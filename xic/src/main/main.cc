@@ -122,6 +122,7 @@ cMain::cMain()
     xm_htext_cnames_only                = false;
     xm_mem_error                        = false;
     xm_saving_dev                       = false;
+    xm_tree_captive                     = false;
 
     // instatiate core functionality
     new ErrRec;             // error handler

@@ -83,7 +83,7 @@ namespace {
         struct InfoState : public CmdState
         {
             friend void cMain::InfoExec(CmdDesc*);
-            friend void cMain::ShowCellInfo(const char*, bool);
+            friend void cMain::ShowCellInfo(const char*, bool, DisplayMode);
 
             InfoState(const char*, const char*);
             virtual ~InfoState();
@@ -223,7 +223,7 @@ cMain::InfoRefresh()
 // Hook for the info command in the cells popup.
 //
 void
-cMain::ShowCellInfo(const char *name, bool init)
+cMain::ShowCellInfo(const char *name, bool init, DisplayMode mode)
 {
     if (!InfoCmd) {
         if (!init)
@@ -240,7 +240,7 @@ cMain::ShowCellInfo(const char *name, bool init)
         CDs *sdesc = 0;
         CDcbin cbin;
         if (CDcdb()->findSymbol(name, &cbin))
-            sdesc = cbin.celldesc(DSP()->CurMode());
+            sdesc = cbin.celldesc(mode);
         if (!sdesc)
             return;
         char *str = Info(sdesc, 100);
@@ -280,18 +280,26 @@ cMain::Info(CDs *sdesc, int level)
         return (0);
     sLstr lstr;
     char buf[512];
-    sprintf(buf, "Symbol: %s\n", Tstring(sdesc->cellname()));
+    sprintf(buf, "%s Cell: %s\n", DisplayModeName(sdesc->displayMode()),
+        Tstring(sdesc->cellname()));
     lstr.add(buf);
     const BBox *tBB = sdesc->BB();
     bool printint = (CDvdb()->getVariable(VA_InfoInternal) != 0);
     int ndgt = CD()->numDigits();
-    if (printint)
+    if (printint) {
         sprintf(buf, "Bounding box: %d,%d %d,%d\n", tBB->left,
             tBB->bottom, tBB->right, tBB->top);
-    else
+    }
+    else if (sdesc->isElectrical()) {
+        sprintf(buf, "Bounding box: %.3f,%.3f %.3f,%.3f\n",
+            ELEC_MICRONS(tBB->left), ELEC_MICRONS(tBB->bottom),
+            ELEC_MICRONS(tBB->right), ELEC_MICRONS(tBB->top));
+    }
+    else {
         sprintf(buf, "Bounding box: %.*f,%.*f %.*f,%.*f\n",
             ndgt, MICRONS(tBB->left), ndgt, MICRONS(tBB->bottom),
             ndgt, MICRONS(tBB->right), ndgt, MICRONS(tBB->top));
+    }
     lstr.add(buf);
 
     if (level > 0) {
@@ -480,13 +488,14 @@ cMain::Info(CDs *sdesc, int level)
                         lstr.add(buf);
                     }
                 }
-                CDsterm *t = ps->cell_terminal();
+                CDsterm *t = sdesc->isElectrical() ? 0 : ps->cell_terminal();
                 if (t) {
                     if (printint)
                         sprintf(buf, "    Location: %d,%d\n", t->lx(), t->ly());
-                    else
+                    else {
                         sprintf(buf, "    Location: %.*f,%.*f\n",
                             ndgt, MICRONS(t->lx()), ndgt, MICRONS(t->ly()));
+                    }
                     lstr.add(buf);
                     sprintf(buf, "    Group: %d\n", t->group());
                     lstr.add(buf);

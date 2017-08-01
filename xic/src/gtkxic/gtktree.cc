@@ -61,10 +61,10 @@ namespace {
         //
         struct sTree : public gtk_bag
         {
-            sTree(GRobject, const char*);
+            sTree(GRobject, const char*, TreeUpdMode);
             ~sTree();
 
-            void update(const char*, const char*);
+            void update(const char*, const char*, TreeUpdMode);
             char *get_selection();
 
         private:
@@ -102,6 +102,7 @@ namespace {
             char *t_selection;          // selected text
             char *t_root_cd;            // name of root cell
             char *t_root_db;            // name of root cell
+            DisplayMode t_mode;         // display mode of cells
             bool t_dragging;            // drag/drop
             bool t_no_select;           // treeview focus hack
             int t_dragX, t_dragY;       // drag/drop
@@ -143,11 +144,12 @@ main_bag::tree_panic()
 
 
 // Pop up a window displaying a tree diagram of the hierarchy of the
-// cell named in root, which should exist in memory.
+// cell named in root, which should exist in memory for the given
+// display mode.
 //
 void
 cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
-    const char *oldroot)
+    TreeUpdMode dmode, const char *oldroot)
 {
     if (!GRX || !mainBag())
         return;
@@ -155,16 +157,17 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
         delete Tree;
         return;
     }
+
     if (mode == MODE_UPD || (mode == MODE_ON && Tree)) {
         if (Tree)
-            Tree->update(root, oldroot);
+            Tree->update(root, oldroot, dmode);
         return;
     }
 
     if ((!root || !*root) && DSP()->MainWdesc()->DbType() == WDcddb)
         return;
 
-    new sTree(caller, root);
+    new sTree(caller, root, dmode);
     if (!Tree->Shell()) {
         delete Tree;
         return;
@@ -182,7 +185,7 @@ cMain::PopUpTree(GRobject caller, ShowMode mode, const char *root,
 #define TR_PLACE_BTN    "Place"
 #define TR_UPD_BTN      "Update"
 
-sTree::sTree(GRobject c, const char *root)
+sTree::sTree(GRobject c, const char *root, TreeUpdMode dmode)
 {
     Tree = this;
     t_caller = c;
@@ -192,6 +195,15 @@ sTree::sTree(GRobject c, const char *root)
     t_selection = 0;
     t_root_cd = 0;
     t_root_db = 0;
+
+    // The display mode of the hierarchy shown is set here.
+    if (dmode == TU_CUR)
+        t_mode = DSP()->CurMode();
+    else if (dmode == TU_PHYS)
+        t_mode = Physical;
+    else
+        t_mode = Electrical;
+
     t_dragging = false;
     t_no_select = false;
     t_dragX = t_dragY = 0;
@@ -230,7 +242,7 @@ sTree::sTree(GRobject c, const char *root)
     gtk_widget_set_name(button, "Help");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(t_action), this);
+        GTK_SIGNAL_FUNC(t_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, 0, 1,
@@ -337,7 +349,7 @@ sTree::sTree(GRobject c, const char *root)
         gtk_widget_set_name(button, buttons[i]);
         gtk_widget_show(button);
         gtk_signal_connect(GTK_OBJECT(button), "clicked",
-            GTK_SIGNAL_FUNC(t_action), this);
+            GTK_SIGNAL_FUNC(t_action), 0);
         gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
         t_buttons[i] = button;
     }
@@ -351,13 +363,14 @@ sTree::sTree(GRobject c, const char *root)
         gtk_signal_connect(GTK_OBJECT(t_caller), "toggled",
             GTK_SIGNAL_FUNC(t_cancel), 0);
 
-    update(0, 0);
+    update(0, 0, dmode);
 }
 
 
 sTree::~sTree()
 {
     Tree = 0;
+    XM()->SetTreeCaptive(false);
     delete [] t_root_cd;
     delete [] t_root_db;
     delete [] t_selection;
@@ -375,7 +388,7 @@ sTree::~sTree()
 
 
 void
-sTree::update(const char *root, const char *oldroot)
+sTree::update(const char *root, const char *oldroot, TreeUpdMode dmode)
 {
     if (DSP()->MainWdesc()->DbType() == WDchd) {
         if (root && (!t_root_db || strcmp(root, t_root_db))) {
@@ -407,12 +420,19 @@ sTree::update(const char *root, const char *oldroot)
         gtk_tree_path_free(Tree->t_curnode);
     t_curnode = 0;
 
+    if (dmode == TU_PHYS)
+        t_mode = Physical;
+    else if (dmode == TU_ELEC)
+        t_mode = Electrical;
+    // Else TU_CUR, keep the present display mode.
+
     char buf[128];
-    if (DSP()->MainWdesc()->DbType() == WDchd)
-        sprintf(buf, "Cells from saved hierarchy named %s",
-            DSP()->MainWdesc()->DbName());
+    if (DSP()->MainWdesc()->DbType() == WDchd) {
+        sprintf(buf, "%s cells from saved hierarchy named %s",
+            DisplayModeName(t_mode), DSP()->MainWdesc()->DbName());
+    }
     else
-        strcpy(buf, "Cells from database (in memory)");
+        sprintf(buf, "%s cells from memory", DisplayModeName(t_mode));
     gtk_label_set_text(GTK_LABEL(t_label), buf);
 
     gtk_label_set_text(GTK_LABEL(wb_textarea),
@@ -645,7 +665,7 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
 
     SymTab *xtab = new SymTab(false, false);
     syrlist_t *s0 = 0;
-    nametab_t *ntab = chd->nameTab(DSP()->CurMode());
+    nametab_t *ntab = chd->nameTab(Tree->t_mode);
     crgen_t cgen(ntab, p);
     const cref_o_t *c;
     while ((c = cgen.next()) != 0) {
@@ -684,7 +704,7 @@ sTree::t_build_proc(void*)
             else {
                 CDcbin cbin;
                 if (CDcdb()->findSymbol(Tree->t_root_cd, &cbin)) {
-                    CDs *sdesc = cbin.celldesc(DSP()->CurMode());
+                    CDs *sdesc = cbin.celldesc(Tree->t_mode);
                     if (sdesc) {
                         Tree->build_tree(sdesc);
                         ok = true;
@@ -706,7 +726,7 @@ sTree::t_build_proc(void*)
                 cCHD *chd = CDchd()->chdRecall(dbname, false);
                 if (chd) {
                     symref_t *p = chd->findSymref(Tree->t_root_db,
-                        DSP()->CurMode(), true);
+                        Tree->t_mode, true);
                     if (p) {
                         Tree->build_tree(chd, p);
                         ok = true;
@@ -729,7 +749,7 @@ sTree::t_build_proc(void*)
         Tree->check_sens();
     }
     if (!ok)
-        XM()->PopUpTree(0, MODE_OFF, 0);
+        XM()->PopUpTree(0, MODE_OFF, 0, TU_CUR);
     return (false);
 }
 
@@ -811,62 +831,63 @@ sTree::t_collapse_proc(GtkTreeView *tv, GtkTreeIter*, GtkTreePath *path, void*)
 void
 sTree::t_cancel(GtkWidget*, void*)
 {
-    XM()->PopUpTree(0, MODE_OFF, 0);
+    XM()->PopUpTree(0, MODE_OFF, 0, TU_CUR);
 }
 
 
 // Static function.
 //
 void
-sTree::t_action(GtkWidget *widget, void *client_data)
+sTree::t_action(GtkWidget *widget, void*)
 {
+    if (!Tree)
+        return;
     const char *wname = gtk_widget_get_name(widget);
+    if (!wname)
+        return;
     if (!strcmp("Help", wname)) {
         DSPmainWbag(PopUpHelp("xic:tree"))
         return;
     }
-    sTree *tree = static_cast<sTree*>(client_data);
-    if (!wname || !tree)
-        return;
     if (!strcmp(TR_INFO_BTN, wname)) {
-        if (!tree->t_selection)
+        if (!Tree->t_selection)
             return;
         if (DSP()->MainWdesc()->DbType() == WDchd) {
             cCHD *chd = CDchd()->chdRecall(DSP()->MainWdesc()->DbName(),
                 false);
             if (!chd)
                 return;
-            symref_t *p = chd->findSymref(tree->t_selection,
-                DSP()->CurMode(), true);
+            symref_t *p = chd->findSymref(Tree->t_selection,
+                Tree->t_mode, true);
             if (!p)
                 return;
             stringlist *sl = new stringlist(
                 lstring::copy(Tstring(p->get_name())), 0);
             int flgs = FIO_INFO_OFFSET | FIO_INFO_INSTANCES |
                 FIO_INFO_BBS | FIO_INFO_FLAGS;
-            char *str = chd->prCells(0, DSP()->CurMode(), flgs, sl);
+            char *str = chd->prCells(0, Tree->t_mode, flgs, sl);
             stringlist::destroy(sl);
-            tree->PopUpInfo(MODE_ON, str, STY_FIXED);
+            Tree->PopUpInfo(MODE_ON, str, STY_FIXED);
             delete [] str;
         }
         else
-            XM()->ShowCellInfo(tree->t_selection, true);
+            XM()->ShowCellInfo(Tree->t_selection, true, Tree->t_mode);
     }
     else if (!strcmp(TR_OPEN_BTN, wname)) {
-        if (!tree->t_selection)
+        if (!Tree->t_selection)
             return;
-        XM()->Load(DSP()->MainWdesc(), tree->t_selection);
+        XM()->Load(DSP()->MainWdesc(), Tree->t_selection);
     }
     else if (!strcmp(TR_PLACE_BTN, wname)) {
-        if (!tree->t_selection)
+        if (!Tree->t_selection)
             return;
         if (DSP()->MainWdesc()->DbType() == WDcddb) {
             EV()->InitCallback();
-            EditIf()->addMaster(tree->t_selection, 0);
+            EditIf()->addMaster(Tree->t_selection, 0);
         }
     }
     else if (!strcmp(TR_UPD_BTN, wname)) {
-        XM()->PopUpTree(0, MODE_UPD, 0);
+        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
     }
 }
 

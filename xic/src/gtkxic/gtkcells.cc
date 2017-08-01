@@ -527,6 +527,7 @@ sCells::sCells(GRobject c)
 sCells::~sCells()
 {
     Cells = 0;
+    XM()->SetTreeCaptive(false);
     if (c_caller) {
         gtk_signal_disconnect_by_func(GTK_OBJECT(c_caller),
             GTK_SIGNAL_FUNC(c_cancel), 0);
@@ -702,7 +703,7 @@ sCells::clear(const char *name)
         }
         if (p_cleared || e_cleared) {
             XM()->PopUpCells(0, MODE_UPD);
-            XM()->PopUpTree(0, MODE_UPD, 0);
+            XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
         }
         if (!cbin.phys() && !cbin.elec()) {
             // Cell and top cell will either be gone, or both ok.
@@ -941,7 +942,12 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
             GtkWidget *widg = 0;
             if (m)
                 widg = (GtkWidget*)m->cmd.caller;
-            XM()->PopUpTree(widg, MODE_ON, cname);
+            XM()->PopUpTree(widg, MODE_ON, cname,
+                c_mode == Physical ? TU_PHYS : TU_ELEC);
+            // If tree is "captive" don't update after main window
+            // display mode switch.
+            XM()->SetTreeCaptive(true);
+
             if (widg)
                 GRX->Select(widg);
         }
@@ -1003,7 +1009,7 @@ sCells::action_hdlr(GtkWidget *caller, void *client_data)
             }
         }
         else
-            XM()->ShowCellInfo(cname, true);
+            XM()->ShowCellInfo(cname, true, c_mode);
     }
     else if (client_data == (void*)ShowCode) {
         bool state = GRX->GetStatus(caller);
@@ -1259,7 +1265,7 @@ sCells::check_sens()
     }
     else {
         bool mode_ok = (c_mode == DSP()->CurMode());
-        gtk_widget_set_sensitive(c_treebtn, mode_ok);
+        gtk_widget_set_sensitive(c_treebtn, true);
         if (DSP()->MainWdesc()->DbType() == WDcddb) {
             gtk_widget_set_sensitive(c_openbtn, mode_ok);
             if (EditIf()->hasEdit()) {
@@ -1343,7 +1349,7 @@ sCells::c_repl_cb(bool state, void *arg)
         }
         EditIf()->ulCommitChanges(true);
         XM()->PopUpCells(0, MODE_UPD);
-        XM()->PopUpTree(0, MODE_UPD, 0);
+        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
     }
 }
 
@@ -1354,12 +1360,14 @@ sCells::c_repl_cb(bool state, void *arg)
 ESret
 sCells::c_rename_cb(const char *newname, void *arg)
 {
+    if (!Cells)
+        return (ESTR_DN);
     char *name = (char*)arg;
     if (EditIf()->renameSymbol(name, newname)) {
         EV()->InitCallback();
         XM()->ShowParameters();
         XM()->PopUpCells(0, MODE_UPD);
-        XM()->PopUpTree(0, MODE_UPD, 0);
+        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
 
         CDcbin cbin;
         if (CDcdb()->findSymbol(newname, &cbin))
@@ -1414,6 +1422,8 @@ sCells::c_mode_proc(GtkWidget*, void *arg)
         Cells->c_mode = m;
         XM()->PopUpCellFilt(0, MODE_UPD, Cells->c_mode, 0, 0);
         Cells->update();
+        XM()->PopUpTree(0, MODE_UPD, 0,
+            Cells->c_mode == Physical ? TU_PHYS : TU_ELEC);
     }
 }
 

@@ -228,7 +228,7 @@ cEdit::createCell(const char *cellname, CDcbin *cbret, bool perm, BBox *BBorg)
         return (false);
     }
     XM()->PopUpCells(0, MODE_UPD);
-    XM()->PopUpTree(0, MODE_UPD, 0);
+    XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
 
     CDcbin cbin;
     if (DSP()->CurMode() == Physical)
@@ -595,7 +595,7 @@ cEdit::renameAll(CDcbin *tbin, const char *pre, const char *suf)
         EV()->InitCallback();
         XM()->ShowParameters();
         XM()->PopUpCells(0, MODE_UPD);
-        XM()->PopUpTree(0, MODE_UPD, 0);
+        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
     }
     return (sx);
 }

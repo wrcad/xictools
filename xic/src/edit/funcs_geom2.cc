@@ -816,7 +816,7 @@ geom2_funcs::IFrenameCell(Variable *res, Variable *args, void*)
         EV()->InitCallback();
         XM()->ShowParameters();
         XM()->PopUpCells(0, MODE_UPD);
-        XM()->PopUpTree(0, MODE_UPD, 0);
+        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
         res->content.value = 1.0;
     }
     return (OK);
@@ -857,7 +857,7 @@ geom2_funcs::IFdeleteEmpties(Variable *res, Variable *args, void*)
             if (didone) {
                 cbin.fixBBs();
                 XM()->PopUpCells(0, MODE_UPD);
-                XM()->PopUpTree(0, MODE_UPD, 0);
+                XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
                 if (recurse)
                     continue;
             }

@@ -249,6 +249,8 @@ typedef void(BangCmdFunc)(const char*);
 // functions.
 #define BANG_BANG_NAME "!!name"
 
+// Passed to the PopUpTree method.
+enum TreeUpdMode { TU_CUR = -1, TU_PHYS = Physical, TU_ELEC = Electrical };
 
 inline class cMain *XM();
 
@@ -340,7 +342,7 @@ public:
     // info.cc
     void InfoExec(CmdDesc*);
     void InfoRefresh();
-    void ShowCellInfo(const char*, bool);
+    void ShowCellInfo(const char*, bool, DisplayMode);
     CDclxy *GetPushList();
     char *Info(CDs*, int);
     char *Info(const CDo*);
@@ -495,7 +497,8 @@ public:
     void PopUpAttributes(GRobject, ShowMode);
     void PopUpSelectControl(GRobject, ShowMode);
     void PopUpSymTabs(GRobject, ShowMode);
-    void PopUpTree(GRobject, ShowMode, const char*, const char* = 0);
+    void PopUpTree(GRobject, ShowMode, const char*, TreeUpdMode,
+        const char* = 0);
 
     sLcb *PopUpLayerEditor(GRobject);
     void PopUpLayerParamEditor(GRobject, ShowMode, const char*, const char*);
@@ -596,6 +599,9 @@ public:
     void SetSavingDev(bool b)           { xm_saving_dev = b; }
     bool SavingDev()                    { return (xm_saving_dev); }
 
+    void SetTreeCaptive(bool b)         { xm_tree_captive = b; }
+    bool TreeCaptive()                  { return (xm_tree_captive); }
+
     static const updif_t *UpdateIf()    { return (xm_updif); }
 
 private:
@@ -685,6 +691,7 @@ private:
     bool xm_htext_cnames_only;  // Restrict hypertext returns to cellnames.
     bool xm_mem_error;          // Memory error occurred.
     bool xm_saving_dev;         // True when saving a device to a file.
+    bool xm_tree_captive;       // Tree is showing cell from Cells List.
 
     // Update interface callbacks
     static const updif_t *xm_updif;

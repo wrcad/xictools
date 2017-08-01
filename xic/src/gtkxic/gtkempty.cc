@@ -215,7 +215,7 @@ sEC::~sEC()
         CDcbin cbin(DSP()->CurCellName());
         cbin.fixBBs();
         XM()->PopUpCells(0, MODE_UPD);
-        XM()->PopUpTree(0, MODE_UPD, 0);
+        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
         DSP()->RedisplayAll();
     }
     delete [] ec_list;

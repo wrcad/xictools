@@ -166,7 +166,13 @@ cMain::SetMode(DisplayMode mode, int wnum)
 
     Menu()->InitAfterModeSwitch(0);
     PopUpCells(0, MODE_UPD);
-    PopUpTree(0, MODE_UPD, 0);
+    if (!TreeCaptive()) {
+        // If the tree is under control of the Cells panel, don't
+        // update here.
+
+        PopUpTree(0, MODE_UPD, 0,
+            DSP()->CurMode() == Physical ? TU_PHYS : TU_ELEC);
+    }
     PopUpLayerParamEditor(0, MODE_UPD, 0, 0);
     Cvt()->PopUpHierarchies(0, MODE_UPD);
     EditIf()->prptyRelist();
@@ -261,7 +267,13 @@ cMain::SetHierDisplayMode(const char *cxname, const char *cellname,
     }
     PopUpSymTabs(0, MODE_OFF);
     PopUpCells(0, MODE_UPD);
-    PopUpTree(0, MODE_UPD, cellname);
+    if (!TreeCaptive()) {
+        // If the tree is under control of the Cells panel, don't
+        // update here.
+
+        PopUpTree(0, MODE_UPD, cellname,
+            DSP()->CurMode() == Physical ? TU_PHYS : TU_ELEC);
+    }
     Cvt()->PopUpAuxTab(0, MODE_OFF);
     Cvt()->PopUpFiles(0, MODE_UPD);
     Cvt()->PopUpLibraries(0, MODE_UPD);
@@ -509,7 +521,8 @@ cMain::Clear(const char *name)
         }
     }
     PopUpCells(0, MODE_UPD);
-    PopUpTree(0, MODE_UPD, 0);
+    PopUpTree(0, MODE_UPD, 0,
+        DSP()->CurMode() == Physical ? TU_PHYS : TU_ELEC);
 }
 
 
@@ -528,7 +541,7 @@ cMain::ClearAll(bool clear_tech)
 
     PopUpCells(0, MODE_OFF);
     PopUpDebug(0, MODE_OFF);
-    PopUpTree(0, MODE_OFF, 0);
+    PopUpTree(0, MODE_OFF, 0, TU_CUR);
     PopUpSymTabs(0, MODE_OFF);
     Cvt()->PopUpFiles(0, MODE_OFF);
     Cvt()->PopUpGeometries(0, MODE_OFF);

@@ -145,7 +145,7 @@ cConvert::CheckEmpties(bool force_delete_all)
     if (changed) {
         cbin.fixBBs();
         XM()->PopUpCells(0, MODE_UPD);
-        XM()->PopUpTree(0, MODE_UPD, 0);
+        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
         DSP()->RedisplayAll();
     }
 }

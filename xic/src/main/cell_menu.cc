@@ -156,11 +156,12 @@ cell_menu::M_Tree(CmdDesc *cmd)
         if (DSP()->CurCellName())
             XM()->PopUpTree(cmd ? cmd->caller : 0,
                 cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF,
-                Tstring(DSP()->CurCellName()));
+                Tstring(DSP()->CurCellName()), TU_CUR);
     }
     else if (DSP()->MainWdesc()->DbType() == WDchd) {
         XM()->PopUpTree(cmd ? cmd->caller : 0,
-            cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF, 0);
+            cmd && Menu()->GetStatus(cmd->caller) ? MODE_ON : MODE_OFF, 0,
+            TU_CUR);
     }
 }
 
