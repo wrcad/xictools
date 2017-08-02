@@ -1,10 +1,17 @@
 
 /*========================================================================*
  *                                                                        *
- *  XICTOOLS Integrated Circuit Design System                             *
- *  Copyright (c) 2007 Whiteley Research Inc, all rights reserved.        *
+ *  Whiteley Research Inc, Sunnyvale, CA USA, http://wrcad.com            *
+ *  Copyright (C) 2017 Whiteley Research Inc, all rights reserved.        *
  *                                                                        *
- *  WHITELEY RESEARCH INCORPORATED PROPRIETARY SOFTWARE                   *
+ *  Licensed under the Apache License, Version 2.0 (the "License");       *
+ *  you may not use this file except in compliance with the License.      *
+ *  You may obtain a copy of the License at                               *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
  *                                                                        *
  *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
  *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
@@ -16,11 +23,12 @@
  *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
  *                                                                        *
  *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * XIC Integrated Circuit Layout and Schematic Editor                     *
+ * Xic Integrated Circuit Layout and Schematic Editor                     *
  *                                                                        *
  *========================================================================*
- $Id: gtkcflags.cc,v 5.20 2017/04/18 03:13:55 stevew Exp $
+ $Id:$
  *========================================================================*/
 
 #include "main.h"
