@@ -768,7 +768,7 @@ sCmp::flat_geom_page()
     cmp_p3_s_btn = gtk_button_new_with_label("S");
     gtk_widget_set_name(cmp_p3_s_btn, "SaveWin");
     gtk_widget_show(cmp_p3_s_btn);
-    gtk_widget_set_usize(cmp_p3_s_btn, 20, -1);
+    gtk_widget_set_usize(cmp_p3_s_btn, 30, -1);
 
     char buf[64];
     cmp_p3_s_menu = gtk_menu_new();
@@ -827,7 +827,7 @@ sCmp::flat_geom_page()
     cmp_p3_r_btn = gtk_button_new_with_label("R");
     gtk_widget_set_name(cmp_p3_r_btn, "RclWin");
     gtk_widget_show(cmp_p3_r_btn);
-    gtk_widget_set_usize(cmp_p3_r_btn, 20, -1);
+    gtk_widget_set_usize(cmp_p3_r_btn, 30, -1);
 
     cmp_p3_r_menu = gtk_menu_new();
     gtk_widget_set_name(cmp_p3_r_menu, "Rmenu");
@@ -1257,7 +1257,7 @@ sCmp::cmp_action(GtkWidget *caller, void*)
         return;
     }
     if (!strcmp(name, "Go")) {
-        // If the prompt to view output is still active, bail.
+        // If the prompt to view output is still active, kill it.
         PL()->AbortEdit();
 
         char *str = Cmp->compose_arglist();

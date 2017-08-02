@@ -337,8 +337,7 @@ cCompare::parse(const char *string)
 
 
 namespace {
-    stringlist *
-    to_stringlist(const char*str)
+    stringlist *to_stringlist(const char *str)
     {
         stringlist *s0 = 0, *se = 0;
         char *tok;
@@ -361,9 +360,18 @@ cCompare::setup()
 {
     TimeDbg tdbg("compare_setup");
 
-    if (c_flat_geometric && (!c_fname1 || !c_fname2)) {
-        Errs()->add_error("Flat geometric comparison requires two files.");
-        return (false);
+    if (c_flat_geometric) {
+        if (!c_fname1 || !c_fname2) {
+            Errs()->add_error("Flat geometric comparison requires two files.");
+            return (false);
+        }
+        if (!c_cell_list2) {
+            // This mode requires that the top cell be given
+            // explicitly if the file contains multiple top-level
+            // cells, so accepting a blank here could cause trouble.
+
+            c_cell_list2 = lstring::copy(c_cell_list1);
+        }
     }
     c_cell_names1 = to_stringlist(c_cell_list1);
     c_cell_names2 = to_stringlist(c_cell_list2);

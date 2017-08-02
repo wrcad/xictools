@@ -152,7 +152,9 @@ cCHD::~cCHD()
 }
 
 
-// Specify the default top cell.
+// Specify the default top cell.  The second arg, it not null, returns
+// the previous name, if any.  Passing a null or empty topname unsets
+// the name configuration.
 //
 bool
 cCHD::setDefaultCellname(const char *topname, const char **prvname)
@@ -240,8 +242,16 @@ cCHD::setCgd(cCGD *cgd, const char *idname)
 }
 
 
-// Return the symref of the first top-level cell found in the file, for
-// the given mode.
+// Return the default symref for the given mode.  This is the cell
+// assumed as the top of the hierarchy if the user does not otherwise
+// specify a cell.  If no such cell has been specified, one will be
+// selected.  This will be the first (by offset) physical top-level
+// cell found in the file that has an instance list, or the first
+// top-level cell if none have instances.  The file may contain PCell
+// or via super-masters, or cells that might have been created to
+// provide resolution for an opposite-mode cell, etc.  It is unlikely
+// that these would be generally useful as the default cell, we want
+// the "real" top-level cell of the hierarchy, if there is one.
 //
 symref_t *
 cCHD::defaultSymref(DisplayMode mode)
@@ -249,23 +259,40 @@ cCHD::defaultSymref(DisplayMode mode)
     if (c_top_symref) {
         if (mode == Physical)
             return (c_top_symref);
-        else
-            // Let the phys top cell define the default for
+        else {
+            // The physical top cell defines the default for
             // electrical, too.
-            return (c_etab->get(c_top_symref->get_name()));
+
+            if (c_etab)
+                return (c_etab->get(c_top_symref->get_name()));
+            return (0);
+        }
     }
+
+    // No top-level symref has been indentified yet, do so now if in
+    // Physical mode.  This is a bit expensive, but since the result
+    // is cached this is not done often.
 
     syrlist_t *sl = topCells(mode, true);
     if (!sl) {
-        Errs()->add_error(
-            "cCHD::defaultSymref: no top-level cell to process.");
+        // No cells?  Can't happen.
         return (0);
     }
     symref_t *s = sl->symref;
-    if (mode == Physical)
+
+    if (mode == Physical) {
         // Cache the default cell.  This is important since calling
         // topCells() is slow.
-        c_top_symref = sl->symref;
+
+        // Find the first symref with instances.
+        for (syrlist_t *sr = sl; sr; sr = sr->next) {
+            if (sr->symref->get_crefs() > 0) {
+                s = sr->symref;
+                break;
+            }
+        }
+        c_top_symref = s;
+    }
 
     syrlist_t::destroy(sl);
     return (s);

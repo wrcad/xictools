@@ -196,8 +196,7 @@ struct symref_t
     symref_t *tab_next()            { return (next); }
     void set_tab_next(symref_t *s)  { next = s; }
     symref_t *tgen_next(bool)       { return (next); }
-    ticket_t get_ticket()     const { const symref_t *st = this;
-                                      return (st ? st->indx : 0); }
+    ticket_t get_ticket()     const { return (indx); }
     void set_ticket(ticket_t t)     { indx = t; }
 
 private:
