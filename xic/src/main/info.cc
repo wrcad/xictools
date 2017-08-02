@@ -1413,6 +1413,8 @@ InfoState::esc()
     GRtextPopup *info2 = DSPmainWbagRet(ActiveInfo2());
     if (info2)
         info2->set_btn2_state(false);
+/*XXX
+//XXX leave selection(?), might be more useful.
     Selections.deselectTypes(CurCell(), 0);
     for (CDol *s = SelBack; s; s = s->next) {
         if (s->odesc) {
@@ -1420,6 +1422,7 @@ InfoState::esc()
             Selections.insertObject(CurCell(), s->odesc);
         }
     }
+*/
     delete this;
 }
 

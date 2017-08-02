@@ -33,7 +33,11 @@
 #include "gtkinlines.h"
 #include "gtkcv.h"
 #include "cd_lgen.h"
+#include "cd_propnum.h"
 #include "errorlog.h"
+#include "menu.h"
+#include "undolist.h"
+#include "promptline.h"
 
 #define WID_DEF     0.1
 #define WID_MIN     0.01
@@ -106,10 +110,10 @@ namespace {
     namespace gtkstdvia {
         struct sStv
         {
-            sStv(GRobject);
+            sStv(GRobject, CDc*);
             ~sStv();
 
-            void update();
+            void update(GRobject, CDc*);
 
             GtkWidget *shell() { return (stv_popup); }
 
@@ -128,6 +132,8 @@ namespace {
             GtkWidget *stv_imp1;
             GtkWidget *stv_imp2;
             GtkWidget *stv_apply;
+
+            CDc *stv_cdesc;
 
             GTKspinBtn sb_wid;
             GTKspinBtn sb_hei;
@@ -157,9 +163,43 @@ namespace {
 
 using namespace gtkstdvia;
 
+namespace {
+    // Sweep some GTK version schmutz under the rug.
 
+#if GTK_CHECK_VERSION(2,24,0)
+#define NEW_COMBO_BOX   gtk_combo_box_text_new()
+#else
+#define NEW_COMBO_BOX   gtk_combo_box_new_text()
+#endif
+
+    inline char *get_active_text(GtkWidget *w)
+    {
+#if GTK_CHECK_VERSION(2,24,0)
+        return (gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(w)));
+#else
+        return (gtk_combo_box_get_active_text(GTK_COMBO_BOX(w)));
+#endif
+    }
+
+    inline void append_text(GtkWidget *w, const char *txt)
+    {
+#if GTK_CHECK_VERSION(2,24,0)
+        gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(w), txt);
+#else
+        gtk_combo_box_append_text(GTK_COMBO_BOX(w), txt);
+#endif
+    }
+}
+
+
+// If cdvia is null, pop up the Standard Via panel, and upon Apply,
+// standard vias will be instantiated where the user clicks.  If cdvia
+// is not null, it must point to a standard via instance.  If so, the
+// Standard Via panel will appear.  On Apply, this instance will be
+// updated to use modified parameters set from the panel.
+//
 void
-cTech::PopUpStdVia(GRobject caller, ShowMode mode)
+cEdit::PopUpStdVia(GRobject caller, ShowMode mode, CDc *cdvia)
 {
     if (!GRX || !mainBag())
         return;
@@ -167,15 +207,28 @@ cTech::PopUpStdVia(GRobject caller, ShowMode mode)
         delete Stv;
         return;
     }
-    if (mode == MODE_UPD) {
-        if (Stv)
-            Stv->update();
+    if (cdvia && !cdvia->prpty(XICP_STDVIA)) {
+        Log()->PopUpErr("Internal error:  PopUpStdVia, missing property.");
         return;
     }
-    if (Stv)
+    if (cdvia && caller) {
+        // If cdvia, caller is null, since were aren't called from
+        // a menu.  We assume this below, so enforce it here.
+        Log()->PopUpErr("Internal error:  caller not null.");
         return;
+    }
 
-    new sStv(caller);
+    if (mode == MODE_UPD) {
+        if (Stv)
+            Stv->update(caller, cdvia);
+        return;
+    }
+    if (Stv) {
+        Stv->update(caller, cdvia);
+        return;
+    }
+
+    new sStv(caller, cdvia);
     if (!Stv->shell()) {
         delete Stv;
         return;
@@ -187,10 +240,11 @@ cTech::PopUpStdVia(GRobject caller, ShowMode mode)
     gtk_widget_show(Stv->shell());
 }
 
-sStv::sStv(GRobject c)
+
+sStv::sStv(GRobject caller, CDc *cdesc)
 {
     Stv = this;
-    stv_caller = c;
+    stv_caller = 0;  // set in update()
     stv_name = 0;
     stv_layer1 = 0;
     stv_layer2 = 0;
@@ -198,8 +252,9 @@ sStv::sStv(GRobject c)
     stv_imp1 = 0;
     stv_imp2 = 0;
     stv_apply = 0;
+    stv_cdesc = 0;
 
-    stv_popup = gtk_NewPopup(0, "Via Creation", stv_cancel_proc, 0);
+    stv_popup = gtk_NewPopup(0, "Standard Via Parameters", stv_cancel_proc, 0);
     if (!stv_popup)
         return;
     gtk_window_set_resizable(GTK_WINDOW(stv_popup), false);
@@ -215,7 +270,7 @@ sStv::sStv(GRobject c)
     //
     GtkWidget *row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-    GtkWidget *label = gtk_label_new("Set parameters for via");
+    GtkWidget *label = gtk_label_new("Set parameters for new standard via");
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     GtkWidget *frame = gtk_frame_new(0);
@@ -239,22 +294,14 @@ sStv::sStv(GRobject c)
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-#if GTK_CHECK_VERSION(2,24,0)
-    stv_name = gtk_combo_box_text_new();
-#else
-    stv_name = gtk_combo_box_new_text();
-#endif
+    stv_name = NEW_COMBO_BOX;
     gtk_widget_show(stv_name);
     gtk_signal_connect(GTK_OBJECT(stv_name), "changed",
         GTK_SIGNAL_FUNC(stv_name_menu_proc), 0);
     gtk_table_attach(GTK_TABLE(form), stv_name, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-#if GTK_CHECK_VERSION(2,24,0)
-    stv_layerv = gtk_combo_box_text_new();
-#else
-    stv_layerv = gtk_combo_box_new_text();
-#endif
+    stv_layerv = NEW_COMBO_BOX;
     gtk_widget_show(stv_layerv);
     gtk_signal_connect(GTK_OBJECT(stv_layerv), "changed",
         GTK_SIGNAL_FUNC(stv_vlayer_menu_proc), 0);
@@ -262,31 +309,6 @@ sStv::sStv(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
-
-    // Fill in the cut layers, only those that are used by an existing
-    // standard via.
-
-    CDlgen lgen(Physical);
-    CDl *ld;
-    while ((ld = lgen.next()) != 0) {
-        if (!ld->isVia())
-            continue;
-
-        tgen_t<sStdVia> gen(Tech()->StdViaTab());
-        const sStdVia *sv;
-        while ((sv = gen.next()) != 0) {
-            if (sv->via() == ld) {
-#if GTK_CHECK_VERSION(2,24,0)
-                gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(stv_layerv),
-                    ld->name());
-#else
-                gtk_combo_box_append_text(GTK_COMBO_BOX(stv_layerv),
-                    ld->name());
-#endif
-                break;
-            }
-        }
-    }
 
     label = gtk_label_new("Layer 1, layer 2");
     gtk_widget_show(label);
@@ -504,7 +526,7 @@ sStv::sStv(GRobject c)
     //
     // Apply and Dismiss buttons
     //
-    button = gtk_button_new_with_label("Apply");
+    button = gtk_button_new_with_label("");
     gtk_widget_set_name(button, "Apply");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
@@ -524,7 +546,7 @@ sStv::sStv(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
     gtk_window_set_focus(GTK_WINDOW(stv_popup), button);
 
-    gtk_combo_box_set_active(GTK_COMBO_BOX(Stv->stv_layerv), 0);
+    update(caller, cdesc);
 }
 
 
@@ -539,33 +561,167 @@ sStv::~sStv()
 
 
 void
-sStv::update()
+sStv::update(GRobject caller, CDc *cd)
 {
-#if GTK_CHECK_VERSION(2,24,0)
-    char *vlyr =
-        gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(stv_layerv));
-#else
-    char *vlyr = gtk_combo_box_get_active_text(GTK_COMBO_BOX(stv_layerv));
-#endif
-    if (!vlyr)
-        return;
-    CDl *ldv = CDldb()->findLayer(vlyr, Physical);
-    g_free(vlyr);
-    if (!ldv)
-        return;
+    if (cd) {
+        // The user has selected a new std via instance, update
+        // everything.
 
-    gtk_combo_box_set_model(GTK_COMBO_BOX(stv_name), 0);
+        if (stv_caller) {
+            // Panel was started from the menu (via creation mode),
+            // detach from menu.
 
-    tgen_t<sStdVia> gen(Tech()->StdViaTab());
-    const sStdVia *sv;
-    while ((sv = gen.next()) != 0) {
-        if (sv->via() == ldv) {
-#if GTK_CHECK_VERSION(2,24,0)
-            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(stv_name),
-                sv->tab_name());
-#else
-            gtk_combo_box_append_text(GTK_COMBO_BOX(stv_name), sv->tab_name());
-#endif
+            Menu()->SetStatus(caller, false);
+            stv_caller = 0;
+        }
+        gtk_button_set_label(GTK_BUTTON(stv_apply), "Update Via");
+
+        CDp *psv = cd->prpty(XICP_STDVIA);
+        if (!psv) {
+            Log()->PopUpErr("Missing StdVia instance property.");
+            return;
+        }
+        const char *str = psv->string();
+        char *vname = lstring::gettok(&str);
+        if (!vname) {
+            Log()->PopUpErr("StdVia instance property has no via name.");
+            return;
+        }
+
+        // The first token is the standard via name.
+        const sStdVia *sv = Tech()->FindStdVia(vname);
+        delete [] vname;
+        if (!sv) {
+            Log()->PopUpErr("StdVia instance property has unknown via name.");
+            return;
+        }
+        if (!sv->bottom() || !sv->top()) {
+            Log()->PopUpErr("StdVia has unknown top or bottom layer.");
+            return;
+        }
+
+        sStdVia rv(*sv);
+        rv.parse(str);
+
+        GtkTreeModel *tm = gtk_combo_box_get_model(GTK_COMBO_BOX(stv_name));
+        gtk_list_store_clear(GTK_LIST_STORE(tm));
+
+        tgen_t<sStdVia> gen(Tech()->StdViaTab());
+        const sStdVia *tsv;
+        int cnt = 0;
+        int ix = 0;
+        while ((tsv = gen.next()) != 0) {
+            if (tsv->via() == sv->via()) {
+                append_text(stv_name, tsv->tab_name());
+                if (!strcmp(tsv->tab_name(), sv->tab_name()))
+                    ix = cnt;
+                cnt++;
+            }
+        }
+        gtk_combo_box_set_active(GTK_COMBO_BOX(stv_name), ix);
+
+        gtk_entry_set_text(GTK_ENTRY(stv_layer1), sv->bottom()->name());
+        gtk_entry_set_text(GTK_ENTRY(stv_layer2), sv->top()->name());
+        sb_wid.set_value(MICRONS(rv.via_wid()));
+        sb_hei.set_value(MICRONS(rv.via_hei()));
+        sb_rows.set_value(rv.via_rows());
+        sb_cols.set_value(rv.via_cols());
+        sb_spa_x.set_value(MICRONS(rv.via_spa_x()));
+        sb_spa_y.set_value(MICRONS(rv.via_spa_y()));
+        sb_enc1_x.set_value(MICRONS(rv.bot_enc_x()));
+        sb_enc1_y.set_value(MICRONS(rv.bot_enc_y()));
+        sb_off1_x.set_value(MICRONS(rv.bot_off_x()));
+        sb_off1_y.set_value(MICRONS(rv.bot_off_y()));
+        sb_enc2_x.set_value(MICRONS(rv.top_enc_x()));
+        sb_enc2_y.set_value(MICRONS(rv.top_enc_y()));
+        sb_off2_x.set_value(MICRONS(rv.top_off_x()));
+        sb_off2_y.set_value(MICRONS(rv.top_off_y()));
+        sb_org_x.set_value(MICRONS(rv.org_off_x()));
+        sb_org_y.set_value(MICRONS(rv.org_off_y()));
+
+        CDl *ldim1 = sv->implant1();
+        if (ldim1) {
+            gtk_entry_set_text(GTK_ENTRY(stv_imp1), ldim1->name());
+            sb_imp1_x.set_value(MICRONS(rv.imp1_enc_x()));
+            sb_imp1_y.set_value(MICRONS(rv.imp1_enc_y()));
+            gtk_widget_set_sensitive(stv_imp1, true);
+            sb_imp1_x.set_sensitive(true);
+            sb_imp1_y.set_sensitive(true);
+        }
+        else {
+            gtk_entry_set_text(GTK_ENTRY(stv_imp1), "");
+            sb_imp1_x.set_value(0);
+            sb_imp1_y.set_value(0);
+            gtk_widget_set_sensitive(stv_imp1, false);
+            sb_imp1_x.set_sensitive(false);
+            sb_imp1_y.set_sensitive(false);
+        }
+        CDl *ldim2 = sv->implant2();
+        if (ldim1 && ldim2) {
+            gtk_entry_set_text(GTK_ENTRY(stv_imp2), ldim2->name());
+            sb_imp2_x.set_value(MICRONS(rv.imp2_enc_x()));
+            sb_imp2_y.set_value(MICRONS(rv.imp2_enc_y()));
+            gtk_widget_set_sensitive(stv_imp2, true);
+            sb_imp2_x.set_sensitive(true);
+            sb_imp2_y.set_sensitive(true);
+        }
+        else {
+            gtk_entry_set_text(GTK_ENTRY(stv_imp2), "");
+            sb_imp2_x.set_value(0);
+            sb_imp2_y.set_value(0);
+            gtk_widget_set_sensitive(stv_imp2, false);
+            sb_imp2_x.set_sensitive(false);
+            sb_imp2_y.set_sensitive(false);
+        }
+        stv_cdesc = cd;
+    }
+    else {
+        // Via creation mode.
+
+        gtk_button_set_label(GTK_BUTTON(stv_apply), "Create Via");
+        stv_cdesc = 0;
+        stv_caller = caller;
+
+        char *vlyr = get_active_text(stv_layerv);
+        if (!vlyr) {
+            // No cut layer, need to fill these in.  Only add those
+            // that are used by an existing standard via.
+
+            CDlgen lgen(Physical);
+            CDl *ld;
+            while ((ld = lgen.next()) != 0) {
+                if (!ld->isVia())
+                    continue;
+
+                tgen_t<sStdVia> gen(Tech()->StdViaTab());
+                const sStdVia *sv;
+                while ((sv = gen.next()) != 0) {
+                    if (sv->via() == ld) {
+                        append_text(stv_layerv, ld->name());
+                        break;
+                    }
+                }
+            }
+            // The signal handler will finish the job.
+            gtk_combo_box_set_active(GTK_COMBO_BOX(stv_layerv), 0);
+            return;
+        }
+
+        // Rebuild the name menu, in case it has changed (hence the
+        // reason for the update).
+
+        CDl *ldv = CDldb()->findLayer(vlyr, Physical);
+        g_free(vlyr);
+        if (!ldv)
+            return;
+
+        gtk_combo_box_set_model(GTK_COMBO_BOX(stv_name), 0);
+
+        tgen_t<sStdVia> gen(Tech()->StdViaTab());
+        const sStdVia *sv;
+        while ((sv = gen.next()) != 0) {
+            if (sv->via() == ldv)
+                append_text(stv_name, sv->tab_name());
         }
     }
 }
@@ -575,7 +731,7 @@ sStv::update()
 void
 sStv::stv_cancel_proc(GtkWidget*, void*)
 {
-    Tech()->PopUpStdVia(0, MODE_OFF);
+    ED()->PopUpStdVia(0, MODE_OFF);
 }
 
 
@@ -593,12 +749,7 @@ sStv::stv_action(GtkWidget *caller, void*)
     if (!strcmp(name, "Apply")) {
         if (!Tech()->StdViaTab())
             return;
-#if GTK_CHECK_VERSION(2,24,0)
-        char *nm = gtk_combo_box_text_get_active_text(
-            GTK_COMBO_BOX_TEXT(Stv->stv_name));
-#else
-        char *nm = gtk_combo_box_get_active_text(GTK_COMBO_BOX(Stv->stv_name));
-#endif
+        char *nm = get_active_text(Stv->stv_name);
         if (!nm)
             return;
         sStdVia *sv = Tech()->FindStdVia(nm);
@@ -649,8 +800,35 @@ sStv::stv_action(GtkWidget *caller, void*)
             return;
         }
 
-        // Place instance
-        ED()->placeDev(Stv->stv_apply, Tstring(sd->cellname()), false);
+        if (!Stv->stv_cdesc) {
+            PL()->ShowPrompt("Click on locations where to instantiate vias.");
+            ED()->placeDev(Stv->stv_apply, Tstring(sd->cellname()), false);
+        }
+        else {
+            // We require that the cdesc still be in good shape here. 
+            // Nothing prevents the application from messing with it
+            // between the pop-up origination and Apply button press,
+            // maybe should make this modal.
+
+            CDc *cdesc = Stv->stv_cdesc;
+            if (cdesc->state() == CDDeleted) {
+                Log()->PopUpErr("Target via instance was deleted.");
+                return;
+            }
+            CDs *cursd = cdesc->parent();
+            if (!cursd) {
+                Log()->PopUpErr("Target via has no parent!");
+                return;
+            }
+
+            CDcbin cbin;
+            cbin.setPhys(sd);
+
+            Ulist()->ListCheck("UPDVIA", cursd, true);
+            if (!ED()->replaceInstance(cdesc, &cbin, false, false))
+                Log()->PopUpErr(Errs()->get_error());
+            Ulist()->CommitChanges(true);
+        }
     }
 }
 
@@ -662,12 +840,7 @@ sStv::stv_vlayer_menu_proc(GtkWidget*, void*)
 {
     if (!Stv)
         return;
-#if GTK_CHECK_VERSION(2,24,0)
-    char *vlyr =
-        gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(Stv->stv_layerv));
-#else
-    char *vlyr = gtk_combo_box_get_active_text(GTK_COMBO_BOX(Stv->stv_layerv));
-#endif
+    char *vlyr = get_active_text(Stv->stv_layerv);
     if (!vlyr)
         return;
     CDl *ldv = CDldb()->findLayer(vlyr, Physical);
@@ -681,15 +854,8 @@ sStv::stv_vlayer_menu_proc(GtkWidget*, void*)
     tgen_t<sStdVia> gen(Tech()->StdViaTab());
     const sStdVia *sv;
     while ((sv = gen.next()) != 0) {
-        if (sv->via() == ldv) {
-#if GTK_CHECK_VERSION(2,24,0)
-            gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(Stv->stv_name),
-                sv->tab_name());
-#else
-            gtk_combo_box_append_text(GTK_COMBO_BOX(Stv->stv_name),
-                sv->tab_name());
-#endif
-        }
+        if (sv->via() == ldv)
+            append_text(Stv->stv_name, sv->tab_name());
     }
     gtk_combo_box_set_active(GTK_COMBO_BOX(Stv->stv_name), 0);
 }
@@ -704,12 +870,7 @@ sStv::stv_name_menu_proc(GtkWidget*, void*)
         return;
     if (!Tech()->StdViaTab())
         return;
-#if GTK_CHECK_VERSION(2,24,0)
-    char *nm =
-        gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(Stv->stv_name));
-#else
-    char *nm = gtk_combo_box_get_active_text(GTK_COMBO_BOX(Stv->stv_name));
-#endif
+    char *nm = get_active_text(Stv->stv_name);
     if (!nm)
         return;
     const sStdVia *sv = Tech()->FindStdVia(nm);

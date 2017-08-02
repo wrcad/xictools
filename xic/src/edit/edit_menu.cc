@@ -63,7 +63,7 @@ namespace {
     edit_pre_switch_proc(int, MenuEnt*)
     {
         ED()->PopUpProperties(0, MODE_OFF, PRPnochange);
-        Tech()->PopUpStdVia(0, MODE_OFF);
+        ED()->PopUpStdVia(0, MODE_OFF);
     }
 
     void
@@ -98,8 +98,8 @@ cEdit::createEditMenu()
         MenuEnt(&M_CreateCell,MenuCRCEL,ME_VANILLA, CMD_NOTSAFE,
         MenuCRCEL": Create new cell from selected objects.");
     EditMenu[editMenuCrvia] =
-        MenuEnt(&M_CreateVia,MenuCRVIA, ME_TOGGLE,  CMD_NOTSAFE,
-        MenuCRVIA": Create a new stabdard via.");
+        MenuEnt(&M_CreateVia,MenuCRVIA, ME_TOGGLE,  CMD_SAFE,
+        MenuCRVIA": Create a new standard via.");
     EditMenu[editMenuFlatn] =
         MenuEnt(&M_Flatten, MenuFLATN,  ME_TOGGLE,  CMD_SAFE,
         MenuFLATN": Flatten the cell hierarchy.");
@@ -197,9 +197,9 @@ edit_menu::M_CreateVia(CmdDesc *cmd)
 {
     if (cmd) {
         if (Menu()->GetStatus(cmd->caller))
-            Tech()->PopUpStdVia(cmd->caller, MODE_ON);
+            ED()->PopUpStdVia(cmd->caller, MODE_ON);
         else
-            Tech()->PopUpStdVia(cmd->caller, MODE_OFF);
+            ED()->PopUpStdVia(cmd->caller, MODE_OFF);
     }
 }
 

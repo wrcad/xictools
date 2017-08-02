@@ -478,39 +478,67 @@ public:
     void makeXORboxExec(CmdDesc*);
     bool xorArea(int, int, int, int);
 
-    // graphics system
+    // Graphics System
+
+    // gtkedset.cc
     void PopUpEditSetup(GRobject, ShowMode);
-    void PopUpLogo(GRobject, ShowMode);
-    void PopUpJoin(GRobject, ShowMode);
-    void PopUpLayerExp(GRobject, ShowMode);
-    void PopUpLayerChangeMode(ShowMode);
-    void PopUpPCellCtrl(GRobject, ShowMode);
-    bool PopUpPCellParams(GRobject, ShowMode, PCellParam*, const char*,
-        pcpMode);
 
-    void PopUpPolytextFont(GRobject, ShowMode);
-    static PolyList *polytext(const char*, int, int, int);
-    static void polytextExtent(const char*, int*, int*, int*);
-
-    // graphics system - placement
-    void PopUpPlace(ShowMode, bool);
+    // gtkflatten.cc
     void PopUpFlatten(GRobject, ShowMode,
         bool(*)(const char*, bool, const char*, void*),
         void*, int = 0, bool = false);
-    void PopUpTransform(GRobject, ShowMode,
-        bool(*)(const char*, bool, const char*, void*), void*);     // export
+
+    // gtkjoin.cc
+    void PopUpJoin(GRobject, ShowMode);
+
+    // gtklexp.cc
+    void PopUpLayerExp(GRobject, ShowMode);
+
+    // gtklogo.cc
+    void PopUpLogo(GRobject, ShowMode);
+
+    // gtkmclchg.cc
+    void PopUpLayerChangeMode(ShowMode);
+
+    // gtkmodif.cc
     PMretType PopUpModified(stringlist*, bool(*)(const char*));     // export
 
-    // graphics system - properties
-    void PopUpPropertyInfo(CDo*, ShowMode);
-    void PropertyInfoPurge(CDo*, CDo*);
+    // gtkpcctrl.cc
+    void PopUpPCellCtrl(GRobject, ShowMode);
+
+    // gtkpcprms.cc
+    bool PopUpPCellParams(GRobject, ShowMode, PCellParam*, const char*,
+        pcpMode);
+
+    // gtkplace.cc
+    void PopUpPlace(ShowMode, bool);
+
+    // gtkprpcedit.cc
+    void PopUpCellProperties(ShowMode);
+
+    // gtkprpedit.cc
     Ptxt *PropertyResolve(int, int, CDo**);                         // export
     void PopUpProperties(CDo*, ShowMode, PRPmode);
     void PropertyPurge(CDo*, CDo*);
     Ptxt *PropertySelect(int);
     Ptxt *PropertyCycle(CDp*, bool(*)(const CDp*), bool);
     void RegisterPrptyBtnCallback(int(*)(Ptxt*));
-    void PopUpCellProperties(ShowMode);
+
+    // gtkprpinfo.cc
+    void PopUpPropertyInfo(CDo*, ShowMode);
+    void PropertyInfoPurge(CDo*, CDo*);
+
+    // gtkptext.cc
+    void PopUpPolytextFont(GRobject, ShowMode);
+    static PolyList *polytext(const char*, int, int, int);
+    static void polytextExtent(const char*, int*, int*, int*);
+
+    // gtkvia.cc
+    void PopUpStdVia(GRobject, ShowMode, CDc* = 0);
+
+    // gtkxform.cc
+    void PopUpTransform(GRobject, ShowMode,
+        bool(*)(const char*, bool, const char*, void*), void*);     // export
 
     // Access to private members.
 

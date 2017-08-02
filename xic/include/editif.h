@@ -222,13 +222,11 @@ public:
     virtual void widthCallback() = 0;
     virtual void setWireAttribute(WsType) = 0;
 
-    // graphics system - placement
+    // Graphics System
+    virtual PMretType PopUpModified(stringlist*, bool(*)(const char*)) = 0;
+    virtual Ptxt *PropertyResolve(int, int, CDo**) = 0;
     virtual void PopUpTransform(GRobject, ShowMode,
             bool(*)(const char*, bool, const char*, void*), void*) = 0;
-    virtual PMretType PopUpModified(stringlist*, bool(*)(const char*)) = 0;
-
-    // graphics system - properties
-    virtual Ptxt *PropertyResolve(int, int, CDo**) = 0;
 
     // edit.h inlines
     virtual void setArrayParams(const iap_t&) = 0;
@@ -301,12 +299,11 @@ class cEditIfStubs : public cEditIf
     void widthCallback() { }
     void setWireAttribute(WsType) { }
 
-    void PopUpTransform(GRobject, ShowMode,
-            bool(*)(const char*, bool, const char*, void*), void*) { }
     PMretType PopUpModified(stringlist*, bool(*)(const char*))
         { return (PMok); }
-
     Ptxt *PropertyResolve(int, int, CDo**) { return (0); }
+    void PopUpTransform(GRobject, ShowMode,
+            bool(*)(const char*, bool, const char*, void*), void*) { }
 
     void setArrayParams(const iap_t&) { }
     WireStyle getWireStyle() { return (CDWIRE_EXTEND); }

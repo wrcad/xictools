@@ -481,9 +481,6 @@ public:
     void CommentDump(FILE*, sLstr*, tBlkType, const char*, const char*,
         const char* = 0);
 
-    // gtkvia.cc
-    void PopUpStdVia(GRobject, ShowMode);
-
     bool Matching(const char *str)
         {
             if (lstring::cimatch(str, tc_kwbuf)) {

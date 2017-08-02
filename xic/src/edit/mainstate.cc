@@ -486,6 +486,10 @@ click:
                                 delete [] pstr;
                             }
                         }
+                        else if (msd && msd->isViaSubMaster()) {
+                            // Edit standard via parameters.
+                            ED()->PopUpStdVia(0, MODE_ON, cd);
+                        }
                         else if (!Menu()->MenuButtonStatus("edit", MenuPRPTY))
                             Menu()->MenuButtonPress("edit", MenuPRPTY);
                     }
