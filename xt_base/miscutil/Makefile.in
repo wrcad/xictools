@@ -25,9 +25,7 @@ HFILES = \
     errorrec.h \
     filestat.h \
     hashfunc.h \
-    internal.h \
     largefile.h \
-    libcoff.h \
     lstring.h \
     miscmath.h \
     miscutil.h \
@@ -39,7 +37,6 @@ HFILES = \
     rangetest.h \
     services.h \
     smartarray.h \
-    stackdump.h \
     symtab.h \
     texttf.h \
     threadpool.h \
@@ -64,7 +61,6 @@ CCFILES = \
     quicksort.cc \
     random.cc \
     randval.cc \
-    stackdump.cc \
     texttf.cc \
     threadpool.cc \
     timedbg.cc \

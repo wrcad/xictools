@@ -1,24 +1,48 @@
 
-/*=======================================================================*
- *                                                                       *
- *  XICTOOLS Integrated Circuit Design System                            *
- *  Copyright (c) 2005 Whiteley Research Inc, all rights reserved.       *
- *                                                                       *
- * MOZY html viewer application files                                    *
- *                                                                       *
- * Based on previous work identified below.                              *
- *-----------------------------------------------------------------------*
+/*========================================================================*
+ *                                                                        *
+ *  Whiteley Research Inc, Sunnyvale, CA USA, http://wrcad.com            *
+ *  Copyright (C) 2017 Whiteley Research Inc, all rights reserved.        *
+ *                                                                        *
+ *  Licensed under the Apache License, Version 2.0 (the "License");       *
+ *  you may not use this file except in compliance with the License.      *
+ *  You may obtain a copy of the License at                               *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
+ *                                                                        *
+ * MOZY html help viewer files                                            *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
+/*------------------------------------------------------------------------*
  * This file is part of the gtkhtm widget library.  The gtkhtm library
  * was derived from the gtk-xmhtml library by:
  *
  *   Stephen R. Whiteley  <stevew@wrcad.com>
  *   Whiteley Research Inc.
- *-----------------------------------------------------------------------*
+ *------------------------------------------------------------------------*
  *  The gtk-xmhtml widget was derived from the XmHTML library by
  *  Miguel de Icaza  <miguel@nuclecu.unam.mx> and others from the GNOME
  *  project.
  *  11/97 - 2/98
- *-----------------------------------------------------------------------*
+ *------------------------------------------------------------------------*
  * Author:  newt
  * (C)Copyright 1995-1996 Ripley Software Development
  * All Rights Reserved
@@ -36,9 +60,7 @@
  * You should have received a copy of the GNU Library General Public
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *-----------------------------------------------------------------------*
- * $Id: htm_format_cx.cc,v 1.3 2014/02/15 23:14:17 stevew Exp $
- *-----------------------------------------------------------------------*/
+ *------------------------------------------------------------------------*/
 
 #include "htm_widget.h"
 #include "htm_format.h"

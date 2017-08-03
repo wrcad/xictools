@@ -1,37 +1,36 @@
-/*****************************************************************************
-*
-*   THIS FILE IS PROVIDED AS IS WITH NO WARRANTIES OF ANY KIND.  THE AUTHOR
-*   SHALL HAVE NO LIABILITY WITH RESPECT TO THE INFRINGEMENT OF COPYRIGHTS,
-*   TRADE SECRETS OR ANY PATENTS BY THIS FILE OR ANY PART THEREOF.  IN NO
-*   EVENT WILL THE AUTHOR BE LIABLE FOR ANY LOST REVENUE OR PROFITS OR
-*   OTHER SPECIAL, INDIRECT AND CONSEQUENTIAL DAMAGES.
-*
-*   IF YOU DECIDE TO USE THE INFORMATION CONTAINED IN THIS FILE TO CONSTRUCT
-*   AND USE THE LZW ALGORITHM YOU AGREE TO ACCEPT FULL RESPONSIBILITY WITH
-*   RESPECT TO THE INFRINGEMENT OF COPYRIGHTS, TRADE SECRECTS OR ANY PATENTS.
-*   IN NO EVENT WILL THE AUTHOR BE LIABLE FOR ANY LOST REVENUE OR PROFITS OR
-*   OTHER SPECIAL, INDIRECT AND CONSEQUENTIAL DAMAGES, INCLUDING BUT NOT
-*   LIMITED TO ANY DAMAGES RESULTING FROM ANY ACTIONS IN A COURT OF LAW.
-*
-*   YOU ARE HEREBY WARNED THAT USE OF THE LZW ALGORITHM WITHOUT HAVING
-*   OBTAINED A PROPER LICENSE FROM UNISYS CONSTITUTES A VIOLATION OF
-*   APPLICABLE PATENT LAW. AS SUCH YOU WILL BE HELD LEGALLY RESPONSIBLE FOR
-*   ANY INFRINGEMENT OF THE UNISYS LZW PATENT.
-*
-*   UNISYS REQUIRES YOU TO HAVE A LZW LICENSE FOR *EVERY* TASK IN WHICH THE
-*   LZW ALGORITHM IS BEING USED (WHICH INCLUDES DECODING THE LZW COMPRESSED
-*   RASTER DATA AS FOUND IN GIF IMAGES). THE FACT THAT YOUR APPLICATION MAY
-*   OR MAY NOT BE DISTRIBUTED AS FREEWARE IS OF NO CONCERN TO UNISYS.
-*
-*   IF YOU RESIDE IN A COUNTRY OR STATE WHERE SOFTWARE PATENT LAWS DO NOT APPLY,
-*   PLEASE BE WARNED THAT EXPORTING SOFTWARE CONTAINING THE LZW ALGORITHM TO
-*   COUNTRIES WHERE SOFTWARE PATENT LAW *DOES* APPLY WITHOUT A VALID LICENSE
-*   ALSO CONSTITUTES A VIOLATION OF PATENT LAW IN THE COUNTRY OF DESTINATION.
-*
-*   INFORMATION ON HOW TO OBTAIN A LZW LICENSE FROM UNISYS CAN BE OBTAINED
-*   BY CONTACTING UNISYS AT lzw_info@unisys.com
-*
-*****************************************************************************/
+
+/*========================================================================*
+ *                                                                        *
+ *  Whiteley Research Inc, Sunnyvale, CA USA, http://wrcad.com            *
+ *  Copyright (C) 2017 Whiteley Research Inc, all rights reserved.        *
+ *                                                                        *
+ *  Licensed under the Apache License, Version 2.0 (the "License");       *
+ *  you may not use this file except in compliance with the License.      *
+ *  You may obtain a copy of the License at                               *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
+ *                                                                        *
+ * MOZY html help viewer files                                            *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
 //
 // External gif decoder
 //
