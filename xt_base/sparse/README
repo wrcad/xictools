@@ -1,0 +1,15 @@
+This directory contains the sparse matrix solver derived from the
+Sparse package from Berkeley.  The Berkeley package was used in
+Spice3.
+
+This version has been converted to c++, with numerous extensions
+added, mostly in an attempt to improve performance.  Although
+developed for WRspice, the package is also used in Xic.  WRspice now
+uses the KLU matrix solver by default rather than Sparse, as this is
+generally faster.
+
+BE CAREFUL when modifying the files, modifications should be done
+to the files here, and not the copies found in the WRspice/Xic
+source trees.  If you work on the files under WRspice, the wrsupd
+script can be used to copy the changes back here.
+

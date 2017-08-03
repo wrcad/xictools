@@ -25,7 +25,7 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * HTPGET http transport utility
+ * httpget --  HTTP file transport utility.                               *
  *                                                                        *
  *========================================================================*
  $Id:$

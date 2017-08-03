@@ -1,0 +1,7 @@
+This directory contains numerical and parameter handling functions
+primarily used in WRspice, but also used in Xic.  They are kept in
+this location so that the two programs remain independent.
+
+DO NOT modify these files when found in the Xic/WRspice source trees,
+modify the files here!
+

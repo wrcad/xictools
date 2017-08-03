@@ -1,0 +1,6 @@
+This directory contains the license server and other codes and
+utilities used with the commercial Xic and WRspice products.  The
+current open-source releases of Xic and WRspice no longer require
+licensing, and are no longer linked to this code by default.  This
+code is provided here on the chance that it might be useful to someone
+who needs to provide license-activated software.

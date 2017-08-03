@@ -1,4 +1,35 @@
 
+ *                                                                        *
+ *  Whiteley Research Inc, Sunnyvale, CA USA, http://wrcad.com            *
+ *  Copyright (C) 2017 Whiteley Research Inc, all rights reserved.        *
+ *                                                                        *
+ *  Licensed under the Apache License, Version 2.0 (the "License");       *
+ *  you may not use this file except in compliance with the License.      *
+ *  You may obtain a copy of the License at                               *
+ *                                                                        *
+ *        http://www.apache.org/licenses/LICENSE-2.0                      *
+ *                                                                        *
+ *  See the License for the specific language governing permissions       *
+ *  and limitations under the License.                                    *
+ *                                                                        *
+ *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,      *
+ *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES      *
+ *   OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-        *
+ *   INFRINGEMENT.  IN NO EVENT SHALL WHITELEY RESEARCH INCORPORATED      *
+ *   OR STEPHEN R. WHITELEY BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER     *
+ *   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,      *
+ *   ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE       *
+ *   USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
+ *                                                                        *
+ *========================================================================*
+ *               XicTools Integrated Circuit Design System                *
+ *                                                                        *
+ * httpget --  HTTP file transport utility.                               *
+ *                                                                        *
+ *========================================================================*
+ $Id:$
+ *========================================================================*/
+
 /************************************************************************
  *
  * httpget: program to issue http/ftp requests and retrieve responses
@@ -33,8 +64,6 @@
  * You should have received a copy of the GNU Library General Public
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- * ----------------------------------------------------------------------
- * $Id: httpget.cc,v 1.3 2015/09/29 03:29:36 stevew Exp $
  ************************************************************************/
 
 #include "httpget/transact.h"
