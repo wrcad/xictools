@@ -25,6 +25,7 @@ spparse.h: $(LPATH)/spnumber/spparse.h
 	cp -f $(LPATH)/spnumber/spparse.h .
 
 clean:
+	rm -f $(FILES)
 
 distclean:
 	rm -f $(FILES) reltag.h

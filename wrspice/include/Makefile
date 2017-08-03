@@ -25,6 +25,7 @@ spnumber.h: $(LPATH)/spnumber/spnumber.h
 	cp -fp $(LPATH)/spnumber/spnumber.h .
 
 clean:
+	rm -f $(FILES)
 
 distclean:
 	rm -f $(FILES) reltag.h
