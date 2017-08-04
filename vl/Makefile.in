@@ -56,11 +56,11 @@ randval.h: $(LPATH)/miscutil/randval.h
 	cp -pf $(LPATH)/miscutil/randval.h .
 
 clean::
-	-rm -f *.o *.a vl vl.exe
+	-rm -f *.o *.a vl vl.exe randval.cc randval.h
 
 distclean::
 	cd packages; $(MAKE) distclean
-	-rm -f *.o *.a vl vl.exe
+	-rm -f *.o *.a vl vl.exe randval.cc randval.h
 	-rm -f verilog_yacc.cc verilog_yacc.h verilog_lex.cc
 	-rm -f config.cache config.h config.log config.status Makefile
 

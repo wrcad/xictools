@@ -1,0 +1,14 @@
+header
+  The file "header" contains the basic licensing statement, which is
+  included with most of the source code (.cc, .c, .h) files in the
+  distribution.
+
+LICENSE-2.0.txt
+  The Apache-2.0 license under which this distribution is released. 
+  In some cases, not all provisions of the Apache license are
+  available due to constraints imposed by the licensing of earlier
+  work from which the file was derived.  In this case, the file will
+  contain a sub-header specifying the licensing terms.
+
+newhdr
+  A script for stripping/adding new header text.

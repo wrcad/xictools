@@ -1,0 +1,29 @@
+#! /bin/sh
+
+#
+# Replace file header with contents of "header" file.
+#
+
+header_file=$1
+if [ -z "$header_file" ]; then
+    echo Usage: newhdr header_file
+    exit 1
+fi
+if [ ! -f "$header_file" ]; then
+    echo "Can't open $header_file"
+    exit 1
+fi
+
+for a in *.cc *.c *.h; do
+    if [ -f $a ]; then
+        txt=`sed -n -e '/^ \*================================*\*$/ p' ${a}`
+        if [ -z "$txt" ]; then
+            echo "WARNING: No header found in $a, skipped."
+            continue;
+        fi
+        mv $a ${a}.bak
+        cp $header_file $a
+        sed -e '1,/^ \*================================*\*$/ d' ${a}.bak >> $a
+        rm ${a}.bak
+    fi
+done

@@ -1,3 +1,64 @@
+                  XicTools Open-Source  Release
+                         July 31, 2017
+
+Whiteley Research is pleased to offer the XicTools programs:  Xic
+(graphical editor) and WRspice (circuit simulator) as open-source. 
+The two programs have sold commercially for more than 20 years, having
+been updated steadily along the way.  However, a lot more development
+is required to increase usage, and Stephen Whiteley, the author of most
+of this, is ready to try a new approach.
+
+It is expected that these programs will enjoy accelerated development
+in an open-source environment, with the contributions of one and all
+adding capability.  One day they may become widely used and known for
+stability and available on-line support through user's and developer's
+groups.  With this critical mass, the programs may become a viable
+choice for foundry users, particularly those who may lack the
+resources to pay for the Big Box tools.  This would never be achieved
+with a proprietary software model given the limited capabilities of a
+tiny company such as Whiteley Research.
+
+The XicTools software is being releases under the Apache-2.0 license,
+which is actually one of the most "free" licenses available.  One is
+not restricted in using this software in a commercial environment, or
+in commercial products.  There is no requirement that you must share
+your source code if you use this.  The code can be redistributed with
+few restrictions.  See the LICENSE-2.0.txt file for the wording of the
+license.  Basically, if you are commercial and this software can add
+to your bottom line, go for it, and we might even help you!
+
+However, this software, like virtually all software, has a history. 
+Much of it originalted from places like the University of California,
+Berkeley (e.g., WRspice is a direct descendent of Berleley Spice). 
+There are bits and pieces that come from other universities.  The
+university licenses are also very unrestrictive and likely highly
+compatible with the Apache-2.0 license (remember that your taxes
+almost certainly paid for the software developed at the university).
+
+At least one accessory (the help viewer) is tainted by the GNU library
+license.  So, at the time of this initial release, there may be some
+question as to whether the full terms of the Apache-2.0 license apply
+in some cases.  This shall presumably be clarified in the future.  All
+old headers have been retained, so users can make their own judgement
+about the constraints on a given set of files.  Getting a beter HTML
+viewer, that understands CSS, is a priority.
+
+Incidently, the GNU licenses are an absolute scourge and should die. 
+Gnu-licensed software is anything but free, its use is highly
+restricted and is poison in a commercial environment.  Fortunately the
+world is moving away from that nonsense, but the damage has been done. 
+For years, Gnu-licensed Linux, and open-source in general, was
+considered to be something far-out hippy-dippy communist, due to
+"copy-lefts" and other peculiarities, by corporate IT departments. 
+These people instead bought Microsoft, costing the world billions of
+dollars (maybe a trillion?  who knows) as a consequence of poor
+security, and need for countermeasures.  Anyway, Bill Gates owes a big
+wet kiss to the GNU folks who made open-source toxic for so long.
+
+
+Overview - What's Here
+
+
 
 Dependencies
 
@@ -12,7 +73,8 @@ xic
   secure
   mrouter
 
-xt_aCCS
+xt_accs
   xt_base
 
 KLU, vl, and mrouter can be built stand-alone.
+

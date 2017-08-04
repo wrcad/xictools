@@ -1,12 +1,19 @@
 
 /*========================================================================*
  *                                                                        *
- *  Whiteley Research Inc, Sunnyvale, CA USA, http://wrcad.com            *
- *  Copyright (C) 2017 Whiteley Research Inc, all rights reserved.        *
+ *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
+ *                       http://wrcad.com                                 *
+ *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
- *  Licensed under the Apache License, Version 2.0 (the "License");       *
- *  you may not use this file except in compliance with the License.      *
- *  You may obtain a copy of the License at                               *
+ *  As fully as possible recognizing licensing terms and conditions       *
+ *  imposed by earlier work from which this work was derived, if any,     *
+ *  this work is released under the Apache License, Version 2.0 (the      *
+ *  "License").  You may not use this file except in compliance with      *
+ *  the License, and compliance with inherited licenses which are         *
+ *  specified in a sub-header below this one if applicable.  A copy       *
+ *  of the License is provided with this distribution, or you may         *
+ *  obtain a copy of the License at                                       *
  *                                                                        *
  *        http://www.apache.org/licenses/LICENSE-2.0                      *
  *                                                                        *
