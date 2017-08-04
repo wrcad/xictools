@@ -3,24 +3,9 @@
                     ----------------------------
 
 (c) Copyright Whiteley Research Inc., 2005
-$Id: README,v 2.1 2005/10/21 06:40:57 stevew Exp $
 
- * This library is available for non-commercial use under the terms of    *
- * the GNU Library General Public License as published by the Free        *
- * Software Foundation; either version 2 of the License, or (at your      *
- * option) any later version.                                             *
- *                                                                        *
- * A commercial license is available to those wishing to use this         *
- * library or a derivative work for commercial purposes.  Contact         *
- * Whiteley Research Inc., 456 Flora Vista Ave., Sunnyvale, CA 94086.     *
- * This provision will be enforced to the fullest extent possible under   *
- * law.                                                                   *
- *                                                                        *
- * This library is distributed in the hope that it will be useful,        *
- * but WITHOUT ANY WARRANTY; without even the implied warranty of         *
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
- * Library General Public License for more details.                       *
- *                                                                        *
+WARNING - This is waaaaay out of date.  The non-graphical stuff
+was moved to ../miscutil.
 
 I.  Introduction
 
