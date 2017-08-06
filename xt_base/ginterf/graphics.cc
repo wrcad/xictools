@@ -57,7 +57,10 @@
 #include "graphics.h"
 #include "lstring.h"
 #include "filestat.h"
-#include "imsave/imsave.h"
+#define WITH_HTM
+#ifdef WITH_HTM
+#include "../../mozy/include/imsave.h"
+#endif
 
 #include "nulldev.h"
 #include "xdraw.h"
@@ -116,6 +119,7 @@ GRimage::create_image_file(GRpkg *pkg, const char *filename)
     if (!pkg || !filename)
         return (false);
 
+#ifdef WITH_HTM
     unsigned char *rgbdata = new unsigned char[im_width*im_height * 3];
     Image img(im_width, im_height, rgbdata);
     // rgbdata freed im Image destructor.
@@ -131,6 +135,9 @@ GRimage::create_image_file(GRpkg *pkg, const char *filename)
     }
     SaveInfo sv;
     return (img.save_image(filename, &sv) == ImOK);
+#else
+    return (false);
+#endif
 }
 
 

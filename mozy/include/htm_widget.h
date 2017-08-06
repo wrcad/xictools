@@ -390,6 +390,16 @@ struct htmDataInterface
     virtual void scroll_visible(int, int, int, int) = 0;
 };
 
+// Declare callback structures defined in htm_callback.h
+struct htmAnchorCallbackStruct;
+struct htmVisitedCallbackStruct;
+struct htmDocumentCallbackStruct;
+struct htmLinkCallbackStruct;
+struct htmImagemapCallbackStruct;
+struct htmEventCallbackStruct;
+
+// Declare callback structures defined in htm_frame.h
+struct htmFrameCallbackStruct;
 
 //-----------------------------------------------------------------------------
 // Color Management

@@ -1,5 +1,5 @@
 #######################################################################
-# src/gtkinterf/Makefile.in
+# mozy/src/gtkmozy/Makefile.in
 #######################################################################
 # $Id: Makefile.in,v 1.28 2014/02/15 18:40:33 stevew Exp $
 #######################################################################
@@ -11,40 +11,20 @@ CC = @CC@
 CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @TOOLKITCFLAGS@
 FILTER = @FILTER@
-INCLUDE = -I. -I.. -I../../miscutil @TOOLKITINC@
 
-LPATH = ../..
+LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/ginterf \
+ -I$(LPATH)/ginterf/gtkinterf -I$(LPATH)/miscutil \
+ @TOOLKITINC@
+
 HFILES = \
-    gtkedit.h \
-    gtkfile.h \
-    gtkfont.h \
-    gtkhcopy.h \
-    gtkinterf.h \
-    gtklist.h \
-    gtkmcol.h \
-    gtkpfiles.h \
-    gtksearch.h \
-    gtkspinbtn.h \
-    gtkutil.h \
-    gtkx11.h \
-    mswdraw.h \
-    mswpdev.h
+    gtkhelp.h \
+    gtkviewer.h
 
 CCFILES = \
-    gtkedit.cc \
-    gtkfile.cc \
-    gtkfont.cc \
-    gtkhcopy.cc \
-    gtkinterf.cc \
-    gtklist.cc \
-    gtkmcol.cc \
-    gtkpfiles.cc \
-    gtksearch.cc \
-    gtkspinbtn.cc \
-    gtkutil.cc \
-    gtkxdraw.cc \
-    mswdraw.cc \
-    mswpdev.cc
+    gtkhelp.cc \
+    gtkhttpmon.cc \
+    gtkviewer.cc
 
 CCOBJS = $(CCFILES:.cc=.o)
 LIBOBJS = $(CCOBJS)
@@ -68,7 +48,7 @@ distclean: clean
 	-@rm -f Makefile
 
 depend:
-	@echo depending in gtkinterf
+	@echo depending in mozy/src/gtkmozy
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

@@ -41,7 +41,7 @@
 #include "config.h"
 #include "update_itf.h"
 #include "crypt.h"
-#include "httpget/transact.h"
+#include "transact.h"
 #include "pathlist.h"
 #include "filestat.h"
 #include "miscutil.h"

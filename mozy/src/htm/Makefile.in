@@ -1,10 +1,10 @@
-#=========================================================================
-# Makefile for htm HTML parser/viewer widget toolkit-independent code
-# Steve Whiteley, stevew@wrcad.com
-# Happy hacking!
-# $Id: Makefile.in,v 1.15 2014/07/19 23:12:58 stevew Exp $
+#######################################################################
+# mozy/src/htm/Makefile.in
+#######################################################################
+# $Id:$
+#######################################################################
 
-HTM_VERSION = 0.1
+HTM_VERSION = 1.0
 
 # Below are the recognized CFLAGS defines.  These should be set
 # appropriately in a config.h file, or can be added to the CFLAGS.
@@ -14,13 +14,17 @@ HTM_VERSION = 0.1
 # -DHAVE_LIBJPEG        | libjpeg (JPEG images) available
 # -DHAVE_LIBTIFF        | libtiff (TIFF images) available
 
+DATE = @DATE@
+
 prefix = @prefix@
 CXX = @CXX@
 CC = @CC@
 CFLAGS = @CFLAGSG@ @UFLAGS@ -DHTM_VERSION=\"$(HTM_VERSION)\"
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DHTM_VERSION=\"$(HTM_VERSION)\"
 FILTER = @FILTER@
-INCLUDE = -I. -I.. -I../../miscutil @IMG_INCLUDES@
+
+LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/miscutil
 
 HFILES = \
     htm_bitmaps.h \
@@ -100,7 +104,7 @@ distclean::
 	-@rm -f Makefile
 
 depend:
-	@echo depending in htm
+	@echo depending in mozy/src/htm
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

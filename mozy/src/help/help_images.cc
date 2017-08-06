@@ -43,11 +43,11 @@
 #include "help_startup.h"
 #include "help_cache.h"
 #include "help_topic.h"
-#include "httpget/transact.h"
+#include "transact.h"
 #include "pathlist.h"
 
-#include "htm/htm_widget.h"
-#include "htm/htm_image.h"
+#include "htm_widget.h"
+#include "htm_image.h"
 
 #include <sys/stat.h>
 #include <errno.h>

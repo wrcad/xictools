@@ -44,7 +44,7 @@
 #include "help_startup.h"
 #include "help_cache.h"
 #include "help_topic.h"
-#include "httpget/transact.h"
+#include "transact.h"
 #include "pathlist.h"
 #include "lstring.h"
 #include "filestat.h"
@@ -52,8 +52,8 @@
 #include "graphics.h"
 #include "symtab.h"
 
-#include "htm/htm_widget.h"
-#include "htm/htm_form.h"
+#include "htm_widget.h"
+#include "htm_form.h"
 
 #include <sys/stat.h>
 #ifdef HAVE_PWD_H

@@ -1,0 +1,53 @@
+#######################################################################
+# mozy/src/upd/Makefile.in
+#######################################################################
+# $Id:$
+#######################################################################
+
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
+FILTER = @FILTER@
+
+LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/miscutil
+
+HFILES = update_itf.h
+CCFILES = update_itf.cc
+
+CCOBJS = $(CCFILES:.cc=.o)
+LIBOBJS = $(CCOBJS)
+
+stamp: $(LIBOBJS)
+	touch stamp
+
+.cc.o:
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+
+files::
+	@echo [ $(CCFILES) $(HFILES) Makefile.in ]
+
+subdirs::
+	@echo ]
+
+clean:
+	-@rm -f $(CCOBJS) stamp
+
+distclean: clean
+	-@rm -f Makefile
+
+depend:
+	@echo depending in mozy/src/upd
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+install::
+
+uninstall::
+
+#######################################################################

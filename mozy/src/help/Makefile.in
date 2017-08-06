@@ -1,4 +1,8 @@
-#=========================================================================
+#######################################################################
+# mozy/src/help/Makefile.in
+#######################################################################
+# $Id:$
+#######################################################################
 
 DATE = @DATE@
 
@@ -7,6 +11,9 @@ CC = @CC@
 CFLAGS = @CFLAGSG@ @UFLAGS@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
 FILTER = @FILTER@
+
+LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 HFILES = \
     help_cache.h \
@@ -25,7 +32,6 @@ CCFILES = \
 
 CCOBJS = $(CCFILES:.cc=.o)
 LIBOBJS = $(CCOBJS)
-INCLUDE = -I. -I.. -I../../miscutil
 
 stamp: $(LIBOBJS)
 	touch stamp
@@ -46,7 +52,7 @@ distclean: clean
 	-@rm -f Makefile
 
 depend:
-	@echo depending in help
+	@echo depending in mozy/src/help
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

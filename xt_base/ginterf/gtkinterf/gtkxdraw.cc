@@ -41,7 +41,10 @@
 #include "gtkinterf.h"
 #include "xdraw.h"
 #include "texttf.h"
-#include "imsave/imsave.h"
+#define WITH_HTM
+#ifdef WITH_HTM
+#include "../../../mozy/src/imsave/imsave.h"
+#endif
 
 #ifdef WITH_X11
 #include <X11/Xlib.h>
@@ -434,6 +437,7 @@ Xparams::get_drawable_size(Drawable win, int *width, int *height)
 void
 Xparams::Halt()
 {
+#ifdef WITH_HTM
     Image *im = create_image_from_drawable(display, window, 0, 0, dev->width,
         dev->height);
     XFreePixmap(display, window);
@@ -451,6 +455,11 @@ Xparams::Halt()
     }
     else
         GRpkgIf()->HCabort("Internal error");
+#else
+    XFreePixmap(display, window);
+    fprintf(stderr, "Image creation failed, package not available.\n");
+    GRpkgIf()->HCabort("Image format unsupported");
+#endif
 
     // Put back original pixmaps in layer descs.
     GRappIf()->SetupLayers(display, this, lcx);

@@ -41,7 +41,10 @@
 #ifndef GTKVIEWER_H
 #define GTKVIEWER_H
 
-#include "gtkhelp.h"
+#include "htm_widget.h"
+#include "help_context.h"
+
+class Transaction;
 
 //
 // HTML viewer component for the help viewer.  This contains the

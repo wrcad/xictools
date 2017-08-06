@@ -42,8 +42,7 @@ HFILES = \
     threadpool.h \
     timedbg.h \
     timer.h \
-    tvals.h \
-    update_itf.h
+    tvals.h
 
 CCFILES = \
     childproc.cc \
@@ -65,28 +64,17 @@ CCFILES = \
     threadpool.cc \
     timedbg.cc \
     timer.cc \
-    tvals.cc \
-    update_itf.cc
+    tvals.cc
 
-SUBDIRS = httpget
 CCOBJS = $(CCFILES:.cc=.o)
 INCLUDE = -I.
 
-recurse: 
-	@for a in $(SUBDIRS); do \
-	    (dir=`pwd`; cd $$a; $(MAKE); cd $$dir) \
-	done
-	$(MAKE) $(LIB_TARGET)
-
-$(LIB_TARGET): $(CCOBJS) $(SUBDIRS:=/*.o)
+$(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
-	$(AR) cr $(LIB_TARGET) $(CCOBJS) $(SUBDIRS:=/*.o)
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
-
-$(SUBDIRS:=/*.o):
-	cd $(@D); $(MAKE)
 
 test_hwaddr::
 	g++ -o test_hwaddr -DTEST_HWADDR miscutil.cc
@@ -98,25 +86,16 @@ files::
 	@echo [ $(CCFILES) $(HFILES) Makefile.in config.h.in ]
 
 subdirs::
-	@echo [ $(SUBDIRS) ]
+	@echo [ ]
 
 clean:
-	-@for a in $(SUBDIRS); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) clean; cd $$dir) \
-	done
 	-@rm -f $(CCOBJS) $(LIB_TARGET) test_hwaddr
 
-distclean:
-	-@for a in $(SUBDIRS); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
-	done
-	-@rm -f $(CCOBJS) $(LIB_TARGET) Makefile test_hwaddr
+distclean: clean
+	-@rm -f Makefile
 
 depend:
-	@for a in $(SUBDIRS); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) depend; cd $$dir) \
-	done
-	@echo depending in miscutil
+	@echo depending in xt_base/miscutil
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

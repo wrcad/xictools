@@ -52,7 +52,7 @@
  *
  ************************************************************************/
 
-#include "httpget/transact.h"
+#include "transact.h"
 #include <gtk/gtk.h>
 #ifdef WITH_X11
 #include <gdk/gdkx.h>

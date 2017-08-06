@@ -1,0 +1,130 @@
+#######################################################################
+# mozy/bin/Makefile.in
+#######################################################################
+# $Id:$
+#######################################################################
+
+MOZY_VERSION = 4.2.2
+
+DATE = @DATE@
+
+prefix = @prefix@
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @UFLAGS@ -DXICTOOLS
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+MSLIBS = @MSLIBS@
+LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
+OSNAME = @OSNAME@
+GRPREF = @GRPREF@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
+RANLIB = @RANLIB@
+STDCLIB = @STDCLIB@
+INSTALL = @INSTALL@
+NTSUFFIX = @NTSUFFIX@
+FILTER = @FILTER@
+NTREGEX = @NTREGEX@
+MOZYRES = @MOZYRES@
+XEDRES = @XEDRES@
+TOOLROOT = @TOOLROOT@
+WINPTHREADFIX = @WINPTHREADFIX@
+
+LPATH = ../../xt_base
+GRAPHICS = $(LPATH)/ginterf/ginterf.a
+MISCUTIL = $(LPATH)/miscutil/miscutil.a
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+SUBDIRS = ../src/gtkmozy ../src/help ../src/htm ../src/httpget \
+  ../src/imsave ../src/upd
+
+CCFILES = mozy.cc httpget.cc
+INCLUDE = -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+#######################################################################
+####### Executable and related targets ################################
+
+LIB_TARGET = ../lib/libmozy.a
+
+all:  libmozy mozy httpget
+
+libmozy:
+	@for a in $(SUBDIRS); do \
+	  (cd $$a; $(MAKE) ) \
+	done
+	@if [ -f $(LIB_TARGET) ]; then \
+            rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS) $(SUBDIRS:=/*.o)
+	$(RANLIB) $(LIB_TARGET)
+
+mozy: libmozy mozy.o $(GRAPHICS) $(MISCUTIL) $(MOZYRES) Makefile
+	@echo $@: dynamic link
+	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o -lmozy $(GRAPHICS) \
+  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
+
+httpget: libmozy httpget.o $(GRAPHICS) $(MISCUTIL)
+	$(LINKCC) -o httpget $(LFLAGS) httpget.o -lmozy $(GRAPHICS) \
+  $(MISCUTIL) $(LIBS) $(STDCLIB)
+
+mozy.o: mozy.cc
+	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
+  -DVERSION_STR=\"$(MOZY_VERSION)\" $(INCLUDE) -c mozy.cc
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+#######################################################################
+####### Recursively generate libraries ################################
+
+$(GRAPHICS)::
+	cd $(@D); $(MAKE)
+
+$(MISCUTIL)::
+	cd $(@D); $(MAKE)
+	if [ x$(NTREGEX) != x ]; then \
+	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	fi
+
+foo $(MOZYRES) $(XEDRES):
+	cd $(@D); $(MAKE) $(@F)
+
+#######################################################################
+####### Dependencies in this directory ################################
+
+depend::
+	@echo depending in mozy/bin
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+	@for a in $(SUBDIRS); do \
+	  (cd $$a; $(MAKE) depend) \
+	done
+
+#######################################################################
+####### Clean up ######################################################
+
+eclean::
+	-rm -f mozy$(NTSUFFIX) httpget$(NTSUFFIX) $(LIB_TARGET)
+
+clean:: eclean
+	-rm -f *.o
+	@for a in $(SUBDIRS); do \
+	  (cd $$a; $(MAKE) clean) \
+	done
+
+distclean:: eclean
+	-rm -f *.o Makefile
+	@for a in $(SUBDIRS); do \
+	  (cd $$a; $(MAKE) distclean) \
+	done
+
+#######################################################################
+####### Installation ##################################################
+
+
+#######################################################################
