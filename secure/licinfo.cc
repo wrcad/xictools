@@ -42,7 +42,7 @@
  // print the host name and IP address, and the hardware address.
 
 #include "secure.h"
-#include "miscutil.h"
+#include "miscutil/miscutil.h"
 #include <string.h>
 #include <stdlib.h>
 #ifdef WIN32

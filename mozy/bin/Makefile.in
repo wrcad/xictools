@@ -63,12 +63,12 @@ libmozy:
 
 mozy: libmozy mozy.o $(GRAPHICS) $(MISCUTIL) $(MOZYRES) Makefile
 	@echo $@: dynamic link
-	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o -lmozy $(GRAPHICS) \
-  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
+	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o -L../lib -lmozy \
+  $(GRAPHICS) $(MISCUTIL) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
 
 httpget: libmozy httpget.o $(GRAPHICS) $(MISCUTIL)
-	$(LINKCC) -o httpget $(LFLAGS) httpget.o -lmozy $(GRAPHICS) \
-  $(MISCUTIL) $(LIBS) $(STDCLIB)
+	$(LINKCC) -o httpget $(LFLAGS) httpget.o -L../lib -lmozy \
+  $(GRAPHICS) $(MISCUTIL) $(LIBS) $(STDCLIB)
 
 mozy.o: mozy.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \

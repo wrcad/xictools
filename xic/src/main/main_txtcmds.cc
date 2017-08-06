@@ -82,7 +82,7 @@
 #include "pathlist.h"
 #include "filestat.h"
 #include "timedbg.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #include "miscutil.h"
 #include "childproc.h"
 

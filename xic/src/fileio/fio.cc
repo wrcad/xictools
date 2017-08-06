@@ -45,7 +45,7 @@
 #include "pathlist.h"
 #include "filestat.h"
 #include "update_itf.h"
-#include "httpget/transact.h"
+#include "transact.h"
 #include <ctype.h>
 
 

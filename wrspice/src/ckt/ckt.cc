@@ -60,6 +60,7 @@ Authors: 1985 Thomas L. Quarles
 #include "errorrec.h"
 #include "verilog.h"
 #include "commands.h"
+//XXX get outplot.h outta here, don't use ginterf in Makefile incl path
 #include "outplot.h"
 #ifdef HAVE_FLOAT_H
 #include <float.h>

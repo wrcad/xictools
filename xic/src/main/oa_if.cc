@@ -55,7 +55,7 @@
 #include "tech.h"
 #include "reltag.h"
 #include "filestat.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #include "secure.h"
 
 #ifdef HAVE_OA

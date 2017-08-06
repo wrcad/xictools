@@ -19,12 +19,14 @@ LIB_TARGET = misc.a
 
 LPATH = ../../../xt_base
 VLPATH = ../../../vl
+INCLUDE = -I../../include -I../../../mozy/include -I$(LPATH)/ginterf \
+  -I$(LPATH)/miscutil -I$(VLPATH)
+
 NFILES = hash.cc spnumber.cc spparse.cc
 HFILES =
 CCFILES = \
   $(NFILES) texthelp.cc time.cc ttyio.cc vardb.cc verilog.cc wlist.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil -I$(VLPATH)
 
 $(LIB_TARGET): include $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

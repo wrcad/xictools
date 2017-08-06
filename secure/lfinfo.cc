@@ -57,7 +57,7 @@
 #include "config.h"
 #include "secure.h"
 #include "secure_prv.h"
-#include "encode.h"
+#include "miscutil/encode.h"
 #include "key.h"
 
 namespace lfinfo {

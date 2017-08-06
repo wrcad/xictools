@@ -18,12 +18,13 @@ FILTER = @FILTER@
 LIB_TARGET = inp.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
 HFILES =
 CCFILES = \
   inpdeck.cc inpdev.cc inpdotcd.cc inperror.cc inpfuncs.cc inpmodel.cc \
   inpptree.cc inptabpa.cc inptoken.cc inptran.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

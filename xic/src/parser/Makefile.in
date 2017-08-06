@@ -18,6 +18,8 @@ FILTER = @FILTER@
 LIB_TARGET = parser.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/miscutil
+
 HFILES =
 CCFILES = \
   funcs_lexpr.cc funcs_math.cc pcell_params.cc si_daemon.cc \
@@ -27,7 +29,6 @@ CCFILES = \
 EXPOBJS = $(CCFILES_EXPORT:.cc=.o)
 
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

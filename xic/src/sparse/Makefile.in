@@ -18,10 +18,11 @@ FILTER = @FILTER@
 LIB_TARGET = sparse.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/miscutil
+
 HFILES = spconfig.h spmacros.h
 CCFILES = spbuild.cc spfactor.cc spsolve.cc sputils.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/miscutil
 
 $(LIB_TARGET): include $(HFILES) $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

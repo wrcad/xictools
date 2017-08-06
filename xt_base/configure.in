@@ -95,18 +95,17 @@ if test $enable_mingwlib != yes -a $enable_mingwlib != no; then
 fi
 )
 
-dnl --enable-nospice
-dnl disable WRspice build
-nospice="no"
-AC_ARG_ENABLE(nospice,
-    [  ]--enable-nospice        skip wrspice build,
-if test $enable_nospice = yes; then
-    nospice="yes"
+dnl --enable-nomozy
+dnl don't build/link mozy, GNU tainted
+nomozy="no"
+AC_ARG_ENABLE(nomozy,
+    [  ]--enable-nomozy        skip mozy build,
+if test $enable_nomozy = yes; then
+    nomozy="yes"
 fi
 )
-
-if test ! -d wrspice; then
-    nospice=yes
+if test ! -d mozy; then
+    nomozy=yes
 fi
 
 dnl  Enable OpenAccess support, i.e., enable and build the OA plugin.  This
@@ -189,10 +188,9 @@ fi
 
 echo '#define HAVE_GTK2 1'>> confdefs.h
 
-if test $nospice = no; then
-    WRSPICE_TARGET='device_lib $(SPICE_PROG)'
+if test $nomozy = no; then
+    echo '#define HAVE_MOZY 1'>> confdefs.h
 fi
-AC_SUBST(WRSPICE_TARGET)
 
 
 dnl ***
@@ -1029,20 +1027,26 @@ if test -f ginterf/ginterf.a; then
     rm -f ginterf/ginterf.a;
 fi
 
-AC_CONFIG_HEADER(miscutil/config.h)
+AC_CONFIG_HEADER(include/config.h)
 
 makefiles="Makefile \
     util/Makefile \
     ginterf/Makefile \
-    ginterf/help/Makefile \
-    ginterf/htm/Makefile \
-    ginterf/imsave/Makefile \
-    ginterf/${GRPREF}interf/Makefile \
+    ${GRPREF}interf/Makefile \
     miscutil/Makefile \
-    miscutil/httpget/Makefile \
     malloc/Makefile"
 if test -d ../secure; then
     makefiles="$makefiles ../secure/Makefile"
+fi
+if test -d ../mozy; then
+    makefiles="$makefiles \
+        ../mozy/src/gtkmozy/Makefile \
+        ../mozy/src/help/Makefile \
+        ../mozy/src/htm/Makefile \
+        ../mozy/src/httpget/Makefile \
+        ../mozy/src/imsave/Makefile \
+        ../mozy/src/upd/Makefile \
+        ../mozy/bin/Makefile"
 fi
 if test -d ../xt_accs; then
     makefiles="$makefiles ../xt_accs/Makefile"

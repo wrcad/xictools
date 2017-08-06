@@ -18,6 +18,8 @@ FILTER = @FILTER@
 LIB_TARGET = sced.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
 HFILES =
 CCFILES = \
   ebtn_menu.cc funcs_sced.cc sced.cc sced_arcs.cc sced_check.cc \
@@ -28,7 +30,6 @@ CCFILES = \
   sced_spicein.cc sced_spiceipc.cc sced_spiceout.cc sced_spmap.cc \
   sced_subckt.cc sced_symbolic.cc sced_txtcmds.cc sced_variables.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

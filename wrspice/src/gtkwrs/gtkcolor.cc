@@ -49,7 +49,7 @@
 #include "frontend.h"
 #include "cshell.h"
 #include "commands.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #include "gtktoolb.h"
 
 // This is for the Xrm stuff

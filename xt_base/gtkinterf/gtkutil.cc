@@ -52,8 +52,7 @@
 #include "gtkinterf.h"
 #include "gtkutil.h"
 #include "gtkfont.h"
-#define WITH_HTM
-#ifdef WITH_HTM
+#ifdef HAVE_MOZY
 #include "../../../mozy/include/gtkviewer.h"
 #include "../../../mozy/include/htm_callback.h"
 #include "../../../mozy/include/help_defs.h"
@@ -1386,7 +1385,7 @@ GTKmsgPopup::pw_message_popdown_ev(GtkWidget*, GdkEvent*, void *client_data)
 //-----------------------------------------------------------------------------
 // Fancy message box (scroll bars, buttons, html, etc.)
 
-#ifdef WITH_HTM
+#ifdef HAVE_MOZY
 
 // Set up an anchor activate signal handler for the HTML info window.
 // Anchor href text is sent to the help system.
@@ -1534,7 +1533,7 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
     // Scrolled text area.
     //
     int width, height;
-#ifdef WITH_HTM
+#ifdef HAVE_MOZY
     if (pw_style == STY_HTML) {
 
         width = 500;
@@ -1666,7 +1665,7 @@ GTKtextPopup::~GTKtextPopup()
     gtk_signal_disconnect_by_func(GTK_OBJECT(pw_shell),
         GTK_SIGNAL_FUNC(pw_text_popdown), this);
 
-#ifdef WITH_HTM
+#ifdef HAVE_MOZY
     delete pw_if;
     delete pw_viewer;
 #endif
@@ -1726,7 +1725,7 @@ bool
 GTKtextPopup::update(const char *message_str)
 {
     if (pw_style == STY_HTML) {
-#ifdef WITH_HTM
+#ifdef HAVE_MOZY
         if (pw_viewer) {
             if (has_body_tag(message_str))
                 pw_viewer->set_source(message_str);

@@ -1,7 +1,5 @@
 #######################################################################
-# util/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.2 2009/04/08 17:25:06 stevew Exp $
+LOCATION = xt_base/util
 #######################################################################
 
 DATE = @DATE@
@@ -22,7 +20,7 @@ clean distclean:
 	rm -f datestr timegen
 
 depend:
-	@echo depending in util
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) timegen.cc $(FILTER) >> Makefile; \

@@ -50,7 +50,7 @@
 #include "kwords_fte.h"
 #include "commands.h"
 #include "frontend.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #include "gtktoolb.h"
 #include "gtkfont.h"
 #include "gtkpfiles.h"

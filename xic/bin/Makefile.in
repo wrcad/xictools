@@ -46,12 +46,14 @@ INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 LPATH = ../../xt_base
+INCLUDE = -I../include -I../../mozy/include -I$(LPATH)/ginterf \
+  -I$(LPATH)/miscutil -I../../secure
+
+MOZY = ../../mozy/lib/libmozy.a
 GRAPHICS = $(LPATH)/ginterf/ginterf.a
 MISCUTIL = $(LPATH)/miscutil/miscutil.a
-HTTPGET = $(LPATH)/miscutil/httpget
 SECURE = ../../secure/secure.a
 
-INCLUDE = -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil -I../../secure
 TARGETS = $(XIC_PROG) wrencode wrdecode wrsetpass
 
 SUBDIRS = \
@@ -79,22 +81,21 @@ $(DLL_XIC_PROG): main.cc $(XIC_PROG).dll
 	$(CC) -o $(XIC_PROG) main.cc ../src/gtkxic/resource.o -L. -l$(XIC_PROG)
 
 $(XIC_PROG).dll: $(XIC_PROG).o $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
-  $(GRAPHICS) $(MISCUTIL) $(NTDGBOBJ) $(MALLOC) $(OA_SUBDIR)
-
+  $(MOZY) $(GRAPHICS) $(MISCUTIL) $(NTDGBOBJ) $(MALLOC) $(OA_SUBDIR)
 	@echo $@: dynamic link
 	@$(LINKCC) $(LSHFLAG) -o $(XIC_PROG).dll $(LFLAGS) $(XIC_PROG).o \
   $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
-  $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(GRAPHICS) \
+  $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(MOZY) $(GRAPHICS) \
   $(MISCUTIL) $(NTREGEX) $(LIBS) $(MALLOC) $(STDCLIB)
 
 #--------------------
 
 $(NODLL_XIC_PROG): $(XIC_PROG).o $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
-  $(GRAPHICS) $(MISCUTIL) $(NTDGBOBJ) $(MALLOC) $(OA_SUBDIR)
+  $(MOZY) $(GRAPHICS) $(MISCUTIL) $(NTDGBOBJ) $(MALLOC) $(OA_SUBDIR)
 	-@echo $@: dynamic link;
 	-@$(LINKCC) -o $(XIC_PROG) $(LFLAGS) $(XIC_PROG).o \
   $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
-  $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(GRAPHICS) \
+  $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(MOZY) $(GRAPHICS) \
   $(MISCUTIL) $(NTREGEX) $(LIBS) $(MALLOC) $(STDCLIB)
 
 plugins::
@@ -131,6 +132,9 @@ $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(OA_SUBDIR)::
 	else \
 	    cd $(@D); $(MAKE); \
 	fi
+
+$(MOZY)::
+	cd $(@D)/../bin; $(MAKE)
 
 $(GRAPHICS)::
 	cd $(@D); $(MAKE)

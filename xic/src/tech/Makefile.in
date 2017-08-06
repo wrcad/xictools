@@ -18,6 +18,8 @@ FILTER = @FILTER@
 LIB_TARGET = tech.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
 HFILES =
 CCFILES = \
   tech.cc tech_attrib.cc tech_cds_in.cc tech_cds_out.cc tech_cni_in.cc \
@@ -26,7 +28,6 @@ CCFILES = \
   tech_setif.cc tech_spacetab.cc tech_stipples.cc tech_variables.cc \
   tech_via.cc tech_write.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

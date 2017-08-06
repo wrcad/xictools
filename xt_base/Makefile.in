@@ -1,17 +1,14 @@
 #######################################################################
-# xt_base/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.30 2016/05/14 20:29:11 stevew Exp $
+LOCATION = xt_base
 #######################################################################
 
 DATE = @DATE@
 MALLOC = @MALLOC@
 
-LPATH = .
-
 SUBDIRS = \
-    ginterf \
     miscutil \
+    ginterf \
+    gtkinterf \
     util
 
 dummy: 
@@ -20,7 +17,7 @@ dummy:
 	        (cd $$a; $(MAKE)) \
 	    fi; \
 	done
-	@if [ z$(MALLOC) != z ]; then \
+	@if [ -n "$(MALLOC)" ]; then \
 	    if [ -d malloc ]; then \
 	        (cd malloc; $(MAKE)) \
 	    fi; \
@@ -32,14 +29,14 @@ depend clean:
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
 	done
-	@if [ z$(MALLOC) != z ]; then \
+	@if [ -n "$(MALLOC)" ]; then \
 	    if [ -d malloc ]; then \
 	        (cd malloc; $(MAKE) $@) \
 	    fi; \
 	fi
 
 distclean:
-	@for a in $(SUBDIRS) packages; do \
+	@if [ -n "$(MALLOC)" ]; then \
 	    if [ -d $$a ]; then \
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
@@ -51,6 +48,6 @@ distclean:
 	fi
 	-rm -f config.cache config.log config.status configure Makefile
 	-rm -rf autom4te.cache
-	-rm -f miscutil/config.h
+	-rm -f include/config.h
 
 

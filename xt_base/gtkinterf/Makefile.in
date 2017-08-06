@@ -1,7 +1,5 @@
 #######################################################################
-# src/gtkinterf/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.28 2014/02/15 18:40:33 stevew Exp $
+LOCATION = xt_base/gtkinterf
 #######################################################################
 
 DATE = @DATE@
@@ -10,10 +8,15 @@ CXX = @CXX@
 CC = @CC@
 CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @TOOLKITCFLAGS@
+AR = @AR@
+RANLIB = @RANLIB@
 FILTER = @FILTER@
-INCLUDE = -I. -I.. -I../../miscutil @TOOLKITINC@
 
-LPATH = ../..
+INCLUDE = -I../include -I../include/gtkinterf -I../include/ginterf \
+  -I../include/miscutil @TOOLKITINC@
+
+LIB_TARGET = ../lib/gtkinterf.a
+
 HFILES = \
     gtkedit.h \
     gtkfile.h \
@@ -47,10 +50,13 @@ CCFILES = \
     mswpdev.cc
 
 CCOBJS = $(CCFILES:.cc=.o)
-LIBOBJS = $(CCOBJS)
 
-stamp: $(LIBOBJS)
-	touch stamp
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
 
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
@@ -62,13 +68,13 @@ subdirs::
 	@echo ]
 
 clean:
-	-@rm -f $(CCOBJS) stamp
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
 
 depend:
-	@echo depending in gtkinterf
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

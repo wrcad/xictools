@@ -45,10 +45,10 @@
 #include "config.h"
 #include "secure.h"
 #include "secure_prv.h"
-#include "encode.h"
-#include "pathlist.h"
-#include "miscutil.h"
 #include "key.h"
+#include "miscutil/encode.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/miscutil.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -65,7 +65,7 @@
 #include <fcntl.h>
 
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

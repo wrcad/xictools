@@ -63,6 +63,10 @@ INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 LPATH = ../../xt_base
+INCLUDE = -I../include -I../../mozy/include/ -I$(LPATH)/ginterf \
+  -I$(LPATH)/miscutil -I../../secure -I$(LPATH)/malloc
+
+MOZY = ../../mozy/lib/libmozy.a
 GRAPHICS = $(LPATH)/ginterf/ginterf.a
 MISCUTIL = $(LPATH)/miscutil/miscutil.a
 SECURE = ../../secure/secure.a
@@ -71,14 +75,12 @@ WDEMODIR = wrspice_ipc_demo
 
 CCFILES = $(SPICE_PROG).cc $(SPICE_PROG)d.cc multidec.cc \
     proc2mod.cc printtoraw.cc
-INCLUDE = -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
-    -I../../secure -I$(LPATH)/malloc
 
 # order is important for link
 LIBDIRS1 = ../src/cp/cp.a ../src/fte/fte.a
 LIBDIRS2 = ../src/analysis/analysis.a ../src/inp/inp.a ../src/ckt/ckt.a \
   ../src/sparse/sparse.a ../src/plot/plot.a ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
-  $(GRAPHICS) $(MISCUTIL) ../src/misc/misc.a
+  $(MOZY) $(GRAPHICS) $(MISCUTIL) ../src/misc/misc.a
 SUBDIR_LIBS =../src/cp/cp.a ../src/fte/fte.a \
   ../src/$(GRPREF)wrs/$(GRPREF)wrs.a ../src/analysis/analysis.a \
   ../src/inp/inp.a ../src/ckt/ckt.a ../src/sparse/sparse.a ../src/plot/plot.a \
@@ -145,6 +147,9 @@ $(DEVLIB_CALL)::
 
 $(SUBDIR_LIBS)::
 	cd $(@D); $(MAKE)
+
+$(MOZY)::
+	cd $(@D)/../bin; $(MAKE)
 
 $(GRAPHICS)::
 	cd $(@D); $(MAKE)

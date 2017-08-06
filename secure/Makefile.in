@@ -1,15 +1,9 @@
 #######################################################################
-# secure/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.43 2016/01/15 19:45:09 stevew Exp $
+LOCATION = secure
 #######################################################################
 
 DATE = @DATE@
 XTLSERV_VERSION = @XTLSERV_VERSION@
-
-# NOTE: use gcc for linking, since g++ forces dynamic link of
-# libstdc++.  All c++ code *must* be statically linked for this to
-# not cause trouble.
 
 prefix = @prefix@
 CXX = @CXX@
@@ -34,15 +28,14 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-LPATH = ../xt_base
-MISCUTIL = $(LPATH)/miscutil/miscutil.a
-LIB_TARGET = secure.a
+BASE = ../xt_base
+INCLUDE = -I. -I$(BASE)/include
+
+MISCUTIL = $(BASE)/lib/miscutil.a
 CCFILES = \
   lfinfo.cc licinfo.cc secure.cc secure_int.cc validate.cc xtlserv.cc \
   xtjobs.cc
 COBJS = secure.o secure_int.o
-
-INCLUDE = -I. -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(COBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
@@ -83,7 +76,7 @@ xtlserv: xtlserv.o $(MISCUTIL)
   $(MISCUTIL) $(SLIBS) $(STDCLIB)
 
 $(MISCUTIL)::
-	cd $(LPATH)/miscutil; $(MAKE)
+	cd $(BASE)/miscutil; $(MAKE)
 
 DARGS = \
   -DPREFIX="\"$(prefix)\"" \
@@ -99,7 +92,7 @@ xtlserv.o:
 	$(CC) $(CFLAGS) $(INCLUDE) -c $*.c
 
 depend:: key.h
-	@echo depending in secure
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -137,16 +130,16 @@ install_clean::
 	-@rm -f $(dst_lib)/README
 
 $(dst_bin)::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	$(INSTALL_BIN) xtlserv$(NTSUFFIX) $@
 	$(INSTALL_BIN) xtjobs$(NTSUFFIX) $@
 
 $(dst_lib)::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	$(INSTALL_LIB) README $@
 
 install_license::
-	@$(LPATH)/util/mkdirpth $(dst_lib)
+	@$(BASE)/util/mkdirpth $(dst_lib)
 	-@if [ -f $(dst_lib)/LICENSE ]; then \
 	    mv -f $(dst_lib)/LICENSE $(dst_lib)/zzLICENSE.old; \
 	fi

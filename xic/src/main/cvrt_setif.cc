@@ -52,7 +52,7 @@
 #include "errorlog.h"
 #include "timer.h"
 #include "filestat.h"
-#include "httpget/transact.h"
+#include "transact.h"
 
 
 //-----------------------------------------------------------------------------

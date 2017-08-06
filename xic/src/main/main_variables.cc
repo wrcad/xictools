@@ -53,7 +53,7 @@
 #include "errorlog.h"
 #include "select.h"
 #include "tech.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #include "filestat.h"
 
 

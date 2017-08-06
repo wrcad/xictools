@@ -1,5 +1,6 @@
-# Makefile.in for malloc
-# $Id: Makefile.in,v 1.12 2013/12/05 19:37:42 stevew Exp $
+#######################################################################
+LOCATION = xt_base/malloc
+#######################################################################
 
 # To enable the monitor, add to CFLAGS: -DENABLE_MONITOR
 # If monitor is enabled, to monitor new/delete only: -DCPP_ONLY
@@ -13,10 +14,11 @@ AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 
-CCFILES = local_malloc.cc monitor.cc
 INCLUDE = -I../miscutil
 
-LIB_TARGET = malloc.a
+LIB_TARGET = ../lib/malloc.a
+
+CCFILES = local_malloc.cc monitor.cc
 
 $(LIB_TARGET): local_malloc.o monitor.o malloc.o
 	@if [ -f $(LIB_TARGET) ]; then \
@@ -36,16 +38,16 @@ malloc.o: malloc.c $(MALLOCFILE) Makefile
  -o malloc.o malloc.c
 
 clean:
-	-@rm *.o *.a
+	-@rm *.o $(LIB_TARGET)
 
-distclean:
-	-@rm *.o *.a Makefile
+distclean: clean
+	-@rm Makefile
 
-mtest: test.cc malloc.a
+mtest: test.cc $(LIB_TARGET)
 	$(CXX) $(CFLAGS) $(INCLUDE) -o mtest test.cc malloc.a
 
 depend:
-	@echo depending in malloc
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(CCFILES) $(INCLUDE) malloc.c $(FILTER) \

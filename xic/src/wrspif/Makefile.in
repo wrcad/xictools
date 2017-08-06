@@ -18,11 +18,12 @@ FILTER = @FILTER@
 LIB_TARGET = wrspif.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
 SPFILES = hash.cc paramsub.cc spnumber.cc spparse.cc
 HFILES =
 CCFILES = $(SPFILES)
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 $(LIB_TARGET): include $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

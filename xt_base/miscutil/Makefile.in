@@ -1,7 +1,5 @@
 #######################################################################
-# src/miscutil/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.24 2015/07/17 19:44:02 stevew Exp $
+LOCATION = xt_base/miscutil
 #######################################################################
 
 DATE = @DATE@
@@ -14,7 +12,9 @@ AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 
-LIB_TARGET = miscutil.a
+INCLUDE = -I../include -I../include/miscutil
+
+LIB_TARGET = ../lib/miscutil.a
 
 HFILES = \
     atomic_stack.h \
@@ -67,7 +67,6 @@ CCFILES = \
     tvals.cc
 
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I.
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
@@ -86,7 +85,7 @@ files::
 	@echo [ $(CCFILES) $(HFILES) Makefile.in config.h.in ]
 
 subdirs::
-	@echo [ ]
+	@echo ]
 
 clean:
 	-@rm -f $(CCOBJS) $(LIB_TARGET) test_hwaddr
@@ -95,7 +94,7 @@ distclean: clean
 	-@rm -f Makefile
 
 depend:
-	@echo depending in xt_base/miscutil
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

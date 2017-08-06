@@ -45,12 +45,12 @@
 #include "config.h"
 #include "secure.h"
 #include "secure_prv.h"
-#include "encode.h"
-#include "graphics.h"
-#include "pathlist.h"
-#include "miscutil.h"
-#include "tvals.h"
-#include "services.h"
+#include "ginterf/graphics.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/miscutil.h"
+#include "miscutil/tvals.h"
+#include "miscutil/services.h"
+#include "miscutil/encode.h"
 
 #include <ctype.h>
 #include <stdlib.h>

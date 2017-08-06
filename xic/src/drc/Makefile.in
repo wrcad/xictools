@@ -18,13 +18,14 @@ FILTER = @FILTER@
 LIB_TARGET = drc.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
 HFILES =
 CCFILES = \
   drc.cc drc_edit.cc drc_eval.cc drc_error.cc drc_menu.cc drc_poly.cc \
   drc_results.cc drc_rule.cc drc_setif.cc drc_tech.cc drc_techif.cc \
   drc_txtcmds.cc drc_user.cc drc_util.cc drc_variables.cc funcs_drc.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

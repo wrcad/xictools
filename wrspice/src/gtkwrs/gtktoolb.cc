@@ -54,7 +54,7 @@
 #include "input.h"
 #include "outdata.h"
 #include "spnumber.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #include "gtktoolb.h"
 #include "gtkutil.h"
 #include "gtkfont.h"

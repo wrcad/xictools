@@ -18,6 +18,8 @@ FILTER = @FILTER@
 LIB_TARGET = geom.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
 HFILES =
 CCFILES = \
   geo.cc geo_3d.cc geo_arcpath.cc geo_box.cc geo_dist.cc geo_edge.cc \
@@ -27,7 +29,6 @@ CCFILES = \
   geo_ylist.cc geo_zdb.cc geo_zgroup.cc geo_zlfuncs.cc geo_zlist.cc \
   geo_zoid.cc geo_zoidclip.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

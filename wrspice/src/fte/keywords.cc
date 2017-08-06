@@ -48,7 +48,7 @@
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
 #include "toolbar.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #include "circuit.h"
 #include "filestat.h"
 #include "spnumber.h"

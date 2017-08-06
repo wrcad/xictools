@@ -57,9 +57,9 @@
 #include "config.h"
 #include "secure.h"
 #include "secure_prv.h"
-#include "encode.h"
 #include "key.h"
-#include "randval.h"
+#include "miscutil/encode.h"
+#include "miscutil/randval.h"
 
 namespace validate {
     void usage();

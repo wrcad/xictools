@@ -7,10 +7,18 @@
 WRSPICE = KLU vl wrspice/bin
 XIC = mrouter xic/bin
 
-SUBDIRS = xt_base secure $(WRSPICE) $(XIC) xt_accs
+SUBDIRS = xt_base secure mozy $(WRSPICE) $(XIC) xt_accs
 
 #######################################################################
 # Configuration
+
+# The Mozy help viewer is tainted with GNU licensing restrictions due
+# to derivation from GNU-licensed original source code.  All of the
+# tainted code is under mozy.  If you're commercial and fear the GNU,
+# uncomment this and live without the help system, http file transfer,
+# and screen dumps.
+#
+#NOMOZY = --enable-nomozy=yes
 
 # Force 32-bit build on x86_64 Linux systems.
 #
@@ -45,7 +53,7 @@ SUBDIRS = xt_base secure $(WRSPICE) $(XIC) xt_accs
 ACONF  = autoconf
 
 #######################################################################
-CFARGS = $(32BIT) $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
+CFARGS = $(NOMOZY) $(32BIT) $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
 
 FLAGFILE = .configured
 

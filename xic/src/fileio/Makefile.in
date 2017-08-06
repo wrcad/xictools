@@ -18,6 +18,8 @@ FILTER = @FILTER@
 LIB_TARGET = fileio.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I../../../mozy/include -I$(LPATH)/miscutil
+
 HFILES =
 CCFILES = \
   filetool.cc fio.cc fio_alias.cc fio_archive.cc fio_assemble.cc \
@@ -31,7 +33,6 @@ CCFILES = \
   fio_oas_read.cc fio_oas_reps.cc fio_oas_text.cc fio_oas_write.cc \
   fio_paths.cc fio_to_xic.cc fio_tstream.cc fio_zio.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

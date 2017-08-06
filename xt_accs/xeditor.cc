@@ -49,7 +49,7 @@
 #include "graphics.h"
 #include "pathlist.h"
 #include "childproc.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif

@@ -30,6 +30,9 @@ TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
 LPATH = ../xt_base
+INCLUDE = -I../mozy/include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+
+MOZY = ../mozy/lib/libmozy.a
 GRAPHICS = $(LPATH)/ginterf/ginterf.a
 MISCUTIL = $(LPATH)/miscutil/miscutil.a
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
@@ -37,41 +40,31 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-CCFILES = mozy.cc xeditor.cc httpget.cc hlp2html.cc hlpsrv.cc fcpp.cc \
+CCFILES = xeditor.cc hlp2html.cc hlpsrv.cc fcpp.cc \
   lstpack.cc lstunpack.cc
-INCLUDE = -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 ODIR = ./xt_accs-$(ACCS_VERSION)
 
 #######################################################################
 ####### Executable and related targets ################################
 
-ACCESSORIES = mozy xeditor httpget hlpsrv hlp2html fcpp lstpack lstunpack
+ACCESSORIES = xeditor hlpsrv hlp2html fcpp lstpack lstunpack
 
 all:  $(ACCESSORIES)
 
-mozy: mozy.o $(GRAPHICS) $(MISCUTIL) $(MOZYRES) Makefile
+xeditor: xeditor.o $(MOZY) $(GRAPHICS) $(MISCUTIL) $(XEDRES) Makefile
 	@echo $@: dynamic link
-	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o $(GRAPHICS) \
-  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
-
-xeditor: xeditor.o $(GRAPHICS) $(MISCUTIL) $(XEDRES) Makefile
-	@echo $@: dynamic link
-	@$(LINKCC) $(NTNOCONS) -o xeditor $(LFLAGS) xeditor.o $(GRAPHICS) \
-  $(MISCUTIL) $(NTREGEX) $(LIBS) $(XEDRES) $(STDCLIB)
-
-httpget:  httpget.o $(GRAPHICS) $(MISCUTIL)
-	$(LINKCC) -o httpget $(LFLAGS) httpget.o $(GRAPHICS) \
-  $(MISCUTIL) $(LIBS) $(STDCLIB)
+	@$(LINKCC) $(NTNOCONS) -o xeditor $(LFLAGS) xeditor.o $(MOZY) \
+  $(GRAPHICS) $(MISCUTIL) $(NTREGEX) $(LIBS) $(XEDRES) $(STDCLIB)
 
 hlpsrv: hlpsrv.o $(GRAPHICS) $(MISCUTIL) Makefile
 	@$(LINKCC) -o hlpsrv $(LFLAGS) hlpsrv.o \
-  $(LPATH)/ginterf/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
+  ../mozy/src/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
   $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 hlp2html: hlp2html.o $(GRAPHICS) $(MISCUTIL) Makefile
 	@$(LINKCC) -o hlp2html $(LFLAGS) hlp2html.o \
-  $(LPATH)/ginterf/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
+  ../mozy/src/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
   $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 fcpp: fcpp.cc $(MISCUTIL)
@@ -87,10 +80,6 @@ lstunpack: lstunpack.cc $(MISCUTIL)
   $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
 
 
-mozy.o: mozy.cc
-	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
-  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c mozy.cc
-
 xeditor.o: xeditor.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
   -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c xeditor.cc
@@ -100,6 +89,9 @@ xeditor.o: xeditor.cc
 
 #######################################################################
 ####### Recursively generate libraries ################################
+
+$(MOZY)::
+	cd $(@D)/../bin; $(MAKE)
 
 $(GRAPHICS)::
 	cd $(@D); $(MAKE)
@@ -127,9 +119,8 @@ depend::
 ####### Clean up ######################################################
 
 eclean::
-	-rm -f mozy$(NTSUFFIX) xeditor$(NTSUFFIX) httpget$(NTSUFFIX) \
-  hlpsrv$(NTSUFFIX) hlp2html$(NTSUFFIX) fcpp$(NTSUFFIX) lstpack$(NTSUFFIX) \
-  lstunpack$(NTSUFFIX)
+	-rm -f xeditor$(NTSUFFIX) hlpsrv$(NTSUFFIX) hlp2html$(NTSUFFIX) \
+	    fcpp$(NTSUFFIX) lstpack$(NTSUFFIX) lstunpack$(NTSUFFIX)
 
 clean:: eclean
 	-rm -f *.o $(ODIR).tar.gz

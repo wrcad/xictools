@@ -25,6 +25,9 @@ LIB_TARGET = oa.a
 SHLIB_TARGET = oa.$(SOEXT)
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/miscutil -I$(LPATH)/ginterf \
+  -I$(OA_INCLUDE)
+
 HFILES = \
   oa.h \
   oa_alib.h \
@@ -50,7 +53,6 @@ CCFILES = \
   oa_tech_observer.cc \
   oa_via.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/miscutil -I$(LPATH)/ginterf -I$(OA_INCLUDE)
 
 DARGS = -DOSNAME="\"$(OSNAME)\""
 

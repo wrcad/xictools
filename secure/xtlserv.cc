@@ -47,14 +47,14 @@
 #include "config.h"
 #include "secure.h"
 #include "secure_prv.h"
-#include "encode.h"
 #include "key.h"
-#include "miscutil.h"
-#include "lstring.h"
-#include "randval.h"
-#include "tvals.h"
-#include "pathlist.h"
-#include "services.h"
+#include "miscutil/encode.h"
+#include "miscutil/miscutil.h"
+#include "miscutil/lstring.h"
+#include "miscutil/randval.h"
+#include "miscutil/tvals.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/services.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -894,6 +894,7 @@ xtlserv::ack_send(int s, sJobReq *c, bool ok, int retval)
             break;
         default:
             retval = ERR_UNKNO;
+            // fallthrough
         case ERR_UNKNO:
             decode(strs14, t);
             break;

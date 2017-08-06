@@ -63,7 +63,7 @@
 #include "ghost.h"
 #include "pathlist.h"
 #include "grfont.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 
 #include <signal.h>
 #include <fcntl.h>

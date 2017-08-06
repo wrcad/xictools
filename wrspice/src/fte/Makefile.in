@@ -21,6 +21,9 @@ PSINCL = @PSINCL@
 LIB_TARGET = fte.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I../../../mozy/include -I$(LPATH)/ginterf \
+  -I$(LPATH)/miscutil -I$(LPATH)/malloc $(PSINCL)
+
 HFILES =
 CCFILES = \
   aspice.cc breakp.cc check.cc circuit.cc cmath1.cc cmath2.cc \
@@ -31,8 +34,6 @@ CCFILES = \
   rawfile.cc resource.cc simulate.cc source.cc spvariable.cc \
   subexpand.cc sweep.cc trnames.cc types.cc vectors.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
-  -I$(LPATH)/malloc $(PSINCL)
 
 $(LIB_TARGET): include $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

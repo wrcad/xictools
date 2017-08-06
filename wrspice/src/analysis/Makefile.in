@@ -18,6 +18,8 @@ FILTER = @FILTER@
 LIB_TARGET = analysis.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I../../include -I$(LPATH)/miscutil
+
 HFILES =
 CCFILES = \
   acan.cc acaskq.cc acprms.cc acprse.cc acsetp.cc dcoan.cc dcoaskq.cc \
@@ -29,7 +31,6 @@ CCFILES = \
   stataskq.cc statsetp.cc task.cc tfan.cc tfaskq.cc tfprse.cc \
   tfsetp.cc tranan.cc tranaskq.cc tranprse.cc transetp.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 $(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \

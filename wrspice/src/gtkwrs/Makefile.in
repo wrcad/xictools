@@ -16,17 +16,20 @@ AR = @AR@
 LD = @LD@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
-INCLUDE = $(APPINCL) @TOOLKITINC@
+TOOLKITINC = @TOOLKITINC@
 RESOURCE = @RESOURCE@
 
 LIB_TARGET = gtkwrs.a
 
 LPATH = ../../../xt_base
+INCLUDE = -I. -I../../include -I../../../mozy/include -I$(LPATH)/ginterf \
+  -I$(LPATH)/miscutil -I$(LPATH)/ginterf/gtkinterf $(TOOLKITINC)
+
 HFILES = gtktoolb.h
 CCFILES = gtkcmds.cc gtkcolor.cc gtkdebug.cc gtkfte.cc gtkpldef.cc \
   gtkplot.cc gtkshell.cc gtksim.cc gtktoolb.cc
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
-APPINCL = -I. -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
+APPINCL = -I. -I../../include -I../../../mozy/include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
     -I$(LPATH)/ginterf/gtkinterf
 
 $(LIB_TARGET): $(CCOBJS)

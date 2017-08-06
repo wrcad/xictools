@@ -39,10 +39,9 @@
  *========================================================================*/
 
 #include "config.h"
-#include "help/help_defs.h"
-#include "help/help_context.h"
-#include "help/help_topic.h"
-#include "imsave/imsave.h"
+#include "help_defs.h"
+#include "help_context.h"
+#include "help_topic.h"
 
 #include <algorithm>
 #include <stdio.h>
@@ -93,22 +92,12 @@ namespace {
     char *ImagePath;
 
     char *Anchor;
+
+    bool next_kw(char**, char**);
+    char *my_fgets(char*, int, FILE*);
+    void pathfix(char *string);
 }
 
-static bool next_kw(char**, char**);
-static char *my_fgets(char*, int, FILE*);
-static void pathfix(char *string);
-
-
-// This satisfies a reference in graphics.cc to avoid linking imsave,
-// and thus avoiding requiring the graphics libraries.
-//
-ImErrType
-Image::save_image(const char*, SaveInfo*)
-{
-    return (ImNoSupport);
-}
-// End of Image functions.
 
 
 // The following topic methods override those in help/topic.cc, which
@@ -687,119 +676,118 @@ sHelp2html::process_file(char *fname)
 }
 
 
-// Grab a keyword, return false if there are no more keywords.
-//
-static bool
-next_kw(char **kw, char **buf)
-{
-    char *s, *t, kbuf[64];;
+namespace {
+    // Grab a keyword, return false if there are no more keywords.
+    //
+    bool next_kw(char **kw, char **buf)
+    {
+        char *s, *t, kbuf[64];;
 
-    s = *buf;
-    while (isspace(*s))
-        s++;
-    if (!*s)
-        return (false);
-    t = kbuf;
-    while (*s && !isspace(*s))
-        *t++ = *s++;
-    *t = '\0';
-    if (kw)
-        *kw = lstring::copy(kbuf);
-    *buf = s;
-    return (true);
-}
+        s = *buf;
+        while (isspace(*s))
+            s++;
+        if (!*s)
+            return (false);
+        t = kbuf;
+        while (*s && !isspace(*s))
+            *t++ = *s++;
+        *t = '\0';
+        if (kw)
+            *kw = lstring::copy(kbuf);
+        *buf = s;
+        return (true);
+    }
 
 
-// An fgets that works with DOS and UNIX.
-///
-static char *
-my_fgets(char *buf, int size, FILE *fp)
-{
-    char *s;
-    int i, c;
+    // An fgets that works with DOS and UNIX.
+    //
+    char *my_fgets(char *buf, int size, FILE *fp)
+    {
+        char *s;
+        int i, c;
 
-    for (s = buf, i = size; i; s++, i--) {
-        c = getc(fp);
-        if (c == '\r')
+        for (s = buf, i = size; i; s++, i--) {
             c = getc(fp);
-        if (c == EOF) {
-            *s = '\0';
-            if (s == buf)
-                return (0);
-            return (buf);
+            if (c == '\r')
+                c = getc(fp);
+            if (c == EOF) {
+                *s = '\0';
+                if (s == buf)
+                    return (0);
+                return (buf);
+            }
+            *s = c;
+            if (c == '\n') {
+                *++s = '\0';
+                return (buf);
+            }
         }
-        *s = c;
-        if (c == '\n') {
-            *++s = '\0';
-            return (buf);
-        }
+        buf[size-1] = '\0';
+        return (buf);
     }
-    buf[size-1] = '\0';
-    return (buf);
-}
 
 
-// In MSW, replace '/' with DOS directory separator, and truncate
-// names.  In UNIX, expande tildes.
-// Note that this is done in-place, string must be large enough
-// for expansion.
-//
-void
-pathfix(char *string)
-{
+    // In MSW, replace '/' with DOS directory separator, and truncate
+    // names.  In UNIX, expande tildes.
+    // Note that this is done in-place, string must be large enough
+    // for expansion.
+    //
+    void pathfix(char *string)
+    {
 #ifdef WIN32
-    char *s, *t;
-    int bcnt = 0, ecnt = 0;
+        char *s, *t;
+        int bcnt = 0, ecnt = 0;
 
-    s = t = string;
-    while (*t != '\0') {
-        if (*t == '/' || *t == '\\') {
-            *s++ = '\\';
-            t++;
-            bcnt = 0;
-            ecnt = 0;
+        s = t = string;
+        while (*t != '\0') {
+            if (*t == '/' || *t == '\\') {
+                *s++ = '\\';
+                t++;
+                bcnt = 0;
+                ecnt = 0;
+            }
+            else if (*t == '.') {
+                *s++ = *t++;
+                ecnt = 1;
+            }
+            else if (!ecnt) {
+                if (bcnt++ < 8) *s++ = *t++;
+                else t++;
+            }
+            else {
+                if (ecnt++ < 4) *s++ = *t++;
+                else t++;
+            }
         }
-        else if (*t == '.') {
-            *s++ = *t++;
-            ecnt = 1;
-        }
-        else if (!ecnt) {
-            if (bcnt++ < 8) *s++ = *t++;
-            else t++;
-        }
-        else {
-            if (ecnt++ < 4) *s++ = *t++;
-            else t++;
-        }
-    }
-    *s = '\0';
+        *s = '\0';
 
 #else
 #ifdef HAVE_GETPWUID
-    passwd *pw;
-    char *s, *t, buf[512];
-    int i;
+        passwd *pw;
+        char *s, *t, buf[512];
+        int i;
 
-    if ((t = strchr(string, '~')) != 0) {
-        if (t == string || isspace(*(t-1))) {
-            s = t;
-            t++;
-            i = 0;
-            while (*t && !isspace(*t) && *t != '/')
-                buf[i++] = *t++;
-            buf[i] = '\0';
-            pw = 0;
-            if (!i)
-                pw = getpwuid(getuid());
-            else
-                pw = getpwnam(buf);
-            if (pw) {
-                strcpy(buf, t);
-                strcpy(s, pw->pw_dir);
-                strcat(s, buf);
+        if ((t = strchr(string, '~')) != 0) {
+            if (t == string || isspace(*(t-1))) {
+                s = t;
+                t++;
+                i = 0;
+                while (*t && !isspace(*t) && *t != '/')
+                    buf[i++] = *t++;
+                buf[i] = '\0';
+                pw = 0;
+                if (!i)
+                    pw = getpwuid(getuid());
+                else
+                    pw = getpwnam(buf);
+                if (pw) {
+                    strcpy(buf, t);
+                    strcpy(s, pw->pw_dir);
+                    strcat(s, buf);
+                }
             }
         }
+#endif
+#endif
     }
-#endif
-#endif
 }

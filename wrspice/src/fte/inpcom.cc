@@ -72,7 +72,7 @@ Authors: 1985 Wayne A. Christopher
 #ifndef WIN32
 #define USE_GTK
 #endif
-#include "httpget/transact.h"
+#include "transact.h"
 namespace { FILE *net_callback(const char*, char**); }
 #endif
 

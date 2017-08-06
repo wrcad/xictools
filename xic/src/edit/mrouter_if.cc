@@ -59,7 +59,7 @@
 #include "si_parser.h"
 #include "../../mrouter/include/mrouter.h"
 #include "mrouter_if.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #ifdef WIN32
 #include <windows.h>
 #else

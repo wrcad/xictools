@@ -43,7 +43,7 @@
 #include "dsp_inlines.h"
 #include "filestat.h"
 #include "events.h"
-#include "help/help_defs.h"
+#include "help_defs.h"
 #include "menu.h"
 #include "help_menu.h"
 #include "errorlog.h"

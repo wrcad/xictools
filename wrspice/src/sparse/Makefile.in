@@ -19,13 +19,14 @@ LIB_TARGET = sparse.a
 
 LPATH = ../../../xt_base
 KPATH = ../../../KLU
+INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
+-I$(KPATH)/AMD/Include -I$(KPATH)/BTF/Include -I$(KPATH)/COLAMD/Include \
+-I$(KPATH)/KLU/Include -I$(KPATH)/SuiteSparse_config
+
 SP_HFILES = spconfig.h spmacros.h
 SP_CCFILES = spbuild.cc spfactor.cc spoutput.cc spsolve.cc sputils.cc
 CCFILES = kluif.cc spspice.cc $(SP_CCFILES)
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
--I$(KPATH)/AMD/Include -I$(KPATH)/BTF/Include -I$(KPATH)/COLAMD/Include \
--I$(KPATH)/KLU/Include -I$(KPATH)/SuiteSparse_config
 
 $(LIB_TARGET): include $(SP_HFILES) $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
