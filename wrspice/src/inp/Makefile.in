@@ -1,7 +1,5 @@
 #######################################################################
-# wrspice/inp/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 2.58 2016/03/13 03:23:17 stevew Exp $
+LOCATION = wrspice/src/inp
 #######################################################################
 
 SPICE_VERSION = @SPICE_VERSION@
@@ -17,8 +15,8 @@ FILTER = @FILTER@
 
 LIB_TARGET = inp.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I$(BASE)/include
 
 HFILES =
 CCFILES = \
@@ -37,7 +35,7 @@ $(LIB_TARGET): $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 depend:
-	@echo depending in wrspice/inp
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -46,7 +44,7 @@ depend:
 clean:
 	-rm *.o $(LIB_TARGET)
 
-distclean:
-	-rm *.o $(LIB_TARGET) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

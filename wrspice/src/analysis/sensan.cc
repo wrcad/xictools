@@ -48,8 +48,8 @@ Authors: UCB CAD Group
 #include "sensdefs.h"
 #include "sensgen.h"
 #include "device.h"
-#include "spmatrix.h"
 #include "outdata.h"
+#include "sparse/spmatrix.h"
 
 
 #ifndef M_LOG2E

@@ -40,8 +40,8 @@
 
 #include "device.h"
 #include "outdata.h"
-#include "threadpool.h"
 #include "frontend.h"
+#include "miscutil/threadpool.h"
 
 
 //#define TH_DEBUG

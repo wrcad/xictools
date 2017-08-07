@@ -51,12 +51,12 @@ Authors: 1985 Wayne A. Christopher, Norbert Jeske
 #include "inpmtab.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
-#include "paramsub.h"
 #include "ttyio.h"
 #include "misc.h"
 #include "wlist.h"
-#include "graphics.h"
 #include "subexpand.h"
+#include "spnumber/paramsub.h"
+#include "ginterf/graphics.h"
 
 // Time profiling.
 //#define TIME_DEBUG

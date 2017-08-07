@@ -38,11 +38,11 @@
  $Id:$
  *========================================================================*/
 
-#include "spconfig.h"
-#include "spmacros.h"
-#include "spmatrix.h"
+#include "sparse/spconfig.h"
+#include "sparse/spmacros.h"
+#include "sparse/spmatrix.h"
 #include "circuit.h"
-#include "errorrec.h"
+#include "miscutil/errorrec.h"
 #include <math.h>
 
 #ifdef WRSPICE

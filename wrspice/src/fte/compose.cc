@@ -52,8 +52,8 @@ Authors: 1986 Wayne A. Christopher
 #include "commands.h"
 #include "ttyio.h"
 #include "toolbar.h"
-#include "spnumber.h"
-#include "random.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/random.h"
 
 
 //

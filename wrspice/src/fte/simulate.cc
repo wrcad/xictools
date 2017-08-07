@@ -62,9 +62,9 @@ Authors: 1985 Wayne A. Christopher
 #include "errors.h"
 #include "input.h"
 #include "toolbar.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 extern int BoxFilled;  // security

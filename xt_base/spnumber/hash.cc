@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "hash.h"
+#include "spnumber/hash.h"
 #ifdef WRSPICE
 #include "wlist.h"
 #endif

@@ -41,7 +41,7 @@
 #ifndef INPMTAB_H
 #define INPMTAB_H
 
-#include "hash.h"
+#include "spnumber/hash.h"
 
 // Model table definition, used in inpmodel.cc and inpsubc.cc.  This
 // is a separate file to avoid exporting hash.h to the device library

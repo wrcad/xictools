@@ -58,7 +58,7 @@ Authors: 1985 Wayne A. Christopher
 #include "keywords.h"
 #include "optdefs.h"
 #include "statdefs.h"
-#include "random.h"
+#include "miscutil/random.h"
 #ifdef HAVE_FENV_H
 #include <fenv.h>
 #if defined(__APPLE__) && defined(__x86_64)

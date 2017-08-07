@@ -49,7 +49,7 @@ Authors: 1987 Thomas L. Quarles
 #define INPPTREE_H
 
 typedef struct IFparseNode ParseNode;
-#include "spparse.h"
+#include "spnumber/spparse.h"
 
 
 //

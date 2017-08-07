@@ -40,7 +40,7 @@
 
 #include "circuit.h"
 #include "outdata.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 
 sTASK::~sTASK()

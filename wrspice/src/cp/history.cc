@@ -47,7 +47,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include "cshell.h"
 #include "commands.h"
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 
 //

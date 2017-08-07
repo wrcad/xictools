@@ -46,8 +46,8 @@ Author: 1990 Jaijeet Roychowdury
 #include <stdio.h>
 #include <math.h>
 #include "misc.h"
-#include "spmatrix.h"
 #include "ttyio.h"
+#include "sparse/spmatrix.h"
 
 #define THRSH 0.01
 #define ABS_THRSH 0

@@ -53,7 +53,7 @@
 #include "frontend.h"
 #include "ftehelp.h"
 #include "gtktoolb.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 
 
 #define STR(x) #x

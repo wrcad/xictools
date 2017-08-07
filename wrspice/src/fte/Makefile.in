@@ -1,7 +1,5 @@
 #######################################################################
-# wrspice/fte/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 2.70 2015/11/19 04:49:03 stevew Exp $
+LOCATION = wrspice/src/fte
 #######################################################################
 
 SPICE_VERSION = @SPICE_VERSION@
@@ -20,9 +18,9 @@ PSINCL = @PSINCL@
 
 LIB_TARGET = fte.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I../../../mozy/include -I$(LPATH)/ginterf \
-  -I$(LPATH)/miscutil -I$(LPATH)/malloc $(PSINCL)
+BASE = ../../../xt_base
+MOZY = ../../../mozy
+INCLUDE = -I../../include -I$(BASE)/include -I$(MOZY)/include $(PSINCL)
 
 HFILES =
 CCFILES = \
@@ -45,14 +43,14 @@ $(LIB_TARGET): include $(CCOBJS)
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
-paramsub.cc: $(LPATH)/spnumber/paramsub.cc
-	cp -f $(LPATH)/spnumber/paramsub.cc .
+paramsub.cc: $(BASE)/spnumber/paramsub.cc
+	cp -f $(BASE)/spnumber/paramsub.cc .
 
 include:
 	cd ../../include; $(MAKE)
 
 depend: paramsub.cc
-	@echo depending in wrspice/fte
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -61,7 +59,7 @@ depend: paramsub.cc
 clean:
 	-rm *.o $(LIB_TARGET) paramsub.cc
 
-distclean:
-	-rm *.o $(LIB_TARGET) paramsub.cc Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

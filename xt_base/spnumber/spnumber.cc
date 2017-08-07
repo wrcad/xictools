@@ -50,10 +50,10 @@ Authors: 1987 Wayne A. Christopher
 #include <stdlib.h>
 #include <ctype.h>
 
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 
 typedef void ParseNode;
-#include "spparse.h"
+#include "spnumber/spparse.h"
 
 #ifdef WRSPICE
 #include "outplot.h"

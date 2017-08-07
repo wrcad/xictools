@@ -49,8 +49,8 @@ Authors: 1985 Wayne A. Christopher
 #define OUTPLOT_H
 
 #include "config.h"
-#include "graphics.h"
 #include "ftedata.h"
+#include "ginterf/graphics.h"
 
 #if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
 #include <signal.h>

@@ -14,7 +14,7 @@ AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 
-INCLUDE = -I../miscutil
+INCLUDE = -I../include -I../include/malloc
 
 LIB_TARGET = ../lib/malloc.a
 

@@ -50,7 +50,7 @@ Authors: UCB CAD Group
 #include "device.h"
 #include "misc.h"
 #include "ttyio.h"
-#include "spmatrix.h"
+#include "sparse/spmatrix.h"
 
 char *Sfilter = 0;
 

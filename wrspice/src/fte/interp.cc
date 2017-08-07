@@ -49,7 +49,7 @@ Authors: 1985 Wayne A. Christopher
 #include <string.h>
 #include "ftedata.h"
 #include "ttyio.h"
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 //#define INTERP_DEBUG
 

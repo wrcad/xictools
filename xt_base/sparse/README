@@ -10,6 +10,5 @@ generally faster.
 
 BE CAREFUL when modifying the files, modifications should be done
 to the files here, and not the copies found in the WRspice/Xic
-source trees.  If you work on the files under WRspice, the wrsupd
-script can be used to copy the changes back here.
+source trees.
 

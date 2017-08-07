@@ -1,7 +1,5 @@
 #######################################################################
-# wrspice/analysis/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 2.60 2015/08/05 03:46:48 stevew Exp $
+LOCATION = wrspice/src/analysis
 #######################################################################
 
 SPICE_VERSION = @SPICE_VERSION@
@@ -17,8 +15,8 @@ FILTER = @FILTER@
 
 LIB_TARGET = analysis.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/miscutil
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I$(BASE)/include
 
 HFILES =
 CCFILES = \
@@ -43,7 +41,7 @@ $(LIB_TARGET): $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 depend:
-	@echo depending in wrspice/analysis
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -52,7 +50,7 @@ depend:
 clean:
 	-rm *.o $(LIB_TARGET)
 
-distclean:
-	-rm *.o $(LIB_TARGET) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

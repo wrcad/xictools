@@ -56,14 +56,14 @@ Authors: 1985 Wayne A. Christopher
 #include "commands.h"
 #include "input.h"
 #include "toolbar.h"
-#include "lstring.h"
 #include "ftemeas.h"
 #include "fteparse.h"
-#include "paramsub.h"
 #include "subexpand.h"
 #include "verilog.h"
-#include "filestat.h"
-#include "tvals.h"
+#include "spnumber/paramsub.h"
+#include "miscutil/lstring.h"
+#include "miscutil/filestat.h"
+#include "miscutil/tvals.h"
 #ifdef WIN32
 #include <winsock2.h>
 #else

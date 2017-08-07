@@ -54,10 +54,10 @@ Authors: 1985 Wayne A. Christopher
 #include "commands.h"
 #include "frontend.h"
 #include "kwords_fte.h"
-#include "pathlist.h"
 #include "spglobal.h"
 #include "outplot.h"
-#include "graphics.h"
+#include "miscutil/pathlist.h"
+#include "ginterf/graphics.h"
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/time.h>

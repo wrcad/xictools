@@ -50,7 +50,7 @@ Authors: 1992 Stephen R. Whiteley
 #include "kwords_fte.h"
 #include "commands.h"
 #include "frontend.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 
 /*********************************************************************

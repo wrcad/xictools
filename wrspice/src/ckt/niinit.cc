@@ -47,9 +47,9 @@ Authors: 1985 Thomas L. Quarles
 
 #include "frontend.h"
 #include "circuit.h"
-#include "spmatrix.h"
 #include "ttyio.h"
-#include "graphics.h"
+#include "sparse/spmatrix.h"
+#include "ginterf/graphics.h"
 
 
 //  Initialize the numerical iteration package.

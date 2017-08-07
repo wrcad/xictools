@@ -51,7 +51,7 @@ Authors: 1987 Thomas L. Quarles
 #include "misc.h"
 #include "subexpand.h"
 #include "optdefs.h"
-#include "hash.h"
+#include "spnumber/hash.h"
 
 
 namespace {

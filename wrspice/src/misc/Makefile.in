@@ -1,7 +1,5 @@
 #######################################################################
-# wrspice/misc/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 2.62 2015/04/09 19:26:36 stevew Exp $
+LOCATION = wrspice/src/misc
 #######################################################################
 
 SPICE_VERSION = @SPICE_VERSION@
@@ -17,10 +15,10 @@ FILTER = @FILTER@
 
 LIB_TARGET = misc.a
 
-LPATH = ../../../xt_base
-VLPATH = ../../../vl
-INCLUDE = -I../../include -I../../../mozy/include -I$(LPATH)/ginterf \
-  -I$(LPATH)/miscutil -I$(VLPATH)
+BASE = ../../../xt_base
+VLOG = ../../../vl
+MOZY = ../../../mozy
+INCLUDE = -I../../include -I$(BASE)/include -I$(VLOG) -I$(MOZY)/include
 
 NFILES = hash.cc spnumber.cc spparse.cc
 HFILES =
@@ -39,17 +37,17 @@ $(LIB_TARGET): include $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 $(NFILES):
-	cp -fp $(LPATH)/spnumber/$@ .
+	cp -fp $(BASE)/spnumber/$@ .
 
-hash.cc:        $(LPATH)/spnumber/hash.cc
-spnumber.cc:    $(LPATH)/spnumber/spnumber.cc
-spparse.cc:     $(LPATH)/spnumber/spparse.cc
+hash.cc:        $(BASE)/spnumber/hash.cc
+spnumber.cc:    $(BASE)/spnumber/spnumber.cc
+spparse.cc:     $(BASE)/spnumber/spparse.cc
 
 include:
 	cd ../../include; $(MAKE)
 
 depend: $(NFILES)
-	@echo depending in wrspice/misc
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -58,7 +56,7 @@ depend: $(NFILES)
 clean:
 	-rm *.o $(LIB_TARGET) $(NFILES)
 
-distclean:
-	-rm *.o $(LIB_TARGET) $(NFILES) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

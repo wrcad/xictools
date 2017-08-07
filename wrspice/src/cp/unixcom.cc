@@ -50,9 +50,9 @@ Authors: 1987 Wayne A. Christopher
 #include "commands.h"
 #include "frontend.h"
 #include "toolbar.h"
-#include "hash.h"
-#include "lstring.h"
-#include "pathlist.h"
+#include "spnumber/hash.h"
+#include "miscutil/lstring.h"
+#include "miscutil/pathlist.h"
 
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>

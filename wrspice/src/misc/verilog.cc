@@ -53,8 +53,8 @@
 #include "frontend.h"
 #include "cshell.h"
 #include "fteparse.h"
-#include "filestat.h"
-#include "graphics.h"
+#include "miscutil/filestat.h"
+#include "ginterf/graphics.h"
 
 
 // Verilog data files are opened using the sourcepath.

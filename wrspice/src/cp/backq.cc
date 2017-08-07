@@ -47,8 +47,8 @@ Authors: 1985 Wayne A. Christopher
 
 #include "config.h"
 #include "cshell.h"
-#include "filestat.h"
-#include "graphics.h"
+#include "miscutil/filestat.h"
+#include "ginterf/graphics.h"
 #ifdef WIN32
 #include <setjmp.h>
 #endif

@@ -48,7 +48,7 @@ Authors: 1986 Wayne A. Christopher
 #ifndef WLIST_H
 #define WLIST_H
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 
 // Doubly linked lists of words

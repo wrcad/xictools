@@ -49,7 +49,7 @@ Authors: 1985 Thomas L. Quarles
 #include "input.h"
 #include "errors.h"
 #include "misc.h"
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 // 
 //  Error handling functions

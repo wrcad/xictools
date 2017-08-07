@@ -39,9 +39,9 @@
  *========================================================================*/
 
 #include "device.h"
-#include "random.h"
 #include "misc.h"
 #include "ttyio.h"
+#include "miscutil/random.h"
 
 
 //

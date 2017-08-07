@@ -66,9 +66,9 @@ Authors: 1985 Wayne A. Christopher
 #include "optdefs.h"
 #include "device.h"
 #include "subexpand.h"
-#include "paramsub.h"
 #include "toolbar.h"
 #include "verilog.h"
+#include "spnumber/paramsub.h"
 int BoxFilled;  // security
 
 

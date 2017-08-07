@@ -6,8 +6,9 @@
 
 WRSPICE = KLU vl wrspice/bin
 XIC = mrouter xic/bin
+MOZY = mozy/bin
 
-SUBDIRS = xt_base secure mozy $(WRSPICE) $(XIC) xt_accs
+SUBDIRS = xt_base secure $(MOZY) $(WRSPICE) $(XIC) xt_accs
 
 #######################################################################
 # Configuration

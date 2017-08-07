@@ -50,7 +50,7 @@ Authors: 1987 Wayne A. Christopher
 #include "inpptree.h"
 #include "circuit.h"
 #include "misc.h"
-#include "random.h"
+#include "miscutil/random.h"
 
 
 #ifndef MAXFLOAT

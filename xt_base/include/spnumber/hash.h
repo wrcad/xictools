@@ -41,7 +41,7 @@
 #ifndef HASH_H
 #define HASH_H
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 
 #ifdef WRSPICE

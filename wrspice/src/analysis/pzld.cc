@@ -47,7 +47,7 @@ Authors: UCB CAD Group
 
 #include "pzdefs.h"
 #include "device.h"
-#include "spmatrix.h"
+#include "sparse/spmatrix.h"
 
 
 int

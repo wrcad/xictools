@@ -50,8 +50,8 @@ Authors: 1987 Wayne A. Christopher
 #include "commands.h"
 #include "variable.h"
 #include "toolbar.h"
-#include "filestat.h"
-#include "miscutil.h"
+#include "miscutil/filestat.h"
+#include "miscutil/miscutil.h"
 
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>

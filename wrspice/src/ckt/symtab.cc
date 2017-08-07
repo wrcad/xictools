@@ -48,8 +48,8 @@ Authors: 1987 Thomas L. Quarles
 #include "device.h"
 #include "errors.h"
 #include "misc.h"
-#include "hash.h"
 #include "frontend.h"
+#include "spnumber/hash.h"
 
 
 //

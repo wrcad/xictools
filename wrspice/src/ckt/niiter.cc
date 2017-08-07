@@ -48,13 +48,13 @@ Authors: 1985 Thomas L. Quarles
 #include "config.h"
 #include "optdefs.h"
 #include "input.h"
-#include "spmatrix.h"
 #include "frontend.h"
 #include "outdata.h"
 #include "outplot.h"
 #include "misc.h"
 #include "device.h"
 #include "ttyio.h"
+#include "sparse/spmatrix.h"
 
 #ifdef HAVE_FENV_H
 #include <fenv.h>

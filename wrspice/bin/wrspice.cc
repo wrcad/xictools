@@ -63,15 +63,10 @@ Authors: 1985 Thomas L. Quarles
 #include "outdata.h"
 #include "keywords.h"
 #include "toolbar.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "childproc.h"
-#include "update_itf.h"
 #include "kluif.h"
 #include "csdffile.h"
 #include "psffile.h"
 #include "kwords_fte.h"
-
 #include "ftedata.h"
 #include "device.h"
 #include "acdefs.h"
@@ -85,14 +80,17 @@ Authors: 1985 Thomas L. Quarles
 #include "tfdefs.h"
 #include "trandefs.h"
 #include "dctdefs.h"
-#include "hash.h"
-#include "lstring.h"
-#include "pathlist.h"
-#include "miscutil.h"
-#include "random.h"
+#include "spnumber/hash.h"
+#include "miscutil/lstring.h"
+#include "miscutil/miscutil.h"
+#include "miscutil/random.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/childproc.h"
+#include "upd/update_itf.h"
 
 #ifdef HAVE_LOCAL_ALLOCATOR
-#include "local_malloc.h"
+#include "malloc/local_malloc.h"
 #endif
 
 #ifdef HAVE_PWD_H
@@ -117,7 +115,7 @@ Authors: 1985 Thomas L. Quarles
 #endif
 
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #include "stackdump.h"
 #else
 #include <sys/socket.h>
@@ -296,7 +294,7 @@ CshPar CP;
 // Set up the ginterf package, include all drivers except Versatec.
 //
 #define GR_CONFIG (GR_ALL_PKGS | GR_ALL_DRIVERS)
-#include "gr_pkg_setup.h"
+#include "ginterf/gr_pkg_setup.h"
 
 // Declare the graphics package.
 namespace { SpGrPkg _sp; }

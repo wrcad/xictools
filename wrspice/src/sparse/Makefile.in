@@ -1,7 +1,5 @@
 #######################################################################
-# wrspice/sparse/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.14 2014/02/28 19:44:38 stevew Exp $
+LOCATION = wrspice/src/sparse
 #######################################################################
 
 SPICE_VERSION = @SPICE_VERSION@
@@ -17,18 +15,17 @@ FILTER = @FILTER@
 
 LIB_TARGET = sparse.a
 
-LPATH = ../../../xt_base
-KPATH = ../../../KLU
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil \
--I$(KPATH)/AMD/Include -I$(KPATH)/BTF/Include -I$(KPATH)/COLAMD/Include \
--I$(KPATH)/KLU/Include -I$(KPATH)/SuiteSparse_config
+BASE = ../../../xt_base
+KLU = ../../../KLU
+INCLUDE = -I../../include -I$(BASE)/include \
+  -I$(KLU)/AMD/Include -I$(KLU)/BTF/Include -I$(KLU)/COLAMD/Include \
+  -I$(KLU)/KLU/Include -I$(KLU)/SuiteSparse_config
 
-SP_HFILES = spconfig.h spmacros.h
 SP_CCFILES = spbuild.cc spfactor.cc spoutput.cc spsolve.cc sputils.cc
 CCFILES = kluif.cc spspice.cc $(SP_CCFILES)
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): include $(SP_HFILES) $(CCOBJS)
+$(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -38,31 +35,26 @@ $(LIB_TARGET): include $(SP_HFILES) $(CCOBJS)
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
-$(SP_HFILES) $(SP_CCFILES):
-	cp -fp $(LPATH)/sparse/$@ .
+$(SP_CCFILES):
+	cp -fp $(BASE)/sparse/$@ .
 
-spconfig.h:     $(LPATH)/sparse/spconfig.h
-spmacros.h:     $(LPATH)/sparse/spmacros.h
-spbuild.cc:     $(LPATH)/sparse/spbuild.cc
-spfactor.cc:    $(LPATH)/sparse/spfactor.cc
-spoutput.cc:    $(LPATH)/sparse/spoutput.cc
-spsolve.cc:     $(LPATH)/sparse/spsolve.cc
-sputils.cc:     $(LPATH)/sparse/sputils.cc
+spbuild.cc:     $(BASE)/sparse/spbuild.cc
+spfactor.cc:    $(BASE)/sparse/spfactor.cc
+spoutput.cc:    $(BASE)/sparse/spoutput.cc
+spsolve.cc:     $(BASE)/sparse/spsolve.cc
+sputils.cc:     $(BASE)/sparse/sputils.cc
 
-include:
-	cd ../../include; $(MAKE)
-
-depend: $(SP_HFILES) $(CCFILES)
-	@echo depending in wrspice/sparse
+depend: $(CCFILES)
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET) $(SP_HFILES) $(SP_CCFILES)
+	-rm *.o $(LIB_TARGET) $(SP_CCFILES)
 
-distclean:
-	-rm *.o $(LIB_TARGET) $(SP_HFILES) $(SP_CCFILES) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

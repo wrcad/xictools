@@ -50,8 +50,8 @@ Authors: 1986 Wayne A. Christopher
 #include "ftedata.h"
 #include "ttyio.h"
 #include "errors.h"
-#include "graphics.h"
 #include "wlist.h"
+#include "ginterf/graphics.h"
 
 
 //

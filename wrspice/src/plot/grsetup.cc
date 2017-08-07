@@ -50,7 +50,7 @@ Authors: 1988 Jeffrey M. Hsu
 #include "kwords_fte.h"
 #include "frontend.h"
 #include "toolbar.h"
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 
 
 //

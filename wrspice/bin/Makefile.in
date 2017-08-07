@@ -1,15 +1,10 @@
 #######################################################################
-# wrspice/bin/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 2.143 2015/12/08 04:28:06 stevew Exp $
+LOCATION = wrspice/bin
 #######################################################################
 
 DATE = @DATE@
 SPICE_VERSION = @SPICE_VERSION@
 DEVLIB_VERSION = @DEVLIB_VERSION@
-
-# NOTE: "make depend" builds the symbolic links, which must be done
-# before programs can be built.
 
 prefix = @prefix@
 CXX = @CXX@
@@ -20,7 +15,7 @@ LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
 PIC_OPT = @PIC_OPT@
 LSHFLAG = @LSHFLAG@
 CURSES = @CURSES@
-LIBS = $(APPLIBS) $(CURSES) @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
+LIBS = $(CURSES) @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
 STDCLIB = @STDCLIB@
 SLIBS = @SLIBS@
 OSNAME = @OSNAME@
@@ -62,33 +57,51 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-LPATH = ../../xt_base
-INCLUDE = -I../include -I../../mozy/include/ -I$(LPATH)/ginterf \
-  -I$(LPATH)/miscutil -I../../secure -I$(LPATH)/malloc
+BASE = ../../xt_base
+MOZY = ../../mozy
+SECURE = ../../secure
+VLOG = ../../vl
+INCLUDE = -I../include -I$(BASE)/include -I$(SECURE) -I$(MOZY)/include
 
-MOZY = ../../mozy/lib/libmozy.a
-GRAPHICS = $(LPATH)/ginterf/ginterf.a
-MISCUTIL = $(LPATH)/miscutil/miscutil.a
-SECURE = ../../secure/secure.a
-VERILOG = ../../vl/libvlog.a
 WDEMODIR = wrspice_ipc_demo
 
 CCFILES = $(SPICE_PROG).cc $(SPICE_PROG)d.cc multidec.cc \
     proc2mod.cc printtoraw.cc
 
-# order is important for link
-LIBDIRS1 = ../src/cp/cp.a ../src/fte/fte.a
-LIBDIRS2 = ../src/analysis/analysis.a ../src/inp/inp.a ../src/ckt/ckt.a \
-  ../src/sparse/sparse.a ../src/plot/plot.a ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
-  $(MOZY) $(GRAPHICS) $(MISCUTIL) ../src/misc/misc.a
-SUBDIR_LIBS =../src/cp/cp.a ../src/fte/fte.a \
-  ../src/$(GRPREF)wrs/$(GRPREF)wrs.a ../src/analysis/analysis.a \
+SUBDIRS =../src/cp ../src/fte ../src/analysis ../src/inp \
+  ../src/ckt ../src/sparse ../src/plot ../src/$(GRPREF)wrs ../src/misc
+SUBDIR_LIBS =../src/cp/cp.a ../src/fte/fte.a ../src/analysis/analysis.a \
   ../src/inp/inp.a ../src/ckt/ckt.a ../src/sparse/sparse.a ../src/plot/plot.a \
-  ../src/misc/misc.a
-SUBDIRS =../src/cp ../src/fte ../src/$(GRPREF)wrs ../src/analysis ../src/inp \
-  ../src/ckt ../src/sparse ../src/plot ../src/misc
-APPLIBS = $(LIBDIRS1) $(DEVLIB_CALL) $(SECURE) $(LIBDIRS2) \
-  $(VERILOG) $(NTREGEX)
+  ../src/$(GRPREF)wrs/$(GRPREF)wrs.a ../src/misc/misc.a
+
+LOCAL_LIBS = \
+  ../src/cp/cp.a \
+  ../src/fte/fte.a \
+  $(DEVLIB_CALL) \
+  $(SECURE)/secure.a \
+  ../src/analysis/analysis.a \
+  ../src/inp/inp.a \
+  ../src/ckt/ckt.a \
+  ../src/sparse/sparse.a \
+  ../src/plot/plot.a \
+  ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
+  $(MOZY)/lib/htm.a \
+  $(MOZY)/lib/help.a \
+  $(MOZY)/lib/update_itf.a \
+  $(MOZY)/lib/gtkmozy.a \
+  $(MOZY)/lib/imsave.a \
+  $(MOZY)/lib/httpget.a \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/gtkinterf.a  \
+  $(BASE)/lib/miscutil.a \
+  $(MOZY)/lib/htm.a \
+  $(MOZY)/lib/help.a \
+  $(MOZY)/lib/gtkmozy.a \
+  $(MOZY)/lib/imsave.a \
+  $(MOZY)/lib/httpget.a \
+  ../src/misc/misc.a \
+  $(VLOG)/libvlog.a \
+  $(NTREGEX)
 
 #######################################################################
 ####### Executable targets ############################################
@@ -104,24 +117,22 @@ $(DLL_SPICE_PROG): main.cc $(SPICE_PROG).dll
 	$(CC) -o $(SPICE_PROG) main.cc ../src/gtkwrs/resource.o -L. \
   -l$(SPICE_PROG)
 
-$(SPICE_PROG).dll: $(DEVLIB_CALL) $(SPICE_PROG).o $(LIBDIRS1) $(SECURE) \
-  $(LIBDIRS2) $(VERILOG) $(MALLOC)
+$(SPICE_PROG).dll: $(SPICE_PROG).o Makefile $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
 	@$(LINKCC) $(LSHFLAG) -o $(SPICE_PROG).dll $(LFLAGS) $(SPICE_PROG).o \
-  $(LIBS) $(MALLOC) $(STDCLIB)
+  $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
 #--------------------
 
-$(NODLL_SPICE_PROG): $(DEVLIB_CALL) $(SPICE_PROG).o $(LIBDIRS1) $(SECURE) \
-  $(LIBDIRS2) $(VERILOG) $(MALLOC)
+$(NODLL_SPICE_PROG): $(SPICE_PROG).o Makefile $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
 	@$(LINKCC) -o $(SPICE_PROG) $(LFLAGS) $(SPICE_PROG).o \
-  $(LIBS) $(MALLOC) $(STDCLIB) $(PSLIBS)
+  $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB) $(PSLIBS)
 
-$(SPICE_PROG)d: $(SPICE_PROG)d.o Makefile $(MISCUTIL)
+$(SPICE_PROG)d: $(SPICE_PROG)d.o Makefile $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o $(SPICE_PROG)d $(LFLAGS) $(SPICE_PROG)d.o $(MISCUTIL) \
-  $(SLIBS) $(STDCLIB) $(WINPTHREADFIX)
+	@$(LINKCC) -o $(SPICE_PROG)d $(LFLAGS) $(SPICE_PROG)d.o \
+  $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 multidec: multidec.o ../src/sparse/sparse.a ../src/misc/misc.a Makefile
 	@echo $@: dynamic link
@@ -134,10 +145,10 @@ proc2mod: proc2mod.o ../src/cp/cp.a ../src/inp/inp.a ../src/misc/misc.a \
 	@$(LINKCC) -o proc2mod proc2mod.o ../src/cp/cp.a ../src/inp/inp.a \
   ../src/misc/misc.a $(STDCLIB) -lm $(WINPTHREADFIX)
 
-printtoraw: printtoraw.o $(MISCUTIL)
+printtoraw: printtoraw.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
-	@$(LINKCC) -o printtoraw printtoraw.o $(MISCUTIL) $(STDCLIB) \
-  $(WINPTHREADFIX)
+	@$(LINKCC) -o printtoraw printtoraw.o $(BASE)/lib/miscutil.a \
+  $(STDCLIB) $(WINPTHREADFIX)
 
 #######################################################################
 ####### Recursively generate libraries ################################
@@ -148,23 +159,41 @@ $(DEVLIB_CALL)::
 $(SUBDIR_LIBS)::
 	cd $(@D); $(MAKE)
 
-$(MOZY)::
-	cd $(@D)/../bin; $(MAKE)
-
-$(GRAPHICS)::
+$(VLOG):
 	cd $(@D); $(MAKE)
 
-$(MISCUTIL)::
+$(SECURE):
 	cd $(@D); $(MAKE)
+
+$(MOZY)/lib/gtkmozy.a:
+	cd $(MOZY)/src/gtkmozy; $(MAKE)
+
+$(MOZY)/lib/help.a:
+	cd $(MOZY)/src/help; $(MAKE)
+
+$(MOZY)/lib/htm.a:
+	cd $(MOZY)/src/htm; $(MAKE)
+
+$(MOZY)/lib/httpget.a:
+	cd $(MOZY)/src/httpget; $(MAKE)
+
+$(MOZY)/lib/imsave.a:
+	cd $(MOZY)/src/imsave; $(MAKE)
+
+$(MOZY)/lib/update_itf.a:
+	cd $(MOZY)/src/update_itf; $(MAKE)
+
+$(BASE)/lib/ginterf.a:
+	cd $(BASED)/ginterf; $(MAKE)
+
+$(BASE)/lib/gtkinterf.a:
+	cd $(BASED)/gtkinterf; $(MAKE)
+
+$(BASE)/lib/miscutil.a:
+	cd $(BASED)/miscutil; $(MAKE)
 	if [ x$(NTREGEX) != x ]; then \
-	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
-
-$(VERILOG)::
-	cd $(@D); $(MAKE)
-
-$(SECURE)::
-	cd $(@D); $(MAKE)
 
 #######################################################################
 ####### Object file targets ###########################################
@@ -209,17 +238,16 @@ $(SPICE_PROG)d.o: $(SPICE_PROG)d.cc
 .PHONY: $(MALLOC)
 
 $(MALLOC)::
-	cd $(@D); $(MAKE)
+	cd $(@D)/../malloc; $(MAKE)
 
 #######################################################################
 ####### Dependencies ##################################################
-# note: mingw requires explicit return from cd
 
 depend:
 	@for a in ../include $(SUBDIRS) ../devlib; do \
-	    (dir=`pwd`; cd $$a; $(MAKE) depend; cd $$dir) \
+	    (cd $$a; $(MAKE) depend) \
 	done
-	@echo depending in wrspice/bin
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -227,28 +255,22 @@ depend:
 
 #######################################################################
 ####### Clean up ######################################################
-# note: mingw requires explicit return from cd
 
 eclean:
-	-rm -f $(SPICE_PROG)$(NTSUFFIX) multidec$(NTSUFFIX) \
-          printtoraw$(NTSUFFIX) proc2mod$(NTSUFFIX) $(SPICE_PROG)d$(NTSUFFIX)
-
-clean:
-	-@for a in $(SUBDIRS) ../devlib; do \
-	    (dir=`pwd`; cd $$a; $(MAKE) clean; cd $$dir) \
-	done
 	-@for a in $(SPICE_TARGETS; do \
 	    rm -f $$a$(NTSUFFIX); \
+	done
+
+clean: eclean
+	-@for a in $(SUBDIRS) ../devlib; do \
+	    (cd $$a; $(MAKE) clean) \
 	done
 	-rm -f *.o $(WDEMODIR).tar.gz
 
-distclean:
+distclean: eclean
 	-@for a in $(SUBDIRS) ../include ../lib ../devlib ../packages \
   ../$(WDEMODIR); do \
-	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
-	done
-	-@for a in $(SPICE_TARGETS; do \
-	    rm -f $$a$(NTSUFFIX); \
+	    (cd $$a; $(MAKE) distclean) \
 	done
 	-rm -f *.o $(WDEMODIR).tar.gz Makefile
 
@@ -263,9 +285,9 @@ wdemo wrspice_ipc_demo:
 	    rm -rf $(WDEMODIR); \
 	fi;
 	cp -pfr ../wrspice_ipc_demo $(WDEMODIR)
-	$(LPATH)/util/mvdir $(LPATH)/miscutil $(WDEMODIR)/miscutil
-	cp -pf $(LPATH)/configure.in $(WDEMODIR)
-	cp -pf $(LPATH)/configure $(WDEMODIR)
+	$(BASE)/util/mvdir $(BASE)/miscutil $(WDEMODIR)/miscutil
+	cp -pf $(BASE)/configure.in $(WDEMODIR)
+	cp -pf $(BASE)/configure $(WDEMODIR)
 	cp -pf ../../xic/src/sced/sced_spiceipc.cc $(WDEMODIR)
 	cp -pf ../../xic/include/sced_spiceipc.h $(WDEMODIR)
 	cp -pf wrspiced.cc $(WDEMODIR)
@@ -303,7 +325,7 @@ install_clean::
 	-@rm -rf $(destn)
 
 $(destn)/bin::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	@for aa in $(SPICE_TARGETS); do \
 	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
 	done
@@ -312,7 +334,7 @@ $(destn)/bin::
 	fi
 
 $(destn)/icons::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	icons=`../packages/util/wrspice_files icons`; \
         for a in $$icons; do \
 	    $(INSTALL_LIB) ../lib/icons/$$a $@; \
@@ -320,7 +342,7 @@ $(destn)/icons::
 
 $(destn)/help::
 	cd ../lib/help; $(MAKE)
-	@$(LPATH)/util/mkdirpth $@ $@/screenshots
+	@$(BASE)/util/mkdirpth $@ $@/screenshots
 	help=`../packages/util/wrspice_files help`; \
 	for a in $$help; do \
 	    $(INSTALL_LIB) ../lib/help/$$a $@; \
@@ -332,7 +354,7 @@ $(destn)/help::
 
 $(destn)/startup::
 	cd ../lib/startup; $(MAKE)
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	startup=`../packages/util/wrspice_files startup`; \
 	for a in $$startup; do \
 	    $(INSTALL_LIB) ../lib/startup/$$a $@; \
@@ -341,28 +363,28 @@ $(destn)/startup::
 	if [ -f ../../KLU/$$klulib ]; then \
 	    $(INSTALL_SCRIPT) ../../KLU/$$klulib $@; \
 	fi
-	$(LPATH)/util/mkdirpth $@/devices;
+	$(BASE)/util/mkdirpth $@/devices;
 	$(INSTALL_LIB) ../lib/startup/devices/README $@/devices;
 	for a in $(VLOGMODS); do \
 	    $(INSTALL_LIB) ../devlib/adms/examples/$$a/$$a.$(SOEXT) $@/devices; \
 	done;
 
 $(destn)/scripts::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	scripts=`../packages/util/wrspice_files scripts`; \
 	for a in $$scripts; do \
 	    $(INSTALL_LIB) ../lib/scripts/$$a $@; \
 	done
 
 $(destn)/examples::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	examples=`../packages/util/wrspice_files examples`; \
 	for a in $$examples; do \
 	    $(INSTALL_LIB) ../lib/examples/$$a $@; \
 	done
 
 $(destn)/docs::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	docs=`../packages/util/wrspice_files docs`; \
 	for a in $$docs; do \
 	    cp ../lib/docs/$$a $@; \
@@ -373,8 +395,8 @@ $(destn)/docs::
 	cp ../lib/docs/wrs$$1.$$2 $@
 
 $(destn)/devkit::
-	@$(LPATH)/util/mkdirpth $@/admst
-	@$(LPATH)/util/mkdirpth $@/include
+	@$(BASE)/util/mkdirpth $@/admst
+	@$(BASE)/util/mkdirpth $@/include
 	$(INSTALL_LIB) ../devlib/adms/Makefile $@;
 	$(INSTALL_LIB) ../devlib/adms/README $@;
 	$(INSTALL_LIB) ../devlib/adms/README.adms $@;
@@ -395,7 +417,7 @@ $(destn)/devkit::
 	    fi; \
 	done; \
 	for a in $$edirs; do \
-	    $(LPATH)/util/mkdirpth $@/examples/$$a/tests; \
+	    $(BASE)/util/mkdirpth $@/examples/$$a/tests; \
 	done; \
 	for a in $$efiles; do \
 	    $(INSTALL_LIB) ../devlib/adms/$$a $@/`dirname $$a`; \

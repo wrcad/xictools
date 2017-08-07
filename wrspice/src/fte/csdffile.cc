@@ -44,7 +44,7 @@
 #include "cshell.h"
 #include "keywords.h"
 #include "circuit.h"
-#include "graphics.h"
+#include "ginterf/graphics.h"
 #include <time.h>
 
 

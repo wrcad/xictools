@@ -46,7 +46,7 @@ Authors: 1987 Gary W. Ng
 ****************************************************************************/
 
 #include "circuit.h"
-#include "spmatrix.h"
+#include "sparse/spmatrix.h"
 
 
 // This routine solves the adjoint system.  It assumes that the matrix has

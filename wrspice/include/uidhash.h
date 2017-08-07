@@ -42,7 +42,7 @@
 #define UIDHASH_H
 
 #include "circuit.h"
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 // A uid hash table for mapping IFuid names to device instance

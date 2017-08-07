@@ -59,12 +59,12 @@ Authors: 1987 Wayne A. Christopher
 #include "ftedata.h"
 #include "variable.h"
 #include "ttyio.h"
-#include "lstring.h"
-#include "errorrec.h"
 #include "verilog.h"
-#include "hash.h"
-#include "random.h"
-#include "graphics.h"
+#include "spnumber/hash.h"
+#include "miscutil/lstring.h"
+#include "miscutil/errorrec.h"
+#include "miscutil/random.h"
+#include "ginterf/graphics.h"
 
 #ifndef MAXFLOAT
 #define MAXFLOAT 3.40282346638528860e+38

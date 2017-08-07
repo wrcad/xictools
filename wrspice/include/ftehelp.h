@@ -46,8 +46,8 @@ Author: 1987 Jeffrey M. Hsu
 #ifndef FTEHELP_H
 #define FTEHELP_H
 
-#include "help_defs.h"
-#include "help_topic.h"
+#include "help/help_defs.h"
+#include "help/help_topic.h"
 
 
 //

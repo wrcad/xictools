@@ -51,8 +51,8 @@ Authors: 1985 Wayne A. Christopher
 #include "cshell.h"
 #include "commands.h"
 #include "inpline.h"
-#include "spnumber.h"
 #include "input.h"
+#include "spnumber/spnumber.h"
 
 
 //

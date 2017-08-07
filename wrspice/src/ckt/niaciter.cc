@@ -47,7 +47,7 @@ Authors: 1985 Thomas L. Quarles
 
 #include "circuit.h"
 #include "device.h"
-#include "spmatrix.h"
+#include "sparse/spmatrix.h"
 
 
 // This subroutine performs the actual numerical iteration.

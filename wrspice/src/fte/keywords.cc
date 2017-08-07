@@ -48,14 +48,14 @@
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
 #include "toolbar.h"
-#include "help_defs.h"
 #include "circuit.h"
-#include "filestat.h"
-#include "spnumber.h"
-#include "graphics.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/filestat.h"
+#include "ginterf/graphics.h"
+#include "help/help_defs.h"
 
 typedef void ParseNode;
-#include "spparse.h"
+#include "spnumber/spparse.h"
 
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>

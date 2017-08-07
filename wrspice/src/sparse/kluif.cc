@@ -38,12 +38,12 @@
  $Id:$
  *========================================================================*/
 
-#include "spmatrix.h"
+#include "sparse/spmatrix.h"
 #include "klumatrix.h"
 #include "kluif.h"
 #include "spglobal.h"
-#include "lstring.h"
-#include "math.h"
+#include "miscutil/lstring.h"
+#include <math.h>
 #ifdef WIN32
 #include <windows.h>
 #else

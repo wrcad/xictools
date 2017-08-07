@@ -58,16 +58,16 @@ Authors: 1987 Wayne A. Christopher
 #include "inpline.h"
 #include "outplot.h"
 #include "outdata.h"
-#include "services.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "childproc.h"
+#include "miscutil/services.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/childproc.h"
 
 #ifdef HAVE_SOCKET
 
 #include <sys/types.h>
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/socket.h>
 #include <sys/ioctl.h>

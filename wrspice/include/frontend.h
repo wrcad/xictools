@@ -52,7 +52,7 @@ Authors: 1985 Wayne A. Christopher
 #include <unistd.h>
 #include "ifdata.h"
 #include "variable.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 
 //

@@ -53,7 +53,7 @@
 #include "gtktoolb.h"
 
 typedef void ParseNode;
-#include "spparse.h"
+#include "spnumber/spparse.h"
 
 
 #define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)

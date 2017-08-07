@@ -49,9 +49,9 @@ Authors: 1985 Wayne A. Christopher
 #include "fteparse.h"
 #include "cshell.h"
 #include "commands.h"
-#include "paramsub.h"
-#include "lstring.h"
-#include "graphics.h"
+#include "spnumber/paramsub.h"
+#include "miscutil/lstring.h"
+#include "ginterf/graphics.h"
 
 
 // User-defined functions. The user defines the function with

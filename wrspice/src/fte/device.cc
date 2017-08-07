@@ -56,11 +56,11 @@ Authors: 1986 Wayne A. Christopher
 #include "device.h"
 #include "input.h"
 #include "spglobal.h"
-#include "spnumber.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "hash.h"
-#include "graphics.h"
+#include "spnumber/spnumber.h"
+#include "spnumber/hash.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "ginterf/graphics.h"
 #include <stdarg.h>
 #include <unistd.h>
 #include <fcntl.h>

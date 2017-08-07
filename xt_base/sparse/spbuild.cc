@@ -67,9 +67,9 @@
 //     Macro definitions for the sparse matrix functions.
 //
 #define spINSIDE_SPARSE
-#include "spconfig.h"
-#include "spmacros.h"
-#include "spmatrix.h"
+#include "sparse/spconfig.h"
+#include "sparse/spmacros.h"
+#include "sparse/spmatrix.h"
 #include <math.h>
 
 #ifdef WRSPICE

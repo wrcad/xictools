@@ -50,9 +50,9 @@ Authors: 1988 Thomas L. Quarles
 
 #include "tfdefs.h"
 #include "device.h"
-#include "spmatrix.h"
 #include "outdata.h"
 #include "misc.h"
+#include "sparse/spmatrix.h"
 
 
 // DC sweep assumed to be swept V/I source.

@@ -49,8 +49,8 @@ Authors: 1985 Thomas L. Quarles
 #include "input.h"
 #include "circuit.h"
 #include "misc.h"
-#include "spnumber.h"
-#include "errorrec.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/errorrec.h"
 
 
 namespace {

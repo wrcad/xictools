@@ -57,10 +57,10 @@ Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 //
 
 #include "config.h"
-#include "lstring.h"
-#include "pathlist.h"
-#include "miscutil.h"
-#include "services.h"
+#include "miscutil/lstring.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/miscutil.h"
+#include "miscutil/services.h"
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>

@@ -39,8 +39,8 @@
  *========================================================================*/
 
 #include "device.h"
-#include "spmatrix.h"
 #include "outdata.h"
+#include "sparse/spmatrix.h"
 
 
 //

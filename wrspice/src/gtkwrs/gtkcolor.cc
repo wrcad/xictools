@@ -49,13 +49,13 @@
 #include "frontend.h"
 #include "cshell.h"
 #include "commands.h"
-#include "help_defs.h"
 #include "gtktoolb.h"
+#include "help/help_defs.h"
 
 // This is for the Xrm stuff
 #include <gdk/gdkprivate.h>
 #ifdef WITH_X11
-#include "gtkx11.h"
+#include "gtkinterf/gtkx11.h"
 #include <X11/Xresource.h>
 #ifdef HAVE_PWD_H
 #include <pwd.h>

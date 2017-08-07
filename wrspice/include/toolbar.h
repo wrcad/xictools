@@ -42,7 +42,7 @@
 #define TOOLBAR_H
 
 #include "wlist.h"
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 
 // arg to UpdateMain();

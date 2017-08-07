@@ -48,8 +48,8 @@ Authors: 1987 UCB
 #include "outplot.h"
 #include "frontend.h"
 #include "ttyio.h"
-#include "texttf.h"
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/texttf.h"
 
 
 //

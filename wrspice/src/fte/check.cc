@@ -50,10 +50,10 @@
 #include "commands.h"
 #include "input.h"
 #include "toolbar.h"
-#include "hash.h"
 #include "psffile.h"
 #include "trnames.h"
-#include "filestat.h"
+#include "spnumber/hash.h"
+#include "miscutil/filestat.h"
 #include <stdarg.h>
 
 

@@ -54,8 +54,8 @@ Authors: 1985 Wayne A. Christopher
 #include "misc.h"
 #include "optdefs.h"
 #include "statdefs.h"
-#include "coresize.h"
-#include "graphics.h"
+#include "miscutil/coresize.h"
+#include "ginterf/graphics.h"
 
 
 //
@@ -117,7 +117,7 @@ namespace {
 #endif
 
 #ifdef HAVE_LOCAL_ALLOCATOR
-#include "local_malloc.h"
+#include "malloc/local_malloc.h"
 #endif
 
 #if defined(HAVE_GETRLIMIT) && defined(RLIMIT_DATA) && defined(RLIM_INFINITY)

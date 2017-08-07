@@ -54,10 +54,10 @@ Authors: 1985 Wayne A. Christopher
 #include "kwords_fte.h"
 #include "commands.h"
 #include "toolbar.h"
-#include "hash.h"
 #include "circuit.h"
-#include "spnumber.h"
-#include "filestat.h"
+#include "spnumber/hash.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/filestat.h"
 #include <algorithm>
 
 

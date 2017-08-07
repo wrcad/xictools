@@ -41,7 +41,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/wait.h>
 #include <netinet/in.h>
@@ -61,7 +61,7 @@
 #include "commands.h"
 #include "frontend.h"
 #include "toolbar.h"
-#include "childproc.h"
+#include "miscutil/childproc.h"
 
 
 #ifdef WIN32

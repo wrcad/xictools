@@ -41,12 +41,12 @@
 #include "frontend.h"
 #include "ftemeas.h"
 #include "fteparse.h"
-#include "lstring.h"
 #include "misc.h"
 #include "ftedata.h"
 #include "cshell.h"
-#include "hash.h"
-#include "spnumber.h"
+#include "spnumber/hash.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/lstring.h"
 
 
 //

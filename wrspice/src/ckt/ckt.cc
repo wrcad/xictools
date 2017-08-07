@@ -52,16 +52,16 @@ Authors: 1985 Thomas L. Quarles
 #include "device.h"
 #include "inpptree.h"
 #include "input.h"
-#include "hash.h"
 #include "ttyio.h"
 #include "wlist.h"
 #include "uidhash.h"
-#include "spmatrix.h"
-#include "errorrec.h"
 #include "verilog.h"
 #include "commands.h"
 //XXX get outplot.h outta here, don't use ginterf in Makefile incl path
 #include "outplot.h"
+#include "sparse/spmatrix.h"
+#include "spnumber/hash.h"
+#include "miscutil/errorrec.h"
 #ifdef HAVE_FLOAT_H
 #include <float.h>
 #endif
@@ -82,7 +82,7 @@ Authors: 1985 Thomas L. Quarles
 #define NEW_THREAD_QUEUE
 
 // #define TDEBUG
-#include "threadpool.h"
+#include "miscutil/threadpool.h"
 #ifdef __APPLE__
 OSSpinLock sCKT::CKTloadLock2;
 #else

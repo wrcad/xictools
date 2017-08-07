@@ -54,8 +54,8 @@ Authors: 1987 Wayne A. Christopher
 #include "kwords_fte.h"
 #include "commands.h"
 #include "toolbar.h"
-#include "hash.h"
-#include "spnumber.h"
+#include "spnumber/hash.h"
+#include "spnumber/spnumber.h"
 
 
 //

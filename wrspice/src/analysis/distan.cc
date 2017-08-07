@@ -48,10 +48,10 @@ Authors: 1988 Jaijeet S. Roychowhury
 #include "distdefs.h"
 #include "dcodefs.h"
 #include "device.h"
-#include "spmatrix.h"
 #include "input.h"
 #include "outdata.h"
 #include "misc.h"
+#include "sparse/spmatrix.h"
 
 
 extern int CKTdisto(sCKT*, int);

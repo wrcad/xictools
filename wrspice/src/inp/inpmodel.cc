@@ -50,7 +50,7 @@ Authors: 1987 Thomas L. Quarles
 #include "inpmtab.h"
 #include "misc.h"
 #include "device.h"
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 
 
 sModTab::~sModTab()

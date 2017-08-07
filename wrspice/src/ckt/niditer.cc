@@ -46,7 +46,7 @@ Authors: 1988 Jaijeet S. Roychowdhury
 ****************************************************************************/
 
 #include "circuit.h"
-#include "spmatrix.h"
+#include "sparse/spmatrix.h"
 
 
 // This is absolutely the same as NIacIter, except that the RHS

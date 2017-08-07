@@ -38,11 +38,11 @@
  $Id:$
  *========================================================================*/
 
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 struct ParseNode;
-#include "spparse.h"
-#include "lstring.h"
-#include "graphics.h"
+#include "spnumber/spparse.h"
+#include "miscutil/lstring.h"
+#include "ginterf/graphics.h"
 
 #ifdef WRSPICE
 #include "frontend.h"

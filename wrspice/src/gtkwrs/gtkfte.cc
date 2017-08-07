@@ -50,10 +50,10 @@
 #include "kwords_fte.h"
 #include "commands.h"
 #include "frontend.h"
-#include "help_defs.h"
 #include "gtktoolb.h"
-#include "gtkfont.h"
-#include "gtkpfiles.h"
+#include "gtkinterf/gtkfont.h"
+#include "gtkinterf/gtkpfiles.h"
+#include "help/help_defs.h"
 
 
 // Keywords referenced in help database:

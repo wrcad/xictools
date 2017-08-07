@@ -44,9 +44,7 @@
 #include "fteparse.h"
 #include "input.h"
 #include "inpline.h"
-#include "paramsub.h"
 #include "ttyio.h"
-#include "spnumber.h"
 #include "reltag.h"
 
 // Time profiling.
@@ -55,14 +53,16 @@
 #ifdef TIME_DEBUG
 #include "outdata.h"
 #endif
+#include "spnumber/paramsub.h"
+#include "spnumber/spnumber.h"
 
 #else
-#include "paramsub.h"
 #include "main.h"
 #include "sced.h"
-#include "spnumber.h"
+#include "spnumber/paramsub.h"
+#include "spnumber/spnumber.h"
 struct ParseNode;
-#include "spparse.h"
+#include "spnumber/spparse.h"
 #endif
 
 

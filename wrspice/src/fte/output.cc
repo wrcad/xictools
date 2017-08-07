@@ -61,11 +61,11 @@ Authors: 1988 Wayne A. Christopher
 #include "errors.h"
 #include "device.h"
 #include "toolbar.h"
-#include "pathlist.h"
-#include "hash.h"
 #include "noisdefs.h"
 #include "tfdefs.h"
 #include "sensdefs.h"
+#include "spnumber/hash.h"
+#include "miscutil/pathlist.h"
 #ifdef SECURITY_TEST
 #include <signal.h>
 #include <unistd.h>

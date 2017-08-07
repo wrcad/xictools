@@ -50,10 +50,10 @@ Authors: 1985 Wayne A. Christopher
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "spnumber.h"
 #include "outplot.h"
 #include "circuit.h"
 #include "keywords.h"
+#include "spnumber/spnumber.h"
 #include <algorithm>
 
 

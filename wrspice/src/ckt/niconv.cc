@@ -46,8 +46,8 @@ Authors: 1985 Thomas L. Quarles
 ****************************************************************************/
 
 #include "circuit.h"
-#include "spmatrix.h"
 #include "ttyio.h"
+#include "sparse/spmatrix.h"
 
 
 // Perform the convergence test - returns 1 if any of the 

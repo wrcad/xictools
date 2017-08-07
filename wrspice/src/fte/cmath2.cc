@@ -48,7 +48,7 @@ Authors: 1985 Wayne A. Christopher
 #include "frontend.h"
 #include "ftedata.h"
 #include "ttyio.h"
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 // Functions to do complex mathematical functions.  These functions
 // require the -lm libraries.  We sacrifice a lot of space to be able

@@ -55,7 +55,7 @@ Authors: 1987 Wayne A. Christopher
 #include "inpptree.h"
 #include "circuit.h"
 #include "misc.h"
-#include "random.h"
+#include "miscutil/random.h"
 
 #ifndef M_PI
 #define M_PI            3.14159265358979323846

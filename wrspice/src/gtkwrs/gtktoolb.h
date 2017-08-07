@@ -41,7 +41,7 @@
 #ifndef GTKTOOLB_H
 #define GTKTOOLB_H
 
-#include "gtkinterf.h"
+#include "gtkinterf/gtkinterf.h"
 #include "keywords.h"
 #include "toolbar.h"
 

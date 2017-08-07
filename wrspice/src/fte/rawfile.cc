@@ -51,8 +51,8 @@ Authors: 1986 Wayne A. Christopher
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "errors.h"
-#include "hash.h"
-#include "graphics.h"
+#include "spnumber/hash.h"
+#include "ginterf/graphics.h"
 
 
 //

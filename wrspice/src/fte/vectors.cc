@@ -59,8 +59,8 @@ Authors: 1985 Wayne A. Christopher
 #include "optdefs.h"
 #include "statdefs.h"
 #include "errors.h"
-#include "hash.h"
-#include "spnumber.h"
+#include "spnumber/hash.h"
+#include "spnumber/spnumber.h"
 
 
 //

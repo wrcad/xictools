@@ -41,7 +41,7 @@
 #ifndef KEYWORDS_H
 #define KEYWORDS_H
 
-#include "hash.h"
+#include "spnumber/hash.h"
 
 
 //

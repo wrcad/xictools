@@ -41,8 +41,8 @@
 #include "frontend.h"
 #include "prntfile.h"
 #include "cshell.h"
-#include "spnumber.h"
-#include "graphics.h"
+#include "spnumber/spnumber.h"
+#include "ginterf/graphics.h"
 
 
 cPrintIn::cPrintIn()

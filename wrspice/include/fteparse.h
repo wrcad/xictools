@@ -47,8 +47,8 @@ Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 #define FTEPARSE_H
 
 typedef pnode ParseNode;
-#include "spparse.h"
 #include "ftedata.h"
+#include "spnumber/spparse.h"
 
 
 //

@@ -46,9 +46,9 @@ Authors: UCB CAD Group
 ****************************************************************************/
 
 #include "sensdefs.h"
-#include "spmatrix.h"
 #include "outdata.h"
 #include "kwords_analysis.h"
+#include "sparse/spmatrix.h"
 
 
 SENSanalysis SENSinfo;

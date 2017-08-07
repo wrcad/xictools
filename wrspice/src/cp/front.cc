@@ -48,9 +48,9 @@ Authors: 1985 Wayne A. Christopher
 #include "cshell.h"
 #include "commands.h"
 #include "frontend.h"
-#include "hash.h"
-#include "spnumber.h"
-#include "graphics.h"
+#include "spnumber/hash.h"
+#include "spnumber/spnumber.h"
+#include "ginterf/graphics.h"
 
 
 //

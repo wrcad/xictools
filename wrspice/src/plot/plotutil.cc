@@ -42,7 +42,7 @@
 #include "frontend.h"
 #include "cshell.h"
 #include "ttyio.h"
-#include "miscutil.h"
+#include "miscutil/miscutil.h"
 
 // for threads
 #include "circuit.h"

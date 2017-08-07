@@ -51,8 +51,8 @@ Authors: 1985 Wayne A. Christopher
 
 #include "config.h"
 #include "cshell.h"
-#include "lstring.h"
-#include "graphics.h"
+#include "miscutil/lstring.h"
+#include "ginterf/graphics.h"
 
 #include <sys/types.h>
 #ifdef HAVE_DIRENT_H

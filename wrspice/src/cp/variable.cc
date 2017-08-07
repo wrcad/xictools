@@ -51,9 +51,9 @@ Authors: 1985 Wayne A. Christopher
 #include "variable.h"
 #include "toolbar.h"
 #include "inpline.h"
-#include "hash.h"
-#include "spnumber.h"
-#include "lstring.h"
+#include "spnumber/hash.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/lstring.h"
 #ifdef WIN32
 #include <process.h>
 #endif

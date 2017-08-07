@@ -51,9 +51,9 @@ Authors: 1985 Wayne A. Christopher
 #include "input.h"
 #include "ttyio.h"
 #include "errors.h"
-#include "paramsub.h"
 #include "wlist.h"
-#include "graphics.h"
+#include "spnumber/paramsub.h"
+#include "ginterf/graphics.h"
 #ifdef HAVE_LIMITS_H
 #include <limits.h>
 #endif

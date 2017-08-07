@@ -40,11 +40,11 @@
 
 #include "variable.h"
 #include "wlist.h"
-#include "hash.h"
 #include "misc.h"
 #include "ttyio.h"
-#include "spnumber.h"
-#include "graphics.h"
+#include "spnumber/hash.h"
+#include "spnumber/spnumber.h"
+#include "ginterf/graphics.h"
 
 
 //

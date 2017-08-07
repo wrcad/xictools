@@ -53,10 +53,10 @@ Authors: 1985 Wayne A. Christopher
 #include "kwords_analysis.h"
 #include "commands.h"
 #include "inpline.h"
-#include "lstring.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "update_itf.h"
+#include "miscutil/lstring.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "upd/update_itf.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -72,7 +72,7 @@ Authors: 1985 Wayne A. Christopher
 #ifndef WIN32
 #define USE_GTK
 #endif
-#include "transact.h"
+#include "httpget/transact.h"
 namespace { FILE *net_callback(const char*, char**); }
 #endif
 

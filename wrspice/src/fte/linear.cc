@@ -50,9 +50,9 @@ Authors: 1985 Wayne A. Christopher
 #include "ftedata.h"
 #include "ttyio.h"
 #include "errors.h"
-#include "hash.h"
-#include "graphics.h"
 #include "wlist.h"
+#include "spnumber/hash.h"
+#include "ginterf/graphics.h"
 
 
 //

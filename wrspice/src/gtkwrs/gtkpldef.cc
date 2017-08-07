@@ -50,7 +50,7 @@
 #include "kwords_fte.h"
 #include "frontend.h"
 #include "gtktoolb.h"
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 
 
 #define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)

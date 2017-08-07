@@ -271,7 +271,7 @@ CYGWIN*)
     DIST_SUFFIX="exe"
 dnl # needed for gcc-2
 dnl # c_flags="-fvtable-thunks $c_flags"
-    INSTALL='$(LPATH)/util/install-sh'
+    INSTALL='$(BASE)/util/install-sh'
     lib_dirs="/usr/lib /usr/local/lib"
     SOEXT=dll
     oa_lpath=$oa_loc/lib/mingw_32/opt
@@ -297,13 +297,13 @@ dnl # index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
         # Assume Yosemite back end,
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         UFLAGS="-mmacosx-version-min=10.10 -arch $ARCH -isysroot $SDK"
-        MALLOC='$(LPATH)/malloc/malloc.a'
+        MALLOC='$(BASE)/lib/malloc.a'
         oa_lpath=$oa_loc/lib/darwin_64/opt
     else
         echo "Architecture not supported."
         exit
     fi
-    INSTALL='STRIPPROG="strip -S" $(LPATH)/util/install-sh'
+    INSTALL='STRIPPROG="strip -S" $(BASE)/util/install-sh'
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=dylib
     LSHFLAG="-dynamiclib -undefined dynamic_lookup"
@@ -322,11 +322,11 @@ FreeBSD)
     fi
     ARCH="i386"
     DIST_SUFFIX="pkg.tbz"
-    MALLOC='$(LPATH)/malloc/malloc.a'
+    MALLOC='$(BASE)/lib/malloc.a'
     PIC_OPT="-fPIC"
     LFLAGS="-rdynamic"
     LSHFLAG="-shared"
-    INSTALL='$(LPATH)/util/install-sh'
+    INSTALL='$(BASE)/util/install-sh'
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=so
     oa_lpath=$oa_loc/lib/freebsd_32/opt
@@ -430,11 +430,11 @@ dnl     # Need Debian/Ubuntu, etc.
     fi
     
     DIST_SUFFIX="rpm"
-    MALLOC='$(LPATH)/malloc/malloc.a'
+    MALLOC='$(BASE)/lib/malloc.a'
     PIC_OPT="-fPIC"
     LFLAGS="-rdynamic"
     LSHFLAG="-shared"
-    INSTALL='$(LPATH)/util/install-sh'
+    INSTALL='$(BASE)/util/install-sh'
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=so
     if test $linux32 = yes; then
@@ -748,7 +748,7 @@ if test $OSNAME = "Win32"; then
     dnl -lbfd -liberty required for stackdump.o, and fnmatch used in mswfile.cc
     SLIBS="$MSLIBS"
     LIBS="$MSLIBS $MSLIBS2 $LIBS"
-    NTREGEX='$(LPATH)/miscutil/libregex/libregex.a'
+    NTREGEX='$(BASE)/miscutil/libregex/libregex.a'
     EXTRALIBS="-lpthread"
 
 dnl # png.h is in a strange place under win-builds

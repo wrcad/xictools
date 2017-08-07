@@ -51,9 +51,9 @@ Authors: 1988 Jeffrey M. Hsu
 #include "kwords_fte.h"
 #include "frontend.h"
 #include "toolbar.h"
-#include "texttf.h"
-#include "spnumber.h"
-#include "grlinedb.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/texttf.h"
+#include "ginterf/grlinedb.h"
 
 
 //

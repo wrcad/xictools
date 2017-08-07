@@ -51,7 +51,7 @@ Authors: 1985 Wayne A. Christopher
 #include "commands.h"
 #include "frontend.h"
 #include "fteparse.h"
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 
 #ifdef WIN32
 extern double erfc(double);

@@ -55,16 +55,16 @@ Authors: 1985 Wayne A. Christopher
 #include "kwords_fte.h"
 #include "commands.h"
 #include "subexpand.h"
-#include "random.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "update_itf.h"
+#include "miscutil/random.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "upd/update_itf.h"
 #ifdef WIN32
 #include "msw.h"
 #endif
 
 #ifdef HAVE_LOCAL_ALLOCATOR
-#include "local_malloc.h"
+#include "malloc/local_malloc.h"
 #endif
 
 #define SYSTEM_MAIL       "mail -s \"%s (%s) Bug Report\" %s"

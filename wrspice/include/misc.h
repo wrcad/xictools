@@ -53,7 +53,7 @@ Authors: 1986 Wayne A. Christopher
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 
 //

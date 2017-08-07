@@ -55,7 +55,7 @@ Authors: 1985 Wayne A. Christopher
 #include "errors.h"
 #include "ttyio.h"
 #include "circuit.h"
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 
 namespace {

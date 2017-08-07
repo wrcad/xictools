@@ -55,11 +55,11 @@ Authors: 1988 Jeffrey M. Hsu
 #include "commands.h"
 #include "frontend.h"
 #include "gtktoolb.h"
-#include "gtkfont.h"
-#include "gtkutil.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "spnumber.h"
+#include "gtkinterf/gtkfont.h"
+#include "gtkinterf/gtkutil.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "spnumber/spnumber.h"
 
 #include <gdk/gdkkeysyms.h>
 #ifndef WIN32

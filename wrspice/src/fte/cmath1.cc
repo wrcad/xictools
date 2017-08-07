@@ -50,8 +50,8 @@ Authors: 1985 Wayne A. Christopher
 #include "ftedata.h"
 #include "kwords_fte.h"
 #include "ttyio.h"
-#include "random.h"
-#include "graphics.h"
+#include "miscutil/random.h"
+#include "ginterf/graphics.h"
 
 
 #ifndef M_PI

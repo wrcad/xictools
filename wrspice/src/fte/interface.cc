@@ -45,8 +45,8 @@
 #include "optdefs.h"
 #include "statdefs.h"
 #include "variable.h"
-#include "hash.h"
-#include "graphics.h"
+#include "spnumber/hash.h"
+#include "ginterf/graphics.h"
 
 
 //

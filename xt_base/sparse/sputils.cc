@@ -68,9 +68,9 @@
 //
 #define spINSIDE_SPARSE
 #include "config.h"
-#include "spconfig.h"
-#include "spmatrix.h"
-#include "spmacros.h"
+#include "sparse/spconfig.h"
+#include "sparse/spmatrix.h"
+#include "sparse/spmacros.h"
 #ifdef HAVE_FLOAT_H
 #include <float.h>
 #endif

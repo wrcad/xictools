@@ -50,10 +50,10 @@ Authors: 1985 Wayne A. Christopher
 #include "ftedata.h"
 #include "kwords_fte.h"
 #include "ttyio.h"
-#include "hash.h"
-#include "spnumber.h"
-#include "graphics.h"
 #include "wlist.h"
+#include "spnumber/hash.h"
+#include "spnumber/spnumber.h"
+#include "ginterf/graphics.h"
 
 
 //
