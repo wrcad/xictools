@@ -41,8 +41,8 @@
 #ifndef GTKVIEWER_H
 #define GTKVIEWER_H
 
-#include "htm_widget.h"
-#include "help_context.h"
+#include "htm/htm_widget.h"
+#include "help/help_context.h"
 
 class Transaction;
 

@@ -41,7 +41,7 @@
 #ifndef GRLINEDB_H
 #define GRLINEDB_H
 
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 // Line clipper for XOR drawing.

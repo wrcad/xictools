@@ -44,7 +44,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include "xfig.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 
 // Driver code for the xfig format

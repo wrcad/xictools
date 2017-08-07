@@ -21,9 +21,7 @@ LIB_TARGET = ../lib/malloc.a
 CCFILES = local_malloc.cc monitor.cc
 
 $(LIB_TARGET): local_malloc.o monitor.o malloc.o
-	@if [ -f $(LIB_TARGET) ]; then \
-	    rm -f $(LIB_TARGET); \
-	fi
+	-@rm -f $(LIB_TARGET); \
 	$(AR) cr $(LIB_TARGET) local_malloc.o monitor.o malloc.o
 	$(RANLIB) $(LIB_TARGET)
 

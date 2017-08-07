@@ -41,11 +41,11 @@
 #include "config.h"
 #include "gtkinterf.h"
 #include "gtkhcopy.h"
-#include "lstring.h"
-#include "filestat.h"
-#include "childproc.h"
+#include "miscutil/lstring.h"
+#include "miscutil/filestat.h"
+#include "miscutil/childproc.h"
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #include "mswdraw.h"
 #include "mswpdev.h"
 #include <algorithm>

@@ -70,7 +70,7 @@
 //
 #include "config.h"
 #include "transact.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>

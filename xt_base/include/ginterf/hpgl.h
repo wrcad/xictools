@@ -41,8 +41,8 @@
 #ifndef HPGL_H
 #define HPGL_H
 
-#include "graphics.h"
-#include "texttf.h"
+#include "ginterf/graphics.h"
+#include "miscutil/texttf.h"
 #include <stdio.h>
 
 // Driver for HPGL plotters

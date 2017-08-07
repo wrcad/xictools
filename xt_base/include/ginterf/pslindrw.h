@@ -41,7 +41,7 @@
 #ifndef PSLINDRW_H
 #define PSLINDRW_H
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
 #include <stdio.h>
 
 // Driver for PostScript (TM) line drawing

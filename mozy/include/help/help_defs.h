@@ -41,8 +41,8 @@
 #ifndef HLPDEFS_H
 #define HLPDEFS_H
 
-#include "graphics.h"
-#include "lstring.h"
+#include "ginterf/graphics.h"
+#include "miscutil/lstring.h"
 
 #include <stdio.h>
 #include <ctype.h>

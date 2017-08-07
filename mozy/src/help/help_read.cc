@@ -42,9 +42,9 @@
 #include "help_defs.h"
 #include "help_context.h"
 #include "help_topic.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "hashfunc.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/hashfunc.h"
 
 #include <string.h>
 #include <sys/types.h>

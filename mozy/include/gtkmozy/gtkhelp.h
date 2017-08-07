@@ -41,11 +41,11 @@
 #ifndef GTKHELP_H
 #define GTKHELP_H
 
-#include "gtklist.h"
-#include "gtksearch.h"
-#include "help_defs.h"
-#include "help_context.h"
-#include "htm_widget.h"
+#include "gtkinterf/gtklist.h"
+#include "gtkinterf/gtksearch.h"
+#include "help/help_defs.h"
+#include "help/help_context.h"
+#include "htm/htm_widget.h"
 
 //
 // The pop-up HTML help viewer/url browser.

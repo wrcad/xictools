@@ -71,7 +71,7 @@
 
 #include "htm_widget.h"
 #include "htm_image.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include <stdio.h>
 #include <ctype.h>
 

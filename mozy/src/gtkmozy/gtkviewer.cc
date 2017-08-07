@@ -42,17 +42,17 @@
 // ahead of pango includes.
 #define PANGO_ENABLE_BACKEND
 
-#include "gtkinterf.h"
+#include "gtkinterf/gtkinterf.h"
 #include "gtkviewer.h"
-#include "gtkfile.h"
-#include "gtkfont.h"
-#include "help_startup.h"
-#include "htm_font.h"
-#include "htm_image.h"
-#include "htm_form.h"
-#include "htm_format.h"
-#include "pathlist.h"
-#include "randval.h"
+#include "gtkinterf/gtkfile.h"
+#include "gtkinterf/gtkfont.h"
+#include "help/help_startup.h"
+#include "htm/htm_font.h"
+#include "htm/htm_image.h"
+#include "htm/htm_form.h"
+#include "htm/htm_format.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/randval.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>

@@ -44,7 +44,7 @@
 #include <sys/types.h>
 #include <time.h>
 #include "pslindrw.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 
 #ifndef M_PI

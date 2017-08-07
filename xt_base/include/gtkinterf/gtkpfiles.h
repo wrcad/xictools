@@ -41,7 +41,7 @@
 #ifndef GTKPFILES_H
 #define GTKPFILES_H
 
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 
 //
 //  Header for the path file listing composite.

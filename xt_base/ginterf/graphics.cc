@@ -55,10 +55,10 @@
 #include <libiberty.h>
 #endif
 #include "graphics.h"
-#include "lstring.h"
-#include "filestat.h"
+#include "miscutil/lstring.h"
+#include "miscutil/filestat.h"
 #ifdef HAVE_MOZY
-#include "../../mozy/include/imsave.h"
+#include "imsave/imsave.h"
 #endif
 
 #include "nulldev.h"

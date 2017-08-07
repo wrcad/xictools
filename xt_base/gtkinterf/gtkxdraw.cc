@@ -38,11 +38,12 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "gtkinterf.h"
-#include "xdraw.h"
-#include "texttf.h"
+#include "ginterf/xdraw.h"
+#include "miscutil/texttf.h"
 #ifdef HAVE_MOZY
-#include "../../../mozy/src/imsave/imsave.h"
+#include "imsave/imsave.h"
 #endif
 
 #ifdef WITH_X11

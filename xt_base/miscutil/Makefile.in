@@ -69,9 +69,7 @@ CCFILES = \
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)
-	@if [ -f $(LIB_TARGET) ]; then \
-	    rm -f $(LIB_TARGET); \
-	fi
+	-@rm -f $(LIB_TARGET); \
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
 

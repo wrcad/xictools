@@ -41,7 +41,7 @@
 #ifndef PSBM_H
 #define PSBM_H
 
-#include "raster.h"
+#include "ginterf/raster.h"
 
 // Driver for single plane in-core bitmap generation with output
 // in PostScript (TM) format.

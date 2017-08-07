@@ -39,12 +39,12 @@
  *========================================================================*/
 
 #include "config.h"
-#include "graphics.h"
-#include "pathlist.h"
-#include "childproc.h"
-#include "help_defs.h"
-#include "help_context.h"
-#include "filestat.h"
+#include "ginterf/graphics.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/childproc.h"
+#include "miscutil/filestat.h"
+#include "help/help_defs.h"
+#include "help/help_context.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -60,7 +60,7 @@
 #include <sys/wait.h>
 #endif
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <pwd.h>
 #endif
@@ -93,7 +93,7 @@ extern char *sys_errlist[];
 // drivers.
 //
 #define GR_CONFIG (GR_ALL_PKGS)
-#include "gr_pkg_setup.h"
+#include "ginterf/gr_pkg_setup.h"
 
 namespace {
     // Create the graphics package.

@@ -41,7 +41,7 @@
 #ifndef PSBC_H
 #define PSBC_H
 
-#include "rgbmap.h"
+#include "ginterf/rgbmap.h"
 
 // Driver for 24-bit color in-core bitmap generation with output
 // in PostScript (TM) format.

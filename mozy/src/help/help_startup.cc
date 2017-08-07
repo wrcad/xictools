@@ -42,8 +42,8 @@
 #include "help_defs.h"
 #include "help_startup.h"
 #include "help_context.h"
-#include "pathlist.h"
-#include "lstring.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/lstring.h"
 
 #include <stdio.h>
 #include <string.h>

@@ -41,7 +41,7 @@
 #ifndef URLCACHE_H
 #define URLCACHE_H
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include <string.h>
 
 

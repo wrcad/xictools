@@ -30,9 +30,20 @@ XEDRES = @XEDRES@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
-LPATH = ../../xt_base
-GRAPHICS = $(LPATH)/ginterf/ginterf.a
-MISCUTIL = $(LPATH)/miscutil/miscutil.a
+BASE = ../../xt_base
+INCLUDE = -I../include -I$(BASE)/include
+
+LOCAL_LIBS = \
+  $(BASE)/lib/ginterf.a \
+  ../lib/htm.a \
+  ../lib/help.a \
+  ../lib/update_itf.a \
+  $(BASE)/lib/gtkinterf.a  \
+  ../lib/gtkmozy.a \
+  ../lib/imsave.a \
+  $(BASE)/lib/miscutil.a \
+  ../lib/httpget.a
+
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
@@ -42,33 +53,26 @@ SUBDIRS = ../src/gtkmozy ../src/help ../src/htm ../src/httpget \
   ../src/imsave ../src/upd
 
 CCFILES = mozy.cc httpget.cc
-INCLUDE = -I../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
 
 #######################################################################
 ####### Executable and related targets ################################
 
-LIB_TARGET = ../lib/libmozy.a
+all:  libraries mozy httpget
 
-all:  libmozy mozy httpget
-
-libmozy:
+libraries:
 	@for a in $(SUBDIRS); do \
 	  (cd $$a; $(MAKE) ) \
 	done
-	@if [ -f $(LIB_TARGET) ]; then \
-            rm -f $(LIB_TARGET); \
-	fi
-	$(AR) cr $(LIB_TARGET) $(CCOBJS) $(SUBDIRS:=/*.o)
-	$(RANLIB) $(LIB_TARGET)
 
-mozy: libmozy mozy.o $(GRAPHICS) $(MISCUTIL) $(MOZYRES) Makefile
-	@echo $@: dynamic link
-	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o -L../lib -lmozy \
-  $(GRAPHICS) $(MISCUTIL) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
+mozy: libraries mozy.o $(LOCAL_LIBS) $(MOZYRES) Makefile
+	@echo $@: dynamic link mozy
+	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o \
+  $(LOCAL_LIBS) $(LOCAL_LIBS) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
 
-httpget: libmozy httpget.o $(GRAPHICS) $(MISCUTIL)
-	$(LINKCC) -o httpget $(LFLAGS) httpget.o -L../lib -lmozy \
-  $(GRAPHICS) $(MISCUTIL) $(LIBS) $(STDCLIB)
+httpget: httpget.o $(LOCAL_LIBS)
+	@echo $@: dynamic link httpget
+	@$(LINKCC) -o httpget $(LFLAGS) httpget.o \
+  $(LOCAL_LIBS) $(LOCAL_LIBS) $(LIBS) $(STDCLIB)
 
 mozy.o: mozy.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
@@ -80,13 +84,34 @@ mozy.o: mozy.cc
 #######################################################################
 ####### Recursively generate libraries ################################
 
-$(GRAPHICS)::
-	cd $(@D); $(MAKE)
+../lib/gtkmozy.a:
+	cd ../src/gtkmozy; $(MAKE)
 
-$(MISCUTIL)::
-	cd $(@D); $(MAKE)
+../lib/help.a:
+	cd ../src/help; $(MAKE)
+
+../lib/htm.a:
+	cd ../src/htm; $(MAKE)
+
+../lib/httpget.a:
+	cd ../src/httpget; $(MAKE)
+
+../lib/imsave.a:
+	cd ../src/imsave; $(MAKE)
+
+../lib/update_itf.a:
+	cd ../src/update_itf; $(MAKE)
+
+$(BASE)/lib/ginterf.a:
+	cd $(BASED)/ginterf; $(MAKE)
+
+$(BASE)/lib/gtkinterf.a:
+	cd $(BASED)/gtkinterf; $(MAKE)
+
+$(BASE)/lib/miscutil.a:
+	cd $(BASED)/miscutil; $(MAKE)
 	if [ x$(NTREGEX) != x ]; then \
-	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
 
 foo $(MOZYRES) $(XEDRES):

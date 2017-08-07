@@ -42,10 +42,10 @@
 #include "help_context.h"
 #include "help_cache.h"
 #include "help_topic.h"
-#include "htm_widget.h"
-#include "lstring.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "htm/htm_widget.h"
+#include "miscutil/lstring.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 #include <algorithm>
 

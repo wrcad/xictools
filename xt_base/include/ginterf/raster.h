@@ -43,7 +43,7 @@
 #ifndef RASTER_H_INCLUDED
 #define RASTER_H_INCLUDED
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
 #include <stdio.h>
 
 namespace ginterf

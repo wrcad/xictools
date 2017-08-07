@@ -41,7 +41,7 @@
 #ifndef SHMCTL_H_INCLUDED
 #define SHMCTL_H_INCLUDED
 
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 //

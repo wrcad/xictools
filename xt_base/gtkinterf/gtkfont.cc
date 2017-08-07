@@ -41,7 +41,7 @@
 #include <ctype.h>
 #include "gtkinterf.h"
 #include "gtkfont.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 #include <gdk/gdkprivate.h>
 #include <gdk/gdkkeysyms.h>

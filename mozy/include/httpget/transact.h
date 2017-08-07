@@ -68,7 +68,7 @@
 #define TRANSACT_H
 
 #include "comm.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 struct http_monitor;
 class Transaction;

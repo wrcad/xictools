@@ -48,8 +48,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include "psbc.h"
-#include "lstring.h"
-#include "texttf.h"
+#include "miscutil/lstring.h"
+#include "miscutil/texttf.h"
 
 
 // font height in points=1/72 inch

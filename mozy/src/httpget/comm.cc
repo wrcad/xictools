@@ -66,8 +66,8 @@
 
 #include "config.h"
 #include "comm.h"
-#include "tvals.h"
-#include "lstring.h"
+#include "miscutil/tvals.h"
+#include "miscutil/lstring.h"
 #include <algorithm>
 #include <errno.h>
 #include <ctype.h>

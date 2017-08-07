@@ -41,8 +41,8 @@
 #ifndef XFIG_H
 #define XFIG_H
 
-#include "graphics.h"
-#include "pixtab.h"
+#include "ginterf/graphics.h"
+#include "ginterf/pixtab.h"
 #include <stdio.h>
 
 // Driver for xfig output

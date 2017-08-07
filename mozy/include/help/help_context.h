@@ -42,7 +42,7 @@
 #define HELP_CONTEXT_H
 
 //#include "help_topic.h"
-#include "fontutil.h"
+#include "ginterf/fontutil.h"
 
 #include <string.h>
 

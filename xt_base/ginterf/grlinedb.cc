@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "grlinedb.h"
-#include "miscmath.h"
+#include "miscutil/miscmath.h"
 #include <stdlib.h>
 
 using namespace ginterf;

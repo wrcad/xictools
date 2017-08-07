@@ -48,8 +48,8 @@
 #include <sys/types.h>
 #include <time.h>
 #include "pcl.h"
-#include "lstring.h"
-#include "texttf.h"
+#include "miscutil/lstring.h"
+#include "miscutil/texttf.h"
 
 
 // default Courrier 12 point font

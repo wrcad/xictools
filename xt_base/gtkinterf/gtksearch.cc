@@ -41,12 +41,12 @@
 #include "config.h"
 #include "gtkinterf.h"
 #include "gtksearch.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 #ifdef HAVE_REGEX_H
 #include <regex.h>
 #else
-#include "libregex/regex.h"
+#include "miscutil/libregex/regex.h"
 #endif
 
 

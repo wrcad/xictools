@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
 #ifndef WIN32
 // Dummy symbol to avoid linker warning.
 bool NO_MSWDRAW = true;
@@ -47,9 +47,9 @@ bool NO_MSWDRAW = true;
 // Windows only code.
 
 #include "mswdraw.h"
-#include "texttf.h"
-#include "lstring.h"
-#include "fontutil.h"
+#include "miscutil/texttf.h"
+#include "miscutil/lstring.h"
+#include "miscutil/fontutil.h"
 
 #include <math.h>
 

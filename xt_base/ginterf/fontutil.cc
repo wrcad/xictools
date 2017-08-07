@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "fontutil.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include <string.h>
 #include <ctype.h>
 #include <stdlib.h>

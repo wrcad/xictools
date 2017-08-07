@@ -41,7 +41,7 @@
 #ifndef NULLDEV_H
 #define NULLDEV_H
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 //
 // A NULL graphics device.  This is used as the main graphics device

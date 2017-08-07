@@ -69,44 +69,73 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *------------------------------------------------------------------------*/
 
-//*********************************************************************
-// Module: stringutil.cc
-// Description: string manipulators
-//
-// Exports:
-// expandEscapes            : expand all escape sequences in the given text.
-// ToAsciiLower             : convert a number to all lowercase ASCII.
-// ToAsciiUpper             : convert a number to all uppercase ASCII.
-// ToRomanLower             : convert a number to all uppercase roman numerals.
-// ToRomanUpper             : convert a number to all lowercase roman numerals.
-// htm_strcasestr           : case insensitive strstr.
-// htm_strndup              : strndup function
-// htm_csvtok               : parse comma-separated variables
-//**********************************************************************
+#ifndef HTM_FONT_H
+#define HTM_FONT_H
 
-#ifndef HTM_STRING_H
-#define HTM_STRING_H
-
-#include "lstring.h"
-#include <sys/types.h>
-
-#ifdef NEED_STRERROR
-extern char *sys_errlist[];
-extern int errno;
-#define strerror(ERRNUM) sys_errlist[ERRNUM]
-#endif
+#include "htm_hashtab.h"
+#include "miscutil/lstring.h"
 
 namespace htm
 {
-    char *expandEscapes(const char*, bool, htmWidget* = 0);
-    extern const char *ToAsciiLower(int);
-    extern const char *ToAsciiUpper(int);
-    extern const char *ToRomanUpper(int);
-    extern const char *ToRomanLower(int);
-    extern char *htm_strcasestr(const char*, const char*);
-    extern char *htm_strndup(const char*, size_t);
-    extern char *htm_csvtok(char**);
+    // Font style bits
+    enum
+    {
+        FONT_BOLD           = 0x1,
+        FONT_ITALIC         = 0x2,
+        FONT_FIXED          = 0x4
+    };
 }
+
+// A gtkhtm font. gtkhtm uses it's own font definition for performance
+// reasons (the layout routines use a *lot* of font properties).
+//
+struct htmFont : public htmHashEnt
+{
+    htmFont(htmWidget*, const char*, int, unsigned char);
+    ~htmFont();
+
+    const char *font_name() { return (h_name); }
+    const char *font_face() { return (ft_face); }
+
+    // Do NOT call this if element is in table!
+    void rename(const char *nm)
+        {
+            char *n = lstring::copy(nm);
+            delete [] h_name;
+            h_name = n;
+        }
+
+private:
+    char            *ft_face;       // face name, derived from font name
+
+public:
+    unsigned char   style;          // this font's style
+    int             ascent;         // font-wide ascent
+    int             descent;        // font-wide descent
+    int             lbearing;       // lbearing of largest character
+    int             rbearing;       // rbearing of largest character
+    int             width;          // width of largest character
+    int             height;         // height of largest character
+    int             lineheight;     // suggested lineheight
+    unsigned int    isp;            // normal interword spacing
+    unsigned int    eol_sp;         // additional end-of-line spacing
+    int             sup_xoffset;    // additional superscript x-offset
+    int             sup_yoffset;    // additional superscript y-offset
+    int             sub_xoffset;    // additional subscript x-offset
+    int             sub_yoffset;    // additional subscript y-offset
+    int             ul_offset;      // additional underline offset
+    unsigned int    ul_thickness;   // underline thickness
+    int             st_offset;      // additional strikeout offset
+    unsigned int    st_thickness;   // strikeout thickness
+    void            *xfont;         // ptr to font definition
+    htmWidget       *html;          // for destructor
+};
+
+// Font cache hash table
+//
+struct htmFontTab : public htmHashTab
+{
+};
 
 #endif
 

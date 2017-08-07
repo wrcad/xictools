@@ -46,7 +46,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <gtk/gtk.h>
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 //
 //  Main header for the GTK+ library

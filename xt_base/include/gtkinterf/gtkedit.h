@@ -41,7 +41,7 @@
 #ifndef GTKEDIT_H
 #define GTKEDIT_H
 
-#include "gtksearch.h"
+#include "gtkinterf/gtksearch.h"
 
 
 //

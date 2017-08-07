@@ -1,7 +1,5 @@
 #######################################################################
-# mozy/src/httpget/Makefile.in
-#######################################################################
-# $Id:$
+LOCATION = mozr/src/httpget
 #######################################################################
 
 # Below are the recognized CFLAGS defines.  The configure script
@@ -23,10 +21,14 @@ DATE = @DATE@
 CC = @CXX@
 CFLAGS = @CFLAGS@ @UFLAGS@ -DVERSION=\"$(VERSION)\"
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ -DVERSION=\"$(VERSION)\"
+AR = @AR@
+RANLIB = @RANLIB@
 FILTER = @FILTER@
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/miscutil
+BASE = ../../../xt_base
+INCLUDE = -I../../include/httpget -I$(BASE)/include
+
+LIB_TARGET = ../../lib/httpget.a
 
 HFILES = \
     comm.h \
@@ -37,10 +39,11 @@ CCFILES = \
     transact.cc
 
 CCOBJS = $(CCFILES:.cc=.o)
-LIBOBJS = $(CCOBJS)
 
-stamp: $(LIBOBJS)
-	touch stamp
+$(LIB_TARGET): $(CCOBJS)
+	-@rm -f $(LIB_TARGET);
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
 
 .cc.o:
 	$(CC) -c $(CFLAGS) $(INCLUDE) -o $@ $<
@@ -52,13 +55,13 @@ subdirs::
 	@echo ]
 
 clean:
-	-@rm -f $(CCOBJS) stamp
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
 
 depend:
-	@echo depending in mozy/src/httpget
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

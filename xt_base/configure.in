@@ -104,7 +104,7 @@ if test $enable_nomozy = yes; then
     nomozy="yes"
 fi
 )
-if test ! -d mozy; then
+if test ! -d ../mozy; then
     nomozy=yes
 fi
 

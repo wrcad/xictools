@@ -43,9 +43,9 @@
 #include "gtkutil.h"
 #include "gtkfile.h"
 #include "gtkfont.h"
-#include "lstring.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/lstring.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 #include <string.h>
 #include <unistd.h>
 #include <dirent.h>

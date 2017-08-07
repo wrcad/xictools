@@ -46,7 +46,7 @@ bool NO_MSWPDEV = true;
 #else
 // Windows only code.
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include "xdraw.h"
 #include "mswdraw.h"
 #include "mswpdev.h"

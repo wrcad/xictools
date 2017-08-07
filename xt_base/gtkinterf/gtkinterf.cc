@@ -42,9 +42,9 @@
 #include "gtkinterf.h"
 #include "gtkfont.h"
 #include "gtkhcopy.h"
-#include "texttf.h"
-#include "grlinedb.h"
-#include "lstring.h"
+#include "ginterf/grlinedb.h"
+#include "miscutil/texttf.h"
+#include "miscutil/lstring.h"
 #include <sys/types.h>
 #include <sys/time.h>
 #ifdef WIN32

@@ -48,12 +48,12 @@
 #include "gtkfont.h"
 #include "gtkfile.h"
 #include "gtkutil.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "timer.h"
-#include "encode.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/timer.h"
+#include "miscutil/encode.h"
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 #include <sys/types.h>

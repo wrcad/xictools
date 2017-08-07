@@ -41,7 +41,7 @@
 #ifndef HELP_TOPIC_H
 #define HELP_TOPIC_H
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 struct HLPtopic;
 

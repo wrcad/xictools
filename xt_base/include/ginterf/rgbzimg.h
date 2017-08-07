@@ -43,8 +43,8 @@
 #ifndef RGBZIMG_H_INCLUDED
 #define RGBZIMG_H_INCLUDED
 
-#include "graphics.h"
-#include "shmctl.h"
+#include "ginterf/graphics.h"
+#include "ginterf/shmctl.h"
 #include <stdio.h>
 #include <string.h>
 

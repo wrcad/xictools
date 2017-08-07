@@ -47,16 +47,17 @@
 #include <string.h>
 #include <time.h>
 
-#include "lstring.h"
-#include "filestat.h"
+#include "config.h"
+#include "miscutil/lstring.h"
+#include "miscutil/filestat.h"
 #include "gtkinterf.h"
 #include "gtkutil.h"
 #include "gtkfont.h"
 #ifdef HAVE_MOZY
-#include "../../../mozy/include/gtkviewer.h"
-#include "../../../mozy/include/htm_callback.h"
-#include "../../../mozy/include/help_defs.h"
-#include "../../../mozy/include/help_context.h"
+#include "gtkmozy/gtkviewer.h"
+#include "htm/htm_callback.h"
+#include "help/help_defs.h"
+#include "help/help_context.h"
 #endif
 
 #include <gdk/gdkkeysyms.h>

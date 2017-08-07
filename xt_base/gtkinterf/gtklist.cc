@@ -46,7 +46,7 @@
 #include "gtkinterf.h"
 #include "gtklist.h"
 #include "gtkfont.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 
 
 // Popup to display a list.  title is the title label text, header

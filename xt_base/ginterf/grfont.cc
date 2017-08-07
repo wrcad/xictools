@@ -40,7 +40,7 @@
 
 #include "graphics.h"
 #include "grfont.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 #include <ctype.h>
 #include <string.h>
 

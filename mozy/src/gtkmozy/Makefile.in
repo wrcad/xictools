@@ -1,7 +1,5 @@
 #######################################################################
-# mozy/src/gtkmozy/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.28 2014/02/15 18:40:33 stevew Exp $
+LOCATION = mozy/src/gtkmozy
 #######################################################################
 
 DATE = @DATE@
@@ -10,12 +8,15 @@ CXX = @CXX@
 CC = @CC@
 CFLAGS = @CFLAGSG@ @TOOLKITCFLAGS@ @UFLAGS@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @TOOLKITCFLAGS@
+AR = @AR@
+RANLIB = @RANLIB@
 FILTER = @FILTER@
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/ginterf \
- -I$(LPATH)/ginterf/gtkinterf -I$(LPATH)/miscutil \
- @TOOLKITINC@
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I../../include/gtkmozy -I$(BASE)/include \
+  @TOOLKITINC@
+
+LIB_TARGET = ../../lib/gtkmozy.a
 
 HFILES = \
     gtkhelp.h \
@@ -27,10 +28,11 @@ CCFILES = \
     gtkviewer.cc
 
 CCOBJS = $(CCFILES:.cc=.o)
-LIBOBJS = $(CCOBJS)
 
-stamp: $(LIBOBJS)
-	touch stamp
+$(LIB_TARGET): $(CCOBJS)
+	-@rm -f $(LIB_TARGET);
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
 
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
@@ -42,13 +44,13 @@ subdirs::
 	@echo ]
 
 clean:
-	-@rm -f $(CCOBJS) stamp
+	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
 distclean: clean
 	-@rm -f Makefile
 
 depend:
-	@echo depending in mozy/src/gtkmozy
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

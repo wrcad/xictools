@@ -41,7 +41,7 @@
 #ifndef PCL_H
 #define PCL_H
 
-#include "raster.h"
+#include "ginterf/raster.h"
 
 // Driver for in-core bitmap generation with output in HP PCL
 // format.

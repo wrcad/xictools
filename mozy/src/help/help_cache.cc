@@ -40,8 +40,8 @@
 
 #include "config.h"
 #include "help_cache.h"
-#include "filestat.h"
-#include "pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 
 #include <string.h>
 #include <errno.h>

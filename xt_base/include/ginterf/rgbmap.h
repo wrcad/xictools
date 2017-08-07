@@ -43,7 +43,7 @@
 #ifndef RGBMAP_H_INCLUDED
 #define RGBMAP_H_INCLUDED
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
 #include <stdio.h>
 
 namespace ginterf

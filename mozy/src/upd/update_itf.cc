@@ -40,11 +40,11 @@
 
 #include "config.h"
 #include "update_itf.h"
-#include "crypt.h"
-#include "transact.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "miscutil.h"
+#include "httpget/transact.h"
+#include "miscutil/crypt.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/miscutil.h"
 
 #include <ctype.h>
 #include <string.h>

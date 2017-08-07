@@ -47,8 +47,8 @@
 #include "gtkmcol.h"
 #include "gtkfont.h"
 #include "gtkutil.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 
 // Popup to display a list.  title is the title label text, callback
