@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 
 // This is a simple program to create a set of FastCap input files from a

@@ -38,9 +38,9 @@
  $Id:$
  *========================================================================*/
 
-#include "lstring.h"
-#include "symtab.h"
-#include "pathlist.h"
+#include "miscutil/lstring.h"
+#include "miscutil/symtab.h"
+#include "miscutil/pathlist.h"
 
 
 // This program will assemble a unified list file from separate files. 

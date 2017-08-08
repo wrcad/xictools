@@ -1,7 +1,5 @@
 #######################################################################
-# src/xictools_accs/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.34 2015/12/08 21:59:30 stevew Exp $
+LOCATION = xt_accs
 #######################################################################
 
 ACCS_VERSION = @ACCS_VERSION@
@@ -29,21 +27,32 @@ XEDRES = @XEDRES@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
-LPATH = ../xt_base
-INCLUDE = -I../mozy/include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+BASE = ../xt_base
+MOZY = ../mozy
+INCLUDE = -I$(BASE)/include -I$(MOZY)/include
 
-MOZY = ../mozy/lib/libmozy.a
-GRAPHICS = $(LPATH)/ginterf/ginterf.a
-MISCUTIL = $(LPATH)/miscutil/miscutil.a
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-CCFILES = xeditor.cc hlp2html.cc hlpsrv.cc fcpp.cc \
-  lstpack.cc lstunpack.cc
+CCFILES = xeditor.cc hlp2html.cc hlpsrv.cc fcpp.cc lstpack.cc lstunpack.cc
 
 ODIR = ./xt_accs-$(ACCS_VERSION)
+
+LOCAL_LIBS = \
+  $(MOZY)/lib/htm.a \
+  $(MOZY)/lib/help.a \
+  $(MOZY)/lib/gtkmozy.a \
+  $(MOZY)/lib/update_itf.a \
+  $(BASE)/lib/gtkinterf.a  \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
+  $(MOZY)/lib/htm.a \
+  $(MOZY)/lib/help.a \
+  $(MOZY)/lib/httpget.a \
+  $(MOZY)/lib/imsave.a \
+  $(NTREGEX)
 
 #######################################################################
 ####### Executable and related targets ################################
@@ -52,32 +61,32 @@ ACCESSORIES = xeditor hlpsrv hlp2html fcpp lstpack lstunpack
 
 all:  $(ACCESSORIES)
 
-xeditor: xeditor.o $(MOZY) $(GRAPHICS) $(MISCUTIL) $(XEDRES) Makefile
+xeditor: xeditor.o $(LOCAL_LIBS) $(XEDRES) Makefile
 	@echo $@: dynamic link
-	@$(LINKCC) $(NTNOCONS) -o xeditor $(LFLAGS) xeditor.o $(MOZY) \
-  $(GRAPHICS) $(MISCUTIL) $(NTREGEX) $(LIBS) $(XEDRES) $(STDCLIB)
+	@$(LINKCC) -o xeditor $(LFLAGS) xeditor.o $(LOCAL_LIBS) \
+  $(LIBS) $(XEDRES) $(STDCLIB)
 
-hlpsrv: hlpsrv.o $(GRAPHICS) $(MISCUTIL) Makefile
+hlpsrv: hlpsrv.o Makefile
 	@$(LINKCC) -o hlpsrv $(LFLAGS) hlpsrv.o \
-  ../mozy/src/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
-  $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+  ../mozy/src/help/help_read.o $(BASE)/ginterf/graphics.o \
+  $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 hlp2html: hlp2html.o $(GRAPHICS) $(MISCUTIL) Makefile
 	@$(LINKCC) -o hlp2html $(LFLAGS) hlp2html.o \
-  ../mozy/src/help/help_read.o $(LPATH)/ginterf/graphics.o $(MISCUTIL) \
-  $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+  ../mozy/src/help/help_read.o $(BASE)/ginterf/graphics.o \
+  $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-fcpp: fcpp.cc $(MISCUTIL)
-	$(LINKCC) $(CFLAGS) $(INCLUDE) -o fcpp fcpp.cc $(MISCUTIL) \
-  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+fcpp: fcpp.cc
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o fcpp fcpp.cc \
+  $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
 
-lstpack: lstpack.cc $(MISCUTIL)
-	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstpack lstpack.cc $(MISCUTIL) \
-  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+lstpack: lstpack.cc
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstpack lstpack.cc \
+  $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
 
-lstunpack: lstunpack.cc $(MISCUTIL)
-	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstunpack lstunpack.cc $(MISCUTIL) \
-  $(STDCLIB) $(STDCLIB) $(WINPTHREADFIX)
+lstunpack: lstunpack.cc
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstunpack lstunpack.cc \
+  $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
 
 
 xeditor.o: xeditor.cc
@@ -90,16 +99,34 @@ xeditor.o: xeditor.cc
 #######################################################################
 ####### Recursively generate libraries ################################
 
-$(MOZY)::
-	cd $(@D)/../bin; $(MAKE)
+$(MOZY)/lib/gtkmozy.a:
+	cd $(MOZY)/src/gtkmozy; $(MAKE)
 
-$(GRAPHICS)::
-	cd $(@D); $(MAKE)
+$(MOZY)/lib/help.a:
+	cd $(MOZY)/src/help; $(MAKE)
 
-$(MISCUTIL)::
-	cd $(@D); $(MAKE)
+$(MOZY)/lib/htm.a:
+	cd $(MOZY)/src/htm; $(MAKE)
+
+$(MOZY)/lib/httpget.a:
+	cd $(MOZY)/src/httpget; $(MAKE)
+
+$(MOZY)/lib/imsave.a:
+	cd $(MOZY)/src/imsave; $(MAKE)
+
+$(MOZY)/lib/update_itf.a:
+	cd $(MOZY)/src/update_itf; $(MAKE)
+
+$(BASE)/lib/ginterf.a:
+	cd $(BASED)/ginterf; $(MAKE)
+
+$(BASE)/lib/gtkinterf.a:
+	cd $(BASED)/gtkinterf; $(MAKE)
+
+$(BASE)/lib/miscutil.a:
+	cd $(BASED)/miscutil; $(MAKE)
 	if [ x$(NTREGEX) != x ]; then \
-	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
 
 foo $(MOZYRES) $(XEDRES):
@@ -108,8 +135,8 @@ foo $(MOZYRES) $(XEDRES):
 #######################################################################
 ####### Dependencies in this directory ################################
 
-depend::
-	@echo depending in xictools_accs
+depend:
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -118,14 +145,14 @@ depend::
 #######################################################################
 ####### Clean up ######################################################
 
-eclean::
+eclean:
 	-rm -f xeditor$(NTSUFFIX) hlpsrv$(NTSUFFIX) hlp2html$(NTSUFFIX) \
 	    fcpp$(NTSUFFIX) lstpack$(NTSUFFIX) lstunpack$(NTSUFFIX)
 
-clean:: eclean
+clean: eclean
 	-rm -f *.o $(ODIR).tar.gz
 
-distclean:: eclean
+distclean: eclean
 	-rm -f *.o Makefile $(ODIR).tar.gz
 	(cd packages; $(MAKE) distclean)
 
@@ -156,13 +183,13 @@ install_clean::
 	done
 
 $(dst_bin)::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	for aa in $(ACCESSORIES); do \
 	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
 	done
 
 $(dst_lib)/mozy/startup::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	startup=`packages/util/accs_files startup`; \
 	for a in $$startup; do \
 	    $(INSTALL_LIB) lib/mozy/startup/$$a $@; \
@@ -172,12 +199,12 @@ $(dst_lib)/mozy/help::
 	if [ -f lib/mozy/help/Makefile ]; then \
 	    (cd lib/mozy/help; $(MAKE)); \
 	fi
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	help=`packages/util/accs_files help`; \
 	for a in $$help; do \
 	    $(INSTALL_LIB) lib/mozy/help/$$a $@; \
 	done
-	@$(LPATH)/util/mkdirpth $@/screenshots
+	@$(BASE)/util/mkdirpth $@/screenshots
 	ss=`packages/util/accs_files help_ss`; \
 	for a in $$ss; do \
 	    $(INSTALL_LIB) lib/mozy/help/screenshots/$$a $@/screenshots; \
@@ -213,15 +240,15 @@ export::
   $(ODIR)/lib/mozy/help/screenshots; \
 	done
 	mkdir $(ODIR)/util
-	cp -pf $(LPATH)/util/install-sh $(ODIR)/util
-	cp -pf $(LPATH)/util/install_bin $(ODIR)/util
-	cp -pf $(LPATH)/util/mkdirpth $(ODIR)/util
+	cp -pf $(BASE)/util/install-sh $(ODIR)/util
+	cp -pf $(BASE)/util/install_bin $(ODIR)/util
+	cp -pf $(BASE)/util/mkdirpth $(ODIR)/util
 	mkdir $(ODIR)/src
 	cp -pf export_files/Makefile.in $(ODIR)/src
-	cp -pf $(LPATH)/configure.in $(ODIR)/src
-	cp -pf $(LPATH)/configure $(ODIR)/src
-	$(LPATH)/util/mvdir $(LPATH)/ginterf $(ODIR)/src/ginterf
-	$(LPATH)/util/mvdir $(LPATH)/miscutil $(ODIR)/src/miscutil
+	cp -pf $(BASE)/configure.in $(ODIR)/src
+	cp -pf $(BASE)/configure $(ODIR)/src
+	$(BASE)/util/mvdir $(BASE)/ginterf $(ODIR)/src/ginterf
+	$(BASE)/util/mvdir $(BASE)/miscutil $(ODIR)/src/miscutil
 	mkdir $(ODIR)/src/xictools_accs
 	for a in $(ACCESSORIES); do \
 	    cp -pf $$a.cc $(ODIR)/src/xictools_accs/$$a.cc; \

@@ -68,19 +68,15 @@ LOCAL_LIBS = \
   $(SUBDIR_LIBS) \
   $(MOZY)/lib/htm.a \
   $(MOZY)/lib/help.a \
-  $(MOZY)/lib/update_itf.a \
   $(MOZY)/lib/gtkmozy.a \
-  $(MOZY)/lib/imsave.a \
-  $(MOZY)/lib/httpget.a \
-  $(BASE)/lib/ginterf.a \
+  $(MOZY)/lib/update_itf.a \
   $(BASE)/lib/gtkinterf.a  \
-  $(BASE)/lib/miscutil.a \
   $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/miscutil.a \
   $(MOZY)/lib/htm.a \
   $(MOZY)/lib/help.a \
-  $(MOZY)/lib/gtkmozy.a \
-  $(MOZY)/lib/imsave.a \
   $(MOZY)/lib/httpget.a \
+  $(MOZY)/lib/imsave.a \
   $(NTREGEX)
 
 all:  $(TARGETS) plugins
@@ -204,7 +200,7 @@ $(EXECOBJS): Makefile
 .PHONY: $(MALLOC)
 
 $(MALLOC)::
-	cd $(@D)../malloc; $(MAKE)
+	cd $(@D)/../malloc; $(MAKE)
 
 #######################################################################
 ####### Dependencies ##################################################

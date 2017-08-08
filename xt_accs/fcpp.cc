@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>

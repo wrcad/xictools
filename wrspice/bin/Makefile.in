@@ -87,18 +87,15 @@ LOCAL_LIBS = \
   ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
   $(MOZY)/lib/htm.a \
   $(MOZY)/lib/help.a \
-  $(MOZY)/lib/update_itf.a \
   $(MOZY)/lib/gtkmozy.a \
-  $(MOZY)/lib/imsave.a \
-  $(MOZY)/lib/httpget.a \
-  $(BASE)/lib/ginterf.a \
+  $(MOZY)/lib/update_itf.a \
   $(BASE)/lib/gtkinterf.a  \
+  $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZY)/lib/htm.a \
   $(MOZY)/lib/help.a \
-  $(MOZY)/lib/gtkmozy.a \
-  $(MOZY)/lib/imsave.a \
   $(MOZY)/lib/httpget.a \
+  $(MOZY)/lib/imsave.a \
   ../src/misc/misc.a \
   $(VLOG)/libvlog.a \
   $(NTREGEX)

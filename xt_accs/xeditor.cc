@@ -46,15 +46,15 @@
 #include <stdarg.h>
 #include <string.h>
 #include "config.h"
-#include "graphics.h"
-#include "pathlist.h"
-#include "childproc.h"
-#include "help_defs.h"
+#include "ginterf/graphics.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/childproc.h"
+#include "help/help_defs.h"
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 
@@ -87,7 +87,7 @@ const char *msw::MSWpkgSuffix = "-4";
 // drivers.
 //
 #define GR_CONFIG (GR_ALL_PKGS)
-#include "gr_pkg_setup.h"
+#include "ginterf/gr_pkg_setup.h"
 
 namespace {
     // Create the graphics package.

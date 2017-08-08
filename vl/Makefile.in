@@ -1,5 +1,6 @@
-# Makefile.in for vl
-# $Id: Makefile.in,v 1.17 2014/11/08 18:04:44 stevew Exp $
+#######################################################################
+LOCATION = vl
+#######################################################################
 
 # Below are the recognized CFLAGS defines.  The configure script
 # defines some or all of these in VL_DEFS.
@@ -25,7 +26,7 @@ RANLIB = @RANLIB@
 NTSUFFIX = @NTSUFFIX@
 FILTER = @FILTER@
 
-LPATH = ../xt_base
+BASE = ../xt_base
 CCFILES = vl_data.cc vl_expr.cc vl_gate.cc vl_obj.cc vl_parse.cc vl_print.cc \
   vl_sim.cc vl_st.cc vl_sys.cc
 OTHERS = verilog.l verilog.y vl_defs.h vl_list.h vl_st.h vl_types.h main.cc \
@@ -49,18 +50,17 @@ $(LIB_TARGET): randval.h $(COBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -DVL_VERSION=\"$(VERSION)\" $*.cc
 
-randval.cc: $(LPATH)/miscutil/randval.cc
-	cp -pf $(LPATH)/miscutil/randval.cc .
+randval.cc: $(BASE)/miscutil/randval.cc
+	cp -pf $(BASE)/miscutil/randval.cc .
 
-randval.h: $(LPATH)/miscutil/randval.h
-	cp -pf $(LPATH)/miscutil/randval.h .
+randval.h: $(BASE)/include/miscutil/randval.h
+	cp -pf $(BASE)/include/miscutil/randval.h .
 
-clean::
+clean:
 	-rm -f *.o *.a vl vl.exe randval.cc randval.h
 
-distclean::
+distclean: clean
 	cd packages; $(MAKE) distclean
-	-rm -f *.o *.a vl vl.exe randval.cc randval.h
 	-rm -f verilog_yacc.cc verilog_yacc.h verilog_lex.cc
 	-rm -f config.cache config.h config.log config.status Makefile
 
@@ -81,7 +81,7 @@ verilog_lex.cc: verilog.l verilog_yacc.h vl_defs.h vl_list.h vl_st.h vl_types.h
 	@mv -f lex.yy.c verilog_lex.cc
 
 depend: randval.cc randval.h
-	@echo depending in vl
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) main.cc $(CCFILES) \

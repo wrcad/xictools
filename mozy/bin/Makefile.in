@@ -1,7 +1,5 @@
 #######################################################################
-# mozy/bin/Makefile.in
-#######################################################################
-# $Id:$
+LOCATION = mozy
 #######################################################################
 
 MOZY_VERSION = 4.2.2
@@ -121,7 +119,7 @@ foo $(MOZYRES) $(XEDRES):
 ####### Dependencies in this directory ################################
 
 depend::
-	@echo depending in mozy/bin
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

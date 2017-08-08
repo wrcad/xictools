@@ -109,7 +109,7 @@ cDRC::cDRC()
 bool
 cDRC::actionHandler(WindowDesc *wdesc, int a)
 {
-    switch ((KeyAction)a) {
+    switch (a) {  // a is eKeyAction enum type
     case DRCb_action:
         if (DRC()->errCb(2, PL()->KeyBuf(wdesc), PL()->KeyPos(wdesc)) != 0) {
             PL()->SetKeys(wdesc, 0);
