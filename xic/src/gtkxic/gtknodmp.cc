@@ -47,9 +47,6 @@
 #include "cd_propnum.h"
 #include "cd_terminal.h"
 #include "cd_netname.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkutil.h"
 #include "events.h"
 #include "menu.h"
 #include "ebtn_menu.h"
@@ -57,6 +54,9 @@
 #include "select.h"
 #include "promptline.h"
 #include "errorlog.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkutil.h"
 
 #include "bitmaps/lsearch.xpm"
 #ifdef HAVE_REGEX_H

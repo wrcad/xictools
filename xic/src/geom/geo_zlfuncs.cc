@@ -40,7 +40,7 @@
 
 #include "cd.h"
 #include "geo_ylist.h"
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 
 
 //------------------------------------------------------------------------

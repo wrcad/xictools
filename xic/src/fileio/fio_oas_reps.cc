@@ -42,7 +42,7 @@
 #include "fio_oasis.h"
 #include "fio_oas_sort.h"
 #include "fio_oas_reps.h"
-#include "hashfunc.h"
+#include "miscutil/hashfunc.h"
 
 
 //---------------------------------------------------------------------------

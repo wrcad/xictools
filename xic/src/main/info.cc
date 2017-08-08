@@ -54,8 +54,8 @@
 #include "promptline.h"
 #include "select.h"
 #include "layertab.h"
-#include "pathlist.h"
-#include "texttf.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/texttf.h"
 
 
 //

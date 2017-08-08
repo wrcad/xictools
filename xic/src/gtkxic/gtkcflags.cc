@@ -39,13 +39,13 @@
  *========================================================================*/
 
 #include "main.h"
-#include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
 #include "cd_celldb.h"
 #include "editif.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //--------------------------------------------------------------------------

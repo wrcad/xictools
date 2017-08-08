@@ -60,7 +60,7 @@
 #include "tech_layer.h"
 #include "promptline.h"
 #include "select.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 
 ////////////////////////////////////////////////////////////////////////

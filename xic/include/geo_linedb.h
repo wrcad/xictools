@@ -43,7 +43,7 @@
 
 #include "geo_zlist.h"
 #include "geo_alloc.h"
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 // Classes for a line segment database, which provides an efficient

@@ -43,7 +43,7 @@
 #include "dsp_inlines.h"
 #include "cd_celldb.h"
 #include "cd_lgen.h"
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 /**************************************************************************

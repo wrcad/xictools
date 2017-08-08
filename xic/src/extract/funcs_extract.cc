@@ -66,7 +66,7 @@
 #include "si_interp.h"
 #include "layertab.h"
 #include "tech_layer.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 
 ////////////////////////////////////////////////////////////////////////

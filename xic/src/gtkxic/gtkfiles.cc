@@ -46,13 +46,13 @@
 #include "fio_library.h"
 #include "fio_alias.h"
 #include "fio_chd.h"
-#include "gtkmain.h"
-#include "gtkmcol.h"
-#include "gtkpfiles.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "events.h"
 #include "errorlog.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkmcol.h"
+#include "gtkinterf/gtkpfiles.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //----------------------------------------------------------------------

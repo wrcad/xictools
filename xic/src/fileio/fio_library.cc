@@ -47,8 +47,8 @@
 #include "si_interp.h"
 #include "si_macro.h"
 #include "cd_celldb.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 #include <ctype.h>
 #include <unistd.h>

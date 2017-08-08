@@ -43,13 +43,13 @@
 #include "dsp_color.h"
 #include "dsp_inlines.h"
 #include "cd_propnum.h"
-#include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "menu.h"
 #include "edit_menu.h"
 #include "events.h"
 #include "promptline.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //--------------------------------------------------------------------------

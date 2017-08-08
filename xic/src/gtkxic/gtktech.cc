@@ -39,14 +39,14 @@
  *========================================================================*/
 
 #include "main.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
 #include "dsp_inlines.h"
 #include "menu.h"
 #include "tech.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "filestat.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "miscutil/filestat.h"
 
 
 //-------------------------------------------------------------------------

@@ -44,7 +44,7 @@
 #include "dsp_inlines.h"
 #include "gtkmain.h"
 #include "gtkinlines.h"
-#include "gtkspinbtn.h"
+#include "gtkinterf/gtkspinbtn.h"
 
 
 //--------------------------------------------------------------------

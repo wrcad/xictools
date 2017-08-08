@@ -42,7 +42,7 @@
 #include "geo_zoid.h"
 #include "geo_poly.h"
 #include "geo_efinder.h"
-#include "errorrec.h"
+#include "miscutil/errorrec.h"
 #include <algorithm>
 
 

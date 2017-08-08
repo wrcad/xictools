@@ -45,8 +45,8 @@
 #include "dsp_inlines.h"
 #include "cd_hypertext.h"
 #include "cd_lgen.h"
-#include "texttf.h"
-#include "grfont.h"
+#include "miscutil/texttf.h"
+#include "ginterf/grfont.h"
 
 
 //

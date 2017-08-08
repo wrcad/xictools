@@ -46,7 +46,7 @@
 #define CallStackDepth 5
 
 // Device independent keycodes.
-enum KEYcode
+enum eKeyCode
 {
     NO_KEY,
     RETURN_KEY,
@@ -75,7 +75,7 @@ enum KEYcode
 
 // Actions corresponding to keyboard input
 //
-enum KeyAction
+enum eKeyAction
 {
     No_action, Iconify_action, Interrupt_action, Escape_action,
     Redisplay_action, Delete_action, Bsp_action, CodeUndo_action,
@@ -310,7 +310,7 @@ public:
     bool IsCallback();
     void ResizeCallback(WindowDesc*, int, int);
     bool KeypressCallback(WindowDesc*, int, char*, int);
-    bool KeyActions(WindowDesc*, KeyAction, int*);
+    bool KeyActions(WindowDesc*, eKeyAction, int*);
     void PanPress(WindowDesc*, int, int, int);
     void PanRelease(WindowDesc*, int, int, int);
     void ZoomPress(WindowDesc*, int, int, int);

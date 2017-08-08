@@ -42,7 +42,7 @@
 #define GEO_POINT_H
 
 
-#include "miscmath.h"
+#include "miscutil/miscmath.h"
 #include <stdlib.h>
 
 struct Zlist;

@@ -65,7 +65,7 @@
 #include "layertab.h"
 #include "promptline.h"
 #include "select.h"
-#include "timer.h"
+#include "miscutil/timer.h"
 #include <algorithm>
 
 

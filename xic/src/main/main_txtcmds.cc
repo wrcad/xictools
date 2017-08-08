@@ -62,7 +62,6 @@
 #include "si_interp.h"
 #include "si_lisp.h"
 #include "pcell.h"
-#include "events.h"
 #include "layertab.h"
 #include "keymap.h"
 #include "menu.h"
@@ -75,19 +74,19 @@
 #include "tech_cds_out.h"
 #include "errorlog.h"
 #include "cvrt.h"
-#include "update_itf.h"
-#include "grfont.h"
-#include "timer.h"
-#include "xdraw.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "timedbg.h"
-#include "help_defs.h"
-#include "miscutil.h"
-#include "childproc.h"
+#include "ginterf/grfont.h"
+#include "ginterf/xdraw.h"
+#include "miscutil/timer.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/timedbg.h"
+#include "miscutil/miscutil.h"
+#include "miscutil/childproc.h"
+#include "help/help_defs.h"
+#include "upd/update_itf.h"
 
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

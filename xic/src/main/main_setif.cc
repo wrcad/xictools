@@ -56,9 +56,9 @@
 #include "tech_layer.h"
 #include "menu.h"
 #include "ghost.h"
-#include "timer.h"
 #include "view_menu.h"
-#include "filestat.h"
+#include "miscutil/timer.h"
+#include "miscutil/filestat.h"
 
 
 //-----------------------------------------------------------------------------

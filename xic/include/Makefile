@@ -1,34 +1,14 @@
 #######################################################################
-# xic/include/Makefile
-#######################################################################
-# $Id:$
+LOCATION = xic/include
 #######################################################################
 
-LPATH = ../../xt_base
-FILES = spmatrix.h hash.h paramsub.h spnumber.h spparse.h
-
-depend: $(FILES) reltag
-
-spmatrix.h: $(LPATH)/sparse/spmatrix.h
-	cp -f $(LPATH)/sparse/spmatrix.h .
-
-hash.h: $(LPATH)/spnumber/hash.h
-	cp -f $(LPATH)/spnumber/hash.h .
-
-paramsub.h: $(LPATH)/spnumber/paramsub.h
-	cp -f $(LPATH)/spnumber/paramsub.h .
-
-spnumber.h: $(LPATH)/spnumber/spnumber.h
-	cp -f $(LPATH)/spnumber/spnumber.h .
-
-spparse.h: $(LPATH)/spnumber/spparse.h
-	cp -f $(LPATH)/spnumber/spparse.h .
+depend: reltag
+	@echo depending in $(LOCATION)
 
 clean:
-	rm -f $(FILES)
 
 distclean:
-	rm -f $(FILES) reltag.h
+	rm -f reltag.h
 
 # Create/update the reltag.h file.
 reltag:

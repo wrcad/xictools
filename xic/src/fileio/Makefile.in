@@ -1,7 +1,5 @@
 #######################################################################
-# xic/fileio/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.27 2012/11/12 00:46:38 stevew Exp $
+LOCATION = xic/src/fileio
 #######################################################################
 
 GFX_VERSION = @GFX_VERSION@
@@ -17,8 +15,9 @@ FILTER = @FILTER@
 
 LIB_TARGET = fileio.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I../../../mozy/include -I$(LPATH)/miscutil
+BASE = ../../../xt_base
+MOZY = ../../../mozy
+INCLUDE = -I../../include -I$(BASE)/include -I$(MOZY)/include
 
 HFILES =
 CCFILES = \
@@ -45,7 +44,7 @@ $(LIB_TARGET): $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 depend:
-	@echo depending in xic/fileio
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -54,7 +53,7 @@ depend:
 clean:
 	-rm *.o $(LIB_TARGET)
 
-distclean:
-	-rm *.o $(LIB_TARGET) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

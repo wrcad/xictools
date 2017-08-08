@@ -41,8 +41,8 @@
 #include "main.h"
 #include "sced_param.h"
 #include "cd_hypertext.h"
-#include "paramsub.h"
 #include "errorlog.h"
+#include "spnumber/paramsub.h"
 
 
 //

@@ -41,13 +41,13 @@
 #include "main.h"
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
-#include "filestat.h"
 #include "events.h"
-#include "help_defs.h"
 #include "menu.h"
 #include "help_menu.h"
 #include "errorlog.h"
-#include "pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
+#include "help/help_defs.h"
 
 
 // The Help menu for the main and subwindows.

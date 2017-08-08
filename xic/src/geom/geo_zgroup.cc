@@ -44,7 +44,7 @@
 #include "geo_zgroup.h"
 #include "geo_ylist.h"
 #include "geo_poly.h"
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 
 
 //------------------------------------------------------------------------

@@ -53,8 +53,8 @@
 #include "cd_hypertext.h"
 #include "fio.h"
 #include "fio_chd.h"
-#include "rgbzimg.h"
-#include "texttf.h"
+#include "ginterf/rgbzimg.h"
+#include "miscutil/texttf.h"
 
 
 double GridDesc::g_phys_mfg_grid = 0.0;

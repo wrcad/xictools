@@ -53,8 +53,8 @@
 #include "cd_celldb.h"
 #include "cd_digest.h"
 #include "cd_chkintr.h"
-#include "texttf.h"
-#include "timedbg.h"
+#include "miscutil/texttf.h"
+#include "miscutil/timedbg.h"
 
 
 // Factory for cv_out.

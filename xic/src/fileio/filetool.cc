@@ -50,8 +50,8 @@
 #include "main_variables.h"
 #include "cvrt_variables.h"
 #include "edit_variables.h"
-#include "filestat.h"
-#include "timedbg.h"
+#include "miscutil/filestat.h"
+#include "miscutil/timedbg.h"
 
 #include <ctype.h>
 #include <stdlib.h>

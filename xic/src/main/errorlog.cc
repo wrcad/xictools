@@ -42,9 +42,9 @@
 #include "errorlog.h"
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
-#include "filestat.h"
-#include "pathlist.h"
-#include "miscutil.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/miscutil.h"
 
 #include <dirent.h>
 #include <errno.h>

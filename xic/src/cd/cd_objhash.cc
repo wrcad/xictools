@@ -41,7 +41,7 @@
 #include "config.h"
 #include "cd.h"
 #include "cd_types.h"
-#include "hashfunc.h"
+#include "miscutil/hashfunc.h"
 
 
 //

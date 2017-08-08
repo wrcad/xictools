@@ -42,8 +42,8 @@
 #include "cvrt_variables.h"
 #include "fio_layermap.h"
 #include "gtkmain.h"
-#include "gtkfont.h"
 #include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 #include <errno.h>
 
 

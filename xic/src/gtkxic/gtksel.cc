@@ -40,12 +40,12 @@
 
 #include "main.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkltab.h"
-#include "gtkinlines.h"
 #include "layertab.h"
 #include "menu.h"
 #include "select.h"
+#include "gtkmain.h"
+#include "gtkltab.h"
+#include "gtkinlines.h"
 
 
 //-----------------------------------------------------------------------------

@@ -55,7 +55,7 @@
 #include "fio_alias.h"
 #include "si_parsenode.h"
 // xdraw.h must come before si_handle.h to enable xdraw handle.
-#include "xdraw.h"
+#include "ginterf/xdraw.h"
 #include "si_handle.h"
 #include "si_args.h"
 #include "si_parser.h"
@@ -63,7 +63,6 @@
 #include "tech_attr_cx.h"
 #include "main_scriptif.h"
 #include "cfilter.h"
-#include "events.h"
 #include "promptline.h"
 #include "select.h"
 #include "ghost.h"
@@ -71,10 +70,10 @@
 #include "pushpop.h"
 #include "tech.h"
 #include "errorlog.h"
-#include "filestat.h"
-#include "crypt.h"
+#include "miscutil/filestat.h"
+#include "miscutil/crypt.h"
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 

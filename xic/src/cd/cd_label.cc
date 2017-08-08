@@ -42,7 +42,7 @@
 #include "cd_types.h"
 #include "cd_hypertext.h"
 #include "cd_propnum.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 #include <ctype.h>
 
 

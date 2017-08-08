@@ -1,7 +1,5 @@
 #######################################################################
-# xic/oa/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.14 2016/03/09 05:43:35 stevew Exp $
+LOCATION = xic/src/oa
 #######################################################################
 
 GFX_VERSION = @GFX_VERSION@
@@ -24,9 +22,8 @@ OSNAME = @OSNAME@
 LIB_TARGET = oa.a
 SHLIB_TARGET = oa.$(SOEXT)
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/miscutil -I$(LPATH)/ginterf \
-  -I$(OA_INCLUDE)
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I$(BASE)/include -I$(OA_INCLUDE)
 
 HFILES = \
   oa.h \
@@ -71,7 +68,7 @@ $(LIB_TARGET): $(CCOBJS)
 	$(CXX) $(CFLAGS) $(DARGS) $(PIC_OPT) $(INCLUDE) -c $*.cc
 
 depend:
-	@echo depending in xic/oa
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -80,7 +77,7 @@ depend:
 clean:
 	-@rm -f *.o $(LIB_TARGET) $(SHLIB_TARGET)
 
-distclean:
-	-@rm -f *.o $(LIB_TARGET) $(SHLIB_TARGET) Makefile
+distclean: clean
+	-@rm -f Makefile
 
 #######################################################################

@@ -49,7 +49,7 @@
 #include "cd_celldb.h"
 #include "cd_digest.h"
 #include "geo_zlist.h"
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 
 
 // Return true if fp points to an OASIS file.

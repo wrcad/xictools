@@ -40,10 +40,10 @@
 
 #include "main.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
 #include "errorlog.h"
 #include "cfilter.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
 
 
 //

@@ -44,16 +44,16 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
+#include "menu.h"
+#include "layertab.h"
+#include "select.h"
 #include "gtkmain.h"
-#include "gtkfont.h"
 #include "gtkparam.h"
 #include "gtkcoord.h"
 #include "gtkhtext.h"
 #include "gtkinlines.h"
-#include "menu.h"
-#include "layertab.h"
-#include "select.h"
-#include "pathlist.h"
+#include "gtkinterf/gtkfont.h"
+#include "miscutil/pathlist.h"
 
 
 // Color selection panel

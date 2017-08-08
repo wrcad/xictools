@@ -49,7 +49,7 @@
 #include "cd_digest.h"
 #include "cd_chkintr.h"
 #include "geo_zlist.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 #include <ctype.h>
 
 

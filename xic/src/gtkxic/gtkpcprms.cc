@@ -42,13 +42,13 @@
 #include "edit.h"
 #include "pcell.h"
 #include "pcell_params.h"
+#include "dsp_inlines.h"
+#include "errorlog.h"
 #include "gtkmain.h"
 #include "gtkmenu.h"
 #include "gtkinlines.h"
-#include "gtkspinbtn.h"
-#include "dsp_inlines.h"
-#include "spnumber.h"
-#include "errorlog.h"
+#include "gtkinterf/gtkspinbtn.h"
+#include "spnumber/spnumber.h"
 
 
 //-------------------------------------------------------------------------

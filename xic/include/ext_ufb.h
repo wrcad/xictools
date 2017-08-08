@@ -42,8 +42,8 @@
 #define EXT_UFB_H
 
 #include "promptline.h"
-#include "timer.h"
 #include "dsp_tkif.h"
+#include "miscutil/timer.h"
 
 
 namespace ext_group {

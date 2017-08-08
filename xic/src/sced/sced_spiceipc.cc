@@ -72,10 +72,10 @@
 #endif
 
 #include "sced_spiceipc.h"
-#include "pathlist.h"
-#include "tvals.h"
-#include "services.h"
-#include "childproc.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/tvals.h"
+#include "miscutil/services.h"
+#include "miscutil/childproc.h"
 
 #ifdef HAVE_PWD_H
 #include <pwd.h>
@@ -88,7 +88,7 @@
 #include <process.h>
 #include <conio.h>
 #include <fcntl.h>
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

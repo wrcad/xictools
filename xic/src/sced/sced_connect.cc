@@ -51,8 +51,8 @@
 #include "sced_connect.h"
 #include "sced_nodemap.h"
 #include "sced_errlog.h"
-#include "symtab.h"
 #include "pcell_params.h"
+#include "miscutil/symtab.h"
 
 
 /*========================================================================*

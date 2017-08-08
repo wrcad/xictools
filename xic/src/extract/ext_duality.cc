@@ -55,13 +55,13 @@
 #include "geo_zlist.h"
 #include "promptline.h"
 #include "select.h"
-#include "timer.h"
+#include "miscutil/timer.h"
 #include <algorithm>
 
 #define TIME_DBG
 #ifdef TIME_DBG
 //#define TIME_DBG_XTRA
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 #endif
 
 

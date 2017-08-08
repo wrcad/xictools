@@ -43,8 +43,8 @@
 #include "si_spt.h"
 #include "si_parsenode.h"
 #include "si_parser.h"
-#include "lstring.h"
-#include "filestat.h"
+#include "miscutil/lstring.h"
+#include "miscutil/filestat.h"
 
 #include <ctype.h>
 

@@ -45,7 +45,7 @@
 #else
 #include <termios.h>
 #endif
-#include "crypt.h"
+#include "miscutil/crypt.h"
 
 static void get_passwd(const char*, char*);
 

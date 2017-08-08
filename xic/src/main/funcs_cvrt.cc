@@ -65,9 +65,9 @@
 #include "si_interp.h"
 #include "si_daemon.h"
 #include "events.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "services.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/services.h"
 
 
 namespace {

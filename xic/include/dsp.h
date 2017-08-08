@@ -43,7 +43,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include "graphics.h"
+#include "ginterf/graphics.h"
 #include "cd.h"
 #include "cd_types.h"
 #include "dsp_if.h"

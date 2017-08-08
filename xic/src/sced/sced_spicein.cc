@@ -51,10 +51,10 @@
 #include "cd_celldb.h"
 #include "fio.h"
 #include "fio_library.h"
-#include "spnumber.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "filestat.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/filestat.h"
 
 
 // Default names for terminals devices in library.

@@ -59,8 +59,8 @@
 #include "tech.h"
 #include "errorlog.h"
 #include "select.h"
-#include "pathlist.h"
-#include "texttf.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/texttf.h"
 #include <algorithm>
 
 #ifdef HAVE_REGEX_H
@@ -71,7 +71,7 @@
 
 #ifdef SECURITY_TEST
 #include <signal.h>
-#include "miscutil.h"
+#include "miscutil/miscutil.h"
 extern int StateInitialized;  // Part of the security system
 #endif
 

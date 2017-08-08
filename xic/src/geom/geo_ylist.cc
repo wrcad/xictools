@@ -45,7 +45,7 @@
 #include "geo_intdb.h"
 #include "geo_ymgr.h"
 #include "cd_chkintr.h"
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 
 
 // Ylist constructor, z0 is consumed.

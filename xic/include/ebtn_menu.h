@@ -41,6 +41,8 @@
 #ifndef SCED_MENU_H
 #define SCED_MENU_H
 
+#include "menu.h"
+
 // Button Menu (Electrical)
 enum
 {
@@ -86,7 +88,7 @@ enum ShapeType
 #define    MenuIPLOT     "iplot"
 #define    MenuMUTUL     "mutul"
 
-extern MenuFunc  M_ShowMutual;;
+extern MenuFunc  M_ShowMutual;
 
 #endif
 

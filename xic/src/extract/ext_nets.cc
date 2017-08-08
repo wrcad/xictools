@@ -52,8 +52,8 @@
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
 #include "events.h"
-#include "filestat.h"
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/filestat.h"
 #include <algorithm>
 
 

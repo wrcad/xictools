@@ -41,7 +41,7 @@
 #include "cd.h"
 #include "cd_types.h"
 #include "fio_gencif.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 
 // Set the transformation matrix from the angle vector and reflection.

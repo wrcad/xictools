@@ -57,8 +57,8 @@
 #include "select.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "timer.h"
-#include "texttf.h"
+#include "miscutil/timer.h"
+#include "miscutil/texttf.h"
 
 
 namespace {

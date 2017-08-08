@@ -52,7 +52,6 @@
 #include "errorlog.h"
 #include "select.h"
 #include "ghost.h"
-//#include "texttf.h"
 
 
 //

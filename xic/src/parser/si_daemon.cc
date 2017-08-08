@@ -51,9 +51,9 @@
 #include "si_handle.h"
 #include "si_lspec.h"
 #include "cd_digest.h"
-#include "miscutil.h"
-#include "crypt.h"
-#include "services.h"
+#include "miscutil/miscutil.h"
+#include "miscutil/crypt.h"
+#include "miscutil/services.h"
 
 #include <ctype.h>
 #include <errno.h>

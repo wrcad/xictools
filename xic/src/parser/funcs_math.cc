@@ -50,8 +50,8 @@
 #include "si_scrfunc.h"
 #include "python_if.h"
 #include "tcltk_if.h"
-#include "random.h"
-#include "tvals.h"
+#include "miscutil/random.h"
+#include "miscutil/tvals.h"
 #include <time.h>
 #include <errno.h>
 #ifdef HAVE_FENV_H

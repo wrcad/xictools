@@ -50,7 +50,7 @@
 #include "errorlog.h"
 #include "cd_strmdata.h"
 #include "cd_lgen.h"
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 
 
 // Instantiate kwyword repository.

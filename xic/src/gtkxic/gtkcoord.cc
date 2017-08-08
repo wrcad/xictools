@@ -41,11 +41,11 @@
 #include "main.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
+#include "events.h"
 #include "gtkmain.h"
 #include "gtkcoord.h"
-#include "gtkfont.h"
 #include "gtkinlines.h"
-#include "events.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //-----------------------------------------------------------------------------

@@ -47,8 +47,8 @@
 #include "cd_hypertext.h"
 #include "cd_celldb.h"
 #include "cd_digest.h"
-#include "timedbg.h"
-#include "filestat.h"
+#include "miscutil/timedbg.h"
+#include "miscutil/filestat.h"
 #include <ctype.h>
 #include <dirent.h>
 

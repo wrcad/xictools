@@ -42,15 +42,14 @@
 #include "editif.h"
 #include "dsp_inlines.h"
 #include "cd_propnum.h"
-#include "gtkmain.h"
-#include "gtkhtext.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
-#include "events.h"
 #include "keymap.h"
 #include "menu.h"
 #include "select.h"
 #include "errorlog.h"
+#include "gtkmain.h"
+#include "gtkhtext.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 #include <gdk/gdkkeysyms.h>
 

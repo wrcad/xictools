@@ -45,9 +45,9 @@
 #include "si_parsenode.h"
 #include "si_parser.h"
 #include "si_interp.h"
-#include "pathlist.h"
-#include "timer.h"
-#include "timedbg.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/timer.h"
+#include "miscutil/timedbg.h"
 
 #include <signal.h>
 #include <time.h>

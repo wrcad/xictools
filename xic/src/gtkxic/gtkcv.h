@@ -41,7 +41,7 @@
 #ifndef GTKCV_H
 #define GTKCV_H
 
-#include "gtkspinbtn.h"
+#include "gtkinterf/gtkspinbtn.h"
 
 struct fmt_menu
 {

@@ -44,7 +44,7 @@
 #include "dsp_color.h"
 #include "gtkmain.h"
 #ifdef WITH_X11
-#include "gtkx11.h"
+#include "gtkinterf/gtkx11.h"
 #endif
 
 #ifdef WIN32

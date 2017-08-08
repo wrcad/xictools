@@ -55,8 +55,8 @@
 #include "si_interp.h"
 #include "si_lexpr.h"
 #include "tech.h"
-#include "spnumber.h"
 #include "errorlog.h"
+#include "spnumber/spnumber.h"
 
 /*========================================================================*
  *

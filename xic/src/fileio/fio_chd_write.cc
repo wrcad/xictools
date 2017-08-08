@@ -43,9 +43,9 @@
 #include "fio_cvt_base.h"
 #include "fio_oasis.h"
 #include "fio_cgd.h"
-#include "timedbg.h"
-#include "coresize.h"
-#include "filestat.h"
+#include "miscutil/timedbg.h"
+#include "miscutil/coresize.h"
+#include "miscutil/filestat.h"
 
 
 //-----------------------------------------------------------------------------

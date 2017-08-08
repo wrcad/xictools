@@ -42,17 +42,17 @@
 #include "dsp_color.h"
 #include "dsp_layer.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtklpal.h"
-#include "gtkltab.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "fio.h"
 #include "fio_gdsii.h"
 #include "keymap.h"
 #include "tech.h"
 #include "menu.h"
 #include "attr_menu.h"
+#include "gtkmain.h"
+#include "gtklpal.h"
+#include "gtkltab.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //-----------------------------------------------------------------------------

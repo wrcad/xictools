@@ -41,13 +41,13 @@
 #include "main.h"
 #include "edit.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkmenu.h"
-#include "gtkinlines.h"
-#include "gtkspinbtn.h"
 #include "promptline.h"
 #include "select.h"
 #include "pbtn_menu.h"
+#include "gtkmain.h"
+#include "gtkmenu.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkspinbtn.h"
 
 
 //-----------------------------------------------------------------------------

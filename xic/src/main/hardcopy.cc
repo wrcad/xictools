@@ -52,7 +52,7 @@
 #include "promptline.h"
 #include "tech.h"
 #include "ghost.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 #include <sys/types.h>
 #include <time.h>

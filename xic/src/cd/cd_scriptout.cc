@@ -46,7 +46,7 @@
 #include "cd_objects.h"
 #include "cd_cell.h"
 #include "cd_instance.h"
-#include "errorrec.h"
+#include "miscutil/errorrec.h"
 
 
 struct CDscriptOut

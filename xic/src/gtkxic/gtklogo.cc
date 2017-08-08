@@ -43,9 +43,9 @@
 #include "dsp_inlines.h"
 #include "gtkmain.h"
 #include "gtkinlines.h"
-#include "gtkspinbtn.h"
-#include "filestat.h"
-#include "grfont.h"
+#include "gtkinterf/gtkspinbtn.h"
+#include "ginterf/grfont.h"
+#include "miscutil/filestat.h"
 
 
 namespace {

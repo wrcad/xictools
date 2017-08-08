@@ -41,7 +41,7 @@
 #ifndef FIO_CHD_ECF_H
 #define FIO_CHD_ECF_H
 
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 //

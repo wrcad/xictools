@@ -41,9 +41,9 @@
 #include "main.h"
 #include "oa_if.h"
 #include "dsp_inlines.h"
+#include "errorlog.h"
 #include "gtkmain.h"
 #include "gtkinlines.h"
-#include "errorlog.h"
 
 
 //

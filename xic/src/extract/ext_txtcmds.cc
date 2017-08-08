@@ -59,7 +59,7 @@
 #include "errorlog.h"
 #include "events.h"
 #include "tech.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 
 //-----------------------------------------------------------------------------

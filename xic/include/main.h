@@ -373,7 +373,7 @@ public:
     void LegalMsg();
     static int System(const char*);
 
-    // keymap.h
+    // keymap.cc
     void KeyMapExec(CmdDesc*);
 
     // layers.cc

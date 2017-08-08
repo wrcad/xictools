@@ -52,7 +52,6 @@
 #include "si_interp.h"
 #include "main_scriptif.h"
 #include "fio.h"
-#include "events.h"
 #include "layertab.h"
 #include "menu.h"
 #include "keymap.h"
@@ -61,9 +60,9 @@
 #include "select.h"
 #include "tech.h"
 #include "ghost.h"
-#include "pathlist.h"
-#include "grfont.h"
-#include "help_defs.h"
+#include "miscutil/pathlist.h"
+#include "ginterf/grfont.h"
+#include "help/help_defs.h"
 
 #include <signal.h>
 #include <fcntl.h>
@@ -74,7 +73,7 @@
 #endif
 
 #ifdef SECURITY_TEST
-#include "miscutil.h"
+#include "miscutil/miscutil.h"
 #endif
 
 int BoxFilled;  // part of security system

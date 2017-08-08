@@ -52,7 +52,7 @@
 #include "oa_net.h"
 #include "oa_prop.h"
 #include "oa_errlog.h"
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 // This sets up ordering of the ports and terminals (terminals can

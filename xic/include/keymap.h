@@ -41,12 +41,14 @@
 #ifndef KEYMAP_H
 #define KEYMAP_H
 
+#include "events.h"
+
 // Element for mapping keysyms to internal code.
 //
 struct keymap
 {
     unsigned int keyval;
-    KEYcode code;
+    eKeyCode code;
     int subcode;
 };
 
@@ -56,7 +58,7 @@ struct keyaction
 {
     int code;
     unsigned int state;
-    KeyAction action;
+    eKeyAction action;
 };
 
 struct sKsMapElt

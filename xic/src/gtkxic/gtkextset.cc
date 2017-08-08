@@ -44,9 +44,6 @@
 #include "ext_rlsolver.h"
 #include "sced.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkspinbtn.h"
 #include "events.h"
 #include "promptline.h"
 #include "errorlog.h"
@@ -54,7 +51,10 @@
 #include "ebtn_menu.h"
 #include "tech.h"
 #include "tech_extract.h"
-#include "filestat.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkspinbtn.h"
+#include "miscutil/filestat.h"
 
 
 //--------------------------------------------------------------------

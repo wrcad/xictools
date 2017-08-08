@@ -59,13 +59,13 @@
 #include "tech_layer.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "filestat.h"
-#include "timer.h"
-#include "timedbg.h"
-#include "childproc.h"
+#include "miscutil/filestat.h"
+#include "miscutil/timer.h"
+#include "miscutil/timedbg.h"
+#include "miscutil/childproc.h"
 
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <signal.h>
 #include <fcntl.h>

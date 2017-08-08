@@ -46,7 +46,7 @@
 #include "events.h"
 #include "menu.h"
 #include "view_menu.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 
 // The View menu for the main and subwindows.
 

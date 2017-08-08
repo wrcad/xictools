@@ -41,7 +41,7 @@
 #ifndef GEO_INTDB_H
 #define GEO_INTDB_H
 
-#include "symtab.h"
+#include "miscutil/symtab.h"
 #include <algorithm>
 
 //

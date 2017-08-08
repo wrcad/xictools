@@ -45,8 +45,8 @@
 #include "cd_propnum.h"
 #include "cd_lgen.h"
 #include "cd_celldb.h"
-#include "filestat.h"
-#include "pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 
 #include <ctype.h>
 #include <errno.h>

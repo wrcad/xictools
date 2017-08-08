@@ -42,8 +42,8 @@
 #include "edit.h"
 #include "geo_zlist.h"
 #include "gtkmain.h"
-#include "gtkfont.h"
 #include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //-----------------------------------------------------------------------------

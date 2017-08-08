@@ -52,7 +52,7 @@ typedef unsigned long long u_int64_t;
 #endif
 
 #ifdef MM_PTHREAD
-#include "atomic_stack.h"
+#include "miscutil/atomic_stack.h"
 #include <pthread.h>
 #endif
 

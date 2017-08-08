@@ -1,7 +1,5 @@
 #######################################################################
-# xic/bin/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 5.150 2015/12/08 21:59:30 stevew Exp $
+LOCATION = xic/bin
 #######################################################################
 
 DATE = @DATE@
@@ -45,14 +43,10 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-LPATH = ../../xt_base
-INCLUDE = -I../include -I../../mozy/include -I$(LPATH)/ginterf \
-  -I$(LPATH)/miscutil -I../../secure
-
-MOZY = ../../mozy/lib/libmozy.a
-GRAPHICS = $(LPATH)/ginterf/ginterf.a
-MISCUTIL = $(LPATH)/miscutil/miscutil.a
-SECURE = ../../secure/secure.a
+BASE = ../../xt_base
+MOZY = ../../mozy
+SECURE = ../../secure
+INCLUDE = -I../include -I$(BASE)/include -I$(SECURE) -I$(MOZY)/include
 
 TARGETS = $(XIC_PROG) wrencode wrdecode wrsetpass
 
@@ -61,15 +55,33 @@ SUBDIRS = \
   ../src/extract ../src/fileio ../src/geom ../src/main ../src/parser \
   ../src/sced ../src/wrspif ../src/sparse ../src/tech $(OA_SUBDIR)
 
-APP_LIBS_BASE = \
+SUBDIR_LIBS = \
   ../src/$(GRPREF)xic/$(GRPREF)xic.a ../src/cd/cd.a ../src/display/display.a \
   ../src/fileio/fileio.a ../src/geom/geom.a ../src/main/main.a \
   ../src/parser/parser.a ../src/sparse/sparse.a ../src/wrspif/wrspif.a \
-  ../src/tech/tech.a
-
-APP_LIBS_XIC = \
-  ../src/edit/edit.a ../src/sced/sced.a ../src/drc/drc.a \
+  ../src/tech/tech.a ../src/edit/edit.a ../src/sced/sced.a ../src/drc/drc.a \
   ../src/extract/extract.a
+
+LOCAL_LIBS = \
+  $(SECURE)/secure.a \
+  $(SUBDIR_LIBS) \
+  $(SUBDIR_LIBS) \
+  $(MOZY)/lib/htm.a \
+  $(MOZY)/lib/help.a \
+  $(MOZY)/lib/update_itf.a \
+  $(MOZY)/lib/gtkmozy.a \
+  $(MOZY)/lib/imsave.a \
+  $(MOZY)/lib/httpget.a \
+  $(BASE)/lib/ginterf.a \
+  $(BASE)/lib/gtkinterf.a  \
+  $(BASE)/lib/miscutil.a \
+  $(BASE)/lib/ginterf.a \
+  $(MOZY)/lib/htm.a \
+  $(MOZY)/lib/help.a \
+  $(MOZY)/lib/gtkmozy.a \
+  $(MOZY)/lib/imsave.a \
+  $(MOZY)/lib/httpget.a \
+  $(NTREGEX)
 
 all:  $(TARGETS) plugins
 
@@ -80,23 +92,19 @@ all:  $(TARGETS) plugins
 $(DLL_XIC_PROG): main.cc $(XIC_PROG).dll
 	$(CC) -o $(XIC_PROG) main.cc ../src/gtkxic/resource.o -L. -l$(XIC_PROG)
 
-$(XIC_PROG).dll: $(XIC_PROG).o $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
-  $(MOZY) $(GRAPHICS) $(MISCUTIL) $(NTDGBOBJ) $(MALLOC) $(OA_SUBDIR)
+$(XIC_PROG).dll: $(XIC_PROG).o Makefile $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
 	@$(LINKCC) $(LSHFLAG) -o $(XIC_PROG).dll $(LFLAGS) $(XIC_PROG).o \
-  $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
-  $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(MOZY) $(GRAPHICS) \
-  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MALLOC) $(STDCLIB)
+  $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
 #--------------------
 
-$(NODLL_XIC_PROG): $(XIC_PROG).o $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
-  $(MOZY) $(GRAPHICS) $(MISCUTIL) $(NTDGBOBJ) $(MALLOC) $(OA_SUBDIR)
+# $(NODLL_XIC_PROG): $(XIC_PROG).o Makefile $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
+
+$(NODLL_XIC_PROG): $(XIC_PROG).o Makefile
 	-@echo $@: dynamic link;
 	-@$(LINKCC) -o $(XIC_PROG) $(LFLAGS) $(XIC_PROG).o \
-  $(SECURE) $(APP_LIBS_BASE) $(APP_LIBS_XIC) \
-  $(APP_LIBS_BASE) $(APP_LIBS_XIC) $(MOZY) $(GRAPHICS) \
-  $(MISCUTIL) $(NTREGEX) $(LIBS) $(MALLOC) $(STDCLIB)
+  $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
 
 plugins::
 	cd ../plugins; $(MAKE)
@@ -105,48 +113,67 @@ plugins::
 # for the binary.
 
 sa-filetool: sa-filetool.o ../src/cd/cd.a ../src/fileio/fileio.a \
-  ../src/geom/geom.a ../src/parser/parser.a $(MISCUTIL)
+  ../src/geom/geom.a ../src/parser/parser.a $(BASE)/lib/miscutil.a
 	$(LINKCC) -o sa-filetool sa-filetool.o ../src/cd/cd.a \
   ../src/fileio/fileio.a ../src/geom/geom.a ../src/parser/parser.a \
-  ../src/fileio/fileio.a $(MISCUTIL) -lm -lz $(STDCLIB)
+  ../src/fileio/fileio.a $(BASE)/lib/miscutil.a -lm -lz $(STDCLIB)
 	rm -f sa-filetool.o
 
-wrencode: cryptmain.cc ../src/parser/parser.a $(MISCUTIL)
+wrencode: cryptmain.cc ../src/parser/parser.a $(BASE)/lib/miscutil.a
 	$(LINKCC) $(CFLAGS) -o wrencode $(INCLUDE) -DENCODING cryptmain.cc \
-  ../src/parser/parser.a $(MISCUTIL) $(STDCLIB) $(WINPTHREADFIX)
+  ../src/parser/parser.a $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
 
-wrdecode: cryptmain.cc ../src/parser/parser.a $(MISCUTIL)
+wrdecode: cryptmain.cc ../src/parser/parser.a $(BASE)/lib/miscutil.a
 	$(LINKCC) $(CFLAGS) -o wrdecode $(INCLUDE) cryptmain.cc \
-  ../src/parser/parser.a $(MISCUTIL) $(STDCLIB) $(WINPTHREADFIX)
+  ../src/parser/parser.a $(BASE)/lib/miscutil.a  $(STDCLIB) $(WINPTHREADFIX)
 
-wrsetpass: cryptmain.cc ../src/parser/parser.a $(MISCUTIL)
+wrsetpass: cryptmain.cc ../src/parser/parser.a $(BASE)/lib/miscutil.a 
 	$(LINKCC) $(CFLAGS) -o wrsetpass $(INCLUDE) -DENCODING -DSETPASS \
-  cryptmain.cc ../src/parser/parser.a $(MISCUTIL) $(STDCLIB) $(WINPTHREADFIX)
+  cryptmain.cc ../src/parser/parser.a $(BASE)/lib/miscutil.a  $(STDCLIB) \
+  $(WINPTHREADFIX)
 
 #######################################################################
 ####### Recursively generate libraries ################################
 
-$(APP_LIBS_BASE) $(APP_LIBS_XIC) $(OA_SUBDIR)::
+$(SUBDIR_LIBS) $(OA_SUBDIR)::
 	@if [ x$@ = x$(OA_SUBDIR) ]; then \
 	    cd $(OA_SUBDIR); $(MAKE); \
 	else \
 	    cd $(@D); $(MAKE); \
 	fi
 
-$(MOZY)::
-	cd $(@D)/../bin; $(MAKE)
-
-$(GRAPHICS)::
+$(SECURE):
 	cd $(@D); $(MAKE)
 
-$(MISCUTIL)::
-	cd $(@D); $(MAKE)
+$(MOZY)/lib/gtkmozy.a:
+	cd $(MOZY)/src/gtkmozy; $(MAKE)
+
+$(MOZY)/lib/help.a:
+	cd $(MOZY)/src/help; $(MAKE)
+
+$(MOZY)/lib/htm.a:
+	cd $(MOZY)/src/htm; $(MAKE)
+
+$(MOZY)/lib/httpget.a:
+	cd $(MOZY)/src/httpget; $(MAKE)
+
+$(MOZY)/lib/imsave.a:
+	cd $(MOZY)/src/imsave; $(MAKE)
+
+$(MOZY)/lib/update_itf.a:
+	cd $(MOZY)/src/update_itf; $(MAKE)
+
+$(BASE)/lib/ginterf.a:
+	cd $(BASED)/ginterf; $(MAKE)
+
+$(BASE)/lib/gtkinterf.a:
+	cd $(BASED)/gtkinterf; $(MAKE)
+
+$(BASE)/lib/miscutil.a:
+	cd $(BASED)/miscutil; $(MAKE)
 	if [ x$(NTREGEX) != x ]; then \
-	    cd $(LPATH)/miscutil/libregex; $(MAKE); \
+	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
-
-$(SECURE)::
-	cd $(@D); $(MAKE)
 
 #######################################################################
 ####### Object file targets ###########################################
@@ -155,7 +182,7 @@ $(SECURE)::
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 sa-filetool.o: sa-filetool.cc Makefile
-	$(CXX) $(CFLAGS) $(INCLUDE) -DTIMELIM=`$(LPATH)/util/timegen 3` \
+	$(CXX) $(CFLAGS) $(INCLUDE) -DTIMELIM=`$(BASE)/util/timegen 3` \
   -c $*.cc
 
 EXECOBJS = xic.o
@@ -177,22 +204,18 @@ $(EXECOBJS): Makefile
 .PHONY: $(MALLOC)
 
 $(MALLOC)::
-	cd $(@D); $(MAKE)
-
-$(LPATH)/mswdebug/stackdump.o:
-	cd ../../mswdebug; $(MAKE) stackdump.o
+	cd $(@D)../malloc; $(MAKE)
 
 #######################################################################
 ####### Dependencies ##################################################
-# note: mingw requires explicit return from cd
 
 CCFILES = xic.cc sa-filetool.cc
 
 depend:
 	@for a in ../include $(SUBDIRS) ../plugins; do \
-	    (dir=`pwd`; cd $$a; $(MAKE) depend; cd $$dir) \
+	    (cd $$a; $(MAKE) depend) \
 	done
-	@echo depending in xic/bin
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -203,24 +226,20 @@ depend:
 # note: mingw requires explicit return from cd
 
 eclean:
-	-rm -f $(XIC_PROG)$(NTSUFFIX)
-
-clean:
-	-@for a in $(SUBDIRS) ../plugins; do \
-	    (dir=`pwd`; cd $$a; $(MAKE) clean; cd $$dir) \
-	done
 	-@for a in $(TARGETS); do \
 	    rm $$a$(NTSUFFIX); \
 	done
+
+clean: eclean
+	-@for a in $(SUBDIRS) ../plugins; do \
+	    (cd $$a; $(MAKE) clean) \
+	done
 	-rm -f *.o
 
-distclean:
+distclean: eclean
 	-@for a in $(SUBDIRS) ../src/scrkit ../include ../lib ../plugins \
   ../packages; do \
-	    (dir=`pwd`; cd $$a; $(MAKE) distclean; cd $$dir) \
-	done
-	-@for a in $(TARGETS); do \
-	    rm -f $$a$(NTSUFFIX); \
+	    (cd $$a; $(MAKE) distclean) \
 	done
 	-rm -f *.o Makefile
 
@@ -261,7 +280,7 @@ install_xic_clean::
 	-@rm -rf $(destn)
 
 $(destn)/bin::
-	@$(LPATH)/util/mkdirpth $(destn)/bin
+	@$(BASE)/util/mkdirpth $(destn)/bin
 	$(INSTALL_BIN) $(XIC_FNAME) $(destn)/bin;
 	$(INSTALL_BIN) wrencode$(NTSUFFIX) $(destn)/bin;
 	$(INSTALL_BIN) wrdecode$(NTSUFFIX) $(destn)/bin;
@@ -272,7 +291,7 @@ $(destn)/bin::
 
 $(destn)/help::
 	cd ../lib/help; $(MAKE)
-	@$(LPATH)/util/mkdirpth $@ $@/screenshots
+	@$(BASE)/util/mkdirpth $@ $@/screenshots
 	help=`../packages/util/xic_files help`; \
         for a in $$help; do \
 	    $(INSTALL_LIB) ../lib/help/$$a $@; \
@@ -283,14 +302,14 @@ $(destn)/help::
 	done
 
 $(destn)/icons::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	icons=`../packages/util/xic_files icons`; \
         for a in $$icons; do \
 	    $(INSTALL_LIB) ../lib/icons/$$a $@; \
 	done
 
 $(destn)/plugins::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	plugins=`../packages/util/xic_files plugins $(OSNAME)`; \
 	for a in $$plugins; do \
 	    $(INSTALL_LIB) ../plugins/$$a $@; \
@@ -301,50 +320,50 @@ $(destn)/plugins::
 	done
 
 $(destn)/startup::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	startup=`../packages/util/xic_files startup`; \
 	for a in $$startup; do \
 	    $(INSTALL_LIB) ../lib/startup/$$a $@; \
 	done
 
 $(destn)/scripts::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	scripts=`../packages/util/xic_files scripts`; \
 	for a in $$scripts; do \
 	    $(INSTALL_LIB) ../lib/scripts/$$a $@; \
 	done
 
 $(destn)/scrkit::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	# update files, in case they're old or not present.
 	$(INSTALL_LIB) ../include/si_args.h ../src/scrkit
 	$(INSTALL_LIB) ../include/si_if_variable.h ../src/scrkit
 	$(INSTALL_LIB) ../include/si_scrfunc.h ../src/scrkit
-	$(INSTALL_LIB) $(LPATH)/miscutil/miscmath.h ../src/scrkit
+	$(INSTALL_LIB) $(BASE)/miscutil/miscmath.h ../src/scrkit
 	scrkit=`../packages/util/xic_files scrkit`; \
 	for a in $$scrkit; do \
 	    $(INSTALL_LIB) ../src/scrkit/$$a $@; \
 	done
 
 $(destn)/examples::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	examples=`../packages/util/xic_files examples`; \
 	for a in $$examples; do \
 	    $(INSTALL_LIB) ../lib/examples/$$a $@; \
 	done
-	@$(LPATH)/util/mkdirpth $@/PCells
+	@$(BASE)/util/mkdirpth $@/PCells
 	examples_pcells=`../packages/util/xic_files examples_pcells`; \
 	for a in $$examples_pcells; do \
 	    $(INSTALL_LIB) ../lib/examples/PCells/$$a $@/PCells; \
 	done
-	@$(LPATH)/util/mkdirpth $@/memchip_example
+	@$(BASE)/util/mkdirpth $@/memchip_example
 	examples_memchip_example=`../packages/util/xic_files examples_memchip_example`; \
 	for a in $$examples_memchip_example; do \
 	    $(INSTALL_LIB) ../lib/examples/memchip_example/$$a $@/memchip_example; \
 	done
 
 $(destn)/docs::
-	@$(LPATH)/util/mkdirpth $@
+	@$(BASE)/util/mkdirpth $@
 	docs=`../packages/util/xic_files docs`; \
 	for a in $$docs; do \
 	    cp ../lib/docs/$$a $@; \

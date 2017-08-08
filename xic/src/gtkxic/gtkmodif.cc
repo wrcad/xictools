@@ -47,9 +47,9 @@
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkfont.h"
 #include "gtkmenu.h"
 #include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //--------------------------------------------------------------------------

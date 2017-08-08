@@ -51,7 +51,7 @@
 #include "errorlog.h"
 #include "select.h"
 #include "ghost.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 
 cPromptLine *cPromptLine::instancePtr = 0;

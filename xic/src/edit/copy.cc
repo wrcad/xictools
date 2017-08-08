@@ -55,7 +55,7 @@
 #include "errorlog.h"
 #include "select.h"
 #include "ghost.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 
 //

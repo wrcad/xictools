@@ -44,9 +44,9 @@
 #include "dsp_inlines.h"
 #include "dsp_tkif.h"
 #include "errorlog.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "childproc.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/childproc.h"
 
 #include <unistd.h>
 #include <signal.h>

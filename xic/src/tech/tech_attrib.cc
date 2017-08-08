@@ -49,7 +49,7 @@
 #include "tech_extract.h"
 #include "tech_ldb3d.h"
 #include "tech_attr_cx.h"
-#include "fontutil.h"
+#include "ginterf/fontutil.h"
 
 
 // Parse attribute keywords.  When there are multiple keywords to set

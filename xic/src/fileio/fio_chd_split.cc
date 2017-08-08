@@ -49,7 +49,7 @@
 #include "cd_digest.h"
 #include "cd_chkintr.h"
 #include "geo_ylist.h"
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 #include <errno.h>
 
 

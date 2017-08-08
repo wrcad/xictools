@@ -43,8 +43,8 @@
 #include "fio.h"
 #include "cd_celldb.h"
 #include "gtkmain.h"
-#include "gtkfont.h"
 #include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //-----------------------------------------------------------------------------

@@ -46,11 +46,11 @@
 #include "fio.h"
 #include "fio_chd.h"
 #include "events.h"
-#include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "errorlog.h"
-#include "timer.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
+#include "miscutil/timer.h"
 #include <algorithm>
 
 

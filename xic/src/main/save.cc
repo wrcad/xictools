@@ -52,8 +52,8 @@
 #include "events.h"
 #include "pushpop.h"
 #include "oa_if.h"
-#include "filestat.h"
-#include "pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 #include <sys/stat.h>
 
 

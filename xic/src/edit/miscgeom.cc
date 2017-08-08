@@ -52,9 +52,9 @@
 #include "si_parser.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "timer.h"
-#include "threadpool.h"
-#include "timedbg.h"
+#include "miscutil/timer.h"
+#include "miscutil/threadpool.h"
+#include "miscutil/timedbg.h"
 
 
 // Core command procedure for layer expression evaluator.

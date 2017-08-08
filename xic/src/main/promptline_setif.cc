@@ -41,7 +41,7 @@
 #include "main.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "tvals.h"
+#include "miscutil/tvals.h"
 
 
 //-----------------------------------------------------------------------------

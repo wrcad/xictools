@@ -40,12 +40,12 @@
 
 #include "main.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkspinbtn.h"
 #include "menu.h"
 #include "errorlog.h"
 #include "tech.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkspinbtn.h"
 #include <gdk/gdkkeysyms.h>
 
 

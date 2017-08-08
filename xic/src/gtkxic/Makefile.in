@@ -1,7 +1,5 @@
 #######################################################################
-# xic/gtkxic/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 5.114 2016/02/27 21:04:20 stevew Exp $
+LOCATION = xic/src/gtkxic
 #######################################################################
 
 GFX_VERSION = @GFX_VERSION@
@@ -21,10 +19,11 @@ RESOURCE = @RESOURCE@
 
 LIB_TARGET = gtkxic.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I. -I../../include -I../../../mozy/include \
-  -I$(LPATH)/ginterf -I$(LPATH)/miscutil -I$(LPATH)/ginterf/gtkinterf \
-  -I$(LPATH)/secure $(TOOLKITINC)
+BASE = ../../../xt_base
+MOZY = ../../../mozy
+SECURE = ../../../secure
+INCLUDE = -I. -I../../include -I$(BASE)/include -I$(MOZY)/include -I$(SECURE) \
+  $(TOOLKITINC)
 
 HFILES = \
   gtkasm.h gtkcoord.h gtkcv.h gtkhtext.h gtkinlines.h gtklpal.h \
@@ -62,7 +61,7 @@ $(LIB_TARGET): $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 depend:
-	@echo depending in xic/gtkxic
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -71,8 +70,8 @@ depend:
 clean:
 	-rm *.o $(LIB_TARGET)
 
-distclean:
-	-rm *.o $(LIB_TARGET) Makefile
+distclean: clean
+	-rm Makefile
 
 resource.o: resource.cc xic.rc
 	vers=$(GFX_VERSION); \

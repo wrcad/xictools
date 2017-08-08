@@ -41,7 +41,7 @@
 #ifndef CD_CHKINTR_H
 #define CD_CHKINTR_H
 
-#include "timer.h"
+#include "miscutil/timer.h"
 
 extern unsigned long CDcheckTime;
 

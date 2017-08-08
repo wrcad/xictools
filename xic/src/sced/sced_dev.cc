@@ -44,8 +44,8 @@
 #include "dsp_inlines.h"
 #include "fio.h"
 #include "fio_library.h"
-#include "filestat.h"
-#include "pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 
 
 namespace {

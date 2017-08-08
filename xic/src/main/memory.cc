@@ -44,19 +44,19 @@
 #include "errorlog.h"
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
-#include "miscutil.h"
-#include "coresize.h"
+#include "miscutil/miscutil.h"
+#include "miscutil/coresize.h"
 
 #include <new>
 #include <sys/types.h>
 #include <fcntl.h>
 
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 #ifdef HAVE_LOCAL_ALLOCATOR
-#include "local_malloc.h"
+#include "malloc/local_malloc.h"
 #endif
 
 //-----------------------------------------------------------------------

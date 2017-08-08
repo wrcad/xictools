@@ -41,9 +41,9 @@
 #include "main.h"
 #include "dsp_inlines.h"
 #include "cd_strmdata.h"
+#include "layertab.h"
 #include "gtkmain.h"
 #include "gtkinlines.h"
-#include "layertab.h"
 
 
 //--------------------------------------------------------------------

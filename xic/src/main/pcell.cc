@@ -58,9 +58,9 @@
 #include "tcltk_if.h"
 #include "cvrt_variables.h"
 #include "main_scriptif.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "encode.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/encode.h"
 
 
 //-----------------------------------------------------------------------------

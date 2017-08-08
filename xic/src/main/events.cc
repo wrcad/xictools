@@ -618,7 +618,7 @@ namespace {
 // processing should be done.
 //
 bool
-cEventHdlr::KeyActions(WindowDesc *wdesc, KeyAction action, int *code)
+cEventHdlr::KeyActions(WindowDesc *wdesc, eKeyAction action, int *code)
 {
     // save press window
     ev_keypress_win = wdesc;

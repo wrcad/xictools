@@ -45,7 +45,7 @@
 #include "si_lexpr.h"
 #include "si_handle.h"
 #include "si_interp.h"
-#include "crypt.h"
+#include "miscutil/crypt.h"
 
 
 ////////////////////////////////////////////////////////////////////////

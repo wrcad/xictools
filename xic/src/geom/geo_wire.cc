@@ -43,7 +43,7 @@
 #include "geo_poly.h"
 #include "geo_linedb.h"
 #include "geo_wire.h"
-#include "smartarray.h"
+#include "miscutil/smartarray.h"
 #include <string.h>
 
 // Uncomment for debugging output.

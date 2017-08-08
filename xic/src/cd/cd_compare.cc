@@ -47,7 +47,7 @@
 #include "cd_hypertext.h"
 #include "geo_zlist.h"
 #include "geo_grid.h"
-#include "hashfunc.h"
+#include "miscutil/hashfunc.h"
 
 
 //

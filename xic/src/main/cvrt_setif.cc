@@ -50,9 +50,9 @@
 #include "tech.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "timer.h"
-#include "filestat.h"
-#include "transact.h"
+#include "miscutil/timer.h"
+#include "miscutil/filestat.h"
+#include "httpget/transact.h"
 
 
 //-----------------------------------------------------------------------------

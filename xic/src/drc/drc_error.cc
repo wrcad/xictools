@@ -51,7 +51,7 @@
 #include "layertab.h"
 #include "tech.h"
 #include "pushpop.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 //-----------------------------------------------------------------------------
 // Error reporting functions

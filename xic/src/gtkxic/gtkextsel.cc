@@ -41,14 +41,14 @@
 #include "main.h"
 #include "ext.h"
 #include "sced.h"
-#include "gtkmain.h"
-#include "gtkspinbtn.h"
-#include "gtkinlines.h"
 #include "dsp_inlines.h"
 #include "menu.h"
 #include "ext_menu.h"
 #include "ext_pathfinder.h"
 #include "promptline.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkspinbtn.h"
 
 
 //-------------------------------------------------------------------------

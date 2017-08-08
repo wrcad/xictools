@@ -46,9 +46,9 @@
 #include "fio_library.h"
 #include "cd_celldb.h"
 #include "cd_digest.h"
-#include "filestat.h"
-#include "timer.h"
-#include "timedbg.h"
+#include "miscutil/filestat.h"
+#include "miscutil/timer.h"
+#include "miscutil/timedbg.h"
 
 
 cCompare::cCompare()

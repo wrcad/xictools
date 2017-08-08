@@ -46,16 +46,16 @@
 #include "si_parsenode.h"
 #include "si_parser.h"
 #include "si_interp.h"
-#include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkutil.h"
-#include "gtksearch.h"
-#include "gtkinlines.h"
 #include "menu.h"
 #include "promptline.h"
 #include "events.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
+#include "gtkinterf/gtkutil.h"
+#include "gtkinterf/gtksearch.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 
 //-----------------------------------------------------------------------------

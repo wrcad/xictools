@@ -46,10 +46,10 @@
 #include "cd_hypertext.h"
 #include "cd_propnum.h"
 #include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkutil.h"
 #include "gtkinlines.h"
 #include "gtkprpty.h"
+#include "gtkinterf/gtkfont.h"
+#include "gtkinterf/gtkutil.h"
 
 
 //--------------------------------------------------------------------------

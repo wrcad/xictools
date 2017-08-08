@@ -42,10 +42,10 @@
 #include "cvrt.h"
 #include "fio.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkcv.h"
 #include "oa_if.h"
+#include "gtkmain.h"
+#include "gtkcv.h"
+#include "gtkinlines.h"
 
 
 //--------------------------------------------------------------------

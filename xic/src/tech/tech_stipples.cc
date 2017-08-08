@@ -42,8 +42,8 @@
 #include "tech.h"
 #include "errorlog.h"
 #include "main_variables.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 #include <time.h>
 
 

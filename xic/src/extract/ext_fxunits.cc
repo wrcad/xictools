@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "ext_fxunits.h"
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 
 //

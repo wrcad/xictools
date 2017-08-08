@@ -58,7 +58,7 @@
 #include "tech_layer.h"
 #include "main_variables.h"
 #include "oa_if.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 #include <unistd.h>
 

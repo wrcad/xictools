@@ -1,7 +1,5 @@
 #######################################################################
-# xic/sparse/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 5.50 2011/08/23 04:37:10 stevew Exp $
+LOCATION = xic/src/sparse
 #######################################################################
 
 GFX_VERSION = @GFX_VERSION@
@@ -17,14 +15,14 @@ FILTER = @FILTER@
 
 LIB_TARGET = sparse.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/miscutil
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I$(BASE)/include
 
-HFILES = spconfig.h spmacros.h
+HFILES =
 CCFILES = spbuild.cc spfactor.cc spsolve.cc sputils.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): include $(HFILES) $(CCOBJS)
+$(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -34,30 +32,25 @@ $(LIB_TARGET): include $(HFILES) $(CCOBJS)
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
-$(HFILES) $(CCFILES):
-	cp -fp $(LPATH)/sparse/$@ .
+$(CCFILES):
+	cp -fp $(BASE)/sparse/$@ .
 
-spconfig.h:     $(LPATH)/sparse/spconfig.h
-spmacros.h:     $(LPATH)/sparse/spmacros.h
-spbuild.cc:     $(LPATH)/sparse/spbuild.cc
-spfactor.cc:    $(LPATH)/sparse/spfactor.cc
-spsolve.cc:     $(LPATH)/sparse/spsolve.cc
-sputils.cc:     $(LPATH)/sparse/sputils.cc
+spbuild.cc:     $(BASE)/sparse/spbuild.cc
+spfactor.cc:    $(BASE)/sparse/spfactor.cc
+spsolve.cc:     $(BASE)/sparse/spsolve.cc
+sputils.cc:     $(BASE)/sparse/sputils.cc
 
-include:
-	cd ../../include; $(MAKE)
-
-depend: $(HFILES) $(CCFILES)
-	@echo depending in xic/sparse
+depend: $(CCFILES)
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET) $(HFILES) $(CCFILES)
+	-rm *.o $(LIB_TARGET) $(CCFILES)
 
-distclean:
-	-rm *.o $(LIB_TARGET) $(HFILES) $(CCFILES) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

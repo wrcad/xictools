@@ -42,7 +42,7 @@
 #include "cd_types.h"
 #include "cd_propnum.h"
 #include "cd_celldb.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 
 
 CDm::~CDm()

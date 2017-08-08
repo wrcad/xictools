@@ -64,8 +64,8 @@
 #include "errorlog.h"
 #include "select.h"
 #include "ghost.h"
-#include "pathlist.h"
-#include "texttf.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/texttf.h"
 
 
 /**************************************************************************

@@ -43,11 +43,11 @@
 #include "si_parser.h"
 #include "si_interp.h"
 #include "si_lisp.h"
-#include "spnumber.h"
-#include "pathlist.h"
-#include "random.h"
 #include "errorlog.h"
-#include "filestat.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/random.h"
+#include "miscutil/filestat.h"
 
 #include <ctype.h>
 #include <time.h>

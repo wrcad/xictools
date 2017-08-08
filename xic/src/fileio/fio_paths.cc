@@ -41,8 +41,8 @@
 #include "config.h"
 #include "fio.h"
 #include "fio_library.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 #include <ctype.h>
 #ifdef HAVE_PWD_H
 #include <pwd.h>

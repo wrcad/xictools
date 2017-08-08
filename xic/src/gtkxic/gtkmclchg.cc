@@ -41,11 +41,11 @@
 #include "main.h"
 #include "edit.h"
 #include "edit_variables.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
 #include "dsp_inlines.h"
 #include "menu.h"
 #include "modf_menu.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
 
 
 //-------------------------------------------------------------------------

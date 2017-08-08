@@ -1,7 +1,5 @@
 #######################################################################
-# xic/main/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.21 2015/02/14 05:25:08 stevew Exp $
+LOCATION = xic/src/display
 #######################################################################
 
 GFX_VERSION = @GFX_VERSION@
@@ -17,8 +15,8 @@ FILTER = @FILTER@
 
 LIB_TARGET = display.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I$(BASE)/include
 
 HFILES =
 CCFILES = \
@@ -39,7 +37,7 @@ $(LIB_TARGET): $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 depend:
-	@echo depending in xic/display
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -48,7 +46,7 @@ depend:
 clean:
 	-rm *.o $(LIB_TARGET)
 
-distclean:
-	-rm *.o $(LIB_TARGET) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

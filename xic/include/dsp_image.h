@@ -45,7 +45,7 @@
 #include "fio_chd.h"
 #include "fio_chd_flat.h"
 #include "fio_cvt_base.h"
-#include "raster.h"
+#include "ginterf/raster.h"
 
 
 //

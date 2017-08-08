@@ -41,7 +41,7 @@
 #ifndef SI_MACRO_H
 #define SI_MACRO_H
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 
 #define MACRO_BUFSIZE 1024
 

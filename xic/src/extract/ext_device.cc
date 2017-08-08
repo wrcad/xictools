@@ -54,7 +54,6 @@
 #include "edit.h"
 #include "sced.h"
 #include "sced_param.h"
-#include "paramsub.h"
 #include "dsp_inlines.h"
 #include "dsp_tkif.h"
 #include "dsp_layer.h"
@@ -70,9 +69,10 @@
 #include "tech.h"
 #include "tech_extract.h"
 #include "tech_layer.h"
-#include "spnumber.h"
-#include "timer.h"
-#include "rangetest.h"
+#include "spnumber/paramsub.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/timer.h"
+#include "miscutil/rangetest.h"
 #include <algorithm>
 
 

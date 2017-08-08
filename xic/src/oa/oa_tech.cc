@@ -55,11 +55,11 @@
 #include "tech_cds_out.h"
 #include "errorlog.h"
 #include "tech.h"
-#include "texttf.h"
 #include "oa_if.h"
 #include "pcell_params.h"
 #include "oa.h"
 #include "oa_via.h"
+#include "miscutil/texttf.h"
 #include <algorithm>
 
 

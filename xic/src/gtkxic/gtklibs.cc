@@ -45,15 +45,15 @@
 #include "dsp_inlines.h"
 #include "fio.h"
 #include "fio_library.h"
-#include "gtkmain.h"
-#include "gtklist.h"
-#include "gtkmcol.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "events.h"
 #include "errorlog.h"
-#include "filestat.h"
-#include "pathlist.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtklist.h"
+#include "gtkinterf/gtkmcol.h"
+#include "gtkinterf/gtkfont.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 #include <algorithm>
 
 #ifdef HAVE_DIRENT_H

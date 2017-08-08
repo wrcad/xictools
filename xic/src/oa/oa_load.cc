@@ -61,7 +61,6 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "tech.h"
-#include "texttf.h"
 #include "oa_if.h"
 #include "pcell_params.h"
 #include "oa.h"
@@ -70,6 +69,7 @@
 #include "oa_net.h"
 #include "oa_nametab.h"
 #include "oa_errlog.h"
+#include "miscutil/texttf.h"
 
 
 // Schematics from Virtuoso are very different from Xic.  For

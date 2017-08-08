@@ -58,13 +58,13 @@
 #include "promptline.h"
 #include "pushpop.h"
 #include "layertab.h"
-#include "timer.h"
 #include "secure.h"
+#include "miscutil/timer.h"
 #include <time.h>
 #include <signal.h>
 
 #ifdef HAVE_LOCAL_ALLOCATOR
-#include "local_malloc.h"
+#include "malloc/local_malloc.h"
 #endif
 
 

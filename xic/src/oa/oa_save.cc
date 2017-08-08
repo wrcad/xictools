@@ -56,10 +56,10 @@
 #include "si_parsenode.h"
 #include "tech.h"
 #include "tech_cds_out.h"
-#include "texttf.h"
 #include "oa.h"
 #include "oa_prop.h"
 #include "oa_via.h"
+#include "miscutil/texttf.h"
 
 
 class oa_save

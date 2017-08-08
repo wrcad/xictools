@@ -45,14 +45,14 @@
 #include "ext_fxjob.h"
 #include "dsp_inlines.h"
 #include "dsp_color.h"
-#include "gtkmain.h"
-#include "gtkutil.h"
-#include "gtkinlines.h"
-#include "gtkspinbtn.h"
 #include "menu.h"
 #include "select.h"
 #include "tech.h"
 #include "tech_extract.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkutil.h"
+#include "gtkinterf/gtkspinbtn.h"
 
 
 //-----------------------------------------------------------------------------

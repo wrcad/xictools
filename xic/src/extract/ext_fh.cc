@@ -50,7 +50,7 @@
 #include "tech.h"
 #include "tech_layer.h"
 #include "tech_ldb3d.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 #include <algorithm>
 

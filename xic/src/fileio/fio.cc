@@ -42,10 +42,10 @@
 #include "fio_library.h"
 #include "fio_alias.h"
 #include "cd_chkintr.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "update_itf.h"
-#include "transact.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "upd/update_itf.h"
+#include "httpget/transact.h"
 #include <ctype.h>
 
 

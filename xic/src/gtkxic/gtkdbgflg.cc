@@ -45,10 +45,10 @@
 #include "oa_if.h"
 #include "si_lisp.h"
 #include "dsp_inlines.h"
+#include "errorlog.h"
 #include "gtkmain.h"
 #include "gtkinlines.h"
-#include "errorlog.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 
 //--------------------------------------------------------------------

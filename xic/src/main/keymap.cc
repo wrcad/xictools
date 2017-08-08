@@ -39,12 +39,11 @@
  *========================================================================*/
 
 #include "main.h"
-#include "events.h"
 #include "keymap.h"
 #include "menu.h"
 #include "promptline.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 
 /*========================================================================
@@ -166,8 +165,8 @@ KsState::getks()
 
 
 namespace {
-    const char *codestr(KEYcode);
-    const char *actionstr(KeyAction);
+    const char *codestr(eKeyCode);
+    const char *actionstr(eKeyAction);
     const char *statestr(unsigned);
     const char *actioncodestr(int);
 }
@@ -284,8 +283,7 @@ cKsMap::SaveMapFile(const char *fname)
 
 
 namespace {
-    const char *
-    codestr(KEYcode code)
+    const char *codestr(eKeyCode code)
     {
         switch (code) {
         case NO_KEY:
@@ -339,8 +337,7 @@ namespace {
     }
 
 
-    const char *
-    actionstr(KeyAction action)
+    const char *actionstr(eKeyAction action)
     {
         switch (action) {
         case No_action:
@@ -436,8 +433,7 @@ namespace {
     }
 
 
-    const char *
-    statestr(unsigned state)
+    const char *statestr(unsigned state)
     {
         static char buf[16];
         if (!(state & (GR_ALT_MASK | GR_CONTROL_MASK | GR_SHIFT_MASK)))
@@ -469,12 +465,11 @@ namespace {
     }
 
 
-    const char *
-    actioncodestr(int code)
+    const char *actioncodestr(int code)
     {
         static char buf[16];
         if (code < 0x20)
-            return (codestr((KEYcode)code));
+            return (codestr((eKeyCode)code));
         if (code >= 0x20 && code <= 0x7e) {
             buf[0] = '\'';
             buf[1] = code;
@@ -512,8 +507,8 @@ cKsMap::DoMap(unsigned keysym)
 
 
 namespace {
-    KEYcode strcode(const char*);
-    KeyAction straction(const char*);
+    eKeyCode strcode(const char*);
+    eKeyAction straction(const char*);
     unsigned int strstate(const char*);
     int stractioncode(const char*);
 }
@@ -820,8 +815,7 @@ cKsMap::ReadMapFile(const char *fname)
 
 
 namespace {
-    KEYcode
-    strcode(const char *string)
+    eKeyCode strcode(const char *string)
     {
         if (lstring::cieq(string, "NO_KEY"))
             return (NO_KEY);
@@ -869,12 +863,11 @@ namespace {
             return (PAGEUP_KEY);
         if (lstring::cieq(string, "FUNC_KEY"))
             return (FUNC_KEY);
-        return ((KEYcode)-1);
+        return ((eKeyCode)-1);
     }
 
 
-    KeyAction
-    straction(const char *string)
+    eKeyAction straction(const char *string)
     {
         if (lstring::cieq(string, "No_action"))
             return (No_action);
@@ -964,7 +957,7 @@ namespace {
             return (IncExpand_action);
         if (lstring::cieq(string, "DecExpand_action"))
             return (DecExpand_action);
-        return ((KeyAction)-1);
+        return ((eKeyAction)-1);
     }
 
 

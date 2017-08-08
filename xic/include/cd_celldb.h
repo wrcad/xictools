@@ -41,7 +41,7 @@
 #ifndef CD_CELLDB_H
 #define CD_CELLDB_H
 
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 // Reserved name for main symbol table.

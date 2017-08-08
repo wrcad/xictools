@@ -41,7 +41,7 @@
 #include "cd.h"
 #include "cd_types.h"
 #include "geo_ylist.h"
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 
 
 // Return a list of zoids from objects on ld that overlap pBB.

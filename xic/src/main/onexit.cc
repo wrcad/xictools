@@ -50,9 +50,9 @@
 #include "events.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "filestat.h"
-#include "miscutil.h"
 #include "secure.h"
+#include "miscutil/filestat.h"
+#include "miscutil/miscutil.h"
 
 #include <signal.h>
 #include <fcntl.h>
@@ -63,7 +63,7 @@
 #endif
 
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 

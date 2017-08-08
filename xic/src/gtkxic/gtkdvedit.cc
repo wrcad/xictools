@@ -44,13 +44,13 @@
 #include "dsp_color.h"
 #include "dsp_inlines.h"
 #include "fio_library.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
 #include "events.h"
 #include "promptline.h"
 #include "errorlog.h"
 #include "menu.h"
-#include "filestat.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "miscutil/filestat.h"
 
 
 //-----------------------------------------------------------------------------

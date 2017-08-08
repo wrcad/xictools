@@ -49,8 +49,8 @@
 #include "fio_chd_flat_prv.h"
 #include "cd_strmdata.h"
 #include "cd_hypertext.h"
-#include "filestat.h"
-#include "timedbg.h"
+#include "miscutil/filestat.h"
+#include "miscutil/timedbg.h"
 #include <algorithm>
 
 

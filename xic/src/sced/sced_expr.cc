@@ -40,7 +40,7 @@
 
 #include "main.h"
 #include "sced.h"
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 
 
 //#define DEBUG
@@ -98,7 +98,7 @@ namespace sced_expr {
 using namespace sced_expr;
 
 typedef pnode_t ParseNode;
-#include "spparse.h"
+#include "spnumber/spparse.h"
 
 namespace {
 #ifdef WITH_EVAL

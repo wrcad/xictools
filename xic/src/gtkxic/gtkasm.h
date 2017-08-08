@@ -41,7 +41,7 @@
 #ifndef GTKASM_H
 #define GTKASM_H
 
-#include "gtkspinbtn.h"
+#include "gtkinterf/gtkspinbtn.h"
 
 enum ASMcode { ASM_INIT, ASM_INFO, ASM_READ, ASM_WRITE, ASM_CNAME };
 

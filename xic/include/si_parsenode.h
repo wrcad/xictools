@@ -41,8 +41,8 @@
 #ifndef SI_PARSENODE_H
 #define SI_PARSENODE_H
 
-#include "lstring.h"
 #include "si_variable.h"
+#include "miscutil/lstring.h"
 
 
 // These definitions apply to the script parser and control structures.

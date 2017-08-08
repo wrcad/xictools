@@ -42,14 +42,14 @@
 #include "pushpop.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkparam.h"
-#include "gtkfont.h"
-#include "gtkcoord.h"
-#include "gtkinlines.h"
 #include "select.h"
 #include "events.h"
 #include "tech.h"
+#include "gtkmain.h"
+#include "gtkparam.h"
+#include "gtkcoord.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //-----------------------------------------------------------------------------

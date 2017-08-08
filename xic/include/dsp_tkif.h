@@ -46,7 +46,7 @@
 // toolkit-specific code.
 //
 
-#include "graphics.h"
+#include "ginterf/graphics.h"
 
 struct hostent;
 

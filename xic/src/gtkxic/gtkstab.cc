@@ -43,11 +43,11 @@
 #include "fio.h"
 #include "cd_celldb.h"
 #include "dsp_inlines.h"
+#include "promptline.h"
+#include "events.h"
 #include "gtkmain.h"
 #include "gtkinlines.h"
 #include "gtkcv.h"
-#include "promptline.h"
-#include "events.h"
 
 
 //--------------------------------------------------------------------

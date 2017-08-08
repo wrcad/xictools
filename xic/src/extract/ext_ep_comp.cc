@@ -49,12 +49,12 @@
 #include "sced.h"
 #include "sced_nodemap.h"
 #include "sced_param.h"
-#include "paramsub.h"
-#include "spnumber.h"
+#include "spnumber/paramsub.h"
+#include "spnumber/spnumber.h"
 
 #define TIME_DBG
 #ifdef TIME_DBG
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 #endif
 
 

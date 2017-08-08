@@ -52,8 +52,8 @@
 #include "cd_digest.h"
 #include "cd_celldb.h"
 #include "cd_chkintr.h"
-#include "filestat.h"
-#include "timedbg.h"
+#include "miscutil/filestat.h"
+#include "miscutil/timedbg.h"
 
 
 // Return a cCHD (cell hierarchy digest) for the archive file.

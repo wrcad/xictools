@@ -39,11 +39,11 @@
  *========================================================================*/
 
 #include "main.h"
-#include "gtkmain.h"
-#include "gtkfile.h"
-#include "gtkinlines.h"
 #include "promptline.h"
-#include "pathlist.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfile.h"
+#include "miscutil/pathlist.h"
 #include <gdk/gdkkeysyms.h>
 
 

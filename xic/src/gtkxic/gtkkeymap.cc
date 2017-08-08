@@ -41,17 +41,16 @@
 #include "main.h"
 #include "dsp_inlines.h"
 #include "fio.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "events.h"
 #include "keymap.h"
 #include "promptline.h"
 #include "tech.h"
 #include "errorlog.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
 
 #include <gdk/gdkkeysyms.h>
 #ifdef WITH_X11
-#include "gtkx11.h"
+#include "gtkinterf/gtkx11.h"
 #else
 #ifdef WIN32
 #include <windows.h>

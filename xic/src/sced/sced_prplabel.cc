@@ -53,7 +53,7 @@
 #include "events.h"
 #include "layertab.h"
 #include "errorlog.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 
 // If regen is false, fix or set the labels when replacing old.  If

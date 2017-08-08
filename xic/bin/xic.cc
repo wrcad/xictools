@@ -71,15 +71,8 @@
 #include "layertab.h"
 #include "filetool.h"
 #include "ghost.h"
-#include "timer.h"
+#include "miscutil/timer.h"
 #include "reltag.h" // defines XIC_RELEASE_TAG
-#include "pathlist.h"
-#include "filestat.h"
-#include "tvals.h"
-#include "grfont.h"
-#include "timedbg.h"
-#include "update_itf.h"
-#include "crypt.h"
 
 #include "file_menu.h"
 #include "cell_menu.h"
@@ -94,6 +87,14 @@
 #include "pbtn_menu.h"
 #include "ebtn_menu.h"
 
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/tvals.h"
+#include "miscutil/timedbg.h"
+#include "miscutil/crypt.h"
+#include "ginterf/grfont.h"
+#include "upd/update_itf.h"
+
 #include <errno.h>
 #include <sys/time.h>
 
@@ -103,15 +104,15 @@
 
 #ifdef WIN32
 #include <conio.h>
-#include "msw.h"
-#include "miscutil.h"
-#include "stackdump.h"
+#include "mswinterf/msw.h"
+#include "mswinterf/miscutil.h"
+//XXX#include "stackdump.h"
 #endif
 
 // Set up the ginterf package, include all drivers.
 //
 #define GR_CONFIG (GR_ALL_PKGS | GR_ALL_DRIVERS)
-#include "gr_pkg_setup.h"
+#include "ginterf/gr_pkg_setup.h"
 
 // FreeBSD malloc resets memory allocated/freed to 0x0a.
 // Need to bypass local malloc to use this.

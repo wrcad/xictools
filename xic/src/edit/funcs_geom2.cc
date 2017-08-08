@@ -65,8 +65,8 @@
 #include "tech.h"
 #include "select.h"
 #include "errorlog.h"
-#include "grfont.h"
-#include "texttf.h"
+#include "ginterf/grfont.h"
+#include "miscutil/texttf.h"
 
 
 #ifndef M_PI

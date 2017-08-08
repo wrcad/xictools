@@ -52,10 +52,10 @@
 #include "tech.h"
 #include "tech_layer.h"
 #include "tech_via.h"
-#include "timer.h"
+#include "miscutil/timer.h"
 
 #define XIC
-#include "spmatrix.h"
+#include "sparse/spmatrix.h"
 
 #include <math.h>
 

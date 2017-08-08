@@ -51,7 +51,7 @@
 #include "errorlog.h"
 #include "events.h"
 #include "select.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 #ifdef WIN32
 #include <winsock2.h>
 #else

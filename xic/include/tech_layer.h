@@ -41,7 +41,7 @@
 #ifndef TECH_LAYER_H
 #define TECH_LAYER_H
 
-#include "hashfunc.h"
+#include "miscutil/hashfunc.h"
 
 
 //

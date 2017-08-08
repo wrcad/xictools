@@ -1,7 +1,5 @@
 #######################################################################
-# xic/wrspif/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.1 2012/05/16 17:56:38 stevew Exp $
+LOCATION = xic/src/wrspif
 #######################################################################
 
 GFX_VERSION = @GFX_VERSION@
@@ -17,8 +15,8 @@ FILTER = @FILTER@
 
 LIB_TARGET = wrspif.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I$(BASE)/include
 
 SPFILES = hash.cc paramsub.cc spnumber.cc spparse.cc
 HFILES =
@@ -36,18 +34,18 @@ $(LIB_TARGET): include $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 $(SPFILES):
-	cp -fp $(LPATH)/spnumber/$@ .
+	cp -fp $(BASE)/spnumber/$@ .
 
-hash.cc:        $(LPATH)/spnumber/hash.cc
-paramsub.cc:    $(LPATH)/spnumber/paramsub.cc
-spnumber.cc:    $(LPATH)/spnumber/spnumber.cc
-spparse.cc:     $(LPATH)/spnumber/spparse.cc
+hash.cc:        $(BASE)/spnumber/hash.cc
+paramsub.cc:    $(BASE)/spnumber/paramsub.cc
+spnumber.cc:    $(BASE)/spnumber/spnumber.cc
+spparse.cc:     $(BASE)/spnumber/spparse.cc
 
 include:
 	cd ../../include; $(MAKE)
 
 depend: $(SPFILES)
-	@echo depending in xic/wrspif
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -56,7 +54,7 @@ depend: $(SPFILES)
 clean:
 	-rm *.o $(LIB_TARGET) $(SPFILES)
 
-distclean:
-	-rm *.o $(LIB_TARGET) $(SPFILES) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

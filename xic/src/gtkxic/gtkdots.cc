@@ -40,10 +40,10 @@
 
 #include "main.h"
 #include "sced.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
 #include "menu.h"
 #include "attr_menu.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
 
 
 //-------------------------------------------------------------------------

@@ -45,7 +45,7 @@
 #include "si_lexpr.h"
 #include "si_parser.h"
 #include "si_interp.h"
-#include "timedbg.h"
+#include "miscutil/timedbg.h"
 
 
 //

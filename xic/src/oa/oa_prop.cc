@@ -45,7 +45,6 @@
 #include "si_lisp.h"
 #include "oa_if.h"
 #include "pcell_params.h"
-#include "spnumber.h"
 #include "oa.h"
 #include "oa_prop.h"
 #include "oa_nametab.h"
@@ -53,6 +52,7 @@
 #include "oa_lib_observer.h"
 #include "oa_errlog.h"
 #include "oa_alib.h"
+#include "spnumber/spnumber.h"
 
 
 namespace {

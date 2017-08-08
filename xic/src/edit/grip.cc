@@ -50,9 +50,9 @@
 #include "dsp_inlines.h"
 #include "events.h"
 #include "ghost.h"
-#include "spnumber.h"
 #include "undolist.h"
 #include "errorlog.h"
+#include "spnumber/spnumber.h"
 
 
 //

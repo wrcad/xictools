@@ -52,8 +52,8 @@
 #include "cd_lgen.h"
 #include "fio.h"
 #include "fio_chd.h"
-#include "grfont.h"
-#include "filestat.h"
+#include "ginterf/grfont.h"
+#include "miscutil/filestat.h"
 
 
 /*************************************************************************

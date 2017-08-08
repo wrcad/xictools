@@ -66,9 +66,9 @@
 #include "view_menu.h"
 #include "attr_menu.h"
 #include "cvrt_menu.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 #ifdef HAVE_LOCAL_ALLOCATOR
-#include "local_malloc.h"
+#include "malloc/local_malloc.h"
 #endif
 
 

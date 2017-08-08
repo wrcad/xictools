@@ -43,9 +43,9 @@
 #include "fio.h"
 #include "sced.h"
 #include "sced_modlib.h"
-#include "spnumber.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 #include <sys/types.h>
 #ifdef HAVE_DIRENT_H

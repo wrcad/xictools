@@ -48,15 +48,15 @@
 #include "fio_library.h"
 #include "fio_chd.h"
 #include "cd_digest.h"
-#include "gtkmain.h"
-#include "gtkmcol.h"
-#include "gtkinlines.h"
-#include "gtkfont.h"
 #include "events.h"
 #include "menu.h"
 #include "promptline.h"
-#include "filestat.h"
-#include "pathlist.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkmcol.h"
+#include "gtkinterf/gtkfont.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 
 
 //----------------------------------------------------------------------

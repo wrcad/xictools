@@ -45,7 +45,7 @@
 #include "si_parser.h"
 #include "si_interp.h"
 #include "si_daemon.h"
-#include "childproc.h"
+#include "miscutil/childproc.h"
 
 #include <signal.h>
 #include <errno.h>
@@ -70,7 +70,7 @@
 #include <ucontext.h>
 #endif
 #ifdef HAVE_LOCAL_ALLOCATOR
-#include "local_malloc.h"
+#include "malloc/local_malloc.h"
 #endif
 
 

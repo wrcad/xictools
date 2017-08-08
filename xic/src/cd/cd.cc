@@ -46,7 +46,7 @@
 #include "cd_sdb.h"
 #include "cd_netname.h"
 #include "fio_gencif.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 
 //

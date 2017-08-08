@@ -61,10 +61,10 @@
 #include "tech.h"
 #include "select.h"
 #include "ghost.h"
-#include "timer.h"
-#include "filestat.h"
-#include "pathlist.h"
 #include "reltag.h"
+#include "miscutil/timer.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 
 #include <algorithm>
 #include <sys/types.h>

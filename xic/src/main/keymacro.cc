@@ -43,13 +43,12 @@
 #include "si_parsenode.h"
 #include "si_parser.h"
 #include "si_interp.h"
-#include "events.h"
 #include "keymap.h"
 #include "keymacro.h"
 #include "promptline.h"
 #include "tech.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 
 /*========================================================================

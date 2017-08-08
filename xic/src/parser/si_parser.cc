@@ -49,7 +49,7 @@
 #define SP_NUMBER
 
 #ifdef SP_NUMBER
-#include "spnumber.h"
+#include "spnumber/spnumber.h"
 #endif
 
 

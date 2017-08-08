@@ -39,9 +39,9 @@
  *========================================================================*/
 
 #include "main.h"
-#include "gtkmain.h"
-#include "gtkfile.h"
 #include "cd_celldb.h"
+#include "gtkmain.h"
+#include "gtkinterf/gtkfile.h"
 
 
 // Export the file/cell selected in the Files Selection, Cells Listing,

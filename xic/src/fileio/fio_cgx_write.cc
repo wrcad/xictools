@@ -44,7 +44,7 @@
 #include "cd_hypertext.h"
 #include "cd_celldb.h"
 #include "cd_chkintr.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 
 // Have to break polys/wires larger than this

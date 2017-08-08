@@ -46,8 +46,8 @@
 #include "fio_alias.h"
 #include "gtkmain.h"
 #include "gtkcv.h"
-#include "gtkfont.h"
 #include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 #include <gdk/gdkkeysyms.h>
 
 

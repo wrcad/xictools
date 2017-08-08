@@ -52,8 +52,8 @@
 #include "layertab.h"
 #include "keymacro.h"
 #include "attr_menu.h"
-#include "filestat.h"
-#include "grfont.h"
+#include "miscutil/filestat.h"
+#include "ginterf/grfont.h"
 
 
 // The Attributes menu for the main and subwindows.

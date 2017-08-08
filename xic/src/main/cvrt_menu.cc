@@ -57,8 +57,8 @@
 #include "tech.h"
 #include "layertab.h"
 #include "tech_kwords.h"
-#include "filestat.h"
-#include "pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 
 #include <sys/stat.h>
 

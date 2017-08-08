@@ -51,7 +51,7 @@
 #include "dsp_inlines.h"
 #include "dsp_layer.h"
 #include "dsp_color.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 //
 // A new interface to FasterCap and FastCap-WR.

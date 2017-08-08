@@ -59,9 +59,9 @@
 #include "errorlog.h"
 #include "select.h"
 #include "ghost.h"
-#include "encode.h"
-#include "grfont.h"
-#include "texttf.h"
+#include "miscutil/encode.h"
+#include "miscutil/texttf.h"
+#include "ginterf/grfont.h"
 
 
 // Fine zoom factor.  Applying this five times is equivalent to the

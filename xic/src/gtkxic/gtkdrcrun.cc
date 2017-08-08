@@ -45,13 +45,13 @@
 #include "cd_digest.h"
 #include "dsp_inlines.h"
 #include "dsp_color.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkspinbtn.h"
 #include "events.h"
 #include "ghost.h"
 #include "errorlog.h"
 #include "promptline.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkspinbtn.h"
 #ifdef WIN32
 #include "windows.h"
 #endif

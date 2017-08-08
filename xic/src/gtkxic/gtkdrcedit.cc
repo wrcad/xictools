@@ -45,15 +45,15 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "layertab.h"
 #include "tech_layer.h"
 #include "promptline.h"
 #include "errorlog.h"
 #include "tech.h"
-#include "filestat.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
+#include "miscutil/filestat.h"
 
 
 //-----------------------------------------------------------------------------

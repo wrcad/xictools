@@ -41,7 +41,7 @@
 #ifndef TECH_VIA_H
 #define TECH_VIA_H
 
-#include "hashfunc.h"
+#include "miscutil/hashfunc.h"
 
 
 // The cTech::StdViaTab provides the standard vias, as defined for the

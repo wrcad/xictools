@@ -47,13 +47,13 @@
 #include "dsp_inlines.h"
 #include "fio.h"
 #include "fio_library.h"
-#include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "events.h"
 #include "menu.h"
 #include "ebtn_menu.h"
 #include "errorlog.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 // This implements a menu of devices from the device library, in two

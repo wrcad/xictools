@@ -1,7 +1,5 @@
 #######################################################################
-# xic/drc/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 5.54 2015/02/17 05:56:33 stevew Exp $
+LOCATION = xic/src/drc
 #######################################################################
 
 GFX_VERSION = @GFX_VERSION@
@@ -17,8 +15,8 @@ FILTER = @FILTER@
 
 LIB_TARGET = drc.a
 
-LPATH = ../../../xt_base
-INCLUDE = -I../../include -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I$(BASE)/include
 
 HFILES =
 CCFILES = \
@@ -38,7 +36,7 @@ $(LIB_TARGET): $(CCOBJS)
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 depend:
-	@echo depending in xic/drc
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -47,7 +45,7 @@ depend:
 clean:
 	-rm *.o $(LIB_TARGET)
 
-distclean:
-	-rm *.o $(LIB_TARGET) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

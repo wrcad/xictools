@@ -41,7 +41,7 @@
 #include "main.h"
 #include "sced_spiceipc.h"
 #include "sced_spmap.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 
 
 // A table of tables of library tag offsets.

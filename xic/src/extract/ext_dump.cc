@@ -46,8 +46,8 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "menu.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 
 // button text, used for PNET and ENET

@@ -52,7 +52,7 @@
 #include "fio.h"
 #include "promptline.h"
 #include "errorlog.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 #include <algorithm>
 
 

@@ -1,16 +1,16 @@
 #######################################################################
-# wrspice/include/Makefile
-#######################################################################
-# $Id:$
+LOCATION = wrspice/include
 #######################################################################
 
 depend: reltag
+	@echo depending in $(LOCATION)
 
 clean:
 
 distclean:
 	rm -f reltag.h
 
+# Create/update the reltag.h file.
 reltag:
 	@version=`../version wrspice`; \
 	if [ -z "$$version" ]; then \
@@ -42,3 +42,4 @@ reltag:
 	fi; \
 	unlink /tmp/reltag.h
 
+#######################################################################

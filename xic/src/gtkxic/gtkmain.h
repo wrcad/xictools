@@ -45,7 +45,7 @@
 #ifndef GTKMAIN_H
 #define GTKMAIN_H
 
-#include "gtkinterf.h"
+#include "gtkinterf/gtkinterf.h"
 #include "dsp_tkif.h"
 
 struct WindowDesc;

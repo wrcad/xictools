@@ -42,8 +42,8 @@
 #include "ext.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkfont.h"
 #include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //---------------------------------------------------------------------------

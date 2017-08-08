@@ -42,15 +42,14 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkspinbtn.h"
 #include "layertab.h"
 #include "menu.h"
 #include "errorlog.h"
-#include "events.h"
 #include "keymap.h"
 #include "tech.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkspinbtn.h"
 #include <gdk/gdkkeysyms.h>
 
 

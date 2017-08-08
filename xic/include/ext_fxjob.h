@@ -41,7 +41,7 @@
 #ifndef EXT_FXJOB_H
 #define EXT_FXJOB_H
 
-#include "lstring.h"
+#include "miscutil/lstring.h"
 #include <sys/types.h>
 
 //------------------------------------------------------------------------

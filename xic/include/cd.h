@@ -50,9 +50,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "lstring.h"
-#include "errorrec.h"
-#include "symtab.h"
+#include "miscutil/lstring.h"
+#include "miscutil/errorrec.h"
+#include "miscutil/symtab.h"
 
 #include "geo.h"
 #include "geo_box.h"

@@ -57,12 +57,12 @@
 #include "events.h"
 #include "cvrt.h"
 #include "oa_if.h"
-#include "filestat.h"
-#include "pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
 
 //#define TIMEDBG
 #ifdef TIMEDBG
-#include "tvals.h"
+#include "miscutil/tvals.h"
 #endif
 
 #include <sys/types.h>

@@ -41,7 +41,7 @@
 #ifndef SCRKIT_H
 #define SCRKIT_H
 
-#include "miscmath.h"
+#include "miscutil/miscmath.h"
 
 //
 // Some misc. definitions from Xic.

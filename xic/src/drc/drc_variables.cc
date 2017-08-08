@@ -40,10 +40,10 @@
 
 #include "main.h"
 #include "drc.h"
-#include "errorlog.h"
 #include "tech.h"
 #include "menu.h"
 #include "drc_menu.h"
+#include "errorlog.h"
 
 
 //-----------------------------------------------------------------------------

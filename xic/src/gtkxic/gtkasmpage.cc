@@ -42,9 +42,9 @@
 #include "cvrt.h"
 #include "fio.h"
 #include "fio_alias.h"
+#include "menu.h"
 #include "gtkmain.h"
 #include "gtkasm.h"
-#include "menu.h"
 
 
 //-----------------------------------------------------------------------------

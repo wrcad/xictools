@@ -42,9 +42,9 @@
 #include "dsp_layer.h"
 #include "dsp_color.h"
 #include "gtkmain.h"
-#include "xdraw.h"
+#include "ginterf/xdraw.h"
 #ifdef WITH_X11
-#include "gtkx11.h"
+#include "gtkinterf/gtkx11.h"
 #endif
 #ifdef WIN32
 #include <windows.h>

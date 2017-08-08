@@ -42,12 +42,12 @@
 #include "main.h"
 #include "cd_celldb.h"
 #include "dsp_color.h"
-#include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "menu.h"
 #include "view_menu.h"
-#include "coresize.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
+#include "miscutil/coresize.h"
 
 #include <sys/types.h>
 #include <sys/time.h>

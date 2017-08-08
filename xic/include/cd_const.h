@@ -41,9 +41,8 @@
 #ifndef CD_CONST_H
 #define CD_CONST_H
 
-#include "miscmath.h"
-#include "sys/types.h"
-
+#include "miscutil/miscmath.h"
+#include <sys/types.h>
 #include <stdint.h>   // for int64_t, uint64_t
 
 

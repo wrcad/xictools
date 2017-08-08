@@ -48,7 +48,7 @@
 #include "dsp_tkif.h"
 #include "errorlog.h"
 #include "promptline.h"
-#include "filestat.h"
+#include "miscutil/filestat.h"
 
 
 //

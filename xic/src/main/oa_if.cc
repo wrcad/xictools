@@ -54,9 +54,9 @@
 #include "si_parser.h"
 #include "tech.h"
 #include "reltag.h"
-#include "filestat.h"
-#include "help_defs.h"
 #include "secure.h"
+#include "miscutil/filestat.h"
+#include "help/help_defs.h"
 
 #ifdef HAVE_OA
 #include <dlfcn.h>

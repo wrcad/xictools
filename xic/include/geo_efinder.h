@@ -42,7 +42,7 @@
 #define GEO_PFINDER_H
 
 #include "geo_alloc.h"
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 //

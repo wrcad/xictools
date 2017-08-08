@@ -41,7 +41,7 @@
 #ifndef CD_NETNAME_H
 #define CD_NETNAME_H
 
-#include "symtab.h"
+#include "miscutil/symtab.h"
 
 
 //

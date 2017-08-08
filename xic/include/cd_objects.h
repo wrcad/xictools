@@ -46,7 +46,7 @@
 #include "geo_wire.h"
 #include "cd_label.h"
 #include "cd_property.h"
-#include "texttf.h"
+#include "miscutil/texttf.h"
 
 
 //-------------------------------------------------------------------------

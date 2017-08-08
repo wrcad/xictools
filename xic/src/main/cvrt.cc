@@ -51,8 +51,8 @@
 #include "promptline.h"
 #include "menu.h"
 #include "cvrt_menu.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 
 cConvert *cConvert::instancePtr = 0;

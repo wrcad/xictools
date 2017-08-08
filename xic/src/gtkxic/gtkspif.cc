@@ -42,8 +42,8 @@
 #include "sced.h"
 #include "edit_variables.h"
 #include "cvrt_variables.h"
-#include "gtkmain.h"
 #include "dsp_inlines.h"
+#include "gtkmain.h"
 #include "gtkinlines.h"
 
 

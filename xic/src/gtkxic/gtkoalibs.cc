@@ -47,10 +47,10 @@
 #include "errorlog.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
-#include "gtkmcol.h"
-#include "gtkfont.h"
-#include "gtkutil.h"
 #include "gtkinlines.h"
+#include "gtkinterf/gtkmcol.h"
+#include "gtkinterf/gtkfont.h"
+#include "gtkinterf/gtkutil.h"
 
 
 //----------------------------------------------------------------------

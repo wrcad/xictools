@@ -47,8 +47,8 @@
 #include "cd_strmdata.h"
 #include "cd_lgen.h"
 #include "fio_layermap.h"
-#include "rgbzimg.h"
-#include "timedbg.h"
+#include "ginterf/rgbzimg.h"
+#include "miscutil/timedbg.h"
 #include <algorithm>
 
 //#define IMAGE_DBG

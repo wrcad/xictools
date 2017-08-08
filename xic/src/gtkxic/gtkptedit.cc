@@ -46,11 +46,11 @@
 #include "cd_netname.h"
 #include "dsp_inlines.h"
 #include "dsp_layer.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkspinbtn.h"
 #include "menu.h"
 #include "promptline.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkspinbtn.h"
 
 
 //---------------------------------------------------------------------------

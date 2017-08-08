@@ -46,8 +46,8 @@
 #include "cd_hypertext.h"
 #include "cd_celldb.h"
 #include "cd_digest.h"
-#include "texttf.h"
-#include "timedbg.h"
+#include "miscutil/texttf.h"
+#include "miscutil/timedbg.h"
 
 
 // When converting to files, write the header properties to this file.

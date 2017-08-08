@@ -45,12 +45,12 @@
 #include "cvrt.h"
 #include "gtkmain.h"
 #include "gtkasm.h"
-#include "gtklist.h"
-#include "gtkfont.h"
-#include "gtkutil.h"
 #include "gtkinlines.h"
 #include "gtkcv.h"
-#include "filestat.h"
+#include "gtkinterf/gtklist.h"
+#include "gtkinterf/gtkfont.h"
+#include "gtkinterf/gtkutil.h"
+#include "miscutil/filestat.h"
 
 
 //-----------------------------------------------------------------------------

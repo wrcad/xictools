@@ -54,8 +54,8 @@
 #include "errorlog.h"
 #include "layertab.h"
 #include "select.h"
-#include "timer.h"
-#include "timedbg.h"
+#include "miscutil/timer.h"
+#include "miscutil/timedbg.h"
 
 
 namespace {

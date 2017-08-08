@@ -60,8 +60,8 @@
 #include "menu.h"
 #include "tech.h"
 #include "errorlog.h"
-#include "filestat.h"
-#include "grfont.h"
+#include "miscutil/filestat.h"
+#include "ginterf/grfont.h"
 
 
 //-----------------------------------------------------------------------------

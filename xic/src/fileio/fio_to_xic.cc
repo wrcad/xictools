@@ -47,8 +47,8 @@
 #include "cd_lgen.h"
 #include "cd_celldb.h"
 #include "cd_chkintr.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 #include <errno.h>
 
 

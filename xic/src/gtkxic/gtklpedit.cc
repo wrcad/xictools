@@ -45,9 +45,6 @@
 #include "kwstr_cvt.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkfont.h"
-#include "gtkinlines.h"
 #include "tech.h"
 #include "tech_extract.h"
 #include "tech_layer.h"
@@ -55,6 +52,9 @@
 #include "layertab.h"
 #include "promptline.h"
 #include "events.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //--------------------------------------------------------------------

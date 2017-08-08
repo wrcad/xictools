@@ -40,12 +40,12 @@
 
 #include "cd.h"
 #include "pcell_params.h"
-#include "spnumber.h"
 #include "si_parsenode.h"
 #include "si_parser.h"
 #include "si_interp.h"
-#include "encode.h"
 #include "errorlog.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/encode.h"
 #include <algorithm>
 
 

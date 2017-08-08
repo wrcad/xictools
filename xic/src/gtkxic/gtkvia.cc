@@ -44,15 +44,15 @@
 #include "tech_via.h"
 #include "fio.h"
 #include "dsp_inlines.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkcv.h"
 #include "cd_lgen.h"
 #include "cd_propnum.h"
 #include "errorlog.h"
 #include "menu.h"
 #include "undolist.h"
 #include "promptline.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkcv.h"
 
 #define WID_DEF     0.1
 #define WID_MIN     0.01

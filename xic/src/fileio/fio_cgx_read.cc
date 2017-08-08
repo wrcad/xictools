@@ -47,8 +47,8 @@
 #include "cd_propnum.h"
 #include "cd_celldb.h"
 #include "cd_digest.h"
-#include "timedbg.h"
-#include "texttf.h"
+#include "miscutil/timedbg.h"
+#include "miscutil/texttf.h"
 
 
 namespace {

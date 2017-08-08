@@ -48,36 +48,35 @@
 #include "si_parser.h"
 #include "si_interp.h"
 #include "si_macro.h"
+#include "keymap.h"
+#include "keymacro.h"
+#include "tech.h"
+#include "errorlog.h"
+#include "ghost.h"
 #include "gtkmain.h"
-#include "gtkfont.h"
 #include "gtkhtext.h"
 #include "gtkltab.h"
 #include "gtkcoord.h"
 #include "gtkparam.h"
 #include "gtkmenu.h"
 #include "gtkmenucfg.h"
-#include "gtkutil.h"
 #include "gtkinlines.h"
-#include "nulldev.h"
-#include "events.h"
-#include "keymap.h"
-#include "keymacro.h"
-#include "tech.h"
-#include "errorlog.h"
-#include "ghost.h"
-#include "timer.h"
-#include "imsave.h"
-#include "help_defs.h"
-#include "help_context.h"
-#include "htm_widget.h"
-#include "htm_form.h"
+#include "gtkinterf/gtkfont.h"
+#include "gtkinterf/gtkutil.h"
+#include "ginterf/nulldev.h"
+#include "miscutil/timer.h"
+#include "imsave/imsave.h"
+#include "help/help_defs.h"
+#include "help/help_context.h"
+#include "htm/htm_widget.h"
+#include "htm/htm_form.h"
 
 #include "file_menu.h"
 #include "view_menu.h"
 
 #include <gdk/gdkkeysyms.h>
 #ifdef WITH_X11
-#include "gtkx11.h"
+#include "gtkinterf/gtkx11.h"
 #include <X11/Xresource.h>
 #endif
 
@@ -1672,7 +1671,7 @@ win_bag::keypress_handler(unsigned keyval, unsigned state, char *keystring,
     if (!wib_windesc)
         return (false);
 
-    // The code: 0x00 - 0x16 are the KEYcode enum values.
+    // The code: 0x00 - 0x16 are the eKeyCode enum values.
     //           0x17 - 0x1f unused
     //           0x20 - 0xffff X keysym
     // The X keysyms 0x20 - 0x7e match the ascii character

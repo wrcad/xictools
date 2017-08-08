@@ -41,11 +41,11 @@
 #include "main.h"
 #include "ext.h"
 #include "ext_extract.h"
-#include "gtkmain.h"
-#include "gtkinlines.h"
-#include "gtkfont.h"
 #include "dsp_inlines.h"
 #include "promptline.h"
+#include "gtkmain.h"
+#include "gtkinlines.h"
+#include "gtkinterf/gtkfont.h"
 
 
 //-------------------------------------------------------------------------

@@ -52,7 +52,7 @@
 #include "promptline.h"
 #include "errorlog.h"
 #include "ghost.h"
-#include "pathlist.h"
+#include "miscutil/pathlist.h"
 
 
 //

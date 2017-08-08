@@ -52,8 +52,8 @@
 #include "errorlog.h"
 #include "menu.h"
 #include "ext_menu.h"
-#include "pathlist.h"
-#include "filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
 
 
 namespace {

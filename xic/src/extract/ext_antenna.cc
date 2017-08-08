@@ -46,8 +46,8 @@
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
 #include "geo_ylist.h"
-#include "timer.h"
 #include "promptline.h"
+#include "miscutil/timer.h"
 
 
 cAntParams *cAntParams::instancePtr = 0;

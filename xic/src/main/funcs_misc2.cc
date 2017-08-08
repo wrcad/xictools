@@ -62,7 +62,6 @@
 #include "si_interp.h"
 #include "si_daemon.h"
 #include "si_lspec.h"
-#include "spnumber.h"
 #include "main_scriptif.h"
 #include "events.h"
 #include "ghost.h"
@@ -71,11 +70,12 @@
 #include "promptline.h"
 #include "pcell.h"
 #include "errorlog.h"
-#include "pathlist.h"
-#include "filestat.h"
-#include "tvals.h"
-#include "miscutil.h"
-#include "coresize.h"
+#include "spnumber/spnumber.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/filestat.h"
+#include "miscutil/tvals.h"
+#include "miscutil/miscutil.h"
+#include "miscutil/coresize.h"
 
 #include <algorithm>
 #include <unistd.h>

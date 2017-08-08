@@ -46,9 +46,9 @@
 #include "cd_digest.h"
 #include "si_parsenode.h"
 #include "si_daemon.h"
-#include "filestat.h"
-#include "pathlist.h"
-#include "services.h"
+#include "miscutil/filestat.h"
+#include "miscutil/pathlist.h"
+#include "miscutil/services.h"
 #include <sys/stat.h>
 #include <algorithm>
 
