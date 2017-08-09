@@ -38,62 +38,16 @@
  $Id:$
  *========================================================================*/
 
-#ifndef PYTHON_IF_H
-#define PYTHON_IF_H
+#ifndef SI_PARAM_H
+#define SI_PARAM_H
 
-struct PyObject;
-#include "py_base.h"
-
-
-inline class cPyIf *PyIf();
-
-// Main class to interface Xic to Python.
+// Base class for a parameter assignment which can be passed to the
+// interpreter functions.  Used for PCells.
 //
-class cPyIf
+struct SIparam
 {
-    static cPyIf *ptr()
-        {
-            if (!instancePtr)
-                on_null_ptr();
-            return (instancePtr);
-        }
-
-    static void on_null_ptr();
-
-public:
-    friend inline cPyIf *PyIf() { return (cPyIf::ptr()); }
-
-    cPyIf(cPy_base*);
-    virtual ~cPyIf() { }
-
-    // Capability flag.
-    bool hasPy()            { return (pyPtr != 0); }
-
-    // Wrapper for native script functions.  This is never called unless
-    // the pyPtr is good.
-    PyObject *wrapper(const char *n, PyObject *args, int nargs,
-            SIscriptFunc xicfunc)
-        {
-            return (pyPtr->wrapper(n, args, nargs, xicfunc));
-        }
-
-    bool run(const char*, const char*);
-    bool runString(const char*, const char*);
-    bool runModuleFunc(const char*, const char*, Variable*, Variable*);
-    void reset();
-
-    static void register_func(const char*, PyObject*(*)(PyObject*, PyObject*));
-
-private:
-    cPy_base *pyPtr;
-
-    static SymTab *py_functions;
-    static cPyIf *instancePtr;
+    virtual char *getAssignment() const = 0;
+    virtual SIparam *next() const = 0;
 };
 
-// Macro to define a Python function.
-#define PY_FUNC(name, na, f) PyObject *py##name(PyObject*, PyObject *a) \
-  { return (PyIf()->wrapper(#name, a, na, &f)); }
-
 #endif
-

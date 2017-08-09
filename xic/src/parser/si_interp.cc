@@ -259,7 +259,7 @@ namespace {
 //
 int
 SIinterp::Interpret(SIfile *sfp, stringlist *wl, const char **line,
-    siVariable *result, bool step, const PCellParam *params)
+    siVariable *result, bool step, const SIparam *params)
 {
     // Function is not reentrant when single-stepping.
 
@@ -274,7 +274,7 @@ step_again:
     if (!step) {
         push_cx();
         // set the variables
-        for (const PCellParam *p = params; p; p = p->next()) {
+        for (const SIparam *p = params; p; p = p->next()) {
             char *s = p->getAssignment();
             if (s) {
                 const char *t = s;
@@ -421,13 +421,13 @@ step_again:
 //
 int
 SIinterp::LineInterp(const char *str, siVariable *res,
-    bool init, const PCellParam *params)
+    bool init, const SIparam *params)
 {
     ClearInterrupt();
     if (init) {
         Init();
         staticCx.reset();
-        for (const PCellParam *p = params; p; p = p->next()) {
+        for (const SIparam *p = params; p; p = p->next()) {
             char *s = p->getAssignment();
             if (s) {
                 const char *t = s;

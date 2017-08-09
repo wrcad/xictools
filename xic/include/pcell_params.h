@@ -41,6 +41,8 @@
 #ifndef PCELL_PARAMS_H
 #define PCELL_PARAMS_H
 
+#include "si_param.h"
+
 //
 // Elements for a PCell database.
 //
@@ -145,10 +147,9 @@ private:
     bool pc_limit_none;
 };
 
-
 // List element for a PCell parameter.
 //
-struct PCellParam
+struct PCellParam : public SIparam
 {
     // PCPbool
     PCellParam(PCPtype t, const char *n, const char *c, bool b)
@@ -201,7 +202,7 @@ struct PCellParam
                 u.aval = 0;
         }
 
-    ~PCellParam()
+    virtual ~PCellParam()
         {
             delete [] p_name;
             delete [] p_appname;

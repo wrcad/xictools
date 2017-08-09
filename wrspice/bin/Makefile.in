@@ -68,23 +68,26 @@ WDEMODIR = wrspice_ipc_demo
 CCFILES = $(SPICE_PROG).cc $(SPICE_PROG)d.cc multidec.cc \
     proc2mod.cc printtoraw.cc
 
-SUBDIRS =../src/cp ../src/fte ../src/analysis ../src/inp \
-  ../src/ckt ../src/sparse ../src/plot ../src/$(GRPREF)wrs ../src/misc
-SUBDIR_LIBS =../src/cp/cp.a ../src/fte/fte.a ../src/analysis/analysis.a \
-  ../src/inp/inp.a ../src/ckt/ckt.a ../src/sparse/sparse.a ../src/plot/plot.a \
-  ../src/$(GRPREF)wrs/$(GRPREF)wrs.a ../src/misc/misc.a
+SUBDIRS = \
+  ../src/cp ../src/fte ../src/analysis ../src/inp ../src/ckt \
+  ../src/sparse ../src/plot ../src/$(GRPREF)wrs ../src/misc
+SUBDIR_LIBS = \
+  ../src/cp/cp.a ../src/fte/fte.a ../src/analysis/analysis.a \
+  ../src/inp/inp.a ../src/ckt/ckt.a ../src/sparse/sparse.a \
+  ../src/plot/plot.a ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
+  ../src/misc/misc.a
 
 LOCAL_LIBS = \
   ../src/cp/cp.a \
   ../src/fte/fte.a \
   $(DEVLIB_CALL) \
-  $(SECURE)/secure.a \
   ../src/analysis/analysis.a \
   ../src/inp/inp.a \
   ../src/ckt/ckt.a \
   ../src/sparse/sparse.a \
   ../src/plot/plot.a \
   ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
+  $(SECURE)/secure.a \
   $(MOZY)/lib/htm.a \
   $(MOZY)/lib/help.a \
   $(MOZY)/lib/gtkmozy.a \

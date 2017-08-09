@@ -41,10 +41,10 @@
 #ifndef SI_INTERP_H
 #define SI_INTERP_H
 
+#include "si_param.h"
 
 class cGroupDesc;
 class SIinterp;
-struct PCellParam;
 struct sCrypt;
 struct SIlexp_list;
 struct SImacroHandler;
@@ -388,9 +388,9 @@ public:
     SIinterp();
     static char *NextLine(int*, SIfile*, stringlist**, const char**);
     int Interpret(SIfile*, stringlist*, const char**, siVariable*,
-        bool = false, const PCellParam* = 0);
+        bool = false, const SIparam* = 0);
     int LineInterp(const char*, siVariable*, bool = false,
-        const PCellParam* = 0);
+        const SIparam* = 0);
     SIfunc *GetBlock(SIfile*, stringlist*, const char**, siVariable**);
     XIrt EvalFunc(SIfunc*, void*, siVariable* = 0, siVariable* = 0);
     void Init();

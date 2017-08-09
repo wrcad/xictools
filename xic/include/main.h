@@ -78,6 +78,7 @@ struct MenuEnt;
 struct sLcb;
 struct updif_t;
 struct cfilter_t;
+class cPyIf;
 
 namespace main_txtcmds {
     struct bcel_t;
@@ -434,6 +435,9 @@ public:
     // pushpop.cc
     void pushSetup();
     void pushExec(CmdDesc*);
+
+    // py_open.cc
+    cPyIf *openPY();
 
     // save.cc
     void Save();

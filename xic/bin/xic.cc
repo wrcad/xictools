@@ -644,7 +644,7 @@ main(int argc, char **argv)
     _oa_ = new cOAif;
 
     // Start Python interface.
-    _py_ = new cPyIf;
+    _py_ = XM()->openPY();
 
     // Start Tcl/Tk interface.
     _tk_ = new cTclIf;

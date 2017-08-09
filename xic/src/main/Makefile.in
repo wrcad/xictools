@@ -31,10 +31,10 @@ CCFILES = \
   layers.cc layertab.cc layertab_setif.cc line45.cc main.cc \
   main_scriptif.cc main_setif.cc main_techif.cc main_txtcmds.cc \
   main_variables.cc measure.cc memory.cc menu.cc misc_menu.cc \
-  modeswitch.cc oa_if.cc onexit.cc open.cc pcell.cc promptline.cc \
-  promptline_setif.cc prpty.cc pushpop.cc python_if.cc save.cc \
-  scedif.cc select.cc signals.cc subwin.cc tcltk_if.cc user_menu.cc \
-  view_menu.cc
+  modeswitch.cc oa_if.cc onexit.cc open.cc pcell.cc pcell_params.cc \
+  promptline.cc promptline_setif.cc prpty.cc pushpop.cc py_open.cc \
+  save.cc scedif.cc select.cc signals.cc subwin.cc tcltk_if.cc \
+  user_menu.cc view_menu.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)

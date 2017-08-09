@@ -6024,7 +6024,7 @@ misc1_funcs::IFrunPython(Variable *res, Variable *args, void*)
     }
     res->type = TYP_SCALAR;
     res->content.value = 1;
-    if (!PyIf()->run(lstr.string())) {
+    if (!PyIf()->run(XM()->Program(), lstr.string())) {
         Errs()->add_error("RunPython: command failed.");
         return (BAD);
     }

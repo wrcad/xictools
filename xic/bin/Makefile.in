@@ -54,7 +54,6 @@ SUBDIRS = \
   ../src/$(GRPREF)xic ../src/cd ../src/display ../src/drc ../src/edit \
   ../src/extract ../src/fileio ../src/geom ../src/main ../src/parser \
   ../src/sced ../src/wrspif ../src/sparse ../src/tech $(OA_SUBDIR)
-
 SUBDIR_LIBS = \
   ../src/$(GRPREF)xic/$(GRPREF)xic.a ../src/cd/cd.a ../src/display/display.a \
   ../src/fileio/fileio.a ../src/geom/geom.a ../src/main/main.a \
@@ -63,9 +62,27 @@ SUBDIR_LIBS = \
   ../src/extract/extract.a
 
 LOCAL_LIBS = \
+  ../src/main/main.a \
+  ../src/drc/drc.a \
+  ../src/extract/extract.a \
+  ../src/tech/tech.a \
+  ../src/edit/edit.a \
+  ../src/sced/sced.a \
+  ../src/$(GRPREF)xic/$(GRPREF)xic.a \
+  ../src/main/main.a \
+  ../src/drc/drc.a \
+  ../src/extract/extract.a \
+  ../src/tech/tech.a \
+  ../src/edit/edit.a \
+  ../src/sced/sced.a \
+  ../src/display/display.a \
+  ../src/parser/parser.a \
+  ../src/geom/geom.a  \
+  ../src/fileio/fileio.a \
+  ../src/cd/cd.a \
+  ../src/sparse/sparse.a \
+  ../src/wrspif/wrspif.a \
   $(SECURE)/secure.a \
-  $(SUBDIR_LIBS) \
-  $(SUBDIR_LIBS) \
   $(MOZY)/lib/htm.a \
   $(MOZY)/lib/help.a \
   $(MOZY)/lib/gtkmozy.a \
@@ -335,7 +352,7 @@ $(destn)/scrkit::
 	$(INSTALL_LIB) ../include/si_args.h ../src/scrkit
 	$(INSTALL_LIB) ../include/si_if_variable.h ../src/scrkit
 	$(INSTALL_LIB) ../include/si_scrfunc.h ../src/scrkit
-	$(INSTALL_LIB) $(BASE)/miscutil/miscmath.h ../src/scrkit
+	$(INSTALL_LIB) $(BASE)/include/miscutil/miscmath.h ../src/scrkit
 	scrkit=`../packages/util/xic_files scrkit`; \
 	for a in $$scrkit; do \
 	    $(INSTALL_LIB) ../src/scrkit/$$a $@; \
