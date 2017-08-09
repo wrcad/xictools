@@ -42,7 +42,6 @@
 #include "help/help_defs.h"
 #include "help/help_context.h"
 #include "help/help_topic.h"
-#include "imsave/imsave.h"
 
 #include <algorithm>
 #include <stdio.h>
@@ -75,18 +74,6 @@
 extern char *sys_errlist[];
 #endif
 #endif
-
-
-// This satisfies a reference in ginterf to avoid linking imsave, and
-// thus avoid requiring a lot of unneeded graphics libraries.
-//
-ImErrType
-Image::save_image(const char*, SaveInfo*)
-{
-    return (ImNoSupport);
-}
-// End of Image functions.
-
 
 namespace {
     GRpkg gr;

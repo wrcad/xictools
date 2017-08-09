@@ -57,7 +57,6 @@ Authors: 1985 Thomas L. Quarles
 #include "uidhash.h"
 #include "verilog.h"
 #include "commands.h"
-//XXX get outplot.h outta here, don't use ginterf in Makefile incl path
 #include "outplot.h"
 #include "sparse/spmatrix.h"
 #include "spnumber/hash.h"

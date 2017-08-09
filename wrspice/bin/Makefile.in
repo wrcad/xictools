@@ -283,6 +283,9 @@ wdemo wrspice_ipc_demo:
 	fi;
 	cp -pfr ../wrspice_ipc_demo $(WDEMODIR)
 	$(BASE)/util/mvdir $(BASE)/miscutil $(WDEMODIR)/miscutil
+	$(BASE)/util/mvdir $(BASE)/include/miscutil $(WDEMODIR)/miscutil
+	cp -pf $(BASE)/include/config.h.in $(WDEMODIR)/miscutil
+	cp -pf $(BASE)/include/config.h $(WDEMODIR)/miscutil
 	cp -pf $(BASE)/configure.in $(WDEMODIR)
 	cp -pf $(BASE)/configure $(WDEMODIR)
 	cp -pf ../../xic/src/sced/sced_spiceipc.cc $(WDEMODIR)
@@ -300,7 +303,7 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/$(SPICE_PROG)
 
 install: install_test install_clean install_bin install_help install_icons \
- install_startup install_scripts install_examples install_docs
+  install_startup install_scripts install_examples install_docs
 
 install_bin:        $(destn)/bin
 install_help:       $(destn)/help

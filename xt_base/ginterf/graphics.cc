@@ -107,6 +107,7 @@ GRappCalls::on_null_ptr()
 }
 
 
+/*XXX
 //-----------------------------------------------------------------------------
 // GRimage functions
 
@@ -138,6 +139,7 @@ GRimage::create_image_file(GRpkg *pkg, const char *filename)
     return (false);
 #endif
 }
+****/
 
 
 //-----------------------------------------------------------------------------

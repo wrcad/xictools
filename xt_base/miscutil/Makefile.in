@@ -12,75 +12,36 @@ AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
 
+ifeq ($(FLAT), yes)
+INCLUDE = -I.
+LIB_TARGET = miscutil.a
+else
 INCLUDE = -I../include -I../include/miscutil
-
 LIB_TARGET = ../lib/miscutil.a
+endif
 
-HFILES = \
-    atomic_stack.h \
-    childproc.h \
-    coresize.h \
-    crypt.h \
-    encode.h \
-    errorrec.h \
-    filestat.h \
-    hashfunc.h \
-    largefile.h \
-    lstring.h \
-    miscmath.h \
-    miscutil.h \
-    msw.h \
-    pathlist.h \
-    quicksort.h \
-    random.h \
-    randval.h \
-    rangetest.h \
-    services.h \
-    smartarray.h \
-    symtab.h \
-    texttf.h \
-    threadpool.h \
-    timedbg.h \
-    timer.h \
-    tvals.h
-
+HFILES =
 CCFILES = \
-    childproc.cc \
-    coresize.cc \
-    crypt.cc \
-    encode.cc \
-    errorrec.cc \
-    filestat.cc \
-    lstring.cc \
-    md5.cc \
-    miscmath.cc \
-    miscutil.cc \
-    msw.cc \
-    pathlist.cc \
-    quicksort.cc \
-    random.cc \
-    randval.cc \
-    texttf.cc \
-    threadpool.cc \
-    timedbg.cc \
-    timer.cc \
-    tvals.cc
+  childproc.cc coresize.cc crypt.cc encode.cc errorrec.cc filestat.cc \
+  lstring.cc md5.cc miscmath.cc miscutil.cc msw.cc pathlist.cc \
+  quicksort.cc random.cc randval.cc texttf.cc threadpool.cc timedbg.cc \
+  timer.cc tvals.cc
 
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)
-	-@rm -f $(LIB_TARGET); \
+	-@rm -f $(LIB_TARGET);
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
 test_hwaddr::
-	g++ -o test_hwaddr -DTEST_HWADDR miscutil.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) -o test_hwaddr -DTEST_HWADDR miscutil.cc
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 files::
-	@echo [ $(CCFILES) $(HFILES) Makefile.in config.h.in ]
+	@echo [ $(CCFILES) $(HFILES) Makefile.in ]
 
 subdirs::
 	@echo ]

@@ -17,38 +17,11 @@ INCLUDE = -I../include -I../include/gtkinterf -I../../mozy/include \
 
 LIB_TARGET = ../lib/gtkinterf.a
 
-HFILES = \
-    gtkedit.h \
-    gtkfile.h \
-    gtkfont.h \
-    gtkhcopy.h \
-    gtkinterf.h \
-    gtklist.h \
-    gtkmcol.h \
-    gtkpfiles.h \
-    gtksearch.h \
-    gtkspinbtn.h \
-    gtkutil.h \
-    gtkx11.h \
-    mswdraw.h \
-    mswpdev.h
-
+HFILES =
 CCFILES = \
-    gtkedit.cc \
-    gtkfile.cc \
-    gtkfont.cc \
-    gtkhcopy.cc \
-    gtkinterf.cc \
-    gtklist.cc \
-    gtkmcol.cc \
-    gtkpfiles.cc \
-    gtksearch.cc \
-    gtkspinbtn.cc \
-    gtkutil.cc \
-    gtkxdraw.cc \
-    mswdraw.cc \
-    mswpdev.cc
-
+  gtkedit.cc gtkfile.cc gtkfont.cc gtkhcopy.cc gtkinterf.cc gtklist.cc \
+  gtkmcol.cc gtkpfiles.cc gtksearch.cc gtkspinbtn.cc gtkutil.cc \
+  gtkxdraw.cc mswdraw.cc mswpdev.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)

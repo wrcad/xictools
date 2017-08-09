@@ -17,14 +17,12 @@ INCLUDE = -I../include -I../include/ginterf -I../../mozy/include
 
 LIB_TARGET = ../lib/ginterf.a
 
-HFILES = \
-  fontutil.h gr_pkg_setup.h graphics.h grfont.h grlinedb.h hpgl.h \
-  nulldev.h pcl.h pixtab.h polydecomp.h psbc.h psbm.h pslindrw.h \
-  raster.h rgbmap.h rgbzimg.h shmctl.h xdraw.h xfig.h
+HFILES =
 CCFILES = \
-  colorname.cc fontutil.cc graphics.cc grfont.cc grlinedb.cc hpgl.cc \
-  pcl.cc pixtab.cc polydecomp.cc psbc.cc psbm.cc psencode.cc \
-  pslindrw.cc raster.cc rgbmap.cc rgbzimg.cc shmctl.cc xfig.cc
+  colorname.cc fontutil.cc graphics.cc grfont.cc grimage.cc \
+  grlinedb.cc hpgl.cc pcl.cc pixtab.cc polydecomp.cc psbc.cc psbm.cc \
+  psencode.cc pslindrw.cc raster.cc rgbmap.cc rgbzimg.cc shmctl.cc \
+  xfig.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)

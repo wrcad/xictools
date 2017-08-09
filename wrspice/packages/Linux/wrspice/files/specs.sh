@@ -104,7 +104,7 @@ for a in $vlmods; do
 done
 
 echo
-if [ $with_devkit=yes ]; then
+if [ $with_devkit = yes ]; then
   echo "%dir /usr/local/xictools/wrspice/devkit"
   echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/Makefile"
   echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/README"
@@ -138,7 +138,7 @@ if [ $with_devkit=yes ]; then
 fi
 
 echo
-if [ $with_cadence=yes ]; then
+if [ $with_cadence = yes ]; then
   dir=/usr/local/xictools/wrspice/cadence-oasis
   echo "%dir $dir"
   echo "%attr(0644, root, root) $dir/advTool.il"

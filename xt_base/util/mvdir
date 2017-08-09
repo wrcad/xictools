@@ -6,7 +6,9 @@
 # targets.
 
 av0=$0
-mkdir $2
+if [ ! -d $2 ]; then
+    mkdir $2
+fi
 pushd $1
 files=`make files`
 sdirs=`make subdirs`

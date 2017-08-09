@@ -50,7 +50,7 @@
 #include <fcntl.h>
 #ifdef WIN32
 #include "msw.h"
-// #include "stackdump.h"
+//XXX #include "stackdump.h"
 #include <iptypes.h>
 #include <iphlpapi.h>
 #else
@@ -490,6 +490,10 @@ miscutil::send_mail(const char *mailaddr, const char *subject,
 }
 
 
+#ifndef TEST_HWADDR
+// Throw this out when doing the hwtest since it needs additional
+// support when linking.
+
 namespace {
     // Return a full path to the xterm executable if found.
     //
@@ -610,6 +614,7 @@ miscutil::fork_terminal(const char *cmd)
 #endif
     return (0);
 }
+#endif
 
 
 #ifdef WIN32
