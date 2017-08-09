@@ -23,7 +23,7 @@ HFILES =
 CCFILES = $(SPFILES)
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): include $(CCOBJS)
+$(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -40,9 +40,6 @@ hash.cc:        $(BASE)/spnumber/hash.cc
 paramsub.cc:    $(BASE)/spnumber/paramsub.cc
 spnumber.cc:    $(BASE)/spnumber/spnumber.cc
 spparse.cc:     $(BASE)/spnumber/spparse.cc
-
-include:
-	cd ../../include; $(MAKE)
 
 depend: $(SPFILES)
 	@echo depending in $(LOCATION)

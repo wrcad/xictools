@@ -647,7 +647,7 @@ main(int argc, char **argv)
     _py_ = XM()->openPY();
 
     // Start Tcl/Tk interface.
-    _tk_ = new cTclIf;
+    _tk_ = XM()->openTclTk();
 
     if (dspPkgIf()->Initialize(gx)) {
         XM()->Auth()->closeValidation();

@@ -38,18 +38,9 @@
  $Id:$
  *========================================================================*/
 
-#include "config.h"
-#include "main.h"
-#include "promptline.h"
-#include "errorlog.h"
-#include "dsp_inlines.h"
+#include "cd.h"
 #include "tcltk_if.h"
 #include "tcl_base.h"
-#include "reltag.h"
-
-#ifdef HAVE_TCL
-#include <dlfcn.h>
-#endif
 
 
 //-----------------------------------------------------------------------------
@@ -76,76 +67,10 @@ class cTcl_nogo : public cTcl_base
 };
 
 
-#ifdef HAVE_TCL
-namespace {
-    // Dynamically open our helper lib, and return a pointer to the
-    // interface if successful.
-    //
-    cTcl_base *find_tcl(bool with_tk, char **lname)
-    {
-        bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
-        sLstr lstr;
-        const char *tclso_path = getenv("XIC_TCLSO_PATH");
-        if (tclso_path) {
-            // User told us where to look.
-            lstr.add(tclso_path);
-        }
-        else {
-            // Look in the plugins directory.
-            lstr.add(XM()->ProgramRoot());
-            lstr.add("/plugins/");
-            lstr.add(with_tk ? "tcltk." : "tcl.");
-#ifdef __APPLE__
-            lstr.add("dylib");
-#else
-            lstr.add("so");
-#endif
-        }
-
-        void *handle = dlopen(lstr.string(), RTLD_LAZY | RTLD_GLOBAL);
-        if (!handle) {
-            if (verbose)
-                printf("dlopen failed: %s\n", dlerror());
-            return (0);
-        }
-
-        cTcl_base*(*tclptr)() = (cTcl_base*(*)())dlsym(handle, "tclptr");
-        if (!tclptr) {
-            if (verbose)
-                printf("dlsym failed: %s\n", dlerror());
-            return (0);
-        }
-
-        char idstr[64];
-        sprintf(idstr, "%s %s", XM()->OSname(), XIC_RELEASE_TAG);
-        cTcl_base *tcl = (*tclptr)();
-        if (tcl && (!tcl->id_string() || strcmp(idstr, tcl->id_string()))) {
-            if (verbose) {
-                printf ("%s plug-in version mismatch:\n"
-                    "Xic is \"%s\", plug-in is \"%s\"\n",
-                    with_tk ? "Tcl/Tk" : "Tcl", idstr,
-                    tcl->id_string() ? tcl->id_string() : "");
-            }
-            tcl = 0;
-        }
-        if (!tcl) {
-            if (verbose)
-                printf("%s interface returned null pointer\n",
-                    with_tk ? "Tcl/Tk" : "Tcl");
-            return (0);
-        }
-        if (lname)
-            *lname = lstring::copy(lstring::strip_path(lstr.string()));
-        return (tcl);
-    }
-}
-#endif
-
-
 SymTab *cTclIf::tcl_functions = 0;
 cTclIf *cTclIf::instancePtr = 0;
 
-cTclIf::cTclIf()
+cTclIf::cTclIf(cTcl_base *tcl)
 {
     if (instancePtr) {
         fprintf(stderr, "Singleton class cTclIf already instantiated.\n");
@@ -153,28 +78,16 @@ cTclIf::cTclIf()
     }
     instancePtr = this;
 
-#ifdef HAVE_TCL
-    char *lname = 0;
-    tclPtr = find_tcl(true, &lname);  // First try with Tk.
-    if (!tclPtr)
-        tclPtr = find_tcl(false, &lname);  // Try again without Tk.
+    tclPtr = tcl;
     if (tclPtr) {
-        has_tcl = true;
-        has_tk = tclPtr->hasTk();
-        XM()->RegisterBangCmd("tcl", &bang_tcl);
-        if (has_tk) {
-            XM()->RegisterBangCmd("tk", &bang_tcl);
-            printf("Using Tcl/Tk (%s).\n", lname);
-        }
-        else
-            printf("Using Tcl (%s).\n", lname);
-        delete [] lname;
-        return;
+        tclAvail = true;
+        tkAvail = tclPtr->hasTk();
     }
-#endif
-
-    tclPtr = new cTcl_nogo;
-    has_tcl = false;
+    else {
+        tclPtr = new cTcl_nogo;
+        tclAvail = false;
+        tkAvail = false;
+    }
 }
 
 
@@ -200,7 +113,7 @@ cTclIf::run(const char *s)
     }
     GCarray<char*> gc_cmdfile(cmdfile);
     bool is_tk = false;
-    if (has_tk) {
+    if (tkAvail) {
         // Tk is available.  The file must have a .tcl or .tk extension.
         char *ext = strrchr(cmdfile, '.');
         if (!ext || (!lstring::cieq(ext, ".tcl") &&
@@ -271,19 +184,5 @@ cTclIf::register_func(const char *fname,
         tcl_functions->add(fname, (void*)func, false);
     else
         ent->stData = (void*)func;
-}
-
-
-// Static function
-//
-void
-cTclIf::bang_tcl(const char *s)
-{
-    if (TclIf()->run(s))
-        PL()->ShowPrompt("Tcl/Tk done.");
-    else {
-        Log()->ErrorLog("Tck/Tk Interface", Errs()->get_error());
-        PL()->ShowPrompt("Tcl/Tk execution failed.");
-    }
 }
 

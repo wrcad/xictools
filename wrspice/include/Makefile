@@ -2,6 +2,8 @@
 LOCATION = wrspice/include
 #######################################################################
 
+dummy:
+
 depend: reltag
 	@echo depending in $(LOCATION)
 

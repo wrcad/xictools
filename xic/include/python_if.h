@@ -67,7 +67,7 @@ public:
     virtual ~cPyIf() { }
 
     // Capability flag.
-    bool hasPy()            { return (pyPtr != 0); }
+    bool hasPy()            { return (pyAvail); }
 
     // Wrapper for native script functions.  This is never called unless
     // the pyPtr is good.
@@ -86,6 +86,7 @@ public:
 
 private:
     cPy_base *pyPtr;
+    bool pyAvail;
 
     static SymTab *py_functions;
     static cPyIf *instancePtr;

@@ -26,7 +26,7 @@ CCFILES = \
   $(NFILES) texthelp.cc time.cc ttyio.cc vardb.cc verilog.cc wlist.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): include $(CCOBJS)
+$(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -42,9 +42,6 @@ $(NFILES):
 hash.cc:        $(BASE)/spnumber/hash.cc
 spnumber.cc:    $(BASE)/spnumber/spnumber.cc
 spparse.cc:     $(BASE)/spnumber/spparse.cc
-
-include:
-	cd ../../include; $(MAKE)
 
 depend: $(NFILES)
 	@echo depending in $(LOCATION)

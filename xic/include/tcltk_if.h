@@ -66,12 +66,12 @@ class cTclIf
 public:
     friend inline cTclIf *TclIf() { return (cTclIf::ptr()); }
 
-    cTclIf();
+    cTclIf(cTcl_base*);
     virtual ~cTclIf() { }
 
     // Capability flags.
-    bool hasTcl()               { return (has_tcl); }
-    bool hasTk()                { return (has_tk); }
+    bool hasTcl()               { return (tclAvail); }
+    bool hasTk()                { return (tkAvail); }
 
     // Wrapper for native script functions.  This is never called unless
     // the tclPtr is good.
@@ -89,11 +89,9 @@ public:
         int, Tcl_Obj* const*));
 
 private:
-    static void bang_tcl(const char*);
-
     cTcl_base *tclPtr;
-    bool has_tcl;
-    bool has_tk;
+    bool tclAvail;
+    bool tkAvail;
 
     static SymTab *tcl_functions;
     static cTclIf *instancePtr;

@@ -33,7 +33,7 @@ CCFILES = \
   subexpand.cc sweep.cc trnames.cc types.cc vectors.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): include $(CCOBJS)
+$(LIB_TARGET): $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -45,9 +45,6 @@ $(LIB_TARGET): include $(CCOBJS)
 
 paramsub.cc: $(BASE)/spnumber/paramsub.cc
 	cp -f $(BASE)/spnumber/paramsub.cc .
-
-include:
-	cd ../../include; $(MAKE)
 
 depend: paramsub.cc
 	@echo depending in $(LOCATION)

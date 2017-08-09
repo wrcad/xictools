@@ -23,32 +23,15 @@ LIB_TARGET = oa.a
 SHLIB_TARGET = oa.$(SOEXT)
 
 BASE = ../../../xt_base
-INCLUDE = -I../../include -I$(BASE)/include -I$(OA_INCLUDE)
+INCLUDE = -I. -I../../include -I$(BASE)/include -I$(OA_INCLUDE)
 
 HFILES = \
-  oa.h \
-  oa_alib.h \
-  oa_errlog.h \
-  oa_lib_observer.h \
-  oa_nametab.h \
-  oa_net.h \
-  oa_prop.h \
-  oa_tech_observer.h \
-  oa_via.h
+  oa.h oa_alib.h oa_errlog.h oa_lib_observer.h oa_nametab.h oa_net.h \
+  oa_prop.h oa_tech_observer.h oa_via.h
 CCFILES = \
-  oa.cc \
-  oa_alib.cc \
-  oa_errlog.cc \
-  oa_lib_observer.cc \
-  oa_library.cc \
-  oa_load.cc \
-  oa_nametab.cc \
-  oa_net.cc \
-  oa_prop.cc \
-  oa_save.cc \
-  oa_tech.cc \
-  oa_tech_observer.cc \
-  oa_via.cc
+  oa.cc oa_alib.cc oa_errlog.cc oa_lib_observer.cc oa_library.cc \
+  oa_load.cc oa_nametab.cc oa_net.cc oa_prop.cc oa_save.cc oa_tech.cc \
+  oa_tech_observer.cc oa_via.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
 DARGS = -DOSNAME="\"$(OSNAME)\""

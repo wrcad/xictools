@@ -16,6 +16,7 @@ CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@ @UFLAGS@
 LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
 LSHFLAG = @LSHFLAG@
 LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
+LIBDL = @LIBDL@
 STDCLIB = @STDCLIB@
 OSNAME = @OSNAME@
 ARCH = @ARCH@
@@ -125,11 +126,22 @@ plugins::
 # sa-filetool will always rebuild fietool.o, to set a three-month lifetime
 # for the binary.
 
-sa-filetool: sa-filetool.o ../src/cd/cd.a ../src/fileio/fileio.a \
-  ../src/geom/geom.a ../src/parser/parser.a $(BASE)/lib/miscutil.a
-	$(LINKCC) -o sa-filetool sa-filetool.o ../src/cd/cd.a \
-  ../src/fileio/fileio.a ../src/geom/geom.a ../src/parser/parser.a \
-  ../src/fileio/fileio.a $(BASE)/lib/miscutil.a -lm -lz $(STDCLIB)
+FT_LIBS = \
+  ../src/geom/geom.a \
+  ../src/fileio/fileio.a \
+  ../src/cd/cd.a \
+  ../src/parser/parser.a \
+  ../src/geom/geom.a \
+  ../src/fileio/fileio.a \
+  ../src/wrspif/wrspif.a \
+  $(BASE)/lib/miscutil.a \
+  $(BASE)/lib/malloc.a \
+  $(MOZY)/lib/httpget.a \
+  $(MOZY)/lib/update_itf.a
+
+sa-filetool: sa-filetool.o $(FT_LIBS)
+	$(LINKCC) -o sa-filetool sa-filetool.o $(FT_LIBS) \
+  -lm -lz $(LIBDL) $(STDCLIB)
 	rm -f sa-filetool.o
 
 wrencode: cryptmain.cc ../src/parser/parser.a $(BASE)/lib/miscutil.a
@@ -158,24 +170,6 @@ $(SUBDIR_LIBS) $(OA_SUBDIR)::
 $(SECURE):
 	cd $(@D); $(MAKE)
 
-$(MOZY)/lib/gtkmozy.a:
-	cd $(MOZY)/src/gtkmozy; $(MAKE)
-
-$(MOZY)/lib/help.a:
-	cd $(MOZY)/src/help; $(MAKE)
-
-$(MOZY)/lib/htm.a:
-	cd $(MOZY)/src/htm; $(MAKE)
-
-$(MOZY)/lib/httpget.a:
-	cd $(MOZY)/src/httpget; $(MAKE)
-
-$(MOZY)/lib/imsave.a:
-	cd $(MOZY)/src/imsave; $(MAKE)
-
-$(MOZY)/lib/update_itf.a:
-	cd $(MOZY)/src/update_itf; $(MAKE)
-
 $(BASE)/lib/ginterf.a:
 	cd $(BASED)/ginterf; $(MAKE)
 
@@ -186,6 +180,36 @@ $(BASE)/lib/miscutil.a:
 	cd $(BASED)/miscutil; $(MAKE)
 	if [ x$(NTREGEX) != x ]; then \
 	    cd $(BASE)/miscutil/libregex; $(MAKE); \
+	fi
+
+$(MOZY)/lib/gtkmozy.a:
+	if [ -d $(MOZY)/src/gtkmozy ]; then \
+	    cd $(MOZY)/src/gtkmozy; $(MAKE); \
+	fi
+
+$(MOZY)/lib/help.a:
+	if [ -d $(MOZY)/src/help ]; then \
+	    cd $(MOZY)/src/help; $(MAKE); \
+	fi
+
+$(MOZY)/lib/htm.a:
+	if [ -d $(MOZY)/src/htm ]; then \
+	    cd $(MOZY)/src/htm; $(MAKE); \
+	fi
+
+$(MOZY)/lib/httpget.a:
+	if [ -d $(MOZY)/src/httpget ]; then \
+	    cd $(MOZY)/src/httpget; $(MAKE); \
+	fi
+
+$(MOZY)/lib/imsave.a:
+	if [ -d $(MOZY)/src/imsave ] ; then \
+	    cd $(MOZY)/src/imsave; $(MAKE); \
+	fi
+
+$(MOZY)/lib/update_itf.a:
+	if [ -d $(MOZY)/src/upd ]; then \
+	    cd $(MOZY)/src/upd; $(MAKE); \
 	fi
 
 #######################################################################

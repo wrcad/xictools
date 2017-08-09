@@ -77,8 +77,12 @@ cPyIf::cPyIf(cPy_base *py)
     instancePtr = this;
 
     pyPtr = py;
-    if (!pyPtr)
+    if (pyPtr)
+        pyAvail = true;
+    else {
         pyPtr = new cPy_nogo;
+        pyAvail = false;
+    }
 }
 
 

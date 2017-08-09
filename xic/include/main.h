@@ -79,6 +79,7 @@ struct sLcb;
 struct updif_t;
 struct cfilter_t;
 class cPyIf;
+class cTclIf;
 
 namespace main_txtcmds {
     struct bcel_t;
@@ -468,6 +469,9 @@ public:
 
     // subwin.cc
     void SubWindowExec(CmdDesc*);
+
+    // tcltk_open.cc
+    cTclIf *openTclTk();
 
     // user_menu.cc
     MenuBox *createUserMenu();

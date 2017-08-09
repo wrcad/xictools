@@ -2,6 +2,8 @@
 LOCATION = xic/include
 #######################################################################
 
+dummy:
+
 depend: reltag
 	@echo depending in $(LOCATION)
 

@@ -33,7 +33,7 @@ CCFILES = \
   main_variables.cc measure.cc memory.cc menu.cc misc_menu.cc \
   modeswitch.cc oa_if.cc onexit.cc open.cc pcell.cc pcell_params.cc \
   promptline.cc promptline_setif.cc prpty.cc pushpop.cc py_open.cc \
-  save.cc scedif.cc select.cc signals.cc subwin.cc tcltk_if.cc \
+  save.cc scedif.cc select.cc signals.cc subwin.cc tcltk_open.cc \
   user_menu.cc view_menu.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
