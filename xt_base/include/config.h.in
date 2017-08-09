@@ -1,0 +1,118 @@
+/***************************************************************************
+XICtools main configuration header template
+Copyright (c) Whiteley Research Inc 1996
+****************************************************************************
+* $Id: config.h.in,v 1.16 2015/06/23 19:51:09 stevew Exp $
+****************************************************************************/
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
+#undef STDC_HEADERS
+#undef TIME_WITH_SYS_TIME
+#undef HAVE_ALLOCA_H
+#undef HAVE_DIRENT_H
+#undef HAVE_FCNTL_H
+#undef HAVE_FENV_H
+#undef HAVE_FLOAT_H
+#undef HAVE_FNMATCH_H
+#undef HAVE_LIMITS_H
+#undef HAVE_PWD_H
+#undef HAVE_REGEX_H
+#undef HAVE_SETJMP_H
+#undef HAVE_SGTTY_H
+#undef HAVE_STRINGS_H
+#undef HAVE_SYS_DIR_H
+#undef HAVE_SYS_FILE_H
+#undef HAVE_SYS_IOCTL_H
+#undef HAVE_SYS_RESOURCE_H
+#undef HAVE_SYS_TIME_H
+#undef HAVE_SYS_WAIT_H
+#undef HAVE_TERM_H
+#undef HAVE_TERMCAP_H
+#undef HAVE_TERMIO_H
+#undef HAVE_TERMIOS_H
+#undef HAVE_ULIMIT_H
+#undef HAVE_UNISTD_H
+
+#undef SYS_ERRLIST_DEF
+#undef SELECT_TAKES_INTP
+
+#undef HAVE_ACCESS
+#undef HAVE_ACOSH
+#undef HAVE_ATEXIT
+#undef HAVE_CBRT
+#undef HAVE_CHDIR
+#undef HAVE_CLEARERR
+#undef HAVE_DUP2
+#undef HAVE_ERF
+#undef HAVE_ERFC
+#undef HAVE_FORK
+#undef HAVE_FSEEKO
+#undef HAVE_FTIME
+#undef HAVE_GETCWD
+#undef HAVE_GETENV
+#undef HAVE_GETHOSTNAME
+#undef HAVE_GETHOSTBYNAME
+#undef HAVE_GETPID
+#undef HAVE_GETPWUID
+#undef HAVE_GETRLIMIT
+#undef HAVE_GETRUSAGE
+#undef HAVE_GETTIMEOFDAY
+#undef HAVE_GETWD
+#undef HAVE_HSTRERROR
+#undef HAVE_ISATTY
+#undef HAVE_KILL
+#undef HAVE_LGAMMA
+#undef HAVE_MKSTEMPS
+#undef HAVE_PERROR
+#undef HAVE_POPEN
+#undef HAVE_POSIX_MEMALIGN
+#undef HAVE_POSIX_OPENPT
+#undef HAVE_QSORT
+#undef HAVE_RAISE
+#undef HAVE_RE_COMP
+#undef HAVE_SELECT
+#undef HAVE_SHMGET
+#undef HAVE_SIGACTION
+#undef HAVE_SIGNAL
+#undef HAVE_SOCKET
+#undef HAVE_SRAND
+#undef HAVE_SRANDOM
+#undef HAVE_STAT
+#undef HAVE_STRCASECMP
+#undef HAVE_STRCHR
+#undef HAVE_STRERROR
+#undef HAVE_STRTOK_R
+#undef HAVE_SYSTEM
+#undef HAVE_TCGETPGRP
+#undef HAVE_TGETENT
+#undef HAVE_TIGETSTR
+#undef HAVE_TIMES
+#undef HAVE_ULIMIT
+#undef HAVE_UNLINK
+#undef HAVE_VSNPRINTF
+#undef HAVE_VASPRINTF
+
+#undef HAVE_GTK1
+#undef HAVE_GTK2
+#undef HAVE_QT
+
+#undef HAVE_OA
+#undef HAVE_PYTHON
+#undef HAVE_TCL
+#undef HAVE_TK
+
+#undef socklen_t
+
+#undef HAVE_LIBZ
+#undef HAVE_LIBPNG
+#undef HAVE_LIBJPEG
+#undef HAVE_LIBTIFF
+
+#undef HAVE_COMPUTED_GOTO
+#undef HAVE_LOCAL_ALLOCATOR
+#undef HAVE_MOZY
+
+#endif
+
