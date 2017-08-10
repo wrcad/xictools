@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "scedif.h"
 #include "dsp_tkif.h"
@@ -54,7 +55,9 @@
 #include "select.h"
 #include "tech.h"
 #include "miscutil/filestat.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#endif
 
 
 //
@@ -146,10 +149,14 @@ namespace {
     bool
     evHelpPath(const char *vstring, bool set)
     {
+#ifdef HAVE_MOZY
         if (set) {
             HLP()->set_path(vstring, false);
             HLP()->rehash();
         }
+#else
+        (void)vstring;
+#endif
 
         // This variables can't be unset.
         return (set);
@@ -773,7 +780,9 @@ namespace {
     bool
     evHelpMultiWin(const char*, bool set)
     {
+#ifdef MOZY
         HLP()->set_multi_win(set);
+#endif
         Menu()->MenuButtonSet("help", MenuMULTW, set);
         return (true);
     }
@@ -974,6 +983,7 @@ cMain::PopUpVariables(bool force_show)
                 char *name = lstring::gettok(&t);
                 char *value = t;
 
+#ifdef HAVE_MOZY
                 if (HLP()->is_keyword(name)) {
                     lstr.add("<tr><td><a href=\"");
                     lstr.add(name);
@@ -981,6 +991,9 @@ cMain::PopUpVariables(bool force_show)
                     lstr.add(name);
                     lstr.add("</tt></a></td><td>");
                 }
+#else
+                if (0) ;
+#endif
                 else {
                     lstr.add("<tr><td><tt>");
                     lstr.add(name);

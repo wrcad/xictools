@@ -12,13 +12,13 @@ DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @NEEDINT64@
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
+USEMOZY = @USEMOZY@
 
 LIB_TARGET = main.a
 
 BASE = ../../../xt_base
-MOZY = ../../../mozy
 SECURE = ../../../secure
-INCLUDE = -I../../include -I$(BASE)/include -I$(SECURE) -I$(MOZY)/include
+INCLUDE = -I../../include -I$(BASE)/include -I$(SECURE)
 
 HFILES =
 CCFILES = \
@@ -44,6 +44,15 @@ $(LIB_TARGET): $(CCOBJS)
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
+ifeq ($(USEMOZY), yes)
+MOZY = ../../../mozy
+MOZYINC = -I$(MOZY)/include
+MOBJS = help_menu.o init.o main_txtcmds.o main_variables.o oa_if.o
+
+$(MOBJS):
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) -c $*.cc
+endif
+
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
@@ -51,7 +60,7 @@ depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
   $(FILTER) >> Makefile; \
 	fi
 

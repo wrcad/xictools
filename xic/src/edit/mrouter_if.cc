@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "edit.h"
 #include "ext.h"
@@ -57,9 +58,13 @@
 #include "si_handle.h"
 #include "si_args.h"
 #include "si_parser.h"
+#include "python_if.h"
+#include "tcltk_if.h"
 #include "../../mrouter/include/mrouter.h"
 #include "mrouter_if.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#endif
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -212,9 +217,11 @@ cMRcmdIf::cMRcmdIf()
             // Register the script functions.
             loadMRouterFuncs();
 
+#ifdef HAVE_MOZY
             // Define "MRouter" in the help database.  This enables some
             // help text otherwise invisible.
             HLP()->define("MRouter");
+#endif
 
             // Finally, add the MRouter help directory to the HelpPath,
             // making the help topics available to the user.

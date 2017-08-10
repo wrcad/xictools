@@ -82,8 +82,10 @@
 #include "miscutil/timedbg.h"
 #include "miscutil/miscutil.h"
 #include "miscutil/childproc.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
 #include "upd/update_itf.h"
+#endif
 
 #ifdef WIN32
 #include "miscutil/msw.h"
@@ -1700,33 +1702,53 @@ bangcmds::rg(const char *s)
 void
 bangcmds::help(const char *s)
 {
+#ifdef HAVE_MOZY
     PL()->ErasePrompt();
     if (!*s)
         s = "xicinfo";
     DSPmainWbag(PopUpHelp(s))
+#else
+    (void)s;
+    PL()->ShowPrompt("Help system not available.");
+#endif
 }
 
 
 void
 bangcmds::helpfont(const char *s)
 {
+#ifdef HAVE_MOZY
     HLP()->set_font_family(s);
     PL()->ErasePrompt();
+#else
+    (void)s;
+    PL()->ShowPrompt("Help system not available.");
+#endif
 }
 
 
 void
 bangcmds::helpfixed(const char *s)
 {
+#ifdef HAVE_MOZY
     HLP()->set_fixed_family(s);
     PL()->ErasePrompt();
+#else
+    (void)s;
+    PL()->ShowPrompt("Help system not available.");
+#endif
 }
 
 
 void
 bangcmds::helpreset(const char*)
 {
+#ifdef HAVE_MOZY
     HLP()->rehash();
+    PL()->ErasePrompt();
+#else
+    PL()->ShowPrompt("Help system not available.");
+#endif
 }
 
 
@@ -4840,6 +4862,7 @@ bangcmds::dumpcds(const char *s)
 // Name of update script file, found in library path.
 #define DST_SCRIPT  "wr_install"
 
+#ifdef HAVE_MOZY
 
 namespace {
     // Show progress when downloading.
@@ -4877,10 +4900,13 @@ namespace {
 #endif
 }
 
+#endif
+
 
 void
 bangcmds::update(const char *s)
 {
+#ifdef HAVE_MOZY
     if (!XM()->UpdateIf()) {
         PL()->ShowPrompt("Command not available.");
         return;
@@ -5084,12 +5110,18 @@ bangcmds::update(const char *s)
     PL()->ShowPrompt(
         "Done.  If install succeeded, restart the program to run new release.");
 #endif
+
+#else
+    (void)s;
+    PL()->ShowPrompt("Command not available.");
+#endif  // HAVE_MOZY
 }
 
 
 void
 bangcmds::passwd(const char*)
 {
+#ifdef HAVE_MOZY
     if (!XM()->UpdateIf()) {
         PL()->ShowPrompt("Command not available.");
         return;
@@ -5143,12 +5175,17 @@ bangcmds::passwd(const char*)
     }
     PL()->ShowPrompt(
         "The .wrpasswd file in your home directory was updated successfully.");
+
+#else
+    PL()->ShowPrompt("Command not available.");
+#endif  // HAVE_MOZY
 }
 
 
 void
 bangcmds::proxy(const char *s)
 {
+#ifdef HAVE_MOZY
     char *addr = lstring::gettok(&s);
     char *port = lstring::gettok(&s);
 
@@ -5228,6 +5265,11 @@ bangcmds::proxy(const char *s)
         PL()->ShowPromptV("Created .wrproxy file for %s:%s", addr, port);
     else
         PL()->ShowPromptV("Created .wrproxy file for %s", addr);
+
+#else
+    (void)s;
+    PL()->ShowPrompt("Command not available.");
+#endif  // HAVE_MOZY
 }
 
 

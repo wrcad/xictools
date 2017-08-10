@@ -190,8 +190,11 @@ echo '#define HAVE_GTK2 1'>> confdefs.h
 
 if test $nomozy = no; then
     echo '#define HAVE_MOZY 1'>> confdefs.h
+    USEMOZY=yes
+else
+    USEMOZY=no
 fi
-
+AC_SUBST(USEMOZY)
 
 dnl ***
 dnl *** Check operating system and build environment

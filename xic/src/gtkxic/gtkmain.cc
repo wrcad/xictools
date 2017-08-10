@@ -65,11 +65,13 @@
 #include "gtkinterf/gtkutil.h"
 #include "ginterf/nulldev.h"
 #include "miscutil/timer.h"
+#ifdef HAVE_MOZY
 #include "imsave/imsave.h"
 #include "help/help_defs.h"
 #include "help/help_context.h"
 #include "htm/htm_widget.h"
 #include "htm/htm_form.h"
+#endif
 
 #include "file_menu.h"
 #include "view_menu.h"
@@ -319,8 +321,10 @@ namespace {
     namespace main_local {
         void wait_cursor(bool);
         int timer_cb(void*);
+#ifdef HAVE_MOZY
         void quit_help(void*);
         void form_submit_hdlr(void*);
+#endif
     };
 
     inline bool is_modifier_key(unsigned keysym)
@@ -430,9 +434,11 @@ GTKpkg::Initialize(GRwbag *wcp)
     DSP()->Initialize(wid, hei, 0, (XM()->RunMode() != ModeNormal));
     LT()->InitLayerTable();
 
+#ifdef HAVE_MOZY
     // callback to tell application when quitting help
     HLP()->context()->registerQuitHelpProc(main_local::quit_help);
     HLP()->context()->registerFormSubmitProc(main_local::form_submit_hdlr);
+#endif
 
     PL()->Init();
     GRX->RegisterBigWindow(w->Shell());
@@ -1385,6 +1391,9 @@ win_bag::PixmapOk()
 bool
 win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
 {
+#ifdef HAVE_MOZY
+// This uses the imsave package from mozy.
+
     // Note that the bounding values are included in the display.
     if (!wib_windesc)
         return (false);
@@ -1457,6 +1466,11 @@ win_bag::DumpWindow(const char *filename, const BBox *AOI = 0)
     }
     delete im;
     return (true);
+#else
+    (void)filename;
+    (void)AOI;
+    return (false);
+#endif
 }
 
 
@@ -3050,6 +3064,8 @@ main_local::timer_cb(void *client_data)
 }
 
 
+#ifdef HAVE_MOZY
+
 void
 main_local::quit_help(void*)
 {
@@ -3157,4 +3173,6 @@ main_local::form_submit_hdlr(void *data)
     }
     lock = false;
 }
+
+#endif // HAVE_MOZY
 

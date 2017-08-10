@@ -38,14 +38,17 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "fio.h"
 #include "fio_library.h"
 #include "fio_alias.h"
 #include "cd_chkintr.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
+#ifdef HAVE_MOZY
 #include "upd/update_itf.h"
 #include "httpget/transact.h"
+#endif
 #include <ctype.h>
 
 
@@ -355,6 +358,8 @@ cFIO::ScalePrptyStrings(CDp *list, double phys_scale, double elec_scale,
 }
 
 
+#ifdef HAVE_MOZY
+
 namespace {
     // This is called periodically during http/ftp transfers.  Print
     // the message on the prompt line and check for interrupts.  If
@@ -379,12 +384,17 @@ namespace {
     }
 }
 
+#endif
+
 
 // Callback to download and open a file given as a URL.
 //
 FILE *
 cFIO::NetOpen(const char *url, char **filename)
 {
+#ifdef HAVE_MOZY
+// Mozy provides internet file access.
+
     Transaction t;
     char *u = lstring::gettok(&url);
     t.set_url(u);
@@ -429,6 +439,10 @@ cFIO::NetOpen(const char *url, char **filename)
         if (tmp_file)
             filestat::queue_deletion(t.destination());
     }
+#else
+    (void)url;
+    (void)filename;
+#endif
     return (0);
 }
 

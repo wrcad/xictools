@@ -71,7 +71,6 @@
 #include "layertab.h"
 #include "filetool.h"
 #include "ghost.h"
-#include "miscutil/timer.h"
 #include "reltag.h" // defines XIC_RELEASE_TAG
 
 #include "file_menu.h"
@@ -87,13 +86,16 @@
 #include "pbtn_menu.h"
 #include "ebtn_menu.h"
 
+#include "miscutil/timer.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
 #include "miscutil/tvals.h"
 #include "miscutil/timedbg.h"
 #include "miscutil/crypt.h"
 #include "ginterf/grfont.h"
+#ifdef HAVE_MOZY
 #include "upd/update_itf.h"
+#endif
 
 #include <errno.h>
 #include <sys/time.h>
@@ -238,6 +240,12 @@ namespace {sCmdLine cmdLine; }
 namespace {
     // Under Windows, create detached process if set
     bool WinBg;
+}
+
+#ifdef HAVE_MOZY
+// Update checking uses httpget from mozy.
+
+namespace {
 
     struct updif : public updif_t
     {
@@ -330,6 +338,8 @@ namespace {
 
 // Export
 const updif_t *cMain::xm_updif = &main_itf;
+
+#endif // HAVE_MOZY
 
 namespace {
     // Instantiate the components.
@@ -745,6 +755,7 @@ xic_main::start_proc(void*)
     Timer()->start(getenv("XIC_NOTIMER") ? 0 : 200);
     dspPkgIf()->RegisterIdleProc(xic_main::read_cell_proc, 0);
 
+#ifdef HAVE_MOZY
     if (!CDvdb()->getVariable(VA_NoCheckUpdate)) {
         check_for_update();
         fprintf(stdout, "Checking for message...");
@@ -758,6 +769,7 @@ xic_main::start_proc(void*)
     }
     if (UpdIf::new_release(APP_ROOT, VERSION_STR))
         Menu()->MenuButtonPress("help", MenuNOTES);
+#endif
 
 #ifdef HAVE_ATEXIT
     atexit(xic_main::onexit);

@@ -28,6 +28,7 @@ INSTALL = @INSTALL@
 NTSUFFIX = @NTSUFFIX@
 FILTER = @FILTER@
 MALLOC = @MALLOC@
+USEMOZY = @USEMOZY@
 NTREGEX = @NTREGEX@
 OA_SUBDIR = @OA_SUBDIR@
 DLL_XIC_PROG = @DLL_XIC_PROG@
@@ -45,9 +46,8 @@ INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 BASE = ../../xt_base
-MOZY = ../../mozy
 SECURE = ../../secure
-INCLUDE = -I../include -I$(BASE)/include -I$(SECURE) -I$(MOZY)/include
+INCLUDE = -I../include -I$(BASE)/include -I$(SECURE)
 
 TARGETS = $(XIC_PROG) wrencode wrdecode wrsetpass
 
@@ -61,6 +61,14 @@ SUBDIR_LIBS = \
   ../src/parser/parser.a ../src/sparse/sparse.a ../src/wrspif/wrspif.a \
   ../src/tech/tech.a ../src/edit/edit.a ../src/sced/sced.a ../src/drc/drc.a \
   ../src/extract/extract.a
+
+ifeq ($(USEMOZY), yes)
+MOZY = ../../mozy
+MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/gtkmozy.a \
+  $(MOZY)/lib/update_itf.a
+MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
+  $(MOZY)/lib/imsave.a
+endif
 
 LOCAL_LIBS = \
   ../src/main/main.a \
@@ -84,17 +92,11 @@ LOCAL_LIBS = \
   ../src/sparse/sparse.a \
   ../src/wrspif/wrspif.a \
   $(SECURE)/secure.a \
-  $(MOZY)/lib/htm.a \
-  $(MOZY)/lib/help.a \
-  $(MOZY)/lib/gtkmozy.a \
-  $(MOZY)/lib/update_itf.a \
+  $(MOZYLIBS1) \
   $(BASE)/lib/gtkinterf.a  \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
-  $(MOZY)/lib/htm.a \
-  $(MOZY)/lib/help.a \
-  $(MOZY)/lib/httpget.a \
-  $(MOZY)/lib/imsave.a \
+  $(MOZYLIBS2) \
   $(NTREGEX)
 
 all:  $(TARGETS) plugins
@@ -124,6 +126,10 @@ plugins::
 # sa-filetool will always rebuild fietool.o, to set a three-month lifetime
 # for the binary.
 
+ifeq ($(USEMOZY), yes)
+FT_MOZYLIBS = $(MOZY)/lib/httpget.a $(MOZY)/lib/update_itf.a
+endif
+
 FT_LIBS = \
   ../src/geom/geom.a \
   ../src/fileio/fileio.a \
@@ -134,8 +140,7 @@ FT_LIBS = \
   ../src/wrspif/wrspif.a \
   $(BASE)/lib/miscutil.a \
   $(BASE)/lib/malloc.a \
-  $(MOZY)/lib/httpget.a \
-  $(MOZY)/lib/update_itf.a
+  $(FT_MOZYLIBS)
 
 sa-filetool: sa-filetool.o $(FT_LIBS)
 	$(LINKCC) -o sa-filetool sa-filetool.o $(FT_LIBS) \
@@ -183,6 +188,7 @@ $(BASE)/lib/miscutil.a::
 	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
 
+ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/gtkmozy.a::
 	if [ -d $(MOZY)/src/gtkmozy ]; then \
 	    cd $(MOZY)/src/gtkmozy; $(MAKE); \
@@ -212,16 +218,21 @@ $(MOZY)/lib/update_itf.a::
 	if [ -d $(MOZY)/src/upd ]; then \
 	    cd $(MOZY)/src/upd; $(MAKE); \
 	fi
+endif
 
 #######################################################################
 ####### Object file targets ###########################################
+
+ifeq ($(USEMOZY), yes)
+MOZYINC = -I$(MOZY)/include
+endif
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
 sa-filetool.o: sa-filetool.cc Makefile
-	$(CXX) $(CFLAGS) $(INCLUDE) -DTIMELIM=`$(BASE)/util/timegen 3` \
-  -c $*.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) \
+  -DTIMELIM=`$(BASE)/util/timegen 3` -c $*.cc
 
 EXECOBJS = xic.o
 DARGS = \
@@ -237,7 +248,7 @@ DARGS = \
   -DBUILD_DATE="\"$(DATE)\""
 
 $(EXECOBJS): Makefile
-	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) -c $*.cc
+	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) $(MOZYINC) -c $*.cc
 
 #######################################################################
 ####### Dependencies ##################################################
@@ -251,7 +262,8 @@ depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
+  $(FILTER) >> Makefile; \
 	fi
 
 #######################################################################

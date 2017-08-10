@@ -14,16 +14,15 @@ AR = @AR@
 LD = @LD@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
+USEMOZY = @USEMOZY@
 TOOLKITINC = @TOOLKITINC@
 RESOURCE = @RESOURCE@
 
 LIB_TARGET = gtkxic.a
 
 BASE = ../../../xt_base
-MOZY = ../../../mozy
 SECURE = ../../../secure
-INCLUDE = -I. -I../../include -I$(BASE)/include -I$(MOZY)/include -I$(SECURE) \
-  $(TOOLKITINC)
+INCLUDE = -I. -I../../include -I$(BASE)/include -I$(SECURE)
 
 HFILES = \
   gtkasm.h gtkcoord.h gtkcv.h gtkhtext.h gtkinlines.h gtklpal.h \
@@ -57,14 +56,24 @@ $(LIB_TARGET): $(CCOBJS)
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
+ifeq ($(USEMOZY), yes)
+MOZY = ../../../mozy
+MOZYINC = -I$(MOZY)/include
+MOBJS = gtkmain.o
+
+$(MOBJS):
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) -c $*.cc
+endif
+
 .cc.o:
-	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) $(TOOLKITINC) -c $*.cc
 
 depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(TOOLKITINC) $(CCFILES) \
+  $(FILTER) >> Makefile; \
 	fi
 
 clean:

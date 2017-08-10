@@ -52,7 +52,6 @@
 #include "errorlog.h"
 #include "miscutil/timer.h"
 #include "miscutil/filestat.h"
-#include "httpget/transact.h"
 
 
 //-----------------------------------------------------------------------------

@@ -56,7 +56,9 @@
 #include "reltag.h"
 #include "secure.h"
 #include "miscutil/filestat.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#endif
 
 #ifdef HAVE_OA
 #include <dlfcn.h>
@@ -222,9 +224,11 @@ cOAif::cOAif()
         setup_vars();
         setup_funcs();
 
+#ifdef HAVE_MOZY
         // Define "OpenAccess" in the help database, makes visible
         // related text and topics.
         HLP()->define("OpenAccess");
+#endif
 
         printf("Using OpenAccess (%s).\n", lname);
         delete [] lname;

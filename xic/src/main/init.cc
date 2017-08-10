@@ -62,7 +62,9 @@
 #include "ghost.h"
 #include "miscutil/pathlist.h"
 #include "ginterf/grfont.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#endif
 
 #include <signal.h>
 #include <fcntl.h>
@@ -99,6 +101,7 @@ cMain::AppInit()
     }
 #endif
 
+#ifdef HAVE_MOZY
     // Set help system defines, do this before init files are read.
 #ifdef WIN32
     HLP()->define("Windows");
@@ -111,6 +114,7 @@ cMain::AppInit()
     else if (!ExtIf()->hasExtract())
         HLP()->define("XicII");
     HLP()->set_no_file_fonts(true);  // Don't use fonts from .mozyrc.
+#endif
 
     DSP()->SetCurMode(xm_initial_mode);
 

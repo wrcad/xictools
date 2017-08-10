@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "main.h"
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
@@ -47,7 +48,9 @@
 #include "errorlog.h"
 #include "miscutil/filestat.h"
 #include "miscutil/pathlist.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#endif
 
 
 // The Help menu for the main and subwindows.
@@ -188,7 +191,9 @@ help_menu::M_Help(CmdDesc *cmd)
         HelpCmd = 0;
         return;
     }
+#ifdef HAVE_MOZY
     HLP()->set_init_x(400);
+#endif
     const char *topkw = CDvdb()->getVariable(VA_HelpDefaultTopic);
     if (!topkw)
         topkw = "xicinfo";
