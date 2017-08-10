@@ -113,9 +113,7 @@ $(XIC_PROG).dll: $(XIC_PROG).o Makefile $(LOCAL_LIBS) $(MALLOC)
 
 #--------------------
 
-# $(NODLL_XIC_PROG): $(XIC_PROG).o Makefile $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
-
-$(NODLL_XIC_PROG): $(XIC_PROG).o Makefile
+$(NODLL_XIC_PROG): $(XIC_PROG).o Makefile $(LOCAL_LIBS) $(MALLOC) $(OA_SUBDIR)
 	-@echo $@: dynamic link;
 	-@$(LINKCC) -o $(XIC_PROG) $(LFLAGS) $(XIC_PROG).o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
@@ -167,47 +165,50 @@ $(SUBDIR_LIBS) $(OA_SUBDIR)::
 	    cd $(@D); $(MAKE); \
 	fi
 
-$(SECURE):
+$(SECURE)::
 	cd $(@D); $(MAKE)
 
-$(BASE)/lib/ginterf.a:
-	cd $(BASED)/ginterf; $(MAKE)
+$(MALLOC)::
+	cd $(@D)/../malloc; $(MAKE)
 
-$(BASE)/lib/gtkinterf.a:
-	cd $(BASED)/gtkinterf; $(MAKE)
+$(BASE)/lib/ginterf.a::
+	cd $(BASE)/ginterf; $(MAKE)
 
-$(BASE)/lib/miscutil.a:
-	cd $(BASED)/miscutil; $(MAKE)
+$(BASE)/lib/gtkinterf.a::
+	cd $(BASE)/gtkinterf; $(MAKE)
+
+$(BASE)/lib/miscutil.a::
+	cd $(BASE)/miscutil; $(MAKE)
 	if [ x$(NTREGEX) != x ]; then \
 	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
 
-$(MOZY)/lib/gtkmozy.a:
+$(MOZY)/lib/gtkmozy.a::
 	if [ -d $(MOZY)/src/gtkmozy ]; then \
 	    cd $(MOZY)/src/gtkmozy; $(MAKE); \
 	fi
 
-$(MOZY)/lib/help.a:
+$(MOZY)/lib/help.a::
 	if [ -d $(MOZY)/src/help ]; then \
 	    cd $(MOZY)/src/help; $(MAKE); \
 	fi
 
-$(MOZY)/lib/htm.a:
+$(MOZY)/lib/htm.a::
 	if [ -d $(MOZY)/src/htm ]; then \
 	    cd $(MOZY)/src/htm; $(MAKE); \
 	fi
 
-$(MOZY)/lib/httpget.a:
+$(MOZY)/lib/httpget.a::
 	if [ -d $(MOZY)/src/httpget ]; then \
 	    cd $(MOZY)/src/httpget; $(MAKE); \
 	fi
 
-$(MOZY)/lib/imsave.a:
+$(MOZY)/lib/imsave.a::
 	if [ -d $(MOZY)/src/imsave ] ; then \
 	    cd $(MOZY)/src/imsave; $(MAKE); \
 	fi
 
-$(MOZY)/lib/update_itf.a:
+$(MOZY)/lib/update_itf.a::
 	if [ -d $(MOZY)/src/upd ]; then \
 	    cd $(MOZY)/src/upd; $(MAKE); \
 	fi
@@ -237,11 +238,6 @@ DARGS = \
 
 $(EXECOBJS): Makefile
 	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) -c $*.cc
-
-.PHONY: $(MALLOC)
-
-$(MALLOC)::
-	cd $(@D)/../malloc; $(MAKE)
 
 #######################################################################
 ####### Dependencies ##################################################

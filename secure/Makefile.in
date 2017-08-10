@@ -31,7 +31,9 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 BASE = ../xt_base
 INCLUDE = -I. -I$(BASE)/include
 
-MISCUTIL = $(BASE)/lib/miscutil.a
+LIB_TARGET = secure.a
+
+HFILES =
 CCFILES = \
   lfinfo.cc licinfo.cc secure.cc secure_int.cc validate.cc xtlserv.cc \
   xtjobs.cc
@@ -48,34 +50,34 @@ all: $(LIB_TARGET) lfinfo licinfo validate xtjobs xtlserv
 
 server: xtjobs xtlserv lfinfo
 
-licinfo: licinfo.o secure.a $(MISCUTIL)
+licinfo: licinfo.o secure.a $(BASE)/lib/miscutil.a
 	$(LINKCC) $(LFLAGS) $(INCLUDE) -o licinfo licinfo.o secure.a \
-  $(MISCUTIL) $(SLIBS) $(STDCLIB)
+  $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB)
 
 make_key: make_key.c
 	$(LINKCC) $(LFLAGS) $(INCLUDE) -o make_key make_key.c $(STDCLIB)
 
-lfinfo: lfinfo.o $(MISCUTIL)
+lfinfo: lfinfo.o $(BASE)/lib/miscutil.a
 	$(LINKCC) $(LFLAGS) $(INCLUDE) -o lfinfo lfinfo.o \
-  $(MISCUTIL) $(SLIBS) $(STDCLIB)
+  $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB)
 
-validate: validate.o $(MISCUTIL)
+validate: validate.o $(BASE)/lib/miscutil.a
 	$(LINKCC) $(LFLAGS) $(INCLUDE) -o validate validate.o \
-  $(MISCUTIL) $(SLIBS) $(STDCLIB)
+  $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB)
 
 bintest: bintest.cc
 	$(CXX) -o bintest bintest.cc
 
-xtjobs: xtjobs.o secure.a $(MISCUTIL)
+xtjobs: xtjobs.o secure.a $(BASE)/lib/miscutil.a
 	$(LINKCC) $(LFLAGS) $(NTNOCONS) $(INCLUDE) -o xtjobs xtjobs.o \
-  secure.a $(MISCUTIL) $(SLIBS) $(STDCLIB)
+  secure.a $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB)
 
-xtlserv: xtlserv.o $(MISCUTIL)
+xtlserv: xtlserv.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
 	@$(LINKCC) $(LFLAGS) $(NTNOCONS) $(INCLUDE) -o xtlserv xtlserv.o \
-  $(MISCUTIL) $(SLIBS) $(STDCLIB)
+  $(BASE)/lib/miscutil.a $(SLIBS) $(STDCLIB)
 
-$(MISCUTIL)::
+$(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
 
 DARGS = \
@@ -91,26 +93,23 @@ xtlserv.o:
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDE) -c $*.c
 
-depend:: key.h
+depend: key.h
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
 	fi
 
-eclean::
-	-rm -f lfinfo$(NTSUFFIX) xtlserv$(NTSUFFIX) xtjobs$(NTSUFFIX)
-
-clean::
+eclean:
 	-rm -f lfinfo$(NTSUFFIX) licinfo$(NTSUFFIX) validate$(NTSUFFIX) \
-  make_key$(NTSUFFIX) xtlserv$(NTSUFFIX) xtjobs$(NTSUFFIX) licinfo$(NTSUFFIX) \
-  *.o *.a
+  xtjobs$(NTSUFFIX) xtlserv$(NTSUFFIX) make_key$(NTSUFFIX) bintest$(NTSUFFIX)
 
-distclean::
+clean: eclean
+	-rm *.o $(LIB_TARGET)
+
+distclean: clean
 	cd packages; $(MAKE) distclean
-	-rm -f lfinfo$(NTSUFFIX) licinfo$(NTSUFFIX) validate$(NTSUFFIX) \
-  make_key$(NTSUFFIX) xtlserv$(NTSUFFIX) xtjobs$(NTSUFFIX) licinfo$(NTSUFFIX) \
-  *.o *.a LICENSE* Makefile validate.log xtdaemon.log
+	-rm -f LICENSE* Makefile validate.log xtdaemon.log
 
 INSTALL_PREFIX ?= $(prefix)
 dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)/license

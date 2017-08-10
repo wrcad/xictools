@@ -149,7 +149,7 @@ cMain::openTclTk()
             printf("Using Tcl (%s).\n", lname);
         delete [] lname;
     }
-    return (new cTclIf(tcl));
 #endif
+    return (new cTclIf(tcl));
 }
 

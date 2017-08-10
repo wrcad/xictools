@@ -82,32 +82,32 @@ mozy.o: mozy.cc
 #######################################################################
 ####### Recursively generate libraries ################################
 
-../lib/gtkmozy.a:
+../lib/gtkmozy.a::
 	cd ../src/gtkmozy; $(MAKE)
 
-../lib/help.a:
+../lib/help.a::
 	cd ../src/help; $(MAKE)
 
-../lib/htm.a:
+../lib/htm.a::
 	cd ../src/htm; $(MAKE)
 
-../lib/httpget.a:
+../lib/httpget.a::
 	cd ../src/httpget; $(MAKE)
 
-../lib/imsave.a:
+../lib/imsave.a::
 	cd ../src/imsave; $(MAKE)
 
-../lib/update_itf.a:
+../lib/update_itf.a::
 	cd ../src/update_itf; $(MAKE)
 
-$(BASE)/lib/ginterf.a:
-	cd $(BASED)/ginterf; $(MAKE)
+$(BASE)/lib/ginterf.a::
+	cd $(BASE)/ginterf; $(MAKE)
 
-$(BASE)/lib/gtkinterf.a:
-	cd $(BASED)/gtkinterf; $(MAKE)
+$(BASE)/lib/gtkinterf.a::
+	cd $(BASE)/gtkinterf; $(MAKE)
 
-$(BASE)/lib/miscutil.a:
-	cd $(BASED)/miscutil; $(MAKE)
+$(BASE)/lib/miscutil.a::
+	cd $(BASE)/miscutil; $(MAKE)
 	if [ x$(NTREGEX) != x ]; then \
 	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
