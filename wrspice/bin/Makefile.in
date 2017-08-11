@@ -28,6 +28,7 @@ INSTALL = @INSTALL@
 NTSUFFIX = @NTSUFFIX@
 FILTER = @FILTER@
 MALLOC = @MALLOC@
+USEMOZY = @USEMOZY@
 NTREGEX = @NTREGEX@
 #DEVLIB_SHARED = @DEVLIB_SHARED_FILE@
 DEVLIB_STATIC = @DEVLIB_STATIC_FILE@
@@ -58,10 +59,9 @@ INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 BASE = ../../xt_base
-MOZY = ../../mozy
 SECURE = ../../secure
 VLOG = ../../vl
-INCLUDE = -I../include -I$(BASE)/include -I$(SECURE) -I$(MOZY)/include
+INCLUDE = -I../include -I$(BASE)/include -I$(SECURE)
 
 WDEMODIR = wrspice_ipc_demo
 
@@ -77,6 +77,14 @@ SUBDIR_LIBS = \
   ../src/plot/plot.a ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
   ../src/misc/misc.a
 
+ifeq ($(USEMOZY), yes)
+MOZY = ../../mozy
+MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/gtkmozy.a \
+  $(MOZY)/lib/update_itf.a
+MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
+  $(MOZY)/lib/imsave.a
+endif
+
 LOCAL_LIBS = \
   ../src/cp/cp.a \
   ../src/fte/fte.a \
@@ -88,17 +96,11 @@ LOCAL_LIBS = \
   ../src/plot/plot.a \
   ../src/$(GRPREF)wrs/$(GRPREF)wrs.a \
   $(SECURE)/secure.a \
-  $(MOZY)/lib/htm.a \
-  $(MOZY)/lib/help.a \
-  $(MOZY)/lib/gtkmozy.a \
-  $(MOZY)/lib/update_itf.a \
+  $(MOZYLIBS1) \
   $(BASE)/lib/gtkinterf.a  \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
-  $(MOZY)/lib/htm.a \
-  $(MOZY)/lib/help.a \
-  $(MOZY)/lib/httpget.a \
-  $(MOZY)/lib/imsave.a \
+  $(MOZYLIBS2) \
   ../src/misc/misc.a \
   $(VLOG)/libvlog.a \
   $(NTREGEX)
@@ -180,6 +182,7 @@ $(BASE)/lib/miscutil.a::
 	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
 
+ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/gtkmozy.a::
 	if [ -d $(MOZY)/src/gtkmozy ]; then \
 	    cd $(MOZY)/src/gtkmozy; $(MAKE); \
@@ -209,12 +212,17 @@ $(MOZY)/lib/update_itf.a::
 	if [ -d $(MOZY)/src/upd ]; then \
 	    cd $(MOZY)/src/upd; $(MAKE); \
 	fi
+endif
 
 #######################################################################
 ####### Object file targets ###########################################
 
+ifeq ($(USEMOZY), yes)
+MOZYINC = -I$(MOZY)/include
+endif
+
 $(SPICE_PROG).o: $(SPICE_PROG).cc Makefile
-	$(CXX) $(CFLAGS) $(INCLUDE) -c \
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) -c \
   -DBDCODE="\"`date +%m%d%y-%H%M%S`"\" \
   -DPREFIX="\"$(prefix)\"" \
   -DOSNAME="\"$(OSNAME)\"" \
@@ -260,7 +268,8 @@ depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
+  $(FILTER) >> Makefile; \
 	fi
 
 #######################################################################

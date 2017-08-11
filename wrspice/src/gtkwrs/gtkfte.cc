@@ -53,7 +53,9 @@
 #include "gtktoolb.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkpfiles.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#endif
 
 
 // Keywords referenced in help database:
@@ -939,7 +941,9 @@ sFiles::fi_actions(GtkWidget *caller, void*)
         return;
 
     if (!strcmp(name, fi_btns[2])) {
+#ifdef HAVE_MOZY
         HLP()->word("filespanel");
+#endif
         GRX->Deselect(caller);
         return;
     }
@@ -1458,6 +1462,7 @@ sTextPop::show(int x, int y)
 void
 sTextPop::tp_help_proc(GtkWidget*, void *client_data)
 {
+#ifdef HAVE_MOZY
     GtkWidget *which = (GtkWidget*)client_data;
 
     if (which == TB()->pl_shell)
@@ -1472,6 +1477,9 @@ sTextPop::tp_help_proc(GtkWidget*, void *client_data)
         HLP()->word("tracepanel");
     else if (which == TB()->va_shell)
         HLP()->word("variablespanel");
+#else
+    (void)client_data;
+#endif
 }
 
 

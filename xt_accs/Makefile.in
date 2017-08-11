@@ -28,31 +28,16 @@ TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
 BASE = ../xt_base
-MOZY = ../mozy
-INCLUDE = -I$(BASE)/include -I$(MOZY)/include
+INCLUDE = -I$(BASE)/include
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-CCFILES = xeditor.cc hlp2html.cc hlpsrv.cc fcpp.cc lstpack.cc lstunpack.cc
+CCFILES = fcpp.cc lstpack.cc lstunpack.cc
 
 ODIR = ./xt_accs-$(ACCS_VERSION)
-
-LOCAL_LIBS = \
-  $(MOZY)/lib/htm.a \
-  $(MOZY)/lib/help.a \
-  $(MOZY)/lib/gtkmozy.a \
-  $(MOZY)/lib/update_itf.a \
-  $(BASE)/lib/gtkinterf.a  \
-  $(BASE)/lib/ginterf.a \
-  $(BASE)/lib/miscutil.a \
-  $(MOZY)/lib/htm.a \
-  $(MOZY)/lib/help.a \
-  $(MOZY)/lib/httpget.a \
-  $(MOZY)/lib/imsave.a \
-  $(NTREGEX)
 
 #######################################################################
 ####### Executable and related targets ################################
@@ -60,21 +45,6 @@ LOCAL_LIBS = \
 ACCESSORIES = xeditor hlpsrv hlp2html fcpp lstpack lstunpack
 
 all:  $(ACCESSORIES)
-
-xeditor: xeditor.o $(LOCAL_LIBS) $(XEDRES) Makefile
-	@echo $@: dynamic link
-	@$(LINKCC) -o xeditor $(LFLAGS) xeditor.o $(LOCAL_LIBS) \
-  $(LIBS) $(XEDRES) $(STDCLIB)
-
-hlpsrv: hlpsrv.o Makefile
-	@$(LINKCC) -o hlpsrv $(LFLAGS) hlpsrv.o \
-  ../mozy/src/help/help_read.o $(BASE)/ginterf/graphics.o \
-  $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
-
-hlp2html: hlp2html.o $(GRAPHICS) $(MISCUTIL) Makefile
-	@$(LINKCC) -o hlp2html $(LFLAGS) hlp2html.o \
-  ../mozy/src/help/help_read.o $(BASE)/ginterf/graphics.o \
-  $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 fcpp: fcpp.cc
 	$(LINKCC) $(CFLAGS) $(INCLUDE) -o fcpp fcpp.cc \
@@ -88,10 +58,6 @@ lstunpack: lstunpack.cc
 	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstunpack lstunpack.cc \
   $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
 
-
-xeditor.o: xeditor.cc
-	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
-  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c xeditor.cc
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc

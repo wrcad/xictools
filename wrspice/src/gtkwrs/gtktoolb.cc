@@ -59,10 +59,12 @@
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkedit.h"
 #include "gtkinterf/gtkpfiles.h"
-#include "gtkmozy/gtkhelp.h"
 #include "spnumber/spnumber.h"
 #include "miscutil/filestat.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#include "gtkmozy/gtkhelp.h"
+#endif
 #include <signal.h>
 
 #ifdef WITH_X11
@@ -718,7 +720,9 @@ sTBhelp::select(GtkWidget *caller, int x, int y)
     int end = line_start - string;
 
     text_select_range(caller, start, end);
+#ifdef HAVE_MOZY
     HLP()->word(buf);
+#endif
     delete [] string;
 }
 
@@ -1733,7 +1737,9 @@ GTKtoolbar::tbpop(bool up)
     // transient-for hint will be applied in help windows.  Skipping
     // this may cause subtle things like help windows not being raised
     // when mapped.
+#ifdef HAVE_MOZY
     GTKhelpPopup::set_transient_for(GTK_WINDOW(toolbar));
+#endif
     GTKeditPopup::set_transient_for(GTK_WINDOW(toolbar));
 
 #if GTK_CHECK_VERSION(2,10,4)

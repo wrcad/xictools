@@ -52,7 +52,9 @@
 #include "spnumber/spnumber.h"
 #include "miscutil/filestat.h"
 #include "ginterf/graphics.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#endif
 
 typedef void ParseNode;
 #include "spnumber/spparse.h"
@@ -1623,7 +1625,11 @@ struct KWent_dbarg : public KWent
         else if (lstring::cieq(word, kw_ginterface))
             Sp.SetFlag(FT_GIDB, isset);
         else if (lstring::cieq(word, kw_helpsys))
+#ifdef HAVE_MOZY
             HLP()->set_debug(isset);
+#else
+            ;
+#endif
         else if (lstring::cieq(word, kw_plot))
             Sp.SetFlag(FT_GRDB, isset);
         else if (lstring::cieq(word, kw_parser))
@@ -2590,12 +2596,13 @@ struct KWent_installcmdfmt : public KWent
 
     void callback(bool isset, variable *v)
     {
-        CP.RawVarSet(word, isset, v);
         if (isset) {
-            VTvalue vv;
-            if (Sp.GetVar(word, VTYP_STRING, &vv))
-                HLP()->set_path(vv.get_string(), false);
+            if (v->type() != VTYP_STRING) {
+                error_pr(word, 0, "a string");
+                return;
+            }
         }
+        CP.RawVarSet(word, isset, v);
         KWent::callback(isset, v);
     }
 };
@@ -2609,12 +2616,20 @@ struct KWent_helppath : public KWent
 
     void callback(bool isset, variable *v)
     {
+        if (isset) {
+            if (v->type() != VTYP_STRING) {
+                error_pr(word, 0, "a string");
+                return;
+            }
+        }
         CP.RawVarSet(word, isset, v);
+#ifdef HAVE_MOZY
         if (isset) {
             VTvalue vv;
             if (Sp.GetVar(word, VTYP_STRING, &vv))
                 HLP()->set_path(vv.get_string(), false);
         }
+#endif
         KWent::callback(isset, v);
     }
 };

@@ -52,13 +52,17 @@ Authors: 1985 Wayne A. Christopher
 #include "kwords_fte.h"
 #include "commands.h"
 #include "circuit.h"
-#include "ftehelp.h"
 #include "fteparse.h"
 #include "outplot.h"
 #include "keywords.h"
 #include "optdefs.h"
 #include "statdefs.h"
 #include "miscutil/random.h"
+#ifdef HAVE_MOZY
+#include "help/help_defs.h"
+#include "help/help_topic.h"
+#include "text_help.h"
+#endif
 #ifdef HAVE_FENV_H
 #include <fenv.h>
 #if defined(__APPLE__) && defined(__x86_64)
@@ -75,10 +79,12 @@ Authors: 1985 Wayne A. Christopher
 // Application initialization and interface code.
 //
 
+#ifdef HAVE_MOZY
 namespace {
     // Text mode help instance.
     text_help thelp;
 }
+#endif
 
 const char *kw_all        = "all";
 const char *kw_everything = "everything";
@@ -121,6 +127,7 @@ IFsimulator::PreInit()
     // Initialize resource use tracking.
     InitResource();
 
+#ifdef HAVE_MOZY
     // Set up help system.
     HLP()->set_path(Global.HelpPath(), false);
 #ifdef WIN32
@@ -131,6 +138,7 @@ IFsimulator::PreInit()
     HLP()->register_text_help(&thelp);  // Register text-mode help handler.
     if (!CP.Display())
         HLP()->set_using_graphics(false);
+#endif
 
     SetVar(kw_history, CP.MaxHistLength());
     SetVar(kw_noglob);

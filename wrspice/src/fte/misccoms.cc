@@ -50,7 +50,6 @@ Authors: 1985 Wayne A. Christopher
 #include "input.h"
 #include "frontend.h"
 #include "ftedata.h"
-#include "ftehelp.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
@@ -58,9 +57,14 @@ Authors: 1985 Wayne A. Christopher
 #include "miscutil/random.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
+#include "ginterf/graphics.h"
+#ifdef HAVE_MOZY
+#include "help/help_defs.h"
+#include "help/help_topic.h"
 #include "upd/update_itf.h"
+#endif
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 #ifdef HAVE_LOCAL_ALLOCATOR
@@ -156,6 +160,7 @@ CommandTab::com_qhelp(wordlist *wl)
 void
 CommandTab::com_help(wordlist *wl)
 {
+#ifdef HAVE_MOZY
     VTvalue vv;
     if (Sp.GetVar(kw_helpinitxpos, VTYP_NUM, &vv))
         HLP()->set_init_x(vv.get_int());
@@ -199,13 +204,21 @@ CommandTab::com_help(wordlist *wl)
     const char *err = HLP()->error_msg();
     if (err)
         GRpkgIf()->ErrPrintf(ET_ERROR, err);
+#else
+    (void)wl;
+    GRpkgIf()->ErrPrintf(ET_ERROR, "Help system is not available.");
+#endif
 }
 
 
 void
 CommandTab::com_helpreset(wordlist*)
 {
+#ifdef HAVE_MOZY
     HLP()->rehash();
+#else
+    GRpkgIf()->ErrPrintf(ET_ERROR, "Help system is not available.");
+#endif
 }
 
 
@@ -337,6 +350,7 @@ void
 CommandTab::com_passwd(wordlist*)
 {
     const char *namsg = "passwd:  command not available.\n";
+#ifdef HAVE_MOZY
     if (CP.GetFlag(CP_NOTTYIO)) {
         GRpkgIf()->ErrPrintf(ET_WARN, namsg);
         return;
@@ -385,6 +399,9 @@ CommandTab::com_passwd(wordlist*)
     }
     TTY.printf(
     "The .wrpasswd file in your home directory was updated successfully.\n");
+#else
+    GRpkgIf()->ErrPrintf(ET_WARN, namsg);
+#endif
 }
 
 
@@ -392,6 +409,7 @@ void
 CommandTab::com_proxy(wordlist *wl)
 {
     const char *namsg = "proxy:  command not available.\n";
+#ifdef HAVE_MOZY
     if (CP.GetFlag(CP_NOTTYIO)) {
         GRpkgIf()->ErrPrintf(ET_WARN, namsg);
         return;
@@ -470,8 +488,14 @@ CommandTab::com_proxy(wordlist *wl)
         TTY.printf("Created .wrproxy file for %s:%s.\n", addr, port);
     else
         TTY.printf("Created .wrproxy file for %s.\n", addr);
+#else
+    (void)wl;
+    GRpkgIf()->ErrPrintf(ET_WARN, namsg);
+#endif
 }
 
+
+#ifdef HAVE_MOZY
 
 // Name of update script file, found in library path.
 #define DST_SCRIPT  "wr_install"
@@ -494,16 +518,20 @@ namespace {
 }
 #endif
 
+#endif
+
 
 void
 CommandTab::com_wrupdate(wordlist *wl)
 {
+    const char *namsg = "wrupdate: command not available.\n";
+#ifdef HAVE_MOZY
     if (CP.GetFlag(CP_NOTTYIO)) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "command not available.\n");
+        GRpkgIf()->ErrPrintf(ET_WARN, namsg);
         return;
     }
     if (!Global.UpdateIf()) {
-        GRpkgIf()->ErrPrintf(ET_WARN, "wrupdate: command not available.\n");
+        GRpkgIf()->ErrPrintf(ET_WARN, namsg);
         return;
     }
     UpdIf udif(*Global.UpdateIf());
@@ -704,6 +732,11 @@ CommandTab::com_wrupdate(wordlist *wl)
         "Done.  "
         "If install succeeded, restart the program to run new release.\n");
 #endif
+
+#else
+    (void)wl;
+    GRpkgIf()->ErrPrintf(ET_WARN, namsg);
+#endif  // HAVE_MOZY
 }
 
 

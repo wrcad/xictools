@@ -45,11 +45,14 @@ Authors: 1986 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
+#ifdef HAVE_MOZY
 #include <stdio.h>
 #include <unistd.h>
+#include "config.h"
 #include "cshell.h"
-#include "ftehelp.h"
-//#include "help/help_context.h"
+#include "help/help_defs.h"
+#include "help/help_topic.h"
+#include "text_help.h"
 
 
 bool
@@ -274,4 +277,6 @@ text_help::putlist(HLPtopic *t, HLPtopList *tl, int base)
     stringlist::destroy(s0);
     return (nbuts);
 }
+
+#endif  //HAVE_MOZY
 

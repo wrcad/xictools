@@ -45,6 +45,7 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
+#include "config.h"
 #include "outplot.h"
 #include "spglobal.h"
 #include "frontend.h"
@@ -56,7 +57,6 @@ Authors: 1985 Wayne A. Christopher
 #include "miscutil/lstring.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
-#include "upd/update_itf.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -65,7 +65,8 @@ Authors: 1985 Wayne A. Christopher
 // Listing and editing of input files.
 //
 
-// define this to enable Internet file access via http/ftp
+#ifdef HAVE_MOZY
+// Define this to enable Internet file access via http/ftp.
 #define USE_TRANSACT
 
 #ifdef USE_TRANSACT
@@ -73,8 +74,10 @@ Authors: 1985 Wayne A. Christopher
 #define USE_GTK
 #endif
 #include "httpget/transact.h"
+#include "upd/update_itf.h"
 namespace { FILE *net_callback(const char*, char**); }
 #endif
+#endif  // HAVE_MOZY
 
 namespace {
     bool callback(const char*, void*, XEtype);

@@ -16,8 +16,7 @@ FILTER = @FILTER@
 LIB_TARGET = cp.a
 
 BASE = ../../../xt_base
-MOZY = ../../../mozy
-INCLUDE = -I../../include -I$(BASE)/include -I$(MOZY)/include
+INCLUDE = -I../../include -I$(BASE)/include
 
 HFILES =
 CCFILES = \

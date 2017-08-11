@@ -32,15 +32,17 @@ BASE = ../../xt_base
 INCLUDE = -I../include -I$(BASE)/include
 
 LOCAL_LIBS = \
-  $(BASE)/lib/ginterf.a \
   ../lib/htm.a \
   ../lib/help.a \
+  ../lib/gtkmozy.a \
   ../lib/update_itf.a \
   $(BASE)/lib/gtkinterf.a  \
-  ../lib/gtkmozy.a \
-  ../lib/imsave.a \
+  $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
-  ../lib/httpget.a
+  ../lib/htm.a \
+  ../lib/help.a \
+  ../lib/httpget.a \
+  ../lib/imsave.a
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
@@ -50,31 +52,47 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 SUBDIRS = ../src/gtkmozy ../src/help ../src/htm ../src/httpget \
   ../src/imsave ../src/upd
 
-CCFILES = mozy.cc httpget.cc
+CCFILES = mozy.cc xeditor.cc hlpsrv.cc hlp2html.cc httpget.cc
 
 #######################################################################
 ####### Executable and related targets ################################
 
-all:  libraries mozy httpget
+TARGETS = mozy xeditor hlpsrv hlp2html httpget
 
-libraries:
-	@for a in $(SUBDIRS); do \
-	  (cd $$a; $(MAKE) ) \
-	done
+all:  $(TARGETS)
 
-mozy: libraries mozy.o $(LOCAL_LIBS) $(MOZYRES) Makefile
+mozy: mozy.o $(LOCAL_LIBS) $(MOZYRES)
 	@echo $@: dynamic link mozy
-	@$(LINKCC) $(NTNOCONS) -o mozy $(LFLAGS) mozy.o \
-  $(LOCAL_LIBS) $(LOCAL_LIBS) $(NTREGEX) $(LIBS) $(MOZYRES) $(STDCLIB)
+	@$(LINKCC) -o mozy $(LFLAGS) mozy.o $(LOCAL_LIBS) $(NTREGEX) \
+  $(LIBS) $(MOZYRES) $(STDCLIB)
+
+xeditor: xeditor.o $(LOCAL_LIBS) $(XEDRES)
+	@echo $@: dynamic link
+	@$(LINKCC) -o xeditor $(LFLAGS) xeditor.o $(LOCAL_LIBS) \
+  $(LIBS) $(XEDRES) $(STDCLIB)
+
+hlpsrv: hlpsrv.o ../lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a
+	@$(LINKCC) -o hlpsrv $(LFLAGS) hlpsrv.o \
+  ../src/help/help_read.o $(BASE)/ginterf/graphics.o \
+  $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+
+hlp2html: hlp2html.o ../lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a Makefile
+	@$(LINKCC) -o hlp2html $(LFLAGS) hlp2html.o \
+  ../src/help/help_read.o $(BASE)/ginterf/graphics.o \
+  $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 httpget: httpget.o $(LOCAL_LIBS)
 	@echo $@: dynamic link httpget
-	@$(LINKCC) -o httpget $(LFLAGS) httpget.o \
-  $(LOCAL_LIBS) $(LOCAL_LIBS) $(LIBS) $(STDCLIB)
+	@$(LINKCC) -o httpget $(LFLAGS) httpget.o ../lib/httpget.a \
+  $(LOCAL_LIBS) $(LIBS) $(STDCLIB)
 
 mozy.o: mozy.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
   -DVERSION_STR=\"$(MOZY_VERSION)\" $(INCLUDE) -c mozy.cc
+
+xeditor.o: xeditor.cc
+	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
+  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c xeditor.cc
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
@@ -98,7 +116,7 @@ mozy.o: mozy.cc
 	cd ../src/imsave; $(MAKE)
 
 ../lib/update_itf.a::
-	cd ../src/update_itf; $(MAKE)
+	cd ../src/upd; $(MAKE)
 
 $(BASE)/lib/ginterf.a::
 	cd $(BASE)/ginterf; $(MAKE)
@@ -132,7 +150,9 @@ depend::
 ####### Clean up ######################################################
 
 eclean::
-	-rm -f mozy$(NTSUFFIX) httpget$(NTSUFFIX) $(LIB_TARGET)
+	for a in $(TARGETS); do \
+	    rm -f $$a$(NTSUFFIX); \
+	done
 
 clean:: eclean
 	-rm -f *.o

@@ -42,6 +42,21 @@
 #define COMMANDS_H
 
 
+// Flags for old built-in help, set in sCommand::co_env.
+#define E_HASPLOTS  1
+#define E_NOPLOTS   2
+#define E_HASGRAPHS 4
+#define E_MENUMODE  8
+
+#define E_BEGINNING 0x1000
+#define E_INTERMED  0x2000
+#define E_ADVANCED  0x4000
+#define E_ALWAYS    0x8000
+
+// Default is intermediate level.
+#define E_DEFHMASK  E_INTERMED
+
+
 // Information about commands.
 //
 struct sCommand

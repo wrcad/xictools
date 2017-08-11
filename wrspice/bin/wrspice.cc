@@ -87,7 +87,9 @@ Authors: 1985 Thomas L. Quarles
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
 #include "miscutil/childproc.h"
+#ifdef HAVE_MOZY
 #include "upd/update_itf.h"
+#endif
 
 #ifdef HAVE_LOCAL_ALLOCATOR
 #include "malloc/local_malloc.h"
@@ -220,7 +222,9 @@ namespace {
     void shift(int, int*, char**);
     void succumb(int, bool);
     void panic_to_gdb();
+#ifdef HAVE_MOZY
     void check_for_update();
+#endif
 
     const char *usage = 
     "Usage: %s [-] [-b] [-c caseflags] [-i] [-j] [-s] [-n] [-x] [-o outfile]\n"
@@ -1167,6 +1171,7 @@ main(int argc, char **argv)
 #ifdef HAVE_ATEXIT
             atexit(exit_proc);
 #endif
+#ifdef HAVE_MOZY
             if (!Sp.GetVar(kw_nocheckupdate, VTYP_BOOL, 0)) {
                 check_for_update();
                 fprintf(stdout, "Checking for message...");
@@ -1180,6 +1185,7 @@ main(int argc, char **argv)
             }
             if (UpdIf::new_release(APP_ROOT, SPICE_VERSION))
                 ToolBar()->PopUpNotes();
+#endif
 
             // Create a named pipe that listens for input.
             setup_fifo();
@@ -1861,7 +1867,6 @@ namespace {
     }
 
 
-
     // Address of faulting line, for debugging.
     void* DeathAddr;
 
@@ -1891,8 +1896,12 @@ namespace {
         }
         exit(EXIT_BAD);
     }
+}
 
 
+#ifdef HAVE_MOZY
+
+namespace {
     struct updif : public updif_t
     {
         const char *HomeDir() const
@@ -1933,8 +1942,7 @@ namespace {
     updif main_itf;
 
 
-    void
-    check_for_update()
+    void check_for_update()
     {
         if (!Global.UpdateIf())
             return;
@@ -1974,6 +1982,8 @@ namespace {
 }
 
 const updif_t *sGlobal::g_upd_if = &main_itf;
+
+#endif  // HAVE_MOZY
 
 
 #if defined(HAVE_GTK1) || defined(HAVE_GTK2)

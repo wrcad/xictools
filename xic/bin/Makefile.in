@@ -5,9 +5,6 @@ LOCATION = xic/bin
 DATE = @DATE@
 GFX_VERSION = @GFX_VERSION@
 
-# NOTE: "make depend" builds the symbolic links, which must be done
-# before programs can be built.
-
 prefix = @prefix@
 CXX = @CXX@
 CC = @CC@
@@ -268,7 +265,6 @@ depend:
 
 #######################################################################
 ####### Clean up ######################################################
-# note: mingw requires explicit return from cd
 
 eclean:
 	-@for a in $(TARGETS); do \

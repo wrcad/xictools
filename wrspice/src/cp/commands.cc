@@ -47,7 +47,6 @@ Authors: 1985 Wayne A. Christopher
 
 #include "cshell.h"
 #include "commands.h"
-#include "ftehelp.h"
 #include "spnumber/hash.h"
 #include <algorithm>
 

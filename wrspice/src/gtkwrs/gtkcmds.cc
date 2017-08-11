@@ -51,9 +51,11 @@
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
 #include "frontend.h"
-#include "ftehelp.h"
 #include "gtktoolb.h"
 #include "miscutil/pathlist.h"
+#ifdef HAVE_MOZY
+#include "help/help_defs.h"
+#endif
 
 
 #define STR(x) #x
@@ -61,14 +63,15 @@
 #define KWGET(string) (xKWent*)sHtab::get(Sp.Options(), string)
 
 namespace {
+#ifdef HAVE_MOZY
     bool get_helppath(char**);
     void helppath_func(bool, variable*, xEnt*);
+#endif
     void cmd_cancel_proc(GtkWidget*, void*);
     void cmd_help_proc(GtkWidget*, void*);
     int cmd_choice_hdlr(GtkWidget*, GdkEvent*, void*);
 
-    inline void
-    dblpr(char *buf, int n, double d, bool ex)
+    inline void dblpr(char *buf, int n, double d, bool ex)
     {
         sprintf(buf, ex ? "%.*e" : "%.*f", n, d);
     }
@@ -553,6 +556,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     }
 
 
+#ifdef HAVE_MOZY
     //
     // help
     //
@@ -630,6 +634,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)0, 2, 2);
     }
+#endif  // HAVE_MOZY
 
     //
     // print
@@ -951,12 +956,12 @@ GTKtoolbar::PopDownCmdConfig()
 
 
 namespace {
+#ifdef HAVE_MOZY
     // Return true and set the path if the help path is currently set as
     // a variable.  Set path to the default help path in use if the help
     // path is not set as a variable, and return false.
     //
-    bool
-    get_helppath(char **path)
+    bool get_helppath(char **path)
     {
         VTvalue vv;
         if (Sp.GetVar(kw_helppath, VTYP_STRING, &vv)) {
@@ -974,8 +979,7 @@ namespace {
     }
 
 
-    void
-    helppath_func(bool isset, variable*, xEnt *ent)
+    void helppath_func(bool isset, variable*, xEnt *ent)
     {
         if (ent->active) {
             GRX->SetStatus(ent->active, isset);
@@ -990,21 +994,20 @@ namespace {
                 gtk_entry_set_editable(GTK_ENTRY(ent->entry), true);
         }
     }
+#endif
 
 
     //
     // Callbacks to process the button selections.
     //
 
-    void
-    cmd_cancel_proc(GtkWidget*, void*)
+    void cmd_cancel_proc(GtkWidget*, void*)
     {
         TB()->PopDownCmdConfig();
     }
 
 
-    void
-    cmd_help_proc(GtkWidget *caller, void *client_data)
+    void cmd_help_proc(GtkWidget *caller, void *client_data)
     {
         GtkWidget *parent = static_cast<GtkWidget*>(client_data);
         bool state = GRX->GetStatus(caller);
@@ -1015,8 +1018,7 @@ namespace {
     }
 
 
-    int
-    cmd_choice_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
+    int cmd_choice_hdlr(GtkWidget *caller, GdkEvent*, void *client_data)
     {
         xKWent *entry = static_cast<xKWent*>(client_data);
         if (GRX->GetStatus(entry->ent->active))

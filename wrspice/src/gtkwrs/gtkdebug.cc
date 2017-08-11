@@ -49,7 +49,6 @@
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "frontend.h"
-#include "ftehelp.h"
 #include "gtktoolb.h"
 
 typedef void ParseNode;

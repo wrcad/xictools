@@ -50,7 +50,9 @@
 #include "cshell.h"
 #include "commands.h"
 #include "gtktoolb.h"
+#ifdef HAVE_MOZY
 #include "help/help_defs.h"
+#endif
 
 // This is for the Xrm stuff
 #include <gdk/gdkprivate.h>
@@ -107,7 +109,7 @@ GTKtoolbar::PopUpColors(int x, int y)
     button = gtk_button_new_with_label("Help");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        (GtkSignalFunc)clr_help_proc, (char*)"color");
+        (GtkSignalFunc)clr_help_proc, 0);
     gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 2);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, 0, 1,
@@ -231,9 +233,11 @@ namespace {
 
 
     void
-    clr_help_proc(GtkWidget*, void *client_data)
+    clr_help_proc(GtkWidget*, void*)
     {
-        HLP()->word((char*)client_data);
+#ifdef HAVE_MOZY
+        HLP()->word("color");
+#endif
     }
 }
 

@@ -43,33 +43,14 @@ Copyright 1990 Regents of the University of California.  All rights reserved.
 Author: 1987 Jeffrey M. Hsu
 **********/
 
-#ifndef FTEHELP_H
-#define FTEHELP_H
-
-#include "help/help_defs.h"
-#include "help/help_topic.h"
+#ifndef TEXT_HELP_H
+#define TEXT_HELP_H
 
 
 //
-// Defines for help.
+// Text-mode help handler, requires mozy.
 //
 
-#define E_HASPLOTS  1
-#define E_NOPLOTS   2
-#define E_HASGRAPHS 4
-#define E_MENUMODE  8
-
-#define E_BEGINNING 4096
-#define E_INTERMED  8192
-#define E_ADVANCED  16384
-#define E_ALWAYS    32768
-
-// Default is intermediate level.
-#define E_DEFHMASK  8192
-
-
-// Text-mode help handler.
-//
 struct text_help : public TextHelp
 {
     text_help()
@@ -87,5 +68,5 @@ struct text_help : public TextHelp
     bool quitflag;
 };
 
-#endif // FTEHELP_H
+#endif
 

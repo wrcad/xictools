@@ -12,13 +12,13 @@ DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DWRSPICE
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
+USEMOZY = @USEMOZY@
 
 LIB_TARGET = misc.a
 
 BASE = ../../../xt_base
 VLOG = ../../../vl
-MOZY = ../../../mozy
-INCLUDE = -I../../include -I$(BASE)/include -I$(VLOG) -I$(MOZY)/include
+INCLUDE = -I../../include -I$(BASE)/include -I$(VLOG)
 
 NFILES = hash.cc spnumber.cc spparse.cc
 HFILES =
@@ -32,6 +32,15 @@ $(LIB_TARGET): $(CCOBJS)
 	fi
 	$(AR) cr $(LIB_TARGET) $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
+
+ifeq ($(USEMOZY), yes)
+MOZY = ../../../mozy
+MOZYINC = -I$(MOZY)/include
+MOBJS = texthelp.o
+
+$(MOBJS):
+	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) -c $*.cc
+endif
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
