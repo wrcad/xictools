@@ -1,0 +1,22 @@
+#! /bin/sh
+#
+# This is where the release numbers are set.
+#
+
+release="4"
+tools_version="4.2"
+mozy_version="4.2.2"
+
+if [ -n "$1" ]; then
+    case $1 in
+    release)
+        echo $release
+        ;;
+    tools)
+        echo $tools_version
+        ;;
+    mozy)
+        echo $mozy_version
+    esac
+fi
+

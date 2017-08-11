@@ -1049,3 +1049,18 @@ via parameter setting panel, allowing instance to be changed.  This
 panel has visual changes, new screen shot needed.  Slightly different
 between via creation mode (from menu) and via update mode.
 
+Made program separable from mozy, which is gnu-tainted.
+edit
+  mrouter_if.cc (help, setup)
+fileio
+  fio.cc (httpget upd, net file open)
+gtkxic
+  gtkmain.cc (htm help, form submit handler)
+main
+  help_menu.cc (help, initializer, rid this)
+  init.cc (help, initialize)
+  main_txtcmds.cc (help upd, !helpxxx and !update.!passwd,!proxy cmds)
+  main_variables.cc (help, help-related variables)
+  oa_if.cc (help, initialization)
+bin
+  xic.cc (upd, check for updates)

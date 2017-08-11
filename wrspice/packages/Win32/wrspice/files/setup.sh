@@ -1,24 +1,26 @@
 #! /bin/sh
-# $Id: setup.sh,v 1.24 2015/10/04 04:14:55 stevew Exp $
 
 pkgfiles=../../pkgfiles
 
 inno="/inno-5.5.1"
 
 program=wrspice
+version=`../../../version wrspice`
 top=../../root/usr/local
-srctree=../../../..
-version=`$srctree/version wrspice`
-utod=../../util/utod.exe
+base=../../../../xt_base
+baseutil=$base/packages/util
+basefiles=$base/packages/files
+
 tifs="$IFS"
 IFS="."
 set $version
 relnote=wrs$1.$2
 IFS="$tifs"
 
+utod=$baseutil/utod.exe
 if [ ! -f $utod ]; then
     cwd=`pwd`
-    cd ../../util
+    cd $baseutil
     make utod.exe
     cd $cwd
 fi
@@ -27,7 +29,7 @@ fi
 if [ ! -d $top/xictools/bin ]; then
     mkdir $top/xictools/bin
 fi
-cp ../../files/program.bat $top/xictools/bin/$program.bat
+cp $basefiles/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
 mv $top/xictools/$program/bin/* $top/xictools/bin
@@ -37,7 +39,7 @@ license=$top/xictools/license
 if [ ! -d $license ]; then
     mkdir $license
 fi
-cp $srctree/src/secure/README.MSW $license
+cp ../../../../secure/README.MSW $license
 $utod $license/README.MSW
 
 examples=$top/xictools/$program/examples
@@ -54,7 +56,7 @@ scripts=$top/xictools/$program/scripts
 $utod $scripts/*
 
 docs=$top/xictools/$program/docs
-cp ../../files/MSWINFO.TXT $docs
+cp $basefiles/MSWINFO.TXT $docs
 $utod $docs/$relnote
 $utod $docs/README
 $utod $docs/MSWINFO.TXT

@@ -259,10 +259,10 @@ AC_PROG_LEX
 AC_PROG_YACC
 AC_PATH_XTRA
 
-DLL_SPICE_PROG='dll-$(SPICE_PROG)'
-NODLL_SPICE_PROG='$(SPICE_PROG)'
-DLL_XIC_PROG='dll-$(XIC_PROG)'
-NODLL_XIC_PROG='$(XIC_PROG)'
+DLL_SPICE_PROG='dll-wrspice'
+NODLL_SPICE_PROG='wrspice'
+DLL_XIC_PROG='dll-xic'
+NODLL_XIC_PROG='xic'
 
 case $sys_os in
 CYGWIN*)
@@ -280,10 +280,10 @@ dnl # c_flags="-fvtable-thunks $c_flags"
     oa_lpath=$oa_loc/lib/mingw_32/opt
     LSHFLAG="-shared -Wl,--enable-auto-import,--export-all-symbols"
     oa_cflags="-DOA_WINDOWS -DOA_MINGW -DOA_NO_DLL_ATTR"
-    DLL_SPICE_PROG='$(SPICE_PROG)'
-    NODLL_SPICE_PROG='nodll-$(SPICE_PROG)'
-    DLL_XIC_PROG='$(XIC_PROG)'
-    NODLL_XIC_PROG='nodll-$(XIC_PROG)'
+    DLL_SPICE_PROG='wrspice'
+    NODLL_SPICE_PROG='nodll-wrspice'
+    DLL_XIC_PROG='xic'
+    NODLL_XIC_PROG='nodll-xic)'
 ;;
 Darwin)
     kern=`uname -r`
@@ -476,7 +476,7 @@ if test $with_oa = yes; then
     OA_LIBS="-L$oa_lpath -loaCommon -loaBase -loaPlugIn -loaDM -loaTech \
  -loaDesign"
     OA_CFLAGS="-O -g -Wall -W -Wwrite-strings $oa_cflags"
-    OA_SUBDIR="../src/oa"
+    OA_SUBDIR="src/oa"
     echo '#define HAVE_OA 1'>> confdefs.h
 fi
 AC_SUBST(OA_INCLUDE)
@@ -928,7 +928,7 @@ dnl ***
 dnl *** WRspice device library
 dnl ***
 
-DEVLIB_CALL='../devlib/$(DEVLIB_STATIC)'
+DEVLIB_CALL='devlib/$(DEVLIB_STATIC)'
 #if test "x$LSHFLAG" != x; then
 #    if test "x$LSHFLAG" = x"-G"; then
 #        DEVLIB_CALL='-Wl,-R$(prefix)/lib $(DEVLIB_SHARED)'

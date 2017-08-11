@@ -45,14 +45,14 @@ Authors: 1986 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifdef HAVE_MOZY
-#include <stdio.h>
-#include <unistd.h>
 #include "config.h"
+#ifdef HAVE_MOZY
 #include "cshell.h"
 #include "help/help_defs.h"
 #include "help/help_topic.h"
 #include "text_help.h"
+#include <stdio.h>
+#include <unistd.h>
 
 
 bool

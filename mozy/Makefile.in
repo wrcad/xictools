@@ -28,31 +28,31 @@ XEDRES = @XEDRES@
 TOOLROOT = @TOOLROOT@
 WINPTHREADFIX = @WINPTHREADFIX@
 
-BASE = ../../xt_base
-INCLUDE = -I../include -I$(BASE)/include
+BASE = ../xt_base
+INCLUDE = -Iinclude -I$(BASE)/include
 
 LOCAL_LIBS = \
-  ../lib/htm.a \
-  ../lib/help.a \
-  ../lib/gtkmozy.a \
-  ../lib/update_itf.a \
+  lib/htm.a \
+  lib/help.a \
+  lib/gtkmozy.a \
+  lib/update_itf.a \
   $(BASE)/lib/gtkinterf.a  \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
-  ../lib/htm.a \
-  ../lib/help.a \
-  ../lib/httpget.a \
-  ../lib/imsave.a
+  lib/htm.a \
+  lib/help.a \
+  lib/httpget.a \
+  lib/imsave.a
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-SUBDIRS = ../src/gtkmozy ../src/help ../src/htm ../src/httpget \
-  ../src/imsave ../src/upd
+SUBDIRS = src/gtkmozy src/help src/htm src/httpget src/imsave src/upd
 
-CCFILES = mozy.cc xeditor.cc hlpsrv.cc hlp2html.cc httpget.cc
+CCFILES = bin/mozy.cc bin/xeditor.cc bin/hlpsrv.cc bin/hlp2html.cc \
+  bin/httpget.cc
 
 #######################################################################
 ####### Executable and related targets ################################
@@ -61,38 +61,41 @@ TARGETS = mozy xeditor hlpsrv hlp2html httpget
 
 all:  $(TARGETS)
 
-mozy: mozy.o $(LOCAL_LIBS) $(MOZYRES)
+$(TARGETS)::
+	$(MAKE) bin/$@
+
+bin/mozy: bin/mozy.o $(LOCAL_LIBS) $(MOZYRES)
 	@echo $@: dynamic link mozy
-	@$(LINKCC) -o mozy $(LFLAGS) mozy.o $(LOCAL_LIBS) $(NTREGEX) \
+	@$(LINKCC) -o bin/mozy $(LFLAGS) bin/mozy.o $(LOCAL_LIBS) $(NTREGEX) \
   $(LIBS) $(MOZYRES) $(STDCLIB)
 
-xeditor: xeditor.o $(LOCAL_LIBS) $(XEDRES)
+bin/xeditor: bin/xeditor.o $(LOCAL_LIBS) $(XEDRES)
 	@echo $@: dynamic link
-	@$(LINKCC) -o xeditor $(LFLAGS) xeditor.o $(LOCAL_LIBS) \
+	@$(LINKCC) -o bin/xeditor $(LFLAGS) bin/xeditor.o $(LOCAL_LIBS) \
   $(LIBS) $(XEDRES) $(STDCLIB)
 
-hlpsrv: hlpsrv.o ../lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a
-	@$(LINKCC) -o hlpsrv $(LFLAGS) hlpsrv.o \
-  ../src/help/help_read.o $(BASE)/ginterf/graphics.o \
+bin/hlpsrv: bin/hlpsrv.o lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a
+	@$(LINKCC) -o bin/hlpsrv $(LFLAGS) bin/hlpsrv.o \
+  src/help/help_read.o $(BASE)/ginterf/graphics.o \
   $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-hlp2html: hlp2html.o ../lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a Makefile
-	@$(LINKCC) -o hlp2html $(LFLAGS) hlp2html.o \
-  ../src/help/help_read.o $(BASE)/ginterf/graphics.o \
+bin/hlp2html: bin/hlp2html.o lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a Makefile
+	@$(LINKCC) -o bin/hlp2html $(LFLAGS) bin/hlp2html.o \
+  src/help/help_read.o $(BASE)/ginterf/graphics.o \
   $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
-httpget: httpget.o $(LOCAL_LIBS)
+bin/httpget: bin/httpget.o $(LOCAL_LIBS)
 	@echo $@: dynamic link httpget
-	@$(LINKCC) -o httpget $(LFLAGS) httpget.o ../lib/httpget.a \
+	@$(LINKCC) -o bin/httpget $(LFLAGS) bin/httpget.o lib/httpget.a \
   $(LOCAL_LIBS) $(LIBS) $(STDCLIB)
 
-mozy.o: mozy.cc
+bin/mozy.o: bin/mozy.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
-  -DVERSION_STR=\"$(MOZY_VERSION)\" $(INCLUDE) -c mozy.cc
+  -DVERSION_STR=\"$(MOZY_VERSION)\" $(INCLUDE) -c bin/mozy.cc -o bin/mozy.o
 
-xeditor.o: xeditor.cc
+bin/xeditor.o: bin/xeditor.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
-  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c xeditor.cc
+  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c bin/xeditor.cc -o bin/xeditor.o
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
@@ -100,23 +103,23 @@ xeditor.o: xeditor.cc
 #######################################################################
 ####### Recursively generate libraries ################################
 
-../lib/gtkmozy.a::
-	cd ../src/gtkmozy; $(MAKE)
+lib/gtkmozy.a::
+	cd src/gtkmozy; $(MAKE)
 
-../lib/help.a::
-	cd ../src/help; $(MAKE)
+lib/help.a::
+	cd src/help; $(MAKE)
 
-../lib/htm.a::
-	cd ../src/htm; $(MAKE)
+lib/htm.a::
+	cd src/htm; $(MAKE)
 
-../lib/httpget.a::
-	cd ../src/httpget; $(MAKE)
+lib/httpget.a::
+	cd src/httpget; $(MAKE)
 
-../lib/imsave.a::
-	cd ../src/imsave; $(MAKE)
+lib/imsave.a::
+	cd src/imsave; $(MAKE)
 
-../lib/update_itf.a::
-	cd ../src/upd; $(MAKE)
+lib/update_itf.a::
+	cd src/upd; $(MAKE)
 
 $(BASE)/lib/ginterf.a::
 	cd $(BASE)/ginterf; $(MAKE)
@@ -151,17 +154,17 @@ depend::
 
 eclean::
 	for a in $(TARGETS); do \
-	    rm -f $$a$(NTSUFFIX); \
+	    rm -f bin/$$a$(NTSUFFIX); \
 	done
 
 clean:: eclean
-	-rm -f *.o
+	-rm -f bin/*.o
 	@for a in $(SUBDIRS); do \
 	  (cd $$a; $(MAKE) clean) \
 	done
 
 distclean:: eclean
-	-rm -f *.o Makefile
+	-rm -f bin/*.o Makefile
 	@for a in $(SUBDIRS); do \
 	  (cd $$a; $(MAKE) distclean) \
 	done
@@ -169,5 +172,62 @@ distclean:: eclean
 #######################################################################
 ####### Installation ##################################################
 
+INSTALL_PREFIX ?= $(prefix)
+dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)
+dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+
+install: install_test install_force
+
+install_force: install_clean install_bin install_startup install_help
+
+install_bin: $(dst_bin)
+install_startup: $(dst_lib)/mozy/startup
+install_help: $(dst_lib)/mozy/help
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_clean::
+	-@for aa in $(TARGETS); do \
+	    rm -f $(dst_bin)/$$aa$(NTSUFFIX); \
+	done
+
+$(dst_bin)::
+	@$(BASE)/util/mkdirpth $@
+	for aa in $(TARGETS); do \
+	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
+	done
+
+$(dst_lib)/mozy/startup::
+	@$(BASE)/util/mkdirpth $@
+	startup=`packages/util/mozy_files startup`; \
+	for a in $$startup; do \
+	    $(INSTALL_LIB) lib/mozy/startup/$$a $@; \
+	done
+
+$(dst_lib)/mozy/help::
+	if [ -f lib/mozy/help/Makefile ]; then \
+	    (cd lib/mozy/help; $(MAKE)); \
+	fi
+	@$(BASE)/util/mkdirpth $@
+	help=`packages/util/mozy_files help`; \
+	for a in $$help; do \
+	    $(INSTALL_LIB) lib/mozy/help/$$a $@; \
+	done
+	@$(BASE)/util/mkdirpth $@/screenshots
+	ss=`packages/util/mozy_files help_ss`; \
+	for a in $$ss; do \
+	    $(INSTALL_LIB) lib/mozy/help/screenshots/$$a $@/screenshots; \
+	done
+
+package::
+	$(MAKE)
+	-rm -rf packages/root
+	mkdir packages/root
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
+	cd packages; make mozy-$(OSNAME)
 
 #######################################################################
