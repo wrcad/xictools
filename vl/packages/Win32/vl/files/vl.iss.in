@@ -1,0 +1,64 @@
+
+[Setup]
+
+AppName=vl
+AppVerName=vl-VERSION
+AppVersion=VERSION
+AppPublisher=Whiteley Research Inc.
+AppPublisherURL=http://wrcad.com
+
+OutputBaseFilename=vl-Win32-VERSION-i386
+
+Compression=bzip
+
+DefaultDirName=c:\usr\local
+DefaultGroupName=XicTools
+DirExistsWarning=no
+
+PrivilegesRequired=admin
+
+UninstallFilesDir={app}\xictools\vl\uninstall
+UninstallDisplayIcon="{app}\xictools\bin\vl.exe"
+
+[Dirs]
+
+Name: "{app}\xictools"
+Name: "{app}\xictools\vl"
+Name: "{app}\xictools\vl\examples"
+Name: "{app}\xictools\vl\examples\ivl"
+Name: "{app}\xictools\vl\examples\ivl\work"
+
+[Files]
+
+Source: "..\..\root\usr\local\xictools\bin\vl.exe"; DestDir: "{app}\xictools\bin"
+
+Source: "..\..\root\usr\local\xictools\vl\README"; DestDir: "{app}\xictools\vl"
+Source: "..\..\root\usr\local\xictools\vl\ChangeLog"; DestDir: "{app}\xictools\vl"
+Source: "..\..\root\usr\local\xictools\vl\verilog-manual.html"; DestDir: "{app}\xictools\vl"
+
+Source: "..\..\root\usr\local\xictools\vl\examples\book\*"; DestDir: "{app}\xictools\vl\examples\book"
+Source: "..\..\root\usr\local\xictools\vl\examples\book\ch13\eg\*"; DestDir: "{app}\xictools\vl\examples\book\ch13\eg"
+Source: "..\..\root\usr\local\xictools\vl\examples\book\ch13\mag_comp\*"; DestDir: "{app}\xictools\vl\examples\book\ch13\mag_comp"
+Source: "..\..\root\usr\local\xictools\vl\examples\book\ch13\vending\*"; DestDir: "{app}\xictools\vl\examples\book\ch13\vending"
+Source: "..\..\root\usr\local\xictools\vl\examples\book\ch14\eg\*"; DestDir: "{app}\xictools\vl\examples\book\ch14\eg"
+Source: "..\..\root\usr\local\xictools\vl\examples\book\ch14\mag_comp\*"; DestDir: "{app}\xictools\vl\examples\book\ch14\mag_comp"
+Source: "..\..\root\usr\local\xictools\vl\examples\book\ch14\vending\*"; DestDir: "{app}\xictools\vl\examples\book\ch14\vending"
+Source: "..\..\root\usr\local\xictools\vl\examples\book\extra\*"; DestDir: "{app}\xictools\vl\examples\book\extra"
+
+Source: "..\..\root\usr\local\xictools\vl\examples\ivl\*"; DestDir: "{app}\xictools\examples\vl\ivl"
+Source: "..\..\root\usr\local\xictools\vl\examples\ivl\contrib\*"; DestDir: "{app}\xictools\vl\examples\ivl\contrib"
+Source: "..\..\root\usr\local\xictools\vl\examples\ivl\extra\*"; DestDir: "{app}\xictools\vl\examples\ivl\extra"
+Source: "..\..\root\usr\local\xictools\vl\examples\ivl\ivltests\*"; DestDir: "{app}\xictools\vl\examples\ivl\ivltests"
+
+Source: "..\..\root\usr\local\xictools\vl\examples\vbs\*"; DestDir: "{app}\xictools\vl\examples\vbs"
+
+[code]
+
+function InitializeSetup(): Boolean;
+begin
+  Result := True;
+  if RegKeyExists(HKLM, 'SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\vl') then begin
+    MsgBox('There is an installed vl present from the old' #13 'install tool.  You must uninstall vl before proceeding.', mbInformation, MB_OK);
+    Result := False;
+  end;
+end;

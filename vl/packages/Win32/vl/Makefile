@@ -1,7 +1,9 @@
 
-all:
-	./mkwinpkg
-	rm -rf vl data vl.iss
+dummy::
+	echo targets: Windows
 
-clean:
-	rm -rf vl data vl.log
+Win32::
+	files/setup.sh
+
+clean::
+	rm -f *.iss *.exe

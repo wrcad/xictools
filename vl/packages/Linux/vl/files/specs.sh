@@ -32,6 +32,7 @@ echo
 echo "%dir /usr/local/xictools/vl"
 echo "%attr(0644, root, root) /usr/local/xictools/vl/README"
 echo "%attr(0644, root, root) /usr/local/xictools/vl/ChangeLog"
+echo "%attr(0644, root, root) /usr/local/xictools/vl/verilog-manual.html"
 echo "%dir /usr/local/xictools/vl/lib"
 echo "%attr(0644, root, root) /usr/local/xictools/vl/lib/libvlog.a"
 echo "%dir /usr/local/xictools/vl/examples"
