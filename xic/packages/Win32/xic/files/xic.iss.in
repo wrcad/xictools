@@ -65,7 +65,7 @@ Name: "{group}\Xic-4"; Filename: "{app}\xictools\bin\xic.bat"; WorkingDir: "c:\"
 
 [code]
 
-#include "..\..\files\inno_uninstall"
+#include "..\..\..\..\xt_base\packages\files\inno_uninstall"
 
 function InitializeSetup(): Boolean;
 begin

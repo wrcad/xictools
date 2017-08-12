@@ -1,18 +1,19 @@
 #! /bin/sh
-# $Id: setup.sh,v 1.6 2014/02/06 18:01:56 stevew Exp $
-
-pkgfiles=../../pkgfiles
 
 inno="/inno-5.5.1"
 
+program=xtlserv
+version=`../../../version $program`
 top=../../root/usr/local
-srctree=../../../..
-version=`$srctree/version xtlserv`
-utod=../../util/utod.exe
+base=../../../../xt_base
+baseutil=$base/packages/util
+basefiles=$base/packages/files
+pkgfiles=$base/packages/pkgfiles
 
+utod=../../util/utod.exe
 if [ ! -f $utod ]; then
     cwd=`pwd`
-    cd ../../util
+    cd $baseutil
     make utod.exe
     cd $cwd
 fi

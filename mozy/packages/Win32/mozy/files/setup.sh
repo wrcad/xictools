@@ -1,7 +1,5 @@
 #! /bin/sh
 
-pkgfiles=../../pkgfiles
-
 inno="/inno-5.5.1"
 
 version=`../../../version mozy`
@@ -9,6 +7,7 @@ top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
+pkgfiles=$base/packages/pkgfiles
 
 utod=$baseutil/utod.exe
 if [ ! -f $utod ]; then

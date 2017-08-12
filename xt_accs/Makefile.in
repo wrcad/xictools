@@ -101,11 +101,9 @@ dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
 install: install_test install_force
 
-install_force: install_clean install_bin install_startup install_help
+install_force: install_clean install_bin
 
 install_bin: $(dst_bin)
-install_startup: $(dst_lib)/mozy/startup
-install_help: $(dst_lib)/mozy/help
 
 install_test::
 	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
@@ -122,28 +120,6 @@ $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
 	for aa in $(ACCESSORIES); do \
 	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
-	done
-
-$(dst_lib)/mozy/startup::
-	@$(BASE)/util/mkdirpth $@
-	startup=`packages/util/accs_files startup`; \
-	for a in $$startup; do \
-	    $(INSTALL_LIB) lib/mozy/startup/$$a $@; \
-	done
-
-$(dst_lib)/mozy/help::
-	if [ -f lib/mozy/help/Makefile ]; then \
-	    (cd lib/mozy/help; $(MAKE)); \
-	fi
-	@$(BASE)/util/mkdirpth $@
-	help=`packages/util/accs_files help`; \
-	for a in $$help; do \
-	    $(INSTALL_LIB) lib/mozy/help/$$a $@; \
-	done
-	@$(BASE)/util/mkdirpth $@/screenshots
-	ss=`packages/util/accs_files help_ss`; \
-	for a in $$ss; do \
-	    $(INSTALL_LIB) lib/mozy/help/screenshots/$$a $@/screenshots; \
 	done
 
 package::

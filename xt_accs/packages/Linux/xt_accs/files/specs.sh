@@ -1,8 +1,6 @@
 #! /bin/sh
 # $Id: specs.sh,v 1.9 2014/07/20 22:25:16 stevew Exp $
 
-files=../../util/accs_files
-
 OSNAME=$1
 VERSION=$2
 SRCDIR=$3
@@ -30,30 +28,9 @@ echo
 
 echo '%files'
 echo
-bin=`$files bin`
-for a in $bin; do
-    echo "%attr(0755, root, root) /usr/local/xictools/bin/$a"
-done
-
-echo
-echo "%dir /usr/local/xictools/mozy"
-echo "%dir /usr/local/xictools/mozy/help"
-help=`$files help`
-for a in $help; do
-    echo "%attr(0644, root, root) /usr/local/xictools/mozy/help/$a"
-done
-echo "%dir /usr/local/xictools/mozy/help/screenshots"
-ss=`$files help_ss`
-for a in $ss; do
-    echo "%attr(0644, root, root) /usr/local/xictools/mozy/help/screenshots/$a"
-done
-
-echo
-echo "%dir /usr/local/xictools/mozy/startup"
-startup=`$files startup`
-for a in $startup; do
-    echo "%config /usr/local/xictools/mozy/startup/$a"
-done
+echo "%attr(0755, root, root) /usr/local/xictools/bin/fcpp"
+echo "%attr(0755, root, root) /usr/local/xictools/bin/lstpack"
+echo "%attr(0755, root, root) /usr/local/xictools/bin/lstunpack"
 
 echo
 cat files/scripts

@@ -1,15 +1,14 @@
 #! /bin/sh
 
-pkgfiles=../../pkgfiles
-
 inno="/inno-5.5.1"
 
 program=wrspice
-version=`../../../version wrspice`
+version=`../../../version $program`
 top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
+pkgfiles=$base/packages/pkgfiles
 
 tifs="$IFS"
 IFS="."

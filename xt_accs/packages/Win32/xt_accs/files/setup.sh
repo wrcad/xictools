@@ -1,40 +1,22 @@
 #! /bin/sh
-# $Id: setup.sh,v 1.10 2014/07/19 23:14:26 stevew Exp $
-
-pkgfiles=../../pkgfiles
 
 inno="/inno-5.5.1"
 
+program=xt_accs
+version=`../../../version $program`
 top=../../root/usr/local
-srctree=../../../..
-version=`$srctree/version xt_accs`
-utod=../../util/utod.exe
+base=../../../../xt_base
+baseutil=$base/packages/util
+basefiles=$base/packages/files
+pkgfiles=$base/packages/pkgfiles
 
+utod=$baseutil/utod.exe
 if [ ! -f $utod ]; then
     cwd=`pwd`
-    cd ../../util
+    cd $baseutil
     make utod.exe
     cd $cwd
 fi
-
-program=mozy
-cp ../../files/program.bat $top/xictools/bin/$program.bat
-chmod 755 $top/xictools/bin/$program.bat
-$utod $top/xictools/bin/$program.bat
-program=xeditor
-cp ../../files/program.bat $top/xictools/bin/$program.bat
-chmod 755 $top/xictools/bin/$program.bat
-$utod $top/xictools/bin/$program.bat
-program=httpget
-cp ../../files/program.bat $top/xictools/bin/$program.bat
-chmod 755 $top/xictools/bin/$program.bat
-$utod $top/xictools/bin/$program.bat
-
-help=$top/xictools/mozy/help
-$utod $help/*.hlp
-
-startup=$top/xictools/mozy/startup
-$utod $startup/README
 
 sed -e s/VERSION/$version/ < files/xt_accs.iss.in > xt_accs.iss
 $utod xt_accs.iss

@@ -18,26 +18,15 @@ DirExistsWarning=no
 
 PrivilegesRequired=admin
 
-UninstallFilesDir={app}\xictools\mozy\uninstall
-UninstallDisplayIcon={app}\xictools\bin\mozy.exe
+UninstallFilesDir={app}\xictools\accs\uninstall
 
 [Files]
 
-Source: "..\..\root\usr\local\xictools\bin\mozy.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\mozy.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\xeditor.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\xeditor.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\httpget.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\httpget.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\hlp2html.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\hlpsrv.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 Source: "..\..\root\usr\local\xictools\bin\fcpp.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 Source: "..\..\root\usr\local\xictools\bin\lstpack.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 Source: "..\..\root\usr\local\xictools\bin\lstunpack.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 
-Source: "..\..\root\usr\local\xictools\mozy\help\*"; DestDir: "{app}\xictools\mozy\help"
-Source: "..\..\root\usr\local\xictools\mozy\help\screenshots\*"; DestDir: "{app}\xictools\mozy\help\screenshots"
-Source: "..\..\root\usr\local\xictools\mozy\startup\*"; DestDir: "{app}\xictools\mozy\startup"
+Source: "..\..\root\usr\local\xictools\accs\*"; DestDir: "{app}\xictools\accs"
 
 [Icons]
 
@@ -45,7 +34,7 @@ Name: "{group}\XtAccs-4"; Filename: "{app}\xictools\bin\mozy.bat"; WorkingDir: "
 
 [code]
 
-#include "..\..\files\inno_uninstall"
+#include "..\..\..\..\xt_base\packages\files\inno_uninstall"
 
 function InitializeSetup(): Boolean;
 begin

@@ -105,7 +105,7 @@ Name: "{group}\WRspice-4"; Filename: "{app}\xictools\bin\wrspice.bat"; WorkingDi
 
 [code]
 
-#include "..\..\files\inno_uninstall"
+#include "..\..\..\..\xt_base\packages\files\inno_uninstall"
 
 function InitializeSetup(): Boolean;
 begin

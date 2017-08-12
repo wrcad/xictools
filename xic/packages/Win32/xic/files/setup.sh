@@ -1,15 +1,14 @@
 #! /bin/sh
 
-pkgfiles=../../pkgfiles
-
 inno="/inno-5.5.1"
 
 program=xic
-version=`../../../version xic`
+version=`../../../version $program`
 top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
+pkgfiles=$base/packages/pkgfiles
 
 tifs="$IFS"
 IFS="."
