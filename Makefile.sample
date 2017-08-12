@@ -4,9 +4,9 @@
 # $Id:$
 #######################################################################
 
-WRSPICE = KLU vl wrspice/bin
-XIC = mrouter xic/bin
-MOZY = mozy/bin
+WRSPICE = KLU vl wrspice
+XIC = mrouter xic
+MOZY = mozy
 
 SUBDIRS = xt_base secure $(MOZY) $(WRSPICE) $(XIC) xt_accs
 
@@ -95,9 +95,9 @@ depend clean:
 	done
 
 distclean:
+	-rm -f $(FLAGFILE)
 	for a in $(SUBDIRS); do \
 	    (cd $$a; $(MAKE) $@) \
 	done
-	-rm -f $(FLAGFILE)
 
 
