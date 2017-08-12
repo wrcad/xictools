@@ -339,9 +339,9 @@ Linux)
     ARCH="x86_64"
     if test -f /etc/redhat-release; then
         dst=`rpm -qf /etc/redhat-release`
-    elif [ -f /etc/centos-release ]; then
+    elif test -f /etc/centos-release ; then
         dst=`rpm -qf /etc/centos-release`
-    elif [ -f /etc/SuSE-release ]; then
+    elif test -f /etc/SuSE-release ; then
         dst=`rpm -qf /etc/SuSE-release`
     fi
     if test -n "$dst"; then
