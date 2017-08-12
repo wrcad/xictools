@@ -272,18 +272,18 @@ depend:
 ####### Clean up ######################################################
 
 eclean:
-	-@for a in $(TARGETS; do \
+	-@for a in $(TARGETS); do \
 	    rm -f bin/$$a$(NTSUFFIX); \
 	done
 
 clean: eclean
-	-@for a in $(SUBDIRS) ../devlib; do \
+	-@for a in $(SUBDIRS) devlib; do \
 	    (cd $$a; $(MAKE) clean) \
 	done
 	-rm -f bin/*.o $(WDEMODIR).tar.gz
 
 distclean: eclean
-	-@for a in $(SUBDIRS) include lib devlib packages $(WDEMODIR); do \
+	-@for a in $(SUBDIRS) include lib devlib packages ipc_demo_files; do \
 	    (cd $$a; $(MAKE) distclean) \
 	done
 	-rm -f *.o $(WDEMODIR).tar.gz Makefile

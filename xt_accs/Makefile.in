@@ -37,12 +37,10 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 CCFILES = fcpp.cc lstpack.cc lstunpack.cc
 
-ODIR = ./xt_accs-$(ACCS_VERSION)
-
 #######################################################################
 ####### Executable and related targets ################################
 
-ACCESSORIES = xeditor hlpsrv hlp2html fcpp lstpack lstunpack
+ACCESSORIES = fcpp lstpack lstunpack
 
 all:  $(ACCESSORIES)
 
@@ -65,50 +63,11 @@ lstunpack: lstunpack.cc
 #######################################################################
 ####### Recursively generate libraries ################################
 
-$(BASE)/lib/ginterf.a::
-	cd $(BASE)/ginterf; $(MAKE)
-
-$(BASE)/lib/gtkinterf.a::
-	cd $(BASE)/gtkinterf; $(MAKE)
-
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
 	if [ x$(NTREGEX) != x ]; then \
 	    cd $(BASE)/miscutil/libregex; $(MAKE); \
 	fi
-
-$(MOZY)/lib/gtkmozy.a::
-	if [ -d $(MOZY)/src/gtkmozy ]; then \
-	    cd $(MOZY)/src/gtkmozy; $(MAKE); \
-	fi
-
-$(MOZY)/lib/help.a::
-	if [ -d $(MOZY)/src/help ]; then \
-	    cd $(MOZY)/src/help; $(MAKE); \
-	fi
-
-$(MOZY)/lib/htm.a::
-	if [ -d $(MOZY)/src/htm ]; then \
-	    cd $(MOZY)/src/htm; $(MAKE); \
-	fi
-
-$(MOZY)/lib/httpget.a::
-	if [ -d $(MOZY)/src/httpget ]; then \
-	    cd $(MOZY)/src/httpget; $(MAKE); \
-	fi
-
-$(MOZY)/lib/imsave.a::
-	if [ -d $(MOZY)/src/imsave ] ; then \
-	    cd $(MOZY)/src/imsave; $(MAKE); \
-	fi
-
-$(MOZY)/lib/update_itf.a::
-	if [ -d $(MOZY)/src/upd ]; then \
-	    cd $(MOZY)/src/upd; $(MAKE); \
-	fi
-
-foo $(MOZYRES) $(XEDRES)::
-	cd $(@D); $(MAKE) $(@F)
 
 #######################################################################
 ####### Dependencies in this directory ################################
@@ -124,8 +83,7 @@ depend:
 ####### Clean up ######################################################
 
 eclean:
-	-rm -f xeditor$(NTSUFFIX) hlpsrv$(NTSUFFIX) hlp2html$(NTSUFFIX) \
-	    fcpp$(NTSUFFIX) lstpack$(NTSUFFIX) lstunpack$(NTSUFFIX)
+	-rm -f fcpp$(NTSUFFIX) lstpack$(NTSUFFIX) lstunpack$(NTSUFFIX)
 
 clean: eclean
 	-rm -f *.o $(ODIR).tar.gz

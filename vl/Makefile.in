@@ -11,29 +11,38 @@ LOCATION = vl
 
 VERSION = `./version vl`
 
+prefix = @prefix@
 CXX = @CXX@
 CC = @CC@
 LINKCC = @LINKCC@
 CFLAGS = @CFLAGS@ @VL_DEFS@ @UFLAGS@
 YACC = @YACC@
 LEX = @LEX@
+OSNAME = @OSNAME@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ @VL_DEFS@
 INSTALL = @INSTALL@
-INSTALL_USER = @INSTALL_USER@
 STDCLIB = @STDCLIB@
 AR = @AR@
 RANLIB = @RANLIB@
 NTSUFFIX = @NTSUFFIX@
 FILTER = @FILTER@
+TOOLROOT = @TOOLROOT@
 
 BASE = ../xt_base
+INCLUDE = -I.
+
 CCFILES = vl_data.cc vl_expr.cc vl_gate.cc vl_obj.cc vl_parse.cc vl_print.cc \
   vl_sim.cc vl_st.cc vl_sys.cc
 OTHERS = verilog.l verilog.y vl_defs.h vl_list.h vl_st.h vl_types.h main.cc \
   Makefile.in configure.in README
 COBJS = verilog_yacc.o verilog_lex.o $(CCFILES:.cc=.o)
+
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
 LIB_TARGET = libvlog.a
-INCLUDE = -I.
 
 all: $(LIB_TARGET) vl
 
@@ -88,8 +97,59 @@ depend: randval.cc randval.h
   $(FILTER) >> Makefile; \
 	fi
 
-install: vl
-	$(INSTALL) -s -c -m 0755 $(INSTALL_USER) vl /usr/local/bin
+#######################################################################
+####### Installation ##################################################
+
+INSTALL_PREFIX ?= $(prefix)
+dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)
+dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+
+install: install_test install_clean install_bin install_lib install_examples
+
+install_bin: $(dst_bin)
+install_lib: $(dst_lib)/vl
+install_examples: $(dst_lib)/vl/examples
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_clean::
+	-@rm -f $(dst_bin)/vl$(NTSUFFIX)
+	-@rm -rf $(dst_lib)
+
+$(dst_bin)::
+	@$(BASE)/util/mkdirpth $@
+	$(INSTALL_BIN) vl$(NTSUFFIX) $@
+
+$(dst_lib)/vl::
+	@$(BASE)/util/mkdirpth $@
+	$(INSTALL_LIB) README $@
+	$(INSTALL_LIB) ChangeLog $@
+	@$(BASE)/util/mkdirpth $@/lib
+	$(INSTALL_LIB) libvlog.a $@/lib
+
+$(dst_lib)/vl/examples::
+	@$(BASE)/util/mkdirpth $@/book
+	cp -pr examples_book/* $@/book
+	@$(BASE)/util/mkdirpth $@/ivl
+	cp -pr examples_ivl/* $@/ivl
+	@$(BASE)/util/mkdirpth $@/vbs
+	cp -pr examples_vbs/* $@/vbs
+
+package::
+	$(MAKE)
+	-rm -rf packages/root
+	mkdir packages/root
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
+	cd packages; make vl-$(OSNAME)
+
+#####
+
+#install: vl
+#	$(INSTALL) -s -c -m 0755 $(INSTALL_USER) vl /usr/local/bin
 
 VLDIR = ../packages/pkgfiles/vl-$(VERSION)
 VLFILES ="\

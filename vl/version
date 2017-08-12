@@ -5,7 +5,7 @@
 
 release="4"
 tools_version="4.2"
-vl_version="1.6"
+vl_version="4.2.6"
 
 if [ z$1 != "z" ]; then
     case $1 in

@@ -1051,7 +1051,7 @@ if test -d ../mozy; then
         ../mozy/src/httpget/Makefile \
         ../mozy/src/imsave/Makefile \
         ../mozy/src/upd/Makefile \
-        ../mozy/bin/Makefile"
+        ../mozy/Makefile"
 fi
 if test -d ../xt_accs; then
     makefiles="$makefiles ../xt_accs/Makefile"
@@ -1081,7 +1081,7 @@ if test -d ../xic; then
         ../xic/src/wrspif/Makefile \
         ../xic/src/tech/Makefile \
         ../xic/plugins/Makefile \
-        ../xic/bin/Makefile"
+        ../xic/Makefile"
 fi
 if test -d ../KLU; then
     makefiles="$makefiles ../KLU/Makefile"
@@ -1101,8 +1101,8 @@ if test -d ../wrspice; then
         ../wrspice/src/misc/Makefile \
         ../wrspice/src/plot/Makefile \
         ../wrspice/src/sparse/Makefile \
-        ../wrspice/wrspice_ipc_demo/Makefile \
-        ../wrspice/bin/Makefile \
+        ../wrspice/ipc_demo_files/Makefile \
+        ../wrspice/Makefile \
         ../wrspice/devlib/Makefile"
     (cd ../wrspice/devlib; make -f Makefile.in devlist)
     subd="`cat ../wrspice/devlib/devices ../wrspice/devlib/modules`"

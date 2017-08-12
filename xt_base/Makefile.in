@@ -36,18 +36,15 @@ depend clean:
 	fi
 
 distclean:
-	@if [ -n "$(MALLOC)" ]; then \
+	@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
 	done
-	@if [ z$(MALLOC) != z ]; then \
+	@if [ -n "$(MALLOC)" ]; then \
 	    if [ -d malloc ]; then \
 	        (cd malloc; $(MAKE) $@) \
-	    fi; \
-	fi
 	-rm -f config.cache config.log config.status configure Makefile
 	-rm -rf autom4te.cache
 	-rm -f include/config.h
-
 

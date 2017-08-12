@@ -98,7 +98,7 @@ bin/xeditor.o: bin/xeditor.cc
   -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c bin/xeditor.cc -o bin/xeditor.o
 
 .cc.o:
-	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc -o $*.o
 
 #######################################################################
 ####### Recursively generate libraries ################################
@@ -198,29 +198,29 @@ install_clean::
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
 	for aa in $(TARGETS); do \
-	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
+	    $(INSTALL_BIN) bin/$$aa$(NTSUFFIX) $@; \
 	done
 
 $(dst_lib)/mozy/startup::
 	@$(BASE)/util/mkdirpth $@
 	startup=`packages/util/mozy_files startup`; \
 	for a in $$startup; do \
-	    $(INSTALL_LIB) lib/mozy/startup/$$a $@; \
+	    $(INSTALL_LIB) lib/startup/$$a $@; \
 	done
 
 $(dst_lib)/mozy/help::
-	if [ -f lib/mozy/help/Makefile ]; then \
-	    (cd lib/mozy/help; $(MAKE)); \
+	if [ -f lib/help/Makefile ]; then \
+	    (cd lib/help; $(MAKE)); \
 	fi
 	@$(BASE)/util/mkdirpth $@
 	help=`packages/util/mozy_files help`; \
 	for a in $$help; do \
-	    $(INSTALL_LIB) lib/mozy/help/$$a $@; \
+	    $(INSTALL_LIB) lib/help/$$a $@; \
 	done
 	@$(BASE)/util/mkdirpth $@/screenshots
 	ss=`packages/util/mozy_files help_ss`; \
 	for a in $$ss; do \
-	    $(INSTALL_LIB) lib/mozy/help/screenshots/$$a $@/screenshots; \
+	    $(INSTALL_LIB) lib/help/screenshots/$$a $@/screenshots; \
 	done
 
 package::

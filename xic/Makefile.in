@@ -280,7 +280,7 @@ clean: eclean
 	-rm -f bin/*.o
 
 distclean: eclean
-	-@for a in $(SUBDIRS) src/scrkit include lib /plugins packages; do \
+	-@for a in $(SUBDIRS) src/scrkit include lib plugins packages; do \
 	    (cd $$a; $(MAKE) distclean) \
 	done
 	-rm -f bin/*.o Makefile

@@ -56,7 +56,8 @@ depend: $(NFILES)
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
+  $(FILTER) >> Makefile; \
 	fi
 
 clean:
