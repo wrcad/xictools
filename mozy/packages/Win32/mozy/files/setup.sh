@@ -2,7 +2,8 @@
 
 inno="/inno-5.5.1"
 
-version=`../../../version mozy`
+appname=mozy
+version=`../../../version $appname`
 top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
@@ -36,17 +37,17 @@ $utod $help/*.hlp
 startup=$top/xictools/mozy/startup
 $utod $startup/README
 
-sed -e s/VERSION/$version/ < files/mozy.iss.in > mozy.iss
-$utod mozy.iss
+sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
+$utod $appname.iss
 
-$inno/iscc mozy.iss > build.log
+$inno/iscc $appname.iss > build.log
 if [ $? != 0 ]; then
     echo Compile failed!
     exit 1
 fi
 
-exfiles="$pkgfiles/mozy-Win32*.exe"
-if [ x"exfiles" != x ]; then
+exfiles="$pkgfiles/$appname-Win32*.exe"
+if [ -n "$exfiles" ]; then
     for a in $exfiles; do
         rm -f $a
     done
@@ -54,5 +55,5 @@ fi
 
 mv Output/*.exe $pkgfiles
 rmdir Output
-rm mozy.iss
+rm $appname.iss
 echo Done

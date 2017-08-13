@@ -2,8 +2,8 @@
 
 inno="/inno-5.5.1"
 
-program=vl
-version=`../../../version vl`
+appname=vl
+version=`../../../version $appname`
 top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
@@ -17,7 +17,7 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-lib=$top/xictools/vl
+lib=$top/xictools/$appname
 $utod $lib/README
 $utod $lib/ChangeLog
 $utod $lib/verilog-manual.html
@@ -35,16 +35,16 @@ $utod $lib/examples/book/ch14/mag_comp/*
 $utod $lib/examples/book/ch14/vending/*
 $utod $lib/examples_vbs/*
 
-sed -e s/VERSION/$version/ < files/$program.iss.in > $program.iss
-$utod $program.iss
+sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
+$utod $appname.iss
 
-$inno/iscc $program.iss > build.log
+$inno/iscc $appname.iss > build.log
 if [ $? != 0 ]; then
     echo Compile failed!
     exit 1
 fi
 
-exfiles="$pkgfiles/vl-Win32*.exe"
+exfiles="$pkgfiles/$appname-Win32*.exe"
 if [ -n "$exfiles" ]; then
     for a in $exfiles; do
         rm -f $a
@@ -53,6 +53,6 @@ fi
 
 mv Output/*.exe $pkgfiles
 rmdir Output
-rm $program.iss
+rm $appname.iss
 echo Done
 

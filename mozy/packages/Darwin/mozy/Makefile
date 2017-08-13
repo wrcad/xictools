@@ -1,9 +1,12 @@
 BASE = ../../../../xt_base
 
-VERSION = `../../../version mozy`
+APPNAME = mozy
+APPTOK = Mozy
+SUBDIRS = bin $(APPNAME)
+VERSION = `../../../version $(APPNAME)`
 RELEASE = `../../../version release`
-PKGFILE = mozy-$(OSNAME)-$(VERSION)-x86_64.pkg
-PKGNAME = XicTools.Mozy.$(RELEASE)
+PKGFILE = $(APPNAME)-$@-$(VERSION)-x86_64.pkg
+PKGNAME = XicTools.$(APPTOK).$(RELEASE)
 PKGDIR = $(BASE)/packages/pkgfiles
 pd = `pwd`
 
@@ -12,21 +15,21 @@ pd = `pwd`
 	    echo "Unknown OSNAME $@"; \
 	    exit; \
 	fi
-	-@rm -f $(PKGDIR)/mozy-Darwin*
+	-@rm -f $(PKGDIR)/$(APPNAME)-Darwin*
 	-@rm -rf contents
 	mkdir contents contents/xictools
-	cp -R ../../root/usr/local/xictools/bin contents/xictools
-	cp -R ../../root/usr/local/xictools/mozy contents/xictools
+	for a in $(SUBDIRS); do \
+	    cp -R ../../root/usr/local/xictools/$$a contents/xictools; \
+	done
 	chown -R root:admin contents
-	pkgbuild --identifier $(PKGNAME) --version $(VERSION) \
-  --root $(pd)/contents --install-location /usr/local $(PKGDIR)/$(PKGFILE)
+	pkgbld="pkgbuild --identifier $(PKGNAME) --version $(VERSION) \
+  --root $(pd)/contents --install-location /usr/local"; \
+	if [ -d $(pd)/resources ]; then \
+	    pkgbld="$$pkgbld --scripts $(pd)/resources"; \
+        fi; \
+        $$pkgbld $(PKGDIR)/$(PKGFILE)
 	-@rm -rf contents
 
 clean::
 	-@rm -rf contents
 
-subdirs::
-	@echo
-
-files::
-	@echo

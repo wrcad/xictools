@@ -2,8 +2,8 @@
 
 inno="/inno-5.5.1"
 
-program=xtlserv
-version=`../../../version $program`
+appname=xtlserv
+version=`../../../version $appname`
 top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
@@ -21,16 +21,23 @@ fi
 startup=$top/xictools/license
 $utod $startup/README
 
-sed -e s/VERSION/$version/ < files/xtlserv.iss.in > xtlserv.iss
-$utod xtlserv.iss
+sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
+$utod $appname.iss
 
-$inno/iscc xtlserv.iss > build.log
+$inno/iscc $appname.iss > build.log
 if [ $? != 0 ]; then
     echo Compile failed!
     exit 1
 fi
 
+exfiles="$pkgfiles/$appname-Win32*.exe"
+if [ -n "$exfiles" ]; then
+    for a in $exfiles; do
+        rm -f $a
+    done
+fi
+
 mv Output/*.exe $pkgfiles
 rmdir Output
-rm xtlserv.iss
+rm $appname.iss
 echo Done

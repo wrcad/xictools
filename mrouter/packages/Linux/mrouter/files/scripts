@@ -1,0 +1,49 @@
+%pre
+if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+
+bindir=$prefix/xictools/bin
+libdir=$prefix/xictools/vl
+
+# nothing to do
+
+
+%post
+if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+
+libdir=$prefix/xictools/vl
+
+# nothing to do
+
+
+%preun
+if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+
+bindir=$prefix/xictools/bin
+libdir=$prefix/xictools/vl
+
+# nothing to do
+
+
+%postun
+if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+
+libdir=$prefix/xictools/vl
+
+# nothing to do
+

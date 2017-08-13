@@ -2,8 +2,8 @@
 
 inno="/inno-5.5.1"
 
-program=xic
-version=`../../../version $program`
+appname=xic
+version=`../../../version $appname`
 top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
@@ -28,11 +28,13 @@ fi
 if [ ! -d $top/xictools/bin ]; then
     mkdir $top/xictools/bin
 fi
+
+program=xic
 cp $basefiles/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
-mv $top/xictools/$program/bin/* $top/xictools/bin
-rmdir $top/xictools/$program/bin
+mv $top/xictools/$appname/bin/* $top/xictools/bin
+rmdir $top/xictools/$appname/bin
 
 license=$top/xictools/license
 if [ ! -d $license ]; then
@@ -41,7 +43,7 @@ fi
 cp ../../../../secure/README.MSW $license
 $utod $license/README.MSW
 
-examples=$top/xictools/$program/examples
+examples=$top/xictools/$appname/examples
 $utod $examples/README
 $utod $examples/cgdtest.scr
 $utod $examples/cgdtest1.scr
@@ -65,11 +67,11 @@ $utod $examples/PCells/*
 $utod $examples/memchip_example/README
 $utod $examples/memchip_example/xic_tech.demo
 
-help=$top/xictools/$program/help
+help=$top/xictools/$appname/help
 $utod $help/*.hlp
 $utod $help/*.xpm
 
-startup=$top/xictools/$program/startup
+startup=$top/xictools/$appname/startup
 $utod $startup/README
 $utod $startup/device.lib
 $utod $startup/model.lib
@@ -85,7 +87,7 @@ $utod $startup/xic_tech.hyp
 $utod $startup/xic_tech.n65
 $utod $startup/xic_tech.scmos
 
-scripts=$top/xictools/$program/scripts
+scripts=$top/xictools/$appname/scripts
 $utod $scripts/blackbg.scr
 $utod $scripts/fullcursor.scr
 $utod $scripts/paths.scr
@@ -94,7 +96,7 @@ $utod $scripts/spiralform.scr
 $utod $scripts/whitebg.scr
 $utod $scripts/yank.scr
 
-scrkit=$top/xictools/$program/scrkit
+scrkit=$top/xictools/$appname/scrkit
 $utod $scrkit/Makefile
 $utod $scrkit/miscmath.h
 $utod $scrkit/README
@@ -105,22 +107,22 @@ $utod $scrkit/si_scrfunc.h
 $utod $scrkit/template.cc
 $utod $scrkit/test.scr
 
-docs=$top/xictools/$program/docs
+docs=$top/xictools/$appname/docs
 cp $basefiles/MSWINFO.TXT $docs
 $utod $docs/$relnote
 $utod $docs/README
 $utod $docs/MSWINFO.TXT
 
-sed -e s/VERSION/$version/ < files/$program.iss.in > $program.iss
-$utod $program.iss
+sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
+$utod $appname.iss
 
-$inno/iscc $program.iss > build.log
+$inno/iscc $appname.iss > build.log
 if [ $? != 0 ]; then
     echo Compile failed!
     exit 1
 fi
 
-exfiles="$pkgfiles/xic-Win32*.exe"
+exfiles="$pkgfiles/$appname-Win32*.exe"
 if [ x"exfiles" != x ]; then
     for a in $exfiles; do
         rm -f $a
@@ -129,6 +131,6 @@ fi
 
 mv Output/*.exe $pkgfiles
 rmdir Output
-rm $program.iss
+rm $appname.iss
 echo Done
 

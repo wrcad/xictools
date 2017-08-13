@@ -1,13 +1,13 @@
 BASE = ../../../../xt_base
 
-APPNAME = xtlserv
-APPTOK = Xtlserv
-SUBDIRS = bin license
+APPNAME = mrouter
+APPTOK = Mrouter
+SUBDIRS = bin $(APPNAME)
 VERSION = `../../../version $(APPNAME)`
 RELEASE = `../../../version release`
 PKGFILE = $(APPNAME)-$@-$(VERSION)-x86_64.pkg
 PKGNAME = XicTools.$(APPTOK).$(RELEASE)
-PKGDIR = $(BASE)/packages//pkgfiles
+PKGDIR = $(BASE)/packages/pkgfiles
 pd = `pwd`
 
 .DEFAULT:

@@ -1,11 +1,22 @@
-# Top-level Makefile for MRouter package.
-# $Id:$
+#######################################################################
+LOCATION = mrouter
+#######################################################################
 
 DATE = @DATE@
+
+prefix = @prefix@
 CC = @CC@
 CXX = @CXX@
 CFLAGS = @CFLAGS@ @PIC_OPT@
+OSNAME = @OSNAME@
+TOOLROOT = @TOOLROOT@
 
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+BASE = ../xt_base
 SUBDIRS = def lef mrouter
 
 all: lef def
@@ -30,7 +41,8 @@ clean:
 	-cd examples; $(MAKE) clean
 
 distclean:
-	-@rm -rf lef def autom4te.cache config.cache config.status config.log Makefile
+	-@rm -rf lef def autom4te.cache config.cache config.status config.log \
+  Makefile
 	-@rm -f mrouter-`./version`.tar.gz
 	-cd mrouter; $(MAKE) distclean
 	-cd examples; $(MAKE) distclean
@@ -48,75 +60,82 @@ depend:
 test:
 	-cd mrouter; $(MAKE) test
 
-INSTALL_PREFIX = /usr/local
-destn = $(INSTALL_PREFIX)/mrouter
+#######################################################################
+####### Install programs into system location #########################
 
-install:
-	rm -rf $(destn)
-	mkdir $(destn)
-	mkdir $(destn)/bin
-	if [ -f mrouter/mrouter.exe ]; then \
-            cp -f mrouter/mrouter.exe             $(destn)/bin; \
-	else \
-	    cp -f mrouter/mrouter                 $(destn)/bin; \
+INSTALL_PREFIX ?= $(prefix)
+destn = $(INSTALL_PREFIX)/$(TOOLROOT)
+
+install_mrouter: install_test install_clean install_bin \
+  install_lib install_help install_examples install_docs
+
+install_bin:            $(destn)/bin
+install_lib:            $(destn)/mrouter/lib
+install_help:           $(destn)/mrouter/help
+install_examples:       $(destn)/mrouter/examples
+install_docs:           $(destn)/mrouter/docs
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
 	fi
-	mkdir $(destn)/doc $(destn)/doc/xic
-#	cp -f doc/mrmanual-`./version`.pdf     	  $(destn)/doc
-#	cp -f doc/mrmanual-html-`./version`.tar.gz $(destn)/doc
-#	cp -f doc/Makefile                        $(destn)/doc
-#	cp -f doc/mrman1.tex                      $(destn)/doc
-#	cp -f doc/mrman2.tex                      $(destn)/doc
-#	cp -f doc/mrman3.tex                      $(destn)/doc
-#	cp -f doc/mrmanual.sed                    $(destn)/doc
-	cp -f doc/README                          $(destn)/doc
-#	cp -f doc/README.build                    $(destn)/doc
-#	cp -f doc/tm.eps                          $(destn)/doc
-	cp -f doc/xic/MRouter.hlp                 $(destn)/doc/xic
-	mkdir $(destn)/examples
-	cp -f examples/Makefile                   $(destn)/examples
-	cp -f examples/main-plg.cc                $(destn)/examples
-	cp -f examples/map9v3.def                 $(destn)/examples
-	cp -f examples/map9v3_blk.def             $(destn)/examples
-	cp -f examples/map9v3.rsc                 $(destn)/examples
-	cp -f examples/openMSP430.def             $(destn)/examples
-	cp -f examples/openMSP430_blk.def         $(destn)/examples
-	cp -f examples/openMSP430.rsc             $(destn)/examples
-	cp -f examples/README                     $(destn)/examples
-	mkdir $(destn)/examples/osu35
-	cp -f examples/osu35/osu035_stdcells.gds2 $(destn)/examples/osu35
-	cp -f examples/osu35/osu035_stdcells.lef  $(destn)/examples/osu35
-	mkdir $(destn)/examples/xic
-	cp -f examples/xic/exroute.scr            $(destn)/examples/xic
-	cp -f examples/xic/osu35.lib              $(destn)/examples/xic
-	cp -f examples/xic/README                 $(destn)/examples/xic
-	cp -f examples/xic/stdvia.scr             $(destn)/examples/xic
-	cp -f examples/xic/stdvias                $(destn)/examples/xic
-	cp -f examples/xic/xic_tech               $(destn)/examples/xic
-	mkdir $(destn)/include
-	cp -f include/ld_util.h include/ld_vers.h include/lddb.h \
-          include/mr_vers.h include/mrouter.h     $(destn)/include
-	mkdir $(destn)/lib
-	cp -f mrouter/libmrouter.*                $(destn)/lib
 
-uninstall:
-	rm -rf $(destn)
+install_clean::
+	-@rm -rf $(destn)
 
-tag:
-	@vrs=`./version`; \
-	tag=`IFS=.; set $$vrs; echo mrouter-$$1-$$2-$$3`; \
-	echo $$tag; \
-	cvs rtag -F $$tag mrouter
+$(destn)/bin::
+	@$(BASE)/util/mkdirpth $(destn)/bin
+	$(INSTALL_BIN) mrouter/mrouter$(NTSUFFIX) $(destn)/bin;
 
-distrib:
-	rm -rf dtmp;
-	mkdir dtmp;
-	@vrs=`./version`; \
-	tag=`IFS=.; set $$vrs; echo mrouter-$$1-$$2-$$3`; \
-	cd dtmp; cvs export -r $$tag  mrouter
-	cp doc/mrmanual-`./version`.pdf \
-  doc/mrmanual-html-`./version`.tar.gz dtmp/mrouter/doc
-	cd dtmp; mv -f mrouter mrouter-`../version`; \
-  tar czf mrouter-`../version`.tar.gz mrouter-`../version`;
-	mv dtmp/mrouter-`./version`.tar.gz .; rm -rf dtmp
+$(destn)/mrouter/lib::
+	@$(BASE)/util/mkdirpth $(destn)/mrouter/lib
+	$(INSTALL_LIB) mrouter/$(LIB_TARGET) $@
 
+$(destn)/mrouter/help::
+	@$(BASE)/util/mkdirpth $(destn)/mrouter/help
+	$(INSTALL_LIB_RO) doc/xic/MRouter.hlp           $@
 
+$(destn)/mrouter/examples::
+	@$(BASE)/util/mkdirpth $(destn)/mrouter/examples
+	$(INSTALL_LIB) examples/Makefile                $@
+	$(INSTALL_LIB) examples/main-plg.cc             $@
+	$(INSTALL_LIB) examples/map9v3.def              $@
+	$(INSTALL_LIB) examples/map9v3_blk.def          $@
+	$(INSTALL_LIB) examples/map9v3.rsc              $@
+	$(INSTALL_LIB) examples/openMSP430.def          $@
+	$(INSTALL_LIB) examples/openMSP430_blk.def      $@
+	$(INSTALL_LIB) examples/openMSP430.rsc          $@
+	$(INSTALL_LIB) examples/README                  $@
+	@$(BASE)/util/mkdirpth $(destn)/mrouter/examples/osu35
+	$(INSTALL_LIB) examples/osu35/osu035_stdcells.gds2  $@/osu35
+	$(INSTALL_LIB) examples/osu35/osu035_stdcells.lef   $@/osu35
+	@$(BASE)/util/mkdirpth $(destn)/mrouter/examples/xic
+	$(INSTALL_LIB) examples/xic/exroute.scr         $@/xic
+	$(INSTALL_LIB) examples/xic/osu35.lib           $@/xic
+	$(INSTALL_LIB) examples/xic/README              $@/xic
+	$(INSTALL_LIB) examples/xic/stdvia.scr          $@/xic
+	$(INSTALL_LIB) examples/xic/stdvias             $@/xic
+	$(INSTALL_LIB) examples/xic/xic_tech            $@/xic
+
+$(destn)/mrouter/doc::
+	@$(BASE)/util/mkdirpth $(destn)/mrouter/doc
+#	$(INSTALL_LIB_RO) doc/mrmanual-`./version`.pdf  $@
+#	$(INSTALL_LIB_RO) doc/mrmanual-html-`./version`.tar.gz $@
+#	$(INSTALL_LIB_RO) doc/Makefile                  $@
+#	$(INSTALL_LIB_RO) doc/mrman1.tex                $@
+#	$(INSTALL_LIB_RO) doc/mrman2.tex                $@
+#	$(INSTALL_LIB_RO) doc/mrman3.tex                $@
+#	$(INSTALL_LIB_RO) doc/mrmanual.sed              $@
+	$(INSTALL_LIB_RO) doc/README                    $@
+#	$(INSTALL_LIB_RO) doc/README.build              $@
+#	$(INSTALL_LIB_RO) doc/tm.eps                    $@
+
+package::
+	$(MAKE) all
+	-rm -rf packages/root
+	mkdir packages/root
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_mrouter
+	cd packages; make xic-$(OSNAME)
+
+#######################################################################

@@ -2,8 +2,8 @@
 
 inno="/inno-5.5.1"
 
-program=wrspice
-version=`../../../version $program`
+appname=wrspice
+version=`../../../version $appname`
 top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
@@ -28,11 +28,13 @@ fi
 if [ ! -d $top/xictools/bin ]; then
     mkdir $top/xictools/bin
 fi
+
+program=wrspice
 cp $basefiles/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
-mv $top/xictools/$program/bin/* $top/xictools/bin
-rmdir $top/xictools/$program/bin
+mv $top/xictools/$appname/bin/* $top/xictools/bin
+rmdir $top/xictools/$appname/bin
 
 license=$top/xictools/license
 if [ ! -d $license ]; then
@@ -41,26 +43,26 @@ fi
 cp ../../../../secure/README.MSW $license
 $utod $license/README.MSW
 
-examples=$top/xictools/$program/examples
+examples=$top/xictools/$appname/examples
 $utod $examples/*
 
-help=$top/xictools/$program/help
+help=$top/xictools/$appname/help
 $utod $help/*.hlp
 
-startup=$top/xictools/$program/startup
+startup=$top/xictools/$appname/startup
 $utod $startup/*
 $utod $startup/devices/README
 
-scripts=$top/xictools/$program/scripts
+scripts=$top/xictools/$appname/scripts
 $utod $scripts/*
 
-docs=$top/xictools/$program/docs
+docs=$top/xictools/$appname/docs
 cp $basefiles/MSWINFO.TXT $docs
 $utod $docs/$relnote
 $utod $docs/README
 $utod $docs/MSWINFO.TXT
 
-devkit=$top/xictools/$program/devkit
+devkit=$top/xictools/$appname/devkit
 $utod $devkit/README
 $utod $devkit/README.adms
 $utod $devkit/Makefile
@@ -71,17 +73,17 @@ for a in $foo; do
     $utod $devkit/$a
 done
 
-sed -e s/VERSION/$version/ < files/$program.iss.in > $program.iss
-$utod $program.iss
+sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
+$utod $appname.iss
 
-$inno/iscc $program.iss > build.log
+$inno/iscc $appname.iss > build.log
 if [ $? != 0 ]; then
     echo Compile failed!
     exit 1
 fi
 
-exfiles="$pkgfiles/wrspice-Win32*.exe"
-if [ x"exfiles" != x ]; then
+exfiles="$pkgfiles/$appname-Win32*.exe"
+if [ -n "$exfiles" ]; then
     for a in $exfiles; do
         rm -f $a
     done
@@ -89,6 +91,6 @@ fi
 
 mv Output/*.exe $pkgfiles
 rmdir Output
-rm $program.iss
+rm $appname.iss
 echo Done
 

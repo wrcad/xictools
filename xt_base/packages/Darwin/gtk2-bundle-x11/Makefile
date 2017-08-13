@@ -1,7 +1,10 @@
+
+APPNAME = gtk2_bundle_x11
+APPTOK = gtk2-bundle-x11
 VERSION = 4.0.1
-PKGFILE = gtk2_bundle_x11-Darwin64-$(VERSION)-x86_64.pkg
+PKGFILE = $(APPNAME)-Darwin64-$(VERSION)-x86_64.pkg
 RELEASE = `../../../../version release`
-PKGNAME = XicTools.gtk2-bundle-x11
+PKGNAME = XicTools.$(APPTOK)
 PKGDIR = ../../pkgfiles
 pd = `pwd`
 
@@ -12,11 +15,15 @@ pkg::
 	sudo $(MAKE) mkpkg
 
 mkpkg::
-	-@rm -f $(PKGDIR)/gtk2-bundle-x11*
+	-@rm -f $(PKGDIR)/$(APPNAME)*
 	-@files/mkgtkx11
 	chown -R root:admin contents
-	pkgbuild --identifier $(PKGNAME) --version $(VERSION) \
-  --root $(pd)/contents --install-location /usr/local $(PKGDIR)/$(PKGFILE)
+	pkgbld="pkgbuild --identifier $(PKGNAME) --version $(VERSION) \
+  --root $(pd)/contents --install-location /usr/local"; \
+	if [ -d $(pd)/resources ]; then \
+	    pkgbld="$$pkgbld --scripts $(pd)/resources"; \
+        fi; \
+        $$pkgbld $(PKGDIR)/$(PKGFILE)
 	-@rm -rf contents
 
 clean::

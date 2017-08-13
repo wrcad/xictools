@@ -1,13 +1,13 @@
-
 #! /bin/sh
+
 inno="/inno-5.5.1"
 
-appname="gtk2-bundle"
-version=$1
+appname=mrouter
+version=`../../../version $appname`
+top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
-pkgfiles=$base/packages/pkgfiles
 
 utod=$baseutil/utod.exe
 if [ ! -f $utod ]; then
@@ -16,6 +16,12 @@ if [ ! -f $utod ]; then
     make utod.exe
     cd $cwd
 fi
+
+lib=$top/xictools/$appname
+
+$utod $lib/examples/*
+$utod $lib/examples/osu35/*.lef
+$utod $lib/examples/xic/*
 
 sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
 $utod $appname.iss
@@ -26,8 +32,8 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-exfiles="$pkgfiles/$appname*.exe"
-if [  -n "$exfiles" ]; then
+exfiles="$pkgfiles/$appname-Win32*.exe"
+if [ -n "$exfiles" ]; then
     for a in $exfiles; do
         rm -f $a
     done
