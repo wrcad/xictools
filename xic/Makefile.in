@@ -252,7 +252,7 @@ bin/xic.o: bin/xic.cc
 #######################################################################
 ####### Dependencies ##################################################
 
-CCFILES = bin/xic.cc bin/sa-filetool.cc bin/cryptmain.cc bin/main.cc
+CCFILES = bin/xic.cc bin/sa-filetool.cc bin/cryptmain.cc
 
 depend:
 	@for a in include $(SUBDIRS) plugins; do \
@@ -263,6 +263,10 @@ depend:
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
   $(FILTER) >> Makefile; \
+	    if [ -n "$(NTSUFFIX)" ]; then \
+	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc \
+  $(FILTER) >> Makefile; \
+	    fi; \
 	fi
 
 #######################################################################

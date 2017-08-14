@@ -24,7 +24,7 @@ RANLIB = @RANLIB@
 FILTER = @FILTER@
 
 BASE = ../../../xt_base
-INCLUDE = -I../../include -I../../include/htm -I$(BASE)/include
+INCLUDE = -I../../include -I../../include/htm -I$(BASE)/include @IMG_INCLUDES@
 
 LIB_TARGET = ../../lib/htm.a
 

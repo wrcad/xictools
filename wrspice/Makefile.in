@@ -266,6 +266,10 @@ depend:
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
   $(FILTER) >> Makefile; \
+	    if [ -n "$(NTSUFFIX)" ]; then \
+	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc \
+  $(FILTER) >> Makefile; \
+	    fi; \
 	fi
 
 #######################################################################

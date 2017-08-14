@@ -760,15 +760,28 @@ dnl # png.h is in a strange place under win-builds
     fi
 
 elif test $OSNAME = "Darwin64"; then
-dnl # XXX point to /opt/include instead of gtk2-bundle
+dnl  If the gtk2-bundle export package is found, use it.  Otherwise
+dnl  assume libraries/includes are under /opt (MacPorts).
     if test $with_quartz = yes; then
-        LIBS=-L/usr/local/gtk2-bundle/lib
-        IMG_LIBS=-L/usr/local/gtk2-bundle/lib
-        IMG_INCLUDES="-I/usr/local/gtk2-bundle/include"
+        if test -d /usr/local/gtk2-bundle; then
+            LIBS=-L/usr/local/gtk2-bundle/lib
+            IMG_LIBS=-L/usr/local/gtk2-bundle/lib
+            IMG_INCLUDES="-I/usr/local/gtk2-bundle/include"
+        elif test -d /opt; then
+            LIBS=-L/opt/lib
+            IMG_LIBS=-L/opt/lib
+            IMG_INCLUDES="-I/opt/include"
+        fi
     else
-        LIBS=-L/usr/local/gtk2-bundle-x11/lib
-        IMG_LIBS=-L/usr/local/gtk2-bundle-x11/lib
-        IMG_INCLUDES="-I/usr/local/gtk2-bundle-x11/include"
+        if test -d /usr/local/gtk2-bundle-x11; then
+            LIBS=-L/usr/local/gtk2-bundle-x11/lib
+            IMG_LIBS=-L/usr/local/gtk2-bundle-x11/lib
+            IMG_INCLUDES="-I/usr/local/gtk2-bundle-x11/include"
+        elif test -d /opt; then
+            LIBS=-L/opt/lib
+            IMG_LIBS=-L/opt/lib
+            IMG_INCLUDES="-I/opt/include"
+        fi
     fi
 
     IMG_FLAGS=
