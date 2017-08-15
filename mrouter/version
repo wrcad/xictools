@@ -21,12 +21,12 @@
 # value is optional.  If mismatched, features may be missing, but
 # there should not be faults due to interface differences.
 
-# The current Interface level is 1, corresponding to
-# lddb.h    1.19
-# ld_util.h 1.4
-# mrouter.h 1.9
+# The current Interface level is 2.  The present release has been
+# merged into the XicTools source tree and makes use of xt_base both
+# for configuration and utilities.  The previoulsy existing
+# configuration script and local utilities port were discarded.
 
-version="1.1.1"
+version="1.2.1"
 
 echo $version
 

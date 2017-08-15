@@ -122,6 +122,14 @@ SPECIALNETS.  There is a new dbPath data struct which describes a list
 of physical routes, now hung on the dbNet after routing or when
 reading DEF.
 
+1.2.1           08/14/2017
+The tool has been merged into the XicTools source tree.  Both
+configuration and utilities are now provided by xt_base, and the local
+configuration script and utilities port have been removed.  Logically,
+there is no change from 1.1.1.  A "packages" tree has been added,
+facilitating binary exports.  The source export function has been
+eliminated.
+
 A separate array is now used for the nets after reordering, preserving
 the original order.  The order of SPECIALNETS may now be different than
 Qrouter, even with compatibility option set.
