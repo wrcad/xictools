@@ -10,6 +10,7 @@ CXX = @CXX@
 CFLAGS = @CFLAGS@ @PIC_OPT@
 OSNAME = @OSNAME@
 TOOLROOT = @TOOLROOT@
+EXESUFFIX = @EXESUFFIX@
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
@@ -86,7 +87,7 @@ install_clean::
 
 $(destn)/bin::
 	@$(BASE)/util/mkdirpth $(destn)/bin
-	$(INSTALL_BIN) mrouter/mrouter$(NTSUFFIX) $(destn)/bin;
+	$(INSTALL_BIN) mrouter/mrouter$(EXESUFFIX) $(destn)/bin;
 
 $(destn)/mrouter/lib::
 	@$(BASE)/util/mkdirpth $(destn)/mrouter/lib

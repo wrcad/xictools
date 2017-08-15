@@ -19,7 +19,7 @@ DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
 RANLIB = @RANLIB@
 STDCLIB = @STDCLIB@
 INSTALL = @INSTALL@
-NTSUFFIX = @NTSUFFIX@
+EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 NTREGEX = @NTREGEX@
 MOZYRES = @MOZYRES@
@@ -83,13 +83,13 @@ depend:
 ####### Clean up ######################################################
 
 eclean:
-	-rm -f fcpp$(NTSUFFIX) lstpack$(NTSUFFIX) lstunpack$(NTSUFFIX)
+	-rm -f fcpp$(EXESUFFIX) lstpack$(EXESUFFIX) lstunpack$(EXESUFFIX)
 
 clean: eclean
-	-rm -f *.o $(ODIR).tar.gz
+	-rm -f *.o
 
-distclean: eclean
-	-rm -f *.o Makefile $(ODIR).tar.gz
+distclean: clean
+	-rm -f Makefile
 	(cd packages; $(MAKE) distclean)
 
 #######################################################################
@@ -113,13 +113,13 @@ install_test::
 
 install_clean::
 	-@for aa in $(ACCESSORIES); do \
-	    rm -f $(dst_bin)/$$aa$(NTSUFFIX); \
+	    rm -f $(dst_bin)/$$aa$(EXESUFFIX); \
 	done
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
 	for aa in $(ACCESSORIES); do \
-	    $(INSTALL_BIN) $$aa$(NTSUFFIX) $@; \
+	    $(INSTALL_BIN) $$aa$(EXESUFFIX) $@; \
 	done
 
 package::
@@ -128,102 +128,5 @@ package::
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
 	cd packages; make xt_accs-$(OSNAME)
-
-export::
-	if [ -d $(ODIR) ]; then \
-	    rm -rf $(ODIR); \
-	fi;
-	mkdir $(ODIR);
-	cp -pf version $(ODIR)
-	cp -pf export_files/README $(ODIR)
-	mkdir $(ODIR)/lib
-	mkdir $(ODIR)/lib/mozy
-	mkdir $(ODIR)/lib/mozy/startup
-	for a in `packages/util/accs_files startup`; do \
-	    cp -pf lib/mozy/startup/$$a $(ODIR)/lib/mozy/startup; \
-	done
-	mkdir $(ODIR)/lib/mozy/help
-	for a in `packages/util/accs_files help`; do \
-	    cp -pf lib/mozy/help/$$a $(ODIR)/lib/mozy/help; \
-	done
-	mkdir $(ODIR)/lib/mozy/help/screenshots
-	for a in `packages/util/accs_files help_ss`; do \
-	    cp -pf lib/mozy/help/screenshots/$$a \
-  $(ODIR)/lib/mozy/help/screenshots; \
-	done
-	mkdir $(ODIR)/util
-	cp -pf $(BASE)/util/install-sh $(ODIR)/util
-	cp -pf $(BASE)/util/install_bin $(ODIR)/util
-	cp -pf $(BASE)/util/mkdirpth $(ODIR)/util
-	mkdir $(ODIR)/src
-	cp -pf export_files/Makefile.in $(ODIR)/src
-	cp -pf $(BASE)/configure.in $(ODIR)/src
-	cp -pf $(BASE)/configure $(ODIR)/src
-	$(BASE)/util/mvdir $(BASE)/ginterf $(ODIR)/src/ginterf
-	$(BASE)/util/mvdir $(BASE)/miscutil $(ODIR)/src/miscutil
-	mkdir $(ODIR)/src/xictools_accs
-	for a in $(ACCESSORIES); do \
-	    cp -pf $$a.cc $(ODIR)/src/xictools_accs/$$a.cc; \
-	done
-	cp -pf export_files/accs_makefile.in \
-          $(ODIR)/src/xictools_accs/Makefile.in
-	mkdir $(ODIR)/src/packages
-	cp -pf packages/Makefile.in $(ODIR)/src/packages
-	mkdir $(ODIR)/src/packages/util
-	cp -pfr packages/util/accs_files $(ODIR)/src/packages/util
-	cp -pfr packages/util/wr_install $(ODIR)/src/packages/util
-	mkdir $(ODIR)/src/packages/files
-	cp -pfr packages/files/make_config.in $(ODIR)/src/packages/files
-	mkdir $(ODIR)/src/packages/root
-	mkdir $(ODIR)/src/packages/pkgfiles
-	mkdir $(ODIR)/src/packages/Darwin
-	mkdir $(ODIR)/src/packages/Darwin/xt_accs
-	cp -pf packages/Darwin/xt_accs/Makefile \
-          $(ODIR)/src/packages/Darwin/xt_accs
-	for a in `make -sC packages/Darwin/xt_accs subdirs`; do \
-	    mkdir $(ODIR)/src/packages/Darwin/xt_accs/$$a; \
-	done
-	for a in `make -sC packages/Darwin/xt_accs files`; do \
-	    cp -pf packages/Darwin/xt_accs/$$a \
-              $(ODIR)/src/packages/Darwin/xt_accs/$$a; \
-	done
-	mkdir $(ODIR)/src/packages/FreeBSD
-	mkdir $(ODIR)/src/packages/FreeBSD/xt_accs
-	cp -pf packages/FreeBSD/xt_accs/Makefile \
-          $(ODIR)/src/packages/FreeBSD/xt_accs
-	for a in `make -sC packages/FreeBSD/xt_accs subdirs`; do \
-	    mkdir $(ODIR)/src/packages/FreeBSD/xt_accs/$$a; \
-	done
-	for a in `make -sC packages/FreeBSD/xt_accs files`; do \
-	    cp -pf packages/FreeBSD/xt_accs/$$a \
-              $(ODIR)/src/packages/FreeBSD/xt_accs/$$a; \
-	done
-	mkdir $(ODIR)/src/packages/Linux
-	mkdir $(ODIR)/src/packages/Linux/xt_accs
-	cp -pf packages/Linux/xt_accs/Makefile \
-          $(ODIR)/src/packages/Linux/xt_accs
-	for a in `make -sC packages/Linux/xt_accs subdirs`; do \
-	    mkdir $(ODIR)/src/packages/Linux/xt_accs/$$a; \
-	done
-	for a in `make -sC packages/Linux/xt_accs files`; do \
-	    cp -pf packages/Linux/xt_accs/$$a \
-              $(ODIR)/src/packages/Linux/xt_accs/$$a; \
-	done
-	mkdir $(ODIR)/src/packages/Win32
-	mkdir $(ODIR)/src/packages/Win32/xt_accs
-	cp -pf packages/Win32/xt_accs/Makefile \
-          $(ODIR)/src/packages/Win32/xt_accs
-	for a in `make -sC packages/Win32/xt_accs subdirs`; do \
-	    mkdir $(ODIR)/src/packages/Win32/xt_accs/$$a; \
-	done
-	for a in `make -sC packages/Win32/xt_accs files`; do \
-	    cp -pf packages/Win32/xt_accs/$$a \
-              $(ODIR)/src/packages/Win32/xt_accs/$$a; \
-	done
-	tar czf $(ODIR).tar.gz $(ODIR)
-	rm -rf $(ODIR)
-	@echo
-	@echo "Export source created in $(ODIR).tar.gz"
-	@echo
 
 #######################################################################

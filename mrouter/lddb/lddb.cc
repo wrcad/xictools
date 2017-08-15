@@ -232,9 +232,9 @@ cLDDB::reset()
     // Don't reset globals, verbose.  These are externally set
     // (e.g., command line).
 
-    dbStringList::destroy(db_dontRoute);
+    stringlist::destroy(db_dontRoute);
     db_dontRoute        = 0;
-    dbStringList::destroy(db_criticalNet);
+    stringlist::destroy(db_criticalNet);
     db_criticalNet      = 0;
 
     delete [] db_layers;

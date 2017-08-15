@@ -18,7 +18,7 @@ AR = @AR@
 RANLIB = @RANLIB@
 INSTALL = @INSTALL@
 FILTER = @FILTER@
-NTSUFFIX = @NTSUFFIX@
+EXESUFFIX = @EXESUFFIX@
 NTNOCONS = @NTNOCONS@
 OSNAME = @OSNAME@
 TOOLROOT = @TOOLROOT@
@@ -101,8 +101,9 @@ depend: key.h
 	fi
 
 eclean:
-	-rm -f lfinfo$(NTSUFFIX) licinfo$(NTSUFFIX) validate$(NTSUFFIX) \
-  xtjobs$(NTSUFFIX) xtlserv$(NTSUFFIX) make_key$(NTSUFFIX) bintest$(NTSUFFIX)
+	-rm -f lfinfo$(EXESUFFIX) licinfo$(EXESUFFIX) validate$(EXESUFFIX) \
+  xtjobs$(EXESUFFIX) xtlserv$(EXESUFFIX) make_key$(EXESUFFIX) \
+  bintest$(EXESUFFIX)
 
 clean: eclean
 	-rm *.o $(LIB_TARGET)
@@ -124,14 +125,14 @@ install_test::
 	fi
 
 install_clean::
-	-@rm -f $(dst_bin)/xtlserv$(NTSUFFIX)
-	-@rm -f $(dst_bin)/xtjobs$(NTSUFFIX)
+	-@rm -f $(dst_bin)/xtlserv$(EXESUFFIX)
+	-@rm -f $(dst_bin)/xtjobs$(EXESUFFIX)
 	-@rm -f $(dst_lib)/README
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
-	$(INSTALL_BIN) xtlserv$(NTSUFFIX) $@
-	$(INSTALL_BIN) xtjobs$(NTSUFFIX) $@
+	$(INSTALL_BIN) xtlserv$(EXESUFFIX) $@
+	$(INSTALL_BIN) xtjobs$(EXESUFFIX) $@
 
 $(dst_lib)::
 	@$(BASE)/util/mkdirpth $@

@@ -252,6 +252,24 @@ else
 fi
 AC_SUBST(DEPEND_PROG)
 
+# Test whether a gcc option (-Wno-ignored-qualifiers) is valid.
+NO_IGNORED_QUALIFIERS=""
+AC_MSG_CHECKING([whether CC supports -Wno-ignored-qualifiers])
+
+cat > conftest.cc << EOF
+int main()
+{ return 0; }
+EOF
+$CXX -c conftest.cc -Wno-ignored-qualifiers 1>&5 2>&5
+if test $? = 0; then
+    NO_IGNORED_QUALIFIERS=-Wno-ignored-qualifiers
+    echo yes
+else
+    echo no
+fi
+rm -rf conftest*
+AC_SUBST([NO_IGNORED_QUALIFIERS])
+
 AC_PROG_MAKE_SET
 
 LEX="flex -l"
@@ -266,7 +284,7 @@ NODLL_XIC_PROG='xic'
 
 case $sys_os in
 CYGWIN*)
-    NTSUFFIX=".exe"
+    EXESUFFIX=".exe"
     FILTER="|sed -e s/C:// -e s///g"
     MALLOC=
     OSNAME="Win32"
@@ -458,7 +476,7 @@ fi
 
 AC_SUBST(SDK)
 AC_SUBST(UFLAGS)
-AC_SUBST(NTSUFFIX)
+AC_SUBST(EXESUFFIX)
 AC_SUBST(FILTER)
 AC_SUBST(MALLOC)
 AC_SUBST(OSNAME)
@@ -973,7 +991,8 @@ AC_CHECK_FUNCS(
     getrlimit getrusage getwd hstrerror isatty kill lgamma mkstemp \
     mkstemps perror popen posix_memalign posix_openpt qsort raise \
     re_comp select shmget sigaction signal socket srand stat strchr \
-    strcasecmp strerror strtok_r system tcgetpgrp ulimit unlink)
+    strcasecmp strcasestr strerror strtok_r system tcgetpgrp ulimit \
+    unlink)
 
 tmplibs=$LIBS
 LIBS="$LIBS $CURSES" 
@@ -1070,7 +1089,10 @@ if test -d ../xt_accs; then
     makefiles="$makefiles ../xt_accs/Makefile"
 fi
 if test -d ../mrouter; then
+    makefiles="$makefiles ../mrouter/Makefile"
+    makefiles="$makefiles ../mrouter/lddb/Makefile"
     makefiles="$makefiles ../mrouter/mrouter/Makefile"
+    makefiles="$makefiles ../mrouter/examples/Makefile"
 fi
 if test -d ../xic; then
     if test $with_oa = yes; then

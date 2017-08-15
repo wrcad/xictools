@@ -49,6 +49,10 @@
 /*--------------------------------------------------------------*/
 
 #include "mrouter_prv.h"
+#include "miscutil/tvals.h"
+#ifdef LD_MEMDBG
+#include "miscutil/coresize.h"
+#endif
 #include <algorithm>
 
 
@@ -173,7 +177,7 @@ cMRouter::initRouter()
     if (mr_initialized)
         return (LD_OK);
 
-    long time0 = db->millisec();
+    long time0 = Tvals::millisec();
 
     // Already done when reading DEF, do it again here in case layers
     // were added by other means.
@@ -358,7 +362,7 @@ cMRouter::initRouter()
     mr_failedNets.clear();
     db->flushMesg();
     if (verbose() > 0) {
-        long elapsed = db->millisec() - time0;
+        long elapsed = Tvals::millisec() - time0;
         db->emitMesg("Initialization complete (%g sec).\n"
             "There are %d nets in this design.\n", 1e-3*elapsed, numNets());
     }
@@ -437,7 +441,7 @@ cMRouter::doRoute(dbNet *net, mrStage stage, bool graphdebug)
     int lastlayer = -1;
 
 #ifdef LD_MEMDBG
-    printf("A %g %6d/%6d %6d/%6d %6d/%6d %6d/%6d\n", db->coresize(),
+    printf("A %g %6d/%6d %6d/%6d %6d/%6d %6d/%6d\n", coresize(),
         mrStack::mrstack_cnt, mrStack::mrstack_hw,
         dbSeg::seg_cnt, dbSeg::seg_hw,
         mrPoint::mrpoint_cnt, mrPoint::mrpoint_hw,
@@ -542,7 +546,7 @@ cMRouter::doRoute(dbNet *net, mrStage stage, bool graphdebug)
     }
 
 #ifdef LD_MEMDBG
-    printf("B %g %6d/%6d %6d/%6d %6d/%6d %6d/%6d\n", db->coresize(),
+    printf("B %g %6d/%6d %6d/%6d %6d/%6d %6d/%6d\n", coresize(),
         mrStack::mrstack_cnt, mrStack::mrstack_hw,
         dbSeg::seg_cnt, dbSeg::seg_hw,
         mrPoint::mrpoint_cnt, mrPoint::mrpoint_hw,
@@ -605,7 +609,7 @@ cMRouter::doFirstStage(bool graphdebug, int debug_netnum)
 
     // Now find and route all the nets.
 
-    long time0 = db->millisec();
+    long time0 = Tvals::millisec();
     int remaining = numNets();
  
     if (debug() & LD_DBG_FLGS)
@@ -641,7 +645,7 @@ cMRouter::doFirstStage(bool graphdebug, int debug_netnum)
         return (failcount);
 
     if (verbose() > 0) {
-        long elapsed = db->millisec() - time0;
+        long elapsed = Tvals::millisec() - time0;
         db->flushMesg();
         db->emitMesg("\n----------------------------------------------\n");
         db->emitMesg("Progress: ");
@@ -679,7 +683,7 @@ int
 cMRouter::doSecondStage(bool graphdebug, bool singlestep)
 {
     int origcount = mr_failedNets.num_elements();
-    long time0 = db->millisec();
+    long time0 = Tvals::millisec();
     u_int maxtries;
     if (origcount)
         maxtries = mr_totalRoutes + ((origcount < 20) ? 20 : origcount) * 8;
@@ -844,7 +848,7 @@ cMRouter::doSecondStage(bool graphdebug, bool singlestep)
     }
 
     if (verbose() > 0) {
-        long elapsed = db->millisec() - time0;
+        long elapsed = Tvals::millisec() - time0;
         db->flushMesg();
         db->emitMesg("\n----------------------------------------------\n");
         db->emitMesg("Progress: ");
@@ -879,7 +883,7 @@ cMRouter::doThirdStage(bool graphdebug, int debug_netnum)
     // Clear the lists of failed routes, in case first stage is being
     // called more than once.
 
-    long time0 = db->millisec();
+    long time0 = Tvals::millisec();
     if (debug_netnum <= 0)
         mr_failedNets.clear();
 
@@ -918,7 +922,7 @@ cMRouter::doThirdStage(bool graphdebug, int debug_netnum)
         return (failcount);
 
     if (verbose() > 0) {
-        long elapsed = db->millisec() - time0;
+        long elapsed = Tvals::millisec() - time0;
         db->flushMesg();
         db->emitMesg("\n----------------------------------------------\n");
         db->emitMesg("Progress: ");
@@ -1089,7 +1093,7 @@ cMRouter::create_net_order()
         mr_nets[i] = nlNet(i);
 
     int i = 1;
-    for (dbStringList *cn = db->criticalNetList(); cn; cn = cn->next) {
+    for (stringlist *cn = db->criticalNetList(); cn; cn = cn->next) {
         if (verbose() > 1)
             db->emitMesg("critical net %s\n", cn->string);
 

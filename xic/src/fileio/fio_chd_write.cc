@@ -38,6 +38,7 @@
  $Id:$
  *========================================================================*/
 
+#include "config.h"
 #include "fio.h"
 #include "fio_chd.h"
 #include "fio_cvt_base.h"
@@ -46,6 +47,9 @@
 #include "miscutil/timedbg.h"
 #include "miscutil/coresize.h"
 #include "miscutil/filestat.h"
+#ifdef HAVE_LOCAL_ALLOCATOR
+#include "malloc/local_malloc.h"
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -129,7 +133,9 @@ cFIO::WriteCHDfile(const char *string)
     }
 
     Tdbg()->start_timing("CHD create");
-    double m0 = have_coresize_metric() ? coresize() : 0.0;
+#ifdef HAVE_LOCAL_ALLOCATOR
+    double m0 = Memory()->coresize();
+#endif
 
     cCHD *chd = 0;
     if (ret) {
@@ -156,8 +162,10 @@ cFIO::WriteCHDfile(const char *string)
 
     Tdbg()->stop_timing("CHD create");
 
-    if (have_coresize_metric() && Tdbg()->is_active())
-        printf("mem use %gMb\n", (coresize() - m0)/1000.0);
+#ifdef HAVE_LOCAL_ALLOCATOR
+    if (Tdbg()->is_active())
+        printf("mem use %gMb\n", (Memory()->coresize() - m0)/1000.0);
+#endif
 
     Tdbg()->start_timing("Write CHD file");
 
@@ -177,8 +185,12 @@ cFIO::WriteCHDfile(const char *string)
 
 #ifdef READ_TEST
     delete chd;
-    if (have_coresize_metric() && Tdbg()->is_active())
-        printf("mem use after deleting CHD %gMb\n", (coresize() - m0)/1000.0);
+#ifdef HAVE_LOCAL_ALLOCATOR
+    if (Tdbg()->is_active()) {
+        printf("mem use after deleting CHD %gMb\n",
+            (Memory()->coresize() - m0)/1000.0);
+    }
+#endif
     Tdbg()->start_timing("Read CHD file");
     {
         sCHDin in;
@@ -187,14 +199,20 @@ cFIO::WriteCHDfile(const char *string)
             printf("%s\n", CD()->Errs.get_error());
     }
     Tdbg()->stop_timing("Read CHD file");
-    if (have_coresize_metric() && Tdbg()->is_active())
-        printf("mem use %gMb\n", (coresize() - m0)/1000.0);
+#ifdef HAVE_LOCAL_ALLOCATOR
+    if (Tdbg()->is_active())
+        printf("mem use %gMb\n", (Memory()->coresize() - m0)/1000.0);
+#endif
 #endif
 
     delete chd;
     delete [] ofname;
-    if (have_coresize_metric() && Tdbg()->is_active())
-        printf("mem use after deleting CHD %gMb\n", (coresize() - m0)/1000.0);
+#ifdef HAVE_LOCAL_ALLOCATOR
+    if (Tdbg()->is_active()) {
+        printf("mem use after deleting CHD %gMb\n",
+            (Memory()->coresize() - m0)/1000.0);
+    }
+#endif
     return (true);
 }
 
@@ -323,7 +341,9 @@ sCHDout::write(const char *fname, unsigned int flags)
         }
         else {
 #ifdef MEM_DEBUG
-printf("before geom write %g\n", coresize());
+#ifdef HAVE_LOCAL_ALLOCATOR
+printf("before geom write %g\n", Memory()->coresize());
+#endif
 #endif
             cCGD::set_chd_out(this);
             // This will write data to the file as it is being
@@ -333,7 +353,9 @@ printf("before geom write %g\n", coresize());
             // The CGD produced in this manner is bogus, data have
             // been freed, but tables remain.
 #ifdef MEM_DEBUG
-printf("after geom write %g\n", coresize());
+#ifdef HAVE_LOCAL_ALLOCATOR
+printf("after geom write %g\n", Memory()->coresize());
+#endif
 #endif
             ret = write_unsigned(CGD_END_REC);
             fclose(co_fp);
@@ -341,7 +363,9 @@ printf("after geom write %g\n", coresize());
                 ret = false;
             delete cgd;
 #ifdef MEM_DEBUG
-printf("after table free %g\n", coresize());
+#ifdef HAVE_LOCAL_ALLOCATOR
+printf("after table free %g\n", Memory()->coresize());
+#endif
 #endif
         }
         co_fp = 0;

@@ -20,7 +20,7 @@ DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
 RANLIB = @RANLIB@
 STDCLIB = @STDCLIB@
 INSTALL = @INSTALL@
-NTSUFFIX = @NTSUFFIX@
+EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 NTREGEX = @NTREGEX@
 MOZYRES = @MOZYRES@
@@ -154,18 +154,18 @@ depend::
 
 eclean::
 	for a in $(TARGETS); do \
-	    rm -f bin/$$a$(NTSUFFIX); \
+	    rm -f bin/$$a$(EXESUFFIX); \
 	done
 
 clean:: eclean
 	-rm -f bin/*.o
-	@for a in $(SUBDIRS); do \
+	-@for a in $(SUBDIRS); do \
 	  (cd $$a; $(MAKE) clean) \
 	done
 
 distclean:: eclean
 	-rm -f bin/*.o Makefile
-	@for a in $(SUBDIRS); do \
+	-@for a in $(SUBDIRS); do \
 	  (cd $$a; $(MAKE) distclean) \
 	done
 
@@ -192,13 +192,13 @@ install_test::
 
 install_clean::
 	-@for aa in $(TARGETS); do \
-	    rm -f $(dst_bin)/$$aa$(NTSUFFIX); \
+	    rm -f $(dst_bin)/$$aa$(EXESUFFIX); \
 	done
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
 	for aa in $(TARGETS); do \
-	    $(INSTALL_BIN) bin/$$aa$(NTSUFFIX) $@; \
+	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
 	done
 
 $(dst_lib)/mozy/startup::

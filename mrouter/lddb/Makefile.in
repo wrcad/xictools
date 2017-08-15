@@ -1,7 +1,5 @@
 #######################################################################
-# lddb/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.4 2017/02/18 02:32:05 stevew Exp $
+LOCATION = mrouter/lddb
 #######################################################################
 
 DATE = @DATE@
@@ -21,22 +19,19 @@ SOEXT = @SOEXT@
 LSHFLAG = @LSHFLAG@
 OSNAME = @OSNAME@
 
+# Last two are redundant, so make depend works before lef/def are built.
+BASE = ../../xt_base
+INCLUDE = -I../include -I$(BASE)/include -I../lef/include -I../def/include \
+  -I../lef/lef -I../def/def
+
 LIB_TARGET = liblddb.a
+
 HFILES =
 CCFILES = \
-  lddb.cc \
-  ld_cmds.cc \
-  ld_def_in.cc \
-  ld_def_out.cc \
-  ld_diag.cc \
-  ld_hash.cc \
-  ld_lef_in.cc \
-  ld_lef_out.cc
-CCOBJS = $(CCFILES:.cc=.o)
+  lddb.cc ld_cmds.cc ld_def_in.cc ld_def_out.cc ld_hash.cc \
+  ld_lef_in.cc ld_lef_out.cc
 
-# Last two are redundant, so make depend works before lef/def are built.
-INCLUDE = -I../include -I../lef/include -I../def/include \
-  -I../lef/lef -I../def/def
+CCOBJS = $(CCFILES:.cc=.o)
 
 all: $(LIB_TARGET)
 
@@ -55,7 +50,7 @@ $(LD_VERS_H):
 	$(CXX) $(CFLAGS) $(PIC_OPT) $(INCLUDE) -c $*.cc
 
 depend: $(LD_VERS_H)
-	@echo depending in lddb
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
@@ -64,7 +59,7 @@ depend: $(LD_VERS_H)
 clean:
 	-rm $(LD_VERS_H) *.o $(LIB_TARGET)
 
-distclean:
-	-rm $(LD_VERS_H) *.o $(LIB_TARGET) Makefile
+distclean: clean
+	-rm Makefile
 
 #######################################################################

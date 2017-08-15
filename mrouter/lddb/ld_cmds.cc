@@ -141,7 +141,7 @@ cLDDB::doCmd(const char *cmd)
 {
     clearMsgs();
     const char *s = cmd;
-    char *tok = lddb::gettok(&s);
+    char *tok = lstring::gettok(&s);
     if (!tok)
         return (LD_OK);
 
@@ -150,7 +150,7 @@ cLDDB::doCmd(const char *cmd)
     if (!strcmp(tok,        "version")) {
         char buf[64];
         sprintf(buf, "LDDB release: %s", LD_VERSION);
-        db_donemsg = lddb::copy(buf);
+        db_donemsg = lstring::copy(buf);
         ret = LD_OK;
     }
     else if (!strcmp(tok,   "reset"))
@@ -174,20 +174,20 @@ cLDDB::doCmd(const char *cmd)
 
     else if (!strcmp(tok,   "read")) {
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!strcmp(tok,        "script")) {
             delete [] tok;
-            tok = lddb::getqtok(&s);
+            tok = lstring::getqtok(&s);
             ret = readScript(tok);
         }
         else if (!strcmp(tok,   "lef")) {
             delete [] tok;
-            tok = lddb::getqtok(&s);
+            tok = lstring::getqtok(&s);
             ret = cmdReadLef(tok);
         }
         else if (!strcmp(tok,   "def")) {
             delete [] tok;
-            tok = lddb::getqtok(&s);
+            tok = lstring::getqtok(&s);
             ret = cmdReadDef(tok);
         }
         else
@@ -195,15 +195,15 @@ cLDDB::doCmd(const char *cmd)
     }
     else if (!strcmp(tok,   "write")) {
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!strcmp(tok,        "lef")) {
             delete [] tok;
-            tok = lddb::getqtok(&s);
+            tok = lstring::getqtok(&s);
             ret = cmdWriteLef(tok);
         }
         else if (!strcmp(tok,   "def")) {
             delete [] tok;
-            tok = lddb::getqtok(&s);
+            tok = lstring::getqtok(&s);
             ret = cmdWriteDef(tok);
         }
         else
@@ -211,8 +211,8 @@ cLDDB::doCmd(const char *cmd)
     }
     else if (!strcmp(tok,   "append")) {
         delete [] tok;
-        tok = lddb::getqtok(&s);
-        char *t2 = lddb::getqtok(&s);
+        tok = lstring::getqtok(&s);
+        char *t2 = lstring::getqtok(&s);
         ret = cmdUpdateDef(tok, t2);
         delete [] t2;
     }
@@ -221,7 +221,7 @@ cLDDB::doCmd(const char *cmd)
     delete [] tok;
 
     if (unhandled) {
-        db_errmsg = lddb::copy("unknown command");
+        db_errmsg = lstring::copy("unknown command");
         return (LD_BAD);
     }
     return (ret);
@@ -235,7 +235,7 @@ namespace {
         va_list args;
         va_start(args, fmt);
         vsnprintf(buf, 256, fmt, args);
-        return (lddb::copy(buf));
+        return (lstring::copy(buf));
     }
 }
 
@@ -245,9 +245,9 @@ cLDDB::cmdSet(const char *cmd)
 {
     clearMsgs();
     char buf[80];
-    char *tok = lddb::gettok(&cmd);
+    char *tok = lstring::gettok(&cmd);
     if (!tok) {
-        dbLstr lstr;
+        sLstr lstr;
         const char *fmt = "%-16s: ";
 
         sprintf(buf, fmt, "debug");
@@ -306,10 +306,10 @@ cLDDB::cmdSet(const char *cmd)
     }
     if (!strcasecmp(tok, "debug")) {
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "debug: 0x%x", debug());
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             setDebug(strtol(tok, 0, 0));
@@ -319,10 +319,10 @@ cLDDB::cmdSet(const char *cmd)
     }
     if (!strcasecmp(tok, "verbose")) {
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "verbose: %d", verbose());
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             if (isdigit(*tok)) {
@@ -339,9 +339,9 @@ cLDDB::cmdSet(const char *cmd)
         // semi-supported here, as aliases for 'global'.
 
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
-            dbLstr lstr;
+            sLstr lstr;
             lstr.add("global:");
             for (int i = 0; i < LD_MAX_GLOBALS; i++) {
                 if (global(i)) {
@@ -360,7 +360,7 @@ cLDDB::cmdSet(const char *cmd)
                     break;
                 }
                 delete [] tok;
-            } while ((tok = lddb::gettok(&cmd)) != 0);
+            } while ((tok = lstring::gettok(&cmd)) != 0);
         }
         return (LD_OK);
     }
@@ -368,10 +368,10 @@ cLDDB::cmdSet(const char *cmd)
         // Set the number of layers assumed.
 
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "layers: %u", numLayers());
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             if (isdigit(*tok)) {
@@ -404,10 +404,10 @@ cLDDB::cmdSet(const char *cmd)
         // accept.
 
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "maxnets: %u", maxNets());
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             if (isdigit(*tok)) {
@@ -442,10 +442,10 @@ cLDDB::cmdSet(const char *cmd)
         // subsequently stored in the database, and to LEF output.
 
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "lefresol: %d", lefResol());
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             if (isdigit(*tok)) {
@@ -469,10 +469,10 @@ cLDDB::cmdSet(const char *cmd)
         // Set the ManufacturingGrid as if read from a LEF file.
 
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "mfggrid: %g", lefToMic(manufacturingGrid()));
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             if (isdigit(*tok)) {
@@ -496,10 +496,10 @@ cLDDB::cmdSet(const char *cmd)
         // Set the DEF resolution as if read from a DEF file.
 
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "definresol: %d", defInResol());
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             if (isdigit(*tok)) {
@@ -523,10 +523,10 @@ cLDDB::cmdSet(const char *cmd)
         // Set the DEF resolution to use when writing output.
 
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "defoutresol: %d", defOutResol());
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             if (isdigit(*tok)) {
@@ -562,7 +562,7 @@ cLDDB::cmdUnset(const char *cmd)
 {
     clearMsgs();
     char *tok;
-    while ((tok = lddb::gettok(&cmd)) != 0) {
+    while ((tok = lstring::gettok(&cmd)) != 0) {
         if (!strcasecmp(tok, "debug"))
             setDebug(0);
         else if (!strcasecmp(tok, "verbose"))
@@ -605,14 +605,14 @@ bool
 cLDDB::cmdIgnore(const char *s)
 {
     clearMsgs();
-    dbStringList *netnames = 0;
-    dbStringList *ne = 0;
+    stringlist *netnames = 0;
+    stringlist *ne = 0;
     char *tok;
-    while ((tok = lddb::gettok(&s)) != 0) {
+    while ((tok = lstring::gettok(&s)) != 0) {
         if (!netnames)
-            ne = netnames = new dbStringList(tok, 0);
+            ne = netnames = new stringlist(tok, 0);
         else {
-            ne->next = new dbStringList(tok, 0);
+            ne->next = new stringlist(tok, 0);
             ne = ne->next;
         }
     }
@@ -625,7 +625,7 @@ cLDDB::cmdIgnore(const char *s)
                 cnt++;
         }
         if (!cnt)
-            db_donemsg = lddb::copy("No nets being ignored.");
+            db_donemsg = lstring::copy("No nets being ignored.");
         else {
             // Compose a listing.
             const char *t = "Ignored nets:\n";
@@ -637,13 +637,13 @@ cLDDB::cmdIgnore(const char *s)
             }
             len++;
             db_donemsg = new char[len];
-            char *e = lddb::stpcpy(db_donemsg, t);
+            char *e = lstring::stpcpy(db_donemsg, t);
             for (u_int i = 0; i < numNets(); i++) {
                 dbNet *net = nlNet(i);
                 if (net->flags & NET_IGNORED) {
                     *e++ = ' ';
                     *e++ = ' ';
-                    e = lddb::stpcpy(e, net->netname);
+                    e = lstring::stpcpy(e, net->netname);
                     *e++ = '\n';
                 }
             }
@@ -652,7 +652,7 @@ cLDDB::cmdIgnore(const char *s)
     }
     else {
         bool unignore = false;
-        for (dbStringList *sl = netnames; sl; sl = sl->next) {
+        for (stringlist *sl = netnames; sl; sl = sl->next) {
             if (!strcmp(sl->string, "-u")) {
                 unignore = true;
                 if (sl->next && !strcasecmp(sl->next->string, "all")) {
@@ -661,11 +661,11 @@ cLDDB::cmdIgnore(const char *s)
                         if (net->flags & NET_IGNORED)
                             net->flags &= ~NET_IGNORED;
                     }
-                    dbStringList *cnets = noRouteList();
-                    dbStringList::destroy(cnets);
+                    stringlist *cnets = noRouteList();
+                    stringlist::destroy(cnets);
                     setNoRouteList(0);
-                    dbStringList::destroy(netnames);
-                    db_donemsg = lddb::copy("Ignored net list cleared.");
+                    stringlist::destroy(netnames);
+                    db_donemsg = lstring::copy("Ignored net list cleared.");
                     return (LD_OK);
                 }
                 continue;
@@ -687,9 +687,9 @@ cLDDB::cmdIgnore(const char *s)
             }
             if (unignore) {
                 net->flags &= ~NET_IGNORED;
-                dbStringList *cnets = noRouteList();
-                dbStringList *cp = 0;
-                for (dbStringList *cl = cnets; cl; cl = cl->next) {
+                stringlist *cnets = noRouteList();
+                stringlist *cp = 0;
+                for (stringlist *cl = cnets; cl; cl = cl->next) {
                     if (!strcmp(cl->string, sl->string)) {
                         if (cp)
                             cp->next = cl->next;
@@ -704,10 +704,10 @@ cLDDB::cmdIgnore(const char *s)
             }
             else {
                 net->flags |= NET_IGNORED;
-                dbStringList *cnets = noRouteList();
+                stringlist *cnets = noRouteList();
                 bool found = false;
-                dbStringList *cp = 0;
-                for (dbStringList *cl = cnets; cl; cl = cl->next) {
+                stringlist *cp = 0;
+                for (stringlist *cl = cnets; cl; cl = cl->next) {
                     if (!strcmp(cl->string, sl->string)) {
                         found = true;
                         // Move existing entry to front.
@@ -722,11 +722,11 @@ cLDDB::cmdIgnore(const char *s)
                 }
                 if (!found) {
                     setNoRouteList(
-                        new dbStringList(lddb::copy(sl->string), cnets));
+                        new stringlist(lstring::copy(sl->string), cnets));
                 }
             }
         }
-        dbStringList::destroy(netnames);
+        stringlist::destroy(netnames);
     }
     return (LD_OK);
 }
@@ -744,14 +744,14 @@ bool
 cLDDB::cmdCritical(const char *s)
 {
     clearMsgs();
-    dbStringList *netnames = 0;
-    dbStringList *ne = 0;
+    stringlist *netnames = 0;
+    stringlist *ne = 0;
     char *tok;
-    while ((tok = lddb::gettok(&s)) != 0) {
+    while ((tok = lstring::gettok(&s)) != 0) {
         if (!netnames)
-            ne = netnames = new dbStringList(tok, 0);
+            ne = netnames = new stringlist(tok, 0);
         else {
-            ne->next = new dbStringList(tok, 0);
+            ne->next = new stringlist(tok, 0);
             ne = ne->next;
         }
     }
@@ -764,7 +764,7 @@ cLDDB::cmdCritical(const char *s)
                 cnt++;
         }
         if (!cnt)
-            db_donemsg = lddb::copy("No critical nets.");
+            db_donemsg = lstring::copy("No critical nets.");
         else {
             // Compose a listing.
             const char *t = "Critical nets:\n";
@@ -776,13 +776,13 @@ cLDDB::cmdCritical(const char *s)
             }
             len++;
             db_donemsg = new char[len];
-            char *e = lddb::stpcpy(db_donemsg, t);
+            char *e = lstring::stpcpy(db_donemsg, t);
             for (u_int i = 0; i < numNets(); i++) {
                 dbNet *net = nlNet(i);
                 if (net->flags & NET_CRITICAL) {
                     *e++ = ' ';
                     *e++ = ' ';
-                    e = lddb::stpcpy(e, net->netname);
+                    e = lstring::stpcpy(e, net->netname);
                     *e++ = '\n';
                 }
             }
@@ -791,7 +791,7 @@ cLDDB::cmdCritical(const char *s)
     }
     else {
         bool uncritical = false;
-        for (dbStringList *sl = netnames; sl; sl = sl->next) {
+        for (stringlist *sl = netnames; sl; sl = sl->next) {
             if (!strcmp(sl->string, "-u")) {
                 uncritical = true;
                 if (sl->next && !strcasecmp(sl->next->string, "all")) {
@@ -800,11 +800,11 @@ cLDDB::cmdCritical(const char *s)
                         if (net->flags & NET_CRITICAL)
                             net->flags &= ~NET_CRITICAL;
                     }
-                    dbStringList *cnets = criticalNetList();
-                    dbStringList::destroy(cnets);
+                    stringlist *cnets = criticalNetList();
+                    stringlist::destroy(cnets);
                     setCriticalNetList(0);
-                    dbStringList::destroy(netnames);
-                    db_donemsg = lddb::copy("Critical net list cleared.");
+                    stringlist::destroy(netnames);
+                    db_donemsg = lstring::copy("Critical net list cleared.");
                     return (LD_OK);
                 }
                 continue;
@@ -826,9 +826,9 @@ cLDDB::cmdCritical(const char *s)
             }
             if (uncritical) {
                 net->flags &= ~NET_CRITICAL;
-                dbStringList *cnets = criticalNetList();
-                dbStringList *cp = 0;
-                for (dbStringList *cl = cnets; cl; cl = cl->next) {
+                stringlist *cnets = criticalNetList();
+                stringlist *cp = 0;
+                for (stringlist *cl = cnets; cl; cl = cl->next) {
                     if (!strcmp(cl->string, sl->string)) {
                         if (cp)
                             cp->next = cl->next;
@@ -843,10 +843,10 @@ cLDDB::cmdCritical(const char *s)
             }
             else {
                 net->flags |= NET_CRITICAL;
-                dbStringList *cnets = criticalNetList();
+                stringlist *cnets = criticalNetList();
                 bool found = false;
-                dbStringList *cp = 0;
-                for (dbStringList *cl = cnets; cl; cl = cl->next) {
+                stringlist *cp = 0;
+                for (stringlist *cl = cnets; cl; cl = cl->next) {
                     if (!strcmp(cl->string, sl->string)) {
                         found = true;
                         // Move existing entry to front.
@@ -861,11 +861,11 @@ cLDDB::cmdCritical(const char *s)
                 }
                 if (!found) {
                     setCriticalNetList(
-                        new dbStringList(lddb::copy(sl->string), cnets));
+                        new stringlist(lstring::copy(sl->string), cnets));
                 }
             }
         }
-        dbStringList::destroy(netnames);
+        stringlist::destroy(netnames);
     }
     return (LD_OK);
 }
@@ -913,7 +913,7 @@ cLDDB::cmdObstruction(const char *cmd)
     bool clear = false;
     bool all = false;
     char *tok;
-    while ((tok = lddb::gettok(&cmd)) != 0) {
+    while ((tok = lstring::gettok(&cmd)) != 0) {
         if (!strcmp(tok, "-u")) {
             clear = true;
             delete [] tok;
@@ -992,7 +992,7 @@ cLDDB::cmdObstruction(const char *cmd)
             dbDseg *ds = userObs();
             dbDseg::destroy(ds);
             setUserObs(0);
-            db_donemsg = lddb::copy("User obstruction list cleared.");
+            db_donemsg = lstring::copy("User obstruction list cleared.");
             return (LD_OK);
         }
         if (lnum >= 0) {
@@ -1012,10 +1012,10 @@ cLDDB::cmdObstruction(const char *cmd)
                         }
                         sp = ds;
                     }
-                    db_donemsg = lddb::copy("Obstruction removed.");
+                    db_donemsg = lstring::copy("Obstruction removed.");
                 }
                 else
-                    db_donemsg = lddb::copy("Obstruction not found.");
+                    db_donemsg = lstring::copy("Obstruction not found.");
             }
             else {
                 // Clear all obstructions on given layer.
@@ -1037,8 +1037,10 @@ cLDDB::cmdObstruction(const char *cmd)
                     lnum+1);
             }
         }
-        else
-            db_donemsg = lddb::copy("No layer given, no obstructions removed.");
+        else {
+            db_donemsg = lstring::copy(
+                "No layer given, no obstructions removed.");
+        }
         return (LD_OK);
     }
 
@@ -1047,7 +1049,7 @@ cLDDB::cmdObstruction(const char *cmd)
         // Format a listing of all user obstructions.
 
         if (userObs()) {
-            dbLstr lstr;
+            sLstr lstr;
             for (dbDseg *ds = userObs(); ds; ds = ds->next) {
                 sprintf(buf, "%-3d %.4f,%.4f  %.4f,%.4f\n", ds->layer,
                     lefToMic(ds->x1), lefToMic(ds->y1),
@@ -1057,7 +1059,7 @@ cLDDB::cmdObstruction(const char *cmd)
             db_donemsg = lstr.string_trim();
         }
         else
-            db_donemsg = lddb::copy("No obstructions in list.");
+            db_donemsg = lstring::copy("No obstructions in list.");
         return (LD_OK);
     }
 
@@ -1070,7 +1072,7 @@ cLDDB::cmdObstruction(const char *cmd)
                 cnt++;
         }
         if (cnt) {
-            dbLstr lstr;
+            sLstr lstr;
             for (dbDseg *ds = userObs(); ds; ds = ds->next) {
                 if (ds->layer != lnum)
                     continue;
@@ -1082,16 +1084,16 @@ cLDDB::cmdObstruction(const char *cmd)
             db_donemsg = lstr.string_trim();
         }
         else
-            db_donemsg = lddb::copy("No obstructions in list.");
+            db_donemsg = lstring::copy("No obstructions in list.");
         return (LD_OK);
     }
 
     dbDseg *ob = findObstruction(left, bottom, right, top, lnum);
     if (ob)
-        db_donemsg = lddb::copy("Obstruction already in list.");
+        db_donemsg = lstring::copy("Obstruction already in list.");
     else {
         addObstruction(left, bottom, right, top, lnum);
-        db_donemsg = lddb::copy("Obstruction added.");
+        db_donemsg = lstring::copy("Obstruction added.");
     }
     return (LD_OK);
 }
@@ -1109,7 +1111,7 @@ bool
 cLDDB::cmdLayer(const char *cmd)
 {
     clearMsgs();
-    char *tok = lddb::gettok(&cmd);
+    char *tok = lstring::gettok(&cmd);
     int lnum = -1;
     if (tok) {
         lnum = getLayer(tok);
@@ -1119,15 +1121,15 @@ cLDDB::cmdLayer(const char *cmd)
             return (LD_BAD);
         }
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
     }
 
     char buf[80];
     if (lnum < 0 || !tok) {
         if (numLayers() == 0)
-            db_donemsg = lddb::copy("No routing layers defined.");
+            db_donemsg = lstring::copy("No routing layers defined.");
         else {
-            dbLstr lstr;
+            sLstr lstr;
             for (u_int i = 0; i < numLayers(); i++) {
                 if (lnum >= 0 && (int)i != lnum)
                     continue;
@@ -1167,10 +1169,10 @@ cLDDB::cmdLayer(const char *cmd)
     if (c == 'n') {
         // name
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "layer %d name: %s", lnum+1, layerName(lnum));
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             setLayerName(lnum, tok);
@@ -1181,11 +1183,11 @@ cLDDB::cmdLayer(const char *cmd)
     if (c == 'l') {
         // GDSII layer number
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "layer %d GDSII layernum: %d", lnum+1,
                 layerNumber(lnum));
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             u_int n;
@@ -1202,11 +1204,11 @@ cLDDB::cmdLayer(const char *cmd)
     if (c == 't') {
         // GDSII datatype number
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "layer %d GDSII datatype: %d", lnum+1,
                 purposeNumber(lnum));
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             u_int n;
@@ -1224,11 +1226,11 @@ cLDDB::cmdLayer(const char *cmd)
         // width
         lefRouteLayer *lefr = getLefRouteLayer(lnum);
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "layer %d path width: %g", lnum+1,
                 lefToMic(lefr->route.width));
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             double w;
@@ -1246,7 +1248,7 @@ cLDDB::cmdLayer(const char *cmd)
         // pitch
         lefRouteLayer *lefr = getLefRouteLayer(lnum);
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             if (lefr->route.pitchX == lefr->route.pitchY ||
                     lefr->route.pitchY == 0) {
@@ -1258,7 +1260,7 @@ cLDDB::cmdLayer(const char *cmd)
                     lefToMic(lefr->route.pitchX),
                     lefToMic(lefr->route.pitchY));
             }
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             double p;
@@ -1270,7 +1272,7 @@ cLDDB::cmdLayer(const char *cmd)
             lefr->route.pitchX = micToLefGrid(p);
             lefr->route.pitchY = lefr->route.pitchX;
             delete [] tok;
-            tok = lddb::gettok(&cmd);
+            tok = lstring::gettok(&cmd);
             if (tok) {
                 if (sscanf(tok, "%lf", &p) != 1) {
                     db_errmsg = write_msg("expecting real number for %s.", tok);
@@ -1287,11 +1289,11 @@ cLDDB::cmdLayer(const char *cmd)
         // horiz or vert
         lefRouteLayer *lefr = getLefRouteLayer(lnum);
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "layer %d direction: %s", lnum+1,
                 lefr->route.direction == DIR_VERT ? "vert" : "horiz");
-            db_donemsg = lddb::copy(buf);
+            db_donemsg = lstring::copy(buf);
         }
         else {
             if (*tok == 'v' || *tok == 'V')
@@ -1316,12 +1318,12 @@ bool
 cLDDB::cmdNewLayer(const char *cmd)
 {
     clearMsgs();
-    char *name = lddb::gettok(&cmd);
+    char *name = lstring::gettok(&cmd);
     if (!name) {
         db_errmsg = write_msg("newlayer: no layer name given.");
         return (LD_BAD);
     }
-    lefRouteLayer *lefl = new lefRouteLayer(lddb::copy(name));
+    lefRouteLayer *lefl = new lefRouteLayer(lstring::copy(name));
     lefAddObject(lefl);
     return (LD_OK);
 }
@@ -1334,17 +1336,17 @@ bool
 cLDDB::cmdBoundary(const char *cmd)
 {
     clearMsgs();
-    char *tok1 = lddb::gettok(&cmd);
-    char *tok2 = lddb::gettok(&cmd);
-    char *tok3 = lddb::gettok(&cmd);
-    char *tok4 = lddb::gettok(&cmd);
+    char *tok1 = lstring::gettok(&cmd);
+    char *tok2 = lstring::gettok(&cmd);
+    char *tok3 = lstring::gettok(&cmd);
+    char *tok4 = lstring::gettok(&cmd);
 
     if (!tok1) {
         char buf[80];
         sprintf(buf, "boundary:  %.4f,%.4f  %.4f,%.4f",
             lefToMic(xLower()), lefToMic(yLower()),
             lefToMic(xUpper()), lefToMic(yUpper()));
-        db_donemsg = lddb::copy(buf);
+        db_donemsg = lstring::copy(buf);
         return (LD_OK);
     }
     if (tok4) {
@@ -1391,7 +1393,7 @@ cLDDB::cmdReadLef(const char *fname)
     clearMsgs();
     if (lefRead(fname, false) == LD_OK)
         return (LD_OK);
-    db_errmsg = lddb::copy("Read LEF failed.");
+    db_errmsg = lstring::copy("Read LEF failed.");
     return (LD_BAD);
 }
 
@@ -1402,7 +1404,7 @@ cLDDB::cmdReadDef(const char *fname)
     clearMsgs();
     if (defRead(fname) == LD_OK)
         return (LD_OK);
-    db_errmsg = lddb::copy("Read DEF failed.");
+    db_errmsg = lstring::copy("Read DEF failed.");
     return (LD_BAD);
 }
 
@@ -1413,7 +1415,7 @@ cLDDB::cmdWriteLef(const char *fname)
     clearMsgs();
     if (lefWrite(fname, LEF_OUT_ALL) == LD_OK)
         return (LD_OK);
-    db_errmsg = lddb::copy("Write LEF failed.");
+    db_errmsg = lstring::copy("Write LEF failed.");
     return (LD_BAD);
 }
 
@@ -1424,7 +1426,7 @@ cLDDB::cmdWriteDef(const char *fname)
     clearMsgs();
     if (defWrite(fname) == LD_OK)
         return (LD_OK);
-    db_errmsg = lddb::copy("Write DEF failed.");
+    db_errmsg = lstring::copy("Write DEF failed.");
     return (LD_BAD);
 }
 
@@ -1435,7 +1437,7 @@ cLDDB::cmdUpdateDef(const char *fname, const char *newfn)
     clearMsgs();
     if (writeDefRoutes(fname, newfn) == LD_OK)
         return (LD_OK);
-    db_errmsg = lddb::copy("Update DEF failed.");
+    db_errmsg = lstring::copy("Update DEF failed.");
     return (LD_BAD);
 }
 

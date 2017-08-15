@@ -22,7 +22,7 @@ GRPREF = @GRPREF@
 TOOLKIT = @TOOLKIT@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@
 INSTALL = @INSTALL@
-NTSUFFIX = @NTSUFFIX@
+EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 MALLOC = @MALLOC@
 USEMOZY = @USEMOZY@
@@ -263,7 +263,7 @@ depend:
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
   $(FILTER) >> Makefile; \
-	    if [ -n "$(NTSUFFIX)" ]; then \
+	    if [ -n "$(EXESUFFIX)" ]; then \
 	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc \
   $(FILTER) >> Makefile; \
 	    fi; \
@@ -274,7 +274,7 @@ depend:
 
 eclean:
 	-@for a in $(TARGETS); do \
-	    rm bin/$$a$(NTSUFFIX); \
+	    rm bin/$$a$(EXESUFFIX); \
 	done
 
 clean: eclean
@@ -325,10 +325,10 @@ install_xic_clean::
 
 $(destn)/bin::
 	@$(BASE)/util/mkdirpth $(destn)/bin
-	$(INSTALL_BIN) bin/xic$(NTSUFFIX) $(destn)/bin;
-	$(INSTALL_BIN) bin/wrencode$(NTSUFFIX) $(destn)/bin;
-	$(INSTALL_BIN) bin/wrdecode$(NTSUFFIX) $(destn)/bin;
-	$(INSTALL_BIN) bin/wrsetpass$(NTSUFFIX) $(destn)/bin;
+	$(INSTALL_BIN) bin/xic$(EXESUFFIX) $(destn)/bin;
+	$(INSTALL_BIN) bin/wrencode$(EXESUFFIX) $(destn)/bin;
+	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $(destn)/bin;
+	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $(destn)/bin;
 	@if [ $(DLL_XIC_PROG) = xic ]; then \
 	    $(INSTALL_BIN) bin/xic.dll $(destn)/bin; \
 	fi

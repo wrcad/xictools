@@ -41,6 +41,7 @@
 
 #include "lddb_prv.h"
 #include "defwWriter.hpp"
+#include "miscutil/tvals.h"
 #include <errno.h>
 
 
@@ -106,7 +107,7 @@ cLDDB::defWrite(const char *fname)
     if (!db_def_out_resol)
         db_def_out_resol = db_def_resol;
 
-    long time0 = millisec();
+    long time0 = Tvals::millisec();
 
     // Write DEF header.
     defwInit(fp,
@@ -398,7 +399,7 @@ cLDDB::defWrite(const char *fname)
     defwEnd();
     fclose(fp);
     if (db_verbose > 0) {
-        long elapsed = millisec() - time0;
+        long elapsed = Tvals::millisec() - time0;
         emitMesg("DEF write: Processed %d lines in %ld milliseconds.\n",
             defwCurrentLineNumber, elapsed);
     }
@@ -440,7 +441,7 @@ cLDDB::writeDefRoutes(const char *in_def_file, const char *out_def_file)
     if (!infp) {
         emitErrMesg(
             "writeDefRoutes: Error, cannot open DEF file %s for reading.\n",
-            lddb::strip_path(in_def_file));
+            lstring::strip_path(in_def_file));
         return (LD_BAD);
     } 
 
@@ -453,7 +454,7 @@ cLDDB::writeDefRoutes(const char *in_def_file, const char *out_def_file)
         emitErrMesg(
             "writeDefRoutes: Error, couldn't open output (routed) DEF "
             "file %s.\n",
-            lddb::strip_path(out_def_file));
+            lstring::strip_path(out_def_file));
         if (infp != stdin)
             fclose(infp);
         return (LD_BAD);

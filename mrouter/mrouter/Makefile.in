@@ -1,7 +1,5 @@
 #######################################################################
-# mrouter/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.22 2017/02/18 02:32:07 stevew Exp $
+LOCATION = mrouter/mrouter
 #######################################################################
 
 DATE = @DATE@
@@ -22,17 +20,15 @@ LSHFLAG = @LSHFLAG@
 OSNAME = @OSNAME@
 EXESUFFIX = @EXESUFFIX@
 
+BASE = ../../xt_base
+INCLUDE = -I../include -I$(BASE)/include -I../lef/include -I../def/include
+
 LIB_TARGET = libmrouter.$(SOEXT)
+
 HFILES =
 CCFILES = \
-  mr_cmds.cc \
-  mr_config.cc \
-  mr_maze.cc \
-  mr_node.cc \
-  mr_route.cc \
-  mrouter.cc
+  mr_cmds.cc mr_config.cc mr_maze.cc mr_node.cc mr_route.cc mrouter.cc
 CCOBJS = $(CCFILES:.cc=.o)
-INCLUDE = -I../include -I../lef/include -I../def/include
 
 LDDBLIB = ../lddb/liblddb.a
 
@@ -51,10 +47,14 @@ $(LIB_TARGET): $(MR_VERS_H) $(LDDBLIB) $(CCOBJS)
 $(LDDBLIB)::
 	cd ../lddb; $(MAKE)
 
-mrouter: $(MR_VERS_H) ../lddb/liblddb.a main.cc $(CCOBJS)
+$(BASE)/lib/miscutil.a::
+	(cd $(BASE)/miscutil; $(MAKE))
+
+mrouter: $(MR_VERS_H) ../lddb/liblddb.a main.cc $(CCOBJS) \
+  $(BASE)/lib/miscutil.a
 	@echo Linking mrouter
 	@$(CXX) $(CFLAGS) $(INCLUDE) -o mrouter main.cc $(CCOBJS) \
-  -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef
+  -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef $(BASE)/lib/miscutil.a
 
 $(MR_VERS_H):
 	@echo "// Automatically generated, don't edit!" > $(MR_VERS_H)
@@ -65,7 +65,7 @@ $(MR_VERS_H):
 
 depend: $(MR_VERS_H)
 	cd ../lddb; $(MAKE) depend
-	@echo depending in mrouter
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \

@@ -7,17 +7,18 @@ CXX = @CXX@
 CC = @CC@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
 FILTER = @FILTER@
+EXESUFFIX = @EXESUFFIX@
 
-#all: datestr timegen
-
-#datestr: datestr.c
-#	$(CC) -o datestr datestr.c
+all: timegen
 
 timegen: timegen.cc
 	$(CXX) -o timegen timegen.cc
 
-clean distclean:
-	rm -f datestr timegen
+clean:
+	rm -f timegen$(EXESUFFIX)
+
+distclean: clean
+	rm Makefile
 
 depend:
 	@echo depending in $(LOCATION)

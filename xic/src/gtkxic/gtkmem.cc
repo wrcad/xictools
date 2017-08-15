@@ -47,7 +47,11 @@
 #include "gtkmain.h"
 #include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
+#ifdef HAVE_LOCAL_ALLOCATOR
+#include "malloc/local_malloc.h"
+#else
 #include "miscutil/coresize.h"
+#endif
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -240,7 +244,11 @@ sMem::update()
     y += fhei;
     SetColor(c1);
     char b;
+#ifdef HAVE_LOCAL_ALLOCATOR
+    double v = chk_val(Memory()->coresize(), &b);
+#else
     double v = chk_val(coresize(), &b);
+#endif
     sprintf(buf, "Current Datasize (%cB):", b);
     Text(buf, x, y, 0);
     x += 24 * spw;

@@ -54,8 +54,12 @@ Authors: 1985 Wayne A. Christopher
 #include "misc.h"
 #include "optdefs.h"
 #include "statdefs.h"
-#include "miscutil/coresize.h"
 #include "ginterf/graphics.h"
+#ifdef HAVE_LOCAL_ALLOCATOR
+#include "malloc/local_malloc.h"
+#else
+#include "miscutil/coresize.h"
+#endif
 
 
 //
@@ -207,7 +211,11 @@ IFsimulator::CheckSpace()
     getrlimit(RLIMIT_DATA, &rld);
     if (rld.rlim_cur == RLIM_INFINITY)
         return;
+#ifdef HAVE_LOCAL_ALLOCATOR
+    long cur = (long)(1000*Memory()->coresize());
+#else
     long cur = (long)(1000*coresize());
+#endif
     if (cur > rld.rlim_max * 0.9) {
         if (cur > lastmax)
             GRpkgIf()->ErrPrintf(ET_WARN, msg1, cur, (long)rld.rlim_max);
@@ -224,7 +232,11 @@ IFsimulator::CheckSpace()
     const char *msg1 =
         "approaching max data size: cur size = %ld, limit = %ld.\n"; 
     long lim = ulimit(3, 0L);
+#ifdef HAVE_LOCAL_ALLOCATOR
+    long cur = (long)(1000*Memory()->coresize());
+#else
     long cur = (long)(1000*coresize());
+#endif
     if (cur > lim * 0.9) {
         if (cur > lastmax)
             GRpkgIf()->ErrPrintf(ET_WARN, msg1, (long)hi, (long)lim);
@@ -515,7 +527,11 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         const char *fmtg = "%-15s%-14g%s\n";
         struct rlimit rld;
         getrlimit(RLIMIT_DATA, &rld);
+#ifdef HAVE_LOCAL_ALLOCATOR
+        double szkb = Memory()->coresize();
+#else
         double szkb = coresize();
+#endif
         sprintf(buf, fmtg, kw_space, szkb, "Current data size KB");
         if (plstr)
             plstr->add(buf);
@@ -542,7 +558,11 @@ ResPrint::print_res(const char *name, sLstr *plstr)
         const char *fmtd = "%-15s%-14d%s\n";
         const char *fmtg = "%-15s%-14g%s\n";
         long lim = ulimit(3, 0L);
+#ifdef HAVE_LOCAL_ALLOCATOR
+        double szkb = Memory()->coresize();
+#else
         double szkb = coresize();
+#endif
         sprintf(buf, fmtg, kw_space, szkb, "Current data size KB");
         if (plstr)
             plstr->add(buf);
@@ -877,7 +897,11 @@ ResPrint::get_space(unsigned *data, unsigned *hlimit, unsigned *slimit)
 
 #else
 
+#ifdef HAVE_LOCAL_ALLOCATOR
+    *data = (unsigned int)(1024*Memory()->coresize());
+#else
     *data = (unsigned int)(1024*coresize());
+#endif
 #if defined(HAVE_GETRLIMIT) && defined(RLIMIT_DATA)
     struct rlimit rld;
     getrlimit(RLIMIT_DATA, &rld);

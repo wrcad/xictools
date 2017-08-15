@@ -1,7 +1,5 @@
 #######################################################################
-# wrspice_ipc_demo/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.6 2014/10/05 03:17:48 stevew Exp $
+LOCATION = wrspice/ipc_demo_files
 #######################################################################
 
 DATE = @DATE@
@@ -26,7 +24,7 @@ GRPREF = @GRPREF@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ -DWRSPICE
 INSTALL = @INSTALL@
 INSTALL_USER = @INSTALL_USER@
-NTSUFFIX = @NTSUFFIX@
+EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 MALLOC = @MALLOC@
 SECURE = @SECURE@
@@ -77,19 +75,19 @@ clean::
 	if [ -d $(LPATH)/miscutil ]; then \
 	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
 	fi
-	rm -f spclient wrspiced
+	rm -f spclient$(EXESUFFIX) wrspiced$(EXESUFFIX)
 
 distclean::
 	if [ -d $(LPATH)/miscutil ]; then \
 	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
 	fi
-	rm -f spclient wrspiced Makefile config.*
+	rm -f spclient$(EXESUFFIX) wrspiced$(EXESUFFIX) Makefile config.*
 
 depend:
 	if [ -d $(LPATH)/miscutil ]; then \
 	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
 	fi
-	@echo depending in wrspice_ipc_demo
+	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
 	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) -DDEMO_EXPORT $(FILTER) \

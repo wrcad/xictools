@@ -390,7 +390,7 @@ cMRouter::readConfig(const char *filename, bool is_info, bool incr)
                 gateinfo->height = db->micToLefGrid(darg2);
             }
             else {
-                gateinfo = new lefMacro(lddb::copy(sarg), darg, darg2);
+                gateinfo = new lefMacro(lstring::copy(sarg), darg, darg2);
                 db->lefAddGate(gateinfo);
             }
         }
@@ -417,7 +417,7 @@ cMRouter::readConfig(const char *filename, bool is_info, bool incr)
                 // This syntax always defines pins on layer 0; LEF file
                 // reader allows pins on all layers.
 
-                lefPin *pnew = new lefPin(lddb::copy(sarg),
+                lefPin *pnew = new lefPin(lstring::copy(sarg),
                     new dbDseg(
                         db->micToLefGrid(darg), db->micToLefGrid(darg2),
                         db->micToLefGrid(darg), db->micToLefGrid(darg2),

@@ -42,6 +42,7 @@
 #include "lddb_prv.h"
 #include "ld_hash.h"
 #include "defrReader.hpp"
+#include "miscutil/tvals.h"
 #include <errno.h>
 #include <math.h>
 
@@ -254,7 +255,7 @@ cLDDB::defRead(const char *filename)
         emitErrMesg("defRead: Error, null filename.\n");
         return (LD_BAD);
     }
-    long time0 = millisec();
+    long time0 = Tvals::millisec();
 
     defrInit();
     defrSetLineNumberFunction(lineNumberCB);
@@ -309,7 +310,7 @@ cLDDB::defRead(const char *filename)
 
     if (db_verbose > 0) {
         emitMesg("Reading DEF data from file %s.\n",
-            lddb::strip_path(filename));
+            lstring::strip_path(filename));
         flushMesg();
     }
     int res = defrRead(f, filename, this, 1);
@@ -347,7 +348,7 @@ cLDDB::defRead(const char *filename)
     defrClear();
 
     if (db_verbose > 0) {
-        long elapsed = millisec() - time0;
+        long elapsed = Tvals::millisec() - time0;
         emitMesg("DEF read: Processed %d lines in %ld milliseconds.\n",
             db_currentLine, elapsed);
     }
@@ -630,7 +631,7 @@ cLDDB::defComponentsSet(defiComponent *cmp)
         return (LD_BAD);
     }
     else {
-        gate = new dbGate(lddb::copy(usename), gateginfo);
+        gate = new dbGate(lstring::copy(usename), gateginfo);
 #ifdef DEBUG
         printf("new gate %s\n", usename);
 #endif
@@ -993,7 +994,7 @@ cLDDB::defViasSet(defiVia *via)
             via->name());
         return (LD_BAD);
     }
-    lefViaObject *lefv = new lefViaObject(lddb::copy(via->name()));
+    lefViaObject *lefv = new lefViaObject(lstring::copy(via->name()));
     lefAddObject(lefv);
 
     if (via->defiVia::numLayers() == 1 || via->defiVia::numLayers() == 3) {
@@ -1133,11 +1134,11 @@ cLDDB::defPinsSet(defiPin *pin)
     db_def_processed++;
 
     // Create the pin record.
-    dbGate *gate = new dbGate(lddb::copy(pin->netName()), db_pinMacro);
+    dbGate *gate = new dbGate(lstring::copy(pin->netName()), db_pinMacro);
     int routelayer = -1;
     int rt_id = -1;
 
-    gate->node[0] = lddb::copy(pin->netName());
+    gate->node[0] = lstring::copy(pin->netName());
 
     if (pin->hasLayer()) {
         // Here we set the gate width/height to the maximum values if
@@ -1206,7 +1207,7 @@ cLDDB::defPinsSet(defiPin *pin)
 
         // If no NET was declared for pin, use pinname.
         if (!gate->gatename)
-            gate->gatename = lddb::copy(pin->pinName());
+            gate->gatename = lstring::copy(pin->pinName());
 
         // Make sure pin is at least the size of the route layer.
 
@@ -1500,7 +1501,7 @@ cLDDB::defReadNet(defiNet *dnet, bool special)
     }
     else {
         net = new dbNet;
-        net->netname = lddb::copy(dnet->name());
+        net->netname = lstring::copy(dnet->name());
         db_nlNets[db_numNets++] = net;
 
         net->netnum = db_def_netidx++;

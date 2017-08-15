@@ -209,10 +209,6 @@ public:
     // ld_lef_out.cc
     bool    lefWrite(const char*, LEF_OUT = LEF_OUT_ALL);
 
-    // ld_util.cc
-    long    millisec();
-    double  coresize();
-
     //
     // Config info.
     //
@@ -232,7 +228,7 @@ public:
     bool    addGlobal(const char *s)
         {
             if (s && *s && db_numGlobals < LD_MAX_GLOBALS) {
-                char *ss = lddb::copy(s);
+                char *ss = lstring::copy(s);
                 delete [] db_global_names[db_numGlobals];
                 db_global_names[db_numGlobals] = ss;
                 db_global_nnums[db_numGlobals] = db_numGlobals + 1;
@@ -250,44 +246,44 @@ public:
             }
         }
 
-    dbStringList *noRouteList()         { return (db_dontRoute); }
-    void    setNoRouteList(dbStringList *s)     { db_dontRoute = s; }
+    stringlist *noRouteList()               { return (db_dontRoute); }
+    void    setNoRouteList(stringlist *s)   { db_dontRoute = s; }
     void    dontRoute(const char *s)
         {
             if (!s)
                 return;
             if (db_dontRoute) {
-                for (dbStringList *sl = db_dontRoute; sl; sl = sl->next) {
+                for (stringlist *sl = db_dontRoute; sl; sl = sl->next) {
                     if (!strcmp(s, sl->string))
                         break;
                     if (!sl->next) {
-                        sl->next = new dbStringList(lddb::copy(s), 0);
+                        sl->next = new stringlist(lstring::copy(s), 0);
                         break;
                     }
                 }
             }
             else
-                db_dontRoute = new dbStringList(lddb::copy(s), 0);
+                db_dontRoute = new stringlist(lstring::copy(s), 0);
         }
 
-    dbStringList *criticalNetList()     { return (db_criticalNet); }
-    void    setCriticalNetList(dbStringList *s)     { db_criticalNet = s; }
+    stringlist *criticalNetList()               { return (db_criticalNet); }
+    void    setCriticalNetList(stringlist *s)   { db_criticalNet = s; }
     void    criticalNet(const char *s)
         {
             if (!s)
                 return;
             if (db_criticalNet) {
-                for (dbStringList *sl = db_criticalNet; sl; sl = sl->next) {
+                for (stringlist *sl = db_criticalNet; sl; sl = sl->next) {
                     if (!strcmp(s, sl->string))
                         break;
                     if (!sl->next) {
-                        sl->next = new dbStringList(lddb::copy(s), 0);
+                        sl->next = new stringlist(lstring::copy(s), 0);
                         break;
                     }
                 }
             }
             else
-                db_criticalNet = new dbStringList(lddb::copy(s), 0);
+                db_criticalNet = new stringlist(lstring::copy(s), 0);
         }
 
     const char *commentLayerName()      { return (db_commentLayer.lname); }
@@ -499,7 +495,7 @@ public:
     const char *technology()            { return (db_technology); }
     void    setTechnology(const char *s)
         {
-            char *t = lddb::copy(s);
+            char *t = lstring::copy(s);
             delete [] db_technology;
             db_technology = t;
         }
@@ -507,7 +503,7 @@ public:
     const char *design()                { return (db_design); }
     void    setDesign(const char *s)
         {
-            char *t = lddb::copy(s);
+            char *t = lstring::copy(s);
             delete [] db_design;
             db_design = t;
         }
@@ -630,8 +626,8 @@ protected:
     cLDio   *db_io;                 // Pointer to i/o handler;
     char    *db_global_names[LD_MAX_GLOBALS];   // Power/ground net names.
     int     db_global_nnums[LD_MAX_GLOBALS];    // Power/ground net numbers.
-    dbStringList *db_dontRoute;     // List of nets not to route (e.g., power).
-    dbStringList *db_criticalNet;   // List of critical nets to route first.
+    stringlist *db_dontRoute;       // List of nets not to route (e.g., power).
+    stringlist *db_criticalNet;     // List of critical nets to route first.
     dbLayerId db_commentLayer;      // Layer for annotation.
     dbLayer *db_layers;             // Routing layer info.
     u_int   db_numGlobals;          // Number of global nets defined.

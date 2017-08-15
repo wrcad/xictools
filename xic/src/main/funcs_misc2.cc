@@ -75,7 +75,11 @@
 #include "miscutil/filestat.h"
 #include "miscutil/tvals.h"
 #include "miscutil/miscutil.h"
+#ifdef HAVE_LOCAL_ALLOCATOR
+#include "malloc/local_malloc.h"
+#else
 #include "miscutil/coresize.h"
+#endif
 
 #include <algorithm>
 #include <unistd.h>
@@ -2565,7 +2569,11 @@ bool
 misc2_funcs::IFcoreSize(Variable *res, Variable*, void*)
 {
     res->type = TYP_SCALAR;
+#ifdef HAVE_LOCAL_ALLOCATOR
+    res->content.value = Memory()->coresize();
+#else
     res->content.value = coresize();
+#endif
     return (OK);
 }
 

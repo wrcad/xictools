@@ -43,7 +43,7 @@
 #define LDDB_H
 
 #include "ld_vers.h"
-#include "ld_util.h"
+#include "miscutil/lstring.h"
 
 //
 // LEF/DEF Database.
@@ -83,7 +83,7 @@ typedef u_short         grdu_t;
 // Turn on allocation counters for debugging.
 // WARNING: this breaks the plug-in capability, as the static fields
 // don't resolve across the interface.
-// #define LD_MEMDBG
+#define LD_MEMDBG
 
 // Path segment information, for dbSeg::segtype.
 #define ST_WIRE         0x01
@@ -958,7 +958,7 @@ struct dbLayerId
 
     void set_layername(const char *nm)
         {
-            char *t = lddb::copy(nm);
+            char *t = lstring::copy(nm);
             delete [] lname;
             lname = t;
         }
@@ -1393,9 +1393,6 @@ public:
 
     virtual bool    lefWrite(const char*, LEF_OUT = LEF_OUT_ALL) = 0;
 
-    virtual long    millisec() = 0;
-    virtual double  coresize() = 0;
-
     virtual cLDio   *ioHandler() = 0;
     virtual void    setIOhandler(cLDio*) = 0;
 
@@ -1403,12 +1400,12 @@ public:
     virtual bool    addGlobal(const char*) = 0;
     virtual void    clearGlobal(int = 0) = 0;
 
-    virtual dbStringList *noRouteList() = 0;
-    virtual void    setNoRouteList(dbStringList*) = 0;
+    virtual stringlist *noRouteList() = 0;
+    virtual void    setNoRouteList(stringlist*) = 0;
     virtual void    dontRoute(const char*) = 0;
 
-    virtual dbStringList *criticalNetList() = 0;
-    virtual void    setCriticalNetList(dbStringList*) = 0;
+    virtual stringlist *criticalNetList() = 0;
+    virtual void    setCriticalNetList(stringlist*) = 0;
     virtual void    criticalNet(const char*) = 0;
 
     virtual const char *commentLayerName() = 0;

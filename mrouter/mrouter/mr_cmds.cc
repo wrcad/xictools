@@ -40,6 +40,7 @@
  *========================================================================*/
 
 #include "mrouter_prv.h"
+#include "miscutil/lstring.h"
 #include <stdarg.h>
 #include <unistd.h>
 #include <algorithm>
@@ -137,7 +138,7 @@ cMRouter::doCmd(const char *cmd)
 {
     clearMsgs();
     const char *s = cmd;
-    char *tok = lddb::gettok(&s);
+    char *tok = lstring::gettok(&s);
     if (!tok)
         return (LD_OK);
 
@@ -145,7 +146,7 @@ cMRouter::doCmd(const char *cmd)
     bool unhandled = false;
     if (!strcmp(tok,        "reset")) {       // override
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         ret = reset( (tok && strchr("tTyY1aA", *tok)) );
     }
     else if (!strcmp(tok,   "set"))           // override
@@ -156,19 +157,19 @@ cMRouter::doCmd(const char *cmd)
         ret = cmdUnset(s);
     else if (!strcmp(tok,   "read")) {
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!tok) {
-            setErrMsg(lddb::copy("Missing directive to read operation."));
+            setErrMsg(lstring::copy("Missing directive to read operation."));
             return (LD_BAD);
         }
         if (!strcmp(tok,        "script")) {  // override
             delete [] tok;
-            tok = lddb::getqtok(&s);
+            tok = lstring::getqtok(&s);
             ret = readScript(tok);
         }
         if (!strcmp(tok,        "config")) {  // override
             delete [] tok;
-            tok = lddb::getqtok(&s);
+            tok = lstring::getqtok(&s);
             ret = cmdReadCfg(tok);
         }
         else
@@ -176,33 +177,33 @@ cMRouter::doCmd(const char *cmd)
     }
     else if (!strcmp(tok,   "write")) {
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!tok) {
-            setErrMsg(lddb::copy("Missing directive to write operation."));
+            setErrMsg(lstring::copy("Missing directive to write operation."));
             return (LD_BAD);
         }
         if (!strcmp(tok,        "def")) {     // override
             delete [] tok;
-            tok = lddb::getqtok(&s);
+            tok = lstring::getqtok(&s);
             setupRoutePaths();
             clearMsgs();
             ret = db->defWrite(tok);
             if (ret == LD_BAD)
-                setErrMsg(lddb::copy("Write DEF failed."));
+                setErrMsg(lstring::copy("Write DEF failed."));
         }
         else
             unhandled = true;
     }
     else if (!strcmp(tok,   "append")) {      // override
         delete [] tok;
-        tok = lddb::getqtok(&s);
-        char *tok2 = lddb::getqtok(&s);
+        tok = lstring::getqtok(&s);
+        char *tok2 = lstring::getqtok(&s);
         setupRoutePaths();
         clearMsgs();
         ret = db->writeDefRoutes(tok, tok2);
         delete [] tok2;
         if (ret == LD_BAD)
-            setErrMsg(lddb::copy("Update DEF failed."));
+            setErrMsg(lstring::copy("Update DEF failed."));
     }
 
     else if (!strcmp(tok,   "stage1"))
@@ -234,7 +235,7 @@ namespace {
         va_list args;
         va_start(args, fmt);
         vsnprintf(buf, 256, fmt, args);
-        return (lddb::copy(buf));
+        return (lstring::copy(buf));
     }
 }
 
@@ -256,9 +257,9 @@ cMRouter::cmdSet(const char *cmd)
     clearMsgs();
     char buf[80];
     const char *s = cmd;
-    char *tok = lddb::gettok(&s);
+    char *tok = lstring::gettok(&s);
     if (!tok) {
-        dbLstr lstr;
+        sLstr lstr;
         const char *fmt = "%-16s: ";
 
         db->cmdSet(0);
@@ -311,10 +312,10 @@ cMRouter::cmdSet(const char *cmd)
         // Set the net ordering algorithm to be used.
 
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!tok) {
             sprintf(buf, "netorder: %u", netOrder());
-            setDoneMsg(lddb::copy(buf));
+            setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -355,10 +356,10 @@ cMRouter::cmdSet(const char *cmd)
         // there is no reason for the user to change it.
 
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!tok) {
             sprintf(buf, "passes: %d", numPasses());
-            setDoneMsg(lddb::copy(buf));
+            setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -394,9 +395,9 @@ cMRouter::cmdSet(const char *cmd)
         // the final (rightmost) value.
 
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!tok) {
-            dbLstr lstr;
+            sLstr lstr;
             lstr.add("increments: ");
             if (!rmaskIncs())
                 lstr.add("1");
@@ -412,7 +413,7 @@ cMRouter::cmdSet(const char *cmd)
             const char *bak = s;
             int ntoks = 1;
             char *t;
-            while ((t = lddb::gettok(&s)) != 0) {
+            while ((t = lstring::gettok(&s)) != 0) {
                 delete [] t;
                 ntoks++;
             }
@@ -447,7 +448,7 @@ cMRouter::cmdSet(const char *cmd)
                 }
                 vals[ntoks++] = i;
                 delete [] tok;
-                tok = lddb::gettok(&s);
+                tok = lstring::gettok(&s);
             }
             setRmaskIncs(vals, ntoks);
         }
@@ -459,7 +460,7 @@ cMRouter::cmdSet(const char *cmd)
         // "none", "0", and "1" all mean the same thing.
 
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!tok) {
             if (stackedVias() < 0 ||
                     (stackedVias() > 0 && stackedVias() >= (int)numLayers()))
@@ -468,7 +469,7 @@ cMRouter::cmdSet(const char *cmd)
                 sprintf(buf, "via_stack: none");
             else
                 sprintf(buf, "via_stack: %d", stackedVias());
-            setDoneMsg(lddb::copy(buf));
+            setDoneMsg(lstring::copy(buf));
         }
         else {
             int i;
@@ -495,11 +496,11 @@ cMRouter::cmdSet(const char *cmd)
         // Values: 0 or n/N[...], nonzero or i/I[...].
 
         delete [] tok;
-        tok = lddb::gettok(&s);
+        tok = lstring::gettok(&s);
         if (!tok) {
             sprintf(buf, "via_stack: %s",
                 viaPattern() == VIA_PATTERN_NORMAL ? "normal" : "inverted");
-            setDoneMsg(lddb::copy(buf));
+            setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -525,9 +526,9 @@ cMRouter::cmdSetcost(const char *cmd)
 {
     clearMsgs();
     char buf[80];
-    char *tok = lddb::gettok(&cmd);
+    char *tok = lstring::gettok(&cmd);
     if (!tok) {
-        dbLstr lstr;
+        sLstr lstr;
         const char *fmt = "%-16s: ";
 
         sprintf(buf, fmt, "segcost");
@@ -574,10 +575,10 @@ cMRouter::cmdSetcost(const char *cmd)
     if (c == 's') {
         // segment cost
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "segment cost: %d", segCost());
-            db->setDoneMsg(lddb::copy(buf));
+            db->setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -591,10 +592,10 @@ cMRouter::cmdSetcost(const char *cmd)
     if (c == 'v') {
         // via cost
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "via cost: %d", viaCost());
-            db->setDoneMsg(lddb::copy(buf));
+            db->setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -608,10 +609,10 @@ cMRouter::cmdSetcost(const char *cmd)
     if (c == 'j') {
         // jog cost
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "jog cost: %d", jogCost());
-            db->setDoneMsg(lddb::copy(buf));
+            db->setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -629,10 +630,10 @@ cMRouter::cmdSetcost(const char *cmd)
     if (c == 'x') {
         // crossover cost
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "crossover cost: %d", xverCost());
-            db->setDoneMsg(lddb::copy(buf));
+            db->setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -646,10 +647,10 @@ cMRouter::cmdSetcost(const char *cmd)
     if (c == 'b') {
         // block cost
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "block cost: %d", blockCost());
-            db->setDoneMsg(lddb::copy(buf));
+            db->setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -663,10 +664,10 @@ cMRouter::cmdSetcost(const char *cmd)
     if (c == 'o') {
         // offset cost
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "offset cost: %d", offsetCost());
-            db->setDoneMsg(lddb::copy(buf));
+            db->setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -680,10 +681,10 @@ cMRouter::cmdSetcost(const char *cmd)
     if (c == 'c') {
         // conflict cost
         delete [] tok;
-        tok = lddb::gettok(&cmd);
+        tok = lstring::gettok(&cmd);
         if (!tok) {
             sprintf(buf, "conflict cost: %d", conflictCost());
-            db->setDoneMsg(lddb::copy(buf));
+            db->setDoneMsg(lstring::copy(buf));
         }
         else {
             if (isdigit(*tok)) {
@@ -708,7 +709,7 @@ cMRouter::cmdUnset(const char *cmd)
 {
     clearMsgs();
     char *tok;
-    while ((tok = lddb::gettok(&cmd)) != 0) {
+    while ((tok = lstring::gettok(&cmd)) != 0) {
         if (!strcasecmp(tok, "netorder"))
             setNetOrder(mrNetDefault);
         else if (!strcasecmp(tok, "passes"))
@@ -757,7 +758,7 @@ cMRouter::cmdReadCfg(const char *fname)
     clearMsgs();
     if (readConfig(fname, false, false) == LD_OK)
         return (LD_OK);
-    setErrMsg(lddb::copy("Read config failed."));
+    setErrMsg(lstring::copy("Read config failed."));
     return (LD_BAD);
 
 }
@@ -790,10 +791,10 @@ cMRouter::cmdStage1(const char *cmd)
     bool dodebug = false;
     bool forceRt = false;
     bool dostep = false;
-    dbStringList *routeNames = 0;
+    stringlist *routeNames = 0;
 
     char *tok;
-    while ((tok = lddb::gettok(&cmd)) != 0) {
+    while ((tok = lstring::gettok(&cmd)) != 0) {
         if (*tok == '-') {
             if (tok[1] == 'd') {
                 dodebug = true;
@@ -833,12 +834,12 @@ cMRouter::cmdStage1(const char *cmd)
                 }
                 if (!tok[2]) {
                     delete tok;
-                    tok = lddb::gettok(&cmd);
+                    tok = lstring::gettok(&cmd);
                     if (!tok) {
                         db->setErrMsg(
-                            lddb::copy("stage1: missing -m value."));
+                            lstring::copy("stage1: missing -m value."));
                         delete [] tok;
-                        dbStringList::destroy(routeNames);
+                        stringlist::destroy(routeNames);
                         return (LD_BAD);
                     }
                     if (*tok == 'a') {
@@ -861,20 +862,20 @@ cMRouter::cmdStage1(const char *cmd)
                         delete [] tok;
                         continue;
                     }
-                    db->setErrMsg(lddb::copy("stage1: bad -m value."));
+                    db->setErrMsg(lstring::copy("stage1: bad -m value."));
                     delete [] tok;
-                    dbStringList::destroy(routeNames);
+                    stringlist::destroy(routeNames);
                     return (LD_BAD);
                 }
             }
             db->setErrMsg(write_msg("stage1: unknown option %s.", tok));
             delete [] tok;
-            dbStringList::destroy(routeNames);
+            stringlist::destroy(routeNames);
             return (LD_BAD);
         }
         else {
             // Anything not an option is a route name.
-            routeNames = new dbStringList(tok, routeNames);
+            routeNames = new stringlist(tok, routeNames);
         }
     }
 
@@ -892,7 +893,7 @@ cMRouter::cmdStage1(const char *cmd)
     if (!routeNames)
         failcount = doFirstStage(dodebug, mr_stepnet);
     else {
-        for (dbStringList *sl = routeNames; sl; sl = sl->next) {
+        for (stringlist *sl = routeNames; sl; sl = sl->next) {
             dbNet *net = getNet(sl->string);
             if (!net) {
                 // No such net, issue a warning.
@@ -912,7 +913,7 @@ cMRouter::cmdStage1(const char *cmd)
                 }
             }
         }
-        dbStringList::destroy(routeNames);
+        stringlist::destroy(routeNames);
     }
     setMaskVal(omask);
     setForceRoutable(oforce);
@@ -953,12 +954,12 @@ cMRouter::cmdStage2(const char *cmd)
     bool dodebug = false;
     bool forceRt = false;
     bool dostep = false;
-    dbStringList *routeNames = 0;
+    stringlist *routeNames = 0;
     int limit = 0;
     int tries = 0;
 
     char *tok;
-    while ((tok = lddb::gettok(&cmd)) != 0) {
+    while ((tok = lstring::gettok(&cmd)) != 0) {
         if (*tok == '-') {
             if (tok[1] == 'd') {
                 dodebug = true;
@@ -977,12 +978,12 @@ cMRouter::cmdStage2(const char *cmd)
             }
             if (tok[1] == 'l') {
                 delete [] tok;
-                tok = lddb::gettok(&cmd);
+                tok = lstring::gettok(&cmd);
                 if (!tok || !isdigit(*tok)) {
                     db->setErrMsg(
-                        lddb::copy("stage2: missing or bad -l value."));
+                        lstring::copy("stage2: missing or bad -l value."));
                     delete [] tok;
-                    dbStringList::destroy(routeNames);
+                    stringlist::destroy(routeNames);
                     return (LD_BAD);
                 }
                 limit = atoi(tok);
@@ -991,12 +992,12 @@ cMRouter::cmdStage2(const char *cmd)
             }
             if (tok[1] == 't') {
                 delete [] tok;
-                tok = lddb::gettok(&cmd);
+                tok = lstring::gettok(&cmd);
                 if (!tok || !isdigit(*tok)) {
                     db->setErrMsg(
-                        lddb::copy("stage2: missing or bad -t value."));
+                        lstring::copy("stage2: missing or bad -t value."));
                     delete [] tok;
-                    dbStringList::destroy(routeNames);
+                    stringlist::destroy(routeNames);
                     return (LD_BAD);
                 }
                 tries = atoi(tok);
@@ -1026,12 +1027,12 @@ cMRouter::cmdStage2(const char *cmd)
                 }
                 if (!tok[2]) {
                     delete tok;
-                    tok = lddb::gettok(&cmd);
+                    tok = lstring::gettok(&cmd);
                     if (!tok) {
                         db->setErrMsg(
-                            lddb::copy("stage2: missing -m value."));
+                            lstring::copy("stage2: missing -m value."));
                         delete [] tok;
-                        dbStringList::destroy(routeNames);
+                        stringlist::destroy(routeNames);
                         return (LD_BAD);
                     }
                     if (*tok == 'a') {
@@ -1055,20 +1056,20 @@ cMRouter::cmdStage2(const char *cmd)
                         continue;
                     }
                     db->setErrMsg(
-                        lddb::copy("stage2: bad -m value."));
+                        lstring::copy("stage2: bad -m value."));
                     delete [] tok;
-                    dbStringList::destroy(routeNames);
+                    stringlist::destroy(routeNames);
                     return (LD_BAD);
                 }
             }
             db->setErrMsg(write_msg("stage2: unknown option %s.", tok));
             delete [] tok;
-            dbStringList::destroy(routeNames);
+            stringlist::destroy(routeNames);
             return (LD_BAD);
         }
         else {
             // Anything not an option is a route name.
-            routeNames = new dbStringList(tok, routeNames);
+            routeNames = new stringlist(tok, routeNames);
         }
     }
 
@@ -1088,7 +1089,7 @@ cMRouter::cmdStage2(const char *cmd)
     if (!routeNames)
         failcount = doSecondStage(dodebug, dostep);
     else {
-        for (dbStringList *sl = routeNames; sl; sl = sl->next) {
+        for (stringlist *sl = routeNames; sl; sl = sl->next) {
             dbNet *net = getNet(sl->string);
             if (!net) {
                 // No such net, issue a warning.
@@ -1098,7 +1099,7 @@ cMRouter::cmdStage2(const char *cmd)
             }
             failcount += routeNetRipup(net, dodebug);
         }
-        dbStringList::destroy(routeNames);
+        stringlist::destroy(routeNames);
     }
     setKeepTrying(otries);
     setRipLimit(olimit);
@@ -1140,12 +1141,12 @@ cMRouter::cmdStage3(const char *cmd)
     bool dodebug = false;
     bool forceRt = false;
     bool dostep = false;
-    dbStringList *routeNames = 0;
+    stringlist *routeNames = 0;
     int limit = 0;
     int tries = 0;
 
     char *tok;
-    while ((tok = lddb::gettok(&cmd)) != 0) {
+    while ((tok = lstring::gettok(&cmd)) != 0) {
         if (*tok == '-') {
             if (tok[1] == 'd') {
                 dodebug = true;
@@ -1164,12 +1165,12 @@ cMRouter::cmdStage3(const char *cmd)
             }
             if (tok[1] == 'l') {
                 delete [] tok;
-                tok = lddb::gettok(&cmd);
+                tok = lstring::gettok(&cmd);
                 if (!tok || !isdigit(*tok)) {
                     db->setErrMsg(
-                        lddb::copy("stage3: missing or bad -l value."));
+                        lstring::copy("stage3: missing or bad -l value."));
                     delete [] tok;
-                    dbStringList::destroy(routeNames);
+                    stringlist::destroy(routeNames);
                     return (LD_BAD);
                 }
                 limit = atoi(tok);
@@ -1178,12 +1179,12 @@ cMRouter::cmdStage3(const char *cmd)
             }
             if (tok[1] == 't') {
                 delete [] tok;
-                tok = lddb::gettok(&cmd);
+                tok = lstring::gettok(&cmd);
                 if (!tok || !isdigit(*tok)) {
                     db->setErrMsg(
-                        lddb::copy("stage3: missing or bad -t value."));
+                        lstring::copy("stage3: missing or bad -t value."));
                     delete [] tok;
-                    dbStringList::destroy(routeNames);
+                    stringlist::destroy(routeNames);
                     return (LD_BAD);
                 }
                 tries = atoi(tok);
@@ -1213,12 +1214,12 @@ cMRouter::cmdStage3(const char *cmd)
                 }
                 if (!tok[2]) {
                     delete tok;
-                    tok = lddb::gettok(&cmd);
+                    tok = lstring::gettok(&cmd);
                     if (!tok) {
                         db->setErrMsg(
-                            lddb::copy("stage3: missing -m value."));
+                            lstring::copy("stage3: missing -m value."));
                         delete [] tok;
-                        dbStringList::destroy(routeNames);
+                        stringlist::destroy(routeNames);
                         return (LD_BAD);
                     }
                     if (*tok == 'a') {
@@ -1241,20 +1242,20 @@ cMRouter::cmdStage3(const char *cmd)
                         delete [] tok;
                         continue;
                     }
-                    db->setErrMsg(lddb::copy("stage3: bad -m value."));
+                    db->setErrMsg(lstring::copy("stage3: bad -m value."));
                     delete [] tok;
-                    dbStringList::destroy(routeNames);
+                    stringlist::destroy(routeNames);
                     return (LD_BAD);
                 }
             }
             db->setErrMsg(write_msg("stage3: unknown option %s.", tok));
             delete [] tok;
-            dbStringList::destroy(routeNames);
+            stringlist::destroy(routeNames);
             return (LD_BAD);
         }
         else {
             // Anything not an option is a route name.
-            routeNames = new dbStringList(tok, routeNames);
+            routeNames = new stringlist(tok, routeNames);
         }
     }
 
@@ -1279,7 +1280,7 @@ cMRouter::cmdStage3(const char *cmd)
     if (!routeNames)
         failcount = doThirdStage(dodebug, mr_stepnet);
     else {
-        for (dbStringList *sl = routeNames; sl; sl = sl->next) {
+        for (stringlist *sl = routeNames; sl; sl = sl->next) {
             dbNet *net = getNet(sl->string);
             if (!net) {
                 // No such net, issue a warning.
@@ -1323,10 +1324,10 @@ bool
 cMRouter::cmdRipUp(const char *cmd)
 {
     clearMsgs();
-    dbStringList *netnames = 0;
+    stringlist *netnames = 0;
     char *tok;
-    while ((tok = lddb::gettok(&cmd)) != 0)
-        netnames = new dbStringList(tok, netnames);
+    while ((tok = lstring::gettok(&cmd)) != 0)
+        netnames = new stringlist(tok, netnames);
 
     if (netnames) {
         if (!strcmp(netnames->string, "-a")) {
@@ -1335,11 +1336,11 @@ cMRouter::cmdRipUp(const char *cmd)
                dbNet *net = nlNet(i);
                ripupNet(net, true);
             }
-            db->setDoneMsg(lddb::copy("All nets ripped up."));
+            db->setDoneMsg(lstring::copy("All nets ripped up."));
         }
         else {
             int cnt = 0;
-            for (dbStringList *s = netnames; s; s = s->next) {
+            for (stringlist *s = netnames; s; s = s->next) {
                 dbNet *net = getNet(s->string);
                 if (!net) {
                     // No such net, issue a warning.
@@ -1352,9 +1353,9 @@ cMRouter::cmdRipUp(const char *cmd)
             }
             char buf[64];
             sprintf(buf, "%d nets ripped up.", cnt);
-            db->setDoneMsg(lddb::copy(buf));
+            db->setDoneMsg(lstring::copy(buf));
         }
-        dbStringList::destroy(netnames);
+        stringlist::destroy(netnames);
     }
     return (LD_OK);
 }
@@ -1377,7 +1378,7 @@ cMRouter::cmdFailed(const char *s)
     bool print = false;
 
     char *tok;
-    while ((tok = lddb::gettok(&s)) != 0) {
+    while ((tok = lstring::gettok(&s)) != 0) {
         if (!strcmp(tok, "-a"))
             all = true;
         else if (!strcmp(tok, "-u"))
@@ -1410,7 +1411,7 @@ cMRouter::cmdFailed(const char *s)
     if (print) {
         int cnt = mr_failedNets.num_elements();
         if (!cnt)
-            db->setDoneMsg(lddb::copy("There are no failed nets."));
+            db->setDoneMsg(lstring::copy("There are no failed nets."));
         else {
             // Print names of failed nets.
             const char *t = "Failed Nets:\n";
@@ -1419,11 +1420,11 @@ cMRouter::cmdFailed(const char *s)
                 len += strlen(nl->net->netname) + 3;
             len++;
             char *dmsg = new char[len];
-            char *e = lddb::stpcpy(dmsg, t);
+            char *e = lstring::stpcpy(dmsg, t);
             for (dbNetList *nl = mr_failedNets.list(); nl; nl = nl->next) {
                 *e++ = ' ';
                 *e++ = ' ';
-                e = lddb::stpcpy(e, nl->net->netname);
+                e = lstring::stpcpy(e, nl->net->netname);
                 *e++ = '\n';
             }
             *e = 0;
@@ -1437,7 +1438,7 @@ cMRouter::cmdFailed(const char *s)
         char buf[80];
         snprintf(buf, 80, "There are %d failed nets out of %d total.",
             cnt, numNets());
-        db->setDoneMsg(lddb::copy(buf));
+        db->setDoneMsg(lstring::copy(buf));
     }
     return (LD_OK);
 }
@@ -1480,20 +1481,20 @@ cMRouter::cmdCongested(const char *s)
     char buf[256];
 
     if (!db->numGates()) {
-        db->setErrMsg(lddb::copy("congestion: no gates in design."));
+        db->setErrMsg(lstring::copy("congestion: no gates in design."));
         return (LD_BAD);
     }
 
     char *tok;
-    while ((tok = lddb::gettok(&s)) != 0) {
+    while ((tok = lstring::gettok(&s)) != 0) {
         if (!strcmp(tok, "-n")) {
             delete [] tok;
-            tok = lddb::gettok(&s);
+            tok = lstring::gettok(&s);
             if (!tok)
                 break;
             if (sscanf(tok, "%d", &entries) != 1 || entries < 0) {
                 db->setErrMsg(
-                    lddb::copy("congestion: syntax error, bad -n value."));
+                    lstring::copy("congestion: syntax error, bad -n value."));
                 delete [] fname;
                 return (LD_BAD);
             }
@@ -1504,7 +1505,7 @@ cMRouter::cmdCongested(const char *s)
             fname = tok;
         else {
             snprintf(buf, 256, "congestion: unknown argument %s.", tok);
-            db->setErrMsg(lddb::copy(buf));
+            db->setErrMsg(lstring::copy(buf));
             delete [] fname;
             delete [] tok;
             return (LD_BAD);
@@ -1581,12 +1582,12 @@ cMRouter::cmdCongested(const char *s)
     else if (entries > (int)numGates())
         entries = numGates();
 
-    dbLstr lstr;
+    sLstr lstr;
     if (fname) {
         FILE *fp = fopen(fname, "w");
         if (!fp) {
             snprintf(buf, 256, "congestion: can't open %s for output.", fname);
-            db->setErrMsg(lddb::copy(buf));
+            db->setErrMsg(lstring::copy(buf));
             delete [] fname;
             for (u_int i = 0; i < numGates(); i++)
                 delete cgates[i];
@@ -1700,7 +1701,7 @@ cMRouter::write_delays(const char *s)
     char *filename = 0;
 
     char *tok;
-    while ((tok = lddb::gettok(&s)) != 0) {
+    while ((tok = lstring::gettok(&s)) != 0) {
         filename = tok;
         break;
     }
@@ -1711,8 +1712,8 @@ cMRouter::write_delays(const char *s)
     else {
         delayFile = fopen(filename, "w");
         if (!delayFile) {
-            db->setErrMsg(
-                lddb::copy("write_delays:  Couldn't open output delay file.\n");
+            db->setErrMsg(lstring::copy(
+                "write_delays:  Couldn't open output delay file.\n");
             delete [] filename;
             return (LD_BAD);
         }

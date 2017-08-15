@@ -133,13 +133,13 @@ main(int argc, char *argv[])
 
             switch (opt) {
             case 'c':
-                configfile = lddb::copy(arg);
+                configfile = lstring::copy(arg);
                 break;
             case 'v':
                 db->setVerbose(atoi(arg));
                 break;
             case 'i':
-                infofile = lddb::copy(arg);
+                infofile = lstring::copy(arg);
                 break;
             case 'p':
                 db->addGlobal(arg);
@@ -165,7 +165,7 @@ main(int argc, char *argv[])
                 mr->setKeepTrying(atoi(arg));
                 break;
             case 'q':
-                design_name = lddb::copy(arg);
+                design_name = lstring::copy(arg);
                 break;
             case 'd':
                 db->setDebug(strtol(arg, 0, 0));

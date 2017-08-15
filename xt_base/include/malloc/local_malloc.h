@@ -48,7 +48,7 @@
 
 
 //
-// A class for control and augmentation of the malloc/free sunctions.
+// A class for control and augmentation of the malloc/free functions.
 // This provides hooks for statistics and monitoring, plus a complete
 // malloc-family replacement when needed.
 //
@@ -101,6 +101,9 @@ struct sMemory
     // No constructor, instantiated global static.
 
     size_t in_use();
+
+    // Return the allocated data size in KB.
+    double coresize()                           { return (in_use() * 0.001); }
 
     bool is_busy()                              { return (mem_busy); }
     void force_not_busy()                       { mem_busy = 0; }

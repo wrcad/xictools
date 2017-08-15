@@ -45,6 +45,7 @@
 #include "lefiDebug.hpp"
 #include "lefiEncryptInt.hpp"
 #include "lefiUtil.hpp"
+#include "miscutil/tvals.h"
 #include <errno.h>
 #include <math.h>
 
@@ -177,7 +178,7 @@ cLDDB::lefRead(const char *filename, bool incr)
     if (!filename)
         return (LD_BAD);
 
-    long time0 = millisec();
+    long time0 = Tvals::millisec();
     lefrInit();
 
     lefrSetLineNumberFunction(lineNumberCB);
@@ -215,7 +216,7 @@ cLDDB::lefRead(const char *filename, bool incr)
     }
     if (db_verbose > 0) {
         emitMesg("Reading LEF data from file %s.\n",
-            lddb::strip_path(filename));
+            lstring::strip_path(filename));
         flushMesg();
     }
     int res = lefrRead(f, filename, this);
@@ -231,7 +232,7 @@ cLDDB::lefRead(const char *filename, bool incr)
         fclose(f);
 
     if (db_verbose > 0) {
-        long elapsed = millisec() - time0;
+        long elapsed = Tvals::millisec() - time0;
         emitMesg("LEF read: Processed %d lines in %ld milliseconds.\n",
             db_currentLine, elapsed);
     }
@@ -518,7 +519,7 @@ cLDDB::lefLayerSet(lefiLayer *lyr)
     }
     if (typekey != CLASS_ROUTE) {
         if (typekey == CLASS_CUT) {
-            lefCutLayer *cl = new lefCutLayer(lddb::copy(lname));
+            lefCutLayer *cl = new lefCutLayer(lstring::copy(lname));
             if (lyr->lefiLayer::hasSpacingNumber()) {
                 for (int i = 0; i < lyr->lefiLayer::numSpacing(); i++) {
                     // Just grab the first number.
@@ -529,20 +530,20 @@ cLDDB::lefLayerSet(lefiLayer *lyr)
             lefAddObject(cl);
         }
         else if (typekey == CLASS_IMPLANT) {
-            lefImplLayer *il = new lefImplLayer(lddb::copy(lname));
+            lefImplLayer *il = new lefImplLayer(lstring::copy(lname));
             if (lyr->lefiLayer::hasWidth())
                 il->width = micToLefGrid(lyr->lefiLayer::width());
             lefAddObject(il);
         }
         else {
             lefAddObject(
-                new lefObject(lddb::copy(lname), (lefCLASS)typekey));
+                new lefObject(lstring::copy(lname), (lefCLASS)typekey));
             // Nothing more to do.
         }
         return (LD_OK);
     }
 
-    lefRouteLayer *lefr = new lefRouteLayer(lddb::copy(lname));
+    lefRouteLayer *lefr = new lefRouteLayer(lstring::copy(lname));
 
     // Use -1 as an indication that offset has not
     // been specified and needs to be set to default.
@@ -669,7 +670,7 @@ cLDDB::lefViaSet(lefiVia *via)
         return (LD_BAD);
     }
 
-    lefViaObject *lefv = new lefViaObject(lddb::copy(vname));
+    lefViaObject *lefv = new lefViaObject(lstring::copy(vname));
     if (via->lefiVia::hasDefault())
         lefv->via.deflt = true;
     else if (via->lefiVia::hasGenerated())
@@ -776,7 +777,7 @@ cLDDB::lefViaRuleSet(lefiViaRule *viar)
         // deals with VIA followed by VIARULE.
         return (LD_OK);
     }
-    lefViaRuleObject *lefvr = new lefViaRuleObject(lddb::copy(vname));
+    lefViaRuleObject *lefvr = new lefViaRuleObject(lstring::copy(vname));
     if (viar->lefiViaRule::hasGenerate())
         lefvr->via.generate = true;
     if (viar->lefiViaRule::hasDefault())
@@ -885,7 +886,7 @@ cLDDB::lefMacroBegin(const char *mname)
     lefMacro *gate = getLefGate(mname);
     while (gate) {
         char *newname = new char[strlen(mname) + 8];
-        char *e = lddb::stpcpy(newname, mname);
+        char *e = lstring::stpcpy(newname, mname);
 
         lefMacro *g = gate;
         for (int suffix = 1; g; suffix++) {
@@ -904,7 +905,7 @@ cLDDB::lefMacroBegin(const char *mname)
     // Create the new cell.  The gate->node value is here 0, used to
     // count the pins.
 
-    lefAddGate(new lefMacro(lddb::copy(mname), 0, 0));
+    lefAddGate(new lefMacro(lstring::copy(mname), 0, 0));
 
     return (LD_OK);
 }
@@ -955,11 +956,11 @@ cLDDB::lefMacroSet(lefiMacro *macro)
     if (gate) {
         if (macro->lefiMacro::hasClass()) {
             const char *str = macro->lefiMacro::macroClass();
-            char *t1 = lddb::gettok(&str);
+            char *t1 = lstring::gettok(&str);
             int typekey = lookup(t1, macro_class_keys);
             if (typekey >= 0) {
                 gate->mclass = typekey;
-                char *t2 = lddb::gettok(&str);
+                char *t2 = lstring::gettok(&str);
                 typekey = lookup(t2, macro_class_keys);
                 if (typekey >= 0)
                     gate->subclass = typekey;
@@ -976,12 +977,12 @@ cLDDB::lefMacroSet(lefiMacro *macro)
             gate->symmetry |= SYMMETRY_90;
 
         if (macro->lefiMacro::hasSiteName())
-            gate->sitename = lddb::copy(macro->lefiMacro::siteName());
+            gate->sitename = lstring::copy(macro->lefiMacro::siteName());
 
         if (macro->lefiMacro::hasForeign()) {
             for (int i = 0; i < macro->lefiMacro::numForeigns(); i++) {
                 dbForeign *f = new dbForeign(
-                    lddb::copy(macro->lefiMacro::foreignName(i)),
+                    lstring::copy(macro->lefiMacro::foreignName(i)),
                     micToLefGrid(macro->lefiMacro::foreignX(i)),
                     micToLefGrid(macro->lefiMacro::foreignY(i)),
                     dbGate::orientation(macro->lefiMacro::foreignOrientStr()));
@@ -1084,7 +1085,7 @@ cLDDB::lefPinSet(lefiPin *pin)
 #ifdef DEBUG
     printf("PIN %s\n", pin->lefiPin::name());
 #endif
-    gate->pins = new lefPin(lddb::copy(pin->lefiPin::name()),
+    gate->pins = new lefPin(lstring::copy(pin->lefiPin::name()),
         rectList, pinDir, pinUse, pinShape, gate->pins);
 #ifdef DEBUG
     if (!rectList)
@@ -1194,10 +1195,10 @@ cLDDB::lefPostSetup()
     if (!gateginfo) {
         // Add a new db_lef_gates entry for pseudo-gate "pin".
 
-        gateginfo = new lefMacro(lddb::copy("pin"), 0, 0);
+        gateginfo = new lefMacro(lstring::copy("pin"), 0, 0);
         gateginfo->mclass = MACRO_CLASS_INTERNAL;
         gateginfo->nodes = 1;
-        gateginfo->pins = new lefPin(lddb::copy("pin"), new dbDseg,
+        gateginfo->pins = new lefPin(lstring::copy("pin"), new dbDseg,
             PORT_CLASS_UNSET, PORT_USE_UNSET, PORT_SHAPE_UNSET, 0);
         lefAddGate(gateginfo);
     }

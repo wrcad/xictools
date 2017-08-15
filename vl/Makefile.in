@@ -24,7 +24,7 @@ INSTALL = @INSTALL@
 STDCLIB = @STDCLIB@
 AR = @AR@
 RANLIB = @RANLIB@
-NTSUFFIX = @NTSUFFIX@
+EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 TOOLROOT = @TOOLROOT@
 
@@ -65,7 +65,7 @@ $(BASE)/lib/miscutil.a::
 	fi
 
 clean:
-	-rm -f *.o *.a vl$(NTSUFFIX)
+	-rm -f *.o *.a vl$(EXESUFFIX)
 
 distclean: clean
 	cd packages; $(MAKE) distclean
@@ -116,12 +116,12 @@ install_test::
 	fi
 
 install_clean::
-	-@rm -f $(dst_bin)/vl$(NTSUFFIX)
+	-@rm -f $(dst_bin)/vl$(EXESUFFIX)
 	-@rm -rf $(dst_lib)
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
-	$(INSTALL_BIN) vl$(NTSUFFIX) $@
+	$(INSTALL_BIN) vl$(EXESUFFIX) $@
 
 $(dst_lib)/vl::
 	@$(BASE)/util/mkdirpth $@

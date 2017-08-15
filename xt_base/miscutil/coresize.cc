@@ -38,40 +38,20 @@
  $Id:$
  *========================================================================*/
 
-#include "config.h"  // for HAVE_LOCAL_ALLOCATOR
 #include "coresize.h"
-
 #include <sys/types.h>
 #include <unistd.h>
-
-#ifdef HAVE_LOCAL_ALLOCATOR
-#include "../malloc/local_malloc.h"
-#endif
-
 #ifdef WIN32
 #include "msw.h"
 #endif
-
 #ifdef __linux
 #include <malloc.h>
 #endif
 
 
-// Return true if the coresize function ia accurate.
-//
-bool have_coresize_metric()
-{
-#ifdef HAVE_LOCAL_ALLOCATOR
-    return (Memory()->in_use() != 0);
-#else
-    return (false);
-#endif
-}
-
-
-// Return the allocated data size in KB.  If not using the local
-// malloc, this returns the break value change, which is a poor
-// indicator.
+// Return the allocated data size in KB.  This should only be used
+// when not using the local allocator, use sMemory::coresize()
+// instead, which will be far more accurate.
 //
 double coresize()
 {
@@ -86,14 +66,9 @@ double coresize()
             size += m.RegionSize;
     }
     return (.001*size);
-#else
-#ifdef HAVE_LOCAL_ALLOCATOR
-    size_t sz = Memory()->in_use();
-    if (sz)
-        return (.001*sz);
+
 #else
     size_t sz = 0;
-#endif
 
 #ifdef __APPLE__
     malloc_statistics_t st;
@@ -105,6 +80,7 @@ double coresize()
     sz = m.arena + m.hblkhd;
 #endif
 #endif
+
     return (.001*sz);
 #endif
 }

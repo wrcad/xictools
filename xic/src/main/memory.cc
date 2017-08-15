@@ -45,19 +45,19 @@
 #include "dsp_tkif.h"
 #include "dsp_inlines.h"
 #include "miscutil/miscutil.h"
+#ifdef HAVE_LOCAL_ALLOCATOR
+#include "malloc/local_malloc.h"
+#else
 #include "miscutil/coresize.h"
+#endif
+#ifdef WIN32
+#include "miscutil/msw.h"
+#endif
 
 #include <new>
 #include <sys/types.h>
 #include <fcntl.h>
 
-#ifdef WIN32
-#include "miscutil/msw.h"
-#endif
-
-#ifdef HAVE_LOCAL_ALLOCATOR
-#include "malloc/local_malloc.h"
-#endif
 
 //-----------------------------------------------------------------------
 // Memory use tracking, new handler.
@@ -118,7 +118,11 @@ sCore::new_err_handler()
     char buf[128];
     strcpy(buf, "FATAL ERROR: out of memory, managing ");
     char *s = buf + strlen(buf);
+#ifdef HAVE_LOCAL_ALLOCATOR
+    spr_ulong((size_t)Memory()->coresize(), &s);
+#else
     spr_ulong((size_t)coresize(), &s);
+#endif
     strcpy(s, " KB.\n");
     fputs(buf, stderr);
     XM()->Exit(ExitPanic);

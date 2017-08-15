@@ -81,6 +81,7 @@ Copyright (c) Whiteley Research Inc 1996
 #undef HAVE_SRANDOM
 #undef HAVE_STAT
 #undef HAVE_STRCASECMP
+#undef HAVE_STRCASESTR
 #undef HAVE_STRCHR
 #undef HAVE_STRERROR
 #undef HAVE_STRTOK_R

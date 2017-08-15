@@ -41,7 +41,6 @@
 #ifndef CORESIZE_H
 #define CORESIZE_H
 
-bool have_coresize_metric();
 double coresize();
 
 #endif

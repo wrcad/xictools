@@ -41,6 +41,7 @@
 
 #include "lddb_prv.h"
 #include "lefwWriter.hpp"
+#include "miscutil/tvals.h"
 #include <errno.h>
 
 
@@ -59,7 +60,7 @@ cLDDB::lefWrite(const char *fname, LEF_OUT out)
         emitErrMesg("Cannot open output file: %s\n", strerror(errno));
         return (LD_BAD);
     }
-    long time0 = millisec();
+    long time0 = Tvals::millisec();
     lefwInit(fp);
 
     // Write file header.
@@ -137,7 +138,7 @@ cLDDB::lefWrite(const char *fname, LEF_OUT out)
     lefwEnd();
     fclose(fp);
     if (db_verbose > 0) {
-        long elapsed = millisec() - time0;
+        long elapsed = Tvals::millisec() - time0;
         emitMesg("LEF write: Processed %d lines in %ld milliseconds.\n",
             lefwCurrentLineNumber, elapsed);
     }
@@ -457,11 +458,11 @@ cLDDB::lefWriteMacro(lefMacro *gate)
     buf[0] = 0;
     char *s = buf;
     if (gate->symmetry & SYMMETRY_X)
-        s = lddb::stpcpy(s, " X");
+        s = lstring::stpcpy(s, " X");
     if (gate->symmetry & SYMMETRY_Y)
-        s = lddb::stpcpy(s, " Y");
+        s = lstring::stpcpy(s, " Y");
     if (gate->symmetry & SYMMETRY_90)
-        s = lddb::stpcpy(s, " 90");
+        s = lstring::stpcpy(s, " 90");
     if (buf[0])
         lefwMacroSymmetry(buf+1);
 
