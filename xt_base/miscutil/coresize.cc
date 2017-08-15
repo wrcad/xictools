@@ -43,9 +43,14 @@
 #include <unistd.h>
 #ifdef WIN32
 #include "msw.h"
-#endif
+#else
 #ifdef __linux
 #include <malloc.h>
+#else
+#ifdef __APPLE__
+#include <malloc/malloc.h>
+#endif
+#endif
 #endif
 
 
