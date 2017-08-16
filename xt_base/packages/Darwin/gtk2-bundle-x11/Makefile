@@ -2,19 +2,20 @@
 APPNAME = gtk2_bundle_x11
 APPTOK = gtk2-bundle-x11
 VERSION = 4.0.1
-PKGFILE = $(APPNAME)-Darwin64-$(VERSION)-x86_64.pkg
 RELEASE = `../../../../version release`
+PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
 PKGNAME = XicTools.$(APPTOK)
 PKGDIR = ../../pkgfiles
 pd = `pwd`
 
-dummy::
-	echo targets: Darwin
+.DEFAULT:
+	@if [ ! $@[0-7] != "Darwin" ]; then \
+	    echo "Unknown OSNAME $@"; \
+	    exit; \
+	fi
+	sudo OSNAME=$@ $(MAKE) package
 
-pkg::
-	sudo $(MAKE) mkpkg
-
-mkpkg::
+package::
 	-@rm -f $(PKGDIR)/$(APPNAME)*
 	-@files/mkgtkx11
 	chown -R root:admin contents

@@ -5,7 +5,7 @@ APPTOK = Mozy
 SUBDIRS = bin $(APPNAME)
 VERSION = `../../../version $(APPNAME)`
 RELEASE = `../../../version release`
-PKGFILE = $(APPNAME)-$@-$(VERSION)-x86_64.pkg
+PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
 PKGNAME = XicTools.$(APPTOK).$(RELEASE)
 PKGDIR = $(BASE)/packages/pkgfiles
 pd = `pwd`
@@ -15,6 +15,9 @@ pd = `pwd`
 	    echo "Unknown OSNAME $@"; \
 	    exit; \
 	fi
+	sudo OSNAME=$@ $(MAKE) package
+
+package::
 	-@rm -f $(PKGDIR)/$(APPNAME)-Darwin*
 	-@rm -rf contents
 	mkdir contents contents/xictools

@@ -5,9 +5,9 @@ APPTOK = Xtlserv
 SUBDIRS = bin license
 VERSION = `../../../version $(APPNAME)`
 RELEASE = `../../../version release`
-PKGFILE = $(APPNAME)-$@-$(VERSION)-x86_64.pkg
+PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
 PKGNAME = XicTools.$(APPTOK).$(RELEASE)
-PKGDIR = $(BASE)/packages//pkgfiles
+PKGDIR = $(BASE)/packages/pkgfiles
 pd = `pwd`
 
 .DEFAULT:
@@ -15,6 +15,9 @@ pd = `pwd`
 	    echo "Unknown OSNAME $@"; \
 	    exit; \
 	fi
+	sudo OSNAME=$@ $(MAKE) package
+
+package::
 	-@rm -f $(PKGDIR)/$(APPNAME)-Darwin*
 	-@rm -rf contents
 	mkdir contents contents/xictools

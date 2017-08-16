@@ -60,8 +60,9 @@
 #include "si_parser.h"
 #include "python_if.h"
 #include "tcltk_if.h"
-#include "../../mrouter/include/mrouter.h"
 #include "mrouter_if.h"
+#include "../../mrouter/include/mrouter.h"
+#include "miscutil/pathlist.h"
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
 #endif
@@ -185,8 +186,6 @@ namespace {
     const char *LefDefHdr = "LEF/DEF";
 }
 
-#define MROUTER_HOME    "/usr/local/mrouter"
-
 cMRcmdIf *cMRcmdIf::instancePtr;
 
 cMRcmdIf::cMRcmdIf()
@@ -225,9 +224,15 @@ cMRcmdIf::cMRcmdIf()
 
             // Finally, add the MRouter help directory to the HelpPath,
             // making the help topics available to the user.
+
+            char *mh = 0;
             const char *mrhome = getenv("MROUTER_HOME");
-            if (!mrhome)
-                mrhome = MROUTER_HOME;
+            if (!mrhome) {
+                char *t = pathlist::mk_path(XM()->Prefix(), XM()->ToolsRoot());
+                mh = pathlist::mk_path(t, "mrouter");
+                delete [] t;
+                mrhome = mh;
+            }
             sLstr lstr;
             lstr.add(mrhome);
             lstr.add("/doc/xic");
@@ -236,6 +241,7 @@ cMRcmdIf::cMRcmdIf()
                 lstr.string(), false);
             CDvdb()->setVariable(VA_HelpPath, np);
             delete [] np;
+            delete [] mh;
         }
         else
             fprintf(stderr, "%s\n", Errs()->get_error());
@@ -356,14 +362,19 @@ cMRcmdIf::openRouter()
         lstr.add(getenv("MROUTER_PATH"));
 
     if (!lstr.string() || !*lstr.string()) {
+        char *mh = 0;
         const char *mrhome = getenv("MROUTER_HOME");
-        if (!mrhome)
-            mrhome = MROUTER_HOME;
-
+        if (!mrhome) {
+            char *t = pathlist::mk_path(XM()->Prefix(), XM()->ToolsRoot());
+            mh = pathlist::mk_path(t, "mrouter");
+            delete [] t;
+            mrhome = mh;
+        }
         lstr.add(mrhome);
         lstr.add("/lib/");
         lstr.add(LIBMROUTER);
         lstr.add(so_sfx());
+        delete [] mh;
     }
 
 #ifdef WIN32

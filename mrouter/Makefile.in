@@ -9,8 +9,12 @@ CC = @CC@
 CXX = @CXX@
 CFLAGS = @CFLAGS@ @PIC_OPT@
 OSNAME = @OSNAME@
-TOOLROOT = @TOOLROOT@
+INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
+TOOLROOT = @TOOLROOT@
+SOEXT = @SOEXT@
+
+LIB_TARGET = libmrouter.$(SOEXT)
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
@@ -68,13 +72,13 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)
 
 install_mrouter: install_test install_clean install_bin \
-  install_lib install_help install_examples install_docs
+  install_lib install_help install_examples install_doc
 
 install_bin:            $(destn)/bin
 install_lib:            $(destn)/mrouter/lib
 install_help:           $(destn)/mrouter/help
 install_examples:       $(destn)/mrouter/examples
-install_docs:           $(destn)/mrouter/docs
+install_doc:            $(destn)/mrouter/doc
 
 install_test::
 	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
@@ -137,6 +141,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_mrouter
-	cd packages; make xic-$(OSNAME)
+	cd packages; make mrouter-$(OSNAME)
 
 #######################################################################
