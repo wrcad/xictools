@@ -4,8 +4,8 @@
 #
 
 release="4"
-tools_version="4.2"
-xtlserv_version="4.2.3"
+tools_version="4.3"
+xtlserv_version="4.3.1"
 
 if [ z$1 != "z" ]; then
     case $1 in

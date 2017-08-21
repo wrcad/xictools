@@ -4,8 +4,8 @@
 #
 
 release="4"
-tools_version="4.2"
-mozy_version="4.2.2"
+tools_version="4.3"
+mozy_version="4.3.1"
 
 if [ -n "$1" ]; then
     case $1 in

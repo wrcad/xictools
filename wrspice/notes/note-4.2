@@ -543,23 +543,6 @@ parameter expanded, not the "param".
 
 The default path to xic was incorrect.
 
-Matt,
-
-You can give commands like "plot v(1) v2) ; plot (v3) v(4)" to get two     
-plot windows.  Importantly, this works from the Xic prompt line when the
-plot button is active, and you can click to define the vectors.  Just add
-": plot" as plain text.
-
-I plan to add a "group" option to the WRspice plot command, so one could     
-have something like "plot v(1) v(2) -g v(3) v(4) -g i(v1) i(v2)" to obtain
-three sub-plots containing the listed vectors.  These would be displayed
-into the same window somehow, or perhaps separate windows.  The latter case
-would be equivalent to "plot v(1) v(2) ; plot v(3) v(4) ; plot i(v1) i(v2)",
-which should not be too difficult to implement.
-
-Regards,
-Steve
-
 Fedora port: set SIGIO to SIG_IGN, so ipc works.
 
 Bug fixed:  In Monte Carlo analysis, compose call for checkPNTS (e.g.)
@@ -567,9 +550,6 @@ would try and delete and replace the vector, which was prevented and
 a message issued since the plot active flag is set.  Instead, the existing
 vector is now kept but the data array updated, in new sDataVec::reset
 method.
-
-ToDo:  option to set default line width for trace lines in plots for
-line-draw drivers (Naveen, Hypres).
 
 Made program separable from gnu-tainted mozy, with HAVE_MOZY.
 fte
@@ -586,4 +566,26 @@ misc
   texthelp.cc (help, implement text_help struct)
 bin
   wrspice.cc (upd, update)
+
+
+ToDo:  option to set default line width for trace lines in plots for
+line-draw drivers (Naveen, Hypres).
+
+ToDo:
+Matt,
+
+You can give commands like "plot v(1) v2) ; plot (v3) v(4)" to get two     
+plot windows.  Importantly, this works from the Xic prompt line when the
+plot button is active, and you can click to define the vectors.  Just add
+": plot" as plain text.
+
+I plan to add a "group" option to the WRspice plot command, so one could     
+have something like "plot v(1) v(2) -g v(3) v(4) -g i(v1) i(v2)" to obtain
+three sub-plots containing the listed vectors.  These would be displayed
+into the same window somehow, or perhaps separate windows.  The latter case
+would be equivalent to "plot v(1) v(2) ; plot v(3) v(4) ; plot i(v1) i(v2)",
+which should not be too difficult to implement.
+
+Regards,
+Steve
 

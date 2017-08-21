@@ -170,7 +170,7 @@ $(SUBDIR_LIBS) $(OA_SUBDIR)::
 	    cd $(@D); $(MAKE); \
 	fi
 
-$(SECURE)::
+$(SECURE)/secure.a::
 	cd $(@D); $(MAKE)
 
 $(MALLOC)::

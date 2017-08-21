@@ -4,9 +4,9 @@
 #
 
 release="4"
-tools_version="4.2"
-spice_version="4.2.17"
-devlib_version="4.2.17"
+tools_version="4.3"
+spice_version="4.3.1"
+devlib_version="4.3.1"
 
 if [ z$1 != "z" ]; then
     case $1 in

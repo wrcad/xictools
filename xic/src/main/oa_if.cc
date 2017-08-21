@@ -78,9 +78,11 @@ namespace {
     cOA_base *find_oa(char **lname)
     {
         // Use requires a license.
+        bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
+/*XXX
+*/
         int code = XM()->Auth()->validate(OA_CODE,
             CDvdb()->getVariable(VA_LibPath));
-        bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
         if (code != OA_CODE) {
             if (verbose)
                 printf("The OpenAccess plug-in is not not licensed, "

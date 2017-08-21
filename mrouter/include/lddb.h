@@ -88,7 +88,7 @@ typedef u_short         grdu_t;
 // Turn on allocation counters for debugging.
 // WARNING: this breaks the plug-in capability, as the static fields
 // don't resolve across the interface.
-#define LD_MEMDBG
+//#define LD_MEMDBG
 
 // Path segment information, for dbSeg::segtype.
 #define ST_WIRE         0x01

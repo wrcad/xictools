@@ -117,7 +117,7 @@ install_test::
 
 install_clean::
 	-@rm -f $(dst_bin)/vl$(EXESUFFIX)
-	-@rm -rf $(dst_lib)
+	-@rm -rf $(dst_lib)/vl
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@

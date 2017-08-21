@@ -103,8 +103,9 @@ namespace {
         {
             void cat(const char*, ...);
             void dump(int);
-            int eos() { return (strlen(OutBuf)); }
-            void clear(int n) { OutBuf[n] = 0; }
+            int eos()           { return (OutBuf ? strlen(OutBuf) : 0); }
+            void clear(int n)   { if (OutBuf) OutBuf[n] = 0; }
+            void reset()        { delete [] OutBuf; OutBuf = 0; }
 
         private:
             char *OutBuf;   // output buffer
@@ -175,9 +176,9 @@ namespace {
 }
 
 
-// Attempt to validate the application.  If validation is successful,
-// return the matching code.  The path is a search path for startup
-// files.
+// Attempt to validate the application.  This will dump a message to
+// stdout and call exit if there is a problem opening the license
+// file.  Return code on success, otherwise 0.
 //
 int
 sAuthChk::validate_int(int code, const char *path)
@@ -193,9 +194,10 @@ sAuthChk::validate_int(int code, const char *path)
         exit(1);
     }
 
-    // check LICENSE file (size 1536 is magic)
     decode(strs2, buf);
     out.cat(buf, LicenseFileName);
+
+    // check LICENSE file (size 1536 is magic)
     struct stat st;
     if (stat(LicenseFileName, &st) < 0) {
         decode(strs1, buf);
@@ -212,9 +214,10 @@ sAuthChk::validate_int(int code, const char *path)
         exit(1);
     }
 
-    secure_prv::alter_key(false);
+    secure_prv::alter_key(true);
     int ern = out.eos();
     int err = secure_prv::test_me(code);
+    secure_prv::alter_key(false);
 
     // New scheme:  XicII and Xiv are no longer separate applications,
     // but licensing levels of Xic.  The passed code will be XIC_CODE
@@ -222,26 +225,34 @@ sAuthChk::validate_int(int code, const char *path)
     // code that matches the license file, which is used to
     // enable/disable features.
 
-    if (err && code == XIC_CODE) {
-        code = XICII_CODE;
-        out.clear(ern);
-        err = secure_prv::test_me(code);
+    if (code == XIC_CODE) {
         if (err) {
-            code = XIV_CODE;
+            code = XICII_CODE;
             out.clear(ern);
             err = secure_prv::test_me(code);
+            if (err) {
+                code = XIV_CODE;
+                out.clear(ern);
+                err = secure_prv::test_me(code);
+                if (err) {
+                    code = XIC_DAEMON_CODE;
+                    out.clear(ern);
+                    err = secure_prv::test_me(code);
+                    if (err)
+                        code = 0;
+                }
+            }
         }
-        if (err) {
-            code = XIC_DAEMON_CODE;
-            out.clear(ern);
-            err = secure_prv::test_me(code);
-        }
+    }
+    else if (code == WRSPICE_CODE) {
         if (err)
             code = 0;
     }
-    else if (err && code == WRSPICE_CODE)
-        code = 0;
-
+    else if (code == OA_CODE) {
+        out.reset();
+        if (err)
+            return (0);
+    }
     if (err) {
         out.dump(true);
         sAuthChk::print_error(err);
@@ -679,7 +690,7 @@ secure_prv::parse_etc_hosts(sJobReq *c, char *name)
 }
 
 
-// Encode the key while not in use.
+// Encode the key while not in use.  Yes, the arg really doesn't matter.
 //
 void
 secure_prv::alter_key(bool revert)
