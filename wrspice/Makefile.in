@@ -216,8 +216,7 @@ ifeq ($(USEMOZY), yes)
 MOZYINC = -I$(MOZY)/include
 endif
 
-bin/wrspice.o: bin/wrspice.cc
-	$(CXX) $(CFLAGS) $(INCLUDE) $(MOZYINC) -c \
+DARGS = \
   -DBDCODE="\"`date +%m%d%y-%H%M%S`"\" \
   -DPREFIX="\"$(prefix)\"" \
   -DOSNAME="\"$(OSNAME)\"" \
@@ -237,8 +236,10 @@ bin/wrspice.o: bin/wrspice.cc
   -DSPICE_HOST="\"$(SPICE_HOST)\"" \
   -DSPICE_DAEMONLOG="\"$(SPICED_LOG)\"" \
   -DSPICE_NOTICE="\"$(SPICE_NOTICE)\"" \
-  -DAN_`echo $(ANALYSES) |sed -e "s/ / -DAN_/g"` \
-  $*.cc
+  -DAN_`echo $(ANALYSES) |sed -e "s/ / -DAN_/g"`
+
+bin/wrspice.o: bin/wrspice.cc
+	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) $(MOZYINC) -c $*.cc -o $*.o
 
 bin/wrspiced.o: bin/wrspiced.cc
 	$(CXX) $(CFLAGS) $(INCLUDE) -c \
@@ -246,7 +247,7 @@ bin/wrspiced.o: bin/wrspiced.cc
   -DTOOLS_ROOT="\"$(TOOLROOT)\"" \
   -DSPICE_DAEMONLOG="\"$(SPICED_LOG)\"" \
   -DSPICE_PROG="\"wrspice\"" \
-  $*.cc
+  $*.cc -o $*.o
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc -o $*.o
@@ -264,10 +265,12 @@ depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
+	    for a in $(CCFILES); do \
+	      $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $$a -MT bin/`basename $$a .cc`.o \
   $(FILTER) >> Makefile; \
+	    done; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
-	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc \
+	      $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc -MT bin/main.o \
   $(FILTER) >> Makefile; \
 	    fi; \
 	fi

@@ -39,7 +39,7 @@
  *========================================================================*/
 
 //
-// Interface to license server.
+// Interface to license validation system.
 //
 
 #include "config.h"
@@ -71,6 +71,12 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #endif
+
+// If this is defined, the validation interface always returns
+// "valid".  Uncomment this to actually enable validation through the
+// system.  We don't do this in the open-source release.
+//
+#define NO_VALIDATION
 
 
 // If this is defined, then if XTLTEST is defined as "host
@@ -257,9 +263,41 @@ sAuthChk::set_validation_host(const char *host)
 // return the matching code.  The path is a search path for startup
 // files.
 //
+// Call with code==0 to remove the application instance from the
+// server list.  This must be done to track usage properly.  It is ok
+// to call more than once.
+//
 int
 sAuthChk::validate(int code, const char *path, const char *timefile)
 {
+#ifdef NO_VALIDATION
+    // Never fail!  This is the open-source release, which has no
+    // licensing.  However, we keep the validation code around for
+    // now.
+    //
+    // The StateInitialized and BoxFilled variables need to be set,
+    // these are used in anti-hacking tests.
+    //
+    StateInitialized = true;
+    BoxFilled = true;
+    return (code);
+#endif
+
+    if (code == 0) {
+        if (!ac_local) {
+            validation(XTV_CLOSE, 0, 0, 0);
+#ifdef WIN32
+            Sleep(250);
+#else
+            struct timespec ts;
+            ts.tv_sec = 0;
+            ts.tv_nsec = 250000000;
+            nanosleep(&ts, 0);
+#endif
+        }
+        return (0);
+    }
+
     if (ac_local)
         return (validate_int(code, path));
 
@@ -354,28 +392,30 @@ sAuthChk::validate(int code, const char *path, const char *timefile)
 }
 
 
-// Remove the application from the server list.  It doesn't hurt to call
-// this more than once.
+// This should be called periodically by the application, with the
+// elapsed time in milliseconds as the argument.  Every
+// CHECK_TIME_MSEC we see if the server is still alive.  If not,
+// return a warning string.
 //
-void
-sAuthChk::closeValidation(void)
+// Warning:  assume that this is called from a SIGALRM handler.
+//
+char *
+sAuthChk::periodicTest(unsigned long msec)
 {
-    if (!ac_local) {
-        validation(XTV_CLOSE, 0, 0, 0);
-#ifdef WIN32
-        Sleep(250);
-#else
-        struct timespec ts;
-        ts.tv_sec = 0;
-        ts.tv_nsec = 250000000;
-        nanosleep(&ts, 0);
+    if (!ac_local && msec - ac_lastchk > AC_CHECK_TIME_MSEC) {
+        ac_lastchk = msec;
+#ifndef NO_VALIDATION
+        if (!ac_armed)
+            return (periodicTestCore());
 #endif
     }
+    return (0);
 }
 
 
 // Send a command to the server, possible commands are XTV_DUMP,
-// XTV_KILL, and XTV_CLOSE.  Return false if error.
+// XTV_KILL, and XTV_CLOSE.  This is used by the xt_jobs utility. 
+// Return false if error.
 //
 bool
 sAuthChk::serverCmd(const char *hostname, int cmd, const char *jhost, int jpid)

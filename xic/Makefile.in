@@ -261,10 +261,12 @@ depend:
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
+	    for a in $(CCFILES); do \
+	      $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $$a -MT bin/`basename $$a .cc`.o \
   $(FILTER) >> Makefile; \
+	    done; \
 	    if [ -n "$(EXESUFFIX)" ]; then \
-	        $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc \
+	      $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) bin/main.cc -MT bin/main.o \
   $(FILTER) >> Makefile; \
 	    fi; \
 	fi

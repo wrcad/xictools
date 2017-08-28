@@ -81,35 +81,21 @@ struct sAuthChk
             delete [] ac_working_alt;
         }
 
+    void closeValidation()  { validate(0, 0); }
+
     void set_validation_host(const char*);
     int validate(int, const char*, const char* = 0);
-    void closeValidation();
+    char *periodicTest(unsigned long);
     bool serverCmd(const char*, int, const char* = 0, int = 0);
 
     static void decode(const unsigned char*, char*);
     static void print_error(int);
 
+private:
+
     // secure_int.cc
     int validate_int(int, const char*);
 
-    // This should be called periodically by the application, with the
-    // elapsed time in milliseconds as the argument.  Every
-    // CHECK_TIME_MSEC we see if the server is still alive.  If not,
-    // return a warning string.
-    //
-    // Warning:  assume that this is called from a SIGALRM handler.
-    //
-    char *periodicTest(unsigned long msec)
-        {
-            if (!ac_local && msec - ac_lastchk > AC_CHECK_TIME_MSEC) {
-                ac_lastchk = msec;
-                if (!ac_armed)
-                    return (periodicTestCore());
-            }
-            return (0);
-        }
-
-private:
     char *periodicTestCore();
     bool validation(int, int, const char*, int*);
     int open_srv(sockaddr_in&, protoent*);

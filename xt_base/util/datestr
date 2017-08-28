@@ -1,6 +1,0 @@
-#! /bin/sh
-
-# Print the date, for tagging files.
-
-echo "DATE = `date`"
-

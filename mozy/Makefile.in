@@ -51,9 +51,6 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
 SUBDIRS = src/gtkmozy src/help src/htm src/httpget src/imsave src/upd
 
-CCFILES = bin/mozy.cc bin/xeditor.cc bin/hlpsrv.cc bin/hlp2html.cc \
-  bin/httpget.cc
-
 #######################################################################
 ####### Executable and related targets ################################
 
@@ -139,11 +136,17 @@ foo $(MOZYRES) $(XEDRES):
 #######################################################################
 ####### Dependencies in this directory ################################
 
+CCFILES = bin/mozy.cc bin/xeditor.cc bin/hlpsrv.cc bin/hlp2html.cc \
+  bin/httpget.cc
+
 depend::
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \
-	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	    for a in $(CCFILES); do \
+	      $(DEPEND_PROG) $(INCLUDE) $$a -MT bin/`basename $$a .cc`.o \
+  $(FILTER) >> Makefile; \
+	    done; \
 	fi
 	@for a in $(SUBDIRS); do \
 	  (cd $$a; $(MAKE) depend) \
