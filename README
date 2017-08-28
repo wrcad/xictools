@@ -11,14 +11,14 @@ of this, is ready to try a new approach.
 It is expected that these programs will enjoy accelerated development
 in an open-source environment, with the contributions of one and all
 adding capability.  One day they may become widely used and known for
-stability and available on-line support through user's and developer's
+stability and available on-line support through user and developer
 groups.  With this critical mass, the programs may become a viable
 choice for foundry users, particularly those who may lack the
 resources to pay for the Big Box tools.  This would never be achieved
 with a proprietary software model given the limited capabilities of a
 tiny company such as Whiteley Research.
 
-The XicTools software is being releases under the Apache-2.0 license,
+The XicTools software is being released under the Apache-2.0 license,
 which is actually one of the most "free" licenses available.  One is
 not restricted in using this software in a commercial environment, or
 in commercial products.  There is no requirement that you must share
@@ -40,8 +40,8 @@ license.  So, at the time of this initial release, there may be some
 question as to whether the full terms of the Apache-2.0 license apply
 in some cases.  This shall presumably be clarified in the future.  All
 old headers have been retained, so users can make their own judgement
-about the constraints on a given set of files.  Getting a beter HTML
-viewer, that understands CSS, is a priority.
+about the constraints on a given set of files.  Incorporating a better
+HTML viewer, that understands CSS, should be a priority.
 
 Incidently, the GNU licenses are an absolute scourge and should die. 
 Gnu-licensed software is anything but free, its use is highly
@@ -58,6 +58,62 @@ wet kiss to the GNU folks who made open-source toxic for so long.
 
 Overview - What's Here
 
+The distribution consists of several semi-independent programs and
+libraries, rooted in subdirectories.  These are described below.
+
+KLU
+This is simply a wrapper around the SuiteSparse sparse matrix package
+written by Timothy A. Davis, available from
+http://faculty.cse.tamu.edu/davis/suitesparse.html
+
+The provided makefile operates on the SuiteSparse distribution file,
+applying needed patches, compiling and linking.  The reslt is a
+run-time loadble module which provides the sparse matrix capability,
+for use with WRspice (or any other application with a suitable interface).
+WRspice does not require this plug-in, but will employ it when provided.
+Use of the SuiteSparse package generally reduces simulation time.
+
+mozy
+The mozy package contains the help system and viewer used by Xic and
+WRspice, including an http/ftp file transfer utility, and a screen
+capture into image file utility.  This code (and only this program
+code) is derived from GNU-licensed code.  Commercial users may wish to
+build the XicTools without the mozy package, which is a top-level
+option.
+
+mrouter
+The MRouter is derived from the Qrouter maze router by Tim Edwards,
+available at http://www.opencircuitdesign.com.  It may be used as a
+stand-alone tool similar to Qrouter, or run-time loaded into Xic as
+a plug-in, in which case its functionality is available within Xic.
+This integration is at a very early development stage.
+
+secure
+This package provides the license server, client-side code, and
+license-generating utilities for the licensing system used with the
+commercial version of Xic and WRspice.  This, of course, is no longer
+used, by simply hacking the main validation entry to always return a
+validated status.  This package is retained, for now at least, in the
+chance that it may be of value to someone.
+
+vl
+This is a Verilog simulator, which is integrated with WRspice but can
+be used as a stand-alone non-graphical simulator.
+
+wrspice
+The WRspice program is a SPICE-derived circuit simulator.
+
+xic
+The Xic program is a graphical editor, used for displaying and editing
+layouts and schematics.  It provides DRC, extraction, and a lot of
+uther  capability.
+
+xt_accs
+This contains a few minor utilities for use with WRspice and Xic.
+
+xt_base
+This contains base libraries and configuration scripts for use with
+the other packages.
 
 
 Dependencies
