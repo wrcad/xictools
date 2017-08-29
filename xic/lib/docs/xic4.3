@@ -1,0 +1,150 @@
+Xic Generation 4 Release Notes
+
+This is the 4.3 post-production series.  See the release note archive
+for the production releases (4.2.1 - 4.2.16) and earlier.
+
+The 4.3 branch is the first open-source release of the XicTools.  The
+programs (Xic, WRspice, and others) are available at no cost, in
+binary packages for selected operating systems, and as source code.
+
+As open-source, there may well be many different versions of the
+programs available.  As much as possible, these will be consolidated
+into general releases, and tagged known-good releases will be issued
+periodically.  The latest source code will be available directly from
+the repository, for those wishing to track the latest.
+
+Scroll down to the notes for the current Xic release, which follows
+some important general information.
+
+*****************************************************
+IMPORTANT  Mac users!
+
+The Darwin64 package release is now generated on Sierra (10.12), but
+the programs are fully compatible with El Capitan (10.11).
+
+Support for earlier OS X releases has ended.  This is Apple's
+decision, not mine.
+
+*****************************************************
+IMPORTANT  (Linux and OS X only)!
+
+You MUST use the wr_install installer script to install the packages. 
+
+This script maintains the new "SafeInstall" logic, which is described
+in detail at http://wrcad.com/installer.html.  The current
+installation is saved in entirety when an update is installed.  The
+system is described in detail in the link, but you should know that
+/usr/local/xictools/xic and /usr/local/xictools/wrspice are now
+symbolic links, which point to directories where the files are
+actually stored.
+
+This has not changed since 4.2.x.
+
+There are three ways to setup access to the programs through the shell
+search path.
+
+1.  Add the new directories /usr/local/xictools/xic/bin and
+    /usr/local/xictools/wrspice/bin to the search path in your shell
+    startup file.  Use the actual locations if not installed under
+    /usr/local.  Be sure to use the links "xic" and "wrspice" and
+    not the diretories,
+
+2.  You can symbolically link the programs into the common
+    xictools bin.  For example, go to /usr/local/xictools/bin, and
+    give "ln -s ../xic/bin/* ." and similar for WRspice This only
+    needs to be done once, and you won't need to change the shell
+    search path.
+
+3.  You can put shell script wrappers into /usr/local/xictools/bin
+    that call the programs.  This is useful if you need to use
+    LD_LIBRARY_PATH for plugins, or need to set other environment
+    variables.  This is conveniently done in the wrapper.
+
+
+*****************************************************
+Windows Notes:
+
+  WINDOWS USERS SHOULD DO THE FOLLOWING:
+  To avoid rendering problems with tree-view display components.
+  Edit the file c:/usr/local/gtk2-bundle/etc/gtk-2.0/gtkrc
+  Either comment out the line by adding a # character at the beginning,
+  or replace the line with
+
+    gtk-theme-name="MS-Windows"
+
+  This changes the appearance of Xic and WRspice, which may look
+  better to Windows users (I think so).
+
+* DLL issues.
+
+  As of xic-4.2.7, wrspice-4.2.4, and xt_accs-4.2.2, there should no
+  longer be any DLL issues.  You should NOT have the gtk2-bundle/bin
+  in your search path.
+
+  The programs that need the bundle DLLs should be run from the .bat
+  files, i.e., xic.bat, wrspice.bat, and from the accessories
+  mozy.bat, xeditor.bat, and httpget.bat.  These are installed by
+  default in /usr/local/xictools/bin.
+
+  All other programs provided in the distributions can be run from the
+  .exe files and don't need the gtk2-bundle.
+
+  It is no longer necessary to install the distributions all using the
+  same location prefix.  The bat files are now smart enough to figure
+  out where to look in the registry.  That being said, it is still
+  strongly recommended to install everything in the default location.
+
+  Older versions of the programs had a dependence on DLLs found in
+  gtk2-bundle/bin.  In particular libwinpthread-1.dll was required by
+  just about everything.  The best fix is to update your programs.
+  Otherwise, you need to have the needed DLLs in the search path when
+  the program is run.
+
+Cygwin users:
+
+* Cygwin now defaults to a new "mintty" terminal emulator.  This does
+  NOT work AT ALL with WRspice, or any other native Windows
+  application that interacts with the console.  The same applies to
+  xterm and rvxt terminal emulators compiled under Cygwin.  These work
+  better for running Xic, or running WRspice from Xic, where the
+  terminal window is not interactive, but there are subtle problems so
+  this is not recommended.
+
+  WRspice can be run from the old-style native bash box, or a native
+  DOS box.  For example, start a Command Prompt terminal window ("DOS
+  box") from Windows, and give the commands
+    cd c:\cygwin\bin
+    bash --login -i
+  This gives the traditional Cygwin window, suitable for running
+  WRspice.  This can be encapsulated in a bat file that can be run
+  from an icon, there may be a c:/cygwin/Cygwin.bat file in the Cygwin
+  distribution that does exactly this.  If not, create a Cygwin.bat
+  file somewhere with the contents
+    @echo off
+    C:
+    chdir C:\cygwin\bin
+    bash --login -i
+  This assumes that Cygwin in installed in C:\Cygwin, modify the
+  file text appropriately if not.  Create a desktop icon that will
+  run this bat file, and use it to launch Cygwin windows for running
+  native Windows applications including WRspice and Xic.
+
+*****************************************************
+End of general info.
+
+
+===============================================================================
+xic-4.3.1  9/1/2017
+Current Release
+
+Welcome the the first open-source release of Xic.  Now, instead of
+asking Whiteley Research for new features, users can modify the source
+code and do it themselves.  Please contribute!  We can help.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+BUGS FIXED
+---- -----
+
+

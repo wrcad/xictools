@@ -39,7 +39,9 @@
  *========================================================================*/
 
 #include "config.h"
+#ifdef HAVE_SECURE
 #include "secure.h"
+#endif
 #include "main.h"
 #include "oa_if.h"
 #include "python_if.h"
@@ -149,7 +151,17 @@
 #define BUG_ADDR "xic@wrcad.com"
 #endif
 #ifndef BUILD_DATE
-#define BUILD_DATE "Mon Mar  4 15:42:16 PST 2013"
+#define BUILD_DATE "Tue Aug 29 15:59:20 PDT 2017"
+#endif
+
+#ifndef HAVE_SECURE
+// As in secure.h, define these so we can force feature sets when not
+// using licensing.
+
+#define XIV_CODE            7
+#define XICII_CODE          9
+#define XIC_CODE            11
+#define XIC_DAEMON_CODE     12
 #endif
 
 namespace {
@@ -550,12 +562,16 @@ main(int argc, char **argv)
     // Must be done before using LibPath below!
     XM()->InitializeVariables();
 
+#ifdef HAVE_SECURE
     int code =
         XM()->Auth()->validate(XIC_CODE, CDvdb()->getVariable(VA_LibPath));
     if (!code) {
         PAUSE();
         return (1);
     }
+#else
+    int code = XIC_CODE;
+#endif
 
     // To detect feature level:
     // if (!EditIf()->hasEdit())        // Xiv level   (no editing)
@@ -643,7 +659,9 @@ main(int argc, char **argv)
 
     GRwbag *gx = GRpkgIf()->NewWbag("Xic", dspPkgIf()->NewGX());
     if (!gx) {
+#ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
+#endif
         PAUSE();
         return (1);
     }
@@ -660,13 +678,17 @@ main(int argc, char **argv)
     _tk_ = XM()->openTclTk();
 
     if (dspPkgIf()->Initialize(gx)) {
+#ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
+#endif
         PAUSE();
         return (1);
     }
 
     if (!Log()->OpenLogDir(lstring::strip_path(XM()->Program()))) {
+#ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
+#endif
         PAUSE();
         return (1);
     }
@@ -678,7 +700,9 @@ main(int argc, char **argv)
         bool ret = ft.run(cmdLine.NumArgs, cmdLine.Args);
 
         XM()->SetExitCleanupDone(true);
+#ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
+#endif
         fflush(stdout);
         if (ret) {
             Log()->CloseLogDir();
@@ -738,7 +762,9 @@ xic_main::start_proc(void*)
             xic_main::do_batch_commands();
             XM()->SetExitCleanupDone(true);
             SCD()->spif()->CloseSpice();
+#ifdef HAVE_SECURE
             XM()->Auth()->closeValidation();
+#endif
             fflush(stdout);
             Log()->CloseLogDir();
             exit(0);
@@ -747,7 +773,9 @@ xic_main::start_proc(void*)
             int ret = XM()->Daemon(cmdLine.ServerPort);
             XM()->SetExitCleanupDone(true);
             SCD()->spif()->CloseSpice();
+#ifdef HAVE_SECURE
             XM()->Auth()->closeValidation();
+#endif
             Log()->CloseLogDir();
             exit (ret);
         }
@@ -789,7 +817,9 @@ xic_main::read_cell_proc(void*)
     XM()->EditCell(0, true);
     if (!XM()->IsAppReady()) {
         // graphics halted by some signal
+#ifdef HAVE_SECURE
         XM()->Auth()->closeValidation();
+#endif
         exit(1);
     }
     return (false);
@@ -1366,12 +1396,16 @@ xic_main::exec_batch_script(const char *scr)
 void
 cMain::InitializeStrings()
 {
+#ifdef HAVE_SECURE
     //  s/S[erver] or l/L[ocal]
     const char *s = getenv("XT_AUTH_MODE");
 #ifdef WIN32
     xm_auth = new sAuthChk(!s || (*s != 's' && *s != 'S'));
 #else
     xm_auth = new sAuthChk(s && (*s == 'l' || *s == 'L'));
+#endif
+#else
+    const char *s;
 #endif
     xm_product_code = XIC_PRODUCT_CODE;
 
@@ -1448,7 +1482,7 @@ cMain::InitializeStrings()
         delete [] tok;
     }
     if (!xm_build_year)
-        xm_build_year = 2015;
+        xm_build_year = 2017;
 
     xm_tech_file_base = "xic_tech";
     xm_default_edit_name = "noname";
@@ -1766,9 +1800,11 @@ sCmdLine::process_args(int argc, char **argv, bool prep)
             if (argv[i][0] == '-' && argv[i][1] == 'L') {
                 // -Llichost[:port]
                 // This must be done before licence validation.
+#ifdef HAVE_SECURE
                 const char *host = argv[i] + 2;
                 if (*host)
                     XM()->Auth()->set_validation_host(host);
+#endif
                 continue;
             }
             if (!strcmp(argv[i], "--WinBg")) {

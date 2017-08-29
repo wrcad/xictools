@@ -74,9 +74,9 @@
 
 // If this is defined, the validation interface always returns
 // "valid".  Uncomment this to actually enable validation through the
-// system.  We don't do this in the open-source release.
+// system.
 //
-#define NO_VALIDATION
+//#define NO_VALIDATION
 
 
 // If this is defined, then if XTLTEST is defined as "host

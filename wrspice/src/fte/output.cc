@@ -66,13 +66,13 @@ Authors: 1988 Wayne A. Christopher
 #include "sensdefs.h"
 #include "spnumber/hash.h"
 #include "miscutil/pathlist.h"
-#ifdef SECURITY_TEST
+#include <limits.h>
+#ifdef HAVE_SECURE
 #include <signal.h>
 #include <unistd.h>
-#include <limits.h>
 extern int StateInitialized;  // security
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #include <libiberty.h>  // provides vasprintf
 #endif
 #endif
@@ -651,7 +651,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
         }
     }
 
-#ifdef SECURITY_TEST
+#ifdef HAVE_SECURE
     // Below is a booby trap in case the call to Validate() is patched
     // over.  This is part of the security system.
     //
@@ -661,10 +661,10 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
 #ifdef WIN32
         sprintf(namebuf, "wrspice: run %s\n", uname);
         delete [] uname;
-        msw::MapiSend(MAIL_ADDR, 0, namebuf, 0, 0);
+        msw::MapiSend(Global.BugAddr(), 0, namebuf, 0, 0);
         raise(SIGTERM);
 #else
-        sprintf(namebuf, "mail %s", MAIL_ADDR);
+        sprintf(namebuf, "mail %s", Global.BugAddr());
         FILE *fp = popen(namebuf, "w");
         if (fp) {
             fprintf(fp, "wrspice: run %s\n", uname);

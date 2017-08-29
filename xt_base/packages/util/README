@@ -5,8 +5,14 @@ fetch_action
 fetchdist
     Local use only, assembles new release packages for upload.
 
-fetchnew
-    Fetch script from www.wrcad.com, for uploading.
+fetchnew4
+    Fetch script from wrcad.com, for uploading.
+
+update
+update_help
+update_man
+    Scripts from wrcad.com used to automate uploading of new
+    distribs.
 
 wr_filename
     print distrib file name, args: program osname version
@@ -17,7 +23,4 @@ wr_install
 
     Also used as installation script for internal install command. 
     copied to startup directories.
-
-wrspice_files
-    master source for wrspice distribution file list
 

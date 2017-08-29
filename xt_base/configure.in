@@ -108,6 +108,19 @@ if test ! -d ../mozy; then
     nomozy=yes
 fi
 
+dnl --enable-secure
+dnl build and enable licensing system for Xic and WRspice
+havesecure="no"
+AC_ARG_ENABLE(havesecure,
+    [  ]--enable-secure        use licensing system,
+if test $enable_secure = yes; then
+    havesecure="yes"
+fi
+)
+if test ! -d ../secure; then
+    havesecure=no
+fi
+
 dnl  Enable OpenAccess support, i.e., enable and build the OA plugin.  This
 dnl  requires the presence of an OpenAccess source tree (for the include
 dnl  files) and the shared libraries in order to run.  The source code is
@@ -195,6 +208,14 @@ else
     USEMOZY=no
 fi
 AC_SUBST(USEMOZY)
+
+if test $havesecure = yes; then
+    echo '#define HAVE_SECURE 1'>> confdefs.h
+    USESECURE=yes
+else
+    USESECURE=no
+fi
+AC_SUBST(USESECURE)
 
 dnl ***
 dnl *** Check operating system and build environment

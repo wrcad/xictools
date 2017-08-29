@@ -74,7 +74,7 @@
 #include <sys/wait.h>
 #endif
 
-#ifdef SECURITY_TEST
+#ifdef HAVE_SECURE
 #include "miscutil/miscutil.h"
 #endif
 
@@ -86,7 +86,7 @@ void
 cMain::AppInit()
 {
 
-#ifdef SECURITY_TEST
+#ifdef HAVE_SECURE
     // Below is a booby trap in case the authorizing code is patched
     // over.  This is part of the security system.
 

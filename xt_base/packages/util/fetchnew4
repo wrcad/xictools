@@ -4,7 +4,7 @@
 # Update the distribution files.
 #
 # (c) Whiteley Research Inc. 2008
-# $Id: fetchnew,v 1.14 2015/07/19 20:05:41 stevew Exp $
+# $Id: fetchnew,v 1.11 2011/04/25 06:45:47 stevew Exp $
 #
 # Usage: fetchnew "programs..." "oses..."|all
 
@@ -29,26 +29,30 @@ if [ x"$oses" = x"all" ]; then
   LinuxRHEL4 \
   LinuxRHEL5 \
   LinuxRHEL6 \
-  LinuxRHEL7 \
   LinuxRHEL3_64 \
   LinuxRHEL4_64 \
   LinuxRHEL5_64 \
   LinuxRHEL6_64 \
-  LinuxRHEL7_64 \
   Solaris8 \
   Solaris8_64 \
   Win32"
 fi
 
 login=stevew
-srcdir=/usr1/stevew/export/xictools
-libdir=/usr1/stevew/src/xictools/lib
-release_file_sfx="release.new"
+srcdir=/home/stevew/export/xictools
+libdir=/home/stevew/src/xictools/lib
+release_file_sfx="release4.new"
 
 destdir=/home/webadmin/wrcad.com/html/restricted
-srcpfx=/usr1/stevew/src/
+srcpfx=/home/stevew/src/
 
-home=`addr`
+sshc=$SSH_CONNECTION
+if [ x"$sshc" = x ]; then
+    echo "Can't get home IP, exiting"
+    exit
+fi
+set -- $sshc
+home=$1
 echo Connecting to $home
 
 # Grab the version file from the web site, and look up the current
@@ -157,14 +161,14 @@ get()
     fi
     set $vers
     vers=$1
-    dir=$2
+    subdir=$2
     fname=`filename $program $os $vers`
     if [ x"$fname" = "x" ]; then
         echo Unknown: $program $os
         exit
     fi
 
-    newloc=$destdir/xictools/$os/$dir/$fname
+    newloc=$destdir/xictools/$os/$subdir/$fname
     if [ ! -f $newloc ]; then
         echo $fname
         rsync --rsh=ssh $login@$home:$srcdir/$os/$fname $newloc

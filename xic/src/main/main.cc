@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "config.h"  // for HAVE_LOCAL_ALLOCATOR
+#include "config.h"
 #include "main.h"
 #include "fio.h"
 #include "editif.h"
@@ -58,7 +58,9 @@
 #include "promptline.h"
 #include "pushpop.h"
 #include "layertab.h"
+#ifdef HAVE_SECURE
 #include "secure.h"
+#endif
 #include "miscutil/timer.h"
 #include <time.h>
 #include <signal.h>
@@ -270,6 +272,7 @@ namespace {
     }
 
 
+#ifdef HAVE_SECURE
     // Can't put the pop-up call in the handler, so use idle proc.
     //
     int v_proc(void *ptr)
@@ -280,6 +283,7 @@ namespace {
             die_timeout, 0);
         return (0);
     }
+#endif
 
 
     int m_proc(void*)
@@ -312,6 +316,7 @@ namespace {
             if (XM()->RunMode() == ModeNormal)
                 dspPkgIf()->RegisterIdleProc(m_proc, 0);
         }
+#ifdef HAVE_SECURE
         char *s = XM()->Auth()->periodicTest(Timer()->elapsed_msec()); 
         if (s) {
             if (XM()->RunMode() == ModeNormal)
@@ -322,6 +327,7 @@ namespace {
                     AC_LIFETIME_MINUTES*60*1000;
             }
         }
+#endif
     }
 }
 

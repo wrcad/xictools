@@ -56,7 +56,7 @@ security, and need for countermeasures.  Anyway, Bill Gates owes a big
 wet kiss to the GNU folks who made open-source toxic for so long.
 
 
-Overview - What's Here
+1. Overview - What's Here
 
 The distribution consists of several semi-independent programs and
 libraries, rooted in subdirectories.  These are described below.
@@ -108,15 +108,12 @@ The Xic program is a graphical editor, used for displaying and editing
 layouts and schematics.  It provides DRC, extraction, and a lot of
 uther  capability.
 
-xt_accs
-This contains a few minor utilities for use with WRspice and Xic.
-
 xt_base
 This contains base libraries and configuration scripts for use with
 the other packages.
 
 
-Dependencies
+2.  Dependencies
 
 wrspice
   xt_base
@@ -129,8 +126,59 @@ xic
   secure
   mrouter
 
-xt_accs
+mozy
   xt_base
 
-KLU, vl, and mrouter can be built stand-alone.
+vl
+  xt_base
+
+
+3.  Building the XicTools
+
+3.1.  Prerequisites
+
+CentOS/RedHat Linux is the reference platform.  You should have
+success building the tools on a RPM-based Linux, including OpenSuSE
+and Fedora.  Other Linux distributions will provide challenges, for
+now.
+
+You will need to be familiar with makefiles, compilers, and the tools
+needed to build Linux programs.  Unless you are very lucky, something
+won't work right, and you'll need to know how to fix it. 
+User-friendliness varies from nonexistant to execrable, meaning that
+the code itself is the documentation.  This will all change over time,
+but for now, this is probably for experts only.
+
+You will need to have the development versions of lots of different
+libraries installed, including GTK.  I don't have a list, but as you
+encounter missing headers, etc., these should be installed on your
+system from your operating system source repositories.  You of course
+need the software development tools installed.
+
+3.2.  Procedure
+
+The procedure is as follows.
+
+
+    1.  Copy Makefile.sample into Makefile, edit Makefile to set the
+        configuration flags, as described in the Makefile.
+    2.  "make config" will configure the source tree to your build
+        environment.
+    3.  "make all" will build all of the programs.
+
+The intended installation procedure is to first build a binary package
+(RPM) for each program, then install the package on your system using
+the wr_install script.  The Makefiles will actually prevent running
+"make install" to the default location under /usr/local.  However, you
+can modify the Makefiles to allow this, and skip the packaging step
+entirely if you wish.
+
+    Packages are built (on a good day) with "make package" from the
+    subdirectories which contain a "packages" sub-subdirectory.
+    "make packages" from the top level will build all packages.
+
+    Packages are left in xt/xt_base/packages/pkgfiles.
+
+    It is recommended that the wr_install script be used to install the
+    packages when possible, as it takes care of some settings.
 

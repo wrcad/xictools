@@ -8,16 +8,22 @@
 
 progs=$1
 login=stevew
-help_destdir=/home/webadmin/wrcad.com/html/restricted/helplib
+help_destdir=/home/webadmin/wrcad.com/html/restricted/helplib4
 destdir=/home/webadmin/wrcad.com/html/restricted
-libdir=/usr1/stevew/src/xictools/lib
-srcdir=/usr1/stevew/export/xictools
-srcpfx=/usr1/stevew/src/
+libdir=/home/stevew/src/xictools/lib
+srcdir=/home/stevew/export/xictools
+srcpfx=/home/stevew/src/
 
-xic_notes=xic3.2
-wrs_notes=wrs3.2
+xic_notes=xic4.2
+wrs_notes=wrs4.2
 
-home=`addr`
+sshc=$SSH_CONNECTION
+if [ x"$sshc" = x ]; then
+    echo "Can't get home IP, exiting"
+    exit
+fi
+set -- $sshc
+home=$1
 echo Connecting to $home
 
 # Refresh the help database.
@@ -27,17 +33,17 @@ fetch_help()
 {
     case $1 in
     xic)
-        echo "Updating xic help"
-        /usr/bin/rsync -e ssh -aC \
-          stevew@`addr`:$srcpfx/xictools/lib/xic/help $help_destdir/xic
+        echo "Updating xic-4 help"
+        /usr/bin/rsync -e ssh -a --exclude=CVS --exclude=.cvsignore \
+          stevew@$home:$srcpfx/xictools/lib/xic/help $help_destdir/xic
         /usr/bin/rsync -e ssh -t \
-          stevew@`addr`:$srcpfx/xictools/lib/xic/help/sp*.hlp \
+          stevew@$home:$srcpfx/xictools/lib/xic/help/sp*.hlp \
           $help_destdir/xic/help
         ;;
     wrspice)
         echo "Updating wrspice help"
-        /usr/bin/rsync -e ssh -aC \
-          stevew@`addr`:$srcpfx/xictools/lib/wrspice/help \
+        /usr/bin/rsync -e ssh -a --exclude=CVS --exclude=.cvsignore \
+          stevew@$home:$srcpfx/xictools/lib/wrspice/help \
           $help_destdir/wrspice
         ;;
     *)

@@ -1,17 +1,18 @@
 #######################################################################
 # packages/util/Makefile
 #######################################################################
-# $Id: Makefile,v 1.11 2015/02/23 17:08:52 stevew Exp $
-#######################################################################
-
-FILES = fetch_action fetchdist fetchnew wr_filename wr_install Makefile
 
 install::
-	cp -fp wr_install /usr1/stevew/export/xictools
+	if [ -d ../pkgfiles ]; then \
+	    cp -fp wr_install ../pkgfiles; \
+	fi
 
 clean::
+	if [ -d ../pkgfiles ]; then \
+	    rm -f ../pkgfiles/wr_install; \
+	fi
 
-distclean::
+distclean:: clean
 	rm -f utod.exe
 
 utod.exe: utod.c

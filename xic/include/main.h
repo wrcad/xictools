@@ -53,9 +53,6 @@
 // Top level include file for Xic application.
 //
 
-// Enable testing for use violations.
-#define SECURITY_TEST
-
 // Product Codes
 #define XIC_PRODUCT_CODE    1
 #define XICII_PRODUCT_CODE  2

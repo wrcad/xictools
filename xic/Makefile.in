@@ -25,6 +25,7 @@ INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 MALLOC = @MALLOC@
+USESECURE = @USESECURE@
 USEMOZY = @USEMOZY@
 NTREGEX = @NTREGEX@
 OA_SUBDIR = @OA_SUBDIR@
@@ -40,9 +41,6 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-BASE = ../xt_base
-SECURE = ../secure
-INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)
 
 SUBDIRS = \
   src/gtkxic src/cd src/display src/drc src/edit src/extract src/fileio \
@@ -53,6 +51,16 @@ SUBDIR_LIBS = \
   src/geom/geom.a src/main/main.a src/parser/parser.a src/sparse/sparse.a \
   src/wrspif/wrspif.a src/tech/tech.a src/edit/edit.a src/sced/sced.a \
   src/drc/drc.a src/extract/extract.a
+
+BASE = ../xt_base
+
+ifeq ($(USESECURE), yes)
+SECURE = ../secure
+SECURELIB = $(SECURE)/secure.a
+INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)
+else
+INCLUDE = -Iinclude -I$(BASE)/include
+endif
 
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
@@ -83,7 +91,7 @@ LOCAL_LIBS = \
   src/cd/cd.a \
   src/sparse/sparse.a \
   src/wrspif/wrspif.a \
-  $(SECURE)/secure.a \
+  $(SECURELIB) \
   $(MOZYLIBS1) \
   $(BASE)/lib/gtkinterf.a  \
   $(BASE)/lib/ginterf.a \
@@ -170,8 +178,10 @@ $(SUBDIR_LIBS) $(OA_SUBDIR)::
 	    cd $(@D); $(MAKE); \
 	fi
 
+ifeq ($(USESECURE), yes)
 $(SECURE)/secure.a::
 	cd $(@D); $(MAKE)
+endif
 
 $(MALLOC)::
 	cd $(@D)/../malloc; $(MAKE)

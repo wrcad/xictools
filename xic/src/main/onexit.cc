@@ -50,7 +50,9 @@
 #include "events.h"
 #include "promptline.h"
 #include "errorlog.h"
+#ifdef HAVE_SECURE
 #include "secure.h"
+#endif
 #include "miscutil/filestat.h"
 #include "miscutil/miscutil.h"
 
@@ -147,7 +149,9 @@ cMain::Exit(ExitType exit_type)
             s = lstring::copy(s);
             system(s);
         }
+#ifdef HAVE_SECURE
         Auth()->closeValidation();
+#endif
         Log()->CloseLogDir();
         dspPkgIf()->Halt();
         exit(0);
@@ -164,7 +168,9 @@ cMain::Exit(ExitType exit_type)
         }
         in_panic = true;
         ScedIf()->closeSpice();
+#ifdef HAVE_SECURE
         Auth()->closeValidation();
+#endif
         filestat::delete_files();
 
         signal(SIGINT, SIG_DFL);

@@ -197,11 +197,5 @@ private:
 };
 extern sGlobal Global;
 
-// Turn on security tests
-#define SECURITY_TEST
-
-// Mail address for security reports
-#define MAIL_ADDR "stevew@srware.com"
-
 #endif
 

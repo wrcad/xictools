@@ -46,6 +46,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include <signal.h>
+#include "config.h"
 #include "spglobal.h"
 #include "cshell.h"
 #include "commands.h"
@@ -539,7 +540,6 @@ sFtCirc::run(SIMtype what, wordlist *args)
     sCKT *ckt;
     sTASK *task;
     int err;
-    char buf[BSIZE_SP];
     // First parse the line...
     if (isAnalysis(what)) {
         err = newCKT(&ckt, 0);
@@ -558,19 +558,20 @@ sFtCirc::run(SIMtype what, wordlist *args)
             return (err);
     }
 
-#ifdef SECURITY_TEST
+#ifdef HAVE_SECURE
     // Below is a booby trap in case the call to Validate() is patched
     // over.  This is part of the security system.
     //
     if (!BoxFilled) {
+        char buf[256];
         char *uname = pathlist::get_user_name(false);
 #ifdef WIN32
         sprintf(buf, "wrspice: plot %s\n", uname);
         delete [] uname;
-        msw::MapiSend(MAIL_ADDR, 0, buf, 0, 0);
+        msw::MapiSend(Global.BugAddr(), 0, buf, 0, 0);
         raise(SIGTERM);
 #else
-        sprintf(buf, "mail %s", MAIL_ADDR);
+        sprintf(buf, "mail %s", Global.BugAddr());
         FILE *fp = popen(buf, "w");
         if (fp) {
             fprintf(fp, "wrspice: plot %s\n", uname);

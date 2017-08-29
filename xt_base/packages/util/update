@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# $Id: update,v 1.4 2012/09/16 16:49:58 stevew Exp $
+# $Id: update,v 1.3 2012/02/08 20:00:21 stevew Exp $
 # Script: update
 # Usage: update <progname>
 # Adjunct for updating the distribution repository.
@@ -12,6 +12,8 @@
 # Move xxx_release.new to xxx_release.
 #
 # This calls fetchnew to perform the file transfers.
+
+sfx="4"
 
 get_namelist()
 {
@@ -25,7 +27,7 @@ get_namelist()
         if [ $? -ne 0 ]; then
             st1="$st1 $v";
         fi
-    done < ${prog}_release
+    done < ${prog}_release$sfx
 
     while true; do
         read v
@@ -36,7 +38,7 @@ get_namelist()
         if [ $? -ne 0 ]; then
             st2="$st2 $v";
         fi
-    done < ${prog}_release.new
+    done < ${prog}_release$sfx.new
 
     st1="$st1 END"
     st2="$st2 END"
@@ -82,7 +84,7 @@ clear_old()
             break
         fi;
         st1="$st1 $v";
-    done < ${prog}_release
+    done < ${prog}_release$sfx
 
     while true; do
         read v
@@ -90,7 +92,7 @@ clear_old()
             break
         fi;
         st2="$st2 $v";
-    done < ${prog}_release.new
+    done < ${prog}_release$sfx.new
 
     st1="$st1 END"
     st2="$st2 END"
@@ -152,9 +154,9 @@ if [ -z "$oses" ]; then
 fi
 echo "Updating: $oses"
 clear_old $which
-echo -n  "execute ./fetchnew $which \"$oses\" ? "
+echo -n  "execute ./fetchnew$sfx $which \"$oses\" ? "
 read yn
 if [ x"$yn" = xy ]; then
-    ./fetchnew $which "$oses"
+    ./fetchnew$sfx $which "$oses"
 fi
 

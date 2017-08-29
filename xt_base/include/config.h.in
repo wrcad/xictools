@@ -114,6 +114,7 @@ Copyright (c) Whiteley Research Inc 1996
 #undef HAVE_COMPUTED_GOTO
 #undef HAVE_LOCAL_ALLOCATOR
 #undef HAVE_MOZY
+#undef HAVE_SECURE
 
 #endif
 

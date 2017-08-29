@@ -54,7 +54,9 @@
 #include "si_parser.h"
 #include "tech.h"
 #include "reltag.h"
+#ifdef HAVE_SECURE
 #include "secure.h"
+#endif
 #include "miscutil/filestat.h"
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
@@ -77,10 +79,9 @@ namespace {
     //
     cOA_base *find_oa(char **lname)
     {
-        // Use requires a license.
         bool verbose = (getenv("XIC_PLUGIN_DBG") != 0);
-/*XXX
-*/
+#ifdef HAVE_SECURE
+        // Use requires a license.
         int code = XM()->Auth()->validate(OA_CODE,
             CDvdb()->getVariable(VA_LibPath));
         if (code != OA_CODE) {
@@ -90,6 +91,7 @@ namespace {
                 "information.\n");
             return (0);
         }
+#endif
 
         sLstr lstr;
         const char *oaso_path = getenv("XIC_OASO_PATH");

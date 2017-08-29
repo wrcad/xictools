@@ -1,0 +1,92 @@
+#
+# Update the distribution files.
+#
+# (c) Whiteley Research Inc. 2014
+# $Id:$
+#
+# Usage: update_man "program-x.x.x ..."
+
+progs=$1
+login=stevew
+man_destdir=/home/webadmin/wrcad.com/html/restricted/xictools/docs
+docdir=/home/stevew/src/xictools/doc
+
+sshc=$SSH_CONNECTION
+if [ x"$sshc" = x ]; then
+    echo "Can't get home IP, exiting"
+    exit
+fi
+set -- $sshc
+home=$1
+echo Connecting to $home
+
+get_man()
+{
+    prg=$1
+    vrs=$2
+    manps=${prg}manual-$vrs.ps.gz
+    manpdf=${prg}manual-$vrs.pdf
+    manhtml=${prg}manual-html-$vrs.tar.gz
+    for a in $man_destdir/${prg}manual-*.ps.gz; do
+        echo -n delete `basename $a`? [n]
+        read yn
+        if [ x"$yn" = xy ]; then
+            rm -f $a
+        fi
+    done
+    for a in $man_destdir/${prg}manual-*.pdf; do
+        echo -n delete `basename $a`? [n]
+        read yn
+        if [ x"$yn" = xy ]; then
+                rm -f $a
+        fi
+    done
+    for a in $man_destdir/${prg}manual-html-*.tar.gz; do
+        echo -n delete `basename $a`? [n]
+        read yn
+        if [ x"$yn" = xy ]; then
+            rm -f $a
+        fi
+    done
+    prog=$prg
+    if [ $prog = "wrs" ]; then
+        prog=wrspice
+    fi
+    echo fetching $manps
+        rsync --rsh=ssh $login@$home:$docdir/$prog/$manps $man_destdir
+    echo fetching $manpdf
+        rsync --rsh=ssh $login@$home:$docdir/$prog/$manpdf $man_destdir
+    echo fetching $manhtml
+        rsync --rsh=ssh $login@$home:$docdir/$prog/$manhtml $man_destdir
+}
+
+for p in $progs; do
+    tifs=$IFS
+    IFS="-"
+    set $p
+    prg=$1
+    vrs=$2
+    if [ x$vrs = x ]; then
+        echo Usage program-x.y.z
+        exit
+    fi
+    IFS="."
+    set $vrs
+    IFS=$tifs
+    gen=$1
+    major=$2
+    minor=$3
+    if [ x$minor = x ]; then
+        echo Usage program-x.y.z
+        exit
+    fi
+
+    if [ $prg = xic ]; then
+        get_man "xic" $vrs
+    elif [ $prg = wrspice ]; then
+        get_man "wrs" $vrs
+    else
+        echo skipping unknown program $prg
+    fi
+done
+

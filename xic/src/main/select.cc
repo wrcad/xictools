@@ -69,7 +69,7 @@
 #include "libregex/regex.h"
 #endif
 
-#ifdef SECURITY_TEST
+#ifdef HAVE_SECURE
 #include <signal.h>
 #include "miscutil/miscutil.h"
 extern int StateInitialized;  // Part of the security system
@@ -211,7 +211,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 addmode = SELdesel;
         }
 
-#ifdef SECURITY_TEST
+#ifdef HAVE_SECURE
         // Below is a booby trap in case the call to Validate() is patched
         // over.  This is part of the security system.
         if (!StateInitialized) {

@@ -1,17 +1,15 @@
 #######################################################################
 # Top level Makefile for XicTools.
 #######################################################################
-# $Id:$
-#######################################################################
 
-WRSPICE = KLU vl wrspice
-XIC = mrouter xic
-MOZY = mozy
-
-SUBDIRS = xt_base secure $(MOZY) $(WRSPICE) $(XIC) xt_accs
-
-#######################################################################
 # Configuration
+
+# The licensing system for Xic and WRspice is disabled by default, but
+# can be enabled by uncommenting the assignment below.  The code for
+# the license server and related is provided as it might be useful to
+# someone, but shouldn't be needed for Xic and WRspice as open-source.
+#
+#HVSECURE = --enable-secure=yes
 
 # The Mozy help viewer is tainted with GNU licensing restrictions due
 # to derivation from GNU-licensed original source code.  All of the
@@ -40,7 +38,7 @@ SUBDIRS = xt_base secure $(MOZY) $(WRSPICE) $(XIC) xt_accs
 # Windows setup.  This uses the win-builds tool chain and gtk2
 # libraries.  The libraries are packaged into a "gtk2-bundle"
 # distribution, which may be obtained and used.  This must be provided
-# to the user.  Alternatively the user and install and link to the
+# to the user.  Alternatively the user can install and link to the
 # libraries directly.  In any case, these valiables must be given when
 # building under Mingw or similar on Windows.
 #
@@ -53,8 +51,25 @@ SUBDIRS = xt_base secure $(MOZY) $(WRSPICE) $(XIC) xt_accs
 #ACONF  = autoconf-2.13
 ACONF  = autoconf
 
+# If you don't want to build all the tools, you can choose what to
+# build below.  The xt_base is required for everything, other
+# dependencies are represented by the two lines below.  You can change
+# SUBDIRS to list only the tools you need.
+
+WRSPICE = KLU vl wrspice
+XIC = mrouter xic
+
+ifdef HVSECURE
+SECURE = secure
+endif
+ifndef NOMOZY 
+MOZY = mozy
+endif
+
+SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC)
+
 #######################################################################
-CFARGS = $(NOMOZY) $(32BIT) $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
+CFARGS = $(HVSECURE) $(NOMOZY) $(32BIT) $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
 
 FLAGFILE = .configured
 
@@ -86,18 +101,31 @@ testcfg:
 
 all: config
 	for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE)) \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE)); \
+	    fi; \
+	done
+
+packages: all
+	for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -d $$a/packages ]; then \
+	        (cd $$a; $(MAKE) package); \
+	    fi; \
 	done
 
 depend clean:
 	for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@) \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@); \
+	    fi; \
 	done
 
 distclean:
 	-rm -f $(FLAGFILE)
 	for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@) \
+	    if [ -d $$a ]; then \
+	        (cd $$a; $(MAKE) $@); \
+	    fi; \
 	done
 
 

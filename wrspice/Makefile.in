@@ -28,6 +28,7 @@ INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 MALLOC = @MALLOC@
+USESECURE = @USESECURE@
 USEMOZY = @USEMOZY@
 NTREGEX = @NTREGEX@
 #DEVLIB_SHARED = @DEVLIB_SHARED_FILE@
@@ -56,11 +57,6 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-BASE = ../xt_base
-SECURE = ../secure
-VLOG = ../vl
-INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)
-
 WDEMODIR = wrspice_ipc_demo
 
 SUBDIRS = \
@@ -70,6 +66,17 @@ SUBDIR_LIBS = \
   src/cp/cp.a src/fte/fte.a src/analysis/analysis.a src/inp/inp.a \
   src/ckt/ckt.a src/sparse/sparse.a src/plot/plot.a src/gtkwrs/gtkwrs.a \
   src/misc/misc.a
+
+BASE = ../xt_base
+VLOG = ../vl
+
+ifeq ($(USESECURE), yes)
+SECURE = ../secure
+SECURELIB = $(SECURE)/secure.a
+INCLUDE = -Iinclude -I$(BASE)/include -I$(SECURE)
+else
+INCLUDE = -Iinclude -I$(BASE)/include
+endif
 
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
@@ -89,7 +96,7 @@ LOCAL_LIBS = \
   src/sparse/sparse.a \
   src/plot/plot.a \
   src/$(GRPREF)wrs/$(GRPREF)wrs.a \
-  $(SECURE)/secure.a \
+  $(SECURELIB) \
   $(MOZYLIBS1) \
   $(BASE)/lib/gtkinterf.a  \
   $(BASE)/lib/ginterf.a \
@@ -159,8 +166,10 @@ $(SUBDIR_LIBS)::
 $(VLOG)::
 	cd $(@D); $(MAKE)
 
-$(SECURE)::
+ifeq ($(USESECURE), yes)
+$(SECURE)/secure.a::
 	cd $(@D); $(MAKE)
+endif
 
 $(MALLOC)::
 	cd $(@D)/../malloc; $(MAKE)

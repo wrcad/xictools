@@ -51,7 +51,9 @@ Authors: 1985 Thomas L. Quarles
 
 
 #include "config.h"
+#ifdef HAVE_SECURE
 #include "secure.h"
+#endif
 #include "spglobal.h"
 #include "cshell.h"
 #include "commands.h"
@@ -164,7 +166,7 @@ Authors: 1985 Thomas L. Quarles
 #define DEVLIB_VERSION ""
 #endif
 #ifndef SPICE_BUILD_DATE
-#define SPICE_BUILD_DATE "unknown"
+#define SPICE_BUILD_DATE "Tue Aug 29 15:59:20 PDT 2017"
 #endif
 #ifndef SPICE_PROG
 #define SPICE_PROG "wrspice"
@@ -592,6 +594,7 @@ namespace {
         }
 #endif
 
+#ifdef HAVE_SECURE
     // Authentication
     inline bool authmode()
     {
@@ -602,11 +605,12 @@ namespace {
         return (s && (*s == 'l' || *s == 'L'));
 #endif
     }
+
+    sAuthChk Auth(authmode());
+#endif
 }
 
 typedef void (*SigType)();
-
-sAuthChk Auth(authmode());
 
 
 // Error message handler called by GR.
@@ -871,14 +875,30 @@ main(int argc, char **argv)
         }
     }
 
+    int year = 0;
+    {
+        const char *s = Global.BuildDate();
+        char *tok;
+        while ((tok = lstring::gettok(&s)) != 0) {
+            if (strlen(tok) == 4 && tok[0] == '2' && isdigit(tok[1]) &&
+                    isdigit(tok[2]) && isdigit(tok[3])) {
+                year = atoi(tok);
+                delete [] tok;
+                break;
+            }
+            delete [] tok;
+        }
+        if (!year)
+            year = 2017;
+    }
 #ifdef BDCODE
     printf("WRspice circuit simulation system, release %s, build %s\n"
-        "Copyright (C) Whiteley Research Inc, Sunnyvale CA  2015\n"
-        "All Rights Reserved\n\n", Global.Version(), BDCODE);
+        "Copyright (C) Whiteley Research Inc, Sunnyvale CA  %d\n"
+        "All Rights Reserved\n\n", Global.Version(), BDCODE, year);
 #else
     printf("WRspice circuit simulation system, release %s\n"
-        "Copyright (C) Whiteley Research Inc, Sunnyvale CA  2015\n"
-        "All Rights Reserved\n\n", Global.Version());
+        "Copyright (C) Whiteley Research Inc, Sunnyvale CA  %d\n"
+        "All Rights Reserved\n\n", Global.Version(), year);
 #endif
 
 #ifdef WIN32
@@ -998,8 +1018,10 @@ main(int argc, char **argv)
         if (!path)
             path = "/tmp";
         char *tbf = pathlist::mk_path(path, WRS_TIMEFILE);
+#ifdef HAVE_SECURE
         if (!Auth.validate(WRSPICE_CODE, buf, tbf))
             return (EXIT_BAD);
+#endif
         delete [] tbf;
     }
     init_sigs();
@@ -1334,11 +1356,13 @@ namespace {
 #endif
             exit(1);
         }
+#ifdef HAVE_SECURE
         char *s = Auth.periodicTest(elapsed_time);
         if (s) {
             delete [] s;
             die_when = elapsed_time + AC_LIFETIME_MINUTES*60*1000;
         }
+#endif
     }
 
     typedef void(*sighdlr)(int, siginfo_t*, void*);
@@ -1630,7 +1654,9 @@ namespace {
                         exit(EXIT_BAD);
                     }
                     shift(j, &ac, av);
+#ifdef HAVE_SECURE
                     Auth.set_validation_host(av[j]);
+#endif
                 }
                 else {
                     fprintf(stderr, usage, CP.Program());
@@ -1847,7 +1873,9 @@ fatal(int error)
             }
         }
     }
+#ifdef HAVE_SECURE
     Auth.closeValidation();
+#endif
     if (error)
         panic_to_gdb();
     exit(EXIT_NORMAL);
@@ -1857,7 +1885,9 @@ fatal(int error)
 namespace {
     void succumb(int how, bool immed)
     {
+#ifdef HAVE_SECURE
         Auth.closeValidation();
+#endif
         if (immed) {
             if (Global.FifoName())
                 unlink(Global.FifoName());
