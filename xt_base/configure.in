@@ -45,9 +45,6 @@ fi
 if test -d ../xic; then
     GFX_VERSION=`../xic/version xic`
 fi
-if test -d ../xt_accs; then
-    ACCS_VERSION=`../xt_accs/version accs`
-fi
 if test -d ../xt_base; then
     XTLSERV_VERSION=`../xt_base/version xtlserv`
 fi
@@ -1105,9 +1102,6 @@ if test -d ../mozy; then
         ../mozy/src/imsave/Makefile \
         ../mozy/src/upd/Makefile \
         ../mozy/Makefile"
-fi
-if test -d ../xt_accs; then
-    makefiles="$makefiles ../xt_accs/Makefile"
 fi
 if test -d ../mrouter; then
     makefiles="$makefiles ../mrouter/Makefile"
