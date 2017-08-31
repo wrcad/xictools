@@ -2,8 +2,6 @@
 LOCATION = secure/packages
 #######################################################################
 
-RELEASE = ../version
-
 dummy:
 
 .DEFAULT:

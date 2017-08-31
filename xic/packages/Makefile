@@ -2,8 +2,6 @@
 LOCATION = xic/packages
 #######################################################################
 
-RELEASE = ../version
-
 dummy:
 
 .DEFAULT:

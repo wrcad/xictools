@@ -2,8 +2,6 @@
 LOCATION = wrspice/packages
 #######################################################################
 
-RELEASE = ../version
-
 dummy:
 
 .DEFAULT:

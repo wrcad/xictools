@@ -2,8 +2,6 @@
 LOCATION = mrouter/packages
 #######################################################################
 
-RELEASE = ../version
-
 dummy:
 
 .DEFAULT:

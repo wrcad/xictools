@@ -2,8 +2,6 @@
 LOCATION = vl/packages
 #######################################################################
 
-RELEASE = ../version
-
 dummy:
 
 .DEFAULT:

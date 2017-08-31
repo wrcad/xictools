@@ -2,8 +2,6 @@
 LOCATION = xt_base/packages
 #######################################################################
 
-RELEASE = ../version
-
 dummy:
 
 .DEFAULT:
