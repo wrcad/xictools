@@ -2,8 +2,6 @@
 LOCATION = mozy/packages
 #######################################################################
 
-RELEASE = ../version
-
 dummy:
 
 .DEFAULT:
