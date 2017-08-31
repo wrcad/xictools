@@ -1,5 +1,4 @@
 # Makefile for preparing the KLU plug-in for WRspice.
-# $Id: Makefile.sample,v 1.5 2014/09/27 21:49:18 stevew Exp $
 #
 # Requires Gnu make
 

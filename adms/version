@@ -1,0 +1,11 @@
+#! /bin/sh
+
+# Previously, adms_wr was versioned by a date code.  The present
+# framework requires a "1.2.3" format for version.  Release number 4
+# corresponds to the 032014 distribution.  We use this and set the
+# minor code to "30" to indicate the original "3.0".
+
+release_num=4
+
+echo 2.30.$release_num
+

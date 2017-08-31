@@ -1,0 +1,11 @@
+
+This directory contains some accessory programs for fastcap.  See the
+source file header for "documentation".
+
+lstpack/lstunpack
+  Convert to/from the unified file format supported by fastcap-wr, and
+  separate files.
+
+fcpp
+  Perform some post-processing of the fastcap output.
+

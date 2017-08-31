@@ -1,0 +1,102 @@
+#! /bin/sh
+
+# Echo files found in fastcap distribution.
+
+bin="\
+fasthenry \
+zbuf"
+
+docs="\
+fasthenry_manual.pdf \
+ms_thesis.pdf \
+nonuniform_manual.pdf"
+
+examples="\
+30pin.inp \
+3d_example2_coarse.inp \
+3d_example2.inp \
+broken.inp \
+gpexamp_copper.inp \
+hole.inp \
+holey_gp.inp \
+make_nonuniform.c \
+msm.inp \
+noname.inp \
+nonuni01.inp \
+nonuni01.inp.old.broken \
+onebargp.inp \
+pin-con2seg.inp \
+pin-con7.inp \
+pin-connect.inp \
+plane.in \
+rom_check_con7_r20.ckt \
+simple_gp.inp \
+sline1.inp \
+sline2.inp \
+template.inp \
+together.inp \
+together_nonuni.inp \
+trace_over_mesh_new.inp \
+trace.test.release \
+tree_sample.hier \
+tree_sample.inp \
+vias.inp \
+Zc_3d_examp2.mat \
+Zc_pin_con7.mat"
+
+results="\
+30pin.mat \
+30pin.out \
+3d_example2_coarse.mat \
+3d_example2_coarse.out \
+3d_example2.mat \
+3d_example2.out \
+broken.mat \
+broken.out \
+gpexamp_copper.mat \
+gpexamp_copper.out \
+hole.mat \
+hole.out \
+holey_gp.mat \
+holey_gp.out \
+msm.mat \
+msm.out \
+nonuni01.mat \
+nonuni01.out \
+onebargp.mat \
+onebargp.out \
+pin-con2seg.mat \
+pin-con2seg.out \
+pin-con7.mat \
+pin-con7.out \
+pin-connect.mat \
+pin-connect.out \
+simple_gp.mat \
+simple_gp.out \
+sline1.mat \
+sline1.out \
+sline2.mat \
+sline2.out \
+template.mat \
+template.out \
+together.mat \
+together_nonuni.mat \
+together_nonuni.out \
+together.out \
+trace_over_mesh_new.mat \
+trace_over_mesh_new.out \
+tree_sample.out \
+vias.mat \
+vias.out"
+
+case $1 in
+bin)
+    echo $bin;;
+doc)
+    echo $docs;;
+examples)
+    echo $examples;;
+results)
+    echo $results;;
+esac
+

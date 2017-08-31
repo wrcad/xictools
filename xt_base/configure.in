@@ -1167,6 +1167,16 @@ if test -d ../wrspice; then
     done
     rm -f ../wrspice/devlib/adms/examples/examples
 fi
+if test -d ../adms; then
+    makefiles="$makefiles ../adms/Makefile"
+fi
+if test -d ../fastcap; then
+    makefiles="$makefiles ../fastcap/Makefile"
+    makefiles="$makefiles ../fastcap/fc_accs/Makefile"
+fi
+if test -d ../fasthenry; then
+    makefiles="$makefiles ../fasthenry/Makefile"
+fi
 
 AC_OUTPUT($makefiles)
 

@@ -1,0 +1,92 @@
+#######################################################################
+LOCATION = adms
+#######################################################################
+
+DATE = @DATE@
+
+prefix = @prefix@
+OSNAME = @OSNAME@
+INSTALL = @INSTALL@
+EXESUFFIX = @EXESUFFIX@
+TOOLROOT = @TOOLROOT@
+
+BASE = ../xt_base
+
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+ADMS = adms-2.3.0-wr032014.tar.gz
+
+ADMS_DIR = adms-2.3.0-wr
+
+all: unpack
+	(cd $(ADMS_DIR); $(MAKE))
+
+unpack:
+	if [ ! -d $(ADMS_DIR) ]; then \
+	    tar xzf $(ADMS); \
+	    (cd $(ADMS_DIR); ./configure --enable-shared=no); \
+	fi
+
+clean:
+	if [ -d $(ADMS_DIR) ]; then \
+	    (cd $(ADMS_DIR); $(MAKE) clean); \
+	fi
+
+distclean:
+	rm -rf $(ADMS_DIR) Makefile
+	(cd packages; $(MAKE) distclean)
+
+depend:
+
+#######################################################################
+####### Installation ##################################################
+
+INSTALL_PREFIX ?= $(prefix)
+dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)/adms
+dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+
+install: install_test install_force
+
+install_force: install_clean install_bin install_lib
+
+install_bin: $(dst_bin)
+install_lib: $(dst_lib) $(dst_lib)/doc $(dst_lib)/examples
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_clean::
+	rm -f $(dst_bin)/admsXml$(EXESUFFIX)
+	rm -rf $(dst_lib)
+
+$(dst_bin)::
+	@$(BASE)/util/mkdirpth $@
+	$(INSTALL_BIN) $(ADMS_DIR)/admsXml$(EXESUFFIX) $@
+
+$(dst_lib)::
+	@$(BASE)/util/mkdirpth $@
+	@$(INSTALL_LIB) $(ADMS_DIR)/README $@
+	@$(INSTALL_LIB) $(ADMS_DIR)/README-WR $@
+
+$(dst_lib)/doc::
+	@$(BASE)/util/mkdirpth $@
+	$(INSTALL_LIB) $(ADMS_DIR)/admsXml.1 $@
+
+$(dst_lib)/examples::
+	@$(BASE)/util/mkdirpth $@
+	$(INSTALL_BIN) $(ADMS_DIR)/admsCheck$(EXESUFFIX) $@
+
+package::
+	$(MAKE)
+	-rm -rf packages/root
+	mkdir packages/root
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
+	cd packages; make adms-$(OSNAME)
+
+#######################################################################

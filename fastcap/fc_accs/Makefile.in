@@ -1,0 +1,77 @@
+#######################################################################
+LOCATION = fastcap/fc_accs
+#######################################################################
+
+DATE = @DATE@
+
+CXX = @CXX@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @UFLAGS@ -DXICTOOLS
+OSNAME = @OSNAME@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
+STDCLIB = @STDCLIB@
+EXESUFFIX = @EXESUFFIX@
+FILTER = @FILTER@
+NTREGEX = @NTREGEX@
+WINPTHREADFIX = @WINPTHREADFIX@
+
+BASE = ../../xt_base
+INCLUDE = -I$(BASE)/include
+
+CCFILES = fcpp.cc lstpack.cc lstunpack.cc
+
+#######################################################################
+####### Executable and related targets ################################
+
+ACCESSORIES = fcpp lstpack lstunpack
+
+all:  $(ACCESSORIES)
+
+fcpp: fcpp.cc
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o fcpp fcpp.cc \
+  $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
+
+lstpack: lstpack.cc
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstpack lstpack.cc \
+  $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
+
+lstunpack: lstunpack.cc
+	$(LINKCC) $(CFLAGS) $(INCLUDE) -o lstunpack lstunpack.cc \
+  $(BASE)/lib/miscutil.a $(STDCLIB) $(WINPTHREADFIX)
+
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+#######################################################################
+####### Recursively generate libraries ################################
+
+$(BASE)/lib/miscutil.a::
+	cd $(BASE)/miscutil; $(MAKE)
+	if [ x$(NTREGEX) != x ]; then \
+	    cd $(BASE)/miscutil/libregex; $(MAKE); \
+	fi
+
+#######################################################################
+####### Dependencies in this directory ################################
+
+depend:
+	@echo depending in $(LOCATION)
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CCFILES) $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################
+####### Clean up ######################################################
+
+eclean:
+	-rm -f fcpp$(EXESUFFIX) lstpack$(EXESUFFIX) lstunpack$(EXESUFFIX)
+
+clean: eclean
+	-rm -f *.o
+
+distclean: clean
+	-rm -f Makefile
+
+#######################################################################

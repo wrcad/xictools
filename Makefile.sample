@@ -56,7 +56,7 @@ ACONF  = autoconf
 # dependencies are represented by the two lines below.  You can change
 # SUBDIRS to list only the tools you need.
 
-WRSPICE = KLU vl wrspice
+WRSPICE = adms KLU vl wrspice
 XIC = mrouter xic
 
 ifdef HVSECURE
@@ -66,7 +66,7 @@ ifndef NOMOZY
 MOZY = mozy
 endif
 
-SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC)
+SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
 #######################################################################
 CFARGS = $(HVSECURE) $(NOMOZY) $(32BIT) $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
@@ -81,9 +81,6 @@ config:
             fi; \
             if [ -d wrspice/lib ]; then \
                 (cd wrspice/lib; ${MAKE}); \
-            fi; \
-            if [ -d mrouter ]; then \
-                (cd mrouter; ./configure $(CFARGS)); \
             fi; \
             if [ -d xic/lib ]; then \
                 (cd xic/lib; ${MAKE}); \

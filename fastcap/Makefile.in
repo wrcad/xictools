@@ -1,0 +1,136 @@
+#######################################################################
+LOCATION = fastcap
+#######################################################################
+
+DATE = @DATE@
+
+prefix = @prefix@
+OSNAME = @OSNAME@
+INSTALL = @INSTALL@
+EXESUFFIX = @EXESUFFIX@
+TOOLROOT = @TOOLROOT@
+
+BASE = ../xt_base
+
+INSTALL_BIN    = $(INSTALL) -s -c -m 0755
+INSTALL_SCRIPT = $(INSTALL) -c -m 0755
+INSTALL_LIB    = $(INSTALL) -c -m 0644
+INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+FASTCAP = fastcap-2.0wr-011517.tar.gz
+
+FASTCAP_DIR = fastcap-2.0wr
+
+all: unpack
+	(cd $(FASTCAP_DIR); $(MAKE) all)
+	(cd fc_accs; $(MAKE) all)
+
+unpack:
+	if [ ! -d $(FASTCAP_DIR) ]; then \
+	    tar xzf $(FASTCAP); \
+	    if [ -n "$(EXESUFFIX)" ]; then \
+	        (cd $(FASTCAP_DIR); ./config mingw); \
+	    fi \
+	fi
+
+clean:
+	if [ -d $(FASTCAP_DIR) ]; then \
+	    (cd $(FASTCAP_DIR); $(MAKE) clean); \
+	fi
+	(cd fc_accs; $(MAKE) clean)
+
+distclean:
+	rm -rf $(FASTCAP_DIR) Makefile
+	(cd fc_accs; $(MAKE) distclean)
+	(cd packages; $(MAKE) distclean)
+
+depend:
+	(cd fc_accs; $(MAKE) depend)
+
+#######################################################################
+####### Installation ##################################################
+
+INSTALL_PREFIX ?= $(prefix)
+dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)/fastcap
+dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+
+install: install_test install_force
+
+install_force: install_clean install_bin install_lib install_examples
+
+install_bin: $(dst_bin)
+install_lib: $(dst_lib) $(dst_lib)/doc
+install_examples: $(dst_lib)/examples $(dst_lib)/examples/work \
+  $(dst_lib)/examples/work/results
+
+install_test::
+	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
+	    echo "No!  Use pagkage to install!"; \
+	    exit 1; \
+	fi
+
+install_clean::
+	-@accs=`packages/util/fc_files accs`; \
+	for aa in $$accs; do \
+	    rm -f $(dst_bin)/$$aa$(EXESUFFIX); \
+	done
+	-@execs=`packages/util/fc_files bin`; \
+	for aa in $$execs; do \
+	    rm -f $(dst_bin)/$$aa$(EXESUFFIX); \
+	done
+	rm -rf $(dst_lib)
+
+$(dst_bin)::
+	@$(BASE)/util/mkdirpth $@
+	@accs=`packages/util/fc_files accs`; \
+	for aa in $$accs; do \
+	    $(INSTALL_BIN) fc_accs/$$aa$(EXESUFFIX) $@; \
+	done
+	@execs=`packages/util/fc_files bin`; \
+	for aa in $$execs; do \
+	    $(INSTALL_BIN) $(FASTCAP_DIR)/bin/$$aa$(EXESUFFIX) $@; \
+	done
+
+$(dst_lib)::
+	@$(BASE)/util/mkdirpth $@
+	@$(INSTALL_LIB) $(FASTCAP_DIR)/README $@
+	@$(INSTALL_LIB) $(FASTCAP_DIR)/README.mit $@
+
+$(dst_lib)/doc::
+	@$(BASE)/util/mkdirpth $@
+	@docs=`packages/util/fc_files doc`; \
+	for aa in $$docs; do \
+	    $(INSTALL_LIB) $(FASTCAP_DIR)/doc/$$aa $@; \
+	done
+
+$(dst_lib)/examples::
+	@$(BASE)/util/mkdirpth $@
+	@files=`packages/util/fc_files examples`; \
+	for aa in $$files; do \
+	    $(INSTALL_LIB) $(FASTCAP_DIR)/examples/$$aa $@; \
+	done
+	@scripts=`packages/util/fc_files examples_scripts`; \
+	for aa in $$scripts; do \
+	    $(INSTALL_SCRIPT) $(FASTCAP_DIR)/examples/$$aa $@; \
+	done
+
+$(dst_lib)/examples/work::
+	@$(BASE)/util/mkdirpth $@
+	@$(INSTALL_LIB) $(FASTCAP_DIR)/examples/work/Makefile $@
+	@$(INSTALL_SCRIPT) $(FASTCAP_DIR)/examples/work/run $@
+
+$(dst_lib)/examples/work/results::
+	@$(BASE)/util/mkdirpth $@
+	@files=`packages/util/fc_files results`; \
+	for aa in $$files; do \
+	    $(INSTALL_LIB) $(FASTCAP_DIR)/examples/work/results/$$aa $@; \
+        done
+
+package::
+	$(MAKE) all
+	-rm -rf packages/root
+	mkdir packages/root
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
+	cd packages; make fastcap-$(OSNAME)
+
+#######################################################################
