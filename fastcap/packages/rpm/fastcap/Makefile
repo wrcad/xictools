@@ -1,8 +1,8 @@
-LPATH = ../../../../xt_base
+BASE = ../../../../xt_base
 
 PROG = fastcap_wr
 VERSION = `../../../version $(PROG)`
-PKGDIR = $(LPATH)/packages/pkgfiles
+PKGDIR = $(BASE)/packages/pkgfiles
 SRCDIR = `pwd`/../../root
 
 osbase = ${@:_64=}

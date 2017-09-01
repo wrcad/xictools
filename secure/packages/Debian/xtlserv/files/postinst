@@ -1,9 +1,0 @@
-#! /bin/sh
-
-prefix=/usr/local
-
-echo See the README file in $prefix/xictools/license
-echo for server configuration and startup information.  A valid
-echo LICENSE file must exist in that directory for the server
-echo to operate.
-

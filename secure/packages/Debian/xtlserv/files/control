@@ -1,9 +1,0 @@
-Package: xtlserv
-Version: @VERSION@
-Maintainer: Whiteley Reseatch Inc. <mts@wrcad.com>
-Homepage: www.wrcad.com
-Architecture: @ARCH@
-Section: utils
-Priority: optional
-Description:
- This is the license server for Xic and WRspice software.

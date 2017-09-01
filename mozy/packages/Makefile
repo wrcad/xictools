@@ -2,17 +2,41 @@
 LOCATION = mozy/packages
 #######################################################################
 
+# To build a package:
+# In this directory, give "make dirname-osname".  The dirname is the
+# name of a subdirectory found under the subdirectories of this
+# directory, which is usually the application name.  The osname,
+# separated from the dirname with a hyphen (no space), is the name
+# assigned by the configure script for this machine and environment. 
+# This is used here to identify the native packaging system, and a
+# link to the appropriate packaging subdirectory is created.  This
+# really applies only to Linux, which can have rpm (RedHat) or dpkg
+# (Debian) packagers.
+
+# Note:  The subdirectory names are lower-case, to differentiate from
+# the osname (the make arg), and thus the symbolic link name.  The
+# exception is Windows, where we don't have symbolic links, and in
+# this case the packager subdirectory name must match the osname token
+# exactly.  The osname is mixed-case with the lead character
+# upper-case.
+
 dummy:
 
 .DEFAULT:
 	@if [ ! -d root ]; then mkdir root; fi
 	@tok=$@; \
 	case $$tok in \
-	Darwin64) if [ ! -f $$tok ]; then ln -s Darwin  $$tok; fi ;; \
-	Debian*)  if [ ! -f $$tok ]; then ln -s Debian  $$tok; fi ;; \
-	FreeBSD*) if [ ! -f $$tok ]; then ln -s FreeBSD $$tok; fi ;; \
-	Linux*)   if [ ! -f $$tok ]; then ln -s Linux   $$tok; fi ;; \
-	Solaris*) if [ ! -f $$tok ]; then ln -s Solaris $$tok; fi ;; \
+	Darwin*) if [ ! -f $$tok ]; then ln -s darwin  $$tok; fi ;; \
+	Linux*) \
+	    if [ ! -f $$tok ]; then \
+	        dst=`$(MAKE) testrpm`; \
+	        if [ -n "$$dst" ]; then \
+	            ln -s rpm   $$tok; \
+	        else \
+	            echo "Packager for $$tok unavailable"; \
+	            exit; \
+	        fi; \
+	    fi ;; \
 	*) \
 	    IFS="-"; \
 	    set -- $$tok; \
@@ -21,42 +45,27 @@ dummy:
 	        exit; \
 	    fi; \
 	    $(MAKE) $$2; \
-	    cd $$2/$$1; $(MAKE) $$2 \
+	    if [ -d $$2/$$1 ]; then \
+	        cd $$2/$$1; $(MAKE) $$2; \
+	    else \
+	        echo "Unknown package $$2/$$1"; \
+	        exit; \
+	    fi \
 	;; \
 	esac
 
-Darwin FreeBSD Linux Solaris Win32:
-	if [ ! -d root ]; then \
-	    mkdir root; \
-	fi
-
 clean::
-	-@for a in Darwin/*; do \
+	-@for a in darwin/*; do \
 	    if [ -d $$a -a -f $$a/Makefile ]; then \
 	        (cd $$a; $(MAKE) clean) \
 	    fi \
 	done
-	-@for a in Debian/*; do \
+	-@for a in rpm/*; do \
 	    if [ -d $$a -a -f $$a/Makefile ]; then \
 	        (cd $$a; $(MAKE) clean) \
 	    fi \
 	done
-	-@for a in FreeBSD/*; do \
-	    if [ -d $$a -a -f $$a/Makefile ]; then \
-	        (cd $$a; $(MAKE) clean) \
-	    fi \
-	done
-	-@for a in Linux/*; do \
-	    if [ -d $$a -a -f $$a/Makefile ]; then \
-	        (cd $$a; $(MAKE) clean) \
-	    fi \
-	done
-	-@for a in Solaris/*; do \
-	    if [ -d $$a -a -f $$a/Makefile ]; then \
-	        (cd $$a; $(MAKE) clean) \
-	    fi \
-	done
-	-@for a in Win32/*; do \
+	-@for a in win32/*; do \
 	    if [ -d $$a -a -f $$a/Makefile ]; then \
 	        (cd $$a; $(MAKE) clean) \
 	    fi \
@@ -64,13 +73,20 @@ clean::
 	-@rm -rf root
 
 distclean: clean
-	-@for a in Darwin* Debian* FreeBSD* Linux* Solaris*; do \
+	-@for a in Darwin* Linux*; do \
 	    case $$a in \
-	    Darwin*)  if [ $$a != Darwin ];  then rm -f $$a; fi ;; \
-	    Debian*)  if [ $$a != Debian ];  then rm -f $$a; fi ;; \
-	    FreeBSD*) if [ $$a != FreeBSD ]; then rm -f $$a; fi ;; \
-	    Linux*)   if [ $$a != Linux ];   then rm -f $$a; fi ;; \
-	    Solaris*) if [ $$a != Solaris ]; then rm -f $$a; fi ;; \
+	    Darwin*)  rm -f $$a ;; \
+	    Linux*)   rm -f $$a ;; \
 	    esac \
 	done
+
+testrpm:
+	@if [ -f /etc/redhat-release ]; then \
+	    dst=`rpm -qf /etc/redhat-release`; \
+	elif [ -f /etc/centos-release ]; then \
+	    dst=`rpm -qf /etc/centos-release`; \
+	elif [ -f /etc/SuSE-release ]; then \
+	    dst=`rpm -qf /etc/SuSE-release`; \
+	fi; \
+	echo $$dst
 

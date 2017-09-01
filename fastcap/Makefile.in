@@ -131,6 +131,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; make fastcap-$(OSNAME)
+	cd packages; $(MAKE) fastcap-$(OSNAME)
 
 #######################################################################
