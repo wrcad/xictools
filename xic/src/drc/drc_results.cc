@@ -61,7 +61,7 @@
 #include <ctype.h>
 #include <dirent.h>
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 //

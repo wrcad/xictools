@@ -54,7 +54,7 @@
 #ifdef HAVE_REGEX_H
 #include <regex.h>
 #else
-#include "libregex/regex.h"
+#include "regex/regex.h"
 #endif
 #include "si_handle.h"
 #include "si_args.h"
@@ -107,7 +107,7 @@
 
 #ifdef WIN32
 #include <winsock2.h>
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

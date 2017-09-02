@@ -72,7 +72,7 @@ Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 
 #ifdef HAVE_SOCKET
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

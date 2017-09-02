@@ -30,7 +30,7 @@ FILTER = @FILTER@
 MALLOC = @MALLOC@
 USESECURE = @USESECURE@
 USEMOZY = @USEMOZY@
-NTREGEX = @NTREGEX@
+REGEX = @REGEX@
 #DEVLIB_SHARED = @DEVLIB_SHARED_FILE@
 DEVLIB_STATIC = @DEVLIB_STATIC_FILE@
 DEVLIB_CALL = @DEVLIB_CALL@
@@ -104,7 +104,7 @@ LOCAL_LIBS = \
   $(MOZYLIBS2) \
   src/misc/misc.a \
   $(VLOG)/libvlog.a \
-  $(NTREGEX)
+  $(REGEX)
 
 #######################################################################
 ####### Executable targets ############################################
@@ -120,9 +120,9 @@ $(TARGETS)::
 # everything in a DLL, so that we can link plugins against the DLL.
 
 bin/$(DLL_SPICE_PROG): bin/main.cc bin/wrspice.dll
-	$(CC) -o bin/wrspice bin/main.cc src/gtkwrs/resource.o -L. -lwrspice
+	$(CC) -o bin/wrspice bin/main.cc src/gtkwrs/resource.o -Lbin -lwrspice
 
-bin/wrspice.dll: wrspice.o $(LOCAL_LIBS) $(MALLOC)
+bin/wrspice.dll: bin/wrspice.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
 	@$(LINKCC) $(LSHFLAG) -o bin/wrspice.dll $(LFLAGS) bin/wrspice.o \
   $(LOCAL_LIBS) $(LIBS) $(MALLOC) $(STDCLIB)
@@ -182,9 +182,9 @@ $(BASE)/lib/gtkinterf.a::
 
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
-	if [ x$(NTREGEX) != x ]; then \
-	    cd $(BASE)/miscutil/libregex; $(MAKE); \
-	fi
+
+$(BASE)/lib/libregex.a::
+	cd $(BASE)/regex; $(MAKE)
 
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/gtkmozy.a::

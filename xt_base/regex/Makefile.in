@@ -1,0 +1,47 @@
+#######################################################################
+LOCATION = xt_base/regex
+#######################################################################
+
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGS_SG@ @UFLAGS@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
+AR = @AR@
+RANLIB = @RANLIB@
+FILTER = @FILTER@
+
+ifeq ($(FLAT), yes)
+INCLUDE = -I.
+LIB_TARGET = libregex.a
+else
+INCLUDE = -I. -I../include/regex
+LIB_TARGET = ../lib/libregex.a
+endif
+
+CFILES = regcomp.c regerror.c regexec.c regfree.c
+COBJS = $(CFILES:.c=.o)
+
+$(LIB_TARGET): $(COBJS)
+	-@rm -f $(LIB_TARGET);
+	$(AR) cr $(LIB_TARGET) $(COBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+.c.o:
+	gcc $(CFLAGS) $(INCLUDE) -c $*.c
+
+clean:
+	-@rm -f $(COBJS) $(LIB_TARGET)
+
+distclean: clean
+	-@rm -f Makefile
+
+depend:
+	@echo depending in $(LOCATION)
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(CFILES) $(FILTER) >> Makefile; \
+	fi
+
+#######################################################################

@@ -49,7 +49,7 @@ bool NO_MSWDRAW = true;
 #include "mswdraw.h"
 #include "miscutil/texttf.h"
 #include "miscutil/lstring.h"
-#include "miscutil/fontutil.h"
+#include "ginterf/fontutil.h"
 
 #include <math.h>
 

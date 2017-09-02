@@ -27,7 +27,7 @@ FILTER = @FILTER@
 MALLOC = @MALLOC@
 USESECURE = @USESECURE@
 USEMOZY = @USEMOZY@
-NTREGEX = @NTREGEX@
+REGEX = @REGEX@
 OA_SUBDIR = @OA_SUBDIR@
 DLL_XIC_PROG = @DLL_XIC_PROG@
 NODLL_XIC_PROG = @NODLL_XIC_PROG@
@@ -97,7 +97,7 @@ LOCAL_LIBS = \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
   $(MOZYLIBS2) \
-  $(NTREGEX)
+  $(REGEX)
 
 #######################################################################
 ####### Executable targets ############################################
@@ -113,7 +113,7 @@ $(TARGETS)::
 # a DLL, so that we can link plugins against the DLL.
 
 bin/$(DLL_XIC_PROG): bin/main.cc bin/xic.dll
-	$(CC) -o bin/xic bin/main.cc src/gtkxic/resource.o -L. -lxic
+	$(CC) -o bin/xic bin/main.cc src/gtkxic/resource.o -Lbin -lxic
 
 bin/xic.dll: bin/xic.o $(LOCAL_LIBS) $(MALLOC)
 	@echo $@: dynamic link
@@ -194,9 +194,9 @@ $(BASE)/lib/gtkinterf.a::
 
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
-	if [ x$(NTREGEX) != x ]; then \
-	    cd $(BASE)/miscutil/libregex; $(MAKE); \
-	fi
+
+$(BASE)/lib/libregex.a::
+	cd $(BASE)/regex; $(MAKE)
 
 ifeq ($(USEMOZY), yes)
 $(MOZY)/lib/gtkmozy.a::

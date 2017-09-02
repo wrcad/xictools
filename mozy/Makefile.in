@@ -22,7 +22,7 @@ STDCLIB = @STDCLIB@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
-NTREGEX = @NTREGEX@
+REGEX = @REGEX@
 MOZYRES = @MOZYRES@
 XEDRES = @XEDRES@
 TOOLROOT = @TOOLROOT@
@@ -42,7 +42,8 @@ LOCAL_LIBS = \
   lib/htm.a \
   lib/help.a \
   lib/httpget.a \
-  lib/imsave.a
+  lib/imsave.a \
+  $(REGEX)
 
 INSTALL_BIN    = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
@@ -63,7 +64,7 @@ $(TARGETS)::
 
 bin/mozy: bin/mozy.o $(LOCAL_LIBS) $(MOZYRES)
 	@echo $@: dynamic link mozy
-	@$(LINKCC) -o bin/mozy $(LFLAGS) bin/mozy.o $(LOCAL_LIBS) $(NTREGEX) \
+	@$(LINKCC) -o bin/mozy $(LFLAGS) bin/mozy.o $(LOCAL_LIBS) \
   $(LIBS) $(MOZYRES) $(STDCLIB)
 
 bin/xeditor: bin/xeditor.o $(LOCAL_LIBS) $(XEDRES)
@@ -74,12 +75,12 @@ bin/xeditor: bin/xeditor.o $(LOCAL_LIBS) $(XEDRES)
 bin/hlpsrv: bin/hlpsrv.o lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a
 	@$(LINKCC) -o bin/hlpsrv $(LFLAGS) bin/hlpsrv.o \
   src/help/help_read.o $(BASE)/ginterf/graphics.o \
-  $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+  $(BASE)/lib/miscutil.a $(REGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 bin/hlp2html: bin/hlp2html.o lib/help.a $(BASE)/lib/ginterf.a $(BASE)/lib/miscutil.a Makefile
 	@$(LINKCC) -o bin/hlp2html $(LFLAGS) bin/hlp2html.o \
   src/help/help_read.o $(BASE)/ginterf/graphics.o \
-  $(BASE)/lib/miscutil.a $(NTREGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
+  $(BASE)/lib/miscutil.a $(REGEX) $(MSLIBS) $(STDCLIB) $(WINPTHREADFIX)
 
 bin/httpget: bin/httpget.o $(LOCAL_LIBS)
 	@echo $@: dynamic link httpget
@@ -126,9 +127,9 @@ $(BASE)/lib/gtkinterf.a::
 
 $(BASE)/lib/miscutil.a::
 	cd $(BASE)/miscutil; $(MAKE)
-	if [ x$(NTREGEX) != x ]; then \
-	    cd $(BASE)/miscutil/libregex; $(MAKE); \
-	fi
+
+$(BASE)/lib/libregex.a::
+	cd $(BASE)/regex; $(MAKE)
 
 foo $(MOZYRES) $(XEDRES):
 	cd $(@D); $(MAKE) $(@F)

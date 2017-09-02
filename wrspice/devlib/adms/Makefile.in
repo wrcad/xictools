@@ -261,10 +261,9 @@ depend:
 	fi
 
 clean:
-	-rm -f $(COBJS) *.$(SOEXT)
+	-@rm -f $(COBJS) *.$(SOEXT)
 
-realclean:
-	@$(MAKE) clean
+realclean: clean
 	-@rm -f device.xml $(HFILES) $(CCFILES) constant* discipline* \
   .adms.implicit.xml .interface.xml .*.adms
 

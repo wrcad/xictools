@@ -77,7 +77,7 @@ Authors: 1987 Wayne A. Christopher
 #include <errno.h>
 
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #endif
 
 // Interface to the TTY.

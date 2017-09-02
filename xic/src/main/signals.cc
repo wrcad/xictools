@@ -51,7 +51,7 @@
 #include <errno.h>
 #ifdef WIN32
 #include <conio.h>
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

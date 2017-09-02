@@ -46,7 +46,7 @@
 #ifdef HAVE_REGEX_H
 #include <regex.h>
 #else
-#include "miscutil/libregex/regex.h"
+#include "regex/regex.h"
 #endif
 
 

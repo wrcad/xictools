@@ -58,7 +58,7 @@
 #ifdef HAVE_REGEX_H
 #include <regex.h>
 #else
-#include "libregex/regex.h"
+#include "regex/regex.h"
 #endif
 #include "si_handle.h"
 #include "si_args.h"

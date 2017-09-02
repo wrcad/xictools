@@ -55,10 +55,10 @@ depend:
 	fi
 
 clean:
-	-rm $(COBJS) $(TARGET)
+	-@rm -f $(COBJS) $(TARGET)
 
-distclean:
-	-rm $(COBJS) $(TARGET) Makefile
+distclean: clean
+	-@rm -f Makefile
 
 modname:
 	@echo $(MODULE)
