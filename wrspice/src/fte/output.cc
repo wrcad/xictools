@@ -71,10 +71,10 @@ Authors: 1988 Wayne A. Christopher
 #include <signal.h>
 #include <unistd.h>
 extern int StateInitialized;  // security
+#endif
 #ifdef WIN32
 #include "miscutil/msw.h"
 #include <libiberty.h>  // provides vasprintf
-#endif
 #endif
 #include <stdarg.h>
 

@@ -120,7 +120,6 @@ Authors: 1985 Thomas L. Quarles
 
 #ifdef WIN32
 #include "miscutil/msw.h"
-#include "stackdump.h"
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -209,13 +208,6 @@ sGlobal Global;
 
 // Random number generator.
 sRnd Rnd;
-
-#ifdef WIN32
-// Dump a stack backtrace if unhandled exception.
-namespace {
-    cStackDump _stackdump_(GDB_OFILE);
-}
-#endif
 
 namespace {
     void start_timer();

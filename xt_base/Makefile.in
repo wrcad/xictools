@@ -4,12 +4,23 @@ LOCATION = xt_base
 
 DATE = @DATE@
 MALLOC = @MALLOC@
+REGEX = @REGEX@
+
+ifdef MALLOC
+MALLOC_DIR = malloc
+endif
+
+ifdef REGEX
+REGEX_DIR = regex
+endif
 
 SUBDIRS = \
-    miscutil \
-    ginterf \
-    gtkinterf \
-    util
+  miscutil \
+  ginterf \
+  gtkinterf \
+  util \
+  $(MALLOC_DIR) \
+  $(REGEX_DIR)
 
 dummy: 
 	@for a in $(SUBDIRS); do \
@@ -17,11 +28,6 @@ dummy:
 	        (cd $$a; $(MAKE)) \
 	    fi; \
 	done
-	@if [ -n "$(MALLOC)" ]; then \
-	    if [ -d malloc ]; then \
-	        (cd malloc; $(MAKE)) \
-	    fi; \
-	fi
 	
 depend clean:
 	-@for a in $(SUBDIRS); do \
@@ -29,11 +35,6 @@ depend clean:
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
 	done
-	-@if [ -n "$(MALLOC)" ]; then \
-	    if [ -d malloc ]; then \
-	        (cd malloc; $(MAKE) $@) \
-	    fi; \
-	fi
 
 distclean:
 	-@for a in $(SUBDIRS); do \
@@ -41,11 +42,6 @@ distclean:
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
 	done
-	-@if [ -n "$(MALLOC)" ]; then \
-	    if [ -d malloc ]; then \
-	        (cd malloc; $(MAKE) $@) \
-	    fi; \
-	fi
 	-rm -f config.cache config.log config.status configure Makefile
 	-rm -rf autom4te.cache
 	-rm -f include/config.h

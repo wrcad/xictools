@@ -325,7 +325,7 @@ CshPar::ShellExec(const char *name, char **argv)
         wl->wl_next = wordlist::wl_build(argv);
         wl->wl_next->wl_prev = wl;
     }
-    char *s = wl->flatten();
+    char *s = wordlist::flatten(wl);
     wordlist::destroy(wl);
     System(s);
     putc('\n', stdout);

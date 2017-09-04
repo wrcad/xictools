@@ -66,7 +66,7 @@
 #ifdef HAVE_REGEX_H
 #include <regex.h>
 #else
-#include "libregex/regex.h"
+#include "regex/regex.h"
 #endif
 
 #ifdef HAVE_SECURE

@@ -55,7 +55,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #include <windows.h>
 #else
 #include <sys/wait.h>

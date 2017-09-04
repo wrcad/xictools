@@ -719,6 +719,7 @@ AC_EGREP_HEADER(sys_errlist, stdio.h, AC_DEFINE(SYS_ERRLIST_DEF))
 dnl Detect when select takes int* as second arg (for HPUX)
 AC_EGREP_HEADER(select.*int.*int, sys/time.h, AC_DEFINE(SELECT_TAKES_INTP))
 
+AC_CHECK_HEADER(regex.h, , REGEX='$(BASE)/lib/libregex.a')
 
 dnl ***
 dnl *** Checks for typedefs, structures, and compiler characteristics
@@ -787,7 +788,6 @@ if test $OSNAME = "Win32"; then
     dnl -lbfd -liberty required for stackdump.o, and fnmatch used in mswfile.cc
     SLIBS="$MSLIBS"
     LIBS="$MSLIBS $MSLIBS2 $LIBS"
-    NTREGEX='$(BASE)/miscutil/libregex/libregex.a'
     EXTRALIBS="-lpthread"
 
 dnl # png.h is in a strange place under win-builds
@@ -959,7 +959,7 @@ dnl  Try to link static graphics libraries if found.
 fi
 AC_SUBST(MSLIBS)
 AC_SUBST(DYNAMIC_LIBS)
-AC_SUBST(NTREGEX)
+AC_SUBST(REGEX)
 AC_SUBST(NTNOCONS)
 AC_SUBST(WRSRES)
 AC_SUBST(MOZYRES)
@@ -1090,6 +1090,10 @@ makefiles="Makefile \
     ${GRPREF}interf/Makefile \
     miscutil/Makefile \
     malloc/Makefile"
+
+if test -n "$REGEX" -a -d regex; then
+    makefiles="$makefiles regex/Makefile"
+fi
 if test -d ../secure; then
     makefiles="$makefiles ../secure/Makefile"
 fi

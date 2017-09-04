@@ -108,9 +108,8 @@
 
 #ifdef WIN32
 #include <conio.h>
-#include "mswinterf/msw.h"
-#include "mswinterf/miscutil.h"
-//XXX#include "stackdump.h"
+#include "miscutil/msw.h"
+#include "miscutil/miscutil.h"
 #endif
 
 // Set up the ginterf package, include all drivers.
@@ -173,11 +172,6 @@ namespace {
 }
 
 #ifdef WIN32
-
-// Dump a stack backtrace if unhandled exception.
-namespace {
-    cStackDump _stackdump_(GDB_OFILE);
-}
 
 // If the application has this name, it will behave as a filetool
 // program.
