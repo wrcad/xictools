@@ -45,10 +45,10 @@
 #MINGW  = --enable-mingw=/usr/local/win-builds
 #GTKLOC = --enable-gtk2=/usr/local/gtk2-bundle/bin
 
-# On Windows, we use Cygwin "autoconf-2.13".  Everywhere else, this is
+# On Windows, we use Cygwin "autoconf-2.69".  Everywhere else, this is
 # just "autoconf".
 
-#ACONF  = autoconf-2.13
+#ACONF  = autoconf-2.69
 ACONF  = autoconf
 
 # If you don't want to build all the tools, you can choose what to

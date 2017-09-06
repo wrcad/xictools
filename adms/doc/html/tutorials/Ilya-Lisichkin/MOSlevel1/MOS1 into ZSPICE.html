@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<!-- saved from url=(0019)http://cadence.com/ -->
+<html><head><title>Example of translation Verilog-A transistor model MOS1 into ZSPICE</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta content="cadence" name="keywords">
+<link href="MOS1%20into%20ZSPICE_files/style.css" rel="stylesheet"><!-- /index.xml --><!-- /index_rightnav.xml -->
+<meta content="MSHTML 6.00.2800.1152" name="GENERATOR">
+<meta name="keywords" content="compact modeling, adms, ekv, bsim, sp, mextram, vbic">
+<meta name="description" content="adms home page, sourceforge">
+</head>
+
+<body leftmargin="21" topmargin="10" bgcolor="#ffffff" marginheight="10" marginwidth="21">
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="800">
+
+<tbody><tr>    
+<td align="center"><a name="top"></a><h2>Example of translation Verilog-A transistor model MOS1 into ZSPICE</h2> 
+by 
+<br><a href="mailto:24xx@mail.ru?subject=From%20mos1%20page">Lisichkin Ilya</a>
+</td>
+</tr>
+<tr>
+<td>
+<h3>Abstract</h3>
+<ul>
+This project has been done at the Bauman State Technical University (Moscow). The goal was to:
+<ul> -  learn how to use ADMS and ZSPICE
+<br> -  learn how to add new models to ZSPICE using ADMS (I implemented MOS level 1 transistor)
+<br> -  learn how to write ZSPICE netlists
+<br> -  learn how to run simple zspice tests using the MOS level 1 transistor implemented into ZSPICE
+</ul>
+</ul>
+</td>
+</tr>
+
+<tr>
+<td>
+<h3>Contents</h3>
+<ul>
+<li><a href="#mos">MOS1 verilog-ams code</a></li>
+<li><a href="#code">Full code version</a></li>
+<li><a href="#verif">Verification</a></li>
+<li><a href="#plots">Plots</a></li>
+<li><a href="#links">Links to related projects</a></li>
+</ul>
+</td>
+</tr>
+
+
+<tr>
+<td>
+<p>
+<br>
+</p><li><a name="mos"></a>MOS1 Verilog-A code: |<a href="#top">back to top</a>|</li>
+</td>
+</tr>
+
+<tr>
+<td>
+<ul>
+<p>`include "discipline.h"
+</p></ul>
+- defining constants
+<ul>
+<p>`define N_TYPE                 -1
+<br>`define P_TYPE                +1
+<br>`define PI		       3.14159265358979323846
+<br>...
+<br>`define	SILICON_PERMITTIVITY   1.0359431e-10
+</p></ul>
+- you have to use the following construct in order to use this example in other simulators
+The (*...*) properties are used bu ADMS to build the c code of the model.
+<ul>
+<p><b>`ifdef insideADMS</b>
+<br><b> `define P(p) (*p*)</b>
+<br><b>`else</b>
+<br><b> `define P(p)</b>
+<br><b>`endif</b>
+</p></ul>
+- declaration of MOS1
+<ul>
+<p>module MOS1 ( Drain, Gate, Source, Bulk );
+<br><l>   inout Drain, Gate, Source, Bulk;
+</l></p></ul>
+- special attributes for node names to save node voltages by convenient Spice names
+<ul>
+<p><l>electrical Drain <b>`P(spice:name="d")</b>, Gate <b>`P(spice:name="g")</b>, Source <b>`P(spice:name="s")</b>, Bulk <b>`P(spice:name="b")</b>;
+<br><l>electrical IntDrain, IntSource;
+</l></l></p><p><l>parameter integer GENDER = `N_TYPE;
+</l></p></ul>
+- special attributes with names, decriptions, types (model or instance), default values and units for parameters
+<ul>
+<p><l>parameter real L = 3.0e-6 <b>`P(spice:name="l" info="Default channel length" type="instance" unit="m");</b>
+<br><l> parameter real W = 3.0e-6  <b>`P(spice:name="w" info="Default channel width"  type="instance" unit="m");</b>
+<br>...
+<br><l>parameter real VTOTEMPCOEF = 0  <b>`P(spice:name="vtotempcoef" info="Threshold voltage temperature coefficient" type="instance");</b>
+</l></l></l></p></ul>
+- local variables declaration
+<ul>
+<p> <l>integer   Reversed;  
+<br><l>   real      Vd, Vs, Vb, Vds, Vgs, Vbs, Vbd;
+<br><l>   real      Vt, Von, Vth, Vdsat, Vgst, Vc, Vfb, Vto;
+<br><l>   real      Iss, Idd, Ibs, Ibd, Irs, Ird, Ibulk, Ioffset, Id;
+<br> ...
+<br><l> real      Vexpl, Gexpl;
+</l></l></l></l></l></p></ul>
+- special construct used to declare output variables
+<ul>
+<p><l>real      Ids <b>'P(ask="yes")</b>; 
+</l></p></ul>
+- begining of analog block
+<ul>
+<p><l>analog
+<br><l><l> begin
+</l></l></l></p></ul>
+- intialization blocks for model and instance parameters which contains common mosfet equations
+<ul>
+<p><ll><b>`ifdef insideADMS</b>
+<br><ll><l><b>@(initial_model)</b>
+<br><ll><b>`endif</b>
+<br><ll><b>begin</b>
+<br><l>...
+<br><ll><b>end</b>
+
+</ll></l></ll></ll></l></ll></ll></p><p><ll><b>`ifdef insideADMS</b>
+<br><ll><l><b>@(initial_instance)</b>
+<br><ll><b>`endif</b>
+<br><ll><b>begin</b>
+<br><l>...
+<br><ll><b>end</b>
+</ll></l></ll></ll></l></ll></ll></p></ul>
+- skiping some equations
+<ul>
+<p><ll>... 
+</ll></p></ul>
+- evaluation of the model equations
+<ul>
+<p><ll>        /* Thershold voltage */
+<br><ll>
+<br><ll>        Vth = Vto + Gamma * ( T1s - sqrtPhi );
+<br><ll>        Vgst = Vgs - Vth;
+<br><ll>        Vdsat = Vgst;
+<br><ll>
+<br><ll>        /* Drain current */
+<br><ll>
+<br><ll>        if( Vgst &gt; 0 )
+<br><ll><l>          if ( Vgst &gt;= Vds )
+<br><ll><ll>            begin
+<br><ll><ll><l>              betta = Kp * Weff / Leff;
+<br><ll><ll><l>               Ids = betta * ( Vgst - Vds / 2.0 ) * Vds * ( 1 + Lambda * Vds );
+<br><ll><ll>            end
+<br><ll><l>          else
+<br><ll><ll>            begin
+<br><ll><ll><l>               betta = Kp * Weff / Leff;
+<br><ll><ll><l>               Ids = betta * Vgst * Vgst / 2.0 * ( 1 + Lambda * Vds );
+<br><ll><ll>            end
+<br><ll>
+<br><ll>        /* For P_TYPE */
+<br><ll>        if( GENDER == `P_TYPE )
+<br><ll><l>          begin
+<br><ll><ll>             Vth = -Vth;
+<br><ll><ll>             Ids = -Ids;
+<br><ll><l>          end
+</l></ll></ll></ll></ll></ll></l></ll></ll></ll></ll></ll></ll></l></ll></ll></l></ll></ll></ll></ll></l></ll></ll></ll></l></ll></ll></l></ll></ll></ll></ll></l></ll></ll></ll></ll></ll></ll></ll></ll></ll></ll></p></ul>
+- output
+<ul>
+<br><ll>        if ( RD &gt; 0.0 )
+<br><ll><l>          I(Drain, IntDrain) &lt;+ V(Drain, IntDrain)/RD;
+<br><ll>        else
+<br><ll><l>          I(Drain, IntDrain) &lt;+ V(Drain, IntDrain);
+<br><ll>
+<br><ll>        if ( RS &gt; 0.0 )
+<br><ll><l>         I(Source, IntSource) &lt;+ V(Source, IntSource)/RS;
+<br><ll>        else
+<br><ll><l>          I(Source, IntSource) &lt;+ V(Source, IntSource);
+<br><ll>
+<br><ll>        I(IntDrain, IntSource) &lt;+ Ids;
+</ll></ll></l></ll></ll></l></ll></ll></ll></l></ll></ll></l></ll></ll></ul>
+-end of analog block
+<ul>
+<br><ll>end
+</ll></ul>
+-end of module
+<ul>
+<br>endmodule
+</ul>
+
+
+
+
+<p><a name="code"></a></p><li>Full code version available at <a href="http://vacomp.noovela.com/tutorials/Ilya-Lisichkin/MOSlevel1/mos1.va">here</a> |<a href="#top">back to top</a>| </li>
+
+<p><a name="verif"></a></p><li>Verification |<a href="#top">back to top</a>|</li>
+<p><l>After implementation of device mos1.va into ZSPICE you'll get mos1.zsp file ( translation order you can see if you type <i><b>zspice -h</b></i> ).
+<br><l>Command <i><b>zspice --load mos1</b></i> shows you that model connected to zspice.
+<br><l>For verification you need to create a simple testcase such as:
+</l></l></l></p><p><ll>mode=circuit
+<br><ll><l>  name=dc_Vg_Vd
+<br><ll><l>  mode=load
+<br><ll><ll>    file=mos1.zsp   
+<br><ll><l>  mode=model
+<br><ll><ll>    name=mymos1
+<br><ll><ll>    module=mos1
+<br><ll><ll>    mode=parameter
+<br><ll><lll>	name=GENDER
+<br><ll><lll>	value=-1
+<br><ll><l>  mode=model
+<br><ll><ll>    name=vsource
+<br><ll><ll>    module=vs
+<br><ll>
+<br><ll><l>  mode=instance
+<br><ll><ll>    name=mos1
+<br><ll> <ll>   modelID=mymos1
+<br><ll><ll>    mode=topology
+<br><ll><lll>      mode=node
+<br><ll><llll>        name=d
+<br><ll><llll>	location=1
+<br><ll><lll>      mode=node
+<br><ll><llll>        name=g
+<br><ll><llll>	location=2
+<br><ll><lll>      mode=node
+<br><ll><llll>        name=s
+<br><ll><llll>	location=0
+<br><ll><lll>      mode=node
+<br><ll><llll>        name=b
+<br><ll><llll>	location=0
+<br><ll>
+<br><ll><l>  mode=instance
+<br><ll><ll>    name=vg
+<br><ll><ll>    modelID=vsource
+<br><ll><ll>    mode=parameter
+<br><ll><lll>      name=dc
+<br><ll><lll>      value=1.0
+<br><ll><ll>    mode=topology
+<br><ll><lll>      mode=node
+<br><ll> <llll>       name=p
+<br><ll><llll>	location=2
+<br><ll><lll>      mode=node
+<br><ll><llll>        name=n
+<br><ll><llll>	location=0
+<br><ll>
+<br><ll><l>  mode=instance
+<br><ll><ll>    name=vd
+<br><ll><ll>    modelID=vsource
+<br><ll><ll>    mode=parameter
+<br><ll><lll>      name=dc		     
+<br><ll><lll>      value=3
+<br><ll><ll>    mode=topology
+<br><ll><lll>      mode=node
+<br><ll><llll>        name=p
+<br><ll><llll>        location=1
+<br><ll><lll>      mode=node
+<br><ll><llll>        name=n
+<br><ll><llll>        location=0
+<br><ll>									 
+<br><ll><l>   mode=dc
+<br><ll><ll>     mode=sweep
+<br><ll><lll>       name=vg:dc
+<br><ll><lll>       start=0.0
+<br><ll><lll>       end=5.0
+<br><ll><lll>       step=0.1
+<br><ll>     
+<br><ll>     mode=save
+<br><ll>     name=mos1:Ids
+</ll></ll></ll></lll></ll></lll></ll></lll></ll></lll></ll></ll></ll></l></ll></ll></llll></ll></llll></ll></lll></ll></llll></ll></llll></ll></lll></ll></ll></ll></lll></ll></lll></ll></ll></ll></ll></ll></ll></ll></l></ll></ll></llll></ll></llll></ll></lll></ll></llll></ll></llll></ll></lll></ll></ll></ll></lll></ll></lll></ll></ll></ll></ll></ll></ll></ll></l></ll></ll></llll></ll></llll></ll></lll></ll></llll></ll></llll></ll></lll></ll></llll></ll></llll></ll></lll></ll></llll></ll></llll></ll></lll></ll></ll></ll></ll></ll></ll></ll></l></ll></ll></ll></ll></ll></ll></l></ll></lll></ll></lll></ll></ll></ll></ll></ll></ll></ll></l></ll></ll></ll></l></ll></l></ll></ll></p><br><l>If you run some tests and parse output you can see theese graphics:   |<a href="#top">back to top</a>|
+<a name="plots"></a>
+<p><img src="MOS1%20into%20ZSPICE_files/Ids_Vd.gif"><img src="MOS1%20into%20ZSPICE_files/Ids_Vg.gif">
+</p><p><img src="MOS1%20into%20ZSPICE_files/gm.gif"><img src="MOS1%20into%20ZSPICE_files/gds.gif">
+</p><br><l>You can use simple <a href="http://vacomp.noovela.com/tutorials/Ilya-Lisichkin/MOSlevel1/mkgraph.pl">Perl script</a> which parse zspice output and run xmgrase to create such images :)
+
+<p><a name="links"></a></p><li>Links to Related Projects: |<a href="#top">back to top</a>|</li>
+<ul>
+<br><a href="http://sourceforge.net/projects/mot-adms/">http://sourceforge.net/projects/mot-adms</a>
+<br><a href="http://sourceforge.net/projects/a-ads-xml">http://sourceforge.net/projects/a-ads-xml</a>
+<br><a href="http://a-ads-xml.sourceforge.net/">http://a-ads-xml.sourceforge.net</a>
+<br><a href="http://sourceforge.net/projects/mot-zspice">http://sourceforge.net/projects/mot-zspice</a>
+<br><a href="http://mot-zspice.sourceforge.net/">http://mot-zspice.sourceforge.net</a>
+</ul>
+
+</l></l></td>
+</tr>
+<tr>
+<td align="right">
+copyrights 24xx@mail.ru Lisichkin Ilya 2005 
+</td>
+</tr>
+</tbody></table>
+
+</body></html>

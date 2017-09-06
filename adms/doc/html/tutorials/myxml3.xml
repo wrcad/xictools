@@ -1,0 +1,13 @@
+<!-- xml file myxml3.xml * -->
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.2.4" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+  <admst:for-each select="/module">
+    <admst:value-of select="name"/>
+    <admst:open file="%s.output">
+      <admst:value-of select="attribute[name='p1']/value"/>
+      <admst:text format="name=%s\n"/>
+    </admst:open>
+    <admst:value-of select="name"/>
+    <admst:text format="%s.output: file created\n"/>
+  </admst:for-each>
+</admst>

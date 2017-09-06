@@ -7,6 +7,9 @@
 # Be sure to edit the list in case any crap files sneak in.
 
 adms_examples::
+	-@if [ -f adms_examples ]; then \
+	    mv adms_examples adms_examples.bak; \
+	fi
 	-@aex=`pwd`/adms_examples; \
 	cd ../../devlib/adms; find examples -type f | \
   sed -e s/Makefile\\.in/Makefile/ | sort > $$aex

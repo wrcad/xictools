@@ -1,0 +1,14 @@
+`include "disciplines.h"
+module mymodule (p,n);
+  inout p, n;
+  electrical p, n;
+  (*info="this is width"*) parameter real w=1u;
+  (*info="this is length"*) parameter real l=1u ;
+  parameter integer level=0;
+  real g;
+  analog
+  begin
+    g=w/l;
+    I(p,n) <+ g*V(p,n);
+  end
+endmodule

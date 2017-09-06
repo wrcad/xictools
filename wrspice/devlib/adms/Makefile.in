@@ -1,7 +1,6 @@
 #######################################################################
-# devlib/adms/Makefile.in
-#######################################################################
-# $Id: Makefile.in,v 1.33 2016/09/28 23:12:55 stevew Exp $
+# Makefile Template for ADMS VerilogA translation
+# For export, and used in examples.
 #######################################################################
 
 # This must match the SyntaxLevel defined in device.xml.  If it is
@@ -14,11 +13,6 @@ SyntaxLevel = 13
 # Set this to the path to the Verilog input file.
 #
 SOURCE = path_to_module.va
-
-# Set this to the directory containing the xml conversion source files,
-# if different from the default setting given.
-#
-ADMST = /usr/local/xictools/wrspice/devkit/admst
 
 # Set this to a unique name for the SPICE model for this device.  This
 # name can appear in the .model line:  .model myname modelname ... 
@@ -51,7 +45,7 @@ KEY = q
 # the same type key letter.  Giving this number in a "level" model
 # parameter in WRspice input will signal use of this device.
 #
-LEVEL = 7
+LEVEL = 2
 
 # If this is set to "yes", then if the device does not have an
 # instance parameter named "m", a real-valued parameter of this name
@@ -92,6 +86,21 @@ LIMITING = yes
 #
 FLAGS = 
 
+# Change this if WRspice is not installed in the default location,
+# which is under /usr/local.
+#
+PREFIX = /usr/local
+
+# Set this to the directory containing the xml conversion source files,
+# if different from the default setting given.
+#
+ADMST = $(PREFIX)/xictools/wrspice/devkit/admst
+
+# Set this to the name of the admsXml translator program, or a full
+# path if installed in a location not in your search path.
+#
+ADMSXML = admsXml
+
 #  Windows Only!
 #
 # The plug-in must link against the wrspice.dll file, which is found
@@ -99,7 +108,7 @@ FLAGS =
 # necessary, it is the full path to the directory containing
 # wrspice.dll.
 #
-DLL_LOC = /usr/local/xictools/bin
+DLL_LOC = $(PREFIX)/xictools/bin
 
 # This should automatically configure the rest of the Makefile to your
 # WRspice environment.  If wrspice in not in your search path, or you
@@ -267,74 +276,77 @@ realclean: clean
 	-@rm -f device.xml $(HFILES) $(CCFILES) constant* discipline* \
   .adms.implicit.xml .interface.xml .*.adms
 
+# This file is exported, don't blow away the user's Makefile!
+distclean: realclean
+
 $(MODULE).cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULE.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULE.cc.xml
 
 $(MODULE)acld.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEacld.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEacld.cc.xml
 
 $(MODULE)aski.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEaski.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEaski.cc.xml
 
 $(MODULE)askm.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEaskm.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEaskm.cc.xml
 
 $(MODULE)load.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEload.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEload.cc.xml
 
 $(MODULE)nois.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEnois.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEnois.cc.xml
 
 $(MODULE)pzld.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEpzld.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEpzld.cc.xml
 
 $(MODULE)set.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEset.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEset.cc.xml
 
 $(MODULE)seti.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEseti.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEseti.cc.xml
 
 $(MODULE)setm.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEsetm.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEsetm.cc.xml
 
 $(MODULE)temp.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEtemp.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEtemp.cc.xml
 
 $(MODULE)topo.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEtopo.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEtopo.cc.xml
 
 $(MODULE)trun.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEtrun.cc.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEtrun.cc.xml
 	
 $(MODULE)defs.h: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEdefs.h.xml $(ADMST)/adms.implicit.xml
-	admsXml $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
+	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
   -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEdefs.h.xml
 
 #######################################################################

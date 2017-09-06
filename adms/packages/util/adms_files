@@ -1,0 +1,124 @@
+#! /bin/sh
+
+# Echo files found in adms distribution.
+
+xml="\
+adms.css \
+admsstyle.xsl \
+admst.dtd \
+admstpathstyle.xsl \
+admstpath.xml \
+admststyle.xsl \
+admst.xml \
+adms.xml \
+metaadms.dtd \
+metaadmst.dtd \
+metaadmstpath.dtd \
+metaadmstpath.xsd \
+metaadmst.xsd \
+metaadms.xsd"
+
+html="\
+Applications.html \
+index.html \
+Introduction.html \
+News.html \
+Scripts.html \
+Tutorials.html"
+
+html_doc="\
+admstpath.xml.html \
+admst.xml.html \
+adms.xml.html"
+
+# html/introduction
+
+html_intro="\
+mysource.html \
+mysource.va \
+myxml.xml"
+
+html_scripts="\
+admstvariables.xml \
+analogfunction.xml \
+attributes.xml \
+blockvariables.xml \
+croixvariable.xml \
+dependency.xml \
+getargv.xml \
+getenv.xml \
+getinstance.xml \
+gettransform.xml \
+sort.xml \
+strutils.xml \
+vlatommlMODULE.htm.xml \
+vlatovla.xml"
+
+html_tutorials="\
+myxml1.xml \
+myxml2.xml \
+myxml3short.xml \
+myxml3.xml \
+myxml4.xml \
+myxml5.xml \
+myxml6.xml \
+myxml7.xml"
+
+# html/tutorials/Ilya-Lisichkin/MOSlevel1:
+
+tmos="\
+MOS1.html \
+mos1.va"
+# MOS1 into ZSPICE.html
+
+scripts="\
+admstvariables.xml \
+analogfunction.va \
+analogfunction.xml \
+arobavariable.xml \
+attributes.xml \
+blockvariables.xml \
+croixvariable.xml \
+dependency.xml \
+getargv.xml \
+getenv.xml \
+getinstance.xml \
+gettransform.xml \
+Makefile.am \
+sort.xml \
+strutils.xml \
+vlatommlMODULE.htm.xml \
+vlatovla.xml"
+
+testcases="\
+0000_scale_factor.va \
+0000_scale_factor.xml \
+0001_operator.va \
+0001_operator.xml \
+0002_transition.va \
+0002_transition.xml \
+0003_subdev.va \
+testNgspice.sh \
+testQucs.sh \
+testXyce.sh"
+
+case $1 in
+xml)
+    echo $xml;;
+html)
+    echo $html;;
+html_doc)
+    echo $html_doc;;
+html_intro)
+    echo $html_intro;;
+html_scripts)
+    echo $html_scripts;;
+html_tutorials)
+    echo $html_tutorials;;
+tmos)
+    echo $tmos;;
+scripts)
+    echo $scripts;;
+testcases)
+    echo $testcases;;
+esac

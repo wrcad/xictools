@@ -1,0 +1,67 @@
+
+This package was created from the ADMS-release-2.3.6 distribution. 
+Previiously, a special ADMS distribution was available from Whiteley
+Research for use with WRspice.  Several cnanges were made, as well as
+general clean-up.  These changes are listed below.
+
+More recently, these changes have been folded into the original ADMS
+development branch, which is now being maintained and developed by the
+Qucs simulator people.  The package builds and works nicely, and has
+replaced the Whiteley Research source-code release going forward.
+
+ADMS is available from github:
+
+https://github.com/Qucs/ADMS.git
+https://github.com/Qucs/ADMS/archive/release-2.3.6.tar.gz
+
+However, there were some changes made when building this package:
+
+1)  We use the original default constants.vams and disciplines.vams
+    files from Allocera.  For some reason, these were replaced in the
+    distribution by sub-standard GNU-licensed versions.  Apparently
+    there was worry about the Allocera copyright of the originals. 
+    These are freely redistributable so there should be no problem,
+    and users certainly don't want to be building GNU-constrained code
+    into their modules.  The non-Allocera constants.vams lacks quite a
+    number of constant definitions, such as M_PI_4, which prevent some
+    of my models from building.
+
+2)  I added some scant documentation found on the web, such as the
+    author's original web site.
+
+3)  We build the admsXml program using our own build system, that
+    avoids libtool and autostuff and is compatible with our Windows
+    build environment.  This has no visibility to the user.  The
+    executable is statically linked.
+
+------------------------------------------------------------------------
+Changes from original adms-2.3.0, also see the ChangeLog in the
+distribution.
+
+All my changes will be marked with my initials:  "SRW".  Search for
+this to find changes.
+
+3/20/2014
+
+PreprocessorLex.l, verilogaLex.l
+String recognition now supports embedded \" as literal quote.
+
+3/7/2014
+
+The preprocessorLex.l was modified so that forms like I(<x>) map to
+I(x,x).  Previously, this would give a syntax error.
+
+3/6/2014
+
+Fix preprocessorLex.l to avoid spurious fatal lex error from an
+included file whose last line contains only white space.
+
+2/21/2014
+
+The preprocessorYacc.y file was not present in the original
+distribution.  This was imported from the "replacement" distribution.
+
+The preprocessorLex.l and preprocessorYacc.y files were tweaked to
+fix problems encountered parsing the bsim6.va file from UC Berkeley.
+See notes in those files.
+

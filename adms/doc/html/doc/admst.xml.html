@@ -1,0 +1,861 @@
+<html xmlns:admst="http://mot-adms/sourceforge.net">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>admst.xsl: The admst Language - Reference Document</title>
+<meta name="generator" content="manual, see http://mot-adms.sourceforge.net/">
+<link rel="stylesheet" type="text/css" href="./adms.css">
+</head>
+<body>
+<h1 class="title">Reference Manual of admst-2 Language</h1>
+<p><span class="freescale">A Freescale.com !n!t!at!ve</span><span class="sourceforge">Supported by www.sourceforge.net</span></p>
+<h1>Introduction</h1>
+<p>
+  This document is the reference document of the admst language.
+  admst is a subset of the xml language. Its DTD can be found at 
+  <a href="./admst.dtd">admst.dtd</a>.
+  admst is used by adms to transform verilog-ams source code into any kind of outputs
+  (html documents, C code for spice simulators.) The primary application of admst is to create
+  C code generators that generate from verilog-ams language ready-to-compile C code for some simulator-specific API.
+  However its use can be extended to other applications like the automatic generation of html documentation. Most of the syntax used by admst has been borrowed from the xsl language.<br>
+  The command below shows how adms interprets admst scripts (myadmst.xml is an admst script and myverilogams.va 
+  is a verilog-ams file):
+  </p>
+<span class="shell_code">admsXml myverilogams.va -e myadmst.xml</span><p>
+  admsXml interprets the admst intructions found in file myadmst.xml and apply the instructions
+  to the contents of the verilog-ams file myverilogams.va. It will produce some output files
+  according to the admst transforms specified into myadmst.xml.
+  </p>
+<h1>Example of admst script</h1>
+<pre class="admst_code">
+  
+  1. &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+  2. &lt;!DOCTYPE admst PUBLIC "-//adms//DTD admst 2.0//-" "http://mot-adms.sourceforge.net/xml-files/adms/admst.dtd"&gt;
+  3. &lt;admst version="1.48.0" xmlns:admst="http://mot-adms.sourceforge.net/adms/admst.xml"&gt;
+  4.  &lt;admst:getenv name="HOME"/&gt;
+  5.  &lt;admst:text format="HOME is %s\n"/&gt;
+  6. &lt;/admst&gt;
+  </pre>
+<ul>
+<li>
+    Line 1. is required.
+     It is not used by admsXml but it helps xml tools to identify the contents of the admst file.
+  </li>
+<li>
+    Line 2. is required.
+     It defines a link to the DTD of the admst language. The admst DTD is similar to a yacc grammar.
+     It specifies the syntax of the admst language. 
+     It is not used by adms.
+     If program xmllint is installed on your system then the following command can check the validity of script
+     myadmst.xml against DTD <a href="./admst.dtd">admst.dtd</a>:
+  <p><span class="shell_code">
+    xmllint admst.xml -noout -postvalid -noblanks
+  </span></p>
+</li>
+<li>
+    Line 3. and Line 6. are required.
+      They delimit the declaration of the admst transforms.
+  </li>
+<li>
+    Line 4. illustrates the use of admst transform admst:getenv.
+    admst:getenv has one attribute called <i>name</i>. Transform
+    admst:getenv will look for the value of shell environement variable
+    <i>HOME</i> and pushes its value to a internal stack created by admsXml.
+  </li>
+<li>
+    Line 5. illustrates the use of admst transform admst:text.
+    admst:text has one attribute called <i>format</i>. Transform
+    admst:text will print the text specified into attribute <i>format</i>. 
+    Each occurence of <i>%s</i> will be replaced by the top value of the internal
+    stack created by admsXml. 
+  </li>
+</ul>
+<h1>List of admst Transforms</h1>
+<p>
+   The list below provides a brief description of all possible admst transforms.
+   Each admst transform has a set of attributes that modify or refine its behavior.
+   An attribute is made of a name and a value: attrName="attrValue".
+   The container of value attrValue can either be a scalar or a list.
+   The data type of value attrValue can either be a basic type (integer, real, string, enumeration) or
+   a reference to an adms element (module, node, branch, ...).
+   adms uses attribute properties (datatypefamily, datatypename, size) to check dynamically the validity of attrValue.
+   A star ("*") means that attrValue can be any adms element or can be of any type.
+  </p>
+<p>
+  Examples:
+  <ul>
+<li>attribute <i>version</i> of admst transform <i>admst</i> can only be a scalar string.</li>
+<li>attribute <i>select</i> of admst transform <i>admst:for-each</i> can only be a list of any adms elements.</li>
+</ul></p>
+<table-wrap id="admst.xml.table"><label></label><table border="1">
+<caption><p>admst transforms</p></caption>
+<thead>
+<tr>
+<td rowspan="2">name</td>
+<td colspan="4" style="text-align: center;">attributes</td>
+</tr>
+<tr>
+<td rowspan="2">name</td>
+<td>type</td>
+<td>size</td>
+<td>required</td>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td rowspan="1"><a href="#howtouse:admst">admst</a></td>
+<td>version</td>
+<td>text</td>
+<td>scalar</td>
+<td>warn</td>
+</tr>
+<tr>
+<td rowspan="5"><a href="#howtouse:admst:apply-templates">admst:apply-templates</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>match</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>required</td>
+<td>text</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:assert">admst:assert</a></td>
+<td>format</td>
+<td>text</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:attribute">admst:attribute</a></td>
+<td>name</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td rowspan="2"><a href="#howtouse:admst:break">admst:break</a></td>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="2"><a href="#howtouse:admst:choose">admst:choose</a></td>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:copy">admst:copy</a></td>
+<td>from</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>to</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="3"><a href="#howtouse:admst:count">admst:count</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:error">admst:error</a></td>
+<td>format</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:fatal">admst:fatal</a></td>
+<td>format</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="3"><a href="#howtouse:admst:for-each">admst:for-each</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="3"><a href="#howtouse:admst:getenv">admst:getenv</a></td>
+<td>name</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="2"><a href="#howtouse:admst:if">admst:if</a></td>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:if-inside">admst:if-inside</a></td>
+<td>list</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:if-not-inside">admst:if-not-inside</a></td>
+<td>list</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:join">admst:join</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>separator</td>
+<td>text</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:message">admst:message</a></td>
+<td>format</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="5"><a href="#howtouse:admst:new">admst:new</a></td>
+<td>datatype</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>arguments</td>
+<td>text</td>
+<td>list</td>
+<td>no</td>
+</tr>
+<tr>
+<td>inputs</td>
+<td>path</td>
+<td>list</td>
+<td>no</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="3"><a href="#howtouse:admst:open">admst:open</a></td>
+<td>file</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="2"><a href="#howtouse:admst:otherwise">admst:otherwise</a></td>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="6"><a href="#howtouse:admst:push">admst:push</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>into</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>onduplicate</td>
+<td>text</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>oncompare</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="3"><a href="#howtouse:admst:read">admst:read</a></td>
+<td>file</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="3"><a href="#howtouse:admst:reset">admst:reset</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="5"><a href="#howtouse:admst:return">admst:return</a></td>
+<td>name</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>string</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>value</td>
+<td>obsolete - see string</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="3"><a href="#howtouse:admst:reverse">admst:reverse</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:setenv">admst:setenv</a></td>
+<td>name</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>string</td>
+<td>text</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:template">admst:template</a></td>
+<td>match</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>mode</td>
+<td>obsolete - ignored</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:text">admst:text</a></td>
+<td>format</td>
+<td>text</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="3"><a href="#howtouse:admst:value-of">admst:value-of</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="5"><a href="#howtouse:admst:value-to">admst:value-to</a></td>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>string</td>
+<td>text</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>value</td>
+<td>obsolete - see string</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="5"><a href="#howtouse:admst:variable">admst:variable</a></td>
+<td>name</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>string</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>select</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="4"><a href="#howtouse:admst:warning">admst:warning</a></td>
+<td>format</td>
+<td>text</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td>select</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+<tr>
+<td rowspan="2"><a href="#howtouse:admst:when">admst:when</a></td>
+<td>test</td>
+<td>path</td>
+<td>scalar</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>path</td>
+<td>path</td>
+<td>scalar</td>
+<td>no</td>
+</tr>
+</tbody>
+</table></table-wrap><hr>
+<p>
+  This page has been automatically created by applying the xsl transform
+  <a href="./admststyle.xsl">admststyle.xsl</a>
+  to the xml data file
+  <a href="./admst.xml">admst.xml</a>.
+  <br>
+  The rendering of the page is specified by the css stylesheet
+  <a href="./adms.css">adms.css</a>.
+  You can get the full contents of data file 
+  <a href="./admst.xml">admst.xml</a>
+  by viewing the source of the document from your web browser.
+  Please address any comments to <a href="mailto:r29173@users.sourceforge.net">r29173</a>.
+  </p>
+</body>
+</html>

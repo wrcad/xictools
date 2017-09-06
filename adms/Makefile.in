@@ -17,26 +17,35 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-ADMS = adms_wr-2.30.5.tar.gz
+ADMS = ADMS-release-2.3.6.tar.gz
 
-ADMS_DIR = adms_wr-2.30.5
+ADMS_DIR = ADMS-release-2.3.6
 
 all: unpack
-	(cd $(ADMS_DIR); $(MAKE))
+	(cd adms_wr/admsXml; $(MAKE))
 
 unpack:
-	if [ ! -d $(ADMS_DIR) ]; then \
+	@if [ ! -d  adms_wr ]; then \
 	    tar xzf $(ADMS); \
-	    (cd $(ADMS_DIR); ./configure); \
+	    mv -f $(ADMS_DIR) adms_wr; \
+	    cp -f files/configure.in adms_wr; \
+	    cp -f files/configure adms_wr; \
+	    mv -f adms_wr/configure.ac adms_wr/configure.ac.notused; \
+	    cp -f files/install-sh adms_wr/auxconf; \
+	    cp -f files/Makefile.in adms_wr/admsXml; \
+	    cp -f files/config.h.in adms_wr/admsXml; \
+	    cp -f files/constants.vams adms_wr/admsXml; \
+	    cp -f files/disciplines.vams adms_wr/admsXml; \
+	    (cd adms_wr; ./configure --enable-maint=yes); \
 	fi
 
 clean:
-	if [ -d $(ADMS_DIR) ]; then \
-	    (cd $(ADMS_DIR); $(MAKE) clean); \
+	if [ -d adms_wr ]; then \
+	    (cd adms_wr/admsXml; $(MAKE) clean); \
 	fi
 
 distclean:
-	rm -rf $(ADMS_DIR) Makefile
+	rm -rf adms_wr Makefile
 	(cd packages; $(MAKE) distclean)
 
 depend:
@@ -47,6 +56,7 @@ depend:
 INSTALL_PREFIX ?= $(prefix)
 dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)/adms
 dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
+src = adms_wr/admsXml
 
 install: install_test install_force
 
@@ -67,19 +77,71 @@ install_clean::
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
-	$(INSTALL_BIN) $(ADMS_DIR)/admsXml$(EXESUFFIX) $@
+	@$(INSTALL_BIN) $(src)/admsXml$(EXESUFFIX) $@
 
 $(dst_lib)::
 	@$(BASE)/util/mkdirpth $@
-	@$(INSTALL_LIB) $(ADMS_DIR)/README-WR $@
+	@$(INSTALL_LIB) README $@
 
 $(dst_lib)/doc::
 	@$(BASE)/util/mkdirpth $@
-	$(INSTALL_LIB) $(ADMS_DIR)/admsXml.1 $@
+	@$(INSTALL_LIB) doc/README $@
+	@$(BASE)/util/mkdirpth $@/man
+	@$(INSTALL_LIB) $(src)/admsXml.1 $@/man
+	@$(BASE)/util/mkdirpth $@/xml
+	@files=`packages/util/adms_files xml`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) adms_wr/$$a $@/xml; \
+	done
+	@$(BASE)/util/mkdirpth $@/html
+	@files=`packages/util/adms_files html`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) doc/html/$$a $@/html; \
+	done
+	@$(BASE)/util/mkdirpth $@/html/doc
+	@files=`packages/util/adms_files html_doc`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) doc/html/doc/$$a $@/html/doc; \
+	done
+	@$(BASE)/util/mkdirpth $@/html/introduction
+	@files=`packages/util/adms_files html_intro`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) doc/html/introduction/$$a $@/html/introduction; \
+	done
+	@$(BASE)/util/mkdirpth $@/html/scripts
+	@files=`packages/util/adms_files html_scripts`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) doc/html/scripts/$$a $@/html/scripts; \
+	done
+	@$(BASE)/util/mkdirpth $@/html/tutorials
+	@files=`packages/util/adms_files html_tutorials`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) doc/html/tutorials/$$a $@/html/tutorials; \
+	done
+	@$(BASE)/util/mkdirpth $@/html/tutorials/Ilya-Lisichkin/MOSlevel1
+	@files=`packages/util/adms_files tmos`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) doc/html/tutorials/Ilya-Lisichkin/MOSlevel1/$$a \
+  $@/html/tutorials/Ilya-Lisichkin/MOSlevel1; \
+	done
+	$(INSTALL_LIB) \
+  "doc/html/tutorials/Ilya-Lisichkin/MOSlevel1/MOS1 into ZSPICE.html" \
+  $@/html/tutorials/Ilya-Lisichkin/MOSlevel1
 
 $(dst_lib)/examples::
 	@$(BASE)/util/mkdirpth $@
-	$(INSTALL_BIN) $(ADMS_DIR)/admsCheck$(EXESUFFIX) $@
+	@$(INSTALL_BIN) $(src)/admsCheck$(EXESUFFIX) $@
+	@$(INSTALL_LIB) $(src)/admsCheck.1 $@
+	@$(BASE)/util/mkdirpth $@/scripts
+	@files=`packages/util/adms_files scripts`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) adms_wr/scripts/$$a $@/scripts; \
+	done
+	@$(BASE)/util/mkdirpth $@/testcases
+	@files=`packages/util/adms_files testcases`; \
+	for a in $$files; do \
+	    $(INSTALL_LIB) adms_wr/testcases/$$a $@/testcases; \
+	done
 
 package::
 	$(MAKE)

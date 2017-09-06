@@ -1,7 +1,5 @@
 #######################################################################
-# devlib/adms/examples/Makefile
-#######################################################################
-# $Id: Makefile,v 1.10 2015/07/30 23:09:33 stevew Exp $
+LOCATION = devlib/adms/examples/Makefile
 #######################################################################
 
 # Create the makefiles and build the example modules.
@@ -25,9 +23,14 @@ SUBDIRS = \
 
 dummy: $(SUBDIRS)
 
+make::
+	@for a in $(SUBDIRS); do \
+	    (cd $$a; ./mkmk); \
+	done
+
 depend::
 	@for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@); \
+	    (cd $$a; ./mkmk; $(MAKE) $@); \
 	done
 
 clean realclean distclean::

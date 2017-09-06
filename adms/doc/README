@@ -1,0 +1,27 @@
+
+The html directory contains the files from the original author's
+(Laurent Lemaitre) adms web site.  This site,
+http://vacomp.noovela.com, seems to no longer be accessible.  These
+files were copied down from an archive site: 
+
+http://guitorri.github.io/adms.github.io/index.html
+
+I noticed a couple of dead links, but it is basically complete.
+
+The information is still quite relevant and is really the only
+starting point for learning how to use this tool.  Prepare for a steep
+learning curve, unless you are abnormally brilliant, or you are
+already familiar with xml and related.
+
+The xml directory contains all of the xml and related files from which
+this release of adms is based.
+
+Note that you can "view" the .xml files with a web browser. and see
+the contents of the file documented.
+
+The man directory contains the unix-style manual page.  This can be
+copied to a man/man1 directory on your system if desired.
+
+There are tutorials that can be found on the web for xml, xsl, xpath,
+etc., which are related to adms.  See http://www.w3schools.com/xml.
+

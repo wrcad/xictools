@@ -268,6 +268,7 @@ CCFILES = bin/wrspice.cc bin/wrspiced.cc bin/multidec.cc bin/proc2mod.cc \
   bin/printtoraw.cc
 
 depend:
+	@(cd devlib/adms/examples; $(MAKE) make);
 	@for a in include $(SUBDIRS) devlib; do \
 	    (cd $$a; $(MAKE) depend) \
 	done
@@ -460,10 +461,6 @@ $(destn)/devkit::
 	    $(INSTALL_LIB) devlib/adms/$$a $@/`dirname $$a`; \
         done; \
 	for a in $$edirs; do \
-	    cat devlib/adms/examples/$$a/Makefile | sed \
-  -e "s%^ADMST = .*%ADMST = /usr/local/xictools/wrspice/devkit/admst%" \
-  -e "s%^DLL_LOC = .*%DLL_LOC = /usr/local/xictools/bin%" \
-  -e "s%^WRSPICE = .*%WRSPICE = wrspice%" > $@/examples/$$a/Makefile; \
 	    mkdir $@/examples/$$a/module_dist; \
 	    cp devlib/adms/examples/$$a/*.$(SOEXT) $@/examples/$$a/module_dist; \
 	done;
@@ -473,8 +470,16 @@ $(destn)/cadence-oasis::
 
 package::
 	$(MAKE) all
-	(export PATH=`pwd`:$$PATH; cd devlib/adms/examples; \
-  $(MAKE) realclean; $(MAKE))
+	(cd devlib/adms/examples; \
+	    $(MAKE) realclean; \
+	    for a in */Makefile; do \
+	        (cd `dirname $$a`; $(MAKE) \
+	            ADMST=../../admst \
+	            ADMSXML=../../../../../adms/adms_wr/admsXml/admsXml \
+	            DLL_LOC=../../../../bin \
+	            WRSPICE=../../../../bin/wrspice); \
+	    done) \
+        )
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install

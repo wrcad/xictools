@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="buttondown.css" type="text/css" />
+</head>
+<body>
+<p><a href="index.html">Contents</a></p>
+<hr />
+<h1 id="tutorial-on-adms">Tutorial on adms</h1>
+<h2 id="introduction">Introduction</h2>
+<p>We review here the main concepts used to write a control file (or xml script) for the adms interpreter. When adms parses a verilog-ams file it builds a data tree - the adms data tree. In the course of this tutorial we build step by step a simple control file that will print out some pieces of the xml data tree.</p>
+<p>Version used: admsXml-2.2.8</p>
+<p><strong>Prerequisite</strong></p>
+<p>adms has to be installed on your system. Any bugs/questions can be sent to <a href="laurent.lemaitre@freescale.com">me</a></p>
+<p>Run <code>admsXml -v</code> to get the adms version installed on your system.</p>
+<p><strong>Understand how the adms data tree is structured</strong></p>
+<p>During parsing the Verilog-AMS input file is 'translated' into the adms data tree. File adms.xml describes how the adms data tree is structured inside adms.</p>
+<h2 id="simple-verilog-ams-input-file">Simple Verilog-AMS input file</h2>
+<p>Let suppose that we want to 'run' adms on the following Verilog-AMS input file:</p>
+<p><a href="tutorials/myfile.va">myfile.va</a></p>
+<pre><code>//**************************
+//*** Input file myfile.va *
+//**************************
+`include &quot;disciplines.h&quot;
+(*p1=&quot;v1&quot; p2=&quot;v2&quot;*)
+module mymodule (t1,t2);
+inout t1,t2;
+electrical t1,t2;
+(*desc=&quot;input param p1&quot; unit=&quot;no&quot;*) parameter real p1=1.0;
+real v1;
+real v2;
+analog
+  begin
+    v1=1.0;
+    I(t1,t2)&lt;+v1*V(t1,t2) (*source=&quot;resistive contrib&quot;*);
+  end
+endmodule</code></pre>
+<p>After parsing the Verilog-AMS code of file myfile.va is saved internally into an 'adms data tree'. The tree is traversed using xml scripts. The language that specifies how to traverse the tree is close to the XPATH language. In order to avoid any ambiguity we will call it <strong>the admstpath</strong>.</p>
+<p>When a node is traversed a specific action is performed. The language that specficies the actions occuring at node traversing is close to the XSLT language. We will call it <strong>the admst language</strong>. At the command line the following command:</p>
+<pre><code>admsXml myfile.va -e myxml.va</code></pre>
+<p>will read the instructions of file myxml.va. These instructions will traverse the adms data tree and perform some operations. Let's now describe the structure of the adms data tree.</p>
+<p><strong>adms data tree</strong></p>
+<p>The structure of the adms data tree can entirely be deduced from file adms.xml The best way to visualize adms.xml is to go to the adms web site and click on &quot;adms internal data tree&quot;. The starting element of the adms data tree is &quot;admsmain&quot;. In the admstpath language character '/' points to this element. Element &quot;admsmain&quot; has children. One of them is called 'name'. It is a string. Suppose we want to print the value of 'name'. For the sake of simplicity we will use the short syntax: /name - which means select child 'name' under element 'admsmain'. The following xml piece of code will select the value of 'name' and prints it to stdout:</p>
+<p><a href="tutorials/myxml1.xml">myxml1.xml</a></p>
+<pre><code>&lt;!--
+xml file myxml1.xml *
+--&gt;
+&lt;!DOCTYPE admst SYSTEM &quot;admst.dtd&quot;&gt;
+&lt;admst version=&quot;2.2.5&quot; xmlns:admst=&quot;http://mot-adms.sourceforge.net/xml-    files/admst&quot;&gt;
+&lt;admst:value-of select=&quot;/name&quot;/&gt; &lt;admst:text format=&quot;name of admsmain=%s\n&quot;/&gt;
+&lt;/admst&gt;</code></pre>
+<p>The following command:</p>
+<pre><code>admsXml -e myxml1.xml</code></pre>
+<p>results in:</p>
+<pre><code>$ admsXml -e myxml1.xml name of admsmain=admsmain [info] elapsed time: 0 [info] admst iterations: 15 (15 freed)</code></pre>
+<p>Note that in this case no input file has been specified at the command line. The adms data tree that has been created contains some general pieces of data. The branch of the tree dedicated for Verilog-AMS data storage is empty. Let's now focus on this part.</p>
+<p>admstpath: /module</p>
+<p>Child '/module' is the starting point where Verilog-AMS modules are saved . '/module' is a list of elements of type 'module'. Go to the definition of element 'module' in file adms.xml to better unserstand its structure. Element 'module' has children. One of them is called 'name' - it is a string. Here we want to print the name of all modules (I assume that the Verilog-AMS input file has different module declarations.) The code below gives a possible implementation of the algorithm:</p>
+<p><a href="tutorials/myxml2.xml">myxml2.xml</a></p>
+<pre><code>************&lt;!-- xml file myxml2.xml * --&gt;
+&lt;!DOCTYPE admst SYSTEM  &quot;admst.dtd&quot;&gt;
+&lt;admst version=&quot;2.2.4&quot; xmlns:admst=&quot;http://mot-adms.sourceforge.net/xml-files/admst&quot;&gt;
+  &lt;admst:for-each select=&quot;/module&quot;&gt;
+    &lt;admst:value-of select=&quot;name&quot;/&gt;
+    &lt;admst:text format=&quot;name=%s\n&quot;/&gt;
+  &lt;/admst:for-each&gt;
+&lt;/admst&gt;</code></pre>
+<p>Let's now run adms. The following command:</p>
+<pre><code>admsXml -e myxml1.xml</code></pre>
+<p>results in:</p>
+<pre><code>$ admsXml myfile.va -e myxml2.xml
+[info] admsXml-2.2.4 May 31 2006 13:03:37 name=mymodule
+[info] elapsed time: 0.0937506
+[info] admst iterations: 772 (772 freed)</code></pre>
+<p><strong>admstpath: [a='b']</strong></p>
+<p>Now let's give a more complex usage of the admstpath language. Element 'module' has a child called attribute. Child 'attribute' is a list of elements 'attribute'. List 'atttribute' links to the verilog-AMS declarations:</p>
+<pre><code>*** piece of Verilog-AMS code that maps to /module/attribute ****
+(*p1=&quot;v1&quot; p2=&quot;v2**) module mymodule (....);....</code></pre>
+<p>Each pair p=&quot;v&quot; is 'converted' into 'attribute' elements. And each attribute element will be added to list module/attribute.</p>
+<p>After looking at the definition of element 'attribute' in file adms.xml you see that this element has two children called 'name' and 'value'. Suppose you want to get the value of p1 and print it to file &quot;.output&quot;. In admstpath you will write:</p>
+<p><a href="tutorials/myxml3.xml">myxml3.xml</a></p>
+<pre><code>&lt;!-- xml file myxml3.xml * --&gt; &lt;!DOCTYPE admst SYSTEM &quot;admst.dtd&quot;&gt;
+&lt;admst version=&quot;2.2.4&quot; xmlns:admst=&quot;http://mot-adms.sourceforge.net/xml-files/admst&quot;&gt;
+  &lt;admst:for-each select=&quot;/module&quot;&gt;
+    &lt;admst:value-of select=&quot;name&quot;/&gt;
+    &lt;admst:open file=&quot;%s.output&quot;&gt;
+      &lt;admst:value-of select=&quot;attribute[name=&#39;p1&#39;]/value&quot;/&gt;
+      &lt;admst:text format=&quot;name=%s\n&quot;/&gt;
+    &lt;/admst:open&gt;
+    &lt;admst:value-of select=&quot;name&quot;/&gt;
+    &lt;admst:text format=&quot;%s.output: file created\n&quot;/&gt;
+    &lt;/admst:for-each&gt;
+&lt;/admst&gt;</code></pre>
+<p>If the output of adms is redirected to stdout then myxml3.xml can reduce to:</p>
+<p><a href="tutorials/myxml3short.xml">myxml3short.xml</a></p>
+<pre><code>&lt;!-- short form * --&gt;
+&lt;!DOCTYPE admst SYSTEM &quot;admst.dtd&quot;&gt;
+&lt;admst version=&quot;2.2.4&quot; xmlns:admst=&quot;http://mot-adms.sourceforge.net/xml-files/admst&quot;&gt;
+&lt;admst:value-of select=&quot;/module/attribute[name=&#39;p1&#39;]/value&quot;/&gt;
+&lt;admst:text format=&quot;name=%s\n&quot;/&gt;
+&lt;/admst&gt;</code></pre>
+<p><strong>admstpath: . and ..</strong></p>
+<p>During tree traversal two special strings are used to specify the currently traversed node and the previously traversed node. They are '.' and '..' respectively.</p>
+<p><a href="tutorials/myxml4.xml">myxml4.xml</a></p>
+<pre><code>&lt;!-- myxml4.xml: special admstpath strings &#39;.&#39; and &#39;..&#39; --&gt;
+&lt;!DOCTYPE admst SYSTEM &quot;admst.dtd&quot;&gt;
+&lt;admst version=&quot;2.2.4&quot; xmlns:admst=&quot;http://mot-adms.sourceforge.net/xml-files/admst&quot;&gt;
+  &lt;admst:for-each select=&quot;/module&quot;&gt;
+    &lt;admst:for-each select=&quot;variable&quot;&gt;
+      &lt;admst:value-of select=&quot;./name&quot;/&gt;
+      &lt;admst:value-of select=&quot;../name&quot;/&gt;
+      &lt;admst:text format=&quot;module=%s variable=%s\n&quot;/&gt;
+    &lt;/admst:for-each&gt;
+  &lt;/admst:for-each&gt;
+&lt;/admst&gt;</code></pre>
+<p>Let's now run adms. The following command:</p>
+<pre><code>admsXml myfile.va -e myxml4.xml</code></pre>
+<p>results in:</p>
+<pre><code>$ admsxml-2.2.3 myfile.va -e myxml4.xml
+[info] admsXml-2.2.3 May 31 2006 13:03:37
+module=mymodule variable=p1
+module=mymodule variable=v1
+module=mymodule variable=v2
+[info] elapsed time: 0.0156252
+[info] admst iterations: 792 (792 freed)</code></pre>
+<p><strong>admstpath: global variables</strong></p>
+<p>Global variables are declared/set using the admst rule admst:variable. The declaration should occur just inside the <admst>...</admst> block. Values of variables are accessed using either <span class="math"><em>n</em><em>a</em><em>m</em><em>e</em> − <em>o</em><em>f</em> − <em>v</em><em>a</em><em>r</em><em>i</em><em>a</em><em>b</em><em>l</em><em>e</em><em>o</em><em>r</em></span>(name-of-variable). The syntax is:</p>
+<p><a href="tutorials/myxml5.xml">myxml5.xml</a></p>
+<pre><code>&lt;!-- xml file myxml5.xml using global variables --&gt;
+&lt;!DOCTYPE admst SYSTEM &quot;admst.dtd&quot;&gt;
+&lt;admst version=&quot;2.2.4&quot; xmlns:admst=&quot;http://mot-adms.sourceforge.net/xml-files/admst&quot;&gt;
+&lt;admst:variable name=&quot;moduleName&quot;/&gt;
+  &lt;admst:for-each select=&quot;/module&quot;&gt;
+    &lt;admst:value-of select=&quot;name&quot;/&gt;
+    &lt;admst:variable name=&quot;moduleName&quot; select=&quot;%s&quot;/&gt;
+    &lt;admst:open file=&quot;$moduleName.output&quot;&gt;
+      &lt;admst:value-of select=&quot;attribute[name=&#39;p1&#39;]/value&quot;/&gt;
+    &lt;admst:text format=&quot;name=%s of module $moduleName\n&quot;/&gt;
+    &lt;/admst:open&gt;
+    &lt;admst:text format=&quot;$moduleName.output: file created\n&quot;/&gt;
+  &lt;/admst:for-each&gt;
+&lt;/admst&gt;</code></pre>
+<p><strong>admst:template</strong></p>
+<p>The admst language provides a mechanism to declare a sort of functions. Functions are actually named admst:template. Rule admst:template is used to declare new templates. And rule admst:apply-templates is used to call a given template. Using templates myxml5.xml can be rewritten as:</p>
+<p><a href="tutorials/myxml6.xml">myxml6.xml</a></p>
+<pre><code>&lt;!-- xml file myxml6.xml using global variables --&gt;
+&lt;!DOCTYPE admst SYSTEM &quot;admst.dtd&quot;&gt;
+&lt;admst version=&quot;2.2.4&quot; xmlns:admst=&quot;http://mot-adms.sourceforge.net/xml-files/admst&quot;&gt;
+  &lt;admst:template match=&quot;print:attribute&quot;&gt;
+    &lt;admst:value-of select=&quot;./attribute[name=&#39;p1&#39;]/value&quot;/&gt;
+    &lt;admst:text format=&quot;name=%s of module $moduleName\n&quot;/&gt;
+  &lt;/admst:template&gt;
+  &lt;admst:for-each select=&quot;/module&quot;&gt;
+    &lt;admst:value-of select=&quot;name&quot;/&gt;
+    &lt;admst:variable name=&quot;moduleName&quot; select=&quot;%s&quot;/&gt;
+    &lt;admst:open file=&quot;$moduleName.output&quot;&gt;
+      &lt;admst:apply-templates select=&quot;.&quot; match=&quot;print:attribute&quot;/&gt;
+    &lt;/admst:open&gt;
+    &lt;admst:text format=&quot;$moduleName.output: file created\n&quot;/&gt;
+  &lt;/admst:for-each&gt;
+&lt;/admst&gt;</code></pre>
+<p>Variables can be defined inside admst:templates. However the scope of the variables is limited to the code of the admst:template.</p>
+<p><strong>Traversing analog code using admst:template and node '/module/analog'</strong></p>
+<p>Child '/module/analog' is the top sub-tree from which all the Verilog-AMS analog code is derived. For instance it is possible to re-create all equations of the source Verilog-AMS code by traversing the adms data tree starting from this node. Note that child 'code' of element 'analog' is special. Its type is '*' which means that it can by any kind of elements. Since the type of 'analog/code' is unknown we have to 'guess' its type before we can perform any operation on it.</p>
+<p>Type of each node of the tree is accessed using admstpath '/adms/datatypename'. The following xml code illustrates the concept of 'datatypename' and its application for recursive traversal of the adms data tree.</p>
+<p><a href="tutorials/myxml7.xml">myxml7.xml</a></p>
+<pre><code>&lt;!-- xml file myxml7.xml using global variables Subtree &#39;analog&#39; is traversed and the dataypename of each traversed node is printed out. --&gt;
+&lt;!DOCTYPE admst SYSTEM &quot;admst.dtd&quot;&gt;
+&lt;admst version=&quot;2.2.4&quot; xmlns:admst=&quot;http://mot-adms.sourceforge.net/xml-files/admst&quot;&gt;
+  &lt;admst:template match=&quot;dump:datatypename:recursively&quot;&gt;
+     &lt;admst:choose&gt;
+     &lt;admst:when test=&quot;adms[datatypename=&#39;block&#39;]&quot;&gt;
+      &lt;admst:text format=&quot;assignment found (\n&quot;/&gt;
+      &lt;admst:apply-templates select=&quot;item&quot; match=&quot;dump:datatypename:recursively&quot;/&gt;
+     &lt;/admst:when&gt;
+     &lt;admst:when test=&quot;adms[datatypename=&#39;assignment&#39;]&quot;&gt;
+      &lt;admst:text format=&quot;assignment found (\n&quot;/&gt;
+     &lt;/admst:when&gt;
+     &lt;admst:when test=&quot;adms[datatypename=&#39;contribution&#39;]&quot;&gt;
+      &lt;admst:text format=&quot;contribution found (\n&quot;/&gt;
+     &lt;/admst:when&gt;
+     &lt;admst:otherwise&gt;
+      &lt;admst:value-of select=&quot;adms/datatypename&quot;/&gt;
+      &lt;admst:message format=&quot;%s: datatypename not handled\n&quot;/&gt;
+     &lt;/admst:otherwise&gt;
+    &lt;/admst:choose&gt;
+    &lt;admst:text format=&quot;)\n&quot;/&gt;
+  &lt;/admst:template&gt;
+  &lt;admst:text format=&quot;***************\n&quot;/&gt;
+  &lt;admst:text format=&quot;start recursion\n&quot;/&gt;
+  &lt;admst:text format=&quot;***************\n&quot;/&gt;
+  &lt;admst:apply-templates select=&quot;/module/analog/code&quot; match=&quot;dump:datatypename:recursively&quot;/&gt;
+&lt;/admst&gt;</code></pre>
+<p>That's all for now! I will put more on the feaures of the admstpath/admst languages after the release of adms-2.2.5 - which should make the use of these languages a lot more easier.</p>
+<hr />
+<p>Retrieved from <a href="http://vacomp.noovela.com/tutorials.html">tutorials.html</a></p>
+</body>
+</html>

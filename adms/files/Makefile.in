@@ -1,0 +1,108 @@
+
+DATE = @DATE@
+prefix = @prefix@
+CC = @CC@
+YACC = @YACC@
+LEX = @LEX@
+PERL = @PERL@
+INSTALL = @INSTALL@
+EXEEXT = @EXEEXT@
+MAINTAINER = @MAINTAINER@
+
+all: admsXml$(EXEEXT) admsCheck$(EXEEXT)
+
+DEFS = -DHAVE_CONFIG_H  -DinsideElement -DinsidePreprocessor -DinsideVeriloga
+CPPFLAGS = -g -Wall
+ifdef EXEEXT
+CFLAGS = $(DEFS) $(CPPFLAGS) -I. -DNO_DLLS
+else
+CFLAGS = $(DEFS) $(CPPFLAGS) -I.
+endif
+
+CFILES = adms.c preprocessorLex.c preprocessorMain.c preprocessorYacc.c \
+  verilogaYacc.c verilogaLex.c admstpathYacc.c
+COBJS=$(CFILES:.c=.o)
+
+admsXml$(EXEEXT): adms.implicit.xml.c adms.c admsXml.o $(COBJS)
+	$(CC) -o $@ admsXml.o $(COBJS)
+
+admsCheck$(EXEEXT): admsCheck.c adms.c dummy.xml.c dummy.va.c
+	$(CC) -o $@ $(CFLAGS) admsCheck.c adms.o
+
+# Avoid circular dependency warnings.
+%:%.c
+%:%.o
+
+.c.o: $(CC) $(CFLAGS) -c $*.c
+
+TOPDIR = ..
+
+adms.c adms.h admstpath.dtd admstpathYacc.h admstpathYacc.y: \
+  $(TOPDIR)/adms.xml $(TOPDIR)/admstpath.xml mkelements.pl
+	$(PERL) mkelements.pl $(TOPDIR)
+
+GENERATED = constants.vams.c disciplines.vams.c adms.implicit.xml.c \
+  dummy.va.c dummy.xml.c
+
+$(GENERATED):%.c:% mkctext.pl
+	$(PERL) mkctext.pl $< $(TOPDIR)
+
+clean:
+	-@rm -f *.o admsXml$(EXEEXT) admsCheck$(EXEEXT)
+
+install:
+	$(INSTALL) -s -m 0755 admsXml$(EXEEXT) $(prefix)/bin
+	if [ -d $(prefix)/share/man/man1 ]; then \
+	    $(INSTALL) -c -m 0644 admsXml.1 $(prefix)/share/man/man1; \
+	elif [ -d $(prefix)/man/man1 ]; then \
+	    $(INSTALL) -m 0644 admsXml.1 $(prefix)/man/man1; \
+	fi
+
+uninstall:
+	rm -f $(prefix)/bin/admsXml$(EXEEXT)
+	if [ -f $(prefix)/share/man/man1/admsXml.1 ]; then \
+	    rm -f $(prefix)/share/man/man1/admsXml.1; \
+	elif [ -f $(prefix)/man/man1/admsXml.1 ]; then \
+	    rm -f $(prefix)/man/man1/admsXml.1; \
+	fi
+
+ifeq ($(MAINTAINER), yes)
+
+verilogaYacc.y: verilogaYacc.y.in mkgrammar.pl $(TOPDIR)/adms.xml
+	$(PERL) mkgrammar.pl verilogaYacc.y.in
+
+verilogaLex.c: verilogaLex.l $(TOPDIR)/adms.xml
+	$(LEX) -Pveriloga -o$@ $<
+
+verilogaYacc.c verilogaYacc.h: verilogaYacc.y
+	$(YACC) -by -d -pveriloga $<
+	mv -f y.tab.c verilogaYacc.c
+	mv -f y.tab.h verilogaYacc.h
+
+preprocessorLex.c: preprocessorLex.l disciplines.vams.c constants.vams.c \
+  $(TOPDIR)/adms.xml preprocessorYacc.h
+	$(LEX) -Ppreprocessor -o$@ $<
+
+preprocessorYacc.c preprocessorYacc.h: preprocessorYacc.y $(TOPDIR)/adms.xml
+	$(YACC) -by -d -ppreprocessor $<
+	mv -f y.tab.c preprocessorYacc.c
+	mv -f y.tab.h preprocessorYacc.h
+
+admstpathYacc.c: admstpathYacc.y
+	$(YACC) -by -padmstpath $<
+	mv -f y.tab.c $@
+
+GENERATED_PNG = adms-scalar.png adms-element.png adms-enumeration.png \
+  adms-uid.png adms-alias.png
+
+$(GENERATED_PNG): mkimages.pl
+	$(PERL) mkimages.pl
+
+maintclean: distclean
+	-@rm -f adms.h adms.c admstpath.dtd verilogaYacc.y verilogaYacc.h \
+  verilogaYacc.c verilogaLex.c admstpathYacc.y admstpathYacc.h \
+  admstpathYacc.c preprocessorYacc.h preprocessorYacc.c preprocessorLex.c \
+  $(GENERATED)
+
+endif
+

@@ -1,0 +1,43 @@
+<admst version="2.3.0" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+  <admst:open file="mysource.html">
+  <html>
+  <table border="1">
+  <tbody>
+  <tr>
+  <td> <p> <admst:text format="position\n"/> </p> </td>
+  <td> <p> <admst:text format="name\n"/> </p> </td>
+  <td> <p> <admst:text format="default\n"/> </p> </td> <td>
+  <p>
+  <admst:text format="description\n"/>
+  </p>
+  </td>
+  </tr>
+  <admst:for-each select="/module/variable">
+    <tr>
+    <td>
+    <admst:text format="--%(position(.))\n"/>
+    </td>
+    <td>
+    <admst:text format="%(name)\n"/>
+    </td>
+    <td>
+    <admst:text test="[exists(default)]" format="hasdef"/>
+    </td>
+    <td>
+    <admst:choose>
+      <admst:when test="[exists(attribute[name='info'])]">
+          <admst:text format="%(attribute[name='info'])"/>
+      </admst:when>
+      <admst:otherwise>
+        <admst:text format="no-description"/>
+      </admst:otherwise>
+    </admst:choose>
+    </td>
+    </tr>
+  </admst:for-each>
+  </tbody>
+  </table>
+  </html>
+  </admst:open>
+  <admst:message format="mysource.html: file created\n"/>
+</admst>

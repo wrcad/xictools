@@ -1,0 +1,17 @@
+<!-- xml file myxml6.xml using global variables -->
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.2.4" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+  <admst:template match="print:attribute">
+    <admst:value-of select="./attribute[name='p1']/value"/>
+    <admst:text format="name=%s of module $moduleName\n"/>
+  </admst:template>
+  <admst:for-each select="/module">
+    <admst:value-of select="name"/>
+    <admst:variable name="moduleName" select="%s"/>
+    <admst:open file="$moduleName.output">
+      <admst:apply-templates select="." match="print:attribute"/>
+    </admst:open>
+    <admst:text format="$moduleName.output: file created\n"/>
+  </admst:for-each>
+</admst>
+

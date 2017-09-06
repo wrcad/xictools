@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="buttondown.css" type="text/css" />
+</head>
+<body>
+<p><a href="index.html">Contents</a></p>
+<hr />
+<h1 id="introduction">Introduction</h1>
+<p><strong>adms</strong> is a code generator that converts electrical compact device models specified in high-level description language into ready-to-compile C code for the API of spice simulators. Based on transformations specified in XML language, ADMS transforms Verilog-AMS code into other target languages.</p>
+<p>Typical run:</p>
+<pre><code>admsXml &lt;vafile&gt; -e &lt;controlfile1&gt;.xml -e &lt;controlfile2&gt;.xml -e ...</code></pre>
+<h2 id="example">Example:</h2>
+<pre><code>admsXml mysource.va -e myxml.xml</code></pre>
+<ul>
+<li>admsXml reads control file <a href="introduction/myxml.xml">myxml.xml</a> and veriloga file <a href="introduction/mysource.va">mysource.va</a>. File <a href="introduction/mysource.html">mysource.html</a> is created.</li>
+<li>Note: files .adms.implicit.xml and .mysource.va.adms are created in background.</li>
+</ul>
+<p>The internal data structure of adms is auto-generated from file <a href="doc/adms.xml.html">adms.xml</a>. This file is very important. The rules used to build a control file are based on its contents. More in section Documentations.</p>
+<h2 id="related-links">Related Links:</h2>
+<ul>
+<li>http://sourceforge.net/projects/mot-adms</li>
+<li>http://www.noovela.com</li>
+</ul>
+<h2 id="limitations">Limitations</h2>
+<ul>
+<li>Subset of Verilog-AMS supported</li>
+</ul>
+<hr />
+<p>Recovered from <a href="http://vacomp.noovela.com/introduction.html">introduction.html</a></p>
+<p>Also available at the <a href="http://web.archive.org/web/20130928004456/http://vacomp.noovela.com/introduction.html">wayback machine</a></p>
+</body>
+</html>

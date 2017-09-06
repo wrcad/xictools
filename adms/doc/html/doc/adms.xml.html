@@ -1,0 +1,925 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>adms.xsl: The adms Data Tree - Reference Document</title>
+<meta name="generator" content="manual, see http://mot-adms.sourceforge.net/">
+<link rel="stylesheet" type="text/css" href="./adms.css">
+<script type="text/javascript">
+    
+     function expandNode(branch)
+     {
+        var objBranch=document.getElementById(branch).style;
+        objBranch.display="block";
+     }
+     function switchNodeCollaping(branch)
+     {
+        var objBranch=document.getElementById(branch).style;
+        if(objBranch.display=="block")
+           objBranch.display="none";
+        else
+           objBranch.display="block";
+     }
+    
+    </script>
+</head>
+<body>
+<p>This section gives a tree view of the different internal data structure created by adms after parsing an input file.</p>
+<p>Symbols used:</p>
+<ul>
+<li>
+<img src="images/adms-element.png">: adms element</li>
+<li>
+<img src="images/adms-uid.png"> property (constructor)</li>
+<li>
+<img src="images/adms-scalar.png">: property (scalar)</li>
+<li>
+<img src="images/adms-list.png"> property (list)</li>
+</ul>
+<p>
+  Clicking on a node will expand it.
+  </p>
+<p><span class="trigger" id="rootadms" onClick="switchNodeCollaping('adms');"><img src="images/adms-element.png"><b>adms</b><span class="info">base type (uid="$1")</span><br></span><span class="branch" id="adms" style="display:block"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicinteger)
+          datatypename</span><span class="info">datatypename</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">list of attribute</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('admstvariable');"><a href="#rootadmstvariable">
+            (admstvariable)
+          </a>variable</span><span class="info">list of variable</span></span><span class="trigger" id="rootsimulator" onClick="switchNodeCollaping('simulator');"><img src="images/adms-element.png">simulator<span class="info">miscellaneous info on simulator (uid="$1")</span><br></span><span class="branch" id="simulator"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          currentdate</span><span class="info">current compilation date</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          developer</span><span class="info">adms version</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          fullname</span><span class="info">full adms version</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          package_name</span><span class="info">autotool package name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          package_tarname</span><span class="info">autotool package identity</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          package_version</span><span class="info">autotool package version</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          package_string</span><span class="info">autotool package string</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          package_bugreport</span><span class="info">email for bug report</span></span><span class="comment"><b>dummy variables: should be removed in the future</b></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('probe');"><a href="#rootprobe">
+            (probe)
+          </a>probe</span><span class="info">dummy variable</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          tmp</span><span class="info">dummy variable</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          tmp1</span><span class="info">dummy variable</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('branch');"><a href="#rootbranch">
+            (branch)
+          </a>br1</span><span class="info">dummy variable</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('branch');"><a href="#rootbranch">
+            (branch)
+          </a>br2</span><span class="info">dummy variable</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('source');"><a href="#rootsource">
+            (source)
+          </a>sr1</span><span class="info">dummy variable</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          ddx</span><span class="info">dummy variable</span></span></span><span class="trigger" id="rootadmsmain" onClick="switchNodeCollaping('admsmain');"><img src="images/adms-element.png">admsmain<span class="info">adms main pointer - selected using / (uid="$1")</span><br></span><span class="branch" id="admsmain"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">identifier (always admsmain)</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          argc</span><span class="info">number of command line arguments</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          fullfilename</span><span class="info">full name of veriloga parsed file</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          filename</span><span class="info">base name of veriloga parsed file</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          curfilename</span><span class="info">name of current parsed veriloga file</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          curline</span><span class="info">current line when parsing file</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          fpos</span><span class="info">first position of returned parsed token</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('simulator');"><a href="#rootsimulator">
+            (simulator)
+          </a>simulator</span><span class="info">miscellaneous info on simulator</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsinfo');">
+          (basicenumeration)
+          info<span class="info">info mode</span><span class="branch" id="admsinfo"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsusage');">
+          (basicenumeration)
+          usage<span class="info">usage mode</span><span class="branch" id="admsusage"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsverbose');">
+          (basicenumeration)
+          verbose<span class="info">verbose mode</span><span class="branch" id="admsverbose"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admshint');">
+          (basicenumeration)
+          hint<span class="info">hint mode</span><span class="branch" id="admshint"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admswarning');">
+          (basicenumeration)
+          warning<span class="info">warning mode</span><span class="branch" id="admswarning"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsobsolete');">
+          (basicenumeration)
+          obsolete<span class="info">obsolete mode</span><span class="branch" id="admsobsolete"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdebug');">
+          (basicenumeration)
+          debug<span class="info">debug mode</span><span class="branch" id="admsdebug"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdbg_vla');">
+          (basicenumeration)
+          dbg_vla<span class="info">verilogamsparsing debug mode</span><span class="branch" id="admsdbg_vla"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdbg_xml');">
+          (basicenumeration)
+          dbg_xml<span class="info">xml parsing debug mode</span><span class="branch" id="admsdbg_xml"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admserror');">
+          (basicenumeration)
+          error<span class="info">error mode</span><span class="branch" id="admserror"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsfatal');">
+          (basicenumeration)
+          fatal<span class="info">fatal mode</span><span class="branch" id="admsfatal"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdbg_mem');">
+          (basicenumeration)
+          dbg_mem<span class="info">debug memory mode</span><span class="branch" id="admsdbg_mem"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">list of modules</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('discipline');"><a href="#rootdiscipline">
+            (discipline)
+          </a>discipline</span><span class="info">list of discipline</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('nature');"><a href="#rootnature">
+            (nature)
+          </a>nature</span><span class="info">list of nature</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('admstvariable');"><a href="#rootadmstvariable">
+            (admstvariable)
+          </a>variable</span><span class="info">global admst variables  (scope is all admst:template)</span></span><span class="trigger"><img src="images/adms-list.png"><span>
+          (basicstring)
+          argv</span><span class="info">command line arguments</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>transform</span><span class="info">transforms</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>invtransform</span><span class="info">transforms (inversed order)</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('itransform');"><a href="#rootitransform">
+            (itransform)
+          </a>itransform</span><span class="info">instance created by apply-templates</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('itransform');"><a href="#rootitransform">
+            (itransform)
+          </a>itransforminsideapplytemplate</span><span class="info">instance inside apply-templates</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>valueof</span><span class="info">adms stack</span></span></span><span class="comment">basic adms elements</span><span class="trigger" id="rootlist" onClick="switchNodeCollaping('list');"><img src="images/adms-element.png">list<span class="info">adms list (uid="$1")</span><br></span><span class="branch" id="list"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          datatype</span><span class="info">name</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>item</span><span class="info">item</span></span></span><span class="comment">elements used to save natures and disciplines inside the internal adms data tree</span><span class="trigger" id="rootnature" onClick="switchNodeCollaping('nature');"><img src="images/adms-element.png">nature<span class="info">all natures created after parsing (uid="$1")</span><br></span><span class="branch" id="nature"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          access</span><span class="info">access identifier</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">name of the nature</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('number');"><a href="#rootnumber">
+            (number)
+          </a>abstol</span><span class="info">absolute tolerance</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('nature');"><a href="#rootnature">
+            (nature)
+          </a>base</span><span class="info">base parent</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          ddt_name</span><span class="info">name of ddt nature</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('nature');"><a href="#rootnature">
+            (nature)
+          </a>ddt_nature</span><span class="info">back to ddt nature</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          idt_name</span><span class="info">name of idt nature</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('nature');"><a href="#rootnature">
+            (nature)
+          </a>idt_nature</span><span class="info">back to idt nature</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          units</span><span class="info">unit</span></span></span><span class="trigger" id="rootdiscipline" onClick="switchNodeCollaping('discipline');"><img src="images/adms-element.png">discipline<span class="info">all disciplines created after parsing (uid="$1")</span><br></span><span class="branch" id="discipline"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name of discipline</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('nature');"><a href="#rootnature">
+            (nature)
+          </a>flow</span><span class="info">back to flow nature</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('nature');"><a href="#rootnature">
+            (nature)
+          </a>potential</span><span class="info">back to potential nature</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdomain');">
+          (basicenumeration)
+          domain<span class="info">domain</span><span class="branch" id="admsdomain"><img src="images/adms-enumeration.png"><span>continuous</span><span class="info">continuous domain</span><br><img src="images/adms-enumeration.png"><span>discrete</span><span class="info">discrete domain</span><br></span></span></span></span><span class="trigger" id="rootevent" onClick="switchNodeCollaping('event');"><img src="images/adms-element.png"><b>event</b><span class="info">actions that are triggered by various things (uid="event")</span><br></span><span class="branch" id="event"><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('block');"><a href="#rootblock">
+            (block)
+          </a>action</span><span class="info">actions to be taken during the event</span></span><span class="trigger" id="rootglobalevent" onClick="switchNodeCollaping('globalevent');"><img src="images/adms-element.png">globalevent<span class="info">one-time events (uid="$1")</span><br></span><span class="branch" id="globalevent"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name of event</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>globalevent/action</b>
+    same as <b>globalevent/event/action</b></span><span class="trigger"><img src="images/adms-list.png"><span>
+          (basicstring)
+          analysis</span><span class="info">list of analyses this event applies to</span></span></span><span class="trigger" id="rootcrossevent" onClick="switchNodeCollaping('crossevent');"><img src="images/adms-element.png">crossevent<span class="info">events caused by crossing a threshold (uid="cross")</span><br></span><span class="branch" id="crossevent"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>trigger</span><span class="info">threshold expression</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="switchNodeCollaping('crosseventdirection');">
+          (basicenumeration)
+          direction<span class="info">direction of crossing</span><span class="branch" id="crosseventdirection"><img src="images/adms-enumeration.png"><span>positive</span><span class="info">trigger when the threshold is crossed in the positive direction</span><br><img src="images/adms-enumeration.png"><span>negative</span><span class="info">trigger when the threshold is crossed in the negative direction</span><br><img src="images/adms-enumeration.png"><span>both</span><span class="info">trigger when the threshold is crossed in both directions</span><br></span></span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>timetol</span><span class="info">time tolerance</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>expressiontol</span><span class="info">expression tolerance</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>crossevent/action</b>
+    same as <b>crossevent/event/action</b></span></span><span class="trigger" id="roottimerevent" onClick="switchNodeCollaping('timerevent');"><img src="images/adms-element.png">timerevent<span class="info">events triggered at a specific time (uid="timer")</span><br></span><span class="branch" id="timerevent"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>time</span><span class="info">trigger time of the first event</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>period</span><span class="info">how often to repeat after the first</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>timerevent/action</b>
+    same as <b>timerevent/event/action</b></span></span></span><span class="comment">elements used to save a module inside the internal adms data tree</span><span class="trigger" id="rootmodule" onClick="switchNodeCollaping('module');"><img src="images/adms-element.png">module<span class="info">module (uid="$1")</span><br></span><span class="branch" id="module"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name of module</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('node');"><a href="#rootnode">
+            (node)
+          </a>node</span><span class="info">list of nodes</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('nodealias');"><a href="#rootnodealias">
+            (nodealias)
+          </a>nodealias</span><span class="info">list of node aliases</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('branch');"><a href="#rootbranch">
+            (branch)
+          </a>branch</span><span class="info">list of all branches</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('branchalias');"><a href="#rootbranchalias">
+            (branchalias)
+          </a>branchalias</span><span class="info">list of all branch alias</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('analogfunction');"><a href="#rootanalogfunction">
+            (analogfunction)
+          </a>analogfunction</span><span class="info">list of all analogfunction</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('instance');"><a href="#rootinstance">
+            (instance)
+          </a>instance</span><span class="info">instances</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('variableprototype');"><a href="#rootvariableprototype">
+            (variableprototype)
+          </a>variable</span><span class="info">variable declarations</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('analog');"><a href="#rootanalog">
+            (analog)
+          </a>analog</span><span class="info">analog code</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('block');"><a href="#rootblock">
+            (block)
+          </a>block</span><span class="info">list of all blocks</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('blockvariable');"><a href="#rootblockvariable">
+            (blockvariable)
+          </a>blockvariable</span><span class="info">list of all blockvariable</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('assignment');"><a href="#rootassignment">
+            (assignment)
+          </a>assignment</span><span class="info">list of assignments</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>callfunction</span><span class="info">instantiator</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('contribution');"><a href="#rootcontribution">
+            (contribution)
+          </a>contribution</span><span class="info">list of contributions</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('conditional');"><a href="#rootconditional">
+            (conditional)
+          </a>conditional</span><span class="info">list of all conditional</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>case</span><span class="info">case</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>forloop</span><span class="info">forloop</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>whileloop</span><span class="info">whileloop</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>instantiator</span><span class="info">instantiator</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('globalevent');"><a href="#rootglobalevent">
+            (globalevent)
+          </a>globalevent</span><span class="info">list of all globalevents</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('crossevent');"><a href="#rootcrossevent">
+            (crossevent)
+          </a>crossevent</span><span class="info">list of all crossevents</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('timerevent');"><a href="#roottimerevent">
+            (timerevent)
+          </a>timerevent</span><span class="info">list of all timerevents</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>expression</span><span class="info">list of all expressions</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('jacobian');"><a href="#rootjacobian">
+            (jacobian)
+          </a>jacobian</span><span class="info">list of jacobians</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('probe');"><a href="#rootprobe">
+            (probe)
+          </a>probe</span><span class="info">list of all probes</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('source');"><a href="#rootsource">
+            (source)
+          </a>source</span><span class="info">list of all sources</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('range');"><a href="#rootrange">
+            (range)
+          </a>range</span><span class="info">list of parameter ranges</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('evaluation');"><a href="#rootevaluation">
+            (evaluation)
+          </a>evaluation</span><span class="info">obsolete</span></span></span><span class="trigger" id="rootanalogfunction" onClick="switchNodeCollaping('analogfunction');"><img src="images/adms-element.png">analogfunction<span class="info">analog functions (user defined functions) (uid="$1:$2")</span><br></span><span class="branch" id="analogfunction"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('lexval');"><a href="#rootlexval">
+            (lexval)
+          </a>lexval</span><span class="info">name of the analog function</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admstype');">
+          (basicenumeration)
+          type<span class="info">returned type</span><span class="branch" id="admstype"><img src="images/adms-enumeration.png"><span>real</span><span class="info">returns reals</span><br><img src="images/adms-enumeration.png"><span>integer</span><span class="info">returns integers</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>tree</span><span class="info">code</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('variableprototype');"><a href="#rootvariableprototype">
+            (variableprototype)
+          </a>variable</span><span class="info">variable declarations</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span></span><span class="trigger" id="rootnodealias" onClick="switchNodeCollaping('nodealias');"><img src="images/adms-element.png">nodealias<span class="info">node aliases declared in the module (uid="$2")</span><br></span><span class="branch" id="nodealias"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">alias name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('node');"><a href="#rootnode">
+            (node)
+          </a>node</span><span class="info">back to branch</span></span></span><span class="trigger" id="rootnode" onClick="switchNodeCollaping('node');"><img src="images/adms-element.png">node<span class="info">internal nodes + terminals (uid="$2")</span><br></span><span class="branch" id="node"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">node name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>maxsize</span><span class="info">upper bound of node array</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>minsize</span><span class="info">lower bound of node array</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdirection');">
+          (basicenumeration)
+          direction<span class="info">its topological direction</span><span class="branch" id="admsdirection"><img src="images/adms-enumeration.png"><span>input</span><span class="info">node is input terminal</span><br><img src="images/adms-enumeration.png"><span>output</span><span class="info">node is output terminal</span><br><img src="images/adms-enumeration.png"><span>inout</span><span class="info">node is input/output terminal</span><br><img src="images/adms-enumeration.png"><span>internal</span><span class="info">node is internal node</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('discipline');"><a href="#rootdiscipline">
+            (discipline)
+          </a>discipline</span><span class="info">back to node discipline</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsgrounded');">
+          (basicenumeration)
+          grounded<span class="info">node is ground</span><span class="branch" id="admsgrounded"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admslocation');">
+          (basicenumeration)
+          location<span class="info">topological location of node</span><span class="branch" id="admslocation"><img src="images/adms-enumeration.png"><span>ground</span><span class="info">node is ground</span><br><img src="images/adms-enumeration.png"><span>external</span><span class="info">node is terminal</span><br><img src="images/adms-enumeration.png"><span>internal</span><span class="info">node is internal node</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span></span><span class="trigger" id="rootbranchalias" onClick="switchNodeCollaping('branchalias');"><img src="images/adms-element.png">branchalias<span class="info">branch aliases declared in the module (uid="$2")</span><br></span><span class="branch" id="branchalias"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">alias name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('branch');"><a href="#rootbranch">
+            (branch)
+          </a>branch</span><span class="info">back to branch</span></span></span><span class="trigger" id="rootbranch" onClick="switchNodeCollaping('branch');"><img src="images/adms-element.png">branch<span class="info">branches used by the module (uid="$2[$3],$4[$5]")</span><br></span><span class="branch" id="branch"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('node');"><a href="#rootnode">
+            (node)
+          </a>pnode</span><span class="info">back to pnode</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>pindex</span><span class="info">pnode index in node array</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('node');"><a href="#rootnode">
+            (node)
+          </a>nnode</span><span class="info">back to nnode</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>nindex</span><span class="info">nnode index in node array</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('discipline');"><a href="#rootdiscipline">
+            (discipline)
+          </a>discipline</span><span class="info">back to discipline</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsgrounded');">
+          (basicenumeration)
+          grounded<span class="info">nnode is ground</span><span class="branch" id="admsgrounded"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span></span><span class="trigger" id="rootvariableprototype" onClick="switchNodeCollaping('variableprototype');"><img src="images/adms-element.png">variableprototype<span class="info">potential/flow source (uid="$2")</span><br></span><span class="branch" id="variableprototype"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('lexval');"><a href="#rootlexval">
+            (lexval)
+          </a>lexval</span><span class="info">locus</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>block</span><span class="info">where is the variable declared? (module,block,analogfunction)</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdependency');">
+          (basicenumeration)
+          dependency<span class="info">is Probe dependent</span><span class="branch" id="admsdependency"><img src="images/adms-enumeration.png"><span>constant</span><span class="info">is operating point independent</span><br><img src="images/adms-enumeration.png"><span>noprobe</span><span class="info">does not depend on probes</span><br><img src="images/adms-enumeration.png"><span>linear</span><span class="info">depends lineary on probes</span><br><img src="images/adms-enumeration.png"><span>nonlinear</span><span class="info">depends non-lineary on probes</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsstatic');">
+          (basicenumeration)
+          static<span class="info">this term has static contribution</span><span class="branch" id="admsstatic"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdynamic');">
+          (basicenumeration)
+          dynamic<span class="info">this term has dynamic contribution</span><span class="branch" id="admsdynamic"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssizetype');">
+          (basicenumeration)
+          sizetype<span class="info">variable is either scalar or array</span><span class="branch" id="admssizetype"><img src="images/adms-enumeration.png"><span>scalar</span><span class="info">it is a scalar</span><br><img src="images/adms-enumeration.png"><span>array</span><span class="info">it is an array</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsparametertype');">
+          (basicenumeration)
+          parametertype<span class="info">parameter type</span><span class="branch" id="admsparametertype"><img src="images/adms-enumeration.png"><span>model</span><span class="info">model parameter (process, scaling)</span><br><img src="images/adms-enumeration.png"><span>instance</span><span class="info">instance (geometries, mfactor)</span><br><img src="images/adms-enumeration.png"><span>analogfunction</span><span class="info">analog function variable</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admstype');">
+          (basicenumeration)
+          type<span class="info">variable data type</span><span class="branch" id="admstype"><img src="images/adms-enumeration.png"><span>integer</span><span class="info">variable has integer values</span><br><img src="images/adms-enumeration.png"><span>real</span><span class="info">variable has real values</span><br><img src="images/adms-enumeration.png"><span>string</span><span class="info">variable has string values</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>maxsize</span><span class="info">upper index of variable (array)</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>minsize</span><span class="info">lower index of variable (array)</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsinput');">
+          (basicenumeration)
+          input<span class="info">parameter variable</span><span class="branch" id="admsinput"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsoutput');">
+          (basicenumeration)
+          output<span class="info">variable is output parameter</span><span class="branch" id="admsoutput"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsscope');">
+          (basicenumeration)
+          scope<span class="info">tells where variable is set/used</span><span class="branch" id="admsscope"><img src="images/adms-enumeration.png"><span>local</span><span class="info">local variable</span><br><img src="images/adms-enumeration.png"><span>global_model</span><span class="info">parameter model or set in @model, used atleast in @ask|@instance|@evaluate|@noise|@final|@cross|@event</span><br><img src="images/adms-enumeration.png"><span>global_instance</span><span class="info">set in @instance, usedatleast in @instance|@evaluate|@noise|@final|@cross|@event</span><br><img src="images/adms-enumeration.png"><span>global_final</span><span class="info">set in @final_step, usedatleast in @ask|@final_step</span><br><img src="images/adms-enumeration.png"><span>global_past</span><span class="info">obsolete</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>default</span><span class="info">default value of the variable</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsderivate');">
+          (basicenumeration)
+          derivate<span class="info">obsolete-used by old interfaces</span><span class="branch" id="admsderivate"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsisstate');">
+          (basicenumeration)
+          isstate<span class="info">obsolete-used by old interfaces</span><span class="branch" id="admsisstate"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsusedinmodel');">
+          (basicenumeration)
+          usedinmodel<span class="info">variable value used in @model</span><span class="branch" id="admsusedinmodel"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsusedininstance');">
+          (basicenumeration)
+          usedininstance<span class="info">variable value used in @instance</span><span class="branch" id="admsusedininstance"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsusedininitial_step');">
+          (basicenumeration)
+          usedininitial_step<span class="info">variable value used in @initial_step</span><span class="branch" id="admsusedininitial_step"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsusedinevaluate');">
+          (basicenumeration)
+          usedinevaluate<span class="info">variable value used in @evaluate</span><span class="branch" id="admsusedinevaluate"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsusedinnoise');">
+          (basicenumeration)
+          usedinnoise<span class="info">variable value used in @noise</span><span class="branch" id="admsusedinnoise"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsusedinfinal');">
+          (basicenumeration)
+          usedinfinal<span class="info">variable value used in @final</span><span class="branch" id="admsusedinfinal"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsusedinevent');">
+          (basicenumeration)
+          usedinevent<span class="info">variable value used in @cross or @timer</span><span class="branch" id="admsusedinevent"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssetinmodel');">
+          (basicenumeration)
+          setinmodel<span class="info">variable value assigned in @model</span><span class="branch" id="admssetinmodel"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssetininstance');">
+          (basicenumeration)
+          setininstance<span class="info">variable value assigned in @instance</span><span class="branch" id="admssetininstance"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssetininitial_step');">
+          (basicenumeration)
+          setininitial_step<span class="info">variable value assigned in @initial_step</span><span class="branch" id="admssetininitial_step"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssetinevaluate');">
+          (basicenumeration)
+          setinevaluate<span class="info">variable value assigned in @evaluate</span><span class="branch" id="admssetinevaluate"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssetinnoise');">
+          (basicenumeration)
+          setinnoise<span class="info">variable value assigned in @noise</span><span class="branch" id="admssetinnoise"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssetinfinal');">
+          (basicenumeration)
+          setinfinal<span class="info">variable value assigned in @final</span><span class="branch" id="admssetinfinal"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssetinevent');">
+          (basicenumeration)
+          setinevent<span class="info">variable value assigned in @cross or @timer</span><span class="branch" id="admssetinevent"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssetingetprev');">
+          (basicenumeration)
+          setingetprev<span class="info">variable value assigned from previous</span><span class="branch" id="admssetingetprev"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsTemperatureDependent');">
+          (basicenumeration)
+          TemperatureDependent<span class="info">variable is temperature dependent</span><span class="branch" id="admsTemperatureDependent"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsOPdependent');">
+          (basicenumeration)
+          OPdependent<span class="info">variable is OP dependent</span><span class="branch" id="admsOPdependent"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsinsource');">
+          (basicenumeration)
+          insource<span class="info">variable occurs in source assignment</span><span class="branch" id="admsinsource"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          vcount</span><span class="info">count in source assignment</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('assignment');"><a href="#rootassignment">
+            (assignment)
+          </a>vlast</span><span class="info">last assignment</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>arraydefault</span><span class="info">default value</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span><span class="trigger"><img src="images/adms-list.png"><span>
+          (basicstring)
+          alias</span><span class="info">alias name</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('range');"><a href="#rootrange">
+            (range)
+          </a>range</span><span class="info">list of ranges of the variable</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('probe');"><a href="#rootprobe">
+            (probe)
+          </a>probe</span><span class="info">the variable depends on these probes</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('probe');"><a href="#rootprobe">
+            (probe)
+          </a>ddxprobe</span><span class="info">the variable depends on these ddx probes</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('variable');"><a href="#rootvariable">
+            (variable)
+          </a>variable</span><span class="info">variable depends on these variables</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('assignment');"><a href="#rootassignment">
+            (assignment)
+          </a>assignment</span><span class="info">obsolete</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('variable');"><a href="#rootvariable">
+            (variable)
+          </a>instance</span><span class="info">all instances</span></span></span><span class="trigger" id="rootsource" onClick="switchNodeCollaping('source');"><img src="images/adms-element.png">source<span class="info">potential/flow source (uid="$3($2)")</span><br></span><span class="branch" id="source"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('branch');"><a href="#rootbranch">
+            (branch)
+          </a>branch</span><span class="info">branch associated to the source</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('nature');"><a href="#rootnature">
+            (nature)
+          </a>nature</span><span class="info">nature of the source</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('discipline');"><a href="#rootdiscipline">
+            (discipline)
+          </a>discipline</span><span class="info">discipline of the source</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsstatic');">
+          (basicenumeration)
+          static<span class="info">has the source a static contribution?</span><span class="branch" id="admsstatic"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdynamic');">
+          (basicenumeration)
+          dynamic<span class="info">has the source a dynamic contribution?</span><span class="branch" id="admsdynamic"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admswhitenoise');">
+          (basicenumeration)
+          whitenoise<span class="info">has the source a whitenoise contribution?</span><span class="branch" id="admswhitenoise"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsflickernoise');">
+          (basicenumeration)
+          flickernoise<span class="info">has the source a flickernoise contribution?</span><span class="branch" id="admsflickernoise"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsgrounded');">
+          (basicenumeration)
+          grounded<span class="info">is second terminal of the source ground?</span><span class="branch" id="admsgrounded"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsswitch');">
+          (basicenumeration)
+          switch<span class="info">is source switch?</span><span class="branch" id="admsswitch"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admstype');">
+          (basicenumeration)
+          type<span class="info">type of the source</span><span class="branch" id="admstype"><img src="images/adms-enumeration.png"><span>shot</span><span class="info">source is shot noise</span><br><img src="images/adms-enumeration.png"><span>thermal</span><span class="info">source is thermal noise</span><br><img src="images/adms-enumeration.png"><span>flicker</span><span class="info">source is flicker noise</span><br><img src="images/adms-enumeration.png"><span>fs</span><span class="info">source is flow source</span><br><img src="images/adms-enumeration.png"><span>ps</span><span class="info">source is potential source</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('probe');"><a href="#rootprobe">
+            (probe)
+          </a>probe</span><span class="info">list of probes</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span></span><span class="trigger" id="rootrange" onClick="switchNodeCollaping('range');"><img src="images/adms-element.png">range<span class="info">range are used by variables to specify valid values (uid="$7 $5$2:$3$6")</span><br></span><span class="branch" id="range"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>infexpr</span><span class="info">value of inf bound</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>supexpr</span><span class="info">value of sup bound</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">unused</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsinfboundtype');">
+          (basicenumeration)
+          infboundtype<span class="info">inf bound type</span><span class="branch" id="admsinfboundtype"><img src="images/adms-enumeration.png"><span>range_bound_include</span><span class="info">[</span><br><img src="images/adms-enumeration.png"><span>range_bound_exclude</span><span class="info">(</span><br><img src="images/adms-enumeration.png"><span>range_bound_value</span><span class="info">[</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admssupboundtype');">
+          (basicenumeration)
+          supboundtype<span class="info">sup bound type</span><span class="branch" id="admssupboundtype"><img src="images/adms-enumeration.png"><span>range_bound_include</span><span class="info">]</span><br><img src="images/adms-enumeration.png"><span>range_bound_exclude</span><span class="info">)</span><br><img src="images/adms-enumeration.png"><span>range_bound_value</span><span class="info">]</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admstype');">
+          (basicenumeration)
+          type<span class="info">type of range</span><span class="branch" id="admstype"><img src="images/adms-enumeration.png"><span>include</span><span class="info">from</span><br><img src="images/adms-enumeration.png"><span>include_value</span><span class="info">from</span><br><img src="images/adms-enumeration.png"><span>exclude</span><span class="info">exclude</span><br><img src="images/adms-enumeration.png"><span>exclude_value</span><span class="info">exclude</span><br></span></span></span></span><span class="trigger" id="rootjacobian" onClick="switchNodeCollaping('jacobian');"><img src="images/adms-element.png">jacobian<span class="info">jacobians created after compilation (uid="$2[$3]:$4[$5]")</span><br></span><span class="branch" id="jacobian"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('node');"><a href="#rootnode">
+            (node)
+          </a>row</span><span class="info">back to node (either equation or node)</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>rowindex</span><span class="info">row index in node array</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('node');"><a href="#rootnode">
+            (node)
+          </a>column</span><span class="info">back to node (either equation or node)</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>columnindex</span><span class="info">column index in node array</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdiagonal');">
+          (basicenumeration)
+          diagonal<span class="info">this term is in the diagonal</span><span class="branch" id="admsdiagonal"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsstatic');">
+          (basicenumeration)
+          static<span class="info">this term has static contribution</span><span class="branch" id="admsstatic"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdynamic');">
+          (basicenumeration)
+          dynamic<span class="info">this term has dynamic contribution</span><span class="branch" id="admsdynamic"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span></span><span class="trigger" id="rootanalog" onClick="switchNodeCollaping('analog');"><img src="images/adms-element.png">analog<span class="info">to analog code (uid="analog $1")</span><br></span><span class="branch" id="analog"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>code</span><span class="info">top of analog block</span></span></span><span class="trigger" id="rootmath" onClick="switchNodeCollaping('math');"><img src="images/adms-element.png"><b>math</b><span class="info">mathml-like type (uid="$1")</span><br></span><span class="branch" id="math"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicreal)
+          value</span><span class="info">numerical value</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsstatic');">
+          (basicenumeration)
+          static<span class="info">math used by static contribution</span><span class="branch" id="admsstatic"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdynamic');">
+          (basicenumeration)
+          dynamic<span class="info">math used by static contribution</span><span class="branch" id="admsdynamic"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsdependency');">
+          (basicenumeration)
+          dependency<span class="info">is Probe dependent</span><span class="branch" id="admsdependency"><img src="images/adms-enumeration.png"><span>constant</span><span class="info">is operating point independent</span><br><img src="images/adms-enumeration.png"><span>noprobe</span><span class="info">does not depend on probes</span><br><img src="images/adms-enumeration.png"><span>linear</span><span class="info">depends lineary on probes</span><br><img src="images/adms-enumeration.png"><span>nonlinear</span><span class="info">depends non-lineary on probes</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>attribute</span><span class="info">list of any items</span></span><span class="trigger" id="rootstring" onClick="switchNodeCollaping('string');"><img src="images/adms-element.png">string<span class="info">adms string (uid="\"$1\"")</span><br></span><span class="branch" id="string"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          value</span><span class="info">character array value</span></span></span><span class="trigger" id="rootsubexpression" onClick="switchNodeCollaping('subexpression');"><img src="images/adms-element.png"><b>subexpression</b><span class="info">mathml-like subexpression (uid="$1")</span><br></span><span class="branch" id="subexpression"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>expression</span><span class="info">root expression</span></span><span class="trigger" id="rootmapply_unary" onClick="switchNodeCollaping('mapply_unary');"><img src="images/adms-element.png">mapply_unary<span class="info">unary operator (uid="$1")</span><br></span><span class="branch" id="mapply_unary"><span class="trigger"><img src="images/adms-uid.png"><span onClick="switchNodeCollaping('mapply_unaryname');">
+          (basicenumeration)
+          name<span class="info">name of operator</span><span class="branch" id="mapply_unaryname"><img src="images/adms-enumeration.png"><span>plus</span><span class="info">(+$2)</span><br><img src="images/adms-enumeration.png"><span>minus</span><span class="info">(-$2)</span><br><img src="images/adms-enumeration.png"><span>not</span><span class="info">(!$2)</span><br><img src="images/adms-enumeration.png"><span>bw_not</span><span class="info">(~$2)</span><br></span></span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>arg1</span><span class="info">first argument</span></span></span><span class="trigger" id="rootmapply_binary" onClick="switchNodeCollaping('mapply_binary');"><img src="images/adms-element.png">mapply_binary<span class="info">binary operator (uid="$1")</span><br></span><span class="branch" id="mapply_binary"><span class="trigger"><img src="images/adms-uid.png"><span onClick="switchNodeCollaping('mapply_binaryname');">
+          (basicenumeration)
+          name<span class="info">name of operator</span><span class="branch" id="mapply_binaryname"><img src="images/adms-enumeration.png"><span>bw_equr</span><span class="info">($2^~$3)</span><br><img src="images/adms-enumeration.png"><span>bw_equl</span><span class="info">($2~^$3)</span><br><img src="images/adms-enumeration.png"><span>bw_xor</span><span class="info">($2^$3)</span><br><img src="images/adms-enumeration.png"><span>bw_or</span><span class="info">($2|$3)</span><br><img src="images/adms-enumeration.png"><span>bw_and</span><span class="info">($2&amp;$3)</span><br><img src="images/adms-enumeration.png"><span>or</span><span class="info">($2||$3)</span><br><img src="images/adms-enumeration.png"><span>and</span><span class="info">($2&amp;&amp;$3)</span><br><img src="images/adms-enumeration.png"><span>equ</span><span class="info">($2==$3)</span><br><img src="images/adms-enumeration.png"><span>notequ</span><span class="info">($2!=$3)</span><br><img src="images/adms-enumeration.png"><span>lt</span><span class="info">($2&lt;$3)</span><br><img src="images/adms-enumeration.png"><span>lt_equ</span><span class="info">($2&lt;=$3)</span><br><img src="images/adms-enumeration.png"><span>gt</span><span class="info">($2&gt;$3)</span><br><img src="images/adms-enumeration.png"><span>gt_equ</span><span class="info">($2&gt;=$3)</span><br><img src="images/adms-enumeration.png"><span>shiftr</span><span class="info">($2&gt;&gt;$3)</span><br><img src="images/adms-enumeration.png"><span>shiftl</span><span class="info">($2&lt;&lt;$3)</span><br><img src="images/adms-enumeration.png"><span>addp</span><span class="info">($2+$3)</span><br><img src="images/adms-enumeration.png"><span>addm</span><span class="info">($2-$3)</span><br><img src="images/adms-enumeration.png"><span>multtime</span><span class="info">($2*$3)</span><br><img src="images/adms-enumeration.png"><span>multdiv</span><span class="info">($2/$3)</span><br><img src="images/adms-enumeration.png"><span>multmod</span><span class="info">($2%$3)</span><br></span></span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>arg1</span><span class="info">first argument</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>arg2</span><span class="info">second argument</span></span></span><span class="trigger" id="rootmapply_ternary" onClick="switchNodeCollaping('mapply_ternary');"><img src="images/adms-element.png">mapply_ternary<span class="info">ternary operator (uid="$1")</span><br></span><span class="branch" id="mapply_ternary"><span class="trigger"><img src="images/adms-uid.png"><span onClick="switchNodeCollaping('mapply_ternaryname');">
+          (basicenumeration)
+          name<span class="info">name of operator</span><span class="branch" id="mapply_ternaryname"><img src="images/adms-enumeration.png"><span>conditional</span><span class="info">($2?$3:$4)</span><br></span></span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>arg1</span><span class="info">first argument</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>arg2</span><span class="info">second argument</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>arg3</span><span class="info">third argument</span></span></span><span class="trigger" id="rootnumber" onClick="switchNodeCollaping('number');"><img src="images/adms-element.png">number<span class="info">number representation (uid="$1")</span><br></span><span class="branch" id="number"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('lexval');"><a href="#rootlexval">
+            (lexval)
+          </a>lexval</span><span class="info">locus</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('subexpressionscalingunit');">
+          (basicenumeration)
+          scalingunit<span class="info">factor by which the number value is scaled</span><span class="branch" id="subexpressionscalingunit"><img src="images/adms-enumeration.png"><span>E</span><span class="info">multiplication factor = 1.0e+18 (exa)</span><br><img src="images/adms-enumeration.png"><span>P</span><span class="info">multiplication factor = 1.0e+15 (peta)</span><br><img src="images/adms-enumeration.png"><span>T</span><span class="info">multiplication factor = 1.0e+12 (tera)</span><br><img src="images/adms-enumeration.png"><span>G</span><span class="info">multiplication factor = 1.0e+9  (giga)</span><br><img src="images/adms-enumeration.png"><span>M</span><span class="info">multiplication factor = 1.0e+6  (mega)</span><br><img src="images/adms-enumeration.png"><span>k</span><span class="info">multiplication factor = 1.0e+3  (kilo)</span><br><img src="images/adms-enumeration.png"><span>h</span><span class="info">multiplication factor = 1.0e+2  (hecto)</span><br><img src="images/adms-enumeration.png"><span>D</span><span class="info">multiplication factor = 1.0e+1  (deka)</span><br><img src="images/adms-enumeration.png"><span>1</span><span class="info">multiplication factor = 1.0     (none)</span><br><img src="images/adms-enumeration.png"><span>d</span><span class="info">multiplication factor = 1.0e-1  (deci)</span><br><img src="images/adms-enumeration.png"><span>c</span><span class="info">multiplication factor = 1.0e-2  (centi)</span><br><img src="images/adms-enumeration.png"><span>m</span><span class="info">multiplication factor = 1.0e-3  (milli)</span><br><img src="images/adms-enumeration.png"><span>u</span><span class="info">multiplication factor = 1.0e-6  (micro)</span><br><img src="images/adms-enumeration.png"><span>n</span><span class="info">multiplication factor = 1.0e-9  (nano)</span><br><img src="images/adms-enumeration.png"><span>A</span><span class="info">multiplication factor = 1.0e-10 (amgstron)</span><br><img src="images/adms-enumeration.png"><span>p</span><span class="info">multiplication factor = 1.0e-12 (pico)</span><br><img src="images/adms-enumeration.png"><span>f</span><span class="info">multiplication factor = 1.0e-15 (femto)</span><br><img src="images/adms-enumeration.png"><span>a</span><span class="info">multiplication factor = 1.0e-18 (atto)</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('subexpressioncast');">
+          (basicenumeration)
+          cast<span class="info">representation</span><span class="branch" id="subexpressioncast"><img src="images/adms-enumeration.png"><span>i</span><span class="info">integer</span><br><img src="images/adms-enumeration.png"><span>d</span><span class="info">double</span><br></span></span></span></span><span class="trigger" id="rootfunction" onClick="switchNodeCollaping('function');"><img src="images/adms-element.png">function<span class="info">function representation (uid="$1($5)")</span><br></span><span class="branch" id="function"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('lexval');"><a href="#rootlexval">
+            (lexval)
+          </a>lexval</span><span class="info">locus</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicinteger)
+          unique_id</span><span class="info">uinque id</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('analogfunction');"><a href="#rootanalogfunction">
+            (analogfunction)
+          </a>definition</span><span class="info">back to analogfunction</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('subexpressionclass');">
+          (basicenumeration)
+          class<span class="info">type of function (builtin, userdefined, ...)</span><span class="branch" id="subexpressionclass"><img src="images/adms-enumeration.png"><span>builtin</span><span class="info">builtin standard math function</span><br><img src="images/adms-enumeration.png"><span>analog</span><span class="info">analog function - user defined</span><br><img src="images/adms-enumeration.png"><span>digital</span><span class="info">digital function - user defined</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>arguments</span><span class="info">list of arguments</span><span class="info">(uid=",")</span></span></span><span class="trigger" id="rootvariable" onClick="switchNodeCollaping('variable');"><img src="images/adms-element.png">variable<span class="info">variable instantiation (uid="$1")</span><br></span><span class="branch" id="variable"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('variableprototype');"><a href="#rootvariableprototype">
+            (variableprototype)
+          </a>prototype</span><span class="info">variable prototype</span></span></span><span class="trigger" id="rootarray" onClick="switchNodeCollaping('array');"><img src="images/adms-element.png">array<span class="info">array instantiation (uid="$1[$2]")</span><br></span><span class="branch" id="array"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('variable');"><a href="#rootvariable">
+            (variable)
+          </a>variable</span><span class="info">back to the variable</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>index</span><span class="info">index (can be complex expression)</span></span></span><span class="trigger" id="rootprobe" onClick="switchNodeCollaping('probe');"><img src="images/adms-element.png">probe<span class="info">all probes created after compilation (uid="$3($2)")</span><br></span><span class="branch" id="probe"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('branch');"><a href="#rootbranch">
+            (branch)
+          </a>branch</span><span class="info">back to branch</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('nature');"><a href="#rootnature">
+            (nature)
+          </a>nature</span><span class="info">back to probe nature</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('subexpressionseen');">
+          (basicenumeration)
+          seen<span class="info">internal use</span><span class="branch" id="subexpressionseen"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('discipline');"><a href="#rootdiscipline">
+            (discipline)
+          </a>discipline</span><span class="info">back to discipline</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('subexpressiongrounded');">
+          (basicenumeration)
+          grounded<span class="info">nnode of probe is ground</span><span class="branch" id="subexpressiongrounded"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('source');"><a href="#rootsource">
+            (source)
+          </a>source</span><span class="info">back to source</span></span></span></span><span class="trigger" id="rootexpression" onClick="switchNodeCollaping('expression');"><img src="images/adms-element.png">expression<span class="info">expression tree (uid="($2)")</span><br></span><span class="branch" id="expression"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>tree</span><span class="info">subexpression</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>expression/static</b>
+    same as <b>expression/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>expression/dynamic</b>
+    same as <b>expression/math/dynamic</b></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          hasspecialnumber</span><span class="info">obsolete - is either +inf or -inf</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('mathhasVoltageDependentFunction');">
+          (basicenumeration)
+          hasVoltageDependentFunction<span class="info">expression has voltage dependent functions</span><span class="branch" id="mathhasVoltageDependentFunction"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('mathinfinity');">
+          (basicenumeration)
+          infinity<span class="info">infinite value</span><span class="branch" id="mathinfinity"><img src="images/adms-enumeration.png"><span>minus</span><span class="info">-inf</span><br><img src="images/adms-enumeration.png"><span>plus</span><span class="info">+inf</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">otherwise</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('mathTemperatureDependent');">
+          (basicenumeration)
+          TemperatureDependent<span class="info">expression is temperature dependent</span><span class="branch" id="mathTemperatureDependent"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('mathvalue');">
+          (basicenumeration)
+          value<span class="info">expression value is either 0, 1, -1 or any</span><span class="branch" id="mathvalue"><img src="images/adms-enumeration.png"><span>is_zero</span><span class="info">expression value equals 0</span><br><img src="images/adms-enumeration.png"><span>is_one</span><span class="info">expression value equals 1</span><br><img src="images/adms-enumeration.png"><span>is_neg_one</span><span class="info">expression value equals -1</span><br><img src="images/adms-enumeration.png"><span>is_any</span><span class="info">expression value equals neither -1, 0, 1</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('function');"><a href="#rootfunction">
+            (function)
+          </a>function</span><span class="info">built-in functions occuring in expression</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('probe');"><a href="#rootprobe">
+            (probe)
+          </a>probe</span><span class="info">list of probes that occur in expression</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('variable');"><a href="#rootvariable">
+            (variable)
+          </a>variable</span><span class="info">list of explicit variables that occur in expression</span></span></span><span class="trigger" id="rootinstance" onClick="switchNodeCollaping('instance');"><img src="images/adms-element.png">instance<span class="info">instantiation (uid="$1.$2#$3")</span><br></span><span class="branch" id="instance"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>instantiator</span><span class="info">back to instantiator</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">instance module</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('instancenode');"><a href="#rootinstancenode">
+            (instancenode)
+          </a>terminal</span><span class="info">terminals</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('instanceparameter');"><a href="#rootinstanceparameter">
+            (instanceparameter)
+          </a>parameterset</span><span class="info">parameter assignments</span></span></span><span class="trigger" id="rootinstanceparameter" onClick="switchNodeCollaping('instanceparameter');"><img src="images/adms-element.png">instanceparameter<span class="info">.parameter(expression) (uid="$1#$2")</span><br></span><span class="branch" id="instanceparameter"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('variableprototype');"><a href="#rootvariableprototype">
+            (variableprototype)
+          </a>parameter</span><span class="info">left-hand-side</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>value</span><span class="info">right-hand-side</span></span></span><span class="trigger" id="rootinstancenode" onClick="switchNodeCollaping('instancenode');"><img src="images/adms-element.png">instancenode<span class="info">instance node (uid="$1#$2")</span><br></span><span class="branch" id="instancenode"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('node');"><a href="#rootnode">
+            (node)
+          </a>nodefrominstantiator</span><span class="info">instantiator node</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('node');"><a href="#rootnode">
+            (node)
+          </a>nodefrommodule</span><span class="info">instance node</span></span></span><span class="trigger" id="rootnilled" onClick="switchNodeCollaping('nilled');"><img src="images/adms-element.png">nilled<span class="info">nilled operator (uid="nilled operator")</span><br></span><span class="branch" id="nilled"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>nilled/static</b>
+    same as <b>nilled/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>nilled/dynamic</b>
+    same as <b>nilled/math/dynamic</b></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">obsolete - not used</span></span></span><span class="trigger" id="rootassignment" onClick="switchNodeCollaping('assignment');"><img src="images/adms-element.png">assignment<span class="info">assignement: variable=expression (uid="$2=$3")</span><br></span><span class="branch" id="assignment"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>lhs</span><span class="info">left-hand-side (variable or array)</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>rhs</span><span class="info">right-hand-side</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('lexval');"><a href="#rootlexval">
+            (lexval)
+          </a>lexval</span><span class="info">locus</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>assignment/static</b>
+    same as <b>assignment/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>assignment/dynamic</b>
+    same as <b>assignment/math/dynamic</b></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">obsolete - not used</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span></span><span class="trigger" id="rootcontribution" onClick="switchNodeCollaping('contribution');"><img src="images/adms-element.png">contribution<span class="info">contribution: source &lt;+ expression; (uid="$2&lt;+$3;")</span><br></span><span class="branch" id="contribution"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('source');"><a href="#rootsource">
+            (source)
+          </a>lhs</span><span class="info">left-hand-side</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>rhs</span><span class="info">right-hand-side</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('lexval');"><a href="#rootlexval">
+            (lexval)
+          </a>lexval</span><span class="info">locus</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>contribution/static</b>
+    same as <b>contribution/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>contribution/dynamic</b>
+    same as <b>contribution/math/dynamic</b></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('branchalias');"><a href="#rootbranchalias">
+            (branchalias)
+          </a>branchalias</span><span class="info">name of branch</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">obsolete - not used</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('mathwhitenoise');">
+          (basicenumeration)
+          whitenoise<span class="info">do we have source&lt;+whitenoise(...)?</span><span class="branch" id="mathwhitenoise"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('mathflickernoise');">
+          (basicenumeration)
+          flickernoise<span class="info">do we have source&lt;+flickernoise(...)?</span><span class="branch" id="mathflickernoise"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span></span><span class="trigger" id="rootconditional" onClick="switchNodeCollaping('conditional');"><img src="images/adms-element.png">conditional<span class="info">conditional if..then..else.. (uid="if($2) $3$4")</span><br></span><span class="branch" id="conditional"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>if</span><span class="info">conditional expression</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>then</span><span class="info">then block</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>else</span><span class="info">else block</span><span class="info">(uid=" else $4")</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>conditional/static</b>
+    same as <b>conditional/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>conditional/dynamic</b>
+    same as <b>conditional/math/dynamic</b></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span></span><span class="trigger" id="rootforloop" onClick="switchNodeCollaping('forloop');"><img src="images/adms-element.png">forloop<span class="info">for(initial;conditional;update) forblock (uid="for($2;$3;$4)\n$5")</span><br></span><span class="branch" id="forloop"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('assignment');"><a href="#rootassignment">
+            (assignment)
+          </a>initial</span><span class="info">initial</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>condition</span><span class="info">condition</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('assignment');"><a href="#rootassignment">
+            (assignment)
+          </a>update</span><span class="info">update</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>forblock</span><span class="info">for block</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>forloop/static</b>
+    same as <b>forloop/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>forloop/dynamic</b>
+    same as <b>forloop/math/dynamic</b></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span></span><span class="trigger" id="rootwhileloop" onClick="switchNodeCollaping('whileloop');"><img src="images/adms-element.png">whileloop<span class="info">while(..).. (uid="while($2)\n$3")</span><br></span><span class="branch" id="whileloop"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>while</span><span class="info">while condition</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>whileblock</span><span class="info">while block</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>whileloop/static</b>
+    same as <b>whileloop/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>whileloop/dynamic</b>
+    same as <b>whileloop/math/dynamic</b></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span></span><span class="trigger" id="rootcase" onClick="switchNodeCollaping('case');"><img src="images/adms-element.png">case<span class="info">case (..) 1,2:...; 2,4:...; default:...; endcase (uid="case")</span><br></span><span class="branch" id="case"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('expression');"><a href="#rootexpression">
+            (expression)
+          </a>case</span><span class="info">case condition</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>case/static</b>
+    same as <b>case/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>case/dynamic</b>
+    same as <b>case/math/dynamic</b></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('caseitem');"><a href="#rootcaseitem">
+            (caseitem)
+          </a>caseitem</span><span class="info">list of case items</span></span></span><span class="trigger" id="rootcaseitem" onClick="switchNodeCollaping('caseitem');"><img src="images/adms-element.png">caseitem<span class="info">case item in 'case (..) 1:...; 2:...; endcase' (uid="caseitem")</span><br></span><span class="branch" id="caseitem"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>code</span><span class="info">evaluated code</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('mathdefaultcase');">
+          (basicenumeration)
+          defaultcase<span class="info">is default case? (in that case condition is empty)</span><span class="branch" id="mathdefaultcase"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>condition</span><span class="info">or-ed conditions for selected case item</span></span></span><span class="trigger" id="rootblockvariable" onClick="switchNodeCollaping('blockvariable');"><img src="images/adms-element.png">blockvariable<span class="info">block variable declarations (uid="real $2;")</span><br></span><span class="branch" id="blockvariable"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('block');"><a href="#rootblock">
+            (block)
+          </a>block</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>blockvariable/static</b>
+    same as <b>blockvariable/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>blockvariable/dynamic</b>
+    same as <b>blockvariable/math/dynamic</b></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('variable');"><a href="#rootvariable">
+            (variable)
+          </a>variable</span><span class="info">block variables</span><span class="info">(uid=",")</span></span></span><span class="trigger" id="rootblock" onClick="switchNodeCollaping('block');"><img src="images/adms-element.png">block<span class="info">begin..end block (uid="begin :$2\n$4end\n")</span><br></span><span class="branch" id="block"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('lexval');"><a href="#rootlexval">
+            (lexval)
+          </a>lexval</span><span class="info">locus</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('block');"><a href="#rootblock">
+            (block)
+          </a>block</span><span class="info">block just above</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>item</span><span class="info">items inside begin..end</span><span class="info">(uid="\n")</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>block/static</b>
+    same as <b>block/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>block/dynamic</b>
+    same as <b>block/math/dynamic</b></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">veriloga items</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('variableprototype');"><a href="#rootvariableprototype">
+            (variableprototype)
+          </a>variable</span><span class="info">block variable declarations</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('probe');"><a href="#rootprobe">
+            (probe)
+          </a>probe</span><span class="info">list of probes that occur in begin..end</span></span></span><span class="trigger" id="rootcallfunction" onClick="switchNodeCollaping('callfunction');"><img src="images/adms-element.png">callfunction<span class="info">calling functions ($strobe, $warning, ..) (uid="$2")</span><br></span><span class="branch" id="callfunction"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('module');"><a href="#rootmodule">
+            (module)
+          </a>module</span><span class="info">back to the module</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('function');"><a href="#rootfunction">
+            (function)
+          </a>function</span><span class="info">function called</span></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>callfunction/static</b>
+    same as <b>callfunction/math/static</b></span><span class="trigger"><img src="images/adms-alias.png">
+    (alias) <b>callfunction/dynamic</b>
+    same as <b>callfunction/math/dynamic</b></span></span></span><span class="comment">internal usage - parsing of xml scripts</span><span class="trigger" id="rootevaluation" onClick="switchNodeCollaping('evaluation');"><img src="images/adms-element.png">evaluation<span class="info">obsolete - kept for backward compatibility (uid="")</span><br></span><span class="branch" id="evaluation"><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('variable');"><a href="#rootvariable">
+            (variable)
+          </a>variable</span><span class="info">variables</span></span></span><span class="comment">text: parse</span><span class="trigger" id="roottext" onClick="switchNodeCollaping('text');"><img src="images/adms-element.png">text<span class="info">text=[admst.basicstring|text|path]* (uid="$1:$2")</span><br></span><span class="branch" id="text"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>transform</span><span class="info">back to transform</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          value</span><span class="info">string value</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          aname</span><span class="info">attribute name or %(...)</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          admse</span><span class="info">admse value, otherwise any</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>token</span><span class="info">sequence of text, admst, path</span></span></span><span class="comment">path: parse</span><span class="trigger" id="rootpath" onClick="switchNodeCollaping('path');"><img src="images/adms-element.png">path<span class="info">internal representation of path (uid="$1:$3.$4")</span><br></span><span class="branch" id="path"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>transform</span><span class="info">back to transform</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>text</span><span class="info">text inside (...) in $(...), @(...) or #(...)</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          aname</span><span class="info">attribute name or %(...)</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          avalue</span><span class="info">attribute value</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>template</span><span class="info">template when path is location02</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          keeplist</span><span class="info">do not flatten lists</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          callbackname</span><span class="info">callback name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicfunction)
+          callback</span><span class="info">called when node traversed</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>bar</span><span class="info">all items between |</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>arg</span><span class="info">arguments of arithmetics (+,-,..)</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>u</span><span class="info">child of unary</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>b</span><span class="info">children (1 or 2) of binary</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>c</span><span class="info">condition</span></span></span><span class="trigger" id="rootptraverse" onClick="switchNodeCollaping('ptraverse');"><img src="images/adms-element.png">ptraverse<span class="info">traverse path (uid="$1")</span><br></span><span class="branch" id="ptraverse"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>transform</span><span class="info">back to admst path</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>admst</span><span class="info">admst list</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>alladmst</span><span class="info">keep track of all admst for memory management</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>aliasadmst</span><span class="info">keep track of all admst for memory management</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          position</span><span class="info">count</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>a1</span><span class="info">returned path</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>an</span><span class="info">returned path</span></span></span><span class="trigger" id="rootpparse" onClick="switchNodeCollaping('pparse');"><img src="images/adms-element.png">pparse<span class="info">parser of attr="path" (uid="$1:$2")</span><br></span><span class="branch" id="pparse"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>transform</span><span class="info">transform</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          aname</span><span class="info">path aname</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          value</span><span class="info">path value</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>path</span><span class="info">returned path</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>text</span><span class="info">returned text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basickstring)
+          position</span><span class="info">current character in lexical analysis</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basickstring)
+          tkstart</span><span class="info">first character of token</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          tklen</span><span class="info">length of token</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admstkid');">
+          (basicenumeration)
+          tkid<span class="info">id of token</span><span class="branch" id="admstkid"></span></span></span></span><span class="comment">path: traverse</span><span class="trigger" id="rootadmst" onClick="switchNodeCollaping('admst');"><img src="images/adms-element.png">admst<span class="info">admst value (uid="admst")</span><br></span><span class="branch" id="admst"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>previous</span><span class="info">previous admst</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>previouspath</span><span class="info">previous path</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="switchNodeCollaping('admstpseudo');">
+          (basicenumeration)
+          pseudo<span class="info">pseudo datatypename</span><span class="branch" id="admstpseudo"></span></span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>item</span><span class="info">item</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicfunction)
+          valueto</span><span class="info">valueto routine</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          position</span><span class="info">position</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          count</span><span class="info">count</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          hasnewbasicstring</span><span class="info">string newly allocated</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>original</span><span class="info">original admst</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          refd</span><span class="info">count of references</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicinteger)
+          true</span><span class="info">count of references</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>preva</span><span class="info">returned path</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>nexta</span><span class="info">returned path</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="switchNodeCollaping('admsselected');">
+          (basicenumeration)
+          selected<span class="info">is selected?</span><span class="branch" id="admsselected"><img src="images/adms-enumeration.png"><span>yes</span><span class="info">it is true</span><br><img src="images/adms-enumeration.png"><span>no</span><span class="info">it is false</span><br></span></span></span></span><span class="comment">transform: parse</span><span class="trigger" id="roottransform" onClick="switchNodeCollaping('transform');"><img src="images/adms-element.png">transform<span class="info">transform (uid="[$1:$3]")</span><br></span><span class="branch" id="transform"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          fullfilename</span><span class="info">full file name</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          basefilename</span><span class="info">base file name</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicinteger)
+          l</span><span class="info">line number in file name</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name in &lt;admst:name ... /&gt;</span></span><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>parent</span><span class="info">parent of transform</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicfunction)
+          callback</span><span class="info">routine evaluated when transform is traversed</span></span><span class="trigger"><img src="images/adms-scalar.png"><span>
+          (basicstring)
+          id</span><span class="info">callback name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>pathselect</span><span class="info">path</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>pathpath</span><span class="info">path</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>pathinto</span><span class="info">path</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>pathtest</span><span class="info">path</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>pathlist</span><span class="info">built from tlist</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textselect</span><span class="info">text - for admst:variable - obsolete</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textdatatype</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textmatch</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textrequired</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textseparator</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textfrom</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textto</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textlist</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textname</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textformat</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textfile</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textversion</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textonduplicate</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textprobe</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textstring</span><span class="info">text</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>templates</span><span class="info">list of templates</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('text');"><a href="#roottext">
+            (text)
+          </a>textarguments</span><span class="info">list of text</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>pathoncompare</span><span class="info">comparison</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('path');"><a href="#rootpath">
+            (path)
+          </a>pathinputs</span><span class="info">list of path</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('attribute');"><a href="#rootattribute">
+            (attribute)
+          </a>attribute</span><span class="info">attributes: &lt;xmlname attribute="value"/&gt; (unused if xmlname is transform)</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>children</span><span class="info">children of transform</span></span></span><span class="trigger" id="rootitransform" onClick="switchNodeCollaping('itransform');"><img src="images/adms-element.png">itransform<span class="info">instance of adms transform created by apply-template (uid="$1")</span><br></span><span class="branch" id="itransform"><span class="trigger"><img src="images/adms-uid.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>template</span><span class="info">link to matching template</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('transform');"><a href="#roottransform">
+            (transform)
+          </a>originalcall</span><span class="info">original call</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('admstvariable');"><a href="#rootadmstvariable">
+            (admstvariable)
+          </a>variable</span><span class="info">local admst variables (scope is template)</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>return</span><span class="info">returned values</span></span></span><span class="trigger" id="rootreturn" onClick="switchNodeCollaping('return');"><img src="images/adms-element.png">return<span class="info">Xreturn value (uid="$1")</span><br></span><span class="branch" id="return"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          value</span><span class="info">value</span></span></span><span class="trigger" id="rootattribute" onClick="switchNodeCollaping('attribute');"><img src="images/adms-element.png">attribute<span class="info">pair (name,value) (uid="$1")</span><br></span><span class="branch" id="attribute"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>value</span><span class="info">value</span></span></span><span class="trigger" id="rootadmstvariable" onClick="switchNodeCollaping('admstvariable');"><img src="images/adms-element.png">admstvariable<span class="info">admst variable (uid="$1")</span><br></span><span class="branch" id="admstvariable"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          name</span><span class="info">name</span></span><span class="trigger"><img src="images/adms-list.png"><span onClick="expandNode('admst');"><a href="#rootadmst">
+            (admst)
+          </a>value</span><span class="info">value (list)</span></span></span><span class="comment">veriloga: parse</span><span class="trigger" id="rootlexval" onClick="switchNodeCollaping('lexval');"><img src="images/adms-element.png">lexval<span class="info">token value returned by veriloga lexical analyzer (uid="$1")</span><br></span><span class="branch" id="lexval"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          string</span><span class="info">token value</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          f</span><span class="info">file name</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicinteger)
+          l</span><span class="info">line number</span></span><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicinteger)
+          c</span><span class="info">first char position</span></span></span><span class="trigger" id="rootyaccval" onClick="switchNodeCollaping('yaccval');"><img src="images/adms-element.png">yaccval<span class="info">in yacc rules value saved into $$ (uid="$1")</span><br></span><span class="branch" id="yaccval"><span class="trigger"><img src="images/adms-uid.png"><span>
+          (basicstring)
+          filename</span><span class="info">file name</span></span><span class="trigger"><img src="images/adms-scalar.png"><span onClick="expandNode('adms');"><a href="#rootadms">
+            (adms)
+          </a>usrdata</span><span class="info">any element</span></span></span></span></p>
+<hr>
+<p>
+  This page has been automatically created by applying the xsl transform
+  <a href="./admsstyle.xsl">admsstyle.xsl</a>
+  to the xml data file
+  <a href="./adms.xml">adms.xml</a>.
+  <br>
+  The rendering of the page is specified by the css stylesheet
+  <a href="./adms.css">adms.css</a>.
+  You can get the full contents of data file 
+  <a href="./adms.xml">adms.xml</a>
+  by viewing the source of the document from your web browser.
+  Please address any comments to <a href="mailto:r29173@users.sourceforge.net">r29173</a>.
+  </p>
+</body>
+</html>

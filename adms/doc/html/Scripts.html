@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <link rel="stylesheet" href="buttondown.css" type="text/css" />
+</head>
+<body>
+<p><a href="index.html">Contents</a></p>
+<hr />
+<p>This table gives some examples of admst scripts that adms can interpret.</p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Name</th>
+<th align="left">Description</th>
+<th align="left">Usage</th>
+<th align="left">Recent Changes</th>
+<th align="left">WasBug?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"><a href="scripts/sort.xml">sort.xml</a></td>
+<td align="left">Save file sort.va - illustrate different usages of sort() and reverse()</td>
+<td align="left">admsXml -e sort.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="scripts/getargv.xml">getargv.xml</a></td>
+<td align="left">prints command line arguments</td>
+<td align="left">admsXml -e getargv.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="scripts/getenv.xml">getenv.xml</a></td>
+<td align="left">prints environment variable</td>
+<td align="left">admsXml -e getenv.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">-</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="scripts/getinstance.xml">getinstance.xml</a></td>
+<td align="left">prints instance names</td>
+<td align="left">admsXml -e getinstance.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="scripts/admstvariables.xml">admstvariables.xml</a></td>
+<td align="left">illustrates the concept of admst variables</td>
+<td align="left">admsXml -e admstvariables.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">yes</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="scripts/analogfunction.xml">analogfunction.xml</a></td>
+<td align="left">illustrates how to compute partial derivatives of analog functions</td>
+<td align="left">admsXml <a href="scripts/">analogfunction.va</a> -e analogfunction.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">yes</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="scripts/attributes.xml">attributes.xml</a></td>
+<td align="left">illustrates how to play with Verilog-AMSattributes</td>
+<td align="left">admsXml -e attributes.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="scripts/blockvariables.xml">blockvariables.xml</a></td>
+<td align="left">illustrates how to manipulate block variables (variables defined inside begin...end)</td>
+<td align="left">admsXml -e blockvariables.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">-</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="scripts/vlatovla.xml">vlatovla.xml</a></td>
+<td align="left">Verilog-ams to Verilog-ams converter - used for auto-testing</td>
+<td align="left">admsXml <a href="scripts/analogfunction.va">analogfunction.va</a> -e vlatovla.xml</td>
+<td align="left">21dec2007: updated for 2.2.8</td>
+<td align="left">no</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="scripts/arobavariables.xml">arobavariables.xml</a></td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="scripts/croixvariable.xml">croixvariable.xml</a></td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="scripts/dependency.xml">dependency.xml</a></td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="scripts/gettransform.xml">gettransform.xml</a></td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+</tr>
+<tr class="even">
+<td align="left"><a href="scripts/strutils.xml">strutils.xml</a></td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+<td align="left">---</td>
+</tr>
+<tr class="odd">
+<td align="left"><a href="scripts/vlatommlMODULE.htm.xml">vlatommlMODULE.htm.xml</a></td>
+<td align="left">Verilog-ams to MathML converter. It helps debugging adms and simplifying the process of documenting compact devices</td>
+<td align="left">admsXml <model>.va -e vlatommlMODULE.htm.xml</td>
+<td align="left">---</td>
+<td align="left">---</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>Retrieved from <a href="http://vacomp.noovela.com/scripts.html">scripts.html</a></p>
+</body>
+</html>

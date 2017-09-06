@@ -1,0 +1,499 @@
+//-------------------------------------------------------------//
+//        MOSFET level 1 ( Shichman-Hodges ) model          //
+//-------------------------------------------------------------//
+
+`include "discipline.h"
+
+//-------------------------------------------------------------//
+//                     Constants definition                    //
+//-------------------------------------------------------------//
+
+`define N_TYPE                -1
+`define P_TYPE                +1
+`define PI		       3.14159265358979323846
+`define PLANK		       6.6260755E-34
+`define BOLTZMANN     	       1.3806226e-23
+`define ELECTRON_CHARGE	       1.6021918e-19
+`define KoverQ 		       `BOLTZMANN / `ELECTRON_CHARGE
+`define	VACUUM_PERMITTIVITY    8.8541879239442001396789635e-12
+`define	OXIDE_PERMITTIVITY     3.9 *`VACUUM_PERMITTIVITY
+`define	SILICON_PERMITTIVITY   1.0359431e-10
+
+`ifdef insideADMS
+ `define P(p) (*p*)
+`else
+ `define P(p)
+`endif
+
+//-------------------------------------------------------------//
+//                       Module definition                     //
+//-------------------------------------------------------------//
+
+module MOS1 ( Drain, Gate, Source, Bulk );
+   inout Drain, Gate, Source, Bulk;
+
+ electrical Drain `P(spice:name="d"), Gate `P(spice:name="g"), Source `P(spice:name="s"), Bulk `P(spice:name="b");
+ electrical IntDrain, IntSource;
+
+   //-------------------------------------------------------------//
+   //                     Parameters definition                   //
+   //-------------------------------------------------------------//
+
+
+   parameter integer GENDER = `N_TYPE `P(spice:name="gender");
+
+   parameter real L = 3.0e-6 `P(spice:name="l" info="Default channel length" type="instance" unit="m");
+   parameter real W = 3.0e-6 `P(spice:name="w" info="Default channel width"  type="instance" unit="m");
+
+   parameter real LD = 0 `P(spice:name="ld" info="Lateral diffusion" type="instance" unit="m");
+   parameter real WD = 0 `P(spice:name="wd" info="Field-oxide encroachment" type="instance" unit="m");
+   parameter real LDIF = 0 `P(spice:name="ldif" info="Lateral diffusion beyond the gate" type="instance" unit="m");
+
+   parameter real XL = 0 `P(spice:name="xl" info="Length variation due to masking and etching" type="instance" unit="m");
+   parameter real XW = 0 `P(spice:name="xw" info="Width variation due to masking and etching" type="instance" unit="m");
+
+   parameter real RD = 0 `P(spice:name="rd" info="Drain resistance" type="instance" unit="Ohm");
+   parameter real RS = 0 `P(spice:name="rs" info="Source resistance" type="instance" unit="Ohm");
+
+   parameter real RSS = 0 `P(spice:name="rss" info="Scalable source resistance" type="instance");
+   parameter real RDD = 0 `P(spice:name="rdd" info="Scalable drain resistance" type="instance");
+   parameter real RSH = 0 `P(spice:name="rsh" info="Source/drain diffusion sheet resistance" type="instance");
+   parameter real TRD = 0 `P(spice:name="trd" info="Temperature parameter for drain resistance" type="instance");
+   parameter real TRS = 0 `P(spice:name="trs" info="Temperature parameter for source resistance" type="instance");
+   parameter real RDC = 0 `P(spice:name="rdc" info="Drain contact resistance" type="instance");
+   parameter real RSC = 0 `P(spice:name="rsc" info="Source contact resistance" type="instance");
+   parameter real NRD = 0 `P(spice:name="nrd" info="Default number of squares of drain diffusion" type="instance");
+   parameter real NRS = 0 `P(spice:name="nrd" info="Default number of squares of source diffusion" type="instance");
+   parameter real CBD = 0 `P(spice:name="cbd" info="Bulk-drain zero-bias junction capacitance" type="instance");
+   parameter real CBS = 0 `P(spice:name="cbs" info="Bulk-source zero-bias junction capacitance" type="instance");
+   parameter real CGSO = 0 `P(spice:name="cgso" info="Gate-source overlap capacitance" type="instance");
+   parameter real CGDO = 0 `P(spice:name="cgdo" info="Gate-drain overlap capacitance" type="instance");
+   parameter real CGBO = 0 `P(spice:name="cgbo" info="Gate-bulk overlap capacitance" type="instance");
+   parameter real FC = 0.5 `P(spice:name="fc" info="Forward-bias depletion capacitance threshold" type="instance");
+   parameter real FCSW = 0.5 `P(spice:name="fcsw" info="Side-wall forward-bias depletion capacitance threshold" type="instance");
+   parameter real N = 1 `P(spice:name="n" info="Junction emission coefficient" type="instance");
+   parameter real PB = 0.8 `P(spice:name="pb" info="Bulk junction built-in potential" type="instance");
+   parameter real MJ = 0.5 `P(spice:name="mj" info="Bulk junction bottom grading coefficient" type="instance");
+   parameter real PBSW = 0.8 `P(spice:name="pbsw" info="Side-wall junction built-in potential" type="instance");
+   parameter real MJSW = 0.33333333333333333333333 `P(spice:name="mjsw" info="Bulk junction sidewall grading coefficient" type="instance");
+   parameter real PS = 0 `P(spice:name="ps" info="Default perimeter of source diffusion" type="instance");
+   parameter real PD = 0 `P(spice:name="pd" info="Default perimeter of drain diffusion" type="instance");
+
+   parameter real AS = 0 `P(spice:name="as" info="Default area of source diffusion" type="instance");
+   parameter real AD = 0 `P(spice:name="ad" info="Default area of drain diffusion" type="instance");
+
+   parameter real CJ = 0 `P(spice:name="cj" info="Zero-bias junction bottom capacitance density" type="instance");
+   parameter real CJSW = 0 `P(spice:name="cjsw" info="Zero-bias junction sidewall capacitance density" type="instance");
+
+   parameter real TT = 0 `P(spice:name="tt" info="Bulk junction transit time" type="instance");
+
+   parameter real IS = 1e-14 `P(spice:name="is" info="Bulk junction reverse saturation current" type="instance");
+   parameter real JS = 0 `P(spice:name="js" info="Bulk junction reverse saturation current density" type="instance");
+   parameter real IMAX = 0 `P(spice:name="imax" info="" type="instance");
+
+   parameter real JSSW = 0 `P(spice:name="jssw" info="Bulk junction saturation current per length of sidewall area" type="instance");
+   parameter real NSUB =-99 `P(spice:name="nsub" info="Channel doping concentration" type="instance");
+   parameter real TOX = 1.0e-7 `P(spice:name="tox" info="Gate oxide thickness" type="instance");
+   parameter real UO = 600.0 `P(spice:name="uo" info="Carrier surface mobility" type="instance");
+
+   parameter real LAMBDA = 0.0 `P(spice:name="lambda" info="Channel length modulation parameter");
+   parameter real GAMMA = -99 `P(spice:name="gamma" info="Body-effect parameter");
+   parameter real KP = 2.0718e-5 `P(spice:name="kp" info="Transconductance parameter" type="instance");
+   parameter real PHI = -99 `P(spice:name="phi" info="Surface potential at strong inversion" type="instance");
+   parameter real VTO = -99  `P(spice:name="vto" info="Threshold voltage at zero body bias" type="model");
+
+   parameter real NSS = 0 `P(spice:name="nss" info="Surface state density" type="instance");
+   parameter real NFS = 0 `P(spice:name="nfs" info="Fast surface state density" type="instance");
+   parameter real UTE = -1.5 `P(spice:name="ute" info="Mobility temperature exponent" type="instance");
+   parameter real TRISE = 0 `P(spice:name="trise" info="Temperature rise from ambient" type="instance");
+   parameter real TNOM = 300.15 `P(spice:name="tnom" info="Parameters measurement temperature" type="instance" unit="K");
+   parameter real EG = 1.12452 `P(spice:name="eg" info="Energy band gap" type="instance");
+   parameter real GAP1 = 7.02e-4 `P(spice:name="gap1" info="Band gap temperature coefficient" type="instance");
+   parameter real GAP2 = 1108 `P(spice:name="gap2" info="Band gap temperature offset" type="instance");
+   parameter real TLEV = 0 `P(spice:name="tlev" info="DC temperature selector" type="instance");
+   parameter real TLEVC = 0 `P(spice:name="tlevc" info="AC temperature selector" type="instance");
+   parameter real PTC = 0 `P(spice:name="ptc" info="Surface potential temperature coefficient" type="instance");
+   parameter real TPG = 1 `P(spice:name="tpg" info="Type of gate (+1 = opposite of substate,-1 = same as substate, 0 = aluminum)" type="instance");
+   parameter real SC = -1 `P(spice:name="sc" info="Spacing between contacts" type="instance");
+   parameter real PTA = 0 `P(spice:name="pta" info="Junction potential temperature coefficient" type="instance");
+   parameter real PTP = 0 `P(spice:name="ptp" info="Sidewall junction potential temperature coefficient" type="instance");
+   parameter real LAMEX = 0 `P(spice:name="lamex" info="Temperature parameter for `lambda' and `kappa'" type="instance");
+   parameter real TCV = 0 `P(spice:name="tcv" info="Threshold voltage temperature coefficient" type="instance");
+
+   parameter real PHITEMPCOEF = 0 `P(spice:name="phitempcoef" info="Surface potential temperature coefficient" type="instance");
+   parameter real MOBTEMPOFF = 0 `P(spice:name="mobtempoff" info="Mobility temperature offset" type="instance");
+   parameter real MOBTEMPEXP = -1.5 `P(spice:name="mobtempexp" info="Mobility temperature exponent" type="instance");
+   parameter real VTOTEMPCOEF = 0 `P(spice:name="vtotempcoef" info="Threshold voltage temperature coefficient" type="instance");
+   //-------------------------------------------------------------//
+   //                  Variables definition                       //
+   //-------------------------------------------------------------//
+
+   integer   Reversed;
+
+   real      Vd `P(ask="yes"), Vs `P(ask="yes"), Vb, Vds, Vgs `P(ask="yes"), Vbs, Vbd `P(ask="yes");
+   real      Vt, Von, Vth `P(ask="yes"), Vdsat, Vgst `P(ask="yes"), Vc, Vfb, Vto `P(ask="yes");
+   real      Ids `P(ask="yes"), Iss, Idd, Ibs, Ibd, Irs, Ird, Ibulk, Ioffset, Id;
+   real      Gm, Gds;
+   real      Rd, Rs;
+
+
+   real      Cbs, Cbd, Cgs, Cgd, Cgb;
+   real      Xbsj, Xbss, Xbdj, Xbds;
+   real      Gbs, Gbd;
+
+   real      Weff, Leff;
+
+   real      T, Tnom, Cox, n, betta, nVt, Ec, K;
+   real      Cd, Cfs;
+   real      Uo, Kp `P(ask="yes"), Eg, Temp_Eg, Temp_Vt, Ni, phi `P(ask="yes"), deltaphi, deltaEphi, dPhi_dT, sqrtPhi;
+   real      Gamma, phims, Lambda, tmp, T1s, Inv_T1s, dT1s_dVb, Phisb, Phis3;
+   real      DeltaT, Wscaled, Nsc, DeltaEpb, DeltaEpbsw, dPhiB_dT, dPhiBSW_dT;
+   real      pb, pbsw, Temp_phi, Temp_Vto, Temp_sqrtPhi, Temp_Lambda, Temp_Kp;
+   real      Ratio, Ratio2, Ratio1;
+   real      Vexpl, Gexpl;
+   real gds `P(ask="yes");
+   real gm `P(ask="yes");
+   real gmbs `P(ask="yes");
+
+   analog
+     begin
+
+`ifdef insideADMS
+        @(initial_instance)
+`endif
+          begin
+	//-------------------------------------------------------------//
+	//                 Common MOSFET Equations                     //
+	//-------------------------------------------------------------//
+
+	/* Temperature */
+
+	T = TNOM;
+
+	/* Channel Width and Length */
+
+	Wscaled = W + XW;
+
+	Weff = W + XW - 2 * WD;
+	Leff = L + XL - 2 * LD;
+
+	/* Drain and Source Parasitic Resistance */
+
+	if ( SC < 0.0)
+	  Nsc = 1.0;
+	else if ( SC == 0.0)
+	  Nsc = Weff;
+	else
+	  begin
+	     Nsc = abs( Weff / SC );
+	     Nsc = max(Nsc, 1.0);
+	  end
+
+	if ( RS != -99 )
+	  begin
+	     if ( LDIF != -99 )
+	       Rs = RS + RSS / Weff + NRS * RSH + RSC / Nsc ;
+	     else
+	       Rs = RS * ( LDIF + LD ) / ( Weff + 2 * WD ) + NRS * RSH + RSC / Nsc ;
+
+	     if (DeltaT != 0.0)
+	       Rs = Rs * (1.0 + TRS * DeltaT);
+	  end
+
+	if ( RD != -99 )
+	  begin
+	     if ( LDIF != -99 )
+	       Rd =  RD + RDD / Weff + NRD * RSH + RDC / Nsc ;
+	     else
+	       Rd = RD * ( LDIF + LD ) / ( Weff + 2 * WD ) + NRD * RSH + RDC / Nsc ;
+
+	     if (DeltaT != 0.0)
+	       Rd = Rd * (1.0 + TRD * DeltaT);
+	  end
+
+ 	Cox = `OXIDE_PERMITTIVITY / TOX ;
+
+	Vt = `BOLTZMANN * T / `ELECTRON_CHARGE;
+
+	/* Mobility and Transconductance */
+
+	if( KP == -99 )
+	  begin
+	     Uo = UO;
+	     Kp = Uo * Cox * 1.0e-4;
+	  end
+	else
+	  begin
+	     Kp = KP;
+	     Uo = Kp / Cox * 1.0e4;
+	  end
+
+	/* Energy Band Gap */
+
+	if( TLEV == 2 )
+	  Eg = EG - GAP1 * T * T / ( T + GAP2 );
+	else
+	  if( TLEV == 1 || TLEV == 0 )
+	    Eg = 1.17 - 0.000473 * T * T / ( T + 636);
+	  else
+	    Eg = 1.16 - 0.000702 * T * T / ( T + 1108);
+
+
+	/* Surface Potential */
+
+	Ni = 1.45e10 * pow( T / TNOM, 1.5 ) * exp ( 0.5 * ( 1.12451923 / Vt - Eg / Vt) );
+
+	phi = PHI;
+
+	if( PHI == -99 )
+	  if( NSUB != -99 )
+	    phi = max( 0.1, 2 * Vt * ln( NSUB / Ni ) );
+	  else
+	    phi = 0.7;
+
+	phi = phi - 3 * Vt * ln( T / TNOM ) + Eg - Eg * T / TNOM;
+
+	sqrtPhi = sqrt( phi );
+
+
+	/* GAMMA */
+
+	Gamma = GAMMA;
+
+	if( GAMMA == -99 )
+	  if( NSUB != -99 )
+	    Gamma = sqrt( 2e6 * `ELECTRON_CHARGE * `SILICON_PERMITTIVITY * NSUB ) / Cox;
+	  else
+	    Gamma = 0.0;
+
+	/* Threshold Voltage at Zero Bias */
+
+	if( VTO == -99 )
+	  begin
+
+	     if( TPG == 1)
+	       Vfb = -0.5 * ( Eg + phi);
+	     else
+	       if( TPG == -1)
+		 Vfb = 0.5 * ( Eg - phi);
+	       else
+		 if( TPG == 0)
+		   Vfb = -0.05 - 0.5 * ( Eg + phi);
+
+	     if ( GENDER == `N_TYPE )
+	       Vto = Vfb + phi + Gamma * sqrtPhi - `ELECTRON_CHARGE * NSS * 1e4 / Cox;
+	     else
+	       Vto = -Vfb - phi - Gamma * sqrtPhi - `ELECTRON_CHARGE * NSS * 1e4 / Cox;
+	  end
+	else
+	  begin
+	     Vto = VTO;
+	     Vfb = Vto - phi - Gamma * sqrtPhi;
+	  end // else: !if( VTO == -99 && NSUB != -99 )
+
+	Lambda = LAMBDA;
+
+	//-------------------------------------------------------------//
+	//         Temperature Effect on Model Parameters              //
+	//-------------------------------------------------------------//
+
+	T = $temperature + TRISE;
+	DeltaT = T - TNOM;
+
+	if( T != TNOM )
+	  begin
+
+	     Temp_Vt =  `BOLTZMANN * T / `ELECTRON_CHARGE;
+
+	     /* Energy Band Gap */
+
+	     if( TLEV == 2 )
+	       Temp_Eg = EG - GAP1 * T * T / ( T + GAP2 );
+	     else
+	       if( TLEV == 1 || TLEV == 0 )
+		 Temp_Eg = 1.17 - 0.000473 * T * T / ( T + 636);
+	       else
+		 Temp_Eg = 1.16 - 0.000702 * T * T / ( T + 1108);
+
+
+	     Ratio = T / TNOM;
+	     DeltaT = T - TNOM;
+
+	     /* Surface Potential */
+
+	     if( TLEVC == 1 || TLEVC == 2 )
+	       Temp_phi = phi - PHITEMPCOEF * DeltaT;
+	     else
+	       if( TLEVC == 3 )
+		 begin
+		    if( TLEV == 2 )
+		      dPhi_dT = -( Eg + 3.0 * Vt + ( EG - Eg )
+				   * ( 2.0 - TNOM / ( TNOM + GAP2))
+				   - phi) / TNOM;
+		    else
+		      dPhi_dT = -( Eg + 3.0 * Vt + ( 1.16 - Eg )
+				   * ( 2.0 - TNOM / ( TNOM + 1108.0 ))
+				   - phi) / TNOM;
+
+		    Temp_phi = phi + dPhi_dT * DeltaT;
+		 end
+	       else
+		 Temp_phi = phi * Ratio - 3.0 * Temp_Vt * ln(Ratio) + Temp_Eg - Eg * Ratio;
+
+	     Temp_sqrtPhi = sqrt( Temp_phi );
+
+	     Ratio1 = Ratio * sqrt( Ratio );
+
+     	     Ni = 1.45e10 * pow( T / TNOM, 1.5 ) * exp ( 0.5 * ( 1.12451923 / Vt - Temp_Eg / Temp_Vt) );
+
+	     Temp_Lambda = Lambda * (1.0 + LAMEX  * DeltaT);
+	     Ratio2 = exp( MOBTEMPEXP * ln( T / ( MOBTEMPOFF + TNOM )));
+	     Temp_Kp = Kp;
+
+	     /* Threshold Voltage at Zero Bias */
+
+	     if( TLEV == 1 )
+	       if ( GENDER == `N_TYPE )
+		 Temp_Vto = Vto - DeltaT * VTOTEMPCOEF;
+	       else
+		 Temp_Vto = Vto + DeltaT * VTOTEMPCOEF;
+	     else
+	       if ( TLEV == 2 )
+		 begin
+		    dPhi_dT = -( Eg + 3.0 * Vt + ( 1.16 - Eg ) * (2.0
+			      - TNOM / (TNOM + 1108.0)) - phi) / TNOM;
+		    if ( GENDER == `N_TYPE )
+		      Temp_Vto = Vto + DeltaT * dPhi_dT
+				 * (1.0 + 0.5 * Gamma / sqrtPhi);
+		    else
+		      Temp_Vto = Vto - DeltaT * dPhi_dT
+				 * (1.0 + 0.5 * Gamma / sqrtPhi);
+		 end // if ( TLEV == 2 )
+	       else
+		 if ( GENDER == `N_TYPE)
+		   Temp_Vto = Vto + Gamma * ( Temp_sqrtPhi - sqrtPhi ) + 0.5
+			      * ( Eg - Temp_Eg ) + 0.5 * ( Temp_phi - phi);
+
+		 else
+		   Temp_Vto = Vto - Gamma * ( Temp_sqrtPhi - sqrtPhi ) + 0.5
+			      * ( Eg - Temp_Eg ) - 0.5 * (Temp_phi - phi);
+
+	  end
+
+		 if( GENDER == `P_TYPE ) Temp_Vto = -Temp_Vto;
+	  end
+	/* Determine if device is reversed. */
+
+
+	Vd = V(IntDrain);
+	Vs = V(IntSource);
+
+        if ( Vd < Vs )
+          if ( GENDER == `N_TYPE )
+            Reversed = 1;
+          else
+            Reversed = 0;
+        else
+          if ( GENDER == `N_TYPE )
+            Reversed = 0;
+          else
+            Reversed = 1;
+
+	if (GENDER == `N_TYPE)
+	  begin
+	     if (Reversed)
+	       begin
+		  Vds = Vs - Vd;
+		  Vgs = V(Gate) - Vd;
+		  Vbs = V(Bulk) - Vd;
+	       end
+	     else
+	       begin
+		  Vds = Vd - Vs;
+		  Vgs = V(Gate) - Vs;
+		  Vbs = V(Bulk) - Vs;
+	       end
+	  end
+	else /* is P_TYPE */
+	  begin
+	     if (Reversed)
+	       begin
+		  Vds = Vd - Vs;
+		  Vgs = Vd - V(Gate);
+		  Vbs = Vd - V(Bulk);
+	       end
+	     else
+	       begin
+		  Vds = Vs - Vd;
+		  Vgs = Vs - V(Gate);
+		  Vbs = Vs - V(Bulk);
+	       end
+	  end
+
+	//-------------------------------------------------------------//
+	//                       Calculations                          //
+	//-------------------------------------------------------------//
+
+
+	if (Vbs == 0.0)
+	  begin
+	     Phisb = phi;
+	     T1s = sqrtPhi;
+	  end
+	else
+	  if ( Vbs < 0.0 )
+	    begin
+	       Phisb = Temp_phi - Vbs;
+               T1s = sqrt(Phisb);
+	    end
+	  else
+	    begin
+	       Phis3 = Temp_phi * Temp_sqrtPhi;
+               T1s = Phis3 / (Temp_phi + 0.5 * Vbs);
+	    end // else: !if( Vbs < 0.0 )
+
+	/* Thershold voltage */
+
+	Vth = Vto + Gamma * ( T1s - sqrtPhi );
+	Vgst = Vgs - Vth;
+        Vdsat = Vgst;
+
+	/* Drain current */
+
+	if( Vgst > 0 )
+	  if ( Vgst >= Vds )
+	    begin
+	       betta = Kp * Weff / Leff;
+	       Ids = betta * ( Vgst - Vds / 2.0 ) * Vds * ( 1 + Lambda * Vds );
+	    end
+	  else
+	    begin
+	       betta = Kp * Weff / Leff;
+	       Ids = betta * Vgst * Vgst / 2.0 * ( 1 + Lambda * Vds );
+end
+
+	/* For P_TYPE */
+	if( GENDER == `P_TYPE )
+	  begin
+	     Vth = -Vth;
+	     Ids = -Ids;
+	  end
+
+	if ( RD > 0.0 )
+	  I(Drain, IntDrain) <+ V(Drain, IntDrain)/RD;
+	else
+	  I(Drain, IntDrain) <+ V(Drain, IntDrain);
+
+
+	if ( RS > 0.0 )
+	  I(Source, IntSource) <+ V(Source, IntSource)/RS;
+	else
+	  I(Source, IntSource) <+ V(Source, IntSource);
+
+	I(IntDrain, IntSource) <+ Ids;
+	gds=ddx(Ids,V(IntDrain,IntSource));
+	gm=ddx(Ids,V(Gate,IntSource));
+	gmbs=ddx(Ids,V(Gate,Bulk));
+
+     end
+endmodule

@@ -1,0 +1,6 @@
+<!-- short form myxml3.xml, output of adms is redirected to stdout  -->
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.2.4" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+  <admst:value-of select="/module/attribute[name='p1']/value"/>
+  <admst:text format="name=%s\n"/>
+</admst>

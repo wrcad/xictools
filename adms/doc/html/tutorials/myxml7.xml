@@ -1,0 +1,28 @@
+<!-- xml file myxml7.xml using global variables Subtree 'analog' is traversed and the dataypename of each traversed node is printed out. -->
+<!DOCTYPE admst SYSTEM "admst.dtd">
+<admst version="2.2.4" xmlns:admst="http://mot-adms.sourceforge.net/xml-files/admst">
+  <admst:template match="dump:datatypename:recursively">
+     <admst:choose>
+   <admst:when test="adms[datatypename='block']">
+    <admst:text format="assignment found (\n"/>
+    <admst:apply-templates select="item" match="dump:datatypename:recursively"/>
+   </admst:when>
+   <admst:when test="adms[datatypename='assignment']">
+    <admst:text format="assignment found (\n"/>
+   </admst:when>
+   <admst:when test="adms[datatypename='contribution']">
+      <admst:text format="contribution found (\n"/>
+     </admst:when>
+     <admst:otherwise>
+      <admst:value-of select="adms/datatypename"/>
+      <admst:message format="%s: datatypename not handled\n"/>
+     </admst:otherwise>
+    </admst:choose>
+    <admst:text format=")\n"/>
+  </admst:template>
+  <admst:text format="***************\n"/>
+  <admst:text format="start recursion\n"/>
+  <admst:text format="***************\n"/>
+  <admst:apply-templates select="/module/analog/code" match="dump:datatypename:recursively"/>
+</admst>
+

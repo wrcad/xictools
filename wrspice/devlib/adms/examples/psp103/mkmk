@@ -1,0 +1,32 @@
+#! /bin/sh
+
+# Create the Makefile by copying the template and substituting text.
+
+# psp103
+SOURCE=psp103.va
+#SOURCE=psp103_nqs.va
+#SOURCE=psp103t.va
+#SOURCE=juncap200.va
+MODELNAME=PSP103VA
+#MODELNAME=PSP103TVA
+MODULE=psp103
+#MODULE=psp103_nqs
+#MODULE=psp103t
+#MODULE=juncap200
+KEY=m
+LEVEL=45
+ADD_M=yes
+LIMITING=yes
+FLAGS=
+
+cat ../../Makefile | sed \
+  -e "s%^SOURCE = .*%SOURCE = $SOURCE%" \
+  -e "s%^MODELNAME = .*%MODELNAME = $MODELNAME%" \
+  -e "s%^MODULE = .*%MODULE = $MODULE%" \
+  -e "s%^KEY = .*%KEY = $KEY%" \
+  -e "s%^LEVEL = .*%LEVEL = $LEVEL%" \
+  -e "s%^ADD_M = .*%ADD_M = $ADD_M%" \
+  -e "s%^LIMITING = .*%LIMITING = $LIMITING%" \
+  -e "s%^FLAGS = .*%FLAGS = $FLAGS%" \
+  > Makefile
+
