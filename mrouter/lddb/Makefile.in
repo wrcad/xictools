@@ -57,9 +57,9 @@ depend: $(LD_VERS_H)
 	fi
 
 clean:
-	-rm $(LD_VERS_H) *.o $(LIB_TARGET)
+	-@rm -f $(LD_VERS_H) *.o $(LIB_TARGET)
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 #######################################################################

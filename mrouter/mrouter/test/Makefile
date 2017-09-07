@@ -33,9 +33,8 @@ $(T2).def:
 clean::
 	-@rm -f $(T1)_route*.def $(T2)_route*.def lef_out_test.lef
 
-distclean::
-	$(MAKE) clean
-	rm -f $(T1).def $(T2).def
+distclean: clean
+	-@rm -f $(T1).def $(T2).def
 
 foo:
 	echo $(TEST)

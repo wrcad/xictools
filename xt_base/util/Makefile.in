@@ -15,10 +15,10 @@ timegen: timegen.cc
 	$(CXX) -o timegen timegen.cc
 
 clean:
-	rm -f timegen$(EXESUFFIX)
+	-@rm -f timegen$(EXESUFFIX)
 
 distclean: clean
-	rm Makefile
+	-@rm -f Makefile
 
 depend:
 	@echo depending in $(LOCATION)

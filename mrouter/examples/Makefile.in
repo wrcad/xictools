@@ -30,9 +30,9 @@ depend:
 	@echo depending in examples
 
 clean:
-	-@rm mrouter-plg
+	-@rm -f mrouter-plg
 
 distclean:
-	-@rm Makefile mrouter-plg
+	-@rm -f Makefile mrouter-plg
 
 #######################################################################

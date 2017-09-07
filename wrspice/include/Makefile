@@ -10,7 +10,7 @@ depend: reltag
 clean:
 
 distclean:
-	rm -f reltag.h
+	-@rm -f reltag.h
 
 # Create/update the reltag.h file.
 reltag:

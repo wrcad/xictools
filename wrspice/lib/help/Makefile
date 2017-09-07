@@ -36,8 +36,8 @@ spSources.hlp:  $(SPBASE)/spSources.hlp
 clean:
 
 distclean:
-	rm -f $(BASEFILES) $(SPFILES)
-	cd screenshots; $(MAKE) distclean
+	-@rm -f $(BASEFILES) $(SPFILES)
+	-@cd screenshots; $(MAKE) distclean
 
 # Look for forms like <a href="something>, some browsers can't handle
 # a missing trailing quote.

@@ -90,36 +90,36 @@ config:
 	(${MAKE} depend)
 
 reconfig:
-	rm -f $(FLAGFILE)
+	-@rm -f $(FLAGFILE)
 	$(MAKE) config
 
 testcfg:
-	(cd xt_base; $(MAKE) distclean; $(ACONF); ./configure $(CFARGS))
+	cd xt_base; $(MAKE) distclean; $(ACONF); ./configure $(CFARGS)
 
 all: config
-	for a in $(SUBDIRS); do \
+	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
 	        (cd $$a; $(MAKE)); \
 	    fi; \
 	done
 
 packages: all
-	for a in $(SUBDIRS); do \
+	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a -a -d $$a/packages ]; then \
 	        (cd $$a; $(MAKE) package); \
 	    fi; \
 	done
 
 depend clean:
-	for a in $(SUBDIRS); do \
+	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
 	        (cd $$a; $(MAKE) $@); \
 	    fi; \
 	done
 
 distclean:
-	-rm -f $(FLAGFILE)
-	for a in $(SUBDIRS); do \
+	-@rm -f $(FLAGFILE)
+	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
 	        (cd $$a; $(MAKE) $@); \
 	    fi; \

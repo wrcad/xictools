@@ -25,17 +25,17 @@ BASE = ../xt_base
 SUBDIRS = def lef mrouter
 
 all: lef def
-	cd def; $(MAKE) CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
-	cd lef; $(MAKE) CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
-	cd mrouter; $(MAKE) depend; $(MAKE)
+	@cd def; $(MAKE) CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
+	@cd lef; $(MAKE) CC="$(CC)" CXX="$(CXX)" CXXFLAGS="$(CFLAGS)"
+	@cd mrouter; $(MAKE) depend; $(MAKE)
 
 lef:
-	tar xzf source.lefdef/lef*tar.Z
-	patch -p0 < source.lefdef/lef.patch
+	@tar xzf source.lefdef/lef*tar.Z
+	@patch -p0 < source.lefdef/lef.patch
 
 def:
-	tar xzf source.lefdef/def*tar.Z
-	patch -p0 < source.lefdef/def.patch
+	@tar xzf source.lefdef/def*tar.Z
+	@patch -p0 < source.lefdef/def.patch
 
 clean:
 	-@for a in $(SUBDIRS); do \
@@ -43,24 +43,25 @@ clean:
 	        (cd $$a; $(MAKE) clean); \
 	    fi \
 	done
-	-cd examples; $(MAKE) clean
+	-@cd examples; $(MAKE) clean
 
 distclean:
 	-@rm -rf lef def autom4te.cache config.cache config.status config.log \
   Makefile
 	-@rm -f mrouter-`./version`.tar.gz
-	-cd mrouter; $(MAKE) distclean
-	-cd examples; $(MAKE) distclean
+	-@cd mrouter; $(MAKE) $@
+	-@cd examples; $(MAKE) $@
+	-@cd packages; $(MAKE) $@
 
 depend:
-	if [ ! -d lef ]; then \
+	@if [ ! -d lef ]; then \
 	    $(MAKE) lef; \
 	fi
-	if [ ! -d def ]; then \
+	@if [ ! -d def ]; then \
 	    $(MAKE) def; \
 	fi
-	cd mrouter; $(MAKE) depend
-	cd examples; $(MAKE) depend
+	@cd mrouter; $(MAKE) $@
+	@cd examples; $(MAKE) $@
 
 test:
 	-cd mrouter; $(MAKE) test

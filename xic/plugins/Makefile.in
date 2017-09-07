@@ -77,9 +77,9 @@ depend:
 	fi
 
 clean:
-	-rm *.o *.$(SOEXT)
+	-@rm -f *.o *.$(SOEXT)
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 #######################################################################

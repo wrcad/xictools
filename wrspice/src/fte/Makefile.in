@@ -64,9 +64,9 @@ depend: paramsub.cc
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET) paramsub.cc
+	-@rm -f *.o $(LIB_TARGET) paramsub.cc
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 #######################################################################

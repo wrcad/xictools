@@ -22,24 +22,24 @@ FASTHENRY = fasthenry-3.0wr-110915.tar.gz
 FASTHENRY_DIR = fasthenry-3.0wr
 
 all: unpack
-	(cd $(FASTHENRY_DIR); $(MAKE) all)
+	cd $(FASTHENRY_DIR); $(MAKE) all
 
 unpack:
-	if [ ! -d $(FASTHENRY_DIR) ]; then \
+	@if [ ! -d $(FASTHENRY_DIR) ]; then \
 	    tar xzf $(FASTHENRY); \
 	    if [ -n "$(EXESUFFIX)" ]; then \
-	        (cd $(FASTHENRY_DIR); ./config mingw); \
+	        cd $(FASTHENRY_DIR); ./config mingw; \
 	    fi \
 	fi
 
 clean:
-	if [ -d $(FASTHENRY_DIR) ]; then \
-	    (cd $(FASTHENRY_DIR); $(MAKE) clean); \
+	-@if [ -d $(FASTHENRY_DIR) ]; then \
+	    cd $(FASTHENRY_DIR); $(MAKE) $@; \
 	fi
 
 distclean:
-	rm -rf $(FASTHENRY_DIR) Makefile
-	(cd packages; $(MAKE) distclean)
+	-@rm -rf $(FASTHENRY_DIR) Makefile
+	-@cd packages; $(MAKE) $@
 
 depend:
 

@@ -33,11 +33,16 @@ depend::
 	    (cd $$a; ./mkmk; $(MAKE) $@); \
 	done
 
-clean realclean distclean::
+clean realclean::
 	@for a in $(SUBDIRS); do \
 	    (cd $$a; $(MAKE) $@); \
 	done
-	rm -f examples
+
+distclean::
+	@for a in $(SUBDIRS); do \
+	    (cd $$a; $(MAKE) $@; rm -f Makefile) \
+	done
+	-@rm -f examples
 
 $(SUBDIRS)::
 	cd $@; $(MAKE)

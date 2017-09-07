@@ -286,20 +286,21 @@ depend:
 
 eclean:
 	-@for a in $(TARGETS); do \
-	    rm bin/$$a$(EXESUFFIX); \
+	    rm -f bin/$$a$(EXESUFFIX); \
 	done
+	-@rm -f bin/sa-filetool$(EXESUFFIX) bin/xic.dll
 
 clean: eclean
 	-@for a in $(SUBDIRS) plugins; do \
-	    (cd $$a; $(MAKE) clean) \
+	    (cd $$a; $(MAKE) $@) \
 	done
-	-rm -f bin/*.o
+	-@rm -f bin/*.o
 
 distclean: eclean
 	-@for a in $(SUBDIRS) src/scrkit include lib plugins packages; do \
-	    (cd $$a; $(MAKE) distclean) \
+	    (cd $$a; $(MAKE) $@) \
 	done
-	-rm -f bin/*.o Makefile
+	-@rm -f bin/*.o Makefile
 
 #######################################################################
 ####### Install programs into system location #########################

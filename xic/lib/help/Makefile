@@ -1,5 +1,4 @@
 # xic/lib/help/Makefile
-# $Id: Makefile,v 1.9 2015/02/07 06:02:35 stevew Exp $
 
 XPMS = \
   arc.xpm box.xpm break.xpm deck.xpm desel.xpm devs.xpm donut.xpm \
@@ -52,8 +51,8 @@ spSources.hlp:  $(SPBASE)/spSources.hlp
 clean:
 
 distclean:
-	rm -f $(XPMS) $(BASEFILES) $(SPFILES)
-	cd screenshots; $(MAKE) distclean
+	-@rm -f $(XPMS) $(BASEFILES) $(SPFILES)
+	-@cd screenshots; $(MAKE) $@
 
 # Look for forms like <a href="something>, some browsers can't handle
 # a missing trailing quote.

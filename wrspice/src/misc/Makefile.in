@@ -61,9 +61,9 @@ depend: $(NFILES)
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET) $(NFILES)
+	-@rm -f *.o $(LIB_TARGET) $(NFILES)
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 #######################################################################

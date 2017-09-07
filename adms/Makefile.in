@@ -22,7 +22,7 @@ ADMS = ADMS-release-2.3.6.tar.gz
 ADMS_DIR = ADMS-release-2.3.6
 
 all: unpack
-	(cd adms_wr/admsXml; $(MAKE))
+	cd adms_wr/admsXml; $(MAKE)
 
 unpack:
 	@if [ ! -d  adms_wr ]; then \
@@ -36,17 +36,17 @@ unpack:
 	    cp -f files/config.h.in adms_wr/admsXml; \
 	    cp -f files/constants.vams adms_wr/admsXml; \
 	    cp -f files/disciplines.vams adms_wr/admsXml; \
-	    (cd adms_wr; ./configure --enable-maint=yes); \
+	    cd adms_wr; ./configure --enable-maint=yes; \
 	fi
 
 clean:
-	if [ -d adms_wr ]; then \
-	    (cd adms_wr/admsXml; $(MAKE) clean); \
+	-@if [ -d adms_wr ]; then \
+	    cd adms_wr/admsXml; $(MAKE) $@; \
 	fi
 
 distclean:
-	rm -rf adms_wr Makefile
-	(cd packages; $(MAKE) distclean)
+	-@rm -rf adms_wr Makefile
+	-@cd packages; $(MAKE) $@
 
 depend:
 

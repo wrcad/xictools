@@ -48,9 +48,9 @@ depend: $(CCFILES)
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET) $(CCFILES)
+	-@rm -f *.o $(LIB_TARGET) $(CCFILES)
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 #######################################################################

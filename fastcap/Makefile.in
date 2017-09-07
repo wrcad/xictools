@@ -22,30 +22,30 @@ FASTCAP = fastcap-2.0wr-011517.tar.gz
 FASTCAP_DIR = fastcap-2.0wr
 
 all: unpack
-	(cd $(FASTCAP_DIR); $(MAKE) all)
-	(cd fc_accs; $(MAKE) all)
+	cd $(FASTCAP_DIR); $(MAKE) all
+	cd fc_accs; $(MAKE) all
 
 unpack:
-	if [ ! -d $(FASTCAP_DIR) ]; then \
+	@if [ ! -d $(FASTCAP_DIR) ]; then \
 	    tar xzf $(FASTCAP); \
 	    if [ -n "$(EXESUFFIX)" ]; then \
-	        (cd $(FASTCAP_DIR); ./config mingw); \
+	        cd $(FASTCAP_DIR); ./config mingw; \
 	    fi \
 	fi
 
 clean:
-	if [ -d $(FASTCAP_DIR) ]; then \
-	    (cd $(FASTCAP_DIR); $(MAKE) clean); \
+	-@if [ -d $(FASTCAP_DIR) ]; then \
+	    cd $(FASTCAP_DIR); $(MAKE) $@; \
 	fi
-	(cd fc_accs; $(MAKE) clean)
+	-@cd fc_accs; $(MAKE) $@
 
 distclean:
-	rm -rf $(FASTCAP_DIR) Makefile
-	(cd fc_accs; $(MAKE) distclean)
-	(cd packages; $(MAKE) distclean)
+	-@rm -rf $(FASTCAP_DIR) Makefile
+	-@cd fc_accs; $(MAKE) $@
+	-@cd packages; $(MAKE) $@
 
 depend:
-	(cd fc_accs; $(MAKE) depend)
+	@cd fc_accs; $(MAKE) $@
 
 #######################################################################
 ####### Installation ##################################################

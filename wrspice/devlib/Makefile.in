@@ -164,23 +164,19 @@ depend:
 
 #######################################################################
 ####### Clean targets #################################################
-# note: mingw requires explicit return from cd
 
 clean:
 	-@for a in adms/examples $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) clean;) \
+	    (cd $$a; $(MAKE) $@) \
 	done
-	-rm -f toc.cc *.o *.a
+	-@rm -f toc.cc *.o *.a
 
 distclean:
-	-@for a in adms/examples); do \
-	    (cd $$a; $(MAKE) realclean; rm -f Makefile;) \
+	-@for a in include adms/include adms/examples  $(SUBDIRS); do \
+	    (cd $$a; $(MAKE) $@) \
 	done
-	-@for a in include adms/include $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) distclean;) \
-	done
-	-rm -f toc.cc *.o *.a Makefile devices modules
-	-rm -f adms/Makefile
+	-@rm -f toc.cc *.o *.a Makefile devices modules
+	-@rm -f adms/Makefile
 
 #######################################################################
 ####### Install targets ###############################################

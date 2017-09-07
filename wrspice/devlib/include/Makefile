@@ -1,7 +1,5 @@
 #######################################################################
-# devlib/include/Makefile
-#######################################################################
-# $Id:$
+# wrspice/devlib/include
 #######################################################################
 
 HFILES = gencurrent.h
@@ -25,5 +23,5 @@ inpline.h:      ../../include/inpline.h
 input.h:        ../../include/input.h
 
 clean distclean::
-	rm -f $(SPHFILES)
+	-@rm -f $(SPHFILES)
 

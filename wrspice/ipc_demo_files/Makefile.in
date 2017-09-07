@@ -71,16 +71,16 @@ $(MISCUTIL)::
 	cd $(@D); $(MAKE)
 
 clean::
-	if [ -d $(LPATH)/miscutil ]; then \
-	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
+	-@if [ -d $(LPATH)/miscutil ]; then \
+	    cd $(LPATH)/miscutil; $(MAKE) $@; \
 	fi
-	rm -f spclient$(EXESUFFIX) wrspiced$(EXESUFFIX)
+	-@rm -f spclient$(EXESUFFIX) wrspiced$(EXESUFFIX)
 
 distclean::
-	if [ -d $(LPATH)/miscutil ]; then \
-	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
+	-@if [ -d $(LPATH)/miscutil ]; then \
+	    cd $(LPATH)/miscutil; $(MAKE) $@; \
 	fi
-	rm -f spclient$(EXESUFFIX) wrspiced$(EXESUFFIX) Makefile config.*
+	-@rm -f spclient$(EXESUFFIX) wrspiced$(EXESUFFIX) Makefile config.*
 
 depend:
 	if [ -d $(LPATH)/miscutil ]; then \

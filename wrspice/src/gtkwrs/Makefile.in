@@ -56,10 +56,10 @@ depend:
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET)
+	-@rm -f *.o $(LIB_TARGET)
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 resource.o: resource.cc wrs.rc
 	vers=$(SPICE_VERSION); \

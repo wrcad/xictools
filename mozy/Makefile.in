@@ -157,21 +157,22 @@ depend::
 ####### Clean up ######################################################
 
 eclean::
-	for a in $(TARGETS); do \
+	-@for a in $(TARGETS); do \
 	    rm -f bin/$$a$(EXESUFFIX); \
 	done
 
 clean:: eclean
-	-rm -f bin/*.o
+	-@rm -f bin/*.o
 	-@for a in $(SUBDIRS); do \
-	  (cd $$a; $(MAKE) clean) \
+	    (cd $$a; $(MAKE) $@) \
 	done
 
 distclean:: eclean
-	-rm -f bin/*.o Makefile
+	-@rm -f bin/*.o Makefile
 	-@for a in $(SUBDIRS); do \
-	  (cd $$a; $(MAKE) distclean) \
+	    (cd $$a; $(MAKE) distclean) \
 	done
+	-@cd packages; $(MAKE) $@
 
 #######################################################################
 ####### Installation ##################################################

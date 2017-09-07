@@ -101,16 +101,16 @@ depend: key.h
 	fi
 
 eclean:
-	-rm -f lfinfo$(EXESUFFIX) licinfo$(EXESUFFIX) validate$(EXESUFFIX) \
+	-@rm -f lfinfo$(EXESUFFIX) licinfo$(EXESUFFIX) validate$(EXESUFFIX) \
   xtjobs$(EXESUFFIX) xtlserv$(EXESUFFIX) make_key$(EXESUFFIX) \
   bintest$(EXESUFFIX)
 
 clean: eclean
-	-rm *.o $(LIB_TARGET)
+	-@rm *.o $(LIB_TARGET)
 
 distclean: clean
-	cd packages; $(MAKE) distclean
-	-rm -f LICENSE* Makefile validate.log xtdaemon.log
+	-@cd packages; $(MAKE) $@
+	-@rm -f LICENSE* Makefile validate.log xtdaemon.log
 
 INSTALL_PREFIX ?= $(prefix)
 dst_lib = $(INSTALL_PREFIX)/$(TOOLROOT)/license

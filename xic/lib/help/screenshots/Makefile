@@ -1,5 +1,4 @@
 # xic/lib/help/screenshots/Makefile
-# $Id:$
 
 SSFILES = \
   filesel.png print.png help.png texted.png email.png
@@ -18,4 +17,4 @@ texted.png:     $(SSHOTS)/texted.png
 email.png:      $(SSHOTS)/email.png
 
 distclean:
-	rm -f $(SSFILES)
+	-@rm -f $(SSFILES)

@@ -120,5 +120,5 @@ endif
 clean:
 
 distclean:
-	rm -rf miscmath.h si_args.h si_if_variable.h si_scrfuncs.h Makefile
+	-@rm -rf miscmath.h si_args.h si_if_variable.h si_scrfuncs.h Makefile
 

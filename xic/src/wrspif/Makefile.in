@@ -49,9 +49,9 @@ depend: $(SPFILES)
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET) $(SPFILES)
+	-@rm -f *.o $(LIB_TARGET) $(SPFILES)
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 #######################################################################

@@ -72,13 +72,13 @@ depend: $(MR_VERS_H)
 	fi
 
 clean:
-	-cd ../lddb; $(MAKE) clean
-	-rm $(MR_VERS_H) *.o $(LIB_TARGET) mrouter$(EXESUFFIX)
+	-@cd ../lddb; $(MAKE) $@
+	-@rm -f $(MR_VERS_H) *.o $(LIB_TARGET) mrouter$(EXESUFFIX)
 
 distclean:
-	-cd ../lddb; $(MAKE) distclean
-	-cd test; $(MAKE) distclean
-	-rm $(MR_VERS_H) *.o $(LIB_TARGET) Makefile mrouter$(EXESUFFIX)
+	-@cd ../lddb; $(MAKE) $@
+	-@cd test; $(MAKE) $@
+	-@rm -f $(MR_VERS_H) *.o $(LIB_TARGET) Makefile mrouter$(EXESUFFIX)
 
 test: mrouter
 	cd test; $(MAKE) test1

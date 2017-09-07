@@ -16,5 +16,5 @@ distclean::
 	        (cd $$a; $(MAKE) distclean); \
 	    fi; \
 	done
-	rm -f examples/wrspice_ipc_demo.tar.gz
+	-@rm -f examples/wrspice_ipc_demo.tar.gz
 

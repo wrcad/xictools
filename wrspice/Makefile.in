@@ -295,15 +295,15 @@ eclean:
 
 clean: eclean
 	-@for a in $(SUBDIRS) devlib; do \
-	    (cd $$a; $(MAKE) clean) \
+	    (cd $$a; $(MAKE) $@) \
 	done
-	-rm -f bin/*.o $(WDEMODIR).tar.gz
+	-@rm -f bin/*.o $(WDEMODIR).tar.gz
 
 distclean: eclean
 	-@for a in $(SUBDIRS) include lib devlib packages ipc_demo_files; do \
-	    (cd $$a; $(MAKE) distclean) \
+	    (cd $$a; $(MAKE) $@) \
 	done
-	-rm -f *.o $(WDEMODIR).tar.gz Makefile
+	-@rm -f bin/*.o $(WDEMODIR).tar.gz Makefile
 
 #######################################################################
 ####### Install into another location #################################

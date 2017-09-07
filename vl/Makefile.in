@@ -65,12 +65,12 @@ $(BASE)/lib/miscutil.a::
 	fi
 
 clean:
-	-rm -f *.o *.a vl$(EXESUFFIX)
+	-@rm -f *.o *.a vl$(EXESUFFIX)
 
 distclean: clean
-	cd packages; $(MAKE) distclean
-	-rm -f verilog_yacc.cc verilog_yacc.h verilog_lex.cc
-	-rm -f config.cache config.h config.log config.status Makefile
+	-@cd packages; $(MAKE) $@
+	-@rm -f verilog_yacc.cc verilog_yacc.h verilog_lex.cc
+	-@rm -f config.cache config.h config.log config.status Makefile
 
 # yacc/lex rules
 verilog_yacc.cc verilog_yacc.h: verilog.y vl_defs.h vl_list.h vl_st.h \

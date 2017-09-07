@@ -42,9 +42,9 @@ depend:
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET)
+	-@rm -f *.o $(LIB_TARGET)
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 #######################################################################

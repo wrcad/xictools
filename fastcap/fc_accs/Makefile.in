@@ -66,12 +66,12 @@ depend:
 ####### Clean up ######################################################
 
 eclean:
-	-rm -f fcpp$(EXESUFFIX) lstpack$(EXESUFFIX) lstunpack$(EXESUFFIX)
+	-@rm -f fcpp$(EXESUFFIX) lstpack$(EXESUFFIX) lstunpack$(EXESUFFIX)
 
 clean: eclean
-	-rm -f *.o
+	-@rm -f *.o
 
 distclean: clean
-	-rm -f Makefile
+	-@rm -f Makefile
 
 #######################################################################

@@ -1,7 +1,5 @@
 #######################################################################
-# devlib/adms/include/Makefile
-#######################################################################
-# $Id:$
+# wrspice/devlib/adms/include
 #######################################################################
 
 SPHFILES = circuit.h device.h acdefs.h dctdefs.h distdefs.h noisdefs.h \
@@ -24,9 +22,7 @@ ifdata.h:       $(INCL)/include/ifdata.h
 inpline.h:      $(INCL)/include/inpline.h
 input.h:        $(INCL)/include/input.h
 
-clean:
-	rm -f $(SPHFILES)
+clean distclean:
+	-@rm -f $(SPHFILES)
 
-distclean::
-	rm -f $(SPHFILES)
 

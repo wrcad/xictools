@@ -52,9 +52,9 @@ depend: $(CCFILES)
 	fi
 
 clean:
-	-rm *.o $(LIB_TARGET) $(SP_CCFILES)
+	-@rm -f *.o $(LIB_TARGET) $(SP_CCFILES)
 
 distclean: clean
-	-rm Makefile
+	-@rm -f Makefile
 
 #######################################################################

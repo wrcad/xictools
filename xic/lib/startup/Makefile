@@ -1,18 +1,9 @@
-# lib/xic/startup/Makefile
-# $Id: Makefile,v 1.2 2015/09/16 00:13:22 stevew Exp $
+# xic/lib/startup/Makefile
 
-FILES = wr_install
-LPATH = ../../../xt_base
+BASE = ../../../xt_base
 
-dummy: $(FILES)
+wr_install: $(BASE)/packages/util/wr_install
 
-$(FILES):
-	cp -f $(LPATH)/packages/util/$@ .
+clean distclean:
+	-@rm -f wr_install 
 
-wr_install:     $(LPATH)/packages/util/wr_install
-
-clean:
-	rm -f $(FILES)
-
-distclean:
-	rm -f $(FILES)

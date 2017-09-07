@@ -79,6 +79,11 @@ distclean: clean
 	    Linux*)   rm -f $$a ;; \
 	    esac \
 	done
+	-@for a in pkgfiles/*; do \
+	    if [ $$a != pkgfiles/README -a $$a != pkgfiles/install ]; then \
+	        rm -f $$a; \
+	    fi; \
+	done
 
 testrpm:
 	@if [ -f /etc/redhat-release ]; then \

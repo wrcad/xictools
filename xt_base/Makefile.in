@@ -37,12 +37,12 @@ depend clean:
 	done
 
 distclean:
-	-@for a in $(SUBDIRS); do \
+	-@for a in $(SUBDIRS) packages; do \
 	    if [ -d $$a ]; then \
 	        (cd $$a; $(MAKE) $@) \
 	    fi; \
 	done
-	-rm -f config.cache config.log config.status configure Makefile
-	-rm -rf autom4te.cache
-	-rm -f include/config.h
+	-@rm -f config.cache config.log config.status configure Makefile
+	-@rm -rf autom4te.cache
+	-@rm -f include/config.h
 

@@ -18,4 +18,4 @@ texted.png:     $(SSHOTS)/texted.png
 email.png:      $(SSHOTS)/email.png
 
 distclean:
-	rm -f $(SSFILES)
+	-@rm -f $(SSFILES)
