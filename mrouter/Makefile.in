@@ -141,6 +141,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_mrouter
-	cd packages; make mrouter-$(OSNAME)
+	cd packages; $(MAKE) mrouter-$(OSNAME)
 
 #######################################################################

@@ -148,6 +148,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; make adms-$(OSNAME)
+	cd packages; $(MAKE) adms-$(OSNAME)
 
 #######################################################################

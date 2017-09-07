@@ -1,10 +1,10 @@
 BASE = ../../../../xt_base
 
-APPNAME = xt_accs
-APPTOK = Accs
+APPNAME = fasthenry_wr
+APPTOK = Fasthenry_wr
 SUBDIRS = bin $(APPNAME)
 VERSION = `../../../version xt_accs`
-RELEASE = `../../../version release`
+RELEASE = 1
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
 PKGNAME = XicTools.$(APPTOK).$(RELEASE)
 PKGDIR = $(BASE)/packages/pkgfiles
@@ -30,7 +30,14 @@ package::
 	if [ -d $(pd)/resources ]; then \
 	    pkgbld="$$pkgbld --scripts $(pd)/resources"; \
         fi; \
-        $$pkgbld $(PKGDIR)/$(PKGFILE)
+        $$pkgbld $(PKGFILE)
+	@if [ -f $(PKGFILE) ]; then \
+	    mv -f $(PKGFILE) $(PKGDIR); \
+	    echo ==================================; \
+	    echo Package file $(PKGFILE); \
+            echo moved to xt_base/packages/pkgfiles; \
+	    echo ==================================; \
+	fi
 	-@rm -rf contents
 
 clean::

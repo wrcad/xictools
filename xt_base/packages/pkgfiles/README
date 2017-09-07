@@ -1,2 +1,14 @@
 This directory is a common receiving point for the packages created
 from the various tools.
+
+Packages can be installed with the ./install command.  Type
+
+./install
+
+for instructions.
+
+You can also use the wr_install script found in ../util to install
+packages.  Arguments to wr_install are the actual package file names.
+
+You very likely need to run as root to install packages.
+

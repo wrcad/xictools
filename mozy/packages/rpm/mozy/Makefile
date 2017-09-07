@@ -33,16 +33,15 @@ osbase = ${@:_64=}
 	    mv -f $$HOME/.rpmmacros_TMP $$HOME/.rpmmacros; \
 	fi
 	-@rm -rf specfile BUILD BUILDROOT SOURCES SPECS SRPMS
-	@mv -f $(PROG)-Linux* $(PKGDIR)
+	@pkg=`ls $(PROG)-Linux*.rpm`; \
+	if [ -n "$$pkg" ]; then \
+	    mv -f $(PROG)-Linux* $(PKGDIR); \
+	    echo ==================================; \
+	    echo Package file $$pkg; \
+            echo moved to xt_base/packages/pkgfiles; \
+	    echo ==================================; \
+	fi
 
 clean::
 	-@rm -rf specfile BUILD BUILDROOT SOURCES SPECS SRPMS
-
-subdirs::
-	@echo files
-
-files::
-	@echo \
-  files/scripts \
-  files/specs.sh
 

@@ -1,0 +1,97 @@
+#! /bin/bash
+
+shopt -s nullglob
+
+programs="adms fastcap fasthenry mozy mrouter xtlserv vl wrspice xic"
+
+list=$*
+if [ -z "$list" ]; then
+    echo
+    echo "Usage:  install arg1 [arg2 ...]"
+    echo
+    echo \
+"The arguments are partial program names from among those listed below.
+Only the first few characters, to uniquely specify the name, are
+required in each argument.  For each argument, if a corresponding
+package file is found in this directory, it will be installed.  The
+argument can also be "all", in which case all package files found in
+this directory will be installed.  It is likely that you will need
+administrator or super-user permissions to successfully install
+packages."
+    echo
+    echo \
+"Program: $programs"
+    echo
+    exit 0
+fi
+
+for a in $list; do
+    case $a in
+    al|all)
+        list=$programs
+        break
+        ;;
+    esac
+done
+
+pkgs=""
+for a in $list; do
+    case $a in
+    ad|adm|adms)
+	pkg=adms_wr-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    fastc|fastca|fastcap)
+	pkg=fastcap_wr-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    fasth|fasthe|fasthen|fasthenr|fasthenry)
+	pkg=fasthenry_wr-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    mo|moz|mozy)
+	pkg=mozy-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    mr|mro|mrou|mrout|mroute|mrouter)
+	pkg=mrouter-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    xt|xtl|xtls|xtlse|xtlser|xtlserv)
+	pkg=xtlserv-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    v|vl)
+	pkg=vl-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
+	pkg=wrspice-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    xi|xic)
+	pkg=xic-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    esac
+done
+
+if [ -n "$pkgs" ]; then
+    if [ ! -e ../util/wr_install ]; then
+        echo:  "Error ../util/wr_install not found, exiting."
+        exit 1
+    fi
+echo    ../util/wr_install $pkgs
+else
+    echo "Nothing found to install."
+fi
+

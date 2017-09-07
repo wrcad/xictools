@@ -24,7 +24,14 @@ package::
 	if [ -d $(pd)/resources ]; then \
 	    pkgbld="$$pkgbld --scripts $(pd)/resources"; \
         fi; \
-        $$pkgbld $(PKGDIR)/$(PKGFILE)
+        $$pkgbld $(PKGFILE)
+	@if [ -f $(PKGFILE) ]; then \
+	    mv -f $(PKGFILE) $(PKGDIR); \
+	    echo ==================================; \
+	    echo Package file $(PKGFILE); \
+            echo moved to xt_base/packages/pkgfiles; \
+	    echo ==================================; \
+	fi
 	-@rm -rf contents
 
 clean::

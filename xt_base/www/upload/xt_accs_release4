@@ -1,0 +1,6 @@
+Darwin64        4.2.2   x86_64  pkg     .
+LinuxRHEL5      4.2.2   i686    rpm     .
+LinuxRHEL5_64   4.2.2   x86_64  rpm     .
+LinuxRHEL6_64   4.2.2   x86_64  rpm     .
+LinuxRHEL7_64   4.2.2   x86_64  rpm     .
+Win32           4.2.2   i386    exe     .

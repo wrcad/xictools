@@ -1,8 +1,8 @@
-LPATH = ../../../../xt_base
+BASE = ../../../../xt_base
 
 PROG = wrspice
 VERSION = `../../../version $(PROG)`
-PKGDIR = $(LPATH)/packages/pkgfiles
+PKGDIR = $(BASE)/packages/pkgfiles
 SRCDIR = `pwd`/../../root
 
 osbase = ${@:_64=}
@@ -33,7 +33,14 @@ osbase = ${@:_64=}
 	    mv -f $$HOME/.rpmmacros_TMP $$HOME/.rpmmacros; \
 	fi
 	-@rm -rf specfile BUILD BUILDROOT SOURCES SPECS SRPMS
-	@mv -f $(PROG)-Linux* $(PKGDIR)
+	@pkg=`ls $(PROG)-Linux*.rpm`; \
+	if [ -n "$$pkg" ]; then \
+	    mv -f $(PROG)-Linux* $(PKGDIR); \
+	    echo ==================================; \
+	    echo Package file $$pkg; \
+            echo moved to xt_base/packages/pkgfiles; \
+	    echo ==================================; \
+	fi
 
 clean::
 	-@rm -rf specfile BUILD BUILDROOT SOURCES SPECS SRPMS

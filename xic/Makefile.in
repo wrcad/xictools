@@ -434,6 +434,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_xic
-	cd packages; make xic-$(OSNAME)
+	cd packages; $(MAKE) xic-$(OSNAME)
 
 #######################################################################
