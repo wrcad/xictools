@@ -4,14 +4,14 @@
 VERSION = "2.24.25-20160628"
 
 dummy::
-	echo targets: Windows
+	@echo targets: Windows
 
 Win32 pkg::
 	files/setup.sh $(VERSION)
 
 clean::
-	-rm -f *.iss *.exe
-	rm -rf gtk2-bundle pkgs
+	-@rm -f *.iss *.exe
+	-@rm -rf gtk2-bundle pkgs
 
 lib:
 	rm -rf gtk2-bundle pkgs

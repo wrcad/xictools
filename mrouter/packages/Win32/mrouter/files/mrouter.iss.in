@@ -1,11 +1,12 @@
 
 [Setup]
 
-AppName=mrouter
-AppVerName=mrouter-VERSION
+AppName=MRouter
+AppVerName=MRouter-VERSION
 AppVersion=VERSION
 AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://wrcad.com
+AppMutex=MRouterMutex
 
 OutputBaseFilename=mrouter-Win32-VERSION-i386
 

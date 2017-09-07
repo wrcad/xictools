@@ -129,8 +129,14 @@ if [ x"exfiles" != x ]; then
     done
 fi
 
-mv Output/*.exe $pkgfiles
+pkg=Output/*.exe
+if [ -f $pkg ]; then
+    mv -f $pkg $pkgfiles
+    echo ==================================
+    echo Package file $(basename $pkg)
+    echo moved to xt_base/packages/pkgfiles
+    echo ==================================
+fi
 rmdir Output
 rm $appname.iss
 echo Done
-

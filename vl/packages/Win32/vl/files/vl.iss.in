@@ -6,6 +6,7 @@ AppVerName=vl-VERSION
 AppVersion=VERSION
 AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://wrcad.com
+AppMutex=vlMutex
 
 OutputBaseFilename=vl-Win32-VERSION-i386
 
