@@ -3,16 +3,17 @@
 # Echo the files found in the mrouter package.
 
 doc="\
-mrmanual-`../../version`.pdf \
-mrmanual-html-`../../version`.tar.gz \
-Makefile \
-mrman1.tex \
-mrman2.tex \
-mrman3.tex \
-mrmanual.sed \
-README \
-README.build \
-tm.eps"
+README"
+# Makefile
+# mrman1.tex
+# mrman2.tex
+# mrman3.tex
+# mrmanual.sed
+# README
+# README.build
+# tm.eps
+# mrmanual-`../../version`.pdf
+# mrmanual-html-`../../version`.tar.gz
 
 examples="\
 Makefile \

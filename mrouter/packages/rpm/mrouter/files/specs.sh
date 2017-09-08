@@ -4,6 +4,8 @@ OSNAME=$1
 VERSION=$2
 SRCDIR=$3
 
+files=../../util/mrouter_files
+
 tifs="$IFS"
 IFS="."
 set -- $VERSION
@@ -33,24 +35,27 @@ echo "%dir /usr/local/xictools/mrouter"
 echo "%dir /usr/local/xictools/mrouter/lib"
 echo "%attr(0644, root, root) /usr/local/xictools/mrouter/lib/libmrouter.so"
 echo
+echo "%dir /usr/local/xictools/mrouter/help"
+echo "%attr(0644, root, root) /usr/local/xictools/mrouter/help/MRouter.hlp"
+echo
 echo "%dir /usr/local/xictools/mrouter/doc"
-docs=`../../../util/mrouter_files doc`
+docs=`$files doc`
 for a in $docs; do 
     echo "%attr(0644, root, root) /usr/local/xictools/mrouter/doc/$a"
 done
 echo
 echo "%dir /usr/local/xictools/mrouter/examples"
-examp=`../../../util/mrouter_files examples`
+examp=`$files examples`
 for a in $examp; do 
     echo "%attr(0644, root, root) /usr/local/xictools/mrouter/examples/$a"
 done
 echo "%dir /usr/local/xictools/mrouter/examples/osu35"
-examp=`../../../util/mrouter_files examples_osu35`
+examp=`$files examples_osu35`
 for a in $examp; do 
     echo "%attr(0644, root, root) /usr/local/xictools/mrouter/examples/osu35/$a"
 done
 echo "%dir /usr/local/xictools/mrouter/examples/xic"
-examp=`../../../util/mrouter_files examples_xic`
+examp=`$files examples_xic`
 for a in $examp; do 
     echo "%attr(0644, root, root) /usr/local/xictools/mrouter/examples/xic/$a"
 done

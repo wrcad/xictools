@@ -466,7 +466,7 @@ $(destn)/devkit::
 	done;
 
 $(destn)/cadence-oasis::
-	cp -pfr ../cadence-oasis $(destn)
+	cp -pfr cadence-oasis $(destn)
 
 package::
 	$(MAKE) all
@@ -478,7 +478,7 @@ package::
 	            ADMSXML=../../../../../adms/adms_wr/admsXml/admsXml \
 	            DLL_LOC=../../../../bin \
 	            WRSPICE=../../../../bin/wrspice); \
-	    done) \
+	    done \
         )
 	-rm -rf packages/root
 	mkdir packages/root

@@ -9,6 +9,7 @@ KPATH = ../../../KLU
 all: wr_install klu
 
 wr_install: $(BASE)/packages/util/wr_install
+	cp -f $(BASE)/packages/util/wr_install .
 
 klu::
 	if [ -f $(KPATH)/klu_wr.$(SOEXT) ]; then \
@@ -19,8 +20,8 @@ klu_wr.$(SOEXT): $(KPATH)/klu_wr.$(SOEXT)
 	cp -f $(KPATH)/klu_wr.$(SOEXT) .
 
 clean:
-	-@rm -f $(FILES) klu_wr.$(SOEXT)
+	-@rm -f wr_install klu_wr.$(SOEXT)
 
 distclean:
-	-@rm -f $(FILES) klu_wr.$(SOEXT) Makefile
+	-@rm -f wr_install klu_wr.$(SOEXT) Makefile
 

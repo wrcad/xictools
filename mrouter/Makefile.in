@@ -73,7 +73,7 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)
 
 install_mrouter: install_test install_clean install_bin \
-  install_lib install_help install_examples install_doc
+  install_lib install_help install_doc install_examples
 
 install_bin:            $(destn)/bin
 install_lib:            $(destn)/mrouter/lib
@@ -102,6 +102,19 @@ $(destn)/mrouter/help::
 	@$(BASE)/util/mkdirpth $(destn)/mrouter/help
 	$(INSTALL_LIB_RO) doc/xic/MRouter.hlp           $@
 
+$(destn)/mrouter/doc::
+	@$(BASE)/util/mkdirpth $(destn)/mrouter/doc
+#	$(INSTALL_LIB_RO) doc/mrmanual-`./version`.pdf  $@
+#	$(INSTALL_LIB_RO) doc/mrmanual-html-`./version`.tar.gz $@
+#	$(INSTALL_LIB_RO) doc/Makefile                  $@
+#	$(INSTALL_LIB_RO) doc/mrman1.tex                $@
+#	$(INSTALL_LIB_RO) doc/mrman2.tex                $@
+#	$(INSTALL_LIB_RO) doc/mrman3.tex                $@
+#	$(INSTALL_LIB_RO) doc/mrmanual.sed              $@
+	$(INSTALL_LIB_RO) doc/README                    $@
+#	$(INSTALL_LIB_RO) doc/README.build              $@
+#	$(INSTALL_LIB_RO) doc/tm.eps                    $@
+
 $(destn)/mrouter/examples::
 	@$(BASE)/util/mkdirpth $(destn)/mrouter/examples
 	$(INSTALL_LIB) examples/Makefile                $@
@@ -123,19 +136,6 @@ $(destn)/mrouter/examples::
 	$(INSTALL_LIB) examples/xic/stdvia.scr          $@/xic
 	$(INSTALL_LIB) examples/xic/stdvias             $@/xic
 	$(INSTALL_LIB) examples/xic/xic_tech            $@/xic
-
-$(destn)/mrouter/doc::
-	@$(BASE)/util/mkdirpth $(destn)/mrouter/doc
-#	$(INSTALL_LIB_RO) doc/mrmanual-`./version`.pdf  $@
-#	$(INSTALL_LIB_RO) doc/mrmanual-html-`./version`.tar.gz $@
-#	$(INSTALL_LIB_RO) doc/Makefile                  $@
-#	$(INSTALL_LIB_RO) doc/mrman1.tex                $@
-#	$(INSTALL_LIB_RO) doc/mrman2.tex                $@
-#	$(INSTALL_LIB_RO) doc/mrman3.tex                $@
-#	$(INSTALL_LIB_RO) doc/mrmanual.sed              $@
-	$(INSTALL_LIB_RO) doc/README                    $@
-#	$(INSTALL_LIB_RO) doc/README.build              $@
-#	$(INSTALL_LIB_RO) doc/tm.eps                    $@
 
 package::
 	$(MAKE) all

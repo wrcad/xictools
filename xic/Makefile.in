@@ -377,6 +377,7 @@ $(destn)/plugins::
 	done
 
 $(destn)/startup::
+	cd lib/startup; $(MAKE)
 	@$(BASE)/util/mkdirpth $@
 	startup=`packages/util/xic_files startup`; \
 	for a in $$startup; do \
