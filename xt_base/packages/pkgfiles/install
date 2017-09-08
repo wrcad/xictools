@@ -90,7 +90,7 @@ if [ -n "$pkgs" ]; then
         echo:  "Error ../util/wr_install not found, exiting."
         exit 1
     fi
-echo    ../util/wr_install $pkgs
+    ../util/wr_install $pkgs
 else
     echo "Nothing found to install."
 fi

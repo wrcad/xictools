@@ -42,7 +42,6 @@
 #include "main.h"
 #include "promptline.h"
 #include "errorlog.h"
-//XXX#include "dsp_inlines.h"
 #include "tcltk_if.h"
 #include "tcl_base.h"
 #include "reltag.h"

@@ -4,7 +4,6 @@
 # SAFE INSTALL version for Gen-4 (not availaable in Microsoft Windows)
 #
 # Copyright (C) Whiteley Research Inc., 2015, all rights reserved
-# $Id: wr_install,v 1.28 2015/09/18 03:19:34 stevew Exp $
 
 # Usage: wr_install [-t] distrib_file ...
 # The arguments are distribution files as obtained from the Whiteley
@@ -113,9 +112,12 @@ do_update()
     release_lev=$1
     IFS=$tmpifs
 
-    if [ x$release_lev != x4 ]; then
-        echo Generation $release_lev is no longer supported.
-        return 127
+    if [ x$progname = xxic -o x$progname = xwrspice -o \
+  x$progname = xxtlserv -o x$progname = xxt_accs ]; then
+        if [ x$release_lev != x4 ]; then
+            echo Generation $release_lev is no longer supported.
+            return 127
+        fi
     fi
 
     case $osname in
