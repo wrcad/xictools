@@ -57,20 +57,6 @@
 // Default dataset name
 #define DEF_DATASET "unnamed"
 
-// Default executables.
-#ifdef WIN32
-#define FC_DEFAULT_PROGRAM      "fastcap.exe"
-#define FR_DEFAULT_PROGRAM      "FasterCap.exe"
-#define FH_DEFAULT_PROGRAM      "fasthenry.exe"
-#else
-#define FC_DEFAULT_PROGRAM      "fastcap"
-#define FR_DEFAULT_PROGRAM      "FasterCap"
-#define FH_DEFAULT_PROGRAM      "fasthenry"
-#endif
-#define FC_DEFAULT_PATH         "/usr/local/bin/" FC_DEFAULT_PROGRAM
-#define FR_DEFAULT_PATH         "/usr/local/FasterCap/" FR_DEFAULT_PROGRAM
-#define FH_DEFAULT_PATH         "/usr/local/bin/" FH_DEFAULT_PROGRAM
-
 // Base class for graphical interface panel.
 //
 struct fxGif
@@ -102,6 +88,9 @@ struct fxJob
 {
     fxJob(const char*, fxJobMode, fxGif*, fxJob*);
     ~fxJob();
+
+    static const char *fc_default_path();
+    static const char *fh_default_path();
 
     bool setup_fc_run(bool, bool);
     bool setup_fh_run(bool, bool);
@@ -178,6 +167,8 @@ private:
     fxJob *next;
 
     static fxJob *j_jobs;       // list of running jobs
+    static char *j_fc_def_path; // fastcap default path
+    static char *j_fh_def_path; // fasthenry default path
 };
 
 #endif

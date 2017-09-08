@@ -877,7 +877,7 @@ sFh::fh_def_string(int id)
         sprintf(tbuf, "%.*f", ndgt, FH_DEF_TARG_VOLEL);
         return (tbuf);
     case FhPath:
-        return (FH_DEFAULT_PATH);
+        return (fxJob::fh_default_path());
     case FhArgs:
         return ("");
     case FhFreq:

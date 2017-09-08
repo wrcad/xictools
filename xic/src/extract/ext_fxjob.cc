@@ -67,6 +67,8 @@
 //------------------------------------------------------------------------
 
 fxJob *fxJob::j_jobs = 0;
+char *fxJob::j_fc_def_path = 0;
+char *fxJob::j_fh_def_path = 0;
 
 
 fxJob::fxJob(const char *ds, fxJobMode m, fxGif *gif, fxJob *n)
@@ -124,6 +126,67 @@ fxJob::~fxJob()
 }
 
 
+// Static function.
+// Return a string giving the path to the XicTools fastcap program.
+//
+const char *
+fxJob::fc_default_path()
+{
+    if (j_fc_def_path)
+        return (j_fc_def_path);
+
+    // Default to /usr/local/xictools/bin/fastcap.  We really should
+    // check for earlier installations in /usr/local/bin/fastcap, and
+    // FasterCap in /usr/local/FasterCap/FasterCap.
+
+    const char *prefix = XM()->Prefix();
+    if (!prefix)
+        prefix = "/usr/local";
+    const char *toolsroot = XM()->ToolsRoot();
+    if (!toolsroot)
+        toolsroot = "xictools";
+#ifdef Win32
+    const char *prg = "/bin/fastcap.exe";
+#else
+    const char *prg = "/bin/fastcap";
+#endif
+    char *t = new char[strlen(prefix) + strlen(toolsroot) + strlen(prg) + 2];
+    sprintf(t, "%s/%s%s", prefix, toolsroot, prg); 
+    j_fc_def_path = t;
+    return (t);
+}
+
+
+// Static function.
+// Return a string giving the path to the XicTools fasthenry program.
+//
+const char *
+fxJob::fh_default_path()
+{
+    if (j_fh_def_path)
+        return (j_fh_def_path);
+
+    // Default to /usr/local/xictools/bin/fasthenry.  We really should
+    // check for earlier installations in /usr/local/bin/fasthenry.
+
+    const char *prefix = XM()->Prefix();
+    if (!prefix)
+        prefix = "/usr/local";
+    const char *toolsroot = XM()->ToolsRoot();
+    if (!toolsroot)
+        toolsroot = "xictools";
+#ifdef Win32
+    const char *prg = "/bin/fasthenry.exe";
+#else
+    const char *prg = "/bin/fasthenry";
+#endif
+    char *t = new char[strlen(prefix) + strlen(toolsroot) + strlen(prg) + 2];
+    sprintf(t, "%s/%s%s", prefix, toolsroot, prg); 
+    j_fh_def_path = t;
+    return (t);
+}
+
+
 namespace{
     // Return true if the program in path is a Whiteley Research
     // version.
@@ -164,7 +227,7 @@ fxJob::setup_fc_run(bool run_foreg, bool monitor)
 
     const char *path = CDvdb()->getVariable(VA_FcPath);
     if (!path || !*path)
-        path = FC_DEFAULT_PATH;
+        path = fc_default_path();
 #ifndef WIN32
     // Access is too restrictive for Windows (e.g., .exe missing
     // should not be an error), let CreateProcess handle reporting
@@ -280,7 +343,7 @@ fxJob::setup_fh_run(bool run_foreg, bool monitor)
 
     const char *path = CDvdb()->getVariable(VA_FhPath);
     if (!path || !*path)
-        path = FH_DEFAULT_PATH;
+        path = fh_default_path();
     if (access(path, X_OK)) {
         Log()->ErrorLogV(mh::Initialization, "Cannot access: %s.\n", path);
         return (false);

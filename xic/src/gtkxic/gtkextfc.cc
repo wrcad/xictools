@@ -1078,7 +1078,7 @@ sFc::fc_def_string(int id)
     static char tbuf[16];
     switch (id) {
     case FcPath:
-        return (FC_DEFAULT_PATH);
+        return (fxJob::fc_default_path());
     case FcArgs:
         return ("");
     case FcPlaneBloat:
