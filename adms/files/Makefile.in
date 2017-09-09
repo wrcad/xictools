@@ -9,8 +9,6 @@ INSTALL = @INSTALL@
 EXEEXT = @EXEEXT@
 MAINTAINER = @MAINTAINER@
 
-all: admsXml$(EXEEXT) admsCheck$(EXEEXT)
-
 DEFS = -DHAVE_CONFIG_H  -DinsideElement -DinsidePreprocessor -DinsideVeriloga
 CPPFLAGS = -g -Wall
 ifdef EXEEXT
@@ -22,6 +20,8 @@ endif
 CFILES = adms.c preprocessorLex.c preprocessorMain.c preprocessorYacc.c \
   verilogaYacc.c verilogaLex.c admstpathYacc.c
 COBJS=$(CFILES:.c=.o)
+
+all: admsXml$(EXEEXT) admsCheck$(EXEEXT)
 
 admsXml$(EXEEXT): adms.implicit.xml.c adms.c admsXml.o $(COBJS)
 	$(CC) -o $@ admsXml.o $(COBJS)
@@ -36,16 +36,6 @@ admsCheck$(EXEEXT): admsCheck.c adms.c dummy.xml.c dummy.va.c
 .c.o: $(CC) $(CFLAGS) -c $*.c
 
 TOPDIR = ..
-
-adms.c adms.h admstpath.dtd admstpathYacc.h admstpathYacc.y: \
-  $(TOPDIR)/adms.xml $(TOPDIR)/admstpath.xml mkelements.pl
-	$(PERL) mkelements.pl $(TOPDIR)
-
-GENERATED = constants.vams.c disciplines.vams.c adms.implicit.xml.c \
-  dummy.va.c dummy.xml.c
-
-$(GENERATED):%.c:% mkctext.pl
-	$(PERL) mkctext.pl $< $(TOPDIR)
 
 clean:
 	-@rm -f *.o admsXml$(EXEEXT) admsCheck$(EXEEXT)
@@ -67,6 +57,17 @@ uninstall:
 	fi
 
 ifeq ($(MAINTAINER), yes)
+
+GENERATED_CTEXT = constants.vams.c disciplines.vams.c adms.implicit.xml.c \
+  dummy.va.c dummy.xml.c
+
+$(GENERATED_CTEXT): %.c:% mkctext.pl
+	$(PERL) mkctext.pl $< $(TOPDIR)
+
+GENERATED_ELEMS = adms.c adms.h admstpath.dtd admstpathYacc.h admstpathYacc.y
+
+$(GENERATED_ELEMS): $(TOPDIR)/adms.xml $(TOPDIR)/admstpath.xml mkelements.pl
+	$(PERL) mkelements.pl $(TOPDIR)
 
 verilogaYacc.y: verilogaYacc.y.in mkgrammar.pl $(TOPDIR)/adms.xml
 	$(PERL) mkgrammar.pl verilogaYacc.y.in
@@ -92,11 +93,17 @@ admstpathYacc.c: admstpathYacc.y
 	$(YACC) -by -padmstpath $<
 	mv -f y.tab.c $@
 
+GENERATED = verilogaYacc.y verilogaYacc.c verilogaYacc.h verilogaLex.c \
+  preprocessorYacc.y preprocessorYacc.c preprocessorYacc.h preprocessorLex.c \
+  admstpathYacc.c
+
 maintclean: distclean
-	-@rm -f adms.h adms.c admstpath.dtd verilogaYacc.y verilogaYacc.h \
-  verilogaYacc.c verilogaLex.c admstpathYacc.y admstpathYacc.h \
-  admstpathYacc.c preprocessorYacc.h preprocessorYacc.c preprocessorLex.c \
-  $(GENERATED)
+	-@rm -f $(GENERATED_CTEXT) $(GENERATED_ELEMS) $(GENERATED)
+
+maintsave:
+	-@rm -rf generated
+	mkdir generated
+	cp -f $(GENERATED_CTEXT) $(GENERATED_ELEMS) #(GENERATED) generated
 
 endif
 
