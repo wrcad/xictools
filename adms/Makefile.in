@@ -41,7 +41,8 @@ unpack:
 	    cp -f files/config.h.in adms_wr/admsXml; \
 	    cp -f files/constants.vams adms_wr/admsXml; \
 	    cp -f files/disciplines.vams adms_wr/admsXml; \
-	    cd adms_wr; ./configure --enable-maint=yes; \
+	    cp -f generated/*.c generated/*.h adms_wr/admsXml; \
+	    cd adms_wr; ./configure --enable-maint=no; \
 	fi
 
 clean:

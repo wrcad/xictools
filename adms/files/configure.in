@@ -28,14 +28,16 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_EXEEXT
 
-#force use of flex/bison
-if test "x$LEX" != "xflex"; then
-  AC_MSG_WARN(Program flex not found (found $LEX))
-  AC_MSG_ERROR(Please install gnu flex from http://www.gnu.org/software/flex/)
-fi
-if test "x$YACC" != "xbison -y"; then
-  AC_MSG_WARN(Program bison not found (found $YACC))
-  AC_MSG_ERROR(Please install gnu bison from http://www.gnu.org/software/bison/)
+if test $MAINTAINER = yes; then
+  #force use of flex/bison
+  if test "x$LEX" != "xflex"; then
+    AC_MSG_WARN(Program flex not found (found $LEX))
+    AC_MSG_ERROR(Please install gnu flex from http://www.gnu.org/software/flex/)
+  fi
+  if test "x$YACC" != "xbison -y"; then
+    AC_MSG_WARN(Program bison not found (found $YACC))
+    AC_MSG_ERROR(Please install gnu bison from http://www.gnu.org/software/bison/)
+  fi
 fi
 
 #advice use of gcc

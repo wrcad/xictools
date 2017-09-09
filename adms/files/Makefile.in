@@ -103,7 +103,7 @@ maintclean: distclean
 maintsave:
 	-@rm -rf generated
 	mkdir generated
-	cp -f $(GENERATED_CTEXT) $(GENERATED_ELEMS) #(GENERATED) generated
+	cp -f $(GENERATED_CTEXT) $(GENERATED_ELEMS) $(GENERATED) generated
 
 endif
 
