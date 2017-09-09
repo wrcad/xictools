@@ -269,7 +269,7 @@ CCFILES = bin/wrspice.cc bin/wrspiced.cc bin/multidec.cc bin/proc2mod.cc \
 
 depend:
 	@(cd devlib/adms/examples; $(MAKE) make);
-	@for a in include $(SUBDIRS) devlib; do \
+	@for a in include lib $(SUBDIRS) devlib; do \
 	    (cd $$a; $(MAKE) depend) \
 	done
 	@echo depending in $(LOCATION)

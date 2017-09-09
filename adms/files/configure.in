@@ -67,14 +67,17 @@ if test $MAINTAINER = yes; then
     else
       AC_MSG_RESULT(ok)
     fi
-    AC_MSG_CHECKING(for GD Perl module)
-    have_gd="`$PERL -MGD -e 'exit 0;' >/dev/null 2>&1`"
-    if test $? != "0"; then
-      AC_MSG_RESULT(failed)
-      AC_MSG_ERROR([Perl package GD:: may be downloaded from http://search.cpan.org/dist/GD])
-    else
-      AC_MSG_RESULT(ok)
-    fi
+
+# Don't bother with GD, only used for creating the image files for html,
+# user can install perl-GD if needed.
+#    AC_MSG_CHECKING(for GD Perl module)
+#    have_gd="`$PERL -MGD -e 'exit 0;' >/dev/null 2>&1`"
+#    if test $? != "0"; then
+#      AC_MSG_RESULT(failed)
+#      AC_MSG_ERROR([Perl package GD:: may be downloaded from http://search.cpan.org/dist/GD])
+#    else
+#      AC_MSG_RESULT(ok)
+#    fi
   fi
 fi
 

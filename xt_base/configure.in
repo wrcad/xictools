@@ -1145,7 +1145,6 @@ if test -d ../vl; then
 fi
 if test -d ../wrspice; then
     makefiles="$makefiles \
-        ../wrspice/lib/startup/Makefile \
         ../wrspice/src/analysis/Makefile \
         ../wrspice/src/ckt/Makefile \
         ../wrspice/src/cp/Makefile \

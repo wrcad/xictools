@@ -1,9 +1,11 @@
-# lib/xic/Makefile
-# $Id: Makefile,v 1.1 2009/02/04 19:41:41 stevew Exp $
+# wrspice/lib/Makefile
 
 SUBDIRS = docs help scripts examples startup
 
-dummy::
+# The depend target does general setup required before build.  Do this
+# during dependency check.
+
+depend::
 	-@for a in $(SUBDIRS); do \
 	    if [ -f $$a/Makefile ]; then \
 	        (cd $$a; $(MAKE)); \

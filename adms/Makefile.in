@@ -22,7 +22,12 @@ ADMS = ADMS-release-2.3.6.tar.gz
 ADMS_DIR = ADMS-release-2.3.6
 
 all: unpack
-	cd adms_wr/admsXml; $(MAKE)
+	@if [ -f adms_wr/admsXml/Makefile ]; then \
+	    cd adms_wr/admsXml; $(MAKE); \
+	else \
+	    echo "ADMS configuration failed. cleaning..."; \
+	    rm -rf adms_wr; \
+	fi
 
 unpack:
 	@if [ ! -d  adms_wr ]; then \
@@ -48,7 +53,7 @@ distclean:
 	-@rm -rf adms_wr Makefile
 	-@cd packages; $(MAKE) $@
 
-depend:
+depend: unpack
 
 #######################################################################
 ####### Installation ##################################################

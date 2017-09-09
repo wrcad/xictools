@@ -169,7 +169,7 @@ unpack:
 patch:
 	@patch -p0 < long_dbl_patch
 
-depend:
+depend: unpack patch
 
 buildlib:
 	@if [ ! -d AMD ]; then \

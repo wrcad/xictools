@@ -1,5 +1,4 @@
 # wrspice/lib/help/Makefile
-# $Id: Makefile,v 1.6 2011/08/23 03:50:15 stevew Exp $
 
 BASEFILES = FileSel.hlp Hardcopy.hlp HelpSys.hlp TextEditor.hlp TMsmall.gif
 

@@ -76,15 +76,6 @@ FLAGFILE = .configured
 config:
 	@if [ ! -f $(FLAGFILE) ]; then \
 	    (cd xt_base; $(ACONF); ./configure $(CFARGS)); \
-            if [ -d KLU ]; then \
-                (cd KLU; $(MAKE) unpack patch); \
-            fi; \
-            if [ -d wrspice/lib ]; then \
-                (cd wrspice/lib; ${MAKE}); \
-            fi; \
-            if [ -d xic/lib ]; then \
-                (cd xic/lib; ${MAKE}); \
-            fi; \
 	    touch $(FLAGFILE); \
 	fi
 	(${MAKE} depend)

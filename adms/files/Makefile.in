@@ -92,12 +92,6 @@ admstpathYacc.c: admstpathYacc.y
 	$(YACC) -by -padmstpath $<
 	mv -f y.tab.c $@
 
-GENERATED_PNG = adms-scalar.png adms-element.png adms-enumeration.png \
-  adms-uid.png adms-alias.png
-
-$(GENERATED_PNG): mkimages.pl
-	$(PERL) mkimages.pl
-
 maintclean: distclean
 	-@rm -f adms.h adms.c admstpath.dtd verilogaYacc.y verilogaYacc.h \
   verilogaYacc.c verilogaLex.c admstpathYacc.y admstpathYacc.h \

@@ -265,7 +265,7 @@ bin/xic.o: bin/xic.cc
 CCFILES = bin/xic.cc bin/sa-filetool.cc bin/cryptmain.cc
 
 depend:
-	@for a in include $(SUBDIRS) plugins; do \
+	@for a in include lib $(SUBDIRS) plugins; do \
 	    (cd $$a; $(MAKE) depend) \
 	done
 	@echo depending in $(LOCATION)
