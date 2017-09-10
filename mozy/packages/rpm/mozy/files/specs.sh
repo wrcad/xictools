@@ -15,7 +15,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: MOZY html help system and accessories'
-echo "Name: mozy-$OSNAME-gen4"
+echo "Name: mozy-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'

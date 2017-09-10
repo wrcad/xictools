@@ -12,7 +12,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: VL Verilog simulator'
-echo "Name: vl-$OSNAME-gen4"
+echo "Name: vl-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'

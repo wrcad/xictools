@@ -15,7 +15,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: Integrated circuit design software'
-echo "Name: xic-$OSNAME-gen4"
+echo "Name: xic-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'

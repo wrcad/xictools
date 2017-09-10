@@ -22,7 +22,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: Circuit simulation software'
-echo "Name: wrspice-$OSNAME-gen4"
+echo "Name: wrspice-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'
