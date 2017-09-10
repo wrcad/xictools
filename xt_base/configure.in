@@ -46,7 +46,7 @@ if test -d ../xic; then
     GFX_VERSION=`../xic/version xic`
 fi
 if test -d ../xt_base; then
-    XTLSERV_VERSION=`../xt_base/version xtlserv`
+    XTLSERV_VERSION=`../secure/version xtlserv`
 fi
 TOOLROOT="xictools"
 AC_SUBST(prefix)
@@ -56,7 +56,6 @@ AC_SUBST(DEVLIB_VERSION)
 AC_SUBST(DEVLIB_SHARED_FILE)
 AC_SUBST(DEVLIB_STATIC_FILE)
 AC_SUBST(GFX_VERSION)
-AC_SUBST(ACCS_VERSION)
 AC_SUBST(XTLSERV_VERSION)
 AC_SUBST(TOOLROOT)
 
@@ -771,12 +770,12 @@ if test $OSNAME = "Win32"; then
     AC_CHECK_LIB(png, main)
     AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
           IMG_LIBS="$IMG_LIBS -lpng")
-    AC_CHECK_LIB(jpeg, main)
-    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
-          IMG_LIBS="$IMG_LIBS -ljpeg")
     AC_CHECK_LIB(tiff, main)
     AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
           IMG_LIBS="$IMG_LIBS -ltiff")
+    AC_CHECK_LIB(jpeg, main)
+    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
+          IMG_LIBS="$IMG_LIBS -ljpeg")
     LDFLAGS=$zzldflags
     MSLIBS=
     if test z"$mingwlib" != z; then
@@ -827,12 +826,12 @@ dnl  assume libraries/includes are under /opt (MacPorts).
           IMG_LIBS="$IMG_LIBS -lpng16"
            echo '#define HAVE_LIBPNG 1'>> confdefs.h
     )
-    AC_CHECK_LIB(jpeg, main)
-    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
-          IMG_LIBS="$IMG_LIBS -ljpeg")
     AC_CHECK_LIB(tiff, main)
     AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
           IMG_LIBS="$IMG_LIBS -ltiff")
+    AC_CHECK_LIB(jpeg, main)
+    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
+          IMG_LIBS="$IMG_LIBS -ljpeg")
     CURSES="-lcurses"
 else
     tmplibs1=$LIBS
@@ -872,22 +871,6 @@ dnl  Try to link static graphics libraries if found.
         fi
     fi)
 
-    AC_CHECK_LIB(jpeg, main)
-    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
-    if test $linux32 = yes; then
-        if test -f /usr/lib/libjpeg.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib/libjpeg.a"
-        else
-            IMG_LIBS="$IMG_LIBS -ljpeg"
-        fi
-    else
-        if test -f /usr/lib64/libjpeg.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a"
-        else
-            IMG_LIBS="$IMG_LIBS -ljpeg"
-        fi
-    fi)
-
     AC_CHECK_LIB(tiff, main)
     AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
     if test $linux32 = yes; then
@@ -901,6 +884,22 @@ dnl  Try to link static graphics libraries if found.
             IMG_LIBS="$IMG_LIBS /usr/lib64/libtiff.a"
         else
             IMG_LIBS="$IMG_LIBS -ltiff"
+        fi
+    fi)
+
+    AC_CHECK_LIB(jpeg, main)
+    AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
+    if test $linux32 = yes; then
+        if test -f /usr/lib/libjpeg.a; then
+            IMG_LIBS="$IMG_LIBS /usr/lib/libjpeg.a"
+        else
+            IMG_LIBS="$IMG_LIBS -ljpeg"
+        fi
+    else
+        if test -f /usr/lib64/libjpeg.a; then
+            IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a"
+        else
+            IMG_LIBS="$IMG_LIBS -ljpeg"
         fi
     fi)
 
@@ -1176,4 +1175,17 @@ if test -d ../fasthenry; then
 fi
 
 AC_OUTPUT($makefiles)
+
+echo '#! /bin/sh'               > info.sh
+echo "# created by configure, don't edit" >> info.sh
+echo                            >> info.sh
+echo "case \$1 in"              >> info.sh
+echo "date) echo $DATE;;"       >> info.sh
+echo "refix) echo $prefix;;"    >> info.sh
+echo "toolroot) echo $TOOLROOT;;" >> info.sh
+echo "osname) echo $OSNAME;;"   >> info.sh
+echo "arch) echo $ARCH;;"       >> info.sh
+echo "dist_suffix) echo $DIST_SUFFIX;;" >> info.sh
+echo "esac"                     >> info.sh
+chmod 755 info.sh
 

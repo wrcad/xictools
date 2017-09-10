@@ -1,0 +1,105 @@
+#! /bin/bash
+
+shopt -s nullglob
+
+programs="adms fastcap fasthenry mozy mrouter xtlserv vl wrspice xic"
+
+dryrun=no
+if [ x"$1" = x-t ]; then
+    dryrun=yes
+    shift
+fi
+
+list=$*
+if [ -z "$list" ]; then
+    echo
+    echo "Usage:  uninstall [-t] arg1 [arg2 ...]"
+    echo
+    echo \
+"The arguments are partial program names from among those listed
+below.  Only the first few characters, to uniquely specify the name,
+are required in each argument.  For each argument, if a corresponding
+installed package is found, it will be uninstalled.  The argument can
+also be "all", in which case all corresponding installed packages will
+be uninstalled.  If the first argument is \"-t\", the removal commands
+are printed but not executed.  It is likely that you will need
+administrator or super-user permissions to successfully uninstall
+packages."
+    echo
+    echo \
+"Program: $programs"
+    echo
+    exit 0
+fi
+
+for a in $list; do
+    case $a in
+    al|all)
+        list=$programs
+        break
+        ;;
+    esac
+done
+
+osname=`../../info.sh osname`
+if [ -z "$osname" ]; then
+    echo "Error: Can't get distribution name!"
+    exit 1
+fi
+psfx=`../../info.sh dist_suffix`
+if [ -z "$psfx" ]; then
+    echo "Error: Can't get distribution file suffix!"
+    exit 1
+fi
+
+
+pkgs=""
+for a in $list; do
+    case $a in
+    ad|adm|adms)
+        pkgs="$pkgs adms_wr-$osname"
+        ;;
+    fastc|fastca|fastcap)
+        pkgs="$pkgs fastcap_wr-$osname"
+        ;;
+    fasth|fasthe|fasthen|fasthenr|fasthenry)
+        pkgs="$pkgs fasthenry_wr-$osname"
+        ;;
+    mo|moz|mozy)
+        pkgs="$pkgs mozy-$osname-gen4"
+        ;;
+    mr|mro|mrou|mrout|mroute|mrouter)
+        pkgs="$pkgs mrouter-$osname-gen4"
+        ;;
+    xt|xtl|xtls|xtlse|xtlser|xtlserv)
+        pkgs="$pkgs xtlserv-$osname-gen4"
+        ;;
+    v|vl)
+        pkgs="$pkgs vl-$osname-gen4"
+        ;;
+    w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
+        pkgs="$pkgs wrspice-$osname-gen4"
+        ;;
+    xi|xic)
+        pkgs="$pkgs xic-$osname-gen4"
+        ;;
+    esac
+done
+
+if [ -n "$pkgs" ]; then
+    for a in $pkgs; do
+        if [ $psfx = rpm ]; then
+            echo rpm -e $a
+            if [ $dryrun = no ]; then
+                rpm -e $a
+            fi
+        elif [ $psfx = pkg.gz ]; then
+            echo darwin
+        elif [ $pshx = exe ]; then
+            echo windows
+        fi
+    done
+else
+    echo "Nothing found to install."
+fi
+
