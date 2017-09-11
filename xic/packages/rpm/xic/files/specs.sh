@@ -3,6 +3,8 @@
 
 files=../../util/xic_files
 
+top=xic.current
+
 OSNAME=$1
 VERSION=$2
 SRCDIR=$3
@@ -31,88 +33,88 @@ echo
 
 echo '%files'
 echo
-echo "%dir /usr/local/xictools/xic"
-echo "%dir /usr/local/xictools/xic/bin"
+echo "%dir /usr/local/xictools/$top"
+echo "%dir /usr/local/xictools/$top/bin"
 bin=`$files bin`
 for a in $bin; do
-    echo "%attr(0755, root, root) /usr/local/xictools/xic/bin/$a"
+    echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/xic/docs"
+echo "%dir /usr/local/xictools/$top/docs"
 docs=`$files docs`
 for a in $docs; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/docs/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/docs/$a"
 done
-echo "%attr(0644, root, root) /usr/local/xictools/xic/docs/xic$VERSION"
+echo "%attr(0644, root, root) /usr/local/xictools/$top/docs/xic$VERSION"
 
 echo
-echo "%dir /usr/local/xictools/xic/examples"
+echo "%dir /usr/local/xictools/$top/examples"
 examples=`$files examples`
 for a in $examples; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/examples/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/examples/$a"
 done
-echo "%dir /usr/local/xictools/xic/examples/PCells"
+echo "%dir /usr/local/xictools/$top/examples/PCells"
 examples_pcells=`$files examples_pcells`
 for a in $examples_pcells; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/examples/PCells/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/examples/PCells/$a"
 done
-echo "%dir /usr/local/xictools/xic/examples/memchip_example"
+echo "%dir /usr/local/xictools/$top/examples/memchip_example"
 examples_memchip_example=`$files examples_memchip_example`
 for a in $examples_memchip_example; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/examples/memchip_example/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/examples/memchip_example/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/xic/help"
+echo "%dir /usr/local/xictools/$top/help"
 help=`$files help`
 for a in $help; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/help/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/help/$a"
 done
-echo "%dir /usr/local/xictools/xic/help/screenshots"
+echo "%dir /usr/local/xictools/$top/help/screenshots"
 help_screenshots=`$files help_screenshots`
 for a in $help_screenshots; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/help/screenshots/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/help/screenshots/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/xic/icons"
+echo "%dir /usr/local/xictools/$top/icons"
 icons=`$files icons`
 for a in $icons; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/icons/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/icons/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/xic/plugins"
+echo "%dir /usr/local/xictools/$top/plugins"
 plugins=`$files plugins $OSNAME`
 for a in $plugins; do
-    echo "%attr(0755, root, root) /usr/local/xictools/xic/plugins/$a"
+    echo "%attr(0755, root, root) /usr/local/xictools/$top/plugins/$a"
 done
 oaplugin=`$files oaplugin $OSNAME`
-for a in $oaplugin; do
-    echo "%attr(0755, root, root) /usr/local/xictools/xic/plugins/$a"
+if [ -n "$oaplugin" ]; then
+    echo "%attr(0755, root, root) /usr/local/xictools/$top/plugins/$oaplugin"
 done
 
 echo
-echo "%dir /usr/local/xictools/xic/scripts"
+echo "%dir /usr/local/xictools/$top/scripts"
 scripts=`$files scripts`
 for a in $scripts; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/scripts/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/scripts/$a"
 done
 echo
 
 echo
-echo "%dir /usr/local/xictools/xic/scrkit"
+echo "%dir /usr/local/xictools/$top/scrkit"
 scrkit=`$files scrkit`
 for a in $scrkit; do
-    echo "%attr(0644, root, root) /usr/local/xictools/xic/scrkit/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/scrkit/$a"
 done
 echo
 
-echo "%dir /usr/local/xictools/xic/startup"
+echo "%dir /usr/local/xictools/$top/startup"
 startup=`$files startup`
 for a in $startup; do
-    echo "%config /usr/local/xictools/xic/startup/$a"
+    echo "%config /usr/local/xictools/$top/startup/$a"
 done
 echo
 

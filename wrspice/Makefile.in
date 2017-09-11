@@ -338,7 +338,7 @@ wdemo wrspice_ipc_demo:
 	@echo
 
 INSTALL_PREFIX ?= $(prefix)
-destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
+destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current
 
 install: install_test install_clean install_bin install_help install_icons \
   install_startup install_scripts install_examples install_docs

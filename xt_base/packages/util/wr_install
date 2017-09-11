@@ -1,17 +1,15 @@
 #! /bin/sh
 #
-# wr_install - script to install Whiteley Research software products
-# SAFE INSTALL version for Gen-4 (not availaable in Microsoft Windows)
-#
-# Copyright (C) Whiteley Research Inc., 2015, all rights reserved
+# wr_install - script to install XicTools packages with safe install.
+# For XicTools-4.3 (open source) branch ONLY.
 
 # Usage: wr_install [-t] distrib_file ...
-# The arguments are distribution files as obtained from the Whiteley
-# Research web site.  DO NOT CHANGE THE NAMES OF THESE FILES!
-# If "-t" is given, files that follow won't be installed, but the
-# commands that would be executed are printed.
+# The arguments are XicTools package files as obtained (for example)
+# from the Whiteley Research web site.  DO NOT CHANGE THE NAMES OF
+# THESE FILES!  If "-t" is given, files that follow won't be
+# installed, but the commands that would be executed are printed.
 
-# The script is also called by xic and wrspice when doing updates
+# This script is also called by xic and wrspice when doing updates
 # through the programs:  wr_install -upd distrib_file prefix
 
 # The following DOES NOT apply to Microsort Windows releases, which
@@ -20,16 +18,13 @@
 
 # This implements "safe install", where the previous release is
 # retained in its entirety, and can be reverted to easily if there is
-# a problem with the new release.  Of course, such a thing could
-# never, ever, happen, except when it does!  The script will recognize
-# an old-style installation, and convert to the safe install
-# configuration transparently.
+# a problem with the new release.
 
 # BE FOREWARNED:  New Xic and WRspice distributions put the
-# executables, for example for xic, in xictools/xic/bin and NOT in
-# xictools/bin, as was true in earlier releases.  The new executables
-# won't be visible in the shell search path!  The maintainer should do
-# one of
+# executables, for example for xic (which we will use for examples,
+# wrspice is analogous), in xictools/xic/bin and NOT in xictools/bin,
+# as was true in earlier releases.  The new executables won't be
+# visible in the shell search path!  The maintainer should do one of
 #   A. change the shell search path to include the new locations, 
 #   B. symbolically link the executables into xictools/bin
 #   C. add a wrapper shell script in xictools/bin
@@ -43,11 +38,16 @@
 # under /usr/local/xictools (by default).  The xic.current directory
 # is symbolically linked as xic in the same directory.
 
-# When updating, this script will remove the link to xic, copy
-# xic.current to xic, then move xic.current to xic-version.  Then it
-# will perform the update using the native tool, such as rpm, and move
-# xic to xic.current, and finally create the symbolic link from
-# xic.current as xic.
+# When updating, this script will remove the link to xic, then move
+# xic.current to xic-version.  Then it will perform the update using
+# the native tool, such as rpm, which will install a new xic.current. 
+# Finally the symbolic link from xic.current as xic is created.
+
+# The difference between 4.3 and earlier safe install packages is that
+# earlier packages installed the files under "xic", which the script
+# changed to "xic.current".  Now, the files are installed under
+# "xic.current" directly, so that if you install with your package
+# tool directly, you will need to create the link by hand.
 
 # If there is a problem with the new release, the maintainer can
 # delete the link from xic.current to xic, and recreate the link, but
@@ -58,9 +58,9 @@
 # xic-version, and can be reverted to if needed.  The user can delete
 # these old releases when they are no longer of potential value.  The
 # release in xic.current is registered with the system package
-# database and should only be uninstalled using this script, or using
-# the same logic, for example:
-#   rm xic; mv xic.current xic; rpm -e `rpm -qa | grep xic`
+# database and should only be uninstalled using your package manager
+# program,  For example:
+#   rpm -e `rpm -qa | grep xic`
 
 #=======================================================================
 
@@ -71,16 +71,15 @@ usage()
     echo
     echo Usage:  wr_install [-t] distrib_file ...
     echo
-    echo The arguments are distribution files as obtained from the
-    echo Whiteley Research web site.
+    echo The arguments are XicTools-4.3 package files,
     echo
     echo DO NOT CHANGE THE NAMES OF THESE FILES!
     echo
     echo If -t is given, files that follow won\'t be installed, but
     echo the commands that would be executed are printed.
     echo
-    echo This is the SAFE INSTALL version for Gen-4, see the script
-    echo comments for info.
+    echo "This is the SAFE INSTALL version for XicTools-4.3 (open"
+    echo "source), see comments in the script for info."
     echo
 }
 
@@ -110,12 +109,17 @@ do_update()
     IFS="."
     set $vers
     release_lev=$1
+    release_maj=$2
     IFS=$tmpifs
 
     if [ x$progname = xxic -o x$progname = xwrspice -o \
-  x$progname = xxtlserv -o x$progname = xxt_accs ]; then
+x$progname = xxtlserv -o x$progname = xxt_accs ]; then
         if [ x$release_lev != x4 ]; then
             echo Generation $release_lev is no longer supported.
+            return 127
+        fi
+        if [ x$release_maj != x3 ]; then
+            echo This script is for $release_lev.$release_maj packages only.
             return 127
         fi
     fi
@@ -220,92 +224,44 @@ safe_install()
         do_update $distfile $prefix $nodo
         ret=$?
     else
-        if [ x$nodo != xyes ]; then
-            if [ -h $prefix/xictools/$prog ]; then
-                rm $prefix/xictools/$prog
-                if [ -d $prefix/xictools/$prog.current ]; then
-                    curver=`$prefix/xictools/$prog.current/bin/$prog --v`
-                    set $curver
-                    curver=$1
-                    rm -rf $prefix/xictools/$prog-$curver
-                    cp -pr $prefix/xictools/$prog.current \
- $prefix/xictools/$prog-$curver
-                    mv $prefix/xictools/$prog.current $prefix/xictools/$prog
-                fi
+        if [ -d $prefix/xictools/$prog.current -a \
+-x $prefix/xictools/$prog.current/bin/$prog ]; then
+            curver=`$prefix/xictools/$prog.current/bin/$prog --v`
+            set $curver
+            curver=$1
+            if [ x$nodo = xyes ]; then
+                echo rm -rf $prefix/xictools/$prog-$curver
+                echo cp -pr $prefix/xictools/$prog.current \
+$prefix/xictools/$prog-$curver
+                echo mv $prefix/xictools/$prog.current $prefix/xictools/$prog
             else
-                if [ -d $prefix/xictools/$prog ]; then
-                    curver=`$prefix/xictools/bin/$prog --v`
-                    set $curver
-                    curver=$1
-                    ddir=$prefix/xictools/$prog-$curver
-                    rm -rf $ddir
-                    cp -pr $prefix/xictools/$prog $ddir
-                    if [ ! -d $ddir/bin ]; then
-                        mkdir $ddir/bin
-                        if [ $prog = xic ]; then
-                            cp $prefix/xictools/bin/wrdecode $ddir/bin
-                            cp $prefix/xictools/bin/wrencode $ddir/bin
-                            cp $prefix/xictools/bin/wrsetpass $ddir/bin
-                            cp $prefix/xictools/bin/xic $ddir/bin
-                        elif [ $prog = wrspice ]; then
-                            cp $prefix/xictools/bin/multidec $ddir/bin
-                            cp $prefix/xictools/bin/proc2mod $ddir/bin
-                            cp $prefix/xictools/bin/printtoraw $ddir/bin
-                            cp $prefix/xictools/bin/wrspice $ddir/bin
-                            cp $prefix/xictools/bin/wrspiced $ddir/bin
-                        fi
-                    fi
-                fi
+                rm -rf $prefix/xictools/$prog-$curver
+                cp -pr $prefix/xictools/$prog.current \
+$prefix/xictools/$prog-$curver
+                mv $prefix/xictools/$prog.current $prefix/xictools/$prog
             fi
-
-            do_update $distfile $prefix $nodo
-            ret=$?
-
-            mv $prefix/xictools/$prog $prefix/xictools/$prog.current
-            ln -s $prefix/xictools/$prog.current $prefix/xictools/$prog
-        else
-            if [ -h $prefix/xictools/$prog ]; then
+        fi
+        if [ -h $prefix/xictools/$prog ]; then
+            if [ x$nodo = xyes ]; then
                 echo rm $prefix/xictools/$prog
-                if [ -d $prefix/xictools/$prog.current ]; then
-                    curver=`$prefix/xictools/$prog.current/bin/$prog --v`
-                    set $curver
-                    curver=$1
-                    echo rm -rf $prefix/xictools/$prog-$curver
-                    echo cp -pr $prefix/xictools/$prog.current \
- $prefix/xictools/$prog-$curver
-                    echo mv $prefix/xictools/$prog.current $prefix/xictools/$prog
-                fi
             else
-                if [ -d $prefix/xictools/$prog ]; then
-                    curver=`$prefix/xictools/bin/$prog --v`
-                    set $curver
-                    curver=$1
-                    ddir=$prefix/xictools/$prog-$curver
-                    echo rm -rf $ddir
-                    echo cp -pr $prefix/xictools/$prog $ddir
-                    if [ ! -d $ddir/bin ]; then
-                        echo mkdir $ddir/bin
-                        if [ $prog = xic ]; then
-                            echo cp $prefix/xictools/bin/wrdecode $ddir/bin
-                            echo cp $prefix/xictools/bin/wrencode $ddir/bin
-                            echo cp $prefix/xictools/bin/wrsetpass $ddir/bin
-                            echo cp $prefix/xictools/bin/xic $ddir/bin
-                        elif [ $prog = wrspice ]; then
-                            echo cp $prefix/xictools/bin/multidec $ddir/bin
-                            echo cp $prefix/xictools/bin/proc2mod $ddir/bin
-                            echo cp $prefix/xictools/bin/printtoraw $ddir/bin
-                            echo cp $prefix/xictools/bin/wrspice $ddir/bin
-                            echo cp $prefix/xictools/bin/wrspiced $ddir/bin
-                        fi
-                    fi
-                fi
+                rm $prefix/xictools/$prog
             fi
+        else
+            if [ x$nodo = xyes ]; then
+                echo rm -rf $prefix/xictools/$prog
+            else
+                rm -rf $prefix/xictools/$prog
+            fi
+        fi
 
-            do_update $distfile $prefix $nodo
-            ret=$?
+        do_update $distfile $prefix $nodo
+        ret=$?
 
-            echo mv $prefix/xictools/$prog $prefix/xictools/$prog.current
+        if [ x$nodo = xyes ]; then
             echo ln -s $prefix/xictools/$prog.current $prefix/xictools/$prog
+        else
+            ln -s $prefix/xictools/$prog.current $prefix/xictools/$prog
         fi
     fi
     return $ret

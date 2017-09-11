@@ -310,7 +310,7 @@ distclean: eclean
 # variable for the splitting to work correctly.
 
 INSTALL_PREFIX ?= $(prefix)
-destn = $(INSTALL_PREFIX)/$(TOOLROOT)/xic
+destn = $(INSTALL_PREFIX)/$(TOOLROOT)/xic.current
 
 install_xic: install_test install_xic_clean install_xic_bin \
   install_xic_help install_xic_icons install_xic_plugins \
@@ -371,10 +371,12 @@ $(destn)/plugins::
 	for a in $$plugins; do \
 	    $(INSTALL_LIB) plugins/$$a $@; \
 	done
-	oaplugin=`packages/util/xic_files oaplugin $(OSNAME)`; \
-	for a in $$oaplugin; do \
-	    $(INSTALL_LIB) src/oa/$$a $@; \
-	done
+	if [ -n "$(OA_SUBDIR) ]; then \
+	    oaplugin=`packages/util/xic_files oaplugin $(OSNAME)`; \
+	    if [ -n "$oaplugin" ]; then \
+	        $(INSTALL_LIB) $(OA_SUBDIR)/$$oaplugin $@; \
+	    fi \
+        fi
 
 $(destn)/startup::
 	cd lib/startup; $(MAKE)

@@ -5,6 +5,8 @@ with_devkit=yes
 
 files=../../util/wrspice_files
 
+top=wrspice.current
+
 OSNAME=$1
 VERSION=$2
 SRCDIR=$3
@@ -38,108 +40,108 @@ echo
 
 echo '%files'
 echo
-echo "%dir /usr/local/xictools/wrspice"
-echo "%dir /usr/local/xictools/wrspice/bin"
+echo "%dir /usr/local/xictools/$top"
+echo "%dir /usr/local/xictools/$top/bin"
 bin=`$files bin`
 for a in $bin; do
-    echo "%attr(0755, root, root) /usr/local/xictools/wrspice/bin/$a"
+    echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/wrspice/docs"
+echo "%dir /usr/local/xictools/$top/docs"
 docs=`$files docs`
 for a in $docs; do
-    echo "%attr(0644, root, root) /usr/local/xictools/wrspice/docs/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/docs/$a"
 done
-echo "%attr(0644, root, root) /usr/local/xictools/wrspice/docs/wrs$VERSION"
+echo "%attr(0644, root, root) /usr/local/xictools/$top/docs/wrs$VERSION"
 
 echo
-echo "%dir /usr/local/xictools/wrspice/examples"
+echo "%dir /usr/local/xictools/$top/examples"
 examples=`$files examples`
 for a in $examples; do
-    echo "%attr(0644, root, root) /usr/local/xictools/wrspice/examples/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/examples/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/wrspice/help"
+echo "%dir /usr/local/xictools/$top/help"
 help=`$files help`
 for a in $help; do
-    echo "%attr(0644, root, root) /usr/local/xictools/wrspice/help/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/help/$a"
 done
-echo "%dir /usr/local/xictools/wrspice/help/screenshots"
+echo "%dir /usr/local/xictools/$top/help/screenshots"
 help_screenshots=`$files help_screenshots`
 for a in $help_screenshots; do
-    echo "%attr(0644, root, root) /usr/local/xictools/wrspice/help/screenshots/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/help/screenshots/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/wrspice/icons"
+echo "%dir /usr/local/xictools/$top/icons"
 icons=`$files icons`
 for a in $icons; do
-    echo "%attr(0644, root, root) /usr/local/xictools/wrspice/icons/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/icons/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/wrspice/scripts"
+echo "%dir /usr/local/xictools/$top/scripts"
 scripts=`$files scripts`
 for a in $scripts; do
-    echo "%attr(0644, root, root) /usr/local/xictools/wrspice/scripts/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/scripts/$a"
 done
 
 echo
-echo "%dir /usr/local/xictools/wrspice/startup"
+echo "%dir /usr/local/xictools/$top/startup"
 startup=`$files startup`
 for a in $startup; do
-    echo "%config /usr/local/xictools/wrspice/startup/$a"
+    echo "%config /usr/local/xictools/$top/startup/$a"
 done
 klulib=`$files klu Linux`
 for a in $klulib; do
-    echo "%attr(0755, root, root) /usr/local/xictools/wrspice/startup/$a"
+    echo "%attr(0755, root, root) /usr/local/xictools/$top/startup/$a"
 done
-echo "%dir /usr/local/xictools/wrspice/startup/devices"
-echo "%attr(0644, root, root) /usr/local/xictools/wrspice/startup/devices/README"
+echo "%dir /usr/local/xictools/$top/startup/devices"
+echo "%attr(0644, root, root) /usr/local/xictools/$top/startup/devices/README"
 vlmods=`$files vlmods`
 for a in $vlmods; do
-    echo "%attr(0644, root, root) /usr/local/xictools/wrspice/startup/devices/$a.so"
+    echo "%attr(0644, root, root) /usr/local/xictools/$top/startup/devices/$a.so"
 done
 
 echo
 if [ $with_devkit = yes ]; then
-  echo "%dir /usr/local/xictools/wrspice/devkit"
-  echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/Makefile"
-  echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/README"
-  echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/README.adms"
-  echo "%dir /usr/local/xictools/wrspice/devkit/admst"
+  echo "%dir /usr/local/xictools/$top/devkit"
+  echo "%attr(0644, root, root) /usr/local/xictools/$top/devkit/Makefile"
+  echo "%attr(0644, root, root) /usr/local/xictools/$top/devkit/README"
+  echo "%attr(0644, root, root) /usr/local/xictools/$top/devkit/README.adms"
+  echo "%dir /usr/local/xictools/$top/devkit/admst"
   admst=`$files admst`
   for a in $admst; do
-      echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/admst/$a"
+      echo "%attr(0644, root, root) /usr/local/xictools/$top/devkit/admst/$a"
   done
-  echo "%dir /usr/local/xictools/wrspice/devkit/include"
+  echo "%dir /usr/local/xictools/$top/devkit/include"
   devincl=`$files devincl`
   for a in $devincl; do
-      echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/include/$a"
+      echo "%attr(0644, root, root) /usr/local/xictools/$top/devkit/include/$a"
   done
-  echo "%dir /usr/local/xictools/wrspice/devkit/examples"
+  echo "%dir /usr/local/xictools/$top/devkit/examples"
   dkexdirs=`$files dkexdirs`
   for a in $dkexdirs; do
-      echo "%dir /usr/local/xictools/wrspice/devkit/examples/$a"
-      echo "%dir /usr/local/xictools/wrspice/devkit/examples/$a/tests"
-      echo "%dir /usr/local/xictools/wrspice/devkit/examples/$a/module_dist"
+      echo "%dir /usr/local/xictools/$top/devkit/examples/$a"
+      echo "%dir /usr/local/xictools/$top/devkit/examples/$a/tests"
+      echo "%dir /usr/local/xictools/$top/devkit/examples/$a/module_dist"
   done
   for a in $dkexdirs; do
       mfile=`$files modname $a`.`$files soext Linux`
-      echo "%attr(0755, root, root) /usr/local/xictools/wrspice/devkit/examples/$a/module_dist/$mfile"
+      echo "%attr(0755, root, root) /usr/local/xictools/$top/devkit/examples/$a/module_dist/$mfile"
   done
   efiles=`cat ../../util/adms_examples`
   for a in $efiles; do
-      echo "%attr(0644, root, root) /usr/local/xictools/wrspice/devkit/$a"
+      echo "%attr(0644, root, root) /usr/local/xictools/$top/devkit/$a"
   done
   echo
 fi
 
 echo
 if [ $with_cadence = yes ]; then
-  dir=/usr/local/xictools/wrspice/cadence-oasis
+  dir=/usr/local/xictools/$top/cadence-oasis
   echo "%dir $dir"
   echo "%attr(0644, root, root) $dir/advTool.il"
   echo "%attr(0644, root, root) $dir/analysis.il"

@@ -1,25 +1,34 @@
 %pre
-if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+if [ -z "$RPM_INSTALL_PREFIX" ]; then
     prefix=/usr/local
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
 
-# Nothiong to do now.
+# Nothing to do now.
 
 
 %post
-if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+if [ -z "$RPM_INSTALL_PREFIX" ]; then
     prefix=/usr/local
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
 
-prog=xic
-libdir=$prefix/xictools/$prog
+libdir=$prefix/xictools/xic.current
 
 # Link technology file.
 if [ ! -f $libdir/startup/xic_tech ]; then
     ln -s xic_tech.scmos $libdir/startup/xic_tech
 fi
+
+%postun
+
+if [ -z "$RPM_INSTALL_PREFIX" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+# Make sure that this is entirely gone.
+rm -rf $prefix/xictools/xic.current
 

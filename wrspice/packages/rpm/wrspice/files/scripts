@@ -1,19 +1,26 @@
 %pre
-if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+if [ -z "$RPM_INSTALL_PREFIX" ]; then
     prefix=/usr/local
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
-
-# Remove some crap possibly left behind.
-rm -rf $prefix/xictools/$prog/devkit/examples/bsimsoi
+# Nothing to do.
 
 
 %post
-if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
+if [ -z "$RPM_INSTALL_PREFIX" ]; then
     prefix=/usr/local
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
+# Nothing to do.
 
-# Nothing to do now.
+%postun
+if [ -z "$RPM_INSTALL_PREFIX" ]; then
+    prefix=/usr/local
+else
+    prefix=$RPM_INSTALL_PREFIX
+fi
+# Make sure that this is entirely gone.
+rm -rf $(prefix)/xictools/wrspice.current
+

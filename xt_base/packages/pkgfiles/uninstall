@@ -66,22 +66,22 @@ for a in $list; do
         pkgs="$pkgs fasthenry_wr-$osname"
         ;;
     mo|moz|mozy)
-        pkgs="$pkgs mozy-$osname-gen4"
+        pkgs="$pkgs mozy-$osname"
         ;;
     mr|mro|mrou|mrout|mroute|mrouter)
-        pkgs="$pkgs mrouter-$osname-gen4"
+        pkgs="$pkgs mrouter-$osname"
         ;;
     xt|xtl|xtls|xtlse|xtlser|xtlserv)
-        pkgs="$pkgs xtlserv-$osname-gen4"
+        pkgs="$pkgs xtlserv-$osname"
         ;;
     v|vl)
-        pkgs="$pkgs vl-$osname-gen4"
+        pkgs="$pkgs vl-$osname"
         ;;
     w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
-        pkgs="$pkgs wrspice-$osname-gen4"
+        pkgs="$pkgs wrspice-$osname"
         ;;
     xi|xic)
-        pkgs="$pkgs xic-$osname-gen4"
+        pkgs="$pkgs xic-$osname"
         ;;
     esac
 done

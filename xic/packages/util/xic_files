@@ -392,8 +392,8 @@ plugins)
     esac;;
 oaplugin)
     case $2 in
-#    Linux*)
-#        echo "oa.so";;
+    Linux*)
+        echo "oa.so";;
     esac;;
 esac
 
