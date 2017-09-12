@@ -21,6 +21,8 @@ ADMS = ADMS-release-2.3.6.tar.gz
 
 ADMS_DIR = ADMS-release-2.3.6
 
+REGEN = no
+
 all: unpack
 	@if [ -f adms_wr/admsXml/Makefile ]; then \
 	    cd adms_wr/admsXml; $(MAKE); \
@@ -42,8 +44,14 @@ unpack:
 	    cp -f files/constants.vams adms_wr/admsXml; \
 	    cp -f files/disciplines.vams adms_wr/admsXml; \
 	    cp -f files/mkelements.pl adms_wr/admsXml; \
-	    cp -f generated/*.c generated/*.h adms_wr/admsXml; \
-	    cd adms_wr; ./configure --enable-maint=no; \
+	    cp -f files/admsPreprocessor.h adms_wr/admsXml; \
+	    cp -f files/admsVeriloga.h adms_wr/admsXml; \
+	    if [ $(REGEN) = yes ]; then \
+	        cd adms_wr; ./configure --enable-maint=yes; \
+	    else \
+	        cp -f generated/*.c generated/*.h adms_wr/admsXml; \
+	        cd adms_wr; ./configure --enable-maint=no; \
+	    fi; \
 	fi
 
 clean:

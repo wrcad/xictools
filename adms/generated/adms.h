@@ -4,7 +4,7 @@
 #ifndef adms_h
 #define adms_h
 
-#define GIT "710966e" /* git release version */
+#define GIT "b3e500f" /* git release version */
 
 /*headers -- depend on compiler, OS, ...*/
 #  if defined(_MSC_VER)
@@ -1342,7 +1342,7 @@ typedef enum {
   admse__
 } admse;
 #undef win32_interface
-#if defined(WIN32)
+#if defined(WIN32) && defined(WITH_DLLS)
 #  if defined(insideElement)
 #    define win32_interface __declspec(dllexport)
 #  else

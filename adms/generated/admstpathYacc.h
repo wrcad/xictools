@@ -5,7 +5,7 @@
 #include "adms.h"
 
 #undef win32_interface
-#if defined(WIN32)
+#if defined(WIN32) && defined(WITH_DLLS)
 #  if defined(insideadmstpathYacc)
 #    define win32_interface __declspec(dllexport)
 #  else

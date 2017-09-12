@@ -46,12 +46,16 @@ However, there were some changes made when building this package:
 
 5)  We also have to supply a modified mkelements.pl (in ./files) that
     has this modification in two places:
+
     #if defined(Win32)
     goes to
     #if defined(Win32) && defined(WITH_DLLS)
+
     We do not set WITH_DLLS, avoiding symbol name redefinitions from
     dllimport/dllexport attributes otherwise hard-coded into Win32
     builds.  This is necessary to build statically-linked code.
+    Did the same modification to the source files admsPreprocessor.h
+    and admsVeriloga.h, also in ./files.
 
 ------------------------------------------------------------------------
 Changes from original adms-2.3.0, also see the ChangeLog in the
