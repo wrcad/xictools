@@ -1,15 +1,16 @@
 #! /bin/sh
-# $Id: specs.sh,v 1.31 2015/09/16 00:13:23 stevew Exp $
-
-with_devkit=yes
-
-files=../../util/wrspice_files
-
-top=wrspice.current
 
 OSNAME=$1
 VERSION=$2
 SRCDIR=$3
+
+files=../../util/wrspice_files
+top=wrspice.current
+
+with_devkit=no
+if [ -d ../../root/usr/local/xictools/$top/devkit ]; then
+    with_devkit=yes
+fi
 
 with_cadence=no
 if [ $OSNAME = LinuxRHEL6_64 -o $OSNAME = LinuxRHEL7_64 ]; then

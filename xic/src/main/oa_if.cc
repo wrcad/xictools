@@ -120,15 +120,19 @@ namespace {
 
         void *handle = dlopen(lstr.string(), RTLD_LAZY | RTLD_GLOBAL);
         if (!handle) {
-            if (verbose)
+            if (verbose) {
                 printf("dlopen failed: %s\n", dlerror());
+                printf("plugin: %s\n", lstr.string());
+            }
             return (0);
         }
 
         cOA_base*(*oaptr)() = (cOA_base*(*)())dlsym(handle, "oaptr");
         if (!oaptr) {
-            if (verbose)
+            if (verbose) {
                 printf("dlsym failed: %s\n", dlerror());
+                printf("plugin: %s\n", lstr.string());
+            }
             return (0);
         }
 
@@ -140,8 +144,9 @@ namespace {
                 printf ("OpenAccess plug-in version mismatch:\n"
                     "Xic is \"%s\", plug-in is \"%s\"\n", idstr,
                     oa->id_string() ? oa->id_string() : "");
+                printf("plugin: %s\n", lstr.string());
             }
-            oa = 0;
+            return (0);
         }
         if (!oa) {
             if (verbose)

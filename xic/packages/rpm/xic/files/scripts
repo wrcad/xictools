@@ -1,14 +1,19 @@
 %pre
+
 if [ -z "$RPM_INSTALL_PREFIX" ]; then
     prefix=/usr/local
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
 
-# Nothing to do now.
+# Remove wrapper and links.
+txic=$prefix/xictools/xic
+tbin=$prefix/xictools/bin
+rm -f $txic $tbin/xic $tbin/wrencode $tbin/decode $tbin/wrsetpass
 
 
 %post
+
 if [ -z "$RPM_INSTALL_PREFIX" ]; then
     prefix=/usr/local
 else
@@ -22,6 +27,22 @@ if [ ! -f $libdir/startup/xic_tech ]; then
     ln -s xic_tech.scmos $libdir/startup/xic_tech
 fi
 
+# Link xic.current to xic.
+txic=$prefix/xictools/xic
+ln -s $libdir $txic
+
+# Set up executables in tools bin.
+tbin=$prefix/xictools/bin
+if [ ! -d $tbin ]; then
+    mkdir $tbin
+fi
+sed -e s%/usr/local%$prefix% < $libdir/bin/xic.sh > $tbin/xic
+chmod 755 $tbin/xic
+ln -s $txic/bin/wrencode $tbin/wrencode
+ln -s $txic/bin/wrdecode $tbin/wrdecode
+ln -s $txic/bin/wrsetpass $tbin/wrsetpass
+
+
 %postun
 
 if [ -z "$RPM_INSTALL_PREFIX" ]; then
@@ -29,6 +50,24 @@ if [ -z "$RPM_INSTALL_PREFIX" ]; then
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
+
 # Make sure that this is entirely gone.
 rm -rf $prefix/xictools/xic.current
 
+txic=$prefix/xictools/xic
+if [ -h $txic ]; then
+    rm -f $txic
+fi
+
+# Remove wrapper and links.
+tbin=$prefix/xictools/bin
+rm -f $tbin/xic
+if [ -h $tbin/wrencode ]; then
+    rm -f $tbin/wrencode
+fi
+if [ -h $tbin/wrdecode ]; then
+    rm -f $tbin/wrdecode
+fi
+if [ -h $tbin/wrsetpass ]; then
+    rm -f $tbin/wrsetpass
+fi

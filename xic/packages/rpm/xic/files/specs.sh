@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Id: specs.sh,v 1.27 2015/10/04 22:05:42 stevew Exp $
 
 files=../../util/xic_files
 
@@ -39,6 +38,9 @@ bin=`$files bin`
 for a in $bin; do
     echo "%attr(0755, root, root) /usr/local/xictools/$top/bin/$a"
 done
+
+echo "%dir /usr/local/xictools/bin"
+echo "%attr(0644, root, root) /usr/local/xictools/$top/bin/xic.sh"
 
 echo
 echo "%dir /usr/local/xictools/$top/docs"
@@ -93,7 +95,7 @@ done
 oaplugin=`$files oaplugin $OSNAME`
 if [ -n "$oaplugin" ]; then
     echo "%attr(0755, root, root) /usr/local/xictools/$top/plugins/$oaplugin"
-done
+fi
 
 echo
 echo "%dir /usr/local/xictools/$top/scripts"

@@ -305,14 +305,13 @@ distclean: eclean
 #######################################################################
 ####### Install programs into system location #########################
 
-# Note:  when using set expansion, make variables seem to be
-# implicitly quoted, so that these have to be moved to a shall
-# variable for the splitting to work correctly.
-
 INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/xic.current
+toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install_xic: install_test install_xic_clean install_xic_bin \
+install_xic: install_xic_pkg install_links
+
+install_xic_pkg: install_test install_xic_clean install_xic_bin \
   install_xic_help install_xic_icons install_xic_plugins \
   install_xic_startup install_xic_scripts install_xic_scrkit \
   install_xic_examples install_xic_docs
@@ -333,6 +332,14 @@ install_test::
 	    exit 1; \
 	fi
 
+install_links::
+	ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/xic
+	sed -e s%/usr/local%$(INSTALL_PREFIX)% < $(destn)/bin/xic.sh \
+  > $(toolbin)
+	ln -s $(destn)/bin/wrencode $(toolbin)
+	ln -s $(destn)/bin/wrdecode $(toolbin)
+	ln -s $(destn)/bin/wrsetpass $(toolbin)
+
 install_xic_clean::
 	-@rm -rf $(destn)
 
@@ -345,6 +352,10 @@ $(destn)/bin::
 	@if [ $(DLL_XIC_PROG) = xic ]; then \
 	    $(INSTALL_BIN) bin/xic.dll $(destn)/bin; \
 	fi
+	@if [ -z "$(EXESUFFIX)" ]; then \
+	    $(INSTALL_SCRIPT) bin/xic.sh $(destn)/bin;
+	fi
+	@$(BASE)/util/mkdirpth $(toolbin)
 
 $(destn)/help::
 	cd lib/help; $(MAKE)
@@ -371,7 +382,7 @@ $(destn)/plugins::
 	for a in $$plugins; do \
 	    $(INSTALL_LIB) plugins/$$a $@; \
 	done
-	if [ -n "$(OA_SUBDIR) ]; then \
+	if [ -n "$(OA_SUBDIR)" ]; then \
 	    oaplugin=`packages/util/xic_files oaplugin $(OSNAME)`; \
 	    if [ -n "$oaplugin" ]; then \
 	        $(INSTALL_LIB) $(OA_SUBDIR)/$$oaplugin $@; \
@@ -437,7 +448,7 @@ package::
 	$(MAKE) all
 	-rm -rf packages/root
 	mkdir packages/root
-	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_xic
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_xic_pkg
 	cd packages; $(MAKE) xic-$(OSNAME)
 
 #######################################################################

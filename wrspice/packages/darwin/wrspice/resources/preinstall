@@ -5,27 +5,29 @@
 # $4 : the root directory for the current System folder
 
 prefix=$2
-libdir=$prefix/xictools/wrspice
 
 # The Gen 4 package name
 pkgname="XicTools.WRspice.4"
 
-# Back up config files
-cfgfiles="mozyrc \
-    news \
-    wrspice_mesg \
-    wrspiceinit"
+# We assume safe-install is being used, so that we keep the prior
+# installation in its entirety, so no need to back up config files.
+# User has to update files by hand, which is probably not good.
 
-for a in $cfgfiles; do
-    if [ -f $libdir/startup/$a ]; then
-        cp -pf $libdir/startup/$a $libdir/startup/$a.tmporig
-    fi
-done
+# Back up config files
+#cfgfiles="mozyrc \
+#    news \
+#    wrspice_mesg \
+#    wrspiceinit"
+#
+#libdir=$prefix/xictools/wrspice
+#for a in $cfgfiles; do
+#    if [ -f $libdir/startup/$a ]; then
+#        cp -pf $libdir/startup/$a $libdir/startup/$a.tmporig
+#    fi
+#done
 
 # Do a manual un-install if an existing package is found, Apple's
-# install system doesn't do this.  If no existing install, just remove
-# the devkit.  Early packages weren't being registered, so this is
-# needed to get rid of the bsimsoi example that was later removed.
+# install system apparently doesn't do this.
 
 dir_list=""
 file_list=`pkgutil --files $pkgname 2>&1 > /dev/null`
@@ -40,7 +42,11 @@ if [ $? = 0 ]; then
     for a in $dir_list; do
         "rmdir $a 2>&1 > /dev/null"
     done
-else
-    rm -rf $prefix/xictools/devkit
 fi
+
+# Remove links.
+twrs=$prefix/xictools/wrspice
+tbin=$prefix/xictools/bin
+rm -f $twrs $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
+  $tbin/wrspiced
 

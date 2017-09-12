@@ -338,10 +338,17 @@ wdemo wrspice_ipc_demo:
 	@echo
 
 INSTALL_PREFIX ?= $(prefix)
+ifdef $(EXESUFFIX)
+destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
+else
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current
+endif
+toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install: install_test install_clean install_bin install_help install_icons \
-  install_startup install_scripts install_examples install_docs
+install_wrspice: install_wrspice_pkg install_links
+
+install_wrspice_pkg: install_test install_clean install_bin install_help \
+  install_icons install_startup install_scripts install_examples install_docs
 
 install_bin:        $(destn)/bin
 install_help:       $(destn)/help
@@ -358,6 +365,35 @@ install_test::
 	    echo "No!  Use pagkage to install!"; \
 	    exit 1; \
 	fi
+
+install_links::
+	@if [ -n $(EXESUFFIX) ]; then \
+	    cp -f $(destn)/bin/multidec $(toolbin)/multidec; \
+	    cp -f $(destn)/bin/proc2mod $(toolbin)/proc2mod; \
+	    cp -f $(destn)/bin/printtoraw $(toolbin)s/printtoraw; \
+	    cp -f $(destn)/bin/wrspice $(toolbin)/wrspice; \
+	    cp -f $(destn)/bin/wrspiced $(toolbin)/wrspiced; \
+	    mv -f $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
+	else \
+	    ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
+	    ln -s $(destn)/bin/multidec $(toolbin)/multidec; \
+	    ln -s $(destn)/bin/proc2mod $(toolbin)/proc2mod; \
+	    ln -s $(destn)/bin/printtoraw $(toolbin)s/printtoraw; \
+	    ln -s $(destn)/bin/wrspice $(toolbin)/wrspice; \
+	    ln -s $(destn)/bin/wrspiced $(toolbin)/wrspiced; \
+	fo
+
+clean_links::
+	-@if [ -n $(EXESUFFIX) ]; then \
+	    rm -rf $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
+	else \
+	    rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
+	fi
+	-@rm -f $(toolbin)/multidec
+	-@rm -f $(toolbin)/proc2mod
+	-@rm -f $(toolbin)s/printtoraw
+	-@rm -f $(toolbin)/wrspice
+	-@rm -f $(toolbin)/wrspiced
 
 install_clean::
 	-@rm -rf $(destn)
@@ -468,8 +504,7 @@ $(destn)/devkit::
 $(destn)/cadence-oasis::
 	cp -pfr cadence-oasis $(destn)
 
-package::
-	$(MAKE) all
+devkit_examples:
 	(cd devlib/adms/examples; \
 	    $(MAKE) realclean; \
 	    for a in */Makefile; do \
@@ -480,9 +515,13 @@ package::
 	            WRSPICE=../../../../bin/wrspice); \
 	    done \
         )
+
+package::
+	$(MAKE) all
+	$(MAKE) devkit_examples
 	-rm -rf packages/root
 	mkdir packages/root
-	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_wrspice_pkg
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_devkit
 	if [ $(OSNAME) = LinuxRHEL6_64 -o $(OSNAME) = LinuxRHEL7_64 ]; then \
 	    $(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_cadence; \

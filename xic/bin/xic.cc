@@ -418,32 +418,6 @@ main(int argc, char **argv)
     // Initial pass to set RunMode.
     cmdLine.process_args(argc, argv, true);
 
-#ifndef WIN32
-    // If XIC_LIBRARY_PATH is found in the environment, prepend it to
-    // LD_LIBRARY_PATH.  This will be used when loading plug-ins.
-    // we actually have to start running again, as LD_LIBRARY_PATH
-    // can't be changed in the current executable.
-    //
-    if (getenv("XIC_LIBRARY_PATH")) {
-#ifdef __APPLE__
-        extern char **environ;
-#endif
-        const char *xp = getenv("XIC_LIBRARY_PATH");
-        if (*xp) {
-            const char *lp = getenv("LD_LIBRARY_PATH");
-            sLstr lstr;
-            lstr.add(xp);
-            if (lp && *lp) {
-                lstr.add_c(':');
-                lstr.add(lp);
-            }
-            setenv("LD_LIBRARY_PATH", lstr.string(), true);
-            unsetenv("XIC_LIBRARY_PATH");
-            execve(argv[0], &argv[0], environ);
-        }
-    }
-#endif
-
 #ifdef WIN32
     if (!getenv("XTNETDEBUG")) {
         if (!WinBg && XM()->RunMode() == ModeServer) {

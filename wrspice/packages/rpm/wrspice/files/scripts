@@ -4,7 +4,12 @@ if [ -z "$RPM_INSTALL_PREFIX" ]; then
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
-# Nothing to do.
+
+# Remove links.
+twrs=$prefix/xictools/wrspice
+tbin=$prefix/xictools/bin
+rm -f $twrs $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
+  $tbin/wrspiced
 
 
 %post
@@ -13,7 +18,24 @@ if [ -z "$RPM_INSTALL_PREFIX" ]; then
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
-# Nothing to do.
+
+libdir=$prefix/xictools/wrspice.current
+
+# Link wrspice.current to wrspice.
+twrs=$prefix/xictools/wrspice
+ln -s $libdir $twrs
+
+# Link executables into tools bin,
+tbin=$prefix/xictools/bin
+if [ ! -d $tbin ]; then
+    mkdir $tbin
+fi
+ln -s $twrs/bin/multidec $tbin/multidec
+ln -s $twrs/bin/proc2mod $tbin/proc2mod
+ln -s $twrs/bin/printtoraw $tbin/printtoraw
+ln -s $twrs/bin/wrspice $tbin/wrspice
+ln -s $twrs/bin/wrspiced $tbin/wrspiced
+
 
 %postun
 if [ -z "$RPM_INSTALL_PREFIX" ]; then
@@ -22,5 +44,29 @@ else
     prefix=$RPM_INSTALL_PREFIX
 fi
 # Make sure that this is entirely gone.
-rm -rf $(prefix)/xictools/wrspice.current
+rm -rf $prefix/xictools/wrspice.current
+
+# Remove the links.
+
+twrs=$prefix/xictools/wrspice
+if [ -h $twrs ]; then
+    rm -f $twrs
+fi
+
+tbin=$prefix/xictools/bin
+if [ -h $tbin/multidec ]; then
+    rm -f $tbin/multidec
+fi
+if [ -h $tbin/proc2mod ]; then
+    rm -f $tbin/proc2mod
+fi
+if [ -h $tbin/printtoraw ]; then
+    rm -f $tbin/printtoraw
+fi
+if [ -h $tbin/wrspice ]; then
+    rm -f $tbin/wrspice
+fi
+if [ -h $tbin/wrspiced ]; then
+    rm -f $tbin/wrspiced
+fi
 

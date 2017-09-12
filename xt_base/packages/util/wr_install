@@ -238,31 +238,11 @@ $prefix/xictools/$prog-$curver
                 rm -rf $prefix/xictools/$prog-$curver
                 cp -pr $prefix/xictools/$prog.current \
 $prefix/xictools/$prog-$curver
-                mv $prefix/xictools/$prog.current $prefix/xictools/$prog
-            fi
-        fi
-        if [ -h $prefix/xictools/$prog ]; then
-            if [ x$nodo = xyes ]; then
-                echo rm $prefix/xictools/$prog
-            else
-                rm $prefix/xictools/$prog
-            fi
-        else
-            if [ x$nodo = xyes ]; then
-                echo rm -rf $prefix/xictools/$prog
-            else
-                rm -rf $prefix/xictools/$prog
             fi
         fi
 
         do_update $distfile $prefix $nodo
         ret=$?
-
-        if [ x$nodo = xyes ]; then
-            echo ln -s $prefix/xictools/$prog.current $prefix/xictools/$prog
-        else
-            ln -s $prefix/xictools/$prog.current $prefix/xictools/$prog
-        fi
     fi
     return $ret
 }
@@ -283,7 +263,6 @@ if [ x$1 = x-upd ]; then
         read aa
         exit 127
     fi
-
 
     safe_install $distfile $prefix $nodo
     ret=$?
