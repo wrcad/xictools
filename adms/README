@@ -38,11 +38,20 @@ However, there were some changes made when building this package:
     during the build process.  This means that the builder does not
     need perl, flex, bison.  Before, All was well for bison 2.7
     (CentOS 7) and later, however bison-2.4.1, as found in CentOS 6,
-    fails, and the build would presumably fail earlier Linux distribs
-    as well.  This isn't good, so we skip the generation, and supply c
-    files and headers that were generated with CentOS 7.  The Makefile
-    is now configured with maintenance mode off.  Advanced users can
-    turn this on in adms_wr/admsXml/Makefile.
+    failed, and the build would presumably fail on earlier Linux
+    distribs as well.  This isn't good, so we skip the generation, and
+    supply c files and headers that were generated with CentOS 7.  The
+    Makefile is now configured with maintenance mode off.  Advanced
+    users can turn this on in adms_wr/admsXml/Makefile.
+
+5)  We also have to supply a modified mkelements.pl (in ./files) that
+    has this modification in two places:
+    #if defined(Win32)
+    goes to
+    #if defined(Win32) && defined(WITH_DLLS)
+    We do not set WITH_DLLS, avoiding symbol name redefinitions from
+    dllimport/dllexport attributes otherwise hard-coded into Win32
+    builds.  This is necessary to build statically-linked code.
 
 ------------------------------------------------------------------------
 Changes from original adms-2.3.0, also see the ChangeLog in the

@@ -11,11 +11,7 @@ MAINTAINER = @MAINTAINER@
 
 DEFS = -DHAVE_CONFIG_H  -DinsideElement -DinsidePreprocessor -DinsideVeriloga
 CPPFLAGS = -g -Wall
-ifdef EXEEXT
-CFLAGS = $(DEFS) $(CPPFLAGS) -I. -DNO_DLLS
-else
 CFLAGS = $(DEFS) $(CPPFLAGS) -I.
-endif
 
 CFILES = adms.c preprocessorLex.c preprocessorMain.c preprocessorYacc.c \
   verilogaYacc.c verilogaLex.c admstpathYacc.c
