@@ -8,6 +8,7 @@ top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
+pkgfiles=$base/packages/pkgfiles
 
 utod=$baseutil/utod.exe
 if [ ! -f $utod ]; then
@@ -41,9 +42,10 @@ fi
 
 pkg=Output/*.exe
 if [ -f $pkg ]; then
+    fn=$(basename $pkg)
     mv -f $pkg $pkgfiles
     echo ==================================
-    echo Package file $(basename $pkg)
+    echo Package file $fn
     echo moved to xt_base/packages/pkgfiles
     echo ==================================
 fi

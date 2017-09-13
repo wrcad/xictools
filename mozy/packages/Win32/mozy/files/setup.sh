@@ -19,15 +19,15 @@ if [ ! -f $utod ]; then
 fi
 
 program=mozy
-cp ../../files/program.bat $top/xictools/bin/$program.bat
+cp $base/packages/files/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
 program=xeditor
-cp ../../files/program.bat $top/xictools/bin/$program.bat
+cp $base/packages/files/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
 program=httpget
-cp ../../files/program.bat $top/xictools/bin/$program.bat
+cp $base/packages/files/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
 
@@ -55,9 +55,10 @@ fi
 
 pkg=Output/*.exe
 if [ -f $pkg ]; then
+    fn=$(basename $pkg)
     mv -f $pkg $pkgfiles
     echo ==================================
-    echo Package file $(basename $pkg)
+    echo Package file $fn
     echo moved to xt_base/packages/pkgfiles
     echo ==================================
 fi

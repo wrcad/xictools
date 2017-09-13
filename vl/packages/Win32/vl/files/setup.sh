@@ -8,6 +8,7 @@ top=../../root/usr/local
 base=../../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
+pkgfiles=$base/packages/pkgfiles
 
 utod=$baseutil/utod.exe
 if [ ! -f $utod ]; then
@@ -33,7 +34,7 @@ $utod $lib/examples/book/ch13/vending/*
 $utod $lib/examples/book/ch14/eg/*
 $utod $lib/examples/book/ch14/mag_comp/*
 $utod $lib/examples/book/ch14/vending/*
-$utod $lib/examples_vbs/*
+$utod $lib/examples/vbs/*
 
 sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
 $utod $appname.iss
@@ -53,9 +54,10 @@ fi
 
 pkg=Output/*.exe
 if [ -f $pkg ]; then
+    fn=$(basename $pkg)
     mv -f $pkg $pkgfiles
     echo ==================================
-    echo Package file $(basename $pkg)
+    echo Package file $fn
     echo moved to xt_base/packages/pkgfiles
     echo ==================================
 fi
