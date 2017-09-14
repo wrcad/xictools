@@ -1,5 +1,67 @@
 #! /bin/bash
 
+get_prefix ()
+{
+    # Set the magic name for the application, created by inno installer.
+    case $1 in
+    adms)
+        appname=adms_wr_is1 ;;
+    fastcap)
+        appname=fastcap_wr_is1 ;;
+    fasthenry)
+        appname=fasthenry_wr_is1 ;;
+    mozy)
+        appname=mozy_is1 ;;
+    mrouter)
+        appname=mrouter_is1 ;;
+    xtlserv|license)
+        appname=Xtlserv-4_is1 ;;
+    vl)
+        appname=vl_is1 ;;
+    wrspice)
+        appname=WRspice-4_is1 ;;
+    xic)
+        appname=Xic-4_is1 ;;
+    *)
+        echo Unknown program name $1
+        exit 1
+        ;;
+    esac
+
+    # Query the installation location in the registry, inno sets this.
+    # If it works, it will be in the fifth token in a form like
+    # c:\usr\local\
+
+    str=$(reg query HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$appname /reg:32 /v InstallLocation 2>/dev/null)
+    set -- $str
+    prf=$5
+    if [ -z "$prf" ]; then
+        return
+    fi
+
+    # Replace the back slashes with forward slashes.  This code removes
+    # the trailing backslash, but you need an actual ^M in the IFS string
+    # or it won't (Cygwin weirdness?).
+
+    tifs=$IFS
+    IFS="\\"
+    set -- $prf
+    IFS=$tifs
+
+    # Build a new path, which will be in the form c:/usr/local.  Cygwin
+    # will do the right thing with the c:.
+
+    pth=$1
+    shift
+    xx=$*
+    for a in $xx; do
+        if [ x$a != "x " ]; then
+            pth="$pth/$a"
+        fi
+    done
+    echo $pth
+}
+
 shopt -s nullglob
 
 programs="adms fastcap fasthenry mozy mrouter xtlserv vl wrspice xic"
@@ -54,51 +116,76 @@ fi
 
 
 pkgs=""
+names=""
 for a in $list; do
     case $a in
     ad|adm|adms)
         pkgs="$pkgs adms_wr-$osname"
+        names="$names adms"
         ;;
     fastc|fastca|fastcap)
         pkgs="$pkgs fastcap_wr-$osname"
+        names="$names fastcap"
         ;;
     fasth|fasthe|fasthen|fasthenr|fasthenry)
         pkgs="$pkgs fasthenry_wr-$osname"
+        names="$names fasthenry"
         ;;
     mo|moz|mozy)
         pkgs="$pkgs mozy-$osname"
+        names="$names mozy"
         ;;
     mr|mro|mrou|mrout|mroute|mrouter)
         pkgs="$pkgs mrouter-$osname"
+        names="$names mrouter"
         ;;
     xt|xtl|xtls|xtlse|xtlser|xtlserv)
         pkgs="$pkgs xtlserv-$osname"
+        names="$names license"
         ;;
     v|vl)
         pkgs="$pkgs vl-$osname"
+        names="$names vl"
         ;;
     w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
         pkgs="$pkgs wrspice-$osname"
+        names="$names wrspice"
         ;;
     xi|xic)
         pkgs="$pkgs xic-$osname"
+        names="$names xic"
         ;;
     esac
 done
 
 if [ -n "$pkgs" ]; then
-    for a in $pkgs; do
-        if [ $psfx = rpm ]; then
+
+    if [ $psfx = rpm ]; then
+        for a in $pkgs; do
             echo rpm -e $a
             if [ $dryrun = no ]; then
                 rpm -e $a
             fi
-        elif [ $psfx = pkg.gz ]; then
-            echo darwin
-        elif [ $pshx = exe ]; then
-            echo windows
-        fi
-    done
+        done
+    elif [ $psfx = pkg.gz ]; then
+        echo darwin
+    elif [ $psfx = exe ]; then
+        echo windows
+        for a in $names; do
+            prefix=`get_prefix $a`
+            if [ -n "$prefix" ]; then
+                udir=$prefix/xictools/$a/uninstall
+                if [ -d $udir ]; then
+                    echo $udir/unins001.exe
+                    if [ $dryrun = no ]; then
+    echo                    $udir/unins001.exe
+                    fi
+                else
+                    echo "$a: uninstall data not found."
+                fi
+            fi
+        done
+    fi
 else
     echo "Nothing found to install."
 fi

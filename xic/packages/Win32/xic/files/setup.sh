@@ -36,13 +36,6 @@ $utod $top/xictools/bin/$program.bat
 mv $top/xictools/$appname/bin/* $top/xictools/bin
 rmdir $top/xictools/$appname/bin
 
-license=$top/xictools/license
-if [ ! -d $license ]; then
-    mkdir $license
-fi
-cp ../../../../secure/README.MSW $license
-$utod $license/README.MSW
-
 examples=$top/xictools/$appname/examples
 $utod $examples/README
 $utod $examples/cgdtest.scr

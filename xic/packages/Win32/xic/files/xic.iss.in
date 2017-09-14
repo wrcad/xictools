@@ -31,8 +31,6 @@ Source: "..\..\root\usr\local\xictools\bin\wrdecode.exe"; DestDir: "{app}\xictoo
 Source: "..\..\root\usr\local\xictools\bin\wrencode.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 Source: "..\..\root\usr\local\xictools\bin\wrsetpass.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 
-Source: "..\..\root\usr\local\xictools\license\*"; DestDir: "{app}\xictools\license"; Flags: uninsneveruninstall
-
 Source: "..\..\root\usr\local\xictools\xic\examples\*"; DestDir: "{app}\xictools\xic\examples"
 Source: "..\..\root\usr\local\xictools\xic\examples\PCells\*"; DestDir: "{app}\xictools\xic\examples\PCells"
 Source: "..\..\root\usr\local\xictools\xic\examples\memchip_example\*"; DestDir: "{app}\xictools\xic\examples\memchip_example"

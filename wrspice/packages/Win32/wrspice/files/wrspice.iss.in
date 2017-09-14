@@ -33,8 +33,6 @@ Source: "..\..\root\usr\local\xictools\bin\multidec.exe"; DestDir: "{app}\xictoo
 Source: "..\..\root\usr\local\xictools\bin\proc2mod.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 Source: "..\..\root\usr\local\xictools\bin\printtoraw.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 
-Source: "..\..\root\usr\local\xictools\license\*"; DestDir: "{app}\xictools\license"; Flags: uninsneveruninstall
-
 Source: "..\..\root\usr\local\xictools\wrspice\examples\*"; DestDir: "{app}\xictools\wrspice\examples"
 
 Source: "..\..\root\usr\local\xictools\wrspice\help\*"; DestDir: "{app}\xictools\wrspice\help"

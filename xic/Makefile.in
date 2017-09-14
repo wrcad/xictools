@@ -306,7 +306,7 @@ distclean: eclean
 ####### Install programs into system location #########################
 
 INSTALL_PREFIX ?= $(prefix)
-ifdef $(EXESUFFIX)
+ifdef EXESUFFIX
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/xic
 else
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/xic.current
@@ -357,7 +357,7 @@ $(destn)/bin::
 	    $(INSTALL_BIN) bin/xic.dll $(destn)/bin; \
 	fi
 	@if [ -z "$(EXESUFFIX)" ]; then \
-	    $(INSTALL_SCRIPT) bin/xic.sh $(destn)/bin;
+	    $(INSTALL_SCRIPT) bin/xic.sh $(destn)/bin; \
 	fi
 	@$(BASE)/util/mkdirpth $(toolbin)
 

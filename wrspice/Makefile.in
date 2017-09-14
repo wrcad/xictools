@@ -338,7 +338,7 @@ wdemo wrspice_ipc_demo:
 	@echo
 
 INSTALL_PREFIX ?= $(prefix)
-ifdef $(EXESUFFIX)
+ifdef EXESUFFIX
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
 else
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current

@@ -36,13 +36,6 @@ $utod $top/xictools/bin/$program.bat
 mv $top/xictools/$appname/bin/* $top/xictools/bin
 rmdir $top/xictools/$appname/bin
 
-license=$top/xictools/license
-if [ ! -d $license ]; then
-    mkdir $license
-fi
-cp ../../../../secure/README.MSW $license
-$utod $license/README.MSW
-
 examples=$top/xictools/$appname/examples
 $utod $examples/*
 
@@ -63,17 +56,20 @@ $utod $docs/README
 $utod $docs/MSWINFO.TXT
 
 devkit=$top/xictools/$appname/devkit
-$utod $devkit/README
-$utod $devkit/README.adms
-$utod $devkit/Makefile
-$utod $devkit/admst/*
-$utod $devkit/include/*
-foo=`cat ../../util/adms_examples`
-for a in $foo; do
-    $utod $devkit/$a
-done
-
-sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
+if [ -d $devkit ]; then
+    $utod $devkit/README
+    $utod $devkit/README.adms
+    $utod $devkit/Makefile
+    $utod $devkit/admst/*
+    $utod $devkit/include/*
+    foo=`cat ../../util/adms_examples`
+    for a in $foo; do
+        $utod $devkit/$a
+    done
+    sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
+else
+    sed -e s/VERSION/$version/ < files/wrspice_nodk.iss.in > $appname.iss
+fi
 $utod $appname.iss
 
 $inno/iscc $appname.iss > build.log

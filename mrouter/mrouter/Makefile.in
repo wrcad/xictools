@@ -30,6 +30,16 @@ CCFILES = \
   mr_cmds.cc mr_config.cc mr_maze.cc mr_node.cc mr_route.cc mrouter.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
+ifdef EXESUFFIX
+# NOTE:  Windows needs the explicit inclusion of lddb.o or
+# GetProcAdress fails to find export names, also miscutil.a must be
+# provided.
+TLIBS = ../lddb/lddb.o -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef \
+  $(BASE)/lib/miscutil.a
+else
+TLIBS = -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef
+endif
+
 LDDBLIB = ../lddb/liblddb.a
 
 all: $(LDDBLIB) $(LIB_TARGET) mrouter
@@ -39,10 +49,7 @@ $(LIB_TARGET): $(MR_VERS_H) $(LDDBLIB) $(CCOBJS)
 	    rm -f $(LIB_TARGET); \
 	fi
 	@echo Linking plug-in
-	@$(CXX) $(LSHFLAG) -o $(LIB_TARGET) $(CCOBJS) \
-  ../lddb/lddb.o -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef
-# NOTE: Windows needs the explicit inclusion of lddb.o above or
-# GetProcAdress fails to find export names.
+	@$(CXX) $(LSHFLAG) -o $(LIB_TARGET) $(CCOBJS) $(TLIBS)
 
 $(LDDBLIB)::
 	cd ../lddb; $(MAKE)

@@ -224,6 +224,8 @@ CYGWIN*)
     sys_os="CYGWIN"
     CC=$mingw_dir/bin/gcc
     CXX=$mingw_dir/bin/g++
+    AC_PROG_CC
+    AC_PROG_CXX
     GCC=yes
     WINDRES=$mingw_dir/bin/windres
     RESOURCE=resource.o

@@ -106,7 +106,6 @@ Authors: 1985 Thomas L. Quarles
 #include <signal.h>
 #endif
 
-#include <setjmp.h>
 #include <time.h>
 #ifndef HAVE_GETRUSAGE
 #ifdef HAVE_FTIME
