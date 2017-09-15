@@ -1,12 +1,10 @@
 BASE = ../../../../xt_base
 
 APPNAME = wrspice
-APPTOK = WRspice
-SUBDIRS = $(APPNAME)
+SUBDIRS = wrspice.current
 VERSION = `../../../version $(APPNAME)`
-RELEASE = `../../../version release`
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
-PKGNAME = XicTools.$(APPTOK).$(RELEASE)
+PKGNAME = xictools.$(APPNAME)
 PKGDIR = $(BASE)/packages/pkgfiles
 pd = `pwd`
 

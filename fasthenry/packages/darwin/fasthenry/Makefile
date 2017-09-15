@@ -1,12 +1,10 @@
 BASE = ../../../../xt_base
 
 APPNAME = fasthenry_wr
-APPTOK = Fasthenry_wr
-SUBDIRS = bin $(APPNAME)
-VERSION = `../../../version xt_accs`
-RELEASE = 1
+SUBDIRS = bin fasthenry
+VERSION = `../../../version $(APPNAME)`
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
-PKGNAME = XicTools.$(APPTOK).$(RELEASE)
+PKGNAME = xictools.$(APPNAME)
 PKGDIR = $(BASE)/packages/pkgfiles
 pd = `pwd`
 

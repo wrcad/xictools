@@ -5,7 +5,7 @@
 # $4 : the root directory for the current System folder
 
 prefix=$2
-libdir=$prefix/xictools/xic
+libdir=$prefix/xictools/xic.current
 
 # We assume safe-install is being used, so that we keep the prior
 # installation in its entirety, so no need to back up config files.

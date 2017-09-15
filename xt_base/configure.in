@@ -224,9 +224,6 @@ CYGWIN*)
     sys_os="CYGWIN"
     CC=$mingw_dir/bin/gcc
     CXX=$mingw_dir/bin/g++
-    AC_PROG_CC
-    AC_PROG_CXX
-    GCC=yes
     WINDRES=$mingw_dir/bin/windres
     RESOURCE=resource.o
     AR=$mingw_dir/bin/ar
@@ -236,8 +233,6 @@ dnl # static link avoids libwinpthread-1.dll dependence
     WINPTHREADFIX="-static"
     ;;
 *)
-    AC_PROG_CC
-    AC_PROG_CXX
     if test "$AR" = ""; then
         AR=ar
     fi
@@ -255,6 +250,9 @@ AC_SUBST(AR)
 AC_SUBST(RANLIB)
 AC_SUBST(LD)
 AC_SUBST(WINPTHREADFIX)
+
+AC_PROG_CC
+AC_PROG_CXX
 
 if test "$GCC" = yes; then
     if test -n "$flags32"; then
@@ -309,8 +307,6 @@ CYGWIN*)
     OSNAME="Win32"
     ARCH="i386"
     DIST_SUFFIX="exe"
-dnl # needed for gcc-2
-dnl # c_flags="-fvtable-thunks $c_flags"
     INSTALL='$(BASE)/util/install-sh'
     lib_dirs="/usr/lib /usr/local/lib"
     SOEXT=dll
@@ -333,8 +329,7 @@ dnl # index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
     if test $1 -ge 13; then
         OSNAME="Darwin64"
         ARCH="x86_64"
-        DIST_SUFFIX="pkg.tgz"
-        # Assume Yosemite back end,
+        DIST_SUFFIX="pkg"
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
         UFLAGS="-mmacosx-version-min=10.10 -arch $ARCH -isysroot $SDK"
         MALLOC='$(BASE)/lib/malloc.a'
@@ -1183,7 +1178,7 @@ echo "# created by configure, don't edit" >> info.sh
 echo                            >> info.sh
 echo "case \$1 in"              >> info.sh
 echo "date) echo $DATE;;"       >> info.sh
-echo "refix) echo $prefix;;"    >> info.sh
+echo "prefix) echo $prefix;;"   >> info.sh
 echo "toolroot) echo $TOOLROOT;;" >> info.sh
 echo "osname) echo $OSNAME;;"   >> info.sh
 echo "arch) echo $ARCH;;"       >> info.sh

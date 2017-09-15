@@ -1,12 +1,10 @@
 BASE = ../../../../xt_base
 
 APPNAME = xic
-APPTOK = Xic
-SUBDIRS = $(APPNAME)
+SUBDIRS = xic.current
 VERSION = `../../../version $(APPNAME)`
-RELEASE = `../../../version release`
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
-PKGNAME = XicTools.$(APPTOK).$(RELEASE)
+PKGNAME = xictools.$(APPNAME)
 PKGDIR = $(BASE)/packages/pkgfiles
 pd = `pwd`
 

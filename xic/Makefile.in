@@ -388,7 +388,7 @@ $(destn)/plugins::
 	done
 	if [ -n "$(OA_SUBDIR)" ]; then \
 	    oaplugin=`packages/util/xic_files oaplugin $(OSNAME)`; \
-	    if [ -n "$oaplugin" ]; then \
+	    if [ -n "$$oaplugin" ]; then \
 	        $(INSTALL_LIB) $(OA_SUBDIR)/$$oaplugin $@; \
 	    fi \
         fi

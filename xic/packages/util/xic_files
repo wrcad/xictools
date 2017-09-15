@@ -392,6 +392,8 @@ plugins)
     esac;;
 oaplugin)
     case $2 in
+    Darwin*)
+        echo "oa.dylib";;
     Linux*)
         echo "oa.so";;
     esac;;

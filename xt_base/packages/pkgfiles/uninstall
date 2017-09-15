@@ -1,6 +1,6 @@
 #! /bin/bash
 
-get_prefix ()
+win_get_prefix ()
 {
     # Set the magic name for the application, created by inno installer.
     case $1 in
@@ -62,9 +62,16 @@ get_prefix ()
     echo $pth
 }
 
+if [ `whoami` != root -a $1 != "-t" ]; then
+    if [ `uname` = "Cygwin" ]; then
+        echo "You need to be root to uninstall packages, exiting."
+        exit 1
+    fi
+fi
+
 shopt -s nullglob
 
-programs="adms fastcap fasthenry mozy mrouter xtlserv vl wrspice xic"
+programs="adms fastcap fasthenry mozy mrouter vl wrspice xic xtlserv"
 
 dryrun=no
 if [ x"$1" = x-t ]; then
@@ -81,15 +88,15 @@ if [ -z "$list" ]; then
 "The arguments are partial program names from among those listed
 below.  Only the first few characters, to uniquely specify the name,
 are required in each argument.  For each argument, if a corresponding
-installed package is found, it will be uninstalled.  The argument can
-also be "all", in which case all corresponding installed packages will
-be uninstalled.  If the first argument is \"-t\", the removal commands
-are printed but not executed.  It is likely that you will need
-administrator or super-user permissions to successfully uninstall
-packages."
+installed XicTools-4.3 package is found, it will be uninstalled.  The
+argument can also be "all", in which case all corresponding
+XicTools-4.3 installed packages will be uninstalled.  If the first
+argument is \"-t\", the removal commands are printed but not executed. 
+It is likely that you will need administrator or super-user
+permissions to successfully uninstall packages."
     echo
     echo \
-"Program: $programs"
+"Programs: $programs"
     echo
     exit 0
 fi
@@ -114,7 +121,6 @@ if [ -z "$psfx" ]; then
     exit 1
 fi
 
-
 pkgs=""
 names=""
 for a in $list; do
@@ -123,11 +129,11 @@ for a in $list; do
         pkgs="$pkgs adms_wr-$osname"
         names="$names adms"
         ;;
-    fastc|fastca|fastcap)
+    fc|fastc|fastca|fastcap)
         pkgs="$pkgs fastcap_wr-$osname"
         names="$names fastcap"
         ;;
-    fasth|fasthe|fasthen|fasthenr|fasthenry)
+    fh|fasth|fasthe|fasthen|fasthenr|fasthenry)
         pkgs="$pkgs fasthenry_wr-$osname"
         names="$names fasthenry"
         ;;
@@ -138,10 +144,6 @@ for a in $list; do
     mr|mro|mrou|mrout|mroute|mrouter)
         pkgs="$pkgs mrouter-$osname"
         names="$names mrouter"
-        ;;
-    xt|xtl|xtls|xtlse|xtlser|xtlserv)
-        pkgs="$pkgs xtlserv-$osname"
-        names="$names license"
         ;;
     v|vl)
         pkgs="$pkgs vl-$osname"
@@ -155,30 +157,40 @@ for a in $list; do
         pkgs="$pkgs xic-$osname"
         names="$names xic"
         ;;
+    xt|xtl|xtls|xtlse|xtlser|xtlserv)
+        pkgs="$pkgs xtlserv-$osname"
+        names="$names license"
+        ;;
     esac
 done
 
 if [ -n "$pkgs" ]; then
 
     if [ $psfx = rpm ]; then
+        # Red Hat compatible rpm-based Linux
         for a in $pkgs; do
             echo rpm -e $a
             if [ $dryrun = no ]; then
-                rpm -e $a
+                sudo rpm -e $a
             fi
         done
-    elif [ $psfx = pkg.gz ]; then
-        echo darwin
+    elif [ $psfx = pkg ]; then
+        # Apple OS X
+        if [ $dryrun = no ]; then
+            sudo ../util/osx_uninstall $names
+        else
+            ../util/osx_uninstall -t $names
+        fi
     elif [ $psfx = exe ]; then
-        echo windows
+        # Microsoft Windows
         for a in $names; do
-            prefix=`get_prefix $a`
+            prefix=`win_get_prefix $a`
             if [ -n "$prefix" ]; then
                 udir=$prefix/xictools/$a/uninstall
                 if [ -d $udir ]; then
                     echo $udir/unins001.exe
                     if [ $dryrun = no ]; then
-    echo                    $udir/unins001.exe
+                        $udir/unins001.exe
                     fi
                 else
                     echo "$a: uninstall data not found."
@@ -187,6 +199,6 @@ if [ -n "$pkgs" ]; then
         done
     fi
 else
-    echo "Nothing found to install."
+    echo "Nothing found to uninstall."
 fi
 

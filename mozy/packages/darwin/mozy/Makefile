@@ -1,12 +1,10 @@
 BASE = ../../../../xt_base
 
 APPNAME = mozy
-APPTOK = Mozy
-SUBDIRS = bin $(APPNAME)
+SUBDIRS = bin mozy
 VERSION = `../../../version $(APPNAME)`
-RELEASE = `../../../version release`
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
-PKGNAME = XicTools.$(APPTOK).$(RELEASE)
+PKGNAME = xictools.$(APPNAME)
 PKGDIR = $(BASE)/packages/pkgfiles
 pd = `pwd`
 

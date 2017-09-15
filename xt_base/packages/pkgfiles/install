@@ -2,7 +2,7 @@
 
 shopt -s nullglob
 
-programs="adms fastcap fasthenry mozy mrouter xtlserv vl wrspice xic"
+programs="adms fastcap fasthenry mozy mrouter vl wrspice xic xtlserv"
 
 list=$*
 if [ -z "$list" ]; then
@@ -42,12 +42,12 @@ for a in $list; do
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
-    fastc|fastca|fastcap)
+    fc|fastc|fastca|fastcap)
 	pkg=fastcap_wr-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
-    fasth|fasthe|fasthen|fasthenr|fasthenry)
+    fh|fasth|fasthe|fasthen|fasthenr|fasthenry)
 	pkg=fasthenry_wr-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
@@ -59,11 +59,6 @@ for a in $list; do
         fi;;
     mr|mro|mrou|mrout|mroute|mrouter)
 	pkg=mrouter-*
-	if [ -n "$pkg" ]; then
-            pkgs="$pkgs $pkg"
-        fi;;
-    xt|xtl|xtls|xtlse|xtlser|xtlserv)
-	pkg=xtlserv-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
@@ -79,6 +74,11 @@ for a in $list; do
         fi;;
     xi|xic)
 	pkg=xic-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    xt|xtl|xtls|xtlse|xtlser|xtlserv)
+	pkg=xtlserv-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;

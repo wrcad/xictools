@@ -1,9 +1,8 @@
 
 APPNAME = gtk2_bundle_x11
-APPTOK = gtk2-bundle-x11
 VERSION = 4.0.1
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
-PKGNAME = XicTools.$(APPTOK)
+PKGNAME = xictools.$(APPNAME)
 PKGDIR = ../../pkgfiles
 pd = `pwd`
 

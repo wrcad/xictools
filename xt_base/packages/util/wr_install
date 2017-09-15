@@ -20,17 +20,12 @@
 # retained in its entirety, and can be reverted to easily if there is
 # a problem with the new release.
 
-# BE FOREWARNED:  New Xic and WRspice distributions put the
-# executables, for example for xic (which we will use for examples,
-# wrspice is analogous), in xictools/xic/bin and NOT in xictools/bin,
-# as was true in earlier releases.  The new executables won't be
-# visible in the shell search path!  The maintainer should do one of
-#   A. change the shell search path to include the new locations, 
-#   B. symbolically link the executables into xictools/bin
-#   C. add a wrapper shell script in xictools/bin
-# In all cases, the executable referenced should be under the "xic/bin"
-# (for example) symbolic link and NOT under xic.current/bin or
-# xic-version/bin (see below).
+# The installation scripts now link all executable programs from the
+# Xic and WRspice distributions into /usr/local/xictools/bin.  Only
+# this directory is needed in your shell search path.  The directories
+# /usr/local/xictools/xic/bin and /usr/local/xictools/wrspice/bin,
+# which were previously needed in the path can (and probably should)
+# be removed if present.
 
 # Here's the safe install logic, for example for xic.  The present
 # release is saved under xic.current, and the previous release under
@@ -41,18 +36,22 @@
 # When updating, this script will remove the link to xic, then move
 # xic.current to xic-version.  Then it will perform the update using
 # the native tool, such as rpm, which will install a new xic.current. 
-# Finally the symbolic link from xic.current as xic is created.
+# Finally the symbolic link from xic.current as xic is created. 
+# Further, links are created to each of the executable programs under
+# the xic link in the /usr/local/xictools/bin directory, so that all
+# programs can be found in this directory, which should be in the
+# user's shell search path.
 
-# The difference between 4.3 and earlier safe install packages is that
-# earlier packages installed the files under "xic", which the script
-# changed to "xic.current".  Now, the files are installed under
-# "xic.current" directly, so that if you install with your package
-# tool directly, you will need to create the link by hand.
+# The symbolic links are maintained by scripts which are run when a
+# package is installed or removed.  This script (wr_install) copies
+# xic.current to xic.version before the install.  Users can do this by
+# hand and use their native installer as an alternative to running
+# wr_install.
 
 # If there is a problem with the new release, the maintainer can
 # delete the link from xic.current to xic, and recreate the link, but
-# from xic-version.  Then you're back to running the previous release,
-# completely as it was.
+# point it to xic-version.  Then you're back to running the previous
+# release, completely as it was.
 
 # Note that the previous installed releases will all be saved as
 # xic-version, and can be reverted to if needed.  The user can delete
@@ -177,17 +176,17 @@ x$progname = xxtlserv -o x$progname = xxt_accs ]; then
             fi
             echo alien -ick $distfile
             if [ x$nodo != xyes ]; then
-                alien -ick $distfile
+                sudo alien -ick $distfile
             fi
         elif [ $prefix = /usr/local ]; then
             echo rpm -U --replacepkgs --replacefiles --nodeps $distfile
             if [ x$nodo != xyes ]; then
-                rpm -U --replacepkgs --replacefiles --nodeps $distfile
+                sudo rpm -U --replacepkgs --replacefiles --nodeps $distfile
             fi
         else
             echo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
             if [ x$nodo != xyes ]; then
-                rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
+                sudo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
             fi
         fi
         ;;
@@ -221,11 +220,18 @@ safe_install()
     IFS=$tmpifs
 
     if [ $prog != xic -a $prog != wrspice ]; then
+
+        # Safe install applies to Xic and WRspice only.
+
         do_update $distfile $prefix $nodo
         ret=$?
     else
         if [ -d $prefix/xictools/$prog.current -a \
 -x $prefix/xictools/$prog.current/bin/$prog ]; then
+
+            # Copy rhe prog.current directory to prog-version, with
+            # version obtained from the executable.
+
             curver=`$prefix/xictools/$prog.current/bin/$prog --v`
             set $curver
             curver=$1
@@ -240,6 +246,9 @@ $prefix/xictools/$prog-$curver
 $prefix/xictools/$prog-$curver
             fi
         fi
+
+        # Do the install, the pre/post install scripts take care of
+        # linking prog.current -> prog, and prog/bin/* -> bin/*
 
         do_update $distfile $prefix $nodo
         ret=$?
@@ -330,14 +339,11 @@ OK [y/n]? "
 fi
 
 if [ `whoami` != root -a $1 != "-t" ]; then
-    if [ `uname` = "Darwin" ]; then
-        echo "You're not root, give your password if asked, continuing.";
-    else
-        printf "You're not root, uninstall/install may fail.  Continue [y/n]? "
-        read rcheck
-        if [ x$rcheck != xy -a x$rcheck != xyes ]; then
-            exit 0
-        fi
+    echo "You're not root, validating using sudo."
+    sudo -v
+    if [ $? != 0 ]; then
+        echo Validation failed.
+        exit 1
     fi
 fi
 

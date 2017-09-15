@@ -6,8 +6,8 @@
 
 prefix=$2
 
-# The Gen 4 package name
-pkgname="XicTools.Xic.4"
+# The XicTools-4.3 package name
+pkgname="xictools.xic"
 
 # We assume safe-install is being used, so that we keep the prior
 # installation in its entirety, so no need to back up config files.
@@ -23,7 +23,7 @@ pkgname="XicTools.Xic.4"
 #    xic_tech.hyp \
 #    xic_tech.scmos"
 #
-#libdir=$prefix/xictools/xic
+#libdir=$prefix/xictools/xic.current
 #for a in $cfgfiles; do
 #    if [ -f $libdir/startup/$a ]; then
 #        cp -pf $libdir/startup/$a $libdir/startup/$a.tmporig

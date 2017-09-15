@@ -80,7 +80,8 @@ distclean: clean
 	    esac \
 	done
 	-@for a in pkgfiles/*; do \
-	    if [ $$a != pkgfiles/README -a $$a != pkgfiles/install ]; then \
+	    if [ $$a != pkgfiles/README -a $$a != pkgfiles/install -a \
+  $$a != pkgfiles/uninstall ]; then \
 	        rm -f $$a; \
 	    fi; \
 	done

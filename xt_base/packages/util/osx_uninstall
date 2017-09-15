@@ -1,0 +1,258 @@
+#! /bin/sh
+
+# Utility to uninstall OS X XicTools-4.3 packages.
+
+nodo=no
+if [ x$1 = x-t ]; then
+    nodo=yes
+    shift
+fi
+
+programs="adms fastcap fasthenry mozy mrouter vl wrspice xic xtlserv"
+
+list=$*
+if [ -z "$list" ]; then
+    echo
+    echo "Usage:  osx_uninstall [-t] arg1 [arg2 ...]"
+    echo
+    echo \
+"The arguments are partial program names from among those listed
+below.  Only the first few characters, to uniquely specify the name,
+are required.  For each argument, the corresponding XicTools-4.3 OS X
+package will be uninstalled.  You must be root to uninstall packages. 
+If -t is given as the first argument, no commands are executed and
+nothing is uninstalled, but the commands that would normally be
+executed are printed."
+    echo
+    echo \
+"Program: $programs"
+    echo
+    exit 0
+fi
+
+for a in $list; do
+
+    case $a in
+    ad|adm|adms)
+        if [ $nodo = yes ]; then
+            echo rm -rf /usr/local/xictools/adms
+            echo rm -f /usr/local/xictools/bin/admsXml
+
+            list=`pkgutil --pkgs | grep xictools.adms_wr`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -rf /usr/local/xictools/adms
+            rm -f /usr/local/xictools/bin/admsXml
+
+            list=`pkgutil --pkgs | grep xictools.adms_wr`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    fc|fastc|fastca|fastcap)
+        if [ $nodo = yes ]; then
+            echo rm -rf /usr/local/xictools/fastcap
+            echo rm -f /usr/local/xictools/bin/fcpp
+            echo rm -f /usr/local/xictools/bin/lstpack
+            echo rm -f /usr/local/xictools/bin/lstunpack
+            echo rm -f /usr/local/xictools/bin/fastcap
+            echo rm -f /usr/local/xictools/bin/cubegen
+            echo rm -f /usr/local/xictools/bin/capgen
+            echo rm -f /usr/local/xictools/bin/busgen
+            echo rm -f /usr/local/xictools/bin/pipedgen
+            echo rm -f /usr/local/xictools/bin/pyragen
+      
+            list=`pkgutil --pkgs | grep xictools.fastcap_wr`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -rf /usr/local/xictools/fastcap
+            rm -f /usr/local/xictools/bin/fcpp
+            rm -f /usr/local/xictools/bin/lstpack
+            rm -f /usr/local/xictools/bin/lstunpack
+            rm -f /usr/local/xictools/bin/fastcap
+            rm -f /usr/local/xictools/bin/cubegen
+            rm -f /usr/local/xictools/bin/capgen
+            rm -f /usr/local/xictools/bin/busgen
+            rm -f /usr/local/xictools/bin/pipedgen
+            rm -f /usr/local/xictools/bin/pyragen
+      
+            list=`pkgutil --pkgs | grep xictools.fastcap_wr`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    fh|fasth|fasthe|fasthen|fasthenr|fasthenry)
+        if [ $nodo = yes ]; then
+            echo rm -rf /usr/local/xictools/fasthenry
+            echo rm -f /usr/local/xictools/bin/fasthenry
+            echo rm -f /usr/local/xictools/bin/zbuf
+      
+            list=`pkgutil --pkgs | grep xictools.fasthenry_wr`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -rf /usr/local/xictools/fasthenry
+            rm -f /usr/local/xictools/bin/fasthenry
+            rm -f /usr/local/xictools/bin/zbuf
+      
+            list=`pkgutil --pkgs | grep xictools.fasthenry_wr`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    mo|moz|mozy)
+        if [ $nodo = yes ]; then
+            echo rm -rf /usr/local/xictools/mozy
+            echo rm -f /usr/local/xictools/bin/mozy
+            echo rm -f /usr/local/xictools/bin/xeditor
+            echo rm -f /usr/local/xictools/bin/httpget
+            echo rm -f /usr/local/xictools/bin/hlp2html
+            echo rm -f /usr/local/xictools/bin/hlpsrv
+      
+            list=`pkgutil --pkgs | grep xictools.mozy`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -rf /usr/local/xictools/mozy
+            rm -f /usr/local/xictools/bin/mozy
+            rm -f /usr/local/xictools/bin/xeditor
+            rm -f /usr/local/xictools/bin/httpget
+            rm -f /usr/local/xictools/bin/hlp2html
+            rm -f /usr/local/xictools/bin/hlpsrv
+      
+            list=`pkgutil --pkgs | grep xictools.mozy`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    mr|mro|mrou|mrout|mroute|mrouter)
+        if [ $nodo = yes ]; then
+            echo rm -rf /usr/local/xictools/mrouter
+            echo rm -f /usr/local/xictools/bin/mrouter
+      
+            list=`pkgutil --pkgs | grep xictools.mrouter`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -rf /usr/local/xictools/mrouter
+            rm -f /usr/local/xictools/bin/mrouter
+      
+            list=`pkgutil --pkgs | grep xictools.mrouter`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    v|vl)
+        if [ $nodo = yes ]; then
+            echo rm -rf /usr/local/xictools/vl
+            echo rm -f /usr/local/xictools/bin/vl
+      
+            list=`pkgutil --pkgs | grep xictools.vl`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -rf /usr/local/xictools/vl
+            rm -f /usr/local/xictools/bin/vl
+      
+            list=`pkgutil --pkgs | grep xictools.vl`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
+        if [ $nodo = yes ]; then
+            echo rm -rf /usr/local/xictools/wrspice.current
+            echo rm -f /usr/local/xictools/wrspice
+            echo rm -f /usr/local/xictools/bin/multidec
+            echo rm -f /usr/local/xictools/bin/proc2mod
+            echo rm -f /usr/local/xictools/bin/printtoraw
+            echo rm -f /usr/local/xictools/bin/wrspice
+            echo rm -f /usr/local/xictools/bin/wrspiced
+      
+            list=`pkgutil --pkgs | grep xictools.wrspice`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -rf /usr/local/xictools/wrspice.current
+            rm -f /usr/local/xictools/wrspice
+            rm -f /usr/local/xictools/bin/multidec
+            rm -f /usr/local/xictools/bin/proc2mod
+            rm -f /usr/local/xictools/bin/printtoraw
+            rm -f /usr/local/xictools/bin/wrspice
+            rm -f /usr/local/xictools/bin/wrspiced
+      
+            list=`pkgutil --pkgs | grep xictools.wrspice`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    xi|xic)
+        if [ $nodo = yes ]; then
+            echo rm -rf /usr/local/xictools/xic.current
+            echo rm -f /usr/local/xictools/xic
+            echo rm -f /usr/local/xictools/bin/wrdecode
+            echo rm -f /usr/local/xictools/bin/wrencode
+            echo rm -f /usr/local/xictools/bin/wrsetpass
+            echo rm -f /usr/local/xictools/bin/xic
+      
+            list=`pkgutil --pkgs | grep xictools.xic`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -rf /usr/local/xictools/xic.current
+            rm -f /usr/local/xictools/xic
+            rm -f /usr/local/xictools/bin/wrdecode
+            rm -f /usr/local/xictools/bin/wrencode
+            rm -f /usr/local/xictools/bin/wrsetpass
+            rm -f /usr/local/xictools/bin/xic
+      
+            list=`pkgutil --pkgs | grep xictools.xic`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    license|xt|xtl|xtls|xtlse|xtlser|xtlserv)
+        if [ $nodo = yes ]; then
+            echo rm -f /usr/local/xictools/license/readme
+            echo rm -f /usr/local/xictools/bin/xtlserv
+            echo rm -f /usr/local/xictools/bin/xtjobs
+      
+            list=`pkgutil --pkgs | grep xictools.xtlserv`
+            for a in $list; do
+                echo pkgutil --forget $a
+            done
+        else
+            rm -f /usr/local/xictools/license/readme
+            rm -f /usr/local/xictools/bin/xtlserv
+            rm -f /usr/local/xictools/bin/xtjobs
+      
+            list=`pkgutil --pkgs | grep xictools.xtlserv`
+            for a in $list; do
+                pkgutil --forget $a
+            done
+        fi
+        ;;
+    *)
+        echo Unknown program $a
+        ;;
+    esac
+done
+
