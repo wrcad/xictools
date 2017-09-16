@@ -38,47 +38,47 @@ pkgs=""
 for a in $list; do
     case $a in
     ad|adm|adms)
-	pkg=adms_wr-*
+	pkg=xictools_adms-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     fc|fastc|fastca|fastcap)
-	pkg=fastcap_wr-*
+	pkg=xictools_fastcap-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     fh|fasth|fasthe|fasthen|fasthenr|fasthenry)
-	pkg=fasthenry_wr-*
+	pkg=xictools_fasthenry-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     mo|moz|mozy)
-	pkg=mozy-*
+	pkg=xictools_mozy-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     mr|mro|mrou|mrout|mroute|mrouter)
-	pkg=mrouter-*
+	pkg=xictools_mrouter-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     v|vl)
-	pkg=vl-*
+	pkg=xictools_vl-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
-	pkg=wrspice-*
+	pkg=xictools_wrspice-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     xi|xic)
-	pkg=xic-*
+	pkg=xictools_xic-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;
     xt|xtl|xtls|xtlse|xtlser|xtlserv)
-	pkg=xtlserv-*
+	pkg=xictools_xtlserv-*
 	if [ -n "$pkg" ]; then
             pkgs="$pkgs $pkg"
         fi;;

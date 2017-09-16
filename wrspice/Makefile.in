@@ -22,7 +22,6 @@ OSNAME = @OSNAME@
 ARCH = @ARCH@
 DIST_SUFFIX = @DIST_SUFFIX@
 GRPREF = @GRPREF@
-TOOLKIT = @TOOLKIT@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ -DWRSPICE
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
@@ -526,6 +525,6 @@ package::
 	if [ $(OSNAME) = LinuxRHEL6_64 -o $(OSNAME) = LinuxRHEL7_64 ]; then \
 	    $(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_cadence; \
 	fi
-	cd packages; $(MAKE) wrspice-$(OSNAME)
+	cd packages; $(MAKE) package
 
 #######################################################################

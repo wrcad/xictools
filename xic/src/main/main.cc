@@ -205,9 +205,9 @@ cMain::IdString()
     time_t tloc = time(0);
     struct tm now = *gmtime(&tloc);
     const char *s = lstring::strip_path(Program());
-    sprintf(buf, "%s %s%s %s %02d/%02d/%04d %02d:%02d GMT", s, VersionString(),
-        sr, OSname(), now.tm_mon + 1, now.tm_mday, now.tm_year + 1900,
-        now.tm_hour, now.tm_min);
+    sprintf(buf, "%s %s%s %s %s %02d/%02d/%04d %02d:%02d GMT", s,
+        VersionString(), sr, OSname(), Arch(), now.tm_mon + 1, now.tm_mday,
+        now.tm_year + 1900, now.tm_hour, now.tm_min);
     return (buf);
 }
 
@@ -260,6 +260,7 @@ cMain::Daemon(int port)
 namespace {
     unsigned long die_when;
 
+#ifdef HAVE_SECURE
     int die_timeout(void*)
     {
         XM()->Exit(ExitPanic);
@@ -272,7 +273,6 @@ namespace {
     }
 
 
-#ifdef HAVE_SECURE
     // Can't put the pop-up call in the handler, so use idle proc.
     //
     int v_proc(void *ptr)

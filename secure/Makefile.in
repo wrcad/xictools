@@ -150,6 +150,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) xtlserv-$(OSNAME)
+	cd packages; $(MAKE) package
 
 #######################################################################

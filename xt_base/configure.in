@@ -327,7 +327,7 @@ Darwin)
 dnl # uname -r returns the kernel release, it seems that the major
 dnl # index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
     if test $1 -ge 13; then
-        OSNAME="Darwin64"
+        OSNAME="Darwin"
         ARCH="x86_64"
         DIST_SUFFIX="pkg"
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
@@ -408,50 +408,46 @@ dnl         # keep only the first token.
                 exit
                 ;;
             5)
+                OSNAME="LinuxRHEL5"
                 if test $linux32 = yes; then
-                    OSNAME="LinuxRHEL5"
                     ARCH="i686"
                     ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
                 else
-                    OSNAME="LinuxRHEL5_64"
                     ARCH="x86_64"
                     lib_dirs="/usr/lib64"
                 fi
                 ;;
             6)
+                OSNAME="LinuxRHEL6"
                 if test $linux32 = yes; then
-                    OSNAME="LinuxRHEL6"
                     ARCH="i686"
                     ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
                     lib_dirs="/usr/lib"
                 else
-                    OSNAME="LinuxRHEL6_64"
                     ARCH="x86_64"
                     lib_dirs="/usr/lib64"
                 fi
                 with_psf_ok=yes
                 ;;
             7)
+                OSNAME="LinuxRHEL7"
                 if test $linux32 = yes; then
-                    OSNAME="LinuxRHEL7"
                     ARCH="i686"
                     ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
                     lib_dirs="/usr/lib"
                 else
-                    OSNAME="LinuxRHEL7_64"
                     ARCH="x86_64"
                     lib_dirs="/usr/lib64"
                 fi
                 with_psf_ok=yes
                 ;;
             *)
+                OSNAME="Linux$oname$major"
                 if test $linux32 = yes; then
-                    OSNAME="Linux$oname$major"
                     ARCH="i686"
                     ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
                     lib_dirs="/usr/lib"
                 else
-                    OSNAME="Linux$oname${major}_64"
                     ARCH="x86_64"
                     lib_dirs="/usr/lib64"
                 fi
@@ -585,7 +581,7 @@ dnl Filter needed in Windows, pkg-config adds ^M that chokes g++.
         tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
         TOOLKITINC="-DUSE_GTK $tkcf"
         TOOLKITLIBS="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
-        if test $OSNAME = "Darwin64" -a $with_quartz = yes; then
+        if test $OSNAME = "Darwin" -a $with_quartz = yes; then
             TOOLKITCFLAGS="-DWITH_QUARTZ"
         fi
     else
@@ -610,7 +606,7 @@ dnl ***
 dnl *** Python and Tcl/Tk configuration
 dnl ***
 
-if test $OSNAME = "Darwin64"; then
+if test $OSNAME = "Darwin"; then
     if test -d /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/python2.7; then
         PY_INCLUDE="-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/python2.7"
         PY_LIBS="-L/usr/lib -lpython2.7"
@@ -791,7 +787,7 @@ dnl # png.h is in a strange place under win-builds
         IMG_INCLUDES="-I/usr/local/win-builds/include/libpng14"
     fi
 
-elif test $OSNAME = "Darwin64"; then
+elif test $OSNAME = "Darwin"; then
 dnl  If the gtk2-bundle export package is found, use it.  Otherwise
 dnl  assume libraries/includes are under /opt (MacPorts).
     if test $with_quartz = yes; then
@@ -1183,6 +1179,7 @@ echo "toolroot) echo $TOOLROOT;;" >> info.sh
 echo "osname) echo $OSNAME;;"   >> info.sh
 echo "arch) echo $ARCH;;"       >> info.sh
 echo "dist_suffix) echo $DIST_SUFFIX;;" >> info.sh
+echo "with_oa) echo $with_oa;;" >> info.sh
 echo "esac"                     >> info.sh
 chmod 755 info.sh
 

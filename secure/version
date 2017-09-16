@@ -1,23 +1,6 @@
 #! /bin/sh
-#
-# This is where the release numbers are set.
-#
 
-release="4"
-tools_version="4.3"
-xtlserv_version="4.3.1"
+release_num=1
 
-if [ z$1 != "z" ]; then
-    case $1 in
-    release)
-        echo $release
-        ;;
-    tools)
-        echo $tools_version
-        ;;
-    xtlserv)
-        echo $xtlserv_version
-        ;;
-    esac
-fi
+echo 4.3.$release_num
 

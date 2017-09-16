@@ -1739,8 +1739,8 @@ sCmdLine::process_args(int argc, char **argv, bool prep)
         }
         for (int i = 1; i < argc; i++) {
             if (!strcmp(argv[1], "--v")) {
-                fprintf(stdout, "%s %s\n", XM()->VersionString(),
-                    XM()->OSname());
+                fprintf(stdout, "%s %s %s\n", XM()->VersionString(),
+                    XM()->OSname(), XM()->Arch());
                 exit (0);
             }
             if (!strcmp(argv[1], "--vv")) {

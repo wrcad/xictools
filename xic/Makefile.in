@@ -19,7 +19,6 @@ OSNAME = @OSNAME@
 ARCH = @ARCH@
 DIST_SUFFIX = @DIST_SUFFIX@
 GRPREF = @GRPREF@
-TOOLKIT = @TOOLKIT@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
@@ -453,6 +452,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_xic_pkg
-	cd packages; $(MAKE) xic-$(OSNAME)
+	cd packages; $(MAKE) package
 
 #######################################################################

@@ -233,6 +233,6 @@ package::
 	-rm -rf packages/root
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
-	cd packages; $(MAKE) mozy-$(OSNAME)
+	cd packages; $(MAKE) package
 
 #######################################################################

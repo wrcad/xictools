@@ -3,56 +3,35 @@ LOCATION = wrspice/packages
 #######################################################################
 
 # To build a package:
-# In this directory, give "make dirname-osname".  The dirname is the
-# name of a subdirectory found under the subdirectories of this
-# directory, which is usually the application name.  The osname,
-# separated from the dirname with a hyphen (no space), is the name
-# assigned by the configure script for this machine and environment. 
-# This is used here to identify the native packaging system, and a
-# link to the appropriate packaging subdirectory is created.  This
-# really applies only to Linux, which can have rpm (RedHat) or dpkg
-# (Debian) packagers.
+# In this directory, give "make package", or just "make".
 
-# Note:  The subdirectory names are lower-case, to differentiate from
-# the osname (the make arg), and thus the symbolic link name.  The
-# exception is Windows, where we don't have symbolic links, and in
-# this case the packager subdirectory name must match the osname token
-# exactly.  The osname is mixed-case with the lead character
-# upper-case.
+# The OSNAME (obtained from configuration info) is used here to
+# identify the native packaging system, and except under Windows a
+# link to the appropriate packaging subdirectory is created.  This is
+# intended for Linux, for which various packagers exist, including rpm
+# (RedHat) and dpkg (Debian).
 
-dummy:
+BASE = ../../xt_base
+OSNAME = `$(BASE)/info.sh osname`
 
-.DEFAULT:
+package::
 	@if [ ! -d root ]; then mkdir root; fi
-	@tok=$@; \
-	case $$tok in \
-	Darwin*) if [ ! -f $$tok ]; then ln -s darwin  $$tok; fi ;; \
+	@osname=$(OSNAME); \
+	case $$osname in \
+	Darwin*) if [ ! -h $$osname ]; then ln -s darwin $$osname; fi ;; \
 	Linux*) \
-	    if [ ! -f $$tok ]; then \
+	    if [ ! -h $$osname ]; then \
 	        dst=`$(MAKE) testrpm`; \
 	        if [ -n "$$dst" ]; then \
-	            ln -s rpm   $$tok; \
+	            ln -s rpm $$osname; \
 	        else \
-	            echo "Packager for $$tok unavailable"; \
+	            echo "Packager for $$osname unavailable"; \
 	            exit; \
 	        fi; \
 	    fi ;; \
-	*) \
-	    IFS="-"; \
-	    set -- $$tok; \
-	    if [ -z $$2 ]; then \
-	        echo "Unknown target $$tok"; \
-	        exit; \
-	    fi; \
-	    $(MAKE) $$2; \
-	    if [ -d $$2/$$1 ]; then \
-	        cd $$2/$$1; $(MAKE) $$2; \
-	    else \
-	        echo "Unknown package $$2/$$1"; \
-	        exit; \
-	    fi \
-	;; \
 	esac
+	@osname=$(OSNAME); \
+	cd $$osname; $(MAKE) package;
 
 clean::
 	-@for a in darwin/*; do \
@@ -72,7 +51,7 @@ clean::
 	done
 	-@rm -rf root
 
-distclean: clean
+distclean:: clean
 	-@for a in Darwin* Linux*; do \
 	    case $$a in \
 	    Darwin*)  rm -f $$a ;; \
@@ -80,7 +59,7 @@ distclean: clean
 	    esac \
 	done
 
-testrpm:
+testrpm::
 	@if [ -f /etc/redhat-release ]; then \
 	    dst=`rpm -qf /etc/redhat-release`; \
 	elif [ -f /etc/centos-release ]; then \
