@@ -1,8 +1,5 @@
 
-dummy::
-	@echo targets: Windows
-
-Win32::
+package::
 	files/setup.sh
 
 clean::

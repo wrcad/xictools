@@ -1,10 +1,10 @@
-
 #! /bin/sh
+
 inno="/inno-5.5.1"
 
 appname="gtk2-bundle"
 version=$1
-base=../../../../xt_base
+base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
 pkgfiles=$base/packages/pkgfiles

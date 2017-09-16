@@ -1,19 +1,24 @@
+BASE = ../../../xt_base
 
 APPNAME = gtk2_bundle_x11
+
 VERSION = 4.0.1
-PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
+PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-$(ARCH).pkg
 PKGNAME = xictools.$(APPNAME)
 PKGDIR = ../../pkgfiles
+OSNAME = `$(BASE)/info.sh osname`
+ARCH = `$(BASE)/info.sh arch`
 pd = `pwd`
 
-.DEFAULT:
-	@if [ ! $@[0-7] != "Darwin" ]; then \
-	    echo "Unknown OSNAME $@"; \
+package::
+	@osname=$(OSNAME); \
+	if [ $${osname:0:6} != "Darwin" ]; then \
+	    echo "Unknown OSNAME $$osname"; \
 	    exit; \
 	fi
-	sudo OSNAME=$@ $(MAKE) package
+	sudo $(MAKE) buildpkg
 
-package::
+buildpkg::
 	-@rm -f $(PKGDIR)/$(APPNAME)*
 	-@files/mkgtkx11
 	chown -R root:admin contents

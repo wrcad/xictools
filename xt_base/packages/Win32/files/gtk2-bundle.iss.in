@@ -24,7 +24,7 @@ Source: "./gtk2-bundle/*.*"; DestDir: "{app}/gtk2-bundle"; Flags: recursesubdirs
 
 [code]
 
-#include "..\..\files\inno_uninstall"
+#include "..\..\..\xt_base\packages\files\inno_uninstall"
 
 function InitializeSetup(): Boolean;
 begin

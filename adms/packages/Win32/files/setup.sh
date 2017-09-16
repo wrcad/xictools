@@ -2,10 +2,10 @@
 
 inno="/inno-5.5.1"
 
-appname=adms_wr
-version=`../../../version $appname`
-top=../../root/usr/local
-base=../../../../xt_base
+appname=xictools_adms
+version=`../../version`
+top=../root/usr/local
+base=../../../xt_base
 baseutil=$base/packages/util
 basefiles=$base/packages/files
 pkgfiles=$base/packages/pkgfiles

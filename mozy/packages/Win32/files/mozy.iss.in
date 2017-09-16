@@ -1,14 +1,14 @@
 
 [Setup]
 
-AppName=Mozy-4
-AppVerName=Mozy-VERSION
+AppName=mozy
+AppVerName=mozy-VERSION
 AppVersion=VERSION
 AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://wrcad.com
-AppMutex=XtAccsMutex
+AppMutex=mozyMutex
 
-OutputBaseFilename=mozy-Win32-VERSION-i386
+OutputBaseFilename=xictools_mozy-Win32-VERSION-i386
 
 Compression=bzip
 
@@ -23,26 +23,26 @@ UninstallDisplayIcon={app}\xictools\bin\mozy.exe
 
 [Files]
 
-Source: "..\..\root\usr\local\xictools\bin\mozy.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\mozy.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\xeditor.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\xeditor.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\httpget.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\httpget.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\hlp2html.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\hlpsrv.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\mozy.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\mozy.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\xeditor.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\xeditor.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\httpget.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\httpget.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\hlp2html.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\hlpsrv.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 
-Source: "..\..\root\usr\local\xictools\mozy\help\*"; DestDir: "{app}\xictools\mozy\help"
-Source: "..\..\root\usr\local\xictools\mozy\help\screenshots\*"; DestDir: "{app}\xictools\mozy\help\screenshots"
-Source: "..\..\root\usr\local\xictools\mozy\startup\*"; DestDir: "{app}\xictools\mozy\startup"
+Source: "..\root\usr\local\xictools\mozy\help\*"; DestDir: "{app}\xictools\mozy\help"
+Source: "..\root\usr\local\xictools\mozy\help\screenshots\*"; DestDir: "{app}\xictools\mozy\help\screenshots"
+Source: "..\root\usr\local\xictools\mozy\startup\*"; DestDir: "{app}\xictools\mozy\startup"
 
 [Icons]
 
-Name: "{group}\Mozy-4"; Filename: "{app}\xictools\bin\mozy.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\bin\mozy.exe"
+Name: "{group}\mozy"; Filename: "{app}\xictools\bin\mozy.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\bin\mozy.exe"
 
 [code]
 
-#include "..\..\..\..\xt_base\packages\files\inno_uninstall"
+#include "..\..\..\xt_base\packages\files\inno_uninstall"
 
 function InitializeSetup(): Boolean;
 begin

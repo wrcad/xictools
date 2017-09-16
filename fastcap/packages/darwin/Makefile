@@ -1,26 +1,30 @@
-BASE = ../../../../xt_base
+BASE = ../../../xt_base
 
-APPNAME = fastcap_wr
+APPNAME = xictools_fastcap
 SUBDIRS = bin fastcap
-VERSION = `../../../version $(APPNAME)`
-PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-x86_64.pkg
-PKGNAME = xictools.$(APPNAME)
+
+VERSION = `../../version`
+PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-$(ARCH).pkg
+PKGNAME = $(APPNAME)
 PKGDIR = $(BASE)/packages/pkgfiles
+OSNAME = `$(BASE)/info.sh osname`
+ARCH = `$(BASE)/info.sh arch`
 pd = `pwd`
 
-.DEFAULT:
-	@if [ ! $@[0-7] != "Darwin" ]; then \
-	    echo "Unknown OSNAME $@"; \
+package::
+	@osname=$(OSNAME); \
+	if [ $${osname:0:6} != "Darwin" ]; then \
+	    echo "Unknown OSNAME $$osname"; \
 	    exit; \
 	fi
-	sudo OSNAME=$@ $(MAKE) package
+	sudo $(MAKE) buildpkg
 
-package::
+buildpkg::
 	-@rm -f $(PKGDIR)/$(APPNAME)-Darwin*
 	-@rm -rf contents
 	mkdir contents contents/xictools
 	for a in $(SUBDIRS); do \
-	    cp -R ../../root/usr/local/xictools/$$a contents/xictools; \
+	    cp -R ../root/usr/local/xictools/$$a contents/xictools; \
 	done
 	chown -R root:admin contents
 	pkgbld="pkgbuild --identifier $(PKGNAME) --version $(VERSION) \

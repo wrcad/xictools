@@ -3,10 +3,7 @@
 #VERSION = "2.24.25-20150430"
 VERSION = "2.24.25-20160628"
 
-dummy::
-	@echo targets: Windows
-
-Win32 pkg::
+package::
 	files/setup.sh $(VERSION)
 
 clean::

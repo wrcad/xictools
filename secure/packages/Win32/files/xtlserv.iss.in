@@ -1,14 +1,14 @@
 
 [Setup]
 
-AppName=XtLserv-4
-AppVerName=XtLserv-VERSION
+AppName=xtlserv
+AppVerName=xtlserv-VERSION
 AppVersion=VERSION
 AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://wrcad.com
-AppMutex=XtLservMutex
+AppMutex=xtlservMutex
 
-OutputBaseFilename=xtlserv-Win32-VERSION-i386
+OutputBaseFilename=xictools_xtlserv-Win32-VERSION-i386
 
 Compression=bzip
 
@@ -23,18 +23,18 @@ UninstallDisplayIcon={app}\xictools\bin\xtlserv.exe
 
 [Files]
 
-Source: "..\..\root\usr\local\xictools\bin\xtlserv.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\xtjobs.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\xtlserv.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\xtjobs.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 
-Source: "..\..\root\usr\local\xictools\license\README"; DestDir: "{app}\xictools\license"
+Source: "..\root\usr\local\xictools\license\README"; DestDir: "{app}\xictools\license"
 
 [Icons]
 
-Name: "{group}\XtLserv-4"; Filename: "{app}\xictools\bin\xtlserv.exe"; WorkingDir: "c:\"
+Name: "{group}\xtlserv"; Filename: "{app}\xictools\bin\xtlserv.exe"; WorkingDir: "c:\"
 
 [code]
 
-#include "..\..\..\..\xt_base\packages\files\inno_uninstall"
+#include "..\..\..\xt_base\packages\files\inno_uninstall"
 
 function InitializeSetup(): Boolean;
 begin

@@ -1,14 +1,14 @@
 
 [Setup]
 
-AppName=FastHenry_wr
-AppVerName=FastHenry_wr-VERSION
+AppName=fasthenry
+AppVerName=fasthenry-VERSION
 AppVersion=VERSION
 AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://wrcad.com
-AppMutex=FastHenry_wrMutex
+AppMutex=fasthenryMutex
 
-OutputBaseFilename=fasthenry_wr-Win32-VERSION-i386
+OutputBaseFilename=xictools_fasthenry-Win32-VERSION-i386
 
 Compression=bzip
 
@@ -22,20 +22,20 @@ UninstallFilesDir={app}\xictools\fasthenry\uninstall
 
 [Files]
 
-Source: "..\..\root\usr\local\xictools\bin\fasthenry.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\zbuf.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\fasthenry.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\zbuf.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 
-Source: "..\..\root\usr\local\xictools\fasthenry\README"; DestDir: "{app}\xictools\fasthenry"
-Source: "..\..\root\usr\local\xictools\fasthenry\README.mit"; DestDir: "{app}\xictools\fasthenry"
+Source: "..\root\usr\local\xictools\fasthenry\README"; DestDir: "{app}\xictools\fasthenry"
+Source: "..\root\usr\local\xictools\fasthenry\README.mit"; DestDir: "{app}\xictools\fasthenry"
 
-Source: "..\..\root\usr\local\xictools\fasthenry\doc\*"; DestDir: "{app}\xictools\fasthenry\doc"
-Source: "..\..\root\usr\local\xictools\fasthenry\examples\*"; DestDir: "{app}\xictools\fasthenry\examples"
-Source: "..\..\root\usr\local\xictools\fasthenry\examples\work\run"; DestDir: "{app}\xictools\fasthenry\examples\work"
-Source: "..\..\root\usr\local\xictools\fasthenry\examples\work\results\*"; DestDir: "{app}\xictools\fasthenry\examples\work\results"
+Source: "..\root\usr\local\xictools\fasthenry\doc\*"; DestDir: "{app}\xictools\fasthenry\doc"
+Source: "..\root\usr\local\xictools\fasthenry\examples\*"; DestDir: "{app}\xictools\fasthenry\examples"
+Source: "..\root\usr\local\xictools\fasthenry\examples\work\run"; DestDir: "{app}\xictools\fasthenry\examples\work"
+Source: "..\root\usr\local\xictools\fasthenry\examples\work\results\*"; DestDir: "{app}\xictools\fasthenry\examples\work\results"
 
 [code]
 
-#include "..\..\..\..\xt_base\packages\files\inno_uninstall"
+#include "..\..\..\xt_base\packages\files\inno_uninstall"
 
 function InitializeSetup(): Boolean;
 begin

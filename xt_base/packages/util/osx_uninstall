@@ -38,7 +38,7 @@ for a in $list; do
             echo rm -rf /usr/local/xictools/adms
             echo rm -f /usr/local/xictools/bin/admsXml
 
-            list=`pkgutil --pkgs | grep xictools.adms_wr`
+            list=`pkgutil --pkgs | grep xictools_adms`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -46,7 +46,7 @@ for a in $list; do
             rm -rf /usr/local/xictools/adms
             rm -f /usr/local/xictools/bin/admsXml
 
-            list=`pkgutil --pkgs | grep xictools.adms_wr`
+            list=`pkgutil --pkgs | grep xictools_adms`
             for a in $list; do
                 pkgutil --forget $a
             done
@@ -65,7 +65,7 @@ for a in $list; do
             echo rm -f /usr/local/xictools/bin/pipedgen
             echo rm -f /usr/local/xictools/bin/pyragen
       
-            list=`pkgutil --pkgs | grep xictools.fastcap_wr`
+            list=`pkgutil --pkgs | grep xictools_fastcap`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -81,7 +81,7 @@ for a in $list; do
             rm -f /usr/local/xictools/bin/pipedgen
             rm -f /usr/local/xictools/bin/pyragen
       
-            list=`pkgutil --pkgs | grep xictools.fastcap_wr`
+            list=`pkgutil --pkgs | grep xictools_fastcap`
             for a in $list; do
                 pkgutil --forget $a
             done
@@ -93,7 +93,7 @@ for a in $list; do
             echo rm -f /usr/local/xictools/bin/fasthenry
             echo rm -f /usr/local/xictools/bin/zbuf
       
-            list=`pkgutil --pkgs | grep xictools.fasthenry_wr`
+            list=`pkgutil --pkgs | grep xictools_fasthenry`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -102,7 +102,7 @@ for a in $list; do
             rm -f /usr/local/xictools/bin/fasthenry
             rm -f /usr/local/xictools/bin/zbuf
       
-            list=`pkgutil --pkgs | grep xictools.fasthenry_wr`
+            list=`pkgutil --pkgs | grep xictools_fasthenry`
             for a in $list; do
                 pkgutil --forget $a
             done
@@ -117,7 +117,7 @@ for a in $list; do
             echo rm -f /usr/local/xictools/bin/hlp2html
             echo rm -f /usr/local/xictools/bin/hlpsrv
       
-            list=`pkgutil --pkgs | grep xictools.mozy`
+            list=`pkgutil --pkgs | grep xictools_mozy`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -129,7 +129,7 @@ for a in $list; do
             rm -f /usr/local/xictools/bin/hlp2html
             rm -f /usr/local/xictools/bin/hlpsrv
       
-            list=`pkgutil --pkgs | grep xictools.mozy`
+            list=`pkgutil --pkgs | grep xictools_mozy`
             for a in $list; do
                 pkgutil --forget $a
             done
@@ -140,7 +140,7 @@ for a in $list; do
             echo rm -rf /usr/local/xictools/mrouter
             echo rm -f /usr/local/xictools/bin/mrouter
       
-            list=`pkgutil --pkgs | grep xictools.mrouter`
+            list=`pkgutil --pkgs | grep xictools_mrouter`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -148,7 +148,7 @@ for a in $list; do
             rm -rf /usr/local/xictools/mrouter
             rm -f /usr/local/xictools/bin/mrouter
       
-            list=`pkgutil --pkgs | grep xictools.mrouter`
+            list=`pkgutil --pkgs | grep xictools_mrouter`
             for a in $list; do
                 pkgutil --forget $a
             done
@@ -159,7 +159,7 @@ for a in $list; do
             echo rm -rf /usr/local/xictools/vl
             echo rm -f /usr/local/xictools/bin/vl
       
-            list=`pkgutil --pkgs | grep xictools.vl`
+            list=`pkgutil --pkgs | grep xictools_vl`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -167,7 +167,7 @@ for a in $list; do
             rm -rf /usr/local/xictools/vl
             rm -f /usr/local/xictools/bin/vl
       
-            list=`pkgutil --pkgs | grep xictools.vl`
+            list=`pkgutil --pkgs | grep xictools_vl`
             for a in $list; do
                 pkgutil --forget $a
             done
@@ -183,7 +183,7 @@ for a in $list; do
             echo rm -f /usr/local/xictools/bin/wrspice
             echo rm -f /usr/local/xictools/bin/wrspiced
       
-            list=`pkgutil --pkgs | grep xictools.wrspice`
+            list=`pkgutil --pkgs | grep xictools_wrspice`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -196,7 +196,7 @@ for a in $list; do
             rm -f /usr/local/xictools/bin/wrspice
             rm -f /usr/local/xictools/bin/wrspiced
       
-            list=`pkgutil --pkgs | grep xictools.wrspice`
+            list=`pkgutil --pkgs | grep xictools_wrspice`
             for a in $list; do
                 pkgutil --forget $a
             done
@@ -211,7 +211,7 @@ for a in $list; do
             echo rm -f /usr/local/xictools/bin/wrsetpass
             echo rm -f /usr/local/xictools/bin/xic
       
-            list=`pkgutil --pkgs | grep xictools.xic`
+            list=`pkgutil --pkgs | grep xictools_xic`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -223,7 +223,7 @@ for a in $list; do
             rm -f /usr/local/xictools/bin/wrsetpass
             rm -f /usr/local/xictools/bin/xic
       
-            list=`pkgutil --pkgs | grep xictools.xic`
+            list=`pkgutil --pkgs | grep xictools_xic`
             for a in $list; do
                 pkgutil --forget $a
             done
@@ -235,7 +235,7 @@ for a in $list; do
             echo rm -f /usr/local/xictools/bin/xtlserv
             echo rm -f /usr/local/xictools/bin/xtjobs
       
-            list=`pkgutil --pkgs | grep xictools.xtlserv`
+            list=`pkgutil --pkgs | grep xictools_xtlserv`
             for a in $list; do
                 echo pkgutil --forget $a
             done
@@ -244,7 +244,7 @@ for a in $list; do
             rm -f /usr/local/xictools/bin/xtlserv
             rm -f /usr/local/xictools/bin/xtjobs
       
-            list=`pkgutil --pkgs | grep xictools.xtlserv`
+            list=`pkgutil --pkgs | grep xictools_xtlserv`
             for a in $list; do
                 pkgutil --forget $a
             done

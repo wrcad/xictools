@@ -1,14 +1,14 @@
 
 [Setup]
 
-AppName=Xic-4
-AppVerName=Xic-VERSION
+AppName=xic
+AppVerName=xic-VERSION
 AppVersion=VERSION
 AppPublisher=Whiteley Research Inc.
 AppPublisherURL=http://wrcad.com
-AppMutex=XicMutex
+AppMutex=xicMutex
 
-OutputBaseFilename=xic-Win32-VERSION-i386
+OutputBaseFilename=xictools_xic-Win32-VERSION-i386
 
 Compression=bzip
 
@@ -24,19 +24,19 @@ UninstallDisplayIcon={app}\xictools\bin\xic.exe
 [Files]
 
 Source: "{app}\xictools\bin\xic.exe"; DestDir: "{app}\xictools\bin\xic_old"; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: "..\..\root\usr\local\xictools\bin\xic.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\xic.dll"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\xic.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\wrdecode.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\wrencode.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\..\root\usr\local\xictools\bin\wrsetpass.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\xic.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\xic.dll"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\xic.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\wrdecode.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\wrencode.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\bin\wrsetpass.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
 
-Source: "..\..\root\usr\local\xictools\xic\examples\*"; DestDir: "{app}\xictools\xic\examples"
-Source: "..\..\root\usr\local\xictools\xic\examples\PCells\*"; DestDir: "{app}\xictools\xic\examples\PCells"
-Source: "..\..\root\usr\local\xictools\xic\examples\memchip_example\*"; DestDir: "{app}\xictools\xic\examples\memchip_example"
+Source: "..\root\usr\local\xictools\xic\examples\*"; DestDir: "{app}\xictools\xic\examples"
+Source: "..\root\usr\local\xictools\xic\examples\PCells\*"; DestDir: "{app}\xictools\xic\examples\PCells"
+Source: "..\root\usr\local\xictools\xic\examples\memchip_example\*"; DestDir: "{app}\xictools\xic\examples\memchip_example"
 
-Source: "..\..\root\usr\local\xictools\xic\help\*"; DestDir: "{app}\xictools\xic\help"
-Source: "..\..\root\usr\local\xictools\xic\help\screenshots\*"; DestDir: "{app}\xictools\xic\help\screenshots"
+Source: "..\root\usr\local\xictools\xic\help\*"; DestDir: "{app}\xictools\xic\help"
+Source: "..\root\usr\local\xictools\xic\help\screenshots\*"; DestDir: "{app}\xictools\xic\help\screenshots"
 
 Source: "{app}\xictools\xic\startup\device.lib"; DestDir: "{app}\xictools\xic\startup\old_config"; Flags: external skipifsourcedoesntexist uninsneveruninstall
 Source: "{app}\xictools\xic\startup\model.lib"; DestDir: "{app}\xictools\xic\startup\old_config"; Flags: external skipifsourcedoesntexist uninsneveruninstall
@@ -47,23 +47,23 @@ Source: "{app}\xictools\xic\startup\xic_tech.hyp"; DestDir: "{app}\xictools\xic\
 Source: "{app}\xictools\xic\startup\xic_tech.scmos"; DestDir: "{app}\xictools\xic\startup\old_config"; Flags: external skipifsourcedoesntexist uninsneveruninstall
 Source: "{app}\xictools\xic\startup\xic_tech"; DestDir: "{app}\xictools\xic\startup\old_config"; Flags: external skipifsourcedoesntexist uninsneveruninstall
 
-Source: "..\..\root\usr\local\xictools\xic\startup\*"; DestDir: "{app}\xictools\xic\startup"
-Source: "..\..\root\usr\local\xictools\xic\startup\xic_tech.scmos"; DestDir: "{app}\xictools\xic\startup"; DestName: "xic_tech"
+Source: "..\root\usr\local\xictools\xic\startup\*"; DestDir: "{app}\xictools\xic\startup"
+Source: "..\root\usr\local\xictools\xic\startup\xic_tech.scmos"; DestDir: "{app}\xictools\xic\startup"; DestName: "xic_tech"
 
-Source: "..\..\root\usr\local\xictools\xic\scripts\*"; DestDir: "{app}\xictools\xic\scripts"
-Source: "..\..\root\usr\local\xictools\xic\scrkit\*"; DestDir: "{app}\xictools\xic\scrkit"
+Source: "..\root\usr\local\xictools\xic\scripts\*"; DestDir: "{app}\xictools\xic\scripts"
+Source: "..\root\usr\local\xictools\xic\scrkit\*"; DestDir: "{app}\xictools\xic\scrkit"
 
-Source: "..\..\root\usr\local\xictools\xic\docs\xic*"; DestDir: "{app}\xictools\xic\docs"; Flags: uninsneveruninstall
-Source: "..\..\root\usr\local\xictools\xic\docs\README"; DestDir: "{app}\xictools\xic\docs"
-Source: "..\..\root\usr\local\xictools\xic\docs\MSWINFO.TXT"; DestDir: "{app}\xictools\xic\docs"
+Source: "..\root\usr\local\xictools\xic\docs\xic*"; DestDir: "{app}\xictools\xic\docs"; Flags: uninsneveruninstall
+Source: "..\root\usr\local\xictools\xic\docs\README"; DestDir: "{app}\xictools\xic\docs"
+Source: "..\root\usr\local\xictools\xic\docs\MSWINFO.TXT"; DestDir: "{app}\xictools\xic\docs"
 
 [Icons]
 
-Name: "{group}\Xic-4"; Filename: "{app}\xictools\bin\xic.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\bin\xic.exe"
+Name: "{group}\xic"; Filename: "{app}\xictools\bin\xic.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\bin\xic.exe"
 
 [code]
 
-#include "..\..\..\..\xt_base\packages\files\inno_uninstall"
+#include "..\..\..\xt_base\packages\files\inno_uninstall"
 
 function InitializeSetup(): Boolean;
 begin

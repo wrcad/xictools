@@ -126,39 +126,39 @@ names=""
 for a in $list; do
     case $a in
     ad|adm|adms)
-        pkgs="$pkgs adms_wr-$osname"
+        pkgs="$pkgs xictools-adms-$osname"
         names="$names adms"
         ;;
     fc|fastc|fastca|fastcap)
-        pkgs="$pkgs fastcap_wr-$osname"
+        pkgs="$pkgs xictools-fastcap-$osname"
         names="$names fastcap"
         ;;
     fh|fasth|fasthe|fasthen|fasthenr|fasthenry)
-        pkgs="$pkgs fasthenry_wr-$osname"
+        pkgs="$pkgs xictools-fasthenry-$osname"
         names="$names fasthenry"
         ;;
     mo|moz|mozy)
-        pkgs="$pkgs mozy-$osname"
+        pkgs="$pkgs xictools-mozy-$osname"
         names="$names mozy"
         ;;
     mr|mro|mrou|mrout|mroute|mrouter)
-        pkgs="$pkgs mrouter-$osname"
+        pkgs="$pkgs xictools-mrouter-$osname"
         names="$names mrouter"
         ;;
     v|vl)
-        pkgs="$pkgs vl-$osname"
+        pkgs="$pkgs xictools-vl-$osname"
         names="$names vl"
         ;;
     w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
-        pkgs="$pkgs wrspice-$osname"
+        pkgs="$pkgs xictools-wrspice-$osname"
         names="$names wrspice"
         ;;
     xi|xic)
-        pkgs="$pkgs xic-$osname"
+        pkgs="$pkgs xictools-xic-$osname"
         names="$names xic"
         ;;
     xt|xtl|xtls|xtlse|xtlser|xtlserv)
-        pkgs="$pkgs xtlserv-$osname"
+        pkgs="$pkgs xictools-xtlserv-$osname"
         names="$names license"
         ;;
     esac
