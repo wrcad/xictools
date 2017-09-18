@@ -51,9 +51,9 @@ package::
 	cd $$osname; $(MAKE) package;
 
 clean::
-	-@cd osxpkg; $(MAKE) clean
-	-@cd rpm; $(MAKE) clean
-	-@cd Win32; $(MAKE) clean
+	-@if [ -d osxpkg ]; then cd osxpkg; $(MAKE) clean; fi
+	-@if [ -d rpm ]; then cd rpm; $(MAKE) clean; fi
+	-@if [ -d Win32 ]; then cd Win32; $(MAKE) clean; fi
 	-@rm -rf root
 
 distclean:: clean
