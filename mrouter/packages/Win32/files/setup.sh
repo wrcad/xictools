@@ -3,6 +3,7 @@
 inno="/inno-5.5.1"
 
 appname=xictools_mrouter
+appdir=mrouter
 version=`../../version`
 top=../root/usr/local
 base=../../../xt_base
@@ -18,7 +19,7 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-lib=$top/xictools/$appname
+lib=$top/xictools/$appdir
 
 $utod $lib/examples/*
 $utod $lib/examples/osu35/*.lef

@@ -3,6 +3,7 @@
 inno="/inno-5.5.1"
 
 appname=xictools_xtlserv
+appdir=license
 version=`../../version`
 top=../root/usr/local
 base=../../../xt_base
@@ -18,7 +19,7 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-startup=$top/xictools/license
+startup=$top/xictools/$appdir
 $utod $startup/README
 
 sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss

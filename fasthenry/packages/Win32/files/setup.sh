@@ -3,6 +3,7 @@
 inno="/inno-5.5.1"
 
 appname=xictools_fasthenry
+appdir=fasthenry
 version=`../../version`
 top=../root/usr/local
 base=../../../xt_base

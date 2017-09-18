@@ -3,6 +3,7 @@
 inno="/inno-5.5.1"
 
 appname=xictools_adms
+appdir=adms
 version=`../../version`
 top=../root/usr/local
 base=../../../xt_base

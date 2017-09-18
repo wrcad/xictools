@@ -3,6 +3,7 @@
 inno="/inno-5.5.1"
 
 appname=xictools_mozy
+appdir=mozy
 version=`../../version`
 top=../root/usr/local
 base=../../../xt_base
@@ -31,10 +32,10 @@ cp $base/packages/files/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
 
-help=$top/xictools/mozy/help
+help=$top/xictools/$appdir/help
 $utod $help/*.hlp
 
-startup=$top/xictools/mozy/startup
+startup=$top/xictools/$appdir/startup
 $utod $startup/README
 
 sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
