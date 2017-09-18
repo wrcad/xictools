@@ -505,13 +505,12 @@ $(destn)/cadence-oasis::
 
 devkit_examples:
 	(cd devlib/adms/examples; \
-	    $(MAKE) realclean; \
 	    for a in */Makefile; do \
 	        (cd `dirname $$a`; $(MAKE) \
 	            ADMST=../../admst \
 	            ADMSXML=../../../../../adms/adms_wr/admsXml/admsXml \
 	            DLL_LOC=../../../../bin \
-	            WRSPICE=../../../../bin/wrspice); \
+	            WRSPICE=../../../../bin/wrspice realclean module); \
 	    done \
         )
 
@@ -522,7 +521,7 @@ package::
 	mkdir packages/root
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_wrspice_pkg
 	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_devkit
-	if [ $(OSNAME) = LinuxRHEL6_64 -o $(OSNAME) = LinuxRHEL7_64 ]; then \
+	if [ -n "$(TKTOOLS)" ]; then \
 	    $(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_cadence; \
 	fi
 	cd packages; $(MAKE) package

@@ -858,7 +858,8 @@ main(int argc, char **argv)
         // and exit.
 
         if (lstring::eq(argv[i], "--v")) {
-            printf("%s %s\n", Global.Version(), Global.OSname());
+            printf("%s %s %s\n", Global.Version(), Global.OSname(),
+                Global.Arch());
             return (0);
         }
         if (lstring::eq(argv[i], "--vv")) {

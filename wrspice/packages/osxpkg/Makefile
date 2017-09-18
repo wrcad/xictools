@@ -1,4 +1,4 @@
-BASE = ../../../../xt_base
+BASE = ../../../xt_base
 
 APPNAME = xictools_wrspice
 SUBDIRS = wrspice.current

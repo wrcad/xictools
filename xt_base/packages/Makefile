@@ -18,46 +18,46 @@ package::
 	@if [ ! -d root ]; then mkdir root; fi
 	@osname=$(OSNAME); \
 	case $$osname in \
-	Darwin*) if [ ! -h $$osname ]; then ln -s darwin $$osname; fi ;; \
+	Darwin*) \
+	    if [ -d $$osname -o -f $$osname ]; then \
+	        echo "Error: $$osname exists and is not a symbolic link"; \
+	        exit; \
+	    fi; \
+            if [ ! -L $$osname ]; then ln -s osxpkg $$osname; fi ;; \
 	Linux*) \
-	    if [ ! -h $$osname ]; then \
+	    if [ -d $$osname -o -f $$osname ]; then \
+	        echo "Error: $$osname exists and is not a symbolic link"; \
+	        exit; \
+	    fi; \
+	    if [ ! -L $$osname ]; then \
 	        dst=`$(MAKE) testrpm`; \
 	        if [ -n "$$dst" ]; then \
 	            ln -s rpm $$osname; \
 	        else \
-	            echo "Packager for $$osname unavailable"; \
+	            echo "No current packager support for $$osname"; \
 	            exit; \
 	        fi; \
 	    fi ;; \
+	Win32) ;; \
+	*) \
+	    if [ -z "$$osname" ]; then \
+	        echo "Error: Can't determine OSNAME"; \
+	    else \
+	        echo "Unsupported OSNAME $$osname"; \
+	    fi; \
+	    exit ;; \
 	esac
 	@osname=$(OSNAME); \
 	cd $$osname; $(MAKE) package;
 
 clean::
-	-@for a in darwin/*; do \
-	    if [ -d $$a -a -f $$a/Makefile ]; then \
-	        (cd $$a; $(MAKE) clean) \
-	    fi \
-	done
-	-@for a in rpm/*; do \
-	    if [ -d $$a -a -f $$a/Makefile ]; then \
-	        (cd $$a; $(MAKE) clean) \
-	    fi \
-	done
-	-@for a in win32/*; do \
-	    if [ -d $$a -a -f $$a/Makefile ]; then \
-	        (cd $$a; $(MAKE) clean) \
-	    fi \
-	done
+	-@cd osxpkg; $(MAKE) clean
+	-@cd rpm; $(MAKE) clean
+	-@cd Win32; $(MAKE) clean
 	-@rm -rf root
 
 distclean:: clean
-	-@for a in Darwin* Linux*; do \
-	    case $$a in \
-	    Darwin*)  rm -f $$a ;; \
-	    Linux*)   rm -f $$a ;; \
-	    esac \
-	done
+	-@rm -f Darwin* Linux*
 
 testrpm::
 	@if [ -f /etc/redhat-release ]; then \

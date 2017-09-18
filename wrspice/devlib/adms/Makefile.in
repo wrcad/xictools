@@ -122,12 +122,15 @@ WRSPICE = wrspice
 #  isn't like mine, likely for non-Linux.
 #######################################################################
 
-DEVLIB_VERSION = $(shell $(WRSPICE) --v | sed -e "s/ .*//")
-OSNAME = $(shell $(WRSPICE) --v | sed -e "s/^.* //")
+VSTR = $(shell $(WRSPICE) --v)
+DEVLIB_VERSION = $(word 1, $(VSTR))
+OSNAME = $(word 2, $(VSTR))
+ARCH = $(word 3, $(VSTR))
 
 # This Makefile originated from this distribution:
 #DEVLIB_VERSION = @DEVLIB_VERSION@
 #OSNAME = @OSNAME@
+#ARCH = @ARCH@
 #CXX = @CXX@
 #CC = @CC@
 #LINKCC = @LINKCC@
@@ -156,9 +159,9 @@ PIC_OPT =
 SOEXT = dll
 DEVWINDLL = -L$(DLL_LOC) -lwrspice
 
-else ifeq ($(OSNAME),Darwin64)
+else ifeq ($(OSNAME:Darwin%=Darwin),Darwin)
 
-# Apple OS X Xcode 7 (supports 10.11 El Capitan, 10.10 Yosemite)
+# Apple OS X
 CXX = g++
 CC = gcc
 LINKCC = $(CXX)
@@ -169,20 +172,8 @@ FILTER =
 PIC_OPT = 
 SOEXT = dylib
 
-else ifeq ($(OSNAME),LinuxRHEL5)
-
-# Red Hat 5 i686 and similar
-CXX = g++ -m32 -march=i686
-CC = gcc -m32 -march=i686
-LINKCC = $(CXX)
-CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
-LSHFLAG = -shared
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
-FILTER =
-PIC_OPT = -fPIC
-SOEXT = so
-
-else
+else ifeq ($(OSNAME:Linux%=Linux),Linux)
+ifeq ($(ARCH),x86_64)
 
 # Generic Linux, covers all 64-bit builds.
 CXX = g++
@@ -195,6 +186,20 @@ FILTER =
 PIC_OPT = -fPIC
 SOEXT = so
 
+else
+
+# Generic Linux, covers all 32-bit builds.
+CXX = g++ -m32 -march=$(ARCH)
+CC = gcc -m32 -march=$(ARCH)
+LINKCC = $(CXX)
+CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
+LSHFLAG = -shared
+DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
+FILTER =
+PIC_OPT = -fPIC
+SOEXT = so
+
+endif
 endif
 
 TARGET = $(MODULE).$(SOEXT)
@@ -219,9 +224,10 @@ COBJS = $(CCFILES:.cc=.o) $(CFILES:.c=.o)
 INCLUDE = -I. -I$(ADMST:admst=include)
 DEFS = -D__WRMODULE__=$(MODULE) -D__WRVERSION__=$(DEVLIB_VERSION)
 
-dummy:
+module:
 	@echo
-	@echo "====> Building for $(OSNAME) $(DEVLIB_VERSION)"
+	@echo \
+ "====> Building $(TARGET) for WRspice-$(DEVLIB_VERSION) $(OSNAME) $(ARCH)"
 	@echo
 	$(MAKE) $(TARGET)
 
