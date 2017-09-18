@@ -522,14 +522,25 @@ PSINCL=" \\
 -I\$(TKTOOLS)/dfII/pvt/include             \\
 -I\$(TKTOOLS)/virtuos/include              \\
 -I\$(TKTOOLS)/dfII/src/artist/psf/awfPSFWriter -DWITH_PSFILE"
+if test $ARCH = x86_64 -o $ARCH = amd64; then
 PSLIBS=" \\
 \$(TKTOOLS)/dfII/pvt/lib/64bit/awflib.a    \\
 \$(TKTOOLS)/lib/64bit/drlLog.a             \\
 \$(TKTOOLS)/lib/64bit/psl.a                \\
 \$(TKTOOLS)/virtuos/lib/64bit/virtuos.a    \\
 \$(TKTOOLS)/lib/64bit/libfastt.a           \\
-\$(TKTOOLS)/lib//64bit/libcls.a            \\
+\$(TKTOOLS)/lib/64bit/libcls.a             \\
 \$(TKTOOLS)/lib/64bit/libcdsCommon.a -lelf"
+else
+PSLIBS=" \\
+\$(TKTOOLS)/dfII/pvt/lib/awflib.a    \\
+\$(TKTOOLS)/lib/drlLog.a             \\
+\$(TKTOOLS)/lib/psl.a                \\
+\$(TKTOOLS)/virtuos/lib/virtuos.a    \\
+\$(TKTOOLS)/lib/libfastt.a           \\
+\$(TKTOOLS)/lib/libcls.a             \\
+\$(TKTOOLS)/lib/libcdsCommon.a -lelf"
+fi
 fi
 AC_SUBST(TKTOOLS)
 AC_SUBST(PSLIBS)

@@ -5,6 +5,7 @@ VERSION=$2
 SRCDIR=$3
 
 files=../util/wrspice_files
+adms_examples=../util/adms_examples
 top=wrspice.current
 
 with_devkit=no
@@ -13,7 +14,7 @@ if [ -d ../root/usr/local/xictools/$top/devkit ]; then
 fi
 
 with_cadence=no
-if [ $OSNAME = LinuxRHEL6_64 -o $OSNAME = LinuxRHEL7_64 ]; then
+if [ -d ../root/usr/local/xictools/$top/cadence-oasis ]; then
     with_cadence=yes
 fi
 
@@ -133,7 +134,7 @@ if [ $with_devkit = yes ]; then
       mfile=`$files modname $a`.`$files soext Linux`
       echo "%attr(0755, root, root) /usr/local/xictools/$top/devkit/examples/$a/module_dist/$mfile"
   done
-  efiles=`cat ../../util/adms_examples`
+  efiles=`cat $adms_examples`
   for a in $efiles; do
       echo "%attr(0644, root, root) /usr/local/xictools/$top/devkit/$a"
   done
