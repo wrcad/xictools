@@ -1,8 +1,9 @@
 #! /bin/sh
 
-inno="/inno-5.5.1"
+inno="/inno-5.5.9"
 
 appname=xictools_vl
+appdir=vl
 version=`../../version`
 top=../root/usr/local
 base=../../../xt_base
@@ -18,7 +19,7 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-lib=$top/xictools/$appname
+lib=$top/xictools/$appdir
 $utod $lib/README
 $utod $lib/ChangeLog
 $utod $lib/verilog-manual.html

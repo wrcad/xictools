@@ -1,0 +1,132 @@
+
+[Setup]
+
+AppName=wrspice
+AppVerName=wrspice-VERSION
+AppVersion=VERSION
+AppPublisher=Whiteley Research Inc.
+AppPublisherURL=http://wrcad.com
+AppMutex=wrspiceMutex
+
+OutputBaseFilename=xictools_wrspice-Win32-VERSION-i386
+
+Compression=bzip
+
+DefaultDirName=c:\usr\local
+DefaultGroupName=XicTools
+DirExistsWarning=no
+
+PrivilegesRequired=admin
+
+UninstallFilesDir={app}\xictools\wrspice.current\uninstall
+UninstallDisplayIcon={app}\xictools\wrspice.current\bin\wrspice.exe
+
+[Files]
+
+Source: "..\root\usr\local\xictools\wrspice.current\bin\preinstall.bat"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\postinstall.bat"; DestDir: "{app}\xictools\wrspice.current\bin"; BeforeInstall: DoBeforeInstall
+Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.dll"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.bat"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspiced.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\multidec.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\proc2mod.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\printtoraw.exe"; DestDir: "{app}\xictools\wrspice.current\bin"; AfterInstall: DoAfterInstall
+
+Source: "..\root\usr\local\xictools\wrspice.current\examples\*"; DestDir: "{app}\xictools\wrspice.current\examples"
+
+Source: "..\root\usr\local\xictools\wrspice.current\help\*"; DestDir: "{app}\xictools\wrspice.current\help"
+Source: "..\root\usr\local\xictools\wrspice.current\help\screenshots\*"; DestDir: "{app}\xictools\wrspice.current\help\screenshots"
+
+Source: "..\root\usr\local\xictools\wrspice.current\startup\*"; DestDir: "{app}\xictools\wrspice.current\startup"
+Source: "..\root\usr\local\xictools\wrspice.current\startup\devices\*"; DestDir: "{app}\xictools\wrspice.current\startup\devices"
+
+Source: "..\root\usr\local\xictools\wrspice.current\scripts\*"; DestDir: "{app}\xictools\wrspice.current\scripts"
+
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\*"; DestDir: "{app}\xictools\wrspice.current\devkit"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\admst\*"; DestDir: "{app}\xictools\wrspice.current\devkit\admst"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6.1\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6.1"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6.1\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6.1\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6.1\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6.1\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsimcmg\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsimcmg"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsimcmg\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsimcmg\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsimcmg\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsimcmg\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsoi44\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsoi44"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsoi44\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsoi44\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsoi44\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsoi44\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsoi45\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsoi45"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsoi45\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsoi45\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsoi45\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsoi45\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\cap\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\cap"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\cap\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\cap\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\cap\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\cap\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\ekv\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\ekv"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\ekv\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\ekv\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\ekv\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\ekv\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\hicum0\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\hicum0"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\hicum0\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\hicum0\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\hicum0\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\hicum0\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\hicum2\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\hicum2"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\hicum2\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\hicum2\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\hicum2\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\hicum2\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\ind\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\ind"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\ind\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\ind\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\ind\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\ind\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\jj\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\jj"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\jj\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\jj\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\jj\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\jj\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\mextram\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\mextram"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\mextram\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\mextram\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\mextram\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\mextram\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\psp102\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\psp102"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\psp102\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\psp102\tests"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\psp102\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\psp102\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\psp103\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\psp103"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\psp103\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\psp103\module_dist"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\include\*"; DestDir: "{app}\xictools\wrspice.current\devkit\include"
+
+Source: "..\root\usr\local\xictools\wrspice.current\docs\wrs*"; DestDir: "{app}\xictools\wrspice.current\docs";
+Source: "..\root\usr\local\xictools\wrspice.current\docs\README"; DestDir: "{app}\xictools\wrspice.current\docs"
+Source: "..\root\usr\local\xictools\wrspice.current\docs\MSWINFO.TXT"; DestDir: "{app}\xictools\wrspice.current\docs"
+
+[Icons]
+
+Name: "{group}\wrspice"; Filename: "{app}\xictools\wrspice.current\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\wrspice.current\bin\wrspice.exe"
+
+[code]
+
+#include "..\..\..\xt_base\packages\files\inno_uninstall"
+
+function InitializeSetup(): Boolean;
+begin
+  Result := True;
+end;
+
+procedure DoBeforeInstall();
+var
+    resultCode:  Integer;
+begin
+    Exec(ExpandConstant('{app}\xictools\wrspice.current\bin\preinstall.bat'),
+        '', ExpandConstant('{app}\xictools'), SW_HIDE, ewWaitUntilTerminated,
+        resultCode);
+end;
+
+procedure DoAfterInstall();
+var
+    resultCode:  Integer;
+begin
+    Exec(ExpandConstant('{app}\xictools\wrspice.current\bin\postinstall.bat'),
+        '', ExpandConstant('{app}\xictools'), SW_HIDE, ewWaitUntilTerminated,
+        resultCode);
+end;
+
+function InitializeUninstall(): Boolean;
+begin
+    DoBeforeInstall();
+    Result := True;
+end;
+

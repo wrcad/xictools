@@ -306,9 +306,9 @@ if [ x$xx != x ]; then
             echo File not found:  $fname
             exit 1
         fi
-        echo $fname
+        echo ./$fname
         if [ $nodo != yes ]; then
-            $fname
+            ./$fname
         fi
     done
     exit 0

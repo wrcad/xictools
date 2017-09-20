@@ -5,23 +5,23 @@ win_get_prefix ()
     # Set the magic name for the application, created by inno installer.
     case $1 in
     adms)
-        appname=adms_wr_is1 ;;
+        appname=adms_is1 ;;
     fastcap)
-        appname=fastcap_wr_is1 ;;
+        appname=fastcap_is1 ;;
     fasthenry)
-        appname=fasthenry_wr_is1 ;;
+        appname=fasthenry_is1 ;;
     mozy)
         appname=mozy_is1 ;;
     mrouter)
         appname=mrouter_is1 ;;
     xtlserv|license)
-        appname=Xtlserv-4_is1 ;;
+        appname=xtlserv_is1 ;;
     vl)
         appname=vl_is1 ;;
     wrspice)
-        appname=WRspice-4_is1 ;;
+        appname=wrspice_is1 ;;
     xic)
-        appname=Xic-4_is1 ;;
+        appname=xic_is1 ;;
     *)
         echo Unknown program name $1
         exit 1
@@ -32,7 +32,10 @@ win_get_prefix ()
     # If it works, it will be in the fifth token in a form like
     # c:\usr\local\
 
-    str=$(reg query HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$appname /reg:32 /v InstallLocation 2>/dev/null)
+# inno-5.5.1
+#    str=$(reg query HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$appname /reg:32 /v InstallLocation 2>/dev/null)
+# inno-5.5.9
+    str=$(reg query HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$appname /reg:32 /v InstallLocation 2>/dev/null)
     set -- $str
     prf=$5
     if [ -z "$prf" ]; then
@@ -188,9 +191,16 @@ if [ -n "$pkgs" ]; then
             if [ -n "$prefix" ]; then
                 udir=$prefix/xictools/$a/uninstall
                 if [ -d $udir ]; then
-                    echo $udir/unins001.exe
-                    if [ $dryrun = no ]; then
-                        $udir/unins001.exe
+                    lst=`ls $udir | grep 'unins[0-9][0-9][0-9]\\.exe' | sort -r`
+                    set -- $lst
+                    ufile=$1
+                    if [ -n "$ufile" ]; then
+                        echo $udir/$ufile
+                        if [ $dryrun = no ]; then
+                            $udir/$ufile
+                        fi
+                    else
+                        echo "$a: uninstall file not found."
                     fi
                 else
                     echo "$a: uninstall data not found."

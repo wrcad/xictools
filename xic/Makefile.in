@@ -305,11 +305,7 @@ distclean: eclean
 ####### Install programs into system location #########################
 
 INSTALL_PREFIX ?= $(prefix)
-ifdef EXESUFFIX
-destn = $(INSTALL_PREFIX)/$(TOOLROOT)/xic
-else
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/xic.current
-endif
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
 install_xic: install_xic_pkg install_links
@@ -347,16 +343,20 @@ install_xic_clean::
 	-@rm -rf $(destn)
 
 $(destn)/bin::
-	@$(BASE)/util/mkdirpth $(destn)/bin
-	$(INSTALL_BIN) bin/xic$(EXESUFFIX) $(destn)/bin;
-	$(INSTALL_BIN) bin/wrencode$(EXESUFFIX) $(destn)/bin;
-	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $(destn)/bin;
-	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $(destn)/bin;
+	@$(BASE)/util/mkdirpth $@
+	$(INSTALL_BIN) bin/xic$(EXESUFFIX) $@
+	$(INSTALL_BIN) bin/wrencode$(EXESUFFIX) $@
+	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $@
+	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $@
 	@if [ $(DLL_XIC_PROG) = xic ]; then \
-	    $(INSTALL_BIN) bin/xic.dll $(destn)/bin; \
+	    $(INSTALL_BIN) bin/xic.dll $@; \
 	fi
 	@if [ -z "$(EXESUFFIX)" ]; then \
-	    $(INSTALL_SCRIPT) bin/xic.sh $(destn)/bin; \
+	    $(INSTALL_SCRIPT) bin/xic.sh $@; \
+	else \
+	    cp $(BASE)/util/program.bat xic.bat; \
+            $(INSTALL_SCRIPT) xic.bat $@; \
+	    rm -f xic.bat; \
 	fi
 	@$(BASE)/util/mkdirpth $(toolbin)
 

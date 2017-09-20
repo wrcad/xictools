@@ -1,8 +1,9 @@
 #! /bin/sh
 
-inno="/inno-5.5.1"
+inno="/inno-5.5.9"
 
 appname=xictools_wrspice
+appdir=wrspice.current
 version=`../../version`
 top=../root/usr/local
 base=../../../xt_base
@@ -24,38 +25,35 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-# Move binaries to the common bin
-if [ ! -d $top/xictools/bin ]; then
-    mkdir $top/xictools/bin
-fi
+chmod 755 $top/xictools/$appdir/bin/wrspice.bat
+$utod $top/xictools/$appdir/bin/wrspice.bat
+cp -f files/postinstall.bat $top/xictools/$appdir/bin
+chmod 755 $top/xictools/$appdir/bin/postinstall.bat
+$utod $top/xictools/$appdir/bin/postinstall.bat
+cp -f files/preinstall.bat $top/xictools/$appdir/bin
+chmod 755 $top/xictools/$appdir/bin/preinstall.bat
+$utod $top/xictools/$appdir/bin/preinstall.bat
 
-program=wrspice
-cp $basefiles/program.bat $top/xictools/bin/$program.bat
-chmod 755 $top/xictools/bin/$program.bat
-$utod $top/xictools/bin/$program.bat
-mv $top/xictools/$appname/bin/* $top/xictools/bin
-rmdir $top/xictools/$appname/bin
-
-examples=$top/xictools/$appname/examples
+examples=$top/xictools/$appdir/examples
 $utod $examples/*
 
-help=$top/xictools/$appname/help
+help=$top/xictools/$appdir/help
 $utod $help/*.hlp
 
-startup=$top/xictools/$appname/startup
+startup=$top/xictools/$appdir/startup
 $utod $startup/*
 $utod $startup/devices/README
 
-scripts=$top/xictools/$appname/scripts
+scripts=$top/xictools/$appdir/scripts
 $utod $scripts/*
 
-docs=$top/xictools/$appname/docs
+docs=$top/xictools/$appdir/docs
 cp $basefiles/MSWINFO.TXT $docs
 $utod $docs/$relnote
 $utod $docs/README
 $utod $docs/MSWINFO.TXT
 
-devkit=$top/xictools/$appname/devkit
+devkit=$top/xictools/$appdir/devkit
 if [ -d $devkit ]; then
     $utod $devkit/README
     $utod $devkit/README.adms
@@ -68,7 +66,7 @@ if [ -d $devkit ]; then
     done
     sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
 else
-    sed -e s/VERSION/$version/ < files/wrspice_nodk.iss.in > $appname.iss
+    sed -e s/VERSION/$version/ < files/${appname}_nodk.iss.in > $appname.iss
 fi
 $utod $appname.iss
 
