@@ -86,7 +86,7 @@ for a in $list; do
 done
 
 if [ -n "$pkgs" ]; then
-    if [ ! -e ../util/wr_install ]; then
+    if [ ! -x ../util/wr_install ]; then
         echo:  "Error ../util/wr_install not found, exiting."
         exit 1
     fi

@@ -337,11 +337,7 @@ wdemo wrspice_ipc_demo:
 	@echo
 
 INSTALL_PREFIX ?= $(prefix)
-ifdef EXESUFFIX
-destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
-else
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current
-endif
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
 install_wrspice: install_wrspice_pkg install_links
@@ -404,6 +400,11 @@ $(destn)/bin::
 	done
 	@if [ $(DLL_SPICE_PROG) = wrspice ]; then \
 	    $(INSTALL_BIN) bin/wrspice.dll $@; \
+	fi
+	@if [ -n "$(EXESUFFIX)" ]; then \
+	    cp $(BASE)/util/program.bat wrspice.bat; \
+            $(INSTALL_SCRIPT) wrspice.bat $@; \
+	    rm -f wrspice.bat; \
 	fi
 
 $(destn)/icons::

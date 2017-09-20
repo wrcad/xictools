@@ -1,9 +1,9 @@
 #! /bin/sh
 
-inno="/inno-5.5.1"
+inno="/inno-5.5.9"
 
 appname=xictools_wrspice
-appdir=wrspice
+appdir=wrspice.current
 version=`../../version`
 top=../root/usr/local
 base=../../../xt_base
@@ -25,17 +25,14 @@ if [ ! -f $utod ]; then
     cd $cwd
 fi
 
-# Move binaries to the common bin
-if [ ! -d $top/xictools/bin ]; then
-    mkdir $top/xictools/bin
-fi
-
-program=wrspice
-cp $basefiles/program.bat $top/xictools/bin/$program.bat
-chmod 755 $top/xictools/bin/$program.bat
-$utod $top/xictools/bin/$program.bat
-mv $top/xictools/$appdir/bin/* $top/xictools/bin
-rmdir $top/xictools/$appdir/bin
+chmod 755 $top/xictools/$appdir/bin/wrspice.bat
+$utod $top/xictools/$appdir/bin/wrspice.bat
+cp -f files/postinstall.bat $top/xictools/$appdir/bin
+chmod 755 $top/xictools/$appdir/bin/postinstall.bat
+$utod $top/xictools/$appdir/bin/postinstall.bat
+cp -f files/preinstall.bat $top/xictools/$appdir/bin
+chmod 755 $top/xictools/$appdir/bin/preinstall.bat
+$utod $top/xictools/$appdir/bin/preinstall.bat
 
 examples=$top/xictools/$appdir/examples
 $utod $examples/*
@@ -69,7 +66,7 @@ if [ -d $devkit ]; then
     done
     sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
 else
-    sed -e s/VERSION/$version/ < files/wrspice_nodk.iss.in > $appname.iss
+    sed -e s/VERSION/$version/ < files/${appname}_nodk.iss.in > $appname.iss
 fi
 $utod $appname.iss
 

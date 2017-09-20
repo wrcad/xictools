@@ -18,42 +18,38 @@ DirExistsWarning=no
 
 PrivilegesRequired=admin
 
-UninstallFilesDir={app}\xictools\wrspice\uninstall
-UninstallDisplayIcon={app}\xictools\bin\wrspice.exe
+UninstallFilesDir={app}\xictools\wrspice.current\uninstall
+UninstallDisplayIcon={app}\xictools\wrspice.current\bin\wrspice.exe
 
 [Files]
 
-Source: "{app}\xictools\bin\wrspice.exe"; DestDir: "{app}\xictools\bin\wrspice_old"; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: "{app}\xictools\bin\wrspice.dll"; DestDir: "{app}\xictools\bin\wrspice_old"; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: "..\root\usr\local\xictools\bin\wrspice.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\wrspice.dll"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\wrspice.bat"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\wrspiced.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\multidec.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\proc2mod.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
-Source: "..\root\usr\local\xictools\bin\printtoraw.exe"; DestDir: "{app}\xictools\bin"; Flags: ignoreversion
+Source: "..\root\usr\local\xictools\wrspice.current\bin\preinstall.bat"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\postinstall.bat"; DestDir: "{app}\xictools\wrspice.current\bin"; BeforeInstall: DoBeforeInstall
+Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.dll"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.bat"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspiced.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\multidec.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\proc2mod.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\printtoraw.exe"; DestDir: "{app}\xictools\wrspice.current\bin"; AfterInstall: DoAfterInstall
 
-Source: "..\root\usr\local\xictools\wrspice\examples\*"; DestDir: "{app}\xictools\wrspice\examples"
+Source: "..\root\usr\local\xictools\wrspice.current\examples\*"; DestDir: "{app}\xictools\wrspice.current\examples"
 
-Source: "..\root\usr\local\xictools\wrspice\help\*"; DestDir: "{app}\xictools\wrspice\help"
-Source: "..\root\usr\local\xictools\wrspice\help\screenshots\*"; DestDir: "{app}\xictools\wrspice\help\screenshots"
+Source: "..\root\usr\local\xictools\wrspice.current\help\*"; DestDir: "{app}\xictools\wrspice.current\help"
+Source: "..\root\usr\local\xictools\wrspice.current\help\screenshots\*"; DestDir: "{app}\xictools\wrspice.current\help\screenshots"
 
-Source: "{app}\xictools\wrspice\startup\news"; DestDir: "{app}\xictools\wrspice\startup\old_config"; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: "{app}\xictools\wrspice\startup\wrspice_mesg"; DestDir: "{app}\xictools\wrspice\startup\old_config"; Flags: external skipifsourcedoesntexist uninsneveruninstall
-Source: "{app}\xictools\wrspice\startup\wrspiceinit"; DestDir: "{app}\xictools\wrspice\startup\old_config"; Flags: external skipifsourcedoesntexist uninsneveruninstall
+Source: "..\root\usr\local\xictools\wrspice.current\startup\*"; DestDir: "{app}\xictools\wrspice.current\startup"
+Source: "..\root\usr\local\xictools\wrspice.current\startup\devices\*"; DestDir: "{app}\xictools\wrspice.current\startup\devices"
 
-Source: "..\root\usr\local\xictools\wrspice\startup\*"; DestDir: "{app}\xictools\wrspice\startup"
-Source: "..\root\usr\local\xictools\wrspice\startup\devices\*"; DestDir: "{app}\xictools\wrspice\startup\devices"
+Source: "..\root\usr\local\xictools\wrspice.current\scripts\*"; DestDir: "{app}\xictools\wrspice.current\scripts"
 
-Source: "..\root\usr\local\xictools\wrspice\scripts\*"; DestDir: "{app}\xictools\wrspice\scripts"
-
-Source: "..\root\usr\local\xictools\wrspice\docs\wrs*"; DestDir: "{app}\xictools\wrspice\docs"; Flags: uninsneveruninstall
-Source: "..\root\usr\local\xictools\wrspice\docs\README"; DestDir: "{app}\xictools\wrspice\docs"
-Source: "..\root\usr\local\xictools\wrspice\docs\MSWINFO.TXT"; DestDir: "{app}\xictools\wrspice\docs"
+Source: "..\root\usr\local\xictools\wrspice.current\docs\wrs*"; DestDir: "{app}\xictools\wrspice.current\docs";
+Source: "..\root\usr\local\xictools\wrspice.current\docs\README"; DestDir: "{app}\xictools\wrspice.current\docs"
+Source: "..\root\usr\local\xictools\wrspice.current\docs\MSWINFO.TXT"; DestDir: "{app}\xictools\wrspice.current\docs"
 
 [Icons]
 
-Name: "{group}\wrspice"; Filename: "{app}\xictools\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\bin\wrspice.exe"
+Name: "{group}\wrspice"; Filename: "{app}\xictools\wrspice.current\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\wrspice.current\bin\wrspice.exe"
 
 [code]
 
@@ -62,5 +58,29 @@ Name: "{group}\wrspice"; Filename: "{app}\xictools\bin\wrspice.bat"; WorkingDir:
 function InitializeSetup(): Boolean;
 begin
   Result := True;
+end;
+
+procedure DoBeforeInstall();
+var
+    resultCode:  Integer;
+begin
+    Exec(ExpandConstant('{app}\xictools\wrspice.current\bin\preinstall.bat'),
+        '', ExpandConstant('{app}\xictools'), SW_HIDE, ewWaitUntilTerminated,
+        resultCode);
+end;
+
+procedure DoAfterInstall();
+var
+    resultCode:  Integer;
+begin
+    Exec(ExpandConstant('{app}\xictools\wrspice.current\bin\postinstall.bat'),
+        '', ExpandConstant('{app}\xictools'), SW_HIDE, ewWaitUntilTerminated,
+        resultCode);
+end;
+
+function InitializeUninstall(): Boolean;
+begin
+    DoBeforeInstall();
+    Result := True;
 end;
 

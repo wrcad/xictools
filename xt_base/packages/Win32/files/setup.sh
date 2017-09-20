@@ -1,6 +1,6 @@
 #! /bin/sh
 
-inno="/inno-5.5.1"
+inno="/inno-5.5.9"
 
 appname="gtk2-bundle"
 version=$1

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-inno="/inno-5.5.1"
+inno="/inno-5.5.9"
 
 appname=xictools_adms
 appdir=adms
@@ -18,6 +18,19 @@ if [ ! -f $utod ]; then
     make utod.exe
     cd $cwd
 fi
+
+libdir=$top/xictools/adms
+$utod $libdir/README
+$utod $libdir/xml/*
+$utod $libdir/doc/README
+$utod $libdir/doc/html/*.html
+$utod $libdir/doc/html/doc/*.html
+$utod $libdir/doc/html/introdustion/*
+$utod $libdir/doc/html/scripts/*
+$utod $libdir/doc/html/tutorials/*.xml
+$utod $libdir/doc/html/tutorials/Ilya-Lisichkin/MOSlevel1/*
+$utod $libdir/examples/scripts/*
+$utod $libdir/examples/testcases/*
 
 sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
 $utod $appname.iss

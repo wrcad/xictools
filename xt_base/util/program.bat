@@ -1,7 +1,6 @@
 @echo off
 @rem   ---------------------------------------------------------------------
 @rem   PROGRAM.BAT:  Command file to start XicTools programs.
-@rem   $Id: program.bat,v 1.8 2015/12/08 21:59:30 stevew Exp $
 
 @rem   This allows the programs to start "out of the box", without any
 @rem   further setup.  This is used as a wrapper to call programs
@@ -42,19 +41,19 @@ set progname=%~n0
 @rem   the installer.
 
 if %progname%==xic (
-    set appname=Xic-4_is1
+    set appname=xic_is1
 ) else (
     if %progname%==wrspice (
-        set appname=WRspice-4_is1
+        set appname=wrspice_is1
     ) else (
         if %progname%==httpget (
-            set appname=XtAccs-4_is1
+            set appname=mozy_is1
         ) else (
             if %progname%==mozy (
-                set appname=XtAccs-4_is1
+                set appname=mozyis1
             ) else (
                 if %progname%==xeditor (
-                    set appname=XtAccs-4_is1
+                    set appname=mozy_is1
                 ) else {
                     set appname=gtk2-bundle_is1
                 )
@@ -72,25 +71,42 @@ if %progname%==xic (
 @rem   for Win7/8 64 bits.
 
 set reg=
-reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\%appname% /v InstallLocation > NUL 2>&1
+
+@rem   This is used by inno-5.5.9
+set key=HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
+
+reg query %key%\%appname% /v InstallLocation > NUL 2>&1
 if ERRORLEVEL 1 set reg=/reg:32
+reg query %key%\%appname% /v InstallLocation > NUL 2>&1
+if ERRORLEVEL 1 (
+    echo Error:  %progname% installation location not found in registry.
+    exit
+)
 
 for /f "Tokens=2,*" %%A in (
-    'reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\%appname% /v InstallLocation %reg%'
+    'reg query %key%\%appname% /v InstallLocation %reg%'
 ) do (
     set prefix=%%B
 )
 
 @rem   Do this again for the gtk2-bundle, in case it was installed under
-@rem   a different prefix.
+@rem   a different prefix.  Look in the old Registry location, too, so we
+@rem   can work with the earlier gtk-bundle installed with inno-5.5.1.
 
 set appname=gtk2-bundle_is1
-set reg=
-reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\%appname% /v InstallLocation > NUL 2>&1
-if ERRORLEVEL 1 set reg=/reg:32
+reg query %key%\%appname% /v InstallLocation  %reg% > NUL 2>&1
+if ERRORLEVEL 1 (
+@rem   This is used by inno-5.5.1
+    set key=HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall
+)
+reg query %key%\%appname% /v InstallLocation  %reg% > NUL 2>&1
+if ERRORLEVEL 1 (
+    echo Error: gtk2-bundle installation location not found in registry.
+    exit
+)
 
 for /f "Tokens=2,*" %%A in (
-    'reg query HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\%appname% /v InstallLocation %reg%'
+    'reg query %key%\%appname% /v InstallLocation %reg%'
 ) do (
     set bundle_prefix=%%B
 )
@@ -108,7 +124,16 @@ PATH=%bundle_prefix%gtk2-bundle\bin;%PATH%
 @rem   Execute the program, with the same arguments (if any) that were
 @rem   given to this script.
 
-"%prefix%xictools\bin\%progname%.exe" %*
+if %progname%==xic (
+    "%prefix%xictools\xic\bin\xic.exe" %*
+) else (
+    if %progname%==wrspice (
+        "%prefix%xictools\wrspice\bin\wrspice.exe" %*
+    ) else (
+        "%prefix%xictools\bin\%progname%.exe" %*
+    )
+)
+    
 endlocal
 @rem   ---------------------------------------------------------------------
 @rem   End of script.

@@ -1,6 +1,6 @@
 #! /bin/sh
 
-inno="/inno-5.5.1"
+inno="/inno-5.5.9"
 
 appname=xictools_fastcap
 appdir=fastcap
@@ -18,6 +18,13 @@ if [ ! -f $utod ]; then
     make utod.exe
     cd $cwd
 fi
+
+libdir=$top/xictools/fastcap
+$utod $libdir/README
+$utod $libdir/README.mit
+$utod $libdir/examples/*
+$utod $libdir/examples/work/*
+$utod $libdir/examples/work/results/*
 
 sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
 $utod $appname.iss
