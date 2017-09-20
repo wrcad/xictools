@@ -19,7 +19,7 @@ DirExistsWarning=no
 PrivilegesRequired=admin
 
 UninstallFilesDir={app}\xictools\wrspice.current\uninstall
-UninstallDisplayIcon={app}\xictools\xic.current\bin\wrspice.exe
+UninstallDisplayIcon={app}\xictools\wrspice.current\bin\wrspice.exe
 
 [Files]
 
@@ -49,7 +49,7 @@ Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\*"; DestDir:
 Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6"
 Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6\tests"
 Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6\module_dist"
-Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6.1\*"; DestDir: "{app}\xictools\wrspice\.currentdevkit\examples\bsim6.1"
+Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6.1\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6.1"
 Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6.1\tests\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6.1\tests"
 Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsim6.1\module_dist\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsim6.1\module_dist"
 Source: "..\root\usr\local\xictools\wrspice.current\devkit\examples\bsimcmg\*"; DestDir: "{app}\xictools\wrspice.current\devkit\examples\bsimcmg"
