@@ -5,9 +5,6 @@ fetch_action
 fetchdist
     Local use only, assembles new release packages for upload.
 
-wr_filename
-    print distrib file name, args: program osname version
-
 wr_install
     For export (direct from web site).  User must use this to install
     programs, for SafeInstall feature.

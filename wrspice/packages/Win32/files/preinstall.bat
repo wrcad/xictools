@@ -4,6 +4,7 @@
 @rem   This is called by the installer before installation, and after
 @rem   deinstallation.
 
+@rem   Remove links.
 @rem   Seems that you must use rmdir rather than del to remove a link
 @rem   created with mklink /j.
 
@@ -14,16 +15,19 @@ rmdir bin\proc2mod.exe
 rmdir bin\printtoraw.exe
 rmdir bin\wrspiced.exe
 
-@rem   Save backup for Safe Install.
+@rem   Copy to backup for Safe Install.
 
-for /f "Tokens=1-3 delim= " %%A in (
-    'wrspice.current/bin/wrspice.exe --v'
+set prog=xic
+for /f "Tokens=1-3" %%a in (
+    '%prog%.current\bin\%prog%.exe --v'
 ) do (
-    set version=%%A
+    set version=%%a
 )
 
-if (x%version%!=x) then (
-    rd /s /q wrspice-%version%
-    xcopy /s /i /q wrspice.current wrspice-%version%
+if not x%version%==x (
+    if exist %prog%-%version% (
+        rd /s /q %prog%-%version%
+    )
+    xcopy /s /i /q %prog%.current %prog%-%version%
 )
 
