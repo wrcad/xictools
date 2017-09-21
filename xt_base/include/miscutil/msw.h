@@ -64,11 +64,6 @@ namespace msw {
     void UnBillize(char*);
     int ListPrinters(int*, char***);
     const char *RawFileToPrinter(const char*, const char*);
-
-    // This must be defined in the application, and provides a suffix
-    // used when creating application names as known in the registry.
-    //
-    extern const char *MSWpkgSuffix;
 }
 
 #endif

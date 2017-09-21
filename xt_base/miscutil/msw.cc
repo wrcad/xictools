@@ -68,182 +68,88 @@ msw::IsWinNT()
 }
 
 
-namespace {
-    // The inno installer places an item in the registry which gives the
-    // location of the uninstall directory.  Return the full path to the
-    // directory containing this directory.  The returned path uses '/' as
-    // the separator character.
-    //
-    // This assumes admin install only.
-    //
-    // Locations:
-    // Xic, XicII, WRspice:
-    //  .../xictools/program/uninstall/uninst000.exe
-    // XicTools accessories:
-    //  .../xictools/accs-uninstall/uninst000.exe
-    //
-    static char *
-    get_inno_uninst(const char *program)
-    {
-        unsigned int key_read = KEY_READ;
-
-        // Note that "program" is the name used by the installer.
-        char buf[1024];
-        sprintf(buf,
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s_is1",
-            program);
-
-        HKEY key;
-        long ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
-        if (ret != ERROR_SUCCESS) {
-            // Try again with WOW64.  This seemed to be required in
-            // early versions of Win-7_64 (could be wrong about this),
-            // but presently this flag causes failure.
-            //
-            OSVERSIONINFO osv;
-            osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-            GetVersionEx(&osv);
-            if (osv.dwMajorVersion > 5 ||
-                    (osv.dwMajorVersion == 5 && osv.dwMinorVersion >= 1)) {
-                // XP or later
-                key_read |= KEY_WOW64_64KEY;
-                ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
-            }
-            if (ret != ERROR_SUCCESS)
-                return (0);
-        }
-        DWORD len = 1024;
-        DWORD type;
-        ret = RegQueryValueEx(key, "UninstallString", 0, &type, (BYTE*)buf,
-            &len);
-        RegCloseKey(key);
-
-        // The string should contain the full path to the uninstall program,
-        //
-        if (ret != ERROR_SUCCESS || type != REG_SZ || len < 20)
-            return (0);
-
-        char *s = buf;
-        char *p = lstring::getqtok(&s);
-        s = strrchr(p, '\\');
-        if (!s) {
-            delete [] p;
-            return (0);
-        }
-        *s = 0;
-        s = strrchr(p, '\\');
-        if (!s) {
-            delete [] p;
-            return (0);
-        }
-        *s = 0;
-
-        lstring::unix_path(p);
-        return (p);
-    }
-
-
-    // The Ghost Installer places an item in the registry which gives the
-    // location of the uninstall.log file.  Return the full path to the
-    // directory containing this file.  The returned path uses '/' as the
-    // separator character
-    //
-    // Locations:
-    // Xic, XicII, WRspice:
-    //  .../xictools/program/setup/install.log
-    // XicTools accessories:
-    //  .../xictools/accs-install.log
-    //
-    static char *
-    get_gins_uninst(const char *program)
-    {
-        unsigned int key_read = KEY_READ;
-
-        // Note that "program" is the name used by the installer.
-        char buf[1024];
-        sprintf(buf,
-            "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s",
-            program);
-
-        HKEY key;
-        long ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
-        if (ret != ERROR_SUCCESS) {
-            // Try again with WOW64.  This seemed to be required in
-            // early versions of Win-7_64 (could be wrong about this),
-            // but presently this flag flag causes failure.
-            //
-            OSVERSIONINFO osv;
-            osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-            GetVersionEx(&osv);
-            if (osv.dwMajorVersion > 5 ||
-                    (osv.dwMajorVersion == 5 && osv.dwMinorVersion >= 1)) {
-                // XP or later
-                key_read |= KEY_WOW64_64KEY;
-                ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
-            }
-            if (ret != ERROR_SUCCESS)
-                return (0);
-        }
-        DWORD len = 1024;
-        DWORD type;
-        ret = RegQueryValueEx(key, "UninstallString", 0, &type, (BYTE*)buf,
-            &len);
-        RegCloseKey(key);
-
-        // The string should contain the full path to the uninstall program,
-        // followed by the path to the uninstall log file, possibly quoted.
-        // If the string length is too short to make sense, abort
-        //
-        if (ret != ERROR_SUCCESS || type != REG_SZ || len < 20)
-            return (0);
-
-        char *s = lstring::copy(buf);
-        // Remove any quotes, and peel off the argument of the uninstall
-        // command, which is the full path to install.log
-        //
-        char *t = s + strlen(s) - 1;
-        while (t >= s && *t == '"')
-            *t-- = '\0';
-        while (t > s && *t != '"' && (!isalpha(*t) || *(t+1) != ':' ||
-                (*(t+2) != '/' && *(t+2) != '\\')))
-            t--;
-        char *dir = 0;
-        bool ok = false;
-        if (t > s && *t != '"') {
-            // found the start of the path
-            dir = lstring::copy(t);
-            t = lstring::strrdirsep(dir);
-            if (t) {
-                *t = 0;  // stripped "/uninstall.log";
-                ok = true;
-            }
-        }
-        delete [] s;
-        if (!ok) {
-            delete [] dir;
-            dir = 0;
-        }
-        lstring::unix_path(dir);
-        return (dir);
-    }
-}
-
-
+// ASSUMES INNO INSTALLER!!!
 // Return the path to the uninstall data.
+//
+// The inno installer places an item in the registry which gives the
+// location of the uninstall directory.  Return the full path to the
+// directory containing this directory.  The returned path uses '/' as
+// the separator character.
+//
+// This assumes admin install only.
+//
+// Locations:
+//  .../xictools/<program>/uninstall/uninst???.exe
 //
 char *
 msw::GetInstallDir(const char *program)
 {
-    // Use the application name used in the setup file.  This
-    // differentiates from previous releases.
-    //
-    char buf[256];
-    sprintf(buf, "%s%s", program, MSWpkgSuffix);
+    unsigned int key_read = KEY_READ;
 
-    char *dir = get_inno_uninst(buf);
-    if (!dir)
-        dir = get_gins_uninst(buf);
-    return (dir);
+    // inno-5.5.9 on Windows 10
+    const char *keyfmt1 =
+"Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s_is1";
+
+    // inno-5.5.1 on Windows 7-10
+    const char *keyfmt2 =
+"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s_is1";
+
+    // Note that "program" is the name used by the installer.
+    char buf[1024];
+    sprintf(buf, keyfmt1, program);
+
+    HKEY key;
+    long ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
+    if (ret != ERROR_SUCCESS) {
+        sprintf(buf, keyfmt2, program);
+        ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
+    }
+    if (ret != ERROR_SUCCESS) {
+        // Try again with WOW64.  This seemed to be required in
+        // early versions of Win-7_64 (could be wrong about this),
+        // but presently this flag causes failure.
+        //
+        sprintf(buf, keyfmt1, program);
+        OSVERSIONINFO osv;
+        osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+        GetVersionEx(&osv);
+        if (osv.dwMajorVersion > 5 ||
+                (osv.dwMajorVersion == 5 && osv.dwMinorVersion >= 1)) {
+            // XP or later
+            key_read |= KEY_WOW64_64KEY;
+            ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
+        }
+        if (ret != ERROR_SUCCESS)
+            return (0);
+    }
+    DWORD len = 1024;
+    DWORD type;
+    ret = RegQueryValueEx(key, "UninstallString", 0, &type, (BYTE*)buf,
+        &len);
+    RegCloseKey(key);
+
+    // The string should contain the full path to the uninstall program,
+    //
+    if (ret != ERROR_SUCCESS || type != REG_SZ || len < 20)
+        return (0);
+
+    char *s = buf;
+    char *p = lstring::getqtok(&s);
+    s = strrchr(p, '\\');
+    if (!s) {
+        delete [] p;
+        return (0);
+    }
+    *s = 0;
+    s = strrchr(p, '\\');
+    if (!s) {
+        delete [] p;
+        return (0);
+    }
+    *s = 0;
+
+    lstring::unix_path(p);
+    return (p);
 }
 
 

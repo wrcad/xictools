@@ -1,78 +1,14 @@
 #! /bin/bash
 
-win_get_prefix ()
-{
-    # Set the magic name for the application, created by inno installer.
-    case $1 in
-    adms)
-        appname=adms_is1 ;;
-    fastcap)
-        appname=fastcap_is1 ;;
-    fasthenry)
-        appname=fasthenry_is1 ;;
-    mozy)
-        appname=mozy_is1 ;;
-    mrouter)
-        appname=mrouter_is1 ;;
-    xtlserv|license)
-        appname=xtlserv_is1 ;;
-    vl)
-        appname=vl_is1 ;;
-    wrspice)
-        appname=wrspice_is1 ;;
-    xic)
-        appname=xic_is1 ;;
-    *)
-        echo Unknown program name $1
-        exit 1
-        ;;
-    esac
-
-    # Query the installation location in the registry, inno sets this.
-    # If it works, it will be in the fifth token in a form like
-    # c:\usr\local\
-
-# inno-5.5.1
-#    str=$(reg query HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$appname /reg:32 /v InstallLocation 2>/dev/null)
-# inno-5.5.9
-    str=$(reg query HKLM\\Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$appname /reg:32 /v InstallLocation 2>/dev/null)
-    set -- $str
-    prf=$5
-    if [ -z "$prf" ]; then
-        return
-    fi
-
-    # Replace the back slashes with forward slashes.  This code removes
-    # the trailing backslash, but you need an actual ^M in the IFS string
-    # or it won't (Cygwin weirdness?).
-
-    tifs=$IFS
-    IFS="\\"
-    set -- $prf
-    IFS=$tifs
-
-    # Build a new path, which will be in the form c:/usr/local.  Cygwin
-    # will do the right thing with the c:.
-
-    pth=$1
-    shift
-    xx=$*
-    for a in $xx; do
-        if [ x$a != "x " ]; then
-            pth="$pth/$a"
-        fi
-    done
-    echo $pth
-}
-
-if [ `whoami` != root -a $1 != "-t" ]; then
-    if [ `uname` = "Cygwin" ]; then
+windows=no
+if [ -n "$COMSPEC" -a $(expr match $COMSPEC '.*\(\.exe\)') ]; then
+    windows=yes
+else
+    if [ `whoami` != root -a x$1 != x -a $1 != "-t" ]; then
         echo "You need to be root to uninstall packages, exiting."
         exit 1
     fi
 fi
-
-shopt -s nullglob
 
 programs="adms fastcap fasthenry mozy mrouter vl wrspice xic xtlserv"
 
@@ -113,100 +49,67 @@ for a in $list; do
     esac
 done
 
-osname=`../../info.sh osname`
-if [ -z "$osname" ]; then
-    echo "Error: Can't get distribution name!"
-    exit 1
-fi
-psfx=`../../info.sh dist_suffix`
-if [ -z "$psfx" ]; then
-    echo "Error: Can't get distribution file suffix!"
-    exit 1
-fi
-
-pkgs=""
 names=""
 for a in $list; do
     case $a in
     ad|adm|adms)
-        pkgs="$pkgs xictools-adms-$osname"
         names="$names adms"
         ;;
     fc|fastc|fastca|fastcap)
-        pkgs="$pkgs xictools-fastcap-$osname"
         names="$names fastcap"
         ;;
     fh|fasth|fasthe|fasthen|fasthenr|fasthenry)
-        pkgs="$pkgs xictools-fasthenry-$osname"
         names="$names fasthenry"
         ;;
     mo|moz|mozy)
-        pkgs="$pkgs xictools-mozy-$osname"
         names="$names mozy"
         ;;
     mr|mro|mrou|mrout|mroute|mrouter)
-        pkgs="$pkgs xictools-mrouter-$osname"
         names="$names mrouter"
         ;;
     v|vl)
-        pkgs="$pkgs xictools-vl-$osname"
         names="$names vl"
         ;;
     w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
-        pkgs="$pkgs xictools-wrspice-$osname"
         names="$names wrspice"
         ;;
     xi|xic)
-        pkgs="$pkgs xictools-xic-$osname"
         names="$names xic"
         ;;
     xt|xtl|xtls|xtlse|xtlser|xtlserv)
-        pkgs="$pkgs xictools-xtlserv-$osname"
-        names="$names license"
+        names="$names xtlserv"
         ;;
     esac
 done
 
-if [ -n "$pkgs" ]; then
+if [ -n "$names" ]; then
 
-    if [ $psfx = rpm ]; then
-        # Red Hat compatible rpm-based Linux
-        for a in $pkgs; do
-            echo rpm -e $a
-            if [ $dryrun = no ]; then
-                sudo rpm -e $a
-            fi
-        done
-    elif [ $psfx = pkg ]; then
-        # Apple OS X
+    if [ $windows = yes ]; then
+        if [ $dryrun = no ]; then
+            ../util/uninstall.bat $names
+        else
+            ../util/uninstall.bat -t $names
+        fi
+    elif [ $(uname) = Darwin ]; then
         if [ $dryrun = no ]; then
             sudo ../util/osx_uninstall $names
         else
             ../util/osx_uninstall -t $names
         fi
-    elif [ $psfx = exe ]; then
-        # Microsoft Windows
-        for a in $names; do
-            prefix=`win_get_prefix $a`
-            if [ -n "$prefix" ]; then
-                udir=$prefix/xictools/$a/uninstall
-                if [ -d $udir ]; then
-                    lst=`ls $udir | grep 'unins[0-9][0-9][0-9]\\.exe' | sort -r`
-                    set -- $lst
-                    ufile=$1
-                    if [ -n "$ufile" ]; then
-                        echo $udir/$ufile
-                        if [ $dryrun = no ]; then
-                            $udir/$ufile
-                        fi
-                    else
-                        echo "$a: uninstall file not found."
+    else
+        list=$(rpm -qa)
+        if [ -n "$list" ]; then
+            for a in $names; do
+                pname=xictools_$a
+                ent=$(echo $list | grep $pname)
+                if [ -n "$ent" ]; then
+                    echo rpm -e $a
+                    if [ $dryrun = no ]; then
+                        sudo rpm -e $a
                     fi
-                else
-                    echo "$a: uninstall data not found."
                 fi
-            fi
-        done
+            done
+        fi
     fi
 else
     echo "Nothing found to uninstall."
