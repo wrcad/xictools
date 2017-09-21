@@ -239,7 +239,6 @@ safe_install()
                 echo rm -rf $prefix/xictools/$prog-$curver
                 echo cp -pr $prefix/xictools/$prog.current \
 $prefix/xictools/$prog-$curver
-                echo mv $prefix/xictools/$prog.current $prefix/xictools/$prog
             else
                 rm -rf $prefix/xictools/$prog-$curver
                 cp -pr $prefix/xictools/$prog.current \

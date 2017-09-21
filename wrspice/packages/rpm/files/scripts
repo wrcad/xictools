@@ -11,6 +11,18 @@ tbin=$prefix/xictools/bin
 rm -f $twrs $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
   $tbin/wrspiced
 
+# Back up for Safe Install.
+prog=wrspice
+if [ -x $prefix/xictools/$prog.current/bin/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/$prog --v)
+    set -- $curver
+    curver=$1
+    if [ -n "$curver" ]; then
+        rm -rf $prefix/xictools/$prog-$curver
+        cp -pr $prefix/xictools/$prog.current $prefix/xictools/$prog-$curver
+    fi
+fi
+
 
 %post
 if [ -z "$RPM_INSTALL_PREFIX" ]; then

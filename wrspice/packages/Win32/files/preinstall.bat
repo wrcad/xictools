@@ -14,3 +14,16 @@ rmdir bin\proc2mod.exe
 rmdir bin\printtoraw.exe
 rmdir bin\wrspiced.exe
 
+@rem   Save backup for Safe Install.
+
+for /f "Tokens=1-3 delim= " %%A in (
+    'wrspice.current/bin/wrspice.exe --v'
+) do (
+    set version=%%A
+)
+
+if (x%version%!=x) then (
+    rd /s /q wrspice-%version%
+    xcopy /s /i /q wrspice.current wrspice-%version%
+)
+

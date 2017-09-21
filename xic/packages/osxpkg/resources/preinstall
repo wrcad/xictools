@@ -9,47 +9,25 @@ prefix=$2
 # The XicTools-4.3 package name
 pkgname="xictools.xic"
 
-# We assume safe-install is being used, so that we keep the prior
-# installation in its entirety, so no need to back up config files.
-# User has to update files by hand, which is probably not good.
-
-# Back up config files
-#cfgfiles="device.lib \
-#    model.lib \
-#    mozyrc \
-#    xic_format_lib \
-#    xic_mesg \
-#    xic_stipples \
-#    xic_tech.hyp \
-#    xic_tech.scmos"
-#
-#libdir=$prefix/xictools/xic.current
-#for a in $cfgfiles; do
-#    if [ -f $libdir/startup/$a ]; then
-#        cp -pf $libdir/startup/$a $libdir/startup/$a.tmporig
-#    fi
-#done
-
-# Do a manual un-install if an existing package is found, Apple's
-# install system apparently doesn't do this.
-
-dir_list=""
-file_list=`pkgutil --files $pkgname 2>&1 > /dev/null`
-if [ $? = 0 ]; then
-    for a in $file_list; do
-        if [ -d $prefix/$a ]; then
-            dir_list="$prefix/$a $dir_list"
-        else
-            rm -f $prefix/$a
-        fi
-    done
-    for a in $dir_list; do
-        "rmdir $a 2>&1 > /dev/null"
-    done
-fi
-
 # Remove wrapper and links.
 txic=$prefix/xictools/xic
 tbin=$prefix/xictools/bin
 rm -f $txic $tbin/xic $tbin/wrencode $tbin/decode $tbin/wrsetpass
+
+# Back up for Safe Install.
+prog=xic
+if [ -x $prefix/xictools/$prog.current/bin/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/$prog --v)
+    set -- $curver
+    curver=$1
+    if [ -n "$curver" ]; then
+        rm -rf $prefix/xictools/$prog-$curver
+        cp -pr $prefix/xictools/$prog.current $prefix/xictools/$prog-$curver
+    fi
+fi
+
+# Do a manual un-install if an existing package is found, Apple's
+# install system apparently doesn't do this.
+
+rm -rf $prefix/xictools/xic.current
 
