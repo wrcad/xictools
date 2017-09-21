@@ -14,7 +14,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: Mrouter maze router'
-echo "Name: xictools-mrouter-$OSNAME"
+echo "Name: xictools_mrouter-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'

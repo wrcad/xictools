@@ -1,12 +1,19 @@
 #! /bin/bash
 
 windows=no
-if [ -n "$COMSPEC" -a $(expr match $COMSPEC '.*\(\.exe\)') ]; then
-    windows=yes
-else
+if [ -n "$COMSPEC" ]; then
+    if [ -n "$(expr match $COMSPEC '.*\(\.exe\)')" ]; then
+        windows=yes
+    fi
+fi
+if [ $windows = no ]; then
     if [ `whoami` != root -a x$1 != x -a $1 != "-t" ]; then
-        echo "You need to be root to uninstall packages, exiting."
-        exit 1
+        echo "You're not root, validating using sudo."
+        sudo -v
+        if [ $? != 0 ]; then
+            echo Validation failed.
+            exit 1
+        fi
     fi
 fi
 
@@ -86,7 +93,7 @@ if [ -n "$names" ]; then
 
     if [ $windows = yes ]; then
         if [ $dryrun = no ]; then
-            ../util/uninstall.bat $names
+            sudo ../util/uninstall.bat $names
         else
             ../util/uninstall.bat -t $names
         fi
@@ -97,17 +104,18 @@ if [ -n "$names" ]; then
             ../util/osx_uninstall -t $names
         fi
     else
-        list=$(rpm -qa)
+        list=$(rpm -qa | grep ^xictools_)
         if [ -n "$list" ]; then
             for a in $names; do
                 pname=xictools_$a
-                ent=$(echo $list | grep $pname)
-                if [ -n "$ent" ]; then
-                    echo rpm -e $a
-                    if [ $dryrun = no ]; then
-                        sudo rpm -e $a
+                for b in $list; do
+                    if [[ $b = $pname* ]]; then
+                        echo rpm -e $b
+                        if [ $dryrun = no ]; then
+                            sudo rpm -e $b
+                        fi
                     fi
-                fi
+                done
             done
         fi
     fi

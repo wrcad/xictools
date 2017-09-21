@@ -14,7 +14,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: FastCap capacitance extractor'
-echo "Name: xictools-fastcap-$OSNAME"
+echo "Name: xictools_fastcap-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'

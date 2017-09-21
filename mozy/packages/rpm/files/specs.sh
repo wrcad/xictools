@@ -15,7 +15,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: MOZY html help system and accessories'
-echo "Name: xictools-mozy-$OSNAME"
+echo "Name: xictools_mozy-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'

@@ -14,7 +14,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: FastHenry inductance extractor'
-echo "Name: xictools-fasthenry-$OSNAME"
+echo "Name: xictools_fasthenry-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'

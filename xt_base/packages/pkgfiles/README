@@ -12,3 +12,48 @@ packages.  Arguments to wr_install are the actual package file names.
 
 You very likely need to run as root to install packages.
 
+======
+XicTools Installation
+
+If you have an existing commercial Xic or WRspice installation, i.e., one
+that needs a LICENSE file, you should do the following before installing
+XicTools-4.3 programs.
+
+It is important to clear your package database of any old Whiteley Research
+distributions (except for the gtk2-bundle distributions on Windows and OS X,
+leave these alone, they are still required).
+
+You have the option of saving the old programs in case you ever need
+to run them again for some reason.  If you do this and use a license server,
+then you will need to save your license server as well.
+
+Windows:
+
+From a command prompt, run the cleanup.bat script.  This will prompt whether
+to save existing Xic and WRspice installations, and clear the machine of
+all pre-4.3 installed XicTools packages.  This will also clear the machine
+of FastHenry, FastVap, and ADMS packages from Whiteley Research.  These
+are now included in the Xictools framework, with now packages available.
+
+OS X:
+
+From a terminal window, run the cleanup script.  This will prompt whether
+to save existing Xic and WRspice installations, and clear the machine of
+all pre-4.3 installed XicTools packages.
+
+You will likely want to manually uninstall fastcap, fasthenry, and
+adms if you have installed any of these from Whiteley Research source
+code.  These programs are now included in the XicTools framework and
+new packages are available.
+
+Linux:
+
+From a terminal window, run the cleanup script.  This will prompt
+whether to save existing Xic and WRspice installations, and clear the
+machine of all pre-4.3 installed XicTools packages.
+
+You will likely want to manually uninstall fastcap, fasthenry, and
+adms if you have installed any of these from Whiteley Research source
+code.  These programs are now included in the XicTools framework and
+new packages are available.
+

@@ -111,7 +111,7 @@ do_update()
     fi
     if [ ! -f $distfile ]; then
         echo File: $distfile
-        echo Error: (do_update) file not found.
+        echo "Error: (do_update) file not found."
         return 127
     fi
     if [ -z "$prefix" ]; then
@@ -276,7 +276,7 @@ if [ x$1 = x-upd ]; then
         exit 127
     fi
 
-    do_install $distfile $prefix no
+    do_update $distfile $prefix no
     ret=$?
 
     echo
@@ -355,7 +355,7 @@ for fname in $args; do
         nodo=yes
         continue
     fi
-    do_install $fname $prefix $nodo
+    do_update $fname $prefix $nodo
     r=$?
     if [ r != 0 ]; then
         ret=1

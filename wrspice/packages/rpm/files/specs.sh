@@ -26,13 +26,13 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: Circuit simulation software'
-echo "Name: xictools-wrspice-$OSNAME"
+echo "Name: xictools_wrspice-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'
 echo "BuildRoot: $SRCDIR"
 echo 'Vendor: Whiteley Research Inc.'
-echo 'License: commercial'
+echo 'License: open-source'
 echo 'Group: Applications/Engineering'
 echo 'AutoReqProv: 0'
 echo '%description'

@@ -231,7 +231,7 @@ for a in $list; do
         ;;
     license|xt|xtl|xtls|xtlse|xtlser|xtlserv)
         if [ $nodo = yes ]; then
-            echo rm -f /usr/local/xictools/license/readme
+            echo rm -f /usr/local/xictools/license/README
             echo rm -f /usr/local/xictools/bin/xtlserv
             echo rm -f /usr/local/xictools/bin/xtjobs
       
@@ -240,7 +240,7 @@ for a in $list; do
                 echo pkgutil --forget $a
             done
         else
-            rm -f /usr/local/xictools/license/readme
+            rm -f /usr/local/xictools/license/README
             rm -f /usr/local/xictools/bin/xtlserv
             rm -f /usr/local/xictools/bin/xtjobs
       

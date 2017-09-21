@@ -13,13 +13,13 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: License daemon for Xic and WRspice'
-echo "Name: xictools-xtlserv-$OSNAME"
+echo "Name: xictools_xtlserv-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'
 echo "BuildRoot: $SRCDIR"
 echo 'Vendor: Whiteley Research Inc.'
-echo 'License: commercial'
+echo 'License: open-source'
 echo 'Group: Applications/Engineering'
 echo 'AutoReqProv: 0'
 echo '%description'

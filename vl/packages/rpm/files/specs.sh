@@ -12,7 +12,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: VL Verilog simulator'
-echo "Name: xictools-vl-$OSNAME"
+echo "Name: xictools_vl-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'

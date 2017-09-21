@@ -14,7 +14,7 @@ RELEASE="$3"
 IFS="$tifs"
 
 echo 'Summary: ADMS translator'
-echo "Name: xictools-adms-$OSNAME"
+echo "Name: xictools_adms-$OSNAME"
 echo "Version: $VERSION"
 echo "Release: $RELEASE"
 echo 'Prefix: /usr/local'
