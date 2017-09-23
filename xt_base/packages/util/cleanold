@@ -5,6 +5,9 @@
 # This will remove all pre-4.3 packages, but the user is given the
 # option of saving existing Xic/WRspice installations into the Safe
 # Install framework.  Existing Safe Installs are preserved.
+#
+# Whiteley Research Inc., open source, Apache 2.0 license
+# Stephen R. Whiteley 9/23/2017
 
 process_rpm_dist ()
 {
@@ -210,6 +213,6 @@ if [ $? = 0 ]; then
 fi
 
 echo "Sorry, I can't find the rpm program, and nobody has taught me"
-echo "how to use anything else.  You're on your own for now, bub."
+echo "how to use anything else on Linux yet."
 exit 1
 

@@ -1,4 +1,6 @@
 @echo off
+@rem   Whiteley Research Inc., open source, Apache 2.0 license
+@rem   Stephen R. Whiteley 9/23/2017
 
 @rem   Uninstall script for Microsoft Windows.
 

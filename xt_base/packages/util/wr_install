@@ -1,7 +1,10 @@
 #! /bin/sh
 #
-# wr_install - script to install XicTools packages with Safe Install.
+# wr_install - script to install XicTools packages.
 # For XicTools-4.3 (open source) branch ONLY.
+#
+# Whiteley Research Inc., open source, Apache 2.0 license
+# Stephen R. Whiteley 9/23/2017
 
 # Usage: wr_install [-t] distrib_file ...
 #

@@ -1,6 +1,9 @@
 #! /bin/sh
 
 # Utility to uninstall OS X XicTools-4.3 packages.
+#
+# Whiteley Research Inc., open source, Apache 2.0 license
+# Stephen R. Whiteley 9/23/2017
 
 nodo=no
 if [ x$1 = x-t ]; then

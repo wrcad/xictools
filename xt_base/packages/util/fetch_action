@@ -1,5 +1,4 @@
 #! /bin/sh
-# $Id: fetch_action,v 1.9 2014/07/21 00:33:12 stevew Exp $
 
 # This is a mozy method=post handler for the fetch form
 
@@ -16,14 +15,14 @@ while [ 1 = 1 ]; do
     set $inp
     IFS="$tifs"
     case $1 in
-    xt_accs | devkit | wrspice | xic | xicii | xiv | xtlserv)
+    adms | fastcap | fasthenry | mozy | mrouter | vl | wrspice | xic | xtlserv)
         if [ x"$progs" = x ]; then
             progs=$1
         else
             progs="$progs $1"
         fi
         ;;
-    Darwin* | Debian* | FreeBSD* | Linux* | Solaris* | Windows)
+    Darwin* | Linux* | Win*)
         if [ x"$oses" = x ]; then
             oses=$1
         else

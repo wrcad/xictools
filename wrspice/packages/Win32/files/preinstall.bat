@@ -6,22 +6,44 @@
 
 @rem   Remove links.
 @rem   Seems that you must use rmdir rather than del to remove a link
-@rem   created with mklink /j.
+@rem   created with mklink /j.  These can be identified with a directory
+@rem   test "if exist link\".  We also blow away regular directories or
+@rem   files that would conflict.
 
-rmdir wrspice
-rmdir bin\wrspice.bat
-rmdir bin\multidec.exe
-rmdir bin\proc2mod.exe
-rmdir bin\printtoraw.exe
-rmdir bin\wrspiced.exe
+set prog=wrspice
+
+@rem   We don't set these, but they might be around from an earlier
+@rem   installation that wasn't properly removed.
+if exist bin\%prog%.exe del bin\%prog%.exe
+if exist bin\%prog%.dll del bin\%prog%.dll
+
+@rem   rd /s /q is safe for links, and will completely remove a regular
+@rem   directory.
+if exist %prog%\ rmdir /s /q %prog%
+
+@rem   This is the only main executable we export, exe and dll are
+@rem   not in the search path.
+if exist bin\%prog%.bat\ ( rmdir bin\%prog%.bat
+) else ( if exist bin\%prog%.bat del bin\%prog%.bat )
+
+@rem   WRspice-specific exported utilities.
+if exist bin\multidec.exe\ ( rmdir bin\multidec.exe
+) else ( if exist bin\multidec.exe del bin\multidec.exe )
+if exist bin\proc2mod.exe\ ( rmdir bin\proc2mod.exe
+) else ( if exist bin\proc2mod.exe del bin\proc2mod.exe )
+if exist bin\printtoraw.exe\ ( rmdir bin\printtoraw.exe
+) else ( if exist bin\printtoraw.exe del bin\printtoraw.exe )
+if exist bin\wrspiced.exe\ ( rmdir bin\wrspiced.exe
+) else ( if exist bin\wrspiced.exe del bin\wrspiced.exe )
 
 @rem   Copy to backup for Safe Install.
 
-set prog=xic
-for /f "Tokens=1-3" %%a in (
-    '%prog%.current\bin\%prog%.exe --v'
-) do (
-    set version=%%a
+if exist %prog%.current\bin\%prog%.exe (
+    for /f "Tokens=1-3" %%a in (
+        '%prog%.current\bin\%prog%.exe --v'
+    ) do (
+        set version=%%a
+    )
 )
 
 if not x%version%==x (

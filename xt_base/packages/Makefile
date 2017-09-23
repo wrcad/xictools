@@ -69,3 +69,10 @@ testrpm::
 	fi; \
 	echo $$dst
 
+fetch::
+	-@if [ ! -f files/fetch_form.html ]; then \
+	    DIREC=`pwd`; cat files/fetch_form.sed | sed s%DIREC%$$DIREC% \
+  > files/fetch_form.html; \
+	fi
+	mozy files/fetch_form.html &
+
