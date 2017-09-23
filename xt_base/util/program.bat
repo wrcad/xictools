@@ -67,16 +67,15 @@ if %progname%==xic (
 @rem   This is where the user installed the program.  This is rather opaque
 @rem   and magical.  The default is c:\usr\local\
 
-@rem   If the reg command fails, assume it needs "/reg:32" which is true
-@rem   for Win7/8 64 bits.
-
-set reg=
-
-@rem   This is used by inno-5.5.9
+@rem   32-bit app in a 64-bit registry view, e.g., Cygwin64 or native64.
 set key=HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
 
 reg query %key%\%appname% /v InstallLocation > NUL 2>&1
-if ERRORLEVEL 1 set reg=/reg:32
+if ERRORLEVEL 1 (
+@rem   32-bit app in a 32-bin registtry view, e.g., Cygwin32, or 32-bit
+@rem   Windows if there is such a thing anymore.
+    set key=HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall
+)
 reg query %key%\%appname% /v InstallLocation > NUL 2>&1
 if ERRORLEVEL 1 (
     echo Error:  %progname% installation location not found in registry.
@@ -84,7 +83,7 @@ if ERRORLEVEL 1 (
 )
 
 for /f "Tokens=2,*" %%A in (
-    'reg query %key%\%appname% /v InstallLocation %reg%'
+    'reg query %key%\%appname% /v InstallLocation'
 ) do (
     set prefix=%%B
 )
@@ -93,13 +92,17 @@ for /f "Tokens=2,*" %%A in (
 @rem   a different prefix.  Look in the old Registry location, too, so we
 @rem   can work with the earlier gtk-bundle installed with inno-5.5.1.
 
+@rem   32-bit app in a 64-bit registry view, e.g., Cygwin64 or native64.
+set key=HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
+
 set appname=gtk2-bundle_is1
-reg query %key%\%appname% /v InstallLocation  %reg% > NUL 2>&1
+reg query %key%\%appname% /v InstallLocation > NUL 2>&1
 if ERRORLEVEL 1 (
-@rem   This is used by inno-5.5.1
+@rem   32-bit app in a 32-bin registtry view, e.g., Cygwin32, or 32-bit
+@rem   Windows if there is such a thing anymore.
     set key=HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall
 )
-reg query %key%\%appname% /v InstallLocation  %reg% > NUL 2>&1
+reg query %key%\%appname% /v InstallLocation > NUL 2>&1
 if ERRORLEVEL 1 (
     echo Error: gtk2-bundle installation location not found in registry.
     exit

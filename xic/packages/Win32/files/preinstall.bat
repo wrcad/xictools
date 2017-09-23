@@ -28,5 +28,6 @@ if not x%version%==x (
         rd /s /q %prog%-%version%
     )
     xcopy /s /i /q %prog%.current %prog%-%version%
+    rd /s /q %prog%-%version%/uninstall
 )
 
