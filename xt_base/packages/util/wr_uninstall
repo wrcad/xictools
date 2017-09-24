@@ -1,5 +1,25 @@
 #! /bin/bash
 
+# wr_uninstall:  script to uninstall XicTools-4.3 packages.
+#
+# Give command without arguments for usage info.
+# Whiteley Research Inc., open source, Apache 2.0 license
+# Stephen R. Whiteley 9/23/2017
+
+# This is the directory that contains the uninstall.bat and osx_uninstall
+# scripts, which are called under Windows and OS X respectively.  By
+# default, we assume that they are in the current directory, but you can
+# change this.
+#
+script_path=.
+
+# For Windows and OS X, you can run the scripts mentioned above
+# instead of this one, the argument lists and effects are the same. 
+# In fact, unless you are running Cygwin bash or equivalent, this
+# script won't work in Windows, you should instead run the batch
+# script from a CMD window.
+
+
 windows=no
 if [ -n "$COMSPEC" ]; then
     if [ -n "$(expr match $COMSPEC '.*\(\.exe\)')" ]; then
@@ -7,12 +27,14 @@ if [ -n "$COMSPEC" ]; then
     fi
 fi
 if [ $windows = no ]; then
-    if [ `whoami` != root -a x$1 != x -a $1 != "-t" ]; then
-        echo "You're not root, validating using sudo."
-        sudo -v
-        if [ $? != 0 ]; then
-            echo Validation failed.
-            exit 1
+    if [ $(whoami) != root ]; then
+        if [ x$1 != x -a x$1 != x-t ]; then
+            echo "You're not root, validating using sudo."
+            sudo -v
+            if [ $? != 0 ]; then
+                echo Validation failed.
+                exit 1
+            fi
         fi
     fi
 fi
@@ -28,21 +50,26 @@ fi
 list=$*
 if [ -z "$list" ]; then
     echo
-    echo "Usage:  uninstall [-t] arg1 [arg2 ...]"
+    echo "Usage:  wr_uninstall [-t] arg1 [arg2 ...]"
     echo
     echo \
 "The arguments are partial program names from among those listed
-below.  Only the first few characters, to uniquely specify the name,
-are required in each argument.  For each argument, if a corresponding
-installed XicTools-4.3 package is found, it will be uninstalled.  The
-argument can also be "all", in which case all corresponding
-XicTools-4.3 installed packages will be uninstalled.  If the first
-argument is \"-t\", the removal commands are printed but not executed. 
-It is likely that you will need administrator or super-user
-permissions to successfully uninstall packages."
+below."
+    echo "  $programs"
     echo
     echo \
-"Programs: $programs"
+"Only the first few characters, to uniquely specify the name, are
+required in each argument.  For each argument, if a corresponding
+installed XicTools-4.3 package is found, it will be uninstalled.  The
+argument can also be \"all\", in which case all installed XicTools-4.3
+packages will be uninstalled.  If the first argument is \"-t\", the
+removal commands are printed but not executed. 
+
+It is likely that you will need administrator or super-user
+permissions to successfully uninstall packages.  Except under Windows,
+the sudo utility is used to grant root permission.  You must be listed
+in /etc/sudoers, and give YOUR (not root's) password when asked."
+    echo
     echo
     exit 0
 fi
@@ -93,15 +120,15 @@ if [ -n "$names" ]; then
 
     if [ $windows = yes ]; then
         if [ $dryrun = no ]; then
-            sudo ../util/uninstall.bat $names
+            sudo $script_path/uninstall.bat $names
         else
-            ../util/uninstall.bat -t $names
+            $script_path/uninstall.bat -t $names
         fi
     elif [ $(uname) = Darwin ]; then
         if [ $dryrun = no ]; then
-            sudo ../util/osx_uninstall $names
+            sudo $script_path/osx_uninstall $names
         else
-            ../util/osx_uninstall -t $names
+            $script_path/osx_uninstall -t $names
         fi
     else
         list=$(rpm -qa | grep ^xictools_)

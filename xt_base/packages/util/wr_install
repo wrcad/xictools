@@ -78,17 +78,24 @@ PATH=$PATH:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 usage()
 {
     echo
-    echo Usage:  wr_install [-t] distrib_file ...
+    echo "Usage:  wr_install [-t] distrib_file ..."
     echo
-    echo The arguments are XicTools-4.3 package files,
+    echo "The arguments are XicTools-4.3 package file names."
     echo
-    echo DO NOT CHANGE THE NAMES OF THESE FILES!
+    echo "DO NOT CHANGE THE NAMES OF THESE FILES!"
     echo
-    echo If -t is given, files that follow won\'t be installed, but
-    echo the commands that would be executed are printed.
+    echo "If \"-t\" is given, files that follow won't be installed, but"
+    echo "the commands that would be executed are printed."
     echo
-    echo "This is the SAFE INSTALL version for XicTools-4.3 (open"
-    echo "source), see comments in the script for info."
+    echo \
+"See the comments at the top of the script file for more information.
+This version is not compatible with pre-4.3 releases."
+    echo
+    echo \
+"It is likely that you will need administrator or super-user
+permissions to successfully install packages.  Except under Windows,
+the sudo utility is used to grant root permission.  You must be listed
+in /etc/sudoers, and give YOUR (not root's) password when asked."
     echo
 }
 
@@ -106,7 +113,7 @@ do_update()
 {
     distfile=$1
     prefix=$2
-    nodo=$3
+    dryrun=$3
 
     if [ -z "$distfile" ]; then
         echo "Error: (do_update) no file name given!"
@@ -114,15 +121,15 @@ do_update()
     fi
     if [ ! -f $distfile ]; then
         echo File: $distfile
-        echo "Error: (do_update) file not found."
+        echo "Error: (do_update) file $distfile not found."
         return 127
     fi
     if [ -z "$prefix" ]; then
         echo "Error: (do_update) no prefix given!"
         return 127
     fi
-    if [ -z "$nodo" ]; then
-        nodo=no
+    if [ -z "$dryrun" ]; then
+        dryrun=no
     fi
 
     dfb=`basename $distfile`
@@ -175,7 +182,7 @@ do_update()
         fi
         ppkg=`fullpath $distfile`
         echo sudo installer -pkg "$ppkg" -target /
-        if [ x$nodo != xyes ]; then
+        if [ x$dryrun != xyes ]; then
             sudo installer -pkg "$ppkg" -target /
         fi
         ;;
@@ -187,7 +194,7 @@ do_update()
             return 127
         fi
         echo ./$distfile
-        if [ x$nodo != xyes ]; then
+        if [ x$dryrun != xyes ]; then
             ./$distfile
         fi
         ;;
@@ -230,17 +237,17 @@ do_update()
                 return 127
             fi
             echo alien -ick $distfile
-            if [ x$nodo != xyes ]; then
+            if [ x$dryrun != xyes ]; then
                 sudo alien -ick $distfile
             fi
         elif [ $prefix = /usr/local ]; then
             echo rpm -U --replacepkgs --replacefiles --nodeps $distfile
-            if [ x$nodo != xyes ]; then
+            if [ x$dryrun != xyes ]; then
                 sudo rpm -U --replacepkgs --replacefiles --nodeps $distfile
             fi
         else
             echo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
-            if [ x$nodo != xyes ]; then
+            if [ x$dryrun != xyes ]; then
                 sudo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
             fi
         fi
@@ -252,7 +259,7 @@ do_update()
     esac
 
     ret=0
-    if [ x$nodo != xyes ]; then
+    if [ x$dryrun != xyes ]; then
         ret=$?
         if [ $ret = 0 ]; then
             echo Installation of $progname-$osname-$vers done, no errors returned.
@@ -261,6 +268,44 @@ do_update()
         fi
     fi
     return $ret
+}
+
+check_clean()
+{
+    dryrun=$1
+    if [ -f $HOME/wr_clean ]; then
+        read resp < $HOME/.wrclean
+    fi
+    if [ x$resp != x4.3 ]; then
+        echo
+        echo \
+"You need to run wr_clean, which will uninstall all pre-4.3 packages.  Your
+present Xic and WRspice can be saved using the \"Safe Install\" format, and
+existing safe-installs won't be touched.  This utility needs to be run once
+only, before 4.3 packages are installed."
+        if [ x$dryrun = xyes ]; then
+            echo
+            echo \
+"You gave \"-t\" so wr_clean won't actually do anything, only print commands
+it would do otherwise, and you will need to run it again not in dry run mode."
+        fi
+        echo
+        echo -n "Run now? [y] :"
+        read resp
+        if [ x$resp = xy -o x$resp = xyes ]; then
+            if [ $dryrun = yes ]; then
+                ./wr_clean -t
+            else
+                ./wr_clean -t
+            fi
+        else
+            if [ x$dryrun != xyes ]; then
+                echo \
+"You will need to run wr_clean, or I'll prompt next time."
+                exit 0
+            fi
+        fi
+    fi
 }
 
 
@@ -288,6 +333,7 @@ if [ x$1 = x-upd ]; then
     exit $ret
 fi
 
+
 if [ $# = 0 ]; then
     usage
     exit 1
@@ -302,15 +348,20 @@ for fname in $args; do
     fi
 done
 
-nodo=no
-if [ $windows != yes ]; then
+cleanchk=no
+dryrun=no
+if [ $windows = yes ]; then
     ret=0
     for fname in $args; do
         if [ $fname = "-t" ]; then
-            nodo=yes
+            dryrun=yes
             continue
         fi
-        do_update $fname /usr/local $nodo
+        if [ $cleanchk = no ]; then
+            check_clean $dryrun
+            cleanchk=yes
+        fi
+        do_update $fname /usr/local $dryrun
         r=$?
         if [ r != 0 ]; then
             ret=1
@@ -343,22 +394,28 @@ OK [y/n]? "
     done
 fi
 
-if [ `whoami` != root -a $1 != "-t" ]; then
-    echo "You're not root, validating using sudo."
-    sudo -v
-    if [ $? != 0 ]; then
-        echo Validation failed.
-        exit 1
+if [ `whoami` != root ]; then
+    if [ x$1 != x -a x$1 != x-t ]; then
+        echo "You're not root, validating using sudo."
+        sudo -v
+        if [ $? != 0 ]; then
+            echo Validation failed.
+            exit 1
+        fi
     fi
 fi
 
 ret=0
 for fname in $args; do
     if [ $fname = "-t" ]; then
-        nodo=yes
+        dryrun=yes
         continue
     fi
-    do_update $fname $prefix $nodo
+    if [ $cleanchk = no ]; then
+        check_clean $dryrun
+        cleanchk=yes
+    fi
+    do_update $fname $prefix $dryrun
     r=$?
     if [ r != 0 ]; then
         ret=1

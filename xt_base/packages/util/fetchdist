@@ -20,20 +20,17 @@ oses=$2
 # Where files are placed.
 outdir=$HOME/export/xictools
 
-# The version script
-release=$HOME/src/xictools/version
-
 # Find and echo the version number of the program name passed as an
 # argument.
 #
-version ()
+version()
 {
     program=$1
     # We're running "make fetch" in xt_base/packages.  The local
     # programs are assumed identical to the remote versions.
     root=../..
     if [ -d $root/$program ]; then
-        echo $($root/$program/version)
+        $($root/$program/version)
     fi
 }
 
@@ -47,6 +44,7 @@ get()
     tifs=$IFS
     IFS="."
     set -- $ostok
+    IFS=$tifs
     osname=$1
     arch=$2
 
@@ -139,16 +137,16 @@ get()
 }
 
 scripts="wr_install wr_uninstall osx_uninstall uninstall.bat \
- cleanold cleanold.bat"
+ wr_clean cleanold.bat"
 
 if [ ! -d $outdir/scripts ]; then
     mkdir $outdir/scripts
 fi
-for a in $scripts: do
+for a in $scripts; do
     if [ ! -f $outdir/scripts/$a -o \
-             "x$(diff --brief $outdir/scripts/$a ../util/$a)" != x ]; then
-        cp -fp ../util/$a $outdir/scripts/$a
-        echo Updated wr_install
+             "x$(diff --brief $outdir/scripts/$a util/$a)" != x ]; then
+        cp -fp util/$a $outdir/scripts/$a
+        echo Updated $a
     fi
 done
 

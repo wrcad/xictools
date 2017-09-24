@@ -172,7 +172,7 @@ process_osx_dist ()
 
 if [ -n "$COMSPEC" ]; then
     if [ -n "$(expr match $COMSPEC '.*\(\.exe\)')" ]; then
-        ../util/cleanold.bat $*
+        ./cleanold.bat $*
         exit $?
     fi
 fi
@@ -183,6 +183,11 @@ if [ x$1 = x-t ]; then
     shift
 fi
 
+if [ $dryrun = yes ]; then
+    echo Running $0 in dry run mode
+else
+    echo Running $0
+fi
 
 if [ $(uname) = Darwin ]; then
     xiclist=$(rpm -qa | grep "^XicTools\.Xic\.")
@@ -205,6 +210,11 @@ if [ $(uname) = Darwin ]; then
     for a in $srvlist; do
         process_osx_dist xtlserv $a $dryrun
     done
+    # Record that we've been run.
+    if [ $dryrun = no ]; then
+        echo "4.3" > $HOME/.wrclean
+    fi
+    echo $0 done
     exit 0
 fi
 
@@ -230,9 +240,15 @@ if [ $? = 0 ]; then
     for a in $srvlist; do
         process_rpm_dist xtlserv $a $dryrun
     done
+    # Record that we've been run.
+    if [ $dryrun = no ]; then
+        echo "4.3" > $HOME/.wrclean
+    fi
+    echo $0 done
     exit 0
 fi
 
 echo Packaging system unsupported.
+echo $0 done
 exit 1
 

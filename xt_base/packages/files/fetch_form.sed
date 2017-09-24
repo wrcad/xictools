@@ -6,11 +6,13 @@
 <table>
 <tr><td width=150>
 <b>Distributions</b><br>
-<input type=checkbox name=Darwin value=Darwin>Darwin<br>
+<input type=checkbox value=Darwin>Darwin<br>
 <input type=checkbox name=LinuxRHEL5 value=LinuxRHEL5.i686>LinuxRHEL5<br>
-<input type=checkbox name=LinuxRHEL5_64 value=LinuxRHEL5.x86_64>LinuxRHEL5_64<br>
+<input type=checkbox value=LinuxRHEL5.x86_64>LinuxRHEL5_64<br>
 <input type=checkbox name=LinuxRHEL6_64 value=LinuxRHEL6>LinuxRHEL6_64<br>
 <input type=checkbox name=LinuxRHEL7_64 value=LinuxRHEL7>LinuxRHEL7_64<br>
+<input type=checkbox name=LinuxOpenSUSE13_64 value=LinuxOpenSUSE13>LinuxOpenSUSE13_64<br>
+<input type=checkbox name=LinuxFedora26_64 value=LinuxFedora26>LinuxFedora26_64<br>
 <input type=checkbox name=Windows value=Windows>Windows<br>
 </td>
 

@@ -32,7 +32,7 @@ while [ 1 = 1 ]; do
 done
 
 if [ x"$progs" = x ]; then
-    echo NO PROGHAMS SELECTED!
+    echo NO PROGRAMS SELECTED!
     exit 1
 fi
 if [ x"$oses" = x ]; then
