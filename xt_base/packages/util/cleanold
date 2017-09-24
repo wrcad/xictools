@@ -15,31 +15,32 @@ process_rpm_dist ()
     dist=$2
     dryrun=$3
 
-    loc=$(rpm -ql $dist | grep xictools/$prog\$)
     if [ $prog = xic -o $prog = wrspice ]; then
-        if [ $(echo $dist | grep gen4) = $dist ]; then
+        loc=$(rpm -ql $dist | grep xictools/$prog/bin/$prog\$)
+        loc=${loc%/$prog/bin/$prog}
+        if [ -n "$loc" ]; then
             echo
             echo Reverting Safe Install linking
-            echo "cd $loc/..; rm $prog; mv -f $prog.current $prog"
+            echo "cd $loc; rm $prog; mv -f $prog.current $prog"
             if [ $dryrun = no ]; then
-                (cd $loc/..; rm $prog; mv -f $prog.current $prog)
+                (cd $loc; rm $prog; mv -f $prog.current $prog)
             fi
             echo
-            echo -n ">>>  Save $loc ? [n] "
+            echo -n ">>>  Save $loc/$prog ? [n] "
             read foo
             if [ x$foo = xy -o x$foo = xyes ]; then
-                vstr=$($loc/bin/$prog --v)
+                vstr=$($loc/$prog/bin/$prog --v)
                 set -- $vstr
                 vstr=$1
                 echo
                 echo Saving $prog-$vstr
-                echo "cd $loc/..; cp -prf $prog $prog-$vstr"
+                echo "cd $loc; cp -prf $prog $prog-$vstr"
                 if [ $dryrun = no ]; then
-                    (cd $loc/..; cp -prf $prog $prog-$vstr)
+                    (cd $loc; cp -prf $prog $prog-$vstr)
                 fi
             fi
             echo
-            echo "***IMPORTANT!  Remove $loc/bin from your search path. ***"
+            echo "***IMPORTANT!  Remove $loc/$prog/bin from your search path. ***"
             echo
         fi
     fi
@@ -62,29 +63,31 @@ process_osx_dist ()
     loc=/usr/local/xictools
 
     if [ $prog = xic -o $prog = wrspice ]; then
-        echo
-        echo Reverting Safe Install linking
-        echo "cd $loc; rm $prog; mv -f $prog.current $prog"
-        if [ $dryrun = no ]; then
-            (cd $loc; rm $prog; mv -f $prog.current $prog)
-        fi
-        echo
-        echo -n ">>>  Save $loc/$prog ? [n] "
-        read foo
-        if [ x$foo = xy -o x$foo = xyes ]; then
-            vstr=$($loc/$prog/bin/$prog --v)
-            set -- $vstr
-            vstr=$1
+        if [ -x $loc/$prog/bin/$prog ]; then
             echo
-            echo Saving $prog-$vstr
-            echo "cd $loc; cp -prf $prog $prog-$vstr"
+            echo Reverting Safe Install linking
+            echo "cd $loc; rm $prog; mv -f $prog.current $prog"
             if [ $dryrun = no ]; then
-                (cd $loc; cp -prf $prog $prog-$vstr)
+                (cd $loc; rm $prog; mv -f $prog.current $prog)
             fi
+            echo
+            echo -n ">>>  Save $loc/$prog ? [n] "
+            read foo
+            if [ x$foo = xy -o x$foo = xyes ]; then
+                vstr=$($loc/$prog/bin/$prog --v)
+                set -- $vstr
+                vstr=$1
+                echo
+                echo Saving $prog-$vstr
+                echo "cd $loc; cp -prf $prog $prog-$vstr"
+                if [ $dryrun = no ]; then
+                    (cd $loc; cp -prf $prog $prog-$vstr)
+                fi
+            fi
+            echo
+            echo "***IMPORTANT!  Remove $loc/$prog/bin from your search path. ***"
+            echo
         fi
-        echo
-        echo "***IMPORTANT!  Remove $loc/$prog/bin from your search path. ***"
-        echo
     fi
 
     echo
@@ -93,18 +96,36 @@ process_osx_dist ()
     xic)
         if [ $dryrun = yes ]; then
             echo rm -rf $loc/$prog
+            echo rm -f $loc/bin/xic
+            echo rm -f $loc/bin/wrdecode
+            echo rm -f $loc/bin/wrencode
+            echo rm -f $loc/bin/wrsetpass
             echo pkgutil --forget $dist
         else
             rm -rf $loc/$prog
+            rm -f $loc/bin/xic
+            rm -f $loc/bin/wrdecode
+            rm -f $loc/bin/wrencode
+            rm -f $loc/bin/wrsetpass
             pkgutil --forget $dist
         fi
         ;;
     wrspice)
         if [ $dryrun = yes ]; then
             echo rm -rf $loc/$prog
+            echo rm -f $loc/bin/multidec
+            echo rm -f $loc/bin/proc2mod
+            echo rm -f $loc/bin/printtoraw
+            echo rm -f $loc/bin/wrspice
+            echo rm -f $loc/bin/wrspiced
             echo pkgutil --forget $dist
         else
             rm -rf $loc/$prog
+            rm -f $loc/bin/multidec
+            rm -f $loc/bin/proc2mod
+            rm -f $loc/bin/printtoraw
+            rm -f $loc/bin/wrspice
+            rm -f $loc/bin/wrspiced
             pkgutil --forget $dist
         fi
         ;;
@@ -185,9 +206,9 @@ if [ $(uname) = Darwin ]; then
         process_osx_dist xtlserv $a $dryrun
     done
     exit 0
-exit
+fi
 
-command -v rpm 2>&1 /dev/null
+command -v rpm 2>&1 > /dev/null
 if [ $? = 0 ]; then
     xiclist=$(rpm -qa | grep "^xic-")
     wrslist=$(rpm -qa | grep "^wrspice-")
@@ -212,7 +233,6 @@ if [ $? = 0 ]; then
     exit 0
 fi
 
-echo "Sorry, I can't find the rpm program, and nobody has taught me"
-echo "how to use anything else on Linux yet."
+echo Packaging system unsupported.
 exit 1
 

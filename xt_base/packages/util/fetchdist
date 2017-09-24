@@ -110,7 +110,7 @@ get()
             rsync $dir/$fname $outdir/$osname/$fname
             chmod 0644 $outdir/$osname/$fname
             ;;
-        LinuxOpenSuse)
+        LinuxOpenSUSE13)
             if [ $arch = x86_64 ]; then
                 dir=$USER@byron:/home/$USER/src/xt/xt_base/packages/pkgfiles
             else
