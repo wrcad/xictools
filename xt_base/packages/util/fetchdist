@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # Utility called by "make fetch" to assemble packages from different
 # machines into a common area for upload to the wrcad.com web site.

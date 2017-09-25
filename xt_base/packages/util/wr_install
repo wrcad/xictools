@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 #
 # wr_install - script to install XicTools packages.
 # For XicTools-4.3 (open source) branch ONLY.
@@ -299,10 +299,10 @@ clean_old()
     fi
 
     if [ $(uname) = Darwin ]; then
-        xiclist=$(rpm -qa | grep "^XicTools\.Xic\.")
-        wrslist=$(rpm -qa | grep "^XicTools\.WRspice\.")
-        acslist=$(rpm -qa | grep "^XicTools\.Accs\.")
-        srvlist=$(rpm -qa | grep "^XicTools\.Xtlserv\.")
+        xiclist=$(pkgutil --pkgs | grep "^XicTools\.Xic\.")
+        wrslist=$(pkgutil --pkgs | grep "^XicTools\.WRspice\.")
+        acslist=$(pkgutil --pkgs | grep "^XicTools\.Accs\.")
+        srvlist=$(pkgutil --pkgs | grep "^XicTools\.Xtlserv\.")
 
         for a in $xiclist; do
             remove_osx_dist xic $a $dryrun
