@@ -187,7 +187,8 @@ goto :eof
 
 :final
 @rem   The installer may not entirely remove xic and wrspice directories.
-@rem   This finishes the job.
+@rem   There also might be prog.current directories still around for some
+@rem   reason.  This removes these if found.
 set prog=%1
 set ucmd=%2
 set dryrun=%3
@@ -203,6 +204,13 @@ if exist %loc%\%prog% (
         echo rd /s /q %loc%\%prog%
     ) else (
         rd /s /q %loc%\%prog%
+    )
+)
+if exist %loc%\%prog%.current (
+    if %dryrun%==yes (
+        echo rd /s /q %loc%\%prog%.current
+    ) else (
+        rd /s /q %loc%\%prog%.current
     )
 )
 goto :eof

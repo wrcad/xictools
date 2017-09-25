@@ -146,8 +146,6 @@ extern char *sys_errlist[];
 #endif
 
 #ifdef WIN32
-// Tell the msw interface that we're Generation 4.
-const char *msw::MSWpkgSuffix = "-4";
 
 #define CLOSESOCKET(x) shutdown(x, SD_SEND), closesocket(x)
 #else

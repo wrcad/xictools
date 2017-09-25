@@ -5,12 +5,12 @@
 @rem   Uninstall script for Microsoft Windows.
 
 if -%1-==-- (
-    echo
+    echo.
     echo Usage:  uninstall [-t] prog ...
-    echo
+    echo.
     echo Arguments are program names from the following:
     echo adms fastcap fasthenry mozy mrouter vl wrspice xic xtlserv
-    echo
+    echo.
     echo Programs listed after -t won't be uninstalled, but the command
     echo that would otherwise run is printed.
     exit
@@ -19,6 +19,7 @@ if -%1-==-- (
 set dryrun=no
 
 :start
+
 if -%1-==-- exit
 
 set appname=
@@ -36,8 +37,8 @@ if %1==vl set appname=vl_is1
 if %1==wrspice set appname=wrspice_is1
 if %1==xic set appname=xic_is1
 
-if -%appname-==-- (
-    echo Unown program %1, ignoring.
+if -%appname%-==-- (
+    echo Unknown program %1, ignoring.
     goto :advance
 )
 
@@ -52,7 +53,7 @@ if ERRORLEVEL 1 (
 )
 reg query %key%\%appname% /v UninstallString > NUL 2>&1
 if ERRORLEVEL 1 (
-    echo %1 installation location not found in registry.
+    echo Uninstall info not found:  %1
     goto :advance
 )
 

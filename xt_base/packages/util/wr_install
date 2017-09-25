@@ -73,6 +73,24 @@
 
 #=======================================================================
 
+command -v sudo 2>&1 > /dev/null
+if [ $? != 0 ]; then
+    echo
+    echo \
+"ERROR:
+The sudo command is not found.  You can fake it by creating a file
+named \"sudo\" somewhere in your search path, with content
+
+#!/bin/bash
+\$@
+
+Make the file executable with "chmod 755 sudo".  This creates a
+phony sudo command that simply executes the arguments.  You may need
+to run the calling script as an administrator or root user."
+    exit 1
+fi
+
+script_path=$(dirname $0)
 PATH=$PATH:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
 usage()
@@ -364,6 +382,8 @@ clean_old()
 check_clean()
 {
     dryrun=$1
+    windows=$2
+    script_path=$3
     if [ -f $HOME/.wrclean ]; then
         read resp < $HOME/.wrclean
     fi
@@ -384,7 +404,15 @@ print commands it would otherwise execute."
         echo -n "Run now? [n]: "
         read resp
         if [ x$resp = xy -o x$resp = xyes ]; then
-            clean_old $dryrun
+            if [ x$windows = xyes ]; then
+                if [ $dryrun = yes ]; then
+                    $script_path/cleanold.bat /t
+                else
+                    $script_path/cleanold.bat
+                fi
+            else
+                clean_old $dryrun
+            fi
         else
             if [ $dryrun != yes ]; then
                 echo Aborting.
@@ -693,7 +721,7 @@ if [ $windows = yes ]; then
             continue
         fi
         if [ $cleanchk = no ]; then
-            check_clean $dryrun
+            check_clean $dryrun $windows $script_path
             cleanchk=yes
         fi
         do_update $fname /usr/local $dryrun
@@ -747,7 +775,7 @@ for fname in $pkgs; do
         continue
     fi
     if [ $cleanchk = no ]; then
-        check_clean $dryrun
+        check_clean $dryrun $windows $script_path
         cleanchk=yes
     fi
     do_update $fname $prefix $dryrun

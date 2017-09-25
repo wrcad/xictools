@@ -6,19 +6,27 @@
 # Whiteley Research Inc., open source, Apache 2.0 license
 # Stephen R. Whiteley 9/23/2017
 
-# This is the directory that contains the uninstall.bat and osx_uninstall
-# scripts, which are called under Windows and OS X respectively.  By
-# default, we assume that they are in the current directory, but you can
-# change this.
-#
-script_path=.
+# For Windows, you can run uninstall.bat instead of this script, the
+# argument lists and effects are the same.  In fact, unless you are
+# running Cygwin bash or equivalent, this script won't work in
+# Windows, you should instead run the batch script from a CMD prompt.
 
-# For Windows and OS X, you can run the scripts mentioned above
-# instead of this one, the argument lists and effects are the same. 
-# In fact, unless you are running Cygwin bash or equivalent, this
-# script won't work in Windows, you should instead run the batch
-# script from a CMD window.
+command -v sudo 2>&1 > /dev/null
+if [ $? != 0 ]; then
+    echo
+    echo \
+"ERROR:
+The sudo command is not found.  You can fake it by creating a file
+named \"sudo\" somewhere in your search path, with content
 
+#!/bin/bash
+\$@
+
+Make the file executable with "chmod 755 sudo".  This creates a
+phony sudo command that simply executes the arguments.  You may need
+to run the calling script as an administrator or root user."
+    exit 1
+fi
 
 windows=no
 if [ -n "$COMSPEC" ]; then
@@ -119,6 +127,7 @@ done
 if [ -n "$names" ]; then
 
     if [ $windows = yes ]; then
+        script_path=$(dirname $0)
         if [ $dryrun = no ]; then
             sudo $script_path/uninstall.bat $names
         else
