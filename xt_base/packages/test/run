@@ -40,7 +40,9 @@ echo
 
 # The installation area (/usr/local/xictools) should contain only
 # safe-installs (subdirectories with names like xic-4.2.17 and
-# wrspice-4.2.16), and an empty bin subdirectory.
+# wrspice-4.2.16), and an empty bin subdirectory.  There may also
+# be a license subdirectory containing old LICENSE and server log
+#  files.
 echo
 echo Done
 echo
