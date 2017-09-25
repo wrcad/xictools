@@ -7,9 +7,9 @@ else
 fi
 
 # Remove wrapper and links.
-txic=$prefix/xictools/xic
+rm -rf $prefix/xictools/xic
 tbin=$prefix/xictools/bin
-rm -f $txic $tbin/xic $tbin/wrencode $tbin/decode $tbin/wrsetpass
+rm -f $tbin/xic $tbin/wrencode $tbin/decode $tbin/wrsetpass
 
 # Back up for Safe Install.
 prog=xic

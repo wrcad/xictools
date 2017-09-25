@@ -1,0 +1,51 @@
+#! /bin/bash
+
+# Test the package install/clean/remove process.
+
+# NOTE: This will blow away any existing xictools installations, and
+# is for development testing only.
+
+# First, copy some old distribution files, and the matching old
+# wr_install script, to this directory.  Then ./run should proceed
+# without errors.  At the end, the /usr/local/xictools should consist
+# of safe-installs and an empty bin directory.
+
+# Start by removing any 4.3 packages that may be installed.
+echo
+echo Remove 4.3 packages.
+echo
+../util/wr_uninstall all
+
+# Install the old package files found here.  Remove the "~/.wrclean" flag
+# that indicates that the clean-old operation has been done.
+echo
+echo Install some old packages.
+echo
+rm -f $HOME/.wrclean
+shopt -s nullglob
+sudo ./wr_install *.rpm *.pkg *.exe
+
+# Install the 4.3 packages.  The clear-old operation should be triggered
+# and will uninstall the old packages before installing the new ones.
+echo
+echo Install some 4.3 packages, should clear old first
+echo
+(cd ../pkgfiles; ../util/wr_install all)
+
+# Uninstall the 4.3 packages.  The installation area should be clean.
+echo
+echo Remove 4.3 packages.
+echo
+../util/wr_uninstall all
+
+# The installation area (/usr/local/xictools) should contain only
+# safe-installs (subdirectories with names like xic-4.2.17 and
+# wrspice-4.2.16), and an empty bin subdirectory.
+echo
+echo Done
+echo
+echo ls /usr/local/xictools
+ls /usr/local/xictools
+echo
+echo ls /usr/local/xictools/bin
+ls /usr/local/xictools/bin

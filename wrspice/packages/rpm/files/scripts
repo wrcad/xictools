@@ -6,9 +6,9 @@ else
 fi
 
 # Remove links.
-twrs=$prefix/xictools/wrspice
+rm -rf $prefix/xictools/wrspice
 tbin=$prefix/xictools/bin
-rm -f $twrs $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
+rm -f $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
   $tbin/wrspiced
 
 # Back up for Safe Install.
