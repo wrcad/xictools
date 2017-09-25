@@ -136,8 +136,7 @@ get()
     echo '--------------------------------------------------------------'>&2
 }
 
-scripts="wr_install wr_uninstall osx_uninstall uninstall.bat \
- wr_clean cleanold.bat"
+scripts="wr_install wr_uninstall uninstall.bat cleanold.bat"
 
 if [ ! -d $outdir/scripts ]; then
     mkdir $outdir/scripts

@@ -78,14 +78,24 @@ PATH=$PATH:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 usage()
 {
     echo
-    echo "Usage:  wr_install [-t] distrib_file ..."
+    echo "Usage:  wr_install [-t] arg ..."
     echo
-    echo "The arguments are XicTools-4.3 package file names."
+    echo \
+"The arguments can be partial program names from among those listed below:"
+    echo "  $*."
+    echo \
+"Only the first few characters, to uniquely specify the name, are
+required in each argument.  For each argument, if a corresponding
+XicTools-4.3 package file is found in this directory, it will be
+installed.  The arguments can also be the actual full names of
+XicTools-4.3 package files found in the this directory."
+
     echo
-    echo "DO NOT CHANGE THE NAMES OF THESE FILES!"
+    echo "DO NOT CHANGE THE NAMES OF THE PACKAGE FILES!"
     echo
-    echo "If \"-t\" is given, files that follow won't be installed, but"
-    echo "the commands that would be executed are printed."
+    echo \
+"If \"-t\" is given, packages that follow won't be installed, but the
+commands that would otherwise be executed are printed."
     echo
     echo \
 "See the comments at the top of the script file for more information.
@@ -104,6 +114,284 @@ in /etc/sudoers, and give YOUR (not root's) password when asked."
 fullpath()
 {
     echo $(cd $(dirname "$1") && pwd -P)/$(basename "$1")
+}
+
+# Remove a pre-4.3 XicTools installation from Linux/rpm.  The user is
+# given the option of saving existing Xic and WRspice installations
+# into the Safe Install framework.  Existing Safe Installs are
+# preserved.
+#
+remove_rpm_dist()
+{
+    prog=$1
+    dist=$2
+    dryrun=$3
+
+    if [ $prog = xic -o $prog = wrspice ]; then
+        loc=$(rpm -ql $dist | grep xictools/$prog/bin/$prog\$)
+        loc=${loc%/$prog/bin/$prog}
+        if [ -n "$loc" ]; then
+            echo
+            echo Reverting Safe Install linking
+            echo "cd $loc; rm $prog; mv -f $prog.current $prog"
+            if [ $dryrun = no ]; then
+                sudo bash -c "cd $loc; rm $prog; mv -f $prog.current $prog"
+            fi
+            echo
+            echo -n ">>>  Save $loc/$prog ? [n] "
+            read foo
+            if [ x$foo = xy -o x$foo = xyes ]; then
+                vstr=$($loc/$prog/bin/$prog --v)
+                set -- $vstr
+                vstr=$1
+                echo
+                echo Saving $prog-$vstr
+                echo "cd $loc; cp -prf $prog $prog-$vstr"
+                if [ $dryrun = no ]; then
+                    sudo bash -c "cd $loc; cp -prf $prog $prog-$vstr"
+                fi
+            fi
+            echo
+            echo "***IMPORTANT!  Remove $loc/$prog/bin from your search path. ***"
+            echo
+        fi
+    fi
+
+    echo
+    echo Removing package $a
+    echo rpm -e $a
+    if [ $dryrun = no ]; then
+        sudo rpm -e $a
+    fi
+}
+
+# Remove a pre-4.3 XicTools installation under OS X.  The user is
+# given the option of saving existing Xic and WRspice installations
+# into the Safe Install framework.  Existing Safe Installs are
+# preserved.
+#
+remove_osx_dist()
+{
+    prog=$1
+    dist=$2
+    dryrun=$3
+
+    # Apple packages aren't relocatable.
+    loc=/usr/local/xictools
+
+    if [ $prog = xic -o $prog = wrspice ]; then
+        if [ -x $loc/$prog/bin/$prog ]; then
+            echo
+            echo Reverting Safe Install linking
+            echo "cd $loc; rm $prog; mv -f $prog.current $prog"
+            if [ $dryrun = no ]; then
+                sudo bash -c "cd $loc; rm $prog; mv -f $prog.current $prog"
+            fi
+            echo
+            echo -n ">>>  Save $loc/$prog ? [n] "
+            read foo
+            if [ x$foo = xy -o x$foo = xyes ]; then
+                vstr=$($loc/$prog/bin/$prog --v)
+                set -- $vstr
+                vstr=$1
+                echo
+                echo Saving $prog-$vstr
+                echo "cd $loc; cp -prf $prog $prog-$vstr"
+                if [ $dryrun = no ]; then
+                    sudo bash -c "cd $loc; cp -prf $prog $prog-$vstr"
+                fi
+            fi
+            echo
+            echo "***IMPORTANT!  Remove $loc/$prog/bin from your search path. ***"
+            echo
+        fi
+    fi
+
+    echo
+    echo Removing package $a
+    case $prog in
+    xic)
+        if [ $dryrun = yes ]; then
+            echo rm -rf $loc/$prog
+            echo rm -f $loc/bin/xic
+            echo rm -f $loc/bin/wrdecode
+            echo rm -f $loc/bin/wrencode
+            echo rm -f $loc/bin/wrsetpass
+            echo pkgutil --forget $dist
+        else
+            sudo rm -rf $loc/$prog
+            sudo rm -f $loc/bin/xic
+            sudo rm -f $loc/bin/wrdecode
+            sudo rm -f $loc/bin/wrencode
+            sudo rm -f $loc/bin/wrsetpass
+            sudo pkgutil --forget $dist
+        fi
+        ;;
+    wrspice)
+        if [ $dryrun = yes ]; then
+            echo rm -rf $loc/$prog
+            echo rm -f $loc/bin/multidec
+            echo rm -f $loc/bin/proc2mod
+            echo rm -f $loc/bin/printtoraw
+            echo rm -f $loc/bin/wrspice
+            echo rm -f $loc/bin/wrspiced
+            echo pkgutil --forget $dist
+        else
+            sudo rm -rf $loc/$prog
+            sudo rm -f $loc/bin/multidec
+            sudo rm -f $loc/bin/proc2mod
+            sudo rm -f $loc/bin/printtoraw
+            sudo rm -f $loc/bin/wrspice
+            sudo rm -f $loc/bin/wrspiced
+            sudo pkgutil --forget $dist
+        fi
+        ;;
+    xt_accs)
+        if [ $dryrun = yes ]; then
+            echo rm -rf $loc/mozy
+            echo rm -f $loc/bin/mozy
+            echo rm -f $loc/bin/xeditor
+            echo rm -f $loc/bin/httpget
+            echo rm -f $loc/bin/hlp2html
+            echo rm -f $loc/bin/hlpsrv
+            echo rm -f $loc/bin/fcpp
+            echo rm -f $loc/bin/lstpack
+            echo rm -f $loc/bin/lstunpack
+            echo pkgutil --forget $dist
+        else
+            sudo rm -rf $loc/mozy
+            sudo rm -f $loc/bin/mozy
+            sudo rm -f $loc/bin/xeditor
+            sudo rm -f $loc/bin/httpget
+            sudo rm -f $loc/bin/hlp2html
+            sudo rm -f $loc/bin/hlpsrv
+            sudo rm -f $loc/bin/fcpp
+            sudo rm -f $loc/bin/lstpack
+            sudo rm -f $loc/bin/lstunpack
+            sudo pkgutil --forget $dist
+        fi
+        ;;
+    xtlserv)
+        if [ $dryrun = yes ]; then
+            echo rm -f $loc/license/README
+            echo rm -f $loc/bin/xtlserv
+            echo rm -f $loc/bin/xtjobs
+            echo pkgutil --forget $dist
+        else
+            sudo rm -f $loc/license/README
+            sudo rm -f $loc/bin/xtlserv
+            sudo rm -f $loc/bin/xtjobs
+            sudo pkgutil --forget $dist
+        fi
+        ;;
+    esac
+}
+
+# Identify obsolete installed packages, and remove them.
+#
+clean_old()
+{
+    dryrun=$1
+    if [ $dryrun = yes ]; then
+        echo Cleaning old packages in dry run mode.
+    else
+        echo Cleaning old packages.
+    fi
+
+    if [ $(uname) = Darwin ]; then
+        xiclist=$(rpm -qa | grep "^XicTools\.Xic\.")
+        wrslist=$(rpm -qa | grep "^XicTools\.WRspice\.")
+        acslist=$(rpm -qa | grep "^XicTools\.Accs\.")
+        srvlist=$(rpm -qa | grep "^XicTools\.Xtlserv\.")
+
+        for a in $xiclist; do
+            remove_osx_dist xic $a $dryrun
+        done
+
+        for a in $wrslist; do
+            remove_osx_dist wrspice $a $dryrun
+        done
+
+        for a in $acslist; do
+            remove_osx_dist xt_accs $a $dryrun
+        done
+
+        for a in $srvlist; do
+            remove_osx_dist xtlserv $a $dryrun
+        done
+        # Record that we've been run.
+        if [ $dryrun = no ]; then
+            echo "4.3" > $HOME/.wrclean
+        fi
+        echo Cleaning done.
+        return
+    fi
+
+    command -v rpm 2>&1 > /dev/null
+    if [ $? = 0 ]; then
+        xiclist=$(rpm -qa | grep "^xic-")
+        wrslist=$(rpm -qa | grep "^wrspice-")
+        acslist=$(rpm -qa | grep "^xt_accs-")
+        srvlist=$(rpm -qa | grep "^xtlserv-")
+
+        for a in $xiclist; do
+            remove_rpm_dist xic $a $dryrun
+        done
+
+        for a in $wrslist; do
+            remove_rpm_dist wrspice $a $dryrun
+        done
+
+        for a in $acslist; do
+            remove_rpm_dist xt_accs $a $dryrun
+        done
+
+        for a in $srvlist; do
+            remove_rpm_dist xtlserv $a $dryrun
+        done
+        # Record that we've been run.
+        if [ $dryrun = no ]; then
+            echo "4.3" > $HOME/.wrclean
+        fi
+        echo Cleaning done.
+        return
+    fi
+
+    echo Packaging system unsupported.
+    exit 1
+}
+
+check_clean()
+{
+    dryrun=$1
+    if [ -f $HOME/.wrclean ]; then
+        read resp < $HOME/.wrclean
+    fi
+    if [ x$resp != x4.3 ]; then
+        echo
+        echo \
+"The following operation will remove all pre-4.3 packages.  Your
+present Xic and WRspice can be saved using the \"Safe Install\"
+format, and existing safe-installs won't be touched.  This utility
+will be run once only, before 4.3 packages are installed."
+        if [ $dryrun = yes ]; then
+            echo
+            echo \
+"You gave \"-t\" so the operation won't actually do anything, only
+print commands it would otherwise execute."
+        fi
+        echo
+        echo -n "Run now? [n]: "
+        read resp
+        if [ x$resp = xy -o x$resp = xyes ]; then
+            clean_old $dryrun
+        else
+            if [ $dryrun != yes ]; then
+                echo Aborting.
+                exit 0
+            fi
+        fi
+    fi
 }
 
 # Do the installation, removing old installation(s) first when possible.
@@ -270,44 +558,6 @@ do_update()
     return $ret
 }
 
-check_clean()
-{
-    dryrun=$1
-    if [ -f $HOME/wr_clean ]; then
-        read resp < $HOME/.wrclean
-    fi
-    if [ x$resp != x4.3 ]; then
-        echo
-        echo \
-"You need to run wr_clean, which will uninstall all pre-4.3 packages.  Your
-present Xic and WRspice can be saved using the \"Safe Install\" format, and
-existing safe-installs won't be touched.  This utility needs to be run once
-only, before 4.3 packages are installed."
-        if [ x$dryrun = xyes ]; then
-            echo
-            echo \
-"You gave \"-t\" so wr_clean won't actually do anything, only print commands
-it would do otherwise, and you will need to run it again not in dry run mode."
-        fi
-        echo
-        echo -n "Run now? [y] :"
-        read resp
-        if [ x$resp = xy -o x$resp = xyes ]; then
-            if [ $dryrun = yes ]; then
-                ./wr_clean -t
-            else
-                ./wr_clean -t
-            fi
-        else
-            if [ x$dryrun != xyes ]; then
-                echo \
-"You will need to run wr_clean, or I'll prompt next time."
-                exit 0
-            fi
-        fi
-    fi
-}
-
 
 if [ x$1 = x-upd ]; then
     # Called from Xic or WRspice when updating.
@@ -334,25 +584,110 @@ if [ x$1 = x-upd ]; then
 fi
 
 
+programs="adms fastcap fasthenry mozy mrouter vl wrspice xic xtlserv"
 if [ $# = 0 ]; then
-    usage
+    usage $programs
+    exit 1
+fi
+
+myname=$0
+
+dryrun=no
+list=$*
+for a in $list; do
+    case $a in
+    al|all)
+        if [ $dryrun = yes ]; then
+            list="-t $programs"
+        else
+            list=$programs
+        fi
+        break
+        ;;
+    -t)
+        dryrun=yes
+        ;;
+    esac
+done
+
+shopt -s nullglob
+
+pkgs=""
+for a in $list; do
+    case $a in
+    -t)
+        pkgs="$pkgs $a"
+    ;;
+    ad|adm|adms)
+	pkg=xictools_adms-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    fc|fastc|fastca|fastcap)
+	pkg=xictools_fastcap-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    fh|fasth|fasthe|fasthen|fasthenr|fasthenry)
+	pkg=xictools_fasthenry-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    mo|moz|mozy)
+	pkg=xictools_mozy-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    mr|mro|mrou|mrout|mroute|mrouter)
+	pkg=xictools_mrouter-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    v|vl)
+	pkg=xictools_vl-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    w|wr|wrs|wrsp|wrspi|wrspic|wrspice)
+	pkg=xictools_wrspice-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    xi|xic)
+	pkg=xictools_xic-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    xt|xtl|xtls|xtlse|xtlser|xtlserv)
+	pkg=xictools_xtlserv-*
+	if [ -n "$pkg" ]; then
+            pkgs="$pkgs $pkg"
+        fi;;
+    *)
+        if [ -f $s ]; then
+            pkgs="$pkgs $a"
+        fi
+    esac
+done
+
+if [ -z "$pkgs" ]; then
+    echo "Nothing found to install."
+    usage $programs
     exit 1
 fi
 
 windows=no
-args=$*
-for fname in $args; do
-    if [ -n $(echo $fname | grep 'exe$') ]; then
+if [ -n "$COMSPEC" ]; then
+    if [ -n "$(expr match $COMSPEC '.*\(\.exe\)')" ]; then
         windows=yes
-        break
     fi
-done
+fi
 
 cleanchk=no
 dryrun=no
 if [ $windows = yes ]; then
     ret=0
-    for fname in $args; do
+    for fname in $pkgs; do
         if [ $fname = "-t" ]; then
             dryrun=yes
             continue
@@ -394,7 +729,7 @@ OK [y/n]? "
     done
 fi
 
-if [ `whoami` != root ]; then
+if [ $(whoami) != root ]; then
     if [ x$1 != x -a x$1 != x-t ]; then
         echo "You're not root, validating using sudo."
         sudo -v
@@ -406,7 +741,7 @@ if [ `whoami` != root ]; then
 fi
 
 ret=0
-for fname in $args; do
+for fname in $pkgs; do
     if [ $fname = "-t" ]; then
         dryrun=yes
         continue

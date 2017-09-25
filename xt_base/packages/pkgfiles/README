@@ -1,54 +1,52 @@
 This directory is a common receiving point for the packages created
 from the various tools.
 
-Packages can be installed with the ./install command.  Type
+Packages can be installed with the wr_install script.  Run this script
+withoun arguments for instructions.  The wr_install script file
+contains more information as a comment.
 
-./install
+The wr_install script and others can be found in the ../util folder.
 
-for instructions.
-
-You can also use the wr_install script found in ../util to install
-packages.  Arguments to wr_install are the actual package file names.
-
-You very likely need to run as root to install packages.
+Packages can removed with the wr_install script, or on Windows without
+Cygwin there is a uninstall.bat script.  There is no need to remove
+a package before it is updated, the update process removes unneeded
+old files automatically (actually saving old Xic/WRspice distributions
+in the Safe Install format).
 
 ======
 XicTools Installation
 
-If you have an existing commercial Xic or WRspice installation, i.e., one
-that needs a LICENSE file, you should do the following before installing
-XicTools-4.3 programs.
+If you have an existing commercial Xic or WRspice installation, i.e.,
+one that needs a LICENSE file, it will be removed.  The wr_install
+script will do this automatically for Linux and OS X.  It is also
+automatic on Windows if you install using wr_install from a Cygwin
+bash window.
 
-It is important to clear your package database of any old Whiteley Research
-distributions (except for the gtk2-bundle distributions on Windows and OS X,
-leave these alone, they are still required).
+On Windows, if you don't have Cygwin or don't use wr_install for
+installation, you should run the cleanold.bat script from a CMD prompt
+before installing any XicTools-4.3 packages.
 
-You have the option of saving the old programs in case you ever need
-to run them again for some reason.  If you do this and use a license server,
-then you will need to save your license server as well.
+You don't need to remove the gtk2-bundle packages on OS X or Windows,
+these will still be needed for the present releases.  The cleanup
+scripts leave these alone.
 
-Windows:
+When cleaning using the scripts, you have the option of saving the old
+programs in case you ever need to run them again for some reason.  If
+you do this and use a license server, then you will need to save your
+license server as well.
 
-From a command prompt, run the cleanup.bat script.  This will prompt whether
-to save existing Xic and WRspice installations, and clear the machine of
-all pre-4.3 installed XicTools packages.  This will also clear the machine
-of FastHenry, FastVap, and ADMS packages from Whiteley Research.  These
-are now included in the Xictools framework, with now packages available.
+Windows (native):
 
-OS X:
+From a command prompt, run the cleanup.bat script.  This will prompt
+whether to save existing Xic and WRspice installations, and clear the
+machine of all pre-4.3 installed XicTools packages.  This will also
+clear the machine of FastHenry, FastCap, and ADMS packages from
+Whiteley Research.  These are now included in the Xictools framework,
+with new packages available.
 
-From a terminal window, run the cleanup script.  This will prompt whether
-to save existing Xic and WRspice installations, and clear the machine of
-all pre-4.3 installed XicTools packages.
+OS X, Linux:
 
-You will likely want to manually uninstall fastcap, fasthenry, and
-adms if you have installed any of these from Whiteley Research source
-code.  These programs are now included in the XicTools framework and
-new packages are available.
-
-Linux:
-
-From a terminal window, run the cleanup script.  This will prompt
+The cleanup operation will be run from wr_install.  This will prompt
 whether to save existing Xic and WRspice installations, and clear the
 machine of all pre-4.3 installed XicTools packages.
 
