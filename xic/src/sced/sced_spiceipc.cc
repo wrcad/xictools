@@ -57,6 +57,11 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "pathlist.h"
+#include "tvals.h"
+#include "services.h"
+#include "childproc.h"
+
 #else
 
 #include "main.h"
@@ -69,13 +74,15 @@
 #include "ebtn_menu.h"
 #include "promptline.h"
 #include "errorlog.h"
-#endif
 
-#include "sced_spiceipc.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/tvals.h"
 #include "miscutil/services.h"
 #include "miscutil/childproc.h"
+
+#endif
+
+#include "sced_spiceipc.h"
 
 #ifdef HAVE_PWD_H
 #include <pwd.h>

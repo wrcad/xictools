@@ -48,12 +48,6 @@ $(LIB_TARGET): $(CCOBJS)
 .cc.o:
 	$(CC) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
-files::
-	@echo [ $(CCFILES) $(HFILES) Makefile.in README rfc1945.txt rfc2616.txt ]
-
-subdirs::
-	@echo ]
-
 clean:
 	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
