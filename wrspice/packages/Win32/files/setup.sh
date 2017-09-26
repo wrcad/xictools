@@ -60,7 +60,7 @@ if [ -d $devkit ]; then
     $utod $devkit/Makefile
     $utod $devkit/admst/*
     $utod $devkit/include/*
-    foo=`cat ../../util/adms_examples`
+    foo=`cat ../util/adms_examples`
     for a in $foo; do
         $utod $devkit/$a
     done

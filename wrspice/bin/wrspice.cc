@@ -225,11 +225,6 @@ namespace {
         "\t[-r rawfile] [-t term] [file ...]\n";
 }
 
-#ifdef WIN32
-// Tell the msw interface that we're Generation 4.
-const char *msw::MSWpkgSuffix = "-4";
-#endif
-
 #ifdef HAVE_LOCAL_ALLOCATOR
 
 // This handles errors from the memory allocator if it is linked.

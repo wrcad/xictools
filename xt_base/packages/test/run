@@ -23,7 +23,14 @@ echo Install some old packages.
 echo
 rm -f $HOME/.wrclean
 shopt -s nullglob
-sudo ./wr_install *.rpm *.pkg *.exe
+exes=*.exe
+if [ -n "$exes" ]; then
+    for a in $exes; do
+        ./$a
+    done
+else
+    sudo ./wr_install *.rpm *.pkg *.exe
+fi
 
 # Install the 4.3 packages.  The clear-old operation should be triggered
 # and will uninstall the old packages before installing the new ones.
