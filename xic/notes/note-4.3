@@ -87,7 +87,7 @@ around button contents.  Such space can cuase side menu button images to
 be truncated on low-res displays.
 
 The !dumpcds command will now output a GDSII layer mapping file in
-addition top the tech and drf files.
+addition to the tech and drf files.
 
 Done:  Allow !join to join electrical wires.  In memory design from Cadence,
 all electrical wire segments are individual wires.  Maybe a join-all-wires
@@ -130,5 +130,14 @@ bin
 
 ToDo: Amir Jafari-Salim, Hypres
 Hot key to terminate wire creation (polys too).
+DONE.  Enter now terminates wires and polys being created.  Also, if the
+clicl is within PixelDelta pixels of the target, the wire or poly will be
+terminated.  This helps ensure termination with ultra-fine grid setting.
 
 Get rid of XIC_LIBRARY_PATH, doesn't work.
+NO.  Xic now starts from a wrapper in xictools/bin, which calls xic
+binary in xictools/xic/bin.  the XIC_LIBRARY_PATH is prepended to the
+LIBRARY_PATH in the wrapper.
+
+OpenAccess support is back.  The plug-in is supplied with RHEL5-7
+releases.  Not for commercial use.
