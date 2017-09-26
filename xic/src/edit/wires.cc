@@ -155,6 +155,7 @@ namespace {
             void message();
 
         private:
+            void create_wire();
             void copy_objlist();
             bool stretch(int, int, int*, int*);
             void delete_vertices();
@@ -331,8 +332,7 @@ WireState::~WireState()
 namespace {
     // Return the spacing in screen pixels between the two points.
     //
-    double
-    pixdist(int x1, int y1, int x2, int y2)
+    double pixdist(int x1, int y1, int x2, int y2)
     {
         WindowDesc *wdesc = EV()->CurrentWin();
         if (!wdesc)
@@ -461,36 +461,46 @@ WireState::b1down()
     GhostOff();
     XM()->SetCoordMode(CO_ABSOLUTE);
     if (x != Points[NumPts-1].x || y != Points[NumPts-1].y) {
-        int np = NumPts;
-        int xx = 0, yy = 0;
-        bool pt_added = false;
-        // See note in 45s.cc about logic.
-        if ((!Tech()->IsConstrain45() && (Override || Simple45)) ||
-                (Tech()->IsConstrain45() && !Override)) {
-            // reg45 or simple45
-            ED()->pthGet(&xx, &yy);
-            Points = Point::append(Points, &NumPts, xx, yy);
-            pt_added = true;
+        int ox = Points[NumPts-1].x;
+        int oy = Points[NumPts-1].y;
+        // If the point is within two pixels of the previous point, assume
+        // wire termination.
+        if (pixdist(x, y, ox, oy) <= DSP()->PixelDelta() + 0.1) {
+            x = ox;
+            y = oy;
         }
-        if ((!Tech()->IsConstrain45() && !Simple45) ||
-                (Tech()->IsConstrain45() && (!Simple45 || Override))) {
-            // reg45 or no45
-            // Only add the second point if it is 8 pixels or more
-            // away, otherwise it is too easy to add spurious
-            // vertices.
-            if (!pt_added || pixdist(x, y, xx, yy) >= 8.0)
-                Points = Point::append(Points, &NumPts, x, y);
-        }
-        if (np != NumPts) {
-            if (allocate_wire(width, style)) {
-                DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
-                DSP()->RedisplayArea(&RdBB);
-                GhostOn(Points[NumPts-1].x, Points[NumPts-1].y);
+        else {
+            int np = NumPts;
+            int xx = 0, yy = 0;
+            bool pt_added = false;
+            // See note in 45s.cc about logic.
+            if ((!Tech()->IsConstrain45() && (Override || Simple45)) ||
+                    (Tech()->IsConstrain45() && !Override)) {
+                // reg45 or simple45
+                ED()->pthGet(&xx, &yy);
+                Points = Point::append(Points, &NumPts, xx, yy);
+                pt_added = true;
             }
-            return;
+            if ((!Tech()->IsConstrain45() && !Simple45) ||
+                    (Tech()->IsConstrain45() && (!Simple45 || Override))) {
+                // reg45 or no45
+                // Only add the second point if it is 8 pixels or more
+                // away, otherwise it is too easy to add spurious
+                // vertices.
+                if (!pt_added || pixdist(x, y, xx, yy) >= 8.0)
+                    Points = Point::append(Points, &NumPts, x, y);
+            }
+            if (np != NumPts) {
+                if (allocate_wire(width, style)) {
+                    DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
+                    DSP()->RedisplayArea(&RdBB);
+                    GhostOn(Points[NumPts-1].x, Points[NumPts-1].y);
+                }
+                return;
+            }
+            // Must be roundoff error, tweek last point so we can terminate
+            Points[NumPts-1].set(x, y);
         }
-        // Must be roundoff error, tweek last point so we can terminate
-        Points[NumPts-1].set(x, y);
     }
     if (x == Points[NumPts-1].x && y == Points[NumPts-1].y) {
         // click twice to terminate
@@ -499,54 +509,10 @@ WireState::b1down()
             DSP()->ShowCrossMark(ERASE, Firstx, Firsty, HighlightingColor,
                 20, DSP()->CurMode());
             DSP()->RedisplayArea(&RdBB);
+            NumPts = 0;
         }
-        else {
-            CDw *neww = (CDw*)DSP()->IncompleteObject();
-            Wire wire;
-            wire.numpts = neww->numpts();
-            wire.points = Point::dup(neww->points(), wire.numpts);
-            wire.set_wire_style(neww->wire_style());
-            wire.set_wire_width(neww->wire_width());
-            CDl *ldesc = neww->ldesc();
-            delete_inc();
-
-            Errs()->init_error();
-            mark_vertices(ERASE);
-            Point *rpts = 0;
-            int npts;
-            for (;;) {
-                if (DSP()->CurMode() == Physical)
-                    wire.checkWireVerts(&rpts, &npts);
-                if (cursd->makeWire(ldesc, &wire, &neww) != CDok) {
-                    Errs()->add_error("makeWire failed");
-                    Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
-                    return;
-                }
-                Ulist()->RecordObjectChange(cursd, 0, neww);
-                if (!cursd->mergeWire(neww, true)) {
-                    Errs()->add_error("mergeWire failed");
-                    Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
-                    return;
-                }
-
-                if (!rpts)
-                    break;
-                wire.points = rpts;
-                wire.numpts = npts;
-            }
-            mark_vertices(DISPLAY);
-
-            DSP()->ShowCrossMark(ERASE, Firstx, Firsty, HighlightingColor,
-                20, DSP()->CurMode());
-            Ulist()->CommitChanges(true);
-
-            // Add a placeholder in the UndoList
-            UndoList = new sUndoV(UndoList);
-            // clear any redo operations
-            sUndoV::destroy(RedoList);
-            RedoList = 0;
-        }
-        NumPts = 0;
+        else
+            create_wire();
     }
 }
 
@@ -741,9 +707,27 @@ WireState::key(int code, const char*, int)
         DSPmainDraw(ShowGhost(DISPLAY))
         break;
     case RETURN_KEY:
-        if (Level == 1 && !NumPts) {
-            SelectingWires = true;
-            PL()->ShowPrompt("Click or drag to select wires for editing.");
+        if (Level == 1) {
+            if (!NumPts) {
+                SelectingWires = true;
+                PL()->ShowPrompt("Click or drag to select wires for editing.");
+            }
+            else if (NumPts > 1 && !SelectingVertex && !SelectingWires) {
+                // Terminate, create wire.
+                sObj::destroy(Objlist_back);
+                Objlist_back = 0;
+                sUndoV::destroy(RedoList);
+                RedoList = 0;
+                while (Phead) {
+                    Plist *pn = Phead->next;
+                    delete Phead;
+                    Phead = pn;
+                }
+                State = 0;
+                GhostOff();
+                XM()->SetCoordMode(CO_ABSOLUTE);
+                create_wire();
+            }
         }
         break;
     case DELETE_KEY:
@@ -971,6 +955,58 @@ WireState::message()
         else
             PL()->ShowPrompt(msg);
     }
+}
+
+
+void
+WireState::create_wire()
+{
+    CDs *cursd = CurCell();
+    CDw *neww = (CDw*)DSP()->IncompleteObject();
+    Wire wire;
+    wire.numpts = neww->numpts();
+    wire.points = Point::dup(neww->points(), wire.numpts);
+    wire.set_wire_style(neww->wire_style());
+    wire.set_wire_width(neww->wire_width());
+    CDl *ldesc = neww->ldesc();
+    delete_inc();
+
+    Errs()->init_error();
+    mark_vertices(ERASE);
+    Point *rpts = 0;
+    int npts;
+    for (;;) {
+        if (DSP()->CurMode() == Physical)
+            wire.checkWireVerts(&rpts, &npts);
+        if (cursd->makeWire(ldesc, &wire, &neww) != CDok) {
+            Errs()->add_error("makeWire failed");
+            Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
+            return;
+        }
+        Ulist()->RecordObjectChange(cursd, 0, neww);
+        if (!cursd->mergeWire(neww, true)) {
+            Errs()->add_error("mergeWire failed");
+            Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
+            return;
+        }
+
+        if (!rpts)
+            break;
+        wire.points = rpts;
+        wire.numpts = npts;
+    }
+    mark_vertices(DISPLAY);
+
+    DSP()->ShowCrossMark(ERASE, Firstx, Firsty, HighlightingColor,
+        20, DSP()->CurMode());
+    Ulist()->CommitChanges(true);
+
+    // Add a placeholder in the UndoList
+    UndoList = new sUndoV(UndoList);
+    // clear any redo operations
+    sUndoV::destroy(RedoList);
+    RedoList = 0;
+    NumPts = 0;
 }
 
 

@@ -191,6 +191,7 @@ namespace {
                 }
 
         private:
+            void create_poly();
             void copy_objlist();
             bool stretch(int, int, int*, int*);
             void delete_vertices();
@@ -349,8 +350,7 @@ PolyState::~PolyState()
 namespace {
     // Return the spacing in screen pixels between the two points.
     //
-    double
-    pixdist(int x1, int y1, int x2, int y2)
+    double pixdist(int x1, int y1, int x2, int y2)
     {
         WindowDesc *wdesc = EV()->CurrentWin();
         if (!wdesc)
@@ -373,7 +373,6 @@ PolyState::b1down()
 {
     static const char *msg1 =
         "Can't allow a polygon with fewer than 3 points.";
-    static const char *msg2 = "Bad polygon, rejected by database.";
 
     if (Level == 2) {
         // Finish the stretch.
@@ -455,92 +454,48 @@ PolyState::b1down()
     XM()->SetCoordMode(CO_ABSOLUTE);
     ED()->pthGet(&x, &y);
 
-    // See note in 45s.cc about logic.
-    if ((!Tech()->IsConstrain45() && (Override || Simple45)) ||
-            (Tech()->IsConstrain45() && !Override)) {
-        // reg45 or simple45
-        if (xc == Points[NumPts-1].x && yc == Points[NumPts-1].y) {
-            XM()->SetCoordMode(CO_RELATIVE, x, y);
-            GhostOn(x, y);
-            return;
-        }
+    if (pixdist(xc, yc, Firstx, Firsty) <= DSP()->PixelDelta() + 0.1) {
+        // Too close, assume termination.
+
+        x = xc = Firstx;
+        y = xc = Firsty;
         Points = Point::append(Points, &NumPts, x, y);
-        if (!Simple45) {
-            // Only add the second point if it is 8 pixels or more
-            // away, otherwise it is too easy to add spurious
-            // vertices.
-            if (pixdist(x, y, xc, yc) >= 8.0) {
-                x = xc;
-                y = yc;
-                Points = Point::append(Points, &NumPts, x, y);
-            }
-        }
     }
     else {
-        if (xc == Points[NumPts-1].x && yc == Points[NumPts-1].y) {
-            x = Firstx;
-            y = Firsty;
+        // See note in 45s.cc about logic.
+        if ((!Tech()->IsConstrain45() && (Override || Simple45)) ||
+                (Tech()->IsConstrain45() && !Override)) {
+            // reg45 or simple45
+            if (xc == Points[NumPts-1].x && yc == Points[NumPts-1].y) {
+                XM()->SetCoordMode(CO_RELATIVE, x, y);
+                GhostOn(x, y);
+                return;
+            }
+            Points = Point::append(Points, &NumPts, x, y);
+            if (!Simple45) {
+                // Only add the second point if it is 8 pixels or more
+                // away, otherwise it is too easy to add spurious
+                // vertices.
+                if (pixdist(x, y, xc, yc) >= 8.0) {
+                    x = xc;
+                    y = yc;
+                    Points = Point::append(Points, &NumPts, x, y);
+                }
+            }
         }
         else {
-            x = xc;
-            y = yc;
-        }
-        Points = Point::append(Points, &NumPts, x, y);
-    }
-    if (x == Firstx && y == Firsty) {
-        if (NumPts <= 3) {
-            if (delete_inc())
-                DSP()->RedisplayArea(&RdBB);
-            PL()->ShowPrompt(msg1);
-        }
-        else {
-            Points = Point::dup(Points, NumPts);
-            Poly poly(NumPts, Point::dup(Points, NumPts));
-
-            // Be sure poly checking is on.
-            int pchk_flags;
-            bool tmp_nc = CD()->IsNoPolyCheck();
-            CD()->SetNoPolyCheck(false);
-
-            CDl *ld = LT()->CurLayer();
-
-            CDpo *newp;
-            if (cursd->makePolygon(ld, &poly, &newp, &pchk_flags) != CDok) {
-                if (delete_inc())
-                    DSP()->RedisplayArea(&RdBB);
-                Errs()->add_error("newPoly failed");
-                Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
-                PL()->ShowPrompt(msg2);
+            if (xc == Points[NumPts-1].x && yc == Points[NumPts-1].y) {
+                x = Firstx;
+                y = Firsty;
             }
             else {
-                delete_inc();
-                Ulist()->RecordObjectChange(cursd, 0, newp);
-                if (pchk_flags & PCHK_REENT) {
-                    Log()->WarningLog(mh::ObjectCreation,
-                    "You have just created a reentrant or otherwise\n"
-                    "degenerate polygon.  You should probably delete this\n"
-                    "and start over.");
-                }
-                else if (!cursd->mergeBoxOrPoly(newp, true)) {
-                    Errs()->add_error("mergeBoxOrPoly failed");
-                    Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
-                }
-                Ulist()->CommitChanges();
-
-                // add a placeholder in the UndoList
-                UndoList = new sUndoV(UndoList);
-                // clear any redo operations
-                sUndoV::destroy(RedoList);
-                RedoList = 0;
+                x = xc;
+                y = yc;
             }
-            CD()->SetNoPolyCheck(tmp_nc);
+            Points = Point::append(Points, &NumPts, x, y);
         }
-        DSP()->ShowCrossMark(ERASE, Firstx, Firsty, HighlightingColor,
-            20, DSP()->CurMode());
-        DSP()->RedisplayArea(&RdBB);
-        NumPts = 0;
     }
-    else {
+    if (x != Firstx || y != Firsty) {
         if (!allocate_poly())
             return;
         DSPmainDraw(SetColor(dsp_prm(LT()->CurLayer())->pixel()))
@@ -552,6 +507,19 @@ PolyState::b1down()
         }
         XM()->SetCoordMode(CO_RELATIVE, x, y);
         GhostOn(x, y);
+    }
+    else {
+        if (NumPts <= 3) {
+            if (delete_inc())
+                DSP()->RedisplayArea(&RdBB);
+            PL()->ShowPrompt(msg1);
+            DSP()->ShowCrossMark(ERASE, Firstx, Firsty, HighlightingColor,
+                20, DSP()->CurMode());
+            DSP()->RedisplayArea(&RdBB);
+            NumPts = 0;
+        }
+        else
+            create_poly();
     }
 }
 
@@ -760,9 +728,28 @@ PolyState::key(int code, const char*, int)
         DSPmainDraw(ShowGhost(DISPLAY))
         break;
     case RETURN_KEY:
-        if (Level == 1 && !NumPts) {
-            SelectingPolys = true;
-            PL()->ShowPrompt("Click or drag to select polys for editing.");
+        if (Level == 1) {
+            if (!NumPts) {
+                SelectingPolys = true;
+                PL()->ShowPrompt("Click or drag to select polys for editing.");
+            }
+            else if (NumPts >= 3 && !SelectingVertex && !SelectingPolys) {
+                // Terminate, create poly.
+
+                sObj::destroy(Objlist_back);
+                Objlist_back = 0;
+                sUndoV::destroy(RedoList);
+                RedoList = 0;
+                while (Phead) {
+                    Plist *pn = Phead->next;
+                    delete Phead;
+                    Phead = pn;
+                }
+                State = 0;
+                GhostOff();
+                XM()->SetCoordMode(CO_ABSOLUTE);
+                create_poly();
+            }
         }
         break;
     case DELETE_KEY:
@@ -953,6 +940,59 @@ PolyState::redo()
         PL()->ShowPrompt(msg);
         return;
     }
+}
+
+
+void
+PolyState::create_poly()
+{
+    static const char *msg2 = "Bad polygon, rejected by database.";
+    CDs *cursd = CurCell();
+
+    Points = Point::dup(Points, NumPts);
+    Poly poly(NumPts, Point::dup(Points, NumPts));
+
+    // Be sure poly checking is on.
+    int pchk_flags;
+    bool tmp_nc = CD()->IsNoPolyCheck();
+    CD()->SetNoPolyCheck(false);
+
+    CDl *ld = LT()->CurLayer();
+
+    CDpo *newp;
+    if (cursd->makePolygon(ld, &poly, &newp, &pchk_flags) != CDok) {
+        if (delete_inc())
+            DSP()->RedisplayArea(&RdBB);
+        Errs()->add_error("newPoly failed");
+        Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
+        PL()->ShowPrompt(msg2);
+    }
+    else {
+        delete_inc();
+        Ulist()->RecordObjectChange(cursd, 0, newp);
+        if (pchk_flags & PCHK_REENT) {
+            Log()->WarningLog(mh::ObjectCreation,
+            "You have just created a reentrant or otherwise\n"
+            "degenerate polygon.  You should probably delete this\n"
+            "and start over.");
+        }
+        else if (!cursd->mergeBoxOrPoly(newp, true)) {
+            Errs()->add_error("mergeBoxOrPoly failed");
+            Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
+        }
+        Ulist()->CommitChanges();
+
+        // add a placeholder in the UndoList
+        UndoList = new sUndoV(UndoList);
+        // clear any redo operations
+        sUndoV::destroy(RedoList);
+        RedoList = 0;
+    }
+    CD()->SetNoPolyCheck(tmp_nc);
+    DSP()->ShowCrossMark(ERASE, Firstx, Firsty, HighlightingColor,
+        20, DSP()->CurMode());
+    DSP()->RedisplayArea(&RdBB);
+    NumPts = 0;
 }
 
 
