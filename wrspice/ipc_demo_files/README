@@ -1,8 +1,5 @@
 
 README, WRspice IPC demo
-$Id: README,v 1.6 2014/10/05 03:17:48 stevew Exp $
-
-Updated for WRspice release 3.2.11.
 
 This directory contains files which illustrate the interprocess
 communications capability of WRspice.  This may be useful for WRspice
@@ -22,9 +19,7 @@ spclient
    template or starting point for a custom application.  The
    sced_spiceipc.cc file and header files provide the actual
    interface.  It is less likely that a developer will need to modify
-   the existing code in these files.  The program also makes use of
-   some of the utility classes and functions found in the miscutil
-   subdirectory.
+   the existing code in these files.
 
 wrspiced
    This is the WRspice daemon, also distributed with WRspice.  It
@@ -38,10 +33,14 @@ web site at www.wrcad.com for information about obtaining WRspice.
 Building the Programs
 ---------------------
 
-Unlike earlier releases of this demo, there is no editing of the files
-required.
+You should be able to build the programs with
+   cd wrspice_ipc_demo
+   make
 
-In the wrspice_ipc_demo directory (which contains this file), type
+There is a configure script, which you can try running if the build
+fails.  This will regenerate the Makefile and config.h files.  These
+come pre-configured on a machine presumably similar to yours, but if
+there are important differences configure should be re-run locally.
 
   ./configure
 

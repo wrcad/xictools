@@ -46,46 +46,34 @@ ASCII_RAWFILE = 1
 OPT_CHAR = -
 SPICE_NOTICE =
 
-LPATH = .
-MISCUTIL = $(LPATH)/miscutil/miscutil.a
+UTIL_HFILES =  miscutil.h tvals.h filestat.h pathlist.h miscmath.h \
+  childproc.h errorrec.h lstring.h services.h largefile.h msw.h
+UTIL_CCFILES = miscutil.cc tvals.cc filestat.cc pathlist.cc miscmath.cc \
+  childproc.cc errorrec.cc lstring.cc msw.cc
+UTIL_OFILES = $(UTIL_CCFILES:.cc=.o)
 
-CCFILES = wrspiced.cc spclient.cc sced_spiceipc.cc
-INCLUDE = -I. -I$(LPATH)/ginterf -I$(LPATH)/miscutil
+CCFILES = wrspiced.cc spclient.cc sced_spiceipc.cc $(UTIL_CCFILES)
+INCLUDE = -I.
 
 all: spclient wrspiced
 
-spclient: spclient.o sced_spiceipc.o $(MISCUTIL)
+spclient: spclient.o sced_spiceipc.o $(UTIL_OFILES)
 	$(CXX) -o spclient $(CFLAGS) $(INCLUDE) spclient.o sced_spiceipc.o \
-        $(MISCUTIL)
+        $(UTIL_OFILES)
 
-wrspiced: wrspiced.cc $(MISCUTIL)
-	$(CXX) -o wrspiced $(CFLAGS) $(INCLUDE) wrspiced.cc $(MISCUTIL)
-
-sced_spiceipc.o:
-	$(CXX) $(CFLAGS) -DDEMO_EXPORT $(INCLUDE) -c $*.cc
+wrspiced: wrspiced.o $(UTIL_OFILES)
+	$(CXX) -o wrspiced $(CFLAGS) $(INCLUDE) wrspiced.o $(UTIL_OFILES)
 
 .cc.o:
-	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
-
-$(MISCUTIL)::
-	cd $(@D); $(MAKE)
+	$(CXX) $(CFLAGS) -DDEMO_EXPORT $(INCLUDE) -c $*.cc
 
 clean::
-	-@if [ -d $(LPATH)/miscutil ]; then \
-	    cd $(LPATH)/miscutil; $(MAKE) $@; \
-	fi
 	-@rm -f spclient$(EXESUFFIX) wrspiced$(EXESUFFIX)
 
 distclean::
-	-@if [ -d $(LPATH)/miscutil ]; then \
-	    cd $(LPATH)/miscutil; $(MAKE) $@; \
-	fi
 	-@rm -f spclient$(EXESUFFIX) wrspiced$(EXESUFFIX) Makefile config.*
 
 depend:
-	if [ -d $(LPATH)/miscutil ]; then \
-	    (cd $(LPATH)/miscutil; $(MAKE) $@); \
-	fi
 	@echo depending in $(LOCATION)
 	@if [ x$(DEPEND_DONE) = x ]; then \
 	    echo DEPEND_DONE = 1 >> Makefile; \

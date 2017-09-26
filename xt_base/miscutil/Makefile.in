@@ -40,12 +40,6 @@ test_hwaddr::
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
-files::
-	@echo [ $(CCFILES) $(HFILES) Makefile.in ]
-
-subdirs::
-	@echo ]
-
 clean:
 	-@rm -f $(CCOBJS) $(LIB_TARGET) test_hwaddr
 

@@ -57,10 +57,17 @@ Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 //
 
 #include "config.h"
+#ifdef DEMO_EXPORT
+#include "lstring.h"
+#include "pathlist.h"
+#include "miscutil.h"
+#include "services.h"
+#else
 #include "miscutil/lstring.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/miscutil.h"
 #include "miscutil/services.h"
+#endif
 #include <stdio.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -72,7 +79,11 @@ Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 
 #ifdef HAVE_SOCKET
 #ifdef WIN32
+#ifdef DEMO_EXPORT
+#include "msw.h"
+#else
 #include "miscutil/msw.h"
+#endif
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>

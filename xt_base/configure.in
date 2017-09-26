@@ -1085,14 +1085,28 @@ if test -f ginterf/ginterf.a; then
     rm -f ginterf/ginterf.a;
 fi
 
-AC_CONFIG_HEADER(include/config.h)
+if test -f config.h.in; then
+    AC_CONFIG_HEADER(config.h)
+elif test -f include/config.h.in; then
+    AC_CONFIG_HEADER(include/config.h)
+fi
 
-makefiles="Makefile \
-    util/Makefile \
-    ginterf/Makefile \
-    ${GRPREF}interf/Makefile \
-    miscutil/Makefile \
-    malloc/Makefile"
+makefiles="Makefile"
+if test -d util; then
+    makefiles="$makefiles util/Makefile"
+fi
+if test -d ginterf; then
+    makefiles="$makefiles ginterf/Makefile"
+fi
+if test -d ${GRPREF}interf; then
+    makefiles="$makefiles ${GRPREF}interf/Makefile"
+fi
+if test -d miscutil; then
+    makefiles="$makefiles miscutil/Makefile"
+fi
+if test -d malloc; then
+    makefiles="$makefiles malloc/Makefile"
+fi
 
 if test -n "$REGEX" -a -d regex; then
     makefiles="$makefiles regex/Makefile"

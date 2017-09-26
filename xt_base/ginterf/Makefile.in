@@ -33,12 +33,6 @@ $(LIB_TARGET): $(CCOBJS)
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
 
-files::
-	@echo [ $(CCFILES) $(HFILES) Makefile.in FORMAT3.2 README ]
-
-subdirs::
-	@echo ]
-
 clean:
 	-@rm -f $(CCOBJS) $(LIB_TARGET)
 

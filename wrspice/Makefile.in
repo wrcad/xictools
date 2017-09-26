@@ -310,28 +310,37 @@ distclean: eclean
 # Create the wrspice_ipc_demo source code tarball, copy to the WRspice
 # examples directory.  This is included in the WRspice distribution.
 
+UTIL_HFILES =  miscutil.h tvals.h filestat.h pathlist.h miscmath.h \
+  childproc.h errorrec.h lstring.h services.h largefile.h msw.h
+UTIL_CCFILES = miscutil.cc tvals.cc filestat.cc pathlist.cc miscmath.cc \
+  childproc.cc errorrec.cc lstring.cc msw.cc
+
 wdemo wrspice_ipc_demo:
-	if [ ! -f ../xic/src/sced/sced_spiceipc.cc ]; then \
+	@if [ ! -f ../xic/src/sced/sced_spiceipc.cc ]; then \
 	    echo "Xic IPC code not found, aborting."; \
 	    exit 1; \
 	fi
-	if [ -d $(WDEMODIR) ]; then \
+	@if [ -d $(WDEMODIR) ]; then \
 	    rm -rf $(WDEMODIR); \
-	fi;
-	cp -pfr ipc_demo_files $(WDEMODIR)
-	$(BASE)/util/mvdir $(BASE)/miscutil $(WDEMODIR)/miscutil
-	$(BASE)/util/mvdir $(BASE)/include/miscutil $(WDEMODIR)/miscutil
-	cp -pf $(BASE)/include/config.h.in $(WDEMODIR)/miscutil
-	cp -pf $(BASE)/include/config.h $(WDEMODIR)/miscutil
-	cp -pf $(BASE)/configure.in $(WDEMODIR)
-	cp -pf $(BASE)/configure $(WDEMODIR)
-	cp -pf ../xic/src/sced/sced_spiceipc.cc $(WDEMODIR)
-	cp -pf ../xic/include/sced_spiceipc.h $(WDEMODIR)
-	cp -pf bin/wrspiced.cc $(WDEMODIR)
-	cp -pf version $(WDEMODIR)
-	tar czf $(WDEMODIR).tar.gz $(WDEMODIR)
-	rm -rf $(WDEMODIR)
-	cp -f $(WDEMODIR).tar.gz lib/examples
+	fi
+	@cp -pfr ipc_demo_files $(WDEMODIR)
+	@for a in $(UTIL_HFILES); do \
+	    cp -f $(BASE)/include/miscutil/$$a $(WDEMODIR); \
+	done
+	@for a in $(UTIL_CCFILES); do \
+	    cp -f $(BASE)/miscutil/$$a $(WDEMODIR); \
+	done
+	@cp -pf $(BASE)/include/config.h.in $(WDEMODIR)
+	@cp -pf $(BASE)/include/config.h $(WDEMODIR)
+	@cp -pf $(BASE)/configure.in $(WDEMODIR)
+	@cp -pf $(BASE)/configure $(WDEMODIR)
+	@cp -pf ../xic/src/sced/sced_spiceipc.cc $(WDEMODIR)
+	@cp -pf ../xic/include/sced_spiceipc.h $(WDEMODIR)
+	@cp -pf bin/wrspiced.cc $(WDEMODIR)
+	@cp -pf version $(WDEMODIR)
+	@tar czf $(WDEMODIR).tar.gz $(WDEMODIR)
+	@rm -rf $(WDEMODIR)
+	@cp -f $(WDEMODIR).tar.gz lib/examples
 	@echo
 	@echo "Export source created in $(WDEMODIR).tar.gz"
 	@echo

@@ -42,12 +42,6 @@ $(LIB_TARGET): $(CCOBJS)
 .cc.o:
 	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
 
-files::
-	@echo [ $(CCFILES) $(HFILES) Makefile.in ]
-
-subdirs::
-	@echo ]
-
 clean:
 	-@rm -f $(CCOBJS) $(LIB_TARGET)
 
