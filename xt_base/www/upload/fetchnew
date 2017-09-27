@@ -1,13 +1,14 @@
 #! /bin/sh
 
 #
-# Update the distribution files.
-#
-# (c) Whiteley Research Inc. 2008
-# $Id: fetchnew,v 1.11 2011/04/25 06:45:47 stevew Exp $
+# Update the distribution files.  Run on the web site to call a
+# machine containing distributions, and copy up newer files.
 #
 # Usage: fetchnew "programs..." "oses..."|all
 
+# Change these if you're not me.
+login=stevew
+srcdir=/home/$login/export/xictools
 
 if [ $# = 0 ]; then
     echo 'fetchnew "programs..." "oses..."|all'
@@ -19,32 +20,18 @@ oses=$2
 if [ x"$oses" = x"all" ]; then
     oses="\
   Darwin \
-  Darwin64 \
-  Debian \
-  Debian64 \
-  FreeBSD \
-  FreeBSD7 \
-  Linux2 \
-  LinuxRHEL3 \
-  LinuxRHEL4 \
+  LinuxFedora26 \
+  LinuxOpenSUSE13 \
+  LinuxRHEL5.i686 \
   LinuxRHEL5 \
   LinuxRHEL6 \
-  LinuxRHEL3_64 \
-  LinuxRHEL4_64 \
-  LinuxRHEL5_64 \
-  LinuxRHEL6_64 \
-  Solaris8 \
-  Solaris8_64 \
+  LinuxRHEL7 \
   Win32"
 fi
 
-login=stevew
-srcdir=/home/stevew/export/xictools
-libdir=/home/stevew/src/xictools/lib
-release_file_sfx="release4.new"
+release_file_sfx="release.new"
 
 destdir=/home/webadmin/wrcad.com/html/restricted
-srcpfx=/home/stevew/src/
 
 sshc=$SSH_CONNECTION
 if [ x"$sshc" = x ]; then
@@ -90,58 +77,26 @@ filename()
     prog=$1
     os=$2
     vers=$3
+
+    tifs="$IFS"
+    IFS="."
+    set -- $os
+    IFS="$tifs"
+    os=$1
+    arch=$2
+    if [ -z "$arch" ]; then
+        arch=x86_64
+    fi
+
     case $os in
-    Darwin)
-        echo $prog-$os-$vers-univ.pkg.tgz
-        ;;
-    Darwin64)
-        echo $prog-$os-$vers-x86_64.pkg
-        ;;
-    Debian)
-        echo $prog-$os-$vers-i386.deb
-        ;;
-    Debian64)
-        echo $prog-$os-$vers-amd64.deb
-        ;;
-    FreeBSD*)
-        echo $prog-$os-$vers-i386.pkg.tbz
+    Darwin*)
+        echo xictools_$prog-$os-$vers-$arch.pkg
         ;;
     Linux*)
-        tmpifs="$IFS"
-        IFS="_"
-        set $os
-        IFS="$tmpifs"
-        osbase=$1
-        if [ $# = 1 ]; then
-            if [ $osbase = Linux2 -o $osbase = Linux ]; then
-                arch=i386
-            else
-                arch=i686
-            fi
-        else
-            arch=x86_64
-        fi
-        echo $prog-$osbase-$vers-$arch.rpm
+        echo xictools_$prog-$os-$vers-$arch.rpm
         ;;
-    Solaris*)
-        tmpifs="$IFS"
-        IFS="_"
-        set $os
-        IFS="$tmpifs"
-        osbase=$1
-        if [ $# = 1 ]; then
-            arch=sparc
-        else
-            arch=sparc64
-        fi
-        echo $prog-$osbase-$vers-$arch.pkg.gz
-        ;;
-    Windows | Win32)
-        if [ $prog = accessories ]; then
-            echo accs-Win32-$vers-i386.exe
-        else
-            echo $prog-Win32-$vers-i386.exe
-        fi
+    Win*)
+        echo xictools_$prog-$os-$vers-i386.rpm
         ;;
     esac
 }
