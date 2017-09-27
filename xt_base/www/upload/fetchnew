@@ -1,0 +1,158 @@
+#! /bin/sh
+
+#
+# Update the distribution files.  Run on the web site to call a
+# machine containing distributions, and copy up newer files.  If -t
+# given, don't actually fetch, just print commands.
+#
+# Usage: fetchnew [-t] "programs..."|all "oses..."|all
+
+# Change these if you're not me.
+login=stevew
+
+# Files come from $login@$home:$srcdir/$osname/$filename
+srcdir=/home/$login/export/xictools
+
+# Files go to $destdir/$osname/$filename
+destdir=/home/webadmin/wrcad.com/html/xictools
+
+if [ $# = 0 ]; then
+    echo 'fetchnew [-t] "programs..."|all "oses..."|all'
+    exit 0
+fi
+
+dryrun=no
+if [ x$1 = x-t ]; then
+    dryrun=yes
+    shift
+fi
+
+progs=$1
+if [ x"$progs" = x"all" ]; then
+    progs="adms fastcap fasthenry mozy mrouter vl wrspice xic"
+fi
+oses=$2
+if [ x"$oses" = x"all" ]; then
+    oses="\
+  Darwin \
+  LinuxFedora26 \
+  LinuxOpenSUSE13 \
+  LinuxRHEL5.i686 \
+  LinuxRHEL5 \
+  LinuxRHEL6 \
+  LinuxRHEL7 \
+  Win32"
+fi
+
+sshc=$SSH_CONNECTION
+if [ x"$sshc" = x ]; then
+    echo "Can't get home IP, exiting"
+    exit
+fi
+set -- $sshc
+home=$1
+echo Connecting to $home
+
+thisdir=$(dirname $0)
+
+# Grab the version file from the web site, and look up the current
+# version for the program and operating system.  Echo the new release
+# number followed by the subdirectory name.
+# arguments:  program_name operating_system
+#
+check_release()
+{
+    prog="$1"
+    os="$2"
+    if [ -f $thisdir/release_$1.new ]; then
+        vers=$(cat $thisdir/release_$1.new)
+    elif [ -f $thisdir/release_$1 ]; then
+        vers=$(cat $thisdir/release_$1)
+    fi
+    if [ x"$vers" != "x" ]; then
+        set -- $vers
+        while [ x"$1" != "x" ]; do
+            if [ $1 = $os ]; then
+                echo $2 $5
+                return;
+            fi
+            shift
+            shift
+            shift
+            shift
+            shift
+        done;
+    fi
+}
+
+# Construct the name of the distribution file from the arguments.
+# arguments: program_name operating_system version_number
+#
+filename()
+{
+    prog=$1
+    os=$2
+    vers=$3
+
+    tifs="$IFS"
+    IFS="."
+    set -- $os
+    IFS="$tifs"
+    os=$1
+    arch=$2
+    if [ -z "$arch" ]; then
+        arch=x86_64
+    fi
+
+    case $os in
+    Darwin*)
+        echo xictools_$prog-$os-$vers-$arch.pkg
+        ;;
+    Linux*)
+        echo xictools_$prog-$os-$vers-$arch.rpm
+        ;;
+    Win*)
+        echo xictools_$prog-$os-$vers-i386.rpm
+        ;;
+    esac
+}
+
+# Grab the release file and put it in place.
+# arguments:  program os
+#
+get()
+{
+    program=$1
+    os=$2
+    vers=`check_release $program $os`
+    if [ x"$vers" = "x" ]; then
+        echo Not found: $program $os
+        exit
+    fi
+    set $vers
+    vers=$1
+    subdir=$2
+    fname=`filename $program $os $vers`
+    if [ x"$fname" = "x" ]; then
+        echo Unknown: $program $os
+        exit
+    fi
+
+    newloc=$destdir/$os/$fname
+    if [ ! -f $newloc ]; then
+        echo $fname
+        if [ $dryrun = yes ]; then
+            echo rsync --rsh=ssh $login@$home:$srcdir/$os/$fname $newloc
+        else
+            rsync --rsh=ssh $login@$home:$srcdir/$os/$fname $newloc
+        fi
+    fi
+}
+
+
+for o in $oses; do
+    for p in $progs; do
+        get $p $o
+    done
+done
+

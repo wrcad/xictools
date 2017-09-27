@@ -30,7 +30,7 @@ version()
     # programs are assumed identical to the remote versions.
     root=../..
     if [ -d $root/$program ]; then
-        $($root/$program/version)
+        echo $($root/$program/version)
     fi
 }
 
@@ -60,6 +60,9 @@ get()
     echo Fetching $program-$osname >&2
     case $osname in
     Darwin*)
+        if [ ! -d $outdir/$osname ]; then
+            mkdir $outdir/$osname
+        fi
         arch=x86_64
         fname=xictools_$program-$osname-$version-$arch.pkg
         dir=$USER@macbook:/Users/$USER/src/xt/xt_base/packages/pkgfiles
@@ -73,6 +76,9 @@ get()
         fname="xictools_$program-$osname-$version-$arch.rpm"
         case $osname in
         LinuxRHEL5)
+            if [ ! -d $outdir/$osname ]; then
+                mkdir $outdir/$osname
+            fi
             if [ $arch = x86_64 ]; then
                 dir=$USER@shelley:/home/$USER/src/xt/xt_base/packages/pkgfiles
             else
@@ -82,6 +88,9 @@ get()
             chmod 0644 $outdir/$osname/$fname
             ;;
         LinuxRHEL6)
+            if [ ! -d $outdir/$osname ]; then
+                mkdir $outdir/$osname
+            fi
             if [ $arch = x86_64 ]; then
                 dir=$USER@poe:/home/$USER/src/xt/xt_base/packages/pkgfiles
             else
@@ -91,6 +100,9 @@ get()
             chmod 0644 $outdir/$osname/$fname
             ;;
         LinuxRHEL7)
+            if [ ! -d $outdir/$osname ]; then
+                mkdir $outdir/$osname
+            fi
             if [ $arch = x86_64 ]; then
                 dir=$USER@frost:/home/$USER/src/xt/xt_base/packages/pkgfiles
             else
@@ -100,6 +112,9 @@ get()
             chmod 0644 $outdir/$osname/$fname
             ;;
         LinuxFedora26)
+            if [ ! -d $outdir/$osname ]; then
+                mkdir $outdir/$osname
+            fi
             if [ $arch = x86_64 ]; then
                 dir=$USER@fedor:/home/$USER/src/xt/xt_base/packages/pkgfiles
             else
@@ -109,6 +124,9 @@ get()
             chmod 0644 $outdir/$osname/$fname
             ;;
         LinuxOpenSUSE13)
+            if [ ! -d $outdir/$osname ]; then
+                mkdir $outdir/$osname
+            fi
             if [ $arch = x86_64 ]; then
                 dir=$USER@byron:/home/$USER/src/xt/xt_base/packages/pkgfiles
             else
@@ -123,6 +141,9 @@ get()
         esac
         ;;
     Win*)
+        if [ ! -d $outdir/$osname ]; then
+            mkdir $outdir/$osname
+        fi
         arch=i386
         fname=xictools_$program-$osname-$version-$arch.exe
         dir=$USER@keats:/cygwin64/home/$USER/src/xt/xt_base/packages/pkgfiles

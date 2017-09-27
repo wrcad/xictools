@@ -5,10 +5,28 @@ fetch_action
 fetchdist
     Local use only, assembles new release packages for upload.
 
-wr_install
-    For export (direct from web site).  User must use this to install
-    programs, for SafeInstall feature.
+wr_install  (exported from web site)
+    User should use this to install programs.  Also used as
+    installation script for internal update command in Xic and
+    WRspice.  copied to startup directories.
 
-    Also used as installation script for internal install command. 
-    copied to startup directories.
+cleanold.bat  (exported from web site)
+    Windows batch file, run before installing 4.3 packages.
+
+    This is handled in wr_install, the batch file can be run directly
+    is the user doesn't have Cygwin so can't run wr_install.
+
+wr_uninstall  (exported from web site)
+    Uninstall script.
+
+uninstall.bat  (exported from web site)
+    Windows batch file for removing packages.
+
+    This is handled in wr_uninstall, the batch file can be run
+    directly if the user doesn't have Cygwin so can't run
+    wr_uninstall.
+
+utod
+    Program to convert sane Unix line terminated text files to insane
+    Windows (DOS) line termination.
 
