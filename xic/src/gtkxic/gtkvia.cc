@@ -304,7 +304,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
     rowcnt++;
 
 #define NUMWID 100
-    label = gtk_label_new("Via name, cut layer");
+    label = gtk_label_new("via name, cut layer");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -325,7 +325,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Layer 1, layer 2");
+    label = gtk_label_new("layer 1, layer 2");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -347,7 +347,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
     rowcnt++;
 
     int ndgt = CD()->numDigits();
-    label = gtk_label_new("Cut width, height");
+    label = gtk_label_new("cut width, height");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -364,7 +364,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Cut rows, columns");
+    label = gtk_label_new("cut rows, columns");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -381,7 +381,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Cut spacing X,Y");
+    label = gtk_label_new("cut spacing X,Y");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -398,7 +398,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Enclosure 1 X,Y");
+    label = gtk_label_new("enclosure 1 X,Y");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -415,7 +415,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Offset 1 X,Y");
+    label = gtk_label_new("offset 1 X,Y");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -432,7 +432,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Enclosure 2 X,Y");
+    label = gtk_label_new("enclosure 2 X,Y");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -449,7 +449,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Offset 2 X,Y");
+    label = gtk_label_new("offset 2 X,Y");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -466,7 +466,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Origin offset X,Y");
+    label = gtk_label_new("origin offset X,Y");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -483,7 +483,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Implant 1, implant 2");
+    label = gtk_label_new("implant 1, implant 2");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -504,7 +504,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Implant 1 Enc X,Y");
+    label = gtk_label_new("implant 1 enc X,Y");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -521,7 +521,7 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
 
-    label = gtk_label_new("Implant 2 enc X,Y");
+    label = gtk_label_new("implant 2 enc X,Y");
     gtk_widget_show(label);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
