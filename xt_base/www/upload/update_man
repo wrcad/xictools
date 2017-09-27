@@ -1,15 +1,20 @@
 #
-# Update the distribution files.
+# Update the manual files.
 #
-# (c) Whiteley Research Inc. 2014
-# $Id:$
-#
-# Usage: update_man "program-x.x.x ..."
+# Usage: update_man [-t] "program-x.x.x ..."
+# program is xic or wrspice
 
-progs=$1
 login=stevew
-man_destdir=/home/webadmin/wrcad.com/html/restricted/xictools/docs
-docdir=/home/stevew/src/xictools/doc
+srcdir=/home/$login/src/xt
+
+man_destdir=/home/webadmin/wrcad.com/html/xictools/docs
+
+dryrun=no
+if [ x$1 = x-t ]; then
+    dryrun=yes
+    shift
+fi
+progs=$1
 
 sshc=$SSH_CONNECTION
 if [ x"$sshc" = x ]; then
@@ -19,6 +24,8 @@ fi
 set -- $sshc
 home=$1
 echo Connecting to $home
+
+shopt -s nullglob
 
 get_man()
 {
@@ -52,12 +59,28 @@ get_man()
     if [ $prog = "wrs" ]; then
         prog=wrspice
     fi
+    manual=$srcdir/$prog/manual
+
     echo fetching $manps
-        rsync --rsh=ssh $login@$home:$docdir/$prog/$manps $man_destdir
+    if [ $dryrun = yes ]; then
+        echo rsync --rsh=ssh $login@$home:$manual/$manps $man_destdir
+    else
+        rsync --rsh=ssh $login@$home:$manual/$manps $man_destdir
+    fi
+
     echo fetching $manpdf
-        rsync --rsh=ssh $login@$home:$docdir/$prog/$manpdf $man_destdir
+    if [ $dryrun = yes ]; then
+        echo rsync --rsh=ssh $login@$home:$manual/$manpdf $man_destdir
+    else
+        rsync --rsh=ssh $login@$home:$manual/$manpdf $man_destdir
+    fi
+
     echo fetching $manhtml
-        rsync --rsh=ssh $login@$home:$docdir/$prog/$manhtml $man_destdir
+    if [ $dryrun = yes ]; then
+        echo rsync --rsh=ssh $login@$home:$manual/$manhtml $man_destdir
+    else
+        rsync --rsh=ssh $login@$home:$manual/$manhtml $man_destdir
+    fi
 }
 
 for p in $progs; do

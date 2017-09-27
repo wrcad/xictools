@@ -1,21 +1,33 @@
 #
 # Update the distribution files.
 #
-# (c) Whiteley Research Inc. 2011
-# $Id: update_help,v 1.2 2012/02/08 20:10:00 stevew Exp $
-#
-# Usage: update_help "programs..."
+# Usage: update_help [-t] "programs..."
+
+# Change this if you're not me.
+login=stevew
+
+# Top of xictools repository at source.
+srcloc=/home/$login/src/xt
+
+# Help files go to $help_destdir/$prog/help
+help_destdir=/home/webadmin/wrcad.com/upload/helplib
+
+# Release notes go here.
+docs_destdir=/home/webadmin/wrcad.com/html/xictools/docs
+
+# Scripts go here.
+script_destdir=/home/webadmin/wrcad.com/html/xictools/scripts
+
+xic_notes=xic4.3
+wrs_notes=wrs4.3
+
+dryrun=no
+if [ x$1 = x-t ]; then
+    dryrun=yes
+    shift
+fi
 
 progs=$1
-login=stevew
-help_destdir=/home/webadmin/wrcad.com/html/restricted/helplib4
-destdir=/home/webadmin/wrcad.com/html/restricted
-libdir=/home/stevew/src/xictools/lib
-srcdir=/home/stevew/export/xictools
-srcpfx=/home/stevew/src/
-
-xic_notes=xic4.2
-wrs_notes=wrs4.2
 
 sshc=$SSH_CONNECTION
 if [ x"$sshc" = x ]; then
@@ -31,44 +43,89 @@ echo Connecting to $home
 #
 fetch_help()
 {
-    case $1 in
-    xic)
-        echo "Updating xic-4 help"
-        /usr/bin/rsync -e ssh -a --exclude=CVS --exclude=.cvsignore \
-          stevew@$home:$srcpfx/xictools/lib/xic/help $help_destdir/xic
-        /usr/bin/rsync -e ssh -t \
-          stevew@$home:$srcpfx/xictools/lib/xic/help/sp*.hlp \
-          $help_destdir/xic/help
-        ;;
-    wrspice)
-        echo "Updating wrspice help"
-        /usr/bin/rsync -e ssh -a --exclude=CVS --exclude=.cvsignore \
-          stevew@$home:$srcpfx/xictools/lib/wrspice/help \
-          $help_destdir/wrspice
-        ;;
-    *)
-        echo "unknown collection"
-        ;;
-    esac
+    prog=$1
+    if [ x$prog = xxic -o x$prog = xwrspice ]; then
+        echo "Updating $prog help"
+        if [ ! -d $help_destdir ]; then
+            if [ $dryrun = yes ]; then
+                echo mkdir $help_destdir
+            else
+                mkdir $help_destdir
+            fi
+        fi
+        if [ ! -d $help_destdir/$prog ]; then
+            if [ $dryrun = yes ]; then
+                echo mkdir $help_destdir/$prog
+            else
+                mkdir $help_destdir/$prog
+            fi
+        fi
+
+        if [ $dryrun = yes ]; then
+            echo /usr/bin/rsync -e ssh -a $login@$home:$srcloc/$prog/lib/help \
+  $help_destdir/$prog
+        else
+            /usr/bin/rsync -e ssh -a $login@$home:$srcloc/$prog/lib/help \
+  $help_destdir/$prog
+        fi
+    else
+        echo "unknown program $prog"
+    fi
 }
 
 for p in $progs; do
+    fname=
     if [ $p = xic ]; then
         fname=$xic_notes
-        echo Updating $fname
-        newloc=$destdir/xictools/docs/xic_release_notes/$fname
-        rsync --rsh=ssh $login@$home:$libdir/$p/docs/$fname $newloc
-        fetch_help xic
     elif [ $p = wrspice ]; then
         fname=$wrs_notes
+    fi
+    if [ -n "$fname" ]; then
         echo Updating $fname
-        newloc=$destdir/xictools/docs/wrspice_release_notes/$fname
-        rsync --rsh=ssh $login@$home:$libdir/$p/docs/$fname $newloc
-        fetch_help wrspice
+        if [ ! -d $docs_destdir ]; then
+            if [ $dryrun = yes ]; then
+                echo mkdir $docs_destdir
+            else
+                mkdir $docs_destdir
+            fi
+        fi
+        if [ ! -d $docs_destdir/${p}_release_notes ]; then
+            if [ $dryrun = yes ]; then
+                echo mkdir $docs_destdir/${p}_release_notes
+            else
+                mkdir $docs_destdir/${p}_release_notes
+            fi
+        fi
+        newloc=$docs_destdir/${p}_release_notes/$fname
+        if [ $dryrun = yes ]; then
+            echo rsync --rsh=ssh $login@$home:$srcloc/$p/lib/docs/$fname $newloc
+        else
+            rsync --rsh=ssh $login@$home:$srcloc/$p/lib/docs/$fname $newloc
+        fi
+        fetch_help $p
+    else
+        echo "unknown program $p"
     fi
 done
 
-newf=/home/webadmin/wrcad.com/html/restricted/xictools/wr_install
-echo Updating $newf
-rsync --rsh=ssh $login@$home:$srcdir/wr_install $newf
+echo Updating scripts
+if [ ! -d $script_destdir ]; then
+    if [ $dryrun = yes ]; then
+        echo mkdir $script_destdir
+    else
+        mkdir $script_destdir
+    fi
+fi
+util=$srcloc/xt_base/packages/util
+if [ $dryrun = yes ]; then
+    echo rsync --rsh=ssh $login@$home:$util/wr_install $script_destdir
+    echo rsync --rsh=ssh $login@$home:$util/wr_uninstall $script_destdir
+    echo rsync --rsh=ssh $login@$home:$util/cleanold.bat $script_destdir
+    echo rsync --rsh=ssh $login@$home:$util/uninstall.bat $script_destdir
+else
+    rsync --rsh=ssh $login@$home:$util/wr_install $script_destdir
+    rsync --rsh=ssh $login@$home:$util/wr_uninstall $script_destdir
+    rsync --rsh=ssh $login@$home:$util/cleanold.bat $script_destdir
+    rsync --rsh=ssh $login@$home:$util/uninstall.bat $script_destdir
+fi
 

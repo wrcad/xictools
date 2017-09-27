@@ -1,0 +1,8 @@
+Darwin          1.2.1   x86_64  pkg     .
+LinuxFedora26   1.2.1   x86_64  rpm     .
+LinuxOpenSUSE13 1.2.1   x86_64  rpm     .
+LinuxRHEL5.i686 1.2.1   i686    rpm     .
+LinuxRHEL5      1.2.1   x86_64  rpm     .
+LinuxRHEL6      1.2.1   x86_64  rpm     .
+LinuxRHEL7      1.2.1   x86_64  rpm     .
+Win32           1.2.1   i386    exe     .

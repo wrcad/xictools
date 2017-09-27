@@ -1,9 +1,6 @@
 
 This document describes the WRspice Josephson junction model.
 
-I. derivation of the model.
-
-
 The expression for the junction current is
 
    J = C*dV/dT + G(V) + Ic(Ci)*sin(P),	   (1)
