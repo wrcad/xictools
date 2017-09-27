@@ -143,7 +143,6 @@ remove_rpm_dist()
 {
     prog=$1
     dist=$2
-    dryrun=$3
 
     if [ $prog = xic -o $prog = wrspice ]; then
         loc=$(rpm -ql $dist | grep xictools/$prog/bin/$prog\$)
@@ -192,7 +191,6 @@ remove_osx_dist()
 {
     prog=$1
     dist=$2
-    dryrun=$3
 
     # Apple packages aren't relocatable.
     loc=/usr/local/xictools
@@ -309,7 +307,6 @@ remove_osx_dist()
 #
 clean_old()
 {
-    dryrun=$1
     if [ $dryrun = yes ]; then
         echo Cleaning old packages in dry run mode.
     else
@@ -323,19 +320,19 @@ clean_old()
         srvlist=$(pkgutil --pkgs | grep "^XicTools\.Xtlserv\.")
 
         for a in $xiclist; do
-            remove_osx_dist xic $a $dryrun
+            remove_osx_dist xic $a
         done
 
         for a in $wrslist; do
-            remove_osx_dist wrspice $a $dryrun
+            remove_osx_dist wrspice $a
         done
 
         for a in $acslist; do
-            remove_osx_dist xt_accs $a $dryrun
+            remove_osx_dist xt_accs $a
         done
 
         for a in $srvlist; do
-            remove_osx_dist xtlserv $a $dryrun
+            remove_osx_dist xtlserv $a
         done
         # Record that we've been run.
         if [ $dryrun = no ]; then
@@ -353,19 +350,19 @@ clean_old()
         srvlist=$(rpm -qa | grep "^xtlserv-")
 
         for a in $xiclist; do
-            remove_rpm_dist xic $a $dryrun
+            remove_rpm_dist xic $a
         done
 
         for a in $wrslist; do
-            remove_rpm_dist wrspice $a $dryrun
+            remove_rpm_dist wrspice $a
         done
 
         for a in $acslist; do
-            remove_rpm_dist xt_accs $a $dryrun
+            remove_rpm_dist xt_accs $a
         done
 
         for a in $srvlist; do
-            remove_rpm_dist xtlserv $a $dryrun
+            remove_rpm_dist xtlserv $a
         done
         # Record that we've been run.
         if [ $dryrun = no ]; then
@@ -381,9 +378,6 @@ clean_old()
 
 check_clean()
 {
-    dryrun=$1
-    windows=$2
-    script_path=$3
     if [ -f $HOME/.wrclean ]; then
         read resp < $HOME/.wrclean
     fi
@@ -404,17 +398,17 @@ print commands it would otherwise execute."
         echo -n "Run now? [n]: "
         read resp
         if [ x$resp = xy -o x$resp = xyes ]; then
-            if [ x$windows = xyes ]; then
+            if [ $windows = yes ]; then
                 if [ $dryrun = yes ]; then
                     $script_path/cleanold.bat /t
                 else
                     $script_path/cleanold.bat
                 fi
             else
-                clean_old $dryrun
+                clean_old
             fi
         else
-            if [ $dryrun != yes ]; then
+            if [ $dryrun = no ]; then
                 echo Aborting.
                 exit 0
             fi
@@ -429,7 +423,6 @@ do_update()
 {
     distfile=$1
     prefix=$2
-    dryrun=$3
 
     if [ -z "$distfile" ]; then
         echo "Error: (do_update) no file name given!"
@@ -443,9 +436,6 @@ do_update()
     if [ -z "$prefix" ]; then
         echo "Error: (do_update) no prefix given!"
         return 127
-    fi
-    if [ -z "$dryrun" ]; then
-        dryrun=no
     fi
 
     dfb=`basename $distfile`
@@ -498,7 +488,7 @@ do_update()
         fi
         ppkg=`fullpath $distfile`
         echo sudo installer -pkg "$ppkg" -target /
-        if [ x$dryrun != xyes ]; then
+        if [ $dryrun = no ]; then
             sudo installer -pkg "$ppkg" -target /
         fi
         ;;
@@ -510,7 +500,7 @@ do_update()
             return 127
         fi
         echo ./$distfile
-        if [ x$dryrun != xyes ]; then
+        if [ $dryrun = no ]; then
             ./$distfile
         fi
         ;;
@@ -553,17 +543,17 @@ do_update()
                 return 127
             fi
             echo alien -ick $distfile
-            if [ x$dryrun != xyes ]; then
+            if [ $dryrun = no ]; then
                 sudo alien -ick $distfile
             fi
         elif [ $prefix = /usr/local ]; then
             echo rpm -U --replacepkgs --replacefiles --nodeps $distfile
-            if [ x$dryrun != xyes ]; then
+            if [ $dryrun = no ]; then
                 sudo rpm -U --replacepkgs --replacefiles --nodeps $distfile
             fi
         else
             echo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
-            if [ x$dryrun != xyes ]; then
+            if [ $dryrun = no ]; then
                 sudo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
             fi
         fi
@@ -575,7 +565,7 @@ do_update()
     esac
 
     ret=0
-    if [ x$dryrun != xyes ]; then
+    if [ $dryrun = no ]; then
         ret=$?
         if [ $ret = 0 ]; then
             echo Installation of $progname-$osname-$vers done, no errors returned.
@@ -721,10 +711,10 @@ if [ $windows = yes ]; then
             continue
         fi
         if [ $cleanchk = no ]; then
-            check_clean $dryrun $windows $script_path
+            check_clean
             cleanchk=yes
         fi
-        do_update $fname /usr/local $dryrun
+        do_update $fname /usr/local
         r=$?
         if [ r != 0 ]; then
             ret=1
@@ -775,10 +765,10 @@ for fname in $pkgs; do
         continue
     fi
     if [ $cleanchk = no ]; then
-        check_clean $dryrun $windows $script_path
+        check_clean
         cleanchk=yes
     fi
-    do_update $fname $prefix $dryrun
+    do_update $fname $prefix
     r=$?
     if [ r != 0 ]; then
         ret=1
