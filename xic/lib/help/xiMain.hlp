@@ -2005,7 +2005,7 @@ Pointing Device
 
 !!REDIRECT selection    button1#selection
 
-!! 022316
+!! 092717
 !!KEYWORD
 button1
 !!TITLE
@@ -2068,13 +2068,18 @@ Left Mouse Button
     plot points from a cell that is shown as an instance symbolically.
 
     <p>
-    Clicking on a selected non-pcell instance with only the
-    <b>Ctrl</b> key held will bring up the <a
+    with only the <b>Ctrl</b> key held, clicking on a selected cell
+    instance will provide access to resources as described.  If the
+    selected instance is a normal cell, the <a
     href="xic:prpty"><b>Property Editor</b></a> panel, with the
-    clicked-on instance as the current object.  If the instance is a
-    <a href="xic:pcells">pcell</a> instantiation, the <a
+    clicked-on instance as the current object, will appear.  If the
+    selected instance master is a parameterized cell (<a
+    href="xic:pcells">pcell</a>), the <a
     href="xic:pcparams"><b>Parameters</b></a> panel appears, allowing
-    the user to reparameterize the instance.
+    the user to reparameterize the instance.  If the selected instance
+    is a <a href="stdvia">standard via</a>, the <a
+    href="xic:crvia"><b>Standard Via Parameters</b></b> panel will
+    appear, allowing the user to alter ther structure of the via.
 
     <a name="selection"></a>
     <h2>Basic Selection Operation</h2>

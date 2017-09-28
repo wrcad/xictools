@@ -161,7 +161,7 @@ commands are described in detail in the following sections.
 \cb !ltsort & Alphanumerically sort layer table\\ \hline
 \cb !exlayers & List layers by applied keywords in console\\ \hline
 
-% 012016
+% 092717
 \multicolumn{2}{|c|}{\kb Layout Editing}\\ \hline
 \cb !array & Manipulate instance arrays\\ \hline
 \cb !layer & Create layers/objects using expression\\ \hline
@@ -176,6 +176,7 @@ commands are described in detail in the following sections.
 \cb !poly2path & Convert polygon boundaries to wires\\ \hline
 \cb !bloat & Expand/contract object\\ \hline
 \cb !join & Join objects into polygon\\ \hline
+\cb !jw & Join similar wires with common endpoints\\ \hline
 \cb !split & Split polygon into trapezoids\\ \hline
 \cb !manh & Convert to Manhattan polygons\\ \hline
 \cb !polyfix & Fix polygon errors\\ \hline
@@ -2942,8 +2943,8 @@ Manhattan corners remain Manhattan.
 \label{joincmd}
 \begin{quote}
 Syntax: {\vt !join} [{\vt -l} {\vt |} {\vt -a}]
-
 \end{quote}
+
 This command will merge boxes, polygons, and optionally wires into
 complex polygons.  Use of merged geometry can reduce memory use and
 the size of the layout data file.
@@ -3042,6 +3043,28 @@ it is subdivided in the same way, and so on until all polygons are
 within the limit.  In this case, the boundaries are Manhattan.  This
 processing is more compute-intensive than the other approach, but
 provides a better looking layout.
+
+% -----------------------------------------------------------------------------
+% !jw 092717
+\subsection{The {\cb !jw} Command: Join Wires}
+\index{"!jw command}
+\begin{quote}
+Syntax: {\vt !jw} [{\vt -l}]
+\end{quote}
+
+Without arguments, this command will take the most recently selected
+wire, and recursively join it with other similar (same width and
+layer) wires that share an end point.
+ 
+If the {\vt -l} option is given, all wires on the current layer in the
+current cell will be joined with any similar wires that share an
+endpoint.
+
+The command works in electrical and physical modes.  Its initial
+purpose was to fix designs imported from another EDA tool that had all
+wires as two-vertex segments.  Within {\Xic}, an attempt is made to
+keep wires maximally joined in general, which is more efficient, so
+this command is probably rarely needed.
 
 % -----------------------------------------------------------------------------
 % !split 121713
@@ -4913,7 +4936,7 @@ functions, which would likely crash the program if referenced.
 \section{Selections}
 
 % -----------------------------------------------------------------------------
-% !select 072517
+% !select 092717
 \subsection{The {\cb !select} Command: Select Objects}
 \index{"!select command}
 \index{selections!"!select command}
@@ -4964,6 +4987,9 @@ is
       [l[abel]] [{\it keyword expression\/}]}
 \end{quote}
     
+For layers, the hyphen (`{\vt -}') is an alias for the current layer,
+but only as an isolated token and not as part of a layer expression.
+
 The {\it keyword} is one of the DRC keywords {\et Overlap}, {\et
 IfOverlap}, {\et NoOverlap}, {\et AnyOverlap}, {\et PartOverlap}, and
 {\et AnyNoOverlap}, and the {\it expression} is a layer expression. 
@@ -5178,17 +5204,18 @@ reference purposes, and the list is rather long.
 If {\it filename} is not specified, ``{\vt attrvars.txt}'' is used.
 
 % -----------------------------------------------------------------------------
-% !dumpcds 041110
+% !dumpcds 092717
 \subsection{The {\cb !dumpcds} Command: Create Virtuoso$^{TM}$ Startup Files}
 \index{"!dumpcds command}
 \begin{quote}
 Syntax: {\vt !dumpcds} [{\it basename\/}]
 \end{quote}
-This command dumps Cadence {\it Virtuoso\/}-compatible technology and
-display resource (DRF) files based on the present {\Xic} technology
-database.  The files produced will be {\it basename\/}{\vt .txt} and
-{\it basename\/}{\vt .drf}.  If no {\it basename} is given, it
-defaults to ``{\vt xic\_tech\_cds}''.
+This command dumps Cadence {\it Virtuoso\/}-compatible ASCII
+technology, display resource (DRF), and GDSII layer mapping files
+based on the present {\Xic} technology database.  The files produced
+will be {\it basename\/}{\vt .txt}, {\it basename\/}{\vt .drf}, and
+{\it basename\/}{\vt .gdsmap}, respectively.  If no {\it basename} is
+given, it defaults to ``{\vt xic\_tech\_cds}''.
 
 
 \section{Update Release}

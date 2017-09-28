@@ -955,7 +955,7 @@ Font Selection
 !!SEEALSO
 xic:attrmenu
 
-!! 022215
+!! 092717
 !!KEYWORD
 xic:color colorpanel
 !!TITLE
@@ -982,16 +982,25 @@ Color Selection
     plot, if the plot driver supports definable colors.
 
     <p>
-    Near the top of the panel is a pull-down menu plus a "radio group"
-    of three buttons.  The three buttons allow the pull-down menu to
-    contain different sets of entries.  Each entry represents a color
-    that can be adjusted.
+    Along the top of the panel are three drop-down menus.  The
+    leftmost menu selects between <b>Electrical</b> and
+    <b>Physical</b>, which for attributes whose color differs between
+    modes, this specifies which color to display or set.
 
     <p>
-    The three buttons provide the following sets of menu entries:
+    The second menu contains two or three choices:  <b>Attributes</b>
+    and <b>Prompt Line</b>, and in the case where the first menu
+    choice is <b>Electrical</b>, a thrid choice <b>Plot Marks</b> is
+    available.  The choice here will determine the content of the
+    third menu.  Each entry of the third menu represents a color that
+    can be adjusted.
 
     <p>
-    <b>Attributes</b> button<br>
+    The third menu choices for the three choices in the second menu
+    are described below.
+
+    <p>
+    <b>Attributes</b><br>
     These are the colors used in the drawing windows.  Most of these
     colors can be separately set while in electrical or physical
     mode.
@@ -1020,7 +1029,7 @@ Color Selection
     </table>
 
     <p>
-    <b>Prompt</b> button<br>
+    <b>Prompt Line</b><br>
     These are the colors used in the <a href="promptline">prompt
     line</a> and <a href="statusline">status line</a>.
 
@@ -1036,7 +1045,7 @@ Color Selection
     </table>
 
     <p>
-    <b>Plot Marks</b> button<br>
+    <b>Plot Marks</b><br>
     These are the colors of the plot point marks used in electrical
     mode to indicate a node or current being plotted by
     <i>WRspice</i>.  The default colors are the same as the trace

@@ -886,7 +886,7 @@ Open} command.
 
 
 % -----------------------------------------------------------------------------
-% xic:env 092615
+% xic:env 092717
 \section{{\Xic} Environment Variables}
 \label{xicenv}
 \index{environment}
@@ -1048,6 +1048,15 @@ encouraged to experiment.
 This variable was once used to disable the internal local memory
 allocator, which in earlier releases was enabled by default. 
 Currently, this variable is ignored.
+
+\index{environment!XT\_GUI\_COMPRESS}
+\index{XT\_GUI\_COMPRESS environment variable}
+\item{\et XT\_GUI\_COMPRESS}\\
+When set, no extra space is allowed around pushbutton contents in the
+graphical interface.  Such space can cause side menu button images to
+be truncated on low-resolution displays if the theme in use imposes
+too much space.  Setting this variable is a quick fix for this
+problem, though one could also change the theme.
 \end{description}
 
 \subsection{{\Xic} Environment Variables}
@@ -1301,14 +1310,12 @@ of looking in the default location.
 \index{XIC\_LIBRARY\_PATH environment variable}
 \item{\et XIC\_LIBRARY\_PATH}\\
 This applies to Linux and OS X only.  If set, the value will be
-prepended to the {\vt LD\_LIBRARY\_PATH} in the {\Xic} process.  This
-can be used to point to installed libraries needed for plugins,
+prepended to the {\vt LD\_LIBRARY\_PATH} in the {\Xic} wrapper script. 
+This can be used to point to installed libraries needed for plugins,
 \ifoa
 for example the OpenAccess libraries,
 \fi
 without having to set {\vt LD\_LIBRARY\_PATH} in the environment. 
-This is basically equivalent to setting {\vt LD\_LIBRARY\_PATH} in a
-wrapper script, but avoids the need for the script.
 
 \index{environment!XICNOMAIL}
 \index{XICNOMAIL environment variable}

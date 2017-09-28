@@ -70,6 +70,7 @@ keybang
 !poly2path
 !bloat
 !join
+!jw
 !split
 !manh
 !polyfix
@@ -347,7 +348,7 @@ Keyboard '!' Commands
     <tr><td><a href="!exlayers"><b>!exlayers</b></a></td>
         <td>List layers by applied keywords in console</td></tr>
 
-!! 012016
+!! 092717
     <tr><th colspan=2 align="center">Layout Editing</th></tr>
     <tr><td><a href="!array"><b>!array</b></a></td>
         <td>Manipulate instance arrays</td></tr>
@@ -375,6 +376,8 @@ Keyboard '!' Commands
         <td>Expand/contract object</td></tr>
     <tr><td><a href="!join"><b>!join</b></a></td>
         <td>Join objects into polygon</td></tr>
+    <tr><td><a href="!jw"><b>!jw</b></a></td>
+        <td>Join similar wires with common endpoints</td></tr>
     <tr><td><a href="!split"><b>!split</b></a></td>
         <td>Split polygon into trapezoids</td></tr>
     <tr><td><a href="!manh"><b>!manh</b></a></td>
@@ -4108,6 +4111,36 @@ keybang
 
 !!SEEALSO
 keybang
+!jw
+
+!! 092717
+!!KEYWORD
+!jw
+!!TITLE
+!jw
+!!HTML
+    <b>Syntax: <tt>!jw</tt> [-l]</b>
+
+    <p>
+    Without arguments, this command will take the most recently
+    selected wire, and recursively join it with other similar (same
+    width and layer) wires that share an end point.
+
+    <p>
+    If the <tt>-l</tt> option is given, all wires on the current layer
+    in the current cell will be joined with any similar wires that
+    share an endpoint.
+
+    <p>
+    The command works in electrical and physical modes.  Its initial
+    purpose was to fix designs imported from another EDA tool that had
+    all wires as two-vertex segments.  Within <i>Xic</i>, an attempt
+    is made to keep wires maximally joined in general, which is more
+    efficient, so this command is probably rarely needed.
+
+!!SEEALSO
+keybang
+!join
 
 !! 121713
 !!KEYWORD
@@ -6638,7 +6671,7 @@ keybang
 !! Selections
 !! ----------------------------------------------------------------------------
 
-!! 072517
+!! 092717
 !!KEYWORD
 !select
 !!TITLE
@@ -6695,6 +6728,11 @@ keybang
     <tt>!select l[ayer]</tt> <i>layer_re</i> <tt>[b[ox]] [w[ire]] [p[olygon]]
         [l[abel]] [</tt><i>keyword expression</i><tt>]</tt>
     </blockquote>
+
+    <p>
+    For layers, the hyphen ('<tt>-</tt>') is an alias for the current
+    layer, but only as an isolated token and not as part of a layer
+    expression.
 
     The <i>keyword</i> is one of the DRC keywords <tt>Overlap,
     IfOverlap, NoOverlap, AnyOverlap, PartOverlap,</tt> and
@@ -6975,7 +7013,7 @@ keybang
 !!SEEALSO
 techfile:attr
 
-!! 041110
+!! 092717
 !!KEYWORD
 !dumpcds
 !!TITLE
@@ -6984,11 +7022,12 @@ techfile:attr
     <b>Syntax: <tt>!dumpcds</tt> [<i>basename</i>]</b>
 
     <p>
-    This command dumps Cadence <i>Virtuoso</i>-compatible technology
-    and display resource (DRF) files based on the present <i>Xic</i>
-    technology database.  The files produced will be
-    <i>basename</i><tt>.txt</tt> and <i>basename</i><tt>.drf</tt>.  If
-    no <i>basename</i> is given, it defaults to
+    This command dumps Cadence <i>Virtuoso</i>-compatible ASCII
+    technology, display resource (DRF), and GDSII layer mapping files
+    based on the present <i>Xic</i> technology database.  The files
+    produced will be <i>basename</i><tt>.txt</tt>,
+    <i>basename</i><tt>.drf</tt>, and <i>basename</i><tt>.gdsmap</tt>,
+    respectively.  If no <i>basename</i> is given, it defaults to
     "<tt>xic_tech_cds</tt>".
 
 !!SEEALSO

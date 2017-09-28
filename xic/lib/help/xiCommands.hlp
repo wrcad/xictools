@@ -2429,7 +2429,7 @@ The plot Button: Generate SPICE Plot
 sidemenu
 xic:iplot
 
-!! 012715
+!! 092717
 !!KEYWORD
 xic:polyg shapes:poly
 !!TITLE
@@ -2450,12 +2450,23 @@ The polyg Button: Create/Edit Polygons
     electrical mode, this functionality is available from the
     <b>poly</b> menu selection brought up by the <a
     href="xic:shapes"><b>shapes</b></a> button.  A polygon is created
-    by clicking on each vertex in sequence, and is terminated by
-    clicking again on the initial vertex, or clicking on the final
-    vertex twice.  The vertices can be undone and redone with the
+    by clicking the left mouse button on each vertex location in
+    sequence.  The vertices can be undone and redone with the
     <b>Tab</b> key and <b>Shift-Tab</b> combination, which are
     equivalent to the <a href="xic:undo"><b>Undo</b></a> and <a
-    href="xic:redo"><b>Redo</b></a> commands.
+    href="xic:redo"><b>Redo</b></a> commands.  Vertex entry is
+    terminated, and a new polygon potentially created, by clicking on
+    the initial point (marked with a cross), or double-clicking the
+    last point, or by pressing the <b>Enter</b> key.  At least three
+    distinct vertices must have been defined, and the polygon must
+    pass some "normality" tests, for successful object creation.
+
+    <p>
+    The <a href="PixelDelta"><b>PixelDelta</b></a> variable can be set
+    to alter the value, in pixels, of the snap distance to the target
+    when clicking to terminate.  By default, the snap distance is 3
+    pixels, so clicking within this distance of the initial point will
+    terminate entry rather than add a new vertex.
 
     <p>
     While the command is active in physical mode, the cursor will snap
@@ -4138,7 +4149,7 @@ The terms Button: Show Subcircuit Connections
 !!SEEALSO
 sidemenu
  
-!! 012715
+!! 092717
 !!KEYWORD
 xic:wire
 !!TITLE
@@ -4157,8 +4168,22 @@ The wire Button: Create/Edit Wires
     <p>
     The <b>wire</b> button is used to create or modify wires.  A wire
     is created by clicking the left mouse button on each vertex
-    location in sequence, and is terminated by clicking on the final
-    vertex twice.  In electrical mode, wires are used to connect
+    location in sequence.  The vertices can be undone and redone with
+    the <b>Tab</b> key and <b>Shift-Tab</b> combination, which are
+    equivalent to the <a href="xic:undo"><b>Undo</b></a> and <a
+    href="xic:redo"><b>Redo</b></a> commands.  Vertex entry is
+    terminated, and a new wire created, by clicking a second time on
+    the last point, or by pressing the <b>Enter</b> key.
+
+    <p>
+    The <a href="PixelDelta"><b>PixelDelta</b></a> variable can be set
+    to alter the value, in pixels, of the snap distance to the target
+    when clicking to terminate.  By default, the snap distance is 3
+    pixels, so clicking within this distance of the last point will
+    terminate entry rather than add a new vertex.
+
+    <p>
+    In electrical mode, wires are used to connect
     devices into circuits.  Vertices are recognized as connecting
     points, and are created where the wire crosses a device or
     subcircuit terminal or a vertex of another wire.  The <a

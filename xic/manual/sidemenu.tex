@@ -2359,7 +2359,7 @@ written to disk, thus the {\cb plot} command string is persistent.
 
 
 % -----------------------------------------------------------------------------
-% xic:polyg 012715
+% xic:polyg 092717
 \section{The {\cb polyg} Button: Create/Edit Polygons}
 \index{polyg button}
 \index{object creation!polygons}
@@ -2367,12 +2367,22 @@ written to disk, thus the {\cb plot} command string is persistent.
 
 The {\cb polyg} button is used to create and modify polygons.  In
 electrical mode, this functionality is available from the {\cb poly}
-menu selection brought up by the {\cb shapes} button.  When A polygon
-is created by clicking on each vertex in sequence, and is terminated
-by clicking again on the initial vertex, or clicking on the final
-vertex twice.  The vertices can be undone and redone with the {\kb
-Tab} key and {\kb Shift-Tab} combination, which are equivalent to the
-{\cb Undo} and {\cb Redo} commands.
+menu selection brought up by the {\cb shapes} button.  A polygon is
+created by clicking the left mouse buton on each vertex location in
+sequence.  The vertices can be undone and redone with the {\kb Tab}
+key and {\kb Shift-Tab} combination, which are equivalent to the {\cb
+Undo} and {\cb Redo} commands.  Vertex entry is terminated, and a new
+polygon potentially created, by clicking on the initial point (marked
+with a cross), or double-clicking the last point, or by pressing the
+{\kb Enter} key.  At least three distinct vertices must have been
+defined, and the polygon must pass some ``normality'' tests, for
+successful object creation.
+
+The {\et PixelDelta} variable can be set to alter the value, in
+pixels, of the snap distance to the target when clicking to terminate. 
+By default, the snap distance is 3 pixels, so clicking within this
+distance of the initial point will terminate entry rather than add a
+new vertex.
 
 While the command is active in physical mode, the cursor will snap to
 horizontal or vertical edges of existing objects in the layout if the
@@ -3686,7 +3696,7 @@ electrical windows, as if the {\cb terms} button was active.
 
 
 % -----------------------------------------------------------------------------
-% xic:wire 102913
+% xic:wire 092717
 \section{The {\cb wire} Button: Create/Edit Wires}
 \index{wire button}
 \index{object creation!wires}
@@ -3694,8 +3704,19 @@ electrical windows, as if the {\cb terms} button was active.
 
 The {\cb wire} button is used to create or modify wires.  A wire is
 created by clicking the left mouse button on each vertex location in
-sequence, and is terminated by clicking on the final vertex twice.  In
-electrical mode, wires are used to connect devices into circuits. 
+sequence.  The vertices can be undone and redone with the {\kb Tab}
+key and {\kb Shift-Tab} combination, which are equivalent to the {\cb
+Undo} and {\cb Redo} commands.  Vertex entry is terminated, and a new
+wire created, by clicking a second time on the last point, or by
+pressing the {\kb Enter} key.
+
+The {\et PixelDelta} variable can be set to alter the value, in
+pixels, of the snap distance to the target when clicking to terminate. 
+By default, the snap distance is 3 pixels, so clicking within this
+distance of the last point will terminate entry rather than add a
+new vertex.
+
+In electrical mode, wires are used to connect devices into circuits. 
 Vertices are recognized as connecting points, and are created where
 the wire crosses a device or subcircuit terminal or a vertex of
 another wire.  The {\cb Connection Dots} button in the {\cb Attributes

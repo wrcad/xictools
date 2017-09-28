@@ -17,9 +17,55 @@ Scroll down to the notes for the current Xic release, which follows
 some important general information.
 
 *****************************************************
+IMPORTANT - Changes from 4.2 branch
+
+1.  If you currently have XicTools programs installed from earlier
+branches, it is strongly recommended that these be deleted.  This will
+be managed automatically by the wr_install script.  Under Windows, you
+can use wr_install under Cygwin, or you can run the cleanold.bat file
+before installing 4.3 programs.  You should NOT delete the gtk2-bundle
+packages for Windows and OS X, these are still required for 4.3.
+
+2.  The Safe Install feature now applies to all packages, including
+Microsoft Windows.  In Safe Install, when updating, the current
+release is saved in its entirety, and can be easily reverted to if
+necessary.  The Safe Install logic is now implemented with scripts
+included in the distribution files, and no longer relies on use of
+wr_install.
+
+3.  Distribution file names, and operating system names, are a little
+different now.  The new OSNAME format is now in the form NAME[.ARCH],
+where the optional ARCH defaults to x86_64 if not given for Linux/OS
+X, or i386 for Windows.
+
+4.2 OSNAME    Corresponding 4.3 name
+Darwin64        Darwin
+LinuxRHEL5      LinuxRHEL5.i686
+LinuxRHEL5_64   LinuxRHEL5
+LinuxRHEL6_64   LinuxRHEL6
+LinuxRHEL7_64   LinuxRHEL7
+Win32           Win32
+
+4.  The XicTools source repository was migrated to GIT from CVS.  The
+source tree orgainzation was improved.  The build, packaging, and
+package installation systems were extensively revised.  Previously
+external accessories such as adms (used with WRspice), and fastcap and
+fasthenry (used with Xic) were added to the XicTools collection.  New
+packages sets for Fedora26 and OpenSUSE13 were added.
+
+5.  Support for OpenAccess in Xic is back.  Non-commercial or
+OpenAccess Coalition members are free to use this capability.
+
+6.  In Linux and OS X, Xic is now run from a shell script, which uses
+the XIC_LIBRARY_PATH environment variable to set the LIBRARY_PATH
+environment variable during execution.  The XIC_LIBRARY_PATH variable
+can be used to transfer the location of the user's OpenAccess library,
+for example.
+
+*****************************************************
 IMPORTANT  Mac users!
 
-The Darwin64 package release is now generated on Sierra (10.12), but
+The Darwin package release is now generated on Sierra (10.12), but
 the programs are fully compatible with El Capitan (10.11).
 
 Support for earlier OS X releases has ended.  This is Apple's
@@ -28,41 +74,23 @@ decision, not mine.
 *****************************************************
 IMPORTANT  (Linux and OS X only)!
 
-You MUST use the wr_install installer script to install the packages. 
+You should remove the following directories from your search path:
+  usr/local/xictools/xic/bin
+  usr/local/xictools/wrspice/bin
+(assuming tools installed under /usr/local, this could be different).
 
-This script maintains the new "SafeInstall" logic, which is described
-in detail at http://wrcad.com/installer.html.  The current
-installation is saved in entirety when an update is installed.  The
-system is described in detail in the link, but you should know that
-/usr/local/xictools/xic and /usr/local/xictools/wrspice are now
-symbolic links, which point to directories where the files are
-actually stored.
+These directories were required in your search path for earlier Xic
+and WRspice, as part of Safe Install support.  In 4.3 releases, all
+executables are linked into the
+   /usr/local/xictools/bin
+directory.
 
-This has not changed since 4.2.x.
-
-There are three ways to setup access to the programs through the shell
-search path.
-
-1.  Add the new directories /usr/local/xictools/xic/bin and
-    /usr/local/xictools/wrspice/bin to the search path in your shell
-    startup file.  Use the actual locations if not installed under
-    /usr/local.  Be sure to use the links "xic" and "wrspice" and
-    not the diretories,
-
-2.  You can symbolically link the programs into the common
-    xictools bin.  For example, go to /usr/local/xictools/bin, and
-    give "ln -s ../xic/bin/* ." and similar for WRspice This only
-    needs to be done once, and you won't need to change the shell
-    search path.
-
-3.  You can put shell script wrappers into /usr/local/xictools/bin
-    that call the programs.  This is useful if you need to use
-    LD_LIBRARY_PATH for plugins, or need to set other environment
-    variables.  This is conveniently done in the wrapper.
-
+This directory should remain, or be added to your search path if not
+already there (again /usr/local is the default, and should be replaced
+by your actual installation location prefix).
 
 *****************************************************
-Windows Notes:
+IMPORTANT  Windows Notes:
 
   WINDOWS USERS SHOULD DO THE FOLLOWING:
   To avoid rendering problems with tree-view display components.
@@ -77,28 +105,16 @@ Windows Notes:
 
 * DLL issues.
 
-  As of xic-4.2.7, wrspice-4.2.4, and xt_accs-4.2.2, there should no
-  longer be any DLL issues.  You should NOT have the gtk2-bundle/bin
-  in your search path.
+  The gtk2-bundle package must be installed to support any XicTools
+  programs that use a graphical interface.  This is the same bundle as
+  was used with 4.2.  You should NOT have the gtk2-bundle/bin in your
+  search path, as it might then adversely affect operation of other
+  programs.
 
   The programs that need the bundle DLLs should be run from the .bat
-  files, i.e., xic.bat, wrspice.bat, and from the accessories
-  mozy.bat, xeditor.bat, and httpget.bat.  These are installed by
-  default in /usr/local/xictools/bin.
-
-  All other programs provided in the distributions can be run from the
-  .exe files and don't need the gtk2-bundle.
-
-  It is no longer necessary to install the distributions all using the
-  same location prefix.  The bat files are now smart enough to figure
-  out where to look in the registry.  That being said, it is still
-  strongly recommended to install everything in the default location.
-
-  Older versions of the programs had a dependence on DLLs found in
-  gtk2-bundle/bin.  In particular libwinpthread-1.dll was required by
-  just about everything.  The best fix is to update your programs.
-  Otherwise, you need to have the needed DLLs in the search path when
-  the program is run.
+  files, i.e., xic.bat, wrspice.bat, and others.  These are installed
+  by default in /usr/local/xictools/bin, which should be in your shell
+  search path.
 
 Cygwin users:
 
@@ -113,28 +129,33 @@ Cygwin users:
   WRspice can be run from the old-style native bash box, or a native
   DOS box.  For example, start a Command Prompt terminal window ("DOS
   box") from Windows, and give the commands
-    cd c:\cygwin\bin
+    cd c:\cygwin64\bin
     bash --login -i
   This gives the traditional Cygwin window, suitable for running
   WRspice.  This can be encapsulated in a bat file that can be run
-  from an icon, there may be a c:/cygwin/Cygwin.bat file in the Cygwin
+  from an icon, there may be a c:/cygwin64/Cygwin.bat file in the Cygwin
   distribution that does exactly this.  If not, create a Cygwin.bat
   file somewhere with the contents
     @echo off
     C:
-    chdir C:\cygwin\bin
+    chdir C:\cygwin64\bin
     bash --login -i
-  This assumes that Cygwin in installed in C:\Cygwin, modify the
+  This assumes that Cygwin in installed in C:\cygwin64, modify the
   file text appropriately if not.  Create a desktop icon that will
   run this bat file, and use it to launch Cygwin windows for running
   native Windows applications including WRspice and Xic.
+
+  Note:  the 64-bit Cygwin64 is recommended over the 32-bit Cygwin,
+  which suffers from internal problems due to conflicts with Windows
+  Defender and other Windows programs.  This caused mysterious run-time
+  failures of Cygwin programs on my Windows 10 machines.
 
 *****************************************************
 End of general info.
 
 
 ===============================================================================
-xic-4.3.1  9/1/2017
+xic-4.3.1  10/1/2017
 Current Release
 
 Welcome the the first open-source release of Xic.  Now, instead of
@@ -144,7 +165,96 @@ code and do it themselves.  Please contribute!  We can help.
 CHANGES AND NEW FEATURES
 ------- --- --- --------
 
+* Major refactoring due to lack of C++ standards conformance
+  throughout the program, which caused real trouble with the latest
+  C++ compilers.
+
+  Specifically, it used to be possible to write very efficient
+  linked-list code in C++ making use of the assumption that it is
+  possible to call a method from a non-polymorphic class through a
+  null pointer, and check for a null "this" pointer in the function
+  body.  One could iterate over the list headed by "this" and have
+  correct behavior when the list is empty.  This idiom was not
+  uncommon, though it violated the official dictum that calling a
+  method from a null object leads to undefined behavior.  The idiom
+  was used in the Microsoft Foundation Class, for example.  Surely,
+  the elegance and efficiency would obviously lead to de-facto
+  standardization, right?  Alas, such code generates a warning in
+  Apple's latest clang, and in addition segmentation faults in gcc-7.1
+  under Fedora 26.  This code had to be replaced by static functions
+  that explicitly pass an object pointer.  Uglier, more complex code,
+  but it works.  This is an unfortunate step backward for "a better C
+  than C" aspect of C++.
+
+* Major effort to clean up core leaks and other internal consistency
+  issues using the Valgrind analysis tool.  Lots of small things were
+  fixed as a result.
+
+* Reversed direction of Ctrl-mouse wheel zoom, to match prevailing
+  standard.
+
+* Miscellaneous changes required in port to Fedora 26, mostly in
+  interprocess communication code.
+
+* The Grid panel was changed visually to avoid some cosmetic problems
+  with the default Fedora/Gnome theme.
+
+* The Color Selection panel was updated to allow setting opposite-mode
+  (electrical when in physical mode and vice-versa) colors.
+
+* New environment variable XT_GUI_COMPRESS.  When set, don't allow
+  space around button contents.  Such space can cause side menu button
+  images to be truncated on low-res displays.  Specifically, this fixes
+  Xic displayed in a VirtualBox running Fedora.
+
+* The !dumpcds command will now output a GDSII layer mapping file in
+  addition to the Cadence ASCII tech and drf files.
+
+* New Join features for wires.
+
+  The !join command can now join wires in electrical mode.
+
+  New command:  !jw [-l]
+  Without argument, take the latest selected wire, and join it
+  recursively to other existing similar wires that share an endpoint.
+  With -l (letter l), join if possible all wires on the current layer.
+
+* !select layer syntax tweak.
+
+  1.  A hyphen ('-') is now a stand-in for the current layer, but not
+      in regular expressions.
+
+  2.  The layer alias name (lppName) is now also tested against the
+      regular expression.
+
+* Standard Via selection
+
+  Ctrl-clicking on a selected standard via instance now pops up the
+  standard via parameter setting panel, allowing the instance to be
+  changed.
+
+* Wire and Polygon Termination
+
+  Pressing Enter now terminates wires and polys being created in the
+  respective side-menu commands.  Also, if the click is within
+  PixelDelta pixels of the target, the wire or poly will be
+  terminated.  This helps ensure termination with ultra-fine grid
+  setting.  The PixelDelta variable can be set to change the snap
+  pixel value, the default is 3.
+
+
 BUGS FIXED
 ---- -----
 
+* Node (net) name mapping failures fixed.
+
+  Fixed lack of name assignment in the Node (Net) Name Mapping panel. 
+  The operation would fail if names are case-insensitive (now the
+  default) and the new name contained lower case.
+
+* In the Spice Commandd (side menu) operation, error messages weren't
+  being handled.  This was a core leak, too.
+
+* Numerous fixes to standard via handling internally.  Standard vias
+  should be handled transparently in all operations.
 

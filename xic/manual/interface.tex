@@ -1071,7 +1071,7 @@ and the help viewer on most systems.
 
 
 % -----------------------------------------------------------------------------
-% button1 022316
+% button1 092717
 \index{button 1}
 \index{point operation}
 Button 1 (the left button) is used for point operations in the drawing
@@ -1115,12 +1115,16 @@ reference points, as if one clicked in the main window (see
 assign plot points from a cell that is shown as an instance
 symbolically.
 
-Clicking on a selected non-pcell instance with only the {\kb Ctrl} key
-held will bring up the {\cb Property Editor} panel (see
-\ref{prptybut}), with the clicked-on instance as the current object. 
-If the instance is a pcell instantiation, the {\cb Parameters} panel
-(see \ref{pcparams}) appears, allowing the user to reparameterize the
-instance.
+with only the {\kb Ctrl} key held, clicking on a selected cell
+instance will provide access to resources as described.  If the
+selected instance is a normal cell, the {\cb Property Editor} panel
+(see \ref{prptybut}), with the clicked-on instance as the current
+object, will appear.  If the selected instance master is a
+parameterized cell (pcell), the {\cb Parameters} panel (see
+\ref{pcparams}) appears, allowing the user to reparameterize the
+instance.  If the selected instance is a standard via (see
+\ref{stdvia}), the {\cb Standard Via Parameters} panel will appear,
+allowing the user to alter ther structure of the via.
 
 \subsection{Basic Selection Operation}
 \label{btnsel}

@@ -1049,6 +1049,7 @@ Command Line Options
 !!REDIRECT XTNETDEBUG           xic:env#XTNETDEBUG
 !!REDIRECT XT_LOCAL_MALLOC      xic:env#XT_LOCAL_MALLOC
 !!REDIRECT XT_SYSTEM_MALLOC     xic:env#XT_SYSTEM_MALLOC
+!!REDIRECT XT_GUI_COMPRESS      xic:env#XT_GUI_COMPRESS
 
 !!REDIRECT FORCE_XICII          xic:env#FORCE_XICII
 !!REDIRECT FORCE_XIV            xic:env#FORCE_XIV
@@ -1079,7 +1080,7 @@ Command Line Options
 !!REDIRECT SPICE_EXEC_NAME      xic:env#SPICE_EXEC_NAME
 !!REDIRECT IMSAVE_PATH          xic:env#IMSAVE_PATH
 
-!! 092615
+!! 092717
 !!KEYWORD
 xic:env
 !!TITLE
@@ -1290,6 +1291,17 @@ Environment Variables
     This variable was once used to disable the internal local memory
     allocator, which in earlier releases was enabled by default.
     Currently, this variable is ignored.
+    </dl>
+
+    <a name="XT_GUI_COMPRESS"></a>
+    <dl>
+    <dt><b>XT_GUI_COMPRESS</b>
+    <dd>
+    When set, no extra space is allowed around pushbutton contents in
+    the graphical interface.  Such space can cause side menu button
+    images to be truncated on low-resolution displays if the theme in
+    use imposes too much space.  Setting this variable is a quick fix
+    for this problem, though one could also change the theme.
     </dl>
 
     <a name="xicenv"></a>
@@ -1590,15 +1602,14 @@ Environment Variables
     <dt><b>XIC_LIBRARY_PATH</b><dd>
     This applies to Linux and OS X only.  If set, the value will be
     prepended to the <tt>LD_LIBRARY_PATH</tt> in the <i>Xic</i>
-    process.  This can be used to point to installed libraries needed
+    wrapper script.
+    This can be used to point to installed libraries needed
     for plugins,
 !!IFDEF OpenAccess
     for example the OpenAccess libraries,
 !!ENDIF
     without having to set <tt>LD_LIBRARY_PATH</tt> in the
-    environment.  This is basically equivalent to setting
-    <tt>LD_LIBRARY_PATH</tt> in a wrapper script, but avoids the need
-    for the script.
+    environment.
     </dl>
 
     <a name="XICNOMAIL"></a>
