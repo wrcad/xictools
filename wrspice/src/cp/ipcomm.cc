@@ -641,11 +641,6 @@ CommandTab::com_sced(wordlist *wl)
             xpstr.add(Global.Prefix());
             xpstr.add_c('/');
             xpstr.add(Global.ToolsRoot());
-#ifdef WIN32
-#else
-            xpstr.add_c('/');
-            xpstr.add(progname);
-#endif
             xpstr.add("/bin/");
             xpstr.add(progname);
         }
