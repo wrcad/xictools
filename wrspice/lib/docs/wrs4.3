@@ -13,125 +13,55 @@ into general releases, and tagged known-good releases will be issued
 periodically.  The latest source code will be available directly from
 the repository, for those wishing to track the latest.
 
-Scroll down to the notes for the current Xic release, which follows
-some important general information.
+Scroll down to the notes for the current WRspice release, which
+follows some important general information.
 
 *****************************************************
-IMPORTANT  Mac users!
+IMPORTANT -- General changes from 4.2 branch
 
-The Darwin64 package release is now generated on Sierra (10.12), but
-the programs are fully compatible with El Capitan (10.11).
+1.  If you currently have XicTools programs installed from earlier
+branches, it is strongly recommended that these be deleted.  This will
+be managed automatically by the wr_install script.  Under Windows, you
+can use wr_install under Cygwin, or you can run the cleanold.bat file
+before installing 4.3 programs.  You should NOT delete the gtk2-bundle
+packages for Windows and OS X, these are still required for 4.3.  Your
+present releases of Xic and WRspice can be saved in Safe Install
+format (even under Windows), and existing safe-installs won't be
+affected.
 
-Support for earlier OS X releases has ended.  This is Apple's
-decision, not mine.
+2.  The Safe Install feature now applies to all packages, including
+Microsoft Windows.  In Safe Install, when updating, the current
+release is saved in its entirety, and can be easily reverted to if
+necessary.  The Safe Install logic is now implemented with scripts
+included in the distribution files, and no longer relies on use of
+wr_install.
 
-*****************************************************
-IMPORTANT  (Linux and OS X only)!
+3.  Distribution file names, and operating system names, are a little
+different now.  The new OSNAME format is now in the form NAME[.ARCH],
+where the optional ARCH defaults to x86_64 if not given for Linux/OS
+X, or i386 for Windows.
 
-You MUST use the wr_install installer script to install the packages. 
+4.2 OSNAME    Corresponding 4.3 name
+Darwin64        Darwin
+LinuxRHEL5      LinuxRHEL5.i686
+LinuxRHEL5_64   LinuxRHEL5
+LinuxRHEL6_64   LinuxRHEL6
+LinuxRHEL7_64   LinuxRHEL7
+Win32           Win32
 
-This script maintains the new "SafeInstall" logic, which is described
-in detail at http://wrcad.com/installer.html.  The current
-installation is saved in entirety when an update is installed.  The
-system is described in detail in the link, but you should know that
-/usr/local/xictools/xic and /usr/local/xictools/wrspice are now
-symbolic links, which point to directories where the files are
-actually stored.
+4.  The XicTools source repository was migrated to GIT from CVS.  The
+source tree orgainzation was improved.  The build, packaging, and
+package installation systems were extensively revised.  Previously
+external accessories such as adms (used with WRspice), and fastcap and
+fasthenry (used with Xic) were added to the XicTools collection.  New
+packages sets for Fedora26 and OpenSUSE13 were added.
 
-This has not changed since 4.2.x.
-
-There are three ways to setup access to the programs through the shell
-search path.
-
-1.  Add the new directories /usr/local/xictools/xic/bin and
-    /usr/local/xictools/wrspice/bin to the search path in your shell
-    startup file.  Use the actual locations if not installed under
-    /usr/local.  Be sure to use the links "xic" and "wrspice" and
-    not the diretories,
-
-2.  You can symbolically link the programs into the common
-    xictools bin.  For example, go to /usr/local/xictools/bin, and
-    give "ln -s ../xic/bin/* ." and similar for WRspice This only
-    needs to be done once, and you won't need to change the shell
-    search path.
-
-3.  You can put shell script wrappers into /usr/local/xictools/bin
-    that call the programs.  This is useful if you need to use
-    LD_LIBRARY_PATH for plugins, or need to set other environment
-    variables.  This is conveniently done in the wrapper.
-
-
-*****************************************************
-Windows Notes:
-
-  WINDOWS USERS SHOULD DO THE FOLLOWING:
-  To avoid rendering problems with tree-view display components.
-  Edit the file c:/usr/local/gtk2-bundle/etc/gtk-2.0/gtkrc
-  Either comment out the line by adding a # character at the beginning,
-  or replace the line with
-
-    gtk-theme-name="MS-Windows"
-
-  This changes the appearance of Xic and WRspice, which may look
-  better to Windows users (I think so).
-
-* DLL issues.
-
-  As of xic-4.2.7, wrspice-4.2.4, and xt_accs-4.2.2, there should no
-  longer be any DLL issues.  You should NOT have the gtk2-bundle/bin
-  in your search path.
-
-  The programs that need the bundle DLLs should be run from the .bat
-  files, i.e., xic.bat, wrspice.bat, and from the accessories
-  mozy.bat, xeditor.bat, and httpget.bat.  These are installed by
-  default in /usr/local/xictools/bin.
-
-  All other programs provided in the distributions can be run from the
-  .exe files and don't need the gtk2-bundle.
-
-  It is no longer necessary to install the distributions all using the
-  same location prefix.  The bat files are now smart enough to figure
-  out where to look in the registry.  That being said, it is still
-  strongly recommended to install everything in the default location.
-
-  Older versions of the programs had a dependence on DLLs found in
-  gtk2-bundle/bin.  In particular libwinpthread-1.dll was required by
-  just about everything.  The best fix is to update your programs.
-  Otherwise, you need to have the needed DLLs in the search path when
-  the program is run.
-
-Cygwin users:
-
-* Cygwin now defaults to a new "mintty" terminal emulator.  This does
-  NOT work AT ALL with WRspice, or any other native Windows
-  application that interacts with the console.  The same applies to
-  xterm and rvxt terminal emulators compiled under Cygwin.  These work
-  better for running Xic, or running WRspice from Xic, where the
-  terminal window is not interactive, but there are subtle problems so
-  this is not recommended.
-
-  WRspice can be run from the old-style native bash box, or a native
-  DOS box.  For example, start a Command Prompt terminal window ("DOS
-  box") from Windows, and give the commands
-    cd c:\cygwin\bin
-    bash --login -i
-  This gives the traditional Cygwin window, suitable for running
-  WRspice.  This can be encapsulated in a bat file that can be run
-  from an icon, there may be a c:/cygwin/Cygwin.bat file in the Cygwin
-  distribution that does exactly this.  If not, create a Cygwin.bat
-  file somewhere with the contents
-    @echo off
-    C:
-    chdir C:\cygwin\bin
-    bash --login -i
-  This assumes that Cygwin in installed in C:\Cygwin, modify the
-  file text appropriately if not.  Create a desktop icon that will
-  run this bat file, and use it to launch Cygwin windows for running
-  native Windows applications including WRspice and Xic.
+5.  You probably want to remove your existing adms package, if any. 
+and install the new xictools adms package.  This provides a newer adms
+release, integrated automatically with WRspice.
 
 *****************************************************
-*** IMPORTANT WRspice Changes ***
-These are these are the same as in 4.2.x.
+IMPORTANT -- WRspice changes (these are the same as in 4.2.x)
 
 The present WRspice has some differences that can affect simulation
 results relative to pre-production or pre-Gen-4 releases.
@@ -201,20 +131,178 @@ results relative to pre-production or pre-Gen-4 releases.
 
   If the boolean variable pexnodes is set, then parameter expansion
   will occur, for backward compatibility.
+*****************************************************
+IMPORTANT  Mac users!
+
+The Darwin64 package release is now generated on Sierra (10.12), but
+the programs are fully compatible with El Capitan (10.11).
+
+Support for earlier OS X releases has ended.  This is Apple's
+decision, not mine.
+
+*****************************************************
+IMPORTANT -- Linux and OS X only
+
+You should remove the following directories from your search path:
+  usr/local/xictools/xic/bin
+  usr/local/xictools/wrspice/bin
+(assuming tools installed under /usr/local, this could be different).
+
+These directories were required in your search path for earlier Xic
+and WRspice, as part of Safe Install support.  In 4.3 releases, all
+executables are linked into the
+   /usr/local/xictools/bin
+directory.
+
+This directory should remain, or be added to your search path if not
+already there (again /usr/local is the default, and should be replaced
+by your actual installation location prefix).
+
+*****************************************************
+IMPORTANT -- Windows notes
+
+  WINDOWS USERS SHOULD DO THE FOLLOWING:
+  To avoid rendering problems with tree-view display components.
+  Edit the file c:/usr/local/gtk2-bundle/etc/gtk-2.0/gtkrc
+  Either comment out the line by adding a # character at the beginning,
+  or replace the line with
+
+    gtk-theme-name="MS-Windows"
+
+  This changes the appearance of Xic and WRspice, which may look
+  better to Windows users (I think so).
+
+* DLL issues.
+
+  The gtk2-bundle package must be installed to support any XicTools
+  programs that use a graphical interface.  This is the same bundle as
+  was used with 4.2.  You should NOT have the gtk2-bundle/bin in your
+  search path, as it might then adversely affect operation of other
+  programs.
+
+  The programs that need the bundle DLLs should be run from the .bat
+  files, i.e., xic.bat, wrspice.bat, and others.  These are installed
+  by default in /usr/local/xictools/bin, which should be in your shell
+  search path.
+
+* Cygwin users:
+
+  Cygwin now defaults to a new "mintty" terminal emulator.  This does
+  NOT work AT ALL with WRspice, or any other native Windows
+  application that interacts with the console.  The same applies to
+  xterm and rvxt terminal emulators compiled under Cygwin.  These work
+  better for running Xic, or running WRspice from Xic, where the
+  terminal window is not interactive, but there are subtle problems so
+  this is not recommended.
+
+  WRspice can be run from the old-style native bash box, or a native
+  DOS box.  For example, start a Command Prompt terminal window ("DOS
+  box") from Windows, and give the commands
+    cd c:\cygwin64\bin
+    bash --login -i
+  This gives the traditional Cygwin window, suitable for running
+  WRspice.  This can be encapsulated in a bat file that can be run
+  from an icon, there may be a c:/cygwin64/Cygwin.bat file in the Cygwin
+  distribution that does exactly this.  If not, create a Cygwin.bat
+  file somewhere with the contents
+    @echo off
+    C:
+    chdir C:\cygwin64\bin
+    bash --login -i
+  This assumes that Cygwin in installed in C:\cygwin64, modify the
+  file text appropriately if not.  Create a desktop icon that will
+  run this bat file, and use it to launch Cygwin windows for running
+  native Windows applications including WRspice and Xic.
+
+  Note:  the 64-bit Cygwin64 is recommended over the 32-bit Cygwin,
+  which suffers from internal problems due to conflicts with Windows
+  Defender and other Windows programs.  This caused mysterious run-time
+  failures of Cygwin programs on my Windows 10 machines.
 
 *****************************************************
 End of general info.
 
 
 ===============================================================================
-wrspice-4.3.1  9/1/2017
+wrspice-4.3.1  10/1/2017
 Current Release
+
+Welcome the the first open-source release of Xic.  Now, instead of
+asking Whiteley Research for new features, users can modify the source
+code and do it themselves.  Please contribute!  We can help.
+
+Changes are relative to the final production release wrspice-4.2.16.
 
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
 
+* Major refactoring due to lack of C++ standards conformance
+  throughout the program, which caused real trouble with the latest
+  C++ compilers.
+
+  Specifically, it used to be possible to write very efficient
+  linked-list code in C++ making use of the assumption that it is
+  possible to call a method from a non-polymorphic class through a
+  null pointer, and check for a null "this" pointer in the function
+  body.  One could iterate over the list headed by "this" and have
+  correct behavior when the list is empty.  This idiom was not
+  uncommon, though it violated the official dictum that calling a
+  method from a null object leads to undefined behavior.  The idiom
+  was used in the Microsoft Foundation Class, for example.  Surely,
+  the elegance and efficiency would obviously lead to de-facto
+  standardization, right?  Alas, such code generates a warning in
+  Apple's latest clang, and in addition segmentation faults in gcc-7.1
+  under Fedora 26.  This code had to be replaced by static functions
+  that explicitly pass an object pointer.  Uglier, more complex code,
+  but it works.  This is an unfortunate step backward for "a better C
+  than C" aspect of C++.
+
+* Major effort to clean up core leaks and other internal consistency
+  issues using the Valgrind analysis tool.  Lots of small things were
+  fixed as a result.
+
+* Miscellaneous changes required in port to Fedora 26, mostly in
+  interprocess communication code.
+
+* Print Control Panel updated.
+
+  The Print Control Panel has changed.  When the PostScript Line-Draw
+  driver is chosen, a new Line Width entry area becomes visible.  This
+  can be used to set the line width as rendered in the plot, in points
+  (1/72 in).  The default is "0", which means to use the minimum line
+  width supported by the printer.
+
+  The Portrait/Landscape selection is now a drop-down menu instead of
+  radio buttons, and some controls have changed location a bit.
+  
+
 BUGS FIXED
 ---- -----
 
+* The default path to Xic was incorrect.
+
+* In Monte Carlo analysis, the compose call for checkPNTS (e.g.)
+  would try and delete and replace the vector, which was prevented and
+  a message issued since the plot active flag would be set.
+
+
+
+ToDo:
+Matt,
+
+You can give commands like "plot v(1) v2) ; plot (v3) v(4)" to get two     
+plot windows.  Importantly, this works from the Xic prompt line when the
+plot button is active, and you can click to define the vectors.  Just add
+": plot" as plain text.
+
+I plan to add a "group" option to the WRspice plot command, so one could     
+have something like "plot v(1) v(2) -g v(3) v(4) -g i(v1) i(v2)" to obtain
+three sub-plots containing the listed vectors.  These would be displayed
+into the same window somehow, or perhaps separate windows.  The latter case
+would be equivalent to "plot v(1) v(2) ; plot v(3) v(4) ; plot i(v1) i(v2)",
+which should not be too difficult to implement.
+
+Regards,
+Steve
 

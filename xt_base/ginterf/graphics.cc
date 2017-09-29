@@ -107,41 +107,6 @@ GRappCalls::on_null_ptr()
 }
 
 
-/*XXX
-//-----------------------------------------------------------------------------
-// GRimage functions
-
-bool
-GRimage::create_image_file(GRpkg *pkg, const char *filename)
-{
-    if (!im_width || !im_height || !im_data)
-        return (false);
-    if (!pkg || !filename)
-        return (false);
-
-#ifdef HAVE_MOZY
-    unsigned char *rgbdata = new unsigned char[im_width*im_height * 3];
-    Image img(im_width, im_height, rgbdata);
-    // rgbdata freed im Image destructor.
-
-    for (unsigned int i = 0; i < im_height; i++) {
-        for (unsigned int j = 0; j < im_width; j++) {
-            int r, g, b;
-            pkg->RGBofPixel(im_data[j + i*im_width], &r, &g, &b);
-            *rgbdata++ = r;
-            *rgbdata++ = g;
-            *rgbdata++ = b;
-        }
-    }
-    SaveInfo sv;
-    return (img.save_image(filename, &sv) == ImOK);
-#else
-    return (false);
-#endif
-}
-****/
-
-
 //-----------------------------------------------------------------------------
 // GRpkg functions
 
@@ -701,6 +666,14 @@ GRdev::HCdevParse(HCdata *hd, int *acp, char **av)
         if (!strcmp(av[i], "-l")) {
             shift(i, acp, av);
             hd->landscape = true;
+            continue;
+        }
+        if (!strcmp(av[i], "-p")) {
+            shift(i, acp, av);
+            if (i >= *acp || !av[i] || !*av[i])
+                return (true);
+            hd->linewidth = atof(av[i]);
+            shift(i, acp, av);
             continue;
         }
         i++;

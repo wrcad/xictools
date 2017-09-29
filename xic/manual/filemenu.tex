@@ -1150,7 +1150,7 @@ environment variable should be set to a path to a suitable directory.
 
 
 % -----------------------------------------------------------------------------
-% hcopypanel 061608
+% hcopypanel 092817
 \subsection{Print Control Panel}
 \index{hardcopy panel}
 
@@ -1193,11 +1193,11 @@ sent to the printer.  The user must enter a name or path to the file,
 which will be created.
 
 {\Xic} normally supplies a legend on the hardcopy output, which can be
-suppressed with the {\cb Legend} button.  The legend is an
-informational area added to the bottom of a plot.  In contexts where
-there is no legend, this button will be absent.  In {\Xic}, a legend
-containing a list of the layers is available.  In {\WRspice}, there is
-no legend.
+suppressed by un-checking the {\cb Legend} check box.  The legend is
+an informational area added to the bottom of a plot.  In contexts
+where there is no legend, this button will be absent.  In {\Xic}, a
+legend containing a list of the layers is available.  In {\WRspice},
+there is no legend.
 
 The size and location of the plot on the page can be specified with
 the {\cb Width}, {\cb Height}, {\cb Left}, and {\cb Top}/{\cb Bottom}
@@ -1229,14 +1229,12 @@ produce a full page image.  Under Windows, the {\et Windows Native}
 driver requires that the actual paper type be selected.  Otherwise,
 this merely specifies the default size of the image.
 
-Portrait or landscape orientation is selectable by the {\cb Portrait}
-and {\cb Landscape} buttons.  These interlocking buttons switch
-between portrait and landscape orientation.  In portrait mode, the
-plot is in the same orientation as seen on-screen, and in landscape
-mode, the image is rotated 90 degrees.  However, if the {\cb Best Fit}
-button is active, the image can have either orientation, but the
-legend will appear as described.  If using auto-height, the legend
-will always be in portrait orientation.
+Portrait or landscape orientation is selectable by the drop-down menu. 
+In portrait mode, the plot is in the same orientation as seen
+on-screen, and in landscape mode, the image is rotated 90 degrees. 
+However, if the {\cb Best Fit} check box is checked, the image can
+have either orientation, but the legend will appear as described.  If
+using auto-height, the legend will always be in portrait orientation.
 
 \index{hardcopy panel!Best Fit}
 When the {\cb Best Fit} button is active, the driver is allowed to
@@ -1273,6 +1271,15 @@ resolutions are selectable in the adjacent resolution menu.  Not all
 drivers support multiple resolutions.  Higher resolutions generate
 larger files which take more time to process, and may cause fill
 patterns to become less differentiable.
+
+When a PostScript line-draw driver is selected, a {\cb Line Width}
+numeric entry area appears, which can be used to set the width of the
+lines used for drawing.  The value given is in points, a point being
+1/72 of an inch.  Different printers may respond to the specified
+width in different ways, depending on physical characteristics.  The
+default, when the line width is set to 0, is to use the narrowest line
+provided by the printer.  At times, using fatter lines improves
+visibility for presentation graphics and similar.
 
 Pressing the {\cb Print} button actually generates the plot or creates
 the output file.  This should be pressed once the appropriate

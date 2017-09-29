@@ -67,11 +67,6 @@ namespace {
 
 namespace ginterf
 {
-    // Variable can be set externally to set line width in PostScript
-    // line-draw driver.
-    //
-    double HCpsLineWidth;
-
     HCdesc PSdesc_m(
         "PS",                           // drname
         "PostScript line draw, mono",   // descr
@@ -94,7 +89,7 @@ namespace ginterf
             HClegOn,    // initially use legend
             HCbest      // initially set best orientation
         ),
-        true);      // line_draw
+        true, true);    // line_draw, line width can be set
 
     HCdesc PSdesc_c(
         "PS",                           // drname
@@ -118,7 +113,7 @@ namespace ginterf
             HClegOn,    // initially use legend
             HCbest      // initially set best orientation
         ),
-        true);      // line draw
+        true, true);    // line_draw, line width can be set
 }
 
 
@@ -290,8 +285,9 @@ PSparams::DefineViewport()
     fprintf(fp, "%d %d lineto\n", 0, 0);
 #endif
 
-    if (HCpsLineWidth > 0.0) {
-        fprintf(fp, "%g setlinewidth\n", HCpsLineWidth);
+    if (dev->data->linewidth > 0.0) {
+        fprintf(fp, "%g setlinewidth\n",
+            dev->data->linewidth*dev->data->resol/72.0);
         // round ends
         fprintf(fp, "1 setlinecap\n");
         fprintf(fp, "1 setlinejoin\n");

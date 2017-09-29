@@ -409,24 +409,6 @@ namespace {
     }
 
     bool
-    evPSlineWidth(const char *vstring, bool set)
-    {
-        if (set) {
-            double d;
-            if (str_to_dbl(&d, vstring) && d >= 0.0 && d <= 25.0)
-                HCpsLineWidth = d;
-            else {
-                Log()->ErrorLog(mh::Variables,
-                    "Incorrect PSLineWidth: range 0-25.");
-                return (false);
-            }
-        }
-        else
-            HCpsLineWidth = 0.0;
-        return (true);
-    }
-
-    bool
     evRmTmpFileMinutes(const char *vstring, bool set)
     {
         if (set) {
@@ -907,7 +889,6 @@ cMain::SetupVariables()
     vsetup(VA_NoAskFileAction,     B,   evNoAskFileAction);
     vsetup(VA_DefaultPrintCmd,     S,   evDefaultPrintCmd);
     vsetup(VA_NoDriverLabels,      B,   0);
-    vsetup(VA_PSlineWidth,         S,   evPSlineWidth);
     vsetup(VA_RmTmpFileMinutes,    S,   evRmTmpFileMinutes);
 
     // Cell Menu Commands

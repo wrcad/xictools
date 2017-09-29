@@ -2767,7 +2767,7 @@ information about use of the selections.
 \section{The Print Control Panel}
 \index{print panel}
 
-% Hardcopy.hlp:hcopypanel 061608
+% Hardcopy.hlp:hcopypanel 092817
 
 The {\cb Print} button in the plot and mplot panels brings up a panel
 which provides an interface to the hardcopy drivers.  The panel is a
@@ -2835,13 +2835,11 @@ produce a full page image.  Under Windows, the ``Windows Native''
 driver requires that the actual paper type be selected.  Otherwise,
 this merely specifies the default size of the image.
 
-Portrait or landscape orientation is selectable by the {\cb Portrait}
-and {\cb Landscape} buttons.  These interlocking buttons switch
-between portrait and landscape orientation.
-In portrait mode, the plot is in the same orientation
-as seen on-screen, and in landscape mode, the image is rotated 90
-degrees.  However, if the {\cb Best Fit} button is active, the image
-can have either orientation.
+Portrait or landscape orientation is selectable by the drop-down menu. 
+In portrait mode, the plot is in the same orientation as seen
+on-screen, and in landscape mode, the image is rotated 90 degrees. 
+However, if the {\cb Best Fit} check box is checked, the image can
+have either orientation.
 
 When the {\cb Best Fit} button is active, the driver is allowed to
 rotate the image 90 degrees if this improves the fit to the aspect
@@ -2852,6 +2850,15 @@ The available output formats are listed in a drop-down menu.  Printer
 resolutions are selectable in the adjacent resolution menu.  Not all
 drivers support multiple resolutions.  Higher resolutions generate
 larger files which take more time to process.
+
+When a PostScript line-draw driver is selected, a {\cb Line Width}
+numeric entry area appears, which can be used to set the width of the
+lines used for drawing.  The value given is in points, a point being
+1/72 of an inch.  Different printers may respond to the specified 
+width in different ways, depending on physical characteristics.  The
+default, when the line width is set to 0, is to use the narrowest line
+provided by the printer.  At times, using fatter lines improves
+visibility for presentation graphics and similar.
 
 Pressing the {\cb Print} button actually generates the plot or creates
 the output file.  This should be pressed once the appropriate

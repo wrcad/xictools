@@ -528,11 +528,6 @@ namespace ginterf
 
 namespace ginterf
 {
-    // Variable can be set externally to set line width in PostScript
-    // line-draw driver.
-    //
-    extern double HCpsLineWidth;
-
     // Flags for image orientation, if "best" allow rotation if this
     // improves fit to aspect ratio of page.
     //
@@ -646,7 +641,7 @@ namespace ginterf
     // HClandsSwpYmarg    Set if y-offset reference (top or bottom) changes in
     //                     landscape mode (as for HP PCL).
     // HCconfirmGo        Issue a popup after 'go' to confirm (Versatec).
-    // HCdontCareXXX      Driver doesn't use these values.
+    // HCdontCare???      Driver doesn't use these values.
     // HCnoLandscape      No landscape mode.
     // HCnoBestOrient     No optional rotation.
     // HCnoCanRotate      Driver can't rotate (must do this externally).
@@ -700,7 +695,8 @@ namespace ginterf
             const char *ft,
             HClimits l,
             HCdefaults d,
-            bool ld) :
+            bool ld=false,
+            bool lw=false) :
                 drname(nm),
                 descr(ds),
                 keyword(kw),
@@ -710,7 +706,8 @@ namespace ginterf
                 last_h(0.0),
                 limits(l),
                 defaults(d),
-                line_draw(ld) { }
+                line_draw(ld),
+                line_width(lw) { }
 
         const char *drname;     // name of device driver
         const char *descr;      // description for menu
@@ -722,19 +719,28 @@ namespace ginterf
         HClimits limits;        // limits
         HCdefaults defaults;    // defaults
         bool line_draw;         // set for "line draw" drivers
+        bool line_width;        // line width can be set in line_draw
     };
 
     // Structure to hold data parsed from hardcopy format string.
     //
     struct HCdata
     {
-        HCdata() { xoff = yoff = 0; width = height = 0; filename = 0;
-            resol = hctype = 0; doRLE = encode = landscape = false; }
+        HCdata()
+            {
+                xoff = yoff = 0.0;
+                width = height = 0.0;
+                linewidth = 0.0;
+                filename = 0;
+                resol = hctype = 0;
+                doRLE = encode = landscape = false;
+            }
 
         double xoff;
         double yoff;
         double width;
         double height;
+        double linewidth;
         const char *filename;
         int resol;
         int hctype;
@@ -861,7 +867,7 @@ namespace ginterf
         int ypos;
     };
 
-    // Arg passed to PopUpXXX functions: pop down, pop_up, update.
+    // Arg passed to PopUp??? functions: pop down, pop_up, update.
     enum ShowMode {MODE_OFF, MODE_ON, MODE_UPD};
 
     // Argument to PopUpFileSelector.

@@ -41,6 +41,7 @@
 #ifndef GTKHCOPY_H
 #define GTKHCOPY_H
 
+
 namespace gtkinterf {
     // values for textfmt
     enum HCtextType { PlainText, PrettyText, HtmlText, PStimes, PShelv,
@@ -119,8 +120,7 @@ namespace gtkinterf {
         GtkWidget *hc_left;
         GtkWidget *hc_ylabel;
         GtkWidget *hc_top;
-        GtkWidget *hc_portbtn;
-        GtkWidget *hc_landsbtn;
+        GtkWidget *hc_orientmenu;
         GtkWidget *hc_fitbtn;
         GtkWidget *hc_legbtn;
         GtkWidget *hc_tofbtn;
@@ -129,6 +129,8 @@ namespace gtkinterf {
         GtkWidget *hc_fmtmenu;
         GtkWidget *hc_resmenu;
         GtkWidget *hc_pgsmenu;
+        GtkWidget *hc_linwlab;
+        GtkWidget *hc_linwent;
 
         HCcb *hc_cb;
         GRdraw *hc_context;

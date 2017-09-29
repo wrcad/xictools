@@ -17,14 +17,17 @@ Scroll down to the notes for the current Xic release, which follows
 some important general information.
 
 *****************************************************
-IMPORTANT - Changes from 4.2 branch
+IMPORTANT -- General changes from 4.2 branch
 
 1.  If you currently have XicTools programs installed from earlier
 branches, it is strongly recommended that these be deleted.  This will
 be managed automatically by the wr_install script.  Under Windows, you
 can use wr_install under Cygwin, or you can run the cleanold.bat file
 before installing 4.3 programs.  You should NOT delete the gtk2-bundle
-packages for Windows and OS X, these are still required for 4.3.
+packages for Windows and OS X, these are still required for 4.3.  Your
+present releases of Xic and WRspice can be saved in Safe Install
+format (even under Windows), and existing safe-installs won't be
+affected.
 
 2.  The Safe Install feature now applies to all packages, including
 Microsoft Windows.  In Safe Install, when updating, the current
@@ -63,7 +66,7 @@ can be used to transfer the location of the user's OpenAccess library,
 for example.
 
 *****************************************************
-IMPORTANT  Mac users!
+IMPORTANT -- Mac OS X note!
 
 The Darwin package release is now generated on Sierra (10.12), but
 the programs are fully compatible with El Capitan (10.11).
@@ -72,7 +75,7 @@ Support for earlier OS X releases has ended.  This is Apple's
 decision, not mine.
 
 *****************************************************
-IMPORTANT  (Linux and OS X only)!
+IMPORTANT -- Linux and OS X only
 
 You should remove the following directories from your search path:
   usr/local/xictools/xic/bin
@@ -90,7 +93,7 @@ already there (again /usr/local is the default, and should be replaced
 by your actual installation location prefix).
 
 *****************************************************
-IMPORTANT  Windows Notes:
+IMPORTANT -- Windows notes
 
   WINDOWS USERS SHOULD DO THE FOLLOWING:
   To avoid rendering problems with tree-view display components.
@@ -116,9 +119,9 @@ IMPORTANT  Windows Notes:
   by default in /usr/local/xictools/bin, which should be in your shell
   search path.
 
-Cygwin users:
+* Cygwin users:
 
-* Cygwin now defaults to a new "mintty" terminal emulator.  This does
+  Cygwin now defaults to a new "mintty" terminal emulator.  This does
   NOT work AT ALL with WRspice, or any other native Windows
   application that interacts with the console.  The same applies to
   xterm and rvxt terminal emulators compiled under Cygwin.  These work
@@ -162,6 +165,9 @@ Welcome the the first open-source release of Xic.  Now, instead of
 asking Whiteley Research for new features, users can modify the source
 code and do it themselves.  Please contribute!  We can help.
 
+Changes are relative to the final production release xic-4.2.16.
+
+
 CHANGES AND NEW FEATURES
 ------- --- --- --------
 
@@ -190,11 +196,11 @@ CHANGES AND NEW FEATURES
   issues using the Valgrind analysis tool.  Lots of small things were
   fixed as a result.
 
-* Reversed direction of Ctrl-mouse wheel zoom, to match prevailing
-  standard.
-
 * Miscellaneous changes required in port to Fedora 26, mostly in
   interprocess communication code.
+
+* Reversed direction of Ctrl-mouse wheel zoom, to match prevailing
+  standard.
 
 * The Grid panel was changed visually to avoid some cosmetic problems
   with the default Fedora/Gnome theme.
@@ -242,6 +248,18 @@ CHANGES AND NEW FEATURES
   setting.  The PixelDelta variable can be set to change the snap
   pixel value, the default is 3.
 
+* Print Control Panel updated.
+
+  The Print Control Panel has changed.  When the PostScript Line-Draw
+  driver is chosen, a new Line Width entry area becomes visible.  This
+  can be used to set the line width as rendered in the plot, in points
+  (1/72 in).  The PSlineWidth variable, which was an odious hack to do
+  the same thing, has been removed.  The default is "0", which means
+  to use the minimum line width supported by the printer.
+
+  The Portrait/Landscape selection is now a drop-down menu instead of
+  radio buttons, and some controls have changed location a bit.
+  
 
 BUGS FIXED
 ---- -----

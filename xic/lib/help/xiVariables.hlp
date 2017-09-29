@@ -196,7 +196,6 @@ xiVariables.hlp
     <tr><td><b>NoAskFileAction</b></td><td>Don't ask before file actions in File Selection pop-up</td></tr>
     <tr><td><b>DefaultPrintCmd</b></td><td>Default print command (printer name in Windows)</td></tr>
     <tr><td><b>NoDriverLabels</b></td><td>Don't use driver text for hard copy labels</td></tr>
-    <tr><td><b>PSlineWidth</b></td><td>Set line width for postscript line draw</td></tr>
     <tr><td><b>RmTmpFileMinutes</b></td><td>Set up temporary file removal</td></tr>
 
 !! 101212
@@ -2424,7 +2423,6 @@ SPICE Interface
 !!REDIRECT NoAskFileAction      !set:hardcopy#NoAskFileAction
 !!REDIRECT DefaultPrintCmd      !set:hardcopy#DefaultPrintCmd
 !!REDIRECT NoDriverLabels       !set:hardcopy#NoDriverLabels
-!!REDIRECT PSlineWidth          !set:hardcopy#PSlineWidth
 !!REDIRECT RmTmpFileMinutes     !set:hardcopy#RmTmpFileMinutes
 
 !! 021515
@@ -2491,18 +2489,6 @@ File Menu - Printing
     default, not the vector font used on-screen.  This can be
     overridden, and the vector font used, by setting this variable. 
     Multi-line labels are always drawn with the vector font, however.
-    </dl>
-
-!! 061308
-    <a name="PSlineWidth"></a>
-    <dl>
-    <dt><b>PSlineWidth</b><dd>
-    <b>Value:</b> real number 0-25.0.<br>
-    This variable can be set to a numeric value which will set the
-    linewidth used in the PostScript line-draw mono and color hard
-    copy drivers.  One unit is 1/72 inch.  The default is 0, which
-    means to use the thinnest line available.  This will have no
-    effect in the PostScript bitmap or non-PostScript drivers.
     </dl>
 
 !! 061308

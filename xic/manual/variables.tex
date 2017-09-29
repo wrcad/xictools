@@ -154,7 +154,6 @@ follow.
   \hline
 \et DefaultPrintCmd & Default print command (printer name in Windows)\\ \hline
 \et NoDriverLabels & Don't use driver text for hard copy labels\\ \hline
-\et PSlineWidth & Set line width for postscript line draw\\ \hline
 \et RmTempFileMinutes & Set up temporary file removal\\ \hline
 
 % 101212
@@ -1983,16 +1982,6 @@ The PostScript hard copy drivers use PostScript text for labels by
 default, not the vector font used on-screen.  This can be overridden,
 and the vector font used, by setting this variable.  Multi-line labels
 are always drawn with the vector font, however.
-
-% 061308
-\index{PSlineWidth variable}
-\item{\et PSlineWidth}\\
-{\bf Value:} real number 0--25.0.\\
-This variable can be set to a numeric value which will set the
-linewidth used in the PostScript line-draw mono and color hard copy
-drivers.  One unit is 1/72 inch.  The default is 0, which means to use
-the thinnest line available.  This will have no effect in the
-PostScript bitmap or non-PostScript drivers.
 
 % 061308
 \index{RmTempFileMinutes variable}
