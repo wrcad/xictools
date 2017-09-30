@@ -32,7 +32,13 @@
 
 % Whether or not to include OpenAccess plug-in features.
 \newif\ifoa
-\oafalse
+\oatrue
+%\oafalse
+
+% Whether or not to include license server references.
+\newif\ifxtlserv
+%\xtlservtrue
+\xtlservfalse
 
 % Have to modify the TOC number spacing.  The following lines do this
 % without tocloft, but cause trouble in latex2html
@@ -43,17 +49,17 @@
 %\renewcommand*\l@subsubsection{\@dottedtocline{4}{9.0em}{4.1em}}
 % \makeatother
 
-% \setlength\cftchapindent{0em}
-% \setlength\cftchapnumwidth{1.5em}
-\setlength\cftsecindent{1.5em}
-\setlength\cftsecnumwidth{3.3em}
-\setlength\cftsubsecindent{4.8em}
-\setlength\cftsubsecnumwidth{4.2em}
-\setlength\cftsubsubsecindent{10.5em}
+% \setlength{\cftchapindent}{0em}
+% \setlength{\cftchapnumwidth}{1.5em}
+\setlength{\cftsecindent}{1.5em}
+\setlength{\cftsecnumwidth}{3.3em}
+\setlength{\cftsubsecindent}{4.8em}
+\setlength{\cftsubsecnumwidth}{4.2em}
+\setlength{\cftsubsubsecindent}{10.5em}
 
-\setlength\cftbeforesecskip{0.5em}
-\setlength\cftbeforesubsecskip{0.4em}
-\setlength\cftbeforesubsubsecskip{0.4em}
+\setlength{\cftbeforesecskip}{0.5em}
+\setlength{\cftbeforesubsecskip}{0.4em}
+\setlength{\cftbeforesubsubsecskip}{0.4em}
 
 % pulled out of figures translated from xfig, since latex2html
 % can't handle this in figure blocks

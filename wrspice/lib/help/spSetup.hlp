@@ -76,6 +76,9 @@ Platforms and Architectures
 !!REDIRECT XT_KLU_PATH          environment#XT_KLU_PATH
 !!REDIRECT XT_LOCAL_MALLOC      environment#XT_LOCAL_MALLOC
 !!REDIRECT XT_SYSTEM_MALLOC     environment#XT_SYSTEM_MALLOC
+!!REDIRECT XT_GUI_COMPACT       environment#XT_GUI_COMPACT
+!!REDIRECT XT_NO_CHECK_UPDATE   environment#XT_NO_CHECK_UPDATE
+!!REDIRECT XT_UPD_DEBUG         environment#XT_UPD_DEBUG
 !!REDIRECT XTNETDEBUG           environment#XT_REMOTE_TEST
 !!REDIRECT HOME                 environment#HOME
 !!REDIRECT DISPLAY              environment#DISPLAY
@@ -97,7 +100,7 @@ Platforms and Architectures
 !!REDIRECT SPICENOMAIL          environment#SPICENOMAIL
 !!REDIRECT XTNOMAIL             environment#XTNOMAIL
 
-!! useriface.tex 013016
+!! useriface.tex 093017
 !!KEYWORD
 environment
 !!TITLE
@@ -209,6 +212,7 @@ Environment Variables
     ignored.
     </dl>
 
+!!IFDEF xtlserv
     <a name="XT_AUTH_MODE"></a>
     <dl>
     <dt><b>XT_AUTH_MODE</b>
@@ -269,6 +273,7 @@ Environment Variables
     <i>port</i> is the port number in use by the server.  There should
     be no space around the colon when using this form.
     </dl>
+!!ENDIF
 
     <a name="XT_PREFIX"></a>
     <dl>
@@ -346,6 +351,35 @@ Environment Variables
     This variable was once used to disable the internal local memory
     allocator, which in earlier releases was enabled by default.
     Currently, this variable is ignored.
+    </dl>
+
+    <a name="XT_GUI_COMPACT"></a>
+    <dl>
+    <dt><b>XT_GUI_COMPACT</b>
+    <dd>
+    When set, no extra space is allowed around pushbutton contents in
+    the graphical interface.  Such space can cause button images to be
+    truncated on low-resolution displays if the theme in use imposes
+    too much space.  Setting this variable is a quick fix for this
+    problem, though one could also change the theme.
+    </dl>
+
+    <a name="XT_NO_CHECK_UPDATE"></a>
+    <dl>
+    <dt><b>XT_NO_CHECK_UPDATE</b>
+    <dd>
+    If set in the environment on program startup, the program will
+    skip attempting to communicate with the site hosting the
+    distribution repository to check for messages and updates.
+    </dl>
+
+    <a name="XT_UPD_DEBUG"></a>
+    <dl>
+    <dt><b>XT_UPD_DEBUG</b>
+    <dd>
+    When checking for updates with the site hosting the distribution
+    repository and an error occurs, if this variable is set then a
+    message will be emitted.  Otherwise, failure is silent.
     </dl>
 
     <p>
@@ -582,6 +616,7 @@ Startup Files
     "<tt>/usr/local</tt>"), but this can be changed by setting the
     <b>SPICE_LIB_DIR</b> environment variable to another location.
 
+!!IFDEF xtlserv
     <a name="license.host"></a>
     <dl>
     <dt><tt>license.host</tt> file<dd>
@@ -597,6 +632,7 @@ Startup Files
     is required if for some reason the license server is not running
     on the default port.
     </dl>
+!!ENDIF
 
     <a name="wrspiceinit"></a>
     <dl>

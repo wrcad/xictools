@@ -647,9 +647,15 @@ CommandTab::com_sced(wordlist *wl)
     }
 
 #ifdef WIN32
+    // Under Windows, Xic is almost always run through the batch file
+    // wrapper.  Unless the user has explicitly given ".exe", add a
+    // ".bat" extension if not already present.
+
     const char *e = strrchr(xpstr.string(), '.');
-    if (!e || !lstring::cieq(e+1, "exe"))
-        xpstr.add(".exe");
+    if (!e || (!lstring::cieq(e+1, "exe") && !lstring::cieq(e+1, "bat"))) {
+        xpstr.add(".bat");
+    }
+    // Change to DOS-style path.
     xpstr.to_dosdirsep();
 #endif
     if (access(xpstr.string(), X_OK)) {

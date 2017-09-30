@@ -144,6 +144,7 @@ the {\et subc\_catchar} variable is set to ``{\vt :}'' (colon).  This
 sets the subcircuit expansion method to match JSPICE3 and SPICE3.}
 \end{enumerate}
 
+\ifxtlserv
 \index{command line options!-l}
 \item{\vt -l} {\it license\_server\/}[{\vt :}{\it port\/}]\\
 This option provides the host name of a machine running the license
@@ -161,6 +162,7 @@ the {\vt xtlserv} (license server) program for more information.
 {\vt xtlserver} in {\vt /etc/hosts}\\
 name of local machine
 \end{quote}
+\fi
 
 \index{command line options!-m}
 \item{\vt -m} {\it path}\\
@@ -278,21 +280,27 @@ If set, the X server will not use shared memory.
 
 \index{command line options!--v}
 \item{\vt -\/-v}\\
-If this argument is given, all other arguments are ignored, {\WRspice}
-will print a version string in the form
+If this argument is given, {\WRspice} will print a version string
+consisting of three tokens to the standard output, and exit.  The
+format is
 \begin{quote}
-{\vt 4.1.6 LinuxRHEL6\_64}
+{\it version osname arch}
 \end{quote}
-to the standard output, and exit.
+for example ``{\vt 4.3.1 LinuxRHEL6 x86\_64}''.
 
 \index{command line options!--vv}
 \item{\vt -\/-vv}\\
-If this argument is given, all other arguments except ``{\vt -\/-v}''
-are ignored, {\WRspice} will print a release tag string in the form
+If this argument is given, {\WRspice} will print a CVS-style release
+tag string in the form
 \begin{quote}
-{\vt wrs-4-1-6}
+{\vt wrs-4-3-1}
 \end{quote}
 to the standard output, and exit.
+
+\index{command line options!--vb}
+\item{\vt -\/-vb}\\
+If this argument is given, {\WRspice} will print the build date to the
+standard output, and exit.
 \end{description}
 \index{command line options|)}
 
@@ -301,7 +309,7 @@ to the standard output, and exit.
 \section{Environment Variables}
 \index{environment variables|(}
 
-% spSetup.hlp:environment 013016
+% spSetup.hlp:environment 093017
 
 Environment variables are keyword/value pairs that are made available
 to an application by the command shell or operating system.  The value
@@ -395,6 +403,7 @@ path except for the file name must exist.  If there is a conflict with
 an existing entity, an integer suffix will be added to make the name
 unique.  In Windows, any path given is stripped and ignored.
 
+\ifxtlserv
 \index{environment variables!XT\_AUTH\_MODE}
 \item{\et XT\_AUTH\_MODE}\\
 By default, Unix/Linux versions of {\Xic} and {\WRspice} use
@@ -441,6 +450,7 @@ to the local name server.  The host name can optionally be suffixed by
 ``{\vt :}{\it port\/}'', where {\it port} is the port number in use by
 the server.  There should be no space around the colon when using this
 form.
+\fi
 
 \index{environment variables!XT\_PREFIX}
 \index{XT\_PREFIX environment variable}
@@ -501,6 +511,29 @@ encouraged to experiment.
 This variable was once used to disable the internal local memory
 allocator, which in earlier releases was enabled by default. 
 Currently, this variable is ignored.
+
+\index{environment!XT\_GUI\_COMPACT}
+\index{XT\_GUI\_COMPACT environment variable}
+\item{\et XT\_GUI\_COMPACT}\\
+When set, no extra space is allowed around pushbutton contents in the
+graphical interface.  Such space can cause menu button images to
+be truncated on low-resolution displays if the theme in use imposes
+too much space.  Setting this variable is a quick fix for this
+problem, though one could also change the theme.
+
+\index{environment!XT\_NO\_CHECK\_UPDATE}
+\index{XT\_NO\_CHECK\_UPDATE environment variable}
+\item{\et XT\_NO\_CHECH\_UPDATE}\\
+If set in the environment on program startup, the program will skip
+attempting to communicate with the site hosting the distribution
+repository to check for messages and updates.
+
+\index{environment!XT\_UPD\_DEBUG}
+\index{XT\_UPD\_DEBUG environment variable}
+\item{\et XT\_UPD\_DEBUG}\\
+When checking for updates with the site hosting the distribution
+repository and an error occurs, if this variable is set then a message
+will be emitted.  Otherwise, failure is silent.
 \end{description}
 
 There are several environment variables which can be used to alter
@@ -800,6 +833,7 @@ but this can be changed by setting the {\et SPICE\_LIB\_DIR}
 environment variable to another location.
 
 \begin{description}
+\ifxtlserv
 \index{license.host file}
 \item{{\vt license.host} file}\\
 When using a license server on a remote machine, it is necessary to
@@ -811,6 +845,7 @@ host name of the license server machine.  The host name can optionally
 be suffixed with ``{\vt :}{\it port\/}'', where {\it port} is the port
 number in use by the license server.  This is required if for some
 reason the license server is not running on the default port.
+\fi
 
 \index{.wrspiceinit file}
 \item{{\vt .wrspiceinit} file}\\

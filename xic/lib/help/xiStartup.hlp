@@ -64,7 +64,7 @@ Graphics Support and Requirements
 macosx
 mswindows
 
-!! 022514
+!! 093017
 !!KEYWORD
 macosx mac osx
 !!TITLE
@@ -80,16 +80,14 @@ Apple OS X Notes
     system.
 
     <p>
-    All Generation 4 OS X distributions require OS X 10.9 (Mavericks)
-    or later.  Unfortunately, it is not possible to support earlier OS
-    X releases at this time.  However, the upgrade to 10.9 is free and
-    was accomplished smoothly over the internet at Whiteley Research.
+    All Generation 4 OS X distributions require OS X 10.910 (Yosemite)
+    or later.
 
     <p>
     The Whiteley Research programs presently require that the
     X-windows server be running, as X is used for graphics.  Unlike in
     some earlier OS X releases, it is not installed automatically in
-    Mavericks.  The Apple-sponsored X-server is called "XQuartz" and
+    Yosemite.  The Apple-sponsored X-server is called "XQuartz" and
     is available for download from the project web site (google
     "XQuartz download").
 
@@ -101,19 +99,10 @@ Apple OS X Notes
 
     <p>
     The package distribution files are "flat" Apple package files. 
-    This is a different format from the release files for Generation
-    3, which were tarred/gzipped Apple package directories.  As an
-    alternative to using <tt>wr_install</tt>, one can use Apple's
-    installer (click on the listing icon in the Finder).
-
-    <p>
     The installation procedure is pretty much the same as under
-    Unix/Linux.  As under Unix/Linux (but not Windows) the
-    <i>Xic</i> and <i>WRspice</i> programs can make use
-    of a separate license server, and all of the workgroup
-    configuration options apply.  Similarly, due to the X-Windows
-    support, graphical operation from remote OS X systems is possible,
-    unlike under Windows.
+    Unix/Linux, using the <tt>wr_install</tt> script from a terminal
+    window.  Due to the X-Windows support, graphical operation from
+    remote systems is possible if running a local X-server program.
 
     <p>
     There are two differences from the Linux releases.
@@ -147,37 +136,17 @@ Apple OS X Notes
     The <tt>sudo</tt> command is built into the <tt>wr_install</tt>
     script, so that users should not need to become root explicitly to
     perform updates.  To edit configuration files in the installation,
-    root access is needed.  The <tt>sudo</tt> command can be used to
-    start the license server, if running the server is necessary.
+    root access is needed.
+!!IFDEF xtlserv
+    The <tt>sudo</tt> command can be used to start the license server,
+    if running the server is necessary.
+!!ENDIF
 
     <h2>Un-Installation</h2>
 
-    The OS X package system does not provide an uninstall function,
-    and overall is quite a bit less capable than the package
-    management systems in supported Unix/Linux systems.  In release
-    4.0.7 and later, when a new release is installed, the preinstall
-    script will explicitly clear all of the files of an existing
-    package if found, as is done by the installer on other systems. 
-    In earlier releases, a new release would simply overwrite the
-    existing release.
-
-    <p>
-    To uninstall, the files must be removed manually.  This is easy,
-    as all files are installed under <tt>/usr/local/xictools</tt>. 
-    One should also clear the package "receipt" from the OS X database
-    with the terminal command
-    <blockquote>
-    <tt>pkgutil --forget</tt> <i>packagename</i>
-    </blockquote>
-    if the program is being removed permanently.  The
-    <i>packagename</i> is the name of the package as known to Apple,
-    which is in a form like "<tt>XicTools.Xic.4</tt>".  All of the
-    Whiteley Research installed packages can be listed by name with
-    the terminal command
-    <blockquote>
-    <tt>pkgutil --pkgs | grep XicTools</tt>
-    </blockquote>
-    This will provide the Apple package names.
+    To uninstall, the <tt>wr_uninstall</tt> script can be used.  This
+    takes care of file removal and updating the systgem package
+    database.
 
     <h2>Running the Applications</h2>
 
@@ -287,7 +256,7 @@ Apple OS X Notes
     </blockquote>
     which will re-map the keys for the current X session.
 
-!! 020514
+!! 093017
 !!KEYWORD
 mswindows
 !!TITLE
@@ -307,6 +276,7 @@ Microsoft Windows Notes
     <a name="setup"></a>
     <h3>Installation and Setup</h3>
 
+!!IFDEF xtlerv
     In order to license a Windows host, two pieces of information are
     needed:
     <ul>
@@ -321,6 +291,7 @@ Microsoft Windows Notes
     this program generates a file named "<tt>XtLicenseInfo</tt>" which
     should be emailed to Whiteley Research.  A pop-up window displays
     the information, and indicates success or failure.
+!!ENDIF
 
     <p>
     The distributions are available from the <tt>wrcad.com</tt> web
@@ -355,8 +326,8 @@ Microsoft Windows Notes
     <table border=0 bgcolor="#ffeeee" cellpadding=3><tr><td>
     WARNING<br>
     The programs use an entry in the Windows Registry to find their
-    startup files, license, etc.  This entry is created by the
-    installer program.
+    startup files, etc.  This entry is created by the installer
+    program.
     </td></tr></table>
 
     Thus
@@ -402,13 +373,6 @@ Microsoft Windows Notes
     <tt>C:\usr\local\gtk2-bundle</tt>.
 
     <p>
-    <table border=0 bgcolor="#ffeeee" cellpadding=3><tr><td>
-    IMPORTANT!<br>
-    The installation prefix given to the installer for all programs,
-    and the gtk2-bundle, <b>must</b> be the same.
-    </td></tr></table>
-
-    <p>
     By default, the actual binary executable is run from a script
     (<tt>.bat</tt>) file, which is installed in the same directory as
     the executables, which by default is
@@ -440,11 +404,6 @@ Microsoft Windows Notes
     location into a directory that is already in the search path, or
     to the current directory.
     </ol>
-
-    <p>
-    Note that if you know your way around Windows <tt>bat</tt>
-    scripts, you can avoid the installation location requirement in
-    the warning above.
 
     <p>
     <table border=0 bgcolor="#ffeeee" cellpadding=3><tr><td>
@@ -512,11 +471,6 @@ Microsoft Windows Notes
     worked.  This app supports MAPI, apparently the Windows 8 Mail app
     does not(?).  The Windows 8 app also does not work with POP3
     servers, solidifying my disrespect.
-
-    <p>
-    <li>The <i>XicTools</i> programs can use a separate license server
-       daemon under Unix/Linux.  Under Windows, no license server is
-       used, as the authentication is built into the programs.
     </ul>
 
     <p>
@@ -641,9 +595,8 @@ Microsoft Windows Notes
     before.  Enter <tt>HOME</tt> for <b>Variable name</b>, For
     <b>Variable value</b>, enter a path to some directory which you
     want to be your "working" directory, where <i>Xic</i> and
-    <i>WRspice</i> will look for startup files, license files, etc. 
-    Enter the full path to this directory.  Check spelling, Click
-    <b>OK</b>.
+    <i>WRspice</i> will look for startup files, etc.  Enter the full
+    path to this directory.  Check spelling, Click <b>OK</b>.
     </ol>
 
     Finalle, click the <b>OK</b> button at the bottom of the window,
@@ -706,8 +659,20 @@ Microsoft Windows Notes
 !!REDIRECT -R                   xic:cmdline#-R
 !!REDIRECT -S                   xic:cmdline#-S
 !!REDIRECT -T                   xic:cmdline#-T
+!!REDIRECT -d                   xic:cmdline#-d
+!!REDIRECT -display             xic:cmdline#-d
+!!REDIRECT --display            xic:cmdline#-d
+!!REDIRECT -name                xic:cmdline#-name
+!!REDIRECT --name               xic:cmdline#-name
+!!REDIRECT --class              xic:cmdline#--clazss
+!!REDIRECT -synchronous         xic:cmdline#--sync
+!!REDIRECT --sync               xic:cmdline#--sync
+!!REDIRECT --no-xshm            xic:cmdline#--no-xshm
+!!REDIRECT --v                  xic:cmdline#--v
+!!REDIRECT --vv                 xic:cmdline#--vv
+!!REDIRECT --vb                 xic:cmdline#--vb
 
-!! 030413
+!! 093017
 !!KEYWORD
 xic:cmdline
 !!TITLE
@@ -739,19 +704,6 @@ Command Line Options
     specification is optional (which applies to all arguments), and
     the '|' symbol is a logical "OR" operator indicating that one may
     specify one of the surrounding forms.
-
-    <dl>
-    <dt>"Undocumented" options: <tt>--v</tt>, <tt>--vv</tt> and
-      <tt>--vb</tt><dd>
-    If <i>Xic</i> is given one of these options, and no other options,
-    <i>Xic</i> will print some text on the standard output and exit. 
-    Note that there are two hyphens in these options.  For
-    <tt>--v</tt> <i>Xic</i> will print the version followed by the
-    distribution name, for example "<tt>3.2.5 LinuxRHEL5</tt>".  For
-    <tt>--vv</tt>, <i>Xic</i> will print the CVS release tag, for
-    example "<tt>xic-3-2-5</tt>".  For <tt>--vb</tt>, <i>Xic</i> will
-    print the build date string.
-    </dl>
 
     <a name="-B"></a>
     <dl>
@@ -898,6 +850,7 @@ Command Line Options
     script is executed.
     </dl>
 
+!!IFDEF xtlserv
     <a name="-L"></a>
     <dl>
     <dt><tt>-L</tt><i>serverhost</i>[:<i>port</i>]<dd>
@@ -920,6 +873,7 @@ Command Line Options
     name of local machine
     </blockquote>
     </dl>
+!!ENDIF
 
     <a name="-R"></a>
     <dl>
@@ -972,6 +926,7 @@ Command Line Options
     system.  The multiple forms are equivalent.
 
     <p>
+    <a name="-d"></a>
     <dl>
     <dt><tt>-d</tt> <i>dispname</i><br>
     <tt>-display</tt> <i>dispname</i><br>
@@ -993,6 +948,7 @@ Command Line Options
     of the <tt>DISPLAY</tt> environment variable.
     </dl>
 
+    <a name="-name"></a>
     <dl>
     <dt><tt>-name</tt> <i>appname</i><br>
     <tt>--name</tt> <i>appname</i><dd>
@@ -1001,6 +957,7 @@ Command Line Options
     to apply resource specifications.
     </dl>
 
+    <a name="--class"></a>
     <dl>
     <dt><tt>--class</tt> <i>classname</i><dd>
     This option provides an alternative class name to the
@@ -1008,6 +965,7 @@ Command Line Options
     class name is used by X to apply resource specifications.
     </dl>
 
+    <a name="--sync"></a>
     <dl>
     <dt><tt>-synchronous</tt><br>
     <tt>--sync</tt><dd>
@@ -1019,6 +977,7 @@ Command Line Options
     It should never be used with a working program.
     </dl>
 
+    <a name="--no-xshm"></a>
     <dl>
     <dt><tt>--no-xshm</tt><dd>
     In releases running under the X-Window system (Unix/Linux),
@@ -1032,6 +991,31 @@ Command Line Options
     Giving the option <tt>--no-xshm</tt> on the command line will
     prevent use of this extension, if for some reason this is
     necessary.
+    </dl>
+
+    <a name="--v"></a>
+    <dl>
+    <dt><tt>--v</tt><dd>
+    If this option is given, <i>Xic</i> will print a string containing
+    three tokens and exit.  The tokens are
+    <blockquote>
+    <i>version</i> <i>osname</i> <i>arch</i>
+    </blockquote>
+    for example "<tt>4.3.1 LinuxRHEL7 x86_64</tt>".
+    </dl>
+
+    <a name="--vv"></a>
+    <dl>
+    <dt><tt>--vv</tt><dd>
+    If this option is given, <i>Xic</i> will print a CVS-style tag
+    string and exit.  The format is, for exmple, "<tt>xic-4-3-1</tt>".
+    </dl>
+
+    <a name="--vb"></a>
+    <dl>
+    <dt><tt>--vb</tt><dd>
+    If this option is given, <i>Xic</i> will print the build date and
+    exit.
     </dl>
 
     <p>
@@ -1049,7 +1033,9 @@ Command Line Options
 !!REDIRECT XTNETDEBUG           xic:env#XTNETDEBUG
 !!REDIRECT XT_LOCAL_MALLOC      xic:env#XT_LOCAL_MALLOC
 !!REDIRECT XT_SYSTEM_MALLOC     xic:env#XT_SYSTEM_MALLOC
-!!REDIRECT XT_GUI_COMPRESS      xic:env#XT_GUI_COMPRESS
+!!REDIRECT XT_GUI_COMPACT       xic:env#XT_GUI_COMPACT
+!!REDIRECT XT_NO_CHECK_UPDATE   xic:env#XT_NO_CHECK_UPDATE
+!!REDIRECT XT_UPD_DEBUG         xic:env#XT_UPD_DEBUG
 
 !!REDIRECT FORCE_XICII          xic:env#FORCE_XICII
 !!REDIRECT FORCE_XIV            xic:env#FORCE_XIV
@@ -1080,7 +1066,7 @@ Command Line Options
 !!REDIRECT SPICE_EXEC_NAME      xic:env#SPICE_EXEC_NAME
 !!REDIRECT IMSAVE_PATH          xic:env#IMSAVE_PATH
 
-!! 092717
+!! 093017
 !!KEYWORD
 xic:env
 !!TITLE
@@ -1181,6 +1167,7 @@ Environment Variables
     separators.
     </dl>
 
+!!IFDEF xtlserv
     <a name="XT_AUTH_MODE"></a>
     <dl>
     <dt><b>XT_AUTH_MODE</b>
@@ -1237,6 +1224,7 @@ Environment Variables
     <i>port</i> is the port number in use by the server.  There should
     be no space around the colon when using this form.
     </dl>
+!!ENDIF
 
     <a name="XT_PREFIX"></a>
     <dl>
@@ -1293,15 +1281,33 @@ Environment Variables
     Currently, this variable is ignored.
     </dl>
 
-    <a name="XT_GUI_COMPRESS"></a>
+    <a name="XT_GUI_COMPACT"></a>
     <dl>
-    <dt><b>XT_GUI_COMPRESS</b>
+    <dt><b>XT_GUI_COMPACT</b>
     <dd>
     When set, no extra space is allowed around pushbutton contents in
     the graphical interface.  Such space can cause side menu button
     images to be truncated on low-resolution displays if the theme in
     use imposes too much space.  Setting this variable is a quick fix
     for this problem, though one could also change the theme.
+    </dl>
+
+    <a name="XT_NO_CHECK_UPDATE"></a>
+    <dl>
+    <dt><b>XT_NO_CHECK_UPDATE</b>
+    <dd>
+    If set in the environment on program startup, the program will
+    skip attempting to communicate with the site hosting the
+    distribution repository to check for messages and updates.
+    </dl>
+
+    <a name="XT_UPD_DEBUG"></a>
+    <dl>
+    <dt><b>XT_UPD_DEBUG</b>
+    <dd>
+    When checking for updates with the site hosting the distribution
+    repository and an error occurs, if this variable is set then a
+    message will be emitted.  Otherwise, failure is silent.
     </dl>
 
     <a name="xicenv"></a>
@@ -1315,10 +1321,11 @@ Environment Variables
     <dt><b>FORCE_XICII</b>
     <dd>
     If this variable is set when <i>Xic</i> starts, the program will
-    run as <i>XicII</i>.  This enables those with a full <i>Xic</i>
-    license to run as <i>XicII</i>, for whatever reason.  One can
-    create an "<tt>xicii</tt>" program with the following shell
-    script:
+    run as <i>XicII</i>.  <i>XicII</i> was a reduced feature set
+    (layout editor only) version of <i>Xic></i> available at lower
+    cost.  Operating in this mode may simplify things for some users. 
+    One can create an "<tt>xicii</tt>" program with the following
+    shell script:
 
     <blockquote><tt>
     #! /bin/sh<br><br>
@@ -1331,9 +1338,11 @@ Environment Variables
     <dt><b>FORCE_XIV</b>
     <dd>
     If this variable is set when <i>Xic</i> starts, the program will
-    run as <i>Xiv</i>.  This enables those with a full <i>Xic</i>
-    license to run as <i>Xiv</i>, for whatever reason.  One can create
-    an "<tt>xiv</tt>" program with the following shell script:
+    run as <i>Xiv</i>.  <i>Xiv</i> was a reduced feature set (layout
+    viewer only) version of <i>Xic></i> available at lower cost. 
+    Operating in this mode may simplify things for some users.  One
+    can create an "<tt>xiv</tt>" program with the following shell
+    script:
 
     <blockquote><tt>
     #! /bin/sh<br><br>
@@ -1723,6 +1732,7 @@ Initialization Files
     instead of the default location.  The default technology file
     provided with <i>Xic</i> is for generic MOSIS scalable CMOS.
 
+!!IFDEF xtlserv
     <a name="license.host"></a>
     <dl>
     <dt><tt>license.host</tt> file<dd>
@@ -1738,6 +1748,7 @@ Initialization Files
     is required if for some reason the license server is not running
     on the default port.
     </dl>
+!!ENDIF
 
     <dl>
     <dt>X resource file<dd>

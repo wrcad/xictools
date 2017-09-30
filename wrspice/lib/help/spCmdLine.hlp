@@ -221,6 +221,7 @@ Command Line Arguments
     </ol>
     </dl>
 
+!!IFDEF xtlserv
     <a name="-l"></a>
     <dl>
     <dt><tt>-l</tt> <i>license_server</i>[<tt>:</tt><i>port</i>]<dd>
@@ -243,6 +244,7 @@ Command Line Arguments
     name of local machine
     </blockquote>
     </dl>
+!!ENDIF
 
     <a name="-m"></a>
     <dl>
@@ -395,22 +397,30 @@ Command Line Arguments
     <a name="--v"></a>
     <dl>
     <dt><tt>--v</tt><dd>
-    If this argument is given, all other arguments are ignored,
-    <i>WRspice</i> will print a version string in the form
+    If this argument is given, <i>WRspice</i> will print a version
+    string consisting of three tokens to the standard output, and
+    exit.  The format is
     <blockquote>
-    <tt>4.1.6 LinuxRHEL6_64</tt>
+    <i>version osname arch</i>
     </blockquote>
-    to the standard output, and exit.
+    for example "<tt>4.3.1 LinuxRHEL6 x86_64</tt>".
     </dl>
 
     <a name="--vv"></a>
     <dl>
     <dt><tt>--vv</tt><dd>
-    If this argument is given, all other arguments except
-    "<tt>--v</tt>" are ignored, <i>WRspice</i> will print a release tag
-    string in the form
+    If this argument is given, <i>WRspice</i> will print a CVS-style
+    release tag string in the form
     <blockquote>
-    <tt>wrs-4-1-6</tt>
+    <tt>wrs-4-3-6</tt>
     </blockquote>
     to the standard output, and exit.
     </dl>
+
+    <a name="--vb"></a>
+    <dl>
+    <dt><tt>--vb</tt><dd>
+    If this argument is given, <i>WRspice</i> will print the build date
+    to the standard output, and exit.
+    </dl>
+

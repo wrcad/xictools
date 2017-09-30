@@ -38,7 +38,7 @@ keyboard, and mouse.  It is not likely that there will be serious
 incompatibilities.
 
 % -----------------------------------------------------------------------------
-% macosx 022514
+% macosx 093017
 \section{Apple OS X Notes}
 
 In OS X, lurking beneath the pretty graphics is a complete Unix
@@ -49,14 +49,12 @@ can look like Unix with a great graphical interface that also runs
 Macintosh applications.  Overall, OS X is a very impressive
 desktop/laptop operating system.
 
-All Generation 4 OS X distributions require OS X 10.9 (Mavericks) or
-later.  Unfortunately, it is not possible to support earlier OS X
-releases at this time.  However, the upgrade to 10.9 is free and was
-accomplished smoothly over the internet at Whiteley Research.
+All Generation 4 OS X distributions require OS X 10.10 (Yosemite) or
+later.
 
 The Whiteley Research programs presently require that the X-windows
 server be running, as X is used for graphics.  Unlike in some earlier
-OS X releases, it is not installed automatically in Mavericks.  The
+OS X releases, it is not installed automatically in Yosemite.  The
 Apple-sponsored X-server is called "XQuartz" and is available for
 download from the project web site (google ``XQuartz download'').
 
@@ -65,18 +63,11 @@ of the programs.  These are 64-bit binaries.
 
 \subsection{Installation}
 
-The package distribution files are ``flat'' Apple package files.  This
-is a different format from the release files for Generation 3, which
-were tarred/gzipped Apple package directories.  As an alternative to
-using {\vt wr\_install}, one can use Apple's installer (click on the
-listing icon in the Finder).
-
-The installation procedure is pretty much the same as under
-Unix/Linux.  As under Unix/Linux (but not Windows) the {\Xic} and
-{\WRspice} programs can make use of a separate license server, and all
-of the workgroup configuration options apply.  Similarly, due to the
-X-Windows support, graphical operation from remote OS X systems is
-possible, unlike under Windows.
+The package distribution files are ``flat'' Apple package files.  The
+installation procedure is pretty much the same as under Unix/Linux,
+using the {\vt wr\_install} script from a terminal window.  Due to the
+X-Windows support, graphical operation from remote systems is possible
+if running a local X-server program.
 
 There are two differences from the Linux releases.
 \begin{enumerate}
@@ -106,34 +97,16 @@ accepted.
 The {\vt sudo} command is built into the {\vt wr\_install} script, so
 that users should not need to become root explicitly to perform
 updates.  To edit configuration files in the installation, root access
-is needed.  The {\vt sudo} command can be used to start the license
-server, if running the server is necessary.
+is needed.
+\ifxtlserv
+The {\vt sudo} command can be used to start the license server, if
+running the server is necessary.
+\fi
 
 \subsection{Un-Installation}
 
-The OS X package system does not provide an uninstall function, and
-overall is quite a bit less capable than the package management
-systems in supported Unix/Linux systems.  In release 4.0.7 and later,
-when a new release is installed, the preinstall script will explicitly
-clear all of the files of an existing package if found, as is done by
-the installer on other systems.  In earlier releases, a new release
-would simply overwrite the existing release.
-
-To uninstall, the files must be removed manually.  This is easy, as
-all files are installed under {\vt /usr/local/xictools}.  One should
-also clear the package ``receipt'' from the OS X database with the
-terminal command
-\begin{quote}
-{\vt pkgutil --forget} {\it packagename}
-\end{quote}
-if the program is being removed permanently.  The {\it packagename} is
-the name of the package as known to Apple, which is in a form like
-``{\vt XicTools.Xic.4}''.  All of the Whiteley Research installed
-packages can be listed by name with the terminal command
-\begin{quote} \vt
-pkgutil --pkgs $|$ grep XicTools
-\end{quote}
-This will provide the Apple package names.
+To uninstall, the {\vt wr\_uninstall} script can be used.  This takes
+care of file removal and updating the system package database.
 
 \subsection{Running the Applications}
 
@@ -233,7 +206,7 @@ which will re-map the keys for the current X session.
 
 
 % -----------------------------------------------------------------------------
-% mswindows 020514
+% mswindows 093017
 \section{Microsoft Windows Notes}
 
 This section contains notes relevant to the Microsoft Windows
@@ -241,6 +214,7 @@ release of the {\XicTools}.
 
 \subsection{Installation and Setup}
 
+\ifxtlserv
 In order to license a Windows host, two pieces of information are
 needed:
 \begin{enumerate}
@@ -253,6 +227,7 @@ The recommended way to retrieve this information is to download the
 run, this program generates a file named ``{\vt tLicenseInfo}'' which
 should be emailed to Whiteley Research.  A pop-up window displays the
 information, and indicates success or failure.
+\fi
 
 The distributions are available from the {\vt wrcad.com} web site,
 along with the distributions for Linux and OS X.  The distributions
@@ -279,9 +254,9 @@ Before an update, any configuration files in the installation that
 have been customized should be saved as they may be overwritten.
 
 WARNING\\
-The programs use an entry in the Windows Registry
-to find their startup files, license, etc.  This entry is created by
-the installer program.  Thus
+The programs use an entry in the Windows Registry to find their
+startup files, etc.  This entry is created by the installer program. 
+Thus
 \begin{enumerate}
 \item{The correct way to move an existing installation to another
 location is to uninstall the program, and reinstall to the new
@@ -323,10 +298,6 @@ files.  You will only need to do this once, or at least very
 infrequently.  The default location is under {\vt
 C:$\backslash$usr$\backslash$local$\backslash$gtk2-bundle}.
 
-IMPORTANT!\\
-The installation prefix given to the installer for all programs, and
-the gtk2-bundle, {\bf must} be the same.
-
 By default, the actual binary executable is run from a script ({\vt
 .bat}) file, which is installed in the same directory as the
 executables, which by default is {\vt
@@ -357,9 +328,6 @@ procedure is described below for Windows 8).}
 into a directory that is already in the search path, or to the current
 directory.}
 \end{enumerate}
-
-Note that if you know your way around Windows {\vt bat} scripts, you
-can avoid the installation location requirement in the warning above.
 
 WARNING\\
 In early alpha test releases, it was suggested that the {\vt
@@ -413,10 +381,6 @@ something called ``live mail'' from Microsoft, which eventually
 worked.  This app supports MAPI, apparently the Windows 8 Mail app
 does not(?).  The Windows 8 app also does not work with POP3 servers,
 solidifying my disrespect.}
-
-\item{The {\XicTools} programs can use a separate license server
-daemon under Unix/Linux.  Under Windows, no license server is
-used, as the authentication is built into the programs.}
 \end{itemize}
 
 The ``environment variables'' mentioned in the {\Xic}/{\WRspice}
@@ -524,8 +488,8 @@ one you just used).  This brings up a text entry as we saw before.
 Enter {\vt HOME} for {\cb Variable name}, For {\cb Variable value},
 enter a path to some directory which you want to be your ``working''
 directory, where {\Xic} and {\WRspice} will look for startup files,
-license files, etc.  Enter the full path to this directory.  Check
-spelling, Click {\cb OK}.}
+etc.  Enter the full path to this directory.  Check spelling, Click
+{\cb OK}.}
 \end{enumerate}
 
 Finally, click the {\cb OK} button at the bottom of the window, we're
@@ -573,7 +537,7 @@ set similarly.
 
 
 % -----------------------------------------------------------------------------
-% xic:cmdline 030413
+% xic:cmdline 093017
 \section{Command Line Options}
 
 \index{command line}
@@ -605,15 +569,6 @@ all arguments), and the `{\vt |}' symbol is a logical ``OR'' operator
 indicating that one may specify one of the surrounding forms.
 
 \begin{description}
-\item{``Undocumented'' options:  {\vt --v}, {\vt --vv}, and {\vt --vb}}\\
-If {\Xic} is given one of these options, and no other options, {\Xic}
-will print some text on the standard output and exit.  Note that there
-are two hyphens in these options.  For {\vt --v} {\Xic} will print the
-version followed by the distribution name, for example ``{\vt 3.2.5
-LinuxRHEL5}''.  For {\vt --vv}, {\Xic} will print the CVS release tag,
-for example ``{\vt xic-3-2-5}''.  For {\vt --vb}, {\Xic} will print
-the build date string.
-
 \index{command line!options!-B}
 \index{-B option}
 \index{batch mode!start in}
@@ -742,6 +697,7 @@ default password.  As the password can be changed with the {\vt
 SetKey} script function, {\cb User Menu} scripts can in principle use
 different passwords, which must be set before the script is executed.
 
+\ifxtlserv
 \index{command line!options!-L}
 \index{-L option}
 \item{\et -L}{\it serverhost}[:{\it port\/}]\\
@@ -760,6 +716,7 @@ the {\vt xtlserv} (license server) program for more information.
 {\vt xtlserver} in {\vt /etc/hosts}\\
 name of local machine
 \end{quote}
+\fi
 
 \index{command line!options!-R}
 \index{-R option}
@@ -864,7 +821,7 @@ used with a working program.
 
 \index{command line!options!\symbol{45}\symbol{45}no-xshm}
 \index{MIT-SHM extension}
-\item{\et \symbol{45}\symbol{45}no-xshm} {\it string}\\
+\item{\et \symbol{45}\symbol{45}no-xshm}\\
 In releases running under the X-Window system (Unix/Linux), {\Xic}
 will use the MIT-SHM shared memory extension if the X server supports
 this extension, and the server is running on the local machine.  This
@@ -875,6 +832,24 @@ may be faster as a result.
 Giving the option {\et \symbol{45}\symbol{45}no-xshm} on the command
 line will prevent use of this extension, if for some reason this is
 necessary.
+
+\index{command line!options!\symbol{45}\symbol{45}v}
+\item{\et \symbol{45}\symbol{45}v}\\
+If this option is given, {\Xic} will print a string containing three
+tokens and exit.  The tokens are
+\begin{quote}
+{\it version osname arch}       
+\end{quote}
+for example ``{\vt 4.3.1 LinuxRHEL7 x86\_64}''.
+
+\index{command line!options!\symbol{45}\symbol{45}vv}
+\item{\et \symbol{45}\symbol{45}vv}\\
+If this option is given, {\Xic} will print a CVS-style tag string and
+exit.  The format is, for exmple, ``{\vt xic-4-3-1}''.
+
+\index{command line!options!\symbol{45}\symbol{45}vb}
+\item{\et \symbol{45}\symbol{45}vb}\\
+If this option is given, {\Xic} will print the build date and exit. 
 \end{description}
 
 Any words found in the command line that are not recognized as options
@@ -886,7 +861,7 @@ Open} command.
 
 
 % -----------------------------------------------------------------------------
-% xic:env 092717
+% xic:env 093017
 \section{{\Xic} Environment Variables}
 \label{xicenv}
 \index{environment}
@@ -962,6 +937,7 @@ know about the Cygwin mount points or symbolic links.  The path is the
 one that would be seen from a DOS box, with forward or reverse slash
 directory separators.
 
+\ifxtlserv
 \index{environment!XT\_AUTH\_MODE}
 \item{\et XT\_AUTH\_MODE}\\
 By default, Unix/Linux versions of {\Xic} and {\WRspice} use
@@ -1005,6 +981,7 @@ to the local name server.  The host name can optionally be suffixed by
 ``{\vt :}{\it port\/}'', where {\it port} is the port number in use by
 the server.  There should be no space around the colon when using this
 form.
+\fi
 
 \index{environment!XT\_PREFIX}
 \index{XT\_PREFIX environment variable}
@@ -1049,14 +1026,28 @@ This variable was once used to disable the internal local memory
 allocator, which in earlier releases was enabled by default. 
 Currently, this variable is ignored.
 
-\index{environment!XT\_GUI\_COMPRESS}
-\index{XT\_GUI\_COMPRESS environment variable}
-\item{\et XT\_GUI\_COMPRESS}\\
+\index{environment!XT\_GUI\_COMPACT}
+\index{XT\_GUI\_COMPACT environment variable}
+\item{\et XT\_GUI\_COMPACT}\\
 When set, no extra space is allowed around pushbutton contents in the
 graphical interface.  Such space can cause side menu button images to
 be truncated on low-resolution displays if the theme in use imposes
 too much space.  Setting this variable is a quick fix for this
 problem, though one could also change the theme.
+
+\index{environment!XT\_NO\_CHECK\_UPDATE}
+\index{XT\_NO\_CHECK\_UPDATE environment variable}
+\item{\et XT\_NO\_CHECH\_UPDATE}\\
+If set in the environment on program startup, the program will skip
+attempting to communicate with the site hosting the distribution
+repository to check for messages and updates.
+
+\index{environment!XT\_UPD\_DEBUG}
+\index{XT\_UPD\_DEBUG environment variable}
+\item{\et XT\_UPD\_DEBUG}\\
+When checking for updates with the site hosting the distribution
+repository and an error occurs, if this variable is set then a message
+will be emitted.  Otherwise, failure is silent.
 \end{description}
 
 \subsection{{\Xic} Environment Variables}
@@ -1069,8 +1060,9 @@ relevant to {\Xic}.
 \index{FORCE\_XICII environment variable}
 \item{\et FORCE\_XICII}\\
 If this variable is set when {\Xic} starts, the program will run as
-{\XicII}.  This enables those with a full {\Xic} license to run as
-{\XicII}, for whatever reason.  One can create an ``{\vt xicii}''
+{\XicII}.  {\XicII} was a reduced feature set (layout editor only)
+version of {\Xic} available at lower cost.  Operating in this mode may
+simplify things for some users.  One can create an ``{\vt xicii}''
 program with the following shell script:
 
 \begin{quote}\vt
@@ -1082,9 +1074,10 @@ FORCE\_XICII=1 xic \$*
 \index{FORCE\_XIV environment variable}
 \item{\et FORCE\_XIV}\\
 If this variable is set when {\Xic} starts, the program will run as
-{\Xiv}.  This enables those with a full {\Xic} license to run as
-{\Xiv}, for whatever reason.  One can create an ``{\vt xiv}'' program
-with the following shell script:
+{\Xiv}.  {\Xiv} was a reduced feature set (layout viewer only) version
+of {\Xic} available at lower cost.  Operating in this mode may
+simplify things for some users.  One can create an ``{\vt xiv}''
+program with the following shell script:
 
 \begin{quote}\vt
 \#! /bin/sh\newline\newline
@@ -1639,6 +1632,7 @@ of or instead of the default location.  The default technology file
 provided with {\Xic} is for generic MOSIS scalable CMOS.
 
 \begin{description}
+\ifxtlserv
 \index{license.host file}
 \item{{\vt license.host} file}\\
 When using a license server on a remote machine, it is necessary to
@@ -1650,6 +1644,7 @@ name of the license server machine.  The host name can optionally be
 suffixed with ``{\vt :}{\it port\/}'', where {\it port} is the port
 number in use by the license server.  This is required if for some
 reason the license server is not running on the default port.
+\fi
 
 \item{X resource file}\\
 As the program starts and the graphics is initialized, the X window

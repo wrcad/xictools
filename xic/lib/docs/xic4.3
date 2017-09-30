@@ -259,7 +259,39 @@ CHANGES AND NEW FEATURES
 
   The Portrait/Landscape selection is now a drop-down menu instead of
   radio buttons, and some controls have changed location a bit.
+
+* The xic --v option now produces three tokens: version osname arch
+  E.g., 4.3.1 LinuxRHEL7 x86_64
   
+* Many more small tweaks and updates, including the following.
+
+  In the Compare Cells panel with compare flat mode, the Equiv list is
+  now explicitly set to the Cells list if nothing is entered. 
+  Otherwise file2 would use the default cell, which may not be the one
+  listed in Cells.
+
+  The cell hierarchy digest (CHD) default cell is now the first
+  top-level physical cell by offset that has instances.  The "has
+  instances" in new, avoids choosing an uninteresting default cell.
+
+  The Tree and Info reports from selections in the Cells Listing now
+  track the display mode of the listing, rather than the current mode. 
+  If the Tree is called from the Cells List, it will no longer update
+  when the main window display mode changes, is is "captive" of the
+  Cells List.
+
+  New code to handle standard vias when flattening, i.e., using a CHD.
+  These vias were excluded before.
+
+  The set current layer by clicking on object function now works for
+  zero-width wires as used in electrical mode.
+
+  In the script debugger, Load will now search the current directory
+  for the script, before searching the ScriptPath.  The !exec command
+  will now check the current directory after the ScriptPath.  Both
+  avoid having to add "./" ahead of a script name if the current
+  directoiry is not in ScriptPath.
+
 
 BUGS FIXED
 ---- -----
@@ -275,4 +307,12 @@ BUGS FIXED
 
 * Numerous fixes to standard via handling internally.  Standard vias
   should be handled transparently in all operations.
+
+* In the prompt line text editor, pressing Backspace or clicking
+  button 1 in the prompt line now exits "firstinsert" (erase all)
+  mode.  The fact that button 1 which resets cursor position didn't do
+  this was a bug.  One could start editing a string, use btn 1 to move
+  the cursor to the center, use Backspace to erase chars to the
+  beginning.  Typing a char would then erase the remainder of the line
+  and there would be nothing left but the new character.
 

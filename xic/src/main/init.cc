@@ -114,6 +114,9 @@ cMain::AppInit()
     else if (!ExtIf()->hasExtract())
         HLP()->define("XicII");
     HLP()->set_no_file_fonts(true);  // Don't use fonts from .mozyrc.
+#ifdef HAVE_SECURE
+    HLP()->define("xtlserv");
+#endif
 #endif
 
     DSP()->SetCurMode(xm_initial_mode);

@@ -217,7 +217,7 @@ namespace {
     void succumb(int, bool);
     void panic_to_gdb();
 #ifdef HAVE_MOZY
-    void check_for_update();
+    void check_for_update(bool);
 #endif
 
     const char *usage = 
@@ -861,6 +861,10 @@ main(int argc, char **argv)
             printf("%s\n", WRS_RELEASE_TAG);
             exit (0);
         }
+        if (lstring::eq(argv[i], "--vb")) {
+            printf("%s\n", Global.BuildDate());
+            exit (0);
+        }
     }
 
     int year = 0;
@@ -1182,8 +1186,10 @@ main(int argc, char **argv)
             atexit(exit_proc);
 #endif
 #ifdef HAVE_MOZY
-            if (!Sp.GetVar(kw_nocheckupdate, VTYP_BOOL, 0)) {
-                check_for_update();
+            if (!getenv("XT_NO_CHECK_UPDATE") &&
+                    !Sp.GetVar(kw_nocheckupdate, VTYP_BOOL, 0)) {
+                    bool dbg = (getenv("XT_UPD_DEBUG") != 0);
+                check_for_update(dbg);
                 fprintf(stdout, "Checking for message...");
                 fflush(stdout);
                 char *message = UpdIf::message(APP_ROOT);
@@ -1960,7 +1966,7 @@ namespace {
     updif main_itf;
 
 
-    void check_for_update()
+    void check_for_update(bool dbg)
     {
         if (!Global.UpdateIf())
             return;
@@ -1975,14 +1981,21 @@ namespace {
         fprintf(stdout, "Checking for update...");
         fflush(stdout);
 
-        release_t new_rel = udif.distrib_version();
+        char *emsg;
+        release_t new_rel = udif.distrib_version(0, 0, 0, 0, &emsg);
         if (new_rel == release_t(0)) {
-            const char *msg =
-    "Unable to access the repository to check for updates.  Your password\n"
-    "may have expired.  To stop this message from appearing you can\n"
-    "purchase a maintenance extension, or set nocheckupdate, or delete\n"
-    "your .wrpasswd file.";
-            GR.ErrPrintf(ET_MSG, msg);
+            // Unless dbg==true, be silent on error geting info.
+
+            if (dbg) {
+                if (emsg && !strncmp(emsg, "Sorry,", 6))
+                    GR.ErrPrintf(ET_MSG, emsg);
+                else {
+                    const char *msg =
+                        "Unable to access the repository to check for updates.";
+                    GR.ErrPrintf(ET_MSG, msg);
+                }
+            }
+            delete [] emsg;
         }
         else if (my_rel < new_rel) {
             char *my_rel_str = my_rel.string();

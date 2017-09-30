@@ -223,7 +223,7 @@ help
       <i>Xic</i> Reference Manual</a><br>
     <a href="mosis">MOSIS SCMOS Design Rules</a>
 
-!! 090814
+!! 093017
 !!KEYWORD
 xicii
 !!TITLE
@@ -232,13 +232,13 @@ The EDITOR Feature Set
     This feature set corresponds to the <i>XicII</i> virtual product. 
     This was once a stand-alone layout editor product.  Currently, the
     same functionality is provided via running <i>Xic</i> with the
-    EDITOR feature set, which is set during license authentication.
+    EDITOR feature set, which was formerly imposed during license
+    authentication.
 
     <p>
-    If the full <i>Xic</i> feature set is licensed, one can force
-    running with the EDITOR feature set by setting the environment
-    variable <tt>FORCE_XICII</tt> before starting the <i>Xic</i>
-    program.
+    One can force running with the EDITOR feature set by setting the
+    environment variable <tt>FORCE_XICII</tt> before starting the
+    <i>Xic</i> program.
 
     <p>
     This feature set restricts the functionality to physical layout
@@ -253,10 +253,7 @@ The EDITOR Feature Set
     common to all feature sets.  This is a slight disadvantage to
     users of restricted feature sets, as the documentation contains
     descriptions of disabled features, which may lead to confusion. 
-    However, this greatly simplifies maintaining the documentation
-    which translates into lower cost to the customer, and also
-    provides information to users about the potential functionality
-    available by upgrading to a non-restricted license.
+    However, this greatly simplifies maintaining the documentation.
 
     <p>
     This document will list the differences and features that are
@@ -315,7 +312,7 @@ The EDITOR Feature Set
     unavailable features will not be recognized.
     </ol>
 
-!! 090814
+!! 093017
 !!KEYWORD
 xiv
 !!TITLE
@@ -324,13 +321,13 @@ The VIEWER Feature Set
     This feature set corresponds to the <i>Xiv</i> virtual product. 
     This was once a stand-alone layout viewer product.  Currently, the
     same functionality is provided via running <i>Xic</i> with the
-    VIEWER feature set, which is set during license authentication.
+    VIEWER feature set, which was formerly imposed during license
+    authentication.
 
     <p>
-    If the full <i>Xic</i> feature set or the EDITOR feature set is
-    licensed, one can force running with the VIEWER feature set by
-    setting the environment variable <tt>FORCE_XIV</tt> before
-    starting the <i>Xic</i> program.
+    One can force running with the VIEWER feature set by setting the
+    environment variable <tt>FORCE_XIV</tt> before starting the
+    <i>Xic</i> program.
 
     <p>
     This feature set restricts the functionality to physical layout
@@ -345,10 +342,7 @@ The VIEWER Feature Set
     common to all feature sets.  This is a slight disadvantage to
     users of restricted feature sets, as the documentation contains
     descriptions of disabled features, which may lead to confusion. 
-    However, this greatly simplifies maintaining the documentation
-    which translates into lower cost to the customer, and also
-    provides information to users about the potential functionality
-    available by upgrading to a non-restricted license.
+    However, this greatly simplifies maintaining the documentation.
 
     <p>
     This document will list the differences and features that are

@@ -138,6 +138,9 @@ IFsimulator::PreInit()
     HLP()->register_text_help(&thelp);  // Register text-mode help handler.
     if (!CP.Display())
         HLP()->set_using_graphics(false);
+#ifdef HAVE_SECURE
+    HLP()->define("xtlserv");
+#endif
 #endif
 
     SetVar(kw_history, CP.MaxHistLength());

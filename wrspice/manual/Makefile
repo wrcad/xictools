@@ -4,35 +4,36 @@
 # $mathend_mark = ""; 
 
 manual::
-	sed -e "s/@RELEASE@/`../version wrspice`/" \
+	@sed -e "s/@RELEASE@/`../version wrspice`/" \
   -e "s/@DATE@/`date +'%B %-d, %Y'`/" < wrsmanual.sed > wrsmanual.tex
 	latex wrsmanual.tex
-	rm wrsmanual.tex
+	-@rm wrsmanual.tex
 
 index::
 	makeindex wrsmanual.idx
 
 html::
-	sed -e "s/@RELEASE@/`../version wrspice`/" \
+	@sed -e "s/@RELEASE@/`../version wrspice`/" \
   -e "s/@DATE@/`date +'%B %-d, %Y'`/" < wrsmanual.sed > wrsmanual.tex
 	latex2html -image_type png -local_icons -no_math -html_version \
   3.2,math wrsmanual
-	files=`grep -l "This page intentionally" wrsmanual/*.html`; \
+	@files=`grep -l "This page intentionally" wrsmanual/*.html`; \
 	for a in $$files; do \
 	    mv  $$a zzztmp; \
 	    sed -e "s/0*This page intentionally left blank.//" < zzztmp > $$a; \
 	    unlink zzztmp; \
 	done
-	rm wrsmanual.tex
-	tar czf wrsmanual-html-`../version wrspice`.tar.gz wrsmanual
+	@tar czf wrsmanual-html-`../version wrspice`.tar.gz wrsmanual
+	-@rm wrsmanual.tex
 
 ps::
 	dvips -o wrsmanual-`../version wrspice`.ps wrsmanual.dvi
-	gzip wrsmanual-`../version wrspice`.ps
+	-@rm -f wrsmanual-`../version wrspice`.ps.gz
+	@gzip wrsmanual-`../version wrspice`.ps
 
 pdf::
 	dvipdf wrsmanual.dvi wrsmanual-`../version wrspice`.pdf
 
 clean distclean::
-	rm -rf *.log *.aux *.ilg *.ind *.dvi wrsmanual *.gz *.pdf
+	-@rm -rf *.log *.aux *.ilg *.ind *.dvi wrsmanual *.gz *.pdf
 

@@ -227,7 +227,7 @@ End of general info.
 wrspice-4.3.1  10/1/2017
 Current Release
 
-Welcome the the first open-source release of Xic.  Now, instead of
+Welcome the the first open-source release of WRspice.  Now, instead of
 asking Whiteley Research for new features, users can modify the source
 code and do it themselves.  Please contribute!  We can help.
 
@@ -276,6 +276,11 @@ CHANGES AND NEW FEATURES
   The Portrait/Landscape selection is now a drop-down menu instead of
   radio buttons, and some controls have changed location a bit.
   
+* The wrspice --v option now produces three tokens: version osname arch
+  E.g., 4.3.1 LinuxRHEL7 x86_64
+
+* Other small tweaks here and there.
+
 
 BUGS FIXED
 ---- -----
@@ -285,24 +290,4 @@ BUGS FIXED
 * In Monte Carlo analysis, the compose call for checkPNTS (e.g.)
   would try and delete and replace the vector, which was prevented and
   a message issued since the plot active flag would be set.
-
-
-
-ToDo:
-Matt,
-
-You can give commands like "plot v(1) v2) ; plot (v3) v(4)" to get two     
-plot windows.  Importantly, this works from the Xic prompt line when the
-plot button is active, and you can click to define the vectors.  Just add
-": plot" as plain text.
-
-I plan to add a "group" option to the WRspice plot command, so one could     
-have something like "plot v(1) v(2) -g v(3) v(4) -g i(v1) i(v2)" to obtain
-three sub-plots containing the listed vectors.  These would be displayed
-into the same window somehow, or perhaps separate windows.  The latter case
-would be equivalent to "plot v(1) v(2) ; plot v(3) v(4) ; plot i(v1) i(v2)",
-which should not be too difficult to implement.
-
-Regards,
-Steve
 

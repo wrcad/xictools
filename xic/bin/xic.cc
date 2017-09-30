@@ -294,7 +294,7 @@ namespace {
 
 
     void
-    check_for_update()
+    check_for_update(bool dbg)
     {
         if (!XM()->UpdateIf())
             return;
@@ -312,18 +312,18 @@ namespace {
         char *emsg;
         release_t new_rel = udif.distrib_version(0, 0, 0, 0, &emsg);
         if (new_rel == release_t(0)) {
-            if (emsg && !strncmp(emsg, "Sorry,", 6)) {
-                DSPmainWbag(PopUpMessage(emsg, false))
-                delete [] emsg;
+            // Unless dbg==true, be silent on error geting info.
+
+            if (dbg) {
+                if (emsg && !strncmp(emsg, "Sorry,", 6))
+                    DSPmainWbag(PopUpMessage(emsg, false))
+                else {
+                    const char *msg =
+                        "Unable to access the repository to check for updates.";
+                    DSPmainWbag(PopUpMessage(msg, false))
+                }
             }
-            else {
-                const char *msg =
-    "Unable to access the repository to check for updates.  Your password\n"
-    "may have expired.  To stop this message from appearing you can\n"
-    "purchase a maintenance extension, or set NoCheckUpdates, or delete\n"
-    "your .wrpasswd file.";
-                DSPmainWbag(PopUpMessage(msg, false))
-            }
+            delete [] emsg;
         }
         else if (my_rel < new_rel) {
             char *my_rel_str = my_rel.string();
@@ -752,8 +752,10 @@ xic_main::start_proc(void*)
     dspPkgIf()->RegisterIdleProc(xic_main::read_cell_proc, 0);
 
 #ifdef HAVE_MOZY
-    if (!CDvdb()->getVariable(VA_NoCheckUpdate)) {
-        check_for_update();
+    if (!getenv("XT_NO_CHECK_UPDATE") &&
+            !CDvdb()->getVariable(VA_NoCheckUpdate)) {
+        bool dbg = (getenv("XT_UPD_DEBUG") != 0);
+        check_for_update(dbg);
         fprintf(stdout, "Checking for message...");
         fflush(stdout);
         char *message = UpdIf::message(APP_ROOT);
@@ -1738,16 +1740,16 @@ sCmdLine::process_args(int argc, char **argv, bool prep)
             return;
         }
         for (int i = 1; i < argc; i++) {
-            if (!strcmp(argv[1], "--v")) {
+            if (!strcmp(argv[i], "--v")) {
                 fprintf(stdout, "%s %s %s\n", XM()->VersionString(),
                     XM()->OSname(), XM()->Arch());
                 exit (0);
             }
-            if (!strcmp(argv[1], "--vv")) {
+            if (!strcmp(argv[i], "--vv")) {
                 fprintf(stdout, "%s\n", XM()->TagString());
                 exit (0);
             }
-            if (!strcmp(argv[1], "--vb")) {
+            if (!strcmp(argv[i], "--vb")) {
                 fprintf(stdout, "%s\n", XM()->BuildDate());
                 exit (0);
             }

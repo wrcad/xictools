@@ -331,6 +331,7 @@ dnl # index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
         ARCH="x86_64"
         DIST_SUFFIX="pkg"
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+dnl # support OSX 10.10 (Yosemite) and later.
         UFLAGS="-mmacosx-version-min=10.10 -arch $ARCH -isysroot $SDK"
         MALLOC='$(BASE)/lib/malloc.a'
         oa_lpath=$oa_loc/lib/darwin_64/opt
