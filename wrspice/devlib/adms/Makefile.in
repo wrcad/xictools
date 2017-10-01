@@ -167,7 +167,7 @@ CC = gcc
 LINKCC = $(CXX)
 CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread -mmacosx-version-min=10.10 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 LSHFLAG = -dynamiclib -undefined dynamic_lookup
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
+DEPEND_PROG = $(CC) -MM
 FILTER = 
 PIC_OPT = 
 SOEXT = dylib
@@ -181,7 +181,7 @@ CC = gcc
 LINKCC = $(CXX)
 CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread 
 LSHFLAG = -shared
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
+DEPEND_PROG = $(CC) -MM
 FILTER = 
 PIC_OPT = -fPIC
 SOEXT = so
