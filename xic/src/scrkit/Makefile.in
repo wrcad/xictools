@@ -4,7 +4,9 @@ LOCATION = xic/src/scrkit
 
 # This will identify the operating system by calling Xic.  If this
 # fails, set this to one of the identifiers in thea ifeq tests below.
-OSNAME = $(shell xic --v | sed -e "s/^.* //")
+VSTR = $(shell xic --v)
+OSNAME = $(word 2, $(VSTR))
+ARCH = $(word 3, $(VSTR))
 
 # Note that this Makefile can be used for building objects on any of
 # the supported operating systems.  Other than for above, you only
@@ -43,44 +45,47 @@ PIC_OPT =
 SOEXT = dll
 WINLIBS = $(DLL_LOC) -lxic
 
-else ifeq ($(OSNAME),Darwin64)
+else ifeq ($(OSNAME:Darwin%=Darwin),Darwin)
 
-# Apple OS X Xcode 7 (supports 10.11 El Capitan, 10.10 Yosemite)
+# Apple OS X
 CXX = g++
 CC = gcc
-CFLAGS = -O -Wall -W -Wshadow -Wwrite-strings -pthread -mmacosx-version-min=10.10
+CFLAGS = -O -Wall -W -Wshadow -Wwrite-strings -pthread -mmacosx-version-min=10.10 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
 LSHFLAG = -dynamiclib -undefined dynamic_lookup
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
+DEPEND_PROG = $(CC) -MM
 FILTER = 
 PIC_OPT = 
 SOEXT = dylib
 
-else ifeq ($(OSNAME),LinuxRHEL5)
+else ifeq ($(OSNAME:Linux%=Linux),Linux)
+ifeq ($(ARCH),x86_64)
 
-# Red Hat 5 i686 and similar
-CXX = g++ -m32 -march=i686
-CC = gcc -m32 -march=i686
-CFLAGS = -O -Wall -W -Wshadow -Wwrite-strings -pthread
+# Generic Linux, covers all 64-bit builds.
+CXX = g++
+CC = gcc
+LINKCC = $(CXX)
+CFLAGS = -O -Wall -W -Wshadow -Wwrite-strings -pthread 
 LSHFLAG = -shared
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
-FILTER =
+DEPEND_PROG = $(CC) -MM
+FILTER = 
 PIC_OPT = -fPIC
 SOEXT = so
 
 else
 
-# Generic Linux, covers all 64-bit builds.
-CXX = g++
-CC = gcc
-CFLAGS = -O -Wall -W -Wshadow -Wwrite-strings -pthread 
+# Generic Linux, covers all 32-bit builds.
+CXX = g++ -m32 -march=$(ARCH)
+CC = gcc -m32 -march=$(ARCH)
+LINKCC = $(CXX)
+CFLAGS = -O -Wall -W -Wshadow -Wwrite-strings -pthread
 LSHFLAG = -shared
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
-FILTER = 
+DEPEND_PROG = $(CC) -MM
+FILTER =
 PIC_OPT = -fPIC
 SOEXT = so
 
 endif
-
+endif
 
 # Add additional libraries here if needed.
 LIBS = $(WINLIBS)
