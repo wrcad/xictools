@@ -2215,14 +2215,9 @@ sGlobal::initialize(const char *argv_0)
     else {
         const char *root = ProgramRoot();
         char *p = pathlist::expand_path(root, true, true);
-#ifdef WIN32
-        // In Windows, path is xictools/bin, xictools/wrspice/bin
-        // otherwise.
-
         char *e = lstring::strrdirsep(p);
         if (e)
             *e = 0;
-#endif
         g_exec_dir = pathlist::mk_path(p, "bin");
         delete [] p;
     }

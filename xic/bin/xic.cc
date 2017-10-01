@@ -1493,17 +1493,6 @@ cMain::InitializeStrings()
             if (!prefix || !lstring::is_rooted(prefix))
                 prefix = PREFIX;
             char *p1 = pathlist::mk_path(prefix, TOOLS_ROOT);
-#ifdef WIN32
-            // Path is xictools/bin in Windows, xictools/wrspice/bin
-            // otherwise.
-#else
-            const char *sppg = SPICE_PROG;
-            if (!sppg || !*sppg)
-                sppg = "wrspice";
-            char *p2 = pathlist::mk_path(p1, sppg);
-            delete [] p1;
-            p1 = p2;
-#endif
             xm_exec_directory = pathlist::mk_path(p1, "bin");
             delete [] p1;
         }
