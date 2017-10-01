@@ -5,7 +5,7 @@ SSFILES = \
 
 SSHOTS = ../../../xt_base/help/screenshots
 
-dummy: $(SSFILES)
+depend: $(SSFILES)
 
 $(SSFILES):
 	cp -fp $(SSHOTS)/$@ .
