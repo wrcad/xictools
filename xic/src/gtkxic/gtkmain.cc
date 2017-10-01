@@ -90,9 +90,9 @@
 #include <gdk/gdkwin32.h>
 #else
 #include <netdb.h>
-#include "../../lib/icons/xic_16x16.xpm"
-#include "../../lib/icons/xic_32x32.xpm"
-#include "../../lib/icons/xic_48x48.xpm"
+#include "../../icons/xic_16x16.xpm"
+#include "../../icons/xic_32x32.xpm"
+#include "../../icons/xic_48x48.xpm"
 #endif
 
 #ifdef WIN32

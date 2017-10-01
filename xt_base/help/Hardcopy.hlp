@@ -16,7 +16,7 @@ hcopypanel
 hcopyfmt
 
 
-!! 061608
+!! 092817
 !!KEYWORD
 hcopypanel
 !!TITLE
@@ -86,11 +86,11 @@ Print Control Panel
 
     <p>
     <i>Xic</i> normally supplies a legend on the hardcopy output,
-    which can be suppressed with the <b>Legend</b> button.  The legend
-    is an informational area added to the bottom of a plot.  In
-    contexts where there is no legend, this button will be absent.  In
-    <i>Xic</i>, a legend containing a list of the layers is available. 
-    In <i>WRspice</i>, there is no legend.
+    which can be suppressed by un-checking the <b>Legend</b> check
+    box.  The legend is an informational area added to the bottom of a
+    plot.  In contexts where there is no legend, this button will be
+    absent.  In <i>Xic</i>, a legend containing a list of the layers
+    is available.  In <i>WRspice</i>, there is no legend.
 
     <p>
     The size and location of the plot on the page can be specified
@@ -130,15 +130,13 @@ Print Control Panel
     merely specifies the default size of the image.
 
     <p>
-    Portrait or landscape orientation is selectable by the
-    <b>Portrait</b> and <b>Landscape</b> buttons.  These interlocking
-    buttons switch between portrait and landscape orientation.  In
-    portrait mode, the plot is in the same orientation as seen
-    on-screen, and in landscape mode, the image is rotated 90 degrees. 
-    However, if the <b>Best Fit</b> button is active, the image can
-    have either orientation, but the legend will appear as described. 
-    If using auto-height, the legend will always be in portrait
-    orientation.
+    Portrait or landscape orientation is selectable by the drop-down
+    menu.  In portrait mode, the plot is in the same orientation as
+    seen on-screen, and in landscape mode, the image is rotated 90
+    degrees.  However, if the <b>Best Fit</b> check box is checked,
+    the image can have either orientation, but the legend will appear
+    as described.  If using auto-height, the legend will always be in
+    portrait orientation.
 
     <p>
     When the <b>Best Fit</b> button is active, the driver is allowed
@@ -182,6 +180,17 @@ Print Control Panel
     resolutions.  Higher resolutions generate larger files which take
     more time to process, and may cause fill patterns to become less
     differentiable.
+
+    <p>
+    When a PostScript line-draw driver is selected, a <b>Line
+    Width</b> numeric entry area appears, which can be used to set the
+    width of the lines used for drawing.  The value given is in
+    points, a point being 1/72 of an inch.  Different printers may
+    respond to the specified width in different ways, depending on
+    physical characteristics.  The default, when the line width is set
+    to 0, is to use the narrowest line provided by the printer.  At
+    times, using fatter lines improves visibility for presentation
+    graphics and similar.
 
     <p>
     Pressing the <b>Print</b> button actually generates the plot or

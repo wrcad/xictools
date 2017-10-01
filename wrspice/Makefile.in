@@ -268,7 +268,7 @@ CCFILES = bin/wrspice.cc bin/wrspiced.cc bin/multidec.cc bin/proc2mod.cc \
 
 depend:
 	@(cd devlib/adms/examples; $(MAKE) make);
-	@for a in include lib $(SUBDIRS) devlib; do \
+	@for a in include $(SUBDIRS) devlib help startup; do \
 	    (cd $$a; $(MAKE) depend) \
 	done
 	@echo depending in $(LOCATION)
@@ -299,10 +299,12 @@ clean: eclean
 	-@rm -f bin/*.o $(WDEMODIR).tar.gz
 
 distclean: eclean
-	-@for a in $(SUBDIRS) include lib devlib packages ipc_demo_files; do \
+	-@for a in $(SUBDIRS) include devlib packages help startup \
+  ipc_demo_files; do \
 	    (cd $$a; $(MAKE) $@) \
 	done
-	-@rm -f bin/*.o $(WDEMODIR).tar.gz Makefile
+	-@rm -f bin/*.o wrspice_ipc_demo.tar.gz Makefile
+	-@rm -f examples/wrspice_ipc_demo.tar.gz
 
 #######################################################################
 ####### Install into another location #################################
@@ -340,7 +342,7 @@ wdemo wrspice_ipc_demo:
 	@cp -pf version $(WDEMODIR)
 	@tar czf $(WDEMODIR).tar.gz $(WDEMODIR)
 	@rm -rf $(WDEMODIR)
-	@cp -f $(WDEMODIR).tar.gz lib/examples
+	@cp -f $(WDEMODIR).tar.gz examples
 	@echo
 	@echo "Export source created in $(WDEMODIR).tar.gz"
 	@echo
@@ -420,34 +422,34 @@ $(destn)/icons::
 	@$(BASE)/util/mkdirpth $@
 	icons=`packages/util/wrspice_files icons`; \
         for a in $$icons; do \
-	    $(INSTALL_LIB) lib/icons/$$a $@; \
+	    $(INSTALL_LIB) icons/$$a $@; \
 	done
 
 $(destn)/help::
-	cd lib/help; $(MAKE)
+	cd help; $(MAKE)
 	@$(BASE)/util/mkdirpth $@ $@/screenshots
 	help=`packages/util/wrspice_files help`; \
 	for a in $$help; do \
-	    $(INSTALL_LIB) lib/help/$$a $@; \
+	    $(INSTALL_LIB) help/$$a $@; \
 	done
 	helpss=`packages/util/wrspice_files help_screenshots`; \
         for a in $$helpss; do \
-	    $(INSTALL_LIB) lib/help/screenshots/$$a $@/screenshots; \
+	    $(INSTALL_LIB) help/screenshots/$$a $@/screenshots; \
 	done
 
 $(destn)/startup::
-	cd lib/startup; $(MAKE)
+	cd startup; $(MAKE)
 	@$(BASE)/util/mkdirpth $@
 	startup=`packages/util/wrspice_files startup`; \
 	for a in $$startup; do \
-	    $(INSTALL_LIB) lib/startup/$$a $@; \
+	    $(INSTALL_LIB) startup/$$a $@; \
 	done
 	klulib=`packages/util/wrspice_files klu $(OSNAME)`; \
 	if [ -f ../KLU/$$klulib ]; then \
 	    $(INSTALL_SCRIPT) ../KLU/$$klulib $@; \
 	fi
 	$(BASE)/util/mkdirpth $@/devices;
-	$(INSTALL_LIB) lib/startup/devices/README $@/devices;
+	$(INSTALL_LIB) startup/devices/README $@/devices;
 	for a in $(VLOGMODS); do \
 	    $(INSTALL_LIB) devlib/adms/examples/$$a/$$a.$(SOEXT) $@/devices; \
 	done;
@@ -456,26 +458,26 @@ $(destn)/scripts::
 	@$(BASE)/util/mkdirpth $@
 	scripts=`packages/util/wrspice_files scripts`; \
 	for a in $$scripts; do \
-	    $(INSTALL_LIB) lib/scripts/$$a $@; \
+	    $(INSTALL_LIB) scripts/$$a $@; \
 	done
 
 $(destn)/examples::
 	@$(BASE)/util/mkdirpth $@
 	examples=`packages/util/wrspice_files examples`; \
 	for a in $$examples; do \
-	    $(INSTALL_LIB) lib/examples/$$a $@; \
+	    $(INSTALL_LIB) examples/$$a $@; \
 	done
 
 $(destn)/docs::
 	@$(BASE)/util/mkdirpth $@
 	docs=`packages/util/wrspice_files docs`; \
 	for a in $$docs; do \
-	    cp lib/docs/$$a $@; \
+	    cp docs/$$a $@; \
 	done
 	IFS="."; \
 	tmp=$(SPICE_VERSION); \
 	set -- $$tmp; \
-	cp lib/docs/wrs$$1.$$2 $@
+	cp docs/wrs$$1.$$2 $@
 
 $(destn)/devkit::
 	@$(BASE)/util/mkdirpth $@/admst

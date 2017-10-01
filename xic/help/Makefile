@@ -16,11 +16,11 @@ SPFILES = \
   spAnalysis.hlp spElements.hlp spExpressions.hlp spInput.hlp \
   spModels.hlp spSemicond.hlp spSources.hlp
 
-BITMAPS = ../../include/bitmaps
-BASE = ../../../xt_base/lib/help
-SPBASE = ../../../xt_base/lib/sphelp
+BITMAPS = ../include/bitmaps
+BASE = ../../xt_base/help
+SPBASE = ../../xt_base/sphelp
 
-dummy: $(XPMS) $(BASEFILES) $(SPFILES)
+depend: $(XPMS) $(BASEFILES) $(SPFILES)
 	cd screenshots; $(MAKE)
 
 $(XPMS): $(BITMAPS)/$@

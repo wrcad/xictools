@@ -9,7 +9,7 @@ BASEFILES = \
 SSFILES = \
   filesel.png print.png help.png texted.png email.png
 
-BASEDIR = ../../../xt_base/lib/help
+BASEDIR = ../../xt_base/help
 
 dummy: $(BASEFILES) $(SSFILES)
 
@@ -25,5 +25,5 @@ $(SSFILES): $(BASEDIR)/screenshots/$@
 clean::
 
 distclean:
-	rm -rf $(BASEFILES) screenshots
+	-@rm -rf $(BASEFILES) screenshots
 

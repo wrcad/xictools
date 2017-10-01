@@ -210,22 +210,22 @@ $(dst_lib)/mozy/startup::
 	@$(BASE)/util/mkdirpth $@
 	startup=`packages/util/mozy_files startup`; \
 	for a in $$startup; do \
-	    $(INSTALL_LIB) lib/startup/$$a $@; \
+	    $(INSTALL_LIB) startup/$$a $@; \
 	done
 
 $(dst_lib)/mozy/help::
-	if [ -f lib/help/Makefile ]; then \
-	    (cd lib/help; $(MAKE)); \
+	if [ -f help/Makefile ]; then \
+	    (cd help; $(MAKE)); \
 	fi
 	@$(BASE)/util/mkdirpth $@
 	help=`packages/util/mozy_files help`; \
 	for a in $$help; do \
-	    $(INSTALL_LIB) lib/help/$$a $@; \
+	    $(INSTALL_LIB) help/$$a $@; \
 	done
 	@$(BASE)/util/mkdirpth $@/screenshots
 	ss=`packages/util/mozy_files help_ss`; \
 	for a in $$ss; do \
-	    $(INSTALL_LIB) lib/help/screenshots/$$a $@/screenshots; \
+	    $(INSTALL_LIB) help/screenshots/$$a $@/screenshots; \
 	done
 
 package::

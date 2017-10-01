@@ -3,7 +3,7 @@
 SSFILES = \
   filesel.png print.png help.png texted.png email.png
 
-SSHOTS = ../../../../xt_base/lib/help/screenshots
+SSHOTS = ../../../xt_base/help/screenshots
 
 dummy: $(SSFILES)
 

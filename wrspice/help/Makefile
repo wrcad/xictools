@@ -6,10 +6,10 @@ SPFILES = \
   spAnalysis.hlp spElements.hlp spExpressions.hlp spInput.hlp spModels.hlp \
   spSemicond.hlp spSources.hlp
 
-BASE = ../../../xt_base/lib/help
-SPBASE = ../../../xt_base/lib/sphelp
+BASE = ../../xt_base/help
+SPBASE = ../../xt_base/sphelp
 
-dummy: $(BASEFILES) $(SPFILES)
+depend: $(BASEFILES) $(SPFILES)
 	cd screenshots; $(MAKE)
 
 $(BASEFILES):

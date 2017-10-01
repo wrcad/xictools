@@ -63,9 +63,9 @@ Authors: 1988 Jeffrey M. Hsu
 
 #include <gdk/gdkkeysyms.h>
 #ifndef WIN32
-#include "../../lib/icons/wrspice_16x16.xpm"
-#include "../../lib/icons/wrspice_32x32.xpm"
-#include "../../lib/icons/wrspice_48x48.xpm"
+#include "../../icons/wrspice_16x16.xpm"
+#include "../../icons/wrspice_32x32.xpm"
+#include "../../icons/wrspice_48x48.xpm"
 #endif
 
 // help keywords used in this file
