@@ -859,18 +859,9 @@ namespace {
         }
 #endif
         if (string == 0) {
-            // Path is xictools/bin in Windows. xictoiols/wrspice/bin
-            // otherwise.
-#ifdef WIN32
             char *s = new char[strlen(prefix) + strlen(TOOLS_ROOT) + 10];
             sprintf(s, "%s/%s/bin", prefix, TOOLS_ROOT);
             string = s;
-#else
-            char *s = new char[strlen(prefix) + strlen(TOOLS_ROOT) +
-                strlen(SPICE_PROG) + 10];
-            sprintf(s, "%s/%s/%s/bin", prefix, TOOLS_ROOT, SPICE_PROG);
-            string = s;
-#endif
         }
         Spice_Exec_Dir = string;
 
