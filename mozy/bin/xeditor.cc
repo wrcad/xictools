@@ -78,11 +78,6 @@ extern char *sys_errlist[];
 #endif
 #endif
 
-#ifdef WIN32
-// Tell the msw interface that we're Generation 4.
-const char *msw::MSWpkgSuffix = "-4";
-#endif
-
 // Set up the ginterf package, support for all devices, no hardcopy
 // drivers.
 //

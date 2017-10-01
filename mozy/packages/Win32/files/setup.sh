@@ -20,15 +20,15 @@ if [ ! -f $utod ]; then
 fi
 
 program=mozy
-cp $base/packages/files/program.bat $top/xictools/bin/$program.bat
+cp $base/util/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
 program=xeditor
-cp $base/packages/files/program.bat $top/xictools/bin/$program.bat
+cp $base/util/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
 program=httpget
-cp $base/packages/files/program.bat $top/xictools/bin/$program.bat
+cp $base/util/program.bat $top/xictools/bin/$program.bat
 chmod 755 $top/xictools/bin/$program.bat
 $utod $top/xictools/bin/$program.bat
 
