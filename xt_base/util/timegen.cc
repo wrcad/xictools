@@ -38,7 +38,7 @@ main(int argc, char **argv)
 
     time_t t = timeset(m);
 
-    printf("%u\n", t);
+    printf("%lu\n", (unsigned long)t);
     return (0);
 }
 
