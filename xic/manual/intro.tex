@@ -109,14 +109,14 @@ environment.  As a server, {\Xic} can serve as the workhorse back-end
 for web-based or turn-key third-party products or services, or
 in-house custom applications.
 
-\ifoa
+%\ifoa
 {\Xic} provides access to the OpenAccess database via a plug-in.  It
 can utilize the OpenAccess database provided with Cadence Virtuoso, or
 Synopsys/Ciranova PyCell Studio, and others.  {\Xic} has some limited
 compatibility with Cadence Virtuoso:  {\Xic} can directly read Cadence
 technology and display resource files, and can read layout and some
 schematic and schematic symbol views.
-\fi
+%\fi
 
 Default schematic editing support is provided for a wide variety of
 devices, even Josephson junctions.  Additional devices and subcircuits
@@ -146,9 +146,9 @@ for GDSII.}
 \item{An extension of CIF, a multi-cell format, somewhat archaic,
 but an ASCII format so human-readable.}
 \item{The CGX file format, developed by Whiteley Research.}
-\ifoa
+%\ifoa
 \item{OpenAccess, a third-party database used by Cadence and others.}
-\fi
+%\fi
 \end{itemize}
 {\Xic} will read any of these file types automatically, and save any
 editing changes in the same file type unless instructed otherwise.
@@ -427,7 +427,7 @@ response to clicking on links in the help viewer.
 
 \subsection{Cadence Virtuoso and OpenAccess Compatibility}
 
-\ifoa
+%\ifoa
 {\Xic} can read and write design data to an OpenAccess database, but
 OpenAccess is not required.  {\Xic} can read and use ASCII technology
 and DRF files intended for Cadence Virtuoso and other similar tools,
@@ -439,17 +439,17 @@ to write back schematic information to Cadence without corruption.
 {\Xic} supports Ciranova/Synopsys portable Python-based parameterized
 cells, and provides support for abutment and stretch handles in native
 parameterized cells.
-\else
-{\Xic} can read and use ASCII technology and DRF files intended for
-Cadence Virtuoso and other similar tools, as provided by chip
-foundries.
-
-OpenAccess support is presently not available.  Such support would
-allow access to an OpenAccess database, such as used with Virtuoso. 
-This support, once available.  has been removed for legal/financial
-reasons, but could be reinstated if there is sufficient demand. 
-Contact Whiteley Research for more information.
-\fi
+%\else
+%{\Xic} can read and use ASCII technology and DRF files intended for
+%Cadence Virtuoso and other similar tools, as provided by chip
+%foundries.
+%
+%OpenAccess support is presently not available.  Such support would
+%allow access to an OpenAccess database, such as used with Virtuoso. 
+%This support, once available.  has been removed for legal/financial
+%reasons, but could be reinstated if there is sufficient demand. 
+%Contact Whiteley Research for more information.
+%\fi
 
 \subsection{Layout Editing}
 
@@ -514,12 +514,12 @@ generate and parse.
 \item{Native}\\
 A CIF-like cell-per-file format.
 
-\ifoa
+%\ifoa
 \item{OpenAccess}\\
 If present, {\Xic} can read and write to an OpenAccess database,
 including the databases provided with Cadence Virtuoso and Ciranova
 PyCell Studio.
-\fi
+%\fi
 \end{description}
 
 Any files in these formats can be read directly into {\Xic}, whether
@@ -699,10 +699,10 @@ interface.
 \et Geometry Digests & \vt geom & \cb Cell Geometry Digests &
   List of Cell Geometry Digests\\ \hline
 \et Libraries List & \vt libs & \cb Libraries & List libraries\\ \hline
-\ifoa
+%\ifoa
 \et OpenAccess Libs & \vt oalib & \cb OpenAccess Libraries & List OA
   libraries (with OA only)\\ \hline
-\fi
+%\fi
 \et Quit & \vt quit & none & Exit {\Xic}\\ \hline
 \end{tabular}
 

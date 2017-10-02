@@ -74,71 +74,31 @@ get()
             arch=x86_64
         fi
         fname="xictools_$program-$osname-$version-$arch.rpm"
+
         case $osname in
-        LinuxRHEL5)
-            if [ ! -d $outdir/$osname ]; then
-                mkdir $outdir/$osname
-            fi
-            if [ $arch = x86_64 ]; then
-                dir=$USER@shelley:/home/$USER/src/xt/xt_base/packages/pkgfiles
-            else
-                dir=$USER@shelley:/home/$USER/src/xt-32/xt_base/packages/pkgfiles
-            fi
-            rsync $dir/$fname $outdir/$osname/$fname
-            chmod 0644 $outdir/$osname/$fname
-            ;;
-        LinuxRHEL6)
-            if [ ! -d $outdir/$osname ]; then
-                mkdir $outdir/$osname
-            fi
-            if [ $arch = x86_64 ]; then
-                dir=$USER@poe:/home/$USER/src/xt/xt_base/packages/pkgfiles
-            else
-                dir=$USER@poe:/home/$USER/src/xt-32/xt_base/packages/pkgfiles
-            fi
-            rsync $dir/$fname $outdir/$osname/$fname
-            chmod 0644 $outdir/$osname/$fname
-            ;;
-        LinuxRHEL7)
-            if [ ! -d $outdir/$osname ]; then
-                mkdir $outdir/$osname
-            fi
-            if [ $arch = x86_64 ]; then
-                dir=$USER@frost:/home/$USER/src/xt/xt_base/packages/pkgfiles
-            else
-                dir=$USER@frost:/home/$USER/src/xt-32/xt_base/packages/pkgfiles
-            fi
-            rsync $dir/$fname $outdir/$osname/$fname
-            chmod 0644 $outdir/$osname/$fname
-            ;;
-        LinuxFedora26)
-            if [ ! -d $outdir/$osname ]; then
-                mkdir $outdir/$osname
-            fi
-            if [ $arch = x86_64 ]; then
-                dir=$USER@fedor:/home/$USER/src/xt/xt_base/packages/pkgfiles
-            else
-                dir=$USER@fedor:/home/$USER/src/xt-32/xt_base/packages/pkgfiles
-            fi
-            rsync $dir/$fname $outdir/$osname/$fname
-            chmod 0644 $outdir/$osname/$fname
-            ;;
-        LinuxOpenSUSE13)
-            if [ ! -d $outdir/$osname ]; then
-                mkdir $outdir/$osname
-            fi
-            if [ $arch = x86_64 ]; then
-                dir=$USER@byron:/home/$USER/src/xt/xt_base/packages/pkgfiles
-            else
-                dir=$USER@byron:/home/$USER/src/xt-32/xt_base/packages/pkgfiles
-            fi
-            rsync $dir/$fname $outdir/$osname/$fname
-            chmod 0644 $outdir/$osname/$fname
-            ;;
-        *)
-            echo "Unknown distribution name $osname"
-            ;;
+        LinuxRHEL5) host=shelley;;
+        LinuxRHEL6) host=poe;;
+        LinuxRHEL7) host=frost;;
+        LinuxFedora26) host=fedor;;
+        LinuxOpenSUSE13) host=byron;;
         esac
+
+        if [ -z "$host" ]; then
+            echo "Unknown distribution name $osname"
+        else
+            if [ $arch = x86_64 ]; then
+                dir=$USER@$host:/home/$USER/src/xt/xt_base/packages/pkgfiles
+                odir=$outdir/$osname
+            else
+                dir=$USER@$host:/home/$USER/src/xt-32/xt_base/packages/pkgfiles
+                odir=$outdir/$osname.$arch
+            fi
+            if [ ! -d $odir ]; then
+                mkdir $odir
+            fi
+            rsync $dir/$fname $odir/$fname
+            chmod 0644 $odir/$fname
+        fi
         ;;
     Win*)
         if [ ! -d $outdir/$osname ]; then
@@ -146,7 +106,7 @@ get()
         fi
         arch=i386
         fname=xictools_$program-$osname-$version-$arch.exe
-        dir=$USER@keats:/cygwin64/home/$USER/src/xt/xt_base/packages/pkgfiles
+        dir=$USER@keats:/home/$USER/src/xt/xt_base/packages/pkgfiles
         rsync $dir/$fname $outdir/$osname/$fname
         chmod 0644 $outdir/$osname/$fname
         ;;

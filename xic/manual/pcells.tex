@@ -28,7 +28,7 @@ A single parameterized cell that replaces the collection of fixed
 cells can streamline the design process, provide greater flexibility,
 and reduce errors.
 
-\ifoa
+%\ifoa
 The full and {\XicII} feature sets have support for native and
 OpenAccess-based portable pcells, as well as the ability to work with
 the Cadence Virtuoso Express PCells$^{TM}$ feature.  The {\Xiv}
@@ -48,18 +48,18 @@ standards.}
 \item{Provide commonality and support for the OpenAccess pcell
 framework.}
 \end{itemize}
-\else
-The full and {\XicII} feature sets have support for native pcells.  The
-{\Xiv} feature set does not support pcells.
-
-Unfortunately, at the present time legal and financial constraints set
-by the controlling organization prevent use of OpenAccess in {\Xic}. 
-With OpenAccess, support for portable pcells, and the ability to work
-with the Cadence Virtuoso Express PCells feature, could be provided. 
-Please contact Whiteley Research if support for OpenAccess would be of
-use to you.  With sufficient demand, the decision to drop OpenAccess
-support may be revisited.
-\fi
+%\else
+%The full and {\XicII} feature sets have support for native pcells.  The
+%{\Xiv} feature set does not support pcells.
+%
+%Unfortunately, at the present time legal and financial constraints set
+%by the controlling organization prevent use of OpenAccess in {\Xic}. 
+%With OpenAccess, support for portable pcells, and the ability to work
+%with the Cadence Virtuoso Express PCells feature, could be provided. 
+%Please contact Whiteley Research if support for OpenAccess would be of
+%use to you.  With sufficient demand, the decision to drop OpenAccess
+%support may be revisited.
+%\fi
 
 \subsection{How PCells Work}
 \index{pcell}
@@ -165,7 +165,7 @@ group, IPLnow.com ({\vt http://www.iplnow.com}) which includes TSMC
 and other foundries and some tool vendors, is pushing the cause of
 ``interoperable'' PDK libraries based on portable pcells.
 
-\ifoa
+%\ifoa
 {\Xic} is intended to be fully compatible with the PyCell Studio and
 PyCells, through the OpenAccess interface plug-in.  In addition,
 {\Xic} without OpenAccess provides support for Python pcells, and the
@@ -192,12 +192,12 @@ may be pointless, and in fact this may cause trouble, for example when
 writing output pcell sub-masters are not written unless the user
 overrides the default (e.g., by checking the box in the {\cb Export
 Control} panel).
-\else
-Currently, support for OpenAccess pcells is not available.  OpenAccess
-support can easily be provided by paying what amounts to a commercial
-use fee.  Users who may need this feature are encouraged to lobby
-Whiteley Research Inc..
-\fi
+%\else
+%Currently, support for OpenAccess pcells is not available.  OpenAccess
+%support can easily be provided by paying what amounts to a commercial
+%use fee.  Users who may need this feature are encouraged to lobby
+%Whiteley Research Inc..
+%\fi
 
 \subsection{{\Xic} Native PCells}
 \label{pcnative}
@@ -207,11 +207,11 @@ Whiteley Research Inc..
 Python or Tcl if the respective plug-ins are loaded.  Parameterized
 cells are supported only in physical mode.  This section will describe
 how to create and use native pcells in {\Xic}.
-\ifoa
+%\ifoa
 By ``native'', execution within {\Xic} rather than through OpenAccess
 is meant.  As will be seen, native pcells can be saved in OpenAccess,
 too, and they are still native.
-\fi
+%\fi
 
 There are several example native pcells provided in the examples
 directory of the {\it Xic} installation.  These provide samples of the
@@ -264,10 +264,10 @@ string type.  In native pcells, all parameters are (for this purpose)
 string type, so the type specifier will never appear.  However, the
 syntax used may be extended in future, so it is documented in the
 table below.  All types except for string type will have a specifier.
-\ifoa
+%\ifoa
 These {\bf will} appear in property strings obtained from OpenAccess
 for non-native pcells.
-\fi
+%\fi
 
 \begin{quote}
 \begin{tabular}{ll}\\
@@ -414,11 +414,11 @@ However, one may encounter a portability issue caused by string length
 limitations of the GDSII and CGX formats due to their maximum record
 length of 64KB.  The native cell format, the CIF format as extended by
 Whiteley Research, and the OASIS format have no built-in string length
-\ifoa
+%\ifoa
 limit, nor does OpenAccess.
-\else
-limit.
-\fi
+%\else
+%limit.
+%\fi
 
 When using separate script files, for portability it may be best to
 {\bf not} provide a full path to the script in the {\et pc\_script}
@@ -575,9 +575,9 @@ file.  One consideration is that GDSII and CGX files have 16-bit record
 lengths, which will limit the lengths of property strings.  In the
 present {\Xic} release, CIF and native string lengths, and
 OASIS string lengths, are unlimited.
-\ifoa
+%\ifoa
 There is also no limit when storing the cell in OpenAccess.
-\fi
+%\fi
 
 First, assume that the script is to be stored in the property string. 
 We will use the ``long text'' feature to facilitate entering the
@@ -678,7 +678,7 @@ file name can be given to the {\cb New} text entry pop-up of the {\cb
 Cell Placement Control} panel brought up with the {\cb place} button
 in the side menu.
 
-\ifoa
+%\ifoa
 Pcells saved in OpenAccess can be instantiated with the {\cb Place}
 button in the {\cb Contents} listing window from the {\cb OpenAccess
 Libraries} pop-up from the {\cb File Menu}.  These cells are also
@@ -686,7 +686,7 @@ available through the {\cb Cell Placement Control} panel.  In the text
 input pop-up from the {\cb New} button, enter the OpenAccess library
 name that contains the desired pcell, followed by space, then the
 pcell name.
-\fi
+%\fi
 
 When cell placement becomes active, by pressing the {\cb Place} button
 the {\cb Cell Placement Control} panel, the {\cb Parameters} pop-up
@@ -782,11 +782,11 @@ editing context if {\cb Push} was used.
 Constraints are described by text strings included in the {\et
 pc\_params} property contained in the super-master cell.  Constraints
 do not appear in the sub-master or instance properties.
-\ifoa
+%\ifoa
 Constraint support is also provided for Ciranove/Python OpenAccess
 pcells, though the constraint strings are provided by another method
 internally as there are no corresponding super-master {\Xic} cells.
-\fi
+%\fi
 
 In {\Xic}, constraints are mainly handled in the {\cb Parameters}
 panel (see \ref{pcparams}), which is where parameter setting is
@@ -1296,7 +1296,7 @@ with the Synopsys (Ciranova) PyCell Studio download.  This is an
 OpenAccess Python portable pcell which is part if the IPL (IPLnow.com)
 library of open-source portable pcells.
 
-\ifoa
+%\ifoa
 The following procedure illustrates auto-abutment.
 
 \begin{enumerate}
@@ -1350,13 +1350,13 @@ overlap.  In this case, note that one of the instances retains the
 contact.  This mode inplements trasistors with a shared contact.}
 \end{enumerate}
 
-\else
-
-Unfortunately, this requires OpenAccess to obtain, so is not currently
-available.  Support for auto-abutment, as decribed in Ciranova
-documentation, is implemented within {\Xic}.  An example native
-abutting pcell will be provided at some point.
-\fi
+%\else
+%
+%Unfortunately, this requires OpenAccess to obtain, so is not currently
+%available.  Support for auto-abutment, as decribed in Ciranova
+%documentation, is implemented within {\Xic}.  An example native
+%abutting pcell will be provided at some point.
+%\fi
 
 The abutment protocol adheres as closely as possible to the
 description from the {\vt eda\_tool\_integration.pdf} document
@@ -1438,7 +1438,7 @@ the copy without touching the partner of the original.
 \end{description}
 
 
-\ifoa
+%\ifoa
 % -----------------------------------------------------------------------------
 % pycell 022513
 \section{Synopsys (Ciranova) PyCell Studio}
@@ -1644,7 +1644,7 @@ before.  This time, however, note that a common contact is retained.}
 \end{enumerate}
 
 This should be enough to get started, have fun!
-\fi
+%\fi
 
 
 % -----------------------------------------------------------------------------
@@ -1653,7 +1653,7 @@ This should be enough to get started, have fun!
 \label{cdscompat}
 \index{Cadence compatibility}
 
-\ifoa
+%\ifoa
 Limited compatibility with Cadence Virtuoso$^{TM}$ is available on two
 levels.  First, technology, display resource (DRF), and layer mapping
 files can be read directly by {\Xic}.  These files are generally
@@ -1662,13 +1662,13 @@ Cadence Virtuoso.  Second, the OpenAccess plug-in allows {\Xic} to
 access the Cadence libraries directly.  Designs can be loaded into
 {\Xic}, however presently they cannot be returned to Virtuoso without
 losing data required by Virtuoso.
-\else
-Limited compatibility with Cadence Virtuoso$^{TM}$ is available.  The
-ASCII technology, display resource (DRF), and layer mapping files can
-be read directly by {\Xic}.  These files are generally provided in
-vendor-supplied process design kits intended for use with Cadence
-Virtuoso.
-\fi
+%\else
+%Limited compatibility with Cadence Virtuoso$^{TM}$ is available.  The
+%ASCII technology, display resource (DRF), and layer mapping files can
+%be read directly by {\Xic}.  These files are generally provided in
+%vendor-supplied process design kits intended for use with Cadence
+%Virtuoso.
+%\fi
 
 For export to a Cadence environment, the {\cb !dumpcds} command will
 create compatible technology and DRF files based on the {\Xic}
@@ -1691,7 +1691,7 @@ contains the layer definitions, and usually quite a lot of technology
 information.  From this, many of the {\it Xic} design rules and
 extraction keywords can be obtained.
 
-\ifoa
+%\ifoa
 \item{\vt ReadOaTech} {\it library}\\
 This will obtain Virtuoso technology information directly from
 OpenAccess.  The {\it library} is an OpenAccess library, listed in
@@ -1699,7 +1699,7 @@ the {\vt lib.defs} or {\vt cds.lib} file.  This obtains technology
 information by use of the OpenAccess plug-in.  There should be no
 reason to use both this and {\vt ReadCdsTech}, as they should
 retrieve the same information.
-\fi
+%\fi
 
 \item{\vt ReadCdsLmap} {\it filename}\\
 The {\it filename} is the path to a Virtuoso layer mapping file.  This
@@ -2274,7 +2274,7 @@ This maps to the {\et width} routing parameter (see \ref{exkwords}).
 \end{description}
 
 
-\ifoa
+%\ifoa
 % -----------------------------------------------------------------------------
 % ReadOaTech 032117
 \subsection{The {\vt ReadOaTech} keyword}
@@ -2297,7 +2297,7 @@ ASCII technology file, which is then parsed by the equivalent of
 specifying {\vt ReadCdsTech} with this file.  The same file can be
 obtained from the print option of the {\cb !oatech} command.  This
 can be used to view the tech information that is being extracted.
-\fi
+%\fi
 
 
 % -----------------------------------------------------------------------------
@@ -2323,7 +2323,7 @@ must appear in the {\Xic} technology file after the {\vt ReadCdsTech}
 line, as the layers must exist in the {\it Xic} database before they
 can be assigned a GDSII mapping. 
 
-\ifoa
+%\ifoa
 % -----------------------------------------------------------------------------
 % cdsconnect 022416
 \subsection{Connecting to Cadence Installations}
@@ -2488,10 +2488,10 @@ the same design into {\Xic}, with no unresolved pcell references.
 Note that when obtaining the pcell sub-masters through OpenAccess, a
 license checkout for the Cadence system occurs.  Cadence will not
 export a sub-master from the cache without a license.
-\fi
+%\fi
 
 
-\ifoa
+%\ifoa
 % -----------------------------------------------------------------------------
 % cdsimport 022816
 \subsection{Importing a Design from Virtuoso}
@@ -2630,7 +2630,7 @@ directory full of cell files.  The archive file will not contain the
 devices.  Be aware that to export the design to another {\Xic}
 installation, the {\vt devices} directory will have to be exported
 too.
-\fi
+%\fi
 
 
 % -----------------------------------------------------------------------------
@@ -2712,11 +2712,11 @@ from which the parameters can be set, and variants created and placed.
 
 The {\et stdvia} property (number 7160) is applied to standard via
 instances and sub-masters.
-\ifoa
+%\ifoa
 The OpenAccess translator will transparently convert these to the
 corresponding OpenAccess forms when writing to OpenAccess, and {\it
 vice-versa\/}.
-\fi
+%\fi
 A string with very similar format to the property string is used by
 the {\vt OpenViaSubMaster} script function.  The property string
 syntax is described here.

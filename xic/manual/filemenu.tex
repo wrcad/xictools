@@ -23,10 +23,10 @@ with button 2 in the area outside of buttons or other objects.
 
 The table below lists the commands found in the {\cb File Menu}, along
 with the internal command name and function.
-\ifoa
+%\ifoa
 The {\cb OpenAccess Libs} button will appear only if the OpenAccess
 plug-in is loaded.
-\fi
+%\fi
 
 \begin{tabular}{|l|l|l|p{2in}|} \hline
 \multicolumn{4}{|c|}{\kb File Menu}\\ \hline
@@ -45,10 +45,10 @@ plug-in is loaded.
 \et Geometry Digests & \vt geom & \cb Cell Geometry Digests &
   List of Cell Geometry Digests\\ \hline
 \et Libraries List & \vt libs & \cb Libraries & List libraries\\ \hline
-\ifoa
+%\ifoa
 \et OpenAccess Libs & \vt oalib & \cb OpenAccess Libraries & List OA
   libraries (with OA only)\\ \hline
-\fi
+%\fi
 \et Quit & \vt quit & none & Exit {\Xic}\\ \hline
 \end{tabular}
 
@@ -140,10 +140,10 @@ library or the search path for native cells.
 In short, the first or only name given can be one of the following.
 
 \begin{itemize}
-\ifoa
+%\ifoa
 \item{The name of an OpenAccess library, if the OpenAccess     
 plug-in has been loaded.}
-\fi
+%\fi
 
 \item{A path to a layout file in a supported format.}
 
@@ -161,10 +161,10 @@ available locally.}
 In each of the cases above, a second name can appear, giving the name
 of a cell to open.  If no cell name is given, the action depends on
 the type of source.
-\ifoa
+%\ifoa
 An OpenAccess library source requires that a cell name be given,
 otherwise the OpenAccess database is not consulted.
-\fi
+%\fi
 
 If no cell name is given and the source is a layout file containing
 only one top-level cell, that cell will be opened.  If there are
@@ -693,14 +693,14 @@ single-cell files.
 \vt C & CIF\\
 \vt G & GDSII\\
 \vt O & OASIS\\
-\ifoa
+%\ifoa
 \vt A & OpenAccess\\
-\fi
+%\fi
 \vt P & PCell sub-masters (native)\\
 \end{tabular}
 \end{quote}
 
-\ifoa
+%\ifoa
 If a cell was read from an OpenAccess library and modified, it will
 (by default) be saved to the same library.  {\Xic} can write only to
 OpenAccess libraries that were created by {\Xic} or otherwise
@@ -708,16 +708,16 @@ OpenAccess libraries that were created by {\Xic} or otherwise
 prevent unintentional overwriting of Virtuoso cells.  Overwriting a
 Virtuoso cell from {\Xic} will hopelessly clobber the cell for
 Virtuoso.  Some day this may work, but for now expect the worst.
-\fi
+%\fi
 
 If saved, PCell sub-masters will be saved as native cell files in the
 current directory.
 
 The fourth column is the full path name of the file that will be
 written if the second column is ``{\vt yes}''.
-\ifoa
+%\ifoa
 In the case of OpenAccess, this will be the library name.
-\fi
+%\fi
 
 {\Xic} native cells are saved under their own name, in the directory
 containing the file the cell was read from, or the current directory
@@ -783,9 +783,9 @@ CGX & ``{\vt cgx}''\\
 CIF & ``{\vt cif}''\\
 GDSII & ``{\vt gds}'', ``{\vt str}'', ``{\vt strm}'', ``{\vt stream}''\\
 OASIS & ``{\vt oas}''\\
-\ifoa
+%\ifoa
 OpenAccess & ``{\vt oa}''\\
-\fi
+%\fi
 Native & ``{\vt xic}''\\
 \end{tabular}
 
@@ -794,12 +794,12 @@ it is taken as a path to the output to produce.  If this path has a
 file extension from the list above, meaning that the file name ends
 with a period followed by one of the words from the table, this will
 specify that format type for output.
-\ifoa
+%\ifoa
 This does not apply to OpenAccess, however.
 
 OpenAccess is available only if the plug-in
 was successfully loaded (see \ref{oaplugin}).
-\fi
+%\fi
 
 If the specified output format is one of the archive formats (CGX,
 CIF, GDSII, OASIS), then the entire cell hierarchy under the current
@@ -863,7 +863,7 @@ current cell is a native cell file.  If omitted, in any case if the
 as the current directory), the ``{\vt xic}'' is understood, and the
 behavior is as described in the table above.
 
-\ifoa
+%\ifoa
 To save to an OpenAccess library, the ``{\vt oa}'' {\it filetype}
 {\bf must} be given, any added file extensions are not recognized.  The
 remainder of the line is interpreted as follows:
@@ -885,7 +885,7 @@ blank & blank & The current cell is written to the library named in
 \it library & \vt * & If an asterisk follows the library name, the
  current cell and its hierarchy will be written to the library.
 \end{tabular}
-\fi
+%\fi
 
 When a file is read into {\Xic}, the full path to that file is saved
 within {\Xic}, and that file is the default written to during a save. 
@@ -2708,7 +2708,7 @@ the {\cb Cell Hierarchy Digests} panel is active, the {\cb Open} and
 {\cb Place} button is not available in the {\Xiv} feature set.
 
 
-\ifoa
+%\ifoa
 % -----------------------------------------------------------------------------
 % xic:oalib 030416
 \section{The {\cb OpenAccess Libs} Button:  List OpenAccess Libraries}
@@ -2846,9 +2846,9 @@ the {\vt lib.defs} file, but not otherwise touched.  To reclaim the
 disk space used by the library, the user can manually delete the
 corresponding directory.  The {\cb !oadelete} command can also be used
 to delete libraries, and to delete cells in libraries.
-\fi
+%\fi
 
-\ifoa
+%\ifoa
 % ----------------
 % xic:oatech 041415
 \section{The {\cb OpenAccess Tech} Panel}
@@ -2903,10 +2903,10 @@ Tech} button becomes un-grayed, and will destroy the local database
 when pressed.
 
 The {\cb !oatech} command can perform may of the same operations.
-\fi
+%\fi
 
 
-\ifoa
+%\ifoa
 % ----------------
 % xic:oadefs 022216
 \section{The {\cb OpenAccess Defaults} Panel}
@@ -2979,7 +2979,7 @@ be dumped to a file in the current directory.  The file name is the
 cell name with a ``{\vt .cdf}'' extension.  This is for
 development/debugging.
 \end{description}
-\fi
+%\fi
 
 
 % -----------------------------------------------------------------------------

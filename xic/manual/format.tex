@@ -414,12 +414,12 @@ no symbol numbering.
 In native cell files only, instead of a cell name, the string can
 contain two words separated by white space.  The first word is a path
 to an archive
-\ifoa
+%\ifoa
 file (CIF, GDSII, etc.), library, or the name of an
 OpenAccess library.
-\else
-(CIF, GDSII, etc.) or library file.
-\fi
+%\else
+%(CIF, GDSII, etc.) or library file.
+%\fi
 The second token would be the cell or library reference name.  If the
 first word is a path to an archive file, the cell name is optional if
 the file contains only one top-level cell, this cell would be

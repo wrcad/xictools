@@ -73,7 +73,7 @@ follow.
   \hline
 \et Shell & Path to shell used for external commands\\ \hline
 
-\ifoa
+%\ifoa
 % 030416
 \multicolumn{2}{|c|}{\kb OpenAccess Interface}\\ \hline
 \et OaLibraryPath & Set location for hidden libraries\\ \hline
@@ -86,7 +86,7 @@ follow.
 \et OaDmSystem & Set design management system\\ \hline
 \et OaDumpCdfFiles & Dump CDF data to a file\\ \hline
 \et OaUseOnly & Restrict to physical/electrical data\\ \hline
-\fi
+%\fi
 
 % 031815
 \multicolumn{2}{|c|}{\kb Parameterized Cells}\\ \hline
@@ -242,9 +242,9 @@ follow.
 \et NoReadLabels & Ignore text labels when reading physical cell data\\ \hline
 \et NoPolyCheck & Skip polygon reentrancy tests when reading\\ \hline
 \et DupCheckMode & Check for duplicate items when reading\\ \hline
-\ifoa
+%\ifoa
 \et EvalOaPCells & Attempt to create sub-master for OpenAccess pcell instances\\ \hline
-\fi
+%\fi
 \et NoEvalNativePCells & Don't attempt to create sub-master for native pcell instances\\ \hline
 \et MergeInput & Merge boxes and coincident objects when reading\\ \hline
 \et LayerList & Layer list for conversion input filtering\\ \hline
@@ -991,7 +991,7 @@ consulted for the default shell, after the {\et SHELL} variable.
 \end{description}
 
 
-\ifoa
+%\ifoa
 % -----------------------------------------------------------------------------
 % !set:oa 021515
 \section{OpenAccess Interface}
@@ -1122,7 +1122,7 @@ attempting to import physical data will produce a lot of errors, which
 can be avoided if only a schematic is needed by importing electrical
 data only.
 \end{description}
-\fi
+%\fi
 
 % -----------------------------------------------------------------------------
 % !set:pcells 021515
@@ -3096,7 +3096,7 @@ This variable tracks the setting of the {\cb Duplicate item handling}
 menu in the {\cb Setup} page of the {\cb Import Control} panel from
 the {\cb Convert Menu}.
 
-\ifoa
+%\ifoa
 % 030416
 \index{EvalOaPCells variable}
 \item{\et EvalOaPCells}\\
@@ -3118,7 +3118,7 @@ to evaluate the scripts and recreate the sub-master.
 This variable tracks the status of the {\cb PCell evaluation:  Eval
 OpenAccess} check box in the {\cb Setup} page of the {\cb Import
 Control} panel from the {\cb Convert Menu}.
-\fi
+%\fi
 
 % 030416
 \index{NoEvalNativePCells variable}

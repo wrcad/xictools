@@ -35,21 +35,21 @@ get_man()
     manpdf=${prg}manual-$vrs.pdf
     manhtml=${prg}manual-html-$vrs.tar.gz
     for a in $man_destdir/${prg}manual-*.ps.gz; do
-        echo -n delete `basename $a`? [n]
+        echo -n "delete `basename $a`? [n] "
         read yn
         if [ x"$yn" = xy ]; then
             rm -f $a
         fi
     done
     for a in $man_destdir/${prg}manual-*.pdf; do
-        echo -n delete `basename $a`? [n]
+        echo -n "delete `basename $a`? [n] "
         read yn
         if [ x"$yn" = xy ]; then
                 rm -f $a
         fi
     done
     for a in $man_destdir/${prg}manual-html-*.tar.gz; do
-        echo -n delete `basename $a`? [n]
+        echo -n "delete `basename $a`? [n] "
         read yn
         if [ x"$yn" = xy ]; then
             rm -f $a

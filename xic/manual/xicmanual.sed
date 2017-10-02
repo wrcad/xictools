@@ -30,15 +30,17 @@
 \newcommand{\vt}{\tt } %verbatim text
 \setlength{\mathindent}{1cm}
 
+%
+% Unfortunately, lates2html doesn't handle conditionals, so these are
+% hard coded and explicitly commented, for now.
+%
 % Whether or not to include OpenAccess plug-in features.
-\newif\ifoa
-\oatrue
-%\oafalse
-
+%\newif\ifoa
+%\oatrue
+%
 % Whether or not to include license server references.
-\newif\ifxtlserv
-%\xtlservtrue
-\xtlservfalse
+%\newif\ifxtlserv
+%\xtlservfalse
 
 % Have to modify the TOC number spacing.  The following lines do this
 % without tocloft, but cause trouble in latex2html
@@ -89,11 +91,11 @@
 \epsfbox{images/tm.eps}\\
 \vspace*{.5in}
 {\huge {\Xic} Reference Manual}\\
-\ifoa
+%\ifoa
 With OpenAccess Support\\
-\else
-No OpenAccess\\
-\fi
+%\else
+%No OpenAccess\\
+%\fi
 \vspace{.75in}
 {\large\sf Whiteley Research Incorporated}\\456 Flora Vista Avenue\\
   Sunnyvale, CA 94086\\

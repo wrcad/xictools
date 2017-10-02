@@ -133,7 +133,7 @@ provides layer and purpose definitions, rules, constraints, and other
 technology data.  Layers defined in this file will appear in addition
 to those defined elsewhere.
 
-\ifoa
+%\ifoa
 \item{\vt ReadOaTech} {\it library}\\
 This will obtain Virtuoso technology information directly from
 OpenAccess.  The {\it library} is an OpenAccess library, listed in
@@ -141,7 +141,7 @@ the {\vt lib.defs} or {\vt cds.lib} file.  This obtains technology
 information by use of the OpenAccess plug-in.  There should be no
 reason to use both this and {\vt ReadCdsTech}, as they should
 retrieve the same information.
-\fi
+%\fi
 
 \item{\vt ReadCdsLmap} {\it filename}\\
 This is part of the Cadence$^{TM}$ compatibility package (see
@@ -159,11 +159,11 @@ search path.  This file format is
 superficially similar to a Virtuoso ASCII technology file, yet
 sufficiently different that a separate reader is required.  The
 format is documented in the PyCell Studio distribution from
-\ifoa
+%\ifoa
 Synopsys, and example files are provided (see \ref{ciranova}).
-\else
-Synopsys.
-\fi
+%\else
+%Synopsys.
+%\fi
 
 When setting up a technology file for the PyCell Studio or something
 similar using Ciranova technology, it may be necessary to use this

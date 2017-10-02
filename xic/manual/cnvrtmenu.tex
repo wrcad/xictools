@@ -1174,14 +1174,14 @@ equivalent text accelerators and including the prompts when exiting
 the program.  It is also ignored when using the {\vt Save} script
 function.
 
-\ifoa
+%\ifoa
 {\Xic} native pcells are only supported in {\Xic}.  OpenAccess-based
 pcells might be supported by other systems, that is certainly the
 intent of the Ciranova PyCells.  Even if another system supports the
 OpenAccess PyCells, it may not have the logic to rebuild the pcells
 coming from a GDSII or other file source.  In that case one will
 probably have to ship the OpenAccess library files.
-\fi
+%\fi
 
 The {\et StripForExport} variable and the equivalent check box will
 have the same effect when set.
@@ -1193,12 +1193,12 @@ box.
 When checked, standard via cell sub-masters are included in the output
 file.  This will be required when sending output to another system, as
 this implementation is specific to {\Xic}.
-\ifoa
+%\ifoa
 An exception may be systems that share an OpenAccess database with
 {\Xic}.  If the cells are written to the OpenAccess database, the
 standard vias should translate properly, and be recognized by other
 tools (e.g., Virtuoso) that share the database.
-\fi
+%\fi
 
 This applies when writing all output, {\bf except} when using the {\cb
 Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
@@ -1372,7 +1372,7 @@ provided, the super-masters for the pcells must be available.
 This check box tracks the state of the {\et NoEvalNativePCells}
 variable.
  
-\ifoa
+%\ifoa
 \item{\cb PCell evaluation:  Eval OpenAccess}\\
 Setting this check box will cause {\Xic} to attempt to evaluate
 OpenAccess pcells when instances are encountered when reading file
@@ -1381,7 +1381,7 @@ and the exporter has probably included the sub-master cells in the
 archive.
 
 This check box tracks the state of the {\et EvalOaPCells} variable. 
-\fi
+%\fi
 
 \item{\cb Don't create new layers when reading, abort instead}\\
 By default, when reading an input file, layers are created if

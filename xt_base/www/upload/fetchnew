@@ -112,7 +112,7 @@ filename()
         echo xictools_$prog-$os-$vers-$arch.rpm
         ;;
     Win*)
-        echo xictools_$prog-$os-$vers-i386.rpm
+        echo xictools_$prog-$os-$vers-i386.exe
         ;;
     esac
 }

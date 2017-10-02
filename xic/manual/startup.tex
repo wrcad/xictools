@@ -98,10 +98,10 @@ The {\vt sudo} command is built into the {\vt wr\_install} script, so
 that users should not need to become root explicitly to perform
 updates.  To edit configuration files in the installation, root access
 is needed.
-\ifxtlserv
-The {\vt sudo} command can be used to start the license server, if
-running the server is necessary.
-\fi
+%\ifxtlserv
+%The {\vt sudo} command can be used to start the license server, if
+%running the server is necessary.
+%\fi
 
 \subsection{Un-Installation}
 
@@ -214,20 +214,20 @@ release of the {\XicTools}.
 
 \subsection{Installation and Setup}
 
-\ifxtlserv
-In order to license a Windows host, two pieces of information are
-needed:
-\begin{enumerate}
-\item{The machine's host name}
-\item{The Windows Product ID}
-\end{enumerate}
-
-The recommended way to retrieve this information is to download the
-{\vt licinfo.exe} program from the {\vt wrcad.com} web site.  When
-run, this program generates a file named ``{\vt tLicenseInfo}'' which
-should be emailed to Whiteley Research.  A pop-up window displays the
-information, and indicates success or failure.
-\fi
+%\ifxtlserv
+%In order to license a Windows host, two pieces of information are
+%needed:
+%\begin{enumerate}
+%\item{The machine's host name}
+%\item{The Windows Product ID}
+%\end{enumerate}
+%
+%The recommended way to retrieve this information is to download the
+%{\vt licinfo.exe} program from the {\vt wrcad.com} web site.  When
+%run, this program generates a file named ``{\vt tLicenseInfo}'' which
+%should be emailed to Whiteley Research.  A pop-up window displays the
+%information, and indicates success or failure.
+%\fi
 
 The distributions are available from the {\vt wrcad.com} web site,
 along with the distributions for Linux and OS X.  The distributions
@@ -356,9 +356,10 @@ advanced features are not.
 \begin{itemize}
 \item{There is presently no support for the Tcl/Tk or Python script 
 language plug-ins.
-\ifoa
+%\ifoa
 There is also no support for the OpenAccess plug-in.
-\fi}
+%\fi
+}
 
 \item{There is no provision for remote running of the programs as
 with the X window system in Linux.}
@@ -697,26 +698,26 @@ default password.  As the password can be changed with the {\vt
 SetKey} script function, {\cb User Menu} scripts can in principle use
 different passwords, which must be set before the script is executed.
 
-\ifxtlserv
-\index{command line!options!-L}
-\index{-L option}
-\item{\et -L}{\it serverhost}[:{\it port\/}]\\
-This supplies the host name of the machine running the license server,
-and optionally specifies the port number.  Note that there is no space
-after {\vt -L}.  If given, this will override the server host supplied
-by other means.
-
-Below is the logic hierarchy for setting the license server host, each
-method will override those listed lower.  See the documentation for
-the {\vt xtlserv} (license server) program for more information.
-\begin{quote}
--L{\it serverhost}[:{\it port\/}]\\
-{\et XTLSERVER} in environment\\
-{\vt license.host} file\\
-{\vt xtlserver} in {\vt /etc/hosts}\\
-name of local machine
-\end{quote}
-\fi
+%\ifxtlserv
+%\index{command line!options!-L}
+%\index{-L option}
+%\item{\et -L}{\it serverhost}[:{\it port\/}]\\
+%This supplies the host name of the machine running the license server,
+%and optionally specifies the port number.  Note that there is no space
+%after {\vt -L}.  If given, this will override the server host supplied
+%by other means.
+%
+%Below is the logic hierarchy for setting the license server host, each
+%method will override those listed lower.  See the documentation for
+%the {\vt xtlserv} (license server) program for more information.
+%\begin{quote}
+%-L{\it serverhost}[:{\it port\/}]\\
+%{\et XTLSERVER} in environment\\
+%{\vt license.host} file\\
+%{\vt xtlserver} in {\vt /etc/hosts}\\
+%name of local machine
+%\end{quote}
+%\fi
 
 \index{command line!options!-R}
 \index{-R option}
@@ -937,51 +938,51 @@ know about the Cygwin mount points or symbolic links.  The path is the
 one that would be seen from a DOS box, with forward or reverse slash
 directory separators.
 
-\ifxtlserv
-\index{environment!XT\_AUTH\_MODE}
-\item{\et XT\_AUTH\_MODE}\\
-By default, Unix/Linux versions of {\Xic} and {\WRspice} use
-authorization provided by an external license server, possibly hosted
-on a different machine.  On the other hand, the Windows versions use
-built-in local authentication.  Both the external license server and
-the programs not using the license server make use of a file named
-``{\vt LICENSE}'' provided by Whiteley Research, Inc., which provides
-authorization to run on the host computer.
-
-Whether to use a license server or local authentication can be set
-with the environment variable {\et XT\_AUTH\_MODE}.  This variable has
-meaning if set to one of the keywords ``{\vt Server}'' or ``{\vt
-Local}''.  If set to ``{\vt Server}'' on a Windows machine, {\Xic} and
-{\WRspice} can by authenticated from a license server.  If set to
-``{\vt Local}'' on a Linux/OS X system, {\Xic} and {\WRspice}
-will be self-validating.
-
-{\Xic} and/or {\WRspice} users on a single licensed workstation may
-prefer to set the environment variable in their shell startup file and
-not use the external license server.
-
-When the programs look for the LICENSE file in ``{\vt Local}'' mode,
-if the file is not found in the startup or license directories, the
-programs will look in the home and current directories, in that order,
-unless {\et XT\_LICENSE\_PATH} is also set.
-
-\index{environment!XT\_LICENSE\_PATH}
-\index{XT\_LICENSE\_PATH environment variable}
-\item{\et XT\_LICENSE\_PATH}\\
-When using local validation (i.e., not using the license server) {\et
-XT\_LICENSE\_PATH} can be set to the full path to the license file. 
-Only this file will be used -- the regular search is suppressed.
-
-\index{environment!XTLSERVER}
-\index{XTLSERVER environment variable}
-\item{\et XTLSERVER}\\
-This provides the host name of the host running the license server
-needed to validate the application.  It is in a format understandable
-to the local name server.  The host name can optionally be suffixed by
-``{\vt :}{\it port\/}'', where {\it port} is the port number in use by
-the server.  There should be no space around the colon when using this
-form.
-\fi
+%\ifxtlserv
+%\index{environment!XT\_AUTH\_MODE}
+%\item{\et XT\_AUTH\_MODE}\\
+%By default, Unix/Linux versions of {\Xic} and {\WRspice} use
+%authorization provided by an external license server, possibly hosted
+%on a different machine.  On the other hand, the Windows versions use
+%built-in local authentication.  Both the external license server and
+%the programs not using the license server make use of a file named
+%``{\vt LICENSE}'' provided by Whiteley Research, Inc., which provides
+%authorization to run on the host computer.
+%
+%Whether to use a license server or local authentication can be set
+%with the environment variable {\et XT\_AUTH\_MODE}.  This variable has
+%meaning if set to one of the keywords ``{\vt Server}'' or ``{\vt
+%Local}''.  If set to ``{\vt Server}'' on a Windows machine, {\Xic} and
+%{\WRspice} can by authenticated from a license server.  If set to
+%``{\vt Local}'' on a Linux/OS X system, {\Xic} and {\WRspice}
+%will be self-validating.
+%
+%{\Xic} and/or {\WRspice} users on a single licensed workstation may
+%prefer to set the environment variable in their shell startup file and
+%not use the external license server.
+%
+%When the programs look for the LICENSE file in ``{\vt Local}'' mode,
+%if the file is not found in the startup or license directories, the
+%programs will look in the home and current directories, in that order,
+%unless {\et XT\_LICENSE\_PATH} is also set.
+%
+%\index{environment!XT\_LICENSE\_PATH}
+%\index{XT\_LICENSE\_PATH environment variable}
+%\item{\et XT\_LICENSE\_PATH}\\
+%When using local validation (i.e., not using the license server) {\et
+%XT\_LICENSE\_PATH} can be set to the full path to the license file. 
+%Only this file will be used -- the regular search is suppressed.
+%
+%\index{environment!XTLSERVER}
+%\index{XTLSERVER environment variable}
+%\item{\et XTLSERVER}\\
+%This provides the host name of the host running the license server
+%needed to validate the application.  It is in a format understandable
+%to the local name server.  The host name can optionally be suffixed by
+%``{\vt :}{\it port\/}'', where {\it port} is the port number in use by
+%the server.  There should be no space around the colon when using this
+%form.
+%\fi
 
 \index{environment!XT\_PREFIX}
 \index{XT\_PREFIX environment variable}
@@ -1261,7 +1262,7 @@ searched in the {\cb Release Notes} command in the {\cb Help Menu}.
 The default location is {\vt /usr/local/xictools/xic/docs}, or,
 if {\et XT\_PREFIX} is set, its value will replace {\vt /usr/local}.
 
-\ifoa
+%\ifoa
 \index{environment!XIC\_OASO\_PATH}
 \index{XIC\_OASO\_PATH environment variable}
 \item{\et XIC\_OASO\_PATH}\\
@@ -1273,7 +1274,7 @@ installation area, which by default is
 This variable can be set to the full path to the OpenAccess plug-in,
 which {\Xic} will attempt to load on program startup instead of
 looking in the default location.
-\fi
+%\fi
 
 \index{environment!XIC\_PYSO\_PATH}
 \index{XIC\_PYSO\_PATH environment variable}
@@ -1305,9 +1306,9 @@ of looking in the default location.
 This applies to Linux and OS X only.  If set, the value will be
 prepended to the {\vt LD\_LIBRARY\_PATH} in the {\Xic} wrapper script. 
 This can be used to point to installed libraries needed for plugins,
-\ifoa
+%\ifoa
 for example the OpenAccess libraries,
-\fi
+%\fi
 without having to set {\vt LD\_LIBRARY\_PATH} in the environment. 
 
 \index{environment!XICNOMAIL}
@@ -1632,19 +1633,19 @@ of or instead of the default location.  The default technology file
 provided with {\Xic} is for generic MOSIS scalable CMOS.
 
 \begin{description}
-\ifxtlserv
-\index{license.host file}
-\item{{\vt license.host} file}\\
-When using a license server on a remote machine, it is necessary to
-provide the name of this machine or {\Xic} can not run.  One way to do
-this is to create a {\vt license.host} file in the startup directory,
-e.g. {\vt /usr/local/xictools/xic/startup}.  The {\vt
-license.host} file consists of a single line of text, giving the host
-name of the license server machine.  The host name can optionally be
-suffixed with ``{\vt :}{\it port\/}'', where {\it port} is the port
-number in use by the license server.  This is required if for some
-reason the license server is not running on the default port.
-\fi
+%\ifxtlserv
+%\index{license.host file}
+%\item{{\vt license.host} file}\\
+%When using a license server on a remote machine, it is necessary to
+%provide the name of this machine or {\Xic} can not run.  One way to do
+%this is to create a {\vt license.host} file in the startup directory,
+%e.g. {\vt /usr/local/xictools/xic/startup}.  The {\vt
+%license.host} file consists of a single line of text, giving the host
+%name of the license server machine.  The host name can optionally be
+%suffixed with ``{\vt :}{\it port\/}'', where {\it port} is the port
+%number in use by the license server.  This is required if for some
+%reason the license server is not running on the default port.
+%\fi
 
 \item{X resource file}\\
 As the program starts and the graphics is initialized, the X window
@@ -2053,9 +2054,9 @@ created in the current directory.}
 A ``plug-in'' is a software library that is read into a running
 program, that provides additional features or capability.  Within
 {\Xic}, plug-ins provide optional support for
-\ifoa
+%\ifoa
 OpenAccess, and
-\fi
+%\fi
 the Python and Tck/Tk languages.  The plug-in provides an interface to
 external libraries that may or not be present on the user's computer. 
 If the needed libraries are present, the plug-in will be loaded into
@@ -2100,7 +2101,7 @@ LD\_LIBRARY\_PATH} environment variable to specify where to look for
 the libraries.  The libraries much match the address size (32 or 64
 bit) of the running {\Xic} program.
 
-\ifoa
+%\ifoa
 % -----------------------------------------------------------------------------
 % oaplugin 040216
 \section{OpenAccess Support}
@@ -2267,7 +2268,7 @@ property.  The property string contains the library and cell names,
 separated by a forward slash (`{\vt /}') character.  Using this
 information, the cell is read later.
 \end{description}
-\fi
+%\fi
 
 % -----------------------------------------------------------------------------
 % pyplugin 032017
@@ -2282,12 +2283,12 @@ versatile language enjoying much popularity.  In particular, it has
 become the language of choice for writing portable parameterized
 cells, as used in the PyCell Studio project from Ciranova, Inc.  (now
 Synopsys).
-\ifoa
+%\ifoa
 This download provides the essentials for creating portable pcells,
 using the Python language, and OpenAccess.  Whiteley Research strongly
 favors this approach, and will integrate Ciranova standards as tightly
 as possible.
-\fi
+%\fi
 
 Python is made available, when Python-2.6 or newer is found on the
 user's computer, via the Python plug-in.  Red Hat Enterprise Linux 6
@@ -2296,21 +2297,21 @@ release 2.6 is supported on Red Hat Enterprise Linux 5, so
 installation of an updated package is required on that operating
 system.
 
-\ifoa
+%\ifoa
 The Ciranova PCell Studio provides Python 2.6, as well as OpenAccess. 
 If using Ciranova, the Ciranova-supplied Python should be used.
-\fi
+%\fi
 
 \begin{description}
 \item{Red Hat Enterprise Linux 6,7}\\
 This supplies a native Python-2.6/2.7, which will work with the
 plug-in without any configuration.
-\ifoa
+%\ifoa
 Unfortunately, this is not compatible with the Python-2.6 provided by
 Ciranova.  {\Xic} can use either one.  The Python-2.6 provided by
 Ciranova was built with different setup flags for handling UTF8 text
 than the stock Python-2.6.
-\fi
+%\fi
 
 \item{Red Hat Enterprise Linux 5}\\
 The operating system provides Python-2.4, which is not supported.  The
@@ -2328,10 +2329,10 @@ python26-2.6.8-2.el5.x86\_64}''.
 To use a non-default Python such as that supplied by Ciranova in the
 PyCell Studio, one will need to set the {\et LD\_LIBRARY\_PATH}
 variable to include the alternative shared library location.
-\ifoa
+%\ifoa
 This will happen automatically if Ciranova's setup procedure is
 followed before starting {\Xic} (see \ref{ciranova}).
-\fi
+%\fi
 
 Failure to load the Python plug-in is by default silent.  If the
 environment variable {\vt XIC\_PLUGIN\_DBG} is set, diagnostics and

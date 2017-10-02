@@ -224,7 +224,7 @@ commands are described in detail in the following sections.
 \cb !mmstats & print memory manager statistics\\ \hline
 \cb !mmclear & Clear caches\\ \hline
 
-\ifoa
+%\ifoa
 % 062313
 \multicolumn{2}{|c|}{\kb OpenAccess Interface}\\ \hline
 \cb !oaversion & Print OpenAccess release number\\ \hline
@@ -235,7 +235,7 @@ commands are described in detail in the following sections.
 \cb !oasave & Save cell to OpenAccess library\\ \hline
 \cb !oaload & Read cell from OpenAccess library\\ \hline
 \cb !oadelete & Delete OpenAccess object\\ \hline
-\fi
+%\fi
 
 % 040216
 \multicolumn{2}{|c|}{\kb Parameterized Cells}\\ \hline
@@ -1233,12 +1233,12 @@ Syntax: {\vt !pcdump} [{\it filename}]
 This will dump the default parameter list for every parameterized cell
 (pcell) evaluated during the session.  The list is in the format of
 the {\et pc\_params} property, including constraints.
-\ifoa
+%\ifoa
 This can be
 useful for viewing the parameters and constraints of OpenAccess
 pcells, as they lack a native super-master and thus the {\et
 pc\_params} property.
-\fi
+%\fi
 
 The argument is the name of a file to create for output.  If not
 given, output goes to the console window.
@@ -4368,7 +4368,7 @@ implicitly called by {\cb !clearall} and the {\vt ClearAll} script
 function.
 
 
-\ifoa
+%\ifoa
 \section{OpenAccess Interface}
 
 % -----------------------------------------------------------------------------
@@ -4629,7 +4629,7 @@ The indicated cell and view in the library will be destroyed.  If the
 {\it viewname} is not given, all views for the cell will be destroyed.
 
 Be careful, this operation can not be undone.
-\fi
+%\fi
 
 
 \section{Parameterized Cells}

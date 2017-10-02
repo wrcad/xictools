@@ -27,7 +27,7 @@ if [ x$1 = x-t ]; then
     shift
 fi
 
-progs=$1
+progs=$*
 
 sshc=$SSH_CONNECTION
 if [ x"$sshc" = x ]; then
@@ -62,10 +62,10 @@ fetch_help()
         fi
 
         if [ $dryrun = yes ]; then
-            echo /usr/bin/rsync -e ssh -a $login@$home:$srcloc/$prog/lib/help \
+            echo /usr/bin/rsync -e ssh -a $login@$home:$srcloc/$prog/help \
   $help_destdir/$prog
         else
-            /usr/bin/rsync -e ssh -a $login@$home:$srcloc/$prog/lib/help \
+            /usr/bin/rsync -e ssh -a $login@$home:$srcloc/$prog/help \
   $help_destdir/$prog
         fi
     else
@@ -98,9 +98,9 @@ for p in $progs; do
         fi
         newloc=$docs_destdir/${p}_release_notes/$fname
         if [ $dryrun = yes ]; then
-            echo rsync --rsh=ssh $login@$home:$srcloc/$p/lib/docs/$fname $newloc
+            echo rsync --rsh=ssh $login@$home:$srcloc/$p/docs/$fname $newloc
         else
-            rsync --rsh=ssh $login@$home:$srcloc/$p/lib/docs/$fname $newloc
+            rsync --rsh=ssh $login@$home:$srcloc/$p/docs/$fname $newloc
         fi
         fetch_help $p
     else

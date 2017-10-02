@@ -236,7 +236,7 @@ The first group of main module functions:
 \vr OpenLibrary({\it path\_name\/}) & Open a library file\\ \hline
 \vr CloseLibrary({\it path\_name\/}) & Close an open library\\ \hline
 
-\ifoa
+%\ifoa
 % 030416
 \multicolumn{2}{|c|}{\kb OpenAccess}\\ \hline
 \vr OaVersion() & Get OpenAccess version string\\ \hline
@@ -278,7 +278,7 @@ The first group of main module functions:
   library\\ \hline
 \vr OaDestroyTech({\it libname\/}, {\it unattach\_only\/}) & Destroy/remove
   technology object\\ \hline
-\fi
+%\fi
 
 % 100408
 \multicolumn{2}{|c|}{\kb Mode}\\ \hline
@@ -3503,7 +3503,7 @@ always returns 1.
 \end{description}
 
 
-\ifoa
+%\ifoa
 \subsection{OpenAccess}
 
 These functions provide an interface to the OpenAccess database.  An
@@ -3732,7 +3732,7 @@ If {\it libname} has an attached technology library, unattach it.  If
 the boolean second argument is false, and the library has a local
 database, destroy the database.
 \end{description}
-\fi
+%\fi
 
 
 \subsection{Mode}
@@ -12340,7 +12340,7 @@ GetInstanceIdNum}.
 \item{(int) \vt CheckPCellParam({\it library\/}, {\it cell\/},
 {\it view\/}, {\it pname\/}, {\it value\/})}\\
 The first three arguments specify a parameterized cell.
-\ifoa
+%\ifoa
 If {\it library} is not given as a scalar 0, it is the name of the
 OpenAccess library containing the pcell super-master, whose name is
 given in the {\it cell} argument.  The {\it view} argument can be
@@ -12348,10 +12348,10 @@ passed a scalar 0 to indicate that the OpenAccess view name is ``{\vt
 layout}'', or the actual view name can be passed if different.  For
 {\Xic} native pcells not stored in OpenAccess, the {\it library} and
 {\it view} should both be 0 (zero).
-\else
-The {\it library} and {\it view} arguments passed to this function
-should always be 0 (zero).
-\fi
+%\else
+%The {\it library} and {\it view} arguments passed to this function
+%should always be 0 (zero).
+%\fi
 
 The {\it pname} is a string containing a parameter name for a
 parameter of the specified pcell, and the {\it value} argument is
@@ -12364,7 +12364,7 @@ is not forbidden by a constraint, 0 otherwise.
 \item{(int) \vt CheckPCellParams({\it library\/}, {\it cell\/},
 {\it view\/}, {\it params\/})}\\
 The first three arguments specify a parameterized cell.
-\ifoa
+%\ifoa
 If {\it library} is not given as a scalar 0, it is the name of the
 OpenAccess library containing the pcell super-master, whose name is
 given in the {\it cell} argument.  The {\it view} argument can be
@@ -12372,10 +12372,10 @@ passed a scalar 0 to indicate that the OpenAccess view name is ``{\vt
 layout}'', or the actual view name can be passed if different.  For
 {\Xic} native pcells not stored in OpenAccess, the {\it library} and
 {\it view} should both be 0 (zero).
-\else
-The {\it library} and {\it view} arguments passed to this function
-should always be 0 (zero).
-\fi
+%\else
+%The {\it library} and {\it view} arguments passed to this function
+%should always be 0 (zero).
+%\fi
 
 The {\it params} argument is a string providing the parameter values
 in the format of the {\et pc\_params} property as applied to
@@ -12448,11 +12448,11 @@ y\/}.  The first argument is of string type and contains the name of
 the cell to place.  The string can consist of two space-separated
 words.  If so, the first word may be a CHD name, an archive file name,
 or a library
-\ifoa
+%\ifoa
 name (including OpenAccess when available).
-\else
-name.
-\fi
+%\else
+%name.
+%\fi
 
 The interpretation is similar to the {\cb new} selection in the {\cb
 Open} command in the {\cb File Menu}.  In the case of two words, the
@@ -12595,7 +12595,7 @@ In electrical mode, the function returns 0 and does nothing.
 This sets the default parameterized cell (pcell) parameters used when
 instantiating the pcell indicated by the {\it libname\/}/{\it
 cell\/}/{\it view\/}.
-\ifoa
+%\ifoa
 If {\it library} is not given as a scalar 0, it is the name of the
 OpenAccess library containing the pcell super-master, whose name is
 given in the {\it cell} argument.  The {\it view} argument can be
@@ -12603,10 +12603,10 @@ passed a scalar 0 to indicate that the OpenAccess view name is ``{\vt
 layout}'', or the actual view name can be passed if different.  For
 {\Xic} native pcells not stored in OpenAccess, the library and view
 should both be 0 (zero).
-\else
-The {\it library} and {\it view} arguments passed to this function
-should always be 0 (zero).
-\fi
+%\else
+%The {\it library} and {\it view} arguments passed to this function
+%should always be 0 (zero).
+%\fi
 
 The {\it params} argument is a string providing the parameter values
 in the format of the {\et pc\_params} property as applied to
