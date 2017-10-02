@@ -177,12 +177,6 @@ namespace {
 // program.
 #define FILETOOL "filetool.exe"
 
-// Tell the msw interface that we're Generation 4.
-const char *msw::MSWpkgSuffix = "-4";
-
-// in debug.c
-extern "C" { void SetupStackDump(TCHAR*); }
-
 namespace {
     bool pause = false;
     const char *pausemsg = "Press any key to exit...\n";
