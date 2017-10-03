@@ -10,7 +10,7 @@ login=stevew
 srcloc=/home/$login/src/xt
 
 # Help files go to $help_destdir/$prog/help
-help_destdir=/home/webadmin/wrcad.com/upload/helplib
+help_destdir=/home/webadmin/wrcad.com/html/helplib
 
 # Release notes go here.
 docs_destdir=/home/webadmin/wrcad.com/html/xictools/docs

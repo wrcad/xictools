@@ -144,25 +144,25 @@ the {\et subc\_catchar} variable is set to ``{\vt :}'' (colon).  This
 sets the subcircuit expansion method to match JSPICE3 and SPICE3.}
 \end{enumerate}
 
-\ifxtlserv
-\index{command line options!-l}
-\item{\vt -l} {\it license\_server\/}[{\vt :}{\it port\/}]\\
-This option provides the host name of a machine running the license
-server, and optionally the port number in use by the server.  The port
-number is required if for some reason the license server is using a
-non-default port.
-
-Below is the logic hierarchy for setting the license server host, each
-method will override those listed lower.  See the documentation for
-the {\vt xtlserv} (license server) program for more information.
-\begin{quote}
-{\vt -l} {\it serverhost}[:{\it port\/}]\\
-{\et XTLSERVER} in environment\\
-{\vt license.host} file\\
-{\vt xtlserver} in {\vt /etc/hosts}\\
-name of local machine
-\end{quote}
-\fi
+%\ifxtlserv
+%\index{command line options!-l}
+%\item{\vt -l} {\it license\_server\/}[{\vt :}{\it port\/}]\\
+%This option provides the host name of a machine running the license
+%server, and optionally the port number in use by the server.  The port
+%number is required if for some reason the license server is using a
+%non-default port.
+%
+%Below is the logic hierarchy for setting the license server host, each
+%method will override those listed lower.  See the documentation for
+%the {\vt xtlserv} (license server) program for more information.
+%\begin{quote}
+%{\vt -l} {\it serverhost}[:{\it port\/}]\\
+%{\et XTLSERVER} in environment\\
+%{\vt license.host} file\\
+%{\vt xtlserver} in {\vt /etc/hosts}\\
+%name of local machine
+%\end{quote}
+%\fi
 
 \index{command line options!-m}
 \item{\vt -m} {\it path}\\
@@ -403,54 +403,54 @@ path except for the file name must exist.  If there is a conflict with
 an existing entity, an integer suffix will be added to make the name
 unique.  In Windows, any path given is stripped and ignored.
 
-\ifxtlserv
-\index{environment variables!XT\_AUTH\_MODE}
-\item{\et XT\_AUTH\_MODE}\\
-By default, Unix/Linux versions of {\Xic} and {\WRspice} use
-authorization provided by an external license server, possibly hosted
-on a different machine.  On the other hand, the Windows versions and
-{\XicII}/{\Xiv} use built-in authorization.  Both the external
-license server and the programs not using the license server make use
-of a file named ``{\vt LICENSE}'' provided by Whiteley Research, Inc.,
-which provides authorization to run on the host computer.
-
-It is possible to run {\Xic} and {\WRspice} without a license server,
-and to run {\XicII}/{\Xiv} from a license server.  The status is set
-with the environment variable {\et XT\_AUTH\_MODE}.  This variable has
-meaning if set to one of the keywords ``{\vt Server}'' or ``{\vt
-Local}''
-
-If set to ``{\vt Server}'', {\XicII} and {\Xiv} will validate through
-a license server the same way as {\Xic} and {\WRspice} normally do. 
-If set to ``{\vt Local}'', {\Xic} and {\WRspice} will be
-self-validating the way {\XicII} normally is.
-
-{\Xic} and/or {\WRspice} users on a single licensed workstation may
-prefer to set the environment variable in their shell startup file and
-not use the external license server.
-
-When the programs look for the LICENSE file in ``{\vt Local}'' mode,
-if the file is not found in the startup or license directories, the
-programs will look in the home and current directories, in that order,
-unless {\et XT\_LICENSE\_PATH} is also set.
-
-\index{environment variables!XT\_LICENSE\_PATH}
-\index{XT\_LICENSE\_PATH environment variable}
-\item{\et XT\_LICENSE\_PATH}\\
-When using local validation (i.e., not using the license server) {\et
-XT\_LICENSE\_PATH} can be set to the full path to the license file. 
-Only this file will be used -- the regular search is suppressed.
-
-\index{environment variables!XTLSERVER}
-\index{XTLSERVER environment variable}
-\item{\et XTLSERVER}\\
-This provides the host name of the host running the license server
-needed to validate the application.  It is in a format understandable
-to the local name server.  The host name can optionally be suffixed by
-``{\vt :}{\it port\/}'', where {\it port} is the port number in use by
-the server.  There should be no space around the colon when using this
-form.
-\fi
+%\ifxtlserv
+%\index{environment variables!XT\_AUTH\_MODE}
+%\item{\et XT\_AUTH\_MODE}\\
+%By default, Unix/Linux versions of {\Xic} and {\WRspice} use
+%authorization provided by an external license server, possibly hosted
+%on a different machine.  On the other hand, the Windows versions and
+%{\XicII}/{\Xiv} use built-in authorization.  Both the external
+%license server and the programs not using the license server make use
+%of a file named ``{\vt LICENSE}'' provided by Whiteley Research, Inc.,
+%which provides authorization to run on the host computer.
+%
+%It is possible to run {\Xic} and {\WRspice} without a license server,
+%and to run {\XicII}/{\Xiv} from a license server.  The status is set
+%with the environment variable {\et XT\_AUTH\_MODE}.  This variable has
+%meaning if set to one of the keywords ``{\vt Server}'' or ``{\vt
+%Local}''
+%
+%If set to ``{\vt Server}'', {\XicII} and {\Xiv} will validate through
+%a license server the same way as {\Xic} and {\WRspice} normally do. 
+%If set to ``{\vt Local}'', {\Xic} and {\WRspice} will be
+%self-validating the way {\XicII} normally is.
+%
+%{\Xic} and/or {\WRspice} users on a single licensed workstation may
+%prefer to set the environment variable in their shell startup file and
+%not use the external license server.
+%
+%When the programs look for the LICENSE file in ``{\vt Local}'' mode,
+%if the file is not found in the startup or license directories, the
+%programs will look in the home and current directories, in that order,
+%unless {\et XT\_LICENSE\_PATH} is also set.
+%
+%\index{environment variables!XT\_LICENSE\_PATH}
+%\index{XT\_LICENSE\_PATH environment variable}
+%\item{\et XT\_LICENSE\_PATH}\\
+%When using local validation (i.e., not using the license server) {\et
+%XT\_LICENSE\_PATH} can be set to the full path to the license file. 
+%Only this file will be used -- the regular search is suppressed.
+%
+%\index{environment variables!XTLSERVER}
+%\index{XTLSERVER environment variable}
+%\item{\et XTLSERVER}\\
+%This provides the host name of the host running the license server
+%needed to validate the application.  It is in a format understandable
+%to the local name server.  The host name can optionally be suffixed by
+%``{\vt :}{\it port\/}'', where {\it port} is the port number in use by
+%the server.  There should be no space around the colon when using this
+%form.
+%\fi
 
 \index{environment variables!XT\_PREFIX}
 \index{XT\_PREFIX environment variable}
@@ -833,19 +833,19 @@ but this can be changed by setting the {\et SPICE\_LIB\_DIR}
 environment variable to another location.
 
 \begin{description}
-\ifxtlserv
-\index{license.host file}
-\item{{\vt license.host} file}\\
-When using a license server on a remote machine, it is necessary to
-provide the name of this machine or {\WRspice} can not run.  One way
-to do this is to create a {\vt license.host} file in the startup
-directory, e.g. {\vt /usr/local/xictools/wrspice/startup}.  The
-{\vt license.host} file consists of a single line of text, giving the
-host name of the license server machine.  The host name can optionally
-be suffixed with ``{\vt :}{\it port\/}'', where {\it port} is the port
-number in use by the license server.  This is required if for some
-reason the license server is not running on the default port.
-\fi
+%\ifxtlserv
+%\index{license.host file}
+%\item{{\vt license.host} file}\\
+%When using a license server on a remote machine, it is necessary to
+%provide the name of this machine or {\WRspice} can not run.  One way
+%to do this is to create a {\vt license.host} file in the startup
+%directory, e.g. {\vt /usr/local/xictools/wrspice/startup}.  The
+%{\vt license.host} file consists of a single line of text, giving the
+%host name of the license server machine.  The host name can optionally
+%be suffixed with ``{\vt :}{\it port\/}'', where {\it port} is the port
+%number in use by the license server.  This is required if for some
+%reason the license server is not running on the default port.
+%\fi
 
 \index{.wrspiceinit file}
 \item{{\vt .wrspiceinit} file}\\

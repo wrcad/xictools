@@ -106,8 +106,12 @@ for p in $progs; do
 
     if [ $prg = xic ]; then
         get_man "xic" $vrs
+        echo Updating online xic manual
+        ./xupd
     elif [ $prg = wrspice ]; then
         get_man "wrs" $vrs
+        echo Updating online wrspice manual
+        ./wupd
     else
         echo skipping unknown program $prg
     fi

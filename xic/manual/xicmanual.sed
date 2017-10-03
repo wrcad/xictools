@@ -97,7 +97,7 @@ With OpenAccess Support\\
 %No OpenAccess\\
 %\fi
 \vspace{.75in}
-{\large\sf Whiteley Research Incorporated}\\456 Flora Vista Avenue\\
+{\large\sf Whiteley Research Incorporated}\\
   Sunnyvale, CA 94086\\
 \vspace{.5in}
 {\large Release @RELEASE@\\
@@ -105,14 +105,15 @@ With OpenAccess Support\\
 \end{center}
 \vspace{.75in}
 \begin{quote}
-\copyright{} Whiteley Research Incorporated, 2006.
+\copyright{} Whiteley Research Incorporated, 2017.
 
 {\Xic} is part of the {\XicTools} software package for integrated
-circuit design.  {\Xic} was authored by S.~R.  Whiteley, with help
-from various public domain software libraries.  Technical support for
-registered users of {\Xic} and other {\XicTools} software is available
-via electronic mail at {\tt xic@wrcad.com}, and by telephone at
-(408) 735-8973.
+circuit design.  {\Xic} was primarily authored by S.~R.  Whiteley,
+Whiteley Research inc., Sunnyvale CA USA.
+
+{\Xic}, and the entire {\XicTools} suite, including this manual, is
+provided as open-source under the Apache-2.0 license, as much as
+applicable per individual tools, some of which are GNU-licensed.
 
 {\Xic} and subsidiary programs and utilities are offered as-is, and the
 suitability of these programs for any purpose or application must be

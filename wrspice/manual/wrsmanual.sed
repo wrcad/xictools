@@ -33,10 +33,13 @@
 \newcommand{\kbkey}{\sf\bfseries}
 \setlongtables
 
+%
+% Unfortunately, lates2html doesn't handle conditionals, so these are
+% hard coded and explicitly commented, for now.
+%
 % Whether or not to include license server references.
-\newif\ifxtlserv
-%\xtlservtrue
-\xtlservfalse
+%\newif\ifxtlserv
+%\xtlservfalse
 
 % Have to modify the TOC number spacing.  The following lines do this
 % without tocloft, but cause trouble in latex2html
@@ -69,7 +72,7 @@
 \vspace*{.5in}
 {\huge {\WRspice} Reference Manual}\\
 \vspace{.5in}
-{\large\sf Whiteley Research Incorporated}\\456 Flora Vista Avenue\\
+{\large\sf Whiteley Research Incorporated}\\
   Sunnyvale, CA 94086\\
 \vspace{.5in}
 {\large Release @RELEASE@\\
@@ -77,7 +80,7 @@
 \end{center}
 \vspace{.5in}
 \begin{quote}
-\copyright{} Whiteley Research Incorporated, 2009.
+\copyright{} Whiteley Research Incorporated, 2017.
 
 % commands, menu entries, and pop-up names: {\cb }
 % variables, vectors: {\et }
@@ -90,9 +93,10 @@ Berkeley SPICE3 program.  This manual was prepared by Whiteley
 Research Inc., acknowledging the material originally authored by the
 developers of SPICE3 in the Electrical Engineering and Computer
 Sciences Department of the University of California, Berkeley. 
-Technical support for registered users of {\WRspice} and other
-{\XicTools} software is available via electronic mail at {\tt
-support@wrcad.com}, and by telephone at (408) 735-8973.
+
+{\WRspice}, and the entire {\XicTools} suite, including this manual,
+is provided as open-source under the Apache-2.0 license, as much as
+applicable per individual tools, some of which are GNU-licensed.
 
 {\WRspice} and subsidiary programs and utilities are offered as-is,
 and the suitability of these programs for any purpose or application
