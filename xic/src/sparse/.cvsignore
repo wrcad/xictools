@@ -1,9 +1,0 @@
-Makefile
-semantic.cache
-spalloc.cc
-spbuild.cc
-spconfig.h
-spfactor.cc
-spmacros.h
-spsolve.cc
-sputils.cc
