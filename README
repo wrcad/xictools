@@ -1,5 +1,5 @@
                   XicTools Open-Source  Release
-                         July 31, 2017
+                         October 1, 2017
 
 Whiteley Research is pleased to offer the XicTools programs:  Xic
 (graphical editor) and WRspice (circuit simulator) as open-source. 
@@ -32,8 +32,9 @@ Much of it originalted from places like the University of California,
 Berkeley (e.g., WRspice is a direct descendent of Berleley Spice). 
 There are bits and pieces that come from other universities.  The
 university licenses are also very unrestrictive and likely highly
-compatible with the Apache-2.0 license (remember that your taxes
-almost certainly paid for the software developed at the university).
+compatible with the Apache-2.0 license (remember that if you paid US
+taxes, you almost certainly paid for the software developed at the
+university).
 
 At least one accessory (the help viewer) is tainted by the GNU library
 license.  So, at the time of this initial release, there may be some
@@ -60,6 +61,20 @@ wet kiss to the GNU folks who made open-source toxic for so long.
 
 The distribution consists of several semi-independent programs and
 libraries, rooted in subdirectories.  These are described below.
+
+adms
+This is a wrapper around the adms tool for creating run-time loadable
+device models for WRspice.
+
+fastcap
+This is a customized version of the venerable capacitance extraction
+program from MIT.  It is called from within Xic for capacitance
+extraction of layouts, and can be used stand-alone as well.
+
+fasthenry
+This is a customized version of the venerable inductance extraction
+program from MIT.  It is called from within Xic for inductance
+extraction of layouts, and can be used stand-alone as well.
 
 KLU
 This is simply a wrapper around the SuiteSparse sparse matrix package
@@ -88,13 +103,12 @@ stand-alone tool similar to Qrouter, or run-time loaded into Xic as
 a plug-in, in which case its functionality is available within Xic.
 This integration is at a very early development stage.
 
-secure
+secure (aka xtlserv)
 This package provides the license server, client-side code, and
 license-generating utilities for the licensing system used with the
 commercial version of Xic and WRspice.  This, of course, is no longer
-used, by simply hacking the main validation entry to always return a
-validated status.  This package is retained, for now at least, in the
-chance that it may be of value to someone.
+used.  This package is retained, for now at least, in the chance that
+it may be of value to someone.
 
 vl
 This is a Verilog simulator, which is integrated with WRspice but can
@@ -116,20 +130,25 @@ the other packages.
 2.  Dependencies
 
 wrspice
+  mozy (optional)
   xt_base
-  secure
   KLU
   vl
 
 xic
+  mozy (optional)
   xt_base
-  secure
   mrouter
 
 mozy
   xt_base
 
 vl
+  xt_base
+
+adms
+fastcap
+fasthenry
   xt_base
 
 
@@ -155,10 +174,9 @@ encounter missing headers, etc., these should be installed on your
 system from your operating system source repositories.  You of course
 need the software development tools installed.
 
-3.2.  Procedure
+3.2.  Build Procedure for Linux
 
 The procedure is as follows.
-
 
     1.  Copy Makefile.sample into Makefile, edit Makefile to set the
         configuration flags, as described in the Makefile.
@@ -167,18 +185,49 @@ The procedure is as follows.
     3.  "make all" will build all of the programs.
 
 The intended installation procedure is to first build a binary package
-(RPM) for each program, then install the package on your system using
-the wr_install script.  The Makefiles will actually prevent running
-"make install" to the default location under /usr/local.  However, you
-can modify the Makefiles to allow this, and skip the packaging step
-entirely if you wish.
+(e.g., RPM) for each program, then install the packages on your system
+using the wr_install script.  The Makefiles will actually prevent
+running "make install" to the default location under /usr/local. 
+However, you can modify the Makefiles to allow this, and skip the
+packaging step entirely if you wish.  However, if you don't install
+from the packages, you won't have the "Safe Install" feature, see
+http://wrcad.com for info about the packages.  Basically, if you are a
+"user", you probably want to install with packages.  If you are a
+"developer", you may wish to enable direct installation.  If you are
+building on a non-rpm Linux, the packaging system is not yet
+supported, so direct installation is your sole option.
 
-    Packages are built (on a good day) with "make package" from the
-    subdirectories which contain a "packages" sub-subdirectory.
-    "make packages" from the top level will build all packages.
+    4. "make packages" will create all of the package files.
+       Packages are left in xt/xt_base/packages/pkgfiles.
 
-    Packages are left in xt/xt_base/packages/pkgfiles.
+    5. cd xt_base/packages/pkgfiles; ./install all
+       This will install the programs from the package files.
 
-    It is recommended that the wr_install script be used to install the
-    packages when possible, as it takes care of some settings.
+
+3.3  Windows
+
+This is set up for a hybrid build environment consisting ov Cygwin
+(www.cygwin.org, I use 64-bit version), win-builds-1.5
+(win-builds.org, presently only the 32-bit version).  Also used is the
+inno-setup 5.5.9 packager (http://www.jrsoftware.org/).  Cygwin
+provides bash, make, and similar.  win-builds provides the compiler
+tool chain, and the gtk libraries and prerequisites.
+
+There is provision for creating a "gtk2-bundle" from win-builds, which
+is deployed along with the packages.  However, you don't need this for
+a local installation,
+
+I'll add detail here in the future.
+
+
+3.4  OS X
+
+You will need xcode, the x-Quartz X-Windows server, and the MacPorts
+gtk2 libraries.
+
+There is provision for creating a "gtk2-bundle" from the MacPorts, which
+is deployed with packages.  Again, a local user can likely skip this
+and link directly.
+
+I'll add detail here in the future.
 
