@@ -46,10 +46,25 @@
 extern FILE *yyin;
 extern int YYTrace;
 
+#ifndef VL_VERSION
+#define VL_VERSION "unknown"
+#endif
+#ifndef VL_OSNAME
+#define VL_OSNAME "unknown"
+#endif
+#ifndef VL_ARCH
+#define VL_ARCH "unknown"
+#endif
+
 
 int
 main(int argc, char **argv)
 {
+    if (argc == 2 && !strcmp(argv[1], "--v")) {
+        cout << VL_VERSION << " " << VL_OSNAME << " " << VL_ARCH << "\n";
+        exit(0);
+    }
+
     cout << '\n' << vl_version() << "\n\n";
     if (argc == 1) {
         cout << "Usage: vl [-v] [-d#] [-p] [-tmin | -tmax] file [files]\n";
@@ -67,6 +82,7 @@ main(int argc, char **argv)
         cout << "             128  print yacc parser trace\n";
         cout << "  -tmin    use minimum delays\n";
         cout << "  -tmax    use maximum delays\n";
+        cout << "  --v      print version osname arch and exit\n";
 
         return (0);
     }

@@ -9,7 +9,7 @@ LOCATION = vl
 # -DHAVE_TIMES          | library has times()
 # -DHAVE_VSNPRINTF      | library has vsnprintf()
 
-VERSION = `./version vl`
+VERSION = `./version`
 
 prefix = @prefix@
 CXX = @CXX@
@@ -19,6 +19,7 @@ CFLAGS = @CFLAGS@ @VL_DEFS@ @UFLAGS@
 YACC = @YACC@
 LEX = @LEX@
 OSNAME = @OSNAME@
+ARCH = @ARCH@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ @VL_DEFS@
 INSTALL = @INSTALL@
 STDCLIB = @STDCLIB@
@@ -57,7 +58,8 @@ $(LIB_TARGET): $(COBJS)
 	$(RANLIB) $(LIB_TARGET)
 
 .cc.o:
-	$(CXX) -c $(CFLAGS) $(INCLUDE) -DVL_VERSION=\"$(VERSION)\" $*.cc
+	$(CXX) -c $(CFLAGS) $(INCLUDE) -DVL_VERSION=\"$(VERSION)\" \
+  -DVL_OSNAME=\"$(OSNAME)\" -DVL_ARCH=\"$(ARCH)\" $*.cc
 
 $(BASE)/lib/miscutil.a::
 	if [ -d $(BASE)/miscutil ]; then \
