@@ -14,6 +14,8 @@ DEPEND_PROG = @DEPEND_PROG@ @CFLAGS@ @NEEDINT64@
 AR = @AR@
 RANLIB = @RANLIB@
 EXESUFFIX = @EXESUFFIX@
+OSNAME = @OSNAME@
+ARCH = @ARCH@
 FILTER = @FILTER@
 PIC_OPT = @PIC_OPT@
 SOEXT = @SOEXT@
@@ -60,7 +62,9 @@ $(BASE)/lib/miscutil.a::
 mrouter: $(MR_VERS_H) ../lddb/liblddb.a main.cc $(CCOBJS) \
   $(BASE)/lib/miscutil.a
 	@echo Linking mrouter
-	@$(CXX) $(CFLAGS) $(INCLUDE) -o mrouter main.cc $(CCOBJS) \
+	@$(CXX) $(CFLAGS) -DVERSION_STR=\"$(MR_VERSION)\" \
+  -DOSNAME_STR=\"$(OSNAME)\" -DARCH_STR=\"$(ARCH)\" \
+  $(INCLUDE) -o mrouter main.cc $(CCOBJS) \
   -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef $(BASE)/lib/miscutil.a
 
 $(MR_VERS_H):

@@ -47,6 +47,16 @@
 #include <unistd.h>
 #include "mrouter.h"
 
+#ifndef VERSION_STR
+#define VERSION_STR "unknown"
+#endif
+#ifndef OSNAME_STR
+#define OSNAME_STR "unknown"
+#endif
+#ifndef ARCH_STR
+#define ARCH_STR "unknown"
+#endif
+
 
 // 
 // mrouter: Stand-alone router program.
@@ -89,6 +99,7 @@ namespace {
             "\t-f \t\t\tForce routable.\n"
             "\t-k <int>\t\tSet number of tries.\n"
             "\t-q <design_name>\tImpersonate qrouter.\n"
+            "\t--v \t\t\tPrint version osname arch and exit.\n"
             "\n";
         printf(msg, MR_VERSION);
     }
@@ -105,6 +116,11 @@ main(int argc, char *argv[])
     const char *infofile = 0;
     const char *design_name = 0;
     int iscale = 1;
+
+    if (argc == 2 && !strcmp(argv[1], "--v")) {
+        printf("%s %s %s\n", VERSION_STR, OSNAME_STR, ARCH_STR);
+        exit (0);
+    }
 
     for (int i = 1; i < argc; i++) {
         if (*argv[i] == '-') {
