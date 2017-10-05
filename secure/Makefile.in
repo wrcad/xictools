@@ -3,16 +3,15 @@ LOCATION = secure
 #######################################################################
 
 DATE = @DATE@
-XTLSERV_VERSION = @XTLSERV_VERSION@
 
 prefix = @prefix@
 CXX = @CXX@
 CC = @CC@
 LINKCC = @LINKCC@
-CFLAGS = @CFLAGSG@ @UFLAGS@ -DVERSION=\"$(XTLSERV_VERSION)\"
+CFLAGS = @CFLAGSG@ @UFLAGS@
 LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
 SLIBS = @SLIBS@
-DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DVERSION=\"$(XTLSERV_VERSION)\"
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
 STDCLIB = @STDCLIB@
 AR = @AR@
 RANLIB = @RANLIB@
@@ -21,12 +20,15 @@ FILTER = @FILTER@
 EXESUFFIX = @EXESUFFIX@
 NTNOCONS = @NTNOCONS@
 OSNAME = @OSNAME@
+ARCH = @ARCH@
 TOOLROOT = @TOOLROOT@
 
 INSTALL_BIN = $(INSTALL) -s -c -m 0755
 INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
+
+XTLSERV_VERSION := `./version`
 
 BASE = ../xt_base
 INCLUDE = -I. -I$(BASE)/include
@@ -82,7 +84,10 @@ $(BASE)/lib/miscutil.a::
 
 DARGS = \
   -DPREFIX="\"$(prefix)\"" \
-  -DTOOLS_ROOT="\"$(TOOLROOT)\""
+  -DTOOLS_ROOT="\"$(TOOLROOT)\"" \
+  -DVERSION=\"$(XTLSERV_VERSION)\" \
+  -DOSNAME=\"$(OSNAME)\" \
+  -DARCH=\"$(ARCH)\"
 
 xtlserv.o:
 	$(CXX) $(CFLAGS) $(DARGS) $(INCLUDE) -c $*.cc

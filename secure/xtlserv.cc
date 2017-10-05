@@ -39,7 +39,13 @@
  *========================================================================*/
 
 #ifndef VERSION
-#define VERSION "0.0"
+#define VERSION "0.0.0"
+#endif
+#ifndef OSNAME
+#define OSNAME "unknown"
+#endif
+#ifndef ARCH
+#define ARCH "unknown"
 #endif
 
 //#define DEBUG
@@ -288,6 +294,11 @@ namespace xtlserv {
 int
 main(int argc, char **argv)
 {
+    if (argc == 2 && !strcmp(argv[1], "--v")) {
+        printf("%s %s %s\n", VERSION, OSNAME, ARCH);
+        exit(0);
+    }
+
     using namespace xtlserv;
 #ifdef WIN32
     FreeConsole();

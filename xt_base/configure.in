@@ -45,9 +45,6 @@ fi
 if test -d ../xic; then
     GFX_VERSION=`../xic/version xic`
 fi
-if test -d ../xt_base; then
-    XTLSERV_VERSION=`../secure/version xtlserv`
-fi
 TOOLROOT="xictools"
 AC_SUBST(prefix)
 AC_SUBST(DATE)
@@ -56,7 +53,6 @@ AC_SUBST(DEVLIB_VERSION)
 AC_SUBST(DEVLIB_SHARED_FILE)
 AC_SUBST(DEVLIB_STATIC_FILE)
 AC_SUBST(GFX_VERSION)
-AC_SUBST(XTLSERV_VERSION)
 AC_SUBST(TOOLROOT)
 
 dnl ***
