@@ -1,7 +1,7 @@
 # Process this file with autoconf to produce a configure script.
 
 # AC_INIT(configure)
-AC_INIT([adms_wr],[2.3.6],[stevew@wrcad.com])
+AC_INIT([xictools_adms],[VERSION],[stevew@wrcad.com])
 AC_CONFIG_SRCDIR([adms.xml])
 AC_CONFIG_AUX_DIR([auxconf])
 

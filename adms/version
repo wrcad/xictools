@@ -4,5 +4,10 @@
 # 2.3.6, with an additional trailing index for local revisions.  I.e.,
 # we will have 2.3.60, 2.3.61, ...
 
-echo 2.3.60
+######
+# IMPORTANT:
+# REGENERATE files/configure AFTER CHANGING VERSION NUMBER!
+######
+
+echo 2.3.61
 
