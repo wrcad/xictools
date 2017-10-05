@@ -67,7 +67,7 @@ main(int argc, char **argv)
   extern double ***axes;
 #endif
 
-  /* SRW - XicTools version hack, XT_IDSTRING is sed'ed to a version
+  /* SRW - XicTools version hack, xt_idstring is sed'ed to a version
      string. */
   {
     if (argc == 2 && !strcmp(argv[1], "--v")) {

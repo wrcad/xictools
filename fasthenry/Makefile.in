@@ -21,6 +21,9 @@ FASTHENRY = fasthenry-3.0wr-110915.tar.gz
 
 FASTHENRY_DIR = fasthenry-3.0wr
 
+IDSTR := "`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
+VERS := \"`./version`\"
+
 all: unpack
 	cd $(FASTHENRY_DIR); $(MAKE) all
 
@@ -29,7 +32,14 @@ unpack:
 	    tar xzf $(FASTHENRY); \
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        cd $(FASTHENRY_DIR); ./config mingw; \
-	    fi \
+	    fi; \
+	    rm -f fasthenry-3.0wr/src/fasthenry/induct.c; \
+            sed -e s/XT_IDSTRING/$(IDSTR)/ \
+	      < files/induct.c.sed > fasthenry-3.0wr/src/fasthenry/induct.c; \
+	    sed -e "s/FHVERSION .*$$/FHVERSION $(VERS)/" \
+	      -e "s/FHDATE .*$$/FHDATE \"xictools\"/" \
+	      < fasthenry-3.0wr/src/fasthenry/induct.h > mytmp.h; \
+	    mv -f mytmp.h fasthenry-3.0wr/src/fasthenry/induct.h; \
 	fi
 
 clean:
