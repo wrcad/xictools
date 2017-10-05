@@ -2,8 +2,6 @@
 LOCATION = mozy
 #######################################################################
 
-MOZY_VERSION = 4.2.2
-
 DATE = @DATE@
 
 prefix = @prefix@
@@ -15,6 +13,7 @@ LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
 MSLIBS = @MSLIBS@
 LIBS = @LIBS@ @TOOLKITLIBS@ @EXTRALIBS@
 OSNAME = @OSNAME@
+ARCH = @ARCH@
 GRPREF = @GRPREF@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ -DXICTOOLS
 RANLIB = @RANLIB@
@@ -30,6 +29,8 @@ WINPTHREADFIX = @WINPTHREADFIX@
 
 BASE = ../xt_base
 INCLUDE = -Iinclude -I$(BASE)/include
+
+MOZY_VERSION := `./version`
 
 LOCAL_LIBS = \
   lib/htm.a \
@@ -89,11 +90,13 @@ bin/httpget: bin/httpget.o $(LOCAL_LIBS)
 
 bin/mozy.o: bin/mozy.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
-  -DVERSION_STR=\"$(MOZY_VERSION)\" $(INCLUDE) -c bin/mozy.cc -o bin/mozy.o
+  -DVERSION_STR=\"$(MOZY_VERSION)\" -DOSNAME_STR=\"$(OSNAME)\" \
+  -DARCH_STR=\"$(ARCH)\" $(INCLUDE) -c bin/mozy.cc -o bin/mozy.o
 
 bin/xeditor.o: bin/xeditor.cc
 	$(CXX) $(CFLAGS) -DPREFIX=\"$(prefix)\" \
-  -DVERSION_STR=\"$(ACCS_VERSION)\" $(INCLUDE) -c bin/xeditor.cc -o bin/xeditor.o
+  -DVERSION_STR=\"$(MOZY_VERSION)\" -DOSNAME_STR=\"$(OSNAME)\" \
+  -DARCH_STR=\"$(ARCH)\" $(INCLUDE) -c bin/xeditor.cc -o bin/xeditor.o
 
 .cc.o:
 	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc -o $*.o

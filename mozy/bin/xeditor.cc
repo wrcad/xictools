@@ -70,6 +70,12 @@
 #ifndef VERSION_STR
 #define VERSION_STR "unknown"
 #endif
+#ifndef OSNAME_STR
+#define OSNAME_STR "unknown"
+#endif
+#ifndef ARCH_STR
+#define ARCH_STR "unknown"
+#endif
 
 
 #ifndef HAVE_STRERROR
@@ -104,6 +110,11 @@ namespace {
 int
 main(int argc, char **argv)
 {
+    if (argc == 2 && !strcmp(argv[1], "--v")) {
+        printf("%s %s %s\n", VERSION_STR, OSNAME_STR, ARCH_STR);
+        exit(0);
+    }
+
 #ifdef WIN32
     // The following solves a problem: when running from a cygwin/bash
     // window, pressing Ctrl-C always kills the program.  One way to avoid

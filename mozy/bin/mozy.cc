@@ -81,6 +81,12 @@
 #ifndef VERSION_STR
 #define VERSION_STR "unknown"
 #endif
+#ifndef OSNAME_STR
+#define OSNAME_STR "unknown"
+#endif
+#ifndef ARCH_STR
+#define ARCH_STR "unknown"
+#endif
 
 #ifndef HAVE_STRERROR
 #ifndef SYS_ERRLIST_DEF
@@ -245,6 +251,11 @@ namespace {
 
 int main(int argc, char **argv)
 {
+    if (argc == 2 && !strcmp(argv[1], "--v")) {
+        printf("%s %s %s\n", VERSION_STR, OSNAME_STR, ARCH_STR);
+        exit(0);
+    }
+
     bool do_xic = false;
     bool do_wrs = false;
     for (int i = 1; i < argc; i++) {
