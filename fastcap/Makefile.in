@@ -21,6 +21,9 @@ FASTCAP = fastcap-2.0wr-011517.tar.gz
 
 FASTCAP_DIR = fastcap-2.0wr
 
+IDSTR := "`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
+VERS := \"`./version` (xictools)\"
+
 all: unpack
 	cd $(FASTCAP_DIR); $(MAKE) all
 	cd fc_accs; $(MAKE) all
@@ -30,7 +33,13 @@ unpack:
 	    tar xzf $(FASTCAP); \
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        cd $(FASTCAP_DIR); ./config mingw; \
-	    fi \
+	    fi; \
+	    rm -f fastcap-2.0wr/src/fastcap.c; \
+            sed -e s/XT_IDSTRING/$(IDSTR)/ \
+	      < files/fastcap.c.sed > fastcap-2.0wr/src/fastcap.c; \
+	    sed -e "s/VERSION_STRING .*$$/VERSION_STRING $(VERS)/" \
+	      < fastcap-2.0wr/src/mulGlobal.h > mytmp.h; \
+	    mv -f mytmp.h fastcap-2.0wr/src/mulGlobal.h; \
 	fi
 
 clean:
