@@ -120,7 +120,7 @@ The WRspice program is a SPICE-derived circuit simulator.
 xic
 The Xic program is a graphical editor, used for displaying and editing
 layouts and schematics.  It provides DRC, extraction, and a lot of
-uther  capability.
+other  capability.
 
 xt_base
 This contains base libraries and configuration scripts for use with
@@ -206,7 +206,7 @@ supported, so direct installation is your sole option.
 
 3.3  Windows
 
-This is set up for a hybrid build environment consisting ov Cygwin
+This is set up for a hybrid build environment consisting of Cygwin
 (www.cygwin.org, I use 64-bit version), win-builds-1.5
 (win-builds.org, presently only the 32-bit version).  Also used is the
 inno-setup 5.5.9 packager (http://www.jrsoftware.org/).  Cygwin
@@ -222,7 +222,7 @@ I'll add detail here in the future.
 
 3.4  OS X
 
-You will need xcode, the x-Quartz X-Windows server, and the MacPorts
+You will need xcode, the X-Quartz X-Windows server, and the MacPorts
 gtk2 libraries.
 
 There is provision for creating a "gtk2-bundle" from the MacPorts, which
