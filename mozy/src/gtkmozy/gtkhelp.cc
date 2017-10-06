@@ -1076,17 +1076,20 @@ GTKhelpPopup::reuse_display()
     if (label)
         gtk_label_set_text(GTK_LABEL(label), h_cur_topic->keyword());
 
-    char *t0 = 0;
-    t = h_cur_topic->title();
-    if (!t || !*t)
-        t = t0 = h_viewer->get_title();
-    if (!t || !*t)
-        t = "Whiteley Research Inc.";
-    char buf[80];
-    snprintf(buf, 80, "%s -- %s", HLP()->get_name(), t);
-    delete [] t0;
-    strip_html(buf);
-    gtk_window_set_title(GTK_WINDOW(wb_shell), buf);
+    if (GTK_IS_WINDOW(wb_shell)) {
+        // Can be a frame, no title in that case.
+        char *t0 = 0;
+        t = h_cur_topic->title();
+        if (!t || !*t)
+            t = t0 = h_viewer->get_title();
+        if (!t || !*t)
+            t = "Whiteley Research Inc.";
+        char buf[80];
+        snprintf(buf, 80, "%s -- %s", HLP()->get_name(), t);
+        delete [] t0;
+        strip_html(buf);
+        gtk_window_set_title(GTK_WINDOW(wb_shell), buf);
+    }
 
     HLP()->context()->imageLoopStart();
 }
@@ -1652,7 +1655,8 @@ GTKhelpPopup::frame_signal_handler(htmFrameCallbackStruct *cbs)
             else if (cbs->frames[i].scroll_type == FRAME_SCROLL_YES)
                 h_frame_array[i]->h_viewer->set_scroll_policy(
                     GTK_POLICY_ALWAYS, GTK_POLICY_ALWAYS);
-
+        }
+        for (int i = 0; i < h_frame_array_size; i++) {
             HLPtopic *newtop;
             char hanchor[128];
             HLP()->context()->resolveKeyword(cbs->frames[i].src, &newtop,
@@ -1683,6 +1687,7 @@ GTKhelpPopup::frame_signal_handler(htmFrameCallbackStruct *cbs)
     }
     else if (cbs->reason == htm::HTM_FRAMERESIZE) {
         for (int i = 0; i < h_frame_array_size; i++) {
+
             gtk_widget_set_usize(h_frame_array[i]->Shell(),
                 cbs->frames[i].width, cbs->frames[i].height);
             gtk_fixed_move(GTK_FIXED(fixed), h_frame_array[i]->Shell(),
