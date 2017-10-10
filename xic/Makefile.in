@@ -63,8 +63,7 @@ endif
 
 ifeq ($(USEMOZY), yes)
 MOZY = ../mozy
-MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/gtkmozy.a \
-  $(MOZY)/lib/update_itf.a
+MOZYLIBS1 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/gtkmozy.a
 MOZYLIBS2 = $(MOZY)/lib/htm.a $(MOZY)/lib/help.a $(MOZY)/lib/httpget.a \
   $(MOZY)/lib/imsave.a
 endif
@@ -133,7 +132,7 @@ plugins::
 # for the binary.
 
 ifeq ($(USEMOZY), yes)
-FT_MOZYLIBS = $(MOZY)/lib/httpget.a $(MOZY)/lib/update_itf.a
+FT_MOZYLIBS = $(MOZY)/lib/httpget.a
 endif
 
 FT_LIBS = \
@@ -221,11 +220,6 @@ $(MOZY)/lib/httpget.a::
 $(MOZY)/lib/imsave.a::
 	if [ -d $(MOZY)/src/imsave ] ; then \
 	    cd $(MOZY)/src/imsave; $(MAKE); \
-	fi
-
-$(MOZY)/lib/update_itf.a::
-	if [ -d $(MOZY)/src/upd ]; then \
-	    cd $(MOZY)/src/upd; $(MAKE); \
 	fi
 endif
 

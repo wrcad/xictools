@@ -11,6 +11,8 @@ DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@
 AR = @AR@
 RANLIB = @RANLIB@
 FILTER = @FILTER@
+OSNAME = @OSNAME@
+ARCH = @ARCH@
 
 BASE = ../../../xt_base
 INCLUDE = -I../../include -I../../include/help -I$(BASE)/include
@@ -28,6 +30,7 @@ CCFILES = \
     help_cache.cc \
     help_context.cc \
     help_images.cc \
+    help_pkgs.cc \
     help_read.cc \
     help_startup.cc \
     help_topic.cc
@@ -40,7 +43,8 @@ $(LIB_TARGET): $(CCOBJS)
 	$(RANLIB) $(LIB_TARGET)
 
 .cc.o:
-	$(CXX) -c $(CFLAGS) $(INCLUDE) -o $@ $<
+	$(CXX) -c $(CFLAGS) -DOSNAME=\"$(OSNAME)\" -DARCH=\"$(ARCH)\" \
+ $(INCLUDE) -o $@ $<
 
 clean:
 	-@rm -f $(CCOBJS) $(LIB_TARGET)

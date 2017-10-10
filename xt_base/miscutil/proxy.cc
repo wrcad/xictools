@@ -38,84 +38,117 @@
  $Id:$
  *========================================================================*/
 
-//
-// Class for downloading/installing new releases.
-//
+#include "proxy.h"
+#include "pathlist.h"
+#include "filestat.h"
 
-#ifndef UPDATE_ITF_H
-#define UPDATE_ITF_H
 
-// The application must subclass this and pass it to the UpdIf
-// constructor.
+#define PXFILE  ".wrproxy"
+
+// Return the first line of the $HOME/.wrproxy file if found.
 //
-struct updif_t
+char *
+proxy::get_proxy()
 {
-    virtual ~updif_t() { }
-    virtual const char *HomeDir() const = 0;
-    virtual const char *Product() const = 0;
-    virtual const char *VersionString() const = 0;
-    virtual const char *OSname() const = 0;
-    virtual const char *Arch() const = 0;
-    virtual const char *DistSuffix() const = 0;
-    virtual const char *Prefix() const = 0;
-};
+    char *home = pathlist::get_home("XIC_START_DIR");
+    if (!home)
+        return (0);
 
-// Struct for parsing/composing version string.  The version string is
-// in the form (all ints) generation.major.minor.
+    char *pwpath = pathlist::mk_path(home, PXFILE);
+    delete [] home;
+
+    FILE *fp = fopen(pwpath, "r");
+    delete [] pwpath;
+    if (fp) {
+        char buf[256];
+        const char *s = fgets(buf, 256, fp);
+        fclose(fp);
+        return (lstring::getqtok(&s));
+    }
+    return (0);
+}
+
+
+// Static function.
+// Write a $HOME/.wrproxy file.  The addr may already have a :port
+// field, in which case port should be null.  The port will be parsed
+// as an integer and if valid added to the addr following a colon.
 //
-struct release_t
+const char *
+proxy::set_proxy(const char *addr, const char *port)
 {
-    release_t(const char*);
-    char *string() const;
+    int p = 0;
+    if (port && *port) {
+        int tmp;
+        if (sscanf(port, "%d", &tmp) == 1 && tmp > 0)
+            p = tmp;
+        else
+            return ("bad port number");
+    }
+    char *a = lstring::gettok(&addr);
+    if (!a)
+        return ("bad host address");
 
-    bool operator==(const release_t&) const;
-    bool operator<(const release_t&) const;
+    char *home = pathlist::get_home("XIC_START_DIR");
+    if (!home) {
+        delete [] a;
+        return ("can't determine home directory");
+    }
 
-    int generation;
-    int major;
-    int minor;
-};
+    char *pwpath = pathlist::mk_path(home, PXFILE);
+    delete [] home;
 
-// The interface.
+    FILE *fp = fopen(pwpath, "w");
+    delete [] pwpath;
+    if (fp) {
+        if (p > 0)
+            fprintf(fp, "http://%s:%d\n", a, p);
+        else
+            fprintf(fp, "http://%s\n", a);
+        delete [] a;
+        fclose (fp);
+        return (0);
+    }
+    delete [] a;
+    return ("can't open " PXFILE " file for writing");
+}
+
+
+// Move the .wrproxy file according to the token:
+//    "-"     .wrproxy -> .wrproxy.bak
+//    "-abc"  .wrprozy -> .wrproxy.abc
+//    "+"     .wrproxy.bak -> .wrproxy
+//    "+abc"  .wrproxy.abc -> .wrproxy.
 //
-class UpdIf
+// Just return 0 if token doesn't start with - or +.
+// Return a message on error.
+//
+const char *
+proxy::move_proxy(const char *token)
 {
-public:
-    UpdIf(const updif_t&);
-    ~UpdIf();
+    int c = *token++;
+    if (c != '-' && c != '+')
+        return (0);
+    char *home = pathlist::get_home(0);
+    if (!home)
+        return ("can't determine home directory.");
+    char *f1 = pathlist::mk_path(home, PXFILE);
+    char *f2;
+    if (!*token)
+        f2 = pathlist::mk_path(home, PXFILE".bak");
+    else {
+        f2 = new char[strlen(f1) + strlen(token) + 2];
+        sprintf(f2, "%s.%s", f1, token);
+    }
 
-    const char *update_pwfile(const char*, const char*);
-    char *program_name();
-    release_t my_version();
-    release_t distrib_version(const char* = 0, char** = 0, char** = 0,
-        char ** = 0, char** = 0);
-    char *distrib_filename(const release_t&, const char* = 0, const char* = 0,
-        const char* = 0);
-    char *download(const char*, const char* = 0, const char* = 0, char** = 0,
-        bool(*)(void*, const char*) = 0);
-    int install(const char*, const char*, const char*, const char* = 0,
-        const char* = 0, char** = 0);
-
-    static char *message(const char*);
-    static bool new_release(const char*, const char*);
-    static char *get_proxy();
-    static const char *set_proxy(const char*, const char*);
-    static const char *move_proxy(const char*);
-
-    const char *username() { return (uif_user); }
-    const char *password() { return (uif_password); }
-
-private:
-    char *uif_user;
-    char *uif_password;
-    char *uif_home;
-    char *uif_product;
-    char *uif_version;
-    char *uif_osname;
-    char *uif_arch;
-    char *uif_dist_suffix;
-    char *uif_prefix;
-};
-
-#endif
+    bool ret;
+    if (c == '-')
+        ret = filestat::move_file_local(f1, f2);
+    else
+        ret = filestat::move_file_local(f2, f1);
+    delete [] home;
+    delete [] f1;
+    delete [] f2;
+    return (ret ? 0 : filestat::error_msg());
+}
 

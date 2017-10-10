@@ -38,63 +38,13 @@
  $Id:$
  *========================================================================*/
 
-#ifndef MISCUTIL_H
-#define MISCUTIL_H
+#ifndef PROXY_H
+#define PROXY_H
 
-
-namespace miscutil
-{
-    // Network interfaces list element.
-    //
-    struct ifc_t
-    {
-        ifc_t(char *n, char *i, char *h)
-            {
-                ifc_next = 0;
-                ifc_name = n;
-                ifc_ip = i;
-                ifc_hw = h;
-            }
-
-        ~ifc_t()
-            {
-                delete [] ifc_name;
-                delete [] ifc_ip;
-                delete [] ifc_hw;
-            }
-
-        static void destroy(const ifc_t *ifc)
-            {
-                while (ifc) {
-                    const ifc_t *ix = ifc;
-                    ifc = ifc->ifc_next;
-                    delete ix;
-                }
-            }
-
-        ifc_t *next()           { return (ifc_next); }
-        void set_next(ifc_t *n) { ifc_next = n; }
-        const char *name()      { return (ifc_name); }
-        const char *ip()        { return (ifc_ip); }
-        void set_ip(char *i)    { delete [] ifc_ip; ifc_ip = i; }
-        const char *hw()        { return (ifc_hw); }
-        void set_hw(char *h)    { delete [] ifc_hw; ifc_hw = h; }
-
-    private:
-        ifc_t *ifc_next;
-        char *ifc_name;
-        char *ifc_ip;
-        char *ifc_hw;
-    };
-
-    const char *dateString();
-    ifc_t *net_if_list();
-    bool send_mail(const char*, const char*, const char*, const char* = 0);
-    int fork_terminal(const char*);
-    bool new_release(const char*, const char*);
-
-#define GDB_OFILE "gdbout"
-    bool dump_backtrace(const char*, const char*, const char*, const void*);
+namespace proxy {
+    char *get_proxy();
+    const char *set_proxy(const char*, const char*);
+    const char *move_proxy(const char*);
 }
 
 #endif

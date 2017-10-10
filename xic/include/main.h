@@ -73,7 +73,6 @@ struct WindowDesc;
 struct MenuBox;
 struct MenuEnt;
 struct sLcb;
-struct updif_t;
 struct cfilter_t;
 class cPyIf;
 class cTclIf;
@@ -622,8 +621,6 @@ public:
     void SetTreeCaptive(bool b)         { xm_tree_captive = b; }
     bool TreeCaptive()                  { return (xm_tree_captive); }
 
-    static const updif_t *UpdateIf()    { return (xm_updif); }
-
 private:
     // funcs_misc*.cc
     void load_funcs_misc1();
@@ -712,9 +709,6 @@ private:
     bool xm_mem_error;          // Memory error occurred.
     bool xm_saving_dev;         // True when saving a device to a file.
     bool xm_tree_captive;       // Tree is showing cell from Cells List.
-
-    // Update interface callbacks
-    static const updif_t *xm_updif;
 
     static cMain *instancePtr;
 };

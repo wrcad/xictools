@@ -45,8 +45,8 @@
 #include "cd_chkintr.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
+#include "miscutil/proxy.h"
 #ifdef HAVE_MOZY
-#include "upd/update_itf.h"
 #include "httpget/transact.h"
 #endif
 #include <ctype.h>
@@ -400,8 +400,8 @@ cFIO::NetOpen(const char *url, char **filename)
     t.set_url(u);
     delete [] u;
 
-    // Set proxy, this is handled by updater.
-    char *pxy = UpdIf::get_proxy();
+    // Set proxy.
+    char *pxy = proxy::get_proxy();
     t.set_proxy(pxy);
     delete [] pxy;
 

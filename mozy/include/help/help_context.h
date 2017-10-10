@@ -356,6 +356,7 @@ public:
         HLPimageList* = 0);
     bool checkLocation(char**, FILE*, ViewerWidget*);
     void download(ViewerWidget*, char*);
+    void download(ViewerWidget*, stringlist*, bool);
 
     // Image Utilities
     bool isImage(const char*);

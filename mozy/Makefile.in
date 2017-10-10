@@ -36,7 +36,6 @@ LOCAL_LIBS = \
   lib/htm.a \
   lib/help.a \
   lib/gtkmozy.a \
-  lib/update_itf.a \
   $(BASE)/lib/gtkinterf.a  \
   $(BASE)/lib/ginterf.a \
   $(BASE)/lib/miscutil.a \
@@ -51,7 +50,7 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-SUBDIRS = src/gtkmozy src/help src/htm src/httpget src/imsave src/upd
+SUBDIRS = src/gtkmozy src/help src/htm src/httpget src/imsave
 
 #######################################################################
 ####### Executable and related targets ################################
@@ -118,9 +117,6 @@ lib/httpget.a::
 
 lib/imsave.a::
 	cd src/imsave; $(MAKE)
-
-lib/update_itf.a::
-	cd src/upd; $(MAKE)
 
 $(BASE)/lib/ginterf.a::
 	cd $(BASE)/ginterf; $(MAKE)

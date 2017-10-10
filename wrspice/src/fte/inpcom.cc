@@ -74,7 +74,7 @@ Authors: 1985 Wayne A. Christopher
 #define USE_GTK
 #endif
 #include "httpget/transact.h"
-#include "upd/update_itf.h"
+#include "miscutil/proxy.h"
 namespace { FILE *net_callback(const char*, char**); }
 #endif
 #endif  // HAVE_MOZY
@@ -655,7 +655,7 @@ namespace {
         delete [] u;
 
         // Set proxy, this is handled by updater.
-        char *pxy = UpdIf::get_proxy();
+        char *pxy = proxy::get_proxy();
         t.set_proxy(pxy);
         delete [] pxy;
 

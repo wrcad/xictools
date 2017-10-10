@@ -82,9 +82,9 @@
 #include "miscutil/timedbg.h"
 #include "miscutil/miscutil.h"
 #include "miscutil/childproc.h"
+#include "miscutil/proxy.h"
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
-#include "upd/update_itf.h"
 #endif
 
 #ifdef WIN32
@@ -4859,333 +4859,25 @@ bangcmds::dumpcds(const char *s)
 // Update Release
 //
 
-// Name of update script file, found in library path.
-#define DST_SCRIPT  "wr_install"
-
-#ifdef HAVE_MOZY
-
-namespace {
-    // Show progress when downloading.
-    //
-    bool http_puts(void*, const char *msg)
-    {
-        dspPkgIf()->CheckForInterrupt();
-        if (XM()->ConfirmAbort("Interrupted.  Abort download? "))
-            return (true);
-        if (!msg)
-            return (false);
-        const char *m = msg;
-        while (isspace(*m))
-            m++;
-        if (!*m)
-            return (false);
-        PL()->ShowPrompt(msg);
-        return (false);
-    }
-
-
-#ifdef WIN32
-    char *msw_exepath;
-
-    // Exit procedure, create a new process to run the install program.
-    //
-    void msw_install()
-    {
-        if (!msw_exepath)
-            return;
-        PROCESS_INFORMATION *info = msw::NewProcess(msw_exepath,
-            DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
-        (void)info;
-    }
-#endif
-}
-
-#endif
-
-
 void
-bangcmds::update(const char *s)
+bangcmds::update(const char*)
 {
-#ifdef HAVE_MOZY
-    if (!XM()->UpdateIf()) {
-        PL()->ShowPrompt("Command not available.");
-        return;
-    }
-    UpdIf udif(*XM()->UpdateIf());
-    if (!udif.username() || !udif.password()) {
-        PL()->ShowPrompt("Use !passwd to create your .wrpasswd file.");
-        return;
-    }
-
-    bool os_given = false;
-    bool force_dl = false;
-    bool no_dl_existing = false;
-    char *osname = 0;
-    char *prefix = 0;
-    char *tok;
-    while ((tok = lstring::gettok(&s)) != 0) {
-        if (!strcmp(tok, "-f")) {
-            delete [] tok;
-            force_dl = true;
-            continue;
-        }
-        if (!strcmp(tok, "-fi")) {
-            // Undocumented - this will skip the download if the file
-            // exists.
-            delete [] tok;
-            force_dl = true;
-            no_dl_existing = true;
-            continue;
-        }
-        if (!strcmp(tok, "-p")) {
-            prefix = lstring::getqtok(&s);
-            if (prefix && lstring::is_rooted(prefix)) {
-                delete [] tok;
-                continue;
-            }
-            PL()->ShowPrompt("Bad or missing prefix.");
-        }
-        else if (!strcmp(tok, "-o")) {
-            osname = lstring::gettok(&s);
-            if (osname && *osname != '-') {
-                delete [] tok;
-                os_given = true;
-                continue;
-            }
-            PL()->ShowPrompt("Bad or missing osname.");
-        }
-        else
-            PL()->ShowPrompt(
-                "Syntax error.  Usage: !update [-f] [-o osname] [-p prefix]");
-        delete [] tok;
-        delete [] osname;
-        delete [] prefix;
-        return;
-    }
-
-    if (!osname)
-        osname = lstring::copy(XM()->OSname());
-    if (!prefix)
-        prefix = lstring::copy(XM()->Prefix());
-
-    GCarray<char*> gc_osname(osname);
-    GCarray<char*> gc_prefix(prefix);
-
-    release_t my_rel = udif.my_version();
-    if (my_rel == release_t(0)) {
-        PL()->ShowPrompt("Internal error: I can't find my version numbers!");
-        return;
-    }
-
-    char *arch;
-    char *suffix;
-    char *subdir;
-    char *errmsg;
-    release_t new_rel = udif.distrib_version(osname, &arch, &suffix, &subdir,
-        &errmsg);
-    if (new_rel == release_t(0)) {
-        PL()->ShowPromptV(
-            "Failed to obtain current release number from server: %s.",
-            errmsg);
-        delete [] errmsg;
-        return;
-    }
-
-    GCarray<char*> gc_arch(arch);
-    GCarray<char*> gc_suffix(suffix);
-    GCarray<char*> gc_subdir(subdir);
-
-    if (!force_dl) {
-        if (!os_given && !(my_rel < new_rel)) {
-            PL()->ShowPromptV("You are running the current release of %s.",
-                XM()->Product());
-            return;
-        }
-    }
-
-    // destination directory
-    const char *tmpdir = getenv("XIC_TMP_DIR");
-    if (!tmpdir || !*tmpdir)
-        tmpdir = getenv("TMPDIR");
-    if (!tmpdir || !*tmpdir)
-        tmpdir = "/tmp";
-
-    char *dst_file = udif.distrib_filename(new_rel, osname, arch, suffix);
-    char *dst_path = pathlist::mk_path(tmpdir, dst_file);
-
-    GCarray<char*> gc_dst_file(dst_file);
-    GCarray<char*> gc_dst_path(dst_path);
-
-    bool need_dl = false;
-    if (!force_dl || no_dl_existing) {
-        FILE *fp = fopen(dst_path, "r");
-        if (fp)
-            fclose(fp);
-        else
-            need_dl = true;
-    }
-    else if (force_dl)
-        need_dl = true;
-
-    char buf[256];
-    if (need_dl) {
-        char *new_rel_str = new_rel.string();
-        sprintf(buf, "Download %s distribution file? ",
-            os_given ? dst_file : new_rel_str);
-        delete [] new_rel_str;
-
-        const char *in = PL()->EditPrompt(buf, "n");
-        in = lstring::strip_space(in);
-        if (!in || (*in != 'y' && *in != 'Y')) {
-            PL()->ErasePrompt();
-            return;
-        }
-
-        dspPkgIf()->SetWorking(true);
-        char *my_dst_file = udif.download(dst_file, osname, subdir, &errmsg,
-            http_puts);
-        dspPkgIf()->SetWorking(false);
-        if (!my_dst_file) {
-            PL()->ShowPromptV("Download failed: %s.", errmsg);
-            delete [] errmsg;
-            return;
-        }
-        delete [] my_dst_file;  // same as dst_path
-    }
-
-    sprintf(buf, "Install %s? ", dst_path);
-    const char *in = PL()->EditPrompt(buf, "n");
-    in = lstring::strip_space(in);
-    if (!in || (*in != 'y' && *in != 'Y')) {
-        PL()->ErasePrompt();
-        return;
-    }
-
-#ifdef WIN32
-    if (!atexit(msw_install)) {
-        msw_exepath = lstring::copy(dst_path);
-        PL()->ShowPrompt("Update will be installed on program exit.");
-    }
-    else {
-        PL()->ShowPrompt(
-            "Error: unknown error scheduling exit process.");
-    }
-
-#else
-    const char *cmdfmt = CDvdb()->getVariable(VA_InstallCmdFormat);
-
-    const char *libpath = CDvdb()->getVariable(VA_LibPath);
-    char *scriptfile;
-    FILE *fp = (pathlist::open_path_file(DST_SCRIPT, libpath, "r",
-        &scriptfile, true));
-    GCarray<char*> gc_scriptfile(scriptfile);
-    if (fp)
-        fclose(fp);
-    else {
-        PL()->ShowPrompt("Can not open update script file.");
-        return;
-    }
-
-    // This will likely fail if there is an osname mismatch to the
-    // running operating system.
-    // Also likely to fail is the user isn't root.
-
-    int ret = udif.install(scriptfile, cmdfmt, dst_path, prefix, osname,
-        &errmsg);
-    if (ret != 0) {
-        if (errmsg) {
-            PL()->ShowPromptV("Error: %s", errmsg);
-            delete [] errmsg;
-        }
-        else
-            PL()->ShowPromptV(
-                "Warning: install process returned error code %d.", ret);
-        return;
-    }
-
-    // Warning:  a 0 return doesn't necessarily mean that the install
-    // was successful - just that there were no config errors and the
-    // terminal popped up.
-
-    PL()->ShowPrompt(
-        "Done.  If install succeeded, restart the program to run new release.");
-#endif
-
-#else
-    (void)s;
-    PL()->ShowPrompt("Command not available.");
-#endif  // HAVE_MOZY
+    DSPmainWbag(PopUpHelp(":xt_pkgs"))
 }
 
 
 void
 bangcmds::passwd(const char*)
 {
-#ifdef HAVE_MOZY
-    if (!XM()->UpdateIf()) {
-        PL()->ShowPrompt("Command not available.");
-        return;
-    }
-    char *in = PL()->EditPrompt("Enter user name: ", 0);
-    if (!in) {
-        PL()->ErasePrompt();
-        return;
-    }
-    char *user = lstring::gettok(&in);
-    if (!user) {
-        PL()->ErasePrompt();
-        return;
-    }
-    GCarray<char*> gc_user(user);
-
-    in = PL()->EditPrompt("Enter password: ", 0, PLedStart, PLedNormal, true);
-    if (!in) {
-        PL()->ErasePrompt();
-        return;
-    }
-    char *pw1 = lstring::gettok(&in);
-    if (!pw1) {
-        PL()->ErasePrompt();
-        return;
-    }
-    GCarray<char*> gc_pw1(pw1);
-
-    in = PL()->EditPrompt("Reenter password: ", 0, PLedStart, PLedNormal, true);
-    if (!in) {
-        PL()->ErasePrompt();
-        return;
-    }
-    char *pw2 = lstring::gettok(&in);
-    if (!pw2) {
-        PL()->ErasePrompt();
-        return;
-    }
-    GCarray<char*> gc_pw2(pw2);
-
-    if (strcmp(pw1, pw2)) {
-        PL()->ShowPrompt("Try again, you mistyped the password.");
-        return;
-    }
-
-    UpdIf udif(*XM()->UpdateIf());
-    const char *err = udif.update_pwfile(user, pw1);
-    if (err) {
-        PL()->ShowPromptV("Error: %s", err);
-        return;
-    }
-    PL()->ShowPrompt(
-        "The .wrpasswd file in your home directory was updated successfully.");
-
-#else
-    PL()->ShowPrompt("Command not available.");
-#endif  // HAVE_MOZY
+    PL()->ShowPrompt("This release is open source, no psswords needed!");
 }
 
 
+// Still may need proxy set for general internet access.
+//
 void
 bangcmds::proxy(const char *s)
 {
-#ifdef HAVE_MOZY
     char *addr = lstring::gettok(&s);
     char *port = lstring::gettok(&s);
 
@@ -5204,7 +4896,7 @@ bangcmds::proxy(const char *s)
     GCarray<char*> gc_addr(addr);
 
     if (*addr == '-' || *addr == '+') {
-        if (!UpdIf::move_proxy(addr))
+        if (!proxy::move_proxy(addr))
             PL()->ShowPromptV("Operation failed: %s.", filestat::error_msg());
         else {
             const char *a = addr;
@@ -5258,18 +4950,13 @@ bangcmds::proxy(const char *s)
         }
     }
 
-    const char *err = UpdIf::set_proxy(addr, port);
+    const char *err = proxy::set_proxy(addr, port);
     if (err)
         PL()->ShowPromptV("Operation failed: %s.", err);
     else if (port)
         PL()->ShowPromptV("Created .wrproxy file for %s:%s", addr, port);
     else
         PL()->ShowPromptV("Created .wrproxy file for %s", addr);
-
-#else
-    (void)s;
-    PL()->ShowPrompt("Command not available.");
-#endif  // HAVE_MOZY
 }
 
 

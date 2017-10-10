@@ -89,9 +89,6 @@ Authors: 1985 Thomas L. Quarles
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
 #include "miscutil/childproc.h"
-#ifdef HAVE_MOZY
-#include "upd/update_itf.h"
-#endif
 
 #ifdef HAVE_LOCAL_ALLOCATOR
 #include "malloc/local_malloc.h"
@@ -1185,23 +1182,8 @@ main(int argc, char **argv)
 #ifdef HAVE_ATEXIT
             atexit(exit_proc);
 #endif
-#ifdef HAVE_MOZY
-            if (!getenv("XT_NO_CHECK_UPDATE") &&
-                    !Sp.GetVar(kw_nocheckupdate, VTYP_BOOL, 0)) {
-                    bool dbg = (getenv("XT_UPD_DEBUG") != 0);
-                check_for_update(dbg);
-                fprintf(stdout, "Checking for message...");
-                fflush(stdout);
-                char *message = UpdIf::message(APP_ROOT);
-                fprintf(stdout, " Done\n");
-                if (message) {
-                    ToolBar()->PopUpInfo(message);
-                    delete [] message;
-                }
-            }
-            if (UpdIf::new_release(APP_ROOT, SPICE_VERSION))
+            if (miscutil::new_release(APP_ROOT, SPICE_VERSION))
                 ToolBar()->PopUpNotes();
-#endif
 
             // Create a named pipe that listens for input.
             setup_fifo();
@@ -1921,100 +1903,6 @@ namespace {
         exit(EXIT_BAD);
     }
 }
-
-
-#ifdef HAVE_MOZY
-
-namespace {
-    struct updif : public updif_t
-    {
-        const char *HomeDir() const
-            {
-                return (pathlist::get_home(0));
-            }
-
-        const char *Product() const
-            {
-                return (Global.Product());
-            }
-
-        const char *VersionString() const
-            {
-                return (Global.Version());
-            }
-
-        const char *OSname() const
-            {
-                return (Global.OSname());
-            }
-
-        const char *Arch() const
-            {
-                return (Global.Arch());
-            }
-        
-        const char *DistSuffix() const
-            {
-                return (Global.DistSuffix());
-            }
-
-        const char *Prefix() const
-            {
-                return (Global.Prefix());
-            }
-    };
-    updif main_itf;
-
-
-    void check_for_update(bool dbg)
-    {
-        if (!Global.UpdateIf())
-            return;
-        UpdIf udif(*Global.UpdateIf());
-        // Update check requires a password;
-        if (!udif.username() || !udif.password())
-            return;
-        release_t my_rel = udif.my_version();
-        if (my_rel == release_t(0))
-            return;   
-
-        fprintf(stdout, "Checking for update...");
-        fflush(stdout);
-
-        char *emsg;
-        release_t new_rel = udif.distrib_version(0, 0, 0, 0, &emsg);
-        if (new_rel == release_t(0)) {
-            // Unless dbg==true, be silent on error geting info.
-
-            if (dbg) {
-                if (emsg && !strncmp(emsg, "Sorry,", 6))
-                    GR.ErrPrintf(ET_MSG, emsg);
-                else {
-                    const char *msg =
-                        "Unable to access the repository to check for updates.";
-                    GR.ErrPrintf(ET_MSG, msg);
-                }
-            }
-            delete [] emsg;
-        }
-        else if (my_rel < new_rel) {
-            char *my_rel_str = my_rel.string();
-            char *new_rel_str = new_rel.string();
-            char buf[256];
-            sprintf(buf, "This release is %s, an update, %s, is available.\n",
-                my_rel_str, new_rel_str);
-            delete [] my_rel_str;
-            delete [] new_rel_str;
-
-            GR.ErrPrintf(ET_MSG, buf);
-        }
-        fprintf(stdout, " Done\n");
-    }
-}
-
-const updif_t *sGlobal::g_upd_if = &main_itf;
-
-#endif  // HAVE_MOZY
 
 
 #if defined(HAVE_GTK1) || defined(HAVE_GTK2)

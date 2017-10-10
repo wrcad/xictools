@@ -61,7 +61,7 @@ Authors: 1985 Wayne A. Christopher
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
 #include "help/help_topic.h"
-#include "upd/update_itf.h"
+#include "miscutil/proxy.h"
 #endif
 #ifdef WIN32
 #include "miscutil/msw.h"
@@ -349,59 +349,8 @@ CommandTab::com_seed(wordlist *wl)
 void
 CommandTab::com_passwd(wordlist*)
 {
-    const char *namsg = "passwd:  command not available.\n";
-#ifdef HAVE_MOZY
-    if (CP.GetFlag(CP_NOTTYIO)) {
-        GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-        return;
-    }
-    if (!Global.UpdateIf()) {
-        GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-        return;
-    }
-    char buf[256];
-    if (!TTY.prompt_for_input(buf, 256, "Enter user name: ") || !*buf)
-        return;
-    char *in = buf;
-    char *user = lstring::gettok(&in);
-    if (!user)
-        return;
-    GCarray<char*> gc_user(user);
-            
-    if (!TTY.prompt_for_input(buf, 256, "Enter password: ", true) || !*buf)
-        return;
-
-    in = buf;
-    char *pw1 = lstring::gettok(&in);
-    if (!pw1)
-        return;
-    GCarray<char*> gc_pw1(pw1);
-
-    if (!TTY.prompt_for_input(buf, 256, "Reenter password: ", true) || !*buf)
-        return;
-
-    in = buf;
-    char *pw2 = lstring::gettok(&in);
-    if (!pw2)
-        return;
-    GCarray<char*> gc_pw2(pw2);
-
-    if (!lstring::eq(pw1, pw2)) {
-        TTY.printf("Try again, you mistyped the password.\n");
-        return;
-    }
-
-    UpdIf udif(*Global.UpdateIf());
-    const char *err = udif.update_pwfile(user, pw1);
-    if (err) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "passwd: %s.\n", err);
-        return;
-    }
-    TTY.printf(
-    "The .wrpasswd file in your home directory was updated successfully.\n");
-#else
+    const char *namsg = "passwd:  command no longer available.\n";
     GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-#endif
 }
 
 
@@ -409,12 +358,7 @@ void
 CommandTab::com_proxy(wordlist *wl)
 {
     const char *namsg = "proxy:  command not available.\n";
-#ifdef HAVE_MOZY
     if (CP.GetFlag(CP_NOTTYIO)) {
-        GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-        return;
-    }
-    if (!Global.UpdateIf()) {
         GRpkgIf()->ErrPrintf(ET_WARN, namsg);
         return;
     }
@@ -428,7 +372,7 @@ CommandTab::com_proxy(wordlist *wl)
     }
 
     if (*addr == '-' || *addr == '+') {
-        if (!UpdIf::move_proxy(addr))
+        if (!proxy::move_proxy(addr))
             TTY.printf("Operation failed: %s.", filestat::error_msg());
         else {
             int c = *addr++;
@@ -481,262 +425,20 @@ CommandTab::com_proxy(wordlist *wl)
         }
     }
 
-    const char *err = UpdIf::set_proxy(addr, port);
+    const char *err = proxy::set_proxy(addr, port);
     if (err)
         TTY.printf("Operation failed: %s.\n", err);
     else if (port)
         TTY.printf("Created .wrproxy file for %s:%s.\n", addr, port);
     else
         TTY.printf("Created .wrproxy file for %s.\n", addr);
-#else
-    (void)wl;
-    GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-#endif
 }
-
-
-#ifdef HAVE_MOZY
-
-// Name of update script file, found in library path.
-#define DST_SCRIPT  "wr_install"
-
-
-#ifdef WIN32
-namespace {
-    char *msw_exepath;
-
-    // Exit procedure, create a new process to run the install program.
-    //
-    void msw_install()
-    {
-        if (!msw_exepath)
-            return;
-        PROCESS_INFORMATION *info = msw::NewProcess(msw_exepath,
-            DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
-        (void)info;
-    }
-}
-#endif
-
-#endif
 
 
 void
-CommandTab::com_wrupdate(wordlist *wl)
+CommandTab::com_wrupdate(wordlist*)
 {
-    const char *namsg = "wrupdate: command not available.\n";
-#ifdef HAVE_MOZY
-    if (CP.GetFlag(CP_NOTTYIO)) {
-        GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-        return;
-    }
-    if (!Global.UpdateIf()) {
-        GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-        return;
-    }
-    UpdIf udif(*Global.UpdateIf());
-    if (!udif.username() || !udif.password()) {
-        TTY.printf(
-            "First use the passwd command to create your .wrpasswd file.\n");
-        return;
-    }
-
-    char *s = wordlist::flatten(wl);
-    GCarray<char*> gc_s(s);
-        
-    bool os_given = false;
-    bool force_dl = false;
-    bool no_dl_existing = false;
-    char *osname = 0;
-    char *prefix = 0;  
-    char *tok;
-    while ((tok = lstring::gettok(&s)) != 0) {
-        if (lstring::eq(tok, "-f")) {
-            delete [] tok;
-            force_dl = true;
-            continue;
-        }
-        if (lstring::eq(tok, "-fi")) {
-            // Undocumented - this will skip the download if the file
-            // exists.
-            delete [] tok;
-            force_dl = true;
-            no_dl_existing = true;
-            continue;
-        }
-        if (lstring::eq(tok, "-p")) {
-            prefix = lstring::getqtok(&s);
-            if (prefix && lstring::is_rooted(prefix)) {
-                delete [] tok;
-                continue;
-            }
-            GRpkgIf()->ErrPrintf(ET_ERROR,
-                "wrupdate: Bad or missing prefix.\n");
-        }
-        else if (lstring::eq(tok, "-o")) {
-            osname = lstring::gettok(&s);
-            if (osname && *osname != '-') {
-                delete [] tok;
-                os_given = true;
-                continue;
-            }
-            GRpkgIf()->ErrPrintf(ET_ERROR,
-                "wrupdate: Bad or missing osname.\n");
-        }
-        else
-            TTY.printf(
-                "Syntax error.  Usage: wrupdate [-o osname] [-p prefix]\n");
-        delete [] tok;
-        delete [] osname;
-        delete [] prefix;
-        return;
-    }
-
-    if (!osname)
-        osname = lstring::copy(Global.OSname());
-    if (!prefix)
-        prefix = lstring::copy(Global.Prefix());
-
-    GCarray<char*> gc_osname(osname);
-    GCarray<char*> gc_prefix(prefix);
-
-    release_t my_rel = udif.my_version();
-    if (my_rel == release_t(0)) {
-        GRpkgIf()->ErrPrintf(ET_INTERR,
-            "wrupdate: I can't find my version numbers!\n");
-        return;
-    }
-
-    char *arch;
-    char *suffix;
-    char *subdir;
-    char *errmsg;
-    release_t new_rel = udif.distrib_version(osname, &arch, &suffix, &subdir,
-        &errmsg);
-    if (new_rel == release_t(0)) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
-            "wrupdate: Failed to obtain release number from server:\n%s.\n",
-            errmsg);
-        delete [] errmsg;
-        return;
-    }
-
-    GCarray<char*> gc_arch(arch);
-    GCarray<char*> gc_suffix(suffix);
-    GCarray<char*> gc_subdir(subdir);
-
-    if (!force_dl) {
-        if (!os_given && !(my_rel < new_rel)) {
-            TTY.printf("You are running the current release of %s.\n",
-                Global.Product());
-            return;
-        }
-    }
-
-    // destination directory
-    const char *tmpdir = getenv("SPICE_TMP_DIR");
-    if (!tmpdir || !*tmpdir)
-        tmpdir = getenv("TMPDIR");
-    if (!tmpdir || !*tmpdir)
-        tmpdir = "/tmp";
-
-    char *dst_file = udif.distrib_filename(new_rel, osname, arch, suffix);
-    char *dst_path = pathlist::mk_path(tmpdir, dst_file);
-
-    GCarray<char*> gc_dst_file(dst_file);
-    GCarray<char*> gc_dst_path(dst_path);
-
-    bool need_dl = false;
-    if (!force_dl || no_dl_existing) {
-        FILE *fp = fopen(dst_path, "r");
-        if (fp)
-            fclose(fp);
-        else
-            need_dl = true;
-    }
-    else if (force_dl)
-        need_dl = true;
-
-    char buf[256];
-    if (need_dl) {
-        char *new_rel_str = new_rel.string();
-        sprintf(buf, "Download %s distribution file [n]? ",
-            os_given ? dst_file : new_rel_str);
-        delete [] new_rel_str;
-
-        if (!TTY.prompt_for_yn(false, buf))
-            return;
-
-        char *my_dst_file = udif.download(dst_file, osname, subdir, &errmsg);
-        if (!my_dst_file) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
-                "wrupdate: Download failed:\n%s.\n", errmsg);
-            delete [] errmsg;
-            return;
-        }
-        delete [] my_dst_file;  // same as dst_path
-    }
-
-#ifdef WIN32
-    if (!atexit(msw_install)) {
-        msw_exepath = lstring::copy(dst_path);
-        TTY.printf(
-            "Exit this program to install update (run %s).", dst_path);
-    }
-    else {
-        TTY.printf(
-            "Error: unknown error scheduling exit process.");
-    }
-
-#else
-    sprintf(buf, "Install %s [n]? ", dst_path);
-    if (!TTY.prompt_for_yn(false, buf))
-        return;
-
-    VTvalue vv;
-    Sp.GetVar(kw_installcmdfmt, VTYP_STRING, &vv);
-    const char *cmdfmt = vv.get_string();
-
-    char *scriptfile = pathlist::mk_path(Global.StartupDir(), DST_SCRIPT);
-    GCarray<char*> gc_scriptfile(scriptfile);
-    FILE *fp = fopen(scriptfile, "r");
-    if (fp)
-        fclose(fp);
-    else {
-        GRpkgIf()->ErrPrintf(ET_ERROR, 
-            "wrupdate: Can not open update script file.\n");
-        return;
-    }
-
-    // This will likely fail if there is an osname mismatch to the
-    // running operating system.
-
-    int ret = udif.install(scriptfile, cmdfmt, dst_path, prefix, osname,
-        &errmsg);
-    if (ret != 0) {
-        if (errmsg) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, "wrupdate: %s\n", errmsg);
-            delete [] errmsg;
-        }
-        else
-            GRpkgIf()->ErrPrintf(ET_WARN,
-                "wrupdate: install process returned error code %d.\n", ret);
-        return;
-    }
-
-    // Warning:  a 0 return doesn't necessarily mean that the install
-    // was successful - just that there were no config errors and the
-    // xterm popped up.
-
-    TTY.printf(
-        "Done.  "
-        "If install succeeded, restart the program to run new release.\n");
-#endif
-
-#else
-    (void)wl;
-    GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-#endif  // HAVE_MOZY
+    HLP()->read(":xt_pkgs");
 }
 
 

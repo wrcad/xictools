@@ -23,7 +23,7 @@ endif
 HFILES =
 CCFILES = \
   childproc.cc coresize.cc crypt.cc encode.cc errorrec.cc filestat.cc \
-  lstring.cc md5.cc miscmath.cc miscutil.cc msw.cc pathlist.cc \
+  lstring.cc md5.cc miscmath.cc miscutil.cc msw.cc pathlist.cc proxy.cc \
   quicksort.cc random.cc randval.cc texttf.cc threadpool.cc timedbg.cc \
   timer.cc tvals.cc
 

@@ -48,9 +48,9 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <sys/stat.h>
 #ifdef WIN32
 #include "msw.h"
-//XXX #include "stackdump.h"
 #include <iptypes.h>
 #include <iphlpapi.h>
 #else
@@ -64,19 +64,6 @@
 #include <net/if_dl.h>
 #endif
 #endif
-
-
-/*
- * Don't do this here, since it brings in several dll dependencies. 
- * Put this code in the application main, when this feature is really
- * wanted.
-
-#ifdef WIN32
-namespace {
-    cStackDump _stackdump_(GDB_OFILE);
-}
-#endif
-*/
 
 
 // Return the date. Return value is static data.
@@ -630,6 +617,117 @@ namespace {
         int n = strlen(text);
         return (write(fd, text, n) == n);
     }
+}
+
+
+#define RELSFX      "_current_release"
+#define LOCALDIR    ".wr_cache"
+
+namespace {
+    // The strings are in the form gen.major.minor (all integers). 
+    // Return -1, 0, 1 if r1 is earlier, equal to or later than r2.
+    // Return -1 if error.
+    //
+    int relcmp(const char *r1, const char *r2)
+    {
+        if (!r1)
+            return (-1);
+        if (!r2)
+            return (1);
+        int v1[3];
+        int n1 = sscanf(r1, "%d.%d.%d", v1, v1+1, v1+2);
+        int v2[3];
+        int n2 = sscanf(r2, "%d.%d.%d", v2, v2+1, v2+2);
+
+        if (n1 > 0 && n2 > 0) {
+            if (v1[0] < v2[0])
+                return (-1);
+            if (v1[0] > v2[0])
+                return (1);
+            if (n1 == 1 && n2 == 1)
+                return (0);
+            if (n1 == 1 || n2 == 1)
+                return (-1);
+        }
+        if (n1 > 1 && n2 > 1) {
+            if (v1[1] < v2[1])
+                return (-1);
+            if (v1[1] > v2[1])
+                return (1);
+            if (n1 == 2 && n2 == 2)
+                return (0);
+            if (n1 == 2 || n2 == 2)
+                return (-1);
+        }
+        if (n1 > 2 && n2 > 2) {
+            if (v1[2] < v2[2])
+                return (-1);
+            if (v1[2] > v2[2])
+                return (1);
+            return (0);
+        }
+        return (-1);
+    }
+}
+
+
+// Return true if the current release is not saved in a
+// $HOME/.wr_cache/<progname>_current_release file.  In this case,
+// create or update the file.  The true return signals the application
+// to display a new release message.
+//
+bool
+miscutil::new_release(const char *progname, const char *release)
+{
+    if (!progname || !release || !*release)
+        return (false);
+    char *p = pathlist::get_home(0);
+    if (!p)
+        return (0);
+    char *dir = pathlist::mk_path(p, LOCALDIR);
+    delete [] p;
+
+    char *filerel = 0;
+    char buf[256];
+    sprintf(buf, "%s/%s%s", dir, progname, RELSFX);
+
+    FILE *fp = fopen(buf, "r");
+    if (fp) {
+        const char *s = fgets(buf, 256, fp);
+        fclose(fp);
+        filerel = lstring::gettok(&s);
+    }
+    char *rel = lstring::gettok(&release);
+    int val = relcmp(rel, filerel);
+    if (val < 1) {
+        // Release is earlier or the same as the file release,
+        // just clean up and return.
+        delete [] dir;
+        delete [] filerel;
+        delete [] rel;
+        return (false);
+    }
+    delete [] filerel;
+
+    // Release is newer, or the file doesn't exist, update.
+
+    // Make sure that the local directory exists.
+#ifdef WIN32
+    mkdir(dir);
+#else
+    mkdir(dir, 0755);
+#endif
+
+    // Create or update the file.
+    sprintf(buf, "%s/%s%s", dir, progname, RELSFX);
+    fp = fopen(buf, "w");
+    if (fp) {
+        fwrite(rel, strlen(rel), 1, fp);
+        fclose(fp);
+    }
+    delete [] dir;
+    delete [] rel;
+    return (true);
 }
 
 

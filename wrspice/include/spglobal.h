@@ -156,8 +156,6 @@ struct sGlobal
     void SetMemError(bool b)            { g_mem_error = b; }
         // set by application if memory error.
 
-    static const updif_t *UpdateIf()    { return (g_upd_if); }
-
 private:
     const char *g_product;
     const char *g_version;
@@ -192,8 +190,6 @@ private:
     char g_opt_char;
     bool g_ascii_out;
     bool g_mem_error;
-
-    static const updif_t *g_upd_if;
 };
 extern sGlobal Global;
 

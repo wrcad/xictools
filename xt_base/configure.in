@@ -1118,7 +1118,6 @@ if test -d ../mozy; then
         ../mozy/src/htm/Makefile \
         ../mozy/src/httpget/Makefile \
         ../mozy/src/imsave/Makefile \
-        ../mozy/src/upd/Makefile \
         ../mozy/Makefile"
 fi
 if test -d ../mrouter; then

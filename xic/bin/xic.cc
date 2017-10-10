@@ -88,6 +88,7 @@
 #include "pbtn_menu.h"
 #include "ebtn_menu.h"
 
+#include "miscutil/miscutil.h"
 #include "miscutil/timer.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
@@ -95,9 +96,6 @@
 #include "miscutil/timedbg.h"
 #include "miscutil/crypt.h"
 #include "ginterf/grfont.h"
-#ifdef HAVE_MOZY
-#include "upd/update_itf.h"
-#endif
 
 #include <errno.h>
 #include <sys/time.h>
@@ -235,113 +233,13 @@ public:
     int ServerPort;      // port number, server mode
     bool ImaFileTool;    // application filetool polymorph
 };
-namespace {sCmdLine cmdLine; }
 
 namespace {
-    // Under Windows, create detached process if set
+    sCmdLine cmdLine;
+
+    // Under Windows, create detached process if set.
     bool WinBg;
-}
 
-#ifdef HAVE_MOZY
-// Update checking uses httpget from mozy.
-
-namespace {
-
-    struct updif : public updif_t
-    {
-        const char *HomeDir() const
-            {
-                return (XM()->HomeDir());
-            }
-
-        const char *Product() const
-            {
-                return (XM()->Product());
-            }
-
-        const char *VersionString() const
-            {
-                return (XM()->VersionString());
-            }
-
-        const char *OSname() const
-            {
-                return (XM()->OSname());
-            }
-
-        const char *Arch() const
-            {
-                return (XM()->Arch());
-            }
-
-        const char *DistSuffix() const
-            {
-                return (XM()->DistSuffix());
-            }
-
-        const char *Prefix() const
-            {
-                return (XM()->Prefix());
-            }
-    };
-    updif main_itf;
-
-
-    void
-    check_for_update(bool dbg)
-    {
-        if (!XM()->UpdateIf())
-            return;
-        UpdIf udif(*XM()->UpdateIf());
-        // Update check requires a password;
-        if (!udif.username() || !udif.password())
-            return;
-        release_t my_rel = udif.my_version();
-        if (my_rel == release_t(0))
-            return;
-
-        fprintf(stdout, "Checking for update...");
-        fflush(stdout);
-
-        char *emsg;
-        release_t new_rel = udif.distrib_version(0, 0, 0, 0, &emsg);
-        if (new_rel == release_t(0)) {
-            // Unless dbg==true, be silent on error geting info.
-
-            if (dbg) {
-                if (emsg && !strncmp(emsg, "Sorry,", 6))
-                    DSPmainWbag(PopUpMessage(emsg, false))
-                else {
-                    const char *msg =
-                        "Unable to access the repository to check for updates.";
-                    DSPmainWbag(PopUpMessage(msg, false))
-                }
-            }
-            delete [] emsg;
-        }
-        else if (my_rel < new_rel) {
-            char *my_rel_str = my_rel.string();
-            char *new_rel_str = new_rel.string();
-            char buf[256];
-            sprintf(buf, "This release is %s.\n"
-                "An update, %s, is available.\n"
-                "Use \'!update\' to download/install.",
-                my_rel_str, new_rel_str);
-            delete [] my_rel_str;
-            delete [] new_rel_str;
-
-            DSPmainWbag(PopUpMessage(buf, false))
-        }
-        fprintf(stdout, " Done\n");
-    }
-}
-
-// Export
-const updif_t *cMain::xm_updif = &main_itf;
-
-#endif // HAVE_MOZY
-
-namespace {
     // Instantiate the components.
     cMain       _xm_;               // application class
     cTimeDbg    _tdb_;              // exec time measurement package
@@ -745,6 +643,7 @@ xic_main::start_proc(void*)
     Timer()->start(getenv("XIC_NOTIMER") ? 0 : 200);
     dspPkgIf()->RegisterIdleProc(xic_main::read_cell_proc, 0);
 
+#ifdef NOTDEF
 #ifdef HAVE_MOZY
     if (!getenv("XT_NO_CHECK_UPDATE") &&
             !CDvdb()->getVariable(VA_NoCheckUpdate)) {
@@ -759,9 +658,10 @@ xic_main::start_proc(void*)
             delete [] message;
         }
     }
-    if (UpdIf::new_release(APP_ROOT, VERSION_STR))
-        Menu()->MenuButtonPress("help", MenuNOTES);
 #endif
+#endif
+    if (miscutil::new_release(APP_ROOT, VERSION_STR))
+        Menu()->MenuButtonPress("help", MenuNOTES);
 
 #ifdef HAVE_ATEXIT
     atexit(xic_main::onexit);

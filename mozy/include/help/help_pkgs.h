@@ -38,63 +38,43 @@
  $Id:$
  *========================================================================*/
 
-#ifndef MISCUTIL_H
-#define MISCUTIL_H
+#ifndef HELP_PKGS_H
+#define HELP_PKGS_H
 
-
-namespace miscutil
+// List element used for package files to download/install.
+//
+struct dl_elt_t
 {
-    // Network interfaces list element.
-    //
-    struct ifc_t
-    {
-        ifc_t(char *n, char *i, char *h)
-            {
-                ifc_next = 0;
-                ifc_name = n;
-                ifc_ip = i;
-                ifc_hw = h;
-            }
+    dl_elt_t(ViewerWidget *w, const char *u, const char *f = 0)
+        {
+            viewer = w;
+            fsel = 0;
+            url = lstring::copy(u);
+            filename = lstring::copy(f);
+            next = 0;
+        }
 
-        ~ifc_t()
-            {
-                delete [] ifc_name;
-                delete [] ifc_ip;
-                delete [] ifc_hw;
-            }
+    ~dl_elt_t()
+        {
+            delete [] url;
+            delete [] filename;
+        }
 
-        static void destroy(const ifc_t *ifc)
-            {
-                while (ifc) {
-                    const ifc_t *ix = ifc;
-                    ifc = ifc->ifc_next;
-                    delete ix;
-                }
-            }
+    ViewerWidget *viewer;
+    GRfilePopup *fsel;
+    char *url;
+    char *filename;
+    dl_elt_t *next;
+};
 
-        ifc_t *next()           { return (ifc_next); }
-        void set_next(ifc_t *n) { ifc_next = n; }
-        const char *name()      { return (ifc_name); }
-        const char *ip()        { return (ifc_ip); }
-        void set_ip(char *i)    { delete [] ifc_ip; ifc_ip = i; }
-        const char *hw()        { return (ifc_hw); }
-        void set_hw(char *h)    { delete [] ifc_hw; ifc_hw = h; }
-
-    private:
-        ifc_t *ifc_next;
-        char *ifc_name;
-        char *ifc_ip;
-        char *ifc_hw;
-    };
-
-    const char *dateString();
-    ifc_t *net_if_list();
-    bool send_mail(const char*, const char*, const char*, const char* = 0);
-    int fork_terminal(const char*);
-    bool new_release(const char*, const char*);
-
-#define GDB_OFILE "gdbout"
-    bool dump_backtrace(const char*, const char*, const char*, const void*);
+namespace pkgs {
+    char *pkgs_page();
+    int xt_install(dl_elt_t*);
+    char *get_download_url(const char*);
+    stringlist *avail_pkgs();
+    stringlist *local_pkgs();
+    char *list_avail_pkgs();
+    char *list_cur_pkgs();
 }
 
 #endif

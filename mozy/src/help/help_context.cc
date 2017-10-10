@@ -44,12 +44,13 @@
 #include "help_startup.h"
 #include "help_cache.h"
 #include "help_topic.h"
+#include "help_pkgs.h"
 #include "httpget/transact.h"
-#include "upd/update_itf.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/lstring.h"
 #include "miscutil/filestat.h"
 #include "miscutil/symtab.h"
+#include "miscutil/proxy.h"
 #include "ginterf/graphics.h"
 #include "htm/htm_widget.h"
 #include "htm/htm_form.h"
@@ -608,14 +609,76 @@ HLPcontext::resolveKeyword(const char *hrefin, HLPtopic **ptop, char *hanchor,
     if (w)
         w->unset_halt_flag();
 
+    while (isspace(*hrefin))
+        hrefin++;
+    if (*hrefin == ':') {
+        // Internal special addresses.
+
+        const char *in = hrefin+1;
+        const char *t = lstring::gettok(&in, "?");
+        if (!strcmp(t, "xt_pkgs")) {
+            // Show a page listing installed and available XicTools
+            // packages, with option for downloading packages.
+
+            char *html = pkgs::pkgs_page();
+            HLPtopic *top = new HLPtopic(lstring::copy(hrefin), "");
+            top->get_string(html);
+            delete [] html;
+            delete [] t;
+            *ptop = top;
+            return (false);
+        }
+        else if (!strcmp(t, "xt_download")) {
+            // Action procedure for the form above, takes care of
+            // downloading.
+
+            const char *qin = strchr(hrefin, '?');
+            if (!qin)
+                return (true);
+            qin++;
+            stringlist *dpkg = 0;
+            char *tok;
+
+            // If the "Download and Install" submit button was pressed,
+            // prepend wr_install, and install after downloading.
+
+            bool install = false;
+            while ((tok = lstring::gettok(&qin, "&=")) != 0) {
+                if (lstring::prefix("d_", tok))
+                    dpkg = new stringlist(lstring::copy(tok+2), dpkg);
+                if (!strcmp(tok, "Download+and+Install"))
+                    install = true;
+                delete [] tok;
+            }
+            if (dpkg) {
+                if (install)
+                    dpkg = new stringlist(lstring::copy("wr_install"), dpkg);
+                for (stringlist *sl = dpkg; sl; sl = sl->next) {
+                    char *url = pkgs::get_download_url(sl->string);
+                    delete [] sl->string;
+                    sl->string = url;
+                }
+                download(w, dpkg, install);
+            }
+            return (true);
+        }
+        else if (!strcmp(t, "xt_avail")) {
+            char *html = pkgs::list_avail_pkgs();
+            HLPtopic *top = new HLPtopic(lstring::copy(hrefin), "");
+            top->get_string(html);
+            delete [] html;
+            delete [] t;
+            *ptop = top;
+            return (false);
+        }
+        delete [] t;
+    }
     if (*hrefin == '+' && nonrelative) {
         // magic character '+' at front of keyword will cause relative
         // interpretation
         nonrelative = false;
         hrefin++;
     }
-    while (isspace(*hrefin))
-        hrefin++;
 
     const char *addr;
     char *protocol = getProtocol(hrefin, &addr);
@@ -935,7 +998,7 @@ HLPcontext::httpRetrieve(char **fname, char **url, char *args,
         }
 
         // Add a proxy if set,  The update system provides this.
-        char *pxy = UpdIf::get_proxy();
+        char *pxy = proxy::get_proxy();
         if (pxy) {
             cmd.add("-p ");
             cmd.add(pxy);
@@ -1081,10 +1144,10 @@ namespace {
         char *url;
     };
 
+
     // Do the download.
     //
-    void
-    dl_cb(const char *filename, void *arg)
+    void dl_cb(const char *filename, void *arg)
     {
         dl_arg *da = (dl_arg*)arg;
 
@@ -1094,7 +1157,7 @@ namespace {
         lstr.add(filename);
         lstr.add_c(' ');
         // Add a proxy if set,  The update system provides this.
-        char *pxy = UpdIf::get_proxy();
+        char *pxy = proxy::get_proxy();
         if (pxy) {
             lstr.add("-p ");
             lstr.add(pxy);
@@ -1117,8 +1180,7 @@ namespace {
     }
 
 
-    void
-    dl_down(GRfilePopup*, void *arg)
+    void dl_down(GRfilePopup*, void *arg)
     {
         dl_arg *da = (dl_arg*)arg;
         delete da;
@@ -1168,6 +1230,171 @@ HLPcontext::download(ViewerWidget *w, char *url)
     }
     else
         GRpkgIf()->ErrPrintf(ET_WARN, "download aborted, no graphics.");
+}
+
+
+namespace {
+    // Do the download.
+    //
+    void dl_list_cb(const char *filename, void *arg)
+    {
+        dl_elt_t *da0 = (dl_elt_t*)arg;
+
+        char buf[256];
+        strcpy(buf, filename);
+        char *f = lstring::strrdirsep(buf);
+        if (f)
+            f++;
+        else
+            f = buf;
+        for (dl_elt_t *da = da0; da; da = da->next) {
+            sLstr lstr;
+            lstr.add("httpget");  // dummy first arg is ignored
+            lstr.add(" -o ");
+            sprintf(f, da->filename ? da->filename : filename);
+            lstr.add(buf);
+            lstr.add_c(' ');
+            // Add a proxy if set,  The update system provides this.
+            char *pxy = proxy::get_proxy();
+            if (pxy) {
+                lstr.add("-p ");
+                lstr.add(pxy);
+                lstr.add_c(' ');
+                delete [] pxy;
+            }
+            lstr.add(da->url);
+
+            Transaction trn;
+            trn.set_err_func(http_err_cb);
+            trn.set_user_data1(da->viewer);
+            trn.set_puts(http_puts);
+
+            // parse command line
+            if (trn.parse_cmd(lstr.string(), 0)) {
+                GRpkgIf()->ErrPrintf(ET_WARN, "internal error, parse failed.");
+                return;
+            }
+            trn.transact();
+
+            if (da->filename) {
+                // Update the filename in the list to full path, in case
+                // any post-download processing is done on the files.
+
+                delete [] da->filename;
+                da->filename = lstring::copy(buf);
+            }
+        }
+
+        // If this is set, pop down when finished downloading.
+        if (da0->fsel)
+            da0->fsel->popdown();
+    }
+
+
+    void dl_list_down(GRfilePopup*, void *arg)
+    {
+        dl_elt_t *da = (dl_elt_t*)arg;
+        while (da) {
+            dl_elt_t *dx = da;
+            da = da->next;
+            delete dx;
+        }
+    }
+
+
+    void dl_list_down_install(GRfilePopup*, void *arg)
+    {
+        dl_elt_t *da = (dl_elt_t*)arg;
+
+        // If the first list element is the installee script, assume
+        // we are ainstalling (for xictools updater support).
+
+        if (da && da->next) {
+            const char *t = lstring::strrdirsep(da->filename);
+            if (t)
+                t++;
+            else
+                t = da->filename;
+            if (t && !strcmp(t, "wr_install"))
+                pkgs::xt_install(da);
+        }
+
+        while (da) {
+            dl_elt_t *dx = da;
+            da = da->next;
+            delete dx;
+        }
+    }
+}
+
+
+// Pop up the file browser to set the download target directory, with
+// the "ok" button set to initiate the download.  This will download a
+// list of files to tha chosen directory (default is CWD).  This is
+// used by the XicTools package updater.
+//
+void
+HLPcontext::download(ViewerWidget *w, stringlist *list, bool install)
+{
+    if (!list)
+        return;
+    GRloc loc(LW_CENTER);
+    if (w && !w->get_widget_bag())
+        w = 0;
+    if (!w && !GRpkgIf()->MainWbag()) {
+        GRpkgIf()->ErrPrintf(ET_WARN, "download aborted, no graphics.");
+        return;
+    }
+
+    dl_elt_t *a0 = 0, *an = 0;
+    for (stringlist *sl = list; sl; sl = sl->next) {
+        if (!sl->string)
+            continue;
+
+        sURL uinfo;
+        cComm::http_parse_url(sl->string, 0, &uinfo);
+        if (!uinfo.filename)
+            uinfo.filename = lstring::copy(DEF_DL_FILE);
+        else if (!*uinfo.filename) {
+            delete [] uinfo.filename;
+            uinfo.filename = lstring::copy(DEF_DL_FILE);
+        }
+        else {
+            char *t = strrchr(uinfo.filename, '/');
+            if (t && *(t+1)) {
+                t++;
+                t = lstring::copy(t);
+                delete [] uinfo.filename;
+                uinfo.filename = t;
+            }
+            else {
+                delete [] uinfo.filename;
+                uinfo.filename = lstring::copy(DEF_DL_FILE);
+            }
+        }
+
+        dl_elt_t *arg = new dl_elt_t(w, sl->string, uinfo.filename);
+        if (!a0)
+            a0 = an = arg;
+        else {
+            an->next = arg;
+            an = arg;
+        }
+    }
+    if (a0) {
+        // Set fsel to pop down when downloads complete.
+        const char *msg = "Press GO to download packages.";
+        if (w) {
+            a0->fsel = w->get_widget_bag()->PopUpFileSelector(fsDOWNLOAD,
+                loc, dl_list_cb, install ? dl_list_down_install : dl_list_down,
+                a0, msg);
+        }
+        else {
+            a0->fsel = GRpkgIf()->MainWbag()->PopUpFileSelector(fsDOWNLOAD,
+                loc, dl_list_cb, install ? dl_list_down_install : dl_list_down,
+                a0, msg);
+        }
+    }
 }
 
 
@@ -2049,12 +2276,12 @@ HLPcontext::formProcess(htmFormCallbackStruct *cbs, HelpWidget *w)
             char *qstr = cComm::http_query_string(nv);
             delete [] nv;
 
-            lstr.add_c('?');
-            lstr.add(qstr);
-            delete [] qstr;
-            url = lstr.string_trim();
-
             if (nonlocal) {
+                lstr.add_c('?');
+                lstr.add(qstr);
+                delete [] qstr;
+                url = lstr.string_trim();
+
                 FILE *fp = httpRetrieve(0, &url, 0, w, true);
                 if (fp) {
                     newtop = new HLPtopic(url, "");
@@ -2062,7 +2289,26 @@ HLPcontext::formProcess(htmFormCallbackStruct *cbs, HelpWidget *w)
                     fclose(fp);
                 }
             }
+            else if (*lstr.string() == ':') {
+                // Internal, handle in resolveKeyword.
+                lstr.add_c('?');
+                lstr.add(qstr);
+                delete [] qstr;
+                url = lstr.string_trim();
+
+                resolveKeyword(url, &newtop, 0, w, 0, false, true);
+            }
             else {
+                // Assume local script, pass args normally.
+                for (char *s = qstr; *s; s++) {
+                    if (*s == '&')
+                        *s = ' ';
+                }
+                lstr.add_c(' ');
+                lstr.add(qstr);
+                delete [] qstr;
+                url = lstr.string_trim();
+
                 FILE *fp = popen(url, "r");
                 if (fp) {
                     newtop = new HLPtopic(url, "");
