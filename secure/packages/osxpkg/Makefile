@@ -5,7 +5,7 @@ SUBDIRS = bin license
 
 VERSION = `../../version`
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-$(ARCH).pkg
-PKGNAME = $(APPNAME)
+PKGNAME = $(APPNAME)-$(VERSION)
 PKGDIR = $(BASE)/packages/pkgfiles
 OSNAME = `$(BASE)/info.sh osname`
 ARCH = `$(BASE)/info.sh arch`

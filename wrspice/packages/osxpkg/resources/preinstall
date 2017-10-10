@@ -6,9 +6,6 @@
 
 prefix=$2
 
-# The XicTools-4.3 package name
-pkgname="xictools.wrspice"
-
 # Remove links.
 rm -rf $prefix/xictools/wrspice
 tbin=$prefix/xictools/bin
@@ -30,5 +27,9 @@ fi
 # Do a manual un-install if an existing package is found, Apple's
 # install system apparently doesn't do this.
 
+pkg=`pkgutil --pkgs : grep xictools_wrspice`
+for a in $pkgs; do
+    pkgutil --forget $a
+done
 rm -rf $prefix/xictools/wrspice.current
 

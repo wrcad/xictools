@@ -1249,6 +1249,8 @@ GTKfilePopup::check_update()
 char *
 GTKfilePopup::get_path(GtkTreePath *path, bool noexpand)
 {
+    if (!path)
+        return (0);
     GtkTreeStore *store =
         GTK_TREE_STORE(gtk_tree_view_get_model(GTK_TREE_VIEW(fs_tree)));
     GtkTreeIter iter;

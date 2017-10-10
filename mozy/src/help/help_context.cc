@@ -663,7 +663,20 @@ HLPcontext::resolveKeyword(const char *hrefin, HLPtopic **ptop, char *hanchor,
             return (true);
         }
         else if (!strcmp(t, "xt_avail")) {
+            // Show a page listing the available packages.
+
             char *html = pkgs::list_avail_pkgs();
+            HLPtopic *top = new HLPtopic(lstring::copy(hrefin), "");
+            top->get_string(html);
+            delete [] html;
+            delete [] t;
+            *ptop = top;
+            return (false);
+        }
+        else if (!strcmp(t, "xt_local")) {
+            // Show a page listing the locally installed packages.
+
+            char *html = pkgs::list_cur_pkgs();
             HLPtopic *top = new HLPtopic(lstring::copy(hrefin), "");
             top->get_string(html);
             delete [] html;

@@ -1,0 +1,18 @@
+#! /bin/sh
+# $1 : the full path to the installation package
+# $2 : the full path to the installation destination
+# $3 : the mountpoint of the destination volume
+# $4 : the root directory for the current System folder
+
+prefix=$2
+prog=mozy
+
+# Do a manual un-install if an existing package is found, Apple's
+# install system apparently doesn't do this.
+
+pkg=`pkgutil --pkgs : grep xictools_$prog`
+for a in $pkgs; do
+    pkgutil --forget $a
+done
+rm -rf $prefix/xictools/$prog
+

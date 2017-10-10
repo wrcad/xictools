@@ -390,12 +390,55 @@ pkgs::avail_pkgs()
 stringlist *
 pkgs::local_pkgs()
 {
+    stringlist *list = 0;
+    char buf[256];
 #ifdef WIN32
 #else
 #ifdef __APPLE__
+    // NOTE:  The original 4.3 packages had names like "xictools_xic". 
+    // This was changed to "xictools_xic-4.3.x".  On update, we must
+    // ensure that the earlier package is removed , i.e., run pkgutil
+    // --forget on it, from the preinstall script.
+
+    FILE *fp = popen("pkgutil --pkgs | grep xictools", "r");
+    if (fp) {
+        char *s;
+        while ((s = fgets(buf, 256, fp)) != 0)
+            const char *vers = strchr(s, '-');
+            if (vers) {
+                vers++;
+                char *v = lstring::copy(vers);
+                sprintf(vers, "Darwin-%s-x86_64", v);
+                delete [] v;
+            }
+            else {
+                const char *ss = s + 9;  // strlen("xictools_")
+                if (!strcmp(ss, "adms")
+                    vers = "2.3.60";
+                else if (!strcmp(ss, "fastcap")
+                    vers = "2.0.11";
+                else if (!strcmp(ss, "fasthenry")
+                    vers = "2.0.12";
+                else if (!strcmp(ss, "mozy")
+                    vers = "4.3.1";
+                else if (!strcmp(ss, "mrouter")
+                    vers = "1.2.1";
+                else if (!strcmp(ss, "vl")
+                    vers = "4.3.1";
+                else if (!strcmp(ss, "wrspice")
+                    vers = "4.3.1";
+                else if (!strcmp(ss, "xic")
+                    vers = "4.3.1";
+                else
+                    continue;  // WTF? can't happen
+                sprintf(s + strlen(s), "-Darwin-%s-x86_64", s, vers);
+            }
+            list = new stringlist(lstring::copy(s), list);
+        if (list && list->next)
+            stringlist::sort(list);
+        fclose(fp);
+    }
 #else
-    stringlist *list = 0;
-    char buf[256];
     FILE *fp = popen("rpm -qa | grep xictools_", "r");
     if (fp) {
         char *s;
@@ -405,10 +448,10 @@ pkgs::local_pkgs()
             stringlist::sort(list);
         fclose(fp);
     }
-    return (list);
 
 #endif
 #endif
+    return (list);
 }
 
 
@@ -422,63 +465,18 @@ pkgs::list_avail_pkgs()
     lstr.add("<h4>Available Packages</h4>\n");
     lstr.add("<blockquote>\n");
 
-    Transaction trn;
-
-    // Create the url:
-    //    http://wrcad.com/cgi-bin/cur_release.cgi?h=osname
-    //
-    char buf[256];
-    char *e = lstring::stpcpy(buf,
-        "http://wrcad.com/cgi-bin/cur_release.cgi?h=");
-    const char *osname = e;
-    e = lstring::stpcpy(e, OSNAME);
-    if (strcmp(ARCH, "x86_64")) {
-        *e++ = '.';
-        strcpy(e, ARCH);
-    }
-    trn.set_url(buf);
-
-    trn.set_timeout(5);
-    trn.set_retries(0);
-    trn.set_http_silent(true);
-
-    trn.transact();
-    char *s = trn.response()->data;
-    if (s && *s) {
-        const char *ss = s;
-        const char *osn = 0;
-        const char *arch = 0;
-        char *t;
-        while ((t = lstring::gettok(&ss)) != 0) {
-            if (!osn) {
-                osn = t;
-                char *a = strchr(t, '.');
-                if (a) {
-                    *a++ = 0;
-                    arch = a;
-                }
-                else
-                    arch = "x86_64";
-                continue;
-            }
-            char *vrs = strchr(t, '-');
-            if (!vrs)
-                break;
-            *vrs++ = 0;
-            sprintf(buf, "xictools_%s-%s-%s-%s", t, osn, vrs, arch);
-            lstr.add("<a href=\":xt_get?f=");
-            lstr.add(buf);
-            lstr.add("\">");
-            lstr.add(buf);
-            lstr.add("</a><br>");
-            delete [] t;
+    stringlist *list = avail_pkgs();
+    if (list) {
+        for (stringlist *sl = list; sl; sl = sl->next) {
+            lstr.add(sl->string);
+            lstr.add("<br>\n");
         }
-        lstr.add("<p>Click to download / install.");
+        stringlist::destroy(list);
     }
     else {
         lstr.add("Sorry, prebuilt packages for ");
         lstr.add(osname);
-        lstr.add(" are not currently available.");
+        lstr.add(" are not currently available.\n");
     }
     lstr.add("</blockquote>\n");
     lstr.add("</body>\n</html>\n");
@@ -495,30 +493,18 @@ pkgs::list_cur_pkgs()
     lstr.add("<html>\n<head>\n<body bgcolor=#ffffff>\n");
     lstr.add("<h4>Currently Installed Packages</h4>\n");
     lstr.add("<blockquote>\n");
-#ifdef WIN32
-#else
-#ifdef __APPLE__
-#else
-    char buf[256];
-    FILE *fp = popen("rpm -qa | grep xictools_", "r");
-    if (fp) {
-        char *s;
-        stringlist *s0 = 0;
-        while ((s = fgets(buf, 256, fp)) != 0)
-            s0 = new stringlist(lstring::copy(s), s0);
-        stringlist::sort(s0);
-        for (stringlist *sl = s0; sl; sl = sl->next) {
+
+    stringlist *list = local_pkgs();
+    if (list) {
+        for (stringlist *sl = list; sl; sl = sl->next) {
             lstr.add(sl->string);
             lstr.add("<br>");
         }
-        stringlist::destroy(s0);
-        fclose(fp);
+        stringlist::destroy(list);
     }
     else
-        lstr.add("Error: rpm database query failed.");
+        lstr.add("Error: package database query failed.");
 
-#endif
-#endif
     lstr.add("</blockquote>\n");
     lstr.add("</body>\n</html>\n");
     return (lstr.string_trim());

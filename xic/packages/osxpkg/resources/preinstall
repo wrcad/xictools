@@ -29,5 +29,9 @@ fi
 # Do a manual un-install if an existing package is found, Apple's
 # install system apparently doesn't do this.
 
+pkg=`pkgutil --pkgs : grep xictools_xic`
+for a in $pkgs; do
+    pkgutil --forget $a
+done
 rm -rf $prefix/xictools/xic.current
 
