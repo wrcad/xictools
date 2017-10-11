@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 # $1 : the full path to the installation package
 # $2 : the full path to the installation destination
 # $3 : the mountpoint of the destination volume
@@ -10,9 +10,11 @@ prog=vl
 # Do a manual un-install if an existing package is found, Apple's
 # install system apparently doesn't do this.
 
-pkg=`pkgutil --pkgs : grep xictools_$prog`
+pkgs=$(pkgutil --pkgs | grep xictools_$prog)
 for a in $pkgs; do
-    pkgutil --forget $a
+    if [ ${a:0:9} = xictools_ ]; then
+        pkgutil --forget $a
+    fi
 done
 rm -rf $prefix/xictools/$prog
 

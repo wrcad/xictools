@@ -61,17 +61,21 @@
 namespace {
     void find_pkg(const char *prog, stringlist **l1, stringlist **l2)
     {
-        while (*l1) {
-            // 9 == strlen*("xictools_")
-            if (lstring::prefix(prog, (*l1)->string + 9))
-                break;
-            *l1 = (*l1)->next;
+        if (l1) {
+            while (*l1) {
+                // 9 == strlen*("xictools_")
+                if (lstring::prefix(prog, (*l1)->string + 9))
+                    break;
+                *l1 = (*l1)->next;
+            }
         }
-        while (*l2) {
-            // 9 == strlen*("xictools_")
-            if (lstring::prefix(prog, (*l2)->string + 9))
-                break;
-            *l2 = (*l2)->next;
+        if (l2) {
+            while (*l2) {
+                // 9 == strlen*("xictools_")
+                if (lstring::prefix(prog, (*l2)->string + 9))
+                    break;
+                *l2 = (*l2)->next;
+            }
         }
     }
 
@@ -149,13 +153,21 @@ pkgs::pkgs_page()
         else {
             lstr.add("<tr><td bgcolor=#f0fff0>");
         }
-        lstr.add(locpkg->string);
+        if (locpkg)
+            lstr.add(locpkg->string);
+        else
+            lstr.add("not found");
         lstr.add("</td><td>");
-        lstr.add(avlpkg->string);
+        if (avlpkg)
+            lstr.add(avlpkg->string);
+        else
+            lstr.add("not found");
         lstr.add("</td><td>");
-        lstr.add("<center><input type=checkbox name=d_");
-        lstr.add(avlpkg->string);
-        lstr.add("></center>");
+        if (avlpkg) {
+            lstr.add("<center><input type=checkbox name=d_");
+            lstr.add(avlpkg->string);
+            lstr.add("></center>");
+        }
         lstr.add("</td></tr>\n");
     }
     lstr.add("</table>\n");
@@ -229,6 +241,7 @@ namespace {
     }
 
 
+    /* not used
     char *get_version(const char *pkgname)
     {
         const char *t = strchr(pkgname, '-');
@@ -246,6 +259,7 @@ namespace {
         n[len] = 0;
         return (n);
     }
+    */
 
 
     char *get_arch(const char *pkgname)
@@ -403,8 +417,11 @@ pkgs::local_pkgs()
     FILE *fp = popen("pkgutil --pkgs | grep xictools", "r");
     if (fp) {
         char *s;
-        while ((s = fgets(buf, 256, fp)) != 0)
-            const char *vers = strchr(s, '-');
+        while ((s = fgets(buf, 256, fp)) != 0) {
+            char *e = s + strlen(s) - 1;
+            while (e >= s && isspace(*e))
+                *e-- = 0;
+            char *vers = strchr(s, '-');
             if (vers) {
                 vers++;
                 char *v = lstring::copy(vers);
@@ -413,27 +430,29 @@ pkgs::local_pkgs()
             }
             else {
                 const char *ss = s + 9;  // strlen("xictools_")
-                if (!strcmp(ss, "adms")
-                    vers = "2.3.60";
-                else if (!strcmp(ss, "fastcap")
-                    vers = "2.0.11";
-                else if (!strcmp(ss, "fasthenry")
-                    vers = "2.0.12";
-                else if (!strcmp(ss, "mozy")
-                    vers = "4.3.1";
-                else if (!strcmp(ss, "mrouter")
-                    vers = "1.2.1";
-                else if (!strcmp(ss, "vl")
-                    vers = "4.3.1";
-                else if (!strcmp(ss, "wrspice")
-                    vers = "4.3.1";
-                else if (!strcmp(ss, "xic")
-                    vers = "4.3.1";
+                const char *v = 0;
+                if (!strcmp("adms", ss))
+                    v = "2.3.60";
+                else if (!strcmp("fastcap", ss))
+                    v = "2.0.11";
+                else if (!strcmp("fasthenry", ss))
+                    v = "3.0.12";
+                else if (!strcmp("mozy", ss))
+                    v = "4.3.1";
+                else if (!strcmp("mrouter", ss))
+                    v = "1.2.1";
+                else if (!strcmp("vl", ss))
+                    v = "4.3.1";
+                else if (!strcmp("wrspice", ss))
+                    v = "4.3.1";
+                else if (!strcmp("xic", ss))
+                    v = "4.3.1";
                 else
                     continue;  // WTF? can't happen
-                sprintf(s + strlen(s), "-Darwin-%s-x86_64", s, vers);
+                sprintf(s + strlen(s), "-Darwin-%s-x86_64", v);
             }
             list = new stringlist(lstring::copy(s), list);
+        }
         if (list && list->next)
             stringlist::sort(list);
         fclose(fp);
@@ -475,7 +494,11 @@ pkgs::list_avail_pkgs()
     }
     else {
         lstr.add("Sorry, prebuilt packages for ");
-        lstr.add(osname);
+        lstr.add(OSNAME);
+        if (strcmp(ARCH, "x86_64")) {
+            lstr.add_c('.');
+            lstr.add(ARCH);
+        }
         lstr.add(" are not currently available.\n");
     }
     lstr.add("</blockquote>\n");
@@ -509,5 +532,4 @@ pkgs::list_cur_pkgs()
     lstr.add("</body>\n</html>\n");
     return (lstr.string_trim());
 }
-
 
