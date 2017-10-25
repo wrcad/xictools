@@ -52,6 +52,7 @@
 
 namespace msw {
     bool IsWinNT();
+    char *GetInstallData(const char*, const char*);
     char *GetInstallDir(const char*);
     char *GetProgramRoot(const char*);
     bool GetProductID(char*, FILE*);

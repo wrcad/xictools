@@ -96,7 +96,7 @@ MSPdev::Init(int *ac, char **av)
     if (*ac >= 3 && !strcmp(av[*ac-3], "-nat")) {
         delete [] printer;
         printer = lstring::copy(av[*ac-2]);
-        media = (int)av[*ac-1];
+        media = atoi(av[*ac-1]);
         *ac -= 3;
     }
 

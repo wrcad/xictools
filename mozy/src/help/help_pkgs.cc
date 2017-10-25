@@ -45,6 +45,9 @@
 #include "miscutil/pathlist.h"
 #include "miscutil/miscutil.h"
 #include "httpget/transact.h"
+#ifdef WIN32
+#include "miscutil/msw.h"
+#endif
 
 //
 // Implementation of package management for XicTools.
@@ -115,6 +118,9 @@ namespace {
             return (true);
         return (false);
     }
+
+    const char *xt_pkgs[] = { "adms", "fastcap", "fasthenry", "mozy",
+        "mrouter", "vl", "wrspice", "xic", 0 };
 }
 
 
@@ -128,9 +134,6 @@ pkgs::pkgs_page()
     stringlist *local = local_pkgs();
     stringlist *avail = avail_pkgs();
 
-    const char *pkgs[] = { "adms", "fastcap", "fasthenry", "mozy", "mrouter",
-        "vl", "wrspice", "xic", 0 };
-
     sLstr lstr;
     lstr.add("<html>\n<head>\n<body bgcolor=#ffffff>\n");
     lstr.add("<h2><i>XicTools</i> Packages</h4>\n");
@@ -139,7 +142,7 @@ pkgs::pkgs_page()
     lstr.add("<form method=get action=\":xt_download\">\n");
     lstr.add("<table cellpadding=4>\n");
     lstr.add("<tr><th>Installed</th><th>Available</th><th>download</th></tr>\n");
-    for (const char **pn = pkgs; *pn;  pn++) {
+    for (const char **pn = xt_pkgs; *pn;  pn++) {
         const char *prog = *pn;
         stringlist *locpkg = local;
         stringlist *avlpkg = avail;
@@ -354,9 +357,17 @@ pkgs::avail_pkgs()
     char *e = lstring::stpcpy(buf,
         "http://wrcad.com/cgi-bin/cur_release.cgi?h=");
     e = lstring::stpcpy(e, OSNAME);
-    if (strcmp(ARCH, "x86_64")) {
-        *e++ = '.';
-        strcpy(e, ARCH);
+    if (!strcmp(OSNAME, "Win32")) {
+        if (strcmp(ARCH, "i386")) {
+            *e++ = '.';
+            strcpy(e, ARCH);
+        }
+    }
+    else {
+        if (strcmp(ARCH, "x86_64")) {
+            *e++ = '.';
+            strcpy(e, ARCH);
+        }
     }
     trn.set_url(buf);
 
@@ -407,6 +418,19 @@ pkgs::local_pkgs()
     stringlist *list = 0;
     char buf[256];
 #ifdef WIN32
+    
+    for (const char **pp = xt_pkgs; *pp; pp++) {
+        const char *prog = *pp;
+        char *vrs = msw::GetInstallData(prog, "DisplayVersion");
+        if (!vrs)
+            continue;
+        sprintf(buf, "xictools_%s-Win32-%s-i386", prog, vrs);
+        delete [] vrs;
+        list = new stringlist(lstring::copy(buf), list);
+    }
+    if (list && list->next)
+        stringlist::sort(list);
+
 #else
 #ifdef __APPLE__
     // NOTE:  The original 4.3 packages had names like "xictools_xic". 

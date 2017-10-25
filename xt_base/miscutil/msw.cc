@@ -69,6 +69,64 @@ msw::IsWinNT()
 
 
 // ASSUMES INNO INSTALLER!!!
+//
+// Return string data from the Uninstall area for program.  Use
+// regedit to see what entries are available, e.g., DisplayName,
+// DisplayVersion, InstallDate, InstallLocation, UninstallString. 
+// Note that "program" is the name used by the installer.
+//
+char *
+msw::GetInstallData(const char *program, const char *keyword)
+{
+    OSVERSIONINFO osv;
+    osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+    GetVersionEx(&osv);
+    if (osv.dwMajorVersion < 6 ||
+            (osv.dwMajorVersion == 6 && osv.dwMinorVersion == 0)) 
+        return (0);
+    // Windows 7 or later
+
+    const char *keyfmt1 =
+"Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s_is1";
+    const char *keyfmt2 =
+"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s_is1";
+    unsigned int key_read = KEY_READ;
+    HKEY key;
+    char buf[1024];
+    sprintf(buf, keyfmt1, program);
+
+    long ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
+    if (ret != ERROR_SUCCESS) {
+        sprintf(buf, keyfmt2, program);
+        ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
+    }
+    if (ret != ERROR_SUCCESS) {
+        // Try again with WOW64.  This seemed to be required in
+        // early versions of Win-7_64 (could be wrong about this),
+        // but presently this flag causes failure.
+        //
+        key_read |= KEY_WOW64_64KEY;
+        sprintf(buf, keyfmt1, program);
+        ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
+        if (ret != ERROR_SUCCESS) {
+            sprintf(buf, keyfmt2, program);
+            ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
+        }
+        if (ret != ERROR_SUCCESS)
+            return (0);
+    }
+    DWORD len = 1024;
+    DWORD type;
+    ret = RegQueryValueEx(key, keyword, 0, &type, (BYTE*)buf, &len);
+    RegCloseKey(key);
+
+    if (ret != ERROR_SUCCESS || type != REG_SZ)
+        return (0);
+    return (lstring::copy(buf));
+}
+
+
+// ASSUMES INNO INSTALLER!!!
 // Return the path to the uninstall data.
 //
 // The inno installer places an item in the registry which gives the
@@ -84,6 +142,27 @@ msw::IsWinNT()
 char *
 msw::GetInstallDir(const char *program)
 {
+    char *s = GetInstallData(program, "UninstallString");
+    if (!s)
+        return (0);
+    // Strip the uninstall/unins000.exe.
+    char *p = lstring::getqtok(&s);
+    s = strrchr(p, '\\');
+    if (!s) {
+        delete [] p;
+        return (0);
+    }
+    *s = 0;
+    s = strrchr(p, '\\');
+    if (!s) {
+        delete [] p;
+        return (0);
+    }
+    *s = 0;
+
+    lstring::unix_path(p);
+    return (p);
+#ifdef XXXnotdef
     unsigned int key_read = KEY_READ;
 
     // inno-5.5.9 on Windows 10
@@ -150,6 +229,7 @@ msw::GetInstallDir(const char *program)
 
     lstring::unix_path(p);
     return (p);
+#endif
 }
 
 

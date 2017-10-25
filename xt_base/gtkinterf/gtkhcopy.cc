@@ -2307,7 +2307,7 @@ GTKprintPopup::hc_do_go(gtk_bag *wb)
     int media = gtk_option_menu_get_history(GTK_OPTION_MENU(hc->hc_pgsmenu));
     int prnt = gtk_option_menu_get_history(GTK_OPTION_MENU(hc->hc_prntmenu));
     if (!strcmp(hcdesc->keyword, "windows_native")) {
-        sprintf(buf + strlen(buf), " -nat %s %s", hc->hc_printers[prnt],
+        sprintf(buf + strlen(buf), " -nat %s %d", hc->hc_printers[prnt],
             media);
     }
 #endif
