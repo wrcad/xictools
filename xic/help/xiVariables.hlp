@@ -97,10 +97,9 @@ xiVariables.hlp
     <tr><td><b>ProgramRoot</b></td><td>Set to the program's installation directory</td></tr>
     <tr><td><b>TeePrompt</b></td><td>Copy messages to given filename or "stdout"</td></tr>
 
-!! 100616
+!! 102817
     <tr><th colspan=2><a href="!set:generalvis">General Visual</a></th></tr>
     <tr><td><b>MouseWheel</b></td><td>Set mouse wheel rate parameters</td></tr>
-    <tr><td><b>NoCheckUpdate</b></td><td>Skip check for new release on startup</td></tr>
     <tr><td><b>ListPageEntries</b></td><td>Maximum entries per page in list pop-ups</td></tr>
     <tr><td><b>NoLocalImage</b></td><td>Don't compose images locally</td></tr>
     <tr><td><b>NoPixmapStore</b></td><td>Don't use screen backing memory</td></tr>
@@ -112,9 +111,8 @@ xiVariables.hlp
     <tr><td><b>NoPhysRedraw</b></td><td>When set don't redraw physical windows after layer visibility change</td></tr>
     <tr><td><b>NoToTop</b></td><td>Don't move obscured windows to top</td></tr>
 
-!! 100816
+!! 102817
     <tr><th colspan=2><a href="!set:bangcmds">'!' Commands</a></th></tr>
-    <tr><td><b>InstallCmdFormat</b></td><td>Installation command string for <b>!update</b> command</td></tr>
     <tr><td><b>Shell</b></td><td>Path to shell used for external commands</td></tr>
 
 !!IFDEF OpenAccess
@@ -862,7 +860,6 @@ Paths and Directories
 !set:variables
 
 !!REDIRECT MouseWheel           !set:generalvis#MouseWheel
-!!REDIRECT NoCheckUpdate        !set:generalvis#NoCheckUpdate
 !!REDIRECT ListPageEntries      !set:generalvis#ListPageEntries
 !!REDIRECT NoLocalImage         !set:generalvis#NoLocalImage
 !!REDIRECT NoPixmapStore        !set:generalvis#NoPixmapStore
@@ -904,18 +901,6 @@ General Visual
     effect per mouse wheel click.  If either number is set to 0, that
     effect (pan or zoom) is suppressed.  Thus, to turn off mouse wheel
     support in drawing windows, give "<tt>0 0</tt>".
-    </dl>
-
-!! 061308
-    <a name="NoCheckUpdate"></a>
-    <dl>
-    <dt><b>NoCheckUpdate</b><dd>
-    <b>Value:</b> boolean.<br>
-    By default, when the program <a href="initops">starts</a>, the
-    distribution repository will be queried via the internet, and if a
-    newer release is available, a pop-up will appear that notifies the
-    user.  If this variable is set in a <a href="initfiles">startup
-    file</a>, this checking will be skipped.
     </dl>
 
 !! 061308
@@ -1077,7 +1062,6 @@ General Visual
 !!SEEALSO
 !set:variables
 
-!!REDIRECT InstallCmdFormat     !set:bangcmds#InstallCmdFormat
 !! REDIRECT Shell                !set:bangcmds#Shell // clash!
 
 !! 100616
@@ -1091,49 +1075,6 @@ Keyboard `!' Commands
     that are not recognized as internal commands are assumed to be
     operating system commands, and are executed in a separate window
     under a command shell.
-
-!! 012309
-    <p>
-    <a name="InstallCmdFormat"></a>
-    <dl>
-    <dt><b>InstallCmdFormat</b><dd>
-    <b>Value:</b> string.<br>
-    Setting this string allows modification of the installation command
-    used in the <a href="!update"><b>!update</b></a> command, for
-    non-Windows releases only.  If not set the effective value used is
-    <blockquote>
-    <tt>xterm -e sudo %s</tt>
-    </blockquote>
-
-    <p>
-    As an example, a reasonable alternative might be
-    <blockquote>
-    <tt>xterm -e su root -c \"%s\"</tt>
-    </blockquote>
-    Which would use <tt>su</tt> rather than <tt>sudo</tt>, and require
-    the root password.
-
-    <p>
-    The characters "<tt>%s</tt>" are replaced with a script invocation
-    command that actually performs the installation.  If this does not
-    appear in the given string, this command will be added to the
-    end, following a space character.
-
-    <p>
-    The internal script invocation command calls <tt>/bin/sh</tt> to
-    run the shell script <tt>upd_install.sh</tt> found in the startup
-    directory of the installation location.  The three arguments to
-    this script are the distribution file path, the distribution name
-    token (such as "<tt>Linux2</tt>"), and the installation location
-    prefix (such as "<tt>/usr/local</tt>").  This script, too, can be
-    customized or replaced.
-
-    <p>
-    The default strings pop-up a terminal (xterm) window, and ask for
-    a password.  The user, who needs to know a bit about Unix shell
-    programming, can modify this behavior by setting this variable to
-    a new string.
-    </dl>
 
 !! 061308
     <a name="Shell"></a>

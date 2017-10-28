@@ -20,7 +20,6 @@ mswindows
 xic:cmdline
 xic:env
 initfiles
-initops
 logfiles
 
 
@@ -256,7 +255,7 @@ Apple OS X Notes
     </blockquote>
     which will re-map the keys for the current X session.
 
-!! 093017
+!! 102817
 !!KEYWORD
 mswindows
 !!TITLE
@@ -305,22 +304,8 @@ Microsoft Windows Notes
     <p>
     The same process can be used to install updated releases - it is
     not necessary to uninstall first.  A more convenient way to keep
-    current is to set up automatic update checking.  For this, you
-    need to have a "home" directory.  The procedure is discussed
-    below.  Then, the <a href="!passwd"><b>!passwd</b></a> command in
-    <i>Xic</i> or the <b>password</b> command in <i>WRspice</i> can be
-    run, and the user/password to the distribution repository entered. 
-    This will produce a file "<tt>.wrpasswd</tt>" in the home
-    directory, used to authenticate with the web server at
-    <tt>wrcad.com</tt>.  When this is set up, the programs will check
-    for updates on startup.  If an update is available, the user is
-    asked (separately) whether to download the update distribution
-    file, and whether to install it.  The actual installation will
-    start when the user exits the program.
-
-    <p>
-    Before an update, any configuration files in the installation that
-    have been customized should be saved as they may be overwritten.
+    current is to use the <a href="update">updating</a> feature of the
+    <a href="helpsys">help system</a>.
 
     <p>
     <table border=0 bgcolor="#ffeeee" cellpadding=3><tr><td>
@@ -1034,8 +1019,6 @@ Command Line Options
 !!REDIRECT XT_LOCAL_MALLOC      xic:env#XT_LOCAL_MALLOC
 !!REDIRECT XT_SYSTEM_MALLOC     xic:env#XT_SYSTEM_MALLOC
 !!REDIRECT XT_GUI_COMPACT       xic:env#XT_GUI_COMPACT
-!!REDIRECT XT_NO_CHECK_UPDATE   xic:env#XT_NO_CHECK_UPDATE
-!!REDIRECT XT_UPD_DEBUG         xic:env#XT_UPD_DEBUG
 
 !!REDIRECT FORCE_XICII          xic:env#FORCE_XICII
 !!REDIRECT FORCE_XIV            xic:env#FORCE_XIV
@@ -1290,24 +1273,6 @@ Environment Variables
     images to be truncated on low-resolution displays if the theme in
     use imposes too much space.  Setting this variable is a quick fix
     for this problem, though one could also change the theme.
-    </dl>
-
-    <a name="XT_NO_CHECK_UPDATE"></a>
-    <dl>
-    <dt><b>XT_NO_CHECK_UPDATE</b>
-    <dd>
-    If set in the environment on program startup, the program will
-    skip attempting to communicate with the site hosting the
-    distribution repository to check for messages and updates.
-    </dl>
-
-    <a name="XT_UPD_DEBUG"></a>
-    <dl>
-    <dt><b>XT_UPD_DEBUG</b>
-    <dd>
-    When checking for updates with the site hosting the distribution
-    repository and an error occurs, if this variable is set then a
-    message will be emitted.  Otherwise, failure is silent.
     </dl>
 
     <a name="xicenv"></a>
@@ -1697,9 +1662,8 @@ Environment Variables
 !!REDIRECT .xicstart            initfiles#.xicstart
 !!REDIRECT xic_mesg             initfiles#xic_mesg
 !!REDIRECT xic_stipples         initfiles#xic_stipples
-!!REDIRECT .wrpasswd            initfiles#.wrpasswd
 
-!! 092614
+!! 102817
 !!KEYWORD
 initfiles
 !!TITLE
@@ -1707,9 +1671,36 @@ Initialization Files
 !!HTML
     When <i>Xic</i> is started, a number of files are read.  This
     section describes these files, and the order of access.  None of
-    these files is required to exist.  In addition, there are a few
-    more files used to maintain state for certain <a
-    href="initops">startup operations</a>.
+    these files is required to exist.
+
+    <p>
+    Prior releases of <i>Xic</i> could be configured to check for the
+    availability of program updates on startup.  There was also
+    provision for display of a message if one was "broadcast" from the
+    Whiteley Research web site.  This latter feature was never used,
+    and neither feature is currently supported in <i>Xic</i>.  Thus,
+    there is no longer a network access attempt on program startup,
+    which may save time.
+
+    <p>
+    Program <a href="update">updates</a> are handled in the <a
+    href="helpsys">help system</a>, for all of the <i>XicTools</i>
+    packages.  Either the help system built into <i>Xic</i> and
+    <i>WRspice</i>, or the stand-alone <i>mozy</i> program can be used
+    to check for, download, and install updates.  Giving the keyword
+    "<tt>:xt_pkgs</tt>" will display a page that provides update
+    information and download/install buttons.
+
+    <p>
+    If a new <i>Xic</i> release is run for the first time, the
+    release notes will appear in a pop-up window, as if the <a
+    href="xic:notes"><b>Notes</b></a> button in the <b>Help</b> menu
+    was pressed.  There is a file in the user's <tt>.wr_cache</tt>
+    directory named <tt>xic_current_release</tt> that contains a
+    release number.  If, when <i>Xic</i> starts, this file is missing
+    or the release number is not current, <i>Xic</i> will show the
+    release notes and update the file.  If the release numbers match,
+    there is no action.
 
     <p>
     On installation, a default configuration is provided for
@@ -1915,94 +1906,6 @@ Initialization Files
     required.  Defaults are provided for these files, but the user
     will very likely need custom device and model library files.
     </dl>
-
-    <a name=".wrpasswd"></a>
-    <dl>
-    <dt><tt>.wrpasswd</tt> file<dd>
-    The <tt>.wrpasswd</tt> file is created in the user's home
-    directory with the <a href="!passwd"><b>!passwd</b></a> command. 
-    It is an encrypted file that contains the user name and password
-    to the distribution repository.  The user name and password are
-    provided by Whiteley Research upon program or maintenance
-    extension purchase, and are required to gain access to the
-    distribution site for program updates.  This file is common to all
-    Whiteley Research products.
-
-    <p>
-    If the file exists, <i>Xic</i> will check for program updates on
-    startup, and alert the user if an update is available.  This is
-    also required to use the <a href="!update"><b>!update</b></a>
-    command.  The user will also be alerted if the password has
-    expired.
-    </dl>
-    
-!! 092615
-!!KEYWORD
-initops
-!!TITLE
-Initial Operations
-!!HTML
-    When <i>Xic</i> starts, the following operations are generally
-    performed.
-
-    <ol>
-    <li>If configured, the program will check for the availability of
-    software updates.  A pop-up message will notify the user if an
-    update is available.  These can be downloaded and installed with
-    the <a href="!update"><b>!update</b></a> command.  The <a
-    href="!passwd"><b>!passwd</b></a> command is used to enable this
-    feature, The username and password to the Whiteley Research
-    software repository should be given, and the command will create a
-    <tt>.wrpasswd</tt> file in the user's home directory.  This will
-    enable update checking in both <i>Xic</i> and <i>WRspice</i>.
-
-    <p>
-    <li>The program will check the <tt>wrcad.com</tt> web site for a
-    message file.  If a file is found, and the user has not seen it,
-    the message text will be shown in a pop-up window.  This is a
-    means of providing users with bug reports or other information
-    which could be important.
-
-    <p>
-    The record of the message is saved in the <tt>.wr_cache</tt>
-    directory in the user's home directory.  There are two files:
-    <dl>
-    <dt><tt>xic_current_mesg</tt><dd>
-    The is the current message text.
-    <dt><tt>xic_current_mesg_digest</tt><dd>
-    This is a checksum of the current message.
-    </dl>
-
-    <p>
-    The program will compare the checksum of the message to the
-    checksum on <tt>wrcad.com</tt>.  If a message is found at
-    <tt>wrcad.com</tt>, and there is no checksum or a different
-    checksum in the user's home directory, the message is downloaded
-    and shown, and the user's files are updated.  Thus, the user will
-    only see the message once, but can find a copy of the message in
-    their <tt>.wr_cache</tt> directory.  Note that there is only one
-    message file, future messages overwrite the files.
-
-    <p>
-    <li>If a new <i>Xic</i> release is run for the first time, the
-    release notes will appear in a pop-up window, as if the <a
-    href="xic:notes"><b>Notes</b></a> button in the <b>Help</b> menu
-    was pressed.  There is a file in the user's <tt>.wr_cache</tt>
-    directory named <tt>xic_current_release</tt> that contains a
-    release number.  If, when <i>Xic</i> starts, this file is missing
-    or the release number is not current, <i>Xic</i> will show the
-    release notes and update the file.  If the release numbers match,
-    there is no action.
-    </ol>
-
-    <p>
-    If the <a href="NoCheckUpdate"><b>NoCheckUpdate</b></a> variable
-    is set (from an <a href="initfiles">initialization file</a>) then
-    there will be no communications with <tt>wrcad.com</tt>, so the
-    checking for updates and a message will be skipped.  This should
-    be set if the user doesn't have internet access, for example, to
-    avoid the delays caused by lack of access and subsequent
-    connection timeout.
 
 !! 051115
 !!KEYWORD

@@ -4869,7 +4869,7 @@ bangcmds::update(const char*)
 void
 bangcmds::passwd(const char*)
 {
-    PL()->ShowPrompt("This release is open source, no psswords needed!");
+    PL()->ShowPrompt("This release is open source, no password needed!");
 }
 
 

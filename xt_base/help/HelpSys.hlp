@@ -13,6 +13,7 @@ HelpSys.hlp
 
 !!SUBTOPICS
 helpsys
+update
 helpview
 helpdb
 helpforms
@@ -247,6 +248,38 @@ helpdb
 helpforms
 helpinit
 helpfiles
+update
+
+!! 102817
+!!KEYWORD
+update
+!!TITLE
+XicTools Update
+!!HTML
+    The help system provides package management capability for the
+    <i>XicTools</i> programs.  Giving the keyword
+    <blockquote>
+    <tt>:xt_pkgs</tt>
+    </blockquote>
+    (note that the keyword starts with a colon) brings up a page listing
+    the installed and available <i>XicTools</i> packages, for the current
+    architecture.  This requires internet access and http connectivity to
+    <tt>wrcad.com</tt>.
+
+    <p>
+    One can select packages to download and optionally install by clicking
+    on the check boxes.  There are separate buttons to initiate downloading
+    only, and downloading and installation.  Package files, and the latest
+    <tt>wr_install</tt> script if downloading, are downloaded to the current
+    directory.  Once installed, these files can be deleted.
+
+    <p>
+    The <i>XicTools</i> package management capability is available from
+    the the internal help system in <i>Xic</i> and <i>WRspice</i>, and
+    from the stand-alone <i>mozy</i> help browser.
+
+!!SEEALSO
+helpsys
 
 !! 072014
 !!KEYWORD

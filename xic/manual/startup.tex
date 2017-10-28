@@ -206,7 +206,7 @@ which will re-map the keys for the current X session.
 
 
 % -----------------------------------------------------------------------------
-% mswindows 093017
+% mswindows 102817
 \section{Microsoft Windows Notes}
 
 This section contains notes relevant to the Microsoft Windows
@@ -238,20 +238,7 @@ the {\cb XicTools} program group in the {\cb Start} menu.
 
 The same process can be used to install updated releases -- it is not
 necessary to uninstall first.  A more convenient way to keep current
-is to set up automatic update checking.  For this, you need to have a
-``home'' directory.  The procedure is discussed below.  Then, the {\cb
-!passwd} command in {\Xic} or the {\cb password} command in {\WRspice}
-can be run, and the user/password to the distribution repository
-entered.  This will produce a file ``{\vt .wrpasswd}'' in the home
-directory, used to authenticate with the web server at {\vt
-wrcad.com}.  When this is set up, the programs will check for updates
-on startup.  If an update is available, the user is asked (separately)
-whether to download the update distribution file, and whether to
-install it.  The actual installation will start when the user exits
-the program.
-
-Before an update, any configuration files in the installation that
-have been customized should be saved as they may be overwritten.
+is to use the updating feature of the help system (see \ref{update}).
 
 WARNING\\
 The programs use an entry in the Windows Registry to find their
@@ -1035,20 +1022,6 @@ graphical interface.  Such space can cause side menu button images to
 be truncated on low-resolution displays if the theme in use imposes
 too much space.  Setting this variable is a quick fix for this
 problem, though one could also change the theme.
-
-\index{environment!XT\_NO\_CHECK\_UPDATE}
-\index{XT\_NO\_CHECK\_UPDATE environment variable}
-\item{\et XT\_NO\_CHECK\_UPDATE}\\
-If set in the environment on program startup, the program will skip
-attempting to communicate with the site hosting the distribution
-repository to check for messages and updates.
-
-\index{environment!XT\_UPD\_DEBUG}
-\index{XT\_UPD\_DEBUG environment variable}
-\item{\et XT\_UPD\_DEBUG}\\
-When checking for updates with the site hosting the distribution
-repository and an error occurs, if this variable is set then a message
-will be emitted.  Otherwise, failure is silent.
 \end{description}
 
 \subsection{{\Xic} Environment Variables}
@@ -1605,15 +1578,35 @@ search path.
 
 
 % -----------------------------------------------------------------------------
-% initfiles 092615
+% initfiles 102817
 \section{Initialization Files}
 \index{initialization files}
 
 When {\Xic} is started, a number of files are read.  This section
 describes these files, and the order of access.  None or these files
-is required to exist.  In addition, there are a few more files used to
-maintain state for certain startup operations, described in the next
-section.
+is required to exist.
+
+Prior releases of {\Xic} could be configured to check for the
+availability of program updates on startup.  There was also provision
+for display of a message if one was ``broadcast'' from the Whiteley
+Research web site.  This latter feature was never used, and neither
+feature is currently supported in {\Xic}.  Thus, there is no longer a
+network access attempt on program startup, which may save time.
+
+Program updates are handled in the help system (see \ref{update}), for
+all of the {\XicTools} packages.  Either the help system built into
+{\Xic} and {\WRspice}, or the stand-alone {\it mozy} program can be
+used to check for, download, and install updates.  Giving the keyword
+``{\vt :xt\_pkgs}'' will display a page that provides update
+information and download/install buttons.
+
+If a new {\Xic} release is run for the first time, the release notes
+will appear in a pop-up window, as if the {\cb Notes} button in the
+{\cb Help} menu was pressed.  There is a file in the user's {\vt
+.wr\_cache} directory named {\vt xic\_current\_release} that contains a
+release number.  If, when {\Xic} starts, this file is missing or the
+release number is not current, {\Xic} will show the release notes and
+update the file.  If the release numbers match, there is no action.
 
 On installation, a default configuration is provided for {\Xic}.  The
 user will need to reconfigure {\Xic} for their requirements.  This
@@ -1774,79 +1767,7 @@ SPICE models used for generating SPICE output.  These files are read
 the first time access is required.  Defaults are provided for these
 files, but the user will very likely need custom device and model
 library files.
-
-\index{.wrpasswd file}
-\item{{\vt .wrpasswd} file}
-The {\vt .wrpasswd} file is created in the user's home directory with
-the {\cb !passwd} command.  It is an encrypted file that contains the
-user name and password to the distribution repository.  The user name
-and password are provided by Whiteley Research upon program or
-maintenance extension purchase, and are required to gain access to the
-distribution site for program updates.  This file is common to all
-Whiteley Research products.
-
-If the file exists, {\Xic} will check for program updates on startup,
-and alert the user if an update is available.  This is also required
-to use the {\cb !update} command.  The user will also be alerted if
-the password has expired.
 \end{description}
-
-
-% -----------------------------------------------------------------------------
-% initops 092615
-\section{Initial Operations}
-
-When {\Xic} starts, the following operations are generally
-performed.
-
-\begin{enumerate}
-\item{If configured, the program will check for the availability of
-software updates.  A pop-up message will notify the user if an update
-is available.  These can be downloaded and installed with the {\cb
-!update} command.  The {\cb !passwd} command is used to enable this
-feature, The username and password to the Whiteley Research software
-repository should be given, and the command will create a {\vt
-.wrpasswd} file in the user's home directory.  This will enable update
-checking in both {\Xic} and {\WRspice}.}
-
-\item{The program will check the {\vt wrcad.com} web site for a
-message file.  If a file is found, and the user has not seen it, the
-message text will be shown in a pop-up window.  This is a means of
-providing users with bug reports or other information which could be
-important.
-
-The record of the message is saved in the {\vt .wr\_cache}
-directory in the user's home directory.  There are two files:
-\begin{description}
-\item{\vt xic\_current\_mesg}\\
-The is the current message text.
-\item{\vt xic\_current\_mesg\_digest}\\
-This is a checksum of the current message.
-\end{description}
-
-The program will compare the checksum of the message to the checksum
-on {\vt wrcad.com}.  If a message is found at {\vt wrcad.com}, and
-there is no checksum or a different checksum in the user's home
-directory, the message is downloaded and shown, and the user's files
-are updated.  Thus, the user will only see the message once, but can
-find a copy of the message in their {\vt .wr\_cache} directory.  Note
-that there is only one message file, future messages overwrite the
-files.}
-
-\item{If a new {\Xic} release is run for the first time, the release
-notes will appear in a pop-up window, as if the {\cb Notes} button in
-the {\cb Help} menu was pressed.  There is a file in the user's {\vt
-.wr\_cache} directory named {\vt xic\_current\_release} that contains
-a release number.  If, when {\Xic} starts, this file is missing or the
-release number is not current, {\Xic} will show the release notes and
-update the file.  If the release numbers match, there is no action.}
-\end{enumerate}
-
-If the {\et NoCheckUpdate} variable is set (from an initialization
-file) then there will be no communications with {\vt wrcad.com}, so
-the checking for updates and a message will be skipped.  This should
-be set if the user doesn't have internet access, for example, to avoid
-the delays caused by lack of access and subsequent connection timeout.
 
 
 % -----------------------------------------------------------------------------

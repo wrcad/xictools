@@ -173,9 +173,6 @@ help
     as a general-purpose viewer for text, html, and image files and
     URLs.
 
-!!    <p>
-!!    <h4><a href="xic40"><i>Xic</i>-4.0 changes</a></h4>
-
     <h4>Feature Sets</h4>
     <a href="xicii">The EDITOR Feature Set (<i>XicII</i>)</a><br>
     <a href="xiv">The VIEWER Feature Set (<i>Xiv</i>)</a>
@@ -195,7 +192,6 @@ help
     <a href="xic:env">Environment Variables</a><br>
     <a href="xic:paths"><i>Xic</i> Search Paths</a><br>
     <a href="initfiles">Initialization Files</a><br>
-    <a href="initops">Initial Operations</a><br>
     <a href="logfiles">Log Files and Error Reporting</a><br>
     <a href="fileorg">Cell Organization and Libraries</a><br>
     <a href="keyboard">Keyboard Commands</a><br>
