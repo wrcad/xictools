@@ -642,12 +642,14 @@ HLPcontext::resolveKeyword(const char *hrefin, HLPtopic **ptop, char *hanchor,
             // If the "Download and Install" submit button was pressed,
             // prepend wr_install, and install after downloading.
 
-            bool install = false;
+            unsigned int install = 0;
             while ((tok = lstring::gettok(&qin, "&=")) != 0) {
                 if (lstring::prefix("d_", tok))
                     dpkg = new stringlist(lstring::copy(tok+2), dpkg);
-                if (!strcmp(tok, "Download+and+Install"))
-                    install = true;
+                else if (!strcmp(tok, "Download+and+Install"))
+                    install = 1;
+                else if (!strcmp(tok, "Download+and+Test+Install"))
+                    install = 2;
                 delete [] tok;
             }
             if (dpkg) {
@@ -1319,8 +1321,8 @@ namespace {
     {
         dl_elt_t *da = (dl_elt_t*)arg;
 
-        // If the first list element is the installee script, assume
-        // we are ainstalling (for xictools updater support).
+        // If the first list element is the installer script, assume
+        // we are installing (for xictools updater support).
 
         if (da && da->next) {
             const char *t = lstring::strrdirsep(da->filename);
@@ -1343,11 +1345,13 @@ namespace {
 
 // Pop up the file browser to set the download target directory, with
 // the "ok" button set to initiate the download.  This will download a
-// list of files to tha chosen directory (default is CWD).  This is
+// list of files to the chosen directory (default is CWD).  This is
 // used by the XicTools package updater.
 //
+//  install:  0 don't install, 1 do install, else do dry run install.
+//
 void
-HLPcontext::download(ViewerWidget *w, stringlist *list, bool install)
+HLPcontext::download(ViewerWidget *w, stringlist *list, unsigned int install)
 {
     if (!list)
         return;
@@ -1397,15 +1401,21 @@ HLPcontext::download(ViewerWidget *w, stringlist *list, bool install)
     if (a0) {
         // Set fsel to pop down when downloads complete.
         const char *msg = "Press GO to download packages.";
+        typedef void(*cbfunc)(GRfilePopup*, void*);
+        cbfunc cb;
+        if (install == 0)
+            cb = &dl_list_down;
+        else if (install == 1)
+            cb = &dl_list_down_install;
+        else
+            cb = &dl_list_down_test_install;
         if (w) {
             a0->fsel = w->get_widget_bag()->PopUpFileSelector(fsDOWNLOAD,
-                loc, dl_list_cb, install ? dl_list_down_install : dl_list_down,
-                a0, msg);
+                loc, dl_list_cb, cb, a0, msg);
         }
         else {
             a0->fsel = GRpkgIf()->MainWbag()->PopUpFileSelector(fsDOWNLOAD,
-                loc, dl_list_cb, install ? dl_list_down_install : dl_list_down,
-                a0, msg);
+                loc, dl_list_cb, cb, a0, msg);
         }
     }
 }

@@ -176,6 +176,7 @@ pkgs::pkgs_page()
     lstr.add("</table>\n");
 
     lstr.add("<input type=submit value=\"Download\">\n");
+    lstr.add("<input type=submit value=\"Download and Test Install\">\n");
     lstr.add("<input type=submit value=\"Download and Install\">\n");
     lstr.add("</form>\n");
     lstr.add("</body>\n</html>\n");
@@ -183,10 +184,28 @@ pkgs::pkgs_page()
 }
 
 
+#ifdef WIN32
+
+namespace {
+    char *msw_exepath;
+
+    void msw_install()
+    {
+        if (!msw_exepath)
+            return;
+        PROCESS_INFORMATION *info = msw::NewProcess(msw_exepath,
+            DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
+        (void)info;
+    }
+}
+
+#endif
+
+
 // Fork a terminal and start the installation process.
 //
 int
-pkgs::xt_install(dl_elt_t *dlist)
+pkgs::xt_install(dl_elt_t *dlist, bool dryrun)
 {
     if (!dlist)
         return (-1);
@@ -199,8 +218,8 @@ pkgs::xt_install(dl_elt_t *dlist)
         }
         else {
             lstr.add(d->filename);
-//XXX
-            lstr.add(" -t");
+            if (dryrun)
+                lstr.add(" -t");
         }
     }
     // The lstr contains the command string, since the first element
@@ -208,7 +227,18 @@ pkgs::xt_install(dl_elt_t *dlist)
     // files.
     
     char *cmd = lstr.string_trim();
+#ifdef WIN32
+    // Can't overwrite the current executable under Windows, will
+    // create a new process to do the install on program exit.
 
+    if (!atexit(msw_install)) {
+        msw_exepath = cmd;
+        MessageBox(0, "Exit this program to install updates.", "Info", MB_OK);
+        return (0);
+    {
+    MessageBox(0, "Unknown error when scheduling exit process.", "Error",
+        MB_OK);
+#else
     int pid = miscutil::fork_terminal(cmd);
     delete [] cmd;
 
@@ -224,6 +254,7 @@ pkgs::xt_install(dl_elt_t *dlist)
 #endif
         return (status);
     }
+#endif
     return (-1);
 }
 
@@ -418,7 +449,6 @@ pkgs::local_pkgs()
     stringlist *list = 0;
     char buf[256];
 #ifdef WIN32
-    
     for (const char **pp = xt_pkgs; *pp; pp++) {
         const char *prog = *pp;
         char *vrs = msw::GetInstallData(prog, "DisplayVersion");
@@ -430,7 +460,6 @@ pkgs::local_pkgs()
     }
     if (list && list->next)
         stringlist::sort(list);
-
 #else
 #ifdef __APPLE__
     // NOTE:  The original 4.3 packages had names like "xictools_xic". 

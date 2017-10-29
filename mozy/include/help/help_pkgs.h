@@ -69,7 +69,7 @@ struct dl_elt_t
 
 namespace pkgs {
     char *pkgs_page();
-    int xt_install(dl_elt_t*);
+    int xt_install(dl_elt_t*, bool);
     char *get_download_url(const char*);
     stringlist *avail_pkgs();
     stringlist *local_pkgs();
