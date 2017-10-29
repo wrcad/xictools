@@ -82,7 +82,6 @@
 #include "miscutil/timedbg.h"
 #include "miscutil/miscutil.h"
 #include "miscutil/childproc.h"
-#include "miscutil/proxy.h"
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
 #endif
@@ -4866,97 +4865,21 @@ bangcmds::update(const char*)
 }
 
 
+// Undocumented, used to be in use so kept for now.
+//
 void
 bangcmds::passwd(const char*)
 {
-    PL()->ShowPrompt("This release is open source, no psswords needed!");
+    PL()->ShowPrompt("This release is open source, no password needed!");
 }
 
 
-// Still may need proxy set for general internet access.
+// Undocumented, used to be in use so kept for now.
 //
 void
-bangcmds::proxy(const char *s)
+bangcmds::proxy(const char*)
 {
-    char *addr = lstring::gettok(&s);
-    char *port = lstring::gettok(&s);
-
-    if (!addr) {
-        char *in = PL()->EditPrompt("Enter proxy internet address: ", 0);
-        if (!in) {
-            PL()->ErasePrompt();
-            return;
-        }
-        addr = lstring::gettok(&in);
-        if (!addr) {
-            PL()->ErasePrompt();
-            return;
-        }
-    }
-    GCarray<char*> gc_addr(addr);
-
-    if (*addr == '-' || *addr == '+') {
-        if (!proxy::move_proxy(addr))
-            PL()->ShowPromptV("Operation failed: %s.", filestat::error_msg());
-        else {
-            const char *a = addr;
-            int c = *a++;
-            if (!*a)
-                a = "bak";
-            if (c == '-') {
-                PL()->ShowPromptV(
-                    "Move .wrproxy file to .wrproxy.%s succeeded.", a);
-            }
-            else {
-                PL()->ShowPromptV(
-                    "Move .wrproxy.%s to .wrproxy file succeeded.", a);
-            }
-        }
-        return;
-    }
-    if (!lstring::prefix("http:", addr)) {
-        PL()->ShowPrompt("Error: \"http:\" prefix required in address.");
-        return;
-    }
-
-    bool a_has_port = false;
-    const char *e = strrchr(addr, ':');
-    if (e) {
-        e++;
-        if (isdigit(*e)) {
-            e++;
-            while (isdigit(*e))
-                e++;
-        }
-        if (!*e)
-            a_has_port = true;
-    }
-
-    if (!a_has_port && !port) {
-        const char *in = PL()->EditPrompt("Enter proxy port number: ", 0);
-        if (!in) {
-            PL()->ErasePrompt();
-            return;
-        }
-        port = lstring::gettok(&in);
-    }
-    GCarray<char*> gc_port(port);
-    if (port) {
-        for (const char *c = port; *c; c++) {
-            if (!isdigit(*c)) {
-                PL()->ShowPrompt("Error: port is not numeric.");
-                return;
-            }
-        }
-    }
-
-    const char *err = proxy::set_proxy(addr, port);
-    if (err)
-        PL()->ShowPromptV("Operation failed: %s.", err);
-    else if (port)
-        PL()->ShowPromptV("Created .wrproxy file for %s:%s", addr, port);
-    else
-        PL()->ShowPromptV("Created .wrproxy file for %s", addr);
+    PL()->ShowPrompt("Use Options/Set Proxy in help window to set proxy url.");
 }
 
 

@@ -276,11 +276,9 @@ commands are described in detail in the following sections.
   \hline
 \cb !dumpcds & Create Cadence Virtuoso$^{TM}$ technology and DRF files\\ \hline
 
-% 092715
+% 102817
 \multicolumn{2}{|c|}{\kb Update Release}\\ \hline
 \cb !update & Download/install new release\\ \hline
-\cb !passwd & Set distribution repository password\\ \hline
-\cb !proxy & Set proxy for internet access\\ \hline
 
 % 102712
 \multicolumn{2}{|c|}{\kb Variables}\\ \hline
@@ -5221,192 +5219,22 @@ given, it defaults to ``{\vt xic\_tech\_cds}''.
 \section{Update Release}
 
 % -----------------------------------------------------------------------------
-% !update 012116
+% !update 102817
 \subsection{The {\cb !update} Command: Download/Install Update}
 \index{"!update command}
 \begin{quote}
-Syntax: {\vt !update} [{\vt -f}] [{\vt -p} {\it prefix\/}]
-  [{\vt -o} {\it osname\/}]
+Syntax: {\vt !update}
 \end{quote}
-This command can be used to check for, download, and install updates
-to the program.  It makes contact to the distribution area of the
-Whiteley Research Inc.  web site via the internet.
-
-In order to use this command, a {\vt .wrpasswd} file must be installed
-in the user's home directory.  The {\cb !passwd} command is used to
-create this file.
-
-If given without arguments, the command first checks for the existence
-of a new release.  If no newer release is available, the command will
-print a message indicating that the program is up-to-date and exit. 
-Otherwise, the user is prompted whether to download the distribution
-file for the new release.  If the user agrees, the release file will
-be downloaded to a temporary directory.  Once downloaded, the user is
-prompted whether to install the new release.  If the user agrees, the
-distribution file will be expanded and the files installed in place of
-the current release.  The present program will still exist (it is
-always available as the program name with a ``{\vt .old}'' extension)
-and the user can continue working.  Subsequent invocations of the
-program will start the new version.
-
-Under Windows, installation will require that the user exit the
-program.  On exit, the interactive installation process will begin
-automatically.
-
-On other operating systems, a shell window will appear, and the user
-will be prompted for a password.  By default, the shell window uses
-the ``{\vt sudo}'' command for password authentication, therefor:
-\begin{enumerate}
-\item{The {\vt sudo} command must be installed on the system.
-On FreeBSD, this command can be installed as a port or package, it
-comes preinstalled on OS X and Red Hat Linux.}
-\item{The user must have permission to use {\vt sudo}, which is
-obtained by adding a line for the user to the {\vt /etc/sudoers} file.}
-\end{enumerate}
-Note that the user should enter their own password, and not the
-root password.
-
-This behavior can be modified by setting the {\et InstallCmdFormat}
-variable.  In particular, if you don't want to use {\vt sudo} for some
-reason, {\vt su} can be used instead, by setting the {\et
-InstallCmdFormat} variable to the string
-\begin{quote}
-\vt xterm -e su root -c $\backslash$"\%s$\backslash$"
-\end{quote}
-In this case, the password entered should be the root password, and
-only one chance is given to enter the correct password ({\vt sudo}
-will re-prompt if the entered password is incorrect).
-
-The {\cb !update} command can be run separately to download and
-install the distribution file -- if the file is found in the temporary
-directory, and the {\vt -f} option is {\it not} given, the downloading
-step is skipped.  Beware, however, that if a network hiccup truncates
-or corrupts the downloaded file, there will be a problem.  If this
-happens, the {\vt -f} option, which forces downloading even if the file
-already exists locally, or the system is up-to-date, should be used. 
-Alternatively, the corrupt file can be removed by hand.
-
-The {\vt -p} {\it prefix} argument applies during installation only,
-and overrides the installation location prefix.  If not given, this
-will default to the prefix used in the current program installation,
-which defaults to {\vt /usr/local}.  If given, the {\it prefix} must
-be a rooted directory path.
-
-The {\vt -o} {\it osname} argument allows downloading of a
-distribution that is not the same ``operating system'' as the running
-program.  The {\it osname} must be one of the distribution names as
-used in the distribution repository.  The table below lists the
-currently recognized names, supported in the 3.3 branch of {\Xic}.
-
-\begin{tabular}{ll}
-\vt Darwin64 & Apple OS X x86\_64\\
-\vt LinuxRHEL5 & Red Hat Enterprise 5 i686\\
-\vt LinuxRHEL5\_64 & Red Hat Enterprise 5 x86\_64\\
-\vt LinuxRHEL6\_64 & Red Hat Enterprise 6 x86\_64\\
-\vt LinuxRHEL7\_64 & Red Hat Enterprise 7 x86\_64\\
-\vt Win32 & Microsoft Windows\\
-\end{tabular}
-
-Then, the corresponding file will be downloaded and installed, if the
-user affirms each step and installation is possible.  The file will be
-downloaded whether or not the running program is current.
-
-The installation step may well fail if the running operating system is
-incompatible with the distribution.  You can install different
-versions of Linux on a Linux machine, or Linux on FreeBSD (if the rpm
-package is installed) for example, but not Win32 on anything but
-Windows.
-
-% -----------------------------------------------------------------------------
-% !passwd 060108
-\subsection{The {\cb !passwd} Command: Create Password File}
-\index{"!passwd command}
-\begin{quote}
-Syntax: {\vt !passwd}
-\end{quote}
-This will create a file named {\vt .wrpasswd} in the user's home
-directory, which is an encrypted file containing the user name and
-password to the program distribution repository.  The user name and
-password are provided by Whiteley Research upon program or maintenance
-extension purchase, and must be supplied in order to access the
-distribution point for updates.  This command prompts the user for the
-user name and password, and writes the {\vt .wrpasswd} file.  This
-needs to be done only once.
-
-With the {\vt .wrpasswd} file present, {\Xic} will check for the
-availability of updates when the program starts, and alert the user if
-an update is available (this can be prevented by setting the {\et
-NoCheckUpdate} variable in an initialization file).
-
-The {\vt .wrpasswd} file is also necessary for the {\cb !update}
-command to function.
-
-% -----------------------------------------------------------------------------
-% !proxy 092715
-\subsection{The {\cb !proxy} Command: Set Internet Proxy}
-\index{"!proxy command}
-\begin{quote}
-Syntax: {\vt !proxy} [{\vt -}[{\it xxx\/}] {\vt |} {\vt +}[{\it xxx\/}] {\vt |}
- {\it address} [{\it port}]]
-\end{quote}
-This command will create or manipulate a {\vt .wrproxy} file in the
-user's home directory, which will provide a transport proxy url for
-internet access, for use by both the {\Xic} and {\WRspice} programs. 
-The file contains a single line giving the internet url of the proxy. 
-The proxy will be used to relay internet transactions such as checking
-for program updates and messages, obtaining data files via http or ftp
-transport, and general internet access through the help system.
-
-One can create a {\vt .wrproxy} file by hand with a text editor.  The
-general form is
-\begin{quote}
-{\vt http://}{\it username\/}{\vt :}{\it password\/}{\vt @}{\it
- proxy.mydomain.com\/}{\vt :}{\it port}
-\end{quote}
-The format must be {\vt http}, {\vt https} is not supported at
-present.  The {\it username} and {\it password} if needed are
-specified as shown, using the colon `{\vt :}' and at-sign `{\vt @}' as
-separators.  The address can be a numeric ip quad, or a standard
-address.  The port number is appended following a colon.  No white
-space is allowed within the text.
-
-This command allows the {\vt .wrproxy} file to be created, updated,
-and destroyed from within {\Xic}.  Here, the {\it address} is the
-complete token, as described above, but possibly without the port.
-
-If no arguments are given, the {\it address} will be prompted for.  If
-the given address does not contain a port, a port is then prompted
-for.  The port is optional, and defaults to 80 if no port is given. 
-The port should be numeric, and is added to the file text separated by
-as a colon as above.
-
-The {\it address} can instead be given as a command argument, and the
-port may be given as a second argument or may be given as part of the
-first argument.
-
-If the argument consists of only a hyphen `{\vt -}', the {\vt
-.wrproxy} file will be moved to {\vt .wrproxy.bak}, in the user's home
-directory.  An existing {\vt .wrproxy.bak} file will be overwritten. 
-If the hyphen is followed by some non-space characters, the {\vt
-.wrproxy} file will be moved to a new file where the given characters
-serve as a suffix following a period.  For example, if {\vt -ZZ} is
-given, the new file would be ``{\vt .wrproxy.ZZ}'' in the user's home
-directory.  An existing file of that name will be overwritten.
-
-If the argument consists of only a plus sign `{\vt +}', if a file
-named ``{\vt .wrproxy.bak}'' exists in the user's home directory, it
-will be moved to {\vt .wrproxy}.  An existing {\vt .wrproxy} will be
-overwritten.  If the `{\vt +}' is followed by some non-space
-characters, the command will look for a file where the characters are
-used as a suffix, as above, and if found the file will be moved to
-{\vt .wrproxy}.
-
-Only the {\vt .wrproxy} file has any significance to {\Xic} and
-{\WRspice}, the other renamed files provide convenient storage, for
-quickly switching between proxys, or no proxy.
-
-Otherwise, if an argument is given, the first argument must start with
-``{\vt http:}'' or an error will result.
+This command is equivalent to giving the special keyword ``{\vt
+:xt\_pkgs}'' to the help system, which brings up the {\XicTools}
+package management page (see \ref{update}).  The page lists installed
+and available packages for each of the {\XicTools} programs for the
+current operating system, and provides buttons to download and install
+the packages.
+ 
+Unlike in earlier {\Xic} releases, there is no provision for automatic
+checking for updates, so this command or equivalent should be run
+periodically to check for updated packages.
 
 \section{Variables}
 \label{setcmd}

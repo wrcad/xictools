@@ -116,7 +116,7 @@ proxy::set_proxy(const char *addr, const char *port)
 
 // Move the .wrproxy file according to the token:
 //    "-"     .wrproxy -> .wrproxy.bak
-//    "-abc"  .wrprozy -> .wrproxy.abc
+//    "-abc"  .wrproxy -> .wrproxy.abc
 //    "+"     .wrproxy.bak -> .wrproxy
 //    "+abc"  .wrproxy.abc -> .wrproxy.
 //
@@ -143,9 +143,9 @@ proxy::move_proxy(const char *token)
 
     bool ret;
     if (c == '-')
-        ret = filestat::move_file_local(f1, f2);
+        ret = filestat::move_file_local(f2, f1);  // f1 -> f2
     else
-        ret = filestat::move_file_local(f2, f1);
+        ret = filestat::move_file_local(f1, f2);  // f2 -> f1
     delete [] home;
     delete [] f1;
     delete [] f2;

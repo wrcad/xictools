@@ -158,8 +158,48 @@ End of general info.
 
 
 ===============================================================================
-xic-4.3.1  10/1/2017
+xic-4.3.2  10/29/2017
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New package management system
+
+  The existing system which automatically checks for updated packages
+  has been removed, and a new package management system is available. 
+  The system for sending messages to users through the wrcad.com web
+  site, which was never used, has also been removed.  Presently, there
+  is no internet access attempted on program startup, which saves
+  time.
+
+  The new package management page is build into the help system, so is
+  available in Xic, WRspice, and in the stand-alone mozy help browser. 
+  Giving the keyword/url
+
+    :xt_pkgs
+
+  displays a page showing the installed and available xictools
+  packages.  Available packages can be downloaded and installed
+  through this interface.  This can also be accessed with the
+  !update command.
+
+  The following items have been removed from Xic and the
+  documentation:
+    XT_NO_CHECK_UPDATE  environment variable
+    XT_UPD_DEBUG        environment variable
+    NoCheckUpdate       variable
+    InstallCmdFormat    variable
+    !passwd             command
+    !proxy              command
+
+  The proxy functionality has also been moved the the help system,
+  through a new Set Proxy button in the Options menu of the help
+  windows.
+
+
+-------------------------------------------------------------------------------
+xic-4.3.1  10/1/2017
 
 Welcome the the first open-source release of Xic.  Now, instead of
 asking Whiteley Research for new features, users can modify the source

@@ -50,10 +50,9 @@ follow.
 \et ProgramRoot & Set to the program's installation directory\\ \hline
 \et TeePrompt & Copy messages to given filename or ``stdout''\\ \hline
 
-% 100616
+% 102817
 \multicolumn{2}{|c|}{\kb General Visual}\\ \hline
 \et MouseWheel & Set mouse wheel rate parameters\\ \hline
-\et NoCheckUpdate & Skip check for new release on startup\\ \hline
 \et ListPageEntries & Maximum entries per page in list pop-ups\\ \hline
 \et NoLocalImage & Don't compose images locally\\ \hline
 \et NoPixmapStore & Don't use screen backing memory\\ \hline
@@ -67,10 +66,8 @@ follow.
   visibility change\\ \hline
 \et NoToTop & Don't move obscured windows to top\\ \hline
 
-% 100816
+% 102817
 \multicolumn{2}{|c|}{\kb `!' Commands}\\ \hline
-\et InstallCmdFormat & Installation command string for {\cb !update} command\\
-  \hline
 \et Shell & Path to shell used for external commands\\ \hline
 
 %\ifoa
@@ -787,15 +784,6 @@ suppressed.  Thus, to turn off mouse wheel support in drawing windows,
 give ``{\vt 0 0}''.
 
 % 061308
-\index{NoCheckUpdate variable}
-\item{\et NoCheckUpdate}\\
-{\bf Value:} boolean.\\
-By default, when the program starts, the distribution repository will
-be queried via the internet, and if a newer release is available, a
-pop-up will appear that notifies the user.  If this variable is set in
-a startup file, this checking will be skipped.
-
-% 061308
 \index{ListPageEntries variable}
 \item{\et ListPageEntries}\\
 {\bf Value:} integer 100--50000\\
@@ -938,41 +926,6 @@ internal commands are assumed to be operating system commands, and are
 executed in a separate window under a command shell.
 
 \begin{description}
-% 012309
-\index{InstallCmdFormat variable}
-\item{\et InstallCmdFormat}\\
-{\bf Value:} string.\\
-Setting this string allows modification of the installation command
-used in the {\cb !update} command, for non-Windows releases only.  If
-not set the effective value used is
-\begin{quote}
-{\vt xterm -e sudo \%s}
-\end{quote}
-
-As an example, a reasonable alternative might be
-\begin{quote}
-{\vt xterm -e su root -c $\backslash$"\%s$\backslash$"}
-\end{quote}
-which would use {\vt su} rather than {\vt sudo}, and require the
-root password.
-
-The characters ``{\vt \%s}'' are replaced with a script invocation
-command that actually performs the installation.  If this does not
-appear in the given string, this command will be added to the end,
-following a space character.
-
-The internal script invocation command calls {\vt /bin/sh} to run the
-shell script {\vt upd\_install.sh} found in the startup directory of
-the installation location.  The three arguments to this script are the
-distribution file path, the distribution name token (such as ``{\vt
-Linux2}''), and the installation location prefix (such as ``{\vt
-/usr/local}'').  This script, too, can be customized or replaced.
-
-The default strings pop-up a terminal (xterm) window, and ask for a
-(root) password.  The user, who needs to know a bit about Unix shell
-programming, can modify this behavior by setting this variable to a
-new string.
-
 % 061308
 \index{Shell variable}
 \item{\et Shell}\\
