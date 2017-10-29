@@ -1331,7 +1331,32 @@ namespace {
             else
                 t = da->filename;
             if (t && !strcmp(t, "wr_install"))
-                pkgs::xt_install(da);
+                pkgs::xt_install(da, false);
+        }
+
+        while (da) {
+            dl_elt_t *dx = da;
+            da = da->next;
+            delete dx;
+        }
+    }
+
+
+    void dl_list_down_test_install(GRfilePopup*, void *arg)
+    {
+        dl_elt_t *da = (dl_elt_t*)arg;
+
+        // If the first list element is the installer script, assume
+        // we are installing (for xictools updater support).
+
+        if (da && da->next) {
+            const char *t = lstring::strrdirsep(da->filename);
+            if (t)
+                t++;
+            else
+                t = da->filename;
+            if (t && !strcmp(t, "wr_install"))
+                pkgs::xt_install(da, true);
         }
 
         while (da) {
