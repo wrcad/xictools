@@ -276,10 +276,9 @@ commands are described in detail in the following sections.
   \hline
 \cb !dumpcds & Create Cadence Virtuoso$^{TM}$ technology and DRF files\\ \hline
 
-% 092715
+% 102817
 \multicolumn{2}{|c|}{\kb Update Release}\\ \hline
 \cb !update & Download/install new release\\ \hline
-\cb !proxy & Set proxy for internet access\\ \hline
 
 % 102712
 \multicolumn{2}{|c|}{\kb Variables}\\ \hline
@@ -5236,73 +5235,6 @@ the packages.
 Unlike in earlier {\Xic} releases, there is no provision for automatic
 checking for updates, so this command or equivalent should be run
 periodically to check for updated packages.
-
-% -----------------------------------------------------------------------------
-% !proxy 102817
-\subsection{The {\cb !proxy} Command: Set Internet Proxy}
-\index{"!proxy command}
-\begin{quote}
-Syntax: {\vt !proxy} [{\vt -}[{\it xxx\/}] {\vt |} {\vt +}[{\it xxx\/}] {\vt |}
- {\it address} [{\it port}]]
-\end{quote}
-This command will create or manipulate a {\vt .wrproxy} file in the
-user's home directory, which will provide a transport proxy url for
-internet access, for use by both the {\Xic} and {\WRspice} programs. 
-The file contains a single line giving the internet url of the proxy. 
-The proxy will be used to relay internet transactions such as checking
-for program updates, obtaining data files via http or ftp transport,
-and general internet access through the help system.
-
-One can create a {\vt .wrproxy} file by hand with a text editor.  The
-general form is
-\begin{quote}
-{\vt http://}{\it username\/}{\vt :}{\it password\/}{\vt @}{\it
- proxy.mydomain.com\/}{\vt :}{\it port}
-\end{quote}
-The format must be {\vt http}, {\vt https} is not supported at
-present.  The {\it username} and {\it password} if needed are
-specified as shown, using the colon `{\vt :}' and at-sign `{\vt @}' as
-separators.  The address can be a numeric ip quad, or a standard
-address.  The port number is appended following a colon.  No white
-space is allowed within the text.
-
-This command allows the {\vt .wrproxy} file to be created, updated,
-and destroyed from within {\Xic}.  Here, the {\it address} is the
-complete token, as described above, but possibly without the port.
-
-If no arguments are given, the {\it address} will be prompted for.  If
-the given address does not contain a port, a port is then prompted
-for.  The port is optional, and defaults to 80 if no port is given. 
-The port should be numeric, and is added to the file text separated by
-as a colon as above.
-
-The {\it address} can instead be given as a command argument, and the
-port may be given as a second argument or may be given as part of the
-first argument.
-
-If the argument consists of only a hyphen `{\vt -}', the {\vt
-.wrproxy} file will be moved to {\vt .wrproxy.bak}, in the user's home
-directory.  An existing {\vt .wrproxy.bak} file will be overwritten. 
-If the hyphen is followed by some non-space characters, the {\vt
-.wrproxy} file will be moved to a new file where the given characters
-serve as a suffix following a period.  For example, if {\vt -ZZ} is
-given, the new file would be ``{\vt .wrproxy.ZZ}'' in the user's home
-directory.  An existing file of that name will be overwritten.
-
-If the argument consists of only a plus sign `{\vt +}', if a file
-named ``{\vt .wrproxy.bak}'' exists in the user's home directory, it
-will be moved to {\vt .wrproxy}.  An existing {\vt .wrproxy} will be
-overwritten.  If the `{\vt +}' is followed by some non-space
-characters, the command will look for a file where the characters are
-used as a suffix, as above, and if found the file will be moved to
-{\vt .wrproxy}.
-
-Only the {\vt .wrproxy} file has any significance to {\Xic} and
-{\WRspice}, the other renamed files provide convenient storage, for
-quickly switching between proxys, or no proxy.
-
-Otherwise, if an argument is given, the first argument must start with
-``{\vt http:}'' or an error will result.
 
 \section{Variables}
 \label{setcmd}

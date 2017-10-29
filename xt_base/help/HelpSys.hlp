@@ -281,7 +281,7 @@ XicTools Update
 !!SEEALSO
 helpsys
 
-!! 072014
+!! 102917
 !!KEYWORD
 helpview
 !!TITLE
@@ -425,6 +425,73 @@ The HTML Help Viewer
     menu.  Without an existing <tt>.mozyrc</tt> file, changes are
     discarded.  If the file exists, it will be updated whenever a help
     window is dismissed.
+    </dl>
+
+    <dl>
+    <dt><b>Set Proxy</b><dd>
+    This button will create or manipulate a <tt>.wrproxy</tt> file in
+    the user's home directory, which will provide a transport proxy
+    url for internet access.  The proxy url will apply in all
+    <i>XicTools</i> programs when connecting to the internet.
+
+    <p>
+    The <tt>$HOME/.wrproxy</tt> file contains a single line giving the
+    internet url of the proxy server.  The proxy server will be used
+    to relay internet transactions such as checking for program <a
+    href="update">updates</a>, obtaining data or input files via http
+    or ftp transport, and general internet access.
+
+    <p>
+    One can create a <tt>.wrproxy</tt> file by hand with a text
+    editor.  The general form is
+    <blockquote>
+    <tt>http://</tt><i>username</i><tt>:</tt><i>password</i><tt>@</tt><i>proxy.mydomain.com</i><tt>:</tt><i>port</i>
+    </blockquote>
+    The format must be <tt>http</tt>, <tt>https</tt> is not supported
+    at present.  The <i>username</i> and <i>password</i> if needed are
+    specified as shown, using the colon '<tt>:</tt>' and at-sign
+    '<tt>@</tt>' as separators.  The address can be a numeric ip quad,
+    or a standard internet address.  The port number is appended
+    following a colon.  No white space is allowed within the text.
+
+    <p>
+    When the menu button is pressed, a pop-up appears that solicits
+    the proxy address.  Here, the address is the complete token, as
+    described above, but possibly without the port.  The port number
+    can be passed as a trailing number separated by white space, if it
+    is not already given (separated by a colon).  If no port number
+    is given, the system will assume use of port number 80.
+
+    <p>
+    If the entry area is empty, any existing <tt>.wrproxy</tt> file
+    will be moved to "<tt>.wrproxy.bak</tt>" in the user's home
+    directory, effectively disabling use of a proxy.  The behavior
+    will be identical if the address consists of a hyphen
+    '<tt>-</tt>'.  An existing <tt>.wrproxy.bak</tt> file will be
+    overwritten.  If the hyphen is followed by some non-space
+    characters, the <tt>.wrproxy</tt> file will be moved to a new file
+    where the given characters serve as a suffix following a period. 
+    For example, if <tt>-ZZ</tt> is given, the new file would be
+    "<tt>.wrproxy.ZZ</tt>" in the user's home directory.  An existing
+    file of that name will be overwritten.
+
+    <p>
+    If the argument consists of only a plus sign '<tt>+</tt>', if a
+    file named "<tt>,wrproxy.bak</tt>" exists in the user's home
+    directory, it will be moved to <tt>.wrproxy</tt>.  An existing
+    <tt>.wrproxy</tt> will be overwritten.  If the '<tt>+</tt>' is
+    followed by some non-space characters, the command will look for a
+    file where the characters are used as a suffix, as above, and if
+    found the file will be moved to <tt>.wrproxy</tt>.
+
+    <p>
+    Only the <tt>.wrproxy</tt> file will provide a proxy url, the
+    other files are ignored.  The renamed files provide convenient
+    storage, for quickly switching between proxys, or no proxy.
+
+    <p>
+    Otherwise, if an address is given, it must start with
+    "<tt>http:</tt>" or an error will result.
     </dl>
 
     <dl>

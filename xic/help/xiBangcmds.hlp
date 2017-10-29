@@ -130,7 +130,6 @@ keybang
 !attrvars
 !dumpcds
 !update
-!proxy
 !set
 !unset
 !setdump
@@ -544,12 +543,10 @@ Keyboard '!' Commands
     <tr><td><a href="!dumpcds"><b>!dumpcds</b></a></td>
         <td>Create Cadence Virtuoso&#174 technology and DRF files</td></tr>
 
-!! 092715
+!! 102817
     <tr><th colspan=2 align="center">Update Release</th></tr>
     <tr><td><a href="!update"><b>!update</b></a></td>
         <td>Download/install new release</td></tr>
-    <tr><td><a href="!proxy"><b>!proxy</b></a></td>
-        <td>Set proxy for internet access</td></tr>
 
 !! 102712
     <tr><th colspan=2 align="center">Variables</th></tr>
@@ -7056,89 +7053,6 @@ keybang
     Unlike in earlier <i>Xic</i> releases, there is no provision for
     automatic checking for updates, so this command or equivalent
     should be run periodically to check for updated packages.
-
-!!SEEALSO
-keybang
-
-!! 102817
-!!KEYWORD
-!proxy
-!!TITLE
-!proxy
-!!HTML
-    <b>Syntax: <tt>!proxy</tt> [<tt>-</tt>[<i>xxx</i>] |
-    <tt>+</tt>[<i>xxx</i>] | <i>address</i> [<i>port</i>]]</b>
-
-    <p>
-    This command will create or manipulate a <tt>.wrproxy</tt> file in
-    the user's home directory, which will provide a transport proxy
-    url for internet access, for use by both the <i>Xic</i> and
-    <i>WRspice</i> programs.  The file contains a single line giving
-    the internet url of the proxy.  The proxy will be used to relay
-    internet transactions such as checking for program <a
-    href="!update">updates</a>, obtaining <a href="xic:open">data
-    files</a> via http or ftp transport, and general internet access
-    through the <a href="helpsys">help system</a>.
-
-    <p>
-    One can create a <tt>.wrproxy</tt> file by hand with a text
-    editor.  The general form is
-    <blockquote>
-    <tt>http://</tt><i>username</i><tt>:</tt><i>password</i><tt>@</tt><i>proxy.mydomain.com</i><tt>:</tt><i>port</i>
-    </blockquote>
-    The format must be <tt>http</tt>, <tt>https</tt> is not supported
-    at present.  The <i>username</i> and <i>password</i> if needed are
-    specified as shown, using the colon '<tt>:</tt>' and at-sign
-    '<tt>@</tt>' as separators.  The address can be a numeric ip quad,
-    or a standard address.  The port number is appended following a
-    colon.  No white space is allowed within the text.
-
-    <p>
-    This command allows the <tt>.wrproxy</tt> file to be created,
-    updated, and destroyed from within <i>Xic</i>.  Here, the
-    <i>address</i> is the complete token, as described above, but
-    possibly without the port.
-
-    <p>
-    If no arguments are given, the <i>address</i> will be prompted
-    for.  If the given address does not contain a port, a port is
-    then prompted for.  The port is optional, and defaults to 80 if
-    no port is given.  The port should be numeric, and is added to
-    the file text separated by as a colon as above.
-
-    <p>
-    The <i>address</i> can instead be given as a command argument,
-    and the port may be given as a second argument or may be given as
-    part of the first argument.
-
-    <p>
-    If the argument consists of only a hyphen '<tt>-</tt>', the
-    <tt>.wrproxy</tt> file will be moved to <tt>.wrproxy.bak</tt>, in
-    the user's home directory.  An existing <tt>.wrproxy.bak</tt> file
-    will be overwritten.  If the hyphen is followed by some non-space
-    characters, the <tt>.wrproxy</tt> file will be moved to a new file
-    where the given characters serve as a suffix following a period.
-    For example, if <tt>-ZZ</tt> is given, the new file would be
-    "<tt>.wrproxy.ZZ</tt>" in the user's home directory.  An existing
-    file of that name will be overwritten.
-
-    <p>
-    If the argument consists of only a plus sign '<tt>+</tt>', if a
-    file named "<tt>,wrproxy.bak</tt>" exists in the user's home
-    directory, it will be moved to <tt>.wrproxy</tt>.  An existing
-    <tt>.wrproxy</tt> will be overwritten.  If the '<tt>+</tt>' is
-    followed by some non-space characters, the command will look for a
-    file where the characters are used as a suffix, as above, and if
-    found the file will be moved to <tt>.wrproxy</tt>.
-
-    <p>
-    Only the <tt>.wrproxy</tt> file has any significance to <i>Xic</i>
-    and <i>WRspice</i>, the other renamed files provide convenient
-    storage, for quickly switching between proxys, or no proxy.
-
-    <p>
-    Otherwise, if an argument is given, the first argument must
-    start with "<tt>http:</tt>" or an error will result.
 
 !!SEEALSO
 keybang

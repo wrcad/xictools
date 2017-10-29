@@ -184,7 +184,7 @@ The {\XicTools} package management capability is available from
 the the internal help system in {\Xic} and {\WRspice}, and
     from the stand-alone {\it mozy} help browser.
 
-% helpview 072014
+% helpview 102917
 \subsection{The HTML Viewer}
 \label{helpview}
 
@@ -306,6 +306,65 @@ sets various parameters, defaults, etc.  This provides persistence of
 the options selected in the {\cb Options} menu.  Without an existing 
 {\vt .mozyrc} file, changes are discarded.  If the file exists, it
 will be updated whenever a help window is dismissed.
+
+\index{help viewer!Set Proxy}
+\item{\cb Set Proxy}\\
+This button will create or manipulate a {\vt .wrproxy} file in the
+user's home directory, which will provide a transport proxy url for
+internet access.  The proxy will apply in all {\XicTools} programs
+when connecting to the internet.
+
+The {\vt \$HOME/.wrproxy} file contains a single line giving the
+internet url of the proxy server.  The proxy server will be used to
+relay internet transactions such as checking for program updates,
+obtaining data or input files via http or ftp transport, and general
+internet access.
+
+One can create a {\vt .wrproxy} file by hand with a text editor.  The
+general form is
+\begin{quote}
+{\vt http://}{\it username\/}{\vt :}{\it password\/}{\vt @}{\it
+ proxy.mydomain.com\/}{\vt :}{\it port}
+\end{quote}
+The format must be {\vt http}, {\vt https} is not supported at
+present.  The {\it username} and {\it password} if needed are
+specified as shown, using the colon `{\vt :}' and at-sign `{\vt @}' as
+separators.  The address can be a numeric ip quad, or a standard
+internet address.  The port number is appended following a colon.  No
+white space is allowed within the text.
+
+When the menu button is pressed, a pop-up appears that solicits the
+proxy address.  Here, the address is the complete token, as described
+above, but possibly without the port.  The port number can be passed
+as a trailing number separated by white space, if it is not already
+given (separated by a colon).  If no port number is given, the system
+will assume use of port number 80.
+
+If the entry area is empty, any existing {\vt .wrproxy} file will be
+moved to ``{\vt .wrproxy.bak}'' in the user's home directory,
+effectively disabling use of a proxy.  The behavior will be identical
+if the address consists of a hyphen `{\vt -}'.  An existing {\vt
+.wrproxy.bak} file will be overwritten.  If the hyphen is followed by
+some non-space characters, the {\vt .wrproxy} file will be moved to a
+new file where the given characters serve as a suffix following a
+period.  For example, if {\vt -ZZ} is given, the new file would be
+``{\vt .wrproxy.ZZ}'' in the user's home directory.  An existing file
+of that name will be overwritten.
+
+If the argument consists of only a plus sign `{\vt +}', if a file
+named ``{\vt ,wrproxy.bak}'' exists in the user's home directory, it
+will be moved to {\vt .wrproxy}.  An existing {\vt .wrproxy} will be
+overwritten.  If the `{\vt +}' is followed by some non-space
+characters, the command will look for a file where the characters are
+used as a suffix, as above, and if found the file will be moved to
+{\vt .wrproxy}.
+
+Only the {\vt .wrproxy} file will provide a proxy url, the other files
+are ignored.  The renamed files provide convenient storage, for
+quickly switching between proxys, or no proxy.
+
+Otherwise, if an address is given, the first argument must start with
+``{\vt http:}'' or an error will result.
 
 \index{help viewer!Search Database}
 \index{search help database}

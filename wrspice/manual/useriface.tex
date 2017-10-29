@@ -520,20 +520,6 @@ graphical interface.  Such space can cause menu button images to
 be truncated on low-resolution displays if the theme in use imposes
 too much space.  Setting this variable is a quick fix for this
 problem, though one could also change the theme.
-
-\index{environment!XT\_NO\_CHECK\_UPDATE}
-\index{XT\_NO\_CHECK\_UPDATE environment variable}
-\item{\et XT\_NO\_CHECH\_UPDATE}\\
-If set in the environment on program startup, the program will skip
-attempting to communicate with the site hosting the distribution
-repository to check for messages and updates.
-
-\index{environment!XT\_UPD\_DEBUG}
-\index{XT\_UPD\_DEBUG environment variable}
-\item{\et XT\_UPD\_DEBUG}\\
-When checking for updates with the site hosting the distribution
-repository and an error occurs, if this variable is set then a message
-will be emitted.  Otherwise, failure is silent.
 \end{description}
 
 There are several environment variables which can be used to alter
@@ -819,7 +805,31 @@ Sparse is used for matrix operations.
 \index{startup file}
 \label{startup}
 
-% spSetup.hlp:startup_files 101010
+% spSetup.hlp:startup_files 102817
+
+Prior releases of {\WRspice} could be configured to check for the
+availability of program updates on startup.  There was also provision
+for display of a message if one was ``broadcast'' from the Whiteley
+Research web site.  This latter feature was never used, and neither
+feature is currently supported in {\WRspice}.  Thus, there is no
+longer a network access attempt on program startup, which may save
+time.
+
+Program updates are handled in the help system (see \ref{update}), for
+all of the {\XicTools} packages.  Either the help system built into
+{\Xic} and {\WRspice}, or the stand-alone {\it mozy} program can be
+used to check for, download, and install updates.  Giving the keyword
+``{\vt :xt\_pkgs}'' will display a page that provides update
+information and download/install buttons.
+
+If a new {\WRspice} release is run for the first time, the
+release notes will appear in a pop-up window, as if the {\cb Notes}
+button in the {\cb Help} menu was pressed.  There is a file in the
+user's {\vt .wr\_cache} directory named ``{\vt
+wrspice\_current\_release}'' that contains a release number.  If, when
+{\WRspice} starts, this file is missing or the release number is not
+current, {\WRspice} will show the release notes and update the file. 
+If the release numbers match, there is no action.
 
 \index{wrspiceinit file}
 {\WRspice} will attempt to source startup files used for
@@ -886,18 +896,6 @@ X-windows system library.
 
 The same definitions could be placed in a {\vt .wrspiceinit} file with
 lines like ``{\vt set color2 = red}''.
-
-\index{.wrpasswd file}
-\index{updating WRspice}
-\index{password file}
-\item{{\vt .wrpasswd} file}\\
-On startup, {\WRspice} will read the {\vt .wrpasswd} file if found in
-the user's home directory.  This file contains the encrypted password
-to the program distribution repository, and is created in {\WRspice}
-with the {\cb passwd} command.  This file can also be generated from
-{\Xic}.  If present and the password is active, {\WRspice} will check
-for the availability of updates on startup, and the {\cb wrupdate}
-command will be enabled.
 \end{description}
 
 %SU-------------------------------------
@@ -960,67 +958,6 @@ Alternatively, the {\cb update} command can be given from the command
 line.  Hand editing of the {\vt .wrspiceinit} file may be used to
 remove buttons or change the button order in the {\cb Tools} menu. 
 Once edited, only the tools present will be updated.
-
-
-%S-----------------------------------------------------------------------------
-\section{Initial Operations}
-\index{initial operations}
-
-% spSetup.hlp:startup_ops 092815
-
-When {\WRspice} starts, the following operations are generally
-performed.
-
-\begin{enumerate}
-\item{If configured, the program will check for the availability of
-software updates.  A pop-up message will notify the user if an update
-is available.  These can be downloaded and installed with the {\cb
-wrupdate} command.  The {\cb passwd} command is used to enable this
-feature, The username and password to the Whiteley Research software
-repository should be given, and the command will create a {\vt
-.wrpasswd} file in the user's home directory.  This will enable update
-checking in both {\Xic} and {\WRspice}.}
-
-\item{The program will check the {\vt wrcad.com} web site for a
-message file.  If a file is found, and the user has not seen it, the
-message text will be shown in a pop-up window.  This is a means of
-providing users with bug reports or other information which could be
-important.
-
-The record of the message is saved in the {\vt .wr\_cache}
-directory in the user's home directory.  There are two files:
-\begin{description}
-\item{\vt wrspice\_current\_mesg}\\
-The is the current message text.
-\item{\vt wrspice\_current\_mesg\_digest}\\
-This is a checksum of the current message.
-\end{description}
-
-The program will compare the checksum of the message to the checksum
-on {\vt wrcad.com}.  If a message is found at {\vt wrcad.com}, and
-there is no checksum or a different checksum in the user's home
-directory, the message is downloaded and shown, and the user's files
-are updated.  Thus, the user will only see the message once, but can
-find a copy of the message in their {\vt .wr\_cache} directory.  Note
-that there is only one message file, future messages overwrite the
-files.}
-
-\item{If a new {\WRspice} release is run for the first time, the
-release notes will appear in a pop-up window, as if the {\cb Notes}
-button in the {\cb Help} menu was pressed.  There is a file in the
-user's {\vt .wr\_cache} directory named ``{\vt
-wrspice\_current\_release}'' that contains a release number.  If, when
-{\WRspice} starts, this file is missing or the release number is not
-current, {\WRspice} will show the release notes and update the file. 
-If the release numbers match, there is no action.}
-\end{enumerate}
-
-\index{nocheckupdate variable}
-If the {\et nocheckupdate} variable is set (from an initialization
-file) then there will be no communications with {\vt wrcad.com}, so
-the checking for updates and a message will be skipped.  This should
-be set if the user doesn't have internet access, for example, to avoid
-the delays caused by lack of access and subsequent connection timeout.
 
 
 %S-----------------------------------------------------------------------------
@@ -3180,7 +3117,7 @@ appear that monitors the transfer, which can be aborted with the {\cb
 Cancel} button.
 
 %SU-------------------------------------
-% helpview 062313
+% helpview 102917
 \subsection{The HTML Viewer}
 `
 \index{help viewer!back}
@@ -3292,6 +3229,65 @@ sets various parameters, defaults, etc.  This provides persistence of
 the options selected in the {\cb Options} menu.  Without an existing
 {\vt .mozyrc} file, changes are discarded.  If the file exists, it
 will be updated whenever a help window is dismissed.
+
+\index{help viewer!Set Proxy}
+\item{\cb Set Proxy}\\
+This button will create or manipulate a {\vt .wrproxy} file in the
+user's home directory, which will provide a transport proxy url for
+internet access.  The proxy will apply in all {\XicTools} programs
+when connecting to the internet.
+
+The {\vt \$HOME/.wrproxy} file contains a single line giving the
+internet url of the proxy server.  The proxy server will be used to
+relay internet transactions such as checking for program updates,
+obtaining data or input files via http or ftp transport, and general
+internet access.
+
+One can create a {\vt .wrproxy} file by hand with a text editor.  The
+general form is
+\begin{quote}
+{\vt http://}{\it username\/}{\vt :}{\it password\/}{\vt @}{\it
+ proxy.mydomain.com\/}{\vt :}{\it port}
+\end{quote}
+The format must be {\vt http}, {\vt https} is not supported at
+present.  The {\it username} and {\it password} if needed are
+specified as shown, using the colon `{\vt :}' and at-sign `{\vt @}' as
+separators.  The address can be a numeric ip quad, or a standard
+internet address.  The port number is appended following a colon.  No
+white space is allowed within the text.
+
+When the menu button is pressed, a pop-up appears that solicits the
+proxy address.  Here, the address is the complete token, as described
+above, but possibly without the port.  The port number can be passed
+as a trailing number separated by white space, if it is not already
+given (separated by a colon).  If no port number is given, the system
+will assume use of port number 80.
+
+If the entry area is empty, any existing {\vt .wrproxy} file will be
+moved to ``{\vt .wrproxy.bak}'' in the user's home directory,
+effectively disabling use of a proxy.  The behavior will be identical
+if the address consists of a hyphen `{\vt -}'.  An existing {\vt
+.wrproxy.bak} file will be overwritten.  If the hyphen is followed by
+some non-space characters, the {\vt .wrproxy} file will be moved to a
+new file where the given characters serve as a suffix following a
+period.  For example, if {\vt -ZZ} is given, the new file would be
+``{\vt .wrproxy.ZZ}'' in the user's home directory.  An existing file
+of that name will be overwritten.
+
+If the argument consists of only a plus sign `{\vt +}', if a file
+named ``{\vt ,wrproxy.bak}'' exists in the user's home directory, it
+will be moved to {\vt .wrproxy}.  An existing {\vt .wrproxy} will be
+overwritten.  If the `{\vt +}' is followed by some non-space
+characters, the command will look for a file where the characters are
+used as a suffix, as above, and if found the file will be moved to
+{\vt .wrproxy}.
+
+Only the {\vt .wrproxy} file will provide a proxy url, the other files
+are ignored.  The renamed files provide convenient storage, for
+quickly switching between proxys, or no proxy.
+
+Otherwise, if an address is given, the first argument must start with
+``{\vt http:}'' or an error will result.
 
 \index{help viewer!Search Database}
 \index{search help database}

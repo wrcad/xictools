@@ -159,6 +159,7 @@ namespace gtkinterf {
         static void h_list_cb(const char*, void*);
         static void h_open_cb(const char*, void*);
         static void h_do_search_proc(const char*, void*);
+        static void h_proxy_proc(const char*, void*);
         static bool h_find_text_proc(const char*, bool, bool, void*);
         static void h_do_save_proc(const char*, void*);
 

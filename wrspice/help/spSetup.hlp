@@ -20,7 +20,6 @@ platforms
 environment
 startup_files
 tbsetup
-startup_ops
 
 
 !! not in manual
@@ -77,8 +76,6 @@ Platforms and Architectures
 !!REDIRECT XT_LOCAL_MALLOC      environment#XT_LOCAL_MALLOC
 !!REDIRECT XT_SYSTEM_MALLOC     environment#XT_SYSTEM_MALLOC
 !!REDIRECT XT_GUI_COMPACT       environment#XT_GUI_COMPACT
-!!REDIRECT XT_NO_CHECK_UPDATE   environment#XT_NO_CHECK_UPDATE
-!!REDIRECT XT_UPD_DEBUG         environment#XT_UPD_DEBUG
 !!REDIRECT XTNETDEBUG           environment#XT_REMOTE_TEST
 !!REDIRECT HOME                 environment#HOME
 !!REDIRECT DISPLAY              environment#DISPLAY
@@ -364,24 +361,6 @@ Environment Variables
     problem, though one could also change the theme.
     </dl>
 
-    <a name="XT_NO_CHECK_UPDATE"></a>
-    <dl>
-    <dt><b>XT_NO_CHECK_UPDATE</b>
-    <dd>
-    If set in the environment on program startup, the program will
-    skip attempting to communicate with the site hosting the
-    distribution repository to check for messages and updates.
-    </dl>
-
-    <a name="XT_UPD_DEBUG"></a>
-    <dl>
-    <dt><b>XT_UPD_DEBUG</b>
-    <dd>
-    When checking for updates with the site hosting the distribution
-    repository and an error occurs, if this variable is set then a
-    message will be emitted.  Otherwise, failure is silent.
-    </dl>
-
     <p>
     There are several environment variables which can be used to alter
     some of the <i>WRspice</i> defaults.  On startup, <i>WRspice</i>
@@ -597,14 +576,42 @@ Environment Variables
 
 !!REDIRECT license.host         startup_files#license.host
 !!REDIRECT .wrspiceinit         startup_files#wrspiceinit
-!!REDIRECT .wrpasswd            startup_files#wrpasswd
 
-!! useriface.tex 101010
+!! useriface.tex 102817
 !!KEYWORD
 startup_files
 !!TITLE
 Startup Files
 !!HTML
+    Prior releases of <i>WRspice</i> could be configured to check for
+    the availability of program updates on startup.  There was also
+    provision for display of a message if one was "broadcast" from the
+    Whiteley Research web site.  This latter feature was never used,
+    and neither feature is currently supported in <i>WRspice</i>. 
+    Thus, there is no longer a network access attempt on program
+    startup, which may save time.
+    
+    <p>
+    Program <a href="update">updates</a> are handled in the <a
+    href="helpsys">help system</a>, for all of the <i>XicTools</i>
+    packages.  Either the help system built into <i>Xic</i> and
+    <i>WRspice</i>, or the stand-alone <i>mozy</i> program can be used
+    to check for, download, and install updates.  Giving the keyword
+    "<tt>:xt_pkgs</tt>" will display a page that provides update
+    information and download/install buttons.
+    
+    <p>
+    If a new <i>WRspice</i> release is run for the first time, the
+    release notes will appear in a pop-up window, as if the
+    <b>Notes</b> button in the <b>Help</b> menu was pressed.  There is
+    a file in the user's <tt>.wr_cache</tt> directory named
+    "<tt>wrspice_current_release</tt>" that contains a release number. 
+    If, when <i>WRspice</i> starts, this file is missing or the
+    release number is not current, <i>WRspice</i> will show the
+    release notes and update the file.  If the release numbers match,
+    there is no action.
+
+    <p>
     <i>WRspice</i> will attempt to source startup files used for
     initialization when the program is started.  First, a file named
     <tt>wrspiceinit</tt> is searched for in the system startup
@@ -680,24 +687,6 @@ Startup Files
     file with lines like "<tt>set color2 = red</tt>".
     </dl>
 
-    <a name="wrpasswd"></a>
-    <dl>
-    <dt><tt>.wrpasswd</tt> file<dd>
-    <p>
-    On startup, <i>WRspice</i> will read the <tt>.wrpasswd</tt> file
-    if found in the user's home directory.  This file contains the
-    encrypted password to the program distribution repository, and is
-    created in <i>WRspice</i> with the <a
-    href="passwd"><b>passwd</b></a> command.  This file can also be
-    generated from <i>Xic</i>.  If present and the password is active,
-    <i>WRspice</i> will check for the availability of updates on
-    startup, and the <a href="wrupdate"><b>wrupdate</b></a> command
-    will be enabled.
-    </dl>
-
-!!SEEALSO
-startup_ops
-
 !! useriface.tex 012709
 !!KEYWORD
 tbsetup
@@ -769,74 +758,4 @@ tbsetup command
 graphics
 startup_files
 
-!! 092615
-!!KEYWORD
-startup_ops
-!!TITLE
-Startup Operations
-!!HTML
-    When <i>WRspice</i> starts, the following operations are generally
-    performed.
-
-    <ol>
-    <li>If configured, the program will check for the availability of
-    software updates.  A pop-up message will notify the user if an
-    update is available.  These can be downloaded and installed with
-    the <a href="wrupdate"><b>wrupdate</b></a> command.  The <a
-    href="passwd"><b>passwd</b></a> command is used to enable this
-    feature, The username and password to the Whiteley Research
-    software repository should be given, and the command will create a
-    <tt>.wrpasswd</tt> file in the user's home directory.  This will
-    enable update checking in both <i>Xic</i> and <i>WRspice</i>.
-
-    <p>
-    <li>The program will check the <tt>wrcad.com</tt> web site for a
-    message file.  If a file is found, and the user has not seen it,
-    the message text will be shown in a pop-up window.  This is a
-    means of providing users with bug reports or other information
-    which could be important.
-
-    <p>
-    The record of the message is saved in the <tt>.wr_cache</tt>
-    directory in the user's home directory.  There are two files:
-    <dl>
-    <dt><tt>wrspice_current_mesg</tt><dd>
-    The is the current message text.
-    <dt><tt>wrspice_current_mesg_digest</tt><dd>
-    This is a checksum of the current message.
-    </dl>
-
-    <p>
-    The program will compare the checksum of the message to the
-    checksum on <tt>wrcad.com</tt>.  If a message is found at
-    <tt>wrcad.com</tt>, and there is no checksum or a different
-    checksum in the user's home directory, the message is downloaded
-    and shown, and the user's files are updated.  Thus, the user will
-    only see the message once, but can find a copy of the message in
-    their <tt>.wr_cache</tt> directory.  Note that there is only one
-    message file, future messages overwrite the files.
-
-    <p>
-    <li>If a new <i>WRspice</i> release is run for the first time, the
-    release notes will appear in a pop-up window, as if the
-    <b>Notes</b> button in the <b>Help</b> menu was pressed.  There is
-    a file in the user's <tt>.wr_cache</tt> directory named
-    "<tt>wrspice_current_release</tt>" that contains a release number. 
-    If, when <i>WRspice</i> starts, this file is missing or the
-    release number is not current, <i>WRspice</i> will show the
-    release notes and update the file.  If the release numbers match,
-    there is no action.
-    </ol>
-
-    <p>
-    If the <a href="nocheckupdate"><b>nocheckupdate</b></a> variable
-    is set (from an <a href="startup_files">initialization file</a>)
-    then there will be no communications with <tt>wrcad.com</tt>, so
-    the checking for updates and a message will be skipped.  This
-    should be set if the user doesn't have internet access, for
-    example, to avoid the delays caused by lack of access and
-    subsequent connection timeout.
-
-!!SEEALSO
-startup_files
 

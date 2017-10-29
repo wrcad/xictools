@@ -103,7 +103,6 @@ Help
     <a href="setup">Installation and Setup</a><br>
     <a href="environment">Environment Variables</a><br>
     <a href="arguments">Command Line Arguments</a><br>
-    <a href="startup_ops">Startup Operations</a><br>
     <a href="startup_files">Initialization Files</a><br>
 
     <h4>Using <i>WRspice</i></h4>

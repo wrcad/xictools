@@ -61,7 +61,6 @@ Authors: 1985 Wayne A. Christopher
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
 #include "help/help_topic.h"
-#include "miscutil/proxy.h"
 #endif
 #ifdef WIN32
 #include "miscutil/msw.h"
@@ -343,95 +342,6 @@ CommandTab::com_seed(wordlist *wl)
         seed = 17;
 #endif
     Rnd.seed(seed);
-}
-
-
-void
-CommandTab::com_passwd(wordlist*)
-{
-    const char *namsg = "passwd:  command no longer available.\n";
-    GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-}
-
-
-void
-CommandTab::com_proxy(wordlist *wl)
-{
-    const char *namsg = "proxy:  command not available.\n";
-    if (CP.GetFlag(CP_NOTTYIO)) {
-        GRpkgIf()->ErrPrintf(ET_WARN, namsg);
-        return;
-    }
-    char buf[256];
-    const char *addr = wl ? wl->wl_word : 0;
-    if (!addr) {
-        if (!TTY.prompt_for_input(buf, 256,
-                "Enter proxy internet address: ") || !*buf)
-            return;
-        addr = buf;
-    }
-
-    if (*addr == '-' || *addr == '+') {
-        if (!proxy::move_proxy(addr))
-            TTY.printf("Operation failed: %s.", filestat::error_msg());
-        else {
-            int c = *addr++;
-            if (!*addr)
-                addr = "bak";
-            if (c == '-') {
-                TTY.printf("Move .wrproxy file to .wrproxy.%s succeeded.\n",
-                    addr);
-            }
-            else {
-                TTY.printf("Move .wrproxy.%s to .wrproxy file succeeded.\n",
-                    addr);
-            }
-        }
-        return;
-    }
-    if (!lstring::prefix("http:", addr)) {
-        TTY.printf("Error: \"http:\" prefix required in address.");
-        return;
-    }
-
-    bool a_has_port = false;
-    const char *e = strrchr(addr, ':');
-    if (e) {
-        e++;
-        if (isdigit(*e)) {
-            e++;
-            while (isdigit(*e))
-                e++;
-        }
-        if (!*e)
-            a_has_port = true;
-    }
-
-    const char *port = wl->wl_next ? wl->wl_next->wl_word : 0;
-    char pbuf[16];
-    if (!a_has_port && !port) {
-
-        if (!TTY.prompt_for_input(pbuf, 16, "Enter port number: "))
-            return;
-        if (*pbuf)
-            port = pbuf;
-    }
-    if (port) {
-        for (const char *c = port; *c; c++) {
-            if (!isdigit(*c)) {
-                TTY.printf("Error: port is not numeric.");
-                return;
-            }
-        }
-    }
-
-    const char *err = proxy::set_proxy(addr, port);
-    if (err)
-        TTY.printf("Operation failed: %s.\n", err);
-    else if (port)
-        TTY.printf("Created .wrproxy file for %s:%s.\n", addr, port);
-    else
-        TTY.printf("Created .wrproxy file for %s.\n", addr);
 }
 
 

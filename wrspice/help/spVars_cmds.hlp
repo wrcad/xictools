@@ -32,11 +32,9 @@ command_vars
 !!REDIRECT helpinitxpos         command_vars#helpinitxpos
 !!REDIRECT helpinitypos         command_vars#helpinitypos
 !!REDIRECT helppath             command_vars#helppath
-!!REDIRECT installcmdfmt        command_vars#installcmdfmt
 !!REDIRECT modpath              command_vars#modpath
 !!REDIRECT mplot_cur            command_vars#mplot_cur
 !!REDIRECT nfreqs               command_vars#nfreqs
-!!REDIRECT nocheckupdate        command_vars#nocheckupdate
 !!REDIRECT nomodload            command_vars#nomodload
 !!REDIRECT noeditwin            command_vars#noeditwin
 !!REDIRECT nopadding            command_vars#nopadding
@@ -60,7 +58,7 @@ command_vars
 !!REDIRECT spicepath            command_vars#spicepath
 !!REDIRECT units                command_vars#units
 
-!! variables.tex 022117
+!! variables.tex 102817
 !!KEYWORD
 command_vars
 !!TITLE
@@ -223,46 +221,6 @@ Command-Specific Variables
     "<tt>/usr/local</tt>".
     </dl>
 
-    <a name="installcmdfmt"></a>
-    <dl>
-    <dt><tt>installcmdfmt</tt><dd>
-    Setting this string allows modification of the installation command
-    used in the <a href="wrupdate"><b>wrupdate</b></a> command, for
-    non-Windows releases only.  If not set the effective value used is
-    <blockquote>
-    <tt>xterm -e sudo %s</tt>
-    </blockquote>
-
-    <p>
-    As an example, a reasonable alternative might be
-    <blockquote>
-    <tt>xterm -e su root -c \"%s\"</tt>
-    </blockquote>
-    Which would use <tt>su</tt> rather than <tt>sudo</tt>, and require
-    the root password.
-
-    <p>
-    The characters "<tt>%s</tt>" are replaced with a script invocation
-    command that actually performs the installation.  If this does not
-    appear in the given string, this command will be added to the
-    end, following a space character.
-
-    <p>
-    The internal script invocation command calls <tt>/bin/sh</tt> to
-    run the shell script <tt>upd_install.sh</tt> found in the startup
-    directory of the installation location.  The three arguments to
-    this script are the distribution file path, the distribution name
-    token (such as "<tt>Linux2</tt>"), and the installation location
-    prefix (such as "<tt>/usr/local</tt>").  This script, too, can be
-    customized or replaced.
-
-    <p>
-    The default strings pop-up a terminal (xterm) window, and ask for
-    a password.  The user, who needs to know a bit about Unix shell
-    programming, can modify this behavior by setting this variable to
-    a new string.
-    </dl>
-
     <a name="modpath"></a>
     <dl>
     <dt><tt>modpath</tt><dd>
@@ -299,16 +257,6 @@ Command-Specific Variables
     This variable specifies how many multiples of the fundamental
     frequency to print in the <a href="fourier"><b>fourier</b></a>
     command.  If not set, 10 values are printed.
-    </dl>
-
-    <a name="nocheckupdate"></a>
-    <dl>
-    <dt><tt>nocheckupdate</tt><dd>
-    By default, when the program starts, the distribution repository
-    will be queried via the internet, and if a newer release is
-    available, a message will appear that notifies the user.  If this
-    variable is set in the <a href="startup_files">startup file</a>,
-    this checking will be skipped.
     </dl>
 
     <a name="noeditwin"></a>

@@ -184,13 +184,11 @@ namespace cmdnames {
     const char *cmd_mplot       = "mplot";
     const char *cmd_noise       = "noise";
     const char *cmd_op          = "op";
-    const char *cmd_passwd      = "passwd";
     const char *cmd_pause       = "pause";
     const char *cmd_pick        = "pick";
     const char *cmd_plot        = "plot";
     const char *cmd_plotwin     = "plotwin";
     const char *cmd_print       = "print";
-    const char *cmd_proxy       = "proxy";
     const char *cmd_pwd         = "pwd";
     const char *cmd_pz          = "pz";
     const char *cmd_qhelp       = "qhelp";
@@ -421,9 +419,6 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_op, com_op, false, true, true,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       "[.op card args] : Determine the operating point of the circuit." ) ,
-    sCommand( cmd_passwd, com_passwd, false, false, false,
-      0, 0, 0, 0, E_DEFHMASK, 0, 0, 0,
-      ": set update repository password." ),
     sCommand( cmd_pause, com_pause, false, false, false,
       0, 0, 0, 0, E_DEFHMASK, 0, 0, 0,
       ": Wait for keypress." ),
@@ -439,9 +434,6 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_print, com_print, false, false, true,
       Bvec, Bvec, Bvec, Bvec, E_BEGINNING, 0, LOTS, 0,
       "[col] expr ... : Print vector values." ) ,
-    sCommand( cmd_proxy, com_proxy, false, false, false,
-      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 2, 0,
-      ": Create/update .wrproxy file." ) ,
     sCommand( cmd_pwd, com_pwd, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 0, 0,
       ": Print working directory." ) ,

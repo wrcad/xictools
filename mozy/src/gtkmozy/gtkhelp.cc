@@ -56,6 +56,7 @@
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
 #include "miscutil/timer.h"
+#include "miscutil/proxy.h"
 
 #include <unistd.h>
 #include <string.h>
@@ -387,11 +388,11 @@ QueueLoop &HLPcontext::hcxImageQueueLoop = _queue_timer_;
 
 // Menu dispatch codes
 enum { HA_NIL, HA_CANCEL, HA_QUIT, HA_OPEN, HA_FILE, HA_BACK,
-    HA_FORWARD, HA_DUMPCFG, HA_SEARCH, HA_FIND, HA_SAVE, HA_PRINT,
-    HA_RELOAD, HA_ISO8859, HA_MKFIFO, HA_COLORS, HA_FONT, HA_NOCACHE,
-    HA_CLRCACHE, HA_LDCACHE, HA_SHCACHE, HA_NOCKS, HA_NOIMG, HA_SYIMG,
-    HA_DLIMG, HA_PGIMG, HA_APLN, HA_ABUT, HA_AUND, HA_HLITE, HA_WARN,
-    HA_FREEZ, HA_COMM, HA_BMADD, HA_BMDEL, HA_HELP };
+    HA_FORWARD, HA_DUMPCFG, HA_PROXY, HA_SEARCH, HA_FIND, HA_SAVE,
+    HA_PRINT, HA_RELOAD, HA_ISO8859, HA_MKFIFO, HA_COLORS, HA_FONT,
+    HA_NOCACHE, HA_CLRCACHE, HA_LDCACHE, HA_SHCACHE, HA_NOCKS,
+    HA_NOIMG, HA_SYIMG, HA_DLIMG, HA_PGIMG, HA_APLN, HA_ABUT, HA_AUND,
+    HA_HLITE, HA_WARN, HA_FREEZ, HA_COMM, HA_BMADD, HA_BMDEL, HA_HELP };
 
 #define GIFC(x) (GtkItemFactoryCallback)x
 
@@ -423,6 +424,8 @@ GtkItemFactoryEntry GTKhelpPopup::h_help_menu_items[] = {
   IFD("/_Options",                  0,               0, 0,
       "<Branch>"),
   IFD("/Options/Save Config",       0, GIFC(h_menu_hdlr), HA_DUMPCFG,
+      0),
+  IFD("/Options/Set Proxy",         0, GIFC(h_menu_hdlr), HA_PROXY,
       0),
 #if defined(HAVE_REGEX_H) || defined(HAVE_REGEXP_H) || defined(HAVE_RE_COMP)
   IFD("/Options/_Search Database", "<Alt>S", GIFC(h_menu_hdlr), HA_SEARCH,
@@ -1876,6 +1879,11 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr, unsigned activate)
         else
             w->PopUpMessage("Saved .mozyrc file.", false);
     }
+    else if (activate == HA_PROXY) {
+        char *pxy = proxy::get_proxy();
+        w->PopUpInput("Enter proxy url:", pxy, "Proxy", h_proxy_proc, w);
+        delete [] pxy;
+    }
     else if (activate == HA_SEARCH) {
         w->PopUpInput("Enter text for database search:", "",
             "Search", h_do_search_proc, w);
@@ -2195,6 +2203,116 @@ GTKhelpPopup::h_do_search_proc(const char *target, void *hlpptr)
         if (w->wb_input)
             w->wb_input->popdown();
     }
+}
+
+
+// Static function.
+// Callback passed to PopUpInput to set a proxy url.
+//
+// The string is in the form "url [port]", where the port can be part
+// of the url, separated by a colon.  In this case, the second token
+// should not be given.  An explicit port number must be provided by
+// either means.
+//
+void
+GTKhelpPopup::h_proxy_proc(const char *str, void *hlpptr)
+{
+    GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);
+    if (!w || !str)
+        return;
+    char buf[256];
+    char *addr = lstring::getqtok(&str);
+
+    // If not address given, convert to "-", which indicates to move
+    // .wrproxy -> .wrproxy.bak
+    if (!addr)
+        addr = lstring::copy("-");
+    else if (!*addr) {
+        delete [] addr;
+        addr = lstring::copy("-");
+    }
+    if (*addr == '-' || *addr == '+') {
+        const char *err = proxy::move_proxy(addr);
+        if (err) {
+            snprintf(buf, 256, "Operation failed: %s.", err);
+            w->PopUpErr(MODE_ON, buf);
+        }
+        else {
+            const char *t = addr+1;
+            if (!*t)
+                t = "bak";
+            if (*addr == '-') {
+                snprintf(buf, 256,
+                    "Move .wrproxy file to .wrproxy.%s succeeded.\n", t);
+                w->PopUpMessage(buf, false);
+            }
+            else {
+                snprintf(buf, 256,
+                    "Move .wrproxy.%s to .wrproxy file succeeded.\n", t);
+                w->PopUpMessage(buf, false);
+            }
+        }
+        delete [] addr;
+        if (w->wb_input)
+            w->wb_input->popdown();
+        return;
+    }
+    if (!lstring::prefix("http:", addr)) {
+        w->PopUpMessage("Error: \"http:\" prefix required in address.", true);
+        delete [] addr;
+        if (w->wb_input)
+            w->wb_input->popdown();
+        return;
+    }
+
+    bool a_has_port = false;
+    const char *e = strrchr(addr, ':');
+    if (e) {
+        e++;
+        if (isdigit(*e)) {
+            e++;
+            while (isdigit(*e))
+                e++;
+        }
+        if (!*e)
+            a_has_port = true;
+    }
+
+    char *port = lstring::gettok(&str, ":");
+    if (!a_has_port && !port) {
+        // Default to port 80.
+        port = lstring::copy("80");
+    }
+    if (port) {
+        for (const char *c = port; *c; c++) {
+            if (!isdigit(*c)) {
+                w->PopUpMessage("Error: port is not numeric.", true);
+                delete [] addr;
+                delete [] port;
+                if (w->wb_input)
+                    w->wb_input->popdown();
+                return;
+            }
+        }
+    }
+
+    const char *err = proxy::set_proxy(addr, port);
+    if (err) {
+        snprintf(buf, 256, "Operation failed: %s.", err);
+        w->PopUpErr(MODE_ON, buf);
+    }
+    else if (port) {
+        snprintf(buf, 256, "Created .wrproxy file for %s:%s.\n", addr, port);
+        w->PopUpMessage(buf, false);
+    }
+    else {
+        snprintf(buf, 256, "Created .wrproxy file for %s.\n", addr);
+        w->PopUpMessage(buf, false);
+    }
+    delete [] addr;
+    delete [] port;
+    if (w->wb_input)
+        w->wb_input->popdown();
 }
 
 

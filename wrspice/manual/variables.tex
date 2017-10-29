@@ -264,7 +264,7 @@ some others will always be shown on top of other windows.
 %SU-------------------------------------
 \subsection{Command-Specific Variables}
 
-% spVars_cmds.hlp:command_vars 022117
+% spVars_cmds.hlp:command_vars 102817
 
 These variables control the operation of specific {\WRspice} commands
 and functions.  Most of these variables can be set indirectly from the
@@ -382,39 +382,6 @@ otherwise it assumes a built-in default ``{\vt (
 /usr/local/xictools/wrspice/help )}'', or, if {\et XT\_PREFIX} is
 defined in the environment, its value replaces ``{\vt /usr/local}''.
 
-\index{installcmdfmt variable}
-\item{\et installcmdfmt}\\
-Setting this string allows modification of the installation command
-used in the {\cb wrupdate} command, for non-Windows releases only.  If
-not set the effective value used is
-\begin{quote}
-{\vt xterm -e sudo \%s}
-\end{quote}
-
-As an example, a reasonable alternative might be
-\begin{quote}
-{\vt xterm -e su root -c $\backslash$"\%s$\backslash$"}
-\end{quote}
-which would use {\vt su} rather than {\vt sudo}, and require the
-root password.
-
-The characters ``{\vt \%s}'' are replaced with a script invocation
-command that actually performs the installation.  If this does not
-appear in the given string, this command will be added to the end,
-following a space character.
-
-The internal script invocation command calls {\vt /bin/sh} to run the
-shell script {\vt upd\_install.sh} found in the startup directory of
-the installation location.  The three arguments to this script are the
-distribution file path, the distribution name token (such as ``{\vt   
-Linux2}''), and the installation location prefix (such as ``{\vt
-/usr/local}'').  This script, too, can be customized or replaced.
-
-The default strings pop-up a terminal (xterm) window, and ask for a
-password.  The user, who needs to know a bit about Unix shell
-programming, can modify this behavior by setting this variable to a
-new string.
-
 \index{modpath variable}
 \item{\et modpath}\\
 This list variable contains directory paths where loadable device
@@ -443,13 +410,6 @@ file names are generated internally.
 This variable specifies how many multiples of the fundamental
 frequency to print in the {\cb fourier} command.  If not set, 10
 values are printed.
-
-\index{nocheckupdate variable}
-\item{\et nocheckupdate}\\
-By default, when the program starts, the distribution repository will
-be queried via the internet, and if a newer release is available, a
-message will appear that notifies the user.  If this variable is set
-in a startup file, this checking will be skipped.
 
 \index{noeditwin variable}
 \item{\et noeditwin}\\
