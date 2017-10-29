@@ -453,8 +453,11 @@ dnl         # keep only the first token.
         fi
     else
 dnl     # Need Debian/Ubuntu, etc.
-        echo "Architecture not supported."
-        exit
+
+dnl     # This will probably build, but no packaging.
+        echo "Architecture not supported, continuing anyway."
+        ARCH="x86_64"
+        lib_dirs="/usr/lib64"
     fi
     
     DIST_SUFFIX="rpm"
@@ -585,13 +588,19 @@ if test $have_cfg = yes; then
     ${gtklocd}pkg-config --exists gtk+-2.0
     if test $? = 0; then
         GRPREF=gtk
-dnl Filter needed in Windows, pkg-config adds ^M that chokes g++.
-        tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
+        if test -n "$EXESUFFIX"; then
+dnl         # Filter needed in Windows, pkg-config adds ^M that chokes g++.
+            tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
+            tkl="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
+        else
+            tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0`"
+            tkl="`${gtklocd}pkg-config --libs gtk+-2.0`"
+        fi
         TOOLKITINC="-DUSE_GTK $tkcf"
-        TOOLKITLIBS="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
         if test $OSNAME = "Darwin" -a $with_quartz = yes; then
             TOOLKITCFLAGS="-DWITH_QUARTZ"
         fi
+        TOOLKITLIBS="$tkl"
     else
         echo "gtk2 not found"
         exit
