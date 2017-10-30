@@ -2,28 +2,31 @@
 LOCATION = mozy/lib/help
 #######################################################################
 
-BASEFILES = \
-  FileSel.hlp Hardcopy.hlp HelpSys.hlp TextEditor.hlp accessories.hlp \
-  TMsmall.gif wrbannermain.gif
+MOZYFILES = \
+  Main.hlp HelpSys.hlp TextEditor.hlp accessories.hlp
 
-SSFILES = \
-  filesel.png print.png help.png texted.png email.png
+BASEFILES = \
+  FileSel.hlp Hardcopy.hlp TMsmall.gif wrbannermain.gif
+
+MOZYSSFILES = \
+  help.png texted.png email.png
+
+BASESSFILES = \
+  filesel.png print.png
 
 BASEDIR = ../../xt_base/help
 
-dummy: $(BASEFILES) $(SSFILES)
+dummy: $(BASEFILES) $(BASESSFILES)
 
 $(BASEFILES): $(BASEDIR)/$@
 	cp -fp $(BASEDIR)/$@ .
 
-$(SSFILES): $(BASEDIR)/screenshots/$@
-	if [ ! -d screenshots ]; then \
-	    mkdir screenshots; \
-	fi;
+$(BASESSFILES): $(BASEDIR)/screenshots/$@
 	cp -fp $(BASEDIR)/screenshots/$@ screenshots
 
 clean::
 
 distclean:
-	-@rm -rf $(BASEFILES) screenshots
+	-@rm -f $(BASEFILES)
+	-@(cd  screenshots; rm -f $(BASESSFILES))
 
