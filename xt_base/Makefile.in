@@ -22,7 +22,10 @@ SUBDIRS = \
   $(MALLOC_DIR) \
   $(REGEX_DIR)
 
-dummy: 
+all: 
+	@if [ ! -d lib ]; then \
+	    mkdir lib; \
+	fi
 	@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \
 	        (cd $$a; $(MAKE)) \
@@ -43,6 +46,6 @@ distclean:
 	    fi; \
 	done
 	-@rm -f config.cache config.log config.status configure Makefile
-	-@rm -rf autom4te.cache
+	-@rm -rf lib autom4te.cache
 	-@rm -f include/config.h
 
