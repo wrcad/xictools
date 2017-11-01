@@ -1,6 +1,7 @@
 # wrspice/lib/help/Makefile
 
-BASEFILES = FileSel.hlp Hardcopy.hlp HelpSys.hlp TextEditor.hlp TMsmall.gif
+BASEFILES = FileSel.hlp Hardcopy.hlp
+MOZYFILES = HelpSys.hlp TextEditor.hlp TMsmall.gif
 
 SPFILES = \
   spAnalysis.hlp spElements.hlp spExpressions.hlp spInput.hlp spModels.hlp \
@@ -8,21 +9,25 @@ SPFILES = \
 
 BASE = ../../xt_base/help
 SPBASE = ../../xt_base/sphelp
+MOZY = ../../mozy/help
 
-depend: $(BASEFILES) $(SPFILES)
+depend: $(BASEFILES) $(MOZYFILES) $(SPFILES)
 	cd screenshots; $(MAKE)
 
 $(BASEFILES):
 	cp -fp $(BASE)/$@ .
+
+$(MOZYFILES):
+	cp -fp $(MOZY)/$@ .
 
 $(SPFILES):
 	cp -fp $(SPBASE)/$@ .
 
 FileSel.hlp:    $(BASE)/FileSel.hlp
 Hardcopy.hlp:   $(BASE)/Hardcopy.hlp
-HelpSys.hlp:    $(BASE)/HelpSys.hlp
-TextEditor.hlp: $(BASE)/TextEditor.hlp
-TMsmall.gif:    $(BASE)/TMsmall.gif
+HelpSys.hlp:    $(MOZY)/HelpSys.hlp
+TextEditor.hlp: $(MOZY)/TextEditor.hlp
+TMsmall.gif:    $(MOZY)/TMsmall.gif
 
 spAnalysis.hlp: $(SPBASE)/spAnalysis.hlp
 spElements.hlp: $(SPBASE)/spElements.hlp
@@ -35,7 +40,7 @@ spSources.hlp:  $(SPBASE)/spSources.hlp
 clean:
 
 distclean:
-	-@rm -f $(BASEFILES) $(SPFILES)
+	-@rm -f $(BASEFILES) $(MOZYFILES) $(SPFILES)
 	-@cd screenshots; $(MAKE) distclean
 
 # Look for forms like <a href="something>, some browsers can't handle

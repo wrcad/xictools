@@ -235,7 +235,7 @@ pkgs::xt_install(dl_elt_t *dlist, bool dryrun)
         msw_exepath = cmd;
         MessageBox(0, "Exit this program to install updates.", "Info", MB_OK);
         return (0);
-    {
+    }
     MessageBox(0, "Unknown error when scheduling exit process.", "Error",
         MB_OK);
 #else

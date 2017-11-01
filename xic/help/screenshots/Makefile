@@ -1,20 +1,27 @@
 # xic/lib/help/screenshots/Makefile
 
-SSFILES = \
-  filesel.png print.png help.png texted.png email.png
+BASESSFILES = \
+  filesel.png print.png
 
-SSHOTS = ../../../xt_base/help/screenshots
+MOZYSSFILES = \
+  help.png texted.png email.png
 
-depend: $(SSFILES)
+BASESSHOTS = ../../../xt_base/help/screenshots
+MOZYSSHOTS = ../../../mozy/help/screenshots
 
-$(SSFILES):
-	cp -fp $(SSHOTS)/$@ .
+depend: $(BASESSFILES) $(MOZYSSFILES)
 
-filesel.png:    $(SSHOTS)/filesel.png
-print.png:      $(SSHOTS)/print.png
-help.png:       $(SSHOTS)/help.png
-texted.png:     $(SSHOTS)/texted.png
-email.png:      $(SSHOTS)/email.png
+$(BASESSFILES):
+	cp -fp $(BASESSHOTS)/$@ .
+
+$(MOZYSSFILES):
+	cp -fp $(MOZYSSHOTS)/$@ .
+
+filesel.png:    $(BASESSHOTS)/filesel.png
+print.png:      $(BASESSHOTS)/print.png
+help.png:       $(MOZYSSHOTS)/help.png
+texted.png:     $(MOZYSSHOTS)/texted.png
+email.png:      $(MOZYSSHOTS)/email.png
 
 distclean:
-	-@rm -f $(SSFILES)
+	-@rm -f $(BASESSFILES) $(MOZYSSFILES)

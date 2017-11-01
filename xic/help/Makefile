@@ -9,8 +9,10 @@ XPMS = \
   wire.xpm wr.xpm xform.xpm xor.xpm
 
 BASEFILES = \
-  FileSel.hlp Hardcopy.hlp HelpSys.hlp TextEditor.hlp accessories.hlp \
-  TMsmall.gif wrbannermain.gif
+  FileSel.hlp Hardcopy.hlp TMsmall.gif wrbannermain.gif
+
+MOZYFILES = \
+  HelpSys.hlp TextEditor.hlp accessories.hlp
 
 SPFILES = \
   spAnalysis.hlp spElements.hlp spExpressions.hlp spInput.hlp \
@@ -19,8 +21,9 @@ SPFILES = \
 BITMAPS = ../include/bitmaps
 BASE = ../../xt_base/help
 SPBASE = ../../xt_base/sphelp
+MOZY = ../../mozy/help
 
-depend: $(XPMS) $(BASEFILES) $(SPFILES)
+depend: $(XPMS) $(BASEFILES) $(MOZYFILES) $(SPFILES)
 	cd screenshots; $(MAKE)
 
 $(XPMS): $(BITMAPS)/$@
@@ -29,16 +32,19 @@ $(XPMS): $(BITMAPS)/$@
 $(BASEFILES):
 	cp -fp $(BASE)/$@ .
 
+$(MOZYFILES):
+	cp -fp $(MOZY)/$@ .
+
 $(SPFILES):
 	cp -fp $(SPBASE)/$@ .
 
 FileSel.hlp:    $(BASE)/FileSel.hlp
 Hardcopy.hlp:   $(BASE)/Hardcopy.hlp
-HelpSys.hlp:    $(BASE)/HelpSys.hlp
-TextEditor.hlp: $(BASE)/TextEditor.hlp
-accessories.hlp: $(BASE)/accessories.hlp
 TMsmall.gif:    $(BASE)/TMsmall.gif
 wrbannermain.gif: $(BASE)/wrbannermain.gif
+HelpSys.hlp:    $(MOZY)/HelpSys.hlp
+TextEditor.hlp: $(MOZY)/TextEditor.hlp
+accessories.hlp: $(MOZY)/accessories.hlp
 
 spAnalysis.hlp: $(SPBASE)/spAnalysis.hlp
 spElements.hlp: $(SPBASE)/spElements.hlp
@@ -51,7 +57,7 @@ spSources.hlp:  $(SPBASE)/spSources.hlp
 clean:
 
 distclean:
-	-@rm -f $(XPMS) $(BASEFILES) $(SPFILES)
+	-@rm -f $(XPMS) $(BASEFILES) $(MOZYFILES) $(SPFILES)
 	-@cd screenshots; $(MAKE) $@
 
 # Look for forms like <a href="something>, some browsers can't handle
