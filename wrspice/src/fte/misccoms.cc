@@ -205,7 +205,8 @@ CommandTab::com_help(wordlist *wl)
         GRpkgIf()->ErrPrintf(ET_ERROR, err);
 #else
     (void)wl;
-    GRpkgIf()->ErrPrintf(ET_ERROR, "Help system is not available.");
+    GRpkgIf()->ErrPrintf(ET_MSG,
+        "Help system is not available in this executable.");
 #endif
 }
 
@@ -216,7 +217,8 @@ CommandTab::com_helpreset(wordlist*)
 #ifdef HAVE_MOZY
     HLP()->rehash();
 #else
-    GRpkgIf()->ErrPrintf(ET_ERROR, "Help system is not available.");
+    GRpkgIf()->ErrPrintf(ET_MSG,
+        "Help system is not available in this executable.");
 #endif
 }
 
@@ -348,7 +350,12 @@ CommandTab::com_seed(wordlist *wl)
 void
 CommandTab::com_wrupdate(wordlist*)
 {
+#ifdef HAVE_MOZY
     HLP()->read(":xt_pkgs");
+#else
+    GRpkgIf()->ErrPrintf(ET_MSG,
+        "Package manager is not available in this executable.");
+#endif
 }
 
 

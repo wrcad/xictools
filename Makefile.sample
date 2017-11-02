@@ -15,7 +15,7 @@
 # to derivation from GNU-licensed original source code.  All of the
 # tainted code is under mozy.  If you're commercial and fear the GNU,
 # uncomment this and live without the help system, http file transfer,
-# and screen dumps.
+# screen dumps, and package management.
 #
 #NOMOZY = --enable-nomozy=yes
 
