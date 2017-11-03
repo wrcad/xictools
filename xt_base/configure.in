@@ -454,8 +454,46 @@ dnl         # keep only the first token.
     else
 dnl     # Need Debian/Ubuntu, etc.
 
+        if test -f /etc/arch_release; then
+            OSNAME="LinuxArch"
+        elif test -f /etc/gentoo_release; then
+            OSNAME="LinuxGentoo"
+        elif test -f /etc/os-release; then
+dnl         # This should find Debian, Ubuntu, and perhaps others.
+dnl         # Need to parse the file, grab the first name token, and
+dnl         # First version number.  Have to strip quotes.
+
+            nm=`(while true; do
+                read foo 
+                if test -z "$foo"; then
+                    break;
+                fi
+                tifs="$IFS"
+                IFS="="
+                set -- $foo
+                IFS="$tifs"
+                if test $1 = NAME; then
+                    set -- $2
+                    name=${1%\"}
+                    name=${name#\"}
+                elif test $1 = VERSION; then
+                    IFS=". "
+                    set -- $2
+                    IFS="$tifs"
+                    vers=${1#\"}
+                fi
+                if test -n "$name" -a -n "$vers"; then
+                    echo $name$vers
+                    break
+                fi
+            done) < /etc/os-release`
+            if test -n "$nm"; then
+                OSNAME=Linux$nm
+            fi
+        fi
+
 dnl     # This will probably build, but no packaging.
-        echo "Architecture not supported, continuing anyway."
+        echo "Architecture $OSNAME not supported, continuing anyway."
         ARCH="x86_64"
         lib_dirs="/usr/lib64"
     fi
