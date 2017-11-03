@@ -1,0 +1,25 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+# Make sure that this is entirely gone.
+rm -rf $prefix/xictools/xic.current
+
+txic=$prefix/xictools/xic
+if [ -h $txic ]; then
+    rm -f $txic
+fi
+
+# Remove wrapper and links.
+tbin=$prefix/xictools/bin
+rm -f $tbin/xic
+if [ -h $tbin/wrencode ]; then
+    rm -f $tbin/wrencode
+fi
+if [ -h $tbin/wrdecode ]; then
+    rm -f $tbin/wrdecode
+fi
+if [ -h $tbin/wrsetpass ]; then
+    rm -f $tbin/wrsetpass
+fi
+
