@@ -31,7 +31,7 @@ unpack:
 	@if [ ! -d $(FASTHENRY_DIR) ]; then \
 	    tar xzf $(FASTHENRY); \
 	    if [ -n "$(EXESUFFIX)" ]; then \
-	        cd $(FASTHENRY_DIR); ./config mingw; \
+	        (cd $(FASTHENRY_DIR); ./config mingw); \
 	    fi; \
 	    rm -f fasthenry-3.0wr/src/fasthenry/induct.c; \
             sed -e s/XT_IDSTRING/$(IDSTR)/ \

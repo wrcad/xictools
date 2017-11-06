@@ -235,7 +235,7 @@ cMRcmdIf::cMRcmdIf()
             }
             sLstr lstr;
             lstr.add(mrhome);
-            lstr.add("/doc/xic");
+            lstr.add("/help");
             char *np = FIO()->PAppendPath(
                 lstring::copy(CDvdb()->getVariable(VA_HelpPath)),
                 lstr.string(), false);
