@@ -258,9 +258,9 @@ programs from these windows (There are issues running the programs,
 though.  See the Xic or WRspice release notes).
 
 2.  Go to http:/win-builds.org, and download the installer
-application.  This is a little tricky, so take care.
-  a.  If you have the gtk2-bundle package installed, move it to a
-      temporary safe location.
+application.  The procedure is a little tricky, so take care.
+  a.  If you have the gtk2-bundle package already installed, move it
+      to a temporary safe location.
 
       cd c:/usr/local
       mv gtk2-bundle ZZgkt2-bundle
@@ -276,8 +276,11 @@ application.  This is a little tricky, so take care.
 
   c.  Move the new directory tree in gtk2-bundle to win-builds.
 
-      cd c:/usr/local
-      mv gtk2-bundle win-builds
+      #cd c:/usr/local
+      #mv gtk2-bundle win-builds
+      This should work, but for some reason it didn't (I got a
+      permission denied message).  I had to reboot Windows, and use
+      the Windows Explorer file manager to change the directory name.
 
   d.  If you already have the gtk2-bundle package installed, move it
       back into place.
@@ -291,6 +294,10 @@ application.  This is a little tricky, so take care.
 This will give you the "mingw" tool chain for building the programs,
 and the gtk-2 libraries and all dependencies.  The latter are resolved
 in gtk2-bundle, which is necessary for exported packages.
+
+Why the weird procedure?  We want the binaries to find their dlls in
+gtk2-bundle, but have the compiler (which is not in the bundle) in
+scope.
 
 4.  Go to http://www.jrsoftware.org and grab inno-setup 5.5.9
 Install it in c:\inno-5.5.9

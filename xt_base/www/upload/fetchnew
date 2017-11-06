@@ -41,6 +41,7 @@ if [ x"$oses" = x"all" ]; then
   LinuxRHEL5 \
   LinuxRHEL6 \
   LinuxRHEL7 \
+  LinuxUbuntu17 \
   Win32"
 fi
 
