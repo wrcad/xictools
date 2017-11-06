@@ -45,11 +45,10 @@
 #MINGW  = --enable-mingw=/usr/local/win-builds
 #GTKLOC = --enable-gtk2=/usr/local/gtk2-bundle/bin
 
-# On Windows, we use Cygwin "autoconf-2.69".  Everywhere else, this is
-# just "autoconf".
-
-#ACONF  = autoconf-2.69
-ACONF  = autoconf
+# NOTE:  We need "autoconf" in Windows, Cygwin provides "autoconf-2.69".
+# To fix, from a CMD window in c:\cygwin64\bin, give
+#  mklink /j autoconf autoconf-2.69
+# This creates a symbolic link named "autoconf" to autoconf-2.69.
 
 # If you don't want to build all the tools, you can choose what to
 # build below.  The xt_base is required for everything, other
@@ -75,7 +74,7 @@ FLAGFILE = .configured
 
 config:
 	@if [ ! -f $(FLAGFILE) ]; then \
-	    (cd xt_base; $(ACONF); ./configure $(CFARGS)); \
+	    (cd xt_base; autoconf; ./configure $(CFARGS)); \
 	    touch $(FLAGFILE); \
 	fi
 	(${MAKE} depend)
@@ -85,7 +84,7 @@ reconfig:
 	$(MAKE) config
 
 testcfg:
-	cd xt_base; $(MAKE) distclean; $(ACONF); ./configure $(CFARGS)
+	cd xt_base; $(MAKE) distclean; autoconf; ./configure $(CFARGS)
 
 all: config
 	-@for a in $(SUBDIRS); do \

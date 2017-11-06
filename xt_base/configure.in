@@ -851,11 +851,6 @@ if test $OSNAME = "Win32"; then
     LIBS="$MSLIBS $MSLIBS2 $LIBS"
     EXTRALIBS="-lpthread"
 
-dnl # png.h is in a strange place under win-builds
-    if test -d /usr/local/win-builds/include/libpng14; then
-        IMG_INCLUDES="-I/usr/local/win-builds/include/libpng14"
-    fi
-
 elif test $OSNAME = "Darwin"; then
 dnl  If the gtk2-bundle export package is found, use it.  Otherwise
 dnl  assume libraries/includes are under /opt (MacPorts).
