@@ -1431,7 +1431,7 @@ sDevOut::cleanup()
 int
 sDevOut::fopen(const char *fname)
 {
-    int fd = open(fname, O_CREAT|O_TRUNC|O_WRONLY);
+    int fd = open(fname, (O_CREAT|O_TRUNC|O_WRONLY), 0644);
     if (fd > 0) {
         for (int i = 0; i < OUT_MAX_FDS; i++) {
             if (dvo_fds[i] == 0) {

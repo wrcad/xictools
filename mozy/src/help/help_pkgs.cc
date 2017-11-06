@@ -48,6 +48,7 @@
 #ifdef WIN32
 #include "miscutil/msw.h"
 #endif
+#include <unistd.h>
 
 //
 // Implementation of package management for XicTools.
@@ -511,15 +512,48 @@ pkgs::local_pkgs()
         fclose(fp);
     }
 #else
-    FILE *fp = popen("rpm -qa | grep xictools_", "r");
-    if (fp) {
-        char *s;
-        while ((s = fgets(buf, 256, fp)) != 0)
-            list = new stringlist(lstring::copy(s), list);
-        if (list && list->next)
-            stringlist::sort(list);
-        fclose(fp);
+    if (!access("/usr/bin/rpm", X_OK) || !access("/bin/rpm", X_OK)) {
+        FILE *fp = popen("rpm -qa | grep xictools_", "r");
+        if (fp) {
+            char *s;
+            while ((s = fgets(buf, 256, fp)) != 0)
+                list = new stringlist(lstring::copy(s), list);
+            fclose(fp);
+        }
     }
+
+    if (!access("/usr/bin/dpkg", X_OK) || !access("/bin/dpkg", X_OK)) {
+        FILE *fp = popen("dpkg-query --show | grep xictools-", "r");
+        if (fp) {
+            char *s;
+            while ((s = fgets(buf, 256, fp)) != 0) {
+                char *pname = lstring::gettok(&s);
+                char *vers = lstring::gettok(&s);
+                if (!vers) {
+                    delete [] pname;
+                    continue;
+                }
+                // The pname is in a form like "xictools-xic-ubuntu17".
+                char *os = strchr(pname, '-');
+                *os++ = '_';  // now xictools_xic...
+                os = strchr(os+1, '-');
+                if (!os) {
+                    delete [] pname;
+                    delete [] vers;
+                    continue;
+                }
+                *os++ = 0;
+                *os = toupper(*os);
+                sprintf(buf, "%s-Linux%s-%s", pname, os, vers);
+                delete [] pname;
+                delete [] vers;
+                list = new stringlist(lstring::copy(buf), list);
+            }
+            fclose(fp);
+        }
+    }
+    if (list && list->next)
+        stringlist::sort(list);
 
 #endif
 #endif

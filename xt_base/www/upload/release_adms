@@ -5,4 +5,5 @@ LinuxRHEL5.i686 2.3.60  i686    rpm     .
 LinuxRHEL5      2.3.60  x86_64  rpm     .
 LinuxRHEL6      2.3.60  x86_64  rpm     .
 LinuxRHEL7      2.3.60  x86_64  rpm     .
+LinuxUbuntu17   2.3.60  x86_64  deb     .
 Win32           2.3.60  i386    exe     .

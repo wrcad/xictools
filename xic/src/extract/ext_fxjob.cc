@@ -600,7 +600,7 @@ namespace {
         if (unlockpt(ptm) < 0)
             return (false);
         char *ptsn = ptsname(ptm);
-        int pts = open(ptsn, O_CREAT | O_WRONLY | O_TRUNC);
+        int pts = open(ptsn, (O_CREAT | O_WRONLY | O_TRUNC), 0644);
         if (pts < 0) {
             close(ptm);
             return (false);
@@ -639,7 +639,7 @@ namespace {
 
         int pid = fork();
         if (pid == 0) {
-            int fd = open(fname, O_CREAT | O_WRONLY | O_TRUNC);
+            int fd = open(fname, (O_CREAT | O_WRONLY | O_TRUNC), 0644);
             for (;;) {
                 char bf[4];
                 int rv = read(pfds[0], bf, 1);
@@ -753,7 +753,7 @@ fxJob::run(bool run_foreg, bool monitor)
     if (!pid) {
         dspPkgIf()->CloseGraphicsConnection();
         if (!monitor || !tee(j_outfile)) {
-            int fd = open(j_outfile, O_CREAT | O_WRONLY | O_TRUNC);
+            int fd = open(j_outfile, (O_CREAT | O_WRONLY | O_TRUNC), 0644);
             dup2(fd, 1);
         }
 

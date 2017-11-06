@@ -359,19 +359,40 @@ if [ -n "$names" ]; then
             esac
         done
     else
-        list=$(rpm -qa | grep ^xictools_)
-        if [ -n "$list" ]; then
-            for a in $names; do
-                pname=xictools_$a
-                for b in $list; do
-                    if [[ $b = $pname* ]]; then
-                        echo rpm -e $b
-                        if [ $dryrun = no ]; then
-                            sudo rpm -e $b
+        command -v rpm 2>&1 > /dev/null
+        if [ $? = 0 ]; then
+            list=$(rpm -qa | grep ^xictools_)
+            if [ -n "$list" ]; then
+                for a in $names; do
+                    pname=xictools_$a
+                    for b in $list; do
+                        if [[ $b = $pname* ]]; then
+                            echo rpm -e $b
+                            if [ $dryrun = no ]; then
+                                sudo rpm -e $b
+                            fi
                         fi
-                    fi
+                    done
                 done
-            done
+            fi
+        fi
+
+        command -v dpkg 2>&1 > /dev/null
+        if [ $? = 0 ]; then
+            list=$(dpkg-query --show | grep ^xictools-)
+            if [ -n "$list" ]; then
+                for a in $names; do
+                    pname=xictools-$a
+                    for b in $list; do
+                        if [[ $b = $pname* ]]; then
+                            echo dpkg -r $b
+                            if [ $dryrun = no ]; then
+                                sudo dpkg -r $b
+                            fi
+                        fi
+                    done
+                done
+            fi
         fi
     fi
 else

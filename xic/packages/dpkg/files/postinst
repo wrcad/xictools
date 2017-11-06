@@ -1,0 +1,26 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+libdir=$prefix/xictools/xic.current
+
+# Link technology file.
+if [ ! -f $libdir/startup/xic_tech ]; then
+    ln -s xic_tech.scmos $libdir/startup/xic_tech
+fi
+
+# Link xic.current to xic.
+txic=$prefix/xictools/xic
+ln -s $libdir $txic
+
+# Set up executables in tools bin.
+tbin=$prefix/xictools/bin
+if [ ! -d $tbin ]; then
+    mkdir $tbin
+fi
+sed -e s%/usr/local%$prefix% < $libdir/bin/xic.sh > $tbin/xic
+chmod 755 $tbin/xic
+ln -s $txic/bin/wrencode $tbin/wrencode
+ln -s $txic/bin/wrdecode $tbin/wrdecode
+ln -s $txic/bin/wrsetpass $tbin/wrsetpass
+

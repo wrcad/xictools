@@ -37,7 +37,7 @@ libdir=$prefix/xictools/wrspice.current
 twrs=$prefix/xictools/wrspice
 ln -s $libdir $twrs
 
-# Link executables into tools bin,
+# Link executables into tools bin.
 tbin=$prefix/xictools/bin
 if [ ! -d $tbin ]; then
     mkdir $tbin

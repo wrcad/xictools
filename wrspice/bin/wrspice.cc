@@ -213,9 +213,6 @@ namespace {
     void shift(int, int*, char**);
     void succumb(int, bool);
     void panic_to_gdb();
-#ifdef HAVE_MOZY
-    void check_for_update(bool);
-#endif
 
     const char *usage = 
     "Usage: %s [-] [-b] [-c caseflags] [-i] [-j] [-s] [-n] [-x] [-o outfile]\n"

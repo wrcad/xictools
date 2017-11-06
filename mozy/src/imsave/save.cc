@@ -433,7 +433,7 @@ namespace {
             goto oops;
 
         if (ofil)
-            if ((ofd = open(ofil, O_WRONLY | O_TRUNC | O_CREAT)) == -1)
+            if ((ofd = open(ofil, (O_WRONLY | O_TRUNC | O_CREAT), 0644)) == -1)
                 goto oops;
 
         int pid;

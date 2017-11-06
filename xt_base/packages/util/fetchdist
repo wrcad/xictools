@@ -81,6 +81,7 @@ get()
         LinuxRHEL7) host=frost;;
         LinuxFedora26) host=fedor;;
         LinuxOpenSUSE13) host=byron;;
+        LinuxUbuntu17) host=ubun;;
         esac
 
         if [ -z "$host" ]; then

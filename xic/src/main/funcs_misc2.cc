@@ -6526,7 +6526,7 @@ misc2_funcs::IFaskConsoleReal(Variable *res, Variable *args, void*)
         sprintf(buf + strlen(buf), "[%s] ", deflt);
     fputs(buf, stdout);
     fflush(stdout);
-    if (!fgets(buf, 356, stdin)) {
+    if (!fgets(buf, 256, stdin)) {
         SI()->SetInterrupt();
         return (OK);
     }
@@ -6566,7 +6566,7 @@ misc2_funcs::IFaskConsoleString(Variable *res, Variable *args, void*)
         sprintf(buf + strlen(buf), "[%s] ", deflt);
     fputs(buf, stdout);
     fflush(stdout);
-    if (!fgets(buf, 356, stdin)) {
+    if (!fgets(buf, 256, stdin)) {
         SI()->SetInterrupt();
         return (OK);
     }

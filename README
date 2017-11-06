@@ -169,10 +169,35 @@ the code itself is the documentation.  This will all change over time,
 but for now, this is probably for experts only.
 
 You will need to have the development versions of lots of different
-libraries installed, including GTK.  I don't have a list, but as you
-encounter missing headers, etc., these should be installed on your
-system from your operating system source repositories.  You of course
-need the software development tools installed.
+libraries installed, including GTK.  As you encounter missing headers,
+etc., these should be installed on your system from your operating
+system source repositories.  You of course need the basic software
+development tools installed.  It can be a bit of a challenge to
+figure out which packages to install, Google is your friend.
+
+Here's a probably incomplete list of things to add, based on the port to
+Ubuntu-17.10.
+
+Programs and Utilities:
+These were missing from the basic operating system after a fresh
+install.  These can be installed with "sudo apt install <progname>".
+  git, autoconf, flex, bison, pkg-config
+
+Libraries and Development Packages:
+Often, the basic libraries are provided, but a separate "devel"
+package contains the include files needed to compile programs with the
+libraries.  If a build fails with a missing header (.h) file, the game
+is to figure out which development package provides it, and install
+the package.  In other cases, the library may be wholly missing, so
+both the library and development packages should be installed.  For
+Ubuntu, I installed gtk and all its dependents with
+  sudo apt-get install build-essential libgtk2.0-dev
+This brings in lot of dependent packages, on other systems, the dependents
+may require separate installation.
+Also needed, libncurses using
+  sudo apt-get install libncurses5-dev libncursesw5-dev
+and libjpeg, libtiff using
+  sudo apt install libjpeg-dev libtiff-dev
 
 3.2.  Build Procedure for Linux
 
@@ -213,11 +238,97 @@ inno-setup 5.5.9 packager (http://www.jrsoftware.org/).  Cygwin
 provides bash, make, and similar.  win-builds provides the compiler
 tool chain, and the gtk libraries and prerequisites.
 
-There is provision for creating a "gtk2-bundle" from win-builds, which
-is deployed along with the packages.  However, you don't need this for
-a local installation,
+1.  Go to http://cygwin.org, and download the 64-bit setup
+application.
 
-I'll add detail here in the future.
+BEWARE:  there is a cygwin.com site that looks the same but may be
+unsafe, DON'T download from there.
+
+Run the installer.  Specify c:\cygwin64 as the installation location.
+The basic tools are already selected for initial installation, but you
+will need a few additional things, including:
+  git, autoconf-2.69, make, flex, bison, patch
+
+You will run the installer in the future to update your packages, and
+to add packages needed later.
+
+Once installed, you can start bash terminal windows from an icon on
+the desktop.  You will be building and probably running the XicTools
+programs from these windows (There are issues running the programs,
+though.  See the Xic or WRspice release notes).
+
+2.  Go to http:/win-builds.org, and download the installer
+application.  The procedure is a little tricky, so take care.
+  a.  If you have the gtk2-bundle package already installed, move it
+      to a temporary safe location.
+
+      cd c:/usr/local
+      mv gtk2-bundle ZZgkt2-bundle
+
+  b.  Run the installer, with the location set to
+
+      c:\usr\local\gtk2-bundle
+
+      Yes, you must use this location.  Choose 32 bits (for now, will
+      support 64-bits at some point), choose native installation (NOT
+      MSYS).  Install everything, it isn't worth the effort to pick
+      and choose.
+
+  c.  Move the new directory tree in gtk2-bundle to win-builds.
+
+      #cd c:/usr/local
+      #mv gtk2-bundle win-builds
+      This should work, but for some reason it didn't (I got a
+      permission denied message).  I had to reboot Windows, and use
+      the Windows Explorer file manager to change the directory name.
+
+  d.  If you already have the gtk2-bundle package installed, move it
+      back into place.
+
+      cd c:/usr/local
+      mv ZZgtk2-bundle gtk2-bundle
+
+      OR, if not, go to http://wrcad.com/xictools/Win32 and get the
+      gtk2-bundle package and install it (execute it like a program).
+
+This will give you the "mingw" tool chain for building the programs,
+and the gtk-2 libraries and all dependencies.  The latter are resolved
+in gtk2-bundle, which is necessary for exported packages.
+
+Why the weird procedure?  We want the binaries to find their dlls in
+gtk2-bundle, but have the compiler (which is not in the bundle) in
+scope.
+
+4.  Go to http://www.jrsoftware.org and grab inno-setup 5.5.9
+Install it in c:\inno-5.5.9
+This location, and the version number, are built into the packaging
+system so should not be changed.
+
+5.  Edit your .bash_profile file.  Add the following lines (between
+the dashed lines) to the end of this file.  This will set your search
+path, among other things.
+
+----------------------------------------
+mount c:/usr/local  /usr/local
+mount -f c:/inno-5.5.9 /inno-5.5.9
+
+# The /usr/local/win-builds directory was created as
+# /usr/local/gtk2-bundle from the win-builds installer.  A gtk2-bundle
+# package is then created.  The installed gtk2-bundle is moved to
+# win-builds under /usr/local.  The new package is then installed,
+# which recreates /usr/local/gtk2-bundle.  When building xictoools,
+# we need graphics from gtk2-bundle, but MinGW-w64 from win-builds.
+
+PATH="$PATH:/usr/local/xictools/bin"
+if [ x$CYGWIN_BUILD = x ]; then
+    PATH="/usr/local/gtk2-bundle/bin:/usr/local/win-builds/bin:$PATH"
+fi
+PATH="${HOME}/bin:$PATH"
+export PATH
+----------------------------------------
+
+6.  Open a new bash window, you should be able to build xictools from
+this window.
 
 
 3.4  OS X

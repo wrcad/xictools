@@ -1,0 +1,23 @@
+#! /bin/bash
+
+# Make sure symbolic links are created in the package directories.
+
+oses="Darwin LinuxFedora26 LinuxOpenSUSE13 LinuxRHEL5 LinuxRHEL5.i686 \
+ LinuxRHEL6 LinuxRHEL7 LinuxUbuntu17 Win32"
+
+for a in $oses; do
+    if [ ! -e 
+        ln -s ../scripts/wr_install $HOME/wrcad.com/html/xictools/$a
+    fi
+    if [ ! -e $HOME/wrcad.com/html/xictools/$a/wr_uninstall ]; then
+        ln -s ../scripts/wr_uninstall $HOME/wrcad.com/html/xictools/$a
+    fi
+done
+
+if [ ! -e $HOME/wrcad.com/html/xictools/Win32/cleanold.bat ]; then
+    ln -s ../scripts/cleanold.bat $HOME/wrcad.com/html/xictools/Win32
+fi
+if [ ! -e $HOME/wrcad.com/html/xictools/Win32/uninstall.bat ]; then
+    ln -s ../scripts/uninstall.bat $HOME/wrcad.com/html/xictools/Win32
+fi
+
