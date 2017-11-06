@@ -9,6 +9,7 @@ OSNAME = @OSNAME@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
 TOOLROOT = @TOOLROOT@
+ACONF = @ACONF@
 
 BASE = ../xt_base
 
@@ -52,10 +53,10 @@ unpack:
 	    cp -f files/admsPreprocessor.h adms_wr/admsXml; \
 	    cp -f files/admsVeriloga.h adms_wr/admsXml; \
 	    if [ $(REGEN) = yes ]; then \
-	        cd adms_wr; autoconf; ./configure --enable-maint=yes; \
+	        cd adms_wr; $(ACONF); ./configure --enable-maint=yes; \
 	    else \
 	        cp -f generated/*.c generated/*.h adms_wr/admsXml; \
-	        cd adms_wr; autoconf; ./configure --enable-maint=no; \
+	        cd adms_wr; $(ACONF); ./configure --enable-maint=no; \
 	    fi; \
 	fi
 

@@ -213,38 +213,79 @@ dnl ***
 dnl *** Check operating system and build environment
 dnl ***
 
+AC_PATH_PROG(PATCH, patch, "")
+if test -z "$PATCH"; then
+    echo "  Error: the \"patch\" program is required and not found."
+    exit 1
+fi
+AC_PATH_PROG(FLEX, flex, "")
+if test -z "$FLEX"; then
+    echo "  Error: the \"flex\" program is required and not found."
+    exit 1
+fi
+AC_PATH_PROG(BISON, bison, "")
+if test -z "$BISON"; then
+    echo "  Error: the \"bison\" program is required and not found."
+    exit 1
+fi
+AC_PATH_PROG(acf1, autoconf, "")
+if test -z "$acf1"; then
+    AC_PATH_PROG(acf2, autoconf-2.69, "")
+    if test -z "$acf2"; then
+        echo "  Error: the \"autoconf\" program (\"autoconf-2.69\" in Cygwin)" 
+        echo "  is required and not found."
+        exit 1
+    else
+        ACONF=$acf2
+    fi
+else
+    ACONF=$acf1
+fi
+AC_PATH_PROG(AR, ar, "")
+if test -z "$AR"; then
+    echo "  Error: the \"ar\" program is required and not found."
+    exit 1
+fi
+AC_PATH_PROG(LD, ld, "")
+AC_PATH_PROG(RANLIB, ranlib, "")
+
 sys_os=`uname`
-case $sys_os in
-CYGWIN*)
+if test ${sys_os:0:6} = CYGWIN; then
     mingw=yes
     sys_os="CYGWIN"
     CC=$mingw_dir/bin/gcc
     CXX=$mingw_dir/bin/g++
-    WINDRES=$mingw_dir/bin/windres
     RESOURCE=resource.o
-    AR=$mingw_dir/bin/ar
-    RANLIB=$mingw_dir/bin/ranlib
-    LD=$mingw_dir/bin/ld
 dnl # static link avoids libwinpthread-1.dll dependence
     WINPTHREADFIX="-static"
-    ;;
-*)
-    if test "$AR" = ""; then
-        AR=ar
+
+dnl # Win-builds has the png include files in a weird place, where they
+dnl # won't be found.  This will prevent png image support unless
+dnl # corrected.  Here we look for this and do the correction if
+dnl # possible.  If the operation fails (permission problem) the user
+dnl # must do this by hand.
+    if test ! -f $mingw_dir/include/png.h -a  \
+        -f $mingw_dir/include/libpng14/png.h; then
+        echo "Configuring win-builds:"
+        echo "cp -f $mingw_dir/include/libpng14/png.h $mingw_dir/include"
+        cp -f $mingw_dir/include/libpng14/png.h $mingw_dir/include
+        if test $? != 0; then
+            echo "Didn't work, do this by hand.  See README file."
+            exit 1
+        fi
+        echo "cp -f $mingw_dir/include/libpng14/pngconf.h $mingw_dir/include"
+        cp -f $mingw_dir/include/libpng14/pngconf.h $mingw_dir/include
     fi
-    if test "$RANLIB" = ""; then
-        AC_PROG_RANLIB
-    fi
-    if test "$LD" = ""; then
-        LD=ld
-    fi
-    ;;
-esac
+
+    AC_PATH_PROG(WINDRES, windres, "")
+fi
+
+AC_SUBST(ACONF)
+AC_SUBST(AR)
+AC_SUBST(LD)
+AC_SUBST(RANLIB)
 AC_SUBST(WINDRES)
 AC_SUBST(RESOURCE)
-AC_SUBST(AR)
-AC_SUBST(RANLIB)
-AC_SUBST(LD)
 AC_SUBST(WINPTHREADFIX)
 
 AC_PROG_CC
