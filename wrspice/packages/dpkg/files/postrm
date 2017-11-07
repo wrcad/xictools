@@ -2,30 +2,5 @@
 
 prefix=/usr/local
 
-# Make sure that this is entirely gone.
-rm -rf $prefix/xictools/wrspice.current
-
-# Remove the links.
-
-twrs=$prefix/xictools/wrspice
-if [ -h $twrs ]; then
-    rm -f $twrs
-fi
-
-tbin=$prefix/xictools/bin
-if [ -h $tbin/multidec ]; then
-    rm -f $tbin/multidec
-fi
-if [ -h $tbin/proc2mod ]; then
-    rm -f $tbin/proc2mod
-fi
-if [ -h $tbin/printtoraw ]; then
-    rm -f $tbin/printtoraw
-fi
-if [ -h $tbin/wrspice ]; then
-    rm -f $tbin/wrspice
-fi
-if [ -h $tbin/wrspiced ]; then
-    rm -f $tbin/wrspiced
-fi
+# Nothing to do.
 

@@ -2,20 +2,9 @@
 
 prefix=/usr/local
 
-# Remove wrapper and links.
+# Remove xic link, xic wrapper script and links in xictools/bin.
+# These should already be gone.
 rm -rf $prefix/xictools/xic
 tbin=$prefix/xictools/bin
 rm -f $tbin/xic $tbin/wrencode $tbin/wrdecode $tbin/wrsetpass
-
-# Back up for Safe Install.
-prog=xic
-if [ -x $prefix/xictools/$prog.current/bin/$prog ]; then
-    curver=$($prefix/xictools/$prog.current/bin/$prog --v)
-    set -- $curver
-    curver=$1
-    if [ -n "$curver" ]; then
-        rm -rf $prefix/xictools/$prog-$curver
-        cp -pr $prefix/xictools/$prog.current $prefix/xictools/$prog-$curver
-    fi
-fi
 
