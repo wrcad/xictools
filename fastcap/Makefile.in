@@ -32,7 +32,7 @@ unpack:
 	@if [ ! -d $(FASTCAP_DIR) ]; then \
 	    tar xzf $(FASTCAP); \
 	    if [ -n "$(EXESUFFIX)" ]; then \
-	        cd $(FASTCAP_DIR); ./config mingw; \
+	        (cd $(FASTCAP_DIR); ./config mingw); \
 	    fi; \
 	    rm -f fastcap-2.0wr/src/fastcap.c; \
             sed -e s/XT_IDSTRING/$(IDSTR)/ \

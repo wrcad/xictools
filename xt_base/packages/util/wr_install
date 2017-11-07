@@ -414,6 +414,11 @@ print commands it would otherwise execute."
                     $script_path/cleanold.bat /t
                 else
                     $script_path/cleanold.bat
+                    # Record that we've been run.
+                    if [ $dryrun = no ]; then
+                        echo "4.3" > $HOME/.wrclean
+                    fi
+                    echo Cleaning done.
                 fi
             else
                 clean_old

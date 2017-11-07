@@ -238,6 +238,11 @@ inno-setup 5.5.9 packager (http://www.jrsoftware.org/).  Cygwin
 provides bash, make, and similar.  win-builds provides the compiler
 tool chain, and the gtk libraries and prerequisites.
 
+The procedure below will give you the "mingw" tool chain for building
+the programs, and the gtk-2 libraries and all dependencies.  The
+latter are resolved in gtk2-bundle, which is necessary for exported
+packages.
+
 1.  Go to http://cygwin.org, and download the 64-bit setup
 application.
 
@@ -257,77 +262,52 @@ the desktop.  You will be building and probably running the XicTools
 programs from these windows (There are issues running the programs,
 though.  See the Xic or WRspice release notes).
 
-2.  Go to http:/win-builds.org, and download the installer
-application.  The procedure is a little tricky, so take care.
-  a.  If you have the gtk2-bundle package already installed, move it
-      to a temporary safe location.
-
-      cd c:/usr/local
-      mv gtk2-bundle ZZgkt2-bundle
-
-  b.  Run the installer, with the location set to
-
-      c:\usr\local\gtk2-bundle
-
-      Yes, you must use this location.  Choose 32 bits (for now, will
-      support 64-bits at some point), choose native installation (NOT
-      MSYS).  Install everything, it isn't worth the effort to pick
-      and choose.
-
-  c.  Move the new directory tree in gtk2-bundle to win-builds.
-
-      #cd c:/usr/local
-      #mv gtk2-bundle win-builds
-      This should work, but for some reason it didn't (I got a
-      permission denied message).  I had to reboot Windows, and use
-      the Windows Explorer file manager to change the directory name.
-
-  d.  If you already have the gtk2-bundle package installed, move it
-      back into place.
-
-      cd c:/usr/local
-      mv ZZgtk2-bundle gtk2-bundle
-
-      OR, if not, go to http://wrcad.com/xictools/Win32 and get the
-      gtk2-bundle package and install it (execute it like a program).
-
-This will give you the "mingw" tool chain for building the programs,
-and the gtk-2 libraries and all dependencies.  The latter are resolved
-in gtk2-bundle, which is necessary for exported packages.
-
-Why the weird procedure?  We want the binaries to find their dlls in
-gtk2-bundle, but have the compiler (which is not in the bundle) in
-scope.
-
-4.  Go to http://www.jrsoftware.org and grab inno-setup 5.5.9
-Install it in c:\inno-5.5.9
-This location, and the version number, are built into the packaging
-system so should not be changed.
-
-5.  Edit your .bash_profile file.  Add the following lines (between
-the dashed lines) to the end of this file.  This will set your search
-path, among other things.
+2.  From a bash window, edit your .bash_profile file.  Add the
+ following lines (between the dashed lines) to the end of this file. 
+ This will set your search path, among other things.
 
 ----------------------------------------
 mount c:/usr/local  /usr/local
 mount -f c:/inno-5.5.9 /inno-5.5.9
 
-# The /usr/local/win-builds directory was created as
-# /usr/local/gtk2-bundle from the win-builds installer.  A gtk2-bundle
-# package is then created.  The installed gtk2-bundle is moved to
-# win-builds under /usr/local.  The new package is then installed,
-# which recreates /usr/local/gtk2-bundle.  When building xictoools,
-# we need graphics from gtk2-bundle, but MinGW-w64 from win-builds.
-
 PATH="$PATH:/usr/local/xictools/bin"
-if [ x$CYGWIN_BUILD = x ]; then
+if [ -z "$CYGWIN_BUILD" ]; then
     PATH="/usr/local/gtk2-bundle/bin:/usr/local/win-builds/bin:$PATH"
 fi
 PATH="${HOME}/bin:$PATH"
 export PATH
 ----------------------------------------
 
-6.  Open a new bash window, you should be able to build xictools from
+3.  Go to http:/win-builds.org, and download the installer
+application.  Run the installer, with the location set to
+
+      c:\usr\local\win-builds
+
+Choose 32 bits (for now, will support 64-bits at some point), choose
+native installation (NOT MSYS/Cygwin).  Install everything, it isn't
+worth the effort to pick and choose.
+
+4.  We need to adjust the location of the png include files so that
+the build script will find them.  The configuration script will attempt
+to do this automatically if needed, so you really only need to do
+the procedure below if that fails.
+
+    a.  Click on the Cygwin terminal icon with the right mouse button,
+        click Run as Administrator from the menu.
+    b.  Enter these commands into the new Cygwin bash window:
+          cd c:/usr/local/win-builds/include/libpng14
+          cp *.h ..
+          (exit the window)
+
+5.  If you do not already have the gtk2-bundle package installed, go
+to http://wrcad.com/xictools/Win32 and get the gtk2-bundle package and
+install it (execute it like a program).
+
+6.  Go to http://www.jrsoftware.org and grab inno-setup 5.5.9. 
+Install it in c:\inno-5.5.9 This location, and the version number, are
+built into the packaging system so should not be changed.
+
+7.  Open a new bash window, you should be able to build xictools from
 this window.
 
 
