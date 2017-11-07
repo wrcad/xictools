@@ -11,31 +11,6 @@ libdir=$prefix/xictools/xic.current
 # installation in its entirety, so no need to back up config files.
 # User has to update files by hand, which is probably not good.
 
-# Deal with config files
-#cfgfiles="device.lib \
-#    model.lib \
-#    mozyrc \
-#    xic_format_lib \
-#    xic_mesg \
-#    xic_stipples \
-#    xic_tech.hyp \
-#    xic_tech.scmos"
-#
-#for a in $cfgfiles; do
-#    if [ -f $libdir/startup/$a.tmporig ]; then
-#        if [ -f $libdir/startup/$a ]; then
-#            tmp=`diff $libdir/startup/$a.tmporig $libdir/startup/$a`
-#            if [ x"$tmp" = "x" ]; then
-#                rm -f $libdir/startup/$a.tmporig
-#            else
-#                mv -f $libdir/startup/$a.tmporig $libdir/startup/$a.orig
-#            fi
-#        else
-#            mv -f $libdir/startup/$a.tmporig $libdir/startup/$a
-#        fi
-#    fi
-#done
-
 # Link technology file
 if [ ! -f $libdir/startup/xic_tech ]; then
     ln -s xic_tech.scmos $libdir/startup/xic_tech

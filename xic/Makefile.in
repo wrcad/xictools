@@ -21,6 +21,7 @@ DIST_SUFFIX = @DIST_SUFFIX@
 GRPREF = @GRPREF@
 DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @NEEDINT64@
 INSTALL = @INSTALL@
+SOEXT = @SOEXT@
 EXESUFFIX = @EXESUFFIX@
 FILTER = @FILTER@
 MALLOC = @MALLOC@
@@ -376,16 +377,15 @@ $(destn)/icons::
 
 $(destn)/plugins::
 	@$(BASE)/util/mkdirpth $@
-	plugins=`packages/util/xic_files plugins $(OSNAME)`; \
-	for a in $$plugins; do \
-	    $(INSTALL_LIB) plugins/$$a $@; \
+	@shopt -s nullglob; \
+	for a in plugins/*.$(SOEXT); do \
+	    $(INSTALL_LIB) $$a $@; \
 	done
-	if [ -n "$(OA_SUBDIR)" ]; then \
-	    oaplugin=`packages/util/xic_files oaplugin $(OSNAME)`; \
-	    if [ -n "$$oaplugin" ]; then \
-	        $(INSTALL_LIB) $(OA_SUBDIR)/$$oaplugin $@; \
+	@if [ -n "$(OA_SUBDIR)" ]; then \
+	    if [ -f $(OA_SUBDIR)/oa.$(SOEXT) ]; then \
+	        $(INSTALL_LIB) $(OA_SUBDIR)/oa.$(SOEXT) $@; \
 	    fi \
-        fi
+	fi
 
 $(destn)/startup::
 	cd startup; $(MAKE)

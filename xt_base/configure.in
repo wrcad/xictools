@@ -381,29 +381,6 @@ dnl # support OSX 10.10 (Yosemite) and later.
     SOEXT=dylib
     LSHFLAG="-dynamiclib -undefined dynamic_lookup"
 ;;
-FreeBSD)
-    rel=`uname -r`
-    tifs=$IFS
-    IFS="."
-    set $rel
-    IFS=$tifs
-    if test $1 = 10; then
-        OSNAME="FreeBSD10"
-    else
-        echo "Architecture not supported."
-        exit
-    fi
-    ARCH="i386"
-    DIST_SUFFIX="pkg.tbz"
-    MALLOC='$(BASE)/lib/malloc.a'
-    PIC_OPT="-fPIC"
-    LFLAGS="-rdynamic"
-    LSHFLAG="-shared"
-    INSTALL='$(BASE)/util/install-sh'
-    lib_dirs="$lib_dirs $ac_x_libraries"
-    SOEXT=so
-    oa_lpath=$oa_loc/lib/freebsd_32/opt
-;;
 Linux)
     OSNAME="LinuxUnknown"
     ARCH="x86_64"
@@ -733,44 +710,6 @@ if test $OSNAME = "Darwin"; then
         TK_LIBS="-ltk"
         echo '#define HAVE_TK 1'>> confdefs.h
     fi
-elif test $OSNAME = "FreeBSD10"; then
-    if test -d /usr/local/include/python2.7; then
-        PY_INCLUDE="-I/usr/local/include/python2.7"
-        PY_LIBS="-L/usr/local/lib -lpython2.7"
-        PY_TARGETS="py27.so"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    elif test -d /usr/local/include/python2.6; then
-        PY_INCLUDE="-I/usr/local/include/python2.6"
-        PY_LIBS="-L/usr/local/lib -lpython2.6"
-        PY_TARGETS="py26.so"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    fi
-    if test -d /usr/local/include/tcl8.6; then
-        TCL_INCLUDE="-I/usr/local/include/tcl8.6"
-        TCL_LIBS="-L/usr/local/lib -ltcl86"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    elif test -d /usr/local/include/tcl8.5; then
-        TCL_INCLUDE="-I/usr/local/include/tcl8.5"
-        TCL_LIBS="-L/usr/local/lib -ltcl85"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    elif test -d /usr/local/include/tcl8.4; then
-        TCL_INCLUDE="-I/usr/local/include/tcl8.4"
-        TCL_LIBS="-L/usr/local/lib -ltcl84"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    fi
-    if test -d /usr/local/include/tk8.6; then
-        TK_INCLUDE="-I/usr/local/include/tk8.6 $X_CFLAGS"
-        TK_LIBS="-L/usr/local/lib -ltk86"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    elif test -d /usr/local/include/tk8.5; then
-        TK_INCLUDE="-I/usr/local/include/tk8.5 $X_CFLAGS"
-        TK_LIBS="-L/usr/local/lib -ltk85"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    elif test -d /usr/local/include/tk8.4; then
-        TK_INCLUDE="-I/usr/local/include/tk8.4 $X_CFLAGS"
-        TK_LIBS="-L/usr/local/lib -ltk84"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    fi
 elif test ${OSNAME:0:5} = "Linux"; then
     if test -d /usr/include/python2.7; then
         PY_INCLUDE="-I/usr/include/python2.7"
@@ -1018,12 +957,6 @@ dnl  Try to link static graphics libraries if found.
     fi
     if test ${OSNAME:0:5} = Linux; then
         AC_CHECK_LIB(pthread, main, EXTRALIBS="$EXTRALIBS -lpthread")
-        AC_CHECK_LIB(dl, main, EXTRALIBS="$EXTRALIBS -ldl")
-        AC_CHECK_LIB(X11, main, EXTRALIBS="$EXTRALIBS -lX11")
-        AC_CHECK_LIB(Xext, main, EXTRALIBS="$EXTRALIBS -lXext")
-    elif test ${OSNAME:0:7} = "FreeBSD"; then
-        AC_CHECK_LIB(execinfo, main, LIBS="$LIBS -lexecinfo"
-          SLIBS="$SLIBS -lexecinfo")
         AC_CHECK_LIB(dl, main, EXTRALIBS="$EXTRALIBS -ldl")
         AC_CHECK_LIB(X11, main, EXTRALIBS="$EXTRALIBS -lX11")
         AC_CHECK_LIB(Xext, main, EXTRALIBS="$EXTRALIBS -lXext")
