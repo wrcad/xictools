@@ -1,0 +1,24 @@
+
+The scripts are run differently in dpkg than rpm, here's the order and
+what they do here.
+
+prerm
+    (run if old install found)
+    Remove wrspice link and links in xictools/bin.
+    Move wrspice.current to wrspice-version for Safe Install.
+
+preinst
+    Remove wrspice link and links in xictools/bin.
+    These should already be gone.
+
+(unpack new files)
+
+postrm
+    (run if old install found)
+    Nothing to do.
+
+postinst
+    Link wrspice.current to wrspice.
+    Create xictools/bin if necessary.
+    Create the links in xictools/bin.
+

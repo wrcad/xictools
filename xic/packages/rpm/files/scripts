@@ -35,7 +35,7 @@ fi
 libdir=$prefix/xictools/xic.current
 
 # Link technology file.
-if [ ! -f $libdir/startup/xic_tech ]; then
+if [ ! -e $libdir/startup/xic_tech ]; then
     ln -s xic_tech.scmos $libdir/startup/xic_tech
 fi
 
