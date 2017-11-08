@@ -379,23 +379,5 @@ scrkit)
     echo $scrkit;;
 startup)
     echo $startup;;
-plugins)
-    case $2 in
-    Darwin*)
-        echo "py26.dylib tcl.dylib tcltk.dylib";;
-    LinuxRHEL3|LinuxRHEL3_64|LinuxRHEL5|LinuxRHEL5_64|LinuxRHEL6_64)
-        echo "py26.so tcl.so tcltk.so";;
-    LinuxRHEL7_64)
-        echo "py27.so tcl.so tcltk.so";;
-    FreeBSD*)
-        echo "py27.so tcl.so tcltk.so";;
-    esac;;
-oaplugin)
-    case $2 in
-    Darwin*)
-        echo "oa.dylib";;
-    Linux*)
-        echo "oa.so";;
-    esac;;
 esac
 

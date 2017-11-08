@@ -213,38 +213,79 @@ dnl ***
 dnl *** Check operating system and build environment
 dnl ***
 
+AC_PATH_PROG(PATCH, patch, "")
+if test -z "$PATCH"; then
+    echo "  Error: the \"patch\" program is required and not found."
+    exit 1
+fi
+AC_PATH_PROG(FLEX, flex, "")
+if test -z "$FLEX"; then
+    echo "  Error: the \"flex\" program is required and not found."
+    exit 1
+fi
+AC_PATH_PROG(BISON, bison, "")
+if test -z "$BISON"; then
+    echo "  Error: the \"bison\" program is required and not found."
+    exit 1
+fi
+AC_PATH_PROG(acf1, autoconf, "")
+if test -z "$acf1"; then
+    AC_PATH_PROG(acf2, autoconf-2.69, "")
+    if test -z "$acf2"; then
+        echo "  Error: the \"autoconf\" program (\"autoconf-2.69\" in Cygwin)" 
+        echo "  is required and not found."
+        exit 1
+    else
+        ACONF=$acf2
+    fi
+else
+    ACONF=$acf1
+fi
+AC_PATH_PROG(AR, ar, "")
+if test -z "$AR"; then
+    echo "  Error: the \"ar\" program is required and not found."
+    exit 1
+fi
+AC_PATH_PROG(LD, ld, "")
+AC_PATH_PROG(RANLIB, ranlib, "")
+
 sys_os=`uname`
-case $sys_os in
-CYGWIN*)
+if test ${sys_os:0:6} = CYGWIN; then
     mingw=yes
     sys_os="CYGWIN"
     CC=$mingw_dir/bin/gcc
     CXX=$mingw_dir/bin/g++
-    WINDRES=$mingw_dir/bin/windres
     RESOURCE=resource.o
-    AR=$mingw_dir/bin/ar
-    RANLIB=$mingw_dir/bin/ranlib
-    LD=$mingw_dir/bin/ld
 dnl # static link avoids libwinpthread-1.dll dependence
     WINPTHREADFIX="-static"
-    ;;
-*)
-    if test "$AR" = ""; then
-        AR=ar
+
+dnl # Win-builds has the png include files in a weird place, where they
+dnl # won't be found.  This will prevent png image support unless
+dnl # corrected.  Here we look for this and do the correction if
+dnl # possible.  If the operation fails (permission problem) the user
+dnl # must do this by hand.
+    if test ! -f $mingw_dir/include/png.h -a  \
+        -f $mingw_dir/include/libpng14/png.h; then
+        echo "Configuring win-builds:"
+        echo "cp -f $mingw_dir/include/libpng14/png.h $mingw_dir/include"
+        cp -f $mingw_dir/include/libpng14/png.h $mingw_dir/include
+        if test $? != 0; then
+            echo "Didn't work, do this by hand.  See README file."
+            exit 1
+        fi
+        echo "cp -f $mingw_dir/include/libpng14/pngconf.h $mingw_dir/include"
+        cp -f $mingw_dir/include/libpng14/pngconf.h $mingw_dir/include
     fi
-    if test "$RANLIB" = ""; then
-        AC_PROG_RANLIB
-    fi
-    if test "$LD" = ""; then
-        LD=ld
-    fi
-    ;;
-esac
+
+    AC_PATH_PROG(WINDRES, windres, "")
+fi
+
+AC_SUBST(ACONF)
+AC_SUBST(AR)
+AC_SUBST(LD)
+AC_SUBST(RANLIB)
 AC_SUBST(WINDRES)
 AC_SUBST(RESOURCE)
-AC_SUBST(AR)
-AC_SUBST(RANLIB)
-AC_SUBST(LD)
 AC_SUBST(WINPTHREADFIX)
 
 AC_PROG_CC
@@ -340,32 +381,10 @@ dnl # support OSX 10.10 (Yosemite) and later.
     SOEXT=dylib
     LSHFLAG="-dynamiclib -undefined dynamic_lookup"
 ;;
-FreeBSD)
-    rel=`uname -r`
-    tifs=$IFS
-    IFS="."
-    set $rel
-    IFS=$tifs
-    if test $1 = 10; then
-        OSNAME="FreeBSD10"
-    else
-        echo "Architecture not supported."
-        exit
-    fi
-    ARCH="i386"
-    DIST_SUFFIX="pkg.tbz"
-    MALLOC='$(BASE)/lib/malloc.a'
-    PIC_OPT="-fPIC"
-    LFLAGS="-rdynamic"
-    LSHFLAG="-shared"
-    INSTALL='$(BASE)/util/install-sh'
-    lib_dirs="$lib_dirs $ac_x_libraries"
-    SOEXT=so
-    oa_lpath=$oa_loc/lib/freebsd_32/opt
-;;
 Linux)
     OSNAME="LinuxUnknown"
     ARCH="x86_64"
+    DIST_SUFFIX="unknown"
     if test -f /etc/redhat-release; then
         dst=`rpm -qf /etc/redhat-release`
     elif test -f /etc/centos-release ; then
@@ -378,6 +397,7 @@ dnl     # RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5/6/7
 dnl     # and assume RHEL production releases.  We obtain the release name
 dnl     # and number from RPM, which will work even if someone hacked the text
 dnl     # of the redhat-release file.
+        DIST_SUFFIX="rpm"
         tifs=$IFS
         IFS=".-_ "
         set -- $dst
@@ -452,15 +472,65 @@ dnl         # keep only the first token.
             esac
         fi
     else
-dnl     # Need Debian/Ubuntu, etc.
+dnl     # Debian/Ubuntu, etc.
 
-dnl     # This will probably build, but no packaging.
-        echo "Architecture not supported, continuing anyway."
-        ARCH="x86_64"
-        lib_dirs="/usr/lib64"
+        if test -f /etc/arch_release; then
+            OSNAME="LinuxArch"
+dnl         # Uses "pacman" package management system.
+        elif test -f /etc/gentoo_release; then
+            OSNAME="LinuxGentoo"
+dnl         # Uses "portage" package management system.
+        elif test -f /etc/os-release; then
+dnl         # This should find Debian, Ubuntu, and perhaps others.
+dnl         # Need to parse the file, grab the first name token, and
+dnl         # First version number.  Have to strip quotes.
+
+            nm=`(while true; do
+                read foo 
+                if test -z "$foo"; then
+                    break;
+                fi
+                tifs="$IFS"
+                IFS="="
+                set -- $foo
+                IFS="$tifs"
+                if test $1 = NAME; then
+                    set -- $2
+                    name=${1%\"}
+                    name=${name#\"}
+                elif test $1 = VERSION; then
+                    IFS=". "
+                    set -- $2
+                    IFS="$tifs"
+                    vers=${1#\"}
+                fi
+                if test -n "$name" -a -n "$vers"; then
+                    echo $name$vers
+                    break
+                fi
+            done) < /etc/os-release`
+            if test -n "$nm"; then
+                OSNAME=Linux$nm
+                case $OSNAME in
+                LinuxUbuntu*)  DIST_SUFFIX=deb ;;
+                LinuxDebian*)  DIST_SUFFIX=deb ;;
+                esac
+            fi
+        fi
+        if test $linux32 = yes; then
+            ARCH="i686"
+            ac_x_libraries=`echo $ac_libraries | sed -e s/lib64/lib/g`
+            lib_dirs="/usr/lib"
+        else
+            ARCH="x86_64"
+            lib_dirs="/usr/lib64"
+        fi
+    fi
+
+    if test $DIST_SUFFIX = unknown; then
+        echo "Architecture $OSNAME not supported, continuing anyway."
     fi
     
-    DIST_SUFFIX="rpm"
     MALLOC='$(BASE)/lib/malloc.a'
     PIC_OPT="-fPIC"
     LFLAGS="-rdynamic"
@@ -640,44 +710,6 @@ if test $OSNAME = "Darwin"; then
         TK_LIBS="-ltk"
         echo '#define HAVE_TK 1'>> confdefs.h
     fi
-elif test $OSNAME = "FreeBSD10"; then
-    if test -d /usr/local/include/python2.7; then
-        PY_INCLUDE="-I/usr/local/include/python2.7"
-        PY_LIBS="-L/usr/local/lib -lpython2.7"
-        PY_TARGETS="py27.so"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    elif test -d /usr/local/include/python2.6; then
-        PY_INCLUDE="-I/usr/local/include/python2.6"
-        PY_LIBS="-L/usr/local/lib -lpython2.6"
-        PY_TARGETS="py26.so"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    fi
-    if test -d /usr/local/include/tcl8.6; then
-        TCL_INCLUDE="-I/usr/local/include/tcl8.6"
-        TCL_LIBS="-L/usr/local/lib -ltcl86"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    elif test -d /usr/local/include/tcl8.5; then
-        TCL_INCLUDE="-I/usr/local/include/tcl8.5"
-        TCL_LIBS="-L/usr/local/lib -ltcl85"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    elif test -d /usr/local/include/tcl8.4; then
-        TCL_INCLUDE="-I/usr/local/include/tcl8.4"
-        TCL_LIBS="-L/usr/local/lib -ltcl84"
-        echo '#define HAVE_TCL 1'>> confdefs.h
-    fi
-    if test -d /usr/local/include/tk8.6; then
-        TK_INCLUDE="-I/usr/local/include/tk8.6 $X_CFLAGS"
-        TK_LIBS="-L/usr/local/lib -ltk86"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    elif test -d /usr/local/include/tk8.5; then
-        TK_INCLUDE="-I/usr/local/include/tk8.5 $X_CFLAGS"
-        TK_LIBS="-L/usr/local/lib -ltk85"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    elif test -d /usr/local/include/tk8.4; then
-        TK_INCLUDE="-I/usr/local/include/tk8.4 $X_CFLAGS"
-        TK_LIBS="-L/usr/local/lib -ltk84"
-        echo '#define HAVE_TK 1'>> confdefs.h
-    fi
 elif test ${OSNAME:0:5} = "Linux"; then
     if test -d /usr/include/python2.7; then
         PY_INCLUDE="-I/usr/include/python2.7"
@@ -798,11 +830,6 @@ if test $OSNAME = "Win32"; then
     SLIBS="$MSLIBS"
     LIBS="$MSLIBS $MSLIBS2 $LIBS"
     EXTRALIBS="-lpthread"
-
-dnl # png.h is in a strange place under win-builds
-    if test -d /usr/local/win-builds/include/libpng14; then
-        IMG_INCLUDES="-I/usr/local/win-builds/include/libpng14"
-    fi
 
 elif test $OSNAME = "Darwin"; then
 dnl  If the gtk2-bundle export package is found, use it.  Otherwise
@@ -930,12 +957,6 @@ dnl  Try to link static graphics libraries if found.
     fi
     if test ${OSNAME:0:5} = Linux; then
         AC_CHECK_LIB(pthread, main, EXTRALIBS="$EXTRALIBS -lpthread")
-        AC_CHECK_LIB(dl, main, EXTRALIBS="$EXTRALIBS -ldl")
-        AC_CHECK_LIB(X11, main, EXTRALIBS="$EXTRALIBS -lX11")
-        AC_CHECK_LIB(Xext, main, EXTRALIBS="$EXTRALIBS -lXext")
-    elif test ${OSNAME:0:7} = "FreeBSD"; then
-        AC_CHECK_LIB(execinfo, main, LIBS="$LIBS -lexecinfo"
-          SLIBS="$SLIBS -lexecinfo")
         AC_CHECK_LIB(dl, main, EXTRALIBS="$EXTRALIBS -ldl")
         AC_CHECK_LIB(X11, main, EXTRALIBS="$EXTRALIBS -lX11")
         AC_CHECK_LIB(Xext, main, EXTRALIBS="$EXTRALIBS -lXext")

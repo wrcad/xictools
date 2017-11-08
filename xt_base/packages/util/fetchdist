@@ -73,15 +73,18 @@ get()
         if [ -z "$arch" ]; then
             arch=x86_64
         fi
-        fname="xictools_$program-$osname-$version-$arch.rpm"
 
+        sfx=rpm
         case $osname in
         LinuxRHEL5) host=shelley;;
         LinuxRHEL6) host=poe;;
         LinuxRHEL7) host=frost;;
         LinuxFedora26) host=fedor;;
         LinuxOpenSUSE13) host=byron;;
+        LinuxUbuntu17) host=ubun; sfx=deb;;
         esac
+
+        fname="xictools_$program-$osname-$version-$arch.$sfx"
 
         if [ -z "$host" ]; then
             echo "Unknown distribution name $osname"
@@ -106,7 +109,9 @@ get()
         fi
         arch=i386
         fname=xictools_$program-$osname-$version-$arch.exe
-        dir=$USER@keats:/home/$USER/src/xt/xt_base/packages/pkgfiles
+        # winhost=keats
+        winhost=marlowe
+        dir=$USER@$winhost:/home/$USER/src/xt/xt_base/packages/pkgfiles
         rsync $dir/$fname $outdir/$osname/$fname
         chmod 0644 $outdir/$osname/$fname
         ;;

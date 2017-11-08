@@ -9,7 +9,7 @@ fi
 # Remove wrapper and links.
 rm -rf $prefix/xictools/xic
 tbin=$prefix/xictools/bin
-rm -f $tbin/xic $tbin/wrencode $tbin/decode $tbin/wrsetpass
+rm -f $tbin/xic $tbin/wrencode $tbin/wrdecode $tbin/wrsetpass
 
 # Back up for Safe Install.
 prog=xic
@@ -35,7 +35,7 @@ fi
 libdir=$prefix/xictools/xic.current
 
 # Link technology file.
-if [ ! -f $libdir/startup/xic_tech ]; then
+if [ ! -e $libdir/startup/xic_tech ]; then
     ln -s xic_tech.scmos $libdir/startup/xic_tech
 fi
 

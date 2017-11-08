@@ -5,6 +5,9 @@ with_oa=`../../../xt_base/info.sh with_oa`
 
 top=xic.current
 
+shopt -s nullglob
+plugins=../root/usr/local/xictools/$top/plugins/*.so
+
 OSNAME=$1
 VERSION=$2
 SRCDIR=$3
@@ -87,17 +90,12 @@ for a in $icons; do
     echo "%attr(0644, root, root) /usr/local/xictools/$top/icons/$a"
 done
 
-echo
-echo "%dir /usr/local/xictools/$top/plugins"
-plugins=`$files plugins $OSNAME`
-for a in $plugins; do
-    echo "%attr(0755, root, root) /usr/local/xictools/$top/plugins/$a"
-done
-if [ x$with_oa = xyes ]; then
-    oaplugin=`$files oaplugin $OSNAME`
-fi
-if [ -n "$oaplugin" ]; then
-    echo "%attr(0755, root, root) /usr/local/xictools/$top/plugins/$oaplugin"
+if [ -n "$plugins" ]; then
+    echo
+    echo "%dir /usr/local/xictools/$top/plugins"
+    for a in $plugins; do
+        echo "%attr(0755, root, root) /usr/local/xictools/$top/plugins/$(basename $a)"
+    done
 fi
 
 echo

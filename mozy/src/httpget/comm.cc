@@ -2659,7 +2659,7 @@ HTTPCookieCache::HTTPCookieCache(const char *fname)
                 // allow white space in name and value items
                 cookie = new HTTPCookie;
                 cookie->domain = copy(token(&t));
-                atoi(token(&t));  // version
+                cookie->version = atoi(token(&t));
                 cookie->exactHostMatch = atoi(token(&t));
                 cookie->path = copy(token(&t));
                 cookie->port = copy(token(&t));

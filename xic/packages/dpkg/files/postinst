@@ -1,0 +1,30 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+libdir=$prefix/xictools/xic.current
+
+# Link technology file xic_tech.scmos to xic_tech.
+if [ ! -e $libdir/startup/xic_tech ]; then
+    ln -s xic_tech.scmos $libdir/startup/xic_tech
+fi
+
+# Link xic.current to xic.
+txic=$prefix/xictools/xic
+ln -s $libdir $txic
+
+# Create xictools/bin if necessary.
+tbin=$prefix/xictools/bin
+if [ ! -d $tbin ]; then
+    mkdir $tbin
+fi
+
+# Copy in through sed the xic wrapper script.
+sed -e s%/usr/local%$prefix% < $libdir/bin/xic.sh > $tbin/xic
+chmod 755 $tbin/xic
+
+# Create the links in xictools/bin.
+ln -s $txic/bin/wrencode $tbin/wrencode
+ln -s $txic/bin/wrdecode $tbin/wrdecode
+ln -s $txic/bin/wrsetpass $tbin/wrsetpass
+

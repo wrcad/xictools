@@ -13,26 +13,28 @@ LOCATION = xic/packages
 
 BASE = ../../xt_base
 OSNAME = `$(BASE)/info.sh osname`
+SFX = `$(BASE)/info.sh dist_suffix`
 
 package::
 	@if [ ! -d root ]; then mkdir root; fi
 	@osname=$(OSNAME); \
 	case $$osname in \
 	Darwin*) \
-	    if [ -d $$osname -o -f $$osname ]; then \
+	    if [ -e $$osname -a ! -L $$osname ]; then \
 	        echo "Error: $$osname exists and is not a symbolic link"; \
 	        exit; \
 	    fi; \
             if [ ! -L $$osname ]; then ln -s osxpkg $$osname; fi ;; \
 	Linux*) \
-	    if [ -d $$osname -o -f $$osname ]; then \
+	    if [ -e $$osname -a ! -L $$osname ]; then \
 	        echo "Error: $$osname exists and is not a symbolic link"; \
 	        exit; \
 	    fi; \
 	    if [ ! -L $$osname ]; then \
-	        dst=`$(MAKE) testrpm`; \
-	        if [ -n "$$dst" ]; then \
+	        if [ x$(SFX) = xrpm ]; then \
 	            ln -s rpm $$osname; \
+	        elif [ x$(SFX) = xdeb ]; then \
+	            ln -s dpkg $$osname; \
 	        else \
 	            echo "No current packager support for $$osname"; \
 	            exit; \
@@ -51,6 +53,7 @@ package::
 	cd $$osname; $(MAKE) package;
 
 clean::
+	-@if [ -d dpkg ]; then cd dpkg; $(MAKE) clean; fi
 	-@if [ -d osxpkg ]; then cd osxpkg; $(MAKE) clean; fi
 	-@if [ -d rpm ]; then cd rpm; $(MAKE) clean; fi
 	-@if [ -d Win32 ]; then cd Win32; $(MAKE) clean; fi
@@ -59,6 +62,7 @@ clean::
 distclean:: clean
 	-@rm -f Darwin* Linux*
 
+# not used
 testrpm::
 	@if [ -f /etc/redhat-release ]; then \
 	    dst=`rpm -qf /etc/redhat-release`; \

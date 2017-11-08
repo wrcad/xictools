@@ -5,4 +5,5 @@ LinuxRHEL5.i686 4.3.1   i686    rpm     .
 LinuxRHEL5      4.3.1   x86_64  rpm     .
 LinuxRHEL6      4.3.1   x86_64  rpm     .
 LinuxRHEL7      4.3.1   x86_64  rpm     .
+LinuxUbuntu17   4.3.1   x86_64  deb     .
 Win32           4.3.1   i386    exe     .

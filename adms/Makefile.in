@@ -9,6 +9,7 @@ OSNAME = @OSNAME@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
 TOOLROOT = @TOOLROOT@
+ACONF = @ACONF@
 
 BASE = ../xt_base
 
@@ -42,7 +43,6 @@ unpack:
 	      > adms_wr/configure.in; \
             sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
 	      < files/admsXml.c.sed > adms_wr/admsXml/admsXml.c; \
-	    cp -f files/configure adms_wr; \
 	    mv -f adms_wr/configure.ac adms_wr/configure.ac.notused; \
 	    cp -f files/install-sh adms_wr/auxconf; \
 	    cp -f files/Makefile.in adms_wr/admsXml; \
@@ -53,10 +53,10 @@ unpack:
 	    cp -f files/admsPreprocessor.h adms_wr/admsXml; \
 	    cp -f files/admsVeriloga.h adms_wr/admsXml; \
 	    if [ $(REGEN) = yes ]; then \
-	        cd adms_wr; ./configure --enable-maint=yes; \
+	        cd adms_wr; $(ACONF); ./configure --enable-maint=yes; \
 	    else \
 	        cp -f generated/*.c generated/*.h adms_wr/admsXml; \
-	        cd adms_wr; ./configure --enable-maint=no; \
+	        cd adms_wr; $(ACONF); ./configure --enable-maint=no; \
 	    fi; \
 	fi
 

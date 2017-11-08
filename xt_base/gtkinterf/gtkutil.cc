@@ -2252,6 +2252,19 @@ gtk_bag::SetErrorLogName(const char *fname)
 {
     GTKtextPopup::set_error_log(fname);
 }
+
+#ifndef HAVE_MOZY
+
+// Resolve help pop-up when mozy is not included.
+//
+bool
+gtk_bag::PopUpHelp(const char*)
+{
+    PopUpErr(MODE_ON, "Help system is not available in this executable.");
+    return (false);
+}
+
+#endif
 // End of gtk_bag functions.
 
 

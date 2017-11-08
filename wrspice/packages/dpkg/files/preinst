@@ -1,0 +1,11 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+# Remove wrspice link and links in xictools/bin.
+# These should already be gone.
+rm -rf $prefix/xictools/wrspice
+tbin=$prefix/xictools/bin
+rm -f $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
+  $tbin/wrspiced
+

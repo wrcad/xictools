@@ -13,6 +13,7 @@
 <input type=checkbox name=LinuxRHEL7>LinuxRHEL7 x86_64<br>
 <input type=checkbox name=LinuxOpenSUSE13>LinuxOpenSUSE13 x86_64<br>
 <input type=checkbox name=LinuxFedora26>LinuxFedora26 x86_64<br>
+<input type=checkbox name=LinuxUbuntu17>LinuxUbuntu17 x86_64<br>
 <input type=checkbox name=Win32>Windows i386<br>
 </td>
 

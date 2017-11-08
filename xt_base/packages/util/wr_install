@@ -372,6 +372,17 @@ clean_old()
         return
     fi
 
+    command -v dpkg 2>&1 > /dev/null
+    if [ $? = 0 ]; then
+        # Nothing to clean, support is new.
+        # Record that we've been run.
+        if [ $dryrun = no ]; then
+            echo "4.3" > $HOME/.wrclean
+        fi
+        echo Cleaning done.
+        return
+    fi
+
     echo Packaging system unsupported.
     exit 1
 }
@@ -403,6 +414,11 @@ print commands it would otherwise execute."
                     $script_path/cleanold.bat /t
                 else
                     $script_path/cleanold.bat
+                    # Record that we've been run.
+                    if [ $dryrun = no ]; then
+                        echo "4.3" > $HOME/.wrclean
+                    fi
+                    echo Cleaning done.
                 fi
             else
                 clean_old
@@ -445,10 +461,14 @@ do_update()
     progname=$1
     osname=$2
     vers=$3
+    arch=$4
     IFS="."
     set -- $vers
     release_lev=$1
     release_maj=$2
+    set -- $arch
+    arch=$1
+    sfx=$2
     fullprogname=$progname
     IFS="_"
     set -- $progname
@@ -506,56 +526,41 @@ do_update()
         ;;
 
     Linux*)
-        # Check for alien/dpkg, as for Ubuntu/Debian.  If found, see
-        # if the user wants to use alien for install.  Debian packages
-        # are no longer being distributed in Gen 4.
-
-        has_alien=no
-        command -v alien >/dev/null 2>&1
-        if [ $? = 0 ]; then
-            has_alien=yes
-        fi
-        has_dpkg=no
-        command -v dpkg >/dev/null 2>&1
-        if [ $? = 0 ]; then
-            has_dpkg=yes
-        fi
-        use_alien=no;
-        if [ $has_alien = yes -a $has_dpkg = yes ]; then
-            while [ 1 = 1 ]; do
-                echo -n "Install using \"alien -ick $distfile\" [y/n]? "
-                read resp
-                if [ x$resp = xy -o x$resp = xyes ]; then
-                    use_alien=yes;
-                    break;
-                elif [ x$resp = xn -o x$resp = xno ]; then
-                    break;
-                else
-                    echo Next time answer y or n.
+        if [ x$sfx = xrpm ]; then
+            command -v rpm >/dev/null 2>&1
+            if [ $? != 0 ]; then
+                echo "Error: can't find rpm command."
+                return 127
+            fi
+            if [ $prefix = /usr/local ]; then
+                echo rpm -U --replacepkgs --replacefiles --nodeps $distfile
+                if [ $dryrun = no ]; then
+                    sudo rpm -U --replacepkgs --replacefiles --nodeps $distfile
                 fi
-            done;
-        fi
-
-        if [ $use_alien = yes ]; then
+            else
+                echo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
+                if [ $dryrun = no ]; then
+                    sudo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
+                fi
+            fi
+        elif [ x$sfx = xdeb ]; then
+            command -v dpkg >/dev/null 2>&1
+            if [ $? != 0 ]; then
+                echo "Error: can't find dpkg command."
+                return 127
+            fi
             if [ $prefix != /usr/local ]; then
                 echo Debian packages are not relocatable, can install under
                 echo /usr/local only.
                 return 127
             fi
-            echo alien -ick $distfile
+            echo dpkg -i $distfile
             if [ $dryrun = no ]; then
-                sudo alien -ick $distfile
-            fi
-        elif [ $prefix = /usr/local ]; then
-            echo rpm -U --replacepkgs --replacefiles --nodeps $distfile
-            if [ $dryrun = no ]; then
-                sudo rpm -U --replacepkgs --replacefiles --nodeps $distfile
+                sudo dpkg -i $distfile
             fi
         else
-            echo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
-            if [ $dryrun = no ]; then
-                sudo rpm -U --replacepkgs --replacefiles --nodeps --relocate /usr/local=$prefix $distfile
-            fi
+            echo Unhandled file extension $sfx, unsupported packager.
+            return 127
         fi
         ;;
     *)
@@ -578,7 +583,7 @@ do_update()
 
 
 if [ x$1 = x-upd ]; then
-    # Called from Xic or WRspice when updating.
+    # Called from package manager when updating
     # wr_install -upd distfile prefix
 
     distfile=$2
@@ -723,30 +728,6 @@ if [ $windows = yes ]; then
     exit $ret
 fi
 
-if [ `uname` = "Darwin" ]; then
-    # Apple packages aren't relocatable
-    prefix=/usr/local
-else
-    prefix=$XT_PREFIX
-    if [ x"$prefix" = x ]; then
-        prefix=/usr/local
-    fi
-    while [ 1 = 1 ]; do
-        printf "Distributions will be installed under\n  $prefix\nIs this \
-OK [y/n]? "
-        read resp
-        if [ x"$resp" = xn -o x"$resp" = xno ]; then 
-            printf "Enter prefix to use instead of\n  $prefix\n> "
-            read prefix
-            continue
-        elif [ x"$resp" = xy -o x"$resp" = xyes ]; then
-            break
-        else
-            echo Next time answer y or n.
-        fi
-    done
-fi
-
 if [ $(whoami) != root ]; then
     if [ x$1 != x -a x$1 != x-t ]; then
         echo "You're not root, validating using sudo."
@@ -758,6 +739,7 @@ if [ $(whoami) != root ]; then
     fi
 fi
 
+prefix=
 ret=0
 for fname in $pkgs; do
     if [ $fname = "-t" ]; then
@@ -768,6 +750,36 @@ for fname in $pkgs; do
         check_clean
         cleanchk=yes
     fi
+    if [ -z "$prefix" ]; then
+        sfx=${fname##*.}
+        if [ x$sfx = xpkg ]; then
+            # Apple packages aren't relocatable
+            prefix=/usr/local
+        elif [ x$sfx = xdeb ]; then
+            # Debian/Ubuntu packages aren't relocatable
+            prefix=/usr/local
+        else
+            prefix=$XT_PREFIX
+            if [ x"$prefix" = x ]; then
+                prefix=/usr/local
+            fi
+            while [ 1 = 1 ]; do
+                printf "Distributions will be installed under\n\
+  $prefix\nIs this OK [y/n]? "
+                read resp
+                if [ x"$resp" = xn -o x"$resp" = xno ]; then 
+                    printf "Enter prefix to use instead of\n  $prefix\n> "
+                    read prefix
+                    continue
+                elif [ x"$resp" = xy -o x"$resp" = xyes ]; then
+                    break
+                else
+                    echo Next time answer y or n.
+                fi
+            done
+        fi
+    fi
+
     do_update $fname $prefix
     r=$?
     if [ r != 0 ]; then

@@ -29,7 +29,7 @@ if [ -n "$exes" ]; then
         ./$a
     done
 else
-    sudo ./wr_install *.rpm *.pkg *.exe
+    sudo ./wr_install *.rpm *.deb *.pkg *.exe
 fi
 
 # Install the 4.3 packages.  The clear-old operation should be triggered

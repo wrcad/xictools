@@ -1,0 +1,22 @@
+#! /bin/sh
+
+prefix=/usr/local
+
+# Remove wrspice link and links in xictools/bin.
+rm -rf $prefix/xictools/wrspice
+tbin=$prefix/xictools/bin
+rm -f $tbin/multidec $tbin/proc2mod $tbin/printtoraw $tbin/wrspice \
+  $tbin/wrspiced
+
+# Move wrspice.current to wrspice-version for Safe Install.
+prog=wrspice
+if [ -x $prefix/xictools/$prog.current/bin/$prog ]; then
+    curver=$($prefix/xictools/$prog.current/bin/$prog --v)
+    set -- $curver
+    curver=$1
+    if [ -n "$curver" ]; then
+        rm -rf $prefix/xictools/$prog-$curver
+        mv -f $prefix/xictools/$prog.current $prefix/xictools/$prog-$curver
+    fi
+fi
+
