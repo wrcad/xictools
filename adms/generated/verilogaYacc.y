@@ -1154,7 +1154,7 @@ R_s.variable.name
             adms_module_list_variable_prepend_once_or_abort(gModule,myvariableprototype); 
             adms_slist_push(&gVariableDeclarationList,(p_adms)myvariableprototype);
           }
-        | tk_ident '[' tk_number ':' tk_number ']'
+        | tk_ident '[' tk_integer ':' tk_integer ']'
           {
             char* mylexval1=((p_lexval)$1)->_string;
             NEWVARIABLE($1)

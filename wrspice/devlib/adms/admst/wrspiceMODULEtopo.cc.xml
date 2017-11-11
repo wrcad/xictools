@@ -328,13 +328,27 @@
       </admst:if>
     </admst:when>
     <admst:when test="[datatypename='assignment']">
-      <admst:if test="[(lhs/insource='yes') and (lhs/OPdependent='no')]">
-        <admst:if test="rhs[nilled(variable[OPdependent='yes'])]">
-          <admst:apply-templates select="lhs" match="variable"/>
-          <admst:text format="$(indent)$e"/>
-          <admst:value-of select="rhs/tree/adms/datatypename"/>
-          <admst:apply-templates select="rhs/tree" match="%s"/>
-          <admst:text format=" = $e;\n"/>
+      <!-- array support 111017 -->
+      <admst:if test="[lhs/datatypename='array']">
+        <admst:if test="[(lhs/variable/insource='yes') and (lhs/variable/OPdependent='no')]">
+          <admst:if test="rhs[nilled(variable[OPdependent='yes'])]">
+            <admst:apply-templates select="lhs" match="array"/>
+            <admst:text format="$(indent)$e"/>
+            <admst:value-of select="rhs/tree/adms/datatypename"/>
+            <admst:apply-templates select="rhs/tree" match="%s"/>
+            <admst:text format=" = $e;\n"/>
+          </admst:if>
+        </admst:if>
+      </admst:if>
+      <admst:if test="[lhs/datatypename='variable']">
+        <admst:if test="[(lhs/insource='yes') and (lhs/OPdependent='no')]">
+          <admst:if test="rhs[nilled(variable[OPdependent='yes'])]">
+            <admst:apply-templates select="lhs" match="variable"/>
+            <admst:text format="$(indent)$e"/>
+            <admst:value-of select="rhs/tree/adms/datatypename"/>
+            <admst:apply-templates select="rhs/tree" match="%s"/>
+            <admst:text format=" = $e;\n"/>
+          </admst:if>
         </admst:if>
       </admst:if>
     </admst:when>

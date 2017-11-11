@@ -57,6 +57,10 @@ However, there were some changes made when building this package:
     Did the same modification to the source files admsPreprocessor.h
     and admsVeriloga.h, also in ./files.
 
+2.3.62:  11/10/2017
+    Modified verilogaYacc.y.in so that array endpoints are tk_integer
+    instead or tk_number.  Arrays are now supported in WRspice.
+
 ------------------------------------------------------------------------
 Changes from original adms-2.3.0, also see the ChangeLog in the
 distribution.
