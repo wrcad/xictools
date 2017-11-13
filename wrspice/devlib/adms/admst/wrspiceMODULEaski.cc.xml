@@ -59,13 +59,31 @@
     <admst:choose>
       <admst:when test="[type='real']">
         <admst:value-of select="name"/>
-        <admst:text format="$(indent)data->v.rValue = inst->%s;\n"/>
-        <admst:text format="$(indent)data->type = IF_REAL;\n"/>
+        <admst:if test="[minsize=maxsize]">
+          <admst:text format="$(indent)data->v.rValue = inst->%s;\n"/>
+          <admst:text format="$(indent)data->type = IF_REAL;\n"/>
+        </admst:if>
+        <!-- array support 111217 -->
+        <admst:if test="[minsize!=maxsize]">
+          <admst:apply-templates select="." match="math:asizeval"/>
+          <admst:text format="$(indent)data->v.v.vec.rVec = inst->%s;\n"/>
+          <admst:text format="$(indent)data->v.v.numValue = $leftval;\n"/>
+          <admst:text format="$(indent)data->type = IF_REALVEC;\n"/>
+        </admst:if>
       </admst:when>
       <admst:when test="[type='integer']">
         <admst:value-of select="name"/>
-        <admst:text format="$(indent)data->v.iValue = inst->%s;\n"/>
-        <admst:text format="$(indent)data->type = IF_INTEGER;\n"/>
+        <admst:if test="[minsize=maxsize]">
+          <admst:text format="$(indent)data->v.iValue = inst->%s;\n"/>
+          <admst:text format="$(indent)data->type = IF_INTEGER;\n"/>
+        </admst:if>
+        <!-- array support 111217 -->
+        <admst:if test="[minsize!=maxsize]">
+          <admst:apply-templates select="." match="math:asizeval"/>
+          <admst:text format="$(indent)data->v.v.vec.IVec = inst->%s;\n"/>
+          <admst:text format="$(indent)data->v.v.numValue = $leftval;\n"/>
+          <admst:text format="$(indent)data->type = IF_INTVEC;\n"/>
+        </admst:if>
       </admst:when>
       <admst:when test="[type='string']">
         <admst:value-of select="name"/>

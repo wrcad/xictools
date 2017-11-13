@@ -295,11 +295,31 @@
         <admst:choose>
           <admst:when test="$goodone[name='$v']"/>
           <admst:otherwise>
-            <admst:text format="$(indent)if (!model->%(name)_Given)\n"/>
-            <admst:apply-templates select="." match="push_indent"/>
-            <admst:text format="$(indent)model->%(name)="/>
-            <admst:text format="%(e(default/tree));\n"/>
-            <admst:apply-templates select="." match="pop_indent"/>
+            <admst:if test="[minsize=maxsize]">
+              <admst:text format="$(indent)if (!model->$(v)_Given)\n"/>
+              <admst:apply-templates select="." match="push_indent"/>
+              <admst:text format="$(indent)model->$v="/>
+              <admst:text format="%(e(default/tree));\n"/>
+              <admst:apply-templates select="." match="pop_indent"/>
+            </admst:if>
+            <!-- array_support 111217 -->
+            <admst:if test="[minsize!=maxsize]">
+              <admst:text format="$(indent)if (!model->$(v)_Given) {\n"/>
+              <admst:apply-templates select="." match="push_indent"/>
+              <admst:choose>
+                <admst:when test="[type='real']">
+                  <admst:text format="$(indent)double *t__$v = model->$v;\n"/>
+                </admst:when>
+                <admst:otherwise>
+                  <admst:text format="$(indent)int *t__$v = model->$v;\n"/>
+                </admst:otherwise>
+              </admst:choose>
+              <admst:for-each select="arraydefault">
+                <admst:text format="$(indent)*t__$v++ = %(.);\n"/>
+              </admst:for-each>
+              <admst:apply-templates select="." match="pop_indent"/>
+              <admst:text format="$(indent)}\n"/>
+            </admst:if>
           </admst:otherwise>
         </admst:choose>
       </admst:for-each>
@@ -311,11 +331,31 @@
         <admst:choose>
           <admst:when test="$goodone[name='$v']"/>
           <admst:otherwise>
-            <admst:text format="$(indent)if (!model->%(name)_Given)\n"/>
-            <admst:apply-templates select="." match="push_indent"/>
-            <admst:text format="$(indent)model->%(name)="/>
-            <admst:text format="%(e(default/tree));\n"/>
-            <admst:apply-templates select="." match="pop_indent"/>
+            <admst:if test="[minsize=maxsize]">
+              <admst:text format="$(indent)if (!model->%(name)_Given)\n"/>
+              <admst:apply-templates select="." match="push_indent"/>
+              <admst:text format="$(indent)model->%(name)="/>
+              <admst:text format="%(e(default/tree));\n"/>
+              <admst:apply-templates select="." match="pop_indent"/>
+            </admst:if>
+            <!-- array_support 111217 -->
+            <admst:if test="[minsize!=maxsize]">
+              <admst:text format="$(indent)if (!model->%(name)_Given) {\n"/>
+              <admst:apply-templates select="." match="push_indent"/>
+              <admst:choose>
+                <admst:when test="[type='real']">
+                  <admst:text format="$(indent)double *t__$v = model->$v;\n"/>
+                </admst:when>
+                <admst:otherwise>
+                  <admst:text format="$(indent)int *t__$v = model->$v;\n"/>
+                </admst:otherwise>
+              </admst:choose>
+              <admst:for-each select="arraydefault">
+                <admst:text format="$(indent)*t__$v++ = %(.);\n"/>
+              </admst:for-each>
+              <admst:apply-templates select="." match="pop_indent"/>
+              <admst:text format="$(indent)}\n"/>
+            </admst:if>
           </admst:otherwise>
         </admst:choose>
       </admst:for-each>
@@ -336,7 +376,24 @@
       <admst:when test="[$unified='yes']">
         <admst:text format="$(indent)if (!inst->%(name)_Given) {\n"/>
         <admst:apply-templates select="." match="push_indent"/>
-        <admst:text format="$(indent)inst->%(name) = model->%(name);\n"/>
+        <admst:if test="[minsize=maxsize]">
+          <admst:text format="$(indent)inst->%(name) = model->%(name);\n"/>
+        </admst:if>
+        <!-- array_support 111217 -->
+        <admst:if test="[minsize!=maxsize]">
+          <admst:if test="[type='real']">
+            <admst:apply-templates select="." match="math:asizeval"/>
+            <admst:text format="$(indent)memcpy(inst->%(name), "/>
+            <admst:text format="model->%(name), "/>
+            <admst:text format="($leftval)*sizeof(double));\n"/>
+          </admst:if>
+          <admst:if test="[type='integer']">
+            <admst:apply-templates select="." match="math:asizeval"/>
+            <admst:text format="$(indent)memcpy(inst->%(name), "/>
+            <admst:text format="model->%(name), "/>
+            <admst:text format="($leftval)*sizeof(int));\n"/>
+          </admst:if>
+        </admst:if>
         <admst:text
           format="$(indent)inst->%(name)_Given = model->%(name)_Given;\n"/>
         <admst:apply-templates select="." match="pop_indent"/>
@@ -345,8 +402,28 @@
       <admst:otherwise>
         <admst:text format="$(indent)if (!inst->%(name)_Given)\n"/>
         <admst:apply-templates select="." match="push_indent"/>
-        <admst:text format="$(indent)inst->%(name)="/>
-        <admst:text format="%(e(default/tree));\n"/>
+        <admst:if test="[minsize=maxsize]">
+          <admst:text format="$(indent)inst->%(name)="/>
+          <admst:text format="%(e(default/tree));\n"/>
+        </admst:if>
+        <!-- array_support 111217 -->
+        <admst:if test="[minsize!=maxsize]">
+          <admst:text format="$(indent)if (!inst->%(name)_Given) {\n"/>
+          <admst:apply-templates select="." match="push_indent"/>
+          <admst:choose>
+            <admst:when test="[type='real']">
+              <admst:text format="$(indent)double *t__$v = inst->$v;\n"/>
+            </admst:when>
+            <admst:otherwise>
+              <admst:text format="$(indent)int *t__$v = inst->$v;\n"/>
+            </admst:otherwise>
+          </admst:choose>
+          <admst:for-each select="arraydefault">
+            <admst:text format="$(indent)*t__$v++ = %(.);\n"/>
+          </admst:for-each>
+          <admst:apply-templates select="." match="pop_indent"/>
+          <admst:text format="$(indent)}\n"/>
+        </admst:if>
         <admst:apply-templates select="." match="pop_indent"/>
       </admst:otherwise>
     </admst:choose>

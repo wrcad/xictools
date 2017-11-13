@@ -424,7 +424,7 @@
 -->
 
 <!--
-  The main template to precess input allowing "eddx" calls (calls to
+  The main template to process input allowing "eddx" calls (calls to
   ddx where the first argument is an expression, not a varaible).
   Call this on the module ahead of normal adms processing.
 -->
@@ -655,7 +655,7 @@
 
 <!--
   End of Whiteley Research Inc.  additions.  The remaining code may
-  contain minor tweeks, such as additions to the recognized function
+  contain minor tweaks, such as additions to the recognized function
   name list.
 -->
 <!-- ---------------------------------------------------------------------- -->

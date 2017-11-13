@@ -53,11 +53,27 @@
     <admst:choose>
       <admst:when test="[type='real']">
         <admst:value-of select="name"/>
-        <admst:text format="$(indent)inst->%s = data->v.rValue;\n"/>
+        <admst:if test="[minsize=maxsize]">
+          <admst:text format="$(indent)inst->%s = data->v.rValue;\n"/>
+        </admst:if>
+        <!-- array support 111217 -->
+        <admst:if test="[minsize!=maxsize]">
+          <admst:apply-templates select="." match="math:asizeval"/>
+          <admst:text format="$(indent)memcpy(inst->%s, data->v.v.vec.rVec, "/>
+          <admst:text format="($leftval)*sizeof(double));\n"/>
+        </admst:if>
       </admst:when>
       <admst:when test="[type='integer']">
         <admst:value-of select="name"/>
-        <admst:text format="$(indent)inst->%s = data->v.iValue;\n"/>
+        <admst:if test="[minsize=maxsize]">
+          <admst:text format="$(indent)inst->%s = data->v.iValue;\n"/>
+        </admst:if>
+        <!-- array support 111217 -->
+        <admst:if test="[minsize!=maxsize]">
+          <admst:apply-templates select="." match="math:asizeval"/>
+          <admst:text format="$(indent)memcpy(inst->%s, data->v.v.vec.iVec, "/>
+          <admst:text format="($leftval)*sizeof(int));\n"/>
+        </admst:if>
       </admst:when>
       <admst:when test="[type='string']">
         <admst:value-of select="name"/>

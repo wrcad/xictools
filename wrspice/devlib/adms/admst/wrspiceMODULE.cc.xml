@@ -133,12 +133,24 @@
     </admst:if>
     <admst:choose>
       <admst:when test="[type='real']">
-        <admst:text
+        <admst:if test="[minsize=maxsize]">
+          <admst:text
   format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REAL"/>
+        </admst:if>
+        <admst:if test="[minsize!=maxsize]">
+          <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REALVEC"/>
+        </admst:if>
       </admst:when>
       <admst:when test="[type='integer']">
-        <admst:text
+        <admst:if test="[minsize=maxsize]">
+          <admst:text
   format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTEGER"/>
+        </admst:if>
+        <admst:if test="[minsize!=maxsize]">
+          <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTVEC"/>
+        </admst:if>
       </admst:when>
       <admst:otherwise>
         <admst:fatal
@@ -192,12 +204,24 @@
         separator=",\n">
       <admst:choose>
         <admst:when test="[type='real']">
-          <admst:text
+          <admst:if test="[minsize=maxsize]">
+            <admst:text
   format="$(indent)IO(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REAL"/>
+          </admst:if>
+          <admst:if test="[minsize!=maxsize]">
+            <admst:text
+  format="$(indent)IO(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REALVEC"/>
+          </admst:if>
         </admst:when>
         <admst:when test="[type='integer']">
-          <admst:text
+          <admst:if test="[minsize=maxsize]">
+            <admst:text
   format="$(indent)IO(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTEGER"/>
+          </admst:if>
+          <admst:if test="[minsize!=maxsize]">
+            <admst:text
+  format="$(indent)IO(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTVEC"/>
+          </admst:if>
         </admst:when>
         <admst:otherwise>
           <admst:fatal
@@ -238,12 +262,24 @@
     </admst:if>
     <admst:choose>
       <admst:when test="[type='real']">
-        <admst:text
+        <admst:if test="[minsize=maxsize]">
+          <admst:text
   format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REAL"/>
+        </admst:if>
+        <admst:if test="[minsize!=maxsize]">
+          <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_REALVEC"/>
+        </admst:if>
       </admst:when>
       <admst:when test="[type='integer']">
-        <admst:text
+        <admst:if test="[minsize=maxsize]">
+          <admst:text
   format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTEGER"/>
+        </admst:if>
+        <admst:if test="[minsize!=maxsize]">
+          <admst:text
+  format="$(indent)$io(&quot;%(name)&quot;, $(moduc)$(qual)%(name), IF_INTVEC"/>
+        </admst:if>
       </admst:when>
       <admst:otherwise>
         <admst:fatal

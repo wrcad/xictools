@@ -373,29 +373,9 @@
   </admst:choose>
 </admst:template>
 
-<!-- Integer variation -->
-<admst:template match="math:subi">
-  <admst:choose>
-    <admst:when test="[math:is_zero($leftval)/value='yes' and
-        math:is_zero($rightval)/value='yes']">
-      <admst:variable name="leftval" value="0"/>
-    </admst:when>
-    <admst:when test="[math:is_zero($rightval)/value='yes']"/>
-    <admst:when test="[math:is_zero($leftval)/value='yes']">
-      <admst:variable name="leftval" value="(-$rightval)"/>
-    </admst:when>
-    <admst:when test="[$leftval=$rightval]">
-      <admst:variable name="leftval" value="0"/>
-    </admst:when>
-    <admst:otherwise>
-      <admst:variable name="leftval" value="$leftval-$rightval"/>
-    </admst:otherwise>
-  </admst:choose>
-</admst:template>
-
 <!--
    $leftval <== ($leftval - $rightval)
-   As above, but add parentheses around two terms.
+   As for sub, but add parentheses around two terms.
 -->
 <admst:template match="math:sub:emparen">
   <admst:choose>
@@ -462,6 +442,74 @@
     </admst:when>
     <admst:otherwise>
       <admst:return name="result" value="no"/>
+    </admst:otherwise>
+  </admst:choose>
+</admst:template>
+
+<!-- Integer variation of math:sub -->
+<admst:template match="math:subi">
+  <admst:choose>
+    <admst:when test="[math:is_zero($leftval)/value='yes' and
+        math:is_zero($rightval)/value='yes']">
+      <admst:variable name="leftval" value="0"/>
+    </admst:when>
+    <admst:when test="[math:is_zero($rightval)/value='yes']"/>
+    <admst:when test="[math:is_zero($leftval)/value='yes']">
+      <admst:variable name="leftval" value="(-$rightval)"/>
+    </admst:when>
+    <admst:when test="[$leftval=$rightval]">
+      <admst:variable name="leftval" value="0"/>
+    </admst:when>
+    <admst:otherwise>
+      <admst:variable name="leftval" value="$leftval-$rightval"/>
+    </admst:otherwise>
+  </admst:choose>
+</admst:template>
+
+<!-- Array index computation -->
+<admst:template match="math:ixval">
+  <admst:choose>
+    <admst:when test="[minsize<maxsize]">
+      <admst:variable name="rightval" value="%(minsize)"/>
+    </admst:when>
+    <admst:otherwise>
+      <admst:variable name="rightval" value="$leftval"/>
+      <admst:variable name="leftval" value="%(minsize)"/>
+    </admst:otherwise>
+  </admst:choose>
+  <admst:apply-templates select="." match="math:subi"/>
+</admst:template>
+
+<!-- Array size computation -->
+<admst:template match="math:asizeval">
+  <admst:choose>
+    <admst:when test="[minsize<maxsize]">
+      <admst:variable name="minsz" value="%(minsize)"/>
+      <admst:choose>
+        <admst:when test="[$minsz='0']">
+          <admst:variable name="leftval" value="%(maxsize)+1"/>
+        </admst:when>
+        <admst:when test="[$minsz='1']">
+          <admst:variable name="leftval" value="%(maxsize)"/>
+        </admst:when>
+        <admst:otherwise>
+          <admst:variable name="leftval" value="%(maxsize)-%(minsize)+1"/>
+        </admst:otherwise>
+      </admst:choose>
+    </admst:when>
+    <admst:otherwise>
+      <admst:variable name="maxsz" value="%(maxsize)"/>
+      <admst:choose>
+        <admst:when test="[$maxsz='0']">
+          <admst:variable name="leftval" value="%(minsize)+1"/>
+        </admst:when>
+        <admst:when test="[$maxsz='1']">
+          <admst:variable name="leftval" value="%(minsize)"/>
+        </admst:when>
+        <admst:otherwise>
+          <admst:variable name="leftval" value="%(minsize)-%(maxsize)+1"/>
+        </admst:otherwise>
+      </admst:choose>
     </admst:otherwise>
   </admst:choose>
 </admst:template>
@@ -1892,22 +1940,20 @@
 <!-- ---------------------------------------------------------------------- -->
 
 <admst:template match="array">
-
   <admst:variable name="leftval" value="%(index)"/>
-  <admst:variable name="rightval" value="%(variable/minsize)"/>
-  <admst:apply-templates select="." match="math:subi"/>
-
+  <admst:apply-templates select="variable" match="math:ixval"/>
+  <admst:variable name="ixval" value="$leftval"/>
   <admst:apply-templates select="variable" match="variable"/>
-  <admst:variable name="e" select="$e[$leftval]"/>
+  <admst:variable name="e" select="$e[$ixval]"/>
   <admst:if test="[$ep != '0.0' and $ep !='']">
-    <admst:variable name="ep" select="$ep[$leftval]"/>
+    <admst:variable name="ep" select="$ep[$ixval]"/>
   </admst:if>
   <admst:if test="$qprobe">
     <admst:if test="[$eq != '0.0' and $eq !='']">
-      <admst:variable name="eq" select="$eq[$leftval]"/>
+      <admst:variable name="eq" select="$eq[$ixval]"/>
     </admst:if>
     <admst:if test="[$epq != '0.0' and $epq !='']">
-      <admst:variable name="epq" select="$epq[$leftval]"/>
+      <admst:variable name="epq" select="$epq[$ixval]"/>
     </admst:if>
   </admst:if>
 </admst:template>
@@ -3878,12 +3924,10 @@
     <admst:variable name="isarray" select="no"/>
     <admst:variable name="subscr" select=""/>
     <admst:if test="[lhs/datatypename='array']">
-      <admst:variable name="lhs" select="%(lhs/variable)"/>
       <admst:variable name="leftval" value="%(lhs/index)"/>
-      <admst:variable name="rightval" value="%(lhs/variable/minsize)"/>
-      <admst:apply-templates select="." match="math:subi"/>
-      <admst:variable name="isarray" select="yes"/>
+      <admst:apply-templates select="lhs/variable" match="math:ixval"/>
       <admst:variable name="subscr" select="$leftval"/>
+      <admst:variable name="isarray" select="yes"/>
     </admst:if>
     <admst:if test="[lhs/datatypename='variable']">
       <admst:variable name="lhs" select="%(lhs)"/>
@@ -4538,6 +4582,16 @@
         </admst:if>
       </admst:if>
     </admst:if>
+    
+    <!-- array support 111017 -->
+    <admst:variable name="isarray" value="no"/>
+    <admst:if test="[minsize!=maxsize]">
+      <!-- an array -->
+      <admst:variable name="isarray" value="yes"/>
+      <admst:apply-templates select="." match="math:asizeval"/>
+      <admst:variable name="subscr" value="$leftval"/>
+    </admst:if>
+
     <admst:if test="[$SkipDCL='no']">
       <!--
         The module variables are assumed initialized to zero in
@@ -4546,33 +4600,24 @@
       -->
       <admst:if test="[scope='local']">
         <admst:choose>
-          <admst:when test="[minsize=maxsize]">
-            <!-- a scalar -->
-            <admst:choose>
-              <admst:when test="[type='real']">
-                <admst:text format="$(indent)%(vtype(.)) %(name) = 0.0;\n"/>
-              </admst:when>
-              <admst:otherwise>
-                <admst:text format="$(indent)%(vtype(.)) %(name) = 0;\n"/>
-              </admst:otherwise>
-            </admst:choose>
+          <admst:when test="[type='real']">
+            <admst:if test="[$isarray='yes']">
+              <admst:text
+  format="$(indent)%(vtype(.)) %(name)[$subscr] = {0.0};\n"/>
+            </admst:if>
+            <admst:if test="[$isarray='no']">
+              <admst:text
+  format="$(indent)%(vtype(.)) %(name) = 0.0;\n"/>
+            </admst:if>
           </admst:when>
-          <!-- array support 111017 -->
           <admst:otherwise>
-            <!-- an array -->
-            <admst:variable name="leftval" value="%(maxsize)"/>
-            <admst:variable name="rightval" value="%(minsize)"/>
-            <admst:apply-templates select="." match="math:subi"/>
-            <admst:choose>
-              <admst:when test="[type='real']">
-                <admst:text
-  format="$(indent)%(vtype(.)) %(name)[$leftval] = {0.0};\n"/>
-              </admst:when>
-              <admst:otherwise>
-                <admst:text
-  format="$(indent)%(vtype(.)) %(name)[$leftval] = {0};\n"/>
-              </admst:otherwise>
-            </admst:choose>
+            <admst:if test="[$isarray='yes']">
+  format="$(indent)%(vtype(.)) %(name)[$subscr] = {0};\n"/>
+            </admst:if>
+            <admst:if test="[$isarray='no']">
+              <admst:text
+  format="$(indent)%(vtype(.)) %(name) = 0;\n"/>
+            </admst:if>
           </admst:otherwise>
         </admst:choose>
       </admst:if>
@@ -4596,54 +4641,39 @@
             </admst:otherwise>
           </admst:choose>
         </admst:if>
-        <admst:choose>
-          <admst:when test="[minsize=maxsize]">
-            <!-- a scalar -->
-            <admst:for-each select="$myvar/probe">
-              <admst:variable name="pprobe" select="%(.)"/>
+
+        <admst:for-each select="$myvar/probe">
+          <admst:variable name="pprobe" select="%(.)"/>
+          <admst:text format="$(indent)double "/>
+          <admst:if test="[$isarray='yes']">
+            <admst:text
+  format="%(dxname($myvar)/[name='dxname']/value)[$subscr] = {0.0};\n"/>
+          </admst:if>
+          <admst:if test="[$isarray='no']">
+            <admst:text
+  format="%(dxname($myvar)/[name='dxname']/value) = 0.0;\n"/>
+          </admst:if>
+        </admst:for-each>
+        <admst:if test="[$emit_defines='yes']">
+          <admst:text test="[$ddxinsidederivate='yes']"
+            format="#if defined(_DERIVATE2)\n"/>
+        </admst:if>
+        <admst:for-each select="$ddxprobes/item">
+          <admst:variable name="pprobe" select="%(.)"/>
+          <admst:for-each select="$myvar/probe">
+            <admst:variable name="qprobe" select="%(.)"/>
+            <admst:text format="$(indent)double "/>
+            <admst:if test="[$isarray='yes']">
               <admst:text
-  format="$(indent)double %(dxname($myvar)/[name='dxname']/value) = 0.0;\n"/>
-            </admst:for-each>
-            <admst:if test="[$emit_defines='yes']">
-              <admst:text test="[$ddxinsidederivate='yes']"
-                format="#if defined(_DERIVATE2)\n"/>
+  format="%(ddxname($myvar)/[name='ddxname']/value)[$subscr] = {0.0};\n"/>
             </admst:if>
-            <admst:for-each select="$ddxprobes/item">
-              <admst:variable name="pprobe" select="%(.)"/>
-              <admst:for-each select="$myvar/probe">
-                <admst:variable name="qprobe" select="%(.)"/>
-                <admst:text
-  format="$(indent)double %(ddxname($myvar)/[name='ddxname']/value) = 0.0;\n"/>
-              </admst:for-each>
-            </admst:for-each>
-          </admst:when>
-          <!-- array support 111017 -->
-          <admst:otherwise>
-            <!-- an array -->
-            <admst:variable name="leftval" value="%($myvar/maxsize)"/>
-            <admst:variable name="rightval" value="%($myvar/minsize)"/>
-            <admst:apply-templates select="." match="math:subi"/>
-            <admst:for-each select="$myvar/probe">
-              <admst:variable name="pprobe" select="%(.)"/>
-              <admst:text format="$(indent)double "/>
+            <admst:if test="[$isarray='no']">
               <admst:text
-  format="%(dxname($myvar)/[name='dxname']/value)[$leftval] = {0.0};\n"/>
-            </admst:for-each>
-            <admst:if test="[$emit_defines='yes']">
-              <admst:text test="[$ddxinsidederivate='yes']"
-                format="#if defined(_DERIVATE2)\n"/>
+  format="%(ddxname($myvar)/[name='ddxname']/value) = 0.0;\n"/>
             </admst:if>
-            <admst:for-each select="$ddxprobes/item">
-              <admst:variable name="pprobe" select="%(.)"/>
-              <admst:for-each select="$myvar/probe">
-                <admst:variable name="qprobe" select="%(.)"/>
-                <admst:text format="$(indent)double "/>
-                <admst:text
-  format="%(ddxname($myvar)/[name='ddxname']/value)[$leftval] = {0.0};\n"/>
-              </admst:for-each>
-            </admst:for-each>
-          </admst:otherwise>
-        </admst:choose>
+          </admst:for-each>
+        </admst:for-each>
+
         <admst:if test="[$emit_defines='yes']">
           <admst:text test="[$ddxinsidederivate='yes']"
             format="#endif // _DERIVATE2\n"/>

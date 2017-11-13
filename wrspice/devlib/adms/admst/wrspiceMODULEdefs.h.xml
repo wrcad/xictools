@@ -589,10 +589,17 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
   <!-- Instance Parameters -->
   <admst:if test="variable[parametertype='instance' and input='yes']">
     <admst:text format="\n$(indent)// Instance parameters.\n"/>
-    <admst:for-each select="variable[parametertype='instance' and
-        input='yes']">
-      <admst:value-of select="name"/>
-      <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+    <admst:for-each select="variable[parametertype='instance' and input='yes']">
+      <admst:if test="[minsize=maxsize]">
+        <admst:value-of select="name"/>
+        <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+      </admst:if>
+      <!-- array support 111217 -->
+      <admst:if test="[minsize!=maxsize]">
+        <admst:value-of select="name"/>
+        <admst:apply-templates select="." match="math:asizeval"/>
+        <admst:text format="$(indent)%(vtype(.)) %s[$leftval];\n"/>
+      </admst:if>
     </admst:for-each>
     <admst:text format="\n"/>
     <admst:for-each
@@ -610,11 +617,27 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
     <admst:text format="\n$(indent)// Variables\n"/>
     <admst:for-each select="variable[input='no' and (scope='global_instance' or
         (parametertype='instance' and not(nilled(attribute))))]">
-      <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+      <admst:if test="[minsize=maxsize]">
+        <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+      </admst:if>
+      <!-- array support 111217 -->
+      <admst:if test="[minsize!=maxsize]">
+        <admst:value-of select="name"/>
+        <admst:apply-templates select="." match="math:asizeval"/>
+        <admst:text format="$(indent)%(vtype(.)) %s[$leftval];\n"/>
+      </admst:if>
     </admst:for-each>
     <admst:if test="$instance_vars">
       <admst:for-each select="$instance_vars">
-        <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+        <admst:if test="[minsize=maxsize]">
+          <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+        </admst:if>
+        <!-- array support 111217 -->
+        <admst:if test="[minsize!=maxsize]">
+          <admst:value-of select="name"/>
+          <admst:apply-templates select="." match="math:asizeval"/>
+          <admst:text format="$(indent)%(vtype(.)) %s[$leftval];\n"/>
+        </admst:if>
       </admst:for-each>
     </admst:if>
   </admst:if>
@@ -840,8 +863,16 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
         <admst:text format="\n$(indent)// Model parameters.\n"/>
         <admst:for-each
             select="variable[parametertype='instance' and input='yes']">
-          <admst:value-of select="name"/>
-          <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+          <admst:if test="[minsize=maxsize]">
+            <admst:value-of select="name"/>
+            <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+          </admst:if>
+          <!-- array support 111217 -->
+          <admst:if test="[minsize!=maxsize]">
+            <admst:value-of select="name"/>
+            <admst:apply-templates select="." match="math:asizeval"/>
+            <admst:text format="$(indent)%(vtype(.)) %s[$leftval];\n"/>
+          </admst:if>
         </admst:for-each>
         <admst:text format="\n"/>
         <admst:for-each
@@ -856,8 +887,16 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
         <admst:text format="\n$(indent)// Model parameters\n"/>
         <admst:for-each
              select="variable[parametertype='model' and input='yes']">
-          <admst:value-of select="name"/>
-          <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+          <admst:if test="[minsize=maxsize]">
+            <admst:value-of select="name"/>
+            <admst:text format="$(indent)%(vtype(.)) %s;\n"/>
+          </admst:if>
+          <!-- array support 111217 -->
+          <admst:if test="[minsize!=maxsize]">
+            <admst:value-of select="name"/>
+            <admst:apply-templates select="." match="math:asizeval"/>
+            <admst:text format="$(indent)%(vtype(.)) %s[$leftval];\n"/>
+          </admst:if>
         </admst:for-each>
         <admst:text format="\n"/>
         <admst:for-each
@@ -878,11 +917,27 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
     <admst:text format="\n$(indent)// Variables\n"/>
     <admst:for-each select="variable[input='no' and (scope='global_model' or
         (parametertype='model' and not(nilled(attribute))))]">
-      <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+      <admst:if test="[minsize=maxsize]">
+        <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+      </admst:if>
+      <!-- array support 111217 -->
+      <admst:if test="[minsize!=maxsize]">
+        <admst:value-of select="name"/>
+        <admst:apply-templates select="." match="math:asizeval"/>
+        <admst:text format="$(indent)%(vtype(.)) %s[$leftval];\n"/>
+      </admst:if>
     </admst:for-each>
     <admst:if test="$model_vars">
       <admst:for-each select="$model_vars">
-        <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+        <admst:if test="[minsize=maxsize]">
+          <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+        </admst:if>
+        <!-- array support 111217 -->
+        <admst:if test="[minsize!=maxsize]">
+          <admst:value-of select="name"/>
+          <admst:apply-templates select="." match="math:asizeval"/>
+          <admst:text format="$(indent)%(vtype(.)) %s[$leftval];\n"/>
+        </admst:if>
       </admst:for-each>
     </admst:if>
   </admst:if>
