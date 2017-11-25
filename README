@@ -320,5 +320,80 @@ There is provision for creating a "gtk2-bundle" from the MacPorts, which
 is deployed with packages.  Again, a local user can likely skip this
 and link directly.
 
-I'll add detail here in the future.
+Here's a step-by-step procedure for building the X11 version of the
+programs.  It is also possible to build a native version, but alas,
+the last time I looked at this, the graphics support in the native gtk
+had very serious shortcomings and the graphics display, notably
+ghosting, doesn't work correctly.
+
+Overall, we install a special version of macports/gtk in
+/usr/local/gtk2-bundle-x11.  This is used to build and run the
+programs on the local machine.  One can build a "gtk2-bundle-x11"
+package which contains only the run-time elements needed, and export
+this.  This package will install a small run-time only
+/usr/local/gtk2-bundle-x11, allowing the program packages to be
+installed and run on other Macs.  There are other ways to obtain these
+libraries and build the programs for local use, should you prefer, but
+you're on your own in this case.
+
+1.  Install xcode
+    This is Apple's development package, available as a download from the
+    App store.
+
+2.  Install the "command line tools"
+    Install this by giving the following command in a terminal window:
+      xcode-select --install
+
+3.  Run xcode to sign off on the license agreement.
+    Give the following command and agree to the terms:
+      xcodebuild -license
+
+4.  To run the programs you will need an X11 server.  The recommended
+    server is XQuartz (www.xquartz.org).  This is the "official" X
+    server for the Mac, however others are available, including one
+    through macports.  Follow the instructions to install and start
+    the server.
+
+5.  Download the latest source code for the Macports installer from
+    macports.org.  Presently, this file is named
+    Macports-2.4.2.tar.gz, but the release number will likely be
+    different (get the gzip (.gz) version).  You are going to be
+    building a special macports from source, don't bother downloading
+    the pre-built package manager.
+
+6.  Move the Macports file you just downloaded into a work area where
+    you have all permissions.  Copy the file xt_base/packages/util/MPbuild
+    from the xictools source tree into this same work area.
+
+7.  Edit the MPbuild script copy with a text editor.  Read the comment
+    and perform configuration as directed.
+
+8.  Move any existing /usr/local/gtk2-bundle-x11 directory out of the way.
+    You will have this directory if you have installed the gtk2-bundle-x11
+    package from wrcad.com.  It is not likely that you will need this
+    anymore, so it can be deleted.
+
+9.  Run the script by, in a Terminal window in the work area, giving the
+    command
+
+      ./MPbuild
+
+    Respond to the prompts.  You should answer "n" to the first prompt
+    to build the standard x11 version, but you can choose to build a
+    quartz native version.  However, this may not work correctly yet.
+
+    The script takes a long time to run, several hours on my old
+    mid-2010 macbook pro.  Make sure to use the ac adaptor!
+
+10.  Make sure that /usr/local/gtk2-bundle-x11/bin is in your search
+    path, ahead of /opt/local/bin (if this exists).
+
+    The shell search path is likely set in your .bash_profile file
+    in your home directory (PATH variable).  After adding the directory
+    to the search path assignment with a text editor, save the file.
+    Exit the Terminal window, and start a new one.  The new window will
+    have the new path set.
+
+You should now be able to build the graphical xictools programs (mozy,
+xic, wrspice).
 

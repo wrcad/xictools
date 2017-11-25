@@ -67,7 +67,7 @@ GRfont::fnt_t GRfont::app_fonts[] =
     fnt_t( "HTML Viewer Proportional Family", "Sans 9", false, true ),
     fnt_t( "HTML Viewer Fixed Pitch Family",  "Lucida Console 9", true, true )
 #else
-#ifdef WITH_QUARTZ
+#ifdef __APPLE__
     fnt_t( "Fixed Pitch Text Window Font",    "Monospace 12", true, false ),
     fnt_t( "Proportional Text Window Font",   "Sans 12", false, false ),
     fnt_t( "Fixed Pitch Drawing Window Font", "Monospace 12", true, false ),

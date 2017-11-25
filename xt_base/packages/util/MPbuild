@@ -1,0 +1,96 @@
+#! /bin/bash
+
+#### Apple OS X setup script
+#
+# Create the gtk2 libraries and applications for building xictools
+# with gtk2 support.
+#
+# See README at the top of the xictools source tree for info.
+
+# Procedure:
+
+# Go to macports.org and download the installer source file.  This will
+# have a name like "Macports-2.4.2.tar.gz".
+
+# Set the numbers in the line below to match the macports source file
+# that you have downloaded to the current directory.
+mpbase=Macports-2.4.2
+
+# With the downloaded file in the current directory, run this script. 
+# Stand by to give your password, and respond to prompts when asked. 
+# After answering 'y' to the long list of ports to install, you can
+# take a break.  The script will take a long time, maybe hours, to
+# complete, as it builds from source gtk2 and all dependent programs.
+ 
+# Once complete, it will have installed everything into
+#   /use/local/gtk2-bundle-x11  (standard x11 version)
+#   /use/local/gtk2-bundle      (experimental native version)
+# Whichever you have, add its bin subdirectory to your search path.
+# You should then be able to build and run xictools and other programs
+# that use the gtk2 user interface.
+
+for_x11=yes
+echo "The quartz version is experimental and doesn't really work last I checked."
+echo -n "Build for quartz? (y/n) [n] "
+read foo
+if [ x$foo = xy -o x$foo = xyes ]; then
+    for_x11=no
+fi
+
+if [ $for_x11 = yes ]; then
+    MP_PREFIX=/usr/local/gtk2-bundle-x11
+else
+    MP_PREFIX=/usr/local/gtk2-bundle
+fi
+if [ -d $MP_PREFIX ]; then
+    echo Error: $MP_PREFIX exists and is in the way, move or delete it.
+    exit 1
+fi
+
+echo -n "Creating $MP_PREFIX, x11: $for_x11,  OK? (y/n) [y] "
+read foo
+if [ x$foo = x -o x$foo = xy -o x$foo = xyes ]; then
+    echo Continuing...
+else
+    echo Terminating
+    exit 0
+fi
+
+rm -rf $mpbase
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:$MP_PREFIX/bin
+
+if [ -f $mpbase.tar.gz ]; then
+    tar xzf $mpbase.tar.gz
+elif [ -f $mpbase.tar ]; then
+    tar xf $mpbase.tar
+else
+    echo Macports source file not found
+    exit 1
+fi
+
+if [ ! -d $mpbase ]; then
+    echo Macports directory not found
+    exit 1
+fi
+cd $mpbase
+
+./configure --prefix=$MP_PREFIX --with-applications-dir=$MP_PREFIX/Applications
+make
+sudo make install
+sudo port -v selfupdate
+
+if [ $for_x11 = yes ]; then
+    sudo port install gtk2
+else
+    sudo port install gtk2 +no_x11 +quartz
+fi
+
+# Set the default widget font, otherwise too small.
+echo "gtk-font-name=\"sans-serif 14\"" > gtkrc
+sudo mv -f gtkrc $MP_PREFIX/etc/gtk-2.0
+
+# Clean up
+cd ..
+rm -rf $mpbase
+echo Done
+
