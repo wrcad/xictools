@@ -1,0 +1,8 @@
+*.[oa]
+Makefile
+Makefile.bak
+.configured
+errs
+*/packages/root
+*/packages/Darwin
+*/packages/Linux*
