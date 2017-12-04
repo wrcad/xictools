@@ -1266,7 +1266,7 @@ namespace {
             sLstr lstr;
             lstr.add("httpget");  // dummy first arg is ignored
             lstr.add(" -o ");
-            sprintf(f, da->filename ? da->filename : filename);
+            sprintf(f, "%s", da->filename ? da->filename : filename);
             lstr.add(buf);
             lstr.add_c(' ');
             // Add a proxy if set,  The update system provides this.

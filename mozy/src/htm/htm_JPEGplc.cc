@@ -72,7 +72,12 @@
 #include "htm_widget.h"
 #include "htm_plc.h"
 
+
 #ifdef HAVE_LIBJPEG
+
+// WARNING:  Type boolean is defined as an enum { FALSE, TRUE } in
+// some libjpeg versions, don't change FALSE/TRUE to false/true here
+// or errors result!
 
 namespace {
     // our own memory manager
@@ -170,7 +175,7 @@ PLCImageJPEG::Init()
     // when I/O suspension occurs in this call.
 
     int i;
-    if ((i = jpeg_read_header(cinfo, true)) != JPEG_HEADER_OK) {
+    if ((i = jpeg_read_header(cinfo, TRUE)) != JPEG_HEADER_OK) {
         // an error of some kind, abort this PLC
         if (i != JPEG_SUSPENDED)
             o_plc->plc_status = PLC_ABORT;
@@ -189,7 +194,7 @@ PLCImageJPEG::Init()
     // We want to have buffered output if we want to be able to display
     // the data read so far.
 
-    cinfo->buffered_image = true;
+    cinfo->buffered_image = TRUE;
 
     // We only want colormapped output, and we only do single-pass
     // color quantization for all but the last passes (two pass
@@ -200,10 +205,10 @@ PLCImageJPEG::Init()
     // want to be able to allow this we must make preparations for
     // this (hence the enable_ settings).
 
-    cinfo->quantize_colors    = true;
-    cinfo->enable_1pass_quant = true;
-    cinfo->enable_2pass_quant = true;
-    cinfo->two_pass_quantize  = false;
+    cinfo->quantize_colors    = TRUE;
+    cinfo->enable_1pass_quant = TRUE;
+    cinfo->enable_2pass_quant = TRUE;
+    cinfo->two_pass_quantize  = FALSE;
     cinfo->dither_mode        = JDITHER_ORDERED;
     cinfo->colormap           = 0;
     cinfo->output_gamma       = o_plc->plc_owner->im_html->htm_screen_gamma;
@@ -287,7 +292,7 @@ PLCImageJPEG::ScanlineProc()
 
     // a new pass
     if (cinfo->input_scan_number != cinfo->output_scan_number) {
-        cinfo->do_block_smoothing = true;
+        cinfo->do_block_smoothing = TRUE;
 
         // rewind output buffer
         o_prev_pos = 0;
@@ -403,8 +408,8 @@ PLCImageJPEG::FinalPass()
     // buffered in the current decompressor.  Set proper color
     // quantization params and initialize the final pass.
 
-    cinfo->quantize_colors    = true;
-    cinfo->two_pass_quantize  = true;
+    cinfo->quantize_colors    = TRUE;
+    cinfo->two_pass_quantize  = TRUE;
     cinfo->dither_mode        = JDITHER_FS;
     cinfo->colormap           = 0;
     cinfo->desired_number_of_colors =
@@ -647,7 +652,7 @@ namespace {
                 src->buffer[1] = (JOCTET)JPEG_EOI;
                 src->pub.next_input_byte = src->buffer;
                 src->pub.bytes_in_buffer = 2;
-                return (true);
+                return (TRUE);
             }
 
             // need to resize jpeg buffer if PLC input buffer size changed
@@ -663,7 +668,7 @@ namespace {
             // suspend decoder
             src->pub.next_input_byte = 0;
             src->pub.bytes_in_buffer = 0;
-            return (false);
+            return (FALSE);
         }
 
         // move data left to the beginning of the current jpeg buffer
@@ -706,7 +711,7 @@ namespace {
                     src->buffer[1] = (JOCTET)JPEG_EOI;
                     src->pub.next_input_byte = src->buffer;
                     src->pub.bytes_in_buffer = 2;
-                    return (true);
+                    return (TRUE);
                 }
 
                 // this should *never* happen
@@ -716,7 +721,7 @@ namespace {
                     "    bytes. Skipping this image.", len);
 
                 plc->plc_status = PLC_ABORT;
-                return (false);
+                return (FALSE);
             }
 
             // this amount of data to be skipped upon next call
@@ -724,7 +729,7 @@ namespace {
 
             // still skipping data or no more data
             if (src->nskip || plc->plc_left == 0) {
-                return (false);
+                return (FALSE);
             }
 
             // no more data to be skipped and input available, fall through
@@ -752,7 +757,7 @@ namespace {
                 src->buffer[1] = (JOCTET)JPEG_EOI;
                 src->pub.next_input_byte = src->buffer;
                 src->pub.bytes_in_buffer = 2;
-                return (true);
+                return (TRUE);
             }
 
             // we should never get here
@@ -766,7 +771,7 @@ namespace {
 
             // abort this PLC
             plc->plc_status = PLC_ABORT;
-            return (false);
+            return (FALSE);
         }
 
         // update source manager fields
@@ -774,7 +779,7 @@ namespace {
         src->pub.bytes_in_buffer += (size_t)status;
 
         // continue processing
-        return (true);
+        return (TRUE);
     }
 
 

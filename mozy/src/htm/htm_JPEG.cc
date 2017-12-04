@@ -79,6 +79,11 @@ extern "C" {
 }
 #include <setjmp.h>
 
+
+// WARNING:  Type boolean is defined as an enum { FALSE, TRUE } in
+// some libjpeg versions, don't change FALSE/TRUE to false/true here
+// or errors result!
+
 namespace htm
 {
     struct my_error_mgr
@@ -115,7 +120,6 @@ namespace {
         jpeg_EOI_buffer[1]=(JOCTET)JPEG_EOI;
     }
 
-
     // We cant give any more data, because all we know about the image is
     // already in the buffer!
     //
@@ -129,7 +133,7 @@ namespace {
         src->buffer=jpeg_EOI_buffer;
         src->pub.next_input_byte=src->buffer;
         src->pub.bytes_in_buffer=2;
-        return (true);
+        return (TRUE);
     }
 
 
@@ -213,10 +217,9 @@ htmImageManager::readJPEG(ImageBuffer *ib)
 
     jpeg_buffer_src(&cinfo, ib->buffer, ib->size);
 
-    jpeg_read_header(&cinfo, true);
-
-    cinfo.quantize_colors = true;
-    cinfo.two_pass_quantize = true;
+    jpeg_read_header(&cinfo, TRUE);
+    cinfo.quantize_colors = TRUE;
+    cinfo.two_pass_quantize = TRUE;
 
     // Get configuration defaults: color quantization and gamma correction.
     // color quantization
