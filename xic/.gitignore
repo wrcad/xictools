@@ -90,3 +90,13 @@ src/wrspif/paramsub.cc
 src/wrspif/spnumber.cc
 src/wrspif/spparse.cc
 startup/wr_install
+manual/*.aux
+manual/xicmanual-*
+manual/xicmanual.aux
+manual/xicmanual.dvi
+manual/xicmanual.idx
+manual/xicmanual.ilg
+manual/xicmanual.ind
+manual/xicmanual.log
+manual/xicmanual.toc
+manual/xicmanual

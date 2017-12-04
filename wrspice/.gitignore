@@ -39,3 +39,13 @@ src/sparse/spsolve.cc
 src/sparse/sputils.cc
 startup/wr_install
 wrspice_ipc_demo.tar.gz
+manual/*.aux
+manual/wrsmanual-*
+manual/wrsmanual.aux
+manual/wrsmanual.dvi
+manual/wrsmanual.idx
+manual/wrsmanual.ilg
+manual/wrsmanual.ind
+manual/wrsmanual.log
+manual/wrsmanual.toc
+manual/wrsmanual

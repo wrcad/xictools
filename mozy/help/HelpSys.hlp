@@ -477,7 +477,7 @@ The HTML Help Viewer
 
     <p>
     If the argument consists of only a plus sign '<tt>+</tt>', if a
-    file named "<tt>,wrproxy.bak</tt>" exists in the user's home
+    file named "<tt>.wrproxy.bak</tt>" exists in the user's home
     directory, it will be moved to <tt>.wrproxy</tt>.  An existing
     <tt>.wrproxy</tt> will be overwritten.  If the '<tt>+</tt>' is
     followed by some non-space characters, the command will look for a
