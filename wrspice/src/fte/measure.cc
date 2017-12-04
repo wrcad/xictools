@@ -541,7 +541,7 @@ sMeas::addMeas(Mfunc type, const char *expr)
 
 
 namespace {
-    // Return true if name names and analysis, and return the index in
+    // Return true if name names an analysis, and return the index in
     // which.
     //
     bool get_anal(const char *name, int *which)

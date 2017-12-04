@@ -82,7 +82,7 @@ namespace {
 #define FIELD_MAX   20
 #define FIELD_INIT  12
 
-// Number of digits ti use when printing numbers.
+// Number of digits to use when printing numbers.
 #define NUMDGT 5
 
 // Maximum character width of a number.
@@ -1832,7 +1832,7 @@ sGraph::gr_draw_last(int len)
 }
 
 
-// The newt two functions hide the push/pop necessary for the ghost
+// The next two functions hide the push/pop necessary for the ghost
 // drawing functions.
 //
 void
@@ -2082,7 +2082,7 @@ sGraph::gr_ghost_zoom(int x, int y, int ref_x, int ref_y)
 }
 
 
-// Show an outline box of the selected text
+// Show an outline box of the selected text.
 //
 void
 sGraph::gr_ghost_tbox(int x, int y)
@@ -3978,7 +3978,6 @@ sGraph::dv_plot_trace(sDataVec *v, sDataVec *xs, int plotno)
     double *result = new double[deg + 1];
     double *xdata = new double[deg + 1];
     double *ydata = new double[deg + 1];
-
 
     // Plot the first degree segments...
     int i;

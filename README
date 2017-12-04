@@ -225,7 +225,7 @@ supported, so direct installation is your sole option.
     4. "make packages" will create all of the package files.
        Packages are left in xt/xt_base/packages/pkgfiles.
 
-    5. cd xt_base/packages/pkgfiles; ./install all
+    5. cd xt_base/packages/pkgfiles; ../util/wr_install all
        This will install the programs from the package files.
 
 
