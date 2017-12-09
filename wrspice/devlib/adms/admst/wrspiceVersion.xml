@@ -1940,7 +1940,9 @@
 <!-- ---------------------------------------------------------------------- -->
 
 <admst:template match="array">
-  <admst:variable name="leftval" value="%(index)"/>
+  <admst:variable name="tn" value="%(index/datatypename)"/>
+  <admst:apply-templates select="index" match="$tn"/>
+  <admst:variable name="leftval" value="$e"/>
   <admst:apply-templates select="variable" match="math:ixval"/>
   <admst:variable name="ixval" value="$leftval"/>
   <admst:apply-templates select="variable" match="variable"/>
@@ -3924,7 +3926,9 @@
     <admst:variable name="isarray" select="no"/>
     <admst:variable name="subscr" select=""/>
     <admst:if test="[lhs/datatypename='array']">
-      <admst:variable name="leftval" value="%(lhs/index)"/>
+      <admst:variable name="tn" value="%(lhs/index/datatypename)"/>
+      <admst:apply-templates select="lhs/index" match="$tn"/>
+      <admst:variable name="leftval" value="$e"/>
       <admst:apply-templates select="lhs/variable" match="math:ixval"/>
       <admst:variable name="subscr" select="$leftval"/>
       <admst:variable name="isarray" select="yes"/>
