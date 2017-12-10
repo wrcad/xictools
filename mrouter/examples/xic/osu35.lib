@@ -1,5 +1,5 @@
 (Library osu035_stdcells.lib);
-Define ARCH_PATH /usr/local/mrouter/examples/osu35/osu035_stdcells.gds2
+Define ARCH_PATH /usr/local/xictools/mrouter/examples/osu35/osu035_stdcells.gds2
 Reference AND2X1               ARCH_PATH AND2X1
 Reference AND2X2               ARCH_PATH AND2X2
 Reference AOI21X1              ARCH_PATH AOI21X1

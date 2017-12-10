@@ -17,7 +17,7 @@ LSHFLAG = @LSHFLAG@
 OSNAME = @OSNAME@
 LIBDL = @LIBDL@
 
-INCLUDE = -I/usr/local/mrouter/include
+INCLUDE = -I/usr/local/xictools/mrouter/include
 CCFILES = main-plg.cc
 
 mrouter-plg: main-plg.cc

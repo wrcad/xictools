@@ -33,13 +33,12 @@ CCFILES = \
 CCOBJS = $(CCFILES:.cc=.o)
 
 ifdef EXESUFFIX
-# NOTE:  Windows needs the explicit inclusion of lddb.o or
-# GetProcAdress fails to find export names, also miscutil.a must be
-# provided.
+# NOTE:  Windows needs miscutil.a.  Not needed otherwise, and in fact
+# will casue error since it is not compiled with -fpic.
 TLIBS = ../lddb/lddb.o -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef \
   $(BASE)/lib/miscutil.a
 else
-TLIBS = -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef
+TLIBS = ../lddb/lddb.o -L../lddb -llddb -L../lef/lib -llef -L../def/lib -ldef
 endif
 
 LDDBLIB = ../lddb/liblddb.a

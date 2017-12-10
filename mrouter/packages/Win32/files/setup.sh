@@ -24,6 +24,7 @@ lib=$top/xictools/$appdir
 $utod $lib/examples/*
 $utod $lib/examples/osu35/*.lef
 $utod $lib/examples/xic/*
+$utod $lib/include/*
 
 sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
 $utod $appname.iss

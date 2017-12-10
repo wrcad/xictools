@@ -116,7 +116,7 @@ namespace {
 
 
 // You will need to include the main mrouter include file.
-// #include "/usr/local/mrouter/include/mrouter.h"
+// #include "/usr/local/xictools/mrouter/include/mrouter.h"
 #ifdef WIN32
 #include <windows.h>
 #else
@@ -183,10 +183,10 @@ cMRio::emitErrMesg(const char *msg)
         return;
     if (!err_fp) {
         char buf[32];
-        char *e = lstring::stpcpy(buf, LOGBASE);
+        strcpy(buf, LOGBASE);
         if (io_num > 0)
-            sprintf(e, "-%d", io_num);
-        strcat(e, ".errs");
+            sprintf(buf + strlen(buf), "-%d", io_num);
+        strcat(buf, ".errs");
         // Open the log file by some means.
         err_fp = OpenLog(buf, "w");  // You need to implement this.
         if (!err_fp)
@@ -209,10 +209,10 @@ cMRio::emitMesg(const char *msg)
         return;
     if (!log_fp) {
         char buf[32];
-        char *e = lstring::stpcpy(buf, LOGBASE);
+        strcpy(buf, LOGBASE);
         if (io_num > 0)
-            sprintf(e, "-%d", io_num);
-        strcat(e, ".log");
+            sprintf(buf + strlen(buf), "-%d", io_num);
+        strcat(buf, ".log");
         // Open the log file by some means.
         log_fp = OpenLog(buf, "w");  // You need to implement this.
         if (!log_fp)
@@ -297,9 +297,9 @@ namespace {
 
 
 #ifdef WIN32
-#define MROUTER_HOME    "\\usr\\local\\mrouter"
+#define MROUTER_HOME    "\\usr\\local\\xictools\\mrouter"
 #else
-#define MROUTER_HOME    "/usr/local/mrouter"
+#define MROUTER_HOME    "/usr/local/xictools/mrouter"
 #endif
 #define LIBMROUTER      "libmrouter"
 
@@ -529,9 +529,9 @@ main(int argc, char *argv[])
     cLDDBif *db = if_l;
     cMRif *mr = if_r;
 
-    const char *configfile = 0;
-    const char *infofile = 0;
-    const char *design_name = 0;
+    char *configfile = 0;
+    char *infofile = 0;
+    char *design_name = 0;
     int iscale = 1;
 
     for (int i = 1; i < argc; i++) {
@@ -566,13 +566,15 @@ main(int argc, char *argv[])
 
             switch (opt) {
             case 'c':
-                configfile = lddb::copy(arg);
+                configfile = new char[strlen(arg)+1];
+                strcpy(configfile, arg);
                 break;
             case 'v':
                 db->setVerbose(atoi(arg));
                 break;
             case 'i':
-                infofile = lddb::copy(arg);
+                infofile = new char[strlen(arg)+1];
+                strcpy(infofile, arg);
                 break;
             case 'p':
                 db->addGlobal(arg);
@@ -598,7 +600,8 @@ main(int argc, char *argv[])
                 mr->setKeepTrying(atoi(arg));
                 break;
             case 'q':
-                design_name = lddb::copy(arg);
+                design_name = new char[strlen(arg)+1];
+                strcpy(design_name, arg);
                 break;
             case 'd':
                 db->setDebug(strtol(arg, 0, 0));
@@ -690,7 +693,7 @@ main(int argc, char *argv[])
     bool ret = LD_OK;
     for (;;) {
         ret = mr->readScript(stdin);
-        if (!ret && isatty(fileno(stdin)))
+        if ((ret == LD_BAD) && isatty(fileno(stdin)))
             continue;
         break;
     }

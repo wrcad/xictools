@@ -1,4 +1,3 @@
-# $Id: exroute.scr,v 1.3 2017/01/22 18:32:35 stevew Exp $
 
 # exroute.scr
 # This is a script that will exercise the MRouter plug-in from within
@@ -7,7 +6,7 @@
 # installed in a different location, edit the MROUTER_PATH below.
 
 # Where MRouter is installed.
-MROUTER_PATH = "/usr/local/mrouter"
+MROUTER_PATH = "/usr/local/xictools/mrouter"
 
 # Ask user to pick example to run.
 r = AskReal("Routing example.  Enter 1 for map9v3, 2 for openMSP430 ", "1")

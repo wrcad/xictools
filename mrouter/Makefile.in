@@ -73,11 +73,12 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)
 
 install_mrouter: install_test install_clean install_bin \
-  install_lib install_help install_doc install_examples
+  install_lib install_help install_include install_doc install_examples
 
 install_bin:            $(destn)/bin
 install_lib:            $(destn)/mrouter/lib
 install_help:           $(destn)/mrouter/help
+install_include:        $(destn)/mrouter/include
 install_examples:       $(destn)/mrouter/examples
 install_doc:            $(destn)/mrouter/doc
 
@@ -101,6 +102,13 @@ $(destn)/mrouter/lib::
 $(destn)/mrouter/help::
 	@$(BASE)/util/mkdirpth $(destn)/mrouter/help
 	$(INSTALL_LIB_RO) doc/xic/MRouter.hlp           $@
+
+$(destn)/mrouter/include::
+	@$(BASE)/util/mkdirpth $(destn)/mrouter/include
+	$(INSTALL_LIB) include/lddb.h                   $@
+	$(INSTALL_LIB) include/ld_vers.h                $@
+	$(INSTALL_LIB) include/mrouter.h                $@
+	$(INSTALL_LIB) include/mr_vers.h                $@
 
 $(destn)/mrouter/doc::
 	@$(BASE)/util/mkdirpth $(destn)/mrouter/doc

@@ -1,4 +1,3 @@
-($Id: README,v 1.5 2017/01/17 02:28:23 stevew Exp $)
 
 This directory provides the files needed to run the MRouter routing
 examples from within Xic.
@@ -14,16 +13,16 @@ A recommended procedure is:
     and osu35.lib files will need editing to change the assumed
     installation path (see below).
 
-2.  Copy this directory (/usr/local/mrouter/examples/xic, by default)
-    to your work area.
+2.  Copy this directory (/usr/local/xictools/mrouter/examples/xic, by
+    default) to your work area.
 
 3.  Change to your newly copied directory.  It should contain this
     README file, along with exroute.scr and others.
 
 4.  If you did not install MRouter in the standard location
-    (/usr/local/mrouter), you need to edit the exroute.scr file to
-    change the MROUTER_PATH variable to the correct location for
-    your system.  You will also have to edit osu35.lib similarly.
+    (/usr/local/xictools/mrouter), you need to edit the exroute.scr
+    file to change the MROUTER_PATH variable to the correct location
+    for your system.  You will also have to edit osu35.lib similarly. 
     You only need to edit your copies of these files.
 
 5.  Start Xic, using the tech file (xic_tech) provided.  Give the
