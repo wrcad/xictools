@@ -83,7 +83,7 @@ The Color Selection panel was changed and updated to allow setting
 opposite-mode colors.  Needs new screen shot.
 
 New environment variable XT_GUI_COMPRESS.  When set, don't allow space
-around button contents.  Such space can cuase side menu button images to
+around button contents.  Such space can cause side menu button images to
 be truncated on low-res displays.
 
 The !dumpcds command will now output a GDSII layer mapping file in
@@ -105,7 +105,7 @@ expression.
 
 ToDo: std vias should be handled transparently in all CHD operations.  Vias
 are ignored in display mode, compare mode (probably).
-Should be DONE, perhaps a bit more checking needed.
+DONE, perhaps a bit more checking needed.
 
 Ctrl-click on selected standard via instance now pops up the standard
 via parameter setting panel, allowing instance to be changed.  This
@@ -159,4 +159,10 @@ InstallCmdFormat
 !proxy  -> (undocumented) prints "use Options/Set Proxy in help window"
 
 --- release 4.3.2
+
+Fixed seg fault in fio_library.cc when open_cell has null cbin.
+
+FIXED: library references weren't being followed through CHD, e.g.,
+expanded cells were blank in display mode.
+
 
