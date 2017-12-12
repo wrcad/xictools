@@ -267,8 +267,15 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
         // recognition.
     }
 
-    // Read flat into database.
+    // Read flat into database.  Don't read labels not only for
+    // efficiency, but to avoid extraction problems when subcell pin
+    // labels are all merged into parent nets.
+    //
+    const char *tnlab = CDvdb()->getVariable(VA_NoReadLabels);
+    CDvdb()->setVariable(VA_NoReadLabels, "");
     OItype oiret = en_chd->readFlat(en_cellname, &prms, 0, CDMAXCALLDEPTH);
+    if (!tnlab)
+        CDvdb()->clearVariable(VA_NoReadLabels);
 
     // Reset layer filtering.
     if (!(en_flags & EN_LFLT)) {
@@ -320,6 +327,7 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
         Errs()->add_error("dump_nets: grouping failed.");
         return (false);
     }
+    en_netcnt =  sdesc->groups()->num_groups();
 
     // Write the group file.
     if (!write_metal_file(sdesc, x, y))
@@ -1755,6 +1763,7 @@ cExtNets::stage3()
     // Buffer for output cell names.
     char *cname = buf + 128;
 
+    en_netcnt = 0;
     bool flat = (en_flags & EN_FLAT);
     bool ok = true;
     for (int ic = 0; ic < en_ny; ic++) {
