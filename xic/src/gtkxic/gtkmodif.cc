@@ -293,6 +293,7 @@ sSC::sSC(stringlist *l, bool(*s)(const char*))
     GtkWidget *label = gtk_label_new(lab);
     gtk_label_set_justify(GTK_LABEL(label), GTK_JUSTIFY_LEFT);
     gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+    gtk_misc_set_padding(GTK_MISC(label), 4, 2);
     gtk_widget_show(label);
     gtk_container_add(GTK_CONTAINER(frame), label);
 

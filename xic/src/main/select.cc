@@ -251,6 +251,18 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 else
                     nusel++;
             }
+
+            // If only instances are in list (instances are listed
+            // last) and there are 3 or more, use a pop-up to control
+            // the selections.
+            //
+            bool instonly = (list->odesc->type() == CDINSTANCE);
+            if (instonly && (nsel+nusel >= 3)) {
+                XM()->PopUpSelectInstances(list);
+                CDol::destroy(list);
+                return (false);
+            }
+
             if (nsel > 1) {
                 // Keep first selected only.
                 while (list) {

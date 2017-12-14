@@ -39,120 +39,143 @@
  *========================================================================*/
 
 #include "main.h"
-#include "cvrt.h"
+#include "select.h"
 #include "cd_celldb.h"
 #include "dsp_color.h"
 #include "dsp_inlines.h"
 #include "gtkmain.h"
+#include "gtkmenu.h"
 #include "gtkinlines.h"
 #include "gtkinterf/gtkfont.h"
 
 
 //--------------------------------------------------------------------------
 //
-// Pop up to allow the user to delete empty cells from a hierarchy
+// Pop up to allow the user to select/deselect cell instances.
 //
 
 namespace {
-    // List element for empty cells
-    //
-    struct e_item
+    void start_modal(GtkWidget *w)
     {
-        e_item() { name = 0; del = false; }
+        gtkMenu()->SetSensGlobal(false);
+        gtkMenu()->SetModal(w);
+        dspPkgIf()->SetOverrideBusy(true);
+        DSPmainDraw(ShowGhost(ERASE))
+    }
 
-        const char *name;                   // cell name
-        bool del;                           // deletion flag
+
+    void end_modal()
+    {
+        gtkMenu()->SetModal(0);
+        gtkMenu()->SetSensGlobal(true);
+        dspPkgIf()->SetOverrideBusy(false);
+        DSPmainDraw(ShowGhost(DISPLAY))
+    }
+}
+
+
+namespace {
+    // List element for cell instances.
+    //
+    struct ci_item
+    {
+        ci_item() { cdesc = 0; name = 0; sel = false; }
+
+        CDc *cdesc;                         // instance desc
+        const char *name;                   // master cell name
+        bool sel;                           // selection flag
     };
 
-    namespace gtkempty {
-        struct sEC : public gtk_bag
+    namespace gtkselinst {
+        struct sCI : public gtk_bag
         {
-            sEC(stringlist*);
-            ~sEC();
+            sCI(CDol*);
+            ~sCI();
 
-            void update(stringlist*);
+            void update(CDol*);
 
         private:
             void refresh();
 
-            static void ec_font_changed();
-            static void ec_cancel_proc(GtkWidget*, void*);
-            static void ec_btn_proc(GtkWidget*, void*);
-            static int ec_btn_hdlr(GtkWidget*, GdkEvent*, void*);
+            static void ci_font_changed();
+            static void ci_cancel_proc(GtkWidget*, void*);
+            static void ci_btn_proc(GtkWidget*, void*);
+            static int ci_btn_hdlr(GtkWidget*, GdkEvent*, void*);
 
-            e_item *ec_list;                    // list of cells
-            SymTab *ec_tab;                     // table of checked cells
-            GtkWidget *ec_label;                // label widget
-            int ec_field;                       // max cell name length
-            bool ec_changed;
+            ci_item *ci_list;                   // list of cell instances
+            GtkWidget *ci_label;                // label widget
+            int ci_field;                       // max cell name length
         };
 
-        sEC *EC;
+        sCI *CI;
 
-        enum { EC_nil, EC_apply, EC_delete, EC_skip };
+        enum { CI_nil, CI_select, CI_desel };
     }
 }
 
-using namespace gtkempty;
+using namespace gtkselinst;
 
 
 void
-cConvert::PopUpEmpties(stringlist *list)
+cMain::PopUpSelectInstances(CDol *list)
 {
     if (!GRX || !mainBag())
         return;
-    if (EC)
+    if (RunMode() != ModeNormal)
         return;
-    if (XM()->RunMode() != ModeNormal)
+    if (CI) {
+        CI->update(list);
         return;
+    }
     if (!list)
         return;
 
-    new sEC(list);
-    if (!EC->Shell()) {
-        delete EC;
+    new sCI(list);
+    if (!CI->Shell()) {
+        delete CI;
         return;
     }
-    gtk_window_set_transient_for(GTK_WINDOW(EC->Shell()),
+    gtk_window_set_transient_for(GTK_WINDOW(CI->Shell()),
         GTK_WINDOW(mainBag()->Shell()));
 
-    GRX->SetPopupLocation(GRloc(LW_LL), EC->Shell(), mainBag()->Viewport());
-    gtk_widget_show(EC->Shell());
+    GRX->SetPopupLocation(GRloc(LW_LL), CI->Shell(), mainBag()->Viewport());
+    gtk_widget_show(CI->Shell());
+
+    start_modal(CI->Shell());
+    GRX->MainLoop();  // wait for user's response
 }
-// End of cConvert functions.
+// End of cMain functions.
 
 
-sEC::sEC(stringlist *l)
+sCI::sCI(CDol *l)
 {
-    EC = this;
-    ec_list = 0;
-    ec_tab = 0;
-    ec_label = 0;
-    ec_field = 0;
-    ec_changed = false;
+    CI = this;
+    ci_list = 0;
+    ci_label = 0;
+    ci_field = 0;
 
-    wb_shell = gtk_NewPopup(0, "Empty Cells", ec_cancel_proc, 0);
+    wb_shell = gtk_NewPopup(0, "Cell Instances", ci_cancel_proc, 0);
     if (!wb_shell)
         return;
     GtkWidget *form = gtk_table_new(2, 4, false);
     gtk_container_add(GTK_CONTAINER(wb_shell), form);
     gtk_widget_show(form);
 
-    GtkWidget *button = gtk_button_new_with_label("Delete All");
-    gtk_widget_set_name(button, "DeleteAll");
+    GtkWidget *button = gtk_button_new_with_label("Select All");
+    gtk_widget_set_name(button, "SelectAll");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ec_btn_proc), (void*)EC_delete);
+        GTK_SIGNAL_FUNC(ci_btn_proc), (void*)CI_select);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    button = gtk_button_new_with_label("Skip All");
-    gtk_widget_set_name(button, "SkipAll");
+    button = gtk_button_new_with_label("Desel All");
+    gtk_widget_set_name(button, "DeselAll");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ec_btn_proc), (void*)EC_skip);
+        GTK_SIGNAL_FUNC(ci_btn_proc), (void*)CI_desel);
 
     gtk_table_attach(GTK_TABLE(form), button, 1, 2, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -161,16 +184,16 @@ sEC::sEC(stringlist *l)
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);
 
-    ec_label = gtk_label_new("");
-    gtk_label_set_justify(GTK_LABEL(ec_label), GTK_JUSTIFY_LEFT);
-    gtk_misc_set_alignment(GTK_MISC(ec_label), 0, 0.5);
-    gtk_misc_set_padding(GTK_MISC(ec_label), 4, 2);
-    gtk_widget_show(ec_label);
-    gtk_container_add(GTK_CONTAINER(frame), ec_label);
+    ci_label = gtk_label_new("");
+    gtk_label_set_justify(GTK_LABEL(ci_label), GTK_JUSTIFY_LEFT);
+    gtk_misc_set_alignment(GTK_MISC(ci_label), 0, 0.5);
+    gtk_misc_set_padding(GTK_MISC(ci_label), 4, 2);
+    gtk_widget_show(ci_label);
+    gtk_container_add(GTK_CONTAINER(frame), ci_label);
 
     // Use a fixed font in the label, same as the text area, so can
     // match columns.
-    GTKfont::setupFont(ec_label, FNT_FIXED, true);
+    GTKfont::setupFont(ci_label, FNT_FIXED, true);
 
     gtk_table_attach(GTK_TABLE(form), frame, 0, 2, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -181,40 +204,30 @@ sEC::sEC(stringlist *l)
 
     gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
     gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
-        GTK_SIGNAL_FUNC(ec_btn_hdlr), 0);
+        GTK_SIGNAL_FUNC(ci_btn_hdlr), 0);
     gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "realize",
         GTK_SIGNAL_FUNC(text_realize_proc), 0);
 
     // The font change pop-up uses this to redraw the widget
     gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",
-        (void*)ec_font_changed);
+        (void*)ci_font_changed);
 
     gtk_table_attach(GTK_TABLE(form), contr, 0, 2, 2, 3,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
 
-    button = gtk_button_new_with_label("Apply");
-    gtk_widget_set_name(button, "Apply");
-    gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ec_btn_proc), (void*)EC_apply);
-
-    gtk_table_attach(GTK_TABLE(form), button, 0, 1, 3, 4,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(ec_cancel_proc), 0);
+        GTK_SIGNAL_FUNC(ci_cancel_proc), 0);
 
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, 3, 4,
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, 3, 4,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     update(l);
-    int ww = (ec_field + 6)*GTKfont::stringWidth(wb_textarea, 0);
+    int ww = (ci_field + 6)*GTKfont::stringWidth(wb_textarea, 0);
     if (ww < 200)
         ww = 200;
     else if (ww > 600)
@@ -224,76 +237,47 @@ sEC::sEC(stringlist *l)
 }
 
 
-sEC::~sEC()
+sCI::~sCI()
 {
-    EC = 0;
-    if (ec_changed) {
-        CDcbin cbin(DSP()->CurCellName());
-        cbin.fixBBs();
-        XM()->PopUpCells(0, MODE_UPD);
-        XM()->PopUpTree(0, MODE_UPD, 0, TU_CUR);
-        DSP()->RedisplayAll();
-    }
-    delete [] ec_list;
-    delete ec_tab;
-    if (wb_shell)
+    CI = 0;
+    delete [] ci_list;
+    if (wb_shell) {
         gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-            GTK_SIGNAL_FUNC(ec_cancel_proc), wb_shell);
+            GTK_SIGNAL_FUNC(ci_cancel_proc), wb_shell);
+    }
+    end_modal();
 }
 
 
 void
-sEC::update(stringlist *sl)
+sCI::update(CDol *ol)
 {
-    stringlist *s0 = 0;
-    if (!ec_tab)
-        ec_tab = new SymTab(false, false);
-    if (!sl) {
-        if (!DSP()->CurCellName())
-            return;
-        CDcbin cbin(DSP()->CurCellName());
-        sl = cbin.listEmpties();
-        stringlist::sort(sl);
-        s0 = sl;
-    }
-    if (!sl) {
-        ec_cancel_proc(0, 0);
-        return;
-    }
-    delete [] ec_list;
-
-    int sz = stringlist::length(sl);
-    ec_list = new e_item[sz+1];
-    ec_field = 0;
-    e_item *itm = ec_list;
-    while (sl) {
-        // Save only names not seen before.
-        if (SymTab::get(ec_tab, sl->string) == ST_NIL) {
-            itm->name = lstring::copy(sl->string);
-            ec_tab->add(itm->name, 0, false);
-            int w = strlen(sl->string);
-            if (w > ec_field)
-                ec_field = w;
-            itm++;
-        }
-        sl = sl->next;
-    }
-    stringlist::destroy(s0);
-
-    if (itm == ec_list) {
-        // No new items.
-        ec_cancel_proc(0, 0);
-        return;
+    int sz = 0;
+    for (CDol *o = ol; o; o = o->next)
+        sz++;
+    ci_list = new ci_item[sz+1];
+    ci_field = 0;
+    ci_item *itm = ci_list;
+    for (CDol *o = ol; o; o = o->next) {
+        if (o->odesc->type() != CDINSTANCE)
+            continue;
+        itm->cdesc = (CDc*)o->odesc;
+        itm->name = Tstring(itm->cdesc->cellname());
+        itm->sel = (itm->cdesc->state() == CDSelected);
+        int w = strlen(itm->name);
+        if (w > ci_field)
+            ci_field = w;
+        itm++;
     }
 
     char lab[256];
-    strcpy(lab, "Empty Cells            Click on yes/no\n");
+    strcpy(lab, "Cell Instances        Click on yes/no\n");
     char *t = lab + strlen(lab);
-    for (int i = 0; i <= ec_field; i++)
+    for (int i = 0; i <= ci_field; i++)
         *t++ = ' ';
-    strcpy(t, "Delete?");
+    strcpy(t, "Select?");
 
-    gtk_label_set_text(GTK_LABEL(ec_label), lab);
+    gtk_label_set_text(GTK_LABEL(ci_label), lab);
     refresh();
 }
 
@@ -301,19 +285,19 @@ sEC::update(stringlist *sl)
 // Redraw the text area.
 //
 void
-sEC::refresh()
+sCI::refresh()
 {
-    if (EC && ec_list) {
+    if (CI && ci_list) {
         char buf[256];
         GdkColor *nc = gtk_PopupColor(GRattrColorNo);
         GdkColor *yc = gtk_PopupColor(GRattrColorYes);
         double val = text_get_scroll_value(wb_textarea);
         text_set_chars(wb_textarea, "");
-        for (e_item *s = ec_list; s->name; s++) {
-            sprintf(buf, "%-*s  ", ec_field, s->name);
+        for (ci_item *s = ci_list; s->name; s++) {
+            sprintf(buf, "%-*s  ", ci_field, s->name);
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
-            sprintf(buf, "%-3s\n", s->del ? "yes" : "no");
-            text_insert_chars_at_point(wb_textarea, s->del ? yc : nc, buf,
+            sprintf(buf, "%-3s\n", s->sel ? "yes" : "no");
+            text_insert_chars_at_point(wb_textarea, s->sel ? yc : nc, buf,
                 -1, -1);
         }
         text_set_scroll_value(wb_textarea, val);
@@ -325,58 +309,59 @@ sEC::refresh()
 // This is called when the font is changed.
 //
 void
-sEC::ec_font_changed()
+sCI::ci_font_changed()
 {
-    if (EC)
-        EC->refresh();
+    if (CI)
+        CI->refresh();
 }
 
 
 // Static function.
 void
-sEC::ec_cancel_proc(GtkWidget*, void*)
+sCI::ci_cancel_proc(GtkWidget*, void*)
 {
-    delete EC;
+    delete CI;
+}
+
+
+namespace {
+    void apply(ci_item *s)
+    {
+        CDs *sd = CurCell();
+        if (s->cdesc->state() == CDVanilla && s->sel) {
+            if (XM()->IsBoundaryVisible(sd, s->cdesc)) {
+                Selections.insertObject(sd, s->cdesc);
+            }
+        }
+        else if (s->cdesc->state() == CDSelected && !s->sel) {
+            if (XM()->IsBoundaryVisible(sd, s->cdesc)) {
+                Selections.removeObject(sd, s->cdesc);
+            }
+        }
+    }
 }
 
 
 // Static function.
 void
-sEC::ec_btn_proc(GtkWidget*, void *client_data)
+sCI::ci_btn_proc(GtkWidget*, void *client_data)
 {
-    if (!EC)
+    if (!CI)
         return;
     int mode = (long)client_data;
-    if (mode == EC_apply) {
-        bool didone = false;
-        bool leftone = false;
-        for (e_item *s = EC->ec_list; s->name; s++) {
-            if (s->del) {
-                CDcbin cbin;
-                if (CDcdb()->findSymbol(s->name, &cbin)) {
-                    if (cbin.deleteCells())
-                        didone = true;
-                    continue;
-                }
-            }
-            leftone = true;
+    if (mode == CI_select) {
+        for (ci_item *s = CI->ci_list; s->name; s++) {
+            s->sel = true;
+            apply(s);
         }
-        if (didone)
-            EC->ec_changed = true;
-        if (didone && !leftone)
-            EC->update(0);
-        else
-            ec_cancel_proc(0, 0);
+        CI->refresh();
     }
-    else if (mode == EC_delete) {
-        for (e_item *s = EC->ec_list; s->name; s++)
-            s->del = true;
-        EC->refresh();
-    }
-    else if (mode == EC_skip) {
-        for (e_item *s = EC->ec_list; s->name; s++)
-            s->del = false;
-        EC->refresh();
+    else if (mode == CI_desel) {
+        for (ci_item *s = CI->ci_list; s->name; s++) {
+            s->sel = false;
+            apply(s);
+        }
+        CI->refresh();
     }
 }
 
@@ -385,9 +370,9 @@ sEC::ec_btn_proc(GtkWidget*, void *client_data)
 // Handle button presses in the text area.
 //
 int
-sEC::ec_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
+sCI::ci_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
 {
-    if (!EC)
+    if (!CI)
         return (true);
     if (event->type != GDK_BUTTON_PRESS)
         return (true);
@@ -445,9 +430,10 @@ sEC::ec_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
         text_replace_chars(caller, c, yn, start, start+3);
         char *cname = lstring::gettok(&line_start);
         if (cname) {
-            for (e_item *s = EC->ec_list; s->name; s++) {
+            for (ci_item *s = CI->ci_list; s->name; s++) {
                 if (!strcmp(s->name, cname)) {
-                    s->del = (*yn != 'n');
+                    s->sel = (*yn != 'n');
+                    apply(s);
                     break;
                 }
             }
