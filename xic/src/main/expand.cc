@@ -251,7 +251,7 @@ PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev)
     if (Stack.TFull())
         return (0);
 
-    CDol *se = 0, *s0 = 0;
+    CDol *ce = 0, *c0 = 0;
     CDg gdesc;
     Stack.TInitGen(sdesc, CellLayer(), BB, &gdesc);
     CDc *cdesc;
@@ -259,6 +259,21 @@ PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev)
         CDs *msdesc = cdesc->masterCell();
         if (!msdesc || msdesc->isDevice())
             continue;
+        CDol *cl = new CDol(cdesc, 0);
+        if (!c0)
+            c0 = ce = cl;
+        else {
+            ce->next = cl;
+            ce = ce->next;
+        }
+    }
+    if (c0 && c0->next && c0->next->next)
+        c0 = XM()->PopUpFilterInstances(c0);
+
+    CDol *se = 0, *s0 = 0;
+    for (CDol *cl = c0; cl; cl = cl->next) {
+        cdesc = (CDc*)cl->odesc;
+
         if (cdesc->has_flag(wdesc->DisplFlags()) ||
                 hierlev < wdesc->Attrib()->expand_level(wdesc->Mode())) {
 
@@ -272,6 +287,7 @@ PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev)
                 if (x2 >= x1 + 2)
                     x2 = ++x1;
 
+                CDs *msdesc = cdesc->masterCell();
                 CDap ap(cdesc);
                 int tx, ty;
                 Stack.TGetTrans(&tx, &ty);
@@ -303,6 +319,7 @@ PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev)
             }
         }
     }
+    CDol::destroy(c0);
     return (s0);
 }
 

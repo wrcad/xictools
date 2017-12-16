@@ -165,13 +165,27 @@ Fixed seg fault in fio_library.cc when open_cell has null cbin.
 FIXED: library references weren't being followed through CHD, e.g.,
 expanded cells were blank in display mode.
 
-NEW:  When doing a click select, and only cell instances are
-selectable, and 3 or more would be selected, a new pop-up appears. 
-This lists the master name of each cell instance under the click, and
-a yes/no as to whether the instance is currently selected.  Clicking
-in this text toggles the selected status of the instance.  The pop-up
-is modal.
+In click-to-select mode when one clicks on cell instances only and the
+click is over 3 or more instances, the new "Filter Instances" pop-up
+appears.  This provides a listing of all instances clicked over, with
+colored yes/no text indicating whether to keep or ignore the instance. 
+One can toggle the status of each instance by clicking on the yes/no
+text.  Click "Continue" to retire the pop-up and continue the command,
+with the filtered list of instances.  The pop-up is modal, meaning all
+but the pop-up is locked out while the pop-up is visible.  This is
+used in the info and peek commands, and in general selections.
 
-Todo: how to apply above to things like Peek and Info?
+In general selections, presently there are two similar pop-ups that
+may appear.  The first is the Filter Instances pop-up described above.
+If three or more instances are kept, the second "Select Instances"
+pop=up appears.  This is also modal, and similar in appearance,
+however one can toggle the selected status of each instance by clicking
+on the colored yes/no text.
 
+Fixed! Info command leaving dead object copies in the selection list,
+instability results.
+
+ToDo: need real instance names for the Filter/Select Instances pop-ups.
+Using the master name won't work with more than one instance of a
+master in the list.
 

@@ -103,6 +103,9 @@ namespace {
             InfoState(const char*, const char*);
             virtual ~InfoState();
 
+            static bool NewInfo(CmdDesc*, tlst_t**);
+
+            void Display(tlst_t*);
             CDclxy *StackList();
 
             void b1down() { cEventHdlr::sel_b1down(); }
@@ -157,71 +160,18 @@ const char *InfoState::msg =
 void
 cMain::InfoExec(CmdDesc *cmd)
 {
+    tlst_t *selobj = 0;
     if (!InfoCmd) {
-
-        // If there is something in the selection queue, give the user the
-        // option of dumping all the info to a file
-        unsigned int nsel;
-        Selections.countQueue(CurCell(), &nsel, 0);
-        if (nsel > 0) {
-            char *in = PL()->EditPrompt(
-                "Dump info on selected objects to file? ", "n");
-            in = lstring::strip_space(in);
-            if (!in) {
-                PL()->ErasePrompt();
-                if (cmd && cmd->caller)
-                    Menu()->Deselect(cmd->caller);
-                return;
-            }
-            if (*in == 'y' || *in == 'Y') {
-                if (cmd && cmd->caller)
-                    Menu()->Deselect(cmd->caller);
-                in = XM()->SaveFileDlg("File name for info? ", "infolist.txt");
-                if (!in) {
-                    PL()->ErasePrompt();
-                    return;
-                }
-                char *fname = pathlist::expand_path(in, false, true);
-                FILE *fp = fopen(fname, "w");
-                if (!fp) {
-                    PL()->ShowPromptV("Error: can't open file %s.", fname);
-                    delete [] fname;
-                    return;
-                }
-                InfoState::info_to_file(fp);
-                fclose(fp);
-                in = PL()->EditPrompt("Done.  View file? ", "y");
-                in = lstring::strip_space(in);
-                PL()->ErasePrompt();
-                if (!in) {
-                    delete [] fname;
-                    return;
-                }
-                if (*in == 'y' || *in == 'Y')
-                    DSPmainWbag(PopUpFileBrowser(fname))
-                delete [] fname;
-                return;
-            }
-        }
-
-        InfoCmd = new InfoState("INFO", "xic:info");
-
-        sSelGen sg(Selections, CurCell());
-        CDo *od;
-        while ((od = sg.next()) != 0)
-            InfoCmd->SelBack = new CDol(od, InfoCmd->SelBack);
-
-        Selections.deselectTypes(CurCell(), 0);
-        if (!EV()->PushCallback(InfoCmd)) {
-            delete InfoCmd;
+        if (!InfoState::NewInfo(cmd, &selobj))
             return;
-        }
     }
     DSPmainWbag(PopUpInfo2(MODE_ON, InfoState::msg, InfoState::info_cb, 0,
         STY_FIXED))
     GRtextPopup *info2 = DSPmainWbagRet(ActiveInfo2());
     if (info2)
         info2->set_btn2_state(true);
+    if (selobj)
+        InfoCmd->Display(selobj);
 }
 
 
@@ -1315,6 +1265,109 @@ InfoState::~InfoState()
 }
 
 
+// Create a new command state.  If there is exactly one object
+// selected, a copy will be returned in pselobj if an address is
+// passed, which can be used for the initial display.
+//
+bool
+InfoState::NewInfo(CmdDesc *cmd, tlst_t **pselobj)
+{
+    tlst_t *selobj = 0;
+
+    unsigned int nsel;
+    Selections.countQueue(CurCell(), &nsel, 0);
+    if (nsel == 1) {
+        if (pselobj) {
+            sSelGen sg(Selections, CurCell());
+            CDo *od = sg.next();
+            od = od->copyObject(true);
+            selobj = new tlst_t(od, 0, 0);
+        }
+    }
+    else if (nsel > 1) {
+        // If there are multiple objects in the selection queue, give
+        // the user the option of dumping all the info to a file.
+
+        char *in = PL()->EditPrompt(
+            "Dump info on selected objects to file? ", "n");
+        in = lstring::strip_space(in);
+        if (!in) {
+            PL()->ErasePrompt();
+            if (cmd && cmd->caller)
+                Menu()->Deselect(cmd->caller);
+            return (false);
+        }
+        if (*in == 'y' || *in == 'Y') {
+            if (cmd && cmd->caller)
+                Menu()->Deselect(cmd->caller);
+            in = XM()->SaveFileDlg("File name for info? ", "infolist.txt");
+            if (!in) {
+                PL()->ErasePrompt();
+                return (false);
+            }
+            char *fname = pathlist::expand_path(in, false, true);
+            FILE *fp = fopen(fname, "w");
+            if (!fp) {
+                PL()->ShowPromptV("Error: can't open file %s.", fname);
+                delete [] fname;
+                return (false);
+            }
+            info_to_file(fp);
+            fclose(fp);
+            in = PL()->EditPrompt("Done.  View file? ", "y");
+            in = lstring::strip_space(in);
+            PL()->ErasePrompt();
+            if (!in) {
+                delete [] fname;
+                return (false);
+            }
+            if (*in == 'y' || *in == 'Y')
+                DSPmainWbag(PopUpFileBrowser(fname))
+            delete [] fname;
+            return (false);
+        }
+    }
+
+    InfoCmd = new InfoState("INFO", "xic:info");
+    if (!EV()->PushCallback(InfoCmd)) {
+        delete InfoCmd;
+        delete selobj;
+        return (false);
+    }
+
+    // Back up the selection list, will be restored when done.
+    if (nsel > 0) {
+        CDol *obak = 0;
+        sSelGen sg(Selections, CurCell());
+        CDo *od;
+        while ((od = sg.next()) != 0)
+            obak = new CDol(od, obak);
+        Selections.deselectTypes(CurCell(), 0);
+        InfoCmd->SelBack = obak;
+    }
+
+    if (pselobj)
+        *pselobj = selobj;
+    return (true);
+}
+
+
+// Display the info for the object passed.
+//
+void
+InfoState::Display(tlst_t *ol)
+{
+    show_cell_expand(false, true);
+    show_obj_info(ol);
+    Selections.deselectTypes(CurCell(), 0);
+    ol->odesc->set_state(CDVanilla);
+    Selections.insertObject(CurCell(), ol->odesc);
+    delete TmpObj;
+    TmpObj = ol;
+    TmpCell = 0;
+}
+
+
 // Return a top-down list of the instance parents.
 //
 CDclxy *
@@ -1366,16 +1419,8 @@ InfoState::b1up()
             CDs *sdesc = wdesc->CurCellDesc(wdesc->Mode());
             if (sdesc) {
                 tlst_t *ol = find_obj(wdesc, &AOI);
-                if (ol) {
-                    show_cell_expand(false, true);
-                    show_obj_info(ol);
-                    Selections.deselectTypes(CurCell(), 0);
-                    ol->odesc->set_state(CDVanilla);
-                    Selections.insertObject(CurCell(), ol->odesc);
-                    delete TmpObj;
-                    TmpObj = ol;
-                    TmpCell = 0;
-                }
+                if (ol)
+                    Display(ol);
                 else {
                     if (!AOI.intersect(sdesc->BB(), false)) {
                         // Outside of cell BB, show cell info.
@@ -1429,16 +1474,16 @@ InfoState::esc()
     if (info2)
         info2->set_btn2_state(false);
 
-    // Retain the selection, might be useful.
-    /*****
+    // The selection list contains copies, clear it!
     Selections.deselectTypes(CurCell(), 0);
+
+    // Put back any backed-up selections.
     for (CDol *s = SelBack; s; s = s->next) {
         if (s->odesc) {
             s->odesc->set_state(CDVanilla);
             Selections.insertObject(CurCell(), s->odesc);
         }
     }
-    *****/
     delete this;
 }
 
@@ -1783,22 +1828,14 @@ InfoState::info_cb(bool state, void *arg)
             InfoCmd->esc();
     }
     else {
+        tlst_t *selobj = 0;
         if (!InfoCmd) {
-            InfoCmd = new InfoState("INFO", "xic:info");
-
-            sSelGen sg(Selections, CurCell());
-            CDo *od;
-            while ((od = sg.next()) != 0)
-                InfoCmd->SelBack = new CDol(od, InfoCmd->SelBack);
-
-            Selections.deselectTypes(CurCell(), 0);
-            if (!EV()->PushCallback(InfoCmd)) {
-                delete InfoCmd;
-                InfoCmd = 0;
+            if (!NewInfo(0, &selobj))
                 return (false);
-            }
         }
         DSPmainWbag(PopUpInfo2(MODE_ON, msg, info_cb, 0, STY_FIXED))
+        if (selobj)
+            InfoCmd->Display(selobj);
     }
     return (false);
 }

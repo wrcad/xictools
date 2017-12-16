@@ -172,11 +172,14 @@ namespace {
 // The is_poinselect() call uses the last button1-press window in
 // non-strict mode.
 //
+// If list is passed, it replaces the call to selectItems.
+// ** IT IS CONSUMED **!!
+//
 // True is returned if an enabled object was clicked on.
 //
 bool
 cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
-    bool strict)
+    bool strict, CDol *list)
 {
     if (!sd)
         return (false);
@@ -188,8 +191,10 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
     CDol *sel_list = 0;
     CDol *unsel_list = 0;
     {
-        CDol *list = selectItems(sd, types, AOI,
-            strict ? PSELstrict_area : PSELpoint);
+        if (!list) {
+            list = selectItems(sd, types, AOI,
+                strict ? PSELstrict_area : PSELpoint, true);
+        }
         if (!list)
             return (false);
 
@@ -260,7 +265,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
             if (instonly && (nsel+nusel >= 3)) {
                 XM()->PopUpSelectInstances(list);
                 CDol::destroy(list);
-                return (false);
+                return (true);
             }
 
             if (nsel > 1) {
@@ -432,7 +437,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
 //
 CDol *
 cSelections::selectItems(const CDs *sd, const char *types, const BBox *AOI,
-    PSELmode psel)
+    PSELmode psel, bool nopopup)
 {
     if (!sd)
         return (0);
@@ -533,6 +538,10 @@ cSelections::selectItems(const CDs *sd, const char *types, const BBox *AOI,
                 ce = ce->next;
             }
         }
+    }
+    if (!nopopup && psel == PSELpoint && c0 &&
+            c0->odesc->type() == CDINSTANCE && c0->next && c0->next->next) {
+        c0 = XM()->PopUpFilterInstances(c0);
     }
     return (c0);
 }

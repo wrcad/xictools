@@ -89,7 +89,7 @@ namespace {
     namespace gtkselinst {
         struct sCI : public gtk_bag
         {
-            sCI(CDol*);
+            sCI(CDol*, bool = false);
             ~sCI();
 
             void update(CDol*);
@@ -105,9 +105,11 @@ namespace {
             ci_item *ci_list;                   // list of cell instances
             GtkWidget *ci_label;                // label widget
             int ci_field;                       // max cell name length
+            bool ci_filt;                       // instance filtering mode
         };
 
         sCI *CI;
+        CDol *ci_return;
 
         enum { CI_nil, CI_select, CI_desel };
     }
@@ -116,6 +118,8 @@ namespace {
 using namespace gtkselinst;
 
 
+// Modal pop-up allows selection/deselection of the instances in list.
+//
 void
 cMain::PopUpSelectInstances(CDol *list)
 {
@@ -144,24 +148,66 @@ cMain::PopUpSelectInstances(CDol *list)
     start_modal(CI->Shell());
     GRX->MainLoop();  // wait for user's response
 }
+
+
+// Modal pop-up returns a new list of instances from those passed,
+// user can control whether to keep or ignore.
+//
+// The argument is consumed, do not use after calling this function.
+//
+CDol *
+cMain::PopUpFilterInstances(CDol *list)
+{
+    if (!GRX || !mainBag())
+        return (list);
+    if (RunMode() != ModeNormal)
+        return (list);
+    if (CI) {
+        CI->update(list);
+        return (list);
+    }
+    if (!list)
+        return (list);
+
+    new sCI(list, true);
+    if (!CI->Shell()) {
+        delete CI;
+        return (list);
+    }
+    CDol::destroy(list);
+
+    gtk_window_set_transient_for(GTK_WINDOW(CI->Shell()),
+        GTK_WINDOW(mainBag()->Shell()));
+
+    GRX->SetPopupLocation(GRloc(LW_LL), CI->Shell(), mainBag()->Viewport());
+    gtk_widget_show(CI->Shell());
+
+    ci_return = 0;
+    start_modal(CI->Shell());
+    GRX->MainLoop();  // wait for user's response
+    return (ci_return);
+}
 // End of cMain functions.
 
 
-sCI::sCI(CDol *l)
+sCI::sCI(CDol *l, bool filtmode)
 {
     CI = this;
     ci_list = 0;
     ci_label = 0;
     ci_field = 0;
+    ci_filt = filtmode;
 
-    wb_shell = gtk_NewPopup(0, "Cell Instances", ci_cancel_proc, 0);
+    wb_shell = gtk_NewPopup(0,
+        ci_filt ? "Filter Instances" : "Select Instances", ci_cancel_proc, 0);
     if (!wb_shell)
         return;
     GtkWidget *form = gtk_table_new(2, 4, false);
     gtk_container_add(GTK_CONTAINER(wb_shell), form);
     gtk_widget_show(form);
 
-    GtkWidget *button = gtk_button_new_with_label("Select All");
+    GtkWidget *button = gtk_button_new_with_label(
+        ci_filt ? "Keep All" : "Select All");
     gtk_widget_set_name(button, "SelectAll");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
@@ -171,7 +217,8 @@ sCI::sCI(CDol *l)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    button = gtk_button_new_with_label("Desel All");
+    button = gtk_button_new_with_label(
+        ci_filt ? "Ignore All" : "Desel All");
     gtk_widget_set_name(button, "DeselAll");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
@@ -216,7 +263,8 @@ sCI::sCI(CDol *l)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
 
-    button = gtk_button_new_with_label("Dismiss");
+    button = gtk_button_new_with_label(
+        ci_filt ? "Continue" : "Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
@@ -240,11 +288,27 @@ sCI::sCI(CDol *l)
 sCI::~sCI()
 {
     CI = 0;
+    if (ci_filt) {
+        CDol *c0 = 0, *cn = 0;
+        for (ci_item *s = ci_list; s->name; s++) {
+            if (s->sel) {
+                if (!c0)
+                    c0 = cn = new CDol(s->cdesc, 0);
+                else {
+                    cn->next = new CDol(s->cdesc, 0);
+                    cn = cn->next;
+                }
+            }
+        }
+        ci_return = c0;
+    }
     delete [] ci_list;
     if (wb_shell) {
         gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
             GTK_SIGNAL_FUNC(ci_cancel_proc), wb_shell);
     }
+    if (GRX->LoopLevel() > 1)
+        GRX->BreakLoop();
     end_modal();
 }
 
@@ -263,7 +327,7 @@ sCI::update(CDol *ol)
             continue;
         itm->cdesc = (CDc*)o->odesc;
         itm->name = Tstring(itm->cdesc->cellname());
-        itm->sel = (itm->cdesc->state() == CDSelected);
+        itm->sel = ci_filt ? false : (itm->cdesc->state() == CDSelected);
         int w = strlen(itm->name);
         if (w > ci_field)
             ci_field = w;
@@ -275,7 +339,7 @@ sCI::update(CDol *ol)
     char *t = lab + strlen(lab);
     for (int i = 0; i <= ci_field; i++)
         *t++ = ' ';
-    strcpy(t, "Select?");
+    strcpy(t, ci_filt ? "Keep? " : "Select?");
 
     gtk_label_set_text(GTK_LABEL(ci_label), lab);
     refresh();
@@ -352,14 +416,16 @@ sCI::ci_btn_proc(GtkWidget*, void *client_data)
     if (mode == CI_select) {
         for (ci_item *s = CI->ci_list; s->name; s++) {
             s->sel = true;
-            apply(s);
+            if (!CI->ci_filt)
+                apply(s);
         }
         CI->refresh();
     }
     else if (mode == CI_desel) {
         for (ci_item *s = CI->ci_list; s->name; s++) {
             s->sel = false;
-            apply(s);
+            if (!CI->ci_filt)
+                apply(s);
         }
         CI->refresh();
     }
@@ -430,10 +496,12 @@ sCI::ci_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
         text_replace_chars(caller, c, yn, start, start+3);
         char *cname = lstring::gettok(&line_start);
         if (cname) {
+//XXX BUG, master name not necessarily unique!
             for (ci_item *s = CI->ci_list; s->name; s++) {
                 if (!strcmp(s->name, cname)) {
                     s->sel = (*yn != 'n');
-                    apply(s);
+                    if (!CI->ci_filt)
+                        apply(s);
                     break;
                 }
             }

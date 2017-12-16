@@ -492,6 +492,7 @@ public:
     char *OpenFileDlg(const char*, const char*);
     void PopUpFileSel(const char*, void(*)(const char*, void*), void*);
     void PopUpSelectInstances(CDol*);
+    CDol *PopUpFilterInstances(CDol*);
 
     void PopUpColor(GRobject, ShowMode);
     void ColorTimerInit();
