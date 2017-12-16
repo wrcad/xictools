@@ -185,7 +185,18 @@ on the colored yes/no text.
 Fixed! Info command leaving dead object copies in the selection list,
 instability results.
 
+Fixed: Script parser, parse of string constants was not expanding
+backslash escapes correctly, a\\b would be a\<backspace> instead
+of a\b.
+
+Fixed: Logo script function ignored LogoPixelSize variable.
+
 ToDo: need real instance names for the Filter/Select Instances pop-ups.
 Using the master name won't work with more than one instance of a
 master in the list.
 
+ToDo: optionally retain standard vias in netext files.
+
+ToDo: preserve or create netname labels in netext files.  Presently,
+labels are completely ignored in netext.  Add pin objects, or add
+labels somehow?  Net cells have a "netname" property?

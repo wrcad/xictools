@@ -135,12 +135,6 @@ public:
 
     SIparser();
 
-    // si_debug.cc
-    void printVar(const char*, char*);
-    char *setVar(const char*, const char*);
-    static char *fromPrintable(const char*);
-    static char *toPrintable(const char*);
-
     // si_lexpr.cc
     char *parseLayer(const char*, char**, char**);
     CDs *openReference(const char*, const char*);
@@ -166,6 +160,12 @@ public:
     bool setGlobalVariable(const char*, siVariable*);
     bool evaluate(const char*, char*, int);
     double numberParse(const char**, bool*);
+
+    // si_variable.cc
+    void printVar(const char*, char*);
+    char *setVar(const char*, const char*);
+    static char *fromPrintable(const char*);
+    static char *toPrintable(const char*);
 
     bool hasError()                     { return (spErrMsgs != 0); }
 

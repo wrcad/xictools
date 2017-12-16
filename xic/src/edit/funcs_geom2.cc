@@ -3425,6 +3425,7 @@ geom2_funcs::IFlabelH(Variable *res, Variable *args, void*)
 //  LogoEndStyle
 //  LogoPathWidth
 //  LogoManhattan
+//  LogoPixelSize
 //  LogoPretty
 //  LogoPrettyFont
 //  LogoToFile
@@ -3462,6 +3463,10 @@ geom2_funcs::IFlogo(Variable *res, Variable *args, void*)
         label.width = (int)(label.width * GEO()->curTx()->magn());
         label.height = (int)(label.height * GEO()->curTx()->magn());
     }
+
+    // This must be called to recognize LogoPixelSize variable.
+    ED()->assert_logo_pixel_size();
+
     int pixel_size = label.height/ED()->logoFont()->cellHeight();
     ED()->createLogo(string, label.x, label.y, pixel_size);
 
