@@ -1986,40 +1986,30 @@ label::xpm_to_zlist(const char *fname, int d, int x, int y)
 bool
 label::xpm_size(const char *fname, int *x, int *y)
 {
-    static char *xpm_fname;
-    static int xpm_wid, xpm_hei;
-
-    if (xpm_fname && !strcmp(fname, xpm_fname)) {
-        *x = xpm_wid;
-        *y = xpm_hei;
-        return (true);;
-    }
+    // Used to cache x,y and the file name for matching, not a good
+    // idea since users may change the content while keeping the same
+    // file name.
 
     FILE *fp = fopen(fname, "r");
-    if (!fp)
-         return (false);
-    // save all quoted lines in order, removing quotes
-    char buf[256];
-    int cnt = 0;
-    while (fgets(buf, 256, fp) != 0) {
-        char *s = buf;
-        while (isspace(*s))
-            s++;
-        if (*s == '"') {
-            fclose(fp);
-            int nc, xx;
-            if (sscanf(s+1, "%d %d %d %d", x, y, &nc, &xx) != 4)
-                return (false);
-            delete [] xpm_fname;
-            xpm_fname = lstring::copy(fname);
-            xpm_wid = *x;
-            xpm_hei = *y;
-            return (true);
+    if (fp) {
+        char buf[256];
+        int cnt = 0;
+        while (fgets(buf, 256, fp) != 0) {
+            char *s = buf;
+            while (isspace(*s))
+                s++;
+            if (*s == '"') {
+                fclose(fp);
+                int nc, xx;
+                if (sscanf(s+1, "%d %d %d %d", x, y, &nc, &xx) != 4)
+                    return (false);
+                return (true);
+            }
+            if (cnt++ > 5)
+                 break;
         }
-        if (cnt++ > 5)
-             break;
+        fclose(fp);
     }
-    fclose(fp);
     return (false);
 }
 
@@ -2259,7 +2249,7 @@ namespace {
 //----------------
 // Ghost Rendering
 
-// Function to render the logo text string or image during placement
+// Function to render the logo text string or image during placement.
 //
 void
 LabelState::show_logo(WindowDesc *wdesc, char *label, int x, int y,
