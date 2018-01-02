@@ -1052,40 +1052,19 @@ cGroupDesc::group_terms(CDpin *pins, bool all)
 }
 
 
-// Set the oGroup field of each cdesc to a number used for ordering
-// in the cell-cell connectivity test.
-//
-void
-cGroupDesc::set_subc_group(bool set)
-{
-    // Note that the numbering is in database order, for what its
-    // worth.
-
-    int count = 0;
-    CDg gdesc;
-    gdesc.init_gen(gd_celldesc, CellLayer());
-    CDc *cdesc;
-    while ((cdesc = (CDc*)gdesc.next()) != 0) {
-        cdesc->set_group(count);
-        if (set) {
-            CDap ap(cdesc);
-            count += ap.nx * ap.ny;
-        }
-    }
-}
-
-
 // The main function to process connectivity between subcircuits.
 //
 XIrt
 cGroupDesc::add_subckts()
 {
+    if (!gd_celldesc)
+        return (XIbad);
 #ifdef TIME_DBG
     Tdbg()->start_timing("connect_total");
     Tdbg()->start_timing("extract_devs");
 #endif
     // set the group numbers in subcells
-    set_subc_group(true);
+    gd_celldesc->numberInstances(true);
 
     // extract devices
     XIrt ret = add_devs();

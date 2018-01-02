@@ -5528,7 +5528,7 @@ sMK::dump_user_marks(const char *fname, const CDs *sd)
 // error.
 //
 int
-cDisplay::AddUserMark(hlType type, ...)
+cDisplay::AddUserMark(int type, ...)
 {
     va_list args;
     va_start(args, type);

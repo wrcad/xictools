@@ -47,7 +47,7 @@
 #include <algorithm>
 
 
-// A temporary consistency check.
+//XXX  A temporary consistency check.
 #define CHECK_CELLTYPE
 
 //----------------------------------------------------------------------
@@ -395,7 +395,6 @@ CDc::elecCellType(const char **nret)
         }
     }
 #ifdef CHECK_CELLTYPE
-//XXX
     // Check consistency with master, this should be temporary.
     if (sd) {
         CDelecCellType tp = sd->elecCellType();
@@ -412,6 +411,54 @@ CDc::elecCellType(const char **nret)
     return (etype);
 }
 
+/*XXX
+// Move this to CDs::.  Can we number per-master?
+// ext_extract.cc
+// Set the oGroup field of each cdesc to a number used for ordering
+// in the cell-cell connectivity test.
+//
+void
+cGroupDesc::set_subc_group(bool set)
+{
+    // Note that the numbering is in database order, for what its
+    // worth.
+
+    int count = 0;
+    CDg gdesc;
+    gdesc.init_gen(gd_celldesc, CellLayer());
+    CDc *cdesc;
+    while ((cdesc = (CDc*)gdesc.next()) != 0) {
+        cdesc->set_group(count);
+        if (set) {
+            CDap ap(cdesc);
+            count += ap.nx * ap.ny;
+        }
+    }
+}
+
+
+const char *
+CDc::getPhysInstName() const
+{
+    CDs *sd = masterCell(true);
+    if (sd && sd->isElectrical()) {
+        // Electrical instance, return base name.
+        return (Tstring(getBaseName(0)));
+    }
+    // Need separate function to update instance group numbers?
+    if (!grouping done)
+        do grouping
+    // The instance number is <cellname>:<groupnum>.
+    const char *nm = Tstring(cellname());
+    if (!nm)
+        return (0);
+    char tbf[16];
+    sprintf("%d", group());
+    char *str = new char[strlen(nm) + strlen(tbf) + 2];
+    sprintf(str, "%s:%s", nm, tbf);
+    return (str);
+}
+*/
 
 // Return the base (not indexed) instance name which is unique among
 // 'setnames'.  The argument is simply to avoid a property lookup if
@@ -423,6 +470,7 @@ CDc::getBaseName(const CDp_name *pn) const
     CDs *sd = masterCell(true);
     if (sd && !sd->isElectrical()) {
         // Phyical instance, return cell name.
+//XXX return a decent physical instance name.
         return (Tstring(cellname()));
     }
     if (!pn)
@@ -461,6 +509,7 @@ CDc::getInstName(unsigned int ix) const
     CDs *sd = masterCell(true);
     if (sd && !sd->isElectrical()) {
         // Phyical instance, return cell name.
+//XXX return a decent physical instance name.
         return (lstring::copy(Tstring(cellname())));
     }
     CDp_range *pr = (CDp_range*)prpty(P_RANGE);

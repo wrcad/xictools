@@ -2649,6 +2649,65 @@ CDs::unlink(CDo *odesc, int save)
 }
 
 
+// When passed true, set the "group" number for each instance.  This
+// will be 0-based, unique in the parent, in database order.  If
+// false, reset the group numbers to 0, The extraction system uses
+// this.  Physical cells only.
+//
+void
+CDs::numberInstances(bool set)
+{
+    if (isElectrical())
+        return;
+    int count = 0;
+    CDg gdesc;
+    gdesc.init_gen(this, CellLayer());
+    CDc *cdesc;
+    while ((cdesc = (CDc*)gdesc.next()) != 0) {
+        cdesc->set_group(count);
+        if (set) {
+            CDap ap(cdesc);
+            // Save per-element number space for arrays.
+            count += ap.nx * ap.ny;
+        }
+    }
+}
+
+
+// Set the index number for each cell instance.  This is 0-based
+// per-master in database order, can be used to generate an instance
+// name.  Physical cells only.
+//
+void
+CDs::indexInstances()
+{
+    if (isElectrical())
+        return;
+    SymTab tab(false, false);
+
+    CDg gdesc;
+    gdesc.init_gen(this, CellLayer());
+    CDc *cdesc;
+    while ((cdesc = (CDc*)gdesc.next()) != 0) {
+        CDs *msdesc = cdesc->masterCell();
+        if (!msdesc)
+            continue;
+        SymTabEnt *ent = SymTab::get_ent(&tab, (unsigned long)msdesc);
+        int cnt = 0;
+        if (!ent) {
+            tab.add((unsigned long)msdesc, 0, false);
+            ent = SymTab::get_ent(&tab, (unsigned long)msdesc);
+        }
+        else {
+            cnt = (long)ent->stData;
+            ent->stData = (void*)(long)(cnt+1);
+//XXX arrays?
+        }
+        cdesc->set_index((long)cnt);
+    }
+}
+
+
 // Return the object descriptor of the device named in name.  This
 // applies to electrical cells.
 //

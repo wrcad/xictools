@@ -344,7 +344,7 @@ public:
         int, int);
     void EraseMarks(int);
     void ClearWindowMarks();
-    int AddUserMark(hlType, ...);
+    int AddUserMark(int, ...);
     bool RemoveUserMark(int);
     bool RemoveUserMarkAt(const BBox*);
     void ClearUserMarks(const CDs*);

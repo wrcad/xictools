@@ -179,6 +179,7 @@ struct CDc : public CDo
         {
             e_type = CDINSTANCE;
             cAttr = NULL_TICKET;
+            cIndex = -1;
             cMaster = 0;
             cPtabNext = 0;
             cX = cY = 0;
@@ -289,6 +290,9 @@ struct CDc : public CDo
     ticket_t attr()     const   { return (cAttr); }
     void setAttr(ticket_t t)    { cAttr = t; }
 
+    int index()         const   { return (cIndex); }
+    void set_index(int i)       { cIndex = i; }
+
     // cd_hash.cc
     unsigned int add_hash(unsigned int);
 
@@ -310,6 +314,7 @@ struct CDc : public CDo
 
 private:
     ticket_t cAttr;     // Attributes ticket.
+    int cIndex;         // Instance index number.
     CDc *cPtabNext;     // Private link for ptable_t.
     CDm *cMaster;       // Pointer to master list descriptor.
     int cX, cY;         // Origin.

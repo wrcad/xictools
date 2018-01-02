@@ -937,6 +937,8 @@ struct CDs : public CDdb
     unsigned int checkTerminals(CDp_snode*** = 0);
     void checkBterms();
     bool unlink(CDo*, int);
+    void numberInstances(bool);
+    void indexInstances();
     CDc *findInstance(const char*);
     void addMissingInstances();
     bool hasSubcells() const;
