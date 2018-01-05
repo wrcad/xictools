@@ -412,30 +412,6 @@ CDc::elecCellType(const char **nret)
 }
 
 /*XXX
-// Move this to CDs::.  Can we number per-master?
-// ext_extract.cc
-// Set the oGroup field of each cdesc to a number used for ordering
-// in the cell-cell connectivity test.
-//
-void
-cGroupDesc::set_subc_group(bool set)
-{
-    // Note that the numbering is in database order, for what its
-    // worth.
-
-    int count = 0;
-    CDg gdesc;
-    gdesc.init_gen(gd_celldesc, CellLayer());
-    CDc *cdesc;
-    while ((cdesc = (CDc*)gdesc.next()) != 0) {
-        cdesc->set_group(count);
-        if (set) {
-            CDap ap(cdesc);
-            count += ap.nx * ap.ny;
-        }
-    }
-}
-
 
 const char *
 CDc::getPhysInstName() const
@@ -445,15 +421,12 @@ CDc::getPhysInstName() const
         // Electrical instance, return base name.
         return (Tstring(getBaseName(0)));
     }
-    // Need separate function to update instance group numbers?
-    if (!grouping done)
-        do grouping
-    // The instance number is <cellname>:<groupnum>.
+
     const char *nm = Tstring(cellname());
     if (!nm)
         return (0);
     char tbf[16];
-    sprintf("%d", group());
+    sprintf("%d", index());
     char *str = new char[strlen(nm) + strlen(tbf) + 2];
     sprintf(str, "%s:%s", nm, tbf);
     return (str);
