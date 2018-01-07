@@ -411,41 +411,18 @@ CDc::elecCellType(const char **nret)
     return (etype);
 }
 
-/*XXX
-
-const char *
-CDc::getPhysInstName() const
-{
-    CDs *sd = masterCell(true);
-    if (sd && sd->isElectrical()) {
-        // Electrical instance, return base name.
-        return (Tstring(getBaseName(0)));
-    }
-
-    const char *nm = Tstring(cellname());
-    if (!nm)
-        return (0);
-    char tbf[16];
-    sprintf("%d", index());
-    char *str = new char[strlen(nm) + strlen(tbf) + 2];
-    sprintf(str, "%s:%s", nm, tbf);
-    return (str);
-}
-*/
 
 // Return the base (not indexed) instance name which is unique among
 // 'setnames'.  The argument is simply to avoid a property lookup if
 // the caller already has the name property.
 //
 const char *
-CDc::getBaseName(const CDp_name *pn) const
+CDc::getElecInstBaseName(const CDp_name *pn) const
 {
     CDs *sd = masterCell(true);
-    if (sd && !sd->isElectrical()) {
-        // Phyical instance, return cell name.
-//XXX return a decent physical instance name.
-        return (Tstring(cellname()));
-    }
+    if (!sd || !sd->isElectrical())
+        return (0);
+
     if (!pn)
         pn = (CDp_name*)prpty(P_NAME);
     if (pn) {
@@ -477,14 +454,12 @@ CDc::getBaseName(const CDp_name *pn) const
 // value.  The return is a copy and should be deleted.
 //
 char *
-CDc::getInstName(unsigned int ix) const
+CDc::getElecInstName(unsigned int ix) const
 {
     CDs *sd = masterCell(true);
-    if (sd && !sd->isElectrical()) {
-        // Phyical instance, return cell name.
-//XXX return a decent physical instance name.
-        return (lstring::copy(Tstring(cellname())));
-    }
+    if (!sd || !sd->isElectrical())
+        return (0);
+
     CDp_range *pr = (CDp_range*)prpty(P_RANGE);
     char buf[256];
     CDp_name *pn = (CDp_name*)prpty(P_NAME);
@@ -522,6 +497,33 @@ CDc::getInstName(unsigned int ix) const
     sprintf(buf + strlen(buf), "%c%d%c", cTnameTab::subscr_open(), n,
         cTnameTab::subscr_close());
     return (lstring::copy(buf));
+}
+
+
+// Return a name for the physical instance, will update the instance
+// index numbers if necessary.
+//
+char *
+CDc::getPhysInstName() const
+{
+    CDm *md = master();
+    if (!md || !md->parent() || !md->celldesc())
+        return (0);
+    CDs *sd = md->celldesc();
+    if (sd->isElectrical())
+        return (0);
+
+    // Update the instance numbers if necessary.
+    if (!md->parent()->isInstNumValid())
+        md->parent()->numberInstances();
+
+    const char *nm = Tstring(sd->cellname());
+
+    char tbf[32];
+    sprintf(tbf, "%d", index());
+    char *str = new char[strlen(nm) + strlen(tbf) + 2];
+    sprintf(str, "%s%c%s", nm, CD_INST_NAME_SEP, tbf);
+    return (str);
 }
 
 
@@ -999,7 +1001,7 @@ CDc::updateTermNames()
     if (!pna)
         return;
     CDs *msdesc = masterCell();
-    if (!msdesc)
+    if (!msdesc || !msdesc->isElectrical())
         return;
 
     // Don't do anything with terminal devices here.  The term_name
@@ -1015,7 +1017,7 @@ CDc::updateTermNames()
     // Update the name label, this will include a range if vectorized.
     CD()->ifUpdateNameLabel(this, pna);
 
-    const char *basename = getBaseName(pna);
+    const char *basename = getElecInstBaseName(pna);
     if (!basename)
         basename = "?";
     CDp_cnode *pn = (CDp_cnode*)prpty(P_NODE);

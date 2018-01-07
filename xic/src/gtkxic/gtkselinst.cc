@@ -79,10 +79,17 @@ namespace {
     //
     struct ci_item
     {
-        ci_item() { cdesc = 0; name = 0; sel = false; }
+        ci_item()
+            {
+                cdesc = 0;
+                name = 0;
+                index = 0;
+                sel = false;
+            }
 
         CDc *cdesc;                         // instance desc
         const char *name;                   // master cell name
+        int index;                          // instance index
         bool sel;                           // selection flag
     };
 
@@ -316,32 +323,43 @@ sCI::~sCI()
 void
 sCI::update(CDol *ol)
 {
-    int sz = 0;
-    for (CDol *o = ol; o; o = o->next)
-        sz++;
-    ci_list = new ci_item[sz+1];
-    ci_field = 0;
-    ci_item *itm = ci_list;
-    for (CDol *o = ol; o; o = o->next) {
-        if (o->odesc->type() != CDINSTANCE)
-            continue;
-        itm->cdesc = (CDc*)o->odesc;
-        itm->name = Tstring(itm->cdesc->cellname());
-        itm->sel = ci_filt ? false : (itm->cdesc->state() == CDSelected);
-        int w = strlen(itm->name);
-        if (w > ci_field)
-            ci_field = w;
-        itm++;
+    if (ol) {
+        int sz = 0;
+        for (CDol *o = ol; o; o = o->next)
+            sz++;
+        ci_list = new ci_item[sz+1];
+        ci_field = 0;
+        ci_item *itm = ci_list;
+        for (CDol *o = ol; o; o = o->next) {
+            if (o->odesc->type() != CDINSTANCE)
+                continue;
+            CDc *cd = (CDc*)o->odesc;
+            CDs *prnt = cd->parent();
+            if (!prnt)
+                continue;
+            if (!prnt->isInstNumValid())
+                prnt->numberInstances();
+
+            itm->cdesc = cd;
+            itm->name = Tstring(cd->cellname());
+            itm->index = cd->index();
+            itm->sel = false;
+            int w = strlen(itm->name);
+            if (w > ci_field)
+                ci_field = w;
+            itm++;
+        }
+        ci_field += 5;
+
+        char lab[256];
+        strcpy(lab, "Cell Instances        Click on yes/no\n");
+        char *t = lab + strlen(lab);
+        for (int i = 0; i <= ci_field; i++)
+            *t++ = ' ';
+        strcpy(t, ci_filt ? "Keep? " : "Select?");
+
+        gtk_label_set_text(GTK_LABEL(ci_label), lab);
     }
-
-    char lab[256];
-    strcpy(lab, "Cell Instances        Click on yes/no\n");
-    char *t = lab + strlen(lab);
-    for (int i = 0; i <= ci_field; i++)
-        *t++ = ' ';
-    strcpy(t, ci_filt ? "Keep? " : "Select?");
-
-    gtk_label_set_text(GTK_LABEL(ci_label), lab);
     refresh();
 }
 
@@ -358,8 +376,17 @@ sCI::refresh()
         double val = text_get_scroll_value(wb_textarea);
         text_set_chars(wb_textarea, "");
         for (ci_item *s = ci_list; s->name; s++) {
-            sprintf(buf, "%-*s  ", ci_field, s->name);
+            sprintf(buf, "%s%c%d", s->name, CD_INST_NAME_SEP, s->index);
+            int len = strlen(buf);
+            char *e = buf + len;
+            while (len <= ci_field) {
+                *e++ = ' ';
+                len++;
+            }
+            *e = 0;
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
+            if (!ci_filt)
+                s->sel = (s->cdesc->state() == CDSelected);
             sprintf(buf, "%-3s\n", s->sel ? "yes" : "no");
             text_insert_chars_at_point(wb_textarea, s->sel ? yc : nc, buf,
                 -1, -1);
@@ -496,13 +523,17 @@ sCI::ci_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
         text_replace_chars(caller, c, yn, start, start+3);
         char *cname = lstring::gettok(&line_start);
         if (cname) {
-//XXX BUG, master name not necessarily unique!
-            for (ci_item *s = CI->ci_list; s->name; s++) {
-                if (!strcmp(s->name, cname)) {
-                    s->sel = (*yn != 'n');
-                    if (!CI->ci_filt)
-                        apply(s);
-                    break;
+            char *e = strrchr(cname, CD_INST_NAME_SEP);
+            if (e) {
+                *e++ = 0;
+                int ix = atoi(e);
+                for (ci_item *s = CI->ci_list; s->name; s++) {
+                    if (!strcmp(s->name, cname) && ix == s->index) {
+                        s->sel = (*yn != 'n');
+                        if (!CI->ci_filt)
+                            apply(s);
+                        break;
+                    }
                 }
             }
             delete cname;

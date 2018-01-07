@@ -1546,7 +1546,7 @@ cGroupDesc::combine_series(sDevPrefixList *p)
 char *
 sEinstList::instance_name() const
 {
-    return (el_cdesc->getInstName(el_vec_ix));
+    return (el_cdesc->getElecInstName(el_vec_ix));
 }
 
 
@@ -1725,8 +1725,8 @@ sEinstList::setup_eval(sParamTab **tret, double **dret) const
 namespace {
     bool et_comp(const sEinstList *e1, const sEinstList *e2)
     {
-        const char *n1 = e1->cdesc()->getBaseName();
-        const char *n2 = e2->cdesc()->getBaseName();
+        const char *n1 = e1->cdesc()->getElecInstBaseName();
+        const char *n2 = e2->cdesc()->getElecInstBaseName();
         int r = strcmp(n1, n2);
         if (r < 0)
             return (true);

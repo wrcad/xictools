@@ -1151,7 +1151,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
         for (sEinstList *c = dv->edevs(); c; c = c->next()) {
             if (!c->dual_dev()) {
                 CDc *cd = c->cdesc();
-                char *instname = cd->getInstName(c->cdesc_index());
+                char *instname = cd->getElecInstName(c->cdesc_index());
                 if (lstring::prefix(WIRECAP_PREFIX, instname)) {
                     // This is a wire capacitor, which has no physical dual
                     // Shouldn't get here, wire caps should be in extras
@@ -1172,7 +1172,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
     if (gd_extra_devs) {
         for (sEinstList *c = gd_extra_devs; c; c = c->next()) {
             CDc *cd = c->cdesc();
-            char *instname = cd->getInstName(c->cdesc_index());
+            char *instname = cd->getElecInstName(c->cdesc_index());
             if (lstring::prefix(WIRECAP_PREFIX, instname)) {
                 // This is a wire capacitor, which has no physical dual
                 if (check_wire_cap(cd, instname, fp))
@@ -1211,7 +1211,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
         }
         for (sEinstList *s = sl->esubs(); s; s = s->next()) {
             if (!s->dual_subc()) {
-                char *instname = s->cdesc()->getInstName(s->cdesc_index());
+                char *instname = s->cdesc()->getElecInstName(s->cdesc_index());
                 fprintf(fp,
                     "  Electrical subcircuit %s (%s) is not associated.\n",
                     instname, Tstring(s->cdesc()->cellname()));
@@ -1223,7 +1223,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
     }
     if (gd_extra_subs) {
         for (sEinstList *c = gd_extra_subs; c; c = c->next()) {
-            char *instname = c->cdesc()->getInstName(c->cdesc_index());
+            char *instname = c->cdesc()->getElecInstName(c->cdesc_index());
             fprintf(fp,
                 "  Electrical subcircuit %s (%s) is not associated.\n",
                 instname, Tstring(c->cdesc()->cellname()));

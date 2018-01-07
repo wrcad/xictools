@@ -111,10 +111,14 @@ namespace {
         {
             EVmainState(const char *nm, const char *hk) : CmdState(nm, hk) { }
 
-            void b1down()   { cEventHdlr::sel_b1down(); }
+            // The MainStateReady flag enables deselection when Esc
+            // is pressed twice.
+            void b1down()   { cEventHdlr::sel_b1down();
+                              EV()->SetMainStateReady(false); }
             void b1up()     { cEventHdlr::sel_b1up(&AOI, 0, 0); }
             void desel()    { cEventHdlr::sel_esc(); }
-            void esc()      { cEventHdlr::sel_esc(); }
+            void esc()      { cEventHdlr::sel_esc();
+                              EV()->SetMainStateReady(true); }
             bool key(int, const char*, int) { return (false); }
             void undo()     { cEventHdlr::sel_undo(); }
             void redo()     { cEventHdlr::sel_redo(); }

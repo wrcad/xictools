@@ -4354,7 +4354,8 @@ geom2_funcs::IFprptyString(Variable *res, Variable *args, void*)
                     if (val == P_NAME && ol->odesc->type() == CDINSTANCE &&
                     OCALL(ol->odesc)->masterCell()->isElectrical()) {
                         res->content.string = lstring::copy(
-                            OCALL(ol->odesc)->getBaseName((CDp_name*)pdesc));
+                            OCALL(ol->odesc)->getElecInstBaseName(
+                                (CDp_name*)pdesc));
                     }
                     else
                         pdesc->string(&res->content.string);
@@ -4377,7 +4378,7 @@ geom2_funcs::IFprptyString(Variable *res, Variable *args, void*)
                 if (odesc && val == P_NAME && odesc->type() == CDINSTANCE &&
                         OCALL(odesc)->masterCell()->isElectrical()) {
                     res->content.string = lstring::copy(
-                        OCALL(odesc)->getBaseName((CDp_name*)prpty));
+                        OCALL(odesc)->getElecInstBaseName((CDp_name*)prpty));
                 }
                 else
                     prpty->string(&res->content.string);

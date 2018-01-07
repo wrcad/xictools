@@ -705,7 +705,7 @@ namespace {
             return;
         sLstr lstr;
         if (CD()->GetSubcCatmode() == cCD::SUBC_CATMODE_SPICE3) {
-            const char *nm = cdesc->getBaseName(pna);
+            const char *nm = cdesc->getElecInstBaseName(pna);
             lstr.add_c(*nm);
             lstr.add_c(CD()->GetSubcCatchar());
             lstr.add(instname);
@@ -714,7 +714,7 @@ namespace {
         }
         else {
             // cCD::SUBC_CATMODE_WR
-            lstr.add(cdesc->getBaseName(pna));
+            lstr.add(cdesc->getElecInstBaseName(pna));
             lstr.add_c(CD()->GetSubcCatchar());
             lstr.add(instname);
         }
@@ -938,7 +938,7 @@ sElecNetList::flatten(const CDc *cdesc, unsigned int vec_ix,
     CDp_snode **nodes;
     unsigned int nsize = msd->checkTerminals(&nodes);
 
-    const char *instname = cdesc->getBaseName();
+    const char *instname = cdesc->getElecInstBaseName();
 
     bool ok = true;
     CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);

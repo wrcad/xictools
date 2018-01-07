@@ -381,7 +381,7 @@ click:
                 return;
             }
             CDol *slist = Selections.selectItems(CurCell(), 0, &AOI,
-                PSELpoint);
+                PSELpoint, true);
             if (!slist)
                 return;
 
@@ -1132,7 +1132,8 @@ MainState::timeout1(void*)
             Mcmd()->set_op(SelectObj);
             return (false);
         }
-        CDol *slist = Selections.selectItems(CurCell(), 0, &BB, PSELpoint);
+        CDol *slist =
+            Selections.selectItems(CurCell(), 0, &BB, PSELpoint, true);
         CDol *sl;
         for (sl = slist; sl; sl = sl->next) {
             if (sl->odesc->state() == CDSelected)

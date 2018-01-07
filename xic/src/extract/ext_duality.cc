@@ -1253,9 +1253,9 @@ cGroupDesc::select_unassoc_edevs()
         for (sEinstList *c = dv->edevs(); c; c = c->next()) {
             if (!c->dual_dev()) {
                 CDc *cd = c->cdesc();
-                const char *instname = cd->getBaseName();
+                const char *instname = cd->getElecInstBaseName();
                 // ignore wire caps
-                if (!lstring::prefix(WIRECAP_PREFIX, instname)) {
+                if (instname && !lstring::prefix(WIRECAP_PREFIX, instname)) {
                     cd->set_state(CDVanilla);
                     Selections.insertObject(cursde, cd);
                 }
@@ -1265,9 +1265,9 @@ cGroupDesc::select_unassoc_edevs()
     if (gd_extra_devs) {
         for (sEinstList *c = gd_extra_devs; c; c = c->next()) {
             CDc *cd = c->cdesc();
-            const char *instname = cd->getBaseName();
+            const char *instname = cd->getElecInstBaseName();
             // ignore wire caps
-            if (!lstring::prefix(WIRECAP_PREFIX, instname)) {
+            if (instname && !lstring::prefix(WIRECAP_PREFIX, instname)) {
                 cd->set_state(CDVanilla);
                 Selections.insertObject(cursde, cd);
             }
@@ -1676,7 +1676,8 @@ top:
                         ExtErrLog.add_log(ExtLogAssoc, msg);
                         pr = true;
                     }
-                    char *instname = s->cdesc()->getInstName(s->cdesc_index());
+                    char *instname =
+                        s->cdesc()->getElecInstName(s->cdesc_index());
                     ExtErrLog.add_log(ExtLogAssoc, "  subcircuit %s %s",
                         Tstring(s->cdesc()->cellname()), instname);
                     delete [] instname;
@@ -1689,7 +1690,8 @@ top:
                         ExtErrLog.add_log(ExtLogAssoc, msg);
                         pr = true;
                     }
-                    char *instname = s->cdesc()->getInstName(s->cdesc_index());
+                    char *instname =
+                        s->cdesc()->getElecInstName(s->cdesc_index());
                     ExtErrLog.add_log(ExtLogAssoc, "  device %s %s",
                         Tstring(s->cdesc()->cellname()), instname);
                     delete [] instname;
@@ -1875,7 +1877,8 @@ cGroupDesc::set_duality()
                         ExtErrLog.add_log(ExtLogAssoc, msg);
                         pr = true;
                     }
-                    char *instname = s->cdesc()->getInstName(s->cdesc_index());
+                    char *instname =
+                        s->cdesc()->getElecInstName(s->cdesc_index());
                     ExtErrLog.add_log(ExtLogAssoc, "  subcircuit %s %s",
                         Tstring(s->cdesc()->cellname()), instname);
                     delete [] instname;
@@ -1888,7 +1891,8 @@ cGroupDesc::set_duality()
                         ExtErrLog.add_log(ExtLogAssoc, msg);
                         pr = true;
                     }
-                    char *instname = s->cdesc()->getInstName(s->cdesc_index());
+                    char *instname =
+                        s->cdesc()->getElecInstName(s->cdesc_index());
                     ExtErrLog.add_log(ExtLogAssoc, "  device %s %s",
                         Tstring(s->cdesc()->cellname()), instname);
                     delete [] instname;
@@ -2861,7 +2865,8 @@ cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) THROW_XIrt
                 return (false);
             }
             if (ExtErrLog.log_associating()) {
-                char *instname = dp->cdesc()->getInstName(dp->cdesc_index());
+                char *instname =
+                    dp->cdesc()->getElecInstName(dp->cdesc_index());
                 ExtErrLog.add_log(ExtLogAssocV, "dev %s %d %d %s",
                     di->desc()->name(), di->index(), mx, instname);
                 delete [] instname;
@@ -3116,7 +3121,7 @@ cGroupDesc::find_match(sSubcList *sl, sSubcInst *si, bool brksym,
         return (false);
     }
     if (ExtErrLog.log_associating()) {
-        char *instname = dp->cdesc()->getInstName(dp->cdesc_index());
+        char *instname = dp->cdesc()->getElecInstName(dp->cdesc_index());
         char *iname = si->instance_name();
         ExtErrLog.add_log(ExtLogAssocV, "sub %s %d %s", iname, mx, instname);
         delete [] iname;

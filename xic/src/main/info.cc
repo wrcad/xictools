@@ -963,7 +963,10 @@ cMain::Info(const CDo *odesc)
         strcat(buf, " Bad State!");
     strcat(buf, "\n");
     lstr.add(buf);
-    sprintf(buf, "Group: %d\n", odesc->group());
+    if (odesc->type() != CDINSTANCE)
+        sprintf(buf, "Group: %d\n", odesc->group());
+    else
+        sprintf(buf, "Index: %d\n", odesc->group());
     lstr.add(buf);
     if (odesc->prpty_list()) {
         lstr.add("Properties:\n");
@@ -1185,14 +1188,14 @@ inst:
                 int vecix = 0;
                 if (pr) {
                     sprintf(buf, "Instance is vectored:  %s%c%d:%d%c\n",
-                        ecdesc->getBaseName(),
+                        ecdesc->getElecInstBaseName(),
                         cTnameTab::subscr_open(), pr->beg_range(),
                         pr->end_range(), cTnameTab::subscr_close());
                     lstr.add(buf);
                 }
                 while (gen.next(0)) {
                     if (pr) {
-                        char *s = ecdesc->getInstName(vecix);
+                        char *s = ecdesc->getElecInstName(vecix);
                         sprintf(buf, "Component: %s\n", s);
                         delete [] s;
                         lstr.add(buf);
@@ -1213,7 +1216,7 @@ inst:
                         if (isary) {
                             sprintf(buf, "Component x=%-4d y=%-4d\n", ix, iy);
                             lstr.add(buf);
-                            char *s = ecdesc->getInstName(vecix);
+                            char *s = ecdesc->getElecInstName(vecix);
                             sprintf(buf, "Dual %s\n", s);
                             delete [] s;
                             lstr.add(buf);

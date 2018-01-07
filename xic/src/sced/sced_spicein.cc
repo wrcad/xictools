@@ -1684,8 +1684,8 @@ cSpiceBuilder::process_muts(CDs *sdesc)
             CDc *cdesc1, *cdesc2;
             if (!pm->get_descs(&cdesc1, &cdesc2))
                 continue;
-            name1 = cdesc1->getBaseName();
-            name2 = cdesc2->getBaseName();
+            name1 = cdesc1->getElecInstBaseName();
+            name2 = cdesc2->getElecInstBaseName();
             if ((!strcmp(name1, m->ind1) && !strcmp(name2, m->ind2)) ||
                     (!strcmp(name1, m->ind2) && !strcmp(name2, m->ind2))) {
                 found = true;
@@ -1711,7 +1711,7 @@ cSpiceBuilder::process_muts(CDs *sdesc)
                 CDp_name *pna = (CDp_name*)cd->prpty(P_NAME);
                 if (!pna)
                     continue;
-                name1 = cd->getBaseName(pna);
+                name1 = cd->getElecInstBaseName(pna);
                 if (!strcmp(name1, m->ind1))
                     cdesc1 = cd;
                 else if (!strcmp(name1, m->ind2))
@@ -2160,7 +2160,7 @@ cSpiceBuilder::mksymtab(CDs *sdesc, SymTab **symtab, bool alldevs)
         if (alldevs) {
             // add all devices
             if (pn) {
-                const char *instname = cdesc->getBaseName(pn);
+                const char *instname = cdesc->getElecInstBaseName(pn);
                 (*symtab)->add(lstring::copy(instname), cdesc, false);
             }
         }

@@ -4109,7 +4109,7 @@ sMark_Ilab::addBB(WindowDesc *wdesc, BBox *BB)
         phei = FT.cellHeight();
 
     BBox tBB(x-delta, y-delta, x+delta, y+delta);
-    char *instname = mCdesc->getInstName(mVecIx);
+    char *instname = mCdesc->getElecInstName(mVecIx);
     int w, h;
     DSP()->DefaultLabelSize(instname, wdesc->Mode(), &w, &h);
     delete [] instname;
@@ -4159,7 +4159,7 @@ sMark_Ilab::ilab_mark(WindowDesc *wdesc, bool display)
         phei = FT.cellHeight();
 
     BBox BB(x-delta, y-delta, x+delta, y+delta);
-    char *instname = mCdesc->getInstName(mVecIx);
+    char *instname = mCdesc->getElecInstName(mVecIx);
     int w, h;
     DSP()->DefaultLabelSize(instname, wdesc->Mode(), &w, &h);
     w = mmRnd((w*(double)phei)/h);

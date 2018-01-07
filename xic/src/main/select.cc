@@ -106,6 +106,7 @@ cMain::DeselectExec(CmdDesc *cmd)
         Selections.deselectAll();
         ExtIf()->deselect();
         XM()->ShowParameters();
+        PopUpSelectInstances(0);
     }
     if (EV()->CurCmd())
         EV()->CurCmd()->desel();
@@ -1381,8 +1382,10 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
                 if (pn->value() != num)
                     continue;
                 char *text;
-                if (num == P_NAME)
-                    text = lstring::copy(cdesc->getBaseName((CDp_name*)pn));
+                if (num == P_NAME) {
+                    text = lstring::copy(
+                        cdesc->getElecInstBaseName((CDp_name*)pn));
+                }
                 else
                     pn->string(&text);
                 if (all || !regexec(&preg, text, 0, 0, 0)) {
@@ -1429,7 +1432,7 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
                     char *text;
                     if (num == P_NAME) {
                         text = lstring::copy(
-                                OCALL(od)->getBaseName((CDp_name*)pn));
+                                OCALL(od)->getElecInstBaseName((CDp_name*)pn));
                     }
                     else
                         pn->string(&text);
@@ -1456,7 +1459,7 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
                             continue;
                         char *text;
                         if (num == P_NAME)
-                            text = ed->getInstName(vecix);
+                            text = ed->getElecInstName(vecix);
                         else
                             pn->string(&text);
                         if (all || !regexec(&preg, text, 0, 0, 0)) {

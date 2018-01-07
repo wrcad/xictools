@@ -1063,8 +1063,9 @@ cGroupDesc::add_subckts()
     Tdbg()->start_timing("connect_total");
     Tdbg()->start_timing("extract_devs");
 #endif
-    // set the group numbers in subcells
-    gd_celldesc->numberInstances(true);
+    // Set the group numbers in subcells.
+    if (!gd_celldesc->isInstNumValid())
+        gd_celldesc->numberInstances();
 
     // extract devices
     XIrt ret = add_devs();

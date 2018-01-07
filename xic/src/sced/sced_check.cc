@@ -983,7 +983,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
         }
     }
     else {
-        name = cdesc->getBaseName(pn);
+        name = cdesc->getElecInstBaseName(pn);
 
         // Check that the instance default name is that of the
         // corresponding device.  If not, make it so and report.  Skip

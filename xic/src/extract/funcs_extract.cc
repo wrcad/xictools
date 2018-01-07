@@ -4686,7 +4686,7 @@ extract_funcs::IFlistElecDevs(Variable *res, Variable *args, void*)
             CDp_name *pn = (CDp_name*)cd->prpty(P_NAME);
             if (!pn)
                 continue;
-            const char *instname = cd->getBaseName(pn);
+            const char *instname = cd->getElecInstBaseName(pn);
             if (!regx || !*regx || !regexec(&preg, instname, 0, 0, 0))
                 s0 = new stringlist(lstring::copy(instname), s0);
         }
