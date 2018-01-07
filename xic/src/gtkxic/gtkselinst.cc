@@ -206,7 +206,7 @@ sCI::sCI(CDol *l, bool filtmode)
     ci_filt = filtmode;
 
     wb_shell = gtk_NewPopup(0,
-        ci_filt ? "Filter Instances" : "Select Instances", ci_cancel_proc, 0);
+        ci_filt ? "Choose Instances" : "Select Instances", ci_cancel_proc, 0);
     if (!wb_shell)
         return;
     GtkWidget *form = gtk_table_new(2, 4, false);
@@ -214,7 +214,7 @@ sCI::sCI(CDol *l, bool filtmode)
     gtk_widget_show(form);
 
     GtkWidget *button = gtk_button_new_with_label(
-        ci_filt ? "Keep All" : "Select All");
+        ci_filt ? "Choose All" : "Select All");
     gtk_widget_set_name(button, "SelectAll");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
@@ -356,7 +356,7 @@ sCI::update(CDol *ol)
         char *t = lab + strlen(lab);
         for (int i = 0; i <= ci_field; i++)
             *t++ = ' ';
-        strcpy(t, ci_filt ? "Keep? " : "Select?");
+        strcpy(t, ci_filt ? "Choose? " : "Select?");
 
         gtk_label_set_text(GTK_LABEL(ci_label), lab);
     }

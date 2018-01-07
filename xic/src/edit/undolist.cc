@@ -2103,6 +2103,16 @@ cUndoList::do_operation(Oper *curop, bool undo)
             }
         }
 
+        // If the instance list changes, invalidate numbering in the cell.
+        //
+        for (Ochg *oc = cur->obj_list(); oc; oc = oc->next_chg()) {
+            if ((oc->oadd() && oc->oadd()->type() == CDINSTANCE) ||
+                    (oc->odel() && oc->odel()->type() == CDINSTANCE)) {
+                cur->celldesc()->setInstNumValid(false);
+                break;
+            }
+        }
+
         move_hack(cur, true);
 
         // Erase terminals if they might change.

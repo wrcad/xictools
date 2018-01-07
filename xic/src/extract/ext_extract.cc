@@ -2364,11 +2364,7 @@ namespace {
             int n2 = s2->iy()*ap.nx + s2->ix();
             return (n1 < n2);
         }
-        if (s1->cdesc()->oBB().top > s2->cdesc()->oBB().top)
-            return (true);
-        if (s1->cdesc()->oBB().top < s2->cdesc()->oBB().top)
-            return (false);
-        return (s1->cdesc()->oBB().left < s2->cdesc()->oBB().left);
+        return (s1->cdesc()->index() < s2->cdesc()->index());
     }
 }
 
@@ -2383,7 +2379,10 @@ cGroupDesc::sort_and_renumber_subs()
     // Sort the subcircuit masters alphabetically.
     sort_subs(false);
 
-    int id = 0;
+    // Set the instance sequence numbers.
+    if (!gd_celldesc->isInstNumValid())
+        gd_celldesc->numberInstances();
+
     for (sSubcList *sc = gd_subckts; sc; sc = sc->next()) {
 
         int cnt = 0;
@@ -2400,11 +2399,12 @@ cGroupDesc::sort_and_renumber_subs()
         sc->set_subs(ary[0]);
         delete [] ary;
 
-        // Renumber.
-        int ix = 0;
+        // Renumber.  Use the instance sequence numbers.
         for (sSubcInst *su = sc->subs(); su; su = su->next()) {
-            su->set_uid(id++);
-            su->set_index(ix++);
+            CDap ap(su->cdesc());
+            int ix = su->iy()*ap.nx + su->ix();
+            su->set_uid(su->cdesc()->group() + ix);
+            su->set_index(su->cdesc()->index() + ix);
         }
     }
 }
@@ -2902,8 +2902,8 @@ sSubcInst::update_template()
 }
 
 
-// Return a concocted instance name consisting of the master name,
-// followed by an underscore, then the index number.
+// Return the instance name, same format as CDc::getPhysInstName, same
+// value too for scalar instances.
 //
 char *
 sSubcInst::instance_name()
@@ -2914,7 +2914,7 @@ sSubcInst::instance_name()
     if (!nm)
         nm = "UNKNOWN";
     char *name = new char[strlen(nm) + strlen(buf) + 2];
-    sprintf(name, "%s_%s", nm, buf);
+    sprintf(name, "%s%c%s", nm, CD_INST_NAME_SEP, buf);
     return (name);
 }
 // End of sSubcInst functions.

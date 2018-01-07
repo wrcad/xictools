@@ -1983,6 +1983,8 @@ CDs::makeCall(CallDesc *calldesc, const CDtx *tx, const CDap *ap,
         cdesc->setBadBB();
     }
 
+    setInstNumValid(false);
+
     // The following is called in lieu of insert().  Unless omode is
     // OpenModeNone, the cdesc is not added to the database here,
     // since its size may not be known yet.  Actual insertion is done
