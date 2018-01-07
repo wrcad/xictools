@@ -232,42 +232,42 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
         }
 #endif
 
+        // Count selections and remove internal objects.
+        int nsel = 0;
+        int nusel = 0;
+        CDol *cp = 0, *cn;
+        for (CDol *c = list; c; c = cn) {
+            cn = c->next;
+            if (!c->odesc->is_normal()) {
+                if (cp)
+                    cp->next = cn;
+                else
+                    list = cn;
+                delete c;
+                continue;
+            }
+            cp = c;
+            if (c->odesc->state() == CDSelected)
+                nsel++;
+            else
+                nusel++;
+        }
+
+        // If only instances are in list (instances are listed
+        // last) and there are 3 or more, use a pop-up to control
+        // the selections.
+        //
+        bool instonly = (list->odesc->type() == CDINSTANCE);
+        if (instonly && (nsel+nusel >= 3)) {
+            XM()->PopUpSelectInstances(list);
+            CDol::destroy(list);
+            return (true);
+        }
+
         if (iterate_mode && is_pointselect(AOI, 0)) {
             // Keep at most one selected and unselected item.  The
             // unselected item is first in the list, or first
             // following the selected item.
-
-            // Count selections and remove internal objects.
-            int nsel = 0;
-            int nusel = 0;
-            CDol *cp = 0, *cn;
-            for (CDol *c = list; c; c = cn) {
-                cn = c->next;
-                if (!c->odesc->is_normal()) {
-                    if (cp)
-                        cp->next = cn;
-                    else
-                        list = cn;
-                    delete c;
-                    continue;
-                }
-                cp = c;
-                if (c->odesc->state() == CDSelected)
-                    nsel++;
-                else
-                    nusel++;
-            }
-
-            // If only instances are in list (instances are listed
-            // last) and there are 3 or more, use a pop-up to control
-            // the selections.
-            //
-            bool instonly = (list->odesc->type() == CDINSTANCE);
-            if (instonly && (nsel+nusel >= 3)) {
-                XM()->PopUpSelectInstances(list);
-                CDol::destroy(list);
-                return (true);
-            }
 
             if (nsel > 1) {
                 // Keep first selected only.
@@ -309,9 +309,9 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
             }
         }
         else {
-            CDol *cn, *se = 0, *ue = 0;
-            for (CDol *c = list; c; c = cn) {
-                cn = c->next;
+            CDol *cnx, *se = 0, *ue = 0;
+            for (CDol *c = list; c; c = cnx) {
+                cnx = c->next;
                 c->next = 0;
                 if (c->odesc->is_normal()) {
                     if (c->odesc->state() == CDSelected) {
