@@ -1115,11 +1115,18 @@ WindowDesc::show_unexpanded_instance(const CDc *cdesc)
                     mname++;
             }
         }
-        if (!mname)
-            mname = Tstring(cdesc->cellname());
-        while (*mname && *mname != '>')
-            *s++ = *mname++;
-        *s = 0;
+        if (mname) {
+            while (*mname && *mname != '>')
+                *s++ = *mname++;
+            *s = 0;
+        }
+        else if (w_mode == Electrical)
+            strcpy(s, Tstring(cdesc->cellname()));
+        else {
+            char *inm = cdesc->getPhysInstName();
+            strcpy(s, inm);
+            delete [] inm;
+        }
 
         if (w_mode == Physical) {
             const BBox *cBB = &cdesc->oBB();
