@@ -165,22 +165,14 @@ Fixed seg fault in fio_library.cc when open_cell has null cbin.
 FIXED: library references weren't being followed through CHD, e.g.,
 expanded cells were blank in display mode.
 
-In click-to-select mode when one clicks on cell instances only and the
-click is over 3 or more instances, the new "Filter Instances" pop-up
-appears.  This provides a listing of all instances clicked over, with
-colored yes/no text indicating whether to keep or ignore the instance. 
-One can toggle the status of each instance by clicking on the yes/no
-text.  Click "Continue" to retire the pop-up and continue the command,
-with the filtered list of instances.  The pop-up is modal, meaning all
-but the pop-up is locked out while the pop-up is visible.  This is
-used in the info and peek commands, and in general selections.
-
-In general selections, presently there are two similar pop-ups that
-may appear.  The first is the Filter Instances pop-up described above.
-If three or more instances are kept, the second "Select Instances"
-pop=up appears.  This is also modal, and similar in appearance,
-however one can toggle the selected status of each instance by clicking
-on the colored yes/no text.
+Selection changes:  A new pop-up applies when there are three or more
+cell instances potentially in a selection operation (point or area)
+and no selectable geometry.  The Select Instances panel produces a
+list of instances with a clickable yes/no to toggle selected status of
+each listed instance.  When the selection mechanism is used to choose
+instances for some other purpose, the same pop-up, laabelled "Choose
+Instances" appears.  The pop-up is modal in either case, meaning all
+but the pop-up is locked out while the pop-up is visible.
 
 Fixed! Info command leaving dead object copies in the selection list,
 instability results.
@@ -195,9 +187,31 @@ Fixed:  Logo creation, no more caching the width/height of xpm data.
 This causes trouble if the user reuses the same xpm file name but
 changes the content.
 
-ToDo:  need real instance names for the Filter/Select Instances
-pop-ups.  Using the master name won't work with more than one instance
-of a master in the list.
+New system to generate and track instance names in physical mode. 
+Each cell instance has a name consisting of the master name, colon
+separator, and a 0-based index number in database order.  The index
+number is increased by the size of the array when numbering array
+instances, to leave space for indexing individual components.  The
+instance name is used in the Select/Choose Instances panel, and in the
+label of unexpanded physical instances in the drawing windows, and in
+the extraction system.  Instance numbers are regenerated when needed,
+after a modification which changes the instance list of a cell.
+They are stable and reproducible as long as the containing cell and
+its hierarchy are unmodified.
+
+In the Xiv feature set, pressing Esc twice now deselects all, same as
+in Xic.
+
+Script functions updated:
+GetInstanceName()  (support physical instance names)
+SetInstanceName()  (descr change)
+GetInstanceIdNum() (check sequence validity, descr updated)
+GetInstanceAltId() (check sequence validity, return index(). descr updated)
+ListSubcells()     (descr change)
+
+New boolean variable NoInstnameLabels
+When set, unexpanded instances in physical drawing windows will use master
+name (as before) instead of instance name.
 
 ToDo:  optionally retain standard vias in netext files.
 

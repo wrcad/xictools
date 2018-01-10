@@ -97,10 +97,11 @@ xiVariables.hlp
     <tr><td><b>ProgramRoot</b></td><td>Set to the program's installation directory</td></tr>
     <tr><td><b>TeePrompt</b></td><td>Copy messages to given filename or "stdout"</td></tr>
 
-!! 102817
+!! 010918
     <tr><th colspan=2><a href="!set:generalvis">General Visual</a></th></tr>
     <tr><td><b>MouseWheel</b></td><td>Set mouse wheel rate parameters</td></tr>
     <tr><td><b>ListPageEntries</b></td><td>Maximum entries per page in list pop-ups</td></tr>
+    <tr><td><b>NoInstnameLabels</b></td><td>Don't use instance names in unexpanded instances</td></tr>
     <tr><td><b>NoLocalImage</b></td><td>Don't compose images locally</td></tr>
     <tr><td><b>NoPixmapStore</b></td><td>Don't use screen backing memory</td></tr>
     <tr><td><b>NoDisplayCache</b></td><td>Don't use multi-object rendering for boxes</td></tr>
@@ -861,6 +862,7 @@ Paths and Directories
 
 !!REDIRECT MouseWheel           !set:generalvis#MouseWheel
 !!REDIRECT ListPageEntries      !set:generalvis#ListPageEntries
+!!REDIRECT NoInstnameLabels     !set:generalvis#NoInstnameLabels
 !!REDIRECT NoLocalImage         !set:generalvis#NoLocalImage
 !!REDIRECT NoPixmapStore        !set:generalvis#NoPixmapStore
 !!REDIRECT NoDisplayCache       !set:generalvis#NoDisplayCache
@@ -914,6 +916,19 @@ General Visual
     listing panel.  Each page will contain at most this number of
     entries.  Only the entries for the currently selected page will be
     visible.  If this variable is not set, the default value is 5000.
+    </dl>
+
+!! 010918
+    <a name="NoInstnameLabels"></a>
+    <dl>
+    <dt><b>NoInstnameLabels</b><dd>
+    <b>Value:</b> boolean.<br>
+    Starting in release 4.3.3, the label used in physical display
+    windows for unexpanded cell instances is the instance name, which
+    consists of the master cell name followed by a colon separator and
+    a unique integer index.  When this variable is set, the label
+    shows the master cell name only, the same as in earlier <i>Xic</i>
+    releases.
     </dl>
 
 !! 082008

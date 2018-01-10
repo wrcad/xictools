@@ -237,34 +237,8 @@ private:
 
 #endif
 
-// Unset this to add a field to CDo for the group number.  Otherwise,
-// group numbers are maintained in a separate hash table.  The group
-// number is used by the extraction system, but may have more general
-// utility.
-//
-//#define CD_GROUP_TAB
-
 // The default (ground) group, export to extraction system.
 #define DEFAULT_GROUP 0
-
-#ifdef CD_GROUP_TAB
-struct gpelt_t
-{
-    unsigned long tab_key()     { return (ge_key); }
-    gpelt_t *tab_next()         { return (ge_next); }
-
-    void set_tab_next(gpelt_t *n) { ge_next = n; }
-    void set_key(const void *k) { ge_key = (unsigned long)k; }
-    int get_group()             { return (ge_group); }
-    void set_group(int g)       { ge_group = g; }
-
-private:
-    int ge_group;
-    unsigned long ge_key;
-    gpelt_t *ge_next;
-};
-
-#endif
 
 // This wraps the string table pointers, which we keep as a separate
 // type, and provides conversion functions to const char*.
@@ -569,67 +543,6 @@ public:
     void ClearPrptyTab() { }
 #endif
 
-#ifdef CD_GROUP_TAB
-    void SetGroup(const CDo *od, int grp)
-        {
-            if (!od)
-                return;
-            if (!cdGroupTab)
-                cdGroupTab = new itable_t<gpelt_t>;
-            gpelt_t *elt = cdGroupTab->find(od);
-            if (!elt) {
-                if (grp == DEFAULT_GROUP)
-                    return;
-                elt = cdGroupFct.new_element();
-                elt->set_key(od);
-                cdGroupTab->link(elt);
-                cdGroupTab = cdGroupTab->check_rehash();
-            }
-            elt->set_group(grp);
-        }
-
-    int Group(const CDo *od)
-        {
-            if (!od || !cdGroupTab)
-                return (DEFAULT_GROUP);
-            gpelt_t *elt = cdGroupTab->find(od);
-            if (!elt)
-                return (DEFAULT_GROUP);
-            return (elt->get_group());
-        }
-
-    void CompactGroupTab()
-        {
-            itable_t<gpelt_t> *tbk = cdGroupTab;
-            cdGroupTab = new itable_t<gpelt_t>;
-
-            eltab_t<gpelt_t> fct(cdGroupFct);
-            cdGroupFct.zero();
-
-            tgen_t<gpelt_t> gen(tbk);
-            gpelt_t *el;
-            while ((el = gen.next()) != 0) {
-                gpelt_t *nel = cdGroupFct.new_element();
-                nel->set_key((const void*)el->tab_key());
-                nel->set_group(el->get_group());
-                cdGroupTab->link(nel);
-                cdGroupTab = cdGroupTab->check_rehash();
-            }
-            delete tbk;
-            fct.clear();
-        }
-
-    void ClearGroupTab()
-        {
-            delete cdGroupTab;
-            cdGroupTab = 0;
-            cdGroupFct.clear();
-        }
-#else
-    void CompactGroupTab() { }
-    void ClearGroupTab() { }
-#endif
-
     bool IsReading()                { return (cdReading != 0); }
     void SetReading(bool b)
         {
@@ -693,9 +606,6 @@ private:
 #ifdef CD_PRPTY_TAB
     itable_t<prpelt_t> *cdPrptyTab; // Object-to-property list hash table
 #endif
-#ifdef CD_GROUP_TAB
-    itable_t<gpelt_t> *cdGroupTab;  // Object-to-group hash table
-#endif
     SymTab *cdAllocTab;             // Struct allocation, for debugging
     CDnameCache *cdNameCache;       // Transient cache for CDc::nameOK
     CDlabelCache *cdLabelCache;     // Transient cache for CDs::prptyLabelPatch
@@ -748,9 +658,6 @@ private:
 
 #ifdef CD_PRPTY_TAB
     eltab_t<prpelt_t> cdPrptyFct;   // Element factory for property list table.
-#endif
-#ifdef CD_GROUP_TAB
-    eltab_t<gpelt_t> cdGroupFct;    // Element factory for group table.
 #endif
     static cCD *instancePtr;
 };

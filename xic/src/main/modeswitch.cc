@@ -454,7 +454,6 @@ cMain::Clear(const char *name)
         CDcdb()->clearTable();
 
         CD()->CompactPrptyTab();
-        CD()->CompactGroupTab();
         CD()->ClearStringTables();
 #ifdef HAVE_LOCAL_ALLOCATOR
         Memory()->register_free_talk(0);

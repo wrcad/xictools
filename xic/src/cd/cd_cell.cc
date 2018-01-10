@@ -4514,6 +4514,7 @@ void
 CDs::reflect_bad_BB()
 {
     setBBsubng(true);
+    setInstNumValid(false);
     CDm_gen gen(this, GEN_MASTER_REFS);
     for (CDm *m = gen.m_first(); m; m = gen.m_next()) {
         CDs *sd = m->parent();

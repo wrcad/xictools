@@ -2540,10 +2540,10 @@ Object Management by Handles
     </dl>
     <hr>
 
-    <!-- 062116 -->
+    <!-- 010818 -->
     <a name="GetInstanceMaster"></a>
     <dl>
-    <dt><b>(string) <tt>GetInstanceName</tt>(<i>object_handle</i>)</b>
+    <dt><b>(string) <tt>GetInstanceMaster</tt>(<i>object_handle</i>)</b>
     <dd><br>
     Note:  prior to 4.2.12, this function was called
     <tt>GetInstanceName</tt>.
@@ -2580,7 +2580,7 @@ Object Management by Handles
     </dl>
     <hr>
 
-    <!-- 060616 -->
+    <!-- 010818 -->
     <a name="GetInstanceName"></a>
     <dl>
     <dt><b>(string) <tt>GetInstanceName</tt>(<i>object_handle</i>)</b>
@@ -2595,8 +2595,19 @@ Object Management by Handles
     would appear in a generated SPICE file.
 
     <p>
-    Currently, for physical instances, and for unnamed electrical
-    instances, a null string is returned.
+    For unnamed (missing name property) electrical instances, a null
+    string is returned.
+
+    <p>
+    For physical cell instances, an instance name is returned, which
+    consists of the master name followed by a colon separator and an
+    index number.  The index is a 0-based sequence for instances with
+    a particular master.  The index count advances by the size of the
+    array for arrayed instances, leaving room in the sequence for
+    individual elements.  The index is in database order (top to
+    bottom then left to right of the upper left corner of the instance
+    bounding box), and is stable and reproducible as long as instance
+    sizes and placement locations remain the same.
 
     <p>
     Internally, names are generated in the following way.  Each device
@@ -2624,7 +2635,7 @@ Object Management by Handles
     </dl>
     <hr>
 
-    <!-- 060616 -->
+    <!-- 010818 -->
     <a name="SetInstanceName"></a>
     <dl>
     <dt><b>(int) <tt>SetInstanceName</tt>(<i>object_handle</i>,
@@ -2644,6 +2655,10 @@ Object Management by Handles
     <p>
     If the string is null or 0, any applied name will be deleted,
     equivalent to "removing" a name property.
+
+    <p>
+    Physical instance names can not be changed, an attempt to do so
+    fails silently.
 
     <p>
     The return value is 1 on success, 0 otherwise.
@@ -2737,7 +2752,7 @@ Object Management by Handles
     </dl>
     <hr>
 
-    <!-- 060616 -->
+    <!-- 010818 -->
     <a name="GetInstanceIdNum"></a>
     <dl>
     <dt><b>(int) <tt>GetInstanceIdNum</tt>(<i>object_handle</i>)</b>
@@ -2751,15 +2766,16 @@ Object Management by Handles
     number sequence.  These values are always non-negative.
 
     <p>
-    For physical instances, an internal indexing number used by the
-    extraction system is returned.
+    The return for all physical instances is similarly created, and is
+    the same index used in the instance name returned by
+    <a href="GetInstanceName"><tt>GetInstanceName</tt></a>.
 
     <p>
     This function will return -1 on error.
     </dl>
     <hr>
 
-    <!-- 060616 -->
+    <!-- 010818 -->
     <a name="GetInstanceAltIdNum"></a>
     <dl>
     <dt><b>(int) <tt>GetInstanceAltIdNum</tt>(<i>object_handle</i>)</b>
@@ -2772,6 +2788,12 @@ Object Management by Handles
     instance placement location in the schematic, top to bottom then
     left to right, with the upper-left corner of the bounding box
     being the reference location.
+
+    <p>
+    For physical instances, an internal indexing number used by the
+    extraction system is returned.  This is a unique 0-based sequence
+    applied to all instances of a cell, in database order.  The count
+    is incremented by the array size for arrayed instances.
 
     <p>
     For other instances, the return value is the same as

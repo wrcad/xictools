@@ -1617,26 +1617,51 @@ cUndoList::CommitChanges(bool redisplay, bool nodrc)
         XM()->InfoRefresh();
     }
     if (bb_set) {
-        bool a_ok = (addBB.right > addBB.left && addBB.top > addBB.bottom);
-        bool d_ok = (delBB.right > delBB.left && delBB.top > delBB.bottom);
-        if (a_ok && d_ok) {
-            if (addBB.left > delBB.right || delBB.left > addBB.right ||
-                    addBB.bottom > delBB.top || delBB.bottom > addBB.top) {
 
-                // No overlap, redisplay both areas.
-                DSP()->RedisplayArea(&delBB);
-                DSP()->RedisplayArea(&addBB);
-            }
-            else {
-                // Some overlap, just combine and redisplay.
-                addBB.add(&delBB);
-                DSP()->RedisplayArea(&addBB);
+        // If a physical instance changed and unexpanded instances are
+        // being shown, redisplay everything since the instance name
+        // labels have likely changed.
+        //
+        bool inst_changed = false;
+        Oper *cur = ul_operations;
+        if (!cur->celldesc()->isElectrical() && cur->celldesc() == CurCell() &&
+                !DSP()->NoInstnameLabels()) {
+            DSPattrib *a = DSP()->MainWdesc()->Attrib();
+            if (a->expand_level(Physical) == 0) {
+                for (Ochg *oc = cur->obj_list(); oc; oc = oc->next_chg()) {
+                    if ((oc->oadd() && oc->oadd()->type() == CDINSTANCE) ||
+                            (oc->odel() && oc->odel()->type() == CDINSTANCE)) {
+                        cur->celldesc()->setInstNumValid(false);
+                        inst_changed = true;
+                        break;
+                    }
+                }
             }
         }
-        else if (a_ok)
-            DSP()->RedisplayArea(&addBB);
-        else if (d_ok)
-            DSP()->RedisplayArea(&delBB);
+        if (inst_changed)
+            DSP()->RedisplayAll(Physical);
+        else {
+            bool a_ok = (addBB.right > addBB.left && addBB.top > addBB.bottom);
+            bool d_ok = (delBB.right > delBB.left && delBB.top > delBB.bottom);
+            if (a_ok && d_ok) {
+                if (addBB.left > delBB.right || delBB.left > addBB.right ||
+                        addBB.bottom > delBB.top || delBB.bottom > addBB.top) {
+
+                    // No overlap, redisplay both areas.
+                    DSP()->RedisplayArea(&delBB);
+                    DSP()->RedisplayArea(&addBB);
+                }
+                else {
+                    // Some overlap, just combine and redisplay.
+                    addBB.add(&delBB);
+                    DSP()->RedisplayArea(&addBB);
+                }
+            }
+            else if (a_ok)
+                DSP()->RedisplayArea(&addBB);
+            else if (d_ok)
+                DSP()->RedisplayArea(&delBB);
+        }
     }
     return (change_made);
 }
@@ -2103,16 +2128,6 @@ cUndoList::do_operation(Oper *curop, bool undo)
             }
         }
 
-        // If the instance list changes, invalidate numbering in the cell.
-        //
-        for (Ochg *oc = cur->obj_list(); oc; oc = oc->next_chg()) {
-            if ((oc->oadd() && oc->oadd()->type() == CDINSTANCE) ||
-                    (oc->odel() && oc->odel()->type() == CDINSTANCE)) {
-                cur->celldesc()->setInstNumValid(false);
-                break;
-            }
-        }
-
         move_hack(cur, true);
 
         // Erase terminals if they might change.
@@ -2347,6 +2362,26 @@ cUndoList::do_operation(Oper *curop, bool undo)
                 tf &= ~CDs_DUALS;
         }
         cur->celldesc()->setFlags(tf);
+
+        // If a physical instance changed and unexpanded instances are
+        // being shown, redisplay everything since the instance name
+        // labels have likely changed.
+        //
+        if (!cur->celldesc()->isElectrical() && cur->celldesc() == CurCell() &&
+                !DSP()->NoInstnameLabels()) {
+            DSPattrib *a = DSP()->MainWdesc()->Attrib();
+            if (a->expand_level(Physical) == 0) {
+                for (Ochg *oc = cur->obj_list(); oc; oc = oc->next_chg()) {
+                    if ((oc->oadd() && oc->oadd()->type() == CDINSTANCE) ||
+                            (oc->odel() && oc->odel()->type() == CDINSTANCE)) {
+                        cur->celldesc()->setInstNumValid(false);
+                        dodisplay_phys = true;
+                        redisplay_phys = full_redisplay;
+                        break;
+                    }
+                }
+            }
+        }
     }
 
     XM()->ShowParameters();

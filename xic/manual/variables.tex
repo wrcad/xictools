@@ -50,10 +50,11 @@ follow.
 \et ProgramRoot & Set to the program's installation directory\\ \hline
 \et TeePrompt & Copy messages to given filename or ``stdout''\\ \hline
 
-% 102817
+% 010918
 \multicolumn{2}{|c|}{\kb General Visual}\\ \hline
 \et MouseWheel & Set mouse wheel rate parameters\\ \hline
 \et ListPageEntries & Maximum entries per page in list pop-ups\\ \hline
+\et NoInstnameLables & Don't use instance names in unexpanded instances\\ \hline
 \et NoLocalImage & Don't compose images locally\\ \hline
 \et NoPixmapStore & Don't use screen backing memory\\ \hline
 \et NoDisplayCache & Don't use multi-object rendering for boxes\\ \hline
@@ -793,6 +794,16 @@ number, a page menu will become visible in the listing panel.  Each
 page will contain at most this number of entries.  Only the entries
 for the currently selected page will be visible.  If this variable is
 not set, the default value is 5000.
+
+% 010918
+\index{NoInstnameLabels variable}
+\item{\et NoInstnameLabels}\\
+{\bf Value:} boolean.\\
+Starting in release 4.3.3, the label used in physical display windows
+for unexpanded cell instances is the instance name, which consists of
+the master cell name followed by a colon separator and a unique
+integer index.  When this variable is set, the label shows the master
+cell name only, the same as in earlier {\Xic} releases.
 
 % 082008
 \index{NoLocalImage variable}

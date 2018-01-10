@@ -214,7 +214,6 @@ cCD::ClearAll(bool clear_tech)
         CDldb()->revertState();
     ClearAttrDB();
     ClearPrptyTab();
-    ClearGroupTab();
     CDmmgr()->collectTrash();
     cdNoElec = false;
     cdCoincErrCnt = 0;

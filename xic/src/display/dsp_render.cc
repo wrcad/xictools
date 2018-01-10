@@ -804,15 +804,6 @@ WindowDesc::redisplay_layer_rc(CDs *sdesc, int hierlev,
                     else
                         state->has_geom = odtmp->intersect(&BBinv, false);
                 }
-
-#ifdef GRP_CMAP_ENABLED
-                if (DSP()->UseGrpCmap() && DSP()->GrpCmap()) {
-                    gp_rgb *rgb = DSP()->GrpCmap()->find(GROUP(odtmp));
-                    int pix;
-                    w_draw->DefineColor(&pix, rgb->red, rgb->green, rgb->blue);
-                    w_draw->SetColor(pix);
-                }
-#endif
                 Display(odtmp);
             }
             if (state->map_color)
@@ -1121,6 +1112,8 @@ WindowDesc::show_unexpanded_instance(const CDc *cdesc)
             *s = 0;
         }
         else if (w_mode == Electrical)
+            strcpy(s, Tstring(cdesc->cellname()));
+        else if (DSP()->NoInstnameLabels())
             strcpy(s, Tstring(cdesc->cellname()));
         else {
             char *inm = cdesc->getPhysInstName();

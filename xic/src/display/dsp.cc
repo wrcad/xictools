@@ -95,31 +95,29 @@ cDisplay::cDisplay()
     d_in_edge_snap_cmd      = false;
     d_no_grid_snap          = false;
     d_no_coarse_only        = false;
-
-#ifdef GRP_CMAP_ENABLED
-    d_grp_cmap              = 0;
-    d_use_grp_cmap          = false;
-#endif
-
     d_show_cnums            = false;
     d_show_invis_marks      = false;
-
     d_no_graphics           = false;
     d_no_redisplay          = false;
     d_slow_mode             = false;
+
     d_doing_hcopy           = false;
     d_no_pixmap_store       = false;
     d_no_local_image        = false;
     d_no_display_cache      = false;
-
     d_use_driver_labels     = false;
     d_number_vertices       = false;
     d_show_terminals        = false;
     d_terminals_visible     = false;
+
     d_contacts_visible      = false;
     d_erase_behind_props    = false;
     d_show_instance_mark    = false;
     d_show_centroid_mark    = false;
+    d_no_instname_labels    = false;
+    d_redisplay_queued      = false;
+    d_transform_overflow    = false;
+    d_initialized           = false;
 
     d_hidden_label_mode     = HLall;
     d_cfv_bloat             = 0;
@@ -133,9 +131,6 @@ cDisplay::cDisplay()
     d_invisible_master_tab  = 0;
     d_min_cell_width        = 0;
     d_empty_cell_width      = 0;
-    d_redisplay_queued      = false;
-    d_transform_overflow    = false;
-    d_initialized           = false;
 
     setupInterface();
     createColorTable();

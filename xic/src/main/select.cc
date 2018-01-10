@@ -253,15 +253,17 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 nusel++;
         }
 
-        // If only instances are in list (instances are listed
-        // last) and there are 3 or more, use a pop-up to control
-        // the selections.
+        // If only physical instances are in list (instances are
+        // listed last) and there are 3 or more, use a pop-up to
+        // control the selections.
         //
-        bool instonly = (list->odesc->type() == CDINSTANCE);
-        if (instonly && (nsel+nusel >= 3)) {
-            XM()->PopUpSelectInstances(list);
-            CDol::destroy(list);
-            return (true);
+        if (!sd->isElectrical()) {
+            bool instonly = (list->odesc->type() == CDINSTANCE);
+            if (instonly && (nsel+nusel >= 3)) {
+                XM()->PopUpSelectInstances(list);
+                CDol::destroy(list);
+                return (true);
+            }
         }
 
         if (iterate_mode && is_pointselect(AOI, 0)) {
@@ -540,7 +542,7 @@ cSelections::selectItems(const CDs *sd, const char *types, const BBox *AOI,
             }
         }
     }
-    if (!nopopup && psel == PSELpoint && c0 &&
+    if (!nopopup && !sd->isElectrical() && c0 &&
             c0->odesc->type() == CDINSTANCE && c0->next && c0->next->next) {
         c0 = XM()->PopUpFilterInstances(c0);
     }

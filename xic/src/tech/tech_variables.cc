@@ -459,6 +459,13 @@ namespace {
     }
 
     bool
+    evNoInstnameLabels(const char*, bool set)
+    {
+        DSP()->SetNoInstnameLabels(set);
+        return (true);
+    }
+
+    bool
     evRoundFlashSides(const char *vstring, bool set)
     {
         if (set) {
@@ -544,6 +551,7 @@ cTech::setupVariables()
     vsetup(VA_BoxLineStyle,         S,  evBoxLinestyle);
     vsetup(VA_GridNoCoarseOnly,     B,  evGridNoCoarseOnly);
     vsetup(VA_GridThreshold,        S,  evGridThreshold);
+    vsetup(VA_NoInstnameLabels,     B,  evNoInstnameLabels);
 
     vsetup(VA_RoundFlashSides,      S,  evRoundFlashSides);
     vsetup(VA_ElecRoundFlashSides,  S,  evElecRoundFlashSides);

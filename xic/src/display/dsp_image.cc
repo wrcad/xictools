@@ -657,14 +657,6 @@ WindowDesc::redisplay_cddb_zimg_rc(CDs *sdesc, int hierlev,
                 if (hierlev > 0 && odtmp->type() == CDLABEL
                         && ((CDla*)odtmp)->no_inst_view())
                     continue;
-#ifdef GRP_CMAP_ENABLED
-                if (DSP()->UseGrpCmap() && DSP()->GrpCmap()) {
-                    gp_rgb *rgb = DSP()->GrpCmap()->find(GROUP(odtmp));
-                    int pix;
-                    w_draw->DefineColor(&pix, rgb->red, rgb->green, rgb->blue);
-                    w_draw->SetColor(pix);
-                }
-#endif
                 Display(odtmp);
             }
         }

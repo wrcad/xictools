@@ -965,8 +965,17 @@ cMain::Info(const CDo *odesc)
     lstr.add(buf);
     if (odesc->type() != CDINSTANCE)
         sprintf(buf, "Group: %d\n", odesc->group());
-    else
-        sprintf(buf, "Index: %d\n", odesc->group());
+    else {
+        CDc *cd = (CDc*)odesc;
+        CDs *prnt = cd->parent();
+        if (prnt) {
+            if (!prnt->isInstNumValid())
+                prnt->numberInstances();
+            sprintf(buf, "Index: %d\n", cd->index());
+            lstr.add(buf);
+            sprintf(buf, "Id:    %d\n", cd->group());
+        }
+    }
     lstr.add(buf);
     if (odesc->prpty_list()) {
         lstr.add("Properties:\n");
