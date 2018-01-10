@@ -267,7 +267,7 @@ cGroupDesc::print_lvs(FILE *fp)
 
     // Print table of group/node associations.
     fprintf(fp, "\nConductor group and electrical node mapping:\n\n");
-    fprintf(fp, "  %-8s%-24s%-24s%-8s\n", "group", "node", "node", "group");
+    fprintf(fp, "  %-7s %-23s %-23s %-8s\n", "group", "node", "node", "group");
     char tbuf[64];
     for (int i = 1; i < psize || i < esize; i++) {
         char gr1[32];
@@ -312,7 +312,7 @@ cGroupDesc::print_lvs(FILE *fp)
         if (*gr1 == 0 && *nname2 == 0 && *nname1 == 0 && *gr2 == 0)
             continue;
 
-        fprintf(fp, "  %-8s%-24s%-24s%-8s\n", gr1, nname2, nname1, gr2);
+        fprintf(fp, "  %-7s %-23s %-23s %-8s\n", gr1, nname2, nname1, gr2);
     }
 
     // Print group names.
@@ -472,7 +472,7 @@ cGroupDesc::print_lvs(FILE *fp)
                 }
                 if (s->dual()) {
                     char *instname = s->dual()->instance_name();
-                    fprintf(fp, " %-24s%s\n",
+                    fprintf(fp, " %-24s %s\n",
                         Tstring(s->dual()->cdesc()->cellname()), instname);
                     delete [] instname;
                 }
