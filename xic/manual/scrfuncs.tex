@@ -12171,7 +12171,7 @@ passed is not a handle to an object list.  If successful, 1 is
 returned, otherwise 0 is returned.
 
 %------------------------------------
-% 010818
+% 011118
 \index{GetInstanceName function}
 \item{(string) \vt GetInstanceName({\it object\_handle\/})}\\
 Note:  prior to 4.2.12, this function returned the name of the
@@ -12195,9 +12195,9 @@ right of the upper left corner of the instance bounding box), and is
 stable and reproducible as long as instance sizes and placement
 locations remain the same.
 
-Internally, names are generated in the following way.  Each device has
-a prefix, as specified in the technology file.  The prefix for
-subcircuits is ``X'', which is defined internally.  The prefixes
+Internally, electrical names are generated in the following way.  Each
+device has a prefix, as specified in the technology file.  The prefix
+for subcircuits is ``X'', which is defined internally.  The prefixes
 follow (or should follow) SPICE conventions.  The database of instance
 placements is scanned in order of the placement location (upper-left
 corner of the instance bounding box) top to bottom, then left to
@@ -12205,12 +12205,12 @@ right.  Each instance encountered is given an index number as a count
 of the same prefix previously encountered in the scan.  The prefix
 followed by the index forms the instance name.  This will identify
 each instance uniquely, and the sequencing is predictable from spatial
-location in the schematic.  For example.  {\vt X1} will be above or
-to the left of {\vt X2}.
+location in the schematic.  For example.  {\vt X1} will be above or to
+the left of {\vt X2}.
 
-Rather than the internal name.  this function will return an assigned
-name, if one has been given using {\vt SetInstanceName} or by setting
-the name property,
+Rather than the internal electrical name.  this function will return
+an assigned name, if one has been given using {\vt SetInstanceName} or
+by setting the name property,
 
 The index number can be obtained as an integer with {\vt
 GetInstanceIdNum}.  See also \newline{\vt GetInstanceAltName} for a
