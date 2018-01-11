@@ -2580,7 +2580,7 @@ Object Management by Handles
     </dl>
     <hr>
 
-    <!-- 010818 -->
+    <!-- 011118 -->
     <a name="GetInstanceName"></a>
     <dl>
     <dt><b>(string) <tt>GetInstanceName</tt>(<i>object_handle</i>)</b>
@@ -2610,22 +2610,23 @@ Object Management by Handles
     sizes and placement locations remain the same.
 
     <p>
-    Internally, names are generated in the following way.  Each device
-    has a prefix, as specified in the technology file.  The prefix for
-    subcircuits is "X", which is defined internally.  The prefixes
-    follow (or should follow) SPICE conventions.  The database of
-    instance placements is scanned in order of the placement location
-    (upper-left corner of the instance bounding box) top to bottom,
-    then left to right.  Each instance encountered is given an index
-    number as a count of the same prefix previously encountered in the
-    scan.  The prefix followed by the index forms the instance name. 
-    This will identify each instance uniquely, and the sequencing is
-    predictable from spatial location in the schematic.  For example. 
-    <tt>X1</tt> will be above or to the left of <tt>X2</tt>.
+    Internally, electrical names are generated in the following way. 
+    Each device has a prefix, as specified in the technology file. 
+    The prefix for subcircuits is "X", which is defined internally. 
+    The prefixes follow (or should follow) SPICE conventions.  The
+    database of instance placements is scanned in order of the
+    placement location (upper-left corner of the instance bounding
+    box) top to bottom, then left to right.  Each instance encountered
+    is given an index number as a count of the same prefix previously
+    encountered in the scan.  The prefix followed by the index forms
+    the instance name.  This will identify each instance uniquely, and
+    the sequencing is predictable from spatial location in the
+    schematic.  For example.  <tt>X1</tt> will be above or to the left
+    of <tt>X2</tt>.
 
     <p>
-    Rather than the internal name.  this function will return an
-    assigned name, if one has been given using
+    Rather than the internal electrical name.  this function will
+    return an assigned name, if one has been given using
     <tt>SetInstanceName</tt> or by setting the name property,
 
     <p>

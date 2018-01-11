@@ -2157,13 +2157,13 @@ Left Mouse Button
 
     <p>
     A special case applies in both point and area selection, when only
-    physical cell instance are selectable, and three or more instances
-    would be selected.  The <b>Select Instances</b> pop-up appears,
-    which provides a listing of the selectable instances, along with
-    colored "yes/no" text indicating the present selected state of
-    each instance.  The state can be toggled by clicking on the
-    colored text.  This is a useful feature for designs containing a
-    large number of overlapping cell instances.  The same pop-up may
+    physical cell instances are selectable, and three or more
+    instances would be selected.  The <b>Select Instances</b> pop-up
+    appears, which provides a listing of the selectable instances,
+    along with colored "yes/no" text indicating the present selected
+    state of each instance.  The state can be toggled by clicking on
+    the colored text.  This is a useful feature for designs containing
+    a large number of overlapping cell instances.  The same pop-up may
     appear in other contexts when instances are being chosen for some
     operation.  In this case, the nomenclature is slightly different
     ("Choose" instead of "Select").  In both cases, the pop-up is

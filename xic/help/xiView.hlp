@@ -204,7 +204,7 @@ Electrical
 !!SEEALSO
 xic:viewmenu
 
-!! 061608
+!! 011118
 !!KEYWORD
 xic:expnd
 !!TITLE
@@ -226,6 +226,21 @@ Expand
     unexpanded state.  If the cell happens to be an array, the
     bounding box in the unexpanded state is shown as a dashed line. 
     Ordinary instances have a solid line bounding box.
+
+    <p>
+    The label shown in unexpanded physical instances is by default the
+    instance name, which consists of the master name followed by a
+    colon separator and an index number.  The index is a 0-based
+    sequence for instances with a particular master.  The index count
+    advances by the size of the array for arrayed instances, leaving
+    room in the sequence for individual elements.  The index is in
+    database order (top to bottom then left to right of the upper left
+    corner of the instance bounding box), and is stable and
+    reproducible as long as instance sizes and placement locations
+    remain the same.  If the boolean <a
+    href="NoInstnameLabels"><b>NoInstnameLabels</b></a> variable is
+    set, the label will display the master name only, which was the
+    behavior in <i>Xic</i> releases prior to 4.3.3.
 
     <p>
     After pressing <b>Expand</b>, the pop-up appears.  The pop-up
