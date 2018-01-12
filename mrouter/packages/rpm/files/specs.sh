@@ -38,6 +38,12 @@ echo
 echo "%dir /usr/local/xictools/mrouter/help"
 echo "%attr(0644, root, root) /usr/local/xictools/mrouter/help/MRouter.hlp"
 echo
+echo "%dir /usr/local/xictools/mrouter/include"
+echo "%attr(0644, root, root) /usr/local/xictools/mrouter/include/lddb.h"
+echo "%attr(0644, root, root) /usr/local/xictools/mrouter/include/ld_vers.h"
+echo "%attr(0644, root, root) /usr/local/xictools/mrouter/include/mrouter.h"
+echo "%attr(0644, root, root) /usr/local/xictools/mrouter/include/mr_vers.h"
+echo
 echo "%dir /usr/local/xictools/mrouter/doc"
 docs=`$files doc`
 for a in $docs; do 

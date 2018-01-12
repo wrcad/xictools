@@ -1,6 +1,12 @@
-$Id: README,v 1.6 2017/01/24 00:11:23 stevew Exp $
 
 This directory provides some miscellaneous examples.
+
+DON'T BUILD/RUN EXAMPLES HERE (in the MRouter installation area) as
+you probably don't have the required permissions and you don't want to
+create files here anyway.
+
+Instread, copy this directory to your personal work space, and
+build/run examples from there.
 
 main-plg.cc, Makefile, Makefile.in
 
@@ -28,19 +34,12 @@ map9v3.rsc
   mrouter/test directory, however that uses the config file approach
   inherited from Qrouter.
 
-  DON'T RUN THIS HERE (in the MRouter installation area) as you
-  probably don't have the required permissions and you don't want to
-  create files here anyway.
-
-  Instead, create a new directory in your work space, and copy
-  map9v3.rsc to this new directory.
-
   If the MRouter in not installed in the standard place
-  (/usr/local/mrouter), you will need to edit the map9v3.rsc file to
-  correct the path given on the second line.
+  (/usr/local/xictools/mrouter), you will need to edit the map9v3.rsc
+  file to correct the path given on the second line.
 
-  From your directory, and assuming that the "mrouter" program is in
-  your search path, you can give the command
+  Assuming that the "mrouter" program is in your search path, you can
+  give the command
 
     mrouter < map9v3.rsc
 
@@ -65,8 +64,8 @@ osu35/
   350nm open-source CMOS library, which are used by the examples.  For
   the examples to work, these files must be found, meaning that the
   MRouter must be installed in the standard location
-  (/usr/local/mrouter) or the scripts must be edited to correct the
-  path.
+  (/usr/local/xictools/mrouter) or the scripts must be edited to
+  correct the path.
 
 xic/
 

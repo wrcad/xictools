@@ -20,10 +20,10 @@ INCLUDE = -I../../include -I$(BASE)/include
 
 HFILES =
 CCFILES = \
-  funcs_lexpr.cc funcs_math.cc python_if.cc si_daemon.cc si_debug.cc \
-  si_handle.cc si_interp.cc si_lexpr.cc si_lisp.cc si_lspec.cc \
-  si_macro.cc si_parsenode.cc si_parser.cc si_spt.cc si_support.cc \
-  si_variable.cc tcltk_if.cc
+  funcs_lexpr.cc funcs_math.cc python_if.cc si_daemon.cc si_handle.cc \
+  si_interp.cc si_lexpr.cc si_lisp.cc si_lspec.cc si_macro.cc \
+  si_parsenode.cc si_parser.cc si_spt.cc si_support.cc si_variable.cc \
+  tcltk_if.cc
 EXPOBJS = $(CCFILES_EXPORT:.cc=.o)
 
 CCOBJS = $(CCFILES:.cc=.o)

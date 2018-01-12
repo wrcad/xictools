@@ -1,5 +1,5 @@
 set verbose 1
-read lef /usr/local/mrouter/examples/osu35/osu035_stdcells.lef
+read lef /usr/local/xictools/mrouter/examples/osu35/osu035_stdcells.lef
 set via_stack 2
 set vdd vdd
 set gnd gnd

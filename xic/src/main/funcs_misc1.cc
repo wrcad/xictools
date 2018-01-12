@@ -1889,8 +1889,8 @@ misc1_funcs::IFcellBB(Variable *res, Variable *args, void*)
 
 // (stringlist handle) ListSubcells(cellname, depth, array, incl_top)
 //
-// This function returns a handle to a sorted list of subcell names
-// found under the named cell, to the given depth, and only if
+// This function returns a handle to a sorted list of subcell master
+// names found under the named cell, to the given depth, and only if
 // instantiated so as to overlap a rectangular area (if given).  These
 // apply to the current mode, electrical or physical.  If cellname is
 // null or empty, the current cell is used.  The depth is the search

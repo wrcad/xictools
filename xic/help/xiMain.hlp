@@ -1995,7 +1995,7 @@ Pointing Device
 
 !!REDIRECT selection    button1#selection
 
-!! 092717
+!! 010818
 !!KEYWORD
 button1
 !!TITLE
@@ -2154,6 +2154,21 @@ Left Mouse Button
     select is ghost drawn.  In area select, qualifying instances are
     always selected or deselected, whether or not other geometry is
     present.
+
+    <p>
+    A special case applies in both point and area selection, when only
+    physical cell instances are selectable, and three or more
+    instances would be selected.  The <b>Select Instances</b> pop-up
+    appears, which provides a listing of the selectable instances,
+    along with colored "yes/no" text indicating the present selected
+    state of each instance.  The state can be toggled by clicking on
+    the colored text.  This is a useful feature for designs containing
+    a large number of overlapping cell instances.  The same pop-up may
+    appear in other contexts when instances are being chosen for some
+    operation.  In this case, the nomenclature is slightly different
+    ("Choose" instead of "Select").  In both cases, the pop-up is
+    modal, meaning that most interface objects other than the pop-up
+    are locked while the pop-up is visible.
 
     <p>
     In either point or area select, if the instance bounding box is

@@ -44,9 +44,9 @@ CCFILES = \
   gtkmodif.cc gtknodmp.cc gtkoadefs.cc gtkoalibs.cc gtkoasis.cc \
   gtkoatech.cc gtkparam.cc gtkpcctrl.cc gtkpcprms.cc gtkpfilt.cc \
   gtkplace.cc gtkprpcedit.cc gtkprpedit.cc gtkprpinfo.cc gtkptedit.cc \
-  gtkptext.cc gtkrule.cc gtksel.cc gtksim.cc gtkspif.cc gtkstab.cc \
-  gtktech.cc gtktedit.cc gtktree.cc gtkvia.cc gtkwndc.cc gtkxdraw.cc \
-  gtkxform.cc gtkzoom.cc
+  gtkptext.cc gtkrule.cc gtksel.cc gtkselinst.cc gtksim.cc gtkspif.cc \
+  gtkstab.cc gtktech.cc gtktedit.cc gtktree.cc gtkvia.cc gtkwndc.cc \
+  gtkxdraw.cc gtkxform.cc gtkzoom.cc
 CCOBJS = $(CCFILES:.cc=.o) $(RESOURCE)
 
 $(LIB_TARGET): $(CCOBJS)

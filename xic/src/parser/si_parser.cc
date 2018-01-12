@@ -1508,6 +1508,7 @@ SIparser::grab_string(const char **pstr)
     char *e = str;
 
     inq = false;
+    bool bs = false;
     s = *pstr;
     while (*s) {
         if (*s == '"') {
@@ -1517,9 +1518,9 @@ SIparser::grab_string(const char **pstr)
         else if (!inq && (strchr(specials, *s) || (*s == ':' && spTriNest)))
             break;
 
-        if (inq && s != *pstr && s[-1] == '\\') {
+        if (inq && bs) {
+            bs = false;
             if (*s == '"') { e--; *e++ = '"'; s++; continue; }
-
             if (*s == 'a') { e--; *e++ = '\a'; s++; continue; }
             if (*s == 'b') { e--; *e++ = '\b'; s++; continue; }
             if (*s == 'f') { e--; *e++ = '\f'; s++; continue; }
@@ -1528,7 +1529,7 @@ SIparser::grab_string(const char **pstr)
             if (*s == 't') { e--; *e++ = '\t'; s++; continue; }
             if (*s == 'v') { e--; *e++ = '\v'; s++; continue; }
             if (*s == '\'') { e--; *e++ = '\''; s++; continue; }
-            if (*s == '\\') { e--; *e++ = '\\'; s++; continue; }
+            if (*s == '\\') {                   s++; continue; }
             if (isdigit(*s)) {
                 const char *stmp = s;
                 int i = *s - '0';
@@ -1551,6 +1552,7 @@ SIparser::grab_string(const char **pstr)
                 s = stmp;
             }
         }
+        bs = (*s == '\\');
         *e++ = *s++;
     }
     *e = 0;

@@ -164,6 +164,7 @@ sEC::sEC(stringlist *l)
     ec_label = gtk_label_new("");
     gtk_label_set_justify(GTK_LABEL(ec_label), GTK_JUSTIFY_LEFT);
     gtk_misc_set_alignment(GTK_MISC(ec_label), 0, 0.5);
+    gtk_misc_set_padding(GTK_MISC(ec_label), 4, 2);
     gtk_widget_show(ec_label);
     gtk_container_add(GTK_CONTAINER(frame), ec_label);
 

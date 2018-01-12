@@ -70,12 +70,12 @@ namespace {
             void message() { PL()->ShowPrompt(pmsg); }
 
         private:
-            CDol *expand(BBox*, CDs*, WindowDesc*, int);
+            CDol *expand(BBox*, CDs*, WindowDesc*, int, bool*);
             CDol *unexpand(BBox*, CDs*, WindowDesc*, int);
             Blist *find_blist(CDs*, WindowDesc*, CDc*, int);
             void redisplay(WindowDesc*, CDol*);
 
-            static void process_list(CDol*, BBox*, WindowDesc*, bool);
+            static void process_list(CDol*, BBox*, WindowDesc*, bool, bool);
             static bool exp_cb(const char*, void*);
 
             GRobject Caller;
@@ -164,11 +164,12 @@ PeekState::b1up()
         CDol *sl;
         if (EV()->Cursor().get_upstate() & GR_SHIFT_MASK) {
             sl = unexpand(&AOI, cursd, wdesc, 0);
-            process_list(sl, &AOI, wdesc, false);
+            process_list(sl, &AOI, wdesc, false, false);
         }
         else {
-            sl = expand(&AOI, cursd, wdesc, 0);
-            process_list(sl, &AOI, wdesc, true);
+            bool filtered = false;
+            sl = expand(&AOI, cursd, wdesc, 0, &filtered);
+            process_list(sl, &AOI, wdesc, true, filtered);
         }
         redisplay(wdesc, sl);
     }
@@ -244,14 +245,16 @@ PeekState::esc()
 
 // Set the expand flag of any unexpanded cells above the hierarchy level
 // which overlap the BB.  Return a list of the odescs with flag changed.
+// Set *pfilteresd true if the instance filter pop-up is shown.
 //
 CDol *
-PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev)
+PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev,
+    bool *pfiltered)
 {
     if (Stack.TFull())
         return (0);
 
-    CDol *se = 0, *s0 = 0;
+    CDol *ce = 0, *c0 = 0;
     CDg gdesc;
     Stack.TInitGen(sdesc, CellLayer(), BB, &gdesc);
     CDc *cdesc;
@@ -259,6 +262,24 @@ PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev)
         CDs *msdesc = cdesc->masterCell();
         if (!msdesc || msdesc->isDevice())
             continue;
+        CDol *cl = new CDol(cdesc, 0);
+        if (!c0)
+            c0 = ce = cl;
+        else {
+            ce->next = cl;
+            ce = ce->next;
+        }
+    }
+    if (c0 && c0->next && c0->next->next) {
+        c0 = XM()->PopUpFilterInstances(c0);
+        if (pfiltered)
+            *pfiltered = true;
+    }
+
+    CDol *se = 0, *s0 = 0;
+    for (CDol *cl = c0; cl; cl = cl->next) {
+        cdesc = (CDc*)cl->odesc;
+
         if (cdesc->has_flag(wdesc->DisplFlags()) ||
                 hierlev < wdesc->Attrib()->expand_level(wdesc->Mode())) {
 
@@ -272,13 +293,15 @@ PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev)
                 if (x2 >= x1 + 2)
                     x2 = ++x1;
 
+                CDs *msdesc = cdesc->masterCell();
                 CDap ap(cdesc);
                 int tx, ty;
                 Stack.TGetTrans(&tx, &ty);
                 xyg_t xyg(x1, x2, y1, y2);
                 do {
                     Stack.TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
-                    CDol *sl = expand(BB, msdesc, wdesc, hierlev + 1);
+                    CDol *sl =
+                        expand(BB, msdesc, wdesc, hierlev + 1, pfiltered);
                     if (sl) {
                         if (!s0)
                             s0 = se = sl;
@@ -303,6 +326,7 @@ PeekState::expand(BBox *BB, CDs* sdesc, WindowDesc *wdesc, int hierlev)
             }
         }
     }
+    CDol::destroy(c0);
     return (s0);
 }
 
@@ -471,16 +495,20 @@ PeekState::redisplay(WindowDesc *wdesc, CDol *sl)
 
 
 // Static function.
-// Take care of thinning out unwanted objects as well as setting
-// the flags.  Arg exp is true when expanding.
+// Take care of thinning out unwanted objects as well as setting the
+// flags.  Arg exp is true when expanding.  Arg filtered is true if
+// the instance filtering pop-up was shown.
 //
 void
-PeekState::process_list(CDol *sl, BBox *BB, WindowDesc *wdesc, bool exp)
+PeekState::process_list(CDol *sl, BBox *BB, WindowDesc *wdesc, bool exp,
+    bool filtered)
 {
     if (!sl)
         return;
-    if (BB->width() <= 10 || BB->height() <= 10) {
-        // "point" select, keep only smallest cell in list
+    if (BB->width() <= 10 && BB->height() <= 10 && !filtered) {
+        // A "point" select that was not filtered, keep only the smallest
+        // cell instance in list.
+
         double area =
             ((double)sl->odesc->oBB().width())*sl->odesc->oBB().height();
         CDol *sm = sl;

@@ -57,9 +57,7 @@
 #define VA_BoxLineStyle         "BoxLinestyle"
 #define VA_GridNoCoarseOnly     "GridNoCoarseOnly"
 #define VA_GridThreshold        "GridTrheshold"
-
-// Enable the group colormap feature (Praesagus).
-// #define GRP_CMAP_ENABLED
+#define VA_NoInstnameLabels     "NoInstnameLabels"
 
 // In a sub-edit (Push command), the context colors are darkened
 // to the percentage below.
@@ -182,71 +180,6 @@ struct sRuler
     sRuler *next;
 };
 
-
-#ifdef GRP_CMAP_ENABLED
-
-// Optionally, the color used to render an object can be determined by
-// the group number, which will index a color table.
-
-// Max number of colors.
-#define GP_CMAP_SIZE 256
-
-struct gp_rgb
-{
-    gp_rgb() { red = 0; green = 0; blue = 0; alpha = 0; }
-    gp_rgb(int r, int g, int b)
-        { red = r; green = g; blue = b; alpha = 0; }
-
-    unsigned char red;
-    unsigned char green;
-    unsigned char blue;
-    unsigned char alpha;  // not used
-};
-
-struct gp_ctab
-{
-    void set(int group, gp_rgb rgb)
-        {
-            if (group < 0 || group >= GP_CMAP_SIZE)
-                return;
-            cmap[group] = rgb;
-        }
-
-    gp_rgb *find(int group)
-        {
-            if (group < 0)
-                group = 0;
-            else if (group >= GP_CMAP_SIZE)
-                group %= GP_CMAP_SIZE;
-            return (cmap + group);
-        }
-
-    void read_file(FILE *fp)
-        {
-            char buf[80];
-            while (fgets(buf, 80, fp) != 0) {
-                int grp, r, g, b;
-                if (sscanf(buf, "%d %d %d %d", &grp, &r, &g, &b) == 4)
-                    set(grp, gp_rgb(r, g, b));
-            }
-        }
-
-
-    void write_file(FILE *fp)
-        {
-            for (int i = 0; i < GP_CMAP_SIZE; i++) {
-                if (cmap[i].red || cmap[i].green || cmap[i].blue)
-                    fprintf(fp, "%4d %4d %4d %4d\n", i, cmap[i].red,
-                        cmap[i].green, cmap[i].blue);
-            }
-        }
-
-private:
-    gp_rgb cmap[GP_CMAP_SIZE];
-};
-
-#endif
-
 // WindowDesc source database type
 //  WDcddb     Cells from CD (normal mode)
 //  WDchd      Context struct display
@@ -344,7 +277,7 @@ public:
         int, int);
     void EraseMarks(int);
     void ClearWindowMarks();
-    int AddUserMark(hlType, ...);
+    int AddUserMark(int, ...);
     bool RemoveUserMark(int);
     bool RemoveUserMarkAt(const BBox*);
     void ClearUserMarks(const CDs*);
@@ -494,25 +427,17 @@ public:
     void SetNoGridSnapping(bool b)          { d_no_grid_snap = b; }
     bool GridNoCoarseOnly()                 { return (d_no_coarse_only); }
     void SetGridNoCoarseOnly(bool b)        { d_no_coarse_only = b; }
-
-#ifdef GRP_CMAP_ENABLED
-    gp_ctab *GrpCmap()                      { return (d_grp_cmap); }
-    void SetGrpCmap(gp_ctab *c)             { d_grp_cmap = c; }
-    bool UseGrpCmap()                       { return (d_use_grp_cmap); }
-    void SetUseGrpCmap(bool b)              { d_use_grp_cmap = b; }
-#endif
-
     bool ShowCndrNumbers()                  { return (d_show_cnums); }
     void SetShowCndrNumbers(bool b)         { d_show_cnums = b; }
     bool ShowInvisMarks()                   { return (d_show_invis_marks); }
     void SetShowInvisMarks(bool b)          { d_show_invis_marks = b; }
-
     bool NoGraphics()                       { return (d_no_graphics); }
     void SetNoGraphics(bool b)              { d_no_graphics = b; }
     bool NoRedisplay()                      { return (d_no_redisplay); }
     void SetNoRedisplay(bool b)             { d_no_redisplay = b; }
     bool SlowMode()                         { return (d_slow_mode); }
     void SetSlowMode(bool b)                { d_slow_mode = b; }
+
     bool DoingHcopy()                       { return (d_doing_hcopy); }
     void SetDoingHcopy(bool b)              { d_doing_hcopy = b; }
     bool NoPixmapStore()                    { return (d_no_pixmap_store); }
@@ -521,7 +446,6 @@ public:
     void SetNoLocalImage(bool b)            { d_no_local_image = b; }
     bool NoDisplayCache()                   { return (d_no_display_cache); }
     void SetNoDisplayCache(bool b)          { d_no_display_cache = b; }
-
     bool UseDriverLabels()                  { return (d_use_driver_labels); }
     void SetUseDriverLabels(bool b)         { d_use_driver_labels = b; }
     bool NumberVertices()                   { return (d_number_vertices); }
@@ -530,6 +454,7 @@ public:
     void SetShowTerminals(bool b)           { d_show_terminals = b; }
     bool TerminalsVisible()                 { return (d_terminals_visible); }
     void SetTerminalsVisible(bool b)        { d_terminals_visible = b; }
+
     bool ContactsVisible()                  { return (d_contacts_visible); }
     void SetContactsVisible(bool b)         { d_contacts_visible = b; }
     bool EraseBehindProps()                 { return (d_erase_behind_props); }
@@ -538,6 +463,8 @@ public:
     void SetShowInstanceOriginMark(bool b)  { d_show_instance_mark = b; }
     bool ShowObjectCentroidMark()           { return (d_show_centroid_mark); }
     void SetShowObjectCentroidMark(bool b)  { d_show_centroid_mark = b; }
+    bool NoInstnameLabels()                 { return (d_no_instname_labels); }
+    void SetNoInstnameLabels(bool b)        { d_no_instname_labels = b; }
 
     int ShowingNode()                       { return (d_showing_node); }
 
@@ -608,31 +535,29 @@ private:
     bool d_in_edge_snap_cmd;    // Set in commands that use edge snapping.
     bool d_no_grid_snap;        // Inhibit snapping to grid.
     bool d_no_coarse_only;      // Don't show coarse grid without fine
-
-#ifdef GRP_CMAP_ENABLED
-    gp_ctab *d_grp_cmap;        // Color map for groups.
-    bool d_use_grp_cmap;        // Enable use of group colors.
-#endif
-
     bool d_show_cnums;          // Show conductor numbers.
     bool d_show_invis_marks;    // Show invisible marks.
-
     bool d_no_graphics;         // No graphics support.
     bool d_no_redisplay;        // Suppress redraw.
     bool d_slow_mode;           // Slow redraw enable.
+
     bool d_doing_hcopy;         // In hard copy mode.
     bool d_no_pixmap_store;     // Don't use backing pixmap.
     bool d_no_local_image;      // Don't use local image.
     bool d_no_display_cache;    // Don't use display cache.
-
     bool d_use_driver_labels;   // Use hardcopy driver text for labels.
     bool d_number_vertices;     // Display polygon vertex numbers
     bool d_show_terminals;      // Show terminal points.
     bool d_terminals_visible;   // Terminals are visible.
+
     bool d_contacts_visible;    // Contacts are visible.
     bool d_erase_behind_props;  // Erase behind prysical property text.
     bool d_show_instance_mark;  // Show instance origin marks when selected.
     bool d_show_centroid_mark;  // Show object centroid marks when selected.
+    bool d_no_instname_labels;  // Use master name not instance name on screen.
+    bool d_redisplay_queued;    // Internal flag.
+    bool d_transform_overflow;  // Transform stack overflow.
+    bool d_initialized;         // Initialize() called.
 
     HLmode d_hidden_label_mode; // Scope allowed for hidden labels.
     int d_cfv_bloat;            // Space around "center full view".
@@ -646,9 +571,6 @@ private:
     SymTab *d_invisible_master_tab;
     int d_min_cell_width;       // Size threshold for subcell display.
     int d_empty_cell_width;     // Effective size for empty cell.
-    bool d_redisplay_queued;
-    bool d_transform_overflow;
-    bool d_initialized;
 
     static cDisplay *instancePtr;
 };

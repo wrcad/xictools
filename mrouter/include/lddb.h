@@ -48,7 +48,13 @@
 #define LDDB_H
 
 #include "ld_vers.h"
-#include "miscutil/lstring.h"
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <ctype.h>
+#include <stdlib.h>
+
+struct stringlist;
 
 //
 // LEF/DEF Database.
@@ -963,7 +969,11 @@ struct dbLayerId
 
     void set_layername(const char *nm)
         {
-            char *t = lstring::copy(nm);
+            char *t = 0;
+            if (nm) {
+                t = new char[strlen(nm) + 1];
+                strcpy(t, nm);
+            }
             delete [] lname;
             lname = t;
         }

@@ -72,6 +72,7 @@
 #define CDs_PCKEEP          0x8000000
 #define CDs_STDVIA          0x10000000
 #define CDs_ARCTOP          0x20000000
+#define CDs_INSTNUM         0x40000000
 
 
 // flags:
@@ -192,6 +193,11 @@
 //   Physical or Electrical
 //     Set if the cell is top-level and was read from an archive
 //     file and it was the only top-level cell in the file.
+//
+// CDs_INSTNUM
+//   Physical
+//     Set if instance numbering is valid (numberInstances called),
+//     invalidated by change to instance database.
 
 // The name property identifies the type of cell.  The type is
 // returned by CDs::elecCellType().  These are:
@@ -475,6 +481,10 @@ struct CDs : public CDdb
     bool isArchiveTopLevel() const      { return (sStatus & CDs_ARCTOP); }
     void setArchiveTopLevel(bool b)
         { if (b) sStatus |= CDs_ARCTOP; else sStatus &= ~CDs_ARCTOP; }
+
+    bool isInstNumValid() const         { return (sStatus & CDs_INSTNUM); }
+    void setInstNumValid(bool b)
+        { if (b) sStatus |= CDs_INSTNUM; else sStatus &= ~CDs_INSTNUM; }
 
     const BBox *BB() const              { return (&sBB); }
     void setBB(const BBox *tBB)         { sBB = *tBB; }
@@ -937,6 +947,7 @@ struct CDs : public CDdb
     unsigned int checkTerminals(CDp_snode*** = 0);
     void checkBterms();
     bool unlink(CDo*, int);
+    void numberInstances();
     CDc *findInstance(const char*);
     void addMissingInstances();
     bool hasSubcells() const;

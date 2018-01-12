@@ -29,6 +29,8 @@ Source: "..\root\usr\local\xictools\mrouter\lib\libmrouter.dll"; DestDir: "{app}
 
 Source: "..\root\usr\local\xictools\mrouter\help\MRouter.hlp"; DestDir: "{app}\xictools\mrouter\help"
 
+Source: "..\root\usr\local\xictools\mrouter\include\*"; DestDir: "{app}\xictools\mrouter\include"
+
 Source: "..\root\usr\local\xictools\mrouter\doc\*"; DestDir: "{app}\xictools\mrouter\doc"
 
 Source: "..\root\usr\local\xictools\mrouter\examples\*"; DestDir: "{app}\xictools\mrouter\examples"

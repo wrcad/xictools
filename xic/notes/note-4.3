@@ -83,7 +83,7 @@ The Color Selection panel was changed and updated to allow setting
 opposite-mode colors.  Needs new screen shot.
 
 New environment variable XT_GUI_COMPRESS.  When set, don't allow space
-around button contents.  Such space can cuase side menu button images to
+around button contents.  Such space can cause side menu button images to
 be truncated on low-res displays.
 
 The !dumpcds command will now output a GDSII layer mapping file in
@@ -105,7 +105,7 @@ expression.
 
 ToDo: std vias should be handled transparently in all CHD operations.  Vias
 are ignored in display mode, compare mode (probably).
-Should be DONE, perhaps a bit more checking needed.
+DONE, perhaps a bit more checking needed.
 
 Ctrl-click on selected standard via instance now pops up the standard
 via parameter setting panel, allowing instance to be changed.  This
@@ -160,3 +160,65 @@ InstallCmdFormat
 
 --- release 4.3.2
 
+Fixed seg fault in fio_library.cc when open_cell has null cbin.
+
+FIXED: library references weren't being followed through CHD, e.g.,
+expanded cells were blank in display mode.
+
+Selection changes:  A new pop-up applies when there are three or more
+cell instances potentially in a selection operation (point or area)
+and no selectable geometry.  The Select Instances panel produces a
+list of instances with a clickable yes/no to toggle selected status of
+each listed instance.  When the selection mechanism is used to choose
+instances for some other purpose, the same pop-up, laabelled "Choose
+Instances" appears.  The pop-up is modal in either case, meaning all
+but the pop-up is locked out while the pop-up is visible.
+
+Fixed! Info command leaving dead object copies in the selection list,
+instability results.
+
+Fixed: Script parser, parse of string constants was not expanding
+backslash escapes correctly, a\\b would be a\<backspace> instead
+of a\b.
+
+Fixed: Logo script function ignored LogoPixelSize variable.
+
+Fixed:  Logo creation, no more caching the width/height of xpm data. 
+This causes trouble if the user reuses the same xpm file name but
+changes the content.
+
+New system to generate and track instance names in physical mode. 
+Each cell instance has a name consisting of the master name, colon
+separator, and a 0-based index number in database order.  The index
+number is increased by the size of the array when numbering array
+instances, to leave space for indexing individual components.  The
+instance name is used in the Select/Choose Instances panel, and in the
+label of unexpanded physical instances in the drawing windows, and in
+the extraction system.  Instance numbers are regenerated when needed,
+after a modification which changes the instance list of a cell.
+They are stable and reproducible as long as the containing cell and
+its hierarchy are unmodified.
+
+In the Xiv feature set, pressing Esc twice now deselects all, same as
+in Xic.
+
+Script functions updated:
+GetInstanceName()  (support physical instance names)
+SetInstanceName()  (descr change)
+GetInstanceIdNum() (check sequence validity, descr updated)
+GetInstanceAltId() (check sequence validity, return index(). descr updated)
+ListSubcells()     (descr change)
+
+New boolean variable NoInstnameLabels
+When set, unexpanded instances in physical drawing windows will use master
+name (as before) instead of instance name.
+
+--- release 4.3.3
+
+ToDo:  optionally retain standard vias in netext files.
+
+ToDo:  preserve or create netname labels in netext files.  Presently,
+labels are completely ignored in netext.  Add pin objects, or add
+labels somehow?  Net cells have a "netname" property?
+Function to iterate thru nets of netext file, and get net names from
+extraction database?

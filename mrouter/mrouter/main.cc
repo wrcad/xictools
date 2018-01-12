@@ -112,9 +112,9 @@ main(int argc, char *argv[])
     cLDDBif *db = cLDDBif::newLDDB();
     cMRif *mr = cMRif::newMR(db);
 
-    const char *configfile = 0;
-    const char *infofile = 0;
-    const char *design_name = 0;
+    char *configfile = 0;
+    char *infofile = 0;
+    char *design_name = 0;
     int iscale = 1;
 
     if (argc == 2 && !strcmp(argv[1], "--v")) {
@@ -154,13 +154,15 @@ main(int argc, char *argv[])
 
             switch (opt) {
             case 'c':
-                configfile = lstring::copy(arg);
+                configfile = new char[strlen(arg)+1];
+                strcpy(configfile, arg);
                 break;
             case 'v':
                 db->setVerbose(atoi(arg));
                 break;
             case 'i':
-                infofile = lstring::copy(arg);
+                infofile = new char[strlen(arg)+1];
+                strcpy(infofile, arg);
                 break;
             case 'p':
                 db->addGlobal(arg);
@@ -186,7 +188,8 @@ main(int argc, char *argv[])
                 mr->setKeepTrying(atoi(arg));
                 break;
             case 'q':
-                design_name = lstring::copy(arg);
+                design_name = new char[strlen(arg)+1];
+                strcpy(design_name, arg);
                 break;
             case 'd':
                 db->setDebug(strtol(arg, 0, 0));

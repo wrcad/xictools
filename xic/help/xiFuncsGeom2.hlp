@@ -1414,7 +1414,7 @@ Other Object Management Functions
     </dl>
     <hr>
 
-    <!-- 100408 -->
+    <!-- 121617 -->
     <a name="Logo"></a>
     <dl>
     <dt><b>(int) <tt>Logo</tt>(<i>string</i>, <i>x</i>, <i>y</i>
@@ -1454,6 +1454,7 @@ Other Object Management Functions
      <a href="LogoPathWidth"><b>LogoPathWidth</b></a><br>
      <a href="LogoAltFont"><b>LogoAltFont</b></a><br>
      <a href="LogoPrettyFont"><b>LogoPrettyFont</b></a><br>
+     <a href="LogoPixelSize"><b>LogoPixelSize</b></a><br>
      <a href="LogoToFile"><b>LogoToFile</b></a>
     </tt></blockquote>
 

@@ -2987,7 +2987,7 @@ cScedConnect::bit_to_inst(CDp_nodeEx *pcn1, const CDp_range *pr1,
                 ScedErrLog.add_err(
                     "can't connect %s and %s/%s, instances have\n"
                     "different vector widths %d and %d.",
-                    tn1, cdesc2->getBaseName(), tn2, iw1, iw2);
+                    tn1, cdesc2->getElecInstBaseName(), tn2, iw1, iw2);
                 delete [] tn1;
                 delete [] tn2;
                 return;
@@ -3334,7 +3334,8 @@ cScedConnect::inst_to_inst(const CDc *cdesc1, const CDp_bcnode *pbcn1,
                 "can't connect %s/%s and %s/%s, instances have\n"
                 "vector widths %d and %d, connector widths are %d and %d,\n"
                 "these must match.",
-                cdesc1->getBaseName(), tn1, cdesc2->getBaseName(), tn2,
+                cdesc1->getElecInstBaseName(), tn1,
+                cdesc2->getElecInstBaseName(), tn2,
                 iw1, iw2, cw1, cw2);
             delete [] tn1;
             delete [] tn2;
@@ -3390,7 +3391,8 @@ cScedConnect::inst_to_inst(const CDc *cdesc1, const CDp_bcnode *pbcn1,
             "can't connect %s/%s and %s/%s, instances have\n"
             "vector widths %d and 1, connector widths are %d and %d,\n"
             "scalar width must equal connector or total width.",
-            cdesc1->getBaseName(), tn1, cdesc2->getBaseName(), tn2,
+            cdesc1->getElecInstBaseName(), tn1,
+            cdesc2->getElecInstBaseName(), tn2,
             iw, cw, bw);
         delete [] tn1;
         delete [] tn2;
@@ -3503,7 +3505,7 @@ cScedConnect::inst_to_named(const CDc *cdesc, const CDp_bcnode *pbcn1,
                 "can't connect %s/%s and %s, instances have\n"
                 "vector widths %d and 1, connector widths are %d and %d,\n"
                 "scalar width must equal connector or total width.",
-                cdesc->getBaseName(), tn1, tn2, iw, cw, bw);
+                cdesc->getElecInstBaseName(), tn1, tn2, iw, cw, bw);
             delete [] tn1;
             delete [] tn2;
             return;
@@ -3608,7 +3610,7 @@ cScedConnect::inst_to_cell(const CDc *cdesc, const CDp_bcnode *pbcn1,
                 "can't connect %s/%s and cell %s, instance has\n"
                 "vector width %d, connector widths are %d and %d,\n"
                 "scalar width must equal connector or total width.",
-                cdesc->getBaseName(), tn1, tn2, iw, cw, bw);
+                cdesc->getElecInstBaseName(), tn1, tn2, iw, cw, bw);
             delete [] tn1;
             delete [] tn2;
             return;

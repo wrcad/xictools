@@ -685,8 +685,10 @@ public:
     void setMaxBlinkingObjects(unsigned int i)
                                     { blink_thresh = i; }
 
-    bool selection(const CDs*, const char*, const BBox*, bool = false);
-    CDol *selectItems(const CDs*, const char*, const BBox*, PSELmode);
+    bool selection(const CDs*, const char*, const BBox*, bool = false,
+        CDol* = 0);
+    CDol *selectItems(const CDs*, const char*, const BBox*, PSELmode,
+        bool = false);
     CDol *filter(const CDs*, CDol*, const BBox*, bool);
     CDol *listQueue(const CDs*, const char* = 0, bool = true);
     void show(WindowDesc*);

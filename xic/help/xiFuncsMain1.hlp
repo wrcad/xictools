@@ -1232,16 +1232,16 @@ Cell Info
     </dl>
     <hr>
 
-    <!-- 020411 -->
+    <!-- 010818 -->
     <a name="ListSubcells"></a>
     <dl>
     <dt><b>(stringlist_handle) <tt>ListSubcells</tt>(<i>cellname</i>,
       <i>depth</i>, <i>array</i>, <i>incl_top</i>)</b>
     <dd><br>
-    This function returns a handle to a sorted list of subcell names
-    found under the named cell, to the given depth, and only if
-    instantiated so as to overlap a rectangular area (if given).  These
-    apply to the current mode, electrical or physical.  If
+    This function returns a handle to a sorted list of subcell master
+    names found under the named cell, to the given depth, and only if
+    instantiated so as to overlap a rectangular area (if given). 
+    These apply to the current mode, electrical or physical.  If
     <i>cellname</i> is null or empty, the current cell is used.  The
     <i>depth</i> is the search depth, which can be an integer which
     sets the maximum depth to search (0 means search <i>cellname</i>

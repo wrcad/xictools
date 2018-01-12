@@ -1,4 +1,4 @@
-# $Id;$
+# $Id:$
 
 # This script reads the standard via descriptions from a file named
 # "stdvias" into the Xic technology database.  The stdvias file, found

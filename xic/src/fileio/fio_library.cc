@@ -729,6 +729,9 @@ sLib::open_cell(sLib *thislib, const char *libname, const char *name,
     sLibRef *libref;
     sLib *lib = lookup(thislib, libname, name, type, &libref);
     if (lib) {
+        CDcbin cbtmp;
+        if (!cbin)
+            cbin = &cbtmp;
         if ((type & LIBnativeOnly) || !libref->dir()) {
             // inline cell
             oiret = FIO()->OpenNative(name, cbin, 1.0);

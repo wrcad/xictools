@@ -1357,23 +1357,23 @@ hyEnt::get_devname() const
         for (hyParent *p = hyPrnt; p; p = p->next())
             stack[++sp] = p;
 
-        lstr.add(((CDc*)hyOdesc)->getBaseName());
+        lstr.add(((CDc*)hyOdesc)->getElecInstBaseName());
         if (sp >= 0) {
             for ( ; sp >= 0; sp--) {
                 lstr.add_c(CD()->GetSubcCatchar());
                 lstr.add_c('x');
-                lstr.add(stack[sp]->cdesc()->getBaseName() + 1);
+                lstr.add(stack[sp]->cdesc()->getElecInstBaseName() + 1);
             }
         }
     }
     else {
-        const char *nbuf = ((CDc*)hyOdesc)->getBaseName();
+        const char *nbuf = ((CDc*)hyOdesc)->getElecInstBaseName();
         lstr.add_c(*nbuf);
         hyParent *p = hyPrnt;
         if (p)
             lstr.add_c(CD()->GetSubcCatchar());
         for ( ; p; p = p->next()) {
-            lstr.add(p->cdesc()->getBaseName() + 1);
+            lstr.add(p->cdesc()->getElecInstBaseName() + 1);
             lstr.add_c(CD()->GetSubcCatchar());
         }
         lstr.add(nbuf+1);
@@ -1451,7 +1451,7 @@ hyEnt::get_nodename(int node) const
         for ( ; sp >= 0; sp--) {
             lstr.add_c(CD()->GetSubcCatchar());
             lstr.add_c('x');
-            const char *instname = stack[sp]->cdesc()->getBaseName();
+            const char *instname = stack[sp]->cdesc()->getElecInstBaseName();
             lstr.add(instname+1);
         }
     }
@@ -1460,7 +1460,7 @@ hyEnt::get_nodename(int node) const
 
         // create text and free
         for (int i = 0; i <= sp; i++) {
-            const char *instname = stack[i]->cdesc()->getBaseName();
+            const char *instname = stack[i]->cdesc()->getElecInstBaseName();
             lstr.add(instname+1);
             lstr.add_c(CD()->GetSubcCatchar());
         }

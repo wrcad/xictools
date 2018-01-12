@@ -158,8 +158,85 @@ End of general info.
 
 
 ===============================================================================
-xic-4.3.2  10/29/2017
+xic-4.3.3  1/10/2017
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New system to generate and track instance names in physical mode. 
+
+  Each physical cell instance has a name consisting of the master
+  name, colon separator, and a 0-based index number in database order
+  (top to bottom then left to right of the upper left corner of the
+  instance bounding box).  The index number is increased by the size
+  of the array when numbering array instances, to leave space for
+  indexing individual components.
+
+  The instance name is used in the Select/Choose Instances panel (see
+  below), in the label of unexpanded physical instances shown in the
+  drawing windows, and in the extraction system.  Instance numbers are
+  regenerated when needed, after a modification which changes the
+  instance list of a cell.  They are stable and reproducible as long
+  as the containing cell and its hierarchy are unmodified.
+
+  New boolean variable: NoInstnameLabels
+
+  When set, unexpanded physical instances in drawing windows will use
+  the master name (as in previous Xic releases) rather than instance
+  names introduced in this release.
+
+* Selection system change.
+
+  A new pop-up applies when there are three or more cell instances
+  potentially in a selection operation (point or area) and no
+  selectable geometry.  The Select Instances panel produces a list of
+  instances with a clickable yes/no to toggle selected status of each
+  listed instance.  When the selection mechanism is used to choose
+  instances for some other purpose, the same pop-up, laabelled "Choose
+  Instances" appears.  The pop-up is modal in either case, meaning all
+  but the pop-up is locked out while the pop-up is visible.
+
+  This was implemented to allow selection of instances when there are
+  many overlapping subcells, such as a netext file where each wire net
+  is a separate subcell.
+
+* Script functions changed.
+
+  GetInstanceName       Support for physical cell instance names added.
+  GetInstanceIdNum()    Now returns the physical instance number as used
+                        in the instance name, checks for sequence validity.
+  GetInstanceAltId()    Checks for number sequence validity.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed segmentation fault library access code.
+
+* Library references weren't being followed through a Cell Hierarchy
+  Digest (CHD), e.g., expanded library cells were blank in display mode.
+
+* The Info command was leaving pointers to freed memory in the
+  selection list, resulting in potential instability.
+
+* Script parser:  parse of string constants was not expanding
+  backslash escapes correctly, a\\b would be read as a\<backspace>
+  instead of a\b.
+
+* The Logo script function was incorectly ignoring the LogoPixelSize
+  variable.
+
+* In logo creation, there is no longer caching of the width/height of
+  xpm data.  This caused trouble when the user reuses the same xpm
+  file name but changes the content.
+
+* In the Xiv feature set, pressing Esc twice now deselects all, the
+  same as in Xic.
+
+
+-------------------------------------------------------------------------------
+xic-4.3.2  10/29/2017
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

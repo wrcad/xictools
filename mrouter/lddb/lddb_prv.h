@@ -48,6 +48,7 @@
 #define LDDB_PRV_H
 
 #include "lddb.h"
+#include "miscutil/lstring.h"
 
 
 //

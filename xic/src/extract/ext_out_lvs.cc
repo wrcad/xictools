@@ -267,7 +267,7 @@ cGroupDesc::print_lvs(FILE *fp)
 
     // Print table of group/node associations.
     fprintf(fp, "\nConductor group and electrical node mapping:\n\n");
-    fprintf(fp, "  %-8s%-24s%-24s%-8s\n", "group", "node", "node", "group");
+    fprintf(fp, "  %-7s %-23s %-23s %-8s\n", "group", "node", "node", "group");
     char tbuf[64];
     for (int i = 1; i < psize || i < esize; i++) {
         char gr1[32];
@@ -312,7 +312,7 @@ cGroupDesc::print_lvs(FILE *fp)
         if (*gr1 == 0 && *nname2 == 0 && *nname1 == 0 && *gr2 == 0)
             continue;
 
-        fprintf(fp, "  %-8s%-24s%-24s%-8s\n", gr1, nname2, nname1, gr2);
+        fprintf(fp, "  %-7s %-23s %-23s %-8s\n", gr1, nname2, nname1, gr2);
     }
 
     // Print group names.
@@ -472,7 +472,7 @@ cGroupDesc::print_lvs(FILE *fp)
                 }
                 if (s->dual()) {
                     char *instname = s->dual()->instance_name();
-                    fprintf(fp, " %-24s%s\n",
+                    fprintf(fp, " %-24s %s\n",
                         Tstring(s->dual()->cdesc()->cellname()), instname);
                     delete [] instname;
                 }
@@ -1151,7 +1151,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
         for (sEinstList *c = dv->edevs(); c; c = c->next()) {
             if (!c->dual_dev()) {
                 CDc *cd = c->cdesc();
-                char *instname = cd->getInstName(c->cdesc_index());
+                char *instname = cd->getElecInstName(c->cdesc_index());
                 if (lstring::prefix(WIRECAP_PREFIX, instname)) {
                     // This is a wire capacitor, which has no physical dual
                     // Shouldn't get here, wire caps should be in extras
@@ -1172,7 +1172,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
     if (gd_extra_devs) {
         for (sEinstList *c = gd_extra_devs; c; c = c->next()) {
             CDc *cd = c->cdesc();
-            char *instname = cd->getInstName(c->cdesc_index());
+            char *instname = cd->getElecInstName(c->cdesc_index());
             if (lstring::prefix(WIRECAP_PREFIX, instname)) {
                 // This is a wire capacitor, which has no physical dual
                 if (check_wire_cap(cd, instname, fp))
@@ -1211,7 +1211,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
         }
         for (sEinstList *s = sl->esubs(); s; s = s->next()) {
             if (!s->dual_subc()) {
-                char *instname = s->cdesc()->getInstName(s->cdesc_index());
+                char *instname = s->cdesc()->getElecInstName(s->cdesc_index());
                 fprintf(fp,
                     "  Electrical subcircuit %s (%s) is not associated.\n",
                     instname, Tstring(s->cdesc()->cellname()));
@@ -1223,7 +1223,7 @@ cGroupDesc::print_summary_lvs(FILE *fp, sLVSstat &lvs)
     }
     if (gd_extra_subs) {
         for (sEinstList *c = gd_extra_subs; c; c = c->next()) {
-            char *instname = c->cdesc()->getInstName(c->cdesc_index());
+            char *instname = c->cdesc()->getElecInstName(c->cdesc_index());
             fprintf(fp,
                 "  Electrical subcircuit %s (%s) is not associated.\n",
                 instname, Tstring(c->cdesc()->cellname()));

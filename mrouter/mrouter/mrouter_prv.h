@@ -56,6 +56,7 @@
 
 #include "mrouter.h"
 #include "mr_stack.h"
+#include "miscutil/lstring.h"
 
 //
 // Maze Router.

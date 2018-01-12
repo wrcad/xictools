@@ -2110,21 +2110,21 @@ or the function fails and returns 0 if the cell has no symbolic
 representation.
 
 %------------------------------------
-% 020411
+% 010818
 \index{ListSubcells function}
 \item{(stringlist\_handle) \vt ListSubcells({\it cellname\/}, {\it depth\/},
  {\it array\/}, {\it incl\_top\/})}\\
-This function returns a handle to a sorted list of subcell names found
-under the named cell, to the given depth, and only if instantiated so
-as to overlap a rectangular area (if given).  These apply to the
-current mode, electrical or physical.  If {\it cellname} is null or
-empty, the current cell is used.  The {\it depth} is the search depth,
-which can be an integer which sets the maximum depth to search (0
-means search {\it cellname} only and return its subcell names, 1 means
-search {\it cellname} plus its subcells, etc., and a negative integer
-sets the depth to search the entire hierarchy).  This argument can
-also be a string starting with `{\vt a}' such as ``{\vt a}'' or ``{\vt
-all}'' which indicates to search the entire hierarchy.
+This function returns a handle to a sorted list of subcell master
+names found under the named cell, to the given depth, and only if
+instantiated so as to overlap a rectangular area (if given).  These
+apply to the current mode, electrical or physical.  If {\it cellname}
+is null or empty, the current cell is used.  The {\it depth} is the
+search depth, which can be an integer which sets the maximum depth to
+search (0 means search {\it cellname} only and return its subcell
+names, 1 means search {\it cellname} plus its subcells, etc., and a
+negative integer sets the depth to search the entire hierarchy).  This
+argument can also be a string starting with `{\vt a}' such as ``{\vt
+a}'' or ``{\vt all}'' which indicates to search the entire hierarchy.
 
 The cell will be read into memory if not already there.  The function
 fails if the cell can not be found.
@@ -12144,7 +12144,7 @@ i.e., mirror first, then rotate, then translate.  The function returns
 not a handle to an object list.
 
 %------------------------------------
-% 062116
+% 010818
 \index{GetInstanceMaster function}
 \item{(string) \vt GetInstanceMaster({\it object\_handle\/})}\\
 Note: prior to 4.2.12, this function was called {\vt GetInstanceName}.
@@ -12171,7 +12171,7 @@ passed is not a handle to an object list.  If successful, 1 is
 returned, otherwise 0 is returned.
 
 %------------------------------------
-% 060616
+% 011118
 \index{GetInstanceName function}
 \item{(string) \vt GetInstanceName({\it object\_handle\/})}\\
 Note:  prior to 4.2.12, this function returned the name of the
@@ -12182,12 +12182,22 @@ This function returns a name for the electrical cell instance
 referenced by the handle.  This is the name of the object, as would
 appear in a generated SPICE file.
 
-Currently, for physical instances, and for unnamed electrical
-instances, a null string is returned.
+For unnamed (missing name property) electrical instances, a null
+string is returned.
+  
+For physical cell instances, an instance name is returned, which
+consists of the master name followed by a colon separator and an index
+number.  The index is a 0-based sequence for instances with a
+particular master.  The index count advances by the size of the array
+for arrayed instances, leaving room in the sequence for individual
+elements.  The index is in database order (top to bottom then left to
+right of the upper left corner of the instance bounding box), and is
+stable and reproducible as long as instance sizes and placement
+locations remain the same.
 
-Internally, names are generated in the following way.  Each device has
-a prefix, as specified in the technology file.  The prefix for
-subcircuits is ``X'', which is defined internally.  The prefixes
+Internally, electrical names are generated in the following way.  Each
+device has a prefix, as specified in the technology file.  The prefix
+for subcircuits is ``X'', which is defined internally.  The prefixes
 follow (or should follow) SPICE conventions.  The database of instance
 placements is scanned in order of the placement location (upper-left
 corner of the instance bounding box) top to bottom, then left to
@@ -12195,19 +12205,19 @@ right.  Each instance encountered is given an index number as a count
 of the same prefix previously encountered in the scan.  The prefix
 followed by the index forms the instance name.  This will identify
 each instance uniquely, and the sequencing is predictable from spatial
-location in the schematic.  For example.  {\vt X1} will be above or
-to the left of {\vt X2}.
+location in the schematic.  For example.  {\vt X1} will be above or to
+the left of {\vt X2}.
 
-Rather than the internal name.  this function will return an assigned
-name, if one has been given using {\vt SetInstanceName} or by setting
-the name property,
+Rather than the internal electrical name.  this function will return
+an assigned name, if one has been given using {\vt SetInstanceName} or
+by setting the name property,
 
 The index number can be obtained as an integer with {\vt
 GetInstanceIdNum}.  See also \newline{\vt GetInstanceAltName} for a
 different subcircuit name style.
 
 %------------------------------------
-% 060616
+% 010818
 \index{SetInstanceName function}
 \item{(int) \vt SetInstanceName({\it object\_handle\/}, {\it newname\/})}\\
 Note:  prior to 4.2.12, this function would re-master the instance,
@@ -12222,6 +12232,9 @@ force.
 
 If the string is null or 0, any applied name will be deleted,
 equivalent to ``removing'' a name property.
+
+Physical instance names can not be changed, an attempt to do so fails
+silently.
 
 The return value is 1 on success, 0 otherwise.
 
@@ -12299,7 +12312,7 @@ For physical instances, at present there is only one return.
 \end{description}
 
 %------------------------------------
-% 060616
+% 010818
 \index{GetInstanceIdNum function}
 \item{(int) \vt GetInstanceIdNum({\it object\_handle\/})}\\
 This function returns the integer index number used in electrical
@@ -12309,13 +12322,14 @@ subcircuit will have a unique number.  Devices are numbered according
 to their prefix strings, each unique prefix has its own number
 sequence.  These values are always non-negative.
 
-For physical instances, an internal indexing number used by the
-extraction system is returned.
+The return for all physical instances is similarly created, and is the
+same index used in the instance name returned by {\vt
+GetInstanceName}.
 
 This function will return -1 on error.
 
 %------------------------------------
-% 060616
+% 010818
 \index{GetInstanceAltIdNum function}
 \item{(int) \vt GetInstanceAltIdNum({\it object\_handle\/})}\\
 This returns an alternative index for electrical subcircuits, as used
@@ -12324,6 +12338,11 @@ will have its instances numbered sequentially starting with 0.  The
 ordering is set by the instance placement location in the schematic,
 top to bottom then left to right, with the upper-left corner of the
 bounding box being the reference location.
+
+For physical instances, an internal indexing number used by the
+extraction system is returned.  This is a unique 0-based sequence
+applied to all instances of a cell, in database order.  The count is
+incremented by the array size for arrayed instances.
 
 For other instances, the return value is the same as {\vt
 GetInstanceIdNum}.
@@ -13159,7 +13178,7 @@ This is similar to the {\vt Label} function, but will return a handle
 to the new object.  On error, a scalar 0 is returned.
 
 %------------------------------------
-% 100408
+% 121617
 \index{Logo function}
 \item{(int) \vt Logo({\it string\/}, {\it x\/}, {\it y\/} [, {\it width\/},
 {\it height\/}])}\\
@@ -13192,6 +13211,7 @@ sensitive to the following variables.
  LogoPathWidth\\
  LogoAltFont\\
  LogoPrettyFont\\
+ LogoPixelSize\\
  LogoToFile
 \end{quote}
 

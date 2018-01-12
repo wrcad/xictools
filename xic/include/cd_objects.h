@@ -196,9 +196,7 @@ struct CDo : public RTelem
             e_children = (RTelem*)ld;
             e_nchildren = CDVanilla;
             e_flags = 0;
-#ifndef CD_GROUP_TAB
             oGroup = 0;                     
-#endif
 #ifndef CD_PRPTY_TAB
             oPrptyList = 0;
 #endif
@@ -299,23 +297,8 @@ struct CDo : public RTelem
             return (0);
         }
 
-    void set_group(int g)
-        {
-#ifdef CD_GROUP_TAB
-            CD()->SetGroup(this, g);
-#else
-            oGroup = g;
-#endif
-        }
-
-    int group() const
-        {
-#ifdef CD_GROUP_TAB
-            return (CD()->Group(this));
-#else
-            return (oGroup);
-#endif
-        }
+    void set_group(int g)            { oGroup = g; }
+    int group()                const { return (oGroup); }
 
     bool operator!=(const CDo &od) const { return !(od == *this); }
 
@@ -362,9 +345,7 @@ struct CDo : public RTelem
     bool prptyAdd(int, const char*, DisplayMode);
 
 protected:
-#ifndef CD_GROUP_TAB
     int oGroup;             // conductor group for extraction
-#endif
 #ifndef CD_PRPTY_TAB
     CDp *oPrptyList;        // object properties
 #endif
@@ -398,9 +379,7 @@ struct CDpo : public CDo
             e_type = CDPOLYGON;
             e_nchildren = o->state();
             e_flags = o->flags();
-#ifndef CD_GROUP_TAB
             set_group(o->group());
-#endif
             poNumpts = num;
             poPoints = pts;
         }

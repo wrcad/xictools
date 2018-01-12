@@ -3425,6 +3425,7 @@ geom2_funcs::IFlabelH(Variable *res, Variable *args, void*)
 //  LogoEndStyle
 //  LogoPathWidth
 //  LogoManhattan
+//  LogoPixelSize
 //  LogoPretty
 //  LogoPrettyFont
 //  LogoToFile
@@ -3462,6 +3463,10 @@ geom2_funcs::IFlogo(Variable *res, Variable *args, void*)
         label.width = (int)(label.width * GEO()->curTx()->magn());
         label.height = (int)(label.height * GEO()->curTx()->magn());
     }
+
+    // This must be called to recognize LogoPixelSize variable.
+    ED()->assert_logo_pixel_size();
+
     int pixel_size = label.height/ED()->logoFont()->cellHeight();
     ED()->createLogo(string, label.x, label.y, pixel_size);
 
@@ -4349,7 +4354,8 @@ geom2_funcs::IFprptyString(Variable *res, Variable *args, void*)
                     if (val == P_NAME && ol->odesc->type() == CDINSTANCE &&
                     OCALL(ol->odesc)->masterCell()->isElectrical()) {
                         res->content.string = lstring::copy(
-                            OCALL(ol->odesc)->getBaseName((CDp_name*)pdesc));
+                            OCALL(ol->odesc)->getElecInstBaseName(
+                                (CDp_name*)pdesc));
                     }
                     else
                         pdesc->string(&res->content.string);
@@ -4372,7 +4378,7 @@ geom2_funcs::IFprptyString(Variable *res, Variable *args, void*)
                 if (odesc && val == P_NAME && odesc->type() == CDINSTANCE &&
                         OCALL(odesc)->masterCell()->isElectrical()) {
                     res->content.string = lstring::copy(
-                        OCALL(odesc)->getBaseName((CDp_name*)prpty));
+                        OCALL(odesc)->getElecInstBaseName((CDp_name*)prpty));
                 }
                 else
                     prpty->string(&res->content.string);

@@ -2119,7 +2119,6 @@ private:
 
     // ext_extract.cc
     CDpin *group_terms(CDpin*, bool);
-    void set_subc_group(bool);
     XIrt add_subckts();
     int add(int, const ext_group::sSubcGen*, int);
     sSubcInst *add_sc(CDc*, int, int);

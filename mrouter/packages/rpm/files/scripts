@@ -5,9 +5,6 @@ else
     prefix=$RPM_INSTALL_PREFIX
 fi
 
-bindir=$prefix/xictools/bin
-libdir=$prefix/xictools/vl
-
 # nothing to do
 
 
@@ -17,8 +14,6 @@ if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
-
-libdir=$prefix/xictools/vl
 
 # nothing to do
 
@@ -30,9 +25,6 @@ else
     prefix=$RPM_INSTALL_PREFIX
 fi
 
-bindir=$prefix/xictools/bin
-libdir=$prefix/xictools/vl
-
 # nothing to do
 
 
@@ -42,8 +34,6 @@ if [ x"$RPM_INSTALL_PREFIX" = "x" ]; then
 else
     prefix=$RPM_INSTALL_PREFIX
 fi
-
-libdir=$prefix/xictools/vl
 
 # nothing to do
 

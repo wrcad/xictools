@@ -106,6 +106,7 @@ cMain::DeselectExec(CmdDesc *cmd)
         Selections.deselectAll();
         ExtIf()->deselect();
         XM()->ShowParameters();
+        PopUpSelectInstances(0);
     }
     if (EV()->CurCmd())
         EV()->CurCmd()->desel();
@@ -172,11 +173,14 @@ namespace {
 // The is_poinselect() call uses the last button1-press window in
 // non-strict mode.
 //
+// If list is passed, it replaces the call to selectItems.
+// ** IT IS CONSUMED **!!
+//
 // True is returned if an enabled object was clicked on.
 //
 bool
 cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
-    bool strict)
+    bool strict, CDol *list)
 {
     if (!sd)
         return (false);
@@ -188,8 +192,10 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
     CDol *sel_list = 0;
     CDol *unsel_list = 0;
     {
-        CDol *list = selectItems(sd, types, AOI,
-            strict ? PSELstrict_area : PSELpoint);
+        if (!list) {
+            list = selectItems(sd, types, AOI,
+                strict ? PSELstrict_area : PSELpoint, true);
+        }
         if (!list)
             return (false);
 
@@ -226,31 +232,45 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
         }
 #endif
 
+        // Count selections and remove internal objects.
+        int nsel = 0;
+        int nusel = 0;
+        CDol *cp = 0, *cn;
+        for (CDol *c = list; c; c = cn) {
+            cn = c->next;
+            if (!c->odesc->is_normal()) {
+                if (cp)
+                    cp->next = cn;
+                else
+                    list = cn;
+                delete c;
+                continue;
+            }
+            cp = c;
+            if (c->odesc->state() == CDSelected)
+                nsel++;
+            else
+                nusel++;
+        }
+
+        // If only physical instances are in list (instances are
+        // listed last) and there are 3 or more, use a pop-up to
+        // control the selections.
+        //
+        if (!sd->isElectrical()) {
+            bool instonly = (list->odesc->type() == CDINSTANCE);
+            if (instonly && (nsel+nusel >= 3)) {
+                XM()->PopUpSelectInstances(list);
+                CDol::destroy(list);
+                return (true);
+            }
+        }
+
         if (iterate_mode && is_pointselect(AOI, 0)) {
             // Keep at most one selected and unselected item.  The
             // unselected item is first in the list, or first
             // following the selected item.
 
-            // Count selections and remove internal objects.
-            int nsel = 0;
-            int nusel = 0;
-            CDol *cp = 0, *cn;
-            for (CDol *c = list; c; c = cn) {
-                cn = c->next;
-                if (!c->odesc->is_normal()) {
-                    if (cp)
-                        cp->next = cn;
-                    else
-                        list = cn;
-                    delete c;
-                    continue;
-                }
-                cp = c;
-                if (c->odesc->state() == CDSelected)
-                    nsel++;
-                else
-                    nusel++;
-            }
             if (nsel > 1) {
                 // Keep first selected only.
                 while (list) {
@@ -291,9 +311,9 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
             }
         }
         else {
-            CDol *cn, *se = 0, *ue = 0;
-            for (CDol *c = list; c; c = cn) {
-                cn = c->next;
+            CDol *cnx, *se = 0, *ue = 0;
+            for (CDol *c = list; c; c = cnx) {
+                cnx = c->next;
                 c->next = 0;
                 if (c->odesc->is_normal()) {
                     if (c->odesc->state() == CDSelected) {
@@ -420,7 +440,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
 //
 CDol *
 cSelections::selectItems(const CDs *sd, const char *types, const BBox *AOI,
-    PSELmode psel)
+    PSELmode psel, bool nopopup)
 {
     if (!sd)
         return (0);
@@ -521,6 +541,10 @@ cSelections::selectItems(const CDs *sd, const char *types, const BBox *AOI,
                 ce = ce->next;
             }
         }
+    }
+    if (!nopopup && !sd->isElectrical() && c0 &&
+            c0->odesc->type() == CDINSTANCE && c0->next && c0->next->next) {
+        c0 = XM()->PopUpFilterInstances(c0);
     }
     return (c0);
 }
@@ -1360,8 +1384,10 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
                 if (pn->value() != num)
                     continue;
                 char *text;
-                if (num == P_NAME)
-                    text = lstring::copy(cdesc->getBaseName((CDp_name*)pn));
+                if (num == P_NAME) {
+                    text = lstring::copy(
+                        cdesc->getElecInstBaseName((CDp_name*)pn));
+                }
                 else
                     pn->string(&text);
                 if (all || !regexec(&preg, text, 0, 0, 0)) {
@@ -1408,7 +1434,7 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
                     char *text;
                     if (num == P_NAME) {
                         text = lstring::copy(
-                                OCALL(od)->getBaseName((CDp_name*)pn));
+                                OCALL(od)->getElecInstBaseName((CDp_name*)pn));
                     }
                     else
                         pn->string(&text);
@@ -1435,7 +1461,7 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
                             continue;
                         char *text;
                         if (num == P_NAME)
-                            text = ed->getInstName(vecix);
+                            text = ed->getElecInstName(vecix);
                         else
                             pn->string(&text);
                         if (all || !regexec(&preg, text, 0, 0, 0)) {

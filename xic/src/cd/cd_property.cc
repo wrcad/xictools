@@ -3245,19 +3245,21 @@ CDp_name::label_text(bool *copied, CDc *cdesc) const
         // ordinary device name
         if (cdesc) {
             CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
-            const char *instname = cdesc->getBaseName(this);
-            if (pr) {
-                // This is a vector instance, tack on the range.
-                sLstr lstr;
-                lstr.add(instname);
-                lstr.add_c(cTnameTab::subscr_open());
-                lstr.add_i(pr->beg_range());
-                lstr.add_c(':');
-                lstr.add_i(pr->end_range());
-                lstr.add_c(cTnameTab::subscr_close());
-                return (new hyList(0, lstr.string(), HYcvPlain));
+            const char *instname = cdesc->getElecInstBaseName(this);
+            if (instname) {
+                if (pr) {
+                    // This is a vector instance, tack on the range.
+                    sLstr lstr;
+                    lstr.add(instname);
+                    lstr.add_c(cTnameTab::subscr_open());
+                    lstr.add_i(pr->beg_range());
+                    lstr.add_c(':');
+                    lstr.add_i(pr->end_range());
+                    lstr.add_c(cTnameTab::subscr_close());
+                    return (new hyList(0, lstr.string(), HYcvPlain));
+                }
+                return (new hyList(0, instname, HYcvPlain));
             }
-            return (new hyList(0, instname, HYcvPlain));
         }
         return (new hyList(0, "??", HYcvPlain));
     }

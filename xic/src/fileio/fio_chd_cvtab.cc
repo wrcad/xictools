@@ -1467,9 +1467,16 @@ cCVtab::build_TS_table_rc(cvtab_item_t *pitem, unsigned int ix,
             return (false);
         }
 
-        // This takes care of remapping symref/CHD pointers if not defseen,
-        // and checks skip flag.
-        cvtab_item_t *item = resolve_item(&cp, ix);
+        if (!cp->get_defseen()) {
+            symref_t *tcp = resolve_symref(chd, cp);
+            if (tcp)
+                cp = tcp;
+
+        }
+        if (cp->should_skip())
+            continue;
+        cvtab_item_t *item = get(cp, ix);
+
         if (!item)
             continue;
         const BBox *pBB = item->get_bb();

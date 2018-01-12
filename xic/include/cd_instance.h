@@ -44,6 +44,11 @@
 #include "cd_memmgr_cfg.h"
 
 
+// Take the physical instance name as the master name followed by this
+// separator and the instance index number.
+//
+#define CD_INST_NAME_SEP ':'
+
 // Instance array parameters
 struct CDap
 {
@@ -179,6 +184,7 @@ struct CDc : public CDo
         {
             e_type = CDINSTANCE;
             cAttr = NULL_TICKET;
+            cIndex = -1;
             cMaster = 0;
             cPtabNext = 0;
             cX = cY = 0;
@@ -289,6 +295,9 @@ struct CDc : public CDo
     ticket_t attr()     const   { return (cAttr); }
     void setAttr(ticket_t t)    { cAttr = t; }
 
+    int index()         const   { return (cIndex); }
+    void set_index(int i)       { cIndex = i; }
+
     // cd_hash.cc
     unsigned int add_hash(unsigned int);
 
@@ -297,8 +306,9 @@ struct CDc : public CDo
     void setTransform(const CDtf*, const CDap* = 0);
     void prptyAddStruct(bool = false);
     CDelecCellType elecCellType(const char** = 0);
-    const char *getBaseName(const CDp_name* = 0) const;
-    char *getInstName(unsigned int) const;
+    const char *getElecInstBaseName(const CDp_name* = 0) const;
+    char *getElecInstName(unsigned int) const;
+    char *getPhysInstName() const;
     bool nameOK(const char*) const;
     CDc *findElecDualOfPhys(int*, unsigned int, unsigned int) const;
     CDc *findPhysDualOfElec(int, unsigned int*, unsigned int*) const;
@@ -310,6 +320,7 @@ struct CDc : public CDo
 
 private:
     ticket_t cAttr;     // Attributes ticket.
+    int cIndex;         // Instance index number.
     CDc *cPtabNext;     // Private link for ptable_t.
     CDm *cMaster;       // Pointer to master list descriptor.
     int cX, cY;         // Origin.

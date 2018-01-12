@@ -1,0 +1,11 @@
+*.cc
+*.h
+.adms.implicit.xml
+.*.va.adms
+.interface.xml
+*.dylib
+*.so
+*.dll
+constants.vams
+disciplines.vams
+device.xml

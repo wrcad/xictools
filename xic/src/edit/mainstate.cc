@@ -381,7 +381,9 @@ click:
                 return;
             }
             CDol *slist = Selections.selectItems(CurCell(), 0, &AOI,
-                PSELpoint);
+                PSELpoint, true);
+            if (!slist)
+                return;
 
             // Handle property label hide/show.
             if ((EV()->Cursor().get_upstate() & GR_SHIFT_MASK)) {
@@ -433,8 +435,9 @@ click:
                 }
                 else if (shft && ctrl && slist &&
                         slist->odesc->type() == CDINSTANCE) {
-                    // ctrl+shift on an pop up a sub-window showing
-                    // the master if a subcircuit or in physical mode.
+                    // ctrl+shift on an instancer pop up a sub-window
+                    // showing the master if a subcircuit or in
+                    // physical mode.
 
                     CDc *cd = (CDc*)slist->odesc;
                     CDs *msd = cd->masterCell(true);
@@ -511,8 +514,9 @@ click:
                 }
                 else {
                     set_op(SelectObj);
-                    if (!Selections.selection(CurCell(), 0, &AOI))
+                    if (!Selections.selection(CurCell(), 0, &AOI, false, slist))
                         no_object_proc();
+                    slist = 0;  // consumed!
                 }
             }
             CDol::destroy(slist);
@@ -1128,11 +1132,13 @@ MainState::timeout1(void*)
             Mcmd()->set_op(SelectObj);
             return (false);
         }
-        CDol *slist = Selections.selectItems(CurCell(), 0, &BB, PSELpoint);
+        CDol *slist =
+            Selections.selectItems(CurCell(), 0, &BB, PSELpoint, true);
         CDol *sl;
-        for (sl = slist; sl; sl = sl->next)
+        for (sl = slist; sl; sl = sl->next) {
             if (sl->odesc->state() == CDSelected)
                 break;
+        }
         if (Selections.ptrMode() == PTRmodify) {
             if (sl && !(downstate & GR_CONTROL_MASK)) {
                 XM()->SetCoordMode(CO_RELATIVE, Mcmd()->Refx, Mcmd()->Refy);

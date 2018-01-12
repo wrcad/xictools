@@ -5591,21 +5591,32 @@ geom1_funcs::IFsetInstanceMaster(Variable *res, Variable *args, void*)
 // referenced by the handle.  This is the name of the object, as would
 // appear in a generated SPICE file.
 //
-// Currently, for physical instances, and for unnamed electrical
-// instances, a null string is returned.
+// For unnamed (missing name property) electrical instances, a null
+// string is returned.
 //
-// Internally, names are generated in the following way.  Each device
-// has a prefix, as specified in the technology file.  The prefix for
-// subcircuits is "X", which is defined internally.  The prefixes
-// follow (or should follow) SPICE conventions.  The database of
-// instance placements is scanned in order of the placement location
-// (upper-left corner of the instance bounding box) top to bottom,
-// then left to right.  Each instance encountered is given an index
-// number as a count of the same prefix previously encountered in the
-// scan.  The prefix followed by the index forms the instance name. 
-// This will identify each instance uniquely, and the sequencing is
-// predictable from spatial location in the schematic.  For example. 
-// X1 will be above or to the left of X2.
+// For physical cell instances, an instance name is returned, which
+// consists of the master name followed by a colon separator and an
+// index number.  The index is a 0-based sequence for instances with a
+// particular master.  The index count advances by the size of the
+// array for arrayed instances, leaving room in the sequence for
+// individual elements.  The index is in database order (top to bottom
+// then left to right of the upper left corner of the instance
+// bounding box), and is stable and reproducible as long as instance
+// sizes and placement locations remain the same.
+//
+// Internally, electrical instance names are generated in the
+// following way.  Each device has a prefix, as specified in the
+// technology file.  The prefix for subcircuits is "X", which is
+// defined internally.  The prefixes follow (or should follow) SPICE
+// conventions.  The database of instance placements is scanned in
+// order of the placement location (upper-left corner of the instance
+// bounding box) top to bottom, then left to right.  Each instance
+// encountered is given an index number as a count of the same prefix
+// previously encountered in the scan.  The prefix followed by the
+// index forms the instance name.  This will identify each instance
+// uniquely, and the sequencing is predictable from spatial location
+// in the schematic.  For example.  X1 will be above or to the left of
+// X2.
 //
 // Rather than the internal name.  this function will return an
 // assigned name, if one has been given using SetInstanceName or by
@@ -5640,8 +5651,22 @@ geom1_funcs::IFgetInstanceName(Variable *res, Variable *args, void*)
                 bool copied;
                 hyList *hyl = pna->label_text(&copied, cd);
                 res->content.string = hyList::string(hyl, HYcvPlain, false);
+                res->flags |= VF_ORIGINAL;
                 if (copied)
                     hyList::destroy(hyl);
+            }
+        }
+        else {
+            CDs *parent = cd->parent();
+            if (parent) {
+                if (!parent->isInstNumValid())
+                    parent->numberInstances();
+
+                char buf[256];
+                sprintf(buf, "%s%c%d", Tstring(msd->cellname()),
+                    CD_INST_NAME_SEP, cd->index());
+                res->content.string = lstring::copy(buf);
+                res->flags |= VF_ORIGINAL;
             }
         }
     }
@@ -5663,6 +5688,9 @@ geom1_funcs::IFgetInstanceName(Variable *res, Variable *args, void*)
 //
 // If the string is null or 0, any applied name will be deleted,
 // equivalent to "removing" a name property.
+//
+// Physical instance names can not be changed, an attempt to do so
+// fails silently.
 //
 // The return value is 1 on success, 0 otherwise.
 //
@@ -5880,8 +5908,9 @@ geom1_funcs::IFgetInstanceType(Variable *res, Variable *args, void*)
 // according to their prefix strings, each unique prefix has its own
 // number sequence.  These values are always non-negative.
 //
-// For physical instances, an internal indexing number used by the
-// extraction system is returned.
+// The return for all physical instances is similarly created, and is
+// the same index used in the instance name returned by
+// GetInstanceName.
 //
 // This function will return -1 on error.
 //
@@ -5909,8 +5938,15 @@ geom1_funcs::IFgetInstanceIdNum(Variable *res, Variable *args, void*)
             if (pna)
                 res->content.value = pna->number();
         }
-        else
-            res->content.value = cd->group();
+        else {
+            CDs *parent = cd->parent();
+            if (parent) {
+                if (!parent->isInstNumValid())
+                    parent->numberInstances();
+
+                res->content.value = cd->index();
+            }
+        }
     }
     return (OK);
 }
@@ -5924,6 +5960,11 @@ geom1_funcs::IFgetInstanceIdNum(Variable *res, Variable *args, void*)
 // ordering is set by the instance placement location in the
 // schematic, top to bottom then left to right, with the upper-left
 // corner of the bounding box being the reference location.
+//
+// For physical instances, an internal indexing number used by the
+// extraction system is returned.  This is a unique 0-based sequence
+// applied to all instances of a cell, in database order.  The count
+// is incremented by the array size for arrayed instances.
 //
 // For other instances, the return value is the same as
 // GetInstanceIdNum.
@@ -5952,8 +5993,15 @@ geom1_funcs::IFgetInstanceAltIdNum(Variable *res, Variable *args, void*)
             if (pna)
                 res->content.value = pna->scindex();
         }
-        else
-            res->content.value = cd->group();
+        else {
+            CDs *parent = cd->parent();
+            if (parent) {
+                if (!parent->isInstNumValid())
+                    parent->numberInstances();
+
+                res->content.value = cd->group();
+            }
+        }
     }
     return (OK);
 }

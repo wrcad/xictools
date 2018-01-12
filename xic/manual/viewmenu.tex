@@ -119,7 +119,7 @@ side-effects, by setting the variable {\et LockMode}.
 
 
 % -----------------------------------------------------------------------------
-% xic:expnd 061608
+% xic:expnd 011118
 \section{The {\cb Expand} Button: Expand Subcells}
 \index{Expand button}
 \index{expanded view}
@@ -131,6 +131,18 @@ expanded cell, whereas only the bounding box and possibly a name label
 are shown in the unexpanded state.  If the cell happens to be an
 array, the bounding box in the unexpanded state is shown as a dashed
 line.  Ordinary instances have a solid line bounding box.
+
+The label shown in unexpanded physical instances is by default the
+instance name, which consists of the master name followed by a colon
+separator and an index number.  The index is a 0--based sequence for
+instances with a particular master.  The index count advances by the
+size of the array for arrayed instances, leaving room in the sequence
+for individual elements.  The index is in database order (top to
+bottom then left to right of the upper left corner of the instance
+bounding box), and is stable and reproducible as long as instance
+sizes and placement locations remain the same.  If the boolean {\et
+NoInstnameLabels} variable is set, the label will display the master
+name only, which was the behavior in {\Xic} releases prior to 4.3.3.
 
 After pressing {\cb Expand}, the pop-up appears.  The pop-up contains
 a text entry area, a number of buttons which push specific text into

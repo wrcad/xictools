@@ -1983,6 +1983,8 @@ CDs::makeCall(CallDesc *calldesc, const CDtx *tx, const CDap *ap,
         cdesc->setBadBB();
     }
 
+    setInstNumValid(false);
+
     // The following is called in lieu of insert().  Unless omode is
     // OpenModeNone, the cdesc is not added to the database here,
     // since its size may not be known yet.  Actual insertion is done
@@ -2069,6 +2071,10 @@ CDs::insert(CDo *odesc)
             return (false);
         }
 
+        // Invalidate instance numbering.  Don't use instance
+        // numbering until all instances are inserted!
+        setInstNumValid(false);
+
         // When reading an archive file, avoid insert/reinsert of
         // instances, this can be expensive.
         if (CD()->IsDeferInst() && (mdesc->isNullCelldesc() ||
@@ -2102,6 +2108,9 @@ CDs::reinsert(CDo *odesc, const BBox *nBB)
 {
     if (!odesc)
         return (false);
+    if (odesc->type() == CDINSTANCE)
+        setInstNumValid(false);
+
     CDtree *l = db_find_layer_head(odesc->ldesc());
     if (l) {
         if (l->is_deferred()) {
@@ -2628,12 +2637,15 @@ CDs::unlink(CDo *odesc, int save)
     CD()->ifInvalidateObject(this, odesc, save);
 
     db_remove(odesc);
-    if (odesc->type() == CDINSTANCE)
-        // Put in unlinked list
+    if (odesc->type() == CDINSTANCE) {
+        setInstNumValid(false);
+
+        // Put in unlinked list.
         // The master desc remains linked in parent until all unlinked
         // objects are deleted, to avoid creating multiple master descs
         // for the same cell.
         ((CDc*)odesc)->unlinkFromMaster(true);
+    }
 
     // This removes any mention of odesc from the cell and other objects
     // still in the database
@@ -2646,6 +2658,54 @@ CDs::unlink(CDo *odesc, int save)
     if (!save)
         delete odesc;
     return (true);
+}
+
+
+// Set the sequence numbers for each instance.  There are two sequence
+// numbers.  The group field contains an absolute 0-based instance
+// count in database order.  The index field contains a 0-based count
+// for each master, also in database order.  In both cases, arrays
+// increment the count by the size of the array, leaving virtual
+// indexing space for individual elements.
+//
+// This is used in physical mode only, mostly for the extraction
+// system, but also for general instance naming.  The CDs_INSTNUM flag
+// indicates whether or not the current numbering is valid.
+//
+void
+CDs::numberInstances()
+{
+    SymTab tab(false, false);
+
+    int count = 0;
+    CDg gdesc;
+    gdesc.init_gen(this, CellLayer());
+    CDc *cdesc;
+    while ((cdesc = (CDc*)gdesc.next()) != 0) {
+        CDap ap(cdesc);
+        // Save per-element number space for arrays.
+        int inc = ap.nx * ap.ny;
+
+        cdesc->set_group(count);
+        count += inc;
+
+        long cnt = 0;
+        CDs *msdesc = cdesc->masterCell();
+        if (msdesc) {
+            SymTabEnt *ent = SymTab::get_ent(&tab, (unsigned long)msdesc);
+            if (!ent) {
+                tab.add((unsigned long)msdesc, 0, false);
+                ent = SymTab::get_ent(&tab, (unsigned long)msdesc);
+            }
+            else {
+                cnt = (long)ent->stData;
+                cnt += inc;
+                ent->stData = (void*)cnt;
+            }
+        }
+        cdesc->set_index((long)cnt);
+    }
+    setInstNumValid(true);
 }
 
 
@@ -2668,7 +2728,7 @@ CDs::findInstance(const char *dname)
                 continue;
             CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
             if (pn) {
-                const char *instname = cdesc->getBaseName(pn);
+                const char *instname = cdesc->getElecInstBaseName(pn);
                 if (!strcmp(dname, instname))
                     return (cdesc);
             }
@@ -4454,6 +4514,7 @@ void
 CDs::reflect_bad_BB()
 {
     setBBsubng(true);
+    setInstNumValid(false);
     CDm_gen gen(this, GEN_MASTER_REFS);
     for (CDm *m = gen.m_first(); m; m = gen.m_next()) {
         CDs *sd = m->parent();

@@ -540,7 +540,7 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
             continue;
         const char *nm = Tstring(pname->name_string());
         bool macrocall =  (nm && (*nm == 'X' || *nm == 'x'));
-        char *device = lstring::copy(cdesc->getBaseName());
+        char *device = lstring::copy(cdesc->getElecInstBaseName());
         char *subname = 0;
         if (pname->is_subckt())
             subname = lstring::copy(Tstring(cdesc->cellname()));
@@ -818,6 +818,7 @@ namespace {
         if (cdesc->prpty(P_RANGE))
             return (true);
         CDp_node *pn = (CDp_node*)cdesc->prpty(P_NODE);
+        CDp_name *pna = (CDp_name*)cdesc->prpty(P_NAME);
         int num_gnd = 0;
         int num_open = 0;
         int num_ok = 0;
@@ -826,7 +827,7 @@ namespace {
             if (n == 0)
                 num_gnd++;
             else if (n >= size) {
-                const char *instname = cdesc->getBaseName();
+                const char *instname = cdesc->getElecInstBaseName(pna);
                 Log()->ErrorLogV(mh::NetlistCreation,
                     "Internal error:  in %s, for %s (%s), node number %d "
                     "too large",
@@ -835,7 +836,7 @@ namespace {
                 return (false);
             }
             else if (n < 0) {
-                const char *instname = cdesc->getBaseName();
+                const char *instname = cdesc->getElecInstBaseName(pna);
                 Log()->ErrorLogV(mh::NetlistCreation,
                     "Internal error:  in %s, for %s (%s), node number %d "
                     "negative", Tstring(sdesc->cellname()), instname,
@@ -843,7 +844,7 @@ namespace {
                 return (false);
             }
             else if (!tlist[n]) {
-                const char *instname = cdesc->getBaseName();
+                const char *instname = cdesc->getElecInstBaseName(pna);
                 Log()->ErrorLogV(mh::NetlistCreation,
                     "Internal error:  in %s, for %s (%s), no terminal for "
                     "node %d", Tstring(sdesc->cellname()), instname,
@@ -988,8 +989,8 @@ SpOut::add_mutual(CDs *sdesc, bool list_all, stringlist **tnames, int tsize)
             // Only write mutuals if both inductors are written.
 
             char tbuf[256];
-            const char *name1 = odesc1->getBaseName();
-            const char *name2 = odesc2->getBaseName();
+            const char *name1 = odesc1->getElecInstBaseName();
+            const char *name2 = odesc2->getElecInstBaseName();
             count++;
             if (pdesc->value() == P_NEWMUT) {
                 if (PNMU(pdesc)->assigned_name())
@@ -1802,7 +1803,7 @@ SpOut::sp_dsave_t::process(CDs *sdesc, const char *pref)
         if (msdesc && msdesc->isDevice()) {
             CDc_gen cgen(md);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
-                const char *instname = c->getBaseName();
+                const char *instname = c->getElecInstBaseName();
                 if (lstring::prefix(pref, instname))
                     save(instname);
             }
@@ -1816,7 +1817,7 @@ SpOut::sp_dsave_t::process(CDs *sdesc, const char *pref)
         if (msdesc && !msdesc->isDevice()) {
             CDc_gen cgen(md);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
-                const char *instname = c->getBaseName();
+                const char *instname = c->getElecInstBaseName();
                 if (push(instname)) {
                     process(msdesc, pref);
                     pop();
