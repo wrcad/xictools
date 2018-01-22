@@ -1,0 +1,25 @@
+#! /bin/sh
+
+# Print the text of the "exported" script augmented to print the
+# current release number of each program when the program name is
+# given as an argument following "version".  The generated script is
+# exported to wrcad.com.
+
+edir=$(dirname $0)
+progs=$($edir/exported progs)
+
+while IFS= read -r line; do
+    if [ "$line" = "#VERSIONS" ]; then
+
+        echo 'version)'
+        echo '  case $2 in'
+        for a in $progs; do
+          printf "  %s) echo %s;;\n" $a $($edir/../../../$a/version)
+        done
+        echo '  esac'
+        echo ';;'
+    else
+        printf "%s\n" "$line"
+    fi
+done < $edir/exported
+

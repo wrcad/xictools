@@ -1,146 +1,113 @@
 #! /bin/sh
 
 # Script: update
-# Usage: update <progname>
+# Usage: update [-f] [-t] [-y] <progname>
 # Adjunct for updating the distribution repository.
 #
-# Procedure:
-# Copy the release_prog file to release_prog.new, update the
-#   new file to new release number.
-# Run update prog, where prog is the program name.
-# Move release_prog.new to release_prog.
+# Options:
+# -f:  force update of same version number.
+# -t:  dry run, no actual operations but print commands
+# -y:  skip prompts (y to all).
 #
 # This calls fetchnew to perform the file transfers.
 
 
+force=no
+dryrun=no
+nopr=no
+
+wrcad_home=/home/webadmin/wrcad.com/html
+
 get_namelist()
 {
     prog=$1
-    while true; do
-        read v
-        if [ x"$v" = x ]; then
-            break
-        fi;
-        echo $v | grep -q ^#
-        if [ $? -ne 0 ]; then
-            st1="$st1 $v";
-        fi
-    done < release_$prog
 
-    while true; do
-        read v
-        if [ x"$v" = x ]; then
-            break
-        fi;
-        echo $v | grep -q ^#
-        if [ $? -ne 0 ]; then
-            st2="$st2 $v";
+    if [ ! -f exported ]; then
+        echo $(./exported.new oses)
+    else
+        vn=$(./exported.new version $prog)
+        vo=$(./exported version $prog)
+        if [ $force = yes -o "$vo" != $vn ]; then
+            echo $(./exported.new oses)
         fi
-    done < release_$prog.new
-
-    st1="$st1 END"
-    st2="$st2 END"
-    while true; do
-        set $st1
-        o1=$1
-        if [ $o1 = END ]; then
-            break;
-        fi
-        o2=$2
-        o3=$3
-        o4=$4
-        o5=$5
-        shift 5
-        st1="$*"
-
-        set $st2
-        n1=$1
-        if [ $n1 = END ]; then
-            break;
-        fi
-        n2=$2
-        n3=$3
-        n4=$4
-        n5=$5
-        shift 5
-        st2="$*"
-
-#        if [ $o1 = $n1 -a $o2 != $n2 ]; then
-        if [ $o1 = $n1 ]; then
-            newr="$newr $o1"
-        fi
-    done
-    echo $newr
+        # If any new directories, output these.
+        nms=
+        oses=$(./exported.new oses)
+        for os in $oses; do
+            host=$(./exported host $os)
+            if [ -z "$host" ]; then
+                if [ -z "$nms" ]; then
+                    nms=$os
+                else
+                    nms="$nms $os"
+                fi
+            fi
+        done
+        echo $nms
+    fi
 }
 
 clear_old()
 {
     prog=$1
-    while true; do
-        read v
-        if [ x"$v" = x ]; then
-            break
-        fi;
-        st1="$st1 $v";
-    done < release_$prog
-
-    while true; do
-        read v
-        if [ x"$v" = x ]; then
-            break
-        fi;
-        st2="$st2 $v";
-    done < release_$prog.new
-
-    st1="$st1 END"
-    st2="$st2 END"
-    while true; do
-        set $st1
-        o1=$1
-        if [ $o1 = END ]; then
-            break;
-        fi
-        o2=$2
-        o3=$3
-        o4=$4
-        o5=$5
-        shift 5
-        st1="$*"
-
-        set $st2
-        n1=$1
-        if [ $n1 = END ]; then
-            break;
-        fi
-        n2=$2
-        n3=$3
-        n4=$4
-        n5=$5
-        shift 5
-        st2="$*"
-
-#        if [ $o1 = $n1 -a $o2 != $n2 -a $o5 = $n5 ]; then
-        if [ $o1 = $n1 -a $o5 = $n5 ]; then
+    if [ -f exported ]; then
+        vers=$(./exported version $prog)
+        # oses is already set, from the new list.
+        for os in $oses; do
+            if [ -z "$(./exported host $os)" ]; then
+                continue
+            fi
             tifs=$IFS
-            IFS="_"
-            set $o1
+            IFS="."
+            set -- $os
             IFS=$tifs
-            o1x=$1
-            fn=xictools/$o1/$o5/$prog-$o1x-$o2*
+            bn=$1
+            fn=$wrcad_home/xictools/$os/xictools_$prog-$bn-$vers*
             for a in $fn; do
                 if [ -f $a ]; then
-                    echo -n "delete $a ? "
-                    read yn
-                    if [ x"$yn" = xy ]; then
-                        rm -f $a
+                    if [ $nopr = yes ]; then
+                        echo "rm -f $a"
+                        if [ $dryrun = no ]; then
+                            rm -f $a
+                        fi
+                    else
+                        echo -n "delete $a ? "
+                        read yn
+                        if [ x"$yn" = xy ]; then
+                            if [ $dryrun = no ]; then
+                                rm -f $a
+                            else
+                                echo "dry run, file not deleted"
+                            fi
+                        fi
                     fi
                 fi
             done
-        fi
-    done
+        done
+    fi
 }
 
-which=$1
+if [ ! -f exported.new ]; then
+    echo "Error: no \'exported.new\' script."
+    exit 1
+fi
+
+while true; do
+    if [ -z $1 ]; then
+        break;
+    fi
+    if [ $1 = -f ]; then
+        force=yes;
+    elif [ $1 = -t ]; then
+        dryrun=yes;
+    elif [ $1 = -y ]; then
+        nopr=yes
+    else
+        which=$1
+    fi
+    shift
+done
+
 if [ -z $which ]; then
     echo Usage: update progname
     exit
@@ -152,9 +119,21 @@ if [ -z "$oses" ]; then
 fi
 echo "Updating: $oses"
 clear_old $which
-echo -n  "execute ./fetchnew $which \"$oses\" ? "
-read yn
-if [ x"$yn" = xy ]; then
-    ./fetchnew $which "$oses"
+if [ $nopr = yes ]; then
+    if [ $dryrun = no ]; then
+        ./fetchnew $which "$oses"
+    else
+        ./fetchnew -t $which "$oses"
+    fi
+else
+    echo -n  "execute ./fetchnew $which \"$oses\" ? "
+    read yn
+    if [ x"$yn" = xy ]; then
+        if [ $dryrun = no ]; then
+            ./fetchnew $which "$oses"
+        else
+            ./fetchnew -t $which "$oses"
+        fi
+    fi
 fi
 

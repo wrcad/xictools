@@ -1,12 +1,15 @@
 #! /bin/bash
 
-# Make sure symbolic links are created in the package directories.
+# Make sure package directories symbolic links are created.
 
-oses="Darwin LinuxFedora26 LinuxOpenSUSE13 LinuxRHEL5 LinuxRHEL5.i686 \
- LinuxRHEL6 LinuxRHEL7 LinuxUbuntu17 Win32"
+exprog=./exported
+oses=$($exprog oses)
 
 for a in $oses; do
-    if [ ! -e 
+    if [ ! -d $HOME/wrcad.com/html/xictools/$a ]; then
+        mkdir $HOME/wrcad.com/html/xictools/$a
+    fi
+    if [ ! -e $HOME/wrcad.com/html/xictools/$a/wr_install ]; then
         ln -s ../scripts/wr_install $HOME/wrcad.com/html/xictools/$a
     fi
     if [ ! -e $HOME/wrcad.com/html/xictools/$a/wr_uninstall ]; then
@@ -14,10 +17,12 @@ for a in $oses; do
     fi
 done
 
-if [ ! -e $HOME/wrcad.com/html/xictools/Win32/cleanold.bat ]; then
-    ln -s ../scripts/cleanold.bat $HOME/wrcad.com/html/xictools/Win32
-fi
-if [ ! -e $HOME/wrcad.com/html/xictools/Win32/uninstall.bat ]; then
-    ln -s ../scripts/uninstall.bat $HOME/wrcad.com/html/xictools/Win32
+if [ -d $HOME/wrcad.com/html/xictools/Win32 ]; then
+    if [ ! -e $HOME/wrcad.com/html/xictools/Win32/cleanold.bat ]; then
+        ln -s ../scripts/cleanold.bat $HOME/wrcad.com/html/xictools/Win32
+    fi
+    if [ ! -e $HOME/wrcad.com/html/xictools/Win32/uninstall.bat ]; then
+        ln -s ../scripts/uninstall.bat $HOME/wrcad.com/html/xictools/Win32
+    fi
 fi
 

@@ -1,0 +1,93 @@
+#! /bin/sh
+
+# This script sets the package operating systems and programs exported
+# to wrcad.com.  It also defines the host names of the machines used
+# to build the listed operating system packages.  Each of the listed
+# operating system names should have a corresponding entry after
+# "hosts".  The hosts should be resolvable on the users local network.
+#
+# Of course, all of this requires customization to the user's site and
+# needs.
+
+# Usage:
+# Print the list of operating system package names supported.
+#   exported oses
+# Print the list of programs exported as packages.
+#   exported progs
+# Print the build host for a given package name.  The <pkgname>
+# is from the "exported oses" list.
+#   exported host <pkgname>
+# Print the package file extension for the given package name.
+#   exported sfx <pkgname>
+#
+# The externally exported version of this script accepts
+#   exported version <pkgname>
+# to print the version number of the package.  In the source, the
+# mkcurrent script outputs the text of this file with the "#VERSIONS"
+# line replaced with code to export version numbers, this is the
+# script exported to the web site.
+# 
+
+case $1 in
+oses)
+  echo \
+"Darwin \
+LinuxFedora27 \
+LinuxOpenSUSE42 \
+LinuxRHEL5.i686 \
+LinusRHEL5 \
+LinuxRHEL6 \
+LinuxRHEL7 \
+LinuxUbuntu17 \
+Win32"
+;;
+progs)
+  echo "adms fastcap fasthenry mozy mrouter vl wrspice xic"
+;;
+host)
+  case $2 in
+  Darwin)
+    echo macbook;;
+  LinuxFedora27)
+    echo fedor;;
+  LinuxOpenSUSE42)
+    echo byron;;
+  LinuxRHEL5.i686)
+    echo shelley;;
+  LinusRHEL5)
+    echo shelley;;
+  LinuxRHEL6)
+    echo poe;;
+  LinuxRHEL7)
+    echo frost;;
+  LinuxUbuntu17)
+    echo ubun;;
+  Win32)
+    echo marlowe;;
+  esac
+;;
+sfx)
+  case $2 in
+  Darwin)
+    echo pkg;;
+  LinuxFedora27)
+    echo rpm;;
+  LinuxOpenSUSE42)
+    echo rpm;;
+  LinuxRHEL5.i686)
+    echo rpm;;
+  LinusRHEL5)
+    echo rpm;;
+  LinuxRHEL6)
+    echo rpm;;
+  LinuxRHEL7)
+    echo rpm;;
+  LinuxUbuntu17)
+    echo deb;;
+  Win32)
+    echo exe;;
+  esac
+;;
+#VERSIONS
+esac
+
