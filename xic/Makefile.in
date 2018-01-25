@@ -340,12 +340,15 @@ install_xic_clean::
 
 $(destn)/bin::
 	@$(BASE)/util/mkdirpth $@
-	$(INSTALL_BIN) bin/xic$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrencode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $@
+# Don't strip xic.exe in Windows, Webroot will think its a virus!
 	@if [ $(DLL_XIC_PROG) = xic ]; then \
 	    $(INSTALL_BIN) bin/xic.dll $@; \
+	    $(INSTALL_SCRIPT) bin/xic$(EXESUFFIX) $@; \
+	else \
+	    $(INSTALL_BIN) bin/xic$(EXESUFFIX) $@; \
 	fi
 	@if [ -z "$(EXESUFFIX)" ]; then \
 	    $(INSTALL_SCRIPT) bin/xic.sh $@; \
