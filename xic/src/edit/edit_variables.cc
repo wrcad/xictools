@@ -112,6 +112,12 @@ namespace {
     {
         ED()->PopUpPlace(MODE_UPD, true);
     }
+
+    void
+    postset_fl(const char*)
+    {
+        ED()->PopUpFlatten(0, MODE_UPD, 0, 0, 0, false);
+    }
 }
 
 
@@ -515,6 +521,22 @@ namespace {
     }
 
     bool
+    evNoFlattenStdVias(const char*, bool set)
+    {
+        ED()->setNoFlattenVias(set);
+        CDvdb()->registerPostFunc(postset_fl);
+        return (true);
+    }
+
+    bool
+    evNoFlattenPCells(const char*, bool set)
+    {
+        ED()->setNoFlattenPCells(set);
+        CDvdb()->registerPostFunc(postset_fl);
+        return (true);
+    }
+
+    bool
     evThreads(const char *vstring, bool set)
     {
         if (set) {
@@ -671,6 +693,8 @@ cEdit::setupVariables()
     vsetup(VA_JoinBreakClean,       B,  evJoinBreakClean);
     vsetup(VA_JoinSplitWires,       B,  evJoinSplitWires);
     vsetup(VA_PartitionSize,        S,  evPartitionSize);
+    vsetup(VA_NoFlattenStdVias,     B,  evNoFlattenStdVias);
+    vsetup(VA_NoFlattenPCells,      B,  evNoFlattenPCells);
     vsetup(VA_Threads,              S,  evThreads);
 
     // Parameterized Cells

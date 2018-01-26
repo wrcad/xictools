@@ -101,6 +101,8 @@ cEdit::cEdit()
     ed_replacing            = false;
     ed_use_array            = false;
     ed_no_wire_width_mag    = false;
+    ed_no_flatten_vias      = false;
+    ed_no_flatten_pcells    = false;
 
     for (int i = 0; i < ED_YANK_DEPTH; i++)
         ed_yank_buffer[i] = 0;

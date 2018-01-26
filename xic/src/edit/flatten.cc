@@ -140,7 +140,7 @@ namespace {
         int depth;
         bool merge;
         bool mode;
-    };
+    } Fdata;
 
 
     sFfb FB;
@@ -209,6 +209,12 @@ namespace {
             if (sd->isSymbolic())
                 return (false);
         }
+        else {
+            if (ED()->noFlattenVias() && sd->isViaSubMaster())
+                return (false);
+            if (ED()->noFlattenPCells() && sd->isPCellSubMaster())
+                return (false);
+        }
         return (true);
     }
 }
@@ -219,7 +225,6 @@ namespace {
 void
 cEdit::flattenExec(CmdDesc *cmd)
 {
-    static sFdata *Fdata;
     if (noEditing())
         return;
     if (!CurCell() || CurCell()->isSymbolic())
@@ -230,10 +235,8 @@ cEdit::flattenExec(CmdDesc *cmd)
         return;
     }
     if (cmd && Menu()->GetStatus(cmd->caller)) {
-        if (!Fdata)
-            Fdata = new sFdata;
-        PopUpFlatten(cmd->caller, MODE_ON, f_cb, Fdata, Fdata->depth,
-            Fdata->mode);
+        PopUpFlatten(cmd->caller, MODE_ON, f_cb, &Fdata, Fdata.depth,
+            Fdata.mode);
     }
     else
         PopUpFlatten(0, MODE_OFF, 0, 0);

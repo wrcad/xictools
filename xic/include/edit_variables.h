@@ -84,6 +84,8 @@
 #define VA_JoinBreakClean       "JoinBreakClean"
 #define VA_JoinSplitWires       "JoinSplitWires"
 #define VA_PartitionSize        "PartitionSize"
+#define VA_NoFlattenStdVias     "NoFlattenStdVias"
+#define VA_NoFlattenPCells      "NoFlattenPCells"
 #define VA_Threads              "Threads"
 
 // Parameterized Cells (see also main_variables.h)

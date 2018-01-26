@@ -70,6 +70,8 @@ namespace {
 
             GRobject fl_caller;
             GtkWidget *fl_popup;
+            GtkWidget *fl_novias;
+            GtkWidget *fl_nopcells;
             GtkWidget *fl_merge;
             GtkWidget *fl_go;
             bool (*fl_callback)(const char*, bool, const char*, void*);
@@ -127,6 +129,8 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     Flt = this;
     fl_caller = c;
     fl_popup = 0;
+    fl_novias = 0;
+    fl_nopcells = 0;
     fl_merge = 0;
     fl_go = 0;
     fl_callback = callback;
@@ -210,6 +214,30 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     //
     // check boxes
     //
+    button = gtk_check_button_new_with_label(
+        "Don't flatten standard vias, move to top");
+    gtk_widget_set_name(button, "StdVias");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    fl_novias = button;
+
+    button = gtk_check_button_new_with_label(
+        "Don't flatten param. cells, move to top");
+    gtk_widget_set_name(button, "PCells");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    fl_nopcells = button;
+
     button = gtk_check_button_new_with_label("Use fast mode, NOT UNDOABLE");
     gtk_widget_set_name(button, "Mode");
     gtk_widget_show(button);
@@ -277,6 +305,8 @@ sFlt::~sFlt()
 void
 sFlt::update()
 {
+    GRX->SetStatus(fl_novias, CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GRX->SetStatus(fl_nopcells, CDvdb()->getVariable(VA_NoFlattenPCells));
 }
 
 
@@ -297,6 +327,18 @@ sFlt::fl_action_proc(GtkWidget *caller, void*)
     const char *name = gtk_widget_get_name(caller);
     if (!strcmp(name, "Help"))
         DSPmainWbag(PopUpHelp("xic:flatn"))
+    else if (!strcmp(name, "StdVias")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenStdVias, "");
+        else
+            CDvdb()->clearVariable(VA_NoFlattenStdVias);
+    }
+    else if (!strcmp(name, "PCells")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenPCells, "");
+        else
+            CDvdb()->clearVariable(VA_NoFlattenPCells);
+    }
     else if (!strcmp(name, "Mode")) {
         if (Flt->fl_callback)
             (*Flt->fl_callback)("mode", GRX->GetStatus(caller), 0,
