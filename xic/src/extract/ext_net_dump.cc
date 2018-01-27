@@ -66,6 +66,25 @@
 // of the original hierarchy.  The algorithm is designed to be as memory
 // efficient as possible, using a gridded approach with CHDs.
 //
+/* XXX
+
+Somehow, I'd like to keep standard vias in the net files.  This would be
+straightforward when not gridding.  Is there a "nice" way to grid?
+One possibility:  at the end, replace physical geometry with standard
+via instances:
+
+For each net cell
+  For each stdvia in hierarchy that overlaps net
+    clip cell via layers around stdvia bb
+    add stdvia instance to net cell
+  done
+done
+
+Implement:
+1) keep stdvia instances when not gridding or otherwise area constraining.
+2) implement a post-processing function as above.
+
+*/
 
 
 cExtNets::cExtNets(cCHD *chd, const char *cname, const char *basename,
@@ -195,10 +214,12 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
 
     FIOcvtPrms prms;
 
-    // Setup area filtering and flattening, with clipping.
-    prms.set_use_window(true);
-    prms.set_window(AOI);
-    prms.set_clip(true);
+    if (AOI && AOI->right > AOI->left && AOI->top > AOI->bottom) {
+        // Setup area filtering and flattening, with clipping.
+        prms.set_use_window(true);
+        prms.set_window(AOI);
+        prms.set_clip(true);
+    }
     prms.set_flatten(true);
     prms.set_allow_layer_mapping(true);
 
@@ -730,6 +751,9 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
 bool
 cExtNets::write_edge_map(const CDs *sdesc, const BBox *AOI, int x, int y) const
 {
+    if (!AOI || AOI->right <= AOI->left || AOI->top <= AOI->bottom)
+        return (true);
+
     if (!sdesc) {
         Errs()->add_error("write_edge_map: null cell descriptor.");
         return (false);
