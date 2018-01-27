@@ -511,23 +511,103 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
             TPush();
             TApply(ttx.tx, ttx.ty, ttx.ax, ttx.ay, ttx.magn, ttx.refly);
             in_transform++;
+// XXX new
+            if (FIO()->IsNoFlattenStdVias() && sd->isViaSubMaster()) {
 
-            if (ap.nx > 1 || ap.ny > 1) {
-                int tx, ty;
-                TGetTrans(&tx, &ty);
-                xyg_t xyg(0, ap.nx-1, 0, ap.ny-1);
-                do {
-                    TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
-                    if (!in_out->write_geometry(sd))
+                in_out->clear_property_queue();
+                CDp *pd = sd->prpty(XICP_STDVIA);
+                char *s;
+                if (pd && pd->string(&s)) {
+                    if (!in_out->queue_property(pd->value(), s)) {
+                        delete [] s;
+                        TPop();
                         return (OIerror);
-                    TSetTrans(tx, ty);
-                } while (xyg.advance());
+                    }
+                    delete [] s;
+                }
+
+                Instance inst;
+                inst.name = Tstring(sd->cellname());
+                inst.nx = ap.nx;
+                inst.ny = ap.ny;
+                inst.dx = ap.dx;
+                inst.dy = ap.dy;
+                inst.magn = ttx.magn;
+                inst.set_angle(ttx.ax, ttx.ay);
+                inst.origin.set(ttx.tx, ttx.ty);
+                inst.cdesc = 0;
+                inst.reflection = ttx.refly;
+
+                if (!in_out->write_sref(&inst)) {
+                    TPop();
+                    return (OIerror);
+                }
+                in_out->clear_property_queue();
+            }
+            else if (FIO()->IsNoFlattenPCells() && sd->isPCellSubMaster()) {
+
+                in_out->clear_property_queue();
+                CDp *pd = sd->prpty(XICP_PC);
+                char *s;
+                if (pd && pd->string(&s)) {
+                    if (!in_out->queue_property(pd->value(), s)) {
+                        delete [] s;
+                        TPop();
+                        return (OIerror);
+                    }
+                    delete [] s;
+                }
+                pd = sd->prpty(XICP_PC_PARAMS);
+                if (pd && pd->string(&s)) {
+                    if (!in_out->queue_property(pd->value(), s)) {
+                        delete [] s;
+                        TPop();
+                        return (OIerror);
+                    }
+                    delete [] s;
+                }
+
+                Instance inst;
+                inst.name = Tstring(sd->cellname());
+                inst.nx = ap.nx;
+                inst.ny = ap.ny;
+                inst.dx = ap.dx;
+                inst.dy = ap.dy;
+                inst.magn = ttx.magn;
+                inst.set_angle(ttx.ax, ttx.ay);
+                inst.origin.set(ttx.tx, ttx.ty);
+                inst.cdesc = 0;
+                inst.reflection = ttx.refly;
+
+                in_out->write_sref(&inst);
+                if (!in_out->write_sref(&inst)) {
+                    TPop();
+                    return (OIerror);
+                }
+                in_out->clear_property_queue();
             }
             else {
-                if (!in_out->write_geometry(sd))
-                    return (OIerror);
-            }
 
+                if (ap.nx > 1 || ap.ny > 1) {
+                    int tx, ty;
+                    TGetTrans(&tx, &ty);
+                    xyg_t xyg(0, ap.nx-1, 0, ap.ny-1);
+                    do {
+                        TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
+                        if (!in_out->write_geometry(sd)) {
+                            TPop();
+                            return (OIerror);
+                        }
+                        TSetTrans(tx, ty);
+                    } while (xyg.advance());
+                }
+                else {
+                    if (!in_out->write_geometry(sd)) {
+                        TPop();
+                        return (OIerror);
+                    }
+                }
+            }
             in_transform--;
             TPop();
         }

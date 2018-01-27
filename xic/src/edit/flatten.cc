@@ -210,7 +210,7 @@ namespace {
                 return (false);
         }
         else {
-            if (ED()->noFlattenVias() && sd->isViaSubMaster())
+            if (ED()->noFlattenStdVias() && sd->isViaSubMaster())
                 return (false);
             if (ED()->noFlattenPCells() && sd->isPCellSubMaster())
                 return (false);

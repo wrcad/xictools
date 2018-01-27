@@ -805,6 +805,12 @@ public:
     bool IsNoCompressContext()          { return (fioNoCompressContext); }
     void SetNoCompressContext(bool b)   { fioNoCompressContext = b; }
 
+    bool IsNoFlattenStdVias()           { return (fioNoFlattenStdVias); }
+    void SetNoFlattenStdVias(bool b)    { fioNoFlattenStdVias = b; }
+
+    bool IsNoFlattenPCells()            { return (fioNoFlattenPCells); }
+    void SetNoFlattenPCells(bool b)     { fioNoFlattenPCells = b; }
+
     bool IsRefCellAutoRename()          { return (fioRefCellAutoRename); }
     void SetRefCellAutoRename(bool b)   { fioRefCellAutoRename = b; }
 
@@ -1139,6 +1145,12 @@ private:
 
     bool fioNoCompressContext;
         // Don't use compressed instance lists in archive context.
+
+    bool fioNoFlattenStdVias;
+        // When flattening, keep std vias as subcells.
+
+    bool fioNoFlattenPCells;
+        // When flattening, keep pcells as subcells.
 
     bool fioRefCellAutoRename;
         // Rename cells under reference cells when writing a hierarchy

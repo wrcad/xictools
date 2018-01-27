@@ -132,6 +132,8 @@ cFIO::cFIO()
     fioSkipInvisibleElec = false;
     fioKeepBadArchive = false;
     fioNoCompressContext = false;
+    fioNoFlattenStdVias = false;
+    fioNoFlattenPCells = false;
     fioRefCellAutoRename = false;
     fioUseCellTab = false;
     fioSkipOverrideCells = false;

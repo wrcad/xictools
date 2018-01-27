@@ -523,7 +523,8 @@ namespace {
     bool
     evNoFlattenStdVias(const char*, bool set)
     {
-        ED()->setNoFlattenVias(set);
+        ED()->setNoFlattenStdVias(set);
+        FIO()->SetNoFlattenStdVias(set);
         CDvdb()->registerPostFunc(postset_fl);
         return (true);
     }
@@ -532,6 +533,7 @@ namespace {
     evNoFlattenPCells(const char*, bool set)
     {
         ED()->setNoFlattenPCells(set);
+        FIO()->SetNoFlattenPCells(set);
         CDvdb()->registerPostFunc(postset_fl);
         return (true);
     }

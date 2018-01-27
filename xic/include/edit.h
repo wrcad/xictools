@@ -613,8 +613,8 @@ public:
     bool noWireWidthMag()                   { return (ed_no_wire_width_mag); }
     void setNoWireWidthMag(bool b)          { ed_no_wire_width_mag = b; }
 
-    bool noFlattenVias()                    { return (ed_no_flatten_vias); }
-    void setNoFlattenVias(bool b)           { ed_no_flatten_vias = b; }
+    bool noFlattenStdVias()                 { return (ed_no_flatten_vias); }
+    void setNoFlattenStdVias(bool b)        { ed_no_flatten_vias = b; }
 
     bool noFlattenPCells()                  { return (ed_no_flatten_pcells); }
     void setNoFlattenPCells(bool b)         { ed_no_flatten_pcells = b; }
