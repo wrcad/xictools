@@ -511,8 +511,9 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
             TPush();
             TApply(ttx.tx, ttx.ty, ttx.ax, ttx.ay, ttx.magn, ttx.refly);
             in_transform++;
-// XXX new
+
             if (FIO()->IsNoFlattenStdVias() && sd->isViaSubMaster()) {
+                // Optionally keep standard via instances.
 
                 in_out->clear_property_queue();
                 CDp *pd = sd->prpty(XICP_STDVIA);
@@ -545,6 +546,7 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
                 in_out->clear_property_queue();
             }
             else if (FIO()->IsNoFlattenPCells() && sd->isPCellSubMaster()) {
+                // Optionally keep pcell instances.
 
                 in_out->clear_property_queue();
                 CDp *pd = sd->prpty(XICP_PC);

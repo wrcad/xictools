@@ -90,7 +90,7 @@ struct rf_out : public cv_out
     bool write_poly(const Poly*);
     bool write_wire(const Wire*);
     bool write_text(const Text*);
-    bool write_sref(const Instance*) { return (true); }
+    bool write_sref(const Instance*);
     bool write_endlib(const char*) { return (true); }
     bool write_info(Attribute*, const char*) { return (true); }
 

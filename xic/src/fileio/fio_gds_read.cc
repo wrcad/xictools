@@ -832,7 +832,10 @@ gds_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
         *sdret = 0;
 
     if (FIO()->IsUseCellTab()) {
-        if (in_mode == Physical && in_action == cvOpenModeTrans) {
+        if (in_mode == Physical && 
+                ((in_action == cvOpenModeTrans) ||
+                ((in_action == cvOpenModeDb) && in_flatten))) {
+
             // The AuxCellTab may contain cells to stream out from the
             // main database, overriding the cell data in the CHD.
 
@@ -845,7 +848,10 @@ gds_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
     }
     if (!p->get_defseen()) {
         CDs *sd = CDcdb()->findCell(p->get_name(), in_mode);
-        if (in_mode == Physical && in_action == cvOpenModeTrans) {
+        if (sd && in_mode == Physical && 
+                ((in_action == cvOpenModeTrans) ||
+                ((in_action == cvOpenModeDb) && in_flatten))) {
+
             // The cell definition was not in the file.  This could mean
             // that the cell is a standard via or parameterized cell
             // sub-master, or is a native library cell.  In any case, it

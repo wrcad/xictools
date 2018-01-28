@@ -381,6 +381,8 @@ ext_bangcmds::netext(const char *s)
             flags |= EN_VIAS;
         else if (matching("-v+"))
             flags |= (EN_VIAS | EN_VTRE);
+        else if (matching("-vs"))
+            flags |= EN_VSTD;
         else if (matching("-k"))
             flags |= EN_KEEP;
         else if (matching("-s1"))

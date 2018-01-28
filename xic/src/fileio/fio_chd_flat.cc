@@ -1258,5 +1258,33 @@ rf_out::write_text(const Text *text)
     }
     return (ret);
 }
+
+
+// This can be used to keep standard vias, pcells, etc.  as instances
+// when flattening.  Not presently supported by backend interface, so
+// only applies when writing to memory.
+//
+bool
+rf_out::write_sref(const Instance *inst)
+{
+    bool ret = true;
+    if (!rf_backend) {
+        CDtx tx(inst->reflection, inst->ax, inst->ay,
+            inst->origin.x, inst->origin.y, inst->magn);
+        CDap ap(inst->nx, inst->ny, inst->dx, inst->dy);
+        CDcellName cname = CD()->CellNameTableAdd(inst->name);
+        CallDesc calldesc(cname, 0);
+
+        CDc *newo;
+        if (rf_targcell->makeCall(&calldesc, &tx, &ap, CDcallDb, &newo)
+                != OIok)
+            ret = false;
+        if (ret && newo && out_prpty) {
+            newo->set_prpty_list(out_prpty);
+            out_prpty = 0;
+        }
+    }
+    return (ret);
+}
 // End of rf_out functions
 

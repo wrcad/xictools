@@ -66,25 +66,6 @@
 // of the original hierarchy.  The algorithm is designed to be as memory
 // efficient as possible, using a gridded approach with CHDs.
 //
-/* XXX
-
-Somehow, I'd like to keep standard vias in the net files.  This would be
-straightforward when not gridding.  Is there a "nice" way to grid?
-One possibility:  at the end, replace physical geometry with standard
-via instances:
-
-For each net cell
-  For each stdvia in hierarchy that overlaps net
-    clip cell via layers around stdvia bb
-    add stdvia instance to net cell
-  done
-done
-
-Implement:
-1) keep stdvia instances when not gridding or otherwise area constraining.
-2) implement a post-processing function as above.
-
-*/
 
 
 cExtNets::cExtNets(cCHD *chd, const char *cname, const char *basename,
@@ -219,12 +200,14 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
         prms.set_use_window(true);
         prms.set_window(AOI);
         prms.set_clip(true);
+        // Make sure this is off.
+        en_flags &= ~EN_VSTD;
     }
     prms.set_flatten(true);
     prms.set_allow_layer_mapping(true);
 
     // Setup layer filtering.
-    // First, set up a table if via tree layers, if necessary.
+    // First, set up a table of via tree layers, if necessary.
     SymTab *ltab = 0;
     if ((en_flags & EN_VIAS) && (en_flags & EN_VTRE) &&
             !(en_flags & EN_LFLT) && !(en_flags & EN_EXTR)) {
@@ -294,9 +277,29 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
     //
     const char *tnlab = CDvdb()->getVariable(VA_NoReadLabels);
     CDvdb()->setVariable(VA_NoReadLabels, "");
+
+    // Keep standard vias if so instructed.
+    //
+    const char *tnsv = CDvdb()->getVariable(VA_NoFlattenStdVias);
+    if (en_flags & EN_VSTD)
+        CDvdb()->setVariable(VA_NoFlattenStdVias, "");
+    else
+        CDvdb()->clearVariable(VA_NoFlattenStdVias);
+
+    // Don't keep PCells.
+    //
+    const char *tnpc = CDvdb()->getVariable(VA_NoFlattenPCells);
+    CDvdb()->clearVariable(VA_NoFlattenPCells);
+
     OItype oiret = en_chd->readFlat(en_cellname, &prms, 0, CDMAXCALLDEPTH);
     if (!tnlab)
         CDvdb()->clearVariable(VA_NoReadLabels);
+    if (!tnsv)
+        CDvdb()->clearVariable(VA_NoFlattenStdVias);
+    else
+        CDvdb()->setVariable(VA_NoFlattenStdVias, "");
+    if (tnpc)
+        CDvdb()->setVariable(VA_NoFlattenPCells, "");
 
     // Reset layer filtering.
     if (!(en_flags & EN_LFLT)) {
@@ -358,8 +361,11 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
     if (!write_edge_map(sdesc, AOI, x, y))
         return (false);
 
-    // clear database
-    delete sdesc;
+    // Clear database, keep if the flag set and not using area.
+    if (AOI && AOI->right > AOI->left && AOI->top > AOI->bottom)
+        delete sdesc;
+    else if (!(en_flags & EN_KEEP))
+        delete sdesc;
     return (true);
 }
 
@@ -467,6 +473,16 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
             return (false);
         }
         for (CDol *ol = grp->net()->objlist(); ol; ol = ol->next) {
+            if (en_flags & EN_VSTD) {
+                // If we're writing standard via instances, don't
+                // include the metal that was smashed in from standard
+                // via cells, which is redundant.  The extraction
+                // system sets the CDmergeDeleted flag of these
+                // objects.
+
+                if (ol->odesc->flags() & CDmergeDeleted)
+                    continue;
+            }
             if (!oas->write_object(ol->odesc, 0)) {
                 Errs()->add_error("write_metal_file: write_object failed.");
                 return (false);
@@ -477,6 +493,42 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
             if (!write_vias(sdesc, grp, oas)) {
                 Errs()->add_error("write_metal_file: write_vias failed.");
                 return (false);
+            }
+        }
+        if (en_flags & EN_VSTD) {
+            // Place standard via instances.
+            for (CDol *ol = grp->net()->vialist(); ol; ol = ol->next) {
+                if (!ol->odesc || ol->odesc->type() != CDINSTANCE)
+                    continue;
+                CDc *cd = (CDc*)ol->odesc;
+                CDap ap(cd);
+                CDtx tx(cd);
+
+                Instance inst;
+                inst.name = Tstring(cd->cellname());
+                inst.nx = ap.nx;
+                inst.ny = ap.ny;
+                inst.dx = ap.dx;
+                inst.dy = ap.dy;
+                inst.magn = tx.magn;
+                inst.set_angle(tx.ax, tx.ay);
+                inst.origin.set(tx.tx, tx.ty);
+                inst.cdesc = cd;
+                inst.reflection = tx.refly;
+                for (CDp *p = cd->prpty_list(); p; p = p->next_prp()) {
+                    char *s;
+                    if (p->string(&s)) {
+                        oas->queue_property(p->value(), s);
+                        delete [] s;
+                    }
+                }
+                if (!oas->write_sref(&inst)) {
+                    Errs()->add_error(
+                        "write_metal_file: write_sref %s returned error.",
+                        inst.name);
+                    return (false);
+                }
+                oas->clear_property_queue();
             }
         }
 
