@@ -365,11 +365,111 @@ cvrt_menu::M_Export(CmdDesc *cmd)
 //
 
 namespace {
-    bool
-    in_cb(int type, void*)
+    // Return false to pop down panel.
+    //
+    bool in_cb(int type, void*)
     {
         if (type < 0)
             return (false);
+
+        if (FIO()->OutFlatten()) {
+            char *in = XM()->OpenFileDlg("File, CHD and cell? ", "");
+            if (!in) {
+                PL()->ShowPrompt("Aborted.");
+                return (true);
+            }
+            char *tt = in;
+            char *filename = lstring::getqtok(&in);
+            char *cellname = lstring::getqtok(&in);
+            delete [] tt;
+
+            FIOcvtPrms prms;
+            const BBox *AOI = FIO()->OutWindow();
+            if (AOI && AOI->right > AOI->left && AOI->top > AOI->bottom) {
+                prms.set_use_window(true);
+                prms.set_window(AOI);
+                prms.set_clip(FIO()->OutClip());
+            }
+            prms.set_flatten(true);
+            prms.set_allow_layer_mapping(true);
+
+            bool free_chd = false;
+            cCHD *chd = CDchd()->chdRecall(filename, false);
+            if (!chd) {
+                char *realname;
+                FILE *fp = FIO()->POpen(filename, "rb", &realname);
+                if (!fp) {
+                    PL()->ShowPromptV("File %s could not be opened.",
+                        filename);
+                    delete [] realname;
+                    delete [] filename;
+                    delete [] cellname;
+                    return (true);
+                }
+                FileType ft = FIO()->GetFileType(fp);
+                fclose(fp);
+                if (!FIO()->IsSupportedArchiveFormat(ft)) {
+                    sCHDin chd_in;
+                    if (!chd_in.check(realname)) {
+                        PL()->ShowPromptV("File %s type not supported.",
+                            filename);
+                        delete [] realname;
+                        delete [] filename;
+                        delete [] cellname;
+                        return (true);
+                    }
+                    chd = chd_in.read(realname, sCHDin::get_default_cgd_type());
+                    delete [] realname;
+                    if (!chd) {
+                        PL()->ShowPromptV("Error reading CHD file %s.",
+                            filename);
+                        if (Errs()->has_error()) {
+                            Log()->ErrorLog(mh::Processing,
+                                Errs()->get_error());
+                        }
+                        Errs()->get_error();
+                        delete [] filename;
+                        delete [] cellname;
+                        return (true);
+                    }
+                }
+                if (!chd)
+                    chd = FIO()->NewCHD(filename, ft, Physical, 0);
+                delete [] filename;
+                if (!chd) {
+                    PL()->ShowPrompt("Error opening CHD.");
+                    if (Errs()->has_error())
+                        Log()->ErrorLog(mh::Processing, Errs()->get_error());
+                    delete [] cellname;
+                    return (true);
+                }
+                free_chd = true;
+            }
+            if (!cellname)
+                cellname = lstring::copy(chd->defaultCell(Physical));
+            OItype oiret = chd->readFlat(cellname, &prms, 0,
+                CDMAXCALLDEPTH);
+            if (free_chd)
+                delete chd;
+            if (oiret == OIok) {
+                XM()->EditCell(cellname, true);
+                delete [] cellname;
+                return (false);
+            }
+            delete [] cellname;
+            if (oiret == OIaborted) {
+                PL()->ShowPrompt("Flat read aborted.");
+                return (true);
+            }
+            if (oiret == OIerror) {
+                PL()->ShowPrompt("Error during flat read.");
+                if (Errs()->has_error())
+                    Log()->ErrorLog(mh::Processing, Errs()->get_error());
+                return (true);
+            }
+            // Shouldn't get here.
+            return (false);
+        }
         FIOreadPrms prms;
         prms.set_scale(FIO()->ReadScale());
         prms.set_alias_mask(

@@ -74,6 +74,7 @@ namespace {
             static void cvi_force_menu_proc(GtkWidget*, void*);
             static void cvi_merg_menu_proc(GtkWidget*, void*);
             static void cvi_val_changed(GtkWidget*, void*);
+            static WndSensMode wnd_sens_test();
 
             GRobject cvi_caller;
             GtkWidget *cvi_popup;
@@ -96,6 +97,7 @@ namespace {
             void *cvi_arg;
             cnmap_t *cvi_cnmap;
             llist_t *cvi_llist;
+            wnd_t *cvi_wnd;
             GTKspinBtn sb_scale;
 
             static int cvi_merg_val;
@@ -199,6 +201,7 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     cvi_arg = arg;
     cvi_cnmap = 0;
     cvi_llist = 0;
+    cvi_wnd = 0;
 
     cvi_popup = gtk_NewPopup(0, "Import Control", cvi_cancel_proc, 0);
     if (!cvi_popup)
@@ -512,6 +515,15 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     rowcnt++;
 
     //
+    // Window
+    //
+    cvi_wnd = new wnd_t(wnd_sens_test, true);
+    gtk_table_attach(GTK_TABLE(form), cvi_wnd->frame(), 0, 2, rowcnt,
+        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    //
     // Scale spin button
     //
     label = gtk_label_new("Conversion Scale Factor");
@@ -572,6 +584,7 @@ sCvi::~sCvi()
         GRX->Deselect(cvi_caller);
     delete cvi_cnmap;
     delete cvi_llist;
+    delete cvi_wnd;
     if (cvi_callback)
         (*cvi_callback)(-1, cvi_arg);
     if (cvi_popup)
@@ -618,6 +631,8 @@ sCvi::update()
     sb_scale.set_value(FIO()->ReadScale());
     cvi_cnmap->update();
     cvi_llist->update();
+    cvi_wnd->update();
+    cvi_wnd->set_sens();
 }
 
 
@@ -846,5 +861,13 @@ sCvi::cvi_val_changed(GtkWidget*, void*)
     double d = strtod(s, &endp);
     if (endp > s && d >= CDSCALEMIN && d <= CDSCALEMAX)
         FIO()->SetReadScale(d);
+}
+
+
+// Static function.
+WndSensMode
+sCvi::wnd_sens_test()
+{
+    return (WndSensFlatten);
 }
 
