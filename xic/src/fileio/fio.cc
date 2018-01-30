@@ -67,7 +67,6 @@ cFIO::cFIO()
 
     fioCvtInfo = cvINFOtotals;
 
-    fioCvtScaleRead = 1.0;
     fioMergeControlEnabled = 0;
     fioSkipFixBB = 0;
 

@@ -92,6 +92,8 @@ namespace {
             GtkWidget *cvi_nolabels;
             GtkWidget *cvi_dtypes;
             GtkWidget *cvi_force;
+            GtkWidget *cvi_noflvias;
+            GtkWidget *cvi_noflpcs;
             GtkWidget *cvi_merg;
             bool (*cvi_callback)(int, void*);
             void *cvi_arg;
@@ -196,12 +198,18 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     cvi_nolabels = 0;
     cvi_dtypes = 0;
     cvi_force = 0;
+    cvi_noflvias = 0;
+    cvi_noflpcs = 0;
     cvi_merg = 0;
     cvi_callback = callback;
     cvi_arg = arg;
     cvi_cnmap = 0;
     cvi_llist = 0;
     cvi_wnd = 0;
+
+    // Dangerous to leave this in effect, force user to turn in on
+    // when needed.
+    FIO()->SetInFlatten(false);
 
     cvi_popup = gtk_NewPopup(0, "Import Control", cvi_cancel_proc, 0);
     if (!cvi_popup)
@@ -454,6 +462,31 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    button = gtk_check_button_new_with_label(
+        "Don't flatten standard vias, keep as instance at top level");
+    gtk_widget_set_name(button, "noflvias");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvi_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvi_noflvias = button;
+
+    button = gtk_check_button_new_with_label(
+        "Don't flatten pcells, keep as instance at top level");
+    gtk_widget_set_name(button, "noflpcs");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvi_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvi_noflpcs = button;
 
     GtkWidget *tab_label = gtk_label_new("Setup");
     gtk_widget_show(tab_label);
@@ -517,7 +550,7 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     //
     // Window
     //
-    cvi_wnd = new wnd_t(wnd_sens_test, true);
+    cvi_wnd = new wnd_t(wnd_sens_test, WndFuncIn);
     gtk_table_attach(GTK_TABLE(form), cvi_wnd->frame(), 0, 2, rowcnt,
         rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -609,6 +642,8 @@ sCvi::update()
     GRX->SetStatus(cvi_empties, CDvdb()->getVariable(VA_NoCheckEmpties));
     GRX->SetStatus(cvi_nolabels, CDvdb()->getVariable(VA_NoReadLabels));
     GRX->SetStatus(cvi_dtypes, CDvdb()->getVariable(VA_NoMapDatatypes));
+    GRX->SetStatus(cvi_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GRX->SetStatus(cvi_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
 
     int hst = 1;
     const char *str = CDvdb()->getVariable(VA_DupCheckMode);
@@ -644,6 +679,7 @@ sCvi::cvi_cancel_proc(GtkWidget*, void*)
 }
 
 
+// Static function.
 void
 sCvi::cvi_page_chg_proc(GtkWidget*, void*, int pg, void*)
 {
@@ -726,6 +762,20 @@ sCvi::cvi_action(GtkWidget *caller, void*)
             CDvdb()->setVariable(VA_NoMapDatatypes, 0);
         else
             CDvdb()->clearVariable(VA_NoMapDatatypes);
+        return;
+    }
+    if (!strcmp(name, "noflvias")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenStdVias, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenStdVias);
+        return;
+    }
+    if (!strcmp(name, "noflpcs")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenPCells, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenPCells);
         return;
     }
     if (!strcmp(name, "luse")) {

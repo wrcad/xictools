@@ -91,6 +91,14 @@ namespace {
     {
         Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
     }
+
+    void
+    postfl(const char*)
+    {
+        Cvt()->PopUpImport(0, MODE_UPD, 0, 0);
+        Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
+        Cvt()->PopUpConvert(0, MODE_UPD, 0, 0, 0);
+    }
 }
 
 
@@ -274,6 +282,22 @@ namespace {
     evNoStrictCellNames(const char*, bool set)
     {
         FIO()->SetNoStrictCellnames(set);
+        return (true);
+    }
+
+    bool
+    evNoFlattenStdVias(const char*, bool set)
+    {
+        FIO()->SetNoFlattenStdVias(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
+
+    bool
+    evNoFlattenPCells(const char*, bool set)
+    {
+        FIO()->SetNoFlattenPCells(set);
+        CDvdb()->registerPostFunc(postfl);
         return (true);
     }
 }
@@ -948,6 +972,8 @@ cConvert::setupVariables()
     vsetup(VA_UnknownGdsLayerBase,      S,  evUnknownGdsLayerBase);
     vsetup(VA_UnknownGdsDatatype,       S,  evUnknownGdsDatatype);
     vsetup(VA_NoStrictCellnames,        B,  evNoStrictCellNames);
+    vsetup(VA_NoFlattenStdVias,         B,  evNoFlattenStdVias);
+    vsetup(VA_NoFlattenPCells,          B,  evNoFlattenPCells);
 
     // Conversion - Import and Conversion Commands
     vsetup(VA_ChdLoadTopOnly,           B,  ev_update);

@@ -54,6 +54,8 @@
 #define VA_UnknownGdsLayerBase      "UnknowGdsLayerBase"
 #define VA_UnknownGdsDatatype       "UnknownGdsDatatype"
 #define VA_NoStrictCellnames        "NoStrictCellnames"
+#define VA_NoFlattenStdVias         "NoFlattenStdVias"
+#define VA_NoFlattenPCells          "NoFlattenPCells"
 
 // Convert Menu - Input and ASCII Output
 #define VA_ChdLoadTopOnly           "ChdLoadTopOnly"

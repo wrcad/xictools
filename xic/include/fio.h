@@ -587,12 +587,14 @@ public:
     cvINFO CvtInfo()                    { return (fioCvtInfo); }
     void SetCvtInfo(cvINFO cv)          { fioCvtInfo = cv; }
 
+    double TransScale()                 { return (fioCvtPrms.scale()); }
     bool CvtUseWindow()                 { return (fioCvtPrms.use_window()); }
     bool CvtClip()                      { return (fioCvtPrms.clip()); }
     bool CvtFlatten()                   { return (fioCvtPrms.flatten()); }
     ECFlevel CvtECFlevel()              { return (fioCvtPrms.ecf_level()); }
     const BBox *CvtWindow()             { return (fioCvtPrms.window()); }
 
+    void SetTransScale(double d)        { fioCvtPrms.set_scale(d); }
     void SetCvtUseWindow(bool b)        { fioCvtPrms.set_use_window(b); }
     void SetCvtClip(bool b)             { fioCvtPrms.set_clip(b); }
     void SetCvtFlatten(bool b)          { fioCvtPrms.set_flatten(b); }
@@ -603,12 +605,14 @@ public:
     void SetCvtWindowRight(int r)       { fioCvtPrms.set_window_right(r); }
     void SetCvtWindowTop(int t)         { fioCvtPrms.set_window_top(t); }
 
+    double WriteScale()                 { return (fioOutPrms.scale()); }
     bool OutUseWindow()                 { return (fioOutPrms.use_window()); }
     bool OutClip()                      { return (fioOutPrms.clip()); }
     bool OutFlatten()                   { return (fioOutPrms.flatten()); }
     ECFlevel OutECFlevel()              { return (fioOutPrms.ecf_level()); }
     const BBox *OutWindow()             { return (fioOutPrms.window()); }
 
+    void SetWriteScale(double d)        { fioOutPrms.set_scale(d); }
     void SetOutUseWindow(bool b)        { fioOutPrms.set_use_window(b); }
     void SetOutClip(bool b)             { fioOutPrms.set_clip(b); }
     void SetOutFlatten(bool b)          { fioOutPrms.set_flatten(b); }
@@ -619,14 +623,25 @@ public:
     void SetOutWindowRight(int r)       { fioOutPrms.set_window_right(r); }
     void SetOutWindowTop(int t)         { fioOutPrms.set_window_top(t); }
 
-    const FIOreadPrms *DefReadPrms()    { return (&fioDefReadPrms); }
+    double ReadScale()                  { return (fioInPrms.scale()); }
+    bool InUseWindow()                  { return (fioInPrms.use_window()); }
+    bool InClip()                       { return (fioInPrms.clip()); }
+    bool InFlatten()                    { return (fioInPrms.flatten()); }
+    ECFlevel InECFlevel()               { return (fioInPrms.ecf_level()); }
+    const BBox *InWindow()              { return (fioInPrms.window()); }
 
-    double ReadScale()                  { return (fioCvtScaleRead); }
-    void SetReadScale(double d)         { fioCvtScaleRead = d; }
-    double WriteScale()                 { return (fioOutPrms.scale()); }
-    void SetWriteScale(double d)        { fioOutPrms.set_scale(d); }
-    double TransScale()                 { return (fioCvtPrms.scale()); }
-    void SetTransScale(double d)        { fioCvtPrms.set_scale(d); }
+    void SetReadScale(double d)         { fioInPrms.set_scale(d); }
+    void SetInUseWindow(bool b)         { fioInPrms.set_use_window(b); }
+    void SetInClip(bool b)              { fioInPrms.set_clip(b); }
+    void SetInFlatten(bool b)           { fioInPrms.set_flatten(b); }
+    void SetInECFlevel(ECFlevel f)      { fioInPrms.set_ecf_level(f); }
+    void SetInWindow(const BBox *BB)    { fioInPrms.set_window(BB); }
+    void SetInWindowLeft(int l)         { fioInPrms.set_window_left(l); }
+    void SetInWindowBottom(int b)       { fioInPrms.set_window_bottom(b); }
+    void SetInWindowRight(int r)        { fioInPrms.set_window_right(r); }
+    void SetInWindowTop(int t)          { fioInPrms.set_window_top(t); }
+
+    const FIOreadPrms *DefReadPrms()    { return (&fioDefReadPrms); }
 
     BBox *savedBB(int i)
         {
@@ -916,13 +931,13 @@ private:
     const char *fioSymSearchPath;   // Cell file locations
     sLib *fioLibraries;             // Open library list
 
-    FIOcvPrms fioCvtPrms;           // Parameters for output from database
-    FIOcvPrms fioOutPrms;           // Parameters for couput from conversion
+    FIOcvPrms fioCvtPrms;           // Parameters for output from conversion
+    FIOcvPrms fioOutPrms;           // Parameters for output from database
+    FIOcvPrms fioInPrms;            // Parameters for input to database
     FIOreadPrms fioDefReadPrms;     // Default reading params
 
     cvINFO fioCvtInfo;              // Info level for CHD create
 
-    double fioCvtScaleRead;         // Scale when reading
     int fioMergeControlEnabled;     // Merge Control pop-up enable count
     int fioSkipFixBB;               // Skip calls to fixBB after reading
 

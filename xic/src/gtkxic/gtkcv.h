@@ -107,11 +107,22 @@ private:
 //
 
 // Sensitivity logic.
-enum WndSensMode { WndSensAllModes, WndSensFlatten, WndSensNone };
+enum WndSensMode {
+    WndSensAllModes,
+    WndSensFlatten,
+    WndSensNone
+};
+
+// Set which function.
+enum WndFuncMode {
+    WndFuncCvt,     // Conversion
+    WndFuncOut,     // Export
+    WndFuncIn       // Import
+};
 
 struct wnd_t
 {
-    wnd_t(WndSensMode(*)(), bool);
+    wnd_t(WndSensMode(*)(), WndFuncMode);
     ~wnd_t();
 
     void update();
@@ -152,7 +163,7 @@ private:
     GTKspinBtn sb_top;
 
     WndSensMode (*wnd_sens_test)();
-    bool wnd_from_db;
+    WndFuncMode wnd_func_mode;
 };
 
 //-------------------------------------------------------------------------

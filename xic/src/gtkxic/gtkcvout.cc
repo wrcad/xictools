@@ -68,6 +68,7 @@ namespace {
 
         private:
             static void cvo_cancel_proc(GtkWidget*, void*);
+            static void cvo_page_chg_proc(GtkWidget*, void*, int, void*);
             static void cvo_action(GtkWidget*, void*);
             static void cvo_format_proc(int);
             static void cvo_val_changed(GtkWidget*, void*);
@@ -76,11 +77,15 @@ namespace {
             GRobject cvo_caller;
             GtkWidget *cvo_popup;
             cvofmt_t *cvo_fmt;
+            GtkWidget *cvo_label;
+            GtkWidget *cvo_nbook;
             GtkWidget *cvo_strip;
             GtkWidget *cvo_wrall;
             GtkWidget *cvo_pcsub;
             GtkWidget *cvo_viasub;
             GtkWidget *cvo_allcells;
+            GtkWidget *cvo_noflvias;
+            GtkWidget *cvo_noflpcs;
             GtkWidget *cvo_invis_p;
             GtkWidget *cvo_invis_e;
             CvoCallback cvo_callback;
@@ -148,6 +153,7 @@ cConvert::PopUpExport(GRobject caller, ShowMode mode,
 
     GRX->SetPopupLocation(GRloc(LW_UR), Cvo->shell(), mainBag()->Viewport());
     gtk_widget_show(Cvo->shell());
+
 }
 
 
@@ -157,11 +163,15 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     cvo_caller = c;
     cvo_popup = 0;
     cvo_fmt = 0;
+    cvo_label = 0;
+    cvo_nbook = 0;
     cvo_strip = 0;
     cvo_wrall = 0;
     cvo_pcsub = 0;
     cvo_viasub = 0;
     cvo_allcells = 0;
+    cvo_noflvias = 0;
+    cvo_noflpcs = 0;
     cvo_invis_p = 0;
     cvo_invis_e = 0;
     cvo_callback = callback;
@@ -170,23 +180,28 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     cvo_wnd = 0;
     cvo_useallcells = false;
 
+    // Dangerous to leave this in effect, force user to turn in on
+    // when needed.
+    FIO()->SetOutFlatten(false);
+
     cvo_popup = gtk_NewPopup(0, "Export Control", cvo_cancel_proc, 0);
     if (!cvo_popup)
         return;
     gtk_window_set_resizable(GTK_WINDOW(cvo_popup), false);
 
-    GtkWidget *form = gtk_table_new(2, 1, false);
-    gtk_widget_show(form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
-    gtk_container_add(GTK_CONTAINER(cvo_popup), form);
-    int rowcnt = 0;
+    GtkWidget *topform = gtk_table_new(2, 1, false);
+    gtk_widget_show(topform);
+    gtk_container_set_border_width(GTK_CONTAINER(topform), 2);
+    gtk_container_add(GTK_CONTAINER(cvo_popup), topform);
+    int toprcnt = 0;
 
     //
     // label in frame plus help btn
     //
     GtkWidget *row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-    GtkWidget *label = gtk_label_new("Write cell data file");
+    GtkWidget *label = gtk_label_new("");
+    cvo_label = label;
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     GtkWidget *frame = gtk_frame_new(0);
@@ -199,64 +214,37 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(cvo_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
-    gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
+    gtk_table_attach(GTK_TABLE(topform), row, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    toprcnt++;
 
     //
     // Format selection notebook
     //
     cvo_fmt = new cvofmt_t(cvo_format_proc, cvo_fmt_type, cvofmt_asm);
-    gtk_table_attach(GTK_TABLE(form), cvo_fmt->frame(), 0, 2, rowcnt,
-        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+    gtk_table_attach(GTK_TABLE(topform), cvo_fmt->frame(), 0, 2, toprcnt,
+        toprcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    toprcnt++;
 
-    //
-    // Cell name mapping
-    //
-    cvo_cnmap = new cnmap_t(true);
-    gtk_table_attach(GTK_TABLE(form), cvo_cnmap->frame(), 0, 2, rowcnt,
-        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
-    // Window
-    //
-    cvo_wnd = new wnd_t(wnd_sens_test, true);
-    gtk_table_attach(GTK_TABLE(form), cvo_wnd->frame(), 0, 2, rowcnt,
-        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    //
-    // Scale spin button and label
-    //
-    label = gtk_label_new("Conversion Scale Factor");
-    gtk_widget_show(label);
-    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
-    gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
+    cvo_nbook = gtk_notebook_new();
+    gtk_widget_show(cvo_nbook);
+    gtk_signal_connect(GTK_OBJECT(cvo_nbook), "switch-page",
+        GTK_SIGNAL_FUNC(cvo_page_chg_proc), 0);
+    gtk_table_attach(GTK_TABLE(topform), cvo_nbook, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
+    toprcnt++;
 
-    GtkWidget *sb = sb_scale.init(FIO()->WriteScale(), CDSCALEMIN, CDSCALEMAX,
-        5);
-    sb_scale.connect_changed(GTK_SIGNAL_FUNC(cvo_val_changed), 0);
-    gtk_widget_set_usize(sb, 100, -1);
 
-    gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-
-    GtkWidget *sep = gtk_hseparator_new();
-    gtk_widget_show(sep);
-    gtk_table_attach(GTK_TABLE(form), sep, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    //
+    // The Setup Page
+    //
+    GtkWidget *form = gtk_table_new(2, 1, false);
+    gtk_widget_show(form);
+    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
+    int rowcnt = 0;
 
     //
     // Invisible layer conversion
@@ -364,8 +352,89 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     rowcnt++;
     cvo_allcells = button;
 
+    button = gtk_check_button_new_with_label(
+        "Don't flatten standard vias, keep as instance at top level");
+    gtk_widget_set_name(button, "noflvias");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvo_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvo_noflvias = button;
+
+    button = gtk_check_button_new_with_label(
+        "Don't flatten pcells, keep as instance at top level");
+    gtk_widget_set_name(button, "noflpcs");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvo_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvo_noflpcs = button;
+
+    GtkWidget *tab_label = gtk_label_new("Setup");
+    gtk_widget_show(tab_label);
+    gtk_notebook_append_page(GTK_NOTEBOOK(cvo_nbook), form, tab_label);
+
     //
-    // Write File and Dismiss buttons
+    // The Read File page
+    //
+    form = gtk_table_new(2, 1, false);
+    gtk_widget_show(form);
+    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
+    rowcnt = 0;
+
+    //
+    // Cell name mapping
+    //
+    cvo_cnmap = new cnmap_t(true);
+    gtk_table_attach(GTK_TABLE(form), cvo_cnmap->frame(), 0, 2, rowcnt,
+        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    //
+    // Window
+    //
+    cvo_wnd = new wnd_t(wnd_sens_test, WndFuncOut);
+    gtk_table_attach(GTK_TABLE(form), cvo_wnd->frame(), 0, 2, rowcnt,
+        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    //
+    // Scale spin button and label
+    //
+    label = gtk_label_new("Conversion Scale Factor");
+    gtk_widget_show(label);
+    gtk_misc_set_padding(GTK_MISC(label), 2, 2);
+    gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+
+    GtkWidget *sb = sb_scale.init(FIO()->WriteScale(), CDSCALEMIN, CDSCALEMAX,
+        5);
+    sb_scale.connect_changed(GTK_SIGNAL_FUNC(cvo_val_changed), 0);
+    gtk_widget_set_usize(sb, 100, -1);
+
+    gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    GtkWidget *sep = gtk_hseparator_new();
+    gtk_widget_show(sep);
+    gtk_table_attach(GTK_TABLE(form), sep, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    //
+    // Write File button
     //
     button = gtk_button_new_with_label("Write File");
     gtk_widget_set_name(button, "WriteFile");
@@ -373,16 +442,23 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(cvo_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
 
+    tab_label = gtk_label_new("Write File");
+    gtk_widget_show(tab_label);
+    gtk_notebook_append_page(GTK_NOTEBOOK(cvo_nbook), form, tab_label);
+
+    //
+    // Dismiss button
+    //
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(cvo_cancel_proc), 0);
 
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
+    gtk_table_attach(GTK_TABLE(topform), button, 1, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
     gtk_window_set_focus(GTK_WINDOW(cvo_popup), button);
@@ -414,6 +490,8 @@ sCvo::update()
     GRX->SetStatus(cvo_wrall, CDvdb()->getVariable(VA_WriteAllCells));
     GRX->SetStatus(cvo_pcsub, CDvdb()->getVariable(VA_PCellKeepSubMasters));
     GRX->SetStatus(cvo_viasub, CDvdb()->getVariable(VA_ViaKeepSubMasters));
+    GRX->SetStatus(cvo_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GRX->SetStatus(cvo_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
 
     const char *s = CDvdb()->getVariable(VA_SkipInvisible);
     if (!s) {
@@ -443,6 +521,20 @@ void
 sCvo::cvo_cancel_proc(GtkWidget*, void*)
 {
     Cvt()->PopUpExport(0, MODE_OFF, 0, 0);
+}
+
+
+void
+sCvo::cvo_page_chg_proc(GtkWidget*, void*, int pg, void*)
+{
+    if (!Cvo)
+        return;
+    const char *lb;
+    if (pg == 0)
+        lb = "Set parameters for writing cell data";
+    else
+        lb = "Write cell data file";
+    gtk_label_set_text(GTK_LABEL(Cvo->cvo_label), lb);
 }
 
 
@@ -487,6 +579,20 @@ sCvo::cvo_action(GtkWidget *caller, void*)
     }
     if (!strcmp(name, "allcells")) {
         Cvo->cvo_useallcells = GRX->GetStatus(caller);
+        return;
+    }
+    if (!strcmp(name, "noflvias")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenStdVias, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenStdVias);
+        return;
+    }
+    if (!strcmp(name, "noflpcs")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenPCells, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenPCells);
         return;
     }
     if (!strcmp(name, "invis_p")) {

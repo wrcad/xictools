@@ -66,6 +66,7 @@ namespace {
 
         private:
             static void cv_cancel_proc(GtkWidget*, void*);
+            static void cv_page_chg_proc(GtkWidget*, void*, int, void*);
             static void cv_action(GtkWidget*, void*);
             static void cv_input_proc(GtkWidget*, void*);
             static void cv_format_proc(int);
@@ -75,9 +76,13 @@ namespace {
 
             GRobject cv_caller;
             GtkWidget *cv_popup;
+            GtkWidget *cv_label;
+            GtkWidget *cv_nbook;
+            GtkWidget *cv_strip;
+            GtkWidget *cv_noflvias;
+            GtkWidget *cv_noflpcs;
             GtkWidget *cv_input;
             GtkWidget *cv_tx_label;
-            GtkWidget *cv_strip;
             bool (*cv_callback)(int, void*);
             void *cv_arg;
             cvofmt_t *cv_fmt;
@@ -142,9 +147,13 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     Cv = this;
     cv_caller = c;
     cv_popup = 0;
+    cv_label = 0;
+    cv_nbook = 0;
+    cv_strip = 0;
+    cv_noflvias = 0;
+    cv_noflpcs = 0;
     cv_input = 0;
     cv_tx_label = 0;
-    cv_strip = 0;
     cv_callback = callback;
     cv_arg = arg;
     cv_fmt = 0;
@@ -160,20 +169,20 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     // Without this, spin entries sometimes freeze up for some reason.
     gtk_object_set_data(GTK_OBJECT(cv_popup), "no_prop_key", (void*)1);
 
-    GtkWidget *form = gtk_table_new(2, 1, false);
-    gtk_widget_show(form);
-    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
-    gtk_container_add(GTK_CONTAINER(cv_popup), form);
-    int rowcnt = 0;
+    GtkWidget *topform = gtk_table_new(2, 1, false);
+    gtk_widget_show(topform);
+    gtk_container_set_border_width(GTK_CONTAINER(topform), 2);
+    gtk_container_add(GTK_CONTAINER(cv_popup), topform);
+    int toprcnt = 0;
 
     //
     // Label in frame plus help btn
     //
     GtkWidget *row = gtk_hbox_new(false, 2);
     gtk_widget_show(row);
-    GtkWidget *label = gtk_label_new(
-        "Direct File-to-File Conversions - (do not alter database)");
+    GtkWidget *label = gtk_label_new("");
     gtk_widget_show(label);
+    cv_label = label;
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);
@@ -185,10 +194,10 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(cv_action), 0);
     gtk_box_pack_end(GTK_BOX(row), button, false, false, 0);
-    gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
+    gtk_table_attach(GTK_TABLE(topform), row, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    toprcnt++;
 
     //
     // Input selection menu
@@ -235,19 +244,89 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_option_menu_set_menu(GTK_OPTION_MENU(cv_input), menu);
     gtk_box_pack_start(GTK_BOX(row), cv_input, false, false, 0);
 
-    gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
+    gtk_table_attach(GTK_TABLE(topform), row, 0, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
+    toprcnt++;
 
     //
     // Output format selection notebook
     //
     cv_fmt = new cvofmt_t(cv_format_proc, cv_fmt_type, cvofmt_file);
-    gtk_table_attach(GTK_TABLE(form), cv_fmt->frame(), 0, 2, rowcnt,
-        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+    gtk_table_attach(GTK_TABLE(topform), cv_fmt->frame(), 0, 2, toprcnt,
+        toprcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    toprcnt++;
+
+    cv_nbook = gtk_notebook_new();
+    gtk_widget_show(cv_nbook);
+    gtk_signal_connect(GTK_OBJECT(cv_nbook), "switch-page",
+        GTK_SIGNAL_FUNC(cv_page_chg_proc), 0);
+    gtk_table_attach(GTK_TABLE(topform), cv_nbook, 0, 2, toprcnt, toprcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    toprcnt++;
+
+    //
+    // The Setup page
+    //
+    GtkWidget *form = gtk_table_new(2, 1, false);
+    gtk_widget_show(form);
+    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
+    int rowcnt = 0;
+
+    //
+    // Strip for Export button
+    //
+    button = gtk_check_button_new_with_label(
+        "Strip For Export - (convert physical data only)");
+    gtk_widget_set_name(button, "strip");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cv_action), 0);
+    GRX->SetStatus(button, CDvdb()->getVariable(VA_StripForExport));
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
+    cv_strip = button;
+
+    button = gtk_check_button_new_with_label(
+        "Don't flatten standard vias, keep as instance at top level");
+    gtk_widget_set_name(button, "noflvias");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cv_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cv_noflvias = button;
+
+    button = gtk_check_button_new_with_label(
+        "Don't flatten pcells, keep as instance at top level");
+    gtk_widget_set_name(button, "noflpcs");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cv_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cv_noflpcs = button;
+
+
+    GtkWidget *tab_label = gtk_label_new("Setup");
+    gtk_widget_show(tab_label);
+    gtk_notebook_append_page(GTK_NOTEBOOK(cv_nbook), form, tab_label);
+
+    //
+    // The Convert File page
+    //
+    form = gtk_table_new(2, 1, false);
+    gtk_widget_show(form);
+    gtk_container_set_border_width(GTK_CONTAINER(form), 2);
+    rowcnt = 0;
 
     //
     // Layer list
@@ -270,7 +349,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     //
     // Window
     //
-    cv_wnd = new wnd_t(wnd_sens_test, false);
+    cv_wnd = new wnd_t(wnd_sens_test, WndFuncCvt);
     gtk_table_attach(GTK_TABLE(form), cv_wnd->frame(), 0, 2, rowcnt,
         rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -304,23 +383,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     rowcnt++;
 
     //
-    // Strip for Export button
-    //
-    button = gtk_check_button_new_with_label(
-        "Strip For Export - (convert physical data only)");
-    gtk_widget_set_name(button, "strip");
-    gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cv_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_StripForExport));
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-    cv_strip = button;
-
-    //
-    // Go and Dismiss buttons
+    // Go button
     //
     button = gtk_button_new_with_label("Convert");
     gtk_widget_set_name(button, "Convert");
@@ -328,16 +391,23 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(cv_action), 0);
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
 
+    tab_label = gtk_label_new("Convert File");
+    gtk_widget_show(tab_label);
+    gtk_notebook_append_page(GTK_NOTEBOOK(cv_nbook), form, tab_label);
+
+    //
+    // Dismiss button
+    //
     button = gtk_button_new_with_label("Dismiss");
     gtk_widget_set_name(button, "Dismiss");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(cv_cancel_proc), 0);
 
-    gtk_table_attach(GTK_TABLE(form), button, 1, 2, rowcnt, rowcnt+1,
+    gtk_table_attach(GTK_TABLE(topform), button, 1, 2, toprcnt, toprcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
     gtk_window_set_focus(GTK_WINDOW(cv_popup), button);
@@ -371,6 +441,8 @@ sCv::update(int inp_type)
     inp_type &= 0xffff;
 
     GRX->SetStatus(cv_strip, CDvdb()->getVariable(VA_StripForExport));
+    GRX->SetStatus(cv_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GRX->SetStatus(cv_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
     sb_scale.set_value(FIO()->TransScale());
 
     cv_fmt->update();
@@ -407,6 +479,21 @@ sCv::cv_cancel_proc(GtkWidget*, void*)
 
 // Static function.
 void
+sCv::cv_page_chg_proc(GtkWidget*, void*, int pg, void*)
+{
+    if (!Cv)
+        return;
+    const char *lb;
+    if (pg == 0)
+        lb = "Set parameters for converting cell data";
+    else
+        lb = "Convert cell data file";
+    gtk_label_set_text(GTK_LABEL(Cv->cv_label), lb);
+}
+
+
+// Static function.
+void
 sCv::cv_action(GtkWidget *caller, void*)
 {
     if (!Cv)
@@ -419,6 +506,20 @@ sCv::cv_action(GtkWidget *caller, void*)
             CDvdb()->setVariable(VA_StripForExport, 0);
         else
             CDvdb()->clearVariable(VA_StripForExport);
+    }
+    if (!strcmp(name, "noflvias")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenStdVias, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenStdVias);
+        return;
+    }
+    if (!strcmp(name, "noflpcs")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenPCells, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenPCells);
+        return;
     }
     else if (!strcmp(name, "Help")) {
         DSPmainWbag(PopUpHelp("xic:convt"))

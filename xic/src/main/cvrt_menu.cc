@@ -372,7 +372,7 @@ namespace {
         if (type < 0)
             return (false);
 
-        if (FIO()->OutFlatten()) {
+        if (FIO()->InFlatten()) {
             char *in = XM()->OpenFileDlg("File, CHD and cell? ", "");
             if (!in) {
                 PL()->ShowPrompt("Aborted.");
@@ -384,11 +384,11 @@ namespace {
             delete [] tt;
 
             FIOcvtPrms prms;
-            const BBox *AOI = FIO()->OutWindow();
+            const BBox *AOI = FIO()->InWindow();
             if (AOI && AOI->right > AOI->left && AOI->top > AOI->bottom) {
                 prms.set_use_window(true);
                 prms.set_window(AOI);
-                prms.set_clip(FIO()->OutClip());
+                prms.set_clip(FIO()->InClip());
             }
             prms.set_flatten(true);
             prms.set_allow_layer_mapping(true);

@@ -43,6 +43,7 @@
 #include "dsp_inlines.h"
 #include "gtkmain.h"
 #include "gtkinlines.h"
+#include "cvrt_variables.h"
 
 
 //--------------------------------------------------------------------------

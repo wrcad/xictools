@@ -114,9 +114,12 @@ namespace {
     }
 
     void
-    postset_fl(const char*)
+    postfl(const char*)
     {
         ED()->PopUpFlatten(0, MODE_UPD, 0, 0, 0, false);
+        Cvt()->PopUpImport(0, MODE_UPD, 0, 0);
+        Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
+        Cvt()->PopUpConvert(0, MODE_UPD, 0, 0, 0);
     }
 }
 
@@ -521,24 +524,6 @@ namespace {
     }
 
     bool
-    evNoFlattenStdVias(const char*, bool set)
-    {
-        ED()->setNoFlattenStdVias(set);
-        FIO()->SetNoFlattenStdVias(set);
-        CDvdb()->registerPostFunc(postset_fl);
-        return (true);
-    }
-
-    bool
-    evNoFlattenPCells(const char*, bool set)
-    {
-        ED()->setNoFlattenPCells(set);
-        FIO()->SetNoFlattenPCells(set);
-        CDvdb()->registerPostFunc(postset_fl);
-        return (true);
-    }
-
-    bool
     evThreads(const char *vstring, bool set)
     {
         if (set) {
@@ -642,6 +627,24 @@ namespace {
         CDvdb()->registerPostFunc(postset_pc);
         return (true);
     }
+
+    bool
+    evNoFlattenStdVias(const char*, bool set)
+    {
+        ED()->setNoFlattenStdVias(set);
+        FIO()->SetNoFlattenStdVias(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
+
+    bool
+    evNoFlattenPCells(const char*, bool set)
+    {
+        ED()->setNoFlattenPCells(set);
+        FIO()->SetNoFlattenPCells(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
 }
 
 
@@ -695,8 +698,6 @@ cEdit::setupVariables()
     vsetup(VA_JoinBreakClean,       B,  evJoinBreakClean);
     vsetup(VA_JoinSplitWires,       B,  evJoinSplitWires);
     vsetup(VA_PartitionSize,        S,  evPartitionSize);
-    vsetup(VA_NoFlattenStdVias,     B,  evNoFlattenStdVias);
-    vsetup(VA_NoFlattenPCells,      B,  evNoFlattenPCells);
     vsetup(VA_Threads,              S,  evThreads);
 
     // Parameterized Cells
@@ -705,5 +706,9 @@ cEdit::setupVariables()
     vsetup(VA_PCellGripInstSize,    S,  evPCellGripInstSize);
     vsetup(VA_PCellListSubMasters,  B,  evPCellListSubMasters);
     vsetup(VA_PCellShowAllWarnings, B,  evPCellShowAllWarnings);
+
+    // Conversion - General (override)
+    vsetup(VA_NoFlattenStdVias,     B,  evNoFlattenStdVias);
+    vsetup(VA_NoFlattenPCells,      B,  evNoFlattenPCells);
 }
 

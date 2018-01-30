@@ -47,10 +47,10 @@
 //-------------------------------------------------------------------------
 // Subwidget group for window control
 
-wnd_t::wnd_t(WndSensMode(sens_test)(), bool from_db)
+wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
 {
     wnd_sens_test = sens_test;
-    wnd_from_db = from_db;
+    wnd_func_mode = fmode;
 
     GtkWidget *tform = gtk_table_new(1, 1, false);
     gtk_widget_show(tform);
@@ -86,7 +86,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), bool from_db)
     wnd_ecf_label = gtk_label_new("Empty Cell Filter");
     gtk_widget_show(wnd_ecf_label);
     gtk_misc_set_padding(GTK_MISC(wnd_ecf_label), 2, 2);
-    if (wnd_from_db)
+    if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         gtk_widget_hide(wnd_ecf_label);
     gtk_table_attach(GTK_TABLE(tform), wnd_ecf_label, 4, 5, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -128,11 +128,13 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), bool from_db)
 
     int ndgt = CD()->numDigits();
 
-    double initd;
-    if (wnd_from_db)
-        initd = MICRONS(FIO()->OutWindow()->left);
-    else
+    double initd = 0;
+    if (wnd_func_mode == WndFuncCvt)
         initd = MICRONS(FIO()->CvtWindow()->left);
+    else if (wnd_func_mode == WndFuncOut)
+        initd = MICRONS(FIO()->OutWindow()->left);
+    else if (wnd_func_mode == WndFuncIn)
+        initd = MICRONS(FIO()->InWindow()->left);
 
     GtkWidget *sb = sb_left.init(initd, -1e6, 1e6, ndgt);
     sb_left.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "left");
@@ -149,10 +151,13 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), bool from_db)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    if (wnd_from_db)
-        initd = MICRONS(FIO()->OutWindow()->bottom);
-    else
+    initd = 0;
+    if (wnd_func_mode == WndFuncCvt)
         initd = MICRONS(FIO()->CvtWindow()->bottom);
+    else if (wnd_func_mode == WndFuncOut)
+        initd = MICRONS(FIO()->OutWindow()->bottom);
+    else if (wnd_func_mode == WndFuncIn)
+        initd = MICRONS(FIO()->InWindow()->bottom);
 
     sb = sb_bottom.init(initd, -1e6, 1e6, ndgt);
     sb_bottom.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "bottom");
@@ -173,7 +178,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), bool from_db)
     gtk_widget_show(wnd_ecf_pre);
     gtk_signal_connect(GTK_OBJECT(wnd_ecf_pre), "clicked",
         GTK_SIGNAL_FUNC(wnd_action), this);
-    if (wnd_from_db)
+    if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         gtk_widget_hide(hbox);
     gtk_box_pack_start(GTK_BOX(hbox), wnd_ecf_pre, false, false, 0);
     gtk_table_attach(GTK_TABLE(tform), hbox, 4, 5, rowcnt, rowcnt+1,
@@ -213,10 +218,13 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), bool from_db)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    if (wnd_from_db)
-        initd = MICRONS(FIO()->OutWindow()->right);
-    else
+    initd = 0;
+    if (wnd_func_mode == WndFuncCvt)
         initd = MICRONS(FIO()->CvtWindow()->right);
+    else if (wnd_func_mode == WndFuncOut)
+        initd = MICRONS(FIO()->OutWindow()->right);
+    else if (wnd_func_mode == WndFuncIn)
+        initd = MICRONS(FIO()->InWindow()->right);
 
     sb = sb_right.init(initd, -1e6, 1e6, ndgt);
     sb_right.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "right");
@@ -233,10 +241,13 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), bool from_db)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    if (wnd_from_db)
-        initd = MICRONS(FIO()->OutWindow()->top);
-    else
+    initd = 0;
+    if (wnd_func_mode == WndFuncCvt)
         initd = MICRONS(FIO()->CvtWindow()->top);
+    else if (wnd_func_mode == WndFuncOut)
+        initd = MICRONS(FIO()->OutWindow()->top);
+    else if (wnd_func_mode == WndFuncIn)
+        initd = MICRONS(FIO()->InWindow()->top);
 
     sb = sb_top.init(initd, -1e6, 1e6, ndgt);
     sb_top.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "top");
@@ -257,7 +268,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), bool from_db)
     gtk_widget_show(wnd_ecf_post);
     gtk_signal_connect(GTK_OBJECT(wnd_ecf_post), "clicked",
         GTK_SIGNAL_FUNC(wnd_action), this);
-    if (wnd_from_db)
+    if (wnd_func_mode == WndFuncOut || wnd_func_mode == WndFuncIn)
         gtk_widget_hide(hbox);
     gtk_box_pack_start(GTK_BOX(hbox), wnd_ecf_post, false, false, 0);
     gtk_table_attach(GTK_TABLE(tform), hbox, 4, 5, rowcnt, rowcnt+1,
@@ -288,7 +299,20 @@ wnd_t::~wnd_t()
 void
 wnd_t::update()
 {
-    if (wnd_from_db) {
+    if (wnd_func_mode == WndFuncCvt) {
+        sb_left.set_value(MICRONS(FIO()->CvtWindow()->left));
+        sb_bottom.set_value(MICRONS(FIO()->CvtWindow()->bottom));
+        sb_right.set_value(MICRONS(FIO()->CvtWindow()->right));
+        sb_top.set_value(MICRONS(FIO()->CvtWindow()->top));
+        GRX->SetStatus(wnd_use_win, FIO()->CvtUseWindow());
+        GRX->SetStatus(wnd_clip, FIO()->CvtClip());
+        GRX->SetStatus(wnd_flatten, FIO()->CvtFlatten());
+        GRX->SetStatus(wnd_ecf_pre,
+            FIO()->CvtECFlevel() == ECFall || FIO()->CvtECFlevel() == ECFpre);
+        GRX->SetStatus(wnd_ecf_post,
+            FIO()->CvtECFlevel() == ECFall || FIO()->CvtECFlevel() == ECFpost);
+    }
+    else if (wnd_func_mode == WndFuncOut) {
         sb_left.set_value(MICRONS(FIO()->OutWindow()->left));
         sb_bottom.set_value(MICRONS(FIO()->OutWindow()->bottom));
         sb_right.set_value(MICRONS(FIO()->OutWindow()->right));
@@ -301,18 +325,18 @@ wnd_t::update()
         GRX->SetStatus(wnd_ecf_post,
             FIO()->OutECFlevel() == ECFall || FIO()->OutECFlevel() == ECFpost);
     }
-    else {
-        sb_left.set_value(MICRONS(FIO()->CvtWindow()->left));
-        sb_bottom.set_value(MICRONS(FIO()->CvtWindow()->bottom));
-        sb_right.set_value(MICRONS(FIO()->CvtWindow()->right));
-        sb_top.set_value(MICRONS(FIO()->CvtWindow()->top));
-        GRX->SetStatus(wnd_use_win, FIO()->CvtUseWindow());
-        GRX->SetStatus(wnd_clip, FIO()->CvtClip());
-        GRX->SetStatus(wnd_flatten, FIO()->CvtFlatten());
+    else if (wnd_func_mode == WndFuncIn) {
+        sb_left.set_value(MICRONS(FIO()->InWindow()->left));
+        sb_bottom.set_value(MICRONS(FIO()->InWindow()->bottom));
+        sb_right.set_value(MICRONS(FIO()->InWindow()->right));
+        sb_top.set_value(MICRONS(FIO()->InWindow()->top));
+        GRX->SetStatus(wnd_use_win, FIO()->InUseWindow());
+        GRX->SetStatus(wnd_clip, FIO()->InClip());
+        GRX->SetStatus(wnd_flatten, FIO()->InFlatten());
         GRX->SetStatus(wnd_ecf_pre,
-            FIO()->CvtECFlevel() == ECFall || FIO()->CvtECFlevel() == ECFpre);
+            FIO()->InECFlevel() == ECFall || FIO()->InECFlevel() == ECFpre);
         GRX->SetStatus(wnd_ecf_post,
-            FIO()->CvtECFlevel() == ECFall || FIO()->CvtECFlevel() == ECFpost);
+            FIO()->InECFlevel() == ECFall || FIO()->InECFlevel() == ECFpost);
     }
     set_sens();
 }
@@ -327,10 +351,12 @@ wnd_t::val_changed(GtkWidget *caller)
         char *endp;
         double d = strtod(s, &endp);
         if (endp > s) {
-            if (wnd_from_db)
-                FIO()->SetOutWindowLeft(INTERNAL_UNITS(d));
-            else
+            if (wnd_func_mode == WndFuncCvt)
                 FIO()->SetCvtWindowLeft(INTERNAL_UNITS(d));
+            else if (wnd_func_mode == WndFuncOut)
+                FIO()->SetOutWindowLeft(INTERNAL_UNITS(d));
+            else if (wnd_func_mode == WndFuncIn)
+                FIO()->SetInWindowLeft(INTERNAL_UNITS(d));
         }
     }
     else if (*n == 'b') {
@@ -338,10 +364,12 @@ wnd_t::val_changed(GtkWidget *caller)
         char *endp;
         double d = strtod(s, &endp);
         if (endp > s) {
-            if (wnd_from_db)
-                FIO()->SetOutWindowBottom(INTERNAL_UNITS(d));
-            else
+            if (wnd_func_mode == WndFuncCvt)
                 FIO()->SetCvtWindowBottom(INTERNAL_UNITS(d));
+            else if (wnd_func_mode == WndFuncOut)
+                FIO()->SetOutWindowBottom(INTERNAL_UNITS(d));
+            else if (wnd_func_mode == WndFuncIn)
+                FIO()->SetInWindowBottom(INTERNAL_UNITS(d));
         }
     }
     else if (*n == 'r') {
@@ -349,10 +377,12 @@ wnd_t::val_changed(GtkWidget *caller)
         char *endp;
         double d = strtod(s, &endp);
         if (endp > s) {
-            if (wnd_from_db)
-                FIO()->SetOutWindowRight(INTERNAL_UNITS(d));
-            else
+            if (wnd_func_mode == WndFuncCvt)
                 FIO()->SetCvtWindowRight(INTERNAL_UNITS(d));
+            else if (wnd_func_mode == WndFuncOut)
+                FIO()->SetOutWindowRight(INTERNAL_UNITS(d));
+            else if (wnd_func_mode == WndFuncIn)
+                FIO()->SetInWindowRight(INTERNAL_UNITS(d));
         }
     }
     else if (*n == 't') {
@@ -360,10 +390,12 @@ wnd_t::val_changed(GtkWidget *caller)
         char *endp;
         double d = strtod(s, &endp);
         if (endp > s) {
-            if (wnd_from_db)
-                FIO()->SetOutWindowTop(INTERNAL_UNITS(d));
-            else
+            if (wnd_func_mode == WndFuncCvt)
                 FIO()->SetCvtWindowTop(INTERNAL_UNITS(d));
+            else if (wnd_func_mode == WndFuncOut)
+                FIO()->SetOutWindowTop(INTERNAL_UNITS(d));
+            else if (wnd_func_mode == WndFuncIn)
+                FIO()->SetInWindowTop(INTERNAL_UNITS(d));
         }
     }
 }
@@ -374,27 +406,63 @@ wnd_t::action(GtkWidget *caller)
 {
     const char *name = gtk_widget_get_name(caller);
     if (!strcmp(name, "Window")) {
-        if (wnd_from_db)
-            FIO()->SetOutUseWindow(GRX->GetStatus(caller));
-        else
+        if (wnd_func_mode == WndFuncCvt)
             FIO()->SetCvtUseWindow(GRX->GetStatus(caller));
+        else if (wnd_func_mode == WndFuncOut)
+            FIO()->SetOutUseWindow(GRX->GetStatus(caller));
+        else if (wnd_func_mode == WndFuncIn)
+            FIO()->SetInUseWindow(GRX->GetStatus(caller));
         set_sens();
     }
     if (!strcmp(name, "Clip")) {
-        if (wnd_from_db)
-            FIO()->SetOutClip(GRX->GetStatus(caller));
-        else
+        if (wnd_func_mode == WndFuncCvt)
             FIO()->SetCvtClip(GRX->GetStatus(caller));
+        else if (wnd_func_mode == WndFuncOut)
+            FIO()->SetOutClip(GRX->GetStatus(caller));
+        else if (wnd_func_mode == WndFuncIn)
+            FIO()->SetInClip(GRX->GetStatus(caller));
     }
     if (!strcmp(name, "Flatten")) {
-        if (wnd_from_db)
-            FIO()->SetOutFlatten(GRX->GetStatus(caller));
-        else
+        if (wnd_func_mode == WndFuncCvt)
             FIO()->SetCvtFlatten(GRX->GetStatus(caller));
+        else if (wnd_func_mode == WndFuncOut)
+            FIO()->SetOutFlatten(GRX->GetStatus(caller));
+        else if (wnd_func_mode == WndFuncIn)
+            FIO()->SetInFlatten(GRX->GetStatus(caller));
         set_sens();
     }
     if (!strcmp(name, "pre")) {
-        if (wnd_from_db) {
+        if (wnd_func_mode == WndFuncCvt) {
+            if (GRX->GetStatus(caller)) {
+                switch (FIO()->CvtECFlevel()) {
+                case ECFnone:
+                    FIO()->SetCvtECFlevel(ECFpre);
+                    break;
+                case ECFall:
+                    break;
+                case ECFpre:
+                    break;
+                case ECFpost:
+                    FIO()->SetCvtECFlevel(ECFall);
+                    break;
+                }
+            }
+            else {
+                switch (FIO()->CvtECFlevel()) {
+                case ECFnone:
+                    break;
+                case ECFall:
+                    FIO()->SetCvtECFlevel(ECFpost);
+                    break;
+                case ECFpre:
+                    FIO()->SetCvtECFlevel(ECFnone);
+                    break;
+                case ECFpost:
+                    break;
+                }
+            }
+        }
+        else if (wnd_func_mode == WndFuncOut) {
             if (GRX->GetStatus(caller)) {
                 switch (FIO()->OutECFlevel()) {
                 case ECFnone:
@@ -424,30 +492,30 @@ wnd_t::action(GtkWidget *caller)
                 }
             }
         }
-        else {
+        else if (wnd_func_mode == WndFuncIn) {
             if (GRX->GetStatus(caller)) {
-                switch (FIO()->CvtECFlevel()) {
+                switch (FIO()->InECFlevel()) {
                 case ECFnone:
-                    FIO()->SetCvtECFlevel(ECFpre);
+                    FIO()->SetInECFlevel(ECFpre);
                     break;
                 case ECFall:
                     break;
                 case ECFpre:
                     break;
                 case ECFpost:
-                    FIO()->SetCvtECFlevel(ECFall);
+                    FIO()->SetInECFlevel(ECFall);
                     break;
                 }
             }
             else {
-                switch (FIO()->CvtECFlevel()) {
+                switch (FIO()->InECFlevel()) {
                 case ECFnone:
                     break;
                 case ECFall:
-                    FIO()->SetCvtECFlevel(ECFpost);
+                    FIO()->SetInECFlevel(ECFpost);
                     break;
                 case ECFpre:
-                    FIO()->SetCvtECFlevel(ECFnone);
+                    FIO()->SetInECFlevel(ECFnone);
                     break;
                 case ECFpost:
                     break;
@@ -456,7 +524,37 @@ wnd_t::action(GtkWidget *caller)
         }
     }
     if (!strcmp(name, "post")) {
-        if (wnd_from_db) {
+        if (wnd_func_mode == WndFuncCvt) {
+            if (GRX->GetStatus(caller)) {
+                switch (FIO()->CvtECFlevel()) {
+                case ECFnone:
+                    FIO()->SetCvtECFlevel(ECFpost);
+                    break;
+                case ECFall:
+                    break;
+                case ECFpre:
+                    FIO()->SetCvtECFlevel(ECFall);
+                    break;
+                case ECFpost:
+                    break;
+                }
+            }
+            else {
+                switch (FIO()->CvtECFlevel()) {
+                case ECFnone:
+                    break;
+                case ECFall:
+                    FIO()->SetCvtECFlevel(ECFpre);
+                    break;
+                case ECFpre:
+                    break;
+                case ECFpost:
+                    FIO()->SetCvtECFlevel(ECFnone);
+                    break;
+                }
+            }
+        }
+        else if (wnd_func_mode == WndFuncOut) {
             if (GRX->GetStatus(caller)) {
                 switch (FIO()->OutECFlevel()) {
                 case ECFnone:
@@ -486,32 +584,32 @@ wnd_t::action(GtkWidget *caller)
                 }
             }
         }
-        else {
+        else if (wnd_func_mode == WndFuncIn) {
             if (GRX->GetStatus(caller)) {
-                switch (FIO()->CvtECFlevel()) {
+                switch (FIO()->InECFlevel()) {
                 case ECFnone:
-                    FIO()->SetCvtECFlevel(ECFpost);
+                    FIO()->SetInECFlevel(ECFpost);
                     break;
                 case ECFall:
                     break;
                 case ECFpre:
-                    FIO()->SetCvtECFlevel(ECFall);
+                    FIO()->SetInECFlevel(ECFall);
                     break;
                 case ECFpost:
                     break;
                 }
             }
             else {
-                switch (FIO()->CvtECFlevel()) {
+                switch (FIO()->InECFlevel()) {
                 case ECFnone:
                     break;
                 case ECFall:
-                    FIO()->SetCvtECFlevel(ECFpre);
+                    FIO()->SetInECFlevel(ECFpre);
                     break;
                 case ECFpre:
                     break;
                 case ECFpost:
-                    FIO()->SetCvtECFlevel(ECFnone);
+                    FIO()->SetInECFlevel(ECFnone);
                     break;
                 }
             }
