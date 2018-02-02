@@ -73,6 +73,7 @@ namespace {
             GtkWidget *fl_popup;
             GtkWidget *fl_novias;
             GtkWidget *fl_nopcells;
+            GtkWidget *fl_nolabels;
             GtkWidget *fl_merge;
             GtkWidget *fl_go;
             bool (*fl_callback)(const char*, bool, const char*, void*);
@@ -132,6 +133,7 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     fl_popup = 0;
     fl_novias = 0;
     fl_nopcells = 0;
+    fl_nolabels = 0;
     fl_merge = 0;
     fl_go = 0;
     fl_callback = callback;
@@ -239,6 +241,17 @@ sFlt::sFlt (GRobject c, bool(*callback)(const char*, bool, const char*, void*),
     rowcnt++;
     fl_nopcells = button;
 
+    button = gtk_check_button_new_with_label("Ignore labels in subcells");
+    gtk_widget_set_name(button, "Labels");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(fl_action_proc), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    fl_nolabels = button;
+
     button = gtk_check_button_new_with_label("Use fast mode, NOT UNDOABLE");
     gtk_widget_set_name(button, "Mode");
     gtk_widget_show(button);
@@ -308,6 +321,7 @@ sFlt::update()
 {
     GRX->SetStatus(fl_novias, CDvdb()->getVariable(VA_NoFlattenStdVias));
     GRX->SetStatus(fl_nopcells, CDvdb()->getVariable(VA_NoFlattenPCells));
+    GRX->SetStatus(fl_nolabels, CDvdb()->getVariable(VA_NoFlattenLabels));
 }
 
 
@@ -339,6 +353,12 @@ sFlt::fl_action_proc(GtkWidget *caller, void*)
             CDvdb()->setVariable(VA_NoFlattenPCells, "");
         else
             CDvdb()->clearVariable(VA_NoFlattenPCells);
+    }
+    else if (!strcmp(name, "Labels")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenLabels, "");
+        else
+            CDvdb()->clearVariable(VA_NoFlattenLabels);
     }
     else if (!strcmp(name, "Mode")) {
         if (Flt->fl_callback)

@@ -59,6 +59,7 @@
 #include "errorlog.h"
 #include "miscutil/timer.h"
 #include "miscutil/texttf.h"
+#include "fio.h"
 
 
 namespace {
@@ -210,9 +211,9 @@ namespace {
                 return (false);
         }
         else {
-            if (ED()->noFlattenStdVias() && sd->isViaSubMaster())
+            if (FIO()->IsNoFlattenStdVias() && sd->isViaSubMaster())
                 return (false);
-            if (ED()->noFlattenPCells() && sd->isPCellSubMaster())
+            if (FIO()->IsNoFlattenPCells() && sd->isPCellSubMaster())
                 return (false);
         }
         return (true);
@@ -584,6 +585,8 @@ wire:
     }
 label:
     {
+        if (FIO()->IsNoFlattenLabels())
+            return (true);
         CDp_lref *prf = (CDp_lref*)odesc->prpty(P_LABRF);
         if (prf && prf->devref())
             // should have already been added

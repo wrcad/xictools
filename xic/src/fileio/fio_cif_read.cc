@@ -1874,6 +1874,13 @@ cif_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
     cv_chd_state stbak;
     in_chd_state.push_state(p, use_inst_list ? get_sym_tab(in_mode) : 0,
         &stbak);
+
+    // Skip labels when flattening subcells when flag set.
+    bool bktxt = in_ignore_text;
+    if (in_mode == Physical && in_flatten && in_transform > 0 &&
+            FIO()->IsNoFlattenLabels())
+        in_ignore_text = true;
+
     for (;;) {
         int c;
         bool abrt;
@@ -1911,6 +1918,7 @@ cif_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
             break;
         }
     }
+    in_ignore_text = bktxt;
     in_chd_state.pop_state(&stbak);
 
     if (!ret && in_out && in_out->was_interrupted())

@@ -678,6 +678,13 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
     in_chd_state.push_state(p, use_inst_list ? get_sym_tab(in_mode) : 0,
         &stbak);
     bool ret = (this->*ftab[R_STRUCT])(size, flags);
+
+    // Skip labels when flattening subcells when flag set.
+    bool bktxt = in_ignore_text;
+    if (in_mode == Physical && in_flatten && in_transform > 0 &&
+            FIO()->IsNoFlattenLabels())
+        in_ignore_text = true;
+
     if (ret) {
         if (in_sdesc || in_action == cvOpenModeTrans) {
             char buf[64];
@@ -701,6 +708,7 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
                 ret = false;
         }
     }
+    in_ignore_text = bktxt;
 
     if (sdret)
         *sdret = in_sdesc;

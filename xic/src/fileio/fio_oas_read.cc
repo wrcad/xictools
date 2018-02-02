@@ -1555,6 +1555,12 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
         &stbak);
     bool ret = read_cell(ix);
     if (ret) {
+        // Skip labels when flattening subcells when flag set.
+        bool bktxt = in_ignore_text;
+        if (in_mode == Physical && in_flatten && in_transform > 0 &&
+                FIO()->IsNoFlattenLabels())
+            in_ignore_text = true;
+
         const char *msg = "read_cell: failed in record type %d.";
         if (in_sdesc || in_action == cvOpenModeTrans) {
             for (;;) {
@@ -1575,6 +1581,7 @@ oas_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
                 }
             }
         }
+        in_ignore_text = bktxt;
     }
     if (sdret)
         *sdret = in_sdesc;

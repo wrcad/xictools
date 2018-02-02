@@ -94,6 +94,7 @@ namespace {
             GtkWidget *cvi_force;
             GtkWidget *cvi_noflvias;
             GtkWidget *cvi_noflpcs;
+            GtkWidget *cvi_nofllbs;
             GtkWidget *cvi_merg;
             bool (*cvi_callback)(int, void*);
             void *cvi_arg;
@@ -200,6 +201,7 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     cvi_force = 0;
     cvi_noflvias = 0;
     cvi_noflpcs = 0;
+    cvi_nofllbs = 0;
     cvi_merg = 0;
     cvi_callback = callback;
     cvi_arg = arg;
@@ -488,6 +490,17 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     rowcnt++;
     cvi_noflpcs = button;
 
+    button = gtk_check_button_new_with_label("Ignore labels in subcells");
+    gtk_widget_set_name(button, "nofllbs");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvi_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvi_nofllbs = button;
+
     GtkWidget *tab_label = gtk_label_new("Setup");
     gtk_widget_show(tab_label);
     gtk_notebook_append_page(GTK_NOTEBOOK(cvi_nbook), form, tab_label);
@@ -644,6 +657,7 @@ sCvi::update()
     GRX->SetStatus(cvi_dtypes, CDvdb()->getVariable(VA_NoMapDatatypes));
     GRX->SetStatus(cvi_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
     GRX->SetStatus(cvi_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
+    GRX->SetStatus(cvi_nofllbs, CDvdb()->getVariable(VA_NoFlattenLabels));
 
     int hst = 1;
     const char *str = CDvdb()->getVariable(VA_DupCheckMode);
@@ -776,6 +790,13 @@ sCvi::cvi_action(GtkWidget *caller, void*)
             CDvdb()->setVariable(VA_NoFlattenPCells, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenPCells);
+        return;
+    }
+    if (!strcmp(name, "nofllbs")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenLabels, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenLabels);
         return;
     }
     if (!strcmp(name, "luse")) {

@@ -907,6 +907,8 @@ struct cv_out : public cv_backend
         { bool t = out_interrupted; out_interrupted = false; return (t); }
 
     void set_no_struct(bool b)  { out_no_struct = b; }
+    void set_no_labels(bool b)  { out_no_labels = b; }
+    bool no_labels()            { return (out_no_labels); }
 
     FileType filetype()         { return (out_filetype); }
     const char *filename()      { return (out_filename); }
@@ -994,6 +996,7 @@ protected:
     bool            out_in_struct;          // in structure context
     bool            out_interrupted;        // user interrupt
     bool            out_no_struct;          // skip struct beg/end recs
+    bool            out_no_labels;          // skip writing text labels
 };
 
 

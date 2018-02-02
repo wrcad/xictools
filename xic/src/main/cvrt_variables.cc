@@ -300,6 +300,14 @@ namespace {
         CDvdb()->registerPostFunc(postfl);
         return (true);
     }
+
+    bool
+    evNoFlattenLabels(const char*, bool set)
+    {
+        FIO()->SetNoFlattenLabels(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
 }
 
 
@@ -974,6 +982,7 @@ cConvert::setupVariables()
     vsetup(VA_NoStrictCellnames,        B,  evNoStrictCellNames);
     vsetup(VA_NoFlattenStdVias,         B,  evNoFlattenStdVias);
     vsetup(VA_NoFlattenPCells,          B,  evNoFlattenPCells);
+    vsetup(VA_NoFlattenLabels,          B,  evNoFlattenLabels);
 
     // Conversion - Import and Conversion Commands
     vsetup(VA_ChdLoadTopOnly,           B,  ev_update);

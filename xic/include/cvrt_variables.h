@@ -56,6 +56,7 @@
 #define VA_NoStrictCellnames        "NoStrictCellnames"
 #define VA_NoFlattenStdVias         "NoFlattenStdVias"
 #define VA_NoFlattenPCells          "NoFlattenPCells"
+#define VA_NoFlattenLabels          "NoFlattenLabels"
 
 // Convert Menu - Input and ASCII Output
 #define VA_ChdLoadTopOnly           "ChdLoadTopOnly"

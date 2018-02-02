@@ -613,12 +613,6 @@ public:
     bool noWireWidthMag()                   { return (ed_no_wire_width_mag); }
     void setNoWireWidthMag(bool b)          { ed_no_wire_width_mag = b; }
 
-    bool noFlattenStdVias()                 { return (ed_no_flatten_vias); }
-    void setNoFlattenStdVias(bool b)        { ed_no_flatten_vias = b; }
-
-    bool noFlattenPCells()                  { return (ed_no_flatten_pcells); }
-    void setNoFlattenPCells(bool b)         { ed_no_flatten_pcells = b; }
-
     yb **yankBuffer()                       { return (ed_yank_buffer); }
 
     const char *layerExpString(unsigned int i)
@@ -763,9 +757,6 @@ private:
     bool ed_use_array;          // Array parameters are specified.
 
     bool ed_no_wire_width_mag;  // Don't change width of magnified wires.
-
-    bool ed_no_flatten_vias;    // Don't flatten standard via cells.
-    bool ed_no_flatten_pcells;  // Don't flatten parameterized cells.
 
     struct yb *ed_yank_buffer[ED_YANK_DEPTH]; // Storage for yanked geometry.
     char *ed_lexpr_stores[ED_LEXPR_STORES]; // Saved layer expression strings.

@@ -81,6 +81,7 @@ namespace {
             GtkWidget *cv_strip;
             GtkWidget *cv_noflvias;
             GtkWidget *cv_noflpcs;
+            GtkWidget *cv_nofllbs;
             GtkWidget *cv_input;
             GtkWidget *cv_tx_label;
             bool (*cv_callback)(int, void*);
@@ -152,6 +153,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     cv_strip = 0;
     cv_noflvias = 0;
     cv_noflpcs = 0;
+    cv_nofllbs = 0;
     cv_input = 0;
     cv_tx_label = 0;
     cv_callback = callback;
@@ -315,6 +317,16 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     rowcnt++;
     cv_noflpcs = button;
 
+    button = gtk_check_button_new_with_label("Ignore labels in subcells");
+    gtk_widget_set_name(button, "nofllbs");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cv_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cv_nofllbs = button;
 
     GtkWidget *tab_label = gtk_label_new("Setup");
     gtk_widget_show(tab_label);
@@ -443,6 +455,7 @@ sCv::update(int inp_type)
     GRX->SetStatus(cv_strip, CDvdb()->getVariable(VA_StripForExport));
     GRX->SetStatus(cv_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
     GRX->SetStatus(cv_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
+    GRX->SetStatus(cv_nofllbs, CDvdb()->getVariable(VA_NoFlattenLabels));
     sb_scale.set_value(FIO()->TransScale());
 
     cv_fmt->update();
@@ -519,6 +532,13 @@ sCv::cv_action(GtkWidget *caller, void*)
             CDvdb()->setVariable(VA_NoFlattenPCells, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenPCells);
+        return;
+    }
+    if (!strcmp(name, "nofllbs")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenLabels, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenLabels);
         return;
     }
     else if (!strcmp(name, "Help")) {

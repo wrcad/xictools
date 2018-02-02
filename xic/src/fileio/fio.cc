@@ -133,6 +133,7 @@ cFIO::cFIO()
     fioNoCompressContext = false;
     fioNoFlattenStdVias = false;
     fioNoFlattenPCells = false;
+    fioNoFlattenLabels = false;
     fioRefCellAutoRename = false;
     fioUseCellTab = false;
     fioSkipOverrideCells = false;

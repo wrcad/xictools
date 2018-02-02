@@ -500,12 +500,19 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
     }
 
     // We're flattening, write out sd only, using the transform list.
+
+    // Suppress labels if flag set.
+    bool bktxt = in_out->no_labels();
+    if (in_mode == Physical && in_transform > 0 && FIO()->IsNoFlattenLabels())
+        in_out->set_no_labels(true);
+
+    bool ret = true;
     if (in_tf_list) {
         ts_reader tsr(in_tf_list);
         CDtx ttx;
         CDap ap;
 
-        while (tsr.read_record(&ttx, &ap)) {
+        while (ret && tsr.read_record(&ttx, &ap)) {
             ttx.scale(in_ext_phys_scale);
             ap.scale(in_ext_phys_scale);
             TPush();
@@ -519,31 +526,26 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
                 CDp *pd = sd->prpty(XICP_STDVIA);
                 char *s;
                 if (pd && pd->string(&s)) {
-                    if (!in_out->queue_property(pd->value(), s)) {
-                        delete [] s;
-                        TPop();
-                        return (OIerror);
-                    }
+                    ret = in_out->queue_property(pd->value(), s);
                     delete [] s;
                 }
 
-                Instance inst;
-                inst.name = Tstring(sd->cellname());
-                inst.nx = ap.nx;
-                inst.ny = ap.ny;
-                inst.dx = ap.dx;
-                inst.dy = ap.dy;
-                inst.magn = ttx.magn;
-                inst.set_angle(ttx.ax, ttx.ay);
-                inst.origin.set(ttx.tx, ttx.ty);
-                inst.cdesc = 0;
-                inst.reflection = ttx.refly;
+                if (ret) {
+                    Instance inst;
+                    inst.name = Tstring(sd->cellname());
+                    inst.nx = ap.nx;
+                    inst.ny = ap.ny;
+                    inst.dx = ap.dx;
+                    inst.dy = ap.dy;
+                    inst.magn = ttx.magn;
+                    inst.set_angle(ttx.ax, ttx.ay);
+                    inst.origin.set(ttx.tx, ttx.ty);
+                    inst.cdesc = 0;
+                    inst.reflection = ttx.refly;
 
-                if (!in_out->write_sref(&inst)) {
-                    TPop();
-                    return (OIerror);
+                    ret = in_out->write_sref(&inst);
+                    in_out->clear_property_queue();
                 }
-                in_out->clear_property_queue();
             }
             else if (FIO()->IsNoFlattenPCells() && sd->isPCellSubMaster()) {
                 // Optionally keep pcell instances.
@@ -552,41 +554,33 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
                 CDp *pd = sd->prpty(XICP_PC);
                 char *s;
                 if (pd && pd->string(&s)) {
-                    if (!in_out->queue_property(pd->value(), s)) {
-                        delete [] s;
-                        TPop();
-                        return (OIerror);
-                    }
+                    ret = in_out->queue_property(pd->value(), s);
                     delete [] s;
                 }
-                pd = sd->prpty(XICP_PC_PARAMS);
-                if (pd && pd->string(&s)) {
-                    if (!in_out->queue_property(pd->value(), s)) {
+                if (ret) {
+                    pd = sd->prpty(XICP_PC_PARAMS);
+                    if (pd && pd->string(&s)) {
+                        ret = in_out->queue_property(pd->value(), s);
                         delete [] s;
-                        TPop();
-                        return (OIerror);
                     }
-                    delete [] s;
-                }
 
-                Instance inst;
-                inst.name = Tstring(sd->cellname());
-                inst.nx = ap.nx;
-                inst.ny = ap.ny;
-                inst.dx = ap.dx;
-                inst.dy = ap.dy;
-                inst.magn = ttx.magn;
-                inst.set_angle(ttx.ax, ttx.ay);
-                inst.origin.set(ttx.tx, ttx.ty);
-                inst.cdesc = 0;
-                inst.reflection = ttx.refly;
+                    if (ret) {
+                        Instance inst;
+                        inst.name = Tstring(sd->cellname());
+                        inst.nx = ap.nx;
+                        inst.ny = ap.ny;
+                        inst.dx = ap.dx;
+                        inst.dy = ap.dy;
+                        inst.magn = ttx.magn;
+                        inst.set_angle(ttx.ax, ttx.ay);
+                        inst.origin.set(ttx.tx, ttx.ty);
+                        inst.cdesc = 0;
+                        inst.reflection = ttx.refly;
 
-                in_out->write_sref(&inst);
-                if (!in_out->write_sref(&inst)) {
-                    TPop();
-                    return (OIerror);
+                        ret = in_out->write_sref(&inst);
+                        in_out->clear_property_queue();
+                    }
                 }
-                in_out->clear_property_queue();
             }
             else {
 
@@ -596,18 +590,12 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
                     xyg_t xyg(0, ap.nx-1, 0, ap.ny-1);
                     do {
                         TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
-                        if (!in_out->write_geometry(sd)) {
-                            TPop();
-                            return (OIerror);
-                        }
+                        ret = in_out->write_geometry(sd);
                         TSetTrans(tx, ty);
-                    } while (xyg.advance());
+                    } while (ret && xyg.advance());
                 }
                 else {
-                    if (!in_out->write_geometry(sd)) {
-                        TPop();
-                        return (OIerror);
-                    }
+                    ret = in_out->write_geometry(sd);
                 }
             }
             in_transform--;
@@ -615,10 +603,10 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
         }
     }
     else {
-        if (!in_out->write_geometry(sd))
-            return (OIerror);
+        ret = in_out->write_geometry(sd);
     }
-    return (OIok);
+    in_out->set_no_labels(bktxt);
+    return (ret ? OIok : OIerror);
 }
 
 
@@ -1154,6 +1142,7 @@ cv_out::cv_out()
     out_in_struct = false;
     out_interrupted = false;
     out_no_struct = false;
+    out_no_labels = false;
 
     CD()->RegisterCreate("cv_out");
 }
@@ -1809,6 +1798,8 @@ cv_out::write_geometry(const CDs *sdesc)
         CDo *odesc;
         while ((odesc = gdesc.next()) != 0) {
             if (!odesc->is_normal())
+                continue;
+            if (out_no_labels && odesc->type() == CDLABEL)
                 continue;
             if (!queue_properties(odesc))
                 return (false);

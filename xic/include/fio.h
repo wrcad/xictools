@@ -826,6 +826,9 @@ public:
     bool IsNoFlattenPCells()            { return (fioNoFlattenPCells); }
     void SetNoFlattenPCells(bool b)     { fioNoFlattenPCells = b; }
 
+    bool IsNoFlattenLabels()            { return (fioNoFlattenLabels); }
+    void SetNoFlattenLabels(bool b)     { fioNoFlattenLabels = b; }
+
     bool IsRefCellAutoRename()          { return (fioRefCellAutoRename); }
     void SetRefCellAutoRename(bool b)   { fioRefCellAutoRename = b; }
 
@@ -1166,6 +1169,10 @@ private:
 
     bool fioNoFlattenPCells;
         // When flattening, keep pcells as subcells.
+
+    bool fioNoFlattenLabels;
+        // Don't promote labels when flattening, avoids conflicting
+        // net name labels.
 
     bool fioRefCellAutoRename;
         // Rename cells under reference cells when writing a hierarchy

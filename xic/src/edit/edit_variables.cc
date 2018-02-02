@@ -628,20 +628,29 @@ namespace {
         return (true);
     }
 
+    // Override, updates Flatten pop-up.
     bool
     evNoFlattenStdVias(const char*, bool set)
     {
-        ED()->setNoFlattenStdVias(set);
         FIO()->SetNoFlattenStdVias(set);
         CDvdb()->registerPostFunc(postfl);
         return (true);
     }
 
+    // Override, updates Flatten pop-up.
     bool
     evNoFlattenPCells(const char*, bool set)
     {
-        ED()->setNoFlattenPCells(set);
         FIO()->SetNoFlattenPCells(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
+
+    // Override, updates Flatten pop-up.
+    bool
+    evNoFlattenLabels(const char*, bool set)
+    {
+        FIO()->SetNoFlattenLabels(set);
         CDvdb()->registerPostFunc(postfl);
         return (true);
     }
@@ -710,5 +719,6 @@ cEdit::setupVariables()
     // Conversion - General (override)
     vsetup(VA_NoFlattenStdVias,     B,  evNoFlattenStdVias);
     vsetup(VA_NoFlattenPCells,      B,  evNoFlattenPCells);
+    vsetup(VA_NoFlattenLabels,      B,  evNoFlattenLabels);
 }
 
