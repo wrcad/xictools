@@ -203,10 +203,12 @@ namespace {
 // parallel-connected totem poles.  The parallel-connected totem poles
 // are permutable.  This function detects this case in device
 // identification, avoiding time-consuming symmetry trials.
+// *** FUNCTION NOT USED ***
 //
 bool
 cGroupDesc::is_mos_tpeq(const sDevInst *d1, const sDevInst *d2) const
 {
+    return (false);
     if (!d1 || !d2)
         return (false);
     sDevDesc *dd1 = d1->desc();
@@ -222,72 +224,88 @@ cGroupDesc::is_mos_tpeq(const sDevInst *d1, const sDevInst *d2) const
     if (mg1.g() != mg2.g())
         return (false);
 
-    // One common permutable group connection which is not global?
-    int grp1, grp2, gc;
+    // One common permutable group connection?
+    int grp1, grp2;
     if (mg1.d() == mg2.d()) {
         grp1 = mg1.s();
         grp2 = mg2.s();
-        gc = mg1.d();
     }
     else if (mg1.d() == mg2.s()) {
         grp1 = mg1.s();
         grp2 = mg2.d();
-        gc = mg1.d();
     }
     else if (mg1.s() == mg2.d()) {
         grp1 = mg1.d();
         grp2 = mg2.s();
-        gc = mg1.s();
     }
     else if (mg1.s() == mg2.s()) {
         grp1 = mg1.d();
         grp2 = mg2.d();
-        gc = mg1.s();
     }
     else
         return (false);
-    if (gd_groups[gc].global())
-        return (false);
+
     if (grp1 == grp2)
-        return (false);
+        return (true);  // parallel device
 
-    // The other permutable contact connects to a permutable contact
-    // of a similar device only.
+    // Walk the totem poles to the end.  The end is indicated when we
+    // reach a group that has other than exactly two connections, the
+    // second one being a permutable contact to the same type of
+    // device, with the gate connected to the same group.
 
-    sDevContactList *cl1 = gd_groups[grp1].device_contacts();
-    if (!cl1 || !cl1->next() || cl1->next()->next())
-        return (false);
-    sDevContactInst *c1;
-    if (cl1->contact()->dev() == d1)
-        c1 = cl1->next()->contact();
-    else if (cl1->next()->contact()->dev() == d1)
-        c1 = cl1->contact();
-    else
-        return (false);
-    sDevInst *di_c1 = c1->dev();
-    if (di_c1->desc()->name() != d1->desc()->name())
-        return (false);
-    if (!dd1->is_permute(c1->desc()->name()))
-        return (false);
+    for (;;) {
+        sDevContactList *cl1 = gd_groups[grp1].device_contacts();
+        sDevContactList *cl2 = gd_groups[grp2].device_contacts();
+        if (!cl1 || !cl1->next() || cl1->next()->next())
+            break;
+        if (!cl2 || !cl2->next() || cl2->next()->next())
+            break;
+        // Exactly one other device contact in this group.
 
-    sDevContactList *cl2 = gd_groups[grp2].device_contacts();
-    if (!cl2 || !cl2->next() || cl2->next()->next())
-        return (false);
-    sDevContactInst *c2;
-    if (cl2->contact()->dev() == d2)
-        c2 = cl2->next()->contact();
-    else if (cl2->next()->contact()->dev() == d2)
-        c2 = cl2->contact();
-    else
-        return (false);
-    sDevInst *di_c2 = c2->dev();
-    if (di_c1->desc()->name() != d1->desc()->name())
-        return (false);
-    if (!dd2->is_permute(c2->desc()->name()))
-        return (false);
+        sDevContactInst *c1;
+        if (cl1->contact()->dev() == d1)
+            c1 = cl1->next()->contact();
+        else if (cl1->next()->contact()->dev() == d1)
+            c1 = cl1->contact();
+        else
+            return (false);
+        sDevContactInst *c2;
+        if (cl2->contact()->dev() == d2)
+            c2 = cl2->next()->contact();
+        else if (cl2->next()->contact()->dev() == d2)
+            c2 = cl2->contact();
+        else
+            return (false);
 
-    // The gate groups of the connected devices are the same?
-    return (gate_group(di_c1) == gate_group(di_c2));
+        // Find the devices owning the second contacts.  They should
+        // be the same type of device as the provious devices, and the
+        // contact should be permutable, and the gate connection
+        // groups of the new devices should be the same.
+
+        sDevInst *di_c1 = c1->dev();
+        if (di_c1->desc()->name() != d1->desc()->name())
+            return (false);
+        if (!dd1->is_permute(c1->desc()->name()))
+            return (false);
+        sDevInst *di_c2 = c2->dev();
+        if (di_c1->desc()->name() != d1->desc()->name())
+            return (false);
+        if (!dd2->is_permute(c2->desc()->name()))
+            return (false);
+
+        // The gate groups of the connected devices are the same?
+        if (gate_group(di_c1) != gate_group(di_c2))
+            return (false);
+
+        grp1 = c1->group();
+        grp2 = c2->group();
+        d1 = di_c1;
+        d2 = di_c2;
+    }
+    // Found end of totem pole for at least one.  If the groups are
+    // the same, the totem poles are parallel and can be permuted, so
+    // return true.
+    return (grp1 == grp2);
 }
 
 
