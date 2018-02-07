@@ -20,7 +20,7 @@ rm -rf $ndir
 mkdir -p $ndir
 
 # Changes from 4.0
-# new libs: liblzma libpcre
+# new libs: liblzma libncurses libpcre
 # deleted libdirs: pango
 # deleted exes: bmp2tiff gif2tiff pango-querymodules ras2tiff rgb2ycbcr
 # deleted etc: pango
@@ -50,6 +50,7 @@ libiconv \
 libintl \
 libjpeg \
 liblzma \
+libncurses \
 libpango-1 \
 libpangocairo-1 \
 libpangoft2-1 \
