@@ -19,6 +19,12 @@ ndir="contents/gtk2-bundle-x11"
 rm -rf $ndir
 mkdir -p $ndir
 
+# Changes from 4.0
+# new libs: liblzma libpcre
+# deleted libdirs: pango
+# deleted exes: bmp2tiff gif2tiff pango-querymodules ras2tiff rgb2ycbcr
+# deleted etc: pango
+
 libs="\
 libasprintf \
 libatk-1 \
@@ -43,9 +49,11 @@ libharfbuzz \
 libiconv \
 libintl \
 libjpeg \
+liblzma \
 libpango-1 \
 libpangocairo-1 \
 libpangoft2-1 \
+libpcre \
 libpixman-1 \
 libpng16 \
 libtiff \
@@ -77,20 +85,13 @@ cairo \
 gdk-pixbuf-2.0 \
 glib-2.0 \
 gtk-2.0 \
-pango \
 terminfo"
-
-# girepository-1.0
-# gobject-introspection
-# gettext
-# engines
 
 for a in $libdirs; do
     cp -R $sdir/lib/${a} $ndir/lib
 done
 
 exes="\
-bmp2tiff \
 cairo-sphinx \
 cairo-trace \
 cjpeg \
@@ -113,7 +114,6 @@ gdk-pixbuf-query-loaders \
 gettext \
 gettext.sh \
 gettextize \
-gif2tiff \
 gio-querymodules \
 glib-compile-resources \
 glib-compile-schemas \
@@ -128,16 +128,13 @@ gtk-update-icon-cache \
 libpng-config \
 libpng16-config \
 ngettext \
-pango-querymodules \
 pango-view \
 pkg-config \
 png-fix-itxt \
 pngfix \
 ppm2tiff \
-ras2tiff \
 raw2tiff \
 rdjpgcom \
-rgb2ycbcr \
 tiff2bw \
 tiff2pdf \
 tiff2ps \
@@ -165,8 +162,7 @@ done
 
 etc="\
 fonts \
-gtk-2.0 \
-pango"
+gtk-2.0"
 
 mkdir $ndir/etc
 for a in $etc; do

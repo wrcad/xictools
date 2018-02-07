@@ -490,12 +490,23 @@ do_update()
     # first token, progname the second.
 
     if [ x$xt != xxictools ]; then
-        echo File: $distfile
-        echo \
-  "Warning: file is not an XicToole-4.3 distribution, install anyway? [n] "
-        read resp
-        if [ x"$resp" != xy -a x"$resp" != xyes ]; then
-            return 0
+        nmok=no
+        case $osname in
+        Darwin*|Win*)
+        if [ x$xt = xgtk2 -a x$progname = xbundle ]; then
+            nmok=yes
+        fi
+        ;;
+        esac
+
+        if [ $nmok = no ]; then
+            echo File: $distfile
+            echo \
+      "Warning: file is not an XicToole-4.3 distribution, install anyway? [n] "
+            read resp
+            if [ x"$resp" != xy -a x"$resp" != xyes ]; then
+                return 0
+            fi
         fi
         progname=$fullprogname
     fi
