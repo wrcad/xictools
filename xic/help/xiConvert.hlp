@@ -911,7 +911,7 @@ xic:exprt
 !!TITLE
 Export Cell Data
 !!HTML
-    <img src="screenshots/cvout.png" align=right>
+    <img src="screenshots/cvout1.png" align=right>
 
     <table border=0>
     <tr><td valign=top><b>jump to</b></td> <td>
@@ -946,6 +946,7 @@ Export Cell Data
     <a name="gdsii"></a>
     <h2>GDSII Settings</h2>
 
+    <img src="screenshots/cvout2.png" align=right>
     <dl>
     <dt><b>GDSII version number, polygon/wire vertex limit</b><dd>
     This option menu effectively sets the <a
@@ -1021,7 +1022,7 @@ Export Cell Data
     <a name="oasis"></a>
     <h2>OASIS Settings</h2>
 
-    <img src="screenshots/cvout2.png" align=right>
+    <img src="screenshots/cvout3.png" align=right>
     <dl>
     <dt><b>Advanced</b><dd>
     This button brings up the <a href="xic:oasadv"><b>Advanced OASIS
@@ -1104,7 +1105,7 @@ Export Cell Data
     <a name="cif"></a>
     <h2>CIF Settings</h2>
 
-    <img src="screenshots/cvout3.png" align=right>
+    <img src="screenshots/cvout4.png" align=right>
     <a name="cifoutstyle">
 
     <dl>
@@ -1239,7 +1240,7 @@ Export Cell Data
 
     <a name="cgx"></a>
     <h2>CGX Settings</h2>
-    <img src="screenshots/cvout4.png" align=right>
+    <img src="screenshots/cvout5.png" align=right>
 
     This page contains an <b>Accept but truncate too-long strings</b>
     check box, with purpose and functionality that is identical to
@@ -2342,6 +2343,7 @@ Format Conversion
 
     <dl>
     <dt><b>GDSII</b><dd>
+    <img src="screenshots/convert2.png" align=right>
     The output format is GDSII.  When the <b>Input Source</b> is set
     to <b>Layout File</b>, this page contains an <b>Input File
     Type</b> menu.  This menu contains two choices:  <b>archive</b>
@@ -2362,21 +2364,21 @@ Format Conversion
 
     <dl>
     <dt><b>OASIS</b><dd>
-    <img src="screenshots/convert2.png" align=right>
+    <img src="screenshots/convert3.png" align=right>
     The output format is OASIS.
     <br clear=all>
     </dl>
 
     <dl>
     <dt><b>CIF</b><dd>
-    <img src="screenshots/convert3.png" align=right>
+    <img src="screenshots/convert4.png" align=right>
     The output format is CIF.
     <br clear=all>
     </dl>
 
     <dl>
     <dt><b>CGX</b><dd>
-    <img src="screenshots/convert4.png" align=right>
+    <img src="screenshots/convert5.png" align=right>
     The output format is CGX.
 
     <p>
@@ -2390,7 +2392,7 @@ Format Conversion
 
     <dl>
     <dt><b>XIC Cell Files</b><dd>
-    <img src="screenshots/convert5.png" align=right>
+    <img src="screenshots/convert6.png" align=right>
     The output will be written to a family of native-format cell files.
 
     <p>
@@ -2406,7 +2408,7 @@ Format Conversion
 
     <dl>
     <dt><b>ASCII Text</b><dd>
-    <img src="screenshots/convert6.png" align=right>
+    <img src="screenshots/convert7.png" align=right>
     The output will be converted to an <a href="gdstext">ASCII
     text</a> representation of the input file format, for GDSII,
     OASIS, and CGX input.  This may be useful for debugging

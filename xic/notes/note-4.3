@@ -225,17 +225,18 @@ geometry is simply copied as for any other cell type.
 These apply when flattening using file operations/CHD, but only
 when the master cells are NOT in the source file.
 
-FIX: flatten causes multiple objects, net name label problem.
+New NoFlattenLabels variable
+When set, labels in subcells are ignored, avoids creating wire nets
+with conflicting net labels.
 
-Netext now takes -vs option, where if not gridding and no area constraint,
+!netext -w 0,0,0,0 means to use cell BB (no area constraint).
+!netext now takes -vs option, where if not gridding and no area constraint,
 standard via cells will be retained.
 
 Added flattening/windowing from the Import panel.
-check if scaling works
-todo: handle via/pc masters in archive
-todo: buttons to keep via/pc instances
 
-ToDo:  optionally retain standard vias in netext files.
+ToDo: check if scaling works: pcells/vias, flattening import.
+ToDo: handle via/pc masters in archive
 
 ToDo:  preserve or create netname labels in netext files.  Presently,
 labels are completely ignored in netext.  Add pin objects, or add

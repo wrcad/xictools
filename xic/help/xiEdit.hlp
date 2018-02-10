@@ -652,7 +652,7 @@ Create Via
 !!SEEALSO
 xic:editmenu
 
-!! 102913
+!! 020918
 !!KEYWORD
 xic:flatn
 !!TITLE
@@ -671,6 +671,32 @@ Flatten Hierarchy
     the current cell, becoming subcells.  If "<tt>all</tt>", the
     entire subcell hierarchy is flattened, i.e., all geometry under a
     selected subcell is brought into the current cell.
+
+    <p>
+    The <b>Don't flatten standard vias, move to top</b> check box
+    enables to option to keep standard vias as cell instances rather
+    than converting to geometry.  Standard vias are otherwise treated
+    as any other cell instance.  This check box tracks the state of
+    the <a href="NoFlattenStdVias"><b>NoFlattenStdVias</b></a>
+    variable.  Applies to physical cells only.
+
+    <p>
+    The <b>Don't flatten param.  cells, move to top</b> check box
+    enables to option to retain parameterized cell (pcell) instances
+    rather than converting to geometry.  Parameterized cell instances
+    are otherwise treated as any other cell instance.  This check box
+    tracks the state of the <a
+    href="NoFlattenPCells"><b>NoFlattenPCells</b></a> variable. 
+    Applies to physical cells only.
+
+    <p>
+    The <b>Ignore labels in subcells</b> check box will skip promoion
+    of labels found in subcells being flattened to new labels in the
+    current cell.  This is to avoid assigning labels to flattened wire
+    nets that might be ambiguous when naming the net.  This check box
+    tracks the state of the the <a
+    href="NoFlattenLabels"><b>NoFlattenLabels</b></a> variable. 
+    Applies to physical and electrical cells.
 
     <p>
     The <b>Use fast mode</b> check box will select a processing mode

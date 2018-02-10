@@ -213,7 +213,7 @@ follow.
 \et GridNoCoarseOnly & Don't show coarse grid without fine grid\\ \hline
 \et GridThreshold & Minimum visible grid spacing pixels\\ \hline
 
-% 101212
+% 020918
 \multicolumn{2}{|c|}{\kb Convert Menu -- General}\\ \hline
 \et ChdFailOnUnresolved & Halt CHD operation if unresolved cell\\ \hline
 \et ChdCmpThreshold & Set CHD compression block size threshold\\ \hline
@@ -223,6 +223,9 @@ follow.
 \et UnknownGdsLayerBase & Base number for generated GDSII layers\\ \hline
 \et UnknownGdsDatatype & Datatype for generated GDSII layers\\ \hline
 \et NoStrictCellnames & Allow white space in cell names\\ \hline
+\et NoFlattenStdVias & Keep standard via instances when flattening\\ \hline
+\et NoFlattenPCells & Keep parameterized cell instances when flattening\\ \hline
+\et NoFlattenLabels & Ignore labels in subcells when flattening\\ \hline
 
 % 030416
 \multicolumn{2}{|c|}{\kb Convert Menu -- Input and ASCII Output}\\ \hline
@@ -2781,6 +2784,54 @@ releases prior to 3.0.5) of accepting white space in cell names will
 be enabled.  Otherwise, white space is not allowed in cell names, and
 if such cells are found in an archive being read, aliasing will be
 employed to map white space characters to underscores.
+
+% 020918
+\index{NoFlattenStdVias variable}
+\item{\et NoFlattenStdVias}\\
+{\bf Value:} boolean.\\
+When set, and when flattening a physical cell hierarchy, standard via
+instances will be retained as such rather than being converted to
+geometry.  This variable tracks the state of the {\cb Don't flatten
+standard vias, move to top} check box in the {\cb Flatten Hierarchy}
+panel, and the {\cb Don't flatten standard vias, keep as instances at
+top level} check boxes in the {\cb Setup} pages of the {\cb Import
+Control} panel, {\cb Export Control} panel, and the {\cb Format
+Conversion} panel.
+
+Presently, when the input data source is an archive file, this
+variable applies only when sub-masters are {\bf not} contained in the
+source file, and are therefor created in {\Xic}.
+
+% 020918
+\index{NoFlattenPCells variable}
+\item{\et NoFlattenPCells}\\
+{\bf Value:} boolean.\\
+When set, and when flattening a physical cell hierarchy, parameterized
+cell (pcell) instances will be retained as such rather than being
+converted to geometry.  This variable tracks the state of the {\cb
+Don't flatten param.  cells, move to top} check box in the {\cb
+Flatten Hierarchy} panel, and the {\cb Don't flatten pcells, keep as
+instances at top level} check boxes in the {\cb Setup} pages of the
+{\cb Import Control} panel, {\cb Export Control} panel, and the {\cb
+Format Conversion} panel.
+
+Presently, when the input data source is an archive file, this
+variable applies only when sub-masters are <b>not</b> contained in the
+source file, and are therefor created in {\Xic}.
+
+% 020918
+\index{NoFlattenLabels variable}
+\item{\et NoFlattenLabels}\\
+{\bf Value:} boolean.\\
+When set, and when flattening a cell hierarchy (physical or
+electrical), labels found in subcells are ignored (not copied into the
+current cell).  Labels found in the current cell are retained.  This
+is intended to avoid creating conflicting net labels of wire nets from
+(subnet) labels in subcells.  This variable tracks the state of the
+{\cb Ignore labels in subcells} check box in the {\cb Flatten
+Hierarchy} panel, and the {\cb Ignore labels in subcells} check boxes
+in the {\cb Setup} pages of the {\cb Import Control} panel, {\cb
+Export Control} panel, and the {\cb Format Conversion} panel.
 \end{description}
 
 

@@ -249,7 +249,7 @@ xiVariables.hlp
     <tr><td><b>GridNoCoarseOnly</b></td><td>Don't show coarse grid without fine grid</td></tr>
     <tr><td><b>GridThreshold</b></td><td>Minimum visible grid spacing pixels</td></tr>
 
-!! 101212
+!! 020918
     <tr><th colspan=2><a href="!set:cvgen">Convert Menu - General</a></th></tr>
     <tr><td><b>ChdFailOnUnresolved</b></td><td>Halt CHD operation if unresolved cell</td></tr>
     <tr><td><b>ChdCmpThreshold</b></td><td>Set CHD compression block size threshold</td></tr>
@@ -258,6 +258,9 @@ xiVariables.hlp
     <tr><td><b>UnknownGdsLayerBase</b></td><td>Base number for generated GDSII layers</td></tr>
     <tr><td><b>UnknownGdsDatatype</b></td><td>Datatype for generated GDSII layers</td></tr>
     <tr><td><b>NoStrictCellnames</b></td><td>Allow white space in cell names</td></tr>
+    <tr><td><b>NoFlattenStdVias</b></td><td>Keep standard via instances when flattening</td></tr>
+    <tr><td><b>NoFlattenPCells</b></td><td>Keep parameterized cell instances when flattening</td></tr>
+    <tr><td><b>NoFlattenLabels</b></td><td>Ignore labels in subcells when flattening</td></tr>
 
 !! 030416
     <tr><th colspan=2><a href="!set:cvimport">Convert Menu - Input and ASCII Output</a></th></tr>
@@ -3453,6 +3456,9 @@ Attributes Menu Commands
 !!REDIRECT UnknownGdsLayerBase  !set:cvgen#UnknownGdsLayerBase
 !!REDIRECT UnknownGdsDatatype   !set:cvgen#UnknownGdsDatatype
 !!REDIRECT NoStrictCellnames    !set:cvgen#NoStrictCellnames
+!!REDIRECT NoFlattenStdVias     !set:cvgen#NoFlattenStdVias
+!!REDIRECT NoFlattenPCells      !set:cvgen#NoFlattenPCells
+!!REDIRECT NoFlattenLabels      !set:cvgen#NoFlattenLabels
 
 !! 061408
 !!KEYWORD
@@ -3567,6 +3573,71 @@ Convert Menu - General
     in cell names, and if such cells are found in an archive being
     read, <a href="cellname">aliasing</a> will be employed to map
     white space characters to underscores.
+    </dl>
+
+!! 020918
+    <a name="NoFlattenStdVias"></a>
+    <dl>
+    <dt><b>NoFlattenStdVias</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, and when flattening a physical cell hierarchy, standard
+    via instances will be retained as such rather than being converted
+    to geometry.  This variable tracks the state of the <b>Don't
+    flatten standard vias, move to top</b> check box in the <a
+    href="xic:flatn"><b>Flatten Hierarchy</b></a> panel, and the
+    <b>Don't flatten standard vias, keep as instances at top level</b>
+    check boxes in the <b>Setup</b> pages of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel, <a
+    href="xic:exprt"><b>Export Control</b></a> panel, and the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel.
+
+    <p>
+    Presently, when the input data source is an <a
+    href="xic:fsaf">archive</a> file, this variable applies only when
+    sub-masters are <b>not</b> contained in the source file, and are
+    therefor created in <i>Xic</i>.
+    </dl>
+
+!! 020918
+    <a name="NoFlattenPCells"></a>
+    <dl>
+    <dt><b>NoFlattenPCells</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, and when flattening a physical cell hierarchy, parameterized
+    cell (pcell) instances will be retained as such rather than being converted
+    to geometry.  This variable tracks the state of the <b>Don't
+    flatten param. cells, move to top</b> check box in the <a
+    href="xic:flatn"><b>Flatten Hierarchy</b></a> panel, and the
+    <b>Don't flatten pcells, keep as instances at top level</b>
+    check boxes in the <b>Setup</b> pages of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel, <a
+    href="xic:exprt"><b>Export Control</b></a> panel, and the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel.
+
+    <p>
+    Presently, when the input data source is an <a
+    href="xic:fsaf">archive</a> file, this variable applies only when
+    sub-masters are <b>not</b> contained in the source file, and are
+    therefor created in <i>Xic</i>.
+    </dl>
+
+!! 020918
+    <a name="NoFlattenLabels"></a>
+    <dl>
+    <dt><b>NoFlattenLabels</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, and when flattening a cell hierarchy (physical or
+    electrical), labels found in subcells are ignored (not copied into
+    the current cell).  Labels found in the current cell are retained. 
+    This is intended to avoid creating conflicting net labels of wire
+    nets from (subnet) labels in subcells.
+    This variable tracks the state of the <b>Ignore labels in
+    subcells</b> check box in the <a href="xic:flatn"><b>Flatten
+    Hierarchy</b></a> panel, and the <b>Ignore labels in subcells</b>
+    check boxes in the <b>Setup</b> pages of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel, <a
+    href="xic:exprt"><b>Export Control</b></a> panel, and the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel.
     </dl>
 
 !!SEEALSO

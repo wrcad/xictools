@@ -156,10 +156,85 @@ IMPORTANT -- Windows notes
 *****************************************************
 End of general info.
 
-
 ===============================================================================
-xic-4.3.3  1/10/2017
+xic-4.3.4  2/10/2018
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Flattening functionality update.
+
+  Three new boolean variables:
+
+    NoFlattenStdVias
+      When set, standard via instances will not be flattened, but are
+      retained as standard vias at the top of the flattened hierarchy.
+
+    NoFlattenPCells
+      When set, parameterized cell (pcell) instances will not be
+      flattened, but are retained as pcells at the top of the
+      flattened hierarchy.
+
+   The NoFlattenStdVias and NoFlattenPCells modes apply only when
+   flattening without windowing.  When flattening cell data from a
+   file, these apply only when the sub-masters are not included in the
+   file (i.e., the sub-masters are created in Xic).  When true,
+   instance placements are retained but moved to the top of the
+   flattened hierarchy.
+
+    NoFlattenLabels
+      When set, labels in subcells are ignored when flattening.  This
+      prevents creating wire nets with conflicting net labels.
+
+    These variables have corresponding check boxes in these four panels:
+    1. Flatten Hierarchy, from the Flatten button in the Edit menu.
+    2. Export Control, from the Export Cell Data button in the Convert
+       menu.
+    3. Import Control, from the Import Cell Data button in the Convert
+       menu.
+    4. Format Conversion, from the Format Conversion button in the
+       Convert menu.
+
+   The Import Control panel now has a windowing/flattening control
+   group in the Read File page allowing these operations to be
+   performed as input is being read (physical data only).
+
+   The Export Control. and Format Conversion panels are now paged,
+   with a Setup page that provides options, and a second page from
+   where the operation is started.
+
+* Update to !netext command.
+
+    Giving "-w 0,0,0,0" now means to use the entire cell bounding box.
+
+    With the above form, there is an additional "-vs" argument recognized.
+    When given, standard vias will not be flattened but remain as instances
+    in the net cells.  This applies when via sub-masters are not included
+    is the source file, and are thus created internally in Xic.
+
+BUGS FIXED
+---- -----
+
+* Updated special-purpose code that helps associate physical and
+  schematic MOS circuits.  The previous test required that power and
+  ground nets be defined as global.  If not so defined, some device
+  associations wouldn't be found.  The new code doesn't require this,
+  and provides complete association in these cases.
+
+* The files xic.exe and wrspice.exe triggered a virus alert in the
+  Webroot virus scanner.  This is spurious, but prevented the programs
+  from being installed.  I found that by not stripping these exe
+  files, the alert wasn't triggered.  The Makefiles were modified to
+  not strip xic.exe and wrspice.exe for this reason.
+
+* Fixed up the Apple gtk2-bundle-x11 build, which needed some tweaks
+  to the library list for the current MacPorts.  The wr_install script
+  now installs this without complaining that it isn't an xictools-4.3
+  distribution.
+
+-------------------------------------------------------------------------------
+xic-4.3.3  1/10/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

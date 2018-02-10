@@ -892,7 +892,7 @@ mode can be exited by pressing the {\kb Esc} key.
 
 
 % -----------------------------------------------------------------------------
-% xic:flatn 102913
+% xic:flatn 020918
 \section{The {\cb Flatten} Button: Flatten Hierarchy}
 \index{Flatten button}
 \index{flatten hierarchy}
@@ -905,6 +905,26 @@ current cell, and sub-subcells are placed in the current cell,
 becoming subcells.  If ``{\vt all}'', the entire subcell hierarchy is
 flattened, i.e., all geometry under a selected subcell is brought into
 the current cell.
+
+The {\cb Don't flatten standard vias, move to top} check box enables
+to option to keep standard vias as cell instances rather than
+converting to geometry.  Standard vias are otherwise treated as any
+other cell instance.  This check box tracks the state of the {\et
+NoFlattenStdVias} variable.  Applies to physical cells only.
+
+The {\cb Don't flatten param.  cells, move to top} check box enables
+to option to retain parameterized cell (pcell) instances rather than
+converting to geometry.  Parameterized cell instances are otherwise
+treated as any other cell instance.  This check box tracks the state
+of the {\et NoFlattenPCells} variable.  Applies to physical cells
+only.
+
+The {\cb Ignore labels in subcells} check box will skip promoion of
+labels found in subcells being flattened to new labels in the current
+cell.  This is to avoid assigning labels to flattened wire nets that
+might be ambiguous when naming the net.  This check box tracks the
+state of the the {\et NoFlattenLabels} variable.  Applies to physical
+and electrical cells.
 
 The {\cb Use fast mode} check box will select a processing mode that
 will skip undo list processing and object merging operations for speed
