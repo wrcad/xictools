@@ -87,6 +87,7 @@ namespace {
             GtkWidget *cvo_noflvias;
             GtkWidget *cvo_noflpcs;
             GtkWidget *cvo_nofllbs;
+            GtkWidget *cvo_keepbad;
             GtkWidget *cvo_invis_p;
             GtkWidget *cvo_invis_e;
             CvoCallback cvo_callback;
@@ -174,6 +175,7 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     cvo_noflvias = 0;
     cvo_noflpcs = 0;
     cvo_nofllbs = 0;
+    cvo_keepbad = 0;
     cvo_invis_p = 0;
     cvo_invis_e = 0;
     cvo_callback = callback;
@@ -390,6 +392,18 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     rowcnt++;
     cvo_nofllbs = button;
 
+    button = gtk_check_button_new_with_label(
+        "Keep bad output (for debugging)");
+    gtk_widget_set_name(button, "keepbad");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvo_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvo_keepbad = button;
+
     GtkWidget *tab_label = gtk_label_new("Setup");
     gtk_widget_show(tab_label);
     gtk_notebook_append_page(GTK_NOTEBOOK(cvo_nbook), form, tab_label);
@@ -507,6 +521,7 @@ sCvo::update()
     GRX->SetStatus(cvo_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
     GRX->SetStatus(cvo_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
     GRX->SetStatus(cvo_nofllbs, CDvdb()->getVariable(VA_NoFlattenLabels));
+    GRX->SetStatus(cvo_keepbad, CDvdb()->getVariable(VA_KeepBadArchive));
 
     const char *s = CDvdb()->getVariable(VA_SkipInvisible);
     if (!s) {
@@ -615,6 +630,13 @@ sCvo::cvo_action(GtkWidget *caller, void*)
             CDvdb()->setVariable(VA_NoFlattenLabels, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenLabels);
+        return;
+    }
+    if (!strcmp(name, "keepbad")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_KeepBadArchive, 0);
+        else
+            CDvdb()->clearVariable(VA_KeepBadArchive);
         return;
     }
     if (!strcmp(name, "invis_p")) {

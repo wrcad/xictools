@@ -57,6 +57,8 @@
 #define VA_NoFlattenStdVias         "NoFlattenStdVias"
 #define VA_NoFlattenPCells          "NoFlattenPCells"
 #define VA_NoFlattenLabels          "NoFlattenLabels"
+#define VA_NoReadLabels             "NoReadLabels"
+#define VA_KeepBadArchive           "KeepBadArchive"
 
 // Convert Menu - Input and ASCII Output
 #define VA_ChdLoadTopOnly           "ChdLoadTopOnly"
@@ -68,7 +70,6 @@
 #define VA_NoOverwriteElec          "NoOverwriteElec"
 #define VA_NoOverwriteLibCells      "NoOverwriteLibCells"
 #define VA_NoCheckEmpties           "NoCheckEmpties"
-#define VA_NoReadLabels             "NoReadLabels"
 #define VA_MergeInput               "MergeInput"
 #define VA_NoPolyCheck              "NoPolyCheck"
 #define VA_DupCheckMode             "DupCheckMode"
@@ -93,7 +94,6 @@
 #define VA_StripForExport           "StripForExport"
 #define VA_WriteAllCells            "WriteAllCells"
 #define VA_SkipInvisible            "SkipInvisible"
-#define VA_KeepBadArchive           "KeepBadArchive"
 #define VA_NoCompressContext        "NoCompressContext"
 #define VA_RefCellAutoRename        "RefCellAutoRename"
 #define VA_UseCellTab               "UseCellTab"

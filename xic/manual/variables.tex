@@ -226,8 +226,11 @@ follow.
 \et NoFlattenStdVias & Keep standard via instances when flattening\\ \hline
 \et NoFlattenPCells & Keep parameterized cell instances when flattening\\ \hline
 \et NoFlattenLabels & Ignore labels in subcells when flattening\\ \hline
+\et NoReadLabels & Ignore text labels when reading physical cell data\\ \hline
+\et KeepBadArchive & Don't delete failed conversion output archive file\\
+  \hline
 
-% 030416
+% 020918
 \multicolumn{2}{|c|}{\kb Convert Menu -- Input and ASCII Output}\\ \hline
 \et ChdLoadTopOnly & Load requested cell from CHD only, create reference\\
   \hline
@@ -240,7 +243,6 @@ follow.
 \et NoOverwriteElec & Don't overwrite elec memory cells when reading\\ \hline
 \et NoOverwriteLibCells & Don't overwrite library cells when reading\\ \hline
 \et NoCheckEmpties & Skip checking for empty cells while reading\\ \hline
-\et NoReadLabels & Ignore text labels when reading physical cell data\\ \hline
 \et NoPolyCheck & Skip polygon reentrancy tests when reading\\ \hline
 \et DupCheckMode & Check for duplicate items when reading\\ \hline
 %\ifoa
@@ -262,13 +264,11 @@ follow.
 \et OasPrintNoWrap & Use one line per record in OASIS ASCII output\\ \hline
 \et OasPrintOffset & Add file offsets to OASIS ASCII output\\ \hline
 
-% 022213
+% 020918
 \multicolumn{2}{|c|}{\kb Convert Menu -- Output}\\ \hline
 \et StripForExport & Strip all format extensions from output file\\ \hline
 \et WriteAllCells & Write library cells when creating archive file\\ \hline
 \et SkipInvisible & Do not write invisible layers to output\\ \hline
-\et KeepBadArchive & Don't delete failed conversion output archive file\\
-  \hline
 \et NoCompressContext & Don't compress instance lists in archive context\\
   \hline
 \et RefCellAutoRename & Use auto-rename when writing reference cell data\\
@@ -2695,7 +2695,7 @@ Attributes Menu}.
 
 
 % -----------------------------------------------------------------------------
-% !set:cvgen 061408
+% !set:cvgen 020918
 \section{Convert Menu --- General}
 
 Below are general variables relating to data input/output and format
@@ -2832,11 +2832,32 @@ is intended to avoid creating conflicting net labels of wire nets from
 Hierarchy} panel, and the {\cb Ignore labels in subcells} check boxes
 in the {\cb Setup} pages of the {\cb Import Control} panel, {\cb
 Export Control} panel, and the {\cb Format Conversion} panel.
+
+% 022716
+\index{NoReadLabels variable}
+\item{\et NoReadLabels}\\
+{\bf Value:} boolean.\\
+When this variable is set, text label elements will not be read from
+archive files in physical mode.  This may improve efficiency if the
+user is concerned with physical layout data only.  This variable
+tracks the setting of the {\cb Skip reading text labels from physical
+archives} check box in the {\cb Setup} page of the {\cb Import
+Control} panel from the {\cb Convert Menu}.
+
+% 061408
+\index{KeepBadArchive variable}
+\item{\et KeepBadArchive}\\
+{\bf Value:} boolean.\\
+When generating an archive file and an error occurs, the archive file
+will normally be deleted.  However, if this variable is set, the
+output file will be given a ``{\vt .BAD}'' extension and retained. 
+This file should be considered corrupt, but may be useful for
+diagnostics.
 \end{description}
 
 
 % -----------------------------------------------------------------------------
-% !set:cvimport 030416
+% !set:cvimport 020918
 \section{Convert Menu --- Input and ASCII Output}
 
 The {\cb !set} variables below affect the format conversion when
@@ -3063,17 +3084,6 @@ check for empty cells at any time with the {\cb !empties} command.
 This variable tracks the setting of the {\cb Skip testing for empty
 cells} check box in the {\cb Setup} page of the {\cb Import Control}
 panel from the {\cb Convert Menu}.
-
-% 022716
-\index{NoReadLabels variable}
-\item{\et NoReadLabels}\\
-{\bf Value:} boolean.\\
-When this variable is set, text label elements will not be read from
-archive files in physical mode.  This may improve efficiency if the
-user is concerned with physical layout data only.  This variable
-tracks the setting of the {\cb Skip reading text labels from physical
-archives} check box in the {\cb Setup} page of the {\cb Import
-Control} panel from the {\cb Convert Menu}.
 
 % 022716
 \index{NoPolyCheck variable}
@@ -3340,7 +3350,7 @@ output format page of the {\cb Format Conversion} panel.
 
 
 % -----------------------------------------------------------------------------
-% xic:cvexport 022916
+% xic:cvexport 020918
 \section{Convert Menu --- Output}
 
 The {\cb !set} variables below affect the format conversion when
@@ -3493,16 +3503,6 @@ will be skipped.  If set to anything else, including the empty string,
 both physical and electrical invisible layers will be skipped.  This
 variable tracks the state of the {\cb Don't convert invisible layers}
 check boxes in the {\cb Export Control} panel.
-
-% 061408
-\index{KeepBadArchive variable}
-\item{\et KeepBadArchive}\\
-{\bf Value:} boolean.\\
-When generating an archive file and an error occurs, the archive file
-will normally be deleted.  However, if this variable is set, the
-output file will be given a ``{\vt .BAD}'' extension and retained. 
-This file should be considered corrupt, but may be useful for
-diagnostics.
 
 % 022916
 \index{NoCompressContext variable}

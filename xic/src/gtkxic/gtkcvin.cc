@@ -89,12 +89,12 @@ namespace {
             GtkWidget *cvi_polys;
             GtkWidget *cvi_dup;
             GtkWidget *cvi_empties;
-            GtkWidget *cvi_nolabels;
             GtkWidget *cvi_dtypes;
             GtkWidget *cvi_force;
             GtkWidget *cvi_noflvias;
             GtkWidget *cvi_noflpcs;
             GtkWidget *cvi_nofllbs;
+            GtkWidget *cvi_nolabels;
             GtkWidget *cvi_merg;
             bool (*cvi_callback)(int, void*);
             void *cvi_arg;
@@ -196,12 +196,12 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     cvi_polys = 0;
     cvi_dup = 0;
     cvi_empties = 0;
-    cvi_nolabels = 0;
     cvi_dtypes = 0;
     cvi_force = 0;
     cvi_noflvias = 0;
     cvi_noflpcs = 0;
     cvi_nofllbs = 0;
+    cvi_nolabels = 0;
     cvi_merg = 0;
     cvi_callback = callback;
     cvi_arg = arg;
@@ -412,18 +412,6 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     cvi_empties = button;
 
     button = gtk_check_button_new_with_label(
-        "Skip reading text labels from physical archives");
-    gtk_widget_set_name(button, "nolabels");
-    gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-    cvi_nolabels = button;
-
-    button = gtk_check_button_new_with_label(
         "Map all unmapped GDSII datatypes to same Xic layer");
     gtk_widget_set_name(button, "dtypes");
     gtk_widget_show(button);
@@ -501,6 +489,18 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
     cvi_nofllbs = button;
+
+    button = gtk_check_button_new_with_label(
+        "Skip reading text labels from physical archives");
+    gtk_widget_set_name(button, "nolabels");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvi_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvi_nolabels = button;
 
     GtkWidget *tab_label = gtk_label_new("Setup");
     gtk_widget_show(tab_label);
@@ -654,11 +654,11 @@ sCvi::update()
     GRX->SetStatus(cvi_merge, CDvdb()->getVariable(VA_MergeInput));
     GRX->SetStatus(cvi_polys, CDvdb()->getVariable(VA_NoPolyCheck));
     GRX->SetStatus(cvi_empties, CDvdb()->getVariable(VA_NoCheckEmpties));
-    GRX->SetStatus(cvi_nolabels, CDvdb()->getVariable(VA_NoReadLabels));
     GRX->SetStatus(cvi_dtypes, CDvdb()->getVariable(VA_NoMapDatatypes));
     GRX->SetStatus(cvi_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
     GRX->SetStatus(cvi_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
     GRX->SetStatus(cvi_nofllbs, CDvdb()->getVariable(VA_NoFlattenLabels));
+    GRX->SetStatus(cvi_nolabels, CDvdb()->getVariable(VA_NoReadLabels));
 
     int hst = 1;
     const char *str = CDvdb()->getVariable(VA_DupCheckMode);
@@ -765,13 +765,6 @@ sCvi::cvi_action(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_NoCheckEmpties);
         return;
     }
-    if (!strcmp(name, "nolabels")) {
-        if (GRX->GetStatus(caller))
-            CDvdb()->setVariable(VA_NoReadLabels, 0);
-        else
-            CDvdb()->clearVariable(VA_NoReadLabels);
-        return;
-    }
     if (!strcmp(name, "dtypes")) {
         if (GRX->GetStatus(caller))
             CDvdb()->setVariable(VA_NoMapDatatypes, 0);
@@ -798,6 +791,13 @@ sCvi::cvi_action(GtkWidget *caller, void*)
             CDvdb()->setVariable(VA_NoFlattenLabels, 0);
         else
             CDvdb()->clearVariable(VA_NoFlattenLabels);
+        return;
+    }
+    if (!strcmp(name, "nolabels")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoReadLabels, 0);
+        else
+            CDvdb()->clearVariable(VA_NoReadLabels);
         return;
     }
     if (!strcmp(name, "luse")) {
