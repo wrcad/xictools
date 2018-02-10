@@ -919,23 +919,34 @@ Export Cell Data
     <a href="xic:exprt#oasis"><b>OASIS Settings</b></a><br>
     <a href="xic:exprt#cif"><b>CIF Settings</b></a><br>
     <a href="xic:exprt#cgx"><b>CGX Settings</b></a>
+//XXX
+    <a href="xic:exprt#setup"><b>Setup page</b></a>
     <a href="xic:exprt#write"><b>Exporting Data</b></a>
     </td></tr></table>
 
     <p>
     <b>Keyword</b>: <tt>exprt</tt>
 
+//XXX
     <p>
     The <b>Export Cell Data</b> button in the <b>Convert Menu</b>
-    brings up the <b>Export Control</b> panel.  The panel serves two
-    purposes.  First, it allows setting of various parameters and
-    modes which are used globally when writing layout files.  Second,
-    it provides a button with which export of cell data to a disk file
-    can be initiated.
+    brings up the <b>Export Control</b> panel.
+The top of the panel contains tabbed pages for <b>GDSII</b>,
+<b>OASIS</b>, <b>CIF</b>, <b>CGX</b>, and <b>Xic cell files</b>. 
+This selects the current output format, and exposes controls and
+settings particular to the format.
+
+The lower part of the panel has two pages.
+The <b>Setup</b> page allows setting of various format-independent parameters and
+    modes which are used globally when writing layout files.
+The <b>Write File</b> page
+provides a button with which export of cell data to a disk file
+    can be initiated, as well as settings which apply during the
+write operation..
 
     <p>
-    The top of the panel contains tabbed pages for <b>GDSII</b>,
-    <b>OASIS</b>, <b>CIF</b>, <b>CGX</b>, and <b>Xic cell files</b>. 
+Below are descriptions of the controls in the file format pages selected
+by the upper tabs.
     Clicking the tab exposes the page containing controls appropriate
     for the format.  The parameters set with this panel always apply
     when writing layout files of the types indicated.  In particular,
@@ -1250,153 +1261,12 @@ Export Cell Data
     automatically on input, and can be coerced as output by giving
     a "<tt>.gz</tt>" suffix to the file name.
 
+//XXX
+    <a name=setup></a>
+    <h2>The Setup Page</h2>
 
-    <a name="write"></a>
-    <h2>Exporting Design Data</h2>
-
-    The remainder of the <b>Export Control</b> panel is used to initiate
-    writing of a design data file to disk.  A number of options are
-    available when writing a file with this panel.  Unlike the
-    settings described above, these settings apply only to files
-    created with this panel.
-
-    <p>
-    The currently selected tab at the top of the panel specifies the
-    output format to use.  Details of the format selections are
-    described below.
-
-    <dl>
-    <dt><b>GDSII</b><dd>
-    This choice will create a GDSII (Stream) file of the current
-    editing cell and its descendents.  Upon pressing <b>Write
-    File</b>, the name of the file for the GDSII output is requested
-    from the user.  The user can add a "<tt>.gz</tt>" extension, or
-    remove the extension if already present, to control whether or not
-    <tt>gzip</tt> compression is used.  The GDSII layer numbers and
-    datatypes are as given in the <a
-    href="techfile:layers:conv">technology file</a>.
-
-    <p>
-    <i>Xic</i> will ensure that cell names included in the GDSII
-    file conform to the standard (upper and lower case, digits, '_',
-    '$', '?' only, up to 32 long in GDSII Release 3).
-
-    <p>
-    All layers that are to be written to the GDSII file should have a
-    GDSII output mapping specified.  This can be added to the <a
-    href="techfile">technology file</a> with a text editor, or
-    interactively with the <a href="xic:lpedt"><b>Edit Tech
-    Params</b></a> button in the <b>Attributes Menu</b>.  By default,
-    a layer needed for output that does not have a mapping will
-    terminate the operation.  However, if the <b>Skip layers without
-    Xic to GDSII layer mapping</b> check bod in the <b>GDSII</b> page
-    of the <b>Export Control</b> panel is checked, or equivalently the
-    variable <b>NoGdsMapOk</b> is set (with the <a
-    href="!set"><b>!set</b></a> command), then such layers will be
-    ignored (producing no output).
-    </dl>
-
-    <dl>
-    <dt><b>OASIS</b><dd>
-    This choice will create an OASIS file of the current editing cell
-    and its descendents.  Upon pressing <b>Write File</b>, he name of
-    the file for the OASIS output is requested from the user.  The
-    layer numbers and datatypes are as given in the <a
-    href="techfile:layers:conv">technology file</a>.  These are the
-    same as for GDSII.
-
-    <p>
-    All layers that are to be written to the OASIS file should have a
-    GDSII output mapping specified.  This can be added to the <a
-    href="techfile">technology file</a> with a text editor, or
-    interactively with the <a href="xic:lpedt"><b>Edit Tech
-    Params</b></a> button in the <b>Attributes Menu</b>.  By default,
-    a layer needed for output that does not have a mapping will
-    terminate the operation.  However, if the <b>Skip layers without
-    Xic to GDSII layer mapping</b> check box in the <b>OASIS</b> page
-    of the <b>Export Control</b></a> panel is checked, or equivalently
-    the variable <b>NoGdsMapOk</b> is set (with the <a
-    href="!set"><b>!set</b></a> command), then such layers will be
-    ignored (producing no output).
-    </dl>
-
-    <dl>
-    <dt><b>CIF</b><dd>
-    With this choice, the current editing cell and its descendents
-    will be written to a CIF file.  Upon pressing <b>Write File</b>,
-    the user is prompted for the name of the file for CIF output.
-
-    <p>
-    The extension syntax used for cell name specification and labels,
-    and whether the layer directives use indexing or names, are
-    settable with the <a href="CifOutStyle"><b>CifOutStyle</b></a>
-    variable and/or the <b>CIF</b> page menus in the <b>Export
-    Control</b> panel.
-    </dl>
-
-    <dl>
-    <dt><b>CGX</b><dd>
-    <p>
-    With this choice, the current editing cell and its descendents
-    will be written to a CGX file.  Upon pressing <b>Write File</b>,
-    the user is prompted for the name of the file for CGX output.  The
-    user can add a "<tt>.gz</tt>" extension, or remove the extension
-    if already present, to control whether or not <tt>gzip</tt>
-    compression is used.
-    </dl>
-
-    <dl>
-    <dt><b>Xic Cell Files</b><dd>
-    This choice will unconditionally write to native-format files the
-    hierarchy of the current editing cell.  It can be used to
-    transform a hierarchy input from a <a href="xic:fsaf">supported
-    archive format</a> file into <i>Xic</i> native format.
-
-    <p>
-    When <b>Write File</b> is pressed, the user is given the option of
-    setting the directory which will receive the created files.  If no
-    directory is given, the files will be created in the current
-    directory.  While the prompt is in effect, a pop-up containing a
-    tree listing of the directory hierarchy rooted in the current
-    directory appears.  The user can select a directory in the
-    listing, or type the directory path on the prompt line.  If a
-    directory path is given and the final directory does not exist, it
-    will be created, if possible.  Pressing <b>Esc</b> will abort the
-    operation.
-
-    <p>
-    After the cell writing is complete, a <a href="libraries">library
-    file</a> will be written in the current directory, given the name
-    of the top-level cell suffixed with "<tt>.lib</tt>".  This file
-    will have references to each of the new files created, with the
-    top-level cell name listed first, and the others listed in
-    alphabetical order.  This library may be placed in the search path
-    to gain access to the new files through the library mechanism, in
-    which case the directory containing the files need not be in the
-    search path.
-    </dl>
-
-    The remaining controls are described below.
-
-    <dl>
-    <dt><b>Cell Name Mapping</b><dd>
-    This group of controls manages the cell name <a
-    href="cellname">aliasing</a> feature.  This does not apply to
-    native cell file output.
-    </dl>
-
-    <p>
-    A subset of the <a href="windowing">windowing</a> operations is
-    available.  From this panel, windowing is only available when
-    flattening.
-
-    <dl>
-    <dt><b>Conversion Scale Factor</b><dd>
-    The <b>Conversion Scale Factor</b> provides an entry area where a
-    scale factor to be applied during the write operation can be
-    entered.  Values of 0.001 through 1000.0 are acceptable.  This
-    will apply to output initiated from this panel only.
-    </dl>
+    The <b>Setup</b> page contains a number of check boxes which control
+    various modes when writing output, as described below.
 
     <a name="invis">
     <dl>
@@ -1545,6 +1415,185 @@ Export Cell Data
     may have multiple top-level cells.
     </dl>
 
+    <dl>
+    <dt><b>Don't flatten standard vias, keep as instance at top
+    level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy.  When
+    set, instances of standard vias are retained as such, rather than
+    being written as geometry.  This check box tracks the state of the
+    <a href="NoFlattenStdVias"><b>NoFlattenStdVieas</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten pcells, keep as instance at top level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy. 
+    When set, instances of parameterized cells (pcells) are retained
+    as such, rather than being written as geometry.  This check box
+    tracks the state of the <a
+    href="NoFlattenPCells"><b>NoFlattenPCells</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Ignore labels in subcells when flattening</b><dd>
+    When flattening a cell hierarchy, if this check box is checked
+    labels found in subcells are ignored, meaning not reparented to
+    the top level.  Pre-existing labels at the top level are not
+    affected.  This is intended to prevent net name labels from
+    subcells conflicting with net name labels defined at higher
+    hierarchy levels.  The check box state tracks the <a
+    href="NoFlattenLabels"><b>NoFlattenLabels</b></a> variable.
+    </dl>
+
+    <a name="write"></a>
+    <h2> The Write File Page, Exporting Design Data</h2>
+//XXX
+
+The <b>Write File</b> page is used to initiate
+    writing of a design data file to disk.  A number of options are
+    available when writing a file with this panel.  Unlike the
+    settings described above, these settings apply only to files
+    created with this panel.
+
+    <p>
+    The currently selected tab at the top of the panel specifies the
+    output format to use.  Details of the format selections are
+    described below.
+
+    <dl>
+    <dt><b>GDSII</b><dd>
+    This choice will create a GDSII (Stream) file of the current
+    editing cell and its descendents.  Upon pressing <b>Write
+    File</b>, the name of the file for the GDSII output is requested
+    from the user.  The user can add a "<tt>.gz</tt>" extension, or
+    remove the extension if already present, to control whether or not
+    <tt>gzip</tt> compression is used.  The GDSII layer numbers and
+    datatypes are as given in the <a
+    href="techfile:layers:conv">technology file</a>.
+
+    <p>
+    <i>Xic</i> will ensure that cell names included in the GDSII
+    file conform to the standard (upper and lower case, digits, '_',
+    '$', '?' only, up to 32 long in GDSII Release 3).
+
+    <p>
+    All layers that are to be written to the GDSII file should have a
+    GDSII output mapping specified.  This can be added to the <a
+    href="techfile">technology file</a> with a text editor, or
+    interactively with the <a href="xic:lpedt"><b>Edit Tech
+    Params</b></a> button in the <b>Attributes Menu</b>.  By default,
+    a layer needed for output that does not have a mapping will
+    terminate the operation.  However, if the <b>Skip layers without
+    Xic to GDSII layer mapping</b> check bod in the <b>GDSII</b> page
+    of the <b>Export Control</b> panel is checked, or equivalently the
+    variable <b>NoGdsMapOk</b> is set (with the <a
+    href="!set"><b>!set</b></a> command), then such layers will be
+    ignored (producing no output).
+    </dl>
+
+    <dl>
+    <dt><b>OASIS</b><dd>
+    This choice will create an OASIS file of the current editing cell
+    and its descendents.  Upon pressing <b>Write File</b>, he name of
+    the file for the OASIS output is requested from the user.  The
+    layer numbers and datatypes are as given in the <a
+    href="techfile:layers:conv">technology file</a>.  These are the
+    same as for GDSII.
+
+    <p>
+    All layers that are to be written to the OASIS file should have a
+    GDSII output mapping specified.  This can be added to the <a
+    href="techfile">technology file</a> with a text editor, or
+    interactively with the <a href="xic:lpedt"><b>Edit Tech
+    Params</b></a> button in the <b>Attributes Menu</b>.  By default,
+    a layer needed for output that does not have a mapping will
+    terminate the operation.  However, if the <b>Skip layers without
+    Xic to GDSII layer mapping</b> check box in the <b>OASIS</b> page
+    of the <b>Export Control</b></a> panel is checked, or equivalently
+    the variable <b>NoGdsMapOk</b> is set (with the <a
+    href="!set"><b>!set</b></a> command), then such layers will be
+    ignored (producing no output).
+    </dl>
+
+    <dl>
+    <dt><b>CIF</b><dd>
+    With this choice, the current editing cell and its descendents
+    will be written to a CIF file.  Upon pressing <b>Write File</b>,
+    the user is prompted for the name of the file for CIF output.
+
+    <p>
+    The extension syntax used for cell name specification and labels,
+    and whether the layer directives use indexing or names, are
+    settable with the <a href="CifOutStyle"><b>CifOutStyle</b></a>
+    variable and/or the <b>CIF</b> page menus in the <b>Export
+    Control</b> panel.
+    </dl>
+
+    <dl>
+    <dt><b>CGX</b><dd>
+    <p>
+    With this choice, the current editing cell and its descendents
+    will be written to a CGX file.  Upon pressing <b>Write File</b>,
+    the user is prompted for the name of the file for CGX output.  The
+    user can add a "<tt>.gz</tt>" extension, or remove the extension
+    if already present, to control whether or not <tt>gzip</tt>
+    compression is used.
+    </dl>
+
+    <dl>
+    <dt><b>Xic Cell Files</b><dd>
+    This choice will unconditionally write to native-format files the
+    hierarchy of the current editing cell.  It can be used to
+    transform a hierarchy input from a <a href="xic:fsaf">supported
+    archive format</a> file into <i>Xic</i> native format.
+
+    <p>
+    When <b>Write File</b> is pressed, the user is given the option of
+    setting the directory which will receive the created files.  If no
+    directory is given, the files will be created in the current
+    directory.  While the prompt is in effect, a pop-up containing a
+    tree listing of the directory hierarchy rooted in the current
+    directory appears.  The user can select a directory in the
+    listing, or type the directory path on the prompt line.  If a
+    directory path is given and the final directory does not exist, it
+    will be created, if possible.  Pressing <b>Esc</b> will abort the
+    operation.
+
+    <p>
+    After the cell writing is complete, a <a href="libraries">library
+    file</a> will be written in the current directory, given the name
+    of the top-level cell suffixed with "<tt>.lib</tt>".  This file
+    will have references to each of the new files created, with the
+    top-level cell name listed first, and the others listed in
+    alphabetical order.  This library may be placed in the search path
+    to gain access to the new files through the library mechanism, in
+    which case the directory containing the files need not be in the
+    search path.
+    </dl>
+
+//XXX
+    The following controls arefound in the <b>Write File</b> page.
+
+    <dl>
+    <dt><b>Cell Name Mapping</b><dd>
+    This group of controls manages the cell name <a
+    href="cellname">aliasing</a> feature.  This does not apply to
+    native cell file output.
+    </dl>
+
+    <p>
+    A subset of the <a href="windowing">windowing</a> operations is
+    available.  From this panel, windowing is only available when
+    flattening.
+
+    <dl>
+    <dt><b>Conversion Scale Factor</b><dd>
+    The <b>Conversion Scale Factor</b> provides an entry area where a
+    scale factor to be applied during the write operation can be
+    entered.  Values of 0.001 through 1000.0 are acceptable.  This
+    will apply to output initiated from this panel only.
+    </dl>
+
+
     <p>
     The write is actually initiated with the <b>Write File</b>
     button.  The name of the output file will be prompted for on the
@@ -1558,6 +1607,7 @@ Export Cell Data
     must be generated from this panel.
 
     <p>
+//XXX new check box
     When generating an archive file and an error occurs.  the archive
     file will normally be deleted.  However, if the variable <a
     href="KeepBadArchive"><b>KeepBadArchive</b></a> is set (with the
@@ -2019,6 +2069,37 @@ Import Control
     <p>
     The <b>CifLayerMode</b> variable corresponds to this set of
     options, where its value of 0-2 corresponds to the three choices.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten standard vias, keep as instance at top
+    level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy.  When
+    set, instances of standard vias are retained as such, rather than
+    being written as geometry.  This check box tracks the state of the
+    <a href="NoFlattenStdVias"><b>NoFlattenStdVieas</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten pcells, keep as instance at top level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy. 
+    When set, instances of parameterized cells (pcells) are retained
+    as such, rather than being written as geometry.  This check box
+    tracks the state of the <a
+    href="NoFlattenPCells"><b>NoFlattenPCells</b></a> variable.
+    </dl>
+
+//XXX
+    <dl>
+    <dt><b>Ignore labels in subcells when flattening</b><dd>
+    When flattening a cell hierarchy, if this check box is checked
+    labels found in subcells are ignored, meaning not placed
+in the current cell.
+Labels defined in the current cell are not affected.
+    This is intended to prevent net name labels from
+    subcells conflicting with net name labels defined at higher
+    hierarchy levels.  The check box state tracks the <a
+    href="NoFlattenLabels"><b>NoFlattenLabels</b></a> variable.
     </dl>
 
     <a name="read"></a>
@@ -2532,6 +2613,42 @@ Format Conversion
     translation.  When scaling, only the physical (not electrical)
     data are scaled.
 
+//XXX
+<h2>The Setup Page</h2>
+
+    StripForExport
+
+    <dl>
+    <dt><b>Don't flatten standard vias, keep as instance at top
+    level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy.  When
+    set, instances of standard vias are retained as such, rather than
+    being written as geometry.  This check box tracks the state of the
+    <a href="NoFlattenStdVias"><b>NoFlattenStdVieas</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten pcells, keep as instance at top level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy. 
+    When set, instances of parameterized cells (pcells) are retained
+    as such, rather than being written as geometry.  This check box
+    tracks the state of the <a
+    href="NoFlattenPCells"><b>NoFlattenPCells</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Ignore labels in subcells when flattening</b><dd>
+    When flattening a cell hierarchy, if this check box is checked
+    labels found in subcells are ignored, meaning not reparented to
+    the top level.  Pre-existing labels at the top level are not
+    affected.  This is intended to prevent net name labels from
+    subcells conflicting with net name labels defined at higher
+    hierarchy levels.  The check box state tracks the <a
+    href="NoFlattenLabels"><b>NoFlattenLabels</b></a> variable.
+    </dl>
+
+<h2>The Convert File Page</h2>
+
     <p>
     The translation is initiated with the <b>Convert</b> button.  The
     user will be prompted for the name of the input file (or directory
@@ -2539,6 +2656,7 @@ Format Conversion
     file, or directory for native files.
 
     <p>
+//XXX add this option!
     When generating an archive file and an error occurs.  the archive
     file will normally be deleted.  However, if the variable <a
     href="KeepBadArchive"><b>KeepBadArchive</b></a> is set (with the
