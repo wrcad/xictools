@@ -317,7 +317,8 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     rowcnt++;
     cv_noflpcs = button;
 
-    button = gtk_check_button_new_with_label("Ignore labels in subcells");
+    button = gtk_check_button_new_with_label(
+        "Ignore labels in subcells when flattening");
     gtk_widget_set_name(button, "nofllbs");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
