@@ -106,6 +106,10 @@ cExtNets::cExtNets(cCHD *chd, const char *cname, const char *basename,
 bool
 cExtNets::dump_nets_grid(int gridsize)
 {
+    if (gridsize < INTERNAL_UNITS(1.0)) {
+        Errs()->add_error("dump_nets_grid: grid size too small.");
+        return (false);
+    }
     if (!en_chd) {
         Errs()->add_error("dump_nets_grid: null CHD.");
         return (false);

@@ -2032,7 +2032,7 @@ keybang
     reference bounding box provided in the log file, on the same line
     as the net number.
 
-!! 070909
+!! 021218
 !!KEYWORD
 !netext
 !!TITLE
@@ -2050,8 +2050,8 @@ keybang
     <b>Syntax: <tt>!netext</tt> <i>arguments</i>...</b>
 
     <p>
-    <font color=red>PRELIMINARY - This is the initial implementation
-    of a new capability.  Feedback and wish-lists from users is
+    <font color=red>This is an early implementation of a new
+    capability.  Feedback and wish-lists from users is
     encouraged.</font>
 
     <p>
@@ -2159,12 +2159,18 @@ keybang
 
     <dl>
     <dt><tt>-g</tt> <i>gridsize</i><dd>
-      This argument is mandatory if <tt>-w</tt> is not given.  It sets
-      the grid size, in microns.  The choice of a grid size is machine
-      and layout dependent.  The objective is to choose as large a
-      grid as possible, without exceeding memory limits or causing
-      excessive page-swapping.  For small layouts, it is fine to give
-      a very large grid size to force use of only one grid cell.  In
+      if the "<tt>-w</tt>" (windowing) option is not given,
+      this sets the grid size, in microns.  Use of a grid minimizes
+      memory consumption for handling large designs.  For smaller
+      designs gridding may not be necessary, so this option can be
+      skipped or given as 0.  In this case the entire bounding box of
+      the top-level cell is understood.  The OASIS file is produced,
+      but there are no edge files, and no Stage 2 or Stage 3 steps.
+
+      <p>
+      The choice of a grid size is machine and layout dependent.  The
+      objective is to choose as large a grid as possible, without
+      exceeding memory limits or causing excessive page-swapping.  In
       general, some experimentation may be required to find the "best"
       grid size.  A starting point of 400 microns may be reasonable.
     </dl>
@@ -2199,13 +2205,27 @@ keybang
     </dl>
 
     <dl>
+    <dt><tt>-vs</tt><dd>
+      When there is no windowing or gridding in use and this option is
+      given, standard vias will be retained as they are rather than
+      being converted to equivalent geometry.  The net cells will
+      contain the standard via placements from the net, from all
+      hierarchy levels, as subcells.  Presently, this requires that
+      the standard via sub-masters not be included in the source
+      layout file, i.e., they are created within <i>Xic</i> as the
+      file is read.
+    </dl>
+
+    <dl>
     <dt><tt>-w</tt> <i>l</i>,<i>b</i>,<i>r</i>,<i>t</i><dd>
-      If a window is given, a grid size should not be given.  In this
-      case, there is no grid, and the rectangular area given, as
-      comma-separated dimensions in microns, is read into memory and
-      processed as if it were a grid cell.  The OASIS file is
-      produced, but there are no edge files, and no Stage 2 or Stage
-      3 steps.
+      If a window is given, a grid size should not be given and will
+      be ignored.  In this case, there is no grid, and the rectangular
+      area given, as comma-separated dimensions in microns, is read
+      into memory and processed as if it were a grid cell.  The OASIS
+      file is produced, but there are no edge files, and no Stage 2 or
+      Stage 3 steps.  If all values are 0, the effective area is the
+      bounding box of the top-level cell, which is the default when no
+      area or grid is given.
     </dl>
 
     <dl>
