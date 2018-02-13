@@ -49,6 +49,7 @@
 #include "cd_celldb.h"
 #include "cd_lgen.h"
 #include "cd_chkintr.h"
+#include "cd_propnum.h"
 #include "fio.h"
 #include "fio_chd.h"
 #include "fio_chd_flat.h"
@@ -93,7 +94,7 @@ cExtNets::cExtNets(cCHD *chd, const char *cname, const char *basename,
 
 // Stage 1
 //
-// For the grid regions, write out an OASIS nets file, and four
+// For the grid regions, write out an OASIS nets file, and up to four
 // edge-stitching files.  The OASIS file contains a top-level cell
 // with the same name as the "real" top-level cell.  This contains in
 // instance of each net cell, i.e., each net is in a separate subcell,
@@ -275,12 +276,12 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
         // recognition.
     }
 
-    // Read flat into database.  Don't read labels not only for
-    // efficiency, but to avoid extraction problems when subcell pin
-    // labels are all merged into parent nets.
+    // Read flat into database.  Don't read subcell labels not only
+    // for efficiency, but to avoid extraction problems when subcell
+    // pin labels are all merged into parent nets.
     //
-    const char *tnlab = CDvdb()->getVariable(VA_NoReadLabels);
-    CDvdb()->setVariable(VA_NoReadLabels, "");
+    const char *tnlab = CDvdb()->getVariable(VA_NoFlattenLabels);
+    CDvdb()->setVariable(VA_NoFlattenLabels, "");
 
     // Keep standard vias if so instructed.
     //
@@ -297,7 +298,7 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
 
     OItype oiret = en_chd->readFlat(en_cellname, &prms, 0, CDMAXCALLDEPTH);
     if (!tnlab)
-        CDvdb()->clearVariable(VA_NoReadLabels);
+        CDvdb()->clearVariable(VA_NoFlattenLabels);
     if (!tnsv)
         CDvdb()->clearVariable(VA_NoFlattenStdVias);
     else
@@ -469,6 +470,11 @@ cExtNets::write_metal_file(const CDs *sdesc, int x, int y) const
         if (!grp->net())
             continue;
         sprintf(cptr, "_%d", i);
+
+        // If then net is named, save the name in a cell property.
+        if (grp->netname())
+            oas->queue_property(XICP_NXNAME, Tstring(grp->netname()));
+
         // Avoid writing empty cells.
         if (!oas->write_begin_struct(cname)) {
             Errs()->add_error(
@@ -1636,6 +1642,8 @@ namespace {
 }
 
 
+//#define DEBUG_S3
+
 bool
 cExtNets::stage3()
 {
@@ -1798,6 +1806,9 @@ cExtNets::stage3()
         }
     }
     fclose(fp);
+#ifdef DEBUG_S3
+    printf("st_a %d st_b %d\n", st_a->allocated(), st_b.allocated());
+#endif
 
     if (!(en_flags & EN_KEEP))
         unlink(eqvname);
@@ -1859,6 +1870,9 @@ cExtNets::stage3()
                     break;
                 }
                 chd_cache[ic*en_nx + jc] = chd;
+#ifdef DEBUG_S3
+                printf("new CHD %s\n", fname);
+#endif
             }
 
             cv_in *in = setup_input(chd, oas);
@@ -1872,13 +1886,24 @@ cExtNets::stage3()
             for (int grp = 0; ; grp++) {
                 sprintf(hname, "%d_%d_%d", jc, ic, grp);
                 symref_t *p = chd->findSymref(hname, Physical);
-                if (!p)
+                if (!p) {
+                    // Ground group? maybe/maybe not
+                    if (!grp)
+                        continue;
+
                     // Done, no more nets in this file.
+#ifdef DEBUG_S3
+                    printf("--- %s\n", hname);
+#endif
                     break;
+                }
 
                 bool primary = SymTab::get(st_a, hname) != ST_NIL ||
                     SymTab::get(&st_b, hname) == ST_NIL;
 
+#ifdef DEBUG_S3
+                printf("flat=%d primary=%d\n", flat, primary);
+#endif
                 if (!flat || primary) {
 
                     if (primary) {
@@ -1888,6 +1913,9 @@ cExtNets::stage3()
                     else
                         strcpy(cname, hname);
 
+#ifdef DEBUG_S3
+                    printf("begin %s\n", cname);
+#endif
                     if (!oas->write_begin_struct(cname)) {
                         Errs()->add_error(
                             "stage3: write_begin_struct %s failed.", cname);
@@ -1896,6 +1924,19 @@ cExtNets::stage3()
                     }
 
                     oas->set_no_struct(true);
+                    // When no_struct is set, properties will be
+                    // written to output.  User must beware:  when
+                    // flattening, the top cell will contain all
+                    // XICP_NXNAME properties contributed by grid
+                    // cells, these should all be duoplicates.  If not
+                    // flattening, the user should check the subcells
+                    // and primary cell for the property, the property
+                    // will appear if the name was defined in that
+                    // grid cell.
+
+#ifdef DEBUG_S3
+                    printf("chd_read_cell %s\n", Tstring(p->get_name()));
+#endif
                     if (!in->chd_read_cell(p, false)) {
                         Errs()->add_error("stage3: read cell %s failed.",
                             hname);
@@ -1905,6 +1946,9 @@ cExtNets::stage3()
 
                     SymTabEnt *h = SymTab::get_ent(st_a, hname);
                     if (h) {
+#ifdef DEBUG_S3
+                        printf("add_listed_nets %s\n", hname);
+#endif
                         SymTab *st = (SymTab*)h->stData;
                         stringlist *names = SymTab::names(st);
                         ok = add_listed_nets(flat, names, oas, chd_cache, in);

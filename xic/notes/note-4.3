@@ -232,14 +232,14 @@ with conflicting net labels.
 !netext -w 0,0,0,0 means to use cell BB (no area constraint).
 !netext now takes -vs option, where if not gridding and no area constraint,
 standard via cells will be retained.
+!netext:  grid no longer mandatory if no -w, -g 0 is default which means
+use full cell area.
+Cells for named nets now have a "NXNAME" property 7149, and string is
+the net name.
 
 Added flattening/windowing from the Import panel.
 
 ToDo: check if scaling works: pcells/vias, flattening import.
 ToDo: handle via/pc masters in archive
 
-ToDo:  preserve or create netname labels in netext files.  Presently,
-labels are completely ignored in netext.  Add pin objects, or add
-labels somehow?  Net cells have a "netname" property?
-Function to iterate thru nets of netext file, and get net names from
-extraction database?
+ToDo: NXNAME label correctly copied in stage 3?

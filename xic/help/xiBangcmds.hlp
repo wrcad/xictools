@@ -2132,6 +2132,13 @@ keybang
     When the output file is written, the equivalence file and the
     Stage 1 OASIS files are deleted, and the operation is complete.
 
+    <p>
+    If a net has an assigned name in the source file, (e.g., through a
+    label or from a terminal) A NXNAME property will be given to the
+    created net files.  This is property number 7149, and the string
+    is the net name.  This is not presently used by <i>Xic</i>, but
+    the net name may be useful to the user.
+
     <a name="args"></a>
     <h2>Command Arguments</h2>
 

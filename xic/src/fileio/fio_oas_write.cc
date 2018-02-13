@@ -568,6 +568,19 @@ oas_out::write_struct(const char *name, tm*, tm*)
 {
     if (out_no_struct) {
         out_in_struct = true;
+        // Write cell properties.  The no_struct option is used only
+        // by the netext function at present, which keeps the assigned
+        // net name in a property.  Writing the properties here
+        // enables this to propagate through stage 3, more or less. 
+        // When flattening, there may be multiple properties, if more
+        // than one grid location contributes.  The user should check
+        // this, and make sure that they are duplicates.  If not
+        // flattening, the user needs to check the subcells, too.  The
+        // property will appear in the primary cell only if defined
+        // there.
+
+        if (!write_cell_properties())
+            return (false);
         return (true);
     }
     if (out_in_struct) {
