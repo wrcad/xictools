@@ -1439,7 +1439,7 @@ the net number.
 
 
 % -----------------------------------------------------------------------------
-% !netext 021218
+% !netext 021318
 \subsection{The {\cb !netext} Command: Batch Physical Net Extraction}
 \index{"!netext command}
 \index{netlist extraction}
@@ -1520,7 +1520,12 @@ If a net has an assigned name in the source file, (e.g., through a
 label or from a terminal) A NXNAME property will be given to the
 created net files.  This is property number 7149, and the string is
 the net name.  This is not presently used by {\Xic}, but the net name
-may be useful to the user.
+may be useful to the user.  Beware if using a grid:  if flattening,
+the top net cell will contain the net name properties from all grid
+cells, so there may be duplicate or inconsistent name properties.  If
+not flattening, the primary and all subcells should be checked, each
+property applies only to the corresponding grid location.  In either
+case, conflicting names would need to be dealt with somehow.
 
 \subsubsection{Command Arguments}
 

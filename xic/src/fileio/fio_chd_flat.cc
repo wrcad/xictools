@@ -825,8 +825,7 @@ cCHD::flatten(symref_t *p, cv_in *in, int maxdepth, const FIOcvtPrms *prms)
     cv_in *cin = in;
     cCHD *cchd = this;
     if (!cin->chd_setup(cchd, fc.ctab, 0, Physical, prms->scale())) {
-        Errs()->add_error(
-            "cCHD::flatten: main channel setup failed.");
+        Errs()->add_error("cCHD::flatten: main channel setup failed.");
         ok = false;
     }
     if (ok && out) {

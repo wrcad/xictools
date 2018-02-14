@@ -378,12 +378,17 @@ namespace {
                 PL()->ShowPrompt("Aborted.");
                 return (true);
             }
-            char *tt = in;
             char *filename = lstring::getqtok(&in);
+            if (!filename) {
+                PL()->ShowPrompt("Aborted.");
+                return (true);
+            }
             char *cellname = lstring::getqtok(&in);
-            delete [] tt;
 
             FIOcvtPrms prms;
+            prms.set_scale(FIO()->ReadScale());
+            prms.set_alias_mask(
+                CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
             const BBox *AOI = FIO()->InWindow();
             if (AOI && AOI->right > AOI->left && AOI->top > AOI->bottom) {
                 prms.set_use_window(true);

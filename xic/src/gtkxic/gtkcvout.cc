@@ -437,7 +437,7 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     //
     // Scale spin button and label
     //
-    label = gtk_label_new("Conversion Scale Factor");
+    label = gtk_label_new("Writing Scale Factor");
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,

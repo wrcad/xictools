@@ -216,7 +216,13 @@ CHANGES AND NEW FEATURES
   Xic.
 
   If the net has a name, a generated net file will be given a cell
-  property with number 7149 and the string being the net name.
+  property with number 7149 and the string being the net name.  Beware
+  if using a grid:  if flattening, the top net cell will contain the
+  net name properties from all grid cells, so there may be duplicate
+  or inconsistent name properties.  If not flattening, the primary and
+  all subcells should be checked, each property applies only to the
+  corresponding grid location.  In either case, conflicting names need
+  to be dealt with somehow.
 
 
 BUGS FIXED

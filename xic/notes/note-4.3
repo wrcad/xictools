@@ -236,10 +236,19 @@ standard via cells will be retained.
 use full cell area.
 Cells for named nets now have a "NXNAME" property 7149, and string is
 the net name.
+Fixed bug which caused stage 3 to fail, finding no nets, if the ground
+group 0 was not used.
+NXNAME label correctly copied in stage 3?  Sort of bad, but hard to
+fix since output is streaming.  When flattening, all NXNAME properties
+found in grid cells will be applied to top.  When not flattening, need
+to check the primary cell and subcells for properties.
 
 Added flattening/windowing from the Import panel.
 
 ToDo: check if scaling works: pcells/vias, flattening import.
 ToDo: handle via/pc masters in archive
 
-ToDo: NXNAME label correctly copied in stage 3?
+Hmmmm: Cells not read from the input file (library, pcells, stdvia)
+aren't scaled when reading.
+Scale hier by X:  scale geom in top cell by X, add X Mag to all placements,
+do nothing to subcells.  Instead of scaling everything in file by X?
