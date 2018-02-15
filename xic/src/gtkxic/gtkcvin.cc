@@ -912,10 +912,21 @@ sCvi::cvi_force_menu_proc(GtkWidget*, void *client_data)
 void
 sCvi::cvi_merg_menu_proc(GtkWidget*, void *client_data)
 {
+    if (!Cvi)
+        return;
     char *s = (char*)client_data;
     for (int i = 0; mergvals[i]; i++) {
         if (!strcmp(s, mergvals[i])) {
             cvi_merg_val = i;
+            if (i > 0) {
+                // Can't use window/flatten ro scale factor.
+                gtk_widget_set_sensitive(Cvi->cvi_wnd->frame(), false);
+                Cvi->sb_scale.set_sensitive(false);
+            }
+            else {
+                gtk_widget_set_sensitive(Cvi->cvi_wnd->frame(), true);
+                Cvi->sb_scale.set_sensitive(true);
+            }
             return;
         }
     }

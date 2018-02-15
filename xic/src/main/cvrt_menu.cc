@@ -372,7 +372,13 @@ namespace {
         if (type < 0)
             return (false);
 
-        if (FIO()->InFlatten()) {
+        if (type == 0 &&
+                (FIO()->InFlatten() || dfix(FIO()->ReadScale()) != 1.0)) {
+            // When flattening or scaling, read input with a CHD,
+            // created if necessary.  This facilitates correct
+            // handling of pcells, standard vias, and library cells.
+            // Not available with "read into current".
+
             char *in = XM()->OpenFileDlg("File, CHD and cell? ", "");
             if (!in) {
                 PL()->ShowPrompt("Aborted.");
@@ -384,19 +390,6 @@ namespace {
                 return (true);
             }
             char *cellname = lstring::getqtok(&in);
-
-            FIOcvtPrms prms;
-            prms.set_scale(FIO()->ReadScale());
-            prms.set_alias_mask(
-                CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
-            const BBox *AOI = FIO()->InWindow();
-            if (AOI && AOI->right > AOI->left && AOI->top > AOI->bottom) {
-                prms.set_use_window(true);
-                prms.set_window(AOI);
-                prms.set_clip(FIO()->InClip());
-            }
-            prms.set_flatten(true);
-            prms.set_allow_layer_mapping(true);
 
             bool free_chd = false;
             cCHD *chd = CDchd()->chdRecall(filename, false);
@@ -452,8 +445,31 @@ namespace {
             }
             if (!cellname)
                 cellname = lstring::copy(chd->defaultCell(Physical));
-            OItype oiret = chd->readFlat(cellname, &prms, 0,
-                CDMAXCALLDEPTH);
+
+            OItype oiret;
+            if (FIO()->InFlatten()) {
+                FIOcvtPrms prms;
+                prms.set_scale(FIO()->ReadScale());
+                prms.set_alias_mask(
+                    CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
+                const BBox *AOI = FIO()->InWindow();
+                if (AOI && AOI->right > AOI->left && AOI->top > AOI->bottom) {
+                    prms.set_use_window(true);
+                    prms.set_window(AOI);
+                    prms.set_clip(FIO()->InClip());
+                }
+                prms.set_flatten(true);
+                prms.set_allow_layer_mapping(true);
+                oiret = chd->readFlat(cellname, &prms, 0, CDMAXCALLDEPTH);
+            }
+            else {
+                FIOreadPrms prms;
+                prms.set_scale(FIO()->ReadScale());
+                prms.set_alias_mask(
+                    CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
+                prms.set_allow_layer_mapping(true);
+                oiret = chd->open(0, cellname, &prms, true);
+            }
             if (free_chd)
                 delete chd;
             if (oiret == OIok) {
@@ -472,20 +488,22 @@ namespace {
                     Log()->ErrorLog(mh::Processing, Errs()->get_error());
                 return (true);
             }
-            // Shouldn't get here.
-            return (false);
         }
-        FIOreadPrms prms;
-        prms.set_scale(FIO()->ReadScale());
-        prms.set_alias_mask(
-            CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
-        prms.set_allow_layer_mapping(true);
-        if (type == 0)
-            XM()->EditCell(0, false, &prms);
-        else if (type == 1)
-            Cvt()->ReadIntoCurrent(0, 0, false, &prms);
-        else
-            Cvt()->ReadIntoCurrent(0, 0, true, &prms);
+        else {
+            // Simple minded read of data from file, will resolve
+            // pcells, etc., but cannot do scaling of these.
+
+            FIOreadPrms prms;
+            prms.set_alias_mask(
+                CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
+            prms.set_allow_layer_mapping(true);
+            if (type == 0)
+                XM()->EditCell(0, false, &prms);
+            else if (type == 1)
+                Cvt()->ReadIntoCurrent(0, 0, false, &prms);
+            else
+                Cvt()->ReadIntoCurrent(0, 0, true, &prms);
+        }
         return (false);
     }
 }

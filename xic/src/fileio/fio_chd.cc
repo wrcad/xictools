@@ -1077,7 +1077,11 @@ cCHD::open(symref_t *p, cv_in *in, const FIOreadPrms *prms, bool allcells)
                 cin->assign_alias(at);
                 cchd = tchd;
 
-                if (!cin->chd_setup(cchd, oc.ctab, 0, mode, prms->scale())) {
+/*
+Read library cells with unit magn.
+*/
+//XXX                if (!cin->chd_setup(cchd, oc.ctab, 0, mode, prms->scale())) {
+            if (!cin->chd_setup(cchd, oc.ctab, 0, mode, 1.0)) {
                     Errs()->add_error(
                         "cCHD::open: reference channel setup failed.");
                     ok = false;

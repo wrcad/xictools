@@ -860,6 +860,8 @@ gds_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
             if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster()))
                 return (chd_output_cell(sd) == OIok);
         }
+        if (sd && (in_action == cvOpenModeDb))
+            return (true);
         FIO()->ifPrintCvLog(IFLOG_WARN, "Unresolved cell %s (%s).",
             DisplayModeNameLC(in_mode), Tstring(p->get_name()),
             sd ? "in memory" : "not found");
@@ -2881,8 +2883,28 @@ gds_in::a_instance(bool ary)
             cname = check_sub_master(cname);
             CallDesc calldesc(cname, 0);
 
-            CDtx tx(in_reflection, ax, ay, in_points->x, in_points->y,
-                in_magn);
+            // If we're reading into the database and scaling, we
+            // don't want to scale library, standard cell, or pcell
+            // sub-masters.  Instead, these are always read in
+            // unscaled, and instance placements are scaled.  We
+            // check/set this here.
+
+            double tmag = in_magn;
+            if (in_mode == Physical && in_needs_mult &&
+                    in_action == cvOpenModeDb) {
+                CDs *sd = CDcdb()->findCell(cname, in_mode);
+                if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster() ||
+                        sd->isLibrary()))
+                    tmag *= in_phys_scale;
+                else if (in_chd_state.chd()) {
+                    symref_t *sr = in_chd_state.chd()->findSymref(cname,
+                        in_mode);
+                    if (!sr || !sr->get_defseen() || !sr->get_offset())
+                        tmag *= in_phys_scale;
+                }
+            }
+            CDtx tx(in_reflection, ax, ay, in_points->x, in_points->y, tmag);
+
             CDc *newo;
             if (OIfailed(in_sdesc->makeCall(&calldesc, &tx, &ap, CDcallDb,
                     &newo)))

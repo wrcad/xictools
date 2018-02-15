@@ -250,7 +250,12 @@ is applied to std via and pcell instance placements.
 
 Bug fixed: Selections panel type filtering was being ignored.
 
-ToDo:  Std vias, library cells, and probably pcells are not scaled when
-reading input hierarchically.
+When reading into db using Import panel, scaling of pcells, std vias, and
+library gates should be correct in all cases, with these masters created
+or read in with unit scaling.  The instances are scaled.
+
+ToDo:  check conversion and write scaling, other operations:  scaling
+with std vias/pcells/libgates.  We probably never want to scale masters,
+but need to scale instances.
 
 ToDo: handle via/pc masters in archive
