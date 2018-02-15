@@ -360,11 +360,7 @@ CDdb::db_clear()
     }
 
     for (unsigned int i = 0; i < db_layers_used; i++)
-{
-//XXX
-//printf("clear %s\n", db_layer_heads[i].ldesc()->name());
         db_layer_heads[i].clear();
-}
     delete [] db_layer_heads;
     db_layer_heads = 0;
     db_layers_used = 0;

@@ -181,18 +181,12 @@ cCD::GetNameCache(const CDs *parent)
 void
 CDc::cleanup()
 {
-if (cMaster)
-//printf("cleanup %s\n", Tstring(cMaster->celldesc()->cellname()));
     unlinkFromMaster(false);
     if (cMaster && !cMaster->hasUnlinked() && !cMaster->hasInstances()) {
         // This is the last of the linking objects.
         cMaster->unlink();  // unlink from parent
         if (cMaster->celldesc())
-{
-//XXX
-//printf("unref %s\n", Tstring(cMaster->celldesc()->cellname()));
             cMaster->unlinkRef();
-}
         delete cMaster;
         cMaster = 0;
     }

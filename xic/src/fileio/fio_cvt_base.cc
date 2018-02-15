@@ -537,7 +537,9 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
                     inst.ny = ap.ny;
                     inst.dx = ap.dx;
                     inst.dy = ap.dy;
-                    inst.magn = ttx.magn;
+                    // Scale the standard via instance explicitly, its
+                    // master is already in memory and not scaled.
+                    inst.magn = ttx.magn * in_scale;
                     inst.set_angle(ttx.ax, ttx.ay);
                     inst.origin.set(ttx.tx, ttx.ty);
                     inst.cdesc = 0;
@@ -571,7 +573,9 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
                         inst.ny = ap.ny;
                         inst.dx = ap.dx;
                         inst.dy = ap.dy;
-                        inst.magn = ttx.magn;
+                        // Scale the pcell instance explicitly, its
+                        // master is already in memory and not scaled.
+                        inst.magn = ttx.magn * in_scale;
                         inst.set_angle(ttx.ax, ttx.ay);
                         inst.origin.set(ttx.tx, ttx.ty);
                         inst.cdesc = 0;

@@ -245,12 +245,12 @@ to check the primary cell and subcells for properties.
 
 Added flattening/windowing from the Import panel.
 
-ToDo: check if scaling works: pcells/vias, flattening import.
-ToDo: handle via/pc masters in archive
-
-Hmmmm: stdvia cells aren't scaled when reading, probably true for pcells
-too?
-Scale hier by X:  scale geom in top cell by X, add X Mag to all placements,
-do nothing to subcells.  Instead of scaling everything in file by X?
+Check if scaling works: pcells/vias, flattening import.  Yes, the scaling
+is applied to std via and pcell instance placements.
 
 Bug fixed: Selections panel type filtering was being ignored.
+
+ToDo:  Std vias, library cells, and probably pcells are not scaled when
+reading input hierarchically.
+
+ToDo: handle via/pc masters in archive

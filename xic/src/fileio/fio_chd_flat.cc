@@ -1278,9 +1278,14 @@ rf_out::write_sref(const Instance *inst)
         if (rf_targcell->makeCall(&calldesc, &tx, &ap, CDcallDb, &newo)
                 != OIok)
             ret = false;
-        if (ret && newo && out_prpty) {
-            newo->set_prpty_list(out_prpty);
-            out_prpty = 0;
+        if (ret && newo) {
+            if (out_prpty) {
+                newo->set_prpty_list(out_prpty);
+                out_prpty = 0;
+            }
+            // Here, the master in in memory and we know its BB.  This
+            // puts the instance into the database properly.
+            newo->updateBB();
         }
     }
     return (ret);
