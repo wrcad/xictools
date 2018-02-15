@@ -248,7 +248,9 @@ Added flattening/windowing from the Import panel.
 ToDo: check if scaling works: pcells/vias, flattening import.
 ToDo: handle via/pc masters in archive
 
-Hmmmm: Cells not read from the input file (library, pcells, stdvia)
-aren't scaled when reading.
+Hmmmm: stdvia cells aren't scaled when reading, probably true for pcells
+too?
 Scale hier by X:  scale geom in top cell by X, add X Mag to all placements,
 do nothing to subcells.  Instead of scaling everything in file by X?
+
+Bug fixed: Selections panel type filtering was being ignored.

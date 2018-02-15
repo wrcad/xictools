@@ -76,15 +76,6 @@ CDo::destroy()
     oPrptyList = 0;
 #endif
 
-#ifdef CD_GROUP_TAB
-    // Leave the group number as the default.  This has no effect
-    // unless the group number was set.  If a non-default group number
-    // was assigned for this, the record is not purged from the table. 
-    // If the address of this is ever re-used as a CDo, the CDo will
-    // inherit the group record in the table.
-    //
-    CD()->SetGroup(this, DEFAULT_GROUP);
-#endif
 #ifdef HAVE_COMPUTED_GOTO
     COMPUTED_JUMP(this)
 #else

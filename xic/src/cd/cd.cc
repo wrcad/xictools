@@ -93,9 +93,6 @@ cCD::cCD()
 #ifdef CD_PRPTY_TAB
     cdPrptyTab = 0;
 #endif
-#ifdef CD_GROUP_TAB
-    cdGroupTab = 0;
-#endif
     cdAllocTab = 0;
     cdNameCache = 0;
     cdLabelCache = 0;
