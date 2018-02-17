@@ -308,7 +308,7 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     rowcnt++;
     cvo_strip = button;
 
-    button = gtk_check_button_new_with_label("Include Library Cells");
+    button = gtk_check_button_new_with_label("Include library cell masters");
     gtk_widget_set_name(button, "libcells");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",

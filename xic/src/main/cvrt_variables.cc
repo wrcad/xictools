@@ -87,12 +87,6 @@ namespace {
     }
 
     void
-    postpc(const char*)
-    {
-        Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
-    }
-
-    void
     postfl(const char*)
     {
         Cvt()->PopUpImport(0, MODE_UPD, 0, 0);
@@ -144,7 +138,7 @@ namespace {
     evPCellKeepSubMasters(const char*, bool set)
     {
         FIO()->SetKeepPCellSubMasters(set);
-        CDvdb()->registerPostFunc(postpc);
+        CDvdb()->registerPostFunc(postset);
         return (true);
     }
 
@@ -175,7 +169,7 @@ namespace {
     evViaKeepSubMasters(const char*, bool set)
     {
         FIO()->SetKeepViaSubMasters(set);
-        CDvdb()->registerPostFunc(postpc);
+        CDvdb()->registerPostFunc(postset);
         return (true);
     }
 

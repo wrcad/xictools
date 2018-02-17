@@ -79,6 +79,9 @@ namespace {
             GtkWidget *cv_label;
             GtkWidget *cv_nbook;
             GtkWidget *cv_strip;
+            GtkWidget *cv_libsub;
+            GtkWidget *cv_pcsub;
+            GtkWidget *cv_viasub;
             GtkWidget *cv_noflvias;
             GtkWidget *cv_noflpcs;
             GtkWidget *cv_nofllbs;
@@ -153,6 +156,9 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     cv_label = 0;
     cv_nbook = 0;
     cv_strip = 0;
+    cv_libsub = 0;
+    cv_pcsub = 0;
+    cv_viasub = 0;
     cv_noflvias = 0;
     cv_noflpcs = 0;
     cv_nofllbs = 0;
@@ -296,6 +302,42 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
         (GtkAttachOptions)0, 2, 2);
     rowcnt++;
     cv_strip = button;
+
+    button = gtk_check_button_new_with_label("Include library cell masters");
+    gtk_widget_set_name(button, "libcells");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cv_action), 0);
+    GRX->SetStatus(button, CDvdb()->getVariable(VA_WriteAllCells));
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cv_libsub = button;
+
+    button = gtk_check_button_new_with_label(
+        "Include parameterized cell sub-masters");
+    gtk_widget_set_name(button, "pcsub");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cv_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cv_pcsub = button;
+
+    button = gtk_check_button_new_with_label(
+        "Include standard via cell sub-masters");
+    gtk_widget_set_name(button, "viasub");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cv_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cv_viasub = button;
 
     button = gtk_check_button_new_with_label(
         "Don't flatten standard vias, keep as instance at top level");
@@ -482,6 +524,9 @@ sCv::update(int inp_type)
     inp_type &= 0xffff;
 
     GRX->SetStatus(cv_strip, CDvdb()->getVariable(VA_StripForExport));
+    GRX->SetStatus(cv_libsub, CDvdb()->getVariable(VA_WriteAllCells));
+    GRX->SetStatus(cv_pcsub, CDvdb()->getVariable(VA_PCellKeepSubMasters));
+    GRX->SetStatus(cv_viasub, CDvdb()->getVariable(VA_ViaKeepSubMasters));
     GRX->SetStatus(cv_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
     GRX->SetStatus(cv_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
     GRX->SetStatus(cv_nofllbs, CDvdb()->getVariable(VA_NoFlattenLabels));
@@ -550,6 +595,27 @@ sCv::cv_action(GtkWidget *caller, void*)
             CDvdb()->setVariable(VA_StripForExport, 0);
         else
             CDvdb()->clearVariable(VA_StripForExport);
+    }
+    if (!strcmp(name, "libcells")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_WriteAllCells, 0);
+        else
+            CDvdb()->clearVariable(VA_WriteAllCells);
+        return;
+    }
+    if (!strcmp(name, "pcsub")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_PCellKeepSubMasters, "");
+        else
+            CDvdb()->clearVariable(VA_PCellKeepSubMasters);
+        return;
+    }
+    if (!strcmp(name, "viasub")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_ViaKeepSubMasters, "");
+        else
+            CDvdb()->clearVariable(VA_ViaKeepSubMasters);
+        return;
     }
     if (!strcmp(name, "noflvias")) {
         if (GRX->GetStatus(caller))

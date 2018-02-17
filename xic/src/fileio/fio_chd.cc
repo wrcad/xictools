@@ -1426,13 +1426,20 @@ cCHD::write(symref_t *p, cv_in *in, const FIOcvtPrms *prms, bool allcells,
             tp = item->symref();
             tBB = item->get_bb();
             if (tchd != cchd) {
+//XXX
+                // Unless setr to keep library masters, don't output them.
+                if (!FIO()->IsWriteAllCells())
+                    continue;
                 cin->chd_finalize();
                 FIOaliasTab *at = cin->extract_alias();
                 cin = wc.itab->find(tchd);
                 cin->assign_alias(at);
                 cchd = tchd;
 
-                if (!cin->chd_setup(cchd, wc.ctab, 0, mode, prms->scale())) {
+                // Library masters are written with unit scaling, must
+                // compensate for this by scaling instance placements.
+                if (!cin->chd_setup(cchd, wc.ctab, 0, mode, 1.0)) {
+//XXX                if (!cin->chd_setup(cchd, wc.ctab, 0, mode, prms->scale())) {
                     Errs()->add_error(
                         "cCHD::write: reference channel setup failed.");
                     ok = false;
