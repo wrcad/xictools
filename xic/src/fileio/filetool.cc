@@ -1188,9 +1188,9 @@ namespace {
     }
 
     bool
-    evWriteAllCells(const char*, bool set)
+    evKeepLibMasters(const char*, bool set)
     {
-        FIO()->SetWriteAllCells(set);
+        FIO()->SetKeepLibMasters(set);
         return (true);
     }
 
@@ -1610,7 +1610,7 @@ cFileTool::setupVariables()
 
     // Conversion - Export Commands
     HOOKVAR(VA_StripForExport,      evStripForExport);
-    HOOKVAR(VA_WriteAllCells,       evWriteAllCells);
+    HOOKVAR(VA_KeepLibMasters,      evKeepLibMasters);
     HOOKVAR(VA_SkipInvisible,       evSkipInvisible);
     HOOKVAR(VA_KeepBadArchive,      evKeepBadArchive);
     HOOKVAR(VA_NoCompressContext,   evNoCompressContext);

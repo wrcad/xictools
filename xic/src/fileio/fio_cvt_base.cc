@@ -1409,10 +1409,10 @@ cv_out::write_symbol(const CDs *sdesc, bool thisonly)
             return (true);
     }
 
-    // Unless WriteAllCells or StripForExport is true, user library
+    // Unless KeepLibMasters or StripForExport is true, user library
     // cells do not appear in output.
     if (sdesc->isLibrary() &&
-            !FIO()->IsWriteAllCells() && !FIO()->IsStripForExport())
+            !FIO()->IsKeepLibMasters() && !FIO()->IsStripForExport())
         return (true);
 
     if (sdesc->isChdRef() && out_filetype != Fnative) {

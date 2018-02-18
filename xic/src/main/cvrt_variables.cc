@@ -608,9 +608,9 @@ namespace {
     }
 
     bool
-    evWriteAllCells(const char*, bool set)
+    evKeepLibMasters(const char*, bool set)
     {
-        FIO()->SetWriteAllCells(set);
+        FIO()->SetKeepLibMasters(set);
         CDvdb()->registerPostFunc(postset);
         return (true);
     }
@@ -1012,7 +1012,8 @@ cConvert::setupVariables()
 
     // Conversion - Export Commands
     vsetup(VA_StripForExport,           0,  evStripForExport);
-    vsetup(VA_WriteAllCells,            B,  evWriteAllCells);
+    vsetup(VA_KeepLibMasters,           B,  evKeepLibMasters);
+    vsetup("WriteAllCells",             B,  evKeepLibMasters);  // Back compat.
     vsetup(VA_SkipInvisible,            S,  evSkipInvisible);
     vsetup(VA_NoCompressContext,        B,  evNoCompressContext);
     vsetup(VA_RefCellAutoRename,        B,  evRefCellAutoRename);

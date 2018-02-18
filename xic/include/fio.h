@@ -805,8 +805,8 @@ public:
     bool IsStripForExport()             { return (fioStripForExport); }
     void SetStripForExport(bool b)      { fioStripForExport = b; }
 
-    bool IsWriteAllCells()              { return (fioWriteAllCells); }
-    void SetWriteAllCells(bool b)       { fioWriteAllCells = b; }
+    bool IsKeepLibMasters()             { return (fioKeepLibMasters); }
+    void SetKeepLibMasters(bool b)      { fioKeepLibMasters = b; }
 
     bool IsSkipInvisiblePhys()          { return (fioSkipInvisiblePhys); }
     void SetSkipInvisiblePhys(bool b)   { fioSkipInvisiblePhys = b; }
@@ -1147,10 +1147,11 @@ private:
         // Flag to indicate that no format extensions are to be used
         // when writing, including restriction to physical data only.
 
-    bool fioWriteAllCells;
-        // When set, user library cells are written to archive output
-        // when writing from the main database.  Normally, library
-        // cells are not included.
+    bool fioKeepLibMasters;
+        // When set, user library cells are written to output when
+        // writing and archive file.  Normally, library cells are not
+        // included, and references are expected to be resolved
+        // through the library mechanism when the file is read by Xic.
 
     bool fioSkipInvisiblePhys;
     bool fioSkipInvisibleElec;

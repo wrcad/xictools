@@ -313,7 +313,7 @@ sCvo::sCvo(GRobject c, CvoCallback callback, void *arg)
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(cvo_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_WriteAllCells));
+    GRX->SetStatus(button, CDvdb()->getVariable(VA_KeepLibMasters));
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -515,7 +515,7 @@ sCvo::update()
 {
     cvo_fmt->update();
     GRX->SetStatus(cvo_strip, CDvdb()->getVariable(VA_StripForExport));
-    GRX->SetStatus(cvo_wrall, CDvdb()->getVariable(VA_WriteAllCells));
+    GRX->SetStatus(cvo_wrall, CDvdb()->getVariable(VA_KeepLibMasters));
     GRX->SetStatus(cvo_pcsub, CDvdb()->getVariable(VA_PCellKeepSubMasters));
     GRX->SetStatus(cvo_viasub, CDvdb()->getVariable(VA_ViaKeepSubMasters));
     GRX->SetStatus(cvo_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
@@ -588,9 +588,9 @@ sCvo::cvo_action(GtkWidget *caller, void*)
     }
     if (!strcmp(name, "libcells")) {
         if (GRX->GetStatus(caller))
-            CDvdb()->setVariable(VA_WriteAllCells, 0);
+            CDvdb()->setVariable(VA_KeepLibMasters, 0);
         else
-            CDvdb()->clearVariable(VA_WriteAllCells);
+            CDvdb()->clearVariable(VA_KeepLibMasters);
         return;
     }
     if (!strcmp(name, "pcsub")) {

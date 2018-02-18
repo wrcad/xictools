@@ -610,7 +610,7 @@ cFIO::FromCIF(const char *cif_fname, const FIOcvtPrms *prms,
 
     SetAllowPrptyStrip(true);
     if (chd || prms->use_window() || prms->flatten() ||
-            (prms->ecf_level() != ECFnone)) {
+            dfix(prms->scale()) != 1.0 || (prms->ecf_level() != ECFnone)) {
 
         // Using windowing or other features requiring a cCHD
         // description.  This is restricted to physical-mode data.

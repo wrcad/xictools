@@ -419,9 +419,9 @@ cMain::SaveCellAs(const char *name, bool silent_errors)
                     "write\n"
                     "functions to obtain stripped output.\n");
             }
-            if (CDvdb()->getVariable(VA_WriteAllCells)) {
+            if (CDvdb()->getVariable(VA_KeepLibMasters)) {
                 lstr.add(
-                    "The \"WriteAllCells\" variable is set, but will be "
+                    "The \"KeepLibMasters\" variable is set, but will be "
                     "ignored\n"
                     "in the present operation.  You must use the Convert "
                     "write\n"
@@ -1453,8 +1453,8 @@ SaveHlpr::write_export(CDcellName cellname, const char *fname, FileType ftype)
     bool tmp[7];
     tmp[0] = FIO()->IsStripForExport();
     FIO()->SetStripForExport(false);
-    tmp[1] = FIO()->IsWriteAllCells();
-    FIO()->SetWriteAllCells(false);
+    tmp[1] = FIO()->IsKeepLibMasters();
+    FIO()->SetKeepLibMasters(false);
     tmp[2] = FIO()->IsSkipInvisiblePhys();
     FIO()->SetSkipInvisiblePhys(false);
     tmp[3] = FIO()->IsSkipInvisibleElec();
@@ -1489,7 +1489,7 @@ SaveHlpr::write_export(CDcellName cellname, const char *fname, FileType ftype)
     }
 
     FIO()->SetStripForExport(tmp[0]);
-    FIO()->SetWriteAllCells(tmp[1]);
+    FIO()->SetKeepLibMasters(tmp[1]);
     FIO()->SetSkipInvisiblePhys(tmp[2]);
     FIO()->SetSkipInvisibleElec(tmp[3]);
     FIO()->SetKeepPCellSubMasters(tmp[4]);

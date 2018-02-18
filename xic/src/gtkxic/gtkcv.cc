@@ -308,7 +308,7 @@ sCv::sCv(GRobject c, int inp_type, bool(*callback)(int, void*), void *arg)
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(cv_action), 0);
-    GRX->SetStatus(button, CDvdb()->getVariable(VA_WriteAllCells));
+    GRX->SetStatus(button, CDvdb()->getVariable(VA_KeepLibMasters));
     gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -524,7 +524,7 @@ sCv::update(int inp_type)
     inp_type &= 0xffff;
 
     GRX->SetStatus(cv_strip, CDvdb()->getVariable(VA_StripForExport));
-    GRX->SetStatus(cv_libsub, CDvdb()->getVariable(VA_WriteAllCells));
+    GRX->SetStatus(cv_libsub, CDvdb()->getVariable(VA_KeepLibMasters));
     GRX->SetStatus(cv_pcsub, CDvdb()->getVariable(VA_PCellKeepSubMasters));
     GRX->SetStatus(cv_viasub, CDvdb()->getVariable(VA_ViaKeepSubMasters));
     GRX->SetStatus(cv_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
@@ -598,9 +598,9 @@ sCv::cv_action(GtkWidget *caller, void*)
     }
     if (!strcmp(name, "libcells")) {
         if (GRX->GetStatus(caller))
-            CDvdb()->setVariable(VA_WriteAllCells, 0);
+            CDvdb()->setVariable(VA_KeepLibMasters, 0);
         else
-            CDvdb()->clearVariable(VA_WriteAllCells);
+            CDvdb()->clearVariable(VA_KeepLibMasters);
         return;
     }
     if (!strcmp(name, "pcsub")) {

@@ -92,7 +92,7 @@
 
 // Convert Menu - Output
 #define VA_StripForExport           "StripForExport"
-#define VA_WriteAllCells            "WriteAllCells"
+#define VA_KeepLibMasters           "KeepLibMasters"  // was WriteAllCells
 #define VA_SkipInvisible            "SkipInvisible"
 #define VA_NoCompressContext        "NoCompressContext"
 #define VA_RefCellAutoRename        "RefCellAutoRename"

@@ -126,7 +126,7 @@ cFIO::cFIO()
     fioOasPrintOffset = false;
 
     fioStripForExport = false;
-    fioWriteAllCells = false;
+    fioKeepLibMasters = false;
     fioSkipInvisiblePhys = false;
     fioSkipInvisibleElec = false;
     fioKeepBadArchive = false;
