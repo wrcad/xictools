@@ -300,7 +300,7 @@ xiVariables.hlp
 !! 020918
     <tr><th colspan=2><a href="!set:cvexport">Convert Menu - Output</a></th></tr>
     <tr><td><b>StripForExport</b></td><td>Strip all format extensions from output file</td></tr>
-    <tr><td><b>WriteAllCells</b></td><td>Write library cells when crating archive file</td></tr>
+    <tr><td><b>KeepLibMasters</b></td><td>Write library cells when crating archive file</td></tr>
     <tr><td><b>SkipInvisible</b></td><td>Do not write invisible layers to output</td></tr>
     <tr><td><b>NoCompressContext</b></td><td>Don't compress instance lists in CHD</td></tr>
     <tr><td><b>RefCellAutoRename</b></td><td>Use auto-rename when writing reference cell data</td></tr>
@@ -4345,7 +4345,7 @@ Convert Menu - Input and ASCII Output
 !set:variables
 
 !!REDIRECT StripForExport       !set:cvexport#StripForExport
-!!REDIRECT WriteAllCells        !set:cvexport#WriteAllCells
+!!REDIRECT KeepLibMasters       !set:cvexport#KeepLibMasters
 !!REDIRECT SkipInvisible        !set:cvexport#SkipInvisible
 !!REDIRECT NoCompressContext    !set:cvexport#NoCompressContext
 !!REDIRECT RefCellAutoRename    !set:cvexport#RefCellAutoRename
@@ -4400,7 +4400,7 @@ Convert Menu - Output
     <tr><td><b>StripForExport</b></td>
       <td><a href="xic:convt"><b>Format Conversion</b></a> and
       <a href="xic:exprt"><b>Export Control</b></a></td> <td>4</td></tr>
-    <tr><td><b>WriteAllCells</b></td>
+    <tr><td><b>KeepLibMasters</b></td>
       <td><a href="xic:exprt"><b>Export Control</b></a></td> <td>3</td></tr>
     <tr><td><b>SkipInvisible</b></td>
       <td><b>Export Control</b></td> <td>3</td></tr>
@@ -4490,7 +4490,7 @@ Convert Menu - Output
     </ol>
 
     <p>
-!! 022916
+!! 022418
     <a name="StripForExport"></a>
     <dl>
     <dt><b>StripForExport</b><dd>
@@ -4499,13 +4499,14 @@ Convert Menu - Output
     href="xic:exprt"><b>Export Control</b></a> and <a
     href="xic:convt"><b>Format Conversion</b></a> panels will contain
     the basic syntax elements with no extensions.  Thus, they contain
-    physical data only.  The <b>StripForExport</b> variable actually
-    applies when writing all output, <b>except</b> when using the <a
+    physical data only.  The <b>StripForExport</b> variable applies
+    when writing all output, <b>except</b> when using the <a
     href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
     As</b></a> buttons in the <b>File Menu</b>, and the equivalent
     text accelerators and including the prompts when exiting the
     program.  It is also ignored when using the <a
-    href="Save"><tt>Save</tt></a> script function.
+    href="Save"><tt>Save</tt></a> script function, but applies in the
+    <a href="ToArchove"><tt>ToArchive</tt></a> script function.
 
     <p>
     Within <i>Xic</i>, <a href="xic:fsaf">archive file</a>
@@ -4515,22 +4516,19 @@ Convert Menu - Output
     compatible with other CAD systems, as these files are generally
     expected to have only one record, and consequently the electrical
     information may be ignored.  However, one should not count on
-    this.  When this variable is set, <i>Xic</i> will write only the
-    physical information when explicitly (i.e., using the operations
-    from the <b>Export Control</b> panel, and not the <a
-    href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
-    As</b></a> buttons) writing to an archive format.  This produces a
-    file which should be an absolutely conventional physical layout
-    file.
+    this.  When in effect, only the physical record is output.  This
+    produces a file which should be an absolutely conventional
+    physical layout file.
 
     <p>
     Additionally, when <b>StripForExport</b> is set, and when writing
     out a hierarchy from the main database, all cells in the hierarchy
-    will be written, whether or not the <b>WriteAllCells</b> variable
-    is set.  Thus, the file will not contain unsatisfied cell
-    references, as (physical) library cells will be included. 
-    Further, all referenced pcell and standard via sub-masters will be
-    written to output, similar to the case when the <a
+    will be written, whether or not the <a
+    href="KeepLibMasters"><b>KeepLibMasters</b></a> variable is set. 
+    Thus, the file will not contain unsatisfied cell references, as
+    (physical) library cells will be included.  Further, all
+    referenced pcell and standard via sub-masters will be written to
+    output, similar to the case when the <a
     href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a> and <a
     href="ViaKeepSubMasters"><b>ViaKeepSubMasters</b></a> variables
     are set.
@@ -4545,9 +4543,9 @@ Convert Menu - Output
     </dl>
 
 !! 022816
-    <a name="WriteAllCells"></a>
+    <a name="KeepLibMasters"></a>
     <dl>
-    <dt><b>WriteAllCells</b><dd>
+    <dt><b>KeepLibMasters</b><dd>
     <b>Value:</b> boolean.<br>
     When writing an archive file from a hierarchy in the main
     database, cells in the hierarchy that were opened through the <a

@@ -905,7 +905,7 @@ techfile
 xic:attrmenu
 xic:cvrtmenu
 
-!! 020918
+!! 022418
 !!KEYWORD
 xic:exprt
 !!TITLE
@@ -947,6 +947,7 @@ Export Cell Data
     commands in the <b>File Menu</b> are used to save design data, as
     well as when the <b>Write File</b> button in this panel is used.
 
+    <br clear=all>
     <a name="gdsii"></a>
     <h2>GDSII Settings</h2>
 
@@ -1255,6 +1256,7 @@ Export Cell Data
     automatically on input, and can be coerced as output by giving
     a "<tt>.gz</tt>" suffix to the file name.
 
+    <br clear=all>
     <a name=setup></a>
     <h2>The Setup Page</h2>
     <img src="screenshots/cvout2.png" align=right>
@@ -1286,7 +1288,7 @@ Export Cell Data
     output will contain physical data only, and will contain no
     <i>Xic</i> extensions.  Further, the <b>Strip For Export</b> check
     box implicitly enables the same functionality as <b>Include
-    Library Cells</b> (see below), so that the file will not contain
+    library cell masters</b> (see below), so that the file will not contain
     unresolved library cell references.  Additionally, parameterized
     cell and standard via sub-masters will be included in output, as
     if the corresponding check boxes were also checked.  The <b>Strip
@@ -1295,40 +1297,25 @@ Export Cell Data
     can never be recovered from a stripped file.
 
     <p>
-    Within <i>Xic</i>, <a href="xic:fsaf">archive file</a>
-    representations consist of two sequential records in each file. 
-    The first record is the physical information, and the second
-    record contains the electrical information.  These files should be
-    compatible with other CAD systems, as these files are generally
-    expected to have only one record, and consequently the electrical
-    information may be ignored.  However, one should not count on
-    this.  When the <b>Strip For Export</b> button is active,
-    <i>Xic</i> will convert only the physical information when
-    explicitly (i.e., using the operations from the <b>Export
-    Control</b> panel, and not the <a href="xic:sv"><b>Save</b></a>
-    and <a href="xic:save"><b>Save As</b></a> buttons) converting to
-    an <a href="xic:fsaf">archive format</a>.  The <b>Strip For
-    Export</b> setting also applies to the <tt>ToArchive</tt>, script
-    function.  This creates a file which should be an absolutely
-    conventional physical layout file.
-
-    <p>
     This mode can also be enabled by setting the boolean variable <a
     href="StripForExport"><b>StripForExport</b></a> with the
     <b>!set</b> command.  The variable tracks the state of the check box.
     </dl>
 
     <dl>
-    <dt><b>Include Library Cells</b><dd>
-    When checked, cells with the LIBRARY <a
-    href="xic:cells#flags">flag</a> set are written to the output
-    file.  Ordinarily, these cells are expected to be resolved through
-    the <a href="xic:libs">library mechanism</a> and are not written
-    to the output file.
+    <dt><b>Include library cell masters</b><dd>
+    If the input references library cells (which have the LIBRARY <a
+    href="xic:cells#flags">flag</a> set) whose masters are not found
+    in the file, then these masters are not written to output unless
+    this box is checked.  With the box not checked, the output file
+    will require the referenced library be preesent and open when the
+    file is read into <i>Xic</i> (the same requirement as the input
+    file).  With the box checked, the masters are written to the
+    output file, which will therefor not need the library.
 
     <p>
     This tracks the state of the <a
-    href="WriteAllCells"><b>WriteAllCells</b></a> variable.
+    href="KeepLibMasters"><b>KeepLibMasters</b></a> variable.
     </dl>
 
     <dl>
@@ -2332,7 +2319,7 @@ Windowing Control
     filtering, enabling both filters can be much faster that using
     post-filtering only.
 
-!! 020918
+!! 022418
 !!KEYWORD
 xic:convt
 !!TITLE
@@ -2558,11 +2545,105 @@ Format Conversion
     <dt><b>Strip For Export</b><dd>
     When the <b>Strip For Export</b> button is active, converted
     output will contain physical data only, and will contain no
-    <i>Xic</i> extensions.  The <b>Strip For Export</b> box should be
-    checked when creating an export file for use in generating
-    photomasks.  Note that the electrical information can never be
-    recovered from a stripped file.  The check box tracks the state of
-    the <a href="StripForExport"><b>StripForExport</b></a> variable.
+    <i>Xic</i> extensions.  Further, the <b>Strip For Export</b> check
+    box implicitly enables the same functionality as <b>Include
+    library cell masters</b> (see below), so that the file will not contain
+    unresolved library cell references.  Additionally, parameterized
+    cell and standard via sub-masters will be included in output, as
+    if the corresponding check boxes were also checked.  The <b>Strip
+    For Export</b> box should be checked when creating a file for use
+    in generating photomasks.  Note that the electrical information
+    can never be recovered from a stripped file.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="StripForExport"><b>StripForExport</b></a> with the
+    <b>!set</b> command.  The variable tracks the state of the check box.
+    </dl>
+
+    <dl>
+    <dt><b>Include library cell masters</b><dd>
+    If the input references library cells (which have the LIBRARY <a
+    href="xic:cells#flags">flag</a> set) whose masters are not found
+    in the file, then these masters are not written to output unless
+    this box is checked.  With the box not checked, the output file
+    will require the referenced library be preesent and open when the
+    file is read into <i>Xic</i> (the same requirement as the input
+    file).  With the box checked, the masters are written to the
+    output file, which will therefor not need the library.
+
+    <p>
+    This tracks the state of the <a
+    href="KeepLibMasters"><b>KeepLibMasters</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Include parameterized cell sub-masters</b><dd>
+    When this check box is checked, output saved to disk files will
+    include <a href="xic:pcells">sub-master</a> cells.  Ordinarily,
+    sub-master cells are not included, as they will be re-created when
+    the file is read.  However, when exporting to a system that does
+    not support the pcells in use, the sub-masters must be written if
+    the file is to have any value.  With the sub-masters present, the
+    cells/instances will look like normal cell placements.
+
+    <p>
+    This applies when writing all output, <b>except</b> when using the
+    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
+    text accelerators and including the prompts when exiting the
+    program.  It is also ignored when using the <a
+    href="Save"><tt>Save</tt></a> script function.
+
+!!IFDEF OpenAccess
+    <p>
+    <i>Xic</i> native pcells are only supported in <i>Xic</i>. 
+    OpenAccess-based pcells might be supported by other systems, that
+    is certainly the intent of the Ciranova PyCells.  Even if another
+    system supports the OpenAccess PyCells, it may not have the logic
+    to rebuild the pcells coming from a GDSII or other file source. 
+    In that case one will probably have to ship the OpenAccess library
+    files.
+!!ENDIF
+
+    <p>
+    The <a href="StripForExport"><b>StripForExport</b></a> variable
+    and the equivalent check box will have the same effect when set.
+
+    <p>
+    The <a href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Include standard via cell sub-masters</b><dd>
+    When checked, <a href="stdvia">standard via</a> cell sub-masters
+    are included in the output file.  This will be required when
+    sending output to another system, as this implementation is
+    specific to <i>Xic</i>.
+!!IFDEF OpenAccess
+    An exception may be systems that share an OpenAccess database
+    with <i>Xic</i>.  If the cells are written to the OpenAccess
+    database, the standard vias should translate properly, and be
+    recognized by other tools (e.g., Virtuoso) that share the
+    database.
+!!ENDIF
+
+    <p>
+    This applies when writing all output, <b>except</b> when using the
+    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
+    text accelerators and including the prompts when exiting the
+    program.  It is also ignored when using the <a
+    href="Save"><tt>Save</tt></a> script function.
+
+    <p>
+    The <a href="StripForExport"><b>StripForExport</b></a> variable
+    and the equivalent check box will have the same effect when set.
+
+    <p>
+    The <a href="ViaKeepSubMasters"><b>ViaKeepSubMasters</b></a>
+    variable tracks the state of this check box.
     </dl>
 
     <dl>

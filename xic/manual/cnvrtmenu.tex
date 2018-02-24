@@ -739,7 +739,7 @@ command.
 
 
 % -----------------------------------------------------------------------------
-% xic:exprt 020918
+% xic:exprt 022418
 \section{The {\cb Export Cell Data} Button: {\cb Export Control} Panel}
 \index{Export Cell Data button}
 
@@ -1020,7 +1020,7 @@ SkipInvisible} with the {\cb !set} command.
 When the {\cb Strip For Export} button is active, converted output
 will contain physical data only, and will contain no {\Xic}
 extensions.  Further, the {\cb Strip For Export} check box implicitly
-enables the same functionality as {\cb Include Library Cells} (see
+enables the same functionality as {\cb Include library cell masters} (see
 below), so that the file will not contain unresolved library cell
 references.  Additionally, parameterized cell and standard via
 sub-masters will be included in output, as if the corresponding check
@@ -1029,30 +1029,20 @@ checked when creating a file for use in generating photomasks.  Note
 that the electrical information can never be recovered from a stripped
 file.
 
-Within {\Xic}, archive file representations consist of two sequential
-records in each file.  The first record is the physical information,
-and the second record contains the electrical information.  These
-files should be compatible with other CAD systems, as these files are
-generally expected to have only one record, and consequently the
-electrical information may be ignored.  However, one should not count
-on this.  When the {\cb Strip For Export} button is active, {\Xic}
-will convert only the physical information when explicitly (i.e.,
-using the operations from the {\cb Export Control} panel, and not
-the {\cb Save} and {\cb Save As} buttons) converting to an archive
-format.  The {\cb Strip For Export} setting also applies to the {\vt
-ToArchive}, script function.  This creates a file which should be an
-absolutely conventional physical layout file.
-
 This mode can also be enabled by setting the boolean variable {\et
 StripForExport} with the {\cb !set} command.  The variable tracks the
 state of the check box.
 
-\item{\cb Include Library Cells}\\
-When checked, cells with the LIBRARY flag set are written to the
-output file.  Ordinarily, these cells are expected to be resolved
-through the library mechanism and are not written to the output file.
+\item{\cb Include library cell masters}\\
+If the input file references library cells (which have the LIBRARY
+flag set) whose masters are not found in the file, then these masters
+are not written to output unless this box is checked.  With the box
+not checked, the output file will require the referenced library be
+preesent and open when the file is read into {\Xic} (the same
+requirement as the input file).  With the box checked, the masters are
+written to the output file, which will therefor not need the library.
 
-This tracks the state of the {\et WriteAllCells} variable.
+This tracks the state of the {\et KeepLibMasters} variable.
 
 \item{\cb Include parameterized cell sub-masters}\\
 When this check box is checked, output saved to disk files will
@@ -1811,7 +1801,7 @@ that using post-filtering only.
 
 
 % -----------------------------------------------------------------------------
-% xic:convt 020918
+% xic:convt 022418
 \section{The {\cb Format Conversion} Button: {\cb Format Conversion} Panel}
 \index{Format Conversion button}
 \index{Format Conversion}
@@ -1972,12 +1962,80 @@ conversion.  These options are described below.
 \begin{description}
 \item{\cb Strip For Export}\\
 When the {\cb Strip For Export} button is active, converted output
-will contain physical data only, and will contain no {\Xic}
-extensions.  The {\cb Strip For Export} box should be checked when
-creating an export file for use in generating photomasks.  Note that
-the electrical information can never be recovered from a stripped
+will contain physical data only, and all masters, and will contain no
+{\Xic} extensions.  The {\cb Strip For Export} box should be checked
+when creating an export file for use in generating photomasks.  Note
+that the electrical information can never be recovered from a stripped
 file.  The check box tracks the state of the {\et StripForExport}
 variable.
+
+This mode can also be enabled by setting the boolean variable {\et
+StripForExport} with the {\cb !set} command.  The variable tracks the
+state of the check box.
+
+\item{\cb Include library cell masters}\\
+If the input file references library cells (which have the LIBRARY
+flag set) whose masters are not found in the file, then these masters
+are not written to output unless this box is checked.  With the box
+not checked, the output file will require the referenced library be
+preesent and open when the file is read into {\Xic} (the same
+requirement as the input file).  With the box checked, the masters are
+written to the output file, which will therefor not need the library.
+
+This tracks the state of the {\et KeepLibMasters} variable.
+
+\item{\cb Include parameterized cell sub-masters}\\
+When this check box is checked, output saved to disk files will
+include sub-master cells.  Ordinarily, sub-master cells are not
+included, as they will be re-created when the file is read.  However,
+when exporting to a system that does not support the pcells in use,
+the sub-masters must be written if the file is to have any value. 
+With the sub-masters present, the cells/instances will look like
+normal cell placements.
+
+This applies when writing all output, {\bf except} when using the {\cb
+Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
+equivalent text accelerators and including the prompts when exiting
+the program.  It is also ignored when using the {\vt Save} script
+function.
+
+%\ifoa
+{\Xic} native pcells are only supported in {\Xic}.  OpenAccess-based
+pcells might be supported by other systems, that is certainly the
+intent of the Ciranova PyCells.  Even if another system supports the
+OpenAccess PyCells, it may not have the logic to rebuild the pcells
+coming from a GDSII or other file source.  In that case one will
+probably have to ship the OpenAccess library files.
+%\fi
+
+The {\et StripForExport} variable and the equivalent check box will
+have the same effect when set.
+
+The {\et PCellKeepSubMasters} variable tracks the state of this check
+box.
+
+\item{\cb Include standard via cell sub-masters}\\
+When checked, standard via cell sub-masters are included in the output
+file.  This will be required when sending output to another system, as
+this implementation is specific to {\Xic}.
+%\ifoa
+An exception may be systems that share an OpenAccess database with
+{\Xic}.  If the cells are written to the OpenAccess database, the
+standard vias should translate properly, and be recognized by other
+tools (e.g., Virtuoso) that share the database.
+%\fi
+
+This applies when writing all output, {\bf except} when using the {\cb
+Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
+equivalent text accelerators and including the prompts when exiting
+the program.  It is also ignored when using the {\vt Save} script
+function.
+
+The {\et StripForExport} variable and the equivalent check box will
+have the same effect when set.
+
+The {\et ViaKeepSubMasters} variable tracks the state of this check
+box.
 
 \item{\cb Don't flatten standard vias, keep as instance at top level}\\
 This mode may apply when flattening a physical cell hierarchy.  When
