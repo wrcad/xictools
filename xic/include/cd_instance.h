@@ -190,20 +190,6 @@ struct CDc : public CDo
             cX = cY = 0;
         }
 
-    // destruction
-    void cleanup()
-        {
-            unlinkFromMaster(false);
-            if (cMaster && !cMaster->hasUnlinked() &&
-                    !cMaster->hasInstances()) {
-                // this is the last of the linking objects
-                cMaster->unlink();  // unlink from parent
-                if (cMaster->celldesc())
-                    cMaster->unlinkRef();
-                delete cMaster;
-            }
-        }
-
     void get_tx(CDtx *tx) const
         {
             tx->tx = cX;
@@ -302,6 +288,7 @@ struct CDc : public CDo
     unsigned int add_hash(unsigned int);
 
     // cd_instance.cc
+    void cleanup();
     void call(CallDesc*) const;
     void setTransform(const CDtf*, const CDap* = 0);
     void prptyAddStruct(bool = false);

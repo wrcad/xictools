@@ -1,11 +1,14 @@
 #! /bin/sh
 
-# This is a mozy method=post handler for the fetch form
+# This is a mozy method=post handler for the fetch form.
 
 progs=
 oses=
 
-while [ 1 = 1 ]; do
+allprogs=$(util/exported progs)
+alloses=$(util/exported oses)
+
+while true; do
     read inp
     if [ $? != 0 ]; then
         break
@@ -14,28 +17,33 @@ while [ 1 = 1 ]; do
     IFS="="
     set $inp
     IFS="$tifs"
-    case $1 in
-    adms | fastcap | fasthenry | mozy | mrouter | vl | wrspice | xic | xtlserv)
-        if [ x"$progs" = x ]; then
-            progs=$1
-        else
-            progs="$progs $1"
+    for p in $allprogs; do
+        if [ $p = $1 ]; then
+            if [ -z "$progs" ]; then
+                progs=$1
+            else
+                progs="$progs $1"
+            fi
+            break
         fi
-        ;;
-    Darwin* | Linux* | Win*)
-        if [ x"$oses" = x ]; then
-            oses=$1
-        else
-            oses="$oses $1"
+    done
+    for o in $alloses; do
+        if [ $o = $1 ]; then
+            if [ -z "$oses" ]; then
+                oses=$1
+            else
+                oses="$oses $1"
+            fi
+            break
         fi
-    esac
+    done
 done
 
-if [ x"$progs" = x ]; then
+if [ -z "$progs" ]; then
     echo NO PROGRAMS SELECTED!
     exit 1
 fi
-if [ x"$oses" = x ]; then
+if [ -z "$oses" ]; then
     echo NO DISTRIBUTIONS SELECTED!
     exit 1
 fi

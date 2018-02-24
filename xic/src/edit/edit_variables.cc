@@ -112,6 +112,15 @@ namespace {
     {
         ED()->PopUpPlace(MODE_UPD, true);
     }
+
+    void
+    postfl(const char*)
+    {
+        ED()->PopUpFlatten(0, MODE_UPD, 0, 0, 0, false);
+        Cvt()->PopUpImport(0, MODE_UPD, 0, 0);
+        Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
+        Cvt()->PopUpConvert(0, MODE_UPD, 0, 0, 0);
+    }
 }
 
 
@@ -618,6 +627,33 @@ namespace {
         CDvdb()->registerPostFunc(postset_pc);
         return (true);
     }
+
+    // Override, updates Flatten pop-up.
+    bool
+    evNoFlattenStdVias(const char*, bool set)
+    {
+        FIO()->SetNoFlattenStdVias(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
+
+    // Override, updates Flatten pop-up.
+    bool
+    evNoFlattenPCells(const char*, bool set)
+    {
+        FIO()->SetNoFlattenPCells(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
+
+    // Override, updates Flatten pop-up.
+    bool
+    evNoFlattenLabels(const char*, bool set)
+    {
+        FIO()->SetNoFlattenLabels(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
 }
 
 
@@ -679,5 +715,10 @@ cEdit::setupVariables()
     vsetup(VA_PCellGripInstSize,    S,  evPCellGripInstSize);
     vsetup(VA_PCellListSubMasters,  B,  evPCellListSubMasters);
     vsetup(VA_PCellShowAllWarnings, B,  evPCellShowAllWarnings);
+
+    // Conversion - General (override)
+    vsetup(VA_NoFlattenStdVias,     B,  evNoFlattenStdVias);
+    vsetup(VA_NoFlattenPCells,      B,  evNoFlattenPCells);
+    vsetup(VA_NoFlattenLabels,      B,  evNoFlattenLabels);
 }
 

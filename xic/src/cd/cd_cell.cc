@@ -917,7 +917,8 @@ CDs::checkInstances()
     while (dups) {
         CDol *ox = dups;
         dups = dups->next;
-        unlink(ox->odesc, false);
+        if (!unlink(ox->odesc, false))
+            CD()->ifPrintCvLog(IFLOG_WARN, "%s", Errs()->get_error());
         delete ox;
     }
     return (ok);
@@ -1360,7 +1361,8 @@ CDs::makeBox(CDl *ldesc, const BBox *pBB, CDo **pointer, bool internal)
                     Tstring(cellname()));
             }
             if (CD()->DupCheckMode() == cCD::DupRemove) {
-                unlink(odesc, false);
+                if (!unlink(odesc, false))
+                    CD()->ifPrintCvLog(IFLOG_WARN, "%s", Errs()->get_error());
                 if (pointer)
                     *pointer = 0;
             }
@@ -1503,7 +1505,8 @@ CDs::makePolygon(CDl *ldesc, Poly *poly, CDpo **pointer, int *pchk_flags,
                     Tstring(cellname()));
             }
             if (CD()->DupCheckMode() == cCD::DupRemove) {
-                unlink(pdesc, false);
+                if (!unlink(pdesc, false))
+                    CD()->ifPrintCvLog(IFLOG_WARN, "%s", Errs()->get_error());
                 if (pointer)
                     *pointer = 0;
             }
@@ -1633,7 +1636,8 @@ CDs::makeWire(CDl *ldesc, Wire *wire, CDw **pointer, int *wchk_flags,
                     Tstring(cellname()));
             }
             if (CD()->DupCheckMode() == cCD::DupRemove) {
-                unlink(wdesc, false);
+                if (!unlink(wdesc, false))
+                    CD()->ifPrintCvLog(IFLOG_WARN, "%s", Errs()->get_error());
                 if (pointer)
                     *pointer = 0;
             }
@@ -1725,7 +1729,8 @@ CDs::makeLabel(CDl *ldesc, Label *label, CDla **pointer, bool internal)
                     Tstring(cellname()));
             }
             if (CD()->DupCheckMode() == cCD::DupRemove) {
-                unlink(ladesc, false);
+                if (!unlink(ladesc, false))
+                    CD()->ifPrintCvLog(IFLOG_WARN, "%s", Errs()->get_error());
                 if (pointer)
                     *pointer = 0;
             }
@@ -2613,12 +2618,22 @@ CDs::unlink(CDo *odesc, int save)
 {
     if (!odesc)
         return (true);
-    if (isImmutable())
+    if (isImmutable()) {
+        Errs()->add_error("unlink: cell is immutable, can't delete.");
         return (false);
-    if (odesc->ldesc()->isImmutable())
+    }
+    if (odesc->ldesc()->isImmutable()) {
+        Errs()->add_error("unlink: object is immutable, can't delete.");
         return (false);
-    if (odesc->is_copy())
+    }
+    if (odesc->is_copy()) {
+        if (!save) {
+            delete odesc;
+            return (true);
+        }
+        Errs()->add_error("unlink: object is a copy, can't save.");
         return (false);
+    }
 
     if (isSymbolic()) {
         // Just ignore.
@@ -2636,7 +2651,11 @@ CDs::unlink(CDo *odesc, int save)
 
     CD()->ifInvalidateObject(this, odesc, save);
 
-    db_remove(odesc);
+    bool ret = true;
+    if (!db_remove(odesc)) {
+        Errs()->add_error("unlink: object not found in database.");
+        ret = false;
+    }
     if (odesc->type() == CDINSTANCE) {
         setInstNumValid(false);
 
@@ -2657,7 +2676,7 @@ CDs::unlink(CDo *odesc, int save)
 
     if (!save)
         delete odesc;
-    return (true);
+    return (ret);
 }
 
 

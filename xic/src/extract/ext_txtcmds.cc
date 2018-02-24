@@ -381,6 +381,8 @@ ext_bangcmds::netext(const char *s)
             flags |= EN_VIAS;
         else if (matching("-v+"))
             flags |= (EN_VIAS | EN_VTRE);
+        else if (matching("-vs"))
+            flags |= EN_VSTD;
         else if (matching("-k"))
             flags |= EN_KEEP;
         else if (matching("-s1"))
@@ -450,9 +452,11 @@ ext_bangcmds::netext(const char *s)
     bool ret;
     if (bb_given)
         ret = netext.dump_nets(&AOI, 0, 0);
+    else if (gridsize == 0)
+        ret = netext.dump_nets(0, 0, 0);
     else {
         if (gridsize < INTERNAL_UNITS(1.0)) {
-            PL()->ShowPrompt("Grid size not given or too small.");
+            PL()->ShowPrompt("Grid size too small.");
             if (free_chd)
                 delete chd;
             return;

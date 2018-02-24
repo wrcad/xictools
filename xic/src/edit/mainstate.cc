@@ -380,8 +380,8 @@ click:
                     no_object_proc();
                 return;
             }
-            CDol *slist = Selections.selectItems(CurCell(), 0, &AOI,
-                PSELpoint, true);
+            CDol *slist = Selections.selectItems(CurCell(),
+                Selections.selectTypes(), &AOI, PSELpoint, true);
             if (!slist)
                 return;
 

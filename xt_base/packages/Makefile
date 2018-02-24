@@ -73,10 +73,7 @@ testrpm::
 	fi; \
 	echo $$dst
 
-fetch: files/fetch_form.html
-	@../../mozy/bin/mozy files/fetch_form.html &
-
-files/fetch_form.html: files/fetch_form.sed
-	@DIREC=`pwd`; cat files/fetch_form.sed | sed s%DIREC%$$DIREC% \
-  > files/fetch_form.html;
+fetch::
+	@util/mkfform > /tmp/fetch_form.html
+	@../../mozy/bin/mozy /tmp/fetch_form.html &
 

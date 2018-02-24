@@ -27,26 +27,22 @@ if [ x$1 = x-t ]; then
     shift
 fi
 
+if [ ! -x exported.new ]; then
+    echo 'Error: exported.new script not found'
+    exit 1
+fi
+
 progs=$1
-if [ x"$progs" = x"all" ]; then
-    progs="adms fastcap fasthenry mozy mrouter vl wrspice xic"
+if [ "$progs" = all ]; then
+    progs=$(./exported.new progs)
 fi
 oses=$2
-if [ x"$oses" = x"all" ]; then
-    oses="\
-  Darwin \
-  LinuxFedora26 \
-  LinuxOpenSUSE13 \
-  LinuxRHEL5.i686 \
-  LinuxRHEL5 \
-  LinuxRHEL6 \
-  LinuxRHEL7 \
-  LinuxUbuntu17 \
-  Win32"
+if [ "$oses" = all ]; then
+    oses=$(./exported.new oses)
 fi
 
 sshc=$SSH_CONNECTION
-if [ x"$sshc" = x ]; then
+if [ -z "$sshc" ]; then
     echo "Can't get home IP, exiting"
     exit
 fi
@@ -65,25 +61,8 @@ check_release()
 {
     prog="$1"
     os="$2"
-    if [ -f $thisdir/release_$1.new ]; then
-        vers=$(cat $thisdir/release_$1.new)
-    elif [ -f $thisdir/release_$1 ]; then
-        vers=$(cat $thisdir/release_$1)
-    fi
-    if [ x"$vers" != "x" ]; then
-        set -- $vers
-        while [ x"$1" != "x" ]; do
-            if [ $1 = $os ]; then
-                echo $2 $5
-                return;
-            fi
-            shift
-            shift
-            shift
-            shift
-            shift
-        done;
-    fi
+
+    echo $(./exported.new version $prog) .
 }
 
 # Construct the name of the distribution file from the arguments.
@@ -94,6 +73,7 @@ filename()
     prog=$1
     os=$2
     vers=$3
+    sfx=$(./exported.new sfx $os)
 
     tifs="$IFS"
     IFS="."
@@ -102,20 +82,15 @@ filename()
     os=$1
     arch=$2
     if [ -z "$arch" ]; then
-        arch=x86_64
+        if [ $os = Win32 ]; then
+            arch-i386
+        else
+            arch=x86_64
+        fi
     fi
 
-    case $os in
-    Darwin*)
-        echo xictools_$prog-$os-$vers-$arch.pkg
-        ;;
-    Linux*)
-        echo xictools_$prog-$os-$vers-$arch.rpm
-        ;;
-    Win*)
-        echo xictools_$prog-$os-$vers-i386.exe
-        ;;
-    esac
+    echo xictools_$prog-$os-$vers-$arch.$sfx
+
 }
 
 # Grab the release file and put it in place.

@@ -74,6 +74,7 @@ namespace {
             static void cvi_force_menu_proc(GtkWidget*, void*);
             static void cvi_merg_menu_proc(GtkWidget*, void*);
             static void cvi_val_changed(GtkWidget*, void*);
+            static WndSensMode wnd_sens_test();
 
             GRobject cvi_caller;
             GtkWidget *cvi_popup;
@@ -88,14 +89,18 @@ namespace {
             GtkWidget *cvi_polys;
             GtkWidget *cvi_dup;
             GtkWidget *cvi_empties;
-            GtkWidget *cvi_nolabels;
             GtkWidget *cvi_dtypes;
             GtkWidget *cvi_force;
+            GtkWidget *cvi_noflvias;
+            GtkWidget *cvi_noflpcs;
+            GtkWidget *cvi_nofllbs;
+            GtkWidget *cvi_nolabels;
             GtkWidget *cvi_merg;
             bool (*cvi_callback)(int, void*);
             void *cvi_arg;
             cnmap_t *cvi_cnmap;
             llist_t *cvi_llist;
+            wnd_t *cvi_wnd;
             GTKspinBtn sb_scale;
 
             static int cvi_merg_val;
@@ -191,14 +196,22 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     cvi_polys = 0;
     cvi_dup = 0;
     cvi_empties = 0;
-    cvi_nolabels = 0;
     cvi_dtypes = 0;
     cvi_force = 0;
+    cvi_noflvias = 0;
+    cvi_noflpcs = 0;
+    cvi_nofllbs = 0;
+    cvi_nolabels = 0;
     cvi_merg = 0;
     cvi_callback = callback;
     cvi_arg = arg;
     cvi_cnmap = 0;
     cvi_llist = 0;
+    cvi_wnd = 0;
+
+    // Dangerous to leave this in effect, force user to turn in on
+    // when needed.
+    FIO()->SetInFlatten(false);
 
     cvi_popup = gtk_NewPopup(0, "Import Control", cvi_cancel_proc, 0);
     if (!cvi_popup)
@@ -399,18 +412,6 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     cvi_empties = button;
 
     button = gtk_check_button_new_with_label(
-        "Skip reading text labels from physical archives");
-    gtk_widget_set_name(button, "nolabels");
-    gtk_widget_show(button);
-    gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(cvi_action), 0);
-    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    rowcnt++;
-    cvi_nolabels = button;
-
-    button = gtk_check_button_new_with_label(
         "Map all unmapped GDSII datatypes to same Xic layer");
     gtk_widget_set_name(button, "dtypes");
     gtk_widget_show(button);
@@ -451,6 +452,55 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    button = gtk_check_button_new_with_label(
+        "Don't flatten standard vias, keep as instance at top level");
+    gtk_widget_set_name(button, "noflvias");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvi_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvi_noflvias = button;
+
+    button = gtk_check_button_new_with_label(
+        "Don't flatten pcells, keep as instance at top level");
+    gtk_widget_set_name(button, "noflpcs");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvi_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvi_noflpcs = button;
+
+    button = gtk_check_button_new_with_label(
+        "Ignore labels in subcells when flattening");
+    gtk_widget_set_name(button, "nofllbs");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvi_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvi_nofllbs = button;
+
+    button = gtk_check_button_new_with_label(
+        "Skip reading text labels from physical archives");
+    gtk_widget_set_name(button, "nolabels");
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(cvi_action), 0);
+    gtk_table_attach(GTK_TABLE(form), button, 0, 2, rowcnt, rowcnt+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+    cvi_nolabels = button;
 
     GtkWidget *tab_label = gtk_label_new("Setup");
     gtk_widget_show(tab_label);
@@ -512,9 +562,18 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     rowcnt++;
 
     //
+    // Window
+    //
+    cvi_wnd = new wnd_t(wnd_sens_test, WndFuncIn);
+    gtk_table_attach(GTK_TABLE(form), cvi_wnd->frame(), 0, 2, rowcnt,
+        rowcnt+1, (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    rowcnt++;
+
+    //
     // Scale spin button
     //
-    label = gtk_label_new("Conversion Scale Factor");
+    label = gtk_label_new("Reading Scale Factor");
     gtk_widget_show(label);
     gtk_misc_set_padding(GTK_MISC(label), 2, 2);
     gtk_table_attach(GTK_TABLE(form), label, 0, 1, rowcnt, rowcnt+1,
@@ -572,6 +631,7 @@ sCvi::~sCvi()
         GRX->Deselect(cvi_caller);
     delete cvi_cnmap;
     delete cvi_llist;
+    delete cvi_wnd;
     if (cvi_callback)
         (*cvi_callback)(-1, cvi_arg);
     if (cvi_popup)
@@ -594,8 +654,11 @@ sCvi::update()
     GRX->SetStatus(cvi_merge, CDvdb()->getVariable(VA_MergeInput));
     GRX->SetStatus(cvi_polys, CDvdb()->getVariable(VA_NoPolyCheck));
     GRX->SetStatus(cvi_empties, CDvdb()->getVariable(VA_NoCheckEmpties));
-    GRX->SetStatus(cvi_nolabels, CDvdb()->getVariable(VA_NoReadLabels));
     GRX->SetStatus(cvi_dtypes, CDvdb()->getVariable(VA_NoMapDatatypes));
+    GRX->SetStatus(cvi_noflvias, CDvdb()->getVariable(VA_NoFlattenStdVias));
+    GRX->SetStatus(cvi_noflpcs, CDvdb()->getVariable(VA_NoFlattenPCells));
+    GRX->SetStatus(cvi_nofllbs, CDvdb()->getVariable(VA_NoFlattenLabels));
+    GRX->SetStatus(cvi_nolabels, CDvdb()->getVariable(VA_NoReadLabels));
 
     int hst = 1;
     const char *str = CDvdb()->getVariable(VA_DupCheckMode);
@@ -618,6 +681,8 @@ sCvi::update()
     sb_scale.set_value(FIO()->ReadScale());
     cvi_cnmap->update();
     cvi_llist->update();
+    cvi_wnd->update();
+    cvi_wnd->set_sens();
 }
 
 
@@ -629,6 +694,7 @@ sCvi::cvi_cancel_proc(GtkWidget*, void*)
 }
 
 
+// Static function.
 void
 sCvi::cvi_page_chg_proc(GtkWidget*, void*, int pg, void*)
 {
@@ -699,18 +765,39 @@ sCvi::cvi_action(GtkWidget *caller, void*)
             CDvdb()->clearVariable(VA_NoCheckEmpties);
         return;
     }
-    if (!strcmp(name, "nolabels")) {
-        if (GRX->GetStatus(caller))
-            CDvdb()->setVariable(VA_NoReadLabels, 0);
-        else
-            CDvdb()->clearVariable(VA_NoReadLabels);
-        return;
-    }
     if (!strcmp(name, "dtypes")) {
         if (GRX->GetStatus(caller))
             CDvdb()->setVariable(VA_NoMapDatatypes, 0);
         else
             CDvdb()->clearVariable(VA_NoMapDatatypes);
+        return;
+    }
+    if (!strcmp(name, "noflvias")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenStdVias, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenStdVias);
+        return;
+    }
+    if (!strcmp(name, "noflpcs")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenPCells, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenPCells);
+        return;
+    }
+    if (!strcmp(name, "nofllbs")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoFlattenLabels, 0);
+        else
+            CDvdb()->clearVariable(VA_NoFlattenLabels);
+        return;
+    }
+    if (!strcmp(name, "nolabels")) {
+        if (GRX->GetStatus(caller))
+            CDvdb()->setVariable(VA_NoReadLabels, 0);
+        else
+            CDvdb()->clearVariable(VA_NoReadLabels);
         return;
     }
     if (!strcmp(name, "luse")) {
@@ -825,10 +912,21 @@ sCvi::cvi_force_menu_proc(GtkWidget*, void *client_data)
 void
 sCvi::cvi_merg_menu_proc(GtkWidget*, void *client_data)
 {
+    if (!Cvi)
+        return;
     char *s = (char*)client_data;
     for (int i = 0; mergvals[i]; i++) {
         if (!strcmp(s, mergvals[i])) {
             cvi_merg_val = i;
+            if (i > 0) {
+                // Can't use window/flatten ro scale factor.
+                gtk_widget_set_sensitive(Cvi->cvi_wnd->frame(), false);
+                Cvi->sb_scale.set_sensitive(false);
+            }
+            else {
+                gtk_widget_set_sensitive(Cvi->cvi_wnd->frame(), true);
+                Cvi->sb_scale.set_sensitive(true);
+            }
             return;
         }
     }
@@ -846,5 +944,13 @@ sCvi::cvi_val_changed(GtkWidget*, void*)
     double d = strtod(s, &endp);
     if (endp > s && d >= CDSCALEMIN && d <= CDSCALEMAX)
         FIO()->SetReadScale(d);
+}
+
+
+// Static function.
+WndSensMode
+sCvi::wnd_sens_test()
+{
+    return (WndSensFlatten);
 }
 

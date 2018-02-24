@@ -17,8 +17,15 @@
 progs=$1
 oses=$2
 
-# Where files are placed.
+# This script assumes that on each machine, the root of the git build
+# tree is $HOME/src/xt, and the user name is the same as the user
+# running this script, on each machine.
+
+# Where files are placed, this must exist.  Files go to a subdirectory
+# named for the operating system.
 outdir=$HOME/export/xictools
+
+utildir=$(dirname $0)
 
 # Find and echo the version number of the program name passed as an
 # argument.
@@ -54,41 +61,37 @@ get()
         exit 1
     fi
 
-# This is all specific to a particualr site and should be changed
-# accordingly.
-
     echo Fetching $program-$osname >&2
     case $osname in
     Darwin*)
         if [ ! -d $outdir/$osname ]; then
             mkdir $outdir/$osname
         fi
-        arch=x86_64
-        fname=xictools_$program-$osname-$version-$arch.pkg
-        dir=$USER@macbook:/Users/$USER/src/xt/xt_base/packages/pkgfiles
-        rsync $dir/$fname $outdir/$osname/$fname
-        chmod 0644 $outdir/$osname/$fname
+        host=$($utildir/exported host $osname)
+        if [ -z "$host" ]; then
+            echo "Unknown distribution name $osname"
+        else
+            arch=x86_64
+            fname=xictools_$program-$osname-$version-$arch.pkg
+            dir=$USER@$host:/Users/$USER/src/xt/xt_base/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+        fi
         ;;
     Linux*)
+        if [ ! -d $outdir/$osname ]; then
+            mkdir $outdir/$osname
+        fi
         if [ -z "$arch" ]; then
             arch=x86_64
         fi
-
-        sfx=rpm
-        case $osname in
-        LinuxRHEL5) host=shelley;;
-        LinuxRHEL6) host=poe;;
-        LinuxRHEL7) host=frost;;
-        LinuxFedora26) host=fedor;;
-        LinuxOpenSUSE13) host=byron;;
-        LinuxUbuntu17) host=ubun; sfx=deb;;
-        esac
-
-        fname="xictools_$program-$osname-$version-$arch.$sfx"
+        host=$($utildir/exported host $osname)
 
         if [ -z "$host" ]; then
             echo "Unknown distribution name $osname"
         else
+            sfx=$($utildir/exported sfx $osname)
+            fname="xictools_$program-$osname-$version-$arch.$sfx"
             if [ $arch = x86_64 ]; then
                 dir=$USER@$host:/home/$USER/src/xt/xt_base/packages/pkgfiles
                 odir=$outdir/$osname
@@ -107,13 +110,16 @@ get()
         if [ ! -d $outdir/$osname ]; then
             mkdir $outdir/$osname
         fi
-        arch=i386
-        fname=xictools_$program-$osname-$version-$arch.exe
-        # winhost=keats
-        winhost=marlowe
-        dir=$USER@$winhost:/home/$USER/src/xt/xt_base/packages/pkgfiles
-        rsync $dir/$fname $outdir/$osname/$fname
-        chmod 0644 $outdir/$osname/$fname
+        host=$($utildir/exported host $osname)
+        if [ -z "$host" ]; then
+            echo "Unknown distribution name $osname"
+        else
+            arch=i386
+            fname=xictools_$program-$osname-$version-$arch.exe
+            dir=$USER@$host:/home/$USER/src/xt/xt_base/packages/pkgfiles
+            rsync $dir/$fname $outdir/$osname/$fname
+            chmod 0644 $outdir/$osname/$fname
+        fi
         ;;
     *)
         echo "Unknown distribution name $osname"
@@ -129,8 +135,8 @@ if [ ! -d $outdir/scripts ]; then
 fi
 for a in $scripts; do
     if [ ! -f $outdir/scripts/$a -o \
-             "x$(diff --brief $outdir/scripts/$a util/$a)" != x ]; then
-        cp -fp util/$a $outdir/scripts/$a
+             "x$(diff --brief $outdir/scripts/$a $utildir/$a)" != x ]; then
+        cp -fp $utildir/$a $outdir/scripts/$a
         echo Updated $a
     fi
 done
@@ -140,4 +146,11 @@ for o in $oses; do
         get $p $o
     done
 done
+
+# Create a script which provides current release numbers for each program.
+# This will be exported to wrcad.com.  This also provides the info from
+# the "exported" script.
+
+$utildir/mkcurrent > $outdir/exported.new
+chmod 755 $outdir/exported.new
 

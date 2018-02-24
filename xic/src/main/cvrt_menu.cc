@@ -261,7 +261,7 @@ namespace {
         }
         else if (type == Fcif) {
             def_cellname(buf, namelist);
-            strcat(buf, ".cif");
+            strcat(buf, "_new.cif");
             char *s = XM()->SaveFileDlg("New CIF file name? ", buf);
             if (!s || !*s) {
                 PL()->ShowPrompt("Aborted.");
@@ -280,7 +280,7 @@ namespace {
         }
         if (type == Fgds) {
             def_cellname(buf, namelist);
-            strcat(buf, ".gds");
+            strcat(buf, "_new.gds");
             char *s = XM()->SaveFileDlg("New GDSII file name? ", buf);
             if (!s || !*s) {
                 PL()->ShowPrompt("Aborted.");
@@ -299,7 +299,7 @@ namespace {
         }
         if (type == Fcgx) {
             def_cellname(buf, namelist);
-            strcat(buf, ".cgx");
+            strcat(buf, "_new.cgx");
             char *s = XM()->SaveFileDlg("New CGX file name? ", buf);
             if (!s || !*s) {
                 PL()->ShowPrompt("Aborted.");
@@ -318,7 +318,7 @@ namespace {
         }
         if (type == Foas) {
             def_cellname(buf, namelist);
-            strcat(buf, ".oas");
+            strcat(buf, "_new.oas");
             char *s = XM()->SaveFileDlg("New OASIS file name? ", buf);
             if (!s || !*s) {
                 PL()->ShowPrompt("Aborted.");
@@ -365,22 +365,145 @@ cvrt_menu::M_Export(CmdDesc *cmd)
 //
 
 namespace {
-    bool
-    in_cb(int type, void*)
+    // Return false to pop down panel.
+    //
+    bool in_cb(int type, void*)
     {
         if (type < 0)
             return (false);
-        FIOreadPrms prms;
-        prms.set_scale(FIO()->ReadScale());
-        prms.set_alias_mask(
-            CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
-        prms.set_allow_layer_mapping(true);
-        if (type == 0)
-            XM()->EditCell(0, false, &prms);
-        else if (type == 1)
-            Cvt()->ReadIntoCurrent(0, 0, false, &prms);
-        else
-            Cvt()->ReadIntoCurrent(0, 0, true, &prms);
+
+        if (type == 0 &&
+                (FIO()->InFlatten() || dfix(FIO()->ReadScale()) != 1.0)) {
+            // When flattening or scaling, read input with a CHD,
+            // created if necessary.  This facilitates correct
+            // handling of pcells, standard vias, and library cells.
+            // Not available with "read into current".
+
+            char *in = XM()->OpenFileDlg("File, CHD and cell? ", "");
+            if (!in) {
+                PL()->ShowPrompt("Aborted.");
+                return (true);
+            }
+            char *filename = lstring::getqtok(&in);
+            if (!filename) {
+                PL()->ShowPrompt("Aborted.");
+                return (true);
+            }
+            char *cellname = lstring::getqtok(&in);
+
+            bool free_chd = false;
+            cCHD *chd = CDchd()->chdRecall(filename, false);
+            if (!chd) {
+                char *realname;
+                FILE *fp = FIO()->POpen(filename, "rb", &realname);
+                if (!fp) {
+                    PL()->ShowPromptV("File %s could not be opened.",
+                        filename);
+                    delete [] realname;
+                    delete [] filename;
+                    delete [] cellname;
+                    return (true);
+                }
+                FileType ft = FIO()->GetFileType(fp);
+                fclose(fp);
+                if (!FIO()->IsSupportedArchiveFormat(ft)) {
+                    sCHDin chd_in;
+                    if (!chd_in.check(realname)) {
+                        PL()->ShowPromptV("File %s type not supported.",
+                            filename);
+                        delete [] realname;
+                        delete [] filename;
+                        delete [] cellname;
+                        return (true);
+                    }
+                    chd = chd_in.read(realname, sCHDin::get_default_cgd_type());
+                    delete [] realname;
+                    if (!chd) {
+                        PL()->ShowPromptV("Error reading CHD file %s.",
+                            filename);
+                        if (Errs()->has_error()) {
+                            Log()->ErrorLog(mh::Processing,
+                                Errs()->get_error());
+                        }
+                        Errs()->get_error();
+                        delete [] filename;
+                        delete [] cellname;
+                        return (true);
+                    }
+                }
+                if (!chd)
+                    chd = FIO()->NewCHD(filename, ft, Physical, 0);
+                delete [] filename;
+                if (!chd) {
+                    PL()->ShowPrompt("Error opening CHD.");
+                    if (Errs()->has_error())
+                        Log()->ErrorLog(mh::Processing, Errs()->get_error());
+                    delete [] cellname;
+                    return (true);
+                }
+                free_chd = true;
+            }
+            if (!cellname)
+                cellname = lstring::copy(chd->defaultCell(Physical));
+
+            OItype oiret;
+            if (FIO()->InFlatten()) {
+                FIOcvtPrms prms;
+                prms.set_scale(FIO()->ReadScale());
+                prms.set_alias_mask(
+                    CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
+                const BBox *AOI = FIO()->InWindow();
+                if (AOI && AOI->right > AOI->left && AOI->top > AOI->bottom) {
+                    prms.set_use_window(true);
+                    prms.set_window(AOI);
+                    prms.set_clip(FIO()->InClip());
+                }
+                prms.set_flatten(true);
+                prms.set_allow_layer_mapping(true);
+                oiret = chd->readFlat(cellname, &prms, 0, CDMAXCALLDEPTH);
+            }
+            else {
+                FIOreadPrms prms;
+                prms.set_scale(FIO()->ReadScale());
+                prms.set_alias_mask(
+                    CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
+                prms.set_allow_layer_mapping(true);
+                oiret = chd->open(0, cellname, &prms, true);
+            }
+            if (free_chd)
+                delete chd;
+            if (oiret == OIok) {
+                XM()->EditCell(cellname, true);
+                delete [] cellname;
+                return (false);
+            }
+            delete [] cellname;
+            if (oiret == OIaborted) {
+                PL()->ShowPrompt("Flat read aborted.");
+                return (true);
+            }
+            if (oiret == OIerror) {
+                PL()->ShowPrompt("Error during flat read.");
+                if (Errs()->has_error())
+                    Log()->ErrorLog(mh::Processing, Errs()->get_error());
+                return (true);
+            }
+        }
+        else {
+            // Simple minded read of data from file, will resolve
+            // pcells, etc., but cannot do scaling of these.
+
+            FIOreadPrms prms;
+            prms.set_alias_mask(
+                CVAL_AUTO_NAME | CVAL_CASE | CVAL_FILE | CVAL_PFSF);
+            prms.set_allow_layer_mapping(true);
+            if (type == 0)
+                XM()->EditCell(0, false, &prms);
+            else if (type == 1)
+                Cvt()->ReadIntoCurrent(0, 0, false, &prms);
+            else
+                Cvt()->ReadIntoCurrent(0, 0, true, &prms);
+        }
         return (false);
     }
 }

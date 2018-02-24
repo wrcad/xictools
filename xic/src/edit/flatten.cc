@@ -59,6 +59,7 @@
 #include "errorlog.h"
 #include "miscutil/timer.h"
 #include "miscutil/texttf.h"
+#include "fio.h"
 
 
 namespace {
@@ -140,7 +141,7 @@ namespace {
         int depth;
         bool merge;
         bool mode;
-    };
+    } Fdata;
 
 
     sFfb FB;
@@ -209,6 +210,12 @@ namespace {
             if (sd->isSymbolic())
                 return (false);
         }
+        else {
+            if (FIO()->IsNoFlattenStdVias() && sd->isViaSubMaster())
+                return (false);
+            if (FIO()->IsNoFlattenPCells() && sd->isPCellSubMaster())
+                return (false);
+        }
         return (true);
     }
 }
@@ -219,7 +226,6 @@ namespace {
 void
 cEdit::flattenExec(CmdDesc *cmd)
 {
-    static sFdata *Fdata;
     if (noEditing())
         return;
     if (!CurCell() || CurCell()->isSymbolic())
@@ -230,10 +236,8 @@ cEdit::flattenExec(CmdDesc *cmd)
         return;
     }
     if (cmd && Menu()->GetStatus(cmd->caller)) {
-        if (!Fdata)
-            Fdata = new sFdata;
-        PopUpFlatten(cmd->caller, MODE_ON, f_cb, Fdata, Fdata->depth,
-            Fdata->mode);
+        PopUpFlatten(cmd->caller, MODE_ON, f_cb, &Fdata, Fdata.depth,
+            Fdata.mode);
     }
     else
         PopUpFlatten(0, MODE_OFF, 0, 0);
@@ -308,7 +312,8 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
                         if (!cursd->isElectrical())
                             DSP()->ShowOdescPhysProperties(
                                 pn->bound(), ERASE);
-                        cursd->unlink(pn->bound(), false);
+                        if (!cursd->unlink(pn->bound(), false))
+                            Errs()->get_error();
                     }
                     else
                         Ulist()->RecordObjectChange(cursd, pn->bound(), 0);
@@ -323,7 +328,8 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
                         if (!cursd->isElectrical())
                             DSP()->ShowOdescPhysProperties(
                                 pp->bound(), ERASE);
-                        cursd->unlink(pp->bound(), false);
+                        if (!cursd->unlink(pp->bound(), false))
+                            Errs()->get_error();
                     }
                     else
                         Ulist()->RecordObjectChange(cursd, pp->bound(), 0);
@@ -362,7 +368,8 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
                 }
                 if (!cursd->isElectrical())
                     DSP()->ShowOdescPhysProperties(cdesc, ERASE);
-                cursd->unlink(cdesc, false);
+                if (!cursd->unlink(cdesc, false))
+                    Errs()->get_error();
             }
             else
                 Ulist()->RecordObjectChange(cursd, cdesc, 0);
@@ -581,6 +588,8 @@ wire:
     }
 label:
     {
+        if (FIO()->IsNoFlattenLabels())
+            return (true);
         CDp_lref *prf = (CDp_lref*)odesc->prpty(P_LABRF);
         if (prf && prf->devref())
             // should have already been added

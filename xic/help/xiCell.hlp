@@ -517,7 +517,7 @@ Cells Listing
     flag set are not included when writing output, unless the
     <b>Include Library Cells</b> check box in the <a
     href="xic:exprt"><b>Export Control</b></a> panel is active, or
-    equivalently the <a href="WriteAllCells"><b>WriteAllCells</b></a>
+    equivalently the <a href="KeepLibMasters"><b>KeepLibMasters</b></a>
     variable is set.
 
     <p>

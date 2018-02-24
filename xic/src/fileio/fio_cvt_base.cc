@@ -198,6 +198,51 @@ cFIO::GdsParamSet(double *angle, double *magn, int *ax, int *ay)
     }
     return (0);
 }
+
+
+// Return true if sdesc should be written to output.
+//
+// Electrical cells are always output unless from the device library.
+//
+// PCell sub-masters are included in output when exporting layout
+// (StripFoExport set) or when KeepPCellSubMasters is set, or if
+// the sub-master was read from a file (not created internally).
+//
+// Standard Via sub-masters are included in output when exporting layout
+// (StripFoExport set) or when KeepViaSubMasters is set.
+//
+// Library cell masters are kept in output when exporting layout
+// (StripFoExport set) or when KeepLibMasters is set.
+//
+bool
+cFIO::KeepCell(const CDs *sdesc)
+{
+    if (!sdesc)
+        return (false);
+    if (sdesc->isElectrical()) {
+        if (sdesc->isLibrary()) {
+            if (sdesc->isDevice() || !IsKeepLibMasters())
+                return (false);
+        }
+        return (true);
+    }
+    if (IsStripForExport())
+        return (true);
+
+    if (sdesc->isPCellSubMaster() && !sdesc->isPCellReadFromFile() &&
+            !IsKeepPCellSubMasters())
+        return (false);
+
+    if (sdesc->isViaSubMaster() && !IsKeepViaSubMasters())
+        return (false);
+
+    // Unless KeepLibMasters or StripForExport is true, user library
+    // cells do not appear in output.
+    if (sdesc->isLibrary() && !IsKeepLibMasters())
+        return (false);
+
+    return (true);
+}
 // End of cFIO functions.
 
 
@@ -475,7 +520,7 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
         // Not flattening, write out sd, and the hierarchy under sd if
         // expanding.
 
-        if (!in_out->write_symbol(sd, true))
+        if (!in_out->write_cell(sd, true))
             return (OIerror);
 
         // If ct is not null, we are processing override cells.  Via and
@@ -490,7 +535,7 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
                 if (!elt)
                     continue;
                 if (!elt->is_written()) {
-                    if (!in_out->write_symbol(sd, true))
+                    if (!in_out->write_cell(sd, true))
                         return (OIerror);
                     elt->set_written(true);
                 }
@@ -500,43 +545,115 @@ cv_in::chd_output_cell(CDs *sd, CDcellTab *ct)
     }
 
     // We're flattening, write out sd only, using the transform list.
+
+    // Suppress labels if flag set.
+    bool bktxt = in_out->no_labels();
+    if (in_mode == Physical && in_transform > 0 && FIO()->IsNoFlattenLabels())
+        in_out->set_no_labels(true);
+
+    bool ret = true;
     if (in_tf_list) {
         ts_reader tsr(in_tf_list);
-        CDtx ttx;
+        CDtx tx;
         CDap ap;
-
-        while (tsr.read_record(&ttx, &ap)) {
-            ttx.scale(in_ext_phys_scale);
+        while (ret && tsr.read_record(&tx, &ap)) {
+            tx.scale(in_ext_phys_scale);
             ap.scale(in_ext_phys_scale);
             TPush();
-            TApply(ttx.tx, ttx.ty, ttx.ax, ttx.ay, ttx.magn, ttx.refly);
+            TApply(tx.tx, tx.ty, tx.ax, tx.ay, tx.magn, tx.refly);
             in_transform++;
 
-            if (ap.nx > 1 || ap.ny > 1) {
-                int tx, ty;
-                TGetTrans(&tx, &ty);
-                xyg_t xyg(0, ap.nx-1, 0, ap.ny-1);
-                do {
-                    TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
-                    if (!in_out->write_geometry(sd))
-                        return (OIerror);
-                    TSetTrans(tx, ty);
-                } while (xyg.advance());
+            if (FIO()->IsNoFlattenStdVias() && sd->isViaSubMaster()) {
+                // Optionally keep standard via instances.
+
+                in_out->clear_property_queue();
+                CDp *pd = sd->prpty(XICP_STDVIA);
+                char *s;
+                if (pd && pd->string(&s)) {
+                    ret = in_out->queue_property(pd->value(), s);
+                    delete [] s;
+                }
+
+                if (ret) {
+                    Instance inst;
+                    inst.name = Tstring(sd->cellname());
+                    inst.nx = ap.nx;
+                    inst.ny = ap.ny;
+                    inst.dx = ap.dx;
+                    inst.dy = ap.dy;
+                    // Scale the standard via instance explicitly, its
+                    // master is already in memory and not scaled.
+                    inst.magn = tx.magn * in_scale;
+                    inst.set_angle(tx.ax, tx.ay);
+                    inst.origin.set(tx.tx, tx.ty);
+                    inst.cdesc = 0;
+                    inst.reflection = tx.refly;
+
+                    ret = in_out->write_sref(&inst);
+                    in_out->clear_property_queue();
+                }
+            }
+            else if (FIO()->IsNoFlattenPCells() && sd->isPCellSubMaster()) {
+                // Optionally keep pcell instances.
+
+                in_out->clear_property_queue();
+                CDp *pd = sd->prpty(XICP_PC);
+                char *s;
+                if (pd && pd->string(&s)) {
+                    ret = in_out->queue_property(pd->value(), s);
+                    delete [] s;
+                }
+                if (ret) {
+                    pd = sd->prpty(XICP_PC_PARAMS);
+                    if (pd && pd->string(&s)) {
+                        ret = in_out->queue_property(pd->value(), s);
+                        delete [] s;
+                    }
+
+                    if (ret) {
+                        Instance inst;
+                        inst.name = Tstring(sd->cellname());
+                        inst.nx = ap.nx;
+                        inst.ny = ap.ny;
+                        inst.dx = ap.dx;
+                        inst.dy = ap.dy;
+                        // Scale the pcell instance explicitly, its
+                        // master is already in memory and not scaled.
+                        inst.magn = tx.magn * in_scale;
+                        inst.set_angle(tx.ax, tx.ay);
+                        inst.origin.set(tx.tx, tx.ty);
+                        inst.cdesc = 0;
+                        inst.reflection = tx.refly;
+
+                        ret = in_out->write_sref(&inst);
+                        in_out->clear_property_queue();
+                    }
+                }
             }
             else {
-                if (!in_out->write_geometry(sd))
-                    return (OIerror);
+                if (ap.nx > 1 || ap.ny > 1) {
+                    int x, y;
+                    TGetTrans(&x, &y);
+                    xyg_t xyg(0, ap.nx-1, 0, ap.ny-1);
+                    do {
+                        TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
+                        ret = in_out->write_geometry(sd);
+                        TSetTrans(x, y);
+                    } while (ret && xyg.advance());
+                }
+                else {
+                    ret = in_out->write_geometry(sd);
+                }
             }
-
             in_transform--;
             TPop();
         }
     }
     else {
-        if (!in_out->write_geometry(sd))
-            return (OIerror);
+        ret = in_out->write_geometry(sd);
     }
-    return (OIok);
+    in_out->set_no_labels(bktxt);
+    return (ret ? OIok : OIerror);
 }
 
 
@@ -1072,6 +1189,7 @@ cv_out::cv_out()
     out_in_struct = false;
     out_interrupted = false;
     out_no_struct = false;
+    out_no_labels = false;
 
     CD()->RegisterCreate("cv_out");
 }
@@ -1113,7 +1231,7 @@ cv_out::write_all(DisplayMode mode, double sc)
     CDgenTab_s gen(mode);
     CDs *sd;
     while ((sd = gen.next()) != 0) {
-        if (!write_symbol(sd, true))
+        if (!write_cell(sd, true))
             return (false);
     }
     if (!write_chd_refs())
@@ -1146,7 +1264,7 @@ cv_out::write(const stringlist *cnlist, DisplayMode mode, double sc)
     }
 
     // On this pass, we don't write empty cells.  Empty cells that are
-    // in the sub-hierarchy will be output in write_symbol().
+    // in the sub-hierarchy will be output in write_cell().
     //
     bool wrote_header = false;
     CDs *top_sdesc = CDcdb()->findCell(cnlist->string, out_mode);
@@ -1168,7 +1286,7 @@ cv_out::write(const stringlist *cnlist, DisplayMode mode, double sc)
                         return (false);
                     wrote_header = true;
                 }
-                if (!write_symbol(sdesc))
+                if (!write_cell(sdesc))
                     return (false);
             }
         }
@@ -1183,7 +1301,7 @@ cv_out::write(const stringlist *cnlist, DisplayMode mode, double sc)
             if (!write_header(top_sdesc))
                 return (false);
             wrote_header = true;
-            if (top_sdesc && !write_symbol(top_sdesc))
+            if (top_sdesc && !write_cell(top_sdesc))
                 return (false);
         }
     }
@@ -1231,7 +1349,7 @@ cv_out::write_flat(const char *cname, double sc, const BBox *AOI, bool clip)
     // warning if a CHD reference is passed.  Turn on warnings and warn
     // the user if one shows up.
     Errs()->arm_warnings(true);
-    bool ok = write_symbol_flat(sdesc, AOI, clip);
+    bool ok = write_cell_flat(sdesc, AOI, clip);
     if (ok && Errs()->get_warnings()) {
         for (const stringlist *s = Errs()->get_warnings(); s; s = s->next)
             FIO()->ifPrintCvLog(IFLOG_WARN, s->string);
@@ -1309,7 +1427,7 @@ cv_out::write_begin_struct(const char *name)
 
 
 bool
-cv_out::write_symbol(const CDs *sdesc, bool thisonly)
+cv_out::write_cell(const CDs *sdesc, bool thisonly)
 {
     if (!sdesc)
         return (true);
@@ -1317,27 +1435,7 @@ cv_out::write_symbol(const CDs *sdesc, bool thisonly)
     // Mark cell as visited, store symbol number.
     add_visited(Tstring(sdesc->cellname()));
 
-    // Never write library cell definitions.
-    if (sdesc->isDevice() && sdesc->isLibrary())
-        return (true);
-
-    // Sub-masters are included in output when exporting layout
-    // (StripFoExport set) or when KeepPCellSubMasters is set,
-    // or if the sub-master was read from a file (not created).
-    // Otherwise, these cells are stripped and will be recreated when
-    // needed.
-    if (!FIO()->IsStripForExport()) {
-        if (sdesc->isPCellSubMaster() && !sdesc->isPCellReadFromFile() &&
-                !FIO()->IsKeepPCellSubMasters())
-            return (true);
-        if (sdesc->isViaSubMaster() && !FIO()->IsKeepViaSubMasters())
-            return (true);
-    }
-
-    // Unless WriteAllCells or StripForExport is true, user library
-    // cells do not appear in output.
-    if (sdesc->isLibrary() &&
-            !FIO()->IsWriteAllCells() && !FIO()->IsStripForExport())
+    if (!FIO()->KeepCell(sdesc))
         return (true);
 
     if (sdesc->isChdRef() && out_filetype != Fnative) {
@@ -1346,6 +1444,15 @@ cv_out::write_symbol(const CDs *sdesc, bool thisonly)
         return (true);
     }
 
+    // If writing library. pcell, or std via masters, use unit scaling.
+    // Instance placements are scaled to compensate.
+    double scalebak = out_scale;
+    if (!sdesc->isElectrical() &&
+            (sdesc->isLibrary() || sdesc->isPCellSubMaster() ||
+            sdesc->isViaSubMaster()))
+        out_scale = 1.0;
+
+    bool ret = true;
     if (!thisonly) {
         // First write to the output file any cell definitions below
         // sdesc.
@@ -1357,35 +1464,39 @@ cv_out::write_symbol(const CDs *sdesc, bool thisonly)
                 if (msdesc && out_visited->find(
                         Tstring(msdesc->cellname())) < 0) {
                     // Write master's definition to output file
-                    if (!write_symbol(msdesc))
-                        return (false);
+                    ret = write_cell(msdesc);
+                    if (!ret)
+                        break;
                 }
             }
         }
     }
 
-    FIO()->ifUpdateNodes(sdesc);
-    if (!queue_properties(sdesc))
-        return (false);
+    if (ret) {
+        FIO()->ifUpdateNodes(sdesc);
+        ret = queue_properties(sdesc);
+    }
 
-    time_t tloc = time(0);
-    tm *date = gmtime(&tloc);
-    bool ret = write_struct(Tstring(sdesc->cellname()), date, date);
-    clear_property_queue();
-    if (!ret)
-        return (false);
+    if (ret) {
+        time_t tloc = time(0);
+        tm *date = gmtime(&tloc);
+        ret = write_struct(Tstring(sdesc->cellname()), date, date);
+        clear_property_queue();
+    }
 
     // Note:  it is important for electrical mode that instances be
     // written before geometry (really just labels).  See
     // CDs::prptyLabelPatch().
 
-    if (!write_instances(sdesc))
-        return (false);
-    if (!write_geometry(sdesc))
-        return (false);
-    if (!write_end_struct())
-        return (false);
-    return (true);
+    if (ret)
+        ret = write_instances(sdesc);
+    if (ret)
+        ret = write_geometry(sdesc);
+    if (ret)
+        ret = write_end_struct();
+
+    out_scale = scalebak;
+    return (ret);
 }
 
 
@@ -1567,7 +1678,7 @@ cv_out::write_chd_refs()
 
 
 bool
-cv_out::write_symbol_flat(const CDs *sdesc, const BBox *AOI, bool clip)
+cv_out::write_cell_flat(const CDs *sdesc, const BBox *AOI, bool clip)
 {
     time_t tloc = time(0);
     tm *date = gmtime(&tloc);
@@ -1575,37 +1686,195 @@ cv_out::write_symbol_flat(const CDs *sdesc, const BBox *AOI, bool clip)
         return (false);
 
     clear_property_queue();
-    CDlgen gen(out_mode);
+    CDlgen gen(out_mode, CDlgen::BotToTopWithCells);
     CDl *ldesc;
     while ((ldesc = gen.next()) != 0) {
         // marked layers are skipped
-        if (ldesc->isTmpSkip() || ldesc->layerType() != CDLnormal)
+        if (ldesc != CellLayer() &&
+                (ldesc->isTmpSkip() || ldesc->layerType() != CDLnormal))
             continue;
 
-        cvLchk lchk = cvLneedCheck;
-        sPF pf(sdesc, AOI, ldesc, CDMAXCALLDEPTH);
-        CDo *odesc;
-        while ((odesc = pf.next(false, false)) != 0) {
-            if (clip && !odesc->oBB().intersect(AOI, false))
-                continue;
-
-            bool ret;
-            if (clip)
-                ret = write_object_clipped(odesc, AOI, &lchk);
-            else
-                ret = write_object(odesc, &lchk);
-            delete odesc;
-            if (!ret)
-                return (false);
-            if (lchk == cvLnogo)
-                break;
-        }
-        if (!flush_cache())
+        cTfmStack tstk;
+        if (!write_cell_recurse(&tstk, sdesc, ldesc, AOI, clip))
             return (false);
     }
     if (!write_end_struct())
         return (false);
     return (true);
+}
+
+
+// Write cell data while recursing through hierarchy, used when
+// writing flat files from the cell database.
+//
+bool
+cv_out::write_cell_recurse(cTfmStack *tstk, const CDs *sdesc, const CDl *ld,
+    const BBox *AOI, bool clip, int level)
+{
+    if (tstk->TFull())
+        return (false);
+
+    // Traverse calls.
+    CDg gdesc;
+    gdesc.init_gen(sdesc, CellLayer());
+    CDc *cdesc;
+    while ((cdesc = (CDc*)gdesc.next()) != 0) {
+        if (clip && !cdesc->oBB().intersect(AOI, false))
+            continue;
+        CDs *sd = cdesc->masterCell();
+        if (!sd)
+            return (false);
+        if (sd->isViaSubMaster() && FIO()->IsNoFlattenStdVias()) {
+            // Optionally keep standard via instances.
+            if (ld != CellLayer())
+                continue;
+
+            tstk->TPush();
+            tstk->TApplyTransform(cdesc);
+            tstk->TPremultiply();
+            CDtx tx;
+            tstk->TCurrent(&tx);
+            tstk->TPop();
+            CDap ap(cdesc);
+
+            bool ret = true;
+            clear_property_queue();
+            CDp *pd = sd->prpty(XICP_STDVIA);
+            char *s;
+            if (pd && pd->string(&s)) {
+                ret = queue_property(pd->value(), s);
+                delete [] s;
+            }
+            if (ret) {
+                Instance inst;
+                inst.name = Tstring(sd->cellname());
+                inst.nx = ap.nx;
+                inst.ny = ap.ny;
+                inst.dx = ap.dx;
+                inst.dy = ap.dy;
+                // Scale the standard via instance explicitly, its
+                // master is already in memory and not scaled.
+                inst.magn = tx.magn * out_scale;
+                inst.set_angle(tx.ax, tx.ay);
+                inst.origin.set(tx.tx, tx.ty);
+                inst.cdesc = 0;
+                inst.reflection = tx.refly;
+
+                cTfmStack *stkbk = out_stk;
+                out_stk = tstk;
+                ret = write_sref(&inst);
+                out_stk = stkbk;
+                clear_property_queue();
+            }
+            if (!ret)
+                return (false);
+        }
+        else if (sd->isPCellSubMaster() && FIO()->IsNoFlattenPCells()) {
+            // Optionally keep pcell instances.
+            if (ld != CellLayer())
+                continue;
+
+            tstk->TPush();
+            tstk->TApplyTransform(cdesc);
+            tstk->TPremultiply();
+            CDtx tx;
+            tstk->TCurrent(&tx);
+            tstk->TPop();
+            CDap ap(cdesc);
+
+            bool ret = true;
+            clear_property_queue();
+            CDp *pd = sd->prpty(XICP_PC);
+            char *s;
+            if (pd && pd->string(&s)) {
+                ret = queue_property(pd->value(), s);
+                delete [] s;
+            }
+            if (ret) {
+                pd = sd->prpty(XICP_PC_PARAMS);
+                if (pd && pd->string(&s)) {
+                    ret = queue_property(pd->value(), s);
+                    delete [] s;
+                }
+
+                if (ret) {
+                    Instance inst;
+                    inst.name = Tstring(sd->cellname());
+                    inst.nx = ap.nx;
+                    inst.ny = ap.ny;
+                    inst.dx = ap.dx;
+                    inst.dy = ap.dy;
+                    // Scale the pcell instance explicitly, its
+                    // master is already in memory and not scaled.
+                    inst.magn = tx.magn * out_scale;
+                    inst.set_angle(tx.ax, tx.ay);
+                    inst.origin.set(tx.tx, tx.ty);
+                    inst.cdesc = 0;
+                    inst.reflection = tx.refly;
+
+                    cTfmStack *stkbk = out_stk;
+                    out_stk = tstk;
+                    ret = write_sref(&inst);
+                    out_stk = stkbk;
+                    clear_property_queue();
+                }
+            }
+            if (!ret)
+                return (false);
+        }
+        else {
+            tstk->TPush();
+            tstk->TApplyTransform(cdesc);
+            tstk->TPremultiply();
+            CDap ap(cdesc);
+            int tx, ty;
+            tstk->TGetTrans(&tx, &ty);
+            xyg_t xyg(0, ap.nx - 1, 0, ap.ny - 1);
+            do {
+                tstk->TTransMult(xyg.x*ap.dx, xyg.y*ap.dy);
+                if (!write_cell_recurse(tstk, sd, ld, AOI, clip,level+1)) {
+                    tstk->TPop();
+                    return (false);
+                }
+                tstk->TSetTrans(tx, ty);
+            } while (xyg.advance());
+            tstk->TPop();
+        }
+    }
+    if (ld == CellLayer())
+        return (true);
+
+    bool ret = true;
+    cTfmStack *stkbk = out_stk;
+    out_stk = tstk;
+    gdesc.init_gen(sdesc, ld);
+    cvLchk lchk = cvLneedCheck;
+    CDo *odesc;
+    while ((odesc = gdesc.next()) != 0) {
+        if (!odesc->is_normal())
+            continue;
+        if (clip && !odesc->oBB().intersect(AOI, false))
+            continue;
+
+        if (odesc->type() == CDLABEL) {
+            if (FIO()->IsNoReadLabels())
+                continue;
+            if (level > 0 && FIO()->IsNoFlattenLabels())
+                continue;
+        }
+        if (clip)
+            ret = write_object_clipped(odesc, AOI, &lchk);
+        else
+            ret = write_object(odesc, &lchk);
+        if (!ret)
+            break;
+        if (lchk == cvLnogo)
+            break;
+    }
+    out_stk = stkbk;
+    if (ret)
+        ret = flush_cache();
+    return (ret);
 }
 
 
@@ -1615,8 +1884,6 @@ cv_out::write_instances(const CDs *sdesc)
     if (!sdesc)
         return (true);
 
-#define SORT_INSTS
-#ifdef SORT_INSTS
     // Sort the instances alphabetically by master, then by database
     // order.
 
@@ -1643,64 +1910,26 @@ cv_out::write_instances(const CDs *sdesc)
         if (!inst.name)
             continue;
         ret = inst.set(cdesc);
-        if (ret)
+        if (ret) {
+            // Library, pcell, and via cells aren't scaled, so instances
+            // should be scaled when scaling.
+
+            if (!sdesc->isElectrical() && out_scale != 1.0) {
+                CDs *sd = cdesc->masterCell();
+                if (sd) {
+                    if (sd->isLibrary() || sd->isPCellSubMaster() ||
+                            sd->isViaSubMaster())
+                        inst.magn *= out_scale;
+                }
+            }
             ret = write_sref(&inst);
+        }
         clear_property_queue();
         if (!ret)
             break;
     }
     CDcl::destroy(cl0);
     return (ret);
-
-#else
-    // This outputs instances in database order.
-    CDg gdesc;
-    gdesc.init_gen(sdesc, CellLayer());
-    const CDc *cdesc;
-    while ((cdesc = (CDc*)gdesc.next()) != 0) {
-
-        out_cellBB.add(&cdesc->oBB());
-        if (!queue_properties(cdesc))
-            return (false);
-
-        Instance inst;
-        inst.name = cdesc->cellname()->string();
-        if (!inst.name)
-            continue;
-        bool ret = inst.set(cdesc);
-        if (ret)
-            ret = write_sref(&inst);
-        clear_property_queue();
-        if (!ret)
-            return (false);
-    }
-    return (true);
-
-    /* This groups by master, but ordering is otherwise random.
-    CDm_gen mgen(sdesc, GEN_MASTERS);
-    for (CDm *mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {
-        CDc_gen cgen(mdesc);
-        for (CDc *cdesc = cgen.c_first(); cdesc; cdesc = cgen.c_next()) {
-
-            out_cellBB.add(&cdesc->oBB());
-            if (!queue_properties(cdesc))
-                return (false);
-
-            Instance inst;
-            inst.name = mdesc->cellname()->string();
-            if (!inst.name)
-                return (false);
-            bool ret = inst.set(cdesc);
-            if (ret)
-                ret = write_sref(&inst);
-            clear_property_queue();
-            if (!ret)
-                return (false);
-        }
-    }
-    return (true);
-    */
-#endif
 }
 
 
@@ -1727,6 +1956,8 @@ cv_out::write_geometry(const CDs *sdesc)
         CDo *odesc;
         while ((odesc = gdesc.next()) != 0) {
             if (!odesc->is_normal())
+                continue;
+            if (out_no_labels && odesc->type() == CDLABEL)
                 continue;
             if (!queue_properties(odesc))
                 return (false);

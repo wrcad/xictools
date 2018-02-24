@@ -1439,7 +1439,7 @@ the net number.
 
 
 % -----------------------------------------------------------------------------
-% !netext 070909
+% !netext 021318
 \subsection{The {\cb !netext} Command: Batch Physical Net Extraction}
 \index{"!netext command}
 \index{netlist extraction}
@@ -1516,6 +1516,17 @@ time and memory to construct.
 When the output file is written, the equivalence file and the Stage 1
 OASIS files are deleted, and the operation is complete.
 
+If a net has an assigned name in the source file, (e.g., through a
+label or from a terminal) A NXNAME property will be given to the
+created net files.  This is property number 7149, and the string is
+the net name.  This is not presently used by {\Xic}, but the net name
+may be useful to the user.  Beware if using a grid:  if flattening,
+the top net cell will contain the net name properties from all grid
+cells, so there may be duplicate or inconsistent name properties.  If
+not flattening, the primary and all subcells should be checked, each
+property applies only to the corresponding grid location.  In either
+case, conflicting names would need to be dealt with somehow.
+
 \subsubsection{Command Arguments}
 
 \begin{description}
@@ -1535,14 +1546,19 @@ the CHD source, if any, or the lowest-offset top-level cell found in
 the source layout file.
 
 \item{\vt -g} {\it gridsize}\\
-This argument is mandatory if {\vt -w} is not given.  It sets the grid
-size, in microns.  The choice of a grid size is machine and layout
-dependent.  The objective is to choose as large a grid as possible,
-without exceeding memory limits or causing excessive page-swapping. 
-For small layouts, it is fine to give a very large grid size to force
-use of only one grid cell.  In general, some experimentation may be
-required to find the ``best'' grid size.  A starting point of 400
-microns may be reasonable.
+if the ``{\vt -w}'' (windowing) option is not given, this sets the
+grid size, in microns.  Use of a grid minimizes memory consumption for
+handling large designs.  For smaller designs gridding may not be
+necessary, so this option can be skipped or given as 0.  In this case
+the entire bounding box of the top-level cell is understood.  The
+OASIS file is produced, but there are no edge files, and no Stage 2 or
+Stage 3 steps.
+
+The choice of a grid size is machine and layout dependent.  The
+objective is to choose as large a grid as possible, without exceeding
+memory limits or causing excessive page-swapping.  In general, some
+experimentation may be required to find the ``best'' grid size.  A
+starting point of 400 microns may be reasonable.
 
 \item{\vt -v}\\
 If given, via objects will be included in the netlist cells and files. 
@@ -1565,12 +1581,23 @@ run, the {\vt -v+} option will allow the nets to be correctly
 re-extracted.  If the check layers are missing, this may fail, and
 extraction would certainly fail if vias are not included at all.
 
+\item{\vt -vs}\\
+When there is no windowing or gridding in use and this option is
+given, standard vias will be retained as they are rather than being
+converted to equivalent geometry.  The net cells will contain the
+standard via placements from the net, from all hierarchy levels, as
+subcells.  Presently, this requires that the standard via sub-masters
+not be included in the source layout file, i.e., they are created
+within {\Xic} as the file is read.
+
 \item{\vt -w} {\it l\/},{\it b\/},{\it r\/},{\it t}\\
-If a window is given, a grid size should not be given.  In this case,
-there is no grid, and the rectangular area given, as comma-separated
-dimensions in microns, is read into memory and processed as if it were
-a grid cell.  The OASIS file is produced, but there are no edge files,
-and no Stage 2 or Stage 3 steps.
+If a window is given, a grid size should not be given and will be
+ignored.  In this case, there is no grid, and the rectangular area
+given, as comma-separated dimensions in microns, is read into memory
+and processed as if it were a grid cell.  The OASIS file is produced,
+but there are no edge files, and no Stage 2 or Stage 3 steps.  If all
+values are 0, the effective area is the bounding box of the top-level
+cell, which is the default when no area or grid is given.
 
 \item{\vt -b} {\it basename}\\
 This supplies a basename for the generated files.  It can have a path

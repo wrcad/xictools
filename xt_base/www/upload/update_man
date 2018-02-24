@@ -1,8 +1,11 @@
 #
 # Update the manual files.
 #
-# Usage: update_man [-t] "program-x.x.x ..."
+# Usage: update_man [-t] [-y] "program-x.x.x ..."
 # program is xic or wrspice
+# Options:
+#   -t:  dry run, don't actually change anything, echo commands.
+#   -y;  skip prompts, yes to all.
 
 login=stevew
 srcdir=/home/$login/src/xt
@@ -10,11 +13,16 @@ srcdir=/home/$login/src/xt
 man_destdir=/home/webadmin/wrcad.com/html/xictools/docs
 
 dryrun=no
-if [ x$1 = x-t ]; then
-    dryrun=yes
-    shift
-fi
-progs=$1
+nopr=no
+for a in $*; do
+    if [ $a = -t ]; then
+        dryrun=yes
+    elif [ $a = -y ]; then
+        nopr=yes;
+    else
+        progs="$progs $a"
+    fi
+done
 
 sshc=$SSH_CONNECTION
 if [ x"$sshc" = x ]; then
@@ -27,6 +35,26 @@ echo Connecting to $home
 
 shopt -s nullglob
 
+del_file()
+{
+    filename=$1
+    if [ $nopr = yes ]; then
+        if [ $dryrun = no ]; then
+            rm -f $filename
+        fi
+    else
+        echo -n "delete `basename $filename`? [n] "
+        read yn
+        if [ x"$yn" = xy ]; then
+            if [ $dryrun = no ]; then
+                rm -f $filename
+            else
+                echo "dry run, file not deleted."
+            fi
+        fi
+    fi
+}
+
 get_man()
 {
     prg=$1
@@ -35,25 +63,13 @@ get_man()
     manpdf=${prg}manual-$vrs.pdf
     manhtml=${prg}manual-html-$vrs.tar.gz
     for a in $man_destdir/${prg}manual-*.ps.gz; do
-        echo -n "delete `basename $a`? [n] "
-        read yn
-        if [ x"$yn" = xy ]; then
-            rm -f $a
-        fi
+        del_file $a
     done
     for a in $man_destdir/${prg}manual-*.pdf; do
-        echo -n "delete `basename $a`? [n] "
-        read yn
-        if [ x"$yn" = xy ]; then
-                rm -f $a
-        fi
+        del_file $a
     done
     for a in $man_destdir/${prg}manual-html-*.tar.gz; do
-        echo -n "delete `basename $a`? [n] "
-        read yn
-        if [ x"$yn" = xy ]; then
-            rm -f $a
-        fi
+        del_file $a
     done
     prog=$prg
     if [ $prog = "wrs" ]; then

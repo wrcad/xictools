@@ -277,7 +277,8 @@ namespace {
         if (DSP()->IncompleteObject()) {
             if (cursd->isElectrical())
                 ScedIf()->uninstall(DSP()->IncompleteObject(), cursd);
-            cursd->unlink(DSP()->IncompleteObject(), false);
+            if (!cursd->unlink(DSP()->IncompleteObject(), false))
+                Log()->PopUpErr(Errs()->get_error());
             DSP()->SetIncompleteObject(0);
             cursd->computeBB();
             return (true);

@@ -761,7 +761,8 @@ cGroupDesc::process_exclude()
         while (ol0) {
             CDol *o = ol0;
             ol0 = ol0->next;
-            gd_g_phonycell->unlink(o->odesc, false);
+            if (!gd_g_phonycell->unlink(o->odesc, false))
+                Errs()->get_error();
             delete o;
         }
     }

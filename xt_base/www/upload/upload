@@ -1,0 +1,72 @@
+#! /bin/bash
+
+#
+# Top-level script for uploading a new release set.
+#
+
+# Change these if you're not me.
+login=stevew
+# Root where distrib files are staged.
+export=/home/$login/export/xictools
+# Build area.
+xictools=/home/$login/src/xt
+
+sshc=$SSH_CONNECTION
+if [ -z "$sshc" ]; then
+    echo "Can't get home IP, exiting"
+    exit
+fi
+set -- $sshc
+home=$1
+echo Connecting to $home
+
+# First upload the "exported" script, which may change between
+# uploads.  Infrastructure uses these to get distrib names, version
+# numbers, etc.
+
+files="exported.new"
+for f in $files; do
+    echo uploading $f
+    rsync --rsh=ssh $login@$home:$export/$f .
+    if [ ! -f $f ]; then
+        echo "Error: failed to upload \'$f\' script, can't continue."
+        exit 1
+    fi
+    if [ ! -x $f ]; then
+        chmod 755 $f
+    fi
+done
+
+# Make sure that target directories exist.
+./mklinks
+
+progs=$(./exported.new progs)
+
+# Loop through the programs and query the user whether to upload the
+# corresponding distrib file.  We also upload manuals and help as
+# appropriate.
+
+for prog in $progs; do
+    echo -n "Update $prog ? "
+    read xy
+    if [ x${xy:0:1} = xy ]; then
+        ./update -y $prog
+        if [ $prog = xic ]; then
+            ./update_help xic
+            vers=$(exported.new version $prog)
+            ./update_man -y xic-$vers
+        elif [ $prog = wrspice ]; then
+            ./update_help wrspice
+            vers=$(exported.new version $prog)
+            ./update_man -y wrspice-$vers
+        fi
+    fi
+done
+
+# Update the release table, used for release number queries from the
+# mozy install page.
+
+./mktab
+
+# Done.
+

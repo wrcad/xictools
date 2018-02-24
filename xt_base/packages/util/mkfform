@@ -1,0 +1,51 @@
+#! /bin/sh
+
+#
+# Script to create the fetch form html file.
+# Takes no arguments.
+#
+
+epath=`dirname $0`
+progs=$($epath/exported progs)
+oses=$($epath/exported oses)
+actpath=$(cd $epath; pwd)/fetch_action
+
+echo '<html>'
+echo '<body bgcolor=white>'
+echo
+echo '<form method=post action='$actpath
+echo
+echo '<table>'
+echo '<tr><td width=250>'
+echo '<b>Distributions</b><br>'
+for a in $oses; do
+  tifs="$IFS"
+  IFS="."
+  set --  $a
+  IFS="$tifs"
+  nm=$1
+  arch=$2
+  if [ -n "$arch" ]; then
+    echo '<input type=checkbox name='$a'>'$nm $arch'<br>'
+  elif [ $nm = Win32 ]; then
+    echo '<input type=checkbox name='$a'>'Windows i386'<br>'
+  else
+    echo '<input type=checkbox name='$a'>'$nm X86_64'<br>'
+  fi
+done
+echo '</td>'
+echo
+echo '<td>'
+echo '<b>Programs</b><br>'
+for a in $progs; do
+  echo '<input type=checkbox name='$a'>'$a'<br>'
+done
+echo '</td></tr>'
+echo '</table>'
+echo
+echo '<input type=submit value="Fetch ">'
+echo '</form>'
+echo
+echo '</body>'
+echo '</html>'
+

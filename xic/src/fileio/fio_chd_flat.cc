@@ -825,8 +825,7 @@ cCHD::flatten(symref_t *p, cv_in *in, int maxdepth, const FIOcvtPrms *prms)
     cv_in *cin = in;
     cCHD *cchd = this;
     if (!cin->chd_setup(cchd, fc.ctab, 0, Physical, prms->scale())) {
-        Errs()->add_error(
-            "cCHD::flatten: main channel setup failed.");
+        Errs()->add_error("cCHD::flatten: main channel setup failed.");
         ok = false;
     }
     if (ok && out) {
@@ -1255,6 +1254,39 @@ rf_out::write_text(const Text *text)
             ret = (err == CDbadLabel);
         if (newo)
             newo->set_flag(rf_targld->getStrmDatatypeFlags(rf_targdt));
+    }
+    return (ret);
+}
+
+
+// This can be used to keep standard vias, pcells, etc.  as instances
+// when flattening.  Not presently supported by backend interface, so
+// only applies when writing to memory.
+//
+bool
+rf_out::write_sref(const Instance *inst)
+{
+    bool ret = true;
+    if (!rf_backend) {
+        CDtx tx(inst->reflection, inst->ax, inst->ay,
+            inst->origin.x, inst->origin.y, inst->magn);
+        CDap ap(inst->nx, inst->ny, inst->dx, inst->dy);
+        CDcellName cname = CD()->CellNameTableAdd(inst->name);
+        CallDesc calldesc(cname, 0);
+
+        CDc *newo;
+        if (rf_targcell->makeCall(&calldesc, &tx, &ap, CDcallDb, &newo)
+                != OIok)
+            ret = false;
+        if (ret && newo) {
+            if (out_prpty) {
+                newo->set_prpty_list(out_prpty);
+                out_prpty = 0;
+            }
+            // Here, the master in in memory and we know its BB.  This
+            // puts the instance into the database properly.
+            newo->updateBB();
+        }
     }
     return (ret);
 }

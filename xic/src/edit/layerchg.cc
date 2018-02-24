@@ -103,8 +103,10 @@ box:
             newo->prptyAddCopyList(odesc->prpty_list());
         if (undoable)
             Ulist()->RecordObjectChange(sdesc, move ? odesc : 0, newo);
-        else if (move)
-            sdesc->unlink(odesc, false);
+        else if (move) {
+            if (!sdesc->unlink(odesc, false))
+                Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
+        }
         if (use_merge && !sdesc->mergeBoxOrPoly(newo, undoable)) {
             Errs()->add_error("mergeBoxOrPoly failed");
             Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
@@ -124,8 +126,10 @@ poly:
             newo->prptyAddCopyList(odesc->prpty_list());
         if (undoable)
             Ulist()->RecordObjectChange(sdesc, move ? odesc : 0, newo);
-        else if (move)
-            sdesc->unlink(odesc, false);
+        else if (move) {
+            if (!sdesc->unlink(odesc, false))
+                Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
+        }
         if (use_merge && !sdesc->mergeBoxOrPoly(newo, undoable)) {
             Errs()->add_error("mergeBoxOrPoly failed");
             Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
@@ -146,8 +150,10 @@ wire:
             newo->prptyAddCopyList(odesc->prpty_list());
         if (undoable)
             Ulist()->RecordObjectChange(sdesc, move ? odesc : 0, newo);
-        else if (move)
-            sdesc->unlink(odesc, false);
+        else if (move) {
+            if (!sdesc->unlink(odesc, false))
+                Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
+        }
         if (use_merge && !sdesc->mergeWire(newo, undoable)) {
             Errs()->add_error("mergeWire failed");
             Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
@@ -167,8 +173,10 @@ label:
             newo->prptyAddCopyList(odesc->prpty_list());
         if (undoable)
             Ulist()->RecordObjectChange(sdesc, move ? odesc : 0, newo);
-        else if (move)
-            sdesc->unlink(odesc, false);
+        else if (move) {
+            if (!sdesc->unlink(odesc, false))
+                Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
+        }
         if (undoable) {
             if (DSP()->CurMode() == Electrical && move)
                 sdesc->prptyLabelUpdate(newo, (CDla*)odesc);

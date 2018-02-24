@@ -199,6 +199,9 @@ enum
     XICP_MEASURES,
     XICP_CNDR,
 
+    // Name property for !netext net file, string is net name.
+    XICP_NXNAME = INTERNAL_PROPERTY_BASE + 49,
+
     // This indicates that the cell is a reference to a cell hierarchy
     // digest.  This is used internally, and can be read from/written to
     // native cell files only.

@@ -173,7 +173,7 @@ cFIO::FromCGX(const char *cgx_fname, const FIOcvtPrms *prms,
 
     SetAllowPrptyStrip(true);
     if (chd || prms->use_window() || prms->flatten() ||
-            (prms->ecf_level() != ECFnone)) {
+            dfix(prms->scale()) != 1.0 || (prms->ecf_level() != ECFnone)) {
 
         // Using windowing or other features requiring a cCHD
         // description.  This is restricted to physical-mode data.
@@ -628,7 +628,10 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
     in_uselist = true;
 
     if (FIO()->IsUseCellTab()) {
-        if (in_mode == Physical && in_action == cvOpenModeTrans) {
+        if (in_mode == Physical && 
+                ((in_action == cvOpenModeTrans) ||
+                ((in_action == cvOpenModeDb) && in_flatten))) {
+
             // The AuxCellTab may contain cells to stream out from the
             // main database, overriding the cell data in the CHD.
 
@@ -641,7 +644,10 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
     }
     if (!p->get_defseen()) {
         CDs *sd = CDcdb()->findCell(p->get_name(), in_mode);
-        if (in_mode == Physical && in_action == cvOpenModeTrans) {
+        if (sd && in_mode == Physical && 
+                ((in_action == cvOpenModeTrans) ||
+                ((in_action == cvOpenModeDb) && in_flatten))) {
+
             // The cell definition was not in the file.  This could mean
             // that the cell is a standard via or parameterized cell
             // sub-master, or is a native library cell.  In any case, it
@@ -650,6 +656,8 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
             if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster()))
                 return (chd_output_cell(sd) == OIok);
         }
+        if (sd && (in_action == cvOpenModeDb))
+            return (true);
         FIO()->ifPrintCvLog(IFLOG_WARN, "Unresolved cell %s (%s).",
             DisplayModeNameLC(in_mode), Tstring(p->get_name()),
             sd ? "in memory" : "not found");
@@ -672,6 +680,13 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
     in_chd_state.push_state(p, use_inst_list ? get_sym_tab(in_mode) : 0,
         &stbak);
     bool ret = (this->*ftab[R_STRUCT])(size, flags);
+
+    // Skip labels when flattening subcells when flag set.
+    bool bktxt = in_ignore_text;
+    if (in_mode == Physical && in_flatten && in_transform > 0 &&
+            FIO()->IsNoFlattenLabels())
+        in_ignore_text = true;
+
     if (ret) {
         if (in_sdesc || in_action == cvOpenModeTrans) {
             char buf[64];
@@ -695,6 +710,7 @@ cgx_in::chd_read_cell(symref_t *p, bool use_inst_list, CDs **sdret)
                 ret = false;
         }
     }
+    in_ignore_text = bktxt;
 
     if (sdret)
         *sdret = in_sdesc;
@@ -1767,6 +1783,7 @@ cgx_in::a_sref(int, int flags)
         }
 
         CDcellName cname = cp->get_name();
+        cname = check_sub_master(cname);
         CDattr at;
         if (!CD()->FindAttr(c->attr, &at)) {
             Errs()->add_error("Unresolved transform ticket %d.", c->attr);
@@ -1786,13 +1803,32 @@ cgx_in::a_sref(int, int flags)
             dx = at.dx;
             dy = at.dy;
         }
-        CDtx tx(at.refly, at.ax, at.ay, x, y, at.magn);
+
+        // If we're reading into the database and scaling, we
+        // don't want to scale library, standard cell, or pcell
+        // sub-masters.  Instead, these are always read in
+        // unscaled, and instance placements are scaled.  We
+        // check/set this here.
+
+        double tmag = at.magn;
+        if (in_mode == Physical && in_needs_mult &&
+                in_action == cvOpenModeDb) {
+            CDs *sd = CDcdb()->findCell(cname, in_mode);
+            if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster() ||
+                    sd->isLibrary()))
+                tmag *= in_phys_scale;
+            else if (in_chd_state.chd()) {
+                symref_t *sr = in_chd_state.chd()->findSymref(cname,
+                    in_mode);
+                if (!sr || !sr->get_defseen() || !sr->get_offset())
+                    tmag *= in_phys_scale;
+            }
+        }
+        CDtx tx(at.refly, at.ax, at.ay, x, y, tmag);
         CDap ap(at.nx, at.ny, dx, dy);
 
-        cname = check_sub_master(cname);
-        CallDesc calldesc(cname, 0);
-
         CDc *newo;
+        CallDesc calldesc(cname, 0);
         if (OIfailed(in_sdesc->makeCall(&calldesc, &tx, &ap, CDcallDb, &newo)))
             return (false);
         FIO()->ScalePrptyStrings(in_prpty_list, in_phys_scale, 1.0, in_mode);
@@ -1905,13 +1941,32 @@ cgx_in::a_sref(int, int flags)
         else if (in_sdesc) {
             CDcellName cname = CD()->CellNameTableAdd(cellname);
             cname = check_sub_master(cname);
-            CallDesc calldesc(cname, 0);
 
-            // Spec says reflection about the X axis before rotation
-            CDtx tx(flags & RF_REFLECT, ax, ay, x, y, magn);
+            // If we're reading into the database and scaling, we
+            // don't want to scale library, standard cell, or pcell
+            // sub-masters.  Instead, these are always read in
+            // unscaled, and instance placements are scaled.  We
+            // check/set this here.
+
+            double tmag = magn;
+            if (in_mode == Physical && in_needs_mult &&
+                    in_action == cvOpenModeDb) {
+                CDs *sd = CDcdb()->findCell(cname, in_mode);
+                if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster() ||
+                        sd->isLibrary()))
+                    tmag *= in_phys_scale;
+                else if (in_chd_state.chd()) {
+                    symref_t *sr = in_chd_state.chd()->findSymref(cname,
+                        in_mode);
+                    if (!sr || !sr->get_defseen() || !sr->get_offset())
+                        tmag *= in_phys_scale;
+                }
+            }
+            CDtx tx(flags & RF_REFLECT, ax, ay, x, y, tmag);
             CDap ap(cols, rows, dx, dy);
 
             CDc *newo;
+            CallDesc calldesc(cname, 0);
             if (OIfailed(in_sdesc->makeCall(&calldesc, &tx, &ap, CDcallDb,
                     &newo))) {
                 clear_properties();
@@ -2629,8 +2684,27 @@ cgx_in::ac_sref(int, int flags)
             dy = at.dy;
         }
 
+        // If we're scaling, we don't want to scale library, standard
+        // cell, or pcell sub-masters.  Instead, these are always
+        // unscaled, and instance placements are scaled.
+
+        double tmag = at.magn;
+        if (in_mode == Physical && in_needs_mult &&
+                in_action == cvOpenModeTrans) {
+            CDs *sd = CDcdb()->findCell(cellname, in_mode);
+            if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster() ||
+                    sd->isLibrary()))
+                tmag *= in_phys_scale;
+            else if (in_chd_state.chd()) {
+                symref_t *sr = in_chd_state.chd()->findSymref(cellname,
+                    in_mode);
+                if (!sr || !sr->get_defseen() || !sr->get_offset())
+                    tmag *= in_phys_scale;
+            }
+        }
+
         Instance inst;
-        inst.magn = at.magn;
+        inst.magn = tmag;
         inst.name = Tstring(cellname);
         inst.nx = at.nx;
         inst.ny = at.ny;
@@ -2709,8 +2783,26 @@ cgx_in::ac_sref(int, int flags)
             dy = mmRnd((tp[2].y - tp[0].y)/(rows*magn));
         }
 
+        // If we're scaling, we don't want to scale library, standard
+        // cell, or pcell sub-masters.  Instead, these are always
+        // unscaled, and instance placements are scaled.
+
+        double tmag = magn;
+        if (in_mode == Physical && in_needs_mult &&
+                in_action == cvOpenModeTrans) {
+            CDs *sd = CDcdb()->findCell(cname, in_mode);
+            if (sd && (sd->isViaSubMaster() || sd->isPCellSubMaster() ||
+                    sd->isLibrary()))
+                tmag *= in_phys_scale;
+            else if (in_chd_state.chd()) {
+                symref_t *sr = in_chd_state.chd()->findSymref(cname, in_mode);
+                if (!sr || !sr->get_defseen() || !sr->get_offset())
+                    tmag *= in_phys_scale;
+            }
+        }
+
         Instance inst;
-        inst.magn = magn;
+        inst.magn = tmag;
         inst.angle = angle;
         inst.name = cname;
         inst.nx = cols;

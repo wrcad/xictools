@@ -400,11 +400,15 @@ install_clean::
 
 $(destn)/bin::
 	@$(BASE)/util/mkdirpth $@
-	@for aa in $(TARGETS); do \
+	@for aa in wrspiced multidec proc2mod printtoraw; do \
 	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
 	done
+# Don't strip wrspice.exe, Webroot will think its a virus!
 	@if [ $(DLL_SPICE_PROG) = wrspice ]; then \
 	    $(INSTALL_BIN) bin/wrspice.dll $@; \
+	    $(INSTALL_SCRIPT) bin/wrspice$(EXESUFFIX) $@; \
+	else \
+	    $(INSTALL_BIN) bin/wrspice$(EXESUFFIX) $@; \
 	fi
 	@if [ -n "$(EXESUFFIX)" ]; then \
 	    cp $(BASE)/util/program.bat wrspice.bat; \

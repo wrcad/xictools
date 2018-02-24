@@ -173,7 +173,7 @@ struct RTelem
             RTelem *r = thisel;
             if (r) {
                 *nx = r->sibling();
-                r->e_right = 0;
+                r->set_sibling(0);
              }
              return (r);
         }
@@ -283,13 +283,15 @@ private:
                 wh = RT_FIRST;
             }
             else {
-                for ( ; r->sibling(); r = r->sibling()) {
+                for ( ; ; r = r->sibling()) {
+                    if (!r->sibling()) {
+                        wh = RT_LAST;
+                        break;
+                    }
                     if (ch->op_le(r->sibling()))
                         break;
                 }
-                if (!r->sibling())
-                    wh = RT_LAST;
-                ch->set_sibling(r->e_right);
+                ch->set_sibling(r->sibling());
                 r->set_sibling(ch);
             }
             ch->rehook(this);
@@ -313,7 +315,7 @@ private:
                     if (!rp)
                         set_children(r->sibling());
                     else
-                        rp->set_sibling(r->e_right);
+                        rp->set_sibling(r->sibling());
                     r->unhook(this);
                     dec_count();
                     return (true);
@@ -437,6 +439,7 @@ private:
         }
 
 public:
+    void test_nch(bool, const char*);
     int test();
     void show(int, int = 1);
     void list_test();

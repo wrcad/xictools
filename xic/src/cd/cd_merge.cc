@@ -370,6 +370,7 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
     }
     PolyList::destroy(p0);
 
+    bool ret = true;
     for (CDol *ol = o0; ol; ol = ol->next) {
         CDo *od = ol->odesc;
         if (Undoable) {
@@ -378,12 +379,14 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
             if (nosl)
                 od->set_flag(CDmergeDeleted);
         }
-        else
-            unlink(od, false);
+        else {
+            if (!unlink(od, false))
+                ret = false;
+        }
     }
     CDol::destroy(o0);
 
-    return (true);
+    return (ret);
 }
 
 
@@ -483,16 +486,20 @@ namespace {
 namespace {
     // Perform the object "deletion".
     //
-    void do_delete(CDs *sdesc, CDo *odesc, bool Undoable)
+    bool do_delete(CDs *sdesc, CDo *odesc, bool Undoable)
     {
+        bool ret = true;
         if (Undoable) {
             bool nosl = (odesc->state() != CDSelected);
             CD()->ifRecordObjectChange(sdesc, odesc, 0);
             if (nosl)
                 odesc->set_flag(CDmergeDeleted);
         }
-        else
-            sdesc->unlink(odesc, false);
+        else {
+            if (!sdesc->unlink(odesc, false))
+                ret = false;
+        }
+        return (ret);
     }
 }
 
@@ -626,15 +633,19 @@ CDs::mergeWire(CDw *wdesc, bool Undoable, CDw **pnew)
         CD()->ifRecordObjectChange(this, 0, wpointer);
         wpointer->set_flag(CDmergeCreated);
     }
-    do_delete(this, wdesc, Undoable);
-    if (merged1)
-        do_delete(this, pointer1, Undoable);
-    if (merged2)
-        do_delete(this, pointer2, Undoable);
+    bool ret = do_delete(this, wdesc, Undoable);
+    if (merged1) {
+        if (!do_delete(this, pointer1, Undoable))
+            ret = false;
+    }
+    if (merged2) {
+        if (!do_delete(this, pointer2, Undoable))
+            ret = false;
+    }
     if (pnew)
         *pnew = wpointer;
 
-    return (true);
+    return (ret);
 }
 // End of CDs functions.
 
@@ -679,8 +690,10 @@ cCD::ClipMerge(CDo *o1, CDo *o2, CDs *sdesc, bool *merged, bool Undoable)
                 o2->set_flag(CDmergeDeleted);
         }
         else {
-            sdesc->unlink(o1, false);
-            sdesc->unlink(o2, false);
+            if (!sdesc->unlink(o1, false))
+                return (false);
+            if (!sdesc->unlink(o2, false))
+                return (false);
         }
         if (!newbox(sdesc, ldesc, tBB.left, tBB.bottom, tBB.right, tBB.top,
                 &pointer))
@@ -719,8 +732,10 @@ cCD::ClipMerge(CDo *o1, CDo *o2, CDs *sdesc, bool *merged, bool Undoable)
                 o2->set_flag(CDmergeDeleted);
         }
         else {
-            sdesc->unlink(o1, false);
-            sdesc->unlink(o2, false);
+            if (!sdesc->unlink(o1, false))
+                return (false);
+            if (!sdesc->unlink(o2, false))
+                return (false);
         }
         if (!newbox(sdesc, ldesc, tBB.left, tBB.bottom, tBB.right, tBB.top,
                 &pointer))
@@ -764,8 +779,10 @@ cCD::ClipMerge(CDo *o1, CDo *o2, CDs *sdesc, bool *merged, bool Undoable)
             o2->set_flag(CDmergeDeleted);
     }
     else {
-        sdesc->unlink(o1, false);
-        sdesc->unlink(o2, false);
+        if (!sdesc->unlink(o1, false))
+            return (false);
+        if (!sdesc->unlink(o2, false))
+            return (false);
     }
     Blist *top = 0;
     Blist *bot = 0;

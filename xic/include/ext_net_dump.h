@@ -85,6 +85,12 @@ struct sGroup;
 //   and EN_VIAS are set and EN_EXTR is not set, the tree layers will
 //   be read into memory in stage 1.
 //
+// EN_VSTD
+//   This applies when not using gridding and the area includes the
+//   whole cell.  The flattening will keep standard vias as subcells,
+//   moved to the top of the flattened hierarchy.  These will be
+//   included in the net files.
+//
 // --- Debugging Flags ---
 //
 // EN_EQVB
@@ -107,6 +113,7 @@ struct sGroup;
 #define EN_LFLT 0x8
 #define EN_VIAS 0x10
 #define EN_VTRE 0x20
+#define EN_VSTD 0x40
 //
 #define EN_EQVB 0x100
 #define EN_KEEP 0x200

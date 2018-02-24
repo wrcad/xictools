@@ -2883,6 +2883,7 @@ cGroupDesc::find_match(sDevList *dv, sDevComp &comp, bool brksym) THROW_XIrt
 
     // Don't associate unless the score is reasonable.
     if (mx < CMP_SCALE/2) {
+
         sSymCll::destroy(eposs);
         // We can never associate the present device, so might as well
         // skip permuting if this is not a symmetry trial.
@@ -3672,10 +3673,8 @@ cGroupDesc::check_global(int grp)
             continue;
 
         // ignore terminals of ignored subcircuits
-        if (gd->test_nets_only()) {
-printf("ZZZ\n");
+        if (gd->test_nets_only())
             continue;
-}
 
         sGroup *gp = gd->group_for(s->contact()->subc_group());
         if (!gp)

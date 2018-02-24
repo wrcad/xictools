@@ -739,23 +739,28 @@ command.
 
 
 % -----------------------------------------------------------------------------
-% xic:exprt 022916
+% xic:exprt 022418
 \section{The {\cb Export Cell Data} Button: {\cb Export Control} Panel}
 \index{Export Cell Data button}
 
 The {\cb Export Cell Data} button in the {\cb Convert Menu} brings up
-the {\cb Export Control} panel.  The panel serves two purposes. 
-First, it allows setting of various parameters and modes which are
-used globally when writing layout files.  Second, it provides a button
-with which export of cell data to a disk file can be initiated.
+the {\cb Export Control} panel.  The top of the panel contains tabbed
+pages for {\cb GDSII}, {\cb OASIS}, {\cb CIF}, {\cb CGX}, and {\cb Xic
+cell files}.  This selects the current output format, and exposes
+controls and settings particular to the format.  The lower part of the
+panel has two pages.  The {\cb Setup} page allows setting of various
+format-independent parameters and modes which are used globally when
+writing layout files.  The {\cb Write File} page provides a button
+with which export of cell data to a disk file can be initiated, as
+well as settings which apply during the write operation.
 
-The top of the panel contains tabbed pages for {\cb GDSII}, {\cb
-OASIS}, {\cb CIF}, {\cb CGX}, and {\cb Xic cell files}.  Clicking the
-tab exposes the page containing controls appropriate for the format. 
-The parameters set with this panel always apply when writing layout
-files of the types indicated.  In particular, the settings apply when
-the commands in the {\cb File Menu} are used to save design data, as
-well as when the {\cb Write File} button in this panel is used.
+Below are descriptions of the controls in the file format pages
+selected by the upper tabs.  Clicking the tab exposes the page
+containing controls appropriate for the format.  The parameters set
+with this panel always apply when writing layout files of the types
+indicated.  In particular, the settings apply when the commands in the
+{\cb File Menu} are used to save design data, as well as when the {\cb
+Write File} button in this panel is used.
 
 \subsection{GDSII Settings}
 
@@ -989,13 +994,149 @@ CGX files can be gzip compressed.  Such files are recognized
 automatically on input, and can be coerced as output by giving a
 ``{\vt .gz}'' suffix to the file name.
 
-\subsection{Exporting Design Data}
+\subsection{The Setup Page}
 
-The remainder of the {\cb Export Control} panel is used to initiate
-writing of a design data file to disk.  A number of options are
-available when writing a file with this panel.  Unlike the settings
-described above, these settings apply only to files created with this
-panel.
+The {\cb Setup} page contains a number of check boxes which control
+various modes when writing output, as described below.
+
+\begin{description}
+\item{\cb Don't convert invisible layers}\\
+\index{Don't convert invisible layers button}
+\index{conversion, file format!layer suppression}
+There are separate check boxes that apply to physical and electrical
+modes.  When active, only layers that are currently visible, as
+selected with button 2 in the layer table, will be written when
+writing output using this panel.  This is the method by which certain
+layers can be eliminated from generated output.  When this button
+button is not active, all {\Xic} layers will be written.
+
+This feature can also be enabled by setting the variable {\et
+SkipInvisible} with the {\cb !set} command.
+
+\item{\cb Strip For Export}\\
+\index{StripForExport button}
+\index{exporting designs!Strip For Export}
+\index{compatibility!Strip For Export}
+When the {\cb Strip For Export} button is active, converted output
+will contain physical data only, and will contain no {\Xic}
+extensions.  Further, the {\cb Strip For Export} check box implicitly
+enables the same functionality as {\cb Include library cell masters} (see
+below), so that the file will not contain unresolved library cell
+references.  Additionally, parameterized cell and standard via
+sub-masters will be included in output, as if the corresponding check
+boxes were also checked.  The {\cb Strip For Export} box should be
+checked when creating a file for use in generating photomasks.  Note
+that the electrical information can never be recovered from a stripped
+file.
+
+This mode can also be enabled by setting the boolean variable {\et
+StripForExport} with the {\cb !set} command.  The variable tracks the
+state of the check box.
+
+\item{\cb Include library cell masters}\\
+If the input file references library cells (which have the LIBRARY
+flag set) whose masters are not found in the file, then these masters
+are not written to output unless this box is checked.  With the box
+not checked, the output file will require the referenced library be
+preesent and open when the file is read into {\Xic} (the same
+requirement as the input file).  With the box checked, the masters are
+written to the output file, which will therefor not need the library.
+
+This tracks the state of the {\et KeepLibMasters} variable.
+
+\item{\cb Include parameterized cell sub-masters}\\
+When this check box is checked, output saved to disk files will
+include sub-master cells.  Ordinarily, sub-master cells are not
+included, as they will be re-created when the file is read.  However,
+when exporting to a system that does not support the pcells in use,
+the sub-masters must be written if the file is to have any value. 
+With the sub-masters present, the cells/instances will look like
+normal cell placements.
+
+This applies when writing all output, {\bf except} when using the {\cb
+Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
+equivalent text accelerators and including the prompts when exiting
+the program.  It is also ignored when using the {\vt Save} script
+function.
+
+%\ifoa
+{\Xic} native pcells are only supported in {\Xic}.  OpenAccess-based
+pcells might be supported by other systems, that is certainly the
+intent of the Ciranova PyCells.  Even if another system supports the
+OpenAccess PyCells, it may not have the logic to rebuild the pcells
+coming from a GDSII or other file source.  In that case one will
+probably have to ship the OpenAccess library files.
+%\fi
+
+The {\et StripForExport} variable and the equivalent check box will
+have the same effect when set.
+
+The {\et PCellKeepSubMasters} variable tracks the state of this check
+box.
+
+\item{\cb Include standard via cell sub-masters}\\
+When checked, standard via cell sub-masters are included in the output
+file.  This will be required when sending output to another system, as
+this implementation is specific to {\Xic}.
+%\ifoa
+An exception may be systems that share an OpenAccess database with
+{\Xic}.  If the cells are written to the OpenAccess database, the
+standard vias should translate properly, and be recognized by other
+tools (e.g., Virtuoso) that share the database.
+%\fi
+
+This applies when writing all output, {\bf except} when using the {\cb
+Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
+equivalent text accelerators and including the prompts when exiting
+the program.  It is also ignored when using the {\vt Save} script
+function.
+
+The {\et StripForExport} variable and the equivalent check box will
+have the same effect when set.
+
+The {\et ViaKeepSubMasters} variable tracks the state of this check
+box.
+
+\item{\cb Consider ALL cells in current symbol table for output}\\
+When checked, all cells in the current symbol table, not just the
+hierarchy of the current cell, will be output as if they were part of
+the hierarchy.  The usual filtering of library and sub-master cells is
+retained.  The resulting file may have multiple top-level cells.
+
+\item{\cb Don't flatten standard vias, keep as instance at top level}\\
+This mode may apply when flattening a physical cell hierarchy.  When
+set, instances of standard vias are retained as such, rather than
+being written as geometry.  This check box tracks the state of the
+{\et NoFlattenStdVias} variable.
+
+\item{\cb Don't flatten pcells, keep as instance at top level}\\
+This mode may apply when flattening a physical cell hierarchy.  When
+set, instances of parameterized cells (pcells) are retained as such,
+rather than being written as geometry.  This check box tracks the
+state of the {\et NoFlattenPCells} variable.
+
+\item{\cb Ignore labels in subcells when flattening}\\
+When flattening a cell hierarchy, if this check box is checked labels
+found in subcells are ignored, meaning not reparented to the top
+level.  Pre-existing labels at the top level are not affected.  This
+is intended to prevent net name labels from subcells conflicting with
+net name labels defined at higher hierarchy levels.  The check box
+state tracks the {\et NoFlattenLabels} variable.
+
+\item{\cb Keep bad output (for debugging)}\\
+When generating an archive file and an error occurs, the archive file
+will normally be deleted.  However, if this box is checked.  the
+output file will be given a ``{\vt .BAD}'' extension and retained. 
+This file should be considered corrupt, but may be useful for
+diagnostics.  This tracks the {\et KeepBadArchive} variable.
+\end{description}
+
+\subsection{The Write File Page, Exporting Design Data}
+
+The {\cb Write File} page is used to initiate writing of a design data
+file to disk.  A number of options are available when writing a file
+with this panel.  Unlike the settings described above, these settings
+apply only to files created with this panel.
 
 The currently selected tab at the top of the panel specifies the
 output format to use.  Details of the format selections are described
@@ -1089,13 +1230,14 @@ mechanism, in which case the directory containing the files need not
 be in the search path.
 \end{description}
 
-The remaining controls are described below.
+The following controls are found in the {\cb Write File} page.
 
 \begin{description}
 \item{\cb Cell Name Mapping}\\
 This group of controls manages the cell name aliasing feature.  This
 does not apply to native cell file output.
 
+\item{\cb Windowing and Flattening}\\
 A subset of the windowing operations is available.  From this panel,
 windowing is only available when flattening.
 
@@ -1105,134 +1247,15 @@ factor to be applied during the write operation can be entered.
 Values of 0.001 through 1000.0 are acceptable.  This will apply to
 output initiated from this panel only.
 
-\item{\cb Don't convert invisible layers}\\
-\index{Don't convert invisible layers button}
-\index{conversion, file format!layer suppression}
-There are separate check boxes that apply to physical and electrical
-modes.  When active, only layers that are currently visible, as
-selected with button 2 in the layer table, will be written when
-writing output using this panel.  This is the method by which certain
-layers can be eliminated from generated output.  When this button
-button is not active, all {\Xic} layers will be written.
-
-This feature can also be enabled by setting the variable {\et
-SkipInvisible} with the {\cb !set} command.
-
-\item{\cb Strip For Export}\\
-\index{StripForExport button}
-\index{exporting designs!Strip For Export}
-\index{compatibility!Strip For Export}
-When the {\cb Strip For Export} button is active, converted output
-will contain physical data only, and will contain no {\Xic}
-extensions.  Further, the {\cb Strip For Export} check box implicitly
-enables the same functionality as {\cb Include Library Cells} (see
-below), so that the file will not contain unresolved library cell
-references.  Additionally, parameterized cell and standard via
-sub-masters will be included in output, as if the corresponding check
-boxes were also checked.  The {\cb Strip For Export} box should be
-checked when creating a file for use in generating photomasks.  Note
-that the electrical information can never be recovered from a stripped
-file.
-
-Within {\Xic}, archive file representations consist of two sequential
-records in each file.  The first record is the physical information,
-and the second record contains the electrical information.  These
-files should be compatible with other CAD systems, as these files are
-generally expected to have only one record, and consequently the
-electrical information may be ignored.  However, one should not count
-on this.  When the {\cb Strip For Export} button is active, {\Xic}
-will convert only the physical information when explicitly (i.e.,
-using the operations from the {\cb Export Control} panel, and not
-the {\cb Save} and {\cb Save As} buttons) converting to an archive
-format.  The {\cb Strip For Export} setting also applies to the {\vt
-ToArchive}, script function.  This creates a file which should be an
-absolutely conventional physical layout file.
-
-This mode can also be enabled by setting the boolean variable {\et
-StripForExport} with the {\cb !set} command.  The variable tracks the
-state of the check box.
-
-\item{\cb Include Library Cells}\\
-When checked, cells with the LIBRARY flag set are written to the
-output file.  Ordinarily, these cells are expected to be resolved
-through the library mechanism and are not written to the output file.
-
-This tracks the state of the {\et WriteAllCells} variable.
-
-\item{\cb Include parameterized cell sub-masters}\\
-When this check box is checked, output saved to disk files will
-include sub-master cells.  Ordinarily, sub-master cells are not
-included, as they will be re-created when the file is read.  However,
-when exporting to a system that does not support the pcells in use,
-the sub-masters must be written if the file is to have any value. 
-With the sub-masters present, the cells/instances will look like
-normal cell placements.
-
-This applies when writing all output, {\bf except} when using the {\cb
-Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
-equivalent text accelerators and including the prompts when exiting
-the program.  It is also ignored when using the {\vt Save} script
-function.
-
-%\ifoa
-{\Xic} native pcells are only supported in {\Xic}.  OpenAccess-based
-pcells might be supported by other systems, that is certainly the
-intent of the Ciranova PyCells.  Even if another system supports the
-OpenAccess PyCells, it may not have the logic to rebuild the pcells
-coming from a GDSII or other file source.  In that case one will
-probably have to ship the OpenAccess library files.
-%\fi
-
-The {\et StripForExport} variable and the equivalent check box will
-have the same effect when set.
-
-The {\et PCellKeepSubMasters} variable tracks the state of this check
-box.
-
-\item{\cb Include standard via cell sub-masters}\\
-When checked, standard via cell sub-masters are included in the output
-file.  This will be required when sending output to another system, as
-this implementation is specific to {\Xic}.
-%\ifoa
-An exception may be systems that share an OpenAccess database with
-{\Xic}.  If the cells are written to the OpenAccess database, the
-standard vias should translate properly, and be recognized by other
-tools (e.g., Virtuoso) that share the database.
-%\fi
-
-This applies when writing all output, {\bf except} when using the {\cb
-Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
-equivalent text accelerators and including the prompts when exiting
-the program.  It is also ignored when using the {\vt Save} script
-function.
-
-The {\et StripForExport} variable and the equivalent check box will
-have the same effect when set.
-
-The {\et ViaKeepSubMasters} variable tracks the state of this check
-box.
-
-\item{\cb Consider ALL cells in current symbol table for output}\\
-When checked, all cells in the current symbol table, not just the
-hierarchy of the current cell, will be output as if they were part of
-the hierarchy.  The usual filtering of library and sub-master cells is
-retained.  The resulting file may have multiple top-level cells.
-\end{description}
-
+\item{Write File}\\
 The write is actually initiated with the {\cb Write File} button.  The
-name of the output file will be prompted for on the prompt line.  The
-{\cb Dismiss} button retires the panel.
+name of the output file will be prompted for on the prompt line.
 
 Cell files can also be written to disk using the {\cb Save} and {\cb
 Save As} commands in the {\cb File Menu}.  However, if scaling or
 other options available in this panel are required, the file must be
 generated from this panel.
-
-When generating an archive file and an error occurs.  the archive file
-will normally be deleted.  However, if the variable {\et
-KeepBadArchive} is set (with the {\cb !set} command) the output file
-will be given a ``{\vt .BAD}'' extension and retained.  This file
-should be considered corrupt, but may be useful for diagnostics.
+\end{description}
 
 
 % -----------------------------------------------------------------------------
@@ -1340,7 +1363,7 @@ property string as the various controls are changed.
 
 
 % -----------------------------------------------------------------------------
-% xic:imprt 030416
+% xic:imprt 020918
 \section{The {\cb Import Cell Data} Button: {\cb Import Control} Panel}
 \index{Import Cell Data button}
 \label{cvimport}
@@ -1361,7 +1384,6 @@ the {\cb File Menu}, as well as through use of the {\cb Read File}
 page of this panel.
 
 \begin{description}
-
 \item{\cb PCell evaluation:  Don't eval native}\\
 Setting this check box will prevent evaluation of native pcells when
 an instance is found while reading file input.  If an archive file
@@ -1505,27 +1527,6 @@ cells at any time with the {\cb !empties} command.
 This mode can also be enabled by setting the boolean variable {\et
 NoCheckEmpties} with the {\cb !set} command.
 
-\item{\cb Skip reading text labels from physical archives}\\
-When set, text labels will not be read from a layout file when reading
-physical-mode data.  It is not generally advisable to use this, as
-text labels, though not physical objects, should be assumed to be
-present for a purpose.  However, this check box gives the user the
-flexibility to strip these out.
-
-Unlike other controls in this panel, this mode applies not only when
-reading a layout file into the database, but also when reading a file
-during translation, such as with the {\cb Format Conversion} panel.
-
-In {\Xic}, text labels are included when the bounding box of a cell is
-computed.  If a text label actually determines the boundary of a cell,
-the bounding box of the cell may report differently from other tools. 
-The effective size of a text label is not well defined, and other
-tools will probably make different assumptions about font size, etc.,
-or may not include text labels in bounding box computations.
-
-The state of this check box tracks the status of the {\et
-NoReadLabels} variable.
-
 \item{\cb Map all unmapped GDSII datatypes to same Xic layer}\\
 This setting affects only the creation of new layers when a GDSII or
 OASIS file is read into the database.  The default behavior is to
@@ -1572,6 +1573,43 @@ zeros that have a corresponding layer table entry.
 
 The {\et CifLayerMode} variable corresponds to this set of options,
 where its value of 0--2 corresponds to the three choices.
+
+\item{\cb Don't flatten standard vias, keep as instance at top level}\\
+This mode may apply when flattening a physical cell hierarchy.  When
+set, instances of standard vias are retained as such, rather than
+being written as geometry.  This check box tracks the state of the
+{\et NoFlattenStdVias} variable.
+
+\item{\cb Don't flatten pcells, keep as instance at top level}\\
+This mode may apply when flattening a physical cell hierarchy.  When
+set, instances of parameterized cells (pcells) are retained as such,
+rather than being written as geometry.  This check box tracks the
+state of the {\et NoFlattenPCells} variable.
+
+\item{\cb Ignore labels in subcells when flattening}\\
+When flattening a cell hierarchy, if this check box is checked labels
+found in subcells are ignored, meaning not placed in the current cell. 
+Labels defined in the current cell are not affected.  This is intended
+to prevent net name labels from subcells conflicting with net name
+labels defined at higher hierarchy levels.  The check box state tracks
+the {\et NoFlattenLabels} variable.
+
+\item{\cb Skip reading text labels from physical archives}\\
+When set, text labels will not be read from a layout file when reading
+physical-mode data.  It is not generally advisable to use this, as
+text labels, though not physical objects, should be assumed to be
+present for a purpose.  However, this check box gives the user the
+flexibility to strip these out.
+
+In {\Xic}, text labels are included when the bounding box of a cell is
+computed.  If a text label actually determines the boundary of a cell,
+the bounding box of the cell may report differently from other tools. 
+The effective size of a text label is not well defined, and other
+tools will probably make different assumptions about font size, etc.,
+or may not include text labels in bounding box computations.
+
+The state of this check box tracks the status of the {\et
+NoReadLabels} variable.
 \end{description}
 
 \subsection{The {\cb Read File} Page}
@@ -1634,9 +1672,16 @@ This applies only when reading archive input files, and not native
 cell files.  The prefix/suffix modifications are applied only in input
 initiated from this panel or script functions.
 
+\item{\cb Layer Modification}\\
 The layer change module allows layer filtering and/or mapping to be
 applied during the read operation.  This applies when reading physical
 data only.
+
+\item{\cb Windowing and Flattening}\\
+Windowing is available only when flattening.  When flattening, all
+information read from a file is mapped intto the top-level cell in
+memory.  Users should realize that flat representation can require
+lots of memory.
 
 \item{\cb Conversion Scale Factor}\\
 The {\cb Conversion Scale Factor} provides an entry area where a scale
@@ -1644,6 +1689,7 @@ factor to be applied during reading can be entered.  Values of 0.001
 through 1000.0 are acceptable.  This will apply to input initiated
 from this panel only.
 
+\item{\cb Read File}\\
 The {\cb Read File} button will prompt the user for a file to read
 into {\Xic}, in the manner of the {\cb Open} command.  However for
 archive files scaling, layer filtering, etc.  may be applied to the
@@ -1755,7 +1801,7 @@ that using post-filtering only.
 
 
 % -----------------------------------------------------------------------------
-% xic:convt 022916
+% xic:convt 022418
 \section{The {\cb Format Conversion} Button: {\cb Format Conversion} Panel}
 \index{Format Conversion button}
 \index{Format Conversion}
@@ -1772,6 +1818,8 @@ flattening while translating.
 
 Conversions can also be performed by reading in a hierarchy and using
 the explicit output conversion in the {\cb Export Control} panel.
+
+\subsection{File Format Selection}
 
 A drop-down menu at the top of the panel selects one of four
 types of input:
@@ -1901,18 +1949,154 @@ of output format tabs, in particular if other than {\cb Layout File}
 is selected, the available tabs are {\cb GDSII}, {\cb OASIS}, {\cb
 CIF}, {\cb CGX}.
 
+Below the output format selection tabs, there are two tabs which alter
+the lower half of the panel.  The {\cb Setup} page provides some
+format-independent settings.  The {\cb Convert File} page provides the
+button to actually start the process.
+
+\subsection{The Setup Page}
+
+This page contains a number of check boxes which apply during format
+conversion.  These options are described below.
+
+\begin{description}
+\item{\cb Strip For Export}\\
+When the {\cb Strip For Export} button is active, converted output
+will contain physical data only, and all masters, and will contain no
+{\Xic} extensions.  The {\cb Strip For Export} box should be checked
+when creating an export file for use in generating photomasks.  Note
+that the electrical information can never be recovered from a stripped
+file.  The check box tracks the state of the {\et StripForExport}
+variable.
+
+This mode can also be enabled by setting the boolean variable {\et
+StripForExport} with the {\cb !set} command.  The variable tracks the
+state of the check box.
+
+\item{\cb Include library cell masters}\\
+If the input file references library cells (which have the LIBRARY
+flag set) whose masters are not found in the file, then these masters
+are not written to output unless this box is checked.  With the box
+not checked, the output file will require the referenced library be
+preesent and open when the file is read into {\Xic} (the same
+requirement as the input file).  With the box checked, the masters are
+written to the output file, which will therefor not need the library.
+
+This tracks the state of the {\et KeepLibMasters} variable.
+
+\item{\cb Include parameterized cell sub-masters}\\
+When this check box is checked, output saved to disk files will
+include sub-master cells.  Ordinarily, sub-master cells are not
+included, as they will be re-created when the file is read.  However,
+when exporting to a system that does not support the pcells in use,
+the sub-masters must be written if the file is to have any value. 
+With the sub-masters present, the cells/instances will look like
+normal cell placements.
+
+This applies when writing all output, {\bf except} when using the {\cb
+Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
+equivalent text accelerators and including the prompts when exiting
+the program.  It is also ignored when using the {\vt Save} script
+function.
+
+%\ifoa
+{\Xic} native pcells are only supported in {\Xic}.  OpenAccess-based
+pcells might be supported by other systems, that is certainly the
+intent of the Ciranova PyCells.  Even if another system supports the
+OpenAccess PyCells, it may not have the logic to rebuild the pcells
+coming from a GDSII or other file source.  In that case one will
+probably have to ship the OpenAccess library files.
+%\fi
+
+The {\et StripForExport} variable and the equivalent check box will
+have the same effect when set.
+
+The {\et PCellKeepSubMasters} variable tracks the state of this check
+box.
+
+\item{\cb Include standard via cell sub-masters}\\
+When checked, standard via cell sub-masters are included in the output
+file.  This will be required when sending output to another system, as
+this implementation is specific to {\Xic}.
+%\ifoa
+An exception may be systems that share an OpenAccess database with
+{\Xic}.  If the cells are written to the OpenAccess database, the
+standard vias should translate properly, and be recognized by other
+tools (e.g., Virtuoso) that share the database.
+%\fi
+
+This applies when writing all output, {\bf except} when using the {\cb
+Save} and {\cb Save As} buttons in the {\cb File Menu}, and the
+equivalent text accelerators and including the prompts when exiting
+the program.  It is also ignored when using the {\vt Save} script
+function.
+
+The {\et StripForExport} variable and the equivalent check box will
+have the same effect when set.
+
+The {\et ViaKeepSubMasters} variable tracks the state of this check
+box.
+
+\item{\cb Don't flatten standard vias, keep as instance at top level}\\
+This mode may apply when flattening a physical cell hierarchy.  When
+set, instances of standard vias are retained as such, rather than
+being written as geometry.  This check box tracks the state of the
+{\et NoFlattenStdVias} variable.
+
+\item{\cb Don't flatten pcells, keep as instance at top level}\\
+This mode may apply when flattening a physical cell hierarchy.  When
+set, instances of parameterized cells (pcells) are retained as such,
+rather than being written as geometry.  This check box tracks the
+state of the {\et NoFlattenPCells} variable.
+
+\item{\cb Ignore labels in subcells when flattening}\\
+When flattening a cell hierarchy, if this check box is checked labels
+found in subcells are ignored, meaning not reparented to the top
+level.  Pre-existing labels at the top level are not affected.  This
+is intended to prevent net name labels from subcells conflicting with
+net name labels defined at higher hierarchy levels.  The check box
+state tracks the {\et NoFlattenLabels} variable.
+
+\item{\cb Skip reading text labels from physical archives}\\
+When set, text labels will not be read from a layout file when reading
+physical-mode data.  It is not generally advisable to use this, as
+text labels, though not physical objects, should be assumed to be
+present for a purpose.  However, this check box gives the user the
+flexibility to strip these out.  This check box tracks the status of
+the {\et NoReadLabels} variable.
+
+In {\Xic}, text labels are included when the bounding box of a cell is
+computed.  If a text label actually determines the boundary of a cell,
+the bounding box of the cell may report differently from other tools. 
+The effective size of a text label is not well defined, and other
+tools will probably make different assumptions about font size, etc.,
+or may not include text labels in bounding box computations.
+
+\item{\cb Keep bad output (for debugging)}\\
+When generating an archive file and an error occurs.  the archive file
+will normally be deleted.  However, if this box is checked, the output
+file will be given a ``{\vt .BAD}'' extension and retained.  This file
+should be considered corrupt, but may be useful for diagnostics.  This
+tracks the state of the {\et KeepBadArchive} variable.
+\end{description}
+
+\subsection{The Convert File Page}
+
+\begin{description}
+\item{\cb Layer Modification}\\
 The layer change module allows layer filtering and/or mapping to be
 applied during the conversion operation.
 
+\item{\cb Cell Name Mapping}\\
 The {\cb Cell Name Mapping} group of controls manages the cell
 name aliasing feature.
 
+\item{\cb Windowing and Flattening}\\
 The windowing and flattening group can be used to set up area
-filtering or hierarchy flattening.
-
-These may not all be available for every input/output format
-permutation.  For example, the windowing operations are not available
-when the input format is {\cb Native Cell Directory}.
+filtering or hierarchy flattening.  These may not all be available for
+every input/output format permutation.  For example, the windowing
+operations are not available when the input format is {\cb Native Cell
+Directory}.
 
 If windowing, flattening, or empty cell filtering is set, only
 physical data are converted, i.e., there will be no electrical data in
@@ -1952,6 +2136,18 @@ from output if the empty cell filtering option is set.  This will add
 some computational overhead, and in most cases empty cells are
 ``harmless''.
 
+\item{\cb Conversion Scale Factor}\\
+For input file types that support scaling, the conversion scale factor
+entry area will be active.  A scale factor of .001 -- 1000.0 can be
+entered in this area, and will be applied during the translation. 
+When scaling, only the physical (not electrical) data are scaled.
+
+\item{\cb Convert}\\
+The translation is initiated with the {\cb Convert} button.  The user
+will be prompted for the name of the input file (or directory for {\cb
+Native Cell Directory}, and then the name of the output file, or
+directory for native files.
+
 When the input source is a CHD or saved CHD file, when the user is
 prompted for the CHD name or file name, the user can supply an
 optional second argument.  This is the name of a cell in the CHD
@@ -1971,22 +2167,7 @@ the first cell in the file that is not used as a subcell by another
 cell defined in the file.  Of course, if the input format choice is a
 CHD, and the CHD is configured with a top-level cell, that cell will
 be used.
-
-For input file types that support scaling, the conversion scale factor
-entry area will be active.  A scale factor of .001 -- 1000.0 can be
-entered in this area, and will be applied during the translation. 
-When scaling, only the physical (not electrical) data are scaled.
-
-The translation is initiated with the {\cb Convert} button.  The user
-will be prompted for the name of the input file (or directory for {\cb
-Native Cell Directory}, and then the name of the output file, or
-directory for native files.
-
-When generating an archive file and an error occurs.  the archive file
-will normally be deleted.  However, if the variable {\et
-KeepBadArchive} is set (with the {\cb !set} command) the output file
-will be given a ``{\vt .BAD}'' extension and retained.  This file
-should be considered corrupt, but may be useful for diagnostics.
+\end{description}
 
 
 % -----------------------------------------------------------------------------

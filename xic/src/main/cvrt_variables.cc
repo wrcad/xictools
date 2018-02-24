@@ -87,9 +87,11 @@ namespace {
     }
 
     void
-    postpc(const char*)
+    postfl(const char*)
     {
+        Cvt()->PopUpImport(0, MODE_UPD, 0, 0);
         Cvt()->PopUpExport(0, MODE_UPD, 0, 0);
+        Cvt()->PopUpConvert(0, MODE_UPD, 0, 0, 0);
     }
 }
 
@@ -136,7 +138,7 @@ namespace {
     evPCellKeepSubMasters(const char*, bool set)
     {
         FIO()->SetKeepPCellSubMasters(set);
-        CDvdb()->registerPostFunc(postpc);
+        CDvdb()->registerPostFunc(postset);
         return (true);
     }
 
@@ -167,7 +169,7 @@ namespace {
     evViaKeepSubMasters(const char*, bool set)
     {
         FIO()->SetKeepViaSubMasters(set);
-        CDvdb()->registerPostFunc(postpc);
+        CDvdb()->registerPostFunc(postset);
         return (true);
     }
 
@@ -276,6 +278,46 @@ namespace {
         FIO()->SetNoStrictCellnames(set);
         return (true);
     }
+
+    bool
+    evNoFlattenStdVias(const char*, bool set)
+    {
+        FIO()->SetNoFlattenStdVias(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
+
+    bool
+    evNoFlattenPCells(const char*, bool set)
+    {
+        FIO()->SetNoFlattenPCells(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
+
+    bool
+    evNoFlattenLabels(const char*, bool set)
+    {
+        FIO()->SetNoFlattenLabels(set);
+        CDvdb()->registerPostFunc(postfl);
+        return (true);
+    }
+
+    bool
+    evNoReadLabels(const char*, bool set)
+    {
+        FIO()->SetNoReadLabels(set);
+        CDvdb()->registerPostFunc(postset);
+        return (true);
+    }
+
+    bool
+    evKeepBadArchive(const char*, bool set)
+    {
+        FIO()->SetKeepBadArchive(set);
+        CDvdb()->registerPostFunc(postset);
+        return (true);
+    }
 }
 
 
@@ -357,14 +399,6 @@ namespace {
     evNoCheckEmpties(const char*, bool set)
     {
         FIO()->SetNoCheckEmpties(set);
-        CDvdb()->registerPostFunc(postset);
-        return (true);
-    }
-
-    bool
-    evNoReadLabels(const char*, bool set)
-    {
-        FIO()->SetNoReadLabels(set);
         CDvdb()->registerPostFunc(postset);
         return (true);
     }
@@ -574,9 +608,9 @@ namespace {
     }
 
     bool
-    evWriteAllCells(const char*, bool set)
+    evKeepLibMasters(const char*, bool set)
     {
-        FIO()->SetWriteAllCells(set);
+        FIO()->SetKeepLibMasters(set);
         CDvdb()->registerPostFunc(postset);
         return (true);
     }
@@ -592,14 +626,6 @@ namespace {
             if (*vstring != 'e' && *vstring != 'E')
                 FIO()->SetSkipInvisiblePhys(true);
         }
-        CDvdb()->registerPostFunc(postset);
-        return (true);
-    }
-
-    bool
-    evKeepBadArchive(const char*, bool set)
-    {
-        FIO()->SetKeepBadArchive(set);
         CDvdb()->registerPostFunc(postset);
         return (true);
     }
@@ -948,6 +974,11 @@ cConvert::setupVariables()
     vsetup(VA_UnknownGdsLayerBase,      S,  evUnknownGdsLayerBase);
     vsetup(VA_UnknownGdsDatatype,       S,  evUnknownGdsDatatype);
     vsetup(VA_NoStrictCellnames,        B,  evNoStrictCellNames);
+    vsetup(VA_NoFlattenStdVias,         B,  evNoFlattenStdVias);
+    vsetup(VA_NoFlattenPCells,          B,  evNoFlattenPCells);
+    vsetup(VA_NoFlattenLabels,          B,  evNoFlattenLabels);
+    vsetup(VA_NoReadLabels,             B,  evNoReadLabels);
+    vsetup(VA_KeepBadArchive,           B,  evKeepBadArchive);
 
     // Conversion - Import and Conversion Commands
     vsetup(VA_ChdLoadTopOnly,           B,  ev_update);
@@ -959,7 +990,6 @@ cConvert::setupVariables()
     vsetup(VA_NoOverwriteElec,          B,  evNoOverwriteElec);
     vsetup(VA_NoOverwriteLibCells,      B,  evNoOverwriteLibCells);
     vsetup(VA_NoCheckEmpties,           B,  evNoCheckEmpties);
-    vsetup(VA_NoReadLabels,             B,  evNoReadLabels);
     vsetup(VA_MergeInput,               B,  evMergeInput);
     vsetup(VA_NoPolyCheck,              B,  evNoPolyCheck);
     vsetup(VA_DupCheckMode,             S,  evDupCheckMode);
@@ -982,9 +1012,9 @@ cConvert::setupVariables()
 
     // Conversion - Export Commands
     vsetup(VA_StripForExport,           0,  evStripForExport);
-    vsetup(VA_WriteAllCells,            B,  evWriteAllCells);
+    vsetup(VA_KeepLibMasters,           B,  evKeepLibMasters);
+    vsetup("WriteAllCells",             B,  evKeepLibMasters);  // Back compat.
     vsetup(VA_SkipInvisible,            S,  evSkipInvisible);
-    vsetup(VA_KeepBadArchive,           B,  evKeepBadArchive);
     vsetup(VA_NoCompressContext,        B,  evNoCompressContext);
     vsetup(VA_RefCellAutoRename,        B,  evRefCellAutoRename);
     vsetup(VA_UseCellTab,               B,  evUseCellTab);

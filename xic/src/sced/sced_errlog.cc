@@ -83,7 +83,8 @@ cScedErrLog::start_logging(CDcellName cellname)
     if (el_level == 0)
         el_errcnt = 0;
     el_level++;
-    open_files();
+    if (el_level == 1)
+        open_files();
     if (el_logfp)
         PL()->TeePrompt(el_logfp);
 }

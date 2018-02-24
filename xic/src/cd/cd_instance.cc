@@ -176,6 +176,23 @@ cCD::GetNameCache(const CDs *parent)
 // End of cCD functions.
 
 
+// Destruction, called from RTelem destructor.
+//
+void
+CDc::cleanup()
+{
+    unlinkFromMaster(false);
+    if (cMaster && !cMaster->hasUnlinked() && !cMaster->hasInstances()) {
+        // This is the last of the linking objects.
+        cMaster->unlink();  // unlink from parent
+        if (cMaster->celldesc())
+            cMaster->unlinkRef();
+        delete cMaster;
+        cMaster = 0;
+    }
+}
+
+
 // Initialize a CallDesc.  Note that the CallDesc CDs is never a
 // symbolic representation cell.
 //

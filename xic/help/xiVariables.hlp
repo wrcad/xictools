@@ -249,7 +249,7 @@ xiVariables.hlp
     <tr><td><b>GridNoCoarseOnly</b></td><td>Don't show coarse grid without fine grid</td></tr>
     <tr><td><b>GridThreshold</b></td><td>Minimum visible grid spacing pixels</td></tr>
 
-!! 101212
+!! 020918
     <tr><th colspan=2><a href="!set:cvgen">Convert Menu - General</a></th></tr>
     <tr><td><b>ChdFailOnUnresolved</b></td><td>Halt CHD operation if unresolved cell</td></tr>
     <tr><td><b>ChdCmpThreshold</b></td><td>Set CHD compression block size threshold</td></tr>
@@ -258,8 +258,13 @@ xiVariables.hlp
     <tr><td><b>UnknownGdsLayerBase</b></td><td>Base number for generated GDSII layers</td></tr>
     <tr><td><b>UnknownGdsDatatype</b></td><td>Datatype for generated GDSII layers</td></tr>
     <tr><td><b>NoStrictCellnames</b></td><td>Allow white space in cell names</td></tr>
+    <tr><td><b>NoFlattenStdVias</b></td><td>Keep standard via instances when flattening</td></tr>
+    <tr><td><b>NoFlattenPCells</b></td><td>Keep parameterized cell instances when flattening</td></tr>
+    <tr><td><b>NoFlattenLabels</b></td><td>Ignore labels in subcells when flattening</td></tr>
+    <tr><td><b>NoReadLabels</b></td><td>Ignore text labels when reading physical cell data</td></tr>
+    <tr><td><b>KeepBadArchive</b></td><td>Don't delete failed conversion output archive file</td></tr>
 
-!! 030416
+!! 020918
     <tr><th colspan=2><a href="!set:cvimport">Convert Menu - Input and ASCII Output</a></th></tr>
     <tr><td><b>ChdLoadTopOnly</b></td><td>Load requested cell from CHD only, create references</td></tr>
     <tr><td><b>ChdRandomGzip</b></td><td>Use random-access table for gzipped files</td></tr>
@@ -271,7 +276,6 @@ xiVariables.hlp
     <tr><td><b>NoOverwriteElec</b></td><td>Don't overwrite elec memory cells when reading</td></tr>
     <tr><td><b>NoOverwriteLibCells</b></td><td>Don't overwrite library cells when reading</td></tr>
     <tr><td><b>NoCheckEmpties</b></td><td>Skip checking for empty cells while reading</td></tr>
-    <tr><td><b>NoReadLabels</b></td><td>Ignore text labels when reading physical cell data</td></tr>
     <tr><td><b>NoPolyCheck</b></td><td>Skip polygon reentrancy tests when reading</td></tr>
     <tr><td><b>DupCheckMode</b></td><td>Check for duplicate items when reading</td></tr>
 !!IFDEF OpenAccess
@@ -293,12 +297,11 @@ xiVariables.hlp
     <tr><td><b>OasPrintNoWrap</b></td><td>Use one line per record in OASIS ASCII output</td></tr>
     <tr><td><b>OasPrintOffset</b></td><td>Add file offsets to OASIS ASCII output</td></tr>
 
-!! 022213
+!! 020918
     <tr><th colspan=2><a href="!set:cvexport">Convert Menu - Output</a></th></tr>
     <tr><td><b>StripForExport</b></td><td>Strip all format extensions from output file</td></tr>
-    <tr><td><b>WriteAllCells</b></td><td>Write library cells when crating archive file</td></tr>
+    <tr><td><b>KeepLibMasters</b></td><td>Write library cells when crating archive file</td></tr>
     <tr><td><b>SkipInvisible</b></td><td>Do not write invisible layers to output</td></tr>
-    <tr><td><b>KeepBadArchive</b></td><td>Don't delete failed conversion output archive file</td></tr>
     <tr><td><b>NoCompressContext</b></td><td>Don't compress instance lists in CHD</td></tr>
     <tr><td><b>RefCellAutoRename</b></td><td>Use auto-rename when writing reference cell data</td></tr>
     <tr><td><b>UseCellTab</b></td><td>Enable use of the cell override table in CHD access</td></tr>
@@ -3453,8 +3456,13 @@ Attributes Menu Commands
 !!REDIRECT UnknownGdsLayerBase  !set:cvgen#UnknownGdsLayerBase
 !!REDIRECT UnknownGdsDatatype   !set:cvgen#UnknownGdsDatatype
 !!REDIRECT NoStrictCellnames    !set:cvgen#NoStrictCellnames
+!!REDIRECT NoFlattenStdVias     !set:cvgen#NoFlattenStdVias
+!!REDIRECT NoFlattenPCells      !set:cvgen#NoFlattenPCells
+!!REDIRECT NoFlattenLabels      !set:cvgen#NoFlattenLabels
+!!REDIRECT NoReadLabels         !set:cvgen#NoReadLabels
+!!REDIRECT KeepBadArchive       !set:cvgen#KeepBadArchive
 
-!! 061408
+!! 020918
 !!KEYWORD
 !set:cvgen
 !!TITLE
@@ -3569,6 +3577,97 @@ Convert Menu - General
     white space characters to underscores.
     </dl>
 
+!! 020918
+    <a name="NoFlattenStdVias"></a>
+    <dl>
+    <dt><b>NoFlattenStdVias</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, and when flattening a physical cell hierarchy, standard
+    via instances will be retained as such rather than being converted
+    to geometry.  This variable tracks the state of the <b>Don't
+    flatten standard vias, move to top</b> check box in the <a
+    href="xic:flatn"><b>Flatten Hierarchy</b></a> panel, and the
+    <b>Don't flatten standard vias, keep as instances at top level</b>
+    check boxes in the <b>Setup</b> pages of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel, <a
+    href="xic:exprt"><b>Export Control</b></a> panel, and the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel.
+
+    <p>
+    Presently, when the input data source is an <a
+    href="xic:fsaf">archive</a> file, this variable applies only when
+    sub-masters are <b>not</b> contained in the source file, and are
+    therefor created in <i>Xic</i>.
+    </dl>
+
+!! 020918
+    <a name="NoFlattenPCells"></a>
+    <dl>
+    <dt><b>NoFlattenPCells</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, and when flattening a physical cell hierarchy, parameterized
+    cell (pcell) instances will be retained as such rather than being converted
+    to geometry.  This variable tracks the state of the <b>Don't
+    flatten param. cells, move to top</b> check box in the <a
+    href="xic:flatn"><b>Flatten Hierarchy</b></a> panel, and the
+    <b>Don't flatten pcells, keep as instances at top level</b>
+    check boxes in the <b>Setup</b> pages of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel, <a
+    href="xic:exprt"><b>Export Control</b></a> panel, and the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel.
+
+    <p>
+    Presently, when the input data source is an <a
+    href="xic:fsaf">archive</a> file, this variable applies only when
+    sub-masters are <b>not</b> contained in the source file, and are
+    therefor created in <i>Xic</i>.
+    </dl>
+
+!! 020918
+    <a name="NoFlattenLabels"></a>
+    <dl>
+    <dt><b>NoFlattenLabels</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, and when flattening a cell hierarchy (physical or
+    electrical), labels found in subcells are ignored (not copied into
+    the current cell).  Labels found in the current cell are retained. 
+    This is intended to avoid creating conflicting net labels of wire
+    nets from (subnet) labels in subcells.
+    This variable tracks the state of the <b>Ignore labels in
+    subcells</b> check box in the <a href="xic:flatn"><b>Flatten
+    Hierarchy</b></a> panel, and the <b>Ignore labels in subcells</b>
+    check boxes in the <b>Setup</b> pages of the <a
+    href="xic:imprt"><b>Import Control</b></a> panel, <a
+    href="xic:exprt"><b>Export Control</b></a> panel, and the <a
+    href="xic:convt"><b>Format Conversion</b></a> panel.
+    </dl>
+
+!! 022716
+    <a name="NoReadLabels"></a>
+    <dl>
+    <dt><b>NoReadLabels</b><dd>
+    <b>Value:</b> boolean.<br>
+    When this variable is set, text label elements will not be read
+    from archive files in physical mode.  This may improve efficiency
+    if the user is concerned with physical layout data only.  This
+    variable tracks the setting of the <b>Skip reading text labels
+    from physical archives</b> check box in the <b>Setup</b> page of
+    the <a href="xic:imprt"><b>Import Control</b></a> panel from the
+    <b>Convert Menu</b>.
+    </dl>
+
+!! 061408
+    <a name="KeepBadArchive"></a>
+    <dl>
+    <dt><b>KeepBadArchive</b><dd>
+    <b>Value:</b> boolean.<br>
+    When generating an archive file and an error occurs, the archive
+    file will normally be deleted.  However, if this variable is set,
+    the output file will be given a "<tt>.BAD</tt>" extension and
+    retained.  This file should be considered corrupt, but may be
+    useful for diagnostics.
+    </dl>
+
 !!SEEALSO
 !set:variables
 
@@ -3582,7 +3681,6 @@ Convert Menu - General
 !!REDIRECT NoOverwriteElec      !set:cvimport#NoOverwriteElec
 !!REDIRECT NoOverwriteLibCells  !set:cvimport#NoOverwriteLibCells
 !!REDIRECT NoCheckEmpties       !set:cvimport#NoCheckEmpties
-!!REDIRECT NoReadLabels         !set:cvimport#NoReadLabels
 !!REDIRECT NoPolyCheck          !set:cvimport#NoPolyCheck
 !!REDIRECT DupCheckMode         !set:cvimport#DupCheckMode
 !!REDIRECT EvalOaPCells         !set:cvimport#EvalOaPCells
@@ -3602,7 +3700,7 @@ Convert Menu - General
 !!REDIRECT OasPrintNoWrap       !set:cvimport#OasPrintNoWrap
 !!REDIRECT OasPrintOffset       !set:cvimport#OasPrintOffset
 
-!! 030416
+!! 020918
 !!KEYWORD
 !set:cvimport
 !!TITLE
@@ -3899,20 +3997,6 @@ Convert Menu - Input and ASCII Output
     the setting of the <b>Skip testing for empty cells</b> check box
     in the <b>Setup</b> page of the <a href="xic:imprt"><b>Import
     Control</b></a> panel from the <b>Convert Menu</b>.
-    </dl>
-
-!! 022716
-    <a name="NoReadLabels"></a>
-    <dl>
-    <dt><b>NoReadLabels</b><dd>
-    <b>Value:</b> boolean.<br>
-    When this variable is set, text label elements will not be read
-    from archive files in physical mode.  This may improve efficiency
-    if the user is concerned with physical layout data only.  This
-    variable tracks the setting of the <b>Skip reading text labels
-    from physical archives</b> check box in the <b>Setup</b> page of
-    the <a href="xic:imprt"><b>Import Control</b></a> panel from the
-    <b>Convert Menu</b>.
     </dl>
 
 !! 022716
@@ -4261,9 +4345,8 @@ Convert Menu - Input and ASCII Output
 !set:variables
 
 !!REDIRECT StripForExport       !set:cvexport#StripForExport
-!!REDIRECT WriteAllCells        !set:cvexport#WriteAllCells
+!!REDIRECT KeepLibMasters       !set:cvexport#KeepLibMasters
 !!REDIRECT SkipInvisible        !set:cvexport#SkipInvisible
-!!REDIRECT KeepBadArchive       !set:cvexport#KeepBadArchive
 !!REDIRECT NoCompressContext    !set:cvexport#NoCompressContext
 !!REDIRECT RefCellAutoRename    !set:cvexport#RefCellAutoRename
 !!REDIRECT UseCellTab           !set:cvexport#UseCellTab
@@ -4292,7 +4375,7 @@ Convert Menu - Input and ASCII Output
 !!REDIRECT OasWriteUseFastSort  !set:cvexport#OasWriteUseFastSort
 !!REDIRECT OasWritePrptyMask    !set:cvexport#OasWritePrptyMask
 
-!! 022916
+!! 020918
 !!KEYWORD
 !set:cvexport
 !!TITLE
@@ -4317,7 +4400,7 @@ Convert Menu - Output
     <tr><td><b>StripForExport</b></td>
       <td><a href="xic:convt"><b>Format Conversion</b></a> and
       <a href="xic:exprt"><b>Export Control</b></a></td> <td>4</td></tr>
-    <tr><td><b>WriteAllCells</b></td>
+    <tr><td><b>KeepLibMasters</b></td>
       <td><a href="xic:exprt"><b>Export Control</b></a></td> <td>3</td></tr>
     <tr><td><b>SkipInvisible</b></td>
       <td><b>Export Control</b></td> <td>3</td></tr>
@@ -4407,7 +4490,7 @@ Convert Menu - Output
     </ol>
 
     <p>
-!! 022916
+!! 022418
     <a name="StripForExport"></a>
     <dl>
     <dt><b>StripForExport</b><dd>
@@ -4416,13 +4499,14 @@ Convert Menu - Output
     href="xic:exprt"><b>Export Control</b></a> and <a
     href="xic:convt"><b>Format Conversion</b></a> panels will contain
     the basic syntax elements with no extensions.  Thus, they contain
-    physical data only.  The <b>StripForExport</b> variable actually
-    applies when writing all output, <b>except</b> when using the <a
+    physical data only.  The <b>StripForExport</b> variable applies
+    when writing all output, <b>except</b> when using the <a
     href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
     As</b></a> buttons in the <b>File Menu</b>, and the equivalent
     text accelerators and including the prompts when exiting the
     program.  It is also ignored when using the <a
-    href="Save"><tt>Save</tt></a> script function.
+    href="Save"><tt>Save</tt></a> script function, but applies in the
+    <a href="ToArchove"><tt>ToArchive</tt></a> script function.
 
     <p>
     Within <i>Xic</i>, <a href="xic:fsaf">archive file</a>
@@ -4432,22 +4516,19 @@ Convert Menu - Output
     compatible with other CAD systems, as these files are generally
     expected to have only one record, and consequently the electrical
     information may be ignored.  However, one should not count on
-    this.  When this variable is set, <i>Xic</i> will write only the
-    physical information when explicitly (i.e., using the operations
-    from the <b>Export Control</b> panel, and not the <a
-    href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
-    As</b></a> buttons) writing to an archive format.  This produces a
-    file which should be an absolutely conventional physical layout
-    file.
+    this.  When in effect, only the physical record is output.  This
+    produces a file which should be an absolutely conventional
+    physical layout file.
 
     <p>
     Additionally, when <b>StripForExport</b> is set, and when writing
     out a hierarchy from the main database, all cells in the hierarchy
-    will be written, whether or not the <b>WriteAllCells</b> variable
-    is set.  Thus, the file will not contain unsatisfied cell
-    references, as (physical) library cells will be included. 
-    Further, all referenced pcell and standard via sub-masters will be
-    written to output, similar to the case when the <a
+    will be written, whether or not the <a
+    href="KeepLibMasters"><b>KeepLibMasters</b></a> variable is set. 
+    Thus, the file will not contain unsatisfied cell references, as
+    (physical) library cells will be included.  Further, all
+    referenced pcell and standard via sub-masters will be written to
+    output, similar to the case when the <a
     href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a> and <a
     href="ViaKeepSubMasters"><b>ViaKeepSubMasters</b></a> variables
     are set.
@@ -4462,9 +4543,9 @@ Convert Menu - Output
     </dl>
 
 !! 022816
-    <a name="WriteAllCells"></a>
+    <a name="KeepLibMasters"></a>
     <dl>
-    <dt><b>WriteAllCells</b><dd>
+    <dt><b>KeepLibMasters</b><dd>
     <b>Value:</b> boolean.<br>
     When writing an archive file from a hierarchy in the main
     database, cells in the hierarchy that were opened through the <a
@@ -4507,18 +4588,6 @@ Convert Menu - Output
     and electrical invisible layers will be skipped.  This variable
     tracks the state of the <b>Don't convert invisible layers</b>
     check boxes in the <b>Export Control</b> panel.
-    </dl>
-
-!! 061408
-    <a name="KeepBadArchive"></a>
-    <dl>
-    <dt><b>KeepBadArchive</b><dd>
-    <b>Value:</b> boolean.<br>
-    When generating an archive file and an error occurs, the archive
-    file will normally be deleted.  However, if this variable is set,
-    the output file will be given a "<tt>.BAD</tt>" extension and
-    retained.  This file should be considered corrupt, but may be
-    useful for diagnostics.
     </dl>
 
 !! 022916

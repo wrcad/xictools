@@ -222,7 +222,7 @@ cFIO::ResolveLibSymref(symref_t *p, cCHD **chdptr, bool *is_devlib)
         FIOaliasTab *atab = new FIOaliasTab(false, false);
         atab->add_lib_alias(libref, lib);
         atab->set_auto_rename(IsAutoRename());
-        // Create with ful info counts for empty cell pre-filtering.
+        // Create with full info counts for empty cell pre-filtering.
         chd = NewCHD(fullpath, ft, Electrical, atab, cvINFOplpc);
         delete atab;
         delete [] fullpath;

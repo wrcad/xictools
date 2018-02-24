@@ -1386,22 +1386,61 @@ sDevComp::is_parallel(const sEinstList *el)
 
 
 namespace {
-    int gate_node(const CDc *cd, unsigned int vix, int gate_index)
+    // Based in the given terminal trm, return the terminal from the
+    // same scalar device with index passed in indx.
+    //
+    CDcterm *find_term(CDcterm *trm, unsigned int indx)
     {
-        CDp_cnode *pc0 = (CDp_cnode*)cd->prpty(P_NODE);
+        if (!trm)
+            return (0);
+        CDc *cd = trm->instance();
+        if (!cd)
+            return (0);
+        int vix = trm->inst_index();
+        CDp_range *pr = 0;
+        if (vix > 0) {
+            pr = (CDp_range*)cd->prpty(P_RANGE);
+            if (!pr)
+                return (0);
+        }
+        CDp_cnode *pn = (CDp_cnode*)cd->prpty(P_NODE);
+        for ( ; pn; pn = pn->next()) {
+            CDp_cnode *pc;
+            if (vix > 0)
+                pc = pr->node(0, vix, pn->index());
+            else
+                pc = pn;
+            if (pc->index() == indx)
+                return (pc->inst_terminal());
+        }
+        return (0);
+    }
+
+    // Return the node number of the terminal with the given index,
+    // based on the device of the terminal passed.
+    //
+    int find_node(CDcterm *trm, unsigned int indx)
+    {
+        if (!trm)
+            return (-1);
+        CDc *cd = trm->instance();
+        if (!cd)
+            return (-1);
+        int vix = trm->inst_index();
         CDp_range *pr = 0;
         if (vix > 0) {
             pr = (CDp_range*)cd->prpty(P_RANGE);
             if (!pr)
                 return (-1);
         }
-        for ( ; pc0; pc0 = pc0->next()) {
+        CDp_cnode *pn = (CDp_cnode*)cd->prpty(P_NODE);
+        for ( ; pn; pn = pn->next()) {
             CDp_cnode *pc;
             if (vix > 0)
-                pc = pr->node(0, vix, pc0->index());
+                pc = pr->node(0, vix, pn->index());
             else
-                pc = pc0;
-            if (pc->index() == (unsigned int)gate_index)
+                pc = pn;
+            if (pc->index() == indx)
                 return (pc->enode());
         }
         return (-1);
@@ -1410,20 +1449,20 @@ namespace {
 
 
 // Return true if the two devices are permutable totem-pole ends. 
-// These would be the end devices connected to the gate output, of
-// parallel-connected totem poles.  The parallel-connected totem poles
-// are permutable.  This function detects this case in device
-// identification, avoiding time-consuming symmetry trials.
-//
-// This function can make a huge difference, reducing association time
-// by a factor of 30 for the global_row_decoder test cell.
+// These would be the end devices connected to the gate output or
+// power net, of identical parallel-connected totem poles.  The
+// parallel-connected totem poles are permutable.  This function
+// detects this case in device identification, avoiding time-consuming
+// symmetry trials.
 //
 bool
 sDevComp::is_mos_tpeq(cGroupDesc *gd, const sEinstList *el)
 {
     if (!gd || !el || !dc_edev || !dc_pdev)
         return (false);
-    if (el->cdesc()->masterCell() != dc_edev->cdesc()->masterCell())
+    CDc *cd1 = dc_edev->cdesc();
+    CDc *cd2 = el->cdesc();
+    if (cd1->masterCell() != cd2->masterCell())
         return (false);
     if (!dc_pdev->desc()->is_mos())
         return (false);
@@ -1448,19 +1487,14 @@ sDevComp::is_mos_tpeq(cGroupDesc *gd, const sEinstList *el)
         }
     }
 
-    // Avoid malloc with a fixed-size array, sane mosfets have four
-    // nodes but allow some insanity.
-    if (dc_nodes_sz > 6)
-        return (false);
-    CDp_cnode *nodes[6];
     int ng2 = -1;
     int ns2 = -1;
     int nd2 = -1;
-    CDp_cnode *pc0 = (CDp_cnode*)el->cdesc()->prpty(P_NODE);
+    CDp_cnode *pc0 = (CDp_cnode*)cd2->prpty(P_NODE);
     int vix = el->cdesc_index();
     CDp_range *pr = 0;
     if (vix > 0) {
-        pr = (CDp_range*)el->cdesc()->prpty(P_RANGE);
+        pr = (CDp_range*)cd2->prpty(P_RANGE);
         if (!pr)
             return (false);
     }
@@ -1486,14 +1520,13 @@ sDevComp::is_mos_tpeq(cGroupDesc *gd, const sEinstList *el)
             ns2 = pc->enode();
             break;
         }
-        nodes[pc->index()] = pc;
     }
 
     // Gate groups the same, and associated?
     if (ng1 != ng2 || gd->group_of_node(ng1) < 0)
         return (false);
 
-    // One common permutable group connection which is not global?
+    // One common permutable group connection?
     int n1, n2, nc;
     if (nd1 == nd2) {
         n1 = ns1;
@@ -1518,85 +1551,95 @@ sDevComp::is_mos_tpeq(cGroupDesc *gd, const sEinstList *el)
     else
         return (false);
 
-    // Group associated and not global?
+    // Group associated?
     int gc = gd->group_of_node(nc);
     sGroup *g = gd->group_for(gc);
-    if (!g || g->global())
+    if (!g)
         return (false);
 
     // Test separately for parallel devices.
     if (n1 == n2)
         return (false);
 
-    // The other permutable contact should connect to exactly one
-    // permutable contact of a similar device, so the termlists should
-    // have exactly two entries.
+    // Walk the totem poles to the end.  The end is indicated when we
+    // reach a node that has other than exactly two connections, the
+    // second one being a permutable contact to the same type of
+    // device, with the gate connected to the same group.
 
-    CDcont *t1 = gd->conts_of_node(n1);
-    if (!t1 || !t1->next() || t1->next()->next())
-        return (false);
-    if (!t1->term()->instance() || !t1->next()->term()->instance())
-        return (false);
+    for (;;) {
+        // The other permutable contact should connect to exactly one
+        // permutable contact of a similar device, so the termlists should
+        // have exactly two entries.
 
-    CDcterm *trm1;
-    CDp_cnode *pc1 = t1->term()->node_prpty();
-    CDp_cnode *pc2 = t1->next()->term()->node_prpty();
-    if (pc1->index() >= dc_nodes_sz || pc2->index() >= dc_nodes_sz)
-        return (false);
-    if (pc1 == dc_nodes[pc1->index()])
-        trm1 = t1->next()->term();
-    else if (pc2 == dc_nodes[pc2->index()])
-        trm1 = t1->term();
-    else
-        return (false);
+        CDcont *t1 = gd->conts_of_node(n1);
+        if (!t1 || !t1->next() || t1->next()->next())
+            break;
+        if (!t1->term()->instance() || !t1->next()->term()->instance())
+            return (false);
+        CDcont *t2 = gd->conts_of_node(n2);
+        if (!t2 || !t2->next() || t2->next()->next())
+            break;
+        if (!t2->term()->instance() || !t2->next()->term()->instance())
+            return (false);
 
-    // Check that device is similar, and contact is permutable.
-    if (trm1->instance()->masterCell() != dc_edev->cdesc()->masterCell())
-        return (false);
-    if (trm1->node_prpty()->index() != (unsigned int)dc_pix1 &&
-            trm1->node_prpty()->index() != (unsigned int)dc_pix2)
-        return (false);
+        // Find the connected device terms.
+        CDcterm *trm1;
+        if (t1->term()->instance() == cd1)
+            trm1 = t1->next()->term();
+        else if (t1->next()->term()->instance() == cd1)
+            trm1 = t1->term();
+        else
+            return (false);
+        CDcterm *trm2;
+        if (t2->term()->instance() == cd2)
+            trm2 = t2->next()->term();
+        else if (t2->next()->term()->instance() == cd2)
+            trm2 = t2->term();
+        else
+            return (false);
 
-    CDcont *t2 = gd->conts_of_node(n2);
-    if (!t2 || !t2->next() || t2->next()->next())
-        return (false);
-    if (!t2->term()->instance() || !t2->next()->term()->instance())
-        return (false);
+        // Check that the connected device is similar.
+        if (trm1->instance()->masterCell() != cd1->masterCell())
+            return (false);
+        if (trm2->instance()->masterCell() != cd2->masterCell())
+            return (false);
 
-    CDcterm *trm2;
-    pc1 = t2->term()->node_prpty();
-    pc2 = t2->next()->term()->node_prpty();
-    if (pc1->index() >= dc_nodes_sz || pc2->index() >= dc_nodes_sz)
-        return (false);
-    if (pc1 == nodes[pc1->index()])
-        trm2 = t2->next()->term();
-    else if (pc2 == nodes[pc2->index()])
-        trm2 = t2->term();
-    else
-        return (false);
+        // Make sure the contact is permutable, set the terms to the
+        // corresponding other permute node of the devices.
+        CDcterm *trm1n;
+        if (trm1->node_prpty()->index() == (unsigned int)dc_pix1)
+            trm1n = find_term(trm1, dc_pix2);
+        else if (trm1->node_prpty()->index() == (unsigned int)dc_pix2)
+            trm1n = find_term(trm1, dc_pix1);
+        else
+            return (false);
+        CDcterm *trm2n;
+        if (trm2->node_prpty()->index() == (unsigned int)dc_pix1)
+            trm2n = find_term(trm2, dc_pix2);
+        else if (trm2->node_prpty()->index() != (unsigned int)dc_pix2)
+            trm2n = find_term(trm2, dc_pix1);
+        else
+            return (false);
+        if (!trm1n || !trm2n)
+            return (false);
 
-    // Check that device is similar, and contact is permutable.
-    if (trm2->instance()->masterCell() != dc_edev->cdesc()->masterCell())
-        return (false);
-    if (trm2->node_prpty()->index() != (unsigned int)dc_pix1 &&
-            trm2->node_prpty()->index() != (unsigned int)dc_pix2)
-        return (false);
+        // Find and compare the gate nodes of the connected devices.
+        ng1 = find_node(trm1, dc_gix);
+        if (ng1 < 0)
+            return (false);
+        ng2 = find_node(trm2, dc_gix);
+        if (ng2 < 0)
+            return (false);
+        if (ng1 != ng2)
+            return (false);
 
-    // Find the gate nodes of the connected devices.  If the nodes are
-    // the same, we're golden.
-
-    CDc *cd1 = trm1->instance();
-    int vix1 = trm1->inst_index();
-    ng1 = gate_node(cd1, vix1, dc_gix);
-    if (ng1 < 0)
-        return (false);
-
-    CDc *cd2 = trm2->instance();
-    int vix2 = trm2->inst_index();
-    ng2 = gate_node(cd2, vix2, dc_gix);
-    if (ng2 < 0)
-        return (false);
-
-    return (ng1 == ng2);
+        n1 = trm1n->node_prpty()->enode();
+        n2 = trm2n->node_prpty()->enode();
+        cd1 = trm1->instance();
+        cd2 = trm2->instance();
+    }
+    // Found end of at least one totem pole.  If the groups are the
+    // same, the totem poles are identical and can be permuted.
+    return (n1 == n2);
 }
 

@@ -2,10 +2,10 @@ BASE = ../../../xt_base
 
 APPNAME = gtk2_bundle_x11
 
-VERSION = 4.0.1
+VERSION = 4.3.1
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-$(ARCH).pkg
 PKGNAME = xictools.$(APPNAME)
-PKGDIR = ../../pkgfiles
+PKGDIR = $(BASE)/packages/pkgfiles
 OSNAME = `$(BASE)/info.sh osname`
 ARCH = `$(BASE)/info.sh arch`
 pd = `pwd`

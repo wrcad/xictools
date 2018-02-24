@@ -213,7 +213,7 @@ follow.
 \et GridNoCoarseOnly & Don't show coarse grid without fine grid\\ \hline
 \et GridThreshold & Minimum visible grid spacing pixels\\ \hline
 
-% 101212
+% 020918
 \multicolumn{2}{|c|}{\kb Convert Menu -- General}\\ \hline
 \et ChdFailOnUnresolved & Halt CHD operation if unresolved cell\\ \hline
 \et ChdCmpThreshold & Set CHD compression block size threshold\\ \hline
@@ -223,8 +223,14 @@ follow.
 \et UnknownGdsLayerBase & Base number for generated GDSII layers\\ \hline
 \et UnknownGdsDatatype & Datatype for generated GDSII layers\\ \hline
 \et NoStrictCellnames & Allow white space in cell names\\ \hline
+\et NoFlattenStdVias & Keep standard via instances when flattening\\ \hline
+\et NoFlattenPCells & Keep parameterized cell instances when flattening\\ \hline
+\et NoFlattenLabels & Ignore labels in subcells when flattening\\ \hline
+\et NoReadLabels & Ignore text labels when reading physical cell data\\ \hline
+\et KeepBadArchive & Don't delete failed conversion output archive file\\
+  \hline
 
-% 030416
+% 020918
 \multicolumn{2}{|c|}{\kb Convert Menu -- Input and ASCII Output}\\ \hline
 \et ChdLoadTopOnly & Load requested cell from CHD only, create reference\\
   \hline
@@ -237,7 +243,6 @@ follow.
 \et NoOverwriteElec & Don't overwrite elec memory cells when reading\\ \hline
 \et NoOverwriteLibCells & Don't overwrite library cells when reading\\ \hline
 \et NoCheckEmpties & Skip checking for empty cells while reading\\ \hline
-\et NoReadLabels & Ignore text labels when reading physical cell data\\ \hline
 \et NoPolyCheck & Skip polygon reentrancy tests when reading\\ \hline
 \et DupCheckMode & Check for duplicate items when reading\\ \hline
 %\ifoa
@@ -259,13 +264,11 @@ follow.
 \et OasPrintNoWrap & Use one line per record in OASIS ASCII output\\ \hline
 \et OasPrintOffset & Add file offsets to OASIS ASCII output\\ \hline
 
-% 022213
+% 020918
 \multicolumn{2}{|c|}{\kb Convert Menu -- Output}\\ \hline
 \et StripForExport & Strip all format extensions from output file\\ \hline
-\et WriteAllCells & Write library cells when creating archive file\\ \hline
+\et KeepLibMasters & Write library cells when creating archive file\\ \hline
 \et SkipInvisible & Do not write invisible layers to output\\ \hline
-\et KeepBadArchive & Don't delete failed conversion output archive file\\
-  \hline
 \et NoCompressContext & Don't compress instance lists in archive context\\
   \hline
 \et RefCellAutoRename & Use auto-rename when writing reference cell data\\
@@ -2692,7 +2695,7 @@ Attributes Menu}.
 
 
 % -----------------------------------------------------------------------------
-% !set:cvgen 061408
+% !set:cvgen 020918
 \section{Convert Menu --- General}
 
 Below are general variables relating to data input/output and format
@@ -2781,11 +2784,80 @@ releases prior to 3.0.5) of accepting white space in cell names will
 be enabled.  Otherwise, white space is not allowed in cell names, and
 if such cells are found in an archive being read, aliasing will be
 employed to map white space characters to underscores.
+
+% 020918
+\index{NoFlattenStdVias variable}
+\item{\et NoFlattenStdVias}\\
+{\bf Value:} boolean.\\
+When set, and when flattening a physical cell hierarchy, standard via
+instances will be retained as such rather than being converted to
+geometry.  This variable tracks the state of the {\cb Don't flatten
+standard vias, move to top} check box in the {\cb Flatten Hierarchy}
+panel, and the {\cb Don't flatten standard vias, keep as instances at
+top level} check boxes in the {\cb Setup} pages of the {\cb Import
+Control} panel, {\cb Export Control} panel, and the {\cb Format
+Conversion} panel.
+
+Presently, when the input data source is an archive file, this
+variable applies only when sub-masters are {\bf not} contained in the
+source file, and are therefor created in {\Xic}.
+
+% 020918
+\index{NoFlattenPCells variable}
+\item{\et NoFlattenPCells}\\
+{\bf Value:} boolean.\\
+When set, and when flattening a physical cell hierarchy, parameterized
+cell (pcell) instances will be retained as such rather than being
+converted to geometry.  This variable tracks the state of the {\cb
+Don't flatten param.  cells, move to top} check box in the {\cb
+Flatten Hierarchy} panel, and the {\cb Don't flatten pcells, keep as
+instances at top level} check boxes in the {\cb Setup} pages of the
+{\cb Import Control} panel, {\cb Export Control} panel, and the {\cb
+Format Conversion} panel.
+
+Presently, when the input data source is an archive file, this
+variable applies only when sub-masters are <b>not</b> contained in the
+source file, and are therefor created in {\Xic}.
+
+% 020918
+\index{NoFlattenLabels variable}
+\item{\et NoFlattenLabels}\\
+{\bf Value:} boolean.\\
+When set, and when flattening a cell hierarchy (physical or
+electrical), labels found in subcells are ignored (not copied into the
+current cell).  Labels found in the current cell are retained.  This
+is intended to avoid creating conflicting net labels of wire nets from
+(subnet) labels in subcells.  This variable tracks the state of the
+{\cb Ignore labels in subcells} check box in the {\cb Flatten
+Hierarchy} panel, and the {\cb Ignore labels in subcells} check boxes
+in the {\cb Setup} pages of the {\cb Import Control} panel, {\cb
+Export Control} panel, and the {\cb Format Conversion} panel.
+
+% 022716
+\index{NoReadLabels variable}
+\item{\et NoReadLabels}\\
+{\bf Value:} boolean.\\
+When this variable is set, text label elements will not be read from
+archive files in physical mode.  This may improve efficiency if the
+user is concerned with physical layout data only.  This variable
+tracks the setting of the {\cb Skip reading text labels from physical
+archives} check box in the {\cb Setup} page of the {\cb Import
+Control} panel from the {\cb Convert Menu}.
+
+% 061408
+\index{KeepBadArchive variable}
+\item{\et KeepBadArchive}\\
+{\bf Value:} boolean.\\
+When generating an archive file and an error occurs, the archive file
+will normally be deleted.  However, if this variable is set, the
+output file will be given a ``{\vt .BAD}'' extension and retained. 
+This file should be considered corrupt, but may be useful for
+diagnostics.
 \end{description}
 
 
 % -----------------------------------------------------------------------------
-% !set:cvimport 030416
+% !set:cvimport 020918
 \section{Convert Menu --- Input and ASCII Output}
 
 The {\cb !set} variables below affect the format conversion when
@@ -3012,17 +3084,6 @@ check for empty cells at any time with the {\cb !empties} command.
 This variable tracks the setting of the {\cb Skip testing for empty
 cells} check box in the {\cb Setup} page of the {\cb Import Control}
 panel from the {\cb Convert Menu}.
-
-% 022716
-\index{NoReadLabels variable}
-\item{\et NoReadLabels}\\
-{\bf Value:} boolean.\\
-When this variable is set, text label elements will not be read from
-archive files in physical mode.  This may improve efficiency if the
-user is concerned with physical layout data only.  This variable
-tracks the setting of the {\cb Skip reading text labels from physical
-archives} check box in the {\cb Setup} page of the {\cb Import
-Control} panel from the {\cb Convert Menu}.
 
 % 022716
 \index{NoPolyCheck variable}
@@ -3289,7 +3350,7 @@ output format page of the {\cb Format Conversion} panel.
 
 
 % -----------------------------------------------------------------------------
-% xic:cvexport 022916
+% xic:cvexport 020918
 \section{Convert Menu --- Output}
 
 The {\cb !set} variables below affect the format conversion when
@@ -3306,7 +3367,7 @@ of the variables.
 \bf Variable          & \bf Set From              & \bf Notes\\ \hline
 \et StripForExport & {\cb Format Conversion} and {\cb Export Control} & 4\\
   \hline
-\et WriteAllCells     & \cb Export Control        & 3\\ \hline
+\et KeepLibMasters    & \cb Export Control        & 3\\ \hline
 \et SkipInvisible     & \cb Export Control        & 3\\ \hline
 \et KeepBadArchive    &                           & 1\\ \hline
 \et NoCompressContext &                           & 5\\ \hline
@@ -3364,18 +3425,19 @@ data.}
 \end{enumerate}
 
 \begin{description}
-% 022916
+% 022418
 \index{StripForExport variable}
 \item{\et StripForExport}\\
 {\bf Value:} boolean.\\
 When this variable is set, files produced through the {\cb Export
 Control} and {\cb Format Conversion} panels will contain the basic
 syntax elements with no extensions.  Thus, they contain physical data
-only.  The {\et StripForExport} variable actually applies when writing
-all output, {\bf except} when using the {\cb Save} and {\cb Save As}
+only.  The {\et StripForExport} variable applies when writing all
+output, {\bf except} when using the {\cb Save} and {\cb Save As}
 buttons in the {\cb File Menu}, and the equivalent text accelerators
 and including the prompts when exiting the program.  It is also
-ignored when using the {\vt Save} script function.
+ignored when using the {\vt Save} script function, but applies in the
+{\vt ToArchive} script function.
 
 Within {\Xic}, archive file representations consist of two sequential
 records in each file.  The first record is the physical information,
@@ -3383,15 +3445,13 @@ and the second record contains the electrical information.  These
 files should be compatible with other CAD systems, as these files are
 generally expected to have only one record, and consequently the
 electrical information may be ignored.  However, one should not count
-on this.  When this variable is set, {\Xic} will write only the
-physical information when explicitly (i.e., using the operations from
-the {\cb Export Control} panel, and not the {\cb Save} and {\cb Save
-As} buttons) writing to an archive format.  This produces a file which
-should be an absolutely conventional physical layout file.
+on this.  When in effect, only the physical record is output.  This
+produces a file which should be an absolutely conventional physical
+layout file.
 
 Additionally, when {\et StripForExport} is set, and when writing out a
 hierarchy from the main database, all cells in the hierarchy will be
-written, whether or not the {\et WriteAllCells} variable is set. 
+written, whether or not the {\et KeepLibMasters} variable is set. 
 Thus, the file will not contain unsatisfied cell references, as
 (physical) library cells will be included.  Further, all referenced
 pcell and standard via sub-masters will be written to output, similar
@@ -3406,8 +3466,8 @@ generating photomasks.  Note that the electrical information can never
 be recovered from a stripped file.
 
 % 022816
-\index{WriteAllCells variable}
-\item{\et WriteAllCells}\\
+\index{KeepLibMasters variable}
+\item{\et KeepLibMasters}\\
 {\bf Value:} boolean.\\
 When writing an archive file from a hierarchy in the main database,
 cells in the hierarchy that were opened through the library mechanism
@@ -3442,16 +3502,6 @@ will be skipped.  If set to anything else, including the empty string,
 both physical and electrical invisible layers will be skipped.  This
 variable tracks the state of the {\cb Don't convert invisible layers}
 check boxes in the {\cb Export Control} panel.
-
-% 061408
-\index{KeepBadArchive variable}
-\item{\et KeepBadArchive}\\
-{\bf Value:} boolean.\\
-When generating an archive file and an error occurs, the archive file
-will normally be deleted.  However, if this variable is set, the
-output file will be given a ``{\vt .BAD}'' extension and retained. 
-This file should be considered corrupt, but may be useful for
-diagnostics.
 
 % 022916
 \index{NoCompressContext variable}

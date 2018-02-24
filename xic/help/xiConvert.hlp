@@ -905,47 +905,53 @@ techfile
 xic:attrmenu
 xic:cvrtmenu
 
-!! 022916
+!! 022418
 !!KEYWORD
 xic:exprt
 !!TITLE
 Export Cell Data
 !!HTML
-    <img src="screenshots/cvout.png" align=right>
+    <b>Keyword</b>: <tt>exprt</tt>
 
+    <p>
     <table border=0>
     <tr><td valign=top><b>jump to</b></td> <td>
     <a href="xic:exprt#gdsii"><b>GDSII Settings</b></a><br>
     <a href="xic:exprt#oasis"><b>OASIS Settings</b></a><br>
     <a href="xic:exprt#cif"><b>CIF Settings</b></a><br>
-    <a href="xic:exprt#cgx"><b>CGX Settings</b></a>
-    <a href="xic:exprt#write"><b>Exporting Data</b></a>
+    <a href="xic:exprt#cgx"><b>CGX Settings</b></a><br>
+    <a href="xic:exprt#setup"><b>Setup page</b></a><br>
+    <a href="xic:exprt#write"><b>Write File page, exporting data</b></a>
     </td></tr></table>
 
     <p>
-    <b>Keyword</b>: <tt>exprt</tt>
-
-    <p>
+    <img src="screenshots/cvout1.png" align=right>
     The <b>Export Cell Data</b> button in the <b>Convert Menu</b>
-    brings up the <b>Export Control</b> panel.  The panel serves two
-    purposes.  First, it allows setting of various parameters and
-    modes which are used globally when writing layout files.  Second,
-    it provides a button with which export of cell data to a disk file
-    can be initiated.
+    brings up the <b>Export Control</b> panel.  The top of the panel
+    contains tabbed pages for <b>GDSII</b>, <b>OASIS</b>, <b>CIF</b>,
+    <b>CGX</b>, and <b>Xic cell files</b>.  This selects the current
+    output format, and exposes controls and settings particular to the
+    format.  The lower part of the panel has two pages.  The
+    <b>Setup</b> page allows setting of various format-independent
+    parameters and modes which are used globally when writing layout
+    files.  The <b>Write File</b> page provides a button with which
+    export of cell data to a disk file can be initiated, as well as
+    settings which apply during the write operation.
 
     <p>
-    The top of the panel contains tabbed pages for <b>GDSII</b>,
-    <b>OASIS</b>, <b>CIF</b>, <b>CGX</b>, and <b>Xic cell files</b>. 
-    Clicking the tab exposes the page containing controls appropriate
-    for the format.  The parameters set with this panel always apply
-    when writing layout files of the types indicated.  In particular,
-    the settings apply when the commands in the <b>File Menu</b> are
-    used to save design data, as well as when the <b>Write File</b>
-    button in this panel is used.
+    Below are descriptions of the controls in the file format pages
+    selected by the upper tabs.  Clicking the tab exposes the page
+    containing controls appropriate for the format.  The parameters
+    set with this panel always apply when writing layout files of the
+    types indicated.  In particular, the settings apply when the
+    commands in the <b>File Menu</b> are used to save design data, as
+    well as when the <b>Write File</b> button in this panel is used.
 
+    <br clear=all>
     <a name="gdsii"></a>
     <h2>GDSII Settings</h2>
 
+    <img src="screenshots/cvout4.png" align=right>
     <dl>
     <dt><b>GDSII version number, polygon/wire vertex limit</b><dd>
     This option menu effectively sets the <a
@@ -1021,7 +1027,7 @@ Export Cell Data
     <a name="oasis"></a>
     <h2>OASIS Settings</h2>
 
-    <img src="screenshots/cvout2.png" align=right>
+    <img src="screenshots/cvout5.png" align=right>
     <dl>
     <dt><b>Advanced</b><dd>
     This button brings up the <a href="xic:oasadv"><b>Advanced OASIS
@@ -1104,7 +1110,7 @@ Export Cell Data
     <a name="cif"></a>
     <h2>CIF Settings</h2>
 
-    <img src="screenshots/cvout3.png" align=right>
+    <img src="screenshots/cvout6.png" align=right>
     <a name="cifoutstyle">
 
     <dl>
@@ -1239,7 +1245,7 @@ Export Cell Data
 
     <a name="cgx"></a>
     <h2>CGX Settings</h2>
-    <img src="screenshots/cvout4.png" align=right>
+    <img src="screenshots/cvout7.png" align=right>
 
     This page contains an <b>Accept but truncate too-long strings</b>
     check box, with purpose and functionality that is identical to
@@ -1250,15 +1256,193 @@ Export Cell Data
     automatically on input, and can be coerced as output by giving
     a "<tt>.gz</tt>" suffix to the file name.
 
+    <br clear=all>
+    <a name=setup></a>
+    <h2>The Setup Page</h2>
+    <img src="screenshots/cvout2.png" align=right>
+
+    The <b>Setup</b> page contains a number of check boxes which control
+    various modes when writing output, as described below.
+
+    <a name="invis">
+    <dl>
+    <dt><b>Don't convert invisible layers</b><dd>
+    There are separate check boxes that apply to physical and
+    electrical modes.  When active, only layers that are currently
+    visible, as selected with <a href="button2">button 2</a> in the <a
+    href="layertab">layer table</a>, will be written when writing
+    output using this panel.  This is the method by which certain
+    layers can be eliminated from generated output.  When this button
+    button is not active, all <i>Xic</i> layers will be written.
+
+    <p>
+    This feature can also be enabled by setting the variable <a
+    href="SkipInvisible"><b>SkipInvisible</b></a> with the <b>!set</b>
+    command.
+    </dl>
+
+    <a name="strip">
+    <dl>
+    <dt><b>Strip For Export</b><dd>
+    When the <b>Strip For Export</b> button is active, converted
+    output will contain physical data only, and will contain no
+    <i>Xic</i> extensions.  Further, the <b>Strip For Export</b> check
+    box implicitly enables the same functionality as <b>Include
+    library cell masters</b> (see below), so that the file will not contain
+    unresolved library cell references.  Additionally, parameterized
+    cell and standard via sub-masters will be included in output, as
+    if the corresponding check boxes were also checked.  The <b>Strip
+    For Export</b> box should be checked when creating a file for use
+    in generating photomasks.  Note that the electrical information
+    can never be recovered from a stripped file.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="StripForExport"><b>StripForExport</b></a> with the
+    <b>!set</b> command.  The variable tracks the state of the check box.
+    </dl>
+
+    <dl>
+    <dt><b>Include library cell masters</b><dd>
+    If the input references library cells (which have the LIBRARY <a
+    href="xic:cells#flags">flag</a> set) whose masters are not found
+    in the file, then these masters are not written to output unless
+    this box is checked.  With the box not checked, the output file
+    will require the referenced library be preesent and open when the
+    file is read into <i>Xic</i> (the same requirement as the input
+    file).  With the box checked, the masters are written to the
+    output file, which will therefor not need the library.
+
+    <p>
+    This tracks the state of the <a
+    href="KeepLibMasters"><b>KeepLibMasters</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Include parameterized cell sub-masters</b><dd>
+    When this check box is checked, output saved to disk files will
+    include <a href="xic:pcells">sub-master</a> cells.  Ordinarily,
+    sub-master cells are not included, as they will be re-created when
+    the file is read.  However, when exporting to a system that does
+    not support the pcells in use, the sub-masters must be written if
+    the file is to have any value.  With the sub-masters present, the
+    cells/instances will look like normal cell placements.
+
+    <p>
+    This applies when writing all output, <b>except</b> when using the
+    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
+    text accelerators and including the prompts when exiting the
+    program.  It is also ignored when using the <a
+    href="Save"><tt>Save</tt></a> script function.
+
+!!IFDEF OpenAccess
+    <p>
+    <i>Xic</i> native pcells are only supported in <i>Xic</i>. 
+    OpenAccess-based pcells might be supported by other systems, that
+    is certainly the intent of the Ciranova PyCells.  Even if another
+    system supports the OpenAccess PyCells, it may not have the logic
+    to rebuild the pcells coming from a GDSII or other file source. 
+    In that case one will probably have to ship the OpenAccess library
+    files.
+!!ENDIF
+
+    <p>
+    The <a href="StripForExport"><b>StripForExport</b></a> variable
+    and the equivalent check box will have the same effect when set.
+
+    <p>
+    The <a href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Include standard via cell sub-masters</b><dd>
+    When checked, <a href="stdvia">standard via</a> cell sub-masters
+    are included in the output file.  This will be required when
+    sending output to another system, as this implementation is
+    specific to <i>Xic</i>.
+!!IFDEF OpenAccess
+    An exception may be systems that share an OpenAccess database
+    with <i>Xic</i>.  If the cells are written to the OpenAccess
+    database, the standard vias should translate properly, and be
+    recognized by other tools (e.g., Virtuoso) that share the
+    database.
+!!ENDIF
+
+    <p>
+    This applies when writing all output, <b>except</b> when using the
+    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
+    text accelerators and including the prompts when exiting the
+    program.  It is also ignored when using the <a
+    href="Save"><tt>Save</tt></a> script function.
+
+    <p>
+    The <a href="StripForExport"><b>StripForExport</b></a> variable
+    and the equivalent check box will have the same effect when set.
+
+    <p>
+    The <a href="ViaKeepSubMasters"><b>ViaKeepSubMasters</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Consider ALL cells in current symbol table for output</b><dd>
+    When checked, all cells in the current <a href="xic:stabs">symbol
+    table</a>, not just the hierarchy of the current cell, will be
+    output as if they were part of the hierarchy.  The usual filtering
+    of library and sub-master cells is retained.  The resulting file
+    may have multiple top-level cells.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten standard vias, keep as instance at top
+    level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy.  When
+    set, instances of standard vias are retained as such, rather than
+    being written as geometry.  This check box tracks the state of the
+    <a href="NoFlattenStdVias"><b>NoFlattenStdVias</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten pcells, keep as instance at top level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy. 
+    When set, instances of parameterized cells (pcells) are retained
+    as such, rather than being written as geometry.  This check box
+    tracks the state of the <a
+    href="NoFlattenPCells"><b>NoFlattenPCells</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Ignore labels in subcells when flattening</b><dd>
+    When flattening a cell hierarchy, if this check box is checked
+    labels found in subcells are ignored, meaning not reparented to
+    the top level.  Pre-existing labels at the top level are not
+    affected.  This is intended to prevent net name labels from
+    subcells conflicting with net name labels defined at higher
+    hierarchy levels.  The check box state tracks the <a
+    href="NoFlattenLabels"><b>NoFlattenLabels</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Keep bad output (for debugging)</b><dd>
+    When generating an archive file and an error occurs, the archive
+    file will normally be deleted.  However, it this box is checked,
+    the output file will be given a "<tt>.BAD</tt>" extension and
+    retained.  This file should be considered corrupt, but may be
+    useful for diagnostics.  This tracks the <a
+    href="KeepBadArchive"><b>KeepBadArchive</b></a> variable.
+    </dl>
 
     <a name="write"></a>
-    <h2>Exporting Design Data</h2>
+    <h2> The Write File Page, Exporting Design Data</h2>
+    <img src="screenshots/cvout3.png" align=right>
 
-    The remainder of the <b>Export Control</b> panel is used to initiate
-    writing of a design data file to disk.  A number of options are
-    available when writing a file with this panel.  Unlike the
-    settings described above, these settings apply only to files
-    created with this panel.
+    The <b>Write File</b> page is used to initiate writing of a design
+    data file to disk.  A number of options are available when writing
+    a file with this panel.  Unlike the settings described above,
+    these settings apply only to files created with this panel.
 
     <p>
     The currently selected tab at the top of the panel specifies the
@@ -1376,7 +1560,8 @@ Export Cell Data
     search path.
     </dl>
 
-    The remaining controls are described below.
+    <p>
+    The following controls are found in the <b>Write File</b> page.
 
     <dl>
     <dt><b>Cell Name Mapping</b><dd>
@@ -1385,10 +1570,12 @@ Export Cell Data
     native cell file output.
     </dl>
 
-    <p>
+    <dl>
+    <dt><b>Windowing and Flattening</b><dd>
     A subset of the <a href="windowing">windowing</a> operations is
     available.  From this panel, windowing is only available when
     flattening.
+    </dl>
 
     <dl>
     <dt><b>Conversion Scale Factor</b><dd>
@@ -1398,157 +1585,11 @@ Export Cell Data
     will apply to output initiated from this panel only.
     </dl>
 
-    <a name="invis">
     <dl>
-    <dt><b>Don't convert invisible layers</b><dd>
-    There are separate check boxes that apply to physical and
-    electrical modes.  When active, only layers that are currently
-    visible, as selected with <a href="button2">button 2</a> in the <a
-    href="layertab">layer table</a>, will be written when writing
-    output using this panel.  This is the method by which certain
-    layers can be eliminated from generated output.  When this button
-    button is not active, all <i>Xic</i> layers will be written.
-
-    <p>
-    This feature can also be enabled by setting the variable <a
-    href="SkipInvisible"><b>SkipInvisible</b></a> with the <b>!set</b>
-    command.
-    </dl>
-
-    <a name="strip">
-    <dl>
-    <dt><b>Strip For Export</b><dd>
-    When the <b>Strip For Export</b> button is active, converted
-    output will contain physical data only, and will contain no
-    <i>Xic</i> extensions.  Further, the <b>Strip For Export</b> check
-    box implicitly enables the same functionality as <b>Include
-    Library Cells</b> (see below), so that the file will not contain
-    unresolved library cell references.  Additionally, parameterized
-    cell and standard via sub-masters will be included in output, as
-    if the corresponding check boxes were also checked.  The <b>Strip
-    For Export</b> box should be checked when creating a file for use
-    in generating photomasks.  Note that the electrical information
-    can never be recovered from a stripped file.
-
-    <p>
-    Within <i>Xic</i>, <a href="xic:fsaf">archive file</a>
-    representations consist of two sequential records in each file. 
-    The first record is the physical information, and the second
-    record contains the electrical information.  These files should be
-    compatible with other CAD systems, as these files are generally
-    expected to have only one record, and consequently the electrical
-    information may be ignored.  However, one should not count on
-    this.  When the <b>Strip For Export</b> button is active,
-    <i>Xic</i> will convert only the physical information when
-    explicitly (i.e., using the operations from the <b>Export
-    Control</b> panel, and not the <a href="xic:sv"><b>Save</b></a>
-    and <a href="xic:save"><b>Save As</b></a> buttons) converting to
-    an <a href="xic:fsaf">archive format</a>.  The <b>Strip For
-    Export</b> setting also applies to the <tt>ToArchive</tt>, script
-    function.  This creates a file which should be an absolutely
-    conventional physical layout file.
-
-    <p>
-    This mode can also be enabled by setting the boolean variable <a
-    href="StripForExport"><b>StripForExport</b></a> with the
-    <b>!set</b> command.  The variable tracks the state of the check box.
-    </dl>
-
-    <dl>
-    <dt><b>Include Library Cells</b><dd>
-    When checked, cells with the LIBRARY <a
-    href="xic:cells#flags">flag</a> set are written to the output
-    file.  Ordinarily, these cells are expected to be resolved through
-    the <a href="xic:libs">library mechanism</a> and are not written
-    to the output file.
-
-    <p>
-    This tracks the state of the <a
-    href="WriteAllCells"><b>WriteAllCells</b></a> variable.
-    </dl>
-
-    <dl>
-    <dt><b>Include parameterized cell sub-masters</b><dd>
-    When this check box is checked, output saved to disk files will
-    include <a href="xic:pcells">sub-master</a> cells.  Ordinarily,
-    sub-master cells are not included, as they will be re-created when
-    the file is read.  However, when exporting to a system that does
-    not support the pcells in use, the sub-masters must be written if
-    the file is to have any value.  With the sub-masters present, the
-    cells/instances will look like normal cell placements.
-
-    <p>
-    This applies when writing all output, <b>except</b> when using the
-    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
-    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
-    text accelerators and including the prompts when exiting the
-    program.  It is also ignored when using the <a
-    href="Save"><tt>Save</tt></a> script function.
-
-!!IFDEF OpenAccess
-    <p>
-    <i>Xic</i> native pcells are only supported in <i>Xic</i>. 
-    OpenAccess-based pcells might be supported by other systems, that
-    is certainly the intent of the Ciranova PyCells.  Even if another
-    system supports the OpenAccess PyCells, it may not have the logic
-    to rebuild the pcells coming from a GDSII or other file source. 
-    In that case one will probably have to ship the OpenAccess library
-    files.
-!!ENDIF
-
-    <p>
-    The <a href="StripForExport"><b>StripForExport</b></a> variable
-    and the equivalent check box will have the same effect when set.
-
-    <p>
-    The <a href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a>
-    variable tracks the state of this check box.
-    </dl>
-
-    <dl>
-    <dt><b>Include standard via cell sub-masters</b><dd>
-    When checked, <a href="stdvia">standard via</a> cell sub-masters
-    are included in the output file.  This will be required when
-    sending output to another system, as this implementation is
-    specific to <i>Xic</i>.
-!!IFDEF OpenAccess
-    An exception may be systems that share an OpenAccess database
-    with <i>Xic</i>.  If the cells are written to the OpenAccess
-    database, the standard vias should translate properly, and be
-    recognized by other tools (e.g., Virtuoso) that share the
-    database.
-!!ENDIF
-
-    <p>
-    This applies when writing all output, <b>except</b> when using the
-    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
-    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
-    text accelerators and including the prompts when exiting the
-    program.  It is also ignored when using the <a
-    href="Save"><tt>Save</tt></a> script function.
-
-    <p>
-    The <a href="StripForExport"><b>StripForExport</b></a> variable
-    and the equivalent check box will have the same effect when set.
-
-    <p>
-    The <a href="ViaKeepSubMasters"><b>ViaKeepSubMasters</b></a>
-    variable tracks the state of this check box.
-    </dl>
-
-    <dl>
-    <dt><b>Consider ALL cells in current symbol table for output</b><dd>
-    When checked, all cells in the current <a href="xic:stabs">symbol
-    table</a>, not just the hierarchy of the current cell, will be
-    output as if they were part of the hierarchy.  The usual filtering
-    of library and sub-master cells is retained.  The resulting file
-    may have multiple top-level cells.
-    </dl>
-
-    <p>
+    <dt><b>Write File</b><dd>
     The write is actually initiated with the <b>Write File</b>
     button.  The name of the output file will be prompted for on the
-    prompt line.  The <b>Dismiss</b> button retires the panel.
+    prompt line.
 
     <p>
     Cell files can also be written to disk using the <a
@@ -1556,14 +1597,7 @@ Export Cell Data
     As</b></a> commands in the <b>File Menu</b>.  However, if scaling
     or other options available in this panel are required, the file
     must be generated from this panel.
-
-    <p>
-    When generating an archive file and an error occurs.  the archive
-    file will normally be deleted.  However, if the variable <a
-    href="KeepBadArchive"><b>KeepBadArchive</b></a> is set (with the
-    <a href="!set"><b>!set</b></a> command) the output file will be
-    given a "<tt>.BAD</tt>" extension and retained.  This file should
-    be considered corrupt, but may be useful for diagnostics.
+    </dl>
 
 !!SEEALSO
 xic:cvrtmenu
@@ -1707,7 +1741,7 @@ Advanced OASIS Export Parameters
     with the <b>!set</b> command without arguments can ge used to
     monitor the property string as the various controls are changed.
 
-!! 030416
+!! 020918
 !!KEYWORD
 xic:imprt
 !!TITLE
@@ -1935,34 +1969,6 @@ Import Control
     </dl>
 
     <dl>
-    <dt><b>Skip reading text labels from physical archives</b><dd> When
-    set, text labels will not be read from a layout file when reading
-    physical-mode data.  It is not generally advisable to use this, as
-    text labels, though not physical objects, should be assumed to be
-    present for a purpose.  However, this check box gives the user the
-    flexibility to strip these out.
-
-    <p>
-    Unlike other controls in this panel, this mode applies not only
-    when reading a layout file into the database, but also when
-    reading a file during translation, such as with the <a
-    href="xic:convt"><b>Format Conversion</b></a> panel.
-
-    <p>
-    In <i>Xic</i>, text labels are included when the bounding box of a
-    cell is computed.  If a text label actually determines the
-    boundary of a cell, the bounding box of the cell may report
-    differently from other tools.  The effective size of a text
-    label is not well defined, and other tools will probably make
-    different assumptions about font size, etc., or may not include
-    text labels in bounding box computations.
-
-    <p>
-    The state of this check box tracks the status of the <a
-    href="NoReadLabels"><b>NoReadLabels</b></a> variable.
-    </dl>
-
-    <dl>
     <dt><b>Map all unmapped GDSII datatypes to same Xic layer</b><dd>
     This setting affects only the creation of new layers when a GDSII
     or OASIS file is read into the database.  The default behavior is
@@ -2019,6 +2025,57 @@ Import Control
     <p>
     The <b>CifLayerMode</b> variable corresponds to this set of
     options, where its value of 0-2 corresponds to the three choices.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten standard vias, keep as instance at top
+    level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy.  When
+    set, instances of standard vias are retained as such, rather than
+    being written as geometry.  This check box tracks the state of the
+    <a href="NoFlattenStdVias"><b>NoFlattenStdVias</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten pcells, keep as instance at top level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy. 
+    When set, instances of parameterized cells (pcells) are retained
+    as such, rather than being written as geometry.  This check box
+    tracks the state of the <a
+    href="NoFlattenPCells"><b>NoFlattenPCells</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Ignore labels in subcells when flattening</b><dd>
+    When flattening a cell hierarchy, if this check box is checked
+    labels found in subcells are ignored, meaning not placed in the
+    current cell.  Labels defined in the current cell are not
+    affected.  This is intended to prevent net name labels from
+    subcells conflicting with net name labels defined at higher
+    hierarchy levels.  The check box state tracks the <a
+    href="NoFlattenLabels"><b>NoFlattenLabels</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Skip reading text labels from physical archives</b><dd> When
+    set, text labels will not be read from a layout file when reading
+    physical-mode data.  It is not generally advisable to use this, as
+    text labels, though not physical objects, should be assumed to be
+    present for a purpose.  However, this check box gives the user the
+    flexibility to strip these out.
+
+    <p>
+    In <i>Xic</i>, text labels are included when the bounding box of a
+    cell is computed.  If a text label actually determines the
+    boundary of a cell, the bounding box of the cell may report
+    differently from other tools.  The effective size of a text
+    label is not well defined, and other tools will probably make
+    different assumptions about font size, etc., or may not include
+    text labels in bounding box computations.
+
+    <p>
+    The state of this check box tracks the status of the <a
+    href="NoReadLabels"><b>NoReadLabels</b></a> variable.
     </dl>
 
     <a name="read"></a>
@@ -2097,10 +2154,20 @@ Import Control
     input initiated from this panel or script functions.
     </dl>
 
-    <p>
+    <dl>
+    <dt><b>Layer Modification</b><dd>
     The <a href="layerchange">layer change module</a> allows layer
     filtering and/or mapping to be applied during the read operation.
     This applies when reading physical data only.
+    </dl>
+
+    <dl>
+    <dt><b>Windowing and Flattening</b><dd>
+    Windowing is available only when flattening.  When flattening, all
+    information read from a file is mapped into the top-level cell in
+    memory.  Users should realize that flat representation can require
+    lots of memory.
+    </dl>
 
     <dl>
     <dt><b>Conversion Scale Factor</b><dd>
@@ -2110,13 +2177,15 @@ Import Control
     initiated from this panel only.
     </dl>
 
-    <p>
+    <dl>
+    <dt><b>Read File</b><dd>
     The <b>Read File</b> button will prompt the user for a file to
     read into <i>Xic</i>, in the manner of the <a
     href="xic:open"><b>Open</b></a> command.  However for <a
     href="xic:fsaf">archive files</a> scaling, layer filtering, etc. 
     may be applied to the cells read from the file through use of this
     panel and not via the <b>Open</b> command.
+    </dl>
 
 !!SEEALSO
 xic:cvrtmenu
@@ -2250,17 +2319,25 @@ Windowing Control
     filtering, enabling both filters can be much faster that using
     post-filtering only.
 
-!! 022916
+!! 022418
 !!KEYWORD
 xic:convt
 !!TITLE
 Format Conversion
 !!HTML
-    <img src="screenshots/convert1.png" align=right>
 
     <b>Keyword</b>: <tt>convt</tt>
 
     <p>
+    <table border=0>
+    <tr><td valign=top><b>jump to</b></td> <td>
+    <a href="xic:convt#format"><b>File Format Selection</b></a><br>
+    <a href="xic:convt#setup"><b>The Setup Page</b></a><br>
+    <a href="xic:convt#convert"><b>The Convert File Page</b></a><br>
+    </td></tr></table>
+
+    <p>
+    <img src="screenshots/convert1.png" align=right>
     The <b>Format Conversion</b> button in the <b>Convert Menu</b>
     brings up the <b>Format Conversion</b> panel, which is a front end
     to a number of direct conversion functions which translate an
@@ -2276,6 +2353,9 @@ Format Conversion
     using the explicit output conversion in the <a
     href="xic:exprt"><b>Export Control</b></a> panel.
 
+    <a name=format></a>
+    <h2>File Format Selection</h2>
+
     <p>
     A drop-down menu at the top of the panel selects one of four
     types of input:
@@ -2284,13 +2364,16 @@ Format Conversion
     The source file is a normal layout file in one of the supported <a
     href="xic:fsaf">archive formats</a>.  The various input file
     formats are recognized automatically.
+    <p>
     <dt><b>Cell Hierarchy Digest Name</b><dd>
     Input will be read through a Cell Hierarchy Digest, as listed in
     the <a href="xic:hier"><b>Cell Hierarchy Digests</b></a> panel.
+    <p>
     <dt><b>Cell Hierarchy Digest File</b><dd>
     Input will be read through a Cell Hierarchy Digest found in a file
     on disk, as was generated from the <b>Save</b> button in the
     <b>Cell Hierarchy Digests</b> panel.
+    <p>
     <dt><b>Native Cell Directory</b><dd>
     Input will consist of native cell files found in a given
     directory.  All cells found in the directory that do not have a
@@ -2342,6 +2425,7 @@ Format Conversion
 
     <dl>
     <dt><b>GDSII</b><dd>
+    <img src="screenshots/convert4.png" align=right>
     The output format is GDSII.  When the <b>Input Source</b> is set
     to <b>Layout File</b>, this page contains an <b>Input File
     Type</b> menu.  This menu contains two choices:  <b>archive</b>
@@ -2362,21 +2446,21 @@ Format Conversion
 
     <dl>
     <dt><b>OASIS</b><dd>
-    <img src="screenshots/convert2.png" align=right>
+    <img src="screenshots/convert5.png" align=right>
     The output format is OASIS.
     <br clear=all>
     </dl>
 
     <dl>
     <dt><b>CIF</b><dd>
-    <img src="screenshots/convert3.png" align=right>
+    <img src="screenshots/convert6.png" align=right>
     The output format is CIF.
     <br clear=all>
     </dl>
 
     <dl>
     <dt><b>CGX</b><dd>
-    <img src="screenshots/convert4.png" align=right>
+    <img src="screenshots/convert7.png" align=right>
     The output format is CGX.
 
     <p>
@@ -2390,7 +2474,7 @@ Format Conversion
 
     <dl>
     <dt><b>XIC Cell Files</b><dd>
-    <img src="screenshots/convert5.png" align=right>
+    <img src="screenshots/convert8.png" align=right>
     The output will be written to a family of native-format cell files.
 
     <p>
@@ -2406,7 +2490,7 @@ Format Conversion
 
     <dl>
     <dt><b>ASCII Text</b><dd>
-    <img src="screenshots/convert6.png" align=right>
+    <img src="screenshots/convert9.png" align=right>
     The output will be converted to an <a href="gdstext">ASCII
     text</a> representation of the input file format, for GDSII,
     OASIS, and CGX input.  This may be useful for debugging
@@ -2445,21 +2529,206 @@ Format Conversion
     <b>GDSII</b>, <b>OASIS</b>, <b>CIF</b>, <b>CGX</b>.
 
     <p>
+    Below the output format selection tabs, there are two tabs which
+    alter the lower half of the panel.  The <b>Setup</b> page provides
+    some format-independent settings.  The <b>Convert File</b> page
+    provides the button to actually start the process.
+
+    <a name="setup"></a>
+    <h2>The Setup Page</h2>
+    <img src="screenshots/convert2.png" align=right>
+
+    This page contains a number of check boxes which apply during
+    format conversion.  These options are described below.
+
+    <dl>
+    <dt><b>Strip For Export</b><dd>
+    When the <b>Strip For Export</b> button is active, converted
+    output will contain physical data only, and will contain no
+    <i>Xic</i> extensions.  Further, the <b>Strip For Export</b> check
+    box implicitly enables the same functionality as <b>Include
+    library cell masters</b> (see below), so that the file will not contain
+    unresolved library cell references.  Additionally, parameterized
+    cell and standard via sub-masters will be included in output, as
+    if the corresponding check boxes were also checked.  The <b>Strip
+    For Export</b> box should be checked when creating a file for use
+    in generating photomasks.  Note that the electrical information
+    can never be recovered from a stripped file.
+
+    <p>
+    This mode can also be enabled by setting the boolean variable <a
+    href="StripForExport"><b>StripForExport</b></a> with the
+    <b>!set</b> command.  The variable tracks the state of the check box.
+    </dl>
+
+    <dl>
+    <dt><b>Include library cell masters</b><dd>
+    If the input references library cells (which have the LIBRARY <a
+    href="xic:cells#flags">flag</a> set) whose masters are not found
+    in the file, then these masters are not written to output unless
+    this box is checked.  With the box not checked, the output file
+    will require the referenced library be preesent and open when the
+    file is read into <i>Xic</i> (the same requirement as the input
+    file).  With the box checked, the masters are written to the
+    output file, which will therefor not need the library.
+
+    <p>
+    This tracks the state of the <a
+    href="KeepLibMasters"><b>KeepLibMasters</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Include parameterized cell sub-masters</b><dd>
+    When this check box is checked, output saved to disk files will
+    include <a href="xic:pcells">sub-master</a> cells.  Ordinarily,
+    sub-master cells are not included, as they will be re-created when
+    the file is read.  However, when exporting to a system that does
+    not support the pcells in use, the sub-masters must be written if
+    the file is to have any value.  With the sub-masters present, the
+    cells/instances will look like normal cell placements.
+
+    <p>
+    This applies when writing all output, <b>except</b> when using the
+    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
+    text accelerators and including the prompts when exiting the
+    program.  It is also ignored when using the <a
+    href="Save"><tt>Save</tt></a> script function.
+
+!!IFDEF OpenAccess
+    <p>
+    <i>Xic</i> native pcells are only supported in <i>Xic</i>. 
+    OpenAccess-based pcells might be supported by other systems, that
+    is certainly the intent of the Ciranova PyCells.  Even if another
+    system supports the OpenAccess PyCells, it may not have the logic
+    to rebuild the pcells coming from a GDSII or other file source. 
+    In that case one will probably have to ship the OpenAccess library
+    files.
+!!ENDIF
+
+    <p>
+    The <a href="StripForExport"><b>StripForExport</b></a> variable
+    and the equivalent check box will have the same effect when set.
+
+    <p>
+    The <a href="PCellKeepSubMasters"><b>PCellKeepSubMasters</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Include standard via cell sub-masters</b><dd>
+    When checked, <a href="stdvia">standard via</a> cell sub-masters
+    are included in the output file.  This will be required when
+    sending output to another system, as this implementation is
+    specific to <i>Xic</i>.
+!!IFDEF OpenAccess
+    An exception may be systems that share an OpenAccess database
+    with <i>Xic</i>.  If the cells are written to the OpenAccess
+    database, the standard vias should translate properly, and be
+    recognized by other tools (e.g., Virtuoso) that share the
+    database.
+!!ENDIF
+
+    <p>
+    This applies when writing all output, <b>except</b> when using the
+    <a href="xic:sv"><b>Save</b></a> and <a href="xic:save"><b>Save
+    As</b></a> buttons in the <b>File Menu</b>, and the equivalent
+    text accelerators and including the prompts when exiting the
+    program.  It is also ignored when using the <a
+    href="Save"><tt>Save</tt></a> script function.
+
+    <p>
+    The <a href="StripForExport"><b>StripForExport</b></a> variable
+    and the equivalent check box will have the same effect when set.
+
+    <p>
+    The <a href="ViaKeepSubMasters"><b>ViaKeepSubMasters</b></a>
+    variable tracks the state of this check box.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten standard vias, keep as instance at top
+    level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy.  When
+    set, instances of standard vias are retained as such, rather than
+    being written as geometry.  This check box tracks the state of the
+    <a href="NoFlattenStdVias"><b>NoFlattenStdVias</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Don't flatten pcells, keep as instance at top level</b><dd>
+    This mode may apply when flattening a physical cell hierarchy. 
+    When set, instances of parameterized cells (pcells) are retained
+    as such, rather than being written as geometry.  This check box
+    tracks the state of the <a
+    href="NoFlattenPCells"><b>NoFlattenPCells</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Ignore labels in subcells when flattening</b><dd>
+    When flattening a cell hierarchy, if this check box is checked
+    labels found in subcells are ignored, meaning not reparented to
+    the top level.  Pre-existing labels at the top level are not
+    affected.  This is intended to prevent net name labels from
+    subcells conflicting with net name labels defined at higher
+    hierarchy levels.  The check box state tracks the <a
+    href="NoFlattenLabels"><b>NoFlattenLabels</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>Skip reading text labels from physical archives</b><dd>
+    When set, text labels will not be read from a layout file when
+    reading physical-mode data.  It is not generally advisable to use
+    this, as text labels, though not physical objects, should be
+    assumed to be present for a purpose.  However, this check box
+    gives the user the flexibility to strip these out.  This check box
+    tracks the status of the <a
+    href="NoReadLabels"><b>NoReadLabels</b></a> variable.
+
+    <p>
+    In <i>Xic</i>, text labels are included when the bounding box of a
+    cell is computed.  If a text label actually determines the
+    boundary of a cell, the bounding box of the cell may report
+    differently from other tools.  The effective size of a text label
+    is not well defined, and other tools will probably make different
+    assumptions about font size, etc., or may not include text labels
+    in bounding box computations.
+    </dl>
+
+    <dl>
+    <dt><b>Keep bad output (for debugging)</b><dd>
+    When generating an archive file and an error occurs.  the archive
+    file will normally be deleted.  However, if this box is checked,
+    the output file will be given a "<tt>.BAD</tt>" extension and
+    retained.  This file should be considered corrupt, but may be
+    useful for diagnostics.  This tracks the state of the <a
+    href="KeepBadArchive"><b>KeepBadArchive</b></a> variable.
+    </dl>
+
+    <a name="convert"></a>
+    <h2>The Convert File Page</h2>
+    <img src="screenshots/convert3.png" align=right>
+
+    <p>
+    <dl>
+    <dt><b>Layer Modification</b><dd>
     The <a href="layerchange">layer change module</a> allows layer
     filtering and/or mapping to be applied during the conversion operation.
+    </dl>
 
-    <p>
+    <dl>
+    <dt><b>Cell Name Mapping</b><dd>
     The <b>Cell Name Mapping</b> group of controls manages the cell
     name <a href="cellname">aliasing</a> feature.
+    </dl>
 
-    <p>
+    <dl>
+    <dt><b>Windowing and Flattening</b><dd>
     The <a href="windowing">windowing and flattening</a> group can be
-    used to set up area filtering or hierarchy flattening.
-
-    <p>
-    These may not all be available for every input/output format
-    permutation.  For example, the windowing operations are not
-    available when the input format is <b>Native Cell Directory</b>.
+    used to set up area filtering or hierarchy flattening.  These may
+    not all be available for every input/output format permutation. 
+    For example, the windowing operations are not available when the
+    input format is <b>Native Cell Directory</b>.
 
     <p>
     If windowing, flattening, or empty cell filtering is set, only
@@ -2499,6 +2768,23 @@ Format Conversion
     Empty cells will be removed from output if the empty cell
     filtering option is set.  This will add some computational
     overhead, and in most cases empty cells are "harmless".
+    </dl>
+
+    <dl>
+    <dt><b>Conversion Scale Factor</b><dd>
+    For input file types that support scaling, the conversion scale
+    factor entry area will be active.  A scale factor of .001 - 1000.0
+    can be entered in this area, and will be applied during the
+    translation.  When scaling, only the physical (not electrical)
+    data are scaled.
+    </dl>
+
+    <dl>
+    <dt><b>Convert</b><dd>
+    The translation is initiated with the <b>Convert</b> button.  The
+    user will be prompted for the name of the input file (or directory
+    if <b>Native Cell Directory</b>), and then the name of the output
+    file, or directory for native files.
 
     <p>
     When the input source is a CHD or saved CHD file, when the user is
@@ -2524,27 +2810,7 @@ Format Conversion
     href="xic:hier">CHD</a>, and the CHD is <a
     href="xic:chdconfig">configured</a> with a top-level cell, that
     cell will be used.
-
-    <p>
-    For input file types that support scaling, the conversion scale
-    factor entry area will be active.  A scale factor of .001 - 1000.0
-    can be entered in this area, and will be applied during the
-    translation.  When scaling, only the physical (not electrical)
-    data are scaled.
-
-    <p>
-    The translation is initiated with the <b>Convert</b> button.  The
-    user will be prompted for the name of the input file (or directory
-    if <b>Native Cell Directory</b>), and then the name of the output
-    file, or directory for native files.
-
-    <p>
-    When generating an archive file and an error occurs.  the archive
-    file will normally be deleted.  However, if the variable <a
-    href="KeepBadArchive"><b>KeepBadArchive</b></a> is set (with the
-    <a href="!set"><b>!set</b></a> command) the output file will be
-    given a "<tt>.BAD</tt>" extension and retained.  This file should
-    be considered corrupt, but may be useful for diagnostics.
+    </dl>
 
 !!SEEALSO
 xic:cvrtmenu
@@ -3271,8 +3537,9 @@ xic:diff
 !!TITLE
 Compare Layouts
 !!HTML
-    <img src="screenshots/compare1.png" align=right>
+    <b>Keyword</b>: <tt>diff</tt>
 
+    <p>
     <table border=0>
     <tr><td valign=top><b>jump to</b></td> <td>
     <a href="xic:diff#cmpage"><b>Comparison Mode Pages</b></a><br>
@@ -3280,9 +3547,7 @@ Compare Layouts
     </td></tr></table>
 
     <p>
-    <b>Keyword</b>: <tt>diff</tt>
-
-    <p>
+    <img src="screenshots/compare1.png" align=right>
     The <b>Compare Layouts</b> button in the <b>Convert Menu</b>
     brings up the <b>Compare Layouts</b> panel.  This is a graphical
     front-end for the <a href="!compare"><b>!compare</b></a> command,

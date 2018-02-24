@@ -500,6 +500,7 @@ public:
     cv_out *NewOutput(const char*, const char*, FileType, bool=false);
     cv_in *NewInput(FileType, bool);
     char *GdsParamSet(double*, double*, int*, int*);
+    bool KeepCell(const CDs*);
 
     // fio_gds_read.cc
     bool IsGDSII(FILE*);
@@ -587,12 +588,14 @@ public:
     cvINFO CvtInfo()                    { return (fioCvtInfo); }
     void SetCvtInfo(cvINFO cv)          { fioCvtInfo = cv; }
 
+    double TransScale()                 { return (fioCvtPrms.scale()); }
     bool CvtUseWindow()                 { return (fioCvtPrms.use_window()); }
     bool CvtClip()                      { return (fioCvtPrms.clip()); }
     bool CvtFlatten()                   { return (fioCvtPrms.flatten()); }
     ECFlevel CvtECFlevel()              { return (fioCvtPrms.ecf_level()); }
     const BBox *CvtWindow()             { return (fioCvtPrms.window()); }
 
+    void SetTransScale(double d)        { fioCvtPrms.set_scale(d); }
     void SetCvtUseWindow(bool b)        { fioCvtPrms.set_use_window(b); }
     void SetCvtClip(bool b)             { fioCvtPrms.set_clip(b); }
     void SetCvtFlatten(bool b)          { fioCvtPrms.set_flatten(b); }
@@ -603,12 +606,14 @@ public:
     void SetCvtWindowRight(int r)       { fioCvtPrms.set_window_right(r); }
     void SetCvtWindowTop(int t)         { fioCvtPrms.set_window_top(t); }
 
+    double WriteScale()                 { return (fioOutPrms.scale()); }
     bool OutUseWindow()                 { return (fioOutPrms.use_window()); }
     bool OutClip()                      { return (fioOutPrms.clip()); }
     bool OutFlatten()                   { return (fioOutPrms.flatten()); }
     ECFlevel OutECFlevel()              { return (fioOutPrms.ecf_level()); }
     const BBox *OutWindow()             { return (fioOutPrms.window()); }
 
+    void SetWriteScale(double d)        { fioOutPrms.set_scale(d); }
     void SetOutUseWindow(bool b)        { fioOutPrms.set_use_window(b); }
     void SetOutClip(bool b)             { fioOutPrms.set_clip(b); }
     void SetOutFlatten(bool b)          { fioOutPrms.set_flatten(b); }
@@ -619,14 +624,25 @@ public:
     void SetOutWindowRight(int r)       { fioOutPrms.set_window_right(r); }
     void SetOutWindowTop(int t)         { fioOutPrms.set_window_top(t); }
 
-    const FIOreadPrms *DefReadPrms()    { return (&fioDefReadPrms); }
+    double ReadScale()                  { return (fioInPrms.scale()); }
+    bool InUseWindow()                  { return (fioInPrms.use_window()); }
+    bool InClip()                       { return (fioInPrms.clip()); }
+    bool InFlatten()                    { return (fioInPrms.flatten()); }
+    ECFlevel InECFlevel()               { return (fioInPrms.ecf_level()); }
+    const BBox *InWindow()              { return (fioInPrms.window()); }
 
-    double ReadScale()                  { return (fioCvtScaleRead); }
-    void SetReadScale(double d)         { fioCvtScaleRead = d; }
-    double WriteScale()                 { return (fioOutPrms.scale()); }
-    void SetWriteScale(double d)        { fioOutPrms.set_scale(d); }
-    double TransScale()                 { return (fioCvtPrms.scale()); }
-    void SetTransScale(double d)        { fioCvtPrms.set_scale(d); }
+    void SetReadScale(double d)         { fioInPrms.set_scale(d); }
+    void SetInUseWindow(bool b)         { fioInPrms.set_use_window(b); }
+    void SetInClip(bool b)              { fioInPrms.set_clip(b); }
+    void SetInFlatten(bool b)           { fioInPrms.set_flatten(b); }
+    void SetInECFlevel(ECFlevel f)      { fioInPrms.set_ecf_level(f); }
+    void SetInWindow(const BBox *BB)    { fioInPrms.set_window(BB); }
+    void SetInWindowLeft(int l)         { fioInPrms.set_window_left(l); }
+    void SetInWindowBottom(int b)       { fioInPrms.set_window_bottom(b); }
+    void SetInWindowRight(int r)        { fioInPrms.set_window_right(r); }
+    void SetInWindowTop(int t)          { fioInPrms.set_window_top(t); }
+
+    const FIOreadPrms *DefReadPrms()    { return (&fioDefReadPrms); }
 
     BBox *savedBB(int i)
         {
@@ -790,8 +806,8 @@ public:
     bool IsStripForExport()             { return (fioStripForExport); }
     void SetStripForExport(bool b)      { fioStripForExport = b; }
 
-    bool IsWriteAllCells()              { return (fioWriteAllCells); }
-    void SetWriteAllCells(bool b)       { fioWriteAllCells = b; }
+    bool IsKeepLibMasters()             { return (fioKeepLibMasters); }
+    void SetKeepLibMasters(bool b)      { fioKeepLibMasters = b; }
 
     bool IsSkipInvisiblePhys()          { return (fioSkipInvisiblePhys); }
     void SetSkipInvisiblePhys(bool b)   { fioSkipInvisiblePhys = b; }
@@ -804,6 +820,15 @@ public:
 
     bool IsNoCompressContext()          { return (fioNoCompressContext); }
     void SetNoCompressContext(bool b)   { fioNoCompressContext = b; }
+
+    bool IsNoFlattenStdVias()           { return (fioNoFlattenStdVias); }
+    void SetNoFlattenStdVias(bool b)    { fioNoFlattenStdVias = b; }
+
+    bool IsNoFlattenPCells()            { return (fioNoFlattenPCells); }
+    void SetNoFlattenPCells(bool b)     { fioNoFlattenPCells = b; }
+
+    bool IsNoFlattenLabels()            { return (fioNoFlattenLabels); }
+    void SetNoFlattenLabels(bool b)     { fioNoFlattenLabels = b; }
 
     bool IsRefCellAutoRename()          { return (fioRefCellAutoRename); }
     void SetRefCellAutoRename(bool b)   { fioRefCellAutoRename = b; }
@@ -910,13 +935,13 @@ private:
     const char *fioSymSearchPath;   // Cell file locations
     sLib *fioLibraries;             // Open library list
 
-    FIOcvPrms fioCvtPrms;           // Parameters for output from database
-    FIOcvPrms fioOutPrms;           // Parameters for couput from conversion
+    FIOcvPrms fioCvtPrms;           // Parameters for output from conversion
+    FIOcvPrms fioOutPrms;           // Parameters for output from database
+    FIOcvPrms fioInPrms;            // Parameters for input to database
     FIOreadPrms fioDefReadPrms;     // Default reading params
 
     cvINFO fioCvtInfo;              // Info level for CHD create
 
-    double fioCvtScaleRead;         // Scale when reading
     int fioMergeControlEnabled;     // Merge Control pop-up enable count
     int fioSkipFixBB;               // Skip calls to fixBB after reading
 
@@ -1123,10 +1148,11 @@ private:
         // Flag to indicate that no format extensions are to be used
         // when writing, including restriction to physical data only.
 
-    bool fioWriteAllCells;
-        // When set, user library cells are written to archive output
-        // when writing from the main database.  Normally, library
-        // cells are not included.
+    bool fioKeepLibMasters;
+        // When set, user library cells are written to output when
+        // writing and archive file.  Normally, library cells are not
+        // included, and references are expected to be resolved
+        // through the library mechanism when the file is read by Xic.
 
     bool fioSkipInvisiblePhys;
     bool fioSkipInvisibleElec;
@@ -1139,6 +1165,16 @@ private:
 
     bool fioNoCompressContext;
         // Don't use compressed instance lists in archive context.
+
+    bool fioNoFlattenStdVias;
+        // When flattening, keep std vias as subcells.
+
+    bool fioNoFlattenPCells;
+        // When flattening, keep pcells as subcells.
+
+    bool fioNoFlattenLabels;
+        // Don't promote labels when flattening, avoids conflicting
+        // net name labels.
 
     bool fioRefCellAutoRename;
         // Rename cells under reference cells when writing a hierarchy

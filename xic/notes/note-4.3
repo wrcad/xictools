@@ -215,10 +215,55 @@ name (as before) instead of instance name.
 
 --- release 4.3.3
 
-ToDo:  optionally retain standard vias in netext files.
+New boolean variables:
+NoFlattenStdVias
+NoFlattenPCells
+Corresponding check boxes in the Flatten pop-up.
+When set, indicated cells will be moved to the top of the flattened
+hierarchy but remain as instances.  Otherwise (as previously) the
+geometry is simply copied as for any other cell type.
+These apply when flattening using file operations/CHD, but only
+when the master cells are NOT in the source file.
 
-ToDo:  preserve or create netname labels in netext files.  Presently,
-labels are completely ignored in netext.  Add pin objects, or add
-labels somehow?  Net cells have a "netname" property?
-Function to iterate thru nets of netext file, and get net names from
-extraction database?
+New NoFlattenLabels variable
+When set, labels in subcells are ignored, avoids creating wire nets
+with conflicting net labels.
+
+!netext -w 0,0,0,0 means to use cell BB (no area constraint).
+!netext now takes -vs option, where if not gridding and no area constraint,
+standard via cells will be retained.
+!netext:  grid no longer mandatory if no -w, -g 0 is default which means
+use full cell area.
+Cells for named nets now have a "NXNAME" property 7149, and string is
+the net name.
+Fixed bug which caused stage 3 to fail, finding no nets, if the ground
+group 0 was not used.
+NXNAME label correctly copied in stage 3?  Sort of bad, but hard to
+fix since output is streaming.  When flattening, all NXNAME properties
+found in grid cells will be applied to top.  When not flattening, need
+to check the primary cell and subcells for properties.
+
+Added flattening/windowing from the Import panel.
+
+Check if scaling works: pcells/vias, flattening import.  Yes, the scaling
+is applied to std via and pcell instance placements.
+
+Bug fixed: Selections panel type filtering was being ignored.
+
+When reading into db using Import panel, scaling of pcells, std vias, and
+library gates should be correct in all cases, with these masters created
+or read in with unit scaling.  The instances are scaled.
+
+WriteAllCells variable renamed KeepLibMastgers.  With
+KeepStdViaSubMasters, KeepPcellSubMasters, added 3 check boxes to
+Format Conversion panel.
+
+Checked conversion and write scaling, other operations:  scaling
+with std vias/pcells/libgates.  We probably never want to scale masters,
+but need to scale instances.  Works from import/export/convert
+panels.
+
+Revised main database, it had trouble when there are large numbers of
+identical objects, elements could get out of order.
+
+ToDo: handle via/pc masters in archive

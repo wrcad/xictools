@@ -740,17 +740,36 @@ SelState::do_it(int group, bool selected)
             CDcbin cbin(DSP()->CurCellName());
             cGroupDesc *gd = cbin.groups();
             if (gd) {
+                sGroup *g = gd->group_for(group);
+                if (!g)
+                    return;
+                sLstr lstr;
+                if (!g->net())
+                    lstr.add("virtual");
+                if (g->global()) {
+                    if (lstr.string())
+                        lstr.add_c(' ');
+                    lstr.add("global");
+                }
+                if (lstr.string())
+                    lstr.add_c(' ');
+                lstr.add("group");
+                lstr.add_c(' ');
+                lstr.add_i(group);
+                if (g->netname()) {
+                    lstr.add(" (");
+                    lstr.add(Tstring(g->netname()));
+                    lstr.add_c(')');
+                }
                 if (cbin.elec()) {
                     const char *nn = SCD()->nodeName(cbin.elec(),
                         gd->node_of_group(group));
-                    PL()->ShowPromptV("Selected %s %d, electrical node %s.",
-                        gd->net_of_group(group) ? "group" : "virtual group",
-                        group, nn);
+                    if (nn) {
+                        lstr.add(", electrical node ");
+                        lstr.add(nn);
+                    }
                 }
-                else
-                    PL()->ShowPromptV("Selected %s %d.",
-                        gd->net_of_group(group) ? "group" : "virtual group",
-                        group);
+                PL()->ShowPrompt(lstr.string());
                 if (GroupShown >= 0)
                     show_group(GroupShown, true);
                 GroupShown = group;
