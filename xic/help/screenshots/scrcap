@@ -12,6 +12,7 @@ if [ x$fname = x ]; then
     exit
 fi
 wid=`xwininfo -frame | grep "Window id:" -`
+#wid=`xwininfo | grep "Window id:" -`
 set $wid
 # echo $4
 import -window $4 $fname

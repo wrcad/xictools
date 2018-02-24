@@ -258,8 +258,12 @@ WriteAllCells variable renamed KeepLibMastgers.  With
 KeepStdViaSubMasters, KeepPcellSubMasters, added 3 check boxes to
 Format Conversion panel.
 
-ToDo:  check conversion and write scaling, other operations:  scaling
+Checked conversion and write scaling, other operations:  scaling
 with std vias/pcells/libgates.  We probably never want to scale masters,
-but need to scale instances.
+but need to scale instances.  Works from import/export/convert
+panels.
+
+Revised main database, it had trouble when there are large numbers of
+identical objects, elements could get out of order.
 
 ToDo: handle via/pc masters in archive

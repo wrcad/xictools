@@ -157,7 +157,7 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
-xic-4.3.4  2/18/2018
+xic-4.3.4  2/23/2018
 Current Release
 
 CHANGES AND NEW FEATURES
@@ -214,14 +214,14 @@ CHANGES AND NEW FEATURES
   scaled.  Instead, all of their instance placements are scaled.
 
   The WriteAllCells variable has been renamed to "KeepLibMasters"
-  which better describs its effect.  WriteAllCells still works as an
+  which better describes its effect.  WriteAllCells still works as an
   alias for now but is undocumented.
 
   The Format Conversion panel now has check boxes "Include library
   cell masters", "Include parameterized cell sub-masters" and "Include
   standard via cell sub-masters" which track the variables KeepLibMasters,
   KeepPCellSubMastgers, and KeepStdViaSubMasters.  These are also found
-  in the Export Control panel.  These deteermine whether library cells,
+  in the Export Control panel.  These determine whether library cells,
   pcells, and standard via cells are written to output.
 
 * Update to !netext command.
@@ -271,7 +271,15 @@ BUGS FIXED
   Import Control, Export Control, and Format conversion panels did
   not play nicely with scaling and library, parameterixed, and
   standard via cells.  Much effort went to cleaning this up.
-  
+
+* The main cell database was updated to fix a logic problem that would
+  cause trouble if there were large numbers of duplicate objects. 
+  This was discovered when a coding error was producing dozens of
+  redundant standard via cells at each location.  Removing the
+  duplicates with the duplicate object filter would cause crashes, and
+  other odd behavior was seen.  Presently, the database should be
+  immune to this, which is unlikely in real layouts, but one never
+  knows.
 
 -------------------------------------------------------------------------------
 xic-4.3.3  1/10/2018
