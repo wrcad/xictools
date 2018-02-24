@@ -69,8 +69,10 @@ CDm::clear()
         // This will remove any references, and put the instance in
         // the mUnlinked list.
         CDc_gen cgen(this);
-        for (CDc *c = cgen.c_first(); c; c = cgen.c_next())
-            parent()->unlink(c, true);
+        for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
+            if (!parent()->unlink(c, true))
+                Errs()->get_error();
+        }
     }
     CDc_gen cgen(this, true);
     for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
@@ -83,8 +85,9 @@ CDm::clear()
         if (celldesc())
             unlinkRef();
         delete this;
+        return (true);
     }
-    return (true);
+    return (false);
 }
 
 

@@ -505,10 +505,7 @@ xic_out::set_file_ptr(FILE *fp)
 bool
 xic_out::write_this_cell(CDs *sdesc, const char *sfile, double tscale)
 {
-    if (sdesc->isPCellSubMaster() && !sdesc->isPCellReadFromFile() &&
-            !FIO()->IsKeepPCellSubMasters())
-        return (true);
-    if (sdesc->isViaSubMaster() && !FIO()->IsKeepViaSubMasters())
+    if (!FIO()->KeepCell(sdesc))
         return (true);
 
     out_mode = sdesc->displayMode();
@@ -1203,12 +1200,23 @@ xic_out::make_native_lib(const char *cellname, const char *defpath)
     CDcbin ncbin;
     bool err;
     while (sgen.next(&ncbin, &err)) {
-        if (!FIO()->IsKeepPCellSubMasters() && ncbin.phys() &&
-                ncbin.phys()->isPCellSubMaster())
-            continue;
-        if (!FIO()->IsKeepViaSubMasters() && ncbin.phys() &&
-                ncbin.phys()->isViaSubMaster())
-            continue;
+        CDs *sd = ncbin.phys();
+        if (sd) {
+            if (sd->isPCellSubMaster() && !sd->isPCellReadFromFile() &&
+                    !FIO()->IsKeepPCellSubMasters())
+                continue;
+            if (sd->isViaSubMaster() && !FIO()->IsKeepViaSubMasters())
+                continue;
+            if (sd->isLibrary() && !FIO()->IsKeepLibMasters())
+                continue;
+        }
+        else {
+            sd = ncbin.elec();
+            if (sd->isLibrary()) {
+                if (sd->isDevice() || !FIO()->IsKeepLibMasters())
+                    continue;
+            }
+        }
         s0 = new stringlist(
             lstring::copy(alias(Tstring(ncbin.cellname()))), s0);
     }

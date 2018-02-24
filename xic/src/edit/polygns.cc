@@ -298,7 +298,8 @@ namespace {
         if (!cursd)
             return (false);
         if (DSP()->IncompleteObject()) {
-            cursd->unlink(DSP()->IncompleteObject(), false);
+            if (!cursd->unlink(DSP()->IncompleteObject(), false))
+                Log()->PopUpErr(Errs()->get_error());
             DSP()->SetIncompleteObject(0);
             cursd->computeBB();
             return (true);

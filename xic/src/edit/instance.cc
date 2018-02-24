@@ -1343,9 +1343,14 @@ cEdit::new_instance(CDs *sdesc, int x, int y, const iap_t &iap,
     bool err;
     while (gen.next(&err)) ;
     if (err) {
-        sdesc->unlink(cdesc, false);
-        Log()->ErrorLog(mh::CellPlacement,
-            "Hierarchy depth exceeded, cell not added.");
+        if (!sdesc->unlink(cdesc, false)) {
+            Log()->ErrorLog(mh::CellPlacement,
+                "Errs()->get_error().");
+        }
+        else {
+            Log()->ErrorLog(mh::CellPlacement,
+                "Hierarchy depth exceeded, cell not added.");
+        }
         return (0);
     }
     Ulist()->RecordObjectChange(sdesc, 0, cdesc);

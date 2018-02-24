@@ -1424,7 +1424,7 @@ cCHD::write(symref_t *p, cv_in *in, const FIOcvtPrms *prms, bool allcells,
             tBB = item->get_bb();
             if (tchd != cchd) {
                 // Unless set to keep library masters, don't output them.
-                if (!FIO()->IsKeepLibMasters())
+                if (!FIO()->IsKeepLibMasters() && !FIO()->IsStripForExport())
                     continue;
                 cin->chd_finalize();
                 FIOaliasTab *at = cin->extract_alias();

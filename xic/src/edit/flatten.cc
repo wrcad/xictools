@@ -312,7 +312,8 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
                         if (!cursd->isElectrical())
                             DSP()->ShowOdescPhysProperties(
                                 pn->bound(), ERASE);
-                        cursd->unlink(pn->bound(), false);
+                        if (!cursd->unlink(pn->bound(), false))
+                            Errs()->get_error();
                     }
                     else
                         Ulist()->RecordObjectChange(cursd, pn->bound(), 0);
@@ -327,7 +328,8 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
                         if (!cursd->isElectrical())
                             DSP()->ShowOdescPhysProperties(
                                 pp->bound(), ERASE);
-                        cursd->unlink(pp->bound(), false);
+                        if (!cursd->unlink(pp->bound(), false))
+                            Errs()->get_error();
                     }
                     else
                         Ulist()->RecordObjectChange(cursd, pp->bound(), 0);
@@ -366,7 +368,8 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
                 }
                 if (!cursd->isElectrical())
                     DSP()->ShowOdescPhysProperties(cdesc, ERASE);
-                cursd->unlink(cdesc, false);
+                if (!cursd->unlink(cdesc, false))
+                    Errs()->get_error();
             }
             else
                 Ulist()->RecordObjectChange(cursd, cdesc, 0);

@@ -876,8 +876,10 @@ geom1_funcs::IFclearCell(Variable *res, Variable *args, void*)
         while ((odesc = gdesc.next()) != 0) {
             if (undoable)
                 Ulist()->RecordObjectChange(cursd, odesc, 0);
-            else
-                cursd->unlink(odesc, false);
+            else {
+                if (!cursd->unlink(odesc, false))
+                    Errs()->get_error();
+            }
             nobjs++;
         }
     }

@@ -115,7 +115,8 @@ namespace {
         while ((h = stgen.next()) != 0) {
             CDo *obj = (CDo*)h->stTag;
             CDs *sd = (CDs*)h->stData;
-            sd->unlink(obj, false);
+            if (!sd->unlink(obj, false))
+                Errs()->get_error();
             delete h;
         }
     }
@@ -631,7 +632,8 @@ Oper::check_objects()
                     pobject(oc1->odel(), DBG_FP);
                 }
                 tab->remove((unsigned long)oc1->odel());
-                o_cell_desc->unlink(oc1->odel(), false);
+                if (!o_cell_desc->unlink(oc1->odel(), false))
+                    Errs()->get_error();
                 oc1->set_odel(0);
                 oc2->set_oadd(0);
             }
@@ -913,8 +915,10 @@ cUndoList::RestoreObjects()
     Ochg *ocn;
     for (Ochg *oc = ul_curop.obj_list(); oc; oc = ocn) {
         ocn = oc->next_chg();
-        if (oc->oadd())
-            ul_curop.celldesc()->unlink(oc->oadd(), false);
+        if (oc->oadd()) {
+            if (!ul_curop.celldesc()->unlink(oc->oadd(), false))
+                Errs()->get_error();
+        }
         delete oc;
     }
     ul_curop.set_obj_list(0);
@@ -1478,7 +1482,8 @@ cUndoList::CommitChanges(bool redisplay, bool nodrc)
                     Selections.purgeDeleted(CurCell());
                     has_deletes = true;
                 }
-                cur->celldesc()->unlink(oc->odel(), true);
+                if (!cur->celldesc()->unlink(oc->odel(), true))
+                    Errs()->get_error();
             }
         }
         cur->celldesc()->computeBB();
@@ -2233,7 +2238,8 @@ cUndoList::do_operation(Oper *curop, bool undo)
                         continue;
                     if (!(*sBB > oc->oadd()->oBB()))
                         fixbb = true;
-                    cur->celldesc()->unlink(oc->oadd(), true);
+                    if (!cur->celldesc()->unlink(oc->oadd(), true))
+                        Errs()->get_error();
                     if (is_elec) {
                         ScedIf()->uninstall(oc->oadd(), cur->celldesc());
                         if (!symb_mode_change && is_toplevel)

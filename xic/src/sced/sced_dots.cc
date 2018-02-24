@@ -386,7 +386,8 @@ DotGen::update_dot(CDs *sdesc, int x, int y)
                 if (odesc->state() != CDInternal)
                     continue;
                 // Someday may need a flag to indicate dots uniquely.
-                sdesc->unlink(odesc, false);
+                if (!sdesc->unlink(odesc, false))
+                    Errs()->get_error();
                 ret = true;
                 break;
             }
@@ -484,7 +485,8 @@ DotGen::clear_dots()
                         if (odesc->state() != CDInternal)
                             continue;
                         // Someday may need a flag to indicate dots uniquely.
-                        sdesc->unlink(odesc, false);
+                        if (!sdesc->unlink(odesc, false))
+                            Errs()->get_error();
                         break;
                     }
                 }
@@ -701,7 +703,8 @@ DotGen::add_dots(CDs *sdesc)
                         if (odesc->state() != CDInternal)
                             continue;
                         // Someday may need a flag to indicate dots uniquely.
-                        sdesc->unlink(odesc, false);
+                        if (!sdesc->unlink(odesc, false))
+                            Errs()->get_error();
                         break;
                     }
                 }

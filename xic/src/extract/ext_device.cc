@@ -1298,7 +1298,8 @@ cGroupDesc::setup_dev_layer()
         while (ol) {
             CDol *ox = ol;
             ol = ol->next;
-            gd_celldesc->unlink(ox->odesc, false);
+            if (!gd_celldesc->unlink(ox->odesc, false))
+                Errs()->get_error();
             delete ox;
         }
     }

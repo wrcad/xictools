@@ -157,7 +157,7 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
-xic-4.3.4  2/10/2018
+xic-4.3.4  2/18/2018
 Current Release
 
 CHANGES AND NEW FEATURES
@@ -196,13 +196,33 @@ CHANGES AND NEW FEATURES
     4. Format Conversion, from the Format Conversion button in the
        Convert menu.
 
+* I/O update (Convert menu functions).
+
   The Import Control panel now has a windowing/flattening control
   group in the Read File page allowing these operations to be
   performed as input is being read (physical data only).
 
-  The Export Control.  and Format Conversion panels are now paged,
+  The Export Control and Format Conversion panels are now paged,
   with a Setup page that provides options, and a second page from
   where the operation is started.
+
+  The Import Control, Export Control, and Format Conversion operations
+  now work more correctly with library, standard vias, and pcells.
+  By default, masters of these cells are never written to output unless
+  this is explicitly enabled (by check boxes in the Setup pages or
+  variables).  If written, while scaling, these masters will never be
+  scaled.  Instead, all of their instance placements are scaled.
+
+  The WriteAllCells variable has been renamed to "KeepLibMasters"
+  which better describs its effect.  WriteAllCells still works as an
+  alias for now but is undocumented.
+
+  The Format Conversion panel now has check boxes "Include library
+  cell masters", "Include parameterized cell sub-masters" and "Include
+  standard via cell sub-masters" which track the variables KeepLibMasters,
+  KeepPCellSubMastgers, and KeepStdViaSubMasters.  These are also found
+  in the Export Control panel.  These deteermine whether library cells,
+  pcells, and standard via cells are written to output.
 
 * Update to !netext command.
 
@@ -244,6 +264,14 @@ BUGS FIXED
   to the library list for the current MacPorts.  The wr_install script
   now installs this without complaining that it isn't an xictools-4.3
   distribution.
+
+* The Selection Contol panel object type filtering was not working.
+
+* Conversion function scaling bugs fixed.  The operations from the
+  Import Control, Export Control, and Format conversion panels did
+  not play nicely with scaling and library, parameterixed, and
+  standard via cells.  Much effort went to cleaning this up.
+  
 
 -------------------------------------------------------------------------------
 xic-4.3.3  1/10/2018

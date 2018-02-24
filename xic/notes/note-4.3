@@ -254,12 +254,12 @@ When reading into db using Import panel, scaling of pcells, std vias, and
 library gates should be correct in all cases, with these masters created
 or read in with unit scaling.  The instances are scaled.
 
+WriteAllCells variable renamed KeepLibMastgers.  With
+KeepStdViaSubMasters, KeepPcellSubMasters, added 3 check boxes to
+Format Conversion panel.
+
 ToDo:  check conversion and write scaling, other operations:  scaling
 with std vias/pcells/libgates.  We probably never want to scale masters,
 but need to scale instances.
 
 ToDo: handle via/pc masters in archive
-
-WriteAllCells should be WriteLibCells?  Relation to
-KeepStdViaSubMasters, KeepPcellSubMasters?  Add check boxes to Format
-Conversion panel?

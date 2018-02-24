@@ -500,6 +500,7 @@ public:
     cv_out *NewOutput(const char*, const char*, FileType, bool=false);
     cv_in *NewInput(FileType, bool);
     char *GdsParamSet(double*, double*, int*, int*);
+    bool KeepCell(const CDs*);
 
     // fio_gds_read.cc
     bool IsGDSII(FILE*);

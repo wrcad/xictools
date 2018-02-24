@@ -473,7 +473,7 @@ CDdb::db_bb(BBox *BB) const
     if (db_layer_heads) {
         for (unsigned int i = 0; i < db_layers_used; i++) {
             RTree *l = &db_layer_heads[i];
-            if (l->num_elements() > 0)
+            if (l->num_elements() > 0 && l->root_bb())
                 BB->add(l->root_bb());
         }
     }

@@ -922,9 +922,11 @@ struct cv_out : public cv_backend
     bool write_multi_final(Topcell*);
     bool write_begin(double);
     bool write_begin_struct(const char*);
-    bool write_symbol(const CDs*, bool = false);
+    bool write_cell(const CDs*, bool = false);
     bool write_chd_refs();
-    bool write_symbol_flat(const CDs*, const BBox *AOI, bool clip);
+    bool write_cell_flat(const CDs*, const BBox *AOI, bool clip);
+    bool write_cell_recurse(cTfmStack*, const CDs*, const CDl*, const BBox*,
+        bool, int=0);
     bool write_instances(const CDs*);
     bool write_geometry(const CDs*);
     bool write_object_clipped(const CDo*, const BBox*, cvLchk*);

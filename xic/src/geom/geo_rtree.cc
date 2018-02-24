@@ -81,6 +81,31 @@ RTelem::~RTelem()
 
 //---- Diagnostics
 
+// Test the children count.
+//
+void
+RTelem::test_nch(bool recurse, const char *s)
+{
+    if (!s)
+        s = "count error";
+    if (recurse) {
+        for (RTelem *r = this; r != RT_ROOT_UP; r = r->parent()) {
+            int cc = 0;
+            for (RTelem *t = r->children(); t; t = t->sibling())
+                cc++;
+            if (cc != r->get_count())
+                printf("%s %d %d\n", s, cc, r->get_count());
+        }
+        return;
+    }
+    int cc = 0;
+    for (RTelem *t = children(); t; t = t->sibling())
+        cc++;
+    if (cc != get_count())
+        printf("%s %d %d\n", s, cc, get_count());
+}
+
+
 // Test the BB's and pointers (diagnostic).
 //
 int
@@ -148,7 +173,7 @@ RTelem::list_test()
 
 
 // Set "deferred mode".  In this mode, objects are simply linked into
-// a list (headed by rt_root) and the count increnented.  Calling
+// a list (headed by rt_root) and the count incremented.  Calling
 // unset_deferred will actually create the database.
 //
 // While in deferred mode, NONE of the database functions other than
@@ -226,9 +251,10 @@ RTree::unset_deferred()
 bool
 RTree::remove(RTelem *rd)
 {
-    if (!rd->is_leaf())
+    if (!rd->is_leaf()) {
         // not a data node
         return (false);
+    }
     if (rt_deferred) {
         RTelem *rp = 0, *rm;
         for (RTelem *r = rt_root; r; r = rm) {
@@ -248,9 +274,10 @@ RTree::remove(RTelem *rd)
         return (false);
     }
     RTelem *p = rd->parent();
-    if (!p)
+    if (!p) {
         // not in database
         return (false);
+    }
     if (p == RT_ROOT_UP) {
         if (rd == rt_root) {
             rt_root = 0;
@@ -258,77 +285,112 @@ RTree::remove(RTelem *rd)
             rt_allocated = 0;
             return (true);
         }
-        // not in tree
+        // not in this tree
         return (false);
     }
-    if (!p->unlink(rd))
+
+    if (!p->unlink(rd)) {
         // not found
         return (false);
+    }
     p->shrink_bb_to_root(rd);
 
     rd->clear_parent();  // all link pointers now nil
-    if (p->count_ge(RTelem::e_minlinks)) {
-        rt_allocated--;
-        return (true);
-    }
-    RTelem *pp = p->parent();
-    if (pp == RT_ROOT_UP) {
-        if (p->count_eq(1)) {
-            rt_root = p->children();
-            rt_root->set_parent(RT_ROOT_UP);
-            p->set_children(0);
-            delete p;
-        }
-        rt_allocated--;
-        return (true);
-    }
 
-    // p has too few children, recursively delete p and reinsert p's
-    // children
-
-    RTelem *r = p;
-    p = pp;
-
-    for (;;) {
-
-        if (!p->unlink(r))
-            // "can't happen"
-            return (false);
-        p->shrink_bb_to_root(r);
-
-        RTelem *q = r->children();
-        r->set_children(0);
-
-        while (q) {
-            RTelem *qn = q->sibling();
-            q->unhook(r);
-            if (!insert_prv(q))
-                return (false);
-            rt_allocated--;
-            q = qn;
-        }
-        delete r;
-
-        if (p->count_ge(RTelem::e_minlinks)) {
-            rt_allocated--;
-            return (true);
-        }
-        pp = p->parent();
-        if (pp == RT_ROOT_UP) {
+    for(;;) {
+        if (p->count_ge(RTelem::e_minlinks))
+            break;
+        if (p->parent() == RT_ROOT_UP) {
             if (p->count_eq(1)) {
                 rt_root = p->children();
                 rt_root->set_parent(RT_ROOT_UP);
                 p->set_children(0);
                 delete p;
             }
-            rt_allocated--;
-            return (true);
+            break;
         }
 
-        r = p;
-        p = pp;
+        // The parent p now has too few children, try and merge its
+        // contents into adjacent elements.  If we can't merge p
+        // away, no problem, just keep it.  Otherwise, recurse.
+
+        RTelem *r = p;
+
+        RTelem *rprev = r->prev();
+        int nprev = rprev ? RTelem::e_maxlinks - rprev->get_count() : 0;
+        RTelem *rnext = r->next();
+        int nnext = rnext ? RTelem::e_maxlinks - rnext->get_count() : 0;
+
+        // If we can't find space for all of r's children, just return.
+        if (nprev + nnext < r->get_count())
+            break;
+
+        if (rprev) {
+            int xcnt = rprev->get_count();
+            int cnt = nprev;
+            if (cnt > r->get_count())
+                cnt = r->get_count();
+
+            RTelem *r0 = 0, *rn = 0;
+            for ( int c = cnt; c; c--) {
+                RTelem *rt = r->children();
+                r->set_children(rt->sibling());
+                rt->unhook(rprev);
+                r->dec_count();
+                if (!r0)
+                    r0 = rn = rt;
+                else {
+                    rn->set_sibling(rt);
+                    rn = rt;
+                }
+                rprev->e_BB.add(&rt->e_BB);
+            }
+
+            RTelem *rt = rprev->children();
+            while (rt->sibling())
+                rt = rt->sibling();
+            rt->set_sibling(r0);
+            rprev->set_count(xcnt + cnt);
+        }
+        if (rnext && r->children()) {
+            int xcnt = rnext->get_count();
+            int cnt = nnext;
+            if (cnt > r->get_count())
+                cnt = r->get_count();
+
+            RTelem *r0 = r->children();
+            r->set_children(0);
+            r->set_count(0);
+            for (RTelem *rt = r0; rt; rt = rt->sibling()) {
+                rt->set_parent(rnext);
+                rnext->e_BB.add(&rt->e_BB);
+            }
+            RTelem *rt = rnext->children();
+            rnext->set_children(r0);
+            while (r0->sibling())
+                r0 = r0->sibling();
+            r0->set_sibling(rt);
+            rnext->set_count(xcnt + cnt);
+        }
+
+        p = r->parent();
+        p->unlink(r);
+        delete r;
+        while (!p->children()) {
+            RTelem *pp = p->parent();
+            if (pp == RT_ROOT_UP) {
+                rt_root = 0;
+                rt_allocated = 0;
+                delete p;
+                return (true);
+            }
+            pp->unlink(p);
+            delete p;
+            p = pp;
+        }
+        p->shrink_bb_to_root(p);
     }
-    // not reached
+    rt_allocated--;
     return (true);
 }
 
@@ -437,45 +499,37 @@ RTree::show(int depth) const
 bool
 RTree::insert_prv(RTelem *rnew)
 {
+    if (!rnew)
+        return (true);
+    if (rnew->parent()) {
+        // Already parented, this is an error.
+        return (false);
+    }
+    if (!rnew->is_leaf()) {
+        // Not a leaf node, this is an error.
+        return (false);
+    }
+
     if (!rt_root) {
         rt_root = rnew;
         rt_root->set_parent(RT_ROOT_UP);
         rt_allocated = 1;
         return (true);
     }
-    RTelem *r = 0;
-    RTelem *p = rnew->parent();
-    if (p) {
 
-        // Called from remove(), rnew has been removed from rnew->up,
-        // and rnew->up has been removed from rnew->up->up.  We need
-        // to reinsert in one of rnew->up->up->children().  We know
-        // that rnew->up->up->children() is not nil (collapsing hs
-        // been done in remove()).
-
-        RTelem *pp = p->parent();
-        if (pp == RT_ROOT_UP)
-            // child of root, should not have been removed
-            return (false);
-
-        r = pp->find_branch(rnew);
+    // Choose best leaf
+    RTelem *r = rt_root;
+    if (!r->children()) {
+        RTelem *rn = new RTelem;
+        rn->link(rt_root);
+        rn->link(rnew);
+        rt_allocated = 2;
+        rt_root = rn;
+        rt_root->set_parent(RT_ROOT_UP);
+        return (true);
     }
-    else {
-        // Choose best leaf
-
-        r = rt_root;
-        if (!r->children()) {
-            RTelem *rn = new RTelem;
-            rn->link(rt_root);
-            rn->link(rnew);
-            rt_allocated = 2;
-            rt_root = rn;
-            rt_root->set_parent(RT_ROOT_UP);
-            return (true);
-        }
-        while (r->children()->children())
-            r = r->find_branch(rnew);
-    }
+    while (r->children()->children())
+        r = r->find_branch(rnew);
 
     if (r->get_count() < RTelem::e_maxlinks) {
         r->link(rnew);
@@ -483,8 +537,8 @@ RTree::insert_prv(RTelem *rnew)
     }
     else {
         RTelem *rnx = rnew;
+        RTwhere_t wh = r->link(rnx);
         for (;;) {
-            RTwhere_t wh = r->link(rnx);
 
             if (r->parent() != RT_ROOT_UP) {
 #ifdef RT_SIMPLE
@@ -560,56 +614,63 @@ RTree::insert_prv(RTelem *rnew)
                     // ahead of any duplicates.
 
                     int cnt = wh == RT_LAST ? RTelem::e_maxlinks - xcnt : 1;
-                    RTelem *r0 = 0;
-                    for ( ; cnt; cnt--) {
+                    RTelem *r0 = 0, *rn = 0;
+                    for ( int c = cnt; c; c--) {
                         RTelem *rt = r->children();
                         r->set_children(rt->sibling());
-                        rt->unhook(r);
+                        rt->unhook(rx);
                         r->dec_count();
-                        rt->set_sibling(r0);
-                        r0 = rt;
+                        if (!r0)
+                            r0 = rn = rt;
+                        else {
+                            rn->set_sibling(rt);
+                            rn = rt;
+                        }
+                        rx->e_BB.add(&rt->e_BB);
                     }
-                    RTelem *rn;
-                    for (RTelem *rt = r0; rt; rt = rn) {
-                        rn = rt->sibling();
-                        rt->set_sibling(0);
-                        rx->link(rt);
-                    }
+
+                    RTelem *rt = rx->children();
+                    while (rt->sibling())
+                        rt = rt->sibling();
+                    rt->set_sibling(r0);
+                    rx->set_count(xcnt + cnt);
                     rx->expand_bb_to_root();
-                    while (r != RT_ROOT_UP) {
-                        r->compute_bb();
-                        r = r->parent();
+                    rx = r;
+                    while (rx != RT_ROOT_UP) {
+                        rx->compute_bb();
+                        rx = rx->parent();
                     }
                     break;
                 }
                 rx = r->next();
                 if (rx && (xcnt = rx->get_count()) < RTelem::e_maxlinks) {
                     int cnt = wh == RT_FIRST ? RTelem::e_maxlinks - xcnt : 1;
-                    for (;;) {
-                        // Note that since we are inserting in
-                        // back-to-front order, correct ordering of
-                        // duplicates is maintained.
 
-                        RTelem *rt = r->children();
-                        while (rt->sibling()->sibling())
-                            rt = rt->sibling();
-                        RTelem *rp = rt;
+                    RTelem *rt = r->children();
+                    int rcnt = r->get_count() - cnt;
+                    for (int c = rcnt-1; c; c--)
                         rt = rt->sibling();
-                        rp->unhook(r);
-                        r->dec_count();
 
-                        cnt--;
-                        if (cnt) {
-                            rx->link(rt);
-                            continue;
-                        }
-                        rx->link(rt);
-                        rx->expand_bb_to_root();
-                        while (r != RT_ROOT_UP) {
-                            r->compute_bb();
-                            r = r->parent();
-                        }
-                        break;
+                    RTelem *r0 = rt->sibling();
+                    rt->set_sibling(0);
+                    r->set_count(rcnt);
+                    r->compute_bb();
+                    for (rt = r0; rt; rt = rt->sibling()) {
+                        rt->set_parent(rx);
+                        rx->e_BB.add(&rt->e_BB);
+                    }
+                    rt = rx->children();
+                    rx->set_children(r0);
+                    while (r0->sibling())
+                        r0 = r0->sibling();
+                    r0->set_sibling(rt);
+                    rx->set_count(xcnt + cnt);
+
+                    rx->expand_bb_to_root();
+                    rx = r;
+                    while (rx != RT_ROOT_UP) {
+                        rx->compute_bb();
+                        rx = rx->parent();
                     }
                     break;
                 }
@@ -617,32 +678,31 @@ RTree::insert_prv(RTelem *rnew)
             }
 
             // Split r such that new node rs < r
-            RTelem *re = 0;
             RTelem *rs = new RTelem;
             int cnt = RTelem::e_maxlinks/2;
             if (wh == RT_LAST)
                 cnt++;
 
+            RTelem *re = 0;
             for (int i = 0; i < cnt; i++) {
                 RTelem *rx = r->children();
                 r->set_children(rx->sibling());
                 rx->unhook(rs);
                 if (!rs->children()) {
                     rs->set_children(rx);
-                    re = rs->children();
                     rs->e_BB = rx->e_BB;
                 }
                 else {
                     re->set_sibling(rx);
-                    re = re->sibling();
                     rs->e_BB.add(&rx->e_BB);
                 }
+                re = rx;
             }
             rs->set_count(cnt);
-            r->set_count(RTelem::e_maxlinks + 1 - cnt);
+            r->set_count(r->get_count() - cnt);
             r->compute_bb();
 
-            p = r->parent();
+            RTelem *p = r->parent();
             if (p == RT_ROOT_UP) {
                 // Grow a new root
                 RTelem *rn = new RTelem;
@@ -657,14 +717,34 @@ RTree::insert_prv(RTelem *rnew)
                 rn->set_count(2);
                 break;
             }
-            p->compute_bb();
+
+            // Stitch in rs just ahead of r.
+            rs->set_parent(p);
+            if (p->children() == r) {
+                p->set_children(rs);
+                rs->set_sibling(r);
+                wh = RT_FIRST;
+            }
+            else {
+                for (RTelem *e = p->children(); e->sibling();
+                        e = e->sibling()) {
+                    if (e->sibling() == r) {
+                        e->set_sibling(rs);
+                        rs->set_sibling(r);
+                        break;
+                    }
+                }
+                wh = RT_MID;
+            }
+            p->e_BB.add(&rs->e_BB);
+            p->e_BB.add(&r->e_BB);
+            p->inc_count();
+
             if (p->get_count() < RTelem::e_maxlinks) {
-                p->link(rs);
                 p->expand_bb_to_root();
                 break;
             }
             r = p;
-            rnx = rs;
         }
     }
     rt_allocated++;
@@ -674,7 +754,18 @@ RTree::insert_prv(RTelem *rnew)
 
     RTelem *rp = rnew->prev();
     if (rp && rnew->op_le(rp))
-        fprintf(stderr, "Ordering error after database insertion!\n");
+        printf("Ordering error 1 after database insertion!\n");
+    RTelem *rn = rnew->next();
+    if (rn && rn->op_lt(rnew))
+        printf("Ordering error 2 after database insertion!\n");
+
+    for (RTelem *rx = rnew; rx != RT_ROOT_UP; rx = rx->parent()) {
+        if (!rx) {
+            printf("Null parent after database insertion!\n");
+            break;
+        }
+        rx->test_nch(true, "After insert, count mismatch");
+    }
 #endif
     return (true);
 }
@@ -796,7 +887,7 @@ RTgen::next_element()
 {
     while (st[sp]) {
         if (BB.isect_i(&st[sp]->oBB())) {
-            if (!st[sp]->children()) {
+            if (st[sp]->is_leaf()) {
                 RTelem *last = st[sp];
                 advance();
                 return (last);
@@ -820,7 +911,7 @@ RTgen::next_element_notouch()
 {
     while (st[sp]) {
         if (BB.isect_x(&st[sp]->oBB())) {
-            if (!st[sp]->children()) {
+            if (st[sp]->is_leaf()) {
                 RTelem *last = st[sp];
                 advance();
                 return (last);
@@ -844,7 +935,7 @@ RTgen::next_element_exact()
 {
     while (st[sp]) {
         if (BB <= st[sp]->oBB()) {
-            if (!st[sp]->children() && BB == st[sp]->oBB()) {
+            if (st[sp]->is_leaf() && BB == st[sp]->oBB()) {
                 RTelem *last = st[sp];
                 advance();
                 return (last);
@@ -867,7 +958,7 @@ RTelem *
 RTgen::next_element_nchk()
 {
     while (st[sp]) {
-        if (!st[sp]->children()) {
+        if (st[sp]->is_leaf()) {
             RTelem *last = st[sp];
             advance();
             return (last);

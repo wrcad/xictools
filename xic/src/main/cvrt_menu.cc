@@ -261,7 +261,7 @@ namespace {
         }
         else if (type == Fcif) {
             def_cellname(buf, namelist);
-            strcat(buf, ".cif");
+            strcat(buf, "_new.cif");
             char *s = XM()->SaveFileDlg("New CIF file name? ", buf);
             if (!s || !*s) {
                 PL()->ShowPrompt("Aborted.");
@@ -280,7 +280,7 @@ namespace {
         }
         if (type == Fgds) {
             def_cellname(buf, namelist);
-            strcat(buf, ".gds");
+            strcat(buf, "_new.gds");
             char *s = XM()->SaveFileDlg("New GDSII file name? ", buf);
             if (!s || !*s) {
                 PL()->ShowPrompt("Aborted.");
@@ -299,7 +299,7 @@ namespace {
         }
         if (type == Fcgx) {
             def_cellname(buf, namelist);
-            strcat(buf, ".cgx");
+            strcat(buf, "_new.cgx");
             char *s = XM()->SaveFileDlg("New CGX file name? ", buf);
             if (!s || !*s) {
                 PL()->ShowPrompt("Aborted.");
@@ -318,7 +318,7 @@ namespace {
         }
         if (type == Foas) {
             def_cellname(buf, namelist);
-            strcat(buf, ".oas");
+            strcat(buf, "_new.oas");
             char *s = XM()->SaveFileDlg("New OASIS file name? ", buf);
             if (!s || !*s) {
                 PL()->ShowPrompt("Aborted.");
