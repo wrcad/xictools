@@ -137,7 +137,9 @@ OP("vmore",             JJ_MQUEST_VM,       IF_REAL|IF_VOLT,
 OP("vdp",               JJ_MQUEST_VDP,      IF_REAL|IF_VOLT,
                 "Dropback voltage"),
 IO("icfact",            JJ_MOD_ICF,         IF_REAL,
-                "Ratio of Ic to qp current at gap"),
+                "Ratio of Ic to qp gap current"),
+IO("icfct",             JJ_MOD_ICF,         IF_REAL,
+                "Ratio of Ic to qp gap current"),
 IO("vshunt",            JJ_MOD_VSHUNT,      IF_REAL|IF_VOLT,
                 "Implied extra shunt R=Vshunt/Ic")
 };

@@ -1,0 +1,27 @@
+* Josephson junction I-V curve demo (rtype=1)
+
+*
+* One can plot a pretty decent iv curve using transient analysis.
+* This can show the differences between the various model options.
+*
+b1 1 0 100 jj1
+v1 2 0 pwl(0 0 2n 70m 4n 0 5n 0)
+r1 2 1 100
+*
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+
+*Nb 1000 A/cm2   area = 30 square microns
+.model jj1 jj(level=1 rtype=1,cct=1,vgap=2.8m,delv=.1m,
++ icrit=0.3m,rsub=100,rnorm=5.4902,cap=1.14195p)
+*
+.tran 5p 5n
+ 
+.control
+run
+plot -i(v1) vs v(1)
+edit
+.endc
+

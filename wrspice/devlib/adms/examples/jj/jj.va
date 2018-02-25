@@ -31,6 +31,11 @@
 // Josephson Junction Model
 // This model is intended for transient analysis only.
 //
+// Version 1.03, Feb 23, 2018
+//   Changed quasiparticle equations to match WRspice internal model.
+//   Specifically Ic/ifact is now the step height rather than the absolute
+//   height at the gap top.  Also changed default icfct from 0.7 to pi/4
+//   to match WRspice internal model.
 // Version 1.02, Oct 21, 2016
 //   Fix syntax in parameter tsfactor line.
 // Version 1.01, Oct 20, 2016
@@ -138,19 +143,24 @@ parameter real rsub     = `Vm from [10.0:100.0];
 parameter real rnorm    = `IcR from [1.5:1.9];
 parameter real vshunt   = 0 from [1u:1m];
 
-// The quasiparticle current at the onset of the normal branch, per the
-// critical current.
-parameter real icfct    = 0.7 from [0.5:`M_PI_4];
+// Ratio of critical current to quasiparticle step height.
+parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4];
 
 // Dropback voltage.
 parameter real vdpbak = sqrt(`PHI0_2PI*icrit/cap);
 
-real phi, dv2, avj, i1, i2, vtmp, gshunt, scale;
+real phi, dv2, avj, i1, i2, vmore, vless, vtmp, gshunt, scale;
 
 analog begin
 
     // The mfactor and area parameters are equivalent.
     scale = area*mfactor;
+
+    dv2 = delv/2.0;
+    vless = vgap - dv2;
+    vmore = vgap + dv2;
+    i1 = vless/rsub;
+    i2 = icrit/icfct;
 
     if (analysis("static") != 0)
         begin
@@ -189,23 +199,19 @@ analog begin
         // Geometric capacitance current.
         I(bc) <+ scale*cap*ddt(V(bc));
 
-        // Quasiparticle current.
+        // Quasiparticle current, piecewise-linear model.
         if (rtype == 1)
             begin
-            dv2 = delv/2.0;
             avj = abs(V(br));
-            if (avj <= vgap - dv2)
+            if (avj <= vless)
                 I(br) <+ scale*V(br)/rsub;
-            else if (avj < vgap + dv2)
-                begin
-                i1 = (vgap - dv2)/rsub;
-                i2 = icrit/icfct;
-                I(br) <+ scale*(V(br)/avj)*(i1 + (i2-i1)*(avj -
-                    vgap + dv2)/delv);
-                end
             else
-                I(br) <+ scale*(V(br)/avj)*(icrit/icfct +
-                    (avj - vgap - dv2)/rnorm);
+                begin
+                if (avj < vmore)
+                    I(br) <+ scale*(V(br)/avj)*(i1 + i2*(avj - vless)/delv);
+                else
+                    I(br) <+ scale*(V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorm);
+                end
             end
 
         if (vshunt > 0)
