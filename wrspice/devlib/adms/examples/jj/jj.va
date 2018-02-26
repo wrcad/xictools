@@ -31,6 +31,8 @@
 // Josephson Junction Model
 // This model is intended for transient analysis only.
 //
+// Version 1.04, Feb 25, 2018
+//   Made quasiparticle expressions prettier (no logic change).
 // Version 1.03, Feb 23, 2018
 //   Changed quasiparticle equations to match WRspice internal model.
 //   Specifically Ic/ifact is now the step height rather than the absolute
@@ -205,13 +207,10 @@ analog begin
             avj = abs(V(br));
             if (avj <= vless)
                 I(br) <+ scale*V(br)/rsub;
+            else if (avj < vmore)
+                I(br) <+ scale*(V(br)/avj)*(i1 + i2*(avj - vless)/delv);
             else
-                begin
-                if (avj < vmore)
-                    I(br) <+ scale*(V(br)/avj)*(i1 + i2*(avj - vless)/delv);
-                else
-                    I(br) <+ scale*(V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorm);
-                end
+                I(br) <+ scale*(V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorm);
             end
 
         if (vshunt > 0)
