@@ -35,7 +35,7 @@ oses)
 LinuxFedora27 \
 LinuxOpenSUSE42 \
 LinuxRHEL5.i686 \
-LinusRHEL5 \
+LinuxRHEL5 \
 LinuxRHEL6 \
 LinuxRHEL7 \
 LinuxUbuntu17 \
@@ -54,7 +54,7 @@ host)
     echo byron;;
   LinuxRHEL5.i686)
     echo shelley;;
-  LinusRHEL5)
+  LinuxRHEL5)
     echo shelley;;
   LinuxRHEL6)
     echo poe;;
@@ -76,7 +76,7 @@ sfx)
     echo rpm;;
   LinuxRHEL5.i686)
     echo rpm;;
-  LinusRHEL5)
+  LinuxRHEL5)
     echo rpm;;
   LinuxRHEL6)
     echo rpm;;

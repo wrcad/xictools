@@ -61,6 +61,14 @@ Authors: 1987 Wayne A. Christopher
 #define M_2_SQRTPI 1.12837916709551257390  // 2/sqrt(pi)
 #endif
 
+#ifndef M_LN2
+#define M_LN2		0.69314718055994530942	/* log_e 2 */
+#endif
+
+namespace {
+double TWOSQRTLN2 = 2.0*sqrt(M_LN2);
+}
+
 
 //
 // "Tran" function setup/evaluation (IFtranData methods).
@@ -109,7 +117,13 @@ IFtranData::IFtranData(PTftType tp, double *list, int num, double *list2,
         set_V1(list[0]);
         set_V2(num >= 2 ? list[1] : list[0]);
         set_TD(num >= 3 ? list[2] : 0.0);
-        set_FWHM(num >= 4 ? list[3] : 0.0);
+
+        // New in 4.3.3, default is to take pulse width as FWHM, used
+        // to just take this as the "variance".  However, if the value
+        // is negative, use the old setup with the absolute value.
+        set_GPW(num >= 4 ?
+            (list[3] >= 0.0 ? list[3]/TWOSQRTLN2 : -list[3]) : 0.0);
+
         set_RPT(num >= 5 ? list[4] : 0.0);
         return;
 
@@ -404,8 +418,22 @@ IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
         }
     }
     else if (td_type == PTF_tGPULSE) {
-        if (FWHM() == 0.0)
-            set_FWHM(step);
+        if (GPW() == 0.0) {
+
+            // A = phi0*fwhm/(2*sqrt(pi*ln(2)))
+            // fwhm = A*(2*sqrt(pi*ln(2)))/phi0
+            // If no pulse width was given, new default in 4.3.3 is to
+            // generate an SFQ pulse with given amplitude, or if the
+            // amplitude is zero, use TSTEP as FWHM for SFQ.
+
+            if (V2() != V1()) {
+                double A = fabs(V2() - V1());
+                set_GPW(TWOSQRTLN2*wrsCONSTphi0/(A*sqrt(M_PI)));
+            }
+            else {
+                set_GPW(step/TWOSQRTLN2);
+            }
+}
 
         // If the pulse has zero amplitude, take it to be a single
         // flux quantum (SFQ) pulse.  This is a pulse that when
@@ -414,7 +442,7 @@ IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
         // encountered in superconducting electronics.
 
         if (V2() == V1())
-            set_V2(V1() + 0.5*wrsCONSTphi0*M_2_SQRTPI/FWHM());
+            set_V2(V1() + 0.5*wrsCONSTphi0*M_2_SQRTPI/GPW());
     }
     else if (td_type == PTF_tPWL) {
         if (!skipbr && ckt) {
@@ -592,7 +620,7 @@ IFtranData::eval_tGPULSE(double t)
     const double rchk = 5.0;
     if (RPT() > 0.0) {
         double per = RPT();
-        double minper = FWHM() + FWHM();
+        double minper = GPW() + GPW();
         if (per >= minper) {
 
             int ifirst, ilast;
@@ -601,24 +629,24 @@ IFtranData::eval_tGPULSE(double t)
                 ilast = 0;
             }
             else {
-                double del = rchk*FWHM();
+                double del = rchk*GPW();
                 ifirst = (int)rint((t - TD() - del)/per);
                 ilast = (int)rint((t - TD() + del)/per);
             }
             for (int i = ifirst; i <= ilast; i++) {
                 double time = t - i*per;
-                double a = (time - TD())/FWHM();
+                double a = (time - TD())/GPW();
                 V += exp(-a*a);
             }
         }
     }
     else {
-        double a = (t - TD())/FWHM();
+        double a = (t - TD())/GPW();
         if (fabs(a) < rchk)
             V += exp(-a*a);
 
         for (int i = 5; i < td_numcoeffs; i++) {
-            a = (t - td_coeffs[i])/FWHM();
+            a = (t - td_coeffs[i])/GPW();
             if (fabs(a) < rchk)
                 V += exp(-a*a);
         }
@@ -634,7 +662,7 @@ IFtranData::eval_tGPULSE_D(double t)
     const double rchk = 5.0;
     if (RPT() > 0.0) {
         double per = RPT();
-        double minper = FWHM() + FWHM();
+        double minper = GPW() + GPW();
         if (per >= minper) {
 
             int ifirst, ilast;
@@ -643,26 +671,26 @@ IFtranData::eval_tGPULSE_D(double t)
                 ilast = 0;
             }
             else {
-                double del = rchk*FWHM();
+                double del = rchk*GPW();
                 ifirst = (int)rint((t - TD() - del)/per);
                 ilast = (int)rint((t - TD() + del)/per);
             }
             for (int i = ifirst; i <= ilast; i++) {
                 double time = t - i*per;
-                double a = (time - TD())/FWHM();
-                V += exp(-a*a)*(-2*a/FWHM());
+                double a = (time - TD())/GPW();
+                V += exp(-a*a)*(-2*a/GPW());
             }
         }
     }
     else {
-        double a = (t - TD())/FWHM();
+        double a = (t - TD())/GPW();
         if (fabs(a) < rchk)
-            V += exp(-a*a)*(-2*a/FWHM());
+            V += exp(-a*a)*(-2*a/GPW());
 
         for (int i = 5; i < td_numcoeffs; i++) {
-            a = (t - td_coeffs[i])/FWHM();
+            a = (t - td_coeffs[i])/GPW();
             if (fabs(a) < rchk)
-                V += exp(-a*a)*(-2*a/FWHM());
+                V += exp(-a*a)*(-2*a/GPW());
         }
     }
     return ((V2() - V1())*V);

@@ -2010,7 +2010,7 @@ analysis, see \ref{tranline} for explanation.
 \index{gaussian pulse specification}
 \index{gpulse tran function}
 
-% spSources.hlp:gpulse 031516
+% spSources.hlp:gpulse 022818
 
 \spgen{gpulse({\it v1 v2 td pw per td1 td2} ... )}
 \spexamp{vsfq 0 0 gpulse(0 0 20p 2p 0 40p 60p)\\
@@ -2023,7 +2023,7 @@ vpulse 1 0 gpulse(0 1 100p 5p 100p)}
 {\it v1} & base value & 0.0 & volts or amps\\ \hline
 {\it v2} & pulse peak value & {\it v1} & volts or amps\\ \hline
 {\it td} & delay time & 0.0 & seconds\\ \hline
-{\it pw} & pulse width & {\vt tstep} & seconds\\ \hline
+{\it pw} & pulse width & see description & seconds\\ \hline
 {\it per} & period & 0.0 & seconds\\ \hline
 \end{tabular}
 \end{quote}
@@ -2031,35 +2031,61 @@ vpulse 1 0 gpulse(0 1 100p 5p 100p)}
 This generates a gaussian pulse signal, and as a special case, as a
 voltage source will generate single flux quantum (SFQ) pulses.
 
-The expression used to generate a pulse is
+{\bf Warning:} The pulse width is interpreted as the full-width
+half-maximum in release 4.3.3 and later.  In earlier releases, this
+was taken as the ``variance'' (width where amplitude is 1/e of the
+peak).  Presently, this interpretation can be coerced by giving a {\bf
+negative} pulse width, the absolute value will be used as the
+variance.
+
+The expression used to generate a pulse is\\
+$pw > 0$:\\
 \begin{quote}
-{\it value} = $v1 + (v2 - v1){\cdot}exp(-((time-td)/pw)^2)$
+{\it value} = $v1 + (v2 - v1){\cdot}exp(-(4\cdot\ln(2)\cdot(time-td)/pw)^2)$
+\end{quote}
+$pw < 0$:\\
+\begin{quote}
+{\it value} = $v1 + (v2 - v1){\cdot}exp(-((time-td)/-pw)^2)$
 \end{quote}
 
 The {\it td} delay value specifies the time of the initial pulse peak. 
-The {\it pw} defines the pulse width, as evident in the expression. 
-If the {\it per} is given a nonzero value larger than twice the {\it
-pw}, a train of pulses will be generated, the first being at {\it td}
-and at time increments of {\it per} thereafter.  A {\it per}
-explicitly zero can be followed by any number of time values.  A pulse
-will be generated to peak at each of these values, in addition to the
-{\it td} value.
+The {\it pw} defines the pulse width, as described above.  If the {\it
+per} is given a nonzero value larger than twice the {\it pw}, a train
+of pulses will be generated, the first being at {\it td} and at time
+increments of {\it per} thereafter.  A {\it per} explicitly zero can
+be followed by any number of time values.  A pulse will be generated
+to peak at each of these values, in addition to the {\it td} value.
 
-If the amplitude is set to zero, i.e., {\it v2} = {\it v1\/}, the
-amplitude will be computed from the pulse width to yield a single flux
-quantum pulse.  Such a pulse, as a voltage applied across an inductor,
-will induce a single flux quantum of $\Phi_0$ = $h/(2{\cdot}\pi)$
-= 2.06783fWb ({\it h} is Planck's constant, {\it e} is the electron
-charge).  With superconductors, the flux that threads superconducting
-loops is quantized in increments of this value, due to the requirement
-that the superconducting wave function meet periodic boundary
-conditions around the loop.  The computed amplitude is
-
+A single flux quantum (SFQ) pulse, as a voltage applied across an
+inductor, will induce a single flux quantum of
 \begin{quote}
-$v2 = v1 + \Phi_0/(pw{\cdot}\sqrt\pi)$
+ $\Phi_0$ = $h/(2e)$ = 2.06783fWb
+\end{quote}
+where {\it h} is Planck's constant, {\it e} is the electron charge. 
+With superconductors, the flux that threads superconducting loops is
+quantized in increments of this value, due to the requirement that the
+superconducting wave function meet periodic boundary conditions around
+the loop.
+
+If the {\vt pw} is not given or given as zero, the source will be
+configured to produce an SFQ pulse with the given amplitude.  Thus,
+the actual pulse width will be computed internally, with amplitude not
+zero, as
+\begin{quote}
+$pw = 2\sqrt{ln(2)}\Phi_0/(abs(v2-v1)\sqrt\pi)$
+\end{quote}
+where $\Phi_0$ is the flux quantum whose value is given above.
+
+Similarly, if the amplitude is set to zero, i.e., {\it v2} = {\it
+v1\/}, the amplitude will be computed from the pulse width to yield an
+SFQ pulse.  The computed amplitude is
+\begin{quote}
+$v2 = v1 + 2\sqrt{ln(2)}\Phi_0/(pw\sqrt\pi)$
 \end{quote}
 
-where $\Phi_0$ is the flux quantum whose value is given above.
+If both amplitude and pulse width are set to zero or not given, the
+full-width half-maximum SFQ pulse width is taken as the TSTEP
+transient analysis parameter, and the amplitude is computed as above.
 
 In superconducting electronics, single flux quantum pulses are
 generated and received by logic circuits.  A generator of SFQ pulses

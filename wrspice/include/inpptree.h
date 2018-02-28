@@ -180,9 +180,9 @@ struct IFtranData
     void set_PER(double d)     { td_parms[6] = d; }
 
     // GPULSE
-    double FWHM()    const { return (td_parms[3]); }
+    double GPW()     const { return (td_parms[3]); }
     double RPT()     const { return (td_parms[4]); }
-    void set_FWHM(double d)    { td_parms[3] = d; }
+    void set_GPW(double d)     { td_parms[3] = d; }
     void set_RPT(double d)     { td_parms[4] = d; }
 
     // SIN

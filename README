@@ -253,6 +253,8 @@ Run the installer.  Specify c:\cygwin64 as the installation location.
 The basic tools are already selected for initial installation, but you
 will need a few additional things, including:
   git, autoconf-2.69, make, flex, bison, patch
+All of these are in category "Devel", the autoconf is listed as
+"autoconf2.5" for some reason last I looked.
 
 You will run the installer in the future to update your packages, and
 to add packages needed later.
