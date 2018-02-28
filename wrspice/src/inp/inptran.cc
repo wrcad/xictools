@@ -57,8 +57,8 @@ Authors: 1987 Wayne A. Christopher
 #define MAXFLOAT 3.40282346638528860e+38
 #endif
 
-#ifndef M_2_SQRTPI
-#define M_2_SQRTPI 1.12837916709551257390  // 2/sqrt(pi)
+#ifndef M_PI
+#define M_PI		3.14159265358979323846	/* pi */
 #endif
 
 #ifndef M_LN2
@@ -66,7 +66,8 @@ Authors: 1987 Wayne A. Christopher
 #endif
 
 namespace {
-double TWOSQRTLN2 = 2.0*sqrt(M_LN2);
+const double TWOSQRTLN2     = 2.0*sqrt(M_LN2);
+const double PHI0_SQRTPI    = wrsCONSTphi0/sqrt(M_PI);
 }
 
 
@@ -420,20 +421,15 @@ IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
     else if (td_type == PTF_tGPULSE) {
         if (GPW() == 0.0) {
 
-            // A = phi0*fwhm/(2*sqrt(pi*ln(2)))
-            // fwhm = A*(2*sqrt(pi*ln(2)))/phi0
             // If no pulse width was given, new default in 4.3.3 is to
             // generate an SFQ pulse with given amplitude, or if the
             // amplitude is zero, use TSTEP as FWHM for SFQ.
 
-            if (V2() != V1()) {
-                double A = fabs(V2() - V1());
-                set_GPW(TWOSQRTLN2*wrsCONSTphi0/(A*sqrt(M_PI)));
-            }
-            else {
+            if (V2() != V1())
+                set_GPW(PHI0_SQRTPI/fabs(V2() - V1()));
+            else
                 set_GPW(step/TWOSQRTLN2);
-            }
-}
+        }
 
         // If the pulse has zero amplitude, take it to be a single
         // flux quantum (SFQ) pulse.  This is a pulse that when
@@ -442,7 +438,7 @@ IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
         // encountered in superconducting electronics.
 
         if (V2() == V1())
-            set_V2(V1() + 0.5*wrsCONSTphi0*M_2_SQRTPI/GPW());
+            set_V2(V1() + PHI0_SQRTPI/GPW());
     }
     else if (td_type == PTF_tPWL) {
         if (!skipbr && ckt) {
