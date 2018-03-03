@@ -180,7 +180,11 @@ JJdev::JJdev()
     dv_numModelParms = NUMELEMS(JJmPTable);
     dv_modelParms = JJmPTable;
 
+#ifdef NEWJJDC
+    dv_flags = (DV_TRUNC | DV_NOAC | DV_JJSTEP);
+#else
     dv_flags = (DV_TRUNC | DV_NOAC | DV_NODCT | DV_JJSTEP);
+#endif
 };
 
 

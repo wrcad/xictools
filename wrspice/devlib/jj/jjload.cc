@@ -80,6 +80,70 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
     sJJinstance *inst = (sJJinstance*)in_inst;
     sJJmodel *model = (sJJmodel*)inst->GENmodPtr;
 
+    struct jjstuff js;
+
+#ifdef NEWJJDC
+    // For DC analysis, Josephson junctions require special treatment. 
+    // The usual SPICE voltage-based calculation can't be used, since
+    // 1. all (or most) node voltages are identically zero,
+    // 2. inductors can't be shorted, since they contribute to the
+    //    current distribution,
+    // 3. quantum mechanical "phase" must be quantized around
+    //    JJ/inductor loops.
+    //
+    // We enforce these by taking the voltage difference across JJs
+    // and inductors as the device phase, scaled downward by a large
+    // number.  The resulting device "voltages" are tiny enough to be
+    // negligible in comparison to "true" voltages in the circuit. 
+    // However, one can obtain the phase, and hence JJ/inductor
+    // currents, by un-scaling the "voltage" and applying the formula
+    // for device current given phase.  This requires special
+    // treatment in ind/mut devices, and transmission lines with no
+    // serial loss (total inductance).  All other devices are treated
+    // normally.
+    //
+    // A JJ can be modeled by the basic formula i = Ic*sin(N*V).
+    // Inductors look like resistors, Li = N*V*phi0/(2*pi)
+    // N is the scale factor. which might be 1e6 for example.
+    //
+    // If there are no nonzero voltage sources, then in a pure SFQ
+    // circuit all node voltages will be zero.  We would not need the
+    // scaling in this case.  Performing a DCOP would yield a
+    // "voltage" for each node which is equal to the phase.
+    //
+    // The scaling makes it possible to include voltage sources and
+    // resistive components in the circuit.  The small phase
+    // difference is assumed negligible but would cause tiny errors. 
+    // For example, consider a current source versus a voltage source
+    // with series resistance.  The latter applied current would be
+    // reduced by the scaled phase that would appear across a biased
+    // junction or inductor.
+    //
+    // Note that for this to work, all JJs must have bias current
+    // less than their Ic.  Both DCOP and DC sweep analysis are
+    // available.
+
+    if ((ckt->CKTmode & MODEDC) && !(ckt->CKTmode & MODEUIC)) {
+
+        js.js_ci  = (inst->JJcontrol) ?
+                *(ckt->CKTrhsOld + inst->JJbranch) : 0;
+
+        js.js_vj  = *(ckt->CKTrhsOld + inst->JJposNode) -
+                *(ckt->CKTrhsOld + inst->JJnegNode);
+
+        js.js_phi = ckt->CKTjjDCscale*js.js_vj;
+
+        js.js_pfac = 1.0;
+        js.js_gqt = 0;
+        js.js_crhs = 0;
+        js.js_dcrt = 0;
+        js.js_crt  = inst->JJcriti;
+        if (model->JJictype != 1)
+            js.jj_ic(model, inst);
+        js.jj_load(ckt, model, inst);
+        return (OK);
+    }
+#else
     // We want to provide some kind of DC operating point analysis
     // capability, mostly for use in hybrid JJ/semiconductor circuits
     // where we want to initialise the semiconductor part with JJ's
@@ -129,8 +193,8 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         ckt->ldadd(inst->JJnegNegPtr, g);
         return (OK);
     }
+#endif
 
-    struct jjstuff js;
 
     js.js_pfac = ckt->CKTdelta / PHI0_2PI;
     if (ckt->CKTorder > 1)
@@ -241,11 +305,19 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         }
         else {
             js.js_vj  = 0;
+#ifdef NEWJJDC
+            js.js_phi = (*(ckt->CKTrhsOld + inst->JJposNode) -
+                *(ckt->CKTrhsOld + inst->JJnegNode))*ckt->CKTjjDCscale;
+            js.js_ci  = (inst->JJcontrol) ?
+                    *(ckt->CKTrhsOld + inst->JJbranch) : 0;
+#else
             js.js_phi = 0;
-            js.js_ci  = 0;
+            js.js_ci  = 0;  // This isn't right?
+#endif
         }
     }
     else {
+        // Probably don't get here unless we allow AC analysis.
         if (ckt->CKTmode & MODEUIC) {
             js.js_vj  = inst->JJinitVoltage;
             js.js_phi = inst->JJinitPhase;
@@ -253,8 +325,15 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         }
         else {
             js.js_vj  = 0;
+#ifdef NEWJJDC
+            js.js_phi = (*(ckt->CKTrhsOld + inst->JJposNode) -
+                *(ckt->CKTrhsOld + inst->JJnegNode))*ckt->CKTjjDCscale;
+            js.js_ci  = (inst->JJcontrol) ?
+                    *(ckt->CKTrhsOld + inst->JJbranch) : 0;
+#else
             js.js_phi = 0;
-            js.js_ci  = 0;
+            js.js_ci  = 0;  // This isn't right?
+#endif
         }
 
         *(ckt->CKTstate1 + inst->JJvoltage) = js.js_vj;
@@ -411,8 +490,8 @@ jjstuff::jj_ic(sJJmodel *model, sJJinstance *inst)
     if (model->JJictype == 2) {
 
         if (ci != 0.0) {
-            double ang, xx = js_crt;
-            ang  = M_PI * ci / model->JJccsens;
+            double xx = js_crt;
+            double ang  = M_PI * ci / model->JJccsens;
             js_crt *= sin(ang)/ang;
             js_dcrt = xx*(cos(ang) - js_crt)/ci;
         }
@@ -477,9 +556,21 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
         gcs = -gcs;
     }
     crt  *= si;
+#ifdef NEWJJDC
+    if (ckt->CKTmode & MODEDC) {
+        crhs += crt - gcs*js_phi;
+        gqt  = ckt->CKTjjDCscale*gcs;
+    }
+    else {
+        crhs += crt - gcs*js_vj;
+        gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
+        crhs += inst->JJdelVdelT*inst->JJcap;
+    }
+#else
     crhs += crt - gcs*js_vj;
     gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
     crhs += inst->JJdelVdelT*inst->JJcap;
+#endif
 
     if (model->JJvShuntGiven)
         gqt += inst->JJcriti/model->JJvShunt;
@@ -491,43 +582,35 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
 
     if (!inst->JJnegNode) {
         ckt->ldadd(inst->JJposPosPtr, gqt);
-        if (!inst->JJcontrol)
-            ckt->rhsadd(inst->JJposNode, -crhs);
-        else {
+        if (inst->JJcontrol) {
             double temp = js_dcrt*si;
             ckt->ldadd(inst->JJposIbrPtr, temp);
             crhs -= temp*js_ci;
-            ckt->rhsadd(inst->JJposNode, -crhs);
         }
+        ckt->rhsadd(inst->JJposNode, -crhs);
     }
     else if (!inst->JJposNode) {
         ckt->ldadd(inst->JJnegNegPtr, gqt);
-        if (!inst->JJcontrol)
-            ckt->rhsadd(inst->JJnegNode, crhs);
-        else {
+        if (inst->JJcontrol) {
             double temp = js_dcrt*si;
             ckt->ldadd(inst->JJnegIbrPtr, -temp);
             crhs -= temp*js_ci;
-            ckt->rhsadd(inst->JJnegNode, crhs);
         }
+        ckt->rhsadd(inst->JJnegNode, crhs);
     }
     else {
         ckt->ldadd(inst->JJposPosPtr, gqt);
         ckt->ldadd(inst->JJposNegPtr, -gqt);
         ckt->ldadd(inst->JJnegPosPtr, -gqt);
         ckt->ldadd(inst->JJnegNegPtr, gqt);
-        if (!inst->JJcontrol) {
-            ckt->rhsadd(inst->JJposNode, -crhs);
-            ckt->rhsadd(inst->JJnegNode, crhs);
-        }
-        else {
+        if (inst->JJcontrol) {
             double temp = js_dcrt*si;
             ckt->ldadd(inst->JJposIbrPtr, temp);
             ckt->ldadd(inst->JJnegIbrPtr, -temp);
             crhs -= temp*js_ci;
-            ckt->rhsadd(inst->JJposNode, -crhs);
-            ckt->rhsadd(inst->JJnegNode, crhs);
         }
+        ckt->rhsadd(inst->JJposNode, -crhs);
+        ckt->rhsadd(inst->JJnegNode, crhs);
     }
 #ifndef USE_PRELOAD
     if (inst->JJphsNode > 0)

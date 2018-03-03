@@ -62,6 +62,8 @@ DCTanalysis::anFunc(sCKT *ckt, int restart)
                 DEV.device(m->GENmodType)->name());
             return (OK);
         }
+        if (DEV.device(m->GENmodType)->flags() & DV_JJSTEP)
+            ckt->CKTjjPresent = true;
     }
     ckt->CKTcurrentAnalysis |= DOING_TRCV;
 

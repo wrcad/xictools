@@ -78,13 +78,28 @@ namespace {
 // The inductors MUST be loaded AFTER the mutual inductors.
 //
 
+
 int
 INDdev::load(sGENinstance *in_inst, sCKT *ckt)
 {
-    if (ckt->CKTmode & MODEDC)
-        return (OK);
-
     sINDinstance *inst = (sINDinstance*)in_inst;
+
+    if (ckt->CKTmode & MODEDC) {
+#ifdef NEWJJDC
+        if (ckt->CKTjjPresent) {
+            // The voltage across the inductor is taken as the
+            // inductor phase scaled by a large value so that the
+            // voltage is small (microvolts).  This is for use when
+            // finding the DCOP when Josephson junctions are present.
+            // See jjload.cc.
+
+            double res = 2*M_PI*inst->INDinduct/
+                (wrsCONSTphi0*ckt->CKTjjDCscale);
+            ckt->ldadd(inst->INDibrIbrptr, -res);
+        }
+#endif
+        return (OK);
+    }
 
     if (ckt->CKTmode & MODEINITFLOAT) {
 

@@ -66,6 +66,10 @@ Authors: 1985 Thomas L. Quarles
 #endif
 #endif
 
+// Enable new code to sopport a true DCOP with Josephson junctions.
+// See description in devlib/jj/jjload.cc.
+#define NEWJJDC
+
 // references
 class spMatrixFrame;
 class cThreadPool;
@@ -2042,6 +2046,9 @@ public:
     double CKTomega;        // current frequency for ac
     double CKTsrcFact;      // source stepping factor
     double CKTdiagGmin;     // gmin stepping
+#ifdef NEWJJDC
+    double CKTjjDCscale;    // voltage to phase scaling in Josephson DCAN
+#endif
 
     double *CKTrhs;         // current rhs value - being loaded
     double *CKTrhsOld;      // previous rhs value for convergence testing

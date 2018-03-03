@@ -374,6 +374,9 @@ TRANanalysis::tran_dcoperation(sCKT *ckt, int restart)
                 (ckt->CKTmode & MODESCROLL) | MODETRANOP | MODEINITFLOAT,
                 ckt->CKTcurTask->TSKdcMaxIter);
 
+#ifndef NEWJJDC
+// With the new approach, we need to carry over the JJ phase and
+// inductor current computed in DCOP.  This is done in model code.
             if (ckt->CKTjjPresent) {
                 // With JJ's, maintaining the phase relationship
                 // between inductors and JJ's in loops requires that
@@ -385,6 +388,7 @@ TRANanalysis::tran_dcoperation(sCKT *ckt, int restart)
 
                 DEV.zeroInductorCurrent(ckt);
             }
+#endif
         }
         if (error)
             return (error);

@@ -70,6 +70,26 @@ MUTdev::load(sGENinstance *in_inst, sCKT *ckt)
             sqrt(inst->MUTind1->INDinduct * inst->MUTind2->INDinduct);
     }
 
+    if (ckt->CKTmode & MODEDC) {
+#ifdef NEWJJDC
+        if (ckt->CKTjjPresent) {
+            // The voltage across the inductor is taken as the
+            // inductor phase scaled by a large value so that the
+            // voltage is small (microvolts).  This is for use when
+            // finding the DCOP when Josephson junctions are present.
+            // See jjload.cc.
+
+            double leff = sqrt(
+                inst->MUTind1->INDinduct*inst->MUTind2->INDinduct*
+                inst->MUTfactor);
+            double res = 2*M_PI*leff/(wrsCONSTphi0*ckt->CKTjjDCscale);
+            ckt->ldadd(inst->MUTbr1br2, -res);
+            ckt->ldadd(inst->MUTbr2br1, -res);
+        }
+#endif
+        return (OK);
+    }
+
     if (ckt->CKTmode & MODEINITFLOAT) {
         if (inst->MUTind1->INDtree || inst->MUTind2->INDtree) {
             // Really only need this at first iteration following

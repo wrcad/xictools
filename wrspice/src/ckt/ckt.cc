@@ -223,7 +223,10 @@ sCKT::sCKT()
 {
     memset(this, 0, sizeof(sCKT));
 
-    CKTsrcFact = 1;
+#ifdef NEWJJDC
+    CKTjjDCscale = 1e6;
+#endif
+    CKTsrcFact = 1.0;
     CKTorder = 1;
     CKTstat = new sSTATS();
     CKTnodeTab.reset();
