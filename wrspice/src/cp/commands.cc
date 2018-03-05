@@ -230,6 +230,7 @@ namespace cmdnames {
     const char *cmd_strprefix   = "strprefix";
     const char *cmd_sweep       = "sweep";
     const char *cmd_tbsetup     = "tbsetup";
+    const char *cmd_tbupdate    = "tbupdate";
     const char *cmd_tf          = "tf";
     const char *cmd_trace       = "trace";
     const char *cmd_tran        = "tran";
@@ -237,7 +238,6 @@ namespace cmdnames {
     const char *cmd_undefine    = "undefine";
     const char *cmd_unlet       = "unlet";
     const char *cmd_unset       = "unset";
-    const char *cmd_update      = "update";
     const char *cmd_usrset      = "usrset";
     const char *cmd_version     = "version";
     const char *cmd_where       = "where";
@@ -558,6 +558,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_tbsetup, com_tbsetup, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_ADVANCED, 0, LOTS, 0,
       "[definitions]... : set up GUI from init file." ) ,
+    sCommand( cmd_tbupdate, com_tbupdate, false, false, false,
+      Bfile, Bnone, Bnone, Bnone, E_ADVANCED, 0, 2, 0,
+      "[file] : dump current setup to spinit file." ) ,
     sCommand( cmd_tf, com_tf, false, true, true,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       "[.tran card args] : Do a transient analysis." ) ,
@@ -579,9 +582,6 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_unset, com_unset, false, false, false,
       Bvec, Bvec, Bvec, Bvec, E_DEFHMASK, 0, LOTS, 0,
       "varname ... : Unset a variable." ) ,
-    sCommand( cmd_update, com_update, false, false, false,
-      Bfile, Bnone, Bnone, Bnone, E_ADVANCED, 0, 2, 0,
-      "[file] : dump current setup to spinit file." ) ,
     sCommand( cmd_usrset, com_usrset, false, false, false,
       Bvar, Bvar, Bvar, Bvar, E_DEFHMASK, 0, LOTS, 0,
       ": Display list of option keywords." ) ,

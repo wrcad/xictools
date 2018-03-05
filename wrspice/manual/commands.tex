@@ -41,7 +41,7 @@ The following table lists all built-in commands understood by
 \cb setcase & Check/set case sensitivity for name classes\\ \hline
 \cb setfont & Set graphical interface fonts\\ \hline
 \cb setrdb & Set X resources\\ \hline
-\cb update & Save tool window configuration\\ \hline
+\cb tbupdate & Save tool window configuration\\ \hline
 \cb wrupdate & Download/install program updates\\ \hline
 \hline
 \multicolumn{2}{|c|}{\bf Shell Commands}\\ \hline
@@ -483,7 +483,7 @@ interface, both graphical and non-graphical.
 \cb setcase & Check/set case sensitivity for name classes\\ \hline
 \cb setfont & Set graphical interface fonts\\ \hline
 \cb setrdb & Set X resources\\ \hline
-\cb update & Save tool window configuration\\ \hline
+\cb tbupdate & Save tool window configuration\\ \hline
 \cb wrupdate & Download/install program updates\\ \hline
 \end{tabular}
 
@@ -618,7 +618,7 @@ This can be done from the {\WRspice} prompt.
 \subsection{\spcmd{setfont}}
 \index{setfont command}
 
-% spToolbar.hlp:tbupdate 013105
+% spToolbar.hlp:setfont 030518
 
 Syntax: {\vt setfont} {\it font\_num} {\it font\_specifier}
 
@@ -663,8 +663,8 @@ The name is in one or the following formats:
 
 You will probably never need to use the {\cb setfont} command
 directly.  All settable fonts are saved in the {\vt .wrspiceinit}
-startup file when the {\cb Update} menu command in the {\cb File} menu
-is given, or the {\cb update} command is invoked.
+startup file when the {\cb Update Tools} menu command in the {\cb
+File} menu is given, or the {\cb tbupdate} command is invoked.
 
 %SU-------------------------------------
 \subsection{\spcmd{setrdb}}
@@ -692,10 +692,10 @@ command, one can use forms like
 \end{quote}
 
 %SU-------------------------------------
-\subsection{\spcmd{update}}
-\index{update command}
+\subsection{\spcmd{tbupdate}}
+\index{tbupdate command}
 
-% spToolbar.hlp:tbupdate 012709
+% spToolbar.hlp:tbupdate 030518
 
 This command will update the user's {\vt .wrspiceinit} file in the
 home directory to reflect the current tool setup.  The window

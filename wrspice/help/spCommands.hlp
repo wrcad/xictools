@@ -186,7 +186,7 @@ Built-in Commands
       <td>Set graphical interface fonts</td></tr>
     <tr><td><a href="setrdb"><b>setrdb</b></a></td>
       <td>Set X resources</td></tr>
-    <tr><td><a href="tbupdate"><b>update</b></a></td>
+    <tr><td><a href="tbupdate"><b>tbupdate</b></a></td>
       <td>Save tool window configuration</td></tr>
     <tr><td><a href="wrupdate"><b>wrupdate</b></a></td>
       <td>Download/install program updates</td></tr>
@@ -838,7 +838,7 @@ User Interface Setup Commands
       <td>Set graphical interface fonts</td></tr>
     <tr><td><a href="setrdb"><b>setrdb</b></a></td>
       <td>Set X resources</td></tr>
-    <tr><td><a href="tbupdate"><b>update</b></a></td>
+    <tr><td><a href="tbupdate"><b>tbupdate</b></a></td>
       <td>Save tool window configuration</td></tr>
     <tr><td><a href="wrupdate"><b>wrupdate</b></a></td>
       <td>Download/install program updates</td></tr>
@@ -997,7 +997,7 @@ setcase command
 !!SEEALSO
 uicmds
 
-!! commands.tex 013105
+!! commands.tex 030518
 !!KEYWORD
 setfont
 !!TITLE
@@ -1057,7 +1057,7 @@ setfont command
     directly.  All settable fonts are saved in the
     <tt>.wrspiceinit</tt> <a href="startup_files">startup file</a>
     when the <b>Update Tools</b> menu command in the <b>File</b> menu is
-    given, or the <a href="update"><b>update</b></a> command is
+    given, or the <a href="tbupdate"><b>tbupdate</b></a> command is
     invoked.
 
 !!SEEALSO
@@ -1094,13 +1094,13 @@ setrdb command
 !!SEEALSO
 uicmds
 
-!! commands.tex 012709
+!! commands.tex 030518
 !!KEYWORD
-tbupdate update
+tbupdate
 !!TITLE
-update command
+tbupdate command
 !!HTML
-    command: <tt>update</tt>
+    command: <tt>tbupdate</tt>
 
     <p>
     This command will update the user's <a

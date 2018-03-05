@@ -204,6 +204,7 @@ public:
     static void com_strprefix(wordlist*);
     static void com_sweep(wordlist*);
     static void com_tbsetup(wordlist*);
+    static void com_tbupdate(wordlist*);
     static void com_tf(wordlist*);
     static void com_trace(wordlist*);
     static void com_tran(wordlist*);
@@ -211,7 +212,6 @@ public:
     static void com_undefine(wordlist*);
     static void com_unlet(wordlist*);
     static void com_unset(wordlist*);
-    static void com_update(wordlist*);
     static void com_usrset(wordlist*);
     static void com_version(wordlist*);
     static void com_where(wordlist*);

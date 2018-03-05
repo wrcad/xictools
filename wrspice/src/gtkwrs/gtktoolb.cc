@@ -187,7 +187,7 @@ CommandTab::com_tbsetup(wordlist *wl)
 // Update the startup file for the current tool configuration.
 //
 void
-CommandTab::com_update(wordlist*)
+CommandTab::com_tbupdate(wordlist*)
 {
     if (!CP.Display()) {
         GRpkgIf()->ErrPrintf(ET_MSG, "No update needed.\n");
@@ -2446,7 +2446,7 @@ GTKtoolbar::load_proc(GtkWidget*, void*, unsigned)
 void
 GTKtoolbar::update_proc(GtkWidget*, void*, unsigned int)
 {
-    CommandTab::com_update(0);
+    CommandTab::com_tbupdate(0);
 }
 
 
