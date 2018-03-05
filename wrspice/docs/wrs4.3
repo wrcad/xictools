@@ -224,8 +224,88 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.2  10/29/2017
+wrspice-4.3.3  3/6/2018
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Modified adms scripts to provide support for real-value arrays.
+
+* Updated the Verilog-A Josephson junction model with better
+  conditioned equations and better tracking with the WRspice internal
+  JJ model.
+
+* Update the the gpulse "tran" function.
+
+  The "pw" is now interpreted as the full-width half-maximum value.
+  Previously, this was the full width at peak/e, i.e., the "variance"
+  of the gaussian.  If pw is given negative, it will be interpreted
+  in the old way as a positive value.
+
+  If pw is given as 0 or not given, the source now generates SFQ
+  pulses with the given amplitude and computed width.  As before, if
+  the amplitude is 0, output is SFQ with the amplitude computed from
+  the(nonzero) pw given.  If both amplitude and pw are zero, the SFQ
+  FWHM is taken as the transient analysis TSTEP, and the amplitude is
+  computed.
+
+* Completely new DC analysis capability when Josephson junctions
+  are present.
+
+  A new phase-based computation provides real operating-point and DC
+  sweep analysis when Josephson junctions are present.  This is an
+  important advance, which should avoid the long-standing need to use
+  "uic" and ramp sources up from zero.  This also avoids the previous
+  hack of using a small resistance value for JJs in OP analysis, which
+  could avoid using "uic" but would cause startup transients that
+  could cause non-convergence.
+
+  For DC analysis, Josephson junctions require special treatment.
+  The usual SPICE voltage-based calculation can't be used, since
+  1. all (or most) node voltages are identically zero,
+  2. inductors can't be shorted, since they contribute to the
+     current distribution,
+  3. quantum mechanical "phase" must be quantized around
+     JJ/inductor loops.
+
+  We enforce these by taking the voltage difference across JJs
+  and inductors as the device phase, scaled downward by a large
+  number.  The resulting device "voltages" are tiny enough to be
+  negligible in comparison to "true" voltages in the circuit.
+  However, one can obtain the phase, and hence JJ/inductor
+  currents, by un-scaling the "voltage" and applying the formula
+  for device current given phase.  This requires special
+  treatment in ind/mut devices, and transmission lines with no
+  serial loss (total inductance).  All other devices are treated
+  normally.
+
+  A JJ can be modeled by the basic formula i = Ic*sin(N*V).
+  Inductors look like resistors, L*i = N*V*phi0/(2*pi)
+  N is the scale factor, which might be 1e6 for example.
+
+  If there are no nonzero voltage sources, then in a pure SFQ
+  circuit all node voltages will be zero.  We would not need the
+  scaling in this case.  Performing a DCOP would yield a
+  "voltage" for each node which is equal to the phase.
+
+  The scaling makes it possible to include voltage sources and
+  resistive components in the circuit.  The small phase
+  difference is assumed negligible but would cause tiny errors.
+  For example, consider a current source versus a voltage source
+  with series resistance.  The latter applied current would be
+  reduced by the scaled phase that would appear across a biased
+  junction or inductor.
+
+  Note that for this to work, all JJs must have bias current
+  less than their Ic.  Both DCOP and DC sweep analysis are
+  available.
+
+BUGS FIXED
+---- -----
+
+-------------------------------------------------------------------------------
+wrspice-4.3.2  10/29/2017
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

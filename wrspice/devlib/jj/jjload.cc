@@ -103,8 +103,8 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
     // normally.
     //
     // A JJ can be modeled by the basic formula i = Ic*sin(N*V).
-    // Inductors look like resistors, Li = N*V*phi0/(2*pi)
-    // N is the scale factor. which might be 1e6 for example.
+    // Inductors look like resistors, L*i = N*V*phi0/(2*pi)
+    // N is the scale factor, which might be 1e6 for example.
     //
     // If there are no nonzero voltage sources, then in a pure SFQ
     // circuit all node voltages will be zero.  We would not need the
@@ -123,7 +123,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
     // less than their Ic.  Both DCOP and DC sweep analysis are
     // available.
 
-    if ((ckt->CKTmode & MODEDC) && !(ckt->CKTmode & MODEUIC)) {
+    if (ckt->CKTmode & MODEDC) {
 
         js.js_ci  = (inst->JJcontrol) ?
                 *(ckt->CKTrhsOld + inst->JJbranch) : 0;
@@ -141,6 +141,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         if (model->JJictype != 1)
             js.jj_ic(model, inst);
         js.jj_load(ckt, model, inst);
+        inst->JJdcrt = js.js_dcrt;  // for ac load
         return (OK);
     }
 #else

@@ -99,7 +99,7 @@ struct JJdev : public IFdevice
     int askModl(const sGENmodel*, int, IFdata*); 
 //    int findBranch(sCKT*, sGENmodel*, IFuid); 
 
-//    int acLoad(sGENmodel*, sCKT*); 
+    int acLoad(sGENmodel*, sCKT*); 
 //    int pzLoad(sGENmodel*, sCKT*, IFcomplex*); 
 //    int disto(int, sGENmodel*, sCKT*);  
 //    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
@@ -142,6 +142,8 @@ struct sJJinstance : public sGENinstance
 
     double JJcr1;                  // cached constants for qp current
     double JJcr2;
+
+    double JJdcrt;                 // param to pass to ac load function
 
     double *JJposNegPtr;           // pointer to sparse matrix at 
                                    //  (positive, negative)
