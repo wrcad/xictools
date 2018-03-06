@@ -475,6 +475,10 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
     }
     else
         js_gqt = 0;
+
+    inst->JJconduct = js_gqt;
+    if (model->JJvShuntGiven)
+        inst->JJconduct += inst->JJcriti/model->JJvShunt;
 }
 
 

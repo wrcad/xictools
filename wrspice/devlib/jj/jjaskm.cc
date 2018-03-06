@@ -85,8 +85,17 @@ JJdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case JJ_MOD_RN:
         value->rValue = model->JJrn;
         break;
+    case JJ_MOD_NOISE:
+        value->rValue = model->JJnoise;
+        break;
     case JJ_MOD_CCS:
         value->rValue = model->JJccsens;
+        break;
+    case JJ_MOD_ICF:
+        value->rValue = model->JJicFactor;
+        break;
+    case JJ_MOD_VSHUNT:
+        value->rValue = model->JJvShunt;
         break;
     case JJ_MQUEST_VL:
         value->rValue = model->JJvless;
@@ -96,12 +105,6 @@ JJdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         break;
     case JJ_MQUEST_VDP:
         value->rValue = model->JJvdpbak;
-        break;
-    case JJ_MOD_ICF:
-        value->rValue = model->JJicFactor;
-        break;
-    case JJ_MOD_VSHUNT:
-        value->rValue = model->JJvShunt;
         break;
     case JJ_MOD_JJ:
         value->iValue = 1;

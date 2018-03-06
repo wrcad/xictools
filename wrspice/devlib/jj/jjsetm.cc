@@ -89,6 +89,10 @@ JJdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->JJrn = value->rValue;
         model->JJrnGiven = true;
         break;
+    case JJ_MOD_NOISE:
+        model->JJnoise = value->rValue;
+        model->JJnoiseGiven = true;
+        break;
     case JJ_MOD_CCS:
         model->JJccsens = value->rValue;
         model->JJccsensGiven = true;

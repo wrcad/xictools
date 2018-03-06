@@ -53,7 +53,8 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
             double crt = *(ckt->CKTstate0 + inst->JJcrti);
             double L = wrsCONSTphi0/(2*M_PI*crt*cos(phi));
 
-            double G;
+            double G = inst->JJconduct;
+/*XXX
             switch (model->JJrtype) {
             case 2:
                 {
@@ -76,6 +77,7 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
             }
             if (model->JJvShuntGiven)
                 G += inst->JJcriti/model->JJvShunt;
+*/
 
             *inst->JJposPosPtr += G;
             *inst->JJnegNegPtr += G;

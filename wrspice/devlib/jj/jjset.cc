@@ -108,6 +108,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             else
                 model->JJrn = def_icr/1e-3;
         }
+        if (!model->JJnoiseGiven)
+            model->JJnoiseGiven = 1.0;
 
         if (model->JJrn > model->JJr0)
             model->JJrn = model->JJr0;
@@ -156,6 +158,9 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             inst->JJcr2 = inst->JJcriti/model->JJicFactor +
                 model->JJvless * inst->JJg0 -
                 model->JJvmore * inst->JJgn;
+
+            if (!inst->JJnoiseGiven)
+                inst->JJnoise = model->JJnoise;
 
             if (model->JJrtype == 3) {
 

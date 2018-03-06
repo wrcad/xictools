@@ -59,7 +59,8 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_JJ_IC,
         &&L_JJ_ICP,
         &&L_JJ_ICV,
-        &&L_JJ_CON};
+        &&L_JJ_CON,
+        &&L_JJ_NOISE};
 
         // &&L_JJ_QUEST_V,
         // &&L_JJ_QUEST_CRT,
@@ -77,7 +78,7 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         // &&L_JJ_QUEST_N2,
         // &&L_JJ_QUEST_NP};
 
-    if ((unsigned int)param > JJ_CON)
+    if ((unsigned int)param > JJ_NOISE)
         return (E_BADPARM);
 #endif
 
@@ -128,6 +129,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->JJcontrol = value->uValue;
         inst->JJcontrolGiven = true;
         return (OK);
+    L_JJ_NOISE:
+        inst->JJnoise = value->rValue;
+        inst->JJnoiseGiven = true;
+        return (OK);
 #else
     switch (param) {
     case JJ_AREA:
@@ -167,6 +172,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case JJ_CON:
         inst->JJcontrol = value->uValue;
         inst->JJcontrolGiven = true;
+        break;
+    case JJ_NOISE:
+        inst->JJnoise = value->uValue;
+        inst->JJnoiseGiven = true;
         break;
     default:
         return (E_BADPARM);

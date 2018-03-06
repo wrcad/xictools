@@ -102,7 +102,8 @@ struct JJdev : public IFdevice
     int acLoad(sGENmodel*, sCKT*); 
 //    int pzLoad(sGENmodel*, sCKT*, IFcomplex*); 
 //    int disto(int, sGENmodel*, sCKT*);  
-//    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
+    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
+//    void initTran(sGENmodel*, double, double);
 };
 
 struct sJJinstance : public sGENinstance
@@ -144,6 +145,8 @@ struct sJJinstance : public sGENinstance
     double JJcr2;
 
     double JJdcrt;                 // param to pass to ac load function
+    double JJconduct;              // shunt conductance av Vj = 0
+    double JJnoise;                // noise scale factor
 
     double *JJposNegPtr;           // pointer to sparse matrix at 
                                    //  (positive, negative)
@@ -165,7 +168,11 @@ struct sJJinstance : public sGENinstance
     unsigned JJinitVoltGiven : 1;  // flag to indicate ic was specified
     unsigned JJinitPhaseGiven : 1; // flag to indicate ic was specified
     unsigned JJcontrolGiven : 1;   // control ind or vsource specified
+    unsigned JJnoiseGiven : 1;     // noise scaling specified
     unsigned JJoffGiven : 1;
+
+    // for noise analysis
+    double JJnVar[NSTATVARS][2];
 };
 
 #define JJvoltage GENstate
@@ -192,6 +199,7 @@ struct sJJmodel : sGENmodel
     double JJcap;
     double JJr0;
     double JJrn;
+    double JJnoise;
     double JJccsens;
     double JJvless;
     double JJvmore;
@@ -208,6 +216,7 @@ struct sJJmodel : sGENmodel
     unsigned JJccsensGiven : 1;
     unsigned JJr0Given : 1;
     unsigned JJrnGiven : 1;
+    unsigned JJnoiseGiven : 1;
     unsigned JJcritiGiven : 1;
     unsigned JJcapGiven : 1;
     unsigned JJicfGiven : 1;
@@ -227,6 +236,7 @@ enum {
     JJ_ICP,
     JJ_ICV,
     JJ_CON,
+    JJ_NOISE,
 
     JJ_QUEST_V,
     JJ_QUEST_CRT,
@@ -257,6 +267,7 @@ enum {
     JJ_MOD_CAP,
     JJ_MOD_R0,
     JJ_MOD_RN,
+    JJ_MOD_NOISE,
     JJ_MOD_CCS,
     JJ_MOD_ICF,
     JJ_MOD_VSHUNT,

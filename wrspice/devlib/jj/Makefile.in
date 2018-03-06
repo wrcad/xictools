@@ -24,7 +24,7 @@ TARGET = $(MODULE).$(SOEXT)
 HFILES = jjdefs.h
 CFILES =
 CCFILES = jj.cc jjacct.cc jjacld.cc jjaski.cc jjaskm.cc jjic.cc jjload.cc \
-  jjset.cc jjseti.cc jjsetm.cc jjtrun.cc
+  jjnois.cc jjset.cc jjseti.cc jjsetm.cc jjtrun.cc
 
 COBJS = $(CCFILES:.cc=.o) $(CFILES:.c=.o)
 INCLUDE = -I../include

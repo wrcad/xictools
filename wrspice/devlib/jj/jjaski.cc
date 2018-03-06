@@ -82,6 +82,7 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_JJ_ICP,
         &&L_JJ_ICV,
         &&L_JJ_CON,
+        &&L_JJ_NOISE,
 
         &&L_JJ_QUEST_V,
         &&L_JJ_QUEST_CRT,
@@ -137,6 +138,9 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_JJ_CON:
         data->type = IF_INSTANCE;
         data->v.uValue = inst->JJcontrol;
+        return (OK);
+    L_JJ_NOISE:
+        data->v.rValue = inst->JJnoise;
         return (OK);
     L_JJ_QUEST_V:
         data->v.rValue = (ckt->rhsOld(inst->JJposNode) -
@@ -214,6 +218,9 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case JJ_CON:
         data->type = IF_INSTANCE;
         data->v.uValue = inst->JJcontrol;
+        break;
+    case JJ_NOISE:
+        data->v.uValue = inst->JJnoise;
         break;
     case JJ_QUEST_V:
         data->v.rValue = (ckt->rhsOld(inst->JJposNode) -
