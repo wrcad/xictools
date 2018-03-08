@@ -187,6 +187,24 @@
               <admst:if test="$srcnnode[grounded='yes']">
                 <admst:text
                   format="$(indent)_load_branch_P($srcpname, $srcnname);\n"/>
+                <admst:choose>
+                  <admst:when test="$contribution[static='yes']">
+                    <admst:text
+  format="$(indent)_load_branch_static_residual($srcpname, $srcnname, 0.0);\n"/>
+                  </admst:when>
+                  <admst:when test="$contribution[dynamic='yes']">
+                    <admst:text
+  format="$(indent)_load_branch_dynamic_residual($srcpname, $srcnname, 0.0);\n"/>
+                  </admst:when>
+                  <admst:when test="$contribution[whitenoise='yes']">
+                    <admst:text
+  format="$(indent)_load_branch_whitenoise_residual($srcpname, $srcnname, 0.0);\n"/>
+                  </admst:when>
+                  <admst:when test="$contribution[flickernoise='yes']">
+                    <admst:text
+  format="$(indent)_load_branch_flickernoise_residual($srcpname, $srcnname, 0.0);\n"/>
+                  </admst:when>
+                </admst:choose>
               </admst:if>
             </admst:if>
             <admst:if test="[$srcnnode/location='external' and
@@ -194,6 +212,24 @@
               <admst:if test="$srcpnode[grounded='yes']">
                 <admst:text
                   format="$(indent)_load_branch_N($srcpname, $srcnname);\n"/>
+                <admst:choose>
+                  <admst:when test="$contribution[static='yes']">
+                    <admst:text
+  format="$(indent)_load_branch_static_residual($srcpname, $srcnname, 0.0);\n"/>
+                  </admst:when>
+                  <admst:when test="$contribution[dynamic='yes']">
+                    <admst:text
+  format="$(indent)_load_branch_dynamic_residual($srcpname, $srcnname, 0.0);\n"/>
+                  </admst:when>
+                  <admst:when test="$contribution[whitenoise='yes']">
+                    <admst:text
+  format="$(indent)_load_branch_whitenoise_residual($srcpname, $srcnname, 0.0);\n"/>
+                  </admst:when>
+                  <admst:when test="$contribution[flickernoise='yes']">
+                    <admst:text
+  format="$(indent)_load_branch_flickernoise_residual($srcpname, $srcnname, 0.0);\n"/>
+                  </admst:when>
+                </admst:choose>
               </admst:if>
             </admst:if>
 
