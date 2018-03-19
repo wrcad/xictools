@@ -54,7 +54,7 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     static void *array[] = {
         0, // notused
         &&L_JJ_AREA, 
-        &&L_JJ_PI,
+        &&L_JJ_ICS, 
         &&L_JJ_OFF,
         &&L_JJ_IC,
         &&L_JJ_ICP,
@@ -94,9 +94,9 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->JJarea = value->rValue;
         inst->JJareaGiven = true;
         return (OK);
-    L_JJ_PI:
-        inst->JJpi = (value->iValue != 0);
-        inst->JJpiGiven = true;
+    L_JJ_ICS:
+        inst->JJics = value->rValue;
+        inst->JJicsGiven = true;
         return (OK);
     L_JJ_OFF:
         inst->JJoffGiven = true;
@@ -139,9 +139,9 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->JJarea = value->rValue;
         inst->JJareaGiven = true;
         break;
-    case JJ_PI:
-        inst->JJpi = (value->iValue != 0);
-        inst->JJpiGiven = true;
+    case JJ_ICS:
+        inst->JJics = value->rValue;
+        inst->JJicsGiven = true;
         break;
     case JJ_OFF:
         inst->JJoffGiven = true;

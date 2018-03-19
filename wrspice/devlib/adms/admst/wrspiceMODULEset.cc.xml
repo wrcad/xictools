@@ -559,9 +559,14 @@
     that would be needed.  Since most of the math is clipped out, there
     is a high potential that remaining math will cause FP exceptions,
     so exception handling is disabled during this call.
+
+    Set the DOING_TRAN flag during the call so that the analysis()
+    function returns something appropriate.
   -->
   <admst:text format="\n$(indent)int fpestate = ckt->disableFPE();\n"/>
+  <admst:text format="$(indent)ckt->CKTcurrentAnalysis |= DOING_TRAN;\n"/>
   <admst:text format="$(indent)int error = topology(ckt, model, inst);\n"/>
+  <admst:text format="$(indent)ckt->CKTcurrentAnalysis &= ~DOING_TRAN;\n"/>
   <admst:text format="$(indent)ckt->enableFPE(fpestate);\n"/>
   <admst:text format="$(indent)if (error)\n"/>
   <admst:apply-templates select="." match="push_indent"/>

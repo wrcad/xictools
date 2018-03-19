@@ -556,7 +556,7 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
     double si    = sin(js_phi);
 #endif
 
-    if (inst->JJpi) {
+    if (model->JJpi) {
         si = -si;
         gcs = -gcs;
     }

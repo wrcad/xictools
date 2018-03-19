@@ -79,11 +79,23 @@ JJdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case JJ_MOD_CAP:
         value->rValue = model->JJcap;
         break;
+    case JJ_MOD_CMU:
+        value->rValue = model->JJcmu;
+        break;
+    case JJ_MOD_VM:
+        value->rValue = model->JJvm;
+        break;
     case JJ_MOD_R0:
         value->rValue = model->JJr0;
         break;
+    case JJ_MOD_ICR:
+        value->rValue = model->JJicrn;
+        break;
     case JJ_MOD_RN:
         value->rValue = model->JJrn;
+        break;
+    case JJ_MOD_GMU:
+        value->rValue = model->JJgmu;
         break;
     case JJ_MOD_NOISE:
         value->rValue = model->JJnoise;

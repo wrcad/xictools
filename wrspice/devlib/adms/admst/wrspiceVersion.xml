@@ -3010,6 +3010,12 @@
         <admst:when test="[$arg1='&quot;predictor&quot;']">
           <admst:variable name="e" value="(ckt->CKTmode & MODEINITPRED)"/>
         </admst:when>
+        <admst:when test="[$arg1='&quot;dcPhaseScale&quot;']">
+          <admst:variable name="e" value="ckt->CKTjjDCscale"/>
+        </admst:when>
+        <admst:when test="[$arg1='&quot;dphimax&quot;']">
+          <admst:variable name="e" value="ckt->CKTcurTask->TSKdphiMax"/>
+        </admst:when>
 
         <admst:when test="[count(arguments)=2]">
           <admst:apply-templates select="arguments[2]" match="ddx"/>

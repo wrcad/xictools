@@ -76,7 +76,7 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     static void *array[] = {
         0, // notused
         &&L_JJ_AREA, 
-        &&L_JJ_PI,
+        &&L_JJ_ICS, 
         &&L_JJ_OFF,
         &&L_JJ_IC,
         &&L_JJ_ICP,
@@ -117,8 +117,8 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_JJ_AREA:
         data->v.rValue = inst->JJarea;
         return (OK);
-    L_JJ_PI:
-        data->v.iValue = inst->JJpi;
+    L_JJ_ICS:
+        data->v.rValue = inst->JJics;
         return (OK);
     L_JJ_OFF:
         data->type = IF_FLAG;
@@ -197,8 +197,8 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case JJ_AREA:
         data->v.rValue = inst->JJarea;
         break;
-    case JJ_PI:
-        data->v.iValue = inst->JJpi;
+    case JJ_ICS:
+        data->v.rValue = inst->JJics;
         break;
     case JJ_OFF:
         data->type = IF_FLAG;

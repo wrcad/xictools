@@ -123,6 +123,7 @@ struct sJJinstance : public sGENinstance
     int JJbranch;                  // number of control current branch
     IFuid JJcontrol;               // name of controlling device
     double JJarea;                 // area factor for the junction
+    double JJics;                  // area factor = ics/icrit
 
     double JJinitCnd[2];           // initial condition vector
 #define JJinitVoltage JJinitCnd[0]
@@ -162,14 +163,15 @@ struct sJJinstance : public sGENinstance
                                    //  (positive, branch equation)
     double *JJnegIbrPtr;           // pointer to sparse matrix at 
                                    //  (negative, branch equation)
-    unsigned JJareaGiven : 1;      // flag to indicate area was specified
-    unsigned JJpi : 1;             // pi junction if set
-    unsigned JJpiGiven : 1;        // flag to indicate pijj was specified
-    unsigned JJinitVoltGiven : 1;  // flag to indicate ic was specified
-    unsigned JJinitPhaseGiven : 1; // flag to indicate ic was specified
-    unsigned JJcontrolGiven : 1;   // control ind or vsource specified
-    unsigned JJnoiseGiven : 1;     // noise scaling specified
-    unsigned JJoffGiven : 1;
+
+                                   // Flags to indicate...
+    unsigned JJareaGiven : 1;      // area was specified
+    unsigned JJicsGiven : 1;       // ics was specified
+    unsigned JJinitVoltGiven : 1;  // ic was specified
+    unsigned JJinitPhaseGiven : 1; // ic was specified
+    unsigned JJcontrolGiven : 1;   // control ind or vsource was specified
+    unsigned JJnoiseGiven : 1;     // noise scaling was specified
+    unsigned JJoffGiven : 1;       // "off" was specified
 
     // for noise analysis
     double JJnVar[NSTATVARS][2];
@@ -197,8 +199,12 @@ struct sJJmodel : sGENmodel
     double JJdelv;
     double JJcriti;
     double JJcap;
+    double JJcmu;
+    double JJvm;
     double JJr0;
+    double JJicrn;
     double JJrn;
+    double JJgmu;
     double JJnoise;
     double JJccsens;
     double JJvless;
@@ -214,11 +220,15 @@ struct sJJmodel : sGENmodel
     unsigned JJvgGiven : 1;
     unsigned JJdelvGiven : 1;
     unsigned JJccsensGiven : 1;
+    unsigned JJvmGiven : 1;
     unsigned JJr0Given : 1;
+    unsigned JJicrnGiven : 1;
     unsigned JJrnGiven : 1;
+    unsigned JJgmuGiven : 1;
     unsigned JJnoiseGiven : 1;
     unsigned JJcritiGiven : 1;
     unsigned JJcapGiven : 1;
+    unsigned JJcmuGiven : 1;
     unsigned JJicfGiven : 1;
     unsigned JJvShuntGiven : 1;
 };
@@ -230,7 +240,7 @@ using namespace JJ;
 // DO NOT CHANGE THIS without updating aski/seti tables!
 enum {
     JJ_AREA = 1, 
-    JJ_PI,
+    JJ_ICS,
     JJ_OFF,
     JJ_IC,
     JJ_ICP,
@@ -265,8 +275,12 @@ enum {
     JJ_MOD_DV,
     JJ_MOD_CRT,
     JJ_MOD_CAP,
+    JJ_MOD_CMU,
+    JJ_MOD_VM,
     JJ_MOD_R0,
+    JJ_MOD_ICR,
     JJ_MOD_RN,
+    JJ_MOD_GMU,
     JJ_MOD_NOISE,
     JJ_MOD_CCS,
     JJ_MOD_ICF,

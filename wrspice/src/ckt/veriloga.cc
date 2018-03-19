@@ -142,7 +142,7 @@ sCKT::va_analysis(const char *tok)
         // as well as those that precede another analysis, such as the
         // DC analysis that precedes an AC or noise analysis, or the
         // IC analysis that precedes a transient analysis.
-        return ((CKTmode & MODEDC) && (CKTmode & MODEINITFLOAT));
+        return (CKTmode & MODEDC);
     }
     if (lstring::cieq(tok, "nodeset")) {
         // The phase during an equilibrium point calculation where

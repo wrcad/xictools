@@ -45,9 +45,61 @@ Author: 1992 Stephen R. Whiteley
 
 #include "jjdefs.h"
 
-static double def_vm  = 0.03;     // default Ic * Rsubgap
-static double def_icr = 0.0017;   // default Ic * Rn
 
+#ifndef M_PI_4
+#define M_PI_4      0.785398163397448309615660845819875721  // pi/4
+#endif
+
+// MIT-LL SFQ5EE process
+#define C_PER_A_10000  70.0     // ff/um2
+#define I_PER_A_10000 100.0     // uA/um2
+#define Vm_LL          16.0     // mV, critical current * subgap resistance
+#define IcR_LL          1.6     // mV, critical current * normal resistance
+
+// Various Hypres foundry processes.
+#define C_PER_A_4500   59.0     // ff/um2
+#define I_PER_A_4500   45.0     // uA/um2
+#define C_PER_A_1000   50.0     // ff/um2
+#define I_PER_A_1000   10.0     // uA/um2
+#define C_PER_A_30     37.0     // ff/um2
+#define I_PER_A_30      0.3     // uA/um2
+#define Vm_HYP         30.0     // mV, critical current * subgap resistance
+#define IcR_HYP         1.7     // mV, critical current * normal resistance
+
+// Hard-wire defaults for MIT-LL process for SuperTools.
+#define C_PER_A C_PER_A_10000
+#define I_PER_A I_PER_A_10000
+#define Vm      Vm_LL
+#define IcR     IcR_LL
+
+#define VmMin   10.0        // Min Vm mV
+#define VmMax   100.0       // Max Vm mV
+#define IcRmin  1.5         // Min IcR mV
+#define IcRmax  1.9         // Max IcR mV
+#define Ic      1e-3        // Assumed Ic of reference, A
+#define IcMin   0.0         // Min reference Ic, A
+#define IcMax   0.1         // Max referenct Ic, A
+#define Vg      2.8e-3      // Assumed Vgap of reference, V
+#define VgMin   2.5e-3      // Min Vgap, V
+#define VgMax   3.1e-3      // Max Vgao, V
+#define DelV    0.08e-3     // Assumed delVg of reference, V
+#define DelVmin 0.01e-3     // Min delVg, V
+#define DelVmax 0.2e-3      // Max delVg, V
+
+#define RTMAX   4           // Max rtype, integer
+#define ITMAX   4           // Max ictype, integer
+#define CCsens  1e-2        // Assumed magnetic sens. of reference
+#define CCsensMin 1e-4      // Min magnetic sens.
+#define CCsensMax 1.0       // Max magnetic sens.
+#define CAP     (1e-12*C_PER_A/I_PER_A) // Reference capacitance, F
+#define CAPmin  0.0         // Min capacitance, F
+#define CAPmax  1e-9        // Max capacitance, F
+#define ICfct   M_PI_4      // Igap/Ic factor for reference
+#define ICfctMin 0.5        // Min factor
+#define ICfctMax M_PI_4     // Max factor
+#define NOI     1.0         // Noise scale for reference
+#define NOImin  0.0         // Min noise scale
+#define NOImax  10.0        // Max noise scale
 
 namespace {
     int get_node_ptr(sCKT *ckt, sJJinstance *inst)
@@ -74,83 +126,202 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
     sJJmodel *model = static_cast<sJJmodel*>(genmod);
     for ( ; model; model = model->next()) {
 
-        if (!model->JJrtypeGiven)  model->JJrtype  = 1;
-        if (!model->JJictypeGiven) model->JJictype = 1;
-        if (!model->JJvgGiven)     model->JJvg     = 3e-3;
-        if (!model->JJdelvGiven)   model->JJdelv   = 1e-4;
-        if (!model->JJccsensGiven) model->JJccsens = 1e-2;
-        if (!model->JJcritiGiven)  model->JJcriti  = 1e-3;
-        if (!model->JJcapGiven)    model->JJcap    = 1e-12;
-        if (!model->JJicfGiven)    model->JJicFactor = M_PI/4.0;
-
-        if (model->JJdelv <= 0) {
-            DVO.textOut(OUT_WARNING,
-                "%s: delv entry was <= 0, reset to 1e-5\n",
-                model->GENmodName);
-            model->JJdelv = 1e-5;
+        if (!model->JJrtypeGiven)
+            model->JJrtype = 1;
+        else {
+            if (model->JJrtype < 0 || model->JJrtype > RTMAX) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: RTYPE out of range [0-%d], reset to 1.\n",
+                    model->GENmodName, RTMAX);
+                model->JJrtype = 1;
+            }
         }
-        if (model->JJccsens <= 0) {
-            DVO.textOut(OUT_WARNING,
-                "%s: icon entry was <= 0, reset to 1e3\n",
-                model->GENmodName);
-            model->JJccsens = 1e3;
+        if (!model->JJictypeGiven)
+            model->JJictype = 1;
+        else {
+            if (model->JJictype < 0 || model->JJictype > ITMAX) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: ICTYPE out of range [0-%d], reset to 1.\n",
+                    model->GENmodName, ITMAX);
+                model->JJictype = 1;
+            }
+        }
+        if (!model->JJvgGiven)
+            model->JJvg = Vg;
+        else {
+            if (model->JJvg < VgMin || model->JJvg > VgMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: VG out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, VgMin, VgMax, Vg);
+                model->JJvg = Vg;
+            }
+        }
+        if (!model->JJdelvGiven)
+            model->JJdelv = DelV;
+        else {
+            if (model->JJdelv < DelVmin || model->JJdelv > DelVmax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: DELV out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, DelVmin, DelVmax, DelV);
+                model->JJdelv = DelV;
+            }
+        }
+
+        double halfdv = 0.5*model->JJdelv;
+        model->JJvless  = model->JJvg - halfdv;
+        model->JJvmore  = model->JJvg + halfdv;
+
+        if (!model->JJccsensGiven)
+            model->JJccsens = CCsens;
+        else {
+            if (model->JJccsens < CCsensMin || model->JJccsens > CCsensMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: ICON out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, CCsensMin, CCsensMax, CCsens);
+                model->JJccsens = CCsens;
+            }
+        }
+        if (!model->JJcritiGiven)
+            model->JJcriti = Ic;
+        else {
+            if (model->JJcriti < IcMin || model->JJcriti > IcMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: ICRIT out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, IcMin, IcMax, Ic);
+                model->JJcriti = Ic;
+            }
+        }
+        if (!model->JJcapGiven)
+            model->JJcap = CAP;
+        else {
+            if (model->JJcap < CAPmin || model->JJcap > CAPmax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: CAP out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, CAPmin, CAPmax, CAP);
+                model->JJcap = CAP;
+            }
+        }
+        if (!model->JJicfGiven)
+            model->JJicFactor = ICfct;
+        else {
+            if (model->JJicFactor < ICfctMin || model->JJicFactor > ICfctMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: ICFACT out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, ICfctMin, ICfctMax, ICfct);
+                model->JJicFactor = ICfct;
+            }
+        }
+        if (!model->JJvmGiven) {
+            model->JJvm = Vm;
+        }
+        else {
+            if (model->JJvm < VmMin || model->JJvm > VmMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: VM out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, VmMin, VmMax, Vm);
+                model->JJvm = Vm;
+            }
         }
 
         if (!model->JJr0Given) {
-            if (model->JJcriti)
-                model->JJr0 = def_vm/model->JJcriti;
-            else
-                model->JJr0 = def_vm/1e-3;
+            double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
+            model->JJr0 = 1e-3*model->JJvm/i;
+        }
+        else {
+            double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
+            double R0min = 1e-3*VmMin/i;
+            double R0max = 1e-3*VmMax/i;
+            if (model->JJr0 < R0min || model->JJr0 > R0max) {
+                double R0 = 1e-3*model->JJvm/i;
+                DVO.textOut(OUT_WARNING,
+                    "%s: RSUB out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, R0min, R0max, R0);
+                model->JJr0 = R0;
+            }
+        }
+
+        if (!model->JJicrnGiven) {
+            model->JJicrn = IcR;
+        }
+        else {
+            if (model->JJicrn < IcRmin || model->JJicrn > IcRmax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: ICRN out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, IcRmin, IcRmax, IcR);
+                model->JJicrn = IcR;
+            }
         }
         if (!model->JJrnGiven) {
-            if (model->JJcriti)
-                model->JJrn = def_icr/model->JJcriti;
-            else
-                model->JJrn = def_icr/1e-3;
+            double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
+            model->JJrn = 1e-3*model->JJicrn/i;
         }
-        if (!model->JJnoiseGiven)
-            model->JJnoiseGiven = 1.0;
-
+        else {
+            double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
+            double RNmin = 1.5e-3/i;
+            double RNmax = 1.9e-3/i;
+            if (model->JJrn < RNmin || model->JJrn > RNmax) {
+                double RN = 1e-3*model->JJicrn/i;
+                DVO.textOut(OUT_WARNING,
+                    "%s: RN out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, RNmin, RNmax, RN);
+                model->JJrn = RN;
+            }
+        }
         if (model->JJrn > model->JJr0)
             model->JJrn = model->JJr0;
 
-        double temp = model->JJdelv/2.0;
-        if (model->JJvg < temp) {
-            DVO.textOut(OUT_WARNING,
-                "%s: vg entry was < delv/2, reset to delv/2\n",
-                model->GENmodName);
-            model->JJvg = temp;
-        }
-        model->JJvless  = model->JJvg - temp;
-        model->JJvmore  = model->JJvg + temp;
-
-        if (model->JJcap > 1e-9) {
-            DVO.textOut(OUT_WARNING,
-                "%s: bad cap entry ( > 1nF), reset to 1pF\n",
-                model->GENmodName);
-            model->JJcap = 1e-12;
+        if (!model->JJnoiseGiven)
+            model->JJnoise = NOI;
+        else {
+            if (model->JJnoise < NOImin || model->JJnoise > NOImax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: NOISE out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, NOImin, NOImax, NOI);
+                model->JJnoise = NOI;
+            }
         }
 
-        temp = model->JJvg/2;
+        double halfvg = model->JJvg/2;
         if (model->JJcap > 0.0) {
             model->JJvdpbak = sqrt(PHI0_2PI * model->JJcriti / model->JJcap);
-            if (model->JJvdpbak > temp)
-                model->JJvdpbak = temp;
+            if (model->JJvdpbak > halfvg)
+                model->JJvdpbak = halfvg;
         }
         else
-            model->JJvdpbak = temp;
+            model->JJvdpbak = halfvg;
 
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
-            if (!inst->JJpiGiven)
-                inst->JJpi = model->JJpi;
-            
-            if (!inst->JJareaGiven) inst->JJarea = 1;
 
+            if (inst->JJicsGiven) {
+                if (inst->JJareaGiven) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: ICS and AREA both given, AREA ignored.\n",
+                        inst->GENname);
+                }
+                if (inst->JJics < IcMin || inst->JJics > IcMax) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: ICS out of range [%g-%g], reset to %g.\n",
+                        inst->GENname, IcMin, IcMax, model->JJcriti);
+                    inst->JJics = model->JJcriti;
+                }
+                inst->JJarea = inst->JJics/model->JJcriti;
+            }
+            else if (!inst->JJareaGiven)
+                inst->JJarea = 1;
+
+            // ics is the input parameter, criti is the actual critical
+            // current to use.
             inst->JJcriti = model->JJcriti * inst->JJarea;
 
-            inst->JJg0 = inst->JJarea / model->JJr0;
-            inst->JJgn = inst->JJarea / model->JJrn;
+            double sqrta = sqrt(inst->JJarea);
+            inst->JJcap = model->JJcap*(inst->JJarea*(1.0 - model->JJcmu) +
+                sqrta*model->JJcmu);
+
+            double gfac = inst->JJarea*(1.0 - model->JJgmu) +
+                sqrta*model->JJgmu;
+            inst->JJg0 = gfac / model->JJr0;
+            inst->JJgn = gfac / model->JJrn;
             inst->JJgs = inst->JJcriti/(model->JJicFactor * model->JJdelv);
 
             // These currents are added to RHS in piecewise qp model
@@ -161,6 +332,14 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
             if (!inst->JJnoiseGiven)
                 inst->JJnoise = model->JJnoise;
+            else {
+                if (inst->JJnoise < NOImin || inst->JJnoise > NOImax) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: NOISE out of range [%g-%g], reset to %g.\n",
+                        inst->GENname, NOImin, NOImax, NOI);
+                    inst->JJnoise = NOI;
+                }
+            }
 
             if (model->JJrtype == 3) {
 
@@ -185,7 +364,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
                 double Gn = (inst->JJcriti/model->JJicFactor +
                     model->JJvless*inst->JJg0)/model->JJvmore;
-                temp = model->JJvmore*model->JJvmore;
+                double temp = model->JJvmore*model->JJvmore;
                 inst->JJg1 = 0.5*(5.0*Gn - inst->JJgs - 4.0*inst->JJg0);
                 inst->JJg2 = (Gn - inst->JJg0 - inst->JJg1)/(temp*temp);
                 inst->JJg1 /= temp;
@@ -203,8 +382,6 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 inst->JJg1 = 0;
                 inst->JJg2 = 0;
             }    
-
-            inst->JJcap = model->JJcap * inst->JJarea;
 
             inst->GENstate = *states;
             *states += JJnumStates;

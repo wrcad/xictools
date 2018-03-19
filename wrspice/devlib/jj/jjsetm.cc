@@ -81,13 +81,29 @@ JJdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->JJcap = value->rValue;
         model->JJcapGiven = true;
         break;
+    case JJ_MOD_CMU:
+        model->JJcmu = value->rValue;
+        model->JJcmuGiven = true;
+        break;
+    case JJ_MOD_VM:
+        model->JJvm = value->rValue;
+        model->JJvmGiven = true;
+        break;
     case JJ_MOD_R0:
         model->JJr0 = value->rValue;
         model->JJr0Given = true;
         break;
+    case JJ_MOD_ICR:
+        model->JJicrn = value->rValue;
+        model->JJicrnGiven = true;
+        break;
     case JJ_MOD_RN:
         model->JJrn = value->rValue;
         model->JJrnGiven = true;
+        break;
+    case JJ_MOD_GMU:
+        model->JJgmu = value->rValue;
+        model->JJgmuGiven = true;
         break;
     case JJ_MOD_NOISE:
         model->JJnoise = value->rValue;
