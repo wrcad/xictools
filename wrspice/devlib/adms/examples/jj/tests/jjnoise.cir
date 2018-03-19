@@ -1,0 +1,19 @@
+* Noise analysis with Josephson Junctions
+
+
+b1 1 0 101 jj3 area=0.2
+rshunt 1 0 10
+r1 2 1 50
+v1 2 0 ac 1
+i1 0 1 100uA
+
+* Hypres Nb 4500A/cm2
+.model jj3 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=1.31p)
+
+
+.control
+*ac dec 50 10G 1T dc i1 95u 195u 20u
+*plot vm(1) vp(1)
+.noise v(1) v1 dec 10 1G 1T 1
+.endc

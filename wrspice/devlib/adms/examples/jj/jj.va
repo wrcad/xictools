@@ -25,12 +25,21 @@
  *   permissions and limitations under the License.                       *
  *                                                                        *
  *========================================================================*
- $Id: jj.va,v 1.7 2016/12/01 05:59:29 stevew Exp $
+ $Id:$
  *========================================================================*/
 
 // Josephson Junction Model
 // This model is intended for transient analysis only.
 //
+// Version 1.05, March 13, 2018
+//   Added MIT-LL JJ parameters, these are now the default.
+//   Changed "mfactor" param name to "mfct" to avoid HSPICE reserved word.
+//   Range of vshunt now 0-2m, active if >= 1uV,
+//   New param ics, if given equivalent to area=ics/icrit.
+//   New param cmu [0:1.0] edge effect capacitance scaling parameter.
+//   New param gmu [0:1.0] edge effect conductance scaling parameter.
+//   New param vm  [10.0:100.0] mV.
+//   New param icrn [1.5:1.9] mV.
 // Version 1.04, Feb 25, 2018
 //   Made quasiparticle expressions prettier (no logic change).
 // Version 1.03, Feb 23, 2018
@@ -64,12 +73,12 @@
 //
 // To use the model:
 // 1.  Before compiling, adjust electrical parameters to your target
-//     process.  This is the Hypres 4500A/cm2 process by default.
+//     process.  This is the MIT-LL SFQ5EE process by default.
 // 2.  Load the model into your simulator before use.
-// 3.  Use the "mfactor" or equivalent "area" parameters to set the
-//     desired critical current, which is 1.0mA for mfactor=1.  Changing
-//     mfactor/area scales capacitance and conductances as well as critical
-//     current.
+// 3.  Use the "ics" or similar "mfct"/"area" instnce parameters to set the
+//     desired critical current, which is 1.0mA for mfct=1.  Changing
+//     mfct/area scales capacitance and conductances as well as critical
+//     current.  Giving ics is equivalent to mfct=ics/1crit.
 // 4.  Use vshunt and rtype=0 most conveniently for SFQ circuits, avoids
 //     the need for an external shunt resistor.
 // 5.  You may have to use a small timestep limit (e.g., .01pS) for accuracy,
@@ -78,21 +87,39 @@
 `include "disciplines.vams"
 `include "constants.vams"
 
+`ifdef insideADMS
+    `define P(txt) (*txt*)
+`else
+    `define P(txt)
+`endif
+
+// MIT-LL SFQ5EE process
+`define C_PER_A_10000  70.0     // ff/um2
+`define I_PER_A_10000 100.0     // uA/um2
+`define IcR_LL          1.6     // mV, critical current * normal resistance
+`define Vm_LL          16.0     // mV, critical current * subgap resistance
 
 // Various Hypres foundry processes.
-`define C_PER_A_4500 59.0  // ff/um2
-`define I_PER_A_4500 45.0  // uA/um2
-`define C_PER_A_1000 50.0  // ff/um2
-`define I_PER_A_1000 10.0  // uA/um2
-`define C_PER_A_30   37.0  // ff/um2
-`define I_PER_A_30    0.3  // uA/um2
+`define C_PER_A_4500   59.0     // ff/um2
+`define I_PER_A_4500   45.0     // uA/um2
+`define C_PER_A_1000   50.0     // ff/um2
+`define I_PER_A_1000   10.0     // uA/um2
+`define C_PER_A_30     37.0     // ff/um2
+`define I_PER_A_30      0.3     // uA/um2
+`define IcR_HYP         1.7     // mV, critical current * normal resistance
+`define Vm_HYP         30.0     // mV, critical current * subgap resistance
 
-// Hard-wire for 4500 A/cm2 process.
-`define C_PER_A `C_PER_A_4500
-`define I_PER_A `I_PER_A_4500
+// Hard-wire defaults for Hypres 4500A/cm2 process
+//`define C_PER_A `C_PER_A_4500
+//`define I_PER_A `I_PER_A_4500
+//`define IcR     `IcR_HYP
+//`define Vm      `Vm_HYP
 
-`define IcR         1.7  // mV, critical current * normal resistance
-`define Vm          30.0 // mV, critical current * subgap resistance
+// Hard-wire for MIT-LL process for SuperTools.
+`define C_PER_A `C_PER_A_10000
+`define I_PER_A `I_PER_A_10000
+`define IcR     `IcR_LL
+`define Vm      `Vm_LL
 
 // Phi0/2pi = hbar over 2 e.
 `define PHI0_2PI    3.291086546e-16
@@ -106,81 +133,196 @@ output ph;
 electrical n1, n2, ph;
 branch(n1, n2) bj, bc, br;
 
-// Initial conditions.
-parameter real ic_v     = 0 from [-5.0m:5.0m];  // not used
-parameter real ic_phase = 0 from (-`M_PI:`M_PI);
+//
+// Model Parameters
+//
 
 // PI junction, or not.
 // If the pijj flag is set, the JJ is a "pi" junction, meaning it has
 // an internal ground-state phase of pi rather than 0.  Such junctions
 // have been made using ferromagnetic barrier materials. 
-parameter integer pijj  = 0 from [0:1];
+parameter integer pijj  = 0 from [0:1]
+    `P(type="model" info="pi junction if set");
+
+// Turn on/off quasiparticle branch and critical current.
+parameter integer rtype = 1 from [0:1]
+    `P(type="model" info="quasiparticle conductance model type");
+parameter integer cct   = 1 from [0:1]
+    `P(type="model" info="critical current model type");
 
 // Factor used in timestep control.  This is similar to the WRspice
 // dphimax parameter, dphimax/pi = tsfactor.  Smaller values might
 // improve accuracy, but at the expense of longer run time.
-parameter real tsfactor = 0.2 from [0.001:1];
+`define TSDEFAULT 0.2
+parameter real tsfactor = `TSDEFAULT from [0.001:1]
+    `P(type="model" info="time step control factor");
 
-// Turn on/off quasiparticle branch and critical current.
-parameter integer rtype = 1 from [0:1];
-parameter integer cct   = 1 from [0:1];
+// Critical current for mfct=1
+parameter real icrit    = 1.0m from [0:100m]
+    `P(type="model" info="reference critical current" units="A");
 
-// Scaling factor, both are equivalent.
-parameter real mfactor  = 1.0 from [0.001:1e3];
-parameter real area     = 1.0 from [0.001:1e3];
+// Capacitance for mfct=1.
+parameter real cap      = 1e-12*`C_PER_A/`I_PER_A from [0.0:1e-9]
+    `P(type="model" info="reference capacitance" units="F");
 
-// Critical current for mfactor=1
-parameter real icrit    = 1.0m;
-
-// Capacitance for mfactor=1.
-parameter real cap      = 1e-12*`C_PER_A/`I_PER_A;
+// Capacitance scaling parameter.
+// caps = cap*(area*(1-cmu) + sqrt(area)*cmu)
+parameter real cmu      = 0.0 from [0.0:1.0]
+    `P(type="model" info="capacitance scaling factor");
 
 // The gap voltage and spread.
-parameter real vgap     = 2.8m from [2.5m:3.1m];
-parameter real delv     = 0.08m from [0.01m:0.2m];
+parameter real vgap     = 2.8m from [2.5m:3.1m]
+    `P(type="model" info="gap voltage" units="V");
+parameter real delv     = 0.08m from [0.01m:0.2m]
+    `P(type="model" info="gap width" units="V");
 
 // The subgap and normal resistances.  If vshunt is given, a fixed
 // shunt is added so that IcReff = vshunt.
-parameter real rsub     = `Vm from [10.0:100.0];
-parameter real rnorm    = `IcR from [1.5:1.9];
-parameter real vshunt   = 0 from [1u:1m];
+parameter real vm       = `Vm from [10.0:100.0]
+    `P(type="model" info="Ic * subgap resistance" units="mV");
+parameter real rsub     = vm*1e-3/icrit from [1e-2/icrit:1e-1/icrit]
+    `P(type="model" info="subgap resistance" units="O");
+parameter real icrn     = `IcR from [1.5:1.9]
+    `P(type="model" info="Ic * normal resistance" units="mV");
+parameter real rnorm    = icrn*1e-3/icrit from [1.5e-3/icrit:1.9e-3/icrit]
+    `P(type="model" info="normal resistance" units="O");
+parameter real vshunt   = 0 from [0:2m]
+    `P(type="model" info="Ic * shunt resistance voltage" units="V");
+
+// Conductance scaling parameter.
+// gxs = gx*(area*(1-gmu) + sqrt(area)*gmu)
+// Applies ro rsub, rnorm.
+parameter real gmu      = 0.0 from [0.0:1.0]
+    `P(type="model" info="conductance scaling factor");
 
 // Ratio of critical current to quasiparticle step height.
-parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4];
+parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4]
+    `P(type="model" info="Ic to Istep ratio");
 
-// Dropback voltage.
-parameter real vdpbak = sqrt(`PHI0_2PI*icrit/cap);
+//
+// Instance Parameters
+//
 
-real phi, dv2, avj, i1, i2, vmore, vless, vtmp, gshunt, scale;
+// Initial conditions.
+parameter real ic_phase = 0 from (-`M_PI:`M_PI)
+    `P(type="instance" info="Initial condition phase");
+
+// Scaling critical current.
+parameter real ics      = icrit from [0.0:100m]
+    `P(type="instance" info="scaled critical current" units="A");
+
+// Scaling factor, both are equivalent.
+parameter real mfct     = 1.0 from [0.001:1e3]
+    `P(type="instance" info="Ic scale factor");
+parameter real area     = 1.0 from [0.001:1e3]
+    `P(type="instance" info="Ic scale factor alias");
+
+real phi, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
+real pscale, vdpbak;
 
 analog begin
 
-    // The mfactor and area parameters are equivalent.
-    scale = area*mfactor;
+    begin : initial_instance
+        real halfdv;
 
-    dv2 = delv/2.0;
-    vless = vgap - dv2;
-    vmore = vgap + dv2;
-    i1 = vless/rsub;
-    i2 = icrit/icfct;
+        // The mfct and area parameters are equivalent.
+        phi = 0.0;
+        if (ics != icrit)
+            scale = ics/icrit;
+        else if (area != 1.0)
+            scale = area;
+        else if (mfct != 1.0)
+            scale = mfct;
+        else
+            scale = 1.0;
+
+        caps = cap*(scale*(1-cmu) + sqrt(scale)*cmu);
+        rsubs = rsub/(scale*(1-gmu) + sqrt(scale)*gmu);
+        rnorms = rnorm/(scale*(1-gmu) + sqrt(scale)*gmu);
+        halfdv = delv/2.0;
+        vless = vgap - halfdv;
+        vmore = vgap + halfdv;
+        i1 = vless/rsubs;
+        i2 = ics/icfct;
+    end
+
+    begin : initial_model
+        real halfvg, tsf;
+
+        // Dropback voltage.
+        halfvg = 0.5*vgap;
+        if (cap > 0.0)
+            begin
+            vdpbak = sqrt(`PHI0_2PI*icrit/cap);
+            if (vdpbak > halfvg)
+                vdpbak = halfvg;
+            end
+        else
+            vdpbak = halfvg;
+
+        // WRspice interface parameters passed to model.
+        // If found, simulator supports scaled phase DC analysis.
+        pscale = $simparam("dcPhaseScale");
+        // If found, simulator has dphimax option which overrides
+        // local default.
+        tsf = $simparam("dphimax")/`M_PI;
+        if (tsf > 0.0 && tsfactor == `TSDEFAULT)
+            tsfactor = tsf;
+    end
 
     if (analysis("static") != 0)
         begin
-        // DC analysis, fake it by modeling device as low value resistor.
-        //
-        I(ph) <+ -V(ph);
-        I(br) <+ 1e6*scale*V(br);
+        if (pscale > 0.0)
+            begin
+            // DC analysis, the simulator supports phase scaling,
+            // i.e., the JJ voltage is actually jjphase/pscale, and
+            // similar for inductors.
+            //
+            phi = pscale*V(bj);
+            if (cct == 1)
+                begin
+                if (pijj != 0)
+                    I(bj) <+ -ics*sin(phi);
+                else
+                    I(bj) <+ ics*sin(phi);
+                end
+            I(ph) <+ phi;
+            I(ph) <+ -V(ph);
+            end
+        else
+            begin
+            // DC analysis, fake it by modeling device as low value resistor.
+            //
+            I(ph) <+ -V(ph);
+            I(br) <+ 1e6*scale*V(br);
+            end
         end
-    else
+    else if (analysis("noise") != 0)
         begin
+        if (pscale > 0.0)
+            ;
+        else
+            ;
+        end
+    else if (analysis("ac") != 0)
+        begin
+        if (pscale > 0.0)
+            ;
+        else
+            ;
+        end
+    else if (analysis("tran") != 0)
+        begin
+        real avj, vtmp, gshunt;
+
         // Supercurrent.
         if (cct == 1)
             begin
             phi = idt(V(bj)/`PHI0_2PI, ic_phase);
             if (pijj != 0)
-                I(bj) <+ -scale*icrit*sin(phi);
+                I(bj) <+ -ics*sin(phi);
             else
-                I(bj) <+ scale*icrit*sin(phi);
+                I(bj) <+ ics*sin(phi);
             end
 
         // The following will make the phase node look like a voltage
@@ -199,28 +341,28 @@ analog begin
         I(ph) <+ -V(ph);
 
         // Geometric capacitance current.
-        I(bc) <+ scale*cap*ddt(V(bc));
+        I(bc) <+ caps*ddt(V(bc));
 
         // Quasiparticle current, piecewise-linear model.
+        avj = abs(V(br));
         if (rtype == 1)
             begin
-            avj = abs(V(br));
             if (avj <= vless)
-                I(br) <+ scale*V(br)/rsub;
+                I(br) <+ V(br)/rsubs;
             else if (avj < vmore)
-                I(br) <+ scale*(V(br)/avj)*(i1 + i2*(avj - vless)/delv);
+                I(br) <+ (V(br)/avj)*(i1 + i2*(avj - vless)/delv);
             else
-                I(br) <+ scale*(V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorm);
+                I(br) <+ (V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorms);
             end
 
-        if (vshunt > 0)
-        begin
-            gshunt = (scale*icrit)/vshunt;
+        if (vshunt >= 1u)
+            begin
+            gshunt = ics/vshunt;
             if (rtype == 1)
-                gshunt = gshunt - 1/rsub;
+                gshunt = gshunt - 1/rsubs;
             if (gshunt > 0)
                 I(br) <+ gshunt*V(br);
-        end
+            end
 
         // Limit time step.  This is important, as the simulator may have
         // no other way to recognize the supercurrent and plasma
@@ -231,6 +373,8 @@ analog begin
             vtmp = vdpbak;
         $bound_step(tsfactor*`PHI0_2PI/vtmp);
         end
+    else
+        $error("JJ.va model:  unknown analysis.");
 end
 endmodule
 
