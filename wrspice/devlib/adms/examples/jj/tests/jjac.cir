@@ -5,8 +5,7 @@
 * An underdamped junction looks like a resonator, and the inductance is
 * tunable by varying junction bias current.  Here the frequency response
 * is computed while sweeping the bias current.  Note that the resonance
-* peak shifts to lower frequency as the bias current approaches the
-* critical current.
+* peak shifts to lower frequency as the bias current increases.
 * 
 * The amplitudes are relative to assumed 1V AC input, not physical.
 
@@ -24,7 +23,7 @@ i1 0 1 100uA
 .model jj1 jj(level=2)
 
 .control
-*ac dec 50 10G 1T dc i1 95u 195u 20u
-ac dec 50 10G 1T
+ac dec 50 10G 1T dc i1 95u 195u 20u
 plot vm(1) vp(1)
+edit
 .endc

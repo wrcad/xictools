@@ -360,7 +360,7 @@ B1dev::B1dev()
     dv_numModelParms = NUMELEMS(B1mPTable);
     dv_modelParms = B1mPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NONOIS;
 };
 
 

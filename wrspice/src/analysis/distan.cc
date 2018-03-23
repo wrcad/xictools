@@ -124,16 +124,14 @@ DISTOanalysis::anFunc(sCKT *ckt, int restart)
     sDISTOAN* job = static_cast<sDISTOAN*>(ckt->CKTcurJob);
     sCKTmodGen mgen(ckt->CKTmodels);
     for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
-        if (DEV.device(m->GENmodType)->flags() & DV_NOAC) {
+        if (DEV.device(m->GENmodType)->flags() & (DV_NOAC | DV_NODIST)) {
             OP.error(ERR_FATAL,
                 "Distortion analysis not possible with device %s.",
                 DEV.device(m->GENmodType)->name());
             return (OK);
         }
     }
-
-    // start at beginning
-    ckt->CKTcurrentAnalysis |= DOING_AC | DOING_DISTO;
+    ckt->CKTcurrentAnalysis |= (DOING_AC | DOING_DISTO);
 
     int i;
     int numNames;

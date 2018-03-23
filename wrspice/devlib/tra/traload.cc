@@ -111,7 +111,7 @@ sTRAinstance::pade_load(sCKT *ckt)
         ckt->ldset(TRAibr2Neg2Ptr, 1.0);
 
 #ifdef NEWJJDC
-        if (ckt->CKTjjPresent) {
+        if (ckt->CKTjjDCscale >= 1.0) {
             // If there is no series resistance, treat the inductance
             // as a resistance which takes the voltage difference as a
             // scaled phase.  This applies to DC analysis when

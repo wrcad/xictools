@@ -223,9 +223,6 @@ sCKT::sCKT()
 {
     memset(this, 0, sizeof(sCKT));
 
-#ifdef NEWJJDC
-    CKTjjDCscale = 1e6;
-#endif
     CKTsrcFact = 1.0;
     CKTorder = 1;
     CKTstat = new sSTATS();
@@ -2123,7 +2120,22 @@ sCKT::setup()
             return (error);
     }
 
+    // Set up Josephson junstion support flags.
+    CKTjjPresent = false;
+#ifdef NEWJJDC
+    CKTjjDCscale = false;
+#endif
     sCKTmodGen mgen(CKTmodels);
+    for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
+        if (DEV.device(m->GENmodType)->flags() & DV_JJSTEP)
+            CKTjjPresent = true;
+#ifdef NEWJJDC
+        if (DEV.device(m->GENmodType)->flags() & DV_JJPMDC)
+            CKTjjDCscale = JJDCSCALE;
+#endif
+    }
+
+    mgen = sCKTmodGen(CKTmodels);
     for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
         error = DEV.device(m->GENmodType)->setup(m, this, &CKTnumStates);
         if (error)

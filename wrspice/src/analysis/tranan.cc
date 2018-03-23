@@ -234,12 +234,10 @@ TRANanalysis::anFunc(sCKT *ckt, int restart)
                 DEV.device(m->GENmodType)->name());
             return (OK);
         }
-        if (DEV.device(m->GENmodType)->flags() & DV_JJSTEP)
-            ckt->CKTjjPresent = true;
     }
+    ckt->CKTcurrentAnalysis |= DOING_TRAN;
 
     sTRANint *tran = &job->TS;
-    ckt->CKTcurrentAnalysis |= DOING_TRAN;
 
     sOUTdata *outd;
     int error;

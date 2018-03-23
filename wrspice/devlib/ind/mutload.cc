@@ -72,7 +72,7 @@ MUTdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     if (ckt->CKTmode & MODEDC) {
 #ifdef NEWJJDC
-        if (ckt->CKTjjPresent) {
+        if (ckt->CKTjjDCscale >= 1.0) {
             // The voltage across the inductor is taken as the
             // inductor phase scaled by a large value so that the
             // voltage is small (microvolts).  This is for use when

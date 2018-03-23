@@ -113,29 +113,27 @@ sCKT::va_boundStep(double maxstep)
 
 // Support for the Verilog-A analysis function.
 //
+//   Argument  DC Sweep TranOp Tran AcOp AC NoiseOp Noise
+//   nodeset   1  first 1      0    1    0  1       0
+//   static    1  all   1      0    1    0  1       0
+//   ic        0  none  1      0    0    0  0       0
+//   dc        1  all   0      0    0    0  0       0
+//   tran      0  none  1      1    0    0  0       0
+//   ac        0  none  0      0    1    1  0       0
+//   noise     0  none  0      0    0    0  1       1
+//   smsig     0  none  0      0    1*   0  0       0
+//
+//  * The smsig argument is WRspice only, returns 1 when the
+//  MODEINITSMSIG flag is set (when small-signal values are
+//  loaded for AC analysis).
+//
 bool
 sCKT::va_analysis(const char *tok)
 {
-    if (lstring::cieq(tok, "ac")) {
-        // .AC analysis (or pz, disto, noise, ac sens, ac tf)
-        return (CKTcurrentAnalysis & DOING_AC);
-    }
-    if (lstring::cieq(tok, "dc")) {
-        // .OP or .DC analysis (or dc sens, dc tf)
-        return (CKTcurrentAnalysis & (DOING_DCOP | DOING_TRCV));
-    }
-    if (lstring::cieq(tok, "noise")) {
-        // .NOISE analysis
-        return (CKTcurrentAnalysis & DOING_NOISE);
-    }
-    if (lstring::cieq(tok, "tran")) {
-        // .TRAN analysis
-        return (CKTcurrentAnalysis & DOING_TRAN);
-    }
-    if (lstring::cieq(tok, "ic")) {
-        // The initial-condition analysis that preceeds a transient
-        // analysis.
-        return (CKTmode & MODETRANOP);
+    if (lstring::cieq(tok, "nodeset")) {
+        // The phase during an equilibrium point calculation where
+        // nodesets are forced.
+        return ((CKTmode & MODEDC) && !(CKTmode & MODEINITFLOAT));
     }
     if (lstring::cieq(tok, "static")) {
         // Any equilibrium point calculation, including a DC analysis
@@ -144,10 +142,31 @@ sCKT::va_analysis(const char *tok)
         // IC analysis that precedes a transient analysis.
         return (CKTmode & MODEDC);
     }
-    if (lstring::cieq(tok, "nodeset")) {
-        // The phase during an equilibrium point calculation where
-        // nodesets are forced.
-        return ((CKTmode & MODEDC) && !(CKTmode & MODEINITFLOAT));
+    if (lstring::cieq(tok, "ic")) {
+        // The initial-condition analysis that preceeds a transient
+        // analysis.
+        return (CKTmode & MODETRANOP);
+    }
+    if (lstring::cieq(tok, "dc")) {
+        // .OP or .DC analysis (or dc sens, dc tf)
+        return (CKTcurrentAnalysis & (DOING_DCOP | DOING_TRCV));
+    }
+    if (lstring::cieq(tok, "tran")) {
+        // .TRAN analysis
+        return (CKTcurrentAnalysis & DOING_TRAN);
+    }
+    if (lstring::cieq(tok, "ac")) {
+        // .AC analysis (or pz, disto, ac sens, ac tf)
+        return ((CKTcurrentAnalysis & DOING_AC) &&
+            !(CKTcurrentAnalysis & DOING_NOISE));
+    }
+    if (lstring::cieq(tok, "noise")) {
+        // .NOISE analysis
+        return (CKTcurrentAnalysis & DOING_NOISE);
+    }
+    if (lstring::cieq(tok, "smsig")) {
+        // WRspice ONLY!
+        return (CKTmode & MODEINITSMSIG);
     }
     return (false);
 }

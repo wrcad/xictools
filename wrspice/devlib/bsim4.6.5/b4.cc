@@ -2026,7 +2026,7 @@ BSIM4dev::BSIM4dev()
     dv_numModelParms = NUMELEMS(BSIM4mPTable);
     dv_modelParms = BSIM4mPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST;
 };
 
 

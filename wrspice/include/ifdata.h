@@ -547,6 +547,10 @@ enum DEV_BKMODE { DEV_CLEAR, DEV_SAVE, DEV_RESTORE };
 #define DV_NOLEVCHG 0x20    // device levels can't be changed
 #define DV_VLAMS    0x40    // device compiled from Verilog-AMS source
 #define DV_JJSTEP   0x80    // device limits time step via Josephson eqn.
+#define DV_JJPMDC   0x100   // device uses scaled phase in DC analysis
+#define DV_NONOIS   0x200   // no NOISE analysis with this device
+#define DV_NOPZ     0x400   // no PZ analysis with this device
+#define DV_NODIST   0x800   // no DISTO analysis with this device
 
 // structure:  IFdevice
 //

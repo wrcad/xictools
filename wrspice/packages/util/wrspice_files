@@ -21,12 +21,13 @@ diodisto.cir \
 diotemp.cir \
 ex8.cir \
 exjjintr.cir \
-exjjiv.cir \
 fftdemo.cir \
 hypres.models \
 intr.sced \
 intr.xic \
 jjcntr.cir \
+jjiv4.cir \
+jjiv.cir \
 jjloop.cir \
 jjloop1.cir \
 jjloop2.cir \

@@ -444,7 +444,7 @@ EKVdev::EKVdev()
     dv_numModelParms = NUMELEMS(EKVmPTable);
     dv_modelParms = EKVmPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST | DV_NOPZ;
 };
 
 

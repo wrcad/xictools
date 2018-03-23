@@ -419,7 +419,7 @@ SOI3dev::SOI3dev()
     dv_numModelParms = NUMELEMS(SOI3mPTable);
     dv_modelParms = SOI3mPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST | DV_NOPZ;
 };
 
 

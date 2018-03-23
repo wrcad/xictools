@@ -472,7 +472,7 @@ B2dev::B2dev()
     dv_numModelParms = NUMELEMS(B2mPTable);
     dv_modelParms = B2mPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST | DV_NONOIS;
 };
 
 

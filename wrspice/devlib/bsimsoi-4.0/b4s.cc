@@ -1900,7 +1900,7 @@ B4SOIdev::B4SOIdev()
     dv_numModelParms = NUMELEMS(B4SOImPTable);
     dv_modelParms = B4SOImPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST;
 };
 
 

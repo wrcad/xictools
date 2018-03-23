@@ -469,7 +469,7 @@ UFSdev::UFSdev()
     dv_numModelParms = NUMELEMS(UFSmPTable);
     dv_modelParms = UFSmPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST;
 };
 
 

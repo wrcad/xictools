@@ -426,7 +426,7 @@ VBICdev::VBICdev()
     dv_numModelParms = NUMELEMS(VBICmPTable);
     dv_modelParms = VBICmPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST;
 };
 
 

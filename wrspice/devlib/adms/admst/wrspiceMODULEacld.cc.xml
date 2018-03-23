@@ -107,7 +107,7 @@
     </admst:if>
   </admst:for-each>
 
-  <!-- Load the Jacopian terms. -->
+  <!-- Load the Jacobian terms. -->
   <admst:for-each select="jacobian[static='yes']">
     <admst:value-of select="column/name"/>
     <admst:value-of select="row/name"/>
@@ -120,6 +120,15 @@
     <admst:text format="$(indent)*(inst->PTR_J_%s_%s) += inst->JSVAL_%s_%s;\n"/>
     <admst:apply-templates select="." match="pop_indent"/>
   </admst:for-each>
+
+  <admst:variable name="instance_vars"
+    select="%(variable[input='no' and (scope='global_instance' or
+    (parametertype='instance' and not(nilled(attribute))))])"/>
+  <admst:variable name="ssl" value=""/>
+  <admst:if test="$instance_vars[name='SmallSigL']">
+    <admst:variable name="ssl" value="-1.0/(omega*inst->SmallSigL)"/>
+  </admst:if>
+
   <admst:for-each select="jacobian[dynamic='yes']">
     <admst:value-of select="column/name"/>
     <admst:value-of select="row/name"/>
@@ -129,7 +138,7 @@
     <admst:value-of select="row/name"/>
     <admst:text format="$(indent)if (inst->PTR_J_%s_%s_required)\n"/>
     <admst:apply-templates select="." match="push_indent"/>
-    <admst:text format="$(indent)*(inst->PTR_J_%s_%s+1) += omega*inst->JDVAL_%s_%s;\n"/>
+    <admst:text format="$(indent)*(inst->PTR_J_%s_%s+1) += omega*inst->JDVAL_%s_%s$(ssl);\n"/>
     <admst:apply-templates select="." match="pop_indent"/>
   </admst:for-each>
   <admst:apply-templates select="." match="pop_indent"/>

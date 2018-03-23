@@ -251,7 +251,7 @@ JFET2dev::JFET2dev()
     dv_numModelParms = NUMELEMS(JFET2mPTable);
     dv_modelParms = JFET2mPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST | DV_NOPZ;
 };
 
 

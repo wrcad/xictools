@@ -62,19 +62,19 @@ NOISEanalysis::anFunc(sCKT *ckt, int restart)
 
     sCKTmodGen mgen(ckt->CKTmodels);
     for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
-        if (DEV.device(m->GENmodType)->flags() & DV_NOAC) {
+        if (DEV.device(m->GENmodType)->flags() & (DV_NOAC | DV_NONOIS)) {
             OP.error(ERR_FATAL,
                 "Noise analysis not possible with device %s.",
                 DEV.device(m->GENmodType)->name());
             return (OK);
         }
     }
+    ckt->CKTcurrentAnalysis |= (DOING_AC | DOING_NOISE);
 
     // Make sure all the nodes/sources referenced are actually
     // in the circuit.
     //
     int error;
-    ckt->CKTcurrentAnalysis |= DOING_AC | DOING_NOISE;
     sOUTdata *outdN;
     sOUTdata *outdI;
     if (restart) {

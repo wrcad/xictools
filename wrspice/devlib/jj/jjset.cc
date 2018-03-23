@@ -403,13 +403,13 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             if (error != OK)
                 return (error);
 
-            if (inst->JJphsNode > 0) {
 #ifdef USE_PRELOAD
+            if (inst->JJphsNode > 0) {
                 // preload constant
                 if (ckt->CKTpreload)
                     ckt->preldset(inst->JJphsPhsPtr, 1.0);
-#endif
             }
+#endif
         }
     }
 

@@ -140,6 +140,11 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         js.js_crt  = inst->JJcriti;
         if (model->JJictype != 1)
             js.jj_ic(model, inst);
+        if (ckt->CKTmode & MODEINITSMSIG) {
+            // We don't want/need this except when setting up for AC
+            // analysis.
+            js.jj_iv(model, inst);
+        }
         js.jj_load(ckt, model, inst);
         inst->JJdcrt = js.js_dcrt;  // for ac load
         return (OK);

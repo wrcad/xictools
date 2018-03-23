@@ -351,7 +351,7 @@ HSM1dev::HSM1dev()
     dv_numModelParms = NUMELEMS(HSM1mPTable);
     dv_modelParms = HSM1mPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST;
 };
 
 

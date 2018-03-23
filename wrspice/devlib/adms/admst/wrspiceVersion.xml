@@ -3021,8 +3021,9 @@
           <admst:apply-templates select="arguments[2]" match="ddx"/>
         </admst:when>
         <admst:otherwise>
-          <admst:error
+          <admst:fatal
   format="\$simparam($arg1) -- not implemented in WRspice interface\n"/>
+          <admst:variable name="e" value="0"/>
         </admst:otherwise>
       </admst:choose>
     </admst:when>

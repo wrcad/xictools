@@ -5,7 +5,7 @@
 
 # This must match the SyntaxLevel defined in device.xml.  If it is
 # smaller, you need to update this Makefile to match devkit/Makefile.
-SyntaxLevel = 13
+SyntaxLevel = 14
 
 #######################################################################
 #  MANDATORY User Configuration
@@ -65,7 +65,7 @@ ADD_M = no
 #
 LIMITING = yes
 
-# You probably don't need any flags, but these can be set when needed. 
+# You probably don't need any flags, but these can be set when needed.
 # The string consists of words from the list below, separated by '|'
 # symbols.  It should be quoted if there are any '|' characters included.
 #
@@ -75,14 +75,23 @@ LIMITING = yes
 # DV_NODCO      Device does not support DCOP analysis.
 # DV_NODCT      Device does not support DCT analysis.
 # DV_NOTRAN     Device does not support TRAN analysis.
+# DV_NONOIS     Device does not support NOISE analysis.
+# DV_NOPZ       Device does not support PZ analysis.
+# DV_NODIST     Device does not support DIST analysis.
 #
-# This is obscure.
+# These are obscure.
 # DV_JJSTEP     Device has timestep limiting based on the device
 #               voltage and Josephson equation, as in the bound_step
 #               call in the Josephson junction example.
 #
+# DV_JJPMDC     Device is Josephson-junction-like and in DC analysis
+#               takes the voltage across the device as scaled phase.
+#               If the simulator supports this mode,
+#               $simparam("dcPhaseScale", 0.0)
+#               will return the scale factor (default 1e6), otherwise 0.
+#
 # Example (from JJ example)
-# FLAGS = "DV_NOAC | DV_NODCT | DV_JJSTEP"
+# FLAGS = "DV_JJSTEP | DV_JJPMDC | DV_NODIST"
 #
 FLAGS = 
 

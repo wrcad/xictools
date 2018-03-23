@@ -1539,7 +1539,7 @@ B3SOIdev::B3SOIdev()
     dv_numModelParms = NUMELEMS(B3SOImPTable);
     dv_modelParms = B3SOImPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST;
 };
 
 

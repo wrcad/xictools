@@ -2047,6 +2047,7 @@ public:
     double CKTsrcFact;      // source stepping factor
     double CKTdiagGmin;     // gmin stepping
 #ifdef NEWJJDC
+#define JJDCSCALE 1e6;
     double CKTjjDCscale;    // voltage to phase scaling in Josephson DCAN
 #endif
 

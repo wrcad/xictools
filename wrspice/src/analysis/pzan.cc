@@ -65,14 +65,14 @@ PZanalysis::anFunc(sCKT *ckt, int restart)
     sPZAN *pzan = static_cast<sPZAN*>(ckt->CKTcurJob);
     sCKTmodGen mgen(ckt->CKTmodels);
     for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
-        if (DEV.device(m->GENmodType)->flags() & DV_NOAC) {
+        if (DEV.device(m->GENmodType)->flags() & (DV_NOAC | DV_NOPZ)) {
             OP.error(ERR_FATAL,
                 "PZ analysis not possible with device %s.",
                 DEV.device(m->GENmodType)->name());
             return (OK);
         }
     }
-    ckt->CKTcurrentAnalysis |= DOING_AC | DOING_PZ;
+    ckt->CKTcurrentAnalysis |= (DOING_AC | DOING_PZ);
 
     struct sOUTdata *outd;
     if (restart) {

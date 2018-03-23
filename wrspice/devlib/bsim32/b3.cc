@@ -1128,7 +1128,7 @@ B3dev::B3dev()
     dv_numModelParms = NUMELEMS(B3mPTable);
     dv_modelParms = B3mPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST;
 };
 
 

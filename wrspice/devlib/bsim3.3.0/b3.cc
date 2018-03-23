@@ -1071,7 +1071,7 @@ BSIM3dev::BSIM3dev()
     dv_numModelParms = NUMELEMS(BSIM3mPTable);
     dv_modelParms = BSIM3mPTable;
 
-    dv_flags = DV_TRUNC;
+    dv_flags = DV_TRUNC | DV_NODIST;
 };
 
 

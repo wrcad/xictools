@@ -193,7 +193,7 @@ JJdev::JJdev()
     dv_modelParms = JJmPTable;
 
 #ifdef NEWJJDC
-    dv_flags = (DV_TRUNC | DV_JJSTEP);
+    dv_flags = (DV_TRUNC | DV_JJSTEP | DV_JJPMDC | DV_NODIST | DV_NOPZ);
 #else
     dv_flags = (DV_TRUNC | DV_NOAC | DV_NODCT | DV_JJSTEP);
 #endif
