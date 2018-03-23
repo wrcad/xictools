@@ -208,7 +208,10 @@ examples/ind/tests/test.sp
 examples/jj/jj.va
 examples/jj/mkmk
 examples/jj/README
-examples/jj/tests/jjva.cir
+examples/jj/tests/jjac.cir
+examples/jj/tests/jjdc.cir
+examples/jj/tests/jjiv.cir
+examples/jj/tests/jjnoise.cir
 examples/Makefile
 examples/mextram/bjt504t.va
 examples/mextram/bjt504.va
