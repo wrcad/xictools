@@ -23,7 +23,7 @@ LEVEL=6
 # Give other devices a different level.
 ADD_M=no
 LIMITING=yes
-FLAGS=
+FLAGS=DV_NODIST
 
 cat ../../Makefile | sed \
   -e "s%^SOURCE = .*%SOURCE = $SOURCE%" \

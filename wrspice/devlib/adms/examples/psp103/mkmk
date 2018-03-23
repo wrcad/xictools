@@ -17,7 +17,7 @@ KEY=m
 LEVEL=45
 ADD_M=yes
 LIMITING=yes
-FLAGS=
+FLAGS=DV_NODIST
 
 cat ../../Makefile | sed \
   -e "s%^SOURCE = .*%SOURCE = $SOURCE%" \

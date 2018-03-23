@@ -10,7 +10,7 @@ KEY=b
 LEVEL=2
 ADD_M=no
 LIMITING=no
-FLAGS="\"DV_NOAC | DV_NODCT | DV_JJSTEP\""
+FLAGS="\"DV_JJSTEP | DV_JJPMDC | DV_NODIST\""
 
 cat ../../Makefile | sed \
   -e "s%^SOURCE = .*%SOURCE = $SOURCE%" \
