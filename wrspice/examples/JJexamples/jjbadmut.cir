@@ -1,0 +1,47 @@
+* Mutual inductor test
+*
+* This illustrates a bug in mutual inductor code in wrspice-4.3.2 and
+* earlier, not sure when this was introduced.
+*
+* If the plot show wiggly curves, this indicates a bug.  The curves
+* should be substantially flat.
+*
+*
+* Two junction SQUID flip-flop
+*
+r1 3 0 1
+r2 5 0 1
+b1 3 0 6 jj1 area=.3 ic_phase=1.375163
+b2 5 0 7 jj1 area=.3 ic_phase=12.40895m
+l1 3 4 2p ic=-294.2774uA
+l2 4 5 2p ic=3.72259uA
+l3 1 2 2p ic=260uA
+l4 2 0 2p ic=260uA
+*b1 3 0 6 jj1 ics=300uA
+*b2 5 0 7 jj1 ics=300uA
+*l1 3 4 2p
+*l2 4 5 2p
+*l3 1 2 2p
+*l4 2 0 2p
+k1 l1 l3 .99
+k2 l2 l4 .99
+*
+* flux bias
+*v1 13 0 pulse(0 12.75m 10p 10p)
+*v1 13 0 13mV
+*rx1 13 1 50
+*ix 0 1 pulse 0 260uA 10p 10p
+ix 0 1 260uA
+
+* gate bias
+*v2 14 0 pulse(0 14.9m 10p 10p)
+v2 14 0 14.9mV
+rx2 14 4 50
+*
+.model jj1 jj(level=1)
+
+.control
+tran 1p 10p uic
+plot v(6) v(7)
+.endc
+

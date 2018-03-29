@@ -77,8 +77,8 @@ Author: 1992 Stephen R. Whiteley
 #define IcRmin  1.5         // Min IcR mV
 #define IcRmax  1.9         // Max IcR mV
 #define Ic      1e-3        // Assumed Ic of reference, A
-#define IcMin   0.0         // Min reference Ic, A
-#define IcMax   0.1         // Max referenct Ic, A
+#define IcMin   Icrit/20    // Min reference Ic, A
+#define IcMax   Icrit*20    // Max referenct Ic, A
 #define Vg      2.8e-3      // Assumed Vgap of reference, V
 #define VgMin   2.5e-3      // Min Vgap, V
 #define VgMax   3.1e-3      // Max Vgao, V
@@ -131,8 +131,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJrtype < 0 || model->JJrtype > RTMAX) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: RTYPE out of range [0-%d], reset to 1.\n",
-                    model->GENmodName, RTMAX);
+                    "%s: RTYPE=%d out of range [0-%d], reset to 1.\n",
+                    model->GENmodName, model->JJrtype, RTMAX);
                 model->JJrtype = 1;
             }
         }
@@ -141,8 +141,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJictype < 0 || model->JJictype > ITMAX) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: ICTYPE out of range [0-%d], reset to 1.\n",
-                    model->GENmodName, ITMAX);
+                    "%s: CCT=%d out of range [0-%d], reset to 1.\n",
+                    model->GENmodName, model->JJictype, ITMAX);
                 model->JJictype = 1;
             }
         }
@@ -151,8 +151,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJvg < VgMin || model->JJvg > VgMax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: VG out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, VgMin, VgMax, Vg);
+                    "%s: VG=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJvg, VgMin, VgMax, Vg);
                 model->JJvg = Vg;
             }
         }
@@ -161,8 +161,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJdelv < DelVmin || model->JJdelv > DelVmax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: DELV out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, DelVmin, DelVmax, DelV);
+                    "%s: DELV=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJdelv, DelVmin, DelVmax, DelV);
                 model->JJdelv = DelV;
             }
         }
@@ -176,18 +176,20 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJccsens < CCsensMin || model->JJccsens > CCsensMax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: ICON out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, CCsensMin, CCsensMax, CCsens);
+                    "%s: ICON=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJccsens, CCsensMin, CCsensMax,
+                    CCsens);
                 model->JJccsens = CCsens;
             }
         }
         if (!model->JJcritiGiven)
             model->JJcriti = Ic;
         else {
+            double Icrit = Ic;
             if (model->JJcriti < IcMin || model->JJcriti > IcMax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: ICRIT out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, IcMin, IcMax, Ic);
+                    "%s: ICRIT=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJcriti, IcMin, IcMax, Ic);
                 model->JJcriti = Ic;
             }
         }
@@ -196,8 +198,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJcap < CAPmin || model->JJcap > CAPmax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: CAP out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, CAPmin, CAPmax, CAP);
+                    "%s: CAP=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJcap, CAPmin, CAPmax, CAP);
                 model->JJcap = CAP;
             }
         }
@@ -206,8 +208,9 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJicFactor < ICfctMin || model->JJicFactor > ICfctMax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: ICFACT out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, ICfctMin, ICfctMax, ICfct);
+                    "%s: ICFACT=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJicFactor, ICfctMin, ICfctMax,
+                    ICfct);
                 model->JJicFactor = ICfct;
             }
         }
@@ -217,8 +220,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJvm < VmMin || model->JJvm > VmMax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: VM out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, VmMin, VmMax, Vm);
+                    "%s: VM=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJvm, VmMin, VmMax, Vm);
                 model->JJvm = Vm;
             }
         }
@@ -234,8 +237,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             if (model->JJr0 < R0min || model->JJr0 > R0max) {
                 double R0 = 1e-3*model->JJvm/i;
                 DVO.textOut(OUT_WARNING,
-                    "%s: RSUB out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, R0min, R0max, R0);
+                    "%s: RSUB=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJr0, R0min, R0max, R0);
                 model->JJr0 = R0;
             }
         }
@@ -246,8 +249,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             if (model->JJicrn < IcRmin || model->JJicrn > IcRmax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: ICRN out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, IcRmin, IcRmax, IcR);
+                    "%s: ICRN=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJicrn, IcRmin, IcRmax, IcR);
                 model->JJicrn = IcR;
             }
         }
@@ -262,21 +265,30 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             if (model->JJrn < RNmin || model->JJrn > RNmax) {
                 double RN = 1e-3*model->JJicrn/i;
                 DVO.textOut(OUT_WARNING,
-                    "%s: RN out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, RNmin, RNmax, RN);
+                    "%s: RN=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJrn, RNmin, RNmax, RN);
                 model->JJrn = RN;
             }
         }
         if (model->JJrn > model->JJr0)
             model->JJrn = model->JJr0;
 
+        if (model->JJvShuntGiven) {
+            if (model->JJvShunt < 0.0 || model->JJvShunt > model->JJvg) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: VSHUNT=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJvShunt, 0.0, model->JJvg, 0.0);
+                model->JJvShunt = 0.0;
+            }
+        }
+
         if (!model->JJnoiseGiven)
             model->JJnoise = NOI;
         else {
             if (model->JJnoise < NOImin || model->JJnoise > NOImax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: NOISE out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, NOImin, NOImax, NOI);
+                    "%s: NOISE=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJnoise, NOImin, NOImax, NOI);
                 model->JJnoise = NOI;
             }
         }
@@ -299,10 +311,12 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                         "%s: ICS and AREA both given, AREA ignored.\n",
                         inst->GENname);
                 }
+                double Icrit = model->JJcriti;
                 if (inst->JJics < IcMin || inst->JJics > IcMax) {
                     DVO.textOut(OUT_WARNING,
-                        "%s: ICS out of range [%g-%g], reset to %g.\n",
-                        inst->GENname, IcMin, IcMax, model->JJcriti);
+                        "%s: ICS=%g out of range [%g-%g], reset to %g.\n",
+                        inst->GENname, inst->JJics, IcMin, IcMax,
+                        model->JJcriti);
                     inst->JJics = model->JJcriti;
                 }
                 inst->JJarea = inst->JJics/model->JJcriti;
@@ -313,6 +327,9 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             // ics is the input parameter, criti is the actual critical
             // current to use.
             inst->JJcriti = model->JJcriti * inst->JJarea;
+
+            // Note: we set the phase-node flag of connected nodes in
+            // sCKT::setup, not here, for easier Verilog support.
 
             double sqrta = sqrt(inst->JJarea);
             inst->JJcap = model->JJcap*(inst->JJarea*(1.0 - model->JJcmu) +

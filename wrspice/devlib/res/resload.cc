@@ -58,9 +58,28 @@ RESdev::loadTest(sGENinstance *in_inst, sCKT *ckt)
                 inst->REStree->num_vars() == 0))
             return (~OK);
     }
+#else
+    (void)in_inst;
+    (void)ckt;
 #endif
     return (OK);
 }
+
+
+#ifdef NEWJJDC
+namespace {
+    enum { GND, PHASE, VOLT };
+    int nodetype(sCKT *ckt, int nnum)
+    {
+        if (nnum <= 0)
+            return (GND);
+        sCKTnode *nd = ckt->CKTnodeTab.find(nnum);
+        if (!nd)
+            return (VOLT);  // shouldn't happen
+        return (nd->phase() ? PHASE : VOLT);
+    }
+}
+#endif
 
 
 int
@@ -168,6 +187,33 @@ RESdev::load(sGENinstance *in_inst, sCKT *ckt)
     // The resistor list is sorted, we don't need to
     // call load anymore, tell caller.
 #else
+
+#ifdef NEWJJDC
+    if ((ckt->CKTmode & MODEDC) && ckt->CKTjjDCphase) {
+        int ntpos = nodetype(ckt, inst->RESposNode);
+        int ntneg = nodetype(ckt, inst->RESnegNode);
+        if (ntpos != VOLT && ntneg != VOLT) {
+            // Load GMIN otherwise matrix might be singular.
+            ckt->ldadd(inst->RESposPosptr, ckt->CKTcurTask->TSKgmin);
+            ckt->ldadd(inst->RESnegNegptr, ckt->CKTcurTask->TSKgmin);
+            ckt->ldadd(inst->RESposNegptr, ckt->CKTcurTask->TSKgmin);
+            ckt->ldadd(inst->RESnegPosptr, ckt->CKTcurTask->TSKgmin);
+            return (OK);
+        }
+        if (ntpos == VOLT && ntneg == PHASE) {
+            ckt->ldadd(inst->RESposPosptr, inst->RESconduct);
+            ckt->ldadd(inst->RESnegPosptr, -inst->RESconduct);
+            return (OK);
+        }
+        if (ntpos == PHASE && ntneg == VOLT) {
+            ckt->ldadd(inst->RESnegNegptr, inst->RESconduct);
+            ckt->ldadd(inst->RESposNegptr, -inst->RESconduct);
+            return (OK);
+        }
+        // Else none are PHASE, load normally.
+    }
+#endif
+
     ckt->ldadd(inst->RESposPosptr, inst->RESconduct);
     ckt->ldadd(inst->RESnegNegptr, inst->RESconduct);
     ckt->ldadd(inst->RESposNegptr, -inst->RESconduct);

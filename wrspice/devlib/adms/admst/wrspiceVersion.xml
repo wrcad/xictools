@@ -2925,107 +2925,19 @@
     <admst:when test="[name='\$simparam']">
       <admst:assert test="[count(arguments)=1 or count(arguments)=2]"
         format="%(name): should have one or two arguments\n"/>
-      <admst:variable name="arg1" string="%(arguments[1])"/>
-      <admst:choose>
-        <admst:when test="[$arg1='&quot;gdev&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKgmin"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;gmin&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKgmin"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;imax&quot;']">
-          <admst:variable name="e" value="1.0"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;imelt&quot;']">
-          <admst:variable name="e" value="1.0"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;iteration&quot;']">
-          <admst:variable name="e" value="ckt->CKTstat->STATnumIter"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;scale&quot;']">
-          <admst:variable name="e" value="1.0"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;shrink&quot;']">
-          <admst:variable name="e" value="1.0"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;simulatorSubversion&quot;']">
-          <admst:variable name="e" value="_WRspice_simulatorSubversion"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;simulatorVersion&quot;']">
-          <admst:variable name="e" value="_WRspice_simulatorVersion"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;sourceScaleFactor&quot;']">
-          <admst:variable name="e" value="ckt->CKTsrcFact"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;tnom&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKnomTemp"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;checkjcap&quot;']">
-          <admst:variable name="e" value="1.0"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;maxmosl&quot;']">
-          <admst:variable name="e" value="1.0"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;maxmosw&quot;']">
-          <admst:variable name="e" value="1.0"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;minmosl&quot;']">
-          <admst:variable name="e" value="1.0e-12"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;minmosw&quot;']">
-          <admst:variable name="e" value="1.0e-12"/>
-        </admst:when>
-
-        <!-- WRspice only -->
-        <admst:when test="[$arg1='&quot;tstep&quot;']">
-          <admst:variable name="e" value="ckt->CKTstep"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;tstart&quot;']">
-          <admst:variable name="e" value="ckt->CKTinitVal"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;tstop&quot;']">
-          <admst:variable name="e" value="ckt->CKTfinalVal"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;delta&quot;']">
-          <admst:variable name="e" value="ckt->CKTdelta"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;delmin&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKdelMin"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;delmax&quot;']">
-          <admst:variable name="e" value="ckt->CKTmaxStep"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;abstol&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKabstol"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;reltol&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKreltol"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;chgtol&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKchgtol"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;volttol&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKvoltTol"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;predictor&quot;']">
-          <admst:variable name="e" value="(ckt->CKTmode & MODEINITPRED)"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;dcPhaseScale&quot;']">
-          <admst:variable name="e" value="ckt->CKTjjDCscale"/>
-        </admst:when>
-        <admst:when test="[$arg1='&quot;dphimax&quot;']">
-          <admst:variable name="e" value="ckt->CKTcurTask->TSKdphiMax"/>
-        </admst:when>
-
-        <admst:when test="[count(arguments)=2]">
-          <admst:apply-templates select="arguments[2]" match="ddx"/>
-        </admst:when>
-        <admst:otherwise>
-          <admst:fatal
-  format="\$simparam($arg1) -- not implemented in WRspice interface\n"/>
-          <admst:variable name="e" value="0"/>
-        </admst:otherwise>
-      </admst:choose>
+      <admst:for-each select="arguments">
+        <admst:if test="[$args!='']">
+          <admst:variable name="args" select="$args,"/>
+        </admst:if>
+        <admst:apply-templates select="." match="ddx"/>
+        <admst:variable name="args" select="$args$e"/>
+      </admst:for-each>
+      <admst:if test="[count(arguments)=1]">
+        <admst:variable name="e" value="ckt->va_simparam($args)"/>
+      </admst:if>
+      <admst:if test="[count(arguments)=2]">
+        <admst:variable name="e" value="ckt->va_simparam($args, true)"/>
+      </admst:if>
     </admst:when>
 
     <admst:when test="[name='\$temperature']">

@@ -91,37 +91,65 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
     // 3. quantum mechanical "phase" must be quantized around
     //    JJ/inductor loops.
     //
-    // We enforce these by taking the voltage difference across JJs
-    // and inductors as the device phase, scaled downward by a large
-    // number.  The resulting device "voltages" are tiny enough to be
-    // negligible in comparison to "true" voltages in the circuit. 
-    // However, one can obtain the phase, and hence JJ/inductor
-    // currents, by un-scaling the "voltage" and applying the formula
-    // for device current given phase.  This requires special
-    // treatment in ind/mut devices, and transmission lines with no
-    // serial loss (total inductance).  All other devices are treated
-    // normally.
+    // We get around this by using phase for josephson junctions,
+    // inductors, and possibly inductor-like devices such as lossless
+    // transmision lines.  Every node connected to a Josephson
+    // junction or inductor has a "Phase" flag set.  This indicates
+    // that the computed value is phase, and NOT voltage, for these
+    // nodes.  We have to special-case the load functions of inductors
+    // and mutual inductors (and lossless transmission lines), and
+    // resistors.  Other devices can probably be treated normally,
+    // however there will be limitations, as noted below.
     //
-    // A JJ can be modeled by the basic formula i = Ic*sin(N*V).
-    // Inductors look like resistors, L*i = N*V*phi0/(2*pi)
-    // N is the scale factor, which might be 1e6 for example.
+    // A JJ can be modeled by the basic formula I = Ic*sin(V(i,j)),
+    // where V(i,j) is the "voltage" difference between nodes i and j,
+    // which is actually the phase.  Inductors look like resistors,
+    // L*I = V(i,j)*phi0/(2*pi), where again V(i,j) is the phase
+    // difference across the inductor.  Mutual inductance adds similar
+    // cross terms.
     //
-    // If there are no nonzero voltage sources, then in a pure SFQ
-    // circuit all node voltages will be zero.  We would not need the
-    // scaling in this case.  Performing a DCOP would yield a
-    // "voltage" for each node which is equal to the phase.
+    // Capacitors are completely ignored.  The treatment of resistors
+    // is slightly complicated.  The connected nodes can each be
+    // "Ground", "Phase", or "Voltage".  If both nodes are Ground or
+    // Voltage, the resistor is loaded normally.  If both nodes are
+    // Phase or Ground, the resistor is not loaded at all.  The
+    // interesting cases are when one node is Phase, the other
+    // Voltage.  In this case, we load the resistor as if the phase
+    // node is actually Ground (number = 0).  In addition, we load a
+    // VCCS template which injects current into the phase node, of
+    // value V(voltage-node)/resistance.
     //
-    // The scaling makes it possible to include voltage sources and
-    // resistive components in the circuit.  The small phase
-    // difference is assumed negligible but would cause tiny errors. 
-    // For example, consider a current source versus a voltage source
-    // with series resistance.  The latter applied current would be
-    // reduced by the scaled phase that would appear across a biased
-    // junction or inductor.
+    // Resistors are the bridge between the normal voltage-mode
+    // devices and phase nodes.  Some circuits may require
+    // introduction of resistors to get correct results.  For example,
+    // assume a JJ gate driving a CMOS comparator circuit.  If the
+    // input MOSFET gate is connected directly to the JJ device, the
+    // DCOP will be incorrect, as the comparator will see phase as its
+    // input.  However, if a resistor separates the MOS gate from the
+    // JJ, the comparator input will be zero, as it should be.
+    // 
+    // There is (at present) a topological requirement that all phase
+    // nodes must be at ground potential.  This means that for a
+    // network of JJs and inductors, there must be a ground connection
+    // to one of these devices.  A voltage source connected to an
+    // inductor, which is connected to a resistor to ground, although
+    // a perfectly valid circuit, will fail.  One must use the
+    // equivalent consisting of the voltage source connected to a
+    // resistor, connected to the inductor which is grounded.  This
+    // satisfies the two topological requirements:
     //
-    // Note that for this to work, all JJs must have bias current
-    // less than their Ic.  Both DCOP and DC sweep analysis are
-    // available.
+    // Rule 1:  There must be a resistor between a voltage-mode device 
+    //          and a phase mode device, no direct connections.  
+    //
+    // Rule 2:  Every phase-node subnet must have a direct connection to
+    //          ground, so all phase nodes are at ground potential.
+    //
+    // With this bit of information, and the warning that controlled
+    // sources can cause unexpected behavior, the DC analysis using
+    // this technique can apply to general circuits.
+    //
+    // Note that for this to work, all JJs must have bias current less
+    // than their Ic.
 
     if (ckt->CKTmode & MODEDC) {
 
@@ -131,25 +159,42 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         js.js_vj  = *(ckt->CKTrhsOld + inst->JJposNode) -
                 *(ckt->CKTrhsOld + inst->JJnegNode);
 
-        js.js_phi = ckt->CKTjjDCscale*js.js_vj;
+        if (model->JJictype != 0) {
+            js.js_phi = js.js_vj;
+            *(ckt->CKTstate0 + inst->JJphase) = js.js_phi;
+            *(ckt->CKTstate0 + inst->JJvoltage) = 0.0;
 
-        js.js_pfac = 1.0;
-        js.js_gqt = 0;
-        js.js_crhs = 0;
-        js.js_dcrt = 0;
-        js.js_crt  = inst->JJcriti;
-        if (model->JJictype != 1)
-            js.jj_ic(model, inst);
-        if (ckt->CKTmode & MODEINITSMSIG) {
-            // We don't want/need this except when setting up for AC
-            // analysis.
-            js.jj_iv(model, inst);
+            js.js_pfac = 1.0;
+            js.js_gqt = 0;
+            js.js_crhs = 0;
+            js.js_dcrt = 0;
+            js.js_crt  = inst->JJcriti;
+            if (model->JJictype != 1)
+                js.jj_ic(model, inst);
+            if (ckt->CKTmode & MODEINITSMSIG) {
+                // We don't want/need this except when setting up for AC
+                // analysis.
+                js.jj_iv(model, inst);
+            }
+            js.jj_load(ckt, model, inst);
+            inst->JJdcrt = js.js_dcrt;  // for ac load
         }
-        js.jj_load(ckt, model, inst);
-        inst->JJdcrt = js.js_dcrt;  // for ac load
+        else {
+            // No critical current, treat like a nonlinear resistor.
+
+            js.js_phi = 0.0;
+            js.js_crhs = 0.0;
+            js.js_dcrt = 0.0;
+            js.js_crt  = 0.0;
+        
+            js.jj_iv(model, inst);
+            js.jj_load(ckt, model, inst);
+        }
         return (OK);
     }
 #else
+    // May want to get rid of this, or possibly add as an option.
+
     // We want to provide some kind of DC operating point analysis
     // capability, mostly for use in hybrid JJ/semiconductor circuits
     // where we want to initialise the semiconductor part with JJ's
@@ -200,7 +245,6 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         return (OK);
     }
 #endif
-
 
     js.js_pfac = ckt->CKTdelta / PHI0_2PI;
     if (ckt->CKTorder > 1)
@@ -305,17 +349,23 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     if (ckt->CKTmode & MODEINITTRAN) {
         if (ckt->CKTmode & MODEUIC) {
-            js.js_vj = *(ckt->CKTstate1 + inst->JJvoltage);
-            js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
-            js.js_ci = *(ckt->CKTstate1 + inst->JJconI);
+            js.js_vj  = inst->JJinitVoltage;
+            js.js_phi = inst->JJinitPhase;
+            js.js_ci  = inst->JJinitControl;
+            *(ckt->CKTstate1 + inst->JJvoltage) = js.js_vj;
+            *(ckt->CKTstate1 + inst->JJphase) = js.js_phi;
+            *(ckt->CKTstate1 + inst->JJconI) = js.js_ci;
         }
         else {
             js.js_vj  = 0;
 #ifdef NEWJJDC
-            js.js_phi = (*(ckt->CKTrhsOld + inst->JJposNode) -
-                *(ckt->CKTrhsOld + inst->JJnegNode))*ckt->CKTjjDCscale;
+            *(ckt->CKTstate1 + inst->JJvoltage) = 0.0;
+            // The RHS node voltage was set to zero in the doTask code.
+            js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
             js.js_ci  = (inst->JJcontrol) ?
-                    *(ckt->CKTrhsOld + inst->JJbranch) : 0;
+                *(ckt->CKTrhsOld + inst->JJbranch) : 0;
+            *(ckt->CKTstate1 + inst->JJconI) = js.js_ci;
+            *(ckt->CKTstate0 + inst->JJvoltage) = 0.0;
 #else
             js.js_phi = 0;
             js.js_ci  = 0;  // This isn't right?
@@ -332,8 +382,8 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         else {
             js.js_vj  = 0;
 #ifdef NEWJJDC
-            js.js_phi = (*(ckt->CKTrhsOld + inst->JJposNode) -
-                *(ckt->CKTrhsOld + inst->JJnegNode))*ckt->CKTjjDCscale;
+            // The RHS node voltage was set to zero in the doTask code.
+            js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
             js.js_ci  = (inst->JJcontrol) ?
                     *(ckt->CKTrhsOld + inst->JJbranch) : 0;
 #else
@@ -481,9 +531,14 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
     else
         js_gqt = 0;
 
+    // For ac load
     inst->JJconduct = js_gqt;
-    if (model->JJvShuntGiven)
-        inst->JJconduct += inst->JJcriti/model->JJvShunt;
+
+    if (model->JJvShuntGiven) {
+        double gshunt = inst->JJcriti/model->JJvShunt - inst->JJg0;
+        if (gshunt > 0.0)
+            inst->JJconduct += gshunt;
+    }
 }
 
 
@@ -569,21 +624,30 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
 #ifdef NEWJJDC
     if (ckt->CKTmode & MODEDC) {
         crhs += crt - gcs*js_phi;
-        gqt  = ckt->CKTjjDCscale*gcs;
+        gqt  = gcs;
     }
     else {
         crhs += crt - gcs*js_vj;
         gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
         crhs += inst->JJdelVdelT*inst->JJcap;
+
+        if (model->JJvShuntGiven) {
+            double gshunt = inst->JJcriti/model->JJvShunt - inst->JJg0;
+            if (gshunt > 0.0)
+                gqt += gshunt;
+        }
     }
 #else
     crhs += crt - gcs*js_vj;
     gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
     crhs += inst->JJdelVdelT*inst->JJcap;
-#endif
 
-    if (model->JJvShuntGiven)
-        gqt += inst->JJcriti/model->JJvShunt;
+    if (model->JJvShuntGiven) {
+        double gshunt = inst->JJcriti/model->JJvShunt - inst->JJg0;
+        if (gshunt > 0.0)
+            gqt += gshunt;
+    }
+#endif
 
     // load matrix, rhs vector
     if (inst->JJphsNode > 0)

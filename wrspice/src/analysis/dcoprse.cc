@@ -55,7 +55,7 @@ int
 DCOanalysis::parse(sLine *current, sCKT*, int which, const char**,
     sTASK *task)
 {
-    int error = task->newAnal(which);
+    int error = sTASK::newAnal(task, which);
     IP.logError(current, error);
     return (0);
 }

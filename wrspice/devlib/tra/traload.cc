@@ -111,22 +111,25 @@ sTRAinstance::pade_load(sCKT *ckt)
         ckt->ldset(TRAibr2Neg2Ptr, 1.0);
 
 #ifdef NEWJJDC
-        if (ckt->CKTjjDCscale >= 1.0) {
+        if (ckt->CKTjjDCphase) {
             // If there is no series resistance, treat the inductance
             // as a resistance which takes the voltage difference as a
-            // scaled phase.  This applies to DC analysis when
-            // Josephson junctions are present (see jjload.cc).
+            // phase.  This applies to DC analysis when Josephson
+            // junctions are present (see jjload.cc).
 
             if (TRAr == 0.0) {
-                double res = 2*M_PI*TRAl*TRAlength/
-                    (wrsCONSTphi0*ckt->CKTjjDCscale);
+                double res = 2*M_PI*TRAl*TRAlength/wrsCONSTphi0;
                 ckt->ldset(TRAibr2Ibr1Ptr, -res);
+                ckt->ldset(TRAibr1Ibr2Ptr, -res);
             }
         }
-        else
+        else {
             ckt->ldset(TRAibr2Ibr1Ptr, -TRAr*TRAlength);
+            ckt->ldset(TRAibr1Ibr2Ptr, -TRAr*TRAlength);
+        }
 #else
         ckt->ldset(TRAibr2Ibr1Ptr, -TRAr*TRAlength);
+        ckt->ldset(TRAibr1Ibr2Ptr, -TRAr*TRAlength);
 #endif
     }
     else {

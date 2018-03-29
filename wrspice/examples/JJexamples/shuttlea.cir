@@ -1,0 +1,140 @@
+* Josephson flux shuttle shift register
+*
+* Warning:  This file probably requires WRspice-4.3.3 or later.
+
+r1 1 2 100
+r2 2 0 .4
+r3 3 0 .4
+r4 4 0 .4
+r5 5 0 .4
+r6 6 0 .4
+r7 7 0 .4
+r8 8 0 .4
+r9 9 0 .4
+r10 10 11 100
+r20 20 21 100
+r30 30 31 100
+
+l1 2 3 3p
+l2 3 4 3p
+l3 4 5 3p
+l4 5 6 3p
+l5 6 7 3p
+l6 7 8 3p
+l7 8 9 3p
+
+*readout
+
+l1a 2 3 7p
+l2a 3 4 7p
+l3a 4 5 7p
+l4a 5 6 7p
+l5a 6 7 7p
+l6a 7 8 7p
+l7a 8 9 7p
+
+lx1 200 201 3p
+lx2 202 203 3p
+lx3 204 205 3p
+lx4 206 207 3p
+lx5 208 209 3p
+lx6 210 211 3p
+lx7 212 213 3p
+
+bx1 200 0 jj1 area=.25
+bx2 201 0 jj1 area=.25
+bx3 202 0 jj1 area=.25
+bx4 203 0 jj1 area=.25
+bx5 204 0 jj1 area=.25
+bx6 205 0 jj1 area=.25
+bx7 206 0 jj1 area=.25
+bx8 207 0 jj1 area=.25
+bx9 208 0 jj1 area=.25
+bxa 209 0 jj1 area=.25
+bxb 210 0 jj1 area=.25
+bxc 211 0 jj1 area=.25
+bxd 212 0 jj1 area=.25
+bxe 213 0 jj1 area=.25
+
+kx1 l1a lx1 .6
+kx2 l2a lx2 .6
+kx3 l3a lx3 .6
+kx4 l4a lx4 .6
+kx5 l5a lx5 .6
+kx6 l6a lx6 .6
+kx7 l7a lx7 .6
+
+rx1 200 0 1
+rx2 201 0 1
+rx3 202 0 1
+rx4 203 0 1
+rx5 204 0 1
+rx6 205 0 1
+rx7 206 0 1
+rx8 207 0 1
+rx9 208 0 1
+rxa 209 0 1
+rxb 210 0 1
+rxc 211 0 1
+rxd 212 0 1
+rxe 213 0 1
+
+*rxx 215 204 50
+*vx2 215 0 pulse(0 20m 20p 20p 20p 0p 50p)
+*vx2 215 0 spulse(0 15m 50p 20p)
+rxx 30 204 500
+rxy 30 205 1000
+****************
+
+l10 11 12 3p
+l11 12 13 3p
+l12 13 0  3p
+l20 21 22 3p
+l21 22 0  3p
+l30 31 32 3p
+l31 32 0  3p
+
+k1 l10 l1 .99
+k2 l11 l4 .99
+k3 l12 l7 .99
+k4 l20 l2 .99
+k5 l21 l5 .99
+k6 l30 l3 .99
+k7 l31 l6 .99
+
+b1 2 0 100 jj1
+b2 3 0 101 jj1
+b3 4 0 102 jj1
+b4 5 0 103 jj1
+b5 6 0 104 jj1
+b6 7 0 105 jj1
+b7 8 0 106 jj1
+b8 9 0 107 jj1
+
+*v1 10 0 pulse(0 120m  25p 10p 10p 10p 120p)
+*v2 20 0 pulse(0 120m  65p 10p 10p 10p 120p)
+*v3 30 0 pulse(0 120m 105p 10p 10p 10p 120p)
+*v4 1 0 pulse(0 40m 25p 10p 10p)
+
+v1 10 0 spulse(0 120m 120p 25p)
+v2 20 0 spulse(0 120m 120p 65p)
+v3 30 0 spulse(0 120m 120p 105p)
+v4 1 0 pulse(0 40m 15p 10p 10p 60p)
+
+*v1 10 0 spulse(0 140m 240p 50p)
+*v2 20 0 spulse(0 140m 240p 130p)
+*v3 30 0 spulse(0 140m 240p 210p)
+*v4 1 0 pulse(0 40m 30p 20p 20p 120p)
+
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+*
+.model jj1 jj(level=1)
+
+.control
+tran 0.2p 400p
+plot v(1) v(2) v(3) v(4) v(5) v(6) v(7) ysep
+edit
+.endc

@@ -1044,7 +1044,7 @@ struct sTASK : public cBase
         }
 
     // task.cc
-    int newAnal(int, sJOB** = 0);
+    static int newAnal(sTASK*, int, sJOB** = 0);
     int findAnal(int*, sJOB**, IFuid);
     void setOptions(sOPTIONS*, bool);
 
@@ -1421,7 +1421,7 @@ private:
 #define PARM_IC 2         // initial condition
 #define PARM_NODETYPE 3   // type of node
 
-// Defines for sCKTnode::type.
+// Defines for sCKTnode::nd_type.
 enum { SP_VOLTAGE, SP_CURRENT };
 
 // Structure to hold node parameters.  This is allocated by the
@@ -1441,6 +1441,10 @@ struct sCKTnode
     IFuid name()            const { return (nd_name); }
     int number()            const { return (nd_number); }
     int type()              const { return (nd_type); }
+#ifdef NEWJJDC
+    bool phase()            const { return (nd_phase); }
+    void set_phase(bool b)        { nd_phase = b; }
+#endif
     bool icGiven()          const { return (nd_icGiven); }
     bool nsGiven()          const { return (nd_nsGiven); }
     double ic()             const { return (nd_ic); }
@@ -1458,7 +1462,12 @@ struct sCKTnode
 private:
     IFuid nd_name;          // Name (UID) of node.
     int nd_number;          // Internal allocation number.
+#ifdef NEWJJDC
+    unsigned char nd_type;  // SP_VOLTAGE or SP_CURRENT.
+    bool nd_phase;          // Connected to inductor or Josephson junction.
+#else
     unsigned short nd_type; // SP_VOLTAGE or SP_CURRENT.
+#endif
     bool nd_icGiven;        // Ic field is valid.
     bool nd_nsGiven;        // Nodeset field is valid.
     double nd_ic;           // Initial condition.
@@ -1630,7 +1639,7 @@ public:
     int setup();
     int unsetup();
     int resetup();
-    int initTran(double, double);
+    int initTranFuncs(double, double);
     int temp();
     void terr(int, double*);
     char *trouble(const char*);
@@ -1699,6 +1708,7 @@ public:
     double va_idt(int, double, double = 0.0, bool = false, double = 0.0);
     void va_boundStep(double);
     bool va_analysis(const char*);
+    double va_simparam(const char*, double = 0.0, bool = false);
     bool va_initial_step();
     bool va_final_step();
     double va_absdelay(double, double);
@@ -2036,6 +2046,7 @@ public:
     double CKTstep;         // user's time increment
     double CKTmaxStep;      // user's max internal increment
     double CKTfinalTime;    // final time for transient analysis
+    double CKTinitTime;     // begin print time fro transient analysis
     double CKTfinalFreq;    // final freq for ac analysis
     double CKTinitFreq;     // initial freq for ac analysis
     double CKTfinalV1;      // final V1 for dct analysis, and chained
@@ -2046,10 +2057,6 @@ public:
     double CKTomega;        // current frequency for ac
     double CKTsrcFact;      // source stepping factor
     double CKTdiagGmin;     // gmin stepping
-#ifdef NEWJJDC
-#define JJDCSCALE 1e6;
-    double CKTjjDCscale;    // voltage to phase scaling in Josephson DCAN
-#endif
 
     double *CKTrhs;         // current rhs value - being loaded
     double *CKTrhsOld;      // previous rhs value for convergence testing
@@ -2102,6 +2109,9 @@ public:
     bool CKTkeepOpInfo;     // flag for small signal analyses
     bool CKTisSetup;        // CKTsetup done
     bool CKTjjPresent;      // Josephson junctions are in circuit
+#ifdef NEWJJDC
+    double CKTjjDCphase;    // Compute phase in DC analysis.
+#endif
     bool CKTtrapCheck;      // check for non-convergence in TRAP
     bool CKTtrapBad;        // check found non-convergence
     bool CKTneedsRevertResetup;  // need to call resetup after dev restore

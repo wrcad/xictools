@@ -951,15 +951,22 @@ sCHECKprms::findEdge(const char *po, const char *pc)
         }
         ToolBar()->SuppressUpdate(false);
         if (error < 0) {
-            // Can't resume.
+            // User interrupt, can't resume.
             ch_nogo = true;
             ch_no_output = false;
             return;
         }
         else if (error != OK) {
-            ch_nogo = true;
-            ch_no_output = false;
-            return;
+            if (error == E_ITERLIM) {
+                // Failed to converge, take this as a fail point.
+                ch_fail = true;
+                error = OK;
+            }
+            else {
+                ch_nogo = true;
+                ch_no_output = false;
+                return;
+            }
         }
         if (!ch_fail) {
             for (int i = 0; i < len; i++) {
@@ -1074,7 +1081,13 @@ sCHECKprms::run()
         ch_pause = true;
         return;
     }
-    else if (error == OK) {
+    if (error == E_ITERLIM) {
+        // Failed to converge, take this as a fail point.
+        // 
+        ch_fail = true;
+        error = OK;
+    }
+    if (error == OK) {
         if (!ch_no_output) {
             if (GP.MpMark(ch_graphid, !ch_fail) && !ch_batchmode)
                 TTY.printf_force(ch_fail ? " FAIL\n\n" : " PASS\n\n");
@@ -1531,6 +1544,12 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
     out_cir->set_keep_deferred(true);
 
     int error = out_cir->runTrial();
+    if (error == E_ITERLIM) {
+        // Failed to converge, take this as a fail point.
+        // 
+        ch_fail = true;
+        error = OK;
+    }
     out_cir->set_keep_deferred(false);
     ToolBar()->SuppressUpdate(false);
 

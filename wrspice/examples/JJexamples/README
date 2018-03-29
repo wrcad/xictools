@@ -1,0 +1,23 @@
+
+Josephson Junctions Circuit Examples
+
+Most of these files have been updated to use the MIT-LL SFQ5EE models
+and other new features introduced in WRspuice-4.3.3.  Mostly they are
+not backward compatible without tweaking.  There are a few new
+examples here.  The previous Josephson examples have been retained in
+the JJexamples_old directory.
+
+Exceptions are mostly files that use the Ic modulation or other
+extended features of the internal JJ model, these are left as-is for
+now.
+
+Not included here but highly recommended are the Xic examples
+containing Josephson circuits.  This includes RSFQ libraries (regular
+and inductorless) and jj/CMOS interface circuits.  Note that top-level
+Xic cell files contain a WRspice listing at the end of the file.  The
+cells can be read by WRspice directly, the Xic stuff is ignored. 
+However, using Xic to view the schematic makes these example circuits
+much easier to understand.
+
+Some of the circuits in this directory are hopelessly opaque.
+

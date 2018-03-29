@@ -147,6 +147,7 @@ struct IFtranData
             td_cache = 0;
             td_numcoeffs = 0;
             td_type = PTF_tNIL;
+            td_enable_tran = false;
             td_pwlRgiven = false;
             td_pwlRstart = 0;
             td_pwlindex = 0;
@@ -286,6 +287,7 @@ private:
     double *td_cache;       // cached stuff for tran evaluation
     int td_numcoeffs;       // number of tran parameters input
     short int td_type;      // function type (PTftType)
+    bool td_enable_tran;    // true if using tran functions
     bool td_pwlRgiven;      // true if pwl r=repeat given
     int td_pwlRstart;       // repeat start index, negative for time=0
     int td_pwlindex;        // index into pwl tran func array

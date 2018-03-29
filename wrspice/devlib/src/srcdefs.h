@@ -104,7 +104,7 @@ struct SRCdev : public IFdevice
     int pzLoad(sGENmodel*, sCKT*, IFcomplex*); 
 //    int disto(int, sGENmodel*, sCKT*);  
 //    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
-    void initTran(sGENmodel*, double, double);
+    void initTranFuncs(sGENmodel*, double, double);
 private:
     void src_parse(sLine*, const char**, sCKT*, sGENinstance*,
         const char*, const char*);

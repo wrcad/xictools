@@ -1,0 +1,64 @@
+* Josephson Interferometer demo
+*
+* This is a symmetric two junction interferometer.
+* The interferometer is evaluated while looping over junction areas,
+* illustrating use of the WRspice loop/sweep command.
+*
+* Warning:  This file probably requires WRspice-4.3.3 or later.
+*
+* the squid loop
+b1 1 0 100 jj1
+b2 3 0 101 jj1
+l1 1 2 8pH
+l2 2 3 8pH
+*
+* the coupled control line
+l3 4 5 8pH
+l4 5 0 8pH
+k1 l1 l3 .98
+k2 l2 l4 .98
+*
+* damping resistance
+rd1 1 0 2
+rd2 3 0 2
+*
+* gate power supply
+rg 2 10 200
+vg 10 0 75m
+*
+* source power supply
+rc 4 11 200
+vc 11 0 pulse(0 25m 0 200p)
+*
+.tran 0.1p 300p
+*
+* Type "run", then "plot v(11) v(3)" to display the control
+* voltage and gate voltage.
+*
+* We have a single vortex transition.
+* The plot is multi-dimensional, with each dimension shown in a
+* different color.  Each dimension corresponds to a different gate
+* bias level.  Click the "D" icon in the plot to show/hide the
+* dimension indices.  Clicking in the indices will show/hide the trace
+* for that index.
+*
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+*
+.model jj1 jj(level=1)
+.end
+
+.control
+# Set up a 2-D sweep over the two junction critical currents.  The
+# different critical currents will affect the timing of the output
+# pulse, which is plotted.  There are nine different cases, all
+# combined into a single multi-dimensional plot.
+
+set value1 = '&@b1[ics]'
+set value2 = '&@b2[ics]'
+sweep 225uA 275uA 25uA 225uA 275uA 25uA
+plot v(1)
+edit
+.endc

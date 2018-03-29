@@ -98,7 +98,7 @@ struct CAPdev : public IFdevice
     int pzLoad(sGENmodel*, sCKT*, IFcomplex*); 
 //    int disto(int, sGENmodel*, sCKT*);  
 //    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
-    void initTran(sGENmodel*, double, double);
+    void initTranFuncs(sGENmodel*, double, double);
 };
 
 struct sCAPinstance : public sGENinstance

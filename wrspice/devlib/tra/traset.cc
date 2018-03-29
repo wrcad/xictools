@@ -222,6 +222,34 @@ TRAdev::setup(sGENmodel *genmod, sCKT *ckt, int *state)
                     (inst->TRAbreakType != TRA_TESTBREAKS))
                 inst->TRAbreakType = TRA_TESTBREAKS;
 
+#ifdef NEWJJDC
+            if (ckt->CKTjjDCphase && inst->TRAr == 0.0) {
+                // The nodes that connect to inductors have the
+                // "phase" flag set, for use in phase-mode DC analysis
+                // with Josephson junctions.
+
+                if (inst->TRAposNode1 > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->TRAposNode1);
+                    if (node)
+                        node->set_phase(true);
+                }
+                if (inst->TRAposNode2 > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->TRAposNode2);
+                    if (node)
+                        node->set_phase(true);
+                }
+                if (inst->TRAnegNode1 > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->TRAnegNode1);
+                    if (node)
+                        node->set_phase(true);
+                }
+                if (inst->TRAnegNode2 > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->TRAnegNode2);
+                    if (node)
+                        node->set_phase(true);
+                }
+            }
+#endif
 
             int error = get_node_ptr(ckt, inst);
             if (error != OK)

@@ -28,20 +28,43 @@
  $Id:$
  *========================================================================*/
 
-// Josephson Junction Model
+// SuperTools Notice ------------------------------------------------------
 //
-// Version 1.1, March 13, 2018
+//   GOVERNMENT PURPOSE RIGHTS
+// 
+//   Contract No. W911NF-17-9-0001
+// 
+//   Contractor Name: Synopsys Inc.
+// 
+//   Contractor Address: 690 E Middlefield Rd, Mountain View, CA 94043-4010
+// 
+//   Expiration Date: perpetual-no-expiration
+// 
+//   The Government's rights to use, modify, reproduce, release,
+//   perform, display, or disclose this software are restricted by
+//   paragraph (b)(2) of the Rights in Technical Data-Noncommercial
+//   Items clause contained in the above identified contract.  No
+//   restrictions apply after the expiration date shown above.  Any
+//   reproduction of technical data or portions thereof marked with this
+//   legend must also reproduce the markings.
+//-------------------------------------------------------------------------
+
+// Whiteley Research/Synopsys Josephson Junction Model
+//
+// Version 1.1, March 28, 2018
 //   Lots of new stuff in this release, so bumped to 1.1.
-//   Support added for scaled-phase dc analysis and ac analysis.
+//   Support added for phase-mode dc analysis and ac analysis.
 //   Added ADMS partitioning info.
 //   Added MIT-LL JJ parameters, these are now the default.
-//   Changed "mfactor" param name to "mfct" to avoid HSPICE reserved word.
+//   Changed "mfactor" param name to "mfct" to avoid Verilog reserved word.
 //   Range of vshunt now 0-2m, active if >= 1uV,
 //   New param ics, if given equivalent to area=ics/icrit.
+//   Got rid if mfct, area is deprecated, use ics instead.
 //   New param cmu [0:1.0] edge effect capacitance scaling parameter.
 //   New param gmu [0:1.0] edge effect conductance scaling parameter.
 //   New param vm  [10.0:100.0] mV.
 //   New param icrn [1.5:1.9] mV.
+//   The phase node is now optional.
 //   Other misc. small changes.
 //
 // Version 1.04, Feb 25, 2018
@@ -67,24 +90,23 @@
 // Version 0.5, February 14, 2012 (original release)
 //
 // Stephen R. Whiteley          stevew@wrcad.com
-// Whiteley Research Inc.       wrcad.com
-//
+// Whiteley Research Inc.       http://wrcad.com
 //
 // MODULE: jj (node_plus, node_minus, node_phase)
-// The phase node provides the junction phase (in radians) but should have
-// no other connections.
 //
+// The optional phase node provides the junction phase (in radians)
+// but should have no other connections.
 //
 // To use the model:
 // 1.  Before compiling, adjust electrical parameters to your target
 //     process.  This is the MIT-LL SFQ5EE process by default.
 // 2.  Load the model into your simulator before use.
-// 3.  Use the "ics" or similar "mfct"/"area" instance parameters to set
-//     the desired critical current, which is 1.0mA for mfct=1.  Changing
-//     mfct/area scales capacitance and conductances as well as critical
-//     current.  Giving ics is equivalent to mfct=ics/1crit.
-// 4.  Use vshunt and most conveniently for SFQ circuits, avoids the
-//     need for an external shunt resistor.
+// 3.  Use the "ics" instance parameter to set the desired critical
+//     current.  Changing ics (or area) scales capacitance and
+//     conductances as well as critical current.  Giving ics is equivalent
+//     to area=ics/1crit (use of area is deprecated).
+// 4.  Use vshunt most conveniently for SFQ circuits, avoids the need
+//     for an external shunt resistor.
 // 5.  You may have to use a small timestep limit (e.g., .01pS) for accuracy,
 //     if bound_step() is not supported by your simulator.
 
@@ -130,8 +152,8 @@
 
 module jj (n1, n2, ph);
 
-// The third node is a phase output, numerically equal to the junction
-// phase.
+// The third node is optional, and if used will return the junction phase
+// in radians.
 inout n1, n2;
 output ph;
 electrical n1, n2, ph;
@@ -162,11 +184,12 @@ parameter integer cct   = 1 from [0:1]
 parameter real tsfactor = `TSDEFAULT from [0.001:1]
     `P(type="model" info="time step control factor");
 
-// Critical current for mfct=1.
-parameter real icrit    = 1.0m from [0:100m]
+// Critical current for area=1.
+`define DEF_IC 1.0m
+parameter real icrit    = `DEF_IC from [`DEF_IC/20:`DEF_IC*20]
     `P(type="model" info="reference critical current" units="A");
 
-// Capacitance for mfct=1.
+// Capacitance for area=1.
 parameter real cap      = 1e-12*`C_PER_A/`I_PER_A from [0.0:1e-9]
     `P(type="model" info="reference capacitance" units="F");
 
@@ -182,7 +205,7 @@ parameter real delv     = 0.08m from [0.01m:0.2m]
     `P(type="model" info="gap width" units="V");
 
 // The subgap and normal resistances.  If vshunt is given, a fixed
-// shunt is added so that IcReff = vshunt.
+// shunt is added so that Ic*Reff = vshunt.
 parameter real vm       = `Vm from [10.0:100.0]
     `P(type="model" info="Ic * subgap resistance" units="mV");
 parameter real rsub     = vm*1e-3/icrit from [1e-2/icrit:1e-1/icrit]
@@ -213,17 +236,19 @@ parameter real ic_phase = 0 from (-`M_PI:`M_PI)
     `P(type="instance" info="Initial condition phase");
 
 // Scaling critical current.
-parameter real ics      = icrit from [0.0:100m]
+parameter real ics      = icrit from [icrit/20:icrit*20]
     `P(type="instance" info="scaled critical current" units="A");
 
-// Scaling factor, both are equivalent.
-parameter real mfct     = 1.0 from [0.001:1e3]
+// Scaling factor, not a physical area.  This is for backward
+// compatibility.
+// *** Deprecated, do not use in new work ***
+// Use ics instead, as the instance critical current won't change if
+// the reference critical current does change.
+parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
-parameter real area     = 1.0 from [0.001:1e3]
-    `P(type="instance" info="Ic scale factor alias");
 
 real phi, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
-real pscale, vdpbak, start_phase, SmallSigL;
+real pmode, vdpbak, start_phase, SmallSigL;
 
 analog begin
 
@@ -236,14 +261,11 @@ analog begin
 `endif
         real halfdv;
 
-        // The mfct and area parameters are equivalent.
         phi = 0.0;
         if (ics != icrit)
             scale = ics/icrit;
         else if (area != 1.0)
             scale = area;
-        else if (mfct != 1.0)
-            scale = mfct;
         else
             scale = 1.0;
 
@@ -275,11 +297,21 @@ analog begin
         else
             vdpbak = halfvg;
 
-        // WRspice interface parameters passed to model.
-        // If found, simulator supports scaled phase DC analysis.
-        pscale = $simparam("dcPhaseScale", 0.0);
-        // If found, simulator has dphimax option which overrides
-        // local default.
+        // Interface parameters passed to model from simulator using
+        // the Verilog $simparam system function.
+        //
+        // dcPhaseMode
+        //   If simulator returns nonzero, it supports phase-mode DC
+        //   analysis.
+        //
+        pmode = $simparam("dcPhaseMode", 0.0);
+
+        // dphiMax
+        //   If simulator returns nonzero, the dphimax .option is
+        //   supported and the value returned.  This is the maximum
+        //   phase change per internal time step.  The local default
+        //   is used if not supported by the simulator.
+        //
         tsf = $simparam("dphimax", 0.0)/`M_PI;
         if (tsf > 0.0 && tsfactor == `TSDEFAULT)
             tsfactor = tsf;
@@ -293,7 +325,7 @@ analog begin
 
             // "smsig" is a WRspice extension, true when we're about to
             // load the small-signal values for AC and similar analysis.
-            // We're through with phase scaling, call the regular load
+            // We're through with phase mode, call the regular load
             // functions.
 
             if (cct == 1)
@@ -310,7 +342,7 @@ analog begin
 `ifdef insideADMS
             // Small-signal inductance of Josephson current.  This is
             // a hack for ADMS - an instance variable of this name is
-            // treated sepcially in the AC load function.  ADMS does
+            // treated specially in the AC load function.  ADMS does
             // not recognize the small signal inductance from the
             // expressions above, so we have to do this explicitly. 
             // Perhaps other parsers will handle this correctly?
@@ -330,16 +362,49 @@ analog begin
                 if (gshunt > 0)
                     I(br) <+ gshunt*V(br);
                 end
+            if ($port_connected(ph))
+                begin
                 I(ph) <+ phi;
                 I(ph) <+ -V(ph);
+                end
             end
-        else if (pscale > 0.0)
+        else if (pmode != 0.0)
             begin
-            // DC analysis, the simulator supports phase scaling,
-            // i.e., the JJ voltage is actually jjphase/pscale, and
-            // similar for inductors.
+            // DC analysis, the simulator supports phase mode DC
+            // analysis.  In this mode, the nodes connected to JJs and
+            // inductors are "phase nodes", and the "voltage" at these
+            // nodes is actually the phase with respect to ground. 
+            // Resistors are treated specially, they are the bridge
+            // between phase nodes and voltage nodes.  When loading
+            // the circuit matrix for a resistor, if both nodes are
+            // voltage-type or ground, the resistance is loaded
+            // normally.  If both nodes are phase-type or ground, the
+            // resistor is not loaded at all.  If the resistor
+            // connects between a phase node and a voltage node, the
+            // resistor is loaded on the voltage node as if connected
+            // to ground.  A term that looks like a voltage-controlled
+            // current source injects current into the phase node,
+            // with value of the voltage node voltage over the
+            // resistance.  Then, a standard SPICE DCOP or DC sweep
+            // can be run, yielding all DC circuit values.
             //
-            phi = pscale*V(bj);
+            // Note that there is at present a topological constraint
+            // that all phase nodes must be at ground potential, so
+            // networks of inductors/JJs must have a ground connection
+            // somewhere.  Also, one may need to introduce resistors
+            // in some cases:  consider a JJ circuit driving a CMOS
+            // comparator.  If the comparator gate is connected
+            // directly to a JJ, during the DC analysis the comparator
+            // will see the phase voltage.  If instead, the comparator
+            // is connected through a resistor of any value, the
+            // comparator input will be set to zero during Dc
+            // analysis, which is correct.
+            //
+            // Below, we can ignore the conductance terms (phase nodes
+            // on both ends), and of course capacitors are ignored in
+            // DC analysis.
+
+            phi = V(bj);
             if (cct == 1)
                 begin
                 if (pijj != 0)
@@ -348,12 +413,18 @@ analog begin
                     I(bj) <+ ics*sin(phi);
                 end
             start_phase = phi;
-            I(ph) <+ phi;
-            I(ph) <+ -V(ph);
+            if ($port_connected(ph))
+                begin
+                I(ph) <+ phi;
+                I(ph) <+ -V(ph);
+                end
             end
         else
+            begin
             $error(
  "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid TRAN OP.");
+            $finish(0);
+            end
         end
     else if (analysis("tran") != 0)
         begin
@@ -369,20 +440,23 @@ analog begin
                 I(bj) <+ ics*sin(phi);
             end
 
-        // The following will make the phase node look like a voltage
-        // source.  However, some Verilog-A translation systems can't
-        // handle this construct (WRspice handles it properly).  It also
-        // adds a "branch" node to the circuit matrix, which increases
-        // memory use for no good reason.
-        //
-        // V(ph) <+ phi;
-        //
-        // The following is basically equivalent.  This gives our "voltage
-        // source" a 1 ohm internal resistance, and does not increase the
-        // circuit matrix size.
-        //
-        I(ph) <+ phi;
-        I(ph) <+ -V(ph);
+        if ($port_connected(ph))
+            begin
+            // The following will make the output phase node look like a
+            // voltage source.  However, some Verilog-A translation
+            // systems can't handle this construct (WRspice handles it
+            // properly).  It also adds a "branch" node to the circuit
+            // matrix, which increases memory use for no good reason.
+            //
+            // V(ph) <+ phi;
+            //
+            // The following is basically equivalent.  This gives our "voltage
+            // source" a 1 ohm internal resistance, and does not increase the
+            // circuit matrix size.
+            //
+            I(ph) <+ phi;
+            I(ph) <+ -V(ph);
+            end
 
         // Geometric capacitance current.
         I(bc) <+ caps*ddt(V(bc));
@@ -418,9 +492,12 @@ analog begin
         $bound_step(tsfactor*`PHI0_2PI/vtmp);
         end
     else
+        begin
         // Note that AC, NOISE, and PZ have their own load functions,
         // so won't be seen here.
         $error("JJ.va model:  unknown or unsupported analysis.");
+        $finish(0);
+        end
 end
 endmodule
 

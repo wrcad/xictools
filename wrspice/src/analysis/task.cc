@@ -54,10 +54,11 @@ sTASK::~sTASK()
 }
 
  
-// Create a new job, linked into task.
+// Create a new job, linked into task if task not null.
 //
+// Static function.
 int
-sTASK::newAnal(int type, sJOB **analPtr)
+sTASK::newAnal(sTASK *tsk, int type, sJOB **analPtr)
 {
     IFanalysis *an = IFanalysis::analysis(type);
     if (an) {
@@ -65,10 +66,16 @@ sTASK::newAnal(int type, sJOB **analPtr)
         if (job) {
             job->JOBname = an->name;
             job->JOBtype = type;
-            const sTASK *tsk = this;
             if (tsk) {
-                job->JOBnextJob = TSKjobs;
-                TSKjobs = job;
+                // Link at end to maintain input file order.
+                if (!tsk->TSKjobs)
+                    tsk->TSKjobs = job;
+                else {
+                    sJOB *j = tsk->TSKjobs;
+                    while (j->JOBnextJob)
+                        j = j->JOBnextJob;
+                    j->JOBnextJob = job;
+                }
             }
             if (analPtr)
                 *analPtr = job;

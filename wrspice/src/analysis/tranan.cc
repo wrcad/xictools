@@ -110,6 +110,7 @@ sTRANAN::init(sCKT *ckt)
 
     ckt->CKTstep = TRANspec->step(0);
     ckt->CKTfinalTime = TS.t_stop;
+    ckt->CKTinitTime = TS.t_start;
 
     ckt->CKTmaxStep = TRANmaxStep;
     ckt->CKTtranDiffs[0] = 1;
@@ -339,9 +340,9 @@ TRANanalysis::tran_dcoperation(sCKT *ckt, int restart)
         for (int i = 0; i < job->TRANspec->nparts; i++)
             ckt->breakSet(job->TRANspec->end(i));
 
-        // Initialize the "tran" functions found in the sources and
-        // possibly cap/res expressions.
-        ckt->initTran(tran->t_step, tran->t_stop);
+        // Enable the "tran" functions found in the sources and
+        // device expressions.
+        ckt->initTranFuncs(tran->t_step, tran->t_stop);
 
         tran->t_dumpit = false;
         tran->t_firsttime = true;
@@ -372,9 +373,24 @@ TRANanalysis::tran_dcoperation(sCKT *ckt, int restart)
                 (ckt->CKTmode & MODESCROLL) | MODETRANOP | MODEINITFLOAT,
                 ckt->CKTcurTask->TSKdcMaxIter);
 
-#ifndef NEWJJDC
-// With the new approach, we need to carry over the JJ phase and
-// inductor current computed in DCOP.  This is done in model code.
+#ifdef NEWJJDC
+            // With the phase-mode approach, we need to carry over the
+            // JJ phase and inductor current computed in DCOP.  This
+            // is done in model code.
+
+            if (ckt->CKTjjDCphase) {
+                // Important!  Zero the voltage of all phase nodes
+                // that were computed, as they are numerically the
+                // phase.  The actual voltage, for voltage-mode going
+                // forward, is zero.
+
+                const sCKTnode *node = ckt->CKTnodeTab.find(1);
+                for ( ; node; node = ckt->CKTnodeTab.nextNode(node)) {
+                    if (node->phase())
+                        ckt->CKTrhsOld[node->number()] = 0.0;
+                }
+            }
+#else
             if (ckt->CKTjjPresent) {
                 // With JJ's, maintaining the phase relationship
                 // between inductors and JJ's in loops requires that

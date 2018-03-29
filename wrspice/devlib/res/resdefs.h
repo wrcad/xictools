@@ -65,8 +65,12 @@ Authors: 1985 Thomas L. Quarles
 // definitions used to describe resistors
 //
 
+#ifdef NEWJJDC
+#undef USE_PRELOAD
+#else
 // Use WRspice pre-loading of constant elements.
 #define USE_PRELOAD
+#endif
 
 // Maximum conductivity allowed, when not limited by circuit gmax.
 #define RES_GMAX 1e12
@@ -104,7 +108,7 @@ struct RESdev : public IFdevice
     int pzLoad(sGENmodel*, sCKT*, IFcomplex*); 
 //    int disto(int, sGENmodel*, sCKT*);  
     int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
-    void initTran(sGENmodel*, double, double);
+    void initTranFuncs(sGENmodel*, double, double);
 };
 
 struct sRESinstance : public sGENinstance

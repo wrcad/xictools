@@ -67,7 +67,7 @@ Completely new DCOP calculation when JJs are present.  This is a
 phase-based calculation which will find the actual initial JJ and
 inductor currents.  Conventional DC analysis is now feasible with JJs.
 
-The update command (to save tool window configuration) is not "tbupdate"
+The update command (to save tool window configuration) is now "tbupdate"
 to avoid clash with program update function.
 
 The dump command printed incorrect values for the imaginary part of
@@ -75,6 +75,22 @@ complex matrices.
 
 New non-portable Verilog-a analysis function keyword: smsig, for JJ
 support.
+
+Phase-mode DC analysis for JJs, lots of work.
+Major update to JJ models, internal and Verilog.
+
+DCOP failure is now a fail point on margin/MonteCarlo analysis instead
+of fatal error.
+
+Bug in mutual inductor code fixed.
+
+Bug fixed, "tran" funcs like pulse were being called during dc sweeps
+with voltage instead of time.  Mayber this was a feature?  No longer
+happens except for pwl.
+
+multiple analysis runs are done in file order for each analysis type,
+ised top be the reverse.  The analysis order is built-in.
+
 
 ToDo:
 Matt,

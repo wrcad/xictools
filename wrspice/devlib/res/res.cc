@@ -232,13 +232,13 @@ RESdev::parse(int type, sCKT *ckt, sLine *current)
 // Setup the tran parameters for any tran function nodes.
 //
 void
-RESdev::initTran(sGENmodel *modp, double step, double finaltime)
+RESdev::initTranFuncs(sGENmodel *modp, double step, double finaltime)
 {
     for (sRESmodel *model = (sRESmodel*)modp; model; model = model->next()) {
         for (sRESinstance *inst = (sRESinstance*)model->GENinstances;
                 inst; inst = inst->next()) {
             if (inst->REStree)
-                inst->REStree->initTran(step, finaltime);
+                inst->REStree->initTranFuncs(step, finaltime);
         }
     }
 }

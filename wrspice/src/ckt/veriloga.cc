@@ -41,6 +41,8 @@
 #include "device.h"
 #include "misc.h"
 #include "ttyio.h"
+#include "spglobal.h"
+#include "ginterf/graphics.h"
 #include "miscutil/random.h"
 
 
@@ -169,6 +171,101 @@ sCKT::va_analysis(const char *tok)
         return (CKTmode & MODEINITSMSIG);
     }
     return (false);
+}
+
+
+// Support for the Verilog-A $simparam function.
+//
+double
+sCKT::va_simparam(const char *tok, double retval, bool rvgiven)
+{
+    if (lstring::cieq(tok, "gdev") || lstring::cieq(tok, "gmin"))
+        return (CKTcurTask->TSKgmin);
+    if (lstring::cieq(tok, "imax"))
+        return (1.0);
+    if (lstring::cieq(tok, "imelt"))
+        return (1.0);
+    if (lstring::cieq(tok, "iteration"))
+        return (CKTstat->STATnumIter);
+    if (lstring::cieq(tok, "scale"))
+        return (1.0);
+    if (lstring::cieq(tok, "shrink"))
+        return (1.0);
+    if (lstring::cieq(tok, "simulatorSubversion")) {
+        const char *v = Global.DevlibVersion();
+        if (v) {
+            const char *t = strrchr(t, '.');
+            if (t)
+                return (atof(t+1));
+        }
+        return (0.0);
+    }
+    if (lstring::cieq(tok, "simulatorVersion")) {
+        static char *vrs;
+        if (vrs)
+            return (atof(vrs));
+        const char *v = Global.DevlibVersion();
+        if (v) {
+            const char *t = strrchr(t, '.');
+            if (t) {
+                strcpy(vrs, v);
+                vrs[t-v] = 0;
+                return (atof(vrs));
+            }
+        }
+        return (0.0);
+    }
+    if (lstring::cieq(tok, "sourceScaleFactor"))
+        return (CKTsrcFact);
+    if (lstring::cieq(tok, "tnom"))
+        return (CKTcurTask->TSKnomTemp);
+    if (lstring::cieq(tok, "checkjcap"))
+        return (1.0);
+    if (lstring::cieq(tok, "maxmosl"))
+        return (1.0);
+    if (lstring::cieq(tok, "maxmosw"))
+        return (1.0);
+    if (lstring::cieq(tok, "minmosl"))
+        return (1.0e-12);
+    if (lstring::cieq(tok, "minmosw"))
+        return (1.0e-12);
+
+    // WRspice only
+    if (lstring::cieq(tok, "tstep"))
+        return (CKTstep);
+    if (lstring::cieq(tok, "tstart"))
+        return (CKTinitTime);
+    if (lstring::cieq(tok, "tstop"))
+        return (CKTfinalTime);
+    if (lstring::cieq(tok, "delta"))
+        return (CKTdelta);
+    if (lstring::cieq(tok, "delmin"))
+        return (CKTcurTask->TSKdelMin);
+    if (lstring::cieq(tok, "delmax"))
+        return (CKTmaxStep);
+    if (lstring::cieq(tok, "abstol"))
+        return (CKTcurTask->TSKabstol);
+    if (lstring::cieq(tok, "reltol"))
+        return (CKTcurTask->TSKreltol);
+    if (lstring::cieq(tok, "chgtol"))
+        return (CKTcurTask->TSKchgtol);
+    if (lstring::cieq(tok, "voltol"))
+        return (CKTcurTask->TSKvoltTol);
+    if (lstring::cieq(tok, "predictor"))
+        return (CKTmode & MODEINITPRED);
+    if (lstring::cieq(tok, "dcphasemode"))
+        return (CKTjjDCphase);
+    if (lstring::cieq(tok, "dphimax"))
+        return (CKTcurTask->TSKdphiMax);
+
+    if (rvgiven)
+        return (retval);
+
+    // Spec says this is an error, which arguably means non-fatal.
+    // Not sure how to cause a halt from here anyway.
+    GRpkgIf()->ErrPrintf(ET_ERROR,
+        "unknown keyword %s passed to $simparam.", tok);
+    return (0.0);
 }
 
 

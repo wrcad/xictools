@@ -195,13 +195,13 @@ SRCdev::delModl(sGENmodel **model, IFuid modname, sGENmodel *modfast)
 // Setup the tran parameters for any tran function nodes.
 //
 void
-SRCdev::initTran(sGENmodel *modp, double step, double finaltime)
+SRCdev::initTranFuncs(sGENmodel *modp, double step, double finaltime)
 {
     for (sSRCmodel *model = (sSRCmodel*)modp; model; model = model->next()) {
         for (sSRCinstance *inst = (sSRCinstance*)model->GENinstances;
                 inst; inst = inst->next()) {
             if (inst->SRCtree)
-                inst->SRCtree->initTran(step, finaltime);
+                inst->SRCtree->initTranFuncs(step, finaltime);
         }
     }
 }

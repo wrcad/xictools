@@ -97,7 +97,7 @@ IFtranData::IFtranData(PTftType tp, double *list, int num, double *list2,
 
     case PTF_tPULSE:
         td_parms = new double[8];
-        td_cache = 0;
+        td_cache = new double[2];
         td_coeffs = list;
         td_numcoeffs = num;
 
@@ -108,6 +108,8 @@ IFtranData::IFtranData(PTftType tp, double *list, int num, double *list2,
         set_TF(num >= 5 ? list[4] : 0.0);
         set_PW(num >= 6 ? list[5] : 0.0);
         set_PER(num >= 7 ? list[6] : 0.0);
+        td_cache[0] = TR() > 0.0 ? (V2() - V1())/TR() : 0.0;
+        td_cache[1] = TF() > 0.0 ? (V2() - V1())/TF() : 0.0;
         return;
 
     case PTF_tGPULSE:
@@ -336,59 +338,40 @@ IFtranData::IFtranData(PTftType tp, double *list, int num, double *list2,
 void
 IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 {
+    // This is called with zeroed arguments to disable tran funcs while
+    // not in transient analysis.
+    //
+    if (td_type != PTF_tNIL && step > 0.0 && finaltime > 0.0) {
+        if (td_enable_tran)
+            setup(ckt, 0.0, 0.0, false);
+        td_enable_tran = true;
+    }
+    else
+        td_enable_tran = false;
     if (td_type == PTF_tPULSE) {
-        if (TR() <= 0.0)
-            set_TR(step);
-        if (TF() > 0.0 && PW() <= 0.0)
-            set_PW(0.0);
-        else {
-            if (TF() <= 0.0)
-                set_TF(step);
-            if (PW() <= 0.0)
-                set_PW(MAXFLOAT);
-        }
-        if (PER() <= 0.0)
-            set_PER(MAXFLOAT);
-        else if (PER() < TR() + PW() + TF())
-            set_PER(TR() + PW() + TF());
-        if (!td_cache)
-            td_cache = new double[2];
-        td_cache[0] = (V2() - V1())/TR();
-        td_cache[1] = (V1() - V2())/TF();
-
-        if (!skipbr && ckt) {
-            if (PER() < finaltime) {
-                double time = TD();
-                ckt->breakSetLattice(time, PER());
-                time += TR();
-                ckt->breakSetLattice(time, PER());
-                if (PW() != 0) {
-                    time += PW();
-                    ckt->breakSetLattice(time, PER());
-                }
-                if (TF() != 0) {
-                    time += TF();
-                    ckt->breakSetLattice(time, PER());
-                }
-            }
+        if (td_enable_tran) {
+            if (TR() <= 0.0)
+                set_TR(step);
+            if (TF() > 0.0 && PW() <= 0.0)
+                set_PW(0.0);
             else {
-                double time = TD();
-                ckt->breakSet(time);
-                time += TR();
-                ckt->breakSet(time);
-                if (PW() != 0) {
-                    time += PW();
-                    ckt->breakSet(time);
-                }
-                if (TF() != 0) {
-                    time += TF();
-                    ckt->breakSet(time);
-                }
+                if (TF() <= 0.0)
+                    set_TF(step);
+                if (PW() <= 0.0)
+                    set_PW(MAXFLOAT);
             }
-            // set for additional offsets
-            for (int i = 7; i < td_numcoeffs; i++) {
+            if (PER() <= 0.0)
+                set_PER(MAXFLOAT);
+            else if (PER() < TR() + PW() + TF())
+                set_PER(TR() + PW() + TF());
+
+            // Reset these, may have changed.
+            td_cache[0] = (V2() - V1())/TR();
+            td_cache[1] = (V1() - V2())/TF();
+
+            if (!skipbr && ckt) {
                 if (PER() < finaltime) {
-                    double time = td_coeffs[i];
+                    double time = TD();
                     ckt->breakSetLattice(time, PER());
                     time += TR();
                     ckt->breakSetLattice(time, PER());
@@ -402,7 +385,7 @@ IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
                     }
                 }
                 else {
-                    double time = td_coeffs[i];
+                    double time = TD();
                     ckt->breakSet(time);
                     time += TR();
                     ckt->breakSet(time);
@@ -415,33 +398,92 @@ IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
                         ckt->breakSet(time);
                     }
                 }
+                // set for additional offsets
+                for (int i = 7; i < td_numcoeffs; i++) {
+                    if (PER() < finaltime) {
+                        double time = td_coeffs[i];
+                        ckt->breakSetLattice(time, PER());
+                        time += TR();
+                        ckt->breakSetLattice(time, PER());
+                        if (PW() != 0) {
+                            time += PW();
+                            ckt->breakSetLattice(time, PER());
+                        }
+                        if (TF() != 0) {
+                            time += TF();
+                            ckt->breakSetLattice(time, PER());
+                        }
+                    }
+                    else {
+                        double time = td_coeffs[i];
+                        ckt->breakSet(time);
+                        time += TR();
+                        ckt->breakSet(time);
+                        if (PW() != 0) {
+                            time += PW();
+                            ckt->breakSet(time);
+                        }
+                        if (TF() != 0) {
+                            time += TF();
+                            ckt->breakSet(time);
+                        }
+                    }
+                }
             }
+        }
+        else {
+            memset(td_parms, 0, 8*sizeof(double));
+            set_V1(td_coeffs[0]);
+            set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
+            set_TD(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+            set_TR(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+            set_TF(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+            set_PW(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
+            set_PER(td_numcoeffs >= 7 ? td_coeffs[6] : 0.0);
+            td_cache[0] = TR() > 0.0 ? (V2() - V1())/TR() : 0.0;
+            td_cache[1] = TF() > 0.0 ? (V2() - V1())/TF() : 0.0;
         }
     }
     else if (td_type == PTF_tGPULSE) {
-        if (GPW() == 0.0) {
+        if (td_enable_tran) {
+            if (GPW() == 0.0) {
 
-            // If no pulse width was given, new default in 4.3.3 is to
-            // generate an SFQ pulse with given amplitude, or if the
-            // amplitude is zero, use TSTEP as FWHM for SFQ.
+                // If no pulse width was given, new default in 4.3.3 is to
+                // generate an SFQ pulse with given amplitude, or if the
+                // amplitude is zero, use TSTEP as FWHM for SFQ.
 
-            if (V2() != V1())
-                set_GPW(PHI0_SQRTPI/fabs(V2() - V1()));
-            else
-                set_GPW(step/TWOSQRTLN2);
+                if (V2() != V1())
+                    set_GPW(PHI0_SQRTPI/fabs(V2() - V1()));
+                else
+                    set_GPW(step/TWOSQRTLN2);
+            }
+
+            // If the pulse has zero amplitude, take it to be a single
+            // flux quantum (SFQ) pulse.  This is a pulse that when
+            // applied to an inductor will induce one quantum of flux (I
+            // * L = the physical constant PHI0).  Such pulses are
+            // encountered in superconducting electronics.
+
+            if (V2() == V1())
+                set_V2(V1() + PHI0_SQRTPI/GPW());
         }
+        else {
+            memset(td_parms, 0, 8*sizeof(double));
+            set_V1(td_coeffs[0]);
+            set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
+            set_TD(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
 
-        // If the pulse has zero amplitude, take it to be a single
-        // flux quantum (SFQ) pulse.  This is a pulse that when
-        // applied to an inductor will induce one quantum of flux (I
-        // * L = the physical constant PHI0).  Such pulses are
-        // encountered in superconducting electronics.
+            // New in 4.3.3, default is to take pulse width as FWHM, used
+            // to just take this as the "variance".  However, if the value
+            // is negative, use the old setup with the absolute value.
+            set_GPW(td_numcoeffs >= 4 ? (td_coeffs[3] >= 0.0 ?
+                td_coeffs[3]/TWOSQRTLN2 : -td_coeffs[3]) : 0.0);
 
-        if (V2() == V1())
-            set_V2(V1() + PHI0_SQRTPI/GPW());
+            set_RPT(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+        }
     }
     else if (td_type == PTF_tPWL) {
-        if (!skipbr && ckt) {
+        if (td_enable_tran && !skipbr && ckt) {
             // Only call this when time is independent variable.
 
             int n = td_numcoeffs/2;
@@ -465,50 +507,102 @@ IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
         }
     }
     else if (td_type == PTF_tSIN) {
-        if (!FREQ())
-            set_FREQ(1.0/finaltime);
-        if (!skipbr) {
-            if (TDL() > 0.0)
-                ckt->breakSet(TDL());
+        if (td_enable_tran) {
+            if (!FREQ())
+                set_FREQ(1.0/finaltime);
+            if (!skipbr) {
+                if (TDL() > 0.0)
+                    ckt->breakSet(TDL());
+            }
+        }
+        else {
+            memset(td_parms, 0, 8*sizeof(double));
+            set_VO(td_coeffs[0]);
+            set_VA(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
+            set_FREQ(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+            set_TDL(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+            set_THETA(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+            set_PHI(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
         }
     }
     else if (td_type == PTF_tSPULSE) {
-        if (!SPER())
-            set_SPER(finaltime);
-        if (!skipbr && ckt) {
-            if (SDEL() > 0.0)
-                ckt->breakSet(SDEL());
+        if (td_enable_tran) {
+            if (!SPER())
+                set_SPER(finaltime);
+            if (!skipbr && ckt) {
+                if (SDEL() > 0.0)
+                    ckt->breakSet(SDEL());
+            }
+        }
+        else {
+            memset(td_parms, 0, 8*sizeof(double));
+            set_V1(td_coeffs[0]);
+            set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
+            set_SPER(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+            set_SDEL(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+            set_THETA(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
         }
     }
     else if (td_type == PTF_tEXP) {
-        if (!TAU2())
-            set_TAU2(step);
-        if (!TD1())
-            set_TD1(step);
-        if (!TAU1())
-            set_TAU1(step);
-        if (!TD2())
-            set_TD2(TD1() + step);
-        if (!skipbr && ckt) {
-            if (TD1() > 0.0)
-                ckt->breakSet(TD1());
-            if (TD2() > TD1())
-                ckt->breakSet(TD2());
+        if (td_enable_tran) {
+            if (!TAU2())
+                set_TAU2(step);
+            if (!TD1())
+                set_TD1(step);
+            if (!TAU1())
+                set_TAU1(step);
+            if (!TD2())
+                set_TD2(TD1() + step);
+            if (!skipbr && ckt) {
+                if (TD1() > 0.0)
+                    ckt->breakSet(TD1());
+                if (TD2() > TD1())
+                    ckt->breakSet(TD2());
+            }
+        }
+        else {
+            memset(td_parms, 0, 8*sizeof(double));
+            set_V1(td_coeffs[0]);
+            set_V2(td_numcoeffs >= 2 ? td_coeffs[1] : td_coeffs[0]);
+            set_TD1(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+            set_TAU1(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+            set_TD2(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+            set_TAU2(td_numcoeffs >= 6 ? td_coeffs[5] : 0.0);
         }
     }
     else if (td_type == PTF_tSFFM) {
-        if (!FC())
-            set_FC(1.0/finaltime);
-        if (!FS())
-            set_FS(1.0/finaltime);
-        // no breakpoints
+        if (td_enable_tran) {
+            if (!FC())
+                set_FC(1.0/finaltime);
+            if (!FS())
+                set_FS(1.0/finaltime);
+            // no breakpoints
+        }
+        else {
+            memset(td_parms, 0, 8*sizeof(double));
+            set_VO(td_coeffs[0]);
+            set_VA(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
+            set_FC(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+            set_MDI(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+            set_FS(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+        }
     }
     else if (td_type == PTF_tAM) {
-        if (!MF())
-            set_MF(1.0/finaltime);
+        if (td_enable_tran) {
+            if (!MF())
+                set_MF(1.0/finaltime);
+        }
+        else {
+            memset(td_parms, 0, 8*sizeof(double));
+            set_SA(td_coeffs[0]);
+            set_OC(td_numcoeffs >= 2 ? td_coeffs[1] : 0.0);
+            set_MF(td_numcoeffs >= 3 ? td_coeffs[2] : 0.0);
+            set_CF(td_numcoeffs >= 4 ? td_coeffs[3] : 0.0);
+            set_DL(td_numcoeffs >= 5 ? td_coeffs[4] : 0.0);
+        }
     }
     else if (td_type == PTF_tGAUSS) {
-        if (!skipbr && ckt) {
+        if (td_enable_tran && !skipbr && ckt) {
             if (LATTICE() != 0.0)
                 ckt->breakSetLattice(0.0, LATTICE());
         }
@@ -521,10 +615,12 @@ IFtranData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 double
 IFtranData::eval_tPULSE(double t)
 {
+    if (!td_enable_tran)
+        return (V1());
     double value;
     double pw = TR() + PW();
     double time = t - TD();
-    if (time > PER()) {
+    if (time > PER() && PER() > 0.0) {
         // Repeating signal - figure out where we are in period.
         double basetime = PER() * (int)(time/PER());
         time -= basetime;
@@ -546,7 +642,7 @@ IFtranData::eval_tPULSE(double t)
     //
     for (int i = 7; i < td_numcoeffs; i++) {
         time = t - td_coeffs[i];
-        if (time > PER()) {
+        if (time > PER() && PER() > 0.0) {
             // Repeating signal - figure out where we are in period.
             double basetime = PER() * (int)(time/PER());
             time -= basetime;
@@ -568,6 +664,8 @@ IFtranData::eval_tPULSE(double t)
 double
 IFtranData::eval_tPULSE_D(double t)
 {
+    if (!td_enable_tran)
+        return (0.0);
     double value = 0.0;
     double pw = TR() + PW();
     double time = t - TD();
@@ -612,6 +710,8 @@ IFtranData::eval_tPULSE_D(double t)
 double
 IFtranData::eval_tGPULSE(double t)
 {
+    if (!td_enable_tran)
+        return (V1());
     double V = 0;
     const double rchk = 5.0;
     if (RPT() > 0.0) {
@@ -654,6 +754,8 @@ IFtranData::eval_tGPULSE(double t)
 double
 IFtranData::eval_tGPULSE_D(double t)
 {
+    if (!td_enable_tran)
+        return (0.0);
     double V = 0;
     const double rchk = 5.0;
     if (RPT() > 0.0) {
@@ -700,6 +802,7 @@ namespace {
 double
 IFtranData::eval_tPWL(double t)
 {
+    // Does not requires that setup be called, t is voltage in DC sweep.
     twovals *tv = (twovals*)td_coeffs;
     if (!tv)
         return (0.0);
@@ -737,6 +840,7 @@ IFtranData::eval_tPWL(double t)
 double
 IFtranData::eval_tPWL_D(double t)
 {
+    // Does not requires that setup be called, t is voltage in DC sweep.
     twovals *tv = (twovals*)td_coeffs;
     if (!tv)
         return (0.0);
@@ -774,6 +878,11 @@ IFtranData::eval_tPWL_D(double t)
 double
 IFtranData::eval_tSIN(double t)
 {
+    if (!td_enable_tran) {
+        if (PHI() != 0.0)
+            return VO() + VA()*sin(M_PI*(PHI()/180));
+        return (VO());
+    }
     double time = t - TDL();
     if (time <= 0) {
         if (PHI() != 0.0)
@@ -794,6 +903,8 @@ IFtranData::eval_tSIN(double t)
 double
 IFtranData::eval_tSIN_D(double t)
 {
+    if (!td_enable_tran)
+        return (0);
     double time = t - TDL();
     if (time <= 0)
         return (0);
@@ -815,6 +926,8 @@ IFtranData::eval_tSIN_D(double t)
 double
 IFtranData::eval_tSPULSE(double t)
 {
+    if (!td_enable_tran)
+        return (V1());
     double time = t - SDEL();
     if (time <= 0)
         return (V1());
@@ -829,6 +942,8 @@ IFtranData::eval_tSPULSE(double t)
 double
 IFtranData::eval_tSPULSE_D(double t)
 {
+    if (!td_enable_tran)
+        return (0.0);
     double time = t - SDEL();
     if (time <= 0)
         return (0);
@@ -844,6 +959,8 @@ IFtranData::eval_tSPULSE_D(double t)
 double
 IFtranData::eval_tEXP(double t)
 {
+    if (!td_enable_tran)
+        return (V1());
     double value = V1();
     if (t <= TD1())
         return (value);
@@ -858,6 +975,8 @@ IFtranData::eval_tEXP(double t)
 double
 IFtranData::eval_tEXP_D(double t)
 {
+    if (!td_enable_tran)
+        return (0.0);
     double value = 0.0;
     if (t <= TD1())
         return (value);
@@ -872,6 +991,8 @@ IFtranData::eval_tEXP_D(double t)
 double
 IFtranData::eval_tSFFM(double t)
 {
+    if (!td_enable_tran)
+        return (VO());
     double w1 = 2*M_PI*FC();
     double w2 = 2*M_PI*FS();
     return (VO() + VA()*sin(w1*t + MDI()*sin(w2*t)));
@@ -879,8 +1000,21 @@ IFtranData::eval_tSFFM(double t)
 
 
 double
+IFtranData::eval_tSFFM_D(double t)
+{
+    if (!td_enable_tran)
+        return (0.0);
+    double w1 = 2*M_PI*FC();
+    double w2 = 2*M_PI*FS();
+    return (VA()*cos(w1*t + MDI()*sin(w2*t))*(w1 + MDI()*w2*cos(w2*t)));
+}
+
+
+double
 IFtranData::eval_tAM(double t)
 {
+    if (!td_enable_tran)
+        return (0.0);
     if (t <= DL())
         return (0.0);
     double w = 2*M_PI*(t - DL());
@@ -891,6 +1025,8 @@ IFtranData::eval_tAM(double t)
 double
 IFtranData::eval_tAM_D(double t)
 {
+    if (!td_enable_tran)
+        return (0.0);
     if (t <= DL())
         return (0.0);
     double w = 2*M_PI*(t - DL());
@@ -903,17 +1039,10 @@ IFtranData::eval_tAM_D(double t)
 
 
 double
-IFtranData::eval_tSFFM_D(double t)
-{
-    double w1 = 2*M_PI*FC();
-    double w2 = 2*M_PI*FS();
-    return (VA()*cos(w1*t + MDI()*sin(w2*t))*(w1 + MDI()*w2*cos(w2*t)));
-}
-
-
-double
 IFtranData::eval_tGAUSS(double t)
 {
+    if (!td_enable_tran)
+        return (0.0);
     if (LATTICE() == 0.0) {
         if (t != TIME()) {
             set_VAL(SD()*Rnd.gauss() + MEAN());
@@ -944,6 +1073,7 @@ IFtranData::eval_tGAUSS(double t)
 double
 IFtranData::eval_tGAUSS_D(double)
 {
+//XXX can do better here?
     return (0.0);
 }
 
@@ -951,6 +1081,7 @@ IFtranData::eval_tGAUSS_D(double)
 double
 IFtranData::eval_tINTERP(double t)
 {
+    // Doesn't need setup call.
     double *tvec = td_parms;   // time values
     double *vec = td_coeffs;   // source values
 
@@ -971,6 +1102,7 @@ IFtranData::eval_tINTERP(double t)
 double
 IFtranData::eval_tINTERP_D(double t)
 {
+    // Doesn't need setup call.
     double *tvec = td_parms;   // time values
     double *vec = td_coeffs;   // source values
 

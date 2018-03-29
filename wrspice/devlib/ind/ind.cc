@@ -245,6 +245,21 @@ MUTdev::delModl(sGENmodel **model, IFuid modname, sGENmodel *modfast)
 }
 
 
+// Setup the tran parameters for any tran function nodes.
+//
+void
+INDdev::initTranFuncs(sGENmodel *modp, double step, double finaltime)
+{
+    for (sINDmodel *model = (sINDmodel*)modp; model; model = model->next()) {
+        for (sINDinstance *inst = (sINDinstance*)model->GENinstances;
+                inst; inst = inst->next()) {
+            if (inst->INDtree)
+                inst->INDtree->initTranFuncs(step, finaltime);
+        }
+    }
+}
+
+
 // Below is hugely GCC-specific.  The __WRMODULE__ and __WRVERSION__
 // tokens are defined in the Makefile and passed with -D when
 // compiling.

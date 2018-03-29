@@ -88,6 +88,11 @@ DCOanalysis::anFunc(sCKT *ckt, int restart)
         outd->initValue = 0;
         outd->finalValue = 0;
         outd->step = 0;
+
+        // Disable the "tran" functions found in the sources and
+        // device expressions.
+        ckt->initTranFuncs(0.0, 0.0);
+
         job->JOBrun = OP.beginPlot(outd);
         if (!job->JOBrun) {
             ckt->CKTcurrentAnalysis &= ~DOING_DCOP;

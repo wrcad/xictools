@@ -836,13 +836,16 @@ IFparseTree::varName(int i, sLstr &lstr)
 
 
 // Initialize the "tran" functions, called just before transient
-// analysis.
+// analysis with step and finaltime nonzero, or just before other
+// analyses with these set to 0.0.  In the latter case, functions
+// other than PWL will return initial values only.  In the former
+// case, we set the breakpoints and the functions will be fully
+// enabled.
 //
 int
-IFparseTree::initTran(double step, double finaltime)
+IFparseTree::initTranFuncs(double step, double finaltime)
 {
     for (int i = 0; i < pt_num_vars; i++) {
-        // pass 0, no breakpoint setting on derivs
         if (pt_derivs && pt_derivs[i])
             pt_derivs[i]->p_init_node(step, finaltime);
     }

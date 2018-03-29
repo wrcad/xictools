@@ -101,6 +101,7 @@ struct INDdev : public IFdevice
     int pzLoad(sGENmodel*, sCKT*, IFcomplex*); 
 //    int disto(int, sGENmodel*, sCKT*);  
 //    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
+    void initTranFuncs(sGENmodel*, double, double);
 };
 
 struct sINDinstance : public sGENinstance

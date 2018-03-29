@@ -81,12 +81,30 @@ INDdev::setup(sGENmodel *genmod, sCKT *ckt, int* states)
                 // compatability with voltage sources, i.e. i(l1) maps
                 // to l1#branch.
                 //
-                sCKTnode *tmp;
-                int error = ckt->mkCur(&tmp, inst->GENname, "branch");
+                sCKTnode *node;
+                int error = ckt->mkCur(&node, inst->GENname, "branch");
                 if (error)
                     return (error);
-                inst->INDbrEq = tmp->number();
+                inst->INDbrEq = node->number();
             }
+#ifdef NEWJJDC
+            if (ckt->CKTjjDCphase) {
+                // The nodes that connect to inductors have the
+                // "phase" flag set, for use in phase-mode DC analysis
+                // with Josephson junctions.
+
+                if (inst->INDposNode > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->INDposNode);
+                    if (node)
+                        node->set_phase(true);
+                }
+                if (inst->INDnegNode > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->INDnegNode);
+                    if (node)
+                        node->set_phase(true);
+                }
+            }
+#endif
 
             inst->INDflux = *states;
             *states += 2 ;

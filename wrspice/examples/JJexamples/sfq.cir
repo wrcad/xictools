@@ -1,0 +1,46 @@
+* SFQ pulse test
+
+* The new GPULSE function generates gaussian pulses.  If the amplitude
+* is specified as 0, the actual amplitude will be computed to generate
+* a single flux quantum (SFQ) pulse.  As a voltage source applied to
+* an inductor, this will induce a quantum of flux, phi0 = 2.06783fWb =
+* h/(2*e), in the inductor.  For superconductors, the flux that
+* threads a superconducting loop is constrained to multiples of this
+* value, as a consequence of the periodic boundary condition that the
+* superconducting wave function must observe.
+*
+* SFQ Josephson digital logic makes use of the fact that if a shunted
+* Josephson junction has its threshold current exceeded, it will emit
+* a pulse, which is an SFQ pulse due to the physics of the Josephson
+* junction device.
+*
+* The circuit below consists of an SFQ pulse generator that produces
+* two SFQ pulses, into an inductor in series with a resistively
+* shunted Josephson junction.  On the second SFQ pulse, the junction
+* critical current is exceeded, and it itself pulses.  allowing the
+* second SFQ pulse to "escape" from the inductor.  Note that the
+* inductor current before and after the second pulse is the same,
+* showing that the GPULSE source and Josephson junction model agree on
+* what constitutes an SFQ pulse.
+*
+* Warning:  This file probably requires WRspice-4.3.3 or later.
+
+v1 1 0 gpulse(0 0 20p 2p 0 40p)
+l1 1 2 10p
+b1 2 0 100 jj3 area=.2
+r2 2 0 2
+.tran .1p 100p uic
+.plot tran v(1) v(2) i(l1) ysep
+
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+*
+.model jj3 jj(level=1)
+
+.control
+run
+plot .
+edit
+.endc

@@ -2123,20 +2123,101 @@ sCKT::setup()
     // Set up Josephson junstion support flags.
     CKTjjPresent = false;
 #ifdef NEWJJDC
-    CKTjjDCscale = false;
+    CKTjjDCphase = false;
 #endif
     sCKTmodGen mgen(CKTmodels);
     for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
-        if (DEV.device(m->GENmodType)->flags() & DV_JJSTEP)
-            CKTjjPresent = true;
+        if (DEV.device(m->GENmodType)->flags() & (DV_JJSTEP | DV_JJPMDC)) {
+            // Looks like a Josephson junction, however if a device
+            // has no critical current, it doesn't count.  With the
+            // known models, this can only happen if CCT=0 is set.  In
+            // the Whiteley Research models (at present) CCT is a
+            // model parameter.  However, it may be an instance
+            // parameter too in some Verilog environments, so have to
+            // cover both cases.
+
+            // Below we loop through the instances and set the Phase
+            // flag in all connected nodes.  This is also done in the
+            // model setup code for inductive devices.  We may want to
+            // do this here universally.  The problem is that for
+            // Verlog one would need to handle this in the device
+            // setup script, which would be messy and difficult to
+            // port.  On the other hand, does anyone need a Verilog-A
+            // custom inductor?  The built-in inductor should suffice.
+
+            // Call setup so that the CCT parameter has been properly
+            // initialized.
+            error = DEV.device(m->GENmodType)->setup(m, this, &CKTnumStates);
+            if (error)
+                return (error);
+
+            IFparm *p = DEV.device(m->GENmodType)->findInstanceParm("cct",
+                IF_ASK);
+            if (p) {
+                // Instance has a CCT parameter.
+                for (sGENinstance *i = m->GENinstances; i;
+                        i = i->GENnextInstance) {
+                    IFdata data;
+                    int err = DEV.device(m->GENmodType)->askInst(this, i, p->id,
+                        &data);
+                    if (err == OK && data.v.iValue == 0)
+                        continue;
+                    CKTjjPresent = true;
 #ifdef NEWJJDC
-        if (DEV.device(m->GENmodType)->flags() & DV_JJPMDC)
-            CKTjjDCscale = JJDCSCALE;
+                    if (DEV.device(m->GENmodType)->flags() & DV_JJPMDC) {
+                        int nn = i->numnodes();
+                        for (int j = 1; j <= nn; j++) {
+                            int nodenum = *i->nodeptr(j);
+                            if (nodenum > 0) {
+                                sCKTnode *node = CKTnodeTab.find(nodenum);
+                                if (node && node->type() == SP_VOLTAGE)
+                                    node->set_phase(true);
+                            }
+                        }
+                        CKTjjDCphase = true;
+                    }
 #endif
+                }
+                continue;
+            }
+            p = DEV.device(m->GENmodType)->findModelParm("cct", IF_ASK);
+            if (p) {
+                // Model has a CCT parameter, but not instance.
+                IFdata data;
+                int err = DEV.device(m->GENmodType)->askModl(m, p->id, &data);
+                if (err == OK && data.v.iValue == 0)
+                    continue;
+                CKTjjPresent = true;
+#ifdef NEWJJDC
+                if (DEV.device(m->GENmodType)->flags() & DV_JJPMDC) {
+
+                    // Look through the instances and set the
+                    // Phase flag in all connected nodes.
+
+                    for (sGENinstance *i = m->GENinstances; i;
+                            i = i->GENnextInstance) {
+                        int nn = i->numnodes();
+                        for (int j = 1; j <= nn; j++) {
+                            int nodenum = *i->nodeptr(j);
+                            if (nodenum > 0) {
+                                sCKTnode *node = CKTnodeTab.find(nodenum);
+                                if (node && node->type() == SP_VOLTAGE)
+                                    node->set_phase(true);
+                            }
+                        }
+                    }
+                    CKTjjDCphase = true;
+                }
+#endif
+            }
+        }
     }
 
     mgen = sCKTmodGen(CKTmodels);
     for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
+        // We've' already done the JJs. if any.
+        if (DEV.device(m->GENmodType)->flags() & (DV_JJSTEP | DV_JJPMDC))
+            continue;
         error = DEV.device(m->GENmodType)->setup(m, this, &CKTnumStates);
         if (error)
             return (error);
@@ -2207,14 +2288,16 @@ sCKT::resetup()
 
 
 // This initializes tran function nodes in parse trees with the
-// transient analysis parameters.
+// transient analysis parameters.  If arguments are zero, tran funcs
+// will be disabled, appropriate when not doing transient analysis.
+// This should be called when a new analysis begins.
 //
 int
-sCKT::initTran(double step, double finaltime)
+sCKT::initTranFuncs(double step, double finaltime)
 {
     sCKTmodGen mgen(CKTmodels);
     for (sGENmodel *m = mgen.next(); m; m = mgen.next())
-        DEV.device(m->GENmodType)->initTran(m, step, finaltime);
+        DEV.device(m->GENmodType)->initTranFuncs(m, step, finaltime);
     return (OK);
 }
 
@@ -2470,21 +2553,32 @@ sCKT::checkLVloops()
     // sdlist_t list of connected devices.
 
     sGENmodel *gen_model = 0;
-    int type = typelook("Inductor", &gen_model);
-    if (type >= 0) {
-        for (sGENmodel *model = gen_model; model;
-                model = model->GENnextModel) {
-            for (sGENinstance *inst = model->GENinstances; inst;
-                    inst = inst->GENnextInstance) {
-                heads[*inst->nodeptr(1)] =
-                    new sdlist_t(inst, heads[*inst->nodeptr(1)]);
-                heads[*inst->nodeptr(2)] =
-                    new sdlist_t(inst, heads[*inst->nodeptr(2)]);
+#ifdef NEWJJDC
+    if (CKTjjDCphase) {
+        // Inductor loops are allowed here.
+        // May want to add a check for "floating" phase-mode subnets,
+        // and voltage-mode devices directly connected to phase nodes.
+    }
+    else {
+#else
+    {
+#endif
+        int type = typelook("Inductor", &gen_model);
+        if (type >= 0) {
+            for (sGENmodel *model = gen_model; model;
+                    model = model->GENnextModel) {
+                for (sGENinstance *inst = model->GENinstances; inst;
+                        inst = inst->GENnextInstance) {
+                    heads[*inst->nodeptr(1)] =
+                        new sdlist_t(inst, heads[*inst->nodeptr(1)]);
+                    heads[*inst->nodeptr(2)] =
+                        new sdlist_t(inst, heads[*inst->nodeptr(2)]);
+                }
             }
         }
     }
 
-    type = typelook("Source", &gen_model);
+    int type = typelook("Source", &gen_model);
     if (type >= 0) {
         IFparm *p = DEV.device(type)->findInstanceParm("branch", IF_ASK);
         if (!p) {

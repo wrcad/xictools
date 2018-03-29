@@ -185,7 +185,7 @@ struct IFparseTree
     int eval(double*, double*, double*, int* = 0);
     void print(const char*);
     void varName(int, sLstr&);
-    int initTran(double, double);
+    int initTranFuncs(double, double);
     double timeLim(double);
     IFparseNode *differentiate(IFparseNode*, int);
     IFparseNode *newNode();
@@ -868,9 +868,8 @@ struct IFdevice
     virtual int noise(int, int, sGENmodel*, sCKT*,
         sNdata*, double*)                               { return (OK); };
 
-    // initTran()      Initialize for transient analysis.
-    virtual void initTran(sGENmodel*, double,
-        double)                                         { }
+    // initTranFuncs() Initialize "tran" funcs for analysis.
+    virtual void initTranFuncs(sGENmodel*, double, double)   { }
 
     const char *name()          const { return (dv_name); }
     const char *description()   const { return (dv_description); }

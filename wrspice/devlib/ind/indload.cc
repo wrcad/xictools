@@ -86,15 +86,12 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     if (ckt->CKTmode & MODEDC) {
 #ifdef NEWJJDC
-        if (ckt->CKTjjDCscale >= 1.0) {
+        if (ckt->CKTjjDCphase) {
             // The voltage across the inductor is taken as the
-            // inductor phase scaled by a large value so that the
-            // voltage is small (microvolts).  This is for use when
-            // finding the DCOP when Josephson junctions are present.
-            // See jjload.cc.
+            // inductor phase.  This is for use when doing DC analysis
+            // when Josephson junctions are present.  See jjload.cc.
 
-            double res = 2*M_PI*inst->INDinduct/
-                (wrsCONSTphi0*ckt->CKTjjDCscale);
+            double res = 2*M_PI*inst->INDinduct/wrsCONSTphi0;
             ckt->ldadd(inst->INDibrIbrptr, -res);
         }
 #endif
@@ -223,7 +220,7 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
             else
                 ival = *(ckt->CKTrhsOld + inst->INDbrEq);
         }
-        *(ckt->CKTstate1 + inst->INDflux) = inst->INDinduct * ival;
+        *(ckt->CKTstate1 + inst->INDflux) += inst->INDinduct * ival;
 
         inst->INDprevFlux = 0;
         *(ckt->CKTstate0 + inst->INDflux) = 0;

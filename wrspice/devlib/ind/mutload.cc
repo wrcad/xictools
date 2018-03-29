@@ -55,8 +55,10 @@ Authors: 1985 Thomas L. Quarles
 int
 MUTdev::load(sGENinstance *in_inst, sCKT *ckt)
 {
+#ifndef NEWJJDC
     if (ckt->CKTmode & MODEDC)
         return (OK);
+#endif
 
     sMUTinstance *inst = (sMUTinstance*)in_inst;
 
@@ -72,17 +74,12 @@ MUTdev::load(sGENinstance *in_inst, sCKT *ckt)
 
     if (ckt->CKTmode & MODEDC) {
 #ifdef NEWJJDC
-        if (ckt->CKTjjDCscale >= 1.0) {
+        if (ckt->CKTjjDCphase) {
             // The voltage across the inductor is taken as the
-            // inductor phase scaled by a large value so that the
-            // voltage is small (microvolts).  This is for use when
-            // finding the DCOP when Josephson junctions are present.
-            // See jjload.cc.
+            // inductor phase.  This is for use when doing DC analysis
+            // when Josephson junctions are present.  See jjload.cc.
 
-            double leff = sqrt(
-                inst->MUTind1->INDinduct*inst->MUTind2->INDinduct*
-                inst->MUTfactor);
-            double res = 2*M_PI*leff/(wrsCONSTphi0*ckt->CKTjjDCscale);
+            double res = 2*M_PI*inst->MUTfactor/wrsCONSTphi0;
             ckt->ldadd(inst->MUTbr1br2, -res);
             ckt->ldadd(inst->MUTbr2br1, -res);
         }

@@ -1,0 +1,54 @@
+* Josephson Interferometer demo
+*
+* This is a symmetric two junction interferometer.
+*
+* Warning:  This file probably requires WRspice-4.3.3 or later.
+*
+* the squid loop
+b1 1 0 100 jj1 ics=200uA
+b2 3 0 101 jj1 ics=200uA
+l1 1 2 10pH
+l2 2 3 10pH
+*
+* the coupled control line
+l3 4 5 10pH
+l4 5 0 10pH
+k1 l1 l3 .98
+k2 l2 l4 .98
+*
+* damping resistance
+rd1 1 0 2.50
+rd2 3 0 2.50
+*
+* gate power supply
+rg 2 10 50
+vg 10 0 16m
+*
+* source power supply
+rc 4 11 50
+vc 11 0 pulse(0 5m 20p 180p)
+*
+.tran 0.1p 200p
+*
+* Initially, we have a single vortex transition.
+*
+* Suggestions for experiment:
+*    1. raise the values of rd1 and rd2 and note the effects,
+*    1. change the amplitude of vg, find the critical point,
+*    3. change vc to a pulse source:
+*       vc 11 0 pulse(0 50m 50p 2p 2p)
+*       and find the amplitude where switching is metastable
+*
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+*
+.model jj1 jj(level=1)
+.end
+
+.control
+run
+plot v(11) v(1) ysep
+edit
+.endc

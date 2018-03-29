@@ -72,7 +72,7 @@ SPinput::parseDeck(sCKT *ckt, sLine *deck, sTASK *task, bool pass2_only)
             if (task && !task->TSKjobs) {
                 int which;
                 if (getAnalysis("op", &which))
-                    task->newAnal(which);
+                    sTASK::newAnal(task, which);
             }
         }
     }

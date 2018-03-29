@@ -59,7 +59,7 @@ SENSanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
     sTASK *task)
 {
     sJOB *job;
-    int error = task->newAnal(which, &job);
+    int error = sTASK::newAnal(task, which, &job);
     IP.logError(current, error);
 
     // Get the output voltage or current.

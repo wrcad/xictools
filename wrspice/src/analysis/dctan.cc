@@ -146,7 +146,11 @@ DCTanalysis::dct_init(sCKT *ckt)
 int
 DCTanalysis::dct_operation(sCKT *ckt, int restart)
 {
-    (void)restart;
+    if (restart) {
+        // Disable the "tran" functions found in the sources and
+        // device expressions.
+        ckt->initTranFuncs(0.0, 0.0);
+    }
     sDCTAN *job = static_cast<sDCTAN*>(ckt->CKTcurJob);
 
 #ifdef ALLPRMS

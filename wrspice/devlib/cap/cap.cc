@@ -195,13 +195,13 @@ CAPdev::parse(int type, sCKT *ckt, sLine *current)
 // Setup the tran parameters for any tran function nodes.
 //
 void
-CAPdev::initTran(sGENmodel *modp, double step, double finaltime)
+CAPdev::initTranFuncs(sGENmodel *modp, double step, double finaltime)
 {
     for (sCAPmodel *model = (sCAPmodel*)modp; model; model = model->next()) {
         for (sCAPinstance *inst = (sCAPinstance*)model->GENinstances;
                 inst; inst = inst->next()) {
             if (inst->CAPtree)
-                inst->CAPtree->initTran(step, finaltime);
+                inst->CAPtree->initTranFuncs(step, finaltime);
         }
     }
 }

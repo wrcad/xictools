@@ -48,51 +48,30 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
     for ( ; model; model = model->next()) {
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
-            double C = inst->JJcap;
-            double phi = *(ckt->CKTstate0 + inst->JJphase);
-            double crt = *(ckt->CKTstate0 + inst->JJcrti);
-            double L = wrsCONSTphi0/(2*M_PI*crt*cos(phi));
 
             double G = inst->JJconduct;
-/*XXX
-            switch (model->JJrtype) {
-            case 2:
-                {
-                    double dv = 0.5*model->JJdelv;
-                    double gam = -model->JJvg/dv;
-                    if (gam > 30.0)
-                        gam = 30.0;
-                    if (gam < -30.0)
-                        gam = -30.0;
-                    double expgam = exp(gam);
-                    double exngam = 1.0 / expgam;
-                    double xp     = 1.0 + expgam;
-                    double xn     = 1.0 + exngam;
-                    G = inst->JJgn/xn + inst->JJg0/xp;
-                }
-                break;
-            default:
-                G = inst->JJg0;
-                break;
-            }
-            if (model->JJvShuntGiven)
-                G += inst->JJcriti/model->JJvShunt;
-*/
-
             *inst->JJposPosPtr += G;
             *inst->JJnegNegPtr += G;
             *inst->JJposNegPtr -= G;
             *inst->JJnegPosPtr -= G;
-            double val = ckt->CKTomega*C - 1.0/(ckt->CKTomega*L);
+
+            double C = inst->JJcap;
+            double val = ckt->CKTomega*C;
+            if (model->JJictype > 0) {
+                double phi = *(ckt->CKTstate0 + inst->JJphase);
+                double crt = *(ckt->CKTstate0 + inst->JJcrti);
+                double Lrecip = (2*M_PI*crt*cos(phi))/wrsCONSTphi0;
+                val -= Lrecip/ckt->CKTomega;
+                if (inst->JJcontrol && inst->JJdcrt != 0.0) {
+                    double temp = inst->JJdcrt*crt*sin(phi);
+                    *inst->JJposIbrPtr += temp;
+                    *inst->JJnegIbrPtr -= temp;
+                }
+            }
             *(inst->JJposPosPtr +1) += val;
             *(inst->JJnegNegPtr +1) += val;
             *(inst->JJposNegPtr +1) -= val;
             *(inst->JJnegPosPtr +1) -= val;
-            if (inst->JJcontrol && inst->JJdcrt != 0.0) {
-                double temp = inst->JJdcrt*crt*sin(phi);
-                *inst->JJposIbrPtr += temp;
-                *inst->JJnegIbrPtr -= temp;
-            }
             if (inst->JJphsNode > 0)
                 *inst->JJphsPhsPtr =  1.0;
         }
