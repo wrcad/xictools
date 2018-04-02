@@ -4,8 +4,26 @@ To run, give these commands to WRspice after sourcing this file:\n\
     check
 *
 * Warning:  This file probably requires WRspice-4.3.3 or later.
+* Warning:  This uses WRspice extensions, file is not portable.
 *
 .monte
+
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
+
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+*
+.model jj1 jj(level=1)
+
+.if dcop
+.tran 1p 500p
+.else
+.tran 1p 500p uic
+.endif
+
 .exec
 # Monte Carlo analysis of a Josephson binary counter.
 # This is an example of a Monte Carlo analysis input file.
@@ -155,7 +173,7 @@ end
 #
 # end of pass/fail logic
 .endc
-.tran 1p 500p uic
+
 .subckt count 1 4 5 6 7
 c1 4 0 3.2p
 r1 3 8 .4
@@ -171,6 +189,7 @@ l6 9 0 .1p
 k1 l1 l3 .99
 k2 l2 l4 .99
 .ends count
+
 r1 17 2 50
 r2 1 6 50
 r3 1 10 50
@@ -192,17 +211,24 @@ x1 3 2 4 100 101 count
 x2 7 6 8 200 201 count
 x3 11 10 12 300 301 count
 x4 15 14 16 400 401 count
-*
+ 
 * These are the sources which vary.
 * In general, the $value1 or $value2 symbols can replace any numerical
 * parameter in the circuit description.  No checking is done as to whether
 * the substitution makes sense.
 *
+.if dcop
 *flux bias
 v1 13 0 $value1%m
 *gate bias
 v2 1 0 $value2%m
-*
+.else
+*flux bias
+v1 13 0 pulse(0 $value1%m 10p 10p)
+*gate bias
+v2 1 0 pulse(0 $value2%m 10p 10p)
+.endif
+ 
 v3 20 0 pwl(0 0 70p 0
 + 75p  15m 90p  15m 100p -15m 115p -15m 
 + 125p 15m 140p 15m 150p -15m 165p -15m
@@ -212,16 +238,16 @@ v3 20 0 pwl(0 0 70p 0
 + 325p 15m 340p 15m 350p -15m 365p -15m
 + 375p 15m 390p 15m 400p -15m 415p -15m
 + 425p 15m 440p 15m 450p -15m 465p -15m 500p -15m)
-*
+ 
+.if dcop
 * flux bias first stage
 v4 18 0 13m
 *gate bias first stage
 v5 17 0 39m
+.else
+* flux bias first stage
+v4 18 0 pulse(0 13m 10p 10p)
+*gate bias first stage
+v5 17 0 pulse(0 39m 10p 10p)
+.endif
 *
-* Below,
-* Level=1 selects the internal JJ model.
-* Level=2 selects the example Verilog-A JJ model, if loaded (with
-* the devload command).
-*
-.model jj1 jj(level=1)
-.end

@@ -3,10 +3,8 @@
 * From the rsfq_lib_jj, a pseudo-random bit sequencer based on
 * inductorless RESQ gates.
 
-.control
-tran 1p 20n
-plot v(23) v(25) v(27) v(29) v(31)
-.endc
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
 
 * Below,
 * Level=1 selects the internal JJ model.
@@ -15,11 +13,27 @@ plot v(23) v(25) v(27) v(29) v(31)
 *
 .model jjr jj(level=1 vshunt=0.5mV)
 
+.control
+run
+plot ysep v(23) v(25) v(27) v(29) v(31)
+.endc
+
+.if dcop
+.tran 1p 20n
+.else
+.tran 1p 20n uic
+.endif
+
 .options maxdata=256k
-.options ysep
 R0 47 43 100
 R1 48 44 100
+
+.if dcop
+V0 vcc 0 10m
+.else
 V0 vcc 0 pwl 0 0 10p 10m
+.endif
+
 V1 47 0 pulse 0 50m 70p 50p 50p 100p 300p
 V2 48 0 pulse 0 50m 220p 50p 50p 100p 300p
 X0 18 19 20 vcc inv_jj
@@ -153,7 +167,4 @@ X3 in2 12 4jj jjarea=0.5
 X4 19 clk 4jj jjarea=0.5
 X5 out 18 4jj jjarea=0.25
 .ends xor_jj
-
-*.model jjr jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
-*+ icrit=1m, vshunt=0.5mV cap=1.31p)
 

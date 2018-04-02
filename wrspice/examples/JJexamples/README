@@ -21,3 +21,13 @@ much easier to understand.
 
 Some of the circuits in this directory are hopelessly opaque.
 
+Most of these are designed to illustrate features of WRspice, and are
+therefor not good candidates for comparison of results with other
+simulators.  However, the following are straightfirward transient
+analysis and should be portable.
+  jjcntr.cir
+  jjintr.cir
+  jjprbs.cir
+  shuttle.cir
+  shuttlea.cir
+  sk.cir

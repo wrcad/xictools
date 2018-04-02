@@ -5,8 +5,26 @@ To run, give these commands to WRspice after sourcing this file:\n\
 *
 *
 * Warning:  This file probably requires WRspice-4.3.3 or later.
+* Warning:  This uses WRspice extensions, file is not portable.
 * 
 .check
+
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
+
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+*
+.model jj1 jj(level=1)
+
+.if dcop
+.tran 1p 400p
+.else
+.tran 1p 400p uic
+.endif
+
 .exec
 # Margins of a Josephson flux shuttle shift register
 # This is an example of an operating range analysis input file
@@ -199,8 +217,7 @@ if time > checkPNTS[6]
 	end
 end
 .endc
-*flux shuttle shift register
-.tran 1p 400p
+
 r1 1 2 100
 r2 2 0 $value1
 r3 3 0 $value1
@@ -254,9 +271,3 @@ v3 30 0 pulse(0 $value2%m 105p 10p 10p 10p 120p)
 
 v4 1 0 pulse(0 40m 25p 10p 10p)
 
-* Below,
-* Level=1 selects the internal JJ model.
-* Level=2 selects the example Verilog-A JJ model, if loaded (with
-* the devload command).
-*
-.model jj1 jj(level=1)

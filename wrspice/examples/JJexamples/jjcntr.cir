@@ -5,6 +5,29 @@
 *
 * Warning:  This file probably requires WRspice-4.3.3 or later.
 *
+
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
+
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+*
+.model jj1 jj(level=1)
+
+.control
+run
+plot v({4,8,12,16}) ysep
+edit
+.endc
+
+.if dcop
+.tran 1p 600p
+.else
+.tran 1p 600p uic
+.endif
+
 r1 17 2 50
 r2 1 6 50
 r3 1 10 50
@@ -44,10 +67,17 @@ k1 l1 l3 .99
 k2 l2 l4 .99
 .ends count
 *
+.if dcop
 * flux bias
 v1 13 0 12.75mV
 * gate bias
 v2 1 0 14.9mV
+.else
+* flux bias
+v1 13 0 pulse(0 12.75mV 10ps 10ps)
+* gate bias
+v2 1 0 pulse(0 14.9mV 10ps 10ps)
+.endif
 *
 v3 20 0 pwl(0 0	70p 0
 + 75p  15m 90p  15m 100p -15m 115p -15m 
@@ -59,20 +89,15 @@ v3 20 0 pwl(0 0	70p 0
 + 375p 15m 390p 15m 400p -15m 415p -15m
 + 425p 15m 440p 15m 450p -15m 465p -15m 500p -15m)
 *
+.if dcop
 * flux bias first stage
 v5 18 0 13mV
 *gate bias first stage
 v4 17 0 14mV
+.else
+* flux bias first stage
+v5 18 0 pulse(0 13mV 10p 10p)
+*gate bias first stage
+v4 17 0 pulse(0 14mV 10p 10p)
+.endif
 *
-* Below,
-* Level=1 selects the internal JJ model.
-* Level=2 selects the example Verilog-A JJ model, if loaded (with
-* the devload command).
-*
-.model jj1 jj(level=2)
-
-.control
-tran 1p 600p
-plot v({4,8,12,16}) ysep
-edit
-.endc

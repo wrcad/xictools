@@ -1,6 +1,7 @@
 * AC Analysis with Josephson Junctions
 
-* This example requires WRspice 4.3.3 or later.
+* Warning:  This example requires WRspice 4.3.3 or later.
+* Warning:  AC analysis with Josephson junctions is not portable.
 *
 * An underdamped junction looks like a resonator, and the inductance is
 * tunable by varying junction bias current.  Here the frequency response
@@ -9,21 +10,22 @@
 * 
 * The amplitudes are relative to assumed 1V AC input, not physical.
 
-b1 1 0 101 jj1 ics=200uA
-rshunt 1 0 10
-r1 2 1 50
-v1 2 0 ac 1
-i1 0 1 100uA
-
 * Below,
 * Level=1 selects the internal JJ model.
 * Level=2 selects the example Verilog-A JJ model, if loaded (with
 * the devload command).
 *
-.model jj1 jj(level=2)
+.model jj1 jj(level=1)
 
 .control
 ac dec 50 10G 1T dc i1 95u 195u 20u
 plot ysep vm(1) vp(1)
 edit
 .endc
+
+b1 1 0 101 jj1 ics=200uA
+rshunt 1 0 10
+r1 2 1 50
+v1 2 0 ac 1
+i1 0 1 100uA
+

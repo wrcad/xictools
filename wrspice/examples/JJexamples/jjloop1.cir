@@ -4,37 +4,7 @@
 * This loops over gate bias using a controlling dc sweep.
 *
 * Warning:  This file probably requires WRspice-4.3.3 or later.
-*
-* the squid loop
-b1 1 0 100 jj1 ics=250uA
-b2 3 0 101 jj1 ics=250ua
-l1 1 2 8pH
-l2 2 3 8pH
-*
-* the coupled control line
-l3 4 5 8pH
-l4 5 0 8pH
-k1 l1 l3 .98
-k2 l2 l4 .98
-*
-* damping resistance
-rd1 1 0 2
-rd2 3 0 2
-*
-* gate power supply
-rg 2 10 200
-* can scale the swept voltage to millivolts like this
-vg 10 0 1m*v(dummynode)
-vgate dummynode 0
-*
-* source power supply
-rc 4 11 200
-vc 11 0 pulse(0 25m 0 200p)
-*
-*.tran 1p 200p
-*
-* Type "run", then "plot v(11) v(3)" to display the control
-* voltage and gate voltage.
+* Warning:  This uses WRspice extensions, file is not portable.
 *
 * We have a single vortex transition.
 * The plot is multi-dimensional, with each dimension shown in a
@@ -42,17 +12,58 @@ vc 11 0 pulse(0 25m 0 200p)
 * bias level.  Click the "D" icon in the plot to show/hide the
 * dimension indices.  Clicking in the indices will show/hide the trace
 * for that index.
-*
+
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
+
 * Below,
 * Level=1 selects the internal JJ model.
 * Level=2 selects the example Verilog-A JJ model, if loaded (with
 * the devload command).
 *
 .model jj1 jj(level=1)
-.end
 
 .control
-tran 0.2p 200p dc vgate 75 83 2
+run
 plot v(1)
 edit
 .endc
+
+.if dcop
+.tran 0.2p 200p dc vgate 75 83 2
+.else
+.tran 0.2p 200p uic dc vgate 75 83 2
+.endif
+
+* the squid loop
+b1 1 0 100 jj1 ics=250uA
+b2 3 0 101 jj1 ics=250ua
+l1 1 2 8pH
+l2 2 3 8pH
+
+* the coupled control line
+l3 4 5 8pH
+l4 5 0 8pH
+k1 l1 l3 .98
+k2 l2 l4 .98
+
+* damping resistance
+rd1 1 0 2
+rd2 3 0 2
+
+* power supply dropping resistors
+rg 2 10 200
+rc 4 11 200
+
+* gate power supply
+* can scale the swept voltage to millivolts like this
+vgate dummynode 0
+.if dcop
+vg 10 0 1m*v(dummynode)
+.else
+vg 10 0 pulse(0 1m 10ps 10ps)*v(dummynode)
+.endif
+
+* source power supply
+vc 11 0 pulse(0 25m 0 200p)
+
