@@ -1,20 +1,23 @@
 *  DC Sweep with Josephson Junctions
-
-b1 1 0 101 jjmod ics=0.2mA
-b2 2 0 102 jjmod ics=0.2mA
-l1 1 2 5pH
-i1 0 1 100uA
-
+*
+* Warning:  This example requires WRspice 4.3.3 or later.
+* Warning:  DC sweep analysis with Josephson junctions is not portable.
 
 * Below,
 * Level=1 selects the internal JJ model.
 * Level=2 selects the example Verilog-A JJ model, if loaded (with
 * the devload command).
 *
-.model jjmod jj(level=2)
+.model jjmod jj(level=1)
 
 .control
 dc i1 100u 280u 10u
 plot 0.2mA*sin(v(101)) 0.2mA*sin(v(102)) single
 edit
 .endc
+
+b1 1 0 101 jjmod ics=0.2mA
+b2 2 0 102 jjmod ics=0.2mA
+l1 1 2 5pH
+i1 0 1 100uA
+

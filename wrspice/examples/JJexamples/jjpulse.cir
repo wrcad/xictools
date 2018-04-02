@@ -5,6 +5,7 @@
 * expression evaluation.
 *
 * Warning:  This file probably requires WRspice-4.3.3 or later.
+* Warning:  This uses WRspice extensions, file is not portable.
 
 * Ic = .2mA @ 100 uA/u^2  (10KA/cm^2) (given)
 * Cj = 65fF/u^2  (assumption) => C = .13pF

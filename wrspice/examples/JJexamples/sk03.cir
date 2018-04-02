@@ -4,7 +4,13 @@
 * network with JJs by Ken Segall.  Search below for "SRW", I had to
 * change a source to obtain phase-mode DCOP convergence.
 
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
+
 .control
+# This is not portable, we need to reset these parameters from the
+# deck values before running.
+
 alter I0, dc=0.00225
 alter I3, dc=0.00225
 alter I1, dc=0.00215
@@ -25,7 +31,12 @@ run
 plot ysep v(1.x44) v(1.x42) v(1.x43)
 .endc
 
+.if dcop
 .tran .05p 20ns 18ns
+.else
+.tran .05p 20ns 18ns uic
+.endif
+
 .plot tran v(1.x44) v(1.x42) v(1.x43)
 *@ set maxdata=4E8
 I0 0 3 2.00m
@@ -210,9 +221,12 @@ B2 10 0 11 jj02 area=1.2
 BJ1 IN 7 8 jj02 area=1.2
 BJout 0 4 9 jj02 area=2.00
 
+.if dcop
 * SRW - Delay this so DCOP converges
-*I00 0 Vb2 0.54mA
 I00 0 Vb2 pulse 0 0.54mA 1p 1p
+.else
+I00 0 Vb2 0.54mA
+.endif
 
 Isrc_left 0 Vb1 0.019mA
 LQ0 IN 0 11.071pH
@@ -409,5 +423,4 @@ X2 10 Vb sk03_Rb_3p00pu
 .model jj02 jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m
 + icrit=0.098m, r0=240, rn=13.1765, cap=0.163p)
 *Nb 4500 A/cm^2  RSFQ-style normalized JJ to 0.125mA A=2.777 um^2,C=58.52fF/um^2
-
 

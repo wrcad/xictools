@@ -4,6 +4,16 @@
 
 # Configuration
 
+# The tools will be installed under /usr/local by default, but this
+# can be changed here.  If you want to install directly to a special
+# location (that may not require root permissions, for example), and
+# skip the packaging step, you can change this variable.  Most
+# packages are relocatable, meaning that the final destination can be
+# set when installing from packages (OX X and Debian/Ubuntu don't
+# allow relocation).
+#
+PREFIX = --prefix=/usr/local
+
 # The licensing system for Xic and WRspice is disabled by default, but
 # can be enabled by uncommenting the assignment below.  The code for
 # the license server and related is provided as it might be useful to
@@ -63,7 +73,8 @@ endif
 SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
 #######################################################################
-CFARGS = $(HVSECURE) $(NOMOZY) $(32BIT) $(OALOC) $(KITLOC) $(MINGW) $(GTKLOC)
+CFARGS = $(PREFIX) $(HVSECURE) $(NOMOZY) $(32BIT) $(OALOC) $(KITLOC) \
+  $(MINGW) $(GTKLOC)
 
 FLAGFILE = .configured
 
@@ -104,6 +115,13 @@ packages: all
 	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a -a -d $$a/packages ]; then \
 	        (cd $$a; $(MAKE) package); \
+	    fi; \
+	done
+
+install: all
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -d $$a/packages ]; then \
+	        (cd $$a; $(MAKE) install); \
 	    fi; \
 	done
 

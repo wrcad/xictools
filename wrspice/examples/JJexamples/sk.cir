@@ -5,10 +5,16 @@
 *
 * Warning:  This file probably requires WRspice-4.3.3 or later.
 
-.control
-tran 1ps 10ns 
-plot ysep v(7.x6) v(8) v(9.x11) v(6.x11) v(8.x10) v(8.x6.x8) Lin.x9#branch
-.endc
+* Note:  Steve Kaplan freely uses DC current sources throughout his
+* designs, and apparently has no trouble.  There is a big transient at
+* time=0, but when it dies away, somehow everything manages to settle
+* at the correct value.  This definitely does not work for voltage
+* sources and resistors, only for current sources.  The DC current
+* source is basically treated as a setp function at the origin, and
+* apparently the SPICE algorithm can respond to this correctly.
+
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
 
 * Below,
 * Level=1 selects the internal JJ model.
@@ -16,6 +22,17 @@ plot ysep v(7.x6) v(8) v(9.x11) v(6.x11) v(8.x10) v(8.x6.x8) Lin.x9#branch
 * the devload command).
 *
 .model jj1000 jj(level=1)
+
+.control
+run
+plot ysep v(7.x6) v(8) v(9.x11) v(6.x11) v(8.x10) v(8.x6.x8) Lin.x9#branch
+.endc
+
+.if dcop
+.tran 1ps 10ns 
+.else
+.tran 1ps 10ns uic
+.endif
 
 *@ set maxdata=2E8
 I1 0 24 sin(.05mA .100mA 10GHz 0 0)

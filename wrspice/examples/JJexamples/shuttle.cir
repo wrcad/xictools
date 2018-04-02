@@ -2,6 +2,28 @@
 *
 * Warning:  This file probably requires WRspice-4.3.3 or later.
 
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
+
+* Below,
+* Level=1 selects the internal JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+*
+.model jj1 jj(level=1)
+
+.control
+run
+plot ysep v({1,2,3,4,5,6,7,8,9})
+edit
+.endc
+
+.if dcop
+.tran .2p 400p
+.else
+.tran .2p 400p uic
+.endif
+
 r1 1 2 100
 r2 2 0 .4
 r3 3 0 .4
@@ -63,15 +85,3 @@ v3 30 0 spulse(0 120m 120p 105p)
 v4 1 0 pulse(0 30m 70p 10p 10p 10p 360p)
 *v5 200 0 pulse(0 30m 430p 10p 10p 10p)
 
-* Below,
-* Level=1 selects the internal JJ model.
-* Level=2 selects the example Verilog-A JJ model, if loaded (with
-* the devload command).
-*
-.model jj1 jj(level=1)
-
-.control
-tran .2p 400p
-plot ysep v({1,2,3,4,5,6,7,8,9})
-edit
-.endc

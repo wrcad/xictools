@@ -24,13 +24,7 @@
 * what constitutes an SFQ pulse.
 *
 * Warning:  This file probably requires WRspice-4.3.3 or later.
-
-v1 1 0 gpulse(0 0 20p 2p 0 40p)
-l1 1 2 10p
-b1 2 0 100 jj3 area=.2
-r2 2 0 2
-.tran .1p 100p uic
-.plot tran v(1) v(2) i(l1) ysep
+* Warning:  This uses WRspice extensions, file is not portable.
 
 * Below,
 * Level=1 selects the internal JJ model.
@@ -44,3 +38,12 @@ run
 plot .
 edit
 .endc
+
+.tran .1p 100p uic
+.plot tran v(1) v(2) i(l1) ysep
+
+v1 1 0 gpulse(0 0 20p 2p 0 40p)
+l1 1 2 10p
+b1 2 0 100 jj3 ics=0.2mA
+r2 2 0 2
+
