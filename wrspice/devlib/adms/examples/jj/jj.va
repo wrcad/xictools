@@ -51,7 +51,11 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
-// Version 1.1, March 28, 2018
+// Version 1.11, April 4, 2018
+//   Fixed bug:  the AREA parameter could not be used.
+//   The vm and icrn parameters are now given in V rather than mV.
+//   Fixes for Verilog compiler picayunity: block names and read-only params.
+// Version 1.10, March 28, 2018
 //   Lots of new stuff in this release, so bumped to 1.1.
 //   Support added for phase-mode dc analysis and ac analysis.
 //   Added ADMS partitioning info.
@@ -206,13 +210,13 @@ parameter real delv     = 0.08m from [0.01m:0.2m]
 
 // The subgap and normal resistances.  If vshunt is given, a fixed
 // shunt is added so that Ic*Reff = vshunt.
-parameter real vm       = `Vm from [10.0:100.0]
-    `P(type="model" info="Ic * subgap resistance" units="mV");
-parameter real rsub     = vm*1e-3/icrit from [1e-2/icrit:1e-1/icrit]
+parameter real vm       = `Vm*1e-3 from [10m:100m]
+    `P(type="model" info="Ic * subgap resistance" units="V");
+parameter real rsub     = vm/icrit from [1e-2/icrit:1e-1/icrit]
     `P(type="model" info="subgap resistance" units="O");
-parameter real icrn     = `IcR from [1.5:1.9]
-    `P(type="model" info="Ic * normal resistance" units="mV");
-parameter real rnorm    = icrn*1e-3/icrit from [1.5e-3/icrit:1.9e-3/icrit]
+parameter real icrn     = `IcR*1e-3 from [1.5m:1.9m]
+    `P(type="model" info="Ic * normal resistance" units="V");
+parameter real rnorm    = icrn/icrit from [1.5e-3/icrit:1.9e-3/icrit]
     `P(type="model" info="normal resistance" units="O");
 parameter real vshunt   = 0 from [0:2m]
     `P(type="model" info="Ic * shunt resistance voltage" units="V");
@@ -248,7 +252,7 @@ parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
 real phi, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
-real pmode, vdpbak, start_phase, SmallSigL;
+real pmode, vdpbak, start_phase, SmallSigL, tsf, ic_scaled;
 
 analog begin
 
@@ -256,18 +260,22 @@ analog begin
     begin : initial_instance
 `else
     @(initial_step)
-        begin
+        begin : initialization
         real halfvg, tsf;
 `endif
         real halfdv;
 
         phi = 0.0;
         if (ics != icrit)
+            begin
             scale = ics/icrit;
-        else if (area != 1.0)
-            scale = area;
+            ic_scaled = ics;
+            end
         else
-            scale = 1.0;
+            begin
+            scale = area;
+            ic_scaled = scale*icrit;
+            end
 
         caps = cap*(scale*(1-cmu) + sqrt(scale)*cmu);
         rsubs = rsub/(scale*(1-gmu) + sqrt(scale)*gmu);
@@ -276,14 +284,14 @@ analog begin
         vless = vgap - halfdv;
         vmore = vgap + halfdv;
         i1 = vless/rsubs;
-        i2 = ics/icfct;
+        i2 = ic_scaled/icfct;
         start_phase = ic_phase;
         SmallSigL = 0.0;
 `ifdef insideADMS
     end
 
     begin : initial_model
-        real halfvg, tsf;
+        real halfvg;
 `endif
 
         // Dropback voltage.
@@ -313,14 +321,14 @@ analog begin
         //   is used if not supported by the simulator.
         //
         tsf = $simparam("dphimax", 0.0)/`M_PI;
-        if (tsf > 0.0 && tsfactor == `TSDEFAULT)
-            tsfactor = tsf;
+        if (tsf < 1e-3 || tsfactor != `TSDEFAULT)
+            tsf = tsfactor;
     end
 
     if (analysis("static") != 0)
         begin
         if (analysis("smsig") != 0)
-            begin
+            begin : smsig
             real gshunt;
 
             // "smsig" is a WRspice extension, true when we're about to
@@ -331,9 +339,9 @@ analog begin
             if (cct == 1)
                 begin
                 if (pijj != 0)
-                    I(bj) <+ -ics*sin(phi);
+                    I(bj) <+ -ic_scaled*sin(phi);
                 else
-                    I(bj) <+ ics*sin(phi);
+                    I(bj) <+ ic_scaled*sin(phi);
                 end
 
             // Geometric capacitance current.
@@ -347,7 +355,7 @@ analog begin
             // expressions above, so we have to do this explicitly. 
             // Perhaps other parsers will handle this correctly?
             // 
-            SmallSigL = `PHI0_2PI/(ics*cos(phi));
+            SmallSigL = `PHI0_2PI/(ic_scaled*cos(phi));
 `endif
 
             // Quasiparticle current, piecewise-linear model.
@@ -356,7 +364,7 @@ analog begin
 
             if (vshunt >= 1u)
                 begin
-                gshunt = ics/vshunt;
+                gshunt = ic_scaled/vshunt;
                 if (rtype == 1)
                     gshunt = gshunt - 1/rsubs;
                 if (gshunt > 0)
@@ -408,9 +416,9 @@ analog begin
             if (cct == 1)
                 begin
                 if (pijj != 0)
-                    I(bj) <+ -ics*sin(phi);
+                    I(bj) <+ -ic_scaled*sin(phi);
                 else
-                    I(bj) <+ ics*sin(phi);
+                    I(bj) <+ ic_scaled*sin(phi);
                 end
             start_phase = phi;
             if ($port_connected(ph))
@@ -427,7 +435,7 @@ analog begin
             end
         end
     else if (analysis("tran") != 0)
-        begin
+        begin : tranan
         real avj, vtmp, gshunt;
 
         // Supercurrent.
@@ -435,9 +443,9 @@ analog begin
             begin
             phi = idt(V(bj)/`PHI0_2PI, start_phase);
             if (pijj != 0)
-                I(bj) <+ -ics*sin(phi);
+                I(bj) <+ -ic_scaled*sin(phi);
             else
-                I(bj) <+ ics*sin(phi);
+                I(bj) <+ ic_scaled*sin(phi);
             end
 
         if ($port_connected(ph))
@@ -475,7 +483,7 @@ analog begin
 
         if (vshunt >= 1u)
             begin
-            gshunt = ics/vshunt;
+            gshunt = ic_scaled/vshunt;
             if (rtype == 1)
                 gshunt = gshunt - 1/rsubs;
             if (gshunt > 0)
@@ -493,8 +501,6 @@ analog begin
         end
     else
         begin
-        // Note that AC, NOISE, and PZ have their own load functions,
-        // so won't be seen here.
         $error("JJ.va model:  unknown or unsupported analysis.");
         $finish(0);
         end
