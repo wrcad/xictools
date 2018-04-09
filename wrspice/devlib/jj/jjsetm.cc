@@ -121,6 +121,10 @@ JJdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->JJvShunt = value->rValue;
         model->JJvShuntGiven = true;
         break;
+    case JJ_MOD_TSFACT:
+        model->JJtsfact = value->rValue;
+        model->JJtsfact = true;
+        break;
     case JJ_MOD_JJ:
         break;
     default:

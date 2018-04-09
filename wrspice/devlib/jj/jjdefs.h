@@ -212,6 +212,7 @@ struct sJJmodel : sGENmodel
     double JJvdpbak;
     double JJicFactor;
     double JJvShunt;
+    double JJtsfact;
 
     unsigned JJrtypeGiven : 1;
     unsigned JJpi : 1;
@@ -231,6 +232,7 @@ struct sJJmodel : sGENmodel
     unsigned JJcmuGiven : 1;
     unsigned JJicfGiven : 1;
     unsigned JJvShuntGiven : 1;
+    unsigned JJtsfactGiven : 1;
 };
 
 } // namespace JJ
@@ -285,6 +287,7 @@ enum {
     JJ_MOD_CCS,
     JJ_MOD_ICF,
     JJ_MOD_VSHUNT,
+    JJ_MOD_TSFACT,
 
     JJ_MQUEST_VL,
     JJ_MQUEST_VM,

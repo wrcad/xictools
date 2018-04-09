@@ -166,10 +166,6 @@ sCKT::va_analysis(const char *tok)
         // .NOISE analysis
         return (CKTcurrentAnalysis & DOING_NOISE);
     }
-    if (lstring::cieq(tok, "smsig")) {
-        // WRspice ONLY!
-        return (CKTmode & MODEINITSMSIG);
-    }
     return (false);
 }
 
@@ -249,12 +245,16 @@ sCKT::va_simparam(const char *tok, double retval, bool rvgiven)
         return (CKTcurTask->TSKreltol);
     if (lstring::cieq(tok, "chgtol"))
         return (CKTcurTask->TSKchgtol);
-    if (lstring::cieq(tok, "voltol"))
+    if (lstring::cieq(tok, "vntol"))
         return (CKTcurTask->TSKvoltTol);
     if (lstring::cieq(tok, "predictor"))
         return (CKTmode & MODEINITPRED);
+#ifdef NEWJJDC
+    if (lstring::cieq(tok, "smallsig"))
+        return (CKTmode & MODEINITSMSIG);
     if (lstring::cieq(tok, "dcphasemode"))
         return (CKTjjDCphase);
+#endif
     if (lstring::cieq(tok, "dphimax"))
         return (CKTcurTask->TSKdphiMax);
 

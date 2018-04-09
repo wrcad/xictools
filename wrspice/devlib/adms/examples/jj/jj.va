@@ -51,6 +51,11 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.12, April 6, 2018
+//   Now uses $simparam("smallsig") to get small-signal loading state, used
+//   to pass this via $analysis("smsig") which is less likely to be adopted
+//   by other simulators.
+//   Added parameter aliases vg, r0, rn, icfact.
 // Version 1.11, April 4, 2018
 //   Fixed bug:  the AREA parameter could not be used.
 //   The vm and icrn parameters are now given in V rather than mV.
@@ -205,6 +210,7 @@ parameter real cmu      = 0.0 from [0.0:1.0]
 // The gap voltage and spread.
 parameter real vgap     = 2.8m from [2.5m:3.1m]
     `P(type="model" info="gap voltage" units="V");
+aliasparam vg           = vgap;
 parameter real delv     = 0.08m from [0.01m:0.2m]
     `P(type="model" info="gap width" units="V");
 
@@ -214,10 +220,12 @@ parameter real vm       = `Vm*1e-3 from [10m:100m]
     `P(type="model" info="Ic * subgap resistance" units="V");
 parameter real rsub     = vm/icrit from [1e-2/icrit:1e-1/icrit]
     `P(type="model" info="subgap resistance" units="O");
+aliasparam r0           = rsub;
 parameter real icrn     = `IcR*1e-3 from [1.5m:1.9m]
     `P(type="model" info="Ic * normal resistance" units="V");
 parameter real rnorm    = icrn/icrit from [1.5e-3/icrit:1.9e-3/icrit]
     `P(type="model" info="normal resistance" units="O");
+aliasparam rn           = rnorm;
 parameter real vshunt   = 0 from [0:2m]
     `P(type="model" info="Ic * shunt resistance voltage" units="V");
 
@@ -230,6 +238,7 @@ parameter real gmu      = 0.0 from [0.0:1.0]
 // Ratio of critical current to quasiparticle step height.
 parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4]
     `P(type="model" info="Ic to Istep ratio");
+aliasparam icfact       = icfct;
 
 //
 // Instance Parameters
@@ -306,11 +315,12 @@ analog begin
             vdpbak = halfvg;
 
         // Interface parameters passed to model from simulator using
-        // the Verilog $simparam system function.
+        // the Verilog $simparam system function.  At present, only
+        // WRspice supports these.
         //
         // dcPhaseMode
         //   If simulator returns nonzero, it supports phase-mode DC
-        //   analysis.
+        //   analysis.  Requires WRspice-4.3.3.
         //
         pmode = $simparam("dcPhaseMode", 0.0);
 
@@ -319,20 +329,25 @@ analog begin
         //   supported and the value returned.  This is the maximum
         //   phase change per internal time step.  The local default
         //   is used if not supported by the simulator.
+        //   Requires WRspice-4.3.3.
         //
-        tsf = $simparam("dphimax", 0.0)/`M_PI;
+        tsf = $simparam("dphiMax", 0.0)/`M_PI;
         if (tsf < 1e-3 || tsfactor != `TSDEFAULT)
             tsf = tsfactor;
     end
 
     if (analysis("static") != 0)
         begin
-        if (analysis("smsig") != 0)
-            begin : smsig
+
+        // smallSig
+        //   If the simulator returns nonzero, we're about to load the
+        //   small-signal values for AC and similar analysis.
+        //   Requires WRspice-4.3.4.
+        //
+        if ($simparam("smallSig", 0.0) != 0.0)
+            begin : smallSig
             real gshunt;
 
-            // "smsig" is a WRspice extension, true when we're about to
-            // load the small-signal values for AC and similar analysis.
             // We're through with phase mode, call the regular load
             // functions.
 

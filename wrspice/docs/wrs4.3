@@ -224,8 +224,26 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.3  3/28/2018
+wrspice-4.3.4  4/9/2018
 Current Release
+
+This is basically a re-release of 4.3.3, with some documentation
+additions and a few tweaks.  The 4.3.3 packages were never built.
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Lots of new documentation added for JJ model, and Verilog-A support.
+
+* The analysis("smsig") feature added in the last release was removed.
+  replaced by $simparam("smsllsig").
+
+* Small tweaks and fine-tuning of JJ internal and Verilog-A models.  The
+  VM and ICRN parameters are now accepted in volts instead of millivolts.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.3  3/28/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
@@ -336,7 +354,7 @@ CHANGES AND NEW FEATURES
   called "tbupdate" to avoid a keyword clash with the program update
   function in the help system.
 
-* New Verilog $analysis system function keyword added:  "smsig"
+* New Verilog analysis() system function keyword added:  "smsig"
   This returns true when the simulator is loading small-signal values
   before AC analysis.  Somehow the Verilog-A designers neglected to
   include this, as the function returns most other states of interest.

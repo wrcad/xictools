@@ -3915,7 +3915,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 \subsection{Josephson Junctions}
 \index{Josephson junction instance}
 
-% spElements.hlp:jj 101516
+% spElements.hlp:jj 040818
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
@@ -3925,123 +3925,348 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 {\vt pijj=1|0} & Whether the device is a ``pi'' junction.\\ \hline
 {\vt area=}{\it val} & Scale factor that multiplies all currents and
   other values, effectively modifying the junction area.\\ \hline
-{\vt mfactor=}{\it val} & Alias for {\vt area}.\\ \hline
+{\vt ics=}{\it val} & Instantiated critical current, used as scale factor
+  for capacitance, conductances.\\ \hline
 {\vt ic=}{\it vj\/},{\it phi} & The initial junction voltage and phase
   (initial condition) for transient analysis.\\ \hline
 {\vt vj=}{\it vj} & The initial junction voltage (initial condition) for
-  transient analysis.\\ \hline
-{\vt ic\_v=}{\it vj} & Alias for {\vt vj}.\\ \hline
+  transient analysis, alias {\vt ic\_v}.\\ \hline
 {\vt phi=}{\it phi} & The initial junction phase (initial condition) for
-  transient analysis.\\ \hline
-{\vt ic\_phase=}{\it phi} & Alias for {\vt phi}.\\ \hline
+  transient analysis, alias {\vt ic\_phase}.\\ \hline
 {\vt control=}{\it name} & Controlling voltage source or inductor
   name.\\ \hline
 \end{tabular}
 
-\spexamp{b1 1 0 10 jj1 area=2\\
+\spexamp{b1 1 0 10 jj1 ics=200uA\\
 bxx 2 0 type1 control=l3\\
 b2 4 5 ybco phi=1.57}
 
-The {\it n\/}{\vt +} and {\it n\/}{\vt -} are the positive and
-negative element nodes, respectively.  These are followed by an
-optional phase node.  The phase node, if specified, generally should
-have no other connections in the circuit, but the voltage of this node
-gives the phase of the junction in radians.  The {\it modname} is the
-name of the Josephson junction model.  If no model is specified, then
-a default model is used (see the description of the Josephson model in
-\ref{jjmodel} for the default values).  Other (optional) parameters
-follow in any order.  The initial phase (in radians) and voltage of
-the junction can be specified either as a vector or independently.  If
-not specified, the initial junction voltage and phase are taken to be
-zero.  Transient analysis of circuits containing Josephson junctions
-always starts from initial conditions.  The junction area (effectively
-the number of devices in parallel) can be specified with the {\vt
-area} parameter.  The control current source can be specified with the
-{\vt control} parameter.  The {\it name} in the control specification
-represents the name of either a voltage source or inductor which
-appears elsewhere in the circuit.  The {\vt control} parameter is only
-needed if critical current modulation is part of the circuit
-operation, and is only relevant to Josephson junction model types that
-support critical current modulation.
+Unless stated otherwise, information presented here also applies to
+The Verilog-A Josephson junction model provided with {\WRspice} in the
+Verilog-A examples.
 
+\begin{description}
+\item{\vt pijj}
 If the {\vt pijj} parameter is given and set to a nonzero integer
 value, the device instance will behave as a ``pi'' junction.  This
 type of junction has a ground state with phase $\pi$ rather than 0. 
 The value given on the device line (if any) overrides the value given
-in the model.
+in the model.  This parameter may not be recognized in the Verilog-A
+model.
 
-When Josephson junctions are present in the circuit, only transient
-analysis may be performed, and the transient {\vt uic} parameter will
-be set implicitly.  The time step is determined by junction phase
-change by default, in accordance with the setting of the {\et dphimax}
-option variable.  If the variable {\et nojjtp} is set, the truncation
-error timestep predictor is used as is the case when Josephson
-junctions are not present.
+\item{\vt area}\\
+{\bf Deprecated, do not use in new files.}\\
+Histrorically, this parameter has been used to set the actual critical
+current of a Josephson junction instance.  It is not a physical area,
+but rather a scale factor, representing the ratio of the instance
+critical current to the reference critical current.  The parameter is
+retained for backwards compatibility, but should not be used in new
+circuit descrfiptions.  The {\vt ics} parameter (below) should be used
+instead.  By using {\vt ics}, one can change the critical current of
+the reference junction without changing the instance critical
+currents, which is not the case for {\vt area}.  In the new paradigm,
+the reference junction critical current corresponds to a ``typical''
+mid-sized junction, with a not necessarily convenient critical current
+value.  Use of {\vt area} assumes that the reference critical current
+is something nice, like the historical 1mA, and unchanging.  If not
+specified and {\vt ics} is not given, the effective value is 1.0.
+
+\item{\vt ics}\\
+This gives the actual critical current of the instantiated junction,
+and in addition scales all conductance and capacitance values from the
+reference junction appropriately.  This is equivalent to giving the
+{\vt area} parameter with a value of {\vt ics}/{\vt icrit}.  The
+default is {\vt icrit}, the reference junction critical current.
+
+\item{\vt ic}\\
+Presently, this keyword is not recognized by the Verilog-A model.  The
+keyword is expected to be followed by two numbers, giving the initial
+junction voltage and phase in radians.  These apply in transient
+analysis when the ``{\vt uic}'' option is included in the transient
+analysis specification.  The initial junction voltage and phase both
+default to 0.0.
+
+\item{{\vt vj} or {\vt ic\_v}}\\
+This provides the initial voltage of the junction when the ``{\vt
+uic}'' option is included in the transient analysis specification. 
+The initial junction voltage defaults to 0.0.
+
+\item{{\vt phi} or {\vt ic\_phase}}\\
+This provides the initial junction phase in radians when the ``{\vt
+uic}'' option is included in the transient analysis specification.
+
+\item{\vt control}\\
+This keyword is not recognized by the Verilog-A model.  The {\vt
+control} parameter is only needed if critical current modulation is
+part of the circuit operation, and is only relevant to Josephson
+junction model types that support critical current modulation, that
+is, the model parameter {\vt cct} is given a value larger than 1.  The
+{\it name} in the {\vt control} specification is the name of either a
+voltage source or inductor which appears somewhere in the circuit. 
+The current flowing through the indicated device is taken as the
+junction control current.
+\end{description}
+
+The Josephson junction device has unique behavior which complicates
+simulation with a SPICE-type simulator.  Central is the idea of phase,
+which is a quantum-mechanical concept and is generally invisible in
+the non-quantum world.  However with superconductivity, and with
+Josephson junctions in particular, phase becomes not only observable,
+but a critical parameter describing these devices and the circuits
+that contain them.
+
+Without going into the detailed physics, one can accept that phase is
+an angle which applies to any superconductor.  The angle is a fixed
+value anywhere on the superconductor, unless current is flowing. 
+Flowing current produces magnetic flux, and magnetic flux produces a
+change in phase.  One can express this as follows:
+
+\begin{quote}
+$LI = flux = \Phi_0(\phi/2\pi)$
+\end{quote}
+
+Here, $L$ is the inductance, $\Phi_0$ is the magnetic flux quantum
+(Planck's constant divided by twice the electron charge) and $\phi$ is
+the phase difference across the inductor.  The supercurrent flowing in
+a Josephson junction is given by
+
+\begin{quote}
+$I = I_c sin(\phi)$
+\end{quote}
+
+where $I_c$ is the junction critical current, and $\phi$ is the phase
+difference across the junction.  The junction phase is proportional to
+the time integral of junction voltage:
+
+\begin{quote}
+$\phi = (2\pi/\Phi_0)\int^t_{-\infty} V(t)dt$
+\end{quote}
+
+The important consequence is that the sum of the phase differences
+around any loop consisting of Josephson junctions and inductors must
+be a multiple of $2\pi$.  This is due to the requirement that the
+superconducting wave function be continuous around the loop.  Further,
+if the loop phase is not zero, it implies that a persistent current is
+flowing around the loop, and that the magnetic fluc through the loop
+is a multiple of the flux quantum $\Phi_0$.
+
+We therefor observe that in a circuit containing loops of Josephson
+junctions and inductors, which includes about all useful circuits:
+
+\begin{enumerate}
+\item{The DC voltage across each Junction or inductor is zero.}
+\item{The DC current applied to the circuit splits in such a manner
+as to satisfy the phase relations above.}
+\end{enumerate}
+
+Without any built-in concept of phase, it would appear to be
+impossible to find the DC operating point of a circuit containing
+Josephson junctions and inductors with a SPICE simulator.  However,
+there are ways to accomplish this.
+
+The time-honored approach, used successfully for many years, is to
+skip DC analysis entirely.  One generally is interested only in
+transient analysis, describing the time evolution of the circuit under
+stimulus, and a DC analysis would only be necessary to find the
+initial values of circuit voltages and currents.  Instead of a DC
+analysis, what is done is every voltage and current source starts at
+zero voltage or current, and ramps to the final value in a few
+picoseconds.  The transient analysis is performed using the ``use
+initial conditions'' (``{\vt uic}'') option, where there is no DC
+operating point analysis, and transient analysis starts immediately
+with any supplied initial condicions (which are not generally given in
+this case).  By ramping up from zero, the phase condition around
+junction/inductor loops is satisfied via Kirchhoff's voltage law. 
+Actually, this ensures that the loop phase is constant, but it is zero
+as we started from zero.  Initially, there is no ``trapped flux'' in
+the inductor/junction loops, so assumption of zero phase is correct. 
+Thus the prescription is to ramp up all sources from zero, use the
+{\vt uic} option of transient analysis, and wait for any transients
+caused by the ramping sources to die away before starting the ``real''
+simulation.  The ramping-up effectively replaces the DC operating
+point analysis.
+
+{\WRspice} after release 4.3.3 offers a DC analysis capability which
+uses phase-mode for circuits containing Josephson junctions.  Unlike
+strictly phase-mode simulators, {\WRspice} allows a mixture of phase
+(inductors and Josephson junctions) and voltage mode components.
+
+Within {\WRspice}, every node connected to a Josephson junction,
+inductor, or lossless transmission line (treated as an inductor in DC
+analysis) has a ``Phase'' flag set.  This indicates that the computed
+value is phase, not voltage, for these nodes.  We have to special-case
+the matrix loading functions for inductors, mutual inductors, lossless
+transmission lines, and resistors.  Other devices are treated
+normally.
+
+A Josephson junction can be modeled by the basic formula
+
+\begin{quote}
+$I = I_c sin(V(i,j))$
+\end{quote}
+
+where $V(i,j)$ is the ``voltage'' difference between nodes i and j
+(across the junction) which is actually the phase.  Inductors look
+like resistors:
+
+\begin{quote}
+$I = \Phi_0 V(i,j)/2{\pi}L$
+\end{quote}
+
+Where $V(i,j)$ is the phase difference across the inductor.  Mutual
+inductance adds similar cross terms.
+
+Capacitors are completely ignored as in normal DC analysis.  The
+treatment of resistors is slightly complicated.  The connected nodes
+can be ``Ground'', ``Phase'', or ``Voltage'' type.  If both nodes are
+Voltage or Ground, the resistor is loaded normally.  If both nodes are
+Phase or Ground, the resistor is not loaded at all.  The interresting
+case is when one node is Phase, the other Voltage.  In this case, we
+load the resistor as if the phase node is actually ground (node number
+0).  In addition we load a voltage-controlled current source template
+that injects current into the phase node of value
+$V(voltage\_node)/Resistance$.
+
+Resistors are the bridge between normal voltage-mode devices and phase
+nodes.  Some circuits may require introduction of resistors to get
+correct results.  For example, assume a Josephson junction logic gate
+driving a CMOS comparator circuit.  If the input MOS gate is connected
+directly to the junction, the DC operating point will be incorrect, as
+the comparator will see phase as input.  However, if a resistor
+separates the MOS gate from the junction, the comparator input will be
+zero, as it should be.
+
+There is (at present) a topological requirement that all phase nodes
+must be at ground potential.  This means that for a network of
+Josephson junctions and inductors, there must be a ground connection
+to one of these devices.  A nonzero voltage source connected to an
+inductor, which is connected to a resistor to ground, although a
+perfectly valid circuit, will fail.  One must use the equivalent
+consisting of the voltage source connected to a resistor, connected to
+the inductor which is grounded.  This satisfies the two topological
+requirements:
+
+\begin{description}
+\item{Rule 1}\\
+There must be a resistor between a voltage-mode device and a
+phase-mode device, no direct connections allowed.
+
+\item{Rule 2}\\
+Every phase-node subnet must have a connection to ground, so all phase
+nodes are at ground potential.
+\end{description}
+
+With this bit of information, and the warning that controlled sources
+can cause unexpected behavior, the DC analysis using thes technique
+can apply to general circuits containing Josephson junctions.
+
+Of course, for this to work, no Josephson junction can be biased above
+its critical current or nonconvergence results.  Both DC operating
+point and DC sweep are available, as is AC analysis.  Noise analysis
+is available with the internal Josephson junction model.  This new
+hybrid technique appears to be an important advance, which should
+avoid the long-standing need to use ``{\vt uic}'' and ramp sources up
+from zero, and makes available DC sweep analysis, and for the first
+time in any simulator AC small-signal analysis.
+
+See the Josephson junction model description for more information.
+
 
 %SU-------------------------------------
 \subsection{Josephson Junction Model}
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 101516
+% spModels.hlp:jjmodel 040818
 
 {\cb Type Name:} {\vt jj}
 
 The Josephson junction model is an extended version of the RSJ model
 as used by Jewett\cite{jewett}.
 
-The parameters marked with an asterisk in the {\bf area} column
-scale with the {\vt area} parameter given in the device line.
+Unless stated otherwise, this information also applies to the
+Verilog-A Josephson junction model provided with {\WRspice} in the
+Verilog-A examples.
+
+The parameters marked with an asterisk in the {\bf area} column scale
+with the {\vt ics} parameter given in the device line, not necessarily
+linearly.  The present model paradigm assumes that the model
+parameters apply to a ``reference'' junction, which is a typical
+mid-critical current device as produced by the fouhdry. 
+Instantiations derive from the reference device for a desired critical
+current.  Appropriate scaling, not necessarily linear, will be applied
+when formulating instance capacitance and conductances.
 
 \begin{quote}
-\begin{tabular}{|l|c|l|l|l|l|}\hline
-\multicolumn{6}{|c|}{\bf JJ Model Parameters}\\ \hline
-\bf name & \bf area & \bf parameter & \bf units & \bf default &
- \bf example\\ \hline\hline
-\vt pijj & & \rr pi junction & - & 0 & 1\\ \hline
-\vt icrit & $*$ & \rr Junction critical current & $A$ & 1.0e-3 & 1.5e-3\\
+\begin{tabular}{|l|c|l|l|l|}\hline
+\multicolumn{5}{|c|}{\bf JJ Model Parameters}\\ \hline
+\bf name & \bf area & \bf parameter & \bf units & \bf default\\ \hline\hline
+\vt pijj & & \rr pi junction & - & 0\\ \hline
+\vt rtype & & \rr Quasiparticle branch model & - & 1\\
 \hline
-\vt cap & $*$ & \rr Junction capacitance & $F$ & 1.0e-12 & 5.0e-13\\
+\vt cct & & \rr Critical current model & - & 1\\
 \hline
-{\vt rn} or {\vt rnorm} & $*$ & \rr Normal state resistance & $\Omega$ &
- 1.7 & 2.0\\
+\vt icrit & $*$ & \rr Reference junction critical current & $A$ & 1.0e-3\\
 \hline
-{\vt r0} or {\vt rsub} & $*$ & \rr Subgap resistance & $\Omega$ & 30 & 50\\
+{\vt vg} or {\vt vgap} & & \rr Gap voltage & $V$ & 2.8e-3\\
 \hline
-{\vt vg} or {\vt vgap} & & \rr Gap voltage & $V$ & 3.0e-3 & 2.8e-3\\
+\vt delv & & \rr Gap voltage spread & $V$ & 80.0e-6\\
 \hline
-\vt delv & & \rr Gap voltage spread & $V$ & 1.0e-4 & 8.0e-5\\
+\vt cap & $*$ & \rr Reference junction capacitance & $F$ & 0.7e-12\\
 \hline
-\vt rtype & & \rr Quasiparticle branch model & - & 1 & 2\\
+\vt cmu & & \rr Capacitance area/edge scaling & & 0.0\\
 \hline
-\vt cct & & \rr Critical current model & - & 1 & 3\\
+\vt vm & & \rr Reference icrit*rsub & $V$ & 16.0e-3\\
 \hline
-\vt icon & & \rr Critical current first zero & $A$ & 1.0e-2 & 2.5e-2\\
+{\vt rsub} or {\vt r0} & $*$ & \rr Reference subgap resistance & $\Omega$ & vm/icrit\\
 \hline
-\vt icfact & & \rr Ratio of critical to gap currents & - & ${\pi}/4$ & 0.7\\
+\vt icrn & & \rr Reference icrit*rnorm & $V$ & 1.6e-3\\
 \hline
-\vt vshunt & & \rr Voltage to specify fixed shunt resistance & - & 0 & 200uV\\
+{\vt rnorm} or {\vt rn} & $*$ & \rr Reference normal state resistance & $\Omega$ &
+ icrn/icrit\\
+\hline
+\vt gmu & & \rr Conductance area/edge scaling & & 0.0\\
+\hline
+{\vt icfct} or {\vt icfact} & & \rr Ratio of critical to gap currents & - & ${\pi}/4$\\
+\hline
+\vt vshunt & & \rr Voltage to specify fixed shunt resistance & $V$ & 0.0\\
+\hline
+\vt tsfactor & & \rr Time step phase change limit & & {\vt dphimax}\\
+\hline
+\vt icon & & \rr Critical current first zero & $A$ & 1.0e-2\\
 \hline
 \end{tabular}
 \end{quote}
 
-If {\vt pijj} is set to a nonzero integer value, instances will be
-``pi'' junctions by default, though this can be overridden per
-instance by giving {\vt pijj=0} on the device line.
+Detailed information about these parameters is presented below.
 
+\begin{description}
+\item{\vt pijj}\\
+If this flag is given a nonzero integer value, the junctions will be
+modeled as a ``pi junction'' meaning that the zero-current phase is
+$\pi$ rather than zero.  Such devices have been fabricated using
+ferromagnetic barrier materials.  Although these devices have some
+interesting behavior, they are not at this point available or used
+with any frequency.
+
+\item{\vt rtype}\\
 The {\vt rtype} parameter determines the type of quasiparticle branch
 modeling employed.  Legal values are as follows:
 
 \begin{quote}
 \begin{tabular}{ll}
-{\bf 0} & The junction is completely unshunted (effectively sets {\vt rn}
- and {\vt r0} to infinity).\\
+\bf 0 & The junction is completely unshunted, all shunt conductances
+ set to zero.\\
 \bf 1 & Standard piecewise-linear model.\\
 \bf 2 & Analytic exponentially-derived approximation.\\
 \bf 3 & Fifth order polynomial expansion model.\\
 \bf 4 & ``Temperature'' variation, allow modulation of the gap parameter.\\
 \end{tabular}
 \end{quote}
+
+Values for {\vt rtype} larger than 1 are not currently supported in
+the Verilog-A model supplied with {\WRspice} in the Verilog-A
+examples.
 
 The default is {\vt rtype=1}.  Setting {\vt rtype=0} will disable
 modeling of the quasiparticle current, effectively setting the RSJ
@@ -4080,7 +4305,8 @@ current) and {\vt cct=1} (fixed critical current).  If another value
 is specified for {\vt cct}, {\vt cct} reverts to 0.  Thus, magnetic
 coupling and quasiparticle injection are not simultaneously available.
 
-In general, the {\vt cct} variable can take on the following values:
+\item{\vt cct}\\
+The {\vt cct} variable can take on the following values:
 \begin{quote}
 \begin{tabular}{ll}
 \bf 0 & No critical current.\\
@@ -4091,8 +4317,11 @@ In general, the {\vt cct} variable can take on the following values:
 \end{tabular}
 \end{quote}
 
-The {\vt control} parameter should be used with devices using {\vt
-cct} 2,3, or 4.  With {\vt cct=2}, the first zero is equal to the
+Values for {\vt cct} larger than 1 are not currently supported in the
+Verilog-A model supplied with {\WRspice} in the Verilog-A examples.
+
+The {\vt control} instance parameter should be used with devices using
+{\vt cct} 2,3, or 4.  With {\vt cct=2}, the first zero is equal to the
 value of the model parameter {\vt icon}.  For {\vt cct=3}, the maximum
 critical current is at control current zero, and it reduces linearly
 to zero at control current = $\pm icon$.  Junctions with {\vt cct=4}
@@ -4102,15 +4331,152 @@ cct} is specified as 2, 3, or 4, the area parameter, if given, is set
 to unity.  Otherwise, the model parameters are scaled appropriately by
 the area before use.
 
-If the {\vt vshunt} parameter is given, every device instance will be
-shunted by a linear resistor.  This is in addition to the resistance
-of the quasiparticle branch.  The value of this resistance is
+\item{\vt icrit}\\
+This is the critical current of the reference junction, which defaults
+to 1.0mA if not given.  This parameter is not used if {\vt cct} is 0.
+the superconducting current through a Josepjson junctions is
 \begin{quote}
-$R_shunt$ = {\it Vshunt\/}/{\it Ic}
+$I = I_c sin(\phi)$
 \end{quote}
-where {\it Vshunt} is the value given for the model parameter, and
-{\it Ic} is the (maximum) critical current of the Josephson junction
-device.  This parameter is useful for simulating SFQ circuits, as it
-can automatically provide the appropriate shunt resistance, which
-would otherwise be a separate resistor.
+where $I_c$ is the critical current. and the junction ``phase'' is
+\begin{quote}
+$\phi = (2\pi/\Phi_0)\int^t_{-\infty} V(t)dt$ .
+\end{quote}
+The {\it V(t)} is the junction voltage, and $\Phi_0$ is the magnetic
+flux quantum.
+
+The {\vt icrit} parameter should not be confused with the
+{\vt ics} instance parameter.  The latter is actually a scale
+factor which specifies the instantiated device critical current as
+well as appropriately scaling conductances and capacitance, from
+the model reference current which is {\vt icrit}.
+
+\item{{\vt vgap} or {\vt vg}}\\
+This parameter specifies the gap voltage, which in a hysteretic
+Josephson junction is a voltage at which there is a large and abrupt
+increase in conductivity.  This parameter is material dependent, the
+default 2.8mV is appropriate for niobium junctions.
+
+\item{\vt delv}\\
+This specifies the assumed width, in voltage, of the quasiparticle
+step region, or gap.  In this region, current increases sharply with
+increasing voltage.  The default value of 80uV is reasonable for
+high-quality niobium/aluminum oxide Josephson junctions independent of
+foundry.
+
+\item{\vt cap}\\
+This is the capacitance of the reference junction, in farads.  The
+default value is obtained from the MIT Lincoln Laboratory SFQ5EE
+process specific capacitance, and the junction critical current, and
+is 0.7pF for the default assumption of 1.0mA critical current.
+
+\item{\vt cmu}\\
+This is a new parameter in the current model, which is intended to
+account for nonlinearity in scaling of capacitance with area (or
+critical current, we actually define ``area'' as the actual over the
+reference critical current).  It is anticipated that the actual
+junction capacitance consists of two components:  a physical area
+dependent ``bulk'' term, and a perimeter-dependent fringing term.  The
+{\vt cmu} is a real number between 0 and 1 where if 0 we assume no
+perimeter dependence, and if 1 we assume that all variation scales
+with the perimeter.  The default value is 0.  The capacitance of an
+instantiated junctions is as follows:
+\begin{quote}
+$C = cap (A(1-cmu) + \sqrt{A} cmu)$
+\end{quote}
+Here, $A$ is the ``area'' scaling factor, which is the ratio of the
+junction critical current to the reference critical current.
+
+\item{\vt vm}\\
+This is the product of the reference subgap resistance and the
+reference device critical current.  This parameter is commonly
+provided by foundries, and is a standard indicator for junction
+quality (higher is better).  Values tend to decrease with increasing
+critical current density.  This defaults to the value for the MIT
+Lincoln Laboratory SFQ5EE process, which is 16mV, The reference
+junction subgap resistance is obtained from the value of this
+parameter and the critical current, unless given explicitly.
+
+\item{{\vt rsub} or {\vt r0}}\\
+The reference junction subgap resistance can be given directly
+with this parameter, and a given value will override the
+{\vt vm} value if also given.
+
+\item{\vt icrn}\\
+This is the product of the reference junction ``normal state''
+resistance and the critical current, where the normal state resistance
+is the differential resistance measured well above the gap.  The
+default value is that provided for the MIT Lincoln Laboratory SFQ5EE
+process which is 1.6mV.  This too is a commonly given parameter from
+Josephson foundries for characterizing junctions.  If not specified
+explicitly, this provides the reference junction normal state
+resistance from the critical current.
+
+\item{{\vt rnorm} or {\vt rn}}\\
+The reference junction normal state resistance can be given explicitly
+with this parameter, which will override {\vt icrn} if this is also
+given.
+
+\item{\vt gmu}\\
+This is analogous to {\vt cmu}, and applies to the subgap and normal
+conductances.  The {\vt vm}, in particular, may vary with junction
+physical size, with small junctions having lower {\vt vm} than larger
+ones.  This parameter should capture this effect.  It is taken that a
+significant part of the conductivity is due to defects or
+imperfections around the periphery of the junction area, and the
+contribution would therefor scale with the perimeter.  The scaling for
+conductivity is as follows:
+\begin{quote}
+$G_x = G_{x0} (A(1-gmu) + \sqrt{A} gmu)$
+\end{quote}
+Here, $G_x$ refers to either the subgap or normal conductance,
+$G_{x0}$ is the same parameter for the reference junction.  The $A$ is
+the scaling parameter, that is, the ratio of instance to reference
+critical currents.  The default value is 0, meaning that scaling is
+assumed purely linear, which will be the case until a number is
+provided through additional data analysis.  It may prove necessary to
+have separate scaling parameters for subgap and above gap condutance,
+at which time a new model parameter may be added.
+
+\item{{\vt icfct} or {\vt icfact}}\\
+This parameter sets the ratio of the critical current to the
+quasiparticle step height.  Theory provides the default value of
+$\pi/4$ which is usually adequately close.  MIT Lincoln Laboratory
+does not currently provide an alternative value, but further
+characterization of fabricated junctions may provide an improved
+number in the future.
+
+\item{\vt vshunt}\\
+This parameter is unique in that it does not describe an as-fabricated
+junction characteristic.  Rather, it is for convenience in specifying
+a shunt resistance to use globally in SFQ circuits, If given (in
+volts) conductance will be added automatically so that the product of
+the total subgap conductance and the critical current will equal {\vt
+vshunt}.  This avoids having to calculate the value of and add an
+explicit resistor across each Josephson junction, as used for damping
+in these circuits.  The designer should choose a value consistent with
+the process parameters and the amount of damping required.  Higher
+values will provide less damping, usually critical damping is desired. 
+This parameter defaults to 0, meaning that no additional demping is
+supplied by default.
+
+\item{\vt tsfactor}\\
+This is mainly for compatibility with the Verilog-A Josephson junction
+model provided with {\WRspice} in the Verilog-A examples.  It has the
+same effect and range as the {\WRspice} {\vt dphimax} parameter, and
+will override {\vt dphimax} if given.  If not given, {\vt dphimax}
+will be used.  This is the maximum phase change allowed between
+internal time points.
+
+\item{\vt icon}\\
+This parameter applies when the {\vt cct} parameter is set to one of
+the choices larger the 1, where critical current modulation is
+modeled.  The value of {\vt icon} is the first value for (assumed)
+full suppression of critical current.
+
+The parameter is not currently recognized by the Verilog-A Josephson
+junction model provided with {\WRspice}, as that model does not
+currently support values of {\vt cct} larger than 1.
+\end{description}
+
 

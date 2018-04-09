@@ -49,11 +49,11 @@ Author: 1992 Stephen R. Whiteley
 int
 JJdev::accept(sCKT *ckt, sGENmodel *genmod)
 {
-    double vmax = 0;
     sJJmodel *model = static_cast<sJJmodel*>(genmod);
     for ( ; model; model = model->next()) {
 
         bool didm = false;
+        double vmax = 0;
 
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
@@ -89,12 +89,12 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
             if (inst->JJphsNode > 0)
                 *(ckt->CKTrhsOld + inst->JJphsNode) = phi + (2*M_PI)*pint;
         }
-    }
-    // Set next time step limit.
-    if (vmax > 0.0) {
-        double delmax = ckt->CKTcurTask->TSKdphiMax*PHI0_2PI/vmax;
-        if (ckt->CKTdevMaxDelta == 0.0 || delmax < ckt->CKTdevMaxDelta)
-            ckt->CKTdevMaxDelta = delmax;
+        if (vmax > 0.0) {
+            // Limit next time step.
+            double delmax = model->JJtsfact*PHI0_2PI/vmax;
+            if (ckt->CKTdevMaxDelta == 0.0 || delmax < ckt->CKTdevMaxDelta)
+                ckt->CKTdevMaxDelta = delmax;
+        }
     }
     return (OK);
 }

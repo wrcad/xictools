@@ -6147,13 +6147,11 @@ would override our new {\vt cval} value.
 
  
 %S-----------------------------------------------------------------------------
-\section{Loadable Device Modules and Verilog-A Support}
+\section{Loadable Device Modules}
 \label{loadable}
 \index{loadable device modules}
-\index{Verilog-A}
-\index{scripts}
 
-% spMain.hlp:loadable 050215
+% spMain.hlp:loadable 040718
 
 It is possible to load device models into {\WRspice} at run time,
 through use of ``loadable device modules''.  These are dynamically
@@ -6163,19 +6161,17 @@ opens up some interesting possibilities for future versions of
 {\WRspice} in how new device models are distributed.  It also gives
 the user, at least in principle, the ability to generate and use
 custom device models in {\WRspice}.
+Support for this important new feature is available in all
+releases.
 
-Initial support for this important new feature is available in all
-releases.  Microsoft support required partitioning of the {\vt
-wrspice.exe} executable into separate {\vt exe} and {\vt dll} files,
-which is true of {\WRspice} release 4.1.5 and later.  Support for
-user-generated loadable device models under Windows is available by
-request, contact {\bf Whiteley Research} for more information
-(technically advanced users only, please). 
+Loadable device modules are most often created by translating and
+compiling Verilog-A compact model descriptions, though it is also
+possible to write C/C++ code directly.
 
 Loadable device modules are specific to a particular release number of
 {\WRspice}, and to the operating system.  Since the interface may
 change, user-created loadable modules need to be rebuilt for new
-releases of {\WRspice}.  This will be relaxed in future releases, when
+releases of {\WRspice}.  This may be relaxed in future releases, when
 the interface stabilizes.
 
 Loadable device modules can be loaded into {\WRspice} in two ways.
@@ -6251,29 +6247,822 @@ The {\vt devkit} directory in the {\WRspice} installation location
 ({\vt /usr/local/xictools/wrspice} is the default) will provide
 the tools needed to build loadable device modules.
 
-The present release provides support for building loadable modules
+%SU-------------------------------------
+\subsection{Creating Loadable Modules from Veriolog-A}
+\index{Verilog-A}
+
+% spMain.hlp:loadable 040618
+
+{\WRspice} provides support for building loadable modules
 from Verilog-A model source.  Many new compact device models have been
 released in this format, as it is (theoretically) portable to all
 simulators.  Most commercial simulators now have this capability.
+
+To build modules from Verilog-A source, the Whiteley Research version
+of the open-source {\vt adms-2.3.x} package must be installed on the
+system.  This is included in the {\XicTools} packages and source.  The
+{\XicTools} version of {\vt adms} contains the latest enhancements and
+bug fixes for use with {\WRspice}, and should be used in preference to
+other versions of this software.
 
 The {\vt devkit/README} file provides instructions on how to build a
 module, and there are several examples.  Pre-built modules are
 provided.  These can be loaded into {\WRspice} and used.
 
-To build modules from Verilog-A source, the Whiteley Research version
-of the open-source {\vt adms-2.3.0} package must be installed on the
-system.  This is available from the free software repository on {\vt
-wrcad.com}.  This release contains enhancements and bug fixes, and
-should be used in preference to other versions of this software.  You
-will need to be able to build this package, meaning that you will need
-to have {\vt gcc/g++}, {\vt make}, and other standard tools for
-program development available.  For OS X, this means that the XCode
-package must be downloaded from Apple and installed.
+\subsubsection{Requirements}
 
-Under Microsoft Windows, the {\vt adms} package can be built with
-Cygwin ({\vt www.cygwin.com}).  MinGW-w64 ({\vt
-sourceforge.net/projects/mingw-w64}) is required for compiling the
-modules (in 32-bit mode).
+In order to build loadable device modules from Verilog-A, the
+following requirements must be met.
+
+\begin{enumerate}
+\item {The user's computer must contain the Gnu C/C++ compiler and the
+regular set of program development tools.  Apple users are advised to
+install Apple's XCode program development environment, which is a free
+(but huge) download from Apple.  It is recommended that you set up a
+build environment as described in the {\vt README} file at the top
+level of the <i>XicTools</i> source tree.}
+
+\item {The compiler version used to build modules must be compatible with
+the version used to build {\WRspice}.  Incompatibility may be
+manifested in various ways:
+\begin{itemize}
+\item {The module fails to load, with an error message.}
+\item {The module loads, but with warnings.}
+\item {The module loads, but causes program instability when used.}
+\end{itemize}
+
+That being said, I haven't noticed any problems, even in the case of
+using different major versions to compile the module and to compile
+the program, but this can not be counted on.  The safest approach is
+to build {\WRspice} from source, which should not be hard since the
+build environment is already set up.}
+
+\item {The {\XicTools} version of the ADMS translator must be
+installed.  This is available as a package and as part of the
+source code for {\XicTools}.}
+
+\item {The procedure to build the example modules is simple.  However,
+to successfully build an arbitrary module will probably require
+expertise in C++ coding/program building, Verilog-A syntax, and
+possibly the ADMS language, if the module does not build or work
+properly initially.}
+\end{enumerate}
+
+\subsubsection{How It Works}
+
+The ADMS program reads the Verilog-A file, and builds a representation
+of the file logic in memory.  A set of XML scripts access this tree
+and generate the C++ code to describe the device functionality.  The
+C++ files are then compiled into a loadable module (shared library)
+which can be loaded into {\WRspice}.
+
+{\WRspice} can load device modules in two ways.  On program startup,
+any device modules found in the {\vt devices} sub-directory in the
+startup directory (e.g. {\vt
+/usr/local/xictools/wrspice/startup/devices}) will be loaded.  While
+running, the {\WRspice} {\cb devload} command can be used to load a
+module, with the command argument being the path to the module.  If no
+argument is given, a list of the modules currently loaded is printed.
+
+\subsubsection{The ADMS Scripts}
+
+The scripts which control the interpretation of the Verilog-A source
+during translation into C++ reside in the {\vt admst} directory. 
+There is a fairly steep learning curve in gaining proficiency with the
+language and logic of these scripts, but they can in theory be
+modified by the user.  In fact, the {\vt wrspiceVersion.xml} file
+provides some user-customization switches.
+
+Some of the features provided by the {\WRspice} script set, that are
+not available in the script sets available for many/most/all other
+simulators, are the following:
+
+\begin{enumerate}
+\item {Rigorous automatic partitioning of static and dynamic
+    contribution terms, as well as noise terms.}
+\item {Support for potential nature contributions ({\vt V() <+} ...),
+    and automatic node collapsing when possible.}
+\item {Support for optional ports and the {\vt \$port\_connected}
+    call.}
+\item {Support for the {\vt idt} (time integration) operator, and
+    most other system functions.}
+\item {Does not require adms-specific format extensions, but will use
+    them if found.}
+\item {Full computation of second-derivative terms.}
+\item {Full support for noise analysis in {\WRspice}.}
+\item {A new and more efficient math package.}
+\item {No ``built in'' fixes for common public Verilog-A models, scripts
+    are intended to be completely generic.}
+\item {Produces C++ code that is indented and humanly-readable.}
+\end{enumerate}
+
+\subsubsection{How to Build a Module}
+
+If all goes according to plan, this is easy.
+
+\begin{enumerate}
+\item {Create a fresh directory somewhere.}
+
+\item {Copy the {\vt Makefile} from the {\vt devkit} directory
+(typically {\vt /usr/local/xictools/wrspice/devkit}) into the
+new directory.}
+
+\item {This is optional, but you may want to copy the Verilog-A
+source file (or files) into this directory as well, for
+convenience.}
+
+\item {Edit the top of the {\vt Makefile} with a text editor.  The
+{\vt Makfile} contains comments explaining what needs setting. 
+Basically, you need to set the device key letter and model level (as
+will be used in {\WRspice}), a short name for the module, and the path
+to the XML scripts provided under the {\vt devkit}.}
+
+\item {Type ``{\vt make}'' at the shell prompt.  The processing may
+take a few minutes.  Some compiler warnings may appear.
+
+There may be a lot of messages like:
+\begin{quote}
+  {\vt warning: declaration of T10 shadows a previous local}
+\end{quote}
+These appear when the module code defines a variable in a block, and
+also in a lower-level block.  These should be harmless, but some
+models ({\vt bsimsoi}) generate a lot of these messages.
+
+Messages like
+\begin{quote}
+  {\vt warning: unused variable vd}
+\end{quote}
+appear if a variable is declared in a block but never used.  Once
+again, these are harmless, but may represent declarations in the
+Verilog-A source that could be omitted.}
+
+\item {If all goes well, a loadable module will be created.  This is a
+file with a ``{\vt .so}'' extension (``{\vt .dylib}'' under OS X, or
+``{\vt .dll}'' in Windows) with the base name the same as the module
+name that was supplied in the {\vt Makefile}.  One should be able to
+load this module into {\WRspice}, and access the device description in
+simulation files.}
+\end{enumerate}
+
+\subsubsection{Building the Examples}
+
+The {\vt examples} subdirectory contains several publicly-available
+Verilog-A models for testing and illustrating the procedure.  The {\vt
+README} files provide more information.  You should copy the
+directories and their contents to your local directory to build the
+modules.  In each model directory, follow the procedure above.
+
+Test the new loadable module.  First, verify that the loadable module
+file exists, i.e., the compile succeeded.  Then, change to the ``{\vt
+tests}'' subdirectory, and start {\WRspice}.  At the {\WRspice}
+prompt, give the command
+\begin{quote}
+{\vt devload ../}{\it module.so}
+\end{quote}
+where {\it module.so} is the actual name of the module file. 
+{\WRspice} will print a ``{\vt Loading device} ...'' message, and no
+error messages should appear.
+
+Next, bring up the {\cb File Selection} panel with the {\cb File
+Select} button in the {\cb File} menu.  There will be at least one
+file listed with a ``{\vt .sp}'' or ``{\vt .cir}'' extension, these
+are the SPICE input source files.  Click on one of these to select,
+and click on the green octagon button.  The simulation will run and a
+plot will appear.
+
+Have fun!
+
+\subsubsection{What if it Doesn't Work?}
+
+There are many things that can go wrong, and it is likely that
+something will.  Most likely, the Verilog-A file contains a construct
+that either ADMS or the scripts can't handle.  The author of ADMS
+describes the translator as ``alpha'', but that being said, it seems
+fairly complete and stable.  The problem most likely resides with the
+XML scripts.  These were adapted to {\WRspice} using scripts for other
+simulators as a starting point.  They will evolve to provide more
+complete and error-free translation.  As a quick look at the script
+text will show, they can be hideously complex.  The language itself is
+not well documented, though ``experts'' can figure it out from the
+configuration files in the ADMS installation.
+
+
+%SU-------------------------------------
+\subsection{Support for AMDS/Verilog-A}
+
+% spMain.hlp:veriloga 040718
+
+The ADMS package translates the Verilog-A model description into a set
+of C++ files, which are then compiled into a loadable module (a shared
+library loaded on demand).
+
+There may be some documentation of ADMS on the internet.  Last I
+looked, there was very little, but is included with the {\XicTools}
+version of ADMS.  One should also google-up a copy of the Verilog-A
+manual, as this describes the official syntax.
+
+This section is a catch-all for information about the {\WRspice} ADMS
+implementation, with regard to syntax and features.
+
+\subsubsection{The ``{\vt insideADMS}'' define}
+\index{insideADMS}
+
+The symbol {\vt insideADMS} is defined (as if with {\vt `define
+insideADMS}), and can be used to test for ADMS in the Verilog-A code.
+
+\subsubsection{The ADMS ``attributes''}
+
+This is a syntax extension to Verilog-A supported by ADMS.  It allows
+additional information in parameter and variable declarations to be
+passed to the simulator.
+
+{\bf Examples}:\\
+{\vt parameter real c10 = 2e-30 from [0:1] (* info="GICCR constant"
+ unit="A\symbol{94}2s" *);}\\
+{\vt real outTheta   (* info="Theta" *);}
+
+The attributes are delimited by {\vt (* ...  *)} just ahead of the
+line-terminating semicolon.  The content consists of {\it
+keyword\/}={\it value} terms, separated by white space.  The {\it
+value} is taken as a literal string, and should be double-quoted if it
+contains white space.  The {\it keyword} can be any token, but only
+certain keywords are recognized by ADMS.
+
+\begin{description}
+\item{\vt info=}"{\it string describing the parameter or variable}"\\
+The string will be used in the {\WRspice} {\cb show} command and
+perhaps elsewhere.
+
+\item{\vt units=}{\it units\_token}\\
+This gives the units of the parameter or variable.  (I'm not sure that
+this is actually used.)
+
+\item{\vt type=model}\\
+This construct indicates that the parameter should be taken as a model
+parameter, i.e., a parameter given in a {\vt .model} line in SPICE.
+
+\item{\vt type=instance}\\
+This construct indicates that the parameter should be taken as an
+instance parameter, i.e., a parameter given in a device instance line.
+\end{description}
+
+Models may use the following code to hide this construct from non-ADMS
+parsers.
+\begin{quote}\vt
+`ifdef insideADMS\\
+\hspace*{2em}`define ATTR(txt) (*txt*)\\
+`else\\
+\hspace*{2em}`define ATTR(txt)\\
+`endif\\
+...\\
+parameter real c10 = 2e-30 from [0:1] `ATTR(info="GICCR constant" unit="A\symbol{94}2s");\\
+real outTheta   `ATTR( info="Theta" );
+\end{quote}
+
+\subsubsection{Read-Only Parameters}
+
+The presence of any attribute on a normal variable magically
+transforms that variable into a parameter which is read-only.  This
+means that it can be used to pass data out of the model during
+simulation.
+
+Such variables are initialized to the starting value at the beginning
+of the simulation only.  Regular variables are initialized on every
+pass through the equation set, which occurrs on every Newton
+iteration.  The read-only parameters can therefor retain history from
+the last iteration.
+
+In {\WRspice}, data from these (and all) parameters can be obtained
+from the {\vt @}{\it device}{\vt [}{\it parmname\/}{\vt ]} special
+vector construct.
+
+\subsubsection{Initialization Blocks and Global Events}
+
+ADMS will handle the two standard global events, but only in the forms
+containing no arguments.
+
+\begin{description}
+\item{\vt @(initial\_step) begin ... end}\\
+The block is executed while computing the initial analysis point, in
+accord with the Verilog-AMS standard.  The block will be called for
+the operating point analysis (if any), all iterations.  Thus, it will
+be called multiple times, which makes it unattractive for use as an
+initializer.
+
+\item{\vt @(final\_step) begin ... end}\\
+The block is executed while computing the final analysis point, in
+accord with the Verilog-AMS standard.  The block will be called for
+all iterations.  It will be called after {\vt initial\_step} if both
+are called.
+
+\item{\vt @(initial\_model) begin ... end}\\
+This block is run once-only before any analysis.  It can be used to
+initialize per-model parameters, such as temperature dependence.  This
+is not in the Verilog-AMS standard and may be particular to ADMS.
+
+\item{\vt @(initial\_instance) begin ...  end}\\ This block is run
+once-only before any analysis.  It can be used to initialize
+per-instance parameters, such as geometrical dependence.  This is not
+in the Verilog-AMS standard and may be particular to ADMS.
+\end{description}
+
+In ADMS, the "global events" are equivalent to named blocks, for
+example:
+
+\begin{tabular}{lll}\\
+\vt begin : initial\_model & \hspace*{0.5in} & \vt @(initial\_model) begin\\
+... & & ...\\
+\vt end & & \vt end\\
+\end{tabular}
+
+Either form can be used for {\vt initial\_step}, {\vt final\_step},
+{\vt initial\_model}, and {\vt initial\_instance}.
+
+\subsubsection{System Tasks}
+
+\paragraph{Input/Output Tasks}
+
+\begin{description}
+\item{\parbox{4in}{
+{\vt \$display}({\it format\/}, {\it variable list\/})\\
+{\vt \$strobe}({\it format\/}, {\it variable list\/})\\
+{\vt \$monitor}({\it format\/}, {\it variable list\/})\\
+{\vt \$write}({\it format\/}, {\it variable list\/})}}\\
+These commands have the same syntax, and display text on the screen
+during simulation.  {\vt \$display} and {\vt \$strobe} display once
+every time they are executed, whereas {\vt \$monitor} displays every
+time one of its parameters changes.  The difference between {\vt
+\$display} and {\vt \$strobe} is that {\vt \$strobe} displays the
+parameters at the very end of the current simulation time unit rather
+than exactly when it is executed.  The format string is like that in
+C/C++, and may contain format characters.  Format characters include
+{\vt \%d} (decimal), {\vt \%h} (hexadecimal), {\vt \%b} (binary), {\vt
+\%c} (character), {\vt \%s} (string) and {\vt \%t} (time), {\vt \%m}
+(hierarchy level).  Forms like {\vt \%5d}, {\vt \%5b} etc.  would
+assign a field width of 5 when printing the item.
+
+{\vt \$display} and {\vt \$write} are the same except {\vt \$display}
+appends a newline if the string does not have a trailing newline
+character, {\vt \$write} does not do this.
+
+\item{\parbox{4in}{
+{\vt \$error}({\it format\/}, ...)\\
+{\vt \$warning}({\it format\/}, ...)}}\\
+Print a message starting with ``{\vt Fatal:}'' or ``{\vt Warning:}''.
+
+\item{\parbox{4in}{
+{\vt \$fopen}({\it filename\/})\\
+{\vt \$fclose}({\it handle\/})\\
+{\vt \$fdisplay}({\it handle\/}, {\it format\/}, {\it variable list\/})\\
+{\vt \$fstrobe}({\it handle\/}, {\it format\/}, {\it variable list\/})\\
+{\vt \$fmonitor}({\it handle\/}, {\it format\/}, {\it variable list\/})\\
+{\vt \$fwrite}({\it handle\/}, {\it format\/}, {\it variable list\/})}}\\
+These commands write more selectively to files.
+
+{\vt \$fopen} opens an output file and gives the open file an integer
+handle for use by the other commands.
+
+{\vt \$fclose} closes the file and lets other programs access it.
+
+In {\WRspice}, there are two special handles that are automatically
+open and can't be closed.
+
+\begin{quote}
+\begin{tabular}{|l|l|} \hline
+0 & Print to the pop-up error window.\\ \hline
+1 or $<$ 0 & Print to the standard output (terminal window).\\ \hline
+\end{tabular}
+\end{quote}
+
+{\vt \$fdisplay} and {\vt \$fwrite} write formatted data to a file
+whenever they are executed.  They are the same except {\vt \$fdisplay}
+appends a newline if the string does not have a trailing newline
+character, {\vt \$fwrite} does not do this.
+
+{\vt \$fstrobe} also writes to a file when executed, but it waits
+until all other operations in the time step are complete before
+writing.  Thus
+\begin{quote}\vt
+initial \#1 a=1; b=0; \$fstrobe(hand1, a,b); b=1;
+\end{quote}
+will write write 1 1 for a and b.
+
+{\vt \$monitor} writes to a file whenever any of its arguments
+changes.
+\end{description}
+
+\paragraph{Simulation Control}
+
+\begin{description}
+\item{\vt \$bound\_step}({\it max\_delta\/})\\
+Limit the next time point to be {\it max\_delta} or less from the
+present time point in transient analysis.
+
+\item{\vt \$finish}[({\it n\/}[, {\it type\_string\/}])]\\
+Halt the analysis.  If integer {\it n} is given, it can be one of
+these values, which determine what if anything is printed.
+
+\begin{quote}
+From the spec, this is not currently supported.
+
+\begin{tabular}{|l|p{4in}|} \hline
+0 & Prints nothing (the default if no argument)\\ \hline
+1 & Prints simulation time and location\\ \hline
+2 & Prints simulation time, location, and statistics
+  about the memory and CPU time used in simulation\\ \hline
+\end{tabular}
+\end{quote}
+
+Verilog-AMS allows an additional option string argument to be
+specified to {\vt \$finish} to indicate the type of the finish.  {\it
+type\_string} can take one of three values:  ``{\vt accepted}'',
+``{\vt immediate}'' or ``{\vt current\_analysis}''.  ``{\vt accepted}
+is the default setting.
+
+If the {\it type\_string} is set to ``{\vt accepted}'' and {\vt
+\$finish} is called during an accepted iteration, then the simulator
+will exit after the current solution is complete.
+
+If the {\it type\_string} is set to ``{\vt current\_analysis}'' and
+{\vt \$finish} is called during an accepted iteration, then the
+simulator terminates the current analysis and will start the next
+analysis if one requested. 
+
+If the {\it type\_string} is set to ``{\vt immediate}'' and {\vt
+\$finish} is called during an iteration, then the simulation will exit
+immediately without the current solution being completed.  This is not
+recommended as it may leave the output files generated by the
+simulator in an undefined state.
+
+\item{\vt \$stop}[({\it n\/})]\\
+A call to {\vt \$stop} during an accepted iteration causes simulation
+to be suspended at a converged timepoint.  This task takes an optional
+integer expression argument (0, 1, or 2), which determines what type
+of diagnostic message is printed.  The amount of diagnostic message
+output increases with the value of {\it n\/}, as shown for {\vt
+\$finish}.
+\end{description}
+
+\paragraph{Random Numbers}
+
+\begin{description}
+\item{\vt \$random}[({\it seed\/})]\\
+{\vt \$random} generates a random integer every time it is called.  If
+the sequence is to be repeatable, the first time one invokes {\vt
+\$random} it is given a numerical argument (a seed).  Otherwise the
+seed is derived from the computer clock.
+
+\item{\parbox{4in}{
+{\vt \$rdist\_uniform}({\it seed\/}, {\it start\/}, {\it end\/}[, {\it dt\/}])\\
+{\vt \$rdist\_normal}({\it seed\/}, {\it mean\/}, {\it stddev\/}[, {\it dt\/}])\\
+{\vt \$rdist\_exponential}({\it seed\/}, {\it mean\/}[, {\it dt\/}])\\
+{\vt \$rdist\_poisson}({\it seed\/}, {\it mean\/}[, {\it dt\/}])\\
+{\vt \$rdist\_chi\_square}({\it seed\/}, {\it dof\/}[, {\it dt\/}])\\
+{\vt \$rdist\_t}({\it seed\/}, {\it dof\/}[, {\it dt\/}])\\
+{\vt \$rdist\_erlang}({\it seed\/}, {\it k\/}, {\it mean\/}[, {\it dt\/}])}}\\
+In {\WRspice}, the following functions are implemented in such a way
+that they are compatible with Newton iterations and convergence
+testing.  Logically, a separate random value is obtained at each point
+of a grid in time that covers the simulation interval.  The actual
+random number used is interpolated from this grid at the present
+simulation time.  Thus, the ``random'' function becomes deterministic,
+and simulations that include output from the random generator will
+converge and iterate normally.  This can be used to model Johnson
+noise in the time domain, for example.
+
+Each has an additional optional ``{\it dt\/}'' argument which if given
+is taken as the time period of the random number grid.  If not given,
+the {\it TStep} from the running transient analysis is assumed.  This
+value has significance only in transient analysis.  During other types
+of analysis, calls to these functions will return a single random
+value, generated on the first call.
+
+Note that during transient analysis, the seed value should not change,
+or non-convergence can result.
+
+The following rules apply to these functions.
+\begin{enumerate}
+\item{All arguments to the system functions are real values, except
+for {\it seed} (which is defined by {\vt \$random}).  For the {\vt
+\$rdist\_exponential}, {\vt \$rdist\_poisson}, {\vt
+\$rdist\_chi\_square}, {\vt \$rdist\_t}, and {\vt \$rdist\_erlang}
+functions, the arguments {\it mean}, {\it dof}, and {\it k} shall be
+greater than zero (0).}
+
+\item{Each of these functions returns a pseudo-random number whose
+characteristics are described by the function name, e.g., {\vt
+\$rdist\_uniform} returns random numbers uniformly distributed in the
+interval specified by its arguments.}
+
+\item{For each system function, the {\it seed} argument shall be an
+integer.  If it is an integer variable, then it is an inout argument;
+that is, a value is passed to the function and a different value is
+returned.  The variable is initialized by the user and only updated by
+the system function.  This ensures the desired distribution is
+achieved upon successive calls to the system function.  If the {\it
+seed} argument is a parameter or constant, then the system function
+does not update the value.  This makes the system function useable for
+parameter initialization.  {\WRspice} doesn't handle this.}
+
+\item{The system functions shall always return the same value given
+the same seed.  This facilitates debugging by making the operation of
+the system repeatable.  In order to get different random values when
+the seed argument is a parameter, the user can override the
+parameter.
+
+The two paragraphs above are difficult to follow.  In {\WRspice}, if
+the same seed value is used for all calls, the sequence of values is
+repeatable.  A call with a different seed will reset the internal
+random number generator and a different sequence would be returned. 
+The system functions never reset the seed.  There is only one seed in
+{\WRspice}, so if any function call changes the seed, all subsequent
+random number calls are affected.}
+
+\item{All functions return a real value.}
+
+\item{In {\vt \$rdist\_uniform}, the {\it start} and {\it end}
+arguments are real inputs which bound the values returned.  The {\it
+start} value shall be smaller than the {\it end} value.}
+
+\item{The {\it mean} argument used by {\vt \$rdist\_normal}, {\vt
+\$rdist\_exponential}, {\vt \$rdist\_poisson}, and {\vt
+\$rdist\_erlang} is a real input which causes the average value
+returned by the function to approach the value specified.}
+
+\item{The {\it standard\_deviation} argument used by {\vt
+\$rdist\_normal} is a real input, which helps determine the shape of
+the density function.  Using larger numbers for {\it
+standard\_deviation} spreads the returned values over a wider range. 
+Using a mean of zero (0) and a standard deviation of one (1), {\vt
+\$rdist\_normal} generates Gaussian distribution.}
+
+\item{The {\it dof} (degree of freedom) argument used by {\vt
+\$rdist\_chi\_square} and {\vt \$rdist\_t} is a real input, which
+helps determine the shape of the density function.  Using larger
+numbers for {\it dof} spreads the returned values over a wider range.}
+\end{enumerate}
+\end{description}
+
+\paragraph{Other System Functions Recognized in ADMS/{\WRspice}}
+
+\begin{description}
+\item{\parbox{4in}{
+{\vt absdelay}({\it arg1\/}, {\it arg2\/})\\
+{\vt delay}({\it arg1\/}, {\it arg2\/})}}\\
+Recognized but not implemented.
+
+\item{\parbox{4in}{
+{\vt \$abstime}\\
+{\vt \$realtime}}}\\
+Returns the simulation time, the names are equivalent.
+
+\item{\vt analysis}({\it keyword\/})\\
+Return nonzero if the analysis type represented by the {\it keyword}
+is being performed.  The {\it keyword} is one of:
+\begin{description}
+
+\item{\vt ac}\\
+True when running AC analysis.
+
+\item{\vt dc}\\
+True when running DC sweep or operating point analysis.
+
+\item{\vt noise}\\
+True when running noise analysis.
+
+\item{\vt tran}\\
+True when running transient analysis.
+
+\item{\vt ic}\\
+True in the initial-condition analysis that preceeds a transient
+analysis.
+
+\item{\vt static}\\
+Any equilibrium point calculation, including a DC analysis as well as
+those that precede another analysis, such as the DC analysis that
+precedes an AC or noise analysis, or the IC analysis that precedes a
+transient analysis.
+
+\item{\vt nodeset}\\
+The phase during an equilibrium point calculation where node voltages
+are forced.
+\end{description}
+
+\item{\vt ceil}({\it x\/})\\
+Return the integer value greater than or equal to the argument.
+
+\item{\vt ddt}({\it expression\/}[, {\it ignored\/}])\\
+Return the time derivative, any second argument is ignored.
+
+\item{\vt ddx}({\it variable\/}, {\it probe\/})\\
+Return the partial derivative of the variable with respect to the
+probe.
+
+\item{\vt flicker\_noise}({\it a\/}, {\it b\/}[, {\it c\/}])\\
+Probably not implemented.
+
+\item{\vt floor}({\it x\/})\\
+Return the integer value less than or equal to the argument.
+
+\item{\vt \$given}({\it model\_or\_instance\_parameter\/})\\
+Return nonzero if the parameter was given, same as {\vt
+\$param\_given}.
+
+\item{\vt idt}({\it expression\/}, {\it icval\/}, {\it reset\/}[,
+ {\it ignored\/})\\
+Return the time integral of {\it expression} using the initial value
+{\it icval\/}.  If {\it reset} is nonzero, instead zero the internal
+integration history.
+
+\item{\vt \$mfactor}\\
+Return the device {\vt M} scale factor if the model was built for this
+support, otherwise 1.0.
+
+\item{\vt \$model}\\
+Expands to the name of the current device model.
+
+\item{\vt \$nominal\_temperature}\\
+Return the nominal temperature in Kelvin.
+
+\item{\vt \$instance}\\
+Expands to the name of the currenly scoped instance, or ``???''.
+
+\item{\vt \$param\_given}({\it model\_or\_instance\_parameter\/})\\
+Return nonzero if the parameter was given, same as {\vt \$given}.
+
+\item{\vt \$port\_connected}({\it port\_name\/})\\
+Return nonzero if the named port is connected externally.
+
+\item{\parbox{4in}{
+{\vt \$realtime}\\
+{\vt \$abstime}}}\\
+Return the simulation time, the names are equivalent.
+
+\item{\vt \$scale}\\
+Return 1.0, no scaling in {\WRspice}.
+
+\item{\vt \$simparam}({\it string\/}[, {\it expression\/}])\\ This
+queries the simulator for a simulation parameter named in {\it
+string\/}.  If {\it string} is known, its value is returned.  If
+string is not known, and the optional {\it expression} is not
+supplied, then an error is generated.  If the optional {\it
+expression} is supplied, its value is returned if {\it string} is not
+known and no error is generated. 
+
+{\vt \$simparam}() shall always return a real value; simulation
+parameters that have integer values shall be coerced to real.  There
+is no fixed list of simulation parameters.  However, simulators shall
+accept the strings below to access commonly-known simulation
+parameters, if they support the parameter.  Simulators can also accept
+other strings to access the same parameters.
+
+The first group below comes from the Verilog-AMS specification.
+
+\begin{description}
+\item{\vt gdev}\\
+Additional conductance to be added to nonlinear branches for
+conductance homotopy convergence algorithm.  Returns the {\WRspice}
+{\vt gmin} parameter.
+
+\item{\vt gmin}\\
+Minimum conductance placed in parallel with nonlinear branches,
+returns the {\WRspice} {\vt gmin} parameter.
+
+\item{\vt imax}\\
+Branch current threshold above which the constitutive relation
+of a nonlinear branch should be linearized.  Returns 1.0.
+
+\item{\vt imelt}\\
+Branch current threshold indicating device failure.  Returns 1.0.
+
+\item{\vt iteration}\\
+Iteration number of the analog solver, returns an internal iteration
+count.
+
+\item{\vt scale}\\
+Scale factor for device instance geometry parameters.  Returns 1.0.
+
+\item{\vt shrink}\\
+Optical linear shrink factor.  Returns 1.0.
+
+\item{\vt simulatorSubversion}\\
+The simulator sub-version.  Returns, e.g., 5 for {\it WRspice\/}-4.3.5.
+
+\item{\vt simulatorVersion}\\
+The simulator version.  Retursn, e.g., 4.3 for {\it WRspice\/}-4.3.5.
+
+\item{\vt sourceScaleFactor}
+Multiplicative factor for independent sources for source stepping
+homotopy convergence algorithm.  {\WRspice} returns the scaling value
+from source stepping.
+
+\item{\vt tnom}\\
+Default value of temperature in Celsius at which model parameters were
+extracted (same as {\vt \$nominal\_temperature\/}>).
+\end{description}
+
+The following group has unknown origin.
+
+\begin{description}
+\item{\vt checkjcap}\\
+Returns 1.0.
+
+\item{\vt maxmosl}\\
+Returns 1.0.
+
+\item{\vt maxmosw}\\
+Returns 1.0.
+
+\item{\vt minmosl}\\
+Returns 1.0e-12.
+
+\item{\vt minmosw}\\
+Returns 1.0e-12.
+\end{description}
+
+The final group is implemented in {\WRspice}, perhaps uniquely.
+
+\begin{description}
+\item{\vt tstep}\\
+The current transient analysis output time increment.
+
+\item{\vt tstart}\\
+The current start time for transient analysis output.
+
+\item{\vt tstop}\\
+The current final time point in transient analysis.
+
+\item{\vt delta}\\
+The current internal time step in transient analysis.
+
+\item{\vt delmin}\\
+The minimum allowable transient analysis time step.
+
+\item{\vt delmax}\\
+The maximum allowable transient analysis time step.
+
+\item{\vt abstol}\\
+The absolute tolerance parameter.
+
+\item{\vt reltol}\\
+The relative tolerance parameter.
+
+\item{\vt chgtol}\\
+The charge tolerance parameter.
+
+\item{\vt vntol}\\
+The voltage tolerance parameter.
+
+\item{\vt predictor}\\
+Nonzero when in the first iteration of a time point.
+
+\item{\vt smallsig}\\
+Nonzero when loading small-signal values in AC analysis.
+
+\item{\vt dcphasemode}\\
+Nonzero if using phase-mode DC analysis, may be true when Josephson
+junctions are present.
+
+\item{\vt dphimax}\\
+Returns the maximum phase change for internal time point for
+sinusoidal sources and Josephson junctions.
+\end{description}
+
+\item{\vt \$temperature}\\
+Returns the circuit ambient temperature in Kelvin.
+
+\item{\vt \$vt}[({\it temperature\_expression\/})]\\
+Returns the thermal voltage KT/q using the argument for temerature, or
+the ambient temperature if no argument is given.
+\end{description}
+
+\paragraph{{\WRspice} C/C++ Bridge Function}
+
+\begin{description}
+\item{\vt cfunc}({\it funcname\/}, {\it arg1\/}, ..., {\it argN\/})\\
+The {\vt cfunc} pseudo-function allows arbitrary C/C++ function calls
+to be made from the model code.
+
+The return value can be used in an assignment.  In the C++ files, the
+construct maps to {\it funcname\/}({\it arg1\/}, ..., {\it argN\/}).
+
+This can be used to, for example, make available special math
+functions callable from Verilog-A.  Be advised that this can be unsafe
+to use in model code, as the derivative is not included in the
+Jacobian, which can lead to convergence problems.  However, if such
+functions are used only for initialization, use is safe.
+
+To use this facility, the {\vt HEADER} variable in the {\vt Makefile}
+should be redefined to yes, and the user should create an include file
+that contains (perhaps through another include) prototypes of the
+functions called using {\vt cfunc}.  This file must be named {\it
+MODULE\/}{\vt extra.h}, where {\it MODULE} is the short name also
+provided from the {\vt Makefile}.
+
+The header file must also be modified to link the library containing
+the function implementations to the loadable module.  The user is
+expected to know how to do this.
+\end{description}
 
 
 %S-----------------------------------------------------------------------------

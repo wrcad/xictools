@@ -1,15 +1,14 @@
-$Id: README.adms,v 1.5 2016/05/11 17:45:49 stevew Exp $
-
-ADMS and Verilog-a notes
+ADMS and Verilog-A notes  4/6/2018
 ------------------------
 
-The ADMS package translates the Verilog-a model description into a set
-of c++ files, which are then compiled into a loadable module.
+The ADMS package translates the Verilog-A model description into a set
+of C++ files, which are then compiled into a loadable module (a shared
+library loaded on demand).
 
 There may be some documentation of ADMS on the internet.  Last I looked,
 there was very little.
 
-One should also google-up a copy of the Verilog-a manual, as this
+One should also google-up a copy of the Verilog-A manual, as this
 describes the official syntax.
 
 This file is going to be a catch-all for information about the WRspice
@@ -19,12 +18,12 @@ ADMS implementation, with regard to syntax and features.
 1. The "insideADMS" define.
 
 The symbol insideADMS is defined (as if with `define insideADMS), and
-can be used to test for ADMS in the Verilog-a code.
+can be used to test for ADMS in the Verilog-A code.
 
 -------------------------------------------------------------------------------
 2. The ADMS "attributes".
 
-This is a syntax extension to Verilog-a supported by ADMS.  It allows
+This is a syntax extension to Verilog-A supported by ADMS.  It allows
 additional information in parameter and variable declarations to be
 passed to the simulator.
 
@@ -49,7 +48,18 @@ units="units_token"
 This gives the units of the parameter or variable.
 (Not sure that this is actually used)
 
-(more?)
+type="model"
+
+This construct indicates that the parameter should be taken as a model
+parameter, i.e., a parameter given in a .model line in SPICE.
+
+type="instance"
+
+This construct indicates that the parameter should be taken as an
+instance parameter, i.e., a parameter given in a device instance
+line.
+
+(others?)
 
 Models may use the following code to hide this construct from non-ADMS
 parsers.
@@ -91,7 +101,7 @@ forms containing no arguments.
 
   The block is executed while computing the initial analysis point, in
   accord with the Verilog-ams standard.  The block will be called for
-  the operating popint analysis (if any), all iterations.  Thus, it
+  the operating point analysis (if any), all iterations.  Thus, it
   will be called multiple times, which makes it unattractive for use
   as an initializer.
 
@@ -164,8 +174,8 @@ $write(format, variable list)
   format string is like that in C/C++, and may contain format
   characters.  Format characters include %d (decimal), %h
   (hexadecimal), %b (binary), %c (character), %s (string) and %t
-  (time), %m (hierarchy level).  %5d, %5b etc.  would give exactly 5
-  spaces for the number instead of the space needed.
+  (time), %m (hierarchy level).  Forms like %5d, %5b etc.  would
+  assign a field width of 5 when printing the item.
 
   $display and $write are the same except $display appends a newline
   if the string does not have a trailing newline character, $write
@@ -216,7 +226,7 @@ $bound_step(max_delta)
   Limit the next time point to be max_delta or less from the present
   time point in transient analysis.
 
-$finish[(n)[, type_string]]
+$finish[(n[, type_string]}]
 
   Halt the analysis.  If n is given, it can be one of these values,
   which determine what if anything is printed.
@@ -237,9 +247,9 @@ $finish[(n)[, type_string]]
   current solution is complete.
 
   If the type_string is set to “current_analysis” and $finish is
-  called during an accepted iteration, then the simulator terminate
-  the current analysis and start the next analysis if one requested. 
-  If not, the simulate will exit.
+  called during an accepted iteration, then the simulator terminates
+  the current analysis and will start the next analysis if one
+  requested.
 
   If the type_string is set to “immediate” and $finish is called
   during an iteration, then the simulation will exit immediately
@@ -262,16 +272,16 @@ $random[(seed)]
 
   $random generates a random integer every time it is called.  If the
   sequence is to be repeatable, the first time one invokes random
-  giving it a numerical argument (a seed).  Otherwise the seed is
+  it is given a numerical argument (a seed).  Otherwise the seed is
   derived from the computer clock.
 
-rdist_uniform(seed, start, end[, dt])
-rdist_normal(seed, mean, stddev[, dt])
-rdist_exponential(seed, mean[, dt])
-rdist_poisson(seed, mean[, dt])
-rdist_chi_square(seed, dof[, dt])
-rdist_t(seed, dof[, dt])
-rdist_erlang(seed, k, mean[, dt])
+$rdist_uniform(seed, start, end[, dt])
+$rdist_normal(seed, mean, stddev[, dt])
+$rdist_exponential(seed, mean[, dt])
+$rdist_poisson(seed, mean[, dt])
+$rdist_chi_square(seed, dof[, dt])
+$rdist_t(seed, dof[, dt])
+$rdist_erlang(seed, k, mean[, dt])
 
   In WRspice, the following functions are implemented in such a way
   that they are compatible with Newton iterations and convergence
@@ -369,7 +379,7 @@ $abstime, $realtime
 
 TODO add $delta
 
-analysis(string)
+analysis(keyword)
 
   Return nonzero if the analysis type represented by the keyword given
   in the argument is being performed.
@@ -464,11 +474,11 @@ $scale
 
 $simparam(string[, expression])
 
-  This queries the simulator for a simulation parameter named string. 
-  If string is known, its value is returned.  If string is not known,
-  and the optional expression is not supplied, then an error is
-  generated.  If the optional expression is supplied, its value is
-  returned if string is not known and no error is generated. 
+  This queries the simulator for a simulation parameter named in
+  string.  If string is known, its value is returned.  If string is
+  not known, and the optional expression is not supplied, then an
+  error is generated.  If the optional expression is supplied, its
+  value is returned if string is not known and no error is generated. 
 
   $simparam() shall always return a real value; simulation parameters
   that have integer values shall be coerced to real.  There is no
@@ -477,60 +487,69 @@ $simparam(string[, expression])
   parameters, if they support the parameter.  Simulators can also
   accept other strings to access the same parameters.
 
-    dev     1/Ohms              gmin
+    These parameters are defined in the Verilog-ams spec.
+
+    gdev
       Additional conductance to be added to nonlinear branches for
-      conductance homotopy convergence algorithm.
+      conductance homotopy convergence algorithm.  Returns the
+      WRspice GMIN parameter.
 
-    gmin    1/Ohms              gmin
-      Minimum conductance placed in parallel with nonlinear branches.
+    gmin
+      Minimum conductance placed in parallel with nonlinear branches,
+      returns the WRspice GMIN parameter.
 
-    imax    Amps                1.0
+    imax
       Branch current threshold above which the constitutive relation
-      of a nonlinear branch should be linearized.
+      of a nonlinear branch should be linearized.  Returns 1.0.
 
-    imelt   Amps                1.0
-      Branch current threshold indicating device failure.
+    imelt
+      Branch current threshold indicating device failure.  Returns
+      1.0.
 
-    iteration                   iteration count
-      Iteration number of the analog solver.
+    iteration
+      Iteration number of the analog solver, returns an internal
+      iteration count.
 
-    scale                       1.0
-      Scale factor for device instance geometry parameters.
+    scale
+      Scale factor for device instance geometry parameters.  Returns
+      1.0.
 
-    shrink                      1.0
-      Optical linear shrink factor.
+    shrink
+      Optical linear shrink factor.  Returns 1.0.
 
-    simulatorSubversion         e.g., 12 for WRspice-4.1.12
-      The simulator sub-version.
+    simulatorSubversion
+      The simulator sub-version.  Returns, e.g., 5 for wrspice-4.3.5.
 
-    simulatorVersion            e.g., 4.1 for WRspice-4.1.12
-      The simulator version.
+    simulatorVersion
+      The simulator version.  Returns, e.g., 4.3 for wrspice-4.3.5.
 
-    sourceScaleFactor           value from WRspice source stepping
+    sourceScaleFactor
       Multiplicative factor for independent sources for source
-      stepping homotopy convergence algorithm.
+      stepping homotopy convergence algorithm.  WRspice returns the
+      scaling value from source stepping
 
-    tnom    degrees Celsius     $nominal_temperature
-      Default value of temperature at which model parameters were
-      extracted.
+    tnom
+      Default value of temperature in Celsius at which model
+      parameters were extracted (same as $nominal_temperature).
 
-    ---- Spec. end
+    These parameters have unknown origin.
+
     checkjcap                   1.0
     maxmosl                     1.0
     maxmosw                     1.0
     minmosl                     1.0e-12
     minmosw                     1.0e-12
-      ?
 
-    WRspice only
+    These parameters are supported in WRspice.
+
     tstep
-      The transient analysis output time increment.
+      The current transient analysis output time increment.
 
     tstart
-      The start time for transient analysis output.
+      The current start time for transient analysis output.
 
     tstop
-      The final time point in transient analysis.
+      The current final time point in transient analysis.
 
     delta
       The current internal time step in transient analysis.
@@ -550,11 +569,22 @@ $simparam(string[, expression])
     chgtol
       The charge tolerance parameter.
 
-    volttol
+    vntol
       The voltage tolerance parameter.
 
     predictor
       Nonzero when in the first iteration of a time point.
+
+    smallsig
+      Nonzero when loading small-signal values in AC analysis.
+
+    dcphasemode
+      Nonzero if using phase-mode DC analysis, may be true when
+      Josephson junctions are present.
+
+    dphimax
+      Returns the maximum phase change for internal time point for
+      sinusoidal sources and Josephson junctions.
 
     TODO: add set variables including .options
 
@@ -572,7 +602,7 @@ white_noise(a[, b])
 5. Special Hackery: cfunc
 
   The cfunc pseudo-function allows arbitrary C/C++ function calls to
-  be made from the model code.  The syntax in the Verilog code is
+  be made from the model code.  The syntax in the Verilog-A code is
 
   cfunc("funcname", arg1, ..., argN)
 
@@ -580,7 +610,7 @@ white_noise(a[, b])
   the construct maps to funcname(arg1, ..., argN).
 
   This can be used to, for example, make available special math
-  functions callable from Verilog.  Be advised that this can be unsafe
+  functions callable from Verilog-A.  Be advised that this can be unsafe
   to use in model code, as the derivative is not included in the
   Jacobian, which can lead to convergence problems.  However, if such
   functions are used only for initialization, use is safe.

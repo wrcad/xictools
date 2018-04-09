@@ -1,4 +1,3 @@
-$Id: README,v 1.9 2015/05/03 16:52:21 stevew Exp $
 
 Welcome the the WRspice Device Kit
 ----------------------------------
@@ -23,66 +22,35 @@ Verilog-A description for use in WRspice.
 Caveat
 ------
 
-This is a very new capability, alpha-grade.  Not all Verilog-A
-constructs are supported.  Consider this experimental.
+This is a new capability, beta-grade.  Not all Verilog-A constructs
+are supported.  Consider this somewhat experimental.
 
 Requirements
 ------------
 
 1.  The user's computer must contain the gcc C/C++ compiler and the
-regular set of program development tools.  This is the default on
-Linux systems.  Apple users are advised to install Apple's program
-development environment, which is a free (but huge) download from
-Apple.
+regular set of program development tools.  Apple users are advised to
+install Apple's XCode program development environment, which is a free
+(but huge) download from Apple.  It is recommended that you set up a
+build environment as described in the README file at the top level of
+the XicTools source tree.
 
-The module compilation is now available under Microsoft Windows.
-See the Windows Setup section at the end of this file.
+2.  The compiler version used to build modules must be compatible with
+the version used to build WRspice.  Incompatibility may be manifested
+in various ways:
 
-2.  The gcc version used to compile modules must be compatible with
-the version used to compile WRspice.  Incompatibility may be
-manifested in various ways
     - The module fails to load, with an error message.
     - The module loads, but with warnings.
     - The module loads, but causes program instability when used.
 
 That being said, I haven't noticed any problems, even in the case of
-using gcc-3 to compile the module and gcc-4 to compile the program.
+using gcc-3 to compile the module and gcc-4 to compile the program. 
+The safest approach is to build WRspice from source, which should not
+be hard since you already have the build environment set up.
 
-The gcc versions used to prepare the various distributions of
-WRspice are presently
-    Darwin64 (OS X 10.9)                clang-5.0
-    LinuxRHEL5, LinuxRHEL5_64,          gcc-4.1.2
-    LinuxRHEL6_64,                      gcc-4.4.7
-    Windows                             gcc-4.8.3
-
-The stock compiler found on the operating system will probably work
-fine, if it is from the gcc-4 series.
-
-3.  The ADMS translator must be installed.  This is available from
-sourceforge.net (http://sourceforge.net/projects/mot-adms).  BE SURE
-TO GET VERSION 2.3.0 OR LATER.  You can build this from the source
-code, or possibly find pre-built packages for your system.
-====
-IMPORTANT
-I see that as of 2/18/2014 there is a different adms-2.3.0.tar.gz
-distribution file on that site, with the following properties:
-1) the configure script is not executable.
-2) there are missing configuration scripts so configure doesn't run
-after making it executable.
-3) the files are mostly a year older than in the original distribution.
-4) the distribution contains old object files and similar rubbish,
-
-It is possible to make it work, but you need to be a near-expert. 
-Sorry, this is probably the most flaky, poorly maintained and
-documented software project I've encountered.  Unfortunately, there
-isn't an alternative at present.
-
-The original adms-2.3.0.tar.gz file has size 639604 bytes.
-The "new" (broken) distribution file has size 4333061 bytes.
-
-Get the original adms-2.3.0 distribution from the Whiteley Research
-"free software" repository.
-====
+3.  The XicTools version of the ADMS translator must be installed.
+This is available as a package and as part of the source code for
+XicTools.
 
 4.  The procedure to build the example modules is simple.  However, to
 successfully build an arbitrary module will probably require expertise
@@ -109,7 +77,7 @@ argument is given, a list of the modules currently loaded is printed.
 The ADMS Scripts
 ----------------
 
-The scripts which control the interpretation of the Verilog source
+The scripts which control the interpretation of the Verilog-A source
 during translation into C++ reside in the admst directory.  There is a
 fairly steep learning curve in gaining proficiency with the language
 and logic of these scripts, but they can in theory be modified by the
@@ -132,7 +100,7 @@ simulators, are the following:
 6.  Full computation of second-derivative terms.
 7.  Full support for noise analysis in WRspice.
 8.  A new and more efficient math package.
-9.  No "built in" fixes for common public Verilog models, scripts
+9.  No "built in" fixes for common public Verilog-A models, scripts
     are intended to be completely generic.
 10. Produces C++ code that is indented and humanly-readable.
 
@@ -158,10 +126,6 @@ provided under the devkit.
 5.  Type "make" at the shell prompt.  The processing may take a few
 minutes.  Some compiler warnings may appear.
 
-You may see a message:
-  [error..] mismatch in assigment - lhs=contribution rhs=block
-This can be ignored, it is a spurious message from ADMS.
-
 There may be a lot of messages like:
   warning: declaration of T10 shadows a previous local
 These appear when the module code defines a variable in a block, and
@@ -171,8 +135,8 @@ models (bsimsoi) generate a lot of these messages.
 Messages like
   warning: unused variable vd
 appear if a variable is declared in a block but never used.  Once
-again, these are harmless, but represent declarations in the Verilog
-source that could be omitted.
+again, these are harmless, but may represent declarations in the
+Verilog-A source that could be omitted.
 
 6.  If all goes well, a loadable module will be created.  This is a
 file with a ".so" extension (".dylib" under OS X, or ".dll" in
@@ -183,17 +147,16 @@ WRspice, and access the device description in simulation files.
 Building the Examples
 ---------------------
 
-The examples subdirectory contains several publicly-available Verilog
-models for testing and illustrating the procedure.  The README files
-provide more information.  You should copy the directories and their
-contents to your local directory to build the modules.  In each model
-directory, follow the procedure above, and modify the Makefile as
-recommended in the README file.
+The examples subdirectory contains several publicly-available
+Verilog-A models for testing and illustrating the procedure.  The
+README files provide more information.  You should copy the
+directories and their contents to your local directory to build the
+modules.  In each model directory, follow the procedure above.
 
-7.  Test the new loadable module.  First, verify the the loadable
-module file exists, i.e., the compile succeeded.  Then, change to the
-"tests" subdirectory, and start WRspice.  At the WRspice prompt, give
-the command
+Test the new loadable module.  First, verify that the loadable module
+file exists, i.e., the compile succeeded.  Then, change to the "tests"
+subdirectory, and start WRspice.  At the WRspice prompt, give the
+command
 
   devload ../module.so
 
@@ -223,115 +186,4 @@ complete and error-free translation.  As a quick look at the script
 text will show, they can be hideously complex.  The language itself is
 not well documented, though "experts" can figure it out from the
 configuration files in the ADMS installation.
-
-If you can provide the Verilog source to Whiteley Research for
-evaluation, we would be happy to help diagnose/fix problems.
-
--------------------------------------------------------------------------------
-Microsoft Windows Setup
--------------------------------------------------------------------------------
-
-It is now possible to compile Verilog-a models and build loadable
-modules in Windows.  This file explains how to obtain and set up the
-tools needed, and compile and install the ADMS translator.
-
-The basic procedure is:
-1) Install Cygwin.
-2) Install MinGW-w64.
-3) Tweak your startup files.
-4) Build/install adms-2.3.0-wr.
-5) Test build the supplied module examples.
-
-Warning:  this is fairly advanced stuff.  The description below is
-from memory and a bit sloppy.
-
-1) Install Cygwin.
-
-Cygwin is a fairly complete Linux-like environment for Windows.  It is
-available from cygwin.org.  First download the installer program.  Run
-this to obtain the packages.
-
-You can choose 32 or 64 bits.  Either should work, however only 32-bits
-has veen tested.
-
-In addition to the basic installation, you'll need the g++ compiler,
-the binutils, make, and libtool, from the development category.
-We need a full compilation chain to build adms.
-
-If you find that a needed program is missing, it is easy to run the
-Cygwin setup program and grab additional programs or libraries.  It
-will also check for updates.
-
-2) Install MinGW-w64
-
-This is a compiler toolchain for Windows.  This is different from
-Cygwin in that it does not require the "Cygwin dll" which is legally
-encumbered.  Programs built with Cygwin can't (or only with
-difficulty) be distributed commercially, but MinGW built programs are
-freely distributable.
-
-Our strategy is, when building the modules, is to use Cygwin for the
-infrastructure (make, bash, etc) but use MinGW for compilation and
-linking.
-
-We recommend the win-builds project as an easy all-in-one install of
-the entire "MinGW" toolchain and needed libraries.  Simply go to
-win-builds.org, download the installer program and run it.  Make sure
-that the "32-bits", and "native Windows" buttons are pressed, and
-click the "Process" button.  This will install everything.  You get a
-lot more than you need, so if disk space is tight you might want to go
-through the list of packages first and skip installing some.
-
-FOR PRESENT WRSPICE, 32-BITS IS REQUIRED.
-
-3) Tweak your startup files.
-
-When the Cygwin bash shell starts, it reads the .bash_profile file,
-which is where user customization can be applied.
-
-We want to be able to compile with either the MinGW or Cygwin
-tool chain.  To use MinGW, the bin directory from the installation
-is added to the front of the PATH variable.  For vanilla Cygwin,
-MinGW is not included in the PATH.
-
-It may be convenient to generate a new icon that will start Cygwin
-with MinGW.  I'll leave how to do this as an exercise.  (Write a bat
-file that sets a variable and starts bash, test for the variable when
-creating the PATH, create a new desktop icon that calls the bat file.)
-
-Remember:  Use MinGW to build the modules themselves.  Use Cygwin to
-build accessories such as adms-2.3.0-wr.
-
-You will probably want to add mount points such as these lines:
-mount c:/win-builds/bin /win-builds/bin
-mount c:/usr/local /usr/local
-
-These map the first (Windows) location to an equivalent point in
-the Cygwin directory system.
-
-You probably want to add :/usr/local/xictools/bin
-to the end of the PATH.
-
-4) Build/install adms-2.3.0-wr.
-
-From a Cygwin window, install the adms-2.3.0-wr files somewhere.  Use
-sftp or whatever to import the distribution files, and tar to
-unpack the distribution.  This produces a directory adms-2.3.0-wr
-in the current directory.  To build and install the program:
-
-> cd adms-2.3.0-wr
-> ./configure
-> make
-> make install
-
-If it doesn't work, you'll have to figure out why and fix it.
-
-5) Test build the supplied module examples.
-
-Copy the adms examples from the WRspice distribution as per the
-instructions.  For testing, you can start with a simple module, such
-as cap.  You should be able to cd into the cap directory, type "make",
-and end up with a "cap.dll" file.  When cap works, they all should
-work.  It takes a while to build all of the modules, as the bsim's in
-particular are quite complex.
 

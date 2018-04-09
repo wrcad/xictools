@@ -45,6 +45,7 @@ sppost
 spintr
 batchmode
 loadable
+veriloga
 refs
 rawfilefmt
 utilities
@@ -1973,9 +1974,9 @@ Batch Mode
     block, the evaluation of the <tt>.exec</tt> block in the second
     <b>run</b> command would override our new <tt>cval</tt> value.
 
-!! useriface.tex 050215
+!! useriface.tex 040718
 !!KEYWORD
-loadable veriloga
+loadable
 !!TITLE
 Loadable Device Modules
 !!HTML
@@ -1987,23 +1988,19 @@ Loadable Device Modules
     possibilities for future versions of <i>WRspice</i> in how new
     device models are distributed.  It also gives the user, at least
     in principle, the ability to generate and use custom device models
-    in <i>WRspice</i>.
+    in <i>WRspice</i>.  Support for this important new feature is
+    available in all releases.
 
     <p>
-    Initial support for this important new feature is available in all
-    releases.  Microsoft support required partitioning of the
-    <tt>wrspice.exe</tt> executable into separate <tt>exe</tt> and
-    <tt>dll</tt> files, which is true of <i>WRspice</i> release 4.1.5
-    and later.  Support for user-generated loadable device models
-    under Windows is available by request, contact <b>Whiteley
-    Research</b> for more information (technically advanced users
-    only, please).
+    Loadable device modules are most often created by translating and
+    compiling <a href="veriloga">Verilog-A</a> compact model descriptions,
+    though it is also possible to write C/C++ code directly.
 
     <p>
     Loadable device modules are specific to a particular release
     number of <i>WRspice</i>, and to the operating system.  Since the
     interface may change, user-created loadable modules need to be
-    rebuilt for new releases of <i>WRspice</i>.  This will be relaxed
+    rebuilt for new releases of <i>WRspice</i>.  This may be relaxed
     in future releases, when the interface stabilizes.
 
     <p>
@@ -2069,6 +2066,7 @@ Loadable Device Modules
     built-in model, the built-in model will always have precedence,
     and the loaded model will not be accessible by level.
 
+    <p>
     <li>By model name.<br>
     Every loadable module has a given model name.  Further, device
     models of dual-polarity devices have a parameter that sets the
@@ -2094,43 +2092,1062 @@ Loadable Device Modules
     default) will provide the tools needed to build loadable device
     modules.
 
-    <p>
-    The present release provides support for building loadable modules
+    <h2>Creating Loadable Modules from Verilog-A</h2>
+
+    <i>WRspice</i> provides support for building loadable modules
     from Verilog-A model source.  Many new compact device models have
     been released in this format, as it is (theoretically) portable to
     all simulators.  Most commercial simulators now have this
     capability.
 
     <p>
+    To build modules from Verilog-A source, the Whiteley Research
+    version of the open-source <tt>adms-2.3.x</tt> package must be
+    installed on the system.  This is included in the <i>XicTools</i>
+    packages and source.  The <i>XicTools</i> version of <tt>adms</tt>
+    contains enhancements and bug fixes for use with <o>WRspice</i>,
+    and should be used in preference to other versions of this
+    software.
+
+    <p>
     The <tt>devkit/README</tt> file provides instructions on how to
     build a module, and there are several examples.  Pre-built modules
     are provided.  These can be loaded into <i>WRspice</i> and used.
 
-    <p>
-    To build modules from Verilog-A source, the Whiteley Research
-    version of the open-source <tt>adms-2.3.0</tt> package must be
-    installed on the system.  This is available from the free software
-    repository
-    on <a
-    href="http://wrcad.com/freestuff.html"><tt>wrcad.com</tt></a>. 
-    This release contains enhancements and bug fixes, and should be
-    used in preference to other versions of this software.  You will
-    need to be able to build this package, meaning that you will need
-    to have <tt>gcc/g++</tt>, <tt>make</tt>, and other standard tools
-    for program development available.  For OS X, this means that the
-    XCode package must be downloaded from Apple and installed.
+    <h2>Requirements</h2>
+
+    In order to build loadable device modules from Verilog-A, the
+    following requirements must be met.
+
+    <ol>
+    <li>The user's computer must contain the Gnu C/C++ compiler and the
+    regular set of program development tools.  Apple users are advised to
+    install Apple's XCode program development environment, which is a free
+    (but huge) download from Apple.  It is recommended that you set up a
+    build environment as described in the <tt>README</tt> file at the top level of
+    the <i>XicTools</i> source tree.
 
     <p>
-    Under Microsoft Windows, the <tt>adms</tt> package can be built
-    with Cygwin (<a
-    href="http://www.cygwin.com"><tt>http://www.cygwin.com</tt></a>). 
-    MinGW-w64 (<a
-    href="http://sourceforge.net/projects/mingw-w64">
-    <tt>http://sourceforge.net/projects/mingw-w64</tt></a>) is
-    reecommended for compiling the modules (in 32-bit mode).
+    <li>The compiler version used to build modules must be compatible with
+    the version used to build <i>WRspice</i>.  Incompatibility may be
+    manifested in various ways:
+    <ul>
+    <li>The module fails to load, with an error message.
+    <li>The module loads, but with warnings.
+    <li>The module loads, but causes program instability when used.
+    </ul>
+
+    <p>
+    That being said, I haven't noticed any problems, even in the case
+    of using different major versions to compile the module and to
+    compile the program, but this can not be counted on.  The safest
+    approach is to build <i>WRspice</i> from source, which should not
+    be hard since the build environment is already set up.
+
+    <p>
+    <li>The <i>XicTools</i> version of the ADMS translator must be
+    installed.  This is available as a package and as part of the
+    source code for <i>XicTools</i>.
+
+    <p>
+    <li>The procedure to build the example modules is simple. 
+    However, to successfully build an arbitrary module will probably
+    require expertise in C++ coding/program building, Verilog-A
+    syntax, and possibly the ADMS language, if the module does not
+    build or work properly initially.
+    </ol>
+
+    <h2>How It Works</h2>
+
+    The ADMS program reads the Verilog-A file, and builds a
+    representation of the file logic in memory.  A set of XML scripts
+    access this tree and generate the C++ code to describe the device
+    functionality.  The C++ files are then compiled into a loadable
+    module (shared library) which can be loaded into <i>WRspice</i>.
+
+    <p>
+    <i>WRspice</i> can load device modules in two ways.  On program
+    startup, any device modules found in the <tt>devices</tt>
+    sub-directory in the startup directory (typically
+    <tt>/usr/local/xictools/wrspice/startup/devices</tt>) will be
+    loaded.  While running, the <i>WRspice</i> <a
+    href="devload"><b>devload</b></a> command can be used to load a
+    module, with the command argument being the path to the module. 
+    If no argument is given, a list of the modules currently loaded is
+    printed.
+
+    <h2>The ADMS Scripts</h2>
+
+    The scripts which control the interpretation of the Verilog-A
+    source during translation into C++ reside in the <tt>admst</tt>
+    directory.  There is a fairly steep learning curve in gaining
+    proficiency with the language and logic of these scripts, but they
+    can in theory be modified by the user.  In fact, the
+    <tt>wrspiceVersion.xml</tt> file provides some user-customization
+    switches.
+
+    <p>
+    Some of the features provided by the <i>WRspice</i> script set,
+    that are not available in the script sets available for
+    many/most/all other simulators, are the following:
+
+    <ol>
+    <li>Rigorous automatic partitioning of static and dynamic
+        contribution terms, as well as noise terms.
+    <li>Support for potential nature contributions (<tt>V()
+        &#60;+</tt> ...), and automatic node collapsing when possible.
+    <li>Support for optional ports and the <tt>$port_connected</tt>
+        call.
+    <li>Support for the <tt>idt</tt> (time integration) operator, and
+        most other system functions.
+    <li>Does not require adms-specific format extensions, but will use
+        them if found.
+    <li>Full computation of second-derivative terms.
+    <li>Full support for noise analysis in <i>WRspice</i>.
+    <li>A new and more efficient math package.
+    <li>No "built in" fixes for common public Verilog-A models, scripts
+        are intended to be completely generic.
+    <li>Produces C++ code that is indented and humanly-readable.
+
+    <h2>How to Build a Module</h2>
+
+    If all goes according to plan, this is easy.
+
+    <ol>
+    <li>Create a fresh directory somewhere.
+
+    <p>
+    <li>Copy the <tt>Makefile</tt> from the <tt>devkit</tt> directory
+    (typically <tt>/usr/local/xictools/wrspice/devkit</tt>) into the
+    new directory.
+
+    <p>
+    <li>This is optional, but you may want to copy the Verilog-A
+    source file (or files) into this directory as well, for
+    convenience.
+
+    <p>
+    <li>Edit the top of the <tt>Makefile</tt> with a text editor.  The
+    <tt>Makfile</tt> contains comments explaining what needs setting. 
+    Basically, you need to set the device key letter and model level
+    (as will be used in <i>WRspice</i>), a short name for the module,
+    and the path to the XML scripts provided under the
+    <tt>devkit</tt>.
+
+    <p>
+    <li>Type "<tt>make</tt>" at the shell prompt.  The processing may
+    take a few minutes.  Some compiler warnings may appear.
+
+    <p>
+    There may be a lot of messages like:
+    <blockquote>
+      <tt>warning: declaration of T10 shadows a previous local</tt>
+    </blockquote>
+    These appear when the module code defines a variable in a block,
+    and also in a lower-level block.  These should be harmless, but
+    some models (<tt>bsimsoi</tt>) generate a lot of these messages.
+
+    <p>
+    Messages like
+    <blockquote>
+      <tt>warning: unused variable vd</tt>
+    </blockquote>
+    appear if a variable is declared in a block but never used.  Once
+    again, these are harmless, but may represent declarations in the
+    Verilog-A source that could be omitted.
+
+    <p>
+    <li>If all goes well, a loadable module will be created.  This is
+    a file with a "<tt>.so</tt>" extension ("<tt>.dylib</tt>" under OS
+    X, or "<tt>.dll</tt>" in Windows) with the base name the same as
+    the module name that was supplied in the <tt>Makefile</tt>.  One
+    should be able to load this module into <i>WRspice</i>, and access
+    the device description in simulation files.
+    </ol>
+
+    <h2>Building the Examples</h2>
+
+    The <tt>examples</tt> subdirectory contains several
+    publicly-available Verilog-A models for testing and illustrating
+    the procedure.  The <tt>README</tt> files provide more
+    information.  You should copy the directories and their contents
+    to your local directory to build the modules.  In each model
+    directory, follow the procedure above.
+
+    <p>
+    Test the new loadable module.  First, verify that the loadable
+    module file exists, i.e., the compile succeeded.  Then, change to
+    the "<tt>tests</tt>" subdirectory, and start <i>WRspice</i>.  At
+    the <i>WRspice</i> prompt, give the command
+    <blockquote>
+    <tt>devload ../</tt><i>module.so</i>
+    </blockquote>
+    where <i>module.so</i> is the actual name of the module file. 
+    <i>WRspice</i> will print a "<tt>Loading device</tt> ..." message,
+    and no error messages should appear.
+
+    <p>
+    Next, bring up the <b>File Selection</b> panel with the <b>File
+    Select</b> button in the <b>File</b> menu.  There will be at least
+    one file listed with a "<tt>.sp</tt>" or "<tt>.cir</tt>" extension,
+    these are the SPICE input source files.  Click on one of these to
+    select, and click on the green octagon button.  The simulation
+    will run and a plot will appear.
+
+    <p>
+    Have fun!
+
+    <h2>What if it Doesn't Work?</h2>
+
+    There are many things that can go wrong, and it is likely that
+    something will.  Most likely, the Verilog-A file contains a
+    construct that either ADMS or the scripts can't handle.  The
+    author of ADMS describes the translator as "alpha", but that being
+    said, it seems fairly complete and stable.  The problem most
+    likely resides with the XML scripts.  These were adapted to
+    <i>WRspice</i> using scripts for other simulators as a starting
+    point.  They will evolve to provide more complete and error-free
+    translation.  As a quick look at the script text will show, they
+    can be hideously complex.  The language itself is not well
+    documented, though "experts" can figure it out from the
+    configuration files in the ADMS installation.
 
 !!SEEALSO
+devload
 devls
+veriloga
+
+!! useriface.tex 040718
+!!KEYWORD
+veriloga adms
+!!TITLE
+Support for ADMS/Verilog-A
+!!HTML
+    The ADMS package translates the Verilog-A model description into a
+    set of C++ files, which are then compiled into a <a
+    href="loadable">loadable module</a> (a shared library loaded on
+    demand).
+
+    <p>
+    There may be some documentation of ADMS on the internet.  Last I
+    looked, there was very little, but is included with the
+    <i>XicTools</i> version of ADMS.  One should also google-up a copy
+    of the Verilog-A manual, as this describes the official syntax.
+
+    <p>
+    This section is a catch-all for information about the
+    <i>WRspice</i> ADMS implementation, with regard to syntax and
+    features.
+
+    <h2>1.  The "<tt>insideADMS</tt>" define</h2>
+
+    The symbol <tt>insideADMS</tt> is defined (as if with <tt>`define
+    insideADMS</tt>), and can be used to test for ADMS in the
+    Verilog-A code.
+
+    <h2>2. The ADMS "attributes"</h2>
+
+    This is a syntax extension to Verilog-A supported by ADMS.  It
+    allows additional information in parameter and variable
+    declarations to be passed to the simulator.
+
+    <p>
+    <b>Examples</b>:<br>
+    <tt>parameter real c10 = 2e-30 from [0:1] (* info="GICCR constant"
+     unit="A^2s" *);</tt><br>
+    <tt>real outTheta   (* info="Theta" *);</tt>
+
+    <p>
+    The attributes are delimited by <tt>(* ...  *)</tt> just ahead of
+    the line-terminating semicolon.  The content consists of
+    <i>keyword</i>=<i>value</i> terms, separated by white space.  The
+    <i>value</i> is taken as a literal string, and should be
+    double-quoted if it contains white space.  The <i>keyword</i> can
+    be any token, but only certain keywords are recognized by ADMS.
+
+    <dl>
+    <dt><tt>info=</tt>"<i>string describing the parameter or variable</i>"<dd>
+    The string will be used in the <i>WRspice</i> <a
+    href="show:><b>show</b></a> command and perhaps elsewhere.
+    </dl>
+
+    <dl>
+    <dt><tt>units=</tt><i>units_token</i><dd>
+    This gives the units of the parameter or variable.  (I'm not sure
+    that this is actually used.)
+    </dl>
+
+    <dl>
+    <dt><tt>type=model</tt><dd>
+    This construct indicates that the parameter should be taken as a
+    model parameter, i.e., a parameter given in a <tt>.model</tt> line
+    in SPICE.
+    </dl>
+
+    <dl>
+    <dt><tt>type=instance</tt><dd>
+    This construct indicates that the parameter should be taken as an
+    instance parameter, i.e., a parameter given in a device instance
+    line.
+    </dl>
+
+    <p>
+    Models may use the following code to hide this construct from
+    non-ADMS parsers.
+    <blockquote><tt>
+    `ifdef insideADMS<br>
+    &nbsp;&nbsp;`define ATTR(txt) (*txt*)<br>
+    `else<br>
+    &nbsp;&nbsp;`define ATTR(txt)<br>
+    `endif<br>
+    ...<br>
+    parameter real c10 = 2e-30 from [0:1] `ATTR(info="GICCR constant" unit="A^2s");<br>
+    real outTheta   `ATTR( info="Theta" );
+    </tt></blockquote>
+
+    <h2>3.  Read-Only Parameters</h2>
+
+    The presence of any attribute on a normal variable magically
+    transforms that variable into a parameter which is read-only. 
+    This means that it can be used to pass data out of the model
+    during simulation.
+
+    <p>
+    Such variables are initialized to the starting value at the
+    beginning of the simulation only.  Regular variables are
+    initialized on every pass through the equation set, which occurrs
+    on every Newton iteration.  The read-only parameters can therefor
+    retain history from the last iteration.
+
+    <p>
+    In <i>WRspice</i>, data from these (and all) parameters can be
+    obtained from the
+    <tt>@</tt><i>device</i><tt>[</tt><i>parmname</i><tt>]</tt> special
+    vector construct.
+
+    <h2>4. Initialization Blocks and Global Events</h2>
+
+    ADMS will handle the two standard global events, but only in the
+    forms containing no arguments.
+
+    <dl>
+    <dt><tt>@(initial_step) begin ... end</tt><dd>
+    The block is executed while computing the initial analysis point,
+    in accord with the Verilog-AMS standard.  The block will be called
+    for the operating point analysis (if any), all iterations.  Thus,
+    it will be called multiple times, which makes it unattractive for
+    use as an initializer.
+    </dl>
+
+    <dl>
+    <dt><tt>@(final_step) begin ... end</tt><dd>
+    The block is executed while computing the final analysis point, in
+    accord with the Verilog-AMS standard.  The block will be called
+    for all iterations.  It will be called after <tt>initial_step</tt>
+    if both are called.
+    </dl>
+
+!!IFDEF notdef
+Here's the Verilog-AMS truth table for the various forms, the forms
+containing arguments are not available in ADMS.  The $analysis function
+can be used in the block to provide analysis-specific code.
+
+                      DCOP  Sweep     TRAN        AC          NOISE
+                      OP    d1 d2 dN  OP  p2  pN  OP  p2  pN  OP  p2  pN
+initial_step()        1     1  0  0   1   0   0   1   0   0   1   0   0
+initial_step("ac")    0     0  0  0   0   0   0   1   0   0   0   0   0
+initial_step("noise") 0     0  0  0   0   0   0   0   0   0   1   0   0
+initial_step("tran")  0     0  0  0   1   0   0   0   0   0   0   0   0
+initial_step("dc")    1     1  0  0   0   0   0   0   0   0   0   0   0
+initial_step(unknown) 0     0  0  0   0   0   0   0   0   0   0   0   0
+final_step()          1     0  0  1   0   0   1   0   0   1   0   0   1
+final_step("ac")      0     0  0  0   0   0   0   0   0   1   0   0   0
+final_step("noise")   0     0  0  0   0   0   0   0   0   0   0   0   1
+final_step("tran")    0     0  0  0   0   0   1   0   0   0   0   0   0
+final_step("dc")      1     0  0  1   0   0   0   0   0   0   0   0   0
+final_step(unknown)   0     0  0  0   0   0   0   0   0   0   0   0   0
+
+These SHOULD NOT be used in compact model code.  Instead, use the following:
+!!ENDIF
+
+    <dl>
+    <dt><tt>@(initial_model) begin ... end</tt><dd>
+    This block is run once-only before any analysis.  It can be used
+    to initialize per-model parameters, such as temperature
+    dependence.  This is not in the Verilog-AMS standard and may be
+    particular to ADMS.
+    </dl>
+
+    <dl>
+    <dt><tt>@(initial_instance) begin ... end</tt><dd>
+    This block is run once-only before any analysis.  It can be used
+    to initialize per-instance parameters, such as geometrical
+    dependence.  This is not in the Verilog-AMS standard and may be
+    particular to ADMS.
+    </dl>
+
+    <p>
+    In ADMS, the "global events" are equivalent to named blocks, for
+    example:
+
+    <table border=0 cellspacing=4>
+    <tr><td><tt>begin : initial_model</tt></td> <td width=40>&nbsp;</td>
+      <td><tt>@(initial_model) begin</tt></td></tr>
+    <tr><td>...</td><td></td><td>...</td></tr>
+    <tr><td><tt>end</tt></td><td></td><td><tt>end</tt></td></tr>
+    </table>
+
+    <p>
+    Either form can be used for <tt>initial_step</tt>,
+    <tt>final_step</tt>, <tt>initial_model</tt>, and
+    <tt>initial_instance</tt>.
+
+    <h2>System Tasks</h2>
+
+    <h4>1. Input/Output</h4>
+                
+    <dl>
+    <dt>
+    <tt>$display</tt>(<i>format</i>, <i>variable list</i>)<br>
+    <tt>$strobe</tt>(<i>format</i>, <i>variable list</i>)<br>
+    <tt>$monitor</tt>(<i>format</i>, <i>variable list</i>)<br>
+    <tt>$write</tt>(<i>format</i>, <i>variable list</i>)<dd>
+    These commands have the same syntax, and display text on the
+    screen during simulation.  <tt>$display</tt> and <tt>$strobe</tt>
+    display once every time they are executed, whereas
+    <tt>$monitor</tt> displays every time one of its parameters
+    changes.  The difference between <tt>$display</tt> and
+    <tt>$strobe</tt> is that <tt>$strobe</tt> displays the parameters
+    at the very end of the current simulation time unit rather than
+    exactly when it is executed.  The format string is like that in
+    C/C++, and may contain format characters.  Format characters
+    include <tt>%d</tt> (decimal), <tt>%h</tt> (hexadecimal),
+    <tt>%b</tt> (binary), <tt>%c</tt> (character), <tt>%s</tt>
+    (string) and <tt>%t</tt> (time), <tt>%m</tt> (hierarchy level). 
+    Forms like <tt>%5d</tt>, <tt>%5b</tt> etc.  would assign a field
+    width of 5 when printing the item.
+
+    <p>
+    <tt>$display</tt> and <tt>$write</tt> are the same except
+    <tt>$display</tt> appends a newline if the string does not have a
+    trailing newline character, <tt>$write</tt> does not do this.
+    </dl>
+
+    <dl>
+    <dt>
+    <tt>$error</tt>(<i>format</i>, ...)<br>
+    <tt>$warning</tt>(<i>format</i>, ...)<dd>
+    Print a message starting with "<tt>Fatal:</tt>" or "<tt>Warning:</tt>".
+    </dl>
+
+    <dl>
+    <dt>
+    <tt>$fopen</tt>(<i>filename</i>)<br>
+    <tt>$fclose</tt>(<i>handle</i>)<br>
+    <tt>$fdisplay</tt>(<i>handle</i>, <i>format</i>, <i>variable list</i>)<br>
+    <tt>$fstrobe</tt>(<i>handle</i>, <i>format</i>, <i>variable list</i>)<br>
+    <tt>$fmonitor</tt>(<i>handle</i>, <i>format</i>, <i>variable list</i>)<br>
+    <tt>$fwrite</tt>(<i>handle</i>, <i>format</i>, <i>variable list</i>)<dd>
+    These commands write more selectively to files.
+
+    <p>
+    <tt>$fopen</tt> opens an output file and gives the open file an
+    integer handle for use by the other commands.
+
+    <p>
+    <tt>$fclose</tt> closes the file and lets other programs access it.
+
+    <p>
+    In <i>WRspice</i>, there are two special handles that are automatically
+    open and can't be closed.
+
+    <blockquote>
+    <table border=1 cellspacing=2 cellpadding=2>
+    <tr><td>0   </td><td>Print to the pop-up error window.</td></tr>
+    <tr><td>1 or &#60; 0</td><td>Print to the standard output (terminal
+      window).</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    <tt>$fdisplay</tt> and <tt>$fwrite</tt> write formatted data to a
+    file whenever they are executed.  They are the same except
+    <tt>$fdisplay</tt> appends a newline if the string does not have a
+    trailing newline character, <tt>$fwrite</tt> does not do this.
+
+    <p>
+    <tt>$fstrobe</tt> also writes to a file when executed, but it
+    waits until all other operations in the time step are complete
+    before writing.  Thus
+    <blockquote>
+    <tt>initial #1 a=1; b=0; $fstrobe(hand1, a,b); b=1;</tt>
+    </blockquote>
+    will write write 1 1 for a and b.
+
+    <p>
+    <tt>$monitor</tt> writes to a file whenever any of its arguments
+    changes.
+    </dl>
+
+    <h4>2. Simulation Control</h4>
+
+    <dl>
+    <dt><tt>$bound_step</tt>(<i>max_delta</i>)<dd>
+    Limit the next time point to be <i>max_delta</i> or less from the
+    present time point in transient analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>$finish</tt>[(<i>n</i>[, <i>type_string</i>])]<dd>
+    Halt the analysis.  If integer <i>n</i> is given, it can be one of
+    these values, which determine what if anything is printed.
+
+    <blockquote>
+    From the spec, this is not currently supported.
+    <table border=1 cellspacing=2 cellpadding=2>
+    <tr><td>0</td>  <td>Prints nothing (the default if no argument)</td></tr>
+    <tr><td>1</td>  <td>Prints simulation time and location</td></tr>
+    <tr><td>2</td>  <td>Prints simulation time, location, and statistics
+      about the memory and CPU time used in simulation</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Verilog-AMS HDL allows an additional option string argument to be
+    specified to <tt>$finish</tt> to indicate the type of the finish. 
+    <i>type_string</i> can take one of three values: 
+    “<tt>accepted</tt>”, “<tt>immediate</tt>” or
+    “<tt>current_analysis</tt>”.  “<tt>accepted</tt>” is the default
+    setting.
+
+    <p>
+    If the <i>type_string</i> is set to “<tt>accepted</tt>” and
+    <tt>$finish</tt> is called during an accepted iteration, then the
+    simulator will exit after the current solution is complete.
+
+    <p>
+    If the <i>type_string</i> is set to “<tt>current_analysis</tt>”
+    and <tt>$finish</tt> is called during an accepted iteration, then
+    the simulator terminates the current analysis and will start the
+    next analysis if one requested. 
+
+    <p>
+    If the <i>type_string</i> is set to “<tt>immediate</tt>” and
+    <tt>$finish</tt> is called during an iteration, then the
+    simulation will exit immediately without the current solution
+    being completed.  This is not recommended as it may leave the
+    output files generated by the simulator in an undefined state.
+    </dl>
+
+    <dl>
+    <dt><tt>$stop</tt>[(<i>n</i>)]<dd>
+    A call to <tt>$stop</tt> during an accepted iteration causes
+    simulation to be suspended at a converged timepoint.  This task
+    takes an optional integer expression argument (0, 1, or 2), which
+    determines what type of diagnostic message is printed.  The amount
+    of diagnostic message output increases with the value of <i>n</i>,
+    as shown for <tt>$finish</tt>.
+    </dl>
+
+    <h4>3.  Random Numbers</h4>
+
+    <dl>
+    <dt><tt>$random</tt>[(<i>seed</i>)]<dd>
+    <tt>$random</tt> generates a random integer every time it is
+    called.  If the sequence is to be repeatable, the first time one
+    invokes <tt>$random</tt> it is given a numerical argument (a
+    seed).  Otherwise the seed is derived from the computer clock.
+    </dl>
+
+    <dl>
+    <dt>
+    <tt>$rdist_uniform</tt>(<i>seed</i>, <i>start</i>, <i>end</i>[, <i>dt</i>])<br>
+    <tt>$rdist_normal</tt>(<i>seed</i>, <i>mean</i>, <i>stddev</i>[, <i>dt</i>])<br>
+    <tt>$rdist_exponential</tt>(<i>seed</i>, <i>mean</i>[, <i>dt</i>])<br>
+    <tt>$rdist_poisson</tt>(<i>seed</i>, <i>mean</i>[, <i>dt</i>])<br>
+    <tt>$rdist_chi_square</tt>(<i>seed</i>, <i>dof</i>[, <i>dt</i>])<br>
+    <tt>$rdist_t</tt>(<i>seed</i>, <i>dof</i>[, <i>dt</i>])<br>
+    <tt>$rdist_erlang</tt>(<i>seed</i>, <i>k</i>, <i>mean</i>[, <i>dt</i>])<dd>
+    In <i>WRspice</i>, the following functions are implemented in such
+    a way that they are compatible with Newton iterations and
+    convergence testing.  Logically, a separate random value is
+    obtained at each point of a grid in time that covers the
+    simulation interval.  The actual random number used is
+    interpolated from this grid at the present simulation time.  Thus,
+    the "random" function becomes deterministic, and simulations that
+    include output from the random generator will converge and iterate
+    normally.  This can be used to model Johnson noise in the time
+    domain, for example.
+
+    <p>
+    Each has an additional optional "<i>dt</i>" argument which if
+    given is taken as the time period of the random number grid.  If
+    not given, the <i>TStep</i> from the running transient analysis is
+    assumed.  This value has significance only in transient analysis. 
+    During other types of analysis, calls to these functions will
+    return a single random value, generated on the first call.
+
+    <p>
+    Note that during transient analysis, the seed value should not
+    change, or non-convergence can result.
+
+    <p>
+    The following rules apply to these functions.
+    <ul>
+    <li>All arguments to the system functions are real values, except
+    for <i>seed</i> (which is defined by <tt>$random</tt>).  For the
+    <tt>$rdist_exponential</tt>, <tt>$rdist_poisson</tt>,
+    <tt>$rdist_chi_square</tt>, <tt>$rdist_t</tt>, and
+    <tt>$rdist_erlang</tt> functions, the arguments <i>mean</i>,
+    <i>dof</i>, and <i>k</i> shall be greater than zero (0).
+
+    <p>
+    <li>Each of these functions returns a pseudo-random number whose
+    characteristics are described by the function name, e.g.,
+    <tt>$rdist_uniform</tt> returns random numbers uniformly
+    distributed in the interval specified by its arguments.
+
+    <p>
+    <li>For each system function, the <i>seed</i> argument shall be an
+    integer.  If it is an integer variable, then it is an inout
+    argument; that is, a value is passed to the function and a
+    different value is returned.  The variable is initialized by the
+    user and only updated by the system function.  This ensures the
+    desired distribution is achieved upon successive calls to the
+    system function.  If the <i>seed</i> argument is a parameter or
+    constant, then the system function does not update the value. 
+    This makes the system function useable for parameter
+    initialization.  <i>WRspice</i> doesn't handle this.
+
+    <p>
+    <li>The system functions shall always return the same value given
+    the same seed.  This facilitates debugging by making the operation
+    of the system repeatable.  In order to get different random values
+    when the seed argument is a parameter, the user can override the
+    parameter.
+
+    <p>
+    The two paragraphs above are difficult to follow.  In
+    <i>WRspice</i>, if the same seed value is used for all calls, the
+    sequence of values is repeatable.  A call with a different seed
+    will reset the internal random number generator and a different
+    sequence would be returned.  The system functions never reset the
+    seed.  There is only one seed in <i>WRspice</i>, so if any
+    function call changes the seed, all subsequent random number calls
+    are affected.
+
+    <li>All functions return a real value.
+
+    <p>
+    <li>In <tt>$rdist_uniform</tt>, the <i>start</i> and <i>end</i>
+    arguments are real inputs which bound the values returned.  The
+    <i>start</i> value shall be smaller than the <i>end</i> value.
+
+    <p>
+    <li>The <i>mean</i> argument used by <tt>$rdist_normal</tt>,
+    <tt>$rdist_exponential</tt>, <tt>$rdist_poisson</tt>, and
+    <tt>$rdist_erlang</tt> is a real input which causes the average
+    value returned by the function to approach the value specified. 
+
+    <p>
+    <li>The <i>standard_deviation</i> argument used by
+    <tt>$rdist_normal</tt> is a real input, which helps determine the
+    shape of the density function.  Using larger numbers for
+    <i>standard_deviation</i> spreads the returned values over a wider
+    range.  Using a mean of zero (0) and a standard deviation of one
+    (1), <tt>$rdist_normal</tt> generates Gaussian distribution.
+
+    <p>
+    <li>The <i>dof</i> (degree of freedom) argument used by
+    <tt>$rdist_chi_square</tt> and <tt>$rdist_t</tt> is a real input,
+    which helps determine the shape of the density function.  Using
+    larger numbers for <i>dof</i> spreads the returned values over a
+    wider range. 
+    </ul>
+    </dl>
+
+
+    <h4>3.  Other System Functions Recognized in ADMS/<i>WRspice</i></h4>
+
+    <dl>
+    <dt>
+    <tt>absdelay</tt>(<i>arg1</i>, <i>arg2</i>)<br>
+    <tt>delay</tt>(<i>arg1</i>, <i>arg2</i>)<dd>
+    Recognized but not implemented.
+    </dl>
+
+    <dl>
+    <dt>
+    <tt>$abstime</tt><br>
+    <tt>$realtime</tt><dd>
+    Returns the simulation time, the names are equivalent.
+    </dl>
+
+    <dl>
+    <dt><tt>analysis</tt>(<i>keyword</i>)<dd>
+    Return nonzero if the analysis type represented by the
+    <i>keyword</i> is being performed.  The <i>keyword</i> is one of:
+    <dl>
+    <dt><tt>ac</tt><dd>
+    True when running AC analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>dc</tt><dd>
+    True when running DC sweep or operating point analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>noise</tt><dd>
+    True when running noise analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>tran</tt><dd>
+    True when running transient analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>ic</tt><dd>
+    True in the initial-condition analysis that preceeds a transient
+    analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>static</tt><dd>
+    Any equilibrium point calculation, including a DC analysis as well
+    as those that precede another analysis, such as the DC analysis
+    that precedes an AC or noise analysis, or the IC analysis that
+    precedes a transient analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>nodeset</tt><dd>
+    The phase during an equilibrium point calculation where node
+    voltages are forced.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><tt>ceil</tt>(<i>x</i>)<dd>
+    Return the integer value greater than or equal to the argument.
+    </dl>
+
+    <dl>
+    <dt><tt>ddt</tt>(<i>expression</i>[, <i>ignored</i>])<dd>
+    Return the time derivative, any second argument is ignored.
+    </dl>
+
+    <dl>
+    <dt><tt>ddx</tt>(<i>variable</i>, <i>probe</i>)<dd>
+    Return the partial derivative of the variable with respect to the
+    probe.
+    </dl>
+
+    <dl>
+    <dt><tt>flicker_noise</tt>(<i>a</i>, <i>b</i>[, <i>c</i>])<dd>
+    Probably not implemented.
+    </dl>
+
+    <dl>
+    <dt><tt>floor</tt>(<i>x</i>)<dd>
+    Return the integer value less than or equal to the argument.
+    </dl>
+
+    <dl>
+    <dt><tt>$given</tt>(<i>model_or_instance_parameter</i>)<dd>
+    Return nonzero if the parameter was given, same as
+    <tt>$param_given</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>idt</tt>(<i>expression</i>, <i>icval</i>, <i>reset</i>[,
+     <i>ignored</i>)<dd>
+    Return the time integral of <i>expression</i> using the initial
+    value <i>icval</i>.  If <i>reset</i> is nonzero, instead zero the
+    internal integration history.
+    </dl>
+
+    <dl>
+    <dt><tt>$mfactor</tt><dd>
+    Return the device <tt>M</tt> scale factor if the model was built
+    for this support, otherwise 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>$model</tt><dd>
+    Expands to the name of the current device model.
+    </dl>
+
+    <dl>
+    <dt><tt>$nominal_temperature</tt><dd>
+    Return the nominal temperature in Kelvin.
+    </dl>
+
+    <dl>
+    <dt><tt>$instance</tt><dd>
+    Expands to the name of the currenly scoped instance, or "???".
+    </dl>
+
+    <dl>
+    <dt><tt>$param_given</tt>(<i>model_or_instance_parameter</i>)<dd>
+    Return nonzero if the parameter was given, same as <tt>$given</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>$port_connected</tt>(<i>port_name</i>)<dd>
+    Return nonzero if the named port is connected externally.
+    </dl>
+
+    <dl>
+    <dt>
+    <tt>$realtime</tt><br>
+    <tt>$abstime</tt><dd>
+    Return the simulation time, the names are equivalent.
+    </dl>
+
+    <dl>
+    <dt><tt>$scale</tt><dd>
+    Return 1.0, no scaling in <i>WRspice</i>.
+    </dl>
+
+    <dl>
+    <dt><tt>$simparam</tt>(<i>string</i>[, <i>expression</i>])<dd>
+    This queries the simulator for a simulation parameter named in
+    <i>string</i>.  If <i>string</i> is known, its value is returned. 
+    If string is not known, and the optional <i>expression</i> is not
+    supplied, then an error is generated.  If the optional
+    <i>expression</i> is supplied, its value is returned if
+    <i>string</i> is not known and no error is generated. 
+
+    <p>
+    <tt>$simparam</tt>() shall always return a real value; simulation
+    parameters that have integer values shall be coerced to real. 
+    There is no fixed list of simulation parameters.  However,
+    simulators shall accept the strings below to access commonly-known
+    simulation parameters, if they support the parameter.  Simulators
+    can also accept other strings to access the same parameters.
+
+    <p>
+    The first group below comes from the Verilog-AMS specification.
+
+    <p>
+    <dl>
+    <dt><tt>gdev</tt><dd>
+    Additional conductance to be added to nonlinear branches for
+    conductance homotopy convergence algorithm.  Returns the
+    <i>WRspice</i> <a href="gmin"><tt>gmin</tt></a> parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>gmin</tt><dd>
+    Minimum conductance placed in parallel with nonlinear branches,
+    returns the <i>WRspice</i> <a href="gmin"><tt>gmin</tt></a>
+    parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>imax</tt><dd>
+    Branch current threshold above which the constitutive relation
+    of a nonlinear branch should be linearized.  Returns 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>imelt</tt><dd>
+    Branch current threshold indicating device failure.  Returns 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>iteration</tt><dd>
+    Iteration number of the analog solver, returns an internal
+    iteration count.
+    </dl>
+
+    <dl>
+    <dt><tt>scale</tt><dd>
+    Scale factor for device instance geometry parameters.  Returns 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>shrink</tt><dd>
+    Optical linear shrink factor.  Returns 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>simulatorSubversion</tt><dd>
+    The simulator sub-version.  Returns, e.g., 5 for <i>WRspice</i>-4.3.5.
+    </dl>
+
+    <dl>
+    <dt><tt>simulatorVersion</tt><dd>
+    The simulator version.  Retursn, e.g., 4.3 for <i>WRspice</i>-4.3.5.
+    </dl>
+
+    <dl>
+    <dt><tt>sourceScaleFactor</tt><dd>
+    Multiplicative factor for independent sources for source stepping
+    homotopy convergence algorithm.  <i>WRspice</i> returns the
+    scaling value from source stepping.
+    </dl>
+
+    <dl>
+    <dt><tt>tnom</tt><dd>
+    Default value of temperature in Celsius at which model parameters were
+    extracted (same as <tt>$nominal_temperature</tt>).
+    </dl>
+
+    <p>
+    The following group has unknown origin.
+
+    <dl>
+    <dt><tt>checkjcap</tt><dd>
+    Returns 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>maxmosl</tt><dd>
+    Returns 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>maxmosw</tt><dd>
+    Returns 1.0.
+    </dl>
+
+    <dl>
+    <dt><tt>minmosl</tt><dd>
+    Returns 1.0e-12.
+    </dl>
+
+    <dl>
+    <dt><tt>minmosw</tt><dd>
+    Returns 1.0e-12.
+    </dl>
+
+    <p>
+    The final group is implemented in <i>WRspice</i>, perhaps uniquely.
+
+    <dl>
+    <dt><a href=".tran"><tt>tstep</tt></a><dd>
+    The current transient analysis output time increment.
+    </dl>
+
+    <dl>
+    <dt><a href=".tran"><tt>tstart</tt></a><dd>
+    The current start time for transient analysis output.
+    </dl>
+
+    <dl>
+    <dt><a href=".tran"><tt>tstop</tt></a><dd>
+    The current final time point in transient analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>delta</tt><dd>
+    The current internal time step in transient analysis.
+    </dl>
+
+    <dl>
+    <dt><a href="delmin"><tt>delmin</tt></a><dd>
+    The minimum allowable transient analysis time step.
+    </dl>
+
+    <dl>
+    <dt><tt>delmax</tt><dd>
+    The maximum allowable transient analysis time step.
+    </dl>
+
+    <dl>
+    <dt><a href="abstol"><tt>abstol</tt></a><dd>
+    The absolute tolerance parameter.
+    </dl>
+
+    <dl>
+    <dt><a href="reltol"><tt>reltol</tt></a><dd>
+    The relative tolerance parameter.
+    </dl>
+
+    <dl>
+    <dt><a href="chgtol"><tt>chgtol</tt></a><dd>
+    The charge tolerance parameter.
+    </dl>
+
+    <dl>
+    <dt><a href="vntol"><tt>vntol</tt></a><dd>
+    The voltage tolerance parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>predictor</tt><dd>
+    Nonzero when in the first iteration of a time point.
+    </dl>
+
+    <dl>
+    <dt><tt>smallsig</tt><dd>
+    Nonzero when loading small-signal values in AC analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>dcphasemode</tt><dd>
+    Nonzero if using phase-mode DC analysis, may be true when Josephson
+    junctions are present.
+    </dl>
+
+    <dl>
+    <dt><a href="dphimax"><tt>dphimax</tt></a><dd>
+    Returns the maximum phase change for internal time point for
+    sinusoidal sources and Josephson junctions.
+    </dl>
+    </dl>
+
+    <dl>
+    <dt><tt>$temperature</tt><dd>
+    Returns the circuit ambient temperature in Kelvin.
+    </dl>
+
+    <dl>
+    <dt><tt>$vt</tt>[(<i>temperature_expression</i>)]<dd>
+    Returns the thermal voltage KT/q using the argument for temerature,
+    or the ambient temperature if no argument is given.
+    </dl>
+
+    <h4>WRspice C/C++ Bridge Function</h4>
+
+    <dl>
+    <dt><tt>cfunc</tt>(<i>funcname</i>, <i>arg1</i>, ..., <i>argN</i>)<dd>
+    The <tt>cfunc</tt> pseudo-function allows arbitrary C/C++ function
+    calls to be made from the model code.
+
+    <p>
+    The return value can be used in an assignment.  In the C++ files,
+    the construct maps to <i>funcname</i>(<i>arg1</i>, ...,
+    <i>argN</i>).
+
+    <p>
+    This can be used to, for example, make available special math
+    functions callable from Verilog-A.  Be advised that this can be
+    unsafe to use in model code, as the derivative is not included in
+    the Jacobian, which can lead to convergence problems.  However, if
+    such functions are used only for initialization, use is safe.
+
+    <p>
+    To use this facility, the <tt>HEADER</tt> variable in the
+    <tt>Makefile</tt> should be redefined to yes, and the user should
+    create an include file that contains (perhaps through another
+    include) prototypes of the functions called using <tt>cfunc</tt>. 
+    This file must be named <i>MODULE</i><tt>extra.h</tt>, where
+    <i>MODULE</i> is the short name also provided from the
+    <tt>Makefile</tt>.
+
+    <p>
+    The header file must also be modified to link the library
+    containing the function implementations to the loadable module. 
+    The user is expected to know how to do this.
+    </dl>
+
+!!SEEALSO
+loadable
+veriloga
 
 !!REDIRECT vlad         refs#vlad
 !!REDIRECT sheu         refs#sheu

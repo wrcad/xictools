@@ -69,13 +69,13 @@ Author: 1992 Stephen R. Whiteley
 // Hard-wire defaults for MIT-LL process for SuperTools.
 #define C_PER_A C_PER_A_10000
 #define I_PER_A I_PER_A_10000
-#define Vm      Vm_LL
-#define IcR     IcR_LL
+#define Vm      (Vm_LL*1e-3)
+#define IcR     (IcR_LL*1e-3)
 
-#define VmMin   10.0        // Min Vm mV
-#define VmMax   100.0       // Max Vm mV
-#define IcRmin  1.5         // Min IcR mV
-#define IcRmax  1.9         // Max IcR mV
+#define VmMin   0.01        // Min Vm V
+#define VmMax   0.1         // Max Vm V
+#define IcRmin  1.5e-3      // Min IcR V
+#define IcRmax  1.9e-3      // Max IcR V
 #define Ic      1e-3        // Assumed Ic of reference, A
 #define IcMin   Icrit/20    // Min reference Ic, A
 #define IcMax   Icrit*20    // Max referenct Ic, A
@@ -228,14 +228,14 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
         if (!model->JJr0Given) {
             double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
-            model->JJr0 = 1e-3*model->JJvm/i;
+            model->JJr0 = model->JJvm/i;
         }
         else {
             double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
-            double R0min = 1e-3*VmMin/i;
-            double R0max = 1e-3*VmMax/i;
+            double R0min = VmMin/i;
+            double R0max = VmMax/i;
             if (model->JJr0 < R0min || model->JJr0 > R0max) {
-                double R0 = 1e-3*model->JJvm/i;
+                double R0 = model->JJvm/i;
                 DVO.textOut(OUT_WARNING,
                     "%s: RSUB=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->JJr0, R0min, R0max, R0);
@@ -256,14 +256,14 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
         if (!model->JJrnGiven) {
             double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
-            model->JJrn = 1e-3*model->JJicrn/i;
+            model->JJrn = model->JJicrn/i;
         }
         else {
             double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
-            double RNmin = 1.5e-3/i;
-            double RNmax = 1.9e-3/i;
+            double RNmin = IcRmin/i;
+            double RNmax = IcRmax/i;
             if (model->JJrn < RNmin || model->JJrn > RNmax) {
-                double RN = 1e-3*model->JJicrn/i;
+                double RN = model->JJicrn/i;
                 DVO.textOut(OUT_WARNING,
                     "%s: RN=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->JJrn, RNmin, RNmax, RN);
@@ -290,6 +290,19 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                     "%s: NOISE=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->JJnoise, NOImin, NOImax, NOI);
                 model->JJnoise = NOI;
+            }
+        }
+
+        if (!model->JJtsfactGiven)
+            model->JJtsfact = ckt->CKTcurTask->TSKdphiMax;
+        else {
+            if (model->JJtsfact < DEF_dphiMax_MIN ||
+                    model->JJtsfact > DEF_dphiMax_MAX) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TSFACTOR=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJtsfact, NOImin, NOImax,
+                    ckt->CKTcurTask->TSKdphiMax);
+                model->JJnoise = ckt->CKTcurTask->TSKdphiMax;
             }
         }
 
