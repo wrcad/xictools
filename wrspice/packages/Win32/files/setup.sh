@@ -36,6 +36,8 @@ $utod $top/xictools/$appdir/bin/preinstall.bat
 
 examples=$top/xictools/$appdir/examples
 $utod $examples/*
+$utod $examples/JJexamples/*
+$utod $examples/JJexamples_old/*
 
 help=$top/xictools/$appdir/help
 $utod $help/*.hlp

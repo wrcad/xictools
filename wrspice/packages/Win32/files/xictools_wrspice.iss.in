@@ -34,6 +34,8 @@ Source: "..\root\usr\local\xictools\wrspice.current\bin\proc2mod.exe"; DestDir: 
 Source: "..\root\usr\local\xictools\wrspice.current\bin\printtoraw.exe"; DestDir: "{app}\xictools\wrspice.current\bin"; AfterInstall: DoAfterInstall
 
 Source: "..\root\usr\local\xictools\wrspice.current\examples\*"; DestDir: "{app}\xictools\wrspice.current\examples"
+Source: "..\root\usr\local\xictools\wrspice.current\examples\JJexamples\*"; DestDir: "{app}\xictools\wrspice.current\examples\JJexamples"
+Source: "..\root\usr\local\xictools\wrspice.current\examples\JJexamples_old\*"; DestDir: "{app}\xictools\wrspice.current\examples\JJexamples_old"
 
 Source: "..\root\usr\local\xictools\wrspice.current\help\*"; DestDir: "{app}\xictools\wrspice.current\help"
 Source: "..\root\usr\local\xictools\wrspice.current\help\screenshots\*"; DestDir: "{app}\xictools\wrspice.current\help\screenshots"

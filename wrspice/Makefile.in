@@ -465,6 +465,16 @@ $(destn)/examples::
 	for a in $$examples; do \
 	    $(INSTALL_LIB) examples/$$a $@; \
 	done
+	@$(BASE)/util/mkdirpth $@/JJexamples
+	jjex=`packages/util/wrspice_files JJexamples`; \
+	for a in $$jjex; do \
+	    $(INSTALL_LIB) examples/JJexamples/$$a $@; \
+	done
+	@$(BASE)/util/mkdirpth $@/JJexamples_old
+	jjexo=`packages/util/wrspice_files JJexamples_old`; \
+	for a in $$jjexo; do \
+	    $(INSTALL_LIB) examples/JJexamples_old/$$a $@; \
+	done
 
 $(destn)/docs::
 	@$(BASE)/util/mkdirpth $@
