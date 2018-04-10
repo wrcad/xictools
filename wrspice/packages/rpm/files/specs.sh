@@ -69,8 +69,8 @@ for a in $jjex; do
     echo "%attr(0644, root, root) /usr/local/xictools/$top/examples/JJexamples/$a"
 done
 echo "%dir /usr/local/xictools/$top/examples/JJexamples_old"
-jjex=`$fileso JJexamples_old`
-for a in $jjexo; do
+jjex=`$files JJexamples_old`
+for a in $jjex; do
     echo "%attr(0644, root, root) /usr/local/xictools/$top/examples/JJexamples_old/$a"
 done
 

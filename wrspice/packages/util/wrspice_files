@@ -258,9 +258,9 @@ docs)
     echo $docs;;
 examples)
     echo $examples;;
-jjexamp)
+JJexamples)
     echo $JJexamples;;
-jjexamp_old)
+JJexamples_old)
     echo $JJexamples_old;;
 help)
     echo $help;;
