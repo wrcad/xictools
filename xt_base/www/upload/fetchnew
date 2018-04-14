@@ -83,7 +83,7 @@ filename()
     arch=$2
     if [ -z "$arch" ]; then
         if [ $os = Win32 ]; then
-            arch-i386
+            arch=i386
         else
             arch=x86_64
         fi

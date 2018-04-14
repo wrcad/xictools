@@ -2,7 +2,7 @@
 
 # Make sure package directories symbolic links are created.
 
-exprog=./exported
+exprog=./exported.new
 oses=$($exprog oses)
 
 for a in $oses; do

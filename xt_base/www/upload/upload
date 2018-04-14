@@ -53,11 +53,11 @@ for prog in $progs; do
         ./update -y $prog
         if [ $prog = xic ]; then
             ./update_help xic
-            vers=$(exported.new version $prog)
+            vers=$(./exported.new version $prog)
             ./update_man -y xic-$vers
         elif [ $prog = wrspice ]; then
             ./update_help wrspice
-            vers=$(exported.new version $prog)
+            vers=$(./exported.new version $prog)
             ./update_man -y wrspice-$vers
         fi
     fi
@@ -67,6 +67,9 @@ done
 # mozy install page.
 
 ./mktab
+
+# Save for next time.
+mv -f exported.new exported
 
 # Done.
 

@@ -83,6 +83,23 @@ namespace {
         }
     }
 
+    // Return the next unsigned int found, -1 if none, while skipping
+    // non-numeric.  Advance pointer.
+    //
+    int nextint(const char **s)
+    {
+        const char *p = *s;
+        while (*p && !isdigit(*p))
+            p++;
+        if (!*p)
+            return (-1);  // error return
+        int i = atoi(p);
+        while (isdigit(*p))
+            p++;
+        *s = p;
+        return (i);
+    }
+
     bool newerpkg(stringlist *loc, stringlist *avl)
     {
         if (!loc || !avl)
@@ -92,20 +109,18 @@ namespace {
 
         delete [] lstring::gettok(&locpkg, "-");  // xictools_prog
         delete [] lstring::gettok(&locpkg, "-");  // osname
-        char *vrs = lstring::gettok(&locpkg, "-");// version
-        int lgen, lmaj, lmin;
-        int n = sscanf(vrs, "%d.%d.%d", &lgen, &lmaj, &lmin);
-        delete [] vrs;
-        if (n != 3)
+        int lgen = nextint(&locpkg);
+        int lmaj = nextint(&locpkg);
+        int lmin = nextint(&locpkg);
+        if (lmin < 0)
             return (false);
 
         delete [] lstring::gettok(&avlpkg, "-");  // xictools_prog
         delete [] lstring::gettok(&avlpkg, "-");  // osname
-        vrs = lstring::gettok(&avlpkg, "-");      // version
-        int agen, amaj, amin;
-        n = sscanf(vrs, "%d.%d.%d", &agen, &amaj, &amin);
-        delete [] vrs;
-        if (n != 3)
+        int agen = nextint(&avlpkg);
+        int amaj = nextint(&avlpkg);
+        int amin = nextint(&avlpkg);
+        if (amin < 0)
             return (false);
         if (agen > lgen)
             return (true);
