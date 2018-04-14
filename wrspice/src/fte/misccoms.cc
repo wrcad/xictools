@@ -351,7 +351,11 @@ void
 CommandTab::com_wrupdate(wordlist*)
 {
 #ifdef HAVE_MOZY
-    HLP()->read(":xt_pkgs");
+    wordlist wl;
+    char buf[16];
+    strcpy(buf, ":xt_pkgs");
+    wl.wl_word = buf;
+    com_help(&wl);
 #else
     GRpkgIf()->ErrPrintf(ET_MSG,
         "Package manager is not available in this executable.");
