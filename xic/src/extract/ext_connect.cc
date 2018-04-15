@@ -1426,15 +1426,29 @@ cExt::isConnection(CDs *sdesc, const sVia *via, const CDo *odv,
             return (XIintr);
         }
     }
-    Zlist *z1 = od1->toZlist();
 
-    XIrt ret = Zlist::zl_and(&zv, z1);
-    if (ret != XIok)
-        return (ret);
-    if (!zv)
-        return (XIok);
-    Zlist *z2 = od2->toZlist();
-    *connected = Zlist::zl_intersect(zv, z2, false);
+    // If od1 or od2 is null, assume that the via is over dark-field
+    // ground plane.
+
+    if (od1) {
+        Zlist *z1 = od1->toZlist();
+        XIrt ret = Zlist::zl_and(&zv, z1);
+        if (ret != XIok)
+            return (ret);
+        if (!zv)
+            return (XIok);
+    }
+    if (od2) {
+        Zlist *z2 = od2->toZlist();
+        XIrt ret = Zlist::zl_and(&zv, z2);
+        if (ret != XIok)
+            return (ret);
+        if (!zv)
+            return (XIok);
+    }
+    Zlist::destroy(zv);
+
+    *connected = true;
     return (XIok);
 }
 

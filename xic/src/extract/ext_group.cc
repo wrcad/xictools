@@ -1108,8 +1108,8 @@ cGroupDesc::combine()
                     continue;
                 }
 
-                int g1 = odesc1->group();
-                int g2 = odesc2->group();
+                int g1 = odesc1 ? odesc1->group() : 0;
+                int g2 = odesc2 ? odesc2->group() : 0;
                 if (g1 == g2) {
                     delete odesc;
                     continue;
