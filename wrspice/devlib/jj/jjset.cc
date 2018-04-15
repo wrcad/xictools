@@ -72,13 +72,15 @@ Author: 1992 Stephen R. Whiteley
 #define Vm      (Vm_LL*1e-3)
 #define IcR     (IcR_LL*1e-3)
 
-#define VmMin   0.01        // Min Vm V
+#define VmMin   0.008       // Min Vm V
 #define VmMax   0.1         // Max Vm V
 #define IcRmin  1.5e-3      // Min IcR V
 #define IcRmax  1.9e-3      // Max IcR V
 #define Ic      1e-3        // Assumed Ic of reference, A
-#define IcMin   Icrit/20    // Min reference Ic, A
-#define IcMax   Icrit*20    // Max referenct Ic, A
+#define IcMin   1e-9        // Min reference Ic, A
+#define IcMax   1e-1        // Max referenct Ic, A
+#define IcsMin  Icrit/20    // Min instance Ic, A
+#define IcsMax  Icrit*20    // Max instance Ic, A
 #define Vg      2.8e-3      // Assumed Vgap of reference, V
 #define VgMin   2.5e-3      // Min Vgap, V
 #define VgMax   3.1e-3      // Max Vgao, V
@@ -185,7 +187,6 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         if (!model->JJcritiGiven)
             model->JJcriti = Ic;
         else {
-            double Icrit = Ic;
             if (model->JJcriti < IcMin || model->JJcriti > IcMax) {
                 DVO.textOut(OUT_WARNING,
                     "%s: ICRIT=%g out of range [%g-%g], reset to %g.\n",
@@ -294,15 +295,14 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
 
         if (!model->JJtsfactGiven)
-            model->JJtsfact = ckt->CKTcurTask->TSKdphiMax;
+            model->JJtsfact = ckt->CKTcurTask->TSKdphiMax/M_PI;
         else {
-            if (model->JJtsfact < DEF_dphiMax_MIN ||
-                    model->JJtsfact > DEF_dphiMax_MAX) {
+            if (model->JJtsfact < 0.001 || model->JJtsfact > 1) {
                 DVO.textOut(OUT_WARNING,
                     "%s: TSFACTOR=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->JJtsfact, NOImin, NOImax,
-                    ckt->CKTcurTask->TSKdphiMax);
-                model->JJnoise = ckt->CKTcurTask->TSKdphiMax;
+                    model->GENmodName, model->JJtsfact, 0.001, 1.0,
+                    ckt->CKTcurTask->TSKdphiMax/M_PI);
+                model->JJtsfact = ckt->CKTcurTask->TSKdphiMax/M_PI;
             }
         }
 
@@ -325,10 +325,10 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                         inst->GENname);
                 }
                 double Icrit = model->JJcriti;
-                if (inst->JJics < IcMin || inst->JJics > IcMax) {
+                if (inst->JJics < IcsMin || inst->JJics > IcsMax) {
                     DVO.textOut(OUT_WARNING,
                         "%s: ICS=%g out of range [%g-%g], reset to %g.\n",
-                        inst->GENname, inst->JJics, IcMin, IcMax,
+                        inst->GENname, inst->JJics, IcsMin, IcsMax,
                         model->JJcriti);
                     inst->JJics = model->JJcriti;
                 }

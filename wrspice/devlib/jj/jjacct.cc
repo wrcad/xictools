@@ -91,7 +91,7 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
         }
         if (vmax > 0.0) {
             // Limit next time step.
-            double delmax = model->JJtsfact*PHI0_2PI/vmax;
+            double delmax = M_PI*model->JJtsfact*PHI0_2PI/vmax;
             if (ckt->CKTdevMaxDelta == 0.0 || delmax < ckt->CKTdevMaxDelta)
                 ckt->CKTdevMaxDelta = delmax;
         }

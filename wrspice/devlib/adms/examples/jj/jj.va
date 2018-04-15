@@ -51,6 +51,9 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.13, April 14, 2018
+//   Wider range of icrit 1e-9 - 1e-1 ought to cover anything.  Vm lower
+//   now 8mv, was 10mV.
 // Version 1.12, April 6, 2018
 //   Now uses $simparam("smallsig") to get small-signal loading state, used
 //   to pass this via $analysis("smsig") which is less likely to be adopted
@@ -195,7 +198,7 @@ parameter real tsfactor = `TSDEFAULT from [0.001:1]
 
 // Critical current for area=1.
 `define DEF_IC 1.0m
-parameter real icrit    = `DEF_IC from [`DEF_IC/20:`DEF_IC*20]
+parameter real icrit    = `DEF_IC from [1e-9:1e-1]
     `P(type="model" info="reference critical current" units="A");
 
 // Capacitance for area=1.
@@ -216,7 +219,7 @@ parameter real delv     = 0.08m from [0.01m:0.2m]
 
 // The subgap and normal resistances.  If vshunt is given, a fixed
 // shunt is added so that Ic*Reff = vshunt.
-parameter real vm       = `Vm*1e-3 from [10m:100m]
+parameter real vm       = `Vm*1e-3 from [8m:100m]
     `P(type="model" info="Ic * subgap resistance" units="V");
 parameter real rsub     = vm/icrit from [1e-2/icrit:1e-1/icrit]
     `P(type="model" info="subgap resistance" units="O");
