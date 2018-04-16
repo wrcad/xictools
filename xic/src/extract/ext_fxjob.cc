@@ -212,7 +212,11 @@ namespace{
         lstring::advtok(&s);   // "Fast..."
         while (isspace(*s) || isdigit(*s) || *s == '.')
             s++;
-        return (s[0] == 'w' && s[1] == 'r');
+        if (s[0] == 'w' && s[1] == 'r')  // old trailing "wr"
+            return (true);
+        if (s[0] == '(' && s[1] == 'x' && s[2] == 'i') // new "(xictools)"
+            return (true);
+        return (false);
     }
 }
 
