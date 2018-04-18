@@ -341,7 +341,7 @@ main(int argc, char **argv)
                 FILE_ATTRIBUTE_NORMAL, 0);
             delete [] fname;
 
-            PROCESS_INFORMATION *info = msw::NewProcess(cmdline,
+            PROCESS_INFORMATION *info = msw::NewProcess(0, cmdline,
                 DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP,
                 true, 0, hlog, herr);
             if (!info) {
@@ -1373,11 +1373,12 @@ cMain::InitializeStrings()
         xm_exec_directory = lstring::copy(string);
     else {
 #ifdef WIN32
+        // We need the path directly to xictools/wrspice/bin rather than
+        // xictools/bin since CreateProcess can't deal with the .bat
+        // file.
+
         char *dp = msw::GetProgramRoot("WRspice");
         if (dp) {
-            char *e = lstring::strrdirsep(dp);
-            if (e)
-                *e = 0;
             xm_exec_directory = pathlist::mk_path(dp, "bin");
             delete [] dp;
         }

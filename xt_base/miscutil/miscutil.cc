@@ -514,7 +514,7 @@ int
 miscutil::fork_terminal(const char *cmd)
 {
 #ifdef WIN32
-    PROCESS_INFORMATION *info = msw::NewProcess(cmd, CREATE_NEW_CONSOLE,
+    PROCESS_INFORMATION *info = msw::NewProcess(0, cmd, CREATE_NEW_CONSOLE,
         false);
     if (info) {
         int pid = info->dwProcessId;

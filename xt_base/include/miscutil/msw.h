@@ -57,8 +57,8 @@ namespace msw {
     char *GetProgramRoot(const char*);
     bool GetProductID(char*, FILE*);
     char *AddPathDrives(const char*, const char*);
-    PROCESS_INFORMATION *NewProcess(const char*, unsigned int, bool,
-        void* = 0, void* = 0, void* = 0);
+    PROCESS_INFORMATION *NewProcess(const char*, const char*, unsigned int,
+        bool, void* = 0, void* = 0, void* = 0);
     const char *MapiSend(const char*, const char*, const char*, int = 0,
         const char** = 0);
     char *Billize(const char*);

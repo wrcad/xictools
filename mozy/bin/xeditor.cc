@@ -139,7 +139,7 @@ main(int argc, char **argv)
             cmdstr++;
         sprintf(cmdline + strlen(cmdline), "%s -winbg", cmdstr);
 
-        PROCESS_INFORMATION *info = msw::NewProcess(cmdline,
+        PROCESS_INFORMATION *info = msw::NewProcess(0, cmdline,
             DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
         if (!info)
             exit (1);

@@ -522,16 +522,18 @@ CshPar::MessageHandler(int fc)
         extern jmp_buf msw_jbf[4];
         extern int msw_jbf_sp;
 
-        bool dopop = false;
-        if (msw_jbf_sp < 3) {
-            msw_jbf_sp++;
-            dopop = true;
+        {
+            volatile bool dopop = false;
+            if (msw_jbf_sp < 3) {
+                msw_jbf_sp++;
+                dopop = true;
+            }
+            if (setjmp(msw_jbf[msw_jbf_sp]) == 0) {
+                EvLoop(buf);
+            }
+            if (dopop)
+                msw_jbf_sp--;
         }
-        if (setjmp(msw_jbf[msw_jbf_sp]) == 0) {
-            EvLoop(buf);
-        }
-        if (dopop)
-            msw_jbf_sp--;
 #else
         try { EvLoop(buf); }
         catch (int) { }
@@ -674,7 +676,8 @@ CommandTab::com_sced(wordlist *wl)
     for ( ; wl; wl = wl->wl_next)
         xpstr.append(" ", wl->wl_word);
 
-    PROCESS_INFORMATION *info = msw::NewProcess(xpstr.string(), 
+//XXX bat file prob won't work
+    PROCESS_INFORMATION *info = msw::NewProcess(0, xpstr.string(), 
         DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, true);
     if (!info) {
         TTY.printf("The graphical editor can not be executed.\n");

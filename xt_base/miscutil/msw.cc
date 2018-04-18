@@ -139,6 +139,13 @@ msw::GetInstallData(const char *program, const char *keyword)
 // Locations:
 //  .../xictools/<program>/uninstall/uninst???.exe
 //
+// The actual location in the registry is
+// ".../xictools/program.current".  In the SafeInstall setup,
+// xictools/program.current is symbolically linked to
+// xictools/program.  We will strip the .current, so that the return
+// references the link, which can actually point to another release
+// tree.
+//
 char *
 msw::GetInstallDir(const char *program)
 {
@@ -160,76 +167,14 @@ msw::GetInstallDir(const char *program)
     }
     *s = 0;
 
-    lstring::unix_path(p);
-    return (p);
-#ifdef XXXnotdef
-    unsigned int key_read = KEY_READ;
-
-    // inno-5.5.9 on Windows 10
-    const char *keyfmt1 =
-"Software\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s_is1";
-
-    // inno-5.5.1 on Windows 7-10
-    const char *keyfmt2 =
-"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\%s_is1";
-
-    // Note that "program" is the name used by the installer.
-    char buf[1024];
-    sprintf(buf, keyfmt1, program);
-
-    HKEY key;
-    long ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
-    if (ret != ERROR_SUCCESS) {
-        sprintf(buf, keyfmt2, program);
-        ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
-    }
-    if (ret != ERROR_SUCCESS) {
-        // Try again with WOW64.  This seemed to be required in
-        // early versions of Win-7_64 (could be wrong about this),
-        // but presently this flag causes failure.
-        //
-        sprintf(buf, keyfmt1, program);
-        OSVERSIONINFO osv;
-        osv.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-        GetVersionEx(&osv);
-        if (osv.dwMajorVersion > 5 ||
-                (osv.dwMajorVersion == 5 && osv.dwMinorVersion >= 1)) {
-            // XP or later
-            key_read |= KEY_WOW64_64KEY;
-            ret = RegOpenKeyEx(HKEY_LOCAL_MACHINE, buf, 0, key_read, &key);
-        }
-        if (ret != ERROR_SUCCESS)
-            return (0);
-    }
-    DWORD len = 1024;
-    DWORD type;
-    ret = RegQueryValueEx(key, "UninstallString", 0, &type, (BYTE*)buf,
-        &len);
-    RegCloseKey(key);
-
-    // The string should contain the full path to the uninstall program,
-    //
-    if (ret != ERROR_SUCCESS || type != REG_SZ || len < 20)
-        return (0);
-
-    char *s = buf;
-    char *p = lstring::getqtok(&s);
-    s = strrchr(p, '\\');
-    if (!s) {
-        delete [] p;
-        return (0);
-    }
-    *s = 0;
-    s = strrchr(p, '\\');
-    if (!s) {
-        delete [] p;
-        return (0);
-    }
-    *s = 0;
+    // Strip off the ".current" so will point to the link, so this
+    // will be valid if the link points to an old release instead.
+    s = strrchr(p, '.');
+    if (s && !strcmp(s, ".current"))
+        *s = 0;
 
     lstring::unix_path(p);
     return (p);
-#endif
 }
 
 
@@ -242,15 +187,13 @@ msw::GetProgramRoot(const char *program)
     char *s = msw::GetInstallDir(program);
     if (!s)
         return (0);
-    // This is the path the the install log file or directory, which may
-    // be in the startup directory or its parent.
+    // This is the path to the top tool directory.
+
     char *t = lstring::strrdirsep(s);
-    if (t && lstring::cieq(t+1, "startup")) {
-        *t = 0;
-        t = lstring::strrdirsep(s);
-    }
     if (t && lstring::cieq(t+1, program))
         return (s);
+
+    // Hmmm, name doesn't match, no good.
     delete [] s;
     return (0);
 }
@@ -444,17 +387,28 @@ msw::AddPathDrives(const char *path, const char *progname)
 }
 
 
-// Exec cmdline as a new sub-process.
+// Exec prog with args as a new sub-process.  If prog is null, assume
+// that the args string contains the program name.
 //
 PROCESS_INFORMATION *
-msw::NewProcess(const char *cmdline, unsigned int flags, bool inherit_hdls,
-    void *hin, void *hout, void *herr)
+msw::NewProcess(const char *prog, const char *args, unsigned int flags,
+    bool inherit_hdls, void *hin, void *hout, void *herr)
 {
-    if (!cmdline)
+    if (!prog) {
+        prog = args;
+        args = 0;
+    }
+    if (!prog)
         return (0);
-    // The path has to be in DOS format, and have a volume specifier.
-    char *cmd = new char[strlen(cmdline) + 4];
-    if (!isalpha(cmdline[0]) || cmdline[1] != ':') {
+    // The path has to be in DOS format, and have a volume specifier. 
+    // Note that we convert forward slashes to backslashes here.  If
+    // the program name is in the args string (prog arg is null) then
+    // forward slashes found in args will be converted to backslashes. 
+    // This is basically why there are separate arguments for the
+    // command path and arguments.
+
+    char *cmd = new char[strlen(prog) + 4];
+    if (!isalpha(prog[0]) || prog[1] != ':') {
         char *cwd = getcwd(0, 0);
         if (!cwd) {
             delete [] cmd;
@@ -469,18 +423,24 @@ msw::NewProcess(const char *cmdline, unsigned int flags, bool inherit_hdls,
         cmd[0] = cwd[0];
         cmd[1] = cwd[1];
         free(cwd);
-        if (lstring::is_dirsep(*cmdline))
-            strcpy(cmd+2, cmdline);
+        if (lstring::is_dirsep(*prog))
+            strcpy(cmd+2, prog);
         else {
             cmd[2] = '/';
-            strcpy(cmd+3, cmdline);
+            strcpy(cmd+3, prog);
         }
     }
     else
-        strcpy(cmd, cmdline);
+        strcpy(cmd, prog);
     for (char *s = cmd; *s; s++) {
         if (*s == '/')
             *s = '\\';
+    }
+    if (args && *args) {
+        char *t = new char[strlen(cmd) + strlen(args) + 2];
+        sprintf(t, "%s %s", cmd, args);
+        delete [] cmd;
+        cmd = t;
     }
     STARTUPINFO startup;
     memset(&startup, 0, sizeof(STARTUPINFO));

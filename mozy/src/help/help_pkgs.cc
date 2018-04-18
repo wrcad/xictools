@@ -209,7 +209,7 @@ namespace {
     {
         if (!msw_exepath)
             return;
-        PROCESS_INFORMATION *info = msw::NewProcess(msw_exepath,
+        PROCESS_INFORMATION *info = msw::NewProcess(0, msw_exepath,
             DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
         (void)info;
     }

@@ -3,10 +3,10 @@
 @rem   Batch file to create symbolic links after installation, executed
 @rem   by the installer program.
 
-mklink /j wrspice wrspice.current
-mklink /j bin\wrspice.bat wrspice\bin\wrspice.bat
-mklink /j bin\multidec.exe wrspice\bin\multidec.exe
-mklink /j bin\proc2mod.exe wrspice\bin\proc2mod.exe
-mklink /j bin\printtoraw.exe wrspice\bin\printtoraw.exe
-mklink /j bin\wrspiced.exe wrspice\bin\wrspiced.exe
+mklink /j wrspice %cd%\wrspice.current
+mklink bin\wrspice.bat %cd%\wrspice\bin\wrspice.bat
+mklink bin\multidec.exe %cd%\wrspice\bin\multidec.exe
+mklink bin\proc2mod.exe %cd%\wrspice\bin\proc2mod.exe
+mklink bin\printtoraw.exe %cd%\wrspice\bin\printtoraw.exe
+mklink bin\wrspiced.exe %cd%\wrspice\bin\wrspiced.exe
 

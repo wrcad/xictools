@@ -471,7 +471,8 @@ main(int, char **av)
                 cmdstr++;
             sprintf(cmdline + strlen(cmdline), "%s -winbg", cmdstr);
 
-            PROCESS_INFORMATION *info = msw::NewProcess(cmdline,
+//XXX handle .bat file?
+            PROCESS_INFORMATION *info = msw::NewProcess(0, cmdline,
                 DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
             if (!info) {
                 fprintf(stderr,
@@ -741,7 +742,8 @@ again:
         HANDLE hout = CreateFile(outfile, GENERIC_WRITE,
             FILE_SHARE_READ, &sa, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
-        PROCESS_INFORMATION *info = msw::NewProcess(lstr.string(),
+//XXX handle .bat file?
+        PROCESS_INFORMATION *info = msw::NewProcess(0, lstr.string(),
             DETACHED_PROCESS|CREATE_NEW_PROCESS_GROUP, true, hin, hout, hout);
         if (!info) {
             log_printf("%s: %s@%s, \"%s\", pid %d\n", miscutil::dateString(),

@@ -232,7 +232,7 @@ cDRC::runDRC(const BBox *AOI, bool backg, cCHD *chd, const char *cellname,
         }
         delete [] tf;
 
-        PROCESS_INFORMATION *info = msw::NewProcess(cmdline,
+        PROCESS_INFORMATION *info = msw::NewProcess(0, cmdline,
             DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, false);
         if (!info) {
             PL()->ShowPrompt("Couldn't execute background process.");

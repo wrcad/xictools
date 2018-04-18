@@ -236,16 +236,10 @@ CommandTab::com_shell(wordlist *wl)
         FILE *fp = fopen(tf, "wb");
         if (fp) {
             filestat::queue_deletion(tf);
-            tt = tf;
-            while (*tt) {
-                if (*tt == '/')
-                    *tt = '\\';
-                tt++;
-            }
             fprintf(fp, "echo off\n%s\npause\ndel %s", com, tf);
             fclose(fp);
             PROCESS_INFORMATION *info =
-                msw::NewProcess(tf, CREATE_NEW_CONSOLE, false);
+                msw::NewProcess(0, tf, CREATE_NEW_CONSOLE, false);
             delete info;
         }
         delete [] tf;

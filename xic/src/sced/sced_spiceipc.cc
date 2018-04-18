@@ -1532,11 +1532,12 @@ cSpiceIPC::init_local()
     else
         strcat(cmd, " -Dnone");
 
-    PROCESS_INFORMATION *info = msw::NewProcess(cmd, DETACHED_PROCESS,
+    PROCESS_INFORMATION *info = msw::NewProcess(0, cmd, DETACHED_PROCESS,
         true, 0, stdout_hwr, stderr_hwr);
     if (!info) {
+        Errs()->add_error(
+            "init_local: Failed to create new process.\ncmd: %s", cmd);
         delete [] cmd;
-        Errs()->add_error("init_local: Failed to create new process.");
         return (-1);
     }
     CloseHandle(stdout_hwr);
@@ -2771,19 +2772,29 @@ cSpiceIPC::open_skt(hostent *he, int port)
 // This is the Xic implementation.
 
 namespace {
-    char *
-    add_exe(char *program)
+    char *add_exe(char *program)
     {
 #ifdef WIN32
-        // check for .exe
-        char *t = program + strlen(program) - 4;
-        if (*program && (t <= program || !lstring::cieq(t, ".exe"))) {
-            t = new char[strlen(program) + 5];
-            strcpy(t, program);
-            strcat(t, ".exe");
-            delete [] program;
-            program = t;
-        }
+        // The file must have a .exe extension, .bat files do not
+        // work.  The user must load this from xictools/wrspice/bin
+        // since the .exe is not exported to xictools/bin.  The
+        // default path is obtained from msw::GetProgramRoot so should
+        // be ok.
+
+        if (!program)
+            return (0);
+        char *t = strrchr(program, '.');
+        if (t && lstring::cieq(t, ".exe"))
+            return (program);
+        char *prg = new char[strlen(program) + 5];
+        strcpy(prg, program);
+        t = strrchr(prg, '.');
+        if (t && lstring::cieq(t, ".bat"))
+            *t = 0;
+        strcat(prg, ".exe");
+        delete [] program;
+        program = prg;
+
 #endif
         return (program);
     }
@@ -2802,14 +2813,8 @@ cSpiceIPC::callback(const char **spice_path, const char **spice_host,
     delete [] path;
     path = 0;
     const char *pg = CDvdb()->getVariable(VA_SpiceProg);
-    if (pg && *pg) {
-        char *s = lstring::copy(pg);
-        s = add_exe(s);
-        if (access(s, X_OK) < 0)
-            delete [] s;
-        else
-            path = s;
-    }
+    if (pg && *pg)
+        path = add_exe(lstring::copy(pg));
     else {
         // Find the name of the executable.  A default is set in startup
         // code, but can be overridden by the variable.
@@ -2825,21 +2830,8 @@ cSpiceIPC::callback(const char **spice_path, const char **spice_host,
             const char *dir = CDvdb()->getVariable(VA_SpiceExecDir);
             if (!dir || !*dir)
                 dir = XM()->ExecDirectory();
-            if (dir && *dir) {
-                char *s = pathlist::mk_path(dir, pgname);
-                delete [] pgname;
-                if (access(s, X_OK) < 0)
-                    delete [] s;
-                else
-                    path = s;
-            }
-            else {
-                // Hmmm, no directory.  Executable in CWD?
-                if (access(pgname, X_OK) < 0)
-                    delete [] pgname;
-                else
-                    path = pgname;
-            }
+            if (dir && *dir)
+                path = add_exe(pathlist::mk_path(dir, pgname));
         }
     }
     *spice_path = path;
