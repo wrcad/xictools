@@ -161,12 +161,42 @@ cMain::AppInit()
             sprintf(buf, "%s.%s", TechFileBase(), Tech()->TechExtension());
         else
             strcpy(buf, TechFileBase());
-        char *realname;
-        FILE *fp = pathlist::open_path_file(buf, libpath, "r", &realname,
-            true);
-        if (!fp)
+
+        char *cwd = pathlist::expand_path(".", true, false);
+        char *tpath = new char[strlen(cwd) + strlen(buf) + 16];
+        strcpy(tpath, cwd);
+        delete [] cwd;
+        char *e = tpath + strlen(tpath);
+        sprintf(e, "/%s", buf);
+
+        // First check in the CWD.
+        FILE *fp = fopen(tpath, "r");
+        char *realname = 0;
+        if (fp) {
+            realname = tpath;
+            tpath = 0;
+        }
+
+        // Next, try a subdirectory named "techfiles".
+        if (!fp) {
+            sprintf(e, "/techfiles/%s", buf);
+            fp = fopen(tpath, "r");
+            if (fp) {
+                realname = tpath;
+                tpath = 0;
+            }
+        }
+        delete [] tpath;
+
+        // Finally, look in the libpath.
+        if (!fp) {
+            fp = pathlist::open_path_file(buf, libpath, "r", &realname,
+                false);
+        }
+        if (!fp) {
             Log()->WarningLog(mh::Initialization,
                 "Can not open technology file.\n");
+        }
         else {
             Tech()->SetTechFilename(realname);
             delete [] realname;

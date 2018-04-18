@@ -266,4 +266,20 @@ panels.
 Revised main database, it had trouble when there are large numbers of
 identical objects, elements could get out of order.
 
+--- release 4.3.4
+
+The IPC to WRspice was broken in multiple ways in Windows.
+1.  The default path to WRspice was assuming that there was a wrspice.exe file
+in xictools/bin, which is no longer true.  CreateProcess does not work with
+.bat files.  The default path is now ...xictools/xic/bin/wrspice.exe.
+2.  The default path was not set at all since the registry query returned
+"wrspice.current", had to strip ".current" to match progname.
+3.  The links of executable files into xictools/bin were "junction" links.
+These don't execute from cmd.exe, but run find from a Cygwin shell.  These
+are now actually symbolic links and run fine from a DOS box, at least with
+the current Windows 10.
+
+The tech fill will now be found if saved in a subcirectory named "techfiles"
+in the current directory.
+
 ToDo: handle via/pc masters in archive
