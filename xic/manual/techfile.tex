@@ -7,7 +7,7 @@
 \appendix
 \chapter{Technology File}
 % -----------------------------------------------------------------------------
-% techfile 032117
+% techfile 041918
 \label{techfile}
 \index{technology file}
 \index{xic\_tech file}
@@ -30,14 +30,18 @@ in, new colors and fill styles can be assigned, and the {\cb Save
 Tech} command in the {\cb Attributes Menu} used to dump an appropriate
 technology file for the next time.
 
+\index{techfiles directory}
 \index{library path}
 \index{Save Tech button}
-The technology file is expected to be found along the library search
-path, which can be set with the environment variable {\et
+The technology file is searched for in the order of the current
+directory (where {\Xic} was started), in a subdirectory of this
+directory named ``{\vt techfiles}'', then along the library search path. 
+The library search path can be set with the environment variable {\et
 XIC\_LIB\_PATH}.  The default path is
 \begin{quote}
  {\vt ( . /usr/local/xictools/xic/startup )}.
 \end{quote}
+The first matching terchnology file found in the search will be used. 
 The default technology file has been provided by your system
 administrator.  A personalized version can be generated with the {\cb
 Save Tech} command.

@@ -157,14 +157,48 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
-xic-4.3.5  4/18/2018
+xic-4.3.5  4/20/2018
 Current Release
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
 
+* The technology file will now be found if installed in a subdirectory
+  named "techfiles" in the directory where Xic is started.  The search
+  order is the current directory, techfiles subdirectory, the "lib"
+  path.
+
 BUGS FIXED
 ---- -----
+
+* In Windows, the interprocess communication to WRspice was broken in
+  the default installation.
+
+  The installation format change and other things prevented the setup
+  from working "out of the box".  Basically, the internal default path
+  to WRspice could not be found.  One would have to set up the path
+  manually, using the SpiceProg variable.  Also, the batch file can
+  not be used here, one must link the .exe file, which is no longer
+  exported to .../xictools/bin, but can be found in the link
+  .../xictools/wrspice/bin.  Anyway, the default setup should be ok
+  now.
+
+  Also, the installation script used "junction" links for the
+  executables linked into .../xictools/bin.  These can't be run from
+  cmd.exe (a "DOS box") for some reason known only to Microsoft. 
+  These have been changed to normal symbolic links which seem to work
+  now in the current Windows 10.  The junction links work fine in a
+  Cygwin window.
+
+* Fixed a minor bug in the FastCap/FastHenry interface:  if the
+  program was run in the foreground, the "Running jobs" displayed in
+  the panel would be incremented but not decremented when the run
+  finishes.
+
+* Fixed a problem in the "Node Mapping" panel from the side menu.  In
+  click-to-select mode in a physical mode subwindow, with the "Use
+  Extract" check box not checked, the wrong node was being selected.
+
 
 -------------------------------------------------------------------------------
 xic-4.3.4  2/23/2018
