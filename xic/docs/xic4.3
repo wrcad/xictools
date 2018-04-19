@@ -163,10 +163,23 @@ Current Release
 CHANGES AND NEW FEATURES
 ------- --- --- --------
 
-* The technology file will now be found if installed in a subdirectory
+* Technology file search.
+
+  The technology file will now be found if installed in a subdirectory
   named "techfiles" in the directory where Xic is started.  The search
-  order is the current directory, techfiles subdirectory, the "lib"
+  order is the current directory, techfiles subdirectory, the library
   path.
+
+* Josephson junction models tweaked.
+  -  Widened the allowable range of reference critical current to
+     1nA - 0.1A.
+  -  Vm lower bound reduced to 8mV.
+  -  In the internal model, pi is now divided off of the tsfactor
+     parameter, so its range is 0.001 - 1.0, same as Verilog-A model.
+
+* The software updating through the mozy help browser sould work now.
+  The special url is ":xt_pkgs".
+
 
 BUGS FIXED
 ---- -----
@@ -199,6 +212,10 @@ BUGS FIXED
   click-to-select mode in a physical mode subwindow, with the "Use
   Extract" check box not checked, the wrong node was being selected.
 
+* Xic was not recognizing the new xictools-included fastcap and
+  fasthenry as being the "wr" versions.
+
+* Fixed crash due to dark-field ground-plane when grouping.
 
 -------------------------------------------------------------------------------
 xic-4.3.4  2/23/2018
