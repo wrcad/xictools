@@ -315,8 +315,10 @@ cFC::fcRun(const char *infile, const char *outfile, const char *resfile,
         delete newjob;
         return;
     }
-    if (run_foreg)
+    if (run_foreg) {
         newjob->fc_post_process();
+        delete newjob;
+    }
 
     updateString();
 }
