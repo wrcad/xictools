@@ -1704,13 +1704,13 @@ NmpState::b1up_altw()
     if (EV()->CurrentWin()->CurCellName() != DSP()->MainWdesc()->CurCellName())
         return;
     if (ExtIf()->hasExtract()) {
-        int node = -1;
-        if (DSP()->CurMode() == Electrical)
-            node = ExtIf()->netSelB1Up_altw();
-        else {
+        int node;
+        if (DSP()->CurMode() == Electrical) {
             int grp = ExtIf()->netSelB1Up_altw();
             node = ExtIf()->nodeOfGroup(CurCell(Physical), grp);
         }
+        else
+            node = ExtIf()->netSelB1Up_altw();
         if (node > 0) {
             NM->show_node_terms(node);
             NM->update_map();
