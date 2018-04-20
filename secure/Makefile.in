@@ -5,6 +5,7 @@ LOCATION = secure
 DATE = @DATE@
 
 prefix = @prefix@
+itopok = @itopok@
 CXX = @CXX@
 CC = @CC@
 LINKCC = @LINKCC@
@@ -124,9 +125,11 @@ dst_bin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 install: install_test install_clean $(dst_bin) $(dst_lib)
 
 install_test::
-	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
-	    echo "No!  Use pagkage to install!"; \
-	    exit 1; \
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	        echo "No!  Use pagkage to install!"; \
+	        exit 1; \
+	    fi; \
 	fi
 
 install_clean::

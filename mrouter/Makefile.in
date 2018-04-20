@@ -5,6 +5,7 @@ LOCATION = mrouter
 DATE = @DATE@
 
 prefix = @prefix@
+itopok = @itopok@
 CC = @CC@
 CXX = @CXX@
 CFLAGS = @CFLAGS@ @PIC_OPT@
@@ -83,9 +84,11 @@ install_examples:       $(destn)/mrouter/examples
 install_doc:            $(destn)/mrouter/doc
 
 install_test::
-	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
-	    echo "No!  Use pagkage to install!"; \
-	    exit 1; \
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	        echo "No!  Use pagkage to install!"; \
+	        exit 1; \
+	    fi; \
 	fi
 
 install_clean::

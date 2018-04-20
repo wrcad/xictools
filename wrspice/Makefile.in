@@ -7,6 +7,7 @@ SPICE_VERSION = @SPICE_VERSION@
 DEVLIB_VERSION = @DEVLIB_VERSION@
 
 prefix = @prefix@
+itopok = @itopok@
 CXX = @CXX@
 CC = @CC@
 LINKCC = @LINKCC@
@@ -345,7 +346,7 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install_wrspice: install_wrspice_pkg install_links
+install: install_wrspice_pkg install_links
 
 install_wrspice_pkg: install_test install_clean install_bin install_help \
   install_icons install_startup install_scripts install_examples install_docs
@@ -361,27 +362,26 @@ install_devkit:     $(destn)/devkit
 install_cadence:    $(destn)/cadence-oasis
 
 install_test::
-	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
-	    echo "No!  Use pagkage to install!"; \
-	    exit 1; \
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	        echo "No!  Use pagkage to install!"; \
+	        exit 1; \
+	    fi; \
 	fi
 
 install_links::
-	@if [ -n $(EXESUFFIX) ]; then \
-	    cp -f $(destn)/bin/multidec $(toolbin)/multidec; \
-	    cp -f $(destn)/bin/proc2mod $(toolbin)/proc2mod; \
-	    cp -f $(destn)/bin/printtoraw $(toolbin)s/printtoraw; \
-	    cp -f $(destn)/bin/wrspice $(toolbin)/wrspice; \
-	    cp -f $(destn)/bin/wrspiced $(toolbin)/wrspiced; \
-	    mv -f $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
-	else \
-	    ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
-	    ln -s $(destn)/bin/multidec $(toolbin)/multidec; \
-	    ln -s $(destn)/bin/proc2mod $(toolbin)/proc2mod; \
-	    ln -s $(destn)/bin/printtoraw $(toolbin)s/printtoraw; \
-	    ln -s $(destn)/bin/wrspice $(toolbin)/wrspice; \
-	    ln -s $(destn)/bin/wrspiced $(toolbin)/wrspiced; \
-	fo
+	@rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
+	@ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
+	@rm -f $(toolbin)/multidec
+	@ln -s $(destn)/bin/multidec $(toolbin)/multidec
+	@rm -f $(toolbin)/proc2mod
+	@ln -s $(destn)/bin/proc2mod $(toolbin)/proc2mod
+	@rm -f $(toolbin)/printtoraw
+	@ln -s $(destn)/bin/printtoraw $(toolbin)/printtoraw
+	@rm -f $(toolbin)/wrspice
+	@ln -s $(destn)/bin/wrspice $(toolbin)/wrspice
+	@rm -f $(toolbin)/wrspiced
+	@ln -s $(destn)/bin/wrspiced $(toolbin)/wrspiced
 
 clean_links::
 	-@if [ -n $(EXESUFFIX) ]; then \

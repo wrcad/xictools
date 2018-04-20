@@ -14,6 +14,19 @@
 #
 PREFIX = --prefix=/usr/local
 
+# The standard way to build and install xictools is to build a set of
+# packages, and then install the packages.  "make install" is actually
+# prevented from installing directory to the default installation
+# location, since typically packages and direct installation don't mix
+# well.  If this variable is set to "yes", installation to the
+# "PREFIX" location is allowed.  This is for users who wish to skip
+# the packaging step.  Package installers may require root permission
+# to run, so users can avoid this and keep all files in their local
+# space with the PREFIX variable set appropriately and this variable
+# set to "yes" instead of "no"..
+#
+ITOPOK = --enable-itopok=no
+
 # The licensing system for Xic and WRspice is disabled by default, but
 # can be enabled by uncommenting the assignment below.  The code for
 # the license server and related is provided as it might be useful to
@@ -73,8 +86,8 @@ endif
 SUBDIRS = xt_base $(SECURE) $(MOZY) $(WRSPICE) $(XIC) fastcap fasthenry
 
 #######################################################################
-CFARGS = $(PREFIX) $(HVSECURE) $(NOMOZY) $(32BIT) $(OALOC) $(KITLOC) \
-  $(MINGW) $(GTKLOC)
+CFARGS = $(PREFIX) $(ITOPOK) $(HVSECURE) $(NOMOZY) $(32BIT) $(OALOC) \
+  $(KITLOC) $(MINGW) $(GTKLOC)
 
 FLAGFILE = .configured
 

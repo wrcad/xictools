@@ -14,6 +14,16 @@ if test "`uname -m`" = i686; then
     linux32=yes;
 fi
 
+dnl --enable-itopok
+dnl Allow make install to default location.
+itopok="no"
+AC_ARG_ENABLE(itopok,
+    [  ]--enable-itopok         Allow install from source to default location,
+if test $enable_itopok = yes; then
+    itopok="yes"
+fi
+)
+
 dnl --enable-force32
 dnl Force 32-bit build on 64-bit systems.
 force32="no"
@@ -47,6 +57,7 @@ if test -d ../xic; then
 fi
 TOOLROOT="xictools"
 AC_SUBST(prefix)
+AC_SUBST(itopok)
 AC_SUBST(DATE)
 AC_SUBST(SPICE_VERSION)
 AC_SUBST(DEVLIB_VERSION)

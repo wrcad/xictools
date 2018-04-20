@@ -5,6 +5,7 @@ LOCATION = adms
 DATE = @DATE@
 
 prefix = @prefix@
+itopok = @itopok@
 OSNAME = @OSNAME@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
@@ -88,9 +89,11 @@ install_bin: $(dst_bin)
 install_lib: $(dst_lib) $(dst_lib)/doc $(dst_lib)/examples
 
 install_test::
-	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
-	    echo "No!  Use pagkage to install!"; \
-	    exit 1; \
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	        echo "No!  Use pagkage to install!"; \
+	        exit 1; \
+	    fi; \
 	fi
 
 install_clean::

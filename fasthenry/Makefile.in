@@ -5,6 +5,7 @@ LOCATION = fasthenry
 DATE = @DATE@
 
 prefix = @prefix@
+itopok = @itopok@
 OSNAME = @OSNAME@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
@@ -70,9 +71,11 @@ install_examples: $(dst_lib)/examples $(dst_lib)/examples/work \
   $(dst_lib)/examples/work/results
 
 install_test::
-	@if [ $(INSTALL_PREFIX) = $prefix ]; then \
-	    echo "No!  Use pagkage to install!"; \
-	    exit 1; \
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	        echo "No!  Use pagkage to install!"; \
+	        exit 1; \
+	    fi; \
 	fi
 
 install_clean::
