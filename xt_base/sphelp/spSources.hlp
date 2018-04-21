@@ -1115,7 +1115,7 @@ Pulse
 !!SEEALSO
 tranfuncs
 
-!! elements.tex 031516
+!! elements.tex 022818
 !!KEYWORD
 gpulse
 !!TITLE
@@ -1143,7 +1143,7 @@ Gaussian Pulse
     <tr><td><i>td</i></td> <td>delay time</td>
         <td><tt>0.0</tt></td> <td>seconds</td></tr>
     <tr><td><i>pw</i></td> <td>pulse width</td>
-        <td><tt>tstep</tt></td> <td>seconds</td></tr>
+        <td>see description</td> <td>seconds</td></tr>
     <tr><td><i>per</i></td> <td>period</td>
         <td><tt>0,0</tt></td> <td>seconds</td></tr>
     </table>
@@ -1154,38 +1154,70 @@ Gaussian Pulse
     pulses.
 
     <p>
-    The expression used to generate a pulse is
+    <b>Warning:</b> The pulse width is interpreted as the full-width
+    half-maximum in release 4.3.3 and later.  In earlier releases,
+    this was taken as the "variance" (width where amplitude is 1/e of
+    the peak).  Presently, this interpretation can be coerced by
+    giving a <b>negative</b> pulse width, the absolute value will be
+    used as the variance.
+
+    <p>
+    The expression used to generate a pulse is<br>
+    <tt>pw</tt> > 0:<br>
     <blockquote>
     <i>value</i> = <i>v1</i> + (<i>v2</i> -
-      <i>v1</i>)*exp(-((<i>time</i> - <i>td</i>)/<i>pw</i>)<sup>2</sup>)
+      <i>v1</i>)*exp(-(4ln(2)(<i>time</i> - <i>td</i>)/<i>pw</i>)<sup>2</sup>)
+    </blockquote>
+    <tt>pw</tt> &#60; 0:<br>
+    <blockquote>
+    <i>value</i> = <i>v1</i> + (<i>v2</i> -
+      <i>v1</i>)*exp(-((<i>time</i> - <i>td</i>)/<i>-pw</i>)<sup>2</sup>)
     </blockquote>
  
     The <i>td</i> delay value specifies the time of the initial pulse
-    peak.  The <i>pw</i> defines the pulse width, as evident in the
-    expression.  If the <i>per</i> is given a nonzero value larger
-    than twice the <i>pw</i>, a train of pulses will be generated, the
-    first being at <i>td</i> and at time increments of <i>per</i>
-    thereafter.  A <i>per</i> explicitly zero can be followed by any
-    number of time values.  A pulse will be generated to peak at each
-    of these values, in addition to the <i>td</i> value.
+    peak.  The <i>pw</i> defines the pulse width, as described above. 
+    If the <i>per</i> is given a nonzero value larger than twice the
+    <i>pw</i>, a train of pulses will be generated, the first being at
+    <i>td</i> and at time increments of <i>per</i> thereafter.  A
+    <i>per</i> explicitly zero can be followed by any number of time
+    values.  A pulse will be generated to peak at each of these
+    values, in addition to the <i>td</i> value.
 
     <p>
-    If the amplitude is set to zero, i.e., <i>v2</i> = <i>v1</i>, the
-    amplitude will be computed from the pulse width to yield a single
-    flux quantum pulse.  Such a pulse, as a voltage applied across an
-    inductor, will induce a single flux quantum of <i>phi0</i> =
-    <i>h</i>/(2*<i>e</i>) = 2.06783fWb <i>h</i> is Planck's constant,
-    <i>e</i> is the electron charge).  With superconductors, the flux
-    that threads superconducting loops is quantized in increments of
-    this value, due to the requirement that the superconducting wave
-    function meet periodic boundary conditions around the loop.  The
-    computed amplitude is
-
+    A single flux quantum (SFQ) pulse, as a voltage applied across an
+    inductor, will induce a single flux quantum of
     <blockquote>
-    <i>v2</i> = <i>v1</i> + <tt>phi0</tt>/(<i>pw</i>*<tt>sqrt(pi)</tt>)
+    <i>phi0</i> = <i>h</i>/(2*<i>e</i>) = 2.06783fWb
+    </blockquote>
+    where <i>h</i> is Planck's constant, and <i>e</i> is the electron
+    charge.  With superconductors, the flux that threads
+    superconducting loops is quantized in increments of this value,
+    due to the requirement that the superconducting wave function meet
+    periodic boundary conditions around the loop.
+
+    <p>
+    If the <tt>pw</tt> is not given or given as zero, the source will
+    be configured to produce an SFQ pulse with the given amplitude. 
+    Thus, the actual pulse width will be computed internally, with
+    amplitude not zero, as
+    <blockquote>
+    <i>pw</i> = 2*sqrt(ln(2))*phi0/(abs(<i>v2</i>-<i>v1</i>)*sqrt(pi))
+    </blockquote>
+    where <tt>phi0</tt> is the flux quantum whose value is given above.
+
+    <p>
+    Similarly, if the amplitude is set to zero, i.e., <i>v2</i> =
+    <i>v1</i>, the amplitude will be computed from the pulse width to
+    yield an SFQ pulse.  The computed amplitude is
+    <blockquote>
+    <i>v2</i> = <i>v1</i> + 2*sqrt(ln(2))*<tt>phi0</tt>/(<i>pw</i>*<tt>sqrt(pi)</tt>)
     </blockquote>
 
-    where <tt>phi0</tt> is the flux quantum whose value is given above.
+    <p>
+    If both amplitude and pulse width are set to zero or not given,
+    the full-width half-maximum SFQ pulse width is taken as the TSTEP
+    transient analysis parameter, and the amplitude is computed as
+    above.
 
     <p>
     In superconducting electronics, single flux quantum pulses are

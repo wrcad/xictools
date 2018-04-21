@@ -1964,7 +1964,7 @@ MOSFET Models
 !!SEEALSO
 .model
 
-!! elements.tex 101516
+!! elements.tex 042018
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -1978,67 +1978,103 @@ Josephson Models
     href="jewett">Jewett</a>.
 
     <p>
+    Unless stated otherwise, this information also applies to the
+    Verilog-A Josephson junction model provided with <i>WRspice</i> in
+    the Verilog-A examples.
+
+    <p>
     The parameters marked with an asterisk in the <b>area</b> column
-    scale with the <tt>area</tt> parameter given in the device line.
+    scale with the <tt>ics</tt> parameter given in the device line,
+    not necessarily linearly.  The present model paradigm assumes that
+    the model parameters apply to a "reference" junction, which is a
+    typical mid-critical current device as produced by the fouhdry. 
+    Instantiations derive from the reference device for a desired
+    critical current.  Appropriate scaling, not necessarily linear,
+    will be applied when formulating instance capacitance and
+    conductances.
 
     <p>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <caption>Josephson Junction Model Parameters</caption>
     <tr><th>name</th> <th>area</th>
         <th>parameter</th>
-        <th>units</th> <th>default</th> <th>example</th></tr>
+        <th>units</th> <th>default</th></tr>
     <tr><td><tt>pijj</tt></td> <td></td>
         <td>pi junction</td>
-        <td>-</td>      <td>0</td> <td>1</td></tr>
-    <tr><td><tt>icrit</tt></td> <td>*</td>
-        <td>junction critical current</td>
-        <td>A</td>      <td>1.0e-3</td> <td>1.5e-3</td></tr>
-    <tr><td><tt>cap</tt></td> <td>*</td>
-        <td>junction capacitance</td>
-        <td>F</td>      <td>1.0e-12</td><td>5.0e-13</td></tr>
-    <tr><td><tt>rn</tt> or <tt>rnorm</tt></td> <td>*</td>
-        <td>normal state resistance</td>
-        <td>O</td>      <td>1.7</td>    <td>2.0</td></tr>
-    <tr><td><tt>r0</tt> or <tt>rsub</tt></td> <td>*</td>
-        <td>subgap resistance</td>
-        <td>O</td>      <td>30</td>     <td>50</td></tr>
-    <tr><td><tt>vg</tt> or <tt>vgap</tt></td> <td>&nbsp;</td>
-        <td>gap voltage</td>
-        <td>V</td>      <td>3.0e-3</td> <td>2.8e-3</td></tr>
-    <tr><td><tt>delv</tt></td> <td>&nbsp;</td>
-        <td>gap voltage spread</td>
-        <td>V</td>      <td>1.0e-4</td> <td>8.0e-5</td></tr>
+        <td>-</td>      <td>0</td></tr>
     <tr><td><tt>rtype</tt></td> <td>&nbsp;</td>
         <td>quasiparticle branch model</td>
-        <td>-</td>      <td>1</td>      <td>2</td></tr>
+        <td>-</td>      <td>1</td></tr>
     <tr><td><tt>cct</tt></td> <td>&nbsp;</td>
         <td>critical current model</td>
-        <td>-</td>      <td>1</td>      <td>3</td></tr>
-    <tr><td><tt>icon</tt></td> <td>&nbsp;</td>
-        <td>critical current first zero</td>
-        <td>A</td>      <td>1.0e-2</td> <td>2.5e-2</td></tr>
-    <tr><td><tt>icfact</tt></td> <td>&nbsp;</td>
+        <td>-</td>      <td>1</td></tr>
+    <tr><td><tt>icrit</tt></td> <td>*</td>
+        <td>reference junction critical current</td>
+        <td>A</td>      <td>1.0e-3</td></tr>
+    <tr><td><tt>vg</tt> or <tt>vgap</tt></td> <td>&nbsp;</td>
+        <td>gap voltage</td>
+        <td>V</td>      <td>2.8e-3</td></td></tr>
+    <tr><td><tt>delv</tt></td> <td>&nbsp;</td>
+        <td>gap voltage spread</td>
+        <td>V</td>      <td>80.0e-6</td></td></tr>
+    <tr><td><tt>cap</tt></td> <td>*</td>
+        <td>reference junction capacitance</td>
+        <td>F</td>      <td>0.7e-12</td></tr>
+    <tr><td><tt>cmu</tt></td> <td>&nbsp;</td>
+        <td>capacitance area/edge scaling</td>
+        <td>-</td>      <td>0.0</td></tr>
+    <tr><td><tt>vm</tt></td> <td>&nbsp;</td>
+        <td>reference icrit*rsub</td>
+        <td>V</td>      <td>16.0e-3</td></tr>
+    <tr><td><tt>rsub</tt> or <tt>r0</tt></td> <td>*</td>
+        <td>reference subgap resistance</td>
+        <td>O</td>      <td>vm/icrit</td></tr>
+    <tr><td><tt>icrn</tt></td> <td>&nbsp;</td>
+        <td>reference icrit*rnorm</td>
+        <td>V</td>      <td>1.6e-3</td></tr>
+    <tr><td><tt>rnorm</tt> or <tt>rn</tt></td> <td>*</td>
+        <td>reference normal state resistance</td>
+        <td>O</td>      <td>icrn/icrit</td></td></tr>
+    <tr><td><tt>gmu</tt></td> <td>&nbsp;</td>
+        <td>conductance area/edge scaling</td>
+        <td>-</td>      <td>0.0</td></tr>
+    <tr><td><tt>icfct</tt> or <tt>icfact</tt></td> <td>&nbsp;</td>
         <td>ratio of critical to gap currents</td>
-        <td>-</td>      <td>pi/4</td>   <td>0.7</td></tr>
+        <td>-</td>      <td>pi/4</td></tr>
     <tr><td><tt>vshunt</tt></td> <td>&nbsp;</td>
         <td>voltage to specify fixed shunt resistance</td>
-        <td>-</td>      <td>0</td>   <td>200uV</td></tr>
+        <td>V</td>      <td>0.0</td></tr>
+    <tr><td><tt>tsfactor</tt></td> <td>&nbsp;</td>
+        <td>time step phase change limit</td>
+        <td>V</td>      <td><tt>dphimax</tt></td></tr>
+    <tr><td><tt>icon</tt></td> <td>&nbsp;</td>
+        <td>critical current first zero</td>
+        <td>A</td>      <td>1.0e-2</td></tr>
     </table>
     <br>
 
     <p>
-    If <tt>pijj</tt> is set to a nonzero integer value, instances will
-    be "pi" junctions by default, though this can be overridden per
-    instance by giving <tt>pijj=0</tt> on the device line.
+    Detailed information about these parameters is presented below.
 
-    <p>
+    <dl>
+    <dt><tt>pijj</tt><dd>
+    If this flag is given a nonzero integer value, the junctions will
+    be modeled as a "pi junction" meaning that the zero-current phase
+    is pi rather than zero.  Such devices have been fabricated using
+    ferromagnetic barrier materials.  Although these devices have some
+    interesting behavior, they are not at this point available or used
+    with any frequency.
+    </dl>
+
+    <dl>
+    <dt><tt>rtype</tt><dd>
     The <tt>rtype</tt> parameter determines the quasiparticle branch
     modeling employed.  Legal values are as follows:
 
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
-    <tr><td>0</td><td>  The junction is completely unshunted (effectively sets
-        <tt>rn</tt> and <tt>r0</tt> to infinity)</td></tr>
+    <tr><td>0</td><td>  The junction is completely unshunted, all shunt
+        conductance set to zero.
     <tr><td>1</td><td>  Standard piecewise-linear model</td></tr>
     <tr><td>2</td><td>  Analytic exponentially-derived approximation</td></tr>
     <tr><td>3</td><td>  Fifth order polynomial approximation model</td></tr>
@@ -2046,6 +2082,11 @@ Josephson Models
         parameter</td></tr>
     </table>
     </blockquote>
+
+    <p>
+    Values for <tt>rtype</tt> larger than 1 are not currently
+    supported in the Verilog-A model supplied in <i>WRspice</i> with
+    the Verilog-A examples.
 
     <p>
     The default is <tt>rtype</tt>=1.  Setting <tt>rtype</tt>=0 will
@@ -2090,9 +2131,11 @@ Josephson Models
     critical current).  If another value is specified for
     <tt>cct</tt>, <tt>cct</tt> reverts to 0.  Thus, magnetic coupling
     and quasiparticle injection are not simultaneously available.
+    </dl>
 
-    <p>
-    In general, the <tt>cct</tt> parameter can take one of the
+    <dl>
+    <dt><tt>cct</tt><dd>
+    The <tt>cct</tt> parameter can take one of the
     following values:
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
@@ -2105,31 +2148,219 @@ Josephson Models
     </blockquote>
 
     <p>
-    The <tt>control</tt> parameter should be used with devices using
-    <tt>cct</tt> 2,3, or 4.  With <tt>cct</tt>=2, the first zero is
-    equal to the value of the model parameter <tt>icon</tt>.  For
-    <tt>cct</tt>=3, the maximum critical current is at control current
-    zero, and it reduces linearly to zero at control current =
-    &#177<tt>icon</tt>.  Junctions with <tt>cct</tt>=4 have maximum
-    critical current at control current = -<tt>icon</tt>, and linear
-    reduction to zero at control current = +<tt>icon</tt>.  If
-    <tt>cct</tt> is specified as 2, 3, or 4, the area parameter, if
-    given, is set to unity.  Otherwise, the model parameters are
-    scaled appropriately by the area before use.
+    Values for <tt>cct</tt> larger than 1 are not currently supported
+    in the Verilog-A model supplied with <i>WRspice</i> in the
+    Verilog-A examples.
 
     <p>
-    If the <tt>vshunt</tt> parameter is given, every device instance
-    will be shunted by a linear resistor.  This is in addition to the
-    resistance of the quasiparticle branch.  The value of this
-    resistance is
+    The <tt>control</tt> instance parameter should be used with
+    devices using <tt>cct</tt> 2,3, or 4.  With <tt>cct</tt>=2, the
+    first zero is equal to the value of the model parameter
+    <tt>icon</tt>.  For <tt>cct</tt>=3, the maximum critical current
+    is at control current zero, and it reduces linearly to zero at
+    control current = &#177<tt>icon</tt>.  Junctions with
+    <tt>cct</tt>=4 have maximum critical current at control current =
+    -<tt>icon</tt>, and linear reduction to zero at control current =
+    +<tt>icon</tt>.  If <tt>cct</tt> is specified as 2, 3, or 4, the
+    area parameter, if given, is set to unity.  Otherwise, the model
+    parameters are scaled appropriately by the area before use.
+    </dl>
+
+    <dl>
+    <dt><tt>icrit</tt><dd>
+    <b>range:</b> 1nA = 0.1A<br>
+    This is the critical current of the reference junction, which defaults
+    to 1.0mA if not given.  This parameter is not used if <tt>cct</tt> is 0.
+    the superconducting current through a Josepjson junctions is
     <blockquote>
-    Rshunt = <i>Vshunt</i>/<i>Ic</i>
+    I = I<sub>c</sub>sin(&phi;)
     </blockquote>
-    where <i>Vshunt</i> is the value given for the model parameter,
-    and <i>Ic</i> is the (maximum) critical current of the Josephson
-    junction device.  This parameter is useful for simulating SFQ
-    circuits, as it can automatically provide the appropriate shunt
-    resistance, which would otherwise be a separate resistor.
+    where I<sub>c</sub> is the critical current. and the junction "phase" is
+    <blockquote>
+    &phi; = (2&pi;/&Phi;<sub>0</sub>) &int;<sup>t</sup> V(t)dt .
+    </blockquote>
+    The <i>V(t)</i> is the junction voltage, and &Phi;<sub>0</sub> is
+    the magnetic flux quantum.
+
+    <p>
+    The <tt>icrit</tt> parameter should not be confused with the
+    <tt>ics</tt> instance parameter.  The latter is actually a scale
+    factor which specifies the instantiated device critical current as
+    well as appropriately scaling conductances and capacitance, from
+    the model reference current which is <tt>icrit</tt>.
+    </dl>
+
+    <dl>
+    <dt><tt>vgap</tt> or <tt>vg</tt><dd>
+    <b>range:</b> 2.0mV - 6.0mV<br>
+    This parameter specifies the gap voltage, which in a hysteretic
+    Josephson junction is a voltage at which there is a large and
+    abrupt increase in conductivity.  This parameter is material
+    dependent, the default 2.8mV is appropriate for niobium junctions.
+    </dl>
+
+    <dl>
+    <dt><tt>delv</tt><dd>
+    <b>range:</b> 10uV - 200uV<br>
+    This specifies the assumed width, in voltage, of the quasiparticle
+    step region, or gap.  In this region, current increases sharply
+    with increasing voltage.  The default value of 80uV is reasonable
+    for high-quality niobium/aluminum oxide Josephson junctions
+    independent of foundry.
+    </dl>
+
+    <dl>
+    <dt><tt>cap</tt><dd>
+    <b>range:</b> 0.0 - 1nF<br>
+    This is the capacitance of the reference junction, in farads.  The
+    default value is obtained from the MIT Lincoln Laboratory SFQ5EE
+    process specific capacitance, and the junction critical current,
+    and is 0.7pF for the default assumption of 1.0mA critical current.
+    </dl>
+
+    <dl>
+    <dt><tt>cmu</tt><dd>
+    <b>range:</b> 0.0 - 1.0<br>
+    This is a new parameter in the current model, which is intended to
+    account for nonlinearity in scaling of capacitance with area (or
+    critical current, we actually define "area" as the actual over the
+    reference critical current).  It is anticipated that the actual
+    junction capacitance consists of two components:  a physical area
+    dependent "bulk" term, and a perimeter-dependent fringing term. 
+    The <tt>cmu</tt> is a real number between 0 and 1 where if 0 we
+    assume no perimeter dependence, and if 1 we assume that all
+    variation scales with the perimeter.  The default value is 0.
+    The capacitance of an instantiated junctions is as follows:
+    <blockquote>
+    C = cap(A(1-cmu) + &#8730;A cmu)
+    </blockquote>
+    Here, A is the "area" scaling factor, which is the ratio of the
+    junction critical current to the reference critical current.
+    </dl>
+
+    <dl>
+    <dt><tt>vm</tt><dd>
+    <b>range:</b> 8mV - 100mV<br>
+    This is the product of the reference subgap resistance and the
+    reference device critical current.  This parameter is commonly
+    provided by foundries, and is a standard indicator for junction
+    quality (higher is better).  Values tend to decrease with
+    increasing critical current density.  This defaults to the value
+    for the MIT Lincoln Laboratory SFQ5EE process, which is 16mV, The
+    reference junction subgap resistance is obtained from the value of
+    this parameter and the critical current, unless given explicitly.
+    </dl>
+
+    <dl>
+    <dt><tt>rsub</tt> or <tt>r0</tt><dd>
+    <b>range:</b> 8mV/<tt>icrit</tt> - 100mV/<tt>icrit</tt><br>
+    The reference junction subgap resistance can be given directly
+    with this parameter, and a given value will override the
+    <tt>vm</tt> value if also given.
+    </dl>
+
+    <dl>
+    <dt><tt>icrn</tt><dd>
+    <b>range:</b> 1.5mV - 1.9mV<br>
+    This is the product of the reference junction "normal state"
+    resistance and the critical current, where the normal state
+    resistance is the differential resistance measured well above the
+    gap.  The default value is that provided for the MIT Lincoln
+    Laboratory SFQ5EE process which is 1.6mV.  This too is a commonly
+    given parameter from Josephson foundries for characterizing
+    junctions.  If not specified explicitly, this provides the
+    reference junction normal state resistance from the critical
+    current.
+    </dl>
+
+    <dl>
+    <dt><tt>rnorm</tt> or <tt>rn</tt><dd>
+    <b>range:</b> 1.5mV/<tt>icrit</tt> - 1.9mV/<tt>icrit</tt><br>
+    The reference junction normal state resistance can be given
+    explicitly with this parameter, which will override <tt>icrn</tt>
+    if this is also given.
+    </dl>
+
+    <dl>
+    <dt><tt>gmu</tt><dd>
+    <b>range:</b> 0.0 - 1.0<br>
+    This is analogous to <tt>cmu</tt>, and applies to the subgap and
+    normal conductances.  The <tt>vm</tt>, in particular, may vary
+    with junction physical size, with small junctions having lower
+    <tt>vm</tt> than larger ones.  This parameter should capture this
+    effect.  It is taken that a significant part of the conductivity
+    is due to defects or imperfections around the periphery of the
+    junction area, and the contribution would therefor scale with the
+    perimeter.  The scaling for conductivity is as follows:
+    <blockquote>
+    G<sub>x</sub> = G<sub>x0</sub>(A(1-gmu) + &#8730;A gmu)
+    </blockquote>
+    Here, G<sub>x</sub> refers to either the subgap or normal
+    conductance, G<sub>x0</sub> is the same parameter for the
+    reference junction.  The A is the scaling parameter, that is, the
+    ratio of instance to reference critical currents.  The default
+    value is 0, meaning that scaling is assumed purely linear, which
+    will be the case until a number is provided through additional
+    data analysis.  It may prove necessary to have separate scaling
+    parameters for subgap and above gap condutance, at which time a
+    new model parameter may be added.
+    </dl>
+
+    <dl>
+    <dt><tt>icfct</tt> or <tt>icfact</tt><dd>
+    <b>range:</b> 0.5 - &pi;/4<br>
+    This parameter sets the ratio of the critical current to the
+    quasiparticle step height.  Theory provides the default value of
+    &pi;/4 which is usually adequately close.  MIT Lincoln Laboratory
+    does not currently provide an alternative value, but further
+    characterization of fabricated junctions may provide an improved
+    number in the future.
+    </dl>
+
+    <dl>
+    <dt><tt>vshunt</tt><dd>
+    <b>range:</b> 0.0 - 2.0mV<br>
+    This parameter is unique in that it does not describe an
+    as-fabricated junction characteristic.  Rather, it is for
+    convenience in specifying a shunt resistance to use globally in
+    SFQ circuits, If given (in volts) conductance will be added
+    automatically so that the product of the total subgap conductance
+    and the critical current will equal <tt>vshunt</tt>.  This avoids
+    having to calculate the value of and add an explicit resistor
+    across each Josephson junction, as used for damping in these
+    circuits.  The designer should choose a value consistent with the
+    process parameters and the amount of damping required.  Higher
+    values will provide less damping, usually critical damping is
+    desired.  This parameter defaults to 0, meaning that no additional
+    demping is supplied by default.
+    </dl>
+
+    <dl>
+    <dt><tt>tsfactor</tt><dd>
+    <b>range:</b> 0.001 - 1.0<br>
+    This is mainly for compatibility with the Verilog-A Josephson
+    junction model provided with <i>WRspice</i> in the
+    Verilog-A examples.  It has the same effect and range as the
+    <i>WRspice</i> <a href="dphimax"><tt>dphimax</tt></a> parameter,
+    and will override <tt>dphimax</tt> if given.  If not given,
+    <tt>dphimax</tt> will be used.  This is the maximum phase change
+    allowed between internal time points.
+    </dl>
+
+    <dl>
+    <dt><tt>icon</tt><dd>
+    <b>range:</b> 1e-4 - 1.0<br>
+    This parameter applies when the <tt>cct</tt> parameter is set to one
+    of the choices larger the 1, where critical current modulation is
+    modeled.  The value of <tt>icon</tt> is the first value for (assumed)
+    full suppression of critical current.
+
+    <p>
+    The parameter is not currently recognized by the Verilog-A
+    Josephson junction model provided with <i>WRspice</i>, as that
+    model does not currently support values of <tt>cct</tt> larger
+    than 1.
+    </dl>
  
 !!SEEALSO
 .model
