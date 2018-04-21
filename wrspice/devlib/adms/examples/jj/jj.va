@@ -51,6 +51,8 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.14, April 20, 2018
+//   Wider range for vgap 2.0mV - 6.0mV, for materials other than Nb.
 // Version 1.13, April 14, 2018
 //   Wider range of icrit 1e-9 - 1e-1 ought to cover anything.  Vm lower
 //   now 8mv, was 10mV.
@@ -211,7 +213,7 @@ parameter real cmu      = 0.0 from [0.0:1.0]
     `P(type="model" info="capacitance scaling factor");
 
 // The gap voltage and spread.
-parameter real vgap     = 2.8m from [2.5m:3.1m]
+parameter real vgap     = 2.8m from [2.0m:6.0m]
     `P(type="model" info="gap voltage" units="V");
 aliasparam vg           = vgap;
 parameter real delv     = 0.08m from [0.01m:0.2m]
@@ -221,7 +223,7 @@ parameter real delv     = 0.08m from [0.01m:0.2m]
 // shunt is added so that Ic*Reff = vshunt.
 parameter real vm       = `Vm*1e-3 from [8m:100m]
     `P(type="model" info="Ic * subgap resistance" units="V");
-parameter real rsub     = vm/icrit from [1e-2/icrit:1e-1/icrit]
+parameter real rsub     = vm/icrit from [8e-3/icrit:1e-1/icrit]
     `P(type="model" info="subgap resistance" units="O");
 aliasparam r0           = rsub;
 parameter real icrn     = `IcR*1e-3 from [1.5m:1.9m]

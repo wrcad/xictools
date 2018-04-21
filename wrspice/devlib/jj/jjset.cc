@@ -82,8 +82,8 @@ Author: 1992 Stephen R. Whiteley
 #define IcsMin  Icrit/20    // Min instance Ic, A
 #define IcsMax  Icrit*20    // Max instance Ic, A
 #define Vg      2.8e-3      // Assumed Vgap of reference, V
-#define VgMin   2.5e-3      // Min Vgap, V
-#define VgMax   3.1e-3      // Max Vgao, V
+#define VgMin   2.0e-3      // Min Vgap, V
+#define VgMax   6.0e-3      // Max Vgao, V
 #define DelV    0.08e-3     // Assumed delVg of reference, V
 #define DelVmin 0.01e-3     // Min delVg, V
 #define DelVmax 0.2e-3      // Max delVg, V
