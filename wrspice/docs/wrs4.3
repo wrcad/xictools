@@ -224,8 +224,33 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.4  4/9/2018
+wrspice-4.3.5  4/21/2018
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* More changes to the JJ models (Verilog-A and internal)
+
+  The accepted range of icrit is now 1nA - 0.1A, which should be
+  adequate to cover special cases.  The previous range was fine for
+  digital circuits but was too restrictive in general.
+
+  The range ov vgap is now 2.0mV - 6.0mV to cover materials other than
+  niobium.
+
+
+BUGS FIXED
+---- -----
+
+* The new Josephson junction model documentation did not make it into
+  the packages other than LinuxRHEL7, or into the source tree. 
+  Infrastructure was added to the build system to prevent this from
+  happening in the future.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.4  4/9/2018
 
 This is basically a re-release of 4.3.3, with some documentation
 additions and a few tweaks.  The 4.3.3 packages were never built.

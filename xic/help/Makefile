@@ -27,7 +27,7 @@ depend: $(XPMS) $(BASEFILES) $(MOZYFILES) $(SPFILES)
 	cd screenshots; $(MAKE)
 
 $(XPMS): $(BITMAPS)/$@
-	cp -fp $(BITMAPS)/$@ .
+	@cp -fp $(BITMAPS)/$@ .
 
 $(BASEFILES):
 	cp -fp $(BASE)/$@ .
@@ -65,3 +65,46 @@ distclean:
 check::
 	-egrep 'href="[^>"]+>' *.hlp
 
+# Make sure that the copies are the same as the source, avoid local
+# updates that won't propagate!
+cptest::
+	@for a in $(XPMS); do \
+	    s1="`/usr/bin/sum $(BITMAPS)/$$a`"; \
+	    s2="`/usr/bin/sum $$a`"; \
+            if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in $(BITMAPS), FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
+	@for a in $(BASEFILES); do \
+	    s1="`/usr/bin/sum $(BASE)/$$a`"; \
+	    s2="`/usr/bin/sum $$a`"; \
+            if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in $(BASE), FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
+	@for a in $(MOZYFILES); do \
+	    s1="`/usr/bin/sum $(MOZY)/$$a`"; \
+	    s2="`/usr/bin/sum $$a`"; \
+            if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in $(MOZY), FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
+	@for a in $(SPFILES); do \
+	    s1="`/usr/bin/sum $(SPBASE)/$$a`"; \
+	    s2="`/usr/bin/sum $$a`"; \
+            if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in $(SPBASE), FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done

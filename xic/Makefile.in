@@ -103,7 +103,12 @@ LOCAL_LIBS = \
 ####### Executable targets ############################################
 
 TARGETS = xic wrencode wrdecode wrsetpass
-all:  $(TARGETS) plugins
+all:  cptest $(TARGETS) plugins
+
+cptest:
+	cd help; make cptest
+	cd src/sparse; make cptest
+	cd src/wrspif; make cptest
 
 $(TARGETS)::
 	$(MAKE) bin/$@

@@ -25,3 +25,17 @@ input.h:        ../../include/input.h
 clean distclean::
 	-@rm -f $(SPHFILES)
 
+# Make sure that the copies are the same as the source, avoid local
+# updates that won't propagate!
+cptest::
+	@for a in $(SPHFILES); do \
+	    s1="`/usr/bin/sum ../../include/$$a`"; \
+	    s2="`/usr/bin/sum $$a`"; \
+            if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in ../../include, FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
+

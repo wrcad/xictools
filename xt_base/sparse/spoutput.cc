@@ -156,7 +156,7 @@
 //  pElement  (spMatrixElement*)
 //      Pointer to the element in the matrix that is to be printed.
 //
-//  pImagElements  (spMatrixElement* [ ])
+//  pElements  (spMatrixElement* [ ])
 //      Array of pointers to elements in the matrix.  These pointers point
 //      to the elements whose real values have just been printed.  They are
 //      used to quickly access those same elements so their imaginary values
@@ -191,7 +191,7 @@ void
 spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
 #endif
 {
-    double *pImagElements[PRINTER_WIDTH/10+1];
+    double *pElements[PRINTER_WIDTH/10+1];
     double smallestDiag = 0.0, smallestElement = 0.0;
     double largestElement = 0.0, largestDiag = 0.0;
     int startCol = 1;
@@ -325,7 +325,7 @@ spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
                 if (ptr != 0) {
                     // Case where element exists.
                     if (data) {
-                        pImagElements[j - startCol] =  ptr;
+                        pElements[j - startCol] =  ptr;
                         if (LongDoubles)
 #ifdef WIN32
                             fprintf(fp, " %9.3g", (double)LDBL(ptr));
@@ -362,7 +362,7 @@ spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
                 else {
                     // Case where element is structurally zero.
                     if (data) {
-                        pImagElements[j - startCol] = 0;
+                        pElements[j - startCol] = 0;
                         fprintf(fp, "       ...");
                     }
                     else
@@ -375,8 +375,8 @@ spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
             if (Complex AND data) {
                 fprintf(fp, "    ");
                 for (j = startCol; j <= stopCol; j++) {
-                    if (pImagElements[j - startCol] != 0)
-                        fprintf(fp, " %8.2gj", *pImagElements[j-startCol]);
+                    if (pElements[j - startCol] != 0)
+                        fprintf(fp, " %8.2gj", *(pElements[j-startCol]+1));
                     else
                         fprintf(fp, "          ");
                 }
@@ -451,7 +451,7 @@ spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
 void
 spMatrixFrame::spPrint(int printReordered, int data, int header)
 {
-    double *pImagElements[PRINTER_WIDTH/10+1];
+    double *pElements[PRINTER_WIDTH/10+1];
     double smallestDiag = 0.0, smallestElement = 0.0;
     double largestElement = 0.0, largestDiag = 0.0;
     int startCol = 1;
@@ -582,7 +582,7 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
                 if (ptr != 0) {
                     // Case where element exists.
                     if (data) {
-                        pImagElements[j - startCol] =  ptr;
+                        pElements[j - startCol] =  ptr;
                         if (LongDoubles)
                             TTY.printf(" %9.3Lg", LDBL(ptr));
                         else
@@ -615,7 +615,7 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
                 else {
                     // Case where element is structurally zero.
                     if (data) {
-                        pImagElements[j - startCol] = 0;
+                        pElements[j - startCol] = 0;
                         TTY.printf("       ...");
                     }
                     else
@@ -628,8 +628,8 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
             if (Complex AND data) {
                 TTY.printf("    ");
                 for (j = startCol; j <= stopCol; j++) {
-                    if (pImagElements[j - startCol] != 0)
-                        TTY.printf(" %8.2gj", *pImagElements[j-startCol]);
+                    if (pElements[j - startCol] != 0)
+                        TTY.printf(" %8.2gj", *(pElements[j-startCol]+1));
                     else
                         TTY.printf("          ");
                 }

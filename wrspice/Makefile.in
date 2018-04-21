@@ -109,7 +109,14 @@ LOCAL_LIBS = \
 ####### Executable targets ############################################
 
 TARGETS = wrspice wrspiced multidec proc2mod printtoraw
-all: $(TARGETS) wdemo
+all: cptest $(TARGETS) wdemo
+
+cptest:
+	cd help; make cptest
+	cd src/misc; make cptest
+	cd src/sparse; make cptest
+	cd devlib/include; make cptest
+	cd devlib/adms/include; make cptest
 
 $(TARGETS)::
 	$(MAKE) bin/$@
