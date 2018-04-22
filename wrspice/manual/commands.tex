@@ -695,20 +695,23 @@ command, one can use forms like
 \subsection{\spcmd{tbupdate}}
 \index{tbupdate command}
 
-% spToolbar.hlp:tbupdate 030518
+% spToolbar.hlp:tbupdate 042118
 
 This command will update the user's {\vt .wrspiceinit} file in the
-home directory to reflect the current tool setup.  The window
-arrangement should be the same the next time the user starts
-{\WRspice}.  This command is also performed when the user presses the
-{\cb Update} button in the {\cb File} menu of the {\cb Tool Control}
-window.
+home directory to reflect the current tool setup.
+\begin{quote}\vt
+tbupdate
+\end{quote}
+The window arrangement should be the same the next time the user
+starts {\WRspice}.  This command is also performed when the user
+presses the {\cb Update Tools} button in the {\cb File} menu of the
+{\cb Tool Control} window.
 
 %SU-------------------------------------
 \subsection{\spcmd{wrupdate}}
 \index{wrupdate command}
 
-% spCommands.hlp:wrupdate 102817
+% spCommands.hlp:wrupdate 042118
 
 This command can be used to check for, download, and install updates
 to the program.
@@ -722,9 +725,11 @@ and available packages for each of the {\XicTools} programs for the
 current operating system, and provides buttons to download and install
 the packages.
 
-Unlike in earlier {\WRspice} releases, there is no provision for automatic
-checking for updates, so this command or equivalent should be run
-periodically to check for updated packages.
+Unlike in earlier {\WRspice} releases, there is no provision for
+automatic checking for updates, so this command or equivalent should
+be run periodically to check for updated packages.  The computer must
+have http access to the internet for successful use of this
+functionality.
 
 
 %S-----------------------------------------------------------------------------

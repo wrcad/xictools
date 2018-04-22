@@ -696,7 +696,7 @@ tbsetup command
     This command can appear in the <a href="startup_files">startup
     files</a> only.  It is inserted into or updated in the
     <tt>.wrspiceinit</tt> file in the user's home directory in
-    response to the <a href="tbupdate"><b>update</b></a> command, or
+    response to the <a href="tbupdate"><b>tbupdate</b></a> command, or
     from pressing the <b>Update Tools</b> button in the <b>File</b>
     menu of the <a href="toolbar"><b>Tool Control</b></a> window.  It
     is not likely that the user will need to work with <b>tbsetup</b>
@@ -714,7 +714,7 @@ tbsetup command
     exist for backward compatibility.
 
     <p>
-    By invoking the <b>update</b> command from the prompt line or
+    By invoking the <b>tbupdate</b> command from the prompt line or
     pressing the <b>Update Tools</b> button in the <b>File</b> menu of
     the <b>Tool Control</b> window, a <tt>.wrspiceinit</tt> file is
     created in the user's home directory if necessary, and the
@@ -749,7 +749,7 @@ tbsetup command
     <b>Update Tools</b> button in the <b>File</b> menu can be pressed. 
     A <tt>.wrspiceinit</tt> file will be created, or an existing file
     updated, in the user's home directory.  Alternatively, the
-    <tt>update</tt> command can be given from the command line.  Hand
+    <b>tbupdate</b> command can be given from the command line.  Hand
     editing of the <tt>.wrspiceinit</tt> file may be used to remove
     buttons or change the button order in the <b>Tools</b> menu.  Once
     edited, only the tools present will be updated.
