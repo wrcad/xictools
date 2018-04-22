@@ -815,11 +815,11 @@ feature is currently supported in {\WRspice}.  Thus, there is no
 longer a network access attempt on program startup, which may save
 time.
 
-Program updates are handled in the help system (see \ref{update}), for
-all of the {\XicTools} packages.  Either the help system built into
-{\Xic} and {\WRspice}, or the stand-alone {\it mozy} program can be
-used to check for, download, and install updates.  Giving the keyword
-``{\vt :xt\_pkgs}'' will display a page that provides update
+Program updates are handled in the help system (see \ref{update}),
+for all of the {\XicTools} packages.  Either the help system built
+into {\Xic} and {\WRspice}, or the stand-alone {\it mozy} program can
+be used to check for, download, and install updates.  Giving the
+keyword ``{\vt :xt\_pkgs}'' will display a page that provides update
 information and download/install buttons.
 
 If a new {\WRspice} release is run for the first time, the
@@ -902,15 +902,15 @@ lines like ``{\vt set color2 = red}''.
 \subsection{The {\vt tbsetup} Command}
 
 \index{startup file}
-\index{update command}
-\index{Update button}
+\index{tbupdate command}
+\index{Update Tools button}
 \index{tbsetup command}
 
 % spSetup:tbsetup 012709
 
 This command can appear in the startup files only.  It is inserted
 into or updated in the {\vt .wrspiceinit} file in the user's home
-directory in response to the {\cb update} command, or from pressing
+directory in response to the {\cb tbupdate} command, or from pressing
 the {\cb Update Tools} button in the {\cb File} menu of the {\cb Tool
 Control window}.  It is not likely that the user will need to work
 with {\cb tbsetup} directly, though it can be used to customize the
@@ -924,11 +924,11 @@ tbsetup [old] [vert] [toolbar on|off {\it x y}] [{\it name1} on|off {\it x y}]
 The {\vt old} and {\vt vert} keywords are ignored.  They exist for
 backward compatibility.
 
-By invoking the {\cb update} command from the prompt line or pressing
-the {\cb Update Tools} button in the {\cb File} menu of the {\cb Tool
-Control} window, a {\vt .wrspiceinit} file is created in the user's
-home directory if necessary, and the {\cb tbsetup} command will be
-added or updated.  This will save the current state of the windows
+By invoking the {\cb tbupdate} command from the prompt line or
+pressing the {\cb Update Tools} button in the {\cb File} menu of the
+{\cb Tool Control} window, a {\vt .wrspiceinit} file is created in the
+user's home directory if necessary, and the {\cb tbsetup} command will
+be added or updated.  This will save the current state of the windows
 from the {\cb Tools} menu, which will be recreated when the program is
 started the next time.
 
@@ -954,9 +954,9 @@ the {\cb Tools} menu and arranging them as necessary and/or moving the
 {\cb Tool Control} window, the {\cb Update Tools} button in the {\cb
 File} menu can be pressed.  A {\vt .wrspiceinit} file will be created,
 or an existing file updated, in the user's home directory. 
-Alternatively, the {\cb update} command can be given from the command
-line.  Hand editing of the {\vt .wrspiceinit} file may be used to
-remove buttons or change the button order in the {\cb Tools} menu. 
+Alternatively, the {\cb tbupdate} command can be given from the
+command line.  Hand editing of the {\vt .wrspiceinit} file may be used
+to remove buttons or change the button order in the {\cb Tools} menu. 
 Once edited, only the tools present will be updated.
 
 
@@ -979,7 +979,7 @@ niceties such as plotting (other than the infamous crude line-printer
 plots of yore).  Under Microsoft Windows, graphics is (of course)
 always available.
 
-% spToolbar.hlp:toolbar 121515
+% spToolbar.hlp:toolbar 042118
 
 \index{tool control window}
 When a graphical interface is available, {\WRspice} by default
@@ -1097,30 +1097,27 @@ in these files, performs the initialization.  The {\vt tbsetup}
 function takes a long, messy command line, however fortunately the
 user has an easy way to automatically add this line, using the
 {\cb Update Tools} command.  This action is also available from the
-command line {\cb update} command.
+command line {\cb tbupdate} command.
 
-The {\cb Update Tools} and {\cb update} commands will create or update
-a {\vt .wrspiceinit} file in the user's home directory.  If the home
-directory can't be determined, the current directory will be used.
+The {\cb Update Tools} and {\cb tbupdate} commands will create or
+update a {\vt .wrspiceinit} file in the user's home directory.  If the
+home directory can't be determined, the current directory will be
+used.
 
 \item{\cb Update WRspice}\\
-The {\cb Update WRspice} button will initiate a dialog on the command
-line to download a program update distribution file, and possibly
-install it over the present installation.  Downloading/installation is
-only possible if a newer distribution exists on the Whiteley Research
-web site, and only if a current {\vt .wrpasswd} file exists in the
-user's home directory, through use of the {\cb passwd} command.
+Pressing this button is equivalent to giving the {\cb wrupdate}
+command, and is equivalent to giving the special keyword ``{\vt
+:xt\_pkgs}'' to the help system, which brings up the {\XicTools}
+package management page (see \ref{update}).  The page lists
+installed and available packages for each of the {\XicTools} programs
+for the current operating system, and provides buttons to download and
+install the packages.
 
-This button calls the {\cb wrupdate} command (without arguments).  The
-command-line {\cb wrupdate} command provides a little more
-flexibility, such as the ability to download releases for other than
-the current ``operating system'' name.  In either case, one can
-install the new release and continue running the present program, but
-subsequently starting {\WRspice} will invoke the new version.  The
-present executable is still available as ``{\vt wrspice.old}''.
-
-The computer must have http access to the internet for successful use
-of this functionality.
+Unlike in earlier {\WRspice} releases, there is no provision for
+automatic checking for updates, so this command or equivalent should
+be run periodically to check for updated packages.  The computer must
+have http access to the internet for successful use of this
+functionality.
 
 \item{\cb Quit}\\
 The {\cb Quit} button will terminate the {\WRspice} session, after
@@ -1800,8 +1797,8 @@ Options} menu of the help viewer.
 
 These fonts can be set in the {\vt .wrspiceinit} startup file by
 giving {\cb setfont} commands.  These are inserted automatically when
-the {\cb Update} button in the {\cb File} menu is pressed, or an {\cb
-update} command is given.
+the {\cb Update Tools} button in the {\cb File} menu is pressed, or a
+{\cb tbupdate} command is given.
 
 % spToolbar.hlp:filespanel 012709
 %SU-------------------------------------
@@ -3115,6 +3112,32 @@ saved name and the directory of the file to be downloaded.  Pressing
 the {\cb Download} button will start downloading.  A pop-up will
 appear that monitors the transfer, which can be aborted with the {\cb
 Cancel} button.
+
+%SU-------------------------------------
+% update 042118
+\subsection{{\XicTools} Update}
+\index{updating {\XicTools}}
+\label{update}
+
+The help system provides package management capability for the
+{\XicTools} programs.  Giving the keyword
+\begin{quote}\vt
+:xt\_pkgs
+\end{quote}
+(note that the keyword starts with a colon) brings up a page listing
+the installed and available {\XicTools} packages, for the current
+architecture.  This requires internet access and http connectivity to
+{\vt wrcad.com}.
+
+One can select packages to download and optionally install by clicking
+on the check boxes.  There are separate buttons to initiate
+downloading only, and downloading and installation.  Package files,
+and the latest {\vt wr\_install} script if downloading, are downloaded
+to the current directory.  Once installed, these files can be deleted.
+
+The {\XicTools} package management capability is available from the
+the internal help system in {\Xic} and {\WRspice}, and from the
+stand-alone {\it mozy} help browser.
 
 %SU-------------------------------------
 % helpview 102917

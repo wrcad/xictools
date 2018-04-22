@@ -60,7 +60,7 @@ graphcmds
 !!REDIRECT wrbtn        toolbar#wrbtn
 !!REDIRECT toolsmenu    toolbar#toolsmenu
 
-!! useriface.tex 121515
+!! useriface.tex 042118
 !!KEYWORD
 toolbar toolcontrol
 !!TITLE
@@ -222,10 +222,10 @@ Tool Control Window
     fortunately the user has an easy way to automatically add this
     line, using the <b>Update Tools</b> command.  This action is
     also available from the command line <a
-    href="update"><b>update</b></a> command.
+    href="tbupdate"><b>tbupdate</b></a> command.
 
     <p>
-    The <b>Update Tools</b> and <b>update</b> commands will create or
+    The <b>Update Tools</b> and <b>tbupdate</b> commands will create or
     update a <tt>.wrspiceinit</tt> file in the user's home
     directory.  If the home directory can't be determined, the current
     directory will be used.
@@ -233,27 +233,21 @@ Tool Control Window
 
     <dl>
     <dt><b>Update WRspice</b>
-    <dd>The <b>Update WRspice</b> button will initiate a dialog on the
-    command line to download a program update distribution file, and
-    possibly install it over the present installation. 
-    Downloading/installation is only possible if a newer distribution
-    exists on the Whiteley Research web site, and only if a current
-    <tt>.wrpasswd</tt> file exists in the user's home directory,
-    through use of the <a href="passwd"><b>passwd</b></a> command.
+    <dd>Pressing this button is equivalent to giving the <a
+    href="wrupdate><b>wrupdate</b></a> command, and is equivalent to
+    giving the special keyword "<tt>:xt_pkgs</tt>" to the help system,
+    which brings up the <i>XicTools</i> <a href="update">package
+    management</a> page.  The page lists installed and available
+    packages for each of the <i>XicTools</i> programs for the current
+    operating system, and provides buttons to download and install the
+    packages.
 
-    <p>
-    This button calls the <a href="wrupdate"><b>wrupdate</b></a>
-    command (without arguments).  The command-line <b>wrupdate</b>
-    command provides a little more flexibility, such as the ability to
-    download releases for other than the current "operating system"
-    name.  In either case, one can install the new release and
-    continue running the present program, but subsequently starting
-    <i>WRspice</i> will invoke the new version.  The present executable
-    is still available as "<tt>wrspice.old</tt>".
-
-    <p>
-    The computer must have http access to the internet for successful
-    use of this functionality.
+    <p>  
+    Unlike in earlier <i>WRspice</i> releases, there is no provision
+    for automatic checking for updates, so this command or equivalent
+    should be run periodically to check for updated packages.  The
+    computer must have http access to the internet for successful use
+    of this functionality.
     </dl>
 
     <dl>
@@ -499,9 +493,9 @@ The Fonts Tool
     These fonts can be set in the <tt>.wrspiceinit</tt> <a
     href="startup_files">startup file</a> by giving <a
     href="setfont"><b>setfont</b></a> commands.  These are inserted
-    automatically when the <b>Update Tools</b> button in the <b>File</b>
-    menu is pressed, or an <href="update"><b>update</b></a> command is
-    given.
+    automatically when the <b>Update Tools</b> button in the
+    <b>File</b> menu is pressed, or an
+    <href="tbupdate"><b>tbupdate</b></a> command is given.
 
 !!SEEALSO
 graphics

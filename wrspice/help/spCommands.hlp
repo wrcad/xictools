@@ -1114,7 +1114,7 @@ tbupdate command
 !!SEEALSO
 uicmds
 
-!! commands.tex 102817
+!! commands.tex 042118
 !!KEYWORD
 wrupdate
 !!TITLE
@@ -1133,7 +1133,9 @@ wrupdate command
     <p>  
     Unlike in earlier <i>WRspice</i> releases, there is no provision
     for automatic checking for updates, so this command or equivalent
-    should be run periodically to check for updated packages.
+    should be run periodically to check for updated packages.  The
+    computer must have http access to the internet for successful use
+    of this functionality.
  
 !!SEEALSO
 uicmds
