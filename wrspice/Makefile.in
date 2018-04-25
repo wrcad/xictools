@@ -353,7 +353,7 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install: install_wrspice_pkg install_links
+install: install_wrspice_pkg install_links devkit_examples install_devkit
 
 install_wrspice_pkg: install_test install_clean install_bin install_help \
   install_icons install_startup install_scripts install_examples install_docs
