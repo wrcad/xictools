@@ -1238,7 +1238,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
 
             double val = DEF_maxData;
             VTvalue vv;
-            if (Sp.GetVar(spkw_maxdata, VTYP_REAL, &vv))
+            if (Sp.GetVar(spkw_maxdata, VTYP_REAL, &vv, Sp.CurCircuit()))
                 val = vv.get_real();
             context->SetColor(tb_clr_1);
             context->Text("program limit", x, y, 0);
