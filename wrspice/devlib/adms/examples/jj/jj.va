@@ -51,6 +51,8 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.15, April 25, 2018
+//   Added alias phi for ic_phase.
 // Version 1.14, April 20, 2018
 //   Wider range for vgap 2.0mV - 6.0mV, for materials other than Nb.
 // Version 1.13, April 14, 2018
@@ -252,6 +254,7 @@ aliasparam icfact       = icfct;
 // Initial conditions.
 parameter real ic_phase = 0 from (-`M_PI:`M_PI)
     `P(type="instance" info="Initial condition phase");
+aliasparam phi          = ic_phase;
 
 // Scaling critical current.
 parameter real ics      = icrit from [icrit/20:icrit*20]
