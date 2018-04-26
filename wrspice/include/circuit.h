@@ -66,7 +66,7 @@ Authors: 1985 Thomas L. Quarles
 #endif
 #endif
 
-// Enable new code to sopport a true DCOP with Josephson junctions.
+// Enable new code to support a true DCOP with Josephson junctions.
 // See description in devlib/jj/jjload.cc.
 #define NEWJJDC
 
