@@ -55,7 +55,12 @@
 #ifndef TRADEFS_H
 #define TRADEFS_H
 
+#define NEWTL
+
 #include "device.h"
+#ifdef NEWTL
+#include "timelist.h"
+#endif
 
 //
 // definitions used to describe transmission liness
@@ -110,7 +115,11 @@ struct TRAdev : public IFdevice
 //    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
 };
 
+#ifdef NEWTL
+struct sTRAtimeval : public timelist<sTRAtimeval>::telt
+#else
 struct sTRAtimeval
+#endif
 {
     double v_i, v_o;
     double i_i, i_o;  
@@ -140,7 +149,11 @@ struct TXLine
     int       ext;      // a flag, set if time step is greater than tau
     int       newtp;    // flag indicating new time point
     int       ifImg;    // set to 1 if non-real roots found
+#ifdef NEWTL
+    sTRAtimeval *tv_head;
+#else
     int       tv_head;  // index into time values
+#endif
     double    ratio;
     double    taul;
     double    sqtCdL;
@@ -158,8 +171,18 @@ struct TXLine
     TERM      h3_term[6];
 };
 
+#ifdef NEWTL
+struct sTRAconval : public timelist<sTRAconval>::telt
+{
+    double h1dashCoeff;     // coefficient for h1dash
+    double h2Coeff;         // coefficient for h2
+    double h3dashCoeff;     // coefficient for h3dash
+};
+#endif
+
 struct sTRAinstance;
 
+// Special model struct for level=2 convolution.
 struct sTRAconvModel
 {
     sTRAconvModel()
@@ -169,9 +192,13 @@ struct sTRAconvModel
 
     ~sTRAconvModel()
         {
+#ifdef NEWTL
+            delete TRAcvdb;
+#else
             delete [] TRAh1dashCoeffs;
             delete [] TRAh2Coeffs;
             delete [] TRAh3dashCoeffs;
+#endif
         }
 
     int setup(sCKT*, sTRAinstance*);
@@ -181,6 +208,7 @@ struct sTRAconvModel
     double rlcH3dashFunc(double, double, double, double);
     double lteCalculate(sCKT*, sTRAinstance*, double);
 
+    // These values will be the same in all instances of this model.
     double TRAl;             // inductance per length
     double TRAc;             // capacitance per length
     double TRAr;             // resistance per length
@@ -205,11 +233,15 @@ struct sTRAconvModel
     double TRArRsLrGRorG;    // sqrt(R)*sinh(l*sqrt(G*R))/sqrt(G)
     double TRArGsLrGRorR;    // sqrt(G)*sinh(l*sqrt(G*R))/sqrt(R)
 
+#ifdef NEWTL
+    timelist<sTRAconval> *TRAcvdb; // lists of convolution coefficients
+#else
     double *TRAh1dashCoeffs; // list of other coefficients for h1dash
     double *TRAh2Coeffs;     // list of other coefficients for h2
     double *TRAh3dashCoeffs; // list of other coefficients for h3dash
     int TRAmodelListSize;    // size of above lists
     int TRAauxIndex;         // auxiliary index for h2 and h3dash
+#endif
 
     sTRAconvModel *next;
 };
@@ -223,7 +255,11 @@ struct sTRAinstance : sGENinstance
             memset(this, 0, sizeof(sTRAinstance));
             GENnumNodes = 4;
         }
+#ifdef NEWTL
+    ~sTRAinstance() { delete TRAtvdb; }
+#else
     ~sTRAinstance() { delete [] TRAvalues; }
+#endif
     sTRAinstance *next()
         { return (static_cast<sTRAinstance*>(GENnextInstance)); }
     const char *tranline_params();
@@ -276,8 +312,12 @@ struct sTRAinstance : sGENinstance
     TXLine TRAtx2;      // pointer to SWEC txline type. temporary storage
 
     sTRAconvModel *TRAconvModel;    // LTRA model parameters
+#ifdef NEWTL
+    timelist<sTRAtimeval> *TRAtvdb;    // history values database
+#else
     sTRAtimeval *TRAvalues;         // history values
     int TRAinstListSize;            // size of history list
+#endif
 
     int TRAhowToInterp; // back time interpolation method
     int TRAlteConType;  // timetoint truncation method

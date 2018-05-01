@@ -1037,9 +1037,12 @@ sTRAconvModel::setup(sCKT*, sTRAinstance *inst)
         TRAintH2 = 1.0;
         TRAintH3dash = 0.0;
 
+#ifdef NEWTL
+#else
         TRAh1dashCoeffs = 0;
         TRAh2Coeffs = 0;
         TRAh3dashCoeffs = 0;
+#endif
     }
     else if (inst->TRAcase == TRA_RG) {
         double tmp1 = TRAlength*sqrt(TRAr*TRAg);

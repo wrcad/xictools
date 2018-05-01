@@ -104,13 +104,19 @@ void
 sTRAconvModel::rcCoeffsSetup(sCKT *ckt)
 {
     // the first coefficients
+#ifdef NEWTL
+    sTRAconval *ca = TRAcvdb->head();
+    double delta1   = ckt->CKTtime - ca->time;
+#else
     int auxindex = ckt->CKTtimeIndex;
     double delta1   = ckt->CKTtime - *(ckt->CKTtimePoints + auxindex);
+#endif
     double hilimit1 = delta1;
 
     double h1lovalue1 = 0.0;
     double h1hivalue1 = sqrt(4*TRAcByR*hilimit1/M_PI);
     double h1dummy1   = h1hivalue1/delta1;
+//XXX double h1relval = fabs(h1dummy1 * ckt->CKTcurTask->TSKreltol);
     TRAh1dashFirstCoeff = h1dummy1;
 
     double temp  = TRArclsqr/(4*hilimit1);
@@ -128,6 +134,7 @@ sTRAconvModel::rcCoeffsSetup(sCKT *ckt)
         h2hivalue1 = 0.0;
         
     double h2dummy1 = h2hivalue1/delta1;
+//XXX double h2relval = fabs(h2dummy1 * ckt->CKTcurTask->TSKreltol);
     TRAh2FirstCoeff = h2dummy1;
 
     double h3lovalue1 = 0.0;
@@ -141,14 +148,25 @@ sTRAconvModel::rcCoeffsSetup(sCKT *ckt)
 
     double h3dummy1 = h3hivalue1/delta1;
     TRAh3dashFirstCoeff = h3dummy1;
+//XXX double h3relval = fabs(h3dummy1 * ckt->CKTcurTask->TSKreltol);
 
     // the coefficients for the rest of the timepoints
 
     int doh1 = 1, doh2 = 1, doh3 = 1;
+#ifdef NEWTL
+    for (sTRAconval *cv = ca; cv->prev; cv = cv->prev) {
+#else
     for (int i = auxindex; i > 0; i--) {
+#endif
 
+#ifdef NEWTL
+        delta1   = cv->time - cv->prev->time;
+        hilimit1 = ckt->CKTtime - cv->prev->time;
+#else
         delta1   = *(ckt->CKTtimePoints + i) - *(ckt->CKTtimePoints + i - 1);
         hilimit1 = ckt->CKTtime - *(ckt->CKTtimePoints + i - 1);
+#endif
+
 
         if (doh1) {
             double h1hivalue2 = h1hivalue1; // previous hivalue1
@@ -157,10 +175,22 @@ sTRAconvModel::rcCoeffsSetup(sCKT *ckt)
             h1lovalue1 = h1hivalue2;
             h1hivalue1 = sqrt(4*TRAcByR*hilimit1/M_PI);
             h1dummy1 = (h1hivalue1 - h1lovalue1)/delta1;
+#ifdef NEWTL
+            cv->h1dashCoeff = h1dummy1 - h1dummy2;
+#else
             *(TRAh1dashCoeffs + i) = h1dummy1 - h1dummy2;
+#endif
+/*XXX
+            if (fabs(h1dummy1 - h1dummy2) < h1relval)
+                doh1 = 0;
+*/
         }
         else
+#ifdef NEWTL
+            cv->h1dashCoeff = 0.0;
+#else
             *(TRAh1dashCoeffs + i) = 0.0;
+#endif
 
         if (doh2 || doh3) {
             temp  = TRArclsqr/(4*hilimit1);
@@ -179,10 +209,22 @@ sTRAconvModel::rcCoeffsSetup(sCKT *ckt)
             else
                 h2hivalue1 = 0.0;
             h2dummy1 = (h2hivalue1 - h2lovalue1)/delta1;
+#ifdef NEWTL
+            cv->h2Coeff = h2dummy1 - h2dummy2;
+#else
             *(TRAh2Coeffs + i) = h2dummy1 - h2dummy2;
+#endif
+/*XXX
+            if (fabs(h2dummy1 - h2dummy2) < h2relval)
+                doh2 = 0;
+*/
         }
         else
+#ifdef NEWTL
+            cv->h2Coeff = 0.0;
+#else
             *(TRAh2Coeffs + i) = 0.0;
+#endif
 
         if (doh3) {
             double h3hivalue2 = h3hivalue1; // previous hivalue1
@@ -196,10 +238,22 @@ sTRAconvModel::rcCoeffsSetup(sCKT *ckt)
             else
                 h3hivalue1 = 0.0;
             h3dummy1 = (h3hivalue1 - h3lovalue1)/delta1;
+#ifdef NEWTL
+            cv->h3dashCoeff = h3dummy1 - h3dummy2;
+#else
             *(TRAh3dashCoeffs + i) = h3dummy1 - h3dummy2;
+#endif
+/*XXX
+            if (fabs(h3dummy1 - h3dummy2) < h3relval)
+                doh3 = 0;
+*/
         }
         else
+#ifdef NEWTL
+            cv->h3dashCoeff = 0.0;
+#else
             *(TRAh3dashCoeffs + i) = 0.0;
+#endif
     }
 }
 
@@ -211,14 +265,36 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
     // coefficients using this assumption in the integration of the
     // function
 
+#ifdef NEWTL
+    sTRAconval *ca = 0;
+#else
     int auxindex;
-    if (TRAtd == 0.0)
+#endif
+    if (TRAtd == 0.0) {
+#ifdef NEWTL
+        ca = TRAcvdb->head();
+#else
         auxindex = ckt->CKTtimeIndex;
+#endif
+    }
     else {
 
-        if (ckt->CKTtime - TRAtd <= 0.0)
+        if (ckt->CKTtime - TRAtd <= 0.0) {
+#ifdef NEWTL
+            ca = TRAcvdb->tail();
+#else
             auxindex = 0;
+#endif
+        }
         else {
+#ifdef NEWTL
+            double tt = ckt->CKTtime - TRAtd;
+            for (ca = TRAcvdb->tail(); ca->next; ca = ca->next) {
+                if (ca->next->time > tt)
+                    break;
+            }
+
+#else
             int i, exact = 0;
             for (i = ckt->CKTtimeIndex; i >= 0; i--) {
                 if (ckt->CKTtime - *(ckt->CKTtimePoints + i) ==
@@ -240,6 +316,7 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
                 auxindex = i;
             else
                 auxindex = i-1;
+#endif
         }
     }
     // the first coefficient
@@ -251,15 +328,22 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
     double h2lovalue1;
     double h2hivalue1;
     double h3hivalue1;
+#ifdef NEWTL
+    if (ca && ca->next) {
+#else
     if (auxindex != 0) {
+#endif
         double lolimit1 = TRAtd;
+#ifdef NEWTL
+        double hilimit1 = ckt->CKTtime - ca->time;
+#else
         double hilimit1 = ckt->CKTtime - *(ckt->CKTtimePoints + auxindex);
+#endif
         double delta1   = hilimit1 - lolimit1;
 
         h2lovalue1 = rlcH2Func(TRAtd);
         double besselarg  = (hilimit1 > TRAtd) ?
-            TRAalpha*sqrt(hilimit1*hilimit1 -
-            TRAtd*TRAtd) : 0.0;
+            TRAalpha*sqrt(hilimit1*hilimit1 - TRAtd*TRAtd) : 0.0;
         double exparg  = -TRAbeta*hilimit1;
         double bessi1overxterm = bessYY(besselarg, exparg);
 
@@ -270,6 +354,7 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
 
         h2dummy1 = twiceintlinfunc(lolimit1, hilimit1, lolimit1, h2lovalue1,
             h2hivalue1, lolimit1, hilimit1)/delta1;
+//XXX double h2relval = fabs(h2dummy1 * ckt->CKTcurTask->TSKreltol);
         TRAh2FirstCoeff = h2dummy1;
 
         double h3lovalue1 = 0.0; // E3dash should be consistent with this
@@ -282,6 +367,7 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
 
         h3dummy1 = intlinfunc(lolimit1, hilimit1, h3lovalue1,
             h3hivalue1, lolimit1, hilimit1)/delta1;
+//XXX double h3relval = fabs(h3dummy1 * ckt->CKTcurTask->TSKreltol);
         TRAh3dashFirstCoeff = h3dummy1;
     }
     else {
@@ -299,28 +385,42 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
     double lolimit2 = 0.0;
     double hilimit2 = 0.0;
     double lolimit1 = 0.0;
+#ifdef NEWTL
+    double hilimit1 = ckt->CKTtime - TRAcvdb->head()->time;
+#else
     double hilimit1 = ckt->CKTtime - *(ckt->CKTtimePoints + ckt->CKTtimeIndex);
+#endif
     double delta1 = hilimit1 - lolimit1;
     double exparg = -TRAbeta*hilimit1;
     double h1lovalue1 = 0.0;
     double h1hivalue1 = (TRAbeta == 0.0)? hilimit1:
         ((hilimit1 == 0.0) ? 0.0 : bessXX(-exparg)*hilimit1 - hilimit1);
     double h1dummy1 = h1hivalue1/delta1;
+//XXX double h1relval = fabs(h1dummy1 * ckt->CKTcurTask->TSKreltol);
     TRAh1dashFirstCoeff = h1dummy1;
 
     // the coefficients for the rest of the timepoints
 
     int doh1 = 1, doh2 = 1, doh3 = 1;
+#ifdef NEWTL
+    for (sTRAconval *cv = TRAcvdb->head(); cv->prev; cv = cv->prev) { 
+#else
     for (int i = ckt->CKTtimeIndex; i > 0; i--) {
+#endif
 
         if (doh1 || doh2 || doh3) {
             lolimit2 = lolimit1; // previous lolimit1
             hilimit2 = hilimit1; // previous hilimit1
 
             lolimit1 = hilimit2;
+#ifdef NEWTL
+            hilimit1 = ckt->CKTtime - cv->prev->time;
+            delta1   = cv->time - cv->prev->time;
+#else
             hilimit1 = ckt->CKTtime - *(ckt->CKTtimePoints + i - 1);
             delta1   =
                 *(ckt->CKTtimePoints + i) - *(ckt->CKTtimePoints + i - 1);
+#endif
 
             exparg = -TRAbeta*hilimit1;
         }
@@ -335,18 +435,33 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
                 bessXX(-exparg)*hilimit1 - hilimit1);
             h1dummy1 = (h1hivalue1 - h1lovalue1)/delta1;
 
+#ifdef NEWTL
+            cv->h1dashCoeff = h1dummy1 - h1dummy2;
+#else
             *(TRAh1dashCoeffs + i) = h1dummy1 - h1dummy2;
+#endif
+/*XXX
+            if (h1dummy1 - h1dummy2) <= h1relval)
+                doh1 = 0;
+*/
         }
         else
+#ifdef NEWTL
+            cv->h1dashCoeff = 0.0;
+#else
             *(TRAh1dashCoeffs + i) = 0.0;
+#endif
 
+#ifdef NEWTL
+        if (cv->time <= ca->time) {
+#else
         if (i <= auxindex) {
+#endif
     
             double besselarg = 0;
             if (doh2 || doh3)
                 besselarg = (hilimit1 > TRAtd) ?
-                    TRAalpha*sqrt(hilimit1*hilimit1 -
-                    TRAtd*TRAtd) : 0.0;
+                    TRAalpha*sqrt(hilimit1*hilimit1 - TRAtd*TRAtd) : 0.0;
 
             if (doh2) {
                 double h2lovalue2 = h2lovalue1; // previous lovalue1
@@ -356,20 +471,31 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
                 h2lovalue1 = h2hivalue2;
                 double bessi1overxterm = bessYY(besselarg, exparg);
 
-                h2hivalue1 =
-                    ((TRAalpha == 0.0) ||
-                    (hilimit1 < TRAtd)) ? 0.0 :
-                    alphasqTterm*bessi1overxterm;
+                h2hivalue1 = ((TRAalpha == 0.0) || (hilimit1 < TRAtd)) ?
+                    0.0 : alphasqTterm*bessi1overxterm;
 
                 h2dummy1 = twiceintlinfunc(lolimit1, hilimit1, lolimit1,
                     h2lovalue1, h2hivalue1, lolimit1, hilimit1)/delta1;
 
+#ifdef NEWTL
+                cv->h2Coeff = h2dummy1 - h2dummy2 + intlinfunc(lolimit2,
+                    hilimit2, h2lovalue2, h2hivalue2, lolimit2, hilimit2);
+#else
                 *(TRAh2Coeffs + i) = h2dummy1 - h2dummy2 +
                     intlinfunc(lolimit2, hilimit2,
                         h2lovalue2, h2hivalue2, lolimit2, hilimit2);
+#endif
+/*XXX
+                if (*(TRAh2Corffs + i) <= h2relval)
+                    doh2 = 0;
+*/
             }
             else
+#ifdef NEWTL
+                cv->h2Coeff = 0.0;
+#else
                 *(TRAh2Coeffs + i) = 0.0;
+#endif
 
             if (doh3) {
                 double h3hivalue2 = h3hivalue1; // previous hivalue1
@@ -378,21 +504,34 @@ sTRAconvModel::rlcCoeffsSetup(sCKT *ckt)
                 double h3lovalue1 = h3hivalue2;
                 double bessi0term = bessZZ(besselarg, exparg);
 
-                h3hivalue1 =
-                    ((hilimit1 <= TRAtd) ||
-                    (TRAbeta == 0.0)) ? 0.0 :
-                    bessi0term - expbetaTterm;
+                h3hivalue1 = ((hilimit1 <= TRAtd) || (TRAbeta == 0.0)) ?
+                    0.0 : bessi0term - expbetaTterm;
 
                 h3dummy1 = intlinfunc(lolimit1, hilimit1, h3lovalue1,
                     h3hivalue1, lolimit1, hilimit1)/delta1;
 
+#ifdef NEWTL
+                cv->h3dashCoeff = h3dummy1 - h3dummy2;
+#else
                 *(TRAh3dashCoeffs + i) = h3dummy1 - h3dummy2;
+#endif
+/*XXX
+                if (h3dummy1 - h3dummy2) <= h3relval)
+                    doh3 = 0;
+*/
             }
             else
+#ifdef NEWTL
+                cv->h3dashCoeff = 0.0;
+#else
                 *(TRAh3dashCoeffs + i) = 0.0;
+#endif
         } 
     }
+#ifdef NEWTL
+#else
     TRAauxIndex = auxindex;
+#endif
 }
 
 
@@ -450,6 +589,16 @@ sTRAconvModel::rlcH3dashFunc(double time, double T, double alpha, double beta)
 *(ckt->CKTtimePoints+i-2)))/(oof - \
 *(ckt->CKTtimePoints+i-2)))
 
+#ifdef NEWTL
+#define SECONDDERIV1(a,b,c) (oof = curtime),\
+(( c - b )/(oof-*(ckt->CKTtimePoints+i-1)) -\
+( b - a )/(*(ckt->CKTtimePoints+i-1)-\
+*(ckt->CKTtimePoints+i-2)))/(oof - \
+*(ckt->CKTtimePoints+i-2)))
+
+#define SECONDDERIV2(t3,t2,t1,a,b,c) (((c-b)/(t1-t2) - (b-a)/(t2-t3))/(t1-t3))
+#endif
+
 // TRAlteCalculate - returns sum of the absolute values of the total
 // local truncation error of the 2 equations for the TRAline
 // Call before present time point is saved in CKTtimePoints.
@@ -477,22 +626,39 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
             (curtime - *(ckt->CKTtimePoints+ckt->CKTtimeIndex)) - g1i;
 
         if (curtime > TRAtd) {
+#ifdef NEWTL
+            sTRAtimeval *ta = inst->TRAtvdb->tail();
+            double atime = curtime - TRAtd;
+            while (ta && ta->time <= atime) {
+                if (ta->time == atime)
+                    break;
+                if (ta->next) {
+                    if (ta->next->time > atime)
+                        break;
+                }
+                ta = ta->next;
+            }
+#else
             int i, exact = 0;
-            for (i = ckt->CKTtimeIndex ; i>= 0; i--) {
-                if (curtime - *(ckt->CKTtimePoints + i) ==
-                        TRAtd) {
+            for (i = ckt->CKTtimeIndex ; i >= 0; i--) {
+                if (curtime - *(ckt->CKTtimePoints + i) == TRAtd) {
                     exact = 1;
                     break;
                 } 
                 if (curtime - *(ckt->CKTtimePoints + i) > TRAtd)
                     break;
             }
+#endif
 
 #ifdef TRADEBUG
             if ((i < 0) || ((i==0) && (exact==1)))
             printf("TRAlteCalculate: i <= 0: some mistake!\n");
 #endif
 
+#ifdef NEWTL
+            hilimit1 = curtime - ta->time;
+            lolimit1 = inst->TRAtvdb->head()->time - ta->time;
+#else
             int auxindex;
             if (!exact)
                 auxindex = i;
@@ -502,6 +668,7 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
             hilimit1 = curtime - *(ckt->CKTtimePoints + auxindex);
             lolimit1 = *(ckt->CKTtimePoints + ckt->CKTtimeIndex) -
                 *(ckt->CKTtimePoints + auxindex);
+#endif
             lolimit1 = SPMAX(TRAtd, lolimit1);
 
             // are the following really doing the operations in the
@@ -512,8 +679,13 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
                 hivalue1, lolimit1, hilimit1);
             g1i = thriceintlinfunc(lolimit1, hilimit1, lolimit1, lolimit1,
                 lovalue1, hivalue1, lolimit1, hilimit1);
+#ifdef NEWTL
+            double h2TfirstCoeff = 0.5*f1i*(curtime-TRAtd -
+                ta->time) - g1i;
+#else
             double h2TfirstCoeff = 0.5*f1i*(curtime-TRAtd -
                 *(ckt->CKTtimePoints+auxindex)) - g1i;
+#endif
 
             hivalue1 = ltra_rlcH3dashIntFunc(hilimit1, TRAtd, TRAbeta);
             lovalue1 = ltra_rlcH3dashIntFunc(lolimit1, TRAtd, TRAbeta);
@@ -521,8 +693,13 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
                 lolimit1, hilimit1);
             g1i = twiceintlinfunc(lolimit1, hilimit1, lolimit1, lovalue1,
                 hivalue1, lolimit1, hilimit1);
+#ifdef NEWTL
+            double h3dashTfirstCoeff = 0.5*f1i*(curtime - TRAtd -
+                ta->time) - g1i;
+#else
             double h3dashTfirstCoeff = 0.5*f1i*(curtime - TRAtd -
                 *(ckt->CKTtimePoints+auxindex)) - g1i;
+#endif
 
             // LTEs for convolution with v1
             // Get divided differences for v1 (2nd derivative estimates).
@@ -531,18 +708,32 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
             // Not bothering to interpolate since everything is
             // approximate
             //
+#ifdef NEWTL
+            sTRAtimeval *tv = inst->TRAtvdb->head();
+            double dashdash = SECONDDERIV2(tv->prev->time, tv->time, curtime,
+                tv->prev->v_i, tv->v_i,
+                *(ckt->CKTrhsOld + inst->TRAposNode1) -
+                *(ckt->CKTrhsOld + inst->TRAnegNode1));
+#else
             double oof; // in macro
             double dashdash = SECONDDERIV(ckt->CKTtimeIndex+1,
                 inst->TRAvalues[ckt->CKTtimeIndex-1].v_i,
                 inst->TRAvalues[ckt->CKTtimeIndex].v_i,
                 *(ckt->CKTrhsOld + inst->TRAposNode1) -
                 *(ckt->CKTrhsOld + inst->TRAnegNode1));
+#endif
             eq1LTE += TRAadmit*FABS(dashdash*h1dashTfirstCoeff);
+#ifdef NEWTL
+            if (ta) {
+                dashdash = SECONDDERIV2(ta->prev->time, ta->time,
+                    ta->next->time, ta->prev->v_i, ta->v_i, ta->next->v_i);
+#else
             if (auxindex) {
                 dashdash = SECONDDERIV(auxindex+1,
                     inst->TRAvalues[auxindex - 1].v_i,
                     inst->TRAvalues[auxindex].v_i,
                     inst->TRAvalues[auxindex + 1].v_i);
+#endif
                 eq2LTE += TRAadmit*FABS(dashdash*h3dashTfirstCoeff);
             }
             // end LTEs for convolution with v1
@@ -550,59 +741,101 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
             // LTEs for convolution with v2
             // Get divided differences for v2 (2nd derivative estimates).
             //
+#ifdef NEWTL
+            dashdash = SECONDDERIV2(tv->prev->time, tv->time, curtime,
+                tv->prev->v_o, tv->v_o,
+                *(ckt->CKTrhsOld + inst->TRAposNode2) -
+                *(ckt->CKTrhsOld + inst->TRAnegNode2));
+#else
             dashdash = SECONDDERIV(ckt->CKTtimeIndex+1,
                 inst->TRAvalues[ckt->CKTtimeIndex-1].v_o,
                 inst->TRAvalues[ckt->CKTtimeIndex].v_o,
                 *(ckt->CKTrhsOld + inst->TRAposNode2) -
                 *(ckt->CKTrhsOld + inst->TRAnegNode2));
+#endif
             eq2LTE += TRAadmit*FABS(dashdash*h1dashTfirstCoeff);
+#ifdef NEWTL
+            if (ta) {
+                dashdash = SECONDDERIV2(ta->prev->time, ta->time,
+                    ta->next->time, ta->prev->v_o, ta->v_o, ta->next->v_o);
+#else
             if (auxindex) {
                 dashdash = SECONDDERIV(auxindex+1,
                     inst->TRAvalues[auxindex - 1].v_o,
                     inst->TRAvalues[auxindex].v_o,
                     inst->TRAvalues[auxindex + 1].v_o) ;
+#endif
                 eq1LTE += TRAadmit*FABS(dashdash*h3dashTfirstCoeff);
             }
             // end LTEs for convolution with v2
 
+#ifdef NEWTL
+            if (ta) {
+#else
             if (auxindex) {
+#endif
                 // LTE for convolution with i1
                 // Get divided differences for i1 (2nd deriv estimates).
                 //
+#ifdef NEWTL
+                dashdash = SECONDDERIV2(ta->prev->time, ta->time,
+                    ta->next->time, ta->prev->i_i, ta->i_i, ta->next->i_i);
+#else
                 dashdash = SECONDDERIV(auxindex+1,
                     inst->TRAvalues[auxindex - 1].i_i,
                     inst->TRAvalues[auxindex].i_i,
                     inst->TRAvalues[auxindex + 1].i_i) ;
+#endif
                 eq2LTE += FABS(dashdash * h2TfirstCoeff);
                 // end LTE for convolution with i1
 
                 // LTE for convolution with i2
                 // Get divided differences for i2 (2nd deriv estimates).
                 //
+#ifdef NEWTL
+                dashdash = SECONDDERIV2(ta->prev->time, ta->time,
+                    ta->next->time, ta->prev->i_o, ta->i_o, ta->next->i_o);
+#else
                 dashdash = SECONDDERIV(auxindex+1,
                     inst->TRAvalues[auxindex - 1].i_o,
                     inst->TRAvalues[auxindex].i_o,
                     inst->TRAvalues[auxindex + 1].i_o) ;
+#endif
                 eq1LTE += FABS(dashdash * h2TfirstCoeff);
             }
             // end LTE for convolution with i1
         }
         else {
             // LTEs for convolution with v1
+#ifdef NEWTL
+            sTRAtimeval *tv = inst->TRAtvdb->head();
+            double dashdash = SECONDDERIV2(tv->prev->time, tv->time, curtime,
+                tv->prev->v_i, tv->v_i,
+                *(ckt->CKTrhsOld + inst->TRAposNode1) -
+                *(ckt->CKTrhsOld + inst->TRAnegNode1));
+#else
             double oof;  // n macro
             double dashdash = SECONDDERIV(ckt->CKTtimeIndex+1,
                 inst->TRAvalues[ckt->CKTtimeIndex-1].v_i,
                 inst->TRAvalues[ckt->CKTtimeIndex].v_i,
                 *(ckt->CKTrhsOld + inst->TRAposNode1) -
                 *(ckt->CKTrhsOld + inst->TRAnegNode1));
+#endif
             eq1LTE += TRAadmit*FABS(dashdash*h1dashTfirstCoeff);
 
             // LTEs for convolution with v2
+#ifdef NEWTL
+            dashdash = SECONDDERIV2(tv->prev->time, tv->time, curtime,
+                tv->prev->v_o, tv->v_o,
+                *(ckt->CKTrhsOld + inst->TRAposNode2) -
+                *(ckt->CKTrhsOld + inst->TRAnegNode2));
+#else
             dashdash = SECONDDERIV(ckt->CKTtimeIndex+1,
                 inst->TRAvalues[ckt->CKTtimeIndex-1].v_o,
                 inst->TRAvalues[ckt->CKTtimeIndex].v_o,
                 *(ckt->CKTrhsOld + inst->TRAposNode2) -
                 *(ckt->CKTrhsOld + inst->TRAnegNode2));
+#endif
             eq2LTE += TRAadmit*FABS(dashdash*h1dashTfirstCoeff);
         }
     }
@@ -617,8 +850,13 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
         double f1i = hivalue1;
         double g1i = intlinfunc(lolimit1, hilimit1, lovalue1, hivalue1,
             lolimit1, hilimit1);
+#ifdef NEWTL
+        double h1dashTfirstCoeff = 0.5*f1i*(curtime -
+            inst->TRAtvdb->head()->time) - g1i;
+#else
         double h1dashTfirstCoeff = 0.5*f1i*(curtime -
             *(ckt->CKTtimePoints+ckt->CKTtimeIndex)) - g1i;
+#endif
 
         hivalue1 = ltra_rcH2TwiceIntFunc(hilimit1, TRArclsqr);
         lovalue1 = 0.0;
@@ -632,8 +870,13 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
         h1dashTfirstCoeff = 0.5*f1i*(curtime -
             *(ckt->CKTtimePoints+ckt->CKTtimeIndex)) - g1i;
 */
+#ifdef NEWTL
+        double h2TfirstCoeff = 0.5*f1i*(curtime -
+            inst->TRAtvdb->head()->time) - g1i;
+#else
         double h2TfirstCoeff = 0.5*f1i*(curtime -
             *(ckt->CKTtimePoints+ckt->CKTtimeIndex)) - g1i;
+#endif
 
         hivalue1 = ltra_rcH2TwiceIntFunc(hilimit1, TRArclsqr);
         lovalue1 = 0.0;
@@ -645,8 +888,13 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
         h1dashTfirstCoeff = 0.5*f1i*(curtime -
             *(ckt->CKTtimePoints+ckt->CKTtimeIndex)) - g1i;
 */
+#ifdef NEWTL
+        double h3dashTfirstCoeff = 0.5*f1i*(curtime -
+            inst->TRAtvdb->head()->time) - g1i;
+#else
         double h3dashTfirstCoeff = 0.5*f1i*(curtime -
             *(ckt->CKTtimePoints+ckt->CKTtimeIndex)) - g1i;
+#endif
 
         // LTEs for convolution with v1
         // get divided differences for v1 (2nd derivative estimates)
@@ -654,12 +902,20 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
         // no need to subtract operating point values because
         // taking differences anyway
 
+#ifdef NEWTL
+        sTRAtimeval *tv = inst->TRAtvdb->head();
+        double dashdash = SECONDDERIV2(tv->prev->time, tv->time, curtime,
+            tv->prev->v_i, tv->v_i,
+            *(ckt->CKTrhsOld + inst->TRAposNode1) -
+            *(ckt->CKTrhsOld + inst->TRAnegNode1));
+#else
         double oof; // in macro
         double dashdash = SECONDDERIV(ckt->CKTtimeIndex+1,
             inst->TRAvalues[ckt->CKTtimeIndex-1].v_i,
             inst->TRAvalues[ckt->CKTtimeIndex].v_i,
             *(ckt->CKTrhsOld + inst->TRAposNode1) -
             *(ckt->CKTrhsOld + inst->TRAnegNode1));
+#endif
         eq1LTE += FABS(dashdash * h1dashTfirstCoeff);
         eq2LTE += FABS(dashdash * h3dashTfirstCoeff);
         
@@ -668,11 +924,18 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
         // LTEs for convolution with v2
         // get divided differences for v2 (2nd derivative estimates)
 
+#ifdef NEWTL
+        dashdash = SECONDDERIV2(tv->prev->time, tv->time, curtime,
+            tv->prev->v_o, tv->v_o,
+            *(ckt->CKTrhsOld + inst->TRAposNode2) -
+            *(ckt->CKTrhsOld + inst->TRAnegNode2));
+#else
         dashdash = SECONDDERIV(ckt->CKTtimeIndex+1,
             inst->TRAvalues[ckt->CKTtimeIndex-1].v_o,
             inst->TRAvalues[ckt->CKTtimeIndex].v_o,
             *(ckt->CKTrhsOld + inst->TRAposNode2) -
             *(ckt->CKTrhsOld + inst->TRAnegNode2));
+#endif
 
         eq2LTE += FABS(dashdash * h1dashTfirstCoeff);
         eq1LTE += FABS(dashdash * h3dashTfirstCoeff);
@@ -682,10 +945,16 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
         // LTE for convolution with i1
         // get divided differences for i1 (2nd derivative estimates)
 
+#ifdef NEWTL
+        dashdash = SECONDDERIV2(tv->prev->time, tv->time, curtime,
+            tv->prev->i_i, tv->i_i,
+            *(ckt->CKTrhsOld + inst->TRAbrEq1));
+#else
         dashdash = SECONDDERIV(ckt->CKTtimeIndex+1,
             inst->TRAvalues[ckt->CKTtimeIndex - 1].i_i,
             inst->TRAvalues[ckt->CKTtimeIndex].i_i,
             *(ckt->CKTrhsOld + inst->TRAbrEq1));
+#endif
 
         eq2LTE += FABS(dashdash * h2TfirstCoeff);
 
@@ -694,10 +963,16 @@ sTRAconvModel::lteCalculate(sCKT *ckt, sTRAinstance *inst, double curtime)
         // LTE for convolution with i2
         // get divided differences for i2 (2nd derivative estimates)
 
+#ifdef NEWTL
+        dashdash = SECONDDERIV2(tv->prev->time, tv->time, curtime,
+            tv->prev->i_o, tv->i_o,
+            *(ckt->CKTrhsOld + inst->TRAbrEq2));
+#else
         dashdash = SECONDDERIV(ckt->CKTtimeIndex+1,
             inst->TRAvalues[ckt->CKTtimeIndex - 1].i_o,
             inst->TRAvalues[ckt->CKTtimeIndex].i_o,
             *(ckt->CKTrhsOld + inst->TRAbrEq2));
+#endif
 
         eq1LTE += FABS(dashdash * h2TfirstCoeff);
         
