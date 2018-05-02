@@ -255,7 +255,8 @@ KLUif::find_klu()
 
     printf(
         "Loading KLU fast sparse matrix solver, by Tim Davis,\n"
-        "University of Florida, CISE, http://www.cise.ufl.edu/~davis.\n");
+        "Texas A&M University, "
+        "http://faculty.cse.tamu.edu/davis/welcome.html.\n");
 
     klu_is_ok = true;
 }
