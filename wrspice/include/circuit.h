@@ -1681,8 +1681,8 @@ public:
 
     // niinit.cc
     int NIinit();
-    void NIprint();
-    void NIdbgPrint(const char*);
+    void NIprint(bool, bool, bool);
+    void NIdbgPrint(bool, bool, bool, const char*);
     int NIreinit();
     void NIdestroy();
 

@@ -91,13 +91,59 @@ CommandTab::com_state(wordlist*)
 
 
 void
-CommandTab::com_dump(wordlist*)
+CommandTab::com_dump(wordlist *wl)
 {
     if (!Sp.CurCircuit() || !Sp.CurCircuit()->runckt()) {
         Sp.Error(E_NOCURCKT);
         return;
     }
-    Sp.CurCircuit()->runckt()->NIprint();
+    bool reordered = false;
+    bool data = true;
+    bool header = true;
+    const char *fname = 0;
+    // dump [-r] [-c] [-t] [ -f filename]
+    while (wl) {
+        if (*wl->wl_word == '-') {
+            bool ok = false;
+            if (strchr(wl->wl_word+1, 'r')) {
+                // Print reordered if matrix has been reordered.
+                reordered = true;
+                ok = true;
+            }
+            if (strchr(wl->wl_word+1, 'c')) {
+                // Compact form, dust show which entries are nonzero.
+                data = false;
+                ok = true;
+            }
+            if (strchr(wl->wl_word+1, 't')) {
+                // Terse, omit header info.
+                header = false;
+                ok = true;
+            }
+            if (strchr(wl->wl_word+1, 'f')) {
+                wl = wl->wl_next;
+                if (wl)
+                    fname = wl->wl_word;
+                else
+                    goto foobar;
+                ok = true;
+            }
+            if (!ok)
+                goto foobar;
+        }
+        else {
+            goto foobar;
+        }
+        wl = wl->wl_next;
+    }
+
+    if (fname)
+        Sp.CurCircuit()->runckt()->NIdbgPrint(reordered, data, header, fname);
+    else
+        Sp.CurCircuit()->runckt()->NIprint(reordered, data, header);
+    return;
+foobar:
+    TTY.printf("dump: syntax error, expecting [-r][-c][-t][-f filename].\n");
 }
 
 

@@ -348,7 +348,7 @@ sCommand CommandTab::ct_list[] = {
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       "[.disto card args] : Do an distortion analysis." ) ,
     sCommand( cmd_dump, com_dump, false, true, false,
-      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 0, 0,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       ": Print the current circuit matrix." ) ,
     sCommand( cmd_dumpnodes, com_dumpnodes, false, true, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 0, 0,
