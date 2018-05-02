@@ -146,11 +146,7 @@ sTRAinstance::pade_load(sCKT *ckt)
         ckt->ldset(TRAibr2Neg2Ptr, -tval);
 
         if (ckt->CKTmode & MODEINITTRAN) {
-#ifdef NEWTL
             sTRAtimeval *tv = TRAtvdb->tail();
-#else
-            sTRAtimeval *tv = &TRAvalues[0];
-#endif
             if (ckt->CKTmode & MODEUIC) {
                 tx->Vin = TRAinitVolt1;
                 tx->Vout = TRAinitVolt2;
@@ -192,8 +188,7 @@ sTRAinstance::pade_load(sCKT *ckt)
         }
         if (ckt->CKTmode & (MODEINITPRED | MODEINITTRAN)) {
             tx->copy_to(tx2);
-            TRAdoload = pade_pred(ckt, ckt->CKTtime - ckt->CKTdelta,
-                ckt->CKTtime, ckt->CKTdelta, h1, &tx->ratio);
+            TRAdoload = pade_pred(ckt->CKTtime, ckt->CKTdelta, h1, &tx->ratio);
             if (TRAdoload == 0)
                 tx->ext = 0;
             else {
@@ -253,9 +248,9 @@ expC(double ar, double ai, double h, double *cr, double *ci)
 
 
 int
-sTRAinstance::pade_pred(sCKT *ckt, double t, double time, double h,
-    double h1, double *ratio)
+sTRAinstance::pade_pred(double time, double h, double h1, double *ratio)
 {
+    double t = time - h;
     double ff = 0.0, gg = 0.0;
     if (!TRAtx2.lsl) {
         double ff1 = 0.0;
@@ -281,26 +276,17 @@ sTRAinstance::pade_pred(sCKT *ckt, double t, double time, double h,
         i1_i = i2_i = i1_o = i2_o = 0.0;
     }
     else {
-#ifdef NEWTL
         sTRAtimeval *tv;
-#else
-        int hd;
-#endif
         if (ta <= 0) {
             i1_i = i1_o = 0.0; 
             v1_i = TRAtx2.dc1;
             v1_o = TRAtx2.dc2; 
-#ifdef NEWTL
             tv = TRAtx2.tv_head;
-if (!tv)
-    tv = TRAtvdb->tail();
-#else
-            hd = TRAtx2.tv_head;
-#endif
+            if (!tv)
+                tv = TRAtvdb->tail();
         }
         else {
-#ifdef NEWTL
-    tv = TRAtvdb->tail();
+tv = TRAtvdb->tail();
 //            tv = TRAtx2.tv_head->prev;
             while (tv->time < ta)
                 tv = tv->next;
@@ -312,35 +298,13 @@ if (tv->prev)
             v1_o = tv->v_o + f*(tv->next->v_o - tv->v_o);
             i1_i = tv->i_i + f*(tv->next->i_i - tv->i_i);
             i1_o = tv->i_o + f*(tv->next->i_o - tv->i_o);
-#else
-            hd = TRAtx2.tv_head + 1;
-            for ( ; ckt->CKTtimePoints[hd] < ta; hd++) ;
-            hd--;
-            sTRAtimeval *tv = &TRAvalues[hd];
-
-            double f = (ta - ckt->CKTtimePoints[hd])/
-                (ckt->CKTtimePoints[hd+1] - ckt->CKTtimePoints[hd]);
-            v1_i = tv->v_i + f*((tv+1)->v_i - tv->v_i);
-            v1_o = tv->v_o + f*((tv+1)->v_o - tv->v_o);
-            i1_i = tv->i_i + f*((tv+1)->i_i - tv->i_i);
-            i1_o = tv->i_o + f*((tv+1)->i_o - tv->i_o);
-#endif
-#ifdef NEWTL
             TRAtx2.tv_head = tv;
-#else
-            TRAtx2.tv_head = hd;
-#endif
         }
         if (tb > t) {
             ext = 1;
             double f = (tb - t)/(time - t);
             *ratio = f;
-#ifdef NEWTL
             tv = TRAtvdb->head()->prev;
-#else
-            hd = ckt->CKTtimeIndex - 1;
-            sTRAtimeval *tv = &TRAvalues[hd];
-#endif
             f = 1 - f;
             v2_i = tv->v_i*f;
             v2_o = tv->v_o*f;
@@ -348,7 +312,6 @@ if (tv->prev)
             i2_o = tv->i_o*f;
         }
         else {
-#ifdef NEWTL
             tv = tv->next;
             while (tv->time < tb)
                 tv = tv->next;
@@ -359,19 +322,6 @@ if (tv->prev)
             v2_o = tv->v_o + f*(tv->next->v_o - tv->v_o);
             i2_i = tv->i_i + f*(tv->next->i_i - tv->i_i);
             i2_o = tv->i_o + f*(tv->next->i_o - tv->i_o);
-#else
-            hd++;
-            for ( ; ckt->CKTtimePoints[hd] < tb; hd++) ;
-            hd--;
-            sTRAtimeval *tv = &TRAvalues[hd];
-          
-            double f = (tb - ckt->CKTtimePoints[hd])/
-                (ckt->CKTtimePoints[hd+1] - ckt->CKTtimePoints[hd]);
-            v2_i = tv->v_i + f*((tv+1)->v_i - tv->v_i);
-            v2_o = tv->v_o + f*((tv+1)->v_o - tv->v_o);
-            i2_i = tv->i_i + f*((tv+1)->i_i - tv->i_i);
-            i2_o = tv->i_o + f*((tv+1)->i_o - tv->i_o);
-#endif
         }
     }
 
@@ -572,19 +522,15 @@ TXLine::update_delayed_cnv(double h, sTRAtimeval *tv)
 namespace TRA {
     struct ltrastuff
     {
-        void ltra_interp(double*, double*, double*, double*, sTRAinstance*);
+        void ltra_interp(double*, double*, double*, double*);
         int ltra_lin_interp(double);
         int ltra_quad_interp(double);
 
         double ls_t1, ls_t2, ls_t3;
         double ls_qf1, ls_qf2, ls_qf3;
         double ls_lf2, ls_lf3;
-#ifdef NEWTL
         sTRAtimeval *ls_saved;
         int ls_over;
-#else
-        int ls_saved, ls_over;
-#endif
         int ls_qinterp;
     };
 }
@@ -623,6 +569,8 @@ sTRAinstance::ltra_load(sCKT *ckt)
                 // set up lists of values of the functions at the
                 // necessary timepoints. 
                 TRAconvModel->rlcCoeffsSetup(ckt);
+
+                TRAtvdb->free_tail(TRAconvModel->TRAcvdb->tail()->time);
             }
 
             // setting up the coefficients for interpolation
@@ -631,7 +579,6 @@ sTRAinstance::ltra_load(sCKT *ckt)
 
                 // serious hack - fix!
                 double dummy1 = ckt->CKTtime - TRAtd; 
-#ifdef NEWTL
                 sTRAtimeval *tv = TRAtvdb->head();
                 for ( ; tv; tv = tv->prev) {
                     if (tv->time < dummy1)
@@ -652,29 +599,6 @@ sTRAinstance::ltra_load(sCKT *ckt)
                     ls.ls_t1 = tv->prev->time;
                     ls.ltra_quad_interp(dummy1);
                 }
-#else
-                int i;
-                for (i = ckt->CKTtimeIndex; i >= 0; i--) {
-                    if (*(ckt->CKTtimePoints + i) < dummy1)
-                        break;
-                }
-
-                if (i == ckt->CKTtimeIndex)
-                    i--;
-                ls.ls_saved = i;
-
-                ls.ls_t2 = *(ckt->CKTtimePoints + i);
-                ls.ls_t3 = *(ckt->CKTtimePoints + i + 1);
-                // linear interpolation
-                ls.ltra_lin_interp(dummy1);
-
-                ls.ls_qinterp = (TRAhowToInterp == TRA_QUADINTERP);
-                if ((i != 0) && ls.ls_qinterp) {
-                    // quadratic interpolation
-                    ls.ls_t1 = *(ckt->CKTtimePoints + i - 1);
-                    ls.ltra_quad_interp(dummy1);
-                }
-#endif
                 // interpolation coefficients set-up
             }
             else
@@ -684,6 +608,8 @@ sTRAinstance::ltra_load(sCKT *ckt)
             // set up lists of values of the coefficients at the
             // necessary timepoints. 
             TRAconvModel->rcCoeffsSetup(ckt);
+
+            TRAtvdb->free_tail(TRAconvModel->TRAcvdb->tail()->time);
         }
         else if (TRAcase != TRA_RG)
             return (E_BADPARM);
@@ -837,7 +763,7 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
     if (TRAcase == TRA_LC || TRAcase == TRA_RLC) {
 
         double v1d, v2d, i1d, i2d;
-        ls->ltra_interp(&v1d, &v2d, &i1d, &i2d, this);
+        ls->ltra_interp(&v1d, &v2d, &i1d, &i2d);
 
         if (TRAcase == TRA_RLC) {
 
@@ -848,7 +774,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
             // convolution of h1dash with v1 and v2
             double dummy1 = 0.0;
             double dummy2 = 0.0;
-#ifdef NEWTL
             sTRAconval *cv = model->TRAcvdb->head();
             sTRAtimeval *tv = TRAtvdb->head();
             for ( ; cv && tv; cv = cv->prev, tv = tv->prev) {
@@ -857,17 +782,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
                     dummy2 += cv->h1dashCoeff * (tv->v_o - TRAinitVolt2);
                 }
             }
-           
-#else
-            for (int i = ckt->CKTtimeIndex; i > 0; i--) {
-                if (*(model->TRAh1dashCoeffs + i) != 0.0) {
-                    dummy1 += *(model->TRAh1dashCoeffs + i)*
-                        (TRAvalues[i].v_i - TRAinitVolt1);
-                    dummy2 += *(model->TRAh1dashCoeffs + i)*
-                        (TRAvalues[i].v_o - TRAinitVolt2);
-                }
-            }
-#endif
 
             // the initial-condition terms
             dummy1 += TRAinitVolt1*model->TRAintH1dash;
@@ -888,7 +802,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
                 dummy2 = (i1d - TRAinitCur1)*model->TRAh2FirstCoeff;
     
                 // the rest of the convolution
-#ifdef NEWTL
                 double tt = ckt->CKTtime - TRAtd;
                 tv = TRAtvdb->tail();
                 cv = model->TRAcvdb->tail();
@@ -907,16 +820,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
                 }
                 cv = cvbk;
                 tv = tvbk;
-#else
-                for (int i = model->TRAauxIndex; i > 0; i--) {
-                    if (*(model->TRAh2Coeffs + i) != 0.0) {
-                        dummy1 += *(model->TRAh2Coeffs + i)*
-                            (TRAvalues[i].i_o - TRAinitCur2);
-                        dummy2 += *(model->TRAh2Coeffs + i)*
-                            (TRAvalues[i].i_i - TRAinitCur1);
-                    }
-                }
-#endif
             }
 
             // the initial-condition terms
@@ -936,23 +839,12 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
                 dummy2 = (v1d - TRAinitVolt1)*model->TRAh3dashFirstCoeff;
     
                 // the rest of the convolution
-#ifdef NEWTL
                 for ( ; cv && tv; cv = cv->prev, tv = tv->prev) {
                     if (cv->h3dashCoeff  != 0.0) {
                         dummy1 += cv->h3dashCoeff * (tv->v_o - TRAinitVolt2);
                         dummy2 += cv->h3dashCoeff * (tv->v_i - TRAinitVolt1);
                     }
                 }
-#else
-                for (int i = model->TRAauxIndex; i > 0; i--) {
-                    if (*(model->TRAh3dashCoeffs + i) != 0.0) {
-                        dummy1 += *(model->TRAh3dashCoeffs + i)*
-                            (TRAvalues[i].v_o - TRAinitVolt2);
-                        dummy2 += *(model->TRAh3dashCoeffs + i)*
-                            (TRAvalues[i].v_i - TRAinitVolt1);
-                    }
-                }
-#endif
             }
 
             // the initial-condition terms
@@ -987,7 +879,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
         // convolution of h1dash with v1 and v2
         double dummy1 = 0.0;
         double dummy2 = 0.0;
-#ifdef NEWTL
         sTRAconval *cv = model->TRAcvdb->head();
         sTRAtimeval *tv = TRAtvdb->head();
         for ( ; cv && tv; cv = cv->prev, tv = tv->prev) {
@@ -996,16 +887,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
                 dummy2 += cv->h1dashCoeff * (tv->v_o - TRAinitVolt2);
             }
         }
-#else
-        for (int i = ckt->CKTtimeIndex; i > 0; i--) {
-            if (*(model->TRAh1dashCoeffs + i) != 0.0) {
-                dummy1 += *(model->TRAh1dashCoeffs + i)*
-                    (TRAvalues[i].v_i - TRAinitVolt1);
-                dummy2 += *(model->TRAh1dashCoeffs + i)*
-                    (TRAvalues[i].v_o - TRAinitVolt2);
-            }
-        }
-#endif
 
         // the initial condition terms
         dummy1 += TRAinitVolt1*model->TRAintH1dash;
@@ -1020,7 +901,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
         // convolution of h2 with i2 and i1
         dummy1 = 0.0;
         dummy2 = 0.0;
-#ifdef NEWTL
         cv = model->TRAcvdb->head();
         tv = TRAtvdb->head();
         for ( ; cv && tv; cv = cv->prev, tv = tv->prev) {
@@ -1029,16 +909,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
                 dummy2 += cv->h2Coeff * (tv->i_i - TRAinitCur1);
             }
         }
-#else
-        for (int i = ckt->CKTtimeIndex; i > 0; i--) {
-            if (*(model->TRAh2Coeffs+ i) != 0.0) {
-                dummy1 += *(model->TRAh2Coeffs + i)*
-                    (TRAvalues[i].i_o - TRAinitCur2);
-                dummy2 += *(model->TRAh2Coeffs + i)*
-                    (TRAvalues[i].i_i - TRAinitCur1);
-            }
-        }
-#endif
 
         // the initial-condition terms
         dummy1 += TRAinitCur2*model->TRAintH2;
@@ -1053,7 +923,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
         // convolution of h3dash with v2 and v1
         dummy1 = 0.0;
         dummy2 = 0.0;
-#ifdef NEWTL
         cv = model->TRAcvdb->head();
         tv = TRAtvdb->head();
         for ( ; cv && tv; cv = cv->prev, tv = tv->prev) {
@@ -1062,16 +931,6 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
                 dummy2 += cv->h3dashCoeff * (tv->v_i - TRAinitVolt1);
             }
         }
-#else
-        for (int i = ckt->CKTtimeIndex; i > 0; i--) {
-            if (*(model->TRAh3dashCoeffs+ i) != 0.0) {
-                dummy1 += *(model->TRAh3dashCoeffs + i)*
-                    (TRAvalues[i].v_o - TRAinitVolt2);
-                dummy2 += *(model->TRAh3dashCoeffs + i)*
-                    (TRAvalues[i].v_i - TRAinitVolt1);
-            }
-        }
-#endif
 
         // the initial-condition terms
         dummy1 += TRAinitVolt2*model->TRAintH3dash;
@@ -1090,8 +949,7 @@ sTRAinstance::ltra_pred(sCKT *ckt, ltrastuff *ls)
 
 
 void
-ltrastuff::ltra_interp(double *v1, double *v2, double *i1, double *i2,
-    sTRAinstance *inst)
+ltrastuff::ltra_interp(double *v1, double *v2, double *i1, double *i2)
 {
     if (!ls_over) {
         *v1 = 0.0;
@@ -1100,7 +958,6 @@ ltrastuff::ltra_interp(double *v1, double *v2, double *i1, double *i2,
         *i2 = 0.0;
         return;
     }
-#ifdef NEWTL
     sTRAtimeval *tv = ls_saved;
     if (tv->prev && ls_qinterp) {
         double max, min;
@@ -1134,41 +991,6 @@ ltrastuff::ltra_interp(double *v1, double *v2, double *i1, double *i2,
     *v2 = tv->v_o*ls_lf2 + tv->next->v_o*ls_lf3;
     *i1 = tv->i_i*ls_lf2 + tv->next->i_i*ls_lf3;
     *i2 = tv->i_o*ls_lf2 + tv->next->i_o*ls_lf3;
-#else
-    sTRAtimeval *tv = &inst->TRAvalues[ls_saved];
-    if (ls_saved && ls_qinterp) {
-        double max, min;
-
-        *v1 = (tv-1)->v_i*ls_qf1 + tv->v_i*ls_qf2 + (tv+1)->v_i*ls_qf3;
-        max = SPMAX((tv-1)->v_i, SPMAX(tv->v_i, (tv+1)->v_i));
-        min = SPMIN((tv-1)->v_i, SPMIN(tv->v_i, (tv+1)->v_i));
-        if (*v1 < min || *v1 > max)
-            *v1 = tv->v_i*ls_lf2 + (tv+1)->v_i*ls_lf3;
-
-        *v2 = (tv-1)->v_o*ls_qf1 + tv->v_o*ls_qf2 + (tv+1)->v_o*ls_qf3;
-        max = SPMAX((tv-1)->v_o, SPMAX(tv->v_o, (tv+1)->v_o));
-        min = SPMIN((tv-1)->v_o, SPMIN(tv->v_o, (tv+1)->v_o));
-        if (*v2 < min || *v2 > max)
-            *v2 = tv->v_o*ls_lf2 + (tv+1)->v_o*ls_lf3;
-
-        *i1 = (tv-1)->i_i*ls_qf1 + tv->i_i*ls_qf2 + (tv+1)->i_i*ls_qf3;
-        max = SPMAX((tv-1)->i_i, SPMAX(tv->i_i, (tv+1)->i_i));
-        min = SPMIN((tv-1)->i_i, SPMIN(tv->i_i, (tv+1)->i_i));
-        if (*i1 < min || *i1 > max)
-            *i1 = tv->i_i*ls_lf2 + (tv+1)->i_i*ls_lf3;
-
-        *i2 = (tv-1)->i_o*ls_qf1 + tv->i_o*ls_qf2 + (tv+1)->i_o*ls_qf3;
-        max = SPMAX((tv-1)->i_o, SPMAX(tv->i_o, (tv+1)->i_o));
-        min = SPMIN((tv-1)->i_o, SPMIN(tv->i_o, (tv+1)->i_o));
-        if (*i2 < min || *v2 > max)
-            *i2 = tv->i_o*ls_lf2 + (tv+1)->i_o*ls_lf3;
-        return;
-    }
-    *v1 = tv->v_i*ls_lf2 + (tv+1)->v_i*ls_lf3;
-    *v2 = tv->v_o*ls_lf2 + (tv+1)->v_o*ls_lf3;
-    *i1 = tv->i_i*ls_lf2 + (tv+1)->i_i*ls_lf3;
-    *i2 = tv->i_o*ls_lf2 + (tv+1)->i_o*ls_lf3;
-#endif
 }
 
 

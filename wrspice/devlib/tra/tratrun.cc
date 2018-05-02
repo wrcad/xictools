@@ -194,15 +194,9 @@ sTRAinstance::limit_timestep(sCKT *ckt, double *td, double mintd)
             // modification:  we change the timestep to half its
             // previous value
             //
-#ifdef NEWTL
             sTRAtimeval *tv = TRAtvdb->head();
             double v1 = tv->v_i + TRAz*tv->i_i;
             double v2 = tv->v_o + TRAz*tv->i_o;
-#else
-            int tp = ckt->CKTtimeIndex;
-            double v1 = TRAvalues[tp].v_i + TRAz*TRAvalues[tp].i_i;
-            double v2 = TRAvalues[tp].v_o + TRAz*TRAvalues[tp].i_o;
-#endif
             double tolerance =
                 ckt->CKTcurTask->TSKtrtol*(ckt->CKTcurTask->TSKreltol*
                     (FABS(v1) + FABS(v2)) + ckt->CKTcurTask->TSKabstol);
@@ -274,18 +268,12 @@ sTRAinstance::limit_timestep(sCKT *ckt, double *td, double mintd)
             return (OK);
         *****/
 
-#ifdef NEWTL
         sTRAtimeval *tv = TRAtvdb->head();
         double v1 = tv->v_i + TRAz*tv->i_i;
         tv = tv->prev;
         double v2 = tv->v_i + TRAz*tv->i_i;
         tv = tv->prev;
         double v3 = tv->v_i + TRAz*tv->i_i;
-#else
-        double v1 = TRAvalues[tp].v_i + TRAz*TRAvalues[tp].i_i;
-        double v2 = TRAvalues[tp-1].v_i + TRAz*TRAvalues[tp-1].i_i;
-        double v3 = TRAvalues[tp-2].v_i + TRAz*TRAvalues[tp-2].i_i;
-#endif
         double a1 = FABS(v1);
         double a2 = FABS(v2);
         double a3 = FABS(v3);
@@ -293,18 +281,12 @@ sTRAinstance::limit_timestep(sCKT *ckt, double *td, double mintd)
                 ckt->CKTcurTask->TSKvoltTol;
         double dti;
         step_compute(ckt, v1, v2, v3, vd, &dti);
-#ifdef NEWTL
         tv = TRAtvdb->head();
         v1 = tv->v_o + TRAz*tv->i_o;
         tv = tv->prev;
         v2 = tv->v_o + TRAz*tv->i_o;
         tv = tv->prev;
         v3 = tv->v_o + TRAz*tv->i_o;
-#else
-        v1 = TRAvalues[tp].v_o + TRAz*TRAvalues[tp].i_o;
-        v2 = TRAvalues[tp-1].v_o + TRAz*TRAvalues[tp-1].i_o;
-        v3 = TRAvalues[tp-2].v_o + TRAz*TRAvalues[tp-2].i_o;
-#endif
         a1 = FABS(v1);
         a2 = FABS(v2);
         a3 = FABS(v3);
