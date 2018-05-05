@@ -72,6 +72,8 @@ sCKT::NIinit()
             flags |= SP_EXT_PREC;
         if (Sp.GetTranTrace() || Sp.GetFlag(FT_SIMDB))
             flags |= SP_TRACE;
+        if (!CKTcurTask->TSKtranslate)
+            flags |= SP_NOMAPTR;
     }
     CKTmatrix = new spMatrixFrame(0, flags);
     return (CKTmatrix->spError());
@@ -103,7 +105,7 @@ sCKT::NIdbgPrint(bool reordered, bool data, bool header, const char *fname)
     FILE *fp = fopen(fname, "w");
     if (fp) {
         if (CKTmatrix && CKTmatrix->spGetSize(1) > 0)
-            CKTmatrix->spFPrint(reordered, data, header, fp);
+            CKTmatrix->spPrint(reordered, data, header, fp);
         else
             fprintf(fp, "Matrix not found.\n");
         fclose(fp);

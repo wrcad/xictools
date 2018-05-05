@@ -184,278 +184,27 @@
 //      The largest expected external row or column number.
 //
 #ifdef WRSPICE
-void
-spMatrixFrame::spFPrint(int printReordered, int data, int header, FILE *fp)
+#define EMIT(fp, ...) \
+  { if (fp) fprintf(fp, __VA_ARGS__); else TTY.printf(__VA_ARGS__); }
 #else
+#define EMIT(fp, ...) { fprintf(fp, __VA_ARGS__); }
+#endif
+
 void
 spMatrixFrame::spPrint(int printReordered, int data, int header, FILE *fp)
-#endif
 {
     double *pElements[PRINTER_WIDTH/10+1];
     double smallestDiag = 0.0, smallestElement = 0.0;
     double largestElement = 0.0, largestDiag = 0.0;
     int startCol = 1;
     int elementCount = 0;
-
-    if (!fp)
-        fp = stdout;
-
-    // Create a packed external to internal row and column translation
-    // array.
-#if SP_OPT_TRANSLATE
-    int top = AllocatedExtSize;
-#else
-    int top = AllocatedSize;
-#endif
-    int *printOrdToIntRowMap = new int[top + 1];
-    int *printOrdToIntColMap = new int[top + 1];
-    memset(printOrdToIntRowMap, 0, (top+1)*sizeof(int));
-    memset(printOrdToIntColMap, 0, (top+1)*sizeof(int));
-    for (int i = 1; i <= Size; i++) {
-        printOrdToIntRowMap[ IntToExtRowMap[i] ] = i;
-        printOrdToIntColMap[ IntToExtColMap[i] ] = i;
-    }
-
-    // Pack the arrays.
-    for (int j = 1, i = 1; i <= top; i++) {
-        if (printOrdToIntRowMap[i] != 0)
-            printOrdToIntRowMap[ j++ ] = printOrdToIntRowMap[ i ];
-    }
-    for (int j = 1, i = 1; i <= top; i++) {
-        if (printOrdToIntColMap[i] != 0)
-            printOrdToIntColMap[ j++ ] = printOrdToIntColMap[ i ];
-    }
-
-    // Print header.
-    if (header) {
-        fprintf(fp, "MATRIX SUMMARY\n\n");
-        fprintf(fp, "Size of matrix = %1d x %1d.\n", Size, Size);
-        if (Reordered AND printReordered)
-            fprintf(fp, "Matrix has been reordered.\n");
-        if (ReorderFailed)
-            fprintf(fp, "Matrix is partially reordered, reordering failed.\n");
-        putc('\n', fp);
-
-        if (Factored)
-            fprintf(fp, "Matrix after factorization:\n");
-        else
-            fprintf(fp, "Matrix before factorization:\n");
-
-        smallestElement = DBL_MAX;
-        smallestDiag = smallestElement;
-    }
-
-    // Determine how many columns to use.
-    int columns = PRINTER_WIDTH;
-    if (header)
-        columns -= 5;
-    if (data)
-        columns = (columns+1) / 10;
-
-    // Print matrix by printing groups of complete columns until all the
-    // columns are printed.
-
-    int j = 0;
-    while (j <= Size) {
-        // Calculate index of last column to printed in this group.
-        int stopCol = startCol + columns - 1;
-        if (stopCol > Size)
-            stopCol = Size;
-
-        // Label the columns.
-        if (header) {
-            if (data) {
-                fprintf(fp, "    ");
-                for (int i = startCol; i <= stopCol; i++) {
-                    int col;
-                    if (printReordered)
-                        col = i;
-                    else
-                        col = printOrdToIntColMap[i];
-                    fprintf(fp, " %9d", IntToExtColMap[ col ]);
-                }
-                fprintf(fp, "\n\n");
-            }
-            else {
-                if (printReordered)
-                    fprintf(fp, "Columns %1d to %1d.\n", startCol, stopCol);
-                else {
-                    fprintf(fp, "Columns %1d to %1d.\n",
-                        IntToExtColMap[ printOrdToIntColMap[startCol] ],
-                        IntToExtColMap[ printOrdToIntColMap[stopCol] ]);
-                }
-            }
-        }
-
-        // Print every row ...
-        for (int i = 1; i <= Size; i++) {
-            int row;
-            if (printReordered)
-                row = i;
-            else
-                row = printOrdToIntRowMap[i];
-
-            if (header) {
-                if (printReordered AND NOT data)
-                    fprintf(fp, "%4d", i);
-                else
-                    fprintf(fp, "%4d", IntToExtRowMap[ row ]);
-                if (NOT data)
-                    putc(' ', fp);
-            }
-
-            // ... in each column of the group
-            for (j = startCol; j <= stopCol; j++) {
-                int col;
-                if (printReordered)
-                    col = j;
-                else
-                    col = printOrdToIntColMap[j];
-
-                spREAL *ptr = 0;
-                if (Matrix)
-                    ptr = Matrix->find(row-1, col-1);
-                else {
-                    spMatrixElement *pElement = FirstInCol[col];
-                    while (pElement != 0 AND pElement->Row != row)
-                        pElement = pElement->NextInCol;
-                    if (pElement)
-                        ptr = &(pElement->Real);
-                }
-                if (ptr != 0) {
-                    // Case where element exists.
-                    if (data) {
-                        pElements[j - startCol] =  ptr;
-                        if (LongDoubles)
-#ifdef WIN32
-                            fprintf(fp, " %9.3g", (double)LDBL(ptr));
-#else
-                            fprintf(fp, " %9.3Lg", LDBL(ptr));
-#endif
-                        else
-                            fprintf(fp, " %9.3g", *ptr);
-                    }
-                    else
-                        putc('x', fp);
-
-                    // Update status variables
-#if SP_OPT_COMPLEX
-                    double magnitude;
-                    if (Complex)
-                        magnitude = ABS(*ptr) + ABS(*(ptr+1));
-                    else if (LongDoubles) {
-                        magnitude = (double)*(long double*)ptr;
-                        if (magnitude < 0.0)
-                            magnitude = -magnitude;
-                    }
-                    else
-                        magnitude = ABS(*ptr);
-#else
-                    double magnitude = ABS(*ptr);
-#endif
-                    if (magnitude > largestElement)
-                        largestElement = magnitude;
-                    if ((magnitude < smallestElement) AND (magnitude != 0.0))
-                        smallestElement = magnitude;
-                    elementCount++;
-                }
-                else {
-                    // Case where element is structurally zero.
-                    if (data) {
-                        pElements[j - startCol] = 0;
-                        fprintf(fp, "       ...");
-                    }
-                    else
-                        putc('.', fp);
-                }
-            }
-            putc('\n', fp);
-
-#if SP_OPT_COMPLEX
-            if (Complex AND data) {
-                fprintf(fp, "    ");
-                for (j = startCol; j <= stopCol; j++) {
-                    if (pElements[j - startCol] != 0)
-                        fprintf(fp, " %8.2gj", *(pElements[j-startCol]+1));
-                    else
-                        fprintf(fp, "          ");
-                }
-                putc('\n', fp);
-            }
-#endif
-        }
-
-        // Calculate index of first column in next group.
-        startCol = stopCol;
-        startCol++;
-        putc('\n', fp);
-    }
-    if (header) {
-        fprintf(fp, "\nLargest element in matrix = %-1.4g.\n", largestElement);
-        fprintf(fp, "Smallest element in matrix = %-1.4g.\n", smallestElement);
-
-        if (!Matrix) {
-            // Search for largest and smallest diagonal values.
-            for (int i = 1; i <= Size; i++) {
-                if (Diag[i] != 0) {
-#if SP_OPT_COMPLEX
-                    spREAL magnitude;
-                    if (Complex)
-                        magnitude = E_MAG(Diag[i]);
-                    else if (LongDoubles)
-                        magnitude = LABS(LDBL(Diag[i]));
-                    else
-                        magnitude = ABS(Diag[i]->Real);
-#else
-                    double magnitude = ABS(Diag[i]->Real);
-#endif
-                    if (magnitude > largestDiag)
-                        largestDiag = magnitude;
-                    if (magnitude < smallestDiag)
-                        smallestDiag = magnitude;
-                }
-            }
-
-            // Print the largest and smallest diagonal values.
-            if (Factored) {
-                fprintf(fp, "\nLargest diagonal element = %-1.4g.\n",
-                    largestDiag);
-                fprintf(fp, "Smallest diagonal element = %-1.4g.\n",
-                    smallestDiag);
-            }
-            else {
-                fprintf(fp, "\nLargest pivot element = %-1.4g.\n", largestDiag);
-                fprintf(fp, "Smallest pivot element = %-1.4g.\n", smallestDiag);
-            }
-
-            // Calculate and print sparsity and number of fill-ins created.
-            fprintf(fp, "\nDensity = %2.2f%%.\n",
-                ((double)(elementCount * 100)) / ((double)(Size * Size)));
-            if (NOT NeedsOrdering)
-                fprintf(fp, "Number of fill-ins = %1d.\n", Fillins);
-        }
-    }
-    putc('\n', fp);
-    fflush(fp);
-
-    delete [] printOrdToIntColMap;
-    delete [] printOrdToIntRowMap;
-}
-
 
 #ifdef WRSPICE
-
-// This is a special version of spPrint that connects to the WRspice
-// TTY system.
-//
-void
-spMatrixFrame::spPrint(int printReordered, int data, int header)
-{
-    double *pElements[PRINTER_WIDTH/10+1];
-    double smallestDiag = 0.0, smallestElement = 0.0;
-    double largestElement = 0.0, largestDiag = 0.0;
-    int startCol = 1;
-    int elementCount = 0;
+    // Null fp means use TTY channel.
+#else
+    if (!fp)
+        fp = stdout;
+#endif
 
     // Create a packed external to internal row and column translation
     // array.
@@ -485,18 +234,18 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
 
     // Print header.
     if (header) {
-        TTY.printf("MATRIX SUMMARY\n\n");
-        TTY.printf("Size of matrix = %1d x %1d.\n", Size, Size);
+        EMIT(fp, "MATRIX SUMMARY\n\n")
+        EMIT(fp, "Size of matrix = %1d x %1d.\n", Size, Size)
         if (Reordered AND printReordered)
-            TTY.printf("Matrix has been reordered.\n");
+            EMIT(fp, "Matrix has been reordered.\n")
         if (ReorderFailed)
-            TTY.printf("Matrix is partially reordered, reordering failed.\n");
-        TTY.printf("\n");
+            EMIT(fp, "Matrix is partially reordered, reordering failed.\n")
+        EMIT(fp, "\n")
 
         if (Factored)
-            TTY.printf("Matrix after factorization:\n");
+            EMIT(fp, "Matrix after factorization:\n")
         else
-            TTY.printf("Matrix before factorization:\n");
+            EMIT(fp, "Matrix before factorization:\n")
 
         smallestElement = DBL_MAX;
         smallestDiag = smallestElement;
@@ -522,57 +271,70 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
         // Label the columns.
         if (header) {
             if (data) {
-                TTY.printf("    ");
+                EMIT(fp, "    ")
                 for (int i = startCol; i <= stopCol; i++) {
                     int col;
-                    if (printReordered)
-                        col = i;
+                    if (Matrix) {
+                        if (printReordered) {
+                            const int *q = Matrix->colmap();
+                            col = printOrdToIntColMap[q[i-1]+1];
+                        }
+                        else
+                            col = printOrdToIntColMap[i];
+                    }
                     else
-                        col = printOrdToIntColMap[i];
-                    TTY.printf(" %9d", IntToExtColMap[ col ]);
+                        col = printReordered ? i : printOrdToIntColMap[i];
+                    EMIT(fp, " %9d", IntToExtColMap[ col ])
                 }
-                TTY.printf("\n\n");
+                EMIT(fp, "\n\n")
             }
             else {
                 if (printReordered)
-                    TTY.printf("Columns %1d to %1d.\n", startCol, stopCol);
+                    EMIT(fp, "Columns %1d to %1d.\n", startCol, stopCol)
                 else {
-                    TTY.printf("Columns %1d to %1d.\n",
+                    EMIT(fp, "Columns %1d to %1d.\n",
                         IntToExtColMap[ printOrdToIntColMap[startCol] ],
-                        IntToExtColMap[ printOrdToIntColMap[stopCol] ]);
+                        IntToExtColMap[ printOrdToIntColMap[stopCol] ])
                 }
             }
         }
 
         // Print every row ...
         for (int i = 1; i <= Size; i++) {
-            int row;
-            if (printReordered)
-                row = i;
-            else
-                row = printOrdToIntRowMap[i];
+            int row = printReordered ? i : printOrdToIntRowMap[i];
 
             if (header) {
                 if (printReordered AND NOT data)
-                    TTY.printf("%4d", i);
-                else
-                    TTY.printf("%4d", IntToExtRowMap[ row ]);
+                    EMIT(fp, "%4d", i)
+                else {
+                    if (Matrix) {
+                        if (printReordered) {
+                            const int *p = Matrix->rowmap();
+                            row = printOrdToIntRowMap[p[i-1]+1];
+                        }
+                    }
+                    EMIT(fp, "%4d", IntToExtRowMap[ row ])
+                }
                 if (NOT data)
-                    TTY.printf(" ");
+                    EMIT(fp, " ")
             }
 
             // ... in each column of the group
             for (j = startCol; j <= stopCol; j++) {
-                int col;
-                if (printReordered)
-                    col = j;
-                else
-                    col = printOrdToIntColMap[j];
 
                 spREAL *ptr = 0;
-                if (Matrix)
-                    ptr = Matrix->find(row-1, col-1);
+                if (Matrix) {
+                    if (printReordered) {
+                        const int *p = Matrix->rowmap();
+                        const int *q = Matrix->colmap();
+                        ptr = Matrix->find(p[i-1], q[j-1]);
+                    }
+                    else {
+                        ptr = Matrix->find(i-1, j-1);
+                    }
+                }
                 else {
+                    int col = printReordered ? j : printOrdToIntColMap[j];
                     spMatrixElement *pElement = FirstInCol[col];
                     while (pElement != 0 AND pElement->Row != row)
                         pElement = pElement->NextInCol;
@@ -584,12 +346,12 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
                     if (data) {
                         pElements[j - startCol] =  ptr;
                         if (LongDoubles)
-                            TTY.printf(" %9.3Lg", LDBL(ptr));
+                            EMIT(fp, " %9.3Lg", LDBL(ptr))
                         else
-                            TTY.printf(" %9.3g", *ptr);
+                            EMIT(fp, " %9.3g", *ptr)
                     }
                     else
-                        TTY.printf("x");
+                        EMIT(fp, "x")
 
                     // Update status variables
 #if SP_OPT_COMPLEX
@@ -616,24 +378,24 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
                     // Case where element is structurally zero.
                     if (data) {
                         pElements[j - startCol] = 0;
-                        TTY.printf("       ...");
+                        EMIT(fp, "       ...")
                     }
                     else
-                        TTY.printf(".");
+                        EMIT(fp, ".")
                 }
             }
-            TTY.printf("\n");
+            EMIT(fp, "\n")
 
 #if SP_OPT_COMPLEX
             if (Complex AND data) {
-                TTY.printf("    ");
+                EMIT(fp, "    ")
                 for (j = startCol; j <= stopCol; j++) {
                     if (pElements[j - startCol] != 0)
-                        TTY.printf(" %8.2gj", *(pElements[j-startCol]+1));
+                        EMIT(fp, " %8.2gj", *(pElements[j-startCol]+1))
                     else
-                        TTY.printf("          ");
+                        EMIT(fp, "          ")
                 }
-                TTY.printf("\n");
+                EMIT(fp, "\n")
             }
 #endif
         }
@@ -641,11 +403,11 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
         // Calculate index of first column in next group.
         startCol = stopCol;
         startCol++;
-        TTY.printf("\n");
+        EMIT(fp, "\n")
     }
     if (header) {
-        TTY.printf("\nLargest element in matrix = %-1.4g.\n", largestElement);
-        TTY.printf("Smallest element in matrix = %-1.4g.\n", smallestElement);
+        EMIT(fp, "\nLargest element in matrix = %-1.4g.\n", largestElement)
+        EMIT(fp, "Smallest element in matrix = %-1.4g.\n", smallestElement)
 
         if (!Matrix) {
             // Search for largest and smallest diagonal values.
@@ -671,30 +433,28 @@ spMatrixFrame::spPrint(int printReordered, int data, int header)
 
             // Print the largest and smallest diagonal values.
             if (Factored) {
-                TTY.printf("\nLargest diagonal element = %-1.4g.\n",
-                    largestDiag);
-                TTY.printf("Smallest diagonal element = %-1.4g.\n",
-                    smallestDiag);
+                EMIT(fp, "\nLargest diagonal element = %-1.4g.\n", largestDiag)
+                EMIT(fp, "Smallest diagonal element = %-1.4g.\n", smallestDiag)
             }
             else {
-                TTY.printf("\nLargest pivot element = %-1.4g.\n", largestDiag);
-                TTY.printf("Smallest pivot element = %-1.4g.\n", smallestDiag);
+                EMIT(fp, "\nLargest pivot element = %-1.4g.\n", largestDiag)
+                EMIT(fp, "Smallest pivot element = %-1.4g.\n", smallestDiag)
             }
 
             // Calculate and print sparsity and number of fill-ins created.
-            TTY.printf("\nDensity = %2.2f%%.\n",
-                ((double)(elementCount * 100)) / ((double)(Size * Size)));
+            EMIT(fp, "\nDensity = %2.2f%%.\n",
+                ((double)(elementCount * 100)) / ((double)(Size * Size)))
             if (NOT NeedsOrdering)
-                TTY.printf("Number of fill-ins = %1d.\n", Fillins);
+                EMIT(fp, "Number of fill-ins = %1d.\n", Fillins)
         }
     }
-    TTY.printf("\n");
+    EMIT(fp, "\n")
+    if (fp)
+        fflush(fp);
 
     delete [] printOrdToIntColMap;
     delete [] printOrdToIntRowMap;
 }
-
-#endif
 
 
 //  OUTPUT MATRIX TO FILE

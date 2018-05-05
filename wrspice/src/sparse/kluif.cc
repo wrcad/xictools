@@ -661,3 +661,21 @@ KLUmatrix::where_singular(int *col)
     return (false);
 }
 
+
+const int *
+KLUmatrix::rowmap()
+{
+    if (!Symbolic)
+        return (0);
+    return (Symbolic->P);
+}
+
+
+const int *
+KLUmatrix::colmap()
+{
+    if (!Symbolic)
+        return (0);
+    return (Symbolic->Q);
+}
+

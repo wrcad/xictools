@@ -118,6 +118,7 @@ enum OPTtype
     OPT_TRAPCHECK,
     OPT_TRYTOCOMPACT,
     OPT_USEADJOINT,
+    OPT_TRANSLATE,
 
     // strings
     OPT_METHOD,

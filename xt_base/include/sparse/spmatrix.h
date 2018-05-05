@@ -852,6 +852,8 @@ struct spMatlabMatrix
     virtual int solve(double*) = 0;
     virtual int tsolve(double*, bool) = 0;
     virtual bool where_singular(int*) = 0;
+    virtual const int *rowmap() = 0;
+    virtual const int *colmap() = 0;
 
 protected:
     int *Ap;
@@ -871,6 +873,7 @@ protected:
 #define SP_NO_KLU       0x4
 #define SP_EXT_PREC     0x8
 #define SP_TRACE        0x10
+#define SP_NOMAPTR      0x20
 
 #if SP_BUILDHASH
 //
@@ -1222,12 +1225,7 @@ public:
 
     // spoutput.cc
 #if SP_OPT_DOCUMENTATION
-#ifdef WRSPICE
-    void     spFPrint(int, int, int, FILE*);
-    void     spPrint(int, int, int);
-#else
-    void     spPrint(int, int, int, FILE*);
-#endif
+    void     spPrint(int, int, int, FILE* = 0);
     int      spFileMatrix(char*, char*, int, int, int);
 #if SP_OPT_COMPLEX && SP_OPT_SEPARATED_COMPLEX_VECTORS
     int      spFileVector(char* , spREAL[], spREAL[]);
@@ -1330,6 +1328,7 @@ private:
     // spbuild.cc
     void EnlargeMatrix(int);
 #if SP_OPT_TRANSLATE
+    void SetRemapInTranslate(bool b)    { RemapInTranslate = b; }
     void Translate(int*, int*);
     void ExpandTranslationArrays(int);
 #endif
@@ -1524,6 +1523,7 @@ private:
 #if SP_OPT_LONG_DBL_SOLVE
     spBOOLEAN                   LongDoubles;
 #endif
+    spBOOLEAN                   RemapInTranslate;
 
     int                         PartitionMode;
     int                         PivotsOriginalCol;

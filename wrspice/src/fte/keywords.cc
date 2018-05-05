@@ -4994,6 +4994,23 @@ struct KWent_spice3 : public KWent
     }
 };
 
+struct KWent_translate : public KWent
+{
+    KWent_translate() { set(
+        spkw_translate,
+        VTYP_BOOL, 0.0, 0.0,
+        "Map node numbers into matrix assuming nodes are not compact"); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset)
+            v->set_boolean(true);
+        if (checknset(word, isset, v))
+            return;
+        KWent::callback(isset, v);
+    }
+};
+
 struct KWent_trapcheck : public KWent
 {
     KWent_trapcheck() { set(
@@ -5385,6 +5402,7 @@ sKW *cKeyWords::KWsim[] = {
     new KWent_substart(),
     new KWent_temp(),
     new KWent_tnom(),
+    new KWent_translate(),
     new KWent_trapcheck(),
     new KWent_trapratio(),
     new KWent_trtol(),

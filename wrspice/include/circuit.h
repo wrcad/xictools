@@ -726,6 +726,7 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_trapCheck           false
 #define DEF_tryToCompact        false
 #define DEF_useAdjoint          false
+#define DEF_translate           false
 
 //
 // Input as strings.
@@ -802,6 +803,7 @@ struct sOPTIONS : public sJOB
             OPTtrapcheck    = DEF_trapCheck;
             OPTtrytocompact = DEF_tryToCompact;
             OPTuseadjoint   = DEF_useAdjoint;
+            OPTtranslate    = DEF_translate;
 
             OPTmethod       = DEF_integrateMethod;
             OPToptmerge     = DEF_optMerge;
@@ -868,6 +870,7 @@ struct sOPTIONS : public sJOB
             OPTtrapcheck_given      = 0;
             OPTtrytocompact_given   = 0;
             OPTuseadjoint_given     = 0;
+            OPTtranslate_given      = 0;
 
             OPTmethod_given         = 0;
             OPToptmerge_given       = 0;
@@ -945,6 +948,7 @@ struct sOPTIONS : public sJOB
     bool OPTtrapcheck;
     bool OPTtrytocompact;
     bool OPTuseadjoint;
+    bool OPTtranslate;
 
     int OPTmethod;
     int OPToptmerge;
@@ -1011,6 +1015,7 @@ struct sOPTIONS : public sJOB
     unsigned int OPTtrapcheck_given:1;
     unsigned int OPTtrytocompact_given:1;
     unsigned int OPTuseadjoint_given:1;
+    unsigned int OPTtranslate_given:1;
 
     unsigned int OPTmethod_given:1;
     unsigned int OPToptmerge_given:1;
@@ -1114,6 +1119,7 @@ struct sTASK : public cBase
 #define TSKtrapCheck        TSKopts.OPTtrapcheck
 #define TSKtryToCompact     TSKopts.OPTtrytocompact
 #define TSKuseAdjoint       TSKopts.OPTuseadjoint
+#define TSKtranslate        TSKopts.OPTtranslate
 
 #define TSKintegrateMethod  TSKopts.OPTmethod
 #define TSKoptMerge         TSKopts.OPToptmerge

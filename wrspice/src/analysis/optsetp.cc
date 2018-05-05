@@ -118,6 +118,7 @@ const char *spkw_spice3         = "spice3";
 const char *spkw_trapcheck      = "trapcheck";
 const char *spkw_trytocompact   = "trytocompact";
 const char *spkw_useadjoint     = "useadjoint";
+const char *spkw_translate      = "translate";
 
 // strings
 const char *spkw_method         = "method";
@@ -422,6 +423,11 @@ sOPTIONS::setup(const sOPTIONS *opts, OMRG_TYPE mt)
             !OPTuseadjoint_given)) {
         OPTuseadjoint = opts->OPTuseadjoint;
         OPTuseadjoint_given = 1;
+    }
+    if (opts->OPTtranslate_given && (mt == OMRG_GLOBAL ||
+            !OPTtranslate_given)) {
+        OPTtranslate = opts->OPTtranslate;
+        OPTtranslate_given = 1;
     }
 
     // strings
@@ -964,6 +970,14 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         else
             opt->OPTuseadjoint_given = 0;
         break;
+    case OPT_TRANSLATE:
+        if (value) {
+            opt->OPTtranslate = value->iValue;
+            opt->OPTtranslate_given = 1;
+        }
+        else
+            opt->OPTtranslate_given = 0;
+        break;
 
     case OPT_METHOD:
         if (value) {
@@ -1186,6 +1200,8 @@ namespace {
             "Try compaction for LTRA lines"),
         IFparm(spkw_useadjoint,     OPT_USEADJOINT,     IF_IO|IF_FLAG,
             "Compute adjoint matrix to measure current in some devices"),
+        IFparm(spkw_translate,      OPT_TRANSLATE,      IF_IO|IF_FLAG,
+            "Map node numbers into matrix assuming nodes are not compact"),
 
         IFparm(spkw_method,         OPT_METHOD,         IF_IO|IF_STRING,
             "Integration method"),

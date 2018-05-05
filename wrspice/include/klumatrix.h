@@ -70,6 +70,8 @@ struct KLUmatrix : public spMatlabMatrix
     int solve(double*);
     int tsolve(double*, bool);
     bool where_singular(int*);
+    const int *rowmap();
+    const int *colmap();
 
 private:
     double *Ainit;

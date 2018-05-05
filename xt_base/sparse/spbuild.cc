@@ -230,6 +230,7 @@ spMatrixFrame::spMatrixFrame(int size, int flags)
 #if SP_OPT_LONG_DBL_SOLVE
     LongDoubles                     = ((flags & SP_EXT_PREC) ? YES : NO);
 #endif
+    RemapInTranslate                = ((flags & SP_NOMAPTR) ? NO : YES);
 
     PartitionMode                   = spDEFAULT_PARTITION;
     PivotsOriginalCol               = 0;
@@ -963,6 +964,16 @@ spMatrixFrame::EnlargeMatrix(int newSize)
 // Convert external row and column numbers to internal row and column
 // numbers.  Also updates Ext/Int maps.
 //
+// SRW
+// When RemapInTranslate is set, the input node numbers will be
+// remapped, and ordering used in the matrix will be arbitrary
+// depending on the order of elements passed to this function.  This
+// *must* be done if the external indices are not contiguous and
+// 1-based.  Otherwise the remapping can be skipped, and the
+// translation arrays will be identity.  The translation arrays and
+// the rest of the Translate infrastructure is available and will
+// reflect changes when the matrix is internally reordered.
+//
 //  >>> Arguments:
 //
 //  row  <input/output>  (int *)
@@ -1008,9 +1019,16 @@ spMatrixFrame::Translate(int *row, int *col)
     // Translate external row or node number to internal row or node number.
     int intRow;
     if ((intRow = ExtToIntRowMap[extRow]) == -1) {
-        ExtToIntRowMap[extRow] = ++CurrentSize;
-        ExtToIntColMap[extRow] = CurrentSize;
-        intRow = CurrentSize;
+        if (RemapInTranslate) {
+            ExtToIntRowMap[extRow] = ++CurrentSize;
+            ExtToIntColMap[extRow] = CurrentSize;
+            intRow = CurrentSize;
+        }
+        else {
+            ExtToIntRowMap[extRow] = extRow;
+            ExtToIntColMap[extRow] = extRow;;
+            intRow = extRow;;
+        }
 
 #if NOT SP_OPT_EXPANDABLE
         ASSERT(intRow <= Size);
@@ -1030,9 +1048,16 @@ spMatrixFrame::Translate(int *row, int *col)
     // number.
     int intCol;
     if ((intCol = ExtToIntColMap[extCol]) == -1) {
-        ExtToIntRowMap[extCol] = ++CurrentSize;
-        ExtToIntColMap[extCol] = CurrentSize;
-        intCol = CurrentSize;
+        if (RemapInTranslate) {
+            ExtToIntRowMap[extCol] = ++CurrentSize;
+            ExtToIntColMap[extCol] = CurrentSize;
+            intCol = CurrentSize;
+        }
+        else {
+            ExtToIntRowMap[extCol] = extCol;
+            ExtToIntColMap[extCol] = extCol;
+            intCol = extCol;
+        }
 
 #if NOT SP_OPT_EXPANDABLE
         ASSERT(intCol <= Size);

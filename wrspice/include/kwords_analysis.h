@@ -181,6 +181,7 @@ extern const char *spkw_spice3;
 extern const char *spkw_trapcheck;
 extern const char *spkw_trytocompact;
 extern const char *spkw_useadjoint;
+extern const char *spkw_translate;
 
 // strings
 extern const char *spkw_method;
