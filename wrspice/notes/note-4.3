@@ -113,6 +113,20 @@ The Pade level DCOP stamp was wrong, can causes DCOP convergence failure.
 TLine update complete, for now.  todo: bulk allocate list elements,
 or use array with head/tail pointer.
 
+Now no longer separate allocation of node numbers in matrix, since original
+node numbering is compact.  Saves a little overhead, maybe, and translation
+vectors only show changes due to internal reordering.  New undocumented
+option "translate" will force translation as in previous releases.
+
+Added options to dump command:
+-c  compact form, just show which entries are nonzero
+-r  show reordered matrix
+-t  terse, don't show header.
+
+TOD):  Make sure WRspice cleans all files/directories under /tmp.  It
+apparently does not.
+
+
 ToDo:
 Matt,
 

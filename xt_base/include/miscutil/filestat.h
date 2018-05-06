@@ -56,7 +56,7 @@ class filestat
 public:
     ~filestat()
         {
-            delete_files();
+            delete_deletions();
         }
 
     static GFTtype get_file_type(const char *path);
@@ -70,28 +70,12 @@ public:
 
     static void make_temp_conf(const char*, const char*);
     static char *make_temp(const char*);
+    static void queue_deletion(const char*);
+    static void delete_deletions();
 
     static void set_rm_minutes(int);
     static int rm_minutes();
     static char *schedule_rm_file(const char*);
-
-    static void queue_deletion(const char *fname)
-        {
-            if (!fname)
-                return;
-            for (stringlist *c = tmp_deletes; c; c = c->next)
-                if (!strcmp(fname, c->string))
-                    return;
-            tmp_deletes = new stringlist(lstring::copy(fname), tmp_deletes);
-        }
-
-    static void delete_files()
-        {
-            for (stringlist *s = tmp_deletes; s; s = s->next)
-                unlink(s->string);
-            stringlist::destroy(tmp_deletes);
-            tmp_deletes = 0;
-        }
 
     static const char *error_msg()          { return (errmsg); }
     static void save_perror(const char *s)  { save_sys_err(s); }

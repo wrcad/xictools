@@ -1072,6 +1072,7 @@ GTKeditPopup::ed_source_proc(GtkWidget*, void *client_data)
                 delete [] fname;
                 return;
             }
+            filestat::queue_deletion(fname);
         }
         else {
             if (w->ed_saved_as)
