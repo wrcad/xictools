@@ -111,7 +111,7 @@ CommandTab::com_dump(wordlist *wl)
                 ok = true;
             }
             if (strchr(wl->wl_word+1, 'c')) {
-                // Compact form, dust show which entries are nonzero.
+                // Compact form, just show which entries are nonzero.
                 data = false;
                 ok = true;
             }

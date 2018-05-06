@@ -51,6 +51,10 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.16, May 5, 2018
+//   x*ddt(y) -> ddt(x*y) for HSPICE efficiency.
+//   Changed phi variable to phase to avoid clash with aliasparam.
+//   Added the "fakeDC" option.
 // Version 1.15, April 25, 2018
 //   Added alias phi for ic_phase.
 // Version 1.14, April 20, 2018
@@ -134,6 +138,10 @@
 `else
     `define P(txt)
 `endif
+
+// Uncomment this to support a phony DC analysis mode by loading JJ as
+// a tiny resistance.  Not recommended.
+//`define fakeDC
 
 // MIT-LL SFQ5EE process
 `define C_PER_A_10000  70.0     // ff/um2
@@ -268,7 +276,7 @@ parameter real ics      = icrit from [icrit/20:icrit*20]
 parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
-real phi, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
+real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
 real pmode, vdpbak, start_phase, SmallSigL, tsf, ic_scaled;
 
 analog begin
@@ -282,7 +290,7 @@ analog begin
 `endif
         real halfdv;
 
-        phi = 0.0;
+        phase = 0.0;
         if (ics != icrit)
             begin
             scale = ics/icrit;
@@ -362,13 +370,13 @@ analog begin
             if (cct == 1)
                 begin
                 if (pijj != 0)
-                    I(bj) <+ -ic_scaled*sin(phi);
+                    I(bj) <+ -ic_scaled*sin(phase);
                 else
-                    I(bj) <+ ic_scaled*sin(phi);
+                    I(bj) <+ ic_scaled*sin(phase);
                 end
 
             // Geometric capacitance current.
-            I(bc) <+ caps*ddt(V(bc));
+            I(bc) <+ ddt(caps*V(bc));
 
 `ifdef insideADMS
             // Small-signal inductance of Josephson current.  This is
@@ -378,7 +386,7 @@ analog begin
             // expressions above, so we have to do this explicitly. 
             // Perhaps other parsers will handle this correctly?
             // 
-            SmallSigL = `PHI0_2PI/(ic_scaled*cos(phi));
+            SmallSigL = `PHI0_2PI/(ic_scaled*cos(phase));
 `endif
 
             // Quasiparticle current, piecewise-linear model.
@@ -395,7 +403,7 @@ analog begin
                 end
             if ($port_connected(ph))
                 begin
-                I(ph) <+ phi;
+                I(ph) <+ phase;
                 I(ph) <+ -V(ph);
                 end
             end
@@ -435,26 +443,35 @@ analog begin
             // on both ends), and of course capacitors are ignored in
             // DC analysis.
 
-            phi = V(bj);
+            phase = V(bj);
             if (cct == 1)
                 begin
                 if (pijj != 0)
-                    I(bj) <+ -ic_scaled*sin(phi);
+                    I(bj) <+ -ic_scaled*sin(phase);
                 else
-                    I(bj) <+ ic_scaled*sin(phi);
+                    I(bj) <+ ic_scaled*sin(phase);
                 end
-            start_phase = phi;
+            start_phase = phase;
             if ($port_connected(ph))
                 begin
-                I(ph) <+ phi;
+                I(ph) <+ phase;
                 I(ph) <+ -V(ph);
                 end
             end
         else
             begin
+`ifdef fakeDC
+            // DC analysis, fake it by modeling the JJ as a low value
+            // resistor.  This is not recommended, but may allow use
+            // of conventional DCOP in some circuits.
+
+            I(ph) <+ -V(ph);
+            I(br) <+ 1e6*scale*V(br);
+`else
             $error(
- "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid TRAN OP.");
+ "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
             $finish(0);
+`endif
             end
         end
     else if (analysis("tran") != 0)
@@ -464,11 +481,11 @@ analog begin
         // Supercurrent.
         if (cct == 1)
             begin
-            phi = idt(V(bj)/`PHI0_2PI, start_phase);
+            phase = idt(V(bj)/`PHI0_2PI, start_phase);
             if (pijj != 0)
-                I(bj) <+ -ic_scaled*sin(phi);
+                I(bj) <+ -ic_scaled*sin(phase);
             else
-                I(bj) <+ ic_scaled*sin(phi);
+                I(bj) <+ ic_scaled*sin(phase);
             end
 
         if ($port_connected(ph))
@@ -479,18 +496,18 @@ analog begin
             // properly).  It also adds a "branch" node to the circuit
             // matrix, which increases memory use for no good reason.
             //
-            // V(ph) <+ phi;
+            // V(ph) <+ phase;
             //
             // The following is basically equivalent.  This gives our "voltage
             // source" a 1 ohm internal resistance, and does not increase the
             // circuit matrix size.
             //
-            I(ph) <+ phi;
+            I(ph) <+ phase;
             I(ph) <+ -V(ph);
             end
 
         // Geometric capacitance current.
-        I(bc) <+ caps*ddt(V(bc));
+        I(bc) <+ ddt(caps*V(bc));
 
         // Quasiparticle current, piecewise-linear model.
         avj = abs(V(br));

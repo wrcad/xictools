@@ -1370,14 +1370,25 @@ namespace {
 void
 GTKtoolbar::RevertFocus(GtkWidget *widget)
 {
+    if (CP.GetFlag(CP_NOTTYIO)) {
+        // We would like for the window to appear on top, but the
+        // window manager has final say.  The cruft below may help.
+
+        gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
+        gtk_window_set_type_hint(GTK_WINDOW(widget),
+            GDK_WINDOW_TYPE_HINT_DIALOG);
+        gtk_window_present(GTK_WINDOW(widget));
+        return;
+    }
     if (!Sp.GetVar("nototop", VTYP_BOOL, 0)) {
         gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
         gtk_window_set_keep_above(GTK_WINDOW(widget), true);
     }
+    gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
+
 #ifdef WIN32
     gtk_window_set_accept_focus(GTK_WINDOW(widget), false);
 #endif
-    gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
     gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
         GTK_SIGNAL_FUNC(revert_proc), widget);
 }
