@@ -563,7 +563,7 @@ cMain::ClearAll(bool clear_tech)
     Cvt()->PopUpLibraries(0, MODE_OFF);
     Cvt()->PopUpAuxTab(0, MODE_OFF);
 
-    filestat::delete_files();
+    filestat::delete_deletions();
 
 #ifdef HAVE_LOCAL_ALLOCATOR
     Memory()->register_free_talk(free_cb);

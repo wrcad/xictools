@@ -171,7 +171,7 @@ cMain::Exit(ExitType exit_type)
 #ifdef HAVE_SECURE
         Auth()->closeValidation();
 #endif
-        filestat::delete_files();
+        filestat::delete_deletions();
 
         signal(SIGINT, SIG_DFL);
         if (DSP()->CurCellName()) {
