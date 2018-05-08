@@ -232,6 +232,9 @@ sOPTIONS::dump()
     askOpt(OPT_USEADJOINT, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_useadjoint, value.iValue);
+    askOpt(OPT_TRANSLATE, &value, &notset);
+    if (!notset)
+        TTY.printf(ifmt, spkw_translate, value.iValue);
 
     askOpt(OPT_METHOD, &value, &notset);
     if (!notset)
@@ -595,6 +598,12 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
         else
             *notset = 1;
         break;
+    case OPT_TRANSLATE:
+        if (opt && OPTtranslate_given)
+            value->iValue = OPTtranslate;
+        else
+            *notset = 1;
+        break;
 
     case OPT_METHOD:
         if (opt && OPTmaxord_given) {
@@ -920,6 +929,10 @@ OPTanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         break;
     case OPT_USEADJOINT:
         value->iValue = task->TSKuseAdjoint;
+        data->type = IF_FLAG;
+        break;
+    case OPT_TRANSLATE:
+        value->iValue = task->TSKtranslate;
         data->type = IF_FLAG;
         break;
 

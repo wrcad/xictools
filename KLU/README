@@ -1,0 +1,13 @@
+
+SuiteSparse is by Tim Davis, Texas A&M University
+http://faculty.cse.tamu.edu/davis/welcome.html
+
+The package is available on
+http://faculty.cse.tamu.edu/davis/suitesparse.html
+
+The current version (5/2/18) is SuiteSparse-5.2.0.  There is no
+difference in the C code of the files used here, and the newer version
+is larger (more Matlab things) and a little trickier to build in the
+framework used here.  Thus I'll stick with the older 4.4.6 release
+for now.
+

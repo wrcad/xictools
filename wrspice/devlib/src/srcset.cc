@@ -179,7 +179,7 @@ SRCdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                         if (ckt->CKTpreload &&
                                 (inst->SRCccCoeffGiven ||
                                 !inst->SRCacTabName)) {
-                            ckt->ldadd(inst->SRCibrContBrptr,
+                            ckt->preldadd(inst->SRCibrContBrptr,
                                 -inst->SRCcoeff.real);
                         }
 #endif
@@ -196,9 +196,9 @@ SRCdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                         if (ckt->CKTpreload &&
                                 (inst->SRCvcCoeffGiven ||
                                 !inst->SRCacTabName)) {
-                            ckt->ldadd(inst->SRCibrContPosptr,
+                            ckt->preldadd(inst->SRCibrContPosptr,
                                 -inst->SRCcoeff.real);
-                            ckt->ldadd(inst->SRCibrContNegptr,
+                            ckt->preldadd(inst->SRCibrContNegptr,
                                 inst->SRCcoeff.real);
                         }
 #endif
@@ -223,9 +223,9 @@ SRCdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                         if (ckt->CKTpreload &&
                                 (inst->SRCccCoeffGiven ||
                                 !inst->SRCacTabName)) {
-                            ckt->ldadd(inst->SRCposContBrptr,
+                            ckt->preldadd(inst->SRCposContBrptr,
                                 inst->SRCcoeff.real);
-                            ckt->ldadd(inst->SRCnegContBrptr,
+                            ckt->preldadd(inst->SRCnegContBrptr,
                                 -inst->SRCcoeff.real);
                         }
 #endif
@@ -244,13 +244,13 @@ SRCdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                         if (ckt->CKTpreload &&
                                 (inst->SRCvcCoeffGiven ||
                                 !inst->SRCacTabName)) {
-                            ckt->ldadd(inst->SRCposContPosptr,
+                            ckt->preldadd(inst->SRCposContPosptr,
                                 inst->SRCcoeff.real);
-                            ckt->ldadd(inst->SRCposContNegptr,
+                            ckt->preldadd(inst->SRCposContNegptr,
                                 -inst->SRCcoeff.real);
-                            ckt->ldadd(inst->SRCnegContPosptr,
+                            ckt->preldadd(inst->SRCnegContPosptr,
                                 -inst->SRCcoeff.real);
-                            ckt->ldadd(inst->SRCnegContNegptr,
+                            ckt->preldadd(inst->SRCnegContNegptr,
                                 inst->SRCcoeff.real);
                         }
 #endif

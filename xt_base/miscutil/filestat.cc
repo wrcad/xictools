@@ -67,8 +67,10 @@ char *filestat::mkt_env_var = 0;
 stringlist *filestat::tmp_deletes = 0;
 int filestat::rm_file_minutes = 0;  // default: disabled
 
-// Instantiate, so that the destructor will destroy temp files.
-namespace { filestat _tfs_; }
+// Instantiate an object, so destructor is called (and tmpfiles freed)
+// on program exit.
+namespace { filestat _fs_; }
+
 
 // Return a code indicating whether to object is a regular file
 // or directory.
@@ -433,6 +435,33 @@ filestat::make_temp(const char *id)
         fpath = lstring::copy(buf);
     delete [] path;
     return (fpath);
+}
+
+
+// Save a full path to a file for deletion.
+//
+void
+filestat::queue_deletion(const char *fname)
+{
+    if (!fname)
+        return;
+    for (stringlist *c = tmp_deletes; c; c = c->next) {
+        if (!strcmp(fname, c->string))
+            return;
+    }
+    tmp_deletes = new stringlist(lstring::copy(fname), tmp_deletes);
+}
+
+
+// Unlink the files saved for deletion.
+//
+void
+filestat::delete_deletions()
+{
+    for (stringlist *s = tmp_deletes; s; s = s->next)
+        unlink(s->string);
+    stringlist::destroy(tmp_deletes);
+    tmp_deletes = 0;
 }
 
 

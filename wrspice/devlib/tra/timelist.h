@@ -3,7 +3,7 @@
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
- *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Copyright (C) 2018 Whiteley Research Inc., all rights reserved.       *
  *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
  *  As fully as possible recognizing licensing terms and conditions       *
@@ -32,117 +32,113 @@
  *========================================================================*
  *               XicTools Integrated Circuit Design System                *
  *                                                                        *
- * WRspice Circuit Simulation and Analysis Tool                           *
+ * WRspice Circuit Simulation and Analysis Tool:  Device Library          *
  *                                                                        *
  *========================================================================*
  $Id:$
  *========================================================================*/
 
-/***************************************************************************
-JSPICE3 adaptation of Spice3e2 - Copyright (c) Stephen R. Whiteley 1992
-Copyright 1990 Regents of the University of California.  All rights reserved.
-Authors: 1985 Thomas L. Quarles
-         1992 Stephen R. Whiteley
-****************************************************************************/
+#ifndef TIMELIST_H
+#define TIMELIST_H
 
-#ifndef OPTDEFS_H
-#define OPTDEFS_H
-
-#include "circuit.h"
+// Storage for history values.  WRspice used to use arrays which would
+// grow in length to the total number of internal time points for each
+// line.  This is very inefficient memory use, so instead we now use a
+// doubly-linked list, based on the structures declared here.  This is
+// still not great, should use some kind of circular buffer based on
+// arrays for lower memory usage.
 
 
-enum OPTtype
+// The main class template.
+//
+template <class T>
+struct timelist
 {
-    OPT_NOTUSED,
+    // Base class for the linked list element.  User should subclass this
+    // adding their own data items.
+    //
+    struct telt
+    {
+        double time;
+        T *next;
+        T *prev;
+    };
 
-    // real values parameters
-    OPT_ABSTOL,
-    OPT_CHGTOL,
-    OPT_DCMU,
-    OPT_DEFAD,
-    OPT_DEFAS,
-    OPT_DEFL,
-    OPT_DEFW,
-    OPT_DELMIN,
-    OPT_DPHIMAX,
-    OPT_GMAX,
-    OPT_GMIN,
-    OPT_MAXDATA,
-    OPT_MINBREAK,
-    OPT_PIVREL,
-    OPT_PIVTOL,
-    OPT_RAMPUP,
-    OPT_RELTOL,
-    OPT_TEMP,
-    OPT_TNOM,
-    OPT_TRAPRATIO,
-    OPT_TRTOL,
-    OPT_VNTOL,
-    OPT_XMU,
+    timelist()
+        {
+            tl_head = 0;
+            tl_tail = 0;
+            tl_freelist = 0;
+        }
 
-    // integer parameters
-    OPT_BYPASS,
-    OPT_FPEMODE,
-    OPT_GMINSTEPS,
-    OPT_INTERPLEV,
-    OPT_ITL1,
-    OPT_ITL2,
-    OPT_ITL2GMIN,
-    OPT_ITL2SRC,
-    OPT_ITL4,
-#ifdef WITH_THREADS
-    OPT_LOADTHRDS,
-    OPT_LOOPTHRDS,
+    ~timelist()
+        {
+            while (tl_tail) {
+                T *tx = tl_tail;
+                tl_tail = tl_tail->next;
+                delete tx;
+            }
+            while (tl_freelist) {
+                T *tx = tl_freelist;
+                tl_freelist = tl_freelist->next;
+                delete tx;
+            }
+        }
+
+    // Allocate and return a new list element for time.
+    //
+    T *link_new(double time)
+        {
+            if (tl_head && time <= tl_head->time)
+                return (0);
+            T *t = 0;
+            if (tl_freelist) {
+                t = tl_freelist;
+                tl_freelist = tl_freelist->next;
+            }
+            if (!t)
+                t = new T;
+            t->time = time;
+            t->next = 0;
+            t->prev = tl_head;
+
+            if (tl_head)
+                tl_head->next = t;
+            tl_head = t;
+            if (!tl_tail)
+                tl_tail = t;
+
+            return (tl_head);
+        }
+
+    // Get rid of elements before, put them in the freelist for
+    // recycling.
+    //
+    void free_tail(double time)
+        {
+
+            while (tl_tail->time < time) {
+                T *tx = tl_tail->next;
+                if (tx)
+                    tx->prev = 0;
+                tl_tail->next = tl_freelist;
+                tl_freelist = tl_tail;
+                tl_tail = tx;
+                if (!tl_tail) {
+                    tl_head = 0;
+                    break;
+                }
+            }
+        }
+
+    T *tail()       { return (tl_tail); }
+    T *head()       { return (tl_head); }
+
+private:
+    T *tl_tail;
+    T *tl_head;
+    T *tl_freelist;
+};
+
 #endif
-    OPT_MAXORD,
-    OPT_SRCSTEPS,
-
-    // flags
-    OPT_DCODDSTEP,
-    OPT_EXTPREC,
-    OPT_FORCEGMIN,
-    OPT_GMINFIRST,
-    OPT_HSPICE,
-    OPT_JJACCEL,
-    OPT_NOITER,
-    OPT_NOJJTP,
-    OPT_NOKLU,
-    OPT_NOMATSORT,
-    OPT_NOOPITER,
-    OPT_NOSHELLOPTS,
-    OPT_OLDLIMIT,
-    OPT_OLDSTEPLIM,
-    OPT_RENUMBER,
-    OPT_SAVECURRENT,
-    OPT_SPICE3,
-    OPT_TRAPCHECK,
-    OPT_TRYTOCOMPACT,
-    OPT_USEADJOINT,
-    OPT_TRANSLATE,
-
-    // strings
-    OPT_METHOD,
-    OPT_OPTMERGE,
-    OPT_PARHIER,
-    OPT_STEPTYPE,
-
-    // special parameters
-    OPT_DELTA,
-    OPT_EXTERNAL
-};
-
-struct OPTanalysis : public IFanalysis
-{
-    OPTanalysis();
-    int parse(sLine*, sCKT*, int, const char**, sTASK*);
-    int setParm(sJOB*, int, IFdata*);
-    int askQuest(const sCKT*, const sJOB*, int, IFdata*) const;
-    int anFunc(sCKT*, int) { return (0); };
-
-    sJOB *newAnal() { return (new sOPTIONS); }
-};
-
-extern OPTanalysis OPTinfo;
-
-#endif // OPTDEFS_H
 

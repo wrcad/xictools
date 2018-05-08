@@ -545,7 +545,7 @@ enum DEV_BKMODE { DEV_CLEAR, DEV_SAVE, DEV_RESTORE };
 #define DV_NODCT    0x8     // no DCT analysis with this device
 #define DV_NOTRAN   0x10    // no transient analysis with this device
 #define DV_NOLEVCHG 0x20    // device levels can't be changed
-#define DV_VLAMS    0x40    // device compiled from Verilog-AMS source
+#define DV_VLAMS    0x40    // device compiled from Verilog-A/AMS source
 #define DV_JJSTEP   0x80    // device limits time step via Josephson eqn.
 #define DV_JJPMDC   0x100   // device uses scaled phase in DC analysis
 #define DV_NONOIS   0x200   // no NOISE analysis with this device

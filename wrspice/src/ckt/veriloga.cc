@@ -190,7 +190,7 @@ sCKT::va_simparam(const char *tok, double retval, bool rvgiven)
     if (lstring::cieq(tok, "simulatorSubversion")) {
         const char *v = Global.DevlibVersion();
         if (v) {
-            const char *t = strrchr(t, '.');
+            const char *t = strrchr(v, '.');
             if (t)
                 return (atof(t+1));
         }
@@ -202,9 +202,9 @@ sCKT::va_simparam(const char *tok, double retval, bool rvgiven)
             return (atof(vrs));
         const char *v = Global.DevlibVersion();
         if (v) {
-            const char *t = strrchr(t, '.');
+            const char *t = strrchr(v, '.');
             if (t) {
-                strcpy(vrs, v);
+                vrs = lstring::copy(v);
                 vrs[t-v] = 0;
                 return (atof(vrs));
             }

@@ -118,12 +118,16 @@ sMemory::in_use()
 #else
     if (mem_use_local_malloc) {
         struct mallinfo m = dlmallinfo();
-        return (m.uordblks);
+        if (m.uordblks)
+            return ((unsigned int)m.uordblks);
+        return ((unsigned int)m.arena + (unsigned int)m.hblkhd);
     }
     else {
 #ifdef __linux
         struct mallinfo m = mallinfo();
-        return (m.arena + m.hblkhd);
+        if (m.uordblks)
+            return ((unsigned int)m.uordblks);
+        return ((unsigned int)m.arena + (unsigned int)m.hblkhd);
 #endif
     }
 #endif

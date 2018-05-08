@@ -151,7 +151,7 @@ subdirs:
 # note: mingw requires explicit return from cd
 
 depend:
-	-@for a in include $(SUBDIRS); do \
+	-@for a in include adms/include $(SUBDIRS); do \
 	    (cd $$a; $(MAKE) depend;) \
 	done
 	@echo depending in devlib

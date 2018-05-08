@@ -2120,7 +2120,7 @@ sCKT::setup()
             return (error);
     }
 
-    // Set up Josephson junstion support flags.
+    // Set up Josephson junction support flags.
     CKTjjPresent = false;
 #ifdef NEWJJDC
     CKTjjDCphase = false;

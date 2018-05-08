@@ -60,42 +60,20 @@ TRAdev::accept(sCKT *ckt, sGENmodel *genmod)
 {
     // Maintain a list of time values, will be used by all instances
     //
-    if (ckt->CKTmode & MODEINITTRAN) {
-        delete [] ckt->CKTtimePoints;
-        ckt->CKTtimeIndex = 0;
-        ckt->CKTsizeIncr = 10;
-        ckt->CKTtimeListSize =
-            (int)(ckt->CKTfinalTime/ckt->CKTmaxStep + 0.5);
-        ckt->CKTtimePoints = new double[ckt->CKTtimeListSize];
-        *ckt->CKTtimePoints = ckt->CKTtime;
-    }
-    else if (ckt->CKTmode & MODETRAN) {
-        if (ckt->CKTtimePoints) {
-            ckt->CKTtimeIndex++;
-            if (ckt->CKTtimeIndex >= ckt->CKTtimeListSize) {
-                // need more space
-                ckt->CKTsizeIncr = 5 + (int)(ckt->CKTtimeIndex*
-                    (ckt->CKTfinalTime - ckt->CKTtime)/ckt->CKTtime);
-                if (ckt->CKTsizeIncr > 100000)
-                    ckt->CKTsizeIncr = 100000;
-                ckt->CKTtimeListSize += ckt->CKTsizeIncr;
-                Realloc(&ckt->CKTtimePoints, ckt->CKTtimeListSize,
-                    ckt->CKTtimeListSize - ckt->CKTsizeIncr);
-            }
-            *(ckt->CKTtimePoints + ckt->CKTtimeIndex) = ckt->CKTtime;
-        }
-        else
-            return (OK);
-    }
-    else
+    if (!(ckt->CKTmode & MODETRAN))
         return (OK);
-
-    int compact = 0;
-    if (ckt->CKTcurTask->TSKtryToCompact && ckt->CKTtimeIndex >= 2)
-        compact = 1;
     double mintd = 0.0;  // Minimum line delay in circuit.
     sTRAmodel *model = static_cast<sTRAmodel*>(genmod);
     for ( ; model; model = model->next()) {
+
+        for (sTRAconvModel *cv = model->TRAconvModels; cv; cv = cv->next) {
+            if (ckt->CKTmode & MODEINITTRAN) {
+                delete cv->TRAcvdb;
+                cv->TRAcvdb = new timelist<sTRAconval>;
+            }
+            cv->TRAcvdb->link_new(ckt->CKTtime);
+        }
+
         sTRAinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
@@ -104,31 +82,29 @@ TRAdev::accept(sCKT *ckt, sGENmodel *genmod)
                     mintd = inst->TRAtd;
             }
 
-            int error = inst->accept(ckt, &compact);
+            int error = inst->accept(ckt);
             if (error)
                 return (error);
 
             if (inst->TRAlevel == PADE_LEVEL && ckt->CKTtimeIndex) {
                 TXLine *tx = &inst->TRAtx;
                 inst->TRAtx2.copy_to(tx);
-                double delta = ckt->CKTtimePoints[ckt->CKTtimeIndex] -
-                    ckt->CKTtimePoints[ckt->CKTtimeIndex - 1];
-                sTRAtimeval *tv_before =
-                    &inst->TRAvalues[ckt->CKTtimeIndex - 1];
+                sTRAtimeval *tv = inst->TRAtvdb->head();
+                sTRAtimeval *tv_before = tv->prev;
+                double delta = tv->time - tv_before->time;
 
                 double v = tv_before->v_i;
-                double v1 = tx->Vin = inst->TRAvalues[ckt->CKTtimeIndex].v_i;
+                double v1 = tx->Vin = tv->v_i;
                 tx->dVin = (v1 - v)/delta;
 
                 v = tv_before->v_o;
-                v1 = tx->Vout = inst->TRAvalues[ckt->CKTtimeIndex].v_o;
+                v1 = tx->Vout = tv->v_o;
                 tx->dVout = (v1 - v)/delta;
 
                 if (!tx->lsl) {
                     tx->update_cnv(delta);
                     if (tx->ext)
-                        tx->update_delayed_cnv(delta,
-                            &inst->TRAvalues[ckt->CKTtimeIndex]);
+                        tx->update_delayed_cnv(delta, tv);
                 }
             }
 
@@ -136,28 +112,6 @@ TRAdev::accept(sCKT *ckt, sGENmodel *genmod)
             if (error)
                 return (error);
         }
-    }
-    if (compact) {
-        // last three timepoints have variables lying on a straight
-        // line, do a compaction
-
-        model = static_cast<sTRAmodel*>(genmod);
-        for ( ; model; model = model->next()) {
-            sTRAinstance *inst;
-            for (inst = model->inst(); inst; inst = inst->next()) {
-                inst->TRAvalues[ckt->CKTtimeIndex - 1] =
-                    inst->TRAvalues[ckt->CKTtimeIndex];
-            }
-        }
-        *(ckt->CKTtimePoints + ckt->CKTtimeIndex - 1) = 
-            *(ckt->CKTtimePoints + ckt->CKTtimeIndex);
-        ckt->CKTtimeIndex--;
-
-#ifdef TRADEBUG
-        fprintf(stdout,"compacted at time=%g\n",
-            *(ckt->CKTtimePoints+ckt->CKTtimeIndex));
-        fflush(stdout);
-#endif
     }
 
     if (mintd > 0.0) {
@@ -206,95 +160,31 @@ straightLineCheck(double x1, double y1, double x2, double y2,
 
 
 int
-sTRAinstance::accept(sCKT *ckt, int *compact)
+sTRAinstance::accept(sCKT *ckt)
 {
     // Store present values in history list
     //
     if (ckt->CKTmode & MODEINITTRAN) {
-        TRAinstListSize = 10;
-        delete [] TRAvalues;
-        TRAvalues = new sTRAtimeval[TRAinstListSize];
+        delete TRAtvdb;
+        TRAtvdb = new timelist<sTRAtimeval>;
     }
-    else if (ckt->CKTtimeIndex >= TRAinstListSize) {
-        // need more space
-        int prevsize = TRAinstListSize;
-        TRAinstListSize += ckt->CKTsizeIncr;
-        sTRAtimeval *tv = new sTRAtimeval[TRAinstListSize];
-        for (int i = 0; i < prevsize; i++)
-            tv[i] = TRAvalues[i];
-        delete [] TRAvalues;
-        TRAvalues = tv;
-    }
-    TRAvalues[ckt->CKTtimeIndex].v_i =
-        *(ckt->CKTrhsOld + TRAposNode1) - *(ckt->CKTrhsOld + TRAnegNode1);
-    TRAvalues[ckt->CKTtimeIndex].v_o =
-        *(ckt->CKTrhsOld + TRAposNode2) - *(ckt->CKTrhsOld + TRAnegNode2);
-    TRAvalues[ckt->CKTtimeIndex].i_i = *(ckt->CKTrhsOld + TRAbrEq1);
-    TRAvalues[ckt->CKTtimeIndex].i_o = *(ckt->CKTrhsOld + TRAbrEq2);
+    sTRAtimeval *tv = TRAtvdb->link_new(ckt->CKTtime);
+    if (!tv)
+        return (E_BADPARM); // can't happen
+
+    tv->v_i = *(ckt->CKTrhsOld + TRAposNode1) - *(ckt->CKTrhsOld + TRAnegNode1);
+    tv->v_o = *(ckt->CKTrhsOld + TRAposNode2) - *(ckt->CKTrhsOld + TRAnegNode2);
+    tv->i_i = *(ckt->CKTrhsOld + TRAbrEq1);
+    tv->i_o = *(ckt->CKTrhsOld + TRAbrEq2);
 
     if (TRAlevel == CONV_LEVEL) {
-
-        sTRAconvModel *model = TRAconvModel;
-        if (TRAcase == TRA_RC || TRAcase == TRA_RLC) {
-            if (ckt->CKTmode & MODEINITTRAN) {
-                model->TRAmodelListSize = 10;
-                model->TRAh1dashCoeffs = new double[model->TRAmodelListSize];
-                model->TRAh2Coeffs = new double[model->TRAmodelListSize];
-                model->TRAh3dashCoeffs = new double[model->TRAmodelListSize];
-            }
-            else if (ckt->CKTtimeIndex >= model->TRAmodelListSize) {
-                // need more space
-                int prevsize = model->TRAmodelListSize;
-                model->TRAmodelListSize += ckt->CKTsizeIncr;
-                Realloc(&model->TRAh1dashCoeffs, model->TRAmodelListSize,
-                    prevsize);
-                Realloc(&model->TRAh2Coeffs, model->TRAmodelListSize,
-                    prevsize);
-                Realloc(&model->TRAh3dashCoeffs, model->TRAmodelListSize,
-                    prevsize);
-            }
-        }
-        else if (TRAcase == TRA_RG)
+        if (TRAcase == TRA_RG)
             return (OK);
-
-        if (*compact) {
-            // figure out if the last 3 points lie on a straight line for
-            // all the terminal variables
-            //
-            double t1 = *(ckt->CKTtimePoints + ckt->CKTtimeIndex - 2);
-            double t2 = *(ckt->CKTtimePoints + ckt->CKTtimeIndex - 1);
-            double t3 = *(ckt->CKTtimePoints + ckt->CKTtimeIndex);
-
-            *compact = straightLineCheck(
-                t1, TRAvalues[ckt->CKTtimeIndex - 2].v_i,
-                t2, TRAvalues[ckt->CKTtimeIndex - 1].v_i,
-                t3, TRAvalues[ckt->CKTtimeIndex].v_i,
-                TRAstLineReltol, TRAstLineAbstol);
-            if (*compact) {
-                *compact = straightLineCheck(
-                    t1, TRAvalues[ckt->CKTtimeIndex - 2].v_o,
-                    t2, TRAvalues[ckt->CKTtimeIndex - 1].v_o,
-                    t3, TRAvalues[ckt->CKTtimeIndex].v_o,
-                    TRAstLineReltol, TRAstLineAbstol);
-            }
-            if (*compact) {
-                *compact = straightLineCheck(
-                    t1, TRAvalues[ckt->CKTtimeIndex - 2].i_i,
-                    t2, TRAvalues[ckt->CKTtimeIndex - 1].i_i,
-                    t3, TRAvalues[ckt->CKTtimeIndex].i_i,
-                    TRAstLineReltol, TRAstLineAbstol);
-            }
-            if (*compact) {
-                *compact = straightLineCheck(
-                    t1, TRAvalues[ckt->CKTtimeIndex - 2].i_o,
-                    t2, TRAvalues[ckt->CKTtimeIndex - 1].i_o,
-                    t3, TRAvalues[ckt->CKTtimeIndex].i_o,
-                    TRAstLineReltol, TRAstLineAbstol);
-            }
-        }
     }
-    else
-        *compact = 0;
+    else {
+        if (tv->prev)
+            TRAtvdb->free_tail(tv->prev->time - TRAtx2.taul);
+    }
     return (OK);
 }
 
@@ -318,36 +208,40 @@ check(double a, double b, double c)
 int
 sTRAinstance::set_breaks(sCKT *ckt)
 {
-    int tp = ckt->CKTtimeIndex;
-    if (tp < 2)
+    sTRAtimeval *tp0 = TRAtvdb->head();
+    sTRAtimeval *tp1 = tp0->prev;
+    if (!tp1)
+        return (OK);
+    sTRAtimeval *tp2 = tp1->prev;
+    if (!tp2)
         return (OK);
 
     // Breakpoint setting
     if (ckt->CKTbreak) {
         if (TRAbreakType == TRA_ALLBREAKS) {
-            int error = ckt->breakSet(ckt->CKTtimePoints[tp-1] + TRAtd);
+            int error = ckt->breakSet(tp1->time + TRAtd);
             return (error);
         }
         else if (TRAbreakType == TRA_TESTBREAKS) {
             double v1, v2, v3, d1, d2;
-            v1 = TRAvalues[tp].v_i + TRAz*TRAvalues[tp].i_i;
-            v2 = TRAvalues[tp-1].v_i + TRAz*TRAvalues[tp-1].i_i;
-            v3 = TRAvalues[tp-2].v_i + TRAz*TRAvalues[tp-2].i_i;
+            v1 = tp0->v_i + TRAz*tp0->i_i;
+            v2 = tp1->v_i + TRAz*tp1->i_i;
+            v3 = tp2->v_i + TRAz*tp2->i_i;
             d1 = (v1-v2)/ckt->CKTdeltaOld[0];
             d2 = (v2-v3)/ckt->CKTdeltaOld[1];
             if (FABS(d1-d2) > FACTOR*SPMAX(FABS(d1), FABS(d2)) &&
                     check(v1, v2, v3)) {
-                int error = ckt->breakSet(ckt->CKTtimePoints[tp-1] + TRAtd);
+                int error = ckt->breakSet(tp1->time + TRAtd);
                 return (error);
             }
-            v1 = TRAvalues[tp].v_o + TRAz*TRAvalues[tp].i_o;
-            v2 = TRAvalues[tp-1].v_o + TRAz*TRAvalues[tp-1].i_o;
-            v3 = TRAvalues[tp-2].v_o + TRAz*TRAvalues[tp-2].i_o;
+            v1 = tp0->v_o + TRAz*tp0->i_o;
+            v2 = tp1->v_o + TRAz*tp1->i_o;
+            v3 = tp2->v_o + TRAz*tp2->i_o;
             d1 = (v1-v2)/ckt->CKTdeltaOld[0];
             d2 = (v2-v3)/ckt->CKTdeltaOld[1];
             if (FABS(d1-d2) > FACTOR*SPMAX(FABS(d1), FABS(d2)) &&
                     check(v1, v2, v3)) {
-                int error = ckt->breakSet(ckt->CKTtimePoints[tp-1] + TRAtd);
+                int error = ckt->breakSet(tp1->time + TRAtd);
                 return (error);
             }
         }

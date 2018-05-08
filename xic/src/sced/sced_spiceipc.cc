@@ -1734,7 +1734,8 @@ cSpiceIPC::init_local()
     }
     ipc_child_sp_pid = pid;
     ipc_spice_port = port;
-    printf("Stream established to %s, port %d.\n", prog_name, port);
+    printf("Simulator: %s\n", ipc_spice_path);
+    printf("Stream established to simulator, port %d.\n", port);
     if (has_graphics && !gr_ok)
         Log()->WarningLog(SpiceIPC, bad_init_msg);
     return (msd);

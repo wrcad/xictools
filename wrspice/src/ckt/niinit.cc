@@ -72,6 +72,8 @@ sCKT::NIinit()
             flags |= SP_EXT_PREC;
         if (Sp.GetTranTrace() || Sp.GetFlag(FT_SIMDB))
             flags |= SP_TRACE;
+        if (!CKTcurTask->TSKtranslate)
+            flags |= SP_NOMAPTR;
     }
     CKTmatrix = new spMatrixFrame(0, flags);
     return (CKTmatrix->spError());
@@ -82,11 +84,11 @@ sCKT::NIinit()
 // TTY system.
 //
 void
-sCKT::NIprint()
+sCKT::NIprint(bool reordered, bool data, bool header)
 {
 
     if (CKTmatrix && CKTmatrix->spGetSize(1) > 0)
-        CKTmatrix->spPrint(0, 1, 1);
+        CKTmatrix->spPrint(reordered, data, header);
     else
         TTY.err_printf("Matrix not found.\n");
 }
@@ -96,14 +98,14 @@ sCKT::NIprint()
 // whose name is passed.
 //
 void
-sCKT::NIdbgPrint(const char *fname)
+sCKT::NIdbgPrint(bool reordered, bool data, bool header, const char *fname)
 {
     if (!fname)
         fname = "wrspice.matrix";
     FILE *fp = fopen(fname, "w");
     if (fp) {
         if (CKTmatrix && CKTmatrix->spGetSize(1) > 0)
-            CKTmatrix->spFPrint(0, 1, 1, fp);
+            CKTmatrix->spPrint(reordered, data, header, fp);
         else
             fprintf(fp, "Matrix not found.\n");
         fclose(fp);

@@ -102,6 +102,31 @@ Lots of new documentation for JJ model, and for Verilog-A support.
 
 --- release 4.3.4
 
+Documentation was not in update, due to the old stupid of updating copied
+files, not the source.  Updated makefiles to check for this.
+
+--- release 4.3.5
+
+The lossless tra model uses far more memory than necessary.
+In progress:  update to fix this.
+The Pade level DCOP stamp was wrong, can causes DCOP convergence failure.
+TLine update complete, for now.  todo: bulk allocate list elements,
+or use array with head/tail pointer.
+
+Now no longer separate allocation of node numbers in matrix, since original
+node numbering is compact.  Saves a little overhead, maybe, and translation
+vectors only show changes due to internal reordering.  New undocumented
+option "translate" will force translation as in previous releases.
+
+Added options to dump command:
+-c  compact form, just show which entries are nonzero
+-r  show reordered matrix
+-t  terse, don't show header.
+
+TOD):  Make sure WRspice cleans all files/directories under /tmp.  It
+apparently does not.
+
+
 ToDo:
 Matt,
 

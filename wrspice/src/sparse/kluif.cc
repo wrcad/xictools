@@ -255,7 +255,8 @@ KLUif::find_klu()
 
     printf(
         "Loading KLU fast sparse matrix solver, by Tim Davis,\n"
-        "University of Florida, CISE, http://www.cise.ufl.edu/~davis.\n");
+        "Texas A&M University, "
+        "http://faculty.cse.tamu.edu/davis/welcome.html.\n");
 
     klu_is_ok = true;
 }
@@ -658,5 +659,23 @@ KLUmatrix::where_singular(int *col)
     }
     *col = -1;
     return (false);
+}
+
+
+const int *
+KLUmatrix::rowmap()
+{
+    if (!Symbolic)
+        return (0);
+    return (Symbolic->P);
+}
+
+
+const int *
+KLUmatrix::colmap()
+{
+    if (!Symbolic)
+        return (0);
+    return (Symbolic->Q);
 }
 

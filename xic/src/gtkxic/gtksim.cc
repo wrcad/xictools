@@ -143,6 +143,12 @@ sSim::control(SpType status)
     gtk_window_set_resizable(GTK_WINDOW(popup), false);
     gtk_widget_set_usize(popup, 200, -1);
 
+    // Prevent the pop-up from taking focus.  Otherwise, when it pops
+    // down it will give focus back to the main window, causing iplots
+    // to disappear below.
+    gtk_window_set_accept_focus(GTK_WINDOW(popup), false);
+    gtk_window_set_focus_on_map(GTK_WINDOW(popup), false);
+
     GtkWidget *form = gtk_table_new(1, 3, false);
     gtk_widget_show(form);
     gtk_container_add(GTK_CONTAINER(popup), form);

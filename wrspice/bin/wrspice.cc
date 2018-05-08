@@ -656,10 +656,9 @@ namespace {
                         }
                     }
                     fclose(fp);
-                    if (total > 0) {
+                    if (total > 0)
                         CP.AddPendingSource(tempfile);
-                        filestat::queue_deletion(tempfile);
-                    }
+                    filestat::queue_deletion(tempfile);
                 }
                 else
                     perror(tempfile);

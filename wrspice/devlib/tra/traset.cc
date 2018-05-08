@@ -1036,10 +1036,6 @@ sTRAconvModel::setup(sCKT*, sTRAinstance *inst)
         TRAintH1dash = 0.0;
         TRAintH2 = 1.0;
         TRAintH3dash = 0.0;
-
-        TRAh1dashCoeffs = 0;
-        TRAh2Coeffs = 0;
-        TRAh3dashCoeffs = 0;
     }
     else if (inst->TRAcase == TRA_RG) {
         double tmp1 = TRAlength*sqrt(TRAr*TRAg);

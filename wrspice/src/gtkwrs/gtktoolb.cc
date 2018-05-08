@@ -1238,7 +1238,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
 
             double val = DEF_maxData;
             VTvalue vv;
-            if (Sp.GetVar(spkw_maxdata, VTYP_REAL, &vv))
+            if (Sp.GetVar(spkw_maxdata, VTYP_REAL, &vv, Sp.CurCircuit()))
                 val = vv.get_real();
             context->SetColor(tb_clr_1);
             context->Text("program limit", x, y, 0);
@@ -1374,10 +1374,11 @@ GTKtoolbar::RevertFocus(GtkWidget *widget)
         gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
         gtk_window_set_keep_above(GTK_WINDOW(widget), true);
     }
+    gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
+
 #ifdef WIN32
     gtk_window_set_accept_focus(GTK_WINDOW(widget), false);
 #endif
-    gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
     gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
         GTK_SIGNAL_FUNC(revert_proc), widget);
 }

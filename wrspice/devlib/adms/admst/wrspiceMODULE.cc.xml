@@ -171,6 +171,52 @@
       <admst:variable name="info" value="%(name)"/>
     </admst:if>
     <admst:text format=", &quot;$info&quot;)"/>
+
+    <!-- Add alias, if any -->
+    <admst:if test="[not(nilled(alias))]">
+      <admst:text format=",\n"/>
+      <admst:choose>
+        <admst:when test="[type='real']">
+          <admst:if test="[minsize=maxsize]">
+            <admst:text
+  format="$(indent)$io(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_REAL|IF_REDUNDANT"/>
+          </admst:if>
+          <admst:if test="[minsize!=maxsize]">
+            <admst:text
+  format="$(indent)$io(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_REALVEC|IF_REDUNDANT"/>
+          </admst:if>
+        </admst:when>
+        <admst:when test="[type='integer']">
+          <admst:if test="[minsize=maxsize]">
+            <admst:text
+  format="$(indent)$io(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_INTEGER|IF_REDUNDANT"/>
+          </admst:if>
+          <admst:if test="[minsize!=maxsize]">
+            <admst:text
+  format="$(indent)$io(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_INTVEC|IF_REDUNDANT"/>
+          </admst:if>
+        </admst:when>
+        <admst:otherwise>
+          <admst:fatal
+            format="module_cc: unsupported parameter type 'string'.\n"/>
+        </admst:otherwise>
+      </admst:choose>
+      <!-- We take any non-adms attributes as info text. -->
+      <admst:variable name="info" value=""/>
+      <admst:for-each select="attribute">
+        <admst:if test="[name!='type' and name!='ask']">
+          <admst:if test="[$info!='']">
+            <admst:variable name="info" value="$info "/>
+          </admst:if>
+          <admst:variable name="info" value="$info%(value)"/>
+        </admst:if>
+      </admst:for-each>
+      <admst:if test="[$info='']">
+        <admst:variable name="info" value="%(name)"/>
+      </admst:if>
+      <admst:text format=", &quot;$info&quot;)"/>
+    </admst:if>
+
   </admst:join>
   <!-- add the nodes -->
   <admst:if test="variable[parametertype='instance' and
@@ -242,6 +288,52 @@
         <admst:variable name="info" value="%(name)"/>
       </admst:if>
       <admst:text format=", &quot;$info&quot;)"/>
+
+      <!-- Add alias, if any -->
+      <admst:if test="[not(nilled(alias))]">
+        <admst:text format=",\n"/>
+        <admst:choose>
+          <admst:when test="[type='real']">
+            <admst:if test="[minsize=maxsize]">
+              <admst:text
+  format="$(indent)IO(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_REAL|IF_REDUNDANT"/>
+            </admst:if>
+            <admst:if test="[minsize!=maxsize]">
+              <admst:text
+  format="$(indent)IO(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_REALVEC|IF_REDUNDANT"/>
+            </admst:if>
+          </admst:when>
+          <admst:when test="[type='integer']">
+            <admst:if test="[minsize=maxsize]">
+              <admst:text
+  format="$(indent)IO(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_INTEGER|IF_REDUNDANT"/>
+            </admst:if>
+            <admst:if test="[minsize!=maxsize]">
+              <admst:text
+  format="$(indent)IO(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_INTVEC|IF_REDUNDANT"/>
+            </admst:if>
+          </admst:when>
+          <admst:otherwise>
+            <admst:fatal
+              format="module_cc: unsupported parameter type 'string'.\n"/>
+          </admst:otherwise>
+        </admst:choose>
+        <!-- We take any non-adms attributes as info text. -->
+        <admst:variable name="info" value=""/>
+        <admst:for-each select="attribute">
+          <admst:if test="[name!='type' and name!='ask']">
+            <admst:if test="[$info!='']">
+              <admst:variable name="info" value="$info "/>
+            </admst:if>
+            <admst:variable name="info" value="$info%(value)"/>
+          </admst:if>
+        </admst:for-each>
+        <admst:if test="[$info='']">
+          <admst:variable name="info" value="%(name)"/>
+        </admst:if>
+        <admst:text format=", &quot;$info&quot;)"/>
+      </admst:if>
+
     </admst:join>
     <admst:if test="[count(variable[parametertype='model' and
         (input='yes' or not(nilled(attribute)))])>0]">
@@ -300,6 +392,51 @@
       <admst:variable name="info" value="%(name)"/>
     </admst:if>
     <admst:text format=", &quot;$info&quot;)"/>
+
+    <!-- Add alias, if any -->
+    <admst:if test="[not(nilled(alias))]">
+      <admst:text format=",\n"/>
+      <admst:choose>
+        <admst:when test="[type='real']">
+          <admst:if test="[minsize=maxsize]">
+            <admst:text
+  format="$(indent)$io(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_REAL|IF_REDUNDANT"/>
+          </admst:if>
+          <admst:if test="[minsize!=maxsize]">
+            <admst:text
+  format="$(indent)$io(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_REALVEC|IF_REDUNDANT"/>
+          </admst:if>
+        </admst:when>
+        <admst:when test="[type='integer']">
+          <admst:if test="[minsize=maxsize]">
+            <admst:text
+  format="$(indent)$io(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_INTEGER|IF_REDUNDANT"/>
+          </admst:if>
+          <admst:if test="[minsize!=maxsize]">
+            <admst:text
+  format="$(indent)$io(&quot;%(alias)&quot;, $(moduc)$(qual)%(name), IF_INTVEC|IF_REDUNDANT"/>
+          </admst:if>
+        </admst:when>
+        <admst:otherwise>
+          <admst:fatal
+        format="module_cc: unsupported parameter type 'string'.\n"/>
+        </admst:otherwise>
+      </admst:choose>
+      <!-- We take any non-adms attributes as info text. -->
+      <admst:variable name="info" value=""/>
+      <admst:for-each select="attribute">
+        <admst:if test="[name!='type' and name!='ask']">
+          <admst:if test="[$info!='']">
+            <admst:variable name="info" value="$info "/>
+          </admst:if>
+          <admst:variable name="info" value="$info%(value)"/>
+        </admst:if>
+      </admst:for-each>
+      <admst:if test="[$info='']">
+        <admst:variable name="info" value="%(name)"/>
+      </admst:if>
+      <admst:text format=", &quot;$info&quot;)"/>
+    </admst:if>
   </admst:join>
   <admst:text format="\n};\n"/>
 
