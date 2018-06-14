@@ -550,9 +550,19 @@ dnl         # First version number.  Have to strip quotes.
     lib_dirs="$lib_dirs $ac_x_libraries"
     SOEXT=so
     if test $linux32 = yes; then
-        oa_lpath=$oa_loc/lib/linux_32/opt
+        if test -f $oa_loc/linux32/lib/opt/liboaCommon.so
+            oa_lpath=$oa_loc/linux32/lib/opt
+        elif test -f $oa_loc/linux/lib/opt/liboaCommon.so
+            oa_lpath=$oa_loc/linux/lib/opt
+        else
+            oa_lpath=$oa_loc/lib/linux_32/opt
     else
-        oa_lpath=$oa_loc/lib/linux_64/opt
+        if test -f $oa_loc/linux64/lib/opt/liboaCommon.so
+            oa_lpath=$oa_loc/linux64/lib/opt
+        elif test -f $oa_loc/amd64/lib/opt/liboaCommon.so
+            oa_lpath=$oa_loc/amd64/lib/opt
+        else
+            oa_lpath=$oa_loc/lib/linux_64/opt
     fi
 ;;
 *)
