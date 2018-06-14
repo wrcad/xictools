@@ -29,8 +29,8 @@ clean distclean::
 # updates that won't propagate!
 cptest::
 	@for a in $(SPHFILES); do \
-	    s1="`/usr/bin/sum ../../include/$$a`"; \
-	    s2="`/usr/bin/sum $$a`"; \
+	    set -- $$(/usr/bin/sum ../../include/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
             if [ "$$s1" != "$$s2" ]; then \
 	        echo ; \
 	        echo  "ERROR!!! $$a differs in ../../include, FIXME"; \

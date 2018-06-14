@@ -52,8 +52,8 @@ check::
 # updates that won't propagate!
 cptest::
 	@for a in $(BASEFILES); do \
-	    s1="`/usr/bin/sum $(BASE)/$$a`"; \
-	    s2="`/usr/bin/sum $$a`"; \
+	    set -- $$(/usr/bin/sum $(BASE)/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
             if [ "$$s1" != "$$s2" ]; then \
 	        echo ; \
 	        echo  "ERROR!!! $$a differs in $(BASE), FIXME"; \
@@ -62,8 +62,8 @@ cptest::
 	    fi; \
 	done
 	@for a in $(MOZYFILES); do \
-	    s1="`/usr/bin/sum $(MOZY)/$$a`"; \
-	    s2="`/usr/bin/sum $$a`"; \
+	    set -- $$(/usr/bin/sum $(MOZY)/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
             if [ "$$s1" != "$$s2" ]; then \
 	        echo ; \
 	        echo  "ERROR!!! $$a differs in $(MOZY), FIXME"; \
@@ -72,8 +72,8 @@ cptest::
 	    fi; \
 	done
 	@for a in $(SPFILES); do \
-	    s1="`/usr/bin/sum $(SPBASE)/$$a`"; \
-	    s2="`/usr/bin/sum $$a`"; \
+	    set -- $$(/usr/bin/sum $(SPBASE)/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
             if [ "$$s1" != "$$s2" ]; then \
 	        echo ; \
 	        echo  "ERROR!!! $$a differs in $(SPBASE), FIXME"; \

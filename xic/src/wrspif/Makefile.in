@@ -58,8 +58,8 @@ distclean: clean
 # updates that won't propagate!
 cptest::
 	@for a in $(SPFILES); do \
-	    s1="`/usr/bin/sum $(BASE)/spnumber/$$a`"; \
-	    s2="`/usr/bin/sum $$a`"; \
+	    set -- $$(/usr/bin/sum $(BASE)/spnumber/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
             if [ "$$s1" != "$$s2" ]; then \
 	        echo ; \
 	        echo  "ERROR!!! $$a differs in $(BASE)/spnumber, FIXME"; \
