@@ -612,17 +612,21 @@ cTechCdsIn::techParams(lispnode *p0, lispnode*, char **err)
     for (lispnode *p = p0->args; p; p = p->next) {
         lispnode n[2];
         int cnt = lispnode::eval_list(p->args, n, 3, err);
+
+        if (n[0].type == LN_NODE) {
+            // Parameter gropup, ignore for now.
+            continue;
+        }
+        if (n[0].type != LN_STRING) {
+            err_rpt("techParams", p);
+            continue;
+        }
         if (cnt < 2) {
             err_rpt("techParams", p);
             continue;
         }
         // n[0] paramName
         // n[1] value
-
-        if (n[0].type != LN_STRING) {
-            err_rpt("techParams", p);
-            continue;
-        }
 
         // Look for string properties with a name suffix "_layer". 
         // We take these as an alias definition for the value, where

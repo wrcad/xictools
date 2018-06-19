@@ -304,18 +304,21 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
     CDp *pvrt = 0;  // Xic properties created for Virtuoso.
 
     const cOAelecInfo *cdf = 0;
+    char *model_prp = 0;
+    char *value_prp = 0;
     bool is_pcell = false;
     bool is_symbol = false;
+    oaString instNamePrefix;
     if (mode == Electrical && type == oacDesignType) {
         oaDesign *des = (oaDesign*)object;
         oaScalarName cellName;
         des->getCellName(cellName);
+        oaScalarName libName;
+        des->getLibName(libName);
         oaCell *cell = oaCell::find(des->getLib(), cellName);
         if (cell) {
             cdf = getCDFinfo(cell, p_def_symbol, p_def_dev_prop);
 
-            oaScalarName libName;
-            des->getLibName(libName);
             oaScalarName viewName(oaNativeNS(), p_def_layout);
             if (oaDesign::exists(libName, cellName, viewName)) {
                 oaDesign *pdes =
@@ -327,9 +330,109 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
         }
         is_symbol =
             (des->getViewType() == oaViewType::get(oacSchematicSymbol));
+
+        oaProp *prp = oaProp::find(des, "instNamePrefix");
+        if (prp)
+            prp->getValue(instNamePrefix);
+        if (!is_symbol) {
+            oaScalarName symViewName(oaNativeNS(), p_def_symbol);
+            oaDesign *symd = oaDesign::open(libName, cellName, symViewName);
+            if (symd) {
+                prp = oaProp::find(symd, "instNamePrefix");
+                if (prp)
+                    prp->getValue(instNamePrefix);
+            }
+        }
+        if (instNamePrefix.getSize() > 0) {
+            // Add this as a P_NAME property.
+            sLstr lstr;
+            if (instNamePrefix.isEqual("pin", true)) {
+                // Special case, the cell is an "ipin" or "opin". 
+                // These are converted to a null device, i.e.,
+                // something that appears in the drawing but is
+                // electrically invisible.  They correspond to cell
+                // terminal boxes.  We will skip adding model and
+                // param properties.
+
+                lstr.add_c(P_NAME_NULL);
+                lstr.add(" 0");
+                ignore_params = true;
+
+                CDp *px = new CDp(lstr.string(), P_NAME);
+                px->set_next_prp(pvrt);
+                pvrt = px;
+            }
+            else {
+                // There are typically two sources for the device name
+                // prefix:  the prefix from the CDF, and the
+                // instNamePrefix property.  We notice that the CDF
+                // prefix is either 'X', or the same as the property
+                // prefix.  The CDF 'X' indicates that the device
+                // should be issued as a subcircuit in SPICE output,
+                // as the "model" name actually resolves to a .subckt
+                // definition in the HSPICE library.
+                //
+                // The Xic name property will be set from the
+                // instNamePrefix property always.  If the CDF prefix
+                // is 'X', we set a macro property, which will cause
+                // the SPICE output generator to add an 'X' ahead of
+                // the device name.  In this case, we also add a model
+                // property containing the cell name.
+
+                lstr.add(instNamePrefix);
+                lstr.add(" 0");
+                CDp *px = new CDp(lstr.string(), P_NAME);
+                px->set_next_prp(pvrt);
+                pvrt = px;
+
+                bool modprop = false;
+                if (cdf) {
+                    oaString cn;
+                    cellName.get(cn);
+
+                    const char *pf = cdf->prefix();
+                    if (pf && (*pf == 'X' || *pf == 'x') &&
+                            (*instNamePrefix != 'X' &&
+                            *instNamePrefix != 'x')) {
+
+                        CDp *px = new CDp("macro", P_MACRO);
+                        px->set_next_prp(pvrt);
+                        pvrt = px;
+                        modprop = true;
+                    }
+                }
+
+                // Now, in some cases we need to add a model property
+                // with the device name, at other times not.  This may
+                // be tricky.
+                //
+                // If the CDF prefix leads with 'X', then we always
+                // need the model property.  This provides the macro
+                // name.
+                //
+                // Otherwise it really isn't clear, but we will assume
+                // that if the device physical part is a pcell, then
+                // we add the model property, otherwise not.  It is
+                // assumed that a pcell will use an actual .model or
+                // .subckt.  If not a pcell, then it is assumed that
+                // the device is something like a "pcapacitor", which
+                // is taken as a standard SPICE element.
+
+                if ((modprop || is_pcell) && !model_prp) {
+                    const cOAelecInfo::param *pm = cdf->find_param("model");
+                    if (pm)
+                        model_prp = lstring::copy(pm->value());
+                    else {
+                        oaString cellname;
+                        ((oaDesign*)object)->getCellName(oaNativeNS(),
+                            cellname);
+                        model_prp = lstring::copy((const char*)cellname);
+                    }
+                }
+            }
+        }
     }
 
-    char *model_prp = 0;
     oaIter<oaProp> iter(object->getProps());
     while (oaProp *prp = iter.getNext()) {
         oaString name;
@@ -441,104 +544,9 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
                 type == oacVectorInstBitType || type == oacArrayInstType ||
                 type == oacVectorInstType)) {
 
-            // Cadence/Virtuoso property.
-            if (!strcasecmp("instNamePrefix", name) && type == oacDesignType) {
-                // Electrical cell.
-                // Add this as a P_NAME property.
-                oaString value;
-                prp->getValue(value);
-                sLstr lstr;
-                if (value.isEqual("pin", true)) {
-                    // Special case, the cell is an "ipin" or "opin". 
-                    // These are converted to a null device, i.e.,
-                    // something that appears in the drawing but is
-                    // electrically invisible.  They correspond to
-                    // cell terminal boxes.  We will skip adding model
-                    // and param properties.
-
-                    lstr.add_c(P_NAME_NULL);
-                    lstr.add(" 0");
-                    ignore_params = true;
-
-                    CDp *px = new CDp(lstr.string(), P_NAME);
-                    px->set_next_prp(pvrt);
-                    pvrt = px;
-                }
-                else {
-                    // There are typically two sources for the device
-                    // name prefix:  the prefix from the CDF, and the
-                    // instNamePrefix property.  We notice that the
-                    // CDF prefix is either 'X', or the same as the
-                    // property prefix.  The CDF 'X' indicates that
-                    // the device should be issued as a subcircuit in
-                    // SPICE output, as the "model" name actually
-                    // resolves to a .subckt definition in the HSPICE
-                    // library.
-                    //
-                    // The Xic name property will be set from the
-                    // instNamePrefix property always.  If the CDF
-                    // prefix is 'X', we set a macro property, which
-                    // will cause the SPICE output generator to add an
-                    // 'X' ahead of the device name.  In this case, we
-                    // also add a model property containing the cell
-                    // name.
-
-                    lstr.add(value);
-                    lstr.add(" 0");
-                    CDp *px = new CDp(lstr.string(), P_NAME);
-                    px->set_next_prp(pvrt);
-                    pvrt = px;
-
-                    bool modprop = false;
-                    if (cdf && mode == Electrical && type == oacDesignType) {
-                        oaDesign *des = (oaDesign*)object;
-                        oaScalarName cellName;
-                        des->getCellName(cellName);
-                        oaString cn;
-                        cellName.get(cn);
-
-                        const char *pf = cdf->prefix();
-                        if (pf && (*pf == 'X' || *pf == 'x') &&
-                                (*value != 'X' && *value != 'x')) {
-
-                            CDp *px = new CDp("macro", P_MACRO);
-                            px->set_next_prp(pvrt);
-                            pvrt = px;
-                            modprop = true;
-                        }
-                    }
-
-                    // Now, in some cases we need to add a model
-                    // property with the device name, at other times
-                    // not.  This may be tricky.
-                    //
-                    // If the CDF prefix leads with 'X', then we
-                    // always need the model property.  This provides
-                    // the macro name.
-                    //
-                    // Otherwise it really isn't clear, but we will
-                    // assume that if the device physical part is a
-                    // pcell, then we add the model property,
-                    // otherwise not.  It is assumed that a pcell will
-                    // use an actual .model or .subckt.  If not a
-                    // pcell, then it is assumed that the device is
-                    // something like a "pcapacitor", which is taken
-                    // as a standard SPICE element.
-
-                    if ((modprop || is_pcell) && !model_prp) {
-                        const cOAelecInfo::param *pm = cdf->find_param("model");
-                        if (pm)
-                            model_prp = lstring::copy(pm->value());
-                        else {
-                            oaString cellname;
-                            ((oaDesign*)object)->getCellName(oaNativeNS(),
-                                cellname);
-                            model_prp = lstring::copy((const char*)cellname);
-                        }
-                    }
-                }
+            // Cadence/Virtuoso property, already processed.
+            if (!strcasecmp("instNamePrefix", name) && type == oacDesignType)
                 continue;
-            }
 
             // Virtuoso stuff, mostly to ignore.
             if (!strcasecmp("portOrder", name))
@@ -589,6 +597,14 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
                 prp->getValue(value);
                 delete [] model_prp;
                 model_prp = lstring::copy((const char*)value);
+                continue;
+            }
+//XXX Synopsys/Hypres
+            if (!strcasecmp("pnValue", name)) {
+                oaString value;
+                prp->getValue(value);
+                delete [] value_prp;
+                value_prp = lstring::copy((const char*)value);
                 continue;
             }
 
@@ -746,6 +762,13 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
         px->set_next_prp(p0);
         p0 = px;
         delete [] model_prp;
+    }
+    if (value_prp) {
+        // Add a value property.
+        CDp *px = new CDp(value_prp, P_VALUE);
+        px->set_next_prp(p0);
+        p0 = px;
+        delete [] value_prp;
     }
 
     return (p0);

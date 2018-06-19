@@ -3564,6 +3564,7 @@ CDs::prptyAdd(int value, const char *string)
             }
             break;
         case P_NAME:
+            //XXX prptyRemove(P_NAME);  // just to be sure...
             pdesc = new CDp_name;
             if (!((CDp_name*)pdesc)->parse_name(string)) {
                 delete pdesc;
