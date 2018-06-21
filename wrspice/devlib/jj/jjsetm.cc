@@ -123,7 +123,7 @@ JJdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         break;
     case JJ_MOD_TSFACT:
         model->JJtsfact = value->rValue;
-        model->JJtsfact = true;
+        model->JJtsfactGiven = true;
         break;
     case JJ_MOD_JJ:
         break;

@@ -51,6 +51,10 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.17, June 21, 2018
+// Pi factor missing plus bug in bound_step argument.  Time steps are
+//   now a factor of pi more aggressive, same as WRspice internal JJ
+//   model.
 // Version 1.16, May 5, 2018
 //   x*ddt(y) -> ddt(x*y) for HSPICE efficiency.
 //   Changed phi variable to phase to avoid clash with aliasparam.
@@ -537,7 +541,7 @@ analog begin
         vtmp = avj;
         if (vtmp < vdpbak)
             vtmp = vdpbak;
-        $bound_step(tsfactor*`PHI0_2PI/vtmp);
+        $bound_step(`M_PI*tsf*`PHI0_2PI/vtmp);
         end
     else
         begin
