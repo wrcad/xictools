@@ -22,5 +22,6 @@ fi
 
 # Call the Xic program, passing along the argument list.
 
+export LD_LIBRARY_PATH
 /usr/local/xictools/xic/bin/xic $*
 

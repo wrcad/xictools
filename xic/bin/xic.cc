@@ -1353,6 +1353,7 @@ cMain::InitializeStrings()
     xm_device_lib_name = "device.lib";
     xm_model_lib_name = "model.lib";
     xm_model_subdir_name = "models";
+    xm_ignore_name = ".xic_ignore";
 
     xm_init_script = ".xicinit";
     xm_startup_script = ".xicstart";

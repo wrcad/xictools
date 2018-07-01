@@ -338,17 +338,15 @@ install_test::
 install_links::
 	@rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/xic
 	@ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/xic
-	@rm -f $(toolbin)/xic.sh
+	@rm -f $(toolbin)/xic.sh $(toolbin)/xic
 	@sed -e s%/usr/local%$(INSTALL_PREFIX)% < $(destn)/bin/xic.sh \
-  > $(toolbin)/xic.sh; chmod 755 $(toolbin)/xic.sh
+  > $(toolbin)/xic; chmod 755 $(toolbin)/xic
 	@rm -f $(toolbin)/wrencode
 	@ln -s $(destn)/bin/wrencode $(toolbin)
 	@rm -f $(toolbin)/wrdecode
 	@ln -s $(destn)/bin/wrdecode $(toolbin)
 	@rm -f $(toolbin)/wrsetpass
 	@ln -s $(destn)/bin/wrsetpass $(toolbin)
-	@rm -f $(toolbin)/xic
-	@ln -s $(destn)/bin/xic $(toolbin)
 	@if [ ! -h $(destn)/startup/xic_tech ]; then \
 	    ln -s $(destn)/startup/xic_tech.scmos $(destn)/startup/xic_tech; \
 	fi

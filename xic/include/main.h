@@ -585,6 +585,8 @@ public:
     void SetDeviceLibName(char *s)      { xm_device_lib_name = s; }
     const char *ModelLibName()          { return (xm_model_lib_name); }
     void SetModelLibName(char *s)       { xm_model_lib_name = s; }
+    const char *IgnoreName()            { return (xm_ignore_name); }
+    void SetIgnoreName(char *s)         { xm_ignore_name = s; }
     const char *ModelSubdirName()       { return (xm_model_subdir_name); }
     void SetModelSubdirName(char *s)    { xm_model_subdir_name = s; }
     const char *InitScript()            { return (xm_init_script); }
@@ -667,6 +669,7 @@ private:
     const char *xm_default_edit_name; // Default edit cell ("noname")
     const char *xm_device_lib_name;   // Device lib file (def. "device.lib")
     const char *xm_model_lib_name;    // Model lib file (def. "model.lib")
+    const char *xm_ignore_name;       // Ignore models dir (def. ".xic_ignore")
     const char *xm_model_subdir_name; // Subdir name for models (def. "models")
     const char *xm_init_script;       // Name of init script (".xicinit")
     const char *xm_startup_script;    // Name of startup script (".xicstart")

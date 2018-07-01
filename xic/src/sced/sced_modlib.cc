@@ -106,11 +106,26 @@ cModLib::Open(const char *name)
         delete [] p;
         p = ptmp;
 
-        DIR *wdir;
-        if (!(wdir = opendir(p))) {
+        DIR *wdir = opendir(p);
+        if (!wdir) {
             delete [] p;
             continue;
         }
+
+        // If the directory contains a file named ".xic_ignore", skip
+        // this directory.
+        //
+        if (XM()->IgnoreName() && *XM()->IgnoreName()) {
+            char *px = pathlist::mk_path(p, XM()->IgnoreName());
+            if (access(px, F_OK) == 0) {
+                delete [] p;
+                delete [] px;
+                closedir(wdir);
+                continue;
+            }
+            delete [] px;
+        }
+
         struct direct *de;
         while ((de = readdir(wdir)) != 0) {
             fname = pathlist::mk_path(p, de->d_name);
