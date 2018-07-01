@@ -71,7 +71,7 @@
 #include "oa_errlog.h"
 #include "miscutil/texttf.h"
 
-#define XXXPRP
+#define NEWPRP
 
 // Schematics from Virtuoso are very different from Xic.  For
 // starters, we need to scale all coordintes by 1000 when reading
@@ -139,7 +139,7 @@ private:
         const oaScalarName&, const oaViewType*);
     void getSuperMasterParams(oaDesign*);
     oaDesign *handleSuperMaster(oaDesign*, char**);
-#ifdef XXXPRP
+#ifdef NEWPRP
     OItype loadPhysicalDesign(const oaDesign*, const char*, CDs**, oaInt4);
     OItype loadElectricalDesign(const oaDesign*, const oaDesign*,
         const char*, CDs**, oaInt4);
@@ -155,7 +155,7 @@ private:
     CDs *newCell(const char*, ncType*, bool = false);
     CDcellName checkSubMaster(CDcellName, CDp*);
 
-#ifdef XXXPRP
+#ifdef NEWPRP
     bool readPhysicalDesign(const oaDesign*, const oaString&, CDs**);
     bool readElectricalDesign(const oaDesign*, const oaDesign*,
         const oaString&, CDs**);
@@ -166,7 +166,7 @@ private:
     bool readVias(const oaBlock*, CDs*);
     bool readGeometry(const oaBlock*, CDs*);
     bool readTerms(const oaBlock*, CDs*sdesc, bool);
-#ifdef XXXPRP
+#ifdef NEWPRP
     bool readPhysicalProperties(const oaDesign*, CDs*);
     bool readElectricalProperties(const oaDesign*, const oaDesign*, CDs*);
 #else
@@ -209,8 +209,6 @@ private:
     stringlist *in_top_elec;
     stringlist *in_warnings;
     char *in_subm_name;
-    char *in_part_name;
-    const char *in_cell_name;
     PCellParam *in_pc_params;
     SymTab *in_submaster_tab;
     const char *in_def_layout;
@@ -455,8 +453,6 @@ oa_in::oa_in(int api_major)
     in_top_elec = 0;
     in_warnings = 0;
     in_subm_name = 0;
-    in_part_name = 0;
-    in_cell_name = 0;
     in_pc_params = 0;
     in_submaster_tab = 0;
 
@@ -516,7 +512,6 @@ oa_in::~oa_in()
         delete in_via_tab;
     }
     delete [] in_subm_name;
-    delete [] in_part_name;
     PCellParam::destroy(in_pc_params);
     delete [] in_def_layout;
     delete [] in_def_schematic;
@@ -927,7 +922,7 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
         if (design) {
             superMasterStatus = 1;
             if (!design->isSuperMaster()) {
-#ifdef XXXPRP
+#ifdef NEWPRP
                 oiret = loadPhysicalDesign(design, alt_cellname, &sd_phys,
                     depth);
 #else
@@ -956,7 +951,7 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                         if (!in_pc_params) {
                             // Can't evaluate super-master, so treat
                             // it like a normal cell.
-#ifdef XXXPRP
+#ifdef NEWPRP
                             oiret = loadPhysicalDesign(design, alt_cellname,
                                 &sd_phys, depth);
 #else
@@ -978,7 +973,7 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
 
                         char *cname;
                         design = handleSuperMaster(design, &cname);
-#ifdef XXXPRP
+#ifdef NEWPRP
                         oiret = loadPhysicalDesign(design, cname, &sd_phys,
                             depth);
 #else
@@ -1015,8 +1010,6 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
     // from the schematic read when reading a symbol.
     //
     in_elec_scale = CDS_ELEC_SCALE;
-    delete [] in_part_name;
-    in_part_name = 0;
 
     if (schematicView) {
         oaScalarName viewName;
@@ -1029,7 +1022,7 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
             schematicVT);
         if (design) {
             if (!design->isSuperMaster()) {
-#ifdef XXXPRP
+#ifdef NEWPRP
                 oaDesign *symdesign = 0;
                 if (schematicSymbolView) {
                     oaScalarName sViewName;
@@ -1103,20 +1096,18 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                     sd_symb->setPrptyList(sd_elec->prptyList());
                     sd_elec->setPrptyList(0);
                 }
-                // Give the cell a dummy name during data entry, for
-                // warning/error messages.
-                char *tname = new char[strlen((const char*)cellname) +
-                    20];
-                sprintf(tname, "%s:symbol", (const char*)cellname);
-                sd_symb->setName((CDcellName)tname);
-#ifdef XXXPRP
+
+                // Give the cell a name during data entry, for
+                // warning/error messages, and "[@cellName]" labels.
+                //
+                sd_symb->setName(CD()->CellNameTableAdd(cellname));
+#ifdef NEWPRP
                 oiret = loadElectricalDesign(design, 0, alt_cellname,
                     &sd_symb, depth);
 #else
                 oiret = loadDesign(design, alt_cellname, &sd_symb, depth);
 #endif
                 sd_symb->setName(0);
-                delete [] tname;
                 if (pp) {
                     CDp *p = sd_symb->prpty(P_PARAM);
                     if (p)
@@ -1647,7 +1638,7 @@ oa_in::handleSuperMaster(oaDesign *design, char **pcname)
     return (0);
 }
 
-#ifdef XXXPRP
+#ifdef NEWPRP
 
 OItype
 oa_in::loadPhysicalDesign(const oaDesign *design, const char *cname, CDs **sdp,
@@ -2005,7 +1996,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
         }
 
         CDs *sd = 0;
-#ifdef XXXPRP
+#ifdef NEWPRP
         OItype oiret = loadPhysicalDesign(design, Tstring(cname), &sd, depth);
 #else
         OItype oiret = loadDesign(design, Tstring(cname), &sd, depth);
@@ -2072,7 +2063,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
             }
 
             CDs *sd = 0;
-#ifdef XXXPRP
+#ifdef NEWPRP
             bool ret = readPhysicalDesign(design, viaCellname, &sd);
 #else
             bool ret = readOaDesign(design, viaCellname, &sd);
@@ -2242,7 +2233,7 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
     }
 
     CDs *sd = 0;
-#ifdef XXXPRP
+#ifdef NEWPRP
     // This is a sub-master and must be physical?
     OItype oiret;
     if (in_mode == Physical)
@@ -2425,7 +2416,7 @@ oa_in::checkSubMaster(CDcellName cname, CDp *plist)
 }
 
 
-#ifdef XXXPRP
+#ifdef NEWPRP
 
 bool 
 oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
@@ -2435,11 +2426,14 @@ oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
         Errs()->add_error("Null design handle encountered.");
         return (false);
     }
-//XXX add err megs
-    if (design->getViewType() != oaViewType::get(oacMaskLayout))
+    if (design->getViewType() != oaViewType::get(oacMaskLayout)) {
+        Errs()->add_error("readPhysicalDesign:  non-layout data passed.");
         return (false);
-    if (in_mode != Physical)
+    }
+    if (in_mode != Physical) {
+        Errs()->add_error("readPhysicalDesign:  not in physical mode.");
         return (false);
+    }
 
     oaString libname;
     design->getLibName(in_ns, libname);
@@ -2508,7 +2502,6 @@ oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
         sdesc->setFileName(libname);
         sdesc->setFileType(Foa);
     }
-    in_cell_name = Tstring(sdesc->cellname());
 
     if (!readPhysicalProperties(design, sdesc))
         return (false);
@@ -2544,11 +2537,14 @@ oa_in::readElectricalDesign(const oaDesign *design, const oaDesign *symdesign,
         Errs()->add_error("Null design handle encountered.");
         return (false);
     }
-//XXX add err megs
-    if (design->getViewType() == oaViewType::get(oacMaskLayout))
+    if (design->getViewType() == oaViewType::get(oacMaskLayout)) {
+        Errs()->add_error("readElectricalDesign:  layout data passed.");
         return (false);
-    if (in_mode == Physical)
+    }
+    if (in_mode == Physical) {
+        Errs()->add_error("readElectricalDesign:  in physical mode.");
         return (false);
+    }
 
     oaString libname;
     design->getLibName(in_ns, libname);
@@ -2601,9 +2597,6 @@ oa_in::readElectricalDesign(const oaDesign *design, const oaDesign *symdesign,
 
     if (ncret == ncSkip)
         return (true);
-
-    if (!symbolic)
-        in_cell_name = Tstring(sdesc->cellname());
 
     // Read properties.  Read properties from schematic and symbol in
     // the schematic pass, skip reading properties in the symbol pass
@@ -2739,9 +2732,6 @@ oa_in::readOaDesign(const oaDesign *design, const oaString &xic_cname,
         sdesc->setFileName(libname);
         sdesc->setFileType(Foa);
     }
-
-    if (!symbolic)
-        in_cell_name = Tstring(sdesc->cellname());
 
     // Read properties.  If symbolic, properties will pass through to
     // the schematic view.
@@ -2898,7 +2888,7 @@ oa_in::readTerms(const oaBlock *blk, CDs *sdesc, bool symbolic)
     return (ret);
 }
 
-#ifdef XXXPRP
+#ifdef NEWPRP
 
 bool
 oa_in::readPhysicalProperties(const oaDesign *design, CDs *sdesc)
@@ -4584,8 +4574,11 @@ oa_in::readOaEvalText(oaEvalText *evalText, CDs *sdesc, CDl *ldesc)
     if (!evalText->isVisible())
         return (true);
 
-    part_name = in_part_name;
-    cell_name = in_cell_name;
+    CDp *prp = sdesc->prpty(XICP_PARTNAME);
+    part_name = prp ? prp->string() : 0;
+
+    // The seems to be redundant, same as model property string.
+    cell_name = Tstring(sdesc->cellname());
 
     if (!evTextLink) {
         if (in_api_major == 5)
@@ -5365,10 +5358,6 @@ oa_in::readProperties(const oaObject *object)
     in_from_xic = prop.fromXic();
     if (in_from_xic)
         in_elec_scale = XIC_ELEC_SCALE;
-    if (prop.partName()) {
-        delete [] in_part_name;
-        in_part_name = lstring::copy(prop.partName());
-    }
     return (p0);
 }
 

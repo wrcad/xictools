@@ -551,11 +551,12 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
             if (!strcasecmp("vendorName", name))
                 continue;
             if (!strcasecmp("partName", name)) {
-                // Grab this for the @partName evalText.
+                // Keep this for the @partName evalText.
                 oaString value;
                 prp->getValue(value);
-                delete [] p_part_name;
-                p_part_name = lstring::copy(value);
+                CDp *px = new CDp(value, XICP_PARTNAME);
+                px->set_next_prp(pvrt);
+                pvrt = px;
                 continue;
             }
             if (!strcasecmp("pin#", name))

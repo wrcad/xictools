@@ -136,17 +136,14 @@ public:
             p_def_symbol = symv;
             p_def_dev_prop = prpv;
 
-            p_part_name = 0;
             p_from_xic = fxic;
         }
 
     ~cOAprop()
         {
-            delete [] p_part_name;
         }
 
     bool fromXic()          const { return (p_from_xic); }
-    const char *partName()  const { return (p_part_name); }
 
     CDp *handleProperties(const oaObject*, DisplayMode);
 
@@ -163,7 +160,6 @@ private:
     const char *p_def_schematic;
     const char *p_def_symbol;
     const char *p_def_dev_prop;
-    char *p_part_name;
     bool p_from_xic;
 };
 
