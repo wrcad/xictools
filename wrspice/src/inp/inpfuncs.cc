@@ -385,161 +385,35 @@ IFparseNode::PTyn(const double *args)
 // cmath library functions.
 
 IFparseNode::PTtfunc IFparseNode::PTtFuncs[] = {
-    PTtfunc( "pulse",  PTF_tPULSE,  &IFparseNode::PTtPulse ) ,
-    PTtfunc( "gpulse", PTF_tGPULSE, &IFparseNode::PTtGpulse ) ,
-    PTtfunc( "pwl",    PTF_tPWL,    &IFparseNode::PTtPwl ) ,
-    PTtfunc( "sin",    PTF_tSIN,    &IFparseNode::PTtSin ) ,
-    PTtfunc( "tsin",   PTF_tSIN,    &IFparseNode::PTtSin ) ,
-    PTtfunc( "spulse", PTF_tSPULSE, &IFparseNode::PTtSpulse ) ,
-    PTtfunc( "exp",    PTF_tEXP,    &IFparseNode::PTtExp ) ,
-    PTtfunc( "texp",   PTF_tEXP,    &IFparseNode::PTtExp ) ,
-    PTtfunc( "sffm",   PTF_tSFFM,   &IFparseNode::PTtSffm ) ,
-    PTtfunc( "am",     PTF_tAM,     &IFparseNode::PTtAm ) ,
-    PTtfunc( "gauss",  PTF_tGAUSS,  &IFparseNode::PTtGauss ),
-    PTtfunc( "tgauss", PTF_tGAUSS,  &IFparseNode::PTtGauss ),
-    PTtfunc( "interp", PTF_tINTERP, &IFparseNode::PTtInterp ),
+    PTtfunc( "pulse",  PTF_tPULSE,  &IFparseNode::tran_func ),
+    PTtfunc( "gpulse", PTF_tGPULSE, &IFparseNode::tran_func ),
+    PTtfunc( "pwl",    PTF_tPWL,    &IFparseNode::tran_func ),
+    PTtfunc( "sin",    PTF_tSIN,    &IFparseNode::tran_func ),
+    PTtfunc( "tsin",   PTF_tSIN,    &IFparseNode::tran_func ),
+    PTtfunc( "spulse", PTF_tSPULSE, &IFparseNode::tran_func ),
+    PTtfunc( "exp",    PTF_tEXP,    &IFparseNode::tran_func ),
+    PTtfunc( "texp",   PTF_tEXP,    &IFparseNode::tran_func ),
+    PTtfunc( "sffm",   PTF_tSFFM,   &IFparseNode::tran_func ),
+    PTtfunc( "am",     PTF_tAM,     &IFparseNode::tran_func ),
+    PTtfunc( "gauss",  PTF_tGAUSS,  &IFparseNode::tran_func ),
+    PTtfunc( "tgauss", PTF_tGAUSS,  &IFparseNode::tran_func ),
+    PTtfunc( "interp", PTF_tINTERP, &IFparseNode::tran_func ),
     PTtfunc( "table",  PTF_tTABLE,  &IFparseNode::PTtTable ),
     PTtfunc( 0,        PTF_tNIL,    0 )
 };
 
 
 double
-IFparseNode::PTtPulse(const double *arg)
+IFparseNode::tran_func(const double *arg)
 {
-    return (v.td->eval_tPULSE(*arg));
+    return (v.td->eval_func(*arg));
 }
 
 
 double
-IFparseNode::PTtPulseD(const double *arg)
+IFparseNode::tran_deriv(const double *arg)
 {
-    return (v.td->eval_tPULSE_D(*arg));
-}
-
-
-double
-IFparseNode::PTtGpulse(const double *arg)
-{
-    return (v.td->eval_tGPULSE(*arg));
-}
-
-
-double
-IFparseNode::PTtGpulseD(const double *arg)
-{
-    return (v.td->eval_tGPULSE_D(*arg));
-}
-
-
-double
-IFparseNode::PTtPwl(const double *arg)
-{
-    return (v.td->eval_tPWL(*arg));
-}
-
-
-double
-IFparseNode::PTtPwlD(const double *arg)
-{
-    return (v.td->eval_tPWL_D(*arg));
-}
-
-
-double
-IFparseNode::PTtSin(const double *arg)
-{
-    return (v.td->eval_tSIN(*arg));
-}
-
-
-double
-IFparseNode::PTtSinD(const double *arg)
-{
-    return (v.td->eval_tSIN_D(*arg));
-}
-
-
-double
-IFparseNode::PTtSpulse(const double *arg)
-{
-    return (v.td->eval_tSPULSE(*arg));
-}
-
-
-double
-IFparseNode::PTtSpulseD(const double *arg)
-{
-    return (v.td->eval_tSPULSE_D(*arg));
-}
-
-
-double
-IFparseNode::PTtExp(const double *arg)
-{
-    return (v.td->eval_tEXP(*arg));
-}
-
-
-double
-IFparseNode::PTtExpD(const double *arg)
-{
-    return (v.td->eval_tEXP_D(*arg));
-}
-
-
-double
-IFparseNode::PTtSffm(const double *arg)
-{
-    return (v.td->eval_tSFFM(*arg));
-}
-
-
-double
-IFparseNode::PTtSffmD(const double *arg)
-{
-    return (v.td->eval_tSFFM_D(*arg));
-}
-
-
-double
-IFparseNode::PTtAm(const double *arg)
-{
-    return (v.td->eval_tAM(*arg));
-}
-
-
-double
-IFparseNode::PTtAmD(const double *arg)
-{
-    return (v.td->eval_tAM_D(*arg));
-}
-
-
-double
-IFparseNode::PTtGauss(const double *arg)
-{
-    return (v.td->eval_tGAUSS(*arg));
-}
-
-
-double
-IFparseNode::PTtGaussD(const double *arg)
-{
-    return (v.td->eval_tGAUSS_D(*arg));
-}
-
-
-double
-IFparseNode::PTtInterp(const double *arg)
-{
-    return (v.td->eval_tINTERP(*arg));
-}
-
-
-double
-IFparseNode::PTtInterpD(const double *arg)
-{
-    return (v.td->eval_tINTERP_D(*arg));
+    return (v.td->eval_deriv(*arg));
 }
 
 
@@ -549,11 +423,11 @@ IFparseNode::PTtTable(const double *arg)
     if (v.table) {
         double t = *arg;
         return ((v.table->tablEval(t)).real);
-    }
+    } 
     return (0.0);
 }
-
-
+    
+ 
 double
 IFparseNode::PTtTableD(const double *arg)
 {
@@ -562,5 +436,5 @@ IFparseNode::PTtTableD(const double *arg)
         return (v.table->tablEvalDeriv(t));
     }
     return (0.0);
-}
+} 
 

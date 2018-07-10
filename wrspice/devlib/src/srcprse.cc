@@ -54,7 +54,6 @@ Authors: 1987 Thomas L. Quarles
 #include "input.h"
 
 namespace {
-    char *fix_parentheses(const char*, sCKT*, const char*);
     void parsepoly(sLine*, const char**, int, const char*);
     char *polystring(char**, int, char**, int);
     int  nxtpwr(int*, int*);
@@ -345,7 +344,7 @@ SRCdev::parse(int type, sCKT *ckt, sLine *current)
     IP.logError(current, error);
 
     if (!polyline) {
-        char *s = fix_parentheses(line, ckt, xalias);
+        char *s = IP.fixParentheses(line, ckt, xalias);
         if (s) {
 
             // Replace the line in the deck with the fixed version.
@@ -706,121 +705,6 @@ SRCdev::src_parse(
 
 
 namespace {
-    // This is to allow lines like "pulse 0 1 ..." (without
-    // parentheses) to be accepted.  The expression parser expects
-    // parentheses, so we add them here.  If the string is changed,
-    // the new string is returned.
-    //
-    char *fix_parentheses(const char *line, sCKT *ckt, const char *xalias)
-    {
-        const char *nend = line;
-        char *nline = 0;
-        while (*nend != 0) {
-            const char *nlst = nend;
-            char *parm = IP.getTok(&nend, true);
-            if (!parm)
-                // catch error later
-                return (0);
-
-            bool is_pwl = !strcasecmp(parm, "pwl");
-
-            // Try to make this work whether or not getTok() returns '(' as
-            // a token.
-            if (IP.isTranFunc(parm) && *nend != '(') {
-                while (!isalpha(*nlst))
-                    nlst++;
-                while (isalpha(*nlst))
-                    nlst++;
-                const char *s = nlst;  // first char after parm
-                for ( ; s < nend; s++)
-                    if (*s == '(')
-                        break;
-                if (s == nend) {
-                    // Have to add the parentheses
-                    char *nstr = new char[strlen(line) + 4];
-                    s = line;
-                    char *t = nstr;
-                    while (s < nlst)
-                        *t++ = *s++;
-                    *t++ = '(';
-
-                    int ac = 0;
-                    s = nend;  // first char of arg list
-                    for (;;) {
-                        ac++;
-                        IFparseTree *tree =
-                            IFparseTree::getTree(&nend, ckt, xalias);
-                        if (!tree) {
-                            if (is_pwl) {
-                                const char *nn = nend;
-                                char *tok = IP.getTok(&nend, true);
-                                if (tok) {
-                                    if (ac <= 2) {
-                                        // Allow an arbitrary vector
-                                        // name (which may not exist
-                                        // yet) for the first two
-                                        // tokens of pwl.  This is a
-                                        // new feature.
-
-                                        delete [] tok;
-                                        continue;
-                                    }
-                                
-                                    if (!strcasecmp(tok, "r") ||
-                                            !strcasecmp(tok, "td")) {
-                                        // Support the Hspice syntax
-                                        //  [R [[=] num]] [TD [=] num] 
-
-                                        delete [] tok;
-                                        continue;
-                                    }
-                                }
-                                nend = nn;
-                                delete [] tok;
-                            }
-                            break;
-                        }
-                        delete tree;
-                    }
-                    while (s < nend)
-                        *t++ = *s++;
-                    while (isspace(*(t-1))) {
-                        t--;
-                        s--;
-                    }
-
-                    if (*nend == ')') {
-                        // See if we really need new closure, user
-                        // might have simply forgotton the first one
-
-                        int cnt = 1;
-                        for (const char *tt = line; tt <= nend; tt++) {
-                            if (*tt == '(')
-                                cnt++;
-                            else if (*tt == ')')
-                                cnt--;
-                        }
-                        if (cnt > 0)
-                            *t++ = ')';
-                    }
-                    else
-                        *t++ = ')';
-
-                    nend = t;
-                    while (*s)
-                        *t++ = *s++;
-                    *t = 0;
-                    delete [] nline;
-                    nline = nstr;
-                    line = nline;
-                }
-            }
-            delete [] parm;
-        }
-        return (nline);
-    }
-
-
     // POLY(N) converter.  Changes the poly specification into a
     // polynomial, which is subsequently parsed in src_parse().
     //

@@ -123,8 +123,24 @@ Added options to dump command:
 -r  show reordered matrix
 -t  terse, don't show header.
 
-TOD):  Make sure WRspice cleans all files/directories under /tmp.  It
+TODO:  Make sure WRspice cleans all files/directories under /tmp.  It
 apparently does not.
+
+NEW:  rewrote tran function code, now uses separate polymorphic structs,
+separate parse funcs, etc.  Much cleaner.
+
+GPULSE now handles additional delay arguments creating separate pulse
+trains, same as PULSE.
+
+PULSE and GPULSE now accept HSPICE-style "bstring" arguments that control
+per-period on/off.
+
+pulse ... [ bstring_elt [...]]
+bstring_elt: bstring [r[=N]} [rb=M]
+bstring: string starting with 'b', chars that follow are interpreted as "on"
+or "off", off = 0,f,n,F,N  anything else is "on",  r == repeat count, -1
+repeat forever.  rb is 1-based starting bit for repeat.
+
 
 
 ToDo:
