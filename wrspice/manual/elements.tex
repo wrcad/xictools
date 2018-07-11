@@ -1954,12 +1954,22 @@ well.
 \index{pulse specification}
 \index{pulse tran function}
 
-% spSources.hlp:pulse 012509
+% spSources.hlp:pulse 071018
 
-\spgen{pulse({\it v1 v2} [{\it td tr tf pw per td1 td2} ... ])}
+\spgen{pulse({\it v1 v2} [{\it td tr tf pw per td1 td2} ...]
+  [{\it pattern\_spec}])}
 \spexamp{vin 3 0 pulse(-1 1 2ns 2ns 2ns 50ns 100ns)\\
 vin1 1 0 pulse(0 1 2n .5n .5n 1n 0 6n 10n)\\
 v2 4 0 v(1)*pulse(0 1 5n 10n)}
+
+This function applies only to transient analysis, where time is the
+running variable.  When referring to default values, {\vt tstep} is
+the printing increment and {\vt tstop} is the final time in transient
+analysis.
+
+The following are the numerical parameters, the {\it pattern\_spec} is
+used to specify a patterned pulse train and the syntax will be
+described separately below.
 
 \begin{quote}
 \begin{tabular}{|l|l|l|l|} \hline
@@ -1975,10 +1985,23 @@ v2 4 0 v(1)*pulse(0 1 5n 10n)}
 \end{tabular}
 \end{quote}
 
-If any of the parameters {\it td1, td2, ...\/} appear, the period is
-ignored, and the pulse is repeated for the delays {\it td1\/}, etc.  The
-output will be a superposition of these pulses.  A single pulse is
-described by the following table:
+The signal starts at value {\it v1} at {\vt time=0}.  At time {\it
+td\/}, the pulse begins, the value arriving linearly at {\it v2} after
+the rise time {\it tr\/}.  The value {\it v2} is maintained for the
+pulse width time {\it pw\/}, then reverts linearly to value {\it v1}
+over the fall time {\it tf\/}.  If a period {\it per} is given and
+nonzero, a periodic train of pulses is produced, starting at {\it
+td\/}, with the second pulse starting at {\it td\/}+{\it per\/}, etc. 
+The minimum value for {\it per} is {\it tr\/}+{\it tf\/}+{\it pw\/},
+which is silently enforced.
+
+Numbers {\it td1\/}, {\it td2\/}, etc.  following {\it per} are taken
+as additional delay values (similar to {\it td\/}) and a pulse will
+start at each given value.  These will actually be superposed periodic
+pulse trains if {\it per} is nonzero (it must be given in any case
+when using the additional delays).
+
+A single pulse so specified is described by the following table:
 \begin{quote}
 \begin{tabular}{ll}
 
@@ -2001,20 +2024,84 @@ describes a voltage which, starting from 0, begins rising at 2
 nanoseconds, reaching 1 volt at 4 nanoseconds, and remains at that
 value.
 
-This function applies only to transient analysis, where time is the
-running variable.  When referring to default values, {\vt tstep} is
-the printing increment and {\vt tstop} is the final time in transient
-analysis, see \ref{tranline} for explanation.
+\subsubsection{Pattern Generation}
+\label{pattern}
+\index{pattern specification}
+
+The transient {\vt pulse} and {\vt gpulse} functions support a
+pattern-specification language borrowed from the pattern source of
+HSPICE.  This applies only when a period is given so that the source
+would provide periodic output.  The {\it pattern\_spec} must appear
+after the additional delay numbers, if any.  The patterning enables
+the user to select in which periods a pulse is actually generated, and
+applies to all periodic trains if additional delays are given.
+
+The {\it pattern\_spec} consists of one or more ``bstrings'', each of
+which can have modifying options.
+
+\begin{quote}
+{\vt b}{\it data} [{\vt r}[{\vt =}{\it rpt\/}]] [{\vt rb}{\vt =}{\it bit\/}] ...
+\end{quote}
+
+The first token is the bstring, which must start with the letter `{\vt
+b}' (case insensitive) and continues for arbitrary length with 0 and 1
+to indicate the presence or absence of a pulse in each period frame,
+traversing left to right.  Actually, the characters {\vt 0,f,F,n,N}
+are taken as `{\vt 0}', anything else is taken as '{\vt 1}'.  Note
+that the HSPICE {\vt m} (intermediate value) and {\vt z}
+(disconnected) are not currently supported.
+
+A bstring can be followed by up to one each of two case-insensitive
+options.
+\begin{description}
+\item{\vt r} [{\vt =} {\it rpt\/}]\\
+This provides a repetition count.  If an integer follows the literal
+`{\vt r}', it is taken as the repetition count.  White space and an
+equal sign can be included, and will be ignored.  If no number is
+given, 1 is assumed, i.e., the pattern will repeat once.  If {\vt r}
+is not given, there will be no repetition.  If the number given is
+negative, the pattern will continue repeating indefinitely.
+
+\item{rb} {\vt =} {\it bit\/}\\
+The {\it bit} is an integer ranging from 1 to the length of the
+bstring pattern, and indicates the start point for repetitions, if
+any.  If not given, the effective value is 1, indicating that the
+entire pattern repeats.  An integer must follow {\vt rb}, white space
+and an equal sign will be ignored.
+\end{description}
+
+An arbitrary number of bstrings with options can appear in the
+specification, the result from each bstring with options will be
+concatenated.  If indefinite repetition is specified for a bstring,
+any bstrings that follow will be ignored.
+
+Example:\\
+{\vt b101101 r=1 rb=2 b000111}
+\begin{quote}
+\begin{itemize}
+\item{emit 101101}
+\item{repeat once starting at bit 2: 01101}
+\item{emit 000111}
+\end{itemize}
+\end{quote}
 
 \subsubsection{Gaussian Pulse}
 \index{gaussian pulse specification}
 \index{gpulse tran function}
 
-% spSources.hlp:gpulse 022818
+% spSources.hlp:gpulse 071018
 
-\spgen{gpulse({\it v1 v2 td pw per td1 td2} ... )}
+\spgen{gpulse([{\it v1 v2 td pw per td1 td2} ...]
+ [{\it pattern\_spec\/}])}
 \spexamp{vsfq 0 0 gpulse(0 0 20p 2p 0 40p 60p)\\
 vpulse 1 0 gpulse(0 1 100p 5p 100p)}
+
+This generates a gaussian pulse signal, and as a special case, as a
+voltage source will generate single flux quantum (SFQ) pulses.  This
+function applies only to transient analysis, where time is the running
+variable.  The following are the numerical parameters, the {\it
+pattern\_spec} is used to specify a patterned pulse train and the
+syntax is described in \ref{pattern}.
 
 \begin{quote}
 \begin{tabular}{|l|l|l|l|} \hline
@@ -2027,9 +2114,6 @@ vpulse 1 0 gpulse(0 1 100p 5p 100p)}
 {\it per} & period & 0.0 & seconds\\ \hline
 \end{tabular}
 \end{quote}
-
-This generates a gaussian pulse signal, and as a special case, as a
-voltage source will generate single flux quantum (SFQ) pulses.
 
 {\bf Warning:} The pulse width is interpreted as the full-width
 half-maximum in release 4.3.3 and later.  In earlier releases, this
@@ -2052,9 +2136,18 @@ The {\it td} delay value specifies the time of the initial pulse peak.
 The {\it pw} defines the pulse width, as described above.  If the {\it
 per} is given a nonzero value larger than twice the {\it pw}, a train
 of pulses will be generated, the first being at {\it td} and at time
-increments of {\it per} thereafter.  A {\it per} explicitly zero can
-be followed by any number of time values.  A pulse will be generated
-to peak at each of these values, in addition to the {\it td} value.
+increments of {\it per} thereafter.
+
+Numbers found after the {\it per} are taken as additional delays,
+similar to {\it td\/}.  The output is a superposition of pulses found
+at each delay value (including {\it td\/}).  If the {\it per} is given
+a value 0.0, only one pulse per delay value is emitted.  If the {\it
+per} specifies a viable period, pulses are emitted at each delay value
+and increments of {\it per\/}.
+
+Periodic pulses can be set to a pattern via the {\it pattern\_spec},
+which can appear following all delay values, if any.  The syntax is
+described in \ref{pattern}.
 
 A single flux quantum (SFQ) pulse, as a voltage applied across an
 inductor, will induce a single flux quantum of
