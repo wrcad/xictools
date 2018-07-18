@@ -73,9 +73,23 @@ INDdev::setup(sGENmodel *genmod, sCKT *ckt, int* states)
 {
     for (sINDmodel *model = static_cast<sINDmodel*>(genmod);
             model; model = model->next()) {
+        if (!model->INDmGiven)
+            model->INDm = 1.0;
+        else if (model->INDm < 1e-3 || model->INDm > 1e3) {
+            DVO.textOut(OUT_FATAL,
+                "%s: M value out or range [1e-3,1e3].", model->GENmodName);
+            return (E_BADPARM);
+        }
+
         sINDinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
-            
+            if (!inst->INDmGiven)
+                inst->INDm = model->INDm;
+            else if (inst->INDm < 1e-3 || inst->INDm > 1e3) {
+                DVO.textOut(OUT_FATAL,
+                    "%s: M value out or range [1e-3,1e3].", inst->GENname);
+                return (E_BADPARM);
+            }
             if (inst->INDbrEq == 0 && (inst->INDposNode || inst->INDnegNode)) {
                 // SRW -- used to call this ...#internal, changed for
                 // compatability with voltage sources, i.e. i(l1) maps
@@ -135,7 +149,7 @@ INDdev::setup(sGENmodel *genmod, sCKT *ckt, int* states)
                 continue;
             }
 
-            inst->INDinduct = inst->INDnomInduct;
+            inst->INDinduct = inst->INDnomInduct/inst->INDm;
 
             if (!inst->INDtree)
                 continue;
@@ -214,8 +228,6 @@ INDdev::setup(sGENmodel *genmod, sCKT *ckt, int* states)
                 // the inductors are nonlinear.
 
                 inst->MUTfactor = 0.0;
-                    // inst->MUTcoupling *
-                    // sqrt(inst->MUTind1->INDinduct * inst->MUTind2->INDinduct);
 
                 error = get_mut_node_ptr(ckt, inst);
                 if (error != OK)

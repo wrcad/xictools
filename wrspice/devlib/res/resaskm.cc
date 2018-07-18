@@ -87,6 +87,9 @@ RESdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case RES_MOD_NOISE:
         value->rValue = model->RESnoise;
         break;
+    case RES_MOD_M:
+        value->rValue = model->RESm;
+        break;
     case RES_MOD_KF:
         value->rValue = model->RESkf;
         break;

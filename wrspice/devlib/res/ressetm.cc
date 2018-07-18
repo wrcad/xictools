@@ -55,6 +55,8 @@ RESdev::setModl(int param, IFdata *data, sGENmodel *genmod)
     IFvalue *value = &data->v;
 
     switch (param) {
+    case RES_MOD_R:
+        break;
     case RES_MOD_RSH:
         model->RESsheetRes = value->rValue;
         model->RESsheetResGiven = true;
@@ -95,6 +97,10 @@ RESdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->RESnoise = value->rValue;
         model->RESnoiseGiven = true;
         break;
+    case RES_MOD_M:
+        model->RESm = value->rValue;
+        model->RESmGiven = true;
+        break;
     case RES_MOD_KF:
         model->RESkf = value->rValue;
         model->RESkfGiven = true;
@@ -114,8 +120,6 @@ RESdev::setModl(int param, IFdata *data, sGENmodel *genmod)
     case RES_MOD_LF:
         model->RESlf = value->rValue;
         model->RESlfGiven = true;
-        break;
-    case RES_MOD_R:
         break;
     default:
         return (E_BADPARM);

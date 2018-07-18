@@ -58,6 +58,7 @@ INDdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         0, // notused
         &&L_IND_IND,
         &&L_IND_IC,
+        &&L_IND_M,
         &&L_IND_POLY,
         &&L_IND_FLUX,
         &&L_IND_VOLT,
@@ -90,6 +91,9 @@ INDdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         return (OK);
     L_IND_IC:    
         data->v.rValue = inst->INDinitCond;
+        return (OK);
+    L_IND_M:    
+        data->v.rValue = inst->INDm;
         return (OK);
     L_IND_POLY:
         data->type = IF_REALVEC;
@@ -145,6 +149,9 @@ INDdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         break;
     case IND_IC:    
         data->v.rValue = inst->INDinitCond;
+        break;
+    case IND_M:    
+        data->v.rValue = inst->INDm;
         break;
     case IND_POLY:
         data->type = IF_REALVEC;

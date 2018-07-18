@@ -127,6 +127,7 @@ public:
     bool getMod(sLine*, sCKT*, const char*, const char*, sINPmodel**);
     bool lookMod(const char*);
     void parseMod(sLine*);
+    void parseDefMod(sLine*, sCKT*);
     bool checkKey(char, int);
 
     // inptran.cc

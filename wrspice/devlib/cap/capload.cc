@@ -56,7 +56,7 @@ namespace {
         int ret = inst->CAPtree->eval(&C, inst->CAPvalues, 0);
         END_EVAL
         if (ret == OK)
-            inst->CAPcapac = C * inst->CAPtcFactor;
+            inst->CAPcapac = C * inst->CAPtcFactor * inst->CAPm;
         return (ret);
     }
 
@@ -69,7 +69,29 @@ namespace {
             V0 *= V;
             C += inst->CAPpolyCoeffs[i]*V0;
         }
-        inst->CAPcapac = C * inst->CAPtcFactor;
+        inst->CAPcapac = C * inst->CAPtcFactor * inst->CAPm;
+    }
+
+    inline void load_cap(sCKT *ckt, sCAPinstance *inst)
+    {
+        double geq = inst->CAPgeq;
+        double ceq = inst->CAPceq;
+        if (inst->CAPposNode == 0) {
+            ckt->ldadd(inst->CAPnegNegptr, geq);
+            ckt->rhsadd(inst->CAPnegNode, ceq);
+            return;
+        }
+        if (inst->CAPnegNode == 0) {
+            ckt->ldadd(inst->CAPposPosptr, geq);
+            ckt->rhsadd(inst->CAPposNode, -ceq);
+            return;
+        }
+        ckt->ldadd(inst->CAPposPosptr, geq);
+        ckt->ldadd(inst->CAPnegNegptr, geq);
+        ckt->ldadd(inst->CAPposNegptr, -geq);
+        ckt->ldadd(inst->CAPnegPosptr, -geq);
+        ckt->rhsadd(inst->CAPposNode, -ceq);
+        ckt->rhsadd(inst->CAPnegNode, ceq);
     }
 }
 
@@ -105,22 +127,7 @@ CAPdev::load(sGENinstance *in_inst, sCKT *ckt)
         ckt->integrate(inst->CAPqcap, inst->CAPceq);
         inst->CAPceq = ckt->find_ceq(inst->CAPqcap);
 
-        if (inst->CAPposNode == 0) {
-            ckt->ldadd(inst->CAPnegNegptr, inst->CAPgeq);
-            ckt->rhsadd(inst->CAPnegNode, inst->CAPceq);
-            return (OK);
-        }
-        if (inst->CAPnegNode == 0) {
-            ckt->ldadd(inst->CAPposPosptr, inst->CAPgeq);
-            ckt->rhsadd(inst->CAPposNode, -inst->CAPceq);
-            return (OK);
-        }
-        ckt->ldadd(inst->CAPposPosptr, inst->CAPgeq);
-        ckt->ldadd(inst->CAPnegNegptr, inst->CAPgeq);
-        ckt->ldadd(inst->CAPposNegptr, -inst->CAPgeq);
-        ckt->ldadd(inst->CAPnegPosptr, -inst->CAPgeq);
-        ckt->rhsadd(inst->CAPposNode, -inst->CAPceq);
-        ckt->rhsadd(inst->CAPnegNode, inst->CAPceq);
+        load_cap(ckt, inst);
         return (OK);
     }
 
@@ -143,22 +150,7 @@ CAPdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->CAPgeq = ckt->CKTag[0] * inst->CAPcapac;
         inst->CAPceq = ckt->find_ceq(inst->CAPqcap);
 
-        if (inst->CAPposNode == 0) {
-            ckt->ldadd(inst->CAPnegNegptr, inst->CAPgeq);
-            ckt->rhsadd(inst->CAPnegNode, inst->CAPceq);
-            return (OK);
-        }
-        if (inst->CAPnegNode == 0) {
-            ckt->ldadd(inst->CAPposPosptr, inst->CAPgeq);
-            ckt->rhsadd(inst->CAPposNode, -inst->CAPceq);
-            return (OK);
-        }
-        ckt->ldadd(inst->CAPposPosptr, inst->CAPgeq);
-        ckt->ldadd(inst->CAPnegNegptr, inst->CAPgeq);
-        ckt->ldadd(inst->CAPposNegptr, -inst->CAPgeq);
-        ckt->ldadd(inst->CAPnegPosptr, -inst->CAPgeq);
-        ckt->rhsadd(inst->CAPposNode, -inst->CAPceq);
-        ckt->rhsadd(inst->CAPnegNode, inst->CAPceq);
+        load_cap(ckt, inst);
         return (OK);
     }
 
@@ -212,12 +204,7 @@ CAPdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->CAPgeq = ckt->CKTag[0] * inst->CAPcapac;
         inst->CAPceq = ckt->find_ceq(inst->CAPqcap);
 
-        ckt->ldadd(inst->CAPposPosptr, inst->CAPgeq);
-        ckt->ldadd(inst->CAPnegNegptr, inst->CAPgeq);
-        ckt->ldadd(inst->CAPposNegptr, -inst->CAPgeq);
-        ckt->ldadd(inst->CAPnegPosptr, -inst->CAPgeq);
-        ckt->rhsadd(inst->CAPposNode, -inst->CAPceq);
-        ckt->rhsadd(inst->CAPnegNode, inst->CAPceq);
+        load_cap(ckt, inst);
     }
     return (OK);
 }

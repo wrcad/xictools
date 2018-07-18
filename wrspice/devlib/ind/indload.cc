@@ -56,7 +56,7 @@ namespace {
         int ret = inst->INDtree->eval(&L, inst->INDvalues, 0);
         END_EVAL
         if (ret == OK)
-            inst->INDinduct = L;
+            inst->INDinduct = L/inst->INDm;
         return (ret);
     }
 
@@ -69,7 +69,7 @@ namespace {
             I0 *= I;
             L += inst->INDpolyCoeffs[i]*I0;
         }
-        inst->INDinduct = L;
+        inst->INDinduct = L/inst->INDm;
     }
 }
 

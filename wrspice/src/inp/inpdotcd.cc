@@ -163,8 +163,8 @@ SPinput::parseDot(sCKT *ckt, sTASK *task, sLine *curline)
         delete [] token;
         return (false);
     }
-    if (lstring::eq(token, MOSMAP_KW)) {
-        // Also handled in pass 1.
+    if (lstring::eq(token, MOSMAP_KW) || lstring::eq(token, DEFMOD_KW)) {
+        // Handled in pass 1.
         delete [] token;
         return (false);
     }

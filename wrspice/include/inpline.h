@@ -126,6 +126,7 @@ enum CBLK_TYPE { CBLK_EXEC, CBLK_CTRL, CBLK_POST };
 #define OPT_KW      ".opt"
 #define TABLE_KW    ".table"
 #define MOSMAP_KW   ".mosmap"
+#define DEFMOD_KW   ".defmod"
 
 #define AC_KW       ".ac"
 #define DC_KW       ".dc"

@@ -51,37 +51,51 @@ Authors: 1985 Thomas L. Quarles
 namespace {
 
 IFparm INDpTable[] = {
-IO("inductance",        IND_IND,            IF_PARSETREE|IF_IND|IF_AC|IF_PRINCIPAL,
+IO("inductance",    IND_IND,        IF_PARSETREE|IF_IND|IF_AC|IF_PRINCIPAL,
                 "Inductance"),
-IO("ind",               IND_IND,            IF_PARSETREE|IF_IND|IF_AC|IF_PRINCIPAL|IF_REDUNDANT,
+IO("ind",       IND_IND,  IF_PARSETREE|IF_IND|IF_AC|IF_PRINCIPAL|IF_REDUNDANT,
                 "Inductance"),
-IO("ic",                IND_IC,             IF_REAL|IF_AMP|IF_AC,
+IO("l",         IND_IND,  IF_PARSETREE|IF_IND|IF_AC|IF_PRINCIPAL|IF_REDUNDANT,
+                "Inductance"),
+IO("ic",            IND_IC,             IF_REAL|IF_AMP|IF_AC,
                 "Initial condition (inductor current"),
-IO("poly",              IND_POLY,           IF_REALVEC,
+IO("m",             IND_M,               IF_REAL,
+                "Parallel multiplier"),
+IO("poly",          IND_POLY,           IF_REALVEC,
                 "Inductance polynomial"),
-OP("flux",              IND_FLUX,           IF_REAL|IF_FLUX,
+OP("flux",          IND_FLUX,           IF_REAL|IF_FLUX,
                 "Inductor flux"),
-OP("v",                 IND_VOLT,           IF_REAL|IF_VOLT,
+OP("v",             IND_VOLT,           IF_REAL|IF_VOLT,
                 "Inductor voltage"),
-OP("i",                 IND_CURRENT,        IF_REAL|IF_AMP,
+OP("i",             IND_CURRENT,        IF_REAL|IF_AMP,
                 "Inductor current"),
-OP("c",                 IND_CURRENT,        IF_REAL|IF_AMP|IF_REDUNDANT,
+OP("c",             IND_CURRENT,        IF_REAL|IF_AMP|IF_REDUNDANT,
                 "Inductor current"),
-OP("p",                 IND_POWER,          IF_REAL|IF_POWR,
+OP("p",             IND_POWER,          IF_REAL|IF_POWR,
                 "Instantaneous stored power"),
-OP("node1",             IND_POSNODE,        IF_INTEGER,
+OP("node1",         IND_POSNODE,        IF_INTEGER,
                 "Node 1 number"),
-OP("node2",             IND_NEGNODE,        IF_INTEGER,
+OP("node2",         IND_NEGNODE,        IF_INTEGER,
                 "Node 2 number"),
-OP("expr",              IND_TREE,           IF_PARSETREE,
+OP("expr",          IND_TREE,           IF_PARSETREE,
                 "Inductance expression")
 };
 
-// no model parameters
+IFparm INDmPTable[] = {
+IP("l",             IND_MOD_L,          IF_FLAG,
+                "Inductor model"),
+IO("m",             IND_MOD_M,          IF_REAL,
+                "Default parallel multiplier")
+};
 
 const char *INDnames[] = {
     "L+",
     "L-"
+};
+
+const char *INDmodNames[] = {
+    "l",
+    0
 };
 
 IFkeys INDkeys[] = {
@@ -101,13 +115,13 @@ INDdev::INDdev()
 
     dv_levels[0] = 1;
     dv_levels[1] = 0;
-    dv_modelKeys = 0;
+    dv_modelKeys = INDmodNames;
 
     dv_numInstanceParms = NUMELEMS(INDpTable);
     dv_instanceParms = INDpTable;
 
-    dv_numModelParms = 0;
-    dv_modelParms = 0;
+    dv_numModelParms = NUMELEMS(INDmPTable);;
+    dv_modelParms = INDmPTable;;
 
     dv_flags = DV_TRUNC;
 };
@@ -157,7 +171,7 @@ void
 INDdev::parse(int type, sCKT *ckt, sLine *current)
 {
     DEV.parse(ckt, current, type, dv_keys->minTerms, dv_keys->maxTerms,
-        false, "inductance");
+        true, "inductance");
 }
 
 

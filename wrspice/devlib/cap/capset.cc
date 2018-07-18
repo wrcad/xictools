@@ -77,12 +77,28 @@ CAPdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         if (!model->CAPnarrowGiven)
             model->CAPnarrow = 0;
 
+        if (!model->CAPmGiven)
+            model->CAPm = 1.0;
+        else if (model->CAPm < 1e-3 || model->CAPm > 1e3) {
+            DVO.textOut(OUT_FATAL,
+                "%s: M value out or range [1e-3,1e3].", model->GENmodName);
+            return (E_BADPARM);
+        }
+
         sCAPinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
             // Default Value Processing for Capacitor Instance
             if (!inst->CAPlengthGiven)
                 inst->CAPlength = 0;
+
+            if (!inst->CAPmGiven)
+                inst->CAPm = model->CAPm;
+            else if (inst->CAPm < 1e-3 || inst->CAPm > 1e3) {
+                DVO.textOut(OUT_FATAL,
+                    "%s: M value out or range [1e-3,1e3].", inst->GENname);
+                return (E_BADPARM);
+            }
 
             inst->CAPqcap = *states;
             *states += 2;

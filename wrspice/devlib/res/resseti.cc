@@ -62,6 +62,7 @@ RESdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_RES_TC1,
         &&L_RES_TC2,
         &&L_RES_NOISE,
+        &&L_RES_M,
         &&L_RES_POLY};
         // &&L_RES_CONDUCT,
         // &&L_RES_VOLTAGE,
@@ -139,6 +140,10 @@ RESdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->RESnoise = value->rValue;
         inst->RESnoiseGiven = true;
         return (OK);
+    L_RES_M:
+        inst->RESm = value->rValue;
+        inst->RESmGiven = true;
+        return (OK);
     L_RES_POLY:
         {
             int nv = value->v.numValue;
@@ -209,6 +214,10 @@ RESdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case RES_NOISE:
         inst->RESnoise = value->rValue;
         inst->RESnoiseGiven = true;
+        break;
+    case RES_M:
+        inst->RESm = value->rValue;
+        inst->RESmGiven = true;
         break;
     case RES_POLY:
         {

@@ -53,9 +53,7 @@ RESdev::loadTest(sGENinstance *in_inst, sCKT *ckt)
 {
 #ifdef USE_PRELOAD
     if (!(ckt->CKTmode & MODEAC)) {
-        sRESinstance *inst = (sRESinstance*)in_inst;
-        if (!inst->RESpolyCoeffs && (!inst->REStree ||
-                inst->REStree->num_vars() == 0))
+        if (((sRESinstance*)in_inst)->RESusePreload)
             return (~OK);
     }
 #else
@@ -64,22 +62,6 @@ RESdev::loadTest(sGENinstance *in_inst, sCKT *ckt)
 #endif
     return (OK);
 }
-
-
-#ifdef NEWJJDC
-namespace {
-    enum { GND, PHASE, VOLT };
-    int nodetype(sCKT *ckt, int nnum)
-    {
-        if (nnum <= 0)
-            return (GND);
-        sCKTnode *nd = ckt->CKTnodeTab.find(nnum);
-        if (!nd)
-            return (VOLT);  // shouldn't happen
-        return (nd->phase() ? PHASE : VOLT);
-    }
-}
-#endif
 
 
 int
@@ -104,30 +86,64 @@ RESdev::load(sGENinstance *in_inst, sCKT *ckt)
             gmax = RES_GMAX;
 
         inst->RESresist = R;
-        double G = 1.0/(R * inst->REStcFactor);
+        double sc = inst->RESm/inst->REStcFactor;
+        double G = sc/R;
         if (G > gmax)
             G = gmax;
         else if (G < -gmax)
             G = -gmax;
         inst->RESconduct = G;
+        double F = G*G*vres/sc;
+        double fderiv = F * D;
+        double rhs = vres*fderiv;
+
+#ifdef NEWJJDC
+        if ((ckt->CKTmode & MODEDC) && ckt->CKTjjDCphase) {
+            int ntpos = nodetype(ckt, inst->RESposNode);
+            int ntneg = nodetype(ckt, inst->RESnegNode);
+            if (ntpos != VOLT && ntneg != VOLT) {
+                // Load GMIN otherwise matrix might be singular.
+                ckt->ldadd(inst->RESposPosptr, ckt->CKTcurTask->TSKgmin);
+                ckt->ldadd(inst->RESnegNegptr, ckt->CKTcurTask->TSKgmin);
+                ckt->ldadd(inst->RESposNegptr, ckt->CKTcurTask->TSKgmin);
+                ckt->ldadd(inst->RESnegPosptr, ckt->CKTcurTask->TSKgmin);
+                return (OK);
+            }
+            if (ntpos == VOLT && ntneg == PHASE) {
+                ckt->ldadd(inst->RESposPosptr, inst->RESconduct);
+                ckt->ldadd(inst->RESnegPosptr, -inst->RESconduct);
+                ckt->ldadd(inst->RESposPosptr, -fderiv);
+                ckt->ldadd(inst->RESnegPosptr, fderiv);
+                ckt->rhsadd(inst->RESposNode, -rhs);
+                return (OK);
+            }
+            if (ntpos == PHASE && ntneg == VOLT) {
+                ckt->ldadd(inst->RESnegNegptr, inst->RESconduct);
+                ckt->ldadd(inst->RESposNegptr, -inst->RESconduct);
+                ckt->ldadd(inst->RESnegNegptr, -fderiv);
+                ckt->ldadd(inst->RESposNegptr, fderiv);
+                ckt->rhsadd(inst->RESnegNode, rhs);
+                return (OK);
+            }
+            // Else none are PHASE, load normally.
+        }
+#endif
 
         ckt->ldadd(inst->RESposPosptr, G);
         ckt->ldadd(inst->RESnegNegptr, G);
         ckt->ldadd(inst->RESposNegptr, -G);
         ckt->ldadd(inst->RESnegPosptr, -G);
 
-        double F = inst->REStcFactor*G*G*vres;
-        double rhs = 0.0;
-        double fderiv = F * D;
-        rhs += vres*fderiv;
         ckt->ldadd(inst->RESposPosptr, -fderiv);
         ckt->ldadd(inst->RESnegNegptr, -fderiv);
         ckt->ldadd(inst->RESposNegptr, fderiv);
         ckt->ldadd(inst->RESnegPosptr, fderiv);
         ckt->rhsadd(inst->RESposNode, -rhs);
         ckt->rhsadd(inst->RESnegNode, rhs);
+
         if (ckt->CKTmode & MODEAC)
             inst->RESv = vres;
+        return (OK);
     }
     if (inst->REStree && inst->REStree->num_vars() > 0) {
         int numvars = inst->REStree->num_vars();
@@ -138,41 +154,97 @@ RESdev::load(sGENinstance *in_inst, sCKT *ckt)
         BEGIN_EVAL
         int ret = inst->REStree->eval(&R, inst->RESvalues, inst->RESderivs);
         END_EVAL
-        if (ret == OK) {
-            double gmax = ckt->CKTcurTask->TSKgmax;
-            if (gmax <= 0.0)
-                gmax = RES_GMAX;
-
-            inst->RESresist = R;
-            double G = 1.0/(R * inst->REStcFactor);
-            if (G > gmax)
-                G = gmax;
-            else if (G < -gmax)
-                G = -gmax;
-            inst->RESconduct = G;
-
-            ckt->ldadd(inst->RESposPosptr, G);
-            ckt->ldadd(inst->RESnegNegptr, G);
-            ckt->ldadd(inst->RESposNegptr, -G);
-            ckt->ldadd(inst->RESnegPosptr, -G);
-
-            double vres = *(ckt->CKTrhsOld + inst->RESposNode) - 
-                *(ckt->CKTrhsOld + inst->RESnegNode);
-            double F = inst->REStcFactor*G*G*vres;
-            double rhs = 0.0;
-            for (int j = 0, i = 0; i < numvars; i++) {
-                double fderiv = F * inst->RESderivs[i];
-                rhs += inst->RESvalues[i]*fderiv;
-                ckt->ldadd(inst->RESposptr[j++], -fderiv);
-                ckt->ldadd(inst->RESposptr[j++], fderiv);
-            }
-            ckt->rhsadd(inst->RESposNode, -rhs);
-            ckt->rhsadd(inst->RESnegNode, rhs);
-            if (ckt->CKTmode & MODEAC)
-                inst->RESv = vres;
-        }
-        else
+        if (ret != OK)
             return (ret);
+
+        double gmax = ckt->CKTcurTask->TSKgmax;
+        if (gmax <= 0.0)
+            gmax = RES_GMAX;
+
+        inst->RESresist = R;
+        double sc = inst->RESm/inst->REStcFactor;
+        double G = sc/R;
+        if (G > gmax)
+            G = gmax;
+        else if (G < -gmax)
+            G = -gmax;
+        inst->RESconduct = G;
+
+        double vres = *(ckt->CKTrhsOld + inst->RESposNode) - 
+            *(ckt->CKTrhsOld + inst->RESnegNode);
+        double F = G*G*vres/sc;
+        double rhs = 0.0;
+
+#ifdef NEWJJDC
+        if ((ckt->CKTmode & MODEDC) && ckt->CKTjjDCphase) {
+            int ntpos = nodetype(ckt, inst->RESposNode);
+            int ntneg = nodetype(ckt, inst->RESnegNode);
+            if (ntpos != VOLT && ntneg != VOLT) {
+                // Load GMIN otherwise matrix might be singular.
+                ckt->ldadd(inst->RESposPosptr, ckt->CKTcurTask->TSKgmin);
+                ckt->ldadd(inst->RESnegNegptr, ckt->CKTcurTask->TSKgmin);
+                ckt->ldadd(inst->RESposNegptr, ckt->CKTcurTask->TSKgmin);
+                ckt->ldadd(inst->RESnegPosptr, ckt->CKTcurTask->TSKgmin);
+                return (OK);
+            }
+            if (ntpos == VOLT && ntneg == PHASE) {
+                ckt->ldadd(inst->RESposPosptr, inst->RESconduct);
+                ckt->ldadd(inst->RESnegPosptr, -inst->RESconduct);
+                for (int j = 0, i = 0; i < numvars; i++) {
+                    if (inst->REStree->vars()[i].type == IF_NODE) {
+                        int n = inst->REStree->vars()[i].v.nValue->number();
+                        if (nodetype(ckt, n) != VOLT) {
+                            j += 2;
+                            continue;
+                        }
+                    }
+                    double fderiv = F * inst->RESderivs[i];
+                    rhs += inst->RESvalues[i]*fderiv;
+                    ckt->ldadd(inst->RESposptr[j++], -fderiv);
+                    j++;
+                }
+                ckt->rhsadd(inst->RESposNode, -rhs);
+                return (OK);
+            }
+            if (ntpos == PHASE && ntneg == VOLT) {
+                ckt->ldadd(inst->RESnegNegptr, inst->RESconduct);
+                ckt->ldadd(inst->RESposNegptr, -inst->RESconduct);
+                for (int j = 0, i = 0; i < numvars; i++) {
+                    if (inst->REStree->vars()[i].type == IF_NODE) {
+                        int n = inst->REStree->vars()[i].v.nValue->number();
+                        if (nodetype(ckt, n) != VOLT) {
+                            j += 2;
+                            continue;
+                        }
+                    }
+                    double fderiv = F * inst->RESderivs[i];
+                    rhs += inst->RESvalues[i]*fderiv;
+                    j++;
+                    ckt->ldadd(inst->RESposptr[j++], fderiv);
+                }
+                ckt->rhsadd(inst->RESnegNode, rhs);
+                return (OK);
+            }
+            // Else none are PHASE, load normally.
+        }
+#endif
+
+        ckt->ldadd(inst->RESposPosptr, G);
+        ckt->ldadd(inst->RESnegNegptr, G);
+        ckt->ldadd(inst->RESposNegptr, -G);
+        ckt->ldadd(inst->RESnegPosptr, -G);
+
+        for (int j = 0, i = 0; i < numvars; i++) {
+            double fderiv = F * inst->RESderivs[i];
+            rhs += inst->RESvalues[i]*fderiv;
+            ckt->ldadd(inst->RESposptr[j++], -fderiv);
+            ckt->ldadd(inst->RESposptr[j++], fderiv);
+        }
+        ckt->rhsadd(inst->RESposNode, -rhs);
+        ckt->rhsadd(inst->RESnegNode, rhs);
+
+        if (ckt->CKTmode & MODEAC)
+            inst->RESv = vres;
         return (OK);
     }
 
@@ -182,11 +254,12 @@ RESdev::load(sGENinstance *in_inst, sCKT *ckt)
             *(ckt->CKTrhsOld + inst->RESnegNode);
     }
 #ifdef USE_PRELOAD
-    else
+    else if (inst->RESusePreload) {
+        // The resistor list is sorted, we don't need to
+        // call load anymore, tell caller.
         return (LOAD_SKIP_FLAG);
-    // The resistor list is sorted, we don't need to
-    // call load anymore, tell caller.
-#else
+    }
+#endif
 
 #ifdef NEWJJDC
     if ((ckt->CKTmode & MODEDC) && ckt->CKTjjDCphase) {
@@ -218,7 +291,6 @@ RESdev::load(sGENinstance *in_inst, sCKT *ckt)
     ckt->ldadd(inst->RESnegNegptr, inst->RESconduct);
     ckt->ldadd(inst->RESposNegptr, -inst->RESconduct);
     ckt->ldadd(inst->RESnegPosptr, -inst->RESconduct);
-#endif
     return (OK);
 }
 

@@ -103,7 +103,12 @@ SPinput::pass1(sCKT *ckt, sLine *deck)
                 tablParse(l, ckt);
             else if (SPcx.kwMatchModel(thisline))
                 parseMod(l);
-            if (lstring::cimatch(MOSMAP_KW, thisline)) {
+            else if (lstring::cimatch(DEFMOD_KW, thisline)) {
+                // Handle .defmod, provide parameters for default R/L/C
+                // models.
+                parseDefMod(l, ckt);
+            }
+            else if (lstring::cimatch(MOSMAP_KW, thisline)) {
 
                 // Handle .mosmap here.  This is a WRspice feature that
                 // allows MOS model level mapping.  Syntax is

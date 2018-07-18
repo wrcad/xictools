@@ -330,6 +330,293 @@ SPinput::parseMod(sLine *curline)
 }
 
 
+namespace {
+    // These are BJT model parameters used in HSPICE extensions, that
+    // have no equivalence here.
+    //
+    const char *hspice_bjt_unused[] = {
+        "iss",
+        "ns",
+        "tlev",
+        "tlevc",
+        "update",
+        0
+    };
+
+    // These are MOS model parameters used in HSPICE extensions, that
+    // have no equivalence here.
+    //
+    const char *hspice_mos_unused[] = {
+        "binflag",
+        "scalm",
+        "scale",
+        "lref",
+        "wref",
+        "xw",
+        "xl",
+        "acm",
+        "calcacm",
+        "cjgate",
+        "hdif",
+        "ldif",
+        "rdc",
+        "rd",
+        "rsc",
+        "rs",
+        "wmlt",
+        "lmlt",
+        "capop",
+        "cta",
+        "ctp",
+        "pta",
+        "ptp",
+        "tlev",
+        "tlevc",
+        "alpha",
+        "lalpha",
+        "walpha",
+        "vcr",
+        "lvcr",
+        "wvcr",
+        "iirat",
+        "dtemp",
+        "nds",
+        "vnds",
+        "sfvtflag",
+        0
+    };
+}
+
+
+// Parse a .defmod line, this sets parameters for the default models
+// in WRspice.
+//
+void
+SPinput::parseDefMod(sLine *curline, sCKT *ckt)
+{
+    const char *line = curline->line();
+    delete [] getTok(&line, true);  // throw away '.defmod'
+
+    const char *mname = getTok(&line, true);
+    if (!mname) {
+        logError(curline, ".DEFMOD with no model name - ignored");
+        return;
+    }
+    IFuid nmuid;
+    int err = ckt->newUid(&nmuid, 0, mname, UID_MODEL);
+    if (err != OK) {
+        logError(curline, "internal error, failed to create UID");
+        delete [] mname;
+        return;
+    }
+    delete [] mname;
+    mname = (const char*)nmuid;
+
+    int type = -1;
+    IFdevice *dev = 0;
+    for (int i = 0; i < DEV.numdevs(); i++) {
+        dev = DEV.device(i);
+        if (dev->modkeyMatch(mname)) {
+            type = i;
+            break;
+        }
+    }
+    if (type < 0) {
+        logError(curline, "no model type %s, .DEFMOD line ignored",
+            (const char*)nmuid);
+        return;
+    }
+
+    // Devices with default models must have fixed terminal number.
+    IFkeys *k = dev->keyMatch(*mname);
+    if (k->minTerms != k->maxTerms) {
+        logError(curline, "no default model for %s, .DEFMOD line ignored",
+            (const char*)nmuid);
+        return;
+    }
+
+    sGENmodel *mdfast;
+    sCKTmodItem *mx = ckt->CKTmodels.find(type);
+    if (mx && mx->default_model)  
+        mdfast = mx->default_model;
+    else {
+        // create default model
+        sGENmodel *m;
+        err = ckt->newModl(type, &m, nmuid);
+        IP.logError(curline, err);
+        if (!mx) {
+            // newModl should have created this
+            mx = ckt->CKTmodels.find(type);
+        }
+        if (mx)
+            mx->default_model = m;
+        mdfast = m;
+    }
+
+    bool lpnf = false;
+    const char *msgfmt = "Messages from model %s instantiation follow";
+    bool didsep = false;
+
+    bool hs_silent = Sp.HspiceFriendly();
+
+    // The first "parameter" is the built-in model name.  This is
+    // always an IF_FLAG, and is a no-op/consistency check except
+    // for npn/pnp, nmos/pmos, etc.
+    //
+    // Here we enforce a flag value, which is a hack for adms
+    // compiled Verilog which does not have a flag datatype and
+    // sets the model name parameter to IF_INTEGER.
+
+    bool first = true;
+    char *parm = lstring::copy(mname);
+    while (parm) {
+        IFparm *p = dev->findModelParm(parm, first ? IF_ASK | IF_SET : IF_SET);
+        if (p) {
+            IFdata data;
+            data.type = first ? IF_FLAG : p->dataType;
+            if (!getValue(&line, &data, ckt)) {
+                if (!didsep) {
+                    didsep = true;
+                    logError(curline, msgfmt, mname);
+                }
+                logError(curline, E_PARMVAL, p->keyword);
+                delete [] parm;
+                return;
+            }
+
+            err  = mdfast->setParam(p->id, &data);
+            if (err) {
+                if (!didsep) {
+                    didsep = true;
+                    logError(curline, msgfmt, mname);
+                }
+                logError(curline, err, p->keyword);
+                delete [] parm;
+                return;
+            }
+            lpnf = false;
+        } 
+        else
+            lpnf = true;
+        first = false;
+        if (p) {
+            delete [] parm;
+            parm = getTok(&line, true);
+            continue;
+        }
+
+        const char *ptmp = parm;
+        if (lpnf && SPnum.parse(&ptmp, false)) {
+            // If the last param wasn't found, don't whine about
+            // the following number.
+
+            lpnf = false;
+            delete [] parm;
+            parm = getTok(&line, true);
+            continue;
+        }
+
+        if (lstring::cieq(parm, "level")) {
+            // Presently, we can't accept non-default LEVEL.
+
+            IFdata data;
+            data.type = IF_REAL;
+            if (!getValue(&line, &data, ckt)) {
+                if (!didsep) {
+                    didsep = true;
+                    logError(curline, msgfmt, mname);
+                }
+                logError(curline, E_PARMVAL, parm);
+                delete [] parm;
+                return;
+            }
+            if (data.v.rValue != 0.0) {
+                if (!didsep) {
+                    didsep = true;
+                    logError(curline, msgfmt, mname);
+                }
+                logError(curline, "nonzero LEVEL parameter given in .DEFMOD");
+                delete [] parm;
+                return;
+            }
+            lpnf = false;
+            delete [] parm;
+            parm = getTok(&line, true);
+            continue;
+        }
+
+        bool found = false;
+        if (dev->isMOS()) {
+            if (lstring::cieq(parm, "lmin") ||
+                    lstring::cieq(parm, "lmax") ||
+                    lstring::cieq(parm, "wmin") ||
+                    lstring::cieq(parm, "wmax")) {
+                // Can't accept binning parameters.
+                // 
+                logError(curline,
+                    "can;t accept binning parameter %s in .DEFMOD", parm);
+                delete [] parm;
+                return;
+            }
+
+            // Check if this is an HSPICE parameter that we don't
+            // handle.
+            for (const char **s = hspice_mos_unused; *s; s++) {
+                if (lstring::cieq(parm, *s)) {
+                    if (!hs_silent) {
+                        if (!didsep) {
+                            didsep = true;
+                            logError(curline, msgfmt, mname);
+                        }
+                        logError(curline,
+                        "HSPICE MOS parameter %s not handled, ignored",
+                            parm);
+                    }
+                    found = true;
+                    break;
+                }
+            }
+        }
+        else if (dev->isBJT()) {
+
+            // Check if this is an HSPICE parameter that we don't
+            // handle.
+            for (const char **s = hspice_bjt_unused; *s; s++) {
+                if (lstring::cieq(parm, *s)) {
+                    if (!hs_silent) {
+                        if (!didsep) {
+                            didsep = true;
+                            logError(curline, msgfmt, mname);
+                        }
+                        logError(curline,
+                        "HSPICE BJT parameter %s not handled, ignored",
+                            parm);
+                    }
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            // For Verilog, the first token can be the module name.
+            // Just ignore if there is no parameter.
+
+            if (!dev->moduleNameMatch(parm)) {
+                if (!didsep) {
+                    didsep = true;
+                    logError(curline, msgfmt, mname);
+                }
+                logError(curline, "Unrecognized parameter %s (ignored)", parm);
+            }
+        }
+        lpnf = true;
+        delete [] parm;
+        parm = getTok(&line, true);
+    }
+}
+
+
 // Return true if the device type has a key that matches the arg.
 //
 bool
@@ -712,64 +999,6 @@ SPinput::mosLWcnds(sLine *curline, sINPmodel *m, double l, double w)
         }
     }
     return (cnds);
-}
-
-
-namespace {
-    // These are BJT model parameters used in HSPICE extensions, that
-    // have no equivalence here.
-    //
-    const char *hspice_bjt_unused[] = {
-        "iss",
-        "ns",
-        "tlev",
-        "tlevc",
-        "update",
-        0
-    };
-
-    // These are MOS model parameters used in HSPICE extensions, that
-    // have no equivalence here.
-    //
-    const char *hspice_mos_unused[] = {
-        "binflag",
-        "scalm",
-        "scale",
-        "lref",
-        "wref",
-        "xw",
-        "xl",
-        "acm",
-        "calcacm",
-        "cjgate",
-        "hdif",
-        "ldif",
-        "rdc",
-        "rd",
-        "rsc",
-        "rs",
-        "wmlt",
-        "lmlt",
-        "capop",
-        "cta",
-        "ctp",
-        "pta",
-        "ptp",
-        "tlev",
-        "tlevc",
-        "alpha",
-        "lalpha",
-        "walpha",
-        "vcr",
-        "lvcr",
-        "wvcr",
-        "iirat",
-        "dtemp",
-        "nds",
-        "vnds",
-        "sfvtflag",
-        0
-    };
 }
 
 

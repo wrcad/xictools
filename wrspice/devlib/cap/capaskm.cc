@@ -78,8 +78,12 @@ CAPdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case CAP_MOD_TC2:
         value->rValue = model->CAPtempCoeff2;
         break;
+    case CAP_MOD_M:
+        value->rValue = model->CAPm;
+        break;
     default:  
         return (E_BADPARM);
     }
     return (OK);
 }
+

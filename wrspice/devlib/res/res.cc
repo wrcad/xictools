@@ -71,6 +71,8 @@ IO("tc2",               RES_TC2,            IF_REAL|IF_ORQUERY,
                 "Second order temp. coefficient"),
 IO("noise",             RES_NOISE,          IF_REAL,
                 "Noise scaling coefficient"),
+IO("m",                 RES_M,              IF_REAL,
+                "Parallel multiplier"),
 IO("poly",              RES_POLY,           IF_REALVEC,
                 "Resistance polynomial"),
 OP("conduct",           RES_CONDUCT,        IF_REAL|IF_COND,
@@ -92,6 +94,8 @@ OP("expr",              RES_TREE,           IF_PARSETREE,
 };
 
 IFparm RESmPTable[] = {
+IP("r",                 RES_MOD_R,          IF_FLAG,
+                "Device is a resistor model"),
 IO("rsh",               RES_MOD_RSH,        IF_REAL|IF_SETQUERY,
                 "Sheet resistance"),
 IO("narrow",            RES_MOD_NARROW,     IF_REAL|IF_CHKQUERY,
@@ -128,6 +132,8 @@ IO("temp",              RES_MOD_TEMP,       IF_REAL|IF_NONSENSE,
                 "Default operating temperature"),
 IO("noise",             RES_MOD_NOISE,      IF_REAL|IF_NONSENSE,
                 "Default noise scale factor"),
+IO("m",                 RES_MOD_M,          IF_REAL|IF_NONSENSE,
+                "Default parallel multiplier"),
 IO("kf",                RES_MOD_KF,         IF_REAL|IF_NONSENSE,
                 "Flicker noise coefficient"),
 IO("af",                RES_MOD_AF,         IF_REAL|IF_NONSENSE,
@@ -137,9 +143,7 @@ IO("ef",                RES_MOD_EF,         IF_REAL|IF_NONSENSE,
 IO("wf",                RES_MOD_WF,         IF_REAL|IF_NONSENSE,
                 "Exponent of effective width"),
 IO("lf",                RES_MOD_LF,         IF_REAL|IF_NONSENSE,
-                "Exponent of frequency"),
-IP("r",                 RES_MOD_R,          IF_FLAG,
-                "Device is a resistor model")
+                "Exponent of frequency")
 };
 
 const char *RESnames[] = {
