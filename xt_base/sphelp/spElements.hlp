@@ -207,7 +207,7 @@ Passive Elements
 !!SEEALSO
 elements
 
-!! elements.tex 011715
+!! elements.tex 071918
 !!KEYWORD
 cap
 !!TITLE
@@ -215,14 +215,15 @@ Capacitors
 !!HTML 
     General forms:
     <blockquote>
-    <tt>c</tt><i>name</i> <i>n+ n-</i>
-     [<i>value</i> | <i>modname</i>] [<tt>c=</tt><i>expr</i>]
-     [<tt>ic=</tt><i>val</i>]
+    <tt>c</tt><i>name</i> <i>n+ n-</i> [<i>value</i> | <i>modname</i>]
+     [<i>options</i>]
+     [<tt>c=</tt><i>expr</i> | <tt>poly</tt> <i>c0</i> [<i>c1</i> ...]]
+    <br><br>
+    <i>Options</i>:
+     [<tt>m=</tt></i>mult</i>] [<tt>ic=</tt><i>val</i>]
      [<tt>temp=</tt><i>temp</i>]
      [<tt>tc1=</tt><i>tcoeff1</i>] [<tt>tc2=</tt><i>tcoeff2</i>]
-     [<tt>l=</tt><i>length</i>] [<tt>w=</tt><i>width</i>]<br><br>
-    <tt>c</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt> <i>c0</i>
-    [<i>c1</i> ...] [<tt>ic=</tt><i>val</i>]
+     [<tt>l=</tt><i>length</i>] [<tt>w=</tt><i>width</i>]
     </blockquote>
 
     <p>
@@ -233,25 +234,33 @@ Capacitors
     </tt></blockquote>
 
     <p>
-    The capacitance value can be specified as a bare number, if it is
-    the first parameter following the node list.  This token can also
-    be a <a href="capmodel">capacitor model</a> name.  The parameters
-    that can follow are:
-
-    <dl>
-    <dt><tt>c=</tt><i>expr</i><dd>
-    This can also be given as "<tt>cap=</tt><i>expr</i>", or
-    "<tt>capacitance=</tt><i>expr</i>", where <i>expr</i> is an <a
-    href="devexpr">expression</a> yielding the capacitance in farads. 
-    This is the partial derivative of charge with respect to voltage,
-    possibly as a function of other circuit variables.  This form is
-    applicable when the first token following the node list is not a
-    capacitance value or model name.  It also applies when a model is
-    given, it overrides the geometric capacitance value.
+    The <i>n+</i> and <i>n-</i> are the positive and negative element
+    nodes, respectively, and <i>value</i> is the capacitance for a
+    constant valued capacitor.  Alternatively, a <a
+    href="capmodel">capacitor model</a> <i>modname</i> can be
+    specified which allows for the calculation of the actual
+    capacitance value from strictly geometric information and the
+    specifications of the process.  If <i>value</i> is specified, it
+    defines the capacitance.  If <i>modname</i> is specified, then the
+    capacitance is calculated from the process information in the
+    model <i>modname</i> and the given <i>length</i> and <i>width</i>. 
+    If <i>value</i> is not specified, then <i>modname</i> and
+    <i>length</i> must be specified.  If <i>width</i> is not
+    specified, then it will be taken from the default width given in
+    the model.  Either <i>value</i> or <i>modname</i>, <i>length</i>,
+    and <i>width</i> may be specified, but not both sets.  See the <a
+    href="capmodel">capacitor model</a> description for more
+    information.
 
     <p>
-    This is the default keyword, so actually the parameter name and
-    equals sign are optional, a bare expression is acceptable.
+    The parameters accepted by the capacitor are:
+
+    <dl>
+    <dt><tt>m=</tt><i>mult</i><dd>
+    This is the parallel multiplier which is the number of devices
+    effectively in parallel.  The given capacitance is multiplied by
+    this value.  It overrides any '<tt>m</tt>' multiplier found in the
+    capacitor model.
     </dl>
 
     <dl>
@@ -292,51 +301,53 @@ Capacitors
     given, which will compute the capacitance from geometry.
     </dl>
 
+    <dl>
+    <dt><tt>c=</tt><i>expr</i><dd>
+    This can also be given as "<tt>cap=</tt><i>expr</i>", or
+    "<tt>capacitance=</tt><i>expr</i>", where <i>expr</i> is an <a
+    href="devexpr">expression</a> yielding the capacitance in farads. 
+    This is the partial derivative of charge with respect to voltage,
+    possibly as a function of other circuit variables.  This form is
+    applicable when the first token following the node list is not a
+    capacitance value or model name.  It also applies when a model is
+    given, it overrides the geometric capacitance value.
+
     <p>
-    The second form allows specification of a polynomial capacitance,
-    which will take the form
+    This is the default keyword, so actually the parameter name and
+    equals sign are optional, a bare expression is acceptable.
+    </dl>
+
+    <dl>
+    <dt><tt>poly</tt> <i>c0</i> [<i>c1</i> ...]<dd>
+    This form allows specification of a polynomial capacitance, which
+    will take the form
     <blockquote>
     Capacitance = <tt>c0</tt> + <tt>c1</tt>&middot;<i>v</i> +
       <tt>c2</tt>&middot;<i>v</i><sup>2</sup> ...
     </blockquote>
-
     where <i>v</i> is the voltage difference between the positive and
     negative element nodes.  There is no built-in limit to the number
     of terms.
+    </dl>
 
-    <p>
-    The <i>n+</i> and <i>n-</i> are the positive and negative element
-    nodes, respectively, and <i>value</i> is the capacitance for a
-    constant valued capacitor.  Alternatively, a capacitor model
-    <i>modname</i> can be specified which allows for the calculation of
-    the actual capacitance value from strictly geometric information
-    and the specifications of the process.  If <i>value</i> is
-    specified, it defines the capacitance.  If <i>modname</i> is
-    specified, then the capacitance is calculated from the process
-    information in the model <i>modname</i> and the given
-    <i>length</i> and <i>width</i>.  If <i>value</i> is not specified,
-    then <i>modname</i> and <i>length</i> must be specified.  If
-    <i>width</i> is not specified, then it will be taken from the
-    default width given in the model.  Either <i>value</i> or
-    <i>modname</i>, <i>length</i>, and <i>width</i> may be specified,
-    but not both sets.  See the <a href="capmodel">capacitor model</a>
-    description for more information.
- 
 !!SEEALSO
 passive
+capmodel
 
-!! elements.tex 011715
+!! elements.tex 071918
 !!KEYWORD
 ind
 !!TITLE
 Inductors
 !!HTML 
-    General forms:
+    General form:
     <blockquote>
-    <tt>l</tt><i>name</i> <i>n+ n-</i> [<tt>ind=</tt>]<i>expr</i>
-    [<tt>ic=</tt><i>val</i>]<br><br>
-    <tt>l</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt> <i>c0</i>
-    [<i>c1</i> ...] [<tt>ic=</tt><i>val</i>]
+    <tt>l</tt><i>name</i> <i>n+ n-</i> [<i>value</i> | <i>modname</i>]
+    [<i>options</i>]
+    [<tt>ind=</tt>]<i>expr</i> | <tt>poly</tt> <i>c0</i> [<i>c1</i> ...]]
+    <br><br>
+    <i>Options</i>:
+    [<tt>m=</tt><i>mult</i>][<tt>ic=</tt><i>val</i>]
     </blockquote>
 
     <p>
@@ -348,37 +359,61 @@ Inductors
 
     <p>
     The <i>n+</i> and <i>n-</i> are the positive and negative element
-    nodes, respectively.  The <i>expr</i> is an <a
-    href="devexpr">expression</a> yielding the inductance in henries. 
-    This is the partial derivative of flux with respect to branch
-    current, possibly as a function of other circuit variables.  The
-    keyword can alse be given as "<tt>inductance</tt>", or may be
-    omitted since this is the default parameter.  Note that the
-    expression can depend on the branch current, in which case the
-    device is nonlinear.
+    nodes, respectively, and <i>value</i> is the inductance, for a
+    constant value inductor.  An <a href="indmodel">inductor model</a>
+    <i>modname</i> can optionally be specified.  Presently the
+    inductor model holds only a parallel multiplier default, so an
+    inductance must be specified in addition to the model.
 
     <p>
-    The second form allows specification of a polynomial inductance,
-    which will take the form
+    The parameters accepted for the inductor device are:
+
+    <dl>
+    <dt><tt>m=</tt><i>mult</i><dd>
+    This is the parallel multiplier which is the number of devices
+    effectively in parallel.  The given inductance is divided by this
+    value.  It overrides any '<tt>m</tt>' multiplier found in the
+    inductor model.
+    </dl>
+
+    <dl>
+    <dt><tt>ic=</tt><i>val</i><dd>
+    The initial condition is the initial (time-zero) value of inductor
+    current (in Amps) that flows from <i>n+</i>, through the inductor,
+    to <i>n-</i>.  The initial condition (if any) applies only when
+    the <tt>uic</tt> option is specified in <a href=".tran">transient
+    analysis</a>.
+    </dl>
+
+    <dl>
+    <dt><tt>ind=</tt>]<i>expr</i><dd>
+    The <i>expr</i> is an <a href="devexpr">expression</a> yielding
+    the inductance in henries.  This is the partial derivative of flux
+    with respect to branch current, possibly as a function of other
+    circuit variables.  The keyword can alse be given as
+    "<tt>inductance</tt>" or "<tt>l</tt>", or may be omitted since
+    this is the default parameter.  Note that the expression can
+    depend on the branch current, in which case the device is
+    nonlinear.
+    </dl>
+
+    <dl>
+    <dt><tt>poly</tt> <i>c0</i> [<i>c1</i> ...]<dd>
+    This form allows specification of a polynomial inductance, which
+    will take the form
     <blockquote>
     Inductance = <tt>c0</tt> + <tt>c1</tt>&middot;<i>i</i> +
       <tt>c2</tt>&middot;<i>i</i><sup>2</sup> ...
     </blockquote>
-
     where <i>i</i> is the current flowing through the device from the
     positive to the negative element nodes.  There is no built-in
     limit to the number of terms.
-
-    <p>
-    The (optional) initial condition is the initial (time-zero) value
-    of inductor current (in Amps) that flows from <i>n+</i>, through
-    the inductor, to <i>n-</i>.  The initial condition (if any)
-    applies only when the <tt>uic</tt> option is specified in <a
-    href=".tran">transient analysis</a>.
+    </dl>
  
 !!SEEALSO
 mut
 passive
+indmodel
 
 !! elements.tex 011715
 !!KEYWORD
@@ -416,22 +451,23 @@ Coupled (Mutual) Inductors
 ind
 passive
 
-!! elements.tex 091714
+!! elements.tex 071918
 !!KEYWORD
 res
 !!TITLE
 Resistors
 !!HTML 
-    General forms:
+    General form:
     <blockquote>
-    <tt>r</tt><i>name</i> <i>n1 n2</i>
-     [<i>value</i> | <i>modname</i>] [<tt>r=</tt><i>expr</i>]
-     [<tt>temp=</tt><i>temp</i>]
+    <tt>r</tt><i>name</i> <i>n1 n2</i> [<i>value</i> | <i>modname</i>]
+     [<i>options</i>]
+     [<tt>r=</tt><i>expr</i> | <tt>poly</tt> <i>c0</i> [<i>c1</i> ...]]
+    <br><br>
+    <i>Options</i>:
+     [<tt>m=</tt></i>mult</i>][<tt>temp=</tt><i>temp</i>]
      [<tt>tc1=</tt><i>tcoeff1</i>] [<tt>tc2=</tt><i>tcoeff2</i>]
      [<tt>l=</tt><i>length</i>] [<tt>w=</tt><i>width</i>]
-     [<tt>noise</tt>=<i>mult</i>]<br><br>
-    <tt>r</tt><i>name</i> <i>n+ n-</i> <tt>poly</tt> <i>c0</i>
-    [<i>c1</i> ...]
+     [<tt>noise</tt>=<i>mult</i>]
     </blockquote>
 
     <p>
@@ -442,22 +478,41 @@ Resistors
     </tt></blockquote>
 
     <p>
-    The nominal-temperature resistance value can be specified as a
-    bare number, if it is the first parameter following the node list. 
-    This token can also be a <a href="resmodel">resistor model</a>
-    name.  The parameters that can follow are:
+    The <i>n1</i> and <i>n2</i> are the two element nodes, and
+    <i>value</i> is the resistance, for a constant value resistor.  A
+    <a href="resmodel">resistor model</a> <i>modname</i> can
+    alternatively be specified and allows the calculation of the
+    actual resistance value from strictly geometric information and
+    the specifications of the process.  If a resistance is specified
+    after <i>modname</i>, it overrides the geometric information (if
+    any) and defines the nominal-temperature resistance.  If
+    <i>modname</i> is specified, then the resistance may be calculated
+    from the process information in the model <i>modname</i> and the
+    given <i>length</i> and <i>width</i>.  In any case, the resulting
+    value will be adjusted for the operating temperature <i>temp</i>
+    if that is specified, using correction factors given.  If
+    <i>value</i> is not specified, then <i>modname</i> and
+    <i>length</i> must be specified.  If <i>width</i> is not
+    specified, then it will be taken from the default width given in
+    the model.  See the <a href="resmodel">resistor model</a>
+    description for more information.
+
+    <p>
+    If the resistance can not be determined from the provided
+    parameters, a fatal error results.  This behavior is different
+    from traditional Berkeley SPICE, which provides a default value of
+    1K.
+
+    <p>
+    The parameters that are understood are:
 
     <dl>
-    <dt><tt>r=</tt><i>expr</i><dd>
-    This can also be given as "<tt>res=</tt><i>expr</i>", or
-    "<tt>resistance=</tt><i>expr</i>", where <i>expr</i> is an <a
-    href="devexpr">expression</a> giving the nominal-temperature
-    device voltage divided by device current ("large signal"
-    resistance) in ohms, possibly as a function of other variables. 
-    This form is applicable when the first token following the node
-    list is not a resistance value or model name.  It also applies
-    when a model is given, it overrides the geometric resistance
-    value.
+    <dt><tt>m=</tt><i>mult</i><dd>
+    This is the parallel multiplication factor, that represents the
+    number of devices effectivly connected in parallel.  The effect is
+    to multiply the conductance by this factor, so that the given
+    resistance is divided by this value.  This overrides the
+    `<tt>m</tt>' multiplier found in the resistor model, if any.
     </dl>
 
     <dl>
@@ -499,46 +554,35 @@ Resistors
     from a circuit noise analysis.
     </dl>
 
-    <p>
-    The second form allows specification of a polynomial resistance,
-    which will take the form
+    <dl>
+    <dt><tt>r=</tt><i>expr</i><dd>
+    This can also be given as "<tt>res=</tt><i>expr</i>", or
+    "<tt>resistance=</tt><i>expr</i>", where <i>expr</i> is an <a
+    href="devexpr">expression</a> giving the nominal-temperature
+    device voltage divided by device current ("large signal"
+    resistance) in ohms, possibly as a function of other variables. 
+    This form is applicable when the first token following the node
+    list is not a resistance value or model name.  It also applies
+    when a model is given, it overrides the geometric resistance
+    value.
+    </dl>
+
+    <dl>
+    <dt><tt>poly</tt> <i>c0</i> [<i>c1</i> ...]<dd>
+    This form allows specification of a polynomial resistance, which
+    will take the form
     <blockquote>
     Resistance = <tt>c0</tt> + <tt>c1</tt>&middot;<i>v</i> +
       <tt>c2</tt>&middot;<i>v</i><sup>2</sup> ...
     </blockquote>
-
     where <i>v</i> is the voltage difference between the positive and
     negative element nodes.  There is no built-in limit to the number
     of terms.
-
-    <p>
-    The <i>n1</i> and <i>n2</i> are the two element nodes, and
-    <i>value</i> is the resistance, for a constant value resistor.  A
-    resistor model <i>modname</i> can alternatively be specified and
-    allows the calculation of the actual resistance value from
-    strictly geometric information and the specifications of the
-    process.  If <i>value</i> is specified after <i>modname</i>, it
-    overrides the geometric information (if any) and defines the
-    nominal-temperature resistance.  If <i>modname</i> is specified,
-    then the resistance may be calculated from the process information
-    in the model <i>modname</i> and the given <i>length</i> and
-    <i>width</i>.  In any case, the resulting value will be
-    adjusted for the operating temperature <i>temp</i> if that is
-    specified, using correction factors given.  If <i>value</i> is not
-    specified, then <i>modname</i> and <i>length</i> must be
-    specified.  If <i>width</i> is not specified, then it will be
-    taken from the default width given in the model.  See the <a
-    href="resmodel">resistor model</a> description for more
-    information.
-
-    <p>
-    If the resistance can not be determined from the provided
-    parameters, a fatal error results.  This behavior is different
-    from traditional Berkeley SPICE, which provides a default value of
-    1K.
+    </dl>
  
 !!SEEALSO
 passive
+resmodel
 
 !! elements.tex 012509
 !!KEYWORD

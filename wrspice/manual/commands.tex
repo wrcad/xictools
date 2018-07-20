@@ -2781,13 +2781,33 @@ distortion analysis is performed at each point of the dc analysis
 \subsection{\spcmd{dump}}
 \index{dump command}
 
-% spCommands.hlp:dump 011909
+% spCommands.hlp:dump 072018
 
-The {\cb dump} command may be useful for analyzing convergence problems.
-This command sends a print of the internal matrix data structure last
-used by the simulator for the current circuit to the standard output. 
-It is used for program debugging, but may be useful if convergence
-problems are encountered.  The command takes no arguments.
+The {\cb dump} command sends a print of the internal matrix data
+structure last used by the simulator for the current circuit to the
+standard output.  It is used for program debugging, amd may also be
+useful for analyzing convergence problems.
+
+\begin{quote}
+{\vt dump} [{\vt -r}] [{\vt -c}] [{\vt -t}] [{\vt -f} {\it filename\/}]
+\end{quote}
+
+The command takes the following optional arguments.
+\begin{description} 
+\item{\vt -r}\\
+Print the reordred matrix, the default is to print the matrix as it
+exists before internal reordering is performed to optimize stability.
+
+\item{\vt -c}\\
+Print in compact form, showing only which elements are nonzero (marked
+with `x') and zero (marked with `.').
+
+\item{-t}\\
+Terse format, do not print header information.
+
+\item{\vt -f} {\it filename}\\
+Print output in the given file.
+\end{description}
 
 %SU-------------------------------------
 \subsection{\spcmd{free}}

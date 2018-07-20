@@ -2,7 +2,7 @@
 %S-----------------------------------------------------------------------------
 \section{Circuit Elements}
 
-%format.tex:elements 012509
+%spElements:elements 012509
 
 Each element in the circuit is specified by an element line that
 contains the element name, the circuit nodes to which the element is
@@ -108,7 +108,7 @@ instance line.  Only the parameters not listed as ``{\vt RO}''
 \section{Device Models}
 \label{dotmodel}
 
-% spModels.hlp:.model 030814
+% spModels.hlp:.model 071918
 
 Many devices reference models, which contain values for the numerous
 parameters describing the device, which would be cumbersome to include
@@ -130,6 +130,7 @@ type} is one of the following types:
 \begin{quote}
 \begin{tabular}{|l|l|}\hline
 \vt c & Capacitor model\\ \hline
+\vt l & Inductor model\\ \hline
 \vt r & Resistor model\\ \hline
 \vt sw & Voltage-controlled switch model\\ \hline
 \vt csw & Current-controlled switch model\\ \hline
@@ -180,6 +181,57 @@ $V$       &  volts\\ \hline
 $eV$      &  electron-volts\\ \hline
 $deg$     &  degrees\\ \hline
 \end{tabular}
+
+
+%SU-------------------------------------
+\subsection{Default Models}
+\index {.defmod}
+\index{default models}
+
+% spModels.hlp:.model 072018
+
+Some simple devices support a ``default model'' in {\WRspice}, meaning
+that if no model name is given in an instance line, an internally
+provided default model will be used.  Internally, all devices have a
+model structure, which is a container for the instances of that device
+type.  It is possible to access the default model used for various
+devices with {\vt .defmod} lines.  This will affect all devices of the
+corresponding type that are not explicitly given a model in the
+instantiation line.
+
+\spgen{.defmod {\it type\/} ({\it pname1=pval1 pname2=pval2} ... )}
+\spexamp{.defmod r (m=1.2)\\
+.model v (temp=300 tc1=.001}
+
+The {\it type} is the name of the device model (the second name that
+would be provided on a {\vt .model} line) such as {\vt R} (for
+resistors), {\vt C} (for capacitors), and {\vt L} (for inductors).
+
+The type name is followed by a list of parameter assignments,
+optionally enclosed in parentheses.  These are precisely the same as
+would appear in a {\vt .model} line for the device.  These provide the
+values for the parameters to be used in the default model.
+
+Not all devices support default models, meaning that lack of a model
+name in an instance line is an error.  In particular devices that have
+a variable terminal count (optional nodes) require a model name and
+therefor don't support a default model.
+
+It is probably also not possible to use a {\vt level} parameter in a
+default model, and binning parameters will be ignored at best. 
+Anything too fancy should be done through a normal model, or there may
+be trouble.
+
+The capability is very powerful, but might cause headaches, too, so
+the user should beware.  For example, if the following line is added
+to an existing deck
+\begin{quote}\vt
+.defmod R(M=1.2)
+\end{quote}
+all ``standard'' resistors in the deck will have their values reduced
+by about twenty percent.  This can be useful for corner analysis, but
+don't let the line get ``lost'' in a big file.
+
 
 %SU-------------------------------------
 \subsection{Analysis at Different Temperatures}
@@ -279,33 +331,41 @@ and $TC_1$ and $TC_2$ are the first and second-order temperature coefficients.
 \index{capacitor}
 \index{poly keyword}
 
-% spElements.hlp:cap 011715
+% spElements.hlp:cap 071918
 
 \spgen{c{\it name} {\it n\/}+ {\it n\/}- [{\it value\/} | {\it modname\/}]
- [c={\it expr\/}] [ic={\it val\/}] [temp={\it temp\/} [tc1={\it tcoeff1\/}]\\
- \hspace*{2em}[tc2={\it tcoeff2\/}] [l={\it length\/}] [w={\it width\/}]\\
- c{\it name} {\it n\/}+ {\it n\/}- {\vt poly} {\it c0} [{\it c1} ...]
- [ic={\it val\/}]}
+ [{\it options\/}]
+ [c={\it expr\/} | {\vt poly} {\it c0} [{\it c1} ...]]\\
+ \\{\it Options\/}:
+ [m={\it mult\/}] [ic={\it val\/}] [temp={\it temp\/} [tc1={\it tcoeff1\/}]
+ [tc2={\it tcoeff2\/}] [l={\it length\/}] [w={\it width\/}]}
 
 \spexamp{cload 2 10 10p\\
 cmod 3 7 cmodel l=10u w=1u}
 
-The capicatance value can be specified as a bare number, if it is the
-first parameter following the node list.  This token can also be a
-capacitor model name.  The paramaters that can follow are:
+The {\it n\/}{\vt +} and {\it n\/}{\vt -} are the positive and
+negative element nodes, respectively, and {\it value\/} is the
+capacitance for a constant valued capacitor.  Alternatively, a
+capacitor model {\it modname\/} can be specified which allows for the
+calculation of the actual capacitance value from strictly geometric
+information and the specifications of the process.  If {\it value\/}
+is specified, it defines the capacitance.  If {\it modname\/} is
+specified, then the capacitance is calculated from the process
+information in the model {\it modname} and the given {\it length} and
+{\it width}.  If {\it value\/} is not specified, then {\it modname\/}
+and {\it length\/} must be specified.  If {\it width\/} is not
+specified, then it will be taken from the default width given in the
+model.  Either {\it value\/} or {\it modname\/}, {\it length\/}, and
+{\it width\/} may be specified, but not both sets.
+
+The parameters accepted by the capacitor are:
 
 \begin{description}
-\item{\vt c=}{\it expr}\\
-This can also be given as ``{\vt cap=}{\it expr}'', or ``{\vt
-capacitance=}{\it expr}'', where {\it expr} is an expression yielding
-the capacitance in farads.  This is the partial derivative of charge
-with respect to voltage, possibly as a function of other circuit
-variables.  This form is applicable when the first token following the
-node list is not a capacitance value or model name.  It also applies
-when a model is given, it overrides the geometric capacitance value.
-
-This is the default keyword, so actually the parameter name and equals
-sign are optional, a bare expression is acceptable.
+\item{\vt m=}{\it mult}\\
+This is the parallel multiplier which is the number of devices
+effectively in parallel.  The given capacitance is multiplied by this
+value.  It overrides any `{\vt m}' multiplier found in the inductor
+model.
 
 \item{\vt ic=}{\it val}\\
 The optional initial condition {\it val} is the initial (time zero)
@@ -331,37 +391,36 @@ which will compute the capacitance from geometry.
 \item{\vt w=}{\it width}\\
 The width of the capacitor.  This applies only when a model is given,
 which will compute the capacitance from geometry.
-\end{description}
 
-The second form allows specification of a polynomial capacitance,
-which will take the form
+\item{\vt c=}{\it expr}\\
+This can also be given as ``{\vt cap=}{\it expr}'', or ``{\vt
+capacitance=}{\it expr}'', where {\it expr} is an expression yielding
+the capacitance in farads.  This is the partial derivative of charge
+with respect to voltage, possibly as a function of other circuit
+variables.  This form is applicable when the first token following the
+node list is not a capacitance value or model name.  It also applies
+when a model is given, it overrides the geometric capacitance value.
+
+This is the default keyword, so actually the parameter name and equals
+sign are optional, a bare expression is acceptable.
+
+\item{\vt poly} {\it c0} [{\it c1} ...]\\
+This form allows specification of a polynomial capacitance, which will
+take the form
 \begin{quote}
 Capacitance = $c0 + c1{\cdot}v + c2{\cdot}v^2 ...$
 \end{quote}
 where $v$ is the voltage difference between the positive and negative
 element nodes.  There is no built-in limit to the number of terms.
+\end{description}
 
-The {\it n\/}{\vt +} and {\it n\/}{\vt -} are the positive and
-negative element nodes, respectively, and {\it value\/} is the
-capacitance for a constant valued capacitor.  Alternatively, a
-capacitor model {\it modname\/} can be specified which allows for the
-calculation of the actual capacitance value from strictly geometric
-information and the specifications of the process.  If {\it value\/}
-is specified, it defines the capacitance.  If {\it modname\/} is
-specified, then the capacitance is calculated from the process
-information in the model {\it modname} and the given {\it length} and
-{\it width}.  If {\it value\/} is not specified, then {\it modname\/}
-and {\it length\/} must be specified.  If {\it width\/} is not
-specified, then it will be taken from the default width given in the
-model.  Either {\it value\/} or {\it modname\/}, {\it length\/}, and
-{\it width\/} may be specified, but not both sets.
 
 %SU-------------------------------------
 \subsection{Capacitor Model}
 \index{capacitor model}
 \label{capmodel}
 
-% spModels.hlp:capmodel 091511
+% spModels.hlp:capmodel 071918
 
 {\cb Type Name:} {\vt c}
 
@@ -373,6 +432,8 @@ used to compute the capacitance from strictly geometric information.
 \multicolumn{5}{|c|}{\bf Capacitor Model Parameters}\\ \hline
 \bf name & \bf parameter & \bf units & \bf default & \bf example
 \\ \hline\hline
+\vt m & \rr parallel multiplier & - & 1.0 & 1.2\\
+\hline
 \vt cj & \rr junction bottom capacitance & $F/M^2$ & - & 5e-5\\
 \hline
 \vt cjsw & \rr junction sidewall capacitance & $F/M$ & - & 2e-11\\
@@ -404,44 +465,90 @@ C{\vt (temp)} = C{\vt (tnom)}$\cdot${\vt (1 $+$ tc1$\cdot$(temp$-$tnom) $+$
  tc2$\cdot$(temp$-$tnom)$^2$)}
 \end{quote}
 
+Finally, the capacitance is multiplied by the parallel 
+multiplication factor ({\vt m}).
 
 %SU-------------------------------------
 \subsection{Inductors}
 \index{inductor}
 \index{poly keyword}
 
-% spElements.hlp:ind 011715
+% spElements.hlp:ind 071918
 
-\spgen{l{\it name\/} {\it n\/}+ {\it n\/}- [{\vt ind=}]{\it expr}
-  [ic={\it val\/}]\\
-l{\it name\/} {\it n\/}+ {\it n\/}- {\vt poly} {\it c0} [{\it c1} ...]
- [ic={\it val\/}]}
+\spgen{l{\it name\/} {\it n\/}+ {\it n\/}- [{\it value} | {\it modname\/}]
+ [{\it options\/}] [{\vt ind=}{\it expr} | {\vt poly} {\it c0} [{\it c1} ...]]\\
+ \\{\it Options\/}:
+ [m={\it mult\/}] [ic={\it val\/}]}
+
 \spexamp{llink 42 69 1uh\\
 lshunt 23 51 10u ic=15.7ma}
 
 The {\it n\/}{\vt +} and {\it n\/}{\vt -} are the positive and
-negative element nodes, respectively.  The {\it expr} is an expression
-yielding the inductance in henries.  This is the partial derivative of
-flux with respect to branch current, possibly as a function of other
-circuit variables.  The keyword can alse be given as ``{\vt
-inductance}'', or may be omitted since this is the default parameter. 
-Note that the expression can depend on the branch current, in which
-case the device is nonlinear.
+negative element nodes, respectively, and {\it value} is the
+inductance, for a constant value inductor.  An inductor model {\it
+modname} can optionally be specified.  Presently the inductor model
+holds only a parallel multiplier default, so an inductance must be
+specified in addition to the model.
 
-The second form allows specification of a polynomial inductance, which
-will take the form
+The parameters accepted for the inductor device are:
+
+\begin{description}
+\item{\vt m=}{\it mult}\\
+This is the parallel multiplier which is the number of devices
+effectively in parallel.  The given inductance is divided by this
+value.  It overrides any `{\vt m}' multiplier found in the inductor
+model.
+
+\item{\vt ic=}{\it val}\\
+The initial condition is the initial (time-zero) value of inductor
+current (in Amps) that flows from {\it n\/}{\vt +}, through the
+inductor, to {\it n\/}{\vt -}.  The initial condition (if any) applies
+only when the {\vt uic} option is specified in transient analysis.
+
+\item{\vt ind=}{\it expr}\\
+The {\it expr} is an expression yielding the inductance in henries. 
+This is the partial derivative of flux with respect to branch current,
+possibly as a function of other circuit variables.  The keyword can
+alse be given as ``{\vt inductance}'' or ``{\vt l}'', or may be
+omitted since this is the default parameter.  Note that the expression
+can depend on the branch current, in which case the device is
+nonlinear.
+
+\item{\vt poly} {\it c0} [{\it c1} ...]\\
+This form allows specification of a polynomial inductance, which will
+take the form
 \begin{quote}
 Inductance = $c0 + c1{\cdot}i + c2{\cdot}i^2 ...$
 \end{quote}
 where {\it i} is the current flowing through the device from the
 positive to the negative element nodes.  There is no built-in limit to
 the number of terms.
+\end{description}
 
-The optional initial condition is the initial (time-zero) value of
-inductor current (in amps) that flows from {\it n\/}{\vt +}, through
-the inductor, to {\it n\/}{\vt -}.  The initial conditions (if any)
-apply only when the {\vt uic} option is specified in transient
-analysis.
+
+%SU-------------------------------------
+\subsection{Inductor Model}
+\index{inductor model}
+\label{indmodel}
+
+% spModels.hlp:indmodel 071918
+
+{\cb Type Name:} {\vt l}
+
+The inductor model currently contains only one parameter.  A geometric
+model may be added in future.
+
+\begin{quote}
+\begin{tabular}{|l|l|l|l|l|}\hline
+\multicolumn{5}{|c|}{\bf Inductor Model Parameters}\\ \hline
+\bf name & \bf parameter & \bf units & \bf default & \bf example
+\\ \hline\hline
+\vt m & \rr parallel multiplier & - & 1.0 & 1.2\\ \hline
+\end{tabular}
+\end{quote}
+
+The parallel multiplier acts on each inductor instance of the model,
+dividing the inductance given by this value.
 
 
 %SU-------------------------------------
@@ -472,30 +579,49 @@ but allowed.
 \index{resistor}
 \index{poly keyword}
 
-% spElements.hlp:res 091714
+% spElements.hlp:res 071918
 
 \spgen{r{\it name\/} {\it n1 n2} [{\it value} | {\it modname\/}]
-[r={\it expr\/}] [temp={\it temp\/} [tc1={\it tcoeff1\/}]
-[tc2={\it tcoeff2\/}]\\
-\hspace*{2em}[l={\it length\/}] [w={\it width\/}] [noise={\it mult\/}]\\
-r{\it name\/} {\it n1 n2}  {\vt poly} {\it c0} [{\it c1} ...]}
+ [{\it options\/}]
+ [r={\it expr\/} | {\vt poly} {\it c0} [{\it c1} ...]]\\
+ \\{\it Options\/}:
+ [m={\it mult\/}] [temp={\it temp\/}] [tc1={\it tcoeff1\/}]
+ [tc2={\it tcoeff2\/}] [l={\it length\/}] [w={\it width\/}]
+ \newline
+ [noise={\it mult\/}]}
+
 \spexamp{rload 2 10 10k\\
 rmod 3 7 rmodel l=10u w=1u}
 
-The nominal-temperature resistance value can be specified as a bare
-number, if it is the first parameter following the node list.  This
-token can also be a resistor model name.  The paramaters that can
-follow are:
+The {\it n1} and {\it n2} are the two element nodes, and {\it value}
+is the resistance, for a constant value resistor.  A resistor model
+{\it modname} can alternatively be specified and allows the
+calculation of the actual resistance value from strictly geometric
+information and the specifications of the process.  If a resistance is
+specified after {\it modname}, it overrides the geometric information
+(if any) and defines the nominal-temperature resistance.  If {\it
+modname} is specified, then the resistance may be calculated from the
+process information in the model {\it modname} and the given {\it
+length} and {\it width}.  In any case, the resulting value will be
+adjusted for the operating temperature {\it temp} if that is
+specified, using correction factors given.  If {\it value} is not
+specified, then {\it modname} and {\it length} must be specified.  If
+{\it width} is not specified, then it will be taken from the default
+width given in the model.
+
+If the resistance can not be determined from the provided parameters,
+a fatal error results.  This behavior is different from traditional
+Berkeley SPICE, which provides a default value of 1K.
+
+The paramaters that are understood are:
 
 \begin{description}
-\item{\vt r=}{\it expr}\\
-This can also be given as ``{\vt res=}{\it expr\/}'' or ``{\vt
-resistance=}{\it expr\/}'', where {\it expr} is an expression giving
-the nominal-temperature device voltage divided by device current
-(``large signal'' resistance) in ohms, possibly as a function of other
-variables.  This form is applicable when the first token following the
-node list is not a resistance value or model name.  It also applies
-when a model is given, it overrides the geometric resistance value.
+\item{\vt m=}{\it mult}\\
+This is the parallel multiplication factor, that represents the number
+of devices effectivly connected in parallel.  The effect is to
+multiply the conductance by this factor, so that the given resistance
+is divided by this value.  This overrides the `{\vt m}' multiplier
+found in the resistor model, if any.
 
 \item{\vt temp=}{\it temp}\\
 The {\it temp} is the Celsius operating temperature of the resistor,
@@ -523,43 +649,34 @@ The {\it mult} is a real number which will multiply the linear
 conductance used in the noise equations.  Probably the major use is to
 give {\vt noise=0.0} to temporarily remove a resistor from a circuit
 noise analysis.
-\end{description}
 
-The second form allows specification of a polynomial resistance, which
-will take the form
+\item{\vt r=}{\it expr}\\
+This can also be given as ``{\vt res=}{\it expr\/}'' or ``{\vt
+resistance=}{\it expr\/}'', where {\it expr} is an expression giving
+the nominal-temperature device voltage divided by device current
+(``large signal'' resistance) in ohms, possibly as a function of other
+variables.  This form is applicable when the first token following the
+node list is not a resistance value or model name.  It also applies
+when a model is given, it overrides the geometric resistance value.
+
+\item{\vt poly} {\it c0} [{\it c1} ...]\\
+This form allows specification of a polynomial resistance, which will
+take the form
 \begin{quote}
 Resistance = $c0 + c1{\cdot}v + c2{\cdot}v^2 ...$
 \end{quote}
 where {\it v} is the voltage difference between the positive and
 negative element nodes.  There is no built-in limit to the number of
 terms.
+\end{description}
 
-The {\it n1} and {\it n2} are the two element nodes, and {\it value}
-is the resistance, for a constant value resistor.  A resistor model
-{\it modname} can alternatively be specified and allows the
-calculation of the actual resistance value from strictly geometric
-information and the specifications of the process.  If {\it value} is
-specified after {\it modname}, it overrides the geometric information
-(if any) and defines the nominal-temperature resistance.  If {\it
-modname} is specified, then the resistance may be calculated from the
-process information in the model {\it modname} and the given {\it
-length} and {\it width}.  In any case, the resulting value will be
-adjusted for the operating temperature {\it temp} if that is
-specified, using correction factors given.  If {\it value} is not
-specified, then {\it modname} and {\it length} must be specified.  If
-{\it width} is not specified, then it will be taken from the default
-width given in the model.
-
-If the resistance can not be determined from the provided parameters,
-a fatal error results.  This behavior is different from traditional
-Berkeley SPICE, which provides a default value of 1K.
 
 %SU-------------------------------------
 \subsection{Resistor Model}
 \index{resistor model}
 \label{resmodel}
 
-% spModels.hlp:resmodel 091714
+% spModels.hlp:resmodel 071918
 
 {\cb Type Name:} {\vt r}
 
@@ -573,6 +690,7 @@ available are:
 \multicolumn{5}{|c|}{\bf Resistor Model Parameters}\\ \hline
 \bf name & \bf parameter & \bf units & \bf default & \bf example
 \\ \hline\hline
+\vt m & \rr parallel multiplier & - & 1.0 & 1.2\\ \hline
 \vt tc1, tc, tc1r & \rr first order temperature coeff\. & $\Omega/C$
  & 0.0 & -\\ \hline
 \vt tc2, tc2r & \rr second order temperature coeff\. & $\Omega/C^2$ &
@@ -623,6 +741,9 @@ temperature by the formula:
 R{\vt (temp)} = R{\vt (tnom)}$\cdot${\vt (1 $+$ tc1$\cdot$(temp$-$tnom) $+$
  tc2$\cdot$(temp$-$tnom)$^2$)}
 \end{quote}
+
+Finally, the resistance is divided by the parallel multiplier ({\vt
+m}) value.
 
 The flicker noise capability can be used in noise analysis.  This
 requires that {\vt kf}, {\vt l}, and {\vt w} be specified.  To use,

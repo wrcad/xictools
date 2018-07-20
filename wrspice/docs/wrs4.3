@@ -224,8 +224,168 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.5  4/21/2018
+wrspice-4.3.6  7/20/2018
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Updates to PULSE and GPULSE "tran" functions.
+
+  Rewrote the basic framework tran function code, which now uses
+  separate polymorphic classes, separate parse functions, etc.  for
+  each function.  This is much cleaner and allows new functionality to
+  be added more easily.
+
+  The PULSE and GPULSE functions now provide a patterning capability
+  similar to the HSPICE pattern source.  Both PULSE and GPULSE have the
+  same basic argument format:
+
+  PULSE {single pulse descr} {period and additional delays} {pattern spec}
+
+  The initial options tescribe a single pulse.  This is followed by
+  an optional period and additional delays.  If a period is given and
+  nonzero, pulses will be emitted at the delay plus multiples of the
+  period.  The period can be followed by additional delays, where a
+  pulse is emitted at each delay, and multiples of the period
+  thereafter if the period is nonzero.
+
+  This is followed by "bstring" constructs which define a pattern for
+  the periodic pulses.  A bstring is an arbitrarily long word starting
+  with 'b' and continuing with 0 and 1 to indicate absence or presence
+  of a pulse, in the corresponding period, as the sequence is read
+  left to right.  A bstring can be immediately followed by two options:
+
+    R [= number]
+
+  The R options sets the repetition count of the preceding bstring. 
+  If no number follows, a value of one (repeat once) is assumed.  If
+  the number is negative, the repetition will continue indefinitely.
+  If not given, or the number is 0, there is no repetition.
+
+    RB = N
+
+  This sets the bit in the bstring where repetitions commence, the
+  following integer must be in the range of 1 to the bstring patern
+  length.  If not given a value of 1 (repeat the whole sequence) is
+  implied.
+
+  Any number of bstrings and their options can be given, the patterns
+  are concatenated.
+
+* New passive element M parameter, inductor model.
+
+  Inductor devices can now specify a model, consistent with resistor
+  and capacitor devices.  At present, there is only one model
+  parameter:  M, described below.  Future development will make use of
+  this capability.
+
+  The inductor instance now accepts a parameter "l" which is a synonym
+  for "ind" and "inductance" as the given inductance.
+
+  The resistor implementation was updated to allow preloading of
+  constant resistance to avoid loading during transient analysis (for
+  speed).  Nonlinear resistors are now handled properly in phase-mode
+  DC analysis.
+
+  Resistor, capacitor, and inductor devices and models all accept a new
+  parameter "M".  This is a "parallel multiplier", and as a real number
+  indicates the how many devices are effectively connected in parallel.
+
+  The M instance parameter if given overrules M given in the model. 
+  The effect of M is to alter the component value, as below.
+
+     actual R  = given R / M
+     actual L  = given L / M
+     actual C  = given C * M
+
+* New syntax element .DEFMOD, default model setting.
+
+  Some simple devices support a "default model" in WRspice, meaning
+  that if no model name is given in an instance line, an internally
+  provided default model will be used.  Internally, all devices have a
+  model structure, which is a container for the instances of that
+  device type.  It is now possible to access the default model used
+  for various devices with .defmod lines.
+
+  .defmod Name ( name=val... )
+
+  The Name is the name of the device model (the second name that would be
+  provided on a .model line) such as R (for resistors), C (for capacitors),
+  and L (for inductors).
+
+  The name is followed by a list of parameter assignments, optionally
+  enclosed in parentheses.  These are precisely the same as would
+  appear in a .model line for the device.  These provide the values
+  for the parameters to be used in the default model.
+
+  Not all devices support default models, meaning that lack of a model
+  name in an instance line is an error.  In particular devices that
+  have a variable terminal count (optional nodes) require a model name
+  and therefor don't support a default model.
+
+  It is probably also not possible to use a LEVEL parameter in a
+  default model, and binning parameters will be ignored at best. 
+  Anything too fancy should be done through a normal model, or there
+  may be trouble.
+
+  The capability is very powerful, but might cause headaches, too, so
+  the user should beware.
+
+  For example, if the following line is added to an existing deck
+    .defmod R(M=1.2)
+  all "standard" resistors in the deck will have their values reduced
+  by about 20%.  This can be useful for corner analysis, but don't
+  let the line get "lost" in a big file.
+
+* Options added to dump command, and related:
+
+  Previously, there was an arbitrary mapping performed between node
+  numbers and matrix indices.  This was probably to avoid
+  non-contiguous matrix column/row numbers, but in WRspice this
+  mapping is not needed and is no longer performed.  This saves a
+  little time, and facilitates use of the dump command to do circuit
+  debugging.  Any difference between node numbers and matrix indices
+  is now only the result of internally performed reordering to improve
+  matrix stability.
+
+  If the "undocumented" option "translate" is given, translation will
+  be done as it has been previously.
+
+  The dump command, which dumps the last circuit matrix used to
+  standard output, now accepts the following new options.
+
+  -c  Use compact form, just show which entries are nonzero, using
+      'x' for nonzero and '.' for zero.
+
+  -r  Show the reordered matrix.
+
+  -t  Terse, don't show header.
+
+  -f filename   Send output to filename
+
+
+BUGS FIXED
+---- -----
+
+* Handling of the tsfactor JJ model param fixed, now works
+  consistently between internal and Verilog models.
+
+* Fixes to avoid leaving empty temporary files behind after normal
+  program exit.
+
+* Linear controlled sources were not working with extended precision,
+  bug fixed.
+
+* The lossless transmission line model was updated to avoid excessive
+  memory use.
+
+* Fixed a bug in the Pade transmission line model that would impede DC
+  operating point convergence (error in the stamp loaded for DC analysis).
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.5  4/21/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
