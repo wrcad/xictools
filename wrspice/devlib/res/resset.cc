@@ -61,6 +61,14 @@ RESdev::setup(sGENmodel *genmod, sCKT *ckt, int*)
 {
     sRESmodel *model = static_cast<sRESmodel*>(genmod);
     for ( ; model; model = model->next()) {
+        if (!model->RESmGiven)
+            model->RESm = 1.0;
+        else if (model->RESm < 1e-3 || model->RESm > 1e3) {
+            DVO.textOut(OUT_FATAL,
+                "%s: M value out or range [1e-3,1e3].", model->GENmodName);
+            return (E_BADPARM);
+        }
+
         sRESinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
@@ -68,6 +76,14 @@ RESdev::setup(sGENmodel *genmod, sCKT *ckt, int*)
             TSTALLOC(RESnegNegptr, RESnegNode, RESnegNode);
             TSTALLOC(RESposNegptr, RESposNode, RESnegNode);
             TSTALLOC(RESnegPosptr, RESnegNode, RESposNode);
+
+            if (!inst->RESmGiven)
+                inst->RESm = model->RESm;
+            else if (inst->RESm < 1e-3 || inst->RESm > 1e3) {
+                DVO.textOut(OUT_FATAL,
+                    "%s: M value out or range [1e-3,1e3].", inst->GENname);
+                return (E_BADPARM);
+            }
 
             if (inst->RESpolyCoeffs)
                 continue;

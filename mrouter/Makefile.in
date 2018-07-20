@@ -71,17 +71,20 @@ test:
 ####### Install programs into system location #########################
 
 INSTALL_PREFIX ?= $(prefix)
-destn = $(INSTALL_PREFIX)/$(TOOLROOT)
+destn = $(INSTALL_PREFIX)/$(TOOLROOT)/mrouter
+toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install_mrouter: install_test install_clean install_bin \
+install: install_test install_clean install_bin \
   install_lib install_help install_include install_doc install_examples
 
-install_bin:            $(destn)/bin
-install_lib:            $(destn)/mrouter/lib
-install_help:           $(destn)/mrouter/help
-install_include:        $(destn)/mrouter/include
-install_examples:       $(destn)/mrouter/examples
-install_doc:            $(destn)/mrouter/doc
+uninstall: install_test install_clean
+
+install_bin:            $(toolbin)
+install_lib:            $(destn)/lib
+install_help:           $(destn)/help
+install_include:        $(destn)/include
+install_examples:       $(destn)/examples
+install_doc:            $(destn)/doc
 
 install_test::
 	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
@@ -93,28 +96,29 @@ install_test::
 
 install_clean::
 	-@rm -rf $(destn)
+	-@rm -f $(toolbin)/mrouter$(EXESUFFIX)
 
-$(destn)/bin::
-	@$(BASE)/util/mkdirpth $(destn)/bin
-	$(INSTALL_BIN) mrouter/mrouter$(EXESUFFIX) $(destn)/bin;
+$(toolbin)::
+	@$(BASE)/util/mkdirpth $(toolbin)
+	$(INSTALL_BIN) mrouter/mrouter$(EXESUFFIX) $(toolbin);
 
-$(destn)/mrouter/lib::
-	@$(BASE)/util/mkdirpth $(destn)/mrouter/lib
-	$(INSTALL_LIB) mrouter/$(LIB_TARGET) $@
+$(destn)/lib::
+	@$(BASE)/util/mkdirpth $(destn)/lib
+	$(INSTALL_LIB) mrouter/$(LIB_TARGET)            $@
 
-$(destn)/mrouter/help::
-	@$(BASE)/util/mkdirpth $(destn)/mrouter/help
+$(destn)/help::
+	@$(BASE)/util/mkdirpth $(destn)/help
 	$(INSTALL_LIB_RO) doc/xic/MRouter.hlp           $@
 
-$(destn)/mrouter/include::
-	@$(BASE)/util/mkdirpth $(destn)/mrouter/include
+$(destn)/include::
+	@$(BASE)/util/mkdirpth $(destn)/include
 	$(INSTALL_LIB) include/lddb.h                   $@
 	$(INSTALL_LIB) include/ld_vers.h                $@
 	$(INSTALL_LIB) include/mrouter.h                $@
 	$(INSTALL_LIB) include/mr_vers.h                $@
 
-$(destn)/mrouter/doc::
-	@$(BASE)/util/mkdirpth $(destn)/mrouter/doc
+$(destn)/doc::
+	@$(BASE)/util/mkdirpth $(destn)/doc
 #	$(INSTALL_LIB_RO) doc/mrmanual-`./version`.pdf  $@
 #	$(INSTALL_LIB_RO) doc/mrmanual-html-`./version`.tar.gz $@
 #	$(INSTALL_LIB_RO) doc/Makefile                  $@
@@ -126,8 +130,8 @@ $(destn)/mrouter/doc::
 #	$(INSTALL_LIB_RO) doc/README.build              $@
 #	$(INSTALL_LIB_RO) doc/tm.eps                    $@
 
-$(destn)/mrouter/examples::
-	@$(BASE)/util/mkdirpth $(destn)/mrouter/examples
+$(destn)/examples::
+	@$(BASE)/util/mkdirpth $(destn)/examples
 	$(INSTALL_LIB) examples/Makefile                $@
 	$(INSTALL_LIB) examples/main-plg.cc             $@
 	$(INSTALL_LIB) examples/map9v3.def              $@
@@ -137,10 +141,10 @@ $(destn)/mrouter/examples::
 	$(INSTALL_LIB) examples/openMSP430_blk.def      $@
 	$(INSTALL_LIB) examples/openMSP430.rsc          $@
 	$(INSTALL_LIB) examples/README                  $@
-	@$(BASE)/util/mkdirpth $(destn)/mrouter/examples/osu35
+	@$(BASE)/util/mkdirpth $(destn)/examples/osu35
 	$(INSTALL_LIB) examples/osu35/osu035_stdcells.gds2  $@/osu35
 	$(INSTALL_LIB) examples/osu35/osu035_stdcells.lef   $@/osu35
-	@$(BASE)/util/mkdirpth $(destn)/mrouter/examples/xic
+	@$(BASE)/util/mkdirpth $(destn)/examples/xic
 	$(INSTALL_LIB) examples/xic/exroute.scr         $@/xic
 	$(INSTALL_LIB) examples/xic/osu35.lib           $@/xic
 	$(INSTALL_LIB) examples/xic/README              $@/xic
@@ -152,7 +156,7 @@ package::
 	$(MAKE) all
 	-rm -rf packages/root
 	mkdir packages/root
-	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install_mrouter
+	$(MAKE) INSTALL_PREFIX=packages/root$(prefix) install
 	cd packages; $(MAKE) package
 
 #######################################################################

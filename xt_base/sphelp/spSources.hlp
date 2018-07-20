@@ -1038,7 +1038,9 @@ Interpolation
 !!SEEALSO
 tranfuncs
 
-!! elements.tex 012509
+!!REDIRECT pattern      pulse#pattern
+
+!! elements.tex 071018
 !!KEYWORD
 pulse
 !!TITLE
@@ -1046,7 +1048,8 @@ Pulse
 !!HTML 
     General forms:
     <blockquote>
-        <tt>pulse</tt>(<i>v1 v2</i> [<i>td tr tf pw per td1 td2</i> ...])
+        <tt>pulse</tt>(<i>v1 v2</i> [<i>td tr tf pw per td1 td2</i> ...]
+      [<i>pattern_spec</i>])
     </blockquote>
 
     <p>
@@ -1057,6 +1060,18 @@ Pulse
         <tt>v2 4 0 v(1)*pulse(0 1 5n 10n</tt>)
     </blockquote>
 
+    <p>
+    This function applies only to transient analysis, where time is
+    the running variable.  When referring to default values,
+    <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
+    final time in <a href=".tran"> transient analysis</a>.
+
+    <p>
+    The following are the numerical parameters, the
+    <i>pattern_spec</i> is used to specify a patterned pulse train and
+    the syntax will be described separately below.
+
+    <p>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>parameter</th><th>description</th>
         <th>default value</th><th>units</th></tr>
@@ -1077,11 +1092,25 @@ Pulse
     </table>
 
     <p>
-    If any of the parameters <i>td1</i>, <i>td2</i>, ...  appear, the
-    period is ignored, and the pulse is repeated for the delays
-    <i>td1</i>, etc.  The output will be a superposition of these
-    pulses.  A single pulse so specified is described by the following
-    table:
+    The signal starts at value <i>v1</i> at <tt>time=0</tt>.  At time
+    <i>td</i>, the pulse begins, the value arriving linearly at
+    <i>v2</i> after the rise time <i>tr</i>.  The value <i>v2</i> is
+    maintained for the pulse width time <i>pw</i>, then reverts
+    linearly to value <i>v1</i> over the fall time <i>tf</i>.  If a
+    period <i>per</i> is given and nonzero, a periodic train of pulses
+    is produced, starting at <i>td</i>, with the second pulse starting
+    at <i>td</i>+<i>per</i>, etc.  The minimum value for <i>per</i> is
+    <i>tr</i>+<i>tf</i>+<i>pw</i>, which is silently enforced.
+
+    <p>
+    Numbers <i>td1</i>, <i>td2</i>, etc.  following <i>per</i> are
+    taken as additional delay values (similar to <i>td</i>) and a
+    pulse will start at each given value.  These will actually be
+    superposed periodic pulse trains if <i>per</i> is nonzero (it must
+    be given in any case when using the additional delays).
+
+    <p>
+    A single pulse so specified is described by the following table:
 
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
@@ -1106,16 +1135,77 @@ Pulse
     nanoseconds, reaching 1 volt at 4 nanoseconds, and remains at
     that value.
 
+    <a name="pattern"></a>
+    <h4>Pattern Generation</h4>
+
+    The transient <tt>pulse</tt> and <a
+    href="gpulse"><tt>gpulse</tt></a> functions support a
+    pattern-specification language borrowed from the pattern source of
+    HSPICE.  This applies only when a period is given so that the
+    source would provide periodic output.  The <i>pattern_spec</i>
+    must appear after the additional delay numbers, if any.  The
+    patterning enables the user to select in which periods a pulse is
+    actually generated, and applies to all periodic trains if
+    additional delays are given.
+
     <p>
-    This function applies only to transient analysis, where time is
-    the running variable.  When referring to default values,
-    <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
-    final time in <a href=".tran"> transient analysis</a>.
+    The <i>pattern_spec</i> consists of one or more "bstrings", each
+    of which can have modifying options.
+    <blockquote>
+    <tt>b</tt><i>data</i> [<tt>r</tt>[=<i>rpt</i>]] [<tt>rb</tt>=<i>bit</i>] ...
+    </blockquote>
+    The first token is the bstring, which must start with the letter
+    '<tt>b</tt>' (case insensitive) and continues for arbitrary length
+    with 1 and 0 to indicate the presence or absence of a pulse in
+    each period frame, traversing left to right.  Actually, the
+    characters <tt>0,f,F,n,N</tt> are taken as '<tt>0</tt>', anything
+    else is taken as '<tt>1</tt>'.  Note that the HSPICE <tt>m</tt>
+    (intermediate value) and <tt>z</tt> (disconnected) are not
+    currently supported.
+
+    <p>
+    A bstring can be followed by up to one each of two
+    case-insensitive options.
+    <dl>
+    <dt><tt>r</tt> [= <i>rpt</i>]<dd>
+    This provides a repetition count.  If an integer follows the
+    literal '<tt>r</tt>', it is taken as the repetition count.  White
+    space and an equal sign can be included, and will be ignored.  If
+    no number is given, 1 is assumed, i.e., the pattern will repeat
+    once.  If <tt>r</tt> is not given, there will be no repetition. 
+    If the number given is negative, the pattern will continue
+    repeating indefinitely.
+    
+    <p>
+    <dt><tt>rb</tt> = <i>bit</i><dd>
+    The <i>bit</i> is an integer ranging from 1 to the length of the
+    bstring pattern, and indicates the start point for repetitions, if
+    any.  If not given, the effective value is 1, indicating that the
+    entire pattern repeats.  An integer must follow <tt>rb</tt>, white
+    space and an equal sign will be ignored.
+    </dl>
+
+    <p>
+    An arbitrary number of bstrings with options can appear in the
+    specification, the result from each bstring with options will be
+    concatenated.  If indefinite repetition is specified for a
+    bstring, any bstrings that follow will be ignored.
+
+    <p>
+    Example:<br>
+    <tt>b101101 r=1 rb=2 b000111</tt>
+    <blockquote>
+    <ul>
+    <li>emit 101101
+    <li>repeat once starting at bit 2: 01101
+    <li>emit 000111
+    </ul>
+    </blockquote>
  
 !!SEEALSO
 tranfuncs
 
-!! elements.tex 022818
+!! elements.tex 071018
 !!KEYWORD
 gpulse
 !!TITLE
@@ -1123,7 +1213,8 @@ Gaussian Pulse
 !!HTML 
     General form:
     <blockquote>
-        <tt>gpulse</tt>(<i>v1 v2 td pw per td1 td2</i> ...)
+        <tt>gpulse</tt>([<i>v1 v2 td pw per td1 td2</i> ...]
+        [<i>pattern_spec</i>])
     </blockquote>
 
     <p>
@@ -1132,6 +1223,15 @@ Gaussian Pulse
         <tt>vsfq 3 0 gpulse(0 0 20p 2p 0 40p 60p)</tt><br>
         <tt>vpulse 1 0 gpulse(0 1 100p 5p 100p)</tt><br>
     </blockquote>
+
+    <p>
+    This generates a gaussian pulse signal, and as a special case, as
+    a voltage source will generate single flux quantum (SFQ) pulses. 
+    This function applies only to transient analysis, where time is
+    the running variable.  The following are the numerical parameters,
+    the <i>pattern_spec</i> is used to specify a patterned pulse train
+    and the syntax is described in the <a
+    href="pattern"><tt>pulse</tt></a> function topic.
 
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>parameter</th><th>description</th>
@@ -1145,13 +1245,8 @@ Gaussian Pulse
     <tr><td><i>pw</i></td> <td>pulse width</td>
         <td>see description</td> <td>seconds</td></tr>
     <tr><td><i>per</i></td> <td>period</td>
-        <td><tt>0,0</tt></td> <td>seconds</td></tr>
+        <td><tt>0.0</tt></td> <td>seconds</td></tr>
     </table>
-
-    <p>
-    This generates a gaussian pulse signal, and as a special case,
-    as a voltage source will generate single flux quantum (SFQ)
-    pulses.
 
     <p>
     <b>Warning:</b> The pulse width is interpreted as the full-width
@@ -1178,10 +1273,20 @@ Gaussian Pulse
     peak.  The <i>pw</i> defines the pulse width, as described above. 
     If the <i>per</i> is given a nonzero value larger than twice the
     <i>pw</i>, a train of pulses will be generated, the first being at
-    <i>td</i> and at time increments of <i>per</i> thereafter.  A
-    <i>per</i> explicitly zero can be followed by any number of time
-    values.  A pulse will be generated to peak at each of these
-    values, in addition to the <i>td</i> value.
+    <i>td</i> and at time increments of <i>per</i> thereafter.
+
+    <p>
+    Numbers found after the <i>per</i> are taken as additional delays,
+    similar to <i>td</i>.  The output is a superposition of pulses
+    found at each delay value (including <i>td</i>).  If the
+    <i>per</i> is given a value 0.0, only one pulse per delay value is
+    emitted.  If the <i>per</i> specifies a viable period, pulses are
+    emitted at each delay value and increments of <i>per</i>.
+
+    <p>
+    Periodic pulses can be set to a pattern via the <a
+    href="pattern"><i>pattern_spec</i></a>, which can appear following
+    all delay values, if any.
 
     <p>
     A single flux quantum (SFQ) pulse, as a voltage applied across an

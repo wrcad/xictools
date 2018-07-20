@@ -65,12 +65,8 @@ Authors: 1985 Thomas L. Quarles
 // definitions used to describe resistors
 //
 
-#ifdef NEWJJDC
-#undef USE_PRELOAD
-#else
-// Use WRspice pre-loading of constant elements.
+// Use WRspice pre-loading of constant elements when possible.
 #define USE_PRELOAD
-#endif
 
 // Maximum conductivity allowed, when not limited by circuit gmax.
 #define RES_GMAX 1e12
@@ -135,15 +131,16 @@ struct sRESinstance : public sGENinstance
     int RESnegNode;     // number of negative node of resistor
 
     double REStemp;     // temperature at which this resistor operates
-    double RESconduct;  // conductance at current analysis temperature
-    double RESresist;   // resistance at temperature Tnom
+    double RESconduct;  // conductance at current analysis temperature and M
+    double RESresist;   // resistance at temperature Tnom, M==1
     double RESwidth;    // width of the resistor
     double RESlength;   // length of the resistor
     double REStc1;      // first order temp. coeff.
     double REStc2;      // second order temp. coeff.
     double REStcFactor; // temperature correction factor
     double RESv;        // voltage across resistor
-    double RESnoise;    // scale factor
+    double RESnoise;    // noise scale factor
+    double RESm;        // conductance scale factor
 
     // for parse tree support
     IFparseTree *REStree;    // large-signal resistance expression
@@ -175,7 +172,10 @@ struct sRESinstance : public sGENinstance
     unsigned REStempGiven   : 1;  // temperature specified
     unsigned REStc1Given    : 1;  // tc1 specified
     unsigned REStc2Given    : 1;  // tc2 specified
-    unsigned RESnoiseGiven  : 1;  // scale factor given
+    unsigned RESnoiseGiven  : 1;  // noise scale factor given
+    unsigned RESmGiven      : 1;  // value scale factor given
+
+    unsigned RESusePreload;
 
     // for noise analysis
     double RESnVar[NSTATVARS][2];
@@ -196,7 +196,8 @@ struct sRESmodel : public sGENmodel
     double RESdefLength;  // default length of a resistor
     double RESnarrow;     // amount by which device is narrower than drawn
     double RESshorten;    // amount by which device is shorter than drawn
-    double RESnoise;      // scale factor
+    double RESnoise;      // voise scale factor
+    double RESm;          // conductance scale factor
 
     // flicker noise model
     double RESkf;         // flicker noise coefficient
@@ -220,8 +221,24 @@ struct sRESmodel : public sGENmodel
     unsigned RESefGiven         : 1; // frequenct exponent given
     unsigned RESwfGiven         : 1; // width exponent given
     unsigned RESlfGiven         : 1; // length exponent given
-    unsigned RESnoiseGiven      : 1; // scale factor given
+    unsigned RESnoiseGiven      : 1; // noise scale factor given
+    unsigned RESmGiven          : 1; // value scale factor given
 };
+
+#ifdef NEWJJDC
+namespace {
+    enum { GND, PHASE, VOLT };
+    inline int nodetype(sCKT *ckt, int nnum)
+    {
+        if (nnum <= 0)
+            return (GND);
+        sCKTnode *nd = ckt->CKTnodeTab.find(nnum);
+        if (!nd)
+            return (VOLT);  // shouldn't happen
+        return (nd->phase() ? PHASE : VOLT);
+    }
+}
+#endif
 
 } // namespace RES
 using namespace RES;
@@ -236,6 +253,7 @@ enum {
     RES_TC1,
     RES_TC2,
     RES_NOISE,
+    RES_M,
     RES_POLY,
     RES_CONDUCT,
     RES_VOLTAGE,
@@ -248,7 +266,8 @@ enum {
 
 // model parameters
 enum {
-    RES_MOD_RSH = 1000,
+    RES_MOD_R = 1000,
+    RES_MOD_RSH,
     RES_MOD_NARROW,
     RES_MOD_DL,
     RES_MOD_TC1,
@@ -258,12 +277,12 @@ enum {
     RES_MOD_TNOM,
     RES_MOD_TEMP,
     RES_MOD_NOISE,
+    RES_MOD_M,
     RES_MOD_KF,
     RES_MOD_AF,
     RES_MOD_EF,
     RES_MOD_WF,
-    RES_MOD_LF,
-    RES_MOD_R
+    RES_MOD_LF
 };
 
 #endif // RESDEFS_H

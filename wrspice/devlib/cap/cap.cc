@@ -68,6 +68,8 @@ IO("tc1",               CAP_TC1,            IF_REAL|IF_SETQUERY,
                 "First order temp coeff."),
 IO("tc2",               CAP_TC2,            IF_REAL|IF_ORQUERY,
                 "Second order temp coeff"),
+IO("m",                 CAP_M,              IF_REAL,
+                "Parallel multiplier"),
 IO("poly",              CAP_POLY,           IF_REALVEC,
                 "Capacitance polynomial"),
 OP("charge",            CAP_CHARGE,         IF_REAL|IF_CHARGE,
@@ -87,14 +89,14 @@ OP("expr",              CAP_TREE,           IF_PARSETREE,
 };
 
 IFparm CAPmPTable[] = {
+IP("c",                 CAP_MOD_C,          IF_FLAG,
+                "Capacitor model"),
 IO("cj",                CAP_MOD_CJ,         IF_REAL|IF_AC,
                 "Bottom Capacitance per area"),
 IO("cjsw",              CAP_MOD_CJSW,       IF_REAL|IF_AC,
                 "Sidewall capacitance per meter"),
 IO("defw",              CAP_MOD_DEFWIDTH,   IF_REAL|IF_NONSENSE,
                 "Default width"),
-IP("c",                 CAP_MOD_C,          IF_FLAG,
-                "Capacitor model"),
 IO("narrow",            CAP_MOD_NARROW,     IF_REAL|IF_AC,
                 "Width correction factor"),
 IO("tnom",              CAP_MOD_TNOM,       IF_REAL|IF_NONSENSE,
@@ -102,7 +104,9 @@ IO("tnom",              CAP_MOD_TNOM,       IF_REAL|IF_NONSENSE,
 IO("tc1",               CAP_MOD_TC1,        IF_REAL|IF_SETQUERY,
                 "First order temp. coefficient"),
 IO("tc2",               CAP_MOD_TC2,        IF_REAL|IF_ORQUERY,
-                "Second order temp. coefficient")
+                "Second order temp. coefficient"),
+IO("m",                 CAP_M,              IF_REAL,
+                "Default parallel multiplier")
 };
 
 const char *CAPnames[] = {

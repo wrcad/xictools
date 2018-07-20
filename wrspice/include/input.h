@@ -127,11 +127,13 @@ public:
     bool getMod(sLine*, sCKT*, const char*, const char*, sINPmodel**);
     bool lookMod(const char*);
     void parseMod(sLine*);
+    void parseDefMod(sLine*, sCKT*);
     bool checkKey(char, int);
 
-    // inpptree.cc
+    // inptran.cc
     bool isTranFunc(const char*);
     char *getTranFunc(const char**, bool);
+    char *fixParentheses(const char*, sCKT*, const char*);
 
     // inptabpa.cc
     bool tablFind(const char*, sCKTtable**, sCKT *ckt);

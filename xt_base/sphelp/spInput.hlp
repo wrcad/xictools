@@ -341,6 +341,7 @@ spinput
      <tr><td align="left">&nbsp;<a href=".endif"><tt>.endif</tt></a></td></tr>
     <tr><th align="left"><a href=".model">Device Models</a></th></tr>
      <tr><td align="left">&nbsp;<a href=".model"><tt>.model</tt></a></td></tr>
+     <tr><td align="left">&nbsp;<a href=".defmod"><tt>.defmod</tt></a></td></tr>
     <tr><th align="left"><a href="subckt">Subcircuits</a></th></tr>
      <tr><td align="left">&nbsp;<a href=".subckt"><tt>.subckt</tt></a></td></tr>
      <tr><td align="left">&nbsp;<a href=".subckt"><tt>.macro</tt></a></td></tr>

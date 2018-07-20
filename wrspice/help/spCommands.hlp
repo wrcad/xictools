@@ -3731,21 +3731,44 @@ disto command
 multidc
 simcmds
 
-!! commands.tex 011909
+!! commands.tex 072018
 !!KEYWORD
 dump
 !!TITLE
 dump command
 !!HTML 
-    command: <tt>dump</tt>
+    command: <tt>dump</tt> [<tt>-r</tt>] [<tt>-c</tt>] [<tt>-t</tt>]
+     [<tt>-f</tt> <i>filename</i>]
 
     <p>
-    The <b>dump</b> command may be useful for analyzing convergence
-    problems.  This command sends a print of the internal matrix data
+    The <b>dump</b> command sends a print of the internal matrix data
     structure last used by the simulator for the current circuit to
-    the standard output.  It is used for program debugging, but may be
-    useful if convergence problems are encountered.  The command takes
-    no arguments.
+    the standard output.  It is used for program debugging, and may be
+    useful for analyzing convergence problems.  The command takes the
+    following optional arguments.
+
+    <dl>
+    <dt><tt>-r</tt><dd>
+    Print the reordred matrix, the default is to print the matrix as
+    it exists before internal reordering is performed to optimize
+    stability.
+    </dl>
+
+    <dl>
+    <dt><tt>-c</tt><dd>
+    Print in compact form, showing only which elements are nonzero
+    (marked with 'x') and zero (marked with '.').
+    </dl>
+
+    <dl>
+    <dt><tt>-t</tt><dd>
+    Terse format, do not print header information.
+    </dl>
+
+    <dl>
+    <dt><tt>-f</tt> <i>filename</i><dd>
+    Print output in the given file.
+    </dl>
  
 !!SEEALSO
 simcmds

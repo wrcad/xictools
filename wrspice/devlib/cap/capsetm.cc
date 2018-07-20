@@ -55,6 +55,8 @@ CAPdev::setModl(int param, IFdata *data, sGENmodel *genmod)
     IFvalue *value = &data->v;
 
     switch (param) {
+    case CAP_MOD_C:
+        break;
     case CAP_MOD_CJ:
         model->CAPcj = value->rValue;
         model->CAPcjGiven = true;
@@ -83,9 +85,9 @@ CAPdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->CAPtempCoeff2 = value->rValue;
         model->CAPtc2Given = true;
         break;
-    case CAP_MOD_C:
-        // just being reassured by the user that we are a capacitor
-        // no-op
+    case CAP_MOD_M:
+        model->CAPm = value->rValue;
+        model->CAPmGiven = true;
         break;
     default:
         return (E_BADPARM);

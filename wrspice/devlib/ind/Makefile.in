@@ -23,9 +23,9 @@ MODULE = ind
 TARGET = $(MODULE).$(SOEXT)
 HFILES = inddefs.h
 CFILES =
-CCFILES = ind.cc indacld.cc indaski.cc indfbr.cc indic.cc indload.cc \
-  indpzld.cc indset.cc indseti.cc indtrun.cc mutacld.cc mutaski.cc \
-  mutload.cc mutprse.cc mutpzld.cc mutseti.cc
+CCFILES = ind.cc indacld.cc indaski.cc indaskm.cc indfbr.cc indic.cc \
+  indload.cc indpzld.cc indset.cc indseti.cc indsetm.cc indtrun.cc \
+  mutacld.cc mutaski.cc mutload.cc mutprse.cc mutpzld.cc mutseti.cc
 COBJS = $(CCFILES:.cc=.o) $(CFILES:.c=.o)
 INCLUDE = -I../include
 DEFS = -D__WRMODULE__=$(MODULE) -D__WRVERSION__=$(DEVLIB_VERSION)

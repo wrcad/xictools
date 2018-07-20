@@ -63,6 +63,7 @@ RESdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_RES_TC1,
         &&L_RES_TC2,
         &&L_RES_NOISE,
+        &&L_RES_M,
         &&L_RES_POLY,
         &&L_RES_CONDUCT,
         &&L_RES_VOLTAGE,
@@ -106,6 +107,9 @@ RESdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         return (OK);
     L_RES_NOISE:
         data->v.rValue = inst->RESnoise;
+        return (OK);
+    L_RES_M:
+        data->v.rValue = inst->RESm;
         return (OK);
     L_RES_POLY:
         data->type = IF_REALVEC;
@@ -184,6 +188,9 @@ RESdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         break;
     case RES_NOISE:
         data->v.rValue = inst->RESnoise;
+        break;
+    case RES_M:
+        data->v.rValue = inst->RESm;
         break;
     case RES_POLY:
         data->type = IF_REALVEC;

@@ -3,7 +3,7 @@
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
- *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Copyright (C) 2018 Whiteley Research Inc., all rights reserved.       *
  *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
  *  As fully as possible recognizing licensing terms and conditions       *
@@ -38,72 +38,21 @@
  $Id:$
  *========================================================================*/
 
-/***************************************************************************
-JSPICE3 adaptation of Spice3f2 - Copyright (c) Stephen R. Whiteley 1992
-Copyright 1990 Regents of the University of California.  All rights reserved.
-Authors: 1985 Thomas L. Quarles
-         1993 Stephen R. Whiteley
-****************************************************************************/
-
-#include "resdefs.h"
+#include "inddefs.h"
 
 
-int 
-RESdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
+int
+INDdev::setModl(int param, IFdata *data, sGENmodel *genmod)
 {
-    const sRESmodel *model = static_cast<const sRESmodel*>(genmod);
+    sINDmodel *model = static_cast<sINDmodel*>(genmod);
     IFvalue *value = &data->v;
-    // Need to override this for non-real returns.
-    data->type = IF_REAL;
 
-    switch (which) {
-    case RES_MOD_RSH:
-        value->rValue = model->RESsheetRes;
+    switch (param) {
+    case IND_MOD_L:
         break;
-    case RES_MOD_NARROW: 
-        value->rValue = model->RESnarrow;
-        break;
-    case RES_MOD_DL:
-        value->rValue = model->RESshorten;
-        break;
-    case RES_MOD_TC1:
-        value->rValue = model->REStempCoeff1;
-        break;
-    case RES_MOD_TC2:
-        value->rValue = model->REStempCoeff2;
-        break;
-    case RES_MOD_DEFWIDTH:
-        value->rValue = model->RESdefWidth;
-        break;
-    case RES_MOD_DEFLENGTH:
-        value->rValue = model->RESdefLength;
-        break;
-    case RES_MOD_TNOM:
-        value->rValue = model->REStnom-CONSTCtoK;
-        break;
-    case RES_MOD_TEMP:
-        value->rValue = model->REStemp-CONSTCtoK;
-        break;
-    case RES_MOD_NOISE:
-        value->rValue = model->RESnoise;
-        break;
-    case RES_MOD_M:
-        value->rValue = model->RESm;
-        break;
-    case RES_MOD_KF:
-        value->rValue = model->RESkf;
-        break;
-    case RES_MOD_AF:
-        value->rValue = model->RESaf;
-        break;
-    case RES_MOD_EF:
-        value->rValue = model->RESef;
-        break;
-    case RES_MOD_WF:
-        value->rValue = model->RESwf;
-        break;
-    case RES_MOD_LF:
-        value->rValue = model->RESlf;
+    case IND_MOD_M:
+        model->INDm = value->rValue;
+        model->INDmGiven = true;
         break;
     default:
         return (E_BADPARM);

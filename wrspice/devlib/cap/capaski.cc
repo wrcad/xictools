@@ -63,6 +63,7 @@ CAPdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_CAP_TEMP,
         &&L_CAP_TC1,
         &&L_CAP_TC2,
+        &&L_CAP_M,
         &&L_CAP_POLY,
         &&L_CAP_CHARGE,
         &&L_CAP_VOLTAGE,
@@ -106,6 +107,9 @@ CAPdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         return (OK);
     L_CAP_TC2:
         data->v.rValue = inst->CAPtc2;
+        return (OK);
+    L_CAP_M:
+        data->v.rValue = inst->CAPm;
         return (OK);
     L_CAP_POLY:
         data->type = IF_REALVEC;
@@ -182,6 +186,9 @@ CAPdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         break;
     case CAP_TC2:
         data->v.rValue = inst->CAPtc2;
+        break;
+    case CAP_M:
+        data->v.rValue = inst->CAPm;
         break;
     case CAP_POLY:
         data->type = IF_REALVEC;

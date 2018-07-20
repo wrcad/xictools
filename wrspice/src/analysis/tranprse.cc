@@ -128,8 +128,9 @@ TRANanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
             continue;
         }
         if (lstring::cieq(token, trkw_tstart)) {
-            // The optional "start" keyword ahead ot the tstart value,
-            // for HSPICE compatability.
+            // The optional "start" keyword ahead of the tstart value,
+            // for HSPICE compatability.  Note that more than one step
+            // value range is not supported at this time.
             delete [] token;
             double dtemp = IP.getFloat(line, &error, true);
             if (error) {

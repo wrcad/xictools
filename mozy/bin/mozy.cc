@@ -537,21 +537,21 @@ namespace {
 
         if (sig == SIGSEGV) {
             fprintf(stderr, "Fatal internal error: segmentation violation.\n");
-            filestat::delete_files();
+            filestat::delete_deletions();
             signal(SIGINT, SIG_DFL);
             raise(SIGINT);
         }
 #ifdef SIGBUS
         else if (sig == SIGBUS) {
             fprintf(stderr, "Fatal internal error: bus error.\n");
-            filestat::delete_files();
+            filestat::delete_deletions();
             signal(SIGINT, SIG_DFL);
             raise(SIGINT);
         }
 #endif
         else if (sig == SIGILL) {
             fprintf(stderr, "Fatal internal error: illegal instruction.\n");
-            filestat::delete_files();
+            filestat::delete_deletions();
             signal(SIGINT, SIG_DFL);
             raise(SIGINT);
         }

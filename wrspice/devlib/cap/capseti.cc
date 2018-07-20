@@ -62,6 +62,7 @@ CAPdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_CAP_TEMP,
         &&L_CAP_TC1,
         &&L_CAP_TC2,
+        &&L_CAP_M,
         &&L_CAP_POLY};
         // &&L_CAP_CHARGE,
         // &&L_CAP_VOLTAGE,
@@ -140,6 +141,10 @@ CAPdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->CAPtc2 = value->rValue;
         inst->CAPtc2Given = true;
         return (OK);
+    L_CAP_M:
+        inst->CAPm = value->rValue;
+        inst->CAPmGiven = true;
+        return (OK);
     L_CAP_POLY:
         {
             int nv = value->v.numValue;
@@ -211,6 +216,10 @@ CAPdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case CAP_TC2:
         inst->CAPtc2 = value->rValue;
         inst->CAPtc2Given = true;
+        break;
+    case CAP_M:
+        inst->CAPm = value->rValue;
+        inst->CAPmGiven = true;
         break;
     case CAP_POLY:
         {

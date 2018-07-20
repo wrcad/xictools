@@ -16,8 +16,10 @@ spModels.hlp
 
 !!SUBTOPICS
 .model
+.defmod
 temperature
 capmodel
+indmodel
 resmodel
 swmodel
 tramodel
@@ -31,7 +33,7 @@ mosmodel
 jjmodel 
 
 
-!! elements.tex 030814
+!! elements.tex 071918
 !!KEYWORD
 .model
 !!TITLE
@@ -68,6 +70,8 @@ Device Models
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><td><a href="capmodel"><tt>c</tt></a></td>
      <td>Capacitor model</td></tr>
+    <tr><td><a href="indmodel"><tt>l</tt></a></td>
+     <td>Inductor model</td></tr>
     <tr><td><a href="resmodel"><tt>r</tt></a></td>
      <td>Resistor model</td></tr>
     <tr><td><a href="swmodel"><tt>sw</tt></a></td>
@@ -145,6 +149,75 @@ Device Models
     <p>
     The resistor and smeiconductor models include <a
     href="temperature">temperature</a> dependence.
+    
+!!SEEALSO
+spinput
+.defmod
+
+!! elements.tex 072018
+!!KEYWORD
+.defmod
+!!TITLE
+Default Models
+!!HTML 
+    Some simple devices support a "default model" in <i>WRspice</i>,
+    meaning that if no model name is given in an instance line, an
+    internally provided default model will be used.  Internally, all
+    devices have a model structure, which is a container for the
+    instances of that device type.  It is possible to access the
+    default model used for various devices with <tt>.defmod</tt>
+    lines.  This will affect all devices of the corresponding type
+    that are not explicitly given a model in the instantiation line.
+
+    <p>
+    General form:
+    <blockquote>
+         <tt>.defmod</tt> <i>type</i> (<i>pname1=pval1</i>
+             <i>pname2=pval2</i> ... )
+    </blockquote>
+
+    <p>
+    Examples:
+    <blockquote><tt>
+         .defmod r (m=1.2)<br>
+         .defmod c (temp=300 tc1=.002)
+    </tt></blockquote>
+
+    <p>
+    The <i>type</i> is the name of the device model (the second name
+    that would be provided on a <a href=".model"><tt>.model</tt></a>
+    line) such as <tt>R</tt> (for resistors), <tt>C</tt> (for
+    capacitors), and <tt>L</tt> (for inductors).
+
+    <p>
+    The type name is followed by a list of parameter assignments,
+    optionally enclosed in parentheses.  These are precisely the same
+    as would appear in a <tt>.model</tt> line for the device.  These
+    provide the values for the parameters to be used in the default
+    model.
+
+    <p>
+    Not all devices support default models, meaning that lack of a
+    model name in an instance line is an error.  In particular devices
+    that have a variable terminal count (optional nodes) require a
+    model name and therefor don't support a default model.
+
+    <p>
+    It is probably also not possible to use a <tt>level</tt>
+    parameter in a default model, and binning parameters will be
+    ignored at best.  Anything too fancy should be done through a
+    normal model, or there may be trouble.
+
+    <p>
+    The capability is very powerful, but might cause headaches, too,
+    so the user should beware.  For example, if the following line is
+    added to an existing deck
+    <blockquote>
+    <tt>.defmod R(M=1.2)</tt>
+    </blockquote>
+    all "standard" resistors in the deck will have their values
+    reduced by about twenty percent.  This can be useful for corner
+    analysis, but don't let the line get "lost" in a big file.
     
 !!SEEALSO
 spinput
@@ -279,7 +352,7 @@ Analysis at Different Temperatures
     <i>TC</i><sub>2</sub> are the first and second-order temperature
     coefficients.
 
-!! elements.tex 091511
+!! elements.tex 071918
 !!KEYWORD
 capmodel
 !!TITLE
@@ -297,6 +370,9 @@ Capacitor Models
     <tr><th>name</th>
         <th>parameter</th>
         <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>m</tt></td>
+        <td>parallel multiplier</td>
+        <td>-</td>                      <td>1.0</td>    <td>1.2</td></tr>
     <tr><td><tt>cj</tt></td>
         <td>junction bottom capacitance</td>
         <td>F/M<sup>2</sup></td>        <td>-</td>      <td>5e-5</td></tr>
@@ -336,10 +412,44 @@ Capacitor Models
           <tt>tc1</tt>&#183(temp-<tt>tnom</tt>) +
           <tt>tc2</tt>&#183(temp-<tt>tnom</tt>)<sup>2</sup>)
     </blockquote>
+
+    <p>
+    Finally, the capacitance is multiplied by the parallel
+    multiplication factor (<tt>m</tt>).
+
+!!SEEALSO
+.model
+
+!! elements.tex 071918
+!!KEYWORD
+indmodel
+!!TITLE
+Inductor Models
+!!HTML 
+    <b>Type Name:</b> <tt>l</tt>
+
+    <p>
+    The <a href="ind">inductor</a> model currently contains only one
+    parameter.  A geometric model may be added in future.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>name</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>m</tt></td>
+        <td>parallel multiplier</td>
+        <td>-</td>                      <td>1.0</td>    <td>1.2</td></tr>
+    </table>
+
+    <p>
+    The parallel multiplier acts on each inductor instance of the model,
+    dividing the inductance given by this value.
+
 !!SEEALSO
 .model
  
-!! elements.tex 091714
+!! elements.tex 071918
 !!KEYWORD
 resmodel
 !!TITLE
@@ -359,6 +469,9 @@ Resistor Models
     <tr><th>name</th>
         <th>parameter</th>
         <th>units</th> <th>default</th> <th>example</th></tr>
+    <tr><td><tt>m</tt></td>
+        <td>parallel multiplier</td>
+        <td>-</td>                      <td>1.0</td>    <td>1.2</td></tr>
     <tr><td><tt>tc1</tt>, <tt>tc</tt>, <tt>tc1r</tt></td>
         <td>first order temperature coeff</td>
         <td>O/C</td>                    <td>0.0</td>    <td>-</td></tr>
@@ -429,6 +542,10 @@ Resistor Models
           <tt>tc1</tt>&#183(temp-<tt>tnom</tt>) +
           <tt>tc2</tt>&#183(temp-<tt>tnom</tt>)<sup>2</sup>)
     </blockquote>
+
+    <p>
+    Finally, the resistance is divided by the parallel multiplier
+    (<tt>m</tt>) value.
 
     <p>
     The flicker noise capability can be used in noise analysis.  This

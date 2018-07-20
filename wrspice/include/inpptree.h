@@ -48,6 +48,8 @@ Authors: 1987 Thomas L. Quarles
 #ifndef INPPTREE_H
 #define INPPTREE_H
 
+#include "inptran.h"
+
 typedef struct IFparseNode ParseNode;
 #include "spnumber/spparse.h"
 
@@ -81,7 +83,7 @@ enum PTtype
     PT_MACRO_DERIV
 };
 
-// These are the functions that we support.
+// These are the math functions that we support.
 //
 enum PTfType
 {
@@ -118,181 +120,6 @@ enum PTfType
     PTF_YN
 };
 
-// These are the tran functions that we support.
-//
-enum PTftType
-{
-    PTF_tNIL,
-    PTF_tPULSE,
-    PTF_tGPULSE,
-    PTF_tPWL,
-    PTF_tSIN,
-    PTF_tSPULSE,
-    PTF_tEXP,
-    PTF_tSFFM,
-    PTF_tAM,
-    PTF_tGAUSS,
-    PTF_tINTERP,
-    PTF_tTABLE
-};
-
-// Cache parameters for tran function evaluation.
-//
-struct IFtranData
-{
-    IFtranData()
-        {
-            td_coeffs = 0;
-            td_parms = 0;
-            td_cache = 0;
-            td_numcoeffs = 0;
-            td_type = PTF_tNIL;
-            td_enable_tran = false;
-            td_pwlRgiven = false;
-            td_pwlRstart = 0;
-            td_pwlindex = 0;
-            td_pwldelay = 0.0;
-        }
-
-    IFtranData(PTftType, double*, int, double* = 0, bool = false , int = 0,
-        double = 0.0);
-
-    ~IFtranData()
-        {
-            delete [] td_coeffs;
-            delete [] td_parms;
-            delete [] td_cache;
-        }
-
-    // PULSE
-    double V1()      const { return (td_parms[0]); }
-    double V2()      const { return (td_parms[1]); }
-    double TD()      const { return (td_parms[2]); }
-    double TR()      const { return (td_parms[3]); }
-    double TF()      const { return (td_parms[4]); }
-    double PW()      const { return (td_parms[5]); }
-    double PER()     const { return (td_parms[6]); }
-    void set_V1(double d)      { td_parms[0] = d; }
-    void set_V2(double d)      { td_parms[1] = d; }
-    void set_TD(double d)      { td_parms[2] = d; }
-    void set_TR(double d)      { td_parms[3] = d; }
-    void set_TF(double d)      { td_parms[4] = d; }
-    void set_PW(double d)      { td_parms[5] = d; }
-    void set_PER(double d)     { td_parms[6] = d; }
-
-    // GPULSE
-    double GPW()     const { return (td_parms[3]); }
-    double RPT()     const { return (td_parms[4]); }
-    void set_GPW(double d)     { td_parms[3] = d; }
-    void set_RPT(double d)     { td_parms[4] = d; }
-
-    // SIN
-    double VO()      const { return (td_parms[0]); }
-    double VA()      const { return (td_parms[1]); }
-    double FREQ()    const { return (td_parms[2]); }
-    double TDL()     const { return (td_parms[3]); }
-    double THETA()   const { return (td_parms[4]); }
-    double PHI()     const { return (td_parms[5]); }
-    void set_VO(double d)      { td_parms[0] = d; }
-    void set_VA(double d)      { td_parms[1] = d; }
-    void set_FREQ(double d)    { td_parms[2] = d; }
-    void set_TDL(double d)     { td_parms[3] = d; }
-    void set_THETA(double d)   { td_parms[4] = d; }
-    void set_PHI(double d)     { td_parms[5] = d; }
-
-    // SPULSE
-    double SPER()    const { return (td_parms[2]); }
-    double SDEL()    const { return (td_parms[3]); }
-    void set_SPER(double d)    { td_parms[2] = d; }
-    void set_SDEL(double d)    { td_parms[3] = d; }
-
-    // EXP
-    double TD1()     const { return (td_parms[2]); }
-    double TAU1()    const { return (td_parms[3]); }
-    double TD2()     const { return (td_parms[4]); }
-    double TAU2()    const { return (td_parms[5]); }
-    void set_TD1(double d)     { td_parms[2] = d; }
-    void set_TAU1(double d)    { td_parms[3] = d; }
-    void set_TD2(double d)     { td_parms[4] = d; }
-    void set_TAU2(double d)    { td_parms[5] = d; }
-
-    // SFFM
-    double FC()      const { return (td_parms[2]); }
-    double MDI()     const { return (td_parms[3]); }
-    double FS()      const { return (td_parms[4]); }
-    void set_FC(double d)      { td_parms[2] = d; }
-    void set_MDI(double d)     { td_parms[3] = d; }
-    void set_FS(double d)      { td_parms[4] = d; }
-
-    // AM (following Hspice)
-    double SA()      const { return (td_parms[0]); }
-    double OC()      const { return (td_parms[1]); }
-    double MF()      const { return (td_parms[2]); }
-    double CF()      const { return (td_parms[3]); }
-    double DL()      const { return (td_parms[4]); }
-    void set_SA(double d)      { td_parms[0] = d; }
-    void set_OC(double d)      { td_parms[1] = d; }
-    void set_MF(double d)      { td_parms[2] = d; }
-    void set_CF(double d)      { td_parms[3] = d; }
-    void set_DL(double d)      { td_parms[4] = d; }
-
-    // GAUSS
-    double SD()      const { return (td_parms[0]); }
-    double MEAN()    const { return (td_parms[1]); }
-    double LATTICE() const { return (td_parms[2]); }
-    double ILEVEL()  const { return (td_parms[3]); }
-    double LVAL()    const { return (td_parms[4]); }
-    double VAL()     const { return (td_parms[5]); }
-    double NVAL()    const { return (td_parms[6]); }
-    double TIME()    const { return (td_parms[7]); }
-    void set_SD(double d)      { td_parms[0] = d; }
-    void set_MEAN(double d)    { td_parms[1] = d; }
-    void set_LATTICE(double d) { td_parms[2] = d; }
-    void set_ILEVEL(double d)  { td_parms[3] = d; }
-    void set_LVAL(double d)    { td_parms[4] = d; }
-    void set_VAL(double d)     { td_parms[5] = d; }
-    void set_NVAL(double d)    { td_parms[6] = d; }
-    void set_TIME(double d)    { td_parms[7] = d; }
-
-    void setup(sCKT*, double, double, bool);
-
-    double eval_tPULSE(double);
-    double eval_tPULSE_D(double);
-    double eval_tGPULSE(double);
-    double eval_tGPULSE_D(double);
-    double eval_tPWL(double);
-    double eval_tPWL_D(double);
-    double eval_tSIN(double);
-    double eval_tSIN_D(double);
-    double eval_tSPULSE(double);
-    double eval_tSPULSE_D(double);
-    double eval_tEXP(double);
-    double eval_tEXP_D(double);
-    double eval_tSFFM(double);
-    double eval_tSFFM_D(double);
-    double eval_tAM(double);
-    double eval_tAM_D(double);
-    double eval_tGAUSS(double);
-    double eval_tGAUSS_D(double);
-    double eval_tINTERP(double);
-    double eval_tINTERP_D(double);
-
-    IFtranData *dup() const;
-    void time_limit(const sCKT*, double*);
-    void print(const char*, sLstr&);
-
-private:
-    double *td_coeffs;      // tran function parameters (as input)
-    double *td_parms;       // tran function run time parameters
-    double *td_cache;       // cached stuff for tran evaluation
-    int td_numcoeffs;       // number of tran parameters input
-    short int td_type;      // function type (PTftType)
-    bool td_enable_tran;    // true if using tran functions
-    bool td_pwlRgiven;      // true if pwl r=repeat given
-    int td_pwlRstart;       // repeat start index, negative for time=0
-    int td_pwlindex;        // index into pwl tran func array
-    double td_pwldelay;     // pwl td value
-};
 
 struct IFparseTree;
 struct IFparseNode;
@@ -314,6 +141,19 @@ struct IFparseNode
     friend struct IFparseTree;
     friend struct IFmacro;
     friend struct sCKT;
+#define NEWTF
+#ifdef NEWTF
+    friend void IFpulseData::parse(const char*, IFparseNode*, int*);
+    friend void IFgpulseData::parse(const char*, IFparseNode*, int*);
+    friend void IFpwlData::parse(const char*, IFparseNode*, int*);
+    friend void IFsinData::parse(const char*, IFparseNode*, int*);
+    friend void IFspulseData::parse(const char*, IFparseNode*, int*);
+    friend void IFexpData::parse(const char*, IFparseNode*, int*);
+    friend void IFsffmData::parse(const char*, IFparseNode*, int*);
+    friend void IFamData::parse(const char*, IFparseNode*, int*);
+    friend void IFgaussData::parse(const char*, IFparseNode*, int*);
+    friend void IFinterpData::parse(const char*, IFparseNode*, int*);
+#endif
 
     struct PTop
     {
@@ -464,26 +304,8 @@ private:
     double PTyn(const double*);
 
     // "tran" funcs
-    double PTtPulse(const double*);
-    double PTtPulseD(const double*);
-    double PTtGpulse(const double*);
-    double PTtGpulseD(const double*);
-    double PTtPwl(const double*);
-    double PTtPwlD(const double*);
-    double PTtSin(const double*);
-    double PTtSinD(const double*);
-    double PTtSpulse(const double*);
-    double PTtSpulseD(const double*);
-    double PTtExp(const double*);
-    double PTtExpD(const double*);
-    double PTtSffm(const double*);
-    double PTtSffmD(const double*);
-    double PTtAm(const double*);
-    double PTtAmD(const double*);
-    double PTtGauss(const double*);
-    double PTtGaussD(const double*);
-    double PTtInterp(const double*);
-    double PTtInterpD(const double*);
+    double tran_func(const double*);
+    double tran_deriv(const double*);
     double PTtTable(const double*);
     double PTtTableD(const double*);
 

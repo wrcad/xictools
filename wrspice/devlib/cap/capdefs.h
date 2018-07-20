@@ -122,9 +122,9 @@ struct sCAPinstance : public sGENinstance
     int CAPposNode;    // number of positive node of capacitor
     int CAPnegNode;    // number of negative node of capacitor
 
-    double CAPcapac;    // capacitance, after temp adj
     double CAPnomCapac; // nominal capacitance
     double CAPinitCond; // initial capacitor voltage if specified
+    double CAPcapac;    // capacitance, after temp and M adj
     double CAPceq;      // storage for ceq, rhs entry
     double CAPgeq;      // stroage for geq, matrix entry
     double CAPwidth;    // width of the capacitor
@@ -133,6 +133,7 @@ struct sCAPinstance : public sGENinstance
     double CAPtc1;      // first order temp. coeff.
     double CAPtc2;      // second order temp. coeff.
     double CAPtcFactor; // temperature adj. factor
+    double CAPm;        // device multiplier
 
     // for parse tree support
     IFparseTree *CAPtree;    // large-signal capacitance expression
@@ -160,6 +161,7 @@ struct sCAPinstance : public sGENinstance
     unsigned CAPtempGiven   : 1; // temperature specified
     unsigned CAPtc1Given    : 1; // tc1 specified
     unsigned CAPtc2Given    : 1; // tc2 specified
+    unsigned CAPmGiven      : 1; // device multiplier given
 };
 
 struct sCAPmodel : public sGENmodel
@@ -175,6 +177,7 @@ struct sCAPmodel : public sGENmodel
     double CAPtnom;       // temperature at which capacitance measured
     double CAPtempCoeff1; // first temperature coefficient of capacitors
     double CAPtempCoeff2; // second temperature coefficient of capacitors
+    double CAPm;        // device multiplier
 
     unsigned CAPcjGiven : 1;       // Unit Area Capacitance ( F/ M**2 )
     unsigned CAPcjswGiven : 1;     // Unit Length Sidewall Capacitance(F/M)
@@ -183,6 +186,7 @@ struct sCAPmodel : public sGENmodel
     unsigned CAPtnomGiven: 1;      // nominal temp. was given
     unsigned CAPtc1Given : 1;      // tc1 was specified
     unsigned CAPtc2Given : 1;      // tc2 was specified
+    unsigned CAPmGiven   : 1;      // device multiplier given
 };
 
 } // namespace CAP
@@ -202,6 +206,7 @@ enum {
     CAP_TEMP,
     CAP_TC1,
     CAP_TC2,
+    CAP_M,
     CAP_POLY,
     CAP_CHARGE,
     CAP_VOLTAGE,
@@ -214,14 +219,15 @@ enum {
 
 // model parameters
 enum {
-    CAP_MOD_CJ = 1000,
+    CAP_MOD_C = 1000,
+    CAP_MOD_CJ,
     CAP_MOD_CJSW,
     CAP_MOD_DEFWIDTH,
-    CAP_MOD_C,
     CAP_MOD_NARROW,
     CAP_MOD_TNOM,
     CAP_MOD_TC1,
-    CAP_MOD_TC2
+    CAP_MOD_TC2,
+    CAP_MOD_M
 };
 
 #endif // CAPDEFS_H

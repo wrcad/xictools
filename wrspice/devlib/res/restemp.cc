@@ -122,7 +122,7 @@ RESdev::temperature(sGENmodel *genmod, sCKT *ckt)
 
         sRESinstance *inst;
 #ifdef USE_PRELOAD
-        // We will move the instances with a tree and variables to the
+        // We will move the instances that can't be preloaded to the
         // front of the list, so we can easily skip the rest when
         // loading.
 
@@ -196,7 +196,7 @@ RESdev::temperature(sGENmodel *genmod, sCKT *ckt)
                     return (E_SYNTAX);
             }
             if (res_given) {
-                double G = 1.0/(inst->RESresist * factor);
+                double G = inst->RESm/(inst->RESresist * factor);
                 if (G > gmax) {
                     G = gmax;
                     DVO.textOut(OUT_WARNING,
@@ -214,17 +214,33 @@ RESdev::temperature(sGENmodel *genmod, sCKT *ckt)
 
 #ifdef USE_PRELOAD
             if (ckt->CKTpreload) {
+#ifdef NEWJJDC
+                // Set the preload flag if the resistor is linear and
+                // not connected to a phase node.
+                if (!inst->RESpolyCoeffs &&
+                        (!inst->REStree || inst->REStree->num_vars() == 0) &&
+                        (nodetype(ckt, inst->RESposNode) != PHASE) &&
+                        (nodetype(ckt, inst->RESnegNode) != PHASE))
+                    inst->RESusePreload = true;
+#else
+                // Set the preload flag if the resistor is linear.
+                if (!inst->RESpolyCoeffs &&
+                        (!inst->REStree || inst->REStree->num_vars() == 0))
+                    inst->RESusePreload = true;
+#endif
+
                 // preload constants
-                if (inst->RESconduct != 0.0) {
-                    ckt->preldadd(inst->RESposPosptr, inst->RESconduct);
-                    ckt->preldadd(inst->RESnegNegptr, inst->RESconduct);
-                    ckt->preldadd(inst->RESposNegptr, -inst->RESconduct);
-                    ckt->preldadd(inst->RESnegPosptr, -inst->RESconduct);
+                if (inst->RESusePreload) {
+                    if (inst->RESconduct != 0.0) {
+                        ckt->preldadd(inst->RESposPosptr, inst->RESconduct);
+                        ckt->preldadd(inst->RESnegNegptr, inst->RESconduct);
+                        ckt->preldadd(inst->RESposNegptr, -inst->RESconduct);
+                        ckt->preldadd(inst->RESnegPosptr, -inst->RESconduct);
+                    }
                 }
             }
 
-            if (inst->RESpolyCoeffs || (inst->REStree &&
-                    inst->REStree->num_vars() > 0)) {
+            if (!inst->RESusePreload) {
                 // Move these to the top of the list.
                 if (prev_inst) {
                     prev_inst->GENnextInstance = next_inst;

@@ -92,9 +92,9 @@ struct INDdev : public IFdevice
 //    int convTest(sGENmodel*, sCKT*);  
 
     int setInst(int, IFdata*, sGENinstance*);  
-//    int setModl(int, IFdata*, sGENmodel*);   
+    int setModl(int, IFdata*, sGENmodel*);   
     int askInst(const sCKT*, const sGENinstance*, int, IFdata*);    
-//    int askModl(const sGENmodel*, int, IFdata*); 
+    int askModl(const sGENmodel*, int, IFdata*); 
     int findBranch(sCKT*, sGENmodel*, IFuid); 
 
     int acLoad(sGENmodel*, sCKT*); 
@@ -127,9 +127,10 @@ struct sINDinstance : public sGENinstance
 
     int INDbrEq; // number of the branch equation added for current
 
-    double INDinduct;     // inductance
-    double INDnomInduct;  // nominal inductance
+    double INDnomInduct;  // inductance as given
     double INDinitCond;   // initial inductor voltage if specified
+    double INDm;          // device multiplier
+    double INDinduct;     // inductance, scaled
     double INDveq;        // storage for veq
     double INDreq;        // storage for req
     double INDprevFlux;   // previous total flux
@@ -156,6 +157,7 @@ struct sINDinstance : public sGENinstance
 
     unsigned INDindGiven : 1;   // inductance was specified
     unsigned INDicGiven  : 1;   // init. cond. was specified
+    unsigned INDmGiven   : 1;   // device multiplier was specified
 };
 
 struct sINDmodel : public sGENmodel
@@ -163,6 +165,10 @@ struct sINDmodel : public sGENmodel
     sINDmodel()         { memset(this, 0, sizeof(sINDmodel)); }
     sINDmodel *next()   { return (static_cast<sINDmodel*>(GENnextModel)); }
     sINDinstance *inst() { return (static_cast<sINDinstance*>(GENinstances)); }
+
+    double INDm;          // device multiplier
+
+    unsigned INDmGiven   : 1;   // device multiplier was specified
 };
 
 #define INDflux GENstate   // flux in the inductor
@@ -234,6 +240,7 @@ using namespace IND;
 enum {
     IND_IND = 1,
     IND_IC,
+    IND_M,
     IND_POLY,
     IND_FLUX,
     IND_VOLT,
@@ -249,5 +256,10 @@ enum {
     IND_NOTUSED
 };
 
+// model parameters
+enum {
+    IND_MOD_L = 1000,
+    IND_MOD_M
+};
 #endif // INDDEFS_H
 

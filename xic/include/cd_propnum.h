@@ -222,6 +222,9 @@ enum
     XICP_STDVIA = INTERNAL_PROPERTY_BASE + 60,
     XICP_CSTMVIA,
 
+    // OA partName property, translator uses this.
+    XICP_PARTNAME = INTERNAL_PROPERTY_BASE + 62,
+
     // Property from OpenAccess the we don't recognize.  We keep these
     // anyway.
     XICP_OA_UNKN = INTERNAL_PROPERTY_BASE + 64,

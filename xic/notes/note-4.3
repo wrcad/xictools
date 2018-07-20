@@ -287,3 +287,27 @@ ToDo: handle via/pc masters in archive
 Update !mklog to handle collections of native cells.
 
 Skip overwrite prompt based on cell source and modification status?
+
+If a file named ".xic_ignore" exists in a "models" directory, the directory
+content will be ignored.
+
+Chris Ayala, unresolved library devices issue
+Hi Steve,
+
+I’ve forgotten to thank you for your previous reply, so thank you so much for
++getting back to me!
+
+1. This is good to know, although I’m not sure how to actually set those
+variables. Is it simply something like NoAskOverwrite = 1?
+
+2. This solution worked great. Is it best practice to place instances of cells
+from a library via Library List->Open desired library->Contents->Select cell
+from listing->Place? (and then with listing window still open, continue to
+place other cells as needed)? Before using the .lib file, I just went over to
+the Place button, entered the name of the cell, and placed it but this only
+worked because I launched xic from the directory where I saved all the cells.
+Now that I used the lib file to reference the directory containing the
+collection of cells, the Place button still works and the tool can still find
+the cell but xic complains of missing basic elements such as jj, ind, etc. But
+if I do place via the Library List->Contents->Listing, it works perfectly fine.
+I’m just wondering what is different about these two “placing” actions.

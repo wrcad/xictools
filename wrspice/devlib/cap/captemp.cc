@@ -95,7 +95,7 @@ CAPdev::temperature(sGENmodel *genmod, sCKT *ckt)
                 else
                     return (E_SYNTAX);
             }
-            inst->CAPcapac = inst->CAPnomCapac * inst->CAPtcFactor;
+            inst->CAPcapac = inst->CAPnomCapac * inst->CAPtcFactor * inst->CAPm;
         }
     }
     return (OK);
