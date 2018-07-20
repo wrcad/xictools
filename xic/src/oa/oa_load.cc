@@ -1126,15 +1126,6 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                     pn->set_next_prp(sd_symb->prptyList());
                     sd_symb->setPrptyList(pn);
                 }
-                if (pn) {
-                    CDp *p = sd_symb->prpty(P_NAME);
-                    if (p) {
-                        sd_symb->prptyUnlink(p);
-                        delete p;
-                    }
-                    pn->set_next_prp(sd_symb->prptyList());
-                    sd_symb->setPrptyList(pn);
-                }
             }
             else if (in_sub_level == 0) {
                 // The symbolic cell must be a regular cell.
