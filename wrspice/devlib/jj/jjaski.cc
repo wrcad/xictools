@@ -77,6 +77,9 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         0, // notused
         &&L_JJ_AREA, 
         &&L_JJ_ICS, 
+#ifdef NEWLSER
+        &&L_JJ_LSER, 
+#endif
         &&L_JJ_OFF,
         &&L_JJ_IC,
         &&L_JJ_ICP,
@@ -98,9 +101,19 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_JJ_QUEST_G2,
         &&L_JJ_QUEST_N1,
         &&L_JJ_QUEST_N2,
+#ifdef NEWLSER
+        &&L_JJ_QUEST_NP,
+        &&L_JJ_QUEST_NI,
+        &&L_JJ_QUEST_NB};
+#else
         &&L_JJ_QUEST_NP};
+#endif
 
+#ifdef NEWLSER
+    if ((unsigned int)which > JJ_QUEST_NB)
+#else
     if ((unsigned int)which > JJ_QUEST_NP)
+#endif
         return (E_BADPARM);
 #endif
 
@@ -120,6 +133,11 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_JJ_ICS:
         data->v.rValue = inst->JJics;
         return (OK);
+#ifdef NEWLSER
+    L_JJ_LSER:
+        data->v.rValue = inst->JJlser;
+        return (OK);
+#endif
     L_JJ_OFF:
         data->type = IF_FLAG;
         data->v.iValue = inst->JJoffGiven;
@@ -182,7 +200,11 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         return (OK);
     L_JJ_QUEST_N1:
         data->type = IF_INTEGER;
+#ifdef NEWLSER
+        data->v.iValue = inst->JJrealPosNode;
+#else
         data->v.iValue = inst->JJposNode;
+#endif
         return (OK);
     L_JJ_QUEST_N2:
         data->type = IF_INTEGER;
@@ -192,6 +214,16 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->type = IF_INTEGER;
         data->v.iValue = inst->JJphsNode;
         return (OK);
+#ifdef NEWLSER
+    L_JJ_QUEST_NI:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJposNode;
+        return (OK);
+    L_JJ_QUEST_NB:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJlserBr;
+        return (OK);
+#endif
 #else
     switch (which) {
     case JJ_AREA:
@@ -200,6 +232,11 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case JJ_ICS:
         data->v.rValue = inst->JJics;
         break;
+#ifdef NEWLSER
+    case JJ_LSER:
+        data->v.rValue = inst->JJlser;
+        break;
+#endif
     case JJ_OFF:
         data->type = IF_FLAG;
         data->v.iValue = inst->JJoffGiven;
@@ -262,7 +299,11 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         break;
     case JJ_QUEST_N1:
         data->type = IF_INTEGER;
+#ifdef NEWLSER
+        data->v.iValue = inst->JJrealPosNode;
+#else
         data->v.iValue = inst->JJposNode;
+#endif
         break;
     case JJ_QUEST_N2:
         data->type = IF_INTEGER;
@@ -272,6 +313,16 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->type = IF_INTEGER;
         data->v.iValue = inst->JJphsNode;
         break;
+#ifdef NEWLSER
+    case JJ_QUEST_NI:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJposNode;
+        return (OK);
+    case JJ_QUEST_NB:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJlserBr;
+        return (OK);
+#endif
     default:
         return (E_BADPARM);
     }

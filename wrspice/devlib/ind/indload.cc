@@ -94,6 +94,16 @@ INDdev::load(sGENinstance *in_inst, sCKT *ckt)
             double res = 2*M_PI*inst->INDinduct/wrsCONSTphi0;
             ckt->ldadd(inst->INDibrIbrptr, -res);
         }
+#ifndef USE_PRELOAD
+        if (inst->INDposNode) {
+            ckt->ldset(inst->INDposIbrptr, 1.0);
+            ckt->ldset(inst->INDibrPosptr, 1.0);
+        }
+        if (inst->INDnegNode) {
+            ckt->ldset(inst->INDnegIbrptr, -1.0);
+            ckt->ldset(inst->INDibrNegptr, -1.0);
+        }
+#endif
 #endif
         return (OK);
     }

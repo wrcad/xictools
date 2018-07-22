@@ -53,6 +53,10 @@ IO("area",              JJ_AREA,            IF_REAL,
                 "Area factor"),
 IO("ics",               JJ_ICS,             IF_REAL,
                 "Critical current with scaling"),
+#ifdef NEWLSER
+IO("lser",              JJ_LSER,             IF_REAL,
+                "Parasitic series inductance"),
+#endif
 IO("off",               JJ_OFF,             IF_FLAG,
                 "Shorted for dc operating point comp."),
 IO("ic",                JJ_IC,              IF_REALVEC|IF_VOLT,
@@ -97,8 +101,17 @@ OP("node1",             JJ_QUEST_N1,        IF_INTEGER,
                 "Node 1 number"),
 OP("node2",             JJ_QUEST_N2,        IF_INTEGER,
                 "Node 2 number"),
+#ifdef NEWLSER
+OP("pnode",             JJ_QUEST_NP,        IF_INTEGER,
+                "Phase node number"),
+OP("lsernode",          JJ_QUEST_NI,        IF_INTEGER,
+                "Internal node number"),
+OP("lserbrn",           JJ_QUEST_NB,        IF_INTEGER,
+                "Internal lser branch number")
+#else
 OP("pnode",             JJ_QUEST_NP,        IF_INTEGER,
                 "Phase node number")
+#endif
 };
 
 IFparm JJmPTable[] = {

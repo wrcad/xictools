@@ -190,6 +190,22 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             js.jj_iv(model, inst);
             js.jj_load(ckt, model, inst);
         }
+#ifdef NEWLSER
+        if (inst->JJlser > 0.0) {
+            double res = 2*M_PI*inst->JJlser/wrsCONSTphi0;
+            ckt->ldadd(inst->JJlIbrIbrPtr, -res);
+        }
+#ifndef USE_PRELOAD
+        if (inst->JJrealPosNode) {
+            ckt->ldset(inst->JJlPosIbrPtr, 1.0);
+            ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+        }
+        if (inst->JJposNode) {
+            ckt->ldset(inst->JJlNegIbrPtr, -1.0);
+            ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+        }
+#endif
+#endif
         return (OK);
     }
 #else
@@ -310,6 +326,31 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         js.jj_load(ckt, model, inst);
 
         ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
+#ifdef NEWLSER
+        *(ckt->CKTstate0 + inst->JJlserFlux) = inst->JJlser *
+            *(ckt->CKTrhsOld + inst->JJlserBr);
+/*XXX
+        double flux = inst->JJlser *
+            *(ckt->CKTrhsOld + inst->JJlserBr) - inst->INDprevFlux;
+        *(ckt->CKTstate0 + inst->JJlserFlux) += flux;
+
+        inst->INDprevFlux = *(ckt->CKTstate0 + inst->JJlserFlux);
+*/
+        ckt->integrate(inst->JJlserFlux, inst->JJlserVeq);
+
+        ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+        ckt->ldadd(inst->JJlIbrIbrPtr, -inst->JJlserReq);
+#ifndef USE_PRELOAD
+        if (inst->JJrealPosNode) {
+            ckt->ldset(inst->JJlPosIbrPtr, 1.0);
+            ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+        }
+        if (inst->JJposNode) {
+            ckt->ldset(inst->JJlNegIbrPtr, -1.0);
+            ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+        }
+#endif
+#endif
         return (OK);
     }
 
@@ -344,6 +385,26 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         if (model->JJictype != 1)
             js.jj_ic(model, inst);
         js.jj_load(ckt, model, inst);
+#ifdef NEWLSER
+        inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
+        inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
+
+        ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+        ckt->ldadd(inst->JJlIbrIbrPtr, -inst->JJlserReq);
+
+//XXX        inst->INDprevFlux = 0;
+        *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
+#ifndef USE_PRELOAD
+        if (inst->JJrealPosNode) {
+            ckt->ldset(inst->JJlPosIbrPtr, 1.0);
+            ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+        }
+        if (inst->JJposNode) {
+            ckt->ldset(inst->JJlNegIbrPtr, -1.0);
+            ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+        }
+#endif
+#endif
         return (OK);
     }
 
@@ -371,6 +432,33 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             js.js_ci  = 0;  // This isn't right?
 #endif
         }
+#ifdef NEWLSER
+        double ival;
+        if (ckt->CKTmode & MODEUIC)
+            ival =  0.0;
+        else
+            ival = *(ckt->CKTrhsOld + inst->JJlserBr);
+        *(ckt->CKTstate1 + inst->JJlserFlux) += inst->JJlser * ival;
+
+//XXX        inst->INDprevFlux = 0;
+        *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
+
+        inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
+        inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
+
+        ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+        ckt->ldadd(inst->JJlIbrIbrPtr, -inst->JJlserReq);
+#ifndef USE_PRELOAD
+        if (inst->JJrealPosNode) {
+            ckt->ldset(inst->JJlPosIbrPtr, 1.0);
+            ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+        }
+        if (inst->JJposNode) {
+            ckt->ldset(inst->JJlNegIbrPtr, -1.0);
+            ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+        }
+#endif
+#endif
     }
     else {
         // Probably don't get here unless we allow AC analysis.

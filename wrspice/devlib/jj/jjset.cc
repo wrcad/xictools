@@ -110,6 +110,13 @@ namespace {
         TSTALLOC(JJnegNegPtr, JJnegNode, JJnegNode)
         TSTALLOC(JJnegPosPtr, JJnegNode, JJposNode)
         TSTALLOC(JJposNegPtr, JJposNode, JJnegNode)
+#ifdef NEWLSER
+        TSTALLOC(JJlPosIbrPtr, JJrealPosNode, JJlserBr)
+        TSTALLOC(JJlNegIbrPtr, JJposNode, JJlserBr)
+        TSTALLOC(JJlIbrPosPtr, JJlserBr, JJrealPosNode)
+        TSTALLOC(JJlIbrNegPtr, JJlserBr, JJposNode)
+        TSTALLOC(JJlIbrIbrPtr, JJlserBr, JJlserBr)
+#endif
         if (inst->JJcontrol) {
             TSTALLOC(JJposIbrPtr, JJposNode, JJbranch)
             TSTALLOC(JJnegIbrPtr, JJnegNode, JJbranch)
@@ -341,6 +348,28 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             // current to use.
             inst->JJcriti = model->JJcriti * inst->JJarea;
 
+#ifdef NEWLSER
+            if (inst->JJlser < 1e-14) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: LSER less than 0.01pH, reset to 0.\n", inst->GENname);
+                inst->JJlser = 0.0;
+            }
+            if (inst->JJlser > 0.0) {
+                sCKTnode *node;
+                int err = ckt->mkVolt(&node, inst->GENname, "jpos");
+                if (err)
+                    return (err);
+                inst->JJposNode = node->number();
+                err = ckt->mkCur(&node, inst->GENname, "branch");
+                if (err)
+                    return (err);
+                inst->JJlserBr = node->number();
+            }
+            else {
+                inst->JJposNode = inst->JJrealPosNode;
+            }
+#endif
+
             // Note: we set the phase-node flag of connected nodes in
             // sCKT::setup, not here, for easier Verilog support.
 
@@ -434,10 +463,20 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 return (error);
 
 #ifdef USE_PRELOAD
-            if (inst->JJphsNode > 0) {
-                // preload constant
-                if (ckt->CKTpreload)
+            if (ckt->CKTpreload) {
+                if (inst->JJphsNode > 0) {
                     ckt->preldset(inst->JJphsPhsPtr, 1.0);
+                }
+#ifdef NEWLSER
+                if (inst->JJrealPosNode) {
+                    ckt->preldset(inst->JJlPosIbrPtr, 1.0);
+                    ckt->preldset(inst->JJlIbrPosPtr, 1.0);
+                }
+                if (inst->JJposNode) {
+                    ckt->preldset(inst->JJlNegIbrPtr, -1.0);
+                    ckt->preldset(inst->JJlIbrNegPtr, -1.0);
+                }
+#endif
             }
 #endif
         }

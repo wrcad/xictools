@@ -52,6 +52,8 @@ Author: 1992 Stephen R. Whiteley
 // data structures used to describe Jopsephson junctions
 //
 
+#define NEWLSER
+
 
 // Use WRspice pre-loading of constant elements.
 #define USE_PRELOAD
@@ -116,9 +118,17 @@ struct sJJinstance : public sGENinstance
     sJJinstance *next()
         { return (static_cast<sJJinstance*>(GENnextInstance)); }
 
+#ifdef NEWLSER
+    int JJrealPosNode;  // number of model positive node
+    int JJnegNode;      // number of model negative node
+    int JJphsNode;      // number of phase node of junction
+    int JJposNode;      // number of positive node of junction
+    int JJlserBr;       // number of internal branch for series L
+#else
     int JJposNode;    // number of positive node of junction
     int JJnegNode;    // number of negative node of junction
     int JJphsNode;    // number of phase node of junction
+#endif
 
     int JJbranch;                  // number of control current branch
     IFuid JJcontrol;               // name of controlling device
@@ -130,7 +140,11 @@ struct sJJinstance : public sGENinstance
 #define JJinitPhase JJinitCnd[1]
 
     double JJinitControl;          // initial control current
-
+#ifdef NEWLSER
+    double JJlser;                 // parasitic series inductance
+    double JJlserReq;              // stamp Req
+    double JJlserVeq;              // stamp Veq
+#endif
     double JJdelVdelT;             // dvdt storage
 
     // These parameters scale with area
@@ -163,10 +177,20 @@ struct sJJinstance : public sGENinstance
                                    //  (positive, branch equation)
     double *JJnegIbrPtr;           // pointer to sparse matrix at 
                                    //  (negative, branch equation)
+#ifdef NEWLSER
+    double *JJlPosIbrPtr;          // series inductance MNA stamp
+    double *JJlNegIbrPtr;
+    double *JJlIbrPosPtr;
+    double *JJlIbrNegPtr;
+    double *JJlIbrIbrPtr;
+#endif
 
                                    // Flags to indicate...
     unsigned JJareaGiven : 1;      // area was specified
     unsigned JJicsGiven : 1;       // ics was specified
+#ifdef NEWLSER
+    unsigned JJlserGiven : 1;      // lser was specified
+#endif
     unsigned JJinitVoltGiven : 1;  // ic was specified
     unsigned JJinitPhaseGiven : 1; // ic was specified
     unsigned JJcontrolGiven : 1;   // control ind or vsource was specified
@@ -177,15 +201,20 @@ struct sJJinstance : public sGENinstance
     double JJnVar[NSTATVARS][2];
 };
 
-#define JJvoltage GENstate
-#define JJdvdt    GENstate + 1
-#define JJphase   GENstate + 2
-#define JJconI    GENstate + 3
-#define JJphsInt  GENstate + 4
-#define JJcrti    GENstate + 5
-#define JJqpi     GENstate + 6
-
+#define JJvoltage   GENstate
+#define JJdvdt      GENstate + 1
+#define JJphase     GENstate + 2
+#define JJconI      GENstate + 3
+#define JJphsInt    GENstate + 4
+#define JJcrti      GENstate + 5
+#define JJqpi       GENstate + 6
+#ifdef NEWLSER
+#define JJlserFlux  GENstate + 7
+#define JJlserVolt  GENstate + 8
+#define JJnumStates 9
+#else
 #define JJnumStates 7
+#endif
 
 struct sJJmodel : sGENmodel
 {
@@ -243,6 +272,9 @@ using namespace JJ;
 enum {
     JJ_AREA = 1, 
     JJ_ICS,
+#ifdef NEWLSER
+    JJ_LSER,
+#endif
     JJ_OFF,
     JJ_IC,
     JJ_ICP,
@@ -264,7 +296,13 @@ enum {
     JJ_QUEST_G2,
     JJ_QUEST_N1,
     JJ_QUEST_N2,
+#ifdef NEWLSER
+    JJ_QUEST_NP,
+    JJ_QUEST_NI,
+    JJ_QUEST_NB
+#else
     JJ_QUEST_NP
+#endif
 };
 
 // model parameters

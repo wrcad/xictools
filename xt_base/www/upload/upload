@@ -26,6 +26,7 @@ echo Connecting to $home
 
 files="exported.new"
 for f in $files; do
+    rm -f $f
     echo uploading $f
     rsync --rsh=ssh $login@$home:$export/$f .
     if [ ! -f $f ]; then
@@ -68,8 +69,11 @@ done
 
 ./mktab
 
-# Save for next time.
-mv -f exported.new exported
+# Subsidiary programs expedt to find exported.new, so keep this in
+# case we need to run fetchnew, for example.  The exported file serves
+# as a reference when this script is run next.
+
+cp -f exported.new exported
 
 # Done.
 
