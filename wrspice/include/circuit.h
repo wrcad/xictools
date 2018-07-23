@@ -1714,7 +1714,7 @@ public:
     double va_idt(int, double, double = 0.0, bool = false, double = 0.0);
     void va_boundStep(double);
     bool va_analysis(const char*);
-    double va_simparam(const char*, double = 0.0, bool = false);
+    double va_simparam(const char*, double, bool, sGENinstance*);
     bool va_initial_step();
     bool va_final_step();
     double va_absdelay(double, double);

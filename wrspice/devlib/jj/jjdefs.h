@@ -160,7 +160,8 @@ struct sJJinstance : public sGENinstance
     double JJcr2;
 
     double JJdcrt;                 // param to pass to ac load function
-    double JJconduct;              // shunt conductance av Vj = 0
+    double JJgqp;                  // intrinsic conductance at Vj = 0
+    double JJgshunt;               // shunt conductance if vshunt given
     double JJnoise;                // noise scale factor
 
     double *JJposNegPtr;           // pointer to sparse matrix at 
@@ -183,6 +184,10 @@ struct sJJinstance : public sGENinstance
     double *JJlIbrPosPtr;
     double *JJlIbrNegPtr;
     double *JJlIbrIbrPtr;
+
+    double *JJrealPosRealPosPtr;   // vshunt r applied external contacts
+    double *JJrealPosNegPtr;
+    double *JJnegRealPosPtr;
 #endif
 
                                    // Flags to indicate...

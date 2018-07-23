@@ -51,8 +51,11 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.18, July 23, 2018
+//   Added lser instance parameter to model parasitic series inductance.
+//   The default value is 0.0, typical value might be 0.25pH.
 // Version 1.17, June 21, 2018
-// Pi factor missing plus bug in bound_step argument.  Time steps are
+//   Pi factor missing plus bug in bound_step argument.  Time steps are
 //   now a factor of pi more aggressive, same as WRspice internal JJ
 //   model.
 // Version 1.16, May 5, 2018
@@ -143,37 +146,39 @@
     `define P(txt)
 `endif
 
+`define NEWLSER
+
 // Uncomment this to support a phony DC analysis mode by loading JJ as
 // a tiny resistance.  Not recommended.
 //`define fakeDC
 
-// MIT-LL SFQ5EE process
+// MIT-LL SFQ5EE process.
 `define C_PER_A_10000  70.0     // ff/um2
 `define I_PER_A_10000 100.0     // uA/um2
 `define IcR_LL          1.6     // mV, critical current * normal resistance
 `define Vm_LL          16.0     // mV, critical current * subgap resistance
 
+// Hard-wire defaults for MIT-LL process for SuperTools.
+`define C_PER_A `C_PER_A_10000
+`define I_PER_A `I_PER_A_10000
+`define IcR     `IcR_LL
+`define Vm      `Vm_LL
+
 // Various Hypres foundry processes.
-`define C_PER_A_4500   59.0     // ff/um2
-`define I_PER_A_4500   45.0     // uA/um2
-`define C_PER_A_1000   50.0     // ff/um2
-`define I_PER_A_1000   10.0     // uA/um2
-`define C_PER_A_30     37.0     // ff/um2
-`define I_PER_A_30      0.3     // uA/um2
-`define IcR_HYP         1.7     // mV, critical current * normal resistance
-`define Vm_HYP         30.0     // mV, critical current * subgap resistance
+//`define C_PER_A_4500   59.0     // ff/um2
+//`define I_PER_A_4500   45.0     // uA/um2
+//`define C_PER_A_1000   50.0     // ff/um2
+//`define I_PER_A_1000   10.0     // uA/um2
+//`define C_PER_A_30     37.0     // ff/um2
+//`define I_PER_A_30      0.3     // uA/um2
+//`define IcR_HYP         1.7     // mV, critical current * normal resistance
+//`define Vm_HYP         30.0     // mV, critical current * subgap resistance
 
 // Hard-wire defaults for Hypres 4500A/cm2 process
 //`define C_PER_A `C_PER_A_4500
 //`define I_PER_A `I_PER_A_4500
 //`define IcR     `IcR_HYP
 //`define Vm      `Vm_HYP
-
-// Hard-wire for MIT-LL process for SuperTools.
-`define C_PER_A `C_PER_A_10000
-`define I_PER_A `I_PER_A_10000
-`define IcR     `IcR_LL
-`define Vm      `Vm_LL
 
 // Phi0/2pi = hbar over 2 e.
 `define PHI0_2PI    3.291086546e-16
@@ -185,7 +190,13 @@ module jj (n1, n2, ph);
 inout n1, n2;
 output ph;
 electrical n1, n2, ph;
+`ifdef NEWLSER
+electrical nint;
+branch(nint, n2) bj, bc, br;
+branch(n1, nint) blser;
+`else
 branch(n1, n2) bj, bc, br;
+`endif
 
 //
 // Model Parameters
@@ -272,6 +283,12 @@ aliasparam phi          = ic_phase;
 parameter real ics      = icrit from [icrit/20:icrit*20]
     `P(type="instance" info="scaled critical current" units="A");
 
+`ifdef NEWLSER
+// Series inductance.
+parameter real lser     = 0.0 from [0.0:10.0p]
+    `P(type="instance" info="series parasitic inductance" units="H");
+`endif
+
 // Scaling factor, not a physical area.  This is for backward
 // compatibility.
 // *** Deprecated, do not use in new work ***
@@ -286,11 +303,39 @@ real pmode, vdpbak, start_phase, SmallSigL, tsf, ic_scaled;
 analog begin
 
 `ifdef insideADMS
-    begin : initial_instance
+    begin : initial_model
+        real halfvg;
 `else
     @(initial_step)
         begin : initialization
-        real halfvg, tsf;
+        real halfvg;
+`endif
+
+        // Dropback voltage.
+        halfvg = 0.5*vgap;
+        if (cap > 0.0)
+            begin
+            vdpbak = sqrt(`PHI0_2PI*icrit/cap);
+            if (vdpbak > halfvg)
+                vdpbak = halfvg;
+            end
+        else
+            vdpbak = halfvg;
+
+        // dphiMax
+        //   If simulator returns nonzero, the dphimax .option is
+        //   supported and the value returned.  This is the maximum
+        //   phase change per internal time step.  The local default
+        //   is used if not supported by the simulator.
+        //   Requires WRspice-4.3.3.
+        //
+        tsf = $simparam("dphiMax", 0.0)/`M_PI;
+        if (tsf < 1e-3 || tsfactor != `TSDEFAULT)
+            tsf = tsfactor;
+`ifdef insideADMS
+    end
+
+    begin : initial_instance
 `endif
         real halfdv;
 
@@ -316,23 +361,6 @@ analog begin
         i2 = ic_scaled/icfct;
         start_phase = ic_phase;
         SmallSigL = 0.0;
-`ifdef insideADMS
-    end
-
-    begin : initial_model
-        real halfvg;
-`endif
-
-        // Dropback voltage.
-        halfvg = 0.5*vgap;
-        if (cap > 0.0)
-            begin
-            vdpbak = sqrt(`PHI0_2PI*icrit/cap);
-            if (vdpbak > halfvg)
-                vdpbak = halfvg;
-            end
-        else
-            vdpbak = halfvg;
 
         // Interface parameters passed to model from simulator using
         // the Verilog $simparam system function.  At present, only
@@ -342,18 +370,19 @@ analog begin
         //   If simulator returns nonzero, it supports phase-mode DC
         //   analysis.  Requires WRspice-4.3.3.
         //
-        pmode = $simparam("dcPhaseMode", 0.0);
-
-        // dphiMax
-        //   If simulator returns nonzero, the dphimax .option is
-        //   supported and the value returned.  This is the maximum
-        //   phase change per internal time step.  The local default
-        //   is used if not supported by the simulator.
-        //   Requires WRspice-4.3.3.
+        // phaseNode:<nodename>
+        //   This will mark the node as a "phase node" for DC analysis.
+        //   If successful, the node number is returned.  Requires
+        //   WRspice-4.3.7.
         //
-        tsf = $simparam("dphiMax", 0.0)/`M_PI;
-        if (tsf < 1e-3 || tsfactor != `TSDEFAULT)
-            tsf = tsfactor;
+        pmode = $simparam("dcPhaseMode", 0.0);
+        if (pmode > 0.0 && cct > 0)
+            begin
+            pmode = 0.0;
+            pmode = pmode + $simparam("phaseNode:n1", 0.0);
+            pmode = pmode + $simparam("phaseNode:n2", 0.0);
+            pmode = pmode + $simparam("phaseNode:nint", 0.0);
+            end
     end
 
     if (analysis("static") != 0)
@@ -371,7 +400,7 @@ analog begin
             // We're through with phase mode, call the regular load
             // functions.
 
-            if (cct == 1)
+            if (cct > 0)
                 begin
                 if (pijj != 0)
                     I(bj) <+ -ic_scaled*sin(phase);
@@ -381,6 +410,9 @@ analog begin
 
             // Geometric capacitance current.
             I(bc) <+ ddt(caps*V(bc));
+`ifdef NEWLSER
+            V(blser) <+ ddt(lser*I(blser));
+`endif
 
 `ifdef insideADMS
             // Small-signal inductance of Josephson current.  This is
@@ -403,7 +435,11 @@ analog begin
                 if (rtype == 1)
                     gshunt = gshunt - 1/rsubs;
                 if (gshunt > 0)
+`ifdef NEWLSER
+                    I(n1,n2) <+ gshunt*V(br);
+`else
                     I(br) <+ gshunt*V(br);
+`endif
                 end
             if ($port_connected(ph))
                 begin
@@ -461,6 +497,9 @@ analog begin
                 I(ph) <+ phase;
                 I(ph) <+ -V(ph);
                 end
+`ifdef NEWLSER
+            V(blser) <+ lser*I(blser)/`PHI0_2PI;
+`endif
             end
         else
             begin
@@ -471,6 +510,9 @@ analog begin
 
             I(ph) <+ -V(ph);
             I(br) <+ 1e6*scale*V(br);
+`ifdef NEWLSER
+            V(blser) <+ 0;
+`endif
 `else
             $error(
  "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
@@ -531,8 +573,16 @@ analog begin
             if (rtype == 1)
                 gshunt = gshunt - 1/rsubs;
             if (gshunt > 0)
+`ifdef NEWLSER
+                I(n1,n2) <+ gshunt*V(br);
+`else
                 I(br) <+ gshunt*V(br);
+`endif
             end
+
+`ifdef NEWLSER
+        V(blser) <+ ddt(lser*I(blser));
+`endif
 
         // Limit time step.  This is important, as the simulator may have
         // no other way to recognize the supercurrent and plasma

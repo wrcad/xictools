@@ -177,7 +177,7 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
                 js.jj_iv(model, inst);
             }
             js.jj_load(ckt, model, inst);
-            inst->JJdcrt = js.js_dcrt;  // for ac load
+            // don't load shunt
         }
         else {
             // No critical current, treat like a nonlinear resistor.
@@ -189,6 +189,31 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         
             js.jj_iv(model, inst);
             js.jj_load(ckt, model, inst);
+
+            // Load the shunt resistance implied if vshunt given.
+            if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+#ifdef NEWLSER
+                ckt->ldadd(inst->JJrealPosRealPosPtr, inst->JJgshunt);
+                ckt->ldadd(inst->JJrealPosNegPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJnegRealPosPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#else
+                ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
+                ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJnegPosPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#endif
+            }
+        }
+        if (ckt->CKTmode & MODEINITSMSIG) {
+            // for ac load
+            inst->JJdcrt = js.js_dcrt;
+            inst->JJgqp = js.js_gqt;
+            if (model->JJvShuntGiven) {
+                double gshunt = inst->JJcriti/model->JJvShunt - inst->JJgqp;
+                if (gshunt > 0.0)
+                    inst->JJgshunt = gshunt;
+            }
         }
 #ifdef NEWLSER
         if (inst->JJlser > 0.0) {
@@ -325,6 +350,21 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             js.jj_ic(model, inst);
         js.jj_load(ckt, model, inst);
 
+        // Load the shunt resistance implied if vshunt given.
+        if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+#ifdef NEWLSER
+            ckt->ldadd(inst->JJrealPosRealPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrealPosNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJnegRealPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#else
+            ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJnegPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#endif
+        }
+
         ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
 #ifdef NEWLSER
         *(ckt->CKTstate0 + inst->JJlserFlux) = inst->JJlser *
@@ -385,6 +425,21 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         if (model->JJictype != 1)
             js.jj_ic(model, inst);
         js.jj_load(ckt, model, inst);
+
+        // Load the shunt resistance implied if vshunt given.
+        if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+#ifdef NEWLSER
+            ckt->ldadd(inst->JJrealPosRealPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrealPosNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJnegRealPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#else
+            ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJnegPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#endif
+        }
 #ifdef NEWLSER
         inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
         inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
@@ -432,6 +487,38 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             js.js_ci  = 0;  // This isn't right?
 #endif
         }
+
+        inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
+
+        js.js_crhs = 0;
+        js.js_dcrt = 0;
+        js.js_crt  = inst->JJcriti;
+
+        js.jj_iv(model, inst);
+        if (model->JJictype != 1)
+            js.jj_ic(model, inst);
+        js.jj_load(ckt, model, inst);
+
+        // Setup/load the shunt resistance implied if vshunt is given.
+        inst->JJgqp = js.js_gqt;
+        if (model->JJvShuntGiven) {
+            double gshunt = inst->JJcriti/model->JJvShunt - inst->JJgqp;
+            if (gshunt > 0.0) {
+                inst->JJgshunt = gshunt;
+#ifdef NEWLSER
+                ckt->ldadd(inst->JJrealPosRealPosPtr, inst->JJgshunt);
+                ckt->ldadd(inst->JJrealPosNegPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJnegRealPosPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#else
+                ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
+                ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJnegPosPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#endif
+            }
+        }
+
 #ifdef NEWLSER
         double ival;
         if (ckt->CKTmode & MODEUIC)
@@ -459,43 +546,9 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         }
 #endif
 #endif
+        return (OK);
     }
-    else {
-        // Probably don't get here unless we allow AC analysis.
-        if (ckt->CKTmode & MODEUIC) {
-            js.js_vj  = inst->JJinitVoltage;
-            js.js_phi = inst->JJinitPhase;
-            js.js_ci  = inst->JJinitControl;
-        }
-        else {
-            js.js_vj  = 0;
-#ifdef NEWJJDC
-            // The RHS node voltage was set to zero in the doTask code.
-            js.js_phi = *(ckt->CKTstate1 + inst->JJphase);
-            js.js_ci  = (inst->JJcontrol) ?
-                    *(ckt->CKTrhsOld + inst->JJbranch) : 0;
-#else
-            js.js_phi = 0;
-            js.js_ci  = 0;  // This isn't right?
-#endif
-        }
-
-        *(ckt->CKTstate1 + inst->JJvoltage) = js.js_vj;
-        *(ckt->CKTstate1 + inst->JJphase)   = js.js_phi;
-        *(ckt->CKTstate1 + inst->JJconI)    = js.js_ci;
-    }
-
-    inst->JJdelVdelT = ckt->find_ceq(inst->JJvoltage);
-
-    js.js_crhs = 0;
-    js.js_dcrt = 0;
-    js.js_crt  = inst->JJcriti;
-
-    js.jj_iv(model, inst);
-    if (model->JJictype != 1)
-        js.jj_ic(model, inst);
-    js.jj_load(ckt, model, inst);
-    return (OK);
+    return (E_BADPARM);
 }
 
 
@@ -618,15 +671,6 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
     }
     else
         js_gqt = 0;
-
-    // For ac load
-    inst->JJconduct = js_gqt;
-
-    if (model->JJvShuntGiven) {
-        double gshunt = inst->JJcriti/model->JJvShunt - inst->JJg0;
-        if (gshunt > 0.0)
-            inst->JJconduct += gshunt;
-    }
 }
 
 
@@ -718,23 +762,11 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
         crhs += crt - gcs*js_vj;
         gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
         crhs += inst->JJdelVdelT*inst->JJcap;
-
-        if (model->JJvShuntGiven) {
-            double gshunt = inst->JJcriti/model->JJvShunt - inst->JJg0;
-            if (gshunt > 0.0)
-                gqt += gshunt;
-        }
     }
 #else
     crhs += crt - gcs*js_vj;
     gqt  += gcs + ckt->CKTag[0]*inst->JJcap;
     crhs += inst->JJdelVdelT*inst->JJcap;
-
-    if (model->JJvShuntGiven) {
-        double gshunt = inst->JJcriti/model->JJvShunt - inst->JJg0;
-        if (gshunt > 0.0)
-            gqt += gshunt;
-    }
 #endif
 
     // load matrix, rhs vector

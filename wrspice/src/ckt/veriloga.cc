@@ -173,7 +173,8 @@ sCKT::va_analysis(const char *tok)
 // Support for the Verilog-A $simparam function.
 //
 double
-sCKT::va_simparam(const char *tok, double retval, bool rvgiven)
+sCKT::va_simparam(const char *tok, double retval, bool rvgiven,
+    sGENinstance *inst)
 {
     if (lstring::cieq(tok, "gdev") || lstring::cieq(tok, "gmin"))
         return (CKTcurTask->TSKgmin);
@@ -254,6 +255,39 @@ sCKT::va_simparam(const char *tok, double retval, bool rvgiven)
         return (CKTmode & MODEINITSMSIG);
     if (lstring::cieq(tok, "dcphasemode"))
         return (CKTjjDCphase);
+    if (lstring::ciprefix("phasenode", tok)) {
+        // Hack for setting the phase node flag from Verilog.
+        const char *t = tok + 9;
+        if (*t == ':' || *t == '.' || *t == ',') {
+            if (inst) {
+                t++;
+                char *nn = new char[strlen(t) + 8];
+                sprintf(nn, "node_%s", t);
+                int type = inst->GENmodPtr->GENmodType;
+                IFparm *p = DEV.device(type)->findInstanceParm(nn, IF_ASK);
+                if (p) {
+                    IFdata data;
+                    int err = DEV.device(type)->askInst(this, inst, p->id,
+                        &data);
+                    if (err == OK) {
+                        int nodenum = 0;
+                        if (data.type == IF_INTEGER)
+                            nodenum = data.v.iValue;
+                        else if (data.type == IF_REAL)
+                            nodenum = (int)data.v.rValue;
+                        if (nodenum > 0) {
+                            sCKTnode *node = CKTnodeTab.find(nodenum);
+                            if (node && node->type() == SP_VOLTAGE)
+                                node->set_phase(true);
+                            delete [] nn;
+                            return (nodenum);
+                        }
+                    }
+                }
+                delete [] nn;
+            }
+        }
+    }
 #endif
     if (lstring::cieq(tok, "dphimax"))
         return (CKTcurTask->TSKdphiMax);

@@ -179,13 +179,13 @@ JJdev::noise (int mode, int operation, sGENmodel *genmod, sCKT *ckt,
                     double lnNdens[2];
                     NevalSrc(&noizDens[0], &lnNdens[0], ckt, THERMNOISE,
                         inst->JJposNode, inst->JJnegNode,
-                        inst->JJnoise * inst->JJconduct);
+                        inst->JJnoise * inst->JJgqp);
 
                     *OnDens += noizDens[0];
 #ifdef WITH_KF
                     if (doing_flicker(model, inst)) {
                         double cur =
-                            inst->JJv * inst->JJnoise * inst->JJconduct;
+                            inst->JJv * inst->JJnoise * inst->JJgqp;
                         if (!model->JJafGiven)
                             cur *= cur;
                         else if (model->JJaf != 1.0)

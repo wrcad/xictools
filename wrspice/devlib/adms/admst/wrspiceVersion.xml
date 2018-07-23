@@ -2933,10 +2933,10 @@
         <admst:variable name="args" select="$args$e"/>
       </admst:for-each>
       <admst:if test="[count(arguments)=1]">
-        <admst:variable name="e" value="ckt->va_simparam($args)"/>
+        <admst:variable name="e" value="ckt->va_simparam($args, 0.0, false, inst)"/>
       </admst:if>
       <admst:if test="[count(arguments)=2]">
-        <admst:variable name="e" value="ckt->va_simparam($args, true)"/>
+        <admst:variable name="e" value="ckt->va_simparam($args, true, inst)"/>
       </admst:if>
     </admst:when>
 

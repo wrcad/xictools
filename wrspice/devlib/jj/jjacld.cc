@@ -49,11 +49,30 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
-            double G = inst->JJconduct;
+#ifdef NEWLSER
+            double G = inst->JJgqp;
             *inst->JJposPosPtr += G;
             *inst->JJnegNegPtr += G;
             *inst->JJposNegPtr -= G;
             *inst->JJnegPosPtr -= G;
+
+            // Load the shunt resistance implied if vshunt given.
+            if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+                G = inst->JJgshunt;
+                ckt->ldadd(inst->JJrealPosRealPosPtr, G);
+                ckt->ldadd(inst->JJrealPosNegPtr, -G);
+                ckt->ldadd(inst->JJnegRealPosPtr, -G);
+                ckt->ldadd(inst->JJnegNegPtr, G);
+            }
+#else
+            double G = inst->JJgqp;
+            if (model->JJvShuntGiven && inst->JJgshunt > 0.0)
+                G += inst->gshunt;
+            *inst->JJposPosPtr += G;
+            *inst->JJnegNegPtr += G;
+            *inst->JJposNegPtr -= G;
+            *inst->JJnegPosPtr -= G;
+#endif
 
             double C = inst->JJcap;
             double val = ckt->CKTomega*C;
@@ -74,6 +93,21 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
             *(inst->JJnegPosPtr +1) -= val;
             if (inst->JJphsNode > 0)
                 *inst->JJphsPhsPtr =  1.0;
+
+#ifdef NEWLSER
+            if (inst->JJlser > 0.0) {
+                val = ckt->CKTomega * inst->JJlser;
+                if (inst->JJrealPosNode) {
+                    ckt->ldset(inst->JJlPosIbrPtr, 1.0);
+                    ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+                }
+                if (inst->JJposNode) {
+                    ckt->ldset(inst->JJlNegIbrPtr, -1.0);
+                    ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+                }
+                *(inst->JJlIbrIbrPtr +1) -= val;
+            }
+#endif
         }
     }
     return (OK);

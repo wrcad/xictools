@@ -111,11 +111,19 @@ namespace {
         TSTALLOC(JJnegPosPtr, JJnegNode, JJposNode)
         TSTALLOC(JJposNegPtr, JJposNode, JJnegNode)
 #ifdef NEWLSER
+        // The series inductance is from JJrealPosNode (device contact)
+        // to JJposNode (an internal node when lser is nonzero).
         TSTALLOC(JJlPosIbrPtr, JJrealPosNode, JJlserBr)
         TSTALLOC(JJlNegIbrPtr, JJposNode, JJlserBr)
         TSTALLOC(JJlIbrPosPtr, JJlserBr, JJrealPosNode)
         TSTALLOC(JJlIbrNegPtr, JJlserBr, JJposNode)
         TSTALLOC(JJlIbrIbrPtr, JJlserBr, JJlserBr)
+
+        // The vshunt (external shunt) is applied from JJrealPosNode
+        // to JJnegNode (the device contacts)
+        TSTALLOC(JJrealPosRealPosPtr, JJrealPosNode, JJrealPosNode);
+        TSTALLOC(JJrealPosNegPtr, JJrealPosNode, JJnegNode);
+        TSTALLOC(JJnegRealPosPtr, JJnegNode, JJrealPosNode);
 #endif
         if (inst->JJcontrol) {
             TSTALLOC(JJposIbrPtr, JJposNode, JJbranch)
