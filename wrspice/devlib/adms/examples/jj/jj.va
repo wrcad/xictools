@@ -298,7 +298,10 @@ parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
 real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
-real pmode, vdpbak, start_phase, SmallSigL, tsf, ic_scaled;
+real pmode, vdpbak, start_phase, tsf, ic_scaled;
+`ifdef insideADMS
+real SmallSigL;
+`endif
 
 analog begin
 
@@ -309,6 +312,7 @@ analog begin
     @(initial_step)
         begin : initialization
         real halfvg;
+        real halfdv;
 `endif
 
         // Dropback voltage.
@@ -336,8 +340,8 @@ analog begin
     end
 
     begin : initial_instance
-`endif
         real halfdv;
+`endif
 
         phase = 0.0;
         if (ics != icrit)
@@ -360,7 +364,9 @@ analog begin
         i1 = vless/rsubs;
         i2 = ic_scaled/icfct;
         start_phase = ic_phase;
+`ifdef insideADMS
         SmallSigL = 0.0;
+`endif
 
         // Interface parameters passed to model from simulator using
         // the Verilog $simparam system function.  At present, only
@@ -384,6 +390,9 @@ analog begin
             pmode = pmode + $simparam("phaseNode:nint", 0.0);
             end
     end
+
+`ifdef insideADMS
+    // Only WRspice can do DC analysis at present.
 
     if (analysis("static") != 0)
         begin
@@ -414,7 +423,6 @@ analog begin
             V(blser) <+ ddt(lser*I(blser));
 `endif
 
-`ifdef insideADMS
             // Small-signal inductance of Josephson current.  This is
             // a hack for ADMS - an instance variable of this name is
             // treated specially in the AC load function.  ADMS does
@@ -423,7 +431,6 @@ analog begin
             // Perhaps other parsers will handle this correctly?
             // 
             SmallSigL = `PHI0_2PI/(ic_scaled*cos(phase));
-`endif
 
             // Quasiparticle current, piecewise-linear model.
             if (rtype == 1)
@@ -513,7 +520,6 @@ analog begin
 `ifdef NEWLSER
             V(blser) <+ 0;
 `endif
-`else
             $error(
  "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
             $finish(0);
@@ -521,6 +527,9 @@ analog begin
             end
         end
     else if (analysis("tran") != 0)
+`else
+    if (analysis("tran") != 0)
+`endif
         begin : tranan
         real avj, vtmp, gshunt;
 
@@ -544,9 +553,9 @@ analog begin
             //
             // V(ph) <+ phase;
             //
-            // The following is basically equivalent.  This gives our "voltage
-            // source" a 1 ohm internal resistance, and does not increase the
-            // circuit matrix size.
+            // The following is basically equivalent.  This gives our
+            // "voltage source" a 1 ohm internal resistance, and does
+            // not increase the circuit matrix size.
             //
             I(ph) <+ phase;
             I(ph) <+ -V(ph);
