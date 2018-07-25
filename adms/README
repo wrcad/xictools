@@ -57,6 +57,12 @@ However, there were some changes made when building this package:
     Did the same modification to the source files admsPreprocessor.h
     and admsVeriloga.h, also in ./files.
 
+2.3.63:  07/25/2018
+    Minor tweaks to differentiate package name (xictools_adms) from
+    executable name (admsXml) in printed output. Updated printed help
+    info, in part to indicate that there can be no space between -D
+    and NAME, it must apear as -DNAME.
+
 2.3.62:  11/10/2017
     Modified verilogaYacc.y.in so that array endpoints are tk_integer
     instead or tk_number.  Arrays are now supported in WRspice.

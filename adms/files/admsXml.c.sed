@@ -590,7 +590,7 @@ static void parseva (const int argc,const char** argv,char* myverilogamsfile)
   root()->_filename=basename(myverilogamsfile);
   root()->_fullfilename=adms_kclone(myverilogamsfile);
   root()->_curfilename=adms_kclone(myverilogamsfile);
-  adms_message_info(("%sXml-%s (%s) %s %s\n",PACKAGE_NAME,PACKAGE_VERSION,GIT,__DATE__,__TIME__))
+  adms_message_info(("%s-%s (%s) %s %s\n",PACKAGE_NAME,PACKAGE_VERSION,GIT,__DATE__,__TIME__))
   /* preprocess input file */
   {
     p_preprocessor mypreprocessor=(p_preprocessor)malloc(sizeof(t_preprocessor));
@@ -2632,7 +2632,7 @@ int main (const int argc,const char**argv)
   {
     char* sfullname=NULL;
     adms_k2strconcat(&sfullname,PACKAGE_NAME);
-    adms_k2strconcat(&sfullname,"Xml-");
+    adms_k2strconcat(&sfullname,"-");
     if(getenv("adms_check"))
       adms_k2strconcat(&sfullname,"0.0.0 (shell variable 'adms_check' is set!)");
     else
@@ -2648,7 +2648,6 @@ int main (const int argc,const char**argv)
   {
     char* sdeveloper=NULL;
     adms_k2strconcat(&sdeveloper,PACKAGE_NAME);
-    adms_k2strconcat(&sdeveloper,"Xml");
     adms_k2strconcat(&sdeveloper,"-");
     adms_k2strconcat(&sdeveloper,PACKAGE_VERSION);
     adms_k2strconcat(&sdeveloper," (");
@@ -2686,18 +2685,23 @@ int main (const int argc,const char**argv)
     ((argc==3)&&!strcmp(argv[1],"--")&&!strcmp(argv[2],"help"))
   )
   {
-    adms_message_usage(("%sXml-%s (%s) ",PACKAGE_NAME,PACKAGE_VERSION,GIT))
+    adms_message_usage(("%s-%s (%s) ",PACKAGE_NAME,PACKAGE_VERSION,GIT))
     adms_message_usage_continue(("%s %s (os=%s compiler=%s)\n",__DATE__,__TIME__,ADMS_OS,ADMS_COMPILER))
-    adms_message_usage(("%sXml source [options] -e script1 [-e script2 ...]\n",PACKAGE_NAME))
+    adms_message_usage(("admsXml source [options] -e script1 [-e script2 ...]\n"))
     adms_message_usage(("files:\n"))
     adms_message_usage(("  source: verilog-ams source code\n"))
     adms_message_usage(("  script1, ...: admst scripts (xml format)\n"))
     adms_message_usage(("options:\n"))
-    adms_message_usage(("  -D NAME: predefine NAME as a macro, with definition `1'\n"))
-    adms_message_usage(("  -D NAME=DEFINITION: predefine NAME as a macro, with definition DEFINITION\n"))
+    adms_message_usage(("  -DNAME: predefine NAME as a macro, with definition `1'\n"))
+    adms_message_usage(("  -DNAME=DEFINITION: predefine NAME as a macro, with definition DEFINITION\n"))
     adms_message_usage(("  -I DIR: Add directory DIR to search path for header files\n"))
     adms_message_usage(("  -x : ignore file .adms.implicit.xml\n"))
     adms_message_usage(("  -xv: do not check version number of scripts\n"))
+    adms_message_usage(("info:\n"))
+    adms_message_usage(("  -i or --info: miscellaneous info (release, web site, mailing list)\n"))
+    adms_message_usage(("  -v or --version: version number\n"))
+    adms_message_usage(("  --v: version id\n"))
+    adms_message_usage(("  -h or --help: usage info\n"))
     adms_message_usage(("shell variables:\n"))
     adms_message_usage(("- adms_info=\"yes\"|\"no\": print info [default=yes]\n"))
     adms_message_usage(("- adms_usage=\"yes\"|\"no\": print usage [default=yes]\n"))
@@ -2706,9 +2710,6 @@ int main (const int argc,const char**argv)
     adms_message_usage(("- adms_dbg_vla=\"yes\"|\"no\": debug messages during vla parsing [default=no]\n"))
     adms_message_usage(("- adms_dbg_xml=\"yes\"|\"no\": debug messages during xml parsing [default=no]\n"))
     adms_message_usage(("- adms_dbg_pre=\"yes\"|\"no\": debug messages during vla preprocessing [default=no]\n"))
-    adms_message_usage(("-i or --info: miscellaneous info (release, web site, mailing list)\n"))
-    adms_message_usage(("-v or --version: version number\n"))
-    adms_message_usage(("-h or --help: short help\n"))
   }
   else if(
     ((argc==2)&&!strcmp(argv[1],"-v"))
@@ -2718,7 +2719,7 @@ int main (const int argc,const char**argv)
     ((argc==3)&&!strcmp(argv[1],"--")&&!strcmp (argv[2],"version"))
   )
   {
-    adms_message_usage(("<release name=\"%sXml\" version=\"%s\" date=\"%s\" time=\"%s\"/>\n",PACKAGE_NAME,PACKAGE_VERSION,__DATE__,__TIME__))
+    adms_message_usage(("<release name=\"%s\" version=\"%s\" date=\"%s\" time=\"%s\"/>\n",PACKAGE_NAME,PACKAGE_VERSION,__DATE__,__TIME__))
     return 0;
   }
   /* SRW - Prints the XicTools package info */
@@ -2802,6 +2803,8 @@ adms_message_usage(("  home-page=\"https://github.com/qucs/adms/\"\n"))
   adms_k2strconcat(&xheader,"  File automatically created\n");
   adms_k2strconcat(&xheader,"  Command used:\n");
   adms_k2strconcat(&xheader,"  # release: ");
+  adms_k2strconcat(&xheader,PACKAGE_NAME);
+  adms_k2strconcat(&xheader,"-");
   adms_k2strconcat(&xheader,PACKAGE_VERSION);
   adms_k2strconcat(&xheader," ");
   adms_k2strconcat(&xheader,__DATE__);
@@ -2809,8 +2812,7 @@ adms_message_usage(("  home-page=\"https://github.com/qucs/adms/\"\n"))
   adms_k2strconcat(&xheader,__TIME__);
   adms_k2strconcat(&xheader,"\n");
   adms_k2strconcat(&xheader,"  ");
-  adms_k2strconcat(&xheader,PACKAGE_NAME);
-  adms_k2strconcat(&xheader,"Xml");
+  adms_k2strconcat(&xheader,"admsXml");
   adms_k2strconcat(&xheader," \\\n");
   if(myskipxmli)
     adms_k2strconcat(&xheader,"   -x \\\n");
