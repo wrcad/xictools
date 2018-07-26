@@ -5,7 +5,7 @@
 
 # This must match the SyntaxLevel defined in device.xml.  If it is
 # smaller, you need to update this Makefile to match devkit/Makefile.
-SyntaxLevel = 14
+SyntaxLevel = 15
 
 #######################################################################
 #  MANDATORY User Configuration
@@ -294,75 +294,65 @@ realclean: clean
 # This file is exported, don't blow away the user's Makefile!
 distclean: realclean
 
+# Predefine `WRspice in Veiilog input.
+BASE = -DWRspice -x -e $(ADMST)/adms.implicit.xml -e device.xml -e \
+ $(ADMST)/wrspiceVersion.xml
+
 $(MODULE).cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULE.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULE.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULE.cc.xml
 
 $(MODULE)acld.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEacld.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEacld.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEacld.cc.xml
 
 $(MODULE)aski.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEaski.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEaski.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEaski.cc.xml
 
 $(MODULE)askm.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEaskm.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEaskm.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEaskm.cc.xml
 
 $(MODULE)load.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEload.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEload.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEload.cc.xml
 
 $(MODULE)nois.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEnois.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEnois.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEnois.cc.xml
 
 $(MODULE)pzld.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEpzld.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEpzld.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEpzld.cc.xml
 
 $(MODULE)set.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEset.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEset.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEset.cc.xml
 
 $(MODULE)seti.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEseti.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEseti.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEseti.cc.xml
 
 $(MODULE)setm.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEsetm.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEsetm.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEsetm.cc.xml
 
 $(MODULE)temp.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEtemp.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEtemp.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEtemp.cc.xml
 
 $(MODULE)topo.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEtopo.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEtopo.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEtopo.cc.xml
 
 $(MODULE)trun.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEtrun.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEtrun.cc.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEtrun.cc.xml
 	
 $(MODULE)defs.h: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEdefs.h.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) -x -e $(ADMST)/adms.implicit.xml -e device.xml \
-  -e $(ADMST)/wrspiceVersion.xml -e $(ADMST)/wrspiceMODULEdefs.h.xml
+	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEdefs.h.xml
 
 #######################################################################
 

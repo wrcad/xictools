@@ -51,6 +51,11 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.19, July 25, 2018
+//   Added WRspice predefine, used instead of "insideADMS" to differentiate
+//   WRspice features.  REQUIRES build from WRspice-4.3.7 or later for this
+//   to be predefined.  A few HSPICE tweaks.  This model is now certified/
+//   guaranteed to compile and run under HSPICE.
 // Version 1.18, July 23, 2018
 //   Added lser instance parameter to model parasitic series inductance.
 //   The default value is 0.0, typical value might be 0.25pH.
@@ -116,7 +121,7 @@
 //   Fixed bug in bound_step expression.
 // Version 0.5, February 14, 2012 (original release)
 //
-// Stephen R. Whiteley          stevew@wrcad.com
+// Stephen R. Whiteley          stevew@wrcad.com, whiteley@synopsys.com
 // Whiteley Research Inc.       http://wrcad.com
 //
 // MODULE: jj (node_plus, node_minus, node_phase)
@@ -299,7 +304,7 @@ parameter real area     = 1.0 from [0.05:20.0]
 
 real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
 real pmode, vdpbak, start_phase, tsf, ic_scaled;
-`ifdef insideADMS
+`ifdef WRspice
 real SmallSigL;
 `endif
 
@@ -364,7 +369,7 @@ analog begin
         i1 = vless/rsubs;
         i2 = ic_scaled/icfct;
         start_phase = ic_phase;
-`ifdef insideADMS
+`ifdef WRspice
         SmallSigL = 0.0;
 `endif
 
@@ -391,7 +396,7 @@ analog begin
             end
     end
 
-`ifdef insideADMS
+`ifdef WRspice
     // Only WRspice can do DC analysis at present.
 
     if (analysis("static") != 0)
