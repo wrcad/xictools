@@ -222,7 +222,11 @@ private:
     bool in_skip_supermaster;
     bool in_from_xic;
     int in_api_major;
+
+    static bool in_mark_references;
 };
+
+bool oa_in::in_mark_references = false;
 
 
 // Load all cells in libname into the main database.  We do NOT change
@@ -1357,6 +1361,11 @@ oa_in::checkMasterXicProps(CDs *sdesc)
 bool
 oa_in::markReferences()
 {
+    // This can't be reentrered, can cause infinite loop.
+    if (in_mark_references)
+        return (true);
+    in_mark_references = true;
+
     stringlist::destroy(in_undef_phys);
     in_undef_phys = 0;
     stringlist::destroy(in_undef_elec);
@@ -1390,6 +1399,7 @@ oa_in::markReferences()
                 // or not the cell was actually found.
                 Errs()->add_error("mark_references: %s.",
                     oiret == OIaborted ? "user abort" : "internal error");
+                in_mark_references = false;
                 return (false);
             }
             if (cbin.phys()) {
@@ -1428,16 +1438,16 @@ oa_in::markReferences()
                     delete stab;
                     Errs()->add_error("Physical cell %s not in database.",
                         sl->string);
+                    in_mark_references = false;
                     return (false);
                 }
-                else {
-                    if (!sdesc->fixBBs(stab)) {
-                        delete stab;
-                        Errs()->add_error(
-                            "Failed to set bounding box of physical cell %s.",
-                            sl->string);
-                        return (false);
-                    }
+                else if (!sdesc->fixBBs(stab)) {
+                    delete stab;
+                    Errs()->add_error(
+                        "Failed to set bounding box of physical cell %s.",
+                        sl->string);
+                    in_mark_references = false;
+                    return (false);
                 }
             }
             delete stab;
@@ -1450,16 +1460,16 @@ oa_in::markReferences()
                     delete stab;
                     Errs()->add_error("Electrical cell %s not in database.",
                         sl->string);
+                    in_mark_references = false;
                     return (false);
                 }
-                else {
-                    if (!sdesc->fixBBs(stab)) {
-                        delete stab;
-                        Errs()->add_error(
-                        "Failed to set bounding box of electrical cell %s.",
-                            sl->string);
-                        return (false);
-                    }
+                else if (!sdesc->fixBBs(stab)) {
+                    delete stab;
+                    Errs()->add_error(
+                    "Failed to set bounding box of electrical cell %s.",
+                        sl->string);
+                    in_mark_references = false;
+                    return (false);
                 }
             }
             delete stab;
@@ -1492,6 +1502,7 @@ oa_in::markReferences()
         }
     }
 
+    in_mark_references = false;
     return (true);
 }
 
