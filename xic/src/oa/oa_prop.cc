@@ -485,6 +485,10 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
 
                     lstr.add(value);
                     lstr.add(" 0");
+                    if (*value == 'X' || *value == 'x') {
+                        lstr.add_c(' ');
+                        lstr.add("subckt");
+                    }
                     CDp *px = new CDp(lstr.string(), P_NAME);
                     px->set_next_prp(pvrt);
                     pvrt = px;

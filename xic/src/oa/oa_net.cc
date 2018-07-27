@@ -1041,18 +1041,9 @@ cOAnetHandler::find_pin_coords(const oaPin *pin, int key, bool symbolic,
         }
         return (false);
     }
-    oaType sh_type = shape->getType();
 
     oaBox bb;
-    if (sh_type == oacRectType) {
-        oaRect *rect = (oaRect*)shape;
-        rect->getBBox(bb);
-    }
-    else if (sh_type == oacPolygonType) {
-        oaPolygon *polygon = (oaPolygon*)shape;
-        polygon->getBBox(bb);
-    }
-    else if (sh_type == oacScalarInstType) {
+    if (shape->getType() == oacScalarInstType) {
         oaScalarInst *inst = (oaScalarInst*)shape;
 
         // Find the bounding box of rects/polys/wires.  Specifically,
@@ -1095,18 +1086,8 @@ cOAnetHandler::find_pin_coords(const oaPin *pin, int key, bool symbolic,
         if (!nshapes)
             inst->getBBox(bb);
     }
-    else {
-        if (OAerrLog.debug_net()) {
-            oaString tname;
-            oaTerm *term = pin->getTerm();
-            if (term)
-                term->getName(oaNativeNS(), tname);
-            oaString shp = sh_type.getName();
-            OAerrLog.add_log(OAlogNet, "terminal %s, unhandled shape %s.",
-                (const char*)tname, (const char*)shp);
-        }
-        return (false);
-    }
+    else
+        shape->getBBox(bb);
 
     if (nh_scale != 1) {
         bb.set(nh_scale*bb.left(), nh_scale*bb.bottom(),
