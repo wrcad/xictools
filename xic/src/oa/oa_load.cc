@@ -1074,29 +1074,13 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
             symbolicVT);
         if (design) {
             if (!design->isSuperMaster()) {
-                // If there are electrical cell properties, temporarily
-                // transfer the property list from the schematic cell to
-                // the new symbolic cell, which we create here.  We will
-                // copy them back later.  There really is only one set of
-                // electrical properties but we haven't linked the
-                // symbolic cell yet so the call-through won't work.
 
-                // Make sure that we only end up with one P_NAME and
-                // P_PARAM property.  If both the schematic and symbol
-                // contribute a P_PARAM property, keep only the symbol
-                // one.  May really need to merge the lists somehow,
-                // but the two properties are probably the same.  Keep
-                // the schematic P_NAME.
-
-                CDp *pp = 0, *pn = 0;
                 sd_symb = new CDs(0, Electrical);
                 if (sd_elec && sd_elec->prptyList()) {
-                    pp = sd_elec->prpty(P_PARAM);
-                    if (pp)
-                        sd_elec->prptyUnlink(pp);
-                    pn = sd_elec->prpty(P_NAME);
-                    if (pn)
-                        sd_elec->prptyUnlink(pn);
+                    // We read all properties in the schematic pass,
+                    // temporarily hang them on the symbol since the
+                    // pass-thru links aren't set yet.
+
                     sd_symb->setPrptyList(sd_elec->prptyList());
                     sd_elec->setPrptyList(0);
                 }
@@ -1112,24 +1096,6 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                 oiret = loadDesign(design, alt_cellname, &sd_symb, depth);
 #endif
                 sd_symb->setName(0);
-                if (pp) {
-                    CDp *p = sd_symb->prpty(P_PARAM);
-                    if (p)
-                        delete pp;
-                    else {
-                        pp->set_next_prp(sd_symb->prptyList());
-                        sd_symb->setPrptyList(pp);
-                    }
-                }
-                if (pn) {
-                    CDp *p = sd_symb->prpty(P_NAME);
-                    if (p) {
-                        sd_symb->prptyUnlink(p);
-                        delete p;
-                    }
-                    pn->set_next_prp(sd_symb->prptyList());
-                    sd_symb->setPrptyList(pn);
-                }
             }
             else if (in_sub_level == 0) {
                 // The symbolic cell must be a regular cell.

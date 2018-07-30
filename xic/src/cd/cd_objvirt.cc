@@ -1210,8 +1210,13 @@ inst:
                 }
                 break;
             case P_NAME:
+#ifdef NEWNMP
+                pdesc = new CDp_cname;
+                if (!((CDp_cname*)pdesc)->parse_name(str)) {
+#else
                 pdesc = new CDp_name;
                 if (!((CDp_name*)pdesc)->parse_name(str)) {
+#endif
                     delete pdesc;
                     return (false);
                 }

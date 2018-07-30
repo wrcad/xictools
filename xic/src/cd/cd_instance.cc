@@ -163,7 +163,11 @@ cCD::GetNameCache(const CDs *parent)
                     continue;
                 CDc_gen cgen(m);
                 for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
+#ifdef NEWNMP
+                    CDp_cname *pnx = (CDp_cname*)c->prpty(P_NAME);
+#else
                     CDp_name *pnx = (CDp_name*)c->prpty(P_NAME);
+#endif
                     if (pnx && pnx->assigned_name())
                         cdNameCache->add(parent, pnx->assigned_name());
                 }
@@ -247,18 +251,25 @@ CDc::prptyAddStruct(bool keepex)
             // If there is exactly one node, the obejct is probably a
             // ground terminal, which does not have a name property.
 
+#ifdef NEWNMP
+            CDp_sname *pname = new CDp_sname;
+#else
             CDp_name *pname = new CDp_name;
-            char bf[2];
-            bf[1] = 0;
+#endif
             if (cnt == 0) {
-                bf[0] = P_NAME_NULL;
+                pname->set_name_string(P_NAME_NULL_STR);
+#ifdef NEWNMP
+#else
                 pname->set_subckt(false);
+#endif
             }
             else {
-                bf[0] = 'X';
+                pname->set_name_string(P_NAME_SUBC_STR);
+#ifdef NEWNMP
+#else
                 pname->set_subckt(true);
+#endif
             }
-            pname->set_name_string(bf);
             pname->set_next_prp(sdesc->prptyList());
             sdesc->setPrptyList(pname);
         }
@@ -275,6 +286,13 @@ CDc::prptyAddStruct(bool keepex)
             pn = ((CDp_snode*)pd)->dupc(sdesc, this);
             break;
         case P_NAME:
+            prptyRemove(pd->value());
+#ifdef NEWNMP
+            pn = new CDp_cname(*(CDp_sname*)pd);
+#else
+            pn = pd->dup();
+#endif
+            break;
         case P_NOPHYS:
             prptyRemove(pd->value());
             pn = pd->dup();
@@ -328,7 +346,11 @@ CDc::elecCellType(const char **nret)
         return (CDelecBad);
 
     CDelecCellType etype = CDelecBad;
+#ifdef NEWNMP
+    CDp_cname *pa = (CDp_cname*)prpty(P_NAME);
+#else
     CDp_name *pa = (CDp_name*)prpty(P_NAME);
+#endif
     if (!pa) {
         // A cell without a name property and with exactly one node
         // property is a "gnd" device.
@@ -336,40 +358,48 @@ CDc::elecCellType(const char **nret)
         CDp_node *pn = (CDp_node*)prpty(P_NODE);
         if (pn && !pn->next())
             etype = CDelecGnd;
-        else {
+        else if (sd) {
             CDelecCellType tp = sd->elecCellType();
             if (tp == CDelecSubc) {
                 // If the master is a subckt, add a name property.
+//XXX why not a device?
+#ifdef NEWNMP
+                CDp_sname *ps = (CDp_sname*)sd->prpty(P_NAME);
+                if (ps) {
+                    pa = new CDp_cname(*ps);
+                    link_prpty_list(pa);
+                }
+#else
                 prptyAdd(P_NAME, "X 0 subckt", Electrical);
-                etype = CDelecSubc;
+#endif
             }
-            else
-                etype = CDelecNull;
-                // Otherwise this is a "null" device.
         }
+        if (!pa)
+            etype = CDelecNull;
     }
-    else {
-        if (!pa->name_string()) {
+    if (pa) {
+        int key = pa->key();
+        if (!key) {
             // "can't happen"
-            char bf[4];
-            bf[0] = P_NAME_NULL;
-            bf[1] = 0;
-            pa->set_name_string(bf);
+            pa->set_name_string(P_NAME_NULL_STR);
         }
-        int key = *Tstring(pa->name_string());
         if (nret)
             *nret = Tstring(pa->name_string());
 
+#ifdef NEWNMP
+#else
         if (pa->is_subckt()) {
             // If set, this is a subcircuit, not from the device
             // library.  The key should be the SPICE subcircuit
             // invocation character 'x'.
 
-            if (key == 'x' || key == 'X')
+            if (key == P_NAME_SUBC)
                 etype = CDelecSubc;
             // Otherwise an error.
         }
-        else if (key == 0 || key == P_NAME_NULL) {
+        else
+#endif
+        if (key == P_NAME_NULL) {
             // A "null" device is for decoration only, it is not
             // electrically active, and should not have node properties.
 
@@ -383,25 +413,25 @@ CDc::elecCellType(const char **nret)
         else if (key == P_NAME_BTERM_DEPREC) {
             // Obsolete prefix, update.
 
-            char tbf[2];
-            tbf[0] = P_NAME_TERM;
-            tbf[1] = 0;
-            pa->set_name_string(tbf);
+            pa->set_name_string(P_NAME_TERM_STR);
             etype = CDelecTerm;
         }
         else if (isalpha(key)) {
             // A regular device, the key is the conventional SPICE key
             // character.
 
-            // If a device is keyed by 'X', it is really a subcircuit
-            // macro call to the model library.  The subname field must be
-            // 0 for devices in the device library file.  The name of the
-            // subcircuit macro is stored in a model property, so that the
-            // text will be added along with the model text.  The subckt
-            // macros are saved in the model database.
+            // If a device is keyed by 'X', it is either a subcircuit
+            // or a macro call to the model library.  The name of the
+            // subcircuit macro is stored in a model property, so that
+            // the text will be added along with the model text.  The
+            // subckt macros are saved in the model database.
 
-            if (key == 'x' || key == 'X')
-                etype = CDelecMacro;
+            if (key == P_NAME_SUBC) {
+                if (pa->is_macro())
+                    etype = CDelecMacro;
+                else
+                    etype = CDelecSubc;
+            }
             else
                 etype = CDelecDev;
         }
@@ -434,14 +464,22 @@ CDc::elecCellType(const char **nret)
 // the caller already has the name property.
 //
 const char *
+#ifdef NEWNMP
+CDc::getElecInstBaseName(const CDp_cname *pn) const
+#else
 CDc::getElecInstBaseName(const CDp_name *pn) const
+#endif
 {
     CDs *sd = masterCell(true);
     if (!sd || !sd->isElectrical())
         return (0);
 
     if (!pn)
+#ifdef NEWNMP
+        pn = (CDp_cname*)prpty(P_NAME);
+#else
         pn = (CDp_name*)prpty(P_NAME);
+#endif
     if (pn) {
         if (pn->assigned_name())
             return (pn->assigned_name());
@@ -479,7 +517,11 @@ CDc::getElecInstName(unsigned int ix) const
 
     CDp_range *pr = (CDp_range*)prpty(P_RANGE);
     char buf[256];
+#ifdef NEWNMP
+    CDp_cname *pn = (CDp_cname*)prpty(P_NAME);
+#else
     CDp_name *pn = (CDp_name*)prpty(P_NAME);
+#endif
     if (pn && pn->assigned_name()) {
         if (!pr)
             return (lstring::copy(pn->assigned_name()));
@@ -557,7 +599,11 @@ CDc::nameOK(const char *name) const
     CDs *prnt = cMaster->parent();
     if (!prnt)
         return (true);
+#ifdef NEWNMP
+    CDp_cname *pn = (CDp_cname*)prpty(P_NAME);
+#else
     CDp_name *pn = (CDp_name*)prpty(P_NAME);
+#endif
     if (!pn || !pn->name_string())
         return (true);
 
@@ -574,7 +620,11 @@ CDc::nameOK(const char *name) const
         for (CDm *m = mgen.m_first(); m; m = mgen.m_next()) {
             if (!m->celldesc())
                 continue;
+#ifdef NEWNMP
+            CDp_sname *pna = (CDp_sname*)m->celldesc()->prpty(P_NAME);
+#else
             CDp_name *pna = (CDp_name*)m->celldesc()->prpty(P_NAME);
+#endif
             if (!pna || !pna->name_string() ||
                     pn->name_string() != pna->name_string())
                 continue;
@@ -582,7 +632,11 @@ CDc::nameOK(const char *name) const
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
                 if (c == this)
                     continue;
+#ifdef NEWNMP
+                CDp_cname *pnx = (CDp_cname*)c->prpty(P_NAME);
+#else
                 CDp_name *pnx = (CDp_name*)c->prpty(P_NAME);
+#endif
                 if (pnx && pnx->assigned_name() &&
                         !strcmp(pnx->assigned_name(), name))
                     return (false);
@@ -649,9 +703,17 @@ CDc::findElecDualOfPhys(int *pvix, unsigned int ix, unsigned int iy) const
                 CDgenRange rgen(pr);
                 int vec_ix = 0;
                 while (rgen.next(0)) {
+#ifdef NEWNMP
+                    CDp_cname *pn;
+#else
                     CDp_name *pn;
+#endif
                     if (vec_ix == 0)
+#ifdef NEWNMP
+                        pn = (CDp_cname*)c->prpty(P_NAME);
+#else
                         pn = (CDp_name*)c->prpty(P_NAME);
+#endif
                     else
                         pn = pr->name_prp(0, vec_ix);
                     if (!pn)
@@ -706,11 +768,19 @@ CDc::findPhysDualOfElec(int vecix, unsigned int *pix, unsigned int *piy) const
         return (0);
 
     CDp_range *pr = (CDp_range*)prpty(P_RANGE);
+#ifdef NEWNMP
+    CDp_cname *pn;
+#else
     CDp_name *pn;
+#endif
     if (vecix > 0 && pr)
         pn = pr->name_prp(0, vecix);
     else
+#ifdef NEWNMP
+        pn = (CDp_cname*)prpty(P_NAME);
+#else
         pn = (CDp_name*)prpty(P_NAME);
+#endif
     if (!pn)
         return (0);
 
@@ -772,7 +842,11 @@ CDc::findPhysDualOfElec(int vecix, unsigned int *pix, unsigned int *piy) const
 void
 CDc::updateDeviceName(unsigned int refcnt)
 {
+#ifdef NEWNMP
+    CDp_cname *pna = (CDp_cname*)prpty(P_NAME);
+#else
     CDp_name *pna = (CDp_name*)prpty(P_NAME);
+#endif
     if (!pna || !pna->name_string())
         return;
     if (!refcnt || pna->number() != refcnt) {
@@ -922,11 +996,20 @@ CDc::updateTerminals(int *map_n)
     }
 
     // Make sure it has a name property, if not a device.
+//XXX why not a device?
     //
+#ifdef NEWNMP
+    if (!sdesc->isDevice() && prpty(P_NAME) == 0) {
+        CDp_sname *ps = (CDp_sname*)sdesc->prpty(P_NAME);
+        if (ps)
+            link_prpty_list(new CDp_cname(*ps));
+    }
+#else
     if (!sdesc->isDevice()) {
         if (prpty(P_NAME) == 0)
             prptyAdd(P_NAME, "X 0 subckt", Electrical);
     }
+#endif
 
     // Update the bus node properties.  The index is known to be
     // unique among the cell bterms, but otherwise the index number is
@@ -1014,7 +1097,11 @@ CDc::updateTerminals(int *map_n)
 void
 CDc::updateTermNames()
 {
+#ifdef NEWNMP
+    CDp_cname *pna = (CDp_cname*)prpty(P_NAME);
+#else
     CDp_name *pna = (CDp_name*)prpty(P_NAME);
+#endif
     if (!pna)
         return;
     CDs *msdesc = masterCell();

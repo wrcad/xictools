@@ -1386,7 +1386,11 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
                 char *text;
                 if (num == P_NAME) {
                     text = lstring::copy(
+#ifdef NEWNMP
+                        cdesc->getElecInstBaseName((CDp_cname*)pn));
+#else
                         cdesc->getElecInstBaseName((CDp_name*)pn));
+#endif
                 }
                 else
                     pn->string(&text);
@@ -1434,7 +1438,11 @@ cSelections::pmatch(const CDs *sd, int num, const char *str, bool select)
                     char *text;
                     if (num == P_NAME) {
                         text = lstring::copy(
+#ifdef NEWNMP
+                                OCALL(od)->getElecInstBaseName((CDp_cname*)pn));
+#else
                                 OCALL(od)->getElecInstBaseName((CDp_name*)pn));
+#endif
                     }
                     else
                         pn->string(&text);

@@ -5648,7 +5648,11 @@ geom1_funcs::IFgetInstanceName(Variable *res, Variable *args, void*)
         if (!msd)
             return (BAD);
         if (msd->isElectrical()) {
+#ifdef NEWNMP
+            CDp_cname *pna = (CDp_cname*)cd->prpty(P_NAME);
+#else
             CDp_name *pna = (CDp_name*)cd->prpty(P_NAME);
+#endif
             if (pna) {
                 bool copied;
                 hyList *hyl = pna->label_text(&copied, cd);
@@ -5718,7 +5722,11 @@ geom1_funcs::IFsetInstanceName(Variable *res, Variable *args, void*)
         if (!msd)
             return (BAD);
         if (msd->isElectrical()) {
+#ifdef NEWNMP
+            CDp_cname *pna = (CDp_cname*)cd->prpty(P_NAME);
+#else
             CDp_name *pna = (CDp_name*)cd->prpty(P_NAME);
+#endif
             if (pna) {
                 res->content.value = (ED()->prptyModify(cd, 0, P_NAME,
                     string, 0) != 0);
@@ -5772,7 +5780,11 @@ geom1_funcs::IFgetInstanceAltName(Variable *res, Variable *args, void*)
         if (!msd)
             return (BAD);
         if (msd->isElectrical()) {
+#ifdef NEWNMP
+            CDp_cname *pna = (CDp_cname*)cd->prpty(P_NAME);
+#else
             CDp_name *pna = (CDp_name*)cd->prpty(P_NAME);
+#endif
             if (pna) {
                 CDelecCellType tp = msd->elecCellType();
                 if (tp == CDelecMacro || tp == CDelecSubc) {
@@ -5936,7 +5948,11 @@ geom1_funcs::IFgetInstanceIdNum(Variable *res, Variable *args, void*)
         if (!msd)
             return (BAD);
         if (msd->isElectrical()) {
+#ifdef NEWNMP
+            CDp_cname *pna = (CDp_cname*)cd->prpty(P_NAME);
+#else
             CDp_name *pna = (CDp_name*)cd->prpty(P_NAME);
+#endif
             if (pna)
                 res->content.value = pna->number();
         }
@@ -5991,7 +6007,11 @@ geom1_funcs::IFgetInstanceAltIdNum(Variable *res, Variable *args, void*)
         if (!msd)
             return (BAD);
         if (msd->isElectrical()) {
+#ifdef NEWNMP
+            CDp_cname *pna = (CDp_cname*)cd->prpty(P_NAME);
+#else
             CDp_name *pna = (CDp_name*)cd->prpty(P_NAME);
+#endif
             if (pna)
                 res->content.value = pna->scindex();
         }

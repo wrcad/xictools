@@ -2321,7 +2321,11 @@ WindowDesc::UpdateProxy()
     sLstr lstr;
     lstr.add("    Proxy ");
     for (const hyParent *p = pl; p; p = p->next()) {
+#ifdef NEWNMP
+        CDp_cname *pn = (CDp_cname*)p->cdesc()->prpty(P_NAME);
+#else
         CDp_name *pn = (CDp_name*)p->cdesc()->prpty(P_NAME);
+#endif
         if (pn) {
             if (p != pl)
                 lstr.add_c('.');
@@ -3242,11 +3246,19 @@ sMark::new_inst_label(const CDc *cdesc, int vecix)
     if (!cdesc || cdesc->type() != CDINSTANCE)
         return (0);
     CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
+#ifdef NEWNMP
+    CDp_cname *pn;
+    if (vecix > 0 && pr)
+        pn = pr->name_prp(0, vecix);
+    else
+        pn = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
     CDp_name *pn;
     if (vecix > 0 && pr)
         pn = pr->name_prp(0, vecix);
     else
         pn = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
     if (!pn)
         return (0);
     sMark *m0 = new sMark_Ilab(cdesc, vecix, HighlightingColor,
@@ -4087,14 +4099,22 @@ sMark_Ilab::addBB(WindowDesc *wdesc, BBox *BB)
     int y = -1;
     CDp_range *pr = (CDp_range*)mCdesc->prpty(P_RANGE);
     if (mVecIx > 0 && pr) {
+#ifdef NEWNMP
+        CDp_cname *pn = pr->name_prp(0, mVecIx);
+#else
         CDp_name *pn = pr->name_prp(0, mVecIx);
+#endif
         if (pn) {
             x = pn->pos_x();
             y = pn->pos_y();
         }
     }
     else {
+#ifdef NEWNMP
+        CDp_cname *pn = (CDp_cname*)mCdesc->prpty(P_NAME);
+#else
         CDp_name *pn = (CDp_name*)mCdesc->prpty(P_NAME);
+#endif
         if (pn) {
             x = pn->pos_x();
             y = pn->pos_y();
@@ -4137,14 +4157,22 @@ sMark_Ilab::ilab_mark(WindowDesc *wdesc, bool display)
     int y = -1;
     CDp_range *pr = (CDp_range*)mCdesc->prpty(P_RANGE);
     if (mVecIx > 0 && pr) {
+#ifdef NEWNMP
+        CDp_cname *pn = pr->name_prp(0, mVecIx);
+#else
         CDp_name *pn = pr->name_prp(0, mVecIx);
+#endif
         if (pn) {
             x = pn->pos_x();
             y = pn->pos_y();
         }
     }
     else {
+#ifdef NEWNMP
+        CDp_cname *pn = (CDp_cname*)mCdesc->prpty(P_NAME);
+#else
         CDp_name *pn = (CDp_name*)mCdesc->prpty(P_NAME);
+#endif
         if (pn) {
             x = pn->pos_x();
             y = pn->pos_y();

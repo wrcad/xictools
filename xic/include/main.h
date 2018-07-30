@@ -729,6 +729,7 @@ private:
 #define OLABEL(zz) ((CDla*)zz)
 #define OCALL(zz)  ((CDc*)zz)
 
+/*XXX
 // subclass coersion for properties
 #define PNOD(zz)   ((CDp_node*)zz)
 #define PNAM(zz)   ((CDp_name*)zz)
@@ -738,6 +739,7 @@ private:
 #define PLRF(zz)   ((CDp_lref*)zz)
 #define PMRF(zz)   ((CDp_mutlrf*)zz)
 #define PUSR(zz)   ((CDp_user*)zz)
+*/
 
 // Integer swap
 #define SwapInts(a, b) { int c = a; a = b; b = c; }

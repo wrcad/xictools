@@ -197,12 +197,12 @@ namespace {
                     return (sdesc->prpty(pdesc->value()));
                 if (pdesc->value() == P_OTHER) {
                     // Return a P_OTHER property with matching text
-                    char *s1 = hyList::string((PUSR(pdesc)->data()),
+                    char *s1 = hyList::string(((CDp_user*)pdesc)->data(),
                         HYcvPlain, false);
                     for (CDp *pd = sdesc->prptyList(); pd;
                             pd = pd->next_prp()) {
                         if (pd->value() == P_OTHER) {
-                            char *s2 = hyList::string((PUSR(pd)->data()),
+                            char *s2 = hyList::string(((CDp_user*)pd)->data(),
                                 HYcvPlain, false);
                             int j = strcmp(s1, s2);
                             delete [] s2;

@@ -527,13 +527,21 @@ struct CDp_range : public CDp
     void setup(const CDc*);
     CDp_cnode *node(const CDc*, unsigned int, unsigned int) const;
     void print_nodes(const CDc*, FILE*, sLstr*) const;
+#ifdef NEWNMP
+    CDp_cname *name_prp(const CDc*, unsigned int) const;
+#else
     CDp_name *name_prp(const CDc*, unsigned int) const;
+#endif
 
 protected:
     unsigned short pr_beg_range;    // range start
     unsigned short pr_end_range;    // range end
     CDp_cnode *pr_nodes;            // array of node properties for 'bits'
+#ifdef NEWNMP
+    CDp_cname *pr_names;            // array of name properties for 'bits'
+#else
     CDp_name *pr_names;             // array of name properties for 'bits'
+#endif
     unsigned int pr_numnodes;       // number of node properties
     unsigned int pr_asize;          // size of allocated nodes array
 };
@@ -1266,13 +1274,168 @@ private:
 // Name property.
 
 // The name property name string can start with one of these special
-// characters, to indicate a terminal type of device.  Additionally,
-// the ground device has no name property, but contains exactly one
-// node property.  Spice devices will have an alpha character key.
+// characters, to indicate a terminal type of device, etc. 
+// Additionally, the ground device has no name property, but contains
+// exactly one node property.  Spice devices will have an alpha
+// character key.
 //
+#define P_NAME_SUBC 'x'
+#define P_NAME_SUBC_STR "X"
 #define P_NAME_NULL '%'
+#define P_NAME_NULL_STR "%"
 #define P_NAME_TERM '@'
+#define P_NAME_TERM_STR "@"
 #define P_NAME_BTERM_DEPREC '#'
+
+#define NEWNMP
+#ifdef NEWNMP
+
+// Name property for cells.
+//
+struct CDp_sname : public CDp
+{
+    CDp_sname() : CDp(P_NAME)
+        {
+            pns_macro = false;
+            pns_located = false;
+            pns_name = 0;
+        }
+
+    CDp_sname(const CDp_sname&);
+    CDp_sname &operator=(const CDp_sname&);
+
+    virtual ~CDp_sname() { }
+
+    // virtual overrides
+    CDp *dup()                  const { return (new CDp_sname(*this)); }
+
+    bool print(sLstr*, int, int) const;
+
+    bool is_elec()              const { return (true); }
+
+    CDp_sname *next()                 { return ((CDp_sname*)next_n()); }
+
+    bool is_subckt()            const { return (key() == P_NAME_SUBC); }
+
+    bool is_macro()             const { return (pns_macro); }
+    void set_macro(bool b)            { pns_macro = b; }
+    bool located()              const { return (pns_located); }
+    void set_located(bool b)          { pns_located = b; }
+
+    CDpfxName name_string()     const { return (pns_name); }
+    void set_name_string(CDpfxName n) { pns_name = n; }
+    void set_name_string(const char *n)
+        {
+            if (n && *n)
+                pns_name = CD()->PfxTableAdd(n);
+        }
+
+    int key()                   const
+        {
+            int c = (pns_name ? *Tstring(pns_name) : 0);
+            return (isupper(c) ? tolower(c) : c);
+        }
+
+    bool parse_name(const char*);
+
+protected:
+    bool pns_macro;             // not used, will replace P_MACRO
+    bool pns_located;           // physical location valid.
+    CDpfxName pns_name;         // name prefix
+};
+
+
+// Name property for cell instances.
+//
+struct CDp_cname : public CDp_sname
+{
+    CDp_cname()
+        {
+            pnc_setname = 0;
+            pnc_label = 0;
+            pnc_labtext = 0;
+            pnc_num = 0;
+            pnc_scindex = 0;
+            pnc_x = pnc_y = 0;
+        }
+
+    CDp_cname(const CDp_cname&);
+    CDp_cname &operator=(const CDp_cname&);
+    CDp_cname(const CDp_sname&);
+    CDp_cname &operator=(const CDp_sname&);
+
+    virtual ~CDp_cname()
+        {
+            delete [] pnc_setname;
+            delete [] pnc_labtext;
+        }
+
+    // virtual overrides
+    CDp *dup()                  const { return (new CDp_cname(*this)); }
+
+    bool print(sLstr*, int, int) const;
+
+    bool cond_bind(CDla* odesc)
+        {
+            if (!pnc_label)
+                pnc_label = odesc;
+            return (pnc_label == odesc);
+        }
+
+    void bind(CDla* odesc)            { pnc_label = odesc; }
+    CDla *bound()               const { return (pnc_label); }
+
+    void purge(CDo *odesc)
+        {
+            if (odesc == (CDo*)pnc_label)
+                pnc_label = 0;
+        }
+
+    hyList *label_text(bool*, CDc* = 0) const;
+
+    bool is_elec()              const { return (true); }
+
+    CDp_cname *next()                 { return ((CDp_cname*)next_n()); }
+
+    unsigned int number()       const { return (pnc_num); }
+    void set_number(unsigned int n)   { pnc_num = n; }
+
+    unsigned int scindex()      const { return (pnc_scindex); }
+    void set_scindex(unsigned int n)  { pnc_scindex = n; }
+
+    const char *assigned_name() const { return (pnc_setname); }
+    void set_assigned_name(const char *n)
+        {
+            char *s = lstring::copy(n);
+            delete [] pnc_setname;
+            pnc_setname = s;
+        }
+
+    const char *label_text()    const { return (pnc_labtext); }
+    void set_label_text(const char *n)
+        {
+            char *s = lstring::copy(n);
+            delete [] pnc_labtext;
+            pnc_labtext = s;
+        }
+
+    int pos_x()                 const { return (pnc_x); }
+    void set_pos_x(int x)             { pnc_x = x; }
+    int pos_y()                 const { return (pnc_y); }
+    void set_pos_y(int y)             { pnc_y = y; }
+
+    bool parse_name(const char*);
+
+private:
+    char *pnc_setname;          // overriding name
+    CDla *pnc_label;            // associated label
+    char *pnc_labtext;          // associated label text
+    unsigned int pnc_num;       // flag, name index
+    int pnc_scindex;            // alternative index for subckts
+    int pnc_x, pnc_y;           // physical location of subckt ref. label
+};
+
+#else
 
 struct CDp_name : public CDp
 {
@@ -1386,6 +1549,8 @@ private:
     bool pna_located;           // physical location valid.
     int pna_x, pna_y;           // physical location of subckt ref. label
 };
+
+#endif
 
 
 //-----------------------------------------------------------------------------

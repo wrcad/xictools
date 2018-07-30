@@ -134,7 +134,11 @@ cSced::checkElectrical(CDcbin *cbin)
         // location property so that the label can be modified to
         // change the terminal name internally.
         //
+#ifdef NEWNMP
+        CDp_sname *pna = (CDp_sname*)sd->prpty(P_NAME);
+#else
         CDp_name *pna = (CDp_name*)sd->prpty(P_NAME);
+#endif
         if (pna && pna->name_string() &&
                 *Tstring(pna->name_string()) == P_NAME_TERM) {
             CDp_labloc *pl = (CDp_labloc*)sd->prpty(P_LABLOC);
@@ -228,7 +232,7 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
     for (pd = sdesc->prptyList(); pd; pd = pnext) {
         pnext = pd->next_prp();
         if (pd->value() == P_NEWMUT) {
-            if (!prptyCheckMutual(sdesc, PNMU(pd), &str))
+            if (!prptyCheckMutual(sdesc, (CDp_nmut*)pd, &str))
                 ret = false;
             if (str) {
                 if (!headpr) {
@@ -310,13 +314,10 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
     if (!sdesc->isDevice()) {
         CDp_snode *ps = (CDp_snode*)sdesc->prpty(P_NODE);
         if (ps) {
-            char tbuf[128];
             // make sure subckt has a name
-            // subckts have 3 entries in name field
             if (!sdesc->prpty(P_NAME)) {
                 if (!nofix) {
-                    sprintf(tbuf, "X 0 %s", Tstring(sdesc->cellname()));
-                    sdesc->prptyAdd(P_NAME, tbuf);
+                    sdesc->prptyAdd(P_NAME, P_NAME_SUBC_STR);
                 }
             }
         }
@@ -596,7 +597,11 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                 if (pd->value() == P_MUTLRF)
                     mutrf = true;
                 else if (pd->value() == P_NAME)
-                    name = Tstring(PNAM(pd)->name_string());
+#ifdef NEWNMP
+                    name = Tstring(((CDp_cname*)pd)->name_string());
+#else
+                    name = Tstring(((CDp_name*)pd)->name_string());
+#endif
                 if (mutrf && name)
                     break;
             }
@@ -644,7 +649,11 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                 if (pd->value() == P_MUTLRF)
                     mutrf = true;
                 else if (pd->value() == P_NAME)
-                    name = Tstring(PNAM(pd)->name_string());
+#ifdef NEWNMP
+                    name = Tstring(((CDp_cname*)pd)->name_string());
+#else
+                    name = Tstring(((CDp_name*)pd)->name_string());
+#endif
                 if (mutrf && name)
                     break;
             }
@@ -965,7 +974,11 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
     }
 
     // Next check name consistency
+#ifdef NEWNMP
+    CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
     CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
     const char *name = 0;
     CDpfxName realname = 0;
     if (!pn) {
@@ -991,7 +1004,11 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
 
         if (msdesc) {
 
+#ifdef NEWNMP
+            CDp_sname *pn1 = (CDp_sname*)msdesc->prpty(P_NAME);
+#else
             CDp_name *pn1 = (CDp_name*)msdesc->prpty(P_NAME);
+#endif
             if (!pn1) {
                 print_err(lstr, "%s %s has no name property!\n",
                     msdesc->isDevice() ? "Device" : "Cell",
@@ -1010,7 +1027,11 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
                         print_err(lstr, im_msg, Tstring(sdesc->cellname()));
                     else {
                         CDp *op = pn;
+#ifdef NEWNMP
+                        pn = (CDp_cname*)pn->dup();
+#else
                         pn = (CDp_name*)pn->dup();
+#endif
                         pn->set_name_string(pn1->name_string());
                         Ulist()->RecordPrptyChange(sdesc, cdesc, op, pn);
                         CDla *olabel = pn->bound();

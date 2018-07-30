@@ -216,7 +216,11 @@ cCD::GetLabelCache(const CDs *sdesc)
                 CDc_gen cgen(mdesc);
                 for (CDc *cdesc = cgen.c_first(); cdesc;
                         cdesc = cgen.c_next()) {
+#ifdef NEWNMP
+                    CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
                     CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
                     if (!pn)
                         continue;
                     cdLabelCache->add(pn->name_string(), pn->number(), cdesc);
@@ -2745,7 +2749,11 @@ CDs::findInstance(const char *dname)
         for (CDc *cdesc = cgen.c_first(); cdesc; cdesc = cgen.c_next()) {
             if (!cdesc->is_normal())
                 continue;
+#ifdef NEWNMP
+            CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
             CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
             if (pn) {
                 const char *instname = cdesc->getElecInstBaseName(pn);
                 if (!strcmp(dname, instname))
@@ -3145,7 +3153,11 @@ CDs::elecCellType(CDpfxName *nret)
         return (CDelecBad);
 
     CDelecCellType etype = CDelecBad;
+#ifdef NEWNMP
+    CDp_sname *pa = (CDp_sname*)prpty(P_NAME);
+#else
     CDp_name *pa = (CDp_name*)prpty(P_NAME);
+#endif
     if (!pa) {
         // Hmmm, no name property.  If the cell contains devices or
         // subcells, we will add a name property, making this a
@@ -3165,12 +3177,14 @@ CDs::elecCellType(CDpfxName *nret)
             }
         }
         if (needX) {
-            char buf[64];
-            sprintf(buf, "X 0 %s", Tstring(cellname()));
-            prptyAdd(P_NAME, buf);
+            prptyAdd(P_NAME, P_NAME_SUBC_STR);
             etype = CDelecSubc;
             if (nret) {
+#ifdef NEWNMP
+                pa = (CDp_sname*)prpty(P_NAME);
+#else
                 pa = (CDp_name*)prpty(P_NAME);
+#endif
                 *nret = pa->name_string();
             }
         }
@@ -3189,26 +3203,27 @@ CDs::elecCellType(CDpfxName *nret)
     else {
         if (!pa->name_string()) {
             // "can't happen"
-            char bf[4];
-            bf[0] = P_NAME_NULL;
-            bf[1] = 0;
-            pa->set_name_string(bf);
+            pa->set_name_string(P_NAME_NULL_STR);
         }
-        int key = *Tstring(pa->name_string());
+        int key = pa->key();
         if (nret)
             *nret = pa->name_string();
 
+#ifdef NEWNMP
+#else
         if (pa->is_subckt()) {
             // If set, this is a subcircuit, not from the device
             // library.  The Subckt flag should be set, and the key
             // should be the SPICE subcircuit invocation character
             // 'x'.
 
-            if (key == 'x' || key == 'X')
+            if (key == P_NAME_SUBC)
                 etype = CDelecSubc;
             // Otherwise an error.
         }
-        else if (key == 0 || key == P_NAME_NULL) {
+        else
+#endif
+        if (key == 0 || key == P_NAME_NULL) {
             // A "null" device is for decoration only, it is not
             // electrically active, and should not have node
             // properties.
@@ -3223,26 +3238,25 @@ CDs::elecCellType(CDpfxName *nret)
         else if (key == P_NAME_BTERM_DEPREC) {
             // Obsolete prefix, update.
 
-            char tbf[2];
-            tbf[0] = P_NAME_TERM;
-            tbf[1] = 0;
-            pa->set_name_string(tbf);
+            pa->set_name_string(P_NAME_TERM_STR);
             etype = CDelecTerm;
         }
         else if (isalpha(key)) {
             // A regular device, the key is the conventional SPICE key
             // character.
 
-            // If a device is keyed by 'X', it is really a subcircuit
-            // macro call to the model library.  The subname field
-            // must be 0 for devices in the device library file.  The
-            // name of the subcircuit macro is stored in a model
-            // property, so that the text will be added along with the
-            // model text.  The subckt macros are saved in the model
-            // database.
+            // If a device is keyed by 'X', it is either a subcircuit,
+            // or a macro call to the model library.  The name of the
+            // subcircuit macro is stored in a model property, so that
+            // the text will be added along with the model text.  The
+            // subckt macros are saved in the model database.
 
-            if (key == 'x' || key == 'X')
-                etype = CDelecMacro;
+            if (key == P_NAME_SUBC) {
+                if (pa->is_macro())
+                    etype = CDelecMacro;
+                else
+                    etype = CDelecSubc;
+            }
             else
                 etype = CDelecDev;
         }
@@ -3564,7 +3578,15 @@ CDs::prptyAdd(int value, const char *string)
             }
             break;
         case P_NAME:
-            //XXX prptyRemove(P_NAME);  // just to be sure...
+#ifdef NEWNMP
+            pdesc = new CDp_sname;
+            if (!((CDp_sname*)pdesc)->parse_name(string)) {
+                delete pdesc;
+                return (false);
+            }
+            // Set the Device flag.
+            setDevice(!((CDp_sname*)pdesc)->is_subckt());
+#else
             pdesc = new CDp_name;
             if (!((CDp_name*)pdesc)->parse_name(string)) {
                 delete pdesc;
@@ -3572,6 +3594,7 @@ CDs::prptyAdd(int value, const char *string)
             }
             // Set the Device flag.
             setDevice(!((CDp_name*)pdesc)->is_subckt());
+#endif
             break;
         case P_LABLOC:
             pdesc = new CDp_labloc;
@@ -4002,7 +4025,11 @@ CDs::prptyInstPatch(CDc *cdesc)
         return;
     }
 
+#ifdef NEWNMP
+    CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
     CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
     if (!pn || !pn->name_string())
         return;
 
@@ -4154,7 +4181,11 @@ CDs::prptyLabelLink(const cTfmStack *tstk, CDo *onew, CDp *oldp,
     if (onew->type() == CDINSTANCE) {
         if (newp->value() == P_NAME && MoveOrCopy == CDcopy)
             // revert copy to default name
+#ifdef NEWNMP
+            CD()->ifUpdateNameLabel((CDc*)onew, (CDp_cname*)newp);
+#else
             CD()->ifUpdateNameLabel((CDc*)onew, (CDp_name*)newp);
+#endif
     }
 }
 
@@ -4293,8 +4324,13 @@ CDs::prptyMutualAdd(CDc *odesc1, CDc *odesc2, const char *val,
     if (sd)
         return (sd->prptyMutualAdd(odesc1, odesc2, val, mname));
 
+#ifdef NEWNMP
+    CDp_cname *pn1 = (CDp_cname*)odesc1->prpty(P_NAME);
+    CDp_cname *pn2 = (CDp_cname*)odesc2->prpty(P_NAME);
+#else
     CDp_name *pn1 = (CDp_name*)odesc1->prpty(P_NAME);
     CDp_name *pn2 = (CDp_name*)odesc2->prpty(P_NAME);
+#endif
     if (!pn1 || !pn1->name_string() || !pn2 || !pn2->name_string()) {
         Errs()->add_error(
             "prptyMutualAdd: (internal error) unnmed inductor.");
@@ -4401,10 +4437,18 @@ CDs::prptyMutualUpdate()
         if (!pm->get_descs(&odesc1, &odesc2))
             // bad link, dead mut reference
             continue;
+#ifdef NEWNMP
+        CDp_cname *pn = (CDp_cname*)odesc1->prpty(P_NAME);
+#else
         CDp_name *pn = (CDp_name*)odesc1->prpty(P_NAME);
+#endif
         if (pn)
             pm->set_l1_index(pn->number());
+#ifdef NEWNMP
+        pn = (CDp_cname*)odesc2->prpty(P_NAME);
+#else
         pn = (CDp_name*)odesc2->prpty(P_NAME);
+#endif
         if (pn)
             pm->set_l2_index(pn->number());
         CDla *olabel = pm->bound();  // the label

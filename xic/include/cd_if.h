@@ -58,7 +58,12 @@ struct CDcellNameStr;
 typedef CDcellNameStr* CDcellName;
 struct CDs;
 struct CDc;
+#define NEWNMP
+#ifdef NEWNMP
+struct CDp_cname;
+#else
 struct CDp_name;
+#endif
 struct CDp_nmut;
 struct CDo;
 struct CDp;
@@ -95,7 +100,11 @@ OIfailed(OItype t) { return ((int)t <= 0); }
 // Callback prototypes.
 typedef const char *(*CDif_NodeName)(const CDs*, int, bool*);
 typedef void(*CDif_UpdateNodes)(const CDs*);
+#ifdef NEWNMP
+typedef void(*CDif_UpdateNameLabel)(CDc*, CDp_cname*);
+#else
 typedef void(*CDif_UpdateNameLabel)(CDc*, CDp_name*);
+#endif
 typedef bool(*CDif_UpdateMutLabel)(CDs*, CDp_nmut*);
 typedef void(*CDif_LabelInstance)(CDs*, CDc*);
 typedef bool(*CDif_UpdatePrptyLabel)(int, CDo*, Label*);
@@ -219,7 +228,11 @@ struct CDif
     // Update the name label for cdesc from name property pna.
     // Applies to electrical mode.
     //
+#ifdef NEWNMP
+    void ifUpdateNameLabel(CDc *cdesc, CDp_cname *pna)
+#else
     void ifUpdateNameLabel(CDc *cdesc, CDp_name *pna)
+#endif
         {
             if (if_update_name_label)
                 (*if_update_name_label)(cdesc, pna);

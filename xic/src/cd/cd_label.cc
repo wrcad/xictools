@@ -254,10 +254,18 @@ CDla::link(CDs *sdesc, CDo *odesc, CDp *pdesc)
     if (pdesc && odesc && odesc->type() == CDINSTANCE) {
         // Device property label.
 
+#ifdef NEWNMP
+        CDp_cname *pn = (CDp_cname*)odesc->prpty(P_NAME);
+#else
         CDp_name *pn = (CDp_name*)odesc->prpty(P_NAME);
+#endif
         if (!pn) {
             if (pdesc->value() == P_NAME)
+#ifdef NEWNMP
+                pn = (CDp_cname*)pdesc;
+#else
                 pn = (CDp_name*)pdesc;
+#endif
             else {
                 Errs()->add_error("CDla::link: no name property");
                 return (false);

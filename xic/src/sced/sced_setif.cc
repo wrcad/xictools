@@ -73,7 +73,11 @@ namespace {
     // electrical mode.
     //
     void
+#ifdef NEWNMP
+    ifUpdateNameLabel(CDc *cdesc, CDp_cname *pna)
+#else
     ifUpdateNameLabel(CDc *cdesc, CDp_name *pna)
+#endif
     {
         SCD()->updateNameLabel(cdesc, pna);
     }

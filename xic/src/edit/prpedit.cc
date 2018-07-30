@@ -1115,9 +1115,15 @@ PrptyState::prp_updtext(sSel *sl)
         if (pdesc) {
             if (Value == P_NAME) {
                 // don't show default name
-                if (PNAM(pdesc)->assigned_name()) {
-                    hyList *h = new hyList(0, PNAM(pdesc)->assigned_name(),
-                        HYcvPlain);
+#ifdef NEWNMP
+                if (((CDp_cname*)pdesc)->assigned_name()) {
+                    hyList *h = new hyList(0,
+                        ((CDp_cname*)pdesc)->assigned_name(), HYcvPlain);
+#else
+                if (((CDp_name*)pdesc)->assigned_name()) {
+                    hyList *h = new hyList(0,
+                        ((CDp_name*)pdesc)->assigned_name(), HYcvPlain);
+#endif
                     PL()->EditHypertextPrompt(buf, h, false, PLedUpdate);
                     hyList::destroy(h);
                 }
@@ -1131,7 +1137,7 @@ PrptyState::prp_updtext(sSel *sl)
                 case P_PARAM:
                 case P_OTHER:
                 case P_DEVREF:
-                    PL()->EditHypertextPrompt(buf, PUSR(pdesc)->data(),
+                    PL()->EditHypertextPrompt(buf, ((CDp_user*)pdesc)->data(),
                         use_lt, PLedUpdate);
                     break;
                 default:
@@ -1834,9 +1840,15 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
             hnew = new hyList(cursd, tbuf, HYcvPlain);
         }
         else if (Value == P_NAME) {
-            if (SelPrp && PNAM(SelPrp)->assigned_name()) {
-                hyList *h = new hyList(0, PNAM(SelPrp)->assigned_name(),
+#ifdef NEWNMP
+            if (SelPrp && ((CDp_cname*)SelPrp)->assigned_name()) {
+                hyList *h = new hyList(0, ((CDp_cname*)SelPrp)->assigned_name(),
                     HYcvPlain);
+#else
+            if (SelPrp && ((CDp_name*)SelPrp)->assigned_name()) {
+                hyList *h = new hyList(0, ((CDp_name*)SelPrp)->assigned_name(),
+                    HYcvPlain);
+#endif
                 hnew = PL()->EditHypertextPrompt(tbuf, h, false);
                 hyList::destroy(h);
             }
@@ -1855,7 +1867,7 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
                 case P_OTHER:
                 case P_DEVREF:
                     hnew = PL()->EditHypertextPrompt(tbuf,
-                        PUSR(SelPrp)->data(), use_lt);
+                        ((CDp_user*)SelPrp)->data(), use_lt);
                     break;
                 default:
                     // shouldn't be here
@@ -2309,11 +2321,11 @@ namespace {
                 if (pdesc->value() != P_OTHER)
                     return (odesc->prpty(pdesc->value()));
                 // Return a P_OTHER property with matching text
-                char *s1 = hyList::string((PUSR(pdesc)->data()), HYcvPlain,
+                char *s1 = hyList::string(((CDp_user*)pdesc)->data(), HYcvPlain,
                     false);
                 for (CDp *pd = odesc->prpty_list(); pd; pd = pd->next_prp()) {
                     if (pd->value() == P_OTHER) {
-                        char *s2 = hyList::string((PUSR(pd)->data()),
+                        char *s2 = hyList::string(((CDp_user*)pd)->data(),
                             HYcvPlain, false);
                         int j = strcmp(s1, s2);
                         delete [] s2;

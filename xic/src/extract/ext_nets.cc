@@ -108,7 +108,11 @@ sElecNetList::sElecNetList(CDs *sdesc)
                 continue;
 
             // Don't include wire capacitors.
+#ifdef NEWNMP
+            CDp_cname *pa = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
             CDp_name *pa = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
             if (pa && pa->assigned_name() &&
                     lstring::prefix(WIRECAP_PREFIX, pa->assigned_name()))
                 continue;
@@ -700,7 +704,11 @@ namespace {
     void rename_inst(const CDc *cdesc, const char *instname,
         const CDp_range *pr, int vec_ix)
     {
+#ifdef NEWNMP
+        CDp_cname *pna = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
         CDp_name *pna = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
         if (!pna || !isalpha(pna->key()))
             return;
         sLstr lstr;
@@ -1374,11 +1382,19 @@ cExt::reset(CDcbin *cbin, bool do_labels, bool do_terms, bool do_recurs)
         for (sEinstList *cl = cl0; cl; cl = cn) {
             cn = cl->next();
             CDp_range *pr = (CDp_range*)cl->cdesc()->prpty(P_RANGE);
+#ifdef NEWNMP
+            CDp_cname *pn = 0;
+            if (cl->cdesc_index() > 1 && pr)
+                pn = pr->name_prp(0, cl->cdesc_index());
+            else
+                pn = (CDp_cname*)cl->cdesc()->prpty(P_NAME);
+#else
             CDp_name *pn = 0;
             if (cl->cdesc_index() > 1 && pr)
                 pn = pr->name_prp(0, cl->cdesc_index());
             else
                 pn = (CDp_name*)cl->cdesc()->prpty(P_NAME);
+#endif
             if (pn) {
                 pn->set_pos_x(0);
                 pn->set_pos_y(0);
@@ -1652,11 +1668,19 @@ cExt::arrangeInstLabels(CDcbin *cbin)
 
     while (cl) {
         CDp_range *pr = (CDp_range*)cl->cdesc()->prpty(P_RANGE);
+#ifdef NEWNMP
+        CDp_cname *pn = 0;
+        if (cl->cdesc_index() > 0 && pr)
+            pn = pr->name_prp(0, cl->cdesc_index());
+        else
+            pn = (CDp_cname*)cl->cdesc()->prpty(P_NAME);
+#else
         CDp_name *pn = 0;
         if (cl->cdesc_index() > 0 && pr)
             pn = pr->name_prp(0, cl->cdesc_index());
         else
             pn = (CDp_name*)cl->cdesc()->prpty(P_NAME);
+#endif
         if (pn) {
             pn->set_pos_x(x);
             pn->set_pos_y(y);
@@ -1921,12 +1945,21 @@ cExt::find_scname_labels_in_area(CDs *sdesc, const BBox *AOI)
             int vec_ix = 0;
             while (rgen.next(0)) {
 
+#ifdef NEWNMP
+                CDp_cname *pn;
+                if (vec_ix == 0) {
+                    pn = (CDp_cname*)cdesc->prpty(P_NAME);
+                    if (!pn || !pn->is_subckt() || pn->is_macro())
+                        break;
+                }
+#else
                 CDp_name *pn;
                 if (vec_ix == 0) {
                     pn = (CDp_name*)cdesc->prpty(P_NAME);
-                    if (!pn || !pn->is_subckt())
+                    if (!pn || !pn->is_subckt()))
                         break;
                 }
+#endif
                 else
                     pn = pr->name_prp(0, vec_ix);
 
@@ -1972,12 +2005,21 @@ cExt::find_scname_labels_unplaced(CDs *sdesc)
             int vec_ix = 0;
             while (rgen.next(0)) {
 
+#ifdef NEWNMP
+                CDp_cname *pn;
+                if (vec_ix == 0) {
+                    pn = (CDp_cname*)cdesc->prpty(P_NAME);
+                    if (!pn || !pn->is_subckt() || pn->is_macro())
+                        break;
+                }
+#else
                 CDp_name *pn;
                 if (vec_ix == 0) {
                     pn = (CDp_name*)cdesc->prpty(P_NAME);
                     if (!pn || !pn->is_subckt())
                         break;
                 }
+#endif
                 else
                     pn = pr->name_prp(0, vec_ix);
                 if (!pn) {

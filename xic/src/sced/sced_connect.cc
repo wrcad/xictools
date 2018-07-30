@@ -417,7 +417,11 @@ cSced::renumberInstances(CDs *sd)
         CDs *msdesc = cdesc->masterCell();
         if (!msdesc)
             continue;
+#ifdef NEWNMP
+        CDp_sname *pna = (CDp_sname*)msdesc->prpty(P_NAME);
+#else
         CDp_name *pna = (CDp_name*)msdesc->prpty(P_NAME);
+#endif
         if (!pna || !pna->name_string())
             continue;
  
@@ -431,14 +435,24 @@ cSced::renumberInstances(CDs *sd)
         // zero-based for each subcircuit master.  We have already
         // computed the absolute ordering number.
 
+#ifdef NEWNMP
+        if (pna->is_subckt() && !pna->is_macro()) {
+#else
         if (pna->is_subckt()) {
+#endif
             dcnt = (long)SymTab::get(scstab, (unsigned long)cdesc->cellname());
             if (dcnt == (long)ST_NIL)
                 dcnt = 0;
             scstab->replace((unsigned long)cdesc->cellname(), (void*)(dcnt+1));
+#ifdef NEWNMP
+            CDp_cname *pnc = (CDp_cname*)cdesc->prpty(P_NAME);
+            if (pnc)
+                pnc->set_scindex(dcnt);
+#else
             pna = (CDp_name*)cdesc->prpty(P_NAME);
             if (pna)
                 pna->set_scindex(dcnt);
+#endif
         }
     }
     delete stab;
@@ -1072,7 +1086,11 @@ cScedConnect::init_terminal(CDc *cdesc)
         return (false);
 
     // Check for valid name property.
+#ifdef NEWNMP
+    CDp_cname *pna = (CDp_cname*)msd->prpty(P_NAME);
+#else
     CDp_name *pna = (CDp_name*)msd->prpty(P_NAME);
+#endif
     if (!pna || (pna->key() != P_NAME_TERM &&
             pna->key() != P_NAME_BTERM_DEPREC))
         return (false);
@@ -1096,7 +1114,11 @@ cScedConnect::init_terminal(CDc *cdesc)
         return (false);
 
     // Check for bound instance label.
+#ifdef NEWNMP
+    pna = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
     pna = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
     if (!pna || !pna->bound())
         return (false);
     if (pna->key() == P_NAME_BTERM_DEPREC) {
@@ -1837,7 +1859,11 @@ cScedConnect::infer_name(const CDw *wdesc, CDnetex **pnx)
                 if (pn->get_pos(0, &p.x, &p.y) && wdesc->has_vertex_at(p)) {
 
                     char *label = 0;
+#ifdef NEWNMP
+                    CDp_cname *pna = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
                     CDp_name *pna = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
                     if (!pna) {
                         // Must be a ground terminal.
                         if (tp != CDelecGnd)

@@ -1323,7 +1323,11 @@ CDp_range::setup(const CDc *cdesc)
         pr_asize = nsize;
         if (ow != width() - 1) {
             delete [] pr_names;
+#ifdef NEWNMP
+            pr_names = new CDp_cname[width() - 1];
+#else
             pr_names = new CDp_name[width() - 1];
+#endif
         }
     }
     pr_numnodes = maxix;
@@ -1414,13 +1418,21 @@ CDp_range::print_nodes(const CDc *cdesc, FILE *fp, sLstr *lstr) const
 }
 
 
+#ifdef NEWNMP
+CDp_cname *
+#else
 CDp_name *
+#endif
 CDp_range::name_prp(const CDc *cdesc, unsigned int instix) const
 {
     if (instix == 0) {
         if (!cdesc)
             return (0);
+#ifdef NEWNMP
+        return ((CDp_cname*)cdesc->prpty(P_NAME));
+#else
         return ((CDp_name*)cdesc->prpty(P_NAME));
+#endif
     }
     if (instix >= width())
         return (0);
@@ -3157,11 +3169,331 @@ CDp_snode::dupc(CDs *sdesc, const CDc *cdesc)
 //
 // Name property
 //
-// Property used by structures and instances to record name.  The name
-// of an instance is by default assigned by the application, using the
-// name and num fields.  If the setname field is assigned, that name will
-// be used instead.  The subname being set indicates a subcircuit,
-// rather than a library device.
+// Property used by structures and instances to record name.
+
+#ifdef NEWNMP
+
+// Name property base, used as a cell property.  This contains the
+// name prefix, and some flags.
+
+CDp_sname::CDp_sname(const CDp_sname &pd) : CDp(0, pd.p_value)
+{
+    pns_macro = pd.pns_macro;
+    pns_located = pd.pns_located;
+    pns_name = pd.pns_name;
+}
+
+
+CDp_sname &
+CDp_sname::operator=(const CDp_sname &pd)
+{
+    (CDp&)*this = (const CDp&)pd;
+    pns_macro = pd.pns_macro;
+    pns_located = pd.pns_located;
+    pns_name = pd.pns_name;
+    return (*this);
+}
+
+
+// Print the name property text to lstr.
+//
+bool
+CDp_sname::print(sLstr *lstr, int, int) const
+{
+    if (!pns_name)
+        lstr->add_c(P_NAME_NULL);
+    else
+        lstr->add(Tstring(pns_name));
+
+    if (is_macro())
+        lstr->add(" macro");
+    else if (is_subckt()) {
+        // This will be ignored, but keep it for back compatibility.
+        lstr->add(" 0 subckt");
+    }
+    return (true);
+}
+
+
+// Parse the name from the string, and initialize.
+// Syntax:  name [macro] [subckt]
+// The first token is the name, others are recognized as "macro" or
+// "subckt" which set switches, or are silently ignored.
+//
+bool
+CDp_sname::parse_name(const char *str)
+{
+    pns_macro = false;
+    pns_located = false;
+    pns_name = 0;
+
+    if (str) {
+        char *tok;
+        int cnt = 0;
+        while ((tok = lstring::gettok(&str)) != 0) {
+            cnt++;
+            if (!pns_name) {
+                // Strip out periods, these are used as field separators
+                // in instance names (defaultname.setname).
+                for (char *c = tok; *c; c++) {
+                    if (*c == '.')
+                        *c = '_';
+                }
+                // The '#' that used to specify "bus" terminals is no
+                // longer used, map it to the regular terminal prefix.
+                if (*tok == P_NAME_BTERM_DEPREC)
+                    *tok = P_NAME_TERM;
+
+                set_name_string(tok);
+                delete [] tok;
+                continue;
+            }
+            if (lstring::ciprefix("mac", tok)) {
+                set_macro(true);
+                delete [] tok;
+                continue;
+            }
+            // Unused token, just ignore.
+            delete [] tok;
+        }
+
+        // Handle old format, just "X 0" implies a macro, any third
+        // token defines a subckt.
+        if (cnt == 2 && !is_macro() && is_subckt())
+            set_macro(true);
+    }
+    if (!pns_name)
+        set_name_string(P_NAME_NULL_STR);
+    return (true);
+}
+// End CDp_sname functions
+
+
+// Name property for instances.  The name of an instance is by default
+// assigned by the application, using the name and num fields.  If the
+// setname field is assigned, that name will be used instead.
+
+CDp_cname::CDp_cname(const CDp_cname &pd) : CDp_sname((const CDp_sname&)pd)
+{
+    pnc_setname = lstring::copy(pd.pnc_setname);
+    pnc_label = pd.pnc_label;
+    pnc_labtext = lstring::copy(pd.pnc_labtext);
+    pnc_num = pd.pnc_num;
+    pnc_scindex = pd.pnc_scindex;
+    pnc_x = pd.pnc_x;
+    pnc_y = pd.pnc_y;
+}
+
+
+CDp_cname &
+CDp_cname::operator=(const CDp_cname &pd)
+{
+    (CDp_sname&)*this = (const CDp_sname&)pd;
+    pnc_setname = lstring::copy(pd.pnc_setname);
+    pnc_label = pd.pnc_label;
+    pnc_labtext = lstring::copy(pd.pnc_labtext);
+    pnc_num = pd.pnc_num;
+    pnc_scindex = pd.pnc_scindex;
+    pnc_x = pd.pnc_x;
+    pnc_y = pd.pnc_y;
+    return (*this);
+}
+
+
+CDp_cname::CDp_cname(const CDp_sname &ps) : CDp_sname(ps)
+{
+    pnc_setname = 0;
+    pnc_label = 0;
+    pnc_labtext = 0;
+    pnc_num = 0;
+    pnc_scindex =0; 
+    pnc_x = 0;
+    pnc_y = 0;
+}
+
+
+CDp_cname &
+CDp_cname::operator=(const CDp_sname &ps)
+{
+    (CDp_sname&)*this = ps;
+    pnc_setname = 0;
+    pnc_label = 0;
+    pnc_labtext = 0;
+    pnc_num = 0;
+    pnc_scindex =0; 
+    pnc_x = 0;
+    pnc_y = 0;
+    return (*this);
+}
+
+
+// Print the name property text to lstr.
+//
+bool
+CDp_cname::print(sLstr *lstr, int, int) const
+{
+    if (!pns_name)
+        lstr->add_c(P_NAME_NULL);
+    else
+        lstr->add(Tstring(pns_name));
+    if (pnc_setname) {
+        lstr->add_c('.');
+        lstr->add(pnc_setname);
+    }
+    lstr->add_c(' ');
+    lstr->add_i(number());
+
+    if (is_subckt() && !is_macro()) {
+        lstr->add_c(' ');
+        lstr->add("subckt");
+        if (pns_located) {
+            lstr->add_c(' ');
+            lstr->add_i(pnc_x);
+            lstr->add_c(' ');
+            lstr->add_i(pnc_y);
+        }
+    }
+    return (true);
+}
+
+
+// Return the label to be associated with the cname property.
+//
+// The pnc_labtext is used to set a default label, before the actual
+// label is created/attached.  It DOES NOT track subsequent label text
+// changes, nor is it read/written to files.
+//
+hyList *
+CDp_cname::label_text(bool *copied, CDc *cdesc) const
+{
+    if (copied)
+        *copied = true;
+    if (!pns_name)
+        return (new hyList(0, "??", HYcvPlain));
+    // Check the name field.  If it is not alpha, treat it
+    // specially.
+    if (isalpha(*Tstring(pns_name))) {
+        // ordinary device name
+        if (cdesc) {
+            CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
+            const char *instname = cdesc->getElecInstBaseName(this);
+            if (instname) {
+                if (pr) {
+                    // This is a vector instance, tack on the range.
+                    sLstr lstr;
+                    lstr.add(instname);
+                    lstr.add_c(cTnameTab::subscr_open());
+                    lstr.add_i(pr->beg_range());
+                    lstr.add_c(':');
+                    lstr.add_i(pr->end_range());
+                    lstr.add_c(cTnameTab::subscr_close());
+                    return (new hyList(0, lstr.string(), HYcvPlain));
+                }
+                return (new hyList(0, instname, HYcvPlain));
+            }
+        }
+        return (new hyList(0, "??", HYcvPlain));
+    }
+    // else assume a terminal
+    if (pnc_label) {
+        if (copied)
+            *copied = false;
+        return (pnc_label->label());
+    }
+    // default terminal name
+    if (pnc_labtext)
+        return (new hyList(0, pnc_labtext, HYcvPlain));
+    if (cdesc && cdesc->master())
+        return (new hyList(0, Tstring(cdesc->cellname()), HYcvPlain));
+    return (new hyList(0, "label", HYcvPlain));
+}
+
+
+// Parse the name from the string, and initialize.
+// syntax: name[.setname] num [subname physx physy]
+// name, setname, subname are strings, num, physx, physy are
+// integers.  The physx, physy locate the physical name label.
+//
+bool
+CDp_cname::parse_name(const char *str)
+{
+    pns_macro = false;
+    pns_located = false;
+        // Set true when the location is set.
+    pns_name = 0;
+
+    pnc_setname = 0;
+    pnc_label = 0;
+    pnc_labtext = 0;
+    pnc_num = 0;
+    pnc_scindex = 0;
+        // The xcindex is an alternate id number for subcircuits, which
+        // will be zero-based for each master.  The pna_num is an absolute
+        // count for all subcircuits.
+    pnc_x = 0;
+    pnc_y = 0;
+        // The location in the physical layout where the label appears,
+        // after extraction/association.
+
+    // First token is the name.
+    char *tok = lstring::gettok(&str);
+    if (!tok) {
+        char bf[4];
+        bf[0] = P_NAME_NULL;
+        bf[1] = 0;
+        set_name_string(bf);
+        return (true);
+    }
+
+    // The name property name string is of the form
+    // default_name[.set_name]
+    //
+    char *cp = strchr(tok, '.');
+    if (cp) {
+        if (cp != tok)
+            *cp++ = 0;
+        else {
+            *cp = P_NAME_NULL;
+            cp = 0;
+        }
+    }
+
+    // The '#' that used to specify "bus" terminals is no longer
+    // used, map it to the regular terminal prefix.
+    if (*tok == P_NAME_BTERM_DEPREC)
+        *tok = P_NAME_TERM;
+
+    set_name_string(tok);
+    if (cp && *cp)
+        pnc_setname = lstring::copy(cp);
+    delete [] tok;
+
+    // Second token is a number.
+    tok = lstring::gettok(&str);
+    if (!tok)
+        return (true);
+    set_number(atoi(tok));
+    delete [] tok;
+
+    // Remaining tokens are "subckt x y" for name label placement
+    // location on physical subcells.
+    tok = lstring::gettok(&str);
+    if (!tok)
+        return (true);
+    if (lstring::ciprefix("subc", tok) && is_subckt()) {
+        int x, y;
+        int nset = sscanf(str, "%d %d", &x, &y);
+        if (nset == 2) {
+            pnc_x = x;
+            pnc_y = y;
+        }
+    }
+    delete [] tok;
+    return (true);
+}
+// End CDp_cname functions
+
+#else
 
 CDp_name::CDp_name(const CDp_name &pd) : CDp(0, pd.p_value)
 {
@@ -3340,6 +3672,7 @@ CDp_name::parse_name(const char *str)
 }
 // End CDp_name functions
 
+#endif
 
 // CDp_labloc property
 // This property provides default locations for the property labels which
@@ -3630,12 +3963,21 @@ CDp_nmut::print(sLstr *lstr, int, int) const
 {
     if (!pnmu_odesc1 || !pnmu_odesc2)
         return (false);
+#ifdef NEWNMP
+    CDp_cname *pn1 = (CDp_cname*)pnmu_odesc1->prpty(P_NAME);
+    if (!pn1 || !pn1->name_string())
+        return (false);
+    CDp_cname *pn2 = (CDp_cname*)pnmu_odesc2->prpty(P_NAME);
+    if (!pn2 || !pn2->name_string())
+        return (false);
+#else
     CDp_name *pn1 = (CDp_name*)pnmu_odesc1->prpty(P_NAME);
     if (!pn1 || !pn1->name_string())
         return (false);
     CDp_name *pn2 = (CDp_name*)pnmu_odesc2->prpty(P_NAME);
     if (!pn2 || !pn2->name_string())
         return (false);
+#endif
 
     lstr->add_i(pnmu_indx);
     lstr->add_c(' ');
@@ -4118,7 +4460,11 @@ CDp_lref::find_my_object(CDs *sd, CDla *la)
         for (CDm *mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {
             CDc_gen cgen(mdesc);
             for (cdesc = cgen.c_first(); cdesc; cdesc = cgen.c_next()) {
+#ifdef NEWNMP
+                CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
                 CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
                 if (!pn || !pn->name_string())
                     continue;
                 if (lname != pn->name_string())

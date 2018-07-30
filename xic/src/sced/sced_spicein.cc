@@ -460,11 +460,8 @@ cSced::extractFromSpice(CDs *sdesc, FILE *fp, int modeflag)
     DSP()->SetNoRedisplay(trd);
 
     // Make sure that the top-level has a name property.
-    if (!sdesc->prpty(P_NAME)) {
-        char buf[64];
-        sprintf(buf, "X 0 %s", Tstring(sdesc->cellname()));
-        sdesc->prptyAdd(P_NAME, buf);
-    }
+    if (!sdesc->prpty(P_NAME))
+        sdesc->prptyAdd(P_NAME, P_NAME_SUBC_STR);
 
     CDs *psdesc = CDcdb()->findCell(sdesc->cellname(), Physical);
     if (psdesc)
@@ -897,11 +894,9 @@ cSpiceBuilder::make_subc(const char *cname, int modeflag)
 
     Ulist()->ListChangeCell(sdesc);
 
-    // add name property, subckts have 3 entries in name field
-    if (!sdesc->prpty(P_NAME)) {
-        sprintf(tbuf, "X 0 %s", cname);
-        sdesc->prptyAdd(P_NAME, tbuf);
-    }
+    // add name property if needed
+    if (!sdesc->prpty(P_NAME))
+        sdesc->prptyAdd(P_NAME, P_NAME_SUBC_STR);
 
     mksymtab(sdesc, &s->stab, (modeflag & EFS_ALLDEVS));
 
@@ -1173,11 +1168,9 @@ cSpiceBuilder::place(CDs *sdesc, const char *key, bool create)
                     return;
                 }
             }
-            // add name property, subckts have 3 entries in name field
-            if (!esdesc->isDevice() && !esdesc->prpty(P_NAME)) {
-                sprintf(tbuf, "X 0 %s", cname);
-                esdesc->prptyAdd(P_NAME, tbuf);
-            }
+            // add name property if needed
+            if (!esdesc->isDevice() && !esdesc->prpty(P_NAME))
+                esdesc->prptyAdd(P_NAME, P_NAME_SUBC_STR);
 
             int x, y;
             cur_posn(esdesc, &x, &y);
@@ -1226,7 +1219,11 @@ cSpiceBuilder::apply_properties()
         }
 
         if (!sb_cdesc->isDevice()) {
+#ifdef NEWNMP
+            CDp_cname *pn = (CDp_cname*)sb_cdesc->prpty(P_NAME);
+#else
             CDp_name *pn = (CDp_name*)sb_cdesc->prpty(P_NAME);
+#endif
             if (pn && (!pn->assigned_name() ||
                     strcmp(sb_name, pn->assigned_name()))) {
                 pn->set_assigned_name(sb_name);
@@ -1236,7 +1233,11 @@ cSpiceBuilder::apply_properties()
         }
         else {
             if (sb_name) {
+#ifdef NEWNMP
+                CDp_cname *pn = (CDp_cname*)sb_cdesc->prpty(P_NAME);
+#else
                 CDp_name *pn = (CDp_name*)sb_cdesc->prpty(P_NAME);
+#endif
                 if (pn && (!pn->assigned_name() ||
                         strcmp(sb_name, pn->assigned_name()))) {
                     pn->set_assigned_name(sb_name);
@@ -1350,7 +1351,11 @@ cSpiceBuilder::sub_glob(CDs *sdesc)
             // terminal
             CDc_gen cgen(m);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
+#ifdef NEWNMP
+                CDp_cname *pna = (CDp_cname*)c->prpty(P_NAME);
+#else
                 CDp_name *pna = (CDp_name*)c->prpty(P_NAME);
+#endif
                 if (!pna)
                     continue;
                 CDla *olabel = pna->bound();
@@ -1708,7 +1713,11 @@ cSpiceBuilder::process_muts(CDs *sdesc)
             while ((cd = (CDc*)gdesc.next()) != 0) {
                 if (!cd->is_normal())
                     continue;
+#ifdef NEWNMP
+                CDp_cname *pna = (CDp_cname*)cd->prpty(P_NAME);
+#else
                 CDp_name *pna = (CDp_name*)cd->prpty(P_NAME);
+#endif
                 if (!pna)
                     continue;
                 name1 = cd->getElecInstBaseName(pna);
@@ -2156,7 +2165,11 @@ cSpiceBuilder::mksymtab(CDs *sdesc, SymTab **symtab, bool alldevs)
         CDs *msdesc = cdesc->masterCell();
         if (!msdesc)
             continue;
+#ifdef NEWNMP
+        CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
         CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
         if (alldevs) {
             // add all devices
             if (pn) {

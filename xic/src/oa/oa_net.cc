@@ -238,7 +238,11 @@ cOAnetHandler::setupNets(bool symbolic)
         port_tab.port_setup(nh_block, cdf);
 
         // First set a P_NAME property if needed.
+#ifdef NEWNMP
+        CDp_sname *pname = (CDp_sname*)nh_sdesc->prpty(P_NAME);
+#else
         CDp_name *pname = (CDp_name*)nh_sdesc->prpty(P_NAME);
+#endif
         if (!pname) {
             // The device lacks an instNamePrefix property.
 
@@ -251,18 +255,28 @@ cOAnetHandler::setupNets(bool symbolic)
             }
             if (cdf && cdf->prefix()) {
                 const char *pfx = cdf->prefix();
+#ifdef NEWNMP
+                pname = new CDp_sname;
+                pname->set_name_string(pfx);
+#else
                 pname = new CDp_name;
                 pname->set_name_string(pfx);
                 if (*pfx == 'X' || *pfx == 'x')
                     pname->set_subckt(true);
+#endif
                 pname->set_next_prp(nh_sdesc->prptyList());
                 nh_sdesc->setPrptyList(pname);
             }
             else {
                 // Assume a subcircuit here.
+#ifdef NEWNMP
+                pname = new CDp_sname;
+                pname->set_name_string("X");
+#else
                 pname = new CDp_name;
                 pname->set_name_string("X");
                 pname->set_subckt(true);
+#endif
                 pname->set_next_prp(nh_sdesc->prptyList());
                 nh_sdesc->setPrptyList(pname);
             }
@@ -307,7 +321,10 @@ cOAnetHandler::setupNets(bool symbolic)
                     oaScalarName viewName(oaNativeNS(), "schematic");
                     design->getLibName(libName);
                     if (!oaDesign::exists(libName, cellName, viewName)) {
+#ifdef NEWNMP
+#else
                         pname->set_subckt(false);
+#endif
                         char bf[2];
                         bf[0] = nulldev ? P_NAME_NULL : P_NAME_TERM;
                         bf[1] = 0;
@@ -322,7 +339,10 @@ cOAnetHandler::setupNets(bool symbolic)
                         instcnt++;
 
                     if (instcnt == 0) {
+#ifdef NEWNMP
+#else
                         pname->set_subckt(false);
+#endif
                         char bf[2];
                         bf[0] = nulldev ? P_NAME_NULL : P_NAME_TERM;
                         bf[1] = 0;
@@ -345,6 +365,9 @@ cOAnetHandler::setupNets(bool symbolic)
             oaString tname;
             term->getName(oaCdbaNS(), tname);
 
+#ifdef NEWNMP
+//XXX FIXME            
+#else
             // If this is a terminal device, and there is no
             // associated label, set the label text field of the
             // property.  When a label is created and associated, it
@@ -352,6 +375,7 @@ cOAnetHandler::setupNets(bool symbolic)
             //
             if (key == P_NAME_TERM && !pname->bound())
                 pname->set_label_text(tname);
+#endif
 
             unsigned int nbits = term->getNumBits();
             // All terminals have a net (which may be empty).
@@ -1649,7 +1673,11 @@ cOAnetHandler::add_terminal(int x, int y, const char *tname)
         return (false);
 
     // Check that the terminal device has a name property.
+#ifdef NEWNMP
+    CDp_cname *pa = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
     CDp_name *pa = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
     if (!pa) {
         Errs()->add_error("Instance of %s has no name property.",
             Tstring(msdesc->cellname()));

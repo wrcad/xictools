@@ -124,13 +124,9 @@ namespace {
         CDs *cursde = CurCell(Electrical);
         if (cursde) {
 
-            // Make sure a name property exists, subckts have 3 entries in
-            // name field.
-            if (!cursde->prpty(P_NAME)) {
-                char tbuf[256];
-                sprintf(tbuf, "X 0 %s", Tstring(cursde->cellname()));
-                cursde->prptyAdd(P_NAME, tbuf);
-            }
+            // Make sure a name property exists.
+            if (!cursde->prpty(P_NAME))
+                cursde->prptyAdd(P_NAME, P_NAME_SUBC_STR);
 
             // Update BB for symbolic mode.
             CDs *cdsymb = cursde->symbolicRep(0);

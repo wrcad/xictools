@@ -1672,7 +1672,11 @@ oa_save::save_cell_properties(CDs *sdesc, oaObject *object)
         return;
 
     if (out_virtuoso) {
+#ifdef NEWNMP
+        CDp_sname *pn = (CDp_sname*)sdesc->prpty(P_NAME);
+#else
         CDp_name *pn = (CDp_name*)sdesc->prpty(P_NAME);
+#endif
         if (pn) {
             // Add the instNamePrefix property to devices.
 

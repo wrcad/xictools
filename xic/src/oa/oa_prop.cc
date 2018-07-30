@@ -1022,7 +1022,11 @@ cOAprop::addPrptyLabel(CDc *cdesc, CDp *pdesc)
         return (true);
     if (pdesc->value() == P_NAME) {
         // The "null" devices don't have a name label.
+#ifdef NEWNMP
+        CDp_cname *pa = (CDp_cname*)pdesc;
+#else
         CDp_name *pa = (CDp_name*)pdesc;
+#endif
         int key = pa->key();
         if (key != P_NAME_TERM && !isalpha(key))
             return (true);

@@ -325,8 +325,13 @@ sPbase::update_display()
                 case P_NAME:
                     // Indicate name property set
                     if (pi_odesc && pi_odesc->type() == CDINSTANCE) {
+#ifdef NEWNMP
+                        CDp_cname *pn =
+                            (CDp_cname*)OCALL(pi_odesc)->prpty(P_NAME);
+#else
                         CDp_name *pn =
                             (CDp_name*)OCALL(pi_odesc)->prpty(P_NAME);
+#endif
                         if (pn && pn->assigned_name())
                             cx = c3;
                     }

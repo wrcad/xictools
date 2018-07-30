@@ -351,14 +351,14 @@ MutState::mut_init()
         if (pdesc->value() == P_MUT) {
             // Referenced by lower left corner
             int l1x, l2x, l1y, l2y;
-            PMUT(pdesc)->get_coords(&l1x, &l1y, &l2x, &l2y);
+            ((CDp_mut*)pdesc)->get_coords(&l1x, &l1y, &l2x, &l2y);
             odesc1 = CDp_mut::find(l1x, l1y, cursde);
             odesc2 = CDp_mut::find(l2x, l2y, cursde);
             if (odesc1 == 0 || odesc2 == 0)
                 continue;
         }
         else if (pdesc->value() == P_NEWMUT) {
-            if (!PNMU(pdesc)->get_descs(&odesc1, &odesc2))
+            if (!((CDp_nmut*)pdesc)->get_descs(&odesc1, &odesc2))
                 continue;
         }
         else
@@ -733,7 +733,7 @@ MutState::delete_mutual()
     CDp *pdesc = Scur->pdesc;
     if (pdesc->value() == P_NEWMUT) {
         CDc *odesc1, *odesc2;
-        if (!PNMU(pdesc)->get_descs(&odesc1, &odesc2))
+        if (!((CDp_nmut*)pdesc)->get_descs(&odesc1, &odesc2))
             return;
         CDp_mutlrf *pml = (CDp_mutlrf*)odesc1->prpty(P_MUTLRF);
         Ulist()->RecordPrptyChange(cursde, odesc1, pml, 0);
@@ -778,7 +778,7 @@ MutState::change_mutual()
     double kv;
     char coefstr[128], devn[128];
     if (pdesc->value() == P_NEWMUT) {
-        CDp_nmut *pm = PNMU(pdesc);
+        CDp_nmut *pm = (CDp_nmut*)pdesc;
         do {
             bool copied;
             hyList *lt = pm->label_text(&copied);
@@ -809,7 +809,7 @@ MutState::change_mutual()
         }
     }
     else {
-        sprintf(coefstr, "%f", PMUT(pdesc)->coeff());
+        sprintf(coefstr, "%f", ((CDp_mut*)pdesc)->coeff());
         char *s;
         do {
             s = PL()->EditPrompt("Enter SPICE coupling factor: k = ", coefstr);
@@ -823,7 +823,7 @@ MutState::change_mutual()
         }
         while (sscanf(s, "%le", &kv) < 1 || kv < -1 || kv > 1);
         Ulist()->ListCheck("mutchg", cursde, false);
-        PMUT(pdesc)->set_coeff(kv);
+        ((CDp_mut*)pdesc)->set_coeff(kv);
     }
     Ulist()->CommitChanges();
     message();
@@ -846,7 +846,7 @@ cSced::mutToNewMut(CDs *sdesc)
             // Referenced by lower left corner
             CDc *odesc1, *odesc2;
             int l1x, l1y, l2x, l2y;
-            PMUT(pd)->get_coords(&l1x, &l1y, &l2x, &l2y);
+            ((CDp_mut*)pd)->get_coords(&l1x, &l1y, &l2x, &l2y);
             odesc1 = CDp_mut::find(l1x, l1y, sdesc);
             odesc2 = CDp_mut::find(l2x, l2y, sdesc);
             if (odesc1 == 0 || odesc2 == 0) {
@@ -854,7 +854,7 @@ cSced::mutToNewMut(CDs *sdesc)
                 delete pd;
                 continue;
             }
-            sprintf(buf, "%g", PMUT(pd)->coeff());
+            sprintf(buf, "%g", ((CDp_mut*)pd)->coeff());
             if (!sdesc->prptyMutualAdd(odesc1, odesc2, buf, 0))
                 Log()->ErrorLog(mh::EditOperation, Errs()->get_error());
             sdesc->prptyUnlink(pd);
@@ -918,7 +918,11 @@ namespace {
             CDp *pd;
             for (pd = cdesc->prpty_list(); pd; pd = pd->next_prp()) {
                 if (pd->value() == P_NAME) {
+#ifdef NEWNMP
+                    if (((CDp_cname*)pd)->key() == 'l')
+#else
                     if (((CDp_name*)pd)->key() == 'l')
+#endif
                         nameok = true;
                 }
                 else if (pd->value() == P_BRANCH)

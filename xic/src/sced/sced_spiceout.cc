@@ -535,14 +535,21 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
         if (!list_all && !check_terms(sdesc, cdesc, tnames, tsize))
             continue;
 
+#ifdef NEWNMP
+        CDp_cname *pname = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
         CDp_name *pname = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
         if (!pname)
             continue;
-        const char *nm = Tstring(pname->name_string());
-        bool macrocall =  (nm && (*nm == 'X' || *nm == 'x'));
+        bool macrocall = pname->is_subckt();
         char *device = lstring::copy(cdesc->getElecInstBaseName());
         char *subname = 0;
+#ifdef NEWNMP
+        if (macrocall && !pname->is_macro())
+#else
         if (pname->is_subckt())
+#endif
             subname = lstring::copy(Tstring(cdesc->cellname()));
         if (!device) {
             // should never happen
@@ -818,7 +825,11 @@ namespace {
         if (cdesc->prpty(P_RANGE))
             return (true);
         CDp_node *pn = (CDp_node*)cdesc->prpty(P_NODE);
+#ifdef NEWNMP
+        CDp_cname *pna = (CDp_cname*)cdesc->prpty(P_NAME);
+#else
         CDp_name *pna = (CDp_name*)cdesc->prpty(P_NAME);
+#endif
         int num_gnd = 0;
         int num_open = 0;
         int num_ok = 0;
@@ -906,7 +917,11 @@ SpOut::def_node_term_list(CDs *sdesc)
             // terminal
             CDc_gen cgen(m);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
+#ifdef NEWNMP
+                CDp_cname *pna = (CDp_cname*)c->prpty(P_NAME);
+#else
                 CDp_name *pna = (CDp_name*)c->prpty(P_NAME);
+#endif
                 if (!pna)
                     continue;
                 CDla *olabel = pna->bound();
@@ -970,7 +985,7 @@ SpOut::add_mutual(CDs *sdesc, bool list_all, stringlist **tnames, int tsize)
         int l1x, l2x, l1y, l2y;
         int refcnt;
         if (pdesc->value() == P_MUT) {
-            PMUT(pdesc)->get_coords(&l1x, &l1y, &l2x, &l2y);
+            ((CDp_mut*)pdesc)->get_coords(&l1x, &l1y, &l2x, &l2y);
             odesc1 = CDp_mut::find(l1x, l1y, sdesc);
             odesc2 = CDp_mut::find(l2x, l2y, sdesc);
             if (odesc1 == 0 || odesc2 == 0)
@@ -978,9 +993,9 @@ SpOut::add_mutual(CDs *sdesc, bool list_all, stringlist **tnames, int tsize)
             refcnt = count;
         }
         else if (pdesc->value() == P_NEWMUT) {
-            if (!PNMU(pdesc)->get_descs(&odesc1, &odesc2))
+            if (!((CDp_nmut*)pdesc)->get_descs(&odesc1, &odesc2))
                 continue;
-            refcnt = PNMU(pdesc)->index();
+            refcnt = ((CDp_nmut*)pdesc)->index();
         }
         else
             continue;
@@ -993,16 +1008,17 @@ SpOut::add_mutual(CDs *sdesc, bool list_all, stringlist **tnames, int tsize)
             const char *name2 = odesc2->getElecInstBaseName();
             count++;
             if (pdesc->value() == P_NEWMUT) {
-                if (PNMU(pdesc)->assigned_name())
-                    sprintf(tbuf, "%s %s %s %s", PNMU(pdesc)->assigned_name(),
-                        name1, name2, PNMU(pdesc)->coeff_str());
+                if (((CDp_nmut*)pdesc)->assigned_name())
+                    sprintf(tbuf, "%s %s %s %s",
+                        ((CDp_nmut*)pdesc)->assigned_name(),
+                        name1, name2, ((CDp_nmut*)pdesc)->coeff_str());
                 else
                     sprintf(tbuf, "%s%d %s %s %s", MUT_CODE, refcnt, name1,
-                        name2, PNMU(pdesc)->coeff_str());
+                        name2, ((CDp_nmut*)pdesc)->coeff_str());
             }
             else
                 sprintf(tbuf, "%s%d %s %s %g", MUT_CODE, refcnt, name1,
-                    name2, PMUT(pdesc)->coeff());
+                    name2, ((CDp_mut*)pdesc)->coeff());
             if (d0 == 0)
                 d = d0 = new sp_line_t(tbuf);
             else {
@@ -1316,7 +1332,7 @@ SpOut::subckt_line(CDs *sub)
 
     CDp *prp = sub->prpty(P_PARAM);
     if (prp) {
-        char *str = hyList::string(PUSR(prp)->data(), HYcvPlain, false);
+        char *str = hyList::string(((CDp_user*)prp)->data(), HYcvPlain, false);
         const char *s = str;
         char *name, *value;
         while (get_pair(&s, &name, &value) != 0) {

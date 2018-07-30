@@ -83,9 +83,11 @@ cSced::saveAsDev(const char *name, bool tofile)
     // Make sure external node is set to be undefined.
     for (CDp *pd = cursde->prptyList(); pd; pd = pd->next_prp()) {
         if (pd->value() == P_NODE)
-            PNOD(pd)->set_enode(-1);
+            ((CDp_node*)pd)->set_enode(-1);
     }
 
+#ifdef NEWNMP
+#else
     CDp_name *pn = (CDp_name*)cursde->prpty(P_NAME);
     if (pn) {
         // Devices never have "set" name.
@@ -95,6 +97,7 @@ cSced::saveAsDev(const char *name, bool tofile)
         // explicitly placed subcells.
         pn->set_subckt(false);
     }
+#endif
 
     // Remove any odesc properties.  Geometry in library cell
     // has no electrical significance.

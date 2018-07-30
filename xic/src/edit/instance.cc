@@ -860,8 +860,13 @@ cEdit::replaceInstance(CDc *cdesc, CDcbin *newcbin, bool add_cur_xform,
     Ulist()->RecordObjectChange(sdesc, cdesc, newcdesc);
     if (sdesc->isElectrical()) {
         // keep any existing assigned name
+#ifdef NEWNMP
+        CDp_cname *pon = (CDp_cname*)cdesc->prpty(P_NAME);
+        CDp_cname *pnn = (CDp_cname*)newcdesc->prpty(P_NAME);
+#else
         CDp_name *pon = (CDp_name*)cdesc->prpty(P_NAME);
         CDp_name *pnn = (CDp_name*)newcdesc->prpty(P_NAME);
+#endif
         if (pon && pnn && pon->assigned_name())
             pnn->set_assigned_name(pon->assigned_name());
         ScedIf()->genDeviceLabels(newcdesc, cdesc, false);

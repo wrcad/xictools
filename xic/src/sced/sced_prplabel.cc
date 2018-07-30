@@ -88,7 +88,11 @@ cSced::genDeviceLabels(CDc *cdesc, CDc *old, bool regen)
 // Update the name label according to pna.
 //
 void
+#ifdef NEWNMP
+cSced::updateNameLabel(CDc *cdesc, CDp_cname *pna)
+#else
 cSced::updateNameLabel(CDc *cdesc, CDp_name *pna)
+#endif
 {
     if (!cdesc || cdesc->type() != CDINSTANCE)
         return;
@@ -267,7 +271,11 @@ cSced::addDeviceLabel(CDc *cdesc, CDp *pdesc, CDp *oldp, hyList *hstring,
         return;
     if (pdesc->value() == P_NAME) {
         // The "null" devices don't have a name label.
+#ifdef NEWNMP
+        CDp_cname *pa = (CDp_cname*)pdesc;
+#else
         CDp_name *pa = (CDp_name*)pdesc;
+#endif
         int key = pa->key();
         if (key != P_NAME_TERM && !isalpha(key))
             return;

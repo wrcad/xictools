@@ -1862,12 +1862,9 @@ SubcState::update()
         if (!cursde)
             return;
 
-        // subckts have 3 entries in name field
-        if (!cursde->prpty(P_NAME)) {
-            char tbuf[128];
-            sprintf(tbuf, "X 0 %s", Tstring(DSP()->CurCellName()));
-            cursde->prptyAdd(P_NAME, tbuf);
-        }
+        // add name property if needed
+        if (!cursde->prpty(P_NAME))
+            cursde->prptyAdd(P_NAME, P_NAME_SUBC_STR);
         // update BB
         CDs *cdsymb = cursde->symbolicRep(0);
         if (cdsymb)
