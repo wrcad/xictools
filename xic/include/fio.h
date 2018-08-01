@@ -913,6 +913,9 @@ public:
     int OasWritePrptyMask()             { return (fioOasWritePrptyMask); }
     void SetOasWritePrptyMask(int m)    { fioOasWritePrptyMask = m; }
 
+    bool IsWriteMacroProps()            { return (fioWriteMacroProps); }
+    void SetWriteMacroProps(bool b)     { fioWriteMacroProps = b; }
+
 private:
     // fio_archive.cc
     OItype open_symbol_file(const char*, const char*,
@@ -1241,6 +1244,10 @@ private:
 
     unsigned char fioOasWritePrptyMask;
         // Omit certain or all properties from OASIS output.
+
+    bool fioWriteMacroProps;
+        // Write redundant and obsolete P_MACRO properties for
+        // backward compatibility (to pre-4.5.6).
 
     static cFIO *instancePtr;
 };

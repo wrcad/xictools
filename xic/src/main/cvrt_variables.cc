@@ -608,6 +608,14 @@ namespace {
     }
 
     bool
+    evWriteMacroProps(const char*, bool set)
+    {
+        FIO()->SetWriteMacroProps(set);
+        CDvdb()->registerPostFunc(postset);
+        return (true);
+    }
+
+    bool
     evKeepLibMasters(const char*, bool set)
     {
         FIO()->SetKeepLibMasters(set);
@@ -1012,6 +1020,7 @@ cConvert::setupVariables()
 
     // Conversion - Export Commands
     vsetup(VA_StripForExport,           0,  evStripForExport);
+    vsetup(VA_WriteMacroProps,          0,  evWriteMacroProps);
     vsetup(VA_KeepLibMasters,           B,  evKeepLibMasters);
     vsetup("WriteAllCells",             B,  evKeepLibMasters);  // Back compat.
     vsetup(VA_SkipInvisible,            S,  evSkipInvisible);

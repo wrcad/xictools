@@ -3586,6 +3586,13 @@ CDs::prptyAdd(int value, const char *string)
             }
             // Set the Device flag.
             setDevice(!((CDp_sname*)pdesc)->is_subckt());
+
+            // Look for Macro property, if found set the macro flag
+            // and remove the property.
+            if (prpty(P_MACRO)) {
+                ((CDp_sname*)pdesc)->set_macro(true);
+                prptyRemove(P_MACRO);
+            }
 #else
             pdesc = new CDp_name;
             if (!((CDp_name*)pdesc)->parse_name(string)) {
@@ -3643,6 +3650,29 @@ CDs::prptyAdd(int value, const char *string)
             }
             break;
         case P_MACRO:
+#ifdef NEWNMP
+            {
+                const char *msg =
+"Found a MACRO property.  These are obsolete and will be removed.  Set\n"
+"the WriteMacroProps variable to generate these properties in output if\n"
+"backward compatibility to 4.3.5 and earlier is needed.";
+
+                static bool seenthis;
+                if (!seenthis && !FIO()->IsWriteMacroProps()) {
+                    CD()->ifInfoMessage(IFMSG_POP_INFO, msg);
+                    seenthis = true;
+                }
+
+                // If we have a Name property, set the macro flag.
+                CDp_sname *pns = (CDp_sname*)prpty(P_NAME);
+                if (pns) {
+                    pns->set_macro(true);
+                    return (true);
+                }
+                // Otherwise create the properety, we'll deal with it
+                // later.
+            }
+#endif
             pdesc = new CDp("macro", value);
             break;
         case P_DEVREF:

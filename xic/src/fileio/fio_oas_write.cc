@@ -579,7 +579,7 @@ oas_out::write_struct(const char *name, tm*, tm*)
         // property will appear in the primary cell only if defined
         // there.
 
-        if (!write_cell_properties())
+        if (!write_properties(0))
             return (false);
         return (true);
     }
@@ -627,7 +627,7 @@ oas_out::write_struct(const char *name, tm*, tm*)
         return (false);
 
     // write cell properties
-    if (!write_cell_properties())
+    if (!write_properties(0))
         return (false);
     return (true);
 }
@@ -967,7 +967,7 @@ oas_out::write_box(const BBox *box)
             return (false);
 
         // write properties
-        if (!write_elem_properties())
+        if (!write_properties(CDBOX))
             return (false);
     }
     return (true);
@@ -1166,7 +1166,7 @@ oas_out::write_poly(const Poly *poly)
             return (false);
 
         // write properties
-        if (!write_elem_properties())
+        if (!write_properties(CDPOLYGON))
             return (false);
     }
     return (true);
@@ -1318,7 +1318,7 @@ oas_out::write_wire(const Wire *wire)
         }
 
         // write properties
-        if (!write_elem_properties())
+        if (!write_properties(CDWIRE))
             return (false);
     }
     return (true);
@@ -1444,7 +1444,7 @@ oas_out::write_text(const Text *text)
         return (false);
 
     // write properties
-    return (write_elem_properties());
+    return (write_properties(CDLABEL));
 }
 
 
@@ -1729,7 +1729,7 @@ oas_out::write_sref(const Instance *inst)
         }
 
         // write properties
-        if (!write_cell_properties())
+        if (!write_properties(CDINSTANCE))
             return (false);
     }
     return (true);
@@ -2029,7 +2029,7 @@ oas_out::write_trapezoid(Zoid *z, bool vert)
                 return (false);
 
             // write properties
-            if (!write_elem_properties())
+            if (!write_properties(CDPOLYGON))
                 return (false);
 
             if (type == 20 || type == 21)
@@ -2131,7 +2131,7 @@ oas_out::write_trapezoid(Zoid *z, bool vert)
                 return (false);
 
             // write properties
-            if (!write_elem_properties())
+            if (!write_properties(CDPOLYGON))
                 return (false);
         }
     }
@@ -2928,103 +2928,16 @@ oas_out::write_object_prv(const CDo *odesc)
 }
 
 
-bool
-oas_out::write_cell_properties()
-{
-    if (out_cgd)
-        return (true);
-    if ((out_prp_mask & OAS_PRPMSK_ALL) && out_mode == Physical)
-        return (true);
-
-    unsigned int pcnt = 0;
-    for (CDp *pd = out_prpty; pd; pd = pd->next_prp())
-        pcnt++;
-    if (!pcnt)
-        return (true);
-
-    if (!write_unsigned(28))
-        return (false);
-
-    pcnt *= 2;
-    const char *pname = "XIC_PROPERTIES";
-    // All properties are in a list (pname) as number,value ...
-
-    unsigned char info_byte = 0x4;  // UUUUVCNS
-    if (pcnt < 15)
-        info_byte |= (pcnt << 4);
-    else
-        info_byte |= 0xf0;
-
-    if (!out_propname_tab) {
-        if (!write_char(info_byte))
-            return (false);
-        if (!write_n_string(pname))
-            return (false);
-    }
-    else {
-        info_byte |= 2;  // N = 1
-        if (!write_char(info_byte))
-            return (false);
-        unsigned long refnum = (unsigned long)SymTab::get(
-            out_propname_tab, pname);
-        if (refnum == (unsigned long)ST_NIL) {
-            refnum = out_propname_ix++;
-            out_propname_tab->add(out_string_pool->new_string(pname),
-                (void*)refnum, false);
-        }
-        if (!write_unsigned(refnum))
-            return (false);
-    }
-    if (pcnt >= 15) {
-        if (!write_unsigned(pcnt))
-            return (false);
-    }
-
-    for (CDp *pd = out_prpty; pd; pd = pd->next_prp()) {
-        CDp *px = pd->dup();
-        if (!px)
-            continue;
-        px->scale(out_scale, out_phys_scale, out_mode);
-        char *str = lstring::copy(px->string());
-        delete px;
-        GCarray<char*> gc_str(str);
-
-        if (!write_unsigned(8))
-            return (false);
-        if (!write_unsigned(pd->value()))
-            return (false);
-
-        if (!out_propstring_tab) {
-            if (!write_unsigned(10))
-                return (false);
-            if (!write_a_string(str))
-                return (false);
-        }
-        else {
-            if (!write_unsigned(13))
-                return (false);
-            unsigned long refnum = (unsigned long)SymTab::get(
-                out_propstring_tab, str);
-            if (refnum == (unsigned long)ST_NIL) {
-                refnum = out_propstring_ix++;
-                out_propstring_tab->add(out_string_pool->new_string(str),
-                    (void*)refnum, false);
-            }
-            if (!write_unsigned(refnum))
-                return (false);
-        }
-    }
-    return (true);
-}
-
-
 // GDSII TEXT record number
 #ifndef II_TEXT
 #define II_TEXT         12
 #endif
 
+// Write the properties for the current context, as given by the
+// argument, which is 0 for cells,
+// CDINSTANCE/CDBOX,CDPOLYGON,CDWIRE,CDLABEL otherwise.
 bool
-oas_out::write_elem_properties()
+oas_out::write_properties(int type)
 {
     if (out_cgd)
         return (true);
@@ -3035,15 +2948,17 @@ oas_out::write_elem_properties()
     CDp *pp = 0, *pn;
     for (CDp *pd = out_prpty; pd; pd = pn) {
         pn = pd->next_prp();
-        if (pd->value() == GDSII_PROPERTY_BASE + II_TEXT &&
-                (out_prp_mask & OAS_PRPMSK_GDS_LBL)) {
-            // Strip out the GDSII text property.
-            if (pp)
-                pp->set_next_prp(pn);
-            else
-                out_prpty = pn;
-            delete pd;
-            continue;
+        if (type == CDLABEL) {
+            if (pd->value() == GDSII_PROPERTY_BASE + II_TEXT &&
+                    (out_prp_mask & OAS_PRPMSK_GDS_LBL)) {
+                // Strip out the GDSII text property.
+                if (pp)
+                    pp->set_next_prp(pn);
+                else
+                    out_prpty = pn;
+                delete pd;
+                continue;
+            }
         }
         pp = pd;
         pcnt++;
@@ -3089,7 +3004,41 @@ oas_out::write_elem_properties()
             return (false);
     }
 
+    bool macro = false;
+    bool macrop = false;
     for (CDp *pd = out_prpty; pd; pd = pd->next_prp()) {
+        if (out_mode == Electrical && type == 0) {
+            if (FIO()->IsWriteMacroProps()) {
+                if (pd->value() == P_MACRO)
+                    macrop = true;
+                else if (pd->value() == P_NAME) {
+                    const char *st = pd->string();
+                    if (isalpha(*st) && *st != 'x' && *st != 'X') {
+                        while (*st && !isspace(*st))
+                            st++;
+                        while (isspace(*st))
+                            st++;
+                        if (lstring::ciprefix("mac", st))
+                            macro = true;
+                    }
+                }
+            }
+        }
+
+        char *str;
+        if (type == 0 || type == CDINSTANCE) {
+            // Cells/instances require scaling.
+            CDp *px = pd->dup();
+            if (!px)
+                continue;
+            px->scale(out_scale, out_phys_scale, out_mode);
+            str = lstring::copy(px->string());
+            delete px;
+        }
+        else
+            str = lstring::copy(pd->string());
+        GCarray<char*> gc_str(str);
+
         if (!write_unsigned(8))
             return (false);
         if (!write_unsigned(pd->value()))
@@ -3098,18 +3047,44 @@ oas_out::write_elem_properties()
         if (!out_propstring_tab) {
             if (!write_unsigned(10))
                 return (false);
-            if (!write_a_string(pd->string()))
+            if (!write_a_string(str))
                 return (false);
         }
         else {
             if (!write_unsigned(13))
                 return (false);
             unsigned long refnum = (unsigned long)SymTab::get(
-                out_propstring_tab, pd->string());
+                out_propstring_tab, str);
             if (refnum == (unsigned long)ST_NIL) {
                 refnum = out_propstring_ix++;
-                out_propstring_tab->add(
-                    out_string_pool->new_string(pd->string()),
+                out_propstring_tab->add(out_string_pool->new_string(str),
+                    (void*)refnum, false);
+            }
+            if (!write_unsigned(refnum))
+                return (false);
+        }
+    }
+    if (macro && !macrop) {
+        const char *str = "macro";
+        if (!write_unsigned(8))
+            return (false);
+        if (!write_unsigned(P_MACRO))
+            return (false);
+
+        if (!out_propstring_tab) {
+            if (!write_unsigned(10))
+                return (false);
+            if (!write_a_string(str))
+                return (false);
+        }
+        else {
+            if (!write_unsigned(13))
+                return (false);
+            unsigned long refnum = (unsigned long)SymTab::get(
+                out_propstring_tab, str);
+            if (refnum == (unsigned long)ST_NIL) {
+                refnum = out_propstring_ix++;
+                out_propstring_tab->add(out_string_pool->new_string(str),
                     (void*)refnum, false);
             }
             if (!write_unsigned(refnum))

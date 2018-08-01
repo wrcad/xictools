@@ -352,6 +352,12 @@ namespace {
         va_end(args);
         lstr.add(buf);
     }
+
+    void af_cb(bool yn, void*)
+    {
+        if (yn)
+            FIO()->SetWriteMacroProps(true);
+    }
 }
 
 
@@ -371,6 +377,18 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
     CDelecCellType tp = sdesc->elecCellType();
 
     const int prpmax = P_MAX_PRP_NUM + 1;
+
+#ifdef NEWNMP
+    // Remove obsolete P_MACRO properties, set flag in name property.
+    // This is redundant, also done in CDs::prptyAdd.
+    CDp_sname *pns = (CDp_sname*)sdesc->prpty(P_NAME);
+    if (pns) {
+        if (sdesc->prpty(P_MACRO)) {
+            pns->set_macro(true);
+            sdesc->prptyRemove(P_MACRO);
+        }
+    }
+#endif
 
     // Check property counts.
     int pcnts[prpmax];
@@ -436,8 +454,13 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
                 print_err(lstr, msg2, cname, CDp::elec_prp_name(i));
             break;
         case P_MACRO:
+#ifdef NEWNMP
+            if (pcnts[i] > 0)
+                print_err(lstr, msg1, cname, CDp::elec_prp_name(i));
+#else
             if (pcnts[i] > 1)
                 print_err(lstr, msg2, cname, CDp::elec_prp_name(i));
+#endif
             break;
         case P_DEVREF:
             if (pcnts[i] > 0)
@@ -512,7 +535,12 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
                         ok = false;
                     break;
                 case P_MACRO:
+#ifdef NEWNMP
+                    // Shouldn't get here.
+                    if (cnt > 0)
+#else
                     if (cnt > 1)
+#endif
                         ok = false;
                     break;
                 case P_DEVREF:

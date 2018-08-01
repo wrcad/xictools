@@ -987,8 +987,7 @@ private:
     bool write_b_string(const char*, unsigned int);
 
     bool write_object_prv(const CDo*);
-    bool write_cell_properties();
-    bool write_elem_properties();
+    bool write_properties(int);
     bool write_offset_std_prpty(uint64_t);
     bool write_label_property(unsigned int, unsigned int);
     bool write_rounded_end_property();

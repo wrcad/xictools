@@ -463,7 +463,24 @@ gds_out::write_struct(const char *name, tm *cdate, tm *mdate)
 
     // write electrical cell properties
     if (out_mode == Electrical) {
+        bool macro = false;
+        bool macrop = false;
         for (CDp *pd = out_prpty; pd; pd = pd->next_prp()) {
+            if (FIO()->IsWriteMacroProps()) {
+                if (pd->value() == P_MACRO)
+                    macrop = true;
+                else if (pd->value() == P_NAME) {
+                    const char *st = pd->string();
+                    if (isalpha(*st) && *st != 'x' && *st != 'X') {
+                        while (*st && !isspace(*st))
+                            st++;
+                        while (isspace(*st))
+                            st++;
+                        if (lstring::ciprefix("mac", st))
+                            macro = true;
+                    }
+                }
+            }
             CDp *px = pd->dup();
             if (px) {
                 px->scale(out_scale, out_phys_scale, out_mode);
@@ -473,6 +490,13 @@ gds_out::write_struct(const char *name, tm *cdate, tm *mdate)
                     struct_err("elec cell property", name);
                     return (false);
                 }
+            }
+        }
+        if (macro && !macrop) {
+            bool ret = write_property_rec(P_MACRO, "macro");
+            if (!ret) {
+                struct_err("elec cell property", name);
+                return (false);
             }
         }
     }

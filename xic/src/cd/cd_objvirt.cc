@@ -1211,15 +1211,30 @@ inst:
                 break;
             case P_NAME:
 #ifdef NEWNMP
-                pdesc = new CDp_cname;
-                if (!((CDp_cname*)pdesc)->parse_name(str)) {
+                {
+                    pdesc = 0;
+                    // Note that macro status is inherited from the
+                    // master.
+                    CDs *msd = ((CDc*)this)->masterCell();
+                    if (msd) {
+                        CDp_sname *ps = (CDp_sname*)msd->prpty(P_NAME);
+                        if (ps)
+                            pdesc = new CDp_cname(*ps);
+                    }
+                    if (!pdesc)
+                        pdesc = new CDp_cname;
+                    if (!((CDp_cname*)pdesc)->parse_name(str)) {
+                        delete pdesc;
+                        return (false);
+                    }
+                }
 #else
                 pdesc = new CDp_name;
                 if (!((CDp_name*)pdesc)->parse_name(str)) {
-#endif
                     delete pdesc;
                     return (false);
                 }
+#endif
                 break;
             case P_BRANCH:
                 pdesc = new CDp_branch;

@@ -483,15 +483,6 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
                     // also add a model property containing the cell
                     // name.
 
-                    lstr.add(value);
-                    lstr.add(" 0");
-                    if (*value == 'X' || *value == 'x') {
-                        lstr.add_c(' ');
-                        lstr.add("subckt");
-                    }
-                    CDp *px = new CDp(lstr.string(), P_NAME);
-                    px->set_next_prp(pvrt);
-                    pvrt = px;
 
                     bool modprop = false;
                     if (cdf && mode == Electrical && type == oacDesignType) {
@@ -505,11 +496,43 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
                         if (pf && (*pf == 'X' || *pf == 'x') &&
                                 (*value != 'X' && *value != 'x')) {
 
-                            CDp *px = new CDp("macro", P_MACRO);
-                            px->set_next_prp(pvrt);
-                            pvrt = px;
                             modprop = true;
                         }
+                    }
+                    if (modprop) {
+#ifdef NEWNMP
+                        lstr.add(value);
+                        lstr.add(" macro");
+#else
+                        lstr.add(value);
+                        lstr.add(" 0");
+                        if (*value == 'X' || *value == 'x') {
+                            lstr.add_c(' ');
+                            lstr.add("subckt");
+                        }
+                        CDp *px = new CDp(lstr.string(), P_NAME);
+                        px->set_next_prp(pvrt);
+                        pvrt = px;
+
+                        CDp *px = new CDp("macro", P_MACRO);
+                        px->set_next_prp(pvrt);
+                        pvrt = px;
+#endif
+                    }
+                    else {
+#ifdef NEWNMP
+                        lstr.add(value);
+#else
+                        lstr.add(value);
+                        lstr.add(" 0");
+                        if (*value == 'X' || *value == 'x') {
+                            lstr.add_c(' ');
+                            lstr.add("subckt");
+                        }
+                        CDp *px = new CDp(lstr.string(), P_NAME);
+                        px->set_next_prp(pvrt);
+                        pvrt = px;
+#endif
                     }
 
                     // Now, in some cases we need to add a model

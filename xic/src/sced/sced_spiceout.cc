@@ -584,16 +584,21 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
         pu = (CDp_user*)cdesc->prpty(P_DEVREF);
         char *devref = pu ? hyList::string(pu->data(), HYcvPlain, true) : 0;
 
-        // If a device has a P_MACRO property, we add an 'X' ahead of
-        // the name so that SPICE treats the line as a subcircuit
-        // call.  The "model" string should be the name of a .subckt,
-        // which is usually followed by parameters.
+        // If a device is a macro, we add an 'X' ahead of the name so
+        // that SPICE treats the line as a subcircuit call.  The
+        // "model" string should be the name of a .subckt, which is
+        // usually followed by parameters.
 
         bool pcell_macro = false;
         if (!macrocall) {
+#ifdef NEWNMP
+            if (pname->is_macro())
+                pcell_macro = true;
+#else
             CDs *msd = cdesc->masterCell();
             if (msd && msd->prpty(P_MACRO))
                 pcell_macro = true;
+#endif
         }
         if (pcell_macro) {
             // We need to add an 'X' ahead of the device name.

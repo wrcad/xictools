@@ -3438,10 +3438,7 @@ CDp_cname::parse_name(const char *str)
     // First token is the name.
     char *tok = lstring::gettok(&str);
     if (!tok) {
-        char bf[4];
-        bf[0] = P_NAME_NULL;
-        bf[1] = 0;
-        set_name_string(bf);
+        set_name_string(P_NAME_NULL_STR);
         return (true);
     }
 

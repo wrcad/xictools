@@ -311,3 +311,36 @@ collection of cells, the Place button still works and the tool can still find
 the cell but xic complains of missing basic elements such as jj, ind, etc. But
 if I do place via the Library List->Contents->Listing, it works perfectly fine.
 I’m just wondering what is different about these two “placing” actions.
+
+Name property change  (ifdef NEWNMP)
+1.  New separate CDp_sname and CDp_cname properties for cells/instances,
+    CDp_cname derives from CDp_sname.
+2.  No longer a "subckt" flag, but new "macro" flag, saved in CDp_sname.
+    Logic about the same, with macro flag being !subckt, when name starts
+    with X.
+3.  NEW:  the macro flag can be set for devices as well as subcircuits.
+    With devices, it replaces the separate P_MACRO property.  Old
+    files with macro properties read fine, the macro properties are
+    removed.  They can be regenerated in output if the new
+    WriteMacroProps variable is set.  This is required for backward
+    compatibility to 4.3.5 and earlier.
+4.  The macro flag in instances is inherited from the master and is no
+    longer settable from the instance name property string.
+5.  The property string syntax has changed a bit, but is backwards
+    compatible except for macro properties.
+    master:
+    if macro flag set: prefix macro
+    else if X: prefix 0 subckt
+    else: prefix
+    The "x 0 subckt" is for backward compatibility, just "x" would be
+    sufficient for 4.3.6 and later.
+    Also for backward compatibility, the reader takes "X anything" (two tokens)
+    as "X macro".
+    instance:
+    prefix number [subckt [x y]]
+    The "subckt" appears if prefix is x and macro not set.  Coordinates
+    additionally appear if physical label was placed (in extraction).
+6.  If a macro property is read, an info window appears telling the
+    user to set WriteMacroProps if backwards compatibility is needed. 
+    Save design without setting variable to shut this up.
+

@@ -4762,7 +4762,10 @@ geom2_funcs::IFaddCellProperty(Variable *res, Variable *args, void*)
             pdesc = new CDp("flatten", val);
             break;
         case P_MACRO:
+#ifdef NEWNMP
+#else
             pdesc = new CDp("macro", val);
+#endif
             break;
 
         // The properties below are not supposed to be user-settable,

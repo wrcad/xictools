@@ -823,7 +823,7 @@ xic_out::write_struct(const char *name, tm *cdate, tm *mdate)
             fprintf(out_symfp, "(RESOLUTION %d);\n", CDelecResolution);
     }
 
-    if (out_mode == Physical)
+    if (out_mode == Physical) {
         fprintf(out_symfp,
             "( CREATED %d/%d/%d %d:%d:%d, MODIFIED %d/%d/%d %d:%d:%d );\n",
             cdate->tm_mon + 1, cdate->tm_mday, cdate->tm_year + 1900,
@@ -831,21 +831,51 @@ xic_out::write_struct(const char *name, tm *cdate, tm *mdate)
             mdate->tm_mon + 1, mdate->tm_mday, mdate->tm_year + 1900,
             mdate->tm_hour, mdate->tm_min, mdate->tm_sec);
 
-    for (CDp *pd = out_prpty; pd; pd = pd->next_prp()) {
-        if (pd->value() == XICP_CHD_REF) {
-            sChdPrp prp(pd->string());
-            prp.scale_bb(out_phys_scale);
-            char *newstr = prp.compose();
-            Gen.Property(out_symfp, pd->value(), newstr);
-            delete [] newstr;
-            continue;
+        for (CDp *pd = out_prpty; pd; pd = pd->next_prp()) {
+            if (pd->value() == XICP_CHD_REF) {
+                sChdPrp prp(pd->string());
+                prp.scale_bb(out_phys_scale);
+                char *newstr = prp.compose();
+                Gen.Property(out_symfp, pd->value(), newstr);
+                delete [] newstr;
+                continue;
+            }
+            CDp *px = pd->dup();
+            if (px) {
+                px->scale(out_scale, out_phys_scale, out_mode);
+                Gen.Property(out_symfp, px->value(), px->string());
+                delete px;
+            }
         }
-        CDp *px = pd->dup();
-        if (px) {
-            px->scale(out_scale, out_phys_scale, out_mode);
-            Gen.Property(out_symfp, px->value(), px->string());
-            delete px;
+    }
+    else {
+        bool macro = false;
+        bool macrop = false;
+        for (CDp *pd = out_prpty; pd; pd = pd->next_prp()) {
+            if (FIO()->IsWriteMacroProps()) {
+                if (pd->value() == P_MACRO)
+                    macrop = true;
+                else if (pd->value() == P_NAME) {
+                    const char *st = pd->string();
+                    if (isalpha(*st) && *st != 'x' && *st != 'X') {
+                        while (*st && !isspace(*st))
+                            st++;
+                        while (isspace(*st))
+                            st++;
+                        if (lstring::ciprefix("mac", st))
+                            macro = true;
+                    }
+                }
+            }
+            CDp *px = pd->dup();
+            if (px) {
+                px->scale(out_scale, out_phys_scale, out_mode);
+                Gen.Property(out_symfp, px->value(), px->string());
+                delete px;
+            }
         }
+        if (macro && !macrop)
+            Gen.Property(out_symfp, P_MACRO, "macro");
     }
 
     fprintf(out_symfp, "9 %s;\n", name);

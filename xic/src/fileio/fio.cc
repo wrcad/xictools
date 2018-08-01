@@ -152,6 +152,7 @@ cFIO::cFIO()
     fioOasWriteNoGCDcheck = false;
     fioOasWriteUseFastSort = false;
     fioOasWritePrptyMask = 0;
+    fioWriteMacroProps = false;
 
     // Default parameters when reading into the database.  Unit scale,
     // no layer mapping, but allow the cellname alias modes given.

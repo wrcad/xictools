@@ -649,7 +649,24 @@ cif_out::write_struct(const char *name, tm*, tm*)
         // cell is scaled, the physical terminal locations should also be
         // scaled, or the extract functions will be broken.
         //
+        bool macro = false;
+        bool macrop = false;
         for (CDp *pd = out_prpty; pd; pd = pd->next_prp()) {
+            if (out_mode == Electrical && FIO()->IsWriteMacroProps()) {
+                if (pd->value() == P_MACRO)
+                    macrop = true;
+                else if (pd->value() == P_NAME) {
+                    const char *st = pd->string();
+                    if (isalpha(*st) && *st != 'x' && *st != 'X') {
+                        while (*st && !isspace(*st))
+                            st++;
+                        while (isspace(*st))
+                            st++;
+                        if (lstring::ciprefix("mac", st))
+                            macro = true;
+                    }
+                }
+            }
             CDp *px = pd->dup();
             if (px) {
                 px->scale(out_scale, out_phys_scale, out_mode);
@@ -657,6 +674,8 @@ cif_out::write_struct(const char *name, tm*, tm*)
                 delete px;
             }
         }
+        if (macro && !macrop)
+            Gen.Property(out_fp, P_MACRO, "macro");
     }
 
     // write DS line and symbol name extension

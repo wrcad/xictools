@@ -406,6 +406,8 @@ cEdit::cellPrptyAdd(int which)
             ED()->PopUpCellProperties(MODE_UPD);
             return;
         }
+#ifdef NEWNMP
+#else
         if (which == P_MACRO) {
             if (cursd->prpty(P_MACRO))
                 return;
@@ -421,6 +423,7 @@ cEdit::cellPrptyAdd(int which)
             ED()->PopUpCellProperties(MODE_UPD);
             return;
         }
+#endif
     }
     else {
         if (which == XICP_EXT_FLATTEN) {

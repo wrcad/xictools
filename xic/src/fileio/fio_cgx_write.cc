@@ -414,7 +414,24 @@ cgx_out::write_struct(const char *name, tm *cdate, tm *mdate)
         return (false);
     out_struct_count++;
 
+    bool macro = false;
+    bool macrop = false;
     for (CDp *pd = out_prpty; pd; pd = pd->next_prp()) {
+        if (out_mode == Electrical && FIO()->IsWriteMacroProps()) {
+            if (pd->value() == P_MACRO)
+                macrop = true;
+            else if (pd->value() == P_NAME) {
+                const char *st = pd->string();
+                if (isalpha(*st) && *st != 'x' && *st != 'X') {
+                    while (*st && !isspace(*st))
+                        st++;
+                    while (isspace(*st))
+                        st++;
+                    if (lstring::ciprefix("mac", st))
+                        macro = true;
+                }
+            }
+        }
         CDp *px = pd->dup();
         if (px) {
             px->scale(out_scale, out_phys_scale, out_mode);
@@ -423,6 +440,11 @@ cgx_out::write_struct(const char *name, tm *cdate, tm *mdate)
             if (!ret)
                 return (false);
         }
+    }
+    if (macro && !macrop) {
+        bool ret = write_cprpty_rec(P_MACRO, "macro");
+        if (!ret)
+            return (false);
     }
     return (true);
 }
