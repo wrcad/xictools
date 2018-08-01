@@ -51,6 +51,9 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.20, July 31, 2018
+//   Fixed expressions involving gshunt, (br -> n1,n2).  Fixed missing
+//   `else under "fake" DCOP.
 // Version 1.19, July 25, 2018
 //   Added WRspice predefine, used instead of "insideADMS" to differentiate
 //   WRspice features.  REQUIRES build from WRspice-4.3.7 or later for this
@@ -151,6 +154,7 @@
     `define P(txt)
 `endif
 
+// This enables series inductance modeling with the LSER parameter.
 `define NEWLSER
 
 // Uncomment this to support a phony DC analysis mode by loading JJ as
@@ -448,7 +452,7 @@ analog begin
                     gshunt = gshunt - 1/rsubs;
                 if (gshunt > 0)
 `ifdef NEWLSER
-                    I(n1,n2) <+ gshunt*V(br);
+                    I(n1,n2) <+ gshunt*V(n1,n2);
 `else
                     I(br) <+ gshunt*V(br);
 `endif
@@ -525,6 +529,7 @@ analog begin
 `ifdef NEWLSER
             V(blser) <+ 0;
 `endif
+`else
             $error(
  "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
             $finish(0);
@@ -588,7 +593,7 @@ analog begin
                 gshunt = gshunt - 1/rsubs;
             if (gshunt > 0)
 `ifdef NEWLSER
-                I(n1,n2) <+ gshunt*V(br);
+                I(n1,n2) <+ gshunt*V(n1,n2);
 `else
                 I(br) <+ gshunt*V(br);
 `endif
