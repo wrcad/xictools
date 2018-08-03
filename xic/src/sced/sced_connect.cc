@@ -958,9 +958,15 @@ cScedConnect::init(CDs *sd, bool lvsmode)
             // and accelerates determining the node of a wire.  The
             // node value is initialized to -1 in this case.
 
+#ifdef NEWWNO
+            CDp_wnode *pn = (CDp_wnode*)odesc->prpty(P_NODE);
+            if (!pn) {
+                pn = new CDp_wnode;
+#else
             CDp_node *pn = (CDp_node*)odesc->prpty(P_NODE);
             if (!pn) {
                 pn = new CDp_node;
+#endif
                 pn->set_enode(-1);
                 odesc->link_prpty_list(pn);
                 continue;
@@ -981,7 +987,11 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                 // label is nothing but white space, remove it.
                 delete [] tok;
                 odesc->prptyRemove(P_BNODE);
+#ifdef NEWWNO
+                pn = new CDp_wnode;
+#else
                 pn = new CDp_node;
+#endif
                 pn->set_enode(-1);
                 odesc->link_prpty_list(pn);
                 continue;
@@ -1296,7 +1306,11 @@ cScedConnect::init_nophys_shorts()
         CDw *wd = new CDw(ld, &wire);
         cn_tmp_wires = new CDol(wd, cn_tmp_wires);
 
+#ifdef NEWWNO
+        CDp_wnode *pnw = new CDp_wnode;
+#else
         CDp_node *pnw = new CDp_node;
+#endif
         pnw->set_enode(-1);
         wd->set_prpty_list(pnw);
     }

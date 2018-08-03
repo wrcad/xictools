@@ -3158,6 +3158,30 @@ namespace {
 void
 bangcmds::mklib(const char *s)
 {
+    struct ml
+    {
+        ml()
+            {
+                arcfile = 0;
+                arcname = 0;
+                refpath = 0;
+                libfile = 0;
+            }
+
+        ~ml()
+            {
+                delete [] arcfile;
+                delete [] arcname;
+                delete [] refpath;
+                delete [] libfile;
+            }
+
+        char *arcfile;
+        char *arcname;
+        char *refpath;
+        char *libfile;
+    } m;
+
     // mklib [arcfile] [-a] [-l]|[-u]
     // If arcfile is given, references are to cells in arcfile.
     // Otherwise, references are to cells in current hierarchy.  If
@@ -3166,12 +3190,12 @@ bangcmds::mklib(const char *s)
     // -l    reference name is lower-cased cellname
     // -u    reference name is upper-cased cellname
     // -a    append to existing library
+    // -d    create Directory library for native cells.
     //
-    char *arcfile = 0;
     bool append = false;
+    bool dodir = false;
     bool dolc = false;
     bool douc = false;
-    char buf[256];
     char *tok;
     if (!DSP()->CurCellName()) {
         PL()->ErasePrompt();
@@ -3181,14 +3205,16 @@ bangcmds::mklib(const char *s)
     while ((tok = lstring::gettok(&s)) != 0) {
         if (!strcmp(tok, "-a"))
             append = true;
+        else if (!strcmp(tok, "-d"))
+            dodir = true;
         else if (!strcmp(tok, "-l"))
             dolc = true;
         else if (!strcmp(tok, "-u"))
             douc = true;
-        else if (*tok != '-' && !arcfile)
-            arcfile = lstring::copy(tok);
+        else if (*tok != '-' && !m.arcfile)
+            m.arcfile = lstring::copy(tok);
         else {
-            PL()->ShowPrompt("Usage:  !mklib [arcfile] [-a] [-l]|[-u]");
+            PL()->ShowPrompt("Usage:  !mklib [arcfile] [-d] [-a] [-l]|[-u]");
             delete [] tok;
             return;
         }
@@ -3196,69 +3222,74 @@ bangcmds::mklib(const char *s)
     }
     if (dolc && douc)
         dolc = douc = false;
-    char *arcname = 0;
 
-    if (!arcfile && FIO()->IsSupportedArchiveFormat(cbin.fileType())) {
-        sprintf(buf, "%s%s", Tstring(DSP()->CurCellName()),
-            FIO()->GetTypeExt(cbin.fileType()));
-        char mbuf[256];
-        const char *msg =
-    "Enter reference %s file name, or blank for native cell references: ";
-        sprintf(mbuf, msg,
-            FIO()->TypeName(cbin.fileType()));
-        char *in = PL()->EditPrompt(mbuf, buf);
-        in = lstring::strip_space(in);
-        if (!in) {
-            PL()->ErasePrompt();
-            return;
+    char buf[256];
+    if (!dodir) {
+        if (!m.arcfile && FIO()->IsSupportedArchiveFormat(cbin.fileType())) {
+            sprintf(buf, "%s%s", Tstring(DSP()->CurCellName()),
+                FIO()->GetTypeExt(cbin.fileType()));
+            char mbuf[256];
+            const char *msg =
+        "Enter reference %s file name, or blank for native cell references: ";
+            sprintf(mbuf, msg,
+                FIO()->TypeName(cbin.fileType()));
+            char *in = PL()->EditPrompt(mbuf, buf);
+            in = lstring::strip_space(in);
+            if (!in) {
+                PL()->ErasePrompt();
+                return;
+            }
+            if (*in)
+                m.arcname = lstring::copy(in);
         }
-        if (*in)
-            arcname = lstring::copy(in);
     }
 
-    char *refpath = 0;
-    if (!(arcfile && lstring::is_rooted(arcfile))) {
+    char *gvnpath;
+    if (!m.arcfile) {
         const char *in = PL()->EditPrompt(
             "Enter directory path for references: ", ".");
         in = lstring::strip_space(in);
         if (!in) {
-            delete [] arcfile;
-            delete [] arcname;
             PL()->ErasePrompt();
             return;
         }
         if (!*in)
             in = ".";
-        refpath = pathlist::expand_path(in, true, true);
-        if (!lstring::is_rooted(refpath)) {
-            char *t = new char[strlen(refpath) + 3];
-            t[0] = '.';
-            t[1] = '/';
-            strcpy(t+2, refpath);
-            delete [] refpath;
-            refpath = pathlist::expand_path(t, true, true);
-            delete [] t;
-        }
-        char *e = refpath + strlen(refpath) - 1;
-        if (lstring::is_dirsep(*e))
-            *e = 0;
-        for (e = refpath; *e; e++) {
-            if (isspace(*e) || *e == PATH_SEP) {
-                char *t = new char[strlen(refpath) + 3];
-                t[0] = '"';
-                strcpy(t+1, refpath);
-                strcat(t, "\"");
-                delete [] refpath;
-                refpath = t;
-                break;
-            }
+        gvnpath = lstring::copy(in);
+    }
+    else
+        gvnpath = lstring::copy(m.arcfile);
+    m.refpath = pathlist::expand_path(gvnpath, true, true);
+    delete [] gvnpath;
+
+    if (!lstring::is_rooted(m.refpath)) {
+        char *t = new char[strlen(m.refpath) + 3];
+        t[0] = '.';
+        t[1] = '/';
+        strcpy(t+2, m.refpath);
+        delete [] m.refpath;
+        m.refpath = pathlist::expand_path(t, true, true);
+        delete [] t;
+    }
+    char *e = m.refpath + strlen(m.refpath) - 1;
+    if (lstring::is_dirsep(*e))
+        *e = 0;
+    for (e = m.refpath; *e; e++) {
+        if (isspace(*e) || *e == PATH_SEP) {
+            char *t = new char[strlen(m.refpath) + 3];
+            t[0] = '"';
+            strcpy(t+1, m.refpath);
+            strcat(t, "\"");
+            delete [] m.refpath;
+            m.refpath = t;
+            break;
         }
     }
 
-    if (arcfile)
-        strcpy(buf, lstring::strip_path(arcfile));
-    else if (arcname)
-        strcpy(buf, arcname);
+    if (m.arcfile)
+        strcpy(buf, lstring::strip_path(m.arcfile));
+    else if (m.arcname)
+        strcpy(buf, m.arcname);
     else
         strcpy(buf, Tstring(DSP()->CurCellName()));
     char *t = strrchr(buf, '.');
@@ -3274,178 +3305,162 @@ bangcmds::mklib(const char *s)
     char *in = PL()->EditPrompt("Enter name for library file: ", buf);
     in = lstring::strip_space(in);
     if (!in) {
-        delete [] arcfile;
-        delete [] arcname;
-        delete [] refpath;
         PL()->ErasePrompt();
         return;
     }
     if (!*in) {
         PL()->ShowPrompt("Error: no name given for library file.");
-        delete [] arcfile;
-        delete [] arcname;
-        delete [] refpath;
         return;
     }
-    char *libfile = lstring::copy(in);
+    m.libfile = lstring::copy(in);
 
-    // put all cell names in tab
-    SymTab *tab = new SymTab(false, false);
-    if (arcfile) {
-        FILE *fp = fopen(arcfile, "rb");
-        if (!fp) {
-            PL()->ShowPromptV("Error: can't open %s.", arcfile);
-            delete [] arcfile;
-            delete [] arcname;
-            delete [] refpath;
-            delete [] libfile;
-            delete tab;
-            return;
-        }
-        Errs()->init_error();
-        FileType ft = FIO()->GetFileType(fp);
-        fclose(fp);
-        cCHD *chd = 0;
-        if (!FIO()->IsSupportedArchiveFormat(ft))
-            Errs()->add_error("Error: %s format not supported.",
-                arcfile);
-        else
-            // no aliasing, except will apply l/u options
-            chd = FIO()->NewCHD(arcfile, ft, Electrical, 0);
-        if (!chd) {
-            PL()->ShowPrompt(Errs()->get_error());
-            delete [] arcfile;
-            delete [] arcname;
-            delete [] refpath;
-            delete [] libfile;
-            delete tab;
-            return;
-        }
-        if (chd->nameTab(Physical)) {
-            namegen_t gen(chd->nameTab(Physical));
-            symref_t *p;
-            while ((p = gen.next()) != 0) {
-                if (FIO()->LookupLibCell(0, Tstring(p->get_name()),
-                        LIBdevice, 0))
-                    continue;
-                tab->add(Tstring(p->get_name()), 0, true);
-            }
-        }
-        if (chd->nameTab(Electrical)) {
-            namegen_t gen(chd->nameTab(Electrical));
-            symref_t *p;
-            while ((p = gen.next()) != 0) {
-                if (FIO()->LookupLibCell(0, Tstring(p->get_name()),
-                        LIBdevice, 0))
-                    continue;
-                tab->add(Tstring(p->get_name()), 0, true);
-            }
-        }
-        delete chd;
-    }
-    else {
-        list_subcells(cbin.phys(), tab);
-        list_subcells(cbin.elec(), tab);
-    }
-
-    // create a stringlist of the cell names
-    stringlist *s0 = SymTab::names(tab);
-    delete tab;
-
-    int len = stringlist::length(s0);
-    if (len <= 0) {
-        PL()->ShowPrompt("No cells found!  Library creation aborted.");
-        delete [] arcfile;
-        delete [] arcname;
-        delete [] refpath;
-        delete [] libfile;
-        return;
-    }
-
-    // sort the cells names
-    stringlist::sort(s0);
-
-    if (append) {
-        FILE *fp = fopen(libfile, "r");
-        if (fp) {
-            if (!FIO()->IsLibrary(fp)) {
-                PL()->ShowPrompt(
-                    "Error: File %s is not a library, can't append.");
-                fclose(fp);
-                stringlist::destroy(s0);
-                delete [] arcfile;
-                delete [] arcname;
-                delete [] refpath;
-                delete [] libfile;
+    stringlist *s0 = 0;
+    if (!dodir) {
+        // put all cell names in tab
+        SymTab *tab = new SymTab(false, false);
+        if (m.arcfile) {
+            FILE *fp = fopen(m.arcfile, "rb");
+            if (!fp) {
+                PL()->ShowPromptV("Error: can't open %s.", m.arcfile);
+                delete tab;
                 return;
             }
+            Errs()->init_error();
+            FileType ft = FIO()->GetFileType(fp);
             fclose(fp);
+            cCHD *chd = 0;
+            if (!FIO()->IsSupportedArchiveFormat(ft))
+                Errs()->add_error("Error: %s format not supported.",
+                    m.arcfile);
+            else
+                // no aliasing, except will apply l/u options
+                chd = FIO()->NewCHD(m.arcfile, ft, Electrical, 0);
+            if (!chd) {
+                PL()->ShowPrompt(Errs()->get_error());
+                delete tab;
+                return;
+            }
+            if (chd->nameTab(Physical)) {
+                namegen_t gen(chd->nameTab(Physical));
+                symref_t *p;
+                while ((p = gen.next()) != 0) {
+                    if (FIO()->LookupLibCell(0, Tstring(p->get_name()),
+                            LIBdevice, 0))
+                        continue;
+                    tab->add(Tstring(p->get_name()), 0, true);
+                }
+            }
+            if (chd->nameTab(Electrical)) {
+                namegen_t gen(chd->nameTab(Electrical));
+                symref_t *p;
+                while ((p = gen.next()) != 0) {
+                    if (FIO()->LookupLibCell(0, Tstring(p->get_name()),
+                            LIBdevice, 0))
+                        continue;
+                    tab->add(Tstring(p->get_name()), 0, true);
+                }
+            }
+            delete chd;
         }
-        else
-            append = false;
+        else {
+            list_subcells(cbin.phys(), tab);
+            list_subcells(cbin.elec(), tab);
+        }
+
+        // create a stringlist of the cell names
+        s0 = SymTab::names(tab);
+        delete tab;
+
+        int len = stringlist::length(s0);
+        if (len <= 0) {
+            PL()->ShowPrompt("No cells found!  Library creation aborted.");
+            return;
+        }
+
+        // sort the cells names
+        stringlist::sort(s0);
+
+        if (append) {
+            FILE *fp = fopen(m.libfile, "r");
+            if (fp) {
+                if (!FIO()->IsLibrary(fp)) {
+                    PL()->ShowPrompt(
+                        "Error: File %s is not a library, can't append.");
+                    fclose(fp);
+                    stringlist::destroy(s0);
+                    return;
+                }
+                fclose(fp);
+            }
+            else
+                append = false;
+        }
     }
 
     if (!append) {
-        if (!filestat::create_bak(libfile))
+        if (!filestat::create_bak(m.libfile))
             GRpkgIf()->ErrPrintf(ET_ERROR, "%s", filestat::error_msg());
     }
-    FILE *fp = fopen(libfile, append ? "a" : "w");
+    FILE *fp = fopen(m.libfile, append ? "a" : "w");
     if (fp) {
         char *arcpath = 0;
         if (!append) {
-            fprintf(fp, "(Library %s);\n", libfile);
-            if (arcfile) {
-                if (refpath)
-                    arcpath = pathlist::mk_path(refpath, arcfile);
-                else
-                    arcpath = lstring::copy(arcfile);
-            }
-            else if (arcname)
-                arcpath = pathlist::mk_path(refpath, arcname);
-            if (arcpath)
-                fprintf(fp, "Define ARCH_PATH %s\n", arcpath);
-        }
-        for (stringlist *sl = s0; sl; sl = sl->next) {
-            strcpy(buf, sl->string);
-            if (dolc)
-                lstring::strtolower(buf);
-            else if (douc)
-                lstring::strtoupper(buf);
-            if (arcfile) {
+            fprintf(fp, "(Library %s);\n", m.libfile);
+            if (!dodir) {
+                if (m.arcfile) {
+                    if (m.refpath)
+                        arcpath = pathlist::mk_path(m.refpath, m.arcfile);
+                    else
+                        arcpath = lstring::copy(m.arcfile);
+                }
+                else if (m.arcname)
+                    arcpath = pathlist::mk_path(m.refpath, m.arcname);
                 if (arcpath)
-                    fprintf(fp, "Reference %-20s ARCH_PATH %s\n", buf,
-                        sl->string);
-                else if (refpath)
-                    fprintf(fp, "Reference %s %s/%s %s\n", buf, refpath,
-                        arcfile, sl->string);
-                else
-                    fprintf(fp, "Reference %s %s %s\n", buf,
-                        arcfile, sl->string);
+                    fprintf(fp, "Define ARCH_PATH %s\n", arcpath);
             }
-            else if (arcname) {
-                if (arcpath)
-                    fprintf(fp, "Reference %-20s ARCH_PATH %s\n", buf,
-                        sl->string);
-                else
-                    fprintf(fp, "Reference %s %s/%s %s\n", buf, refpath,
-                        arcname, sl->string);
-            }
-            else
-                fprintf(fp, "Reference %s %s/%s\n", buf, refpath,
-                    sl->string);
         }
-        PL()->ShowPromptV("Library file %s %s.", libfile,
+        if (dodir) {
+            fprintf(fp, "\nDirectory %s\n", m.refpath);
+        }
+        else {
+            for (stringlist *sl = s0; sl; sl = sl->next) {
+                strcpy(buf, sl->string);
+                if (dolc)
+                    lstring::strtolower(buf);
+                else if (douc)
+                    lstring::strtoupper(buf);
+                if (m.arcfile) {
+                    if (arcpath)
+                        fprintf(fp, "Reference %-20s ARCH_PATH %s\n", buf,
+                            sl->string);
+                    else if (m.refpath)
+                        fprintf(fp, "Reference %s %s/%s %s\n", buf, m.refpath,
+                            m.arcfile, sl->string);
+                    else
+                        fprintf(fp, "Reference %s %s %s\n", buf,
+                            m.arcfile, sl->string);
+                }
+                else if (m.arcname) {
+                    if (arcpath)
+                        fprintf(fp, "Reference %-20s ARCH_PATH %s\n", buf,
+                            sl->string);
+                    else
+                        fprintf(fp, "Reference %s %s/%s %s\n", buf, m.refpath,
+                            m.arcname, sl->string);
+                }
+                else
+                    fprintf(fp, "Reference %s %s/%s\n", buf, m.refpath,
+                        sl->string);
+            }
+        }
+        PL()->ShowPromptV("Library file %s %s.", m.libfile,
             append ? "appended" : "created");
         delete [] arcpath;
     }
     else
-        PL()->ShowPromptV("Error: can't open %s.", libfile);
+        PL()->ShowPromptV("Error: can't open %s.", m.libfile);
     fclose(fp);
     stringlist::destroy(s0);
-    delete [] arcfile;
-    delete [] arcname;
-    delete [] refpath;
-    delete [] libfile;
 }
 
 

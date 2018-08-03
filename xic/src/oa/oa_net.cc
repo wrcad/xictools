@@ -325,11 +325,14 @@ cOAnetHandler::setupNets(bool symbolic)
 #else
                         pname->set_subckt(false);
 #endif
-                        char bf[2];
-                        bf[0] = nulldev ? P_NAME_NULL : P_NAME_TERM;
-                        bf[1] = 0;
-                        pname->set_name_string(bf);
-                        key = nulldev ? P_NAME_NULL : P_NAME_TERM;
+                        if (nulldev) {
+                            pname->set_name_string(P_NAME_NULL_STR);
+                            key = P_NAME_NULL;
+                        }
+                        else {
+                            pname->set_name_string(P_NAME_TERM_STR);
+                            key = P_NAME_TERM;
+                        }
                     }
                 }
                 else {
@@ -343,11 +346,14 @@ cOAnetHandler::setupNets(bool symbolic)
 #else
                         pname->set_subckt(false);
 #endif
-                        char bf[2];
-                        bf[0] = nulldev ? P_NAME_NULL : P_NAME_TERM;
-                        bf[1] = 0;
-                        pname->set_name_string(bf);
-                        key = nulldev ? P_NAME_NULL : P_NAME_TERM;
+                        if (nulldev) {
+                            pname->set_name_string(P_NAME_NULL_STR);
+                            key = P_NAME_NULL;
+                        }
+                        else {
+                            pname->set_name_string(P_NAME_TERM_STR);
+                            key = P_NAME_TERM;
+                        }
                     }
                 }
             }
@@ -520,7 +526,7 @@ cOAnetHandler::setupNets(bool symbolic)
                             // a bus term device.
 
                             sLstr lstr;
-                            pb->add_label_text(&lstr);
+                            pb->add_bundle_text(&lstr);
                             add_terminal(x, y, lstr.string());
                         }
                         OAerrLog.add_log(OAlogNet,

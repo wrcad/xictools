@@ -1145,15 +1145,25 @@ wire:
             }
         }
         if (value == P_BNODE && mode == Electrical) {
+#ifdef NEWWNO
+            pdesc = new CDp_bwnode;
+            if (!((CDp_bwnode*)pdesc)->parse_bnode(str)) {
+#else
             pdesc = new CDp_bnode;
             if (!((CDp_bnode*)pdesc)->parse_bnode(str)) {
+#endif
                 delete pdesc;
                 return (false);
             }
         }
         else if (value == P_NODE && mode == Electrical) {
+#ifdef NEWWNO
+            pdesc = new CDp_wnode;
+            if (!((CDp_wnode*)pdesc)->parse_node(str)) {
+#else
             pdesc = new CDp_node;
             if (!((CDp_node*)pdesc)->parse_node(str)) {
+#endif
                 delete pdesc;
                 return (false);
             }

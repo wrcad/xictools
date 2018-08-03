@@ -374,9 +374,15 @@ CDw::set_node_label(CDs *sdesc, CDla *label, bool noundo)
 
             CDnetex::destroy(netex);
             prptyRemove(P_BNODE);
+#ifdef NEWWNO
+            CDp_wnode *pn = (CDp_wnode*)prpty(P_NODE);
+            if (!pn) {
+                pn = new CDp_wnode;
+#else
             CDp_node *pn = (CDp_node*)prpty(P_NODE);
             if (!pn) {
                 pn = new CDp_node;
+#endif
                 link_prpty_list(pn);
             }
             pn->set_term_name(nm);
@@ -396,9 +402,15 @@ CDw::set_node_label(CDs *sdesc, CDla *label, bool noundo)
             // A vector connector.
 
             prptyRemove(P_NODE);
+#ifdef NEWWNO
+            CDp_bwnode *pb = (CDp_bwnode*)prpty(P_BNODE);
+            if (!pb) {
+                pb = new CDp_bwnode;
+#else
             CDp_bnode *pb = (CDp_bnode*)prpty(P_BNODE);
             if (!pb) {
                 pb = new CDp_bnode;
+#endif
                 link_prpty_list(pb);
             }
             if (pb->bound()) {
@@ -435,7 +447,11 @@ CDw::set_node_label(CDs *sdesc, CDla *label, bool noundo)
             CDnetex::destroy(netex);
 
             // Create, link, and bind a new node property.
+#ifdef NEWWNO
+            CDp_wnode *pn = new CDp_wnode;
+#else
             CDp_node *pn = new CDp_node;
+#endif
             link_prpty_list(pn);
             pn->set_term_name(nm);
             pn->bind(label);
@@ -466,7 +482,11 @@ CDw::set_node_label(CDs *sdesc, CDla *label, bool noundo)
             // A vector connector.
 
             // Create, link, and bind a new bnode property.
+#ifdef NEWWNO
+            CDp_bwnode *pb = new CDp_bwnode;
+#else
             CDp_bnode *pb = new CDp_bnode;
+#endif
             link_prpty_list(pb);
             pb->bind(label);
             bool ret = label->link(0, this, 0);

@@ -156,9 +156,125 @@ IMPORTANT -- Windows notes
 *****************************************************
 End of general info.
 
+
 ===============================================================================
-xic-4.3.5  4/19/2018
+xic-4.3.6  8/1/2018
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Schematic property changes.
+
+  The Name property, used for cells and cell instances, has changed.
+  This is internal and leads to better efficiency.
+
+  The Macro property has disappeared, and has been replaced by a flag
+  in the Name property.
+
+  The property usage model for Name/Macro properties has changed, and
+  there is a backwards compatibility issue.
+
+    > Xic 4.3.6 can read and process any Xic file.
+
+    > Files written by 4.3.6 contain no Macro properties, unless the
+      WriteMacroProps variable is set, in which case any needed Macro
+      properties will be regenerated when writing output.  This
+      must be set for files written with xic-4.3.6 to be read properly
+      by earlier Xic releases, if Macro properties would be present.
+
+      However, Macro properties are unusual, and these are set primarily
+      by the OpenAccess reader when encountering certain passive device
+      schematic symbols that are implemented as macros instead of models.
+      Unless you have created these yourself, or are using OpenAccess with
+      a PDK, you won't have to worry about Macro properties.
+
+      When Xic-4.3.6 encounters a Macro property when reading input, a
+      window pops up warning the user to set the WriteMacroProps
+      variable before writing output to be exported to pre-4.3.6
+      systems.  If this doesn't appear, then the design is "safe".
+
+      The message will not appear if the WriteMacroProps variable is
+      set, which can be done in a .xicstart/.xicinit or techfile.
+      If you are using 4.3.6 only, just save the design to produce files
+      without Macro properties, and thus avopid the pop-up.
+
+  Specific changes.
+  1.  New separate propery structures for cells/instances, instance name
+      derives from cell name.
+
+  2.  In Name property string, there is a new "macro" keyword which
+      sets the macro flag.  Ths logic is about the same as before,
+      with "macro" being the complement of the previous "subckt" flag,
+      for elements keyed with X.
+
+  3.  The macro flag can be set for devices as well as subcircuits. 
+      For devices, this replaces the separate Macro property.  Old
+      files with macro properties read fine, the macro properties setr
+      the flag and are removed.  They can be regenerated in output if
+      the new WriteMacroProps variable is set.  This is required for
+      backward compatibility to 4.3.5 and earlier.
+
+  4.  The macro flag in instances is inherited from the master and is
+      no longer settable from the instance name property string.
+
+  5.  The property string syntax has changed a bit, but is backwards
+      compatible except for macro properties.
+
+      Master:
+        if macro flag is set:           <prefix> macro
+        else if <prefix) is "X":        X 0 subckt
+        else:                           <prefix>
+        The "X 0 subckt" is for backward compatibility, just "X" would
+        be sufficient for 4.3.6 and later.
+        Also for backward compatibility, the reader takes "X anything"
+        (two tokens) as "X macro".
+
+      Instance:
+        any case:                       <name> number [subckt [<x> <y>]]
+        The "subckt" appears if <name> starts with "X" and macro is
+        not set in the master.  Coordinates additionally appear if a
+        physical label was placed (in extraction).  The "subckt" and
+        coordinates are ignored by the reader, but can be seen in native
+        cell files (for example).
+
+  6.  If a macro property is read, an Info window appears telling the
+      user to set WriteMacroProps if backwards compatibility is
+      needed.  Save design without setting variable to shut this up.
+     
+* OpenAccess interface enhancements
+      
+    Update to OpenAccess translator property handling.  All electrical
+    cell properties are now read at once, from both schematic and
+    symbol views, before reading other content.  This ensures having
+    all values available when needed, which avoided some trouble.
+
+    A new property XICP_PARTNAME (7162) can be applied, and is set
+    from "partName" properties when reading OpenAccess.  This is used in
+    in @partName text labels.
+
+* Misc. Changes
+
+  If a file named ".xic_ignore" exists in a "models" directory, the
+  directory content will be ignored.
+
+  A -d option was added to the !mklib command for creating references
+  to directories that contain collections of native cell files.
+
+
+BUGS FIXED
+---- -----
+
+* Fixes a bug causing some temporary files to not be deleted on normal
+  program exit.
+
+* Prevent the simulation monitor pop-up from taking focus, to avoid
+  giving focus back to the main window which causes iplots to
+  disappear underneath the Xic window (on some window managers).
+
+
+-------------------------------------------------------------------------------
+xic-4.3.5  4/19/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

@@ -1453,7 +1453,10 @@ CDp_bnode::CDp_bnode(const CDp_bnode &pd) : CDp(0, pd.p_value)
     pbn_end_range = pd.pbn_end_range;
     pbn_name = pd.pbn_name;
     pbn_bundle = CDnetex::dup(pd.bundle_spec());
+#ifdef NEWWNO
+#else
     pbn_label = 0;
+#endif
 }
 
 
@@ -1465,7 +1468,10 @@ CDp_bnode::operator=(const CDp_bnode &pd)
     pbn_end_range = pd.pbn_end_range;
     pbn_name = pd.pbn_name;
     pbn_bundle = CDnetex::dup(pd.bundle_spec());
+#ifdef NEWWNO
+#else
     pbn_label = 0;
+#endif
     return (*this);
 }
 
@@ -1486,7 +1492,7 @@ CDp_bnode::print(sLstr *lstr, int, int) const
     lstr->add_i(pbn_end_range);
     if (pbn_bundle) {
         lstr->add_c(' ');
-        add_label_text(lstr);
+        add_bundle_text(lstr);
     }
     return (true);
 }
@@ -1592,7 +1598,7 @@ CDp_bnode::update_bundle(CDnetex *nx)
 // Put the net expresion into lstr.
 //
 void
-CDp_bnode::add_label_text(sLstr *lstr) const
+CDp_bnode::add_bundle_text(sLstr *lstr) const
 {
     if (!lstr)
         return;
@@ -1630,6 +1636,27 @@ CDp_bnode::has_name() const
     return (pbn_name || (pbn_bundle && pbn_bundle->first_name()));
 }
 // End CDp_bnode functions
+
+#ifdef NEWWNO
+//
+// Bus node property class for instances
+//
+
+CDp_bwnode::CDp_bwnode(const CDp_bwnode &pd) : CDp_bnode(pd)
+{
+    pbn_label = pd.pbn_label;
+}
+
+
+CDp_bwnode &
+CDp_bwnode::operator=(const CDp_bwnode &pd)
+{
+    (CDp_bnode&)*this = (const CDp_bnode&)pd;
+    pbn_label = pd.pbn_label;
+    return (*this);
+}
+// End CDp_bwnode functions
+#endif
 
 
 NetexWrap::~NetexWrap()
@@ -2281,7 +2308,10 @@ CDp_node::CDp_node(const CDp_node &pd) : CDp(0, pd.p_value)
 {
     pno_enode = pd.pno_enode;
     pno_name = pd.pno_name;
-    pno_label = 0;
+#ifdef NEWWNO
+#else
+    pno_label = pd.pno_label;
+#endif
 }
 
 
@@ -2291,7 +2321,10 @@ CDp_node::operator=(const CDp_node &pd)
     (CDp&)*this = (const CDp&)pd;
     pno_enode = pd.pno_enode;
     pno_name = pd.pno_name;
-    pno_label = 0;
+#ifdef NEWWNO
+#else
+    pno_label = pd.pno_label;
+#endif
     return (*this);
 }
 
@@ -2324,6 +2357,23 @@ CDp_node::parse_node(const char *str)
     return (true);
 }
 // End CDp_node functions
+
+#ifdef NEWWNO
+
+CDp_wnode::CDp_wnode(const CDp_wnode &pd) : CDp_node(pd)
+{
+    pno_label = pd.pno_label;
+}
+
+CDp_wnode &
+CDp_wnode::operator=(const CDp_wnode &pd)
+{
+    (CDp_node&)*this = (const CDp_node&)pd;
+    pno_label = pd.pno_label;
+    return (*this);
+}
+// End CDp_wnode functions
+#endif
 
 // Extended node property, used as base for cell and instance nodes.
 
@@ -3181,6 +3231,7 @@ CDp_sname::CDp_sname(const CDp_sname &pd) : CDp(0, pd.p_value)
     pns_macro = pd.pns_macro;
     pns_located = pd.pns_located;
     pns_name = pd.pns_name;
+    pns_labtext = pd.pns_labtext;
 }
 
 
@@ -3191,6 +3242,7 @@ CDp_sname::operator=(const CDp_sname &pd)
     pns_macro = pd.pns_macro;
     pns_located = pd.pns_located;
     pns_name = pd.pns_name;
+    pns_labtext = pd.pns_labtext;
     return (*this);
 }
 
@@ -3215,6 +3267,17 @@ CDp_sname::print(sLstr *lstr, int, int) const
 }
 
 
+// This sets the default label string for terminal device instances. 
+// If not set, the default name is the cell name.
+//
+void
+CDp_sname::set_label_text(const char *n)
+{
+    if (n && *n)
+        pns_labtext = CDnetex::name_tab_add(n);
+}
+
+
 // Parse the name from the string, and initialize.
 // Syntax:  name [macro] [subckt]
 // The first token is the name, others are recognized as "macro" or
@@ -3226,6 +3289,7 @@ CDp_sname::parse_name(const char *str)
     pns_macro = false;
     pns_located = false;
     pns_name = 0;
+    pns_labtext = 0;
 
     if (str) {
         char *tok;
@@ -3275,9 +3339,8 @@ CDp_sname::parse_name(const char *str)
 
 CDp_cname::CDp_cname(const CDp_cname &pd) : CDp_sname((const CDp_sname&)pd)
 {
-    pnc_setname = lstring::copy(pd.pnc_setname);
+    pnc_setname = pd.pnc_setname;
     pnc_label = pd.pnc_label;
-    pnc_labtext = lstring::copy(pd.pnc_labtext);
     pnc_num = pd.pnc_num;
     pnc_scindex = pd.pnc_scindex;
     pnc_x = pd.pnc_x;
@@ -3289,9 +3352,8 @@ CDp_cname &
 CDp_cname::operator=(const CDp_cname &pd)
 {
     (CDp_sname&)*this = (const CDp_sname&)pd;
-    pnc_setname = lstring::copy(pd.pnc_setname);
+    pnc_setname = pd.pnc_setname;
     pnc_label = pd.pnc_label;
-    pnc_labtext = lstring::copy(pd.pnc_labtext);
     pnc_num = pd.pnc_num;
     pnc_scindex = pd.pnc_scindex;
     pnc_x = pd.pnc_x;
@@ -3304,7 +3366,6 @@ CDp_cname::CDp_cname(const CDp_sname &ps) : CDp_sname(ps)
 {
     pnc_setname = 0;
     pnc_label = 0;
-    pnc_labtext = 0;
     pnc_num = 0;
     pnc_scindex =0; 
     pnc_x = 0;
@@ -3318,7 +3379,6 @@ CDp_cname::operator=(const CDp_sname &ps)
     (CDp_sname&)*this = ps;
     pnc_setname = 0;
     pnc_label = 0;
-    pnc_labtext = 0;
     pnc_num = 0;
     pnc_scindex =0; 
     pnc_x = 0;
@@ -3338,7 +3398,7 @@ CDp_cname::print(sLstr *lstr, int, int) const
         lstr->add(Tstring(pns_name));
     if (pnc_setname) {
         lstr->add_c('.');
-        lstr->add(pnc_setname);
+        lstr->add(Tstring(pnc_setname));
     }
     lstr->add_c(' ');
     lstr->add_i(number());
@@ -3401,8 +3461,8 @@ CDp_cname::label_text(bool *copied, CDc *cdesc) const
         return (pnc_label->label());
     }
     // default terminal name
-    if (pnc_labtext)
-        return (new hyList(0, pnc_labtext, HYcvPlain));
+    if (pns_labtext)
+        return (new hyList(0, Tstring(pns_labtext), HYcvPlain));
     if (cdesc && cdesc->master())
         return (new hyList(0, Tstring(cdesc->cellname()), HYcvPlain));
     return (new hyList(0, "label", HYcvPlain));
@@ -3424,7 +3484,6 @@ CDp_cname::parse_name(const char *str)
 
     pnc_setname = 0;
     pnc_label = 0;
-    pnc_labtext = 0;
     pnc_num = 0;
     pnc_scindex = 0;
         // The xcindex is an alternate id number for subcircuits, which
@@ -3461,8 +3520,7 @@ CDp_cname::parse_name(const char *str)
         *tok = P_NAME_TERM;
 
     set_name_string(tok);
-    if (cp && *cp)
-        pnc_setname = lstring::copy(cp);
+    set_assigned_name(cp);
     delete [] tok;
 
     // Second token is a number.

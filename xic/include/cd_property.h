@@ -41,6 +41,8 @@
 #ifndef CD_PRPTYPE_H
 #define CD_PRPTYPE_H
 
+#define NEWWNO
+
 
 //-----------------------------------------------------------------------------
 // Derived properties for physical mode.
@@ -575,7 +577,10 @@ struct CDp_bnode : public CDp
             pbn_end_range = 0;
             pbn_name = 0;
             pbn_bundle = 0;
+#ifdef NEWWNO
+#else
             pbn_label = 0;
+#endif
         }
 
     CDp_bnode(const CDp_bnode&);
@@ -615,6 +620,53 @@ struct CDp_bnode : public CDp
             pbn_end_range = end;
         }
 
+#ifdef NEWWNO
+#else
+    bool cond_bind(CDla* odesc)
+        {
+            if (!pbn_label)
+                pbn_label = odesc;
+            return (pbn_label == odesc);
+        }
+
+    void bind(CDla* odesc)          { pbn_label = odesc; }
+    CDla *bound()             const { return (pbn_label); }
+#endif
+
+    bool parse_bnode(const char*);
+    void update_bundle(CDnetex*);
+    void add_bundle_text(sLstr*) const;
+    CDnetex *get_netex() const;
+    bool has_name() const;
+
+protected:
+    unsigned short pbn_beg_range;   // range start
+    unsigned short pbn_end_range;   // range end
+    CDnetName pbn_name;             // assigned terminal name, null for
+                                    // default name
+    CDnetex *pbn_bundle;            // bundle spec
+#ifdef NEWWNO
+#else
+    CDla *pbn_label;                // associated label
+#endif
+};
+
+#ifdef NEWWNO
+struct CDp_bwnode : public CDp_bnode
+{
+    CDp_bwnode()
+        {
+            pbn_label = 0;
+        }
+
+    CDp_bwnode(const CDp_bwnode&);
+    CDp_bwnode &operator=(const CDp_bwnode&);
+
+    virtual ~CDp_bwnode() { }
+
+    // virtual overrides
+    virtual CDp *dup()        const { return (new CDp_bwnode(*this)); }
+
     bool cond_bind(CDla* odesc)
         {
             if (!pbn_label)
@@ -625,20 +677,10 @@ struct CDp_bnode : public CDp
     void bind(CDla* odesc)          { pbn_label = odesc; }
     CDla *bound()             const { return (pbn_label); }
 
-    bool parse_bnode(const char*);
-    void update_bundle(CDnetex*);
-    void add_label_text(sLstr*) const;
-    CDnetex *get_netex() const;
-    bool has_name() const;
-
 protected:
-    unsigned short pbn_beg_range;   // range start
-    unsigned short pbn_end_range;   // range end
-    CDnetName pbn_name;             // assigned terminal name, null for
-                                    // default name
-    CDnetex *pbn_bundle;            // bundle spec
     CDla *pbn_label;                // associated label
 };
+#endif
 
 //----------------------------------------------------------------------------
 // Accessory CDnetex wrapper.
@@ -982,7 +1024,10 @@ struct CDp_node : public CDp
         {
             pno_enode = 0;
             pno_name = 0;
+#ifdef NEWWNO
+#else
             pno_label = 0;
+#endif
         }
 
     CDp_node(const CDp_node&);
@@ -1005,6 +1050,46 @@ struct CDp_node : public CDp
     int enode()                   const { return (pno_enode); }
     void set_enode(int e)               { pno_enode = e; }
 
+#ifdef NEWWNO
+#else
+    bool cond_bind(CDla* odesc)
+        {
+            if (!pno_label)
+                pno_label = odesc;
+            return (pno_label == odesc);
+        }
+
+    void bind(CDla* odesc)          { pno_label = odesc; }
+    CDla *bound()             const { return (pno_label); }
+#endif
+
+    bool parse_node(const char*);
+
+protected:
+    int pno_enode;                  // scalar node external node number
+    CDnetName pno_name;             // assigned terminal name, null for
+                                    // default name
+#ifdef NEWWNO
+#else
+    CDla *pno_label;                // associated label
+#endif
+};
+
+#ifdef NEWWNO
+struct CDp_wnode : public CDp_node
+{
+    CDp_wnode()
+        {
+            pno_label = 0;
+        }
+
+    CDp_wnode(const CDp_wnode&);
+    CDp_wnode &operator=(const CDp_wnode&);
+
+    ~CDp_wnode() { }
+
+    // virtual overrides
+    virtual CDp *dup()        const { return (new CDp_wnode(*this)); }
     bool cond_bind(CDla* odesc)
         {
             if (!pno_label)
@@ -1015,14 +1100,10 @@ struct CDp_node : public CDp
     void bind(CDla* odesc)          { pno_label = odesc; }
     CDla *bound()             const { return (pno_label); }
 
-    bool parse_node(const char*);
-
 protected:
-    int pno_enode;                  // scalar node external node number
-    CDnetName pno_name;             // assigned terminal name, null for
-                                    // default name
     CDla *pno_label;                // associated label
 };
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -1299,6 +1380,7 @@ struct CDp_sname : public CDp
             pns_macro = false;
             pns_located = false;
             pns_name = 0;
+            pns_labtext = 0;
         }
 
     CDp_sname(const CDp_sname&);
@@ -1330,18 +1412,22 @@ struct CDp_sname : public CDp
                 pns_name = CD()->PfxTableAdd(n);
         }
 
+    const char *label_text()    const { return (Tstring(pns_labtext)); }
+
     int key()                   const
         {
             int c = (pns_name ? *Tstring(pns_name) : 0);
             return (isupper(c) ? tolower(c) : c);
         }
 
+    void set_label_text(const char*);
     bool parse_name(const char*);
 
 protected:
     bool pns_macro;             // not used, will replace P_MACRO
     bool pns_located;           // physical location valid.
     CDpfxName pns_name;         // name prefix
+    CDnetName pns_labtext;      // terminal label default text
 };
 
 
@@ -1353,7 +1439,6 @@ struct CDp_cname : public CDp_sname
         {
             pnc_setname = 0;
             pnc_label = 0;
-            pnc_labtext = 0;
             pnc_num = 0;
             pnc_scindex = 0;
             pnc_x = pnc_y = 0;
@@ -1364,11 +1449,7 @@ struct CDp_cname : public CDp_sname
     CDp_cname(const CDp_sname&);
     CDp_cname &operator=(const CDp_sname&);
 
-    virtual ~CDp_cname()
-        {
-            delete [] pnc_setname;
-            delete [] pnc_labtext;
-        }
+    virtual ~CDp_cname() { }
 
     // virtual overrides
     CDp *dup()                  const { return (new CDp_cname(*this)); }
@@ -1403,20 +1484,11 @@ struct CDp_cname : public CDp_sname
     unsigned int scindex()      const { return (pnc_scindex); }
     void set_scindex(unsigned int n)  { pnc_scindex = n; }
 
-    const char *assigned_name() const { return (pnc_setname); }
+    const char *assigned_name() const { return (Tstring(pnc_setname)); }
     void set_assigned_name(const char *n)
         {
-            char *s = lstring::copy(n);
-            delete [] pnc_setname;
-            pnc_setname = s;
-        }
-
-    const char *label_text()    const { return (pnc_labtext); }
-    void set_label_text(const char *n)
-        {
-            char *s = lstring::copy(n);
-            delete [] pnc_labtext;
-            pnc_labtext = s;
+            if (n && *n)
+                pnc_setname = CD()->PfxTableAdd(n);
         }
 
     int pos_x()                 const { return (pnc_x); }
@@ -1427,9 +1499,8 @@ struct CDp_cname : public CDp_sname
     bool parse_name(const char*);
 
 private:
-    char *pnc_setname;          // overriding name
+    CDpfxName pnc_setname;      // overriding name
     CDla *pnc_label;            // associated label
-    char *pnc_labtext;          // associated label text
     unsigned int pnc_num;       // flag, name index
     int pnc_scindex;            // alternative index for subckts
     int pnc_x, pnc_y;           // physical location of subckt ref. label

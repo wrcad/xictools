@@ -1345,7 +1345,7 @@ cDisplay::HliteElecBsc(bool display, const CDp_bsnode *pn)
 
         if (display) {
             sLstr lstr;
-            pn->add_label_text(&lstr);
+            pn->add_bundle_text(&lstr);
             MK.hlite_list = new sMark_Bsc(x, y, 40, SelectColor,
                 pn->beg_range(), pn->end_range(), pn->index(),
                 0, lstr.string(), pn->flags(), symb, MK.hlite_list);
@@ -1718,7 +1718,7 @@ cDisplay::ShowBscMark(bool display, int x, int y, int color, int pixsz,
 {
     if (display) {
         sLstr lstr;
-        pb->add_label_text(&lstr);
+        pb->add_bundle_text(&lstr);
         sMark *mm = MK.mark_heads[MARK_BSC] =
             new sMark_Bsc(x, y, pixsz, color,
                 pb->beg_range(), pb->end_range(), indx, 0,
@@ -1759,7 +1759,7 @@ cDisplay::ShowSyBscMark(bool display, int x, int y, int color, int pixsz,
 {
     if (display) {
         sLstr lstr;
-        pb->add_label_text(&lstr);
+        pb->add_bundle_text(&lstr);
         sMark *mm = MK.mark_heads[MARK_SYBSC] =
             new sMark_Bsc(x, y, pixsz, color, pb->beg_range(),
                 pb->end_range(), indx, 0,
@@ -3194,7 +3194,7 @@ sMark::new_bterm_marks(int mode, CDc *cdesc, bool symbolic)
 
         for ( ; pn; pn = pn->next()) {
             sLstr lstr;
-            pn->add_label_text(&lstr);
+            pn->add_bundle_text(&lstr);
             if (symbolic) {
                 for (unsigned int ix = 0; ; ix++) {
                     int x, y;
@@ -3224,7 +3224,7 @@ sMark::new_bterm_marks(int mode, CDc *cdesc, bool symbolic)
 
         for ( ; pn; pn = pn->next()) {
             sLstr lstr;
-            pn->add_label_text(&lstr);
+            pn->add_bundle_text(&lstr);
             for (unsigned int ix = 0; ; ix++) {
                 int x, y;
                 if (!pn->get_pos(ix, &x, &y))

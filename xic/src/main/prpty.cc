@@ -468,7 +468,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 lstr.add_i(pb->end_range());
                 if (pb->bound()) {
                     lstr.add_c(' ');
-                    pb->add_label_text(&lstr);
+                    pb->add_bundle_text(&lstr);
                 }
                 char *str = lstr.string_trim();
                 list = new Ptxt(hd, str, pb, list);

@@ -264,7 +264,7 @@ te_info_t::te_info_t(const CDp_bsnode *pb)
     if (pb) {
         ti_name = Tstring(pb->get_term_name());
         sLstr lstr;
-        pb->add_label_text(&lstr);
+        pb->add_bundle_text(&lstr);
         ti_netex = lstr.string_trim();
         ti_index = pb->index();
         ti_beg = pb->beg_range();

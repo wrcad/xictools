@@ -330,6 +330,26 @@ CDc::prptyAddStruct(bool keepex)
 }
 
 
+#ifdef CHECK_CELLTYPE
+namespace {
+    // Check consistency with master, this should be temporary.
+    void check_celltype(CDs *sd, CDelecCellType etype)
+    {
+        if (sd) {
+            CDelecCellType tp = sd->elecCellType();
+            if (etype != tp) {
+                CDelecCellTypeName ncell(tp);
+                CDelecCellTypeName ninst(etype);
+                printf(
+                    "WARNING: master and instance of %s have different cell\n"
+                    "types \"%s\" and \"%s\".\n",  Tstring(sd->cellname()),
+                    ncell.name(), ninst.name());
+            }
+        }
+    }
+}
+#endif
+
 // Return the type of the cell for electrical mode, based on instance
 // properties.
 //
@@ -345,7 +365,6 @@ CDc::elecCellType(const char **nret)
     if (sd && !sd->isElectrical())
         return (CDelecBad);
 
-    CDelecCellType etype = CDelecBad;
 #ifdef NEWNMP
     CDp_cname *pa = (CDp_cname*)prpty(P_NAME);
 #else
@@ -356,104 +375,103 @@ CDc::elecCellType(const char **nret)
         // property is a "gnd" device.
 
         CDp_node *pn = (CDp_node*)prpty(P_NODE);
-        if (pn && !pn->next())
-            etype = CDelecGnd;
-        else if (sd) {
+        if (pn && !pn->next()) {
+#ifdef CHECK_CELLTYPE
+            check_celltype(sd, CDelecGnd);
+#endif
+            return (CDelecGnd);
+        }
+        if (sd) {
+#ifdef NEWNMP
+            // Master has a name but not the instance, shouldn't
+            // happen, create an instance name property.
+
+            CDp_sname *ps = (CDp_sname*)sd->prpty(P_NAME);
+            if (ps) {
+                pa = new CDp_cname(*ps);
+                link_prpty_list(pa);
+            }
+#else
             CDelecCellType tp = sd->elecCellType();
             if (tp == CDelecSubc) {
                 // If the master is a subckt, add a name property.
-//XXX why not a device?
-#ifdef NEWNMP
-                CDp_sname *ps = (CDp_sname*)sd->prpty(P_NAME);
-                if (ps) {
-                    pa = new CDp_cname(*ps);
-                    link_prpty_list(pa);
-                }
-#else
                 prptyAdd(P_NAME, "X 0 subckt", Electrical);
-#endif
+                pa = (CDp_name*)prpty(P_NAME);
             }
+#endif
         }
-        if (!pa)
-            etype = CDelecNull;
+        if (!pa) {
+#ifdef CHECK_CELLTYPE
+            check_celltype(sd, CDelecNull);
+#endif
+            return (CDelecNull);
+        }
     }
-    if (pa) {
-        int key = pa->key();
-        if (!key) {
-            // "can't happen"
-            pa->set_name_string(P_NAME_NULL_STR);
-        }
-        if (nret)
-            *nret = Tstring(pa->name_string());
+
+    CDelecCellType etype = CDelecBad;
+    int key = pa->key();
+    if (!key) {
+        // "can't happen"
+        pa->set_name_string(P_NAME_NULL_STR);
+    }
+    if (nret)
+        *nret = Tstring(pa->name_string());
 
 #ifdef NEWNMP
 #else
-        if (pa->is_subckt()) {
-            // If set, this is a subcircuit, not from the device
-            // library.  The key should be the SPICE subcircuit
-            // invocation character 'x'.
+    if (pa->is_subckt()) {
+        // If set, the key should be the SPICE subcircuit invocation
+        // character 'X'.
 
-            if (key == P_NAME_SUBC)
+        if (key == P_NAME_SUBC)
+            etype = CDelecSubc;
+        // Otherwise an error.
+    }
+    else
+#endif
+    if (key == P_NAME_NULL) {
+        // A "null" device is for decoration only, it is not
+        // electrically active, and should not have node properties.
+
+        etype = CDelecNull;
+    }
+    else if (key == P_NAME_TERM) {
+        // A terminal.
+
+        etype = CDelecTerm;
+    }
+    else if (key == P_NAME_BTERM_DEPREC) {
+        // Obsolete prefix, update.
+
+        pa->set_name_string(P_NAME_TERM_STR);
+        etype = CDelecTerm;
+    }
+    else if (isalpha(key)) {
+        // A regular device, the key is the conventional SPICE key
+        // character.
+
+        // If a device is keyed by 'X', it is either a subcircuit
+        // or a macro call to the model library.  The name of the
+        // subcircuit macro is stored in a model property, so that
+        // the text will be added along with the model text.  The
+        // subckt macros are saved in the model database.
+
+        if (key == P_NAME_SUBC) {
+            if (pa->is_macro())
+                etype = CDelecMacro;
+            else
                 etype = CDelecSubc;
-            // Otherwise an error.
         }
         else
-#endif
-        if (key == P_NAME_NULL) {
-            // A "null" device is for decoration only, it is not
-            // electrically active, and should not have node properties.
+            etype = CDelecDev;
+    }
+    else {
+        // Name not recognized, null device.
 
-            etype = CDelecNull;
-        }
-        else if (key == P_NAME_TERM) {
-            // A terminal.
-
-            etype = CDelecTerm;
-        }
-        else if (key == P_NAME_BTERM_DEPREC) {
-            // Obsolete prefix, update.
-
-            pa->set_name_string(P_NAME_TERM_STR);
-            etype = CDelecTerm;
-        }
-        else if (isalpha(key)) {
-            // A regular device, the key is the conventional SPICE key
-            // character.
-
-            // If a device is keyed by 'X', it is either a subcircuit
-            // or a macro call to the model library.  The name of the
-            // subcircuit macro is stored in a model property, so that
-            // the text will be added along with the model text.  The
-            // subckt macros are saved in the model database.
-
-            if (key == P_NAME_SUBC) {
-                if (pa->is_macro())
-                    etype = CDelecMacro;
-                else
-                    etype = CDelecSubc;
-            }
-            else
-                etype = CDelecDev;
-        }
-        else {
-            // Name not recognized, null device.
-
-            etype = CDelecNull;
-        }
+        etype = CDelecNull;
     }
 #ifdef CHECK_CELLTYPE
-    // Check consistency with master, this should be temporary.
-    if (sd) {
-        CDelecCellType tp = sd->elecCellType();
-        if (etype != tp) {
-            CDelecCellTypeName ncell(tp);
-            CDelecCellTypeName ninst(etype);
-            printf(
-                "WARNING: master and instance of %s have different cell\n"
-                "types \"%s\" and \"%s\".\n",  Tstring(sd->cellname()),
-                ncell.name(), ninst.name());
-        }
-    }
+    check_celltype(sd, etype);
 #endif
     return (etype);
 }
@@ -995,16 +1013,19 @@ CDc::updateTerminals(int *map_n)
         set_prpty_list(ptmp);
     }
 
-    // Make sure it has a name property, if not a device.
-//XXX why not a device?
-    //
 #ifdef NEWNMP
-    if (!sdesc->isDevice() && prpty(P_NAME) == 0) {
+    if (!prpty(P_NAME)) {
         CDp_sname *ps = (CDp_sname*)sdesc->prpty(P_NAME);
-        if (ps)
+        if (ps) {
+            // Master has a name but not the instance, shouldn't
+            // happen, create an instance name property.
+
             link_prpty_list(new CDp_cname(*ps));
+        }
     }
 #else
+    // Make sure it has a name property, if not a device.
+//XXX why not a device?
     if (!sdesc->isDevice()) {
         if (prpty(P_NAME) == 0)
             prptyAdd(P_NAME, "X 0 subckt", Electrical);

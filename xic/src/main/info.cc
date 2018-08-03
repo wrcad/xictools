@@ -485,7 +485,7 @@ cMain::Info(CDs *sdesc, int level)
             pbs = (CDp_bsnode*)cbin.elec()->prpty(P_BNODE);
             for ( ; pbs; pbs = pbs->next()) {
                 sLstr tstr;
-                pbs->add_label_text(&tstr);
+                pbs->add_bundle_text(&tstr);
                 if (tstr.string()) {
                     lstr.add("  Name ");
                     lstr.add(tstr.string());
