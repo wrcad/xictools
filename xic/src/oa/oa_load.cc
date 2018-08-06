@@ -1627,7 +1627,7 @@ oa_in::loadPhysicalDesign(const oaDesign *design, const char *cname, CDs **sdp,
         return (OIerror);
 
     // We never open a super-master directly.  We get here with a
-    // super-master from openMaster, when the master is not a sub
+    // super-master from loadMaster, when the master is not a sub
     // master, but loadCellRec opens all views and another view may be
     // a pcell and we skip processing that design here.
     if (design->isSuperMaster())
@@ -1699,7 +1699,7 @@ oa_in::loadElectricalDesign(const oaDesign *design, const oaDesign *symdesign,
         return (OIerror);
 
     // We never open a super-master directly.  We get here with a
-    // super-master from openMaster, when the master is not a sub
+    // super-master from loadMaster, when the master is not a sub
     // master, but loadCellRec opens all views and another view may be
     // a pcell and we skip processing that design here.
     if (design->isSuperMaster())
@@ -1765,7 +1765,7 @@ oa_in::loadDesign(const oaDesign *design, const char *cname, CDs **sdp,
         return (OIerror);
 
     // We never open a super-master directly.  We get here with a
-    // super-master from openMaster, when the master is not a sub
+    // super-master from loadMaster, when the master is not a sub
     // master, but loadCellRec opens all views and another view may be
     // a pcell and we skip processing that design here.
     if (design->isSuperMaster())
@@ -1920,8 +1920,10 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
             return (OIerror);
         }
 
+        oaParamArray params;
+        header->getParams(params);
         CDcellName cname = NameTab.getMasterName(libName, cellName, viewName,
-            allParams, in_from_xic);
+            params, true, in_from_xic);
 
         // Check if the cell has already been translated.
         //
@@ -1938,8 +1940,6 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
 
         lib->getAccess(oacReadLibAccess);
 
-        oaParamArray params;
-        header->getParams(params);
         oaDesign *design;
 
         try {
@@ -2158,9 +2158,12 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
     }
 
     oaParamArray allParams;
-    hdr->getAllParams(allParams);
+    bool has_params = (allParams.getNumElements() > 0);
+
+    oaParamArray params;
+    hdr->getParams(params);
     CDcellName cname = NameTab.getMasterName(libName, cellName, viewName,
-        allParams, in_from_xic);
+        params, has_params, in_from_xic);
 
     // Check if the cell has already been translated.
     //
@@ -2177,8 +2180,6 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
 
     lib->getAccess(oacReadLibAccess);
 
-    oaParamArray params;
-    hdr->getParams(params);
     oaDesign *design;
 
     try {
@@ -2756,8 +2757,12 @@ oa_in::readInstances(const oaBlock *blk, CDs *sdesc)
 
             oaParamArray allParams;
             header->getAllParams(allParams);
+            bool has_params = (allParams.getNumElements() > 0);
+
+            oaParamArray params;
+            header->getParams(params);
             CDcellName cname = NameTab.getMasterName(libName, cellName,
-                viewName, allParams, in_from_xic);
+                viewName, params, has_params, in_from_xic);
 
             long f = in_mode == Physical ? OAL_REFP : OAL_REFE;
             NameTab.updateCname(cname, f);

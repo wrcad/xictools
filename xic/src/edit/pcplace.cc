@@ -343,7 +343,7 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
             return (false);
         }
 
-        if (*oldprms == *prms) {
+        if (PCellParam::matching(oldprms, prms)) {
             // No change, we're done.
             delete [] dbname;
             PCellParam::destroy(prms);
@@ -469,7 +469,7 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
             return (false);
         }
 
-        if (*oldprms == *prms) {
+        if (PCellParam::matching(oldprms, prms)) {
             // No change, we're done.
             PCellParam::destroy(prms);
             PCellParam::destroy(oldprms);

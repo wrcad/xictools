@@ -343,6 +343,15 @@ Name property change  (ifdef NEWNMP)
 !mklib updated with new -d option to handle Directory entries, for native
 cell collections.
 
+--new
+
+New !preload command and RegisterSubMaster function, registers Xic pcell
+sub master files so will resolve when reading data via library mechanism.
+Avoids cell name uncertainty.
+
+Bug fixed in pcell parameter compare function, infinite loop.  Potential
+bug fixed in OpenImport with null cbin, would seg fault.
+
 TODO:
 ToDo: handle via/pc masters in archive
 Skip overwrite prompt based on cell source and modification status?

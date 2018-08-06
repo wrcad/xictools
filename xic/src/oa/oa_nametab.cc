@@ -114,20 +114,20 @@ cOAnameTab::clearCnameTab()
 
 
 // Return a cell name to correspond to L/C/V.  This takes care of
-// mapping pcell names.
+// mapping pcell names (has_params is true for pcells).
 //
 CDcellName
 cOAnameTab::getMasterName(const oaScalarName &libName,
     const oaScalarName &cellName, const oaScalarName &viewName,
-    const oaParamArray &allParams, bool from_xic)
+    const oaParamArray &params, bool has_params, bool from_xic)
 {
-    if (allParams.getNumElements() > 0) {
+    if (has_params) {
         oaString libname, cellname, viewname;
         libName.get(oaNativeNS(), libname);
         cellName.get(oaNativeNS(), cellname);
         viewName.get(oaNativeNS(), viewname);
 
-        PCellParam *pm = cOAprop::getPcParameters(allParams, 0);
+        PCellParam *pm = cOAprop::getPcParameters(params, 0);
         char *cname = PC()->addSubMaster(libname, cellname, viewname, pm);
         CDcellName nn = CD()->CellNameTableAdd(cname);
         delete [] cname;

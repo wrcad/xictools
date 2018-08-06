@@ -97,6 +97,7 @@ namespace {
         bool IFedit(Variable*, Variable*, void*);
         bool IFopenCell(Variable*, Variable*, void*);
         bool IFtouchCell(Variable*, Variable*, void*);
+        bool IFregisterSubMasters(Variable*, Variable*, void*);
         bool IFpush(Variable*, Variable*, void*);
         bool IFpushElement(Variable*, Variable*, void*);
         bool IFpop(Variable*, Variable*, void*);
@@ -280,6 +281,7 @@ namespace {
     PY_FUNC(Edit,                   2,  IFedit);
     PY_FUNC(OpenCell,               3,  IFopenCell);
     PY_FUNC(TouchCell,              2,  IFtouchCell);
+    PY_FUNC(RegisterSubMasters,     1,  IFregisterSubMasters);
     PY_FUNC(Push,                   1,  IFpush);
     PY_FUNC(PushElement,            3,  IFpushElement);
     PY_FUNC(Pop,                    0,  IFpop);
@@ -462,6 +464,7 @@ namespace {
       cPyIf::register_func("Edit",                   pyEdit);
       cPyIf::register_func("OpenCell",               pyOpenCell);
       cPyIf::register_func("TouchCell",              pyTouchCell);
+      cPyIf::register_func("RegisterSubMasters",     pyRegisterSubMasters);
       cPyIf::register_func("Push",                   pyPush);
       cPyIf::register_func("PushElement",            pyPushElement);
       cPyIf::register_func("Pop",                    pyPop);
@@ -647,6 +650,7 @@ namespace {
     TCL_FUNC(Edit,                   2,  IFedit);
     TCL_FUNC(OpenCell,               3,  IFopenCell);
     TCL_FUNC(TouchCell,              2,  IFtouchCell);
+    TCL_FUNC(RegisterSubMasters,     1,  IFregisterSubMasters);
     TCL_FUNC(Push,                   1,  IFpush);
     TCL_FUNC(PushElement,            3,  IFpushElement);
     TCL_FUNC(Pop,                    0,  IFpop);
@@ -829,6 +833,7 @@ namespace {
       cTclIf::register_func("Edit",                   tclEdit);
       cTclIf::register_func("OpenCell",               tclOpenCell);
       cTclIf::register_func("TouchCell",              tclTouchCell);
+      cTclIf::register_func("RegisterSubMasters",     tclRegisterSubMasters);
       cTclIf::register_func("Push",                   tclPush);
       cTclIf::register_func("PushElement",            tclPushElement);
       cTclIf::register_func("Pop",                    tclPop);
@@ -1020,6 +1025,7 @@ cMain::load_funcs_misc1()
   SIparse()->registerFunc("Edit",                   2,  IFedit);
   SIparse()->registerFunc("OpenCell",               3,  IFopenCell);
   SIparse()->registerFunc("TouchCell",              2,  IFtouchCell);
+  SIparse()->registerFunc("RegisterSubMasters",     1,  IFregisterSubMasters);
   SIparse()->registerFunc("Push",                   1,  IFpush);
   SIparse()->registerFunc("PushElement",            3,  IFpushElement);
   SIparse()->registerFunc("Pop",                    0,  IFpop);
@@ -1372,6 +1378,21 @@ misc1_funcs::IFtouchCell(Variable *res, Variable *args, void*)
         res->content.value = 1;
     else if (ot == OIerror)
         res->content.value = -1;
+    return (OK);
+}
+
+
+// (int) RegisterSubMasters(archive)
+//
+bool
+misc1_funcs::IFregisterSubMasters(Variable *res, Variable *args, void*)
+{
+    const char *arch;
+    ARG_CHK(arg_string(args, 0, &arch))
+
+    res->type = TYP_SCALAR;
+    res->content.value = XM()->RegisterSubMasters(arch);
+
     return (OK);
 }
 

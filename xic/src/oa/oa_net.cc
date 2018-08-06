@@ -372,16 +372,25 @@ cOAnetHandler::setupNets(bool symbolic)
             term->getName(oaCdbaNS(), tname);
 
 #ifdef NEWNMP
-//XXX FIXME            
+            // If this is a terminal device, set the label text field
+            // of the property.  When a label is created in an
+            // instance and associated, it will have this text.
+            //
+
+            if (key == P_NAME_TERM) {
+                OAerrLog.add_log(OAlogNet,
+                    "Setting net name of device %s to %s",
+                    Tstring(nh_sdesc->cellname()), (const char*)tname);
 #else
             // If this is a terminal device, and there is no
             // associated label, set the label text field of the
             // property.  When a label is created and associated, it
             // will have this text.
             //
-            if (key == P_NAME_TERM && !pname->bound())
-                pname->set_label_text(tname);
+            if (key == P_NAME_TERM && !pname->bound()) {
 #endif
+                pname->set_label_text(tname);
+            }
 
             unsigned int nbits = term->getNumBits();
             // All terminals have a net (which may be empty).

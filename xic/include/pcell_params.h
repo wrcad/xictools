@@ -151,6 +151,8 @@ private:
 //
 struct PCellParam : public SIparam
 {
+    static bool matching(const PCellParam*, const PCellParam*);
+
     // PCPbool
     PCellParam(PCPtype t, const char *n, const char *c, bool b)
         {
@@ -355,6 +357,7 @@ private:
     } u;
 };
 
+//XXX rid this
 bool operator== (const PCellParam&, const PCellParam&);
 
 
@@ -460,7 +463,7 @@ struct PCellDesc
     PCellItem *findItem(const PCellParam *prms) const
         {
             for (PCellItem *pi = pd_instances; pi; pi = pi->next()) {
-                if (*pi->params() == *prms)
+                if (PCellParam::matching(pi->params(), prms))
                     return (pi);
             }
             return (0);

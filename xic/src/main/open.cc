@@ -56,6 +56,7 @@
 #include "select.h"
 #include "events.h"
 #include "cvrt.h"
+#include "pcell.h"
 #include "oa_if.h"
 #include "miscutil/filestat.h"
 #include "miscutil/pathlist.h"
@@ -67,6 +68,7 @@
 
 #include <sys/types.h>
 #include <time.h>
+#include <dirent.h>
 
 
 /*************************************************************************
@@ -588,6 +590,11 @@ cMain::Load(WindowDesc *wdesc, const char *file_or_cell_name,
         return (EditFailed);
     }
 
+    // If the cell is a pcell sub-master, add it to the table so it
+    // will resolve calls to instantiate with its parameter set.
+    //
+    PC()->recordIfSubMaster(cbin.phys());
+
     ShowParameters();
     PushOpenCellName(Tstring(DSP()->CurCellName()));
 
@@ -678,6 +685,98 @@ cMain::TouchCell(const char *cname, bool tocur)
     symb_cell = cbin.elec();
     symb_mode = symb_cell ? symb_cell->symbolicRep(0) != 0 : false;
     return (newcell ? OInew : OIok);
+}
+
+
+// Assume that one has a collection of pcell sub-master Xic cells that
+// have been imported from a foreign OpenAccess tool such as virtuoso. 
+// These are assumed to not be portable pcells.  One would like to use
+// these cells to resolve pcells when reading directly from the
+// OpenAccess database.  There are two issues:  1) the system needs to
+// know that these cells are available, and 2) one has to remap the
+// cell names.  The first issue is fixed simply by making the
+// sub-masters available through the library mechanism.  The second
+// issue is due to the simple naming convention of the sub-master
+// instantiations, which suffixes the pcell name with "$$" followed by
+// an integer.  The integer is a count of when the cell was generated,
+// and is consistent with the design output at the time, but there is
+// no guarantee the the names are consistent with the design at other
+// times.
+//
+// This function will read a collection of cells into a temporary
+// symbool table.  Those that are pcell sub-masters have the property
+// strings entered into the internal pcell database, under the
+// existing cell name.  This will cause the correct cell name to be
+// associated with a given parameter set.  The cells are not saved,
+// but the entries in the pcell table persist so that resolution, when
+// reading OpenAccess or otherwise, will reference the correct cells. 
+// The cell collection must be available through an open library, and
+// this function must be run, before loading the design.
+//
+bool
+cMain::RegisterSubMasters(const char *s)
+{
+    if (!s || !*s) {
+        return (false);
+        Errs()->add_error("no file/directory given");
+    }
+    GFTtype gft = filestat::get_file_type(s);
+    if (gft == GFT_DIR) {
+        stringlist *s0 = 0;
+        DIR *wdir = opendir(s);
+        if (wdir) {
+            struct dirent *de;
+            while ((de = readdir(wdir)) != 0) {
+                if (!strcmp(de->d_name, "."))
+                    continue;
+                if (!strcmp(de->d_name, ".."))
+                    continue;
+                s0 = new stringlist(lstring::copy(de->d_name), s0);
+            }
+            closedir(wdir);
+        }
+
+        const char *stbak = CDcdb()->tableName();
+        const char *stname = "tmp_tab";
+        CDcdb()->switchTable(stname);
+
+        for (stringlist *sl = s0; sl; sl = sl->next) {
+            char *p = pathlist::mk_path(s, sl->string);
+            CDcbin cbin;
+            FIO()->OpenImport(p, FIO()->DefReadPrms(), 0, 0, &cbin); 
+            PC()->recordIfSubMaster(cbin.phys());
+            delete [] p;
+            delete cbin.phys();
+            delete cbin.elec();
+        }
+        stringlist::destroy(s0);
+
+        CDcdb()->destroyTable(false);
+        CDcdb()->switchTable(stbak);
+        return (true);
+    }
+    if (gft == GFT_FILE) {
+        const char *stbak = CDcdb()->tableName();
+        const char *stname = "tmp_tab";
+        CDcdb()->switchTable(stname);
+
+        FIO()->OpenImport(s, FIO()->DefReadPrms(), 0, 0, 0); 
+
+        CDgenTab_s gen(Physical);
+        CDs *sd;
+        while ((sd = gen.next()) != 0) {
+            PC()->recordIfSubMaster(sd);
+        }
+
+        CDcdb()->destroyTable(false);
+        CDcdb()->switchTable(stbak);
+        return (true);
+    }
+    if (gft == GFT_OTHER)
+        Errs()->add_error("unknown file type");
+    else if (gft == GFT_NONE)
+        Errs()->add_error("file/directory not found");
+    return (false);
 }
 
 

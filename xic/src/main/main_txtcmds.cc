@@ -96,6 +96,7 @@
 #endif
 
 #include <errno.h>
+#include <dirent.h>
 
 #ifdef HAVE_REGEX_H
 #include <regex.h>
@@ -326,6 +327,7 @@ namespace {
 
         // PCells
         void rmpcprops(const char*);
+        void preload(const char*);
 
         // Rulers
         void dr(const char*);
@@ -530,6 +532,7 @@ cMain::setupBangCmds()
 
     // PCells
     RegisterBangCmd("rmpcprops", &bangcmds::rmpcprops);
+    RegisterBangCmd("preload", &bangcmds::preload);
 
     // Rulers
     RegisterBangCmd("dr", &bangcmds::dr);
@@ -4069,6 +4072,18 @@ bangcmds::rmpcprops(const char *s)
             }
         }
     }
+}
+
+
+void
+bangcmds::preload(const char *s)
+{
+    if (!s || !*s)
+        return;
+    if (!XM()->RegisterSubMasters(s))
+        PL()->ShowPromptV("Error: %s.", Errs()->get_error());
+    else
+        PL()->ShowPrompt("Done.");
 }
 
 

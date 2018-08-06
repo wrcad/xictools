@@ -96,7 +96,7 @@ public:
     const PCellParam *curPCinstParams(const char*);
 
     char *addSubMaster(const char*, const char*, const char*,
-        const PCellParam*);
+        const PCellParam*, const char* = 0);
     char *addSuperMaster(const char*, const char*, const char*,
         const PCellParam*);
     PCellDesc *findSuperMaster(const char*);
@@ -110,6 +110,7 @@ public:
     OItype openSubMaster(const CDs*, const char*, CDs**);
     bool openSubMaster(const char*, const char*, CDs**, CDs*);
     bool reopenSubMaster(CDs*);
+    bool recordIfSubMaster(CDs*);
     bool isSuperMaster(const CDs*);
 
     bool evalScript(CDs*, const char*);

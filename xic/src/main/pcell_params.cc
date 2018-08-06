@@ -52,21 +52,23 @@
 // Equality operator for PCellParam lists.  Lists are equal if there
 // is a 1-1 correspondence between properties, and all values match.
 //
-bool operator==(const PCellParam &p1, const PCellParam &p2)
+bool PCellParam::matching(const PCellParam *p1, const PCellParam *p2)
 {
     int n1 = 0;
-    for (const PCellParam *p = &p1; p; p = p->next())
+    for (const PCellParam *p = p1; p; p = p->next())
         n1++;
     int n2 = 0;
-    for (const PCellParam *p = &p2; p; p = p->next())
+    for (const PCellParam *p = p2; p; p = p->next())
         n2++;
     if (n1 != n2)
         return (false);
+    if (n1 == 0)
+        return (true);
 
-    const PCellParam *p2last = &p2;
-    for (const PCellParam *p = &p1; p; p = p->next()) {
+    const PCellParam *p2last = p2;
+    for (const PCellParam *p = p1; p; p = p->next()) {
         if (!p2last || strcmp(p->name(), p2last->name())) {
-            for (p2last = &p2; p2last; p2last->next()) {
+            for (p2last = p2; p2last; p2last = p2last->next()) {
                 if (!strcmp(p->name(), p2last->name()))
                     break;
             }

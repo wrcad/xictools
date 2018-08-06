@@ -550,11 +550,15 @@ protected:
 
 
 //----------------------------------------------------------------------------
+#ifdef NEWWNO
+// Bus node base property.
+#else
 // Bus node base property, for wires.
 //
 // This supports an associated label.  In a wire, the label
 // (pbn_label) always exists and provides a "net expression" that
 // defines the connections.
+#endif
 //
 // The propeerty can be a "bus" terminal or a "bundle" terminal.  Bus
 // terminals have a name in pbn_name, and range in pbn_beg_range and
@@ -652,11 +656,18 @@ protected:
 };
 
 #ifdef NEWWNO
+//----------------------------------------------------------------------------
+// Bus node base property for wires.
+//
+// This supports an associated label.  In a wire, the label
+// (pbw_label) always exists and provides a "net expression" that
+// defines the connections.
+//
 struct CDp_bwnode : public CDp_bnode
 {
     CDp_bwnode()
         {
-            pbn_label = 0;
+            pbw_label = 0;
         }
 
     CDp_bwnode(const CDp_bwnode&);
@@ -669,16 +680,16 @@ struct CDp_bwnode : public CDp_bnode
 
     bool cond_bind(CDla* odesc)
         {
-            if (!pbn_label)
-                pbn_label = odesc;
-            return (pbn_label == odesc);
+            if (!pbw_label)
+                pbw_label = odesc;
+            return (pbw_label == odesc);
         }
 
-    void bind(CDla* odesc)          { pbn_label = odesc; }
-    CDla *bound()             const { return (pbn_label); }
+    void bind(CDla* odesc)          { pbw_label = odesc; }
+    CDla *bound()             const { return (pbw_label); }
 
 protected:
-    CDla *pbn_label;                // associated label
+    CDla *pbw_label;                // associated label
 };
 #endif
 
@@ -1014,9 +1025,15 @@ private:
 
 
 //----------------------------------------------------------------------------
+#ifdef NEWWNO
+// Node base property.
+//
+// This supports an "external" node.
+#else
 // Node property for wires (base node property).
 //
 // This supports an "external" node, and associated label.
+#endif
 
 struct CDp_node : public CDp
 {
@@ -1076,11 +1093,15 @@ protected:
 };
 
 #ifdef NEWWNO
+// Node property for wires.
+//
+// This an associated label, which will give the wire net a name.
+//
 struct CDp_wnode : public CDp_node
 {
     CDp_wnode()
         {
-            pno_label = 0;
+            pnw_label = 0;
         }
 
     CDp_wnode(const CDp_wnode&);
@@ -1092,16 +1113,16 @@ struct CDp_wnode : public CDp_node
     virtual CDp *dup()        const { return (new CDp_wnode(*this)); }
     bool cond_bind(CDla* odesc)
         {
-            if (!pno_label)
-                pno_label = odesc;
-            return (pno_label == odesc);
+            if (!pnw_label)
+                pnw_label = odesc;
+            return (pnw_label == odesc);
         }
 
-    void bind(CDla* odesc)          { pno_label = odesc; }
-    CDla *bound()             const { return (pno_label); }
+    void bind(CDla* odesc)          { pnw_label = odesc; }
+    CDla *bound()             const { return (pnw_label); }
 
 protected:
-    CDla *pno_label;                // associated label
+    CDla *pnw_label;                // associated label
 };
 #endif
 

@@ -820,9 +820,17 @@ cFIO::OpenImport(const char *fullname, const FIOreadPrms *prms,
     else {
         // Device library cell?
         if (!cellname) {
-            if (OpenLibCell(0, name, LIBdevice | LIBuser | LIBnativeOnly,
-                    cbret) == OIok && (cbret->phys() || cbret->elec()))
-                return (OIok);
+            if (cbret) {
+                if (OpenLibCell(0, name, LIBdevice | LIBuser | LIBnativeOnly,
+                        cbret) == OIok && (cbret->phys() || cbret->elec()))
+                    return (OIok);
+            }
+            else {
+                CDcbin cbin;
+                if (OpenLibCell(0, name, LIBdevice | LIBuser | LIBnativeOnly,
+                        &cbin) == OIok && (cbin.phys() || cbin.elec()))
+                    return (OIok);
+            }
         }
         else if (name == fullname) {
             if (ifOpenOA(name, cellname, cbret))

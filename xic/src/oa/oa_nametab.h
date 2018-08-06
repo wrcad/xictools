@@ -102,7 +102,7 @@ public:
     void clearCnameTab();
 
     CDcellName getMasterName(const oaScalarName&, const oaScalarName&,
-        const oaScalarName&, const oaParamArray&, bool);
+        const oaScalarName&, const oaParamArray&, bool, bool);
     CDcellName cellNameAlias(const oaScalarName&, const oaScalarName&, bool);
     CDcellName getNewName(CDcellName);
     stringlist *listLibNames();

@@ -420,6 +420,7 @@ public:
     EditType Load(WindowDesc*, const char*, const FIOreadPrms* = 0,
         const char* = 0, cCHD* = 0);
     OItype TouchCell(const char*, bool);
+    bool RegisterSubMasters(const char*);
     void SetNewContext(CDcbin*, bool);
     char *NewCellName();
 

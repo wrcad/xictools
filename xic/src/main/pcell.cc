@@ -237,11 +237,15 @@ cPCellDb::curPCinstParams(const char *dbname)
 
 // Add a sub-master specification to the global pcell table.  The
 // returned string is the unique Xic database name for the sub-master
-// cell.
+// cell.  If xicname is given, use it for the Xic cell name.  This is
+// done when pre-loading Xic cells that represent pcell sub-masters,
+// which can be done before reading a Virtuoso design that references
+// Skill pcells, which won't be resolved as-is.  The sub-master Xic
+// cells must have been obtained previously by some means.
 //
 char *
 cPCellDb::addSubMaster(const char *libname, const char *cellname,
-    const char *viewname, const PCellParam *pm)
+    const char *viewname, const PCellParam *pm, const char *xicname)
 {
     // Used for all PCells.
 
@@ -255,7 +259,17 @@ cPCellDb::addSubMaster(const char *libname, const char *cellname,
         pd->addItem(pi);
         pc_master_tab->add(pd->dbname(), pd, false);
         delete [] dbname;
+        if (xicname && *xicname)
+            pi->setCellname(xicname);
+#ifdef PC_DEBUG
+        char *nm = pd->cellname(cellname, pi);
+        printf("addSubMaster: initial %s %s %s %s\n", nm, libname, cellname,
+            viewname);
+        pm->print();
+        return (nm);
+#else
         return (pd->cellname(cellname, pi));
+#endif
     }
     delete [] dbname;
     PCellDesc *pd = (PCellDesc*)ent->stData;
@@ -263,8 +277,18 @@ cPCellDb::addSubMaster(const char *libname, const char *cellname,
     if (!pi) {
         pi = new PCellItem(pm);
         pd->addItem(pi);
+        if (xicname && *xicname)
+            pi->setCellname(xicname);
     }
+#ifdef PC_DEBUG
+    char *nm = pd->cellname(cellname, pi);
+    printf("addSubMaster: adding %s %s %s %s\n", nm, libname, cellname,
+        viewname);
+    pm->print();
+    return (nm);
+#else
     return (pd->cellname(cellname, pi));
+#endif
 }
 
 
@@ -868,6 +892,42 @@ cPCellDb::reopenSubMaster(CDs *sdesc)
 
     sdesc->setUnread(false);
     return (openSubMaster(pn->string(), pp->string(), 0, sdesc));
+}
+
+
+// If the cell is a pcell sub-master, add it to the table so it will
+// resolve calls to instantiate with its parameter set.  Suppose that
+// we have a translation of an OpenAccess foreign design containing
+// pcells, which includes the pcell masters.  We can gather the pcell
+// masters and pre-load them with this function, then read the
+// openAccess top-level and get the complete desigh even though we
+// can't evaluate the pcells.
+//
+bool
+cPCellDb::recordIfSubMaster(CDs *sdesc)
+{
+    if (!sdesc || sdesc->isElectrical())
+        return (false);
+
+    CDp *pa = sdesc->prpty(XICP_PC);
+    if (!pa)
+        return (false);
+    CDp *pm = sdesc->prpty(XICP_PC_PARAMS);
+    if (!pm)
+        return (false);
+    PCellParam *prm;
+    if (PCellParam::parseParams(pm->string(), &prm)) {
+        char *lname, *cname, *vname;
+        if (PCellDesc::split_dbname(pa->string(), &lname, &cname, &vname)) {
+            addSubMaster(lname, cname, vname, prm, Tstring(sdesc->cellname()));
+            PCellParam::destroy(prm);
+            delete [] lname;
+            delete [] cname;
+            delete [] vname;
+            return (true);
+        }
+    }
+    return (false);
 }
 
 

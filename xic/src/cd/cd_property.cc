@@ -1644,7 +1644,7 @@ CDp_bnode::has_name() const
 
 CDp_bwnode::CDp_bwnode(const CDp_bwnode &pd) : CDp_bnode(pd)
 {
-    pbn_label = pd.pbn_label;
+    pbw_label = pd.pbw_label;
 }
 
 
@@ -1652,7 +1652,7 @@ CDp_bwnode &
 CDp_bwnode::operator=(const CDp_bwnode &pd)
 {
     (CDp_bnode&)*this = (const CDp_bnode&)pd;
-    pbn_label = pd.pbn_label;
+    pbw_label = pd.pbw_label;
     return (*this);
 }
 // End CDp_bwnode functions
@@ -2310,7 +2310,7 @@ CDp_node::CDp_node(const CDp_node &pd) : CDp(0, pd.p_value)
     pno_name = pd.pno_name;
 #ifdef NEWWNO
 #else
-    pno_label = pd.pno_label;
+    pnw_label = pd.pnw_label;
 #endif
 }
 
@@ -2362,14 +2362,14 @@ CDp_node::parse_node(const char *str)
 
 CDp_wnode::CDp_wnode(const CDp_wnode &pd) : CDp_node(pd)
 {
-    pno_label = pd.pno_label;
+    pnw_label = pd.pnw_label;
 }
 
 CDp_wnode &
 CDp_wnode::operator=(const CDp_wnode &pd)
 {
     (CDp_node&)*this = (const CDp_node&)pd;
-    pno_label = pd.pno_label;
+    pnw_label = pd.pnw_label;
     return (*this);
 }
 // End CDp_wnode functions
