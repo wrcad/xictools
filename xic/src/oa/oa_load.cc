@@ -1155,9 +1155,6 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
         CDp *prps = sd_symb->prptyList();
         sd_symb->setPrptyList(0);
 
-        // This needs to be passed to the owner.
-        sd_elec->setDevice(sd_symb->isDevice());
-
         // Put the properties back into the electrical cell.
         if (prps) {
             // The electrical cell should have no properties at present.
@@ -1202,8 +1199,13 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
     }
 
     // Fix up the label reference pointers, etc.
-    if (sd_elec)
+    if (sd_elec) {
         sd_elec->prptyPatchAll();
+
+        // Set the Device flag if the master is not a subcircuit.
+        CDelecCellType tp = sd_elec->elecCellType();
+        sd_elec->setDevice(tp != CDelecSubc);
+    }
 
     CDm_gen mgen(sd_elec, GEN_MASTERS);
     for (CDm *mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {
