@@ -2141,7 +2141,7 @@ private:
     bool check_merge();
     void remove_contact(sSubcContactInst*);
     sDevInst *add_dev_copy(cTfmStack*, sDevInst*, int*);
-    void add_subc_copy(cTfmStack*, sSubcInst*, int*);
+    sSubcInst *add_subc_copy(cTfmStack*, sSubcInst*, int*);
     CDc *copy_cdesc(cTfmStack*, CDc*);
 
     // ext_group.cc

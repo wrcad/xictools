@@ -1968,7 +1968,7 @@ namespace {
 //
 // When called during extraction, the electrical lists are null.  We
 // may also call this with assoc true after first-pass association, in
-// which case we flatten subcircuits that don't mave a matching
+// which case we flatten subcircuits that don't have a matching
 // electrical subcell.
 //
 bool
@@ -2208,8 +2208,8 @@ cGroupDesc::flatten_core(sSubcList *sc, bool assoc, int *nf, int *ns, int *nd)
         for (sDevList *dv = gd->gd_devices; dv; dv = dv->next()) {
             for (sDevPrefixList *p = dv->prefixes(); p; p = p->next()) {
                 for (sDevInst *d = p->devs(); d; d = d->next()) {
-                    add_dev_copy(&stk, d, map);
-                    dev_added++;
+                    if (add_dev_copy(&stk, d, map))
+                        dev_added++;
                 }
             }
         }
@@ -2217,8 +2217,8 @@ cGroupDesc::flatten_core(sSubcList *sc, bool assoc, int *nf, int *ns, int *nd)
         // Add subckts.
         for (sSubcList *sx = gd->gd_subckts; sx; sx = sx->next()) {
             for (sSubcInst *su = sx->subs(); su; su = su->next()) {
-                add_subc_copy(&stk, su, map);
-                subc_added++;
+                if (add_subc_copy(&stk, su, map))
+                    subc_added++;
             }
         }
         if (newgnd > 0)
@@ -2645,6 +2645,16 @@ cGroupDesc::add_dev_copy(cTfmStack *tstk, sDevInst *di, int *map)
     if (!dl)
         gd_devices = new sDevList(di, gd_devices);
     else {
+//XXX FixMe  What happens when promoted device intersects an existing
+//XXX device?  Should merge them.
+        // Throw this away if it is coincident with an existing device.
+        for (sDevInst *d = p->devs(); d; d = d->next()) {
+            if (*d->BB() == *di->BB()) {
+                delete di;
+                return (0);
+            }
+        }
+
         sDevInst *dp = 0;
         for (sDevInst *d = p->devs(); d; dp = d, d = d->next())
             if (d->index() > ind)
@@ -2684,7 +2694,7 @@ cGroupDesc::add_dev_copy(cTfmStack *tstk, sDevInst *di, int *map)
 
 // Add a transformed copy of the subckt.
 //
-void
+sSubcInst *
 cGroupDesc::add_subc_copy(cTfmStack *tstk, sSubcInst *su, int *map)
 {
     su = su->copy(copy_cdesc(tstk, su->cdesc()), map);
@@ -2699,6 +2709,17 @@ cGroupDesc::add_subc_copy(cTfmStack *tstk, sSubcInst *su, int *map)
     if (!sl)
         gd_subckts = new sSubcList(su, 0, gd_subckts);
     else {
+        // Check for an existing coincident subcircuit, if found
+        // delete this one, it would be really bad to include it.
+
+        for (sSubcInst *s = sl->subs(); s; s = s->next()) {
+            if (s->cdesc()->oBB() == su->cdesc()->oBB() &&
+                    s->cdesc()->attr() == su->cdesc()->attr()) {
+                delete su;
+                return (0);
+            }
+        }
+
         sSubcInst *sp = 0;
         for (sSubcInst *s = sl->subs(); s; sp = s, s = s->next()) {
             if (s->uid() > ind)
@@ -2721,6 +2742,7 @@ cGroupDesc::add_subc_copy(cTfmStack *tstk, sSubcInst *su, int *map)
                 Tstring(gd_celldesc->cellname()), cpg, gd_asize);
         }
     }
+    return (su);
 }
 
 
