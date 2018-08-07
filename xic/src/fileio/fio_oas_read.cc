@@ -2274,9 +2274,10 @@ oas_in::a_cell(const char *name)
             }
             else {
                 mitem_t mi(in_cellname);
-                if (sd->isViaSubMaster()) {
+                if (sd->isViaSubMaster() || sd->isPCellSubMaster()) {
                     mi.overwrite_phys = false;
                     mi.overwrite_elec = false;
+                    mi.skip_elec = true;
                 }
                 else if (dup_sym) {
                     mi.overwrite_phys = true;
@@ -2349,7 +2350,7 @@ oas_in::a_cell(const char *name)
                         mi.overwrite_phys = true;
                         mi.overwrite_elec = true;
                     }
-                    else {
+                    else if (!mi.skip_elec) {
                         if (!FIO()->IsNoOverwritePhys())
                             mi.overwrite_phys = true;
                         if (!FIO()->IsNoOverwriteElec())

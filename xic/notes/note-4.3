@@ -360,3 +360,9 @@ Accept model from CDF.
 Chris Ayala:  Copy between windows doesn't work foir schematics.
 Chris Ayala:  "Glued contacts" when moving schematic device, meaning
 wires stretch(?).
+
+idea:
+Extraction change?  always flatten devices, but never promote device
+in flatten (it will be discovered at higher level).  Skip device cells
+when checking lower levels when recognizing.  Then, overlapping devices
+whould be handled properly.

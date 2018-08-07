@@ -369,6 +369,7 @@ struct mitem_t
             name = na;
             overwrite_phys = false;
             overwrite_elec = false;
+            skip_elec = false;
         }
 
     static void destroy(mitem_t *m)
@@ -384,6 +385,7 @@ struct mitem_t
     const char *name;                   // cell name
     bool overwrite_phys;                // physical data
     bool overwrite_elec;                // electrical data
+    bool skip_elec;                     // no ask electrical
 };
 
 

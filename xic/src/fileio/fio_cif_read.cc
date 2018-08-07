@@ -1018,6 +1018,7 @@ cFIO::OpenNative(const char *spath, CDcbin *cbret, double scale, bool *divert)
         LIBdevice | LIBuser | LIBnativeOnly, &libref, &libptr);
 
     if (!exists) {
+printf("%s\n", pathname);
         // If the cell doesn't exist, it is an error if we can't
         // resolve the given cell name/path.
 
@@ -1131,7 +1132,8 @@ cFIO::OpenNative(const char *spath, CDcbin *cbret, double scale, bool *divert)
 
                 if (fp && !unread) {
                     mitem_t mi(sname);
-                    if (cbin.phys() && cbin.phys()->isViaSubMaster()) {
+                    if (cbin.phys() && (cbin.phys()->isViaSubMaster() ||
+                            cbin.phys()->isPCellSubMaster())) {
                         mi.overwrite_phys = false;
                         mi.overwrite_elec = false;
                     }
@@ -2495,9 +2497,10 @@ cif_in::a_symbol_db(const char *unalias_name, int sym_num)
             }
             else {
                 mitem_t mi(in_cellname);
-                if (sd->isViaSubMaster()) {
+                if (sd->isViaSubMaster() || sd->isPCellSubMaster()) {
                     mi.overwrite_phys = false;
                     mi.overwrite_elec = false;
+                    mi.skip_elec = true;
                 }
                 else if (dup_sym) {
                     mi.overwrite_phys = true;
@@ -2570,7 +2573,7 @@ cif_in::a_symbol_db(const char *unalias_name, int sym_num)
                         mi.overwrite_phys = true;
                         mi.overwrite_elec = true;
                     }
-                    else {
+                    else if (!mi.skip_elec) {
                         if (!FIO()->IsNoOverwritePhys())
                             mi.overwrite_phys = true;
                         if (!FIO()->IsNoOverwriteElec())

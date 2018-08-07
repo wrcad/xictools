@@ -2292,9 +2292,10 @@ gds_in::a_bgnstr()
             }
             else {
                 mitem_t mi(in_cbuf);
-                if (sd->isViaSubMaster()) {
+                if (sd->isViaSubMaster() || sd->isPCellSubMaster()) {
                     mi.overwrite_phys = false;
                     mi.overwrite_elec = false;
+                    mi.skip_elec = true;
                 }
                 else if (dup_sym) {
                     mi.overwrite_phys = true;
@@ -2367,7 +2368,7 @@ gds_in::a_bgnstr()
                         mi.overwrite_phys = true;
                         mi.overwrite_elec = true;
                     }
-                    else {
+                    else if (!mi.skip_elec) {
                         if (!FIO()->IsNoOverwritePhys())
                             mi.overwrite_phys = true;
                         if (!FIO()->IsNoOverwriteElec())
