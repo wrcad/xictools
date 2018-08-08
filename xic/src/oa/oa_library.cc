@@ -44,7 +44,8 @@
 #include "oa_prop.h"
 
 
-// Return true if libname is the name of a library in the OA database.
+// Return true if libname is the name of a library found in the
+// lib.defs tree.  Set retval true if the library is open.
 //
 bool
 cOA::is_library(const char *libname, bool *retval)
@@ -57,9 +58,13 @@ cOA::is_library(const char *libname, bool *retval)
     }
     try {
         oaScalarName libName(oaNativeNS(), libname);
-        if (retval)
-            *retval = (oaLib::find(libName) != 0);
-        return (true);
+        oaLibDefList *list = oaLibDefList::getTopList();
+        if (oaLibDef::find(list, libName)) {
+            if (retval)
+                *retval = (oaLib::find(libName) != 0);
+            return (true);
+        }
+        return (false);
     }
     catch (oaCompatibilityError &ex) {
         cOA::handleFBCError(ex);
