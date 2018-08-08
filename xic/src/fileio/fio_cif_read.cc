@@ -1018,7 +1018,6 @@ cFIO::OpenNative(const char *spath, CDcbin *cbret, double scale, bool *divert)
         LIBdevice | LIBuser | LIBnativeOnly, &libref, &libptr);
 
     if (!exists) {
-printf("%s\n", pathname);
         // If the cell doesn't exist, it is an error if we can't
         // resolve the given cell name/path.
 

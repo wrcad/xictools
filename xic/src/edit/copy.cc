@@ -1573,7 +1573,7 @@ namespace {
                 WindowDesc *wdesc;
                 WDgen wgen(WDgen::MAIN, WDgen::CDDB);
                 while ((wdesc = wgen.next()) != 0) {
-                    if (wdesc->IsSimilar(Electrical, DSP()->MainWdesc())) {
+                    if (Gst()->ShowingGhostInWindow(wdesc)) {
                         int delta = (int)(2.0/wdesc->Ratio());
                         CDp_cnode *pn =
                             (CDp_cnode*)((CDc*)odesc)->prpty(P_NODE);
