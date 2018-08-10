@@ -813,20 +813,25 @@ cFIO::FromNative(const char *fullpath, CDcbin *cbret, double scale)
                     cbin.elec()->listSubcells(&inames, false);
             }
         }
-        if (inames) {
-            stringnumlist *n = inames;
-            while (n->next)
-                n = n->next;
-            n->next = s0->next;
-            s0->next = 0;
-            stringnumlist::destroy(s0);
-            s0 = inames;
-        }
-        else {
-            stringnumlist *n = s0->next;
-            s0->next = 0;
-            stringnumlist::destroy(s0);
-            s0 = n;
+        stringnumlist *n = s0->next;
+        s0->next = 0;
+        stringnumlist::destroy(s0);
+        s0 = n;
+
+        // The cells read from libraries have already been grought
+        // into the database, filter these.
+        while (inames) {
+            CDcbin cb(CD()->CellNameTableAdd(inames->string));
+            n = inames->next;
+            if (cb.isLibrary()) {
+                inames->next = 0;
+                stringnumlist::destroy(inames);
+            }
+            else {
+                inames->next = s0;
+                s0 = inames;
+            }
+            inames = n;
         }
     }
     delete fioSubMasterTab;

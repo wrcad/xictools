@@ -822,14 +822,34 @@ cFIO::OpenImport(const char *fullname, const FIOreadPrms *prms,
         if (!cellname) {
             if (cbret) {
                 if (OpenLibCell(0, name, LIBdevice | LIBuser | LIBnativeOnly,
-                        cbret) == OIok && (cbret->phys() || cbret->elec()))
-                    return (OIok);
+                        cbret) == OIok) {
+                    // OpenLibCell calls OpenNative directly for
+                    // speed, so does not call fixBBs, have to do this
+                    // here.
+
+                    if (cbret->phys())
+                         cbret->phys()->fixBBs();
+                    if (cbret->elec())
+                         cbret->elec()->fixBBs();
+                    if (cbret->phys() || cbret->elec())
+                        return (OIok);
+                }
             }
             else {
                 CDcbin cbin;
                 if (OpenLibCell(0, name, LIBdevice | LIBuser | LIBnativeOnly,
-                        &cbin) == OIok && (cbin.phys() || cbin.elec()))
-                    return (OIok);
+                        &cbin) == OIok) {
+                    // OpenLibCell calls OpenNative directly for
+                    // speed, so does not call fixBBs, have to do this
+                    // here.
+
+                    if (cbin.phys())
+                        cbin.phys()->fixBBs();
+                    if (cbin.elec())
+                        cbin.elec()->fixBBs();
+                    if (cbin.phys() || cbin.elec())
+                        return (OIok);
+                }
             }
         }
         else if (name == fullname) {
