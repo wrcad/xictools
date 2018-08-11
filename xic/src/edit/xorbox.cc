@@ -306,7 +306,7 @@ cEdit::xorArea(int x1, int y1, int x2, int y2)
     CDo *pointer;
     while ((pointer = gdesc.next()) != 0) {
         // ignore selected objects
-        if (pointer->state() == CDSelected)
+        if (pointer->state() == CDobjSelected)
             continue;
         // nonzero overlap area only
         if (pointer->oBB().right <= AOI.left ||

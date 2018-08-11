@@ -174,7 +174,7 @@ cEdit::eraseUnder()
             CDo *odesc;
             Zlist *z0 = 0;
             while ((odesc = gdesc.next()) != 0) {
-                if (odesc->state() != CDVanilla)
+                if (odesc->state() != CDobjVanilla)
                     continue;
                 if (odesc->type() == CDLABEL)
                     continue;
@@ -831,7 +831,7 @@ cEdit::eraseList(CDol *slist, BBox *BB)
     CDmergeInhibit inh(slist);
     for (CDol *sl = slist; sl; sl = sl->next) {
         // ignore selected objects
-        if (!sl->odesc->is_normal() || sl->odesc->state() == CDSelected)
+        if (!sl->odesc->is_normal() || sl->odesc->state() == CDobjSelected)
             continue;
         if (erase(sl->odesc, cursd, BB))
             erased = true;
@@ -853,7 +853,7 @@ cEdit::clipList(CDol *slist, BBox *BB)
     CDmergeInhibit inh(slist);
     for (CDol *sl = slist; sl; sl = sl->next) {
         // ignore selected objects
-        if (!sl->odesc->is_normal() || sl->odesc->state() == CDSelected)
+        if (!sl->odesc->is_normal() || sl->odesc->state() == CDobjSelected)
             continue;
         if (sl->odesc->oBB() <= *BB)
             continue;
@@ -1144,7 +1144,7 @@ cEdit::yank(CDol *slist, BBox *AOI, bool clipping)
 {
     yb *y0 = 0;
     for (CDol *sl = slist; sl; sl = sl->next) {
-        if (!sl->odesc->is_normal() || sl->odesc->state() == CDSelected)
+        if (!sl->odesc->is_normal() || sl->odesc->state() == CDobjSelected)
             continue;
         yb *yx = add_yank(sl->odesc, AOI, y0, clipping);
         if (yx)

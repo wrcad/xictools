@@ -386,7 +386,7 @@ sCI::refresh()
             *e = 0;
             text_insert_chars_at_point(wb_textarea, 0, buf, -1, -1);
             if (!ci_filt)
-                s->sel = (s->cdesc->state() == CDSelected);
+                s->sel = (s->cdesc->state() == CDobjSelected);
             sprintf(buf, "%-3s\n", s->sel ? "yes" : "no");
             text_insert_chars_at_point(wb_textarea, s->sel ? yc : nc, buf,
                 -1, -1);
@@ -419,12 +419,12 @@ namespace {
     void apply(ci_item *s)
     {
         CDs *sd = CurCell();
-        if (s->cdesc->state() == CDVanilla && s->sel) {
+        if (s->cdesc->state() == CDobjVanilla && s->sel) {
             if (XM()->IsBoundaryVisible(sd, s->cdesc)) {
                 Selections.insertObject(sd, s->cdesc);
             }
         }
-        else if (s->cdesc->state() == CDSelected && !s->sel) {
+        else if (s->cdesc->state() == CDobjSelected && !s->sel) {
             if (XM()->IsBoundaryVisible(sd, s->cdesc)) {
                 Selections.removeObject(sd, s->cdesc);
             }

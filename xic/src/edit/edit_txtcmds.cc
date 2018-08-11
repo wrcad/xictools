@@ -1071,7 +1071,7 @@ edit_bangcmds::box2poly(const char*)
     while ((od = sg.next()) != 0) {
         if (!od->is_normal())
             continue;
-        if (od->state() == CDSelected && od->ldesc()->isSelectable()) {
+        if (od->state() == CDobjSelected && od->ldesc()->isSelectable()) {
             found = true;
             break;
         }
@@ -1085,7 +1085,7 @@ edit_bangcmds::box2poly(const char*)
     int cnt = 0;
     sg = sSelGen(Selections, cursd, "b");
     while ((od = sg.next()) != 0) {
-        if (od->state() == CDSelected && od->ldesc()->isSelectable()) {
+        if (od->state() == CDobjSelected && od->ldesc()->isSelectable()) {
             Poly po(5, new Point[5]);
             od->oBB().to_path(po.points);
             if (cursd->newPoly(od, &po, od->ldesc(), 0, false))
@@ -1217,7 +1217,7 @@ edit_bangcmds::bloat(const char *s)
     while ((od = sg.next()) != 0) {
         if (!od->is_normal())
             continue;
-        if (od->state() == CDSelected && od->ldesc()->isSelectable()) {
+        if (od->state() == CDobjSelected && od->ldesc()->isSelectable()) {
             found = true;
             break;
         }

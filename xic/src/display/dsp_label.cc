@@ -736,7 +736,7 @@ WindowDesc::LabelHideHandler(CDol *slist)
         if (sl->odesc->type() != CDLABEL)
             continue;
         CDla *la = (CDla*)sl->odesc;
-        if (la->state() != CDVanilla)
+        if (la->state() != CDobjVanilla)
             continue;
 
         int xform = la->xform();

@@ -1357,7 +1357,7 @@ cEdit::translate_muts(const cTfmStack *tstk, int ref_x, int ref_y,
                     if (od == odesc1 || od == odesc2) {
                         // Keep the present oState, these objects will be
                         // linked back into selection list.
-                        int info = od->state();
+                        CDobjState info = od->state();
                         sg.remove();
                         od->set_state(info);
                         s0 = new CDol(od, s0);

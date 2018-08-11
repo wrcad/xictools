@@ -312,7 +312,7 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
                 if (pn && pn->bound()) {
                     if (fastmode) {
                         SI()->UpdateObject(pn->bound(), 0);
-                        pn->bound()->set_state(CDDeleted);
+                        pn->bound()->set_state(CDobjDeleted);
                         if (!cursd->isElectrical())
                             DSP()->ShowOdescPhysProperties(
                                 pn->bound(), ERASE);
@@ -328,7 +328,7 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
                 if (pp && pp->bound()) {
                     if (fastmode) {
                         SI()->UpdateObject(pp->bound(), 0);
-                        pp->bound()->set_state(CDDeleted);
+                        pp->bound()->set_state(CDobjDeleted);
                         if (!cursd->isElectrical())
                             DSP()->ShowOdescPhysProperties(
                                 pp->bound(), ERASE);
@@ -361,7 +361,7 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
             if (fastmode) {
                 // update script handles
                 SI()->UpdateObject(cdesc, 0);
-                cdesc->set_state(CDDeleted);
+                cdesc->set_state(CDobjDeleted);
                 if (cdesc->type() == CDINSTANCE) {
                     WindowDesc *wdesc;
                     WDgen wgen(WDgen::MAIN, WDgen::CDDB);

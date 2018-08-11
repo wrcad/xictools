@@ -474,7 +474,7 @@ PrptyState::pSetGlobal(bool glob)
             for (sSel *s = Shead; s; s = s->next) {
                 // Skip display, then revert to vanilla.
                 Selections.insertObject(cursd, s->pointer, true);
-                s->pointer->set_state(CDVanilla);
+                s->pointer->set_state(CDobjVanilla);
             }
         }
         else
@@ -523,7 +523,7 @@ PrptyState::pUpdateList(CDo *odesc, CDo *onew)
             if (od == odesc) {
                 if (onew) {
                     // Keep state, replace sets to selected.
-                    int st = onew->state();
+                    CDobjState st = onew->state();
                     sg.replace(onew);
                     onew->set_state(st);
                 }
@@ -693,7 +693,7 @@ PrptyState::b1up()
                 // list.
                 //
                 if (Global || ShowAllSel) {
-                    sl->odesc->set_state(CDVanilla);
+                    sl->odesc->set_state(CDobjVanilla);
                     Selections.insertObject(CurCell(), sl->odesc);
                 }
                 if (newsel == 0)
@@ -2711,15 +2711,15 @@ cEdit::acceptPseudoProp(CDo *odesc, CDs *sdesc, int val, const char *string)
     }
     if (val == XprpState) {
         if (lstring::cieq(string, "normal"))
-            odesc->set_state(CDVanilla);
+            odesc->set_state(CDobjVanilla);
         else if (lstring::cieq(string, "selected"))
-            odesc->set_state(CDSelected);
+            odesc->set_state(CDobjSelected);
         else if (lstring::cieq(string, "deleted"))
-            odesc->set_state(CDDeleted);
+            odesc->set_state(CDobjDeleted);
         else if (lstring::cieq(string, "incomplete"))
-            odesc->set_state(CDIncomplete);
+            odesc->set_state(CDobjIncomplete);
         else if (lstring::cieq(string, "internal"))
-            odesc->set_state(CDInternal);
+            odesc->set_state(CDobjInternal);
         else {
             Errs()->add_error("error, unknown state keyword");
             return (false);

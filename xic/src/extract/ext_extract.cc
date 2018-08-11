@@ -2712,11 +2712,14 @@ cGroupDesc::add_subc_copy(cTfmStack *tstk, sSubcInst *su, int *map)
         // Check for an existing coincident subcircuit, if found
         // delete this one, it would be really bad to include it.
 
-        for (sSubcInst *s = sl->subs(); s; s = s->next()) {
-            if (s->cdesc()->oBB() == su->cdesc()->oBB() &&
-                    s->cdesc()->attr() == su->cdesc()->attr()) {
-                delete su;
-                return (0);
+        CDap ap(su->cdesc());
+        if (ap.nx == 1 && ap.ny == 1) {
+            for (sSubcInst *s = sl->subs(); s; s = s->next()) {
+                if (s->cdesc()->oBB() == su->cdesc()->oBB() &&
+                        s->cdesc()->attr() == su->cdesc()->attr()) {
+                    delete su;
+                    return (0);
+                }
             }
         }
 

@@ -583,9 +583,9 @@ Oper::check_objects()
     for (Ochg *oc = o_obj_list; oc; oc = oc->next_chg()) {
         if (oc->odel()) {
             oc->odel()->set_flag(CDinqueue);
-            // Since it is in the queue, better have CDDeleted.
-            if (oc->odel()->state() != CDDeleted) {
-                oc->odel()->set_state(CDDeleted);
+            // Since it is in the queue, better have CDobjDeleted.
+            if (oc->odel()->state() != CDobjDeleted) {
+                oc->odel()->set_state(CDobjDeleted);
                 dflag++;
             }
         }
@@ -616,7 +616,7 @@ Oper::check_objects()
     //
     SymTab *tab = new SymTab(false, false);
     for (Ochg *oc1 = o_obj_list; oc1; oc1 = oc1->next_chg()) {
-        if (oc1->oadd() && oc1->oadd()->state() == CDDeleted) {
+        if (oc1->oadd() && oc1->oadd()->state() == CDobjDeleted) {
             // Since the delete flag was set, the object must have
             // been deleted later.  Entries after the present occurred
             // later since list was reversed.
@@ -906,9 +906,9 @@ cUndoList::RestoreObjects()
 {
     for (Ochg *oc = ul_curop.obj_list(); oc; oc = oc->next_chg()) {
         if (oc->oadd())
-            oc->oadd()->set_state(CDDeleted);
+            oc->oadd()->set_state(CDobjDeleted);
         if (oc->odel())
-            oc->odel()->set_state(CDVanilla);
+            oc->odel()->set_state(CDobjVanilla);
     }
     Selections.purgeDeleted(CurCell());
 
@@ -995,10 +995,10 @@ cUndoList::RecordObjectChange(CDs *sdesc, CDo *olddesc, CDo *newdesc)
 
     if (newdesc)
         // object is already added to database
-        newdesc->set_state(CDVanilla);
+        newdesc->set_state(CDobjVanilla);
 
     if (olddesc) {
-        olddesc->set_state(CDDeleted);
+        olddesc->set_state(CDobjDeleted);
         if (sdesc->cellname() == DSP()->CurCellName()) {
             if (olddesc->type() == CDINSTANCE) {
                 WindowDesc *wdesc;
@@ -1945,7 +1945,7 @@ cUndoList::SelectLast(const char *types)
     CDs *cursd = CurCell();
     int cnt = 0;
     for (Ochg *oc = ul_curop.obj_list(); oc; oc = oc->next_chg()) {
-        if (oc->oadd() && oc->oadd()->state() == CDVanilla &&
+        if (oc->oadd() && oc->oadd()->state() == CDobjVanilla &&
                 (!types || strchr(types, oc->oadd()->type()))) {
             Selections.insertObject(cursd, oc->oadd(), true);
             cnt++;
@@ -2220,7 +2220,7 @@ cUndoList::do_operation(Oper *curop, bool undo)
                 if (has_add)
                     // fix property editor
                     ED()->prptyUpdateList(oc->oadd(), oc->odel());
-                oc->odel()->set_state(CDVanilla);
+                oc->odel()->set_state(CDobjVanilla);
                 if (is_elec) {
                     ScedIf()->install(oc->odel(), cur->celldesc(), false);
                     if (!symb_mode_change && is_toplevel)
@@ -2244,7 +2244,7 @@ cUndoList::do_operation(Oper *curop, bool undo)
             if (has_add) {
                 for (Ochg *oc = cur->obj_list(); oc; oc = oc->next_chg()) {
                     if (oc->oadd())
-                        oc->oadd()->set_state(CDDeleted);
+                        oc->oadd()->set_state(CDobjDeleted);
                 }
                 Selections.purgeDeleted(cursd);
                 const BBox *sBB = cur->celldesc()->BB();

@@ -255,7 +255,7 @@ drc_menu::M_DrcFlag(CmdDesc *cmd)
             if (pointer->type() == CDBOX || pointer->type() == CDWIRE ||
                     pointer->type() == CDPOLYGON) {
                 if (pointer->has_flag(CDnoDRC)) {
-                    pointer->set_state(CDVanilla);
+                    pointer->set_state(CDobjVanilla);
                     Selections.insertObject(CurCell(Physical), pointer);
                 }
             }
@@ -297,12 +297,12 @@ FlagState::b1up()
     if (!cEventHdlr::sel_b1up(0, types, &stmp))
         return;
     for (CDol *s = stmp; s; s = s->next) {
-        if (s->odesc->state() == CDSelected) {
+        if (s->odesc->state() == CDobjSelected) {
             Selections.removeObject(CurCell(Physical), s->odesc);
             s->odesc->unset_flag(CDnoDRC);
         }
         else {
-            s->odesc->set_state(CDVanilla);
+            s->odesc->set_state(CDobjVanilla);
             Selections.insertObject(CurCell(Physical), s->odesc);
             s->odesc->set_flag(CDnoDRC);
         }

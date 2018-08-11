@@ -873,15 +873,15 @@ cMain::GetPseudoProp(CDo *odesc, int val)
         return (lstring::copy("none"));
     }
     if (val == XprpState) {
-        if (odesc->state() == CDVanilla)
+        if (odesc->state() == CDobjVanilla)
             return (lstring::copy("Normal"));
-        else if (odesc->state() == CDSelected)
+        else if (odesc->state() == CDobjSelected)
             return (lstring::copy("Selected"));
-        else if (odesc->state() == CDDeleted)
+        else if (odesc->state() == CDobjDeleted)
             return (lstring::copy("Deleted"));
-        else if (odesc->state() == CDIncomplete)
+        else if (odesc->state() == CDobjIncomplete)
             return (lstring::copy("Incomplete"));
-        else if (odesc->state() == CDInternal)
+        else if (odesc->state() == CDobjInternal)
             return (lstring::copy("Internal"));
         return (lstring::copy("Bad"));
     }

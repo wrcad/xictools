@@ -395,7 +395,7 @@ click:
 
             CDol *sl;
             for (sl = slist; sl; sl = sl->next) {
-                if (sl->odesc->state() == CDSelected)
+                if (sl->odesc->state() == CDobjSelected)
                     break;
             }
             unsigned int upstate = EV()->Cursor().get_upstate();
@@ -1136,7 +1136,7 @@ MainState::timeout1(void*)
             Selections.selectItems(CurCell(), 0, &BB, PSELpoint, true);
         CDol *sl;
         for (sl = slist; sl; sl = sl->next) {
-            if (sl->odesc->state() == CDSelected)
+            if (sl->odesc->state() == CDobjSelected)
                 break;
         }
         if (Selections.ptrMode() == PTRmodify) {

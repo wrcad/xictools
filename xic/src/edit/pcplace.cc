@@ -608,7 +608,7 @@ cEdit::reparamInstance(CDs *sdesc, CDc *cdesc, const CDp *newp, CDc **pnew)
         return (false);
     }
 
-    bool was_selected = (cdesc->state() == CDSelected);
+    bool was_selected = (cdesc->state() == CDobjSelected);
     CDs *sdsub = 0;
 
     // We can determine from the name whether the super-master in from

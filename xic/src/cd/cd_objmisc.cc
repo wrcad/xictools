@@ -58,6 +58,7 @@ FlagDef OdescFlags[] =
     { "NoDRC", CDnoDRC, true, "Skip DRC on this object" },
     { "Expand", CDexpand, false, "Show cell expanded" },
     { "InQueue", CDinqueue, false, "Object is in selection queue" },
+    { "Duplicatye", CDduplicate, false, "Object is a duplicate" },
     { "NoMerge", CDnoMerge, false, "Object will not be merged" },
     { "IsCopy", CDisCopy, false, "Object is a copy (not in database)" },
     { 0, 0, false, 0 }

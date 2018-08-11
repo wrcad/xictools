@@ -637,7 +637,7 @@ WindowDesc::redisplay_cddb_zimg_rc(CDs *sdesc, int hierlev,
             CDo *odtmp;
             while ((odtmp = gdesc.next()) != 0) {
                 // Don't display if conditionally deleted.
-                if (odtmp->state() == CDDeleted)
+                if (odtmp->state() == CDobjDeleted)
                     continue;
                 numgeom++;
 
@@ -708,7 +708,7 @@ WindowDesc::redisplay_cddb_zimg_rc(CDs *sdesc, int hierlev,
                 delete [] invpts;
                 return (numgeom);
             }
-            if (cdesc->state() == CDDeleted)
+            if (cdesc->state() == CDobjDeleted)
                 continue;
             if (state->is_context && cdesc == DSP()->context_cell())
                 continue;

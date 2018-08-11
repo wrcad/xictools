@@ -383,7 +383,7 @@ DotGen::update_dot(CDs *sdesc, int x, int y)
             while ((odesc = gdesc.next()) != 0) {
                 if (odesc->type() != CDPOLYGON)
                     continue;
-                if (odesc->state() != CDInternal)
+                if (odesc->state() != CDobjInternal)
                     continue;
                 // Someday may need a flag to indicate dots uniquely.
                 if (!sdesc->unlink(odesc, false))
@@ -482,7 +482,7 @@ DotGen::clear_dots()
                     while ((odesc = gdesc.next()) != 0) {
                         if (odesc->type() != CDPOLYGON)
                             continue;
-                        if (odesc->state() != CDInternal)
+                        if (odesc->state() != CDobjInternal)
                             continue;
                         // Someday may need a flag to indicate dots uniquely.
                         if (!sdesc->unlink(odesc, false))
@@ -700,7 +700,7 @@ DotGen::add_dots(CDs *sdesc)
                     while ((odesc = gdesc.next()) != 0) {
                         if (odesc->type() != CDPOLYGON)
                             continue;
-                        if (odesc->state() != CDInternal)
+                        if (odesc->state() != CDobjInternal)
                             continue;
                         // Someday may need a flag to indicate dots uniquely.
                         if (!sdesc->unlink(odesc, false))

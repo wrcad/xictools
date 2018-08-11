@@ -560,7 +560,7 @@ cEdit::execLabelScript()
         return (false);
     bool didexec = false;
     for (CDol *sl = slist; sl; sl = sl->next) {
-        if (sl->odesc->state() == CDSelected)
+        if (sl->odesc->state() == CDobjSelected)
             continue;
         if (!OLABEL(sl->odesc)->label()->is_label_script())
             continue;

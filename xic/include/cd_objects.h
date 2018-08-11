@@ -55,15 +55,22 @@
 
 // State of object in database (return from state() method).
 //
-// CDVanilla    Normal object
-// CDSelected   Shown highlihted in display, should be listed in
-//               select queue.
-// CDDeleted    Object being deleted, not shown in display.
-// CDIncomplete Object being created, shown as outline in display.
-// CDInternal   Internal object, shown normally but not converted
-//               in output, can't be selected.
+// CDobjVanilla     Normal object
+// CDobjSelected    Shown highlihted in display, should be listed in
+//                  select queue.
+// CDobjDeleted     Object being deleted, not shown in display.
+// CDobjIncomplete  Object being created, shown as outline in display.
+// CDobjInternal    Internal object, shown normally but not converted
+//                  in output, can't be selected.
 //
-enum ObjState { CDVanilla, CDSelected, CDDeleted, CDIncomplete, CDInternal };
+enum CDobjState
+{
+    CDobjVanilla,
+    CDobjSelected,
+    CDobjDeleted,
+    CDobjIncomplete,
+    CDobjInternal
+};
 
 // Flags for CDo::oFlags
 //
@@ -77,6 +84,7 @@ enum ObjState { CDVanilla, CDSelected, CDDeleted, CDIncomplete, CDInternal };
 #define CDoMarkExtG    0x400
 #define CDoMarkExtE    0x800
 #define CDinqueue      0x1000
+#define CDduplicate    0x2000
 #define CDnoMerge      0x4000
 #define CDisCopy       0x8000
 //
@@ -90,6 +98,7 @@ enum ObjState { CDVanilla, CDSelected, CDDeleted, CDIncomplete, CDInternal };
 // CDoMarkExtE      Extraction system, in extraction phonycell.
 // CDinqueue        Object is in selection queue.
 // CDnoMerge        Object will not be merged.
+// CDduplicate      Object is identical to another database object.
 // CDisCopy         Object is a copy, not in database.
 
 // CDmergeInhibit will set/unset the CDnoMerge flags in a list of
@@ -194,7 +203,7 @@ struct CDo : public RTelem
             }
             e_type = CDBOX;
             e_children = (RTelem*)ld;
-            e_nchildren = CDVanilla;
+            e_nchildren = CDobjVanilla;
             e_flags = 0;
             oGroup = 0;                     
 #ifndef CD_PRPTY_TAB
@@ -210,8 +219,8 @@ struct CDo : public RTelem
 
     int type()                  const { return (e_type); }
     CDl *ldesc()                const { return (CDl*)e_children; }
-    int state()                 const { return (e_nchildren); }
-    void set_state(int s)             { e_nchildren = (char)s; }
+    CDobjState state()          const { return ((CDobjState)e_nchildren); }
+    void set_state(CDobjState s)      { e_nchildren = (char)s; }
     unsigned int flags()        const { return (e_flags); }
     void set_flags(unsigned int f)    { e_flags = (unsigned short)f; }
     bool has_flag(int f)        const { return (e_flags & f); }
@@ -220,7 +229,8 @@ struct CDo : public RTelem
 
     bool is_normal() const
         {
-            return (state() == CDVanilla || state() == CDSelected);
+            return ((state() == CDobjVanilla || state() == CDobjSelected) &&
+                !(flags() & (CDduplicate | CDisCopy)));
         }
 
     bool is_copy()              const { return (has_flag(CDisCopy)); }

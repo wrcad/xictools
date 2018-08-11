@@ -536,7 +536,7 @@ PolyState::b1up()
             for (CDol *sl = slist; sl; sl = sl->next) {
                 if (sl->odesc->type() != CDPOLYGON)
                     continue;
-                if (sl->odesc->state() == CDSelected)
+                if (sl->odesc->state() == CDobjSelected)
                     Selections.removeObject(CurCell(), sl->odesc);
                 else
                     Selections.insertObject(CurCell(), sl->odesc);
@@ -1006,7 +1006,7 @@ PolyState::copy_objlist()
 {
     UndoList->list = Ochg::copy(Ulist()->CurOp().obj_list());
     for (Ochg *oc1 = UndoList->list; oc1; oc1 = oc1->next_chg()) {
-        if (oc1->oadd() && oc1->oadd()->state() == CDDeleted) {
+        if (oc1->oadd() && oc1->oadd()->state() == CDobjDeleted) {
             for (Ochg *oc2 = UndoList->list; oc2; oc2 = oc2->next_chg()) {
                 if (oc2->odel() == oc1->oadd()) {
                     oc1->set_oadd(0);
@@ -1103,7 +1103,7 @@ PolyState::delete_vertices()
             Errs()->add_error("mergeBoxOrPoly failed");
             Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
         }
-        if (newp->state() != CDDeleted)
+        if (newp->state() != CDobjDeleted)
             Selections.replaceObject(cursd, podesc, newp);
         ED()->purgeObjectList(podesc);
     }
@@ -1152,7 +1152,7 @@ PolyState::add_vertex()
     CDpo *podesc = 0;
 
     for (CDol *s = slist; s; s = s->next) {
-        if (s->odesc->state() == CDSelected &&
+        if (s->odesc->state() == CDobjSelected &&
                 Selections.inQueue(cursd, s->odesc)) {
             podesc = OPOLY(s->odesc);
             break;
@@ -1218,7 +1218,7 @@ PolyState::add_vertex()
         Errs()->add_error("mergeBoxOrPoly failed");
         Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
     }
-    if (newp->state() != CDDeleted)
+    if (newp->state() != CDobjDeleted)
         Selections.replaceObject(cursd, podesc, newp);
 
     Ulist()->CommitChanges(true);
@@ -1270,7 +1270,7 @@ PolyState::allocate_poly()
         return (false);
     }
     CD()->SetNotStrict(false);
-    newp->set_state(CDIncomplete);
+    newp->set_state(CDobjIncomplete);
     RdBB = newp->oBB();
 
     delete_inc();

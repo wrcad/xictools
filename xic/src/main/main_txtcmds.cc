@@ -2545,7 +2545,7 @@ bangcmds::checkgrid(const char *s)
             while ((odesc = gdesc.next()) != 0) {
                 int v = DSP()->MainWdesc()->CheckGrid(odesc, true);
                 if (v) {
-                    odesc->set_state(CDVanilla);
+                    odesc->set_state(CDobjVanilla);
                     Selections.insertObject(CurCell(Physical), odesc);
                     ocnt++;
                     vcnt += v;
@@ -2685,7 +2685,7 @@ bangcmds::check45(const char *s)
                 if (wonly)
                     continue;
                 if (((const CDpo*)odesc)->po_has_non45()) {
-                    odesc->set_state(CDVanilla);
+                    odesc->set_state(CDobjVanilla);
                     Selections.insertObject(cursdp, odesc);
                     pcount++;
                 }
@@ -2694,7 +2694,7 @@ bangcmds::check45(const char *s)
                 if (ponly)
                     continue;
                 if (((const CDw*)odesc)->w_has_non45()) {
-                    odesc->set_state(CDVanilla);
+                    odesc->set_state(CDobjVanilla);
                     Selections.insertObject(cursdp, odesc);
                     wcount++;
                 }
@@ -2733,12 +2733,12 @@ bangcmds::dups(const char*)
         gdesc.init_gen(cursd, ld);
         CDo *odesc;
         while ((odesc = gdesc.next()) != 0) {
-            if (odesc->state() == CDSelected)
+            if (odesc->state() == CDobjSelected)
                 continue;
 
             CDol *o0 = cursd->db_list_coinc(odesc);
             for (CDol *o = o0; o; o = o->next) {
-                o->odesc->set_state(CDVanilla);
+                o->odesc->set_state(CDobjVanilla);
                 Selections.insertObject(CurCell(true), o->odesc);
                 dupcnt++;
             }
@@ -2785,7 +2785,7 @@ bangcmds::wirecheck(const char *s)
                         continue;
                     Wire w(((CDw*)o->odesc)->w_wire());
                     if (!w.checkWire()) {
-                        o->odesc->set_state(CDVanilla);
+                        o->odesc->set_state(CDobjVanilla);
                         Selections.insertObject(cursdp, o->odesc);
                         count++;
                     }
@@ -2800,7 +2800,7 @@ bangcmds::wirecheck(const char *s)
                         continue;
                     Wire w(((CDw*)odesc)->w_wire());
                     if (!w.checkWire()) {
-                        odesc->set_state(CDVanilla);
+                        odesc->set_state(CDobjVanilla);
                         Selections.insertObject(cursdp, odesc);
                         count++;
                     }
@@ -2821,7 +2821,7 @@ bangcmds::wirecheck(const char *s)
                         continue;
                     Wire w(((CDw*)o->odesc)->w_wire());
                     if (!w.checkWire()) {
-                        o->odesc->set_state(CDVanilla);
+                        o->odesc->set_state(CDobjVanilla);
                         Selections.insertObject(cursdp, o->odesc);
                         count++;
                     }
@@ -2836,7 +2836,7 @@ bangcmds::wirecheck(const char *s)
                         continue;
                     Wire w(((CDw*)odesc)->w_wire());
                     if (!w.checkWire()) {
-                        odesc->set_state(CDVanilla);
+                        odesc->set_state(CDobjVanilla);
                         Selections.insertObject(cursdp, odesc);
                         count++;
                     }
@@ -2888,7 +2888,7 @@ bangcmds::polycheck(const char *s)
                         true);
                     if (ret) {
                         // Select if any flag set.
-                        o->odesc->set_state(CDVanilla);
+                        o->odesc->set_state(CDobjVanilla);
                         Selections.insertObject(cursdp, o->odesc);
                         count++;
                     }
@@ -2904,7 +2904,7 @@ bangcmds::polycheck(const char *s)
                     int ret = ((CDpo*)odesc)->po_check_poly(PCHK_REENT, true);
                     if (ret) {
                         // Select if any flag set.
-                        odesc->set_state(CDVanilla);
+                        odesc->set_state(CDobjVanilla);
                         Selections.insertObject(cursdp, odesc);
                         count++;
                     }
@@ -2927,7 +2927,7 @@ bangcmds::polycheck(const char *s)
                         true);
                     if (ret) {
                         // Select if any flag set.
-                        o->odesc->set_state(CDVanilla);
+                        o->odesc->set_state(CDobjVanilla);
                         Selections.insertObject(cursdp, o->odesc);
                         count++;
                     }
@@ -2943,7 +2943,7 @@ bangcmds::polycheck(const char *s)
                     int ret = ((CDpo*)odesc)->po_check_poly(PCHK_REENT, true);
                     if (ret) {
                         // Select if any flag set.
-                        odesc->set_state(CDVanilla);
+                        odesc->set_state(CDobjVanilla);
                         Selections.insertObject(cursdp, odesc);
                         count++;
                     }
@@ -2997,7 +2997,7 @@ bangcmds::polymanh(const char *s)
             if (odesc->type() == CDPOLYGON) {
                 bool ismanh = ((const CDpo*)odesc)->po_is_manhattan();
                 if ((ismanh && !shownon) || (!ismanh && shownon)) {
-                    odesc->set_state(CDVanilla);
+                    odesc->set_state(CDobjVanilla);
                     Selections.insertObject(cursdp, odesc);
                     count++;
                 }

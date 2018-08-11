@@ -3144,7 +3144,7 @@ geom1_funcs::IFselectObjects(Variable *res, Variable *args, void*)
         CDol *ol = (CDol*)hdl->data;
         while (ol) {
             if (((sHdlObject*)hdl)->sdesc == CurCell() &&
-                    ol->odesc->state() == CDVanilla) {
+                    ol->odesc->state() == CDobjVanilla) {
                 Selections.insertObject(cursd, ol->odesc);
                 cnt++;
             }
@@ -3195,7 +3195,7 @@ geom1_funcs::IFdeselectObjects(Variable *res, Variable *args, void*)
         CDol *ol = (CDol*)hdl->data;
         while (ol) {
             if (((sHdlObject*)hdl)->sdesc == CurCell() &&
-                    ol->odesc->state() == CDSelected) {
+                    ol->odesc->state() == CDobjSelected) {
                 Selections.removeObject(cursd, ol->odesc);
                 cnt++;
             }

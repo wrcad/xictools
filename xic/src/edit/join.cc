@@ -394,7 +394,7 @@ cEdit::joinQueue()
                 CDo *od = ol->odesc;
                 if (!od->is_normal())
                     continue;
-                if (od->state() != CDSelected)
+                if (od->state() != CDobjSelected)
                     continue;
                 if (od->type() == CDWIRE) {
                     if (!incl_wires)

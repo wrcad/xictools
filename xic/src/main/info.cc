@@ -949,15 +949,15 @@ cMain::Info(const CDo *odesc)
     }
 
     strcpy(buf, "State:");
-    if (odesc->state() == CDVanilla)
+    if (odesc->state() == CDobjVanilla)
         strcat(buf, " Normal");
-    else if (odesc->state() == CDSelected)
+    else if (odesc->state() == CDobjSelected)
         strcat(buf, " Selected");
-    else if (odesc->state() == CDDeleted)
+    else if (odesc->state() == CDobjDeleted)
         strcat(buf, " Deleted");
-    else if (odesc->state() == CDIncomplete)
+    else if (odesc->state() == CDobjIncomplete)
         strcat(buf, " Incomplete");
-    else if (odesc->state() == CDInternal)
+    else if (odesc->state() == CDobjInternal)
         strcat(buf, " Internal");
     else
         strcat(buf, " Bad State!");
@@ -1372,7 +1372,7 @@ InfoState::Display(tlst_t *ol)
     show_cell_expand(false, true);
     show_obj_info(ol);
     Selections.deselectTypes(CurCell(), 0);
-    ol->odesc->set_state(CDVanilla);
+    ol->odesc->set_state(CDobjVanilla);
     Selections.insertObject(CurCell(), ol->odesc);
     delete TmpObj;
     TmpObj = ol;
@@ -1492,7 +1492,7 @@ InfoState::esc()
     // Put back any backed-up selections.
     for (CDol *s = SelBack; s; s = s->next) {
         if (s->odesc) {
-            s->odesc->set_state(CDVanilla);
+            s->odesc->set_state(CDobjVanilla);
             Selections.insertObject(CurCell(), s->odesc);
         }
     }
@@ -1643,7 +1643,7 @@ InfoState::show_cell_expand(bool exp, bool clear)
                         continue;
                     CDo *newod = od->copyObject(true);
                     ol0 = new CDol(newod, ol0);
-                    newod->set_state(CDVanilla);
+                    newod->set_state(CDobjVanilla);
                     Selections.insertObject(CurCell(), newod);
                 }
             }
@@ -1696,7 +1696,7 @@ InfoState::show_cell_expand(bool exp, bool clear)
 
                     CDo *newod = od->copyObjectWithXform(&stk, true);
                     ol0 = new CDol(newod, ol0);
-                    newod->set_state(CDVanilla);
+                    newod->set_state(CDobjVanilla);
                     Selections.insertObject(CurCell(), newod);
                 }
             }
@@ -1731,7 +1731,7 @@ InfoState::show_cell_expand(bool exp, bool clear)
             delete o;
         }
         if (!clear) {
-            TmpObj->odesc->set_state(CDVanilla);
+            TmpObj->odesc->set_state(CDobjVanilla);
             Selections.insertObject(CurCell(), TmpObj->odesc);
             show_obj_info(TmpObj);
         }

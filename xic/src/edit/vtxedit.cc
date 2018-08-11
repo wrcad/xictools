@@ -120,7 +120,7 @@ sObj::mklist(sObj *thiso, CDol *slist, BBox *AOI)
             continue;
         if (sl->odesc->type() == CDLABEL)
             continue;
-        if (sl->odesc->state() != CDSelected)
+        if (sl->odesc->state() != CDobjSelected)
             continue;
         if (sl->odesc->type() == CDBOX) {
             Point_c p(sl->odesc->oBB().left, sl->odesc->oBB().bottom);

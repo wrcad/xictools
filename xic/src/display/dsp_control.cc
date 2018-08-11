@@ -435,7 +435,7 @@ WindowDesc::RedisplayHighlighting(const BBox *AOI, bool bbflag)
     if (!w_frozen || DSP()->DoingHcopy()) {
         // Show incomplete object
         if (DSP()->IncompleteObject() &&
-                DSP()->IncompleteObject()->state() == CDIncomplete &&
+                DSP()->IncompleteObject()->state() == CDobjIncomplete &&
                 IsSimilar(DSP()->MainWdesc())) {
             CDl *ld = DSP()->IncompleteObject()->ldesc();
             w_draw->SetColor(dsp_prm(ld)->pixel());

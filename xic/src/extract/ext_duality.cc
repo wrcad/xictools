@@ -1209,7 +1209,7 @@ cGroupDesc::select_unassoc_groups()
         if (gd_groups[i].node() < 0) {
             if (gd_groups[i].net()) {
                 for (CDol *o = gd_groups[i].net()->objlist(); o; o = o->next) {
-                    o->odesc->set_state(CDVanilla);
+                    o->odesc->set_state(CDobjVanilla);
                     Selections.insertObject(cursdp, o->odesc);
                 }
             }
@@ -1256,7 +1256,7 @@ cGroupDesc::select_unassoc_edevs()
                 const char *instname = cd->getElecInstBaseName();
                 // ignore wire caps
                 if (instname && !lstring::prefix(WIRECAP_PREFIX, instname)) {
-                    cd->set_state(CDVanilla);
+                    cd->set_state(CDobjVanilla);
                     Selections.insertObject(cursde, cd);
                 }
             }
@@ -1268,7 +1268,7 @@ cGroupDesc::select_unassoc_edevs()
             const char *instname = cd->getElecInstBaseName();
             // ignore wire caps
             if (instname && !lstring::prefix(WIRECAP_PREFIX, instname)) {
-                cd->set_state(CDVanilla);
+                cd->set_state(CDobjVanilla);
                 Selections.insertObject(cursde, cd);
             }
         }
@@ -1285,7 +1285,7 @@ cGroupDesc::select_unassoc_psubs()
     for (sSubcList *sl = gd_subckts; sl; sl = sl->next()) {
         for (sSubcInst *s = sl->subs(); s; s = s->next()) {
             if (!s->dual()) {
-                s->cdesc()->set_state(CDVanilla);
+                s->cdesc()->set_state(CDobjVanilla);
                 Selections.insertObject(cursdp, s->cdesc());
             }
         }
@@ -1302,14 +1302,14 @@ cGroupDesc::select_unassoc_esubs()
     for (sSubcList *sl = gd_subckts; sl; sl = sl->next()) {
         for (sEinstList *s = sl->esubs(); s; s = s->next()) {
             if (!s->dual_subc()) {
-                s->cdesc()->set_state(CDVanilla);
+                s->cdesc()->set_state(CDobjVanilla);
                 Selections.insertObject(cursde, s->cdesc());
             }
         }
     }
     if (gd_extra_subs) {
         for (sEinstList *s = gd_extra_subs; s; s = s->next()) {
-            s->cdesc()->set_state(CDVanilla);
+            s->cdesc()->set_state(CDobjVanilla);
             Selections.insertObject(cursde, s->cdesc());
         }
     }

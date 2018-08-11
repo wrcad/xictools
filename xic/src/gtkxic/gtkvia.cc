@@ -826,7 +826,7 @@ sStv::stv_action(GtkWidget *caller, void*)
             // maybe should make this modal.
 
             CDc *cdesc = Stv->stv_cdesc;
-            if (cdesc->state() == CDDeleted) {
+            if (cdesc->state() == CDobjDeleted) {
                 Log()->PopUpErr("Target via instance was deleted.");
                 return;
             }

@@ -1337,7 +1337,7 @@ CDs::makeBox(CDl *ldesc, const BBox *pBB, CDo **pointer, bool internal)
     }
     CDo *odesc = new CDo(ldesc, pBB);
     if (internal)
-        odesc->set_state(CDInternal);
+        odesc->set_state(CDobjInternal);
     if (!insert(odesc)) {
         delete odesc;
         return (CDfailed);
@@ -1481,7 +1481,7 @@ CDs::makePolygon(CDl *ldesc, Poly *poly, CDpo **pointer, int *pchk_flags,
     poly->points = 0;
 
     if (internal)
-        pdesc->set_state(CDInternal);
+        pdesc->set_state(CDobjInternal);
     if (!insert(pdesc)) {
         delete pdesc;
         return (CDfailed);
@@ -1612,7 +1612,7 @@ CDs::makeWire(CDl *ldesc, Wire *wire, CDw **pointer, int *wchk_flags,
     wire->points = 0;
 
     if (internal)
-        wdesc->set_state(CDInternal);
+        wdesc->set_state(CDobjInternal);
     if (!insert(wdesc)) {
         delete wdesc;
         return (CDfailed);
@@ -1705,7 +1705,7 @@ CDs::makeLabel(CDl *ldesc, Label *label, CDla **pointer, bool internal)
     label->label = 0;
 
     if (internal)
-        ladesc->set_state(CDInternal);
+        ladesc->set_state(CDobjInternal);
     if (!insert(ladesc)) {
         delete ladesc;
         return (CDfailed);
@@ -2047,7 +2047,7 @@ CDs::insert(CDo *odesc)
                 "Attempt to add instance to symbolic representation.");
             return (false);
         }
-        if (odesc->state() == CDInternal) {
+        if (odesc->state() == CDobjInternal) {
             Errs()->add_error(
                 "Attempt to add internal object to symbolic representation.");
             return (false);
@@ -2641,11 +2641,11 @@ CDs::unlink(CDo *odesc, int save)
 
     if (isSymbolic()) {
         // Just ignore.
-        if (odesc->state() == CDInternal)
+        if (odesc->state() == CDobjInternal)
             return (true);
     }
 
-    odesc->set_state(CDDeleted);
+    odesc->set_state(CDobjDeleted);
     if (isElectrical() &&
             (odesc->type() == CDWIRE || odesc->type() == CDINSTANCE))
         hyDeleteReference(odesc, true);
@@ -3836,7 +3836,7 @@ CDs::prptyPurge(CDo *odesc)
         pdesc->purge(odesc);
     for (CDp *pd = odesc->prpty_list(); pd; pd = pd->next_prp()) {
         CDla *la = pd->bound();
-        if (la && !(la->state() == CDDeleted)) {
+        if (la && !(la->state() == CDobjDeleted)) {
             CDp_lref *prf = (CDp_lref*)la->prpty(P_LABRF);
             if (prf) {
                 la->prptyUnlink(prf);

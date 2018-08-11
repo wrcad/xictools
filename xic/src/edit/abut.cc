@@ -100,7 +100,7 @@ cAbutCtrl::handleAbutment()
     // First pass, update properties, maybe revert partners.
     for (CDol *ol = ac_abut_instances; ol; ol = ol->next) {
         CDc *cdesc = (CDc*)ol->odesc;
-        if (cdesc->state() == CDDeleted)
+        if (cdesc->state() == CDobjDeleted)
             continue;
 
         // If the XICP_AB_COPY property is found, then cdesc is a copy
@@ -155,7 +155,7 @@ cAbutCtrl::handleAbutment()
     // Second pass, check and do abutments.
     for (CDol *ol = ac_abut_instances; ol; ol = ol->next) {
         CDc *cdesc = (CDc*)ol->odesc;
-        if (cdesc->state() == CDDeleted)
+        if (cdesc->state() == CDobjDeleted)
             continue;
 
         CDp *p_prms = cdesc->prpty(XICP_PC_PARAMS);
@@ -1173,7 +1173,7 @@ sAbutPrior::findNewPartnerInList(CDol *ol0, CDp **pprior) const
 
     for (CDol *ol = ol0; ol; ol = ol->next) {
         CDc *cd2 = (CDc*)ol->odesc;
-        if (cd2->state() == CDDeleted)
+        if (cd2->state() == CDobjDeleted)
             continue;
         CDs *msd2 = cd2->masterCell();
         if (!msd2 || !msd2->isPCellSubMaster())
@@ -1228,7 +1228,7 @@ sAbutPrior::findPartner(CDp **pprior) const
     stk.TInitGen(CurCell(), CellLayer(), &srchBB, &gdesc);
     CDc *cd2;
     while ((cd2 = (CDc*)gdesc.next()) != 0) {
-        if (cd2->state() == CDDeleted)
+        if (cd2->state() == CDobjDeleted)
             continue;
         CDs *msd2 = cd2->masterCell();
         if (!msd2 || !msd2->isPCellSubMaster())

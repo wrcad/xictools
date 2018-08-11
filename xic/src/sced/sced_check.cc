@@ -280,7 +280,7 @@ cSced::prptyCheck(CDs *sdesc, FILE* fp, bool select_labels)
             if (DSP()->CurMode() == Electrical && select_labels) {
                 CDp_lref *prf = (CDp_lref*)pointer->prpty(P_LABRF);
                 if (!prf || !prf->devref()) {
-                    pointer->set_state(CDVanilla);
+                    pointer->set_state(CDobjVanilla);
                     Selections.insertObject(sdesc, pointer);
                 }
             }
@@ -596,7 +596,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                 lstr.add("  Label links bogus.\n");
                 bogus = true;
             }
-            if (olabel->state() == CDDeleted) {
+            if (olabel->state() == CDobjDeleted) {
                 if (!printed)
                     printed = printprop(pm, lstr);
                 lstr.add("  Label in delete list.\n");
@@ -613,7 +613,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
             bogus = true;
         }
         else {
-            if (odesc->state() == CDDeleted) {
+            if (odesc->state() == CDobjDeleted) {
                 if (!printed)
                     printed = printprop(pm, lstr);
                 lstr.add("  Object field1 in delete list.\n");
@@ -665,7 +665,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
             bogus = true;
         }
         else {
-            if (odesc->state() == CDDeleted) {
+            if (odesc->state() == CDobjDeleted) {
                 if (!printed)
                     printprop(pm, lstr);
                 lstr.add("  Object field1 in delete list.\n");
@@ -769,7 +769,7 @@ cSced::prptyCheckLabel(CDs *sdesc, CDla *olabel, char **str)
                     err = "Linked device or subckt has null parent";
                 else if (cdesc->parent() != sdesc)
                     err = "Linked device or subckt has wrong parent";
-                else if (((CDo*)prf->devref())->state() == CDDeleted)
+                else if (((CDo*)prf->devref())->state() == CDobjDeleted)
                     err = "Linked device or subckt in delete list";
             }
         }
@@ -1109,7 +1109,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
                 printprop(pd, lstr);
                 print_err(lstr, "  %s: Label links bogus.\n", name);
             }
-            if (olabel->state() == CDDeleted) {
+            if (olabel->state() == CDobjDeleted) {
                 printprop(pd, lstr);
                 print_err(lstr, "  %s: Label in delete list.\n", name);
             }

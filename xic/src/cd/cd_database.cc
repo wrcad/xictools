@@ -378,8 +378,10 @@ CDdb::db_check_coinc(CDo *od)
     for (CDo *o = od->db_next(); o; o = o->db_next()) {
         if (od->oBB().top != o->oBB().top || od->oBB().left != o->oBB().left)
             break;
-        if (*o == *od)
+        if (*o == *od) {
+            od->set_flag(CDduplicate);
             return (true);
+        }
     }
     return (false);
 }

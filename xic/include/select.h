@@ -377,7 +377,7 @@ public:
                         if (!sq)
                             return;
                     }
-                    int st = ol->odesc->state();
+                    CDobjState st = ol->odesc->state();
                     sq->insert_object(ol->odesc, SQinsNoShow);
                     ol->odesc->set_state(st);
                 }

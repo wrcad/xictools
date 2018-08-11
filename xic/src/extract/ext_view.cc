@@ -315,7 +315,7 @@ cGroupDesc::show_objects(WindowDesc *wdesc, const CDl *ldesc)
         CDo *odtmp;
         while ((odtmp = gdesc.next()) != 0) {
             // Don't display if conditionally deleted.
-            if (odtmp->state() == CDDeleted)
+            if (odtmp->state() == CDobjDeleted)
                 continue;
             numgeom++;
             // Test for user interrupt

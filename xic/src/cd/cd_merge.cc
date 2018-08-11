@@ -374,7 +374,7 @@ CDs::mergeBoxOrPoly(CDo *odesc, bool Undoable)
     for (CDol *ol = o0; ol; ol = ol->next) {
         CDo *od = ol->odesc;
         if (Undoable) {
-            bool nosl = (od->state() != CDSelected);
+            bool nosl = (od->state() != CDobjSelected);
             CD()->ifRecordObjectChange(this, od, 0);
             if (nosl)
                 od->set_flag(CDmergeDeleted);
@@ -490,7 +490,7 @@ namespace {
     {
         bool ret = true;
         if (Undoable) {
-            bool nosl = (odesc->state() != CDSelected);
+            bool nosl = (odesc->state() != CDobjSelected);
             CD()->ifRecordObjectChange(sdesc, odesc, 0);
             if (nosl)
                 odesc->set_flag(CDmergeDeleted);
@@ -680,8 +680,8 @@ cCD::ClipMerge(CDo *o1, CDo *o2, CDs *sdesc, bool *merged, bool Undoable)
         BBox tBB(o1->oBB().left, mmMin(o1->oBB().bottom, o2->oBB().bottom),
             o1->oBB().right, mmMax(o1->oBB().top, o2->oBB().top));
         if (Undoable) {
-            bool nosl1 = (o1->state() != CDSelected);
-            bool nosl2 = (o2->state() != CDSelected);
+            bool nosl1 = (o1->state() != CDobjSelected);
+            bool nosl2 = (o2->state() != CDobjSelected);
             ifRecordObjectChange(sdesc, o1, 0);
             ifRecordObjectChange(sdesc, o2, 0);
             if (nosl1)
@@ -722,8 +722,8 @@ cCD::ClipMerge(CDo *o1, CDo *o2, CDs *sdesc, bool *merged, bool Undoable)
         BBox tBB(mmMin(o1->oBB().left, o2->oBB().left), o1->oBB().bottom,
             mmMax(o1->oBB().right, o2->oBB().right), o1->oBB().top);
         if (Undoable) {
-            bool nosl1 = (o1->state() != CDSelected);
-            bool nosl2 = (o2->state() != CDSelected);
+            bool nosl1 = (o1->state() != CDobjSelected);
+            bool nosl2 = (o2->state() != CDobjSelected);
             ifRecordObjectChange(sdesc, o1, 0);
             ifRecordObjectChange(sdesc, o2, 0);
             if (nosl1)
@@ -769,8 +769,8 @@ cCD::ClipMerge(CDo *o1, CDo *o2, CDs *sdesc, bool *merged, bool Undoable)
     BBox BB1 = o1->oBB();
     BBox BB2 = o2->oBB();
     if (Undoable) {
-        bool nosl1 = (o1->state() != CDSelected);
-        bool nosl2 = (o2->state() != CDSelected);
+        bool nosl1 = (o1->state() != CDobjSelected);
+        bool nosl2 = (o2->state() != CDobjSelected);
         ifRecordObjectChange(sdesc, o1, 0);
         ifRecordObjectChange(sdesc, o2, 0);
         if (nosl1)

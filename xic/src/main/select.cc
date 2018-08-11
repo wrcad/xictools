@@ -155,11 +155,11 @@ namespace {
 // The Selection code extensively uses the CD State field.  The following
 // convention is used:
 //
-//   State = CDVanilla       Object is unselected.
-//  *State = CDSelected      Object is selected.
-//   State = CDDeleted       Object is conditionally deleted.
-//   State = CDIncomplete    Object is being created.
-//   State = CDInternal      Object is internal, not selectable.
+//   State = CDobjVanilla      Object is unselected.
+//  *State = CDobjSelected     Object is selected.
+//   State = CDobjDeleted      Object is conditionally deleted.
+//   State = CDobjIncomplete   Object is being created.
+//   State = CDobjInternal     Object is internal, not selectable.
 //
 //  * means that redisplay will highlight these objects.
 
@@ -247,7 +247,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 continue;
             }
             cp = c;
-            if (c->odesc->state() == CDSelected)
+            if (c->odesc->state() == CDobjSelected)
                 nsel++;
             else
                 nusel++;
@@ -274,7 +274,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
             if (nsel > 1) {
                 // Keep first selected only.
                 while (list) {
-                    if (list->odesc->state() == CDSelected) {
+                    if (list->odesc->state() == CDobjSelected) {
                         CDol::destroy(list->next);
                         list->next = 0;
                         sel_list = list;
@@ -288,7 +288,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
             else if (nsel == 1) {
                 // Keep selected and first one following only.
                 while (list) {
-                    if (list->odesc->state() == CDSelected) {
+                    if (list->odesc->state() == CDobjSelected) {
                         if (list->next) {
                             CDol::destroy(list->next->next);
                             list->next->next = 0;
@@ -316,7 +316,7 @@ cSelections::selection(const CDs *sd, const char *types, const BBox *AOI,
                 cnx = c->next;
                 c->next = 0;
                 if (c->odesc->is_normal()) {
-                    if (c->odesc->state() == CDSelected) {
+                    if (c->odesc->state() == CDobjSelected) {
                         if (!se)
                             sel_list = se = c;
                         else {
@@ -635,7 +635,7 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
         CDol *cp = 0, *cn;
         for (CDol *c = list; c; c = cn) {
             cn = c->next;
-            if (c->odesc->state() != CDSelected &&
+            if (c->odesc->state() != CDobjSelected &&
                     !XM()->IsBoundaryVisible(sd, c->odesc)) {
                 if (!cp)
                     list = cn;
@@ -818,7 +818,7 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
             for (CDol *c = list; c; c = cn) {
                 cn = c->next;
                 if (c->odesc->type() == CDINSTANCE) {
-                    if (c->odesc->state() == CDSelected)
+                    if (c->odesc->state() == CDobjSelected)
                         nsel++;
                     else
                         nusel++;
@@ -844,7 +844,7 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
                 if (nsel > 1) {
                     // Keep first selected only.
                     while (c0) {
-                        if (c0->odesc->state() == CDSelected) {
+                        if (c0->odesc->state() == CDobjSelected) {
                             CDol::destroy(c0->next);
                             c0->next = 0;
                             break;
@@ -857,7 +857,7 @@ cSelections::filter(const CDs *sd, CDol *list, const BBox *AOI,
                 else if (nsel == 1) {
                     // Keep selected and first one following only.
                     while (c0) {
-                        if (c0->odesc->state() == CDSelected) {
+                        if (c0->odesc->state() == CDobjSelected) {
                             if (c0->next) {
                                 CDol::destroy(c0->next->next);
                                 c0->next->next = 0;
@@ -1861,7 +1861,7 @@ sSelGen::next()
         CDo *od = sg_el->odesc;
         sg_el = sg_el->next;
         if (match_type(sg_types, od) &&
-                (sg_all || od->state() == CDSelected)) {
+                (sg_all || od->state() == CDobjSelected)) {
             sg_obj = od;
             return (od);
         }
@@ -1937,9 +1937,9 @@ sqelfct_t::delete_element(sqel_t *el)
 // Insert an object into the queue, this becomes the new list head. 
 // True is returned if the object is in the list.  If sm is SQinsShow,
 // the object will be displayed.  If sm is SQinsProvShow, the object
-// will be displayed if its state is CDVanilla.  If sm is SQinsNoShow,
+// will be displayed if its state is CDobjVanilla.  If sm is SQinsNoShow,
 // to object won't be displayed.  In any case, the object state is set
-// to CDSelected.
+// to CDobjSelected.
 //
 bool
 selqueue_t::insert_object(CDo *od, SQinsMode sm)
@@ -1969,13 +1969,13 @@ selqueue_t::insert_object(CDo *od, SQinsMode sm)
     sq_tab->link(el, false);
     sq_tab = sq_tab->check_rehash();
     if (sm == SQinsShow) {
-        od->set_state(CDVanilla);
+        od->set_state(CDobjVanilla);
         show_selected(sq_sdesc, od);
     }
     else if (sm == SQinsProvShow)
         show_selected(sq_sdesc, od);
     else
-        od->set_state(CDSelected);
+        od->set_state(CDobjSelected);
     return (true);
 }
 
@@ -1999,7 +1999,7 @@ selqueue_t::replace_object(CDo *od, CDo *odnew)
     if (!el)
         return (false);
     el->odesc = odnew;
-    odnew->set_state(CDSelected);
+    odnew->set_state(CDobjSelected);
     sq_tab->link(el);
     return (true);
 }
@@ -2056,8 +2056,8 @@ selqueue_t::remove_object(CDo *od)
         sq_list = el->next;
     if (el->next)
         el->next->prev = el->prev;
-    if (el->odesc->state() == CDSelected)
-        el->odesc->set_state(CDVanilla);
+    if (el->odesc->state() == CDobjSelected)
+        el->odesc->set_state(CDobjVanilla);
     sq_fct.delete_element(el);
 
     // Undisplay stretch handles in pCell instance.
@@ -2109,7 +2109,8 @@ selqueue_t::deselect_types(const char *types)
     sqel_t *en;
     for (sqel_t *el = sq_list; el; el = en) {
         en = el->next;
-        if (match_type(types, el->odesc) && el->odesc->state() == CDSelected) {
+        if (match_type(types, el->odesc) &&
+                el->odesc->state() == CDobjSelected) {
             o0 = new CDol(el->odesc, o0);
             remove_object(el->odesc);
         }
@@ -2129,7 +2130,7 @@ selqueue_t::deselect_layer(const CDl *ld)
     sqel_t *en;
     for (sqel_t *el = sq_list; el; el = en) {
         en = el->next;
-        if (el->odesc->ldesc() == ld && el->odesc->state() == CDSelected) {
+        if (el->odesc->ldesc() == ld && el->odesc->state() == CDobjSelected) {
             o0 = new CDol(el->odesc, o0);
             remove_object(el->odesc);
         }
@@ -2146,7 +2147,7 @@ selqueue_t::deselect_last()
 {
     if (sq_list) {
         CDo *od = sq_list->odesc;
-        if (od->state() == CDSelected) {
+        if (od->state() == CDobjSelected) {
             show_unselected(sq_sdesc, od);
             remove_object(od);
             return (true);
@@ -2173,7 +2174,7 @@ selqueue_t::compute_bb(BBox *nBB, bool all) const
         }
         else {
             for (sqel_t *el = sq_list; el; el = el->next) {
-                if (el->odesc->state() == CDSelected) {
+                if (el->odesc->state() == CDobjSelected) {
                     nBB->add(&el->odesc->oBB());
                     ret = true;
                 }
@@ -2192,7 +2193,7 @@ selqueue_t::count_queue(unsigned int *ns, unsigned int *nu) const
 {
     unsigned int s = 0, u = 0;
     for (sqel_t *el = sq_list; el; el = el->next) {
-        if (el->odesc->state() == CDSelected)
+        if (el->odesc->state() == CDobjSelected)
             s++;
         else
             u++;
@@ -2214,8 +2215,8 @@ selqueue_t::set_show_selected(const char *types, bool on)
         DSPmainDraw(SetColor(DSP()->SelectPixel()))
         for (sqel_t *c = sq_list; c; c = c->next) {
             if (match_type(types, c->odesc) &&
-                    c->odesc->state() == CDVanilla) {
-                c->odesc->set_state(CDSelected);
+                    c->odesc->state() == CDobjVanilla) {
+                c->odesc->set_state(CDobjSelected);
                 WindowDesc *wdesc;
                 WDgen wgen(WDgen::MAIN, WDgen::CDDB);
                 while ((wdesc = wgen.next()) != 0) {
@@ -2231,8 +2232,8 @@ selqueue_t::set_show_selected(const char *types, bool on)
         int cnt = 0;
         for (sqel_t *c = sq_list; c; c = c->next) {
             if (match_type(types, c->odesc) &&
-                    c->odesc->state() == CDSelected) {
-                c->odesc->set_state(CDVanilla);
+                    c->odesc->state() == CDobjSelected) {
+                c->odesc->set_state(CDobjVanilla);
                 BB.add(&c->odesc->oBB());
                 cnt++;
             }
@@ -2250,7 +2251,8 @@ selqueue_t::set_show_selected(const char *types, bool on)
 
     int cnt = 0;
     for (sqel_t *c = sq_list; c; c = c->next) {
-        if (match_type(types, c->odesc) && c->odesc->state() == CDSelected) {
+        if (match_type(types, c->odesc) &&
+                c->odesc->state() == CDobjSelected) {
             if (cnt++ > DEL_AGGREG)
                 break;
         }
@@ -2259,8 +2261,8 @@ selqueue_t::set_show_selected(const char *types, bool on)
         BBox BB(CDnullBB);
         for (sqel_t *c = sq_list; c; c = c->next) {
             if (match_type(types, c->odesc) &&
-                    c->odesc->state() == CDSelected) {
-                c->odesc->set_state(CDVanilla);
+                    c->odesc->state() == CDobjSelected) {
+                c->odesc->set_state(CDobjVanilla);
                 BB.add(&c->odesc->oBB());
             }
         }
@@ -2274,8 +2276,8 @@ selqueue_t::set_show_selected(const char *types, bool on)
     else {
         for (sqel_t *c = sq_list; c; c = c->next) {
             if (match_type(types, c->odesc) &&
-                    c->odesc->state() == CDSelected) {
-                c->odesc->set_state(CDVanilla);
+                    c->odesc->state() == CDobjSelected) {
+                c->odesc->set_state(CDobjVanilla);
                 WindowDesc *wdesc;
                 WDgen wgen(WDgen::MAIN, WDgen::CDDB);
                 while ((wdesc = wgen.next()) != 0) {
@@ -2301,7 +2303,7 @@ selqueue_t::show(WindowDesc *wdesc) const
             DSP()->RedisplayAfterInterrupt();
             break;
         }
-        if (el->odesc->state() == CDSelected) {
+        if (el->odesc->state() == CDobjSelected) {
             wdesc->DisplaySelected(el->odesc);
 
             // Display stretch handles in pcell instances.
@@ -2388,7 +2390,7 @@ selqueue_t::has_types(const char *types, bool all) const
 {
     for (sqel_t *el = sq_list; el; el = el->next) {
         if (match_type(types, el->odesc) &&
-                (all || el->odesc->state() == CDSelected))
+                (all || el->odesc->state() == CDobjSelected))
             return (true);
     }
     return (false);
@@ -2413,7 +2415,7 @@ selqueue_t::first_object(const char *types, bool all, bool array_only) const
 {
     for (sqel_t *el = sq_list; el; el = el->next) {
         if (match_type(types, el->odesc) &&
-                (all || el->odesc->state() == CDSelected)) {
+                (all || el->odesc->state() == CDobjSelected)) {
             if (el->odesc->type() == CDINSTANCE) {
                 CDc *cdesc = OCALL(el->odesc);
                 CDs *sdesc = cdesc->masterCell();
@@ -2440,7 +2442,7 @@ selqueue_t::purge_deleted()
     sqel_t *en;
     for (sqel_t *el = sq_list; el; el = en) {
         en = el->next;
-        if (el->odesc->state() == CDDeleted)
+        if (el->odesc->state() == CDobjDeleted)
             remove_object(el->odesc);
     }
 }
@@ -2462,7 +2464,7 @@ selqueue_t::add_labels()
         en = el->next;
         if (el->odesc->type() == CDINSTANCE) {
             CDo *od = el->odesc;
-            int state = od->state();
+            CDobjState state = od->state();
             remove_object(od);
             od->set_state(state);
             list = new CDol(od, list);
@@ -2475,7 +2477,7 @@ selqueue_t::add_labels()
                     continue;
             }
             CDo *od = el->odesc;
-            int state = od->state();
+            CDobjState state = od->state();
             remove_object(od);
             od->set_state(state);
             list = new CDol(od, list);
@@ -2485,7 +2487,7 @@ selqueue_t::add_labels()
             if (pl && pl->devref() && (pl->devref()->type() == CDINSTANCE ||
                     pl->devref()->type() == CDWIRE)) {
                 CDo *od = el->odesc;
-                int state = od->state();
+                CDobjState state = od->state();
                 remove_object(od);
                 od->set_state(state);
                 list = new CDol(od, list);
@@ -2496,7 +2498,7 @@ selqueue_t::add_labels()
         return;
 
     for (CDol *c = list; c; c = c->next) {
-        if (c->odesc->state() != CDSelected)
+        if (c->odesc->state() != CDobjSelected)
             continue;
         if (c->odesc->type() == CDLABEL) {
             CDp_lref *pl = (CDp_lref*)c->odesc->prpty(P_LABRF);
@@ -2514,7 +2516,7 @@ selqueue_t::add_labels()
                 for ( ; pm; pm = pm->next()) {
                     CDc *other;
                     if (pm->match((CDc*)c->odesc, &other) && other &&
-                            other->state() == CDSelected) {
+                            other->state() == CDobjSelected) {
                         CDla *olabel = pm->bound();
                         if (olabel)
                             insert_object(olabel, SQinsShow);
@@ -2532,7 +2534,7 @@ selqueue_t::add_labels()
     // Put the queue back in order.
     for (CDol *ol = list; ol; ol = ol->next) {
         // Keep the present state.
-        int st = ol->odesc->state();
+        CDobjState st = ol->odesc->state();
         insert_object(ol->odesc, SQinsNoShow);
         ol->odesc->set_state(st);
     }
@@ -2570,7 +2572,7 @@ selqueue_t::purge_labels(bool all)
         en = el->next;
         if (el->odesc->type() == CDINSTANCE) {
             CDo *od = el->odesc;
-            int state = od->state();
+            CDobjState state = od->state();
             remove_object(od);
             od->set_state(state);
             list = new CDol(od, list);
@@ -2583,7 +2585,7 @@ selqueue_t::purge_labels(bool all)
                     continue;
             }
             CDo *od = el->odesc;
-            int state = od->state();
+            CDobjState state = od->state();
             remove_object(od);
             od->set_state(state);
             list = new CDol(od, list);
@@ -2618,7 +2620,7 @@ selqueue_t::purge_labels(bool all)
     // Put the queue back in order.
     for (CDol *ol = list; ol; ol = ol->next) {
         // Keep the present state.
-        int st = ol->odesc->state();
+        CDobjState st = ol->odesc->state();
         insert_object(ol->odesc, SQinsNoShow);
         ol->odesc->set_state(st);
     }
@@ -2729,7 +2731,7 @@ selqueue_t::check()
     sqel_t *en;
     for (sqel_t *el = sq_list; el; el = en) {
         en = el->next;
-        if (el->odesc->state() != CDSelected) {
+        if (el->odesc->state() != CDobjSelected) {
             remove_object(el->odesc);
             unst++;
         }
@@ -2746,16 +2748,16 @@ selqueue_t::check()
 
 
 // Static function.
-// Show the object as selected.  Object must be CDVanilla, and if so
-// it is set to CDSelected and displayed.  The object need not be in
+// Show the object as selected.  Object must be CDobjVanilla, and if so
+// it is set to CDobjSelected and displayed.  The object need not be in
 // any list.
 //
 void
 selqueue_t::show_selected(const CDs *sd, CDo *cd)
 {
-    if (!sd || !cd || cd->state() != CDVanilla)
+    if (!sd || !cd || cd->state() != CDobjVanilla)
         return;
-    cd->set_state(CDSelected);
+    cd->set_state(CDobjSelected);
     if (DSP()->NoRedisplay())
         return;
     DSPmainDraw(SetColor(DSP()->SelectPixel()))
@@ -2769,16 +2771,16 @@ selqueue_t::show_selected(const CDs *sd, CDo *cd)
 
 
 // Static function.
-// Show object as unselected.  Object must be CDSelected, and if so it
-// is set to CDVanilla and shown as unselected.  The object need not be
+// Show object as unselected.  Object must be CDobjSelected, and if so it
+// is set to CDobjVanilla and shown as unselected.  The object need not be
 // in any list.
 //
 void
 selqueue_t::show_unselected(const CDs *sd, CDo *od)
 {
-    if (!sd || !od || od->state() != CDSelected)
+    if (!sd || !od || od->state() != CDobjSelected)
         return;
-    od->set_state(CDVanilla);
+    od->set_state(CDobjVanilla);
     if (DSP()->NoRedisplay())
         return;
     if (!DSP()->NoPixmapStore()) {

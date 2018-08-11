@@ -529,7 +529,7 @@ WireState::b1up()
             for (CDol *sl = slist; sl; sl = sl->next) {
                 if (sl->odesc->type() != CDWIRE)
                     continue;
-                if (sl->odesc->state() == CDSelected)
+                if (sl->odesc->state() == CDobjSelected)
                     Selections.removeObject(CurCell(), sl->odesc);
                 else
                     Selections.insertObject(CurCell(), sl->odesc);
@@ -1021,7 +1021,7 @@ WireState::copy_objlist()
 {
     UndoList->list = Ochg::copy(Ulist()->CurOp().obj_list());
     for (Ochg *oc1 = UndoList->list; oc1; oc1 = oc1->next_chg()) {
-        if (oc1->oadd() && oc1->oadd()->state() == CDDeleted) {
+        if (oc1->oadd() && oc1->oadd()->state() == CDobjDeleted) {
             for (Ochg *oc2 = UndoList->list; oc2; oc2 = oc2->next_chg()) {
                 if (oc2->odel() == oc1->oadd()) {
                     oc1->set_oadd(0);
@@ -1138,7 +1138,7 @@ WireState::delete_vertices()
             Errs()->add_error("mergeWire failed");
             Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
         }
-        if (neww->state() != CDDeleted)
+        if (neww->state() != CDobjDeleted)
             Selections.replaceObject(cursd, wdesc, neww);
         ED()->purgeObjectList(wdesc);
     }
@@ -1189,7 +1189,7 @@ WireState::add_vertex()
     CDw *wrdesc = 0;
 
     for (CDol *s = slist; s; s = s->next) {
-        if (s->odesc->state() == CDSelected &&
+        if (s->odesc->state() == CDobjSelected &&
                 Selections.inQueue(cursd, s->odesc)) {
             wrdesc = OWIRE(s->odesc);
             break;
@@ -1255,7 +1255,7 @@ WireState::add_vertex()
     }
 
     mark_vertices(ERASE);
-    if (neww->state() != CDDeleted)
+    if (neww->state() != CDobjDeleted)
         Selections.replaceObject(cursd, wrdesc, neww);
 
     Ulist()->CommitChanges(true);
@@ -1308,7 +1308,7 @@ WireState::allocate_wire(int width, WireStyle style)
         return (false);
     }
     CD()->SetNotStrict(false);
-    neww->set_state(CDIncomplete);
+    neww->set_state(CDobjIncomplete);
     RdBB = neww->oBB();
     RdBB.bloat(width);
 
@@ -1370,7 +1370,7 @@ cEdit::execWireStyle()
     while ((wd = (CDw*)sg.next()) != 0) {
         if (!wd->is_normal())
             continue;
-        if (wd->state() == CDSelected && wd->ldesc()->isSelectable()) {
+        if (wd->state() == CDobjSelected && wd->ldesc()->isSelectable()) {
             found = true;
             break;
         }
@@ -1383,7 +1383,7 @@ cEdit::execWireStyle()
     for ( ; wd; wd = (CDw*)sg.next()) {
         if (!wd->is_normal())
             continue;
-        if (wd->state() == CDSelected && wd->ldesc()->isSelectable()) {
+        if (wd->state() == CDobjSelected && wd->ldesc()->isSelectable()) {
             // Change selected wires to new end style.
             int num = wd->numpts();
             Wire wire(num, Point::dup(wd->points(), num), wd->attributes());
@@ -1453,7 +1453,7 @@ cEdit::execWireWidth()
         while ((wd = (CDw*)sg.next()) != 0) {
             if (!wd->is_normal())
                 continue;
-            if (wd->state() == CDSelected && wd->ldesc()->isSelectable()) {
+            if (wd->state() == CDobjSelected && wd->ldesc()->isSelectable()) {
                 found = true;
                 break;
             }
@@ -1489,7 +1489,8 @@ cEdit::execWireWidth()
             for ( ; wd; wd = (CDw*)sg.next()) {
                 if (!wd->is_normal())
                     continue;
-                if (wd->state() == CDSelected && wd->ldesc()->isSelectable()) {
+                if (wd->state() == CDobjSelected &&
+                        wd->ldesc()->isSelectable()) {
                     int num = wd->numpts();
                     Wire wire(num, Point::dup(wd->points(), num),
                         wd->attributes());
@@ -1508,7 +1509,7 @@ cEdit::execWireWidth()
                         Log()->ErrorLog(mh::ObjectCreation,
                             Errs()->get_error());
                     }
-                    if (neww->state() != CDDeleted)
+                    if (neww->state() != CDobjDeleted)
                         sg.replace(neww);
                 }
             }

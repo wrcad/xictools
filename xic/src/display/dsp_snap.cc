@@ -445,11 +445,11 @@ DSPsnapper::check_snap_edges(WindowDesc *wdesc, int delta)
                     check_box(odesc->oBB(), BB);
                 else if (odesc->type() == CDPOLYGON) {
                     const Poly po(((const CDpo*)odesc)->po_poly());
-                    check_poly(po, BB, (odesc->state() == CDIncomplete));
+                    check_poly(po, BB, (odesc->state() == CDobjIncomplete));
                 }
                 else if (odesc->type() == CDWIRE) {
                     const Wire w(((const CDw*)odesc)->w_wire());
-                    check_wire(w, BB, (odesc->state() == CDIncomplete));
+                    check_wire(w, BB, (odesc->state() == CDobjIncomplete));
                 }
                 delete odesc;
                 if (sn_x_snapped && sn_y_snapped)

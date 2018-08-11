@@ -737,7 +737,7 @@ WindowDesc::FindContact(int x, int y, int *cx, int *cy, int *cflags, int delta,
     CDc *cdesc;
     while ((cdesc = (CDc*)gdesc.next()) != 0) {
         if (!cdesc->is_normal() || cdesc == oskip ||
-                (skipSel && cdesc->state() == CDSelected))
+                (skipSel && cdesc->state() == CDobjSelected))
             continue;
         CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
         for ( ; pn; pn = pn->next()) {
@@ -767,7 +767,7 @@ WindowDesc::FindContact(int x, int y, int *cx, int *cy, int *cflags, int delta,
             if (wd->type() != CDWIRE)
                 continue;
             if (!wd->is_normal() || wd == oskip ||
-                    (skipSel && wd->state() == CDSelected))
+                    (skipSel && wd->state() == CDobjSelected))
                 continue;
             const Point *pts = wd->points();
             int num = wd->numpts();
@@ -857,7 +857,7 @@ WindowDesc::FindBterm(int x, int y, int *cx, int *cy, int *cflags, int delta,
     CDc *cdesc;
     while ((cdesc = (CDc*)gdesc.next()) != 0) {
         if (!cdesc->is_normal() || cdesc == oskip ||
-                (skipSel && cdesc->state() == CDSelected))
+                (skipSel && cdesc->state() == CDobjSelected))
             continue;
         CDp_bcnode *pn = (CDp_bcnode*)cdesc->prpty(P_BNODE);
         for ( ; pn; pn = pn->next()) {
@@ -887,7 +887,7 @@ WindowDesc::FindBterm(int x, int y, int *cx, int *cy, int *cflags, int delta,
             if (wd->type() != CDWIRE)
                 continue;
             if (!wd->is_normal() || wd == oskip ||
-                    (skipSel && wd->state() == CDSelected))
+                    (skipSel && wd->state() == CDobjSelected))
                 continue;
             const Point *pts = wd->points();
             int num = wd->numpts();
@@ -1027,7 +1027,7 @@ box:
     }
 poly:
     {
-        if (odesc->state() == CDIncomplete)
+        if (odesc->state() == CDobjIncomplete)
             return;
         if (w_attributes.showing_polys()) {
             const Poly po(((const CDpo*)odesc)->po_poly());
@@ -1038,7 +1038,7 @@ poly:
     }
 wire:
     {
-        if (odesc->state() == CDIncomplete)
+        if (odesc->state() == CDobjIncomplete)
             return;
         if (w_attributes.showing_wires()) {
             const Wire w(((const CDw*)odesc)->w_wire());

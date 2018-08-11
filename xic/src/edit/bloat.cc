@@ -159,7 +159,7 @@ cEdit::bloatQueue(int width, int mode)
     while ((od = sg.next()) != 0) {
         if (!od->is_normal())
             continue;
-        if (od->state() == CDSelected && od->ldesc()->isSelectable())
+        if (od->state() == CDobjSelected && od->ldesc()->isSelectable())
             ocnt++;
     }
     if (!ocnt) {
@@ -181,7 +181,7 @@ cEdit::bloatQueue(int width, int mode)
     while ((od = sg.next()) != 0) {
         if (!od->is_normal())
             continue;
-        if (od->state() == CDSelected && od->ldesc()->isSelectable()) {
+        if (od->state() == CDobjSelected && od->ldesc()->isSelectable()) {
             if (!(cnt % 50))
                 PL()->ShowPromptV("Working... %6d/%d", cnt, ocnt);
             cnt++;
@@ -283,7 +283,7 @@ cEdit::manhattanizeQueue(int minside, int mode)
     while ((od = sg.next()) != 0) {
         if (!od->is_normal())
             continue;
-        if (od->state() == CDSelected && od->ldesc()->isSelectable()) {
+        if (od->state() == CDobjSelected && od->ldesc()->isSelectable()) {
             if (od->type() == CDPOLYGON) {
                 if (((const CDpo*)od)->po_is_manhattan())
                     continue;
