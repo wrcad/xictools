@@ -503,6 +503,10 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
 #ifdef NEWNMP
                         lstr.add(value);
                         lstr.add(" macro");
+
+                        CDp *px = new CDp(lstr.string(), P_NAME);
+                        px->set_next_prp(pvrt);
+                        pvrt = px;
 #else
                         lstr.add(value);
                         lstr.add(" 0");

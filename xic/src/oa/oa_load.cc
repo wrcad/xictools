@@ -71,7 +71,6 @@
 #include "oa_errlog.h"
 #include "miscutil/texttf.h"
 
-#define NEWPRP
 
 // Schematics from Virtuoso are very different from Xic.  For
 // starters, we need to scale all coordintes by 1000 when reading
@@ -139,13 +138,9 @@ private:
         const oaScalarName&, const oaViewType*);
     void getSuperMasterParams(oaDesign*);
     oaDesign *handleSuperMaster(oaDesign*, char**);
-#ifdef NEWPRP
     OItype loadPhysicalDesign(const oaDesign*, const char*, CDs**, oaInt4);
     OItype loadElectricalDesign(const oaDesign*, const oaDesign*,
         const char*, CDs**, oaInt4);
-#else
-    OItype loadDesign(const oaDesign*, const char*, CDs**, oaInt4);
-#endif
     OItype loadVia(const oaViaHeader*, oaUInt4);
     char *getViaName(const oaViaHeader*);
     bool writeOaStdViaCutStruct(oaStdViaHeader*, bool*);
@@ -155,23 +150,15 @@ private:
     CDs *newCell(const char*, ncType*, bool = false);
     CDcellName checkSubMaster(CDcellName, CDp*);
 
-#ifdef NEWPRP
     bool readPhysicalDesign(const oaDesign*, const oaString&, CDs**);
     bool readElectricalDesign(const oaDesign*, const oaDesign*,
         const oaString&, CDs**);
-#else
-    bool readOaDesign(const oaDesign*, const oaString&, CDs**);
-#endif
     bool readInstances(const oaBlock*, CDs*);
     bool readVias(const oaBlock*, CDs*);
     bool readGeometry(const oaBlock*, CDs*);
     bool readTerms(const oaBlock*, CDs*sdesc, bool);
-#ifdef NEWPRP
     bool readPhysicalProperties(const oaDesign*, CDs*);
     bool readElectricalProperties(const oaDesign*, const oaDesign*, CDs*);
-#else
-    bool readProperties(const oaDesign*, CDs*);
-#endif
     bool readOaLPPHeader(oaLPPHeader*, CDs*);
     bool readOaDot(oaDot*, CDs*, CDl*);
     bool readOaEllipse(oaEllipse*, CDs*, CDl*);
@@ -926,12 +913,8 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
         if (design) {
             superMasterStatus = 1;
             if (!design->isSuperMaster()) {
-#ifdef NEWPRP
                 oiret = loadPhysicalDesign(design, alt_cellname, &sd_phys,
                     depth);
-#else
-                oiret = loadDesign(design, alt_cellname, &sd_phys, depth);
-#endif
                 if (oiret == OIok && sd_phys) {
                     if (sd_phys->prpty(XICP_PC_SCRIPT) &&
                             sd_phys->prpty(XICP_PC_PARAMS)) {
@@ -955,13 +938,8 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                         if (!in_pc_params) {
                             // Can't evaluate super-master, so treat
                             // it like a normal cell.
-#ifdef NEWPRP
                             oiret = loadPhysicalDesign(design, alt_cellname,
                                 &sd_phys, depth);
-#else
-                            oiret = loadDesign(design, alt_cellname, &sd_phys,
-                                depth);
-#endif
                         }
                         else {
                             // clean up and return ok.
@@ -977,12 +955,8 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
 
                         char *cname;
                         design = handleSuperMaster(design, &cname);
-#ifdef NEWPRP
                         oiret = loadPhysicalDesign(design, cname, &sd_phys,
                             depth);
-#else
-                        oiret = loadDesign(design, cname, &sd_phys, depth);
-#endif
 
                         // Save the sub-master name, we need this at
                         // the top level when opening pcells for
@@ -1026,7 +1000,6 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
             schematicVT);
         if (design) {
             if (!design->isSuperMaster()) {
-#ifdef NEWPRP
                 oaDesign *symdesign = 0;
                 if (schematicSymbolView) {
                     oaScalarName sViewName;
@@ -1038,9 +1011,6 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                     &sd_elec, depth);
                 if (symdesign)
                     symdesign->close();
-#else
-                oiret = loadDesign(design, alt_cellname, &sd_elec, depth);
-#endif
             }
             else if (in_sub_level == 0) {
                 // The schematic cell must be a regular cell.
@@ -1089,12 +1059,8 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                 // warning/error messages, and "[@cellName]" labels.
                 //
                 sd_symb->setName(CD()->CellNameTableAdd(cellname));
-#ifdef NEWPRP
                 oiret = loadElectricalDesign(design, 0, alt_cellname,
                     &sd_symb, depth);
-#else
-                oiret = loadDesign(design, alt_cellname, &sd_symb, depth);
-#endif
                 sd_symb->setName(0);
             }
             else if (in_sub_level == 0) {
@@ -1617,7 +1583,6 @@ oa_in::handleSuperMaster(oaDesign *design, char **pcname)
     return (0);
 }
 
-#ifdef NEWPRP
 
 OItype
 oa_in::loadPhysicalDesign(const oaDesign *design, const char *cname, CDs **sdp,
@@ -1687,6 +1652,7 @@ oa_in::loadPhysicalDesign(const oaDesign *design, const char *cname, CDs **sdp,
     return (oiret);
 }
 
+
 OItype
 oa_in::loadElectricalDesign(const oaDesign *design, const oaDesign *symdesign,
     const char *cname, CDs **sdp, oaInt4 depth)
@@ -1754,103 +1720,6 @@ oa_in::loadElectricalDesign(const oaDesign *design, const oaDesign *symdesign,
     }
     return (oiret);
 }
-
-#else
-
-OItype
-oa_in::loadDesign(const oaDesign *design, const char *cname, CDs **sdp,
-    oaInt4 depth)
-{
-    if (depth < 0)
-        return (OIok);
-    if (!design)
-        return (OIerror);
-
-    // We never open a super-master directly.  We get here with a
-    // super-master from loadMaster, when the master is not a sub
-    // master, but loadCellRec opens all views and another view may be
-    // a pcell and we skip processing that design here.
-    if (design->isSuperMaster())
-        return (OIok);   
-
-    if (OAerrLog.debug_load()) {
-        sLstr lstr;
-        lstr.add("Loading ");
-        lcv(design, lstr);
-        OAerrLog.add_log(OAlogLoad, "%s\n", lstr.string());
-    }
-    oaString cellname;
-    if (cname && *cname)
-        cellname = cname;
-    else
-        design->getCellName(in_ns, cellname);
-
-    // Read in the masters first, these are needed for finding
-    // terminal locations.
-
-    OItype oiret = OIok;
-    if (design->getViewType() == oaViewType::get(oacMaskLayout)) {
-        if (depth > 0) {
-            // Translate instance masters.
-            // The blk will be null if a PCell can't be evaluated.
-            oaBlock *blk = design->getTopBlock();
-            if (!blk)
-                return (OIerror);
-            oaIter<oaInstHeader> iter(blk->getInstHeaders());
-            while (oaInstHeader *iHdr = iter.getNext()) {
-                // Try to load all masters, but return an error if one
-                // fails.
-
-                OItype ot = loadMaster(iHdr, depth - 1);
-                if (ot == OIaborted)
-                    return (OIaborted);
-                if (ot != OIok && oiret != OIok)
-                    oiret = OIerror;
-            }
-            oaIter<oaViaHeader> viter(blk->getViaHeaders());
-            while (oaViaHeader *vHdr = viter.getNext()) {
-                OItype ot = loadVia(vHdr, depth - 1);
-                if (ot == OIaborted)
-                    return (OIaborted);
-                if (ot != OIok) {
-                    oiret = ot;
-                    break;
-                }
-            }
-        }
-        if (!readOaDesign(design, cellname, sdp))
-            return (OIerror);
-    }
-    else if (design->getViewType() == oaViewType::get(oacSchematic)) {
-        if (depth > 0) {
-            // Translate instance masters.
-            oaBlock *blk = design->getTopBlock();
-            if (!blk)
-                return (OIok);  // Just an empty cell?
-            oaIter<oaInstHeader> iter(blk->getInstHeaders());
-            while (oaInstHeader *iHdr = iter.getNext()) {
-                // Try to load all masters, but return an error if one
-                // fails.
-
-                OItype ot = loadMaster(iHdr, depth - 1);
-                if (ot == OIaborted)
-                    return (OIaborted);
-                if (ot != OIok && oiret != OIok)
-                    oiret = OIerror;
-            }
-        }
-        if (!readOaDesign(design, cellname, sdp))
-            return (OIerror);
-    }
-    else if (design->getViewType() == oaViewType::get(oacSchematicSymbol)) {
-        if (!readOaDesign(design, cellname, sdp))
-            return (OIerror);
-        // Xic symbols can't have instance placements.
-    }
-    return (oiret);
-}
-
-#endif
 
 
 namespace {
@@ -1975,11 +1844,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
         }
 
         CDs *sd = 0;
-#ifdef NEWPRP
         OItype oiret = loadPhysicalDesign(design, Tstring(cname), &sd, depth);
-#else
-        OItype oiret = loadDesign(design, Tstring(cname), &sd, depth);
-#endif
 
         design->close();
         lib->releaseAccess();
@@ -2042,11 +1907,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
             }
 
             CDs *sd = 0;
-#ifdef NEWPRP
             bool ret = readPhysicalDesign(design, viaCellname, &sd);
-#else
-            bool ret = readOaDesign(design, viaCellname, &sd);
-#endif
             if (ret && sd)
                 add_std_via_prop(stdViaHeader, sd);
 
@@ -2213,16 +2074,12 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
     }
 
     CDs *sd = 0;
-#ifdef NEWPRP
     // This is a sub-master and must be physical?
     OItype oiret;
     if (in_mode == Physical)
         oiret = loadPhysicalDesign(design, Tstring(cname), &sd, depth);
     else
         oiret = loadElectricalDesign(design, 0, Tstring(cname), &sd, depth);
-#else
-    OItype oiret = loadDesign(design, Tstring(cname), &sd, depth);
-#endif
 
     design->close();
     lib->releaseAccess();
@@ -2396,8 +2253,6 @@ oa_in::checkSubMaster(CDcellName cname, CDp *plist)
 }
 
 
-#ifdef NEWPRP
-
 bool 
 oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
     CDs **sdp)
@@ -2498,11 +2353,9 @@ oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
     if (!readGeometry(blk, sdesc))
         return (false);
 
-    if (!readTerms(blk, sdesc, false))
-        return (false);
-
     return (true);
 }
+
 
 bool 
 oa_in::readElectricalDesign(const oaDesign *design, const oaDesign *symdesign,
@@ -2611,136 +2464,6 @@ oa_in::readElectricalDesign(const oaDesign *design, const oaDesign *symdesign,
     return (true);
 }
 
-#else
-
-
-// Read the OA data into an Xic cell, which is given in/returned in
-// sdp.  If sdp is not null, it points to an existing cell to use, or
-// 0.  If no cell is provided, one will be created, and returned in
-// sdp if not null.
-//
-bool 
-oa_in::readOaDesign(const oaDesign *design, const oaString &xic_cname,
-    CDs **sdp)
-{
-    if (!design) {
-        Errs()->add_error("Null design handle encountered.");
-        return (false);
-    }
-
-    oaString libname;
-    design->getLibName(in_ns, libname);
-    oaBlock *blk = design->getTopBlock();
-    if (!blk) {
-        oaString cellname;
-        oaString viewname;
-        design->getCellName(in_ns, cellname);
-        design->getViewName(in_ns, viewname);
-
-        Errs()->add_error(
-            "No top block in design library=%s cell=%s view=%s.",
-            (const char*)libname, (const char*)cellname,
-            (const char*)viewname);
-        return (false);
-    }
-
-    bool symbolic =
-        design->getViewType() == oaViewType::get(oacSchematicSymbol);
-
-    // Open design in the database.
-    ncType ncret = ncOK;
-    CDs *sdesc = sdp ? *sdp : 0;
-    if (!sdesc) {
-        if (symbolic)
-            sdesc = new CDs(0, Electrical);
-        else
-            sdesc = newCell(xic_cname, &ncret, design->isSubMaster());
-    }
-
-    if (ncret == ncError) {
-        Errs()->add_error("Failed to open/reopen %s cell %s.",
-            DisplayModeNameLC(in_mode), (const char*)xic_cname);
-        return (false);
-    }
-    if (sdp)
-        *sdp = sdesc;
-
-    // Set a flag indicating that a cell has been read, of the
-    // corresponding type.
-    //
-    long f = 0;
-    if (in_mode == Physical)
-         f = OAL_READP;
-    else if (in_mode == Electrical) {
-        if (symbolic)
-            f = OAL_READS;
-        else
-            f = OAL_READE;
-    }
-    NameTab.updateCname(xic_cname, f);
-
-    if (ncret == ncSkip)
-        return (true);
-
-    if (design->isSubMaster()) {
-        // Note that sub-masters aren't OA cells.  Set the properties
-        // and flags for Xic.
-
-        sdesc->prptyRemove(XICP_PC);
-        sdesc->prptyRemove(XICP_PC_PARAMS);
-        oaString cellname;
-        oaString viewname;
-        design->getCellName(in_ns, cellname);
-        design->getViewName(in_ns, viewname);
-        char *dbname = PCellDesc::mk_dbname(libname, cellname, viewname);
-        sdesc->prptyAdd(XICP_PC, dbname);
-        delete [] dbname;
-
-        oaParamArray parray;
-        design->getParams(parray, false);  // Non-default params only.
-        PCellParam *pm = cOAprop::getPcParameters(parray, 0);
-        if (pm) {
-            char *pmstr = pm->string(true);
-            sdesc->prptyAdd(XICP_PC_PARAMS, pmstr);
-            delete [] pmstr;
-            PCellParam::destroy(pm);
-        }
-        sdesc->setPCell(true, false, true);
-    }
-    else {
-        sdesc->setFileName(libname);
-        sdesc->setFileType(Foa);
-    }
-
-    // Read properties.  If symbolic, properties will pass through to
-    // the schematic view.
-    //
-    if (!readProperties(design, sdesc))
-        return (false);
-
-    // Read Instances.  This must be done before reading text labels
-    // for bound labels to work.  If symbolic, we can't handle
-    // instances, so instances read here will cause an error.
-    //
-    if (!readInstances(blk, sdesc))
-        return (false);
-
-    if (in_mode == Physical) {
-        if (!readVias(blk, sdesc))
-            return (false);
-    }
-
-    // Read shapes.
-    if (!readGeometry(blk, sdesc))
-        return (false);
-
-    if (!readTerms(blk, sdesc, symbolic))
-        return (false);
-
-    return (true);
-}
-
-#endif
 
 bool
 oa_in::readInstances(const oaBlock *blk, CDs *sdesc)
@@ -2856,6 +2579,8 @@ oa_in::readTerms(const oaBlock *blk, CDs *sdesc, bool symbolic)
 {
     if (in_from_xic)
         return (true);
+    if (!sdesc->isElectrical())
+        return (true);
 
     sLstr lstr;
     oaString cname, vname;
@@ -2871,7 +2596,6 @@ oa_in::readTerms(const oaBlock *blk, CDs *sdesc, bool symbolic)
     return (ret);
 }
 
-#ifdef NEWPRP
 
 bool
 oa_in::readPhysicalProperties(const oaDesign *design, CDs *sdesc)
@@ -2905,6 +2629,7 @@ oa_in::readPhysicalProperties(const oaDesign *design, CDs *sdesc)
     return (ret);
 }
 
+
 bool
 oa_in::readElectricalProperties(const oaDesign *design,
     const oaDesign *symdesign, CDs *sdesc)
@@ -2934,38 +2659,132 @@ oa_in::readElectricalProperties(const oaDesign *design,
                 in_warnings = s0;
             }
         }
-    }
-    catch (oaCompatibilityError &ex) {
-        cOA::handleFBCError(ex);
-        ret = false;
-    }
-    catch (oaException &excp) {
-        Errs()->add_error((const char*)excp.getMsg());
-        ret = false;
-    }
-    if (!ret)
-        Errs()->add_error("Failed reading cell (design) properties.");
-    return (ret);
-}
 
+        // Look up the CDF info for this device (if any).
+        oaLib *lib = design->getLib();
+        oaScalarName cellName;
+        design->getCellName(cellName);
+        oaCell *cell = oaCell::find(lib, cellName);
+        const cOAelecInfo *cdf = cOAprop::getCDFinfo(cell, in_def_symbol,
+            in_def_dev_prop);
+
+        // First set a P_NAME property if needed.
+#ifdef NEWNMP
+        CDp_sname *pname = (CDp_sname*)sdesc->prpty(P_NAME);
 #else
+        CDp_name *pname = (CDp_name*)sdesc->prpty(P_NAME);
+#endif
+        if (!pname) {
+            // The device lacks an instNamePrefix property.
 
-bool
-oa_in::readProperties(const oaDesign *design, CDs *sdesc)
-{
-    bool ret = true;
-    try {
-        in_from_xic = false;
-        CDp *p0 = readProperties(design);
-        if (p0) {
-            stringlist *s0 = sdesc->prptyApplyList(0, &p0);
-            CDp::destroy(p0);
-            if (s0) {
-                stringlist *s = s0;
-                while (s->next)
-                    s = s->next;
-                s->next = in_warnings;
-                in_warnings = s0;
+            // This could be a "gnd" device, from Xic.  If so, it will
+            // have exactly one node property and no subcells.
+            CDp_node *pnd = (CDp_node*)sdesc->prpty(P_NODE);
+            if (pnd && !pnd->next() && !sdesc->masters()) {
+                // Is a gnd device, nothing more to do.
+                return (true);
+            }
+            if (cdf && cdf->prefix()) {
+                const char *pfx = cdf->prefix();
+#ifdef NEWNMP
+                pname = new CDp_sname;
+                pname->set_name_string(pfx);
+#else
+                pname = new CDp_name;
+                pname->set_name_string(pfx);
+                if (*pfx == 'X' || *pfx == 'x')
+                    pname->set_subckt(true);
+#endif
+                pname->set_next_prp(sdesc->prptyList());
+                sdesc->setPrptyList(pname);
+            }
+            else {
+                // Assume a subcircuit here.
+#ifdef NEWNMP
+                pname = new CDp_sname;
+                pname->set_name_string("X");
+#else
+                pname = new CDp_name;
+                pname->set_name_string("X");
+                pname->set_subckt(true);
+#endif
+                pname->set_next_prp(sdesc->prptyList());
+                sdesc->setPrptyList(pname);
+            }
+        }
+        if (!pname->name_string() || pname->key() == P_NAME_NULL) {
+            // A "null" device, no nodes.
+            return (true);
+        }
+        int key = pname->key();
+
+        // If the "subcircuit" has exactly one pin, and no instances,
+        // assume that it is a terminal device.  It is probably one of
+        // the analogLib terminals, which on import will behave like
+        // an Xic terminal.  Note that the "gnd" device from analogLib
+        // is actually a terminal connected to "gnd!", and NOT an Xic
+        // gnd device.
+
+        if (key == 'x' || key == 'X') {
+            int numpins = 0;
+            oaBlock *block = design->getTopBlock();
+            oaIter<oaPin> pin_iter(block->getPins());
+            while (pin_iter.getNext() != 0)
+                numpins++;
+            if (numpins == 1) {
+                oaScalarName cellName;
+                design->getCellName(cellName);
+                oaString cn;
+                cellName.get(cn);
+
+                // Here's a hack, make the "noConn" device not
+                // electrically active.
+
+                bool nulldev = (cn == "noConn");
+
+                // If there is no schematic view, the cell is a
+                // terminal.  Otherwise, the schematic would have
+                // been checked already as below (schematic view
+                // is read first).
+
+                oaScalarName libName;
+                oaScalarName viewName(oaNativeNS(), "schematic");
+                design->getLibName(libName);
+                if (!oaDesign::exists(libName, cellName, viewName)) {
+#ifdef NEWNMP
+#else
+                    pname->set_subckt(false);
+#endif
+                    if (nulldev) {
+                        pname->set_name_string(P_NAME_NULL_STR);
+                        key = P_NAME_NULL;
+                    }
+                    else {
+                        pname->set_name_string(P_NAME_TERM_STR);
+                        key = P_NAME_TERM;
+                    }
+                }
+                else {
+                    int instcnt = 0;
+                    oaIter<oaInst> inst_iter(block->getInsts());
+                    while (inst_iter.getNext() != 0)
+                        instcnt++;
+
+                    if (instcnt == 0) {
+#ifdef NEWNMP
+#else
+                        pname->set_subckt(false);
+#endif
+                        if (nulldev) {
+                            pname->set_name_string(P_NAME_NULL_STR);
+                            key = P_NAME_NULL;
+                        }
+                        else {
+                            pname->set_name_string(P_NAME_TERM_STR);
+                            key = P_NAME_TERM;
+                        }
+                    }
+                }
             }
         }
     }
@@ -2982,7 +2801,6 @@ oa_in::readProperties(const oaDesign *design, CDs *sdesc)
     return (ret);
 }
 
-#endif
 
 bool
 oa_in::readOaLPPHeader(oaLPPHeader *header, CDs *sdesc)

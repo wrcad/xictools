@@ -237,129 +237,21 @@ cOAnetHandler::setupNets(bool symbolic)
         sOAportTab port_tab;
         port_tab.port_setup(nh_block, cdf);
 
-        // First set a P_NAME property if needed.
 #ifdef NEWNMP
         CDp_sname *pname = (CDp_sname*)nh_sdesc->prpty(P_NAME);
 #else
         CDp_name *pname = (CDp_name*)nh_sdesc->prpty(P_NAME);
 #endif
-        if (!pname) {
-            // The device lacks an instNamePrefix property.
+        if (!pname)
+            return (true);
 
-            // This could be a "gnd" device, from Xic.  If so, it will
-            // have exactly one node property and no subcells.
-            CDp_node *pnd = (CDp_node*)nh_sdesc->prpty(P_NODE);
-            if (pnd && !pnd->next() && !nh_sdesc->masters()) {
-                // Is a gnd device, nothing more to do.
-                return (true);
-            }
-            if (cdf && cdf->prefix()) {
-                const char *pfx = cdf->prefix();
-#ifdef NEWNMP
-                pname = new CDp_sname;
-                pname->set_name_string(pfx);
-#else
-                pname = new CDp_name;
-                pname->set_name_string(pfx);
-                if (*pfx == 'X' || *pfx == 'x')
-                    pname->set_subckt(true);
-#endif
-                pname->set_next_prp(nh_sdesc->prptyList());
-                nh_sdesc->setPrptyList(pname);
-            }
-            else {
-                // Assume a subcircuit here.
-#ifdef NEWNMP
-                pname = new CDp_sname;
-                pname->set_name_string("X");
-#else
-                pname = new CDp_name;
-                pname->set_name_string("X");
-                pname->set_subckt(true);
-#endif
-                pname->set_next_prp(nh_sdesc->prptyList());
-                nh_sdesc->setPrptyList(pname);
-            }
-        }
         if (!pname->name_string() || pname->key() == P_NAME_NULL) {
             // A "null" device, no nodes.
             return (true);
         }
         int key = pname->key();
 
-        // If the "subcircuit" has exactly one pin, and no instances,
-        // assume that it is a terminal device.  It is probably one of
-        // the analogLib terminals, which on import will behave like
-        // an Xic terminal.  Note that the "gnd" device from analogLib
-        // is actually a terminal connected to "gnd!", and NOT an Xic
-        // gnd device.
-
-        if (key == 'x' || key == 'X') {
-            int numpins = 0;
-            oaIter<oaPin> pin_iter(nh_block->getPins());
-            while (pin_iter.getNext() != 0)
-                numpins++;
-            if (numpins == 1) {
-                oaDesign *design = nh_block->getDesign();
-                oaScalarName cellName;
-                design->getCellName(cellName);
-                oaString cn;
-                cellName.get(cn);
-
-                // Here's a hack, make the "noConn" device not
-                // electrically active.
-
-                bool nulldev = (cn == "noConn");
-
-                if (symbolic) {
-                    // If there is no schematic view, the cell is a
-                    // terminal.  Otherwise, the schematic would have
-                    // been checked already as below (schematic view
-                    // is read first).
-
-                    oaScalarName libName;
-                    oaScalarName viewName(oaNativeNS(), "schematic");
-                    design->getLibName(libName);
-                    if (!oaDesign::exists(libName, cellName, viewName)) {
-#ifdef NEWNMP
-#else
-                        pname->set_subckt(false);
-#endif
-                        if (nulldev) {
-                            pname->set_name_string(P_NAME_NULL_STR);
-                            key = P_NAME_NULL;
-                        }
-                        else {
-                            pname->set_name_string(P_NAME_TERM_STR);
-                            key = P_NAME_TERM;
-                        }
-                    }
-                }
-                else {
-                    int instcnt = 0;
-                    oaIter<oaInst> inst_iter(nh_block->getInsts());
-                    while (inst_iter.getNext() != 0)
-                        instcnt++;
-
-                    if (instcnt == 0) {
-#ifdef NEWNMP
-#else
-                        pname->set_subckt(false);
-#endif
-                        if (nulldev) {
-                            pname->set_name_string(P_NAME_NULL_STR);
-                            key = P_NAME_NULL;
-                        }
-                        else {
-                            pname->set_name_string(P_NAME_TERM_STR);
-                            key = P_NAME_TERM;
-                        }
-                    }
-                }
-            }
-        }
-
-        // Now deal with P_NODE and P_BNODE properties.
+        // Deal with P_NODE and P_BNODE properties.
 
         int npin = 0;
         int nterm = 0;

@@ -3582,6 +3582,8 @@ CDs::prptyAdd(int value, const char *string)
             pdesc = new CDp_sname;
             if (!((CDp_sname*)pdesc)->parse_name(string)) {
                 delete pdesc;
+//XXX
+printf("FFFFF\n");
                 return (false);
             }
             // Set the Device flag.

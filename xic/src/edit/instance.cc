@@ -505,22 +505,27 @@ cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)
         Errs()->init_error();
         if (mnamein && cname && OAif()->hasOA()) {
             // Check if cell is a foreign super-master from OA.
-            bool is_oalib;
-            if (!OAif()->is_library(mnamein, &is_oalib)) {
-                Errs()->add_error("Error opening %s", mnamein);
-                Log()->ErrorLog(mh::CellPlacement, Errs()->get_error());
-                return;
+            bool is_open;
+            bool is_oalib = OAif()->is_library(mnamein, &is_open);
+            if (is_oalib && !is_open) {
+                // The library exists but is not open, open it
+                // temporarily here.
+
+                OAif()->set_lib_open(mnamein, true);
             }
             bool in_lib = false;
             if (is_oalib && !OAif()->is_cell_in_lib(mnamein, cname, &in_lib)) {
                 Errs()->add_error("Error opening %s", mnamein);
                 Log()->ErrorLog(mh::CellPlacement, Errs()->get_error());
+                OAif()->set_lib_open(mnamein, is_open);
                 return;
             }
-            if (in_lib && DSP()->CurMode() == Physical) {
+            if (in_lib) {
                 PCellParam *p0 = 0;
-                if (!OAif()->load_cell(mnamein, cname, 0, CDMAXCALLDEPTH,
-                        false, &p0, 0)) {
+                bool ok = OAif()->load_cell(mnamein, cname, 0, CDMAXCALLDEPTH,
+                        false, &p0, 0);
+                OAif()->set_lib_open(mnamein, is_open);
+                if (!ok) {
                     Log()->ErrorLog(mh::CellPlacement, Errs()->get_error());
                     return;
                 }
