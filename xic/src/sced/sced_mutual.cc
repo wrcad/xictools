@@ -918,11 +918,7 @@ namespace {
             CDp *pd;
             for (pd = cdesc->prpty_list(); pd; pd = pd->next_prp()) {
                 if (pd->value() == P_NAME) {
-#ifdef NEWNMP
                     if (((CDp_cname*)pd)->key() == 'l')
-#else
-                    if (((CDp_name*)pd)->key() == 'l')
-#endif
                         nameok = true;
                 }
                 else if (pd->value() == P_BRANCH)

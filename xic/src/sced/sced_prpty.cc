@@ -243,11 +243,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
             // Can't add name to gnd device.
             return (0);
         }
-#ifdef NEWNMP
         CDp_cname *pn = (CDp_cname*)oldp;
-#else
-        CDp_name *pn = (CDp_name*)oldp;
-#endif
         if (pn->key() == P_NAME_TERM) {
             // Just update label of terminal.
             if (hystr)
@@ -261,11 +257,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
             return (0);
         }
 
-#ifdef NEWNMP
         pn = (CDp_cname*)pn->dup();
-#else
-        pn = (CDp_name*)pn->dup();
-#endif
         pn->set_assigned_name(0);
         char *nstr = 0;
         if (hystr)
@@ -312,11 +304,7 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
         }
 
         // Find name.
-#ifdef NEWNMP
         CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-        CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
         // Allow only "other" properties on gnd and terminal
         // devices.
         //
@@ -500,11 +488,7 @@ cSced::defaultLayer(CDp *pdesc)
         switch (pdesc->value()) {
         case P_NAME:
             {
-#ifdef NEWNMP
                 CDp_cname *pn = (CDp_cname*)pdesc;
-#else
-                CDp_name *pn = (CDp_name*)pdesc;
-#endif
                 int k = pn->key();
                 if (isalpha(k))
                     ld = CDldb()->findLayer("NAME", Electrical);

@@ -406,24 +406,6 @@ cEdit::cellPrptyAdd(int which)
             ED()->PopUpCellProperties(MODE_UPD);
             return;
         }
-#ifdef NEWNMP
-#else
-        if (which == P_MACRO) {
-            if (cursd->prpty(P_MACRO))
-                return;
-            if (!cursd->isDevice()) {
-                PL()->ShowPrompt(
-                    "Property not added, applies to devices only.");
-                return;
-            }
-            Ulist()->ListCheckPush("edcprp", cursd, false, false);
-            CDp *newp = new CDp("macro", P_MACRO);
-            Ulist()->RecordPrptyChange(cursd, 0, 0, newp);
-            Ulist()->ListPop();
-            ED()->PopUpCellProperties(MODE_UPD);
-            return;
-        }
-#endif
     }
     else {
         if (which == XICP_EXT_FLATTEN) {

@@ -1733,13 +1733,8 @@ namespace {
             return (true);
         if (r > 0)
             return (false);
-#ifdef NEWNMP
         CDp_cname *pn1 = (CDp_cname*)e1->cdesc()->prpty(P_NAME);
         CDp_cname *pn2 = (CDp_cname*)e2->cdesc()->prpty(P_NAME);
-#else
-        CDp_name *pn1 = (CDp_name*)e1->cdesc()->prpty(P_NAME);
-        CDp_name *pn2 = (CDp_name*)e2->cdesc()->prpty(P_NAME);
-#endif
         unsigned i1 = pn1 ? pn1->number() : 0;
         unsigned i2 = pn2 ? pn2->number() : 0;
         if (i1 != i2)

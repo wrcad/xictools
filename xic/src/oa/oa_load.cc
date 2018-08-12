@@ -2669,11 +2669,7 @@ oa_in::readElectricalProperties(const oaDesign *design,
             in_def_dev_prop);
 
         // First set a P_NAME property if needed.
-#ifdef NEWNMP
         CDp_sname *pname = (CDp_sname*)sdesc->prpty(P_NAME);
-#else
-        CDp_name *pname = (CDp_name*)sdesc->prpty(P_NAME);
-#endif
         if (!pname) {
             // The device lacks an instNamePrefix property.
 
@@ -2686,28 +2682,15 @@ oa_in::readElectricalProperties(const oaDesign *design,
             }
             if (cdf && cdf->prefix()) {
                 const char *pfx = cdf->prefix();
-#ifdef NEWNMP
                 pname = new CDp_sname;
                 pname->set_name_string(pfx);
-#else
-                pname = new CDp_name;
-                pname->set_name_string(pfx);
-                if (*pfx == 'X' || *pfx == 'x')
-                    pname->set_subckt(true);
-#endif
                 pname->set_next_prp(sdesc->prptyList());
                 sdesc->setPrptyList(pname);
             }
             else {
                 // Assume a subcircuit here.
-#ifdef NEWNMP
                 pname = new CDp_sname;
                 pname->set_name_string("X");
-#else
-                pname = new CDp_name;
-                pname->set_name_string("X");
-                pname->set_subckt(true);
-#endif
                 pname->set_next_prp(sdesc->prptyList());
                 sdesc->setPrptyList(pname);
             }
@@ -2751,10 +2734,6 @@ oa_in::readElectricalProperties(const oaDesign *design,
                 oaScalarName viewName(oaNativeNS(), "schematic");
                 design->getLibName(libName);
                 if (!oaDesign::exists(libName, cellName, viewName)) {
-#ifdef NEWNMP
-#else
-                    pname->set_subckt(false);
-#endif
                     if (nulldev) {
                         pname->set_name_string(P_NAME_NULL_STR);
                         key = P_NAME_NULL;
@@ -2771,10 +2750,6 @@ oa_in::readElectricalProperties(const oaDesign *design,
                         instcnt++;
 
                     if (instcnt == 0) {
-#ifdef NEWNMP
-#else
-                        pname->set_subckt(false);
-#endif
                         if (nulldev) {
                             pname->set_name_string(P_NAME_NULL_STR);
                             key = P_NAME_NULL;

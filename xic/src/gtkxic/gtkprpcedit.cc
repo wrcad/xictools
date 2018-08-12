@@ -115,10 +115,6 @@ sAddEnt sPc::pc_elec_addmenu[] = {
     sAddEnt("other", P_OTHER),
     sAddEnt("virtual", P_VIRTUAL),
     sAddEnt("flatten", P_FLATTEN),
-#ifdef NEWNMP
-#else
-    sAddEnt("macro", P_MACRO),
-#endif
     sAddEnt(0, 0)
 };
 

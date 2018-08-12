@@ -1219,11 +1219,7 @@ cSpiceBuilder::apply_properties()
         }
 
         if (!sb_cdesc->isDevice()) {
-#ifdef NEWNMP
             CDp_cname *pn = (CDp_cname*)sb_cdesc->prpty(P_NAME);
-#else
-            CDp_name *pn = (CDp_name*)sb_cdesc->prpty(P_NAME);
-#endif
             if (pn && (!pn->assigned_name() ||
                     strcmp(sb_name, pn->assigned_name()))) {
                 pn->set_assigned_name(sb_name);
@@ -1233,11 +1229,7 @@ cSpiceBuilder::apply_properties()
         }
         else {
             if (sb_name) {
-#ifdef NEWNMP
                 CDp_cname *pn = (CDp_cname*)sb_cdesc->prpty(P_NAME);
-#else
-                CDp_name *pn = (CDp_name*)sb_cdesc->prpty(P_NAME);
-#endif
                 if (pn && (!pn->assigned_name() ||
                         strcmp(sb_name, pn->assigned_name()))) {
                     pn->set_assigned_name(sb_name);
@@ -1351,11 +1343,7 @@ cSpiceBuilder::sub_glob(CDs *sdesc)
             // terminal
             CDc_gen cgen(m);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
-#ifdef NEWNMP
                 CDp_cname *pna = (CDp_cname*)c->prpty(P_NAME);
-#else
-                CDp_name *pna = (CDp_name*)c->prpty(P_NAME);
-#endif
                 if (!pna)
                     continue;
                 CDla *olabel = pna->bound();
@@ -1713,11 +1701,7 @@ cSpiceBuilder::process_muts(CDs *sdesc)
             while ((cd = (CDc*)gdesc.next()) != 0) {
                 if (!cd->is_normal())
                     continue;
-#ifdef NEWNMP
                 CDp_cname *pna = (CDp_cname*)cd->prpty(P_NAME);
-#else
-                CDp_name *pna = (CDp_name*)cd->prpty(P_NAME);
-#endif
                 if (!pna)
                     continue;
                 name1 = cd->getElecInstBaseName(pna);
@@ -2165,11 +2149,7 @@ cSpiceBuilder::mksymtab(CDs *sdesc, SymTab **symtab, bool alldevs)
         CDs *msdesc = cdesc->masterCell();
         if (!msdesc)
             continue;
-#ifdef NEWNMP
         CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-        CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
         if (alldevs) {
             // add all devices
             if (pn) {

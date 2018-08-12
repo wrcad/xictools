@@ -237,11 +237,7 @@ cOAnetHandler::setupNets(bool symbolic)
         sOAportTab port_tab;
         port_tab.port_setup(nh_block, cdf);
 
-#ifdef NEWNMP
         CDp_sname *pname = (CDp_sname*)nh_sdesc->prpty(P_NAME);
-#else
-        CDp_name *pname = (CDp_name*)nh_sdesc->prpty(P_NAME);
-#endif
         if (!pname)
             return (true);
 
@@ -263,7 +259,6 @@ cOAnetHandler::setupNets(bool symbolic)
             oaString tname;
             term->getName(oaCdbaNS(), tname);
 
-#ifdef NEWNMP
             // If this is a terminal device, set the label text field
             // of the property.  When a label is created in an
             // instance and associated, it will have this text.
@@ -273,14 +268,6 @@ cOAnetHandler::setupNets(bool symbolic)
                 OAerrLog.add_log(OAlogNet,
                     "Setting net name of device %s to %s",
                     Tstring(nh_sdesc->cellname()), (const char*)tname);
-#else
-            // If this is a terminal device, and there is no
-            // associated label, set the label text field of the
-            // property.  When a label is created and associated, it
-            // will have this text.
-            //
-            if (key == P_NAME_TERM && !pname->bound()) {
-#endif
                 pname->set_label_text(tname);
             }
 
@@ -1580,11 +1567,7 @@ cOAnetHandler::add_terminal(int x, int y, const char *tname)
         return (false);
 
     // Check that the terminal device has a name property.
-#ifdef NEWNMP
     CDp_cname *pa = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-    CDp_name *pa = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
     if (!pa) {
         Errs()->add_error("Instance of %s has no name property.",
             Tstring(msdesc->cellname()));

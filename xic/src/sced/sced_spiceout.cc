@@ -535,21 +535,13 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
         if (!list_all && !check_terms(sdesc, cdesc, tnames, tsize))
             continue;
 
-#ifdef NEWNMP
         CDp_cname *pname = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-        CDp_name *pname = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
         if (!pname)
             continue;
         bool macrocall = pname->is_subckt();
         char *device = lstring::copy(cdesc->getElecInstBaseName());
         char *subname = 0;
-#ifdef NEWNMP
         if (macrocall && !pname->is_macro())
-#else
-        if (pname->is_subckt())
-#endif
             subname = lstring::copy(Tstring(cdesc->cellname()));
         if (!device) {
             // should never happen
@@ -591,14 +583,8 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
 
         bool pcell_macro = false;
         if (!macrocall) {
-#ifdef NEWNMP
             if (pname->is_macro())
                 pcell_macro = true;
-#else
-            CDs *msd = cdesc->masterCell();
-            if (msd && msd->prpty(P_MACRO))
-                pcell_macro = true;
-#endif
         }
         if (pcell_macro) {
             // We need to add an 'X' ahead of the device name.
@@ -830,11 +816,7 @@ namespace {
         if (cdesc->prpty(P_RANGE))
             return (true);
         CDp_node *pn = (CDp_node*)cdesc->prpty(P_NODE);
-#ifdef NEWNMP
         CDp_cname *pna = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-        CDp_name *pna = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
         int num_gnd = 0;
         int num_open = 0;
         int num_ok = 0;
@@ -922,11 +904,7 @@ SpOut::def_node_term_list(CDs *sdesc)
             // terminal
             CDc_gen cgen(m);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
-#ifdef NEWNMP
                 CDp_cname *pna = (CDp_cname*)c->prpty(P_NAME);
-#else
-                CDp_name *pna = (CDp_name*)c->prpty(P_NAME);
-#endif
                 if (!pna)
                     continue;
                 CDla *olabel = pna->bound();

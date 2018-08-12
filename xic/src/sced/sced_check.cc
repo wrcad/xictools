@@ -134,11 +134,7 @@ cSced::checkElectrical(CDcbin *cbin)
         // location property so that the label can be modified to
         // change the terminal name internally.
         //
-#ifdef NEWNMP
         CDp_sname *pna = (CDp_sname*)sd->prpty(P_NAME);
-#else
-        CDp_name *pna = (CDp_name*)sd->prpty(P_NAME);
-#endif
         if (pna && pna->name_string() &&
                 *Tstring(pna->name_string()) == P_NAME_TERM) {
             CDp_labloc *pl = (CDp_labloc*)sd->prpty(P_LABLOC);
@@ -378,7 +374,6 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
 
     const int prpmax = P_MAX_PRP_NUM + 1;
 
-#ifdef NEWNMP
     // Remove obsolete P_MACRO properties, set flag in name property.
     // This is redundant, also done in CDs::prptyAdd.
     CDp_sname *pns = (CDp_sname*)sdesc->prpty(P_NAME);
@@ -388,7 +383,6 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
             sdesc->prptyRemove(P_MACRO);
         }
     }
-#endif
 
     // Check property counts.
     int pcnts[prpmax];
@@ -454,13 +448,8 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
                 print_err(lstr, msg2, cname, CDp::elec_prp_name(i));
             break;
         case P_MACRO:
-#ifdef NEWNMP
             if (pcnts[i] > 0)
                 print_err(lstr, msg1, cname, CDp::elec_prp_name(i));
-#else
-            if (pcnts[i] > 1)
-                print_err(lstr, msg2, cname, CDp::elec_prp_name(i));
-#endif
             break;
         case P_DEVREF:
             if (pcnts[i] > 0)
@@ -535,12 +524,8 @@ cSced::prptyCheckCell(CDs *sdesc, char **str)
                         ok = false;
                     break;
                 case P_MACRO:
-#ifdef NEWNMP
                     // Shouldn't get here.
                     if (cnt > 0)
-#else
-                    if (cnt > 1)
-#endif
                         ok = false;
                     break;
                 case P_DEVREF:
@@ -625,11 +610,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                 if (pd->value() == P_MUTLRF)
                     mutrf = true;
                 else if (pd->value() == P_NAME)
-#ifdef NEWNMP
                     name = Tstring(((CDp_cname*)pd)->name_string());
-#else
-                    name = Tstring(((CDp_name*)pd)->name_string());
-#endif
                 if (mutrf && name)
                     break;
             }
@@ -677,11 +658,7 @@ cSced::prptyCheckMutual(CDs *sdesc, CDp_nmut *pm, char **str)
                 if (pd->value() == P_MUTLRF)
                     mutrf = true;
                 else if (pd->value() == P_NAME)
-#ifdef NEWNMP
                     name = Tstring(((CDp_cname*)pd)->name_string());
-#else
-                    name = Tstring(((CDp_name*)pd)->name_string());
-#endif
                 if (mutrf && name)
                     break;
             }
@@ -1002,11 +979,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
     }
 
     // Next check name consistency
-#ifdef NEWNMP
     CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-    CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
     const char *name = 0;
     CDpfxName realname = 0;
     if (!pn) {
@@ -1032,11 +1005,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
 
         if (msdesc) {
 
-#ifdef NEWNMP
             CDp_sname *pn1 = (CDp_sname*)msdesc->prpty(P_NAME);
-#else
-            CDp_name *pn1 = (CDp_name*)msdesc->prpty(P_NAME);
-#endif
             if (!pn1) {
                 print_err(lstr, "%s %s has no name property!\n",
                     msdesc->isDevice() ? "Device" : "Cell",
@@ -1055,11 +1024,7 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
                         print_err(lstr, im_msg, Tstring(sdesc->cellname()));
                     else {
                         CDp *op = pn;
-#ifdef NEWNMP
                         pn = (CDp_cname*)pn->dup();
-#else
-                        pn = (CDp_name*)pn->dup();
-#endif
                         pn->set_name_string(pn1->name_string());
                         Ulist()->RecordPrptyChange(sdesc, cdesc, op, pn);
                         CDla *olabel = pn->bound();

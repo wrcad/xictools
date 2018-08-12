@@ -86,19 +86,6 @@ cSced::saveAsDev(const char *name, bool tofile)
             ((CDp_node*)pd)->set_enode(-1);
     }
 
-#ifdef NEWNMP
-#else
-    CDp_name *pn = (CDp_name*)cursde->prpty(P_NAME);
-    if (pn) {
-        // Devices never have "set" name.
-        pn->set_assigned_name(0);
-
-        // Devices never have "subname".  This field is used only for
-        // explicitly placed subcells.
-        pn->set_subckt(false);
-    }
-#endif
-
     // Remove any odesc properties.  Geometry in library cell
     // has no electrical significance.
     CDl *ldesc;

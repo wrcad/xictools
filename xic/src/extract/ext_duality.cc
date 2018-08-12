@@ -1326,11 +1326,7 @@ namespace {
     //
     bool is_wire_cap(CDc *cd)
     {
-#ifdef NEWNMP
         CDp_cname *pn = (CDp_cname*)cd->prpty(P_NAME);
-#else
-        CDp_name *pn = (CDp_name*)cd->prpty(P_NAME);
-#endif
         if (!pn)
             return (false);
         if (pn->assigned_name() &&
@@ -2481,15 +2477,9 @@ cGroupDesc::position_labels(cTfmStack *tstk)
                 continue;
 
             sEinstList *edual = s->dual();
-#ifdef NEWNMP
             CDp_cname *pn = 0;
             if (edual->cdesc_index() == 0)
                 pn = (CDp_cname*)edual->cdesc()->prpty(P_NAME);
-#else
-            CDp_name *pn = 0;
-            if (edual->cdesc_index() == 0)
-                pn = (CDp_name*)edual->cdesc()->prpty(P_NAME);
-#endif
             else {
                 CDp_range *pr = (CDp_range*)edual->cdesc()->prpty(P_RANGE);
                 if (pr)

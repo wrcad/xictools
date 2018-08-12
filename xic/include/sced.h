@@ -371,11 +371,7 @@ public:
 
     // sced_prplabel.cc
     void genDeviceLabels(CDc*, CDc*, bool);                         // export
-#ifdef NEWNMP
     void updateNameLabel(CDc*, CDp_cname*);                         // export
-#else
-    void updateNameLabel(CDc*, CDp_name*);                          // export
-#endif
     bool updateLabelText(CDla*, CDs*, hyList*, BBox*);              // export
     CDla *changeLabel(CDla*, CDs*, hyList*);                        // export
     void addDeviceLabel(CDc*, CDp*, CDp*, hyList*, bool, bool);

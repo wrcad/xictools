@@ -4355,11 +4355,7 @@ geom2_funcs::IFprptyString(Variable *res, Variable *args, void*)
                     OCALL(ol->odesc)->masterCell()->isElectrical()) {
                         res->content.string = lstring::copy(
                             OCALL(ol->odesc)->getElecInstBaseName(
-#ifdef NEWNMP
                                 (CDp_cname*)pdesc));
-#else
-                                (CDp_name*)pdesc));
-#endif
                     }
                     else
                         pdesc->string(&res->content.string);
@@ -4382,11 +4378,7 @@ geom2_funcs::IFprptyString(Variable *res, Variable *args, void*)
                 if (odesc && val == P_NAME && odesc->type() == CDINSTANCE &&
                         OCALL(odesc)->masterCell()->isElectrical()) {
                     res->content.string = lstring::copy(
-#ifdef NEWNMP
                         OCALL(odesc)->getElecInstBaseName((CDp_cname*)prpty));
-#else
-                        OCALL(odesc)->getElecInstBaseName((CDp_name*)prpty));
-#endif
                 }
                 else
                     prpty->string(&res->content.string);
@@ -4762,10 +4754,8 @@ geom2_funcs::IFaddCellProperty(Variable *res, Variable *args, void*)
             pdesc = new CDp("flatten", val);
             break;
         case P_MACRO:
-#ifdef NEWNMP
-#else
+            // Warning, property not used 4.3.6 and later.
             pdesc = new CDp("macro", val);
-#endif
             break;
 
         // The properties below are not supposed to be user-settable,
@@ -4780,22 +4770,13 @@ geom2_funcs::IFaddCellProperty(Variable *res, Variable *args, void*)
             }
             break;
         case P_NAME:
-#ifdef NEWNMP
             pdesc = new CDp_sname;
             if (!((CDp_sname*)pdesc)->parse_name(string)) {
-#else
-            pdesc = new CDp_name;
-            if (!((CDp_name*)pdesc)->parse_name(string)) {
-#endif
                 delete pdesc;
                 return (BAD);
             }
             // Set the Device flag.
-#ifdef NEWNMP
             cursd->setDevice(!((CDp_sname*)pdesc)->is_subckt());
-#else
-            cursd->setDevice(!((CDp_name*)pdesc)->is_subckt());
-#endif
             break;
         case P_SYMBLC:
             pdesc = new CDp_sym;

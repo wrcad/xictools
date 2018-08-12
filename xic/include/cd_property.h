@@ -41,8 +41,6 @@
 #ifndef CD_PRPTYPE_H
 #define CD_PRPTYPE_H
 
-#define NEWWNO
-
 
 //-----------------------------------------------------------------------------
 // Derived properties for physical mode.
@@ -529,36 +527,20 @@ struct CDp_range : public CDp
     void setup(const CDc*);
     CDp_cnode *node(const CDc*, unsigned int, unsigned int) const;
     void print_nodes(const CDc*, FILE*, sLstr*) const;
-#ifdef NEWNMP
     CDp_cname *name_prp(const CDc*, unsigned int) const;
-#else
-    CDp_name *name_prp(const CDc*, unsigned int) const;
-#endif
 
 protected:
     unsigned short pr_beg_range;    // range start
     unsigned short pr_end_range;    // range end
     CDp_cnode *pr_nodes;            // array of node properties for 'bits'
-#ifdef NEWNMP
     CDp_cname *pr_names;            // array of name properties for 'bits'
-#else
-    CDp_name *pr_names;             // array of name properties for 'bits'
-#endif
     unsigned int pr_numnodes;       // number of node properties
     unsigned int pr_asize;          // size of allocated nodes array
 };
 
 
 //----------------------------------------------------------------------------
-#ifdef NEWWNO
-// Bus node base property.
-#else
-// Bus node base property, for wires.
-//
-// This supports an associated label.  In a wire, the label
-// (pbn_label) always exists and provides a "net expression" that
-// defines the connections.
-#endif
+// Bus node property.
 //
 // The propeerty can be a "bus" terminal or a "bundle" terminal.  Bus
 // terminals have a name in pbn_name, and range in pbn_beg_range and
@@ -581,10 +563,6 @@ struct CDp_bnode : public CDp
             pbn_end_range = 0;
             pbn_name = 0;
             pbn_bundle = 0;
-#ifdef NEWWNO
-#else
-            pbn_label = 0;
-#endif
         }
 
     CDp_bnode(const CDp_bnode&);
@@ -624,19 +602,6 @@ struct CDp_bnode : public CDp
             pbn_end_range = end;
         }
 
-#ifdef NEWWNO
-#else
-    bool cond_bind(CDla* odesc)
-        {
-            if (!pbn_label)
-                pbn_label = odesc;
-            return (pbn_label == odesc);
-        }
-
-    void bind(CDla* odesc)          { pbn_label = odesc; }
-    CDla *bound()             const { return (pbn_label); }
-#endif
-
     bool parse_bnode(const char*);
     void update_bundle(CDnetex*);
     void add_bundle_text(sLstr*) const;
@@ -649,15 +614,10 @@ protected:
     CDnetName pbn_name;             // assigned terminal name, null for
                                     // default name
     CDnetex *pbn_bundle;            // bundle spec
-#ifdef NEWWNO
-#else
-    CDla *pbn_label;                // associated label
-#endif
 };
 
-#ifdef NEWWNO
-//----------------------------------------------------------------------------
-// Bus node base property for wires.
+
+// Bus node property for wires.
 //
 // This supports an associated label.  In a wire, the label
 // (pbw_label) always exists and provides a "net expression" that
@@ -691,12 +651,10 @@ struct CDp_bwnode : public CDp_bnode
 protected:
     CDla *pbw_label;                // associated label
 };
-#endif
 
-//----------------------------------------------------------------------------
+
 // Accessory CDnetex wrapper.
-
-
+//
 // If a CDp_bnode is "named" (i.e., has_name() returns true), it can
 // have a fully-defined CDnetex.  If the name is a bundle spec, the
 // CDnetex already exists and can be used directly.  Otherwise, the
@@ -725,9 +683,9 @@ private:
     CDnetex *nxtmp;
 };
 
-//----------------------------------------------------------------------------
-// Accessory range generator.
 
+// Accessory range generator.
+//
 // A bus wire or terminal may have a base name and will have a range,
 // and can be specified in various ways with the base name followed by
 // two integers, for example foo<3:0> or foo.3.0.  The first integer
@@ -816,7 +774,6 @@ private:
 };
 
 
-//----------------------------------------------------------------------------
 // Bus Node property for cell instances.
 
 struct CDp_bsnode;
@@ -1025,15 +982,9 @@ private:
 
 
 //----------------------------------------------------------------------------
-#ifdef NEWWNO
-// Node base property.
+// Node property.
 //
 // This supports an "external" node.
-#else
-// Node property for wires (base node property).
-//
-// This supports an "external" node, and associated label.
-#endif
 
 struct CDp_node : public CDp
 {
@@ -1041,10 +992,6 @@ struct CDp_node : public CDp
         {
             pno_enode = 0;
             pno_name = 0;
-#ifdef NEWWNO
-#else
-            pno_label = 0;
-#endif
         }
 
     CDp_node(const CDp_node&);
@@ -1067,32 +1014,15 @@ struct CDp_node : public CDp
     int enode()                   const { return (pno_enode); }
     void set_enode(int e)               { pno_enode = e; }
 
-#ifdef NEWWNO
-#else
-    bool cond_bind(CDla* odesc)
-        {
-            if (!pno_label)
-                pno_label = odesc;
-            return (pno_label == odesc);
-        }
-
-    void bind(CDla* odesc)          { pno_label = odesc; }
-    CDla *bound()             const { return (pno_label); }
-#endif
-
     bool parse_node(const char*);
 
 protected:
     int pno_enode;                  // scalar node external node number
     CDnetName pno_name;             // assigned terminal name, null for
                                     // default name
-#ifdef NEWWNO
-#else
-    CDla *pno_label;                // associated label
-#endif
 };
 
-#ifdef NEWWNO
+
 // Node property for wires.
 //
 // This an associated label, which will give the wire net a name.
@@ -1124,10 +1054,8 @@ struct CDp_wnode : public CDp_node
 protected:
     CDla *pnw_label;                // associated label
 };
-#endif
 
 
-//-----------------------------------------------------------------------------
 // Extended node property base
 //
 // This is a base class to be used by cell and instance node property
@@ -1279,40 +1207,6 @@ protected:
 };
 
 
-//-----------------------------------------------------------------------------
-// Node property for cell instances.
-
-struct CDp_cnode : public CDp_nodeEx
-{
-    CDp_cnode()
-        {
-            pcno_term = 0;
-        }
-
-    CDp_cnode(const CDp_cnode&);
-    CDp_cnode &operator=(const CDp_cnode&);
-
-    virtual ~CDp_cnode();
-
-    // virtual overrides
-    CDp *dup()                const { return (new CDp_cnode(*this)); }
-
-    bool print(sLstr*, int, int) const;
-    unsigned int term_flags() const;
-
-    CDp_cnode *next()               { return ((CDp_cnode*)next_n()); }
-
-    CDcterm *inst_terminal()  const { return (pcno_term); }
-    void set_terminal(CDcterm *t)   { pcno_term = t; }
-
-    bool parse_cnode(const char*);
-
-private:
-    CDcterm *pcno_term;             // Physical terminal descriptor.
-};
-
-
-//-----------------------------------------------------------------------------
 // Node property for cells.
 //
 // This provides an additional coordinate pair used for the hot-spot
@@ -1372,6 +1266,38 @@ private:
 };
 
 
+// Node property for cell instances.
+
+struct CDp_cnode : public CDp_nodeEx
+{
+    CDp_cnode()
+        {
+            pcno_term = 0;
+        }
+
+    CDp_cnode(const CDp_cnode&);
+    CDp_cnode &operator=(const CDp_cnode&);
+
+    virtual ~CDp_cnode();
+
+    // virtual overrides
+    CDp *dup()                const { return (new CDp_cnode(*this)); }
+
+    bool print(sLstr*, int, int) const;
+    unsigned int term_flags() const;
+
+    CDp_cnode *next()               { return ((CDp_cnode*)next_n()); }
+
+    CDcterm *inst_terminal()  const { return (pcno_term); }
+    void set_terminal(CDcterm *t)   { pcno_term = t; }
+
+    bool parse_cnode(const char*);
+
+private:
+    CDcterm *pcno_term;             // Physical terminal descriptor.
+};
+
+
 //-----------------------------------------------------------------------------
 // Name property.
 
@@ -1389,8 +1315,6 @@ private:
 #define P_NAME_TERM_STR "@"
 #define P_NAME_BTERM_DEPREC '#'
 
-#define NEWNMP
-#ifdef NEWNMP
 
 // Name property for cells.
 //
@@ -1526,123 +1450,6 @@ private:
     int pnc_scindex;            // alternative index for subckts
     int pnc_x, pnc_y;           // physical location of subckt ref. label
 };
-
-#else
-
-struct CDp_name : public CDp
-{
-    CDp_name() : CDp(P_NAME)
-        {
-            pna_num = 0;
-            pna_label = 0;
-            pna_name = 0;
-            pna_setname = 0;
-            pna_labtext = 0;
-            pna_scindex = 0;
-            pna_subckt = false;
-            pna_located = false;
-            pna_x = pna_y = 0;
-        }
-
-    CDp_name(const CDp_name&);
-    CDp_name &operator=(const CDp_name&);
-
-    virtual ~CDp_name()
-        {
-            delete [] pna_setname;
-            delete [] pna_labtext;
-        }
-
-
-    // virtual overrides
-    CDp *dup()                  const { return (new CDp_name(*this)); }
-
-    bool print(sLstr*, int, int) const;
-
-    bool cond_bind(CDla* odesc)
-        {
-            if (!pna_label)
-                pna_label = odesc;
-            return (pna_label == odesc);
-        }
-
-    void bind(CDla* odesc)            { pna_label = odesc; }
-    CDla *bound()               const { return (pna_label); }
-
-    void purge(CDo *odesc)
-        {
-            if (odesc == (CDo*)pna_label)
-                pna_label = 0;
-        }
-
-    hyList *label_text(bool*, CDc* = 0) const;
-
-    bool is_elec()              const { return (true); }
-
-    CDp_name *next()                  { return ((CDp_name*)next_n()); }
-
-    bool is_subckt()            const { return (pna_subckt); }
-    void set_subckt(bool b)           { pna_subckt = b; }
-
-    unsigned int number()       const { return (pna_num); }
-    void set_number(unsigned int n)   { pna_num = n; }
-
-    unsigned int scindex()      const { return (pna_scindex); }
-    void set_scindex(unsigned int n)  { pna_scindex = n; }
-
-    CDpfxName name_string()     const { return (pna_name); }
-    void set_name_string(CDpfxName n) { pna_name = n; }
-    void set_name_string(const char *n)
-        {
-            if (n && *n)
-                pna_name = CD()->PfxTableAdd(n);
-        }
-
-    int key()                   const
-        {
-            int c = (pna_name ? *Tstring(pna_name) : 0);
-            return (isupper(c) ? tolower(c) : c);
-        }
-
-    const char *assigned_name() const { return (pna_setname); }
-    void set_assigned_name(const char *n)
-        {
-            char *s = lstring::copy(n);
-            delete [] pna_setname;
-            pna_setname = s;
-        }
-
-    const char *label_text()    const { return (pna_labtext); }
-    void set_label_text(const char *n)
-        {
-            char *s = lstring::copy(n);
-            delete [] pna_labtext;
-            pna_labtext = s;
-        }
-
-    bool located()              const { return (pna_located); }
-    void set_located(bool b)          { pna_located = b; }
-
-    int pos_x()                 const { return (pna_x); }
-    void set_pos_x(int x)             { pna_x = x; }
-    int pos_y()                 const { return (pna_y); }
-    void set_pos_y(int y)             { pna_y = y; }
-
-    bool parse_name(const char*);
-
-private:
-    unsigned int pna_num;       // flag, name index
-    CDla *pna_label;            // associated label
-    CDpfxName pna_name;         // name prefix
-    char *pna_setname;          // overriding name
-    char *pna_labtext;          // associated label text
-    int pna_scindex;            // alternative index for subckts
-    bool pna_subckt;            // true if subckt
-    bool pna_located;           // physical location valid.
-    int pna_x, pna_y;           // physical location of subckt ref. label
-};
-
-#endif
 
 
 //-----------------------------------------------------------------------------

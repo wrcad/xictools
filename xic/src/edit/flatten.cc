@@ -304,11 +304,7 @@ cEdit::flattenSelected(cTfmStack *tstk, int depth, bool use_merge,
             // celldesc() is ok, from is_flattenable
             if (cdesc->masterCell()->isElectrical()) {
                 // Delete name property.
-#ifdef NEWNMP
                 CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-                CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
                 if (pn && pn->bound()) {
                     if (fastmode) {
                         SI()->UpdateObject(pn->bound(), 0);
@@ -418,11 +414,7 @@ cEdit::flattenCell(cTfmStack *tstk, CDc *cdesc)
         // delete the name label, if any
         // celldesc() is ok, from is_flattenable
         if (cdesc->masterCell()->isElectrical()) {
-#ifdef NEWNMP
             CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-            CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
             if (pn && pn->bound())
                 Ulist()->RecordObjectChange(cursd, pn->bound(), 0);
         }

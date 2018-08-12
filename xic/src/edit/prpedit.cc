@@ -1115,15 +1115,9 @@ PrptyState::prp_updtext(sSel *sl)
         if (pdesc) {
             if (Value == P_NAME) {
                 // don't show default name
-#ifdef NEWNMP
                 if (((CDp_cname*)pdesc)->assigned_name()) {
                     hyList *h = new hyList(0,
                         ((CDp_cname*)pdesc)->assigned_name(), HYcvPlain);
-#else
-                if (((CDp_name*)pdesc)->assigned_name()) {
-                    hyList *h = new hyList(0,
-                        ((CDp_name*)pdesc)->assigned_name(), HYcvPlain);
-#endif
                     PL()->EditHypertextPrompt(buf, h, false, PLedUpdate);
                     hyList::destroy(h);
                 }
@@ -1840,15 +1834,9 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
             hnew = new hyList(cursd, tbuf, HYcvPlain);
         }
         else if (Value == P_NAME) {
-#ifdef NEWNMP
             if (SelPrp && ((CDp_cname*)SelPrp)->assigned_name()) {
                 hyList *h = new hyList(0, ((CDp_cname*)SelPrp)->assigned_name(),
                     HYcvPlain);
-#else
-            if (SelPrp && ((CDp_name*)SelPrp)->assigned_name()) {
-                hyList *h = new hyList(0, ((CDp_name*)SelPrp)->assigned_name(),
-                    HYcvPlain);
-#endif
                 hnew = PL()->EditHypertextPrompt(tbuf, h, false);
                 hyList::destroy(h);
             }

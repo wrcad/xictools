@@ -116,11 +116,7 @@ cMain::PrptyStrings(CDs *sdesc)
         }
         CDpl::destroy(pl0);
 
-#ifdef NEWNMP
         CDp_sname *pna = (CDp_sname*)sdesc->prpty(P_NAME);
-#else
-        CDp_name *pna = (CDp_name*)sdesc->prpty(P_NAME);
-#endif
         if (pna) {
             sprintf(tbuf, "(%d) name: ", P_NAME);
             char *hd = lstring::copy(tbuf);
@@ -353,13 +349,8 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             tbuf[0] = 0;
             if (pnm->l1_dev() && pnm->l2_dev()) {
-#ifdef NEWNMP
                 CDp_cname *p1 = (CDp_cname*)pnm->l1_dev()->prpty(P_NAME);
                 CDp_cname *p2 = (CDp_cname*)pnm->l2_dev()->prpty(P_NAME);
-#else
-                CDp_name *p1 = (CDp_name*)pnm->l1_dev()->prpty(P_NAME);
-                CDp_name *p2 = (CDp_name*)pnm->l2_dev()->prpty(P_NAME);
-#endif
                 if (p1 && p1->name_string() && p2 && p2->name_string())
                     sprintf(tbuf, "%d %s%d %s%d %s", pnm->index(),
                         Tstring(p1->name_string()), pnm->l1_index(),
@@ -509,11 +500,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
         }
         else if (odesc->type() == CDINSTANCE) {
-#ifdef NEWNMP
             CDp_cname *pna = (CDp_cname*)odesc->prpty(P_NAME);
-#else
-            CDp_name *pna = (CDp_name*)odesc->prpty(P_NAME);
-#endif
             if (pna) {
                 sprintf(tbuf, "(%d) name (user): ", P_NAME);
                 char *hd = lstring::copy(tbuf);

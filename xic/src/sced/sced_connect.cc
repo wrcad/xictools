@@ -417,11 +417,7 @@ cSced::renumberInstances(CDs *sd)
         CDs *msdesc = cdesc->masterCell();
         if (!msdesc)
             continue;
-#ifdef NEWNMP
         CDp_sname *pna = (CDp_sname*)msdesc->prpty(P_NAME);
-#else
-        CDp_name *pna = (CDp_name*)msdesc->prpty(P_NAME);
-#endif
         if (!pna || !pna->name_string())
             continue;
  
@@ -435,24 +431,14 @@ cSced::renumberInstances(CDs *sd)
         // zero-based for each subcircuit master.  We have already
         // computed the absolute ordering number.
 
-#ifdef NEWNMP
         if (pna->is_subckt() && !pna->is_macro()) {
-#else
-        if (pna->is_subckt()) {
-#endif
             dcnt = (long)SymTab::get(scstab, (unsigned long)cdesc->cellname());
             if (dcnt == (long)ST_NIL)
                 dcnt = 0;
             scstab->replace((unsigned long)cdesc->cellname(), (void*)(dcnt+1));
-#ifdef NEWNMP
             CDp_cname *pnc = (CDp_cname*)cdesc->prpty(P_NAME);
             if (pnc)
                 pnc->set_scindex(dcnt);
-#else
-            pna = (CDp_name*)cdesc->prpty(P_NAME);
-            if (pna)
-                pna->set_scindex(dcnt);
-#endif
         }
     }
     delete stab;
@@ -958,15 +944,9 @@ cScedConnect::init(CDs *sd, bool lvsmode)
             // and accelerates determining the node of a wire.  The
             // node value is initialized to -1 in this case.
 
-#ifdef NEWWNO
             CDp_wnode *pn = (CDp_wnode*)odesc->prpty(P_NODE);
             if (!pn) {
                 pn = new CDp_wnode;
-#else
-            CDp_node *pn = (CDp_node*)odesc->prpty(P_NODE);
-            if (!pn) {
-                pn = new CDp_node;
-#endif
                 pn->set_enode(-1);
                 odesc->link_prpty_list(pn);
                 continue;
@@ -987,11 +967,7 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                 // label is nothing but white space, remove it.
                 delete [] tok;
                 odesc->prptyRemove(P_BNODE);
-#ifdef NEWWNO
                 pn = new CDp_wnode;
-#else
-                pn = new CDp_node;
-#endif
                 pn->set_enode(-1);
                 odesc->link_prpty_list(pn);
                 continue;
@@ -1096,11 +1072,7 @@ cScedConnect::init_terminal(CDc *cdesc)
         return (false);
 
     // Check for valid name property.
-#ifdef NEWNMP
     CDp_cname *pna = (CDp_cname*)msd->prpty(P_NAME);
-#else
-    CDp_name *pna = (CDp_name*)msd->prpty(P_NAME);
-#endif
     if (!pna || (pna->key() != P_NAME_TERM &&
             pna->key() != P_NAME_BTERM_DEPREC))
         return (false);
@@ -1124,11 +1096,7 @@ cScedConnect::init_terminal(CDc *cdesc)
         return (false);
 
     // Check for bound instance label.
-#ifdef NEWNMP
     pna = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-    pna = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
     if (!pna || !pna->bound())
         return (false);
     if (pna->key() == P_NAME_BTERM_DEPREC) {
@@ -1306,11 +1274,7 @@ cScedConnect::init_nophys_shorts()
         CDw *wd = new CDw(ld, &wire);
         cn_tmp_wires = new CDol(wd, cn_tmp_wires);
 
-#ifdef NEWWNO
         CDp_wnode *pnw = new CDp_wnode;
-#else
-        CDp_node *pnw = new CDp_node;
-#endif
         pnw->set_enode(-1);
         wd->set_prpty_list(pnw);
     }
@@ -1873,11 +1837,7 @@ cScedConnect::infer_name(const CDw *wdesc, CDnetex **pnx)
                 if (pn->get_pos(0, &p.x, &p.y) && wdesc->has_vertex_at(p)) {
 
                     char *label = 0;
-#ifdef NEWNMP
                     CDp_cname *pna = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-                    CDp_name *pna = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
                     if (!pna) {
                         // Must be a ground terminal.
                         if (tp != CDelecGnd)

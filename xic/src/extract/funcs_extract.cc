@@ -4683,11 +4683,7 @@ extract_funcs::IFlistElecDevs(Variable *res, Variable *args, void*)
     for (CDm *m = mgen.m_first(); m; m = mgen.m_next()) {
         CDc_gen cgen(m);
         for (CDc *cd = cgen.c_first(); cd; cd = cgen.c_next()) {
-#ifdef NEWNMP
             CDp_cname *pn = (CDp_cname*)cd->prpty(P_NAME);
-#else
-            CDp_name *pn = (CDp_name*)cd->prpty(P_NAME);
-#endif
             if (!pn)
                 continue;
             const char *instname = cd->getElecInstBaseName(pn);

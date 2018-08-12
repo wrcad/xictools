@@ -1323,11 +1323,7 @@ CDp_range::setup(const CDc *cdesc)
         pr_asize = nsize;
         if (ow != width() - 1) {
             delete [] pr_names;
-#ifdef NEWNMP
             pr_names = new CDp_cname[width() - 1];
-#else
-            pr_names = new CDp_name[width() - 1];
-#endif
         }
     }
     pr_numnodes = maxix;
@@ -1418,21 +1414,13 @@ CDp_range::print_nodes(const CDc *cdesc, FILE *fp, sLstr *lstr) const
 }
 
 
-#ifdef NEWNMP
 CDp_cname *
-#else
-CDp_name *
-#endif
 CDp_range::name_prp(const CDc *cdesc, unsigned int instix) const
 {
     if (instix == 0) {
         if (!cdesc)
             return (0);
-#ifdef NEWNMP
         return ((CDp_cname*)cdesc->prpty(P_NAME));
-#else
-        return ((CDp_name*)cdesc->prpty(P_NAME));
-#endif
     }
     if (instix >= width())
         return (0);
@@ -1453,10 +1441,6 @@ CDp_bnode::CDp_bnode(const CDp_bnode &pd) : CDp(0, pd.p_value)
     pbn_end_range = pd.pbn_end_range;
     pbn_name = pd.pbn_name;
     pbn_bundle = CDnetex::dup(pd.bundle_spec());
-#ifdef NEWWNO
-#else
-    pbn_label = 0;
-#endif
 }
 
 
@@ -1468,10 +1452,6 @@ CDp_bnode::operator=(const CDp_bnode &pd)
     pbn_end_range = pd.pbn_end_range;
     pbn_name = pd.pbn_name;
     pbn_bundle = CDnetex::dup(pd.bundle_spec());
-#ifdef NEWWNO
-#else
-    pbn_label = 0;
-#endif
     return (*this);
 }
 
@@ -1637,7 +1617,7 @@ CDp_bnode::has_name() const
 }
 // End CDp_bnode functions
 
-#ifdef NEWWNO
+
 //
 // Bus node property class for instances
 //
@@ -1656,7 +1636,6 @@ CDp_bwnode::operator=(const CDp_bwnode &pd)
     return (*this);
 }
 // End CDp_bwnode functions
-#endif
 
 
 NetexWrap::~NetexWrap()
@@ -2308,10 +2287,6 @@ CDp_node::CDp_node(const CDp_node &pd) : CDp(0, pd.p_value)
 {
     pno_enode = pd.pno_enode;
     pno_name = pd.pno_name;
-#ifdef NEWWNO
-#else
-    pnw_label = pd.pnw_label;
-#endif
 }
 
 
@@ -2321,10 +2296,6 @@ CDp_node::operator=(const CDp_node &pd)
     (CDp&)*this = (const CDp&)pd;
     pno_enode = pd.pno_enode;
     pno_name = pd.pno_name;
-#ifdef NEWWNO
-#else
-    pno_label = pd.pno_label;
-#endif
     return (*this);
 }
 
@@ -2358,7 +2329,8 @@ CDp_node::parse_node(const char *str)
 }
 // End CDp_node functions
 
-#ifdef NEWWNO
+
+// Node property for wires.
 
 CDp_wnode::CDp_wnode(const CDp_wnode &pd) : CDp_node(pd)
 {
@@ -2373,7 +2345,7 @@ CDp_wnode::operator=(const CDp_wnode &pd)
     return (*this);
 }
 // End CDp_wnode functions
-#endif
+
 
 // Extended node property, used as base for cell and instance nodes.
 
@@ -3221,8 +3193,6 @@ CDp_snode::dupc(CDs *sdesc, const CDc *cdesc)
 //
 // Property used by structures and instances to record name.
 
-#ifdef NEWNMP
-
 // Name property base, used as a cell property.  This contains the
 // name prefix, and some flags.
 
@@ -3548,186 +3518,6 @@ CDp_cname::parse_name(const char *str)
 }
 // End CDp_cname functions
 
-#else
-
-CDp_name::CDp_name(const CDp_name &pd) : CDp(0, pd.p_value)
-{
-    pna_num = pd.pna_num;
-    pna_label = pd.pna_label;
-    pna_name = pd.pna_name;
-    pna_setname = lstring::copy(pd.pna_setname);
-    pna_labtext = lstring::copy(pd.pna_labtext);
-    pna_scindex = pd.pna_scindex;
-    pna_subckt = pd.pna_subckt;
-    pna_located = pd.pna_located;
-    pna_x = pd.pna_x;
-    pna_y = pd.pna_y;
-}
-
-
-CDp_name &
-CDp_name::operator=(const CDp_name &pd)
-{
-    (CDp&)*this = (const CDp&)pd;
-    pna_num = pd.pna_num;
-    pna_label = pd.pna_label;
-    pna_name = pd.pna_name;
-    pna_setname = lstring::copy(pd.pna_setname);
-    pna_labtext = lstring::copy(pd.pna_labtext);
-    pna_scindex = pd.pna_scindex;
-    pna_subckt = pd.pna_subckt;
-    pna_located = pd.pna_located;
-    pna_x = pd.pna_x;
-    pna_y = pd.pna_y;
-    return (*this);
-}
-
-
-// Print the name property text to lstr, using offset xo, yo.
-//
-bool
-CDp_name::print(sLstr *lstr, int, int) const
-{
-    if (!pna_name)
-        lstr->add_c(P_NAME_NULL);
-    else
-        lstr->add(Tstring(pna_name));
-    if (pna_setname) {
-        lstr->add_c('.');
-        lstr->add(pna_setname);
-    }
-    lstr->add_c(' ');
-    lstr->add_i(number());
-
-    if (is_subckt()) {
-        lstr->add_c(' ');
-        lstr->add("subckt");
-        if (pna_located) {
-            lstr->add_c(' ');
-            lstr->add_i(pna_x);
-            lstr->add_c(' ');
-            lstr->add_i(pna_y);
-        }
-    }
-    return (true);
-}
-
-
-// Return the label to be associated with the name property.
-//
-// The cna_labtext is used to set a default label, before the actual
-// label is created/attached.  It DOES NOT track subsequent label text
-// changes, nor is it read/written to files.
-//
-hyList *
-CDp_name::label_text(bool *copied, CDc *cdesc) const
-{
-    if (copied)
-        *copied = true;
-    if (!pna_name)
-        return (new hyList(0, "??", HYcvPlain));
-    // Check the name field.  If it is not alpha, treat it
-    // specially.
-    if (isalpha(*Tstring(pna_name))) {
-        // ordinary device name
-        if (cdesc) {
-            CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
-            const char *instname = cdesc->getElecInstBaseName(this);
-            if (instname) {
-                if (pr) {
-                    // This is a vector instance, tack on the range.
-                    sLstr lstr;
-                    lstr.add(instname);
-                    lstr.add_c(cTnameTab::subscr_open());
-                    lstr.add_i(pr->beg_range());
-                    lstr.add_c(':');
-                    lstr.add_i(pr->end_range());
-                    lstr.add_c(cTnameTab::subscr_close());
-                    return (new hyList(0, lstr.string(), HYcvPlain));
-                }
-                return (new hyList(0, instname, HYcvPlain));
-            }
-        }
-        return (new hyList(0, "??", HYcvPlain));
-    }
-    // else assume a terminal
-    if (pna_label) {
-        if (copied)
-            *copied = false;
-        return (pna_label->label());
-    }
-    // default terminal name
-    if (pna_labtext)
-        return (new hyList(0, pna_labtext, HYcvPlain));
-    if (cdesc && cdesc->master())
-        return (new hyList(0, Tstring(cdesc->cellname()), HYcvPlain));
-    return (new hyList(0, "label", HYcvPlain));
-}
-
-
-// Parse the name from the string, and initialize.
-// syntax: name[.setname] num [subname physx physy]
-// name, setname, subname are strings, num, physx, physy are
-// integers.  The physx, physy locate the physical name label.
-//
-bool
-CDp_name::parse_name(const char *str)
-{
-    char namebf[128];
-    char subnbf[128];
-    pna_num = 0;
-    pna_label = 0;
-    pna_name = 0;
-    pna_setname = 0;
-    pna_labtext = 0;
-    pna_scindex = 0;
-        // The xcindex is an alternate id number for subcircuits, which
-        // will be zero-based for each master.  The pna_num is an absolute
-        // count for all subcircuits.
-    pna_subckt = false;
-        // Set true for subcircuits.
-    pna_located = false;
-        // Set true when the location is set.
-    pna_x = 0;
-    pna_y = 0;
-        // The location in the physical layout where the label appears,
-        // after extraction/association.
-
-    if (str) {
-        unsigned int num = 0;
-        int nset = sscanf(str, "%s %u %s %d %d", namebf, &num,
-            subnbf, &pna_x, &pna_y);
-        if (nset < 1) {
-            namebf[0] = P_NAME_NULL;
-            namebf[1] = 0;
-        }
-        set_number(num);
-
-        // The name property name string is of the form
-        // default_name[.set_name]
-        //
-        char *cp;
-        if ((cp = strchr(namebf, '.')) != 0)
-            *cp++ = '\0';
-
-        // The '#' that used to specify "bus" terminals is no longer
-        // used, map it to the regular terminal prefix.
-        if (*namebf == P_NAME_BTERM_DEPREC)
-            *namebf = P_NAME_TERM;
-
-        set_name_string(namebf);
-        if (cp && *cp)
-            pna_setname = lstring::copy(cp);
-        if (nset >= 3)
-            // the subname is just a flag at present
-            set_subckt(true);
-        // Label coords are ignored for now.
-    }
-    return (true);
-}
-// End CDp_name functions
-
-#endif
 
 // CDp_labloc property
 // This property provides default locations for the property labels which
@@ -4018,21 +3808,12 @@ CDp_nmut::print(sLstr *lstr, int, int) const
 {
     if (!pnmu_odesc1 || !pnmu_odesc2)
         return (false);
-#ifdef NEWNMP
     CDp_cname *pn1 = (CDp_cname*)pnmu_odesc1->prpty(P_NAME);
     if (!pn1 || !pn1->name_string())
         return (false);
     CDp_cname *pn2 = (CDp_cname*)pnmu_odesc2->prpty(P_NAME);
     if (!pn2 || !pn2->name_string())
         return (false);
-#else
-    CDp_name *pn1 = (CDp_name*)pnmu_odesc1->prpty(P_NAME);
-    if (!pn1 || !pn1->name_string())
-        return (false);
-    CDp_name *pn2 = (CDp_name*)pnmu_odesc2->prpty(P_NAME);
-    if (!pn2 || !pn2->name_string())
-        return (false);
-#endif
 
     lstr->add_i(pnmu_indx);
     lstr->add_c(' ');
@@ -4515,11 +4296,7 @@ CDp_lref::find_my_object(CDs *sd, CDla *la)
         for (CDm *mdesc = mgen.m_first(); mdesc; mdesc = mgen.m_next()) {
             CDc_gen cgen(mdesc);
             for (cdesc = cgen.c_first(); cdesc; cdesc = cgen.c_next()) {
-#ifdef NEWNMP
                 CDp_cname *pn = (CDp_cname*)cdesc->prpty(P_NAME);
-#else
-                CDp_name *pn = (CDp_name*)cdesc->prpty(P_NAME);
-#endif
                 if (!pn || !pn->name_string())
                     continue;
                 if (lname != pn->name_string())

@@ -266,11 +266,7 @@ sDE::sDE(GRobject caller)
         (GtkAttachOptions)0, 2, 2);
     row++;
 
-#ifdef NEWNMP
     CDp_sname *pn = (CDp_sname*)(cursde ? cursde->prpty(P_NAME) : 0);
-#else
-    CDp_name *pn = (CDp_name*)(cursde ? cursde->prpty(P_NAME) : 0);
-#endif
     if (pn && pn->name_string())
         gtk_entry_set_text(GTK_ENTRY(de_prefix), Tstring(pn->name_string()));
 
@@ -706,11 +702,7 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
         // This is only possible for a ground terminal.
         if (nodecnt == 1 && !ent.model && !ent.value && !ent.param &&
                 !GRX->GetStatus(DE->de_toggle)) {
-#ifdef NEWNMP
             CDp_sname *pn = (CDp_sname*)cursde->prpty(P_NAME);
-#else
-            CDp_name *pn = (CDp_name*)cursde->prpty(P_NAME);
-#endif
             if (pn) {
                 cursde->prptyUnlink(pn);
                 delete pn;
@@ -724,17 +716,9 @@ sDE::de_devs_proc(GtkWidget*, void *arg)
         }
     }
     else {
-#ifdef NEWNMP
         CDp_sname *pn = (CDp_sname*)cursde->prpty(P_NAME);
-#else
-        CDp_name *pn = (CDp_name*)cursde->prpty(P_NAME);
-#endif
         if (!pn) {
-#ifdef NEWNMP
             pn = new CDp_sname;
-#else
-            pn = new CDp_name;
-#endif
             pn->set_next_prp(cursde->prptyList());
             cursde->setPrptyList(pn);
         }

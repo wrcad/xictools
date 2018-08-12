@@ -1145,25 +1145,15 @@ wire:
             }
         }
         if (value == P_BNODE && mode == Electrical) {
-#ifdef NEWWNO
             pdesc = new CDp_bwnode;
             if (!((CDp_bwnode*)pdesc)->parse_bnode(str)) {
-#else
-            pdesc = new CDp_bnode;
-            if (!((CDp_bnode*)pdesc)->parse_bnode(str)) {
-#endif
                 delete pdesc;
                 return (false);
             }
         }
         else if (value == P_NODE && mode == Electrical) {
-#ifdef NEWWNO
             pdesc = new CDp_wnode;
             if (!((CDp_wnode*)pdesc)->parse_node(str)) {
-#else
-            pdesc = new CDp_node;
-            if (!((CDp_node*)pdesc)->parse_node(str)) {
-#endif
                 delete pdesc;
                 return (false);
             }
@@ -1220,7 +1210,6 @@ inst:
                 }
                 break;
             case P_NAME:
-#ifdef NEWNMP
                 {
                     pdesc = 0;
                     // Note that macro status is inherited from the
@@ -1238,13 +1227,6 @@ inst:
                         return (false);
                     }
                 }
-#else
-                pdesc = new CDp_name;
-                if (!((CDp_name*)pdesc)->parse_name(str)) {
-                    delete pdesc;
-                    return (false);
-                }
-#endif
                 break;
             case P_BRANCH:
                 pdesc = new CDp_branch;

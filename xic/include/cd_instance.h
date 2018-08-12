@@ -293,11 +293,7 @@ struct CDc : public CDo
     void setTransform(const CDtf*, const CDap* = 0);
     void prptyAddStruct(bool = false);
     CDelecCellType elecCellType(const char** = 0);
-#ifdef NEWNMP
     const char *getElecInstBaseName(const CDp_cname* = 0) const;
-#else
-    const char *getElecInstBaseName(const CDp_name* = 0) const;
-#endif
     char *getElecInstName(unsigned int) const;
     char *getPhysInstName() const;
     bool nameOK(const char*) const;

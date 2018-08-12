@@ -1211,19 +1211,11 @@ namespace {
                     DSP()->ShowInstanceLabel(ERASE, ed, vecix);
 
                     CDp_range *pr = (CDp_range*)ed->prpty(P_RANGE);
-#ifdef NEWNMP
                     CDp_cname *pn;
                     if (vecix > 0 && pr)
                         pn = pr->name_prp(0, vecix);
                     else
                         pn = (CDp_cname*)ed->prpty(P_NAME);
-#else
-                    CDp_name *pn;
-                    if (vecix > 0 && pr)
-                        pn = pr->name_prp(0, vecix);
-                    else
-                        pn = (CDp_name*)ed->prpty(P_NAME);
-#endif
                     if (!pn)
                         continue;
                     int px = pn->pos_x();
@@ -1277,19 +1269,11 @@ namespace {
                 DSP()->ShowInstanceLabel(ERASE, ed, vecix);
 
                 CDp_range *pr = (CDp_range*)ed->prpty(P_RANGE);
-#ifdef NEWNMP
                 CDp_cname *pn;
                 if (vecix > 0 && pr)
                     pn = pr->name_prp(0, vecix);
                 else
                     pn = (CDp_cname*)ed->prpty(P_NAME);
-#else
-                CDp_name *pn;
-                if (vecix > 0 && pr)
-                    pn = pr->name_prp(0, vecix);
-                else
-                    pn = (CDp_name*)ed->prpty(P_NAME);
-#endif
                 if (!pn)
                     continue;
                 int x = pn->pos_x();

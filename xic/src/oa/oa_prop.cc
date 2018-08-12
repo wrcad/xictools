@@ -500,43 +500,15 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
                         }
                     }
                     if (modprop) {
-#ifdef NEWNMP
                         lstr.add(value);
                         lstr.add(" macro");
 
                         CDp *px = new CDp(lstr.string(), P_NAME);
                         px->set_next_prp(pvrt);
                         pvrt = px;
-#else
-                        lstr.add(value);
-                        lstr.add(" 0");
-                        if (*value == 'X' || *value == 'x') {
-                            lstr.add_c(' ');
-                            lstr.add("subckt");
-                        }
-                        CDp *px = new CDp(lstr.string(), P_NAME);
-                        px->set_next_prp(pvrt);
-                        pvrt = px;
-
-                        CDp *px = new CDp("macro", P_MACRO);
-                        px->set_next_prp(pvrt);
-                        pvrt = px;
-#endif
                     }
                     else {
-#ifdef NEWNMP
                         lstr.add(value);
-#else
-                        lstr.add(value);
-                        lstr.add(" 0");
-                        if (*value == 'X' || *value == 'x') {
-                            lstr.add_c(' ');
-                            lstr.add("subckt");
-                        }
-                        CDp *px = new CDp(lstr.string(), P_NAME);
-                        px->set_next_prp(pvrt);
-                        pvrt = px;
-#endif
                     }
 
                     // Now, in some cases we need to add a model
@@ -1049,11 +1021,7 @@ cOAprop::addPrptyLabel(CDc *cdesc, CDp *pdesc)
         return (true);
     if (pdesc->value() == P_NAME) {
         // The "null" devices don't have a name label.
-#ifdef NEWNMP
         CDp_cname *pa = (CDp_cname*)pdesc;
-#else
-        CDp_name *pa = (CDp_name*)pdesc;
-#endif
         int key = pa->key();
         if (key != P_NAME_TERM && !isalpha(key))
             return (true);
