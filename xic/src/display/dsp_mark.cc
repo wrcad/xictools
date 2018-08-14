@@ -1360,7 +1360,7 @@ cDisplay::HliteElecBsc(bool display, const CDp_bsnode *pn)
             sMark *mp = 0, *mn;
             for (sMark *mm = MK.hlite_list; mm; mm = mn) {
                 mn = mm->mNext;
-                if (mm->mType == (symb ? MARK_STERM : MARK_ETERM) &&
+                if (mm->mType == (symb ? MARK_SYBSC : MARK_BSC) &&
                         mm->mX == x && mm->mY == y &&
                         mm->mColor == SelectColor) {
                     if (!mp)

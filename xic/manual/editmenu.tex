@@ -1749,7 +1749,7 @@ will be deleted.
 
 
 % -----------------------------------------------------------------------------
-% xic:cprop 012014
+% xic:cprop 081418
 \section{The {\cb Cell Properties} Button: Edit Cell properties}
 \index{Cell Properties button}
 The {\cb Cell Properties} button in the {\cb Edit Menu} brings up the
@@ -1855,17 +1855,6 @@ representing the opamp, from a vendor model file.
 See the description of the {\et flatten} property in the physical {\cb
 Add} menu properties list above.  The property has the same use in
 electrical mode.
-
-\index{macro property}
-\item{\et macro}\\
-This property can be applied to device masters.  The only effect is
-that when {\Xic} is generating SPICE output, instances of devices with
-this property will have an `{\vt X}' prepended to the device name,
-thereby making the device appear as a subcircuit call in SPICE.  This
-enables a component, such as a resistor, to be modeled by a subcircuit
-that may contain dependent sources to model nonlinear behavior.  The
-subcircuit definition is likely provided in the SPICE models from a
-vendor or foundry.
 \end{description}
 
 For device cells, as would appear in the device library file, {\et

@@ -1764,7 +1764,7 @@ prptyspec
 spiceline
 xic:editmenu
 
-!! 012014
+!! 081418
 !!KEYWORD
 xic:cprop
 !!TITLE
@@ -1893,18 +1893,6 @@ Cell Property Editor
     See the description of the <b>flatten</b> property in the physical
     <b>Add</b> menu properties list above.  The property has the same
     use in electrical mode.
-    </dl>
-
-    <dl>
-    <dt><a href="prpty:macro"><b>macro</b></a><dd>
-    This property can be applied to device masters.  The only effect
-    is that when <i>Xic</i> is generating SPICE output, instances of
-    devices with this property will have an '<tt>X</tt>' prepended to
-    the device name, thereby making the device appear as a subcircuit
-    call in SPICE.  This enables a component, such as a resistor, to
-    be modeled by a subcircuit that may contain dependent sources to
-    model nonlinear behavior.  The subcircuit definition is likely
-    provided in the SPICE models from a vendor or foundry.
     </dl>
 
     <p>
