@@ -354,11 +354,15 @@ bug fixed in OpenImport with null cbin, would seg fault.
 
 ToDo: handle via/pc masters in archive (DONE for pcells, check this)
 
-TODO: Skip overwrite prompt based on cell source and modification status?
+TODO: Accept model from CDF. OK (bug fixed)
 
-TODO: Accept model from CDF.
+FIX Place button in Content window of OA Libs panel requires library
+to be open or place fails with uninformative error message. DONE
+
 Chris Ayala:  "Glued contacts" when moving schematic device, meaning
 wires stretch(?).
+
+TODO: Skip overwrite prompt based on cell source and modification status?
 
 idea:
 Extraction change?  always flatten devices, but never promote device
@@ -366,6 +370,4 @@ in flatten (it will be discovered at higher level).  Skip device cells
 when checking lower levels when recognizing.  Then, overlapping devices
 whould be handled properly.
 
-FIX Place button in Content window of OA Libs panel requires library
-to be open or place fails with uninformative error message.
-
+update OA/Xic properties and mapping in docs, e.g., XICP_PARTNAME

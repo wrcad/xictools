@@ -688,8 +688,8 @@ cMain::TouchCell(const char *cname, bool tocur)
 }
 
 
-// Assume that one has a collection of pcell sub-master Xic cells that
-// have been imported from a foreign OpenAccess tool such as virtuoso. 
+// Suppose that one has a collection of pcell sub-master Xic cells that
+// have been imported from a foreign OpenAccess tool such as Virtuoso. 
 // These are assumed to not be portable pcells.  One would like to use
 // these cells to resolve pcells when reading directly from the
 // OpenAccess database.  There are two issues:  1) the system needs to

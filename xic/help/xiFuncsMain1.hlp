@@ -42,6 +42,7 @@ funcs:main1:version
 !!REDIRECT Edit                 funcs:main1:curcell#Edit
 !!REDIRECT OpenCell             funcs:main1:curcell#OpenCell
 !!REDIRECT TouchCell            funcs:main1:curcell#TouchCell
+!!REDIRECT RegisterSubMasters   funcs:main1:curcell#RegisterSubMasters
 !!REDIRECT Push                 funcs:main1:curcell#Push
 !!REDIRECT PushElement          funcs:main1:curcell#PushElement
 !!REDIRECT Pop                  funcs:main1:curcell#Pop
@@ -253,7 +254,7 @@ Main Functions 1
 !!HTML
     <table border=1 cellpadding=2 bgcolor="#ffffee">
 
-    <!-- 030115 -->
+    <!-- 081318 -->
     <tr><th colspan=2 align=center>
         <a href="funcs:main1:curcell">Current Cell</a></th></tr>
 
@@ -266,6 +267,9 @@ Main Functions 1
     <tr><td><a href="funcs:main1:curcell#TouchCell">
      <tt>TouchCell</tt>(<i>cellname</i>, <i>curcell</i>)</a>
      </td><td>Create cell in memory</td></tr>
+    <tr><td><a href="funcs:main1:curcell#RegsiterSubMasters">
+     <tt>RegsiterSubMasters</tt>(<i>archive</i>)</a>
+     </td><td>Pre-load pcell sub-masters to resolve as archive is read</td></tr>
     <tr><td><a href="funcs:main1:curcell#Push">
      <tt>Push</tt>(<i>object_handle</i>)</a>
      </td><td>Make a subcell the current cell</td></tr>
@@ -991,6 +995,47 @@ Current Cell
     much faster than <tt>Edit</tt> or <tt>OpenCell</tt> for cells
     already in memory.  The return value is -1 on error, 0 if no new
     cell was created, or 1 if a new cell was created.
+    </dl>
+    <hr>
+
+    <!-- 081318 -->
+    <a name="RegisterSubMasters"></a>
+    <dl>
+    <dt><b>(int) <tt>RegisterSubMasters</tt>(<i>archive</i>)</b>
+    <dd><br>
+    Suppose that one has a collection of pcell sub-master <i>Xic</i>
+    cells that have been imported from a foreign OpenAccess tool such
+    as Virtuoso.  These are assumed to not be portable pcells.  One
+    would like to use these cells to resolve pcells when reading
+    directly from the OpenAccess database.  There are two issues:  1)
+    the system needs to know that these cells are available, and 2)
+    one has to remap the cell names.  The first issue is fixed simply
+    by making the sub-masters available through the library mechanism. 
+    The second issue is due to the simple naming convention of the
+    sub-master instantiations, which suffixes the pcell name with
+    "<tt>$$</tt>" followed by an integer.  The integer is a count of
+    when the cell was generated, and is consistent with the design
+    output at the time, but there is no guarantee the the names are
+    consistent with the design at other times.
+
+    <p>
+    This function will read a collection of cells into a temporary
+    symbol table.  Those that are pcell sub-masters have the property
+    strings entered into the internal pcell database, under the
+    existing cell name.  This will cause the correct cell name to be
+    associated with a given parameter set.  The cells are not saved,
+    but the entries in the pcell table persist so that resolution,
+    when reading OpenAccess or otherwise, will reference the correct
+    cells.  The cell collection must be available through an open
+    library, and this function must be run before loading the design.
+
+    <p>
+    The argument is either a path to a directory containing native
+    pcell sub-master cells, or a path to an archive file that contains
+    the cells.  The return is 1 on success, 0 otherwise with a message
+    available from <a href="GetError"><tt>GetError</tt></a>.  This
+    functionality is also available with the <a
+    href="!preload"><b>!preload</b></a> command.
     </dl>
     <hr>
 

@@ -2625,7 +2625,10 @@ devedit
 xic:devs
 filefmts
 
-!! 102208
+!!REDIRECT  .xic_ignore         modlib#ignore
+!!REDIRECT  xic_ignore          modlib#ignore
+
+!! 081318
 !!KEYWORD
 modlib
 !!TITLE
@@ -2655,12 +2658,15 @@ Model Library file
     <b>ModelSubdirs</b> keyword.
 
     <p>
+    <a name="ignore"></a>
     In the search, the current directory is always searched first,
     whether or not this is actually specified in the search path. 
     Only the first model library file is read, which allows the user
     to override a system model library file with a custom version. 
     All files found in <tt>models</tt> subdirectories will be
-    searched.  The names of the files found in <tt>models</tt>
+    searched, unless the directory contains a file names
+    "<tt>.xic_ignore</tt>", in which case the files in the directory
+    will be ignored.  The names of the files found in <tt>models</tt>
     subdirectories are unimportant, but files existing in these
     directories should contain SPICE models, though it is not an error
     if no models or subcircuits are found in a file.

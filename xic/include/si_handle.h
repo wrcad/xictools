@@ -68,6 +68,7 @@ enum HDLtype
     HDLbstream
 };
 
+
 // enum:          datatype:       iterator returns:  deletes data?
 // HDLgeneric     no data type    data               no
 // HDLstring      stringlist      char*              yes (not string)

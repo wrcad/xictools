@@ -175,19 +175,20 @@ CHANGES AND NEW FEATURES
   The property usage model for Name/Macro properties has changed, and
   there is a backwards compatibility issue.
 
-    > Xic 4.3.6 can read and process any Xic file.
+    > Xic 4.3.6 can read and correctly process any Xic file.
 
     > Files written by 4.3.6 contain no Macro properties, unless the
       WriteMacroProps variable is set, in which case any needed Macro
-      properties will be regenerated when writing output.  This
-      must be set for files written with xic-4.3.6 to be read properly
-      by earlier Xic releases, if Macro properties would be present.
+      properties will be regenerated when writing output.  This must
+      be set for files written with xic-4.3.6 to be read properly by
+      earlier Xic releases, if Macro properties would be present.
 
-      However, Macro properties are unusual, and these are set primarily
-      by the OpenAccess reader when encountering certain passive device
-      schematic symbols that are implemented as macros instead of models.
-      Unless you have created these yourself, or are using OpenAccess with
-      a PDK, you won't have to worry about Macro properties.
+      However, Macro properties are unusual, and these are set
+      primarily by the OpenAccess reader when encountering certain
+      passive device schematic symbols that are implemented as macros
+      instead of models.  Unless you have created these yourself, or
+      are using OpenAccess with a PDK, you won't have to worry about
+      Macro properties.
 
       When Xic-4.3.6 encounters a Macro property when reading input, a
       window pops up warning the user to set the WriteMacroProps
@@ -195,9 +196,9 @@ CHANGES AND NEW FEATURES
       systems.  If this doesn't appear, then the design is "safe".
 
       The message will not appear if the WriteMacroProps variable is
-      set, which can be done in a .xicstart/.xicinit or techfile.
-      If you are using 4.3.6 only, just save the design to produce files
-      without Macro properties, and thus avopid the pop-up.
+      set, which can be done in a .xicstart/.xicinit or techfile.  If
+      you are using 4.3.6 only, just save the design to produce files
+      without Macro properties, and thus avoid the pop-up.
 
   Specific changes.
   1.  New separate propery structures for cells/instances, instance name
@@ -210,13 +211,14 @@ CHANGES AND NEW FEATURES
 
   3.  The macro flag can be set for devices as well as subcircuits. 
       For devices, this replaces the separate Macro property.  Old
-      files with macro properties read fine, the macro properties setr
+      files with macro properties read fine, the macro properties set
       the flag and are removed.  They can be regenerated in output if
       the new WriteMacroProps variable is set.  This is required for
-      backward compatibility to 4.3.5 and earlier.
+      backward compatibility to 4.3.5 and earlier when Macro properties
+      would be present.
 
   4.  The macro flag in instances is inherited from the master and is
-      no longer settable from the instance name property string.
+      not settable from the instance name property string.
 
   5.  The property string syntax has changed a bit, but is backwards
       compatible except for macro properties.
@@ -240,18 +242,18 @@ CHANGES AND NEW FEATURES
 
   6.  If a macro property is read, an Info window appears telling the
       user to set WriteMacroProps if backwards compatibility is
-      needed.  Save design without setting variable to shut this up.
+      needed.
      
 * OpenAccess interface enhancements
-      
+
     Update to OpenAccess translator property handling.  All electrical
     cell properties are now read at once, from both schematic and
     symbol views, before reading other content.  This ensures having
-    all values available when needed, which avoided some trouble.
+    all values available when needed, which avoids some trouble.
 
     A new property XICP_PARTNAME (7162) can be applied, and is set
-    from "partName" properties when reading OpenAccess.  This is used in
-    in @partName text labels.
+    from "partName" properties when reading OpenAccess.  This is used
+    in in @partName text labels.
 
 * Misc. Changes
 
@@ -261,16 +263,44 @@ CHANGES AND NEW FEATURES
   A -d option was added to the !mklib command for creating references
   to directories that contain collections of native cell files.
 
+* New !preload command and RegisterSubMaster function.
+
+  These allow native sub-master cells in the library to resolve
+  references when reading OpenAccess data, useful when pcell
+  evaluation is not possible.  Rather obscure, see the help system
+  (give "? RegisterSubMasters") for complete information.
+
 
 BUGS FIXED
 ---- -----
 
-* Fixes a bug causing some temporary files to not be deleted on normal
+* Fixed a bug causing some temporary files to not be deleted on normal
   program exit.
 
 * Prevent the simulation monitor pop-up from taking focus, to avoid
   giving focus back to the main window which causes iplots to
   disappear underneath the Xic window (on some window managers).
+
+* The extraction system will now ignore duplicate instance placements,
+  these are ignored elsewhere as well.  Previously these caused errors
+  and required explicit removal before extraction would work.
+
+* Fixed a bug causing errors if the Place button was used with library
+  cells.
+
+* Using Place from the Contents pop-up from the OpenAccess Libraries
+  listing panel requred that the library be open, or there was an
+  error with an uninformative message.  The library is no longer
+  required to be open for placement through this button.
+
+* Fixed ghost terminal marks incorectly appearing in the main window
+  when copying from a schematic sub-window with a different cell, and
+  the mouse pointer is in the sub-window.
+
+* Avoid showing the Merge Control pop-up spuriously when loading pcell
+  sub-masters.
+
+* Fixed miscellaneous bugs in pcell evaluation.
 
 
 -------------------------------------------------------------------------------

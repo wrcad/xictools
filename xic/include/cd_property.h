@@ -622,7 +622,7 @@ protected:
 // This supports an associated label.  In a wire, the label
 // (pbw_label) always exists and provides a "net expression" that
 // defines the connections.
-//
+
 struct CDp_bwnode : public CDp_bnode
 {
     CDp_bwnode()
@@ -935,7 +935,6 @@ protected:
 };
 
 
-//----------------------------------------------------------------------------
 // Bus Node property for cells.
 
 struct CDp_bsnode : public CDp_bcnode
@@ -1025,7 +1024,8 @@ protected:
 
 // Node property for wires.
 //
-// This an associated label, which will give the wire net a name.
+// This provides an associated label, which will give the wire net a
+// name.
 //
 struct CDp_wnode : public CDp_node
 {
@@ -1207,6 +1207,38 @@ protected:
 };
 
 
+// Node property for cell instances.
+
+struct CDp_cnode : public CDp_nodeEx
+{
+    CDp_cnode()
+        {
+            pcno_term = 0;
+        }
+
+    CDp_cnode(const CDp_cnode&);
+    CDp_cnode &operator=(const CDp_cnode&);
+
+    virtual ~CDp_cnode();
+
+    // virtual overrides
+    CDp *dup()                const { return (new CDp_cnode(*this)); }
+
+    bool print(sLstr*, int, int) const;
+    unsigned int term_flags() const;
+
+    CDp_cnode *next()               { return ((CDp_cnode*)next_n()); }
+
+    CDcterm *inst_terminal()  const { return (pcno_term); }
+    void set_terminal(CDcterm *t)   { pcno_term = t; }
+
+    bool parse_cnode(const char*);
+
+private:
+    CDcterm *pcno_term;             // Physical terminal descriptor.
+};
+
+
 // Node property for cells.
 //
 // This provides an additional coordinate pair used for the hot-spot
@@ -1263,38 +1295,6 @@ struct CDp_snode : public CDp_nodeEx
 private:
     CDsterm *psno_term;             // Physical terminal descriptor.
     int psno_x, psno_y;             // Node location in schematic.
-};
-
-
-// Node property for cell instances.
-
-struct CDp_cnode : public CDp_nodeEx
-{
-    CDp_cnode()
-        {
-            pcno_term = 0;
-        }
-
-    CDp_cnode(const CDp_cnode&);
-    CDp_cnode &operator=(const CDp_cnode&);
-
-    virtual ~CDp_cnode();
-
-    // virtual overrides
-    CDp *dup()                const { return (new CDp_cnode(*this)); }
-
-    bool print(sLstr*, int, int) const;
-    unsigned int term_flags() const;
-
-    CDp_cnode *next()               { return ((CDp_cnode*)next_n()); }
-
-    CDcterm *inst_terminal()  const { return (pcno_term); }
-    void set_terminal(CDcterm *t)   { pcno_term = t; }
-
-    bool parse_cnode(const char*);
-
-private:
-    CDcterm *pcno_term;             // Physical terminal descriptor.
 };
 
 
@@ -1369,8 +1369,8 @@ struct CDp_sname : public CDp
     bool parse_name(const char*);
 
 protected:
-    bool pns_macro;             // not used, will replace P_MACRO
-    bool pns_located;           // physical location valid.
+    bool pns_macro;             // is a macro (replaces P_MACRO)
+    bool pns_located;           // physical location valid
     CDpfxName pns_name;         // name prefix
     CDnetName pns_labtext;      // terminal label default text
 };

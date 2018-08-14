@@ -3185,7 +3185,7 @@ bangcmds::mklib(const char *s)
         char *libfile;
     } m;
 
-    // mklib [arcfile] [-a] [-l]|[-u]
+    // mklib [arcfile] [-d] [-a] [-l]|[-u]
     // If arcfile is given, references are to cells in arcfile.
     // Otherwise, references are to cells in current hierarchy.  If
     // the current hierarchy is an archive, save references as if in

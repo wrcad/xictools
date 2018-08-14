@@ -43,12 +43,14 @@ The first group of main module functions:
 \begin{longtable}{|p{3.0in}|p{2.875in}|} \hline
 \multicolumn{2}{|l|}{\kb Main Functions 1}\\ \hline
 
-% 030115
+% 081318
 \multicolumn{2}{|c|}{\kb Current Cell}\\ \hline
 \vr Edit({\it name\/}, {\it symname\/}) & Edit cell\\ \hline
 \vr OpenCell({\it name\/}, {\it symname\/}, {\it curcell}) & Read file into
   memory\\ \hline
 \vr TouchCell({\it cellname\/}, {\it curcell}) & Create cell in memory\\ \hline
+\vr RegisterSubMasters({\it archive\/}) & Pre-load pcell sub-masters to 
+  resolve as archive is read\\ \hline
 \vr Push({\it object\_handle\/}) & Make a subcell the current cell\\ \hline
 \vr PushElement({\it object\_handle\/}, {\it xind\/}, {\it yind\/}) & Make an
   arrayed subcell element the current cell\\ \hline
@@ -1926,6 +1928,40 @@ the current cell to {\it cellname}.  This can be much faster than {\vt
 Edit} or {\vt OpenCell} for cells already in memory.  The return value
 is -1 on error, 0 if no new cell was created, or 1 if a new cell was
 created.
+
+%------------------------------------
+% 081318
+\index{RegisterSubMasters function}
+\item{(int) \vt RegisterSubMasters({\it archive\/})}\\
+Suppose that one has a collection of pcell sub-master {\Xic} cells
+that have been imported from a foreign OpenAccess tool such as
+Virtuoso.  These are assumed to not be portable pcells.  One would
+like to use these cells to resolve pcells when reading directly from
+the OpenAccess database.  There are two issues:  1) the system needs
+to know that these cells are available, and 2) one has to remap the
+cell names.  The first issue is fixed simply by making the sub-masters
+available through the library mechanism.  The second issue is due to
+the simple naming convention of the sub-master instantiations, which
+suffixes the pcell name with ``{\vt \$\$}" followed by an integer. 
+The integer is a count of when the cell was generated, and is
+consistent with the design output at the time, but there is no
+guarantee the the names are consistent with the design at other times.
+
+This function will read a collection of cells into a temporary symbol
+table.  Those that are pcell sub-masters have the property strings
+entered into the internal pcell database, under the existing cell
+name.  This will cause the correct cell name to be associated with a
+given parameter set.  The cells are not saved, but the entries in the
+pcell table persist so that resolution, when reading OpenAccess or
+otherwise, will reference the correct cells.  The cell collection must
+be available through an open library, and this function must be run
+before loading the design.
+
+The argument is either a path to a directory containing native pcell
+sub-master cells, or a path to an archive file that contains the
+cells.  The return is 1 on success, 0 otherwise with a message
+available from {\vt GetError}; This functionality is also available
+with the {\cb !preload} command.
 
 %------------------------------------
 % 012114

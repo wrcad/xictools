@@ -297,9 +297,10 @@ xiVariables.hlp
     <tr><td><b>OasPrintNoWrap</b></td><td>Use one line per record in OASIS ASCII output</td></tr>
     <tr><td><b>OasPrintOffset</b></td><td>Add file offsets to OASIS ASCII output</td></tr>
 
-!! 020918
+!! 081318
     <tr><th colspan=2><a href="!set:cvexport">Convert Menu - Output</a></th></tr>
     <tr><td><b>StripForExport</b></td><td>Strip all format extensions from output file</td></tr>
+    <tr><td><b>WriteMacroProps</b></td><td>Include deprecated <b>macro</b> properties in output</td></tr>
     <tr><td><b>KeepLibMasters</b></td><td>Write library cells when crating archive file</td></tr>
     <tr><td><b>SkipInvisible</b></td><td>Do not write invisible layers to output</td></tr>
     <tr><td><b>NoCompressContext</b></td><td>Don't compress instance lists in CHD</td></tr>
@@ -4345,6 +4346,7 @@ Convert Menu - Input and ASCII Output
 !set:variables
 
 !!REDIRECT StripForExport       !set:cvexport#StripForExport
+!!REDIRECT WriteMacroProps      !set:cvexport#WriteMacroProps
 !!REDIRECT KeepLibMasters       !set:cvexport#KeepLibMasters
 !!REDIRECT SkipInvisible        !set:cvexport#SkipInvisible
 !!REDIRECT NoCompressContext    !set:cvexport#NoCompressContext
@@ -4375,7 +4377,7 @@ Convert Menu - Input and ASCII Output
 !!REDIRECT OasWriteUseFastSort  !set:cvexport#OasWriteUseFastSort
 !!REDIRECT OasWritePrptyMask    !set:cvexport#OasWritePrptyMask
 
-!! 020918
+!! 081318
 !!KEYWORD
 !set:cvexport
 !!TITLE
@@ -4400,6 +4402,8 @@ Convert Menu - Output
     <tr><td><b>StripForExport</b></td>
       <td><a href="xic:convt"><b>Format Conversion</b></a> and
       <a href="xic:exprt"><b>Export Control</b></a></td> <td>4</td></tr>
+    <tr><td><b>WriteMacroProps</b></td>
+      <td><a href="xic:exprt"><b>Export Control</b></a></td> <td>1</td></tr>
     <tr><td><b>KeepLibMasters</b></td>
       <td><a href="xic:exprt"><b>Export Control</b></a></td> <td>3</td></tr>
     <tr><td><b>SkipInvisible</b></td>
@@ -4540,6 +4544,18 @@ Convert Menu - Output
     button should be active when creating a file to be sent to a
     vendor for use in generating photomasks.  Note that the electrical
     information can never be recovered from a stripped file.
+    </dl>
+
+!! 081318
+    <a name="WriteMacroProps"></a>
+    <dl>
+    <dt><b>WriteMacroProps</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, output will include <a
+    href="prpty:macro"><b>macro</b></a> properties, which are no
+    longer in use in 4.3.6 and later.  This variable can be set to
+    force generation of these properties, thus providing backwards
+    compatibility.
     </dl>
 
 !! 022816

@@ -264,9 +264,10 @@ follow.
 \et OasPrintNoWrap & Use one line per record in OASIS ASCII output\\ \hline
 \et OasPrintOffset & Add file offsets to OASIS ASCII output\\ \hline
 
-% 020918
+% 081318
 \multicolumn{2}{|c|}{\kb Convert Menu -- Output}\\ \hline
 \et StripForExport & Strip all format extensions from output file\\ \hline
+\et WriteMacroProps & Include deprecated {\et macro} properties in output\\ \hline
 \et KeepLibMasters & Write library cells when creating archive file\\ \hline
 \et SkipInvisible & Do not write invisible layers to output\\ \hline
 \et NoCompressContext & Don't compress instance lists in archive context\\
@@ -3350,7 +3351,7 @@ output format page of the {\cb Format Conversion} panel.
 
 
 % -----------------------------------------------------------------------------
-% xic:cvexport 020918
+% xic:cvexport 081318
 \section{Convert Menu --- Output}
 
 The {\cb !set} variables below affect the format conversion when
@@ -3367,6 +3368,7 @@ of the variables.
 \bf Variable          & \bf Set From              & \bf Notes\\ \hline
 \et StripForExport & {\cb Format Conversion} and {\cb Export Control} & 4\\
   \hline
+\et WriteMacroProps   & \cb Export Control        & 1\\ \hline
 \et KeepLibMasters    & \cb Export Control        & 3\\ \hline
 \et SkipInvisible     & \cb Export Control        & 3\\ \hline
 \et KeepBadArchive    &                           & 1\\ \hline
@@ -3464,6 +3466,15 @@ Control} and {\cb Format Conversion} panels.  This button should be
 active when creating a file to be sent to a vendor for use in
 generating photomasks.  Note that the electrical information can never
 be recovered from a stripped file.
+
+% 081318
+\index{WriteMacroProps variable}
+\item{\et WriteMacroProps}\\
+{\bf Value:} boolean.\\
+When set, output will include {\et macro} properties, which are no
+longer in use in 4.3.6 and later.  This variable can be set to force
+generation of these properties, thus providing backwards
+compatibility.
 
 % 022816
 \index{KeepLibMasters variable}

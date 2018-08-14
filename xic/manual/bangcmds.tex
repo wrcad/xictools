@@ -237,9 +237,10 @@ commands are described in detail in the following sections.
 \cb !oadelete & Delete OpenAccess object\\ \hline
 %\fi
 
-% 040216
+% 081318
 \multicolumn{2}{|c|}{\kb Parameterized Cells}\\ \hline
 \cb !rmpcprops & Remove pcell properties from pcell sub-masters\\ \hline
+\cb !preload & Pre-load sub-masters to resolve as cell data are read\\ \hline
 
 % 102712
 \multicolumn{2}{|c|}{\kb Rulers}\\ \hline
@@ -4141,19 +4142,26 @@ features associated with cell editing.  This flag is also set by the
 \section{Libraries and Databases}
 
 % -----------------------------------------------------------------------------
-% !mklib 021017
+% !mklib 081318
 \subsection{The {\cb !mklib} Command: Create Library File}
 \index{"!mklib command}
 \begin{quote}
-Syntax: {\vt !mklib [{\it archive\_file\/}] [-a] [-l]|[-u]}
+Syntax: {\vt !mklib [{\it archive\_file\/}] [-d] [-a] [-l]|[-u]}
 \end{quote}
 This command will create or append to a library file adding references
 to cells in the current hierarchy, or to cells in an archive file if
 {\it archive\_file} is given.  If {\vt -a} is given, the library
 entries will be appended to an existing library, otherwise a new
-library will be created.  If {\vt -l} is given, the reference name
-will be a lower-cased version of the cell name, or, if {\vt -u} is
-given, the reference will be upper-cased.
+library will be created.  If {\vt -d} is given, a {\vt Directory}
+reference will be created.  These are usually collections of native
+{\Xic} cells.  The {\it archive\_file} argument is the directory path
+in this case, if given.  If not given, the path will be prompted for. 
+The {\vt -l} and {\vt -u} arguments are ignored with {\vt -d} given. 
+Otherwise, if {\vt -l} is given, the reference name will be a
+lower-cased version of the cell name, or, if {\vt -u} is given, the
+reference will be upper-cased.
+
+The following applies when {\vt -d} is not given.
 
 if {\it archive\_file} is given, all cells found in the file will be
 added to the output library as references.  If the file is not rooted,
@@ -4707,6 +4715,40 @@ resolved.  Thus you must remember to explicitly enable saving the
 sub-masters when writing output, unless you have used the {\cb
 !rmpcprops} command.
 
+% !preload 081318
+\subsection{The {\cb !preload} Command: Pre-Load PCell Sub-Masters}
+\index{"!preload command}
+\begin{quote}
+Syntax: {\vt !preload} {\it archive}
+\end{quote}
+Suppose that one has a collection of pcell sub-master {\Xic} cells
+that have been imported from a foreign OpenAccess tool such as
+Virtuoso.  These are assumed to not be portable pcells.  One would
+like to use these cells to resolve pcells when reading directly from
+the OpenAccess database.  There are two issues:  1) the system needs
+to know that these cells are available, and 2) one has to remap the
+cell names.  The first issue is fixed simply by making the sub-masters
+available through the library mechanism.  The second issue is due to
+the simple naming convention of the sub-master instantiations, which
+suffixes the pcell name with ``{\vt \$\$}" followed by an integer. 
+The integer is a count of when the cell was generated, and is
+consistent with the design output at the time, but there is no
+guarantee the the names are consistent with the design at other times.
+
+This command will read a collection of cells into a temporary symbol
+table.  Those that are pcell sub-masters have the property strings
+entered into the internal pcell database, under the existing cell
+name.  This will cause the correct cell name to be associated with a
+given parameter set.  The cells are not saved, but the entries in the
+pcell table persist so that resolution, when reading OpenAccess or
+otherwise, will reference the correct cells.  The cell collection must
+be available through an open library, and this function must be run
+before loading the design.
+
+The argument is either a path to a directory containing native pcell
+sub-master cells, or a path to an archive file that contains the
+cells.  This capability is also available with the {\vt
+RegisterSubMasters} script function.
 
 \section{Rulers}
 

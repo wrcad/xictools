@@ -2091,7 +2091,7 @@ in the distributed {\vt device.lib} file.
  
 
 % -----------------------------------------------------------------------------
-% modlib 102208
+% modlib 081318
 \section{Model Library Files}
 
 \index{model.lib file}
@@ -2113,14 +2113,17 @@ subdirectories to search for device models is ``{\vt models}'', and
 this name can be changed in the technology file with the {\vt
 ModelSubdirs} keyword.
 
+\index{{\vt .xic\_ignore} file}
 In the search, the current directory is always searched first, whether
 or not this is actually specified in the search path.  Only the first
 model library file is read, which allows the user to override a system
 model library file with a custom version.  All files found in {\vt
-models} subdirectories will be searched.  The names of the files found
-in {\vt models} subdirectories are unimportant, but files existing in
-these directories should contain SPICE models, though it is not an
-error if no models or subcircuits are found in a file.
+models} subdirectories will be searched, unless the directory contains
+a file names ``{\vt .xic\_ignore}'', in which case the files in the
+directory will be ignored.  The names of the files found in {\vt
+models} subdirectories are unimportant, but files existing in these
+directories should contain SPICE models, though it is not an error if
+no models or subcircuits are found in a file.
 
 As with the device library file, the model library file can be edited
 using the {\cb Open} command in {\Xic}.  One simply enters the name
