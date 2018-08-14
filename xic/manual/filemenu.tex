@@ -898,7 +898,7 @@ were read in as part of an archive file.
 
 
 % -----------------------------------------------------------------------------
-% xic:sadev 041615
+% xic:sadev 081418
 \section{The {\cb Save As Device} Button:  Editing Devices}
 \index{Save As Device button}
 \label{devedit}
@@ -960,22 +960,31 @@ significance except as a unique identifier of that particular device,
 so the prefix should be unique in the device library file.  The prefix
 is saved in a {\et name} property applied to the device.
 
-If the current cell is not a SPICE device but rather a macro, which
-will instantiate a subcircuit (such as the ``{\vt opamp}'' example in
-the supplied {\vt device.lib} file) the SPICE Prefix {\it must} start
-with `{\vt x}' or `{\vt X}'.
+If the prefix entry contains a second word ``{\vt macro}''', then the
+{\vt macro} flag will be set in the {\et name} property.  In this
+case, if the name prefix does not start with ``{\vt X}'' or ``{\vt
+x}'', {\Xic} will prepend an ``{\vt X}'' to instance calls, so that
+they are actually resolved as subcircuits.  See the description of the
+name property for implications and use of this.  A {\et model}
+property supplies the name of the SPICE {\vt .subckt} that will be
+used.  This must be supplied in the generated SPICE netlist by some
+means.
 
-A subcircuit added in this manner is expected to reference a {\vt
-.subckt} macro in the model library.  The name of the macro (not the
-file name) is given to instances of the device as a {\et model}
-property.  A default model property can be supplied to the device.  In
-the example, the name of the device is ``{\vt opamp}'', and the {\et
-model} property is given as ``{\vt ua741}''.  There should be a file
-in the models subdirectories along the library search path, or an
-entry in the model library file, starting with ``{\vt .subckt ua741}
-...'' and containing the subcircuit definition, terminated with ``{\vt
-.ends}''.  Note that subcircuits and models can be intermixed freely
-in the model files, but the reference names must be unique.
+If the name prefix starts with ``{\vt X}'' or ``{\vt x}'', it is taken
+as a macro whether or not the keyword is given, to differentiate it
+from a normal subcircuit (which is not a ``device'').  A macro
+subcircuit is expected to reference a {\vt .subckt} macro in the model
+library or another source.  The name of the macro is given to
+instances of the device as a {\et model} property.  A default model
+property can be supplied to the device.  In the example in the
+provided device and model libraries, the name of the device is ``{\vt
+opamp}'', and the {\et model} property is given as ``{\vt ua741}''. 
+There should be a file in the models subdirectories along the library
+search path, or an entry in the model library file, starting with
+``{\vt .subckt ua741} ...'' and containing the subcircuit definition,
+terminated with ``{\vt .ends}''.  Note that subcircuits and models can
+be intermixed freely in the model files, but the reference names must
+be unique.
 
 There is one special case:  ground terminals.  These have exactly one
 connection (a {\et node} property), and no other properties including
@@ -991,10 +1000,11 @@ translate into {\et model} and {\et value} properties applied to the
 device.  Instances will inherit which ever of these properties is
 given, but they can be changed on a per-instance basis.
 
-If the device is a macro, i.e., the SPICE prefix starts with `{\vt x}'
-or `{\vt X}', then the {\cb Default Model} field is mandatory and
-contains the name of the subcircuit that will be instantiated.  This
-name should be found in a {\vt .subckt} line in the model library.
+If the device is a macro, i.e., the {\vt macro} keyword is given or
+the SPICE prefix starts with `{\vt x}' or `{\vt X}', then the {\cb
+Default Model} field is mandatory and contains the name of the
+subcircuit that will be instantiated.  This name should be found in a
+{\vt .subckt} line in the model library or elsewhere.
 
 The {\cb Default Parameters} field provides a default parameter set
 for the device or macro.  The string can be any text relevant to the

@@ -267,8 +267,13 @@ sDE::sDE(GRobject caller)
     row++;
 
     CDp_sname *pn = (CDp_sname*)(cursde ? cursde->prpty(P_NAME) : 0);
-    if (pn && pn->name_string())
-        gtk_entry_set_text(GTK_ENTRY(de_prefix), Tstring(pn->name_string()));
+    if (pn && pn->name_string()) {
+        sLstr lstr;
+        lstr.add(Tstring(pn->name_string()));
+        if (pn->is_macro())
+            lstr.add(" macro");
+        gtk_entry_set_text(GTK_ENTRY(de_prefix), lstr.string());
+    }
 
     GtkWidget *button = gtk_button_new_with_label("Help");
     gtk_widget_set_name(button, "help");
@@ -493,6 +498,17 @@ sDE::load(entries_t *e)
     e->value = strip(gtk_entry_get_text(GTK_ENTRY(de_value)));
     e->param = strip(gtk_entry_get_text(GTK_ENTRY(de_param)));
     e->branch = strip(gtk_entry_get_text(GTK_ENTRY(de_branch)));
+
+    // Make sure that 'X' is a macro.
+    if (*e->prefix == 'X' || *e->prefix == 'x') {
+        char *tmp = e->prefix;
+        char *tok = lstring::gettok(&tmp);
+        tmp = new char[strlen(tok) + 7];
+        sprintf(tmp, "%s macro", tok);
+        delete [] tok;
+        delete [] e->prefix;
+        e->prefix = tmp;
+    }
 }
 
 

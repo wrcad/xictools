@@ -922,7 +922,7 @@ Save As
 xic:filemenu
 
 
-!! 041615
+!! 081418
 !!KEYWORD
 xic:sadev devedit
 !!TITLE
@@ -1004,24 +1004,34 @@ Save As Device, Editing Devices
     property</a> applied to the device.
 
     <p>
-    If the current cell is not a SPICE device but rather a macro,
-    which will instantiate a subcircuit (such as the "<tt>opamp</tt>"
-    example in the supplied <tt>device.lib</tt> file) the SPICE Prefix
-    <i>must</i> start with '<tt>x</tt>' or `<tt>X</tt>'.
+    If the prefix entry contains a second word "<tt>macro</tt>", then
+    the <tt>macro</tt> flag will be set in the <a
+    href="prpty:name"><b>name</b></a> property.  In this case, if the
+    name prefix does not start with "<tt>X</tt>" or "<tt>x</tt>",
+    <i>Xic</i> will prepend an "<tt>X</tt>" to instance calls, so that
+    they are actually resolved as subcircuits.  See the description of
+    the name property for implications and use of this.
+    A <a href="prpty:model"><b>model</b></a> property supplies the name of the
+    SPICE <tt>.subckt</tt> that will be used.  This must be supplied in the
+    generated SPICE netlist by some means.
 
     <p>
-    A subcircuit added in this manner is expected to reference a
-    <tt>.subckt</tt> macro in the <a href="modlib">model library</a>. 
-    The name of the macro (not the file name) is given to instances of
-    the device as a <a href="prpty:model"><b>model</b> property</a>. 
-    A default model property can be supplied to the device.  In the
-    example, the name of the device is "<tt>opamp</tt>", and the
-    <b>model</b> property is given as "<tt>ua741</tt>".  There should
-    be a file in the models subdirectories along the library <a
-    href="xicpaths">search path</a>, or an entry in the model library
-    file, starting with "<tt>.subckt ua741</tt> ..." and containing
-    the subcircuit definition, terminated with "<tt>.ends</tt>".  Note
-    that subcircuits and models can be intermixed freely in the model
+    If the name prefix starts with "<tt>X</tt>" or "<tt>x</tt>", it is
+    taken as a macro whether or not the keyword is given.  to
+    differentiate it from a normal subcircuit (which is not a
+    "device").  A macro subcircuit is expected to reference a
+    <tt>.subckt</tt> macro in the <a href="modlib">model library</a>
+    or another source.  The name of the macro is given to instances of
+    the device as a <b>model</b> property.  A default model property
+    can be supplied to the device.  In the example in the default
+    provided device and model libraries, the name of the device is
+    "<tt>opamp</tt>", and the <b>model</b> property is given as
+    "<tt>ua741</tt>".  There should be a file in the models
+    subdirectories along the library <a href="xicpaths">search
+    path</a>, or an entry in the model library file, starting with
+    "<tt>.subckt ua741</tt> ..." and containing the subcircuit
+    definition, terminated with "<tt>.ends</tt>".  Note that
+    subcircuits and models can be intermixed freely in the model
     files, but the reference names must be unique.
 
     <p>
@@ -1042,11 +1052,12 @@ Save As Device, Editing Devices
     given, but they can be changed on a per-instance basis.
 
     <p>
-    If the device is a macro, i.e., the SPICE prefix starts with
-    '<tt>x</tt>' or '<tt>X</tt>', then the <b>Default Model</b> field
-    is mandatory and contains the name of the subcircuit that will be
-    instantiated.  This name should be found in a <tt>.subckt</tt>
-    line in the model library.
+    If the device is a macro, i.e., the <tt>macro</tt> keyword is
+    given or SPICE prefix starts with '<tt>x</tt>' or '<tt>X</tt>',
+    then the <b>Default Model</b> field is mandatory and contains the
+    name of the subcircuit that will be instantiated.  This name
+    should be found in a <tt>.subckt</tt> line in the model library or
+    elsewhere.
 
     <p>
     The <b>Default Parameters</b> field provides a default parameter
