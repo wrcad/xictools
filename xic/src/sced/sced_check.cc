@@ -348,12 +348,6 @@ namespace {
         va_end(args);
         lstr.add(buf);
     }
-
-    void af_cb(bool yn, void*)
-    {
-        if (yn)
-            FIO()->SetWriteMacroProps(true);
-    }
 }
 
 

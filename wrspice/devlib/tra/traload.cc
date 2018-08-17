@@ -286,12 +286,11 @@ sTRAinstance::pade_pred(double time, double h, double h1, double *ratio)
                 tv = TRAtvdb->tail();
         }
         else {
-tv = TRAtvdb->tail();
-//            tv = TRAtx2.tv_head->prev;
+            tv = TRAtvdb->tail();
             while (tv->time < ta)
                 tv = tv->next;
-if (tv->prev)
-            tv = tv->prev;
+            if (tv->prev)
+                tv = tv->prev;
 
             double f = (ta - tv->time)/(tv->next->time - tv->time);
             v1_i = tv->v_i + f*(tv->next->v_i - tv->v_i);
