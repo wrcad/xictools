@@ -1357,15 +1357,15 @@ struct CDp_sname : public CDp
                 pns_name = CD()->PfxTableAdd(n);
         }
 
-    const char *label_text()    const { return (Tstring(pns_labtext)); }
-
     int key()                   const
         {
             int c = (pns_name ? *Tstring(pns_name) : 0);
             return (isupper(c) ? tolower(c) : c);
         }
 
-    void set_label_text(const char*);
+    const char *def_label_text()    const { return (Tstring(pns_labtext)); }
+
+    void set_def_label_text(const char*);
     bool parse_name(const char*);
 
 protected:

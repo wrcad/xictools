@@ -268,7 +268,7 @@ cOAnetHandler::setupNets(bool symbolic)
                 OAerrLog.add_log(OAlogNet,
                     "Setting net name of device %s to %s",
                     Tstring(nh_sdesc->cellname()), (const char*)tname);
-                pname->set_label_text(tname);
+                pname->set_def_label_text(tname);
             }
 
             unsigned int nbits = term->getNumBits();

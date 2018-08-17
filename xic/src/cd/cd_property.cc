@@ -3241,7 +3241,7 @@ CDp_sname::print(sLstr *lstr, int, int) const
 // If not set, the default name is the cell name.
 //
 void
-CDp_sname::set_label_text(const char *n)
+CDp_sname::set_def_label_text(const char *n)
 {
     if (n && *n)
         pns_labtext = CDnetex::name_tab_add(n);
