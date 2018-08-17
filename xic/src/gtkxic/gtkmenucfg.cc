@@ -754,7 +754,11 @@ gtkMenuConfig::instantiateTopButtonMenu()
         set(mbox->menu[miscMenuLtvis], "LTvisib", 0);
         set(mbox->menu[miscMenuLpal], "Palette", 0);
         set(mbox->menu[miscMenuSetcl], "SetCL", 0);
-        set(mbox->menu[miscMenuSelcp], "SelPanel", 0);
+        // This is really weird, in Ubuntu-18 a widget named
+        // "SelPanel" gets a black background from somewhere.  Maybe
+        // from the theme?
+        // set(mbox->menu[miscMenuSelcp], "SelPanel", 0);
+        set(mbox->menu[miscMenuSelcp], "SelCP", 0);
         set(mbox->menu[miscMenuDesel], "Desel", 0);
         set(mbox->menu[miscMenuRdraw], "Rdraw", 0);
 
