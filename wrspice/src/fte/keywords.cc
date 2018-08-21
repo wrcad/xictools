@@ -4861,39 +4861,6 @@ struct KWent_nojjtp : public KWent
     }
 };
 
-struct KWent_noopiter : public KWent
-{
-    KWent_noopiter() { set(
-        spkw_noopiter,
-        VTYP_BOOL, 0.0, 0.0,
-        "Go directly to gmin stepping."); }
-
-    void callback(bool isset, variable *v)
-    {
-        if (isset)
-            v->set_boolean(true);
-        if (checknset(word, isset, v))
-            return;
-        KWent::callback(isset, v);
-    }
-};
-
-struct KWent_noshellopts : public KWent
-{
-    KWent_noshellopts() { set(
-        spkw_noshellopts,
-        VTYP_BOOL, 0.0, 0.0,
-        "No use of shell-set spice options in analysis."); }
-
-    void callback(bool isset, variable *v)
-    {
-        if (isset)
-            v->set_boolean(true);
-        CP.RawVarSet(word, isset, v);
-        KWent::callback(isset, v);
-    }
-};
-
 struct KWent_noklu : public KWent
 {
     KWent_noklu() { set(
@@ -4924,6 +4891,56 @@ struct KWent_nomatsort : public KWent
             v->set_boolean(true);
         if (checknset(word, isset, v))
             return;
+        KWent::callback(isset, v);
+    }
+};
+
+struct KWent_noopiter : public KWent
+{
+    KWent_noopiter() { set(
+        spkw_noopiter,
+        VTYP_BOOL, 0.0, 0.0,
+        "Go directly to gmin stepping."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset)
+            v->set_boolean(true);
+        if (checknset(word, isset, v))
+            return;
+        KWent::callback(isset, v);
+    }
+};
+
+struct KWent_nopmdc : public KWent
+{
+    KWent_nopmdc() { set(
+        spkw_nopmdc,
+        VTYP_BOOL, 0.0, 0.0,
+        "Don't allow phase-mode DC analysis."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset)
+            v->set_boolean(true);
+        if (checknset(word, isset, v))
+            return;
+        KWent::callback(isset, v);
+    }
+};
+
+struct KWent_noshellopts : public KWent
+{
+    KWent_noshellopts() { set(
+        spkw_noshellopts,
+        VTYP_BOOL, 0.0, 0.0,
+        "No use of shell-set spice options in analysis."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset)
+            v->set_boolean(true);
+        CP.RawVarSet(word, isset, v);
         KWent::callback(isset, v);
     }
 };
@@ -5381,10 +5398,11 @@ sKW *cKeyWords::KWsim[] = {
     new KWent_nobjthack(),
     new KWent_noiter(),
     new KWent_nojjtp(),
-    new KWent_noopiter(),
-    new KWent_noshellopts(),
     new KWent_noklu(),
     new KWent_nomatsort(),
+    new KWent_noopiter(),
+    new KWent_nopmdc(),
+    new KWent_noshellopts(),
     new KWent_oldlimit(),
     new KWent_optmerge(),
     new KWent_parhier(),
@@ -5458,10 +5476,11 @@ sKW *cKeyWords::KWsim[] = {
     new KWent_jjaccel(),
     new KWent_noiter(),
     new KWent_nojjtp(),
-    new KWent_noopiter(),
-    new KWent_noshellopts(),
     new KWent_noklu(),
     new KWent_nomatsort(),
+    new KWent_noopiter(),
+    new KWent_nopmdc(),
+    new KWent_noshellopts(),
     new KWent_oldlimit(),
     new KWent_renumber(),
     new KWent_savecurrent(),

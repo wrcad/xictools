@@ -479,7 +479,7 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
   <admst:text format="$(indent)int setup(sGENmodel*, sCKT*, int*);\n"/>
   <admst:text format="$(indent)int unsetup(sGENmodel*, sCKT*);\n"/>
   <admst:text format="$(indent)int resetup(sGENmodel*, sCKT*);\n"/>
-  <admst:text format="$(indent)int temperature(sGENmodel*, sCKT*);\n"/>
+  <admst:text format="$(indent)// int temperature(sGENmodel*, sCKT*);\n"/>
   <admst:text format="$(indent)// int getic(sGENmodel*, sCKT*);\n"/>
   <admst:text format="$(indent)// int accept(sCKT*, sGENmodel*);\n"/>
   <admst:text format="$(indent)int trunc(sGENmodel*, sCKT*, double*);\n"/>

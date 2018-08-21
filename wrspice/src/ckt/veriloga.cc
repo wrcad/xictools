@@ -254,40 +254,7 @@ sCKT::va_simparam(const char *tok, double retval, bool rvgiven,
     if (lstring::cieq(tok, "smallsig"))
         return (CKTmode & MODEINITSMSIG);
     if (lstring::cieq(tok, "dcphasemode"))
-        return (CKTjjDCphase);
-    if (lstring::ciprefix("phasenode", tok)) {
-        // Hack for setting the phase node flag from Verilog.
-        const char *t = tok + 9;
-        if (*t == ':' || *t == '.' || *t == ',') {
-            if (inst) {
-                t++;
-                char *nn = new char[strlen(t) + 8];
-                sprintf(nn, "node_%s", t);
-                int type = inst->GENmodPtr->GENmodType;
-                IFparm *p = DEV.device(type)->findInstanceParm(nn, IF_ASK);
-                if (p) {
-                    IFdata data;
-                    int err = DEV.device(type)->askInst(this, inst, p->id,
-                        &data);
-                    if (err == OK) {
-                        int nodenum = 0;
-                        if (data.type == IF_INTEGER)
-                            nodenum = data.v.iValue;
-                        else if (data.type == IF_REAL)
-                            nodenum = (int)data.v.rValue;
-                        if (nodenum > 0) {
-                            sCKTnode *node = CKTnodeTab.find(nodenum);
-                            if (node && node->type() == SP_VOLTAGE)
-                                node->set_phase(true);
-                            delete [] nn;
-                            return (nodenum);
-                        }
-                    }
-                }
-                delete [] nn;
-            }
-        }
-    }
+        return (CKTcurTask->TSKnoPhaseModeDC ? 0.0 : 1.0);
 #endif
     if (lstring::cieq(tok, "dphimax"))
         return (CKTcurTask->TSKdphiMax);
@@ -301,6 +268,23 @@ sCKT::va_simparam(const char *tok, double retval, bool rvgiven,
         "unknown keyword %s passed to $simparam.", tok);
     return (0.0);
 }
+
+
+#ifdef NEWJJDC
+
+// Set the phase flag of the node given by the passed number.
+//
+void
+sCKT::va_set_phase_node(int nodenum)
+{
+    if (nodenum > 0) {
+        sCKTnode *node = CKTnodeTab.find(nodenum);
+        if (node && node->type() == SP_VOLTAGE)
+            node->set_phase(true);
+    }
+}
+
+#endif
 
 
 /******

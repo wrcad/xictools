@@ -378,8 +378,31 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
 #endif
 
-            // Note: we set the phase-node flag of connected nodes in
-            // sCKT::setup, not here, for easier Verilog support.
+#ifdef NEWJJDC
+            if (model->JJictype > 0 && !ckt->CKTcurTask->TSKnoPhaseModeDC) {
+                // Set the phase flag of connected nodes for
+                // phase-mode DC analysis, if critical current is
+                // turned on and phase mode DC is not disabled.
+
+#ifdef NEWLSER
+                if (inst->JJrealPosNode > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJrealPosNode);
+                    if (node)
+                        node->set_phase(true);
+                }
+#endif
+                if (inst->JJposNode > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJposNode);
+                    if (node)
+                        node->set_phase(true);
+                }
+                if (inst->JJnegNode > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJnegNode);
+                    if (node)
+                        node->set_phase(true);
+                }
+            }
+#endif
 
             double sqrta = sqrt(inst->JJarea);
             inst->JJcap = model->JJcap*(inst->JJarea*(1.0 - model->JJcmu) +

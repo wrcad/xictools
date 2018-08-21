@@ -205,6 +205,9 @@ sOPTIONS::dump()
     askOpt(OPT_NOOPITER, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_noopiter, value.iValue);
+    askOpt(OPT_NOPMDC, &value, &notset);
+    if (!notset)
+        TTY.printf(ifmt, spkw_nopmdc, value.iValue);
     askOpt(OPT_NOSHELLOPTS, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_noshellopts, value.iValue);
@@ -541,6 +544,12 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
     case OPT_NOOPITER:
         if (opt && OPTnoopiter_given)
             value->iValue = OPTnoopiter;
+        else
+            *notset = 1;
+        break;
+    case OPT_NOPMDC:
+        if (opt && OPTnopmdc_given)
+            value->iValue = OPTnopmdc;
         else
             *notset = 1;
         break;
@@ -893,6 +902,10 @@ OPTanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         break;
     case OPT_NOOPITER:
         value->iValue = task->TSKnoOpIter;
+        data->type = IF_FLAG;
+        break;
+    case OPT_NOPMDC:
+        value->iValue = task->TSKnoPhaseModeDC;
         data->type = IF_FLAG;
         break;
     case OPT_NOSHELLOPTS:

@@ -2121,94 +2121,69 @@ sCKT::setup()
     }
 
     // Set up Josephson junction support flags.
-    CKTjjPresent = false;
+    CKTjjPresent = false;   // Circuit contains a Josephson junction.
 #ifdef NEWJJDC
-    CKTjjDCphase = false;
+    CKTjjDCphase = false;   // Phase-mode DC analysis to be used.
 #endif
     sCKTmodGen mgen(CKTmodels);
     for (sGENmodel *m = mgen.next(); m; m = mgen.next()) {
         if (DEV.device(m->GENmodType)->flags() & (DV_JJSTEP | DV_JJPMDC)) {
-            // Looks like a Josephson junction, however if a device
-            // has no critical current, it doesn't count.  With the
-            // known models, this can only happen if CCT=0 is set.  In
-            // the Whiteley Research models (at present) CCT is a
-            // model parameter.  However, it may be an instance
-            // parameter too in some Verilog environments, so have to
-            // cover both cases.
 
-            // Below we loop through the instances and set the Phase
-            // flag in all connected nodes.  This is also done in the
-            // model setup code for inductive devices.  We may want to
-            // do this here universally.  The problem is that for
-            // Verlog one would need to handle this in the device
-            // setup script, which would be messy and difficult to
-            // port.  On the other hand, does anyone need a Verilog-A
-            // custom inductor?  The built-in inductor should suffice.
+            // Logic:
+            // Call setup for JJs before other devices.  If the device
+            // supports it, and phase-mode DC analysis is not disabled
+            // (nopmdc option), then setup will set the phase flag of
+            // all connected nodes.  If this is the case, set the
+            // CKTjjDCphase flag, which enables phase-mode DC
+            // analysis.
+            //
+            // If CKTjjDCphase is set, set also CKTjjPresent. 
+            // Otherwise, look for the CCT model parameter and if not
+            // found, or found and nonzero, set CKTjjPresent.
 
-            // Call setup so that the CCT parameter has been properly
-            // initialized.
             error = DEV.device(m->GENmodType)->setup(m, this, &CKTnumStates);
             if (error)
                 return (error);
 
-            IFparm *p = DEV.device(m->GENmodType)->findInstanceParm("cct",
-                IF_ASK);
-            if (p) {
-                // Instance has a CCT parameter.
+#ifdef NEWJJDC
+            if (!CKTjjDCphase) {
                 for (sGENinstance *i = m->GENinstances; i;
                         i = i->GENnextInstance) {
+                    if (DEV.device(m->GENmodType)->flags() & DV_JJPMDC) {
+
+                        int nn = i->numnodes();
+                        for (int j = 1; j <= nn; j++) {
+                            int nodenum = *i->nodeptr(j);
+                            if (nodenum > 0) {
+                                sCKTnode *node = CKTnodeTab.find(nodenum);
+                                if (node && node->phase()) {
+                                    CKTjjDCphase = true;
+                                    CKTjjPresent = true;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+#endif
+            if (!CKTjjPresent) {
+                CKTjjPresent = true;
+                IFparm *p = DEV.device(m->GENmodType)->findModelParm("cct",
+                    IF_ASK);
+                if (p) {
+                    // Model has a CCT parameter.  Take this as a
+                    // Whiteley Research JJ model, so there is no
+                    // overriding instance parameter.  If CCT is 0,
+                    // reset CKTjjPrsent since there is no critical
+                    // current.
+
                     IFdata data;
-                    int err = DEV.device(m->GENmodType)->askInst(this, i, p->id,
+                    int err = DEV.device(m->GENmodType)->askModl(m, p->id,
                         &data);
                     if (err == OK && data.v.iValue == 0)
-                        continue;
-                    CKTjjPresent = true;
-#ifdef NEWJJDC
-                    if (DEV.device(m->GENmodType)->flags() & DV_JJPMDC) {
-                        int nn = i->numnodes();
-                        for (int j = 1; j <= nn; j++) {
-                            int nodenum = *i->nodeptr(j);
-                            if (nodenum > 0) {
-                                sCKTnode *node = CKTnodeTab.find(nodenum);
-                                if (node && node->type() == SP_VOLTAGE)
-                                    node->set_phase(true);
-                            }
-                        }
-                        CKTjjDCphase = true;
-                    }
-#endif
+                        CKTjjPresent = false;
                 }
-                continue;
-            }
-            p = DEV.device(m->GENmodType)->findModelParm("cct", IF_ASK);
-            if (p) {
-                // Model has a CCT parameter, but not instance.
-                IFdata data;
-                int err = DEV.device(m->GENmodType)->askModl(m, p->id, &data);
-                if (err == OK && data.v.iValue == 0)
-                    continue;
-                CKTjjPresent = true;
-#ifdef NEWJJDC
-                if (DEV.device(m->GENmodType)->flags() & DV_JJPMDC) {
-
-                    // Look through the instances and set the
-                    // Phase flag in all connected nodes.
-
-                    for (sGENinstance *i = m->GENinstances; i;
-                            i = i->GENnextInstance) {
-                        int nn = i->numnodes();
-                        for (int j = 1; j <= nn; j++) {
-                            int nodenum = *i->nodeptr(j);
-                            if (nodenum > 0) {
-                                sCKTnode *node = CKTnodeTab.find(nodenum);
-                                if (node && node->type() == SP_VOLTAGE)
-                                    node->set_phase(true);
-                            }
-                        }
-                    }
-                    CKTjjDCphase = true;
-                }
-#endif
             }
         }
     }

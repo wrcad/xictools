@@ -717,6 +717,7 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_noKLU               false
 #define DEF_noMatrixSort        false
 #define DEF_noOpIter            false
+#define DEF_nopmdc              false
 #define DEF_noShellOpts         false
 #define DEF_fixLimit            false
 #define DEF_oldStepLim          false
@@ -794,6 +795,7 @@ struct sOPTIONS : public sJOB
             OPTnoklu        = DEF_noKLU;
             OPTnomatsort    = DEF_noMatrixSort;
             OPTnoopiter     = DEF_noOpIter;
+            OPTnopmdc       = DEF_nopmdc;
             OPTnoshellopts  = DEF_noShellOpts;
             OPToldlimit     = DEF_fixLimit;
             OPToldsteplim   = DEF_oldStepLim;
@@ -861,6 +863,7 @@ struct sOPTIONS : public sJOB
             OPTnoklu_given          = 0;
             OPTnomatsort_given      = 0;
             OPTnoopiter_given       = 0;
+            OPTnopmdc_given         = 0;
             OPTnoshellopts_given    = 0;
             OPToldlimit_given       = 0;
             OPToldsteplim_given     = 0;
@@ -939,6 +942,7 @@ struct sOPTIONS : public sJOB
     bool OPTnoklu;
     bool OPTnomatsort;
     bool OPTnoopiter;
+    bool OPTnopmdc;
     bool OPTnoshellopts;
     bool OPToldlimit;
     bool OPToldsteplim;
@@ -1006,6 +1010,7 @@ struct sOPTIONS : public sJOB
     unsigned int OPTnoklu_given:1;
     unsigned int OPTnomatsort_given:1;
     unsigned int OPTnoopiter_given:1;
+    unsigned int OPTnopmdc_given:1;
     unsigned int OPTnoshellopts_given:1;
     unsigned int OPToldlimit_given:1;
     unsigned int OPToldsteplim_given:1;
@@ -1110,6 +1115,7 @@ struct sTASK : public cBase
 #define TSKnoKLU            TSKopts.OPTnoklu
 #define TSKnoMatrixSort     TSKopts.OPTnomatsort
 #define TSKnoOpIter         TSKopts.OPTnoopiter
+#define TSKnoPhaseModeDC    TSKopts.OPTnopmdc
 #define TSKnoShellOpts      TSKopts.OPTnoshellopts
 #define TSKfixLimit         TSKopts.OPToldlimit
 #define TSKoldStepLim       TSKopts.OPToldsteplim
@@ -1715,6 +1721,9 @@ public:
     void va_boundStep(double);
     bool va_analysis(const char*);
     double va_simparam(const char*, double, bool, sGENinstance*);
+#ifdef NEWJJDC
+    void va_set_phase_node(int);
+#endif
     bool va_initial_step();
     bool va_final_step();
     double va_absdelay(double, double);

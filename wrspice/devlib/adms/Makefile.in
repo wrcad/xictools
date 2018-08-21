@@ -5,7 +5,7 @@
 
 # This must match the SyntaxLevel defined in device.xml.  If it is
 # smaller, you need to update this Makefile to match devkit/Makefile.
-SyntaxLevel = 15
+SyntaxLevel = 16
 
 #######################################################################
 #  MANDATORY User Configuration
@@ -225,7 +225,6 @@ CCFILES = \
   $(MODULE)set.cc \
   $(MODULE)seti.cc \
   $(MODULE)setm.cc \
-  $(MODULE)temp.cc \
   $(MODULE)topo.cc \
   $(MODULE)trun.cc
 
@@ -338,9 +337,10 @@ $(MODULE)setm.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEsetm.cc.xml $(ADMST)/adms.implicit.xml
 	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEsetm.cc.xml
 
-$(MODULE)temp.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
-  $(ADMST)/wrspiceMODULEtemp.cc.xml $(ADMST)/adms.implicit.xml
-	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEtemp.cc.xml
+# No longer used.
+#$(MODULE)temp.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
+#  $(ADMST)/wrspiceMODULEtemp.cc.xml $(ADMST)/adms.implicit.xml
+#	$(ADMSXML) $(SOURCE) $(BASE) -e $(ADMST)/wrspiceMODULEtemp.cc.xml
 
 $(MODULE)topo.cc: $(SOURCE) device.xml $(ADMST)/wrspiceVersion.xml \
   $(ADMST)/wrspiceMODULEtopo.cc.xml $(ADMST)/adms.implicit.xml

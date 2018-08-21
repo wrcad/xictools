@@ -157,6 +157,9 @@
 // This enables series inductance modeling with the LSER parameter.
 `define NEWLSER
 
+// Enable series inductance modeling of external shunt resistance.
+`define NEWLSH
+
 // Uncomment this to support a phony DC analysis mode by loading JJ as
 // a tiny resistance.  Not recommended.
 //`define fakeDC
@@ -206,6 +209,9 @@ branch(n1, nint) blser;
 `else
 branch(n1, n2) bj, bc, br;
 `endif
+`ifdef NEWLSH
+electrical nshint;
+`endif
 
 //
 // Model Parameters
@@ -220,9 +226,9 @@ parameter integer pijj  = 0 from [0:1]
 
 // Turn on/off quasiparticle branch and critical current.
 parameter integer rtype = 1 from [0:1]
-    `P(type="model" info="quasiparticle conductance model type");
+    `P(type="model" info="Quasiparticle conductance model type");
 parameter integer cct   = 1 from [0:1]
-    `P(type="model" info="critical current model type");
+    `P(type="model" info="Critical current model type");
 
 // Factor used in timestep control.  This is similar to the WRspice
 // dphimax parameter, dphimax/pi = tsfactor.  Smaller values might
@@ -230,49 +236,57 @@ parameter integer cct   = 1 from [0:1]
 // set explicitly, actual value will be obtained from WRspice.
 `define TSDEFAULT 0.2
 parameter real tsfactor = `TSDEFAULT from [0.001:1]
-    `P(type="model" info="time step control factor");
+    `P(type="model" info="Time step control factor");
 
 // Critical current for area=1.
 `define DEF_IC 1.0m
 parameter real icrit    = `DEF_IC from [1e-9:1e-1]
-    `P(type="model" info="reference critical current" units="A");
+    `P(type="model" info="Reference critical current" units="A");
 
 // Capacitance for area=1.
 parameter real cap      = 1e-12*`C_PER_A/`I_PER_A from [0.0:1e-9]
-    `P(type="model" info="reference capacitance" units="F");
+    `P(type="model" info="Reference capacitance" units="F");
 
 // Capacitance scaling parameter.
 // caps = cap*(area*(1-cmu) + sqrt(area)*cmu)
 parameter real cmu      = 0.0 from [0.0:1.0]
-    `P(type="model" info="capacitance scaling factor");
+    `P(type="model" info="Capacitance scaling factor");
 
 // The gap voltage and spread.
 parameter real vgap     = 2.8m from [2.0m:6.0m]
-    `P(type="model" info="gap voltage" units="V");
+    `P(type="model" info="Gap voltage" units="V");
 aliasparam vg           = vgap;
 parameter real delv     = 0.08m from [0.01m:0.2m]
-    `P(type="model" info="gap width" units="V");
+    `P(type="model" info="Gap width" units="V");
 
 // The subgap and normal resistances.  If vshunt is given, a fixed
 // shunt is added so that Ic*Reff = vshunt.
 parameter real vm       = `Vm*1e-3 from [8m:100m]
     `P(type="model" info="Ic * subgap resistance" units="V");
 parameter real rsub     = vm/icrit from [8e-3/icrit:1e-1/icrit]
-    `P(type="model" info="subgap resistance" units="O");
+    `P(type="model" info="Subgap resistance" units="O");
 aliasparam r0           = rsub;
 parameter real icrn     = `IcR*1e-3 from [1.5m:1.9m]
     `P(type="model" info="Ic * normal resistance" units="V");
 parameter real rnorm    = icrn/icrit from [1.5e-3/icrit:1.9e-3/icrit]
-    `P(type="model" info="normal resistance" units="O");
+    `P(type="model" info="Normal resistance" units="O");
 aliasparam rn           = rnorm;
 parameter real vshunt   = 0 from [0:2m]
     `P(type="model" info="Ic * shunt resistance voltage" units="V");
+`ifdef NEWLSH
+parameter real lsh0   = 0 from [0:2p]
+    `P(type="model" info="Constant part of shunt resistor inductance" \
+ units="H");
+parameter real lsh1   = 0 from [0:10p]
+    `P(type="model" info="Part of shunt resistor inductance proportional \
+ to resistance" units="H/Ohm");
+`endif
 
 // Conductance scaling parameter.
 // gxs = gx*(area*(1-gmu) + sqrt(area)*gmu)
 // Applies ro rsub, rnorm.
 parameter real gmu      = 0.0 from [0.0:1.0]
-    `P(type="model" info="conductance scaling factor");
+    `P(type="model" info="Conductance scaling factor");
 
 // Ratio of critical current to quasiparticle step height.
 parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4]
@@ -290,12 +304,18 @@ aliasparam phi          = ic_phase;
 
 // Scaling critical current.
 parameter real ics      = icrit from [icrit/20:icrit*20]
-    `P(type="instance" info="scaled critical current" units="A");
+    `P(type="instance" info="Scaled critical current" units="A");
 
 `ifdef NEWLSER
 // Series inductance.
 parameter real lser     = 0.0 from [0.0:10.0p]
-    `P(type="instance" info="series parasitic inductance" units="H");
+    `P(type="instance" info="Series parasitic inductance" units="H");
+`endif
+
+`ifdef NEWLSH
+parameter real lsh      = 0.0 from [0.0:100.0p]
+    `P(type="instance" info="Series inductance of shunt resistance" 
+ units="H");
 `endif
 
 // Scaling factor, not a physical area.  This is for backward
@@ -307,7 +327,7 @@ parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
 real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
-real pmode, vdpbak, start_phase, tsf, ic_scaled;
+real pmode, vdpbak, start_phase, tsf, ic_scaled, lshval;
 `ifdef WRspice
 real SmallSigL;
 `endif
@@ -451,10 +471,21 @@ analog begin
                 if (rtype == 1)
                     gshunt = gshunt - 1/rsubs;
                 if (gshunt > 0)
+`ifdef NEWLSH
+                    if (lsh != 0.0)
+                        lshval = lsh;
+                    else if (lsh0 != 0.0 || lsh1 != 0.0)
+                        lshval = lsh0 + lsh1/gshunt;
+                    else
+                        lshval = 0.0;
+                    V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+                    I(nshint,n2) <+ gshunt*V(nshint,n2);
+`else
 `ifdef NEWLSER
                     I(n1,n2) <+ gshunt*V(n1,n2);
 `else
                     I(br) <+ gshunt*V(br);
+`endif
 `endif
                 end
             if ($port_connected(ph))
@@ -592,10 +623,21 @@ analog begin
             if (rtype == 1)
                 gshunt = gshunt - 1/rsubs;
             if (gshunt > 0)
+`ifdef NEWLSH
+                if (lsh != 0.0)
+                    lshval = lsh;
+                else if (lsh0 != 0.0 || lsh1 != 0.0)
+                    lshval = lsh0 + lsh1/gshunt;
+                else
+                    lshval = 0.0;
+                V(n1,nshint) <+ ddt(lsh*I(n1,nshint));
+                I(nshint,n2) <+ gshunt*V(nshint,n2);
+`else
 `ifdef NEWLSER
                 I(n1,n2) <+ gshunt*V(n1,n2);
 `else
                 I(br) <+ gshunt*V(br);
+`endif
 `endif
             end
 

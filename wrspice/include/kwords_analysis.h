@@ -172,6 +172,7 @@ extern const char *spkw_nojjtp;
 extern const char *spkw_noklu;
 extern const char *spkw_nomatsort;
 extern const char *spkw_noopiter;
+extern const char *spkw_nopmdc;
 extern const char *spkw_noshellopts;
 extern const char *spkw_oldlimit;
 extern const char *spkw_oldsteplim;

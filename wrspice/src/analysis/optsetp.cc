@@ -109,6 +109,7 @@ const char *spkw_nojjtp         = "nojjtp";
 const char *spkw_noklu          = "noklu";
 const char *spkw_nomatsort      = "nomatsort";
 const char *spkw_noopiter       = "noopiter";
+const char *spkw_nopmdc         = "nopmdc";
 const char *spkw_noshellopts    = "noshellopts";
 const char *spkw_oldlimit       = "oldlimit";
 const char *spkw_oldsteplim     = "oldsteplim";
@@ -381,6 +382,10 @@ sOPTIONS::setup(const sOPTIONS *opts, OMRG_TYPE mt)
     if (opts->OPTnoopiter_given && (mt == OMRG_GLOBAL || !OPTnoopiter_given)) {
         OPTnoopiter = opts->OPTnoopiter;
         OPTnoopiter_given = 1;
+    }
+    if (opts->OPTnopmdc_given && (mt == OMRG_GLOBAL || !OPTnopmdc_given)) {
+        OPTnopmdc = opts->OPTnopmdc;
+        OPTnopmdc_given = 1;
     }
     if (opts->OPTnoshellopts_given && (mt == OMRG_GLOBAL ||
             !OPTnoshellopts_given)) {
@@ -898,6 +903,14 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         else
             opt->OPTnoopiter_given = 0;
         break;
+    case OPT_NOPMDC:
+        if (value) {
+            opt->OPTnopmdc = value->iValue;
+            opt->OPTnopmdc_given = 1;
+        }
+        else
+            opt->OPTnopmdc_given = 0;
+        break;
     case OPT_NOSHELLOPTS:
         if (value) {
             opt->OPTnoshellopts = value->iValue;
@@ -1182,6 +1195,8 @@ namespace {
             "Don't sort sparse matrix before solving"),
         IFparm(spkw_noopiter,       OPT_NOOPITER,       IF_IO|IF_FLAG,
             "Go directly to gmin stepping"),
+        IFparm(spkw_nopmdc,         OPT_NOPMDC,         IF_IO|IF_FLAG,
+            "Do not allow phase-mode DC analysis"),
         IFparm(spkw_noshellopts,    OPT_NOSHELLOPTS,    IF_IO|IF_FLAG,
             "Ignore shell variables as options"),
         IFparm(spkw_oldlimit,       OPT_OLDLIMIT,       IF_IO|IF_FLAG,

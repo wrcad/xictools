@@ -34,6 +34,54 @@
 <admst:variable name="DEBUG" value="no"/>
 
 <!-- ---------------------------------------------------------------------- -->
+  <!-- formerly in module_temp -->
+<!--
+  Local variables that are assigned to in the init blocks have been
+  added to the list of model/instance structure entries, except
+  possibly for for loop counters.  Grab a list of for loop counters
+  that match an entry in the local variable lists - these must be
+  declared (assuming that they are not also found in a local parent
+  block).
+-->
+<admst:template match="forvars">
+  <admst:choose>
+    <admst:when test="adms[datatypename='assignment']"/>
+    <admst:when test="adms[datatypename='block']">
+      <admst:apply-templates select="item" match="forvars"/>
+    </admst:when>
+    <admst:when test="adms[datatypename='conditional']">
+      <admst:apply-templates select="then" match="forvars"/>
+      <admst:apply-templates select="else" match="forvars"/>
+    </admst:when>
+    <admst:when test="adms[datatypename='whileloop']">
+      <admst:apply-templates select="whileblock" match="forvars"/>
+    </admst:when>
+    <admst:when test="adms[datatypename='forloop']">
+      <admst:variable name="vn" value="%(initial/lhs/variable/name)"/>
+      <admst:choose>
+        <admst:when test="$model_local_vars[name='$vn']">
+          <admst:push into="$for_vars" select="initial/lhs/variable"
+            onduplicate="ignore"/>
+        </admst:when>
+        <admst:when test="$instance_local_vars[name='$vn']">
+          <admst:push into="$for_vars" select="initial/lhs/variable"
+            onduplicate="ignore"/>
+        </admst:when>
+      </admst:choose>
+      <admst:apply-templates select="forblock" match="forvars"/>
+    </admst:when>
+    <admst:when test="adms[datatypename='contribution']"/>
+    <admst:when test="adms[datatypename='callfunction']"/>
+    <admst:when test="adms[datatypename='nilled']"/>
+    <admst:when test="adms[datatypename='blockvariable']"/>
+    <admst:otherwise>
+      <admst:fatal
+        format="forvars: unhandled datatype %(adms/datatypename).\n"/>
+    </admst:otherwise>
+  </admst:choose>
+</admst:template>
+
+<!-- ---------------------------------------------------------------------- -->
 <admst:template match="module_set_cc">
 
   <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
@@ -109,6 +157,22 @@
   <admst:text format="$(indent)for ( ; model; model = model->next()) {\n\n"/>
   <admst:apply-templates select="." match="push_indent"/>
   <admst:text format="$(indent)inst = 0;\n"/>
+
+  <!-- formerly in module_temp -->
+  <!-- Check the forloop counters. -->
+  <admst:for-each select="analog/code/item">
+    <admst:if test="adms[datatypename='block']/..[name='initial_model' or
+        name='initializeModel']">
+      <admst:apply-templates select="." match="forvars"/>
+    </admst:if>
+    <admst:if test="adms[datatypename='block']/..[name='initial_instance' or
+        name='initializeInstance']">
+      <admst:apply-templates select="." match="forvars"/>
+    </admst:if>
+  </admst:for-each>
+  <admst:for-each select="$for_vars">
+    <admst:text format="$(indent)%(vtype(.)) %(name);\n"/>
+  </admst:for-each>
 
   <admst:variable name="goodone"/>
   <admst:variable name="pval"/>
@@ -362,6 +426,14 @@
     </admst:otherwise>
   </admst:choose>
 
+  <!-- formerly in module_temp -->
+  <admst:for-each select="analog/code/item">
+    <admst:if test="adms[datatypename='block']/..[name='initial_model' or
+        name='initializeModel']">
+      <admst:apply-templates select="." match="block"/>
+    </admst:if>
+  </admst:for-each>
+
   <admst:text format="\n$(indent)for (inst = model->inst(); inst; inst = inst->next()) {\n"/>
   <admst:apply-templates select="." match="push_indent"/>
 
@@ -427,6 +499,14 @@
         <admst:apply-templates select="." match="pop_indent"/>
       </admst:otherwise>
     </admst:choose>
+  </admst:for-each>
+
+  <!-- formerly in module_temp -->
+  <admst:for-each select="analog/code/item">
+    <admst:if test="adms[datatypename='block']/..[name='initial_instance' or
+        name='initializeInstance']">
+      <admst:apply-templates select="." match="block"/>
+    </admst:if>
   </admst:for-each>
 
   <admst:if test="[count(node[location='internal'])!=0 or
@@ -727,6 +807,21 @@
     </admst:for-each>
   </admst:if>
 
+  <!--
+    Call a function to set the phase flag of nodes with a "phase"
+    attribute set to 'true'.  These are set with (* ...  *) for nodes
+    of Josephson junction and inductor devices, which participate in
+    phase-mode DC analysis, as supported by WRspice.
+  -->
+  <admst:for-each select="node">
+    <admst:for-each select="attribute">
+      <admst:if test="[name='phase' and value='true']">
+        <admst:text
+  format="$(indent)ckt->va_set_phase_node(inst->%(../name)_Node);\n"/>
+      </admst:if>
+    </admst:for-each>
+  </admst:for-each>
+
   <admst:text format="\n$(indent)// Get matrix element pointer.\n"/>
   <admst:text format="$(indent)error = get_node_ptr(ckt, inst);\n"/>
   <admst:text format="$(indent)if (error != OK)\n"/>
@@ -820,6 +915,8 @@
 <!-- ---------------------------------------------------------------------- -->
 <!-- ---------------------------------------------------------------------- -->
 
+<admst:variable name="for_vars"/>
+
 <admst:for-each select="/module">
   <admst:apply-templates select="." match="init:translation"/>
   <admst:open file="$(modlc)set.cc">
@@ -829,6 +926,7 @@
     <admst:value-of select="/simulator/fullname"/>
     <admst:text format="// Created by: %s - %s\n"/>
     <admst:variable name="SkipProbe" value="yes"/>
+<admst:apply-templates select="." match="init:variables"/>
     <admst:apply-templates select="." match="push_indent"/>
     <admst:apply-templates select="." match="module_set_cc"/>
     <admst:apply-templates select="." match="pop_indent"/>
