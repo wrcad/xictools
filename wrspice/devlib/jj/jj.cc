@@ -54,8 +54,12 @@ IO("area",              JJ_AREA,            IF_REAL,
 IO("ics",               JJ_ICS,             IF_REAL,
                 "Critical current with scaling"),
 #ifdef NEWLSER
-IO("lser",              JJ_LSER,             IF_REAL,
+IO("lser",              JJ_LSER,             IF_REAL|IF_IND,
                 "Parasitic series inductance"),
+#endif
+#ifdef NEWLSH
+IO("lsh",              JJ_LSH,              IF_REAL|IF_IND,
+                "External shunt resistor series parasitic inductance"),
 #endif
 IO("off",               JJ_OFF,             IF_FLAG,
                 "Shorted for dc operating point comp."),
@@ -101,16 +105,22 @@ OP("node1",             JJ_QUEST_N1,        IF_INTEGER,
                 "Node 1 number"),
 OP("node2",             JJ_QUEST_N2,        IF_INTEGER,
                 "Node 2 number"),
-#ifdef NEWLSER
 OP("pnode",             JJ_QUEST_NP,        IF_INTEGER,
                 "Phase node number"),
+#ifdef NEWLSER
 OP("lsernode",          JJ_QUEST_NI,        IF_INTEGER,
-                "Internal node number"),
+                "Internal lser node number"),
 OP("lserbrn",           JJ_QUEST_NB,        IF_INTEGER,
                 "Internal lser branch number")
-#else
-OP("pnode",             JJ_QUEST_NP,        IF_INTEGER,
-                "Phase node number")
+#endif
+#ifdef NEWLSH
+#ifdef NEWLSER
+                ,
+#endif
+OP("lshnode",           JJ_QUEST_NSHI,      IF_INTEGER,
+                "Internal lsh node number"),
+OP("lshbrn",            JJ_QUEST_NSHB,      IF_INTEGER,
+                "Internal lsh branch number")
 #endif
 };
 
@@ -159,6 +169,12 @@ IO("icfct",             JJ_MOD_ICF,         IF_REAL|IF_REDUNDANT,
                 "Ratio of Ic to qp gap current"),
 IO("vshunt",            JJ_MOD_VSHUNT,      IF_REAL|IF_VOLT,
                 "Implied extra shunt R=Vshunt/Ic"),
+#ifdef NEWLSH
+IO("lsh0",              JJ_MOD_LSH0,        IF_REAL|IF_IND,
+                "Shunt resistor inductance constant part"),
+IO("lsh1",              JJ_MOD_LSH1,        IF_REAL|IF_TIME,
+                "Shunt resistor inductance per ohm"),
+#endif
 IO("tsfactor",          JJ_MOD_TSFACT,      IF_REAL,
                 "Phase change limit per step"),
 OP("vless",             JJ_MQUEST_VL,       IF_REAL|IF_VOLT,

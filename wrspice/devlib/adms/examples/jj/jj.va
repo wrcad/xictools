@@ -51,6 +51,12 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.21, August 20, 2018
+//   Added support for series inductance in added (vshunt != 0) shunt
+//   resistance.  New model params lsh0 and lsh1, inductance = lsh0 +
+//   resistance*lsh1.  New instance parameter lsh overrides.  Phase
+//   nodes are now flagged, ADMS will detect and set flags in WRspice,
+//   requires WRspice-4.3.7.
 // Version 1.20, July 31, 2018
 //   Fixed expressions involving gshunt, (br -> n1,n2).  Fixed missing
 //   `else under "fake" DCOP.
@@ -201,16 +207,19 @@ module jj (n1, n2, ph);
 // in radians.
 inout n1, n2;
 output ph;
-electrical n1, n2, ph;
+// Add flags to indicate a "phase node" for WRspice phase-mode DC analysis.
+electrical n1           `P(phase="true");
+electrical n2           `P(phase="true");
+electrical ph;
 `ifdef NEWLSER
-electrical nint;
+electrical nint         `P(phase="true");
 branch(nint, n2) bj, bc, br;
 branch(n1, nint) blser;
 `else
 branch(n1, n2) bj, bc, br;
 `endif
 `ifdef NEWLSH
-electrical nshint;
+electrical nshint       `P(phase="true");
 `endif
 
 //
@@ -275,11 +284,9 @@ parameter real vshunt   = 0 from [0:2m]
     `P(type="model" info="Ic * shunt resistance voltage" units="V");
 `ifdef NEWLSH
 parameter real lsh0   = 0 from [0:2p]
-    `P(type="model" info="Constant part of shunt resistor inductance" \
- units="H");
+    `P(type="model" info="Shunt inductance constant part" units="H");
 parameter real lsh1   = 0 from [0:10p]
-    `P(type="model" info="Part of shunt resistor inductance proportional \
- to resistance" units="H/Ohm");
+    `P(type="model" info="Shunt inductance prop. to resistance" units="H/Ohm");
 `endif
 
 // Conductance scaling parameter.
@@ -314,8 +321,7 @@ parameter real lser     = 0.0 from [0.0:10.0p]
 
 `ifdef NEWLSH
 parameter real lsh      = 0.0 from [0.0:100.0p]
-    `P(type="instance" info="Series inductance of shunt resistance" 
- units="H");
+    `P(type="instance" info="Series inductance of shunt resistance" units="H");
 `endif
 
 // Scaling factor, not a physical area.  This is for backward
@@ -327,12 +333,20 @@ parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
 real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
-real pmode, vdpbak, start_phase, tsf, ic_scaled, lshval;
+real vdpbak, start_phase, tsf, ic_scaled, gshunt, lshval;
 `ifdef WRspice
 real SmallSigL;
 `endif
+integer pmode;
 
 analog begin
+
+// Differentiate between model and instance initialization blocks when
+// using ADMS.  This allows model and instance parameters to apply to
+// models and instances, respectively, for space efficiency.  Other
+// compilers may use a unified model where all parameters can apply to
+// instances or models, which is sometimes convenient but very memory
+// intensive.
 
 `ifdef insideADMS
     begin : initial_model
@@ -396,28 +410,33 @@ analog begin
 `ifdef WRspice
         SmallSigL = 0.0;
 `endif
+        gshunt=0.0;
+`ifdef NEWLSH
+        lshval=0.0;
+`endif
+        if (vshunt >= 1u)
+            begin
+            gshunt = ic_scaled/vshunt;
+            if (rtype == 1)
+                gshunt = gshunt - 1/rsubs;
+`ifdef NEWLSH
+            if (gshunt > 0)
+                if (lsh != 0.0)
+                    lshval = lsh;
+                else if (lsh0 != 0.0 || lsh1 != 0.0)
+                    lshval = lsh0 + lsh1/gshunt;
+`endif
+            end
 
-        // Interface parameters passed to model from simulator using
+        // Interface parameter passed to model from simulator using
         // the Verilog $simparam system function.  At present, only
-        // WRspice supports these.
+        // WRspice supports this.
         //
         // dcPhaseMode
         //   If simulator returns nonzero, it supports phase-mode DC
         //   analysis.  Requires WRspice-4.3.3.
         //
-        // phaseNode:<nodename>
-        //   This will mark the node as a "phase node" for DC analysis.
-        //   If successful, the node number is returned.  Requires
-        //   WRspice-4.3.7.
-        //
-        pmode = $simparam("dcPhaseMode", 0.0);
-        if (pmode > 0.0 && cct > 0)
-            begin
-            pmode = 0.0;
-            pmode = pmode + $simparam("phaseNode:n1", 0.0);
-            pmode = pmode + $simparam("phaseNode:n2", 0.0);
-            pmode = pmode + $simparam("phaseNode:nint", 0.0);
-            end
+        pmode = (cct > 0 && $simparam("dcPhaseMode", 0.0) > 0);
     end
 
 `ifdef WRspice
@@ -433,7 +452,6 @@ analog begin
         //
         if ($simparam("smallSig", 0.0) != 0.0)
             begin : smallSig
-            real gshunt;
 
             // We're through with phase mode, call the regular load
             // functions.
@@ -465,36 +483,26 @@ analog begin
             if (rtype == 1)
                 I(br) <+ V(br)/rsubs;
 
-            if (vshunt >= 1u)
-                begin
-                gshunt = ic_scaled/vshunt;
-                if (rtype == 1)
-                    gshunt = gshunt - 1/rsubs;
-                if (gshunt > 0)
+            if (gshunt > 0)
 `ifdef NEWLSH
-                    if (lsh != 0.0)
-                        lshval = lsh;
-                    else if (lsh0 != 0.0 || lsh1 != 0.0)
-                        lshval = lsh0 + lsh1/gshunt;
-                    else
-                        lshval = 0.0;
-                    V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
-                    I(nshint,n2) <+ gshunt*V(nshint,n2);
+                begin
+                V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+                I(nshint,n2) <+ gshunt*V(nshint,n2);
+                end
 `else
 `ifdef NEWLSER
-                    I(n1,n2) <+ gshunt*V(n1,n2);
+                I(n1,n2) <+ gshunt*V(n1,n2);
 `else
-                    I(br) <+ gshunt*V(br);
+                I(br) <+ gshunt*V(br);
 `endif
 `endif
-                end
             if ($port_connected(ph))
                 begin
                 I(ph) <+ phase;
                 I(ph) <+ -V(ph);
                 end
             end
-        else if (pmode != 0.0)
+        else if (pmode != 0)
             begin
             // DC analysis, the simulator supports phase mode DC
             // analysis.  In this mode, the nodes connected to JJs and
@@ -547,6 +555,9 @@ analog begin
 `ifdef NEWLSER
             V(blser) <+ lser*I(blser)/`PHI0_2PI;
 `endif
+`ifdef NEWLSH
+            V(n1,nshint) <+ lshval*I(n1,nshint)/`PHI0_2PI;
+`endif
             end
         else
             begin
@@ -572,7 +583,7 @@ analog begin
     if (analysis("tran") != 0)
 `endif
         begin : tranan
-        real avj, vtmp, gshunt;
+        real avj, vtmp;
 
         // Supercurrent.
         if (cct == 1)
@@ -617,29 +628,19 @@ analog begin
                 I(br) <+ (V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorms);
             end
 
-        if (vshunt >= 1u)
-            begin
-            gshunt = ic_scaled/vshunt;
-            if (rtype == 1)
-                gshunt = gshunt - 1/rsubs;
-            if (gshunt > 0)
+        if (gshunt > 0)
 `ifdef NEWLSH
-                if (lsh != 0.0)
-                    lshval = lsh;
-                else if (lsh0 != 0.0 || lsh1 != 0.0)
-                    lshval = lsh0 + lsh1/gshunt;
-                else
-                    lshval = 0.0;
-                V(n1,nshint) <+ ddt(lsh*I(n1,nshint));
-                I(nshint,n2) <+ gshunt*V(nshint,n2);
+            begin
+            V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+            I(nshint,n2) <+ gshunt*V(nshint,n2);
+            end
 `else
 `ifdef NEWLSER
-                I(n1,n2) <+ gshunt*V(n1,n2);
+            I(n1,n2) <+ gshunt*V(n1,n2);
 `else
-                I(br) <+ gshunt*V(br);
+            I(br) <+ gshunt*V(br);
 `endif
 `endif
-            end
 
 `ifdef NEWLSER
         V(blser) <+ ddt(lser*I(blser));

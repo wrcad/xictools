@@ -113,17 +113,18 @@ namespace {
 #ifdef NEWLSER
         // The series inductance is from JJrealPosNode (device contact)
         // to JJposNode (an internal node when lser is nonzero).
-        TSTALLOC(JJlPosIbrPtr, JJrealPosNode, JJlserBr)
-        TSTALLOC(JJlNegIbrPtr, JJposNode, JJlserBr)
-        TSTALLOC(JJlIbrPosPtr, JJlserBr, JJrealPosNode)
-        TSTALLOC(JJlIbrNegPtr, JJlserBr, JJposNode)
-        TSTALLOC(JJlIbrIbrPtr, JJlserBr, JJlserBr)
+        TSTALLOC(JJlserPosIbrPtr, JJrealPosNode, JJlserBr)
+        TSTALLOC(JJlserNegIbrPtr, JJposNode, JJlserBr)
+        TSTALLOC(JJlserIbrPosPtr, JJlserBr, JJrealPosNode)
+        TSTALLOC(JJlserIbrNegPtr, JJlserBr, JJposNode)
+        TSTALLOC(JJlserIbrIbrPtr, JJlserBr, JJlserBr)
 
         // The vshunt (external shunt) is applied from JJrealPosNode
         // to JJnegNode (the device contacts)
-        TSTALLOC(JJrealPosRealPosPtr, JJrealPosNode, JJrealPosNode);
-        TSTALLOC(JJrealPosNegPtr, JJrealPosNode, JJnegNode);
-        TSTALLOC(JJnegRealPosPtr, JJnegNode, JJrealPosNode);
+        TSTALLOC(JJrshPosPosPtr, JJrealPosNode, JJrealPosNode);
+        TSTALLOC(JJrshPosNegPtr, JJrealPosNode, JJnegNode);
+        TSTALLOC(JJrshNegPosPtr, JJnegNode, JJrealPosNode);
+        TSTALLOC(JJrshNegNegPtr, JJnegNode, JJnegNode);
 #endif
         if (inst->JJcontrol) {
             TSTALLOC(JJposIbrPtr, JJposNode, JJbranch)
@@ -500,12 +501,12 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 }
 #ifdef NEWLSER
                 if (inst->JJrealPosNode) {
-                    ckt->preldset(inst->JJlPosIbrPtr, 1.0);
-                    ckt->preldset(inst->JJlIbrPosPtr, 1.0);
+                    ckt->preldset(inst->JJlserPosIbrPtr, 1.0);
+                    ckt->preldset(inst->JJlserIbrPosPtr, 1.0);
                 }
                 if (inst->JJposNode) {
-                    ckt->preldset(inst->JJlNegIbrPtr, -1.0);
-                    ckt->preldset(inst->JJlIbrNegPtr, -1.0);
+                    ckt->preldset(inst->JJlserNegIbrPtr, -1.0);
+                    ckt->preldset(inst->JJlserIbrNegPtr, -1.0);
                 }
 #endif
             }

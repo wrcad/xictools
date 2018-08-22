@@ -80,6 +80,9 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
 #ifdef NEWLSER
         &&L_JJ_LSER, 
 #endif
+#ifdef NEWLSH
+        &&L_JJ_LSH, 
+#endif
         &&L_JJ_OFF,
         &&L_JJ_IC,
         &&L_JJ_ICP,
@@ -101,18 +104,27 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_JJ_QUEST_G2,
         &&L_JJ_QUEST_N1,
         &&L_JJ_QUEST_N2,
+        &&L_JJ_QUEST_NP
 #ifdef NEWLSER
-        &&L_JJ_QUEST_NP,
+        ,
         &&L_JJ_QUEST_NI,
-        &&L_JJ_QUEST_NB};
-#else
-        &&L_JJ_QUEST_NP};
+        &&L_JJ_QUEST_NB
 #endif
+#ifdef NEWLSH
+        ,
+        &&L_JJ_QUEST_NSHI,
+        &&L_JJ_QUEST_NSHB
+#endif
+        };
 
+#ifdef NEWLSH
+    if ((unsigned int)which > JJ_QUEST_NSHB)
+#else
 #ifdef NEWLSER
     if ((unsigned int)which > JJ_QUEST_NB)
 #else
     if ((unsigned int)which > JJ_QUEST_NP)
+#endif
 #endif
         return (E_BADPARM);
 #endif
@@ -136,6 +148,11 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
 #ifdef NEWLSER
     L_JJ_LSER:
         data->v.rValue = inst->JJlser;
+        return (OK);
+#endif
+#ifdef NEWLSH
+    L_JJ_LSH:
+        data->v.rValue = inst->JJlsh;
         return (OK);
 #endif
     L_JJ_OFF:
@@ -224,6 +241,16 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.iValue = inst->JJlserBr;
         return (OK);
 #endif
+#ifdef NEWLSH
+    L_JJ_QUEST_NSHI:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJlshIntNode;
+        return (OK);
+    L_JJ_QUEST_NSHB:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJlshBr;
+        return (OK);
+#endif
 #else
     switch (which) {
     case JJ_AREA:
@@ -235,6 +262,11 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
 #ifdef NEWLSER
     case JJ_LSER:
         data->v.rValue = inst->JJlser;
+        break;
+#endif
+#ifdef NEWLSH
+    case JJ_LSH:
+        data->v.rValue = inst->JJlsh;
         break;
 #endif
     case JJ_OFF:
@@ -321,6 +353,16 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case JJ_QUEST_NB:
         data->type = IF_INTEGER;
         data->v.iValue = inst->JJlserBr;
+        return (OK);
+#endif
+#ifdef NEWLSER
+    case JJ_QUEST_NSHI:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJlshIntNode;
+        return (OK);
+    case JJ_QUEST_NSHB:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJlshBr;
         return (OK);
 #endif
     default:

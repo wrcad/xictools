@@ -58,6 +58,9 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
 #ifdef NEWLSER
         &&L_JJ_LSER, 
 #endif
+#ifdef NEWLSH
+        &&L_JJ_LSH, 
+#endif
         &&L_JJ_OFF,
         &&L_JJ_IC,
         &&L_JJ_ICP,
@@ -105,6 +108,12 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     L_JJ_LSER:
         inst->JJlser = value->rValue;
         inst->JJlserGiven = true;
+        return (OK);
+#endif
+#ifdef NEWLSH
+    L_JJ_LSH:
+        inst->JJlsh = value->rValue;
+        inst->JJlshGiven = true;
         return (OK);
 #endif
     L_JJ_OFF:
@@ -156,6 +165,12 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case JJ_LSER:
         inst->JJlser = value->rValue;
         inst->JJlserGiven = true;
+        break;
+#endif
+#ifdef NEWLSH
+    case JJ_LSH:
+        inst->JJlsh = value->rValue;
+        inst->JJlshGiven = true;
         break;
 #endif
     case JJ_OFF:

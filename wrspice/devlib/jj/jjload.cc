@@ -193,10 +193,10 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             // Load the shunt resistance implied if vshunt given.
             if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
 #ifdef NEWLSER
-                ckt->ldadd(inst->JJrealPosRealPosPtr, inst->JJgshunt);
-                ckt->ldadd(inst->JJrealPosNegPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJnegRealPosPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+                ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
+                ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
 #else
                 ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
                 ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
@@ -218,16 +218,16 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
 #ifdef NEWLSER
         if (inst->JJlser > 0.0) {
             double res = 2*M_PI*inst->JJlser/wrsCONSTphi0;
-            ckt->ldadd(inst->JJlIbrIbrPtr, -res);
+            ckt->ldadd(inst->JJlserIbrIbrPtr, -res);
         }
 #ifndef USE_PRELOAD
         if (inst->JJrealPosNode) {
-            ckt->ldset(inst->JJlPosIbrPtr, 1.0);
-            ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+            ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
+            ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
         }
         if (inst->JJposNode) {
-            ckt->ldset(inst->JJlNegIbrPtr, -1.0);
-            ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+            ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
+            ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
         }
 #endif
 #endif
@@ -353,10 +353,10 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         // Load the shunt resistance implied if vshunt given.
         if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
 #ifdef NEWLSER
-            ckt->ldadd(inst->JJrealPosRealPosPtr, inst->JJgshunt);
-            ckt->ldadd(inst->JJrealPosNegPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJnegRealPosPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
 #else
             ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
             ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
@@ -379,15 +379,15 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         ckt->integrate(inst->JJlserFlux, inst->JJlserVeq);
 
         ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
-        ckt->ldadd(inst->JJlIbrIbrPtr, -inst->JJlserReq);
+        ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
 #ifndef USE_PRELOAD
         if (inst->JJrealPosNode) {
-            ckt->ldset(inst->JJlPosIbrPtr, 1.0);
-            ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+            ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
+            ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
         }
         if (inst->JJposNode) {
-            ckt->ldset(inst->JJlNegIbrPtr, -1.0);
-            ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+            ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
+            ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
         }
 #endif
 #endif
@@ -429,10 +429,10 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         // Load the shunt resistance implied if vshunt given.
         if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
 #ifdef NEWLSER
-            ckt->ldadd(inst->JJrealPosRealPosPtr, inst->JJgshunt);
-            ckt->ldadd(inst->JJrealPosNegPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJnegRealPosPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
 #else
             ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
             ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
@@ -445,18 +445,18 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
 
         ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
-        ckt->ldadd(inst->JJlIbrIbrPtr, -inst->JJlserReq);
+        ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
 
 //XXX        inst->INDprevFlux = 0;
         *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
 #ifndef USE_PRELOAD
         if (inst->JJrealPosNode) {
-            ckt->ldset(inst->JJlPosIbrPtr, 1.0);
-            ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+            ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
+            ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
         }
         if (inst->JJposNode) {
-            ckt->ldset(inst->JJlNegIbrPtr, -1.0);
-            ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+            ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
+            ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
         }
 #endif
 #endif
@@ -506,10 +506,10 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             if (gshunt > 0.0) {
                 inst->JJgshunt = gshunt;
 #ifdef NEWLSER
-                ckt->ldadd(inst->JJrealPosRealPosPtr, inst->JJgshunt);
-                ckt->ldadd(inst->JJrealPosNegPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJnegRealPosPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+                ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
+                ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
+                ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
 #else
                 ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
                 ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
@@ -534,15 +534,15 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
         inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
 
         ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
-        ckt->ldadd(inst->JJlIbrIbrPtr, -inst->JJlserReq);
+        ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
 #ifndef USE_PRELOAD
         if (inst->JJrealPosNode) {
-            ckt->ldset(inst->JJlPosIbrPtr, 1.0);
-            ckt->ldset(inst->JJlIbrPosPtr, 1.0);
+            ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
+            ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
         }
         if (inst->JJposNode) {
-            ckt->ldset(inst->JJlNegIbrPtr, -1.0);
-            ckt->ldset(inst->JJlIbrNegPtr, -1.0);
+            ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
+            ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
         }
 #endif
 #endif

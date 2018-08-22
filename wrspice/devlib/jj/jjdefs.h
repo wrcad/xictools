@@ -53,6 +53,7 @@ Author: 1992 Stephen R. Whiteley
 //
 
 #define NEWLSER
+#define NEWLSH
 
 
 // Use WRspice pre-loading of constant elements.
@@ -125,9 +126,13 @@ struct sJJinstance : public sGENinstance
     int JJposNode;      // number of positive node of junction
     int JJlserBr;       // number of internal branch for series L
 #else
-    int JJposNode;    // number of positive node of junction
-    int JJnegNode;    // number of negative node of junction
-    int JJphsNode;    // number of phase node of junction
+    int JJposNode;      // number of positive node of junction
+    int JJnegNode;      // number of negative node of junction
+    int JJphsNode;      // number of phase node of junction
+#endif
+#ifdef NEWLSH
+    int JJlshIntNode;   // number of internal shunt node
+    int JJlshBr;        // number of shunt inductor branch
 #endif
 
     int JJbranch;                  // number of control current branch
@@ -144,6 +149,11 @@ struct sJJinstance : public sGENinstance
     double JJlser;                 // parasitic series inductance
     double JJlserReq;              // stamp Req
     double JJlserVeq;              // stamp Veq
+#endif
+#ifdef NEWLSH
+    double JJlsh;                  // parasitic shunt res. series inductance
+    double JJlshReq;               // stamp Req
+    double JJlshVeq;               // stamp Veq
 #endif
     double JJdelVdelT;             // dvdt storage
 
@@ -178,16 +188,25 @@ struct sJJinstance : public sGENinstance
                                    //  (positive, branch equation)
     double *JJnegIbrPtr;           // pointer to sparse matrix at 
                                    //  (negative, branch equation)
-#ifdef NEWLSER
-    double *JJlPosIbrPtr;          // series inductance MNA stamp
-    double *JJlNegIbrPtr;
-    double *JJlIbrPosPtr;
-    double *JJlIbrNegPtr;
-    double *JJlIbrIbrPtr;
+    // "external" shunt resistor
+    double *JJrshPosPosPtr;
+    double *JJrshPosNegPtr;
+    double *JJrshNegPosPtr;
+    double *JJrshNegNegPtr;
 
-    double *JJrealPosRealPosPtr;   // vshunt r applied external contacts
-    double *JJrealPosNegPtr;
-    double *JJnegRealPosPtr;
+#ifdef NEWLSER
+    double *JJlserPosIbrPtr;       // series inductance MNA stamp
+    double *JJlserNegIbrPtr;
+    double *JJlserIbrPosPtr;
+    double *JJlserIbrNegPtr;
+    double *JJlserIbrIbrPtr;
+#endif
+#ifdef NEWLSH
+    double *JJlshPosIbrPtr;        // shunt res. series inductance MNA stamp
+    double *JJlshNegIbrPtr;
+    double *JJlshIbrPosPtr;
+    double *JJlshIbrNegPtr;
+    double *JJlshIbrIbrPtr;
 #endif
 
                                    // Flags to indicate...
@@ -195,6 +214,9 @@ struct sJJinstance : public sGENinstance
     unsigned JJicsGiven : 1;       // ics was specified
 #ifdef NEWLSER
     unsigned JJlserGiven : 1;      // lser was specified
+#endif
+#ifdef NEWLSH
+    unsigned JJlshGiven : 1;       // lsh was specified
 #endif
     unsigned JJinitVoltGiven : 1;  // ic was specified
     unsigned JJinitPhaseGiven : 1; // ic was specified
@@ -216,9 +238,21 @@ struct sJJinstance : public sGENinstance
 #ifdef NEWLSER
 #define JJlserFlux  GENstate + 7
 #define JJlserVolt  GENstate + 8
+#ifdef NEWLSH
+#define JJlshFlux   GENstate + 9
+#define JJlshVolt   GENstate + 10
+#define JJnumStates 11
+#else
+#define JJnumStates 9
+#endif
+#else
+#ifdef NEWLSH
+#define JJlshFlux   GENstate + 7
+#define JJlshVolt   GENstate + 8
 #define JJnumStates 9
 #else
 #define JJnumStates 7
+#endif
 #endif
 
 struct sJJmodel : sGENmodel
@@ -247,6 +281,10 @@ struct sJJmodel : sGENmodel
     double JJicFactor;
     double JJvShunt;
     double JJtsfact;
+#ifdef NEWLSH
+    double JJlsh0;
+    double JJlsh1;
+#endif
 
     unsigned JJrtypeGiven : 1;
     unsigned JJpi : 1;
@@ -267,6 +305,10 @@ struct sJJmodel : sGENmodel
     unsigned JJicfGiven : 1;
     unsigned JJvShuntGiven : 1;
     unsigned JJtsfactGiven : 1;
+#ifdef NEWLSH
+    unsigned JJlsh0Given : 1;
+    unsigned JJlsh1Given : 1;
+#endif
 };
 
 } // namespace JJ
@@ -279,6 +321,9 @@ enum {
     JJ_ICS,
 #ifdef NEWLSER
     JJ_LSER,
+#endif
+#ifdef NEWLSH
+    JJ_LSH,
 #endif
     JJ_OFF,
     JJ_IC,
@@ -301,12 +346,17 @@ enum {
     JJ_QUEST_G2,
     JJ_QUEST_N1,
     JJ_QUEST_N2,
-#ifdef NEWLSER
     JJ_QUEST_NP,
+#ifdef NEWLSER
     JJ_QUEST_NI,
     JJ_QUEST_NB
-#else
-    JJ_QUEST_NP
+#endif
+#ifdef NEWLSH
+#ifdef NEWLSER
+    ,
+#endif
+    JJ_QUEST_NSHI,
+    JJ_QUEST_NSHB
 #endif
 };
 
@@ -330,6 +380,10 @@ enum {
     JJ_MOD_CCS,
     JJ_MOD_ICF,
     JJ_MOD_VSHUNT,
+#ifdef NEWLSH
+    JJ_MOD_LSH0,
+    JJ_MOD_LSH1,
+#endif
     JJ_MOD_TSFACT,
 
     JJ_MQUEST_VL,
