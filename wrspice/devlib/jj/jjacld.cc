@@ -49,7 +49,7 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
-#ifdef NEWLSER
+            // Load intrinsic shunt conductance.
             double G = inst->JJgqp;
             *inst->JJposPosPtr += G;
             *inst->JJnegNegPtr += G;
@@ -64,15 +64,6 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 ckt->ldadd(inst->JJrshNegPosPtr, -G);
                 ckt->ldadd(inst->JJrshNegNegPtr, G);
             }
-#else
-            double G = inst->JJgqp;
-            if (model->JJvShuntGiven && inst->JJgshunt > 0.0)
-                G += inst->gshunt;
-            *inst->JJposPosPtr += G;
-            *inst->JJnegNegPtr += G;
-            *inst->JJposNegPtr -= G;
-            *inst->JJnegPosPtr -= G;
-#endif
 
             double C = inst->JJcap;
             double val = ckt->CKTomega*C;
@@ -92,7 +83,7 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
             *(inst->JJposNegPtr +1) -= val;
             *(inst->JJnegPosPtr +1) -= val;
             if (inst->JJphsNode > 0)
-                *inst->JJphsPhsPtr =  1.0;
+                *inst->JJphsPhsPtr = 1.0;
 
 #ifdef NEWLSER
             if (inst->JJlser > 0.0) {
@@ -106,6 +97,16 @@ JJdev::acLoad(sGENmodel *genmod, sCKT *ckt)
                     ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
                 }
                 *(inst->JJlserIbrIbrPtr +1) -= val;
+            }
+#endif
+#ifdef NEWLSH
+            if (inst->JJlsh > 0.0) {
+                val = ckt->CKTomega * inst->JJlsh;
+                ckt->ldset(inst->JJlshPosIbrPtr, 1.0);
+                ckt->ldset(inst->JJlshIbrPosPtr, 1.0);
+                ckt->ldset(inst->JJlshNegIbrPtr, -1.0);
+                ckt->ldset(inst->JJlshIbrNegPtr, -1.0);
+                *(inst->JJlshIbrIbrPtr +1) -= val;
             }
 #endif
         }

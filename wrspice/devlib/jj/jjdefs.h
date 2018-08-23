@@ -261,6 +261,8 @@ struct sJJmodel : sGENmodel
     sJJmodel *next()    { return (static_cast<sJJmodel*>(GENnextModel)); }
     sJJinstance *inst() { return (static_cast<sJJinstance*>(GENinstances)); }
 
+    static double subgap(sJJmodel*, sJJinstance*);
+
     int JJrtype;
     int JJictype;
     double JJvg;

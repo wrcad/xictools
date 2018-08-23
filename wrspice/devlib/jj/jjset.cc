@@ -103,6 +103,12 @@ Author: 1992 Stephen R. Whiteley
 #define NOImin  0.0         // Min noise scale
 #define NOImax  10.0        // Max noise scale
 
+#ifdef NEWLSH
+#define LSH_MAX 1e-11
+#define LSH0_MAX 2e-12
+#define LSH1_MAX 1e-10
+#endif
+
 namespace {
     int get_node_ptr(sCKT *ckt, sJJinstance *inst)
     {
@@ -118,14 +124,45 @@ namespace {
         TSTALLOC(JJlserIbrPosPtr, JJlserBr, JJrealPosNode)
         TSTALLOC(JJlserIbrNegPtr, JJlserBr, JJposNode)
         TSTALLOC(JJlserIbrIbrPtr, JJlserBr, JJlserBr)
+#endif
 
-        // The vshunt (external shunt) is applied from JJrealPosNode
-        // to JJnegNode (the device contacts)
+#ifdef NEWLSH
+        // The shunt series inductance is from device top contact to
+        // JJlshIntNode.
+#ifdef NEWLSER
+        TSTALLOC(JJlshPosIbrPtr, JJrealPosNode, JJlshBr)
+        TSTALLOC(JJlshIbrPosPtr, JJlshBr, JJrealPosNode)
+#else
+        TSTALLOC(JJlshPosIbrPtr, JJposNode, JJlshBr)
+        TSTALLOC(JJlshIbrPosPtr, JJlshBr, JJposNode)
+#endif
+        TSTALLOC(JJlshNegIbrPtr, JJlshIntNode, JJlshBr)
+        TSTALLOC(JJlshIbrNegPtr, JJlshBr, JJlshIntNode)
+        TSTALLOC(JJlshIbrIbrPtr, JJlshBr, JJlshBr)
+#endif
+
+#ifdef NEWLSH
+        // Rshunt:  internal node to device contact 2.
+        TSTALLOC(JJrshPosPosPtr, JJlshIntNode, JJlshIntNode);
+        TSTALLOC(JJrshPosNegPtr, JJlshIntNode, JJnegNode);
+        TSTALLOC(JJrshNegPosPtr, JJnegNode, JJlshIntNode);
+        TSTALLOC(JJrshNegNegPtr, JJnegNode, JJnegNode);
+#else
+#ifdef NEWLSER
+        // Rshunt:  device contact 1 to device contact 2.
         TSTALLOC(JJrshPosPosPtr, JJrealPosNode, JJrealPosNode);
         TSTALLOC(JJrshPosNegPtr, JJrealPosNode, JJnegNode);
         TSTALLOC(JJrshNegPosPtr, JJnegNode, JJrealPosNode);
         TSTALLOC(JJrshNegNegPtr, JJnegNode, JJnegNode);
+#else
+        // Rshunt:  device contact 1 to device contact 2.
+        TSTALLOC(JJrshPosPosPtr, JJposNode, JJposNode);
+        TSTALLOC(JJrshPosNegPtr, JJposNode, JJnegNode);
+        TSTALLOC(JJrshNegPosPtr, JJnegNode, JJposNode);
+        TSTALLOC(JJrshNegNegPtr, JJnegNode, JJnegNode);
 #endif
+#endif
+
         if (inst->JJcontrol) {
             TSTALLOC(JJposIbrPtr, JJposNode, JJbranch)
             TSTALLOC(JJnegIbrPtr, JJnegNode, JJbranch)
@@ -298,6 +335,24 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->JJvShunt = 0.0;
             }
         }
+#ifdef NEWLSH
+        if (model->JJlsh0Given) {
+            if (model->JJlsh0 < 0.0 || model->JJlsh0 > LSH0_MAX) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: LSH0=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJlsh0, 0.0, LSH0_MAX, 0.0);
+                model->JJlsh0 = 0.0;
+            }
+        }
+        if (model->JJlsh1Given) {
+            if (model->JJlsh1 < 0.0 || model->JJlsh1 > LSH1_MAX) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: LSH1=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJlsh1, 0.0, LSH1_MAX, 0.0);
+                model->JJlsh1 = 0.0;
+            }
+        }
+#endif
 
         if (!model->JJnoiseGiven)
             model->JJnoise = NOI;
@@ -358,7 +413,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             inst->JJcriti = model->JJcriti * inst->JJarea;
 
 #ifdef NEWLSER
-            if (inst->JJlser < 1e-14) {
+            if (inst->JJlser > 0.0 && inst->JJlser < 1e-14) {
                 DVO.textOut(OUT_WARNING,
                     "%s: LSER less than 0.01pH, reset to 0.\n", inst->GENname);
                 inst->JJlser = 0.0;
@@ -376,6 +431,46 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
             else {
                 inst->JJposNode = inst->JJrealPosNode;
+            }
+#endif
+            inst->JJgqp = sJJmodel::subgap(model, inst);
+            if (model->JJvShuntGiven) {
+                double gshunt = inst->JJcriti/model->JJvShunt - inst->JJgqp;
+                if (gshunt > 0.0)
+                    inst->JJgshunt = gshunt;
+            }
+
+#ifdef NEWLSH
+            if (inst->JJlshGiven) {
+                if (inst->JJlsh < 0.0 || inst->JJlsh > LSH_MAX) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: LSH=%g out of range [%g-%g], reset to %g.\n",
+                        inst->GENname, inst->JJlsh, 0.0, LSH_MAX, 0.0);
+                    inst->JJlsh = 0.0;
+                }
+            }
+            else if (inst->JJgshunt > 0.0 &&
+                    (model->JJlsh0Given || model->JJlsh1Given))
+                inst->JJlsh = model->JJlsh0 + model->JJlsh1/inst->JJgshunt;
+            if (inst->JJgshunt > 0.0) {
+                if (inst->JJlsh > 0) {
+                    sCKTnode *node;
+                    int err = ckt->mkVolt(&node, inst->GENname, "sh");
+                    if (err)
+                        return (err);
+                    inst->JJlshIntNode = node->number();
+                    err = ckt->mkCur(&node, inst->GENname, "shbr");
+                    if (err)
+                        return (err);
+                    inst->JJlshBr = node->number();
+                }
+                else {
+#ifdef NEWLSER
+                    inst->JJlshIntNode = inst->JJrealPosNode;
+#else
+                    inst->JJlshIntNode = inst->JJposNode;
+#endif
+                }
             }
 #endif
 
@@ -509,6 +604,14 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                     ckt->preldset(inst->JJlserIbrNegPtr, -1.0);
                 }
 #endif
+#ifdef NEWLSH
+                if (inst->JJlsh > 0.0) {
+                    ckt->ldset(inst->JJlshPosIbrPtr, 1.0);
+                    ckt->ldset(inst->JJlshIbrPosPtr, 1.0);
+                    ckt->ldset(inst->JJlshNegIbrPtr, -1.0);
+                    ckt->ldset(inst->JJlshIbrNegPtr, -1.0);
+                }
+#endif
             }
 #endif
         }
@@ -518,7 +621,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 }
 
 
-// SRW - reset the matrix element pointers.
+// Reset the matrix element pointers.
 //
 int
 JJdev::resetup(sGENmodel *inModel, sCKT *ckt)

@@ -178,6 +178,22 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             }
             js.jj_load(ckt, model, inst);
             // don't load shunt
+#ifdef NEWLSH
+            if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+                // Load lsh as 0-voltage source, don't load resistor. 
+                // Dangling voltage source shouldn't matter.
+
+                if (inst->JJlsh > 0.0) {
+                    ckt->ldadd(inst->JJlshIbrIbrPtr, 0.0);
+#ifndef USE_PRELOAD
+                    ckt->ldset(inst->JJlshPosIbrPtr, 1.0);
+                    ckt->ldset(inst->JJlshIbrPosPtr, 1.0);
+                    ckt->ldset(inst->JJlshNegIbrPtr, -1.0);
+                    ckt->ldset(inst->JJlshIbrNegPtr, -1.0);
+#endif
+                }
+            }
+#endif
         }
         else {
             // No critical current, treat like a nonlinear resistor.
@@ -192,28 +208,27 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
 
             // Load the shunt resistance implied if vshunt given.
             if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
-#ifdef NEWLSER
                 ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
                 ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
                 ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
                 ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
-#else
-                ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
-                ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJnegPosPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#ifdef NEWLSH
+                // Load lsh as 0-voltage source.
+                if (inst->JJlsh > 0.0) {
+                    ckt->ldadd(inst->JJlshIbrIbrPtr, 0.0);
+#ifndef USE_PRELOAD
+                    ckt->ldset(inst->JJlshPosIbrPtr, 1.0);
+                    ckt->ldset(inst->JJlshIbrPosPtr, 1.0);
+                    ckt->ldset(inst->JJlshNegIbrPtr, -1.0);
+                    ckt->ldset(inst->JJlshIbrNegPtr, -1.0);
+#endif
+                }
 #endif
             }
         }
         if (ckt->CKTmode & MODEINITSMSIG) {
             // for ac load
             inst->JJdcrt = js.js_dcrt;
-            inst->JJgqp = js.js_gqt;
-            if (model->JJvShuntGiven) {
-                double gshunt = inst->JJcriti/model->JJvShunt - inst->JJgqp;
-                if (gshunt > 0.0)
-                    inst->JJgshunt = gshunt;
-            }
         }
 #ifdef NEWLSER
         if (inst->JJlser > 0.0) {
@@ -352,44 +367,48 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
 
         // Load the shunt resistance implied if vshunt given.
         if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
-#ifdef NEWLSER
             ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
             ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
             ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
             ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
-#else
-            ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
-            ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJnegPosPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#ifdef NEWLSH
+            if (inst->JJlsh > 0.0) {
+                *(ckt->CKTstate0 + inst->JJlshFlux) = inst->JJlsh *
+                    *(ckt->CKTrhsOld + inst->JJlshBr);
+                ckt->integrate(inst->JJlshFlux, inst->JJlshVeq);
+
+                ckt->rhsadd(inst->JJlshBr, inst->JJlshVeq);
+                ckt->ldadd(inst->JJlshIbrIbrPtr, -inst->JJlshReq);
+#ifndef USE_PRELOAD
+                ckt->ldset(inst->JJlshPosIbrPtr, 1.0);
+                ckt->ldset(inst->JJlshIbrPosPtr, 1.0);
+                ckt->ldset(inst->JJlshNegIbrPtr, -1.0);
+                ckt->ldset(inst->JJlshIbrNegPtr, -1.0);
+#endif
+            }
 #endif
         }
 
         ckt->integrate(inst->JJvoltage, inst->JJdelVdelT);
 #ifdef NEWLSER
-        *(ckt->CKTstate0 + inst->JJlserFlux) = inst->JJlser *
-            *(ckt->CKTrhsOld + inst->JJlserBr);
-/*XXX
-        double flux = inst->JJlser *
-            *(ckt->CKTrhsOld + inst->JJlserBr) - inst->INDprevFlux;
-        *(ckt->CKTstate0 + inst->JJlserFlux) += flux;
+        if (inst->JJlser > 0.0) {
+            *(ckt->CKTstate0 + inst->JJlserFlux) = inst->JJlser *
+                *(ckt->CKTrhsOld + inst->JJlserBr);
+            ckt->integrate(inst->JJlserFlux, inst->JJlserVeq);
 
-        inst->INDprevFlux = *(ckt->CKTstate0 + inst->JJlserFlux);
-*/
-        ckt->integrate(inst->JJlserFlux, inst->JJlserVeq);
-
-        ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
-        ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
+            ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+            ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
 #ifndef USE_PRELOAD
-        if (inst->JJrealPosNode) {
-            ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
-            ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
-        }
-        if (inst->JJposNode) {
-            ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
-            ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
-        }
+            if (inst->JJrealPosNode) {
+                ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
+                ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
+            }
+            if (inst->JJposNode) {
+                ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
+                ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
+            }
 #endif
+        }
 #endif
         return (OK);
     }
@@ -428,37 +447,48 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
 
         // Load the shunt resistance implied if vshunt given.
         if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
-#ifdef NEWLSER
             ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
             ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
             ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
             ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
-#else
-            ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
-            ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJnegPosPtr, -inst->JJgshunt);
-            ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+#ifdef NEWLSH
+            if (inst->JJlsh > 0.0) {
+                inst->JJlshReq = ckt->CKTag[0] * inst->JJlsh;
+                inst->JJlshVeq = ckt->find_ceq(inst->JJlshFlux);
+
+                ckt->rhsadd(inst->JJlshBr, inst->JJlshVeq);
+                ckt->ldadd(inst->JJlshIbrIbrPtr, -inst->JJlshReq);
+
+                *(ckt->CKTstate0 + inst->JJlshFlux) = 0;
+#ifndef USE_PRELOAD
+                ckt->ldset(inst->JJlshPosIbrPtr, 1.0);
+                ckt->ldset(inst->JJlshIbrPosPtr, 1.0);
+                ckt->ldset(inst->JJlshNegIbrPtr, -1.0);
+                ckt->ldset(inst->JJlshIbrNegPtr, -1.0);
+#endif
+            }
 #endif
         }
 #ifdef NEWLSER
-        inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
-        inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
+        if (inst->JJlser > 0.0) {
+            inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
+            inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
 
-        ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
-        ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
+            ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+            ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
 
-//XXX        inst->INDprevFlux = 0;
-        *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
+            *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
 #ifndef USE_PRELOAD
-        if (inst->JJrealPosNode) {
-            ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
-            ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
-        }
-        if (inst->JJposNode) {
-            ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
-            ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
-        }
+            if (inst->JJrealPosNode) {
+                ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
+                ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
+            }
+            if (inst->JJposNode) {
+                ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
+                ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
+            }
 #endif
+        }
 #endif
         return (OK);
     }
@@ -499,56 +529,80 @@ JJdev::load(sGENinstance *in_inst, sCKT *ckt)
             js.jj_ic(model, inst);
         js.jj_load(ckt, model, inst);
 
-        // Setup/load the shunt resistance implied if vshunt is given.
-        inst->JJgqp = js.js_gqt;
-        if (model->JJvShuntGiven) {
-            double gshunt = inst->JJcriti/model->JJvShunt - inst->JJgqp;
-            if (gshunt > 0.0) {
-                inst->JJgshunt = gshunt;
-#ifdef NEWLSER
-                ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
-                ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
-#else
-                ckt->ldadd(inst->JJposPosPtr, inst->JJgshunt);
-                ckt->ldadd(inst->JJposNegPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJnegPosPtr, -inst->JJgshunt);
-                ckt->ldadd(inst->JJnegNegPtr, inst->JJgshunt);
+        if (model->JJvShuntGiven && inst->JJgshunt > 0.0) {
+            ckt->ldadd(inst->JJrshPosPosPtr, inst->JJgshunt);
+            ckt->ldadd(inst->JJrshPosNegPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegPosPtr, -inst->JJgshunt);
+            ckt->ldadd(inst->JJrshNegNegPtr, inst->JJgshunt);
+#ifdef NEWLSH
+            if (inst->JJlsh > 0.0) {
+                double ival;
+                if (ckt->CKTmode & MODEUIC)
+                    ival =  0.0;
+                else
+                    ival = *(ckt->CKTrhsOld + inst->JJlshBr);
+                *(ckt->CKTstate1 + inst->JJlshFlux) += inst->JJlsh * ival;
+                *(ckt->CKTstate0 + inst->JJlshFlux) = 0;
+
+                inst->JJlshReq = ckt->CKTag[0] * inst->JJlsh;
+                inst->JJlshVeq = ckt->find_ceq(inst->JJlshFlux);
+
+                ckt->rhsadd(inst->JJlshBr, inst->JJlshVeq);
+                ckt->ldadd(inst->JJlshIbrIbrPtr, -inst->JJlshReq);
+#ifndef USE_PRELOAD
+                ckt->ldset(inst->JJlshPosIbrPtr, 1.0);
+                ckt->ldset(inst->JJlshIbrPosPtr, 1.0);
+                ckt->ldset(inst->JJlshNegIbrPtr, -1.0);
+                ckt->ldset(inst->JJlshIbrNegPtr, -1.0);
 #endif
             }
+#endif
         }
 
 #ifdef NEWLSER
-        double ival;
-        if (ckt->CKTmode & MODEUIC)
-            ival =  0.0;
-        else
-            ival = *(ckt->CKTrhsOld + inst->JJlserBr);
-        *(ckt->CKTstate1 + inst->JJlserFlux) += inst->JJlser * ival;
+        if (inst->JJlser > 0.0) {
+            double ival;
+            if (ckt->CKTmode & MODEUIC)
+                ival =  0.0;
+            else
+                ival = *(ckt->CKTrhsOld + inst->JJlserBr);
+            *(ckt->CKTstate1 + inst->JJlserFlux) += inst->JJlser * ival;
+            *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
 
-//XXX        inst->INDprevFlux = 0;
-        *(ckt->CKTstate0 + inst->JJlserFlux) = 0;
+            inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
+            inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
 
-        inst->JJlserReq = ckt->CKTag[0] * inst->JJlser;
-        inst->JJlserVeq = ckt->find_ceq(inst->JJlserFlux);
-
-        ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
-        ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
+            ckt->rhsadd(inst->JJlserBr, inst->JJlserVeq);
+            ckt->ldadd(inst->JJlserIbrIbrPtr, -inst->JJlserReq);
 #ifndef USE_PRELOAD
-        if (inst->JJrealPosNode) {
-            ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
-            ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
-        }
-        if (inst->JJposNode) {
-            ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
-            ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
-        }
+            if (inst->JJrealPosNode) {
+                ckt->ldset(inst->JJlserPosIbrPtr, 1.0);
+                ckt->ldset(inst->JJlserIbrPosPtr, 1.0);
+            }
+            if (inst->JJposNode) {
+                ckt->ldset(inst->JJlserNegIbrPtr, -1.0);
+                ckt->ldset(inst->JJlserIbrNegPtr, -1.0);
+            }
 #endif
+        }
 #endif
         return (OK);
     }
     return (E_BADPARM);
+}
+
+
+// Static function.
+// Return the quasiparticle conductance at zero voltage.
+//
+double
+sJJmodel::subgap(sJJmodel *model, sJJinstance *inst)
+{
+    jjstuff js;
+    memset(&js, 0, sizeof(jjstuff));
+
+    js.jj_iv(model, inst);
+    return (js.js_gqt);
 }
 
 

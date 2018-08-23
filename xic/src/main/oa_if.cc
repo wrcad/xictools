@@ -86,7 +86,7 @@ namespace {
             CDvdb()->getVariable(VA_LibPath));
         if (code != OA_CODE) {
             if (verbose)
-                printf("The OpenAccess plug-in is not not licensed, "
+                printf("The OpenAccess plug-in is not licensed, "
                 "contact\nWhiteley Research for product and licensing "
                 "information.\n");
             return (0);
