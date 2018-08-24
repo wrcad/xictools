@@ -52,9 +52,11 @@ Author: 1992 Stephen R. Whiteley
 // data structures used to describe Jopsephson junctions
 //
 
+// Uncomment to support series parasitic inductance.
 #define NEWLSER
-#define NEWLSH
 
+// Uncomment to support shunt resistor parasitic inductance.
+#define NEWLSH
 
 // Use WRspice pre-loading of constant elements.
 #define USE_PRELOAD

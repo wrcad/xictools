@@ -4129,7 +4129,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 \subsection{Josephson Junctions}
 \index{Josephson junction instance}
 
-% spElements.hlp:jj 042018
+% spElements.hlp:jj 082418
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
@@ -4141,6 +4141,8 @@ BSIM3v3.1.  The following parameters are new for v3.2:
   other values, effectively modifying the junction area.\\ \hline
 {\vt ics=}{\it val} & Instantiated critical current, used as scale factor
   for capacitance, conductances.\\ \hline
+{\vt lser=}{\it val} & Junction series parasitic inductance. \\ \hline
+{\vt lsh=}{\it val} & Shunt resistor series parasitic inductance. \\ \hline
 {\vt ic=}{\it vj\/},{\it phi} & The initial junction voltage and phase
   (initial condition) for transient analysis.\\ \hline
 {\vt vj=}{\it vj} & The initial junction voltage (initial condition) for
@@ -4193,6 +4195,26 @@ and in addition scales all conductance and capacitance values from the
 reference junction appropriately.  This is equivalent to giving the
 {\vt area} parameter with a value of {\vt ics}/{\vt icrit}.  The
 default is {\vt icrit}, the reference junction critical current.
+
+\item{\vt lser}\\
+{\bf range:} 0.0 -- 10.0pH\\
+This models series inductance of the physical Josephson junction
+structure, caused by constriction of current through the junction
+orifice.  This inductance might typically be in the range of 0.1 to
+0.3 picohenries.  If nonzero, an internal node is added to the model,
+providing the connection point of the inductance and the Josephson
+junction.  The default value is 0.0, meaning that no parasitic
+inductance is assumed.  Nonzero given values less than 0.01pH revert
+to zero.
+
+\item{\vt lsh}\\
+{\bf range:} 0.0 -- 100.0pH\\
+This parameter specifies the series inductance of the external shunt
+resistance.  The {\vt vshunt} model parameter must be specified such
+that a positive external shunt conductance is applied, otherwise this
+parameter is ignored.  Ordinarily, the {\vt lsh0}/{\vt lsh1} model
+parameters would be used to specify the inductance, this parameter can
+be used to override these values on a per-instance basis if desired.
 
 \item{\vt ic}\\
 Presently, this keyword is not recognized by the Verilog-A model.  The
@@ -4393,7 +4415,7 @@ See the Josephson junction model description for more information.
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 042018
+% spModels.hlp:jjmodel 082418
 
 {\cb Type Name:} {\vt jj}
 
@@ -4424,7 +4446,7 @@ when formulating instance capacitance and conductances.
 \hline
 \vt icrit & $*$ & \rr Reference junction critical current & $A$ & 1.0e-3\\
 \hline
-{\vt vg} or {\vt vgap} & & \rr Gap voltage & $V$ & 2.8e-3\\
+{\vt vg} or {\vt vgap} & & \rr Gap voltage & $V$ & 2.6e-3\\
 \hline
 \vt delv & & \rr Gap voltage spread & $V$ & 80.0e-6\\
 \hline
@@ -4446,6 +4468,10 @@ when formulating instance capacitance and conductances.
 {\vt icfct} or {\vt icfact} & & \rr Ratio of critical to gap currents & - & ${\pi}/4$\\
 \hline
 \vt vshunt & & \rr Voltage to specify fixed shunt resistance & $V$ & 0.0\\
+\hline
+\vt lsh0 & & \rr Shunt resistor series inductance, constant part & $H$ & 0.0\\
+\hline
+\vt lsh1 & & \rr Shunt resistor series inductance, proportional part & $H\Omega$ & 0.0\\
 \hline
 \vt tsfactor & & \rr Time step phase change limit & & {\vt dphimax}\\
 \hline
@@ -4569,14 +4595,14 @@ well as appropriately scaling conductances and capacitance, from
 the model reference current which is {\vt icrit}.
 
 \item{{\vt vgap} or {\vt vg}}\\
-{\bf range:} 2.0mV -- 6.0mV\\
+{\bf range:} 0.1mV -- 10.0mV\\
 This parameter specifies the gap voltage, which in a hysteretic
 Josephson junction is a voltage at which there is a large and abrupt
 increase in conductivity.  This parameter is material dependent, the
-default 2.8mV is appropriate for niobium junctions.
+default 2.6mV is appropriate for niobium junctions.
 
 \item{\vt delv}\\
-{\bf range:} 80uV -- 200uV\\
+\bf range:} 0.001*{\vt vgap} -- 0.2*{\vt vgap}\\
 This specifies the assumed width, in voltage, of the quasiparticle
 step region, or gap.  In this region, current increases sharply with
 increasing voltage.  The default value of 80uV is reasonable for
@@ -4687,6 +4713,18 @@ the process parameters and the amount of damping required.  Higher
 values will provide less damping, usually critical damping is desired. 
 This parameter defaults to 0, meaning that no additional demping is
 supplied by default.
+
+\item{\vt lsh0}\\
+{\bf range:} 0.0 -- 2.0pH\\
+\item{\vt lsh1}\\
+{\bf range:} 0.0 -- 10.0pH\\
+These parameters specify series parasitic inductance in the external
+shunt resistor.  the {\vt vshunt} parameter must be given a value such
+that the added external conductance is positive, or these parameters
+are ignored.  The inductance consists of a constant part ({\vt lsh0})
+assumed to come from resistor contacts, plus a value ({\vt lsh1})
+proportional to the resistance in ohms, intended to capture the length
+dependence.
 
 \item{\vt tsfactor}\\
 {\bf range:} 0.001 -- 1.0\\

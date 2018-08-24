@@ -224,8 +224,47 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.6  7/20/2018
+wrspice-4.3.7  8/24/2018
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Updates to the Josephson junction models.
+
+  These updates apply to both the internal and Verilog-a Josephson
+  junction models.
+
+  Added the LSER instance parameter to model junction series
+  inductance.  This is intended to model geometric inductance of the
+  Josephson junction structure, which looks lika a via.
+
+  There are two new model parameters, LSH0 and LSH1, used to model the
+  parasitic series inductance in the "external" shunt resistance
+  assumed when using the VSHUNT parameter.  The shunt resistance
+  series inductance will be
+
+    L = LSH0 + Rshunt*LSH1
+
+  LSH0 is a constant value intended to model end/via contributions. 
+  LSH1 is inductance per ohm, intended to capture resistor length
+  dependence.
+
+  There is also a new instance parameter LSH, which will override the
+  model parameters if also given.  This will set the value of the
+  shunt resistor inductance directly.
+
+  The following default parameter value and range changes were made
+  to accommodate non-standard materials.
+  vgap,min,,max   2.8mV,2.0mV,6.0mV    -> 2.6mV,0.1mV,10.0mV
+  delv,min,max    0.08mV,0.01mV,0.2mV  -> 0.08mV,0.001*vgap,0.2*vgap
+
+  Other evolution of the Verilog-a model, see the changes list in the
+  model code.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.6  7/20/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

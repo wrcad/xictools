@@ -1061,7 +1061,7 @@ Uniform RC Line
 passive
 tra
 
-!! elements.tex 042018
+!! elements.tex 082418
 !!KEYWORD
 jj
 !!TITLE
@@ -1085,6 +1085,10 @@ Josephson Junctions
     <tr><td><tt>ics=</tt><i>val</i></td> <td>Instantiated critical
       current, used as scale factor for
       capacitance, conductances.</td></tr>
+    <tr><td><tt>lser=</tt><i>val</i></td> <td>Junction series parasitic
+      inductance.</td></tr>
+    <tr><td><tt>lsh=</tt><i>val</i></td> <td>Shunt resistor series parasitic
+      inductance.</td></tr>
     <tr><td><tt>ic=</tt><i>vj</i>,<i>phi</i></td> <td>
       The initial junction voltage and phase (initial condition) for transient
       analysis.</td></tr>
@@ -1163,6 +1167,31 @@ Josephson Junctions
     equivalent to giving the <tt>area</tt> parameter with a value of
     <tt>ics</tt>/<tt>icrit</tt>.  The default is <tt>icrit</tt>, the
     reference junction critical current.
+    </dl>
+
+    <dl>
+    <dt><tt>lser</tt><dd>
+    <b>range:</b> 0.0 - 10.0pH<br>
+    This models series inductance of the physical Josephson junction
+    structure, caused by constriction of current through the junction
+    orifice.  This inductance might typically be in the range of 0.1
+    to 0.3 picohenries.  If nonzero, an internal node is added to the
+    model, providing the connection point of the inductance and the
+    Josephson junction.  The default value is 0.0, meaning that no
+    parasitic inductance is assumed.  Nonzero given values less than
+    0.01pH revert to zero.
+    </dl>
+
+    <dl>
+    <dt><tt>lsh</tt><dd>
+    <b>range:</b> 0.0 - 100.0pH<br>
+    This parameter specifies the series inductance of the external
+    shunt resistance.  The <tt>vshunt</tt> model parameter must be
+    specified such that a positive external shunt conductance is
+    applied, otherwise this parameter is ignored.  Ordinarily, the
+    <tt>lsh0</tt>/<tt>lsh1</tt> model parameters would be used to
+    specify the inductance, this parameter can be used to override
+    these values on a per-instance basis if desired.
     </dl>
 
     <dl>

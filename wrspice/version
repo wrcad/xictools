@@ -1,6 +1,6 @@
 #! /bin/sh
 
-release_num=6
+release_num=7
 
 echo 4.3.$release_num
 

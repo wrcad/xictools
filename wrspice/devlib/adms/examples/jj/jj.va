@@ -51,6 +51,14 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.22, August 24, 2018
+//   Parameter and range changes, allow wider Vgap range for non-
+//   standard materials.
+//     vgap,min,max 2.8mV,2.0mV,6.0mV   ->  2.6mV,0.1mV,10.0mV
+//     delv,min,max 0.08mV,0.01mV,0.2mV -> 0.08mV,0.001*vgap,0.2*vgap
+//   Add conditionals around loading functions, avoid node creation
+//   and calculations when inductor elements are not used.  Use only
+//   parameters in conditionals containing analog operators.
 // Version 1.21, August 20, 2018
 //   Added support for series inductance in added (vshunt != 0) shunt
 //   resistance.  New model params lsh0 and lsh1, inductance = lsh0 +
@@ -262,10 +270,10 @@ parameter real cmu      = 0.0 from [0.0:1.0]
     `P(type="model" info="Capacitance scaling factor");
 
 // The gap voltage and spread.
-parameter real vgap     = 2.8m from [2.0m:6.0m]
+parameter real vgap     = 2.6m from [0.1m:10.0m]
     `P(type="model" info="Gap voltage" units="V");
 aliasparam vg           = vgap;
-parameter real delv     = 0.08m from [0.01m:0.2m]
+parameter real delv     = 0.08m from [0.001*vgap:0.2*vgap]
     `P(type="model" info="Gap width" units="V");
 
 // The subgap and normal resistances.  If vshunt is given, a fixed
@@ -336,8 +344,8 @@ real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
 real vdpbak, start_phase, tsf, ic_scaled, gshunt, lshval;
 `ifdef WRspice
 real SmallSigL;
-`endif
 integer pmode;
+`endif
 
 analog begin
 
@@ -419,6 +427,8 @@ analog begin
             gshunt = ic_scaled/vshunt;
             if (rtype == 1)
                 gshunt = gshunt - 1/rsubs;
+            if (gshunt < 0.0)
+                gshunt = 0.0;
 `ifdef NEWLSH
             if (gshunt > 0)
                 if (lsh != 0.0)
@@ -436,7 +446,9 @@ analog begin
         //   If simulator returns nonzero, it supports phase-mode DC
         //   analysis.  Requires WRspice-4.3.3.
         //
+`ifdef WRspice
         pmode = (cct > 0 && $simparam("dcPhaseMode", 0.0) > 0);
+`endif
     end
 
 `ifdef WRspice
@@ -467,7 +479,10 @@ analog begin
             // Geometric capacitance current.
             I(bc) <+ ddt(caps*V(bc));
 `ifdef NEWLSER
-            V(blser) <+ ddt(lser*I(blser));
+            if (lser > 0.0)
+                V(blser) <+ ddt(lser*I(blser));
+            else
+                V(blser) <+ 0.0;
 `endif
 
             // Small-signal inductance of Josephson current.  This is
@@ -483,12 +498,14 @@ analog begin
             if (rtype == 1)
                 I(br) <+ V(br)/rsubs;
 
-            if (gshunt > 0)
-`ifdef NEWLSH
+            if (vshunt > 1u)
                 begin
-                V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+`ifdef NEWLSH
+                if (lsh > 0.0 || lsh0 > 0.0 || lsh1 > 0.0)
+                    V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+                else
+                    V(n1,nshint) <+ 0.0;
                 I(nshint,n2) <+ gshunt*V(nshint,n2);
-                end
 `else
 `ifdef NEWLSER
                 I(n1,n2) <+ gshunt*V(n1,n2);
@@ -496,6 +513,8 @@ analog begin
                 I(br) <+ gshunt*V(br);
 `endif
 `endif
+                end
+
             if ($port_connected(ph))
                 begin
                 I(ph) <+ phase;
@@ -553,10 +572,16 @@ analog begin
                 I(ph) <+ -V(ph);
                 end
 `ifdef NEWLSER
-            V(blser) <+ lser*I(blser)/`PHI0_2PI;
+            if (lser > 0.0)
+                V(blser) <+ lser*I(blser)/`PHI0_2PI;
+            else
+                V(blser) <+ 0.0;
 `endif
 `ifdef NEWLSH
-            V(n1,nshint) <+ lshval*I(n1,nshint)/`PHI0_2PI;
+            if (lsh > 0.0 || lsh0 > 0.0 || lsh1 > 0.0)
+                V(n1,nshint) <+ lshval*I(n1,nshint)/`PHI0_2PI;
+            else
+                V(n1,nshint) <+ 0.0;
 `endif
             end
         else
@@ -569,7 +594,7 @@ analog begin
             I(ph) <+ -V(ph);
             I(br) <+ 1e6*scale*V(br);
 `ifdef NEWLSER
-            V(blser) <+ 0;
+            V(blser) <+ 0.0;
 `endif
 `else
             $error(
@@ -628,12 +653,14 @@ analog begin
                 I(br) <+ (V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorms);
             end
 
-        if (gshunt > 0)
-`ifdef NEWLSH
+        if (vshunt > 1u)
             begin
-            V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+`ifdef NEWLSH
+            if (lsh > 0.0 || lsh0 > 0.0 || lsh1 > 0.0)
+                V(n1,nshint) <+ ddt(lshval*I(n1,nshint));
+            else
+                V(n1,nshint) <+ 0.0;
             I(nshint,n2) <+ gshunt*V(nshint,n2);
-            end
 `else
 `ifdef NEWLSER
             I(n1,n2) <+ gshunt*V(n1,n2);
@@ -641,9 +668,13 @@ analog begin
             I(br) <+ gshunt*V(br);
 `endif
 `endif
+            end
 
 `ifdef NEWLSER
-        V(blser) <+ ddt(lser*I(blser));
+        if (lser > 0.0)
+            V(blser) <+ ddt(lser*I(blser));
+        else
+            V(blser) <+ 0.0;
 `endif
 
         // Limit time step.  This is important, as the simulator may have

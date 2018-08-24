@@ -2081,7 +2081,7 @@ MOSFET Models
 !!SEEALSO
 .model
 
-!! elements.tex 042018
+!! elements.tex 082418
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -2130,7 +2130,7 @@ Josephson Models
         <td>A</td>      <td>1.0e-3</td></tr>
     <tr><td><tt>vg</tt> or <tt>vgap</tt></td> <td>&nbsp;</td>
         <td>gap voltage</td>
-        <td>V</td>      <td>2.8e-3</td></td></tr>
+        <td>V</td>      <td>2.6e-3</td></td></tr>
     <tr><td><tt>delv</tt></td> <td>&nbsp;</td>
         <td>gap voltage spread</td>
         <td>V</td>      <td>80.0e-6</td></td></tr>
@@ -2161,6 +2161,12 @@ Josephson Models
     <tr><td><tt>vshunt</tt></td> <td>&nbsp;</td>
         <td>voltage to specify fixed shunt resistance</td>
         <td>V</td>      <td>0.0</td></tr>
+    <tr><td><tt>lsh0</tt></td> <td>&nbsp;</td>
+        <td>shunt resistor series inductance, constant part</td>
+        <td>H</td>      <td>0.0</td></tr>
+    <tr><td><tt>lsh1</tt></td> <td>&nbsp;</td>
+        <td>shunt resistor series inductance, proportional part</td>
+        <td>H/ohm</td>  <td>0.0</td></tr>
     <tr><td><tt>tsfactor</tt></td> <td>&nbsp;</td>
         <td>time step phase change limit</td>
         <td>V</td>      <td><tt>dphimax</tt></td></tr>
@@ -2309,16 +2315,16 @@ Josephson Models
 
     <dl>
     <dt><tt>vgap</tt> or <tt>vg</tt><dd>
-    <b>range:</b> 2.0mV - 6.0mV<br>
+    <b>range:</b> 0.1mV - 10.0mV<br>
     This parameter specifies the gap voltage, which in a hysteretic
     Josephson junction is a voltage at which there is a large and
     abrupt increase in conductivity.  This parameter is material
-    dependent, the default 2.8mV is appropriate for niobium junctions.
+    dependent, the default 2.6mV is appropriate for niobium junctions.
     </dl>
 
     <dl>
     <dt><tt>delv</tt><dd>
-    <b>range:</b> 10uV - 200uV<br>
+    <b>range:</b> 0.001*<tt>vgap</tt> - 0.2*<tt>vgap</tt><br>
     This specifies the assumed width, in voltage, of the quasiparticle
     step region, or gap.  In this region, current increases sharply
     with increasing voltage.  The default value of 80uV is reasonable
@@ -2450,6 +2456,20 @@ Josephson Models
     values will provide less damping, usually critical damping is
     desired.  This parameter defaults to 0, meaning that no additional
     demping is supplied by default.
+    </dl>
+
+    <dl>
+    <dt><tt>lsh0</tt><dd>
+    <b>range:</b> 0.0 - 2.0pH<br>
+    <dt><tt>lsh1</tt><dd>
+    <b>range:</b> 0.0 - 10.0pH/ohm<br>
+    These parameters specify series parasitic inductance in the
+    external shunt resistor.  the <tt>vshunt</tt> parameter must be
+    given a value such that the added external conductance is
+    positive, or these parameters are ignored.  The inductance
+    consists of a constant part (<tt>lsh0</tt>) assumed to come from
+    resistor contacts, plus a value (<tt>lsh1</tt>) proportional to
+    the resistance in ohms, intended to capture the length dependence.
     </dl>
 
     <dl>

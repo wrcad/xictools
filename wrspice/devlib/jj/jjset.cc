@@ -81,12 +81,12 @@ Author: 1992 Stephen R. Whiteley
 #define IcMax   1e-1        // Max referenct Ic, A
 #define IcsMin  Icrit/20    // Min instance Ic, A
 #define IcsMax  Icrit*20    // Max instance Ic, A
-#define Vg      2.8e-3      // Assumed Vgap of reference, V
-#define VgMin   2.0e-3      // Min Vgap, V
-#define VgMax   6.0e-3      // Max Vgao, V
+#define Vg      2.6e-3      // Assumed Vgap of reference, V
+#define VgMin   0.1e-3      // Min Vgap, V
+#define VgMax   10.0e-3     // Max Vgap, V
 #define DelV    0.08e-3     // Assumed delVg of reference, V
-#define DelVmin 0.01e-3     // Min delVg, V
-#define DelVmax 0.2e-3      // Max delVg, V
+#define DelVmin 0.001*Vgap  // Min delVg, V
+#define DelVmax 0.2*Vgap    // Max delVg, V
 
 #define RTMAX   4           // Max rtype, integer
 #define ITMAX   4           // Max ictype, integer
@@ -104,9 +104,9 @@ Author: 1992 Stephen R. Whiteley
 #define NOImax  10.0        // Max noise scale
 
 #ifdef NEWLSH
-#define LSH_MAX 1e-11
+#define LSH_MAX 1e-10
 #define LSH0_MAX 2e-12
-#define LSH1_MAX 1e-10
+#define LSH1_MAX 1e-11
 #endif
 
 namespace {
@@ -214,6 +214,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         if (!model->JJdelvGiven)
             model->JJdelv = DelV;
         else {
+            double Vgap = model->JJvg;
             if (model->JJdelv < DelVmin || model->JJdelv > DelVmax) {
                 DVO.textOut(OUT_WARNING,
                     "%s: DELV=%g out of range [%g-%g], reset to %g.\n",
