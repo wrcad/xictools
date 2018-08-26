@@ -4471,7 +4471,7 @@ when formulating instance capacitance and conductances.
 \hline
 \vt lsh0 & & \rr Shunt resistor series inductance, constant part & $H$ & 0.0\\
 \hline
-\vt lsh1 & & \rr Shunt resistor series inductance, proportional part & $H\Omega$ & 0.0\\
+\vt lsh1 & & \rr Shunt resistor series inductance, proportional part & $H/\Omega$ & 0.0\\
 \hline
 \vt tsfactor & & \rr Time step phase change limit & & {\vt dphimax}\\
 \hline
@@ -4602,7 +4602,7 @@ increase in conductivity.  This parameter is material dependent, the
 default 2.6mV is appropriate for niobium junctions.
 
 \item{\vt delv}\\
-\bf range:} 0.001*{\vt vgap} -- 0.2*{\vt vgap}\\
+{\bf range:} $0.001{\vt vgap}$ -- $0.2{\vt vgap}$\\
 This specifies the assumed width, in voltage, of the quasiparticle
 step region, or gap.  In this region, current increases sharply with
 increasing voltage.  The default value of 80uV is reasonable for
@@ -4715,9 +4715,9 @@ This parameter defaults to 0, meaning that no additional demping is
 supplied by default.
 
 \item{\vt lsh0}\\
-{\bf range:} 0.0 -- 2.0pH\\
+{\bf range:} 0.0 -- 2.0pH
 \item{\vt lsh1}\\
-{\bf range:} 0.0 -- 10.0pH\\
+{\bf range:} 0.0 -- 10.0pH/${\Omega}$\\
 These parameters specify series parasitic inductance in the external
 shunt resistor.  the {\vt vshunt} parameter must be given a value such
 that the added external conductance is positive, or these parameters

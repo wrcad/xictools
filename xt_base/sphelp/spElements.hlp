@@ -1188,10 +1188,10 @@ Josephson Junctions
     This parameter specifies the series inductance of the external
     shunt resistance.  The <tt>vshunt</tt> model parameter must be
     specified such that a positive external shunt conductance is
-    applied, otherwise this parameter is ignored.  Ordinarily, the
-    <tt>lsh0</tt>/<tt>lsh1</tt> model parameters would be used to
-    specify the inductance, this parameter can be used to override
-    these values on a per-instance basis if desired.
+    applied, otherwise this parameter is ignored.  Ordinarily, the <a
+    href="jjmodel"><tt>lsh0</tt>/<tt>lsh1</tt></a> model parameters
+    would be used to specify the inductance, this parameter can be
+    used to override these values on a per-instance basis if desired.
     </dl>
 
     <dl>

@@ -2145,13 +2145,13 @@ Josephson Models
         <td>V</td>      <td>16.0e-3</td></tr>
     <tr><td><tt>rsub</tt> or <tt>r0</tt></td> <td>*</td>
         <td>reference subgap resistance</td>
-        <td>O</td>      <td>vm/icrit</td></tr>
+        <td>&#8486;</td>      <td>vm/icrit</td></tr>
     <tr><td><tt>icrn</tt></td> <td>&nbsp;</td>
         <td>reference icrit*rnorm</td>
         <td>V</td>      <td>1.6e-3</td></tr>
     <tr><td><tt>rnorm</tt> or <tt>rn</tt></td> <td>*</td>
         <td>reference normal state resistance</td>
-        <td>O</td>      <td>icrn/icrit</td></td></tr>
+        <td>&#8486;</td>      <td>icrn/icrit</td></td></tr>
     <tr><td><tt>gmu</tt></td> <td>&nbsp;</td>
         <td>conductance area/edge scaling</td>
         <td>-</td>      <td>0.0</td></tr>
@@ -2166,7 +2166,7 @@ Josephson Models
         <td>H</td>      <td>0.0</td></tr>
     <tr><td><tt>lsh1</tt></td> <td>&nbsp;</td>
         <td>shunt resistor series inductance, proportional part</td>
-        <td>H/ohm</td>  <td>0.0</td></tr>
+        <td>H/&#8486;</td>  <td>0.0</td></tr>
     <tr><td><tt>tsfactor</tt></td> <td>&nbsp;</td>
         <td>time step phase change limit</td>
         <td>V</td>      <td><tt>dphimax</tt></td></tr>
