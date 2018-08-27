@@ -113,11 +113,11 @@ ADMSXML = admsXml
 #  Windows Only!
 #
 # The plug-in must link against the wrspice.dll file, which is found
-# in the bin directory of the distribution area.  Modify this if
-# necessary, it is the full path to the directory containing
+# in the bin directory of the wrspice distribution area.  Modify this
+# if necessary, it is the full path to the directory containing
 # wrspice.dll.
 #
-DLL_LOC = $(PREFIX)/xictools/bin
+DLL_LOC = $(PREFIX)/xictools/wrspice/bin
 
 # This should automatically configure the rest of the Makefile to your
 # WRspice environment.  If wrspice in not in your search path, or you
