@@ -4185,7 +4185,11 @@
         <!--  ddx needs the following!  -->
         <admst:for-each select="rhs/probe">
           <admst:variable name="pprobe" path="."/>
+<!-- XXX
+error here?  below generates "bad attribute" erors
           <admst:apply-templates select="../rhs/tree" match="ddx"/>
+-->
+          <admst:apply-templates select="../tree" match="ddx"/>
           <admst:choose>
             <admst:when test="../[dynamic='yes']">
               <admst:text
