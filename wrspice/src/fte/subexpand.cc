@@ -177,16 +177,19 @@ struct sScGlobal
         {
             sg_stack_ptr = 0;
             sg_glob_tab = 0;
+            sg_submaps = 0;
             memset(sg_stack, 0, SUB_STK_DEPTH*sizeof(sSCX));
         }
 
     ~sScGlobal()
         {
             delete sg_glob_tab;
+            string2list::destroy(sg_submaps);
         }
 
     void init(sFtCirc*);
     sLine *expand_and_replace(sLine*, sParamTab**, cUdf**, const char* = 0);
+    bool do_submapping(sLine*);
     bool extract_cache_block(sLine**, char**, sLine**);
     bool extract_subckts(sLine**);
     void addmod(const char*, const char*);
@@ -234,8 +237,15 @@ struct sScGlobal
 private:
     int sg_stack_ptr;
 
-    sHtab *sg_glob_tab;
-    sSCX sg_stack[SUB_STK_DEPTH];
+    sHtab *sg_glob_tab;             // Global nodename table.
+
+    string2list *sg_submaps;        // List of mappings for subckt calls
+                                    // that are mapped to device calls:
+                                    // x<pfx>... -> <val>..., or if <val>==0
+                                    // x<pfx>... -> <pfx>.  Hack for HSPICE
+                                    // and Verilog-A compatibility.
+
+    sSCX sg_stack[SUB_STK_DEPTH];   // Stack for nested subckt processing.
 };
 
 // Cache block entry.
@@ -281,6 +291,7 @@ struct sCblkTab : public sHtab
 sSPcache SPcache;
 sSPcx SPcx;
 
+const char *spkw_submaps = "submaps";
 
 // Expand all subcircuits in the deck.  This handles embedded .subckt
 // definitions.  The variables substart, subend, and subinvoke can be
@@ -345,6 +356,30 @@ sScGlobal::init(sFtCirc *circ)
 
     sg_stack_ptr = 0;
     sg_stack[0].clear();
+    string2list::destroy(sg_submaps);
+    sg_submaps = 0;
+
+    VTvalue vv;
+    if (Sp.GetVar(spkw_submaps, VTYP_STRING, &vv, circ)) {
+        string2list *se = 0;
+        const char *str = vv.get_string();
+        char *tok;
+        while ((tok = lstring::gettok(&str)) != 0) {
+            char *va = strchr(tok, ',');
+            if (va)
+                *va++ = 0;
+            if (va && *va)
+                va = lstring::copy(va);
+            char *nm = lstring::copy(tok);
+            delete [] tok;
+            if (!sg_submaps)
+                sg_submaps = se = new string2list(nm, va, 0);
+            else {
+                se->next = new string2list(nm, va, 0);
+                se = se->next;
+            }
+        }
+    }
 
     // Add the global node names to a hash table.
     //
@@ -415,7 +450,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
     }
 
     for (sLine *c = deck; c; ) {
-        if (!SPcx.kwMatchSubinvoke(c->line())) {
+        if (!SPcx.kwMatchSubinvoke(c->line()) || do_submapping(c)) {
             if (sg_stack_ptr == 0)
                 param_expand(c, *parm_ptr);
             lc = c;
@@ -619,6 +654,32 @@ cleanup:
         deck = 0;
     }
     return (deck);
+}
+
+
+// Map the name of subcircuits with prefix listed in the submaps list
+// to a new name.  If a mapping is done, return true.
+//
+bool
+sScGlobal::do_submapping(sLine *c)
+{
+    int ninv = strlen(SPcx.invoke());
+    for (string2list *s = sg_submaps; s; s = s->next) {
+        if (lstring::ciprefix(s->string, c->line()+ninv)) {
+            char *str;
+            if (!s->value)
+                str = lstring::copy(c->line()+ninv);
+            else {
+                int n = strlen(s->string) + ninv;
+                str = new char[strlen(c->line()) - n + strlen(s->value) + 1];
+                sprintf(str, "%s%s", s->value, c->line() + n);
+            }
+            c->set_line(str);
+            delete [] str;
+            return (true);
+        }
+    }
+    return (false);
 }
 
 

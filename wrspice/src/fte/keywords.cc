@@ -5359,6 +5359,39 @@ struct KWent_substart : public KWent
     }
 };
 
+struct KWent_submaps : public KWent
+{
+    KWent_submaps() { set(
+        spkw_submaps,
+        VTYP_STRING, 0.0, 0.0,
+        "Subcircuit name maps list."); }
+
+    void print(char **rstr)
+    {
+        sKW::print(rstr);
+        char buf[256];
+        for (int i = 0; KW.parhier(i)->word; i++) {
+            sprintf(buf, fmt2, KW.parhier(i)->word, KW.parhier(i)->descr);
+            if (!rstr)
+                TTY.send(buf);
+            else
+                *rstr = lstring::build_str(*rstr, buf);
+        }
+    }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset) {
+            if (v->type() != VTYP_STRING) {
+                error_pr(word, 0, "a string");
+                return;
+            }
+        }
+        CP.RawVarSet(word, isset, v);
+        KWent::callback(isset, v);
+    }
+};
+
 sKW *cKeyWords::KWsim[] = {
     new KWent_abstol(),
     new KWent_bypass(),
@@ -5417,6 +5450,7 @@ sKW *cKeyWords::KWsim[] = {
     new KWent_steptype(),
     new KWent_subend(),
     new KWent_subinvoke(),
+    new KWent_submaps(),
     new KWent_substart(),
     new KWent_temp(),
     new KWent_tnom(),
@@ -5500,6 +5534,7 @@ sKW *cKeyWords::KWsim[] = {
     new KWent_subend(),
     new KWent_subinvoke(),
     new KWent_substart(),
+    new KWent_submaps(),
 */
     new sKW(0, 0)
 };

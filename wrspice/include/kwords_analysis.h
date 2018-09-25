@@ -189,6 +189,7 @@ extern const char *spkw_method;
 extern const char *spkw_optmerge;
 extern const char *spkw_parhier;
 extern const char *spkw_steptype;
+extern const char *spkw_submaps;
 
 // "external" options
 extern const char *spkw_acct;
