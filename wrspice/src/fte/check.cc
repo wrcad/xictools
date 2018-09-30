@@ -162,11 +162,28 @@ struct mtest_t
 {
     mtest_t()
         {
-            Sp.SetFlag(FT_MONTE,
-                (Sp.CurCircuit() &&
-                    Sp.CurCircuit()->runtype() == MONTE_GIVEN));
+            in_monte = false;
         }
-    ~mtest_t() { Sp.SetFlag(FT_MONTE, false); }
+
+    ~mtest_t()
+        {
+            if (in_monte)
+                Sp.SetFlag(FT_MONTE, false);
+        }
+
+    void set_monte(bool m)
+        {
+            if (m && !in_monte) {
+                Sp.SetFlag(FT_MONTE, true);
+                in_monte = true;
+            }
+            else if (!m && in_monte) {
+                Sp.SetFlag(FT_MONTE, false);
+                in_monte = false;
+            }
+        }
+private:
+    bool in_monte;
 };
 
 
@@ -195,6 +212,7 @@ IFsimulator::MargAnalysis(wordlist *wl)
     if (ft_curckt->runtype() == MONTE_GIVEN) {
         monte = true;
         doall = true;
+        mtest.set_monte(true);
     }
     else if (ft_curckt->runtype() == CHECKALL_GIVEN)
         doall = true;
@@ -253,6 +271,7 @@ IFsimulator::MargAnalysis(wordlist *wl)
                         // coerce Monte Carlo analysis
                         monte = true;
                         doall = true;
+                        mtest.set_monte(true);
                     }
                     else if (*c == 'r')
                         // use remote servers
@@ -1543,7 +1562,13 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
     ToolBar()->SuppressUpdate(true);
     out_cir->set_keep_deferred(true);
 
+
+    // Shutup DCOP convergence error messages during trial,
+    // nonconvergence is simply a fail point.
+    bool flg = Sp.GetFlag(FT_DCOSILENT);
+    Sp.SetFlag(FT_DCOSILENT, true);
     int error = out_cir->runTrial();
+    Sp.SetFlag(FT_DCOSILENT, flg);
     if (error == E_ITERLIM) {
         // Failed to converge, take this as a fail point.
         // 

@@ -1827,8 +1827,11 @@ namespace {
         }
         if (err == E_ITERLIM) {
             if (!first) {
-                OP.error(ERR_FATAL, "No DCOP convergence, stepping failed.");
-                print_nodes();
+                if (!Sp.GetFlag(FT_DCOSILENT)) {
+                    OP.error(ERR_FATAL,
+                        "No DCOP convergence, stepping failed.");
+                    print_nodes();
+                }
                 return (true);
             }
             return (false);

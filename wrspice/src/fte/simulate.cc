@@ -691,13 +691,13 @@ sFtCirc::rebuild(bool save_loop)
     ci_origdeck = 0;
     const char *tfilename = FTSAVE(ci_filename);
 
-    const char *ename = ci_execs.name();
+    char *ename = lstring::copy(ci_execs.name());
     ci_execs.set_name(0);
     sControl *eblock = ci_execs.tree();
     ci_execs.set_tree(0);
     wordlist *texecs = ci_execs.text();
     ci_execs.set_text(0);
-    const char *cname = ci_controls.name();
+    char *cname = lstring::copy(ci_controls.name());
     ci_controls.set_name(0);
     sControl *cblock = ci_controls.tree();
     ci_controls.set_tree(0);
@@ -713,9 +713,9 @@ sFtCirc::rebuild(bool save_loop)
 
     sFtCirc *ct = Sp.CurCircuit();
     if (ct) {
-        ct->ci_execs.set_name((char*)ename);
+        ct->ci_execs.set_name(ename);
         ct->ci_execs.set_tree(eblock);
-        ct->ci_controls.set_name((char*)cname);
+        ct->ci_controls.set_name(cname);
         ct->ci_controls.set_tree(cblock);
         ct->ci_sweep = tsweep;
         ct->ci_check = tcheck;
@@ -732,6 +732,8 @@ sFtCirc::rebuild(bool save_loop)
             ct->ci_use_trial_deferred = tusetrialdeferred;
         }
     }
+    delete [] ename;
+    delete [] cname;
     delete [] tfilename;
 
     if (ttask) {

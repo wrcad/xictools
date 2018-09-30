@@ -439,6 +439,7 @@ enum FT_FLAG
     FT_SERVERMODE,      // Variant of batch mode.
     FT_JS3EMU,          // Jspice3 emulation mode.
     FT_SILENT,          // Only print really serious error messages.
+    FT_DCOSILENT,       // Don't print convergence error message in DCOP.
     FT_NOERRWIN,        // Don't use a separate error message window.
     FT_INTERRUPT,       // Interrupt received.
     FT_SIMFLAG,         // Set while running simulation.
