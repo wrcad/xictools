@@ -1147,7 +1147,17 @@ IFsimulator::IsVec(const char *word, const sCKT *ckt)
         *param++ = '\0';
         char *s;
         for (s = param; *s && *s != ']'; s++) ;
-        *s = '\0';
+        if (*s == ']') {
+            const char *resid = s+1;
+            *s = '\0';
+
+            // Don't recognize the vector if there is something
+            // following, i.e., it is part of an expression.
+            while (isspace(*resid))
+                resid++;
+            if (*resid)
+                return (false);
+        }
     }
     else
         param = 0;

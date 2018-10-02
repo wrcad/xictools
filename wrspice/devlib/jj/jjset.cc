@@ -50,11 +50,13 @@ Author: 1992 Stephen R. Whiteley
 #define M_PI_4      0.785398163397448309615660845819875721  // pi/4
 #endif
 
-// MIT-LL SFQ5EE process
+// MIT-LL SFQ5EE process, parameters from:
+// Tolpygo et al., IEEE J. Appl. Superconductivity, 26, 1100110, (2016)
+// Tolpygo et al., IEEE J. Appl. Superconductivity, 27, 1100815, (2017)
 #define C_PER_A_10000  70.0     // ff/um2
 #define I_PER_A_10000 100.0     // uA/um2
-#define Vm_LL          16.0     // mV, critical current * subgap resistance
-#define IcR_LL          1.6     // mV, critical current * normal resistance
+#define Vm_LL          16.5     // mV, critical current * subgap resistance
+#define IcR_LL          1.65    // mV, critical current * normal resistance
 
 // Various Hypres foundry processes.
 #define C_PER_A_4500   59.0     // ff/um2

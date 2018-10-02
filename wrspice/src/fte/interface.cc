@@ -54,7 +54,7 @@
 //
 
 // Find and return the instance parameter struct matching the given
-// name and mask.  The name matchine is case-insensitive.  The mask
+// name and mask.  The name matching is case-insensitive.  The mask
 // should be IF_ASK, IF_SET, or the OR of both.
 //
 // This builds a hash table on the first call, for subsequent speed.

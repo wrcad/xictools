@@ -47,6 +47,7 @@ Authors: 1986 Wayne A. Christopher
 
 #include "config.h"
 #include "frontend.h"
+#include "fteparse.h"
 #include "ftedata.h"
 #include "ftemeas.h"
 #include "outdata.h"
@@ -1804,41 +1805,114 @@ sDevOut::stop(sGENmodel *model, sGENinstance *inst, double time, int n)
 // End of sDevOut functions.
 
 
+dfrdlist *
+sFtCirc::findDeferred(const char *dname, const char *param)
+{
+    dfrdlist *dl = ci_use_trial_deferred ? ci_trial_deferred : ci_deferred;
+    while (dl) {
+        if (lstring::cieq(dname, dl->dname) && lstring::cieq(param, dl->param))
+            return (dl);
+        dl = dl->next;
+    }
+    return (0);
+}
+
+
 // Add a deferred device or model parameter assignment.  These will be
 // applied to the next analysis.
 //
 void
 sFtCirc::addDeferred(const char *dname, const char *param, const char *rhs)
 {
-    wordlist *wl = new wordlist;
-    wl->wl_word = new char[strlen(dname) + strlen(param) + strlen(rhs) + 4];
-    sprintf(wl->wl_word, "%s %s %s", dname, param, rhs);
-    if (ci_use_trial_deferred) {
-        wl->wl_next = ci_trial_deferred;
-        if (ci_trial_deferred)
-            ci_trial_deferred->wl_prev = wl;
-        ci_trial_deferred = wl;
+    dfrdlist *dl = ci_use_trial_deferred ? ci_trial_deferred : ci_deferred;
+    dfrdlist *dp = 0;
+    for (; dl; dp = dl, dl = dl->next) {
+        if (lstring::cieq(dname, dl->dname) &&
+                lstring::cieq(param, dl->param)) {
+            char *r = lstring::copy(rhs);
+            delete [] dl->rhs;
+            dl->rhs = r;
+            return;
+        }
     }
-    else {
-        wl->wl_next = ci_deferred;
-        if (ci_deferred)
-            ci_deferred->wl_prev = wl;
-        ci_deferred = wl;
+    dl = new dfrdlist(dname, param, rhs);
+    if (dp) {
+        dp->next = dl;
+        return;
     }
+    if (ci_use_trial_deferred)
+        ci_trial_deferred = dl;
+    else
+        ci_deferred = dl;
 }
 
 
-// Free the deferred list.
+// Free the deferred lists.
 //
 void
 sFtCirc::clearDeferred()
 {
-    wordlist::destroy(ci_deferred);
+    dfrdlist::destroy(ci_deferred);
     ci_deferred = 0;
-    wordlist::destroy(ci_trial_deferred);
+    dfrdlist::destroy(ci_trial_deferred);
     ci_trial_deferred = 0;
     ci_keep_deferred = false;
     ci_use_trial_deferred = false;
+}
+
+
+namespace {
+    void apply_dfrd(sCKT *ckt, dfrdlist *dl)
+    {
+        sDataVec *t = 0;
+        const char *rhs = dl->rhs;
+        pnode *nn = Sp.GetPnode(&rhs, true);
+        if (nn) {
+            t = Sp.Evaluate(nn);
+            delete nn;
+        }
+        if (t) {
+            IFdata data;
+            data.type = IF_REAL;
+            data.v.rValue = t->realval(0);
+
+            int err = ckt->setParam(dl->dname, dl->param, &data);
+            if (err) {
+                const char *msg = Sp.ErrorShort(err);
+                GRpkgIf()->ErrPrintf(ET_ERROR, "could not set @%s[%s]: %s.\n",
+                    dl->dname, dl->param, msg);
+            }
+        }
+        else
+            GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation of %s failed.\n", rhs);
+    }
+}
+
+
+// Apply the deferred device/model parameter setting, which clears the
+// list.  This is done just before analysis, after any call to reset.
+//
+// There are actually two lists, for loop and range analysis support. 
+// The trial list contains the changes for each trial (if any).  The
+// normal list contains changes that were in effect before the
+// analysis.  The trial list, applied after the normal list, is always
+// cleared.  The normal list is kept in this case.
+//
+void
+sFtCirc::applyDeferred(sCKT *ckt)
+{
+    if (!ci_deferred && !ci_trial_deferred)
+        return;
+    for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
+        apply_dfrd(ckt, dl);
+    for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
+        apply_dfrd(ckt, dl);
+    dfrdlist::destroy(ci_trial_deferred);
+    ci_trial_deferred = 0;
+    if (!ci_keep_deferred) {
+        dfrdlist::destroy(ci_deferred);
+        ci_deferred = 0;
+    }
 }
 
 
@@ -1916,29 +1990,10 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
 void
 sFtCirc::printAlter()
 {
-    if (!ci_deferred && !ci_trial_deferred)
-        return;
-    wordlist *w0 = wordlist::copy(ci_deferred);
-    w0 = wordlist::reverse(w0);  // apply in specified order
-
-    wordlist *w1 = wordlist::copy(ci_trial_deferred);
-    w1 = wordlist::reverse(w1);
-    w0 = wordlist::append(w0, w1);
-
-    while (w0) {
-        wordlist *wl = w0;
-        w0 = w0->wl_next;
-        const char *rhs = wl->wl_word;
-        char *dname = lstring::gettok(&rhs);
-        char *param = lstring::gettok(&rhs);
-
-        TTY.printf("%-16s %-16s %s\n", dname, param, rhs);
-
-        delete [] dname;
-        delete [] param;
-        delete [] wl->wl_word;
-        delete wl;
-    }
+    for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
+        TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+    for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
+        TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
 }
 // End of sFtCirc functions.
 

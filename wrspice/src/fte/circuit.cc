@@ -618,8 +618,8 @@ sFtCirc::clear()
     delete ci_models;           ci_models = 0;
 
     delete ci_defOpt;           ci_defOpt = 0;
-    wordlist::destroy(ci_deferred);         ci_deferred = 0;
-    wordlist::destroy(ci_trial_deferred);   ci_trial_deferred = 0;
+    dfrdlist::destroy(ci_deferred);         ci_deferred = 0;
+    dfrdlist::destroy(ci_trial_deferred);   ci_trial_deferred = 0;
 
     delete ci_symtab;           ci_symtab = new sSymTab(true);
     delete ci_runckt;           ci_runckt = 0;

@@ -661,9 +661,9 @@ sFtCirc::rebuild(bool save_loop)
     sCHECKprms *tcheck = 0;
     sPlot *trunplot = 0;
     sOPTIONS *tdopt = 0;
-    wordlist *tdeferred = 0;
+    dfrdlist *tdeferred = 0;
     bool tkeep_deferred = false;
-    wordlist *ttrialdeferred = 0;
+    dfrdlist *ttrialdeferred = 0;
     bool tusetrialdeferred = false;
     if (save_loop) {
         tsweep = FTSAVE(ci_sweep);
@@ -804,67 +804,6 @@ sFtCirc::resetTrial(bool textchange)
     }
     else
         reset();
-}
-
-
-// Apply the deferred device/model parameter setting, which clears the
-// list.  This is done just before analysis, after any call to reset.
-//
-// There are actually two lists, for loop and range analysis support. 
-// The trial list contains the changes for each trial (if any).  The
-// normal list contains changes that were in effect before the
-// analysis.  The trial list, applied after the normal list, is always
-// cleared.  The normal list is kept in this case.
-//
-void
-sFtCirc::applyDeferred(sCKT *ckt)
-{
-    if (!ci_deferred && !ci_trial_deferred)
-        return;
-    wordlist *w0 = wordlist::copy(ci_deferred);
-    w0 = wordlist::reverse(w0);  // apply in specified order
-
-    wordlist *w1 = ci_trial_deferred;
-    ci_trial_deferred = 0;
-    w1 = wordlist::reverse(w1);
-    w0 = wordlist::append(w0, w1);
-
-    while (w0) {
-        wordlist *wl = w0;
-        w0 = w0->wl_next;
-        const char *rhs = wl->wl_word;
-        char *dname = lstring::gettok(&rhs);
-        char *param = lstring::gettok(&rhs);
-
-        sDataVec *t = 0;
-        pnode *nn = Sp.GetPnode(&rhs, true);
-        if (nn) {
-            t = Sp.Evaluate(nn);
-            delete nn;
-        }
-        if (t) {
-            IFdata data;
-            data.type = IF_REAL;
-            data.v.rValue = t->realval(0);
-
-            int err = ckt->setParam(dname, param, &data);
-            if (err) {
-                const char *msg = Sp.ErrorShort(err);
-                GRpkgIf()->ErrPrintf(ET_ERROR, "could not set @%s[%s]: %s.\n",
-                    dname, param, msg);
-            }
-        }
-        else
-            GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation of %s failed.\n", rhs);
-        delete [] dname;
-        delete [] param;
-        delete [] wl->wl_word;
-        delete wl;
-    }
-    if (!ci_keep_deferred) {
-        wordlist::destroy(ci_deferred);
-        ci_deferred = 0;
-    }
 }
 
 

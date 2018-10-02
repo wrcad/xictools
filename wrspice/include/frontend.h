@@ -141,6 +141,7 @@ private:
     sHtab *sl_tab;
 };
 
+// Executable block (codeblock).
 struct sExBlk
 {
     sExBlk()
@@ -172,6 +173,38 @@ private:
     sControl *xb_tree;
 };
 
+// Element list for Alter command.
+struct dfrdlist
+{
+    dfrdlist(const char *d, const char *p, const char *v)
+        {
+            next = 0;
+            dname = lstring::copy(d);
+            param = lstring::copy(p);
+            rhs = lstring::copy(v);
+        }
+
+    ~dfrdlist()
+        {
+            delete [] dname;
+            delete [] param;
+            delete [] rhs;
+        }
+
+    static void destroy(dfrdlist *dl)
+        {
+            while (dl) {
+                dfrdlist *dx = dl;
+                dl = dl->next;
+                delete dx;
+            }
+        }
+
+    dfrdlist *next;
+    char *dname;
+    char *param;
+    char *rhs;
+};
 
 // ci_runtype values
 #define MONTE_GIVEN    1
@@ -199,8 +232,10 @@ struct sFtCirc
     void getSaves(sSaveList*, const sCKT*);
 
     // device.cc
+    dfrdlist *findDeferred(const char*, const char*);
     void addDeferred(const char*, const char*, const char*);
     void clearDeferred();
+    void applyDeferred(sCKT*);
     void alter(const char*, wordlist*);
     void printAlter();
     static bool devParams(int, wordlist**, wordlist**, bool);
@@ -216,7 +251,6 @@ struct sFtCirc
     void reset();
     int runTrial();
     void resetTrial(bool);
-    void applyDeferred(sCKT*);
     static bool isAnalysis(SIMtype);
     static const char *analysisString(SIMtype);
     static int analysisType(const char*);
@@ -308,8 +342,8 @@ private:
     sTrie *ci_models;           // ccom struct for models
 
     sOPTIONS *ci_defOpt;        // .options set for this circuit
-    wordlist *ci_deferred;      // Deferred special asignments
-    wordlist *ci_trial_deferred; // Deferred special asignments, loop/check
+    dfrdlist *ci_deferred;      // Deferred special asignments
+    dfrdlist *ci_trial_deferred; // Deferred special asignments, loop/check
 
     sSymTab *ci_symtab;         // String (UID) table for circuit.
     sCKT *ci_runckt;            // The running or most-recently run ckt

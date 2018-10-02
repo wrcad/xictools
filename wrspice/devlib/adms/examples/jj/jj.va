@@ -51,6 +51,9 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.23, October 2, 2018
+//   References added for model parameters.
+//   default IcR 1.6 -> 1.65mV, default Vm 16.0 -> 16.5 mV
 // Version 1.22, August 24, 2018
 //   Parameter and range changes, allow wider Vgap range for non-
 //   standard materials.
@@ -178,11 +181,13 @@
 // a tiny resistance.  Not recommended.
 //`define fakeDC
 
-// MIT-LL SFQ5EE process.
+// MIT-LL SFQ5EE process, parameters from:
+// Tolpygo et al., IEEE J. Appl. Superconductivity, 26, 1100110, (2016)
+// Tolpygo et al., IEEE J. Appl. Superconductivity, 27, 1100815, (2017)
 `define C_PER_A_10000  70.0     // ff/um2
 `define I_PER_A_10000 100.0     // uA/um2
-`define IcR_LL          1.6     // mV, critical current * normal resistance
-`define Vm_LL          16.0     // mV, critical current * subgap resistance
+`define IcR_LL          1.65    // mV, critical current * normal resistance
+`define Vm_LL          16.5     // mV, critical current * subgap resistance
 
 // Hard-wire defaults for MIT-LL process for SuperTools.
 `define C_PER_A `C_PER_A_10000
