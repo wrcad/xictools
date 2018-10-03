@@ -3164,6 +3164,7 @@ veriloga
 !!REDIRECT whiteley     refs#whiteley
 !!REDIRECT roy          refs#roy
 !!REDIRECT lin          refs#roy
+!!REDIRECT tolpygo      refs#tolpygo
 
 !! bib.tex.tex 041415
 !!KEYWORD
@@ -3271,6 +3272,22 @@ References
     temperature superconductor digital circuits,"
     IEEE Trans. Applied Superconductivity,
     vol. 9, no. 2, pt. 3, pp. 4095-4098, June 1999.
+
+    <p>
+    <li> <a name="tolpygo"></a>
+    Sergey K. Tolpygo, Vladimir Bolkhovsky, T. J. Weir, Alex Wynn,
+    D. E. Oats, L. M. Johnson, and M. A. Gouker, "Advanced
+    Fabrication Processes for Superconducting Very Large-Scale
+    Integrated Circuits", IEEE Trans. Appl. Superconductivity vol. 26,
+    no. 3, 1100110, 2016.<br>
+
+    Sergey K. Tolpygo, Vladimir Bolkovsky, Scott Zarr, T. J. Weir,
+    Alex Wynn, Alexandra L. Day, L. M. Johnson, and M. A. Gouker,
+    "Properties of Unshunted and Resistively Shunted Nb/AlO<sub>X</sub>-Al/Nb
+    Josephson Junctions With Critical Current Densities From 0.1 to 1
+    mA/&mu;m<sup>2</sup>", IEEE Trans.  Appl.  Superconductivity, vol. 
+    27, no.  4, 1100815, 2017. 
+
     </ol>
     </blockquote>
  
