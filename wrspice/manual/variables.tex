@@ -2467,6 +2467,27 @@ to be changed.  If unset, the keyword is ``{\vt .subckt}''.  The
 equivalent ``{\vt .macro}'' keyword applies whether or not this
 variable is set.
 
+\index{submaps variable}
+\item{\et submaps}\\
+This is a string which can be set to a list of tokens of the form {\it
+name\/}[{\vt ,}{\it value\/}], separated by space.  The square
+brackets indicate that the value part and delimiting comma are
+optional.
+
+Before subcircuit expansion, if a line starts with {\vt x}{\it name}
+({\vt x} followed by a {\it name} given in the option), then if the
+corresponding {\it value} is given it will replace {\vt x}{\it name}. 
+If no {\it value} was given, the {\vt x} is simply stripped off.  This
+is all case insensitive.
+
+{\bf Example}:  {\vt set submaps j,b}\\
+In the deck, ``{\vt xj1 1 2 ...}'' would be replaced by ``{\vt b1 1 2
+...}''.
+
+This is fairly obscure, but may be useful for reading HSPICE netlists
+that contain Verilog-A devices.  HSPICE uses ``{\vt X}'' for these,
+{\WRspice} maps them to a standard letter for the device type.
+
 \index{units\_catchar variable}
 \item{\et units\_catchar}\\
 A ``units string'' can follow numbers given to {\WRspice}, and these

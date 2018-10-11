@@ -881,7 +881,7 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
 
         sDataVec *d;
         char *word_strp = lstring::copy(word);
-        if (range)
+        if (range && (*word != SpecCatchar()))
             word_strp[range - word] = 0;
         if (tt) {
             // evaluate the expression

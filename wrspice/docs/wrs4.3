@@ -224,8 +224,54 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.7  8/24/2018
+wrspice-4.3.8  10/3/2018
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Added journal reference citations to documents and source code
+  indicating that default parameters from the MIT-Lincoln Laboratory
+  SFQ5EE Josephson process are obtained from public sources.
+
+* New set variable / option.
+
+  keyword: submaps
+
+  This is a string which can be set to a list of tokens of
+  the form name[,value], separated by space.  The square brackets
+  indicate that the value part and delimiting comma are optional.
+
+  Before subcircuit expansion, if a line starts with Xname (X followed
+  ba a name given in the option), then if value is given it will
+  replace Xname.  If no value was given, the X is simply stripped off. 
+  This is all case insensitive.
+
+  Example:  set submaps j,b
+  In the deck, xj1 1 2 ... would be replaced by b1 1 2 ...
+
+  This is fairly obscure, but may be useful for reading HSPICE
+  netlists that contain Verilog-A devices.  HSPICE uses "X" for these,
+  WRspice maps them to a standard letter for the device type.
+
+
+BUGS FIXED
+---- -----
+* The Alter command now checks for existing entries for the same
+  device and parameter, and will update rather than add a new list
+  item.
+
+* Fixed a bug preventing Monte Carlo/Operating Range analysis with
+  bound codeblocks.
+
+* DC operating point convergence error messages are now suppressed in
+  Monte Carlo/Operating Range trials.
+
+* Fixed the DLL_LOC define in the ADMS examples, wrspice.dll is no
+  longer found in xictools/bin, must look in xictools/wrspice/bin.
+
+-------------------------------------------------------------------------------
+wrspice-4.3.7  8/24/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

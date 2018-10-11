@@ -548,7 +548,7 @@ sCKT::doTask(bool reset)
                 if (reset) {
                     CKTcurJob = job;
                     error = doTaskSetup();
-                    if (error)
+                    if (error != OK)
                         return (error);
                     GP.Checkup();
                     if (Sp.GetFlag(FT_INTERRUPT))
@@ -588,12 +588,11 @@ sCKT::doTask(bool reset)
 
                 if (error != E_PAUSE)
                     DVO.cleanup();
-                if (error) {
+                if (error != OK) {
                     CKTstat->STATtotAnalTime += OP.seconds() - startTime;
                     return (error);
                 }
-                if (error == OK && CKTbackPtr &&
-                        CKTbackPtr->postrun()->text()) {
+                if (CKTbackPtr && CKTbackPtr->postrun()->text()) {
                     // Execute the .postrun commands.
 
                     Sp.ExecCmds(CKTbackPtr->postrun()->text());

@@ -1988,12 +1988,20 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
 
 
 void
-sFtCirc::printAlter()
+sFtCirc::printAlter(FILE *fp)
 {
-    for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
-        TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
-    for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
-        TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+    if (fp) {
+        for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
+            fprintf(fp, "%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+        for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
+            fprintf(fp, "%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+    }
+    else {
+        for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
+            TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+        for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
+            TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+    }
 }
 // End of sFtCirc functions.
 

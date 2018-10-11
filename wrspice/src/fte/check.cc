@@ -57,12 +57,83 @@
 #include <stdarg.h>
 
 
-// The operating range and Monte Carlo analysis command.
+//
+// The operating range and Monte Carlo analysis commands.
+//
+
+// The main command to initiate and control margin analysis.
 //
 void
 CommandTab::com_check(wordlist *wl)
 {
     Sp.MargAnalysis(wl);
+}
+
+
+// Command to run a single trial when performing atomic Monte Carlo
+// analysis.
+//
+void
+CommandTab::com_mctrial(wordlist*)
+{
+    if (!Sp.CurCircuit())
+        return;
+    sCHECKprms *cj = Sp.CurCircuit()->check();
+    if (!cj)
+        return;
+    Sp.SetFlag(FT_MONTE, true);
+    int ret;
+    cj->set_no_output(true);
+    if (!cj->out_cir)
+        ret = cj->initial();
+    else
+        ret = cj->trial(0, 0, 0.0, 0.0);
+    cj->set_no_output(false);
+    Sp.SetFlag(FT_MONTE, false);
+    Sp.SetVar("trial_return", ret);
+}
+
+namespace {
+    void set_opvec(int, int);
+}
+
+void
+CommandTab::com_findrange(wordlist*)
+{
+    if (!Sp.CurCircuit())
+        return;
+    sCHECKprms *cj = Sp.CurCircuit()->check();
+    if (!cj)
+        return;
+    int ret = true;
+
+    bool mbak = cj->monte();
+    bool abak = cj->doall();
+    cj->set_monte(false);
+    cj->set_doall(false);
+double v1 = cj->val1();
+double v2 = cj->val2();
+    cj->set_val1(13.0);
+    cj->set_val2(38.0);
+double d1 = cj->delta1();
+double d2 = cj->delta2();
+    cj->set_delta1(0.5);
+    cj->set_delta2(1.0);
+    cj->set_iterno(6);
+
+//    set_opvec(0, 0);
+    if (!cj->out_cir)
+        ret = cj->initial();
+    if (ret)
+        ret = cj->findRange();
+
+    cj->set_monte(mbak);
+    cj->set_doall(abak);
+    cj->set_val1(v1);
+    cj->set_val2(v2);
+    cj->set_delta1(d1);
+    cj->set_delta2(d2);
+    cj->set_iterno(0);
 }
 
 
@@ -81,7 +152,9 @@ namespace {
 }
 
 
-// An echo command that puts output in the current analysis output file.
+// An echo command that puts output in the current analysis output
+// file.  This can be called from scripts when running margin
+// analysis.
 //
 void
 CommandTab::com_echof(wordlist *wlist)
@@ -105,6 +178,22 @@ CommandTab::com_echof(wordlist *wlist)
     }
     if (nl)
         printit("\n");
+}
+
+
+// This will dump the alter list to the output file, for use in Monte
+// Carlo analysis.  In this approach, the alter command, or
+// equivalently forms like "let @device[param] = trial_value" are used
+// to set trial values in the exec block.  Once set, this can be
+// called to dump the values into the output file.
+//
+void
+CommandTab::com_alterf(wordlist*)
+{
+    if (!Sp.CurCircuit() || !Sp.CurCircuit()->check() ||
+            !Sp.CurCircuit()->check()->outfp())
+        return;
+    Sp.CurCircuit()->printAlter(Sp.CurCircuit()->check()->outfp());
 }
 // End of CommandTab functions.
 
@@ -136,6 +225,7 @@ namespace {
             "\n  check [options] [analysis]\n"
             "  options are:\n"
             "   -a    Cover all points in range analysis\n"
+            "   -b    Perform setup and return, pausing run\n"
             "   -c    Clear paused analysis\n"
             "   -e invec outvec    Find the operating boundary between vecs\n"
             "   -f    Save data during each trial\n"
@@ -158,6 +248,8 @@ namespace {
 }
 
 
+// Setting the FT_MONTE flag enables random number generation functions.
+//
 struct mtest_t
 {
     mtest_t()
@@ -208,6 +300,7 @@ IFsimulator::MargAnalysis(wordlist *wl)
     bool segbase = false;
     bool keepall = false;
     bool keepplot = false;
+    bool brk = false;
 
     if (ft_curckt->runtype() == MONTE_GIVEN) {
         monte = true;
@@ -228,10 +321,16 @@ IFsimulator::MargAnalysis(wordlist *wl)
             wn = wl->wl_next;
             if (wl->wl_word[0] == '-') {
                 for (char *c = wl->wl_word + 1; *c; c++) {
-                    if (*c == 'a')
+                    if (*c == 'a') {
                         // cover all points, not just extrema
                         doall = true;
+                    }
+                    else if (*c == 'b') {
+                        // stop after setup
+                        brk = true;
+                    }
                     else if (*c == 'c') {
+//XXX always return?  make it so
                         if (cj) {
                             delete cj;
                             cj = 0;
@@ -261,27 +360,32 @@ IFsimulator::MargAnalysis(wordlist *wl)
                         delete wx;
                         findedge = true;
                     }
-                    else if (*c == 'f')
+                    else if (*c == 'f') {
                         // keep points
                         keepplot = true;
-                    else if (*c == 'k')
+                    }
+                    else if (*c == 'k') {
                         // multi-dimension output
                         keepall = true;
+                    }
                     else if (*c == 'm') {
                         // coerce Monte Carlo analysis
                         monte = true;
                         doall = true;
                         mtest.set_monte(true);
                     }
-                    else if (*c == 'r')
+                    else if (*c == 'r') {
                         // use remote servers
                         remote = true;
-                    else if (*c == 's')
+                    }
+                    else if (*c == 's') {
                         // segment output
                         segbase = true;
-                    else if (*c == 'v')
+                    }
+                    else if (*c == 'v') {
                         // verbose, print stuff on screen
                         batchmode = false;
+                    }
                     else {
                         // print help message
                         check_usage();
@@ -308,15 +412,18 @@ IFsimulator::MargAnalysis(wordlist *wl)
 
     if (cj) {
         // resuming
-        TTY.printf("Resuming check run in progress.\n");
-        ft_flags[FT_SIMFLAG] = true;
-        cj->run();
-        if (cj->ended()) {
-            cj->endJob();
-            delete cj;
-            cj = 0;
+        if (!brk) {
+            TTY.printf("Resuming check run in progress.\n");
+            ft_flags[FT_SIMFLAG] = true;
+            if (cj->initial())
+                cj->loop();
+            if (cj->ended()) {
+                cj->endJob();
+                delete cj;
+                cj = 0;
+            }
+            ft_flags[FT_SIMFLAG] = false;
         }
-        ft_flags[FT_SIMFLAG] = false;
         return;
     }
 
@@ -449,11 +556,16 @@ IFsimulator::MargAnalysis(wordlist *wl)
     if (!batchmode && !monte && !findedge)
         check_print();
 
+    if (brk)
+        return;
+
     ft_flags[FT_SIMFLAG] = true;
     if (findedge)
         cj->findEdge(po, pe);
-    else
-        cj->run();
+    else {
+        if (cj->initial())
+            cj->loop();
+    }
     if (cj->ended()) {
         cj->endJob();
         delete cj;
@@ -516,10 +628,17 @@ sCHECKprms::~sCHECKprms()
     delete ch_names;
 
     if (ch_tmpout) {
+        TTY.ioOverride(0, ch_op, 0);
         fclose(ch_tmpout);
         if (ch_tmpoutname) {
             unlink(ch_tmpoutname);
             delete [] ch_tmpoutname;
+        }
+    }
+    else {
+        if (ch_op && ch_op != TTY.outfile()) {
+            fclose(ch_op);
+            ch_op = 0;
         }
     }
 }
@@ -920,7 +1039,6 @@ sCHECKprms::findEdge(const char *po, const char *pc)
         GRpkgIf()->ErrPrintf(ET_WARN,
             "bad value for checkiterate, set to %d.\n", DEF_checkiterate);
     }
-    int iterno = ch_iterno;
     sDataVec *vo = Sp.VecGet(po, 0);
     if (!vo) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "can't find vector %s.\n", po);
@@ -950,7 +1068,8 @@ sCHECKprms::findEdge(const char *po, const char *pc)
 
     bool pass1 = true;
     ch_no_output = true;
-    while (iterno--) {
+    int itno = ch_iterno;
+    while (itno--) {
         int error;
         out_cir->resetTrial(ch_names != 0);
         ToolBar()->SuppressUpdate(true);
@@ -958,7 +1077,10 @@ sCHECKprms::findEdge(const char *po, const char *pc)
             pass1 = false;
             out_cir = Sp.CurCircuit();
             out_cir->set_keep_deferred(true);
+            bool flg = Sp.GetFlag(FT_DCOSILENT);
+            Sp.SetFlag(FT_DCOSILENT, true);
             error = out_cir->run(ch_cmdline->wl_word, ch_cmdline->wl_next);
+            Sp.SetFlag(FT_DCOSILENT, flg);
             out_cir->set_keep_deferred(false);
             if (error == 0)
                 out_cir = Sp.CurCircuit();
@@ -1004,10 +1126,13 @@ sCHECKprms::findEdge(const char *po, const char *pc)
 }
 
 
-// Finish initializing and begin the operating range analysis.
+// Finish initializing and begin the analysis, doing the first run. 
+// If true is returned, all was successful and caller can finish the
+// analysis by calling the loop function.  Otherwise, an error ocurred
+// and the analysis should be halted.
 //
-void
-sCHECKprms::run()
+bool
+sCHECKprms::initial()
 {
     char buf[256];
     buf[0] = 0;
@@ -1022,10 +1147,8 @@ sCHECKprms::run()
             if (ch_graphid && ch_flags)
                 plot();
         }
-        if (ch_flags) {
-            loop();
-            return;
-        }
+        if (ch_flags)
+            return (true);
     }
     else {
         ch_iterno = 0;
@@ -1050,17 +1173,19 @@ sCHECKprms::run()
         }
         out_plot->set_dimensions(dm);
 
-        if (!Sp.GetFlag(FT_SERVERMODE))
+        if (!Sp.GetFlag(FT_SERVERMODE)) {
             ch_graphid = (GP.MpInit(2*ch_step1+1, 2*ch_step2+1, 
                 value1, ch_val1 + ch_step1*ch_delta1, 
                 value2, ch_val2 + ch_step2*ch_delta2, ch_monte, out_plot));
+        }
 
         if (!ch_graphid && !ch_batchmode) {
             if (ch_monte)
                 TTY.printf_force("%3d %3d run %3d\n", -ch_step1, -ch_step2, 1);
-            else
+            else {
                 TTY.printf_force("%3d %3d %12g %12g\n",
                     -ch_step1, -ch_step2, value1, value2);
+            }
         }
         if (ch_op) {
             if (ch_monte)
@@ -1093,12 +1218,15 @@ sCHECKprms::run()
     GP.MpWhere(ch_graphid, -ch_step1, -ch_step2);
 
     out_cir->set_keep_deferred(true);
+    bool flg = Sp.GetFlag(FT_DCOSILENT);
+    Sp.SetFlag(FT_DCOSILENT, true);
     int error = out_cir->run(ch_cmdline->wl_word, ch_cmdline->wl_next);
+    Sp.SetFlag(FT_DCOSILENT, flg);
     out_cir->set_keep_deferred(false);
 
     if (error < 0) { // user interrupt
         ch_pause = true;
-        return;
+        return (false);
     }
     if (error == E_ITERLIM) {
         // Failed to converge, take this as a fail point.
@@ -1117,13 +1245,13 @@ sCHECKprms::run()
     }
     else {
         ch_nogo = true;
-        return;
+        return (false);
     }
     if (Sp.GetFlag(FT_SERVERMODE))
         // only run one point
-        return;
+        return (false);
 
-    loop();
+    return (true);
 }
 
 
@@ -1562,13 +1690,7 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
     ToolBar()->SuppressUpdate(true);
     out_cir->set_keep_deferred(true);
 
-
-    // Shutup DCOP convergence error messages during trial,
-    // nonconvergence is simply a fail point.
-    bool flg = Sp.GetFlag(FT_DCOSILENT);
-    Sp.SetFlag(FT_DCOSILENT, true);
     int error = out_cir->runTrial();
-    Sp.SetFlag(FT_DCOSILENT, flg);
     if (error == E_ITERLIM) {
         // Failed to converge, take this as a fail point.
         // 
@@ -1739,12 +1861,12 @@ sCHECKprms::findrange2(double val, int offset, bool dolower, bool doupper)
 // Return true if error or pause.
 //
 bool
-sCHECKprms::findext1(int iterno, double *value1, double value2, double delta)
+sCHECKprms::findext1(int itno, double *value1, double value2, double delta)
 {
     delta *= .5;
     *value1 -= delta;
     ch_no_output = true;
-    while (iterno--) {
+    while (itno--) {
         set_input(*value1, value2);
         out_cir->resetTrial(ch_names != 0);
         ToolBar()->SuppressUpdate(true);
@@ -1756,6 +1878,12 @@ sCHECKprms::findext1(int iterno, double *value1, double value2, double delta)
             ch_pause = true;
             ch_no_output = false;
             return (true);
+        }
+        if (error == E_ITERLIM) {
+            // Failed to converge, take this as a fail point.
+            // 
+            ch_fail = true;
+            error = OK;
         }
         else if (error != OK) {
             ch_nogo = true;
@@ -1778,12 +1906,12 @@ sCHECKprms::findext1(int iterno, double *value1, double value2, double delta)
 // Return true if error or pause.
 //
 bool
-sCHECKprms::findext2(int iterno, double value1, double *value2, double delta)
+sCHECKprms::findext2(int itno, double value1, double *value2, double delta)
 {
     delta *= .5;
     *value2 -= delta;
     ch_no_output = true;
-    while (iterno--) {
+    while (itno--) {
         set_input(value1, *value2);
         out_cir->resetTrial(ch_names != 0);
         ToolBar()->SuppressUpdate(true);
@@ -1795,6 +1923,12 @@ sCHECKprms::findext2(int iterno, double value1, double *value2, double delta)
             ch_pause = true;
             ch_no_output = false;
             return (true);
+        }
+        if (error == E_ITERLIM) {
+            // Failed to converge, take this as a fail point.
+            // 
+            ch_fail = true;
+            error = OK;
         }
         else if (error != OK) {
             ch_nogo = true;
@@ -1887,7 +2021,6 @@ namespace {
         double val2 = 0.0;
         int step2 = 0;
         double delta2 = 0.0;
-        int iterno = 0;
 
         sDataVec *d;
         if ((d = Sp.VecGet(checkDEL1, 0)) != 0)
@@ -1902,6 +2035,7 @@ namespace {
             step1 = (int) d->realval(0);
         if ((d = Sp.VecGet(checkSTP2, 0)) != 0)
             step2 = (int) d->realval(0);
+        int iterno = 0;
         VTvalue vv;
         if (Sp.GetVar(kw_checkiterate, VTYP_NUM, &vv, Sp.CurCircuit()))
             iterno = vv.get_int();

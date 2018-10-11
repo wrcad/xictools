@@ -237,7 +237,7 @@ struct sFtCirc
     void clearDeferred();
     void applyDeferred(sCKT*);
     void alter(const char*, wordlist*);
-    void printAlter();
+    void printAlter(FILE* = 0);
     static bool devParams(int, wordlist**, wordlist**, bool);
     static void showDevParms(wordlist*, bool, bool);
     static wordlist *devExpand(const char*, bool);

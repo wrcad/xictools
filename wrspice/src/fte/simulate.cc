@@ -481,7 +481,7 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
             }
         }
     }
-    else if (err == E_PANIC) {
+    else if (err != OK) {
         GP.HaltFullScreenGraphics();
         ft_curckt->set_inprogress(false);
         bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
@@ -597,14 +597,10 @@ sFtCirc::run(SIMtype what, wordlist *args)
         err = ckt->doTask(true);
         if (err != OK) {
             Sp.SetRunCircuit(0);
-            if (err < 0) {
-                // pause
-                return (err);
-            }
-            else {
+            // Don't report convergence error if DCOSILENT set.
+            if (err > 0 && (!Sp.GetFlag(FT_DCOSILENT) || err != E_ITERLIM))
                 Sp.Error(err, "doTask");
-                return (E_PANIC);
-            }
+            return (err);
         }
     }
     else if (what == SIMresume) {
@@ -619,14 +615,9 @@ sFtCirc::run(SIMtype what, wordlist *args)
         err = ci_runckt->doTask(false);
         if (err != OK) {
             Sp.SetRunCircuit(0);
-            if (err < 0) {
-                // pause
-                return (err);
-            }
-            else {
+            if (err > 0)
                 Sp.Error(err, "doTask");
-                return (E_PANIC);
-            }
+            return (err);
         }
     }
 
@@ -781,8 +772,14 @@ sFtCirc::runTrial()
 {
     Sp.SetRunCircuit(this);
     ci_runonce = true;
+
+    // Suppress DCOP nonconvergence messages in trial, these will be
+    // taken as a fail point silently.
+    bool flg = Sp.GetFlag(FT_DCOSILENT);
+    Sp.SetFlag(FT_DCOSILENT, true);
     applyDeferred(ci_runckt);
     int error = ci_runckt->doTask(true);
+    Sp.SetFlag(FT_DCOSILENT, flg);
     Sp.SetRunCircuit(0);
     return (error);
 }

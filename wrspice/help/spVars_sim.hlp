@@ -2145,6 +2145,7 @@ sim_vars
 !!REDIRECT subend       syntax_vars#subend
 !!REDIRECT subinvoke    syntax_vars#subinvoke
 !!REDIRECT substart     syntax_vars#substart
+!!REDIRECT submaps      syntax_vars#submaps
 !!REDIRECT units_catchar syntax_vars#units_catchar
 !!REDIRECT var_catchar  syntax_vars#var_catchar
 
@@ -2356,6 +2357,34 @@ Syntax Control Variables
     definition to be changed.  If unset, the keyword is
     "<tt>.subckt</tt>".  The equivalent "<tt>.macro</tt>" keyword
     applies whether or not this variable is set.
+    </dl>
+
+    <a name="submaps"></a>
+    <dl>
+    <dt><tt>submaps</tt><dd>
+    This is a string which can be set to a list of tokens of the form
+    <i>name</i>[,<i>value</i>], separated by space.  The square
+    brackets indicate that the value part and delimiting comma are
+    optional.
+  
+    <p>
+    Before subcircuit expansion, if a line starts with
+    <tt>x</tt><i>name</i> (<tt>x</tt> followed by a <i>name</i> given
+    in the option), then if the corresponding <i>value</i> is given it
+    will replace <tt>x</tt><i>name</i>.  If no <i>value</i> was given,
+    the <tt>x</tt> is simply stripped off.  This is all case
+    insensitive. 
+
+    <p>
+    <b>Example</b>:  <tt>set submaps j,b</tt><br>
+    In the deck, "<tt>xj1 1 2 ...</tt>" would be replaced by "<tt>b1 1
+    2 ...</tt>".
+
+    <p>
+    This is fairly obscure, but may be useful for reading <a
+    href="hspicesim">HSPICE</a> netlists that contain Verilog-A
+    devices.  HSPICE uses "<tt>X</tt>" for these, <i>WRspice</i> maps
+    them to a standard letter for the device type.
     </dl>
 
     <a name="units_catchar"></a>

@@ -109,7 +109,7 @@ struct sCHECKprms : public sOUTcontrol
     void set_input(double, double);
     void evaluate();
     void findEdge(const char*, const char*);
-    void run();
+    bool initial();
     bool findRange();
 
     // aspice.cc
@@ -123,39 +123,54 @@ struct sCHECKprms : public sOUTcontrol
 
     void set_cmd(wordlist *w)   { ch_cmdline = w; }
 
-    int index()                 { return (ch_index); }
+    int index()                 const { return (ch_index); }
     void set_index(int i)       { ch_index = i; }
-    int max_index()             { return (ch_max); }
+    int max_index()             const { return (ch_max); }
 
-    int cycles()                { return (ch_cycles); }
-    const double *points()      { return (ch_points); }
-    const char *segbase()       { return (ch_segbase); }
+    int cycles()                const { return (ch_cycles); }
+    const double *points()      const { return (ch_points); }
+    const char *segbase()       const { return (ch_segbase); }
 
-    FILE *outfp()               { return (ch_op); }
-    bool ended()                { return (!ch_use_remote && !ch_pause); }
+    FILE *outfp()               const { return (ch_op); }
+    bool ended()                const { return (!ch_use_remote && !ch_pause); }
 
-    bool nogo()                 { return (ch_nogo); }
+    bool nogo()                 const { return (ch_nogo); }
+    bool failed()               const { return (ch_fail); }
     void set_nogo(bool b)       { ch_nogo = b; }
-    bool failed()               { return (ch_fail); }
     void set_failed(bool b)     { ch_fail = b; }
 
-    bool monte()                { return (ch_monte); }
+    bool monte()                const { return (ch_monte); }
+    bool doall()                const { return (ch_doall); }
+    void set_monte(bool b)      { ch_monte = b; }
+    void set_doall(bool b)      { ch_doall = b; }
 
-    double val1()               { return (ch_val1); }
-    double val2()               { return (ch_val2); }
-    double delta1()             { return (ch_delta1); }
-    double delta2()             { return (ch_delta2); }
-    int step1()                 { return (ch_step1); }
-    int step2()                 { return (ch_step2); }
+    double val1()               const { return (ch_val1); }
+    double val2()               const { return (ch_val2); }
+    double delta1()             const { return (ch_delta1); }
+    double delta2()             const { return (ch_delta2); }
+    int step1()                 const { return (ch_step1); }
+    int step2()                 const { return (ch_step2); }
+
+    void set_val1(double v)     { ch_val1 = v; }
+    void set_val2(double v)     { ch_val2 = v; }
+    void set_delta1(double v)   { ch_delta1 = v; }
+    void set_delta2(double v)   { ch_delta2 = v; }
+    void set_step1(int n)       { ch_step1 = n; }
+    void set_step2(int n)       { ch_step2 = n; }
 
     void set_pflag(int i, int v) { ch_flags[i] = v; }
 
-private:
+    int iterno()                const { return (ch_iterno); }
+    void set_iterno(int n)      { ch_iterno = n; }
+
+void set_no_output(bool b) { ch_no_output = b; }
+//XXX private:
     // check.cc
     void set_rangevec();
     void plot();
     bool loop();
     int trial(int, int, double, double);
+private:
     bool findrange1(double, int, bool, bool);
     bool findrange2(double, int, bool, bool);
     bool findext1(int, double*, double, double);

@@ -2081,7 +2081,7 @@ MOSFET Models
 !!SEEALSO
 .model
 
-!! elements.tex 082418
+!! elements.tex 100318
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -2142,13 +2142,13 @@ Josephson Models
         <td>-</td>      <td>0.0</td></tr>
     <tr><td><tt>vm</tt></td> <td>&nbsp;</td>
         <td>reference icrit*rsub</td>
-        <td>V</td>      <td>16.0e-3</td></tr>
+        <td>V</td>      <td>16.5e-3</td></tr>
     <tr><td><tt>rsub</tt> or <tt>r0</tt></td> <td>*</td>
         <td>reference subgap resistance</td>
         <td>&#8486;</td>      <td>vm/icrit</td></tr>
     <tr><td><tt>icrn</tt></td> <td>&nbsp;</td>
         <td>reference icrit*rnorm</td>
-        <td>V</td>      <td>1.6e-3</td></tr>
+        <td>V</td>      <td>1.65e-3</td></tr>
     <tr><td><tt>rnorm</tt> or <tt>rn</tt></td> <td>*</td>
         <td>reference normal state resistance</td>
         <td>&#8486;</td>      <td>icrn/icrit</td></td></tr>
@@ -2337,8 +2337,9 @@ Josephson Models
     <b>range:</b> 0.0 - 1nF<br>
     This is the capacitance of the reference junction, in farads.  The
     default value is obtained from the MIT Lincoln Laboratory SFQ5EE
-    process specific capacitance, and the junction critical current,
-    and is 0.7pF for the default assumption of 1.0mA critical current.
+    process <a href="tolpygo">[Tolpygo]</a> specific capacitance, and
+    the junction critical current, and is 0.7pF for the default
+    assumption of 1.0mA critical current.
     </dl>
 
     <dl>
@@ -2369,9 +2370,10 @@ Josephson Models
     provided by foundries, and is a standard indicator for junction
     quality (higher is better).  Values tend to decrease with
     increasing critical current density.  This defaults to the value
-    for the MIT Lincoln Laboratory SFQ5EE process, which is 16mV, The
-    reference junction subgap resistance is obtained from the value of
-    this parameter and the critical current, unless given explicitly.
+    for the MIT Lincoln Laboratory SFQ5EE process <a
+    href="tolpygo">[Tolpygo]</a>, which is 16.5mV, The reference
+    junction subgap resistance is obtained from the value of this
+    parameter and the critical current, unless given explicitly.
     </dl>
 
     <dl>
@@ -2389,11 +2391,11 @@ Josephson Models
     resistance and the critical current, where the normal state
     resistance is the differential resistance measured well above the
     gap.  The default value is that provided for the MIT Lincoln
-    Laboratory SFQ5EE process which is 1.6mV.  This too is a commonly
-    given parameter from Josephson foundries for characterizing
-    junctions.  If not specified explicitly, this provides the
-    reference junction normal state resistance from the critical
-    current.
+    Laboratory SFQ5EE process <a href="tolpygo">[Tolpygo]</a> which is
+    1.65mV.  This too is a commonly given parameter from Josephson
+    foundries for characterizing junctions.  If not specified
+    explicitly, this provides the reference junction normal state
+    resistance from the critical current.
     </dl>
 
     <dl>
@@ -2434,10 +2436,8 @@ Josephson Models
     <b>range:</b> 0.5 - &pi;/4<br>
     This parameter sets the ratio of the critical current to the
     quasiparticle step height.  Theory provides the default value of
-    &pi;/4 which is usually adequately close.  MIT Lincoln Laboratory
-    does not currently provide an alternative value, but further
-    characterization of fabricated junctions may provide an improved
-    number in the future.
+    &pi;/4 which is usually adequately close.  Characterization of
+    fabricated junctions would provide an improved number.
     </dl>
 
     <dl>

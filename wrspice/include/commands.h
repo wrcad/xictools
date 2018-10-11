@@ -117,6 +117,11 @@ public:
     static void com_cd(wordlist*);
     static void com_cdump(wordlist*);
     static void com_check(wordlist*);
+//XXX
+    static void com_mctrial(wordlist*);
+    static void com_findrange(wordlist*);
+    static void com_alterf(wordlist*);
+
     static void com_codeblock(wordlist*);
     static void com_combine(wordlist*);
     static void com_compose(wordlist*);

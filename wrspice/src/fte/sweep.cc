@@ -235,7 +235,7 @@ IFsimulator::SweepAnalysis(wordlist *wl)
             error = sweep->out_cir->runTrial();
             sweep->out_cir->set_keep_deferred(false);
         }
-        if (error) {
+        if (error != OK) {
             sweep->out_plot->set_active(false);
             sweep->out_cir->set_runplot(0);
             OP.endIplot(sweep->out_rundesc);

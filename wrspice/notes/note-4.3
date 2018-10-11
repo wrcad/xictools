@@ -186,3 +186,13 @@ Steve
 
 Model names and device instance keywords and model keywords are always
 case insensitive.  Is this noted in docs?
+
+Updates to support "atomic Monte Carlo" analysis, a script-based Monte
+Carlo analysis where user has finer-grain control.
+new command:  alterf  Dump alter list to Monte Carlo output file.
+new command:  mctrial Run a single Monte Carlo trial, sets variable
+named "trial_return" to 0-error, 1-pass, 2-fail.
+The check command has new option: -b.  If this is given, the analysis will
+be paused after setup and the check command will return.  This is the start
+for atomic Monte Carlo, a script can call mctrial numerous times
+at this point, then "check -c" when done.

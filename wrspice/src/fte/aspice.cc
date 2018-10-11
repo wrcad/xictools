@@ -425,10 +425,11 @@ sCHECKprms::registerJob()
 void
 sCHECKprms::endJob()
 {
-    if (ch_op && ch_opname)
+    if (ch_op && ch_opname) {
         TTY.printf_force(
             "%s analysis complete.  Data in file %s.\n", ch_monte ?
                 "Monte Carlo" : "Operating range", ch_opname);
+    }
 
     if (ch_tmpout) {
         TTY.ioOverride(0, ch_op, 0);
@@ -436,10 +437,13 @@ sCHECKprms::endJob()
         ch_tmpout = 0;
         unlink(ch_tmpoutname);
         delete [] ch_tmpoutname;
+        ch_tmpoutname = 0;
     }
     else {
-        if (ch_op && ch_op != TTY.outfile())
+        if (ch_op && ch_op != TTY.outfile()) {
             fclose(ch_op);
+            ch_op = 0;
+        }
     }
     GP.MpDone(ch_graphid);
 

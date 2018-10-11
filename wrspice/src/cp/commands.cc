@@ -144,6 +144,10 @@ namespace cmdnames {
     const char *cmd_cd          = "cd";
     const char *cmd_cdump       = "cdump";
     const char *cmd_check       = "check";
+//XXX
+    const char *cmd_mctrial     = "mctrial";
+    const char *cmd_findrange   = "findrange";
+    const char *cmd_alterf      = "alterf";
     const char *cmd_codeblock   = "codeblock";
     const char *cmd_combine     = "combine";
     const char *cmd_compose     = "compose";
@@ -299,6 +303,17 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_check, com_check, false, true, true,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       "[-options] [analysis]: Perform operating range analysis." ) ,
+//XXX
+    sCommand( cmd_mctrial, com_mctrial, false, true, true,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Perform Monte Carlo trial." ) ,
+    sCommand( cmd_findrange, com_findrange, false, true, true,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Find operating range." ) ,
+    sCommand( cmd_alterf, com_alterf, false, true, true,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Print trial values in Monte Carlo output file." ) ,
+
     sCommand( cmd_codeblock, com_codeblock, false, false, false,
       Bfile, Bfile, Bfile, Bfile, E_DEFHMASK, 0, 3, 0,
       "codeblock [filename] [print] [free]: Name an executable codeblock." ) ,
