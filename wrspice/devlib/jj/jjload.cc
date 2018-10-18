@@ -714,8 +714,14 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
                 else
                     js_crhs  = (js_gqt - inst->JJg0)*vless;
             }
-            else
+            else {
                 js_gqt = inst->JJgn;
+//XXX new
+                double cr2 = js_crt/model->JJicFactor +
+                    vless * inst->JJg0 -
+                    vmore * inst->JJgn;
+                js_crhs = (vj >= 0 ? cr2 : -cr2);
+            }
         }
         else
             js_gqt = inst->JJgn;

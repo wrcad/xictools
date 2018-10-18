@@ -133,30 +133,32 @@ namespace {
 void
 sNames::set_input(sFtCirc *out_cir, sPlot *out_plot, double v1, double v2)
 {
+/*XXX
     sFtCirc *cir = Sp.CurCircuit();
     sPlot *plt = Sp.CurPlot();
     Sp.SetCurCircuit(out_cir);
     Sp.SetCurPlot(out_plot);
+*/
 
     out_cir->set_use_trial_deferred(true);
     Sp.SetVar(n_value1, v1);
     Sp.SetVar(n_value2, v2);
     out_cir->set_use_trial_deferred(false);
 
-    sDataVec *d = Sp.VecGet(n_value, 0);
+    sDataVec *d = out_plot->find_vec(n_value);
     if (d && d->isreal()) {
         int ix1 = -1, ix2 = -1;
         if (is_int(n_n1))
             ix1 = atoi(n_n1);
         else {
-            sDataVec *dn1 = Sp.VecGet(n_n1, 0);
+            sDataVec *dn1 = out_plot->find_vec(n_n1);
             if (dn1 && dn1->isreal())
                 ix1 = (int)dn1->realval(0);
         }
         if (is_int(n_n2))
             ix2 = atoi(n_n2);
         else {
-            sDataVec *dn2 = Sp.VecGet(n_n2, 0);
+            sDataVec *dn2 = out_plot->find_vec(n_n2);
             if (dn2 && dn2->isreal())
                 ix2 = (int)dn2->realval(0);
         }
@@ -172,11 +174,14 @@ sNames::set_input(sFtCirc *out_cir, sPlot *out_plot, double v1, double v2)
         if (ix1 >= 0)
             d->set_realval(ix1, v1);
     }
+/*XXX
     Sp.SetCurCircuit(cir);
     Sp.SetCurPlot(plt);
+*/
 }
 
 
+// XXX does this make sense?
 // Copy the "value" vectors from the previous plot to the current plot.
 // Skip if the previous plot is the constants plot, the vectors are
 // available from there by name anyway.

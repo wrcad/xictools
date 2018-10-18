@@ -231,6 +231,11 @@ struct sFtCirc
     bool getVerilog(const char*, const char*, IFdata*);
     void getSaves(sSaveList*, const sCKT*);
 
+//XXX
+    // check.cc
+    int checkCodeblocks();
+    int setAnalysis(wordlist**);
+
     // device.cc
     dfrdlist *findDeferred(const char*, const char*);
     void addDeferred(const char*, const char*, const char*);
