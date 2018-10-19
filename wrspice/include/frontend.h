@@ -602,7 +602,6 @@ struct IFsimulator
     void SetDbgActive(int, bool);
     char *DebugStatus(bool);
     void DeleteDbg(bool, bool, bool, bool, bool, int);
-    void GetSaves(sFtCirc*, sSaveList*);
     int IsIplot(bool = false);
 
     // fte/check.cc
@@ -679,6 +678,9 @@ struct IFsimulator
     void CheckSpace();
     void InitResource();
     void ShowOption(wordlist*, char**);
+
+    // fte/save.cc
+    void GetSaves(sFtCirc*, sSaveList*);
 
     // fte/simulate.cc
     void Simulate(SIMtype, wordlist*);
