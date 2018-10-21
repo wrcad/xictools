@@ -44,6 +44,9 @@
 #include "misc.h"
 #include "ftedata.h"
 #include "cshell.h"
+#include "outdata.h"
+#include "device.h"
+#include "rundesc.h"
 #include "spnumber/hash.h"
 #include "spnumber/spnumber.h"
 #include "miscutil/lstring.h"
@@ -55,6 +58,56 @@
 // 2.  .measure statements
 // 3.  measure debug
 //
+
+
+// Initialize the measurements.
+//
+void
+IFoutput::initMeasures(sRunDesc *run)
+{
+    if (!run || !run->circuit())
+        return;
+    for (sMeas *m = run->circuit()->measures(); m; m = m->next) {
+        if (run->job()->JOBtype != m->analysis)
+            continue;
+        m->reset(run->runPlot());
+    }
+}
+
+
+bool
+IFoutput::measure(sRunDesc *run)
+{
+    if (!run || !run->circuit())
+        return (false);
+    sMeas *m = run->circuit()->measures();
+    if (!m)
+        return (false);
+
+    run->segmentizeVecs();
+    bool done = true;
+    bool stop = false;
+    for ( ; m; m = m->next) {
+        if (run->anType() != m->analysis)
+            continue;
+        if (!m->check(run->circuit())) {
+            done = false;
+            continue;
+        }
+        if (m->shouldstop())
+            stop = true;
+    }
+    done &= stop;
+    if (done) {
+        // Reset stop flags so analysis can be continued.
+        for (m = run->circuit()->measures(); m; m = m->next)
+            m->nostop();
+    }
+    run->unsegmentizeVecs();
+    return (done);
+}
+// End of IFoutput functions.
+
 
 namespace {
     bool get_anal(const char*, int*);

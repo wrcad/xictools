@@ -54,6 +54,9 @@ Authors: 1987 Wayne A. Christopher
 #include "kwords_fte.h"
 #include "commands.h"
 #include "toolbar.h"
+#include "outdata.h"
+#include "device.h"
+#include "rundesc.h"
 #include "spnumber/hash.h"
 #include "spnumber/spnumber.h"
 
@@ -611,6 +614,165 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
     }
 }
 // End of IFsimulator functions.
+
+void
+IFoutput::initDebugs(sRunDesc *run)
+{
+    if (!run || !run->circuit())
+        return;
+    sDebug *db = run->circuit()->debugs();
+    sDbComm *d, *dt;
+    // called at beginning of run
+    if (DB.step_count() != DB.num_steps()) {
+        // left over from last run
+        DB.set_step_count(0);
+        DB.set_num_steps(0);
+    }
+    for (d = DB.stops(); d; d = d->next()) {
+        for (dt = d; dt; dt = dt->also()) {
+            if (dt->type() == DB_STOPWHEN)
+                dt->set_point(0);
+        }
+    }
+    for (dt = DB.traces(); dt; dt = dt->next())
+        dt->set_point(0);
+    for (dt = DB.iplots(); dt; dt = dt->next()) {
+        if (dt->type() == DB_DEADIPLOT) {
+            // user killed the window
+            if (dt->graphid())
+                GP.DestroyGraph(dt->graphid());
+            dt->set_type(DB_IPLOT);
+        }
+        if (run->check() && run->check()->out_mode == OutcCheckSeg)
+            dt->set_reuseid(dt->graphid());
+        if (!(run->check() && (run->check()->out_mode == OutcCheckMulti ||
+                run->check()->out_mode == OutcLoop))) {
+            dt->set_point(0);
+            dt->set_graphid(0);
+        }
+    }
+    if (db) {
+        for (d = db->stops(); d; d = d->next()) {
+            for (dt = d; dt; dt = dt->also()) {
+                if (dt->type() == DB_STOPWHEN)
+                    dt->set_point(0);
+            }
+        }
+        for (dt = db->traces(); dt; dt = dt->next())
+            dt->set_point(0);
+        for (dt = db->iplots(); dt; dt = dt->next()) {
+            if (dt->type() == DB_DEADIPLOT) {
+                // user killed the window
+                if (dt->graphid())
+                    GP.DestroyGraph(dt->graphid());
+                dt->set_type(DB_IPLOT);
+            }
+            if (run->check() && run->check()->out_mode == OutcCheckSeg)
+                dt->set_reuseid(dt->graphid());
+            if (!(run->check() && (run->check()->out_mode == OutcCheckMulti ||
+                    run->check()->out_mode == OutcLoop))) {
+                dt->set_point(0);
+                dt->set_graphid(0);
+            }
+        }
+    }
+}
+
+
+// The output functions call this function to update the debugs, and
+// to see if the run should continue.  If it returns true, then the
+// run should continue.  This should be called with point = -1 at the
+// end of analysis.
+//
+bool
+IFoutput::breakPtCheck(sRunDesc *run)
+{
+    if (!run)
+        return (false);
+    if (run->pointCount() <= 0)
+        return (true);
+    sDebug *db = 0;
+    if (run->circuit() && run->circuit()->debugs())
+        db = run->circuit()->debugs();
+    bool nohalt = true;
+    if (DB.traces() || DB.stops() || (db && (db->traces() || db->stops()))) {
+        bool tflag = true;
+        run->scalarizeVecs();
+        sDbComm *d;
+        for (d = DB.traces(); d; d = d->next())
+            d->print_trace(run->runPlot(), &tflag, run->pointCount());
+        if (db) {
+            for (d = db->traces(); d; d = d->next())
+                d->print_trace(run->runPlot(), &tflag, run->pointCount());
+        }
+        for (d = DB.stops(); d; d = d->next()) {
+            if (d->should_stop(run->pointCount())) {
+                bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
+                TTY.printf("%-2d: condition met: stop ", d->number());
+                d->printcond(0);
+                nohalt = false;
+                if (need_pr)
+                    CP.Prompt();
+            }
+        }
+        if (db) {
+            for (d = db->stops(); d; d = d->next()) {
+                if (d->should_stop(run->pointCount())) {
+                    bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
+                    TTY.printf("%-2d: condition met: stop ", d->number());
+                    d->printcond(0);
+                    nohalt = false;
+                    if (need_pr)
+                        CP.Prompt();
+                }
+            }
+        }
+        run->unscalarizeVecs();
+    }
+    if (DB.iplots() || (db && db->iplots())) {
+        sDataVec *xs = run->runPlot()->scale();
+        if (xs) {
+            int len = xs->length();
+            if (len >= IPOINTMIN || (xs->flags() & VF_ROLLOVER)) {
+                bool doneone = false;
+                for (sDbComm *d = DB.iplots(); d; d = d->next()) {
+                    if (d->type() == DB_IPLOT) {
+                        OP.iplot(d, run);
+                        if (GRpkgIf()->CurDev() &&
+                                GRpkgIf()->CurDev()->devtype == GRfullScreen) {
+                            doneone = true;
+                            break;
+                        }
+                    }
+                }
+                if (run->circuit()->debugs() && !doneone) {
+                    db = run->circuit()->debugs();
+                    for (sDbComm *d = db->iplots(); d; d = d->next()) {
+                        if (d->type() == DB_IPLOT) {
+                            OP.iplot(d, run);
+                            if (GRpkgIf()->CurDev() &&
+                                    GRpkgIf()->CurDev()->devtype ==
+                                    GRfullScreen)
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (DB.step_count() > 0 && DB.dec_step_count() == 0) {
+        if (DB.num_steps() > 1) {
+            bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
+            TTY.printf("Stopped after %d steps.\n", DB.num_steps());
+            if (need_pr)
+                CP.Prompt();
+        }
+        return (false);
+    }
+    return (nohalt);
+}
+// End of IFoutput functions.
 
 
 // Static function.

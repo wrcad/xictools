@@ -56,12 +56,10 @@
 #include "miscutil/filestat.h"
 #include <stdarg.h>
 
-//XXX
-#define NEWMC
-
 //
 // The operating range and Monte Carlo analysis commands.
 //
+
 
 // The main command to initiate and control margin analysis.
 //
@@ -1004,7 +1002,7 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
             ch_segbase = lstring::copy(vv.get_string());
         out_mode = OutcCheckSeg;
     }
-    else if (keepplot || Sp.CurCircuit()->measures() || Sp.IsIplot(true)) {
+    else if (keepplot || Sp.CurCircuit()->measures() || OP.isIplot(true)) {
         // Keep all data for curent trial.
         out_mode = OutcCheckSeg;
     }

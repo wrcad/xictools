@@ -83,8 +83,10 @@ struct sTrie;
 struct sHtab;
 struct IFspecial;
 struct sDebug;
+struct sDbComm;
 struct sMeas;
 struct sPlotList;
+struct sRunDesc;
 union va_t;
 
 // Default char used to separate units string from numbers, was '_' in
@@ -231,7 +233,6 @@ struct sFtCirc
     bool getVerilog(const char*, const char*, IFdata*);
     void getSaves(sSaveList*, const sCKT*);
 
-//XXX
     // check.cc
     int checkCodeblocks();
     int setAnalysis(wordlist**);
@@ -602,7 +603,6 @@ struct IFsimulator
     void SetDbgActive(int, bool);
     char *DebugStatus(bool);
     void DeleteDbg(bool, bool, bool, bool, bool, int);
-    int IsIplot(bool = false);
 
     // fte/check.cc
     void MargAnalysis(wordlist*);

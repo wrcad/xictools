@@ -62,6 +62,7 @@ struct sDCTprms;
 struct sNames;
 struct sHtab;
 struct sExBlk;
+struct sDbComm;
 
 enum OutcType
 {
@@ -358,20 +359,33 @@ struct sMsg
 //
 struct IFoutput
 {
+    // output.cc
     sRunDesc *beginPlot(sOUTdata*, int = 0, const char* = 0, double = 0.0);
     int appendData(sRunDesc*, IFvalue*, IFvalue*);
     int insertData(sCKT*, sRunDesc*, IFvalue*, IFvalue*, unsigned int);
     int setDims(sRunDesc*, int*, int, bool = false);
     int setDC(sRunDesc*, sDCTprms*);
     int setAttrs(sRunDesc*, IFuid*, OUTscaleType, IFvalue*);
-    int initMeasure(sRunDesc*);
+    int checkBreak(sRunDesc*, IFvalue*, IFvalue*);
     int pauseTest(sRunDesc*);
     void unrollPlot(sRunDesc*);
     void addPlotNote(sRunDesc*, const char*);
     void endPlot(sRunDesc*, bool);
-    void endIplot(sRunDesc*);
     double seconds();
     int error(ERRtype, const char*, ...);
+
+    // breakp.cc
+    void initDebugs(sRunDesc*);
+    bool breakPtCheck(sRunDesc*);
+
+    // measure.cc
+    void initMeasures(sRunDesc*);
+    bool measure(sRunDesc*);
+
+    // trace.cc
+    void iplot(sDbComm*, sRunDesc*);
+    void endIplot(sRunDesc*);
+    bool isIplot(bool = false);
 
     bool endit()            { return (o_endit); }
     void set_endit(bool b)  { o_endit = b; }
