@@ -299,8 +299,8 @@ namespace {
             if (Sp.GetFlag(FT_SIMFLAG)) {
                 if (Sp.CurCircuit())
                     Sp.CurCircuit()->set_inprogress(false);
-                if (Sp.CurPlot())
-                    Sp.CurPlot()->set_active(false);
+                if (OP.curPlot())
+                    OP.curPlot()->set_active(false);
                 Sp.SetFlag(FT_SIMFLAG, false);
             }
             CP.ResetControl();
@@ -960,8 +960,8 @@ main(int argc, char **argv)
     if (CmdLineOpts.term)
         Sp.SetVar("term", CmdLineOpts.term);
     if (CmdLineOpts.rawfile) {
-        Sp.GetOutDesc()->set_outFile(CmdLineOpts.rawfile);
-        Sp.SetVar("rawfile", Sp.GetOutDesc()->outFile());
+        OP.getOutDesc()->set_outFile(CmdLineOpts.rawfile);
+        Sp.SetVar("rawfile", OP.getOutDesc()->outFile());
     }
     if (CmdLineOpts.output) {
         if (!(freopen(CmdLineOpts.output, "w", stdout))) {
@@ -987,7 +987,7 @@ main(int argc, char **argv)
     if (!istty || Sp.GetFlag(FT_BATCHMODE))
         TTY.setmore(false);
     if (Sp.GetFlag(FT_SERVERMODE) && !CmdLineOpts.rawfile)
-        Sp.GetOutDesc()->set_outFile(0);
+        OP.getOutDesc()->set_outFile(0);
 
     CP.SetFlag(CP_INTERACTIVE, false);
     char buf[BSIZE_SP];
@@ -1227,7 +1227,7 @@ main(int argc, char **argv)
             }
             else if (!Sp.CurCircuit()->runonce()) {
                 if (Sp.GetFlag(FT_SERVERMODE))
-                    Sp.Run(Sp.GetOutDesc()->outFile());
+                    Sp.Run(OP.getOutDesc()->outFile());
                 else
                     Sp.RunBatch();
                 Sp.CurCircuit()->set_runonce(false);
@@ -2227,11 +2227,6 @@ IFsimulator::IFsimulator()
     ft_version = SPICE_VERSION;
 
     DEV.init();
-
-    ft_outfile.set_outFile("rawspice.raw");
-
-    ft_plot_list = sPlot::constants();
-    ft_plot_cur = sPlot::constants();
 
     // Set up the hash table for 'set' variables.
     // This is case insensitive, so that setting shell variables itl1, ITL1

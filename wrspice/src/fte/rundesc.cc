@@ -80,7 +80,7 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
     if (plot == 0) {
         rd_runPlot = new sPlot(rd_type);
         rd_runPlot->new_plot();
-        Sp.SetCurPlot(rd_runPlot->type_name());
+        OP.setCurPlot(rd_runPlot->type_name());
         // add some interface hooks
         rd_runPlot->set_circuit(rd_circ->name());
         rd_runPlot->set_options(rd_ckt->CKTcurTask->TSKshellOpts->copy());
@@ -769,6 +769,15 @@ sRunDesc::getSpecial(sCKT *ckt, int indx, IFvalue *val)
         }
     }
     return (false);
+}
+
+
+// Not inlined to avoid use of sCKT in include file.
+void
+sRunDesc::setCkt(sCKT *c)
+{
+    rd_ckt = c;
+    rd_circ = c->CKTbackPtr;
 }
 // End of sRunDesc functions.
 

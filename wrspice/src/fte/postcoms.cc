@@ -49,6 +49,7 @@ Authors: 1985 Wayne A. Christopher
 #include "fteparse.h"
 #include "rawfile.h"
 #include "csdffile.h"
+#include "outdata.h"
 #include "psffile.h"
 #include "cshell.h"
 #include "kwords_fte.h"
@@ -71,18 +72,18 @@ void
 CommandTab::com_load(wordlist *wl)
 {
     if (!wl) {
-        const char *stmp = Sp.GetOutDesc()->outFile();
+        const char *stmp = OP.getOutDesc()->outFile();
         // Can't read PSF data yet.
         if (cPSFout::is_psf(stmp))
             stmp = 0;
-        Sp.LoadFile(&stmp, true);
+        OP.loadFile(&stmp, true);
     }
     else {
         ToolBar()->UpdatePlots(2);
         char *str = wordlist::flatten(wl);
         const char *s = str;
         while (*s) {
-            Sp.LoadFile(&s, true);
+            OP.loadFile(&s, true);
         }
         delete [] str;
         ToolBar()->UpdatePlots(2);
@@ -156,7 +157,7 @@ namespace {
 
             sDvList *dl;
             for (dl = dl0; dl; dl = dl->dl_next) {
-                if (Sp.VecEq(dl->dl_dvec, scale))
+                if (IFoutput::vecEq(dl->dl_dvec, scale))
                     break;
             }
             if (!dl) {
@@ -420,7 +421,7 @@ namespace {
 
             sDvList xl;
             if (!noscale) {
-                if (scale && !Sp.VecEq(bv, scale)) {
+                if (scale && !IFoutput::vecEq(bv, scale)) {
                     xl.dl_dvec = scale;
                     xl.dl_next = bl;
                     bl = &xl;
@@ -729,10 +730,10 @@ CommandTab::com_print(wordlist *wl)
         TTY.send("\n");
     sDvList::destroy(dl0);
 
-    if (Sp.CurPlot()->notes()) {
+    if (OP.curPlot()->notes()) {
         TTY.send("Notes:\n");
         int ncnt = 1;
-        for (wordlist *w = Sp.CurPlot()->notes(); w; w = w->wl_next) {
+        for (wordlist *w = OP.curPlot()->notes(); w; w = w->wl_next) {
             TTY.printf("%d. %s\n", ncnt, w->wl_word);
             ncnt++;
         }
@@ -780,15 +781,15 @@ CommandTab::com_write(wordlist *wl)
         wl = wl->wl_next;
     }
     else
-        file = Sp.GetOutDesc()->outFile();
+        file = OP.getOutDesc()->outFile();
     if (!wl) {
         // just dump the current plot
-        if (Sp.CurPlot()->num_perm_vecs() == 0) {
+        if (OP.curPlot()->num_perm_vecs() == 0) {
             GRpkgIf()->ErrPrintf(ET_WARN, "plot is empty, nothing written.\n");
             return;
         }
-        do_write(file, Sp.CurPlot(), appendwrite);
-        Sp.CurPlot()->set_written(true);
+        do_write(file, OP.curPlot(), appendwrite);
+        OP.curPlot()->set_written(true);
         return;
     }
 
@@ -874,7 +875,7 @@ sPlot::write(sDvList *dl0, bool appendwrite, const char *file)
             if (newplot.pl_hashtab == 0)
                 newplot.pl_hashtab = new sHtab(sHtab::get_ciflag(CSE_VEC));
             newplot.pl_hashtab->add(vv->name(), vv);
-            if (Sp.VecEq(d, scale())) {
+            if (IFoutput::vecEq(d, scale())) {
                 newplot.pl_scale = vv;
                 scalefound = true;
             }
@@ -905,7 +906,7 @@ sPlot::write(sDvList *dl0, bool appendwrite, const char *file)
                 wordlist *tll;
                 for (tll = wl0; tll; tll = tll->wl_next) {
                     sDataVec *vv = newplot.get_perm_vec(tll->wl_word);
-                    if (Sp.VecEq(vv, d->scale())) {
+                    if (IFoutput::vecEq(vv, d->scale())) {
                         d->set_scale(vv);
                         break;
                     }

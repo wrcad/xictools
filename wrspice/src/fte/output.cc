@@ -77,6 +77,20 @@ extern int StateInitialized;  // security
 // Main functions for dumping simulation output.
 //
 
+IFoutput::IFoutput()
+{
+    o_debugs        = new sDebug;
+    o_endit         = false;
+    o_shouldstop    = false;
+
+    o_plot_cur      = sPlot::constants();
+    o_plot_list     = sPlot::constants();
+    o_plot_cx       = 0;
+    o_cxplots       = 0;
+
+    o_outfile.set_outFile("rawspice.raw");
+}
+
 namespace {
     // ParseSpecial takes something of the form "@name[param, index]" or
     // equivalently "@name[param][index] and rips out index.
@@ -174,7 +188,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
         chk->set_failed(false);
         run = chk->out_rundesc;
         if (run)
-            run->set_ckt(ckt);  // this may have changed
+            run->setCkt(ckt);  // this may have changed
         plot = chk->out_plot;
         if (chk->out_mode != OutcNormal && run) {
             // True if inside chained analysis
@@ -216,7 +230,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
         if (swp) {
             run = swp->out_rundesc;
             if (run)
-                run->set_ckt(ckt);  // this may have changed
+                run->setCkt(ckt);  // this may have changed
             plot = swp->out_plot;
             if (run) {
                 for (int i = 0; i < run->numData(); i++) {
@@ -238,7 +252,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
         run->set_sweep(swp);
     }
     run->set_job(outd->analysisPtr);
-    run->set_ckt(ckt);
+    run->setCkt(ckt);
     run->set_name(run->circuit()->name());
     run->set_type((char*)outd->analName);
     run->set_cycles(multip);
@@ -283,7 +297,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
 
         // When doing op analysis, ignore saves and output everything.
         run->circuit()->getSaves(&saves, ckt); // from .save's
-        Sp.GetSaves(run->circuit(), &saves);  // from front end
+        getSaves(run->circuit(), &saves);  // from front end
     }
     int numregular = 0;
     bool saveall = true;
@@ -408,7 +422,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                         // Better add it.
                         j = (unsigned long)sHtab::get(&dataNameTab, nm);
                         if (j == 0) {
-                            sDataVec *d = Sp.VecGet(depbuf, ckt);
+                            sDataVec *d = vecGet(depbuf, ckt);
                             if (d) {
                                 j = (int)d->realval(0);
                                 run->addSpecialDesc(h->name(), j, false);
@@ -502,8 +516,8 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
 #endif
 
     // If we are dumping to a file or PSF directory, set rawout.
-    bool rawout = Sp.GetOutDesc()->outFp() ||
-        Sp.GetOutDesc()->outFtype() == OutFpsf;
+    bool rawout = OP.getOutDesc()->outFp() ||
+        OP.getOutDesc()->outFtype() == OutFpsf;
 
 
     // If writing to file, create a plot anyway, but keep only the
@@ -522,21 +536,21 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
 
     run->plotInit(outd->initValue, outd->finalValue, outd->step, plot);
     if (rawout) {
-        if (Sp.GetOutDesc()->outFtype() == OutFpsf) {
+        if (OP.getOutDesc()->outFtype() == OutFpsf) {
             run->set_rd(new cPSFout(run->runPlot()));
-            const char *dn = cPSFout::is_psf(Sp.GetOutDesc()->outFile());
+            const char *dn = cPSFout::is_psf(OP.getOutDesc()->outFile());
             run->rd()->file_open(dn, "w", false);
         }
-        else if (Sp.GetOutDesc()->outFtype() == OutFcsdf) {
+        else if (OP.getOutDesc()->outFtype() == OutFcsdf) {
             run->set_rd(new cCSDFout(run->runPlot()));
             run->rd()->file_open(0, "w", false);
-            run->rd()->file_set_fp(Sp.GetOutDesc()->outFp());
+            run->rd()->file_set_fp(OP.getOutDesc()->outFp());
         }
         else {
             run->set_rd(new cRawOut(run->runPlot()));
-            bool binary = Sp.GetOutDesc()->outBinary();
+            bool binary = OP.getOutDesc()->outBinary();
             run->rd()->file_open(0, binary ? "wb" : "w", binary);
-            run->rd()->file_set_fp(Sp.GetOutDesc()->outFp());
+            run->rd()->file_set_fp(OP.getOutDesc()->outFp());
         }
         run->rd()->file_head();
     }
@@ -551,8 +565,8 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
     if (outd->refName && run->runPlot())
         run->runPlot()->set_num_dimensions(1);
 
-    run->circuit()->set_runplot(Sp.CurPlot());
-    Sp.CurPlot()->set_active(true);
+    run->circuit()->set_runplot(OP.curPlot());
+    OP.curPlot()->set_active(true);
     initDebugs(run);
     initMeasures(run);
     return (run);
@@ -647,9 +661,9 @@ IFoutput::insertData(sCKT *ckt, sRunDesc *run, IFvalue *refValue,
     }
 
     /* what to do here?
-    if (run->measure())
+    if (measure(run))
         o_shouldstop = true;
-    if (!run->breakPtCheck())
+    if (!checkDebugs(run))
         o_shouldstop = true;
     */
 
@@ -676,7 +690,7 @@ IFoutput::insertData(sCKT *ckt, sRunDesc *run, IFvalue *refValue,
     }
     */
 
-    Sp.VecGc();
+    vecGc();
     return (OK);
 }
 
@@ -825,7 +839,7 @@ IFoutput::checkBreak(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
         run->addPointToPlot(refValue, valuePtr, false);
         if (!chk->points() ||
                 refValue->rValue < chk->points()[chk->index()]) {
-            Sp.VecGc();
+            vecGc();
             return (OK);
         }
 
@@ -834,13 +848,13 @@ IFoutput::checkBreak(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
         chk->set_index(chk->index() + 1);
         if (chk->failed() || chk->index() == chk->max_index())
             o_endit = true;
-        Sp.VecGc();
+        vecGc();
         return (OK);
     }
 
     if (measure(run))
         o_shouldstop = true;
-    if (!breakPtCheck(run))
+    if (!checkDebugs(run))
         o_shouldstop = true;
 
     if (chk && (chk->out_mode == OutcCheckSeg ||
@@ -848,7 +862,7 @@ IFoutput::checkBreak(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
         if (!chk->points() ||
                 refValue->rValue < chk->points()[chk->index()] ||
                 chk->index() >= chk->max_index()) {
-            Sp.VecGc();
+            vecGc();
             return (OK);
         }
 
@@ -864,7 +878,7 @@ IFoutput::checkBreak(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
             o_endit = true;
     }
 
-    Sp.VecGc();
+    vecGc();
     return (OK);
 }
 

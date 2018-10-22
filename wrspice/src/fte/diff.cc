@@ -48,6 +48,7 @@ Authors: 1985 Wayne A. Christopher
 #include "frontend.h"
 #include "commands.h"
 #include "ftedata.h"
+#include "outdata.h"
 #include "kwords_fte.h"
 #include "ttyio.h"
 #include "wlist.h"
@@ -94,7 +95,7 @@ CommandTab::com_diff(wordlist *wl)
     // Let's try to be clever about defaults
     sPlot *p1 = 0;
     if (!wl || !wl->wl_next) {
-        p1 = Sp.CurPlot();
+        p1 = OP.curPlot();
         if (p1 == sPlot::constants()) {
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "invalid current plot (constants).\n");
@@ -117,7 +118,7 @@ CommandTab::com_diff(wordlist *wl)
 
     else if (!wl->wl_next) {
         // try current and named plot
-        for (p2 = Sp.PlotList(); p2 &&
+        for (p2 = OP.plotList(); p2 &&
                 !lstring::eq(p2->type_name(), wl->wl_word);
                 p2 = p2->next_plot()) ;
 
@@ -131,7 +132,7 @@ CommandTab::com_diff(wordlist *wl)
         wl = 0;
     }
     else {
-        for (p1 = Sp.PlotList(); p1; p1 = p1->next_plot()) {
+        for (p1 = OP.plotList(); p1; p1 = p1->next_plot()) {
             if (lstring::eq(wl->wl_word, p1->type_name()))
                 break;
         }
@@ -141,7 +142,7 @@ CommandTab::com_diff(wordlist *wl)
         }
         wl = wl->wl_next;
 
-        for (p2 = Sp.PlotList(); p2; p2 = p2->next_plot()) {
+        for (p2 = OP.plotList(); p2; p2 = p2->next_plot()) {
             if (lstring::eq(wl->wl_word, p2->type_name()))
                 break;
         }

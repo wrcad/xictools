@@ -42,6 +42,7 @@
 #include "ftemeas.h"
 #include "circuit.h"
 #include "ftedata.h"
+#include "outdata.h"
 #include "optdefs.h"
 #include "statdefs.h"
 #include "variable.h"
@@ -444,7 +445,7 @@ IFspecial::evaluate(const char *string, sCKT *ckt, IFdata *data, int list_ind)
         // has not been performed
         for (sMeas *m = ckt->CKTbackPtr->measures(); m; m = m->next) {   
             if (m->result && lstring::cieq(name, m->result)) {
-                sDataVec *d = Sp.VecGet(name, ckt);
+                sDataVec *d = OP.vecGet(name, ckt);
                 if (d) {
                     int ix = atoi(param);
                     data->type = IF_REAL;

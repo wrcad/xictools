@@ -47,6 +47,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include "frontend.h"
 #include "ftedata.h"
+#include "outdata.h"
 #include "cshell.h"
 
 
@@ -133,7 +134,7 @@ void
 sDataVec::newtemp(sPlot *pl)
 {
     if (!pl)
-        pl = Sp.CurPlot();
+        pl = OP.curPlot();
 #ifdef FTEDEBUG
     if (Sp.ft_vecdb)
         GRpkgIf()->ErrPrintf(ET_MSGS, "new temporary vector %s\n", v_name);
@@ -152,7 +153,7 @@ void
 sDataVec::newperm(sPlot *pl)
 {
     if (!pl)
-        pl = Sp.CurPlot();
+        pl = OP.curPlot();
     if (!pl)
         return;
     if (!v_name)
@@ -164,7 +165,7 @@ sDataVec::newperm(sPlot *pl)
     v_flags |= VF_PERMANENT;
     v_plot = pl;
     pl->new_perm_vec(this);
-    if (pl == Sp.CurPlot())
+    if (pl == OP.curPlot())
         CP.AddKeyword(CT_VECTOR, v_name);
 }
 

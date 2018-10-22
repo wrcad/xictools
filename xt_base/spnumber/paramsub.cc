@@ -39,6 +39,9 @@
  *========================================================================*/
 
 #ifdef WRSPICE
+// Time profiling.
+//#define TIME_DEBUG
+
 #include "cshell.h"
 #include "frontend.h"
 #include "fteparse.h"
@@ -46,13 +49,7 @@
 #include "inpline.h"
 #include "ttyio.h"
 #include "reltag.h"
-
-// Time profiling.
-//#define TIME_DEBUG
-
-#ifdef TIME_DEBUG
 #include "outdata.h"
-#endif
 #include "spnumber/paramsub.h"
 #include "spnumber/spnumber.h"
 
@@ -839,7 +836,7 @@ sParamTab::squote_subst(char **str) const
     delete [] expr;
     delete [] *str;
     *str = lstring::copy(SPnum.printnum(dv->realval(0), dv->units(), false));
-    Sp.VecGc(true);
+    OP.vecGc(true);
 #else
     const char *eptr = expr;
     double *dp = SCD()->evalExpr(&eptr);

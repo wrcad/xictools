@@ -46,8 +46,9 @@ Authors: 1985 Wayne A. Christopher
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
 #include "frontend.h"
+#include "outplot.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
@@ -169,8 +170,8 @@ namespace {
         sDataVec *sc = vec->scale();
         if (!sc && vec->plot())
             sc = vec->plot()->scale();
-        if (!sc && Sp.CurPlot())
-            sc = Sp.CurPlot()->scale();
+        if (!sc && OP.curPlot())
+            sc = OP.curPlot()->scale();
         if (!sc)
             return (false);
         if (sc == scale)
@@ -633,7 +634,7 @@ namespace {
     //
     bool asciilin(sDvList *dl0, bool *nointerp)
     {
-        sPlot *p = Sp.CurPlot();
+        sPlot *p = OP.curPlot();
         if (!p)
         if (!p || !p->scale() || !p->scale()->isreal())
             return (true);

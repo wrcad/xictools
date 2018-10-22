@@ -45,11 +45,12 @@
  **************************************************************************/
 
 #include "config.h"
+#include "frontend.h"
 #include "outplot.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "frontend.h"
 #include "gtktoolb.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkpfiles.h"
@@ -137,10 +138,10 @@ sPlots::pl_actions(GtkWidget *caller, void *client_data)
 {
     if (client_data == (void*)1)
         // 'New' button pressed, create a new plot and make it current.
-        Sp.SetCurPlot("new");
+        OP.setCurPlot("new");
     else if (client_data == (void*)2) {
         // 'Delete' button pressed, ask for confirmation.
-        if (Sp.CurPlot() == sPlot::constants())
+        if (OP.curPlot() == sPlot::constants())
             GRpkgIf()->ErrPrintf(ET_ERROR, "can't destroy constants plot.\n");
         else
             TB()->RUsure(TB()->pl_shell, pl_dfunc);
@@ -155,7 +156,7 @@ sPlots::pl_actions(GtkWidget *caller, void *client_data)
 void
 sPlots::pl_dfunc()
 {
-    Sp.RemovePlot(Sp.CurPlot());
+    OP.removePlot(OP.curPlot());
 }
 
 
@@ -174,12 +175,12 @@ sPlots::pl_btn_hdlr(GtkWidget *caller, int x, int y)
 
     sPlot *p;
     int i;
-    for (i = 0, p = Sp.PlotList(); p; i++, p = p->next_plot())
+    for (i = 0, p = OP.plotList(); p; i++, p = p->next_plot())
         if (i == y)
             break;
     if (p) {
-        Sp.SetCurPlot(p);
-        Sp.CurPlot()->run_commands();
+        OP.setCurPlot(p);
+        OP.curPlot()->run_commands();
         TB()->UpdatePlots(0);
         if (p->circuit()) {
             Sp.OptUpdate();
@@ -196,9 +197,9 @@ GTKtoolbar::PopUpPlots(int x, int y)
     if (pl_shell)
         return;
     char *s = 0;
-    for (sPlot *p = Sp.PlotList(); p; p = p->next_plot()) {
+    for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
         char buf[256];
-        if (Sp.CurPlot() == p)
+        if (OP.curPlot() == p)
             sprintf(buf, "Current %-11s%-20s (%s)\n",
             p->type_name(), p->title(), p->name());
         else
@@ -265,8 +266,8 @@ GTKtoolbar::UpdatePlots(int lev)
         return;
 
     char *s = 0, buf[512];
-    for (sPlot *p = Sp.PlotList(); p; p = p->next_plot()) {
-        if (Sp.CurPlot() == p)
+    for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
+        if (OP.curPlot() == p)
             sprintf(buf, "Current %-11s%-20s (%s)\n",
             p->type_name(), p->title(), p->name());
         else
@@ -326,7 +327,7 @@ sVectors::update()
         return;
 
     char *s = 0;
-    Sp.VecPrintList(0, &s);
+    OP.vecPrintList(0, &s);
 
     double val = text_get_scroll_value(text);
     text_set_chars(text, s);
@@ -464,7 +465,7 @@ sVectors::ve_btn_hdlr(GtkWidget *caller, int x, int y)
         *s++ = *t++;
     *s = '\0';
     // grab the dvec from storage
-    sDataVec *dv = (sDataVec*)Sp.CurPlot()->get_perm_vec(buf);
+    sDataVec *dv = (sDataVec*)OP.curPlot()->get_perm_vec(buf);
     if (!dv) {
         delete [] string;
         return;
@@ -544,7 +545,7 @@ sVectors::ve_desel()
     }
     text_set_editable(text, false);
     text_set_scroll_value(text, val);
-    Sp.CurPlot()->clear_selected();
+    OP.curPlot()->clear_selected();
 }
 // End of sVectors functions
 
@@ -1070,7 +1071,7 @@ const char *sTraces::tr_btns[] = { "Delete Inactive" };
 void
 sTraces::update()
 {
-    char *s = Sp.DebugStatus(false);
+    char *s = OP.dbgStatus(false);
     GtkWidget *text = TB()->tr_text;
     if (!text)
         return;
@@ -1113,7 +1114,7 @@ sTraces::tr_actions(GtkWidget *caller, void*)
 void
 sTraces::tr_dfunc()
 {
-    Sp.DeleteDbg(true, true, true, true, true, -1);
+    OP.deleteDebug(DF_ALL, true, -1);
     TB()->UpdateTrace();
 }
 
@@ -1151,7 +1152,7 @@ sTraces::tr_btn_hdlr(GtkWidget *caller, int x, int y)
         return;
     }
 
-    Sp.SetDbgActive(dnum, active);
+    OP.setDebugActive(dnum, active);
     int posn = line_start - string;
     delete [] string;
 

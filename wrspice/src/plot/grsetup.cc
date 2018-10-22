@@ -45,10 +45,11 @@ Authors: 1988 Jeffrey M. Hsu
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
+#include "frontend.h"
 #include "outplot.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
 #include "toolbar.h"
 #include "spnumber/spnumber.h"
 
@@ -486,12 +487,12 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
         gr->free_title = true;
     }
     else
-        gr->title = Sp.CurPlot()->name();
+        gr->title = OP.curPlot()->name();
 
-    char *tpn = new char[strlen(Sp.CurPlot()->type_name()) +
-        strlen(Sp.CurPlot()->title()) + 3];
-    sprintf(tpn, "%s: %s", Sp.CurPlot()->type_name(),
-        Sp.CurPlot()->title());
+    char *tpn = new char[strlen(OP.curPlot()->type_name()) +
+        strlen(OP.curPlot()->title()) + 3];
+    sprintf(tpn, "%s: %s", OP.curPlot()->type_name(),
+        OP.curPlot()->title());
     gr->plotname = tpn;
 
     gr->nointerp = grs.nointerp;

@@ -48,6 +48,7 @@ Authors: 1985 Wayne A. Christopher
 #include "config.h"
 #include "frontend.h"
 #include "fteparse.h"
+#include "outdata.h"
 #include "input.h"
 #include "ttyio.h"
 #include "errors.h"
@@ -262,7 +263,7 @@ IFsimulator::GetPtree(wordlist *wl, bool check)
             *(buf + strlen(buf) - 1) = 0;
             xsbuf = lstring::copy(buf);
             pnlist *pl = 0;
-            if (IsVec(xsbuf, ckt)) {
+            if (OP.isVec(xsbuf, ckt)) {
                 pnode *p = new pnode(xsbuf, xsbuf, 0);
                 if (p)
                     pl = new pnlist(p, 0);
@@ -291,7 +292,7 @@ IFsimulator::GetPtree(wordlist *wl, bool check)
                 xsbuf = lstring::build_str(xsbuf, buf);
             }
             else if (!ww->wl_next && !is_int(ww->wl_word) &&
-                    IsVec(ww->wl_word, ckt)) {
+                    OP.isVec(ww->wl_word, ckt)) {
                 pnode *p = new pnode(0, ww->wl_word, 0);
                 if (p) {
                     pnlist *pl = new pnlist(p, 0);
@@ -630,7 +631,7 @@ spElement::makeFnode(pnode *arg, void*)
             lstr.add(arg->token_string());
         lstr.add_c(')');
         sCKT *ckt = Sp.CurCircuit() ? Sp.CurCircuit()->runckt() : 0;
-        if (Sp.IsVec(lstr.string(), ckt)) {
+        if (OP.isVec(lstr.string(), ckt)) {
             delete arg;
             delete [] string;
             return (new pnode(0, lstr.string(), 0));
@@ -720,7 +721,7 @@ pnode::checkvalid() const
     if (pn_string) {
         if (!pn_value && pn_type == PN_VEC) {
             sCKT *ckt = Sp.CurCircuit() ? Sp.CurCircuit()->runckt() : 0;
-            sDataVec *d = Sp.VecGet(pn_string, ckt);
+            sDataVec *d = OP.vecGet(pn_string, ckt);
             if (!d || (d->length() == 0 && !lstring::eq(d->name(), "list"))) {
                 if (lstring::eq(pn_string, "all"))
                     GRpkgIf()->ErrPrintf(ET_ERROR,

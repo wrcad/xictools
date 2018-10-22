@@ -48,16 +48,13 @@ Authors: 1987 Wayne A. Christopher
 #include "frontend.h"
 #include "fteparse.h"
 #include "ftedebug.h"
-#include "ftemeas.h"
 #include "outplot.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
 #include "toolbar.h"
 #include "outdata.h"
-#include "device.h"
 #include "rundesc.h"
-#include "spnumber/hash.h"
 #include "spnumber/spnumber.h"
 
 
@@ -74,8 +71,49 @@ const char *kw_when   = "when";
 const char *kw_active = "active";
 const char *kw_inactive = "inactive";
 
-// This is for debugs entered interactively
-sDebug DB;
+
+// Step a number of output increments.
+//
+void
+CommandTab::com_step(wordlist *wl)
+{
+    int n;
+    if (wl)
+        n = atoi(wl->wl_word);
+    else
+        n = 1;
+    OP.debugs()->set_step_count(n);
+    OP.debugs()->set_num_steps(n);
+    Sp.Simulate(SIMresume, 0);
+}
+
+
+// Set up a stop debug, many possibilities see below.
+//
+void
+CommandTab::com_stop(wordlist *wl)
+{
+    OP.dbgStop(wl);
+}
+
+
+// Print out the currently active breakpoints and traces.
+//
+void
+CommandTab::com_status(wordlist*)
+{
+    OP.dbgStatus(true);
+}
+
+
+// Delete debugs, many possibilities see below.
+//
+void
+CommandTab::com_delete(wordlist *wl)
+{
+    OP.dbgDelete(wl);
+}
+// End of CommandTab functions.
 
 
 // Set a breakpoint. Possible commands are:
@@ -85,7 +123,7 @@ sDebug DB;
 // If more than one is given on a command line, then this is a conjunction.
 //
 void
-CommandTab::com_stop(wordlist *wl)
+IFoutput::dbgStop(wordlist *wl)
 {
     sDbComm *d = 0, *thisone = 0;
     while (wl) {
@@ -157,16 +195,16 @@ CommandTab::com_stop(wordlist *wl)
             goto bad;
     }
     if (thisone) {
-        thisone->set_number(DB.new_count());
+        thisone->set_number(o_debugs->new_count());
         thisone->set_active(true);
         if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
-            if (DB.stops()) {
-                for (d = DB.stops(); d->next(); d = d->next())
+            if (o_debugs->stops()) {
+                for (d = o_debugs->stops(); d->next(); d = d->next())
                     ;
                 d->set_next(thisone);
             }
             else
-                DB.set_stops(thisone);
+                o_debugs->set_stops(thisone);
         }
         else {
             if (!Sp.CurCircuit()->debugs())
@@ -189,28 +227,49 @@ bad:
 }
 
 
-// Step a number of output increments.
-//
-void
-CommandTab::com_step(wordlist *wl)
+char *
+IFoutput::dbgStatus(bool tofp)
 {
-    int n;
-    if (wl)
-        n = atoi(wl->wl_word);
+    const char *msg = "No debugs are in effect.\n";
+    if (!o_debugs->isset() && (!Sp.CurCircuit() || !Sp.CurCircuit()->debugs() ||
+            !Sp.CurCircuit()->debugs()->isset())) {
+        if (tofp) {
+            TTY.send(msg);
+            return (0);
+        }
+        else
+            return (lstring::copy(msg));
+    }
+    char *s = 0, **t;
+    if (tofp)
+        t = 0;
     else
-        n = 1;
-    DB.set_step_count(n);
-    DB.set_num_steps(n);
-    Sp.Simulate(SIMresume, 0);
-}
-
-
-// Print out the currently active breakpoints and traces.
-//
-void
-CommandTab::com_status(wordlist*)
-{
-    Sp.DebugStatus(true);
+        t = &s;
+    sDbComm *d;
+    sDebug *db = 0;
+    if (Sp.CurCircuit() && Sp.CurCircuit()->debugs())
+        db = Sp.CurCircuit()->debugs();
+    for (d = o_debugs->stops(); d; d = d->next())
+        d->print(t);
+    if (db)
+        for (d = db->stops(); d; d = d->next())
+            d->print(t);
+    for (d = o_debugs->traces(); d; d = d->next())
+        d->print(t);
+    if (db)
+        for (d = db->traces(); d; d = d->next())
+            d->print(t);
+    for (d = o_debugs->iplots(); d; d = d->next())
+        d->print(t);
+    if (db)
+        for (d = db->iplots(); d; d = d->next())
+            d->print(t);
+    for (d = o_debugs->saves(); d; d = d->next())
+        d->print(t);
+    if (db)
+        for (d = db->saves(); d; d = d->next())
+            d->print(t);
+    return (s);
 }
 
 
@@ -220,17 +279,20 @@ CommandTab::com_status(wordlist*)
 // cleared only if it is inactive.
 //
 void
-CommandTab::com_delete(wordlist *wl)
+IFoutput::dbgDelete(wordlist *wl)
 {
     if (!wl) {
-        sDbComm *d = DB.stops();
+        sDbComm *d = o_debugs->stops();
         // find the earlist debug
-        if (!d || (DB.traces() && d->number() > DB.traces()->number()))
-            d = DB.traces();
-        if (!d || (DB.iplots() && d->number() > DB.iplots()->number()))
-            d = DB.iplots();
-        if (!d || (DB.saves() && d->number() > DB.saves()->number()))
-            d = DB.saves();
+        if (!d ||
+            (o_debugs->traces() && d->number() > o_debugs->traces()->number()))
+            d = o_debugs->traces();
+        if (!d ||
+            (o_debugs->iplots() && d->number() > o_debugs->iplots()->number()))
+            d = o_debugs->iplots();
+        if (!d ||
+            (o_debugs->saves() && d->number() > o_debugs->saves()->number()))
+            d = o_debugs->saves();
         if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
             sDebug *db = Sp.CurCircuit()->debugs();
             if (!d || (db->stops() && d->number() > db->stops()->number()))
@@ -251,14 +313,14 @@ CommandTab::com_delete(wordlist *wl)
             return;
         if (!TTY.prompt_for_yn(true, "delete [y]? "))
             return;
-        if (d == DB.stops())
-            DB.set_stops(d->next());
-        else if (d == DB.traces())
-            DB.set_traces(d->next());
-        else if (d == DB.iplots())
-            DB.set_iplots(d->next());
-        else if (d == DB.saves())
-            DB.set_saves(d->next());
+        if (d == o_debugs->stops())
+            o_debugs->set_stops(d->next());
+        else if (d == o_debugs->traces())
+            o_debugs->set_traces(d->next());
+        else if (d == o_debugs->iplots())
+            o_debugs->set_iplots(d->next());
+        else if (d == o_debugs->saves())
+            o_debugs->set_saves(d->next());
         else if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
             sDebug *db = Sp.CurCircuit()->debugs();
             if (d == db->stops())
@@ -285,23 +347,23 @@ CommandTab::com_delete(wordlist *wl)
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_all)) {
-            Sp.DeleteDbg(true, true, true, true, inactive, -1);
+            deleteDebug(DF_ALL, inactive, -1);
             return;
         }
         if (lstring::eq(wl->wl_word, kw_stop)) {
-            Sp.DeleteDbg(true, false, false, false, inactive, -1);
+            deleteDebug(DF_STOP, inactive, -1);
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_trace)) {
-            Sp.DeleteDbg(false, true, false, false, inactive, -1);
+            deleteDebug(DF_TRACE, inactive, -1);
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_iplot)) {
-            Sp.DeleteDbg(false, false, true, false, inactive, -1);
+            deleteDebug(DF_IPLOT, inactive, -1);
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_save)) {
-            Sp.DeleteDbg(false, false, false, true, inactive, -1);
+            deleteDebug(DF_SAVE, inactive, -1);
             continue;
         }
 
@@ -332,7 +394,7 @@ CommandTab::com_delete(wordlist *wl)
                 n2 = nt;
             }
             while (n1 <= n2) {
-                Sp.DeleteDbg(true, true, true, true, inactive, n1);
+                deleteDebug(DF_ALL, inactive, n1);
                 n1++;
             }
             continue;
@@ -348,36 +410,35 @@ CommandTab::com_delete(wordlist *wl)
         if (*s)
             continue;
         int i = atoi(wl->wl_word);
-        Sp.DeleteDbg(true, true, true, true, inactive, i);
+        deleteDebug(DF_ALL, inactive, i);
     }
     ToolBar()->UpdateTrace();
 }
-// End of CommandTab functions.
 
 
 void
-IFsimulator::SetDbgActive(int dbnum, bool state)
+IFoutput::setDebugActive(int dbnum, bool state)
 {
     sDbComm *d;
-    for (d = DB.stops(); d; d = d->next()) {
+    for (d = o_debugs->stops(); d; d = d->next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
         }
     }
-    for (d = DB.traces(); d; d = d->next()) {
+    for (d = o_debugs->traces(); d; d = d->next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
         }
     }
-    for (d = DB.iplots(); d; d = d->next()) {
+    for (d = o_debugs->iplots(); d; d = d->next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
         }
     }
-    for (d = DB.saves(); d; d = d->next()) {
+    for (d = o_debugs->saves(); d; d = d->next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
@@ -413,65 +474,18 @@ IFsimulator::SetDbgActive(int dbnum, bool state)
 }
 
 
-char *
-IFsimulator::DebugStatus(bool tofp)
-{
-    const char *msg = "No debugs are in effect.\n";
-    if (!DB.isset() && (!Sp.CurCircuit() || !Sp.CurCircuit()->debugs() ||
-            !Sp.CurCircuit()->debugs()->isset())) {
-        if (tofp) {
-            TTY.send(msg);
-            return (0);
-        }
-        else
-            return (lstring::copy(msg));
-    }
-    char *s = 0, **t;
-    if (tofp)
-        t = 0;
-    else
-        t = &s;
-    sDbComm *d;
-    sDebug *db = 0;
-    if (Sp.CurCircuit() && Sp.CurCircuit()->debugs())
-        db = Sp.CurCircuit()->debugs();
-    for (d = DB.stops(); d; d = d->next())
-        d->print(t);
-    if (db)
-        for (d = db->stops(); d; d = d->next())
-            d->print(t);
-    for (d = DB.traces(); d; d = d->next())
-        d->print(t);
-    if (db)
-        for (d = db->traces(); d; d = d->next())
-            d->print(t);
-    for (d = DB.iplots(); d; d = d->next())
-        d->print(t);
-    if (db)
-        for (d = db->iplots(); d; d = d->next())
-            d->print(t);
-    for (d = DB.saves(); d; d = d->next())
-        d->print(t);
-    if (db)
-        for (d = db->saves(); d; d = d->next())
-            d->print(t);
-    return (s);
-}
-
-
 void
-IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
-    bool inactive, int num)
+IFoutput::deleteDebug(int which, bool inactive, int num)
 {
     sDbComm *d, *dlast, *dnext;
-    if (stop) {
+    if (which & DF_SAVE) {
         dlast = 0;
-        for (d = DB.stops(); d; d = dnext) {
+        for (d = o_debugs->stops(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
                 if (!dlast)
-                    DB.set_stops(dnext);
+                    o_debugs->set_stops(dnext);
                 else
                     dlast->set_next(dnext);
                 sDbComm::destroy(d);
@@ -501,14 +515,14 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
             }
         }
     }
-    if (trace) {
+    if (which & DF_TRACE) {
         dlast = 0;
-        for (d = DB.traces(); d; d = dnext) {
+        for (d = o_debugs->traces(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
                 if (!dlast)
-                    DB.set_traces(dnext);
+                    o_debugs->set_traces(dnext);
                 else
                     dlast->set_next(dnext);
                 sDbComm::destroy(d);
@@ -538,14 +552,14 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
             }
         }
     }
-    if (iplot) {
+    if (which & DF_IPLOT) {
         dlast = 0;
-        for (d = DB.iplots(); d; d = dnext) {
+        for (d = o_debugs->iplots(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
                 if (!dlast)
-                    DB.set_iplots(dnext);
+                    o_debugs->set_iplots(dnext);
                 else
                     dlast->set_next(dnext);
                 sDbComm::destroy(d);
@@ -575,14 +589,14 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
             }
         }
     }
-    if (save) {
+    if (which & DF_SAVE) {
         dlast = 0;
-        for (d = DB.saves(); d; d = dnext) {
+        for (d = o_debugs->saves(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
                 if (!dlast)
-                    DB.set_saves(dnext);
+                    o_debugs->set_saves(dnext);
                 else
                     dlast->set_next(dnext);
                 sDbComm::destroy(d);
@@ -613,7 +627,7 @@ IFsimulator::DeleteDbg(bool stop, bool trace, bool iplot, bool save,
         }
     }
 }
-// End of IFsimulator functions.
+
 
 void
 IFoutput::initDebugs(sRunDesc *run)
@@ -623,20 +637,20 @@ IFoutput::initDebugs(sRunDesc *run)
     sDebug *db = run->circuit()->debugs();
     sDbComm *d, *dt;
     // called at beginning of run
-    if (DB.step_count() != DB.num_steps()) {
+    if (o_debugs->step_count() != o_debugs->num_steps()) {
         // left over from last run
-        DB.set_step_count(0);
-        DB.set_num_steps(0);
+        o_debugs->set_step_count(0);
+        o_debugs->set_num_steps(0);
     }
-    for (d = DB.stops(); d; d = d->next()) {
+    for (d = o_debugs->stops(); d; d = d->next()) {
         for (dt = d; dt; dt = dt->also()) {
             if (dt->type() == DB_STOPWHEN)
                 dt->set_point(0);
         }
     }
-    for (dt = DB.traces(); dt; dt = dt->next())
+    for (dt = o_debugs->traces(); dt; dt = dt->next())
         dt->set_point(0);
-    for (dt = DB.iplots(); dt; dt = dt->next()) {
+    for (dt = o_debugs->iplots(); dt; dt = dt->next()) {
         if (dt->type() == DB_DEADIPLOT) {
             // user killed the window
             if (dt->graphid())
@@ -685,7 +699,7 @@ IFoutput::initDebugs(sRunDesc *run)
 // end of analysis.
 //
 bool
-IFoutput::breakPtCheck(sRunDesc *run)
+IFoutput::checkDebugs(sRunDesc *run)
 {
     if (!run)
         return (false);
@@ -695,17 +709,17 @@ IFoutput::breakPtCheck(sRunDesc *run)
     if (run->circuit() && run->circuit()->debugs())
         db = run->circuit()->debugs();
     bool nohalt = true;
-    if (DB.traces() || DB.stops() || (db && (db->traces() || db->stops()))) {
+    if (o_debugs->traces() || o_debugs->stops() || (db && (db->traces() || db->stops()))) {
         bool tflag = true;
         run->scalarizeVecs();
         sDbComm *d;
-        for (d = DB.traces(); d; d = d->next())
+        for (d = o_debugs->traces(); d; d = d->next())
             d->print_trace(run->runPlot(), &tflag, run->pointCount());
         if (db) {
             for (d = db->traces(); d; d = d->next())
                 d->print_trace(run->runPlot(), &tflag, run->pointCount());
         }
-        for (d = DB.stops(); d; d = d->next()) {
+        for (d = o_debugs->stops(); d; d = d->next()) {
             if (d->should_stop(run->pointCount())) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                 TTY.printf("%-2d: condition met: stop ", d->number());
@@ -729,15 +743,15 @@ IFoutput::breakPtCheck(sRunDesc *run)
         }
         run->unscalarizeVecs();
     }
-    if (DB.iplots() || (db && db->iplots())) {
+    if (o_debugs->iplots() || (db && db->iplots())) {
         sDataVec *xs = run->runPlot()->scale();
         if (xs) {
             int len = xs->length();
             if (len >= IPOINTMIN || (xs->flags() & VF_ROLLOVER)) {
                 bool doneone = false;
-                for (sDbComm *d = DB.iplots(); d; d = d->next()) {
+                for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
                     if (d->type() == DB_IPLOT) {
-                        OP.iplot(d, run);
+                        iplot(d, run);
                         if (GRpkgIf()->CurDev() &&
                                 GRpkgIf()->CurDev()->devtype == GRfullScreen) {
                             doneone = true;
@@ -749,7 +763,7 @@ IFoutput::breakPtCheck(sRunDesc *run)
                     db = run->circuit()->debugs();
                     for (sDbComm *d = db->iplots(); d; d = d->next()) {
                         if (d->type() == DB_IPLOT) {
-                            OP.iplot(d, run);
+                            iplot(d, run);
                             if (GRpkgIf()->CurDev() &&
                                     GRpkgIf()->CurDev()->devtype ==
                                     GRfullScreen)
@@ -761,10 +775,10 @@ IFoutput::breakPtCheck(sRunDesc *run)
         }
     }
 
-    if (DB.step_count() > 0 && DB.dec_step_count() == 0) {
-        if (DB.num_steps() > 1) {
+    if (o_debugs->step_count() > 0 && o_debugs->dec_step_count() == 0) {
+        if (o_debugs->num_steps() > 1) {
             bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-            TTY.printf("Stopped after %d steps.\n", DB.num_steps());
+            TTY.printf("Stopped after %d steps.\n", o_debugs->num_steps());
             if (need_pr)
                 CP.Prompt();
         }

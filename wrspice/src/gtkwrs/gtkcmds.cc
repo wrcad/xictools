@@ -45,12 +45,13 @@
  **************************************************************************/
 
 #include "config.h"
+#include "frontend.h"
 #include "spglobal.h"
 #include "outplot.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
-#include "frontend.h"
 #include "gtktoolb.h"
 #include "miscutil/pathlist.h"
 #ifdef HAVE_MOZY
@@ -781,7 +782,7 @@ GTKtoolbar::PopUpCmdConfig(int x, int y)
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
         entry->ent->create_widgets(entry,
-            Sp.GetOutDesc()->outFile() ? Sp.GetOutDesc()->outFile() : "");
+            OP.getOutDesc()->outFile() ? OP.getOutDesc()->outFile() : "");
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
             entrycount, entrycount + 1,

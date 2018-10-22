@@ -52,7 +52,6 @@ Authors: 1987 Wayne A. Christopher
 #include "toolbar.h"
 #include "outplot.h"
 #include "outdata.h"
-#include "device.h"
 #include "rundesc.h"
 
 //
@@ -64,10 +63,29 @@ const char *kw_trace  = "trace";
 const char *kw_iplot  = "iplot";
 
 
-// Trace a node. Usage is "trace expr ..."
+// Trace a node.
 //
 void
 CommandTab::com_trace(wordlist *wl)
+{
+    OP.dbgTrace(wl);
+}
+
+
+// Incrementally plot a value, similar to trace.
+//
+void
+CommandTab::com_iplot(wordlist *wl)
+{
+    OP.dbgIplot(wl);
+}
+// End of CommandTab functions.
+
+
+// Trace a node. Usage is "trace expr ..."
+//
+void
+IFoutput::dbgTrace(wordlist *wl)
 {
     const char *msg = "already tracing %s, ignored.\n";
 
@@ -75,23 +93,23 @@ CommandTab::com_trace(wordlist *wl)
     d->set_type(DB_TRACE);
     d->set_active(true);
     d->set_string(wordlist::flatten(wl));
-    d->set_number(DB.new_count());
+    d->set_number(o_debugs->new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
-        if (DB.traces()) {
+        if (o_debugs->traces()) {
             sDbComm *ld = 0;
-            for (sDbComm *td = DB.traces(); td; ld = td, td = td->next()) {
+            for (sDbComm *td = o_debugs->traces(); td; ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
                     GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
                     sDbComm::destroy(d);
-                    DB.decrement_count();
+                    o_debugs->decrement_count();
                     return;
                 }
             }
             ld->set_next(d);
         }
         else
-            DB.set_traces(d);
+            o_debugs->set_traces(d);
     }
     else {
         if (!Sp.CurCircuit()->debugs())
@@ -103,7 +121,7 @@ CommandTab::com_trace(wordlist *wl)
                 if (lstring::eq(td->string(), d->string())) {
                     GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
                     sDbComm::destroy(d);
-                    DB.decrement_count();
+                    o_debugs->decrement_count();
                     return;
                 }
             }
@@ -116,10 +134,10 @@ CommandTab::com_trace(wordlist *wl)
 }
 
 
-// Incrementally plot a value. This is just like trace.
+// Incrementally plot a value, similar to trace.
 //
 void
-CommandTab::com_iplot(wordlist *wl)
+IFoutput::dbgIplot(wordlist *wl)
 {
     if (!wl) {
         GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");
@@ -162,16 +180,16 @@ CommandTab::com_iplot(wordlist *wl)
     d->set_active(true);
     d->set_string(wordlist::flatten(wl));
     wordlist::destroy(wl);
-    d->set_number(DB.new_count());
+    d->set_number(o_debugs->new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
-        if (DB.iplots()) {
+        if (o_debugs->iplots()) {
             sDbComm *td;
-            for (td = DB.iplots(); td->next(); td = td->next()) ;
+            for (td = o_debugs->iplots(); td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
-            DB.set_iplots(d);
+            o_debugs->set_iplots(d);
     }
     else {
         if (!Sp.CurCircuit()->debugs())
@@ -187,8 +205,6 @@ CommandTab::com_iplot(wordlist *wl)
     }
     ToolBar()->UpdateTrace();
 }
-// End of CommandTab functions.
-
 
 namespace {
     // Compute the last entry, and grow the iplot's dvecs.
@@ -206,9 +222,9 @@ namespace {
             return;
         }
         run->scalarizeVecs();
-        sPlot *plot = Sp.CurPlot();
+        sPlot *plot = OP.curPlot();
         sFtCirc *circ = Sp.CurCircuit();
-        Sp.SetCurPlot(run->runPlot());
+        OP.setCurPlot(run->runPlot());
         Sp.SetCurCircuit(run->circuit());
         pnlist *pl = Sp.GetPtree(wl, false);
         wordlist::destroy(wl);
@@ -218,7 +234,7 @@ namespace {
             dl0 = Sp.DvList(pl);
             Sp.SetFlag(FT_SILENT, false);
         }
-        Sp.SetCurPlot(plot);
+        OP.setCurPlot(plot);
         Sp.SetCurCircuit(circ);
         if (!dl0) {
             db->set_point(-1);
@@ -462,14 +478,14 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
             return;
         int rlen = xs->allocated();
 
-        sPlot *plot = Sp.CurPlot();
+        sPlot *plot = OP.curPlot();
         sFtCirc *circ = Sp.CurCircuit();
-        Sp.SetCurPlot(run->runPlot());
+        OP.setCurPlot(run->runPlot());
         Sp.SetCurCircuit(run->circuit());
         pnlist *pl = Sp.GetPtree(wl, false);
         if (pl)
             dl0 = Sp.DvList(pl);
-        Sp.SetCurPlot(plot);
+        OP.setCurPlot(plot);
         Sp.SetCurCircuit(circ);
         if (!dl0) {
             db->set_point(-1);
@@ -812,12 +828,12 @@ IFoutput::endIplot(sRunDesc *run)
     sDebug *db = 0;
     if (run->circuit())
         db = run->circuit()->debugs();
-    if (DB.iplots() || (db && db->iplots())) {
+    if (o_debugs->iplots() || (db && db->iplots())) {
         if (GRpkgIf()->CurDev() &&
                 GRpkgIf()->CurDev()->devtype == GRfullScreen)
             // redraw
             GP.PopGraphContext();
-        for (sDbComm *d = DB.iplots(); d; d = d->next()) {
+        for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
             d->set_reuseid(0);
             if (d->type() == DB_IPLOT && d->point() == 0) {
                 if (d->graphid()) {
@@ -870,7 +886,7 @@ IFoutput::isIplot(bool resurrect)
 {
     if (resurrect) {
         // Turn dead iplots back on.
-        for (sDbComm *d = DB.iplots(); d; d = d->next()) {
+        for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
             if (d->type() == DB_DEADIPLOT)
                 d->set_type(DB_IPLOT);
         }
@@ -883,7 +899,7 @@ IFoutput::isIplot(bool resurrect)
         }
     }
 
-    for (sDbComm *d = DB.iplots(); d; d = d->next()) {
+    for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
         if ((d->type() == DB_IPLOT || d->type() == DB_IPLOTALL) && d->active())
             return (true);
     }

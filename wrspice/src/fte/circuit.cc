@@ -84,9 +84,9 @@ CommandTab::com_state(wordlist*)
         TTY.printf("No run in progress.\n");
         return;
     }
-    TTY.printf("Type of run: %s\n", Sp.CurPlot()->name());
+    TTY.printf("Type of run: %s\n", OP.curPlot()->name());
     TTY.printf("Number of points so far: %d\n", 
-        Sp.CurPlot()->scale()->length());
+        OP.curPlot()->scale()->length());
 }
 
 
@@ -401,7 +401,7 @@ IFsimulator::SetOption(bool isset, const char *word, IFdata *val)
 void
 IFsimulator::OptUpdate()
 {
-    variable *ovars = CurPlot()->options()->tovar();
+    variable *ovars = OP.curPlot()->options()->tovar();
     for (variable *v = ovars; v; v = v->next()) {
         if (v->type() == VTYP_BOOL && !v->boolean())
             RemVar(v->name());
@@ -546,7 +546,7 @@ sFtCirc::sFtCirc()
 sFtCirc::~sFtCirc()
 {
     // Delete the references in the plots.
-    for (sPlot *p = Sp.PlotList(); p; p = p->next_plot()) {
+    for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
         if (p->circuit() && lstring::eq(p->circuit(), ci_name))
             p->set_circuit(0);
     }

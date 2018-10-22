@@ -48,6 +48,7 @@ Authors: 1985 Wayne A. Christopher
 #include "frontend.h"
 #include "commands.h"
 #include "ftedata.h"
+#include "outdata.h"
 #include "ttyio.h"
 #include "errors.h"
 #include "wlist.h"
@@ -63,25 +64,25 @@ Authors: 1985 Wayne A. Christopher
 void
 CommandTab::com_linearize(wordlist *wl)
 {
-    if (!Sp.CurPlot()) {
+    if (!OP.curPlot()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "no current plot.\n");
         return;
     }
-    if (!Sp.CurPlot()->scale()) {
+    if (!OP.curPlot()->scale()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "current plot has no scale.\n");
         return;
     }
-    if (!Sp.CurPlot()->scale()->isreal()) {
+    if (!OP.curPlot()->scale()->isreal()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "non-real scale for %s\n", 
-            Sp.CurPlot()->type_name());
+            OP.curPlot()->type_name());
         return;
     }
-    if (!lstring::ciprefix("tran", Sp.CurPlot()->type_name())) {
+    if (!lstring::ciprefix("tran", OP.curPlot()->type_name())) {
         GRpkgIf()->ErrPrintf(ET_ERROR,
             "plot must be from transient analysis.\n");
         return;
     }
-    Sp.CurPlot()->linearize(wl);
+    OP.curPlot()->linearize(wl);
 }
 // End of CommandTab functions.
 
@@ -142,7 +143,7 @@ sPlot::linearize(wordlist *wl)
     newp->pl_stop = tstop;
     newp->pl_step = tstep;
     newp->new_plot();
-    Sp.SetCurPlot(newp->type_name());
+    OP.setCurPlot(newp->type_name());
     int len = (int)((tstop - tstart) / tstep + 1.5);
     sDataVec *newtime = new sDataVec(
         lstring::copy(oldtime->name()), oldtime->flags(), len,

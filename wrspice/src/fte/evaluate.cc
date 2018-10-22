@@ -52,6 +52,7 @@ Authors: 1985 Wayne A. Christopher
 #include "config.h"
 #include "frontend.h"
 #include "fteparse.h"
+#include "outdata.h"
 #include "errors.h"
 #include "ttyio.h"
 #include "circuit.h"
@@ -92,7 +93,7 @@ IFsimulator::Evaluate(pnode *node)
                 return (0);
             }
             sDataVec *scale = 0;
-            if (ft_plot_cur && (scale = ft_plot_cur->scale()) != 0 &&
+            if (OP.curPlot() && (scale = OP.curPlot()->scale()) != 0 &&
                     scale->length() > 1 && scale->isreal()) {
                 double *vec;
                 if (ft_curckt->runckt()->evalTranFunc(&vec,
@@ -116,7 +117,7 @@ IFsimulator::Evaluate(pnode *node)
             }
         }
         if (d == 0) {
-            d = VecGet(node->token_string(),
+            d = OP.vecGet(node->token_string(),
                 ft_curckt ? ft_curckt->runckt() : 0);
             // note that "vs" can be a real vector, x-y plots only if
             // undefined.
@@ -265,10 +266,10 @@ pnode::apply_func() const
         sDataVec *t;
         if (*buf == Sp.SpecCatchar()) {
             sCKT *ckt = Sp.CurCircuit() ? Sp.CurCircuit()->runckt() : 0;
-            t = Sp.VecGet(buf, ckt);
+            t = OP.vecGet(buf, ckt);
         }
         else
-            t = Sp.CurPlot()->find_vec(buf);
+            t = OP.curPlot()->find_vec(buf);
         if (!t) {
             Sp.Error(E_NOVEC, 0, buf);
             return (0);
@@ -362,7 +363,7 @@ pnode::apply_func() const
     if (res && nargs == 1 && !v[0]->link() && !res->scale() &&
             res->length() > 1) {
         sDataVec *sc = v[0]->scale();
-        if (!sc && v[0]->plot() && v[0]->plot() != Sp.CurPlot())
+        if (!sc && v[0]->plot() && v[0]->plot() != OP.curPlot())
             sc = v[0]->plot()->scale();
         if (sc && sc->length() == res->length() && sc->isreal())
             res->set_scale(sc);
@@ -494,7 +495,7 @@ pnode::apply_bop() const
             res->set_numdims(v1->numdims());
             if (res->length() > 1) {
                 sDataVec *sc = v1->scale();
-                if (!sc && v1->plot() && v1->plot() != Sp.CurPlot())
+                if (!sc && v1->plot() && v1->plot() != OP.curPlot())
                     sc = v1->plot()->scale();
                 if (sc && sc->length() == res->length() && sc->isreal())
                     res->set_scale(sc);
@@ -506,7 +507,7 @@ pnode::apply_bop() const
             res->set_numdims(v2->numdims());
             if (res->length() > 1) {
                 sDataVec *sc = v1->scale();
-                if (!sc && v2->plot() && v2->plot() != Sp.CurPlot())
+                if (!sc && v2->plot() && v2->plot() != OP.curPlot())
                     sc = v2->plot()->scale();
                 if (sc && sc->length() == res->length() && sc->isreal())
                     res->set_scale(sc);

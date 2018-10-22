@@ -44,12 +44,12 @@ Copyright 1990 Regents of the University of California.  All rights reserved.
 Authors: 1992 Stephen R. Whiteley
 ****************************************************************************/
 
+#include "frontend.h"
 #include "outplot.h"
 #include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "frontend.h"
 #include "miscutil/texttf.h"
 
 
@@ -96,7 +96,7 @@ CommandTab::com_mplot(wordlist *wl)
     if (wl && !wl->wl_next) {
         // If one arg, it can be the name of a multi-dimensional vector
         // for use in selecting the components to plot
-        sDataVec *d = Sp.VecGet(wl->wl_word, 0);
+        sDataVec *d = OP.vecGet(wl->wl_word, 0);
         if (d) {
             p0 = get_fromvec(d);
             if (!p0) {

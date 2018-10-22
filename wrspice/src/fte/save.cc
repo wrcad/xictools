@@ -49,6 +49,7 @@ Authors: 1987 Wayne A. Christopher
 #include "fteparse.h"
 #include "ftedebug.h"
 #include "ftemeas.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "commands.h"
 #include "toolbar.h"
@@ -116,56 +117,6 @@ namespace {
             return (true);
         return (false);
     }
-
-
-    // Save a vector.
-    //
-    void dbsaveword(sFtCirc *circuit, const char *name)
-    {
-        char *s = lstring::copy(name);
-        CP.Unquote(s);
-        sDbComm *td;
-        for (td = DB.saves(); td; td = td->next()) {
-            if (name_eq(s, td->string())) {
-                delete [] s;
-                return;
-            }
-        }
-        if (circuit && circuit->debugs()) {
-            for (td = circuit->debugs()->saves(); td; td = td->next()) {
-                if (name_eq(s, td->string())) {
-                    delete [] s;
-                    return;
-                }
-            }
-        }
-
-        sDbComm *d = new sDbComm;
-        d->set_type(DB_SAVE);
-        d->set_active(true);
-        d->set_string(s);
-        d->set_number(DB.new_count());
-
-        if (CP.GetFlag(CP_INTERACTIVE) || !circuit) {
-            if (DB.saves()) {
-                for (td = DB.saves(); td->next(); td = td->next()) ;
-                td->set_next(d);
-            }
-            else
-                DB.set_saves(d);
-        }
-        else {
-            if (!circuit->debugs())
-                circuit->set_debugs(new sDebug);
-            sDebug *db = circuit->debugs();
-            if (db->saves()) {
-                for (td = db->saves(); td->next(); td = td->next()) ;
-                td->set_next(d);
-            }
-            else
-                db->set_saves(d);
-        }
-    }
 }
 
 
@@ -174,10 +125,18 @@ namespace {
 void
 CommandTab::com_save(wordlist *wl)
 {
+    OP.dbgSave(wl);
+}
+// End of CommandTab functions.
+
+
+void
+IFoutput::dbgSave(wordlist *wl)
+{
     char buf[BSIZE_SP];
     for ( ; wl; wl = wl->wl_next) {
         if (!isvec(wl->wl_word)) {
-            dbsaveword(Sp.CurCircuit(), wl->wl_word);
+            addSave(Sp.CurCircuit(), wl->wl_word);
             continue;
         }
         if (*wl->wl_word == 'v' || *wl->wl_word == 'V') {
@@ -188,7 +147,7 @@ CommandTab::com_save(wordlist *wl)
             strcpy(buf, s);
             s = strchr(buf, ',');
             if (!s) {
-                dbsaveword(Sp.CurCircuit(), wl->wl_word);
+                addSave(Sp.CurCircuit(), wl->wl_word);
                 continue;
             }
             char *n1 = buf;
@@ -208,8 +167,8 @@ CommandTab::com_save(wordlist *wl)
                 else
                     break;
             }
-            dbsaveword(Sp.CurCircuit(), n1);
-            dbsaveword(Sp.CurCircuit(), n2);
+            addSave(Sp.CurCircuit(), n1);
+            addSave(Sp.CurCircuit(), n2);
         }
         else {
             // deal with forms like ixx(vyy)
@@ -225,12 +184,61 @@ CommandTab::com_save(wordlist *wl)
                     break;
             }
             strcat(buf, "#branch");
-            dbsaveword(Sp.CurCircuit(), n1);
+            addSave(Sp.CurCircuit(), n1);
         }
     }
     ToolBar()->UpdateTrace();
 }
-// End of CommandTab functions.
+
+// Save a vector.
+//
+void
+IFoutput::addSave(sFtCirc *circuit, const char *name)
+{
+    char *s = lstring::copy(name);
+    CP.Unquote(s);
+    sDbComm *td;
+    for (td = o_debugs->saves(); td; td = td->next()) {
+        if (name_eq(s, td->string())) {
+            delete [] s;
+            return;
+        }
+    }
+    if (circuit && circuit->debugs()) {
+        for (td = circuit->debugs()->saves(); td; td = td->next()) {
+            if (name_eq(s, td->string())) {
+                delete [] s;
+                return;
+            }
+        }
+    }
+
+    sDbComm *d = new sDbComm;
+    d->set_type(DB_SAVE);
+    d->set_active(true);
+    d->set_string(s);
+    d->set_number(o_debugs->new_count());
+
+    if (CP.GetFlag(CP_INTERACTIVE) || !circuit) {
+        if (o_debugs->saves()) {
+            for (td = o_debugs->saves(); td->next(); td = td->next()) ;
+            td->set_next(d);
+        }
+        else
+            o_debugs->set_saves(d);
+    }
+    else {
+        if (!circuit->debugs())
+            circuit->set_debugs(new sDebug);
+        sDebug *db = circuit->debugs();
+        if (db->saves()) {
+            for (td = db->saves(); td->next(); td = td->next()) ;
+            td->set_next(d);
+        }
+        else
+            db->set_saves(d);
+    }
+}
 
 
 // Fill in a list of vector names used in the debugs.  If there are only
@@ -240,13 +248,13 @@ CommandTab::com_save(wordlist *wl)
 // The .measure lines are also checked here.
 //
 void
-IFsimulator::GetSaves(sFtCirc *circuit, sSaveList *saves)
+IFoutput::getSaves(sFtCirc *circuit, sSaveList *saves)
 {
     sDebug *db = 0;
     if (circuit && circuit->debugs())
         db = circuit->debugs();
     sDbComm *d;
-    for (d = DB.saves(); d && d->active(); d = d->next())
+    for (d = o_debugs->saves(); d && d->active(); d = d->next())
         saves->add_save(d->string());
     if (db) {
         for (d = db->saves(); d && d->active(); d = d->next())
@@ -256,7 +264,7 @@ IFsimulator::GetSaves(sFtCirc *circuit, sSaveList *saves)
     sHgen gen(saves->table());
     sHent *h;
     while ((h = gen.next()) != 0) {
-        if (*h->name() != SpecCatchar()) {
+        if (*h->name() != Sp.SpecCatchar()) {
             saveall = false;
             break;
         }
@@ -271,13 +279,13 @@ IFsimulator::GetSaves(sFtCirc *circuit, sSaveList *saves)
     // to @Vsrc[p].  When done, we'll go back an purge non-specials
     // if saveall is true.
 
-    for (d = DB.traces(); d && d->active(); d = d->next())
+    for (d = o_debugs->traces(); d && d->active(); d = d->next())
         saves->list_expr(d->string());
     if (db) {
         for (d = db->traces(); d && d->active(); d = d->next())
             saves->list_expr(d->string());
     }
-    for (d = DB.iplots(); d && d->active(); d = d->next()) {
+    for (d = o_debugs->iplots(); d && d->active(); d = d->next()) {
         saves->list_expr(d->string());
         for (sDbComm *dd = d->also(); dd; dd = dd->also())
             saves->list_expr(d->string());
@@ -289,7 +297,7 @@ IFsimulator::GetSaves(sFtCirc *circuit, sSaveList *saves)
                 saves->list_expr(d->string());
         }
     }
-    for (d = DB.stops(); d && d->active(); d = d->next())
+    for (d = o_debugs->stops(); d && d->active(); d = d->next())
         saves->list_expr(d->string());
     if (db) {
         for (d = db->stops(); d && d->active(); d = d->next())
@@ -325,7 +333,7 @@ IFsimulator::GetSaves(sFtCirc *circuit, sSaveList *saves)
             saves->remove_save(m->result);
     }
 }
-// End of IFsimulator functions.
+// End of IFoutput functions.
 
 
 sSaveList::~sSaveList()

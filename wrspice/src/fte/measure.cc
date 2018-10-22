@@ -43,8 +43,8 @@
 #include "fteparse.h"
 #include "misc.h"
 #include "ftedata.h"
-#include "cshell.h"
 #include "outdata.h"
+#include "cshell.h"
 #include "device.h"
 #include "rundesc.h"
 #include "spnumber/hash.h"
@@ -764,10 +764,10 @@ sMeas::reset(sPlot *pl)
                     vh = new sDataVec(*v->units());
                     vh->set_name(buf);
                     vh->set_flags(0);
-                    sPlot *px = Sp.CurPlot();
-                    Sp.SetCurPlot(pl);
+                    sPlot *px = OP.curPlot();
+                    OP.setCurPlot(pl);
                     vh->newperm();
-                    Sp.SetCurPlot(px);
+                    OP.setCurPlot(px);
                 }
                 sDataVec *vhs = vh->scale();
                 if (!vhs) {
@@ -775,10 +775,10 @@ sMeas::reset(sPlot *pl)
                     vhs = new sDataVec(*vs->units());
                     vhs->set_name(buf);
                     vhs->set_flags(0);
-                    sPlot *px = Sp.CurPlot();
-                    Sp.SetCurPlot(pl);
+                    sPlot *px = OP.curPlot();
+                    OP.setCurPlot(pl);
                     vhs->newperm();
-                    Sp.SetCurPlot(px);
+                    OP.setCurPlot(px);
                     vh->set_scale(vhs);
                 }
 
@@ -1376,19 +1376,19 @@ sMeas::check(sFtCirc *circuit)
         }
         nv->set_name(result);
         nv->set_flags(0);
-        sPlot *px = Sp.CurPlot();
-        Sp.SetCurPlot(pl);
+        sPlot *px = OP.curPlot();
+        OP.setCurPlot(pl);
         nv->newperm();
-        Sp.SetCurPlot(px);
+        OP.setCurPlot(px);
         char scname[128];
         sprintf(scname, "%s_scale", result);
         sDataVec *ns = new sDataVec(*xs->units());
         ns->set_name(scname);
         ns->set_flags(0);
-        px = Sp.CurPlot();
-        Sp.SetCurPlot(pl);
+        px = OP.curPlot();
+        OP.setCurPlot(pl);
         ns->newperm();
-        Sp.SetCurPlot(px);
+        OP.setCurPlot(px);
         nv->set_scale(ns);
 
         if (expr2) {

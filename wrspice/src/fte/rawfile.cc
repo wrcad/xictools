@@ -48,6 +48,7 @@ Authors: 1986 Wayne A. Christopher
 #include "spglobal.h"
 #include "frontend.h"
 #include "rawfile.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "errors.h"
@@ -134,8 +135,8 @@ cRawOut::file_open(const char *filename, const char *mode, bool binary)
     }
     ro_fp = fp;
     ro_pointPosn = 0;
-    if (Sp.GetOutDesc()->outNdgts() > 0)
-        ro_prec = Sp.GetOutDesc()->outNdgts();
+    if (OP.getOutDesc()->outNdgts() > 0)
+        ro_prec = OP.getOutDesc()->outNdgts();
     else
         ro_prec = DEFPREC;
     ro_numdims = 0;
@@ -474,7 +475,7 @@ cRawIn::raw_read(const char *name)
         return (0);
     }
 
-    Sp.PushPlot();
+    OP.pushPlot();
     TTY.ioPush();
     CP.PushControl();
 
@@ -792,7 +793,7 @@ cRawIn::raw_read(const char *name)
                 }
                 CP.PopControl();
                 TTY.ioPop();
-                Sp.PopPlot();
+                OP.popPlot();
                 fclose(ri_fp);
                 ri_fp = 0;
                 return (0);
@@ -812,7 +813,7 @@ cRawIn::raw_read(const char *name)
 
     CP.PopControl();
     TTY.ioPop();
-    Sp.PopPlot();
+    OP.popPlot();
     fclose(ri_fp);
     ri_fp = 0;
 

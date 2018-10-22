@@ -28,10 +28,10 @@ CCFILES = \
   compose.cc csdffile.cc datavec.cc define.cc device.cc diff.cc \
   dotcards.cc error.cc evaluate.cc initialize.cc inpcom.cc \
   interface.cc interp.cc keywords.cc linear.cc measure.cc misccoms.cc \
-  output.cc paramsub.cc parse.cc postcoms.cc prntfile.cc psffile.cc \
-  rawfile.cc resource.cc rundesc.cc save.cc simulate.cc source.cc \
-  spvariable.cc subexpand.cc sweep.cc trace.cc trnames.cc types.cc \
-  vectors.cc
+  output.cc paramsub.cc parse.cc plots.cc postcoms.cc prntfile.cc \
+  psffile.cc rawfile.cc resource.cc rundesc.cc save.cc simulate.cc \
+  source.cc spvariable.cc subexpand.cc sweep.cc trace.cc trnames.cc \
+  types.cc vectors.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
 $(LIB_TARGET): $(CCOBJS)

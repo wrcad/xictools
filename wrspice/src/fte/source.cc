@@ -50,6 +50,7 @@ Authors: 1985 Wayne A. Christopher
 #include "frontend.h"
 #include "circuit.h"
 #include "outplot.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
@@ -80,9 +81,6 @@ Authors: 1985 Wayne A. Christopher
 #include "../../malloc/local_malloc.h"
 #endif
 
-#ifdef TIME_DEBUG
-#include "outdata.h"
-#endif
 
 //
 // Functions for sourcing of input.
@@ -958,20 +956,20 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
             for (wordlist *wl = wx; wl; wl = wl->wl_next)
                 ptab->param_subst_all(&wl->wl_word);
         }
-        strcpy(tpname, ft_plot_cur->type_name());
+        strcpy(tpname, OP.curPlot()->type_name());
         // Run the execs (before source).
         // Set up a temporary plot for vectors defined in the exec
         // block that might be needed in the circuit.
         pl_ex = new sPlot("exec");
         pl_ex->new_plot();
-        ft_plot_cur = pl_ex;
+        OP.setCurPlot(pl_ex);
         pl_ex->set_circuit(ft_curckt->name());
         pl_ex->set_title(ft_curckt->name());
         ExecCmds(wx);
         wordlist::destroy(wx);
 
         // Still in list? may have been destroyed.
-        sPlot *px = ft_plot_list;
+        sPlot *px = OP.plotList();
         for ( ; px; px = px->next_plot()) {
             if (px == pl_ex)
                 break;
@@ -1026,10 +1024,10 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
         ToolBar()->SuppressUpdate(true);
         pl_ex->destroy();
         ToolBar()->SuppressUpdate(false);
-        // ft_plot_cur might be deleted in the execs
-        for (sPlot *pl = ft_plot_list; pl; pl = pl->next_plot()) {
-            if (PlotPrefix(tpname, pl->type_name())) {
-                ft_plot_cur = pl;
+        // current plot might be deleted in the execs
+        for (sPlot *pl = OP.plotList(); pl; pl = pl->next_plot()) {
+            if (IFoutput::plotPrefix(tpname, pl->type_name())) {
+                OP.setCurPlot(pl);
                 break;
             }
         }
@@ -1046,14 +1044,14 @@ IFsimulator::ExecCmds(wordlist *wl)
     if (wl) {
         bool intr = CP.GetFlag(CP_INTERACTIVE);
         CP.SetFlag(CP_INTERACTIVE, false);
-        PushPlot();
+        OP.pushPlot();
         TTY.ioPush();
         CP.PushControl();
         for ( ; wl; wl = wl->wl_next)
             CP.EvLoop(wl->wl_word);
         CP.PopControl();
         TTY.ioPop();
-        PopPlot();
+        OP.popPlot();
         CP.SetFlag(CP_INTERACTIVE, intr);
     }
 }
@@ -1943,7 +1941,7 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
                                 *t = tolower(*t);
                             t++;
                         }
-                        Sp.GetOutDesc()->set_outFile(fn);
+                        OP.getOutDesc()->set_outFile(fn);
                         delete [] fn;
                         Sp.SetFlag(FT_RAWFGIVEN, true);
                     }

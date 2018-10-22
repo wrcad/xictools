@@ -48,12 +48,14 @@ Authors: 1992 Stephen R. Whiteley
 #define OUTDATA_H
 
 #include <stdio.h>
+#include "miscutil/lstring.h"
 
 
 // references
 struct sCKT;
 struct sJOB;
 struct sPlot;
+struct sPlotList;
 struct sFtCirc;
 struct sRunDesc;
 struct sOUTdata;
@@ -63,6 +65,10 @@ struct sNames;
 struct sHtab;
 struct sExBlk;
 struct sDbComm;
+struct sDebug;
+struct sSaveList;
+struct sDataVec;
+struct pnode;
 
 enum OutcType
 {
@@ -352,6 +358,81 @@ struct sMsg
     ERRtype flag;
 };
 
+// This maintains a hash table of vector names to save for output.
+//
+struct sSaveList
+{
+    sSaveList() { sl_tab = 0; }
+    ~sSaveList();
+
+    sHtab *table() { return (sl_tab); }
+
+    int numsaves();
+    bool set_used(const char*, bool);
+    int is_used(const char*);
+
+    void add_save(const char*);
+    void remove_save(const char*);
+    void list_expr(const char*);
+    void purge_non_special();
+
+private:
+    void list_vecs(pnode*);
+
+    sHtab *sl_tab;
+};
+
+// Output plot file format: native rawfile, Synopsys CDF, Cadence PSF.
+//
+enum OutFtype { OutFnone, OutFraw, OutFcsdf, OutFpsf };
+
+// This describes the output file for plot results from batch mode.
+//
+struct IFoutfile
+{
+    IFoutfile()
+        {
+            of_filename = 0;
+            of_type = OutFnone;
+            of_numdgts = 0;
+            of_fp = 0;
+        }
+
+    const char *outFile()       { return (of_filename); }
+    void set_outFile(const char *n)
+        {
+            if (n != of_filename)
+                delete [] of_filename;
+            of_filename = n && *n ? lstring::copy(n) : 0;
+        }
+
+    OutFtype outFtype()         { return (of_type); }
+    void set_outFtype(OutFtype t) { of_type = t; }
+
+    int outNdgts()              { return (of_numdgts); }
+    void set_outNdgts(int n)    { if (n >= 0 && n <= 15) of_numdgts = n; }
+
+    bool outBinary()            { return (of_binary); }
+    void set_outBinary(bool b)  { of_binary = b; }
+
+    FILE *outFp()               { return (of_fp); }
+    void set_outFp(FILE *f)     { of_fp = f; }
+
+private:
+    char *of_filename;      // Given filename
+    OutFtype of_type;       // Type of output
+    short of_numdgts;       // ASCII precision
+    bool of_binary;         // Use binary format.
+    FILE *of_fp;            // Pointer to output file.
+};
+
+// Flags for IFoutput::deleteDbg.
+#define DF_STOP     0x1
+#define DF_TRACE    0x2
+#define DF_IPLOT    0x4
+#define DF_SAVE     0x8
+#define DF_ALL      0xf
+
 // Structure: IFoutput
 //
 // This structure provides the simulator with an interface for saving
@@ -360,6 +441,7 @@ struct sMsg
 struct IFoutput
 {
     // output.cc
+    IFoutput();
     sRunDesc *beginPlot(sOUTdata*, int = 0, const char* = 0, double = 0.0);
     int appendData(sRunDesc*, IFvalue*, IFvalue*);
     int insertData(sCKT*, sRunDesc*, IFvalue*, IFvalue*, unsigned int);
@@ -375,27 +457,78 @@ struct IFoutput
     int error(ERRtype, const char*, ...);
 
     // breakp.cc
+    void dbgStop(wordlist*);
+    char *dbgStatus(bool);
+    void dbgDelete(wordlist*);
+    void setDebugActive(int, bool);
+    void deleteDebug(int, bool, int);
     void initDebugs(sRunDesc*);
-    bool breakPtCheck(sRunDesc*);
+    bool checkDebugs(sRunDesc*);
 
     // measure.cc
     void initMeasures(sRunDesc*);
     bool measure(sRunDesc*);
 
+    // save.cc
+    void dbgSave(wordlist*);
+    void addSave(sFtCirc*, const char*);
+    void getSaves(sFtCirc*, sSaveList*);
+
     // trace.cc
+    void dbgTrace(wordlist*);
+    void dbgIplot(wordlist*);
     void iplot(sDbComm*, sRunDesc*);
     void endIplot(sRunDesc*);
     bool isIplot(bool = false);
 
-    bool endit()            { return (o_endit); }
-    void set_endit(bool b)  { o_endit = b; }
+    // plots.cc
+    sPlot *findPlot(const char*);
+    void setCurPlot(const char*);
+    void pushPlot();
+    void popPlot();
+    void removePlot(const char*, bool = false);
+    void removePlot(sPlot*);
+    void loadFile(const char**, bool);
+    static bool plotPrefix(const char*, const char*);
 
-    sMsg *msgs()            { return (o_msgs); }
+    // vectors.cc
+    sDataVec *vecGet(const char*, const sCKT*, bool = false);
+    bool isVec(const char*, const sCKT*);
+    void vecSet(const char*, const char*, bool = false, const char** = 0);
+    void vecGc(bool = false);
+    static bool vecEq(sDataVec*, sDataVec*);
+    void vecPrintList(wordlist*, char**);
+
+    sDebug *debugs()            { return (o_debugs); }
+
+    bool endit()                { return (o_endit); }
+    void set_endit(bool b)      { o_endit = b; }
+
+    sPlot *curPlot()            { return (o_plot_cur); }
+    void setCurPlot(sPlot *p)   { o_plot_cur = p; }
+    sPlot *plotList()           { return (o_plot_list); }
+    void setPlotList(sPlot *p)  { o_plot_list = p; }
+    sPlot *cxPlot()             { return (o_plot_cx); }
+    void setCxPlot(sPlot *p)    { o_plot_cx = p; }
+    sPlotList *cxPlotList()     { return (o_cxplots); }
+
+    IFoutfile *getOutDesc()     { return (&o_outfile); }
+
+    sMsg *msgs()                { return (o_msgs); }
 
 private:
+    sDebug *o_debugs;       // Debugs entered interactively.
+
     bool o_endit;           // If nonzero, quit the current analysis as if
                             // finished.
     bool o_shouldstop;      // Tell simulator to stop next time it asks.
+
+    sPlot *o_plot_cur;      // The "current" (default) plot
+    sPlot *o_plot_list;     // List head for plots
+    sPlot *o_plot_cx;       // Plot when starting .control's
+    sPlotList *o_cxplots;   // Context plot list
+
+    IFoutfile o_outfile;    // Batch output description
 
     static sMsg o_msgs[];   // Error message prefixes.
 };

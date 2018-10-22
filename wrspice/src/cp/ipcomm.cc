@@ -60,6 +60,7 @@
 #include "kwords_fte.h"
 #include "commands.h"
 #include "frontend.h"
+#include "outdata.h"
 #include "toolbar.h"
 #include "miscutil/childproc.h"
 
@@ -301,8 +302,8 @@ CshPar::MessageHandler(int fc)
     else if (lstring::eq(buf, "curplot")) {
         // Return the name of the current plot.
         const char *c = 0;
-        if (Sp.CurPlot())
-            c = Sp.CurPlot()->type_name();
+        if (OP.curPlot())
+            c = OP.curPlot()->type_name();
         if (c && *c)
             write_msg(c);
         else
@@ -327,13 +328,13 @@ CshPar::MessageHandler(int fc)
         char *name = lstring::gettok(&s);
         if (name) {
             if (!lstring::eq(name, "constants"))
-                Sp.RemovePlot(name, true);
+                OP.removePlot(name, true);
             delete [] name;
         }
-        else if (Sp.CurPlot()) {
-            const char *c = Sp.CurPlot()->type_name();
+        else if (OP.curPlot()) {
+            const char *c = OP.curPlot()->type_name();
             if (c && *c && !lstring::eq(c, "constants"))
-                Sp.RemovePlot(c, true);
+                OP.removePlot(c, true);
         }
         write_msg("ok");
     }
@@ -380,7 +381,7 @@ CshPar::MessageHandler(int fc)
         bool wrote = false;
         if (*s) {
             sCKT *ckt = Sp.CurCircuit() ? Sp.CurCircuit()->runckt() : 0;
-            sDataVec *dv = Sp.VecGet(s, ckt);
+            sDataVec *dv = OP.vecGet(s, ckt);
             if (dv) {
                 if (dv->isreal())
                     sprintf(buf, "ok%15e", dv->realval(0));

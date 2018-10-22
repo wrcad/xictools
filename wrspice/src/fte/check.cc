@@ -610,7 +610,7 @@ sCHECKprms::setup(checkargs &args, wordlist *wl)
     // Create a new plot for the analysis.
     out_plot = new sPlot("range");
     out_plot->new_plot();
-    Sp.SetCurPlot(out_plot->type_name());
+    OP.setCurPlot(out_plot->type_name());
 
     set_batchmode(args.batchmode());
     set_use_remote(args.remote());
@@ -1383,9 +1383,9 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
     buf[0] = 0;
 
     sFtCirc *cir = Sp.CurCircuit();
-    sPlot *plt = Sp.CurPlot();
+    sPlot *plt = OP.curPlot();
     Sp.SetCurCircuit(out_cir);
-    Sp.SetCurPlot(out_plot);
+    OP.setCurPlot(out_plot);
     if (ch_monte) {
         execblock(out_cir->execs(), true);
         sDataVec *d = out_plot->find_vec(checkPNTS);
@@ -1444,7 +1444,7 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
     else
         ch_nogo = true;
     Sp.SetCurCircuit(cir);
-    Sp.SetCurPlot(plt);
+    OP.setCurPlot(plt);
 
     return (0);
 }
@@ -1458,9 +1458,9 @@ sCHECKprms::evaluate()
     bool fail = true;
     if (out_cir && out_plot) {
         sFtCirc *cir = Sp.CurCircuit();
-        sPlot *plt = Sp.CurPlot();
+        sPlot *plt = OP.curPlot();
         Sp.SetCurCircuit(out_cir);
-        Sp.SetCurPlot(out_plot);
+        OP.setCurPlot(out_plot);
         sDataVec *d = out_plot->find_vec(checkFAIL);
         if (d && d->isreal()) {
             d->set_realval(0, 0.0);
@@ -1473,7 +1473,7 @@ sCHECKprms::evaluate()
                 fail = (d->realval(0) != 0.0 ? true : false);
         }
         Sp.SetCurCircuit(cir);
-        Sp.SetCurPlot(plt);
+        OP.setCurPlot(plt);
     }
     ch_evalcnt++;
     ch_fail = fail;
@@ -1718,7 +1718,7 @@ sCHECKprms::set_vec(const char *name, double val)
     lstr.add(name);
     char buf[64];
     sprintf(buf, "%.12g", val);
-    Sp.VecSet(lstr.string(), buf);
+    OP.vecSet(lstr.string(), buf);
 }
 
 
@@ -1807,7 +1807,7 @@ sCHECKprms::execblock(sExBlk *exblk, bool suppress)
         bool temp = CP.GetFlag(CP_INTERACTIVE);
         CP.SetFlag(CP_INTERACTIVE, false);
         TTY.ioPush();
-        Sp.PushPlot();
+        OP.pushPlot();
 
         if (suppress)
             ToolBar()->SuppressUpdate(true);
@@ -1822,7 +1822,7 @@ sCHECKprms::execblock(sExBlk *exblk, bool suppress)
         if (suppress)
             ToolBar()->SuppressUpdate(false);
 
-        Sp.PopPlot();
+        OP.popPlot();
         TTY.ioPop();
         CP.SetFlag(CP_INTERACTIVE, temp);
     }
@@ -1842,9 +1842,9 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
     if (Sp.GetFlag(FT_SERVERMODE)) {
         Sp.SetVar(kw_mplot_cur, "mplot");
         // If a non-psf filename was given on the command line, use it.
-        if (Sp.GetOutDesc()->outFile() &&
-                !cPSFout::is_psf(Sp.GetOutDesc()->outFile())) {
-            FILE *fp = fopen(Sp.GetOutDesc()->outFile(), "w");
+        if (OP.getOutDesc()->outFile() &&
+                !cPSFout::is_psf(OP.getOutDesc()->outFile())) {
+            FILE *fp = fopen(OP.getOutDesc()->outFile(), "w");
             if (!fp)
                 fp = TTY.outfile();
             return (fp);
@@ -1939,7 +1939,7 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
     }
 
     // Map the file name to the current plot name.
-    sCHECKprms::setMfilePlotname(buf1, Sp.CurPlot()->type_name());
+    sCHECKprms::setMfilePlotname(buf1, OP.curPlot()->type_name());
 
     Sp.SetVar(kw_mplot_cur, buf1);
     return (fp);

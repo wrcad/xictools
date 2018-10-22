@@ -40,6 +40,7 @@
 
 #include "spglobal.h"
 #include "frontend.h"
+#include "outdata.h"
 #include "csdffile.h"
 #include "cshell.h"
 #include "keywords.h"
@@ -394,7 +395,7 @@ cCSDFin::csdf_read(const char *name)
         return (0);
     }
 
-    Sp.PushPlot();
+    OP.pushPlot();
     TTY.ioPush();
     CP.PushControl();
 
@@ -411,7 +412,7 @@ cCSDFin::csdf_read(const char *name)
 
     CP.PopControl();
     TTY.ioPop();
-    Sp.PopPlot();
+    OP.popPlot();
 
     // Make the vectors permanent, and fix dimension.
     for (p = plots; p; p = p->next_plot()) {

@@ -50,6 +50,7 @@ Authors: 1985 Wayne A. Christopher
 #include "input.h"
 #include "frontend.h"
 #include "ftedata.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
@@ -92,7 +93,7 @@ CommandTab::com_qhelp(wordlist *wl)
 
         // determine environment
         int env = 0;
-        if (Sp.PlotList()->next_plot())
+        if (OP.plotList()->next_plot())
             env |= E_HASPLOTS;
         else
             env |= E_NOPLOTS;
@@ -236,7 +237,7 @@ CommandTab::com_quit(wordlist*)
             if (cc->inprogress())
                 ncc++;
         int npl = 0;
-        for (sPlot *pl = Sp.PlotList(); pl; pl = pl->next_plot())
+        for (sPlot *pl = OP.plotList(); pl; pl = pl->next_plot())
             if (!pl->written() && pl->num_perm_vecs())
                 npl++;
         if (ncc || npl) {
@@ -255,7 +256,7 @@ CommandTab::com_quit(wordlist*)
                     TTY.printf("and ");
                 TTY.printf("the following plot%s been saved:\n",
                     (npl > 1) ? "s haven't" : " hasn't");
-                for (sPlot *pl = Sp.PlotList(); pl; pl = pl->next_plot())
+                for (sPlot *pl = OP.plotList(); pl; pl = pl->next_plot())
                     if (!pl->written() && pl->num_perm_vecs())
                         TTY.printf("%s\t%s, %s\n",
                             pl->type_name(), pl->title(), pl->name());
@@ -492,7 +493,7 @@ CommandTab::com_mmon(wordlist *wl)
             return;
         }
         if (lstring::cieq(wl->wl_word, "stop")) {
-            Sp.VecGc();
+            OP.vecGc();
             const char *fname = "mon.out";
             if (wl->wl_next)
                 fname = wl->wl_next->wl_word;

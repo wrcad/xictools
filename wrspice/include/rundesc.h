@@ -175,6 +175,7 @@ struct sRunDesc
     int addDataDesc(const char*, int, int);
     int addSpecialDesc(const char*, int, bool);
     bool getSpecial(sCKT*, int, IFvalue*);
+    void setCkt(sCKT*);
 
     const char *name()              { return (rd_name); }
     void set_name(const char *n)
@@ -203,7 +204,6 @@ struct sRunDesc
     sJOB *job()                     { return (rd_job); }
     void set_job(sJOB *a)           { rd_job = a; }
 
-    void set_ckt(sCKT *c)           { rd_ckt = c; rd_circ = c->CKTbackPtr; }
     sCKT *get_ckt()                 { return (rd_ckt); }
     sFtCirc *circuit()              { return (rd_circ); }
 

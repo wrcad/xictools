@@ -147,7 +147,7 @@ struct sDebug
             sd_debugcnt = 1;
             sd_stepcnt = 0;
             sd_steps = 0;
-        };
+        }
 
     bool isset() { return (sd_iplot || sd_trace || sd_save || sd_stop); }
 
@@ -183,8 +183,6 @@ private:
     int sd_stepcnt;        // number of steps done
     int sd_steps;          // number of steps to do
 };
-
-extern sDebug DB;
 
 #endif // FTEDEBUG_H
 

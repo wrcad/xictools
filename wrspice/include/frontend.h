@@ -87,6 +87,7 @@ struct sDbComm;
 struct sMeas;
 struct sPlotList;
 struct sRunDesc;
+struct sSaveList;
 union va_t;
 
 // Default char used to separate units string from numbers, was '_' in
@@ -118,30 +119,6 @@ union va_t;
 // startup file names
 #define SYS_STARTUP(buf) sprintf(buf, "%sinit", CP.Program())
 #define USR_STARTUP(buf) sprintf(buf, ".%sinit", CP.Program())
-
-// This maintains a hash table of vector names to save for output.
-//
-struct sSaveList
-{
-    sSaveList() { sl_tab = 0; }
-    ~sSaveList();
-
-    sHtab *table() { return (sl_tab); }
-
-    int numsaves();
-    bool set_used(const char*, bool);
-    int is_used(const char*);
-
-    void add_save(const char*);
-    void remove_save(const char*);
-    void list_expr(const char*);
-    void purge_non_special();
-
-private:
-    void list_vecs(pnode*);
-
-    sHtab *sl_tab;
-};
 
 // Executable block (codeblock).
 struct sExBlk
@@ -537,50 +514,6 @@ enum FPEmode
 };
 #define FPEdefault  FPEcheck
 
-// Output plot file format: native rawfile, Synopsys CDF, Cadence PSF.
-//
-enum OutFtype { OutFnone, OutFraw, OutFcsdf, OutFpsf };
-
-// This describes the output file for plot results from batch mode.
-//
-struct IFoutfile
-{
-    IFoutfile()
-        {
-            of_filename = 0;
-            of_type = OutFnone;
-            of_numdgts = 0;
-            of_fp = 0;
-        }
-
-    const char *outFile()       { return (of_filename); }
-    void set_outFile(const char *n)
-        {
-            if (n != of_filename)
-                delete [] of_filename;
-            of_filename = n && *n ? lstring::copy(n) : 0;
-        }
-
-    OutFtype outFtype()         { return (of_type); }
-    void set_outFtype(OutFtype t) { of_type = t; }
-
-    int outNdgts()              { return (of_numdgts); }
-    void set_outNdgts(int n)    { if (n >= 0 && n <= 15) of_numdgts = n; }
-
-    bool outBinary()            { return (of_binary); }
-    void set_outBinary(bool b)  { of_binary = b; }
-
-    FILE *outFp()               { return (of_fp); }
-    void set_outFp(FILE *f)     { of_fp = f; }
-
-private:
-    char *of_filename;      // Given filename
-    OutFtype of_type;       // Type of output
-    short of_numdgts;       // ASCII precision
-    bool of_binary;         // Use binary format.
-    FILE *of_fp;            // Pointer to output file.
-};
-
 // Structure: IFsimulator
 //
 // This structure dscribes the top level simulator interface.
@@ -598,11 +531,6 @@ struct IFsimulator
 
     // fte/aspice.cc
     void CheckAsyncJobs();
-
-    // fte/breakp.cc
-    void SetDbgActive(int, bool);
-    char *DebugStatus(bool);
-    void DeleteDbg(bool, bool, bool, bool, bool, int);
 
     // fte/check.cc
     void MargAnalysis(wordlist*);
@@ -679,9 +607,6 @@ struct IFsimulator
     void InitResource();
     void ShowOption(wordlist*, char**);
 
-    // fte/save.cc
-    void GetSaves(sFtCirc*, sSaveList*);
-
     // fte/simulate.cc
     void Simulate(SIMtype, wordlist*);
     void Run(const char*);
@@ -725,22 +650,6 @@ struct IFsimulator
     int TypeNum(const char*);
     const char *PlotAbbrev(const char*);
 
-    // fte/vectors.cc
-    sPlot *FindPlot(const char*);
-    sDataVec *VecGet(const char*, const sCKT*, bool = false);
-    bool IsVec(const char*, const sCKT*);
-    void VecSet(const char*, const char*, bool = false, const char** = 0);
-    void LoadFile(const char**, bool);
-    void SetCurPlot(const char*);
-    void PushPlot();
-    void PopPlot();
-    void RemovePlot(const char*, bool = false);
-    void RemovePlot(sPlot*);
-    bool PlotPrefix(const char*, const char*);
-    void VecGc(bool = false);
-    bool VecEq(sDataVec*, sDataVec*);
-    void VecPrintList(wordlist*, char**);
-
     // Access to private members.
 
     const char *Simulator()         { return (ft_simulator); }
@@ -760,15 +669,6 @@ struct IFsimulator
 
     IFanalysis *CurAnalysis()       { return (ft_cur_analysis); }
     void SetCurAnalysis(IFanalysis *a) { ft_cur_analysis = a; }
-    sPlot *CurPlot()                { return (ft_plot_cur); }
-    void SetCurPlot(sPlot *p)       { ft_plot_cur = p; }
-    sPlot *PlotList()               { return (ft_plot_list); }
-    void SetPlotList(sPlot *p)      { ft_plot_list = p; }
-    sPlot *CxPlot()                 { return (ft_plot_cx); }
-    void SetCxPlot(sPlot *p)        { ft_plot_cx = p; }
-    sPlotList *CxPlotList()         { return (ft_cxplots); }
-
-    IFoutfile *GetOutDesc()         { return (&ft_outfile); }
 
     void PushFPEinhibit()           { ft_fpe_inhibit++; }
     void PopFPEinhibit()            { if (ft_fpe_inhibit) ft_fpe_inhibit--; }
@@ -808,12 +708,6 @@ private:
     sFtCirc *ft_circuits;       // List head for circuits
 
     IFanalysis *ft_cur_analysis; // The most recent analysis started.
-    sPlot *ft_plot_cur;         // The "current" (default) plot
-    sPlot *ft_plot_list;        // List head for plots
-    sPlot *ft_plot_cx;          // Plot when starting .control's
-    sPlotList *ft_cxplots;      // Context plot list
-
-    IFoutfile ft_outfile;       // Batch output description
 
     int ft_fpe_inhibit;         // Longjmp on SIGFPE inhibited when nonzero
 

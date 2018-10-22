@@ -39,11 +39,11 @@
  *========================================================================*/
 
 #include "config.h"
+#include "frontend.h"
 #include "outplot.h"
 #include "outdata.h"
 #include "cshell.h"
 #include "commands.h"
-#include "frontend.h"
 #include "keywords.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
@@ -368,7 +368,7 @@ struct KWent_curplot : public KWent
                 error_pr(word, 0, "a string");
                 return;
             }
-            Sp.SetCurPlot(v->string());
+            OP.setCurPlot(v->string());
         }
         KWent::callback(isset, v);
     }
@@ -2958,10 +2958,10 @@ struct KWent_rawfile : public KWent
                 error_pr(word, 0, "a string");
                 return;
             }
-            Sp.GetOutDesc()->set_outFile(v->string());
+            OP.getOutDesc()->set_outFile(v->string());
         }
         else
-            Sp.GetOutDesc()->set_outFile(0);
+            OP.getOutDesc()->set_outFile(0);
         CP.RawVarSet(word, isset, v);
         KWent::callback(isset, v);
     }
@@ -2988,10 +2988,10 @@ struct KWent_rawfileprec : public KWent
                 error_pr(word, 0, pr_integer((int)min, (int)max));
                 return;
             }
-            Sp.GetOutDesc()->set_outNdgts(v->integer());
+            OP.getOutDesc()->set_outNdgts(v->integer());
         }
         else
-            Sp.GetOutDesc()->set_outNdgts(0);
+            OP.getOutDesc()->set_outNdgts(0);
         CP.RawVarSet(word, isset, v);
         KWent::callback(isset, v);
     }
@@ -3729,8 +3729,8 @@ namespace {
     //
     bool checknset(const char *name, bool isset, variable *v)
     {
-        if (Sp.CurPlot()) {
-            for (variable *tv = Sp.CurPlot()->environment(); tv;
+        if (OP.curPlot()) {
+            for (variable *tv = OP.curPlot()->environment(); tv;
                     tv = tv->next()) {
                 if (lstring::cieq(tv->name(), name)) {
                     GRpkgIf()->ErrPrintf(ET_ERROR,

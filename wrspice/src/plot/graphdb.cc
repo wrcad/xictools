@@ -46,6 +46,7 @@ Authors: 1987 UCB
 ****************************************************************************/
 
 #include "outplot.h"
+#include "outdata.h"
 #include "cshell.h"
 #include "frontend.h"
 #include "ftedebug.h"
@@ -130,8 +131,9 @@ SPgraphics::DestroyGraph(int id)
         if (list->id() == id) {  // found it
 
             // Fix the iplot list
-            sDbComm *d;
-            for (d = DB.iplots(); d && d->graphid() != id; d = d->next()) ;
+            sDbComm *d = OP.debugs()->iplots();
+            while (d && d->graphid() != id)
+                d = d->next();
             if (!d) {
                 for (sFtCirc *f = Sp.CircuitList(); f; f = f->next()) {
                     if (f->debugs()) {

@@ -54,6 +54,7 @@ Authors: 1985 Wayne A. Christopher
 #include "circuit.h"
 #include "fteparse.h"
 #include "outplot.h"
+#include "outdata.h"
 #include "keywords.h"
 #include "optdefs.h"
 #include "statdefs.h"
@@ -190,7 +191,7 @@ IFsimulator::PreInit()
     // The ft_constants are real values only.
     for (sConstant *c = ft_constants; c->name; c++) {
         if (!c->units)
-            VecSet(c->name, "1", true);
+            OP.vecSet(c->name, "1", true);
         else {
             char buf[64];
             char *ss = buf;
@@ -205,14 +206,14 @@ IFsimulator::PreInit()
                 *ss++ = *tt++;
             }
             *ss = 0;
-            VecSet(c->name, buf, true);
+            OP.vecSet(c->name, buf, true);
         }
-        sDataVec *v = VecGet(c->name, 0);
+        sDataVec *v = OP.vecGet(c->name, 0);
         v->set_realval(0, c->value);
     }
 
     // The complex constants (only one).
-    VecSet("const_j", "0,1", true);
+    OP.vecSet("const_j", "0,1", true);
 }
 
 
@@ -308,7 +309,7 @@ IFsimulator::Periodic()
     SetFlag(FT_INTERRUPT, false);
     CheckSpace();
     CheckAsyncJobs();
-    VecGc();
+    OP.vecGc();
 }
 
 

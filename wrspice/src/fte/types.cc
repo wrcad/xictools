@@ -48,6 +48,7 @@ Authors: 1986 Wayne A. Christopher
 #include "frontend.h"
 #include "commands.h"
 #include "ftedata.h"
+#include "outdata.h"
 #include "ttyio.h"
 #include "errors.h"
 #include "wlist.h"
@@ -199,7 +200,7 @@ CommandTab::com_settype(wordlist *wl)
     }
     for (wl = wl->wl_next; wl; wl = wl->wl_next) {
         // We only want permanent vectors.
-        sDataVec *v = Sp.VecGet(wl->wl_word, 0);
+        sDataVec *v = OP.vecGet(wl->wl_word, 0);
         if (!v || !(v->flags() & VF_PERMANENT))
             Sp.Error(E_NOVEC, 0, wl->wl_word);
         else {
