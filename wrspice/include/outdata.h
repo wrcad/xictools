@@ -68,6 +68,7 @@ struct sDbComm;
 struct sDebug;
 struct sSaveList;
 struct sDataVec;
+struct sJobc;
 struct pnode;
 
 enum OutcType
@@ -183,11 +184,10 @@ struct sCHECKprms : public sOUTcontrol
     static void execblock(sExBlk*, bool);
     FILE *df_open(int, char**, FILE**, sNames*);
 
-    // aspice.cc
-    void registerJob();
-    void endJob();
-    bool processReturn(const char*);
     int nextTask(int*, int*);
+    void registerJob();
+    bool processReturn(const char*);
+    void endJob();
 
     FILE *outfp()               const { return (ch_op); }
     void set_pflag(int i, int v) { ch_flags[i] = v; }
@@ -456,6 +456,9 @@ struct IFoutput
     double seconds();
     int error(ERRtype, const char*, ...);
 
+    // aspice.cc
+    void checkAsyncJobs();
+
     // breakp.cc
     void dbgStop(wordlist*);
     char *dbgStatus(bool);
@@ -512,6 +515,8 @@ struct IFoutput
     void setCxPlot(sPlot *p)    { o_plot_cx = p; }
     sPlotList *cxPlotList()     { return (o_cxplots); }
 
+    sJobc *jobc()               { return (o_jobc); }
+
     IFoutfile *getOutDesc()     { return (&o_outfile); }
 
     sMsg *msgs()                { return (o_msgs); }
@@ -523,12 +528,14 @@ private:
                             // finished.
     bool o_shouldstop;      // Tell simulator to stop next time it asks.
 
-    sPlot *o_plot_cur;      // The "current" (default) plot
-    sPlot *o_plot_list;     // List head for plots
-    sPlot *o_plot_cx;       // Plot when starting .control's
-    sPlotList *o_cxplots;   // Context plot list
+    sPlot *o_plot_cur;      // The "current" (default) plot.
+    sPlot *o_plot_list;     // List head for plots.
+    sPlot *o_plot_cx;       // Plot when starting .control's.
+    sPlotList *o_cxplots;   // Context plot list.
 
-    IFoutfile o_outfile;    // Batch output description
+    sJobc *o_jobc;          // Asynchronous/remote job control.
+
+    IFoutfile o_outfile;    // Batch output description.
 
     static sMsg o_msgs[];   // Error message prefixes.
 };

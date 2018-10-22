@@ -529,9 +529,6 @@ struct IFsimulator
     static void SigHdlr(int, void*, void*);
 #endif
 
-    // fte/aspice.cc
-    void CheckAsyncJobs();
-
     // fte/check.cc
     void MargAnalysis(wordlist*);
 

@@ -49,7 +49,6 @@ Authors: 1987 Wayne A. Christopher
 // Stuff for asynchronous spice runs.
 //
 
-#include "config.h"
 #include "spglobal.h"
 #include "frontend.h"
 #include "cshell.h"
@@ -64,8 +63,6 @@ Authors: 1987 Wayne A. Christopher
 #include "miscutil/filestat.h"
 #include "miscutil/childproc.h"
 
-#ifdef HAVE_SOCKET
-
 #include <sys/types.h>
 #ifdef WIN32
 #include "miscutil/msw.h"
@@ -77,18 +74,12 @@ Authors: 1987 Wayne A. Christopher
 #include <netdb.h>
 #endif
 
-#ifdef HAVE_SIGNAL
-#include <signal.h>
-#endif
-
 
 #ifdef WIN32
 #define CLOSESOCKET(x) shutdown(x, SD_SEND), closesocket(x)
 #else
 #define CLOSESOCKET(x) close(x)
 #endif
-
-namespace { sJobc Jobc; }
 
 
 // Start an asynchronous job.
@@ -118,7 +109,7 @@ CommandTab::com_aspice(wordlist *wl)
     char *output = 0;
     if (wl)
         output = wl->wl_word;
-    Jobc.submit_local(spicepath, 0, deck, Sp.CurCircuit(), 0, output);
+    OP.jobc()->submit_local(spicepath, 0, deck, Sp.CurCircuit(), 0, output);
 }
 
 
@@ -171,7 +162,7 @@ CommandTab::com_rspice(wordlist *wl)
     }
 
     if (!*rhost)
-        strcpy(rhost, Jobc.gethost());
+        strcpy(rhost, OP.jobc()->gethost());
     if (!*program) {
         VTvalue vv;
         if (Sp.GetVar(kw_rprogram, VTYP_STRING, &vv))
@@ -187,22 +178,66 @@ CommandTab::com_rspice(wordlist *wl)
             }
         }
     }
-    Jobc.submit(rhost, program, analysis, filename, Sp.CurCircuit(), 0);
+    OP.jobc()->submit(rhost, program, analysis, filename, Sp.CurCircuit(), 0);
     delete [] analysis;
 }
+
+
+/*XXX
+#define SUBMIT "/bin/csh /usr/bin/rspice"
+void
+CommandTab::com_rspice(wordlist *wl)
+{
+    char *input;
+    if (wl && !wl->wl_next)
+        input = wl->wl_word;
+    else {
+        GRpkgIf()->ErrPrintf(ET_ERROR,
+            "you must supply the input deck name.\n");
+        return;
+    }
+    char *output = filestat::make_temp("out");
+    char *raw = filestat::make_temp("raw");
+    GCarray<char*> gc_output(output);
+    GCarray<char*> gc_raw(raw);
+
+    TTY.printf("Running job, please wait. ");
+    TTY.flush();
+    char buf[BSIZE_SP];
+    sprintf(buf, "%s %s %s %s", SUBMIT, input, output, raw);
+    if (CP.System(buf) != 0)
+        return;
+
+    TTY.printf("done.\n\n");
+
+    FILE *fp;
+    if (!(fp = fopen(output, "r"))) {
+        GRpkgIf()->Perror(output);
+        return;
+    }
+    while (fgets(buf, BSIZE_SP, fp))
+        TTY.send(buf);
+    fclose(fp);
+    unlink(output);
+
+    const char *stmp = raw;
+    Sp.LoadFile(&stmp, false);
+    unlink(raw);
+}
+*/
 
 
 void
 CommandTab::com_rhost(wordlist *wl)
 {
-    Jobc.rhost(wl);
+    OP.jobc()->rhost(wl);
 }
 
 
 void
 CommandTab::com_jobs(wordlist*)
 {
-    Jobc.jobs();
+    OP.jobc()->jobs();
 }
 // End of CommandTab functions.
 
@@ -213,199 +248,11 @@ CommandTab::com_jobs(wordlist*)
 // whether the exit was normal or not.
 //
 void
-IFsimulator::CheckAsyncJobs()
+IFoutput::checkAsyncJobs()
 {
-    Jobc.check_jobs();
+    o_jobc->check_jobs();
 }
-// End of IFsimulator functions.
-
-
-void
-sCHECKprms::registerJob()
-{
-    Jobc.register_job(this);
-}
-
-
-// End the analysis, free storage.
-//
-void
-sCHECKprms::endJob()
-{
-    if (ch_op && ch_opname) {
-        TTY.printf_force(
-            "%s analysis complete.  Data in file %s.\n", ch_monte ?
-                "Monte Carlo" : "Operating range", ch_opname);
-    }
-
-    if (ch_tmpout) {
-        TTY.ioOverride(0, ch_op, 0);
-        fclose(ch_tmpout);
-        ch_tmpout = 0;
-        unlink(ch_tmpoutname);
-        delete [] ch_tmpoutname;
-        ch_tmpoutname = 0;
-    }
-    else {
-        if (ch_op && ch_op != TTY.outfile()) {
-            fclose(ch_op);
-            ch_op = 0;
-        }
-    }
-    GP.MpDone(ch_graphid);
-
-    if (ch_iterno > 0 && !ch_doall)
-        set_rangevec();
-    out_cir->set_check(0);
-    OP.endPlot(out_rundesc, true);
-}
-
-
-// Process the output from an asynchronous run.  If there is nothing
-// useful in the file, return true.
-//
-bool
-sCHECKprms::processReturn(const char *fname)
-{
-    FILE *fp = fopen(fname, "r");
-    if (!fp) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
-        return (true);
-    }
-
-    bool goodstuff = false;
-    char string1[80], string2[80], string3[80];
-    char buf[BSIZE_SP];
-    int num1 = 2*ch_step1 + 1;
-    while (fgets(buf, 80, fp)) {
-        int pf, d1, d2;
-        if (GP.MpParse(buf, &d1, &d2, string1, string2, string3)) {
-            goodstuff = true;
-            if (lstring::eq(string3, "PASS"))
-                pf = 1;
-            else
-                pf = 0;
-            bool mcrun = false;
-            if (lstring::eq(string1, "run")) {
-                sprintf(string2, "%d", 
-                    (d2 + ch_step2)*(2*ch_step1 + 1) + d1 + ch_step1);
-                mcrun = true;
-            }
-            if (GP.MpWhere(ch_graphid, d1, d2) && !ch_batchmode) {
-                if (mcrun)
-                    TTY.printf_force("%3d %3d %3s %3s\t\t%s\n", d1, d2,
-                        string1, string2, string3);
-                else
-                    TTY.printf_force("%3d %3d %12s %12s\t\t%s\n", d1, d2,
-                        string1, string2, string3);
-            }
-            GP.MpMark(ch_graphid, pf);
-            if (ch_op) {
-                if (mcrun)
-                    fprintf(ch_op,
-                        "[DATA] %3d %3d %3s %3s\t\t%s\n", d1, d2, string1,
-                        string2, string3);
-                else
-                    fprintf(ch_op,
-                        "[DATA] %3d %3d %12s %12s\t\t%s\n", d1, d2, string1,
-                        string2, string3);
-            }
-            char *flag = ch_flags + (d2 + ch_step2)*num1 + d1;
-            *flag = 1 + (1-pf);
-        }
-        else if (ch_op)
-            fprintf(ch_op, "%s", buf);
-    }
-    fclose(fp);
-    if (goodstuff)
-        return (false);
-    return (true);
-}
-
-
-// Compute the indices of the next trial.  Return true if no more
-// trials to do.
-//
-int
-sCHECKprms::nextTask(int *pi, int *pj)
-{
-    int i, j, last;
-    char *rowflags;
-    int num1 = 2*ch_step1 + 1;
-    if (ch_doall) {
-        for (j = -ch_step2; j <= ch_step2; j++) {
-            rowflags = ch_flags + (j + ch_step2)*num1;
-            for (i = -ch_step1; i <= ch_step1; i++, rowflags++) {
-                if (*rowflags) continue;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-        }
-        return (true);
-    }
-
-    // Find the range along the rows
-    if (ch_step1 > 0 || ch_step2 == 0) {
-        for (j = -ch_step2; j <= ch_step2; j++) {
-            rowflags = ch_flags + (j + ch_step2)*num1;
-            for (last = i = -ch_step1; i <= ch_step1; i++, rowflags++) {
-                if (*rowflags == 2) continue;
-                if (*rowflags == 1) break;
-                if (*rowflags == -1) break;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-            last = i;
-
-            rowflags = ch_flags + (j + ch_step2 + 1)*num1 - 1;
-            for (i = ch_step1; i > last; i--, rowflags--) {
-                if (*rowflags == 2) continue;
-                if (*rowflags == 1) break;
-                if (*rowflags == -1) break;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-        }
-    }
-
-    // Now check the columns, fill in any missing points.
-    //
-    if (ch_step2 > 0) {
-        for (i = -ch_step1; i <= ch_step1; i++) {
-            rowflags = ch_flags + i + ch_step1;
-            for (last = j = -ch_step2; j <= ch_step2;
-                    j++, rowflags += num1) {
-                if (*rowflags == 2) continue;
-                if (*rowflags == 1) break;
-                if (*rowflags == -1) break;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-            last = j;
-
-            rowflags = ch_flags + i + ch_step1 + 2*ch_step2*num1;
-            for (j = ch_step2; j > last; j--, rowflags -= num1) {
-                if (*rowflags == 2) continue;
-                if (*rowflags == 1) break;
-                if (*rowflags == -1) break;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-        }
-    }
-    return (true);
-}
-// End of sCHECKprms functions.
+// End of IFoutput functions.
 
 
 void
@@ -537,7 +384,7 @@ sJobc::check_jobs()
         }
         if (p == 0) {
             GRpkgIf()->ErrPrintf(ET_INTERR,
-                "CheckAsyncJobs: process %d not found.\n", pid);
+                "checkAsyncJobs: process %d not found.\n", pid);
             here = false;
             return;
         }
@@ -1275,7 +1122,7 @@ sJobc::th_hdlr(void *arg)
             GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
                 Jobc.jc_numchanged);
         if (CP.GetFlag(CP_CWAIT))
-            Sp.CheckAsyncJobs();
+            OP.checkAsyncJobs();
         return;
     }
     int i;
@@ -1294,7 +1141,7 @@ sJobc::th_hdlr(void *arg)
         GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
             Jobc.jc_numchanged);
     if (CP.GetFlag(CP_CWAIT))
-        Sp.CheckAsyncJobs();
+        OP.checkAsyncJobs();
 }
 
 
@@ -1317,7 +1164,7 @@ sJobc::th_local_hdlr(void *arg)
         GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
             Jobc.jc_numchanged);
     if (CP.GetFlag(CP_CWAIT))
-        Sp.CheckAsyncJobs();
+        OP.checkAsyncJobs();
     delete t;
 }
 
@@ -1328,107 +1175,29 @@ void
 sJobc::sigchild(int pid, int status, void*)
 {
     if (WIFEXITED(status)) {
-        Jobc.jc_numchanged++;
-        Jobc.add_done(pid, WEXITSTATUS(status));
+        OP.jobc()->jc_numchanged++;
+        OP.jobc()->add_done(pid, WEXITSTATUS(status));
         if (Sp.GetFlag(FT_ASYNCDB)) {
             GRpkgIf()->ErrPrintf(ET_MSG,
                 "process %d exited with status %d.\n",
                 pid, WEXITSTATUS(status));
         }
         if (CP.GetFlag(CP_CWAIT))
-            Sp.CheckAsyncJobs();
+            OP.checkAsyncJobs();
     }
     else if (WIFSIGNALED(status)) {
-        Jobc.jc_numchanged++;
-        Jobc.add_done(pid, -1);
+        OP.jobc()->jc_numchanged++;
+        OP.jobc()->add_done(pid, -1);
         if (Sp.GetFlag(FT_ASYNCDB)) {
             GRpkgIf()->ErrPrintf(ET_MSG,
                 "process %d terminated by signal %d.\n",
                 pid, WIFSIGNALED(status));
         }
         if (CP.GetFlag(CP_CWAIT))
-            Sp.CheckAsyncJobs();
+            OP.checkAsyncJobs();
     }
 }
 
 #endif
 // End of sJobc functions.
-
-
-#else // HAVE_SOCKET
-
-#define SUBMIT "/bin/csh /usr/bin/rspice"
-
-namespace {
-    const char *nyet = "Asynchronous spice %s are not available.\n";
-}
-
-
-void
-CommandTab::com_aspice(wordlist*)
-{
-    GRpkgIf()->ErrPrintf(ET_MSG, nyet, "runs");
-}
-
-
-void
-CommandTab::com_rspice(wordlist *wl)
-{
-    char *input;
-    if (wl && !wl->wl_next)
-        input = wl->wl_word;
-    else {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
-            "you must supply the input deck name.\n");
-        return;
-    }
-    char *output = filestat::make_temp("out");
-    char *raw = filestat::make_temp("raw");
-    GCarray<char*> gc_output(output);
-    GCarray<char*> gc_raw(raw);
-
-    TTY.printf("Running job, please wait. ");
-    TTY.flush();
-    char buf[BSIZE_SP];
-    sprintf(buf, "%s %s %s %s", SUBMIT, input, output, raw);
-    if (CP.System(buf) != 0)
-        return;
-
-    TTY.printf("done.\n\n");
-
-    FILE *fp;
-    if (!(fp = fopen(output, "r"))) {
-        GRpkgIf()->Perror(output);
-        return;
-    }
-    while (fgets(buf, BSIZE_SP, fp))
-        TTY.send(buf);
-    fclose(fp);
-    unlink(output);
-
-    const char *stmp = raw;
-    Sp.LoadFile(&stmp, false);
-    unlink(raw);
-}
-
-
-void
-CommandTab::com_jobs(wordlist*)
-{
-    GRpkgIf()->ErrPrintf(ET_MSG, nyet, "jobs");
-}
-
-
-void IFsimulator::CheckAsyncJobs()
-{
-}
-
-
-void
-sCHECKprms::registerJob()
-{
-    GRpkgIf()->ErrPrintf(ET_MSG, nyet, "jobs");
-}
-
-#endif // HAVE_SOCKET
 

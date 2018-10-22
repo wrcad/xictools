@@ -55,6 +55,7 @@ Authors: 1988 Wayne A. Christopher
 #include "outdata.h"
 #include "device.h"
 #include "rundesc.h"
+#include "aspice.h"
 #include "toolbar.h"
 #include "spnumber/hash.h"
 #include "miscutil/pathlist.h"
@@ -87,6 +88,8 @@ IFoutput::IFoutput()
     o_plot_list     = sPlot::constants();
     o_plot_cx       = 0;
     o_cxplots       = 0;
+
+    o_jobc          = new sJobc;
 
     o_outfile.set_outFile("rawspice.raw");
 }

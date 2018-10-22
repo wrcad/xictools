@@ -308,7 +308,7 @@ IFsimulator::Periodic()
 {
     SetFlag(FT_INTERRUPT, false);
     CheckSpace();
-    CheckAsyncJobs();
+    OP.checkAsyncJobs();
     OP.vecGc();
 }
 

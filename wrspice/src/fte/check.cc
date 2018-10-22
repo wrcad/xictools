@@ -52,6 +52,7 @@
 #include "toolbar.h"
 #include "psffile.h"
 #include "trnames.h"
+#include "aspice.h"
 #include "spnumber/hash.h"
 #include "miscutil/filestat.h"
 #include <stdarg.h>
@@ -1945,6 +1946,195 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
     return (fp);
 }
 
+
+// Compute the indices of the next trial.  Return true if no more
+// trials to do.
+//
+int
+sCHECKprms::nextTask(int *pi, int *pj)
+{
+    int i, j, last;
+    char *rowflags;
+    int num1 = 2*ch_step1 + 1;
+    if (ch_doall) {
+        for (j = -ch_step2; j <= ch_step2; j++) {
+            rowflags = ch_flags + (j + ch_step2)*num1;
+            for (i = -ch_step1; i <= ch_step1; i++, rowflags++) {
+                if (*rowflags) continue;
+                *rowflags = -1;
+                *pi = i;
+                *pj = j;
+                return (false);
+            }
+        }
+        return (true);
+    }
+
+    // Find the range along the rows
+    if (ch_step1 > 0 || ch_step2 == 0) {
+        for (j = -ch_step2; j <= ch_step2; j++) {
+            rowflags = ch_flags + (j + ch_step2)*num1;
+            for (last = i = -ch_step1; i <= ch_step1; i++, rowflags++) {
+                if (*rowflags == 2) continue;
+                if (*rowflags == 1) break;
+                if (*rowflags == -1) break;
+                *rowflags = -1;
+                *pi = i;
+                *pj = j;
+                return (false);
+            }
+            last = i;
+
+            rowflags = ch_flags + (j + ch_step2 + 1)*num1 - 1;
+            for (i = ch_step1; i > last; i--, rowflags--) {
+                if (*rowflags == 2) continue;
+                if (*rowflags == 1) break;
+                if (*rowflags == -1) break;
+                *rowflags = -1;
+                *pi = i;
+                *pj = j;
+                return (false);
+            }
+        }
+    }
+
+    // Now check the columns, fill in any missing points.
+    //
+    if (ch_step2 > 0) {
+        for (i = -ch_step1; i <= ch_step1; i++) {
+            rowflags = ch_flags + i + ch_step1;
+            for (last = j = -ch_step2; j <= ch_step2;
+                    j++, rowflags += num1) {
+                if (*rowflags == 2) continue;
+                if (*rowflags == 1) break;
+                if (*rowflags == -1) break;
+                *rowflags = -1;
+                *pi = i;
+                *pj = j;
+                return (false);
+            }
+            last = j;
+
+            rowflags = ch_flags + i + ch_step1 + 2*ch_step2*num1;
+            for (j = ch_step2; j > last; j--, rowflags -= num1) {
+                if (*rowflags == 2) continue;
+                if (*rowflags == 1) break;
+                if (*rowflags == -1) break;
+                *rowflags = -1;
+                *pi = i;
+                *pj = j;
+                return (false);
+            }
+        }
+    }
+    return (true);
+}
+
+
+void
+sCHECKprms::registerJob()
+{
+    OP.jobc()->register_job(this);
+}
+
+
+// Process the output from an asynchronous run.  If there is nothing
+// useful in the file, return true.
+//
+bool
+sCHECKprms::processReturn(const char *fname)
+{
+    FILE *fp = fopen(fname, "r");
+    if (!fp) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
+        return (true);
+    }
+
+    bool goodstuff = false;
+    char string1[80], string2[80], string3[80];
+    char buf[BSIZE_SP];
+    int num1 = 2*ch_step1 + 1;
+    while (fgets(buf, 80, fp)) {
+        int pf, d1, d2;
+        if (GP.MpParse(buf, &d1, &d2, string1, string2, string3)) {
+            goodstuff = true;
+            if (lstring::eq(string3, "PASS"))
+                pf = 1;
+            else
+                pf = 0;
+            bool mcrun = false;
+            if (lstring::eq(string1, "run")) {
+                sprintf(string2, "%d", 
+                    (d2 + ch_step2)*(2*ch_step1 + 1) + d1 + ch_step1);
+                mcrun = true;
+            }
+            if (GP.MpWhere(ch_graphid, d1, d2) && !ch_batchmode) {
+                if (mcrun)
+                    TTY.printf_force("%3d %3d %3s %3s\t\t%s\n", d1, d2,
+                        string1, string2, string3);
+                else
+                    TTY.printf_force("%3d %3d %12s %12s\t\t%s\n", d1, d2,
+                        string1, string2, string3);
+            }
+            GP.MpMark(ch_graphid, pf);
+            if (ch_op) {
+                if (mcrun)
+                    fprintf(ch_op,
+                        "[DATA] %3d %3d %3s %3s\t\t%s\n", d1, d2, string1,
+                        string2, string3);
+                else
+                    fprintf(ch_op,
+                        "[DATA] %3d %3d %12s %12s\t\t%s\n", d1, d2, string1,
+                        string2, string3);
+            }
+            char *flag = ch_flags + (d2 + ch_step2)*num1 + d1;
+            *flag = 1 + (1-pf);
+        }
+        else if (ch_op)
+            fprintf(ch_op, "%s", buf);
+    }
+    fclose(fp);
+    if (goodstuff)
+        return (false);
+    return (true);
+}
+
+
+// End the analysis, free storage.
+//
+void
+sCHECKprms::endJob()
+{
+    if (ch_op && ch_opname) {
+        TTY.printf_force(
+            "%s analysis complete.  Data in file %s.\n", ch_monte ?
+                "Monte Carlo" : "Operating range", ch_opname);
+    }
+
+    if (ch_tmpout) {
+        TTY.ioOverride(0, ch_op, 0);
+        fclose(ch_tmpout);
+        ch_tmpout = 0;
+        unlink(ch_tmpoutname);
+        delete [] ch_tmpoutname;
+        ch_tmpoutname = 0;
+    }
+    else {
+        if (ch_op && ch_op != TTY.outfile()) {
+            fclose(ch_op);
+            ch_op = 0;
+        }
+    }
+    GP.MpDone(ch_graphid);
+
+    if (ch_iterno > 0 && !ch_doall)
+        set_rangevec();
+    out_cir->set_check(0);
+    OP.endPlot(out_rundesc, true);
+}
+
+
+// Remaining functions are private.
 
 // Create a vector and a scale for the plot which gives the computed
 // boundary of the pass region.  This happens only when checkiterate
