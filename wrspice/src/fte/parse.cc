@@ -767,7 +767,7 @@ pnode::checktree() const
             // We allow "temper" and names from the constants plot
             // only.
             if (!lstring::eq(pn_string, "temper") &&
-                    !sPlot::constants()->find_vec(pn_string)) {
+                    OP.constants()->find_vec(pn_string)) {
                 if (!ret)
                     ret = 1;
             }

@@ -226,7 +226,7 @@ IFsimulator::PostInit()
     post_init_done = true;
 
     // Fix case sensitivity of the constants plot.
-    sPlot::constants()->set_case(sHtab::get_ciflag(CSE_VEC));
+    OP.constants()->set_case(sHtab::get_ciflag(CSE_VEC));
 
     if (!CP.GetFlag(CP_NOCC)) {
         // Add commands...

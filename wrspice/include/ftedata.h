@@ -924,8 +924,6 @@ struct sPlot
 
     wordlist *notes()                       const { return (pl_notes); }
 
-    static sPlot *constants()               { return (pl_constants); }
-
 private:
 
     char *pl_title;         // The title card.
@@ -952,15 +950,10 @@ private:
     int pl_ndims;           // Number of dimensions.
     bool pl_active;         // True when the plot is being used.
     bool pl_written;        // Some or all of the vecs have been saved.
-
-    static sPlot *pl_constants;  // Pointer to the "constants" plot.
 };
 
 // fourier.cc
 extern double *FFTwindow(int, double*, double);
-
-// vectors.cc
-extern sPlot *constantplot;
 
 #endif // FTEDATA_H
 

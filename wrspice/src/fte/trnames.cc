@@ -134,12 +134,13 @@ namespace {
 void
 sNames::set_input(sFtCirc *out_cir, sPlot *out_plot, double v1, double v2)
 {
-/*XXX
     sFtCirc *cir = Sp.CurCircuit();
-    sPlot *plt = Sp.CurPlot();
+    sPlot *plt = OP.curPlot();
     Sp.SetCurCircuit(out_cir);
-    Sp.SetCurPlot(out_plot);
-*/
+    OP.setCurPlot(out_plot);
+
+//XXX Do we use trial_deferred?  If the SetVar calls apply to
+// vectors, maybe need the switching above?
 
     out_cir->set_use_trial_deferred(true);
     Sp.SetVar(n_value1, v1);
@@ -175,10 +176,8 @@ sNames::set_input(sFtCirc *out_cir, sPlot *out_plot, double v1, double v2)
         if (ix1 >= 0)
             d->set_realval(ix1, v1);
     }
-/*XXX
     Sp.SetCurCircuit(cir);
-    Sp.SetCurPlot(plt);
-*/
+    OP.setCurPlot(plt);
 }
 
 
@@ -191,8 +190,8 @@ void
 sNames::setup_newplot(sFtCirc *out_cir, sPlot *out_plot)
 {
     if (!out_plot)
-        out_plot = sPlot::constants();
-    if (out_plot == sPlot::constants())
+        out_plot = OP.constants();
+    if (out_plot == OP.constants())
         return;
     sFtCirc *cir = Sp.CurCircuit();
     sPlot *plt = OP.curPlot();

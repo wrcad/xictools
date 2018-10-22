@@ -63,27 +63,6 @@ Authors: 1985 Wayne A. Christopher
 //
 
 
-namespace {
-    // Where 'constants' go when defined on initialization.
-    //
-    struct sConstPlot : public sPlot
-    {
-        sConstPlot() : sPlot(0) {
-            set_title("Constant values");
-            set_date(datestring());
-            set_name("constants");
-            set_type_name("constants");
-            set_written(true);
-        }
-    };
-    sConstPlot constplot;
-}
-
-// XXX put this in IFoutput?
-// Export the "constants" plot.
-sPlot *sPlot::pl_constants = &constplot;
-
-
 // Set the current working plot.
 //
 void
@@ -231,7 +210,7 @@ CommandTab::com_combine(wordlist*)
         GRpkgIf()->ErrPrintf(ET_INTERR, "no plots in list!\n");
         return;
     }
-    if (OP.plotList() == sPlot::constants()) {
+    if (OP.plotList() == OP.constants()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "can't combine constants plot.\n");
         return;
     }
@@ -239,7 +218,7 @@ CommandTab::com_combine(wordlist*)
         GRpkgIf()->ErrPrintf(ET_ERROR, "no plot to combine.\n");
         return;
     }
-    if (OP.plotList()->next_plot() == sPlot::constants()) {
+    if (OP.plotList()->next_plot() == OP.constants()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "can't combine constants plot.\n");
         return;
     }
@@ -504,19 +483,19 @@ IFoutput::removePlot(const char *name, bool all_for_cir)
             npl = pl->next_plot();
             if (pl->active())
                 active = true;
-            if (pl != sPlot::constants() && !pl->active())
+            if (pl != o_constants && !pl->active())
                 pl->destroy();
         }
         if (active)
             GRpkgIf()->ErrPrintf(ET_WARN, "Active plot(s) not deleted.\n");
-        setCurPlot(sPlot::constants());
+        setCurPlot(o_constants);
     }
     else  {
         if (all_for_cir) {
             char *cname = 0;
             for (sPlot *pl = o_plot_list; pl; pl = pl->next_plot()) {
                 if (lstring::eq(pl->type_name(), name)) {
-                    if (pl == sPlot::constants()) {
+                    if (pl == o_constants) {
                         GRpkgIf()->ErrPrintf(ET_WARN,
                             "Constants plot not deleted.\n");
                         return;
@@ -533,7 +512,7 @@ IFoutput::removePlot(const char *name, bool all_for_cir)
                     if (pl->title() && lstring::eq(cname, pl->title())) {
                         if (pl->active())
                             active = true;
-                        else if (pl != sPlot::constants())
+                        else if (pl != o_constants)
                             pl->destroy();
                     }
                 }
@@ -550,11 +529,11 @@ IFoutput::removePlot(const char *name, bool all_for_cir)
                 if (lstring::eq(pl->type_name(), name))
                     break;
             }
-            if (pl && !pl->active() && pl != sPlot::constants())
+            if (pl && !pl->active() && pl != o_constants)
                 pl->destroy();
             else if (pl && pl->active())
                 GRpkgIf()->ErrPrintf(ET_WARN, "Active plot not deleted.\n");
-            else if (pl == sPlot::constants())
+            else if (pl == o_constants)
                 GRpkgIf()->ErrPrintf(ET_WARN, "Constants plot not deleted.\n");
         }
     }
@@ -570,7 +549,7 @@ IFoutput::removePlot(sPlot *plot)
             "Can't delete active plot, reset analysis first.\n");
         return;
     }
-    if (plot == sPlot::constants()) {
+    if (plot == o_constants) {
         GRpkgIf()->ErrPrintf(ET_MSG, "Can't delete constants plot.\n");
         return;
     }
@@ -812,7 +791,7 @@ sPlot::sPlot(const char *n)
 
 sPlot::~sPlot()
 {
-    if (this == pl_constants)
+    if (this == OP.constants())
         return;
     // clear temporary dvecs
     sDataVec *v, *nv;
@@ -1021,7 +1000,7 @@ sPlot::remove_vec(const char *vname)
 {
     const char *msg = "can't remove %s from %s plot.\n";
     if (lstring::cieq(vname, "all")) {
-        if (this == pl_constants) {
+        if (this == OP.constants()) {
             GRpkgIf()->ErrPrintf(ET_ERROR, msg, vname, "constants");
             return;
         }
@@ -1060,7 +1039,7 @@ sPlot::remove_vec(const char *vname)
     sDataVec *v = get_perm_vec(vname);
     if (!v)
         return;
-    if (this == pl_constants && (v->flags() & VF_READONLY)) {
+    if (this == OP.constants() && (v->flags() & VF_READONLY)) {
         GRpkgIf()->ErrPrintf(ET_ERROR, msg, vname, "constants");
         return;
     }
@@ -1283,7 +1262,7 @@ sPlot::destroy()
     if (!tplot)
         return;
 
-    if (this == pl_constants) {
+    if (this == OP.constants()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "can't destroy the constants plot.\n");
         return;
     }

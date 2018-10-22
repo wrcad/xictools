@@ -141,7 +141,7 @@ sPlots::pl_actions(GtkWidget *caller, void *client_data)
         OP.setCurPlot("new");
     else if (client_data == (void*)2) {
         // 'Delete' button pressed, ask for confirmation.
-        if (OP.curPlot() == sPlot::constants())
+        if (OP.curPlot() == OP.constants())
             GRpkgIf()->ErrPrintf(ET_ERROR, "can't destroy constants plot.\n");
         else
             TB()->RUsure(TB()->pl_shell, pl_dfunc);

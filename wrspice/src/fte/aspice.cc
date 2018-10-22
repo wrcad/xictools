@@ -183,50 +183,6 @@ CommandTab::com_rspice(wordlist *wl)
 }
 
 
-/*XXX
-#define SUBMIT "/bin/csh /usr/bin/rspice"
-void
-CommandTab::com_rspice(wordlist *wl)
-{
-    char *input;
-    if (wl && !wl->wl_next)
-        input = wl->wl_word;
-    else {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
-            "you must supply the input deck name.\n");
-        return;
-    }
-    char *output = filestat::make_temp("out");
-    char *raw = filestat::make_temp("raw");
-    GCarray<char*> gc_output(output);
-    GCarray<char*> gc_raw(raw);
-
-    TTY.printf("Running job, please wait. ");
-    TTY.flush();
-    char buf[BSIZE_SP];
-    sprintf(buf, "%s %s %s %s", SUBMIT, input, output, raw);
-    if (CP.System(buf) != 0)
-        return;
-
-    TTY.printf("done.\n\n");
-
-    FILE *fp;
-    if (!(fp = fopen(output, "r"))) {
-        GRpkgIf()->Perror(output);
-        return;
-    }
-    while (fgets(buf, BSIZE_SP, fp))
-        TTY.send(buf);
-    fclose(fp);
-    unlink(output);
-
-    const char *stmp = raw;
-    Sp.LoadFile(&stmp, false);
-    unlink(raw);
-}
-*/
-
-
 void
 CommandTab::com_rhost(wordlist *wl)
 {

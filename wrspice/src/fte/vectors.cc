@@ -520,7 +520,7 @@ IFoutput::vecGet(const char *word, const sCKT *ckt, bool silent)
         // plot is wildcard
         sDvList *dl0 = 0, *dl = 0;
         for (pl = plotList(); pl; pl = pl->next_plot()) {
-            if (pl == sPlot::constants())
+            if (pl == o_constants)
                 continue;
             d = pl->find_vec(word);
             if (d) {
@@ -558,10 +558,10 @@ IFoutput::vecGet(const char *word, const sCKT *ckt, bool silent)
     else
         pl = curPlot();
 
-    if (cxPlot() && cxPlot() != pl && cxPlot() != sPlot::constants())
+    if (cxPlot() && cxPlot() != pl && cxPlot() != o_constants)
         d = cxPlot()->find_vec(word);
     if (!d)
-        d = sPlot::constants()->find_vec(word);
+        d = o_constants->find_vec(word);
     if (d)
         return (d);
 
@@ -774,10 +774,10 @@ IFoutput::isVec(const char *word, const sCKT *ckt)
     else
         pl = curPlot();
 
-    if (cxPlot() && cxPlot() != pl && cxPlot() != sPlot::constants())
+    if (cxPlot() && cxPlot() != pl && cxPlot() != o_constants)
         d = cxPlot()->find_vec(word);
     if (!d)
-        d = sPlot::constants()->find_vec(word);
+        d = o_constants->find_vec(word);
     if (d)
         return (true);
 

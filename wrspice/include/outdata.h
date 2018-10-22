@@ -514,6 +514,7 @@ struct IFoutput
     sPlot *cxPlot()             { return (o_plot_cx); }
     void setCxPlot(sPlot *p)    { o_plot_cx = p; }
     sPlotList *cxPlotList()     { return (o_cxplots); }
+    sPlot *constants()          { return (o_constants); }
 
     sJobc *jobc()               { return (o_jobc); }
 
@@ -532,6 +533,7 @@ private:
     sPlot *o_plot_list;     // List head for plots.
     sPlot *o_plot_cx;       // Plot when starting .control's.
     sPlotList *o_cxplots;   // Context plot list.
+    sPlot *o_constants;     // The "constants" plot.
 
     sJobc *o_jobc;          // Asynchronous/remote job control.
 

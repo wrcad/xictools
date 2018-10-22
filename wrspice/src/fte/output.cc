@@ -78,16 +78,34 @@ extern int StateInitialized;  // security
 // Main functions for dumping simulation output.
 //
 
+namespace {
+    // Where 'constants' go when defined on initialization.
+    //
+    struct sConstPlot : public sPlot
+    {
+        sConstPlot() : sPlot(0) {
+            set_title("Constant values");
+            set_date(datestring());
+            set_name("constants");
+            set_type_name("constants");
+            set_written(true);
+        }
+    };
+    sConstPlot constplot;
+}
+
+
 IFoutput::IFoutput()
 {
     o_debugs        = new sDebug;
     o_endit         = false;
     o_shouldstop    = false;
 
-    o_plot_cur      = sPlot::constants();
-    o_plot_list     = sPlot::constants();
+    o_plot_cur      = &constplot;
+    o_plot_list     = &constplot;
     o_plot_cx       = 0;
     o_cxplots       = 0;
+    o_constants     = &constplot;
 
     o_jobc          = new sJobc;
 

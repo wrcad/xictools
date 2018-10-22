@@ -92,11 +92,11 @@ CommandTab::com_diff(wordlist *wl)
     if (Sp.GetVar(kw_diff_reltol, VTYP_REAL, &vv))
         reltol = vv.get_real();
 
-    // Let's try to be clever about defaults
+    // Let's try to be clever about defaults.
     sPlot *p1 = 0;
     if (!wl || !wl->wl_next) {
         p1 = OP.curPlot();
-        if (p1 == sPlot::constants()) {
+        if (p1 == OP.constants()) {
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "invalid current plot (constants).\n");
             return;
@@ -105,7 +105,7 @@ CommandTab::com_diff(wordlist *wl)
 
     sPlot *p2 = 0;
     if (!wl) {
-        // try the current and previous plot of same name
+        // Try the current and previous plot of same name.
         for (p2 = p1->next_plot(); p2 && !lstring::eq(p1->name(), p2->name());
             p2 = p2->next_plot()) ;
         if (!p2) {
@@ -117,12 +117,12 @@ CommandTab::com_diff(wordlist *wl)
     }
 
     else if (!wl->wl_next) {
-        // try current and named plot
+        // Try current and named plot.
         for (p2 = OP.plotList(); p2 &&
                 !lstring::eq(p2->type_name(), wl->wl_word);
                 p2 = p2->next_plot()) ;
 
-        if (!p2 || p2 == sPlot::constants()) {
+        if (!p2 || p2 == OP.constants()) {
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "invalid plot \"%s\".\n", wl->wl_word);
             return;
