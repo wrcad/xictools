@@ -71,6 +71,7 @@ const char *kw_before = "before";
 const char *kw_when   = "when";
 const char *kw_active = "active";
 const char *kw_inactive = "inactive";
+const char *kw_call   = "call";
 
 
 // Step a number of output increments.
@@ -133,6 +134,13 @@ namespace {
         }
         return (true);
     }
+
+    bool is_kw(const char *s)
+    {
+        return (lstring::cieq(s, kw_after) || lstring::cieq(s, kw_at) ||
+            lstring::cieq(s, kw_before) || lstring::cieq(s, kw_when) ||
+            lstring::cieq(s, kw_call));
+    }
 }
 
 
@@ -166,6 +174,25 @@ IFoutput::dbgStop(wordlist *wl)
             if (pt) {
                 int i = 0;
                 for (wordlist *w = wl; w; w = w->wl_next) {
+                    if (!is_uint(w->wl_word))
+                        break;
+                    i++;
+                }
+                if (i) {
+                    int *ary = new int[i];
+                    i = 0;
+                    for ( ; wl; wl = wl->wl_next) {
+                        if (!is_uint(wl->wl_word))
+                            break;
+                        ary[i++] = atoi(wl->wl_word);
+                    }
+                    d->set_points(i, ary);
+                    continue;
+                }
+            }
+            else {
+                int i = 0;
+                for (wordlist *w = wl; w; w = w->wl_next) {
                     const char *word = w->wl_word;
                     int err;
                     IP.getFloat(&word, &err, true);
@@ -185,27 +212,12 @@ IFoutput::dbgStop(wordlist *wl)
                         ary[i++] = tmp;
                     }
                     d->set_points(i, ary);
+                    continue;
                 }
             }
-            else {
-                int i = 0;
-                for (wordlist *w = wl; w; w = w->wl_next) {
-                    if (!is_uint(w->wl_word))
-                        break;
-                    i++;
-                }
-                if (i) {
-                    int *ary = new int[i];
-                    i = 0;
-                    for ( ; wl; wl = wl->wl_next) {
-                        if (!is_uint(wl->wl_word))
-                            break;
-                        ary[i++] = atoi(wl->wl_word);
-                    }
-                    d->set_points(i, ary);
-                }
-            }
-            continue;
+            GRpkgIf()->ErrPrintf(ET_ERROR, "stop at: no targets found.\n");
+            sDbComm::destroy(thisone);
+            return;
         }
         if (lstring::eq(wl->wl_word, kw_after) ||
                 lstring::eq(wl->wl_word, kw_before)) {
@@ -222,56 +234,77 @@ IFoutput::dbgStop(wordlist *wl)
             if (wl) {
                 const char *word = wl->wl_word;
                 if (pt) {
-                    int err;
-                    double tmp = IP.getFloat(&word, &err, true);
-                    if (err != OK)
-                        goto bad;
-                    d->set_point(tmp);
+                    if (is_uint(word)) {
+                        d->set_point(atoi(word));
+                        wl = wl->wl_next;
+                        continue;
+                    }
                 }
                 else {
-                    if (!is_uint(word))
-                        goto bad;
-                    d->set_point(atoi(word));
+                    int err;
+                    double tmp = IP.getFloat(&word, &err, true);
+                    if (err == OK) {
+                        d->set_point(tmp);
+                        wl = wl->wl_next;
+                        continue;
+                    }
                 }
-                wl = wl->wl_next;
             }
-            continue;
+            GRpkgIf()->ErrPrintf(ET_ERROR, "stop %s: no target found.\n",
+               d->type() == DB_STOPBEFORE ? "before" : "after");
+            sDbComm::destroy(thisone);
+            return;
         }
         if (lstring::eq(wl->wl_word, kw_when)) {
             d->set_type(DB_STOPWHEN);
             wl = wl->wl_next;
-            if (!wl)
-                goto bad;
-            wordlist *wx;
-            int i;
-            for (i = 0, wx = wl; wx; wx = wx->wl_next) {
-                if (lstring::eq(wx->wl_word, kw_after) ||
-                        lstring::eq(wx->wl_word, kw_at) ||
-                        lstring::eq(wx->wl_word, kw_before) ||
-                        lstring::eq(wx->wl_word, kw_when))
-                    break;
-                i += strlen(wx->wl_word) + 1;
+            char *string = 0;
+            if (wl) {
+                wordlist *wx;
+                int i;
+                for (i = 0, wx = wl; wx; wx = wx->wl_next) {
+                    if (is_kw(wx->wl_word))
+                        break;
+                    i += strlen(wx->wl_word) + 1;
+                }
+                i++;
+                string = new char[i];
+                char *s = lstring::stpcpy(string, wl->wl_word);
+                for (wl = wl->wl_next; wl; wl = wl->wl_next) {
+                    if (is_kw(wl->wl_word))
+                        break;
+                    char *t = wl->wl_word;
+                    *s++ = ' ';
+                    while (*t)
+                        *s++ = *t++;
+                }
+                *s = '\0';
+                CP.Unquote(string);
+                if (!*string) {
+                    delete [] string;
+                    string = 0;
+                }
             }
-            i++;
-            char *string = new char[i];
-            char *s = lstring::stpcpy(string, wl->wl_word);
-            for (wl = wl->wl_next; wl; wl = wl->wl_next) {
-                if (lstring::eq(wl->wl_word, kw_after) ||
-                        lstring::eq(wl->wl_word, kw_at) ||
-                        lstring::eq(wl->wl_word, kw_before) ||
-                        lstring::eq(wl->wl_word, kw_when))
-                    break;
-                char *t = wl->wl_word;
-                *s++ = ' ';
-                while (*t)
-                    *s++ = *t++;
+            if (string) {
+                d->set_string(string);
+                continue;
             }
-            *s = '\0';
-            CP.Unquote(string);
-            d->set_string(string);
+            GRpkgIf()->ErrPrintf(ET_ERROR, "stop when: no expression found.\n");
+            sDbComm::destroy(thisone);
+            return;
         }
-        else
-            goto bad;
+        if (lstring::eq(wl->wl_word, kw_call)) {
+            wl = wl->wl_next;
+            const char *word = wl ? wl->wl_word : 0;
+            thisone->set_call(true, word);
+            if (wl)
+                wl = wl->wl_next;
+            continue;
+        }
+        GRpkgIf()->ErrPrintf(ET_ERROR,
+            "stop: unknown keyword following \"stop\".\n");
+        sDbComm::destroy(thisone);
+        return;
     }
     if (thisone) {
         thisone->set_number(o_debugs->new_count());
@@ -299,10 +332,6 @@ IFoutput::dbgStop(wordlist *wl)
         }
     }
     ToolBar()->UpdateTrace();
-    return;
-
-bad:
-    GRpkgIf()->ErrPrintf(ET_ERROR, "syntax.\n");
 }
 
 
@@ -944,11 +973,12 @@ sDbComm::should_stop(sRunDesc *run)
             }
         }
         else if (dt->db_type == DB_STOPAT) {
+            after = false;
             if (dt->db_ptmode) {
                 if (dt->db_index < dt->db_numpts &&
                         run->pointCount() >= dt->db_a.ipoints[dt->db_index]) {
                     dt->db_index++;
-                    after = false;
+                    after = true;;
                     break;
                 }
             }
@@ -956,7 +986,7 @@ sDbComm::should_stop(sRunDesc *run)
                 if (dt->db_index < dt->db_numpts &&
                         run->ref_value() >= dt->db_a.dpoints[dt->db_index]) {
                     dt->db_index++;
-                    after = false;
+                    after = true;;
                     break;
                 }
             }
@@ -1150,7 +1180,7 @@ sDbComm::printcond(char **retstr)
                 if (dt->db_ptmode)
                     sprintf(buf, msg1, kw_at, dt->db_a.ipoints[dt->db_index-1]);
                 else
-                    sprintf(buf, msg3, kw_at, dt->db_a.ipoints[dt->db_index-1]);
+                    sprintf(buf, msg3, kw_at, dt->db_a.dpoints[dt->db_index-1]);
             }
             else if (dt->db_type == DB_STOPBEFORE) {
                 if (dt->db_ptmode)

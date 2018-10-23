@@ -79,6 +79,7 @@ struct sDbComm
             db_next     = 0;
             db_also     = 0;
             db_string   = 0;
+            db_callfn   = 0;
             db_p.dpoint = 0.0;
             db_number   = 0;
             db_type     = DB_NONE;
@@ -87,6 +88,7 @@ struct sDbComm
             db_active   = false;
             db_bad      = false;
             db_ptmode   = false;
+            db_call     = false;
             db_index    = 0;
             db_numpts   = 0;
             db_a.dpoints= 0;
@@ -95,6 +97,7 @@ struct sDbComm
     ~sDbComm()
         {
             delete [] db_string;
+            delete [] db_callfn;
             if (db_ptmode)
                 delete [] db_a.ipoints;
             else
@@ -116,6 +119,14 @@ struct sDbComm
 
     const char *string()        { return (db_string); }
     void set_string(char *s)    { db_string = s; }
+
+    void set_call(bool b, const char *fn)
+        {
+            db_call = b;
+            char *nm = lstring::copy(fn);
+            delete [] db_callfn;
+            db_callfn = nm;
+        }
 
     void set_point(double d)
         {
@@ -175,6 +186,7 @@ private:
     sDbComm *db_next;           // List of active debugging commands.
     sDbComm *db_also;           // Link for conjunctions.
     char *db_string;            // Condition or node, text.
+    char *db_callfn;            // Name of script to call on stop.
     union {                     // Output point for test:
         double dpoint;          //   Value.
         int ipoint;             //   Plot point index.
@@ -186,6 +198,7 @@ private:
     bool db_active;             // True if active.
     bool db_bad;                // True if error.
     bool db_ptmode;             // Input to before/after/at in points.
+    bool db_call;               // Call script or bound codeblock on stop.
     int db_index;               // Index into the db_points array.
     int db_numpts;              // Size of the db_points array.
     union {                     // Array of points to test for "stop at".
