@@ -303,6 +303,7 @@ TFanalysis::tf_dcoperation(sCKT *ckt, int restart)
             IFvalue refval;
             refval.rValue = SRC(job->JOBdc.elt(0))->SRCdcValue;
             OP.appendData(job->JOBrun, &refval, &outdata);
+            OP.checkBreak(job->JOBrun, refval.rValue);
         }
         else
             OP.appendData(job->JOBrun, 0, &outdata);
@@ -433,8 +434,10 @@ TFanalysis::tf_acoperation(sCKT *ckt, int restart)
         unsigned int os = (outd->cycle - 1)*outd->numPts + outd->count;
         OP.insertData(ckt, job->JOBrun, &refval, &outdata, os);
     }
-    else
+    else {
         OP.appendData(job->JOBrun, &refval, &outdata);
+        OP.checkBreak(job->JOBrun, refval.rValue);
+    }
     outd->count++;
     return (OK);
 }

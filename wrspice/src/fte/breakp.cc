@@ -49,6 +49,7 @@ Authors: 1987 Wayne A. Christopher
 #include "fteparse.h"
 #include "ftedebug.h"
 #include "outplot.h"
+#include "input.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
@@ -116,6 +117,25 @@ CommandTab::com_delete(wordlist *wl)
 // End of CommandTab functions.
 
 
+namespace {
+    // Return true if s is a bare integer, perhaps with trailing white
+    // space.
+    //
+    bool is_uint(const char *s)
+    {
+        if (!s || !isdigit(*s))
+            return (false);
+        while (*++s) {
+            if (isspace(*s))
+                break;
+            if (!isdigit(*s))
+                return (false);
+        }
+        return (true);
+    }
+}
+
+
 // Set a breakpoint. Possible commands are:
 //  stop after|at|before n
 //  stop when expr
@@ -135,27 +155,86 @@ IFoutput::dbgStop(wordlist *wl)
         }
 
         // Figure out what the first condition is.
+        if (lstring::cieq(wl->wl_word, kw_at)) {
+            d->set_type(DB_STOPAT);
+            wl = wl->wl_next;
+            bool pt = false;
+            if (wl && lstring::ciprefix("p", wl->wl_word)) {
+                pt = true;
+                wl = wl->wl_next;
+            }
+            if (pt) {
+                int i = 0;
+                for (wordlist *w = wl; w; w = w->wl_next) {
+                    const char *word = w->wl_word;
+                    int err;
+                    IP.getFloat(&word, &err, true);
+                    if (err != OK)
+                        break;
+                    i++;
+                }
+                if (i) {
+                    double *ary = new double[i];
+                    i = 0;
+                    for ( ; wl; wl = wl->wl_next) {
+                        const char *word = wl->wl_word;
+                        int err;
+                        double tmp = IP.getFloat(&word, &err, true);
+                        if (err != OK)
+                            break;
+                        ary[i++] = tmp;
+                    }
+                    d->set_points(i, ary);
+                }
+            }
+            else {
+                int i = 0;
+                for (wordlist *w = wl; w; w = w->wl_next) {
+                    if (!is_uint(w->wl_word))
+                        break;
+                    i++;
+                }
+                if (i) {
+                    int *ary = new int[i];
+                    i = 0;
+                    for ( ; wl; wl = wl->wl_next) {
+                        if (!is_uint(wl->wl_word))
+                            break;
+                        ary[i++] = atoi(wl->wl_word);
+                    }
+                    d->set_points(i, ary);
+                }
+            }
+            continue;
+        }
         if (lstring::eq(wl->wl_word, kw_after) ||
-                lstring::eq(wl->wl_word, kw_at) ||
                 lstring::eq(wl->wl_word, kw_before)) {
             if (lstring::eq(wl->wl_word, kw_after))
                 d->set_type(DB_STOPAFTER);
-            else if (lstring::eq(wl->wl_word, kw_at))
-                d->set_type(DB_STOPAT);
             else
                 d->set_type(DB_STOPBEFORE);
-            int i = 0;
             wl = wl->wl_next;
+            bool pt = false;
+            if (wl && lstring::ciprefix("p", wl->wl_word)) {
+                pt = true;
+                wl = wl->wl_next;
+            }
             if (wl) {
-                if (wl->wl_word) {
-                    for (char *s = wl->wl_word; *s; s++)
-                        if (!isdigit(*s))
-                            goto bad;
-                    i = atoi(wl->wl_word);
+                const char *word = wl->wl_word;
+                if (pt) {
+                    int err;
+                    double tmp = IP.getFloat(&word, &err, true);
+                    if (err != OK)
+                        goto bad;
+                    d->set_point(tmp);
+                }
+                else {
+                    if (!is_uint(word))
+                        goto bad;
+                    d->set_point(atoi(word));
                 }
                 wl = wl->wl_next;
             }
-            d->set_point(i);
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_when)) {
@@ -709,7 +788,8 @@ IFoutput::checkDebugs(sRunDesc *run)
     if (run->circuit() && run->circuit()->debugs())
         db = run->circuit()->debugs();
     bool nohalt = true;
-    if (o_debugs->traces() || o_debugs->stops() || (db && (db->traces() || db->stops()))) {
+    if (o_debugs->traces() || o_debugs->stops() ||
+            (db && (db->traces() || db->stops()))) {
         bool tflag = true;
         run->scalarizeVecs();
         sDbComm *d;
@@ -720,7 +800,7 @@ IFoutput::checkDebugs(sRunDesc *run)
                 d->print_trace(run->runPlot(), &tflag, run->pointCount());
         }
         for (d = o_debugs->stops(); d; d = d->next()) {
-            if (d->should_stop(run->pointCount())) {
+            if (d->should_stop(run)) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                 TTY.printf("%-2d: condition met: stop ", d->number());
                 d->printcond(0);
@@ -731,7 +811,7 @@ IFoutput::checkDebugs(sRunDesc *run)
         }
         if (db) {
             for (d = db->stops(); d; d = d->next()) {
-                if (d->should_stop(run->pointCount())) {
+                if (d->should_stop(run)) {
                     bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                     TTY.printf("%-2d: condition met: stop ", d->number());
                     d->printcond(0);
@@ -810,13 +890,13 @@ namespace { const char *Msg = "can't evaluate %s.\n"; }
 bool
 sDbComm::istrue()
 {
-    if (db_point < 0)
+    if (db_bad)
         return (true);
 
     wordlist *wl = CP.LexStringSub(db_string);
     if (!wl) {
         GRpkgIf()->ErrPrintf(ET_ERROR, Msg, db_string);
-        db_point = -1;
+        db_bad = true;
         return (true);
     }
     char *str = wordlist::flatten(wl);
@@ -832,7 +912,7 @@ sDbComm::istrue()
     }
     if (!v) {
         GRpkgIf()->ErrPrintf(ET_ERROR, Msg, db_string);
-        db_point = -1;
+        db_bad = true;
         return (true);
     }
     if (v->realval(0) != 0.0 || v->imagval(0) != 0.0)
@@ -842,29 +922,57 @@ sDbComm::istrue()
 
 
 bool
-sDbComm::should_stop(int pnt)
+sDbComm::should_stop(sRunDesc *run)
 {
-    if (!db_active)
+    if (!db_active || !run)
         return (false);
     bool when = true;
     bool after = true;
     for (sDbComm *dt = this; dt; dt = dt->db_also) {
         if (dt->db_type == DB_STOPAFTER) {
-            if (pnt < dt->db_point) {
-                after = false;
-                break;
+            if (dt->db_ptmode) {
+                if (run->pointCount() < dt->db_p.ipoint) {
+                    after = false;
+                    break;
+                }
+            }
+            else {
+                if (run->ref_value() < dt->db_p.dpoint) {
+                    after = false;
+                    break;
+                }
             }
         }
         else if (dt->db_type == DB_STOPAT) {
-            if (pnt != dt->db_point) {
-                after = false;
-                break;
+            if (dt->db_ptmode) {
+                if (dt->db_index < dt->db_numpts &&
+                        run->pointCount() >= dt->db_a.ipoints[dt->db_index]) {
+                    dt->db_index++;
+                    after = false;
+                    break;
+                }
+            }
+            else {
+                if (dt->db_index < dt->db_numpts &&
+                        run->ref_value() >= dt->db_a.dpoints[dt->db_index]) {
+                    dt->db_index++;
+                    after = false;
+                    break;
+                }
             }
         }
         else if (dt->db_type == DB_STOPBEFORE) {
-            if (pnt > dt->db_point) {
-                after = false;
-                break;
+            if (dt->db_ptmode) {
+                if (run->pointCount() > dt->db_p.ipoint) {
+                    after = false;
+                    break;
+                }
+            }
+            else {
+                if (run->ref_value() > dt->db_p.dpoint) {
+                    after = false;
+                    break;
+                }
             }
         }
         else if (dt->db_type == DB_STOPWHEN) {
@@ -967,12 +1075,12 @@ sDbComm::print_trace(sPlot *plot, bool *flag, int pnt)
     }
 
     if (db_string) {
-        if (db_point < 0)
+        if (db_bad)
             return (false);
         wordlist *wl = CP.LexStringSub(db_string);
         if (!wl) {
             GRpkgIf()->ErrPrintf(ET_ERROR, Msg, db_string);
-            db_point = -1;
+            db_bad = true;
             return (false);
         }
 
@@ -983,7 +1091,7 @@ sDbComm::print_trace(sPlot *plot, bool *flag, int pnt)
             dvl = Sp.DvList(pl);
         if (!dvl) {
             GRpkgIf()->ErrPrintf(ET_ERROR, Msg, db_string);
-            db_point = -1;
+            db_bad = true;
             return (false);
         }
         for (sDvList *dv = dvl; dv; dv = dv->dl_next) {
@@ -1022,33 +1130,64 @@ sDbComm::printcond(char **retstr)
     char buf[BSIZE_SP];
     const char *msg1 = " %s %d";
     const char *msg2 = " %s %s";
+    const char *msg3 = " %s %g";
 
-    buf[0] = '\0';
+    sLstr lstr;
+    if (retstr) {
+        lstr.add(*retstr);
+        delete [] *retstr;
+        *retstr = 0;
+    }
     for (sDbComm *dt = this; dt; dt = dt->db_also) {
         if (retstr) {
-            if (dt->db_type == DB_STOPAFTER)
-                sprintf(buf + strlen(buf), msg1, kw_after, dt->db_point);
-            else if (dt->db_type == DB_STOPAT)
-                sprintf(buf + strlen(buf), msg1, kw_at, dt->db_point);
-            else if (dt->db_type == DB_STOPBEFORE)
-                sprintf(buf + strlen(buf), msg1, kw_before, dt->db_point);
+            if (dt->db_type == DB_STOPAFTER) {
+                if (dt->db_ptmode)
+                    sprintf(buf, msg1, kw_after, dt->db_p.ipoint);
+                else
+                    sprintf(buf, msg3, kw_after, dt->db_p.dpoint);
+            }
+            else if (dt->db_type == DB_STOPAT) {
+                if (dt->db_ptmode)
+                    sprintf(buf, msg1, kw_at, dt->db_a.ipoints[dt->db_index-1]);
+                else
+                    sprintf(buf, msg3, kw_at, dt->db_a.ipoints[dt->db_index-1]);
+            }
+            else if (dt->db_type == DB_STOPBEFORE) {
+                if (dt->db_ptmode)
+                    sprintf(buf, msg1, kw_before, dt->db_p.ipoint);
+                else
+                    sprintf(buf, msg3, kw_before, dt->db_p.dpoint);
+            }
             else
-                sprintf(buf + strlen(buf), msg2, kw_when, dt->db_string);
+                sprintf(buf, msg2, kw_when, dt->db_string);
+            lstr.add(buf);
         }
         else {
-            if (dt->db_type == DB_STOPAFTER)
-                TTY.printf(msg1, kw_after, dt->db_point);
-            else if (dt->db_type == DB_STOPAT)
-                TTY.printf(msg1, kw_at, dt->db_point);
-            else if (dt->db_type == DB_STOPBEFORE)
-                TTY.printf(msg1, kw_before, dt->db_point);
+            if (dt->db_type == DB_STOPAFTER) {
+                if (dt->db_ptmode)
+                    TTY.printf(msg1, kw_after, dt->db_p.ipoint);
+                else
+                    TTY.printf(msg3, kw_after, dt->db_p.dpoint);
+            }
+            else if (dt->db_type == DB_STOPAT) {
+                if (dt->db_ptmode)
+                    TTY.printf(msg1, kw_at, dt->db_a.ipoints[dt->db_index - 1]);
+                else
+                    TTY.printf(msg3, kw_at, dt->db_a.dpoints[dt->db_index - 1]);
+            }
+            else if (dt->db_type == DB_STOPBEFORE) {
+                if (dt->db_ptmode)
+                    TTY.printf(msg1, kw_before, dt->db_p.ipoint);
+                else
+                    TTY.printf(msg3, kw_before, dt->db_p.dpoint);
+            }
             else
                 TTY.printf(msg2, kw_when, dt->db_string);
         }
     }
     if (retstr) {
-        strcat(buf, "\n");
-        *retstr = lstring::build_str(*retstr, buf);
+        lstr.add_c('\n');
+        *retstr = lstr.string_trim();
     }
     else
         TTY.send("\n");

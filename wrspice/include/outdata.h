@@ -448,7 +448,7 @@ struct IFoutput
     int setDims(sRunDesc*, int*, int, bool = false);
     int setDC(sRunDesc*, sDCTprms*);
     int setAttrs(sRunDesc*, IFuid*, OUTscaleType, IFvalue*);
-    int checkBreak(sRunDesc*, IFvalue*, IFvalue*);
+    int checkBreak(sRunDesc*, double);
     int pauseTest(sRunDesc*);
     void unrollPlot(sRunDesc*);
     void addPlotNote(sRunDesc*, const char*);

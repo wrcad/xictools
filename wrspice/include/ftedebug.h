@@ -54,6 +54,8 @@ Authors: 1985 Wayne A. Christopher
 // etc).
 //
 
+struct sRunDesc;
+
 enum DBtype
 {
     DB_NONE,
@@ -74,22 +76,34 @@ struct sDbComm
 {
     sDbComm()
         {
-            db_next = 0;
-            db_also = 0;
-            db_string = 0;
-            db_number = 0;
-            db_type = DB_NONE;
-            db_point = 0;
-            db_graphid = 0;
-            db_reuseid = 0;
-            db_active = false;
+            db_next     = 0;
+            db_also     = 0;
+            db_string   = 0;
+            db_p.dpoint = 0.0;
+            db_number   = 0;
+            db_type     = DB_NONE;
+            db_graphid  = 0;
+            db_reuseid  = 0;
+            db_active   = false;
+            db_bad      = false;
+            db_ptmode   = false;
+            db_index    = 0;
+            db_numpts   = 0;
+            db_a.dpoints= 0;
         }
 
-    ~sDbComm()                  { delete [] db_string; }
+    ~sDbComm()
+        {
+            delete [] db_string;
+            if (db_ptmode)
+                delete [] db_a.ipoints;
+            else
+                delete [] db_a.dpoints;
+        }
 
     static void destroy(sDbComm*); // destroy this debug and descendents
     bool istrue();              // evaluate true if condition met
-    bool should_stop(int);      // true if stop condition met
+    bool should_stop(sRunDesc*); // true if stop condition met
     void print(char**);         // print, in string if given, the debug msg
     bool print_trace(sPlot*, bool*, int);  // print trace output
     void printcond(char**);     // print the conditional expression
@@ -103,14 +117,23 @@ struct sDbComm
     const char *string()        { return (db_string); }
     void set_string(char *s)    { db_string = s; }
 
+    void set_point(double d)
+        {
+            db_p.dpoint = d;
+            db_ptmode = false;
+        }
+
+    void set_point(int i)
+        {
+            db_p.ipoint = i;
+            db_ptmode = true;
+        }
+
     int number()                { return (db_number); }
     void set_number(int i)      { db_number = i; }
 
     DBtype type()               { return (db_type); }
     void set_type(DBtype t)     { db_type = t; }
-
-    int point()                 { return (db_point); }
-    void set_point(int i)       { db_point = i; }
 
     int graphid()               { return (db_graphid); }
     void set_graphid(int i)     { db_graphid = i; }
@@ -121,16 +144,54 @@ struct sDbComm
     bool active()               { return (db_active); }
     void set_active(bool b)     { db_active = b; }
 
+    bool bad()                  { return (db_bad); }
+    void set_bad(bool b)        { db_bad = b; }
+
+    void set_points(int sz, double *p)
+        {
+            db_numpts = sz;
+            db_index = 0;
+            if (db_ptmode)
+                delete [] db_a.ipoints;
+            else
+                delete [] db_a.dpoints;
+            db_a.dpoints = p;
+            db_ptmode = false;
+        }
+
+    void set_points(int sz, int *p)
+        {
+            db_numpts = sz;
+            db_index = 0;
+            if (db_ptmode)
+                delete [] db_a.ipoints;
+            else
+                delete [] db_a.dpoints;
+            db_a.ipoints = p;
+            db_ptmode = true;
+        }
+
 private:
     sDbComm *db_next;           // List of active debugging commands.
     sDbComm *db_also;           // Link for conjunctions.
     char *db_string;            // Condition or node, text.
+    union {                     // Output point for test:
+        double dpoint;          //   Value.
+        int ipoint;             //   Plot point index.
+    } db_p;
     int db_number;              // The number of this debugging command.
     DBtype db_type;             // One of the above.
-    int db_point;               // Output point for test.
     int db_graphid;             // If iplot, id of graph.
     int db_reuseid;             // Iplot window to reuse.
     bool db_active;             // True if active.
+    bool db_bad;                // True if error.
+    bool db_ptmode;             // Input to before/after/at in points.
+    int db_index;               // Index into the db_points array.
+    int db_numpts;              // Size of the db_points array.
+    union {                     // Array of points to test for "stop at".
+        double *dpoints;
+        int *ipoints;
+    } db_a;
 };
 
 

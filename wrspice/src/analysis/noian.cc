@@ -430,6 +430,7 @@ sNdata::noise (sCKT *ckt, int mode, int operation)
                 outData.v.numValue = outNumber; // vector number
                 outData.v.vec.rVec = outpVector; // vector of outputs
                 OP.appendData(job->JOBrun, &refVal, &outData);
+                OP.checkBreak(job->JOBrun, freq);
             }
             return (OK);
         }

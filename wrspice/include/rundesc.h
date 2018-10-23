@@ -250,6 +250,13 @@ struct sRunDesc
 
     void set_scrolling(bool b)      { rd_scrolling = b; }
 
+    double ref_value()
+        {
+            if (rd_refIndex >= 0 && rd_data)
+                return (rd_data[rd_refIndex].vec->realval(rd_pointCount-1));
+            return (0.0);
+        }
+
 private:
     char *rd_name;          // circuit name: e.g., CKT1
     char *rd_type;          // analysis key: e.g., TRAN

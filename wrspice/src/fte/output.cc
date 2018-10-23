@@ -602,7 +602,9 @@ IFoutput::appendData(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
     if (!run)
         return (OK);
     sCHECKprms *chk = run->check();
-    if (!chk || chk->out_mode != OutcCheck) {
+    if (chk && chk->out_mode == OutcCheck)
+        run->addPointToPlot(refValue, valuePtr, false);
+    else {
         run->inc_pointCount();
         run->addPointToPlot(refValue, valuePtr, run->rd() ? false : true);
         if (run->rd()) {
@@ -624,8 +626,7 @@ IFoutput::appendData(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
                 "Set \"maxdata\" to alter limit.\n", maxdata);
         }
     }
-
-    return (checkBreak(run, refValue, valuePtr));
+    return (OK);
 }
 
 
@@ -851,15 +852,13 @@ IFoutput::setAttrs(sRunDesc *run, IFuid *varName, OUTscaleType param, IFvalue*)
 // Run debugs, measures, and margin analysis tests.
 //
 int
-IFoutput::checkBreak(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
+IFoutput::checkBreak(sRunDesc *run, double ref)
 {
     if (!run)
         return (OK);
     sCHECKprms *chk = run->check();
     if (chk && chk->out_mode == OutcCheck) {
-        run->addPointToPlot(refValue, valuePtr, false);
-        if (!chk->points() ||
-                refValue->rValue < chk->points()[chk->index()]) {
+        if (!chk->points() || ref < chk->points()[chk->index()]) {
             vecGc();
             return (OK);
         }
@@ -880,8 +879,7 @@ IFoutput::checkBreak(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
 
     if (chk && (chk->out_mode == OutcCheckSeg ||
             chk->out_mode == OutcCheckMulti)) {
-        if (!chk->points() ||
-                refValue->rValue < chk->points()[chk->index()] ||
+        if (!chk->points() || ref < chk->points()[chk->index()] ||
                 chk->index() >= chk->max_index()) {
             vecGc();
             return (OK);

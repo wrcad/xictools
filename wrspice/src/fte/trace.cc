@@ -217,7 +217,7 @@ namespace {
         sDvList *dvl = (sDvList*)graph->plotdata();
         wordlist *wl = CP.LexStringSub(db->string());
         if (!wl) {
-            db->set_point(-1);
+            db->set_bad(true);
             GRpkgIf()->ErrPrintf(ET_INTERR, msg, 1);
             return;
         }
@@ -237,7 +237,7 @@ namespace {
         OP.setCurPlot(plot);
         Sp.SetCurCircuit(circ);
         if (!dl0) {
-            db->set_point(-1);
+            db->set_bad(true);
             GRpkgIf()->ErrPrintf(ET_INTERR, msg, 2);
             run->unscalarizeVecs();
             return;
@@ -251,7 +251,7 @@ namespace {
                 if (!dp || !dn) {
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 3);
                     sDvList::destroy(dl0);
-                    db->set_point(-1);
+                    db->set_bad(true);
                     return;
                 }
                 xs = dn->dl_dvec;
@@ -269,7 +269,7 @@ namespace {
 
             if (vt->isreal()) {
                 if (!vf->isreal()) {
-                    db->set_point(-1);
+                    db->set_bad(true);
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 3);
                     break;
                 }
@@ -289,7 +289,7 @@ namespace {
             }
             else {
                 if (vf->isreal()) {
-                    db->set_point(-1);
+                    db->set_bad(true);
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 4);
                     break;
                 }
@@ -313,7 +313,7 @@ namespace {
             vt->set_length(vt->length() + 1);;
         }
         if (dl || dd) {
-            db->set_point(-1);
+            db->set_bad(true);
             GRpkgIf()->ErrPrintf(ET_INTERR, msg, 5);
         }
         sDataVec *scale = dvl->dl_dvec->scale();
@@ -325,7 +325,7 @@ namespace {
             // no need to Smith transform the scale
             if (xs->isreal()) {
                 if (!scale->isreal()) {
-                    db->set_point(-1);
+                    db->set_bad(true);
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 6);
                 }
                 if (scale->length() >= scale->allocated()) {
@@ -339,7 +339,7 @@ namespace {
             }
             else {
                 if (scale->isreal()) {
-                    db->set_point(-1);
+                    db->set_bad(true);
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 7);
                 }
                 if (scale->length() >= scale->allocated()) {
@@ -445,7 +445,7 @@ namespace {
 void
 IFoutput::iplot(sDbComm *db, sRunDesc *run)
 {
-    if (!run || !db || db->point() == -1)
+    if (!run || !db || db->bad())
         return;
     if (Sp.GetFlag(FT_GRDB)) {
         GRpkgIf()->ErrPrintf(ET_MSGS, "Entering iplot, len = %d\n\r",
@@ -458,20 +458,20 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         // Draw the grid for the first time, and plot everything
 
         // Error handling:  If an error occurs during plot initialization, 
-        // point() is set to -1 (graphic() remains 0).
-        // If an error occurs later, point() is set to -1, and the plot
+        // set_bad() is set true (graphic() remains 0).
+        // If an error occurs later, set_bad() is set true, and the plot
         // is "frozen".
 
         wordlist *wl = CP.LexStringSub(db->string());
         if (!wl) {
-            db->set_point(-1);
+            db->set_bad(true);
             return;
         }
         dl0 = 0;
 
         sDataVec *xs = run->runPlot()->scale();
         if (!xs) {
-            db->set_point(-1);
+            db->set_bad(true);
             return;
         }
         if (xs->length() < IPOINTMIN)
@@ -488,7 +488,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         OP.setCurPlot(plot);
         Sp.SetCurCircuit(circ);
         if (!dl0) {
-            db->set_point(-1);
+            db->set_bad(true);
             return;
         }
         // check for "vs"
@@ -502,7 +502,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
                     GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced vs arg.\n");
                     sDvList::destroy(dl0);
                     dl0 = 0;
-                    db->set_point(-1);
+                    db->set_bad(true);
                     return;
                 }
                 foundvs = true;
@@ -522,7 +522,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         dl = dl0;
         sGrInit gr;
         if (!GP.Setup(&gr, &dl0, 0, xs, 0)) {
-            db->set_point(-1);
+            db->set_bad(true);
             return;
         }
         if (dl != dl0)
@@ -548,7 +548,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         if (graph)
             db->set_graphid(graph->id());
         if (!db->graphid()) {
-            db->set_point(-1);
+            db->set_bad(true);
             return;
         }
 
@@ -608,7 +608,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
     graph = GP.FindGraph(db->graphid());
     if (!graph) {
         // shouldn't happen
-        db->set_point(-1);
+        db->set_bad(true);
         return;
     }
     graph->set_noevents(true);  // suppress event checking
@@ -835,7 +835,7 @@ IFoutput::endIplot(sRunDesc *run)
             GP.PopGraphContext();
         for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
             d->set_reuseid(0);
-            if (d->type() == DB_IPLOT && d->point() == 0) {
+            if (d->type() == DB_IPLOT && !d->bad()) {
                 if (d->graphid()) {
                     sGraph *graph = GP.FindGraph(d->graphid());
                     graph->dev()->Clear();
@@ -856,7 +856,7 @@ IFoutput::endIplot(sRunDesc *run)
         if (db) {
             for (sDbComm *d = db->iplots(); d; d = d->next()) {
                 d->set_reuseid(0);
-                if (d->type() == DB_IPLOT && d->point() == 0) {
+                if (d->type() == DB_IPLOT && !d->bad()) {
                     if (d->graphid()) {
                         sGraph *graph = GP.FindGraph(d->graphid());
                         graph->dev()->Clear();
