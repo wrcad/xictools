@@ -318,7 +318,7 @@ cRawOut::file_points(int indx)
         for (int i = 0; i < ro_length; i++) {
             for (sDvList *dl = ro_dlist; dl; dl = dl->dl_next) {
                 sDataVec *v = dl->dl_dvec;
-                if (v && v->realvec()) {
+                if (v) {
                     // Don't run off the end of this vector's data
                     double dd;
                     if (i < v->length()) {
@@ -357,7 +357,7 @@ cRawOut::file_points(int indx)
             fprintf(ro_fp, " %d", indx >= 0 ? indx : i);
             for (sDvList *dl = ro_dlist; dl; dl = dl->dl_next) {
                 sDataVec *v = dl->dl_dvec;
-                if (v && v->realvec()) {
+                if (v) {
                     if (i < v->length()) {
                         if (ro_realflag)
                             fprintf(ro_fp,
