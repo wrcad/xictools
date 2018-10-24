@@ -550,6 +550,8 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
                 continue;
             if (!strcasecmp("instancesLastChanged", name))
                 continue;
+            if (!strcasecmp("logicalConnectivityValid", name)) // Synopsys
+                continue;
             if (!strcasecmp("vendorName", name))
                 continue;
             if (!strcasecmp("partName", name)) {

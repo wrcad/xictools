@@ -4753,10 +4753,33 @@ oa_in::readOaScalarInst(oaScalarInst *inst, const char *cname,
     cn = checkSubMaster(cn, p0);
     CallDesc calldesc(cn, 0);
 
+    CDc *cnew;
     CDap ap;
     ret = makeInst(inst, &calldesc, &tx, &ap, header, sdesc, &p0,
-        &in_warnings);
+        &in_warnings, &cnew);
     CDp::destroy(p0);
+
+    // For electrical instances, if the instance name has the same
+    // device prefix, use it as an assigned name.
+    if (ret && sdesc->isElectrical()) {
+        CDp_cname *pn = (CDp_cname*)cnew->prpty(P_NAME);
+        if (!pn) {
+            // No instance name property, if the master has one,
+            // create one for the instance.
+            CDp_sname *ps = (CDp_sname*)cnew->masterCell()->prpty(P_NAME);
+            if (ps) {
+                pn = new CDp_cname(*ps);
+                cnew->link_prpty_list(pn);
+            }
+        }
+        if (pn && !pn->assigned_name() &&
+                isalpha(*Tstring(pn->name_string()))) {
+            oaString instName;
+            inst->getName(in_ns, instName);
+            if (lstring::ciprefix(Tstring(pn->name_string()), instName))
+                 pn->set_assigned_name(instName);
+        }
+    }
     return (ret);
 }
 
