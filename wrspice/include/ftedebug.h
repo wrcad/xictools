@@ -104,12 +104,13 @@ struct sDbComm
                 delete [] db_a.dpoints;
         }
 
-    static void destroy(sDbComm*); // destroy this debug and descendents
-    bool istrue();              // evaluate true if condition met
-    bool should_stop(sRunDesc*); // true if stop condition met
-    void print(char**);         // print, in string if given, the debug msg
+    static void destroy(sDbComm*);  // destroy this debug and descendents
+    bool istrue();                  // evaluate true if condition met
+    bool should_stop(sRunDesc*);    // true if stop condition met
+    bool run_call(sRunDesc*);       // call the callfunc is given
+    void print(char**);             // print, in string if given, the debug msg
     bool print_trace(sPlot*, bool*, int);  // print trace output
-    void printcond(char**);     // print the conditional expression
+    void printcond(char**);         // print the conditional expression
 
     sDbComm *next()             { return (db_next); }
     void set_next(sDbComm *d)   { db_next = d; }
@@ -120,6 +121,7 @@ struct sDbComm
     const char *string()        { return (db_string); }
     void set_string(char *s)    { db_string = s; }
 
+    const char *call_func()     { return (db_call ? db_callfn : 0); }
     void set_call(bool b, const char *fn)
         {
             db_call = b;
@@ -157,6 +159,8 @@ struct sDbComm
 
     bool bad()                  { return (db_bad); }
     void set_bad(bool b)        { db_bad = b; }
+
+    bool call()                 { return (db_call); }
 
     void set_points(int sz, double *p)
         {

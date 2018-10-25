@@ -417,6 +417,7 @@ CommandTab::com_strciprefix(wordlist *wl)
 
 // Set the global return value, may be useful in scripts to return a
 // value to the caller.
+// This is stupid, use "return [expr]" instead.
 //
 void
 CommandTab::com_retval(wordlist *wl)
@@ -472,6 +473,8 @@ CshPar::CshPar()
     cp_flags[CP_NOTTYIO]         = false;
     cp_flags[CP_WAITING]         = false;
     cp_flags[CP_RAWMODE]         = false;
+
+    cp_return           = false;
 
     cp_amp              = '&';
     cp_back             = '`';

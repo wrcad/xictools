@@ -829,7 +829,7 @@ IFoutput::checkDebugs(sRunDesc *run)
                 d->print_trace(run->runPlot(), &tflag, run->pointCount());
         }
         for (d = o_debugs->stops(); d; d = d->next()) {
-            if (d->should_stop(run)) {
+            if (d->should_stop(run) && d->run_call(run)) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                 TTY.printf("%-2d: condition met: stop ", d->number());
                 d->printcond(0);
@@ -840,7 +840,7 @@ IFoutput::checkDebugs(sRunDesc *run)
         }
         if (db) {
             for (d = db->stops(); d; d = d->next()) {
-                if (d->should_stop(run)) {
+                if (d->should_stop(run) && d->run_call(run)) {
                     bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                     TTY.printf("%-2d: condition met: stop ", d->number());
                     d->printcond(0);
@@ -1013,6 +1013,38 @@ sDbComm::should_stop(sRunDesc *run)
         }
     }
     return (when && after);
+}
+
+
+//XXX
+// Call the callback.  Return true if the run should pause.
+// This is called when should_stop returns true.
+//
+bool
+sDbComm::run_call(sRunDesc *run)
+{
+    if (!db_call)
+        return (true);
+
+    if (db_call) {
+        if (db_callfn) {
+            // Call the named script or codeblock.
+        }
+        else {
+            if (run->check()) {
+                // Run the "controls" bound codeblock.  We stop
+                // (return true) only if the checkFAIL vector is not
+                // set.
+
+                run->check()->evaluate();
+                if (!run->check()->failed())
+                    return (false);
+            }
+            else {
+            }
+        }
+    }
+    return (true);
 }
 
 

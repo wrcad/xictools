@@ -48,6 +48,8 @@ Authors: 1985 Wayne A. Christopher
 #include "cshell.h"
 #include "commands.h"
 #include "frontend.h"
+#include "ftedata.h"
+#include "fteparse.h"
 #include "spnumber/hash.h"
 #include "spnumber/spnumber.h"
 #include "ginterf/graphics.h"
@@ -70,7 +72,8 @@ enum RItype
     NORMAL,
     BROKEN,
     CONTINUED,
-    LABEL
+    LABEL,
+    RETURN
 };
 
 struct retinfo
@@ -120,7 +123,8 @@ enum COtype
     CO_CONTINUE,
     CO_LABEL,
     CO_GOTO,
-    CO_REPEAT
+    CO_REPEAT,
+    CO_RETURN
 };
 
 struct sControl
@@ -1053,6 +1057,10 @@ sControl::set_block(wordlist *wl)
         }
         cur = cur->newblock();
     }
+    else if (lstring::eq(wl->wl_word, "return")) {
+        cur->co_type = CO_RETURN;
+        cur->co_text = wordlist::copy(wl->wl_next);
+    }
     else if (lstring::eq(wl->wl_word, "if")) {
         cur->co_type = CO_IF;
         cur->co_cond = wordlist::copy(wl->wl_next);
@@ -1200,6 +1208,10 @@ sControl::eval_block(sControl *x)
                     GRpkgIf()->ErrPrintf(ET_ERROR, "label %s not found.\n",
                         ri.label());
                 ri.set_label(0);
+                break;
+
+            case RETURN:
+                break;
         }
         if (x)
             x = x->co_next;
@@ -1290,6 +1302,11 @@ sControl::doblock(retinfo *info)
                         return;
                     }
                     ri.set_label(0);
+                    break;
+
+                case RETURN:
+                    info->set_type(RETURN);
+                    return;
                 }
             }
         }
@@ -1336,6 +1353,11 @@ sControl::doblock(retinfo *info)
                         return;
                     }
                     ri.set_label(0);
+                    break;
+
+                case RETURN:
+                    info->set_type(RETURN);
+                    return;
                 }
             }
         } while (co_cond && Sp.IsTrue(co_cond));
@@ -1385,6 +1407,11 @@ sControl::doblock(retinfo *info)
                         return;
                     }
                     ri.set_label(0);
+                    break;
+
+                case RETURN:
+                    info->set_type(RETURN);
+                    return;
                 }
             }
         }
@@ -1478,6 +1505,11 @@ sControl::doblock(retinfo *info)
                         return;
                     }
                     ri.set_label(0);
+                    break;
+
+                case RETURN:
+                    info->set_type(RETURN);
+                    return;
                 }
             }
         }
@@ -1522,6 +1554,26 @@ sControl::doblock(retinfo *info)
     case CO_STATEMENT:
         CP.DoCommand(wordlist::copy(co_text));
         break;
+
+    case CO_RETURN:
+        info->set_type(RETURN);
+        if (co_text) {
+            wordlist *w = wordlist::copy(co_text);
+            char *str = wordlist::flatten(w);
+            const char *wp = str;
+            pnode *nn = Sp.GetPnode(&wp, true);
+            if (!nn) {
+                GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", str);
+                return;
+            }
+            sDataVec *t = Sp.Evaluate(nn);
+            delete nn;
+            if (!t)
+                GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation failed: %s.\n", str);
+            else
+                CP.SetReturnVal(t->realval(0));
+        }
+        return;
 
     case CO_UNFILLED:
         // There was probably an error here...

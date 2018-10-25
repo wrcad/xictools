@@ -322,6 +322,9 @@ struct CshPar
             cp_promptstring = s;
         }
 
+    bool Return()                           { return (cp_return); }
+    void SetReturn(bool b)                  { cp_return = b; }
+
     double ReturnVal()                      { return (cp_return_val); }
     void SetReturnVal(double d)             { cp_return_val = d; }
 
@@ -396,6 +399,7 @@ private:
     int cp_port;                            // IPC port.
 
     bool cp_flags[CP_NUMFLAGS];             // Misc. flags.
+    bool cp_return;                         // Return from script when set.
 
     char cp_amp;                            // '&'
     char cp_back;                           // '`'
