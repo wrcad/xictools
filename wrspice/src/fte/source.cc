@@ -680,8 +680,8 @@ IFsimulator::SpSource(FILE *fp, bool nospice, bool nocmds,
     while (isspace(*s))
         s++;
     if (*s == '.') {
-        if (lstring::cimatch(CBLK_KW, s) ||
-                lstring::cimatch(EBLK_KW, s) ||
+        if (lstring::cimatch(CONT_KW, s) ||
+                lstring::cimatch(EXEC_KW, s) ||
                 lstring::cimatch(INCL_L_KW, s) ||
                 lstring::cimatch(INCL_S_KW, s) ||
                 lstring::cimatch(SPINCL_KW, s) ||
@@ -818,13 +818,20 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
     // If noexec is true here, old format is indicated.  The first line
     // is .whatever, and will be cut below.
 
-    int kwfound = 0;
-    wordlist *execs =
-        deck->get_controls(nospice && nocmds, CBLK_EXEC, noexec, &kwfound);
-    wordlist *controls =
-        deck->get_controls(nospice && nocmds, CBLK_CTRL);
-    wordlist *postrun =
-        deck->get_controls(nospice && nocmds, CBLK_POST);
+    int kwfound;
+    deck->get_keywords(&kwfound);
+
+    wordlist *execs = 0;
+    wordlist *controls = 0;
+    wordlist *postrun = 0;
+
+    if (noexec || (kwfound & LI_EXEC_FOUND))
+        execs = deck->get_controls(nospice && nocmds, CBLK_EXEC, noexec);
+    if (kwfound & LI_CONT_FOUND)
+        controls = deck->get_controls(nospice && nocmds, CBLK_CTRL);
+    if (kwfound & LI_POST_FOUND)
+        postrun = deck->get_controls(nospice && nocmds, CBLK_POST);
+
     if (!noexec) {
         check = ((kwfound & LI_CHECK_FOUND) ? true : false);
         checkall = ((kwfound & LI_CHECKALL_FOUND) ? true : false);
@@ -1965,7 +1972,7 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
 
     // Substitute for shell variables in the spice deck as it is read. 
     // The variables must have been defined before the deck is sourced
-    // (in the EBLK_KW (".exec") block, NOT in the CBLK_KW
+    // (in the EXEC_KW (".exec") block, NOT in the CONT_KW
     // (".control") block), or in the .options line.
 
     // The .options have been parsed, and are now available in the
@@ -2228,6 +2235,90 @@ sLine::get_speccmds()
 }
 
 
+// Set flags if certain keywords are found in the deck.  The "flag"
+// keywords are removed from the deck, those that start a block are
+// retained.
+//
+void
+sLine::get_keywords(int *kwfound)
+{
+    if (!kwfound)
+        return;
+    *kwfound = 0;
+    sLine *ld = this;
+    for (sLine *dd = li_next; dd; dd = ld->li_next) {
+        if (lstring::cimatch(CHECKALL_KW, dd->li_line)) {
+            *kwfound |= LI_CHECKALL_FOUND;
+            ld->li_next = dd->li_next;
+            delete dd;
+            continue;
+        }
+        if (lstring::cimatch(CHECK_KW, dd->li_line)) {
+            *kwfound |= LI_CHECK_FOUND;
+            ld->li_next = dd->li_next;
+            delete dd;
+            continue;
+        }
+        if (lstring::cimatch(MONTE_KW, dd->li_line)) {
+            *kwfound |= LI_MONTE_FOUND;
+            ld->li_next = dd->li_next;
+            delete dd;
+            continue;
+        }
+        if (lstring::cimatch(NOEXEC_KW, dd->li_line)) {
+            *kwfound |= LI_NOEXEC_FOUND;
+            ld->li_next = dd->li_next;
+            delete dd;
+            continue;
+        }
+
+        if (lstring::cimatch(CONT_KW, dd->li_line))
+            *kwfound |= LI_CONT_FOUND;
+        else if (lstring::cimatch(EXEC_KW, dd->li_line))
+            *kwfound |= LI_EXEC_FOUND;
+        else if (lstring::cimatch(POST_KW, dd->li_line))
+            *kwfound |= LI_POST_FOUND;
+        ld = dd;
+    }
+}
+
+#define XXXNEW
+#ifdef XXXNEW
+
+namespace {
+    // Handle in-line '#' comments.  We would like to use this as an
+    // in-line comment character, but this can be part of a vector
+    // name, etc., so we need to be careful.  We'll take it as a
+    // comment delimeter if it appears at the line start or after
+    // white space.  We've already dealt with the case where the first
+    // line char is '#'.
+    //
+    // If the # is preceded by a backslash, the user is telling us
+    // that the # is explicitly not a comment.  Strip the backslash.
+    //
+    void clip_comment(char *str)
+    {
+        char *t = strchr(str, '#');
+        while (t) {
+            if (isspace(*(t-1))) {
+                // Don't leave trailing space.
+                t--;
+                while (t >= str && isspace(*t))
+                    *t-- = 0;
+                break;
+            }
+            if (*(t-1) == '\\') {
+                for (char *c = t-1; *c; c++)
+                    *c = *(c+1);
+                t = strchr(t, '#');
+            }
+            else
+                t = strchr(t+1, '#');
+        }
+    }
+}
+
+
 // Strip the control lines out of the deck and return as a wordlist. 
 // If allcmds is true, assume that all lines are commands, up to the
 // block terminator.  If not allcmds, the contblk sets whether we are
@@ -2237,31 +2328,203 @@ sLine::get_speccmds()
 // They are taken as comments (killed) if inside blocks.  Blocks
 // should not overlap.  If kwfound is not 0, check for margin analysis
 // keywords and set *kwfound code if found.  If oldformat is true,
-// start out saving exec block, up until CBLK_KW.
+// start out saving exec block, up until CONT_KW.
+//
+wordlist *
+sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat)
+{
+    const char *cmdkey, *altkey1, *altkey2, *prefx;
+    if (type == CBLK_EXEC) {
+        cmdkey = EXEC_KW;
+        altkey1 = CONT_KW;
+        altkey2 = POST_KW;
+        prefx = EXEC_PREFX;
+    }
+    else if (type == CBLK_CTRL) {
+        cmdkey = CONT_KW;
+        altkey1 = EXEC_KW;
+        altkey2 = POST_KW;
+        prefx = CONT_PREFX;
+        // exec block only
+        oldformat = false;
+    }
+    else {
+        cmdkey = POST_KW;
+        altkey1 = EXEC_KW;
+        altkey2 = CONT_KW;
+        prefx = 0;
+        // exec block only
+        oldformat = false;
+    }
+    wordlist *unnamed_blk = 0, *ub_end = 0;
+    wordlist *named_blk = 0, *nb_end = 0;;
+    bool commands = oldformat;
+    bool altcmds1 = false;
+    bool altcmds2 = false;
+    char *blkname = 0;
+
+    sLine *ld = this;
+    for (sLine *dd = li_next; dd; dd = ld->li_next) {
+        if (lstring::cimatch(cmdkey, dd->li_line)) {
+            const char *str = dd->li_line;
+            lstring::advtok(&str);
+            blkname = lstring::gettok(&str);
+
+            if (allcmds || commands)
+                GRpkgIf()->ErrPrintf(ET_WARN, "redundant %s card.\n", cmdkey);
+            ld->li_next = dd->li_next;
+            delete dd;
+            commands = true;
+        }
+        else if (lstring::cimatch(altkey1, dd->li_line)) {
+            if (oldformat)
+                break;
+            if (allcmds || altcmds1)
+                GRpkgIf()->ErrPrintf(ET_WARN, "redundant %s card.\n", altkey1);
+            if (allcmds) {
+                ld->li_next = dd->li_next;
+                delete dd;
+            }
+            else
+                ld = dd;
+            altcmds1 = true;
+        }
+        else if (lstring::cimatch(altkey2, dd->li_line)) {
+            if (oldformat)
+                break;
+            if (allcmds || altcmds2)
+                GRpkgIf()->ErrPrintf(ET_WARN, "redundant %s card.\n", altkey2);
+            if (allcmds) {
+                ld->li_next = dd->li_next;
+                delete dd;
+            }
+            else
+                ld = dd;
+            altcmds2 = true;
+        }
+        else if (lstring::cimatch(ENDC_KW, dd->li_line)) {
+            if (allcmds)
+                break;
+            if (commands) {
+                ld->li_next = dd->li_next;
+                delete dd;
+                commands = false;
+            }
+            else if (altcmds1) {
+                ld = dd;
+                altcmds1 = false;
+            }
+            else if (altcmds2) {
+                ld = dd;
+                altcmds2 = false;
+            }
+            else {
+                GRpkgIf()->ErrPrintf(ET_WARN, "misplaced %s card.\n",
+                    ENDC_KW);
+                ld->li_next = dd->li_next;
+                delete dd;
+            }
+            if (blkname) {
+                // save as named codeblock
+
+                CP.AddBlock(blkname, named_blk);
+
+                delete [] blkname;
+                blkname = 0;
+            }
+        }
+        else if (!*dd->li_line || ((allcmds ||
+                (commands && !altcmds1 && !altcmds2)) &&
+                (*dd->li_line == '#' || *dd->li_line == '*'))) {
+            // So blank lines in com files don't get considered as
+            // circuits.  Also kill comments in commands.  Note that
+            // "*#" doesn't work in command files.
+
+            ld->li_next = dd->li_next;
+            delete dd;
+        }
+        else if (allcmds || (commands && !altcmds1 && !altcmds2 && !blkname) ||
+                (!altcmds1 && !altcmds2 && prefx &&
+                lstring::prefix(prefx, dd->li_line))) {
+            // element of an unnamed block
+
+            const char *c;
+            if (prefx && lstring::prefix(prefx, dd->li_line)) {
+                c = dd->li_line + 2;
+                while (isspace(*c))
+                    c++;
+            }
+            else
+                c = dd->li_line;
+
+            if (!unnamed_blk)
+                ub_end = unnamed_blk = new wordlist(c, 0);
+            else {
+                ub_end->wl_next = new wordlist(c, ub_end);
+                ub_end->wl_next->wl_prev = ub_end;
+                ub_end = ub_end->wl_next;
+            }
+            clip_comment(ub_end->wl_word);
+
+            ld->li_next = dd->li_next;
+            delete dd;
+        }
+        else if (commands && !altcmds1 && !altcmds2) {
+            // element of a named block
+
+            if (!named_blk)
+                named_blk = nb_end = new wordlist(dd->li_line, 0);
+            else {
+                nb_end->wl_next = new wordlist(dd->li_line, nb_end);
+                nb_end = nb_end->wl_next;
+            }
+            clip_comment(nb_end->wl_word);
+
+            ld->li_next = dd->li_next;
+            delete dd;
+        }
+        else
+            ld = dd;
+    }
+    return (unnamed_blk);
+}
+
+#else
+
+// Strip the control lines out of the deck and return as a wordlist. 
+// If allcmds is true, assume that all lines are commands, up to the
+// block terminator.  If not allcmds, the contblk sets whether we are
+// saving control commands (true) or exec commands (false). 
+// Additionally, lines starting with "*#" are taken as control
+// commands, "*@" are taken as exec commands, if outside of blocks. 
+// They are taken as comments (killed) if inside blocks.  Blocks
+// should not overlap.  If kwfound is not 0, check for margin analysis
+// keywords and set *kwfound code if found.  If oldformat is true,
+// start out saving exec block, up until CONT_KW.
 //
 wordlist *
 sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat, int *kwfound)
 {
     const char *cmdkey, *altkey1, *altkey2, *prefx;
     if (type == CBLK_EXEC) {
-        cmdkey = EBLK_KW;
-        altkey1 = CBLK_KW;
+        cmdkey = EXEC_KW;
+        altkey1 = CONT_KW;
         altkey2 = POST_KW;
-        prefx = EBLK_PREFX;
+        prefx = EXEC_PREFX;
     }
     else if (type == CBLK_CTRL) {
-        cmdkey = CBLK_KW;
-        altkey1 = EBLK_KW;
+        cmdkey = CONT_KW;
+        altkey1 = EXEC_KW;
         altkey2 = POST_KW;
-        prefx = CBLK_PREFX;
+        prefx = CONT_PREFX;
         // exec block only
         oldformat = false;
         kwfound = 0;
     }
     else {
         cmdkey = POST_KW;
-        altkey1 = EBLK_KW;
-        altkey2 = CBLK_KW;
+        altkey1 = EXEC_KW;
+        altkey2 = CONT_KW;
         prefx = 0;
         // exec block only
         oldformat = false;
@@ -2420,6 +2683,7 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat, int *kwfound)
     }
     return (controls);
 }
+#endif
 
 
 // Remove the .verilog lines, which terminate with .end, and the .adc

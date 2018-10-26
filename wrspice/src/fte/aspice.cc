@@ -664,7 +664,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
         while ((i = fread(buf, 1, BSIZE_SP, inp)) > 0)
             send(sfd, buf, i, 0);
         if (analysis) {
-            sprintf(buf, "%s\n%s\n%s\n", CBLK_KW, analysis, ENDC_KW);
+            sprintf(buf, "%s\n%s\n%s\n", CONT_KW, analysis, ENDC_KW);
             send(sfd, buf, strlen(buf), 0);
         }
         send(sfd, "@\n", 3, 0);
@@ -687,7 +687,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
                 fprintf(inp, "%s\n", MONTE_KW);
             else
                 fprintf(inp, "%s\n", CHECK_KW);
-            fprintf(inp, "%s\n", EBLK_KW);
+            fprintf(inp, "%s\n", EXEC_KW);
             if (cir->execs()->name())
                 CP.PrintBlock(cir->execs()->name(), inp);
             else if (cir->execs()->tree())
@@ -703,7 +703,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
             fprintf(inp, "let checkSTP1 = %d\n", -rj->i);
             fprintf(inp, "let checkSTP2 = %d\n", -rj->j);
             fprintf(inp, "%s\n", ENDC_KW);
-            fprintf(inp, "%s\n", CBLK_KW);
+            fprintf(inp, "%s\n", CONT_KW);
             if (cir->controls()->name())
                 CP.PrintBlock(cir->controls()->name(), inp);
             else
@@ -715,7 +715,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
         else {
             Sp.Listing(inp, cir->deck(), cir->options(), LS_DECK);
             if (analysis)
-                fprintf(inp, "%s\n%s\n%s\n", CBLK_KW, analysis, ENDC_KW);
+                fprintf(inp, "%s\n%s\n%s\n", CONT_KW, analysis, ENDC_KW);
         }
         fputs("@\n", inp);
         fflush(inp);
@@ -862,7 +862,7 @@ sJobc::submit_local(const char *program, const char *analysis,
                 fprintf(inp, "%s\n", MONTE_KW);
             else
                 fprintf(inp, "%s\n", CHECK_KW);
-            fprintf(inp, "%s\n", EBLK_KW);
+            fprintf(inp, "%s\n", EXEC_KW);
             if (cir->execs()->name())
                 CP.PrintBlock(cir->execs()->name(), inp);
             else if (cir->execs()->tree())
@@ -878,7 +878,7 @@ sJobc::submit_local(const char *program, const char *analysis,
             fprintf(inp, "let checkSTP1 = %d\n", -rj->i);
             fprintf(inp, "let checkSTP2 = %d\n", -rj->j);
             fprintf(inp, "%s\n", ENDC_KW);
-            fprintf(inp, "%s\n", CBLK_KW);
+            fprintf(inp, "%s\n", CONT_KW);
             if (cir->controls()->name())
                 CP.PrintBlock(cir->controls()->name(), inp);
             else
@@ -890,7 +890,7 @@ sJobc::submit_local(const char *program, const char *analysis,
         else {
             Sp.Listing(inp, cir->deck(), cir->options(), LS_DECK);
             if (analysis)
-                fprintf(inp, "%s\n%s\n%s\n", CBLK_KW, analysis, ENDC_KW);
+                fprintf(inp, "%s\n%s\n%s\n", CONT_KW, analysis, ENDC_KW);
         }
         fflush(inp);
         fclose(inp);
