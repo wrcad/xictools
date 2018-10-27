@@ -136,12 +136,10 @@ SPgraphics::DestroyGraph(int id)
                 d = d->next();
             if (!d) {
                 for (sFtCirc *f = Sp.CircuitList(); f; f = f->next()) {
-                    if (f->debugs()) {
-                        d = f->debugs()->iplots();
-                        for ( ; d && d->graphid() != id; d = d->next()) ;
-                        if (d)
-                            break;
-                    }
+                    d = f->iplots();
+                    for ( ; d && d->graphid() != id; d = d->next()) ;
+                    if (d)
+                        break;
                 }
             }
 

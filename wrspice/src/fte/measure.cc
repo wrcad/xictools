@@ -40,6 +40,7 @@
 
 #include "frontend.h"
 #include "ftemeas.h"
+#include "ftedebug.h"
 #include "fteparse.h"
 #include "misc.h"
 #include "ftedata.h"
@@ -60,34 +61,19 @@
 //
 
 
-// Initialize the measurements.
-//
-void
-IFoutput::initMeasures(sRunDesc *run)
-{
-    if (!run || !run->circuit())
-        return;
-    for (sMeas *m = run->circuit()->measures(); m; m = m->next) {
-        if (run->job()->JOBtype != m->analysis)
-            continue;
-        m->reset(run->runPlot());
-    }
-}
-
-
 bool
 IFoutput::measure(sRunDesc *run)
 {
     if (!run || !run->circuit())
         return (false);
-    sMeas *m = run->circuit()->measures();
-    if (!m)
+    sMeas *measures = run->circuit()->measures();
+    if (!measures)
         return (false);
 
     run->segmentizeVecs();
     bool done = true;
     bool stop = false;
-    for ( ; m; m = m->next) {
+    for (sMeas *m = measures; m; m = m->next) {
         if (run->anType() != m->analysis)
             continue;
         if (!m->check(run->circuit())) {
@@ -100,7 +86,7 @@ IFoutput::measure(sRunDesc *run)
     done &= stop;
     if (done) {
         // Reset stop flags so analysis can be continued.
-        for (m = run->circuit()->measures(); m; m = m->next)
+        for (sMeas *m = measures; m; m = m->next)
             m->nostop();
     }
     run->unsegmentizeVecs();
@@ -885,11 +871,16 @@ namespace {
 bool
 sMeas::check(sFtCirc *circuit)
 {
+    if (!circuit)
+        return (true);
     if (measure_done || measure_error || measure_skip)
         return (true);
     sDataVec *xs = circuit->runplot()->scale();
+    sMeas *measures = circuit->measures();
+    if (!measures)
+       return (true);  // "can't happen"
     if (expr2) {
-        for (sMeas *m = circuit->measures(); m; m = m->next) {
+        for (sMeas *m = measures; m; m = m->next) {
             if (analysis != m->analysis)
                 continue;
             if (m == this)
@@ -956,7 +947,7 @@ sMeas::check(sFtCirc *circuit)
         // 'trig' and maybe 'targ' were given, measure over an interval
         // if targ given
         if (start_name && !start_dv) {
-            sMeas *m = sMeas::find(circuit->measures(), start_name);
+            sMeas *m = sMeas::find(measures, start_name);
             if (m) {
                 if (!m->measure_done)
                     return (false);
@@ -976,7 +967,7 @@ sMeas::check(sFtCirc *circuit)
         }
         if (start_at_given && !start_dv) {
             if (start_meas) {
-                sMeas *m = sMeas::find(circuit->measures(), start_meas);
+                sMeas *m = sMeas::find(measures, start_meas);
                 if (!m) {
                     measure_error = true;
                     return (false);
@@ -991,7 +982,7 @@ sMeas::check(sFtCirc *circuit)
             start_dv = circuit->runplot()->scale();
         }
         if (end_name && !end_dv) {
-            sMeas *m = sMeas::find(circuit->measures(), end_name);
+            sMeas *m = sMeas::find(measures, end_name);
             if (m) {
                 if (!m->measure_done)
                     return (false);
@@ -1011,7 +1002,7 @@ sMeas::check(sFtCirc *circuit)
         }
         if (end_at_given && !end_dv) {
             if (end_meas) {
-                sMeas *m = sMeas::find(circuit->measures(), end_meas);
+                sMeas *m = sMeas::find(measures, end_meas);
                 if (!m) {
                     measure_error = true;
                     return (false);

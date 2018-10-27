@@ -440,6 +440,7 @@ IFspecial::evaluate(const char *string, sCKT *ckt, IFdata *data, int list_ind)
         }
         *t = '\0';
 
+/* XXX expand this to debugs?
         // The param name can be the name if a .measure result, with
         // an index.  If so, return the value, or 0 if the measure
         // has not been performed
@@ -461,6 +462,7 @@ IFspecial::evaluate(const char *string, sCKT *ckt, IFdata *data, int list_ind)
                 return (sp_error);
             }
         }
+*/
 
         // passing 'this' to these functions fills in the cached parameters
         // and sets 'isset'

@@ -48,6 +48,7 @@ Authors: 1987 Wayne A. Christopher
 #include "frontend.h"
 #include "fteparse.h"
 #include "ftedebug.h"
+#include "ftemeas.h"
 #include "outplot.h"
 #include "input.h"
 #include "cshell.h"
@@ -56,6 +57,7 @@ Authors: 1987 Wayne A. Christopher
 #include "toolbar.h"
 #include "outdata.h"
 #include "rundesc.h"
+#include "device.h"
 #include "spnumber/spnumber.h"
 
 
@@ -307,9 +309,10 @@ IFoutput::dbgStop(wordlist *wl)
         return;
     }
     if (thisone) {
+        sFtCirc *curcir = Sp.CurCircuit();
         thisone->set_number(o_debugs->new_count());
         thisone->set_active(true);
-        if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
+        if (CP.GetFlag(CP_INTERACTIVE) || !curcir) {
             if (o_debugs->stops()) {
                 for (d = o_debugs->stops(); d->next(); d = d->next())
                     ;
@@ -319,16 +322,13 @@ IFoutput::dbgStop(wordlist *wl)
                 o_debugs->set_stops(thisone);
         }
         else {
-            if (!Sp.CurCircuit()->debugs())
-                Sp.CurCircuit()->set_debugs(new sDebug);
-            sDebug *db = Sp.CurCircuit()->debugs();
-            if (db->stops()) {
-                for (d = db->stops(); d->next(); d = d->next())
+            if (curcir->stops()) {
+                for (d = curcir->stops(); d->next(); d = d->next())
                     ;
                 d->set_next(thisone);
             }
             else
-                db->set_stops(thisone);
+                curcir->set_stops(thisone);
         }
     }
     ToolBar()->UpdateTrace();
@@ -339,8 +339,8 @@ char *
 IFoutput::dbgStatus(bool tofp)
 {
     const char *msg = "No debugs are in effect.\n";
-    if (!o_debugs->isset() && (!Sp.CurCircuit() || !Sp.CurCircuit()->debugs() ||
-            !Sp.CurCircuit()->debugs()->isset())) {
+    if (!o_debugs->isset() &&
+            (!Sp.CurCircuit() || !Sp.CurCircuit()->debugs().isset())) {
         if (tofp) {
             TTY.send(msg);
             return (0);
@@ -353,30 +353,31 @@ IFoutput::dbgStatus(bool tofp)
         t = 0;
     else
         t = &s;
-    sDbComm *d;
-    sDebug *db = 0;
-    if (Sp.CurCircuit() && Sp.CurCircuit()->debugs())
-        db = Sp.CurCircuit()->debugs();
-    for (d = o_debugs->stops(); d; d = d->next())
+    sFtCirc *curcir = Sp.CurCircuit();
+    for (sDbComm *d = o_debugs->stops(); d; d = d->next())
         d->print(t);
-    if (db)
-        for (d = db->stops(); d; d = d->next())
+    if (curcir) {
+        for (sDbComm *d = curcir->stops(); d; d = d->next())
             d->print(t);
-    for (d = o_debugs->traces(); d; d = d->next())
+    }
+    for (sDbComm *d = o_debugs->traces(); d; d = d->next())
         d->print(t);
-    if (db)
-        for (d = db->traces(); d; d = d->next())
+    if (curcir) {
+        for (sDbComm *d = curcir->traces(); d; d = d->next())
             d->print(t);
-    for (d = o_debugs->iplots(); d; d = d->next())
+    }
+    for (sDbComm *d = o_debugs->iplots(); d; d = d->next())
         d->print(t);
-    if (db)
-        for (d = db->iplots(); d; d = d->next())
+    if (curcir) {
+        for (sDbComm *d = curcir->iplots(); d; d = d->next())
             d->print(t);
-    for (d = o_debugs->saves(); d; d = d->next())
+    }
+    for (sDbComm *d = o_debugs->saves(); d; d = d->next())
         d->print(t);
-    if (db)
-        for (d = db->saves(); d; d = d->next())
+    if (curcir) {
+        for (sDbComm *d = curcir->saves(); d; d = d->next())
             d->print(t);
+    }
     return (s);
 }
 
@@ -401,16 +402,16 @@ IFoutput::dbgDelete(wordlist *wl)
         if (!d ||
             (o_debugs->saves() && d->number() > o_debugs->saves()->number()))
             d = o_debugs->saves();
-        if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-            sDebug *db = Sp.CurCircuit()->debugs();
-            if (!d || (db->stops() && d->number() > db->stops()->number()))
-                d = db->stops();
-            if (!d || (db->traces() && d->number() > db->traces()->number()))
-                d = db->traces();
-            if (!d || (db->iplots() && d->number() > db->iplots()->number()))
-                d = db->iplots();
-            if (!d || (db->saves() && d->number() > db->saves()->number()))
-                d = db->saves();
+        if (Sp.CurCircuit()) {
+            sDebug &db = Sp.CurCircuit()->debugs();
+            if (!d || (db.stops() && d->number() > db.stops()->number()))
+                d = db.stops();
+            if (!d || (db.traces() && d->number() > db.traces()->number()))
+                d = db.traces();
+            if (!d || (db.iplots() && d->number() > db.iplots()->number()))
+                d = db.iplots();
+            if (!d || (db.saves() && d->number() > db.saves()->number()))
+                d = db.saves();
         }
         if (!d) {
             TTY.printf("No debugs are in effect.\n");
@@ -429,16 +430,16 @@ IFoutput::dbgDelete(wordlist *wl)
             o_debugs->set_iplots(d->next());
         else if (d == o_debugs->saves())
             o_debugs->set_saves(d->next());
-        else if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-            sDebug *db = Sp.CurCircuit()->debugs();
-            if (d == db->stops())
-                db->set_stops(d->next());
-            else if (d == db->traces())
-                db->set_traces(d->next());
-            else if (d == db->iplots())
-                db->set_iplots(d->next());
-            else if (d == db->saves())
-                db->set_saves(d->next());
+        else if (Sp.CurCircuit()) {
+            sDebug &db = Sp.CurCircuit()->debugs();
+            if (d == db.stops())
+                db.set_stops(d->next());
+            else if (d == db.traces())
+                db.set_traces(d->next());
+            else if (d == db.iplots())
+                db.set_iplots(d->next());
+            else if (d == db.saves())
+                db.set_saves(d->next());
         }
         ToolBar()->UpdateTrace();
         sDbComm::destroy(d);
@@ -552,27 +553,27 @@ IFoutput::setDebugActive(int dbnum, bool state)
             return;
         }
     }
-    if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-        sDebug *db = Sp.CurCircuit()->debugs();
-        for (d = db->stops(); d; d = d->next()) {
+    if (Sp.CurCircuit()) {
+        sDebug &db = Sp.CurCircuit()->debugs();
+        for (d = db.stops(); d; d = d->next()) {
             if (d->number() == dbnum) {
                 d->set_active(state);
                 return;
             }
         }
-        for (d = db->traces(); d; d = d->next()) {
+        for (d = db.traces(); d; d = d->next()) {
             if (d->number() == dbnum) {
                 d->set_active(state);
                 return;
             }
         }
-        for (d = db->iplots(); d; d = d->next()) {
+        for (d = db.iplots(); d; d = d->next()) {
             if (d->number() == dbnum) {
                 d->set_active(state);
                 return;
             }
         }
-        for (d = db->saves(); d; d = d->next()) {
+        for (d = db.saves(); d; d = d->next()) {
             if (d->number() == dbnum) {
                 d->set_active(state);
                 return;
@@ -603,15 +604,15 @@ IFoutput::deleteDebug(int which, bool inactive, int num)
             }
             dlast = d;
         }
-        if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-            sDebug *db = Sp.CurCircuit()->debugs();
+        if (Sp.CurCircuit()) {
+            sDebug &db = Sp.CurCircuit()->debugs();
             dlast = 0;
-            for (d = db->stops(); d; d = dnext) {
+            for (d = db.stops(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
                     if (!dlast)
-                        db->set_stops(dnext);
+                        db.set_stops(dnext);
                     else
                         dlast->set_next(dnext);
                     sDbComm::destroy(d);
@@ -640,15 +641,15 @@ IFoutput::deleteDebug(int which, bool inactive, int num)
             }
             dlast = d;
         }
-        if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-            sDebug *db = Sp.CurCircuit()->debugs();
+        if (Sp.CurCircuit()) {
+            sDebug &db = Sp.CurCircuit()->debugs();
             dlast = 0;
-            for (d = db->traces(); d; d = dnext) {
+            for (d = db.traces(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
                     if (!dlast)
-                        db->set_traces(dnext);
+                        db.set_traces(dnext);
                     else
                         dlast->set_next(dnext);
                     sDbComm::destroy(d);
@@ -677,15 +678,15 @@ IFoutput::deleteDebug(int which, bool inactive, int num)
             }
             dlast = d;
         }
-        if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-            sDebug *db = Sp.CurCircuit()->debugs();
+        if (Sp.CurCircuit()) {
+            sDebug &db = Sp.CurCircuit()->debugs();
             dlast = 0;
-            for (d = db->iplots(); d; d = dnext) {
+            for (d = db.iplots(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
                     if (!dlast)
-                        db->set_iplots(dnext);
+                        db.set_iplots(dnext);
                     else
                         dlast->set_next(dnext);
                     sDbComm::destroy(d);
@@ -714,15 +715,15 @@ IFoutput::deleteDebug(int which, bool inactive, int num)
             }
             dlast = d;
         }
-        if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-            sDebug *db = Sp.CurCircuit()->debugs();
+        if (Sp.CurCircuit()) {
+            sDebug &db = Sp.CurCircuit()->debugs();
             dlast = 0;
-            for (d = db->saves(); d; d = dnext) {
+            for (d = db.saves(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
                     if (!dlast)
-                        db->set_saves(dnext);
+                        db.set_saves(dnext);
                     else
                         dlast->set_next(dnext);
                     sDbComm::destroy(d);
@@ -740,9 +741,9 @@ IFoutput::deleteDebug(int which, bool inactive, int num)
 void
 IFoutput::initDebugs(sRunDesc *run)
 {
-    if (!run || !run->circuit())
+    if (!run)
         return;
-    sDebug *db = run->circuit()->debugs();
+    sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
     sDbComm *d, *dt;
     // called at beginning of run
     if (o_debugs->step_count() != o_debugs->num_steps()) {
@@ -773,6 +774,11 @@ IFoutput::initDebugs(sRunDesc *run)
             dt->set_graphid(0);
         }
     }
+    for (sMeas *m = o_debugs->measures(); m; m = m->next) {
+        if (run->job()->JOBtype != m->analysis)
+            continue;
+        m->reset(run->runPlot());
+    }
     if (db) {
         for (d = db->stops(); d; d = d->next()) {
             for (dt = d; dt; dt = dt->also()) {
@@ -797,6 +803,11 @@ IFoutput::initDebugs(sRunDesc *run)
                 dt->set_graphid(0);
             }
         }
+        for (sMeas *m = db->measures(); m; m = m->next) {
+            if (run->job()->JOBtype != m->analysis)
+                continue;
+            m->reset(run->runPlot());
+        }
     }
 }
 
@@ -813,9 +824,7 @@ IFoutput::checkDebugs(sRunDesc *run)
         return (false);
     if (run->pointCount() <= 0)
         return (true);
-    sDebug *db = 0;
-    if (run->circuit() && run->circuit()->debugs())
-        db = run->circuit()->debugs();
+    sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
     bool nohalt = true;
     if (o_debugs->traces() || o_debugs->stops() ||
             (db && (db->traces() || db->stops()))) {
@@ -868,8 +877,7 @@ IFoutput::checkDebugs(sRunDesc *run)
                         }
                     }
                 }
-                if (run->circuit()->debugs() && !doneone) {
-                    db = run->circuit()->debugs();
+                if (db && !doneone) {
                     for (sDbComm *d = db->iplots(); d; d = d->next()) {
                         if (d->type() == DB_IPLOT) {
                             iplot(d, run);
@@ -1255,4 +1263,24 @@ sDbComm::printcond(char **retstr)
         TTY.send("\n");
 }
 // End of sDbComm functions.
+
+
+void
+sDebug::clear()
+{
+    sDbComm::destroy_list(sd_iplot);
+    sDbComm::destroy_list(sd_trace);
+    sDbComm::destroy_list(sd_save);
+    sDbComm::destroy_list(sd_stop);
+    sMeas::destroy(sd_meas);
+    sd_iplot = 0;
+    sd_trace = 0;
+    sd_save = 0;
+    sd_stop = 0;
+    sd_meas = 0;
+    sd_debugcnt = 1;
+    sd_stepcnt = 0;
+    sd_steps = 0;
+}
+// End of sDebug functions.
 

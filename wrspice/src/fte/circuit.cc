@@ -484,8 +484,6 @@ sFtCirc::sFtCirc()
     ci_params = 0;
     ci_vars = 0;
     ci_defines = 0;
-    ci_debugs = 0;
-    ci_measures = 0;
 
     ci_commands = 0;
 
@@ -604,9 +602,8 @@ sFtCirc::clear()
     delete ci_params;           ci_params = 0;
     variable::destroy(ci_vars); ci_vars = 0;
     delete ci_defines;          ci_defines = 0;
-    delete ci_debugs;           ci_debugs = 0;
-    sMeas::destroy(ci_measures); ci_measures = 0;
 
+    ci_debug.clear();
     ci_execs.clear();
     ci_controls.clear();
     ci_postrun.clear();
@@ -787,7 +784,7 @@ sFtCirc::getVerilog(const char *word, const char *range, IFdata *data)
 // Add to the save list from the .save lines.
 //
 void
-sFtCirc::getSaves(sSaveList *saves, const sCKT *ckt)
+sFtCirc::getSaves(sSaveList *saved, const sCKT *ckt)
 {
     for (wordlist *wl = ci_commands; wl; wl = wl->wl_next) {
         char *s = wl->wl_word;
@@ -797,7 +794,7 @@ sFtCirc::getSaves(sSaveList *saves, const sCKT *ckt)
             lstring::advtok(&s); // skip ".save"
             char *t;
             while ((t = lstring::gettok(&s)) != 0) {
-                saves->add_save(t);
+                saved->add_save(t);
                 delete [] t;
             }
         }
@@ -818,7 +815,7 @@ sFtCirc::getSaves(sSaveList *saves, const sCKT *ckt)
                             char buf[128];
                             sprintf(buf, "@%s[%s]", (char*)inst->GENname,
                                 w->wl_word);
-                            saves->add_save(buf);
+                            saved->add_save(buf);
                         }
                     }
                 }

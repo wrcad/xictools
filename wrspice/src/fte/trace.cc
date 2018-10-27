@@ -112,9 +112,7 @@ IFoutput::dbgTrace(wordlist *wl)
             o_debugs->set_traces(d);
     }
     else {
-        if (!Sp.CurCircuit()->debugs())
-            Sp.CurCircuit()->set_debugs(new sDebug);
-        sDebug *db = Sp.CurCircuit()->debugs();
+        sDebug *db = &Sp.CurCircuit()->debugs();
         if (db->traces()) {
             sDbComm *ld = 0;
             for (sDbComm *td = db->traces(); td; ld = td, td = td->next()) {
@@ -192,9 +190,7 @@ IFoutput::dbgIplot(wordlist *wl)
             o_debugs->set_iplots(d);
     }
     else {
-        if (!Sp.CurCircuit()->debugs())
-            Sp.CurCircuit()->set_debugs(new sDebug);
-        sDebug *db = Sp.CurCircuit()->debugs();
+        sDebug *db = &Sp.CurCircuit()->debugs();
         if (db->iplots()) {
             sDbComm *td;
             for (td = db->iplots(); td->next(); td = td->next()) ;
@@ -825,9 +821,7 @@ IFoutput::endIplot(sRunDesc *run)
 {
     if (!run)
         return;
-    sDebug *db = 0;
-    if (run->circuit())
-        db = run->circuit()->debugs();
+    sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
     if (o_debugs->iplots() || (db && db->iplots())) {
         if (GRpkgIf()->CurDev() &&
                 GRpkgIf()->CurDev()->devtype == GRfullScreen)
@@ -890,8 +884,8 @@ IFoutput::isIplot(bool resurrect)
             if (d->type() == DB_DEADIPLOT)
                 d->set_type(DB_IPLOT);
         }
-        if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-            sDebug *db = Sp.CurCircuit()->debugs();
+        if (Sp.CurCircuit()) {
+            sDebug *db = &Sp.CurCircuit()->debugs();
             for (sDbComm *d = db->iplots(); d; d = d->next()) {
                 if (d->type() == DB_DEADIPLOT)
                     d->set_type(DB_IPLOT);
@@ -903,8 +897,8 @@ IFoutput::isIplot(bool resurrect)
         if ((d->type() == DB_IPLOT || d->type() == DB_IPLOTALL) && d->active())
             return (true);
     }
-    if (Sp.CurCircuit() && Sp.CurCircuit()->debugs()) {
-        sDebug *db = Sp.CurCircuit()->debugs();
+    if (Sp.CurCircuit()) {
+        sDebug *db = &Sp.CurCircuit()->debugs();
         for (sDbComm *d = db->iplots(); d; d = d->next())
             if ((d->type() == DB_IPLOT || d->type() == DB_IPLOTALL) &&
                     d->active())

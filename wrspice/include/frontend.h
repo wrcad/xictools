@@ -152,6 +152,68 @@ private:
     sControl *xb_tree;
 };
 
+// Container for debug list bases, etc.
+//
+struct sDebug
+{
+    sDebug()
+        {
+            sd_iplot = 0;
+            sd_trace = 0;
+            sd_save = 0;
+            sd_stop = 0;
+            sd_meas = 0;
+            sd_debugcnt = 1;
+            sd_stepcnt = 0;
+            sd_steps = 0;
+        }
+
+    ~sDebug()
+        {
+            clear();
+        }
+
+    void clear();
+
+    bool isset() { return (sd_iplot || sd_trace || sd_save || sd_stop); }
+
+    sDbComm *saves()            { return (sd_save); }
+    void set_saves(sDbComm *d)  { sd_save = d; }
+
+    sDbComm *traces()           { return (sd_trace); }
+    void set_traces(sDbComm *d) { sd_trace = d; }
+
+    sDbComm *iplots()           { return (sd_iplot); }
+    void set_iplots(sDbComm *d) { sd_iplot = d; }
+
+    sDbComm *stops()            { return (sd_stop); }
+    void set_stops(sDbComm *d)  { sd_stop = d; }
+
+    sMeas *measures()           { return (sd_meas); }
+    void set_measures(sMeas *m) { sd_meas = m; }
+
+    int new_count()             { return (sd_debugcnt++); }
+    int decrement_count()       { return (sd_debugcnt--); }
+
+    int step_count()            { return (sd_stepcnt); }
+    void set_step_count(int i)  { sd_stepcnt = i; }
+    int dec_step_count()        { return (--sd_stepcnt); }
+
+    int num_steps()             { return (sd_steps); }
+    void set_num_steps(int i)   { sd_steps = i; }
+
+private:
+    sDbComm *sd_save;           // save list head
+    sDbComm *sd_trace;          // trace list head
+    sDbComm *sd_iplot;          // iplot list head
+    sDbComm *sd_stop;           // stop after/when list head
+    sMeas   *sd_meas;           // measures list head
+
+    int sd_debugcnt;       // running sum of debugs created, provides id
+    int sd_stepcnt;        // number of steps done
+    int sd_steps;          // number of steps to do
+};
+
 // Element list for Alter command.
 struct dfrdlist
 {
@@ -261,14 +323,23 @@ struct sFtCirc
     sParamTab *params()         { return (ci_params); }
     variable *vars()            { return (ci_vars); }
     cUdf *defines()             { return (ci_defines); }
-    sDebug *debugs()            { return (ci_debugs); }
-    void set_debugs(sDebug *d)  { ci_debugs = d; }
-    sMeas *measures()           { return (ci_measures); }
 
     sExBlk *execs()             { return (&ci_execs); }
     sExBlk *controls()          { return (&ci_controls); }
     sExBlk *postrun()           { return (&ci_postrun); }
     void set_postrun(wordlist *w) { ci_postrun.set_text(w); }
+
+    sDebug &debugs()            { return (ci_debug); }
+    sDbComm *saves()            { return (ci_debug.saves()); }
+    void set_saves(sDbComm *d)  { ci_debug.set_saves(d); }
+    sDbComm *traces()           { return (ci_debug.traces()); }
+    void set_traces(sDbComm *d) { ci_debug.set_traces(d); }
+    sDbComm *iplots()           { return (ci_debug.iplots()); }
+    void set_iplots(sDbComm *d) { ci_debug.set_iplots(d); }
+    sDbComm *stops()            { return (ci_debug.stops()); }
+    void set_stops(sDbComm *d)  { ci_debug.set_stops(d); }
+    sMeas *measures()           { return (ci_debug.measures()); }
+    void set_measures(sMeas *m) { ci_debug.set_measures(m); }
 
     wordlist *commands()        { return (ci_commands); }
 
@@ -311,12 +382,11 @@ private:
     sParamTab *ci_params;       // .param parameter list
     variable *ci_vars;          // ... and the parsed versions
     cUdf *ci_defines;           // Functions defined by .param lines
-    sDebug *ci_debugs;          // Circuit-specific debugs, if any
-    sMeas *ci_measures;         // Circuit-specific measures, if any
 
     sExBlk ci_execs;            // Pre-parse executable block
     sExBlk ci_controls;         // Post-parse executable block;
     sExBlk ci_postrun;          // Post-run executable block;
+    sDebug ci_debug;            // Circuit-specific debugs, if any
 
     wordlist *ci_commands;      // Things to do when this circuit is done
 

@@ -529,7 +529,7 @@ sDCTprms::loop(LoopWorkFunc func, sCKT *ckt, int restart)
             }
             // do operation
             dct_skip = 0;
-            OP.initMeasures(job->JOBrun);
+            OP.initDebugs(job->JOBrun);
 #ifdef ALLPRMS
             ckt->doTaskSetup();
 #endif
@@ -814,7 +814,7 @@ namespace {
 #ifdef ALLPRMS
         cx->ckt()->doTaskSetup();
 #endif
-        OP.initMeasures(job->JOBrun);
+        OP.initDebugs(job->JOBrun);
         int error = (*run->func)(ckt, true);
         return (error);
     }

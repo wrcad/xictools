@@ -43,6 +43,7 @@
 //
 
 #include "frontend.h"
+#include "ftedebug.h"
 #include "outplot.h"
 #include "outdata.h"
 #include "cshell.h"
@@ -1003,7 +1004,9 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
             ch_segbase = lstring::copy(vv.get_string());
         out_mode = OutcCheckSeg;
     }
-    else if (keepplot || Sp.CurCircuit()->measures() || OP.isIplot(true)) {
+//XXX fixme stop when, keep only used vectors
+    else if (keepplot || (Sp.CurCircuit() && Sp.CurCircuit()->measures()) ||
+            OP.isIplot(true)) {
         // Keep all data for curent trial.
         out_mode = OutcCheckSeg;
     }

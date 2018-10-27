@@ -469,7 +469,6 @@ struct IFoutput
     bool checkDebugs(sRunDesc*);
 
     // measure.cc
-    void initMeasures(sRunDesc*);
     bool measure(sRunDesc*);
 
     // save.cc

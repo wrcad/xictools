@@ -48,6 +48,7 @@ Authors: 1985 Wayne A. Christopher
 #include "spglobal.h"
 #include <errno.h>
 #include "frontend.h"
+#include "ftedebug.h"
 #include "circuit.h"
 #include "outplot.h"
 #include "outdata.h"
@@ -2063,15 +2064,24 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 delete [] er;
             }
                 
-            if (!ci_measures)
-                ci_measures = m;
+            if (!ci_debug.measures())
+                ci_debug.set_measures(m);
             else {
-                sMeas *mx = ci_measures;
+                sMeas *mx = ci_debug.measures();
                 while (mx->next)
                     mx = mx->next;
                 mx->next = m;
             }
         }
+//XXX add debugs here (.stop lines)
+/*
+        else if (lstring::cimatch(STOP_KW, dd->line()) {
+        }
+        else if (lstring::cimatch(TRACE_KW, dd->line()) {
+        }
+        else if (lstring::cimatch(IPLOT_KW, dd->line()) {
+        }
+*/
     }
 
     ci_deck->set_actual(realdeck);

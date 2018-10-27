@@ -204,8 +204,8 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
             return;
         }
     }
-    if (circuit && circuit->debugs()) {
-        for (td = circuit->debugs()->saves(); td; td = td->next()) {
+    if (circuit) {
+        for (td = circuit->saves(); td; td = td->next()) {
             if (name_eq(s, td->string())) {
                 delete [] s;
                 return;
@@ -228,15 +228,12 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
             o_debugs->set_saves(d);
     }
     else {
-        if (!circuit->debugs())
-            circuit->set_debugs(new sDebug);
-        sDebug *db = circuit->debugs();
-        if (db->saves()) {
-            for (td = db->saves(); td->next(); td = td->next()) ;
+        if (circuit->saves()) {
+            for (td = circuit->saves(); td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
-            db->set_saves(d);
+            circuit->set_saves(d);
     }
 }
 
@@ -248,20 +245,17 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
 // The .measure lines are also checked here.
 //
 void
-IFoutput::getSaves(sFtCirc *circuit, sSaveList *saves)
+IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
 {
-    sDebug *db = 0;
-    if (circuit && circuit->debugs())
-        db = circuit->debugs();
-    sDbComm *d;
-    for (d = o_debugs->saves(); d && d->active(); d = d->next())
-        saves->add_save(d->string());
+    sDebug *db = circuit ? &circuit->debugs() : 0;
+    for (sDbComm *d = o_debugs->saves(); d && d->active(); d = d->next())
+        saved->add_save(d->string());
     if (db) {
-        for (d = db->saves(); d && d->active(); d = d->next())
-            saves->add_save(d->string());
+        for (sDbComm *d = db->saves(); d && d->active(); d = d->next())
+            saved->add_save(d->string());
     }
     bool saveall = true;
-    sHgen gen(saves->table());
+    sHgen gen(saved->table());
     sHent *h;
     while ((h = gen.next()) != 0) {
         if (*h->name() != Sp.SpecCatchar()) {
@@ -279,58 +273,83 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saves)
     // to @Vsrc[p].  When done, we'll go back an purge non-specials
     // if saveall is true.
 
-    for (d = o_debugs->traces(); d && d->active(); d = d->next())
-        saves->list_expr(d->string());
+    for (sDbComm *d = o_debugs->traces(); d && d->active(); d = d->next())
+        saved->list_expr(d->string());
     if (db) {
-        for (d = db->traces(); d && d->active(); d = d->next())
-            saves->list_expr(d->string());
+        for (sDbComm *d = db->traces(); d && d->active(); d = d->next())
+            saved->list_expr(d->string());
     }
-    for (d = o_debugs->iplots(); d && d->active(); d = d->next()) {
-        saves->list_expr(d->string());
+    for (sDbComm *d = o_debugs->iplots(); d && d->active(); d = d->next()) {
+        saved->list_expr(d->string());
         for (sDbComm *dd = d->also(); dd; dd = dd->also())
-            saves->list_expr(d->string());
+            saved->list_expr(d->string());
     }
     if (db) {
-        for (d = db->iplots(); d && d->active(); d = d->next()) {
-            saves->list_expr(d->string());
+        for (sDbComm *d = db->iplots(); d && d->active(); d = d->next()) {
+            saved->list_expr(d->string());
             for (sDbComm *dd = d->also(); dd; dd = dd->also())
-                saves->list_expr(d->string());
+                saved->list_expr(d->string());
         }
     }
-    for (d = o_debugs->stops(); d && d->active(); d = d->next())
-        saves->list_expr(d->string());
+    for (sDbComm *d = o_debugs->stops(); d && d->active(); d = d->next())
+        saved->list_expr(d->string());
     if (db) {
-        for (d = db->stops(); d && d->active(); d = d->next())
-            saves->list_expr(d->string());
+        for (sDbComm *d = db->stops(); d && d->active(); d = d->next())
+            saved->list_expr(d->string());
     }
 
-    for (sMeas *m = circuit->measures(); m; m = m->next) {
+    for (sMeas *m = o_debugs->measures(); m; m = m->next) {
         if (m->start_name)
-            saves->list_expr(m->start_name);
+            saved->list_expr(m->start_name);
         if (m->end_name)
-            saves->list_expr(m->end_name);
+            saved->list_expr(m->end_name);
         if (m->expr2)
-            saves->list_expr(m->expr2);
+            saved->list_expr(m->expr2);
         if (m->start_when_expr1)
-            saves->list_expr(m->start_when_expr1);
+            saved->list_expr(m->start_when_expr1);
         if (m->start_when_expr2)
-            saves->list_expr(m->start_when_expr2);
+            saved->list_expr(m->start_when_expr2);
         if (m->end_when_expr1)
-            saves->list_expr(m->end_when_expr1);
+            saved->list_expr(m->end_when_expr1);
         if (m->end_when_expr2)
-            saves->list_expr(m->end_when_expr2);
+            saved->list_expr(m->end_when_expr2);
         for (sMfunc *f = m->funcs; f; f = f->next)
-            saves->list_expr(f->expr);
+            saved->list_expr(f->expr);
     }
+    if (db) {
+        for (sMeas *m = db->measures(); m; m = m->next) {
+            if (m->start_name)
+                saved->list_expr(m->start_name);
+            if (m->end_name)
+                saved->list_expr(m->end_name);
+            if (m->expr2)
+                saved->list_expr(m->expr2);
+            if (m->start_when_expr1)
+                saved->list_expr(m->start_when_expr1);
+            if (m->start_when_expr2)
+                saved->list_expr(m->start_when_expr2);
+            if (m->end_when_expr1)
+                saved->list_expr(m->end_when_expr1);
+            if (m->end_when_expr2)
+                saved->list_expr(m->end_when_expr2);
+            for (sMfunc *f = m->funcs; f; f = f->next)
+                saved->list_expr(f->expr);
+        }
+    }
+
     if (saveall)
-        saves->purge_non_special();
+        saved->purge_non_special();
     else {
         // Remove all the measure result names, which may have been
         // added if they are referenced by another measure.  These
         // vectors don't exist until the measurement is done.
 
-        for (sMeas *m = circuit->measures(); m; m = m->next)
-            saves->remove_save(m->result);
+        for (sMeas *m = o_debugs->measures(); m; m = m->next)
+            saved->remove_save(m->result);
+        if (db) {
+            for (sMeas *m = db->measures(); m; m = m->next)
+                saved->remove_save(m->result);
+        }
     }
 }
 // End of IFoutput functions.

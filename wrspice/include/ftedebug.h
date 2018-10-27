@@ -55,19 +55,21 @@ Authors: 1985 Wayne A. Christopher
 //
 
 struct sRunDesc;
+struct sMeas;
 
 enum DBtype
 {
     DB_NONE,
     DB_SAVE,                // Save a node.
     DB_TRACE,               // Print the value of a node every iteration.
+    DB_IPLOT,               // Incrementally plot listed vectors.
+    DB_IPLOTALL,            // Incrementally plot everything.
+    DB_DEADIPLOT,           // Iplot is being destroyed.
     DB_STOPAFTER,           // Break after this many iterations.
     DB_STOPAT,              // Break at this many iterations.
     DB_STOPBEFORE,          // Break before this many iterations.
     DB_STOPWHEN,            // Break when a node reaches this value.
-    DB_IPLOT,               // Incrementally plot listed vectors.
-    DB_IPLOTALL,            // Incrementally plot everything.
-    DB_DEADIPLOT            // Iplot is being destroyed.
+    DB_MEASURE              // Perform a measurement.
 };
 
 // Structure to save a debug context as a list element.
@@ -111,6 +113,15 @@ struct sDbComm
     void print(char**);             // print, in string if given, the debug msg
     bool print_trace(sPlot*, bool*, int);  // print trace output
     void printcond(char**);         // print the conditional expression
+
+    static void destroy_list(sDbComm *l)
+        {
+            while (l) {
+                sDbComm *x = l;
+                l = l->db_next;
+                destroy(x);
+            }
+        }
 
     sDbComm *next()             { return (db_next); }
     void set_next(sDbComm *d)   { db_next = d; }
@@ -209,57 +220,6 @@ private:
         double *dpoints;
         int *ipoints;
     } db_a;
-};
-
-
-// Container for debug list bases, etc.
-//
-struct sDebug
-{
-    sDebug()
-        {
-            sd_iplot = 0;
-            sd_trace = 0;
-            sd_save = 0;
-            sd_stop = 0;
-            sd_debugcnt = 1;
-            sd_stepcnt = 0;
-            sd_steps = 0;
-        }
-
-    bool isset() { return (sd_iplot || sd_trace || sd_save || sd_stop); }
-
-    sDbComm *iplots()           { return (sd_iplot); }
-    void set_iplots(sDbComm *d) { sd_iplot = d; }
-
-    sDbComm *traces()           { return (sd_trace); }
-    void set_traces(sDbComm *d) { sd_trace = d; }
-
-    sDbComm *saves()            { return (sd_save); }
-    void set_saves(sDbComm *d)  { sd_save = d; }
-
-    sDbComm *stops()            { return (sd_stop); }
-    void set_stops(sDbComm *d)  { sd_stop = d; }
-
-    int new_count()             { return (sd_debugcnt++); }
-    int decrement_count()       { return (sd_debugcnt--); }
-
-    int step_count()            { return (sd_stepcnt); }
-    void set_step_count(int i)  { sd_stepcnt = i; }
-    int dec_step_count()        { return (--sd_stepcnt); }
-
-    int num_steps()             { return (sd_steps); }
-    void set_num_steps(int i)   { sd_steps = i; }
-
-private:
-    sDbComm *sd_iplot;          // iplot list head
-    sDbComm *sd_trace;          // trace list head
-    sDbComm *sd_save;           // save list head
-    sDbComm *sd_stop;           // stop after/when list head
-
-    int sd_debugcnt;       // running sum of debugs created, provides id
-    int sd_stepcnt;        // number of steps done
-    int sd_steps;          // number of steps to do
 };
 
 #endif // FTEDEBUG_H

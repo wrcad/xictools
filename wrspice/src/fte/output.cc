@@ -232,7 +232,6 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                 run->data(i)->sp.sp_mod = 0;
             }
             initDebugs(run);
-            initMeasures(run);
             return (run);
         }
         if (chk->out_mode == OutcCheckMulti)
@@ -261,7 +260,6 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                     run->data(i)->sp.sp_mod = 0;
                 }
                 initDebugs(run);
-                initMeasures(run);
                 return (run);
             }
         }
@@ -589,7 +587,6 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
     run->circuit()->set_runplot(OP.curPlot());
     OP.curPlot()->set_active(true);
     initDebugs(run);
-    initMeasures(run);
     return (run);
 }
 
