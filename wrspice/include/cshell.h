@@ -223,6 +223,7 @@ struct CshPar
     // cshpar.cc
     wordlist *Parse(const char*);           // Parse wordlist from cmd line
     void Redirect(wordlist**);              // Set up IO redirection
+    void SetReturnVal(double);              // Ser return value for function.
 
     // front.cc
     void AddBlock(const char*, wordlist*);  // Add codeblock to list
@@ -326,7 +327,6 @@ struct CshPar
     void SetReturn(bool b)                  { cp_return = b; }
 
     double ReturnVal()                      { return (cp_return_val); }
-    void SetReturnVal(double d)             { cp_return_val = d; }
 
     int Event()                             { return (cp_event); }
 

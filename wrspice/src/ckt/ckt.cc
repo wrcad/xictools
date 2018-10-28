@@ -593,10 +593,10 @@ sCKT::doTask(bool reset)
                     CKTstat->STATtotAnalTime += OP.seconds() - startTime;
                     return (error);
                 }
-                if (CKTbackPtr && CKTbackPtr->postrun()->text()) {
+                if (CKTbackPtr && CKTbackPtr->postrunBlk().text()) {
                     // Execute the .postrun commands.
 
-                    Sp.ExecCmds(CKTbackPtr->postrun()->text());
+                    Sp.ExecCmds(CKTbackPtr->postrunBlk().text());
                 }
                 if (!reset)
                     reset = true;

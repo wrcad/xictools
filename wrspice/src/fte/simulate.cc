@@ -684,18 +684,19 @@ sFtCirc::rebuild(bool save_loop)
     ci_origdeck = 0;
     const char *tfilename = FTSAVE(ci_filename);
 
-    char *ename = lstring::copy(ci_execs.name());
-    ci_execs.set_name(0);
-    sControl *eblock = ci_execs.tree();
-    ci_execs.set_tree(0);
-    wordlist *texecs = ci_execs.text();
-    ci_execs.set_text(0);
-    char *cname = lstring::copy(ci_controls.name());
-    ci_controls.set_name(0);
-    sControl *cblock = ci_controls.tree();
-    ci_controls.set_tree(0);
-    wordlist *tcontrols = ci_controls.text();
-    ci_controls.set_text(0);
+    char *ename = lstring::copy(ci_execBlk.name());
+    ci_execBlk.set_name(0);
+    sControl *eblock = ci_execBlk.tree();
+    ci_execBlk.set_tree(0);
+    wordlist *texecs = ci_execBlk.text();
+    ci_execBlk.set_text(0);
+    char *cname = lstring::copy(ci_controlBlk.name());
+    ci_controlBlk.set_name(0);
+    sControl *cblock = ci_controlBlk.tree();
+    ci_controlBlk.set_tree(0);
+    wordlist *tcontrols = ci_controlBlk.text();
+    ci_controlBlk.set_text(0);
+//XXX ci_postrunBlk?
 
     sLine *tverilog = FTSAVE(ci_verilog);
 
@@ -706,10 +707,10 @@ sFtCirc::rebuild(bool save_loop)
 
     sFtCirc *ct = Sp.CurCircuit();
     if (ct) {
-        ct->ci_execs.set_name(ename);
-        ct->ci_execs.set_tree(eblock);
-        ct->ci_controls.set_name(cname);
-        ct->ci_controls.set_tree(cblock);
+        ct->ci_execBlk.set_name(ename);
+        ct->ci_execBlk.set_tree(eblock);
+        ct->ci_controlBlk.set_name(cname);
+        ct->ci_controlBlk.set_tree(cblock);
         ct->ci_sweep = tsweep;
         ct->ci_check = tcheck;
         delete ct->ci_symtab;

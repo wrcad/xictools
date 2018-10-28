@@ -203,9 +203,9 @@ IFsimulator::Bind(const char *name, bool exec)
 {
     if (ft_curckt) {
         if (exec)
-            ft_curckt->execs()->set_name(name);
+            ft_curckt->execBlk().set_name(name);
         else
-            ft_curckt->controls()->set_name(name);
+            ft_curckt->controlBlk().set_name(name);
     }
     else
         GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit.\n");
@@ -217,11 +217,15 @@ IFsimulator::Bind(const char *name, bool exec)
 void
 IFsimulator::Unbind(const char *name)
 {
+    if (!name)
+        return;
     for (sFtCirc *ct = ft_circuits; ct; ct = ct->next()) {
-        if (ct->execs()->name() && lstring::eq(ct->execs()->name(), name))
-            ct->execs()->set_name(0);
-        if (ct->controls()->name() && lstring::eq(ct->controls()->name(), name))
-            ct->controls()->set_name(0);
+        if (ct->execBlk().name() &&
+                lstring::eq(ct->execBlk().name(), name))
+            ct->execBlk().set_name(0);
+        if (ct->controlBlk().name() &&
+                lstring::eq(ct->controlBlk().name(), name))
+            ct->controlBlk().set_name(0);
     }
 }
 
@@ -232,13 +236,13 @@ void
 IFsimulator::ListBound()
 {
     if (ft_curckt) {
-        if (ft_curckt->execs()->name()) {
+        if (ft_curckt->execBlk().name()) {
             TTY.printf("\tBound exec codeblock: %s\n",
-                ft_curckt->execs()->name());
+                ft_curckt->execBlk().name());
         }
-        if (ft_curckt->controls()->name()) {
+        if (ft_curckt->controlBlk().name()) {
             TTY.printf("\tBound control codeblock: %s\n",
-                ft_curckt->controls()->name());
+                ft_curckt->controlBlk().name());
         }
     }
 }
@@ -604,9 +608,9 @@ sFtCirc::clear()
     delete ci_defines;          ci_defines = 0;
 
     ci_debug.clear();
-    ci_execs.clear();
-    ci_controls.clear();
-    ci_postrun.clear();
+    ci_execBlk.clear();
+    ci_controlBlk.clear();
+    ci_postrunBlk.clear();
 
     wordlist::destroy(ci_commands); ci_commands = 0;
 
@@ -836,5 +840,36 @@ sExBlk::clear()
     xb_text = 0;
     CP.FreeControl(xb_tree);
     xb_tree = 0;
+}
+
+
+// Execute the codeblock.
+//
+void
+sExBlk::exec(bool suppress)
+{
+    if (xb_name || xb_tree) {
+        bool temp = CP.GetFlag(CP_INTERACTIVE);
+        CP.SetFlag(CP_INTERACTIVE, false);
+        TTY.ioPush();
+        OP.pushPlot();
+
+        if (suppress)
+            ToolBar()->SuppressUpdate(true);
+        ToolBar()->UpdateVectors(2);
+
+        if (xb_name)
+            CP.ExecBlock(xb_name);
+        else if (xb_tree)
+            CP.ExecControl(xb_tree);
+        ToolBar()->UpdateVectors(2);
+
+        if (suppress)
+            ToolBar()->SuppressUpdate(false);
+
+        OP.popPlot();
+        TTY.ioPop();
+        CP.SetFlag(CP_INTERACTIVE, temp);
+    }
 }
 

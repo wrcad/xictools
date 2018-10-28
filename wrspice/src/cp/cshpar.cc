@@ -53,6 +53,7 @@ Authors: 1987 Wayne A. Christopher
 #include "miscutil/filestat.h"
 #include "miscutil/miscutil.h"
 
+#include <math.h>
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
 #else
@@ -706,6 +707,26 @@ CshPar::Redirect(wordlist **list)
 error:
     wordlist::destroy(wl);
     *list = 0;
+}
+
+
+// This is used to set the return value for a function, which can be
+// obtained with the pseudo-variable "$?" after the function returns. 
+// Coerce to a nearby integer if very close, so that scripts can get
+// away with simple integer comparisons of return values.
+//
+void
+CshPar::SetReturnVal(double d)
+{
+    double a = fabs(d);
+    if (a > 0.999) {
+        double n = nearbyint(d);
+        if (fabs(n - d) < 1e-12*a) {
+            cp_return_val = n;
+            return;
+        }
+    }
+    cp_return_val = d;
 }
 
 

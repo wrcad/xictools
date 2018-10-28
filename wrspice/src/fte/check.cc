@@ -319,15 +319,15 @@ IFsimulator::MargAnalysis(wordlist *wl)
 int
 sFtCirc::checkCodeblocks()
 {
-    if (!controls()->name()) {
-        if (!controls()->tree()) {
-            if (!controls()->text()) {
+    if (!controlBlk().name()) {
+        if (!controlBlk().tree()) {
+            if (!controlBlk().text()) {
                 GRpkgIf()->ErrPrintf(ET_ERROR,
                     "no control statements or codeblock.\n");
                 return (E_NOTFOUND);
             }
-            controls()->set_tree(CP.MakeControl(controls()->text()));
-            if (!controls()->tree()) {
+            controlBlk().set_tree(CP.MakeControl(controlBlk().text()));
+            if (!controlBlk().tree()) {
                 GRpkgIf()->ErrPrintf(ET_ERROR,
                     "control statements parse failed.\n");
                 return(E_FAILED);
@@ -335,20 +335,20 @@ sFtCirc::checkCodeblocks()
         }
     }
     else {
-        if (!CP.IsBlockDef(controls()->name())) {
+        if (!CP.IsBlockDef(controlBlk().name())) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "control codeblock %s not found.\n", 
-                controls()->name());
+                controlBlk().name());
             return (E_NOTFOUND);
         }
     }
-    if (!execs()->name()) {
-        if (!execs()->tree()) {
-            if (!execs()->text())
+    if (!execBlk().name()) {
+        if (!execBlk().tree()) {
+            if (!execBlk().text())
                 GRpkgIf()->ErrPrintf(ET_WARN,
                     "no exec statements or codeblock.\n");
             else {
-                execs()->set_tree(CP.MakeControl(execs()->text()));
-                if (!execs()->tree()) {
+                execBlk().set_tree(CP.MakeControl(execBlk().text()));
+                if (!execBlk().tree()) {
                     GRpkgIf()->ErrPrintf(ET_ERROR,
                         "exec statements parse failed.\n");
                     return(E_FAILED);
@@ -357,9 +357,9 @@ sFtCirc::checkCodeblocks()
         }
     }
     else {
-        if (!CP.IsBlockDef(execs()->name())) {
+        if (!CP.IsBlockDef(execBlk().name())) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "exec codeblock %s not found.\n", 
-                execs()->name());
+                execBlk().name());
             return (E_NOTFOUND);
         }
     }
@@ -638,7 +638,7 @@ sCHECKprms::setup(checkargs &args, wordlist *wl)
 
     // Run the exec script.
     set_vec(checkINIT, 1.0);
-    execblock(curckt->execs(), false);
+    curckt->execBlk().exec(false);
     set_vec(checkINIT, 0.0);
     set_vec(checkFAIL, 0.0);
 
@@ -1391,7 +1391,7 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
     Sp.SetCurCircuit(out_cir);
     OP.setCurPlot(out_plot);
     if (ch_monte) {
-        execblock(out_cir->execs(), true);
+        out_cir->execBlk().exec(true);
         sDataVec *d = out_plot->find_vec(checkPNTS);
         if (d) {
             // Needed since checkPNTS may be redefined in the header
@@ -1469,7 +1469,7 @@ sCHECKprms::evaluate()
         if (d && d->isreal()) {
             d->set_realval(0, 0.0);
             // update windows first call only
-            execblock(out_cir->controls(), ch_evalcnt == 0 ? true : false);
+            out_cir->controlBlk().exec(ch_evalcnt == 0 ? true : false);
             // checkFAIL is true if failed
             d = out_plot->find_vec(checkFAIL);
             // dummy user may have deleted it
@@ -1798,38 +1798,6 @@ sCHECKprms::check_print()
     "    steps: %d\n\n", tval2, tdelta2, tstep2);
 
     TTY.printf("checkiterate is set to %d\n\n", titerno);
-}
-
-
-// Static function.
-// Execute the codeblock.
-//
-void
-sCHECKprms::execblock(sExBlk *exblk, bool suppress)
-{
-    if (exblk && (exblk->name() || exblk->tree())) {
-        bool temp = CP.GetFlag(CP_INTERACTIVE);
-        CP.SetFlag(CP_INTERACTIVE, false);
-        TTY.ioPush();
-        OP.pushPlot();
-
-        if (suppress)
-            ToolBar()->SuppressUpdate(true);
-        ToolBar()->UpdateVectors(2);
-
-        if (exblk->name())
-            CP.ExecBlock(exblk->name());
-        else if (exblk->tree())
-            CP.ExecControl(exblk->tree());
-        ToolBar()->UpdateVectors(2);
-
-        if (suppress)
-            ToolBar()->SuppressUpdate(false);
-
-        OP.popPlot();
-        TTY.ioPop();
-        CP.SetFlag(CP_INTERACTIVE, temp);
-    }
 }
 
 

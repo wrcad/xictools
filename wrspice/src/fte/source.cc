@@ -1055,6 +1055,7 @@ IFsimulator::ExecCmds(wordlist *wl)
         OP.pushPlot();
         TTY.ioPush();
         CP.PushControl();
+        CP.SetReturnVal(0.0);
         for ( ; wl; wl = wl->wl_next)
             CP.EvLoop(wl->wl_word);
         CP.PopControl();
@@ -1826,8 +1827,8 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
     ci_descr = lstring::copy(spdeck->line());
     ci_verilog = vlog;
     ci_params = ptab;
-    ci_execs.set_text(exec);
-    ci_controls.set_text(ctrl);
+    ci_execBlk.set_text(exec);
+    ci_controlBlk.set_text(ctrl);
     if (fname)
         ci_filename = lstring::copy(fname);
 

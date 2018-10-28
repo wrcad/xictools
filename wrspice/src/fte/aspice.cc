@@ -688,10 +688,10 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
             else
                 fprintf(inp, "%s\n", CHECK_KW);
             fprintf(inp, "%s\n", EXEC_KW);
-            if (cir->execs()->name())
-                CP.PrintBlock(cir->execs()->name(), inp);
-            else if (cir->execs()->tree())
-                CP.PrintControl(cir->execs()->tree(), inp);
+            if (cir->execBlk().name())
+                CP.PrintBlock(cir->execBlk().name(), inp);
+            else if (cir->execBlk().tree())
+                CP.PrintControl(cir->execBlk().tree(), inp);
             if (!rj->job()->monte()) {
                 double v1 = rj->job()->val1() + rj->i*rj->job()->delta1();
                 double v2 = rj->job()->val2() + rj->j*rj->job()->delta2();
@@ -704,10 +704,10 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
             fprintf(inp, "let checkSTP2 = %d\n", -rj->j);
             fprintf(inp, "%s\n", ENDC_KW);
             fprintf(inp, "%s\n", CONT_KW);
-            if (cir->controls()->name())
-                CP.PrintBlock(cir->controls()->name(), inp);
+            if (cir->controlBlk().name())
+                CP.PrintBlock(cir->controlBlk().name(), inp);
             else
-                CP.PrintControl(cir->controls()->tree(), inp);
+                CP.PrintControl(cir->controlBlk().tree(), inp);
             fprintf(inp, "%s\n", ENDC_KW);
             Sp.Listing(inp, cir->origdeck()->next(), cir->options(),
                 LS_DECK);
@@ -863,10 +863,10 @@ sJobc::submit_local(const char *program, const char *analysis,
             else
                 fprintf(inp, "%s\n", CHECK_KW);
             fprintf(inp, "%s\n", EXEC_KW);
-            if (cir->execs()->name())
-                CP.PrintBlock(cir->execs()->name(), inp);
-            else if (cir->execs()->tree())
-                CP.PrintControl(cir->execs()->tree(), inp);
+            if (cir->execBlk().name())
+                CP.PrintBlock(cir->execBlk().name(), inp);
+            else if (cir->execBlk().tree())
+                CP.PrintControl(cir->execBlk().tree(), inp);
             if (!rj->job()->monte()) {
                 double v1 = rj->job()->val1() + rj->i*rj->job()->delta1();
                 double v2 = rj->job()->val2() + rj->j*rj->job()->delta2();
@@ -879,10 +879,10 @@ sJobc::submit_local(const char *program, const char *analysis,
             fprintf(inp, "let checkSTP2 = %d\n", -rj->j);
             fprintf(inp, "%s\n", ENDC_KW);
             fprintf(inp, "%s\n", CONT_KW);
-            if (cir->controls()->name())
-                CP.PrintBlock(cir->controls()->name(), inp);
+            if (cir->controlBlk().name())
+                CP.PrintBlock(cir->controlBlk().name(), inp);
             else
-                CP.PrintControl(cir->controls()->tree(), inp);
+                CP.PrintControl(cir->controlBlk().tree(), inp);
             fprintf(inp, "%s\n", ENDC_KW);
             Sp.Listing(inp, cir->origdeck()->next(), cir->options(),
                 LS_DECK);

@@ -55,45 +55,7 @@
 
 //
 // Functions for the measurement post-processor:
-// 1. "measure" button on plot window
-// 2.  .measure statements
-// 3.  measure debug
 //
-
-
-bool
-IFoutput::measure(sRunDesc *run)
-{
-    if (!run || !run->circuit())
-        return (false);
-    sMeas *measures = run->circuit()->measures();
-    if (!measures)
-        return (false);
-
-    run->segmentizeVecs();
-    bool done = true;
-    bool stop = false;
-    for (sMeas *m = measures; m; m = m->next) {
-        if (run->anType() != m->analysis)
-            continue;
-        if (!m->check(run->circuit())) {
-            done = false;
-            continue;
-        }
-        if (m->shouldstop())
-            stop = true;
-    }
-    done &= stop;
-    if (done) {
-        // Reset stop flags so analysis can be continued.
-        for (sMeas *m = measures; m; m = m->next)
-            m->nostop();
-    }
-    run->unsegmentizeVecs();
-    return (done);
-}
-// End of IFoutput functions.
-
 
 namespace {
     bool get_anal(const char*, int*);

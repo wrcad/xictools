@@ -680,8 +680,6 @@ IFoutput::insertData(sCKT *ckt, sRunDesc *run, IFvalue *refValue,
     }
 
     /* what to do here?
-    if (measure(run))
-        o_shouldstop = true;
     if (!checkDebugs(run))
         o_shouldstop = true;
     */
@@ -869,8 +867,6 @@ IFoutput::checkBreak(sRunDesc *run, double ref)
         return (OK);
     }
 
-    if (measure(run))
-        o_shouldstop = true;
     if (!checkDebugs(run))
         o_shouldstop = true;
 

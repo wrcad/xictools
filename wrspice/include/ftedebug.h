@@ -72,6 +72,9 @@ enum DBtype
     DB_MEASURE              // Perform a measurement.
 };
 
+// Call function returns.
+enum { CB_OK, CB_PAUSE, CB_ENDIT };
+
 // Structure to save a debug context as a list element.
 //
 struct sDbComm

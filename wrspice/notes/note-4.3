@@ -206,10 +206,17 @@ before op range or first MC trial.  Set to 0 otherwise.
 TODO
 Use trial reset if alter only, otherwise rebuild.
 Tie .measure to debugs somehow, e.g. stop when measname
-When stopping for debug, call exec script.
-New "frame" default plot support.:Wq
-
+When stopping for debug, call exec script. (done, new "call" syntax)
+New "frame" default plot support.
 
 FIX/check: rtype=4 bug, update jjiv4.cir example.
 
 Christine's file:  Windows singular matrix, ok under Linux.
+
+1.  snap global ret to nearby int (done).
+2.  define returns for pause. abort (done)
+3.  make sure return set b4 every function eval. (done)
+4.  integrate check checks with break checks
+5.  "debugs" -> simtasks
+6.  lock out stops after invoked. ("at" ok, others need this?)
+

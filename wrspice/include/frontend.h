@@ -131,6 +131,7 @@ struct sExBlk
         }
 
     void clear();
+    void exec(bool);
 
     const char *name()              { return (xb_name); }
     void set_name(const char *n)
@@ -324,10 +325,10 @@ struct sFtCirc
     variable *vars()            { return (ci_vars); }
     cUdf *defines()             { return (ci_defines); }
 
-    sExBlk *execs()             { return (&ci_execs); }
-    sExBlk *controls()          { return (&ci_controls); }
-    sExBlk *postrun()           { return (&ci_postrun); }
-    void set_postrun(wordlist *w) { ci_postrun.set_text(w); }
+    sExBlk &execBlk()           { return (ci_execBlk); }
+    sExBlk &controlBlk()        { return (ci_controlBlk); }
+    sExBlk &postrunBlk()        { return (ci_postrunBlk); }
+    void set_postrun(wordlist *w) { ci_postrunBlk.set_text(w); }
 
     sDebug &debugs()            { return (ci_debug); }
     sDbComm *saves()            { return (ci_debug.saves()); }
@@ -383,9 +384,9 @@ private:
     variable *ci_vars;          // ... and the parsed versions
     cUdf *ci_defines;           // Functions defined by .param lines
 
-    sExBlk ci_execs;            // Pre-parse executable block
-    sExBlk ci_controls;         // Post-parse executable block;
-    sExBlk ci_postrun;          // Post-run executable block;
+    sExBlk ci_execBlk;          // Pre-parse executable block
+    sExBlk ci_controlBlk;       // Post-parse executable block;
+    sExBlk ci_postrunBlk;       // Post-run executable block;
     sDebug ci_debug;            // Circuit-specific debugs, if any
 
     wordlist *ci_commands;      // Things to do when this circuit is done

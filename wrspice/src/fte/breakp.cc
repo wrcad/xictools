@@ -814,8 +814,7 @@ IFoutput::initDebugs(sRunDesc *run)
 
 // The output functions call this function to update the debugs, and
 // to see if the run should continue.  If it returns true, then the
-// run should continue.  This should be called with point = -1 at the
-// end of analysis.
+// run should continue.
 //
 bool
 IFoutput::checkDebugs(sRunDesc *run)
@@ -826,18 +825,57 @@ IFoutput::checkDebugs(sRunDesc *run)
         return (true);
     sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
     bool nohalt = true;
+    if (o_debugs->measures() || (db && db->measures())) {
+        run->segmentizeVecs();
+        bool done = true;
+        bool stop = false;
+        for (sMeas *m = o_debugs->measures(); m; m = m->next) {
+            if (run->anType() != m->analysis)
+                continue;
+            if (!m->check(run->circuit())) {
+                done = false;
+                continue;
+            }
+            if (m->shouldstop())
+                stop = true;
+        }
+        if (db) {
+            for (sMeas *m = db->measures(); m; m = m->next) {
+                if (run->anType() != m->analysis)
+                    continue;
+                if (!m->check(run->circuit())) {
+                    done = false;
+                    continue;
+                }
+                if (m->shouldstop())
+                    stop = true;
+            }
+        }
+        stop &= done;
+        if (stop) {
+            // Reset stop flags so analysis can be continued.
+            for (sMeas *m = o_debugs->measures(); m; m = m->next)
+                m->nostop();
+            if (db) {
+                for (sMeas *m = db->measures(); m; m = m->next)
+                    m->nostop();
+            }
+        }
+        run->unsegmentizeVecs();
+        if (stop)
+            nohalt = false;
+    }
     if (o_debugs->traces() || o_debugs->stops() ||
             (db && (db->traces() || db->stops()))) {
         bool tflag = true;
         run->scalarizeVecs();
-        sDbComm *d;
-        for (d = o_debugs->traces(); d; d = d->next())
+        for (sDbComm *d = o_debugs->traces(); d; d = d->next())
             d->print_trace(run->runPlot(), &tflag, run->pointCount());
         if (db) {
-            for (d = db->traces(); d; d = d->next())
+            for (sDbComm *d = db->traces(); d; d = d->next())
                 d->print_trace(run->runPlot(), &tflag, run->pointCount());
         }
-        for (d = o_debugs->stops(); d; d = d->next()) {
+        for (sDbComm *d = o_debugs->stops(); d; d = d->next()) {
             if (d->should_stop(run) && d->run_call(run)) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                 TTY.printf("%-2d: condition met: stop ", d->number());
@@ -848,7 +886,7 @@ IFoutput::checkDebugs(sRunDesc *run)
             }
         }
         if (db) {
-            for (d = db->stops(); d; d = d->next()) {
+            for (sDbComm *d = db->stops(); d; d = d->next()) {
                 if (d->should_stop(run) && d->run_call(run)) {
                     bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                     TTY.printf("%-2d: condition met: stop ", d->number());
@@ -891,7 +929,6 @@ IFoutput::checkDebugs(sRunDesc *run)
             }
         }
     }
-
     if (o_debugs->step_count() > 0 && o_debugs->dec_step_count() == 0) {
         if (o_debugs->num_steps() > 1) {
             bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
@@ -986,7 +1023,7 @@ sDbComm::should_stop(sRunDesc *run)
                 if (dt->db_index < dt->db_numpts &&
                         run->pointCount() >= dt->db_a.ipoints[dt->db_index]) {
                     dt->db_index++;
-                    after = true;;
+                    after = true;
                     break;
                 }
             }
@@ -994,7 +1031,7 @@ sDbComm::should_stop(sRunDesc *run)
                 if (dt->db_index < dt->db_numpts &&
                         run->ref_value() >= dt->db_a.dpoints[dt->db_index]) {
                     dt->db_index++;
-                    after = true;;
+                    after = true;
                     break;
                 }
             }
@@ -1024,7 +1061,7 @@ sDbComm::should_stop(sRunDesc *run)
 }
 
 
-//XXX
+//XXX don't use checkFAIL here
 // Call the callback.  Return true if the run should pause.
 // This is called when should_stop returns true.
 //
@@ -1037,19 +1074,25 @@ sDbComm::run_call(sRunDesc *run)
     if (db_call) {
         if (db_callfn) {
             // Call the named script or codeblock.
+            wordlist wl;
+            wl.wl_word = db_callfn;
+            Sp.ExecCmds(&wl);
+            if (CP.ReturnVal() == CB_PAUSE || CP.ReturnVal() == CB_ENDIT)
+                return (false);
+        }
+        else if (run->check()) {
+            // Run the "controls" bound codeblock.  We stop
+            // (return true) only if the checkFAIL vector is not
+            // set.
+
+            run->check()->evaluate();
+            if (!run->check()->failed())
+                return (false);
         }
         else {
-            if (run->check()) {
-                // Run the "controls" bound codeblock.  We stop
-                // (return true) only if the checkFAIL vector is not
-                // set.
-
-                run->check()->evaluate();
-                if (!run->check()->failed())
-                    return (false);
-            }
-            else {
-            }
+            Sp.CurCircuit()->controlBlk().exec(true);
+            if (CP.ReturnVal() == CB_PAUSE || CP.ReturnVal() == CB_ENDIT)
+                return (false);
         }
     }
     return (true);

@@ -181,7 +181,6 @@ struct sCHECKprms : public sOUTcontrol
     void set_vec(const char*, double);
     void set_opvec(int, int);
     void check_print();
-    static void execblock(sExBlk*, bool);
     FILE *df_open(int, char**, FILE**, sNames*);
 
     int nextTask(int*, int*);
@@ -467,9 +466,6 @@ struct IFoutput
     void deleteDebug(int, bool, int);
     void initDebugs(sRunDesc*);
     bool checkDebugs(sRunDesc*);
-
-    // measure.cc
-    bool measure(sRunDesc*);
 
     // save.cc
     void dbgSave(wordlist*);

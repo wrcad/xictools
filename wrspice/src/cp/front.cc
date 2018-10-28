@@ -512,6 +512,7 @@ CshPar::AddBlock(const char *name, wordlist *wl)
 void
 CshPar::ExecBlock(const char *name)
 {
+    CP.SetReturnVal(0.0);
     block *b = 0;
     CS.push_stack();
     if (name) {
@@ -677,6 +678,7 @@ CshPar::PrintControl(sControl *c, FILE *fp)
 void
 CshPar::ExecControl(sControl *c)
 {
+    CP.SetReturnVal(0.0);
     CS.push_stack();
     if (c) {
         sControl *x = CS.cur_control();

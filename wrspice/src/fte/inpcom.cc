@@ -359,22 +359,22 @@ IFsimulator::Listing(FILE *file, sLine *deck, sLine *extras, int flags)
     if (type != LS_DECK) {
         if (useout) {
             TTY.printf("\t%s\n", ft_curckt->descr());
-            if (ft_curckt->execs()->name())
+            if (ft_curckt->execBlk().name())
                 TTY.printf("\tBound exec codeblock: %s\n",
-                    ft_curckt->execs()->name());
-            if (ft_curckt->controls()->name())
+                    ft_curckt->execBlk().name());
+            if (ft_curckt->controlBlk().name())
                 TTY.printf("\tBound control codeblock: %s\n",
-                    ft_curckt->controls()->name());
+                    ft_curckt->controlBlk().name());
             TTY.send("\n");
         }
         else {
             fprintf(file, "\t%s\n", ft_curckt->descr());
-            if (ft_curckt->execs()->name())
+            if (ft_curckt->execBlk().name())
                 fprintf(file, "\tBound exec codeblock: %s\n",
-                    ft_curckt->execs()->name());
-            if (ft_curckt->controls()->name())
+                    ft_curckt->execBlk().name());
+            if (ft_curckt->controlBlk().name())
                 fprintf(file, "\tBound control codeblock: %s\n",
-                    ft_curckt->controls()->name());
+                    ft_curckt->controlBlk().name());
             fputc('\n', file);
         }
     }
