@@ -456,7 +456,7 @@ struct IFoutput
     // aspice.cc
     void checkAsyncJobs();
 
-    // breakp.cc
+    // runop.cc
     void stopCmd(wordlist*);
     void statusCmd(char**);
     void deleteCmd(wordlist*);

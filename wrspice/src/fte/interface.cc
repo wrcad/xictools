@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "frontend.h"
-#include "ftemeas.h"
+#include "measure.h"
 #include "circuit.h"
 #include "ftedata.h"
 #include "outdata.h"

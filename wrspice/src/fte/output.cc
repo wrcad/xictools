@@ -51,7 +51,7 @@ Authors: 1988 Wayne A. Christopher
 #include "rawfile.h"
 #include "csdffile.h"
 #include "psffile.h"
-#include "ftedebug.h"
+#include "runop.h"
 #include "outdata.h"
 #include "device.h"
 #include "rundesc.h"

@@ -49,7 +49,7 @@ Authors: 1986 Wayne A. Christopher
 #include "frontend.h"
 #include "fteparse.h"
 #include "ftedata.h"
-#include "ftemeas.h"
+#include "measure.h"
 #include "outdata.h"
 #include "cshell.h"
 #include "kwords_fte.h"

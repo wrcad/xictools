@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#ifndef FTEMEAS_H
-#define FTEMEAS_H
+#ifndef MEASURE_H
+#define MEASURE_H
 
 #include <string.h>
 

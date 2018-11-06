@@ -46,7 +46,7 @@ Authors: 1987 Wayne A. Christopher
 ****************************************************************************/
 
 #include "frontend.h"
-#include "ftedebug.h"
+#include "runop.h"
 #include "cshell.h"
 #include "commands.h"
 #include "toolbar.h"

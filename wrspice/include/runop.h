@@ -45,8 +45,8 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifndef FTEDEBUG_H
-#define FTEDEBUG_H
+#ifndef RUNOP_H
+#define RUNOP_H
 
 
 //

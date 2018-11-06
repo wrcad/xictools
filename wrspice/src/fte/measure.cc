@@ -39,8 +39,8 @@
  *========================================================================*/
 
 #include "frontend.h"
-#include "ftemeas.h"
-#include "ftedebug.h"
+#include "measure.h"
+#include "runop.h"
 #include "fteparse.h"
 #include "misc.h"
 #include "ftedata.h"

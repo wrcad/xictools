@@ -875,7 +875,7 @@ private:
 
 //
 // Definitions for external symbols for output graphics.
-//
+// XXX put these somewhere
 
 // grsetup.cc
 extern void SetDefaultColors();

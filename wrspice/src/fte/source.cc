@@ -48,7 +48,7 @@ Authors: 1985 Wayne A. Christopher
 #include "spglobal.h"
 #include <errno.h>
 #include "frontend.h"
-#include "ftedebug.h"
+#include "runop.h"
 #include "circuit.h"
 #include "outplot.h"
 #include "outdata.h"
@@ -58,7 +58,7 @@ Authors: 1985 Wayne A. Christopher
 #include "commands.h"
 #include "input.h"
 #include "toolbar.h"
-#include "ftemeas.h"
+#include "measure.h"
 #include "fteparse.h"
 #include "subexpand.h"
 #include "verilog.h"

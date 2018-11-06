@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "frontend.h"
-#include "ftemeas.h"
+#include "measure.h"
 #include "outplot.h"
 #include "outdata.h"
 #include "cshell.h"

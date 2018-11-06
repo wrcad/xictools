@@ -43,7 +43,7 @@
 //
 
 #include "frontend.h"
-#include "ftedebug.h"
+#include "runop.h"
 #include "outplot.h"
 #include "outdata.h"
 #include "cshell.h"
