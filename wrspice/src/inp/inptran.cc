@@ -50,7 +50,7 @@ Authors: 1987 Wayne A. Christopher
 #include "inpptree.h"
 #include "circuit.h"
 #include "frontend.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "output.h"
 #include "misc.h"
 #include "miscutil/random.h"

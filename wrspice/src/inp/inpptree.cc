@@ -56,7 +56,6 @@ Authors: 1987 Wayne A. Christopher
 #include "inpptree.h"
 #include "circuit.h"
 #include "frontend.h"
-#include "ftedata.h"
 #include "variable.h"
 #include "ttyio.h"
 #include "verilog.h"

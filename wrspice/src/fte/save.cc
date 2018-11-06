@@ -46,7 +46,7 @@ Authors: 1987 Wayne A. Christopher
 ****************************************************************************/
 
 #include "frontend.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "runop.h"
 #include "measure.h"
 #include "output.h"

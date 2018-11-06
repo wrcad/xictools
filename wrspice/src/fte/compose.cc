@@ -47,7 +47,7 @@ Authors: 1986 Wayne A. Christopher
 
 #include "config.h"
 #include "frontend.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "output.h"
 #include "cshell.h"
 #include "commands.h"

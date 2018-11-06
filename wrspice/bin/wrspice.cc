@@ -69,7 +69,7 @@ Authors: 1985 Thomas L. Quarles
 #include "csdffile.h"
 #include "psffile.h"
 #include "kwords_fte.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "device.h"
 #include "acdefs.h"
 #include "distdefs.h"

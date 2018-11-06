@@ -49,7 +49,7 @@ Authors: 1985 Wayne A. Christopher
 #define GRAPH_H
 
 #include "config.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "ginterf/graphics.h"
 
 #if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
@@ -589,8 +589,8 @@ private:
     int gr_ticmarks;                // mark every ticmark'th point
     int gr_field;                   // character width of factor box
 
-    PlotType gr_pltype;             // defined in ftedata.h
-    GridType gr_grtype;             // defined in ftedata.h
+    PlotType gr_pltype;             // defined in datavec.h
+    GridType gr_grtype;             // defined in datavec.h
     ScaleType gr_format;            // format: F_?
 
     const char *gr_xlabel;          // for grid axes

@@ -49,7 +49,7 @@ Authors: 1985 Wayne A. Christopher
 #include "spglobal.h"
 #include "input.h"
 #include "frontend.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"

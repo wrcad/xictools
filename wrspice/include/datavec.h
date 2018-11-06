@@ -45,8 +45,8 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifndef FTEDATA_H
-#define FTEDATA_H
+#ifndef DATAVEC_H
+#define DATAVEC_H
 
 #include <math.h>
 #include "ifdata.h"

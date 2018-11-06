@@ -51,7 +51,7 @@ Authors: 1985 Wayne A. Christopher
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "spnumber/spnumber.h"
 
 #ifdef WIN32

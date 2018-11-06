@@ -41,7 +41,7 @@
 #ifndef RAWFILE_H
 #define RAWFILE_H
 
-#include "ftedata.h"
+#include "datavec.h"
 
 
 //

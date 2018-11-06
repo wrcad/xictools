@@ -52,7 +52,7 @@ Authors: 1985 Wayne A. Christopher
 #include "kwords_fte.h"
 #include "commands.h"
 #include "circuit.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "graph.h"
 #include "output.h"
 #include "keywords.h"

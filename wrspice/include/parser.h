@@ -43,11 +43,11 @@ Copyright 1990 Regents of the University of California.  All rights reserved.
 Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 **********/
 
-#ifndef FTEPARSE_H
-#define FTEPARSE_H
+#ifndef PARSER_H
+#define PARSER_H
 
 typedef pnode ParseNode;
-#include "ftedata.h"
+#include "datavec.h"
 #include "spnumber/spparse.h"
 
 
@@ -329,10 +329,6 @@ private:
     pnlist *pnl_next;
     pnode *pnl_node;
 };
-
-// Imports for processing the "tran" functions, also in inpptree.h
-extern char *GetTranFunc(char**);
-extern int EvalTranFunc(double**, const char*, double*, int);
 
 #endif // FTEPARSE_H
 

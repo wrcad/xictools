@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher, Norbert Jeske
 ****************************************************************************/
 
 #include "frontend.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "input.h"
 #include "inpmtab.h"
 #include "kwords_fte.h"

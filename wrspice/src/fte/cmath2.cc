@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "frontend.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "ttyio.h"
 #include "ginterf/graphics.h"
 

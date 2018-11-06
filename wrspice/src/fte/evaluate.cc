@@ -51,7 +51,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include "config.h"
 #include "frontend.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "output.h"
 #include "errors.h"
 #include "ttyio.h"

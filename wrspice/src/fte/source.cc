@@ -59,7 +59,7 @@ Authors: 1985 Wayne A. Christopher
 #include "input.h"
 #include "toolbar.h"
 #include "measure.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "subexpand.h"
 #include "verilog.h"
 #include "spnumber/paramsub.h"

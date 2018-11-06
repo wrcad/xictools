@@ -52,7 +52,7 @@
 #include "circuit.h"
 #include "frontend.h"
 #include "cshell.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "miscutil/filestat.h"
 #include "ginterf/graphics.h"
 

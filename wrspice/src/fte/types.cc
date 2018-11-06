@@ -47,7 +47,7 @@ Authors: 1986 Wayne A. Christopher
 
 #include "frontend.h"
 #include "commands.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "output.h"
 #include "ttyio.h"
 #include "errors.h"

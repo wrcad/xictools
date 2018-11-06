@@ -41,7 +41,7 @@
 #ifndef PRNTFILE_H
 #define PRNTFILE_H
 
-#include "ftedata.h"
+#include "datavec.h"
 
 class cPrintIn
 {

@@ -50,7 +50,7 @@ Authors: 1985 Wayne A. Christopher
 #include "cshell.h"
 #include "commands.h"
 #include "toolbar.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "rawfile.h"
 #include "csdffile.h"
 #include "prntfile.h"

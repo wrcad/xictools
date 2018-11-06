@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "frontend.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "rawfile.h"
 #include "csdffile.h"
 #include "output.h"

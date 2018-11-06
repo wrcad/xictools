@@ -47,8 +47,8 @@ Authors: 1986 Wayne A. Christopher
 
 #include "config.h"
 #include "frontend.h"
-#include "fteparse.h"
-#include "ftedata.h"
+#include "parser.h"
+#include "datavec.h"
 #include "measure.h"
 #include "output.h"
 #include "cshell.h"

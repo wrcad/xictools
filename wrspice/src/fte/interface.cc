@@ -41,7 +41,7 @@
 #include "frontend.h"
 #include "measure.h"
 #include "circuit.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "output.h"
 #include "optdefs.h"
 #include "statdefs.h"

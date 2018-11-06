@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "frontend.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "cshell.h"
 #include "commands.h"
 #include "spnumber/paramsub.h"

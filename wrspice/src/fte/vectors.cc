@@ -49,7 +49,7 @@ Authors: 1985 Wayne A. Christopher
 #include "rawfile.h"
 #include "csdffile.h"
 #include "prntfile.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
