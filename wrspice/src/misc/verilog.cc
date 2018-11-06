@@ -48,7 +48,7 @@
 #include "verilog.h"
 #include "misc.h"
 #include "ifdata.h"
-#include "outdata.h"
+#include "output.h"
 #include "circuit.h"
 #include "frontend.h"
 #include "cshell.h"

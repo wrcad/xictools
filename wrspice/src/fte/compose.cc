@@ -48,7 +48,7 @@ Authors: 1986 Wayne A. Christopher
 #include "config.h"
 #include "frontend.h"
 #include "ftedata.h"
-#include "outdata.h"
+#include "output.h"
 #include "cshell.h"
 #include "commands.h"
 #include "ttyio.h"

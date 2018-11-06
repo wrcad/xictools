@@ -56,7 +56,7 @@ typedef void ParseNode;
 #include "spnumber/spparse.h"
 
 #ifdef WRSPICE
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "frontend.h"
 #endif

@@ -45,8 +45,8 @@ Authors: 1987 UCB
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "frontend.h"
 #include "runop.h"

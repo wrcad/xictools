@@ -49,7 +49,7 @@ Authors: 1988 Jeffrey M. Hsu
 // GTK drivers for plotting.
 //
 
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"

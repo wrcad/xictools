@@ -50,7 +50,7 @@ Authors: 1988 Thomas L. Quarles
 
 #include "tfdefs.h"
 #include "device.h"
-#include "outdata.h"
+#include "output.h"
 #include "misc.h"
 #include "sparse/spmatrix.h"
 

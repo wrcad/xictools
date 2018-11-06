@@ -48,7 +48,7 @@ Authors: 1986 Wayne A. Christopher
 #include "frontend.h"
 #include "commands.h"
 #include "ftedata.h"
-#include "outdata.h"
+#include "output.h"
 #include "ttyio.h"
 #include "errors.h"
 #include "wlist.h"

@@ -47,7 +47,7 @@
 #include "config.h"
 #include "ttyio.h"
 #include "wlist.h"
-#include "outplot.h"
+#include "graph.h"
 #include <ctype.h>
 #include <errno.h>
 #include <sys/types.h>

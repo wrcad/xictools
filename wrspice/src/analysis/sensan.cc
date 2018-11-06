@@ -48,7 +48,7 @@ Authors: UCB CAD Group
 #include "sensdefs.h"
 #include "sensgen.h"
 #include "device.h"
-#include "outdata.h"
+#include "output.h"
 #include "sparse/spmatrix.h"
 
 

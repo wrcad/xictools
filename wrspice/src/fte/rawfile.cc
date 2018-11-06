@@ -48,7 +48,7 @@ Authors: 1986 Wayne A. Christopher
 #include "spglobal.h"
 #include "frontend.h"
 #include "rawfile.h"
-#include "outdata.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "errors.h"

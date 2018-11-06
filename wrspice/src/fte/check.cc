@@ -44,8 +44,8 @@
 
 #include "frontend.h"
 #include "runop.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"

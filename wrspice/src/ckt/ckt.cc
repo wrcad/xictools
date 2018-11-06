@@ -48,7 +48,7 @@ Authors: 1985 Thomas L. Quarles
 #include <math.h>
 #include "config.h"
 #include "frontend.h"
-#include "outdata.h"
+#include "output.h"
 #include "device.h"
 #include "inpptree.h"
 #include "input.h"
@@ -57,7 +57,7 @@ Authors: 1985 Thomas L. Quarles
 #include "uidhash.h"
 #include "verilog.h"
 #include "commands.h"
-#include "outplot.h"
+#include "graph.h"
 #include "sparse/spmatrix.h"
 #include "spnumber/hash.h"
 #include "miscutil/errorrec.h"

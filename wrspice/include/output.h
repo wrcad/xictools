@@ -44,8 +44,8 @@ Copyright 1990 Regents of the University of California.  All rights reserved.
 Authors: 1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifndef OUTDATA_H
-#define OUTDATA_H
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
 #include <stdio.h>
 #include "miscutil/lstring.h"

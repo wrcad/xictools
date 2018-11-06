@@ -47,8 +47,8 @@ Authors: 1985 Wayne A. Christopher
 
 #include "frontend.h"
 #include "measure.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "commands.h"
 #include "inpline.h"

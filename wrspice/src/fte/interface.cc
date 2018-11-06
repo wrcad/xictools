@@ -42,7 +42,7 @@
 #include "measure.h"
 #include "circuit.h"
 #include "ftedata.h"
-#include "outdata.h"
+#include "output.h"
 #include "optdefs.h"
 #include "statdefs.h"
 #include "variable.h"

@@ -47,7 +47,7 @@ Authors: 1985 Thomas L. Quarles
 
 #include "dcodefs.h"
 #include "errors.h"
-#include "outdata.h"
+#include "output.h"
 
 
 DCOanalysis DCOinfo;

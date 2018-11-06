@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "device.h"
-#include "outdata.h"
+#include "output.h"
 #include "sparse/spmatrix.h"
 
 

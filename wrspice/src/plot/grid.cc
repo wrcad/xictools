@@ -45,7 +45,7 @@ Authors: 1987 UCB
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
+#include "graph.h"
 #include "frontend.h"
 #include "ttyio.h"
 #include "spnumber/spnumber.h"

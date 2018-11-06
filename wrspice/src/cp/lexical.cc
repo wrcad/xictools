@@ -55,7 +55,7 @@ Authors: 1985 Wayne A. Christopher
 #include "frontend.h"
 #include "kwords_fte.h"
 #include "spglobal.h"
-#include "outplot.h"
+#include "graph.h"
 #include "miscutil/pathlist.h"
 #include "ginterf/graphics.h"
 #include <errno.h>

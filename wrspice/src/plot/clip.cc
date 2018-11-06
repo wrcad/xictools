@@ -46,7 +46,7 @@ Authors: 1982 Giles Billingsley
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
+#include "graph.h"
 
 
 //

@@ -50,7 +50,7 @@ Authors: 1985 Wayne A. Christopher
 #include "input.h"
 #include "frontend.h"
 #include "ftedata.h"
-#include "outdata.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"

@@ -47,7 +47,7 @@ Authors: 1987 Gary W. Ng
 
 #include "noisdefs.h"
 #include "device.h"
-#include "outdata.h"
+#include "output.h"
 #include "miscutil/lstring.h"
 
 

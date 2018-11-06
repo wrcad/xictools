@@ -46,13 +46,13 @@ Authors: 1988 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "frontend.h"
 #include "rawfile.h"
 #include "csdffile.h"
 #include "psffile.h"
 #include "runop.h"
-#include "outdata.h"
+#include "output.h"
 #include "device.h"
 #include "rundesc.h"
 #include "aspice.h"

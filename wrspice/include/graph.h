@@ -45,8 +45,8 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifndef OUTPLOT_H
-#define OUTPLOT_H
+#ifndef GRAPH_H
+#define GRAPH_H
 
 #include "config.h"
 #include "ftedata.h"

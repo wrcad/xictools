@@ -51,7 +51,7 @@ Authors: 1987 Wayne A. Christopher
 #include "circuit.h"
 #include "frontend.h"
 #include "ftedata.h"
-#include "outdata.h"
+#include "output.h"
 #include "misc.h"
 #include "miscutil/random.h"
 #include "miscutil/errorrec.h"

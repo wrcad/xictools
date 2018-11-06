@@ -54,13 +54,13 @@
 #include <errno.h>
 #include <signal.h>
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "spglobal.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
 #include "frontend.h"
-#include "outdata.h"
+#include "output.h"
 #include "toolbar.h"
 #include "miscutil/childproc.h"
 

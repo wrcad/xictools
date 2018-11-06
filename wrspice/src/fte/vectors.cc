@@ -50,7 +50,7 @@ Authors: 1985 Wayne A. Christopher
 #include "csdffile.h"
 #include "prntfile.h"
 #include "fteparse.h"
-#include "outdata.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"

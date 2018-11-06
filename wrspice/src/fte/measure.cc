@@ -44,7 +44,7 @@
 #include "fteparse.h"
 #include "misc.h"
 #include "ftedata.h"
-#include "outdata.h"
+#include "output.h"
 #include "cshell.h"
 #include "device.h"
 #include "rundesc.h"

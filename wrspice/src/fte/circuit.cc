@@ -54,7 +54,7 @@ Authors: 1985 Wayne A. Christopher
 #include "config.h"
 #include "spglobal.h"
 #include "frontend.h"
-#include "outdata.h"
+#include "output.h"
 #include "ftedata.h"
 #include "runop.h"
 #include "measure.h"

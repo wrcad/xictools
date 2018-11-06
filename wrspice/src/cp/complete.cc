@@ -48,8 +48,8 @@ Authors: 1985 Wayne A. Christopher
 #include "config.h"
 #include "cshell.h"
 #include "frontend.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 
 #include <sys/types.h>
 #ifdef HAVE_DIRENT_H

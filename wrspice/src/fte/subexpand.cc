@@ -62,7 +62,7 @@ Authors: 1985 Wayne A. Christopher, Norbert Jeske
 //#define TIME_DEBUG
 
 #ifdef TIME_DBG
-#include "outdata.h"
+#include "output.h"
 #endif
 
 

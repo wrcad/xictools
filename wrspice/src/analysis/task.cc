@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "circuit.h"
-#include "outdata.h"
+#include "output.h"
 #include "miscutil/lstring.h"
 
 

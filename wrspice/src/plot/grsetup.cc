@@ -46,8 +46,8 @@ Authors: 1988 Jeffrey M. Hsu
 ****************************************************************************/
 
 #include "frontend.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "toolbar.h"

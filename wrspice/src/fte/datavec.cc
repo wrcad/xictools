@@ -47,7 +47,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include "frontend.h"
 #include "ftedata.h"
-#include "outdata.h"
+#include "output.h"
 #include "cshell.h"
 
 

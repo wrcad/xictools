@@ -50,8 +50,8 @@ Authors: 1987 Wayne A. Christopher
 #include "cshell.h"
 #include "commands.h"
 #include "toolbar.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 #include "rundesc.h"
 
 //

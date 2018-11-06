@@ -49,7 +49,7 @@ Authors: 1987 Wayne A. Christopher
 #include "fteparse.h"
 #include "runop.h"
 #include "measure.h"
-#include "outdata.h"
+#include "output.h"
 #include "cshell.h"
 #include "commands.h"
 #include "toolbar.h"

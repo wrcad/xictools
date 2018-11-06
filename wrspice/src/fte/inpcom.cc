@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "spglobal.h"
 #include "frontend.h"
 #include "cshell.h"

@@ -46,7 +46,7 @@ Authors: 1988 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "frontend.h"
 #include "rawfile.h"
@@ -54,7 +54,7 @@ Authors: 1988 Wayne A. Christopher
 #include "psffile.h"
 #include "runop.h"
 #include "measure.h"
-#include "outdata.h"
+#include "output.h"
 #include "device.h"
 #include "rundesc.h"
 #include "toolbar.h"

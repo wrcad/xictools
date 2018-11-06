@@ -40,8 +40,8 @@
 
 #include "config.h"
 #include "frontend.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "commands.h"
 #include "keywords.h"

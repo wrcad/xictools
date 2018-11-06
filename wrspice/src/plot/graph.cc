@@ -46,7 +46,7 @@ Authors: 1988 Jeffrey M. Hsu
 ****************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "frontend.h"

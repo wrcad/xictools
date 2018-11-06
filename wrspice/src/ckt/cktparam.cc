@@ -43,7 +43,7 @@
 
 #include "frontend.h"
 #include "cshell.h"
-#include "outdata.h"
+#include "output.h"
 
 
 namespace {

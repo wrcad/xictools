@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "device.h"
-#include "outdata.h"
+#include "output.h"
 #include "frontend.h"
 #include "miscutil/threadpool.h"
 

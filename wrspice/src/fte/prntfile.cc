@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "frontend.h"
-#include "outdata.h"
+#include "output.h"
 #include "prntfile.h"
 #include "cshell.h"
 #include "spnumber/spnumber.h"

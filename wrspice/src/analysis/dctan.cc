@@ -47,7 +47,7 @@ Authors: 1985 Thomas L. Quarles
 
 #include "dctdefs.h"
 #include "device.h"
-#include "outdata.h"
+#include "output.h"
 
 
 int

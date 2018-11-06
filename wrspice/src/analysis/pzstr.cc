@@ -48,7 +48,7 @@ Authors: 1990 UCB CAD Group
 #include <math.h>
 #include "pzdefs.h"
 #include "input.h"
-#include "outdata.h"
+#include "output.h"
 #include "misc.h"
 #include "sparse/spmatrix.h"
 
