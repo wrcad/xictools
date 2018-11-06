@@ -309,7 +309,7 @@ sCKT::acDump(double freq, sRunDesc *run)
         // Single-thread.
 
         OP.appendData(run, &freqData, &valueData);
-        OP.checkBreak(run, freq);
+        OP.checkRunops(run, freq);
     }
     delete [] data;
     outd->count++;
@@ -703,7 +703,7 @@ sCKT::dump(double ref, sRunDesc *run)
         // Single-thread.
 
         OP.appendData(run, &refData, &valData);
-        OP.checkBreak(run, ref);
+        OP.checkRunops(run, ref);
     }
     outd->count++;
 }

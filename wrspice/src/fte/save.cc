@@ -125,13 +125,13 @@ namespace {
 void
 CommandTab::com_save(wordlist *wl)
 {
-    OP.dbgSave(wl);
+    OP.saveCmd(wl);
 }
 // End of CommandTab functions.
 
 
 void
-IFoutput::dbgSave(wordlist *wl)
+IFoutput::saveCmd(wordlist *wl)
 {
     char buf[BSIZE_SP];
     for ( ; wl; wl = wl->wl_next) {

@@ -68,7 +68,7 @@ const char *kw_iplot  = "iplot";
 void
 CommandTab::com_trace(wordlist *wl)
 {
-    OP.dbgTrace(wl);
+    OP.TraceCmd(wl);
 }
 
 
@@ -77,7 +77,7 @@ CommandTab::com_trace(wordlist *wl)
 void
 CommandTab::com_iplot(wordlist *wl)
 {
-    OP.dbgIplot(wl);
+    OP.iplotCmd(wl);
 }
 // End of CommandTab functions.
 
@@ -85,7 +85,7 @@ CommandTab::com_iplot(wordlist *wl)
 // Trace a node. Usage is "trace expr ..."
 //
 void
-IFoutput::dbgTrace(wordlist *wl)
+IFoutput::TraceCmd(wordlist *wl)
 {
     const char *msg = "already tracing %s, ignored.\n";
 
@@ -135,7 +135,7 @@ IFoutput::dbgTrace(wordlist *wl)
 // Incrementally plot a value, similar to trace.
 //
 void
-IFoutput::dbgIplot(wordlist *wl)
+IFoutput::iplotCmd(wordlist *wl)
 {
     if (!wl) {
         GRpkgIf()->ErrPrintf(ET_ERRORS, "no vectors given.\n");

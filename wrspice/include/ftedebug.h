@@ -75,6 +75,14 @@ enum DBtype
 // Call function returns.
 enum { CB_OK, CB_PAUSE, CB_ENDIT };
 
+// Returns from runop test, should match call function returns;
+enum ROret
+{
+    RO_OK = CB_OK,  // Proceed with run.
+    RO_PAUSE,       // Pause run, can be resumed.
+    RO_ENDIT        // Abort run, can not be resumed.
+};
+
 // Structure to save a debug context as a list element.
 //
 struct sDbComm
@@ -111,8 +119,7 @@ struct sDbComm
 
     static void destroy(sDbComm*);  // destroy this debug and descendents
     bool istrue();                  // evaluate true if condition met
-    bool should_stop(sRunDesc*);    // true if stop condition met
-    bool run_call(sRunDesc*);       // call the callfunc is given
+    ROret should_stop(sRunDesc*);   // true if stop condition met
     void print(char**);             // print, in string if given, the debug msg
     bool print_trace(sPlot*, bool*, int);  // print trace output
     void printcond(char**);         // print the conditional expression

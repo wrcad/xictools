@@ -425,7 +425,7 @@ private:
     FILE *of_fp;            // Pointer to output file.
 };
 
-// Flags for IFoutput::deleteDbg.
+// Flags for IFoutput::deleteRunop.
 #define DF_STOP     0x1
 #define DF_TRACE    0x2
 #define DF_IPLOT    0x4
@@ -447,8 +447,6 @@ struct IFoutput
     int setDims(sRunDesc*, int*, int, bool = false);
     int setDC(sRunDesc*, sDCTprms*);
     int setAttrs(sRunDesc*, IFuid*, OUTscaleType, IFvalue*);
-    int checkBreak(sRunDesc*, double);
-    int pauseTest(sRunDesc*);
     void unrollPlot(sRunDesc*);
     void addPlotNote(sRunDesc*, const char*);
     void endPlot(sRunDesc*, bool);
@@ -459,22 +457,23 @@ struct IFoutput
     void checkAsyncJobs();
 
     // breakp.cc
-    void dbgStop(wordlist*);
-    char *dbgStatus(bool);
-    void dbgDelete(wordlist*);
-    void setDebugActive(int, bool);
-    void deleteDebug(int, bool, int);
-    void initDebugs(sRunDesc*);
-    bool checkDebugs(sRunDesc*);
+    void stopCmd(wordlist*);
+    void statusCmd(char**);
+    void deleteCmd(wordlist*);
+    void initRunops(sRunDesc*);
+    void setRunopActive(int, bool);
+    void deleteRunop(int, bool, int);
+    void checkRunops(sRunDesc*, double);
+    int pauseTest(sRunDesc*);
 
     // save.cc
-    void dbgSave(wordlist*);
+    void saveCmd(wordlist*);
     void addSave(sFtCirc*, const char*);
     void getSaves(sFtCirc*, sSaveList*);
 
     // trace.cc
-    void dbgTrace(wordlist*);
-    void dbgIplot(wordlist*);
+    void TraceCmd(wordlist*);
+    void iplotCmd(wordlist*);
     void iplot(sDbComm*, sRunDesc*);
     void endIplot(sRunDesc*);
     bool isIplot(bool = false);

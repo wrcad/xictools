@@ -231,7 +231,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                 run->data(i)->sp.sp_inst = 0;
                 run->data(i)->sp.sp_mod = 0;
             }
-            initDebugs(run);
+            initRunops(run);
             return (run);
         }
         if (chk->out_mode == OutcCheckMulti)
@@ -259,7 +259,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                     run->data(i)->sp.sp_inst = 0;
                     run->data(i)->sp.sp_mod = 0;
                 }
-                initDebugs(run);
+                initRunops(run);
                 return (run);
             }
         }
@@ -586,7 +586,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
 
     run->circuit()->set_runplot(OP.curPlot());
     OP.curPlot()->set_active(true);
-    initDebugs(run);
+    initRunops(run);
     return (run);
 }
 
@@ -680,7 +680,7 @@ IFoutput::insertData(sCKT *ckt, sRunDesc *run, IFvalue *refValue,
     }
 
     /* what to do here?
-    if (!checkDebugs(run))
+    if (!checkRunops(run))
         o_shouldstop = true;
     */
 
@@ -841,82 +841,6 @@ IFoutput::setAttrs(sRunDesc *run, IFuid *varName, OUTscaleType param, IFvalue*)
             run->runPlot()->scale()->set_gridtype(type);
     }
     return (OK);
-}
-
-
-// Run debugs, measures, and margin analysis tests.
-//
-int
-IFoutput::checkBreak(sRunDesc *run, double ref)
-{
-    if (!run)
-        return (OK);
-    sCHECKprms *chk = run->check();
-    if (chk && chk->out_mode == OutcCheck) {
-        if (!chk->points() || ref < chk->points()[chk->index()]) {
-            vecGc();
-            return (OK);
-        }
-
-        chk->evaluate();
-
-        chk->set_index(chk->index() + 1);
-        if (chk->failed() || chk->index() == chk->max_index())
-            o_endit = true;
-        vecGc();
-        return (OK);
-    }
-
-    if (!checkDebugs(run))
-        o_shouldstop = true;
-
-    if (chk && (chk->out_mode == OutcCheckSeg ||
-            chk->out_mode == OutcCheckMulti)) {
-        if (!chk->points() || ref < chk->points()[chk->index()] ||
-                chk->index() >= chk->max_index()) {
-            vecGc();
-            return (OK);
-        }
-
-        if (!chk->failed()) {
-            run->scalarizeVecs();
-            chk->evaluate();
-            run->unscalarizeVecs();
-        }
-
-        chk->set_index(chk->index() + 1);
-        if ((chk->failed() || chk->index() == chk->max_index()) &&
-                chk->out_mode != OutcCheckMulti)
-            o_endit = true;
-    }
-
-    vecGc();
-    return (OK);
-}
-
-
-// Check for requested pause.
-//
-int
-IFoutput::pauseTest(sRunDesc *run)
-{
-    if (!Sp.GetFlag(FT_BATCHMODE))
-        GP.Checkup();
-    if (Sp.GetFlag(FT_INTERRUPT)) {
-        o_shouldstop = false;
-        Sp.SetFlag(FT_INTERRUPT, false);
-        ToolBar()->UpdatePlots(0);
-        endIplot(run);
-        return (E_INTRPT);
-    }
-    else if (o_shouldstop) {
-        o_shouldstop = false;
-        ToolBar()->UpdatePlots(0);
-        endIplot(run);
-        return (E_PAUSE);
-    }
-    else
-        return (OK);
 }
 
 

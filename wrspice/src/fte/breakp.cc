@@ -97,7 +97,7 @@ CommandTab::com_step(wordlist *wl)
 void
 CommandTab::com_stop(wordlist *wl)
 {
-    OP.dbgStop(wl);
+    OP.stopCmd(wl);
 }
 
 
@@ -106,7 +106,7 @@ CommandTab::com_stop(wordlist *wl)
 void
 CommandTab::com_status(wordlist*)
 {
-    OP.dbgStatus(true);
+    OP.statusCmd(0);
 }
 
 
@@ -115,7 +115,7 @@ CommandTab::com_status(wordlist*)
 void
 CommandTab::com_delete(wordlist *wl)
 {
-    OP.dbgDelete(wl);
+    OP.deleteCmd(wl);
 }
 // End of CommandTab functions.
 
@@ -153,7 +153,7 @@ namespace {
 // If more than one is given on a command line, then this is a conjunction.
 //
 void
-IFoutput::dbgStop(wordlist *wl)
+IFoutput::stopCmd(wordlist *wl)
 {
     sDbComm *d = 0, *thisone = 0;
     while (wl) {
@@ -335,24 +335,21 @@ IFoutput::dbgStop(wordlist *wl)
 }
 
 
-char *
-IFoutput::dbgStatus(bool tofp)
+void
+IFoutput::statusCmd(char **ps)
 {
+    if (ps)
+        *ps = 0;
     const char *msg = "No debugs are in effect.\n";
     if (!o_debugs->isset() &&
             (!Sp.CurCircuit() || !Sp.CurCircuit()->debugs().isset())) {
-        if (tofp) {
+        if (!ps)
             TTY.send(msg);
-            return (0);
-        }
         else
-            return (lstring::copy(msg));
+            *ps = lstring::copy(msg);
+        return;
     }
-    char *s = 0, **t;
-    if (tofp)
-        t = 0;
-    else
-        t = &s;
+    char **t = ps;
     sFtCirc *curcir = Sp.CurCircuit();
     for (sDbComm *d = o_debugs->stops(); d; d = d->next())
         d->print(t);
@@ -378,7 +375,6 @@ IFoutput::dbgStatus(bool tofp)
         for (sDbComm *d = curcir->saves(); d; d = d->next())
             d->print(t);
     }
-    return (s);
 }
 
 
@@ -388,7 +384,7 @@ IFoutput::dbgStatus(bool tofp)
 // cleared only if it is inactive.
 //
 void
-IFoutput::dbgDelete(wordlist *wl)
+IFoutput::deleteCmd(wordlist *wl)
 {
     if (!wl) {
         sDbComm *d = o_debugs->stops();
@@ -456,23 +452,23 @@ IFoutput::dbgDelete(wordlist *wl)
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_all)) {
-            deleteDebug(DF_ALL, inactive, -1);
+            deleteRunop(DF_ALL, inactive, -1);
             return;
         }
         if (lstring::eq(wl->wl_word, kw_stop)) {
-            deleteDebug(DF_STOP, inactive, -1);
+            deleteRunop(DF_STOP, inactive, -1);
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_trace)) {
-            deleteDebug(DF_TRACE, inactive, -1);
+            deleteRunop(DF_TRACE, inactive, -1);
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_iplot)) {
-            deleteDebug(DF_IPLOT, inactive, -1);
+            deleteRunop(DF_IPLOT, inactive, -1);
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_save)) {
-            deleteDebug(DF_SAVE, inactive, -1);
+            deleteRunop(DF_SAVE, inactive, -1);
             continue;
         }
 
@@ -503,7 +499,7 @@ IFoutput::dbgDelete(wordlist *wl)
                 n2 = nt;
             }
             while (n1 <= n2) {
-                deleteDebug(DF_ALL, inactive, n1);
+                deleteRunop(DF_ALL, inactive, n1);
                 n1++;
             }
             continue;
@@ -519,14 +515,88 @@ IFoutput::dbgDelete(wordlist *wl)
         if (*s)
             continue;
         int i = atoi(wl->wl_word);
-        deleteDebug(DF_ALL, inactive, i);
+        deleteRunop(DF_ALL, inactive, i);
     }
     ToolBar()->UpdateTrace();
 }
 
 
 void
-IFoutput::setDebugActive(int dbnum, bool state)
+IFoutput::initRunops(sRunDesc *run)
+{
+    if (!run)
+        return;
+    sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
+    sDbComm *d, *dt;
+    // called at beginning of run
+    if (o_debugs->step_count() != o_debugs->num_steps()) {
+        // left over from last run
+        o_debugs->set_step_count(0);
+        o_debugs->set_num_steps(0);
+    }
+    for (d = o_debugs->stops(); d; d = d->next()) {
+        for (dt = d; dt; dt = dt->also()) {
+            if (dt->type() == DB_STOPWHEN)
+                dt->set_point(0);
+        }
+    }
+    for (dt = o_debugs->traces(); dt; dt = dt->next())
+        dt->set_point(0);
+    for (dt = o_debugs->iplots(); dt; dt = dt->next()) {
+        if (dt->type() == DB_DEADIPLOT) {
+            // user killed the window
+            if (dt->graphid())
+                GP.DestroyGraph(dt->graphid());
+            dt->set_type(DB_IPLOT);
+        }
+        if (run->check() && run->check()->out_mode == OutcCheckSeg)
+            dt->set_reuseid(dt->graphid());
+        if (!(run->check() && (run->check()->out_mode == OutcCheckMulti ||
+                run->check()->out_mode == OutcLoop))) {
+            dt->set_point(0);
+            dt->set_graphid(0);
+        }
+    }
+    for (sMeas *m = o_debugs->measures(); m; m = m->next) {
+        if (run->job()->JOBtype != m->analysis)
+            continue;
+        m->reset(run->runPlot());
+    }
+    if (db) {
+        for (d = db->stops(); d; d = d->next()) {
+            for (dt = d; dt; dt = dt->also()) {
+                if (dt->type() == DB_STOPWHEN)
+                    dt->set_point(0);
+            }
+        }
+        for (dt = db->traces(); dt; dt = dt->next())
+            dt->set_point(0);
+        for (dt = db->iplots(); dt; dt = dt->next()) {
+            if (dt->type() == DB_DEADIPLOT) {
+                // user killed the window
+                if (dt->graphid())
+                    GP.DestroyGraph(dt->graphid());
+                dt->set_type(DB_IPLOT);
+            }
+            if (run->check() && run->check()->out_mode == OutcCheckSeg)
+                dt->set_reuseid(dt->graphid());
+            if (!(run->check() && (run->check()->out_mode == OutcCheckMulti ||
+                    run->check()->out_mode == OutcLoop))) {
+                dt->set_point(0);
+                dt->set_graphid(0);
+            }
+        }
+        for (sMeas *m = db->measures(); m; m = m->next) {
+            if (run->job()->JOBtype != m->analysis)
+                continue;
+            m->reset(run->runPlot());
+        }
+    }
+}
+
+
+void
+IFoutput::setRunopActive(int dbnum, bool state)
 {
     sDbComm *d;
     for (d = o_debugs->stops(); d; d = d->next()) {
@@ -584,7 +654,7 @@ IFoutput::setDebugActive(int dbnum, bool state)
 
 
 void
-IFoutput::deleteDebug(int which, bool inactive, int num)
+IFoutput::deleteRunop(int which, bool inactive, int num)
 {
     sDbComm *d, *dlast, *dnext;
     if (which & DF_SAVE) {
@@ -738,109 +808,36 @@ IFoutput::deleteDebug(int which, bool inactive, int num)
 }
 
 
+// Run debugs, measures, and margin analysis tests.
+//
 void
-IFoutput::initDebugs(sRunDesc *run)
+IFoutput::checkRunops(sRunDesc *run, double ref)
 {
     if (!run)
         return;
-    sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
-    sDbComm *d, *dt;
-    // called at beginning of run
-    if (o_debugs->step_count() != o_debugs->num_steps()) {
-        // left over from last run
-        o_debugs->set_step_count(0);
-        o_debugs->set_num_steps(0);
-    }
-    for (d = o_debugs->stops(); d; d = d->next()) {
-        for (dt = d; dt; dt = dt->also()) {
-            if (dt->type() == DB_STOPWHEN)
-                dt->set_point(0);
+    sCHECKprms *chk = run->check();
+    if (chk && chk->out_mode == OutcCheck) {
+        if (!chk->points() || ref < chk->points()[chk->index()]) {
+            vecGc();
+            return;
         }
-    }
-    for (dt = o_debugs->traces(); dt; dt = dt->next())
-        dt->set_point(0);
-    for (dt = o_debugs->iplots(); dt; dt = dt->next()) {
-        if (dt->type() == DB_DEADIPLOT) {
-            // user killed the window
-            if (dt->graphid())
-                GP.DestroyGraph(dt->graphid());
-            dt->set_type(DB_IPLOT);
-        }
-        if (run->check() && run->check()->out_mode == OutcCheckSeg)
-            dt->set_reuseid(dt->graphid());
-        if (!(run->check() && (run->check()->out_mode == OutcCheckMulti ||
-                run->check()->out_mode == OutcLoop))) {
-            dt->set_point(0);
-            dt->set_graphid(0);
-        }
-    }
-    for (sMeas *m = o_debugs->measures(); m; m = m->next) {
-        if (run->job()->JOBtype != m->analysis)
-            continue;
-        m->reset(run->runPlot());
-    }
-    if (db) {
-        for (d = db->stops(); d; d = d->next()) {
-            for (dt = d; dt; dt = dt->also()) {
-                if (dt->type() == DB_STOPWHEN)
-                    dt->set_point(0);
-            }
-        }
-        for (dt = db->traces(); dt; dt = dt->next())
-            dt->set_point(0);
-        for (dt = db->iplots(); dt; dt = dt->next()) {
-            if (dt->type() == DB_DEADIPLOT) {
-                // user killed the window
-                if (dt->graphid())
-                    GP.DestroyGraph(dt->graphid());
-                dt->set_type(DB_IPLOT);
-            }
-            if (run->check() && run->check()->out_mode == OutcCheckSeg)
-                dt->set_reuseid(dt->graphid());
-            if (!(run->check() && (run->check()->out_mode == OutcCheckMulti ||
-                    run->check()->out_mode == OutcLoop))) {
-                dt->set_point(0);
-                dt->set_graphid(0);
-            }
-        }
-        for (sMeas *m = db->measures(); m; m = m->next) {
-            if (run->job()->JOBtype != m->analysis)
-                continue;
-            m->reset(run->runPlot());
-        }
-    }
-}
 
+        chk->evaluate();
 
-// The output functions call this function to update the debugs, and
-// to see if the run should continue.  If it returns true, then the
-// run should continue.
-//
-bool
-IFoutput::checkDebugs(sRunDesc *run)
-{
-    if (!run)
-        return (false);
-    if (run->pointCount() <= 0)
-        return (true);
-    sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
-    bool nohalt = true;
-    if (o_debugs->measures() || (db && db->measures())) {
-        run->segmentizeVecs();
-        bool done = true;
-        bool stop = false;
-        for (sMeas *m = o_debugs->measures(); m; m = m->next) {
-            if (run->anType() != m->analysis)
-                continue;
-            if (!m->check(run->circuit())) {
-                done = false;
-                continue;
-            }
-            if (m->shouldstop())
-                stop = true;
-        }
-        if (db) {
-            for (sMeas *m = db->measures(); m; m = m->next) {
+        chk->set_index(chk->index() + 1);
+        if (chk->failed() || chk->index() == chk->max_index())
+            o_endit = true;
+        vecGc();
+        return;
+    }
+
+    if (run->pointCount() > 0) {
+        sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
+        if (o_debugs->measures() || (db && db->measures())) {
+            run->segmentizeVecs();
+            bool done = true;
+            bool stop = false;
+            for (sMeas *m = o_debugs->measures(); m; m = m->next) {
                 if (run->anType() != m->analysis)
                     continue;
                 if (!m->check(run->circuit())) {
@@ -850,95 +847,164 @@ IFoutput::checkDebugs(sRunDesc *run)
                 if (m->shouldstop())
                     stop = true;
             }
-        }
-        stop &= done;
-        if (stop) {
-            // Reset stop flags so analysis can be continued.
-            for (sMeas *m = o_debugs->measures(); m; m = m->next)
-                m->nostop();
             if (db) {
-                for (sMeas *m = db->measures(); m; m = m->next)
+                for (sMeas *m = db->measures(); m; m = m->next) {
+                    if (run->anType() != m->analysis)
+                        continue;
+                    if (!m->check(run->circuit())) {
+                        done = false;
+                        continue;
+                    }
+                    if (m->shouldstop())
+                        stop = true;
+                }
+            }
+            stop &= done;
+            if (stop) {
+                // Reset stop flags so analysis can be continued.
+                for (sMeas *m = o_debugs->measures(); m; m = m->next)
                     m->nostop();
+                if (db) {
+                    for (sMeas *m = db->measures(); m; m = m->next)
+                        m->nostop();
+                }
             }
+            run->unsegmentizeVecs();
+            if (stop)
+                o_shouldstop = true;
         }
-        run->unsegmentizeVecs();
-        if (stop)
-            nohalt = false;
-    }
-    if (o_debugs->traces() || o_debugs->stops() ||
-            (db && (db->traces() || db->stops()))) {
-        bool tflag = true;
-        run->scalarizeVecs();
-        for (sDbComm *d = o_debugs->traces(); d; d = d->next())
-            d->print_trace(run->runPlot(), &tflag, run->pointCount());
-        if (db) {
-            for (sDbComm *d = db->traces(); d; d = d->next())
+        if (o_debugs->traces() || o_debugs->stops() ||
+                (db && (db->traces() || db->stops()))) {
+            bool tflag = true;
+            run->scalarizeVecs();
+            for (sDbComm *d = o_debugs->traces(); d; d = d->next())
                 d->print_trace(run->runPlot(), &tflag, run->pointCount());
-        }
-        for (sDbComm *d = o_debugs->stops(); d; d = d->next()) {
-            if (d->should_stop(run) && d->run_call(run)) {
-                bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                TTY.printf("%-2d: condition met: stop ", d->number());
-                d->printcond(0);
-                nohalt = false;
-                if (need_pr)
-                    CP.Prompt();
+            if (db) {
+                for (sDbComm *d = db->traces(); d; d = d->next())
+                    d->print_trace(run->runPlot(), &tflag, run->pointCount());
             }
-        }
-        if (db) {
-            for (sDbComm *d = db->stops(); d; d = d->next()) {
-                if (d->should_stop(run) && d->run_call(run)) {
+            for (sDbComm *d = o_debugs->stops(); d; d = d->next()) {
+                ROret r = d->should_stop(run);
+                if (r == RO_PAUSE) {
                     bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                     TTY.printf("%-2d: condition met: stop ", d->number());
                     d->printcond(0);
-                    nohalt = false;
+                    o_shouldstop = true;
                     if (need_pr)
                         CP.Prompt();
                 }
+                else if (r == RO_ENDIT) {
+//XXX handle this
+                    o_endit = true;
+                }
             }
-        }
-        run->unscalarizeVecs();
-    }
-    if (o_debugs->iplots() || (db && db->iplots())) {
-        sDataVec *xs = run->runPlot()->scale();
-        if (xs) {
-            int len = xs->length();
-            if (len >= IPOINTMIN || (xs->flags() & VF_ROLLOVER)) {
-                bool doneone = false;
-                for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
-                    if (d->type() == DB_IPLOT) {
-                        iplot(d, run);
-                        if (GRpkgIf()->CurDev() &&
-                                GRpkgIf()->CurDev()->devtype == GRfullScreen) {
-                            doneone = true;
-                            break;
-                        }
+            if (db) {
+                for (sDbComm *d = db->stops(); d; d = d->next()) {
+                    ROret r = d->should_stop(run);
+                    if (r == RO_PAUSE) {
+                        bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
+                        TTY.printf("%-2d: condition met: stop ", d->number());
+                        d->printcond(0);
+                        o_shouldstop = true;
+                        if (need_pr)
+                            CP.Prompt();
+                    }
+                    else if (r == RO_ENDIT) {
+//XXX handle this
+                        o_endit = true;
                     }
                 }
-                if (db && !doneone) {
-                    for (sDbComm *d = db->iplots(); d; d = d->next()) {
+            }
+            run->unscalarizeVecs();
+        }
+        if (o_debugs->iplots() || (db && db->iplots())) {
+            sDataVec *xs = run->runPlot()->scale();
+            if (xs) {
+                int len = xs->length();
+                if (len >= IPOINTMIN || (xs->flags() & VF_ROLLOVER)) {
+                    bool doneone = false;
+                    for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
                         if (d->type() == DB_IPLOT) {
                             iplot(d, run);
                             if (GRpkgIf()->CurDev() &&
                                     GRpkgIf()->CurDev()->devtype ==
-                                    GRfullScreen)
+                                    GRfullScreen) {
+                                doneone = true;
                                 break;
+                            }
+                        }
+                    }
+                    if (db && !doneone) {
+                        for (sDbComm *d = db->iplots(); d; d = d->next()) {
+                            if (d->type() == DB_IPLOT) {
+                                iplot(d, run);
+                                if (GRpkgIf()->CurDev() &&
+                                        GRpkgIf()->CurDev()->devtype ==
+                                        GRfullScreen)
+                                    break;
+                            }
                         }
                     }
                 }
             }
         }
-    }
-    if (o_debugs->step_count() > 0 && o_debugs->dec_step_count() == 0) {
-        if (o_debugs->num_steps() > 1) {
-            bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-            TTY.printf("Stopped after %d steps.\n", o_debugs->num_steps());
-            if (need_pr)
-                CP.Prompt();
+        if (o_debugs->step_count() > 0 && o_debugs->dec_step_count() == 0) {
+            if (o_debugs->num_steps() > 1) {
+                bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
+                TTY.printf("Stopped after %d steps.\n", o_debugs->num_steps());
+                if (need_pr)
+                    CP.Prompt();
+            }
+            o_shouldstop = true;
         }
-        return (false);
     }
-    return (nohalt);
+
+    if (chk && (chk->out_mode == OutcCheckSeg ||
+            chk->out_mode == OutcCheckMulti)) {
+        if (!chk->points() || ref < chk->points()[chk->index()] ||
+                chk->index() >= chk->max_index()) {
+            vecGc();
+            return;
+        }
+
+        if (!chk->failed()) {
+            run->scalarizeVecs();
+            chk->evaluate();
+            run->unscalarizeVecs();
+        }
+
+        chk->set_index(chk->index() + 1);
+        if ((chk->failed() || chk->index() == chk->max_index()) &&
+                chk->out_mode != OutcCheckMulti)
+            o_endit = true;
+    }
+
+    vecGc();
+}
+
+
+// Check for requested pause.
+//
+int
+IFoutput::pauseTest(sRunDesc *run)
+{
+    if (!Sp.GetFlag(FT_BATCHMODE))
+        GP.Checkup();
+    if (Sp.GetFlag(FT_INTERRUPT)) {
+        o_shouldstop = false;
+        Sp.SetFlag(FT_INTERRUPT, false);
+        ToolBar()->UpdatePlots(0);
+        endIplot(run);
+        return (E_INTRPT);
+    }
+    else if (o_shouldstop) {
+        o_shouldstop = false;
+        ToolBar()->UpdatePlots(0);
+        endIplot(run);
+        return (E_PAUSE);
+    }
+    else
+        return (OK);
 }
 // End of IFoutput functions.
 
@@ -995,11 +1061,11 @@ sDbComm::istrue()
 }
 
 
-bool
+ROret
 sDbComm::should_stop(sRunDesc *run)
 {
     if (!db_active || !run)
-        return (false);
+        return (RO_OK);
     bool when = true;
     bool after = true;
     for (sDbComm *dt = this; dt; dt = dt->db_also) {
@@ -1057,45 +1123,40 @@ sDbComm::should_stop(sRunDesc *run)
             }
         }
     }
-    return (when && after);
-}
-
-
+    if (when && after) {
+        // Call the callback, if any.  This can override the stop.
+        if (db_call) {
+            if (db_callfn) {
+                // Call the named script or codeblock.
+                wordlist wl;
+                wl.wl_word = db_callfn;
+                Sp.ExecCmds(&wl);
+                if (CP.ReturnVal() == CB_OK)
+                    return (RO_OK);
+                if (CP.ReturnVal() == CB_ENDIT)
+                    return (RO_ENDIT);
+            }
+            else if (run->check()) {
+                // Run the "controls" bound codeblock.  We stop
+                // only if the checkFAIL vector is not
+                // set.
 //XXX don't use checkFAIL here
-// Call the callback.  Return true if the run should pause.
-// This is called when should_stop returns true.
-//
-bool
-sDbComm::run_call(sRunDesc *run)
-{
-    if (!db_call)
-        return (true);
 
-    if (db_call) {
-        if (db_callfn) {
-            // Call the named script or codeblock.
-            wordlist wl;
-            wl.wl_word = db_callfn;
-            Sp.ExecCmds(&wl);
-            if (CP.ReturnVal() == CB_PAUSE || CP.ReturnVal() == CB_ENDIT)
-                return (false);
+                run->check()->evaluate();
+                if (!run->check()->failed())
+                    return (RO_OK);
+            }
+            else {
+                Sp.CurCircuit()->controlBlk().exec(true);
+                if (CP.ReturnVal() == CB_OK)
+                    return (RO_OK);
+                if (CP.ReturnVal() == CB_ENDIT)
+                    return (RO_ENDIT);
+            }
         }
-        else if (run->check()) {
-            // Run the "controls" bound codeblock.  We stop
-            // (return true) only if the checkFAIL vector is not
-            // set.
-
-            run->check()->evaluate();
-            if (!run->check()->failed())
-                return (false);
-        }
-        else {
-            Sp.CurCircuit()->controlBlk().exec(true);
-            if (CP.ReturnVal() == CB_PAUSE || CP.ReturnVal() == CB_ENDIT)
-                return (false);
-        }
+        return (RO_PAUSE);
     }
-    return (true);
+    return (RO_OK);
 }
 
 

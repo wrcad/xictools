@@ -1071,7 +1071,8 @@ const char *sTraces::tr_btns[] = { "Delete Inactive" };
 void
 sTraces::update()
 {
-    char *s = OP.dbgStatus(false);
+    char *s;
+    OP.statusCmd(&s);
     GtkWidget *text = TB()->tr_text;
     if (!text)
         return;
@@ -1114,7 +1115,7 @@ sTraces::tr_actions(GtkWidget *caller, void*)
 void
 sTraces::tr_dfunc()
 {
-    OP.deleteDebug(DF_ALL, true, -1);
+    OP.deleteRunop(DF_ALL, true, -1);
     TB()->UpdateTrace();
 }
 
@@ -1152,7 +1153,7 @@ sTraces::tr_btn_hdlr(GtkWidget *caller, int x, int y)
         return;
     }
 
-    OP.setDebugActive(dnum, active);
+    OP.setRunopActive(dnum, active);
     int posn = line_start - string;
     delete [] string;
 
