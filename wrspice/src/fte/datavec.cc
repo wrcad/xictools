@@ -45,7 +45,7 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "datavec.h"
 #include "output.h"
 #include "cshell.h"

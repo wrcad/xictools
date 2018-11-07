@@ -46,7 +46,7 @@ Authors: 1986 Wayne A. Christopher
 ****************************************************************************/
 
 #include "spglobal.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "rawfile.h"
 #include "output.h"
 #include "cshell.h"

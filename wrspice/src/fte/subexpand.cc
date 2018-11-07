@@ -45,7 +45,7 @@ Authors: 1985 Wayne A. Christopher, Norbert Jeske
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "parser.h"
 #include "input.h"
 #include "inpmtab.h"

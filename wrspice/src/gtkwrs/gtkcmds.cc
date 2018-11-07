@@ -45,7 +45,7 @@
  **************************************************************************/
 
 #include "config.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "spglobal.h"
 #include "graph.h"
 #include "output.h"

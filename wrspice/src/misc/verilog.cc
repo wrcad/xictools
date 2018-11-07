@@ -50,7 +50,7 @@
 #include "ifdata.h"
 #include "output.h"
 #include "circuit.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "parser.h"
 #include "miscutil/filestat.h"

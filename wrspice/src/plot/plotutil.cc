@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "graph.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "ttyio.h"
 #include "miscutil/miscutil.h"

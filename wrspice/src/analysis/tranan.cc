@@ -50,7 +50,7 @@ Authors: 1987 Thomas L. Quarles
 #include "input.h"
 #include "output.h"
 #include "verilog.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "ttyio.h"
 #include "sparse/spmatrix.h"
 

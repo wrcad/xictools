@@ -46,7 +46,7 @@
 
 #include "config.h"
 #include "graph.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "commands.h"
 #include "gtktoolb.h"

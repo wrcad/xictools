@@ -50,7 +50,7 @@ Authors: 1987 Wayne A. Christopher
 //
 
 #include "spglobal.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"

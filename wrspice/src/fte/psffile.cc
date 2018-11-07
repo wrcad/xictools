@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "spglobal.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "psffile.h"
 #include "cshell.h"
 #include "kwords_fte.h"

@@ -49,7 +49,7 @@ Authors: 1987 Wayne A. Christopher
 #include "input.h"
 #include "inpptree.h"
 #include "circuit.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "datavec.h"
 #include "output.h"
 #include "misc.h"

@@ -47,7 +47,7 @@ Authors: 1985 Thomas L. Quarles
 
 #include <math.h>
 #include "config.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "output.h"
 #include "device.h"
 #include "inpptree.h"

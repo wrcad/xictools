@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "output.h"
 #include "prntfile.h"
 #include "cshell.h"

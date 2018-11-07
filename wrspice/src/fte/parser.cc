@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "parser.h"
 #include "output.h"
 #include "input.h"

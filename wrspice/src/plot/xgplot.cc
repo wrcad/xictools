@@ -48,7 +48,7 @@ Authors: 1988 Jeffrey M. Hsu
 #include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
+#include "simulator.h"
 
 #define XG_MAXVECTORS 64
 

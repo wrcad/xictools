@@ -45,8 +45,8 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifndef FRONTEND_H
-#define FRONTEND_H
+#ifndef SIMULATOR_H
+#define SIMULATOR_H
 
 #include <stdio.h>
 #include <unistd.h>

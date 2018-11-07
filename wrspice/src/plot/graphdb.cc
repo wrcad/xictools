@@ -48,7 +48,7 @@ Authors: 1987 UCB
 #include "graph.h"
 #include "output.h"
 #include "cshell.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "runop.h"
 
 

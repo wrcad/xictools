@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "graph.h"
 #include "output.h"
 #include "cshell.h"

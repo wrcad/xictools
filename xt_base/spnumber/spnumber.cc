@@ -58,7 +58,7 @@ typedef void ParseNode;
 #ifdef WRSPICE
 #include "graph.h"
 #include "cshell.h"
-#include "frontend.h"
+#include "simulator.h"
 #endif
 
 

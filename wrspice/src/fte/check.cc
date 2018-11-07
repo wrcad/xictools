@@ -42,7 +42,7 @@
 // Functions for operating range and related analysis
 //
 
-#include "frontend.h"
+#include "simulator.h"
 #include "runop.h"
 #include "graph.h"
 #include "output.h"

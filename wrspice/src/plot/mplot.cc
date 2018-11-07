@@ -44,7 +44,7 @@ Copyright 1990 Regents of the University of California.  All rights reserved.
 Authors: 1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "graph.h"
 #include "output.h"
 #include "cshell.h"

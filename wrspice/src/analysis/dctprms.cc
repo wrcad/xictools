@@ -40,7 +40,7 @@
 
 #include "device.h"
 #include "output.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "miscutil/threadpool.h"
 
 

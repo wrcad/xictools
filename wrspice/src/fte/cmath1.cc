@@ -46,7 +46,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "datavec.h"
 #include "output.h"
 #include "kwords_fte.h"

@@ -45,7 +45,7 @@ Authors: 1988 Jeffrey M. Hsu
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "graph.h"
 #include "output.h"
 #include "cshell.h"

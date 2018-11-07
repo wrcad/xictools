@@ -45,7 +45,7 @@ Authors: 1987 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "runop.h"
 #include "cshell.h"
 #include "commands.h"

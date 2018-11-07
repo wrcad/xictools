@@ -51,7 +51,7 @@
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
 #include "variable.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "gtktoolb.h"
 
 

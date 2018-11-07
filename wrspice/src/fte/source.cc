@@ -47,7 +47,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include "spglobal.h"
 #include <errno.h>
-#include "frontend.h"
+#include "simulator.h"
 #include "runop.h"
 #include "circuit.h"
 #include "graph.h"

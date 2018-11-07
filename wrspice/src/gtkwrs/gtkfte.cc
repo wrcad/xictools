@@ -45,7 +45,7 @@
  **************************************************************************/
 
 #include "config.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "graph.h"
 #include "output.h"
 #include "cshell.h"

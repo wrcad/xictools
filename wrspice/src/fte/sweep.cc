@@ -42,7 +42,7 @@
 // Functions for loop analysis.
 //
 
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "commands.h"
 #include "graph.h"

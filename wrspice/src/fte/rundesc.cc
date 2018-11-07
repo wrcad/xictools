@@ -48,7 +48,7 @@ Authors: 1988 Wayne A. Christopher
 #include "config.h"
 #include "graph.h"
 #include "cshell.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "rawfile.h"
 #include "csdffile.h"
 #include "psffile.h"

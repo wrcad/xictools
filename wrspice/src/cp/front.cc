@@ -47,7 +47,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include "cshell.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "parser.h"
 #include "spnumber/hash.h"
 #include "spnumber/spnumber.h"

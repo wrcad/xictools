@@ -47,7 +47,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include "cshell.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "variable.h"
 #include "toolbar.h"
 #include "inpline.h"

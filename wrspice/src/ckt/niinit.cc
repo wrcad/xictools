@@ -45,7 +45,7 @@ Authors: 1985 Thomas L. Quarles
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "circuit.h"
 #include "ttyio.h"
 #include "sparse/spmatrix.h"

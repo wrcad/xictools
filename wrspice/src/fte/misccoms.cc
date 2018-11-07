@@ -48,7 +48,7 @@ Authors: 1985 Wayne A. Christopher
 #include "config.h"
 #include "spglobal.h"
 #include "input.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "datavec.h"
 #include "output.h"
 #include "cshell.h"

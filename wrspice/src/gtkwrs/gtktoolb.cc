@@ -49,7 +49,7 @@
 #include "graph.h"
 #include "cshell.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "circuit.h"
 #include "input.h"
 #include "output.h"

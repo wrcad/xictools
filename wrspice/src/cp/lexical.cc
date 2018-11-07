@@ -52,7 +52,7 @@ Authors: 1985 Wayne A. Christopher
 #include "config.h"
 #include "cshell.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "kwords_fte.h"
 #include "spglobal.h"
 #include "graph.h"

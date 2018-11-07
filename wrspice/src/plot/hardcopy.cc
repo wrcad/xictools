@@ -47,7 +47,7 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "graph.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"

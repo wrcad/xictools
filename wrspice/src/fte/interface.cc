@@ -38,7 +38,7 @@
  $Id:$
  *========================================================================*/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "measure.h"
 #include "circuit.h"
 #include "datavec.h"

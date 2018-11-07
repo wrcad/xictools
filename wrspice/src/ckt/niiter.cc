@@ -48,7 +48,7 @@ Authors: 1985 Thomas L. Quarles
 #include "config.h"
 #include "optdefs.h"
 #include "input.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "output.h"
 #include "graph.h"
 #include "misc.h"

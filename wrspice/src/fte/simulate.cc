@@ -52,7 +52,7 @@ Authors: 1985 Wayne A. Christopher
 #include "commands.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "parser.h"
 #include "csdffile.h"
 #include "psffile.h"

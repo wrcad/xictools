@@ -43,13 +43,13 @@
 //#define TIME_DEBUG
 
 #include "cshell.h"
-#include "frontend.h"
-#include "fteparse.h"
+#include "simulator.h"
+#include "parser.h"
 #include "input.h"
 #include "inpline.h"
 #include "ttyio.h"
 #include "reltag.h"
-#include "outdata.h"
+#include "output.h"
 #include "spnumber/paramsub.h"
 #include "spnumber/spnumber.h"
 

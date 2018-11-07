@@ -39,7 +39,7 @@
  *========================================================================*/
 
 #include "spglobal.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "output.h"
 #include "csdffile.h"
 #include "cshell.h"

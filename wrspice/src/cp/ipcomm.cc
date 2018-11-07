@@ -59,7 +59,7 @@
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "output.h"
 #include "toolbar.h"
 #include "miscutil/childproc.h"

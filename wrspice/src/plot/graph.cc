@@ -49,7 +49,7 @@ Authors: 1988 Jeffrey M. Hsu
 #include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "toolbar.h"
 #include "spnumber/spnumber.h"
 #include "miscutil/texttf.h"

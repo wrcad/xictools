@@ -58,7 +58,7 @@ Authors: 1985 Thomas L. Quarles
 #include "cshell.h"
 #include "commands.h"
 #include "variable.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "input.h"
 #include "device.h"
 #include "graph.h"

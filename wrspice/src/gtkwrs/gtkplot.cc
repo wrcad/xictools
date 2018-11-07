@@ -53,7 +53,7 @@ Authors: 1988 Jeffrey M. Hsu
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "gtktoolb.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"

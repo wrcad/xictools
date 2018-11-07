@@ -46,7 +46,7 @@ Authors: 1987 UCB
 ****************************************************************************/
 
 #include "graph.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "ttyio.h"
 #include "spnumber/spnumber.h"
 #include "miscutil/texttf.h"
