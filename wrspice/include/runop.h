@@ -50,26 +50,26 @@ Authors: 1985 Wayne A. Christopher
 
 
 //
-// Definitions for the "debugs" (analysis tracing, stop on condition,
+// Definitions for the "runops" (analysis tracing, stop on condition,
 // etc).
 //
 
 struct sRunDesc;
 struct sMeas;
 
-enum DBtype
+enum ROtype
 {
-    DB_NONE,
-    DB_SAVE,                // Save a node.
-    DB_TRACE,               // Print the value of a node every iteration.
-    DB_IPLOT,               // Incrementally plot listed vectors.
-    DB_IPLOTALL,            // Incrementally plot everything.
-    DB_DEADIPLOT,           // Iplot is being destroyed.
-    DB_STOPAFTER,           // Break after this many iterations.
-    DB_STOPAT,              // Break at this many iterations.
-    DB_STOPBEFORE,          // Break before this many iterations.
-    DB_STOPWHEN,            // Break when a node reaches this value.
-    DB_MEASURE              // Perform a measurement.
+    RO_NONE,
+    RO_SAVE,                // Save a node.
+    RO_TRACE,               // Print the value of a node every iteration.
+    RO_IPLOT,               // Incrementally plot listed vectors.
+    RO_IPLOTALL,            // Incrementally plot everything.
+    RO_DEADIPLOT,           // Iplot is being destroyed.
+    RO_STOPAFTER,           // Break after this many iterations.
+    RO_STOPAT,              // Break at this many iterations.
+    RO_STOPBEFORE,          // Break before this many iterations.
+    RO_STOPWHEN,            // Break when a node reaches this value.
+    RO_MEASURE              // Perform a measurement.
 };
 
 // Call function returns.
@@ -83,154 +83,154 @@ enum ROret
     RO_ENDIT        // Abort run, can not be resumed.
 };
 
-// Structure to save a debug context as a list element.
+// Structure to save a runop context as a list element.
 //
-struct sDbComm
+struct sRunop
 {
-    sDbComm()
+    sRunop()
         {
-            db_next     = 0;
-            db_also     = 0;
-            db_string   = 0;
-            db_callfn   = 0;
-            db_p.dpoint = 0.0;
-            db_number   = 0;
-            db_type     = DB_NONE;
-            db_graphid  = 0;
-            db_reuseid  = 0;
-            db_active   = false;
-            db_bad      = false;
-            db_ptmode   = false;
-            db_call     = false;
-            db_index    = 0;
-            db_numpts   = 0;
-            db_a.dpoints= 0;
+            ro_next     = 0;
+            ro_also     = 0;
+            ro_string   = 0;
+            ro_callfn   = 0;
+            ro_p.dpoint = 0.0;
+            ro_number   = 0;
+            ro_type     = RO_NONE;
+            ro_graphid  = 0;
+            ro_reuseid  = 0;
+            ro_active   = false;
+            ro_bad      = false;
+            ro_ptmode   = false;
+            ro_call     = false;
+            ro_index    = 0;
+            ro_numpts   = 0;
+            ro_a.dpoints= 0;
         }
 
-    ~sDbComm()
+    ~sRunop()
         {
-            delete [] db_string;
-            delete [] db_callfn;
-            if (db_ptmode)
-                delete [] db_a.ipoints;
+            delete [] ro_string;
+            delete [] ro_callfn;
+            if (ro_ptmode)
+                delete [] ro_a.ipoints;
             else
-                delete [] db_a.dpoints;
+                delete [] ro_a.dpoints;
         }
 
-    static void destroy(sDbComm*);  // destroy this debug and descendents
+    static void destroy(sRunop*);  // destroy this runop and descendents
     bool istrue();                  // evaluate true if condition met
     ROret should_stop(sRunDesc*);   // true if stop condition met
-    void print(char**);             // print, in string if given, the debug msg
+    void print(char**);             // print, in string if given, the runop msg
     bool print_trace(sPlot*, bool*, int);  // print trace output
     void printcond(char**);         // print the conditional expression
 
-    static void destroy_list(sDbComm *l)
+    static void destroy_list(sRunop *l)
         {
             while (l) {
-                sDbComm *x = l;
-                l = l->db_next;
+                sRunop *x = l;
+                l = l->ro_next;
                 destroy(x);
             }
         }
 
-    sDbComm *next()             { return (db_next); }
-    void set_next(sDbComm *d)   { db_next = d; }
+    sRunop *next()              { return (ro_next); }
+    void set_next(sRunop *d)    { ro_next = d; }
 
-    sDbComm *also()             { return (db_also); }
-    void set_also(sDbComm *d)   { db_also = d; }
+    sRunop *also()              { return (ro_also); }
+    void set_also(sRunop *d)    { ro_also = d; }
 
-    const char *string()        { return (db_string); }
-    void set_string(char *s)    { db_string = s; }
+    const char *string()        { return (ro_string); }
+    void set_string(char *s)    { ro_string = s; }
 
-    const char *call_func()     { return (db_call ? db_callfn : 0); }
+    const char *call_func()     { return (ro_call ? ro_callfn : 0); }
     void set_call(bool b, const char *fn)
         {
-            db_call = b;
+            ro_call = b;
             char *nm = lstring::copy(fn);
-            delete [] db_callfn;
-            db_callfn = nm;
+            delete [] ro_callfn;
+            ro_callfn = nm;
         }
 
     void set_point(double d)
         {
-            db_p.dpoint = d;
-            db_ptmode = false;
+            ro_p.dpoint = d;
+            ro_ptmode = false;
         }
 
     void set_point(int i)
         {
-            db_p.ipoint = i;
-            db_ptmode = true;
+            ro_p.ipoint = i;
+            ro_ptmode = true;
         }
 
-    int number()                { return (db_number); }
-    void set_number(int i)      { db_number = i; }
+    int number()                { return (ro_number); }
+    void set_number(int i)      { ro_number = i; }
 
-    DBtype type()               { return (db_type); }
-    void set_type(DBtype t)     { db_type = t; }
+    ROtype type()               { return (ro_type); }
+    void set_type(ROtype t)     { ro_type = t; }
 
-    int graphid()               { return (db_graphid); }
-    void set_graphid(int i)     { db_graphid = i; }
+    int graphid()               { return (ro_graphid); }
+    void set_graphid(int i)     { ro_graphid = i; }
 
-    int reuseid()               { return (db_reuseid); }
-    void set_reuseid(int i)     { db_reuseid = i; }
+    int reuseid()               { return (ro_reuseid); }
+    void set_reuseid(int i)     { ro_reuseid = i; }
 
-    bool active()               { return (db_active); }
-    void set_active(bool b)     { db_active = b; }
+    bool active()               { return (ro_active); }
+    void set_active(bool b)     { ro_active = b; }
 
-    bool bad()                  { return (db_bad); }
-    void set_bad(bool b)        { db_bad = b; }
+    bool bad()                  { return (ro_bad); }
+    void set_bad(bool b)        { ro_bad = b; }
 
-    bool call()                 { return (db_call); }
+    bool call()                 { return (ro_call); }
 
     void set_points(int sz, double *p)
         {
-            db_numpts = sz;
-            db_index = 0;
-            if (db_ptmode)
-                delete [] db_a.ipoints;
+            ro_numpts = sz;
+            ro_index = 0;
+            if (ro_ptmode)
+                delete [] ro_a.ipoints;
             else
-                delete [] db_a.dpoints;
-            db_a.dpoints = p;
-            db_ptmode = false;
+                delete [] ro_a.dpoints;
+            ro_a.dpoints = p;
+            ro_ptmode = false;
         }
 
     void set_points(int sz, int *p)
         {
-            db_numpts = sz;
-            db_index = 0;
-            if (db_ptmode)
-                delete [] db_a.ipoints;
+            ro_numpts = sz;
+            ro_index = 0;
+            if (ro_ptmode)
+                delete [] ro_a.ipoints;
             else
-                delete [] db_a.dpoints;
-            db_a.ipoints = p;
-            db_ptmode = true;
+                delete [] ro_a.dpoints;
+            ro_a.ipoints = p;
+            ro_ptmode = true;
         }
 
 private:
-    sDbComm *db_next;           // List of active debugging commands.
-    sDbComm *db_also;           // Link for conjunctions.
-    char *db_string;            // Condition or node, text.
-    char *db_callfn;            // Name of script to call on stop.
+    sRunop *ro_next;            // List of active runop commands.
+    sRunop *ro_also;            // Link for conjunctions.
+    char *ro_string;            // Condition or node, text.
+    char *ro_callfn;            // Name of script to call on stop.
     union {                     // Output point for test:
         double dpoint;          //   Value.
         int ipoint;             //   Plot point index.
-    } db_p;
-    int db_number;              // The number of this debugging command.
-    DBtype db_type;             // One of the above.
-    int db_graphid;             // If iplot, id of graph.
-    int db_reuseid;             // Iplot window to reuse.
-    bool db_active;             // True if active.
-    bool db_bad;                // True if error.
-    bool db_ptmode;             // Input to before/after/at in points.
-    bool db_call;               // Call script or bound codeblock on stop.
-    int db_index;               // Index into the db_points array.
-    int db_numpts;              // Size of the db_points array.
+    } ro_p;
+    int ro_number;              // The number of this runop command.
+    ROtype ro_type;             // One of the above.
+    int ro_graphid;             // If iplot, id of graph.
+    int ro_reuseid;             // Iplot window to reuse.
+    bool ro_active;             // True if active.
+    bool ro_bad;                // True if error.
+    bool ro_ptmode;             // Input to before/after/at in points.
+    bool ro_call;               // Call script or bound codeblock on stop.
+    int ro_index;               // Index into the ro_points array.
+    int ro_numpts;              // Size of the ro_points array.
     union {                     // Array of points to test for "stop at".
         double *dpoints;
         int *ipoints;
-    } db_a;
+    } ro_a;
 };
 
-#endif // FTEDEBUG_H
+#endif // RUNOP_H
 

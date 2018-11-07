@@ -527,7 +527,7 @@ sRunDesc::unrollVecs()
 
 // Temporarily convert all the vectors to unit length, pointing
 // to the latest value.  Then we can use the vector expression
-// parser efficiently in the debugs.
+// parser efficiently in the runops.
 //
 void
 sRunDesc::scalarizeVecs()

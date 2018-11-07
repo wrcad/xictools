@@ -82,8 +82,7 @@ struct variable;
 struct sTrie;
 struct sHtab;
 struct IFspecial;
-struct sDebug;
-struct sDbComm;
+struct sRunop;
 struct sMeas;
 struct sPlotList;
 struct sRunDesc;
@@ -153,66 +152,66 @@ private:
     sControl *xb_tree;
 };
 
-// Container for debug list bases, etc.
+// Container for runop list bases, etc.
 //
-struct sDebug
+struct sRunopDb
 {
-    sDebug()
+    sRunopDb()
         {
-            sd_iplot = 0;
-            sd_trace = 0;
-            sd_save = 0;
-            sd_stop = 0;
-            sd_meas = 0;
-            sd_debugcnt = 1;
-            sd_stepcnt = 0;
-            sd_steps = 0;
+            rd_iplot = 0;
+            rd_trace = 0;
+            rd_save = 0;
+            rd_stop = 0;
+            rd_meas = 0;
+            rd_runopcnt = 1;
+            rd_stepcnt = 0;
+            rd_steps = 0;
         }
 
-    ~sDebug()
+    ~sRunopDb()
         {
             clear();
         }
 
     void clear();
 
-    bool isset() { return (sd_iplot || sd_trace || sd_save || sd_stop); }
+    bool isset() { return (rd_iplot || rd_trace || rd_save || rd_stop); }
 
-    sDbComm *saves()            { return (sd_save); }
-    void set_saves(sDbComm *d)  { sd_save = d; }
+    sRunop *saves()             { return (rd_save); }
+    void set_saves(sRunop *d)   { rd_save = d; }
 
-    sDbComm *traces()           { return (sd_trace); }
-    void set_traces(sDbComm *d) { sd_trace = d; }
+    sRunop *traces()            { return (rd_trace); }
+    void set_traces(sRunop *d)  { rd_trace = d; }
 
-    sDbComm *iplots()           { return (sd_iplot); }
-    void set_iplots(sDbComm *d) { sd_iplot = d; }
+    sRunop *iplots()            { return (rd_iplot); }
+    void set_iplots(sRunop *d)  { rd_iplot = d; }
 
-    sDbComm *stops()            { return (sd_stop); }
-    void set_stops(sDbComm *d)  { sd_stop = d; }
+    sRunop *stops()             { return (rd_stop); }
+    void set_stops(sRunop *d)   { rd_stop = d; }
 
-    sMeas *measures()           { return (sd_meas); }
-    void set_measures(sMeas *m) { sd_meas = m; }
+    sMeas *measures()           { return (rd_meas); }
+    void set_measures(sMeas *m) { rd_meas = m; }
 
-    int new_count()             { return (sd_debugcnt++); }
-    int decrement_count()       { return (sd_debugcnt--); }
+    int new_count()             { return (rd_runopcnt++); }
+    int decrement_count()       { return (rd_runopcnt--); }
 
-    int step_count()            { return (sd_stepcnt); }
-    void set_step_count(int i)  { sd_stepcnt = i; }
-    int dec_step_count()        { return (--sd_stepcnt); }
+    int step_count()            { return (rd_stepcnt); }
+    void set_step_count(int i)  { rd_stepcnt = i; }
+    int dec_step_count()        { return (--rd_stepcnt); }
 
-    int num_steps()             { return (sd_steps); }
-    void set_num_steps(int i)   { sd_steps = i; }
+    int num_steps()             { return (rd_steps); }
+    void set_num_steps(int i)   { rd_steps = i; }
 
 private:
-    sDbComm *sd_save;           // save list head
-    sDbComm *sd_trace;          // trace list head
-    sDbComm *sd_iplot;          // iplot list head
-    sDbComm *sd_stop;           // stop after/when list head
-    sMeas   *sd_meas;           // measures list head
+    sRunop *rd_save;            // save list head
+    sRunop *rd_trace;           // trace list head
+    sRunop *rd_iplot;           // iplot list head
+    sRunop *rd_stop;            // stop after/when list head
+    sMeas   *rd_meas;           // measures list head
 
-    int sd_debugcnt;       // running sum of debugs created, provides id
-    int sd_stepcnt;        // number of steps done
-    int sd_steps;          // number of steps to do
+    int rd_runopcnt;            // running sum of runops created, provides id
+    int rd_stepcnt;             // number of steps done
+    int rd_steps;               // number of steps to do
 };
 
 // Element list for Alter command.
@@ -330,17 +329,17 @@ struct sFtCirc
     sExBlk &postrunBlk()        { return (ci_postrunBlk); }
     void set_postrun(wordlist *w) { ci_postrunBlk.set_text(w); }
 
-    sDebug &debugs()            { return (ci_debug); }
-    sDbComm *saves()            { return (ci_debug.saves()); }
-    void set_saves(sDbComm *d)  { ci_debug.set_saves(d); }
-    sDbComm *traces()           { return (ci_debug.traces()); }
-    void set_traces(sDbComm *d) { ci_debug.set_traces(d); }
-    sDbComm *iplots()           { return (ci_debug.iplots()); }
-    void set_iplots(sDbComm *d) { ci_debug.set_iplots(d); }
-    sDbComm *stops()            { return (ci_debug.stops()); }
-    void set_stops(sDbComm *d)  { ci_debug.set_stops(d); }
-    sMeas *measures()           { return (ci_debug.measures()); }
-    void set_measures(sMeas *m) { ci_debug.set_measures(m); }
+    sRunopDb &runops()          { return (ci_runops); }
+    sRunop *saves()             { return (ci_runops.saves()); }
+    void set_saves(sRunop *d)   { ci_runops.set_saves(d); }
+    sRunop *traces()            { return (ci_runops.traces()); }
+    void set_traces(sRunop *d)  { ci_runops.set_traces(d); }
+    sRunop *iplots()            { return (ci_runops.iplots()); }
+    void set_iplots(sRunop *d)  { ci_runops.set_iplots(d); }
+    sRunop *stops()             { return (ci_runops.stops()); }
+    void set_stops(sRunop *d)   { ci_runops.set_stops(d); }
+    sMeas *measures()           { return (ci_runops.measures()); }
+    void set_measures(sMeas *m) { ci_runops.set_measures(m); }
 
     wordlist *commands()        { return (ci_commands); }
 
@@ -385,9 +384,9 @@ private:
     cUdf *ci_defines;           // Functions defined by .param lines
 
     sExBlk ci_execBlk;          // Pre-parse executable block
-    sExBlk ci_controlBlk;       // Post-parse executable block;
-    sExBlk ci_postrunBlk;       // Post-run executable block;
-    sDebug ci_debug;            // Circuit-specific debugs, if any
+    sExBlk ci_controlBlk;       // Post-parse executable block
+    sExBlk ci_postrunBlk;       // Post-run executable block
+    sRunopDb ci_runops;         // Circuit-specific runops, if any
 
     wordlist *ci_commands;      // Things to do when this circuit is done
 

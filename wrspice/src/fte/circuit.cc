@@ -607,7 +607,7 @@ sFtCirc::clear()
     variable::destroy(ci_vars); ci_vars = 0;
     delete ci_defines;          ci_defines = 0;
 
-    ci_debug.clear();
+    ci_runops.clear();
     ci_execBlk.clear();
     ci_controlBlk.clear();
     ci_postrunBlk.clear();

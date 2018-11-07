@@ -2065,16 +2065,16 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 delete [] er;
             }
                 
-            if (!ci_debug.measures())
-                ci_debug.set_measures(m);
+            if (!ci_runops.measures())
+                ci_runops.set_measures(m);
             else {
-                sMeas *mx = ci_debug.measures();
+                sMeas *mx = ci_runops.measures();
                 while (mx->next)
                     mx = mx->next;
                 mx->next = m;
             }
         }
-//XXX add debugs here (.stop lines)
+//XXX add runops here (.stop lines)
 /*
         else if (lstring::cimatch(STOP_KW, dd->line()) {
         }

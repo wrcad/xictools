@@ -97,7 +97,7 @@ namespace {
 
 IFoutput::IFoutput()
 {
-    o_debugs        = new sDebug;
+    o_runops        = new sRunopDb;
     o_endit         = false;
     o_shouldstop    = false;
 
@@ -540,7 +540,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
 
 
     // If writing to file, create a plot anyway, but keep only the
-    // latest value (length = 1) for the debugs, etc.
+    // latest value (length = 1) for the runops, etc.
     //
     if (rawout)
         run->set_numPoints(1);

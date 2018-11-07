@@ -197,8 +197,8 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
 {
     char *s = lstring::copy(name);
     CP.Unquote(s);
-    sDbComm *td;
-    for (td = o_debugs->saves(); td; td = td->next()) {
+    sRunop *td;
+    for (td = o_runops->saves(); td; td = td->next()) {
         if (name_eq(s, td->string())) {
             delete [] s;
             return;
@@ -213,19 +213,19 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
         }
     }
 
-    sDbComm *d = new sDbComm;
-    d->set_type(DB_SAVE);
+    sRunop *d = new sRunop;
+    d->set_type(RO_SAVE);
     d->set_active(true);
     d->set_string(s);
-    d->set_number(o_debugs->new_count());
+    d->set_number(o_runops->new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !circuit) {
-        if (o_debugs->saves()) {
-            for (td = o_debugs->saves(); td->next(); td = td->next()) ;
+        if (o_runops->saves()) {
+            for (td = o_runops->saves(); td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
-            o_debugs->set_saves(d);
+            o_runops->set_saves(d);
     }
     else {
         if (circuit->saves()) {
@@ -238,7 +238,7 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
 }
 
 
-// Fill in a list of vector names used in the debugs.  If there are only
+// Fill in a list of vector names used in the runops.  If there are only
 // specials in the list as passed and in any db saves, save only specials,
 // i.e., names starting with SpecCatchar().
 //
@@ -247,11 +247,11 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
 void
 IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
 {
-    sDebug *db = circuit ? &circuit->debugs() : 0;
-    for (sDbComm *d = o_debugs->saves(); d && d->active(); d = d->next())
+    sRunopDb *db = circuit ? &circuit->runops() : 0;
+    for (sRunop *d = o_runops->saves(); d && d->active(); d = d->next())
         saved->add_save(d->string());
     if (db) {
-        for (sDbComm *d = db->saves(); d && d->active(); d = d->next())
+        for (sRunop *d = db->saves(); d && d->active(); d = d->next())
             saved->add_save(d->string());
     }
     bool saveall = true;
@@ -273,32 +273,32 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
     // to @Vsrc[p].  When done, we'll go back an purge non-specials
     // if saveall is true.
 
-    for (sDbComm *d = o_debugs->traces(); d && d->active(); d = d->next())
+    for (sRunop *d = o_runops->traces(); d && d->active(); d = d->next())
         saved->list_expr(d->string());
     if (db) {
-        for (sDbComm *d = db->traces(); d && d->active(); d = d->next())
+        for (sRunop *d = db->traces(); d && d->active(); d = d->next())
             saved->list_expr(d->string());
     }
-    for (sDbComm *d = o_debugs->iplots(); d && d->active(); d = d->next()) {
+    for (sRunop *d = o_runops->iplots(); d && d->active(); d = d->next()) {
         saved->list_expr(d->string());
-        for (sDbComm *dd = d->also(); dd; dd = dd->also())
+        for (sRunop *dd = d->also(); dd; dd = dd->also())
             saved->list_expr(d->string());
     }
     if (db) {
-        for (sDbComm *d = db->iplots(); d && d->active(); d = d->next()) {
+        for (sRunop *d = db->iplots(); d && d->active(); d = d->next()) {
             saved->list_expr(d->string());
-            for (sDbComm *dd = d->also(); dd; dd = dd->also())
+            for (sRunop *dd = d->also(); dd; dd = dd->also())
                 saved->list_expr(d->string());
         }
     }
-    for (sDbComm *d = o_debugs->stops(); d && d->active(); d = d->next())
+    for (sRunop *d = o_runops->stops(); d && d->active(); d = d->next())
         saved->list_expr(d->string());
     if (db) {
-        for (sDbComm *d = db->stops(); d && d->active(); d = d->next())
+        for (sRunop *d = db->stops(); d && d->active(); d = d->next())
             saved->list_expr(d->string());
     }
 
-    for (sMeas *m = o_debugs->measures(); m; m = m->next) {
+    for (sMeas *m = o_runops->measures(); m; m = m->next) {
         if (m->start_name)
             saved->list_expr(m->start_name);
         if (m->end_name)
@@ -344,7 +344,7 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
         // added if they are referenced by another measure.  These
         // vectors don't exist until the measurement is done.
 
-        for (sMeas *m = o_debugs->measures(); m; m = m->next)
+        for (sMeas *m = o_runops->measures(); m; m = m->next)
             saved->remove_save(m->result);
         if (db) {
             for (sMeas *m = db->measures(); m; m = m->next)

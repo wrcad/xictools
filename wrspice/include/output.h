@@ -64,8 +64,8 @@ struct sDCTprms;
 struct sNames;
 struct sHtab;
 struct sExBlk;
-struct sDbComm;
-struct sDebug;
+struct sRunop;
+struct sRunopDb;
 struct sSaveList;
 struct sDataVec;
 struct sJobc;
@@ -474,7 +474,7 @@ struct IFoutput
     // trace.cc
     void TraceCmd(wordlist*);
     void iplotCmd(wordlist*);
-    void iplot(sDbComm*, sRunDesc*);
+    void iplot(sRunop*, sRunDesc*);
     void endIplot(sRunDesc*);
     bool isIplot(bool = false);
 
@@ -496,7 +496,7 @@ struct IFoutput
     static bool vecEq(sDataVec*, sDataVec*);
     void vecPrintList(wordlist*, char**);
 
-    sDebug *debugs()            { return (o_debugs); }
+    sRunopDb *runops()          { return (o_runops); }
 
     bool endit()                { return (o_endit); }
     void set_endit(bool b)      { o_endit = b; }
@@ -517,7 +517,7 @@ struct IFoutput
     sMsg *msgs()                { return (o_msgs); }
 
 private:
-    sDebug *o_debugs;       // Debugs entered interactively.
+    sRunopDb *o_runops;     // Runops entered interactively.
 
     bool o_endit;           // If nonzero, quit the current analysis as if
                             // finished.

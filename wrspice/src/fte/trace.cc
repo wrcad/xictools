@@ -89,44 +89,44 @@ IFoutput::TraceCmd(wordlist *wl)
 {
     const char *msg = "already tracing %s, ignored.\n";
 
-    sDbComm *d = new sDbComm;
-    d->set_type(DB_TRACE);
+    sRunop *d = new sRunop;
+    d->set_type(RO_TRACE);
     d->set_active(true);
     d->set_string(wordlist::flatten(wl));
-    d->set_number(o_debugs->new_count());
+    d->set_number(o_runops->new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
-        if (o_debugs->traces()) {
-            sDbComm *ld = 0;
-            for (sDbComm *td = o_debugs->traces(); td; ld = td, td = td->next()) {
+        if (o_runops->traces()) {
+            sRunop *ld = 0;
+            for (sRunop *td = o_runops->traces(); td; ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
                     GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
-                    sDbComm::destroy(d);
-                    o_debugs->decrement_count();
+                    sRunop::destroy(d);
+                    o_runops->decrement_count();
                     return;
                 }
             }
             ld->set_next(d);
         }
         else
-            o_debugs->set_traces(d);
+            o_runops->set_traces(d);
     }
     else {
-        sDebug *db = &Sp.CurCircuit()->debugs();
-        if (db->traces()) {
-            sDbComm *ld = 0;
-            for (sDbComm *td = db->traces(); td; ld = td, td = td->next()) {
+        sRunopDb *runop = &Sp.CurCircuit()->runops();
+        if (runop->traces()) {
+            sRunop *ld = 0;
+            for (sRunop *td = runop->traces(); td; ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
                     GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
-                    sDbComm::destroy(d);
-                    o_debugs->decrement_count();
+                    sRunop::destroy(d);
+                    o_runops->decrement_count();
                     return;
                 }
             }
             ld->set_next(d);
         }
         else
-            db->set_traces(d);
+            runop->set_traces(d);
     }
     ToolBar()->UpdateTrace();
 }
@@ -173,31 +173,31 @@ IFoutput::iplotCmd(wordlist *wl)
         }
     }
 
-    sDbComm *d = new sDbComm;
-    d->set_type(DB_IPLOT);
+    sRunop *d = new sRunop;
+    d->set_type(RO_IPLOT);
     d->set_active(true);
     d->set_string(wordlist::flatten(wl));
     wordlist::destroy(wl);
-    d->set_number(o_debugs->new_count());
+    d->set_number(o_runops->new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
-        if (o_debugs->iplots()) {
-            sDbComm *td;
-            for (td = o_debugs->iplots(); td->next(); td = td->next()) ;
+        if (o_runops->iplots()) {
+            sRunop *td;
+            for (td = o_runops->iplots(); td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
-            o_debugs->set_iplots(d);
+            o_runops->set_iplots(d);
     }
     else {
-        sDebug *db = &Sp.CurCircuit()->debugs();
-        if (db->iplots()) {
-            sDbComm *td;
-            for (td = db->iplots(); td->next(); td = td->next()) ;
+        sRunopDb *runop = &Sp.CurCircuit()->runops();
+        if (runop->iplots()) {
+            sRunop *td;
+            for (td = runop->iplots(); td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
-            db->set_iplots(d);
+            runop->set_iplots(d);
     }
     ToolBar()->UpdateTrace();
 }
@@ -205,15 +205,15 @@ IFoutput::iplotCmd(wordlist *wl)
 namespace {
     // Compute the last entry, and grow the iplot's dvecs.
     //
-    void update_dvecs(sGraph *graph, sDbComm *db, sDataVec *xs, bool *vs_flag,
+    void update_dvecs(sGraph *graph, sRunop *rc, sDataVec *xs, bool *vs_flag,
         sRunDesc *run)
     {
         const char *msg = "iplot #%d.\n";
         *vs_flag = false;
         sDvList *dvl = (sDvList*)graph->plotdata();
-        wordlist *wl = CP.LexStringSub(db->string());
+        wordlist *wl = CP.LexStringSub(rc->string());
         if (!wl) {
-            db->set_bad(true);
+            rc->set_bad(true);
             GRpkgIf()->ErrPrintf(ET_INTERR, msg, 1);
             return;
         }
@@ -233,7 +233,7 @@ namespace {
         OP.setCurPlot(plot);
         Sp.SetCurCircuit(circ);
         if (!dl0) {
-            db->set_bad(true);
+            rc->set_bad(true);
             GRpkgIf()->ErrPrintf(ET_INTERR, msg, 2);
             run->unscalarizeVecs();
             return;
@@ -247,7 +247,7 @@ namespace {
                 if (!dp || !dn) {
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 3);
                     sDvList::destroy(dl0);
-                    db->set_bad(true);
+                    rc->set_bad(true);
                     return;
                 }
                 xs = dn->dl_dvec;
@@ -265,7 +265,7 @@ namespace {
 
             if (vt->isreal()) {
                 if (!vf->isreal()) {
-                    db->set_bad(true);
+                    rc->set_bad(true);
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 3);
                     break;
                 }
@@ -285,7 +285,7 @@ namespace {
             }
             else {
                 if (vf->isreal()) {
-                    db->set_bad(true);
+                    rc->set_bad(true);
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 4);
                     break;
                 }
@@ -309,7 +309,7 @@ namespace {
             vt->set_length(vt->length() + 1);;
         }
         if (dl || dd) {
-            db->set_bad(true);
+            rc->set_bad(true);
             GRpkgIf()->ErrPrintf(ET_INTERR, msg, 5);
         }
         sDataVec *scale = dvl->dl_dvec->scale();
@@ -321,7 +321,7 @@ namespace {
             // no need to Smith transform the scale
             if (xs->isreal()) {
                 if (!scale->isreal()) {
-                    db->set_bad(true);
+                    rc->set_bad(true);
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 6);
                 }
                 if (scale->length() >= scale->allocated()) {
@@ -335,7 +335,7 @@ namespace {
             }
             else {
                 if (scale->isreal()) {
-                    db->set_bad(true);
+                    rc->set_bad(true);
                     GRpkgIf()->ErrPrintf(ET_INTERR, msg, 7);
                 }
                 if (scale->length() >= scale->allocated()) {
@@ -439,9 +439,9 @@ namespace {
 #define IPLTOL 2e-3    // Allow this fraction out of range before redraw.
 
 void
-IFoutput::iplot(sDbComm *db, sRunDesc *run)
+IFoutput::iplot(sRunop *rc, sRunDesc *run)
 {
-    if (!run || !db || db->bad())
+    if (!run || !rc || rc->bad())
         return;
     if (Sp.GetFlag(FT_GRDB)) {
         GRpkgIf()->ErrPrintf(ET_MSGS, "Entering iplot, len = %d\n\r",
@@ -450,7 +450,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
 
     sGraph *graph;
     sDvList *dl0, *dl;
-    if (!db->graphid()) {
+    if (!rc->graphid()) {
         // Draw the grid for the first time, and plot everything
 
         // Error handling:  If an error occurs during plot initialization, 
@@ -458,16 +458,16 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         // If an error occurs later, set_bad() is set true, and the plot
         // is "frozen".
 
-        wordlist *wl = CP.LexStringSub(db->string());
+        wordlist *wl = CP.LexStringSub(rc->string());
         if (!wl) {
-            db->set_bad(true);
+            rc->set_bad(true);
             return;
         }
         dl0 = 0;
 
         sDataVec *xs = run->runPlot()->scale();
         if (!xs) {
-            db->set_bad(true);
+            rc->set_bad(true);
             return;
         }
         if (xs->length() < IPOINTMIN)
@@ -484,7 +484,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         OP.setCurPlot(plot);
         Sp.SetCurCircuit(circ);
         if (!dl0) {
-            db->set_bad(true);
+            rc->set_bad(true);
             return;
         }
         // check for "vs"
@@ -498,7 +498,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
                     GRpkgIf()->ErrPrintf(ET_ERROR, "misplaced vs arg.\n");
                     sDvList::destroy(dl0);
                     dl0 = 0;
-                    db->set_bad(true);
+                    rc->set_bad(true);
                     return;
                 }
                 foundvs = true;
@@ -518,7 +518,7 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         dl = dl0;
         sGrInit gr;
         if (!GP.Setup(&gr, &dl0, 0, xs, 0)) {
-            db->set_bad(true);
+            rc->set_bad(true);
             return;
         }
         if (dl != dl0)
@@ -530,9 +530,9 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
 
         bool reuse = false;
         graph = 0;
-        if (db->reuseid() > 0) {
+        if (rc->reuseid() > 0) {
             // if this is set, reuse the iplot window
-            graph = GP.FindGraph(db->reuseid());
+            graph = GP.FindGraph(rc->reuseid());
             if (graph) {
                 graph->dev()->Clear();
                 reuse = true;
@@ -542,9 +542,9 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         graph = GP.Init(dl0, &gr, graph);
         sDvList::destroy(dl0);
         if (graph)
-            db->set_graphid(graph->id());
-        if (!db->graphid()) {
-            db->set_bad(true);
+            rc->set_graphid(graph->id());
+        if (!rc->graphid()) {
+            rc->set_bad(true);
             return;
         }
 
@@ -601,17 +601,17 @@ IFoutput::iplot(sDbComm *db, sRunDesc *run)
         return;
     }
 
-    graph = GP.FindGraph(db->graphid());
+    graph = GP.FindGraph(rc->graphid());
     if (!graph) {
         // shouldn't happen
-        db->set_bad(true);
+        rc->set_bad(true);
         return;
     }
     graph->set_noevents(true);  // suppress event checking
 
     dl0 = (sDvList*)graph->plotdata();
     bool vs_flag;
-    update_dvecs(graph, db, run->runPlot()->scale(), &vs_flag, run);
+    update_dvecs(graph, rc, run->runPlot()->scale(), &vs_flag, run);
     sDataVec *xs = dl0->dl_dvec->scale();
     int len = xs->length() - 1;
 
@@ -821,15 +821,15 @@ IFoutput::endIplot(sRunDesc *run)
 {
     if (!run)
         return;
-    sDebug *db = run->circuit() ? &run->circuit()->debugs() : 0;
-    if (o_debugs->iplots() || (db && db->iplots())) {
+    sRunopDb *runop = run->circuit() ? &run->circuit()->runops() : 0;
+    if (o_runops->iplots() || (runop && runop->iplots())) {
         if (GRpkgIf()->CurDev() &&
                 GRpkgIf()->CurDev()->devtype == GRfullScreen)
             // redraw
             GP.PopGraphContext();
-        for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
+        for (sRunop *d = o_runops->iplots(); d; d = d->next()) {
             d->set_reuseid(0);
-            if (d->type() == DB_IPLOT && !d->bad()) {
+            if (d->type() == RO_IPLOT && !d->bad()) {
                 if (d->graphid()) {
                     sGraph *graph = GP.FindGraph(d->graphid());
                     graph->dev()->Clear();
@@ -839,18 +839,18 @@ IFoutput::endIplot(sRunDesc *run)
                     graph->gr_end();
                 }
             }
-            if (d->type() == DB_DEADIPLOT) {
+            if (d->type() == RO_DEADIPLOT) {
                 // user killed the window while it was running
                 if (d->graphid())
                     GP.DestroyGraph(d->graphid());
-                d->set_type(DB_IPLOT);
+                d->set_type(RO_IPLOT);
                 d->set_graphid(0);
             }
         }
-        if (db) {
-            for (sDbComm *d = db->iplots(); d; d = d->next()) {
+        if (runop) {
+            for (sRunop *d = runop->iplots(); d; d = d->next()) {
                 d->set_reuseid(0);
-                if (d->type() == DB_IPLOT && !d->bad()) {
+                if (d->type() == RO_IPLOT && !d->bad()) {
                     if (d->graphid()) {
                         sGraph *graph = GP.FindGraph(d->graphid());
                         graph->dev()->Clear();
@@ -860,11 +860,11 @@ IFoutput::endIplot(sRunDesc *run)
                         graph->gr_end();
                     }
                 }
-                if (d->type() == DB_DEADIPLOT) {
+                if (d->type() == RO_DEADIPLOT) {
                     // user killed the window while it was running
                     if (d->graphid())
                         GP.DestroyGraph(d->graphid());
-                    d->set_type(DB_IPLOT);
+                    d->set_type(RO_IPLOT);
                     d->set_graphid(0);
                 }
             }
@@ -880,27 +880,27 @@ IFoutput::isIplot(bool resurrect)
 {
     if (resurrect) {
         // Turn dead iplots back on.
-        for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
-            if (d->type() == DB_DEADIPLOT)
-                d->set_type(DB_IPLOT);
+        for (sRunop *d = o_runops->iplots(); d; d = d->next()) {
+            if (d->type() == RO_DEADIPLOT)
+                d->set_type(RO_IPLOT);
         }
         if (Sp.CurCircuit()) {
-            sDebug *db = &Sp.CurCircuit()->debugs();
-            for (sDbComm *d = db->iplots(); d; d = d->next()) {
-                if (d->type() == DB_DEADIPLOT)
-                    d->set_type(DB_IPLOT);
+            sRunopDb *runop = &Sp.CurCircuit()->runops();
+            for (sRunop *d = runop->iplots(); d; d = d->next()) {
+                if (d->type() == RO_DEADIPLOT)
+                    d->set_type(RO_IPLOT);
             }
         }
     }
 
-    for (sDbComm *d = o_debugs->iplots(); d; d = d->next()) {
-        if ((d->type() == DB_IPLOT || d->type() == DB_IPLOTALL) && d->active())
+    for (sRunop *d = o_runops->iplots(); d; d = d->next()) {
+        if ((d->type() == RO_IPLOT || d->type() == RO_IPLOTALL) && d->active())
             return (true);
     }
     if (Sp.CurCircuit()) {
-        sDebug *db = &Sp.CurCircuit()->debugs();
-        for (sDbComm *d = db->iplots(); d; d = d->next())
-            if ((d->type() == DB_IPLOT || d->type() == DB_IPLOTALL) &&
+        sRunopDb *runop = &Sp.CurCircuit()->runops();
+        for (sRunop *d = runop->iplots(); d; d = d->next())
+            if ((d->type() == RO_IPLOT || d->type() == RO_IPLOTALL) &&
                     d->active())
                 return (true);
     }
