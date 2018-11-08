@@ -64,7 +64,7 @@ struct sDCTprms;
 struct sNames;
 struct sHtab;
 struct sExBlk;
-struct sRunop;
+struct sRunopIplot;
 struct sRunopDb;
 struct sSaveList;
 struct sDataVec;
@@ -474,7 +474,7 @@ struct IFoutput
     // trace.cc
     void TraceCmd(wordlist*);
     void iplotCmd(wordlist*);
-    void iplot(sRunop*, sRunDesc*);
+    void iplot(sRunopIplot*, sRunDesc*);
     void endIplot(sRunDesc*);
     bool isIplot(bool = false);
 

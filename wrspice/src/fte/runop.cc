@@ -155,12 +155,12 @@ namespace {
 void
 IFoutput::stopCmd(wordlist *wl)
 {
-    sRunop *d = 0, *thisone = 0;
+    sRunopStop *d = 0, *thisone = 0;
     while (wl) {
         if (thisone == 0)
-            thisone = d = new sRunop;
+            thisone = d = new sRunopStop;
         else {
-            d->set_also(new sRunop);
+            d->set_also(new sRunopStop);
             d = d->also();
         }
 
@@ -218,7 +218,7 @@ IFoutput::stopCmd(wordlist *wl)
                 }
             }
             GRpkgIf()->ErrPrintf(ET_ERROR, "stop at: no targets found.\n");
-            sRunop::destroy(thisone);
+            thisone->destroy();
             return;
         }
         if (lstring::eq(wl->wl_word, kw_after) ||
@@ -254,7 +254,7 @@ IFoutput::stopCmd(wordlist *wl)
             }
             GRpkgIf()->ErrPrintf(ET_ERROR, "stop %s: no target found.\n",
                d->type() == RO_STOPBEFORE ? "before" : "after");
-            sRunop::destroy(thisone);
+            thisone->destroy();
             return;
         }
         if (lstring::eq(wl->wl_word, kw_when)) {
@@ -292,7 +292,7 @@ IFoutput::stopCmd(wordlist *wl)
                 continue;
             }
             GRpkgIf()->ErrPrintf(ET_ERROR, "stop when: no expression found.\n");
-            sRunop::destroy(thisone);
+            thisone->destroy();
             return;
         }
         if (lstring::eq(wl->wl_word, kw_call)) {
@@ -305,7 +305,7 @@ IFoutput::stopCmd(wordlist *wl)
         }
         GRpkgIf()->ErrPrintf(ET_ERROR,
             "stop: unknown keyword following \"stop\".\n");
-        sRunop::destroy(thisone);
+        thisone->destroy();
         return;
     }
     if (thisone) {
@@ -314,18 +314,20 @@ IFoutput::stopCmd(wordlist *wl)
         thisone->set_active(true);
         if (CP.GetFlag(CP_INTERACTIVE) || !curcir) {
             if (o_runops->stops()) {
-                for (d = o_runops->stops(); d->next(); d = d->next())
+                sRunopStop *td = o_runops->stops();
+                for ( ; td->next(); td = td->next())
                     ;
-                d->set_next(thisone);
+                td->set_next(thisone);
             }
             else
                 o_runops->set_stops(thisone);
         }
         else {
             if (curcir->stops()) {
-                for (d = curcir->stops(); d->next(); d = d->next())
+                sRunopStop *td = curcir->stops();
+                for ( ; td->next(); td = td->next())
                     ;
-                d->set_next(thisone);
+                td->set_next(thisone);
             }
             else
                 curcir->set_stops(thisone);
@@ -351,28 +353,28 @@ IFoutput::statusCmd(char **ps)
     }
     char **t = ps;
     sFtCirc *curcir = Sp.CurCircuit();
-    for (sRunop *d = o_runops->stops(); d; d = d->next())
+    for (sRunopStop *d = o_runops->stops(); d; d = d->next())
         d->print(t);
     if (curcir) {
-        for (sRunop *d = curcir->stops(); d; d = d->next())
+        for (sRunopStop *d = curcir->stops(); d; d = d->next())
             d->print(t);
     }
-    for (sRunop *d = o_runops->traces(); d; d = d->next())
+    for (sRunopTrace *d = o_runops->traces(); d; d = d->next())
         d->print(t);
     if (curcir) {
-        for (sRunop *d = curcir->traces(); d; d = d->next())
+        for (sRunopTrace *d = curcir->traces(); d; d = d->next())
             d->print(t);
     }
-    for (sRunop *d = o_runops->iplots(); d; d = d->next())
+    for (sRunopIplot *d = o_runops->iplots(); d; d = d->next())
         d->print(t);
     if (curcir) {
-        for (sRunop *d = curcir->iplots(); d; d = d->next())
+        for (sRunopIplot *d = curcir->iplots(); d; d = d->next())
             d->print(t);
     }
-    for (sRunop *d = o_runops->saves(); d; d = d->next())
+    for (sRunopSave *d = o_runops->saves(); d; d = d->next())
         d->print(t);
     if (curcir) {
-        for (sRunop *d = curcir->saves(); d; d = d->next())
+        for (sRunopSave *d = curcir->saves(); d; d = d->next())
             d->print(t);
     }
 }
@@ -419,26 +421,26 @@ IFoutput::deleteCmd(wordlist *wl)
         if (!TTY.prompt_for_yn(true, "delete [y]? "))
             return;
         if (d == o_runops->stops())
-            o_runops->set_stops(d->next());
+            o_runops->set_stops(o_runops->stops()->next());
         else if (d == o_runops->traces())
-            o_runops->set_traces(d->next());
+            o_runops->set_traces(o_runops->traces()->next());
         else if (d == o_runops->iplots())
-            o_runops->set_iplots(d->next());
+            o_runops->set_iplots(o_runops->iplots()->next());
         else if (d == o_runops->saves())
-            o_runops->set_saves(d->next());
+            o_runops->set_saves(o_runops->saves()->next());
         else if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
             if (d == db.stops())
-                db.set_stops(d->next());
+                db.set_stops(db.stops()->next());
             else if (d == db.traces())
-                db.set_traces(d->next());
+                db.set_traces(db.traces()->next());
             else if (d == db.iplots())
-                db.set_iplots(d->next());
+                db.set_iplots(db.iplots()->next());
             else if (d == db.saves())
-                db.set_saves(d->next());
+                db.set_saves(db.saves()->next());
         }
         ToolBar()->UpdateTrace();
-        sRunop::destroy(d);
+        d->destroy();
         return;
     }
     bool inactive = false;
@@ -533,15 +535,15 @@ IFoutput::initRunops(sRunDesc *run)
         o_runops->set_step_count(0);
         o_runops->set_num_steps(0);
     }
-    for (sRunop *d = o_runops->stops(); d; d = d->next()) {
-        for (sRunop *dt = d; dt; dt = dt->also()) {
+    for (sRunopStop *d = o_runops->stops(); d; d = d->next()) {
+        for (sRunopStop *dt = d; dt; dt = dt->also()) {
             if (dt->type() == RO_STOPWHEN)
                 dt->set_point(0);
         }
     }
-    for (sRunop *dt = o_runops->traces(); dt; dt = dt->next())
+    for (sRunopTrace *dt = o_runops->traces(); dt; dt = dt->next())
         dt->set_point(0);
-    for (sRunop *dt = o_runops->iplots(); dt; dt = dt->next()) {
+    for (sRunopIplot *dt = o_runops->iplots(); dt; dt = dt->next()) {
         if (dt->type() == RO_DEADIPLOT) {
             // user killed the window
             if (dt->graphid())
@@ -562,15 +564,15 @@ IFoutput::initRunops(sRunDesc *run)
         m->reset(run->runPlot());
     }
     if (db) {
-        for (sRunop *d = db->stops(); d; d = d->next()) {
-            for (sRunop *dt = d; dt; dt = dt->also()) {
+        for (sRunopStop *d = db->stops(); d; d = d->next()) {
+            for (sRunopStop *dt = d; dt; dt = dt->also()) {
                 if (dt->type() == RO_STOPWHEN)
                     dt->set_point(0);
             }
         }
-        for (sRunop *dt = db->traces(); dt; dt = dt->next())
+        for (sRunopTrace *dt = db->traces(); dt; dt = dt->next())
             dt->set_point(0);
-        for (sRunop *dt = db->iplots(); dt; dt = dt->next()) {
+        for (sRunopIplot *dt = db->iplots(); dt; dt = dt->next()) {
             if (dt->type() == RO_DEADIPLOT) {
                 // user killed the window
                 if (dt->graphid())
@@ -597,25 +599,25 @@ IFoutput::initRunops(sRunDesc *run)
 void
 IFoutput::setRunopActive(int dbnum, bool state)
 {
-    for (sRunop *d = o_runops->stops(); d; d = d->next()) {
+    for (sRunopStop *d = o_runops->stops(); d; d = d->next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
         }
     }
-    for (sRunop *d = o_runops->traces(); d; d = d->next()) {
+    for (sRunopTrace *d = o_runops->traces(); d; d = d->next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
         }
     }
-    for (sRunop *d = o_runops->iplots(); d; d = d->next()) {
+    for (sRunopIplot *d = o_runops->iplots(); d; d = d->next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
         }
     }
-    for (sRunop *d = o_runops->saves(); d; d = d->next()) {
+    for (sRunopSave *d = o_runops->saves(); d; d = d->next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
@@ -623,25 +625,25 @@ IFoutput::setRunopActive(int dbnum, bool state)
     }
     if (Sp.CurCircuit()) {
         sRunopDb &db = Sp.CurCircuit()->runops();
-        for (sRunop *d = db.stops(); d; d = d->next()) {
+        for (sRunopStop *d = db.stops(); d; d = d->next()) {
             if (d->number() == dbnum) {
                 d->set_active(state);
                 return;
             }
         }
-        for (sRunop *d = db.traces(); d; d = d->next()) {
+        for (sRunopTrace *d = db.traces(); d; d = d->next()) {
             if (d->number() == dbnum) {
                 d->set_active(state);
                 return;
             }
         }
-        for (sRunop *d = db.iplots(); d; d = d->next()) {
+        for (sRunopIplot *d = db.iplots(); d; d = d->next()) {
             if (d->number() == dbnum) {
                 d->set_active(state);
                 return;
             }
         }
-        for (sRunop *d = db.saves(); d; d = d->next()) {
+        for (sRunopSave *d = db.saves(); d; d = d->next()) {
             if (d->number() == dbnum) {
                 d->set_active(state);
                 return;
@@ -655,8 +657,8 @@ void
 IFoutput::deleteRunop(int which, bool inactive, int num)
 {
     if (which & DF_SAVE) {
-        sRunop *dlast = 0, *dnext;
-        for (sRunop *d = o_runops->stops(); d; d = dnext) {
+        sRunopStop *dlast = 0, *dnext;
+        for (sRunopStop *d = o_runops->stops(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
@@ -664,7 +666,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
                     o_runops->set_stops(dnext);
                 else
                     dlast->set_next(dnext);
-                sRunop::destroy(d);
+                d->destroy();
                 if (num >= 0)
                     return;
                 continue;
@@ -674,7 +676,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
         if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
             dlast = 0;
-            for (sRunop *d = db.stops(); d; d = dnext) {
+            for (sRunopStop *d = db.stops(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
@@ -682,7 +684,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
                         db.set_stops(dnext);
                     else
                         dlast->set_next(dnext);
-                    sRunop::destroy(d);
+                    d->destroy();
                     if (num >= 0)
                         return;
                     continue;
@@ -692,8 +694,8 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
         }
     }
     if (which & DF_TRACE) {
-        sRunop *dlast = 0, *dnext;
-        for (sRunop *d = o_runops->traces(); d; d = dnext) {
+        sRunopTrace *dlast = 0, *dnext;
+        for (sRunopTrace *d = o_runops->traces(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
@@ -701,7 +703,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
                     o_runops->set_traces(dnext);
                 else
                     dlast->set_next(dnext);
-                sRunop::destroy(d);
+                d->destroy();
                 if (num >= 0)
                     return;
                 continue;
@@ -711,7 +713,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
         if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
             dlast = 0;
-            for (sRunop *d = db.traces(); d; d = dnext) {
+            for (sRunopTrace *d = db.traces(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
@@ -719,7 +721,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
                         db.set_traces(dnext);
                     else
                         dlast->set_next(dnext);
-                    sRunop::destroy(d);
+                    d->destroy();
                     if (num >= 0)
                         return;
                     continue;
@@ -729,8 +731,8 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
         }
     }
     if (which & DF_IPLOT) {
-        sRunop *dlast = 0, *dnext;
-        for (sRunop *d = o_runops->iplots(); d; d = dnext) {
+        sRunopIplot *dlast = 0, *dnext;
+        for (sRunopIplot *d = o_runops->iplots(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
@@ -738,7 +740,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
                     o_runops->set_iplots(dnext);
                 else
                     dlast->set_next(dnext);
-                sRunop::destroy(d);
+                d->destroy();
                 if (num >= 0)
                     return;
                 continue;
@@ -748,7 +750,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
         if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
             dlast = 0;
-            for (sRunop *d = db.iplots(); d; d = dnext) {
+            for (sRunopIplot *d = db.iplots(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
@@ -756,7 +758,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
                         db.set_iplots(dnext);
                     else
                         dlast->set_next(dnext);
-                    sRunop::destroy(d);
+                    d->destroy();
                     if (num >= 0)
                         return;
                     continue;
@@ -766,8 +768,8 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
         }
     }
     if (which & DF_SAVE) {
-        sRunop *dlast = 0, *dnext;
-        for (sRunop *d = o_runops->saves(); d; d = dnext) {
+        sRunopSave *dlast = 0, *dnext;
+        for (sRunopSave *d = o_runops->saves(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
@@ -775,7 +777,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
                     o_runops->set_saves(dnext);
                 else
                     dlast->set_next(dnext);
-                sRunop::destroy(d);
+                d->destroy();
                 if (num >= 0)
                     return;
                 continue;
@@ -785,7 +787,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
         if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
             dlast = 0;
-            for (sRunop *d = db.saves(); d; d = dnext) {
+            for (sRunopSave *d = db.saves(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
@@ -793,7 +795,7 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
                         db.set_saves(dnext);
                     else
                         dlast->set_next(dnext);
-                    sRunop::destroy(d);
+                    d->destroy();
                     if (num >= 0)
                         return;
                     continue;
@@ -874,13 +876,13 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 (db && (db->traces() || db->stops()))) {
             bool tflag = true;
             run->scalarizeVecs();
-            for (sRunop *d = o_runops->traces(); d; d = d->next())
+            for (sRunopTrace *d = o_runops->traces(); d; d = d->next())
                 d->print_trace(run->runPlot(), &tflag, run->pointCount());
             if (db) {
-                for (sRunop *d = db->traces(); d; d = d->next())
+                for (sRunopTrace *d = db->traces(); d; d = d->next())
                     d->print_trace(run->runPlot(), &tflag, run->pointCount());
             }
-            for (sRunop *d = o_runops->stops(); d; d = d->next()) {
+            for (sRunopStop *d = o_runops->stops(); d; d = d->next()) {
                 ROret r = d->should_stop(run);
                 if (r == RO_PAUSE) {
                     bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
@@ -896,7 +898,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 }
             }
             if (db) {
-                for (sRunop *d = db->stops(); d; d = d->next()) {
+                for (sRunopStop *d = db->stops(); d; d = d->next()) {
                     ROret r = d->should_stop(run);
                     if (r == RO_PAUSE) {
                         bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
@@ -920,7 +922,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 int len = xs->length();
                 if (len >= IPOINTMIN || (xs->flags() & VF_ROLLOVER)) {
                     bool doneone = false;
-                    for (sRunop *d = o_runops->iplots(); d; d = d->next()) {
+                    for (sRunopIplot *d = o_runops->iplots(); d;
+                            d = d->next()) {
                         if (d->type() == RO_IPLOT) {
                             iplot(d, run);
                             if (GRpkgIf()->CurDev() &&
@@ -932,7 +935,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                         }
                     }
                     if (db && !doneone) {
-                        for (sRunop *d = db->iplots(); d; d = d->next()) {
+                        for (sRunopIplot *d = db->iplots(); d; d = d->next()) {
                             if (d->type() == RO_IPLOT) {
                                 iplot(d, run);
                                 if (GRpkgIf()->CurDev() &&
@@ -1006,26 +1009,196 @@ IFoutput::pauseTest(sRunDesc *run)
 // End of IFoutput functions.
 
 
-// Static function.
 void
-sRunop::destroy(sRunop *d)
+sRunopSave::print(char **retstr)
 {
-    while (d) {
-        sRunop *x = d;
-        d = d->ro_also;
-        if (x->ro_type == RO_DEADIPLOT && x->ro_graphid) {
-            // User killed the window.
-            GP.DestroyGraph(x->ro_graphid);
-        }
-        delete x;
+    const char *msg0 = "%c %-4d %s %s\n";
+    char buf[BSIZE_SP];
+    if (!retstr)
+        TTY.printf(msg0, ro_active ? ' ' : 'I', ro_number,
+            kw_save,  ro_string);
+    else {
+        sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
+            kw_save,  ro_string);
+        *retstr = lstring::build_str(*retstr, buf);
     }
+}
+
+
+void
+sRunopSave::destroy()
+{
+    delete this;
+}
+// End of sRunopSave functions.
+
+
+void
+sRunopTrace::print(char **retstr)
+{
+    const char *msg0 = "%c %-4d %s %s\n";
+    char buf[BSIZE_SP];
+    if (!retstr)
+        TTY.printf(msg0, ro_active ? ' ' : 'I', ro_number,
+            kw_trace,  ro_string ? ro_string : "");
+    else {
+        sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
+            kw_trace,  ro_string ? ro_string : "");
+        *retstr = lstring::build_str(*retstr, buf);
+    }
+}
+
+
+void
+sRunopTrace::destroy()
+{
+    delete this;
 }
 
 
 namespace { const char *Msg = "can't evaluate %s.\n"; }
 
+// Print the node voltages for trace.
+//
 bool
-sRunop::istrue()
+sRunopTrace::print_trace(sPlot *plot, bool *flag, int pnt)
+{
+    if (!ro_active)
+        return (true);
+    if (*flag) {
+        sDataVec *v1 = plot->scale();
+        if (v1)
+            TTY.printf_force("%-5d %s = %s\n", pnt, v1->name(), 
+                SPnum.printnum(v1->realval(0), v1->units(), false));
+        *flag = false;
+    }
+
+    if (ro_string) {
+        if (ro_bad)
+            return (false);
+        wordlist *wl = CP.LexStringSub(ro_string);
+        if (!wl) {
+            GRpkgIf()->ErrPrintf(ET_ERROR, Msg, ro_string);
+            ro_bad = true;
+            return (false);
+        }
+
+        sDvList *dvl = 0;
+        pnlist *pl = Sp.GetPtree(wl, true);
+        wordlist::destroy(wl);
+        if (pl)
+            dvl = Sp.DvList(pl);
+        if (!dvl) {
+            GRpkgIf()->ErrPrintf(ET_ERROR, Msg, ro_string);
+            ro_bad = true;
+            return (false);
+        }
+        for (sDvList *dv = dvl; dv; dv = dv->dl_next) {
+            sDataVec *v1 = dv->dl_dvec;
+            if (v1 == plot->scale())
+                continue;
+            if (v1->length() <= 0) {
+                if (pnt == 1)
+                    GRpkgIf()->ErrPrintf(ET_WARN, Msg, v1->name());
+                continue;
+            }
+            if (v1->isreal())
+                TTY.printf_force("  %-10s %s\n", v1->name(), 
+                    SPnum.printnum(v1->realval(0), v1->units(), false));
+
+            else {
+                // remember printnum returns static data!
+                TTY.printf_force("  %-10s %s, ", v1->name(), 
+                    SPnum.printnum(v1->realval(0), v1->units(), false));
+                TTY.printf_force("%s\n",
+                    SPnum.printnum(v1->imagval(0), v1->units(), false));
+            }
+        }
+        sDvList::destroy(dvl);
+    }
+    return (true);
+}
+// End of sRunopTrace functions.
+
+
+void
+sRunopIplot::print(char **retstr)
+{
+    const char *msg2 = "%c %-4d %s %s";
+    char buf[BSIZE_SP];
+    if (!retstr) {
+        TTY.printf(msg2, ro_active ? ' ' : 'I', ro_number,
+            kw_iplot, ro_string);
+/*XXX
+        for (dc = ro_also; dc; dc = dc->ro_also)
+            TTY.printf(" %s", dc->ro_string);
+*/
+        TTY.send("\n");
+    }
+    else {
+        sprintf(buf, msg2, ro_active ? ' ' : 'I', ro_number,
+            kw_iplot, ro_string);
+/*XXX
+        for (dc = ro_also; dc; dc = dc->ro_also)
+            sprintf(buf + strlen(buf), " %s", dc->ro_string);
+*/
+        strcat(buf, "\n");
+        *retstr = lstring::build_str(*retstr, buf);
+    }
+}
+
+
+void
+sRunopIplot::destroy()
+{
+    sRunopIplot *d = this;
+    while (d) {
+        sRunopIplot *x = d;
+/*XXX
+        d = d->ro_also;
+*/
+        if (x->ro_type == RO_DEADIPLOT && x->ro_graphid) {
+            // User killed the window.
+            GP.DestroyGraph(x->ro_graphid);
+        }
+        delete x;
+return;
+    }
+}
+// End of sRunopIplot functions.
+
+
+void
+sRunopStop::print(char **retstr)
+{
+    const char *msg1 = "%c %-4d stop";
+    char buf[BSIZE_SP];
+    if (!retstr) {
+        TTY.printf(msg1, ro_active ? ' ' : 'I', ro_number);
+        printcond(0);
+    }
+    else {
+        sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
+        *retstr = lstring::build_str(*retstr, buf);
+        printcond(retstr);
+    }
+}
+
+
+void
+sRunopStop::destroy()
+{
+    sRunopStop *d = this;
+    while (d) {
+        sRunopStop *x = d;
+        d = d->ro_also;
+        delete x;
+    }
+}
+
+
+bool
+sRunopStop::istrue()
 {
     if (ro_bad)
         return (true);
@@ -1059,13 +1232,13 @@ sRunop::istrue()
 
 
 ROret
-sRunop::should_stop(sRunDesc *run)
+sRunopStop::should_stop(sRunDesc *run)
 {
     if (!ro_active || !run)
         return (RO_OK);
     bool when = true;
     bool after = true;
-    for (sRunop *dt = this; dt; dt = dt->ro_also) {
+    for (sRunopStop *dt = this; dt; dt = dt->ro_also) {
         if (dt->ro_type == RO_STOPAFTER) {
             if (dt->ro_ptmode) {
                 if (run->pointCount() < dt->ro_p.ipoint) {
@@ -1157,146 +1330,11 @@ sRunop::should_stop(sRunDesc *run)
 }
 
 
-void
-sRunop::print(char **retstr)
-{
-    char buf[BSIZE_SP];
-    sRunop *dc = 0;
-    const char *msg0 = "%c %-4d %s %s\n";
-    const char *msg1 = "%c %-4d stop";
-    const char *msg2 = "%c %-4d %s %s";
-
-    switch (ro_type) {
-    case RO_SAVE:
-        if (!retstr)
-            TTY.printf(msg0, ro_active ? ' ' : 'I', ro_number,
-                kw_save,  ro_string);
-        else {
-            sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
-                kw_save,  ro_string);
-            *retstr = lstring::build_str(*retstr, buf);
-        }
-        break;
-
-    case RO_TRACE:
-        if (!retstr)
-            TTY.printf(msg0, ro_active ? ' ' : 'I', ro_number,
-                kw_trace,  ro_string ? ro_string : "");
-        else {
-            sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
-                kw_trace,  ro_string ? ro_string : "");
-            *retstr = lstring::build_str(*retstr, buf);
-        }
-        break;
-
-    case RO_STOPWHEN:
-    case RO_STOPAFTER:
-    case RO_STOPAT:
-    case RO_STOPBEFORE:
-        if (!retstr) {
-            TTY.printf(msg1, ro_active ? ' ' : 'I', ro_number);
-            printcond(0);
-        }
-        else {
-            sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
-            *retstr = lstring::build_str(*retstr, buf);
-            printcond(retstr);
-        }
-        break;
-
-    case RO_IPLOT:
-    case RO_DEADIPLOT:
-        if (!retstr) {
-            TTY.printf(msg2, ro_active ? ' ' : 'I', ro_number,
-                kw_iplot, ro_string);
-            for (dc = ro_also; dc; dc = dc->ro_also)
-                TTY.printf(" %s", dc->ro_string);
-            TTY.send("\n");
-        }
-        else {
-            sprintf(buf, msg2, ro_active ? ' ' : 'I', ro_number,
-                kw_iplot, ro_string);
-            for (dc = ro_also; dc; dc = dc->ro_also)
-                sprintf(buf + strlen(buf), " %s", dc->ro_string);
-            strcat(buf, "\n");
-            *retstr = lstring::build_str(*retstr, buf);
-        }
-        break;
-
-    default:
-        GRpkgIf()->ErrPrintf(ET_INTERR, "com_status: bad db %d.\n", ro_type);
-        break;
-    }
-}
-
-
-// Print the node voltages for trace.
-//
-bool
-sRunop::print_trace(sPlot *plot, bool *flag, int pnt)
-{
-    if (!ro_active)
-        return (true);
-    if (*flag) {
-        sDataVec *v1 = plot->scale();
-        if (v1)
-            TTY.printf_force("%-5d %s = %s\n", pnt, v1->name(), 
-                SPnum.printnum(v1->realval(0), v1->units(), false));
-        *flag = false;
-    }
-
-    if (ro_string) {
-        if (ro_bad)
-            return (false);
-        wordlist *wl = CP.LexStringSub(ro_string);
-        if (!wl) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, Msg, ro_string);
-            ro_bad = true;
-            return (false);
-        }
-
-        sDvList *dvl = 0;
-        pnlist *pl = Sp.GetPtree(wl, true);
-        wordlist::destroy(wl);
-        if (pl)
-            dvl = Sp.DvList(pl);
-        if (!dvl) {
-            GRpkgIf()->ErrPrintf(ET_ERROR, Msg, ro_string);
-            ro_bad = true;
-            return (false);
-        }
-        for (sDvList *dv = dvl; dv; dv = dv->dl_next) {
-            sDataVec *v1 = dv->dl_dvec;
-            if (v1 == plot->scale())
-                continue;
-            if (v1->length() <= 0) {
-                if (pnt == 1)
-                    GRpkgIf()->ErrPrintf(ET_WARN, Msg, v1->name());
-                continue;
-            }
-            if (v1->isreal())
-                TTY.printf_force("  %-10s %s\n", v1->name(), 
-                    SPnum.printnum(v1->realval(0), v1->units(), false));
-
-            else {
-                // remember printnum returns static data!
-                TTY.printf_force("  %-10s %s, ", v1->name(), 
-                    SPnum.printnum(v1->realval(0), v1->units(), false));
-                TTY.printf_force("%s\n",
-                    SPnum.printnum(v1->imagval(0), v1->units(), false));
-            }
-        }
-        sDvList::destroy(dvl);
-    }
-    return (true);
-}
-
-
 // Print the condition.  If fp is 0 and retstr is not 0,
 // add the text to *retstr, otherwise print to fp;
 //
 void
-sRunop::printcond(char **retstr)
+sRunopStop::printcond(char **retstr)
 {
     char buf[BSIZE_SP];
     const char *msg1 = " %s %d";
@@ -1309,7 +1347,7 @@ sRunop::printcond(char **retstr)
         delete [] *retstr;
         *retstr = 0;
     }
-    for (sRunop *dt = this; dt; dt = dt->ro_also) {
+    for (sRunopStop *dt = this; dt; dt = dt->ro_also) {
         if (retstr) {
             if (dt->ro_type == RO_STOPAFTER) {
                 if (dt->ro_ptmode)
@@ -1363,7 +1401,7 @@ sRunop::printcond(char **retstr)
     else
         TTY.send("\n");
 }
-// End of sRunop functions.
+// End of sRunopStop functions.
 
 
 void

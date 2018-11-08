@@ -82,7 +82,10 @@ struct variable;
 struct sTrie;
 struct sHtab;
 struct IFspecial;
-struct sRunop;
+struct sRunopSave;
+struct sRunopTrace;
+struct sRunopIplot;
+struct sRunopStop;
 struct sMeas;
 struct sPlotList;
 struct sRunDesc;
@@ -177,20 +180,20 @@ struct sRunopDb
 
     bool isset() { return (rd_iplot || rd_trace || rd_save || rd_stop); }
 
-    sRunop *saves()             { return (rd_save); }
-    void set_saves(sRunop *d)   { rd_save = d; }
+    sRunopSave *saves()             { return (rd_save); }
+    void set_saves(sRunopSave *d)   { rd_save = d; }
 
-    sRunop *traces()            { return (rd_trace); }
-    void set_traces(sRunop *d)  { rd_trace = d; }
+    sRunopTrace *traces()           { return (rd_trace); }
+    void set_traces(sRunopTrace *d) { rd_trace = d; }
 
-    sRunop *iplots()            { return (rd_iplot); }
-    void set_iplots(sRunop *d)  { rd_iplot = d; }
+    sRunopIplot *iplots()           { return (rd_iplot); }
+    void set_iplots(sRunopIplot *d) { rd_iplot = d; }
 
-    sRunop *stops()             { return (rd_stop); }
-    void set_stops(sRunop *d)   { rd_stop = d; }
+    sRunopStop *stops()             { return (rd_stop); }
+    void set_stops(sRunopStop *d)   { rd_stop = d; }
 
-    sMeas *measures()           { return (rd_meas); }
-    void set_measures(sMeas *m) { rd_meas = m; }
+    sMeas *measures()               { return (rd_meas); }
+    void set_measures(sMeas *m)     { rd_meas = m; }
 
     int new_count()             { return (rd_runopcnt++); }
     int decrement_count()       { return (rd_runopcnt--); }
@@ -203,10 +206,10 @@ struct sRunopDb
     void set_num_steps(int i)   { rd_steps = i; }
 
 private:
-    sRunop *rd_save;            // save list head
-    sRunop *rd_trace;           // trace list head
-    sRunop *rd_iplot;           // iplot list head
-    sRunop *rd_stop;            // stop after/when list head
+    sRunopSave *rd_save;            // save list head
+    sRunopTrace *rd_trace;           // trace list head
+    sRunopIplot *rd_iplot;           // iplot list head
+    sRunopStop *rd_stop;            // stop after/when list head
     sMeas   *rd_meas;           // measures list head
 
     int rd_runopcnt;            // running sum of runops created, provides id
@@ -330,14 +333,14 @@ struct sFtCirc
     void set_postrun(wordlist *w) { ci_postrunBlk.set_text(w); }
 
     sRunopDb &runops()          { return (ci_runops); }
-    sRunop *saves()             { return (ci_runops.saves()); }
-    void set_saves(sRunop *d)   { ci_runops.set_saves(d); }
-    sRunop *traces()            { return (ci_runops.traces()); }
-    void set_traces(sRunop *d)  { ci_runops.set_traces(d); }
-    sRunop *iplots()            { return (ci_runops.iplots()); }
-    void set_iplots(sRunop *d)  { ci_runops.set_iplots(d); }
-    sRunop *stops()             { return (ci_runops.stops()); }
-    void set_stops(sRunop *d)   { ci_runops.set_stops(d); }
+    sRunopSave *saves()             { return (ci_runops.saves()); }
+    void set_saves(sRunopSave *d)   { ci_runops.set_saves(d); }
+    sRunopTrace *traces()           { return (ci_runops.traces()); }
+    void set_traces(sRunopTrace *d) { ci_runops.set_traces(d); }
+    sRunopIplot *iplots()           { return (ci_runops.iplots()); }
+    void set_iplots(sRunopIplot *d) { ci_runops.set_iplots(d); }
+    sRunopStop *stops()             { return (ci_runops.stops()); }
+    void set_stops(sRunopStop *d)   { ci_runops.set_stops(d); }
     sMeas *measures()           { return (ci_runops.measures()); }
     void set_measures(sMeas *m) { ci_runops.set_measures(m); }
 

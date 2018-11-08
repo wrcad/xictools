@@ -197,15 +197,14 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
 {
     char *s = lstring::copy(name);
     CP.Unquote(s);
-    sRunop *td;
-    for (td = o_runops->saves(); td; td = td->next()) {
+    for (sRunopSave *td = o_runops->saves(); td; td = td->next()) {
         if (name_eq(s, td->string())) {
             delete [] s;
             return;
         }
     }
     if (circuit) {
-        for (td = circuit->saves(); td; td = td->next()) {
+        for (sRunopSave *td = circuit->saves(); td; td = td->next()) {
             if (name_eq(s, td->string())) {
                 delete [] s;
                 return;
@@ -213,15 +212,15 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
         }
     }
 
-    sRunop *d = new sRunop;
-    d->set_type(RO_SAVE);
+    sRunopSave *d = new sRunopSave;
     d->set_active(true);
     d->set_string(s);
     d->set_number(o_runops->new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !circuit) {
         if (o_runops->saves()) {
-            for (td = o_runops->saves(); td->next(); td = td->next()) ;
+            sRunopSave *td = o_runops->saves();
+            for ( ; td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
@@ -229,7 +228,8 @@ IFoutput::addSave(sFtCirc *circuit, const char *name)
     }
     else {
         if (circuit->saves()) {
-            for (td = circuit->saves(); td->next(); td = td->next()) ;
+            sRunopSave *td = circuit->saves();
+            for ( ; td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
@@ -248,10 +248,10 @@ void
 IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
 {
     sRunopDb *db = circuit ? &circuit->runops() : 0;
-    for (sRunop *d = o_runops->saves(); d && d->active(); d = d->next())
+    for (sRunopSave *d = o_runops->saves(); d && d->active(); d = d->next())
         saved->add_save(d->string());
     if (db) {
-        for (sRunop *d = db->saves(); d && d->active(); d = d->next())
+        for (sRunopSave *d = db->saves(); d && d->active(); d = d->next())
             saved->add_save(d->string());
     }
     bool saveall = true;
@@ -273,28 +273,32 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
     // to @Vsrc[p].  When done, we'll go back an purge non-specials
     // if saveall is true.
 
-    for (sRunop *d = o_runops->traces(); d && d->active(); d = d->next())
+    for (sRunopTrace *d = o_runops->traces(); d && d->active(); d = d->next())
         saved->list_expr(d->string());
     if (db) {
-        for (sRunop *d = db->traces(); d && d->active(); d = d->next())
+        for (sRunopTrace *d = db->traces(); d && d->active(); d = d->next())
             saved->list_expr(d->string());
     }
-    for (sRunop *d = o_runops->iplots(); d && d->active(); d = d->next()) {
+    for (sRunopIplot *d = o_runops->iplots(); d && d->active(); d = d->next()) {
         saved->list_expr(d->string());
+/*XXX
         for (sRunop *dd = d->also(); dd; dd = dd->also())
             saved->list_expr(d->string());
+*/
     }
     if (db) {
-        for (sRunop *d = db->iplots(); d && d->active(); d = d->next()) {
+        for (sRunopIplot *d = db->iplots(); d && d->active(); d = d->next()) {
             saved->list_expr(d->string());
+/*XXX
             for (sRunop *dd = d->also(); dd; dd = dd->also())
                 saved->list_expr(d->string());
+*/
         }
     }
-    for (sRunop *d = o_runops->stops(); d && d->active(); d = d->next())
+    for (sRunopStop *d = o_runops->stops(); d && d->active(); d = d->next())
         saved->list_expr(d->string());
     if (db) {
-        for (sRunop *d = db->stops(); d && d->active(); d = d->next())
+        for (sRunopStop *d = db->stops(); d && d->active(); d = d->next())
             saved->list_expr(d->string());
     }
 

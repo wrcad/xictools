@@ -83,73 +83,51 @@ enum ROret
     RO_ENDIT        // Abort run, can not be resumed.
 };
 
-// Structure to save a runop context as a list element.
-//
+// Base class, not instantiated directy.  This contains common fields.
 struct sRunop
 {
     sRunop()
         {
             ro_next     = 0;
-            ro_also     = 0;
-            ro_string   = 0;
-            ro_callfn   = 0;
-            ro_p.dpoint = 0.0;
-            ro_number   = 0;
             ro_type     = RO_NONE;
-            ro_graphid  = 0;
-            ro_reuseid  = 0;
+            ro_number   = 0;
+            ro_string   = 0;
+            ro_p.dpoint = 0.0;
             ro_active   = false;
             ro_bad      = false;
             ro_ptmode   = false;
-            ro_call     = false;
-            ro_index    = 0;
-            ro_numpts   = 0;
-            ro_a.dpoints= 0;
         }
 
-    ~sRunop()
+    virtual ~sRunop()
         {
             delete [] ro_string;
-            delete [] ro_callfn;
-            if (ro_ptmode)
-                delete [] ro_a.ipoints;
-            else
-                delete [] ro_a.dpoints;
         }
-
-    static void destroy(sRunop*);  // destroy this runop and descendents
-    bool istrue();                  // evaluate true if condition met
-    ROret should_stop(sRunDesc*);   // true if stop condition met
-    void print(char**);             // print, in string if given, the runop msg
-    bool print_trace(sPlot*, bool*, int);  // print trace output
-    void printcond(char**);         // print the conditional expression
 
     static void destroy_list(sRunop *l)
         {
             while (l) {
                 sRunop *x = l;
                 l = l->ro_next;
-                destroy(x);
+                x->destroy();
             }
         }
 
-    sRunop *next()              { return (ro_next); }
     void set_next(sRunop *d)    { ro_next = d; }
 
-    sRunop *also()              { return (ro_also); }
-    void set_also(sRunop *d)    { ro_also = d; }
+    ROtype type()               { return (ro_type); }
+    void set_type(ROtype t)     { ro_type = t; }
+
+    int number()                { return (ro_number); }
+    void set_number(int i)      { ro_number = i; }
 
     const char *string()        { return (ro_string); }
     void set_string(char *s)    { ro_string = s; }
 
-    const char *call_func()     { return (ro_call ? ro_callfn : 0); }
-    void set_call(bool b, const char *fn)
-        {
-            ro_call = b;
-            char *nm = lstring::copy(fn);
-            delete [] ro_callfn;
-            ro_callfn = nm;
-        }
+    bool active()               { return (ro_active); }
+    void set_active(bool b)     { ro_active = b; }
+
+    bool bad()                  { return (ro_bad); }
+    void set_bad(bool b)        { ro_bad = b; }
 
     void set_point(double d)
         {
@@ -163,11 +141,62 @@ struct sRunop
             ro_ptmode = true;
         }
 
-    int number()                { return (ro_number); }
-    void set_number(int i)      { ro_number = i; }
+    virtual void print(char**) = 0;
+    virtual void destroy() = 0;
 
-    ROtype type()               { return (ro_type); }
-    void set_type(ROtype t)     { ro_type = t; }
+protected:
+    sRunop *ro_next;            // List of active runop commands.
+    ROtype ro_type;             // One of the above.
+    int ro_number;              // The number of this runop command.
+    char *ro_string;            // Condition or node, text.
+    union {                     // Output point for test:
+        double dpoint;          //   Value.
+        int ipoint;             //   Plot point index.
+    } ro_p;
+    bool ro_active;             // True if active.
+    bool ro_bad;                // True if error.
+    bool ro_ptmode;             // Input in points, else absolute.
+};
+
+// Save an expression when running.
+struct sRunopSave : public sRunop
+{
+    sRunopSave()
+        {
+            ro_type = RO_SAVE;
+        }
+
+    sRunopSave *next()          { return ((sRunopSave*)ro_next); }
+
+    void print(char**);         // Print, in string if given, the runop msg.
+    void destroy();             // Destroy this runop.
+};
+
+// Trace an expression (print value of at each time point) when running.
+struct sRunopTrace : public sRunop
+{
+    sRunopTrace()
+        {
+            ro_type = RO_TRACE;
+        }
+
+    sRunopTrace *next()         { return ((sRunopTrace*)ro_next); }
+
+    void print(char**);         // Print, in string if given, the runop msg.
+    void destroy();             // Destroy this runop.
+
+    bool print_trace(sPlot*, bool*, int);  // Print trace output.
+};
+
+// Plot incrementally while running.
+struct sRunopIplot : public sRunop
+{
+    sRunopIplot()
+        {
+            ro_type = RO_IPLOT;
+        }
+
+    sRunopIplot *next()         { return ((sRunopIplot*)ro_next); }
 
     int graphid()               { return (ro_graphid); }
     void set_graphid(int i)     { ro_graphid = i; }
@@ -175,13 +204,52 @@ struct sRunop
     int reuseid()               { return (ro_reuseid); }
     void set_reuseid(int i)     { ro_reuseid = i; }
 
-    bool active()               { return (ro_active); }
-    void set_active(bool b)     { ro_active = b; }
+    void print(char**);         // Print, in string if given, the runop msg.
+    void destroy();             // Destroy this runop.
 
-    bool bad()                  { return (ro_bad); }
-    void set_bad(bool b)        { ro_bad = b; }
+private:
+    int ro_graphid;             // If iplot, id of graph.
+    int ro_reuseid;             // Iplot window to reuse.
+};
+
+// Check for breakout condition while running.
+struct sRunopStop : public sRunop
+{
+    sRunopStop()
+        {
+            ro_type     = RO_STOPAFTER;
+
+            ro_call     = false;
+            ro_callfn   = 0;
+            ro_also     = 0;
+            ro_index    = 0;
+            ro_numpts   = 0;
+            ro_a.dpoints= 0;
+        }
+
+    ~sRunopStop()
+        {
+            delete [] ro_callfn;
+            if (ro_ptmode)
+                delete [] ro_a.ipoints;
+            else
+                delete [] ro_a.dpoints;
+        }
+
+    sRunopStop *next()          { return ((sRunopStop*)ro_next); }
 
     bool call()                 { return (ro_call); }
+    const char *call_func()     { return (ro_call ? ro_callfn : 0); }
+    void set_call(bool b, const char *fn)
+        {
+            ro_call = b;
+            char *nm = lstring::copy(fn);
+            delete [] ro_callfn;
+            ro_callfn = nm;
+        }
+
+    sRunopStop *also()          { return (ro_also); }
+    void set_also(sRunopStop *d){ ro_also = d; }
 
     void set_points(int sz, double *p)
         {
@@ -207,23 +275,17 @@ struct sRunop
             ro_ptmode = true;
         }
 
+    void print(char**);         // Print, in string if given, the runop msg.
+    void destroy();             // Destroy this runop and alsos.
+
+    bool istrue();                  // Evaluate true if condition met.
+    ROret should_stop(sRunDesc*);   // True if stop condition met.
+    void printcond(char**);         // Print the conditional expression.
+
 private:
-    sRunop *ro_next;            // List of active runop commands.
-    sRunop *ro_also;            // Link for conjunctions.
-    char *ro_string;            // Condition or node, text.
-    char *ro_callfn;            // Name of script to call on stop.
-    union {                     // Output point for test:
-        double dpoint;          //   Value.
-        int ipoint;             //   Plot point index.
-    } ro_p;
-    int ro_number;              // The number of this runop command.
-    ROtype ro_type;             // One of the above.
-    int ro_graphid;             // If iplot, id of graph.
-    int ro_reuseid;             // Iplot window to reuse.
-    bool ro_active;             // True if active.
-    bool ro_bad;                // True if error.
-    bool ro_ptmode;             // Input to before/after/at in points.
     bool ro_call;               // Call script or bound codeblock on stop.
+    sRunopStop *ro_also;        // Link for conjunctions.
+    char *ro_callfn;            // Name of script to call on stop.
     int ro_index;               // Index into the ro_points array.
     int ro_numpts;              // Size of the ro_points array.
     union {                     // Array of points to test for "stop at".

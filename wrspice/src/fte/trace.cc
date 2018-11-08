@@ -89,19 +89,19 @@ IFoutput::TraceCmd(wordlist *wl)
 {
     const char *msg = "already tracing %s, ignored.\n";
 
-    sRunop *d = new sRunop;
-    d->set_type(RO_TRACE);
+    sRunopTrace *d = new sRunopTrace;
     d->set_active(true);
     d->set_string(wordlist::flatten(wl));
     d->set_number(o_runops->new_count());
 
     if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
         if (o_runops->traces()) {
-            sRunop *ld = 0;
-            for (sRunop *td = o_runops->traces(); td; ld = td, td = td->next()) {
+            sRunopTrace *ld = 0;
+            for (sRunopTrace *td = o_runops->traces(); td;
+                    ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
                     GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
-                    sRunop::destroy(d);
+                    d->destroy();
                     o_runops->decrement_count();
                     return;
                 }
@@ -114,11 +114,12 @@ IFoutput::TraceCmd(wordlist *wl)
     else {
         sRunopDb *runop = &Sp.CurCircuit()->runops();
         if (runop->traces()) {
-            sRunop *ld = 0;
-            for (sRunop *td = runop->traces(); td; ld = td, td = td->next()) {
+            sRunopTrace *ld = 0;
+            for (sRunopTrace *td = runop->traces(); td;
+                    ld = td, td = td->next()) {
                 if (lstring::eq(td->string(), d->string())) {
                     GRpkgIf()->ErrPrintf(ET_WARN, msg, td->string());
-                    sRunop::destroy(d);
+                    d->destroy();
                     o_runops->decrement_count();
                     return;
                 }
@@ -173,8 +174,7 @@ IFoutput::iplotCmd(wordlist *wl)
         }
     }
 
-    sRunop *d = new sRunop;
-    d->set_type(RO_IPLOT);
+    sRunopIplot *d = new sRunopIplot;
     d->set_active(true);
     d->set_string(wordlist::flatten(wl));
     wordlist::destroy(wl);
@@ -182,8 +182,8 @@ IFoutput::iplotCmd(wordlist *wl)
 
     if (CP.GetFlag(CP_INTERACTIVE) || !Sp.CurCircuit()) {
         if (o_runops->iplots()) {
-            sRunop *td;
-            for (td = o_runops->iplots(); td->next(); td = td->next()) ;
+            sRunopIplot *td = o_runops->iplots();
+            for ( ; td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
@@ -192,8 +192,8 @@ IFoutput::iplotCmd(wordlist *wl)
     else {
         sRunopDb *runop = &Sp.CurCircuit()->runops();
         if (runop->iplots()) {
-            sRunop *td;
-            for (td = runop->iplots(); td->next(); td = td->next()) ;
+            sRunopIplot *td = runop->iplots();
+            for ( ; td->next(); td = td->next()) ;
             td->set_next(d);
         }
         else
@@ -439,7 +439,7 @@ namespace {
 #define IPLTOL 2e-3    // Allow this fraction out of range before redraw.
 
 void
-IFoutput::iplot(sRunop *rc, sRunDesc *run)
+IFoutput::iplot(sRunopIplot *rc, sRunDesc *run)
 {
     if (!run || !rc || rc->bad())
         return;
@@ -821,13 +821,14 @@ IFoutput::endIplot(sRunDesc *run)
 {
     if (!run)
         return;
-    sRunopDb *runop = run->circuit() ? &run->circuit()->runops() : 0;
-    if (o_runops->iplots() || (runop && runop->iplots())) {
+    sRunopDb *db = run->circuit() ? &run->circuit()->runops() : 0;
+    if (o_runops->iplots() || (db && db->iplots())) {
         if (GRpkgIf()->CurDev() &&
-                GRpkgIf()->CurDev()->devtype == GRfullScreen)
+                GRpkgIf()->CurDev()->devtype == GRfullScreen) {
             // redraw
             GP.PopGraphContext();
-        for (sRunop *d = o_runops->iplots(); d; d = d->next()) {
+        }
+        for (sRunopIplot *d = o_runops->iplots(); d; d = (sRunopIplot*)d->next()) {
             d->set_reuseid(0);
             if (d->type() == RO_IPLOT && !d->bad()) {
                 if (d->graphid()) {
@@ -847,8 +848,8 @@ IFoutput::endIplot(sRunDesc *run)
                 d->set_graphid(0);
             }
         }
-        if (runop) {
-            for (sRunop *d = runop->iplots(); d; d = d->next()) {
+        if (db) {
+            for (sRunopIplot *d = db->iplots(); d; d = (sRunopIplot*)d->next()) {
                 d->set_reuseid(0);
                 if (d->type() == RO_IPLOT && !d->bad()) {
                     if (d->graphid()) {
@@ -880,26 +881,26 @@ IFoutput::isIplot(bool resurrect)
 {
     if (resurrect) {
         // Turn dead iplots back on.
-        for (sRunop *d = o_runops->iplots(); d; d = d->next()) {
+        for (sRunopIplot *d = o_runops->iplots(); d; d = d->next()) {
             if (d->type() == RO_DEADIPLOT)
                 d->set_type(RO_IPLOT);
         }
         if (Sp.CurCircuit()) {
-            sRunopDb *runop = &Sp.CurCircuit()->runops();
-            for (sRunop *d = runop->iplots(); d; d = d->next()) {
+            sRunopDb *db = &Sp.CurCircuit()->runops();
+            for (sRunopIplot *d = db->iplots(); d; d = d->next()) {
                 if (d->type() == RO_DEADIPLOT)
                     d->set_type(RO_IPLOT);
             }
         }
     }
 
-    for (sRunop *d = o_runops->iplots(); d; d = d->next()) {
+    for (sRunopIplot *d = o_runops->iplots(); d; d = d->next()) {
         if ((d->type() == RO_IPLOT || d->type() == RO_IPLOTALL) && d->active())
             return (true);
     }
     if (Sp.CurCircuit()) {
         sRunopDb *runop = &Sp.CurCircuit()->runops();
-        for (sRunop *d = runop->iplots(); d; d = d->next())
+        for (sRunopIplot *d = runop->iplots(); d; d = d->next())
             if ((d->type() == RO_IPLOT || d->type() == RO_IPLOTALL) &&
                     d->active())
                 return (true);
