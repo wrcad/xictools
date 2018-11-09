@@ -39,7 +39,6 @@
  *========================================================================*/
 
 #include "simulator.h"
-#include "measure.h"
 #include "runop.h"
 #include "parser.h"
 #include "misc.h"
@@ -65,38 +64,16 @@ namespace {
 }
 
 
-// Constructor.
-//
-sMeas::sMeas(const char *str, char **errstr)
+void
+sRunopMeas::print(char**)
 {
-    memset(this, 0, sizeof(sMeas));
-    parse(str, errstr);
 }
 
 
-// Destructor.
-//
-sMeas::~sMeas()
+void
+sRunopMeas::destroy()
 {
-    delete [] result;
-    delete [] start_name;
-    delete [] end_name;
-    delete [] expr2;
-    delete [] start_when_expr1;
-    delete [] start_when_expr2;
-    delete [] end_when_expr1;
-    delete [] end_when_expr2;
-
-    while (funcs) {
-        sMfunc *f = funcs->next;
-        delete funcs;
-        funcs = f;
-    }
-    while (finds) {
-        sMfunc *f = finds->next;
-        delete finds;
-        finds = f;
-    }
+    delete this;
 }
 
 
@@ -121,7 +98,7 @@ namespace {
 // Parse the string and set up the structure appropriately.
 //
 bool
-sMeas::parse(const char *str, char **errstr)
+sRunopMeas::parse(const char *str, char **errstr)
 {
     bool err = false;
     const char *s = str;
@@ -515,10 +492,10 @@ sMeas::parse(const char *str, char **errstr)
 // called during the parse.
 //
 void
-sMeas::addMeas(Mfunc type, const char *expr)
+sRunopMeas::addMeas(Mfunc mtype, const char *expr)
 {
-    sMfunc *m = new sMfunc(type, expr);
-    if (type == Mfind) {
+    sMfunc *m = new sMfunc(mtype, expr);
+    if (mtype == Mfind) {
         if (!finds)
             finds = m;
         else {
@@ -693,7 +670,7 @@ namespace {
 // Reset the measurement.
 //
 void
-sMeas::reset(sPlot *pl)
+sRunopMeas::reset(sPlot *pl)
 {
     if (pl) {
         // if the result vector is found in pl, delete it after copying
@@ -831,18 +808,18 @@ namespace {
 // was performed.
 //
 bool
-sMeas::check(sFtCirc *circuit)
+sRunopMeas::check(sFtCirc *circuit)
 {
     if (!circuit)
         return (true);
     if (measure_done || measure_error || measure_skip)
         return (true);
     sDataVec *xs = circuit->runplot()->scale();
-    sMeas *measures = circuit->measures();
+    sRunopMeas *measures = circuit->measures();
     if (!measures)
        return (true);  // "can't happen"
     if (expr2) {
-        for (sMeas *m = measures; m; m = m->next) {
+        for (sRunopMeas *m = measures; m; m = m->next()) {
             if (analysis != m->analysis)
                 continue;
             if (m == this)
@@ -909,7 +886,7 @@ sMeas::check(sFtCirc *circuit)
         // 'trig' and maybe 'targ' were given, measure over an interval
         // if targ given
         if (start_name && !start_dv) {
-            sMeas *m = sMeas::find(measures, start_name);
+            sRunopMeas *m = sRunopMeas::find(measures, start_name);
             if (m) {
                 if (!m->measure_done)
                     return (false);
@@ -929,7 +906,7 @@ sMeas::check(sFtCirc *circuit)
         }
         if (start_at_given && !start_dv) {
             if (start_meas) {
-                sMeas *m = sMeas::find(measures, start_meas);
+                sRunopMeas *m = sRunopMeas::find(measures, start_meas);
                 if (!m) {
                     measure_error = true;
                     return (false);
@@ -944,7 +921,7 @@ sMeas::check(sFtCirc *circuit)
             start_dv = circuit->runplot()->scale();
         }
         if (end_name && !end_dv) {
-            sMeas *m = sMeas::find(measures, end_name);
+            sRunopMeas *m = sRunopMeas::find(measures, end_name);
             if (m) {
                 if (!m->measure_done)
                     return (false);
@@ -964,7 +941,7 @@ sMeas::check(sFtCirc *circuit)
         }
         if (end_at_given && !end_dv) {
             if (end_meas) {
-                sMeas *m = sMeas::find(measures, end_meas);
+                sRunopMeas *m = sRunopMeas::find(measures, end_meas);
                 if (!m) {
                     measure_error = true;
                     return (false);
@@ -1408,7 +1385,7 @@ sMeas::check(sFtCirc *circuit)
 // Return a string containing text of measurement result.
 //
 char *
-sMeas::print()
+sRunopMeas::print()
 {
     if (!measure_done)
         return (0);
@@ -1525,7 +1502,7 @@ namespace {
 // Otherwise, the value is after the index point.
 //
 double
-sMeas::endval(sDataVec *dv, sDataVec *xs, bool end)
+sRunopMeas::endval(sDataVec *dv, sDataVec *xs, bool end)
 {
     if (!end) {
         int i = start_indx;
@@ -1556,7 +1533,7 @@ sMeas::endval(sDataVec *dv, sDataVec *xs, bool end)
 // integration and divide by the scale interval.
 //
 double
-sMeas::findavg(sDataVec *dv, sDataVec *xs)
+sRunopMeas::findavg(sDataVec *dv, sDataVec *xs)
 {
     double sum = 0.0;
     double d, delt;
@@ -1598,7 +1575,7 @@ sMeas::findavg(sDataVec *dv, sDataVec *xs)
 // integration of the magnitudes.
 //
 double
-sMeas::findrms(sDataVec *dv, sDataVec *xs)
+sRunopMeas::findrms(sDataVec *dv, sDataVec *xs)
 {
     double sum = 0.0;
     double d, delt;
@@ -1640,7 +1617,7 @@ sMeas::findrms(sDataVec *dv, sDataVec *xs)
 // Find the fwhm of a pulse assumed to be contained in the interval.
 //
 double
-sMeas::findpw(sDataVec *dv, sDataVec *xs)
+sRunopMeas::findpw(sDataVec *dv, sDataVec *xs)
 {
     // find the max/min
     double mx = dv->realval(start_indx);
@@ -1703,7 +1680,7 @@ sMeas::findpw(sDataVec *dv, sDataVec *xs)
 // interval.
 //
 double
-sMeas::findrft(sDataVec *dv, sDataVec *xs)
+sRunopMeas::findrft(sDataVec *dv, sDataVec *xs)
 {
     double start = endval(dv, xs, false);
     double end = endval(dv, xs, true);

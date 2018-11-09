@@ -39,9 +39,9 @@
  *========================================================================*/
 
 #include "simulator.h"
-#include "measure.h"
 #include "circuit.h"
 #include "datavec.h"
+#include "runop.h"
 #include "output.h"
 #include "optdefs.h"
 #include "statdefs.h"
@@ -440,11 +440,11 @@ IFspecial::evaluate(const char *string, sCKT *ckt, IFdata *data, int list_ind)
         }
         *t = '\0';
 
-/* XXX expand this to debugs?
+// XXX expand this to debugs?
         // The param name can be the name if a .measure result, with
         // an index.  If so, return the value, or 0 if the measure
-        // has not been performed
-        for (sMeas *m = ckt->CKTbackPtr->measures(); m; m = m->next) {   
+        // has not been performed.
+        for (sRunopMeas *m = ckt->CKTbackPtr->measures(); m; m = m->next()) {   
             if (m->result && lstring::cieq(name, m->result)) {
                 sDataVec *d = OP.vecGet(name, ckt);
                 if (d) {
@@ -462,7 +462,6 @@ IFspecial::evaluate(const char *string, sCKT *ckt, IFdata *data, int list_ind)
                 return (sp_error);
             }
         }
-*/
 
         // passing 'this' to these functions fills in the cached parameters
         // and sets 'isset'

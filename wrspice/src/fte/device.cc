@@ -49,7 +49,6 @@ Authors: 1986 Wayne A. Christopher
 #include "simulator.h"
 #include "parser.h"
 #include "datavec.h"
-#include "measure.h"
 #include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"

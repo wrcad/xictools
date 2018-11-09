@@ -58,7 +58,6 @@ Authors: 1985 Wayne A. Christopher
 #include "commands.h"
 #include "input.h"
 #include "toolbar.h"
-#include "measure.h"
 #include "parser.h"
 #include "subexpand.h"
 #include "verilog.h"
@@ -2059,7 +2058,7 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 lstring::cimatch(MEASURE_KW, dd->line())) {
 
             char *er = 0;
-            sMeas *m = new sMeas(dd->line(), &er);
+            sRunopMeas *m = new sRunopMeas(dd->line(), &er);
             if (er) {
                 dd->set_error(er);
                 delete [] er;
@@ -2068,10 +2067,10 @@ sFtCirc::expand(sLine *realdeck, bool *err)
             if (!ci_runops.measures())
                 ci_runops.set_measures(m);
             else {
-                sMeas *mx = ci_runops.measures();
-                while (mx->next)
-                    mx = mx->next;
-                mx->next = m;
+                sRunopMeas *mx = ci_runops.measures();
+                while (mx->next())
+                    mx = mx->next();
+                mx->set_next(m);
             }
         }
 //XXX add runops here (.stop lines)

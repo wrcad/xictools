@@ -48,7 +48,6 @@ Authors: 1987 Wayne A. Christopher
 #include "simulator.h"
 #include "parser.h"
 #include "runop.h"
-#include "measure.h"
 #include "output.h"
 #include "cshell.h"
 #include "commands.h"
@@ -279,30 +278,28 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
         for (sRunopTrace *d = db->traces(); d && d->active(); d = d->next())
             saved->list_expr(d->string());
     }
-    for (sRunopIplot *d = o_runops->iplots(); d && d->active(); d = d->next()) {
+    for (sRunopIplot *d = o_runops->iplots(); d && d->active(); d = d->next())
         saved->list_expr(d->string());
-/*XXX
-        for (sRunop *dd = d->also(); dd; dd = dd->also())
-            saved->list_expr(d->string());
-*/
-    }
     if (db) {
-        for (sRunopIplot *d = db->iplots(); d && d->active(); d = d->next()) {
+        for (sRunopIplot *d = db->iplots(); d && d->active(); d = d->next())
             saved->list_expr(d->string());
-/*XXX
-            for (sRunop *dd = d->also(); dd; dd = dd->also())
+    }
+    for (sRunopStop *d = o_runops->stops(); d && d->active(); d = d->next()) {
+        for (sRunopStop *dt = d; dt; dt = dt->also()) {
+            if (dt->type() == RO_STOPWHEN)
                 saved->list_expr(d->string());
-*/
         }
     }
-    for (sRunopStop *d = o_runops->stops(); d && d->active(); d = d->next())
-        saved->list_expr(d->string());
     if (db) {
-        for (sRunopStop *d = db->stops(); d && d->active(); d = d->next())
-            saved->list_expr(d->string());
+        for (sRunopStop *d = db->stops(); d && d->active(); d = d->next()) {
+            for (sRunopStop *dt = d; dt; dt = dt->also()) {
+                if (dt->type() == RO_STOPWHEN)
+                    saved->list_expr(d->string());
+            }
+        }
     }
 
-    for (sMeas *m = o_runops->measures(); m; m = m->next) {
+    for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
         if (m->start_name)
             saved->list_expr(m->start_name);
         if (m->end_name)
@@ -321,7 +318,7 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
             saved->list_expr(f->expr);
     }
     if (db) {
-        for (sMeas *m = db->measures(); m; m = m->next) {
+        for (sRunopMeas *m = db->measures(); m; m = m->next()) {
             if (m->start_name)
                 saved->list_expr(m->start_name);
             if (m->end_name)
@@ -348,10 +345,10 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
         // added if they are referenced by another measure.  These
         // vectors don't exist until the measurement is done.
 
-        for (sMeas *m = o_runops->measures(); m; m = m->next)
+        for (sRunopMeas *m = o_runops->measures(); m; m = m->next())
             saved->remove_save(m->result);
         if (db) {
-            for (sMeas *m = db->measures(); m; m = m->next)
+            for (sRunopMeas *m = db->measures(); m; m = m->next())
                 saved->remove_save(m->result);
         }
     }

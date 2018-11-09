@@ -57,7 +57,6 @@ Authors: 1985 Wayne A. Christopher
 #include "output.h"
 #include "datavec.h"
 #include "runop.h"
-#include "measure.h"
 #include "parser.h"
 #include "cshell.h"
 #include "kwords_analysis.h"

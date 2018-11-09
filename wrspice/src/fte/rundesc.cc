@@ -53,7 +53,6 @@ Authors: 1988 Wayne A. Christopher
 #include "csdffile.h"
 #include "psffile.h"
 #include "runop.h"
-#include "measure.h"
 #include "output.h"
 #include "device.h"
 #include "rundesc.h"

@@ -48,7 +48,6 @@ Authors: 1987 Wayne A. Christopher
 #include "simulator.h"
 #include "parser.h"
 #include "runop.h"
-#include "measure.h"
 #include "graph.h"
 #include "input.h"
 #include "cshell.h"
@@ -541,8 +540,6 @@ IFoutput::initRunops(sRunDesc *run)
                 dt->set_point(0);
         }
     }
-    for (sRunopTrace *dt = o_runops->traces(); dt; dt = dt->next())
-        dt->set_point(0);
     for (sRunopIplot *dt = o_runops->iplots(); dt; dt = dt->next()) {
         if (dt->type() == RO_DEADIPLOT) {
             // user killed the window
@@ -554,11 +551,10 @@ IFoutput::initRunops(sRunDesc *run)
             dt->set_reuseid(dt->graphid());
         if (!(run->check() && (run->check()->out_mode == OutcCheckMulti ||
                 run->check()->out_mode == OutcLoop))) {
-            dt->set_point(0);
             dt->set_graphid(0);
         }
     }
-    for (sMeas *m = o_runops->measures(); m; m = m->next) {
+    for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
         if (run->job()->JOBtype != m->analysis)
             continue;
         m->reset(run->runPlot());
@@ -570,8 +566,6 @@ IFoutput::initRunops(sRunDesc *run)
                     dt->set_point(0);
             }
         }
-        for (sRunopTrace *dt = db->traces(); dt; dt = dt->next())
-            dt->set_point(0);
         for (sRunopIplot *dt = db->iplots(); dt; dt = dt->next()) {
             if (dt->type() == RO_DEADIPLOT) {
                 // user killed the window
@@ -583,11 +577,10 @@ IFoutput::initRunops(sRunDesc *run)
                 dt->set_reuseid(dt->graphid());
             if (!(run->check() && (run->check()->out_mode == OutcCheckMulti ||
                     run->check()->out_mode == OutcLoop))) {
-                dt->set_point(0);
                 dt->set_graphid(0);
             }
         }
-        for (sMeas *m = db->measures(); m; m = m->next) {
+        for (sRunopMeas *m = db->measures(); m; m = m->next()) {
             if (run->job()->JOBtype != m->analysis)
                 continue;
             m->reset(run->runPlot());
@@ -836,7 +829,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             run->segmentizeVecs();
             bool done = true;
             bool stop = false;
-            for (sMeas *m = o_runops->measures(); m; m = m->next) {
+            for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
                 if (run->anType() != m->analysis)
                     continue;
                 if (!m->check(run->circuit())) {
@@ -847,7 +840,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                     stop = true;
             }
             if (db) {
-                for (sMeas *m = db->measures(); m; m = m->next) {
+                for (sRunopMeas *m = db->measures(); m; m = m->next()) {
                     if (run->anType() != m->analysis)
                         continue;
                     if (!m->check(run->circuit())) {
@@ -861,10 +854,10 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             stop &= done;
             if (stop) {
                 // Reset stop flags so analysis can be continued.
-                for (sMeas *m = o_runops->measures(); m; m = m->next)
+                for (sRunopMeas *m = o_runops->measures(); m; m = m->next())
                     m->nostop();
                 if (db) {
-                    for (sMeas *m = db->measures(); m; m = m->next)
+                    for (sRunopMeas *m = db->measures(); m; m = m->next())
                         m->nostop();
                 }
             }
@@ -1124,25 +1117,15 @@ sRunopTrace::print_trace(sPlot *plot, bool *flag, int pnt)
 void
 sRunopIplot::print(char **retstr)
 {
-    const char *msg2 = "%c %-4d %s %s";
+    const char *msg2 = "%c %-4d %s %s\n";
     char buf[BSIZE_SP];
     if (!retstr) {
-        TTY.printf(msg2, ro_active ? ' ' : 'I', ro_number,
-            kw_iplot, ro_string);
-/*XXX
-        for (dc = ro_also; dc; dc = dc->ro_also)
-            TTY.printf(" %s", dc->ro_string);
-*/
-        TTY.send("\n");
+        TTY.printf(msg2, ro_active ? ' ' : 'I', ro_number, kw_iplot,
+            ro_string);
     }
     else {
-        sprintf(buf, msg2, ro_active ? ' ' : 'I', ro_number,
-            kw_iplot, ro_string);
-/*XXX
-        for (dc = ro_also; dc; dc = dc->ro_also)
-            sprintf(buf + strlen(buf), " %s", dc->ro_string);
-*/
-        strcat(buf, "\n");
+        sprintf(buf, msg2, ro_active ? ' ' : 'I', ro_number, kw_iplot,
+            ro_string);
         *retstr = lstring::build_str(*retstr, buf);
     }
 }
@@ -1151,19 +1134,11 @@ sRunopIplot::print(char **retstr)
 void
 sRunopIplot::destroy()
 {
-    sRunopIplot *d = this;
-    while (d) {
-        sRunopIplot *x = d;
-/*XXX
-        d = d->ro_also;
-*/
-        if (x->ro_type == RO_DEADIPLOT && x->ro_graphid) {
-            // User killed the window.
-            GP.DestroyGraph(x->ro_graphid);
-        }
-        delete x;
-return;
+    if (ro_type == RO_DEADIPLOT && ro_graphid) {
+        // User killed the window.
+        GP.DestroyGraph(ro_graphid);
     }
+    delete this;
 }
 // End of sRunopIplot functions.
 
@@ -1411,7 +1386,7 @@ sRunopDb::clear()
     sRunop::destroy_list(rd_trace);
     sRunop::destroy_list(rd_save);
     sRunop::destroy_list(rd_stop);
-    sMeas::destroy(rd_meas);
+    sRunop::destroy_list(rd_meas);
     rd_iplot = 0;
     rd_trace = 0;
     rd_save = 0;

@@ -86,7 +86,7 @@ struct sRunopSave;
 struct sRunopTrace;
 struct sRunopIplot;
 struct sRunopStop;
-struct sMeas;
+struct sRunopMeas;
 struct sPlotList;
 struct sRunDesc;
 struct sSaveList;
@@ -192,8 +192,8 @@ struct sRunopDb
     sRunopStop *stops()             { return (rd_stop); }
     void set_stops(sRunopStop *d)   { rd_stop = d; }
 
-    sMeas *measures()               { return (rd_meas); }
-    void set_measures(sMeas *m)     { rd_meas = m; }
+    sRunopMeas *measures()          { return (rd_meas); }
+    void set_measures(sRunopMeas *m){ rd_meas = m; }
 
     int new_count()             { return (rd_runopcnt++); }
     int decrement_count()       { return (rd_runopcnt--); }
@@ -206,11 +206,11 @@ struct sRunopDb
     void set_num_steps(int i)   { rd_steps = i; }
 
 private:
-    sRunopSave *rd_save;            // save list head
-    sRunopTrace *rd_trace;           // trace list head
-    sRunopIplot *rd_iplot;           // iplot list head
-    sRunopStop *rd_stop;            // stop after/when list head
-    sMeas   *rd_meas;           // measures list head
+    sRunopSave *rd_save;        // save list head
+    sRunopTrace *rd_trace;      // trace list head
+    sRunopIplot *rd_iplot;      // iplot list head
+    sRunopStop *rd_stop;        // stop after/when list head
+    sRunopMeas *rd_meas;        // measures list head
 
     int rd_runopcnt;            // running sum of runops created, provides id
     int rd_stepcnt;             // number of steps done
@@ -341,8 +341,8 @@ struct sFtCirc
     void set_iplots(sRunopIplot *d) { ci_runops.set_iplots(d); }
     sRunopStop *stops()             { return (ci_runops.stops()); }
     void set_stops(sRunopStop *d)   { ci_runops.set_stops(d); }
-    sMeas *measures()           { return (ci_runops.measures()); }
-    void set_measures(sMeas *m) { ci_runops.set_measures(m); }
+    sRunopMeas *measures()          { return (ci_runops.measures()); }
+    void set_measures(sRunopMeas *m){ ci_runops.set_measures(m); }
 
     wordlist *commands()        { return (ci_commands); }
 

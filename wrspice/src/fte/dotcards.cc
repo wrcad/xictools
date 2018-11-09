@@ -46,8 +46,8 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "simulator.h"
-#include "measure.h"
 #include "graph.h"
+#include "runop.h"
 #include "output.h"
 #include "cshell.h"
 #include "commands.h"
@@ -355,14 +355,12 @@ IFsimulator::RunBatch()
         }
     }
 
-/*XXX
-print stops too
-    for (sMeas *m = ft_curckt->measures(); m; m = m->next) {
+//XXX print stops too
+    for (sRunopMeas *m = ft_curckt->measures(); m; m = m->next()) {
         char *s = m->print();
         TTY.printf(s);
         delete [] s;
     }
-*/
 
     // The options.
     if (ft_flags[FT_OPTSPRNT]) {
