@@ -300,40 +300,40 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
     }
 
     for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
-        if (m->start_name)
-            saved->list_expr(m->start_name);
-        if (m->end_name)
-            saved->list_expr(m->end_name);
-        if (m->expr2)
-            saved->list_expr(m->expr2);
-        if (m->start_when_expr1)
-            saved->list_expr(m->start_when_expr1);
-        if (m->start_when_expr2)
-            saved->list_expr(m->start_when_expr2);
-        if (m->end_when_expr1)
-            saved->list_expr(m->end_when_expr1);
-        if (m->end_when_expr2)
-            saved->list_expr(m->end_when_expr2);
-        for (sMfunc *f = m->funcs; f; f = f->next)
+        if (m->start_name())
+            saved->list_expr(m->start_name());
+        if (m->end_name())
+            saved->list_expr(m->end_name());
+        if (m->expr2())
+            saved->list_expr(m->expr2());
+        if (m->start_when_expr1())
+            saved->list_expr(m->start_when_expr1());
+        if (m->start_when_expr2())
+            saved->list_expr(m->start_when_expr2());
+        if (m->end_when_expr1())
+            saved->list_expr(m->end_when_expr1());
+        if (m->end_when_expr2())
+            saved->list_expr(m->end_when_expr2());
+        for (sMfunc *f = m->funcs(); f; f = f->next)
             saved->list_expr(f->expr);
     }
     if (db) {
         for (sRunopMeas *m = db->measures(); m; m = m->next()) {
-            if (m->start_name)
-                saved->list_expr(m->start_name);
-            if (m->end_name)
-                saved->list_expr(m->end_name);
-            if (m->expr2)
-                saved->list_expr(m->expr2);
-            if (m->start_when_expr1)
-                saved->list_expr(m->start_when_expr1);
-            if (m->start_when_expr2)
-                saved->list_expr(m->start_when_expr2);
-            if (m->end_when_expr1)
-                saved->list_expr(m->end_when_expr1);
-            if (m->end_when_expr2)
-                saved->list_expr(m->end_when_expr2);
-            for (sMfunc *f = m->funcs; f; f = f->next)
+            if (m->start_name())
+                saved->list_expr(m->start_name());
+            if (m->end_name())
+                saved->list_expr(m->end_name());
+            if (m->expr2())
+                saved->list_expr(m->expr2());
+            if (m->start_when_expr1())
+                saved->list_expr(m->start_when_expr1());
+            if (m->start_when_expr2())
+                saved->list_expr(m->start_when_expr2());
+            if (m->end_when_expr1())
+                saved->list_expr(m->end_when_expr1());
+            if (m->end_when_expr2())
+                saved->list_expr(m->end_when_expr2());
+            for (sMfunc *f = m->funcs(); f; f = f->next)
                 saved->list_expr(f->expr);
         }
     }
@@ -346,10 +346,10 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
         // vectors don't exist until the measurement is done.
 
         for (sRunopMeas *m = o_runops->measures(); m; m = m->next())
-            saved->remove_save(m->result);
+            saved->remove_save(m->result());
         if (db) {
             for (sRunopMeas *m = db->measures(); m; m = m->next())
-                saved->remove_save(m->result);
+                saved->remove_save(m->result());
         }
     }
 }

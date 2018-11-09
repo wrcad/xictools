@@ -555,7 +555,7 @@ IFoutput::initRunops(sRunDesc *run)
         }
     }
     for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
-        if (run->job()->JOBtype != m->analysis)
+        if (run->job()->JOBtype != m->analysis())
             continue;
         m->reset(run->runPlot());
     }
@@ -581,7 +581,7 @@ IFoutput::initRunops(sRunDesc *run)
             }
         }
         for (sRunopMeas *m = db->measures(); m; m = m->next()) {
-            if (run->job()->JOBtype != m->analysis)
+            if (run->job()->JOBtype != m->analysis())
                 continue;
             m->reset(run->runPlot());
         }
@@ -830,7 +830,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             bool done = true;
             bool stop = false;
             for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
-                if (run->anType() != m->analysis)
+                if (run->anType() != m->analysis())
                     continue;
                 if (!m->check(run->circuit())) {
                     done = false;
@@ -841,7 +841,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             }
             if (db) {
                 for (sRunopMeas *m = db->measures(); m; m = m->next()) {
-                    if (run->anType() != m->analysis)
+                    if (run->anType() != m->analysis())
                         continue;
                     if (!m->check(run->circuit())) {
                         done = false;

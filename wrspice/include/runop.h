@@ -323,135 +323,115 @@ struct sRunopMeas : public sRunop
     {
         ro_type = RO_MEASURE;
 
-        start_at                = 0.0;
-        end_at                  = 0.0;
-        start_val               = 0.0;
-        end_val                 = 0.0;
-        start_delay             = 0.0;
-        end_delay               = 0.0;
-        start_crosses           = 0;
-        start_rises             = 0;
-        start_falls             = 0;
-        end_crosses             = 0;
-        end_rises               = 0;
-        end_falls               = 0;
-        start_at_given          = 0;
-        start_when_given        = 0;
-        end_at_given            = 0;
-        end_when_given          = 0;
-        when_given              = 0;
-        analysis                = 0;
-        result                  = 0;
-        start_name              = 0;
-        end_name                = 0;
-        expr2                   = 0;
-        start_when_expr1        = 0;
-        start_when_expr2        = 0;
-        end_when_expr1          = 0;
-        end_when_expr2          = 0;
-        start_meas              = 0;
-        end_meas                = 0;
-        cktptr                  = 0;
-        funcs                   = 0;
-        finds                   = 0;
-
-        start_dv                = 0;
-        end_dv                  = 0;
-        start_indx              = 0;
-        end_indx                = 0;
-        found_rises             = 0;
-        found_falls             = 0;
-        found_crosses           = 0;
-        found_start             = 0.0;
-        found_end               = 0.0;
-        found_start_flag        = false;
-        found_end_flag          = false;
-        measure_done            = false;
-        measure_error           = false;
-        measure_skip            = false;
-        stop_flag               = false;
-        print_flag              = 0;
+        ro_start_at             = 0.0;
+        ro_end_at               = 0.0;
+        ro_start_val            = 0.0;
+        ro_end_val              = 0.0;
+        ro_start_delay          = 0.0;
+        ro_end_delay            = 0.0;
+        ro_start_crosses        = 0;
+        ro_start_rises          = 0;
+        ro_start_falls          = 0;
+        ro_end_crosses          = 0;
+        ro_end_rises            = 0;
+        ro_end_falls            = 0;
+        ro_start_at_given       = 0;
+        ro_start_when_given     = 0;
+        ro_end_at_given         = 0;
+        ro_end_when_given       = 0;
+        ro_when_given           = 0;
+        ro_analysis             = 0;
+        ro_result               = 0;
+        ro_start_name           = 0;
+        ro_end_name             = 0;
+        ro_expr2                = 0;
+        ro_start_when_expr1     = 0;
+        ro_start_when_expr2     = 0;
+        ro_end_when_expr1       = 0;
+        ro_end_when_expr2       = 0;
+        ro_start_meas           = 0;
+        ro_end_meas             = 0;
+        ro_cktptr               = 0;
+        ro_funcs                = 0;
+        ro_finds                = 0;
+        ro_start_dv             = 0;
+        ro_end_dv               = 0;
+        ro_start_indx           = 0;
+        ro_end_indx             = 0;
+        ro_found_rises          = 0;
+        ro_found_falls          = 0;
+        ro_found_crosses        = 0;
+        ro_found_start          = 0.0;
+        ro_found_end            = 0.0;
+        ro_found_start_flag     = false;
+        ro_found_end_flag       = false;
+        ro_measure_done         = false;
+        ro_measure_error        = false;
+        ro_measure_skip         = false;
+        ro_stop_flag            = false;
+        ro_print_flag           = 0;
 
         parse(str, errstr);
     }
 
     ~sRunopMeas()
         {
-            delete [] result;
-            delete [] start_name;
-            delete [] end_name;
-            delete [] expr2;
-            delete [] start_when_expr1;
-            delete [] start_when_expr2;
-            delete [] end_when_expr1;
-            delete [] end_when_expr2;
+            delete [] ro_result;
+            delete [] ro_start_name;
+            delete [] ro_end_name;
+            delete [] ro_expr2;
+            delete [] ro_start_when_expr1;
+            delete [] ro_start_when_expr2;
+            delete [] ro_end_when_expr1;
+            delete [] ro_end_when_expr2;
 
-            while (funcs) {
-                sMfunc *f = funcs->next;
-                delete funcs;
-                funcs = f;
+            while (ro_funcs) {
+                sMfunc *f = ro_funcs->next;
+                delete ro_funcs;
+                ro_funcs = f;
             }
-            while (finds) {
-                sMfunc *f = finds->next;
-                delete finds;
-                finds = f;
+            while (ro_finds) {
+                sMfunc *f = ro_finds->next;
+                delete ro_finds;
+                ro_finds = f;
             }
         }
 
     sRunopMeas *next()          { return ((sRunopMeas*)ro_next); }
 
-    void print(char**);         // Print, in string if given, the runop msg.
-    void destroy();             // Destroy this runop.
-
-    bool parse(const char*, char**);
-    void reset(sPlot*);
-    bool check(sFtCirc*);
-    char *print();
-    bool shouldstop() { return stop_flag; }
-    void nostop() { stop_flag = false; }
-
     static sRunopMeas *find(sRunopMeas *thism, const char *res)
         {
             if (res) {
                 for (sRunopMeas *m = thism; m; m = m->next()) {
-                    if (m->result && !strcmp(res, m->result))
+                    if (m->ro_result && !strcmp(res, m->ro_result))
                         return (m);
                 }
             }
             return (0);
         }
 
-    double start_at;            // 'trig at =' value
-    double end_at;              // 'targ at =' value
-    double start_val;           // 'trig ... val =' value
-    double end_val;             // 'targ ... val =' value
-    double start_delay;         // 'trig ... td =' value
-    double end_delay;           // 'targ ... td =' value
-    int start_crosses;          // 'trig ... cross =' vaule
-    int start_rises;            // 'trig ... rise =' value
-    int start_falls;            // 'trig ... fall =' value
-    int end_crosses;            // 'targ ... cross =' value
-    int end_rises;              // 'targ ... rise =' value
-    int end_falls;              // 'targ ... fall =' value
-    int start_at_given :1;      // true if 'trig at' given
-    int start_when_given :1;    // true if 'trig when' given
-    int end_at_given :1;        // true if 'targ at' given
-    int end_when_given :1;      // true if 'targ when' given
-    int when_given :1;          // true if 'when' given without 'trig', 'targ'
-    int analysis;               // type index of analysis 
-    const char *result;         // result name for measurement
-    const char *start_name;     // 'trig' vector name
-    const char *end_name;       // 'targ' vector name
-    const char *expr2;          // misc expression
-    const char *start_when_expr1; // lhs expression for 'trig when lhs = rhs'
-    const char *start_when_expr2; // rhs expression for 'trig when lhs = rhs'
-    const char *end_when_expr1; // lhs expression for 'targ when lhs = rhs'
-    const char *end_when_expr2; // rhs expression for 'targ when lhs = rhs'
-    const char *start_meas;     // chained measure, start
-    const char *end_meas;       // chained measure, end
-    sFtCirc *cktptr;            // back pointer to circuit
-    sMfunc *funcs;              // list of measurements over interval
-    sMfunc *finds;              // list of measurements at point
+    bool shouldstop()           { return (ro_stop_flag); }
+    void nostop()               { ro_stop_flag = false; }
+
+    const char *result()        { return (ro_result); }
+    int analysis()              { return (ro_analysis); }
+    const char *start_name()    { return (ro_start_name); }
+    const char *end_name()      { return (ro_end_name); }
+    const char *expr2()         { return (ro_expr2); }
+    const char *start_when_expr1()  { return (ro_start_when_expr1); }
+    const char *start_when_expr2()  { return (ro_start_when_expr2); }
+    const char *end_when_expr1()    { return (ro_end_when_expr1); }
+    const char *end_when_expr2()    { return (ro_end_when_expr2); }
+    sMfunc *funcs()             { return (ro_funcs); }
+
+    void print(char**);         // Print, in string if given, the runop msg.
+    void destroy();             // Destroy this runop.
+
+    // measure.cc
+    bool parse(const char*, char**);
+    void reset(sPlot*);
+    bool check(sFtCirc*);
+    char *print();
 
 private:
     void addMeas(Mfunc, const char*);
@@ -461,23 +441,53 @@ private:
     double findpw(sDataVec*, sDataVec*);
     double findrft(sDataVec*, sDataVec*);
 
-    struct sDataVec *start_dv;  // cached datavec for trig name
-    struct sDataVec *end_dv;    // cached datavec for targ name
-    int start_indx;             // index of trigger point
-    int end_indx;               // index of target point
-    int found_rises;            // number of rising crossings
-    int found_falls;            // number of falling crossings
-    int found_crosses;          // number of crossings
-    double found_start;         // trigger point
-    double found_end;           // target point
-    bool found_start_flag;      // trigger point identified
-    bool found_end_flag;        // target point identified
-    bool measure_done;          // measurement done successfully
-    bool measure_error;         // measurement can't be done
-    bool measure_skip;          // parse error so skip
-    bool stop_flag;             // stop analysis when done
-    char print_flag;            // print result on screen
-                                //  1 terse  2 verbose
+    double ro_start_at;         // 'trig at =' value
+    double ro_end_at;           // 'targ at =' value
+    double ro_start_val;        // 'trig ... val =' value
+    double ro_end_val;          // 'targ ... val =' value
+    double ro_start_delay;      // 'trig ... td =' value
+    double ro_end_delay;        // 'targ ... td =' value
+    int ro_start_crosses;       // 'trig ... cross =' vaule
+    int ro_start_rises;         // 'trig ... rise =' value
+    int ro_start_falls;         // 'trig ... fall =' value
+    int ro_end_crosses;         // 'targ ... cross =' value
+    int ro_end_rises;           // 'targ ... rise =' value
+    int ro_end_falls;           // 'targ ... fall =' value
+    int ro_start_at_given :1;   // true if 'trig at' given
+    int ro_start_when_given :1; // true if 'trig when' given
+    int ro_end_at_given :1;     // true if 'targ at' given
+    int ro_end_when_given :1;   // true if 'targ when' given
+    int ro_when_given :1;       // true if 'when' given without 'trig', 'targ'
+    int ro_analysis;            // type index of analysis 
+    const char *ro_result;      // result name for measurement
+    const char *ro_start_name;  // 'trig' vector name
+    const char *ro_end_name;    // 'targ' vector name
+    const char *ro_expr2;       // misc expression
+    const char *ro_start_when_expr1; // lhs expression for 'trig when lhs = rhs'
+    const char *ro_start_when_expr2; // rhs expression for 'trig when lhs = rhs'
+    const char *ro_end_when_expr1; // lhs expression for 'targ when lhs = rhs'
+    const char *ro_end_when_expr2; // rhs expression for 'targ when lhs = rhs'
+    const char *ro_start_meas;  // chained measure, start
+    const char *ro_end_meas;    // chained measure, end
+    sFtCirc *ro_cktptr;         // back pointer to circuit
+    sMfunc *ro_funcs;           // list of measurements over interval
+    sMfunc *ro_finds;           // list of measurements at point
+    sDataVec *ro_start_dv;      // cached datavec for trig name
+    sDataVec *ro_end_dv;        // cached datavec for targ name
+    int ro_start_indx;          // index of trigger point
+    int ro_end_indx;            // index of target point
+    int ro_found_rises;         // number of rising crossings
+    int ro_found_falls;         // number of falling crossings
+    int ro_found_crosses;       // number of crossings
+    double ro_found_start;      // trigger point
+    double ro_found_end;        // target point
+    bool ro_found_start_flag;   // trigger point identified
+    bool ro_found_end_flag;     // target point identified
+    bool ro_measure_done;       // measurement done successfully
+    bool ro_measure_error;      // measurement can't be done
+    bool ro_measure_skip;       // parse error so skip
+    bool ro_stop_flag;          // stop analysis when done
+    char ro_print_flag;         // print result on screen, 1 terse  2 verbose
 };
 
 #endif // RUNOP_H

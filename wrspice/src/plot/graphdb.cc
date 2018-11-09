@@ -131,7 +131,7 @@ SPgraphics::DestroyGraph(int id)
         if (list->id() == id) {  // found it
 
             // Fix the iplot list
-            sDbComm *d = OP.debugs()->iplots();
+            sRunopIplot *d = OP.runops()->iplots();
             while (d && d->graphid() != id)
                 d = d->next();
             if (!d) {
@@ -143,8 +143,8 @@ SPgraphics::DestroyGraph(int id)
                 }
             }
 
-            if (d && d->type() == DB_IPLOT) {
-                d->set_type(DB_DEADIPLOT);
+            if (d && d->type() == RO_IPLOT) {
+                d->set_type(RO_DEADIPLOT);
                 // Delete this later
                 return (0);
             }

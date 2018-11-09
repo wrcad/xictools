@@ -445,7 +445,7 @@ IFspecial::evaluate(const char *string, sCKT *ckt, IFdata *data, int list_ind)
         // an index.  If so, return the value, or 0 if the measure
         // has not been performed.
         for (sRunopMeas *m = ckt->CKTbackPtr->measures(); m; m = m->next()) {   
-            if (m->result && lstring::cieq(name, m->result)) {
+            if (m->result() && lstring::cieq(name, m->result())) {
                 sDataVec *d = OP.vecGet(name, ckt);
                 if (d) {
                     int ix = atoi(param);
