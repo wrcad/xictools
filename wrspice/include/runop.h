@@ -245,6 +245,7 @@ struct sRunopStop : public sRunop
     sRunopStop *also()          { return (ro_also); }
     void set_also(sRunopStop *d){ ro_also = d; }
 
+    void set_index(int n)       { ro_index = n; }
     void set_points(int sz, double *p)
         {
             ro_numpts = sz;
@@ -274,7 +275,7 @@ struct sRunopStop : public sRunop
 
     bool istrue();                  // Evaluate true if condition met.
     ROret should_stop(sRunDesc*);   // True if stop condition met.
-    void printcond(char**);         // Print the conditional expression.
+    void printcond(char**, bool);   // Print the conditional expression.
 
 private:
     bool ro_call;               // Call script or bound codeblock on stop.
@@ -301,14 +302,14 @@ struct sMfunc
 {
     sMfunc(Mfunc t, const char *e)
         {
-            type = t;
-            expr = e;
-            val = 0.0;
-            next = 0;
-            error = false;
+            type    = t;
+            expr    = e;
+            val     = 0.0;
+            next    = 0;
+            error   = false;
         }
 
-    ~sMfunc() { delete [] expr; }
+    ~sMfunc()       { delete [] expr; }
 
     Mfunc type;         // type of job
     const char *expr;   // expression to evaluate
@@ -317,54 +318,120 @@ struct sMfunc
     bool error;         // set if expr evaluation fails
 };
 
+// Argument to sTpoint::parse.
+enum TPform { TPunknown, TPat, TPwhen, TPvar };
+
+struct sTpoint
+{
+    sTpoint()
+        {
+            t_name          = 0;
+            t_when_expr1    = 0;
+            t_when_expr2    = 0;
+            t_meas          = 0;
+            t_at            = 0.0;
+            t_val           = 0.0;
+            t_delay         = 0.0;
+            t_found         = 0.0;
+            t_dv            = 0;
+            t_indx          = 0;
+            t_crosses       = 0;
+            t_rises         = 0;
+            t_falls         = 0;
+            t_at_given      = false;
+            t_when_given    = false;
+            t_found_flag    = false;
+        }
+
+    ~sTpoint()
+        {
+            delete [] t_when_expr1;
+            delete [] t_when_expr2;
+            delete [] t_name;
+            delete [] t_meas;
+        }
+
+    const char *name()          { return (t_name); }
+    void set_name(char *s)      { t_name = s; }
+    const char *when_expr1()    { return (t_when_expr1); }
+    void set_when_expr1(char *s){ t_when_expr1 = s; }
+    const char *when_expr2()    { return (t_when_expr2); }
+    void set_when_expr2(char *s){ t_when_expr2 = s; }
+    const char *meas()          { return (t_meas); }
+    void set_meas(char *s)      { t_meas = s; }
+    double at()                 { return (t_at); }
+    void set_at(double d)       { t_at = d; }
+    double val()                { return (t_val); }
+    void set_val(double d)      { t_val = d; }
+    double delay()              { return (t_delay); }
+    void set_delay(double d)    { t_delay = d; }
+    double found()              { return (t_found); }
+    void set_found(double d)    { t_found = d; }
+    sDataVec *dv()              { return (t_dv); }
+    void set_dv(sDataVec *d)    { t_dv = d; }
+    int indx()                  { return (t_indx); }
+    void set_indx(int i)        { t_indx = i; }
+    int crosses()               { return (t_crosses); }
+    void set_crosses(int i)     { t_crosses = i; }
+    int rises()                 { return (t_rises); }
+    void set_rises(int i)       { t_rises = i; }
+    int falls()                 { return (t_falls); }
+    void set_falls(int i)       { t_falls = i; }
+    bool at_given()             { return (t_at_given); }
+    void set_at_given(bool b)   { t_at_given = b; }
+    bool when_given()           { return (t_when_given); }
+    void set_when_given(bool b) { t_when_given = b; }
+    bool found_flag()           { return (t_found_flag); }
+    void set_found_flag(bool b) { t_found_flag = b; }
+
+    void reset()
+        {
+            t_delay = 0.0;
+            t_found = 0.0;
+            t_dv = 0;
+            t_indx = 0;
+            t_found_flag = false;
+        }
+
+    int parse(TPform, const char**, char**);
+    bool setup_dv(sFtCirc*, bool*);
+    bool check_found(sFtCirc*, bool*, bool);
+
+private:
+    char *t_name;           // Vector name.
+    char *t_when_expr1;     // LHS expression for 'when lhs = rhs'.
+    char *t_when_expr2;     // RHS expression for 'when lhs = rhs'.
+    char *t_meas;           // Chained measure name.
+    double t_at;            // The 'at' value.
+    double t_val;           // The 'val' value.
+    double t_delay;         // The 'td' value.
+    double t_found;         // The measure point, once found.
+    sDataVec *t_dv;         // Cached datavec for vector name.
+    int t_indx;             // Index of trigger point.
+    int t_crosses;          // The 'crosses' value.
+    int t_rises;            // The 'rises' value.
+    int t_falls;;           // The 'falls' value.
+    bool t_at_given;        // The 'at' clause was given.
+    bool t_when_given;      // The 'when' clause was given.
+    bool t_found_flag;      // The measure point was found.
+};
+
+
 struct sRunopMeas : public sRunop
 {
     sRunopMeas(const char *str, char **errstr)
     {
         ro_type = RO_MEASURE;
 
-        ro_start_at             = 0.0;
-        ro_end_at               = 0.0;
-        ro_start_val            = 0.0;
-        ro_end_val              = 0.0;
-        ro_start_delay          = 0.0;
-        ro_end_delay            = 0.0;
-        ro_start_crosses        = 0;
-        ro_start_rises          = 0;
-        ro_start_falls          = 0;
-        ro_end_crosses          = 0;
-        ro_end_rises            = 0;
-        ro_end_falls            = 0;
-        ro_start_at_given       = 0;
-        ro_start_when_given     = 0;
-        ro_end_at_given         = 0;
-        ro_end_when_given       = 0;
-        ro_when_given           = 0;
         ro_analysis             = 0;
         ro_result               = 0;
-        ro_start_name           = 0;
-        ro_end_name             = 0;
         ro_expr2                = 0;
-        ro_start_when_expr1     = 0;
-        ro_start_when_expr2     = 0;
-        ro_end_when_expr1       = 0;
-        ro_end_when_expr2       = 0;
-        ro_start_meas           = 0;
-        ro_end_meas             = 0;
         ro_cktptr               = 0;
         ro_funcs                = 0;
         ro_finds                = 0;
-        ro_start_dv             = 0;
-        ro_end_dv               = 0;
-        ro_start_indx           = 0;
-        ro_end_indx             = 0;
         ro_found_rises          = 0;
         ro_found_falls          = 0;
         ro_found_crosses        = 0;
-        ro_found_start          = 0.0;
-        ro_found_end            = 0.0;
-        ro_found_start_flag     = false;
-        ro_found_end_flag       = false;
         ro_measure_done         = false;
         ro_measure_error        = false;
         ro_measure_skip         = false;
@@ -377,13 +444,7 @@ struct sRunopMeas : public sRunop
     ~sRunopMeas()
         {
             delete [] ro_result;
-            delete [] ro_start_name;
-            delete [] ro_end_name;
             delete [] ro_expr2;
-            delete [] ro_start_when_expr1;
-            delete [] ro_start_when_expr2;
-            delete [] ro_end_when_expr1;
-            delete [] ro_end_when_expr2;
 
             while (ro_funcs) {
                 sMfunc *f = ro_funcs->next;
@@ -399,6 +460,25 @@ struct sRunopMeas : public sRunop
 
     sRunopMeas *next()          { return ((sRunopMeas*)ro_next); }
 
+    double found_start()        { return (ro_start.found()); }
+    bool found_start_flag()     { return (ro_start.found_flag()); }
+    double found_end()          { return (ro_end.found()); }
+    bool found_end_flag()       { return (ro_end.found_flag()); }
+
+    const char *result()        { return (ro_result); }
+    int analysis()              { return (ro_analysis); }
+    const char *start_name()    { return (ro_start.name()); }
+    const char *end_name()      { return (ro_end.name()); }
+    const char *expr2()         { return (ro_expr2); }
+    const char *start_when_expr1()  { return (ro_start.when_expr1()); }
+    const char *start_when_expr2()  { return (ro_start.when_expr2()); }
+    const char *end_when_expr1()    { return (ro_end.when_expr1()); }
+    const char *end_when_expr2()    { return (ro_end.when_expr2()); }
+    sMfunc *funcs()             { return (ro_funcs); }
+    bool measure_done()         { return (ro_measure_done); }
+    bool shouldstop()           { return (ro_stop_flag); }
+    void nostop()               { ro_stop_flag = false; }
+
     static sRunopMeas *find(sRunopMeas *thism, const char *res)
         {
             if (res) {
@@ -409,20 +489,6 @@ struct sRunopMeas : public sRunop
             }
             return (0);
         }
-
-    bool shouldstop()           { return (ro_stop_flag); }
-    void nostop()               { ro_stop_flag = false; }
-
-    const char *result()        { return (ro_result); }
-    int analysis()              { return (ro_analysis); }
-    const char *start_name()    { return (ro_start_name); }
-    const char *end_name()      { return (ro_end_name); }
-    const char *expr2()         { return (ro_expr2); }
-    const char *start_when_expr1()  { return (ro_start_when_expr1); }
-    const char *start_when_expr2()  { return (ro_start_when_expr2); }
-    const char *end_when_expr1()    { return (ro_end_when_expr1); }
-    const char *end_when_expr2()    { return (ro_end_when_expr2); }
-    sMfunc *funcs()             { return (ro_funcs); }
 
     void print(char**);         // Print, in string if given, the runop msg.
     void destroy();             // Destroy this runop.
@@ -441,48 +507,21 @@ private:
     double findpw(sDataVec*, sDataVec*);
     double findrft(sDataVec*, sDataVec*);
 
-    double ro_start_at;         // 'trig at =' value
-    double ro_end_at;           // 'targ at =' value
-    double ro_start_val;        // 'trig ... val =' value
-    double ro_end_val;          // 'targ ... val =' value
-    double ro_start_delay;      // 'trig ... td =' value
-    double ro_end_delay;        // 'targ ... td =' value
-    int ro_start_crosses;       // 'trig ... cross =' vaule
-    int ro_start_rises;         // 'trig ... rise =' value
-    int ro_start_falls;         // 'trig ... fall =' value
-    int ro_end_crosses;         // 'targ ... cross =' value
-    int ro_end_rises;           // 'targ ... rise =' value
-    int ro_end_falls;           // 'targ ... fall =' value
-    int ro_start_at_given :1;   // true if 'trig at' given
-    int ro_start_when_given :1; // true if 'trig when' given
-    int ro_end_at_given :1;     // true if 'targ at' given
-    int ro_end_when_given :1;   // true if 'targ when' given
-    int ro_when_given :1;       // true if 'when' given without 'trig', 'targ'
+    sTpoint ro_start;
+    sTpoint ro_end;
+
     int ro_analysis;            // type index of analysis 
     const char *ro_result;      // result name for measurement
-    const char *ro_start_name;  // 'trig' vector name
-    const char *ro_end_name;    // 'targ' vector name
     const char *ro_expr2;       // misc expression
-    const char *ro_start_when_expr1; // lhs expression for 'trig when lhs = rhs'
-    const char *ro_start_when_expr2; // rhs expression for 'trig when lhs = rhs'
-    const char *ro_end_when_expr1; // lhs expression for 'targ when lhs = rhs'
-    const char *ro_end_when_expr2; // rhs expression for 'targ when lhs = rhs'
-    const char *ro_start_meas;  // chained measure, start
-    const char *ro_end_meas;    // chained measure, end
     sFtCirc *ro_cktptr;         // back pointer to circuit
     sMfunc *ro_funcs;           // list of measurements over interval
     sMfunc *ro_finds;           // list of measurements at point
-    sDataVec *ro_start_dv;      // cached datavec for trig name
     sDataVec *ro_end_dv;        // cached datavec for targ name
-    int ro_start_indx;          // index of trigger point
     int ro_end_indx;            // index of target point
     int ro_found_rises;         // number of rising crossings
     int ro_found_falls;         // number of falling crossings
     int ro_found_crosses;       // number of crossings
-    double ro_found_start;      // trigger point
-    double ro_found_end;        // target point
-    bool ro_found_start_flag;   // trigger point identified
-    bool ro_found_end_flag;     // target point identified
+    bool ro_when_given;         // true if 'when' given without 'trig', 'targ'
     bool ro_measure_done;       // measurement done successfully
     bool ro_measure_error;      // measurement can't be done
     bool ro_measure_skip;       // parse error so skip

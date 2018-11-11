@@ -155,17 +155,28 @@ void
 IFoutput::stopCmd(wordlist *wl)
 {
     sRunopStop *d = 0, *thisone = 0;
+    char *deferred_call = 0;
+    bool deferred_call_set = false;
+    bool had_call = false;
     while (wl) {
-        if (thisone == 0)
-            thisone = d = new sRunopStop;
-        else {
-            d->set_also(new sRunopStop);
-            d = d->also();
-        }
 
         // Figure out what the first condition is.
         if (lstring::cieq(wl->wl_word, kw_at)) {
+            if (thisone == 0)
+                thisone = d = new sRunopStop;
+            else {
+                d->set_also(new sRunopStop);
+                d = d->also();
+            }
             d->set_type(RO_STOPAT);
+            if (deferred_call_set) {
+                thisone->set_call(true, deferred_call);
+                delete [] deferred_call;
+                deferred_call = 0;
+                had_call = true;
+                deferred_call_set = false;
+            }
+
             wl = wl->wl_next;
             bool pt = false;
             if (wl && lstring::ciprefix("p", wl->wl_word)) {
@@ -222,10 +233,24 @@ IFoutput::stopCmd(wordlist *wl)
         }
         if (lstring::eq(wl->wl_word, kw_after) ||
                 lstring::eq(wl->wl_word, kw_before)) {
+            if (thisone == 0)
+                thisone = d = new sRunopStop;
+            else {
+                d->set_also(new sRunopStop);
+                d = d->also();
+            }
             if (lstring::eq(wl->wl_word, kw_after))
                 d->set_type(RO_STOPAFTER);
             else
                 d->set_type(RO_STOPBEFORE);
+            if (deferred_call_set) {
+                thisone->set_call(true, deferred_call);
+                delete [] deferred_call;
+                deferred_call = 0;
+                had_call = true;
+                deferred_call_set = false;
+            }
+
             wl = wl->wl_next;
             bool pt = false;
             if (wl && lstring::ciprefix("p", wl->wl_word)) {
@@ -257,7 +282,21 @@ IFoutput::stopCmd(wordlist *wl)
             return;
         }
         if (lstring::eq(wl->wl_word, kw_when)) {
+            if (thisone == 0)
+                thisone = d = new sRunopStop;
+            else {
+                d->set_also(new sRunopStop);
+                d = d->also();
+            }
             d->set_type(RO_STOPWHEN);
+            if (deferred_call_set) {
+                thisone->set_call(true, deferred_call);
+                delete [] deferred_call;
+                deferred_call = 0;
+                had_call = true;
+                deferred_call_set = false;
+            }
+
             wl = wl->wl_next;
             char *string = 0;
             if (wl) {
@@ -295,11 +334,32 @@ IFoutput::stopCmd(wordlist *wl)
             return;
         }
         if (lstring::eq(wl->wl_word, kw_call)) {
+            if (had_call || deferred_call_set) {
+                GRpkgIf()->ErrPrintf(ET_ERROR,
+                    "stop: more than one call directive not allowed.\n");
+                thisone->destroy();
+                delete [] deferred_call;
+                return;
+            }
+            // The call can appear anywhere a keyword is expected,
+            // including ahead of the first directive (e.g.  stop call
+            // foo at point 100).  This case uses the deferred_call
+            // to hold name until the struct is created.
+
             wl = wl->wl_next;
             const char *word = wl ? wl->wl_word : 0;
-            thisone->set_call(true, word);
-            if (wl)
+            if (word && is_kw(word))
+                word = 0;
+            else if (wl)
                 wl = wl->wl_next;
+            if (thisone) {
+                thisone->set_call(true, word);
+                had_call = true;
+            }
+            else {
+                deferred_call = lstring::copy(word);
+                deferred_call_set = true;
+            }
             continue;
         }
         GRpkgIf()->ErrPrintf(ET_ERROR,
@@ -331,8 +391,13 @@ IFoutput::stopCmd(wordlist *wl)
             else
                 curcir->set_stops(thisone);
         }
+        ToolBar()->UpdateTrace();
     }
-    ToolBar()->UpdateTrace();
+    else if (deferred_call_set) {
+        GRpkgIf()->ErrPrintf(ET_ERROR,
+            "stop: orphaned call, no trigger.\n");
+        delete [] deferred_call;
+    }
 }
 
 
@@ -538,6 +603,8 @@ IFoutput::initRunops(sRunDesc *run)
         for (sRunopStop *dt = d; dt; dt = dt->also()) {
             if (dt->type() == RO_STOPWHEN)
                 dt->set_point(0);
+            else if (dt->type() == RO_STOPAT)
+                dt->set_index(0);
         }
     }
     for (sRunopIplot *dt = o_runops->iplots(); dt; dt = dt->next()) {
@@ -564,6 +631,8 @@ IFoutput::initRunops(sRunDesc *run)
             for (sRunopStop *dt = d; dt; dt = dt->also()) {
                 if (dt->type() == RO_STOPWHEN)
                     dt->set_point(0);
+                else if (dt->type() == RO_STOPAT)
+                    dt->set_index(0);
             }
         }
         for (sRunopIplot *dt = db->iplots(); dt; dt = dt->next()) {
@@ -879,8 +948,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 ROret r = d->should_stop(run);
                 if (r == RO_PAUSE) {
                     bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                    TTY.printf("%-2d: condition met: stop ", d->number());
-                    d->printcond(0);
+                    TTY.printf("%-2d: condition met: stop", d->number());
+                    d->printcond(0, false);
                     o_shouldstop = true;
                     if (need_pr)
                         CP.Prompt();
@@ -895,8 +964,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                     ROret r = d->should_stop(run);
                     if (r == RO_PAUSE) {
                         bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                        TTY.printf("%-2d: condition met: stop ", d->number());
-                        d->printcond(0);
+                        TTY.printf("%-2d: condition met: stop", d->number());
+                        d->printcond(0, false);
                         o_shouldstop = true;
                         if (need_pr)
                             CP.Prompt();
@@ -1150,12 +1219,12 @@ sRunopStop::print(char **retstr)
     char buf[BSIZE_SP];
     if (!retstr) {
         TTY.printf(msg1, ro_active ? ' ' : 'I', ro_number);
-        printcond(0);
+        printcond(0, true);
     }
     else {
         sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
         *retstr = lstring::build_str(*retstr, buf);
-        printcond(retstr);
+        printcond(retstr, true);
     }
 }
 
@@ -1276,6 +1345,8 @@ sRunopStop::should_stop(sRunDesc *run)
                 wordlist wl;
                 wl.wl_word = ro_callfn;
                 Sp.ExecCmds(&wl);
+//XXX
+printf("return %g\n", CP.ReturnVal());
                 if (CP.ReturnVal() == CB_OK)
                     return (RO_OK);
                 if (CP.ReturnVal() == CB_ENDIT)
@@ -1305,17 +1376,14 @@ sRunopStop::should_stop(sRunDesc *run)
 }
 
 
-// Print the condition.  If fp is 0 and retstr is not 0,
-// add the text to *retstr, otherwise print to fp;
+// Print the condition.  If retstr is not 0, add the text to *retstr,
+// otherwise print to standard output.  The status arg is true when
+// printing for the status command, print the "at" point list in this
+// case.  Otherwise print only the current "at" value.
 //
 void
-sRunopStop::printcond(char **retstr)
+sRunopStop::printcond(char **retstr, bool status)
 {
-    char buf[BSIZE_SP];
-    const char *msg1 = " %s %d";
-    const char *msg2 = " %s %s";
-    const char *msg3 = " %s %g";
-
     sLstr lstr;
     if (retstr) {
         lstr.add(*retstr);
@@ -1323,58 +1391,67 @@ sRunopStop::printcond(char **retstr)
         *retstr = 0;
     }
     for (sRunopStop *dt = this; dt; dt = dt->ro_also) {
-        if (retstr) {
-            if (dt->ro_type == RO_STOPAFTER) {
-                if (dt->ro_ptmode)
-                    sprintf(buf, msg1, kw_after, dt->ro_p.ipoint);
-                else
-                    sprintf(buf, msg3, kw_after, dt->ro_p.dpoint);
-            }
-            else if (dt->ro_type == RO_STOPAT) {
-                if (dt->ro_ptmode)
-                    sprintf(buf, msg1, kw_at, dt->ro_a.ipoints[dt->ro_index-1]);
-                else
-                    sprintf(buf, msg3, kw_at, dt->ro_a.dpoints[dt->ro_index-1]);
-            }
-            else if (dt->ro_type == RO_STOPBEFORE) {
-                if (dt->ro_ptmode)
-                    sprintf(buf, msg1, kw_before, dt->ro_p.ipoint);
-                else
-                    sprintf(buf, msg3, kw_before, dt->ro_p.dpoint);
+        lstr.add_c(' ');
+        if (dt->ro_type == RO_STOPAFTER)
+            lstr.add(kw_after);
+        else if (dt->ro_type == RO_STOPBEFORE)
+            lstr.add(kw_before);
+        else if (dt->ro_type == RO_STOPAT)
+            lstr.add(kw_at);
+        else
+            lstr.add(kw_when);
+        lstr.add_c(' ');
+        if (dt->ro_type == RO_STOPAFTER || dt->ro_type == RO_STOPBEFORE) {
+            if (dt->ro_ptmode) {
+                lstr.add("point ");
+                lstr.add_u(dt->ro_p.ipoint);
             }
             else
-                sprintf(buf, msg2, kw_when, dt->ro_string);
-            lstr.add(buf);
+                lstr.add_g(dt->ro_p.dpoint);
+        }
+        else if (dt->ro_type == RO_STOPAT) {
+            if (dt->ro_ptmode) {
+                lstr.add("point ");
+                if (status) {
+                    lstr.add_u(dt->ro_a.ipoints[0]);
+                    for (int i = 1; i < dt->ro_numpts; i++) {
+                        lstr.add_c(' ');
+                        lstr.add_g(dt->ro_a.ipoints[i]);
+                    }
+                }
+                else {
+                    lstr.add_u(dt->ro_a.ipoints[dt->ro_index-1]);
+                }
+            }
+            else {
+                if (status) {
+                    lstr.add_g(dt->ro_a.dpoints[0]);
+                    for (int i = 1; i < dt->ro_numpts; i++) {
+                        lstr.add_c(' ');
+                        lstr.add_g(dt->ro_a.dpoints[i]);
+                    }
+                }
+                else {
+                    lstr.add_g(dt->ro_a.dpoints[dt->ro_index-1]);
+                }
+            }
         }
         else {
-            if (dt->ro_type == RO_STOPAFTER) {
-                if (dt->ro_ptmode)
-                    TTY.printf(msg1, kw_after, dt->ro_p.ipoint);
-                else
-                    TTY.printf(msg3, kw_after, dt->ro_p.dpoint);
-            }
-            else if (dt->ro_type == RO_STOPAT) {
-                if (dt->ro_ptmode)
-                    TTY.printf(msg1, kw_at, dt->ro_a.ipoints[dt->ro_index - 1]);
-                else
-                    TTY.printf(msg3, kw_at, dt->ro_a.dpoints[dt->ro_index - 1]);
-            }
-            else if (dt->ro_type == RO_STOPBEFORE) {
-                if (dt->ro_ptmode)
-                    TTY.printf(msg1, kw_before, dt->ro_p.ipoint);
-                else
-                    TTY.printf(msg3, kw_before, dt->ro_p.dpoint);
-            }
-            else
-                TTY.printf(msg2, kw_when, dt->ro_string);
+            lstr.add(dt->ro_string);
         }
     }
-    if (retstr) {
-        lstr.add_c('\n');
-        *retstr = lstr.string_trim();
+    if (ro_call) {
+        lstr.add(" call");
+        if (ro_callfn) {
+            lstr.add_c(' ');
+            lstr.add(ro_callfn);
+        }
     }
+    lstr.add_c('\n');
+    if (retstr)
+        *retstr = lstr.string_trim();
     else
-        TTY.send("\n");
+        TTY.send(lstr.string());
 }
 // End of sRunopStop functions.
 
