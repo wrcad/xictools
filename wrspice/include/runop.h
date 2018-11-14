@@ -302,20 +302,40 @@ struct sMfunc
 {
     sMfunc(Mfunc t, const char *e)
         {
-            type    = t;
-            expr    = e;
-            val     = 0.0;
-            next    = 0;
-            error   = false;
+            f_type  = t;
+            f_error = false;
+            f_next  = 0;
+            f_expr  = e;
+            f_val   = 0.0;
         }
 
-    ~sMfunc()       { delete [] expr; }
+    ~sMfunc()       { delete [] f_expr; }
 
-    Mfunc type;         // type of job
-    const char *expr;   // expression to evaluate
-    double val;         // result of measurement
-    sMfunc *next;       // pointer to next job
-    bool error;         // set if expr evaluation fails
+    static void destroy_list(sMfunc *f)
+        {
+            while (f) {
+                sMfunc *x = f;
+                f = f->f_next;
+                delete x;
+            }
+        }
+
+    Mfunc type()                { return (f_type); }
+    bool error()                { return (f_error); }
+    void set_error(bool b)      { f_error = b; }
+    sMfunc *next()              { return (f_next); }
+    void set_next(sMfunc *x)    { f_next = x; }
+    const char *expr()          { return (f_expr); }
+    double val()                { return (f_val); }
+    void set_val(double d)      { f_val = d; }
+
+    void print(sLstr&);
+
+    Mfunc f_type;       // type of job
+    bool f_error;       // set if expr evaluation fails
+    sMfunc *f_next;     // pointer to next job
+    const char *f_expr; // expression to evaluate
+    double f_val;       // result of measurement
 };
 
 // Argument to sTpoint::parse.
@@ -331,8 +351,9 @@ struct sTpoint
             t_meas          = 0;
             t_at            = 0.0;
             t_val           = 0.0;
-            t_delay         = 0.0;
             t_found         = 0.0;
+            t_delay_given   = 0.0;
+            t_delay         = 0.0;
             t_dv            = 0;
             t_indx          = 0;
             t_crosses       = 0;
@@ -341,6 +362,7 @@ struct sTpoint
             t_at_given      = false;
             t_when_given    = false;
             t_found_flag    = false;
+            t_active        = false;
         }
 
     ~sTpoint()
@@ -352,37 +374,12 @@ struct sTpoint
         }
 
     const char *name()          { return (t_name); }
-    void set_name(char *s)      { t_name = s; }
     const char *when_expr1()    { return (t_when_expr1); }
-    void set_when_expr1(char *s){ t_when_expr1 = s; }
     const char *when_expr2()    { return (t_when_expr2); }
-    void set_when_expr2(char *s){ t_when_expr2 = s; }
-    const char *meas()          { return (t_meas); }
-    void set_meas(char *s)      { t_meas = s; }
-    double at()                 { return (t_at); }
-    void set_at(double d)       { t_at = d; }
-    double val()                { return (t_val); }
-    void set_val(double d)      { t_val = d; }
-    double delay()              { return (t_delay); }
-    void set_delay(double d)    { t_delay = d; }
     double found()              { return (t_found); }
-    void set_found(double d)    { t_found = d; }
-    sDataVec *dv()              { return (t_dv); }
-    void set_dv(sDataVec *d)    { t_dv = d; }
     int indx()                  { return (t_indx); }
-    void set_indx(int i)        { t_indx = i; }
-    int crosses()               { return (t_crosses); }
-    void set_crosses(int i)     { t_crosses = i; }
-    int rises()                 { return (t_rises); }
-    void set_rises(int i)       { t_rises = i; }
-    int falls()                 { return (t_falls); }
-    void set_falls(int i)       { t_falls = i; }
-    bool at_given()             { return (t_at_given); }
-    void set_at_given(bool b)   { t_at_given = b; }
-    bool when_given()           { return (t_when_given); }
-    void set_when_given(bool b) { t_when_given = b; }
     bool found_flag()           { return (t_found_flag); }
-    void set_found_flag(bool b) { t_found_flag = b; }
+    bool active()               { return (t_active); }
 
     void reset()
         {
@@ -394,6 +391,7 @@ struct sTpoint
         }
 
     int parse(TPform, const char**, char**);
+    void print(sLstr&);
     bool setup_dv(sFtCirc*, bool*);
     bool check_found(sFtCirc*, bool*, bool);
 
@@ -404,8 +402,9 @@ private:
     char *t_meas;           // Chained measure name.
     double t_at;            // The 'at' value.
     double t_val;           // The 'val' value.
-    double t_delay;         // The 'td' value.
     double t_found;         // The measure point, once found.
+    double t_delay_given;   // The 'td' value.
+    double t_delay;         // Actual measurement point.
     sDataVec *t_dv;         // Cached datavec for vector name.
     int t_indx;             // Index of trigger point.
     int t_crosses;          // The 'crosses' value.
@@ -414,6 +413,7 @@ private:
     bool t_at_given;        // The 'at' clause was given.
     bool t_when_given;      // The 'when' clause was given.
     bool t_found_flag;      // The measure point was found.
+    bool t_active;          // This is active, if not skip it.
 };
 
 
@@ -423,12 +423,13 @@ struct sRunopMeas : public sRunop
     {
         ro_type = RO_MEASURE;
 
-        ro_analysis             = 0;
         ro_result               = 0;
         ro_expr2                = 0;
+        ro_call                 = 0;
         ro_cktptr               = 0;
         ro_funcs                = 0;
         ro_finds                = 0;
+        ro_analysis             = 0;
         ro_found_rises          = 0;
         ro_found_falls          = 0;
         ro_found_crosses        = 0;
@@ -436,6 +437,7 @@ struct sRunopMeas : public sRunop
         ro_measure_error        = false;
         ro_measure_skip         = false;
         ro_stop_flag            = false;
+        ro_call_flag            = false;
         ro_print_flag           = 0;
 
         parse(str, errstr);
@@ -445,31 +447,23 @@ struct sRunopMeas : public sRunop
         {
             delete [] ro_result;
             delete [] ro_expr2;
+            delete [] ro_call;
 
-            while (ro_funcs) {
-                sMfunc *f = ro_funcs->next;
-                delete ro_funcs;
-                ro_funcs = f;
-            }
-            while (ro_finds) {
-                sMfunc *f = ro_finds->next;
-                delete ro_finds;
-                ro_finds = f;
-            }
+            sMfunc::destroy_list(ro_funcs);
+            sMfunc::destroy_list(ro_finds);
         }
 
     sRunopMeas *next()          { return ((sRunopMeas*)ro_next); }
 
-    double found_start()        { return (ro_start.found()); }
-    bool found_start_flag()     { return (ro_start.found_flag()); }
-    double found_end()          { return (ro_end.found()); }
-    bool found_end_flag()       { return (ro_end.found_flag()); }
+    sTpoint &start()            { return (ro_start); }
+    sTpoint &end()              { return (ro_end); }
 
     const char *result()        { return (ro_result); }
     int analysis()              { return (ro_analysis); }
     const char *start_name()    { return (ro_start.name()); }
     const char *end_name()      { return (ro_end.name()); }
     const char *expr2()         { return (ro_expr2); }
+    const char *call()          { return (ro_call); }
     const char *start_when_expr1()  { return (ro_start.when_expr1()); }
     const char *start_when_expr2()  { return (ro_start.when_expr2()); }
     const char *end_when_expr1()    { return (ro_end.when_expr1()); }
@@ -497,6 +491,8 @@ struct sRunopMeas : public sRunop
     bool parse(const char*, char**);
     void reset(sPlot*);
     bool check(sFtCirc*);
+    bool measure(sDataVec**, int*);
+    bool update_plot(sDataVec*, int);
     char *print();
 
 private:
@@ -510,22 +506,21 @@ private:
     sTpoint ro_start;
     sTpoint ro_end;
 
-    int ro_analysis;            // type index of analysis 
     const char *ro_result;      // result name for measurement
     const char *ro_expr2;       // misc expression
+    const char *ro_call;        // function to call when measure comp[lete
     sFtCirc *ro_cktptr;         // back pointer to circuit
     sMfunc *ro_funcs;           // list of measurements over interval
     sMfunc *ro_finds;           // list of measurements at point
-    sDataVec *ro_end_dv;        // cached datavec for targ name
-    int ro_end_indx;            // index of target point
+    int ro_analysis;            // type index of analysis 
     int ro_found_rises;         // number of rising crossings
     int ro_found_falls;         // number of falling crossings
     int ro_found_crosses;       // number of crossings
-    bool ro_when_given;         // true if 'when' given without 'trig', 'targ'
     bool ro_measure_done;       // measurement done successfully
     bool ro_measure_error;      // measurement can't be done
     bool ro_measure_skip;       // parse error so skip
     bool ro_stop_flag;          // stop analysis when done
+    bool ro_call_flag;          // call a function or bound codeblock
     char ro_print_flag;         // print result on screen, 1 terse  2 verbose
 };
 

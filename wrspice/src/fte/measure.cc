@@ -53,8 +53,69 @@
 
 
 //
-// Functions for the measurement post-processor:
+// Functions for the measurement post-processor.
 //
+
+namespace {
+
+    // Keywords
+    const char *mkw_measure     = "measure";
+    const char *mkw_trig        = "trig";
+    const char *mkw_targ        = "targ";
+    const char *mkw_at          = "at";
+    const char *mkw_when        = "when";
+    const char *mkw_val         = "val";
+    const char *mkw_td          = "td";
+    const char *mkw_cross       = "cross";
+    const char *mkw_rise        = "rise";
+    const char *mkw_fall        = "fall";
+    const char *mkw_from        = "from";
+    const char *mkw_to          = "to";
+    const char *mkw_min         = "min";
+    const char *mkw_max         = "max";
+    const char *mkw_pp          = "pp";
+    const char *mkw_avg         = "avg";
+    const char *mkw_rms         = "rms";
+    const char *mkw_pw          = "pw";
+    const char *mkw_rt          = "rt";
+    const char *mkw_find        = "find";
+    const char *mkw_param       = "param";
+    const char *mkw_goal        = "goal";
+    const char *mkw_minval      = "minval";
+    const char *mkw_weight      = "weight";
+    const char *mkw_print       = "print";
+    const char *mkw_print_terse = "print_terse";
+    const char *mkw_stop        = "stop";
+    const char *mkw_call        = "call";
+}
+
+
+void
+sMfunc::print(sLstr &lstr)
+{
+    lstr.add_c(' ');
+    if (f_type == Mmin)
+        lstr.add(mkw_min);
+    else if (f_type == Mmax)
+        lstr.add(mkw_max);
+    else if (f_type == Mpp)
+        lstr.add(mkw_pp);
+    else if (f_type == Mavg)
+        lstr.add(mkw_avg);
+    else if (f_type == Mrms)
+        lstr.add(mkw_rms);
+    else if (f_type == Mpw)
+        lstr.add(mkw_pw);
+    else if (f_type == Mrft)
+        lstr.add(mkw_rt);
+    else if (f_type == Mfind)
+        lstr.add(mkw_find);
+    lstr.add_c(' ');
+    lstr.add(f_expr);
+}
+// End of sMfunc functions.
+
+
 
 namespace {
     // Return true if name names an analysis, and return the index in
@@ -212,7 +273,7 @@ namespace {
 
 
 // Three forms:
-//  at value
+//  at value|measure_name
 //  when expr1=expr2 [td=delay] [cross=crosses] [rise=rises] [fall=falls]
 //  variable val=value [td=delay] [cross=crosses] [rise=rises] [fall=falls]
 //
@@ -228,40 +289,46 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             return (E_SYNTAX);
         }
 
-        if (lstring::cieq(tok, "at")) {
+        if (lstring::cieq(tok, mkw_at)) {
             delete [] tok;
             f = TPat;
         }
-        else if (lstring::cieq(tok, "when")) {
+        else if (lstring::cieq(tok, mkw_when)) {
             delete [] tok;
             f = TPwhen;
         }
         else {
-            set_name(tok);
+            t_name = tok;
             f = TPvar;
         }
     }
 
     if (f == TPat) {
-        bool err;
-        double d = gval(&s, &err);
-        if (err) {
-            listerr(errstr, "at");
+        // at number|measure
+        char *tok = gtok(&s);
+        if (!tok) {
+            listerr(errstr, mkw_at);
             return (E_SYNTAX);
         }
-        set_at(d);
-        set_at_given(true);
+        const char *t = tok;
+        bool err;
+        double d = gval(&t, &err);
+        if (err)
+            t_meas = tok;
+        else
+            t_at = d;
+        t_at_given = true;
     }
     else if (f == TPwhen) {
         char *tok = gtok(&s);
         if (!tok) {
-            listerr(errstr, "when");
+            listerr(errstr, mkw_when);
             return (E_SYNTAX);
         }
-        set_when_expr1(tok);
+        t_when_expr1 = tok;
         tok = gtok(&s);
         if (!tok) {
-            listerr(errstr, "when");
+            listerr(errstr, mkw_when);
             return (E_SYNTAX);
         }
         if (*tok == '=') {
@@ -269,17 +336,17 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             tok = gtok(&s);
         }
         if (!tok) {
-            listerr(errstr, "when");
+            listerr(errstr, mkw_when);
             return (E_SYNTAX);
         }
-        set_when_expr2(tok);
-        set_when_given(true);
+        t_when_expr2 = tok;
+        t_when_given = true;
     }
 
     const char *last = s;
     char *tok;
     while ((tok = gtok(&s, true)) != 0) {
-        if (lstring::cieq(tok, "val")) {
+        if (lstring::cieq(tok, mkw_val)) {
             if (f != TPvar) {
                 if (errstr && !*errstr)
                     lstring::copy("unexpected keyword.");
@@ -287,15 +354,15 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             }
             delete [] tok;
             bool err;
-            set_val(gval(&s, &err));
+            t_val = gval(&s, &err);
             if (err) {
-                listerr(errstr, "val");
+                listerr(errstr, mkw_val);
                 return (E_SYNTAX);
             }
             last = s;
             continue;
         }
-        if (lstring::cieq(tok, "td")) {
+        if (lstring::cieq(tok, mkw_td)) {
             if (f != TPvar && f != TPwhen) {
                 if (errstr && !*errstr)
                     lstring::copy("unexpected keyword.");
@@ -303,15 +370,15 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             }
             delete [] tok;
             bool err;
-            set_delay(gval(&s, &err));
+            t_delay_given = gval(&s, &err);
             if (err) {
-                listerr(errstr, "td");
+                listerr(errstr, mkw_td);
                 break;
             }
             last = s;
             continue;
         }
-        if (lstring::cieq(tok, "cross")) {
+        if (lstring::cieq(tok, mkw_cross)) {
             if (f != TPvar && f != TPwhen) {
                 if (errstr && !*errstr)
                     lstring::copy("unexpected keyword.");
@@ -319,15 +386,15 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             }
             delete [] tok;
             bool err;
-            set_crosses((int)gval(&s, &err));
+            t_crosses = (int)gval(&s, &err);
             if (err) {
-                listerr(errstr, "cross");
+                listerr(errstr, mkw_cross);
                 break;
             }
             last = s;
             continue;
         }
-        if (lstring::cieq(tok, "rise")) {
+        if (lstring::cieq(tok, mkw_rise)) {
             if (f != TPvar && f != TPwhen) {
                 if (errstr && !*errstr)
                     lstring::copy("unexpected keyword.");
@@ -335,15 +402,15 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             }
             delete [] tok;
             bool err;
-            set_rises((int)gval(&s, &err));
+            t_rises = (int)gval(&s, &err);
             if (err) {
-                listerr(errstr, "rise");
+                listerr(errstr, mkw_rise);
                 return (E_SYNTAX);
             }
             last = s;
             continue;
         }
-        if (lstring::cieq(tok, "fall")) {
+        if (lstring::cieq(tok, mkw_fall)) {
             if (f != TPvar && f != TPwhen) {
                 if (errstr && !*errstr)
                     lstring::copy("unexpected keyword.");
@@ -351,9 +418,9 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             }
             delete [] tok;
             bool err;
-            set_falls((int)gval(&s, &err));
+            t_falls = (int)gval(&s, &err);
             if (err) {
-                listerr(errstr, "fall");
+                listerr(errstr, mkw_fall);
                 return (E_SYNTAX);
             }
             last = s;
@@ -366,7 +433,7 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             double *dd = SPnum.parse(&t, false);
             delete [] tok;
             if (dd) {
-                set_val(*dd);
+                t_val = *dd;
                 last = s;
                 continue;
             }
@@ -375,13 +442,152 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
         s = last;
         break;
     }
-    if (f == TPwhen || f == TPvar) {
-        // If non of these are set, assume the first corssing.
-        if (rises() == 0 && falls() == 0 && crosses() == 0)
-            set_crosses(1);
-    }
+    t_active = true;
     *pstr = s;
     return (OK);
+}
+
+
+void
+sTpoint::print(sLstr &lstr)
+{
+    if (!t_active)
+        return;
+    if (t_at_given) {
+        lstr.add_c(' ');
+        lstr.add(mkw_at);
+        lstr.add_c(' ');
+        lstr.add_g(t_at);
+    }
+    else if (t_when_given) {
+        lstr.add_c(' ');
+        lstr.add(mkw_when);
+        lstr.add_c(' ');
+        lstr.add(t_when_expr1);
+        lstr.add_c('=');
+        lstr.add(t_when_expr2);
+        if (t_delay_given > 0.0) {
+            lstr.add_c(' ');
+            lstr.add(mkw_td);
+            lstr.add_c('=');
+            lstr.add_g(t_delay_given);
+        }
+        if (t_rises) {
+            lstr.add_c(' ');
+            lstr.add(mkw_rise);
+            lstr.add_c('=');
+            lstr.add_u(t_rises);
+        }
+        if (t_falls) {
+            lstr.add_c(' ');
+            lstr.add(mkw_fall);
+            lstr.add_c('=');
+            lstr.add_u(t_falls);
+        }
+        if (t_crosses) {
+            lstr.add_c(' ');
+            lstr.add(mkw_cross);
+            lstr.add_c('=');
+            lstr.add_u(t_crosses);
+        }
+    }
+    else if (t_name) {
+        lstr.add_c(' ');
+        lstr.add(t_name);
+        if (t_delay_given > 0.0) {
+            lstr.add_c(' ');
+            lstr.add(mkw_td);
+            lstr.add_c('=');
+            lstr.add_g(t_delay_given);
+        }
+        if (t_rises) {
+            lstr.add_c(' ');
+            lstr.add(mkw_rise);
+            lstr.add_c('=');
+            lstr.add_u(t_rises);
+        }
+        if (t_falls) {
+            lstr.add_c(' ');
+            lstr.add(mkw_fall);
+            lstr.add_c('=');
+            lstr.add_u(t_falls);
+        }
+        if (t_crosses) {
+            lstr.add_c(' ');
+            lstr.add(mkw_cross);
+            lstr.add_c('=');
+            lstr.add_u(t_crosses);
+        }
+    }
+    else if (t_meas) {
+        lstr.add_c(' ');
+        lstr.add(t_meas);
+        if (t_delay_given > 0.0) {
+            lstr.add_c(' ');
+            lstr.add(mkw_td);
+            lstr.add_c('=');
+            lstr.add_g(t_delay_given);
+        }
+    }
+}
+
+
+bool
+sTpoint::setup_dv(sFtCirc *circuit, bool *err)
+{
+    if (!t_active)
+        return (true);
+    if (!t_dv) {
+        sRunopMeas *measures = circuit->measures();
+        if (t_name) {
+            sRunopMeas *m = sRunopMeas::find(measures, t_name);
+            if (m) {
+                if (!m->measure_done())
+                    return (false);
+                if (m->end().t_found_flag)
+                    t_delay += m->end().t_found;
+                else
+                    t_delay += m->start().t_found;
+                   
+                t_dv = circuit->runplot()->scale();
+            }
+            else {
+                t_dv = circuit->runplot()->find_vec(name());
+                if (!t_dv) {
+                    if (*err)
+                        *err = true;
+                    return (false);
+                }
+                // If none of these are set, assume the first crossing.
+                if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
+                    t_crosses = 1;
+            }
+        }
+        else if (t_at_given) {
+            if (t_meas) {
+                sRunopMeas *m = sRunopMeas::find(measures, t_meas);
+                if (!m) {
+                    if (err)
+                        *err = true;
+                    return (false);
+                }
+                if (!m->measure_done())
+                    return (false);
+                if (m->end().t_found_flag)
+                    t_at = m->end().found();
+                else
+                    t_at = m->start().found();
+            }
+            t_dv = circuit->runplot()->scale();
+        }
+        else if (t_when_given) {
+            // If none of these are set, assume the first crossing.
+            if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
+                t_crosses = 1;
+            t_dv = circuit->runplot()->scale();
+        }
+    }
+    return (true);
 }
 
 
@@ -460,158 +666,159 @@ namespace {
 
 
 bool
-sTpoint::setup_dv(sFtCirc *circuit, bool *err)
-{
-    sRunopMeas *measures = circuit->measures();
-    if (name() && !dv()) {
-        sRunopMeas *m = sRunopMeas::find(measures, name());
-        if (m) {
-            if (!m->measure_done())
-                return (false);
-            if (m->found_end_flag())
-                set_delay(delay() + m->found_end());
-            else
-                set_delay(delay() + m->found_start());
-            set_dv(circuit->runplot()->scale());
-        }
-        else {
-            set_dv(circuit->runplot()->find_vec(name()));
-            if (!dv()) {
-                if (*err)
-                    *err = true;
-                return (false);
-            }
-        }
-    }
-    if (at_given() && !dv()) {
-        if (meas()) {
-            sRunopMeas *m = sRunopMeas::find(measures, meas());
-            if (!m) {
-                if (err)
-                    *err = true;
-                return (false);
-            }
-            if (!m->measure_done())
-                return (false);
-            if (m->found_end_flag())
-                set_at(m->found_end());
-            else
-                set_at(m->found_start());
-        }
-        set_dv(circuit->runplot()->scale());
-    }
-    return (true);
-}
-
-
-bool
 sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
 {
-    if (!found_flag() && dv()) {
-        sDataVec *xs = circuit->runplot()->scale();
-        double fval;
-        if (at_given())
-            fval = at();
-        else
-            fval = delay();
-//XXX
-//printf("check\n");
-        int i = chk_trig(fval, xs);
-        if (i < 0)
+    if (!t_active || t_found_flag || !t_dv)
+        return (true);
+
+    sDataVec *xs = circuit->runplot()->scale();
+    double fval;
+    if (t_at_given)
+        fval = t_at;
+    else
+        fval = t_delay;
+    int i = chk_trig(fval, xs);
+    if (i < 0)
+        return (false);
+    if (t_at_given)
+        fval = xs->realval(i);
+    else if (t_when_given) {
+        sDataVec *dvl = evaluate(t_when_expr1);
+        sDataVec *dvr = evaluate(t_when_expr2);
+        if (!dvl || !dvr) {
+            if (err)
+                *err = true;
             return (false);
-        if (at_given())
-            fval = xs->realval(i);
-        else if (when_given()) {
-            sDataVec *dvl = evaluate(when_expr1());
-            sDataVec *dvr = evaluate(when_expr2());
-            if (!dvl || !dvr) {
-                if (err)
-                    *err = true;
-                return (false);
-            }
-            int r = 0, f = 0, c = 0;
-            bool foundit = false;
-            for ( ; i < dvl->length(); i++) {
-                if (i && value(dvl, i-1) <= value(dvr, i-1) &&
-                        value(dvr, i) < value(dvl, i)) {
-                    r++;
-                    c++;
-                }
-                else if (i && value(dvl, i-1) > value(dvr, i-1) &&
-                        value(dvr, i) >= value(dvl, i)) {
-                    f++;
-                    c++;
-                }
-                else
-                    continue;
-                if (r >= rises() && f >= falls() && c >= crosses()) {
-                    double d = value(dvr, i) - value(dvr, i-1) -
-                        (value(dvl, i) - value(dvl, i-1));
-                    if (d != 0.0) {
-                        fval = xs->realval(i-1) +
-                            (xs->realval(i) - xs->realval(i-1))*
-                            (value(dvl, i-1) - value(dvr, i-1))/d;
-                    }
-                    else
-                        fval = xs->realval(i);
-                    foundit = true;
-                    if (end)
-                        i--;
-                    break;
-                }
-            }
-            if (!foundit)
-                return (false);
         }
-        else if (rises() > 0 || falls() > 0 || crosses() > 0) {
-            int r = 0, f = 0, c = 0;
-            bool foundit = false;
-            for ( ; i < dv()->length(); i++) {
-                if (i && dv()->realval(i-1) <= val() &&
-                        val() < dv()->realval(i)) {
-                    r++;
-                    c++;
-                }
-                else
-                if (i && dv()->realval(i-1) > val() &&
-                        val() >= dv()->realval(i)) {
-                    f++;
-                    c++;
-                }
-                else
-                    continue;
-                if (r >= rises() && f >= falls() && c >= crosses()) {
+        int r = 0, f = 0, c = 0;
+        bool foundit = false;
+        for ( ; i < dvl->length(); i++) {
+            if (i && value(dvl, i-1) <= value(dvr, i-1) &&
+                    value(dvr, i) < value(dvl, i)) {
+                r++;
+                c++;
+            }
+            else if (i && value(dvl, i-1) > value(dvr, i-1) &&
+                    value(dvr, i) >= value(dvl, i)) {
+                f++;
+                c++;
+            }
+            else
+                continue;
+            if (r >= t_rises && f >= t_falls && c >= t_crosses) {
+                double d = value(dvr, i) - value(dvr, i-1) -
+                    (value(dvl, i) - value(dvl, i-1));
+                if (d != 0.0) {
                     fval = xs->realval(i-1) +
                         (xs->realval(i) - xs->realval(i-1))*
-                        (val() - dv()->realval(i-1))/
-                        (dv()->realval(i) - dv()->realval(i-1));
-                    foundit = true;
-                    if (end)
-                        i--;
-                    break;
+                        (value(dvl, i-1) - value(dvr, i-1))/d;
                 }
+                else
+                    fval = xs->realval(i);
+                foundit = true;
+                if (end)
+                    i--;
+                break;
             }
-            if (!foundit)
-                return (false);
         }
-        else if (dv() != circuit->runplot()->scale())
+        if (!foundit)
             return (false);
-
-        set_indx(i);
-        set_found(fval);
-        set_found_flag(true);
-//XXX
-//printf("found\n");
     }
+    else if (t_rises > 0 || t_falls > 0 || t_crosses > 0) {
+        int r = 0, f = 0, c = 0;
+        bool foundit = false;
+        for ( ; i < t_dv->length(); i++) {
+            if (i && t_dv->realval(i-1) <= t_val &&
+                    t_val < t_dv->realval(i)) {
+                r++;
+                c++;
+            }
+            else if (i && t_dv->realval(i-1) > t_val &&
+                    t_val >= t_dv->realval(i)) {
+                f++;
+                c++;
+            }
+            else
+                continue;
+            if (r >= t_rises && f >= t_falls && c >= t_crosses) {
+                fval = xs->realval(i-1) +
+                    (xs->realval(i) - xs->realval(i-1))*
+                    (t_val - t_dv->realval(i-1))/
+                    (t_dv->realval(i) - t_dv->realval(i-1));
+                foundit = true;
+                if (end)
+                    i--;
+                break;
+            }
+        }
+        if (!foundit)
+            return (false);
+    }
+    else if (t_dv != circuit->runplot()->scale())
+        return (false);
+
+    t_indx = i;
+    t_found = fval;
+    t_found_flag = true;
     return (true);
 }
 // End of sTpoint functions.
 
 
 void
-sRunopMeas::print(char**)
+sRunopMeas::print(char **pstr)
 {
-//XXX store line, puke it back here
+    sLstr lstr;
+    lstr.add(mkw_measure);
+    if (ro_analysis >= 0) {
+        IFanalysis *a = IFanalysis::analysis(ro_analysis);
+        if (a) {
+            lstr.add_c(' ');
+            lstr.add(a->name);
+        }
+    }
+    if (ro_result) {
+        lstr.add_c(' ');
+        lstr.add(ro_result);
+    }
+    ro_start.print(lstr);
+    ro_end.print(lstr);
+
+    if (ro_end.active()) {
+        for (sMfunc *m = ro_funcs; m; m = m->next())
+            m->print(lstr);
+    }
+    else {
+        for (sMfunc *m = ro_finds; m; m = m->next())
+            m->print(lstr);
+    }
+
+    lstr.add_c('\n');
+    if (pstr)
+        *pstr = lstr.string_trim();
+    else
+        TTY.send(lstr.string());
+
+    if (ro_print_flag == 2) {
+        lstr.add_c(' ');
+        lstr.add(mkw_print);
+    }
+    else if (ro_print_flag == 1) {
+        lstr.add_c(' ');
+        lstr.add(mkw_print_terse);
+    }
+    if (ro_call_flag) {
+        lstr.add_c(' ');
+        lstr.add(mkw_call);
+        if (ro_call) {
+            lstr.add_c(' ');
+            lstr.add(ro_call);
+        }   
+    }
+    if (ro_stop_flag) {
+        lstr.add_c(' ');
+        lstr.add(mkw_stop);
+    }
 }
 
 
@@ -632,6 +839,7 @@ sRunopMeas::parse(const char *str, char **errstr)
     char *tok = gtok(&s);
     delete [] tok;
     bool gotanal = false;
+    bool in_call = false;
     ro_analysis = -1;
     while ((tok = gtok(&s, true)) != 0) {
         if (!gotanal) {
@@ -644,105 +852,119 @@ sRunopMeas::parse(const char *str, char **errstr)
                     listerr(errstr, 0);
                     break;
                 }
+                in_call = false;
                 continue;
             }
         }
-        if (lstring::cieq(tok, "trig")) {
+        if (lstring::cieq(tok, mkw_trig)) {
             delete [] tok;
             int ret = ro_start.parse(TPunknown, &s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
             }
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "targ")) {
+        if (lstring::cieq(tok, mkw_targ)) {
             delete [] tok;
             int ret = ro_end.parse(TPunknown, &s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
             }
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "from")) {
+        if (lstring::cieq(tok, mkw_from)) {
             delete [] tok;
             int ret = ro_start.parse(TPat, &s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
             }
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "to")) {
+        if (lstring::cieq(tok, mkw_to)) {
             delete [] tok;
             int ret = ro_end.parse(TPat, &s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
             }
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "when")) {
+        if (lstring::cieq(tok, mkw_when)) {
             delete [] tok;
             int ret = ro_start.parse(TPwhen, &s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
             }
-            ro_when_given = true;
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "at")) {
+        if (lstring::cieq(tok, mkw_at)) {
             delete [] tok;
             int ret = ro_start.parse(TPat, &s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
             }
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "min")) {
+        if (lstring::cieq(tok, mkw_min)) {
             delete [] tok;
             addMeas(Mmin, gtok(&s));
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "max")) {
+        if (lstring::cieq(tok, mkw_max)) {
             delete [] tok;
             addMeas(Mmax, gtok(&s));
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "pp")) {
+        if (lstring::cieq(tok, mkw_pp)) {
             delete [] tok;
             addMeas(Mpp, gtok(&s));
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "avg")) {
+        if (lstring::cieq(tok, mkw_avg)) {
             delete [] tok;
             addMeas(Mavg, gtok(&s));
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "rms")) {
+        if (lstring::cieq(tok, mkw_rms)) {
             delete [] tok;
             addMeas(Mrms, gtok(&s));
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "pw")) {
+        if (lstring::cieq(tok, mkw_pw)) {
             delete [] tok;
             addMeas(Mpw, gtok(&s));
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "rt")) {
+        if (lstring::cieq(tok, mkw_rt)) {
             delete [] tok;
             addMeas(Mrft, gtok(&s));
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "find")) {
+        if (lstring::cieq(tok, mkw_find)) {
             delete [] tok;
             addMeas(Mfind, gtok(&s));
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "param")) {
+        if (lstring::cieq(tok, mkw_param)) {
             delete [] tok;
             ro_expr2 = gtok(&s);
             if (ro_expr2 && *ro_expr2 == '=') {
@@ -751,54 +973,72 @@ sRunopMeas::parse(const char *str, char **errstr)
             }
             if (!ro_expr2) {
                 err = true;
-                listerr(errstr, "param");
+                listerr(errstr, mkw_param);
                 break;
             }
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "goal")) {
-            gval(&s, &err);
+        if (lstring::cieq(tok, mkw_goal)) {
             delete [] tok;
-            if (err) {
-                listerr(errstr, "goal");
-                break;
-            }
-            continue;
-        }
-        if (lstring::cieq(tok, "minval")) {
             gval(&s, &err);
-            delete [] tok;
             if (err) {
-                listerr(errstr, "minval");
+                listerr(errstr, mkw_goal);
                 break;
             }
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "weight")) {
+        if (lstring::cieq(tok, mkw_minval)) {
+            delete [] tok;
             gval(&s, &err);
-            delete [] tok;
             if (err) {
-                listerr(errstr, "weight");
+                listerr(errstr, mkw_minval);
                 break;
             }
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "print")) {
+        if (lstring::cieq(tok, mkw_weight)) {
+            delete [] tok;
+            gval(&s, &err);
+            if (err) {
+                listerr(errstr, mkw_weight);
+                break;
+            }
+            in_call = false;
+            continue;
+        }
+        if (lstring::cieq(tok, mkw_print)) {
+            delete [] tok;
             ro_print_flag = 2;
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "print_terse")) {
+        if (lstring::cieq(tok, mkw_print_terse)) {
             ro_print_flag = 1;
+            in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, "stop")) {
+        if (lstring::cieq(tok, mkw_stop)) {
+            delete [] tok;
             ro_stop_flag = true;
+            in_call = false;
             continue;
         }
 
-//XXX add me
-        if (lstring::cieq(tok, "call")) {
+        // This should follow all other keywords.
+        if (lstring::cieq(tok, mkw_call)) {
+            delete [] tok;
+            ro_call_flag = true;
+            // Ugly logic, the script name is optional, take the next
+            // token as the script name if it is not a keyword.
+            in_call = true;
             continue;
+        }
+        if (in_call) {
+            ro_call = tok;
+            in_call = false;
         }
 
         if (errstr && !*errstr) {
@@ -896,10 +1136,10 @@ sRunopMeas::reset(sPlot *pl)
 }
 
 
-// Check if the measurement is triggered, and if so perform the measurement.
-// This is called periodically as the analysis progresses, or can be called
-// after the analysis is complete.  True is returned if the measurement
-// was performed.
+// Check if the measurement is triggered, and if so perform the
+// measurement.  This is called periodically as the analysis
+// progresses, or can be called after the analysis is complete.  True
+// is returned if the measurement was performed.
 //
 bool
 sRunopMeas::check(sFtCirc *circuit)
@@ -908,7 +1148,6 @@ sRunopMeas::check(sFtCirc *circuit)
         return (true);
     if (ro_measure_done || ro_measure_error || ro_measure_skip)
         return (true);
-    sDataVec *xs = circuit->runplot()->scale();
     sRunopMeas *measures = circuit->measures();
     if (!measures)
        return (true);  // "can't happen"
@@ -925,66 +1164,11 @@ sRunopMeas::check(sFtCirc *circuit)
         }
         // All non-param measurements done.
     }
-    else if (ro_when_given) {
-        // 'when' was given, measure at a single point
-        if (!ro_start.found_flag()) {
-            double start = ro_start.delay();
-            int i = chk_trig(start, xs);
-            if (i < 0)
-                return (false);
-
-            sDataVec *dvl = evaluate(ro_start.when_expr1());
-            sDataVec *dvr = evaluate(ro_start.when_expr2());
-            if (!dvl || !dvr) {
-                ro_measure_error = true;
-                return (false);
-            }
-            int r = 0, f = 0, c = 0;
-            bool found = false;
-            for ( ; i < dvl->length(); i++) {
-                if (i && value(dvl, i-1) <= value(dvr, i-1) &&
-                        value(dvr, i) < value(dvl, i)) {
-                    r++;
-                    c++;
-                }
-                else if (i && value(dvl, i-1) > value(dvr, i-1) &&
-                        value(dvr, i) >= value(dvl, i)) {
-                    f++;
-                    c++;
-                }
-                else
-                    continue;
-                if (r >= ro_start.rises() && f >= ro_start.falls() &&
-                        c >= ro_start.crosses()) {
-                    double d = value(dvr, i) - value(dvr, i-1) -
-                        (value(dvl, i) - value(dvl, i-1));
-                    if (d != 0.0) {
-                        start = xs->realval(i-1) +
-                            (xs->realval(i) - xs->realval(i-1))*
-                            (value(dvl, i-1) - value(dvr, i-1))/d;
-                    }
-                    else
-                        start = xs->realval(i);
-                    found = true;
-                    ro_start.set_indx(i);
-                    break;
-                }
-            }
-            if (!found)
-                return (false);
-            ro_start.set_found(start);
-            ro_start.set_found_flag(true);
-        }
-    }
     else {
-        // The 'trig' and maybe 'targ' were given, measure over an
-        // interval if targ was given.
-
         if (!ro_start.setup_dv(circuit, &ro_measure_error))
             return (false);
         if (!ro_end.setup_dv(circuit, &ro_measure_error))
             return (false);
-
         if (!ro_start.check_found(circuit, &ro_measure_error, false))
             return (false);
         if (!ro_end.check_found(circuit, &ro_measure_error, true))
@@ -992,22 +1176,41 @@ sRunopMeas::check(sFtCirc *circuit)
     }
     ro_cktptr = circuit;
 
-    //
-    // Successfully identified measurement interval, do measurement.
-    // Add a vector containing the results to the plot.
-    //
+    sDataVec *dv;
+    int cnt;
+    if (!measure(&dv, &cnt))
+        return (false);
+    if (!update_plot(dv, cnt))
+        return (false);
+    return (true);
+}
+
+
+// Do the measurement, call after successfully identifying the
+// measure interval.
+//
+bool
+sRunopMeas::measure(sDataVec **dvp, int *cntp)
+{
+    if (dvp)
+        *dvp = 0;
+    if (cntp)
+        *cntp = 0;
+    if (!ro_cktptr)
+        return (false);
+    sDataVec *xs = ro_cktptr->runplot()->scale();
     sDataVec *dv0 = 0;
     int count = 0;
     if (ro_start.found_flag() && ro_end.found_flag()) {
-        for (sMfunc *ff = ro_funcs; ff; ff = ff->next, count++) {
-            sDataVec *dv = evaluate(ff->expr);
+        for (sMfunc *ff = ro_funcs; ff; ff = ff->next(), count++) {
+            sDataVec *dv = evaluate(ff->expr());
             if (dv && ((dv->length() > ro_start.indx() &&
                     dv->length() > ro_end.indx()) || dv->length() == 1)) {
                 if (!dv0)
                     dv0 = dv;
-                if (ff->type == Mmin) {
+                if (ff->type() == Mmin) {
                     if (dv->length() == 1)
-                        ff->val = dv->realval(0);
+                        ff->set_val(dv->realval(0));
                     else {
                         double mn = dv->realval(ro_start.indx());
                         for (int i = ro_start.indx()+1; i <= ro_end.indx();
@@ -1022,12 +1225,12 @@ sRunopMeas::check(sFtCirc *circuit)
                         d = endval(dv, xs, true);
                         if (d < mn)
                             mn = d;
-                        ff->val = mn;
+                        ff->set_val(mn);
                     }
                 }
-                else if (ff->type == Mmax) {
+                else if (ff->type() == Mmax) {
                     if (dv->length() == 1)
-                        ff->val = dv->realval(0);
+                        ff->set_val(dv->realval(0));
                     else {
                         double mx = dv->realval(ro_start.indx());
                         for (int i = ro_start.indx()+1; i <= ro_end.indx();
@@ -1042,12 +1245,12 @@ sRunopMeas::check(sFtCirc *circuit)
                         d = endval(dv, xs, true);
                         if (d > mx)
                             mx = d;
-                        ff->val = mx;
+                        ff->set_val(mx);
                     }
                 }
-                else if (ff->type == Mpp) {
+                else if (ff->type() == Mpp) {
                     if (dv->length() == 1)
-                        ff->val = 0.0;
+                        ff->set_val(0.0);
                     else {
                         double mn = dv->realval(ro_start.indx());
                         double mx = mn;
@@ -1069,59 +1272,59 @@ sRunopMeas::check(sFtCirc *circuit)
                             mx = d;
                         if (d < mn)
                             mn = d;
-                        ff->val = mx - mn;
+                        ff->set_val(mx - mn);
                     }
                 }
-                else if (ff->type == Mavg) {
+                else if (ff->type() == Mavg) {
                     if (dv->length() == 1)
-                        ff->val = dv->realval(0);
+                        ff->set_val(dv->realval(0));
                     else {
-                        sDataVec *txs = circuit->runplot()->scale();
-                        ff->val = findavg(dv, txs);
+                        sDataVec *txs = ro_cktptr->runplot()->scale();
+                        ff->set_val(findavg(dv, txs));
                     }
                 }
-                else if (ff->type == Mrms) {
+                else if (ff->type() == Mrms) {
                     if (dv->length() == 1)
-                        ff->val = dv->realval(0);
+                        ff->set_val(dv->realval(0));
                     else {
-                        sDataVec *txs = circuit->runplot()->scale();
-                        ff->val = findrms(dv, txs);
+                        sDataVec *txs = ro_cktptr->runplot()->scale();
+                        ff->set_val(findrms(dv, txs));
                     }
                 }
-                else if (ff->type == Mpw) {
+                else if (ff->type() == Mpw) {
                     if (dv->length() == 1)
-                        ff->val = 0;
+                        ff->set_val(0);
                     else {
-                        sDataVec *txs = circuit->runplot()->scale();
-                        ff->val = findpw(dv, txs);
+                        sDataVec *txs = ro_cktptr->runplot()->scale();
+                        ff->set_val(findpw(dv, txs));
                     }
                 }
-                else if (ff->type == Mrft) {
+                else if (ff->type() == Mrft) {
                     if (dv->length() == 1)
-                        ff->val = 0;
+                        ff->set_val(0);
                     else {
-                        sDataVec *txs = circuit->runplot()->scale();
-                        ff->val = findrft(dv, txs);
+                        sDataVec *txs = ro_cktptr->runplot()->scale();
+                        ff->set_val(findrft(dv, txs));
                     }
                 }
             }
             else {
-                ff->error = true;
-                ff->val = 0;
+                ff->set_error(true);
+                ff->set_val(0);
             }
         }
     }
     else if (ro_start.found_flag()) {
-        for (sMfunc *ff = ro_finds; ff; ff = ff->next, count++) {
-            sDataVec *dv = evaluate(ff->expr);
+        for (sMfunc *ff = ro_finds; ff; ff = ff->next(), count++) {
+            sDataVec *dv = evaluate(ff->expr());
             if (dv) {
-                ff->val = endval(dv, xs, false);
+                ff->set_val(endval(dv, xs, false));
                 if (!dv0)
                     dv0 = dv;
             }
             else {
-                ff->error = true;
-                ff->val = 0.0;
+                ff->set_error(true);
+                ff->set_val(0.0);
             }
         }
     }
@@ -1135,16 +1338,32 @@ sRunopMeas::check(sFtCirc *circuit)
     else
         return (false);
 
-    if (circuit->runplot()) {
+    if (dvp)
+        *dvp = dv0;
+    if (cntp)
+        *cntp = count;
+    return (true);
+}
+
+
+// Add a vector containing the results to the plot.
+//
+bool
+sRunopMeas::update_plot(sDataVec *dv0, int count)
+{
+    if (!ro_cktptr)
+        return (false);
+    if (ro_cktptr->runplot()) {
 
         // create the output vector and scale
-        sPlot *pl = circuit->runplot();
+        sPlot *pl = ro_cktptr->runplot();
+        sDataVec *xs = pl->scale();
         sDataVec *nv = 0;
         if (ro_end.found_flag()) {
             // units test
             int uv = 0, us = 0;
-            for (sMfunc *ff = ro_funcs; ff; ff = ff->next) {
-                if (ff->type == Mpw || ff->type == Mrft)
+            for (sMfunc *ff = ro_funcs; ff; ff = ff->next()) {
+                if (ff->type() == Mpw || ff->type() == Mrft)
                     us++;
                 else
                     uv++;
@@ -1213,12 +1432,12 @@ sRunopMeas::check(sFtCirc *circuit)
             nv->set_allocated(count);
             count = 0;
             if (ro_end.found_flag()) {
-                for (sMfunc *ff = ro_funcs; ff; ff = ff->next, count++)
-                    nv->set_realval(count, ff->val);
+                for (sMfunc *ff = ro_funcs; ff; ff = ff->next(), count++)
+                    nv->set_realval(count, ff->val());
             }
             else {
-                for (sMfunc *ff = ro_finds; ff; ff = ff->next, count++)
-                    nv->set_realval(count, ff->val);
+                for (sMfunc *ff = ro_finds; ff; ff = ff->next(), count++)
+                    nv->set_realval(count, ff->val());
             }
             count = 1;
             if (ro_end.found_flag())
@@ -1257,7 +1476,8 @@ sRunopMeas::print()
     }
     if (ro_start.found_flag() && ro_end.found_flag()) {
         if (ro_print_flag > 1) {
-            if (ro_cktptr && ro_cktptr->runplot() && ro_cktptr->runplot()->scale()) {
+            if (ro_cktptr && ro_cktptr->runplot() &&
+                    ro_cktptr->runplot()->scale()) {
                 const char *zz = ro_cktptr->runplot()->scale()->name();
                 if (zz && *zz) {
                     sprintf(buf, " %s\n", zz);
@@ -1265,40 +1485,41 @@ sRunopMeas::print()
                 }
             }
             sprintf(buf, "    start: %-16g end: %-16g delta: %g\n",
-                ro_start.found(), ro_end.found(), ro_end.found() - ro_start.found());
+                ro_start.found(), ro_end.found(),
+                ro_end.found() - ro_start.found());
             lstr.add(buf);
         }
-        for (sMfunc *ff = ro_funcs; ff; ff = ff->next) {
+        for (sMfunc *ff = ro_funcs; ff; ff = ff->next()) {
             if (ro_print_flag > 1) {
-                sprintf(buf, " %s\n", ff->expr);
+                sprintf(buf, " %s\n", ff->expr());
                 lstr.add(buf);
             }
             const char *str = "???";
-            if (ff->type == Mmin)
-                str = "min";
-            else if (ff->type == Mmax)
-                str = "max";
-            else if (ff->type == Mpp)
-                str = "p-p";
-            else if (ff->type == Mavg)
-                str = "avg";
-            else if (ff->type == Mrms)
-                str = "rms";
-            else if (ff->type == Mpw)
-                str = "pw";
-            else if (ff->type == Mrft)
-                str = "rt";
+            if (ff->type() == Mmin)
+                str = mkw_min;
+            else if (ff->type() == Mmax)
+                str = mkw_max;
+            else if (ff->type() == Mpp)
+                str = mkw_pp;
+            else if (ff->type() == Mavg)
+                str = mkw_avg;
+            else if (ff->type() == Mrms)
+                str = mkw_rms;
+            else if (ff->type() == Mpw)
+                str = mkw_pw;
+            else if (ff->type() == Mrft)
+                str = mkw_rt;
             if (ro_print_flag > 1) {
-                if (ff->error)
+                if (ff->error())
                     sprintf(buf, "    %s: (error occurred)\n", str);
                 else
-                    sprintf(buf, "    %s: %g\n", str, ff->val);
+                    sprintf(buf, "    %s: %g\n", str, ff->val());
             }
             else {
-                if (ff->error)
+                if (ff->error())
                     sprintf(buf, "%s %s: (error occurred)\n", ro_result, str);
                 else
-                    sprintf(buf, "%s %s: %g\n", ro_result, str, ff->val);
+                    sprintf(buf, "%s %s: %g\n", ro_result, str, ff->val());
             }
             lstr.add(buf);
         }
@@ -1315,19 +1536,19 @@ sRunopMeas::print()
             sprintf(buf, "    start: %g\n", ro_start.found());
             lstr.add(buf);
         }
-        for (sMfunc *ff = ro_finds; ff; ff = ff->next) {
+        for (sMfunc *ff = ro_finds; ff; ff = ff->next()) {
             if (ro_print_flag > 1) {
-                if (ff->error)
-                    sprintf(buf, " %s = (error occurred)\n", ff->expr);
+                if (ff->error())
+                    sprintf(buf, " %s = (error occurred)\n", ff->expr());
                 else
-                    sprintf(buf, " %s = %g\n", ff->expr, ff->val);
+                    sprintf(buf, " %s = %g\n", ff->expr(), ff->val());
             }
             else {
-                if (ff->error)
+                if (ff->error())
                     sprintf(buf, "%s %s = (error occurred)\n", ro_result,
-                        ff->expr);
+                        ff->expr());
                 else
-                    sprintf(buf, "%s %s = %g\n", ro_result, ff->expr, ff->val);
+                    sprintf(buf, "%s %s = %g\n", ro_result, ff->expr(), ff->val());
             }
             lstr.add(buf);
         }
@@ -1350,9 +1571,9 @@ sRunopMeas::addMeas(Mfunc mtype, const char *expr)
             ro_finds = m;
         else {
             sMfunc *mm = ro_finds;
-            while (mm->next)
-                mm = mm->next;
-            mm->next = m;
+            while (mm->next())
+                mm = mm->next();
+            mm->set_next(m);
         }
     }
     else {
@@ -1360,9 +1581,9 @@ sRunopMeas::addMeas(Mfunc mtype, const char *expr)
             ro_funcs = m;
         else {
             sMfunc *mm = ro_funcs;
-            while (mm->next)
-                mm = mm->next;
-            mm->next = m;
+            while (mm->next())
+                mm = mm->next();
+            mm->set_next(m);
         }
     }
 }
@@ -1373,9 +1594,9 @@ sRunopMeas::addMeas(Mfunc mtype, const char *expr)
 // Otherwise, the value is after the index point.
 //
 double
-sRunopMeas::endval(sDataVec *dv, sDataVec *xs, bool end)
+sRunopMeas::endval(sDataVec *dv, sDataVec *xs, bool final)
 {
-    if (!end) {
+    if (!final) {
         int i = ro_start.indx();
         if (ro_start.found() != xs->realval(i) && i > 0) {
             double y0 = value(dv, ro_start.indx());
@@ -1553,10 +1774,10 @@ sRunopMeas::findpw(sDataVec *dv, sDataVec *xs)
 double
 sRunopMeas::findrft(sDataVec *dv, sDataVec *xs)
 {
-    double start = endval(dv, xs, false);
-    double end = endval(dv, xs, true);
-    double th1 = start + 0.1*(end - start);
-    double th2 = start + 0.9*(end - start);
+    double vstart = endval(dv, xs, false);
+    double vend = endval(dv, xs, true);
+    double th1 = vstart + 0.1*(vend - vstart);
+    double th2 = vstart + 0.9*(vend - vstart);
 
     int ibeg = -1, iend = -1;
     for (int i = ro_start.indx() + 1; i <= ro_end.indx(); i++) {

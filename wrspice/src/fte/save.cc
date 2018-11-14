@@ -314,8 +314,8 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
             saved->list_expr(m->end_when_expr1());
         if (m->end_when_expr2())
             saved->list_expr(m->end_when_expr2());
-        for (sMfunc *f = m->funcs(); f; f = f->next)
-            saved->list_expr(f->expr);
+        for (sMfunc *f = m->funcs(); f; f = f->next())
+            saved->list_expr(f->expr());
     }
     if (db) {
         for (sRunopMeas *m = db->measures(); m; m = m->next()) {
@@ -333,8 +333,8 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
                 saved->list_expr(m->end_when_expr1());
             if (m->end_when_expr2())
                 saved->list_expr(m->end_when_expr2());
-            for (sMfunc *f = m->funcs(); f; f = f->next)
-                saved->list_expr(f->expr);
+            for (sMfunc *f = m->funcs(); f; f = f->next())
+                saved->list_expr(f->expr());
         }
     }
 
