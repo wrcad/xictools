@@ -458,6 +458,7 @@ struct IFoutput
 
     // runop.cc
     void stopCmd(wordlist*);
+    void measureCmd(wordlist*);
     void statusCmd(char**);
     void deleteCmd(wordlist*);
     void initRunops(sRunDesc*);

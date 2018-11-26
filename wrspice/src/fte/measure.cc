@@ -272,16 +272,177 @@ namespace {
 }
 
 
+namespace {
+    bool is_kw(const char *s)
+    {
+        if (lstring::cieq(s, mkw_measure)) return (true);
+        if (lstring::cieq(s, mkw_trig)) return (true);
+        if (lstring::cieq(s, mkw_targ)) return (true);
+        if (lstring::cieq(s, mkw_at)) return (true);
+        if (lstring::cieq(s, mkw_when)) return (true);
+        if (lstring::cieq(s, mkw_val)) return (true);
+        if (lstring::cieq(s, mkw_td)) return (true);
+        if (lstring::cieq(s, mkw_cross)) return (true);
+        if (lstring::cieq(s, mkw_rise)) return (true);
+        if (lstring::cieq(s, mkw_fall)) return (true);
+        if (lstring::cieq(s, mkw_from)) return (true);
+        if (lstring::cieq(s, mkw_to)) return (true);
+        if (lstring::cieq(s, mkw_min)) return (true);
+        if (lstring::cieq(s, mkw_max)) return (true);
+        if (lstring::cieq(s, mkw_pp)) return (true);
+        if (lstring::cieq(s, mkw_avg)) return (true);
+        if (lstring::cieq(s, mkw_rms)) return (true);
+        if (lstring::cieq(s, mkw_pw)) return (true);
+        if (lstring::cieq(s, mkw_rt)) return (true);
+        if (lstring::cieq(s, mkw_find)) return (true);
+        if (lstring::cieq(s, mkw_param)) return (true);
+        if (lstring::cieq(s, mkw_goal)) return (true);
+        if (lstring::cieq(s, mkw_minval)) return (true);
+        if (lstring::cieq(s, mkw_weight)) return (true);
+        if (lstring::cieq(s, mkw_print)) return (true);
+        if (lstring::cieq(s, mkw_print_terse)) return (true);
+        if (lstring::cieq(s, mkw_stop)) return (true);
+        if (lstring::cieq(s, mkw_call)) return (true);
+        return (false);
+    }
+}
+
+
 // Three forms:
 //  at value|measure_name
-//  when expr1=expr2 [td=delay] [cross=crosses] [rise=rises] [fall=falls]
-//  variable val=value [td=delay] [cross=crosses] [rise=rises] [fall=falls]
+//  [when] expr[val][=]expr [td=delay] [cross=crosses] [rise=rises] [fall=falls]
+//  measure_name [td=delay]
+/*
+ignore at/when, genl form [at/when] token1 [token2] [td/cross/rise/fall]
+if token2, then token1/token2 expressions, td/cross/rise/fall apply
+if !token2, token 1 can be
+   numeric value       time point      no other kwrds apply
+   measure name                        td only
+   expression          boolean true    td only
+*/
 //
 int
-sTpoint::parse(TPform f, const char **pstr, char **errstr)
+sTpoint::parse(const char **pstr, char **errstr)
 {
     const char *s = *pstr;
+    const char *sbk = s;
+    char *tok = gtok(&s, true);
+    if (!tok) {
+        if (errstr && !*errstr)
+            lstring::copy("unexpected empty line passed to parser.");
+        return (E_SYNTAX);
+    }
+    if (lstring::cieq(tok, mkw_at) || lstring::cieq(tok, mkw_when)) {
+        delete [] tok;
+        tok = gtok(&s);
+    }
+    else {
+        delete [] tok;
+        s = sbk;
+        tok = gtok(&s);
+    }
+    if (!tok) {
+        if (errstr && !*errstr)
+            lstring::copy("premature end of line.");
+        return (E_SYNTAX);
+    }
+    t_when_expr1 = tok;
+
+    sbk = s;
+    tok = gtok(&s);
+    if (tok) {
+        if (lstring::cieq(tok, mkw_val)) {
+            delete [] tok;
+            sbk = s;
+            tok = gtok(&s);
+        }
+        if (tok) {
+            if (*tok == '=') {
+                delete [] tok;
+                sbk = s;
+                tok = gtok(&s);
+            }
+            if (tok) {
+                if (is_kw(tok)) {
+                    delete [] tok;
+                    s = sbk;
+                }
+                else
+                    t_when_expr2 = tok;
+            }
+        }
+    }
+    if (t_when_expr2)
+        t_type = TPexp2;
+    else {
+        const char *t = t_when_expr1;
+        double *dd = SPnum.parse(&t, false, true);
+        if (dd && !*t)
+            t_type = TPnum;
+        else
+            t_type = TPexp1;
+    }
+
+    const char *last = s;
+    while ((tok = gtok(&s, true)) != 0) {
+        if (lstring::cieq(tok, mkw_td)) {
+            delete [] tok;
+            bool err;
+            t_delay_given = gval(&s, &err);
+            if (err) {
+                listerr(errstr, mkw_td);
+                break;
+            }
+            last = s;
+            continue;
+        }
+        if (t_type == TPexp2) {
+            if (lstring::cieq(tok, mkw_cross)) {
+                delete [] tok;
+                bool err;
+                t_crosses = (int)gval(&s, &err);
+                if (err) {
+                    listerr(errstr, mkw_cross);
+                    break;
+                }
+                last = s;
+                continue;
+            }
+            if (lstring::cieq(tok, mkw_rise)) {
+                delete [] tok;
+                bool err;
+                t_rises = (int)gval(&s, &err);
+                if (err) {
+                    listerr(errstr, mkw_rise);
+                    return (E_SYNTAX);
+                }
+                last = s;
+                continue;
+            }
+            if (lstring::cieq(tok, mkw_fall)) {
+                delete [] tok;
+                bool err;
+                t_falls = (int)gval(&s, &err);
+                if (err) {
+                    listerr(errstr, mkw_fall);
+                    return (E_SYNTAX);
+                }
+                last = s;
+                continue;
+            }
+        }
+        s = last;
+        break;
+    }
+
+    t_active = true;
+    *pstr = s;
+    return (OK);
+
+#ifdef XXXNOTDEF
+    const char *s = *pstr;
     if (f == TPunknown) {
+        const char *sbk = s;
         char *tok = gtok(&s, true);
         if (!tok) {
             if (errstr && !*errstr)
@@ -298,11 +459,11 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             f = TPwhen;
         }
         else {
-            t_name = tok;
-            f = TPvar;
+            delete [] tok;
+            f = TPwhen;
+            s = sbk;
         }
     }
-
     if (f == TPat) {
         // at number|measure
         char *tok = gtok(&s);
@@ -313,61 +474,61 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
         const char *t = tok;
         bool err;
         double d = gval(&t, &err);
-        if (err)
-            t_meas = tok;
-        else
-            t_at = d;
-        t_at_given = true;
+        if (err) {
+            t_when_expr1 = tok;
+            t_type = TPmref;
+        }
+        else {
+            t_delay_given = d;
+            t_type = TPat;
+            t_active = true;
+            *pstr = s;
+            return (OK);
+        }
     }
-    else if (f == TPwhen) {
+    if (t_type != TPmref) {
         char *tok = gtok(&s);
         if (!tok) {
             listerr(errstr, mkw_when);
             return (E_SYNTAX);
         }
         t_when_expr1 = tok;
+        t_type = TPwhen;
+
+        const char *sbk = s;
         tok = gtok(&s);
-        if (!tok) {
-            listerr(errstr, mkw_when);
-            return (E_SYNTAX);
+        if (tok) {
+            if (lstring::cieq(tok, mkw_val)) {
+                delete [] tok;
+                sbk = s;
+                tok = gtok(&s);
+            }
+            if (tok) {
+                if (*tok == '=') {
+                    delete [] tok;
+                    sbk = s;
+                    tok = gtok(&s);
+                }
+                if (tok) {
+                    if (is_kw(tok)) {
+                        delete [] tok;
+                        s = sbk;
+                    }
+                    else
+                        t_when_expr2 = tok;
+                }
+            }
         }
-        if (*tok == '=') {
-            delete [] tok;
-            tok = gtok(&s);
-        }
-        if (!tok) {
-            listerr(errstr, mkw_when);
-            return (E_SYNTAX);
-        }
-        t_when_expr2 = tok;
-        t_when_given = true;
+        // If no second expression was found, the first must be the name
+        // of another measure.
+        if (!t_when_expr2)
+            t_type = TPmref;
     }
 
-    const char *last = s;
     char *tok;
+    const char *last = s;
     while ((tok = gtok(&s, true)) != 0) {
-        if (lstring::cieq(tok, mkw_val)) {
-            if (f != TPvar) {
-                if (errstr && !*errstr)
-                    lstring::copy("unexpected keyword.");
-                return (E_SYNTAX);
-            }
-            delete [] tok;
-            bool err;
-            t_val = gval(&s, &err);
-            if (err) {
-                listerr(errstr, mkw_val);
-                return (E_SYNTAX);
-            }
-            last = s;
-            continue;
-        }
         if (lstring::cieq(tok, mkw_td)) {
-            if (f != TPvar && f != TPwhen) {
-                if (errstr && !*errstr)
-                    lstring::copy("unexpected keyword.");
-                return (E_SYNTAX);
-            }
             delete [] tok;
             bool err;
             t_delay_given = gval(&s, &err);
@@ -378,73 +539,49 @@ sTpoint::parse(TPform f, const char **pstr, char **errstr)
             last = s;
             continue;
         }
-        if (lstring::cieq(tok, mkw_cross)) {
-            if (f != TPvar && f != TPwhen) {
-                if (errstr && !*errstr)
-                    lstring::copy("unexpected keyword.");
-                return (E_SYNTAX);
+        if (t_type == TPwhen) {
+            if (lstring::cieq(tok, mkw_cross)) {
+                delete [] tok;
+                bool err;
+                t_crosses = (int)gval(&s, &err);
+                if (err) {
+                    listerr(errstr, mkw_cross);
+                    break;
+                }
+                last = s;
+                continue;
             }
-            delete [] tok;
-            bool err;
-            t_crosses = (int)gval(&s, &err);
-            if (err) {
-                listerr(errstr, mkw_cross);
-                break;
+            if (lstring::cieq(tok, mkw_rise)) {
+                delete [] tok;
+                bool err;
+                t_rises = (int)gval(&s, &err);
+                if (err) {
+                    listerr(errstr, mkw_rise);
+                    return (E_SYNTAX);
+                }
+                last = s;
+                continue;
             }
-            last = s;
-            continue;
-        }
-        if (lstring::cieq(tok, mkw_rise)) {
-            if (f != TPvar && f != TPwhen) {
-                if (errstr && !*errstr)
-                    lstring::copy("unexpected keyword.");
-                return (E_SYNTAX);
-            }
-            delete [] tok;
-            bool err;
-            t_rises = (int)gval(&s, &err);
-            if (err) {
-                listerr(errstr, mkw_rise);
-                return (E_SYNTAX);
-            }
-            last = s;
-            continue;
-        }
-        if (lstring::cieq(tok, mkw_fall)) {
-            if (f != TPvar && f != TPwhen) {
-                if (errstr && !*errstr)
-                    lstring::copy("unexpected keyword.");
-                return (E_SYNTAX);
-            }
-            delete [] tok;
-            bool err;
-            t_falls = (int)gval(&s, &err);
-            if (err) {
-                listerr(errstr, mkw_fall);
-                return (E_SYNTAX);
-            }
-            last = s;
-            continue;
-        }
-
-        if (f == TPvar) {
-            // The "val=" is optional.
-            const char *t = tok;
-            double *dd = SPnum.parse(&t, false);
-            delete [] tok;
-            if (dd) {
-                t_val = *dd;
+            if (lstring::cieq(tok, mkw_fall)) {
+                delete [] tok;
+                bool err;
+                t_falls = (int)gval(&s, &err);
+                if (err) {
+                    listerr(errstr, mkw_fall);
+                    return (E_SYNTAX);
+                }
                 last = s;
                 continue;
             }
         }
-
         s = last;
         break;
     }
+
     t_active = true;
     *pstr = s;
     return (OK);
+#endif
 }
 
 
@@ -453,13 +590,33 @@ sTpoint::print(sLstr &lstr)
 {
     if (!t_active)
         return;
-    if (t_at_given) {
+    if (t_type == TPnum) {
         lstr.add_c(' ');
         lstr.add(mkw_at);
         lstr.add_c(' ');
-        lstr.add_g(t_at);
+        lstr.add_g(t_delay_given);
     }
-    else if (t_when_given) {
+    else if (t_type == TPmref) {
+        lstr.add_c(' ');
+        lstr.add(t_when_expr1);
+        if (t_delay_given > 0.0) {
+            lstr.add_c(' ');
+            lstr.add(mkw_td);
+            lstr.add_c('=');
+            lstr.add_g(t_delay_given);
+        }
+    }
+    else if (t_type == TPexp1) {
+        lstr.add_c(' ');
+        lstr.add(t_when_expr1);
+        if (t_delay_given > 0.0) {
+            lstr.add_c(' ');
+            lstr.add(mkw_td);
+            lstr.add_c('=');
+            lstr.add_g(t_delay_given);
+        }
+    }
+    else if (t_type == TPexp2) {
         lstr.add_c(' ');
         lstr.add(mkw_when);
         lstr.add_c(' ');
@@ -491,44 +648,6 @@ sTpoint::print(sLstr &lstr)
             lstr.add_u(t_crosses);
         }
     }
-    else if (t_name) {
-        lstr.add_c(' ');
-        lstr.add(t_name);
-        if (t_delay_given > 0.0) {
-            lstr.add_c(' ');
-            lstr.add(mkw_td);
-            lstr.add_c('=');
-            lstr.add_g(t_delay_given);
-        }
-        if (t_rises) {
-            lstr.add_c(' ');
-            lstr.add(mkw_rise);
-            lstr.add_c('=');
-            lstr.add_u(t_rises);
-        }
-        if (t_falls) {
-            lstr.add_c(' ');
-            lstr.add(mkw_fall);
-            lstr.add_c('=');
-            lstr.add_u(t_falls);
-        }
-        if (t_crosses) {
-            lstr.add_c(' ');
-            lstr.add(mkw_cross);
-            lstr.add_c('=');
-            lstr.add_u(t_crosses);
-        }
-    }
-    else if (t_meas) {
-        lstr.add_c(' ');
-        lstr.add(t_meas);
-        if (t_delay_given > 0.0) {
-            lstr.add_c(' ');
-            lstr.add(mkw_td);
-            lstr.add_c('=');
-            lstr.add_g(t_delay_given);
-        }
-    }
 }
 
 
@@ -537,54 +656,39 @@ sTpoint::setup_dv(sFtCirc *circuit, bool *err)
 {
     if (!t_active)
         return (true);
-    if (!t_dv) {
-        sRunopMeas *measures = circuit->measures();
-        if (t_name) {
-            sRunopMeas *m = sRunopMeas::find(measures, t_name);
-            if (m) {
-                if (!m->measure_done())
-                    return (false);
-                if (m->end().t_found_flag)
-                    t_delay += m->end().t_found;
-                else
-                    t_delay += m->start().t_found;
-                   
-                t_dv = circuit->runplot()->scale();
-            }
-            else {
-                t_dv = circuit->runplot()->find_vec(name());
-                if (!t_dv) {
-                    if (*err)
-                        *err = true;
-                    return (false);
-                }
-                // If none of these are set, assume the first crossing.
-                if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
-                    t_crosses = 1;
-            }
+    if (!t_init) {
+        sRunopMeas *m = 0;
+        if (t_type == TPnum)
+            t_init = true;
+        else if (t_type == TPexp1) {
+            m = sRunopMeas::find(circuit->measures(), t_when_expr1);
+            if (m)
+                t_type = TPmref;
+            else
+                t_init = true;
         }
-        else if (t_at_given) {
-            if (t_meas) {
-                sRunopMeas *m = sRunopMeas::find(measures, t_meas);
-                if (!m) {
-                    if (err)
-                        *err = true;
-                    return (false);
-                }
-                if (!m->measure_done())
-                    return (false);
-                if (m->end().t_found_flag)
-                    t_at = m->end().found();
-                else
-                    t_at = m->start().found();
+
+        if (t_type == TPmref) {
+            if (!m)
+                m = sRunopMeas::find(circuit->measures(), t_when_expr1);
+            if (!m) {
+                if (err)
+                    *err = true;
+                return (false);
             }
-            t_dv = circuit->runplot()->scale();
+            if (!m->measure_done())
+                return (false);
+            if (m->end().t_found_flag)
+                t_delay += m->end().t_found;
+            else
+                t_delay += m->start().t_found;
+            t_init = true;
         }
-        else if (t_when_given) {
+        else if (t_type == TPexp2) {
             // If none of these are set, assume the first crossing.
             if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
                 t_crosses = 1;
-            t_dv = circuit->runplot()->scale();
+            t_init = true;
         }
     }
     return (true);
@@ -668,21 +772,29 @@ namespace {
 bool
 sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
 {
-    if (!t_active || t_found_flag || !t_dv)
+    if (!t_active || t_found_flag)
         return (true);
 
     sDataVec *xs = circuit->runplot()->scale();
-    double fval;
-    if (t_at_given)
-        fval = t_at;
-    else
-        fval = t_delay;
-    int i = chk_trig(fval, xs);
-    if (i < 0)
+    int indx = chk_trig(t_delay, xs);
+    if (indx < 0)
         return (false);
-    if (t_at_given)
-        fval = xs->realval(i);
-    else if (t_when_given) {
+
+    double fval = t_delay;
+    if (t_type == TPnum)
+        fval = xs->realval(indx);
+    else if (t_type == TPmref) {
+    }
+    else if (t_type == TPexp1) {
+        sDataVec *dvl = evaluate(t_when_expr1);
+        if (!dvl) {
+            if (err)
+                *err = true;
+            return (false);
+        }
+//XXX finish me
+    }
+    else if (t_type == TPexp2) {
         sDataVec *dvl = evaluate(t_when_expr1);
         sDataVec *dvr = evaluate(t_when_expr2);
         if (!dvl || !dvr) {
@@ -692,72 +804,40 @@ sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
         }
         int r = 0, f = 0, c = 0;
         bool foundit = false;
-        for ( ; i < dvl->length(); i++) {
-            if (i && value(dvl, i-1) <= value(dvr, i-1) &&
-                    value(dvr, i) < value(dvl, i)) {
+        for ( ; indx < dvl->length(); indx++) {
+            if (indx && value(dvl, indx-1) <= value(dvr, indx-1) &&
+                    value(dvr, indx) < value(dvl, indx)) {
                 r++;
                 c++;
             }
-            else if (i && value(dvl, i-1) > value(dvr, i-1) &&
-                    value(dvr, i) >= value(dvl, i)) {
+            else if (indx && value(dvl, indx-1) > value(dvr, indx-1) &&
+                    value(dvr, indx) >= value(dvl, indx)) {
                 f++;
                 c++;
             }
             else
                 continue;
             if (r >= t_rises && f >= t_falls && c >= t_crosses) {
-                double d = value(dvr, i) - value(dvr, i-1) -
-                    (value(dvl, i) - value(dvl, i-1));
+                double d = value(dvr, indx) - value(dvr, indx-1) -
+                    (value(dvl, indx) - value(dvl, indx-1));
                 if (d != 0.0) {
-                    fval = xs->realval(i-1) +
-                        (xs->realval(i) - xs->realval(i-1))*
-                        (value(dvl, i-1) - value(dvr, i-1))/d;
+                    fval = xs->realval(indx-1) +
+                        (xs->realval(indx) - xs->realval(indx-1))*
+                        (value(dvl, indx-1) - value(dvr, indx-1))/d;
                 }
                 else
-                    fval = xs->realval(i);
+                    fval = xs->realval(indx);
                 foundit = true;
                 if (end)
-                    i--;
+                    indx--;
                 break;
             }
         }
         if (!foundit)
             return (false);
     }
-    else if (t_rises > 0 || t_falls > 0 || t_crosses > 0) {
-        int r = 0, f = 0, c = 0;
-        bool foundit = false;
-        for ( ; i < t_dv->length(); i++) {
-            if (i && t_dv->realval(i-1) <= t_val &&
-                    t_val < t_dv->realval(i)) {
-                r++;
-                c++;
-            }
-            else if (i && t_dv->realval(i-1) > t_val &&
-                    t_val >= t_dv->realval(i)) {
-                f++;
-                c++;
-            }
-            else
-                continue;
-            if (r >= t_rises && f >= t_falls && c >= t_crosses) {
-                fval = xs->realval(i-1) +
-                    (xs->realval(i) - xs->realval(i-1))*
-                    (t_val - t_dv->realval(i-1))/
-                    (t_dv->realval(i) - t_dv->realval(i-1));
-                foundit = true;
-                if (end)
-                    i--;
-                break;
-            }
-        }
-        if (!foundit)
-            return (false);
-    }
-    else if (t_dv != circuit->runplot()->scale())
-        return (false);
 
-    t_indx = i;
+    t_indx = indx;
     t_found = fval;
     t_found_flag = true;
     return (true);
@@ -835,12 +915,11 @@ bool
 sRunopMeas::parse(const char *str, char **errstr)
 {
     bool err = false;
-    const char *s = str;
-    char *tok = gtok(&s);
-    delete [] tok;
     bool gotanal = false;
     bool in_call = false;
     ro_analysis = -1;
+    const char *s = str;
+    char *tok;
     while ((tok = gtok(&s, true)) != 0) {
         if (!gotanal) {
             if (get_anal(tok, &ro_analysis)) {
@@ -858,7 +937,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_trig)) {
             delete [] tok;
-            int ret = ro_start.parse(TPunknown, &s, errstr);
+            int ret = ro_start.parse(&s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
@@ -868,7 +947,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_targ)) {
             delete [] tok;
-            int ret = ro_end.parse(TPunknown, &s, errstr);
+            int ret = ro_end.parse(&s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
@@ -878,7 +957,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_from)) {
             delete [] tok;
-            int ret = ro_start.parse(TPat, &s, errstr);
+            int ret = ro_start.parse(&s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
@@ -888,7 +967,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_to)) {
             delete [] tok;
-            int ret = ro_end.parse(TPat, &s, errstr);
+            int ret = ro_start.parse(&s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
@@ -898,7 +977,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_when)) {
             delete [] tok;
-            int ret = ro_start.parse(TPwhen, &s, errstr);
+            int ret = ro_start.parse(&s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
@@ -908,7 +987,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_at)) {
             delete [] tok;
-            int ret = ro_start.parse(TPat, &s, errstr);
+            int ret = ro_start.parse(&s, errstr);
             if (ret != OK) {
                 err = true;
                 break;
@@ -1039,6 +1118,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         if (in_call) {
             ro_call = tok;
             in_call = false;
+            continue;
         }
 
         if (errstr && !*errstr) {
@@ -1133,6 +1213,8 @@ sRunopMeas::reset(sPlot *pl)
     ro_found_crosses    = 0;
     ro_measure_done     = false;
     ro_measure_error    = false;
+    ro_stop_flag        = false;
+    ro_end_flag         = false;
 }
 
 
@@ -1142,10 +1224,11 @@ sRunopMeas::reset(sPlot *pl)
 // is returned if the measurement was performed.
 //
 bool
-sRunopMeas::check(sFtCirc *circuit)
+sRunopMeas::check(sRunDesc *run)
 {
-    if (!circuit)
+    if (!run || !run->circuit())
         return (true);
+    sFtCirc *circuit = run->circuit();
     if (ro_measure_done || ro_measure_error || ro_measure_skip)
         return (true);
     sRunopMeas *measures = circuit->measures();
@@ -1182,6 +1265,14 @@ sRunopMeas::check(sFtCirc *circuit)
         return (false);
     if (!update_plot(dv, cnt))
         return (false);
+
+    // call function
+    ROret ret = call(run);
+    if (ret == RO_PAUSE)
+        ro_stop_flag = true;
+    if (ret == RO_ENDIT)
+        ro_end_flag = true;
+
     return (true);
 }
 
@@ -1458,6 +1549,50 @@ sRunopMeas::update_plot(sDataVec *dv0, int count)
         delete [] s;
     }
     return (true);
+}
+
+
+// Call the pose-measurement callback, if on is set up.
+//
+ROret
+sRunopMeas::call(sRunDesc *run)
+{
+    // Call the callback, if any.  This can override the stop.
+    if (ro_call_flag) {
+        if (ro_call) {
+            // Call the named script or codeblock.
+            wordlist wl;
+            wl.wl_word = lstring::copy(ro_call);
+            Sp.ExecCmds(&wl);
+            delete [] wl.wl_word;
+            wl.wl_word = 0;
+            if (CP.ReturnVal() == CB_PAUSE)
+                return (RO_PAUSE);
+            if (CP.ReturnVal() == CB_ENDIT)
+                return (RO_ENDIT);
+        }
+        else if (run->check()) {
+            // Run the "controls" bound codeblock.  We stop
+            // only if the checkFAIL vector is not
+            // set.
+//XXX don't use checkFAIL here
+
+            run->check()->evaluate();
+            if (!run->check()->failed())
+                return (RO_OK);
+        }
+        else {
+            sFtCirc *circ = run->circuit();
+            if (circ) {
+                circ->controlBlk().exec(true);
+                if (CP.ReturnVal() == CB_PAUSE)
+                    return (RO_PAUSE);
+                if (CP.ReturnVal() == CB_ENDIT)
+                    return (RO_ENDIT);
+            }
+        }
+    }
+    return (RO_OK);
 }
 
 

@@ -2058,7 +2058,9 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 lstring::cimatch(MEASURE_KW, dd->line())) {
 
             char *er = 0;
-            sRunopMeas *m = new sRunopMeas(dd->line(), &er);
+            const char *line = dd->line();
+            lstring::advtok(&line);
+            sRunopMeas *m = new sRunopMeas(line, &er);
             if (er) {
                 dd->set_error(er);
                 delete [] er;

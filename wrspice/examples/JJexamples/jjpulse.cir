@@ -17,6 +17,9 @@
 *.options Lval=2.6p Rnval=3 Cval=160f Ibval=180
 .options Lval=2.6p Rnval=4.9 Cval=68f Ibval=160
 
+* Needed for best resolution
+.options steptype=nousertp
+
 .control
 
 # Generate a table of pulse width and amplitude

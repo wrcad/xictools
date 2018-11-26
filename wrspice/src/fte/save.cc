@@ -300,10 +300,6 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
     }
 
     for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
-        if (m->start_name())
-            saved->list_expr(m->start_name());
-        if (m->end_name())
-            saved->list_expr(m->end_name());
         if (m->expr2())
             saved->list_expr(m->expr2());
         if (m->start_when_expr1())
@@ -319,10 +315,6 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
     }
     if (db) {
         for (sRunopMeas *m = db->measures(); m; m = m->next()) {
-            if (m->start_name())
-                saved->list_expr(m->start_name());
-            if (m->end_name())
-                saved->list_expr(m->end_name());
             if (m->expr2())
                 saved->list_expr(m->expr2());
             if (m->start_when_expr1())

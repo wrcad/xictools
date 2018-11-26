@@ -184,6 +184,7 @@ namespace cmdnames {
     const char *cmd_load        = "load";
     const char *cmd_loop        = "loop";       // alias for "sweep"
     const char *cmd_mapkey      = "mapkey";
+    const char *cmd_measure     = "measure";
     const char *cmd_mmon        = "mmon";
     const char *cmd_mplot       = "mplot";
     const char *cmd_noise       = "noise";
@@ -422,6 +423,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_mapkey, com_mapkey, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       ": manipulate keyboard mapping." ) ,
+    sCommand( cmd_measure, com_measure, false, true, false,
+      Bstop, Bstop, Bstop, Bstop, E_DEFHMASK, 0, LOTS, 0,
+      "[measure args] : Set up a measurement." ) ,
     sCommand( cmd_mmon, com_mmon, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 2, 0,
       ": memory monitor control." ) ,

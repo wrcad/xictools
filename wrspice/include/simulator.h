@@ -178,7 +178,8 @@ struct sRunopDb
 
     void clear();
 
-    bool isset() { return (rd_iplot || rd_trace || rd_save || rd_stop); }
+    bool isset()
+        { return (rd_iplot || rd_trace || rd_save || rd_stop || rd_meas); }
 
     sRunopSave *saves()             { return (rd_save); }
     void set_saves(sRunopSave *d)   { rd_save = d; }
