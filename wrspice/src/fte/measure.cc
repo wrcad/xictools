@@ -51,10 +51,11 @@
 #include "spnumber/spnumber.h"
 #include "miscutil/lstring.h"
 
-
 //
 // Functions for the measurement post-processor.
 //
+
+//#define M_DEBUG
 
 namespace {
 
@@ -308,18 +309,32 @@ namespace {
 }
 
 
-// Three forms:
-//  at value|measure_name
-//  [when] expr[val][=]expr [td=delay] [cross=crosses] [rise=rises] [fall=falls]
-//  measure_name [td=delay]
-/*
-ignore at/when, genl form [at/when] token1 [token2] [td/cross/rise/fall]
-if token2, then token1/token2 expressions, td/cross/rise/fall apply
-if !token2, token 1 can be
-   numeric value       time point      no other kwrds apply
-   measure name                        td only
-   expression          boolean true    td only
-*/
+// The general form of the definition string is
+//   [when/at] expr[val][=][expr] [td=delay] [cross=crosses] [rise=rises]
+//     [fall=falls]
+// The initial keyword (which may be missing if unambiguous) is one of
+// "at" or "when".  These are equivalent.  One or two expressions follow,
+// with optional '=' or 'val=' ahead of the second expression.  the second
+// expression can be missing.
+//
+// TPexp2:  expr1 and expr2 are both given, then the point is when
+//   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
+//   falls, crosses are integers.  The delay is a numeric value, or the
+//   name of another measure.  The trigger is the matching
+//   rise/fall/cross found after the delay.
+//
+// If expr2 is not given, then expr1 is one of:
+//
+// TPnum:  (numeric value) Gives the point directly, no other keywords
+//   apply.
+//
+// TPmref:  (measure name) Point where given measure completes,
+//   numeric td applies, triggers at the referenced measure time plus
+//   delay.
+//
+// TPexpr1:  (expression) Point where expression is boolen true, td
+//   applies, can be numeric or measure name, trigers when expr is true
+//   after delay.
 //
 int
 sTpoint::parse(const char **pstr, char **errstr)
@@ -387,12 +402,27 @@ sTpoint::parse(const char **pstr, char **errstr)
     while ((tok = gtok(&s, true)) != 0) {
         if (lstring::cieq(tok, mkw_td)) {
             delete [] tok;
-            bool err;
-            t_delay_given = gval(&s, &err);
-            if (err) {
+            tok = gtok(&s);
+            if (!tok) {
                 listerr(errstr, mkw_td);
                 break;
             }
+            if (*tok == '=') {
+                delete [] tok;
+                tok = gtok(&s);
+            }
+            if (!tok) {
+                listerr(errstr, mkw_td);
+                break;
+            }
+            const char *t = tok;
+            double *dd = SPnum.parse(&t, false, true);
+            if (dd && !*t) {
+                t_delay_given = *dd;
+                delete [] tok;
+            }
+            else
+                t_mname = tok;
             last = s;
             continue;
         }
@@ -437,151 +467,12 @@ sTpoint::parse(const char **pstr, char **errstr)
 
     t_active = true;
     *pstr = s;
-    return (OK);
-
-#ifdef XXXNOTDEF
-    const char *s = *pstr;
-    if (f == TPunknown) {
-        const char *sbk = s;
-        char *tok = gtok(&s, true);
-        if (!tok) {
-            if (errstr && !*errstr)
-                lstring::copy("unexpected empty line passed to parser.");
-            return (E_SYNTAX);
-        }
-
-        if (lstring::cieq(tok, mkw_at)) {
-            delete [] tok;
-            f = TPat;
-        }
-        else if (lstring::cieq(tok, mkw_when)) {
-            delete [] tok;
-            f = TPwhen;
-        }
-        else {
-            delete [] tok;
-            f = TPwhen;
-            s = sbk;
-        }
-    }
-    if (f == TPat) {
-        // at number|measure
-        char *tok = gtok(&s);
-        if (!tok) {
-            listerr(errstr, mkw_at);
-            return (E_SYNTAX);
-        }
-        const char *t = tok;
-        bool err;
-        double d = gval(&t, &err);
-        if (err) {
-            t_when_expr1 = tok;
-            t_type = TPmref;
-        }
-        else {
-            t_delay_given = d;
-            t_type = TPat;
-            t_active = true;
-            *pstr = s;
-            return (OK);
-        }
-    }
-    if (t_type != TPmref) {
-        char *tok = gtok(&s);
-        if (!tok) {
-            listerr(errstr, mkw_when);
-            return (E_SYNTAX);
-        }
-        t_when_expr1 = tok;
-        t_type = TPwhen;
-
-        const char *sbk = s;
-        tok = gtok(&s);
-        if (tok) {
-            if (lstring::cieq(tok, mkw_val)) {
-                delete [] tok;
-                sbk = s;
-                tok = gtok(&s);
-            }
-            if (tok) {
-                if (*tok == '=') {
-                    delete [] tok;
-                    sbk = s;
-                    tok = gtok(&s);
-                }
-                if (tok) {
-                    if (is_kw(tok)) {
-                        delete [] tok;
-                        s = sbk;
-                    }
-                    else
-                        t_when_expr2 = tok;
-                }
-            }
-        }
-        // If no second expression was found, the first must be the name
-        // of another measure.
-        if (!t_when_expr2)
-            t_type = TPmref;
-    }
-
-    char *tok;
-    const char *last = s;
-    while ((tok = gtok(&s, true)) != 0) {
-        if (lstring::cieq(tok, mkw_td)) {
-            delete [] tok;
-            bool err;
-            t_delay_given = gval(&s, &err);
-            if (err) {
-                listerr(errstr, mkw_td);
-                break;
-            }
-            last = s;
-            continue;
-        }
-        if (t_type == TPwhen) {
-            if (lstring::cieq(tok, mkw_cross)) {
-                delete [] tok;
-                bool err;
-                t_crosses = (int)gval(&s, &err);
-                if (err) {
-                    listerr(errstr, mkw_cross);
-                    break;
-                }
-                last = s;
-                continue;
-            }
-            if (lstring::cieq(tok, mkw_rise)) {
-                delete [] tok;
-                bool err;
-                t_rises = (int)gval(&s, &err);
-                if (err) {
-                    listerr(errstr, mkw_rise);
-                    return (E_SYNTAX);
-                }
-                last = s;
-                continue;
-            }
-            if (lstring::cieq(tok, mkw_fall)) {
-                delete [] tok;
-                bool err;
-                t_falls = (int)gval(&s, &err);
-                if (err) {
-                    listerr(errstr, mkw_fall);
-                    return (E_SYNTAX);
-                }
-                last = s;
-                continue;
-            }
-        }
-        s = last;
-        break;
-    }
-
-    t_active = true;
-    *pstr = s;
-    return (OK);
+#ifdef M_DEBUG
+    sLstr lstr;
+    print(lstr);
+    printf("sTpoint:  %s\n", lstr.string());
 #endif
+    return (OK);
 }
 
 
@@ -609,11 +500,14 @@ sTpoint::print(sLstr &lstr)
     else if (t_type == TPexp1) {
         lstr.add_c(' ');
         lstr.add(t_when_expr1);
-        if (t_delay_given > 0.0) {
+        if (t_delay_given > 0.0 || t_mname) {
             lstr.add_c(' ');
             lstr.add(mkw_td);
             lstr.add_c('=');
-            lstr.add_g(t_delay_given);
+            if (t_mname)
+                lstr.add(t_mname);
+            else
+                lstr.add_g(t_delay_given);
         }
     }
     else if (t_type == TPexp2) {
@@ -623,11 +517,14 @@ sTpoint::print(sLstr &lstr)
         lstr.add(t_when_expr1);
         lstr.add_c('=');
         lstr.add(t_when_expr2);
-        if (t_delay_given > 0.0) {
+        if (t_delay_given > 0.0 || t_mname) {
             lstr.add_c(' ');
             lstr.add(mkw_td);
             lstr.add_c('=');
-            lstr.add_g(t_delay_given);
+            if (t_mname)
+                lstr.add(t_mname);
+            else
+                lstr.add_g(t_delay_given);
         }
         if (t_rises) {
             lstr.add_c(' ');
@@ -652,22 +549,30 @@ sTpoint::print(sLstr &lstr)
 
 
 bool
-sTpoint::setup_dv(sFtCirc *circuit, bool *err)
+sTpoint::setup_delay(sFtCirc *circuit, bool *err)
 {
     if (!t_active)
         return (true);
     if (!t_init) {
+        t_delay = t_delay_given;
         sRunopMeas *m = 0;
-        if (t_type == TPnum)
+        if (t_type == TPnum) {
+#ifdef M_DEBUG
+            printf("setup_delay:  numeric\n");
+#endif
             t_init = true;
-        else if (t_type == TPexp1) {
-            m = sRunopMeas::find(circuit->measures(), t_when_expr1);
-            if (m)
-                t_type = TPmref;
-            else
-                t_init = true;
+            return (true);
         }
-
+        if (t_type == TPexp1) {
+            m = sRunopMeas::find(circuit->measures(), t_when_expr1);
+            if (m) {
+                t_type = TPmref;
+#ifdef M_DEBUG
+                printf("setup_delay: found expr1 is measure %s\n",
+                    t_when_expr1);
+#endif
+            }
+        }
         if (t_type == TPmref) {
             if (!m)
                 m = sRunopMeas::find(circuit->measures(), t_when_expr1);
@@ -683,11 +588,40 @@ sTpoint::setup_dv(sFtCirc *circuit, bool *err)
             else
                 t_delay += m->start().t_found;
             t_init = true;
+#ifdef M_DEBUG
+            printf("setup_delay:  expr measure reference %s, delay %g\n",
+                t_when_expr1, t_delay);
+#endif
+            return (true);
         }
-        else if (t_type == TPexp2) {
-            // If none of these are set, assume the first crossing.
-            if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
-                t_crosses = 1;
+        if (t_type == TPexp1 || t_type == TPexp2) {
+            if (t_mname) {
+                m = sRunopMeas::find(circuit->measures(), t_mname);
+                if (!m) {
+                    if (err)
+                        *err = true;
+                    return (false);
+                }
+                if (!m->measure_done())
+                    return (false);
+                if (m->end().t_found_flag)
+                    t_delay += m->end().t_found;
+                else
+                    t_delay += m->start().t_found;
+#ifdef M_DEBUG
+                printf("setup_delay:  td measure reference %s, delay %g\n",
+                    t_mname, t_delay);
+#endif
+            }
+            if (t_type == TPexp2) {
+                // If none of these are set, assume the first crossing.
+                if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
+                    t_crosses = 1;
+            }
+#ifdef M_DEBUG
+            printf("setup_delay:  %s\n", t_type == TPexp1 ?
+                "expr1" : "expr2");
+#endif
             t_init = true;
         }
     }
@@ -1248,9 +1182,9 @@ sRunopMeas::check(sRunDesc *run)
         // All non-param measurements done.
     }
     else {
-        if (!ro_start.setup_dv(circuit, &ro_measure_error))
+        if (!ro_start.setup_delay(circuit, &ro_measure_error))
             return (false);
-        if (!ro_end.setup_dv(circuit, &ro_measure_error))
+        if (!ro_end.setup_delay(circuit, &ro_measure_error))
             return (false);
         if (!ro_start.check_found(circuit, &ro_measure_error, false))
             return (false);

@@ -200,12 +200,25 @@ private:
 // "at" or "when".  These are equivalent.  One or two expressions follow,
 // with optional '=' or 'val=' ahead of the second expression.  the second
 // expression can be missing.
-// If expr1 and expr2 are both given, then the point is when expr==expr2,
-// and the td,cross,rise,fall keywords apply.
+//
+// TPexp2:  expr1 and expr2 are both given, then the point is when
+//   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
+//   falls, crosses are integers.  The delay is a numeric value, or the
+//   name of another measure.  The trigger is the matching
+//   rise/fall/cross found after the delay.
+//
 // If expr2 is not given, then expr1 is one of:
-//   numeric value      gives the point directly, no other keywords apply.
-//   measure name       point where given measure completes, td applies.
-//   expression         point where expression is boolen true, td applies.
+//
+// TPnum:  (numeric value) Gives the point directly, no other keywords
+//   apply.
+//
+// TPmref:  (measure name) Point where given measure completes,
+//   numeric td applies, triggers at the referenced measure time plus
+//   delay.
+//
+// TPexpr1:  (expression) Point where expression is boolen true, td
+//   applies, can be numeric or measure name, trigers when expr is true
+//   after delay.
 //
 enum TPform
 {
@@ -222,6 +235,7 @@ struct sTpoint
         {
             t_when_expr1    = 0;
             t_when_expr2    = 0;
+            t_mname         = 0;
             t_found         = 0.0;
             t_delay_given   = 0.0;
             t_delay         = 0.0;
@@ -239,6 +253,7 @@ struct sTpoint
         {
             delete [] t_when_expr1;
             delete [] t_when_expr2;
+            delete [] t_mname;
         }
 
     const char *when_expr1()    { return (t_when_expr1); }
@@ -259,12 +274,13 @@ struct sTpoint
 
     int parse(const char**, char**);
     void print(sLstr&);
-    bool setup_dv(sFtCirc*, bool*);
+    bool setup_delay(sFtCirc*, bool*);
     bool check_found(sFtCirc*, bool*, bool);
 
 private:
-    char *t_when_expr1;     // LHS expression for 'when lhs = rhs'.
-    char *t_when_expr2;     // RHS expression for 'when lhs = rhs'.
+    char *t_when_expr1;     // First expression text.
+    char *t_when_expr2;     // Second expression text.
+    char *t_mname;          // Measure reference name.
     double t_found;         // The measure point, once found.
     double t_delay_given;   // The 'td' value.
     double t_delay;         // Actual measurement point.
