@@ -16,8 +16,6 @@
 *.noexec
 *.options Lval=2.6p Rnval=3 Cval=160f Ibval=180
 .options Lval=2.6p Rnval=4.9 Cval=68f Ibval=160
-
-* Needed for best resolution
 .options steptype=nousertp
 
 .control
@@ -123,12 +121,12 @@ x5 6 10 jtl
 vx 20 0 1.5*v(10)
 rx 20 1 1
 ry 10 0 1
-.tran .1p 300p
+.tran .1p 350p
 * use v(5) to measure pulse width
 .plot tran v(1) v(5)
 
-.measure tran t1 trig v(5) val=.3m rise=3
-.measure tran t2 trig v(5) val=.3m rise=4
+.measure tran t1 trig v(5) val=.5m rise=3
+.measure tran t2 trig v(5) val=.5m rise=4
 .measure tran pw trig t1 td=20p targ t2 td=20p pw v(5) max v(5)
 
 * Below,

@@ -710,13 +710,13 @@ sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
         return (true);
 
     sDataVec *xs = circuit->runplot()->scale();
-    int indx = chk_trig(t_delay, xs);
-    if (indx < 0)
+    int ix = chk_trig(t_delay, xs);
+    if (ix < 0)
         return (false);
 
     double fval = t_delay;
     if (t_type == TPnum)
-        fval = xs->realval(indx);
+        fval = xs->realval(ix);
     else if (t_type == TPmref) {
     }
     else if (t_type == TPexp1) {
@@ -738,32 +738,32 @@ sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
         }
         int r = 0, f = 0, c = 0;
         bool foundit = false;
-        for ( ; indx < dvl->length(); indx++) {
-            if (indx && value(dvl, indx-1) <= value(dvr, indx-1) &&
-                    value(dvr, indx) < value(dvl, indx)) {
+        for ( ; ix < dvl->length(); ix++) {
+            if (ix && value(dvl, ix-1) <= value(dvr, ix-1) &&
+                    value(dvr, ix) < value(dvl, ix)) {
                 r++;
                 c++;
             }
-            else if (indx && value(dvl, indx-1) > value(dvr, indx-1) &&
-                    value(dvr, indx) >= value(dvl, indx)) {
+            else if (ix && value(dvl, ix-1) > value(dvr, ix-1) &&
+                    value(dvr, ix) >= value(dvl, ix)) {
                 f++;
                 c++;
             }
             else
                 continue;
             if (r >= t_rises && f >= t_falls && c >= t_crosses) {
-                double d = value(dvr, indx) - value(dvr, indx-1) -
-                    (value(dvl, indx) - value(dvl, indx-1));
+                double d = value(dvr, ix) - value(dvr, ix-1) -
+                    (value(dvl, ix) - value(dvl, ix-1));
                 if (d != 0.0) {
-                    fval = xs->realval(indx-1) +
-                        (xs->realval(indx) - xs->realval(indx-1))*
-                        (value(dvl, indx-1) - value(dvr, indx-1))/d;
+                    fval = xs->realval(ix-1) +
+                        (xs->realval(ix) - xs->realval(ix-1))*
+                        (value(dvl, ix-1) - value(dvr, ix-1))/d;
                 }
                 else
-                    fval = xs->realval(indx);
+                    fval = xs->realval(ix);
                 foundit = true;
                 if (end)
-                    indx--;
+                    ix--;
                 break;
             }
         }
@@ -771,7 +771,7 @@ sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
             return (false);
     }
 
-    t_indx = indx;
+    t_indx = ix;
     t_found = fval;
     t_found_flag = true;
     return (true);
