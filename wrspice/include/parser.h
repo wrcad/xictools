@@ -225,7 +225,7 @@ struct pnode
             pn_localval = local;
         }
 
-    // parse.cc
+    // parser.cc
     ~pnode();
 
     bool checkvalid()               const;

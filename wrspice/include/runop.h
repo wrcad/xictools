@@ -229,12 +229,16 @@ enum TPform
     TPexp2          // two expressions given
 };
 
+struct pnode;
+
 struct sTpoint
 {
     sTpoint()
         {
             t_when_expr1    = 0;
             t_when_expr2    = 0;
+            t_tree1         = 0;
+            t_tree2         = 0;
             t_mname         = 0;
             t_found         = 0.0;
             t_delay_given   = 0.0;
@@ -249,12 +253,7 @@ struct sTpoint
             t_active        = false;
         }
 
-    ~sTpoint()
-        {
-            delete [] t_when_expr1;
-            delete [] t_when_expr2;
-            delete [] t_mname;
-        }
+    ~sTpoint();
 
     const char *when_expr1()    { return (t_when_expr1); }
     const char *when_expr2()    { return (t_when_expr2); }
@@ -276,10 +275,14 @@ struct sTpoint
     void print(sLstr&);
     bool setup_delay(sFtCirc*, bool*);
     bool check_found(sFtCirc*, bool*, bool);
+    sDataVec *eval1();
+    sDataVec *eval2();
 
 private:
     char *t_when_expr1;     // First expression text.
     char *t_when_expr2;     // Second expression text.
+    pnode *t_tree1;
+    pnode *t_tree2;
     char *t_mname;          // Measure reference name.
     double t_found;         // The measure point, once found.
     double t_delay_given;   // The 'td' value.

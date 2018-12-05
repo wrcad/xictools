@@ -309,6 +309,16 @@ namespace {
 }
 
 
+sTpoint::~sTpoint()
+{
+    delete [] t_when_expr1;
+    delete [] t_when_expr2;
+    delete t_tree1;
+    delete t_tree2;
+    delete [] t_mname;
+}
+
+
 // The general form of the definition string is
 //   [when/at] expr[val][=][expr] [td=delay] [cross=crosses] [rise=rises]
 //     [fall=falls]
@@ -720,7 +730,7 @@ sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
     else if (t_type == TPmref) {
     }
     else if (t_type == TPexp1) {
-        sDataVec *dvl = evaluate(t_when_expr1);
+        sDataVec *dvl = eval1();
         if (!dvl) {
             if (err)
                 *err = true;
@@ -729,8 +739,8 @@ sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
 //XXX finish me
     }
     else if (t_type == TPexp2) {
-        sDataVec *dvl = evaluate(t_when_expr1);
-        sDataVec *dvr = evaluate(t_when_expr2);
+        sDataVec *dvl = eval1();
+        sDataVec *dvr = eval2();
         if (!dvl || !dvr) {
             if (err)
                 *err = true;
@@ -775,6 +785,40 @@ sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
     t_found = fval;
     t_found_flag = true;
     return (true);
+}
+
+
+sDataVec *
+sTpoint::eval1()
+{
+    if (!t_when_expr1)
+        return (0);
+    if (!t_tree1) {
+        const char *s = t_when_expr1;
+        t_tree1 = Sp.GetPnode(&s, true);
+        if (t_tree1)
+            t_tree1->copyvecs();
+    }
+    if (t_tree1)
+        return (Sp.Evaluate(t_tree1));
+    return (0);
+}
+
+
+sDataVec *
+sTpoint::eval2()
+{
+    if (!t_when_expr2)
+        return (0);
+    if (!t_tree2) {
+        const char *s = t_when_expr2;
+        t_tree2 = Sp.GetPnode(&s, true);
+        if (t_tree2)
+            t_tree2->copyvecs();
+    }
+    if (t_tree2)
+        return (Sp.Evaluate(t_tree2));
+    return (0);
 }
 // End of sTpoint functions.
 
