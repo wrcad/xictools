@@ -231,3 +231,82 @@ use expression parse in sTpoint parser, save as parse tree
 use sTpoint in stop command
 .stop, .iplot syntax elements
 integrate these as margin/MC analysis tests
+
+// .measure line or measure command
+// Note: below we assume time is the scale, but it can be anything.
+measure: anal name [trig|from] tpoint [find expr] [post]
+measure: anal name [trig|from] tpoint targ|to tpoint [measurements] [post]
+
+anal:
+  Name of analysis, e.g. tran.
+name
+  Name of measurement, must be unique in circuit.  Vector of this name is
+  created upon measurement, with scale name_scale giving the time
+  values (1 or 2 points) of the measurement.
+
+// .stop line or stop command
+stop tpoint [call funcname]
+  Analysis is stopped at tpoint, however this can be overridden if the
+  called function returns a particular value. 
+funcname:
+  Known returns are:
+  1:    NOSTOP,  don't stop.
+  2:    TERMINATE,  error occurred halt all analysis.
+  otherwise: OK, proceed as if function was not called.
+
+// Time point element.
+// Specifies a time point, which is the true first conjunction of all terms.
+tpoint: [before time | at time | after time][...] [when wexpr][...]
+
+before:
+  True before the time.
+at:
+  True at the time point closest to the time.
+after:
+  True at time points after the time.
+
+wexpr: logical_expression
+  True when the logical expression evaluates as nonzero integer.
+
+// Two expression time specification.
+time: xexpr1 [val[=]] xexpr2 [td=val][rise=num][fall=num][cross=num]
+xexpr1: expression
+  The expression returns a real or integer, true at expression
+  crossings set by rise/fall/crossing values (default is first
+  crossing if all are not given or zero).  The td value indicates when
+  the crossing test begins.
+
+// One expression time specification.
+time: expr1 [td=val]
+expr1: measure_name
+  Measure_name: measure time of another measure.
+expr1: const_expr
+  Time value given by constant expression.
+expr1: logical_expression
+  Time when logical_expression is first true (nonzero as integer).
+td
+  Actual time is delayed by val.
+
+measurements: avg, pw, etc.
+  Zero or more internal measurement functions.
+
+// Post-measurement processing.
+post: [call funcname] [print] [print_terse] [stop [when wexpr]]
+call [funcname]:
+  Call the script function or codeblock named, funcname is name of
+  function or codeblock, or "exec" or "control" to indicate bound
+  codeblock.
+funcname:
+  Known returns are:
+  1:    STOP,  stop current analysis.
+  2:    TERMINATE,  error occurred halt all analysis.
+  otherwise: OK, proceed as if function was not called.
+print or print_terse:
+  Print measurement result on stdio when done.
+stop [when wexpr]:
+  If no when clause, stop analysis when all measurements are complete,
+  can appear in any measure line, redundant is ok.
+  If an expression is given, stop only if the expression is true
+  (nonzero as integer) when the measurement was done.  If true, stop
+  immediately, don't wait for other measures.
+
