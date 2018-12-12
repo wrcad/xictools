@@ -235,6 +235,8 @@ struct sTpoint
 {
     sTpoint()
         {
+            t_kw1           = 0;
+            t_kw2           = 0;
             t_when_expr1    = 0;
             t_when_expr2    = 0;
             t_tree1         = 0;
@@ -271,7 +273,7 @@ struct sTpoint
             t_init = false;
         }
 
-    int parse(const char**, char**);
+    int parse(const char**, char**, const char*);
     void print(sLstr&);
     bool setup_delay(sFtCirc*, bool*);
     bool check_found(sFtCirc*, bool*, bool);
@@ -279,6 +281,8 @@ struct sTpoint
     sDataVec *eval2();
 
 private:
+    const char *t_kw1;      // Optional first keyword saved.
+    const char *t_kw2;      // Optional second keyword saved.
     char *t_when_expr1;     // First expression text.
     char *t_when_expr2;     // Second expression text.
     pnode *t_tree1;
@@ -378,6 +382,7 @@ struct sRunopStop : public sRunop
     void print(char**);         // Print, in string if given, the runop msg.
     void destroy();             // Destroy this runop and alsos.
 
+    void parse(char*);              // Parse specification line.
     bool istrue();                  // Evaluate true if condition met.
     ROret should_stop(sRunDesc*);   // Return if stop condition met.
     ROret call(sRunDesc*);          // Call function wrapper.

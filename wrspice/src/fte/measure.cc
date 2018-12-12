@@ -347,63 +347,124 @@ sTpoint::~sTpoint()
 //   after delay.
 //
 int
-sTpoint::parse(const char **pstr, char **errstr)
+sTpoint::parse(const char **pstr, char **errstr, const char *kw)
 {
+    t_kw1 = kw;
     const char *s = *pstr;
     const char *sbk = s;
-    char *tok = gtok(&s, true);
+    char *tok = gtok(&s, false);
+    if (tok && *tok == '=') {
+        delete [] tok;
+        sbk = s;
+        tok = gtok(&s);
+    }
     if (!tok) {
         if (errstr && !*errstr)
             lstring::copy("unexpected empty line passed to parser.");
         return (E_SYNTAX);
     }
-    if (lstring::cieq(tok, mkw_at) || lstring::cieq(tok, mkw_when)) {
+    if (lstring::cieq(tok, mkw_at)) {
+        t_kw2 = mkw_at;
         delete [] tok;
-        tok = gtok(&s);
+    }
+    else if (lstring::cieq(tok, mkw_when)) {
+        t_kw2 = mkw_when;
+        delete [] tok;
     }
     else {
         delete [] tok;
         s = sbk;
-        tok = gtok(&s);
     }
-    if (!tok) {
+
+    // parse first expression
+    while (isspace(*s))
+        s++;
+    sbk = s;
+    pnode *pn = Sp.GetPnode(&s, false);
+    if (!pn) {
         if (errstr && !*errstr)
-            lstring::copy("premature end of line.");
+            lstring::copy("no first expression found.");
         return (E_SYNTAX);
     }
+    const char *st = s-1;
+    while (st >= sbk && isspace(*st))
+        st--;
+    st++;
+    int len = st - sbk;
+    tok = new char[len + 1];
+    strncpy(tok, sbk, len);
+    tok[len] = 0;
     t_when_expr1 = tok;
+    t_tree1 = pn;
+    t_tree1->copyvecs();
+#ifdef M_DEBUG
+    printf("expr1 |%s| |%s|\n", tok, t_tree1->get_string(false));
+#endif
 
+
+    // strip any "val="
     sbk = s;
     tok = gtok(&s);
+    if (tok && lstring::cieq(tok, mkw_val)) {
+        delete [] tok;
+        sbk = s;
+        tok = gtok(&s);
+    }
+    if (tok && *tok == '=') {
+        delete [] tok;
+        sbk = s;
+        tok = gtok(&s);
+    }
     if (tok) {
-        if (lstring::cieq(tok, mkw_val)) {
+        if (is_kw(tok)) {
             delete [] tok;
-            sbk = s;
-            tok = gtok(&s);
+            s = sbk;
         }
-        if (tok) {
-            if (*tok == '=') {
-                delete [] tok;
-                sbk = s;
-                tok = gtok(&s);
-            }
-            if (tok) {
-                if (is_kw(tok)) {
-                    delete [] tok;
-                    s = sbk;
-                }
-                else
-                    t_when_expr2 = tok;
+        else {
+            delete [] tok;
+
+            // parse second expression
+            while (isspace(*s))
+                s++;
+            s = sbk;
+            pn = Sp.GetPnode(&s, false);
+            if (pn) {
+                st = s-1;
+                while (st >= sbk && isspace(*st))
+                    st--;
+                st++;
+                len = st - sbk;
+                tok = new char[len + 1];
+                strncpy(tok, sbk, len);
+                tok[len] = 0;
+                t_when_expr2 = tok;
+                t_tree2 = pn;
+                t_tree2->copyvecs();
+                t_type = TPexp2;
+#ifdef M_DEBUG
+                printf("expr2 |%s| |%s|\n", tok, t_tree2->get_string(false));
+#endif
             }
         }
     }
-    if (t_when_expr2)
-        t_type = TPexp2;
-    else {
-        const char *t = t_when_expr1;
-        double *dd = SPnum.parse(&t, false, true);
-        if (dd && !*t)
+    if (t_tree1 && !t_tree2) {
+        if (t_tree1->is_const()) {
+            // numeric or constant expression
             t_type = TPnum;
+            sDataVec *dv = eval1();
+            if (dv)
+                t_delay_given = dv->realval(0);
+        }
+        else if (t_tree1->optype() == TT_EQ) {
+            pn = t_tree1;
+            pn->split(&t_tree1, &t_tree2);
+            delete [] t_when_expr1;
+            delete [] t_when_expr2;
+            t_when_expr1 = t_tree1->get_string(false);
+            t_when_expr2 = t_tree2->get_string(false);
+            t_type = TPexp2;
+            delete pn;
+        }
         else
             t_type = TPexp1;
     }
@@ -491,14 +552,19 @@ sTpoint::print(sLstr &lstr)
 {
     if (!t_active)
         return;
+    lstr.add_c(' ');
+    if (t_kw1) {
+        lstr.add(t_kw1);
+        lstr.add_c(' ');
+    }
+    if (t_kw2) {
+        lstr.add(t_kw2);
+        lstr.add_c(' ');
+    }
     if (t_type == TPnum) {
-        lstr.add_c(' ');
-        lstr.add(mkw_at);
-        lstr.add_c(' ');
         lstr.add_g(t_delay_given);
     }
     else if (t_type == TPmref) {
-        lstr.add_c(' ');
         lstr.add(t_when_expr1);
         if (t_delay_given > 0.0) {
             lstr.add_c(' ');
@@ -508,7 +574,6 @@ sTpoint::print(sLstr &lstr)
         }
     }
     else if (t_type == TPexp1) {
-        lstr.add_c(' ');
         lstr.add(t_when_expr1);
         if (t_delay_given > 0.0 || t_mname) {
             lstr.add_c(' ');
@@ -521,9 +586,6 @@ sTpoint::print(sLstr &lstr)
         }
     }
     else if (t_type == TPexp2) {
-        lstr.add_c(' ');
-        lstr.add(mkw_when);
-        lstr.add_c(' ');
         lstr.add(t_when_expr1);
         lstr.add_c('=');
         lstr.add(t_when_expr2);
@@ -568,7 +630,7 @@ sTpoint::setup_delay(sFtCirc *circuit, bool *err)
         sRunopMeas *m = 0;
         if (t_type == TPnum) {
 #ifdef M_DEBUG
-            printf("setup_delay:  numeric\n");
+            printf("setup_delay:  numeric %s\n", t_when_expr1);
 #endif
             t_init = true;
             return (true);
@@ -627,10 +689,15 @@ sTpoint::setup_delay(sFtCirc *circuit, bool *err)
                 // If none of these are set, assume the first crossing.
                 if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
                     t_crosses = 1;
+#ifdef M_DEBUG
+                printf("setup_delay:  expr2 |%s| |%s|\n", t_when_expr1,
+                    t_when_expr2);
+#endif
             }
 #ifdef M_DEBUG
-            printf("setup_delay:  %s\n", t_type == TPexp1 ?
-                "expr1" : "expr2");
+            else if (t_type == TPexp1) {
+                printf("setup_delay:  expr1 |%s|\n", t_when_expr1);
+            }
 #endif
             t_init = true;
         }
@@ -851,12 +918,6 @@ sRunopMeas::print(char **pstr)
             m->print(lstr);
     }
 
-    lstr.add_c('\n');
-    if (pstr)
-        *pstr = lstr.string_trim();
-    else
-        TTY.send(lstr.string());
-
     if (ro_print_flag == 2) {
         lstr.add_c(' ');
         lstr.add(mkw_print);
@@ -877,6 +938,12 @@ sRunopMeas::print(char **pstr)
         lstr.add_c(' ');
         lstr.add(mkw_stop);
     }
+
+    lstr.add_c('\n');
+    if (pstr)
+        *pstr = lstr.string_trim();
+    else
+        TTY.send(lstr.string());
 }
 
 
@@ -915,7 +982,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_trig)) {
             delete [] tok;
-            int ret = ro_start.parse(&s, errstr);
+            int ret = ro_start.parse(&s, errstr, mkw_trig);
             if (ret != OK) {
                 err = true;
                 break;
@@ -925,7 +992,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_targ)) {
             delete [] tok;
-            int ret = ro_end.parse(&s, errstr);
+            int ret = ro_end.parse(&s, errstr, mkw_targ);
             if (ret != OK) {
                 err = true;
                 break;
@@ -935,7 +1002,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_from)) {
             delete [] tok;
-            int ret = ro_start.parse(&s, errstr);
+            int ret = ro_start.parse(&s, errstr, mkw_from);
             if (ret != OK) {
                 err = true;
                 break;
@@ -945,7 +1012,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_to)) {
             delete [] tok;
-            int ret = ro_start.parse(&s, errstr);
+            int ret = ro_end.parse(&s, errstr, mkw_to);
             if (ret != OK) {
                 err = true;
                 break;
@@ -955,7 +1022,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_when)) {
             delete [] tok;
-            int ret = ro_start.parse(&s, errstr);
+            int ret = ro_start.parse(&s, errstr, mkw_when);
             if (ret != OK) {
                 err = true;
                 break;
@@ -965,7 +1032,7 @@ sRunopMeas::parse(const char *str, char **errstr)
         }
         if (lstring::cieq(tok, mkw_at)) {
             delete [] tok;
-            int ret = ro_start.parse(&s, errstr);
+            int ret = ro_start.parse(&s, errstr, mkw_at);
             if (ret != OK) {
                 err = true;
                 break;

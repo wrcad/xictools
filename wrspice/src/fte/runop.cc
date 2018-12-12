@@ -376,6 +376,7 @@ IFoutput::stopCmd(wordlist *wl)
         thisone->destroy();
         return;
     }
+
     if (thisone) {
         sFtCirc *curcir = Sp.CurCircuit();
         thisone->set_number(o_runops->new_count());
@@ -408,202 +409,6 @@ IFoutput::stopCmd(wordlist *wl)
         delete [] deferred_call;
     }
 }
-
-
-/*XXX
-void
-sRunopStop::parse(char *str)
-{
-    char *tok = gtok(&str);
-
-    // Figure out what the first condition is.
-    if (lstring::cieq(tok, kw_at)) {
-        set_type(RO_STOPAT);
-        if (deferred_call_set) {
-            set_call(true, deferred_call);
-            delete [] deferred_call;
-            deferred_call = 0;
-            had_call = true;
-            deferred_call_set = false;
-        }
-        delete [] tok;
-        tok = gtok(&str);
-        bool pt = false;
-        if (wl && lstring::ciprefix("p", tok)) {
-            pt = true;
-            delete [] tok;
-            tok = gtok(&str);
-        }
-        if (pt) {
-            int i = 0;
-            const char *sbk = s;
-            while ((tok = gtok(&s)) != 0) {
-                bool isi = is_uint(tok);
-                delete [] tok;
-                if (isi)
-                    break;
-                i++;
-            }
-            if (i) {
-                int *ary = new int[i];
-                i = 0;
-                s = sbk;
-                for (int j = 0; j < i; j++) {
-                    tok = gtok(&s);
-                    ary[i++] = atoi(tok);
-                    delete [] tok;
-                }
-                set_points(i, ary);
-            }
-        }
-        else {
-            int i = 0;
-            const char *sbk = s;
-            while ((tok = gtok(&s)) != 0) {
-                const char *t = tok;
-                int err;
-                IP.getFloat(&t, &err, true);
-                delete [] tok;
-                if (err != OK)
-                    break;
-                i++;
-            }
-            if (i) {
-                double *ary = new double[i];
-                i = 0;
-                s = sbk;
-                for (int j = 0; j < i; j++) {
-                    const char *t = tok;
-                    int err;
-                    ary[i++] = IP.getFloat(&t, &err, true);
-                    delete [] tok;
-                }
-                d->set_points(i, ary);
-            }
-        }
-        GRpkgIf()->ErrPrintf(ET_ERROR, "stop at: no targets found.\n");
-        thisone->destroy();
-        return;
-    }
-    if (lstring::eq(tok, kw_after) || lstring::eq(tok, kw_before)) {
-        if (lstring::eq(tok, kw_after))
-            set_type(RO_STOPAFTER);
-        else
-            set_type(RO_STOPBEFORE);
-        if (deferred_call_set) {
-            thisone->set_call(true, deferred_call);
-            delete [] deferred_call;
-            deferred_call = 0;
-            had_call = true;
-            deferred_call_set = false;
-        }
-
-        delete [] tok;
-        tok = gtok(&str);
-
-        bool pt = false;
-        if (tok && lstring::ciprefix("p", tok)) {
-            pt = true;
-            delete [] tok;
-            tok = gtok(&str);
-        }
-        if (tok) {
-            if (pt) {
-                if (is_uint(tok)) {
-                    set_point(atoi(tok));
-                    delete [] tok;
-                    tok = gtok(&str);
-                    continue;
-                }
-            }
-            else {
-                int err;
-                const char *t = tok;
-                double tmp = IP.getFloat(&t, &err, true);
-                if (err == OK) {
-                    set_point(tmp);
-                    delete [] tok;
-                    tok = gtok(&str);
-                    continue;
-                }
-            }
-        }
-        GRpkgIf()->ErrPrintf(ET_ERROR, "stop %s: no target found.\n",
-           d->type() == RO_STOPBEFORE ? "before" : "after");
-        thisone->destroy();
-        return;
-    }
-    if (lstring::eq(tok, kw_when)) {
-        set_type(RO_STOPWHEN);
-        if (deferred_call_set) {
-            thisone->set_call(true, deferred_call);
-            delete [] deferred_call;
-            deferred_call = 0;
-            had_call = true;
-            deferred_call_set = false;
-        }
-
-        delete [] tok;
-        tok = gtok(&str);
-        char *string = 0;
-        if (tok) {
-            int i = 0;
-            const char *sbk = str;
-            while ((tok = gtok(&str)) != 0) {
-                bool isk = is_kw(tok);
-                delete [] tok;
-                if (isk)
-                    break;
-                i++;
-            }
-            sLstr lstr;
-            str = sbk;
-            for (int j = 0; j < i; j++) {
-                tok = gtok(&str);
-                if (j)
-                    lstr.add_c(' ');
-                lstr.add(tok);
-                delete [] tok;
-            }
-            string = lstr.string_trim();
-            CP.Unquote(string);
-            if (!*string) {
-                delete [] string;
-                string = 0;
-            }
-        }
-        if (string) {
-            set_string(string);
-            continue;
-        }
-        GRpkgIf()->ErrPrintf(ET_ERROR, "stop when: no expression found.\n");
-        thisone->destroy();
-        return;
-    }
-    if (lstring::eq(tok, kw_call)) {
-        if (had_call || deferred_call_set) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
-                "stop: more than one call directive not allowed.\n");
-            thisone->destroy();
-            delete [] deferred_call;
-            return;
-        }
-        // The call can appear anywhere a keyword is expected,
-        // including ahead of the first directive (e.g.  stop call
-        // foo at point 100).  This case uses the deferred_call
-        // to hold name until the struct is created.
-
-        delete [] tok;
-        tok = gtok(&str);
-        if (tok && is_kw(tok)) {
-            delete [] tok;
-            tok = 0;
-        }
-        set_call(true, tok);
-        had_call = true;
-    }
-}
-*/
 
 
 void
@@ -1520,6 +1325,222 @@ sRunopStop::destroy()
         d = d->ro_also;
         delete x;
     }
+}
+
+/*XXX
+stop tpoint [call [fnc]]
+tpoint [before|at|after time]... [when expr]...
+time
+    const_expr (if at, list of const exprs
+    measure [delay]
+    expr [delay]
+    expr=expr opts
+
+measure an result trig [targ] mmt [call [fnc]] print stop [when expr]...
+trig|from
+  [trig|from] tpoint
+targ|to
+  [targ|to] tpoint
+
+vector measures
+at t1 t2 ...
+rise=all fall=all
+
+*/
+
+void
+sRunopStop::parse(char *str)
+{
+/*XXX
+    char *tok = gtok(&str);
+
+    // Figure out what the first condition is.
+    if (lstring::cieq(tok, kw_at)) {
+        set_type(RO_STOPAT);
+        if (deferred_call_set) {
+            set_call(true, deferred_call);
+            delete [] deferred_call;
+            deferred_call = 0;
+            had_call = true;
+            deferred_call_set = false;
+        }
+        delete [] tok;
+        tok = gtok(&str);
+        bool pt = false;
+        if (wl && lstring::ciprefix("p", tok)) {
+            pt = true;
+            delete [] tok;
+            tok = gtok(&str);
+        }
+        if (pt) {
+            int i = 0;
+            const char *sbk = s;
+            while ((tok = gtok(&s)) != 0) {
+                bool isi = is_uint(tok);
+                delete [] tok;
+                if (isi)
+                    break;
+                i++;
+            }
+            if (i) {
+                int *ary = new int[i];
+                i = 0;
+                s = sbk;
+                for (int j = 0; j < i; j++) {
+                    tok = gtok(&s);
+                    ary[i++] = atoi(tok);
+                    delete [] tok;
+                }
+                set_points(i, ary);
+            }
+        }
+        else {
+            int i = 0;
+            const char *sbk = s;
+            while ((tok = gtok(&s)) != 0) {
+                const char *t = tok;
+                int err;
+                IP.getFloat(&t, &err, true);
+                delete [] tok;
+                if (err != OK)
+                    break;
+                i++;
+            }
+            if (i) {
+                double *ary = new double[i];
+                i = 0;
+                s = sbk;
+                for (int j = 0; j < i; j++) {
+                    const char *t = tok;
+                    int err;
+                    ary[i++] = IP.getFloat(&t, &err, true);
+                    delete [] tok;
+                }
+                d->set_points(i, ary);
+            }
+        }
+        GRpkgIf()->ErrPrintf(ET_ERROR, "stop at: no targets found.\n");
+        destroy();
+        return;
+    }
+    if (lstring::eq(tok, kw_after) || lstring::eq(tok, kw_before)) {
+        if (lstring::eq(tok, kw_after))
+            set_type(RO_STOPAFTER);
+        else
+            set_type(RO_STOPBEFORE);
+        if (deferred_call_set) {
+            set_call(true, deferred_call);
+            delete [] deferred_call;
+            deferred_call = 0;
+            had_call = true;
+            deferred_call_set = false;
+        }
+
+        delete [] tok;
+        tok = gtok(&str);
+
+        bool pt = false;
+        if (tok && lstring::ciprefix("p", tok)) {
+            pt = true;
+            delete [] tok;
+            tok = gtok(&str);
+        }
+        if (tok) {
+            if (pt) {
+                if (is_uint(tok)) {
+                    set_point(atoi(tok));
+                    delete [] tok;
+                    tok = gtok(&str);
+                    continue;
+                }
+            }
+            else {
+                int err;
+                const char *t = tok;
+                double tmp = IP.getFloat(&t, &err, true);
+                if (err == OK) {
+                    set_point(tmp);
+                    delete [] tok;
+                    tok = gtok(&str);
+                    continue;
+                }
+            }
+        }
+        GRpkgIf()->ErrPrintf(ET_ERROR, "stop %s: no target found.\n",
+           d->type() == RO_STOPBEFORE ? "before" : "after");
+        destroy();
+        return;
+    }
+    if (lstring::eq(tok, kw_when)) {
+        set_type(RO_STOPWHEN);
+        if (deferred_call_set) {
+            set_call(true, deferred_call);
+            delete [] deferred_call;
+            deferred_call = 0;
+            had_call = true;
+            deferred_call_set = false;
+        }
+
+        delete [] tok;
+        tok = gtok(&str);
+        char *string = 0;
+        if (tok) {
+            int i = 0;
+            const char *sbk = str;
+            while ((tok = gtok(&str)) != 0) {
+                bool isk = is_kw(tok);
+                delete [] tok;
+                if (isk)
+                    break;
+                i++;
+            }
+            sLstr lstr;
+            str = sbk;
+            for (int j = 0; j < i; j++) {
+                tok = gtok(&str);
+                if (j)
+                    lstr.add_c(' ');
+                lstr.add(tok);
+                delete [] tok;
+            }
+            string = lstr.string_trim();
+            CP.Unquote(string);
+            if (!*string) {
+                delete [] string;
+                string = 0;
+            }
+        }
+        if (string) {
+            set_string(string);
+            continue;
+        }
+        GRpkgIf()->ErrPrintf(ET_ERROR, "stop when: no expression found.\n");
+        destroy();
+        return;
+    }
+    if (lstring::eq(tok, kw_call)) {
+        if (had_call || deferred_call_set) {
+            GRpkgIf()->ErrPrintf(ET_ERROR,
+                "stop: more than one call directive not allowed.\n");
+            destroy();
+            delete [] deferred_call;
+            return;
+        }
+        // The call can appear anywhere a keyword is expected,
+        // including ahead of the first directive (e.g.  stop call
+        // foo at point 100).  This case uses the deferred_call
+        // to hold name until the struct is created.
+
+        delete [] tok;
+        tok = gtok(&str);
+        if (tok && is_kw(tok)) {
+            delete [] tok;
+            tok = 0;
+        }
+        set_call(true, tok);
+        had_call = true;
+    }
+*/
 }
 
 

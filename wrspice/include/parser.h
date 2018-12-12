@@ -275,6 +275,14 @@ struct pnode
                 pn_value->length() == 1 && pn_value->realval(0) == 0.0);
         }
 
+    void split(pnode **pl, pnode **pr)
+        {
+            *pl = pn_left;
+            *pr = pn_right;
+            pn_left = 0;
+            pn_right = 0;
+        }
+
     const char *token_string()      const { return (pn_string); }
     sDataVec *value()               const { return (pn_value); }
     sFunc *func()                   const { return (pn_func); }
