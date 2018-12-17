@@ -192,115 +192,6 @@ private:
     int ro_reuseid;             // Iplot window to reuse.
 };
 
-
-// The general form of the definition string is
-//   [when/at] expr[val][=][expr] [td=delay] [cross=crosses] [rise=rises]
-//     [fall=falls]
-// The initial keyword (which may be missing if unambiguous) is one of
-// "at" or "when".  These are equivalent.  One or two expressions follow,
-// with optional '=' or 'val=' ahead of the second expression.  the second
-// expression can be missing.
-//
-// TPexp2:  expr1 and expr2 are both given, then the point is when
-//   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
-//   falls, crosses are integers.  The delay is a numeric value, or the
-//   name of another measure.  The trigger is the matching
-//   rise/fall/cross found after the delay.
-//
-// If expr2 is not given, then expr1 is one of:
-//
-// TPnum:  (numeric value) Gives the point directly, no other keywords
-//   apply.
-//
-// TPmref:  (measure name) Point where given measure completes,
-//   numeric td applies, triggers at the referenced measure time plus
-//   delay.
-//
-// TPexpr1:  (expression) Point where expression is boolen true, td
-//   applies, can be numeric or measure name, trigers when expr is true
-//   after delay.
-//
-enum TPform
-{
-    TPunknown,      // unknown/unspecified
-    TPnum,          // single numeric value given
-    TPmref,         // measure reference name given
-    TPexp1,         // single expression given
-    TPexp2          // two expressions given
-};
-
-struct pnode;
-
-struct sTpoint
-{
-    sTpoint()
-        {
-            t_kw1           = 0;
-            t_kw2           = 0;
-            t_when_expr1    = 0;
-            t_when_expr2    = 0;
-            t_tree1         = 0;
-            t_tree2         = 0;
-            t_mname         = 0;
-            t_found         = 0.0;
-            t_delay_given   = 0.0;
-            t_delay         = 0.0;
-            t_type          = TPunknown;
-            t_indx          = 0;
-            t_crosses       = 0;
-            t_rises         = 0;
-            t_falls         = 0;
-            t_found_flag    = false;
-            t_init          = false;
-            t_active        = false;
-        }
-
-    ~sTpoint();
-
-    const char *when_expr1()    { return (t_when_expr1); }
-    const char *when_expr2()    { return (t_when_expr2); }
-    double found()              { return (t_found); }
-    int indx()                  { return (t_indx); }
-    bool found_flag()           { return (t_found_flag); }
-    bool active()               { return (t_active); }
-
-    void reset()
-        {
-            t_delay = 0.0;
-            t_found = 0.0;
-            t_indx = 0;
-            t_found_flag = false;
-            t_init = false;
-        }
-
-    int parse(const char**, char**, const char*);
-    void print(sLstr&);
-    bool setup_delay(sFtCirc*, bool*);
-    bool check_found(sFtCirc*, bool*, bool);
-    sDataVec *eval1();
-    sDataVec *eval2();
-
-private:
-    const char *t_kw1;      // Optional first keyword saved.
-    const char *t_kw2;      // Optional second keyword saved.
-    char *t_when_expr1;     // First expression text.
-    char *t_when_expr2;     // Second expression text.
-    pnode *t_tree1;
-    pnode *t_tree2;
-    char *t_mname;          // Measure reference name.
-    double t_found;         // The measure point, once found.
-    double t_delay_given;   // The 'td' value.
-    double t_delay;         // Actual measurement point.
-    TPform t_type;          // Syntax type.
-    int t_indx;             // Index of trigger point.
-    int t_crosses;          // The 'crosses' value.
-    int t_rises;            // The 'rises' value.
-    int t_falls;;           // The 'falls' value.
-    bool t_found_flag;      // The measure point was found.
-    bool t_init;            // This is initialized.
-    bool t_active;          // This is active, if not skip it.
-};
-
 // Check for breakout condition while running.
 struct sRunopStop : public sRunop
 {
@@ -391,8 +282,6 @@ struct sRunopStop : public sRunop
 private:
     bool ro_call_flag;          // Call script or bound codeblock on stop.
     bool ro_ptmode;             // Input in points, else absolute.
-//XXX
-    sTpoint ro_start;           // For stop when.
     union {                     // Output point for test:
         double dpoint;          //   Value.
         int ipoint;             //   Plot point index.
@@ -405,6 +294,126 @@ private:
         double *dpoints;
         int *ipoints;
     } ro_a;
+};
+
+
+// The general form of the definition string is
+//   [when/at] expr[val][=][expr] [td=delay] [cross=crosses] [rise=rises]
+//     [fall=falls]
+// The initial keyword (which may be missing if unambiguous) is one of
+// "at" or "when".  These are equivalent.  One or two expressions follow,
+// with optional '=' or 'val=' ahead of the second expression.  the second
+// expression can be missing.
+//
+// MPexp2:  expr1 and expr2 are both given, then the point is when
+//   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
+//   falls, crosses are integers.  The delay is a numeric value, or the
+//   name of another measure.  The trigger is the matching
+//   rise/fall/cross found after the delay.
+//
+// If expr2 is not given, then expr1 is one of:
+//
+// MPnum:  (numeric value) Gives the point directly, no other keywords
+//   apply.
+//
+// MPmref:  (measure name) Point where given measure completes,
+//   numeric td applies, triggers at the referenced measure time plus
+//   delay.
+//
+// MPexpr1:  (expression) Point where expression is boolen true, td
+//   applies, can be numeric or measure name, trigers when expr is true
+//   after delay.
+//
+enum MPform
+{
+    MPunknown,      // unknown/unspecified
+    MPnum,          // single numeric value given
+    MPmref,         // measure reference name given
+    MPexp1,         // single expression given
+    MPexp2          // two expressions given
+};
+
+enum MPrange
+{
+    MPatwhen,       // applies at defined value
+    MPbefore,       // applies before defined value
+    MPafter         // appies after defined value
+};
+
+struct pnode;
+
+struct sMpoint
+{
+    sMpoint()
+        {
+            t_conj          = 0;
+            t_kw1           = 0;
+            t_kw2           = 0;
+            t_when_expr1    = 0;
+            t_when_expr2    = 0;
+            t_tree1         = 0;
+            t_tree2         = 0;
+            t_mname         = 0;
+            t_found         = 0.0;
+            t_delay_given   = 0.0;
+            t_delay         = 0.0;
+            t_indx          = 0;
+            t_crosses       = 0;
+            t_rises         = 0;
+            t_falls         = 0;
+            t_found_flag    = false;
+            t_init          = false;
+            t_active        = false;
+            t_type          = MPunknown;
+            t_range         = MPatwhen;
+        }
+
+    ~sMpoint();
+
+    const char *when_expr1()    { return (t_when_expr1); }
+    const char *when_expr2()    { return (t_when_expr2); }
+    double found()              { return (t_found); }
+    int indx()                  { return (t_indx); }
+    bool found_flag()           { return (t_found_flag); }
+    bool active()               { return (t_active); }
+
+    void reset()
+        {
+            t_delay = 0.0;
+            t_found = 0.0;
+            t_indx = 0;
+            t_found_flag = false;
+            t_init = false;
+        }
+
+    int parse(const char**, char**, const char*);
+    void print(sLstr&);
+    bool setup_delay(sFtCirc*, bool*);
+    bool check_found(sFtCirc*, bool*, bool);
+    sDataVec *eval1();
+    sDataVec *eval2();
+
+private:
+    sMpoint *t_conj;        // Conjunction list.
+    const char *t_kw1;      // Optional first keyword saved.
+    const char *t_kw2;      // Optional second keyword saved.
+    char *t_when_expr1;     // First expression text.
+    char *t_when_expr2;     // Second expression text.
+    pnode *t_tree1;
+    pnode *t_tree2;
+    char *t_mname;          // Measure reference name.
+    double t_found;         // The measure point, once found.
+    double t_delay_given;   // The 'td' value.
+    double t_delay;         // Actual measurement point.
+    int t_indx;             // Index of trigger point.
+    int t_crosses;          // The 'crosses' value.
+    int t_rises;            // The 'rises' value.
+    int t_falls;;           // The 'falls' value.
+    bool t_found_flag;      // The measure point was found.
+    bool t_init;            // This is initialized.
+    bool t_active;          // This is active, if not skip it.
+    unsigned char t_type;   // Syntax type, MPform.
+    unsigned char t_range;  // Before/at/after, MPrange.
 };
 
 enum Mfunc { Mmin, Mmax, Mpp, Mavg, Mrms, Mpw, Mrft, Mfind };
@@ -491,8 +500,8 @@ struct sRunopMeas : public sRunop
 
     sRunopMeas *next()          { return ((sRunopMeas*)ro_next); }
 
-    sTpoint &start()            { return (ro_start); }
-    sTpoint &end()              { return (ro_end); }
+    sMpoint &start()            { return (ro_start); }
+    sMpoint &end()              { return (ro_end); }
 
     const char *result()        { return (ro_result); }
     int analysis()              { return (ro_analysis); }
@@ -539,8 +548,8 @@ private:
     double findpw(sDataVec*, sDataVec*);
     double findrft(sDataVec*, sDataVec*);
 
-    sTpoint ro_start;
-    sTpoint ro_end;
+    sMpoint ro_start;
+    sMpoint ro_end;
 
     const char *ro_result;      // result name for measurement
     const char *ro_expr2;       // misc expression

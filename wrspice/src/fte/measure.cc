@@ -63,7 +63,9 @@ namespace {
     const char *mkw_measure     = "measure";
     const char *mkw_trig        = "trig";
     const char *mkw_targ        = "targ";
+    const char *mkw_before      = "before";
     const char *mkw_at          = "at";
+    const char *mkw_after       = "after";
     const char *mkw_when        = "when";
     const char *mkw_val         = "val";
     const char *mkw_td          = "td";
@@ -279,7 +281,9 @@ namespace {
         if (lstring::cieq(s, mkw_measure)) return (true);
         if (lstring::cieq(s, mkw_trig)) return (true);
         if (lstring::cieq(s, mkw_targ)) return (true);
+        if (lstring::cieq(s, mkw_before)) return (true);
         if (lstring::cieq(s, mkw_at)) return (true);
+        if (lstring::cieq(s, mkw_after)) return (true);
         if (lstring::cieq(s, mkw_when)) return (true);
         if (lstring::cieq(s, mkw_val)) return (true);
         if (lstring::cieq(s, mkw_td)) return (true);
@@ -309,7 +313,7 @@ namespace {
 }
 
 
-sTpoint::~sTpoint()
+sMpoint::~sMpoint()
 {
     delete [] t_when_expr1;
     delete [] t_when_expr2;
@@ -327,7 +331,7 @@ sTpoint::~sTpoint()
 // with optional '=' or 'val=' ahead of the second expression.  the second
 // expression can be missing.
 //
-// TPexp2:  expr1 and expr2 are both given, then the point is when
+// MPexp2:  expr1 and expr2 are both given, then the point is when
 //   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
 //   falls, crosses are integers.  The delay is a numeric value, or the
 //   name of another measure.  The trigger is the matching
@@ -335,19 +339,19 @@ sTpoint::~sTpoint()
 //
 // If expr2 is not given, then expr1 is one of:
 //
-// TPnum:  (numeric value) Gives the point directly, no other keywords
+// MPnum:  (numeric value) Gives the point directly, no other keywords
 //   apply.
 //
-// TPmref:  (measure name) Point where given measure completes,
+// MPmref:  (measure name) Point where given measure completes,
 //   numeric td applies, triggers at the referenced measure time plus
 //   delay.
 //
-// TPexpr1:  (expression) Point where expression is boolen true, td
+// MPexpr1:  (expression) Point where expression is boolen true, td
 //   applies, can be numeric or measure name, trigers when expr is true
 //   after delay.
 //
 int
-sTpoint::parse(const char **pstr, char **errstr, const char *kw)
+sMpoint::parse(const char **pstr, char **errstr, const char *kw)
 {
     t_kw1 = kw;
     const char *s = *pstr;
@@ -369,6 +373,16 @@ sTpoint::parse(const char **pstr, char **errstr, const char *kw)
     }
     else if (lstring::cieq(tok, mkw_when)) {
         t_kw2 = mkw_when;
+        delete [] tok;
+    }
+    else if (lstring::cieq(tok, mkw_before)) {
+        t_kw2 = mkw_before;
+        t_range = MPbefore;
+        delete [] tok;
+    }
+    else if (lstring::cieq(tok, mkw_after)) {
+        t_kw2 = mkw_after;
+        t_range = MPafter;
         delete [] tok;
     }
     else {
@@ -400,7 +414,6 @@ sTpoint::parse(const char **pstr, char **errstr, const char *kw)
 #ifdef M_DEBUG
     printf("expr1 |%s| |%s|\n", tok, t_tree1->get_string(false));
 #endif
-
 
     // strip any "val="
     sbk = s;
@@ -440,7 +453,7 @@ sTpoint::parse(const char **pstr, char **errstr, const char *kw)
                 t_when_expr2 = tok;
                 t_tree2 = pn;
                 t_tree2->copyvecs();
-                t_type = TPexp2;
+                t_type = MPexp2;
 #ifdef M_DEBUG
                 printf("expr2 |%s| |%s|\n", tok, t_tree2->get_string(false));
 #endif
@@ -450,7 +463,7 @@ sTpoint::parse(const char **pstr, char **errstr, const char *kw)
     if (t_tree1 && !t_tree2) {
         if (t_tree1->is_const()) {
             // numeric or constant expression
-            t_type = TPnum;
+            t_type = MPnum;
             sDataVec *dv = eval1();
             if (dv)
                 t_delay_given = dv->realval(0);
@@ -462,11 +475,11 @@ sTpoint::parse(const char **pstr, char **errstr, const char *kw)
             delete [] t_when_expr2;
             t_when_expr1 = t_tree1->get_string(false);
             t_when_expr2 = t_tree2->get_string(false);
-            t_type = TPexp2;
+            t_type = MPexp2;
             delete pn;
         }
         else
-            t_type = TPexp1;
+            t_type = MPexp1;
     }
 
     const char *last = s;
@@ -497,7 +510,7 @@ sTpoint::parse(const char **pstr, char **errstr, const char *kw)
             last = s;
             continue;
         }
-        if (t_type == TPexp2) {
+        if (t_type == MPexp2) {
             if (lstring::cieq(tok, mkw_cross)) {
                 delete [] tok;
                 bool err;
@@ -535,20 +548,45 @@ sTpoint::parse(const char **pstr, char **errstr, const char *kw)
         s = last;
         break;
     }
+#ifdef M_DEBUG
+    static int lockout;
+#endif
+    last = s;
+    tok = gtok(&s, true);
+    if (tok) {
+        bool c = (lstring::cieq(tok, mkw_at) || lstring::cieq(tok, mkw_when) ||
+            lstring::cieq(tok, mkw_before) || lstring::cieq(tok, mkw_after));
+        delete [] tok;
+        s = last;
+        if (c) {
+            t_conj = new sMpoint();
+#ifdef M_DEBUG
+    lockout++;
+#endif
+            int err = t_conj->parse(&s, errstr, 0);
+#ifdef M_DEBUG
+    lockout--;
+#endif
+            if (err != OK)
+                return (err);
+        }
+    }
 
     t_active = true;
     *pstr = s;
 #ifdef M_DEBUG
-    sLstr lstr;
-    print(lstr);
-    printf("sTpoint:  %s\n", lstr.string());
+    if (!lockout) {
+        sLstr lstr;
+        print(lstr);
+        printf("sMpoint:  %s\n", lstr.string());
+    }
 #endif
     return (OK);
 }
 
 
 void
-sTpoint::print(sLstr &lstr)
+sMpoint::print(sLstr &lstr)
 {
     if (!t_active)
         return;
@@ -561,10 +599,10 @@ sTpoint::print(sLstr &lstr)
         lstr.add(t_kw2);
         lstr.add_c(' ');
     }
-    if (t_type == TPnum) {
+    if (t_type == MPnum) {
         lstr.add_g(t_delay_given);
     }
-    else if (t_type == TPmref) {
+    else if (t_type == MPmref) {
         lstr.add(t_when_expr1);
         if (t_delay_given > 0.0) {
             lstr.add_c(' ');
@@ -573,7 +611,7 @@ sTpoint::print(sLstr &lstr)
             lstr.add_g(t_delay_given);
         }
     }
-    else if (t_type == TPexp1) {
+    else if (t_type == MPexp1) {
         lstr.add(t_when_expr1);
         if (t_delay_given > 0.0 || t_mname) {
             lstr.add_c(' ');
@@ -585,7 +623,7 @@ sTpoint::print(sLstr &lstr)
                 lstr.add_g(t_delay_given);
         }
     }
-    else if (t_type == TPexp2) {
+    else if (t_type == MPexp2) {
         lstr.add(t_when_expr1);
         lstr.add_c('=');
         lstr.add(t_when_expr2);
@@ -617,58 +655,40 @@ sTpoint::print(sLstr &lstr)
             lstr.add_u(t_crosses);
         }
     }
+    if (t_conj)
+        t_conj->print(lstr);
 }
 
 
 bool
-sTpoint::setup_delay(sFtCirc *circuit, bool *err)
+sMpoint::setup_delay(sFtCirc *circuit, bool *err)
 {
     if (!t_active)
         return (true);
+
     if (!t_init) {
         t_delay = t_delay_given;
         sRunopMeas *m = 0;
-        if (t_type == TPnum) {
+        if (t_type == MPnum) {
 #ifdef M_DEBUG
             printf("setup_delay:  numeric %s\n", t_when_expr1);
 #endif
             t_init = true;
-            return (true);
         }
-        if (t_type == TPexp1) {
-            m = sRunopMeas::find(circuit->measures(), t_when_expr1);
-            if (m) {
-                t_type = TPmref;
-#ifdef M_DEBUG
-                printf("setup_delay: found expr1 is measure %s\n",
-                    t_when_expr1);
-#endif
-            }
-        }
-        if (t_type == TPmref) {
-            if (!m)
+        else {
+            if (t_type == MPexp1) {
                 m = sRunopMeas::find(circuit->measures(), t_when_expr1);
-            if (!m) {
-                if (err)
-                    *err = true;
-                return (false);
-            }
-            if (!m->measure_done())
-                return (false);
-            if (m->end().t_found_flag)
-                t_delay += m->end().t_found;
-            else
-                t_delay += m->start().t_found;
-            t_init = true;
+                if (m) {
+                    t_type = MPmref;
 #ifdef M_DEBUG
-            printf("setup_delay:  expr measure reference %s, delay %g\n",
-                t_when_expr1, t_delay);
+                    printf("setup_delay: found expr1 is measure %s\n",
+                        t_when_expr1);
 #endif
-            return (true);
-        }
-        if (t_type == TPexp1 || t_type == TPexp2) {
-            if (t_mname) {
-                m = sRunopMeas::find(circuit->measures(), t_mname);
+                }
+            }
+            if (t_type == MPmref) {
+                if (!m)
+                    m = sRunopMeas::find(circuit->measures(), t_when_expr1);
                 if (!m) {
                     if (err)
                         *err = true;
@@ -680,27 +700,52 @@ sTpoint::setup_delay(sFtCirc *circuit, bool *err)
                     t_delay += m->end().t_found;
                 else
                     t_delay += m->start().t_found;
+                t_init = true;
 #ifdef M_DEBUG
-                printf("setup_delay:  td measure reference %s, delay %g\n",
-                    t_mname, t_delay);
+                printf("setup_delay:  expr measure reference %s, delay %g\n",
+                    t_when_expr1, t_delay);
 #endif
             }
-            if (t_type == TPexp2) {
-                // If none of these are set, assume the first crossing.
-                if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
-                    t_crosses = 1;
+            else if (t_type == MPexp1 || t_type == MPexp2) {
+                if (t_mname) {
+                    m = sRunopMeas::find(circuit->measures(), t_mname);
+                    if (!m) {
+                        if (err)
+                            *err = true;
+                        return (false);
+                    }
+                    if (!m->measure_done())
+                        return (false);
+                    if (m->end().t_found_flag)
+                        t_delay += m->end().t_found;
+                    else
+                        t_delay += m->start().t_found;
 #ifdef M_DEBUG
-                printf("setup_delay:  expr2 |%s| |%s|\n", t_when_expr1,
-                    t_when_expr2);
+                    printf("setup_delay:  td measure reference %s, delay %g\n",
+                        t_mname, t_delay);
 #endif
-            }
+                }
+                if (t_type == MPexp2) {
+                    // If none of these are set, assume the first crossing.
+                    if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
+                        t_crosses = 1;
 #ifdef M_DEBUG
-            else if (t_type == TPexp1) {
-                printf("setup_delay:  expr1 |%s|\n", t_when_expr1);
-            }
+                    printf("setup_delay:  expr2 |%s| |%s|\n", t_when_expr1,
+                        t_when_expr2);
 #endif
-            t_init = true;
+                }
+#ifdef M_DEBUG
+                else if (t_type == MPexp1) {
+                    printf("setup_delay:  expr1 |%s|\n", t_when_expr1);
+                }
+#endif
+                t_init = true;
+            }
         }
+    }
+    for (sMpoint *m = t_conj; m; m = m->t_conj) {
+        if (!m->setup_delay(circuit, err))
+            return (false);
     }
     return (true);
 }
@@ -781,82 +826,88 @@ namespace {
 
 
 bool
-sTpoint::check_found(sFtCirc *circuit, bool *err, bool end)
+sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
 {
-    if (!t_active || t_found_flag)
+    if (!t_active)
         return (true);
 
-    sDataVec *xs = circuit->runplot()->scale();
-    int ix = chk_trig(t_delay, xs);
-    if (ix < 0)
-        return (false);
+    if (!t_found_flag) {
+        sDataVec *xs = circuit->runplot()->scale();
+        int ix = chk_trig(t_delay, xs);
+        if (ix < 0)
+            return (false);
 
-    double fval = t_delay;
-    if (t_type == TPnum)
-        fval = xs->realval(ix);
-    else if (t_type == TPmref) {
-    }
-    else if (t_type == TPexp1) {
-        sDataVec *dvl = eval1();
-        if (!dvl) {
-            if (err)
-                *err = true;
-            return (false);
+        double fval = t_delay;
+        if (t_type == MPnum)
+            fval = xs->realval(ix);
+        else if (t_type == MPmref) {
         }
-//XXX finish me
-    }
-    else if (t_type == TPexp2) {
-        sDataVec *dvl = eval1();
-        sDataVec *dvr = eval2();
-        if (!dvl || !dvr) {
-            if (err)
-                *err = true;
-            return (false);
+        else if (t_type == MPexp1) {
+            sDataVec *dvl = eval1();
+            if (!dvl) {
+                if (err)
+                    *err = true;
+                return (false);
+            }
+    //XXX finish me
         }
-        int r = 0, f = 0, c = 0;
-        bool foundit = false;
-        for ( ; ix < dvl->length(); ix++) {
-            if (ix && value(dvl, ix-1) <= value(dvr, ix-1) &&
-                    value(dvr, ix) < value(dvl, ix)) {
-                r++;
-                c++;
+        else if (t_type == MPexp2) {
+            sDataVec *dvl = eval1();
+            sDataVec *dvr = eval2();
+            if (!dvl || !dvr) {
+                if (err)
+                    *err = true;
+                return (false);
             }
-            else if (ix && value(dvl, ix-1) > value(dvr, ix-1) &&
-                    value(dvr, ix) >= value(dvl, ix)) {
-                f++;
-                c++;
-            }
-            else
-                continue;
-            if (r >= t_rises && f >= t_falls && c >= t_crosses) {
-                double d = value(dvr, ix) - value(dvr, ix-1) -
-                    (value(dvl, ix) - value(dvl, ix-1));
-                if (d != 0.0) {
-                    fval = xs->realval(ix-1) +
-                        (xs->realval(ix) - xs->realval(ix-1))*
-                        (value(dvl, ix-1) - value(dvr, ix-1))/d;
+            int r = 0, f = 0, c = 0;
+            bool foundit = false;
+            for ( ; ix < dvl->length(); ix++) {
+                if (ix && value(dvl, ix-1) <= value(dvr, ix-1) &&
+                        value(dvr, ix) < value(dvl, ix)) {
+                    r++;
+                    c++;
+                }
+                else if (ix && value(dvl, ix-1) > value(dvr, ix-1) &&
+                        value(dvr, ix) >= value(dvl, ix)) {
+                    f++;
+                    c++;
                 }
                 else
-                    fval = xs->realval(ix);
-                foundit = true;
-                if (end)
-                    ix--;
-                break;
+                    continue;
+                if (r >= t_rises && f >= t_falls && c >= t_crosses) {
+                    double d = value(dvr, ix) - value(dvr, ix-1) -
+                        (value(dvl, ix) - value(dvl, ix-1));
+                    if (d != 0.0) {
+                        fval = xs->realval(ix-1) +
+                            (xs->realval(ix) - xs->realval(ix-1))*
+                            (value(dvl, ix-1) - value(dvr, ix-1))/d;
+                    }
+                    else
+                        fval = xs->realval(ix);
+                    foundit = true;
+                    if (end)
+                        ix--;
+                    break;
+                }
             }
+            if (!foundit)
+                return (false);
         }
-        if (!foundit)
+
+        t_indx = ix;
+        t_found = fval;
+        t_found_flag = true;
+    }
+    for (sMpoint *m = t_conj; m; m = m->t_conj) {
+        if (!m->check_found(circuit, err, end))
             return (false);
     }
-
-    t_indx = ix;
-    t_found = fval;
-    t_found_flag = true;
     return (true);
 }
 
 
 sDataVec *
-sTpoint::eval1()
+sMpoint::eval1()
 {
     if (!t_when_expr1)
         return (0);
@@ -873,7 +924,7 @@ sTpoint::eval1()
 
 
 sDataVec *
-sTpoint::eval2()
+sMpoint::eval2()
 {
     if (!t_when_expr2)
         return (0);
@@ -887,7 +938,7 @@ sTpoint::eval2()
         return (Sp.Evaluate(t_tree2));
     return (0);
 }
-// End of sTpoint functions.
+// End of sMpoint functions.
 
 
 void

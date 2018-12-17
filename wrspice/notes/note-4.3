@@ -256,36 +256,35 @@ funcname:
 
 // Time point element.
 // Specifies a time point, which is the true first conjunction of all terms.
-tpoint: [before time | at time | after time][...] [when wexpr][...]
+tpoint: [before|at|after|when time][...]
 
 before:
-  True before the time.
-at:
+  True at time points before the time.
+at|when:
   True at the time point closest to the time.
 after:
   True at time points after the time.
-
-wexpr: logical_expression
-  True when the logical expression evaluates as nonzero integer.
-
-// Two expression time specification.
-time: xexpr1 [val[=]] xexpr2 [td=val][rise=num][fall=num][cross=num]
-xexpr1: expression
-  The expression returns a real or integer, true at expression
-  crossings set by rise/fall/crossing values (default is first
-  crossing if all are not given or zero).  The td value indicates when
-  the crossing test begins.
 
 // One expression time specification.
 time: expr1 [td=val]
 expr1: measure_name
   Measure_name: measure time of another measure.
-expr1: const_expr
+| expr1: const_expr
   Time value given by constant expression.
-expr1: logical_expression
+| expr1: logical_expression
   Time when logical_expression is first true (nonzero as integer).
 td
-  Actual time is delayed by val.
+  Activted time is delayed by val, val is const expression.
+
+// Two expression time specification.
+time: xexpr1 [val[=]] xexpr2 [td=val][rise=num][fall=num][cross=num]
+xexpr1: expression
+  The expression returns a real or integer, true at expression
+  crossings set by rise/fall/crossing values (integers, default is first
+  crossing if all are not given or zero).  The td value indicates when
+  the crossing test begins.
+td
+  Count crossings after val, val is const expr or nmeasure name..
 
 measurements: avg, pw, etc.
   Zero or more internal measurement functions.
