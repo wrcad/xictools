@@ -260,8 +260,8 @@ operator new(size_t size)
         if (Sp.GetFlag(FT_SIMFLAG)) {
             if (Sp.CurCircuit())
                 Sp.CurCircuit()->set_inprogress(false);
-            if (Sp.CurPlot())
-                Sp.CurPlot()->set_active(false);
+            if (OP.curPlot())
+                OP.curPlot()->set_active(false);
             Sp.SetFlag(FT_SIMFLAG, false);
         }
         CP.ResetControl();

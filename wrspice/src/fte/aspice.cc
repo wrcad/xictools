@@ -1066,8 +1066,8 @@ sJobc::th_hdlr(void *arg)
     FILE *out;
     if (!(out = fopen(t->outfile, "w"))) {
         GRpkgIf()->Perror(t->outfile);
-        Jobc.jc_numchanged++;
-        for (sdone_t *sd = Jobc.jc_complete_list; sd; sd = sd->next) {
+        OP.jobs()->jc_numchanged++;
+        for (sdone_t *sd = OP.jobs()->jc_complete_list; sd; sd = sd->next) {
             if (sd->pid == t->pid) {
                 sd->status = 2;
                 break;
@@ -1076,7 +1076,7 @@ sJobc::th_hdlr(void *arg)
         delete t;
         if (Sp.GetFlag(FT_ASYNCDB))
             GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
-                Jobc.jc_numchanged);
+                OP.jobs()->jc_numchanged);
         if (CP.GetFlag(CP_CWAIT))
             OP.checkAsyncJobs();
         return;
@@ -1085,8 +1085,8 @@ sJobc::th_hdlr(void *arg)
     while ((i = recv(t->sfd, buf, BSIZE_SP, 0)) > 0)
         fwrite(buf, 1, i, out);
     fclose(out);
-    Jobc.jc_numchanged++;
-    for (sdone_t *sd = Jobc.jc_complete_list; sd; sd = sd->next) {
+    OP.jobs()->jc_numchanged++;
+    for (sdone_t *sd = OP.jobs()->jc_complete_list; sd; sd = sd->next) {
         if (sd->pid == t->pid) {
             sd->status = 1;
             break;
@@ -1095,7 +1095,7 @@ sJobc::th_hdlr(void *arg)
     delete t;
     if (Sp.GetFlag(FT_ASYNCDB))
         GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
-            Jobc.jc_numchanged);
+            OP.jobs()->jc_numchanged);
     if (CP.GetFlag(CP_CWAIT))
         OP.checkAsyncJobs();
 }
@@ -1107,10 +1107,10 @@ sJobc::th_local_hdlr(void *arg)
 {
     thdata *t = (thdata*)arg;
     WaitForSingleObject(t->process, INFINITE);
-    Jobc.jc_numchanged++;
+    OP.jobs()->jc_numchanged++;
     CloseHandle(t->infile);
     CloseHandle(t->outfile);
-    for (sdone_t *sd = Jobc.jc_complete_list; sd; sd = sd->next) {
+    for (sdone_t *sd = OP.jobs()->jc_complete_list; sd; sd = sd->next) {
         if (sd->pid == t->pid) {
             sd->status = 1;
             break;
@@ -1118,7 +1118,7 @@ sJobc::th_local_hdlr(void *arg)
     }
     if (Sp.GetFlag(FT_ASYNCDB))
         GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
-            Jobc.jc_numchanged);
+            OP.jobs()->jc_numchanged);
     if (CP.GetFlag(CP_CWAIT))
         OP.checkAsyncJobs();
     delete t;
