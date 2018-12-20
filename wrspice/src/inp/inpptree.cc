@@ -217,8 +217,8 @@ IFparseTree::getTree(const char **expstr, sCKT *ckt, const char *xalias,
     tree->pt_macro = macro;
 
     // Instantiate parser.
-    Parser P = Parser(new PTelement[STACKSIZE],
-        PRSR_NODEHACK | PRSR_USRSTR | PRSR_SOURCE);
+    PTelement elements[STACKSIZE];
+    Parser P = Parser(elements, PRSR_NODEHACK | PRSR_USRSTR | PRSR_SOURCE);
 
     if (xalias && !macro) {
         // Create a tree for the "xalias".  This may increment numVars.
@@ -292,8 +292,8 @@ IFparseTree::treeParse(const char **expstr)
     }
 
     // Instantiate parser.
-    Parser P = Parser(new PTelement[STACKSIZE],
-        PRSR_NODEHACK | PRSR_USRSTR | PRSR_SOURCE);
+    PTelement elements[STACKSIZE];
+    Parser P = Parser(elements, PRSR_NODEHACK | PRSR_USRSTR | PRSR_SOURCE);
     P.init(t, this);
 
     IFparseNode *p = P.parse();

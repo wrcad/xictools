@@ -101,12 +101,6 @@ Parser::Parser(Element *elem, unsigned int flags)
 }
 
 
-Parser::~Parser()
-{
-    delete [] prsr_el;
-}
-
-
 void
 Parser::init(const char *str, void *arg)
 {

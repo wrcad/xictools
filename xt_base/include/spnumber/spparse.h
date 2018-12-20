@@ -164,7 +164,6 @@ class Parser
 {
 public:
     Parser(Element*, unsigned int);
-    ~Parser();
 
     static bool parenTable(TokenType, TokenType, bool);
 

@@ -791,8 +791,8 @@ IFparseNode::parse_if_tranfunc(IFparseNode *p, const char *string, int *error)
             *error = E_BADPARM;
             return (true);
         }
-        Parser P = Parser(new PTelement[STACKSIZE],
-            PRSR_NODEHACK | PRSR_USRSTR);
+        PTelement elements[STACKSIZE];
+        Parser P = Parser(elements, PRSR_NODEHACK | PRSR_USRSTR);
         P.init(tt, p->p_tree);
         p->p_left = P.parse();
         if (!p->p_left || !check(p->p_left)) {
