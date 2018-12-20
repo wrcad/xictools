@@ -2125,8 +2125,10 @@ sLx::mv_l()
         SetConsoleCursorPosition(h, info.dwCursorPosition);
     }
 #else
-    TTY.out_printf("%s", Tle);
-    TTY.flush();
+    if (Tle) {
+        TTY.out_printf("%s", Tle);
+        TTY.flush();
+    }
 #endif
 }
 
@@ -2141,8 +2143,10 @@ sLx::mv_d()
     info.dwCursorPosition.Y++;
     SetConsoleCursorPosition(h, info.dwCursorPosition);
 #else
-    TTY.out_printf("%s", Tdo);
-    TTY.flush();
+    if (Tdo) {
+        TTY.out_printf("%s", Tdo);
+        TTY.flush();
+    }
 #endif
 }
 
@@ -2157,8 +2161,10 @@ sLx::mv_r()
     info.dwCursorPosition.X++;
     SetConsoleCursorPosition(h, info.dwCursorPosition);
 #else
-    TTY.out_printf("%s", Tnd);
-    TTY.flush();
+    if (Tnd) {
+        TTY.out_printf("%s", Tnd);
+        TTY.flush();
+    }
 #endif
 }
 
@@ -2174,8 +2180,10 @@ sLx::mv_u()
         info.dwCursorPosition.Y--;
     SetConsoleCursorPosition(h, info.dwCursorPosition);
 #else
-    TTY.out_printf("%s", Tup);
-    TTY.flush();
+    if (Tup) {
+        TTY.out_printf("%s", Tup);
+        TTY.flush();
+    }
 #endif
 }
 // End of sLx functions.
