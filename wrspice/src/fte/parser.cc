@@ -344,7 +344,8 @@ IFsimulator::GetPtree(const char *xsbuf, bool check)
     // instantiate the parser
     unsigned int flags =
         (PRSR_UNITS | PRSR_AMPHACK | PRSR_NODEHACK | PRSR_USRSTR);
-    Parser P = Parser(new spElement[STACKSIZE], flags);
+    spElement elements[STACKSIZE];
+    Parser P = Parser(elements, flags);
     P.init(xsbuf, 0);
     const char *thisone = xsbuf;
 
@@ -416,7 +417,8 @@ IFsimulator::GetPnode(const char **xsptr, bool check, bool param)
     unsigned int flags = PRSR_UNITS | PRSR_AMPHACK | PRSR_NODEHACK;
     if (!param)
         flags |= PRSR_USRSTR;
-    Parser P = Parser(new spElement[STACKSIZE], flags);
+    spElement elements[STACKSIZE];
+    Parser P = Parser(elements, flags);
     P.init(xsbuf, 0);
     const char *thisone = xsbuf;
 
