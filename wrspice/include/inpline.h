@@ -108,6 +108,7 @@ enum CBLK_TYPE { CBLK_EXEC, CBLK_CTRL, CBLK_POST };
 #define PARAM_KW    ".param"
 #define MEASURE_KW  ".measure"
 #define MEAS_KW     ".meas"
+#define STOP_KW     ".stop"
 #define VERILOG_KW  ".verilog"
 #define ENDV_KW     ".endv"
 #define ADC_KW      ".adc"

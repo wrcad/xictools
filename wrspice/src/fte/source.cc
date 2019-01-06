@@ -2075,10 +2075,28 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 mx->set_next(m);
             }
         }
+        else if (lstring::cimatch(STOP_KW, dd->line())) {
+
+            char *er = 0;
+            const char *line = dd->line();
+            lstring::advtok(&line);
+            sRunopStop2 *m = new sRunopStop2(line, &er);
+            if (er) {
+                dd->set_error(er);
+                delete [] er;
+            }
+                
+            if (!ci_runops.stops2())
+                ci_runops.set_stops2(m);
+            else {
+                sRunopStop2 *mx = ci_runops.stops2();
+                while (mx->next())
+                    mx = mx->next();
+                mx->set_next(m);
+            }
+        }
 //XXX add runops here (.stop lines)
 /*
-        else if (lstring::cimatch(STOP_KW, dd->line()) {
-        }
         else if (lstring::cimatch(TRACE_KW, dd->line()) {
         }
         else if (lstring::cimatch(IPLOT_KW, dd->line()) {

@@ -52,7 +52,7 @@
 #include "miscutil/lstring.h"
 
 //
-// Functions for the measurement post-processor.
+// Functions for the measurement run operation.
 //
 
 //#define M_DEBUG
@@ -119,119 +119,111 @@ sMfunc::print(sLstr &lstr)
 // End of sMfunc functions.
 
 
-
 namespace {
-    // Return true if name names an analysis, and return the index in
-    // which.
+    // Grab text enclosed in parentheses, return token with outer
+    // parentheses stripped if notok is false.  If notok is true, don't
+    // return a token, just advance the string pointer.
     //
-    bool get_anal(const char *name, int *which)
+    char *parse_parens(const char **pstr, bool notok)
     {
-        for (int i = 0; ; i++) {
-            IFanalysis *a = IFanalysis::analysis(i);
-            if (!a)
-                break;
-            if (lstring::cieq(a->name, name)) {
-                *which = i;
-                return (true);
-            }
+        const char *s = *pstr;
+        if (*s != '(')
+            return (0);
+
+        s++;
+        int np = 1;
+        const char *p = s;
+        while (*p && np) {
+            if (*p == '(')
+                np++;
+            else if (*p == ')')
+                np--;
+            p++;
         }
-        *which = -1;
-        return (false);
+        if (notok) {
+            *pstr = p;
+            return (0);
+        }
+        int len = p - s;
+        char *t = new char[len+1];
+        char *e = t;
+
+        np = 1;
+        while (*s && np) {
+            if (*s == '(')
+                np++;
+            else if (*s == ')')
+                np--;
+            if (np)
+                *e++ = *s++;
+            else
+                s++;
+        }
+        *e = 0;
+        *pstr = s;
+        return (t);
     }
 
 
-    // Return comma or space separated token, with '=' considered as a
-    // token.  If kw is true, terminate tokens at '(', splitting forms
-    // like "param(val)".  Otherwise the parentheses will be included
-    // in the token.  The former is appropriate when a keyword is
-    // expected, the latter if an expression is expected.
+    // Return comma or space separated token, with '=' and quoted strings
+    // considered as tokens.
     //
-    char *gtok(const char **s, bool kw = false)
+    char *gtok(const char **pstr)
     {
-        if (s == 0 || *s == 0)
+        if (pstr == 0 || *pstr == 0)
             return (0);
-        while (isspace(**s) || **s == ',')
-            (*s)++;
-        if (!**s)
+        const char *s = *pstr;
+
+        // Strip leading "space".
+        while (isspace(*s) || *s == ',')
+            s++;
+        if (!*s)
             return (0);
-        char buf[BSIZE_SP];
-        char *t = buf;
-        if (**s == '=')
-            *t++ = *(*s)++;
-        else {
+        char *t = 0;
+        if (*s == '=') {
+            // This is a token.
+            t = lstring::copy("=");
+            s++;
+        }
+        else if (*s == '\'' || *s == '"') {
+            // Quoted text, take as one token, include quotes.
+            const char *p = s+1;
+            for ( ; *p && *p != *s; p++) ;
+            if (*p)
+                p++;
+            int len = p - s;
+            t = new char[len+1];
+            strncpy(t, s, len);
+            t[len] = 0;
+            s += len;
+        }
+        else if (*s == '(') {
             // Treat (....) as a single token.  Expressions can be
             // delimited this way to ensure that they are parsed
-            // correctly.  Single quotes were originally used for this
-            // purpose, but single quoted exporessions are now
-            // evaluated at circuit load time.
+            // correctly.  Single quotes can also be used.
             //
-            if (**s == '(') {
-                (*s)++;
-                int np = 1;
-                while (**s && np) {
-                    if (**s == '(')
-                        np++;
-                    else if (**s == ')')
-                        np--;
-                    if (np)
-                        *t++ = *(*s)++;
-                    else
-                        (*s)++;
-                }
-            }
-            else {
-                // Here's the problem:  Hspice can apparently handle
-                // forms like
-                //   ... trig vin'expression'
-                // where there is no space between the vin and the
-                // single quote.  We translate this to
-                //   ... trig vin(expression)
-                // implying that we need to stop parsing the trig at '('.
-                // However, this breaks forms like
-                //   ... trig v(vin) ...
-                // The fix is to
-                // 1. Add a space ahead of the leading '(' when we
-                //    translate.
-                // 2. Recognize and perform the following translations
-                //    here:
-                //    v(x) -> x
-                //    i(x) -> x#branch
-
-                const char *p = *s;
-                if (kw && p[1] == '(') {
-                    char ch = isupper(*p) ? tolower(*p) : *p;
-                    if (ch == 'v' || ch == 'i') {
-                        p += 2;
-                        while (isspace(*p))
-                            p++;
-                        while (*p && !isspace(*p) && *p != ',' && *p != ')' &&
-                                *p != '(') {
-                            *t++ = *p++;
-                        }
-                        while (*p && *p != ')')
-                            p++;
-                        if (ch == 'i')
-                            t = lstring::stpcpy(t, "#branch");
-                        if (*p)
-                            p++;
-                    }
-                }
-                if (p != *s)
-                    *s = p;
-                else {
-                    while (**s && !isspace(**s) && **s != '=' && **s != ',' &&
-                            (!kw || **s != '(')) {
-                        *t++ = *(*s)++;
-                    }
-                }
-            }
+            t = parse_parens(&s, false);
         }
-        *t = 0;
-        while (isspace(**s) || **s == ',')
-            (*s)++;
-        return (lstring::copy(buf));
+        else {
+            const char *p = s;
+            while (*p && !isspace(*p) &&
+                    *p != '=' && *p != ',' && *p != '\'') {
+                if (*p == '(')
+                    parse_parens(&p, true);
+                else
+                    p++;
+            }
+            int len = p - s;
+            t = new char[len+1];
+            strncpy(t, s, len);
+            t[len] = 0;
+            s += len;
+        }
+        while (isspace(*s) || *s == ',')
+            s++;
+        *pstr = s;
+        return (t);
     }
-
 
     // Return a double found after '=', set err if problems.
     //
@@ -265,17 +257,15 @@ namespace {
         if (!*errstr) {
             if (string) {
                 char buf[128];
-                sprintf(buf, ".measure syntax error after \'%s\'.", string);
+                sprintf(buf, "syntax error after \'%s\'.", string);
                 *errstr = lstring::copy(buf);
             }
             else
-                *errstr = lstring::copy(".measure syntax error.");
+                *errstr = lstring::copy("syntax error.");
         }
     }
-}
 
 
-namespace {
     bool is_kw(const char *s)
     {
         if (lstring::cieq(s, mkw_measure)) return (true);
@@ -315,6 +305,7 @@ namespace {
 
 sMpoint::~sMpoint()
 {
+    delete t_conj;
     delete [] t_when_expr1;
     delete [] t_when_expr2;
     delete t_tree1;
@@ -356,7 +347,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     t_kw1 = kw;
     const char *s = *pstr;
     const char *sbk = s;
-    char *tok = gtok(&s, false);
+    char *tok = gtok(&s);
     if (tok && *tok == '=') {
         delete [] tok;
         sbk = s;
@@ -412,7 +403,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     t_tree1 = pn;
     t_tree1->copyvecs();
 #ifdef M_DEBUG
-    printf("expr1 |%s| |%s|\n", tok, t_tree1->get_string(false));
+    printf("expr1 \'%s\' \'%s\'\n", tok, t_tree1->get_string(false));
 #endif
 
     // strip any "val="
@@ -455,7 +446,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
                 t_tree2->copyvecs();
                 t_type = MPexp2;
 #ifdef M_DEBUG
-                printf("expr2 |%s| |%s|\n", tok, t_tree2->get_string(false));
+    printf("expr2 \'%s\' \'%s\'\n", tok, t_tree2->get_string(false));
 #endif
             }
         }
@@ -483,7 +474,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     }
 
     const char *last = s;
-    while ((tok = gtok(&s, true)) != 0) {
+    while ((tok = gtok(&s)) != 0) {
         if (lstring::cieq(tok, mkw_td)) {
             delete [] tok;
             tok = gtok(&s);
@@ -552,7 +543,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     static int lockout;
 #endif
     last = s;
-    tok = gtok(&s, true);
+    tok = gtok(&s);
     if (tok) {
         bool c = (lstring::cieq(tok, mkw_at) || lstring::cieq(tok, mkw_when) ||
             lstring::cieq(tok, mkw_before) || lstring::cieq(tok, mkw_after));
@@ -561,11 +552,11 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
         if (c) {
             t_conj = new sMpoint();
 #ifdef M_DEBUG
-    lockout++;
+            lockout++;
 #endif
             int err = t_conj->parse(&s, errstr, 0);
 #ifdef M_DEBUG
-    lockout--;
+            lockout--;
 #endif
             if (err != OK)
                 return (err);
@@ -585,6 +576,8 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
 }
 
 
+// Print the specification into lstr.
+//
 void
 sMpoint::print(sLstr &lstr)
 {
@@ -660,20 +653,29 @@ sMpoint::print(sLstr &lstr)
 }
 
 
+// Initialise the delay, returns true when this operation is complete.
+//
 bool
 sMpoint::setup_delay(sFtCirc *circuit, bool *err)
 {
     if (!t_active)
         return (true);
 
-    if (!t_init) {
+    bool ready = true;
+    if (t_conj) {
+        if (!t_conj->setup_delay(circuit, err))
+            ready = false;
+    }
+
+    if (!t_delay_set) {
+
         t_delay = t_delay_given;
         sRunopMeas *m = 0;
         if (t_type == MPnum) {
 #ifdef M_DEBUG
             printf("setup_delay:  numeric %s\n", t_when_expr1);
 #endif
-            t_init = true;
+            t_delay_set = true;
         }
         else {
             if (t_type == MPexp1) {
@@ -700,7 +702,7 @@ sMpoint::setup_delay(sFtCirc *circuit, bool *err)
                     t_delay += m->end().t_found;
                 else
                     t_delay += m->start().t_found;
-                t_init = true;
+                t_delay_set = true;
 #ifdef M_DEBUG
                 printf("setup_delay:  expr measure reference %s, delay %g\n",
                     t_when_expr1, t_delay);
@@ -739,108 +741,39 @@ sMpoint::setup_delay(sFtCirc *circuit, bool *err)
                     printf("setup_delay:  expr1 |%s|\n", t_when_expr1);
                 }
 #endif
-                t_init = true;
+                t_delay_set = true;
             }
         }
     }
-    for (sMpoint *m = t_conj; m; m = m->t_conj) {
-        if (!m->setup_delay(circuit, err))
-            return (false);
-    }
-    return (true);
+    return (ready && t_delay_set);
 }
 
 
-namespace {
-    // Return a non-negative index if the scale covers the trigger point
-    // of val.  Do some fudging to avoid not triggering at the expected
-    // time point due to numerical error.
-    //
-    int chk_trig(double val, sDataVec *xs)
-    {
-        int len = xs->length();
-        if (len > 1) {
-            if (xs->realval(1) > xs->realval(0)) {
-                // Assume monotonically increasing.
-                if (xs->realval(0) >= val)
-                    return (0);
-                for (int i = 1; i < len; i++) {
-                    double dx = (xs->realval(i) - xs->realval(i-1)) * 1e-3;
-                    if (xs->realval(i) >= val - dx) {
-                        if (fabs(xs->realval(i-1) - val) <
-                                fabs(xs->realval(i) - val))
-                            i--;
-                        return (i);
-                    }
-                }
-            }
-            else {
-                // Assume monotonically decreasing.
-                if (xs->realval(0) <= val)
-                    return (0);
-                for (int i = 1; i < len; i++) {
-                    double dx = (xs->realval(i) - xs->realval(i-1)) * 1e-3;
-                    if (xs->realval(i) <= val - dx) {
-                        if (fabs(xs->realval(i-1) - val) <
-                                fabs(xs->realval(i) - val))
-                            i--;
-                        return (i);
-                    }
-                }
-            }
-        }
-        else if (len == 1) {
-            if (xs->realval(0) == val)
-                return (0);
-        }
-        return (-1);
-    }
-
-
-    // Return a data vector structure representing the expression
-    // evaluation.
-    //
-    sDataVec *evaluate(const char *str)
-    {
-        if (!str)
-            return (0);
-        const char *s = str;
-        pnode *pn = Sp.GetPnode(&s, true);
-        if (!pn)
-            return (0);
-        sDataVec *dv = Sp.Evaluate(pn);
-        delete pn;
-        return (dv);
-    }
-
-
-    // Return the indexed value, or the last value if index is too big.
-    //
-    inline double value(sDataVec *dv, int i)
-    {
-        if (i < dv->length())
-            return (dv->realval(i));
-        return (dv->realval(dv->length() - 1));
-    }
-}
-
-
+// Return true if the specified point has been reached.
+//
 bool
 sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
 {
     if (!t_active)
         return (true);
 
-    if (!t_found_flag) {
+    bool ready = true;
+    if (t_conj) {
+        if (!t_conj->check_found(circuit, err, end))
+            ready = false;
+    }
+    if (!t_found_flag && t_delay_set) {
         sDataVec *xs = circuit->runplot()->scale();
-        int ix = chk_trig(t_delay, xs);
-        if (ix < 0)
+        int ix = check_trig(xs);
+        if (ix < 0) {
             return (false);
+        }
 
         double fval = t_delay;
         if (t_type == MPnum)
             fval = xs->realval(ix);
         else if (t_type == MPmref) {
+            // nothing to do
         }
         else if (t_type == MPexp1) {
             sDataVec *dvl = eval1();
@@ -849,7 +782,12 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
                     *err = true;
                 return (false);
             }
-    //XXX finish me
+            if ((int)dvl->realval(0) == 0)
+                return (false);
+            ix = xs->unscalarized_length() - 1;
+            fval = xs->realval(0);;
+            if (end)
+                ix--;
         }
         else if (t_type == MPexp2) {
             sDataVec *dvl = eval1();
@@ -859,37 +797,42 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
                     *err = true;
                 return (false);
             }
-            int r = 0, f = 0, c = 0;
+
             bool foundit = false;
-            for ( ; ix < dvl->length(); ix++) {
-                if (ix && value(dvl, ix-1) <= value(dvr, ix-1) &&
-                        value(dvr, ix) < value(dvl, ix)) {
-                    r++;
-                    c++;
-                }
-                else if (ix && value(dvl, ix-1) > value(dvr, ix-1) &&
-                        value(dvr, ix) >= value(dvl, ix)) {
-                    f++;
-                    c++;
+            double v1 = dvl->realval(0);
+            double v2 = dvr->realval(0);
+            double x = xs->realval(0);
+            ix = xs->unscalarized_length() - 1;
+            if (t_v1 <= t_v2 && v2 < v1) {
+                t_rise_cnt++;
+                t_cross_cnt++;
+            }
+            else if (t_v1 > t_v2 && v2 >= v1) {
+                t_fall_cnt++;
+                t_cross_cnt++;
+            }
+            else {
+                t_v1 = v1;
+                t_v2 = v2;
+                return (false);
+            }
+
+            if (t_rise_cnt >= t_rises && t_fall_cnt >= t_falls &&
+                    t_cross_cnt >= t_crosses) {
+                double d = v2 - t_v2 - (v1 - t_v1);
+                if (d != 0.0) {
+                    double xp = xs->unscalarized_prev_real();
+                    fval = xp + (x - xp)*(t_v1 - t_v2)/d;
                 }
                 else
-                    continue;
-                if (r >= t_rises && f >= t_falls && c >= t_crosses) {
-                    double d = value(dvr, ix) - value(dvr, ix-1) -
-                        (value(dvl, ix) - value(dvl, ix-1));
-                    if (d != 0.0) {
-                        fval = xs->realval(ix-1) +
-                            (xs->realval(ix) - xs->realval(ix-1))*
-                            (value(dvl, ix-1) - value(dvr, ix-1))/d;
-                    }
-                    else
-                        fval = xs->realval(ix);
-                    foundit = true;
-                    if (end)
-                        ix--;
-                    break;
-                }
+                    fval = x;
+                foundit = true;
+                if (end)
+                    ix--;
             }
+            t_v1 = v1;
+            t_v2 = v2;
+
             if (!foundit)
                 return (false);
         }
@@ -898,11 +841,39 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
         t_found = fval;
         t_found_flag = true;
     }
-    for (sMpoint *m = t_conj; m; m = m->t_conj) {
-        if (!m->check_found(circuit, err, end))
-            return (false);
+    return (ready & t_found_flag);
+}
+
+
+// Return a non-negative index if the scale covers the trigger point
+// of val.  Do some fudging to avoid not triggering at the expected
+// time point due to numerical error.
+//
+int
+sMpoint::check_trig(sDataVec *xs)
+{
+    double x = xs->realval(0);
+    double xp = xs->unscalarized_prev_real();
+    int i = xs->unscalarized_length() - 1;
+    if (i > 0) {
+        if (x > xp) {
+            double dx = (x - xp)*1e-3;
+            if (x > t_delay - dx) {
+                if (fabs(xp - t_delay) < fabs(x - t_delay))
+                    i--;
+                return (i);
+            }
+        }
+        else if (x < xp) {
+            double dx = (x - xp)*1e-3;
+            if (x < t_delay - dx) {
+                if (fabs(xp - t_delay) < fabs(x - t_delay))
+                    i--;
+                return (i);
+            }
+        }
     }
-    return (true);
+    return (-1);
 }
 
 
@@ -1005,6 +976,27 @@ sRunopMeas::destroy()
 }
 
 
+namespace {
+    // Return true if name names an analysis, and return the index in
+    // which.
+    //
+    bool get_anal(const char *name, int *which)
+    {
+        for (int i = 0; ; i++) {
+            IFanalysis *a = IFanalysis::analysis(i);
+            if (!a)
+                break;
+            if (lstring::cieq(a->name, name)) {
+                *which = i;
+                return (true);
+            }
+        }
+        *which = -1;
+        return (false);
+    }
+}
+
+
 // Parse the string and set up the structure appropriately.
 //
 bool
@@ -1016,7 +1008,7 @@ sRunopMeas::parse(const char *str, char **errstr)
     ro_analysis = -1;
     const char *s = str;
     char *tok;
-    while ((tok = gtok(&s, true)) != 0) {
+    while ((tok = gtok(&s)) != 0) {
         if (!gotanal) {
             if (get_anal(tok, &ro_analysis)) {
                 gotanal = true;
@@ -1084,6 +1076,26 @@ sRunopMeas::parse(const char *str, char **errstr)
         if (lstring::cieq(tok, mkw_at)) {
             delete [] tok;
             int ret = ro_start.parse(&s, errstr, mkw_at);
+            if (ret != OK) {
+                err = true;
+                break;
+            }
+            in_call = false;
+            continue;
+        }
+        if (lstring::cieq(tok, mkw_before)) {
+            delete [] tok;
+            int ret = ro_start.parse(&s, errstr, mkw_before);
+            if (ret != OK) {
+                err = true;
+                break;
+            }
+            in_call = false;
+            continue;
+        }
+        if (lstring::cieq(tok, mkw_after)) {
+            delete [] tok;
+            int ret = ro_start.parse(&s, errstr, mkw_after);
             if (ret != OK) {
                 err = true;
                 break;
@@ -1320,7 +1332,7 @@ sRunopMeas::reset(sPlot *pl)
 // is returned if the measurement was performed.
 //
 bool
-sRunopMeas::check(sRunDesc *run)
+sRunopMeas::check_measure(sRunDesc *run)
 {
     if (!run || !run->circuit())
         return (true);
@@ -1330,6 +1342,7 @@ sRunopMeas::check(sRunDesc *run)
     sRunopMeas *measures = circuit->measures();
     if (!measures)
        return (true);  // "can't happen"
+    bool ready = true;
     if (ro_expr2) {
         for (sRunopMeas *m = measures; m; m = m->next()) {
             if (ro_analysis != m->ro_analysis)
@@ -1339,21 +1352,35 @@ sRunopMeas::check(sRunDesc *run)
             if (m->ro_expr2)
                 continue;
             if (!m->ro_measure_done && !m->ro_measure_error)
-                return (false);
+                ready = false;
         }
         // All non-param measurements done.
     }
     else {
         if (!ro_start.setup_delay(circuit, &ro_measure_error))
-            return (false);
+            ready = false;
         if (!ro_end.setup_delay(circuit, &ro_measure_error))
-            return (false);
+            ready = false;
         if (!ro_start.check_found(circuit, &ro_measure_error, false))
-            return (false);
+            ready = false;
         if (!ro_end.check_found(circuit, &ro_measure_error, true))
-            return (false);
+            ready = false;
     }
     ro_cktptr = circuit;
+    ro_queue_measure = ready;
+
+    return (ready);
+}
+
+
+// Called with vectors segmentized.
+//
+bool
+sRunopMeas::do_measure(sRunDesc *run)
+{
+    if (!ro_queue_measure)
+        return (false);
+    ro_queue_measure = false;
 
     sDataVec *dv;
     int cnt;
@@ -1361,6 +1388,14 @@ sRunopMeas::check(sRunDesc *run)
         return (false);
     if (!update_plot(dv, cnt))
         return (false);
+    ro_measure_done = true;
+
+
+    if (ro_print_flag && !Sp.GetFlag(FT_SERVERMODE)) {
+        char *s = print();
+        TTY.printf_force("%s", s);
+        delete [] s;
+    }
 
     // call function
     ROret ret = call(run);
@@ -1368,8 +1403,26 @@ sRunopMeas::check(sRunDesc *run)
         ro_stop_flag = true;
     if (ret == RO_ENDIT)
         ro_end_flag = true;
-
     return (true);
+}
+
+
+namespace {
+    // Return a data vector structure representing the expression
+    // evaluation.
+    //
+    sDataVec *evaluate(const char *str)
+    {
+        if (!str)
+            return (0);
+        const char *s = str;
+        pnode *pn = Sp.GetPnode(&s, true);
+        if (!pn)
+            return (0);
+        sDataVec *dv = Sp.Evaluate(pn);
+        delete pn;
+        return (dv);
+    }
 }
 
 
@@ -1637,18 +1690,11 @@ sRunopMeas::update_plot(sDataVec *dv0, int count)
                 ns->set_realval(1, ro_end.found());
         }
     }
-
-    ro_measure_done = true;
-    if (ro_print_flag && !Sp.GetFlag(FT_SERVERMODE)) {
-        char *s = print();
-        TTY.printf_force("%s", s);
-        delete [] s;
-    }
     return (true);
 }
 
 
-// Call the pose-measurement callback, if on is set up.
+// Call the post-measurement callback, if on is set up.
 //
 ROret
 sRunopMeas::call(sRunDesc *run)
@@ -1692,7 +1738,7 @@ sRunopMeas::call(sRunDesc *run)
 }
 
 
-// Return a string containing text of measurement result.
+// Return a string containing text of measurement results.
 //
 char *
 sRunopMeas::print()
@@ -1757,7 +1803,8 @@ sRunopMeas::print()
     }
     else if (ro_start.found_flag()) {
         if (ro_print_flag > 1) {
-            if (ro_cktptr && ro_cktptr->runplot() && ro_cktptr->runplot()->scale()) {
+            if (ro_cktptr && ro_cktptr->runplot() &&
+                    ro_cktptr->runplot()->scale()) {
                 const char *zz = ro_cktptr->runplot()->scale()->name();
                 if (zz && *zz) {
                     sprintf(buf, " %s\n", zz);
@@ -1775,11 +1822,14 @@ sRunopMeas::print()
                     sprintf(buf, " %s = %g\n", ff->expr(), ff->val());
             }
             else {
-                if (ff->error())
+                if (ff->error()) {
                     sprintf(buf, "%s %s = (error occurred)\n", ro_result,
                         ff->expr());
-                else
-                    sprintf(buf, "%s %s = %g\n", ro_result, ff->expr(), ff->val());
+                }
+                else {
+                    sprintf(buf, "%s %s = %g\n", ro_result, ff->expr(),
+                        ff->val());
+                }
             }
             lstr.add(buf);
         }
@@ -1816,6 +1866,18 @@ sRunopMeas::addMeas(Mfunc mtype, const char *expr)
                 mm = mm->next();
             mm->set_next(m);
         }
+    }
+}
+
+
+namespace {
+    // Return the indexed value, or the last value if index is too big.
+    //
+    inline double value(sDataVec *dv, int i)
+    {
+        if (i < dv->length())
+            return (dv->realval(i));
+        return (dv->realval(dv->length() - 1));
     }
 }
 
@@ -1938,7 +2000,6 @@ sRunopMeas::findrms(sDataVec *dv, sDataVec *xs)
 
 
 // Find the fwhm of a pulse assumed to be contained in the interval.
-//
 double
 sRunopMeas::findpw(sDataVec *dv, sDataVec *xs)
 {
@@ -2038,5 +2099,217 @@ sRunopMeas::findrft(sDataVec *dv, sDataVec *xs)
         return(tend - tbeg);
     }
     return (0.0);
+}
+// End of sRunopMeas functions.
+
+
+void
+sRunopStop2::print(char **retstr)
+{
+    const char *msg1 = "%c %-4d nstop";
+    if (!retstr) {
+        TTY.printf(msg1, ro_active ? ' ' : 'I', ro_number);
+        printcond(0, true);
+    }
+    else {
+        char buf[64];
+        sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
+        *retstr = lstring::build_str(*retstr, buf);
+        printcond(retstr, true);
+    }
+}
+
+
+void
+sRunopStop2::destroy()
+{
+    delete this;
+}
+
+
+// Parse the string and set up the structure appropriately.
+//
+bool
+sRunopStop2::parse(const char *str, char **errstr)
+{
+    bool err = false;
+    bool gotanal = false;
+    bool in_call = false;
+    ro_analysis = -1;
+    const char *s = str;
+    char *tok;
+    for (;;) {
+        const char *last = s;
+        tok = gtok(&s);
+        if (!tok)
+            break;
+        if (!gotanal) {
+            if (get_anal(tok, &ro_analysis)) {
+                gotanal = true;
+                delete [] tok;
+                in_call = false;
+                continue;
+            }
+        }
+        if (lstring::cieq(tok, mkw_when) ||
+                lstring::cieq(tok, mkw_at) ||
+                lstring::cieq(tok, mkw_before) ||
+                lstring::cieq(tok, mkw_after)) {
+            delete [] tok;
+            s = last;
+            int ret = ro_start.parse(&s, errstr, mkw_when);
+            if (ret != OK) {
+                err = true;
+                break;
+            }
+            in_call = false;
+            continue;
+        }
+
+        // This should follow all other keywords.
+        if (lstring::cieq(tok, mkw_call)) {
+            delete [] tok;
+            ro_call_flag = true;
+            // Ugly logic, the script name is optional, take the next
+            // token as the script name if it is not a keyword.
+            in_call = true;
+            continue;
+        }
+        if (in_call) {
+            ro_call = tok;
+            in_call = false;
+            continue;
+        }
+
+        if (errstr && !*errstr) {
+            char buf[128];
+            sprintf(buf, ".stop syntax error, unknown token \'%s\'.", tok);
+            *errstr = lstring::copy(buf);
+            err = true;
+            delete [] tok;
+        }
+    }
+    if (err)
+        ro_stop_skip = true;
+    return (true);
+}
+
+
+// Reset the measurement.
+//
+void
+sRunopStop2::reset()
+{
+
+    ro_start.reset();
+
+    ro_found_rises      = 0;
+    ro_found_falls      = 0;
+    ro_found_crosses    = 0;
+    ro_stop_done        = false;
+    ro_stop_error       = false;
+    ro_stop_flag        = false;
+    ro_end_flag         = false;
+}
+
+
+ROret
+sRunopStop2::check_stop(sRunDesc *run)
+{
+    if (!ro_active || !run || !run->circuit())
+        return (RO_OK);
+    if (ro_stop_done || ro_stop_error || ro_stop_skip)
+        return (RO_OK);
+
+    sFtCirc *circuit = run->circuit();
+    if (!ro_start.setup_delay(circuit, &ro_stop_error))
+        return (RO_OK);
+    if (!ro_start.check_found(circuit, &ro_stop_error, false))
+        return (RO_OK);
+
+    // Call the callback, if any.  This can override the stop.
+    ROret ret = call(run);
+    if (ret == RO_OK)
+        return (RO_PAUSE);
+    if (ret == RO_PAUSE)
+        return (RO_OK);
+    return (RO_ENDIT);
+}
+
+
+// Call the post-measurement callback, if on is set up.
+//
+ROret
+sRunopStop2::call(sRunDesc *run)
+{
+    // Call the callback, if any.  This can override the stop.
+    if (ro_call_flag) {
+        if (ro_call) {
+            // Call the named script or codeblock.
+            wordlist wl;
+            wl.wl_word = lstring::copy(ro_call);
+            Sp.ExecCmds(&wl);
+            delete [] wl.wl_word;
+            wl.wl_word = 0;
+            if (CP.ReturnVal() == CB_PAUSE)
+                return (RO_PAUSE);
+            if (CP.ReturnVal() == CB_ENDIT)
+                return (RO_ENDIT);
+        }
+        else if (run->check()) {
+            // Run the "controls" bound codeblock.  We stop
+            // only if the checkFAIL vector is not
+            // set.
+//XXX don't use checkFAIL here
+
+            run->check()->evaluate();
+            if (!run->check()->failed())
+                return (RO_OK);
+        }
+        else {
+            sFtCirc *circ = run->circuit();
+            if (circ) {
+                circ->controlBlk().exec(true);
+                if (CP.ReturnVal() == CB_PAUSE)
+                    return (RO_PAUSE);
+                if (CP.ReturnVal() == CB_ENDIT)
+                    return (RO_ENDIT);
+            }
+        }
+    }
+    return (RO_OK);
+}
+
+
+// Print the condition.  If retstr is not 0, add the text to *retstr,
+// otherwise print to standard output.  The status arg is true when
+// printing for the status command.
+//
+void
+sRunopStop2::printcond(char **retstr, bool status)
+{
+    (void)status;
+    sLstr lstr;
+    if (retstr) {
+        lstr.add(*retstr);
+        delete [] *retstr;
+        *retstr = 0;
+    }
+    ro_start.print(lstr);
+
+    if (ro_call_flag) {
+        lstr.add_c(' ');
+        lstr.add(mkw_call);
+        if (ro_call) {
+            lstr.add_c(' ');
+            lstr.add(ro_call);
+        }
+    }
+    lstr.add_c('\n');
+
+    if (retstr)
+        *retstr = lstr.string_trim();
+    else
+        TTY.send(lstr.string());
 }
 

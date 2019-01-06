@@ -532,6 +532,11 @@ void
 sRunDesc::scalarizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
+#ifdef XXXNEWSC
+        sDataVec *v = rd_data[k].vec;
+        if (v)
+            v->scalarize();
+#else
         if (rd_data[k].scalarized)
             continue;
         scData *bk = &rd_data[k].sc;
@@ -559,6 +564,7 @@ sRunDesc::scalarizeVecs()
             }
             rd_data[k].scalarized = true;
         }
+#endif
     }
 }
 
@@ -567,6 +573,11 @@ void
 sRunDesc::unscalarizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
+#ifdef XXXNEWSC
+        sDataVec *v = rd_data[k].vec;
+        if (v)
+            v->unscalarize();
+#else
         if (!rd_data[k].scalarized)
             continue;
         scData *bk = &rd_data[k].sc;
@@ -585,6 +596,7 @@ sRunDesc::unscalarizeVecs()
             }
             rd_data[k].scalarized = false;
         }
+#endif
     }
 }
 
@@ -596,6 +608,11 @@ void
 sRunDesc::segmentizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
+#ifdef XXXNEWSC
+        sDataVec *v = rd_data[k].vec;
+        if (v)
+            v->segmentize();
+#else
         if (rd_data[k].segmentized)
             continue;
         segData *bk = &rd_data[k].seg;
@@ -629,6 +646,7 @@ sRunDesc::segmentizeVecs()
             }
             rd_data[k].segmentized = true;
         }
+#endif
     }
 }
 
@@ -637,6 +655,11 @@ void
 sRunDesc::unsegmentizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
+#ifdef XXXNEWSC
+        sDataVec *v = rd_data[k].vec;
+        if (v)
+            v->unsegmentize();
+#else
         if (!rd_data[k].segmentized)
             continue;
         segData *bk = &rd_data[k].seg;
@@ -653,6 +676,7 @@ sRunDesc::unsegmentizeVecs()
                 v->set_compvec(bk->tdata.comp);
             rd_data[k].segmentized = false;
         }
+#endif
     }
 }
 

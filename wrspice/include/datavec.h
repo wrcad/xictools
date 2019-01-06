@@ -224,7 +224,6 @@ private:
     char units[8];
 };
 
-
 // Structure:  sDataVec
 //
 // A (possibly multi-dimensional) data vector.  The data is
@@ -272,8 +271,76 @@ enum PlotType
     PLOT_POINT
 };
 
+
 struct sDataVec
 {
+    // Temp storage of vector data for scalarizing.
+    //
+    struct scalData
+    {
+        scalData(sDataVec *v)
+            {
+                if (v) {
+                    length = v->length();
+                    rlength = v->allocated();
+                    numdims = v->numdims();
+                    for (int i = 0; i < MAXDIMS; i++)
+                        dims[i] = v->dims(i);
+                    real = v->realval(0);
+                    imag = v->imagval(0);
+
+                }
+                else {
+                    length = 0;
+                    rlength = 0;
+                    numdims = 0;
+                    memset(dims, 0, MAXDIMS*sizeof(int));
+                    real = 0.0;
+                    imag = 0.0;
+                }
+            }
+
+        int length;
+        int rlength;
+        int numdims;
+        int dims[MAXDIMS];
+        double real;
+        double imag;
+    };
+
+    // Temp storage of vector data for segmentizing.
+    //
+    struct segmData
+    {
+        segmData(sDataVec *v)
+            {
+                if (v) {
+                    length = v->length();
+                    rlength = v->allocated();
+                    numdims = v->numdims();
+                    for (int i = 0; i < MAXDIMS; i++)
+                        dims[i] = v->dims(i);
+                    if (v->isreal())
+                        tdata.real = v->realvec();
+                    else
+                        tdata.comp = v->compvec();
+                }
+                else {
+                    length = 0;
+                    rlength = 0;
+                    numdims = 0;
+                    memset(dims, 0, MAXDIMS*sizeof(int));
+                    tdata.real = 0;
+                }
+            }
+
+        int length;
+        int rlength;
+        int numdims;
+        int dims[MAXDIMS];
+        union { double *real; complex *comp; } tdata;
+    };
+
     sDataVec(int t = UU_NOTYPE)
         {
             v_data.real = 0;
@@ -287,6 +354,8 @@ struct sDataVec
             v_next = 0;
             v_link2 = 0;
             v_defcolor = 0;
+            v_scaldata = 0;
+            v_segmdata = 0;
 
             v_flags = 0;
             v_length = 0;
@@ -312,6 +381,8 @@ struct sDataVec
             v_next = 0;
             v_link2 = 0;
             v_defcolor = 0;
+            v_scaldata = 0;
+            v_segmdata = 0;
 
             v_flags = 0;
             v_length = 0;
@@ -348,6 +419,8 @@ struct sDataVec
             v_next = 0;
             v_link2 = 0;
             v_defcolor = 0;
+            v_scaldata = 0;
+            v_segmdata = 0;
 
             v_flags = type;
             v_length = v_rlength = len;
@@ -366,6 +439,10 @@ struct sDataVec
     sDataVec *pad(int, bool*);
     void newtemp(sPlot* = 0);
     void newperm(sPlot* = 0);
+    void scalarize();
+    void unscalarize();
+    void segmentize();
+    void unsegmentize();
     sDataVec *copy();
     void copyto(sDataVec*, int, int, int);
     void alloc(bool, int);
@@ -541,6 +618,28 @@ struct sDataVec
             v_data.comp = c;
         }
 
+    bool scalarized()           { return (v_scaldata != 0); }
+    bool segmentized()          { return (v_segmdata != 0); }
+
+    int unscalarized_length()
+        {
+            return (v_scaldata ? v_scaldata->length : v_length);
+        }
+
+    double unscalarized_prev_real()
+        {
+            if (v_scaldata)
+                return (realval(v_scaldata->length - 2));
+            return (realval(v_length - 2));
+        }
+
+    double unscalarized_prev_imag()
+        {
+            if (v_scaldata)
+                return (imagval(v_scaldata->length - 2));
+            return (imagval(v_length - 2));
+        }
+
     double absval(int i)
         {
             return (isreal() ? fabs(v_data.real[i]) :
@@ -642,6 +741,8 @@ private:
     sDataVec *v_next;       // Link for list of plot vectors.
     sDvList *v_link2;       // Extra link for things like print.
     char *v_defcolor;       // The name of a color to use.
+    scalData *v_scaldata;
+    segmData *v_segmdata;
 
     int v_flags;            // Flags (a combination of VF_*).
     int v_length;           // Length of the vector.

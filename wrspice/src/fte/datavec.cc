@@ -59,6 +59,10 @@ bool sDataVec::v_temporary = false;
 
 sDataVec::~sDataVec()
 {
+    if (v_scaldata)
+        unscalarize();
+    if (v_segmdata)
+        unsegmentize();
     delete [] v_name;
     sDvList::destroy(v_link2);
     if (isreal())
@@ -167,6 +171,95 @@ sDataVec::newperm(sPlot *pl)
     pl->new_perm_vec(this);
     if (pl == OP.curPlot())
         CP.AddKeyword(CT_VECTOR, v_name);
+}
+
+
+void
+sDataVec::scalarize()
+{
+    if (!v_scaldata && v_length > 1) {
+        v_scaldata = new scalData(this);
+
+        v_length = 1;
+        v_rlength = 1;
+        v_numdims = 1;
+        memset(v_dims, 0, MAXDIMS*sizeof(int));
+        if (isreal()) {
+            set_realval(0, realval(v_scaldata->length - 1));
+        }
+        else {
+            set_compval(0, compval(v_scaldata->length - 1));
+        }
+    }
+}
+
+
+void
+sDataVec::unscalarize()
+{
+    if (v_scaldata) {
+
+        v_length = v_scaldata->length;
+        v_rlength = v_scaldata->rlength;
+        v_numdims = v_scaldata->numdims;
+        memcpy(v_dims, v_scaldata->dims, MAXDIMS*sizeof(int));
+        if (isreal())
+            set_realval(0, v_scaldata->real);
+        else {
+            set_realval(0, v_scaldata->real);
+            set_imagval(0, v_scaldata->imag);
+        }
+        delete v_scaldata;
+        v_scaldata = 0;
+    }
+}
+
+
+void
+sDataVec::segmentize()
+{
+    if (!v_segmdata && v_numdims > 1) {
+
+        int per = v_dims[v_numdims - 1];
+        int l = v_length;
+        if (l >= per) {
+            v_segmdata = new segmData(this);
+
+            int lx = (l/per)*per;
+            if (lx == l)
+                lx = l - per;
+            int newlen = l - lx;
+            v_length = newlen;
+            v_rlength = newlen;
+            v_numdims = 1;
+            memset(v_dims, 0, MAXDIMS*sizeof(int));
+            if (isreal()) {
+                set_realvec(realvec() + lx);
+            }
+            else {
+                set_compvec(compvec() + lx);
+            }
+        }
+    }
+}
+
+
+void
+sDataVec::unsegmentize()
+{
+    if (v_segmdata) {
+
+        v_length = v_segmdata->length;
+        v_rlength = v_segmdata->rlength;
+        v_numdims = v_segmdata->numdims;
+        memcpy(v_dims, v_segmdata->dims, MAXDIMS*sizeof(int));
+        if (isreal())
+            set_realvec(v_segmdata->tdata.real);
+        else
+            set_compvec(v_segmdata->tdata.comp);
+        delete v_segmdata;
+        v_segmdata = 0;
+    }
 }
 
 

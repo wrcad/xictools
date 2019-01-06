@@ -68,6 +68,7 @@ enum ROtype
     RO_STOPAT,              // Break at this many iterations.
     RO_STOPBEFORE,          // Break before this many iterations.
     RO_STOPWHEN,            // Break when a node reaches this value.
+    RO_STOP,                // Break on condition.
     RO_MEASURE              // Perform a measurement.
 };
 
@@ -137,6 +138,36 @@ protected:
     bool ro_active;             // True if active.
     bool ro_bad;                // True if error.
 };
+
+
+template <class T>
+struct ROgen
+{
+    ROgen(T *list1, T *list2)
+        {
+            head1 = list1;
+            head2 = list2;
+        }
+
+    T *next()
+        {
+            if (head1) {
+                T *n = head1;
+                head1 = head1->next();
+                return (n);
+            }
+            if (head2) {
+                T *n = head2;
+                head2 = head2->next();
+                return (n);
+            }
+            return (0);
+        }
+private:
+    T *head1;
+    T *head2;
+};
+
 
 // Save an expression when running.
 struct sRunopSave : public sRunop
@@ -273,9 +304,9 @@ struct sRunopStop : public sRunop
     void print(char**);         // Print, in string if given, the runop msg.
     void destroy();             // Destroy this runop and alsos.
 
-    void parse(char*);              // Parse specification line.
+    static sRunopStop *parse(const char*);
     bool istrue();                  // Evaluate true if condition met.
-    ROret should_stop(sRunDesc*);   // Return if stop condition met.
+    ROret check_stop(sRunDesc*);    // Return if stop condition met.
     ROret call(sRunDesc*);          // Call function wrapper.
     void printcond(char**, bool);   // Print the conditional expression.
 
@@ -354,15 +385,20 @@ struct sMpoint
             t_tree1         = 0;
             t_tree2         = 0;
             t_mname         = 0;
-            t_found         = 0.0;
             t_delay_given   = 0.0;
             t_delay         = 0.0;
+            t_found         = 0.0;
+            t_v1            = 0.0;
+            t_v2            = 0.0;
             t_indx          = 0;
             t_crosses       = 0;
             t_rises         = 0;
             t_falls         = 0;
+            t_cross_cnt     = 0;
+            t_rise_cnt      = 0;
+            t_fall_cnt      = 0;
             t_found_flag    = false;
-            t_init          = false;
+            t_delay_set     = false;
             t_active        = false;
             t_type          = MPunknown;
             t_range         = MPatwhen;
@@ -370,6 +406,7 @@ struct sMpoint
 
     ~sMpoint();
 
+    sMpoint *conj()             { return (t_conj); }
     const char *when_expr1()    { return (t_when_expr1); }
     const char *when_expr2()    { return (t_when_expr2); }
     double found()              { return (t_found); }
@@ -381,39 +418,119 @@ struct sMpoint
         {
             t_delay = 0.0;
             t_found = 0.0;
+            t_v1 = 0.0;
+            t_v2 = 0.0;
             t_indx = 0;
+            t_cross_cnt = 0;
+            t_rise_cnt = 0;
+            t_fall_cnt = 0;
             t_found_flag = false;
-            t_init = false;
+            t_delay_set = false;
         }
 
     int parse(const char**, char**, const char*);
     void print(sLstr&);
     bool setup_delay(sFtCirc*, bool*);
     bool check_found(sFtCirc*, bool*, bool);
+
+private:
+    int check_trig(sDataVec*);
     sDataVec *eval1();
     sDataVec *eval2();
 
-private:
     sMpoint *t_conj;        // Conjunction list.
     const char *t_kw1;      // Optional first keyword saved.
     const char *t_kw2;      // Optional second keyword saved.
     char *t_when_expr1;     // First expression text.
     char *t_when_expr2;     // Second expression text.
-    pnode *t_tree1;
-    pnode *t_tree2;
+    pnode *t_tree1;         // Expression 1 parse tree.
+    pnode *t_tree2;         // Expression 2 parse tree.
     char *t_mname;          // Measure reference name.
-    double t_found;         // The measure point, once found.
     double t_delay_given;   // The 'td' value.
     double t_delay;         // Actual measurement point.
+    double t_found;         // The measure point, once found.
+    double t_v1;            // Previous expr1 value,
+    double t_v2;            // Previous expr2 value,
     int t_indx;             // Index of trigger point.
     int t_crosses;          // The 'crosses' value.
     int t_rises;            // The 'rises' value.
     int t_falls;;           // The 'falls' value.
+    int t_cross_cnt;        // Running croses count.
+    int t_rise_cnt;         // Running rises count.
+    int t_fall_cnt;         // Running falls count.
     bool t_found_flag;      // The measure point was found.
-    bool t_init;            // This is initialized.
+    bool t_delay_set;       // This is initialized.
     bool t_active;          // This is active, if not skip it.
     unsigned char t_type;   // Syntax type, MPform.
     unsigned char t_range;  // Before/at/after, MPrange.
+};
+
+struct sRunopStop2 : public sRunop
+{
+    sRunopStop2(const char *str, char **errstr)
+    {
+        ro_type = RO_STOP;
+
+        ro_call                 = 0;
+        ro_analysis             = 0;
+        ro_found_rises          = 0;
+        ro_found_falls          = 0;
+        ro_found_crosses        = 0;
+        ro_stop_done            = false;
+        ro_stop_error           = false;
+        ro_stop_skip            = false;
+        ro_stop_flag            = false;
+        ro_end_flag             = false;
+        ro_call_flag            = false;
+
+        parse(str, errstr);
+    }
+
+    ~sRunopStop2()
+        {
+            delete [] ro_call;
+        }
+
+    sRunopStop2 *next()         { return ((sRunopStop2*)ro_next); }
+
+    sMpoint &start()            { return (ro_start); }
+
+    int analysis()              { return (ro_analysis); }
+    const char *call()          { return (ro_call); }
+    const char *start_when_expr1()  { return (ro_start.when_expr1()); }
+    const char *start_when_expr2()  { return (ro_start.when_expr2()); }
+    bool stop_done()            { return (ro_stop_done); }
+    bool stop_flag()            { return (ro_stop_flag); }
+    bool end_flag()             { return (ro_end_flag); }
+    void nostop()               { ro_stop_flag = false; ro_end_flag = false; }
+
+    void print(char**);         // Print, in string if given, the runop msg.
+    void destroy();             // Destroy this runop.
+
+    // measure.cc
+    bool parse(const char*, char**);
+    void reset();
+    ROret check_stop(sRunDesc*);
+    ROret call(sRunDesc*);
+    void printcond(char**, bool);
+
+private:
+    double endval(sDataVec*, sDataVec*, bool);
+
+    sMpoint ro_start;
+
+    const char *ro_call;        // function to call when measure comp[lete
+    int ro_analysis;            // type index of analysis 
+    int ro_found_rises;         // number of rising crossings
+    int ro_found_falls;         // number of falling crossings
+    int ro_found_crosses;       // number of crossings
+    bool ro_stop_done;          // measurement done successfully
+    bool ro_stop_error;         // measurement can't be done
+    bool ro_stop_skip;          // parse error so skip
+    bool ro_stop_flag;          // pause analysis when done
+    bool ro_end_flag;           // terminate analysis when done
+    bool ro_call_flag;          // call a function or bound codeblock
+//    char ro_print_flag;         // print result on screen, 1 terse  2 verbose
 };
 
 enum Mfunc { Mmin, Mmax, Mpp, Mavg, Mrms, Mpw, Mrft, Mfind };
@@ -477,6 +594,7 @@ struct sRunopMeas : public sRunop
         ro_found_rises          = 0;
         ro_found_falls          = 0;
         ro_found_crosses        = 0;
+        ro_queue_measure        = false;
         ro_measure_done         = false;
         ro_measure_error        = false;
         ro_measure_skip         = false;
@@ -512,6 +630,7 @@ struct sRunopMeas : public sRunop
     const char *end_when_expr1()    { return (ro_end.when_expr1()); }
     const char *end_when_expr2()    { return (ro_end.when_expr2()); }
     sMfunc *funcs()             { return (ro_funcs); }
+    bool measure_queued()       { return (ro_queue_measure); }
     bool measure_done()         { return (ro_measure_done); }
     bool stop_flag()            { return (ro_stop_flag); }
     bool end_flag()             { return (ro_end_flag); }
@@ -534,7 +653,8 @@ struct sRunopMeas : public sRunop
     // measure.cc
     bool parse(const char*, char**);
     void reset(sPlot*);
-    bool check(sRunDesc*);
+    bool check_measure(sRunDesc*);
+    bool do_measure(sRunDesc*);
     bool measure(sDataVec**, int*);
     bool update_plot(sDataVec*, int);
     ROret call(sRunDesc*);
@@ -561,6 +681,7 @@ private:
     int ro_found_rises;         // number of rising crossings
     int ro_found_falls;         // number of falling crossings
     int ro_found_crosses;       // number of crossings
+    bool ro_queue_measure;      // ready to measure
     bool ro_measure_done;       // measurement done successfully
     bool ro_measure_error;      // measurement can't be done
     bool ro_measure_skip;       // parse error so skip

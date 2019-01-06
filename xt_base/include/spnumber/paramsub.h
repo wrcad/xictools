@@ -136,10 +136,13 @@ struct sParamTab
             pt_table = new sHtab(sHtab::get_ciflag(CSE_PARAM));
             pt_rctab = new sHtab(sHtab::get_ciflag(CSE_PARAM));
             pt_collapse = false;
+            pt_no_sqexp = false;
             add_predefs();
         }
 
     ~sParamTab();
+
+    void set_no_sqexp(bool b)       { pt_no_sqexp = b; }
 
     // tokenize str and update all tokens.
     //
@@ -188,41 +191,17 @@ struct sParamTab
         }
 
     // Special for .measure line.  For HSPICE compatibility, don't do
-    // single-quote expansion.  Replace single quotes with ( ).
+    // single-quote expansion.
     //
-    void param_subst_measure(char **str) const
+    void param_subst_measure(char **str)
         {
-            sLstr lstr;
-            char *s = *str;
-            bool first = true;
-            for ( ; *s; s++) {
-                if (*s == '\'') {
-                    if (first) {
-                        // Inject a space before the leading quote. 
-                        // This helps the parser later.  We need to be
-                        // able to parse forms like
-                        // "...  trig vin'expr' ...".
-                        // Encountered this in an Hspice deck so
-                        // apparently Hspice accepts this.
-
-                        if (s > *str && !isspace(s[-1]) && s[-1] != '=')
-                            lstr.add_c(' ');
-                        lstr.add_c('(');
-                        first = false;
-                    }
-                    else {
-                        lstr.add_c(')');
-                        first = true;
-                    }
-                }
-                else
-                    lstr.add_c(*s);
-            }
-            delete [] *str;
-            *str = lstr.string_trim();
+            pt_no_sqexp = true;
             line_subst(str);
+            pt_no_sqexp = false;
         }
 
+    // Special for .options lines.
+    //
     void param_subst_options(char **str)
         {
             pt_collapse = true;
@@ -259,6 +238,7 @@ private:
     sHtab *pt_table;        // Main table for elements.
     sHtab *pt_rctab;        // Used for recursion testing.
     bool pt_collapse;
+    bool pt_no_sqexp;       // Don't do single-quote expansion.
 };
 
 // Mapping used when promoting macros.

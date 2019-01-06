@@ -708,10 +708,11 @@ sParamTab::squote_subst(char **str) const
     const char *msg = "Evaluation failed: %s.";
 
     char *expr;
-    if (strchr(*str, '$')) {
-        // The expression contains unexpanded shell variables.  In this
-        // case expand any parameters, and leave the result in single
-        // quotes.
+    if (pt_no_sqexp || strchr(*str, '$')) {
+        // We aren't single-quote expanding, ot The expression
+        // contains unexpanded shell variables.  In this case expand
+        // any parameters, and leave the result in single quotes.
+
         bool quoted = false;
         if (**str == '\'') {
             // strip quotes;

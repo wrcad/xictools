@@ -751,6 +751,54 @@ pnode::checkvalid() const
     return (true);
 }
 
+/*XXX
+void
+pnode::scalarize()
+{
+    if (pn_string) {
+        if (!pn_value && pn_type == PN_VEC) {
+            sCKT *ckt = Sp.CurCircuit() ? Sp.CurCircuit()->runckt() : 0;
+            sDataVec *d = OP.vecGet(pn_string, ckt);
+            if (d)
+                d->scalarize();
+        }
+    }
+    else if (pn_func) {
+        if (pn_left && !pn_left->scalarize())
+            return (false);
+    }
+    else if (pn_op) {
+        if (pn_left && !pn_left->scalarize())
+            return (false);
+        if (pn_right && !pn_right->scalarize())
+            return (false);
+    }
+}
+
+void
+pnode::unscalarize()
+{
+    if (pn_string) {
+        if (!pn_value && pn_type == PN_VEC) {
+            sCKT *ckt = Sp.CurCircuit() ? Sp.CurCircuit()->runckt() : 0;
+            sDataVec *d = OP.vecGet(pn_string, ckt);
+            if (d)
+                d->unscalarize();
+        }
+    }
+    else if (pn_func) {
+        if (pn_left && !pn_left->unscalarize())
+            return (false);
+    }
+    else if (pn_op) {
+        if (pn_left && !pn_left->unscalarize())
+            return (false);
+        if (pn_right && !pn_right->unscalarize())
+            return (false);
+    }
+}
+*/
+
 
 // Special silent tree-checking function.  Return values are
 // 0  No errors.
