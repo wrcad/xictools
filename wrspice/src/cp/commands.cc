@@ -185,6 +185,7 @@ namespace cmdnames {
     const char *cmd_loop        = "loop";       // alias for "sweep"
     const char *cmd_mapkey      = "mapkey";
     const char *cmd_measure     = "measure";
+const char *cmd_nstop        = "nstop";
     const char *cmd_mmon        = "mmon";
     const char *cmd_mplot       = "mplot";
     const char *cmd_noise       = "noise";
@@ -229,7 +230,6 @@ namespace cmdnames {
     const char *cmd_status      = "status";
     const char *cmd_step        = "step";
     const char *cmd_stop        = "stop";
-const char *cmd_nstop        = "nstop";
     const char *cmd_strcicmp    = "strcicmp";
     const char *cmd_strciprefix = "strciprefix";
     const char *cmd_strcmp      = "strcmp";
@@ -427,6 +427,10 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_measure, com_measure, false, true, false,
       Bstop, Bstop, Bstop, Bstop, E_DEFHMASK, 0, LOTS, 0,
       "[measure args] : Set up a measurement." ) ,
+//XXX
+    sCommand( cmd_nstop, com_nstop, false, true, false,
+      Bstop, Bstop, Bstop, Bstop, E_DEFHMASK, 0, LOTS, 0,
+      "[nstop args] : Set a breakpoint." ) ,
     sCommand( cmd_mmon, com_mmon, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 2, 0,
       ": memory monitor control." ) ,
@@ -560,10 +564,6 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_stop, com_stop, false, true, false,
       Bstop, Bstop, Bstop, Bstop, E_DEFHMASK, 0, LOTS, 0,
       "[stop args] : Set a breakpoint." ) ,
-//XXX
-    sCommand( cmd_nstop, com_nstop, false, true, false,
-      Bstop, Bstop, Bstop, Bstop, E_DEFHMASK, 0, LOTS, 0,
-      "[nstop args] : Set a breakpoint." ) ,
     sCommand( cmd_strcicmp, com_strcicmp, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 2, 2, 0,
       "s1 s2 : Set $? to strcasecmp(s1, s2)." ) ,

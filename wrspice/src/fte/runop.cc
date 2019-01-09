@@ -99,12 +99,6 @@ CommandTab::com_stop(wordlist *wl)
     OP.stopCmd(wl);
 }
 
-void
-CommandTab::com_nstop(wordlist *wl)
-{
-    OP.stop2Cmd(wl);
-}
-
 
 // Set up a measure runop.
 //
@@ -112,6 +106,13 @@ void
 CommandTab::com_measure(wordlist *wl)
 {
     OP.measureCmd(wl);
+}
+
+
+void
+CommandTab::com_nstop(wordlist *wl)
+{
+    OP.stop2Cmd(wl);
 }
 
 
@@ -201,6 +202,30 @@ IFoutput::stopCmd(wordlist *wl)
 
 
 void
+IFoutput::measureCmd(wordlist *wl)
+{
+    char *str = wordlist::flatten(wl);
+    char *errstr = 0;
+    sRunopMeas *m = new sRunopMeas(str, &errstr);
+    if (errstr) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "Measure: %s\n", errstr);
+        delete [] errstr;
+        delete m;
+    }
+    else {
+        if (o_runops->measures()) {
+            sRunopMeas *d = o_runops->measures();
+            for ( ; d->next(); d = d->next())
+                ;
+            d->set_next(m);
+        }
+        else
+            o_runops->set_measures(m);
+    }
+}
+
+
+void
 IFoutput::stop2Cmd(wordlist *wl)
 {
     char *str = wordlist::flatten(wl);
@@ -241,30 +266,6 @@ IFoutput::stop2Cmd(wordlist *wl)
 
 
 void
-IFoutput::measureCmd(wordlist *wl)
-{
-    char *str = wordlist::flatten(wl);
-    char *errstr = 0;
-    sRunopMeas *m = new sRunopMeas(str, &errstr);
-    if (errstr) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Measure: %s\n", errstr);
-        delete [] errstr;
-        delete m;
-    }
-    else {
-        if (o_runops->measures()) {
-            sRunopMeas *d = o_runops->measures();
-            for ( ; d->next(); d = d->next())
-                ;
-            d->set_next(m);
-        }
-        else
-            o_runops->set_measures(m);
-    }
-}
-
-
-void
 IFoutput::statusCmd(char **ps)
 {
     if (ps)
@@ -297,12 +298,12 @@ IFoutput::statusCmd(char **ps)
     for (sRunopStop *d = sgen.next(); d; d = sgen.next())
         d->print(t);
 
-    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
-    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next())
-        d->print(t);
-
     ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
     for (sRunopMeas *d = mgen.next(); d; d = mgen.next())
+        d->print(t);
+
+    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
+    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next())
         d->print(t);
 }
 
@@ -490,20 +491,18 @@ IFoutput::initRunops(sRunDesc *run)
         }
     }
 
-    /*
-    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
-    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
-        if (run->job()->JOBtype != d->analysis())
-            continue;
-        d->reset(run->runPlot());
-    }
-    */
-
     ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
     for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
         if (run->job()->JOBtype != d->analysis())
             continue;
         d->reset(run->runPlot());
+    }
+
+    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
+    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
+        if (run->job()->JOBtype != d->analysis())
+            continue;
+        d->reset();
     }
 }
 
@@ -545,16 +544,16 @@ IFoutput::setRunopActive(int dbnum, bool state)
         }
     }
 
-    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
-    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
+    ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
+    for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
         }
     }
 
-    ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
-    for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
+    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
+    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
@@ -712,42 +711,6 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
             }
         }
     }
-    if (which & DF_STOP2) {
-        sRunopStop2 *dlast = 0, *dnext;
-        for (sRunopStop2 *d = o_runops->stops2(); d; d = dnext) {
-            dnext = d->next();
-            if ((num < 0 || num == d->number()) &&
-                    (!inactive || !d->active())) {
-                if (!dlast)
-                    o_runops->set_stops2(dnext);
-                else
-                    dlast->set_next(dnext);
-                d->destroy();
-                if (num >= 0)
-                    return;
-                continue;
-            }
-            dlast = d;
-        }
-        if (db) {
-            dlast = 0;
-            for (sRunopStop2 *d = db->stops2(); d; d = dnext) {
-                dnext = d->next();
-                if ((num < 0 || num == d->number()) &&
-                        (!inactive || !d->active())) {
-                    if (!dlast)
-                        db->set_stops2(dnext);
-                    else
-                        dlast->set_next(dnext);
-                    d->destroy();
-                    if (num >= 0)
-                        return;
-                    continue;
-                }
-                dlast = d;
-            }
-        }
-    }
     if (which & DF_MEASURE) {
         sRunopMeas *dlast = 0, *dnext;
         for (sRunopMeas *d = o_runops->measures(); d; d = dnext) {
@@ -784,6 +747,42 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
             }
         }
     }
+    if (which & DF_STOP2) {
+        sRunopStop2 *dlast = 0, *dnext;
+        for (sRunopStop2 *d = o_runops->stops2(); d; d = dnext) {
+            dnext = d->next();
+            if ((num < 0 || num == d->number()) &&
+                    (!inactive || !d->active())) {
+                if (!dlast)
+                    o_runops->set_stops2(dnext);
+                else
+                    dlast->set_next(dnext);
+                d->destroy();
+                if (num >= 0)
+                    return;
+                continue;
+            }
+            dlast = d;
+        }
+        if (db) {
+            dlast = 0;
+            for (sRunopStop2 *d = db->stops2(); d; d = dnext) {
+                dnext = d->next();
+                if ((num < 0 || num == d->number()) &&
+                        (!inactive || !d->active())) {
+                    if (!dlast)
+                        db->set_stops2(dnext);
+                    else
+                        dlast->set_next(dnext);
+                    d->destroy();
+                    if (num >= 0)
+                        return;
+                    continue;
+                }
+                dlast = d;
+            }
+        }
+    }
 }
 
 
@@ -796,45 +795,98 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
         return;
     sCHECKprms *chk = run->check();
     if (chk && chk->out_mode == OutcCheck) {
-        // Only the current analysis point is saved.  There are no
-        // measures, stop-whens, or iplots.
+        // Only the current analysis point is saved.
 
-        if (!chk->points() || ref < chk->points()[chk->index()]) {
-            vecGc();
-            return;
-        }
         sRunopDb *db = run->circuit() ? &run->circuit()->runops() : 0;
 
         bool tflag = true;
         ROgen<sRunopTrace> tgen(o_runops->traces(), db ? db->traces() : 0);
-//XXX need a point index count in print_trace last arg
         for (sRunopTrace *d = tgen.next(); d; d = tgen.next())
-            d->print_trace(run->runPlot(), &tflag, 0);
+            d->print_trace(run->runPlot(), &tflag, chk->index());
 
-/*XXX handle this somehow?
+/*XXX handle these somehow?
         ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
         for (sRunopStop *d = sgen.next(); d; d = sgen.next())
             ROret r = d->check_stop(run);
-            if (r == RO_PAUSE) {
+            if (r == RO_PAUSE || r == RO_ENDIT) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
                 TTY.printf("%-2d: condition met: stop", d->number());
                 d->printcond(0, false);
-                o_shouldstop = true;
+                if (r == RO_PAUSE)
+                    o_shouldstop = true;
+                else
+                    o_endit = true;
                 if (need_pr)
                     CP.Prompt();
             }
-            else if (r == RO_ENDIT) {
-//XXX handle this
-                o_endit = true;
+        }
+
+        bool measures_done = true;
+        bool measure_queued = false;
+        ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
+        for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
+            if (run->anType() != d->analysis())
+                continue;
+            if (!d->check_measure(run))
+                measures_done = false;
+            if (d->measure_queued())
+                measure_queued = true;
+        }
+
+//XXX can't do actual measurements since we don't have data, but
+// process call/print and, maybe create new vector with expression
+// result.
+        if (measure_queued) {
+            run->segmentizeVecs();
+            mgen = ROgen<sRunopMeas>(o_runops->measures(),
+                db ? db->measures() : 0);
+            for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
+                if (run->anType() != d->analysis())
+                    continue;
+                if (!d->do_measure(run))
+                    measures_done = false;
+            }
+            run->unsegmentizeVecs();
+        }
+        if (measures_done) {
+            // Reset stop flags so analysis can be continued.
+            mgen = ROgen<sRunopMeas>(o_runops->measures(),
+                db ? db->measures() : 0);
+            for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
+                if (d->end_flag())
+                    o_endit = true;
+                if (d->stop_flag())
+                    o_shouldstop = true;
+                d->nostop();
             }
         }
+
+        ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
+        for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next())
+            ROret r = d->check_stop(run);
+            if (r == RO_PAUSE || r == RO_ENDIT) {
+                bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
+                TTY.printf("%-2d: condition met: stop", d->number());
+                d->printcond(0, false);
+                if (r == RO_PAUSE)
+                    o_shouldstop = true;
+                else
+                    o_endit = true;
+                if (need_pr)
+                    CP.Prompt();
+            }
+        }
+
 */
+        if (chk->points() && ref >= chk->points()[chk->index()]) {
+//XXX fix this, check return set o_endit
+            chk->evaluate();
 
-        chk->evaluate();
+            chk->set_index(chk->index() + 1);
+            if (chk->failed() || chk->index() == chk->max_index())
+                o_endit = true;
+        }
 
-        chk->set_index(chk->index() + 1);
-        if (chk->failed() || chk->index() == chk->max_index())
-            o_endit = true;
         vecGc();
         return;
     }
@@ -873,6 +925,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             }
         }
 
+//XXX do this after measures.
         ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
         for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
             if (!scalarized) {

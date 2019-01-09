@@ -166,8 +166,8 @@ struct sRunopDb
             rd_trace = 0;
             rd_save = 0;
             rd_stop = 0;
-            rd_stop2 = 0;
             rd_meas = 0;
+            rd_stop2 = 0;
             rd_runopcnt = 1;
             rd_stepcnt = 0;
             rd_steps = 0;
@@ -196,11 +196,11 @@ struct sRunopDb
     sRunopStop *stops()             { return (rd_stop); }
     void set_stops(sRunopStop *d)   { rd_stop = d; }
 
-    sRunopStop2 *stops2()           { return (rd_stop2); }
-    void set_stops2(sRunopStop2 *d) { rd_stop2 = d; }
-
     sRunopMeas *measures()          { return (rd_meas); }
     void set_measures(sRunopMeas *m){ rd_meas = m; }
+
+    sRunopStop2 *stops2()           { return (rd_stop2); }
+    void set_stops2(sRunopStop2 *d) { rd_stop2 = d; }
 
     int new_count()             { return (rd_runopcnt++); }
     int decrement_count()       { return (rd_runopcnt--); }
@@ -217,8 +217,8 @@ private:
     sRunopTrace *rd_trace;      // trace list head
     sRunopIplot *rd_iplot;      // iplot list head
     sRunopStop *rd_stop;        // stop after/when list head
-    sRunopStop2 *rd_stop2;      // stop after/when list head
     sRunopMeas *rd_meas;        // measures list head
+    sRunopStop2 *rd_stop2;      // stop after/when list head
 
     int rd_runopcnt;            // running sum of runops created, provides id
     int rd_stepcnt;             // number of steps done
@@ -349,10 +349,10 @@ struct sFtCirc
     void set_iplots(sRunopIplot *d) { ci_runops.set_iplots(d); }
     sRunopStop *stops()             { return (ci_runops.stops()); }
     void set_stops(sRunopStop *d)   { ci_runops.set_stops(d); }
-    sRunopStop2 *stops2()           { return (ci_runops.stops2()); }
-    void set_stops2(sRunopStop2 *d) { ci_runops.set_stops2(d); }
     sRunopMeas *measures()          { return (ci_runops.measures()); }
     void set_measures(sRunopMeas *m){ ci_runops.set_measures(m); }
+    sRunopStop2 *stops2()           { return (ci_runops.stops2()); }
+    void set_stops2(sRunopStop2 *d) { ci_runops.set_stops2(d); }
 
     wordlist *commands()        { return (ci_commands); }
 

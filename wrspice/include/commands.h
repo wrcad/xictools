@@ -158,6 +158,7 @@ public:
     static void com_load(wordlist*);
     static void com_mapkey(wordlist*);
     static void com_measure(wordlist*);
+static void com_nstop(wordlist*);
     static void com_mmon(wordlist*);
     static void com_mplot(wordlist*);
     static void com_noise(wordlist*);
@@ -204,7 +205,6 @@ public:
     static void com_status(wordlist*);
     static void com_step(wordlist*);
     static void com_stop(wordlist*);
-static void com_nstop(wordlist*);
     static void com_strcicmp(wordlist*);
     static void com_strciprefix(wordlist*);
     static void com_strcmp(wordlist*);
