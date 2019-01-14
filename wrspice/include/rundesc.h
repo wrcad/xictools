@@ -52,37 +52,6 @@ Authors: 1988 Wayne A. Christopher
 // sRunDesc functions, low-level output control.
 //
 
-#define XXXNEWSC
-#ifdef XXXNEWSC
-#else
-
-// Temp storage of vector data for scalarizing.
-//
-struct scData
-{
-    // No construcor, part of dataDesc.
-
-    double real;
-    double imag;
-    int length;
-    int rlength;
-    int numdims;
-    int dims[MAXDIMS];
-};
-
-// Temp storage of vector data for segmentizing.
-//
-struct segData
-{
-    // No construcor, part of dataDesc.
-
-    union { double *real; complex *comp; } tdata;
-    int length;
-    int rlength;
-    int numdims;
-    int dims[MAXDIMS];
-};
-#endif
 
 // Struct used to store information on a data object.
 //
@@ -103,20 +72,10 @@ struct dataDesc
     int outIndex;       // Index of regular vector or dependent
     int numbasedims;    // Vector numdims for looping
     int basedims[MAXDIMS]; // Vecor dimensions for looping
-#ifdef XXXNEWSC
-#else
-    scData sc;          // Back store for scalarization
-    segData seg;        // Back store for segmentization
-#endif
     IFspecial sp;       // Descriptor for special parameter
     bool useVecIndx;    // Use vector for special array index
     bool regular;       // True if regular vector, false if special
     bool rollover_ok;   // If true, roll over
-#ifdef XXXNEWSC
-#else
-    bool scalarized;    // True if scalarized
-    bool segmentized;   // True if segmentized
-#endif
 };
 
 // Struct used to store run status and context.  This is returned from

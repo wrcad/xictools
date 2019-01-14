@@ -292,11 +292,13 @@ extern const char *kw_substart;
  *  Misc.
  *************************************************************************/
 
-// breakp.cc
-extern const char *kw_stop;
+// runop.cc
+extern const char *kw_save;
 extern const char *kw_trace;
 extern const char *kw_iplot;
-extern const char *kw_save;
+extern const char *kw_stop;
+extern const char *kw_measure;
+extern const char *kw_stop2;
 extern const char *kw_after;
 extern const char *kw_at;
 extern const char *kw_before;

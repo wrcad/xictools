@@ -532,39 +532,9 @@ void
 sRunDesc::scalarizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
-#ifdef XXXNEWSC
         sDataVec *v = rd_data[k].vec;
         if (v)
             v->scalarize();
-#else
-        if (rd_data[k].scalarized)
-            continue;
-        scData *bk = &rd_data[k].sc;
-        sDataVec *v = rd_data[k].vec;
-        if (v && v->length() > 1) {
-            bk->length = v->length();
-            bk->rlength = v->allocated();
-            bk->numdims = v->numdims();
-            for (int i = 0; i < MAXDIMS; i++)
-                bk->dims[i] = v->dims(i);
-
-            v->set_length(1);
-            v->set_allocated(1);
-            v->set_numdims(1);
-            for (int i = 0; i < MAXDIMS; i++)
-                v->set_dims(i, 0);
-            if (v->isreal()) {
-                bk->real = v->realval(0);
-                v->set_realval(0, v->realval(bk->length - 1));
-            }
-            else {
-                bk->real = v->realval(0);
-                bk->imag = v->imagval(0);
-                v->set_compval(0, v->compval(bk->length - 1));
-            }
-            rd_data[k].scalarized = true;
-        }
-#endif
     }
 }
 
@@ -573,30 +543,9 @@ void
 sRunDesc::unscalarizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
-#ifdef XXXNEWSC
         sDataVec *v = rd_data[k].vec;
         if (v)
             v->unscalarize();
-#else
-        if (!rd_data[k].scalarized)
-            continue;
-        scData *bk = &rd_data[k].sc;
-        sDataVec *v = rd_data[k].vec;
-        if (v) {
-            v->set_length(bk->length);
-            v->set_allocated(bk->rlength);
-            v->set_numdims(bk->numdims);
-            for (int i = 0; i < MAXDIMS; i++)
-                v->set_dims(i, bk->dims[i]);
-            if (v->isreal())
-                v->set_realval(0, bk->real);
-            else {
-                v->set_realval(0, bk->real);
-                v->set_imagval(0, bk->imag);
-            }
-            rd_data[k].scalarized = false;
-        }
-#endif
     }
 }
 
@@ -608,45 +557,9 @@ void
 sRunDesc::segmentizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
-#ifdef XXXNEWSC
         sDataVec *v = rd_data[k].vec;
         if (v)
             v->segmentize();
-#else
-        if (rd_data[k].segmentized)
-            continue;
-        segData *bk = &rd_data[k].seg;
-        sDataVec *v = rd_data[k].vec;
-        if (v && v->numdims() > 1) {
-            int per = v->dims(v->numdims() - 1);
-            int l = v->length();
-            if (l < per)
-                continue;
-            int lx = (l/per)*per;
-            if (lx == l)
-                lx = l - per;
-            int newlen = l - lx;
-            bk->length = v->length();
-            bk->rlength = v->allocated();
-            bk->numdims = v->numdims();
-            for (int i = 0; i < MAXDIMS; i++)
-                bk->dims[i] = v->dims(i);
-            v->set_length(newlen);
-            v->set_allocated(newlen);
-            v->set_numdims(1);
-            for (int i = 0; i < MAXDIMS; i++)
-                v->set_dims(i, 0);
-            if (v->isreal()) {
-                bk->tdata.real = v->realvec();
-                v->set_realvec(v->realvec() + lx);
-            }
-            else {
-                bk->tdata.comp = v->compvec();
-                v->set_compvec(v->compvec() + lx);
-            }
-            rd_data[k].segmentized = true;
-        }
-#endif
     }
 }
 
@@ -655,28 +568,9 @@ void
 sRunDesc::unsegmentizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
-#ifdef XXXNEWSC
         sDataVec *v = rd_data[k].vec;
         if (v)
             v->unsegmentize();
-#else
-        if (!rd_data[k].segmentized)
-            continue;
-        segData *bk = &rd_data[k].seg;
-        sDataVec *v = rd_data[k].vec;
-        if (v) {
-            v->set_length(bk->length);
-            v->set_allocated(bk->rlength);
-            v->set_numdims(bk->numdims);
-            for (int i = 0; i < MAXDIMS; i++)
-                v->set_dims(i, bk->dims[i]);
-            if (v->isreal())
-                v->set_realvec(bk->tdata.real);
-            else
-                v->set_compvec(bk->tdata.comp);
-            rd_data[k].segmentized = false;
-        }
-#endif
     }
 }
 

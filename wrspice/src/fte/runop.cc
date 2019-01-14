@@ -66,6 +66,8 @@ Authors: 1987 Wayne A. Christopher
 
 // keywords
 const char *kw_stop   = "stop";
+const char *kw_measure = "measure";
+const char *kw_stop2  = "nstop";
 const char *kw_after  = "after";
 const char *kw_at     = "at";
 const char *kw_before = "before";
@@ -308,7 +310,6 @@ IFoutput::statusCmd(char **ps)
 }
 
 
-//XXXstop2
 // Delete breakpoints and traces. Usage is:
 //   delete [[in]active][all | stop | trace | iplot | save | number] ...
 // With inactive true (args to right of keyword), the runop is
@@ -318,8 +319,8 @@ void
 IFoutput::deleteCmd(wordlist *wl)
 {
     if (!wl) {
-        sRunop *d = o_runops->stops();
-        // find the earlist runop
+        // Find the earlist runop.
+        sRunop *d = o_runops->saves();
         if (!d ||
             (o_runops->traces() && d->number() > o_runops->traces()->number()))
             d = o_runops->traces();
@@ -327,18 +328,29 @@ IFoutput::deleteCmd(wordlist *wl)
             (o_runops->iplots() && d->number() > o_runops->iplots()->number()))
             d = o_runops->iplots();
         if (!d ||
-            (o_runops->saves() && d->number() > o_runops->saves()->number()))
+            (o_runops->stops() && d->number() > o_runops->stops()->number()))
             d = o_runops->saves();
+        if (!d ||
+            (o_runops->measures() && d->number() > o_runops->measures()->number()))
+            d = o_runops->measures();
+        if (!d ||
+            (o_runops->stops2() && d->number() > o_runops->stops2()->number()))
+            d = o_runops->stops2();
+
         if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
-            if (!d || (db.stops() && d->number() > db.stops()->number()))
-                d = db.stops();
+            if (!d || (db.saves() && d->number() > db.saves()->number()))
+                d = db.saves();
             if (!d || (db.traces() && d->number() > db.traces()->number()))
                 d = db.traces();
             if (!d || (db.iplots() && d->number() > db.iplots()->number()))
                 d = db.iplots();
-            if (!d || (db.saves() && d->number() > db.saves()->number()))
-                d = db.saves();
+            if (!d || (db.stops() && d->number() > db.stops()->number()))
+                d = db.stops();
+            if (!d || (db.measures() && d->number() > db.measures()->number()))
+                d = db.measures();
+            if (!d || (db.stops2() && d->number() > db.stops2()->number()))
+                d = db.stops2();
         }
         if (!d) {
             TTY.printf("No runops are in effect.\n");
@@ -349,24 +361,33 @@ IFoutput::deleteCmd(wordlist *wl)
             return;
         if (!TTY.prompt_for_yn(true, "delete [y]? "))
             return;
-        if (d == o_runops->stops())
-            o_runops->set_stops(o_runops->stops()->next());
+
+        if (d == o_runops->saves())
+            o_runops->set_saves(o_runops->saves()->next());
         else if (d == o_runops->traces())
             o_runops->set_traces(o_runops->traces()->next());
         else if (d == o_runops->iplots())
             o_runops->set_iplots(o_runops->iplots()->next());
-        else if (d == o_runops->saves())
-            o_runops->set_saves(o_runops->saves()->next());
+        else if (d == o_runops->stops())
+            o_runops->set_stops(o_runops->stops()->next());
+        else if (d == o_runops->measures())
+            o_runops->set_measures(o_runops->measures()->next());
+        else if (d == o_runops->stops2())
+            o_runops->set_stops2(o_runops->stops2()->next());
         else if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
-            if (d == db.stops())
-                db.set_stops(db.stops()->next());
+            if (d == db.saves())
+                db.set_saves(db.saves()->next());
             else if (d == db.traces())
                 db.set_traces(db.traces()->next());
             else if (d == db.iplots())
                 db.set_iplots(db.iplots()->next());
-            else if (d == db.saves())
-                db.set_saves(db.saves()->next());
+            else if (d == db.stops())
+                db.set_stops(db.stops()->next());
+            else if (d == db.measures())
+                db.set_measures(db.measures()->next());
+            else if (d == db.stops2())
+                db.set_stops2(db.stops2()->next());
         }
         ToolBar()->UpdateTrace();
         d->destroy();
@@ -386,8 +407,8 @@ IFoutput::deleteCmd(wordlist *wl)
             deleteRunop(DF_ALL, inactive, -1);
             return;
         }
-        if (lstring::eq(wl->wl_word, kw_stop)) {
-            deleteRunop(DF_STOP, inactive, -1);
+        if (lstring::eq(wl->wl_word, kw_save)) {
+            deleteRunop(DF_SAVE, inactive, -1);
             continue;
         }
         if (lstring::eq(wl->wl_word, kw_trace)) {
@@ -398,8 +419,17 @@ IFoutput::deleteCmd(wordlist *wl)
             deleteRunop(DF_IPLOT, inactive, -1);
             continue;
         }
-        if (lstring::eq(wl->wl_word, kw_save)) {
-            deleteRunop(DF_SAVE, inactive, -1);
+        if (lstring::eq(wl->wl_word, kw_stop)) {
+            deleteRunop(DF_STOP, inactive, -1);
+            continue;
+        }
+        if (lstring::eq(wl->wl_word, kw_measure)) {
+            deleteRunop(DF_MEASURE, inactive, -1);
+            continue;
+        }
+//XXX
+        if (lstring::eq(wl->wl_word, "nstop")) {
+            deleteRunop(DF_STOP2, inactive, -1);
             continue;
         }
 
@@ -925,7 +955,22 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             }
         }
 
-//XXX do this after measures.
+        bool measures_done = true;
+        bool measure_queued = false;
+        ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
+        for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
+            if (run->anType() != d->analysis())
+                continue;
+            if (!scalarized) {
+                run->scalarizeVecs();
+                scalarized = true;
+            }
+            if (!d->check_measure(run))
+                measures_done = false;
+            if (d->measure_queued())
+                measure_queued = true;
+        }
+
         ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
         for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
             if (!scalarized) {
@@ -944,22 +989,6 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 if (need_pr)
                     CP.Prompt();
             }
-        }
-
-        bool measures_done = true;
-        bool measure_queued = false;
-        ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
-        for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
-            if (run->anType() != d->analysis())
-                continue;
-            if (!scalarized) {
-                run->scalarizeVecs();
-                scalarized = true;
-            }
-            if (!d->check_measure(run))
-                measures_done = false;
-            if (d->measure_queued())
-                measure_queued = true;
         }
 
         if (scalarized) {
