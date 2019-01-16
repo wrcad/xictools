@@ -832,7 +832,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
         bool tflag = true;
         ROgen<sRunopTrace> tgen(o_runops->traces(), db ? db->traces() : 0);
         for (sRunopTrace *d = tgen.next(); d; d = tgen.next())
-            d->print_trace(run->runPlot(), &tflag, chk->index());
+//XXX last arg needs a count.
+            d->print_trace(run->runPlot(), &tflag, 0);
 
 /*XXX handle these somehow?
         ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
@@ -840,8 +841,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             ROret r = d->check_stop(run);
             if (r == RO_PAUSE || r == RO_ENDIT) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                TTY.printf("%-2d: condition met: stop", d->number());
-                d->printcond(0, false);
+                TTY.printf("%-2d: condition met: ", d->number());
+                d->print_cond(0, false);
                 if (r == RO_PAUSE)
                     o_shouldstop = true;
                 else
@@ -896,8 +897,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             ROret r = d->check_stop(run);
             if (r == RO_PAUSE || r == RO_ENDIT) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                TTY.printf("%-2d: condition met: stop", d->number());
-                d->printcond(0, false);
+                TTY.printf("%-2d: condition met: ", d->number());
+                d->print_cond(0, false);
                 if (r == RO_PAUSE)
                     o_shouldstop = true;
                 else
@@ -944,8 +945,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             ROret r = d->check_stop(run);
             if (r == RO_PAUSE || r == RO_ENDIT) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                TTY.printf("%-2d: condition met: stop", d->number());
-                d->printcond(0, false);
+                TTY.printf("%-2d: condition met: ", d->number());
+                d->print_cond(0, false);
                 if (r == RO_PAUSE)
                     o_shouldstop = true;
                 else
@@ -980,8 +981,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             ROret r = d->check_stop(run);
             if (r == RO_PAUSE || r == RO_ENDIT) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                TTY.printf("%-2d: condition met: stop", d->number());
-                d->printcond(0, false);
+                TTY.printf("%-2d: condition met: ", d->number());
+                d->print_cond(0, false);
                 if (r == RO_PAUSE)
                     o_shouldstop = true;
                 else
@@ -1508,16 +1509,16 @@ sRunopStop::parse(const char *str)
 void
 sRunopStop::print(char **retstr)
 {
-    const char *msg1 = "%c %-4d stop";
-    char buf[BSIZE_SP];
+    const char *msg1 = "%c %-4d ";
     if (!retstr) {
         TTY.printf(msg1, ro_active ? ' ' : 'I', ro_number);
-        printcond(0, true);
+        print_cond(0, true);
     }
     else {
+        char buf[64];
         sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
         *retstr = lstring::build_str(*retstr, buf);
-        printcond(retstr, true);
+        print_cond(retstr, true);
     }
 }
 
@@ -1692,7 +1693,7 @@ sRunopStop::call(sRunDesc *run)
 // case.  Otherwise print only the current "at" value.
 //
 void
-sRunopStop::printcond(char **retstr, bool status)
+sRunopStop::print_cond(char **retstr, bool status)
 {
     sLstr lstr;
     if (retstr) {
@@ -1700,6 +1701,7 @@ sRunopStop::printcond(char **retstr, bool status)
         delete [] *retstr;
         *retstr = 0;
     }
+    lstr.add(kw_stop);
     for (sRunopStop *dt = this; dt; dt = dt->ro_also) {
         lstr.add_c(' ');
         if (dt->ro_type == RO_STOPAFTER)

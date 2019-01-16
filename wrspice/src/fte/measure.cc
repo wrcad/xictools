@@ -47,6 +47,7 @@
 #include "cshell.h"
 #include "device.h"
 #include "rundesc.h"
+#include "kwords_fte.h"
 #include "spnumber/hash.h"
 #include "spnumber/spnumber.h"
 #include "miscutil/lstring.h"
@@ -385,11 +386,40 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     while (isspace(*s))
         s++;
     sbk = s;
-    pnode *pn = Sp.GetPnode(&s, false);
-    if (!pn) {
-        if (errstr && !*errstr)
-            lstring::copy("no first expression found.");
-        return (E_SYNTAX);
+    pnode *pn;
+    if (*s == '[') {
+        // [ const_expr ]
+        // take const_expr as point count.
+        s++;
+        const char *e = s;
+        while (*e && *e != ']')
+            e++;
+        if (*e != ']') {
+            if (errstr && !*errstr)
+                lstring::copy("no first expression found.");
+            return (E_SYNTAX);
+        }
+        int len = e-s;
+        tok = new char[len];
+        memcpy(tok, s, len-1);
+        tok[len-1] = 0;
+        s = e+1;
+        e = tok;
+        pn = Sp.GetPnode(&e, false);
+        if (!pn) {
+            if (errstr && !*errstr)
+                lstring::copy("no point index found.");
+            return (E_SYNTAX);
+        }
+        t_ptmode = true;
+    }
+    else {
+        pn = Sp.GetPnode(&s, false);
+        if (!pn) {
+            if (errstr && !*errstr)
+                lstring::copy("no first expression found.");
+            return (E_SYNTAX);
+        }
     }
     const char *st = s-1;
     while (st >= sbk && isspace(*st))
@@ -456,8 +486,12 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
             // numeric or constant expression
             t_type = MPnum;
             sDataVec *dv = eval1();
-            if (dv)
-                t_delay_given = dv->realval(0);
+            if (dv) {
+                if (t_ptmode)
+                    t_indx = (int)lrint(dv->realval(0));
+                else
+                    t_delay_given = dv->realval(0);
+            }
         }
         else if (t_tree1->optype() == TT_EQ) {
             pn = t_tree1;
@@ -915,8 +949,13 @@ sMpoint::eval2()
 void
 sRunopMeas::print(char **pstr)
 {
+    const char *msg1 = "%c %-4d %s";
+    char buf[64];
+    sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number, kw_measure);
     sLstr lstr;
-    lstr.add(mkw_measure);
+    if (pstr && *pstr)
+        lstr.add(*pstr);
+    lstr.add(buf);
     if (ro_analysis >= 0) {
         IFanalysis *a = IFanalysis::analysis(ro_analysis);
         if (a) {
@@ -1007,8 +1046,11 @@ sRunopMeas::parse(const char *str, char **errstr)
     bool in_call = false;
     ro_analysis = -1;
     const char *s = str;
-    char *tok;
-    while ((tok = gtok(&s)) != 0) {
+    for (;;) {
+        const char *last = s;
+        char *tok = gtok(&s);
+        if (!tok)
+            break;
         if (!gotanal) {
             if (get_anal(tok, &ro_analysis)) {
                 gotanal = true;
@@ -1063,39 +1105,14 @@ sRunopMeas::parse(const char *str, char **errstr)
             in_call = false;
             continue;
         }
-        if (lstring::cieq(tok, mkw_when)) {
+        if (lstring::cieq(tok, mkw_when) ||
+                lstring::cieq(tok, mkw_at) ||
+                lstring::cieq(tok, mkw_before) ||
+                lstring::cieq(tok, mkw_after)) {
+
             delete [] tok;
-            int ret = ro_start.parse(&s, errstr, mkw_when);
-            if (ret != OK) {
-                err = true;
-                break;
-            }
-            in_call = false;
-            continue;
-        }
-        if (lstring::cieq(tok, mkw_at)) {
-            delete [] tok;
-            int ret = ro_start.parse(&s, errstr, mkw_at);
-            if (ret != OK) {
-                err = true;
-                break;
-            }
-            in_call = false;
-            continue;
-        }
-        if (lstring::cieq(tok, mkw_before)) {
-            delete [] tok;
-            int ret = ro_start.parse(&s, errstr, mkw_before);
-            if (ret != OK) {
-                err = true;
-                break;
-            }
-            in_call = false;
-            continue;
-        }
-        if (lstring::cieq(tok, mkw_after)) {
-            delete [] tok;
-            int ret = ro_start.parse(&s, errstr, mkw_after);
+            s = last;
+            int ret = ro_start.parse(&s, errstr, 0);
             if (ret != OK) {
                 err = true;
                 break;
@@ -1392,7 +1409,7 @@ sRunopMeas::do_measure(sRunDesc *run)
 
 
     if (ro_print_flag && !Sp.GetFlag(FT_SERVERMODE)) {
-        char *s = print();
+        char *s = print_meas();
         TTY.printf_force("%s", s);
         delete [] s;
     }
@@ -1741,7 +1758,7 @@ sRunopMeas::call(sRunDesc *run)
 // Return a string containing text of measurement results.
 //
 char *
-sRunopMeas::print()
+sRunopMeas::print_meas()
 {
     if (!ro_measure_done)
         return (0);
@@ -2106,16 +2123,16 @@ sRunopMeas::findrft(sDataVec *dv, sDataVec *xs)
 void
 sRunopStop2::print(char **retstr)
 {
-    const char *msg1 = "%c %-4d nstop";
+    const char *msg1 = "%c %-4d ";
     if (!retstr) {
         TTY.printf(msg1, ro_active ? ' ' : 'I', ro_number);
-        printcond(0, true);
+        print_cond(0, true);
     }
     else {
         char buf[64];
         sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
         *retstr = lstring::build_str(*retstr, buf);
-        printcond(retstr, true);
+        print_cond(retstr, true);
     }
 }
 
@@ -2157,7 +2174,7 @@ sRunopStop2::parse(const char *str, char **errstr)
                 lstring::cieq(tok, mkw_after)) {
             delete [] tok;
             s = last;
-            int ret = ro_start.parse(&s, errstr, mkw_when);
+            int ret = ro_start.parse(&s, errstr, 0);
             if (ret != OK) {
                 err = true;
                 break;
@@ -2286,7 +2303,7 @@ sRunopStop2::call(sRunDesc *run)
 // printing for the status command.
 //
 void
-sRunopStop2::printcond(char **retstr, bool status)
+sRunopStop2::print_cond(char **retstr, bool status)
 {
     (void)status;
     sLstr lstr;
@@ -2294,6 +2311,14 @@ sRunopStop2::printcond(char **retstr, bool status)
         lstr.add(*retstr);
         delete [] *retstr;
         *retstr = 0;
+    }
+    lstr.add(kw_stop2);
+    if (ro_analysis >= 0) {
+        IFanalysis *a = IFanalysis::analysis(ro_analysis);
+        if (a) {
+            lstr.add_c(' ');
+            lstr.add(a->name);
+        }
     }
     ro_start.print(lstr);
 

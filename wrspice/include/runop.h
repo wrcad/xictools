@@ -308,7 +308,7 @@ struct sRunopStop : public sRunop
     bool istrue();                  // Evaluate true if condition met.
     ROret check_stop(sRunDesc*);    // Return if stop condition met.
     ROret call(sRunDesc*);          // Call function wrapper.
-    void printcond(char**, bool);   // Print the conditional expression.
+    void print_cond(char**, bool);  // Print the conditional expression.
 
 private:
     bool ro_call_flag;          // Call script or bound codeblock on stop.
@@ -400,6 +400,7 @@ struct sMpoint
             t_found_flag    = false;
             t_delay_set     = false;
             t_active        = false;
+            t_ptmode        = false;
             t_type          = MPunknown;
             t_range         = MPatwhen;
         }
@@ -461,6 +462,7 @@ private:
     bool t_found_flag;      // The measure point was found.
     bool t_delay_set;       // This is initialized.
     bool t_active;          // This is active, if not skip it.
+    bool t_ptmode;          // Input in points, else absolute.
     unsigned char t_type;   // Syntax type, MPform.
     unsigned char t_range;  // Before/at/after, MPrange.
 };
@@ -512,7 +514,7 @@ struct sRunopStop2 : public sRunop
     void reset();
     ROret check_stop(sRunDesc*);
     ROret call(sRunDesc*);
-    void printcond(char**, bool);
+    void print_cond(char**, bool);
 
 private:
     double endval(sDataVec*, sDataVec*, bool);
@@ -530,7 +532,6 @@ private:
     bool ro_stop_flag;          // pause analysis when done
     bool ro_end_flag;           // terminate analysis when done
     bool ro_call_flag;          // call a function or bound codeblock
-//    char ro_print_flag;         // print result on screen, 1 terse  2 verbose
 };
 
 enum Mfunc { Mmin, Mmax, Mpp, Mavg, Mrms, Mpw, Mrft, Mfind };
@@ -658,7 +659,7 @@ struct sRunopMeas : public sRunop
     bool measure(sDataVec**, int*);
     bool update_plot(sDataVec*, int);
     ROret call(sRunDesc*);
-    char *print();
+    char *print_meas();
 
 private:
     void addMeas(Mfunc, const char*);
