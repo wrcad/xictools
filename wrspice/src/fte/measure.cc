@@ -627,7 +627,13 @@ sMpoint::print(sLstr &lstr)
         lstr.add_c(' ');
     }
     if (t_type == MPnum) {
-        lstr.add_g(t_delay_given);
+        if (t_ptmode) {
+            lstr.add_c('[');
+            lstr.add_u(t_indx);
+            lstr.add_c(']');
+        }
+        else
+            lstr.add_g(t_delay_given);
     }
     else if (t_type == MPmref) {
         lstr.add(t_when_expr1);
@@ -800,6 +806,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
         sDataVec *xs = circuit->runplot()->scale();
         int ix = check_trig(xs);
         if (ix < 0) {
+            if (t_range == MPbefore)
+                return (ready);
             return (false);
         }
 
@@ -875,6 +883,9 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
         t_found = fval;
         t_found_flag = true;
     }
+    if (t_range == MPbefore)
+        return (ready & !t_found_flag);
+//XXX difference btwn at and after?
     return (ready & t_found_flag);
 }
 
@@ -890,6 +901,11 @@ sMpoint::check_trig(sDataVec *xs)
     double xp = xs->unscalarized_prev_real();
     int i = xs->unscalarized_length() - 1;
     if (i > 0) {
+        if (t_ptmode) {
+            if (i < t_indx)
+                return (-1);
+            return (i);
+        }
         if (x > xp) {
             double dx = (x - xp)*1e-3;
             if (x > t_delay - dx) {
