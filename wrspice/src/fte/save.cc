@@ -284,20 +284,6 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
         for (sRunopIplot *d = db->iplots(); d && d->active(); d = d->next())
             saved->list_expr(d->string());
     }
-    for (sRunopStop *d = o_runops->stops(); d && d->active(); d = d->next()) {
-        for (sRunopStop *dt = d; dt; dt = dt->also()) {
-            if (dt->type() == RO_STOPWHEN)
-                saved->list_expr(d->string());
-        }
-    }
-    if (db) {
-        for (sRunopStop *d = db->stops(); d && d->active(); d = d->next()) {
-            for (sRunopStop *dt = d; dt; dt = dt->also()) {
-                if (dt->type() == RO_STOPWHEN)
-                    saved->list_expr(d->string());
-            }
-        }
-    }
 
     for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
         if (m->expr2())
@@ -329,6 +315,23 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
                 saved->list_expr(f->expr());
         }
     }
+
+/*XXX fixme
+    for (sRunopStop *d = o_runops->stops(); d && d->active(); d = d->next()) {
+        for (sRunopStop *dt = d; dt; dt = dt->also()) {
+            if (dt->type() == RO_STOPWHEN)
+                saved->list_expr(d->string());
+        }
+    }
+    if (db) {
+        for (sRunopStop *d = db->stops(); d && d->active(); d = d->next()) {
+            for (sRunopStop *dt = d; dt; dt = dt->also()) {
+                if (dt->type() == RO_STOPWHEN)
+                    saved->list_expr(d->string());
+            }
+        }
+    }
+*/
 
     if (saveall)
         saved->purge_non_special();

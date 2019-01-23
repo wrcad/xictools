@@ -65,9 +65,8 @@ Authors: 1987 Wayne A. Christopher
 //
 
 // keywords
-const char *kw_stop   = "stop";
 const char *kw_measure = "measure";
-const char *kw_stop2  = "nstop";
+const char *kw_stop   = "stop";
 const char *kw_after  = "after";
 const char *kw_at     = "at";
 const char *kw_before = "before";
@@ -75,6 +74,24 @@ const char *kw_when   = "when";
 const char *kw_active = "active";
 const char *kw_inactive = "inactive";
 const char *kw_call   = "call";
+
+
+// Set up a measure runop.
+//
+void
+CommandTab::com_measure(wordlist *wl)
+{
+    OP.measureCmd(wl);
+}
+
+
+// Set up a stop runop.
+//
+void
+CommandTab::com_stop(wordlist *wl)
+{
+    OP.stopCmd(wl);
+}
 
 
 // Step a number of output increments.
@@ -90,31 +107,6 @@ CommandTab::com_step(wordlist *wl)
     OP.runops()->set_step_count(n);
     OP.runops()->set_num_steps(n);
     Sp.Simulate(SIMresume, 0);
-}
-
-
-// Set up a stop runop, many possibilities see below.
-//
-void
-CommandTab::com_stop(wordlist *wl)
-{
-    OP.stopCmd(wl);
-}
-
-
-// Set up a measure runop.
-//
-void
-CommandTab::com_measure(wordlist *wl)
-{
-    OP.measureCmd(wl);
-}
-
-
-void
-CommandTab::com_nstop(wordlist *wl)
-{
-    OP.stop2Cmd(wl);
 }
 
 
@@ -137,72 +129,6 @@ CommandTab::com_delete(wordlist *wl)
 // End of CommandTab functions.
 
 
-namespace {
-    // Return true if s is a bare integer, perhaps with trailing white
-    // space.
-    //
-    bool is_uint(const char *s)
-    {
-        if (!s || !isdigit(*s))
-            return (false);
-        while (*++s) {
-            if (isspace(*s))
-                break;
-            if (!isdigit(*s))
-                return (false);
-        }
-        return (true);
-    }
-
-    bool is_kw(const char *s)
-    {
-        return (lstring::cieq(s, kw_after) || lstring::cieq(s, kw_at) ||
-            lstring::cieq(s, kw_before) || lstring::cieq(s, kw_when) ||
-            lstring::cieq(s, kw_call));
-    }
-}
-
-
-void
-IFoutput::stopCmd(wordlist *wl)
-{
-    char *str = wordlist::flatten(wl);
-    char *errstr = 0;
-    sRunopStop *d = sRunopStop::parse(str);
-    if (errstr) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Stop: %s\n", errstr);
-        delete [] errstr;
-        delete d;
-    }
-    else {
-        sFtCirc *curcir = Sp.CurCircuit();
-        d->set_number(o_runops->new_count());
-        d->set_active(true);
-        if (CP.GetFlag(CP_INTERACTIVE) || !curcir) {
-            if (o_runops->stops()) {
-                sRunopStop *td = o_runops->stops();
-                for ( ; td->next(); td = td->next())
-                    ;
-                td->set_next(d);
-            }
-            else
-                o_runops->set_stops(d);
-        }
-        else {
-            if (curcir->stops()) {
-                sRunopStop *td = curcir->stops();
-                for ( ; td->next(); td = td->next())
-                    ;
-                td->set_next(d);
-            }
-            else
-                curcir->set_stops(d);
-        }
-        ToolBar()->UpdateTrace();
-    }
-}
-
-
 void
 IFoutput::measureCmd(wordlist *wl)
 {
@@ -215,26 +141,42 @@ IFoutput::measureCmd(wordlist *wl)
         delete m;
     }
     else {
-        if (o_runops->measures()) {
-            sRunopMeas *d = o_runops->measures();
-            for ( ; d->next(); d = d->next())
-                ;
-            d->set_next(m);
+        sFtCirc *curcir = Sp.CurCircuit();
+        m->set_number(o_runops->new_count());
+        m->set_active(true);
+        if (CP.GetFlag(CP_INTERACTIVE) || !curcir) {
+            if (o_runops->measures()) {
+                sRunopMeas *td = o_runops->measures();
+                for ( ; td->next(); td = td->next())
+                    ;
+                td->set_next(m);
+            }
+            else
+                o_runops->set_measures(m);
         }
-        else
-            o_runops->set_measures(m);
+        else {
+            if (curcir->measures()) {
+                sRunopMeas *td = curcir->measures();
+                for ( ; td->next(); td = td->next())
+                    ;
+                td->set_next(m);
+            }
+            else
+                curcir->set_measures(m);
+        }
+        ToolBar()->UpdateTrace();
     }
 }
 
 
 void
-IFoutput::stop2Cmd(wordlist *wl)
+IFoutput::stopCmd(wordlist *wl)
 {
     char *str = wordlist::flatten(wl);
     char *errstr = 0;
-    sRunopStop2 *m = new sRunopStop2(str, &errstr);
+    sRunopStop *m = new sRunopStop(str, &errstr);
     if (errstr) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Stop2: %s\n", errstr);
+        GRpkgIf()->ErrPrintf(ET_ERROR, "Stop: %s\n", errstr);
         delete [] errstr;
         delete m;
     }
@@ -243,24 +185,24 @@ IFoutput::stop2Cmd(wordlist *wl)
         m->set_number(o_runops->new_count());
         m->set_active(true);
         if (CP.GetFlag(CP_INTERACTIVE) || !curcir) {
-            if (o_runops->stops2()) {
-                sRunopStop2 *td = o_runops->stops2();
+            if (o_runops->stops()) {
+                sRunopStop *td = o_runops->stops();
                 for ( ; td->next(); td = td->next())
                     ;
                 td->set_next(m);
             }
             else
-                o_runops->set_stops2(m);
+                o_runops->set_stops(m);
         }
         else {
-            if (curcir->stops2()) {
-                sRunopStop2 *td = curcir->stops2();
+            if (curcir->stops()) {
+                sRunopStop *td = curcir->stops();
                 for ( ; td->next(); td = td->next())
                     ;
                 td->set_next(m);
             }
             else
-                curcir->set_stops2(m);
+                curcir->set_stops(m);
         }
         ToolBar()->UpdateTrace();
     }
@@ -296,16 +238,12 @@ IFoutput::statusCmd(char **ps)
     for (sRunopIplot *d = igen.next(); d; d = igen.next())
         d->print(t);
 
-    ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
-    for (sRunopStop *d = sgen.next(); d; d = sgen.next())
-        d->print(t);
-
     ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
     for (sRunopMeas *d = mgen.next(); d; d = mgen.next())
         d->print(t);
 
-    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
-    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next())
+    ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
+    for (sRunopStop *d = sgen.next(); d; d = sgen.next())
         d->print(t);
 }
 
@@ -328,14 +266,11 @@ IFoutput::deleteCmd(wordlist *wl)
             (o_runops->iplots() && d->number() > o_runops->iplots()->number()))
             d = o_runops->iplots();
         if (!d ||
-            (o_runops->stops() && d->number() > o_runops->stops()->number()))
-            d = o_runops->saves();
-        if (!d ||
             (o_runops->measures() && d->number() > o_runops->measures()->number()))
             d = o_runops->measures();
         if (!d ||
-            (o_runops->stops2() && d->number() > o_runops->stops2()->number()))
-            d = o_runops->stops2();
+            (o_runops->stops() && d->number() > o_runops->stops()->number()))
+            d = o_runops->stops();
 
         if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
@@ -345,12 +280,10 @@ IFoutput::deleteCmd(wordlist *wl)
                 d = db.traces();
             if (!d || (db.iplots() && d->number() > db.iplots()->number()))
                 d = db.iplots();
-            if (!d || (db.stops() && d->number() > db.stops()->number()))
-                d = db.stops();
             if (!d || (db.measures() && d->number() > db.measures()->number()))
                 d = db.measures();
-            if (!d || (db.stops2() && d->number() > db.stops2()->number()))
-                d = db.stops2();
+            if (!d || (db.stops() && d->number() > db.stops()->number()))
+                d = db.stops();
         }
         if (!d) {
             TTY.printf("No runops are in effect.\n");
@@ -368,12 +301,10 @@ IFoutput::deleteCmd(wordlist *wl)
             o_runops->set_traces(o_runops->traces()->next());
         else if (d == o_runops->iplots())
             o_runops->set_iplots(o_runops->iplots()->next());
-        else if (d == o_runops->stops())
-            o_runops->set_stops(o_runops->stops()->next());
         else if (d == o_runops->measures())
             o_runops->set_measures(o_runops->measures()->next());
-        else if (d == o_runops->stops2())
-            o_runops->set_stops2(o_runops->stops2()->next());
+        else if (d == o_runops->stops())
+            o_runops->set_stops(o_runops->stops()->next());
         else if (Sp.CurCircuit()) {
             sRunopDb &db = Sp.CurCircuit()->runops();
             if (d == db.saves())
@@ -382,12 +313,10 @@ IFoutput::deleteCmd(wordlist *wl)
                 db.set_traces(db.traces()->next());
             else if (d == db.iplots())
                 db.set_iplots(db.iplots()->next());
-            else if (d == db.stops())
-                db.set_stops(db.stops()->next());
             else if (d == db.measures())
                 db.set_measures(db.measures()->next());
-            else if (d == db.stops2())
-                db.set_stops2(db.stops2()->next());
+            else if (d == db.stops())
+                db.set_stops(db.stops()->next());
         }
         ToolBar()->UpdateTrace();
         d->destroy();
@@ -419,17 +348,12 @@ IFoutput::deleteCmd(wordlist *wl)
             deleteRunop(DF_IPLOT, inactive, -1);
             continue;
         }
-        if (lstring::eq(wl->wl_word, kw_stop)) {
-            deleteRunop(DF_STOP, inactive, -1);
-            continue;
-        }
         if (lstring::eq(wl->wl_word, kw_measure)) {
             deleteRunop(DF_MEASURE, inactive, -1);
             continue;
         }
-//XXX
-        if (lstring::eq(wl->wl_word, "nstop")) {
-            deleteRunop(DF_STOP2, inactive, -1);
+        if (lstring::eq(wl->wl_word, kw_stop)) {
+            deleteRunop(DF_STOP, inactive, -1);
             continue;
         }
 
@@ -511,16 +435,6 @@ IFoutput::initRunops(sRunDesc *run)
         }
     }
 
-    ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
-    for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
-        for (sRunopStop *dt = d; dt; dt = dt->also()) {
-            if (dt->type() == RO_STOPWHEN)
-                dt->set_point(0);
-            else if (dt->type() == RO_STOPAT)
-                dt->set_index(0);
-        }
-    }
-
     ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
     for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
         if (run->job()->JOBtype != d->analysis())
@@ -528,8 +442,8 @@ IFoutput::initRunops(sRunDesc *run)
         d->reset(run->runPlot());
     }
 
-    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
-    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
+    ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
+    for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
         if (run->job()->JOBtype != d->analysis())
             continue;
         d->reset();
@@ -566,14 +480,6 @@ IFoutput::setRunopActive(int dbnum, bool state)
         }
     }
 
-    ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
-    for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
-        if (d->number() == dbnum) {
-            d->set_active(state);
-            return;
-        }
-    }
-
     ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
     for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
         if (d->number() == dbnum) {
@@ -582,8 +488,8 @@ IFoutput::setRunopActive(int dbnum, bool state)
         }
     }
 
-    ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
-    for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
+    ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
+    for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
         if (d->number() == dbnum) {
             d->set_active(state);
             return;
@@ -705,42 +611,6 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
             }
         }
     }
-    if (which & DF_STOP) {
-        sRunopStop *dlast = 0, *dnext;
-        for (sRunopStop *d = o_runops->stops(); d; d = dnext) {
-            dnext = d->next();
-            if ((num < 0 || num == d->number()) &&
-                    (!inactive || !d->active())) {
-                if (!dlast)
-                    o_runops->set_stops(dnext);
-                else
-                    dlast->set_next(dnext);
-                d->destroy();
-                if (num >= 0)
-                    return;
-                continue;
-            }
-            dlast = d;
-        }
-        if (db) {
-            dlast = 0;
-            for (sRunopStop *d = db->stops(); d; d = dnext) {
-                dnext = d->next();
-                if ((num < 0 || num == d->number()) &&
-                        (!inactive || !d->active())) {
-                    if (!dlast)
-                        db->set_stops(dnext);
-                    else
-                        dlast->set_next(dnext);
-                    d->destroy();
-                    if (num >= 0)
-                        return;
-                    continue;
-                }
-                dlast = d;
-            }
-        }
-    }
     if (which & DF_MEASURE) {
         sRunopMeas *dlast = 0, *dnext;
         for (sRunopMeas *d = o_runops->measures(); d; d = dnext) {
@@ -777,14 +647,14 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
             }
         }
     }
-    if (which & DF_STOP2) {
-        sRunopStop2 *dlast = 0, *dnext;
-        for (sRunopStop2 *d = o_runops->stops2(); d; d = dnext) {
+    if (which & DF_STOP) {
+        sRunopStop *dlast = 0, *dnext;
+        for (sRunopStop *d = o_runops->stops(); d; d = dnext) {
             dnext = d->next();
             if ((num < 0 || num == d->number()) &&
                     (!inactive || !d->active())) {
                 if (!dlast)
-                    o_runops->set_stops2(dnext);
+                    o_runops->set_stops(dnext);
                 else
                     dlast->set_next(dnext);
                 d->destroy();
@@ -796,12 +666,12 @@ IFoutput::deleteRunop(int which, bool inactive, int num)
         }
         if (db) {
             dlast = 0;
-            for (sRunopStop2 *d = db->stops2(); d; d = dnext) {
+            for (sRunopStop *d = db->stops(); d; d = dnext) {
                 dnext = d->next();
                 if ((num < 0 || num == d->number()) &&
                         (!inactive || !d->active())) {
                     if (!dlast)
-                        db->set_stops2(dnext);
+                        db->set_stops(dnext);
                     else
                         dlast->set_next(dnext);
                     d->destroy();
@@ -836,22 +706,6 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             d->print_trace(run->runPlot(), &tflag, 0);
 
 /*XXX handle these somehow?
-        ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
-        for (sRunopStop *d = sgen.next(); d; d = sgen.next())
-            ROret r = d->check_stop(run);
-            if (r == RO_PAUSE || r == RO_ENDIT) {
-                bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                TTY.printf("%-2d: condition met: ", d->number());
-                d->print_cond(0, false);
-                if (r == RO_PAUSE)
-                    o_shouldstop = true;
-                else
-                    o_endit = true;
-                if (need_pr)
-                    CP.Prompt();
-            }
-        }
-
         bool measures_done = true;
         bool measure_queued = false;
         ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
@@ -892,8 +746,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             }
         }
 
-        ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
-        for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next())
+        ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
+        for (sRunopStop *d = sgen.next(); d; d = sgen.next())
             ROret r = d->check_stop(run);
             if (r == RO_PAUSE || r == RO_ENDIT) {
                 bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
@@ -936,26 +790,6 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             d->print_trace(run->runPlot(), &tflag, run->pointCount());
         }
 
-        ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
-        for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
-            if (!scalarized) {
-                run->scalarizeVecs();
-                scalarized = true;
-            }
-            ROret r = d->check_stop(run);
-            if (r == RO_PAUSE || r == RO_ENDIT) {
-                bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                TTY.printf("%-2d: condition met: ", d->number());
-                d->print_cond(0, false);
-                if (r == RO_PAUSE)
-                    o_shouldstop = true;
-                else
-                    o_endit = true;
-                if (need_pr)
-                    CP.Prompt();
-            }
-        }
-
         bool measures_done = true;
         bool measure_queued = false;
         ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
@@ -972,8 +806,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 measure_queued = true;
         }
 
-        ROgen<sRunopStop2> s2gen(o_runops->stops2(), db ? db->stops2() : 0);
-        for (sRunopStop2 *d = s2gen.next(); d; d = s2gen.next()) {
+        ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
+        for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
             if (!scalarized) {
                 run->scalarizeVecs();
                 scalarized = true;
@@ -1242,547 +1076,19 @@ sRunopIplot::destroy()
 // End of sRunopIplot functions.
 
 
-// Set a breakpoint. Possible commands are:
-//  stop after|at|before n
-//  stop when expr
-//
-// If more than one is given on a command line, then this is a conjunction.
-//
-sRunopStop *
-sRunopStop::parse(const char *str)
-{
-    sRunopStop *d = 0, *thisone = 0;
-    char *deferred_call = 0;
-    bool deferred_call_set = false;
-    bool had_call = false;
-    char *tok;
-    while ((tok = IP.getTok(&str, false)) != 0) {
-
-        // Figure out what the first condition is.
-        if (lstring::cieq(tok, kw_at)) {
-            if (thisone == 0)
-                thisone = d = new sRunopStop;
-            else {
-                d->set_also(new sRunopStop);
-                d = d->also();
-            }
-            d->set_type(RO_STOPAT);
-            if (deferred_call_set) {
-                thisone->set_call(true, deferred_call);
-                delete [] deferred_call;
-                deferred_call = 0;
-                had_call = true;
-                deferred_call_set = false;
-            }
-
-            delete [] tok;
-            const char *tloc = str;
-            tok = IP.getTok(&str, false);
-            bool pt = false;
-            if (tok && lstring::ciprefix("p", tok)) {
-                pt = true;
-                delete [] tok;
-                tloc = str;
-                tok = IP.getTok(&str, false);
-            }
-            if (pt) {
-                int i = 0;
-                while (tok) {
-                    if (!is_uint(tok))
-                        break;
-                    i++;
-                    delete [] tok;
-                    tok = IP.getTok(&str, false);
-                }
-                delete [] tok;
-                str = tloc;
-
-                if (i) {
-                    int *ary = new int[i];
-                    i = 0;
-                    while ((tok = IP.getTok(&str, false)) != 0) {
-                        if (!is_uint(tok))
-                            break;
-                        ary[i++] = atoi(tok);
-                        delete [] tok;
-                    }
-                    d->set_points(i, ary);
-                    continue;
-                }
-            }
-            else {
-                int i = 0;
-                while (tok) {
-                    int err;
-                    const char *word = tok;
-                    IP.getFloat(&word, &err, true);
-                    if (err != OK)
-                        break;
-                    i++;
-                    delete [] tok;
-                    tok = IP.getTok(&str, false);
-                }
-                delete [] tok;
-                str = tloc;
-
-                if (i) {
-                    double *ary = new double[i];
-                    i = 0;
-                    while ((tok = IP.getTok(&str, false)) != 0) {
-                        const char *word = tok;
-                        int err;
-                        double tmp = IP.getFloat(&word, &err, true);
-                        if (err != OK)
-                            break;
-                        ary[i++] = tmp;
-                        delete [] tok;
-                    }
-                    d->set_points(i, ary);
-                    continue;
-                }
-            }
-            GRpkgIf()->ErrPrintf(ET_ERROR, "stop at: no targets found.\n");
-            thisone->destroy();
-            return (0);
-        }
-        if (lstring::eq(tok, kw_after) || lstring::eq(tok, kw_before)) {
-            if (thisone == 0)
-                thisone = d = new sRunopStop;
-            else {
-                d->set_also(new sRunopStop);
-                d = d->also();
-            }
-            if (lstring::eq(tok, kw_after))
-                d->set_type(RO_STOPAFTER);
-            else
-                d->set_type(RO_STOPBEFORE);
-            if (deferred_call_set) {
-                thisone->set_call(true, deferred_call);
-                delete [] deferred_call;
-                deferred_call = 0;
-                had_call = true;
-                deferred_call_set = false;
-            }
-
-            delete [] tok;
-            tok = IP.getTok(&str, false);
-            bool pt = false;
-            if (tok && lstring::ciprefix("p", tok)) {
-                pt = true;
-                delete [] tok;
-                tok = IP.getTok(&str, false);
-            }
-            if (tok) {
-                const char *word = tok;
-                if (pt) {
-                    if (is_uint(word)) {
-                        d->set_point(atoi(word));
-                        delete [] tok;
-                        tok = IP.getTok(&str, false);
-                        continue;
-                    }
-                }
-                else {
-                    int err;
-                    double tmp = IP.getFloat(&word, &err, true);
-                    if (err == OK) {
-                        d->set_point(tmp);
-                        delete [] tok;
-                        tok = IP.getTok(&str, false);
-                        continue;
-                    }
-                }
-            }
-            GRpkgIf()->ErrPrintf(ET_ERROR, "stop %s: no target found.\n",
-               d->type() == RO_STOPBEFORE ? "before" : "after");
-            thisone->destroy();
-            return (0);
-        }
-        if (lstring::eq(tok, kw_when)) {
-            if (thisone == 0)
-                thisone = d = new sRunopStop;
-            else {
-                d->set_also(new sRunopStop);
-                d = d->also();
-            }
-            d->set_type(RO_STOPWHEN);
-            if (deferred_call_set) {
-                thisone->set_call(true, deferred_call);
-                delete [] deferred_call;
-                deferred_call = 0;
-                had_call = true;
-                deferred_call_set = false;
-            }
-
-            delete [] tok;
-            const char *tloc = str;
-            tok = IP.getTok(&str, false);
-
-            char *string = 0;
-            if (tok) {
-                int i = 0;
-                while (tok) {
-                    if (is_kw(tok))
-                        break;
-                    i += strlen(tok) + 1;
-                    delete [] tok;
-                    tok = IP.getTok(&str, false);
-                }
-                i++;
-
-                string = new char[i];
-                char *s = string;
-                str = tloc;
-                tok = IP.getTok(&str, false);
-                while (tok) {
-                    if (is_kw(tok))
-                        break;
-                    if (s != string)
-                        *s++ = ' ';
-                    char *t = tok;
-                    while (*t)
-                        *s++ = *t++;
-                    delete [] tok;
-                    tok = IP.getTok(&str, false);
-                }
-                *s = '\0';
-                CP.Unquote(string);
-                if (!*string) {
-                    delete [] string;
-                    string = 0;
-                }
-            }
-            if (string) {
-                d->set_string(string);
-                continue;
-            }
-            GRpkgIf()->ErrPrintf(ET_ERROR, "stop when: no expression found.\n");
-            thisone->destroy();
-            return (0);
-        }
-        if (lstring::eq(tok, kw_call)) {
-            if (had_call || deferred_call_set) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
-                    "stop: more than one call directive not allowed.\n");
-                thisone->destroy();
-                delete [] deferred_call;
-                return (0);
-            }
-            // The call can appear anywhere a keyword is expected,
-            // including ahead of the first directive (e.g.  stop call
-            // foo at point 100).  This case uses the deferred_call
-            // to hold name until the struct is created.
-
-            delete [] tok;
-            tok = IP.getTok(&str, false);
-            const char *word = tok;
-            if (word && is_kw(word))
-                word = 0;
-            else if (tok) {
-                delete [] tok;
-                tok = IP.getTok(&str, false);
-            }
-            if (thisone) {
-                thisone->set_call(true, word);
-                had_call = true;
-            }
-            else {
-                deferred_call = lstring::copy(word);
-                deferred_call_set = true;
-            }
-            continue;
-        }
-        GRpkgIf()->ErrPrintf(ET_ERROR,
-            "stop: unknown keyword following \"stop\".\n");
-        thisone->destroy();
-        return (0);
-    }
-    if (!thisone && deferred_call_set) {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
-            "stop: orphaned call, no trigger.\n");
-        delete [] deferred_call;
-    }
-    return (thisone);
-}
-
-
-void
-sRunopStop::print(char **retstr)
-{
-    const char *msg1 = "%c %-4d ";
-    if (!retstr) {
-        TTY.printf(msg1, ro_active ? ' ' : 'I', ro_number);
-        print_cond(0, true);
-    }
-    else {
-        char buf[64];
-        sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
-        *retstr = lstring::build_str(*retstr, buf);
-        print_cond(retstr, true);
-    }
-}
-
-
-void
-sRunopStop::destroy()
-{
-    sRunopStop *d = this;
-    while (d) {
-        sRunopStop *x = d;
-        d = d->ro_also;
-        delete x;
-    }
-}
-
-
-bool
-sRunopStop::istrue()
-{
-    if (ro_bad)
-        return (true);
-
-    wordlist *wl = CP.LexStringSub(ro_string);
-    if (!wl) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, Msg, ro_string);
-        ro_bad = true;
-        return (true);
-    }
-    char *str = wordlist::flatten(wl);
-    wordlist::destroy(wl);
-
-    const char *t = str;
-    pnode *p = Sp.GetPnode(&t, true);
-    delete [] str;
-    sDataVec *v = 0;
-    if (p) {
-        v = Sp.Evaluate(p);
-        delete p;
-    }
-    if (!v) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, Msg, ro_string);
-        ro_bad = true;
-        return (true);
-    }
-    if (v->realval(0) != 0.0 || v->imagval(0) != 0.0)
-        return (true);
-    return (false);
-}
-
-
-ROret
-sRunopStop::check_stop(sRunDesc *run)
-{
-    if (!ro_active || !run)
-        return (RO_OK);
-    bool when = true;
-    bool after = true;
-    for (sRunopStop *dt = this; dt; dt = dt->ro_also) {
-        if (dt->ro_type == RO_STOPAFTER) {
-            if (dt->ro_ptmode) {
-                if (run->pointCount() < dt->ro_p.ipoint) {
-                    after = false;
-                    break;
-                }
-            }
-            else {
-                if (run->ref_value() < dt->ro_p.dpoint) {
-                    after = false;
-                    break;
-                }
-            }
-        }
-        else if (dt->ro_type == RO_STOPAT) {
-            after = false;
-            if (dt->ro_ptmode) {
-                if (dt->ro_index < dt->ro_numpts &&
-                        run->pointCount() >= dt->ro_a.ipoints[dt->ro_index]) {
-                    dt->ro_index++;
-                    after = true;
-                    break;
-                }
-            }
-            else {
-                if (dt->ro_index < dt->ro_numpts &&
-                        run->ref_value() >= dt->ro_a.dpoints[dt->ro_index]) {
-                    dt->ro_index++;
-                    after = true;
-                    break;
-                }
-            }
-        }
-        else if (dt->ro_type == RO_STOPBEFORE) {
-            if (dt->ro_ptmode) {
-                if (run->pointCount() > dt->ro_p.ipoint) {
-                    after = false;
-                    break;
-                }
-            }
-            else {
-                if (run->ref_value() > dt->ro_p.dpoint) {
-                    after = false;
-                    break;
-                }
-            }
-        }
-        else if (dt->ro_type == RO_STOPWHEN) {
-            if (!dt->istrue()) {
-                when = false;
-                break;
-            }
-        }
-    }
-    if (when && after) {
-        // Call the callback, if any.  This can override the stop.
-        ROret ret = call(run);
-        if (ret == RO_OK)
-            return (RO_PAUSE);
-        if (ret == RO_PAUSE)
-            return (RO_OK);
-        return (RO_ENDIT);
-    }
-    return (RO_OK);
-}
-
-
-ROret
-sRunopStop::call(sRunDesc *run)
-{
-    if (ro_call_flag) {
-        if (ro_call) {
-            // Call the named script or codeblock.
-            wordlist wl;
-            wl.wl_word = lstring::copy(ro_call);
-            Sp.ExecCmds(&wl);
-            delete [] wl.wl_word;
-            wl.wl_word = 0;
-            if (CP.ReturnVal() == CB_PAUSE)
-                return (RO_PAUSE);
-            if (CP.ReturnVal() == CB_ENDIT)
-                return (RO_ENDIT);
-        }
-/*XXX
-        else if (run->check()) {
-            // Run the "controls" bound codeblock.  We stop
-            // only if the checkFAIL vector is not
-            // set.
-//XXX don't use checkFAIL here
-
-            run->check()->evaluate();
-            if (!run->check()->failed())
-                return (RO_OK);
-        }
-*/
-        else {
-            sFtCirc *circ = run->circuit();
-            if (circ) {
-                circ->controlBlk().exec(true);
-                if (CP.ReturnVal() == CB_PAUSE)
-                    return (RO_PAUSE);
-                if (CP.ReturnVal() == CB_ENDIT)
-                    return (RO_ENDIT);
-            }
-        }
-    }
-    return (RO_OK);
-}
-
-
-// Print the condition.  If retstr is not 0, add the text to *retstr,
-// otherwise print to standard output.  The status arg is true when
-// printing for the status command, print the "at" point list in this
-// case.  Otherwise print only the current "at" value.
-//
-void
-sRunopStop::print_cond(char **retstr, bool status)
-{
-    sLstr lstr;
-    if (retstr) {
-        lstr.add(*retstr);
-        delete [] *retstr;
-        *retstr = 0;
-    }
-    lstr.add(kw_stop);
-    for (sRunopStop *dt = this; dt; dt = dt->ro_also) {
-        lstr.add_c(' ');
-        if (dt->ro_type == RO_STOPAFTER)
-            lstr.add(kw_after);
-        else if (dt->ro_type == RO_STOPBEFORE)
-            lstr.add(kw_before);
-        else if (dt->ro_type == RO_STOPAT)
-            lstr.add(kw_at);
-        else
-            lstr.add(kw_when);
-        lstr.add_c(' ');
-        if (dt->ro_type == RO_STOPAFTER || dt->ro_type == RO_STOPBEFORE) {
-            if (dt->ro_ptmode) {
-                lstr.add("point ");
-                lstr.add_u(dt->ro_p.ipoint);
-            }
-            else
-                lstr.add_g(dt->ro_p.dpoint);
-        }
-        else if (dt->ro_type == RO_STOPAT) {
-            if (dt->ro_ptmode) {
-                lstr.add("point ");
-                if (status) {
-                    lstr.add_u(dt->ro_a.ipoints[0]);
-                    for (int i = 1; i < dt->ro_numpts; i++) {
-                        lstr.add_c(' ');
-                        lstr.add_g(dt->ro_a.ipoints[i]);
-                    }
-                }
-                else {
-                    lstr.add_u(dt->ro_a.ipoints[dt->ro_index-1]);
-                }
-            }
-            else {
-                if (status) {
-                    lstr.add_g(dt->ro_a.dpoints[0]);
-                    for (int i = 1; i < dt->ro_numpts; i++) {
-                        lstr.add_c(' ');
-                        lstr.add_g(dt->ro_a.dpoints[i]);
-                    }
-                }
-                else {
-                    lstr.add_g(dt->ro_a.dpoints[dt->ro_index-1]);
-                }
-            }
-        }
-        else {
-            lstr.add(dt->ro_string);
-        }
-    }
-    if (ro_call_flag) {
-        lstr.add(" call");
-        if (ro_call) {
-            lstr.add_c(' ');
-            lstr.add(ro_call);
-        }
-    }
-    lstr.add_c('\n');
-    if (retstr)
-        *retstr = lstr.string_trim();
-    else
-        TTY.send(lstr.string());
-}
-// End of sRunopStop functions.
-
-
 void
 sRunopDb::clear()
 {
-    sRunop::destroy_list(rd_iplot);
-    sRunop::destroy_list(rd_trace);
     sRunop::destroy_list(rd_save);
-    sRunop::destroy_list(rd_stop);
-    sRunop::destroy_list(rd_stop2);
+    sRunop::destroy_list(rd_trace);
+    sRunop::destroy_list(rd_iplot);
     sRunop::destroy_list(rd_meas);
-    rd_iplot = 0;
-    rd_trace = 0;
+    sRunop::destroy_list(rd_stop);
     rd_save = 0;
-    rd_stop = 0;
-    rd_stop2 = 0;
+    rd_trace = 0;
+    rd_iplot = 0;
     rd_meas = 0;
+    rd_stop = 0;
     rd_runopcnt = 1;
     rd_stepcnt = 0;
     rd_steps = 0;

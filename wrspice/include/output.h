@@ -429,10 +429,9 @@ private:
 #define DF_SAVE     0x1
 #define DF_TRACE    0x2
 #define DF_IPLOT    0x4
-#define DF_STOP     0x8
-#define DF_MEASURE  0x10
-#define DF_STOP2    0x20
-#define DF_ALL      0x3f
+#define DF_MEASURE  0x8
+#define DF_STOP     0x10
+#define DF_ALL      0x1f
 
 // Structure: IFoutput
 //

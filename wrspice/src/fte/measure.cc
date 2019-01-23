@@ -267,6 +267,19 @@ namespace {
     }
 
 
+    inline void listerr1(char **errstr, const char *string)
+    {
+        if (!errstr)
+            return;
+        if (!*errstr) {
+            if (string)
+                *errstr = lstring::copy(string);
+            else
+                *errstr = lstring::copy("syntax error.");
+        }
+    }
+
+
     bool is_kw(const char *s)
     {
         if (lstring::cieq(s, mkw_measure)) return (true);
@@ -399,13 +412,14 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
                 lstring::copy("no first expression found.");
             return (E_SYNTAX);
         }
-        int len = e-s;
+        int len = e-s+1;
         tok = new char[len];
         memcpy(tok, s, len-1);
         tok[len-1] = 0;
         s = e+1;
         e = tok;
         pn = Sp.GetPnode(&e, false);
+        delete [] tok;
         if (!pn) {
             if (errstr && !*errstr)
                 lstring::copy("no point index found.");
@@ -693,24 +707,23 @@ sMpoint::print(sLstr &lstr)
 }
 
 
-// Initialise the delay, returns true when this operation is complete.
+// Return true if the specified point has been logically reached.
 //
 bool
-sMpoint::setup_delay(sFtCirc *circuit, bool *err)
+sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
 {
     if (!t_active)
         return (true);
 
     bool ready = true;
     if (t_conj) {
-        if (!t_conj->setup_delay(circuit, err))
+        if (!t_conj->check_found(circuit, err, end))
             ready = false;
     }
 
     if (!t_delay_set) {
 
         t_delay = t_delay_given;
-        sRunopMeas *m = 0;
         if (t_type == MPnum) {
 #ifdef M_DEBUG
             printf("setup_delay:  numeric %s\n", t_when_expr1);
@@ -718,6 +731,7 @@ sMpoint::setup_delay(sFtCirc *circuit, bool *err)
             t_delay_set = true;
         }
         else {
+            sRunopMeas *m = 0;
             if (t_type == MPexp1) {
                 m = sRunopMeas::find(circuit->measures(), t_when_expr1);
                 if (m) {
@@ -736,8 +750,11 @@ sMpoint::setup_delay(sFtCirc *circuit, bool *err)
                         *err = true;
                     return (false);
                 }
-                if (!m->measure_done())
+                if (!m->measure_done()) {
+                    if (t_range == MPbefore)
+                        return (ready);
                     return (false);
+                }
                 if (m->end().t_found_flag)
                     t_delay += m->end().t_found;
                 else
@@ -756,8 +773,11 @@ sMpoint::setup_delay(sFtCirc *circuit, bool *err)
                             *err = true;
                         return (false);
                     }
-                    if (!m->measure_done())
+                    if (!m->measure_done()) {
+                        if (t_range == MPbefore)
+                            return (ready);
                         return (false);
+                    }
                     if (m->end().t_found_flag)
                         t_delay += m->end().t_found;
                     else
@@ -772,37 +792,21 @@ sMpoint::setup_delay(sFtCirc *circuit, bool *err)
                     if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
                         t_crosses = 1;
 #ifdef M_DEBUG
-                    printf("setup_delay:  expr2 |%s| |%s|\n", t_when_expr1,
+                    printf("setup_delay:  expr2 \'%s\' \'%s\'\n", t_when_expr1,
                         t_when_expr2);
 #endif
                 }
 #ifdef M_DEBUG
                 else if (t_type == MPexp1) {
-                    printf("setup_delay:  expr1 |%s|\n", t_when_expr1);
+                    printf("setup_delay:  expr1 \'%s\'\n", t_when_expr1);
                 }
 #endif
                 t_delay_set = true;
             }
         }
     }
-    return (ready && t_delay_set);
-}
 
-
-// Return true if the specified point has been reached.
-//
-bool
-sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
-{
-    if (!t_active)
-        return (true);
-
-    bool ready = true;
-    if (t_conj) {
-        if (!t_conj->check_found(circuit, err, end))
-            ready = false;
-    }
-    if (!t_found_flag && t_delay_set) {
+    if (t_delay_set && !t_found_flag) {
         sDataVec *xs = circuit->runplot()->scale();
         int ix = check_trig(xs);
         if (ix < 0) {
@@ -824,8 +828,11 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
                     *err = true;
                 return (false);
             }
-            if ((int)dvl->realval(0) == 0)
+            if ((int)dvl->realval(0) == 0) {
+                if (t_range == MPbefore)
+                    return (ready);
                 return (false);
+            }
             ix = xs->unscalarized_length() - 1;
             fval = xs->realval(0);;
             if (end)
@@ -856,6 +863,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
             else {
                 t_v1 = v1;
                 t_v2 = v2;
+                if (t_range == MPbefore)
+                    return (ready);
                 return (false);
             }
 
@@ -875,8 +884,11 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
             t_v1 = v1;
             t_v2 = v2;
 
-            if (!foundit)
+            if (!foundit) {
+                if (t_range == MPbefore)
+                    return (ready);
                 return (false);
+            }
         }
 
         t_indx = ix;
@@ -885,7 +897,6 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
     }
     if (t_range == MPbefore)
         return (ready & !t_found_flag);
-//XXX difference btwn at and after?
     return (ready & t_found_flag);
 }
 
@@ -1074,12 +1085,15 @@ sRunopMeas::parse(const char *str, char **errstr)
                 ro_result = gtok(&s);
                 if (!ro_result) {
                     err = true;
-                    listerr(errstr, 0);
+                    listerr1(errstr, "missing result name.");
                     break;
                 }
                 in_call = false;
                 continue;
             }
+            err = true;
+            listerr1(errstr, "missing analysis name.");
+            break;
         }
         if (lstring::cieq(tok, mkw_trig)) {
             delete [] tok;
@@ -1390,10 +1404,6 @@ sRunopMeas::check_measure(sRunDesc *run)
         // All non-param measurements done.
     }
     else {
-        if (!ro_start.setup_delay(circuit, &ro_measure_error))
-            ready = false;
-        if (!ro_end.setup_delay(circuit, &ro_measure_error))
-            ready = false;
         if (!ro_start.check_found(circuit, &ro_measure_error, false))
             ready = false;
         if (!ro_end.check_found(circuit, &ro_measure_error, true))
@@ -2137,7 +2147,7 @@ sRunopMeas::findrft(sDataVec *dv, sDataVec *xs)
 
 
 void
-sRunopStop2::print(char **retstr)
+sRunopStop::print(char **retstr)
 {
     const char *msg1 = "%c %-4d ";
     if (!retstr) {
@@ -2154,7 +2164,7 @@ sRunopStop2::print(char **retstr)
 
 
 void
-sRunopStop2::destroy()
+sRunopStop::destroy()
 {
     delete this;
 }
@@ -2163,7 +2173,7 @@ sRunopStop2::destroy()
 // Parse the string and set up the structure appropriately.
 //
 bool
-sRunopStop2::parse(const char *str, char **errstr)
+sRunopStop::parse(const char *str, char **errstr)
 {
     bool err = false;
     bool gotanal = false;
@@ -2183,6 +2193,9 @@ sRunopStop2::parse(const char *str, char **errstr)
                 in_call = false;
                 continue;
             }
+            err = true;
+            listerr1(errstr, "missing analysis name.");
+            break;
         }
         if (lstring::cieq(tok, mkw_when) ||
                 lstring::cieq(tok, mkw_at) ||
@@ -2231,7 +2244,7 @@ sRunopStop2::parse(const char *str, char **errstr)
 // Reset the measurement.
 //
 void
-sRunopStop2::reset()
+sRunopStop::reset()
 {
 
     ro_start.reset();
@@ -2247,7 +2260,7 @@ sRunopStop2::reset()
 
 
 ROret
-sRunopStop2::check_stop(sRunDesc *run)
+sRunopStop::check_stop(sRunDesc *run)
 {
     if (!ro_active || !run || !run->circuit())
         return (RO_OK);
@@ -2255,8 +2268,6 @@ sRunopStop2::check_stop(sRunDesc *run)
         return (RO_OK);
 
     sFtCirc *circuit = run->circuit();
-    if (!ro_start.setup_delay(circuit, &ro_stop_error))
-        return (RO_OK);
     if (!ro_start.check_found(circuit, &ro_stop_error, false))
         return (RO_OK);
 
@@ -2273,7 +2284,7 @@ sRunopStop2::check_stop(sRunDesc *run)
 // Call the post-measurement callback, if on is set up.
 //
 ROret
-sRunopStop2::call(sRunDesc *run)
+sRunopStop::call(sRunDesc *run)
 {
     // Call the callback, if any.  This can override the stop.
     if (ro_call_flag) {
@@ -2319,7 +2330,7 @@ sRunopStop2::call(sRunDesc *run)
 // printing for the status command.
 //
 void
-sRunopStop2::print_cond(char **retstr, bool status)
+sRunopStop::print_cond(char **retstr, bool status)
 {
     (void)status;
     sLstr lstr;
@@ -2328,7 +2339,7 @@ sRunopStop2::print_cond(char **retstr, bool status)
         delete [] *retstr;
         *retstr = 0;
     }
-    lstr.add(kw_stop2);
+    lstr.add(kw_stop);
     if (ro_analysis >= 0) {
         IFanalysis *a = IFanalysis::analysis(ro_analysis);
         if (a) {

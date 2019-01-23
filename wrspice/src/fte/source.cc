@@ -2080,22 +2080,22 @@ sFtCirc::expand(sLine *realdeck, bool *err)
             char *er = 0;
             const char *line = dd->line();
             lstring::advtok(&line);
-            sRunopStop2 *m = new sRunopStop2(line, &er);
+            sRunopStop *m = new sRunopStop(line, &er);
             if (er) {
                 dd->set_error(er);
                 delete [] er;
             }
                 
-            if (!ci_runops.stops2())
-                ci_runops.set_stops2(m);
+            if (!ci_runops.stops())
+                ci_runops.set_stops(m);
             else {
-                sRunopStop2 *mx = ci_runops.stops2();
+                sRunopStop *mx = ci_runops.stops();
                 while (mx->next())
                     mx = mx->next();
                 mx->set_next(m);
             }
         }
-//XXX add runops here (.stop lines)
+//XXX add this?
 /*
         else if (lstring::cimatch(TRACE_KW, dd->line()) {
         }

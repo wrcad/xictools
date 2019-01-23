@@ -85,9 +85,8 @@ struct IFspecial;
 struct sRunopSave;
 struct sRunopTrace;
 struct sRunopIplot;
-struct sRunopStop;
-struct sRunopStop2;
 struct sRunopMeas;
+struct sRunopStop;
 struct sPlotList;
 struct sRunDesc;
 struct sSaveList;
@@ -162,12 +161,11 @@ struct sRunopDb
 {
     sRunopDb()
         {
-            rd_iplot = 0;
-            rd_trace = 0;
             rd_save = 0;
-            rd_stop = 0;
+            rd_trace = 0;
+            rd_iplot = 0;
             rd_meas = 0;
-            rd_stop2 = 0;
+            rd_stop = 0;
             rd_runopcnt = 1;
             rd_stepcnt = 0;
             rd_steps = 0;
@@ -181,8 +179,7 @@ struct sRunopDb
     void clear();
 
     bool isset()
-        { return (rd_iplot || rd_trace || rd_save || rd_stop || rd_stop2 ||
-        rd_meas); }
+        { return (rd_iplot || rd_trace || rd_save || rd_meas || rd_stop); }
 
     sRunopSave *saves()             { return (rd_save); }
     void set_saves(sRunopSave *d)   { rd_save = d; }
@@ -193,14 +190,11 @@ struct sRunopDb
     sRunopIplot *iplots()           { return (rd_iplot); }
     void set_iplots(sRunopIplot *d) { rd_iplot = d; }
 
-    sRunopStop *stops()             { return (rd_stop); }
-    void set_stops(sRunopStop *d)   { rd_stop = d; }
-
     sRunopMeas *measures()          { return (rd_meas); }
     void set_measures(sRunopMeas *m){ rd_meas = m; }
 
-    sRunopStop2 *stops2()           { return (rd_stop2); }
-    void set_stops2(sRunopStop2 *d) { rd_stop2 = d; }
+    sRunopStop *stops()             { return (rd_stop); }
+    void set_stops(sRunopStop *d)   { rd_stop = d; }
 
     int new_count()             { return (rd_runopcnt++); }
     int decrement_count()       { return (rd_runopcnt--); }
@@ -216,9 +210,8 @@ private:
     sRunopSave *rd_save;        // save list head
     sRunopTrace *rd_trace;      // trace list head
     sRunopIplot *rd_iplot;      // iplot list head
-    sRunopStop *rd_stop;        // stop after/when list head
     sRunopMeas *rd_meas;        // measures list head
-    sRunopStop2 *rd_stop2;      // stop after/when list head
+    sRunopStop *rd_stop;        // stops list head
 
     int rd_runopcnt;            // running sum of runops created, provides id
     int rd_stepcnt;             // number of steps done
@@ -347,12 +340,10 @@ struct sFtCirc
     void set_traces(sRunopTrace *d) { ci_runops.set_traces(d); }
     sRunopIplot *iplots()           { return (ci_runops.iplots()); }
     void set_iplots(sRunopIplot *d) { ci_runops.set_iplots(d); }
-    sRunopStop *stops()             { return (ci_runops.stops()); }
-    void set_stops(sRunopStop *d)   { ci_runops.set_stops(d); }
     sRunopMeas *measures()          { return (ci_runops.measures()); }
     void set_measures(sRunopMeas *m){ ci_runops.set_measures(m); }
-    sRunopStop2 *stops2()           { return (ci_runops.stops2()); }
-    void set_stops2(sRunopStop2 *d) { ci_runops.set_stops2(d); }
+    sRunopStop *stops()             { return (ci_runops.stops()); }
+    void set_stops(sRunopStop *d)   { ci_runops.set_stops(d); }
 
     wordlist *commands()        { return (ci_commands); }
 

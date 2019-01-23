@@ -158,7 +158,6 @@ public:
     static void com_load(wordlist*);
     static void com_mapkey(wordlist*);
     static void com_measure(wordlist*);
-static void com_nstop(wordlist*);
     static void com_mmon(wordlist*);
     static void com_mplot(wordlist*);
     static void com_noise(wordlist*);

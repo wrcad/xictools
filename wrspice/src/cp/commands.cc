@@ -185,7 +185,6 @@ namespace cmdnames {
     const char *cmd_loop        = "loop";       // alias for "sweep"
     const char *cmd_mapkey      = "mapkey";
     const char *cmd_measure     = "measure";
-const char *cmd_nstop        = "nstop";
     const char *cmd_mmon        = "mmon";
     const char *cmd_mplot       = "mplot";
     const char *cmd_noise       = "noise";
@@ -427,10 +426,6 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_measure, com_measure, false, true, false,
       Bstop, Bstop, Bstop, Bstop, E_DEFHMASK, 0, LOTS, 0,
       "[measure args] : Set up a measurement." ) ,
-//XXX
-    sCommand( cmd_nstop, com_nstop, false, true, false,
-      Bstop, Bstop, Bstop, Bstop, E_DEFHMASK, 0, LOTS, 0,
-      "[nstop args] : Set a breakpoint." ) ,
     sCommand( cmd_mmon, com_mmon, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 2, 0,
       ": memory monitor control." ) ,

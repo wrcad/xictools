@@ -223,6 +223,7 @@ private:
     int ro_reuseid;             // Iplot window to reuse.
 };
 
+/*XXX
 // Check for breakout condition while running.
 struct sRunopStop : public sRunop
 {
@@ -326,6 +327,7 @@ private:
         int *ipoints;
     } ro_a;
 };
+*/
 
 
 // The general form of the definition string is
@@ -431,7 +433,6 @@ struct sMpoint
 
     int parse(const char**, char**, const char*);
     void print(sLstr&);
-    bool setup_delay(sFtCirc*, bool*);
     bool check_found(sFtCirc*, bool*, bool);
 
 private:
@@ -467,9 +468,9 @@ private:
     unsigned char t_range;  // Before/at/after, MPrange.
 };
 
-struct sRunopStop2 : public sRunop
+struct sRunopStop : public sRunop
 {
-    sRunopStop2(const char *str, char **errstr)
+    sRunopStop(const char *str, char **errstr)
     {
         ro_type = RO_STOP;
 
@@ -488,12 +489,12 @@ struct sRunopStop2 : public sRunop
         parse(str, errstr);
     }
 
-    ~sRunopStop2()
+    ~sRunopStop()
         {
             delete [] ro_call;
         }
 
-    sRunopStop2 *next()         { return ((sRunopStop2*)ro_next); }
+    sRunopStop *next()          { return ((sRunopStop*)ro_next); }
 
     sMpoint &start()            { return (ro_start); }
 
