@@ -184,6 +184,7 @@ sDataVec::v_times(sDataVec *data2)
     sDataVec *res = new sDataVec(0, v_flags | data2->v_flags, v_length,
         &v_units);
     res->v_units*data2->v_units;
+
     if (iscomplex()) {
         complex *out = res->v_data.comp;
         if (data2->iscomplex()) {

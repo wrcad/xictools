@@ -320,3 +320,8 @@ Gleb crash (close window with running WRspice crashes WRspice).
 Jooyoung: Verilog JJ model doesn't work in sweep/chained DC analysis.
 
 Add random bit 'x' in pattern gpulse/pulse.
+
+Changed the character that separates numerator and denominator units from '/'
+to '_', which is tied to the new "units_sepchar" variable.  The earlier
+choice could cause ambiguous expressions.  e.g., 1/V  could be ine over
+a vector V or one per volt.  Where is units stuff documented?

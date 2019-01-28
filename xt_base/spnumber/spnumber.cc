@@ -527,8 +527,10 @@ sSPnumber::parse(const char **line, bool whole, bool gobble, sUnits **units)
 
 #ifdef WRSPICE
 #define UNITS_CATCHAR() Sp.UnitsCatchar()
+#define UNITS_SEPCHAR() Sp.UnitsSepchar()
 #else
 #define UNITS_CATCHAR() '#'
+#define UNITS_SEPCHAR() '/'
 #endif
 
 // Static function.
@@ -542,14 +544,20 @@ sSPnumber::get_unitstr(const char **s, char *buf)
     const char *t = *s;
     bool had_alpha = false;
     bool had_cat = false;
-    if (isalpha(*t) || *t == UNITS_CATCHAR()) {
+    if (isalpha(*t) || *t == UNITS_CATCHAR() || *t == UNITS_SEPCHAR()) {
         if (*t != UNITS_CATCHAR()) {
             buf[i++] = *t;
-            had_alpha = true;
+            if (*t != UNITS_SEPCHAR())
+                had_alpha = true;
         }
         for (t++; i < 31; t++) {
             if (isalpha(*t)) {
                 had_alpha = true;
+                buf[i++] = *t;
+                continue;
+            }
+            if (*t == UNITS_SEPCHAR()) {
+                had_alpha = false;
                 buf[i++] = *t;
                 continue;
             }
@@ -559,7 +567,7 @@ sSPnumber::get_unitstr(const char **s, char *buf)
             }
             if (!had_cat && *t == UNITS_CATCHAR()) {
                 had_alpha = false;
-                buf[i++] = '/';
+                buf[i++] = UNITS_SEPCHAR();
                 continue;
             }
             break;

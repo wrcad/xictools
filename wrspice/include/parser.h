@@ -266,7 +266,8 @@ struct pnode
     bool is_const_one()
         {
             return (is_const() && pn_value->isreal() &&
-                pn_value->length() == 1 && pn_value->realval(0) == 1.0);
+                pn_value->length() == 1 && pn_value->realval(0) == 1.0 &&
+                pn_value->units()->isnotype());
         }
 
     bool is_const_zero()

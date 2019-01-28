@@ -2241,6 +2241,11 @@ IFsimulator::IFsimulator()
     //
     ft_units_catchar = DEF_UNITS_CATCHAR;
 
+    // Character used to separate numerator units from denominator
+    // units in units string.
+    //
+    ft_units_sepchar = DEF_UNITS_SEPCHAR;
+
     // Character that separates plot name from vector name when referencing
     // vectors.
     //

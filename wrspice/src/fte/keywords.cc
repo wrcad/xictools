@@ -1669,6 +1669,7 @@ const char *kw_nosubckt         = "nosubckt";
 const char *kw_program          = "program";
 const char *kw_strictnumparse   = "strictnumparse";
 const char *kw_units_catchar    = "units_catchar";
+const char *kw_units_sepchar    = "units_sepchar";
 const char *kw_subc_catchar     = "subc_catchar";
 const char *kw_subc_catmode     = "subc_catmode";
 const char *kw_plot_catchar     = "plot_catchar";
@@ -1900,6 +1901,35 @@ struct KWent_units_catchar : public KWent
             Sp.SetUnitsCatchar(*v->string());
         else
             Sp.SetUnitsCatchar(DEF_UNITS_CATCHAR);
+        CP.RawVarSet(word, isset, v);
+        KWent::callback(isset, v);
+    }
+};
+
+struct KWent_units_sepchar : public KWent
+{
+    KWent_units_sepchar() { set(
+        kw_units_sepchar,
+        VTYP_STRING, 0.0, 0.0,
+        cpystr("Units string numertor/denominator separator, default \'%c\'.",
+            DEF_UNITS_SEPCHAR)); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset) {
+            if (v->type() != VTYP_STRING) {
+                error_pr(word, 0, "a string");
+                return;
+            }
+            if (strlen(v->string()) > 1 || !ispunct(*v->string())) {
+                error_pr(word, 0, "one punctuation character");
+                return;
+            }
+        }
+        if (isset)
+            Sp.SetUnitsSepchar(*v->string());
+        else
+            Sp.SetUnitsSepchar(DEF_UNITS_SEPCHAR);
         CP.RawVarSet(word, isset, v);
         KWent::callback(isset, v);
     }
@@ -2148,6 +2178,7 @@ sKW *cKeyWords::KWdebug[] = {
     new KWent_program(),
     new KWent_strictnumparse(),
     new KWent_units_catchar(),
+    new KWent_units_sepchar(),
     new KWent_subc_catchar(),
     new KWent_subc_catmode(),
     new KWent_plot_catchar(),

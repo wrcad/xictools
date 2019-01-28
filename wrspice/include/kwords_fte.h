@@ -173,6 +173,7 @@ extern const char *kw_nosubckt;
 extern const char *kw_program;
 extern const char *kw_strictnumparse;
 extern const char *kw_units_catchar;
+extern const char *kw_units_sepchar;
 extern const char *kw_subc_catchar;
 extern const char *kw_subc_catmode;
 extern const char *kw_plot_catchar;

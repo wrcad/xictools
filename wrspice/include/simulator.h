@@ -97,6 +97,12 @@ union va_t;
 //
 #define DEF_UNITS_CATCHAR '#'
 
+// Default character that separtes numerator from denomintor in units
+// strings, was '/' before 4.3.9, which could lead to ambiguous
+// expressions.
+//
+#define DEF_UNITS_SEPCHAR '_'
+
 // Default char used as a field separator when creating flat token
 // names when expanding subckts, was ':' in releases before 3.2.5. 
 // Changed to '_' in 3.2.5 to avoid clash with ternary a?b:c operator,
@@ -755,6 +761,8 @@ struct IFsimulator
     void SetSubcCatchar(char c)     { ft_subc_catchar = c; }
     char UnitsCatchar()             { return (ft_units_catchar); }
     void SetUnitsCatchar(char c)    { ft_units_catchar = c; }
+    char UnitsSepchar()             { return (ft_units_sepchar); }
+    void SetUnitsSepchar(char c)    { ft_units_sepchar = c; }
     char PlotCatchar()              { return (ft_plot_catchar); }
     void SetPlotCatchar(char c)     { ft_plot_catchar = c; }
     char SpecCatchar()              { return (ft_spec_catchar); }
@@ -794,6 +802,10 @@ private:
     // This can follow a number, separating a units string from the number.
     //
     char ft_units_catchar;
+
+    // Character used in units strings to separate numerator from
+    // denominator.  Avoid use of '/' which can be ambiguous.
+    char ft_units_sepchar;
 
     // Character that separates plot name from vector name when referencing
     // vectors.
