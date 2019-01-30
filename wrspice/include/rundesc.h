@@ -101,6 +101,7 @@ struct sRunDesc
             rd_numData      = 0;
             rd_dataSize     = 0;
             rd_refIndex     = 0;
+            rd_pointsSeen   = 0;
             rd_pointCount   = 0;
             rd_numPoints    = 0;
             rd_isComplex    = 0;
@@ -196,6 +197,9 @@ struct sRunDesc
     int refIndex()                  { return (rd_refIndex); }
     void set_refIndex(int i)        { rd_refIndex = i; }
 
+    int pointsSeen()                { return (rd_pointsSeen); }
+    void inc_pointsSeen()           { rd_pointsSeen++; }
+
     int pointCount()                { return (rd_pointCount); }
     void inc_pointCount()           { rd_pointCount++; }
 
@@ -244,7 +248,8 @@ private:
     int rd_numData;         // size of data array
     int rd_dataSize;        // allocated size of data array
     int rd_refIndex;        // index of reference datum in data array
-    int rd_pointCount;      // running count of output points
+    int rd_pointsSeen;      // running count of output points seen
+    int rd_pointCount;      // running count of output points saved
     int rd_numPoints;       // num points expected, -1 if not known
     int rd_isComplex;       // set if any vector is complex
     int rd_maxPts;          // point limit

@@ -1757,14 +1757,14 @@ sRunopMeas::call(sRunDesc *run)
                 return (RO_ENDIT);
         }
         else if (run->check()) {
-            // Run the "controls" bound codeblock.  We stop
-            // only if the checkFAIL vector is not
-            // set.
-//XXX don't use checkFAIL here
+            // Run the "controls" bound codeblock.  Stop if the fail
+            // flag is set.
 
-            run->check()->evaluate();
-            if (!run->check()->failed())
-                return (RO_OK);
+            CBret ret = run->check()->evaluate();
+            if (ret == CBfail)
+                return (RO_PAUSE);
+            if (ret == CBendit)
+                return (RO_ENDIT);
         }
         else {
             sFtCirc *circ = run->circuit();
@@ -2301,14 +2301,14 @@ sRunopStop::call(sRunDesc *run)
                 return (RO_ENDIT);
         }
         else if (run->check()) {
-            // Run the "controls" bound codeblock.  We stop
-            // only if the checkFAIL vector is not
-            // set.
-//XXX don't use checkFAIL here
+            // Run the "controls" bound codeblock.  stop if the fail
+            // flag is set.
 
-            run->check()->evaluate();
-            if (!run->check()->failed())
-                return (RO_OK);
+            CBret ret = run->check()->evaluate();
+            if (ret == CBfail)
+                return (RO_PAUSE);
+            if (ret == CBendit)
+                return (RO_ENDIT);
         }
         else {
             sFtCirc *circ = run->circuit();

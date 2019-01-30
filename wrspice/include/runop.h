@@ -55,6 +55,7 @@ Authors: 1985 Wayne A. Christopher
 //
 
 struct sRunDesc;
+struct pnode;
 
 enum ROtype
 {
@@ -64,12 +65,8 @@ enum ROtype
     RO_IPLOT,               // Incrementally plot listed vectors.
     RO_IPLOTALL,            // Incrementally plot everything.
     RO_DEADIPLOT,           // Iplot is being destroyed.
-    RO_STOPAFTER,           // Break after this many iterations.
-    RO_STOPAT,              // Break at this many iterations.
-    RO_STOPBEFORE,          // Break before this many iterations.
-    RO_STOPWHEN,            // Break when a node reaches this value.
-    RO_STOP,                // Break on condition.
-    RO_MEASURE              // Perform a measurement.
+    RO_MEASURE,             // Perform a measurement.
+    RO_STOP                 // Break on condition.
 };
 
 // Call function returns.
@@ -223,113 +220,9 @@ private:
     int ro_reuseid;             // Iplot window to reuse.
 };
 
-/*XXX
-// Check for breakout condition while running.
-struct sRunopStop : public sRunop
-{
-    sRunopStop()
-        {
-            ro_type     = RO_STOPAFTER;
 
-            ro_call_flag    = false;
-            ro_ptmode       = false;
-            ro_p.dpoint     = 0.0;
-            ro_call         = 0;
-            ro_also         = 0;
-            ro_index        = 0;
-            ro_numpts       = 0;
-            ro_a.dpoints    = 0;
-        }
-
-    ~sRunopStop()
-        {
-            delete [] ro_call;
-            if (ro_ptmode)
-                delete [] ro_a.ipoints;
-            else
-                delete [] ro_a.dpoints;
-        }
-
-    sRunopStop *next()          { return ((sRunopStop*)ro_next); }
-
-    void set_point(double d)
-        {
-            ro_p.dpoint = d;
-            ro_ptmode = false;
-        }
-
-    void set_point(int i)
-        {
-            ro_p.ipoint = i;
-            ro_ptmode = true;
-        }
-
-    bool call_flag()            { return (ro_call_flag); }
-    const char *call_func()     { return (ro_call_flag ? ro_call : 0); }
-    void set_call(bool b, const char *fn)
-        {
-            ro_call_flag = b;
-            char *nm = lstring::copy(fn);
-            delete [] ro_call;
-            ro_call = nm;
-        }
-
-    sRunopStop *also()          { return (ro_also); }
-    void set_also(sRunopStop *d){ ro_also = d; }
-
-    void set_index(int n)       { ro_index = n; }
-    void set_points(int sz, double *p)
-        {
-            ro_numpts = sz;
-            ro_index = 0;
-            if (ro_ptmode)
-                delete [] ro_a.ipoints;
-            else
-                delete [] ro_a.dpoints;
-            ro_a.dpoints = p;
-            ro_ptmode = false;
-        }
-
-    void set_points(int sz, int *p)
-        {
-            ro_numpts = sz;
-            ro_index = 0;
-            if (ro_ptmode)
-                delete [] ro_a.ipoints;
-            else
-                delete [] ro_a.dpoints;
-            ro_a.ipoints = p;
-            ro_ptmode = true;
-        }
-
-    void print(char**);         // Print, in string if given, the runop msg.
-    void destroy();             // Destroy this runop and alsos.
-
-    static sRunopStop *parse(const char*);
-    bool istrue();                  // Evaluate true if condition met.
-    ROret check_stop(sRunDesc*);    // Return if stop condition met.
-    ROret call(sRunDesc*);          // Call function wrapper.
-    void print_cond(char**, bool);  // Print the conditional expression.
-
-private:
-    bool ro_call_flag;          // Call script or bound codeblock on stop.
-    bool ro_ptmode;             // Input in points, else absolute.
-    union {                     // Output point for test:
-        double dpoint;          //   Value.
-        int ipoint;             //   Plot point index.
-    } ro_p;
-    sRunopStop *ro_also;        // Link for conjunctions.
-    const char *ro_call;        // Name of script to call on stop.
-    int ro_index;               // Index into the ro_points array.
-    int ro_numpts;              // Size of the ro_points array.
-    union {                     // Array of points to test for "stop at".
-        double *dpoints;
-        int *ipoints;
-    } ro_a;
-};
-*/
-
-
+// Time point for measure/stop.
+//
 // The general form of the definition string is
 //   [when/at] expr[val][=][expr] [td=delay] [cross=crosses] [rise=rises]
 //     [fall=falls]
@@ -372,8 +265,6 @@ enum MPrange
     MPbefore,       // applies before defined value
     MPafter         // appies after defined value
 };
-
-struct pnode;
 
 struct sMpoint
 {
@@ -466,73 +357,6 @@ private:
     bool t_ptmode;          // Input in points, else absolute.
     unsigned char t_type;   // Syntax type, MPform.
     unsigned char t_range;  // Before/at/after, MPrange.
-};
-
-struct sRunopStop : public sRunop
-{
-    sRunopStop(const char *str, char **errstr)
-    {
-        ro_type = RO_STOP;
-
-        ro_call                 = 0;
-        ro_analysis             = 0;
-        ro_found_rises          = 0;
-        ro_found_falls          = 0;
-        ro_found_crosses        = 0;
-        ro_stop_done            = false;
-        ro_stop_error           = false;
-        ro_stop_skip            = false;
-        ro_stop_flag            = false;
-        ro_end_flag             = false;
-        ro_call_flag            = false;
-
-        parse(str, errstr);
-    }
-
-    ~sRunopStop()
-        {
-            delete [] ro_call;
-        }
-
-    sRunopStop *next()          { return ((sRunopStop*)ro_next); }
-
-    sMpoint &start()            { return (ro_start); }
-
-    int analysis()              { return (ro_analysis); }
-    const char *call()          { return (ro_call); }
-    const char *start_when_expr1()  { return (ro_start.when_expr1()); }
-    const char *start_when_expr2()  { return (ro_start.when_expr2()); }
-    bool stop_done()            { return (ro_stop_done); }
-    bool stop_flag()            { return (ro_stop_flag); }
-    bool end_flag()             { return (ro_end_flag); }
-    void nostop()               { ro_stop_flag = false; ro_end_flag = false; }
-
-    void print(char**);         // Print, in string if given, the runop msg.
-    void destroy();             // Destroy this runop.
-
-    // measure.cc
-    bool parse(const char*, char**);
-    void reset();
-    ROret check_stop(sRunDesc*);
-    ROret call(sRunDesc*);
-    void print_cond(char**, bool);
-
-private:
-    double endval(sDataVec*, sDataVec*, bool);
-
-    sMpoint ro_start;
-
-    const char *ro_call;        // function to call when measure comp[lete
-    int ro_analysis;            // type index of analysis 
-    int ro_found_rises;         // number of rising crossings
-    int ro_found_falls;         // number of falling crossings
-    int ro_found_crosses;       // number of crossings
-    bool ro_stop_done;          // measurement done successfully
-    bool ro_stop_error;         // measurement can't be done
-    bool ro_stop_skip;          // parse error so skip
-    bool ro_stop_flag;          // pause analysis when done
-    bool ro_end_flag;           // terminate analysis when done
-    bool ro_call_flag;          // call a function or bound codeblock
 };
 
 enum Mfunc { Mmin, Mmax, Mpp, Mavg, Mrms, Mpw, Mrft, Mfind };
@@ -632,6 +456,7 @@ struct sRunopMeas : public sRunop
     const char *end_when_expr1()    { return (ro_end.when_expr1()); }
     const char *end_when_expr2()    { return (ro_end.when_expr2()); }
     sMfunc *funcs()             { return (ro_funcs); }
+    sMfunc *finds()             { return (ro_finds); }
     bool measure_queued()       { return (ro_queue_measure); }
     bool measure_done()         { return (ro_measure_done); }
     bool stop_flag()            { return (ro_stop_flag); }
@@ -691,6 +516,73 @@ private:
     bool ro_end_flag;           // terminate analysis when done
     bool ro_call_flag;          // call a function or bound codeblock
     char ro_print_flag;         // print result on screen, 1 terse  2 verbose
+};
+
+struct sRunopStop : public sRunop
+{
+    sRunopStop(const char *str, char **errstr)
+    {
+        ro_type = RO_STOP;
+
+        ro_call                 = 0;
+        ro_analysis             = 0;
+        ro_found_rises          = 0;
+        ro_found_falls          = 0;
+        ro_found_crosses        = 0;
+        ro_stop_done            = false;
+        ro_stop_error           = false;
+        ro_stop_skip            = false;
+        ro_stop_flag            = false;
+        ro_end_flag             = false;
+        ro_call_flag            = false;
+
+        parse(str, errstr);
+    }
+
+    ~sRunopStop()
+        {
+            delete [] ro_call;
+        }
+
+    sRunopStop *next()          { return ((sRunopStop*)ro_next); }
+
+    sMpoint &start()            { return (ro_start); }
+
+    int analysis()              { return (ro_analysis); }
+    const char *call()          { return (ro_call); }
+    const char *start_when_expr1()  { return (ro_start.when_expr1()); }
+    const char *start_when_expr2()  { return (ro_start.when_expr2()); }
+    bool stop_done()            { return (ro_stop_done); }
+    bool stop_flag()            { return (ro_stop_flag); }
+    bool end_flag()             { return (ro_end_flag); }
+    void nostop()               { ro_stop_flag = false; ro_end_flag = false; }
+
+    void print(char**);         // Print, in string if given, the runop msg.
+    void destroy();             // Destroy this runop.
+
+    // measure.cc
+    bool parse(const char*, char**);
+    void reset();
+    ROret check_stop(sRunDesc*);
+    ROret call(sRunDesc*);
+    void print_cond(char**, bool);
+
+private:
+    double endval(sDataVec*, sDataVec*, bool);
+
+    sMpoint ro_start;
+
+    const char *ro_call;        // function to call when measure comp[lete
+    int ro_analysis;            // type index of analysis 
+    int ro_found_rises;         // number of rising crossings
+    int ro_found_falls;         // number of falling crossings
+    int ro_found_crosses;       // number of crossings
+    bool ro_stop_done;          // measurement done successfully
+    bool ro_stop_error;         // measurement can't be done
+    bool ro_stop_skip;          // parse error so skip
+    bool ro_stop_flag;          // pause analysis when done
+    bool ro_end_flag;           // terminate analysis when done
+    bool ro_call_flag;          // call a function or bound codeblock
 };
 
 #endif // RUNOP_H

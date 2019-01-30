@@ -247,10 +247,10 @@ void
 IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
 {
     sRunopDb *db = circuit ? &circuit->runops() : 0;
-    for (sRunopSave *d = o_runops->saves(); d && d->active(); d = d->next())
-        saved->add_save(d->string());
-    if (db) {
-        for (sRunopSave *d = db->saves(); d && d->active(); d = d->next())
+
+    ROgen<sRunopSave> svgen(o_runops->saves(), db ? db->saves() : 0);
+    for (sRunopSave *d = svgen.next(); d; d = svgen.next()) {
+        if (d->active())
             saved->add_save(d->string());
     }
     bool saveall = true;
@@ -272,66 +272,47 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
     // to @Vsrc[p].  When done, we'll go back an purge non-specials
     // if saveall is true.
 
-    for (sRunopTrace *d = o_runops->traces(); d && d->active(); d = d->next())
-        saved->list_expr(d->string());
-    if (db) {
-        for (sRunopTrace *d = db->traces(); d && d->active(); d = d->next())
-            saved->list_expr(d->string());
-    }
-    for (sRunopIplot *d = o_runops->iplots(); d && d->active(); d = d->next())
-        saved->list_expr(d->string());
-    if (db) {
-        for (sRunopIplot *d = db->iplots(); d && d->active(); d = d->next())
+    ROgen<sRunopTrace> tgen(o_runops->traces(), db ? db->traces() : 0);
+    for (sRunopTrace *d = tgen.next(); d; d = tgen.next()) {
+        if (d->active())
             saved->list_expr(d->string());
     }
 
-    for (sRunopMeas *m = o_runops->measures(); m; m = m->next()) {
-        if (m->expr2())
-            saved->list_expr(m->expr2());
-        if (m->start_when_expr1())
-            saved->list_expr(m->start_when_expr1());
-        if (m->start_when_expr2())
-            saved->list_expr(m->start_when_expr2());
-        if (m->end_when_expr1())
-            saved->list_expr(m->end_when_expr1());
-        if (m->end_when_expr2())
-            saved->list_expr(m->end_when_expr2());
-        for (sMfunc *f = m->funcs(); f; f = f->next())
-            saved->list_expr(f->expr());
+    ROgen<sRunopIplot> igen(o_runops->iplots(), db ? db->iplots() : 0);
+    for (sRunopIplot *d = igen.next(); d; d = igen.next()) {
+        if (d->active())
+            saved->list_expr(d->string());
     }
-    if (db) {
-        for (sRunopMeas *m = db->measures(); m; m = m->next()) {
+
+    ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
+    for (sRunopMeas *m = mgen.next(); m; m = mgen.next()) {
+        if (m->active()) {
             if (m->expr2())
                 saved->list_expr(m->expr2());
-            if (m->start_when_expr1())
-                saved->list_expr(m->start_when_expr1());
-            if (m->start_when_expr2())
-                saved->list_expr(m->start_when_expr2());
-            if (m->end_when_expr1())
-                saved->list_expr(m->end_when_expr1());
-            if (m->end_when_expr2())
-                saved->list_expr(m->end_when_expr2());
+            for (sMpoint *pt = &m->start(); pt; pt = pt->conj()) {
+                saved->list_expr(pt->when_expr1());
+                saved->list_expr(pt->when_expr2());
+            }
+            for (sMpoint *pt = &m->end(); pt; pt = pt->conj()) {
+                saved->list_expr(pt->when_expr1());
+                saved->list_expr(pt->when_expr2());
+            }
             for (sMfunc *f = m->funcs(); f; f = f->next())
+                saved->list_expr(f->expr());
+            for (sMfunc *f = m->finds(); f; f = f->next())
                 saved->list_expr(f->expr());
         }
     }
 
-/*XXX fixme
-    for (sRunopStop *d = o_runops->stops(); d && d->active(); d = d->next()) {
-        for (sRunopStop *dt = d; dt; dt = dt->also()) {
-            if (dt->type() == RO_STOPWHEN)
-                saved->list_expr(d->string());
-        }
-    }
-    if (db) {
-        for (sRunopStop *d = db->stops(); d && d->active(); d = d->next()) {
-            for (sRunopStop *dt = d; dt; dt = dt->also()) {
-                if (dt->type() == RO_STOPWHEN)
-                    saved->list_expr(d->string());
+    ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
+    for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
+        if (d->active()) {
+            for (sMpoint *pt = &d->start(); pt; pt = pt->conj()) {
+                saved->list_expr(pt->when_expr1());
+                saved->list_expr(pt->when_expr2());
             }
         }
     }
-*/
 
     if (saveall)
         saved->purge_non_special();
@@ -340,12 +321,9 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
         // added if they are referenced by another measure.  These
         // vectors don't exist until the measurement is done.
 
-        for (sRunopMeas *m = o_runops->measures(); m; m = m->next())
+        mgen = ROgen<sRunopMeas>(o_runops->measures(), db ? db->measures() : 0);
+        for (sRunopMeas *m = mgen.next(); m; m = mgen.next())
             saved->remove_save(m->result());
-        if (db) {
-            for (sRunopMeas *m = db->measures(); m; m = m->next())
-                saved->remove_save(m->result());
-        }
     }
 }
 // End of IFoutput functions.

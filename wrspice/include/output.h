@@ -149,6 +149,9 @@ private:
     bool ca_clear;
 };
 
+// Return from sCHECKprms::evaluate.
+enum CBret { CBok, CBfail, CBendit };
+
 // Interface for asynchronous/remote chained analysis.  This structure
 // is used to store parameters used in operating range and Monte Carlo
 // analysis.
@@ -171,7 +174,7 @@ struct sCHECKprms : public sOUTcontrol
     bool initial();
     bool loop();
     int trial(int, int, double, double);
-    void evaluate();
+    CBret evaluate();
     void findEdge(const char*, const char*);
     bool findRange();
 

@@ -599,6 +599,7 @@ IFoutput::appendData(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
     if (!run)
         return (OK);
     sCHECKprms *chk = run->check();
+    run->inc_pointsSeen();
     if (chk && chk->out_mode == OutcCheck)
         run->addPointToPlot(refValue, valuePtr, false);
     else {

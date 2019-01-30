@@ -60,9 +60,6 @@ Authors: 1988 Jeffrey M. Hsu
 //  "plot" command graphics.
 //
 
-// These are what get plotted as points when you specify point plots
-const char *DefPointchars = "oxabcdefghijklmnopqrstuvwxyz";
-
 namespace {
     inline int num_colors()
     {
@@ -121,7 +118,7 @@ sGraph::gr_dev_init()
             GRpkgIf()->MainDev()->name)
         return (gr_pkg_init());
     for (int i = 0; i < NUMPLOTCOLORS; i++)
-        gr_colors[i] = DefColors[i];
+        gr_colors[i] = SpGrPkg::DefColors[i];
     gr_area.set_width(GRpkgIf()->CurDev()->width);
     gr_area.set_height(GRpkgIf()->CurDev()->height);
     gr_area.set_left(GRpkgIf()->CurDev()->xoff);
@@ -3079,10 +3076,10 @@ sGraph::dv_initdata()
             PointChars = va->string();
         else if (va)
             // a bool
-            PointChars = DefPointchars;
+            PointChars = SpGrPkg::DefPointchars;
         else {
             if (GRpkgIf()->CurDev()->devtype == GRhardcopy)
-                PointChars = DefPointchars;
+                PointChars = SpGrPkg::DefPointchars;
             else
                 PointChars = 0;
         }
@@ -3119,12 +3116,12 @@ sGraph::dv_initdata()
         // zeros are 'o's.
         //
         if (v->flags() & VF_POLE) {
-            PointChars = DefPointchars;
+            PointChars = SpGrPkg::DefPointchars;
             v->set_linestyle(1);
             continue;
         }
         else if (v->flags() & VF_ZERO) {
-            PointChars = DefPointchars;
+            PointChars = SpGrPkg::DefPointchars;
             v->set_linestyle(0);
             continue;
         }

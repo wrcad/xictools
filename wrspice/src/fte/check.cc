@@ -1456,31 +1456,43 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
 
 // Evaluate pass/fail of the circuit at the current operating point.
 //
-void
+CBret
 sCHECKprms::evaluate()
 {
-    bool fail = true;
+    CBret ret = CBfail;
     if (out_cir && out_plot) {
         sFtCirc *cir = Sp.CurCircuit();
         sPlot *plt = OP.curPlot();
         Sp.SetCurCircuit(out_cir);
         OP.setCurPlot(out_plot);
+
         sDataVec *d = out_plot->find_vec(checkFAIL);
-        if (d && d->isreal()) {
+        if (d && d->isreal())
             d->set_realval(0, 0.0);
-            // update windows first call only
-            out_cir->controlBlk().exec(ch_evalcnt == 0 ? true : false);
-            // checkFAIL is true if failed
+
+        // update windows first call only
+        out_cir->controlBlk().exec(ch_evalcnt == 0 ? true : false);
+        if (CP.ReturnVal() == CB_PAUSE) {
+            // failure indication
+            ;
+        }
+        else if (CP.ReturnVal() == CB_ENDIT) {
+            // end analysis
+            ret = CBendit;
+        }
+        else {
+            // User may have deleted d, find again.
             d = out_plot->find_vec(checkFAIL);
-            // dummy user may have deleted it
-            if (d && d->isreal())
-                fail = (d->realval(0) != 0.0 ? true : false);
+            if (!d || !d->isreal() || (int)d->realval(0) == CB_OK)
+                ret = CBok;
         }
         Sp.SetCurCircuit(cir);
         OP.setCurPlot(plt);
     }
     ch_evalcnt++;
-    ch_fail = fail;
+    ch_fail = (ret == CBfail);
+    ch_nogo = (ret == CBendit);
+    return (ret);
 }
 
 

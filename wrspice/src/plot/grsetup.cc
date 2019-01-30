@@ -58,9 +58,13 @@ Authors: 1988 Jeffrey M. Hsu
 // Initialization functions for WRspice graphics.
 //
 
+// These are what get plotted as points when one specifies point
+// plots.
+const char *SpGrPkg::DefPointchars = "oxabcdefghijklmnopqrstuvwxyz";
+
 // Default plotting colors, these are overridden by colorN X resources.
 //
-const char *DefColorNames[NUMPLOTCOLORS] =
+const char *SpGrPkg::DefColorNames[NUMPLOTCOLORS] =
 {
     "white", 
     "black", 
@@ -84,11 +88,10 @@ const char *DefColorNames[NUMPLOTCOLORS] =
     "rosy brown"
 };
 
-
 // Default colors corresponding to the name array above, as pixel/rgb
 // triples.
 //
-sColor DefColors[NUMPLOTCOLORS] =
+sColor SpGrPkg::DefColors[NUMPLOTCOLORS] =
 {
     sColor( 1, 255, 255, 255 ),
     sColor( 0, 0, 0, 0 ),
@@ -113,10 +116,11 @@ sColor DefColors[NUMPLOTCOLORS] =
 };
 
 
+// Static function.
 // Set the pixels in the DefColors array.
 //
 void
-SetDefaultColors()
+SpGrPkg::SetDefaultColors()
 {
     ToolBar()->LoadResourceColors();  // toolkit-specific, loads DefColorNames
     if (GRpkgIf()->MainDev()->numcolors > NUMPLOTCOLORS)

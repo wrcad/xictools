@@ -1148,8 +1148,8 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         context->switch_to_pixmap();
         int fwid, dy;
         context->TextExtent(0, &fwid, &dy);
-        context->SetWindowBackground(DefColors[0].pixel);
-        context->SetBackground(DefColors[0].pixel);
+        context->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
+        context->SetBackground(SpGrPkg::DefColors[0].pixel);
         int y = dy + 2;
         int x = 4;
         int ux = 18*fwid;
@@ -1157,7 +1157,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
 
         int wid, hei;
         gdk_window_get_size(context->Window(), &wid, &hei);
-        context->SetColor(DefColors[0].pixel);
+        context->SetColor(SpGrPkg::DefColors[0].pixel);
         context->Box(0, 0, wid, hei);
 
         double elapsed, user, cpu;
@@ -2198,7 +2198,7 @@ GTKtoolbar::tbpop(bool up)
         // set up initial xor color
         // offset 1 is assumed to be the highlighting color
         GdkColor clr;
-        clr.pixel = DefColors[0].pixel ^ DefColors[1].pixel;
+        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
         gtk_QueryColor(&clr);
         gdk_gc_set_foreground(w->XorGC(), &clr);
     }
@@ -2221,8 +2221,8 @@ GTKtoolbar::tbpop(bool up)
         s = "blue";
     tb_clr_4 = GRX->NameColor(s);
 
-    w->SetWindowBackground(DefColors[0].pixel);
-    w->SetBackground(DefColors[0].pixel);
+    w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
+    w->SetBackground(SpGrPkg::DefColors[0].pixel);
     w->Clear();
     gtk_timeout_add(2000, res_timeout, 0);
 }

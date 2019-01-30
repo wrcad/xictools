@@ -702,10 +702,12 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
         bool tflag = true;
         ROgen<sRunopTrace> tgen(o_runops->traces(), db ? db->traces() : 0);
         for (sRunopTrace *d = tgen.next(); d; d = tgen.next())
-//XXX last arg needs a count.
-            d->print_trace(run->runPlot(), &tflag, 0);
+            d->print_trace(run->runPlot(), &tflag, run->pointsSeen());
 
 /*XXX handle these somehow?
+// can't do actual measurements since we don't have data, but
+// process call/print and, maybe create new vector with expression
+// result.
         bool measures_done = true;
         bool measure_queued = false;
         ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
@@ -718,9 +720,6 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 measure_queued = true;
         }
 
-//XXX can't do actual measurements since we don't have data, but
-// process call/print and, maybe create new vector with expression
-// result.
         if (measure_queued) {
             run->segmentizeVecs();
             mgen = ROgen<sRunopMeas>(o_runops->measures(),
@@ -761,15 +760,14 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                     CP.Prompt();
             }
         }
-
 */
         if (chk->points() && ref >= chk->points()[chk->index()]) {
-//XXX fix this, check return set o_endit
-            chk->evaluate();
-
+            CBret ret = chk->evaluate();
             chk->set_index(chk->index() + 1);
-            if (chk->failed() || chk->index() == chk->max_index())
+            if (ret == CBfail || chk->index() == chk->max_index())
                 o_endit = true;
+            if (ret == CBendit)
+                chk->set_nogo(true);
         }
 
         vecGc();
@@ -892,9 +890,10 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             return;
         }
 
+        CBret ret = CBfail;
         if (!chk->failed()) {
             run->scalarizeVecs();
-            chk->evaluate();
+            ret = chk->evaluate();
             run->unscalarizeVecs();
         }
 
@@ -902,6 +901,8 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
         if ((chk->failed() || chk->index() == chk->max_index()) &&
                 chk->out_mode != OutcCheckMulti)
             o_endit = true;
+        if (ret == CBendit)
+            chk->set_nogo(true);
     }
 
     vecGc();

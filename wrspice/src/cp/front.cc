@@ -1212,6 +1212,7 @@ sControl::eval_block(sControl *x)
                 break;
 
             case RETURN:
+                x = 0;
                 break;
         }
         if (x)
@@ -1243,6 +1244,8 @@ sControl::find_label(sControl *ct, const char *s)
 //
 // CONTINUED indicates a continue -- if the caller is a continuable loop, 
 //      continue, else pass the continue upwards.
+//
+// RETURN indicates function termination due to a return statement.
 //
 // Any other return code is considered a pointer to a string which is
 // a label somewhere -- if this label is present in the block, goto
@@ -1423,6 +1426,11 @@ sControl::doblock(retinfo *info)
             for (ch = co_children; ch; ch = cn) {
                 cn = ch->co_next;
                 ch->doblock(&ri);
+                if (ri.type() == BROKEN || ri.type() == CONTINUED) {
+                    info->set_type(ri.type());
+                    info->set_num(ri.num());
+                    return;
+                }
                 if (ri.type() == LABEL) {
                     cn = find_label(co_children, ri.label());
                     if (!cn) {
@@ -1432,9 +1440,8 @@ sControl::doblock(retinfo *info)
                     }
                     ri.set_label(0);
                 }
-                else if (ri.type() != NORMAL) {
-                    info->set_type(ri.type());
-                    info->set_num(ri.num());
+                else if (ri.type() == RETURN) {
+                    info->set_type(RETURN);
                     return;
                 }
             }
@@ -1443,6 +1450,11 @@ sControl::doblock(retinfo *info)
             for (ch = co_elseblock; ch; ch = cn) {
                 cn = ch->co_next;
                 ch->doblock(&ri);
+                if (ri.type() == BROKEN || ri.type() == CONTINUED) {
+                    info->set_type(ri.type());
+                    info->set_num(ri.num());
+                    return;
+                }
                 if (ri.type() == LABEL) {
                     cn = find_label(co_elseblock, ri.label());
                     if (!cn) {
@@ -1452,9 +1464,8 @@ sControl::doblock(retinfo *info)
                     }
                     ri.set_label(0);
                 }
-                else if (ri.type() != NORMAL) {
-                    info->set_type(ri.type());
-                    info->set_num(ri.num());
+                else if (ri.type() == RETURN) {
+                    info->set_type(RETURN);
                     return;
                 }
             }

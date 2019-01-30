@@ -66,17 +66,6 @@ Authors: 1985 Wayne A. Christopher
 #define M_PI            3.14159265358979323846
 #endif
 
-// The graphical interface.  The application takes care of pixel mapping
-// so we override the RGBofPixel function.  When X is running, X supplies
-// the pixels, in which case the application mapping is updated in
-// InitColormap().
-//
-class SpGrPkg : public GRpkg
-{
-    bool InitColormap(int mn, int mx, bool dp);
-    void RGBofPixel(int p, int *r, int *g, int *b);
-};
-
 #define DEF_WIDTH   80  // Line printer width
 #define DEF_HEIGHT  66  // Line printer height
 #define IPOINTMIN   20  // When we start plotting incremental plots
@@ -94,6 +83,47 @@ inline int ceillog(double x)
 enum {GR_PLOT=0, GR_MPLT=1};
 #define GR_PLOTstr "plot"
 #define GR_MPLTstr "mplot"
+
+struct sColor
+{
+    sColor()
+        {
+            pixel = 0;
+            red = 0;
+            green = 0;
+            blue = 0;
+        }
+
+    sColor(unsigned int p, unsigned int r, unsigned int g, unsigned int b)
+        {
+            pixel = p;
+            red = r;
+            green = g;
+            blue = b;
+        }
+
+    unsigned int pixel;
+    unsigned char red, green, blue;
+};
+
+// The graphical interface.  The application takes care of pixel mapping
+// so we override the RGBofPixel function.  When X is running, X supplies
+// the pixels, in which case the application mapping is updated in
+// InitColormap().
+//
+class SpGrPkg : public GRpkg
+{
+    bool InitColormap(int mn, int mx, bool dp);
+    void RGBofPixel(int p, int *r, int *g, int *b);
+
+public:
+    // grsetup.cc
+    static void SetDefaultColors();
+
+    static const char *DefPointchars;
+    static sColor DefColors[NUMPLOTCOLORS];     // default plotting colors...
+    static const char *DefColorNames[NUMPLOTCOLORS];  // ... and their names
+};
 
 // Display scale format.
 enum ScaleType { FT_SINGLE=0, FT_GROUP=2, FT_MULTI=3 };
@@ -188,28 +218,6 @@ struct sKeyed
     sKeyed *next;
 };
 
-struct sColor
-{
-    sColor()
-        {
-            pixel = 0;
-            red = 0;
-            green = 0;
-            blue = 0;
-        }
-
-    sColor(unsigned int p, unsigned int r, unsigned int g, unsigned int b)
-        {
-            pixel = p;
-            red = r;
-            green = g;
-            blue = b;
-        }
-
-    unsigned int pixel;
-    unsigned char red, green, blue;
-};
-
 // Codes for keys pressed.
 enum { NO_KEY, UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY, ENTER_KEY,
     BSP_KEY, DELETE_KEY };
@@ -284,6 +292,10 @@ struct sGraph
     void gr_redraw();
     void gr_refresh(int, int, int, int, bool = false);
     void gr_popdown();
+
+    // clip.cc
+    static bool clip_line(int*, int*, int*, int*, int, int, int, int);
+    static bool clip_to_circle(int*, int*, int*, int*, int, int, int);
 
     // graph.cc
     bool gr_setup_dev(int, const char*);
@@ -873,25 +885,10 @@ private:
     int spg_running_id;         // counter for sGraph id assignment
 };
 
-//
 // Definitions for external symbols for output graphics.
-// XXX put these somewhere
-
-// grsetup.cc
-extern void SetDefaultColors();
-
-// ui-specific
-extern void LoadResourceColors();
-
+//
 extern SPgraphics GP;
-extern const char *DefPointchars;
-extern sColor DefColors[NUMPLOTCOLORS];     // default plotting colors...
-extern const char *DefColorNames[NUMPLOTCOLORS];  // ... and their names
 extern HCcb wrsHCcb;
-
-// clip.cc
-extern bool clip_line(int*, int*, int*, int*, int, int, int, int);
-extern bool clip_to_circle(int*, int*, int*, int*, int, int, int);
 
 #endif // OUTPLOT_H
 

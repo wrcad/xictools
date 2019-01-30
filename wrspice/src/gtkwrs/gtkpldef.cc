@@ -412,7 +412,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     entry = KWGET(kw_pointchars);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, DefPointchars);
+        entry->ent->create_widgets(entry, SpGrPkg::DefPointchars);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
             entrycount, entrycount + 1,

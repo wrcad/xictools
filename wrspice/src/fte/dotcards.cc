@@ -355,7 +355,6 @@ IFsimulator::RunBatch()
         }
     }
 
-//XXX print stops too
     for (sRunopMeas *m = ft_curckt->measures(); m; m = m->next()) {
         char *s = m->print_meas();
         TTY.printf(s);

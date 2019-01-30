@@ -519,7 +519,7 @@ wrs_if::ApplyHelpInput(const char *fname)
 pix_list *
 wrs_if::ListPixels()
 {
-    sColor *colors = DefColors;
+    sColor *colors = SpGrPkg::DefColors;
     pix_list *p0 = 0;
     for (int i = 0; i < GR.CurDev()->numcolors; i++) {
         pix_list *p = new pix_list;
@@ -539,7 +539,7 @@ wrs_if::BackgroundPixel()
 {
     if (GP.Cur())
         return (GP.Cur()->color(0).pixel);
-    return (DefColors[0].pixel);
+    return (SpGrPkg::DefColors[0].pixel);
 }
 // End of wrs_if functions.
 

@@ -124,11 +124,11 @@ GTKtoolbar::PopUpColors(int x, int y)
             VTvalue vv;
             if (!Sp.GetVar(buf, VTYP_STRING, &vv)) {
                 const char *s = TB()->XRMgetFromDb(buf);
-                if (s && DefColorNames[i] != s)
-                    DefColorNames[i] = s;
+                if (s && SpGrPkg::DefColorNames[i] != s)
+                    SpGrPkg::DefColorNames[i] = s;
             }
             entry->ent = new xEnt(kw_string_func);
-            entry->ent->create_widgets(entry, DefColorNames[i]);
+            entry->ent->create_widgets(entry, SpGrPkg::DefColorNames[i]);
 
             gtk_table_attach(GTK_TABLE(form), entry->ent->frame, i&1, (i&1) + 1,
                 i/2 + 1, i/2 + 2,
@@ -290,7 +290,7 @@ GTKtoolbar::LoadResourceColors()
         char *ss;
         XrmValue v;
         if (XrmGetResource(db, name, clss, &ss, &v))
-            DefColorNames[i] = v.addr;
+            SpGrPkg::DefColorNames[i] = v.addr;
     }
     if (clss[0] == 'W' && clss[1] == 'r') {
         // might as well let "WRspice" work, too
@@ -301,7 +301,7 @@ GTKtoolbar::LoadResourceColors()
             char *ss;
             XrmValue v;
             if (XrmGetResource(db, name, clss, &ss, &v))
-                DefColorNames[i] = v.addr;
+                SpGrPkg::DefColorNames[i] = v.addr;
         }
     }
 #endif
