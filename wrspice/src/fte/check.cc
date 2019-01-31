@@ -426,9 +426,12 @@ checkargs::parse(wordlist **pwl, const char **pe, const char **po)
     if (!pwl || !*pwl)
         return (OK);
 
-//XXX fixme, add range
     const char *help_mesg =
-        "\n  check [options] [analysis]\n"
+        "\n  check [options] [analysis spec]\n"
+        "  analysis spec for Monte Carlo:\n"
+        "   [stp1 [stp2]] [analysis]\n"
+        "  analysis spec for operating range:\n"
+        "   [[pstr1] val1 del1 stp1] [[pstr2] val2 del2 stp2] [analysis]\n"
         "  options are:\n"
         "   -a    Cover all points in range analysis\n"
         "   -b    Perform setup and return, pausing run\n"
@@ -440,8 +443,8 @@ checkargs::parse(wordlist **pwl, const char **pe, const char **po)
         "   -m    Perform Monte Carlo analysis\n"
         "   -r    Use remote servers\n"
         "   -s    Save data during each trial and dump it\n"
-        "   -v    Verbose mode\n"
-        "  anything left is taken as an analysis command.\n\n";
+        "   -v    Verbose mode\n\n"
+        ;
 
     wordlist *wl = wordlist::copy(*pwl);
     *pwl = 0;
@@ -582,6 +585,7 @@ sCHECKprms::sCHECKprms()
 sCHECKprms::~sCHECKprms()
 {
     delete [] ch_opname;
+    delete [] ch_points;
     wordlist::destroy(ch_cmdline);
     delete ch_names;
 
@@ -1004,9 +1008,7 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
             ch_segbase = lstring::copy(vv.get_string());
         out_mode = OutcCheckSeg;
     }
-//XXX fixme stop when, keep only used vectors
-    else if (keepplot || (Sp.CurCircuit() && Sp.CurCircuit()->measures()) ||
-            OP.isIplot(true)) {
+    else if (keepplot || OP.isIplot(true)) {
         // Keep all data for curent trial.
         out_mode = OutcCheckSeg;
     }
@@ -1018,17 +1020,17 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
 void
 sCHECKprms::initCheckPnts()
 {
-//XXX copy this
     // implicitly set to last point
     ch_max = 0;
+    delete [] ch_points;
     ch_points = 0;
     sDataVec *d = out_plot->find_vec(checkPNTS);
     if (d) {
-        // Make sure an "exact" point is recognized.
-        for (int i = 0; i < d->length(); i++)
-            d->set_realval(i, d->realval(i) * 0.9999);
         ch_max = d->length();
-        ch_points = d->realvec();
+        ch_points = new double[ch_max];
+        // Make sure an "exact" point is recognized.
+        for (int i = 0; i < ch_max; i++)
+            ch_points[i] = d->realval(i) * 0.9999;
     }
 }
 
@@ -1397,8 +1399,14 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
             // Needed since checkPNTS may be redefined in the header
             // block.
             //
+            if (d->length() > ch_max) {
+                delete [] ch_points;
+                ch_points = new double[d->length()];
+            }
             ch_max = d->length();
-            ch_points = d->realvec();
+            // Make sure an "exact" point is recognized.
+            for (int k = 0; k < ch_max; k++)
+                ch_points[k] = d->realval(k) * 0.9999;
         }
         if (!ch_no_output) {
             int num = (j + ch_step2)*(2*ch_step1 + 1) + i + ch_step1 + 1;

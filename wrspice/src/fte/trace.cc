@@ -828,7 +828,8 @@ IFoutput::endIplot(sRunDesc *run)
             // redraw
             GP.PopGraphContext();
         }
-        for (sRunopIplot *d = o_runops->iplots(); d; d = (sRunopIplot*)d->next()) {
+        ROgen<sRunopIplot> igen(o_runops->iplots(), db ? db->iplots() : 0);
+        for (sRunopIplot *d = igen.next(); d; d = igen.next()) {
             d->set_reuseid(0);
             if (d->type() == RO_IPLOT && !d->bad()) {
                 if (d->graphid()) {
@@ -848,28 +849,6 @@ IFoutput::endIplot(sRunDesc *run)
                 d->set_graphid(0);
             }
         }
-        if (db) {
-            for (sRunopIplot *d = db->iplots(); d; d = (sRunopIplot*)d->next()) {
-                d->set_reuseid(0);
-                if (d->type() == RO_IPLOT && !d->bad()) {
-                    if (d->graphid()) {
-                        sGraph *graph = GP.FindGraph(d->graphid());
-                        graph->dev()->Clear();
-                        graph->clear_selections();
-                        update_dims(run->runPlot(), graph);
-                        graph->gr_redraw();
-                        graph->gr_end();
-                    }
-                }
-                if (d->type() == RO_DEADIPLOT) {
-                    // user killed the window while it was running
-                    if (d->graphid())
-                        GP.DestroyGraph(d->graphid());
-                    d->set_type(RO_IPLOT);
-                    d->set_graphid(0);
-                }
-            }
-        }
     }
 }
 
@@ -879,31 +858,19 @@ IFoutput::endIplot(sRunDesc *run)
 bool
 IFoutput::isIplot(bool resurrect)
 {
+    sRunopDb *db = Sp.CurCircuit() ? &Sp.CurCircuit()->runops() : 0;
     if (resurrect) {
         // Turn dead iplots back on.
-        for (sRunopIplot *d = o_runops->iplots(); d; d = d->next()) {
+        ROgen<sRunopIplot> igen(o_runops->iplots(), db ? db->iplots() : 0);
+        for (sRunopIplot *d = igen.next(); d; d = igen.next()) {
             if (d->type() == RO_DEADIPLOT)
                 d->set_type(RO_IPLOT);
         }
-        if (Sp.CurCircuit()) {
-            sRunopDb *db = &Sp.CurCircuit()->runops();
-            for (sRunopIplot *d = db->iplots(); d; d = d->next()) {
-                if (d->type() == RO_DEADIPLOT)
-                    d->set_type(RO_IPLOT);
-            }
-        }
     }
-
-    for (sRunopIplot *d = o_runops->iplots(); d; d = d->next()) {
+    ROgen<sRunopIplot> igen(o_runops->iplots(), db ? db->iplots() : 0);
+    for (sRunopIplot *d = igen.next(); d; d = igen.next()) {
         if ((d->type() == RO_IPLOT || d->type() == RO_IPLOTALL) && d->active())
             return (true);
-    }
-    if (Sp.CurCircuit()) {
-        sRunopDb *runop = &Sp.CurCircuit()->runops();
-        for (sRunopIplot *d = runop->iplots(); d; d = d->next())
-            if ((d->type() == RO_IPLOT || d->type() == RO_IPLOTALL) &&
-                    d->active())
-                return (true);
     }
     return (false);
 }

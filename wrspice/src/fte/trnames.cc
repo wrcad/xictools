@@ -139,9 +139,6 @@ sNames::set_input(sFtCirc *out_cir, sPlot *out_plot, double v1, double v2)
     Sp.SetCurCircuit(out_cir);
     OP.setCurPlot(out_plot);
 
-//XXX Do we use trial_deferred?  If the SetVar calls apply to
-// vectors, maybe need the switching above?
-
     out_cir->set_use_trial_deferred(true);
     Sp.SetVar(n_value1, v1);
     Sp.SetVar(n_value2, v2);
@@ -181,7 +178,6 @@ sNames::set_input(sFtCirc *out_cir, sPlot *out_plot, double v1, double v2)
 }
 
 
-// XXX does this make sense?
 // Copy the "value" vectors from the previous plot to the current plot.
 // Skip if the previous plot is the constants plot, the vectors are
 // available from there by name anyway.

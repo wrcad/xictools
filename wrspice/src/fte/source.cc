@@ -2052,7 +2052,7 @@ sFtCirc::expand(sLine *realdeck, bool *err)
     }
 
     for (sLine *dd = ci_deck->next(); dd; dd = dd->next()) {
-        // Set up any .measures.
+        // Set up any .measures or .stops.
         //
         if (lstring::cimatch(MEAS_KW, dd->line()) ||
                 lstring::cimatch(MEASURE_KW, dd->line())) {
@@ -2095,13 +2095,7 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 mx->set_next(m);
             }
         }
-//XXX add this?
-/*
-        else if (lstring::cimatch(TRACE_KW, dd->line()) {
-        }
-        else if (lstring::cimatch(IPLOT_KW, dd->line()) {
-        }
-*/
+        // Maybe add .trace, .iplot?
     }
 
     ci_deck->set_actual(realdeck);

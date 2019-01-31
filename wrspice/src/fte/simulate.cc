@@ -696,7 +696,6 @@ sFtCirc::rebuild(bool save_loop)
     ci_controlBlk.set_tree(0);
     wordlist *tcontrols = ci_controlBlk.text();
     ci_controlBlk.set_text(0);
-//XXX ci_postrunBlk?
 
     sLine *tverilog = FTSAVE(ci_verilog);
 

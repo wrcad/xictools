@@ -520,9 +520,6 @@ sUnits::set(int type)
     }
 }
 
-//XXX
-//#define USLASH '/'
-#define USLASH '_'
 
 // Parse the type abbreviations in string and set the units accordingly.
 // Return false if error.
@@ -538,7 +535,7 @@ sUnits::set(const char *string)
     char buf[128];
     strcpy(buf, string);
     char *s1 = buf;
-    char *s2 = strchr(buf, USLASH);
+    char *s2 = strchr(buf, Sp.UnitsSepchar());
     if (s2)
         *s2++ = 0;
     char ab[8];
@@ -688,7 +685,7 @@ sUnits::unitstr()
             isdenom = true;
     }
     if (isdenom) {
-        *s++ = USLASH;
+        *s++ = Sp.UnitsSepchar();
         *s = 0;
         for (i = 1; i < NUM_BTYPES; i++) {
             if (xx[i] < 0) {
@@ -708,9 +705,9 @@ sUnits::unitstr()
         }
     }
     if (*buf) {
-        if (buf[0] == USLASH && buf[1] == 'S')
+        if (buf[0] == Sp.UnitsSepchar() && buf[1] == 'S')
             return (lstring::copy("Hz"));
-        if (buf[0] == USLASH && buf[1] == 'O')
+        if (buf[0] == Sp.UnitsSepchar() && buf[1] == 'O')
             return (lstring::copy("Si"));
         return (lstring::copy(buf));
     }
