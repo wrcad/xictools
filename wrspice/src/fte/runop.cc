@@ -761,13 +761,20 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             }
         }
 */
-        if (chk->points() && ref >= chk->points()[chk->index()]) {
-            CBret ret = chk->evaluate();
-            chk->set_index(chk->index() + 1);
-            if (ret == CBfail || chk->index() == chk->max_index())
-                o_endit = true;
-            if (ret == CBendit)
-                chk->set_nogo(true);
+        if (chk->points()) {
+            bool increasing = run->job()->JOBoutdata->initValue <=
+                run->job()->JOBoutdata->finalValue;
+            double val = chk->points()[chk->index()];
+            if ((increasing && ref >= val) ||
+                    (!increasing && ref <= val)) {
+
+                CBret ret = chk->evaluate();
+                chk->set_index(chk->index() + 1);
+                if (ret == CBfail || chk->index() == chk->max_index())
+                    o_endit = true;
+                if (ret == CBendit)
+                    chk->set_nogo(true);
+            }
         }
 
         vecGc();
