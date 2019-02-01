@@ -1020,7 +1020,6 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
 void
 sCHECKprms::initCheckPnts()
 {
-    // implicitly set to last point
     ch_max = 0;
     delete [] ch_points;
     ch_points = 0;
@@ -1028,9 +1027,8 @@ sCHECKprms::initCheckPnts()
     if (d) {
         ch_max = d->length();
         ch_points = new double[ch_max];
-        // Make sure an "exact" point is recognized.
         for (int i = 0; i < ch_max; i++)
-            ch_points[i] = d->realval(i) * 0.9999;
+            ch_points[i] = d->realval(i);
     }
 }
 
@@ -1404,9 +1402,8 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
                 ch_points = new double[d->length()];
             }
             ch_max = d->length();
-            // Make sure an "exact" point is recognized.
             for (int k = 0; k < ch_max; k++)
-                ch_points[k] = d->realval(k) * 0.9999;
+                ch_points[k] = d->realval(k);
         }
         if (!ch_no_output) {
             int num = (j + ch_step2)*(2*ch_step1 + 1) + i + ch_step1 + 1;
@@ -1491,7 +1488,7 @@ sCHECKprms::evaluate()
         else {
             // User may have deleted d, find again.
             d = out_plot->find_vec(checkFAIL);
-            if (!d || !d->isreal() || (int)d->realval(0) == CB_OK)
+            if (!d || !d->isreal() || (int)d->realval(0) == 0)
                 ret = CBok;
         }
         Sp.SetCurCircuit(cir);

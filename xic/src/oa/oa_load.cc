@@ -2680,7 +2680,7 @@ oa_in::readElectricalProperties(const oaDesign *design,
                 // Is a gnd device, nothing more to do.
                 return (true);
             }
-            if (cdf && cdf->prefix()) {
+            if (cdf && cdf->prefix() && *cdf->prefix()) {
                 const char *pfx = cdf->prefix();
                 pname = new CDp_sname;
                 pname->set_name_string(pfx);
