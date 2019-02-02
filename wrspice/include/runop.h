@@ -324,7 +324,7 @@ struct sMpoint
 
     int parse(const char**, char**, const char*);
     void print(sLstr&);
-    bool check_found(sFtCirc*, bool*, bool);
+    bool check_found(sFtCirc*, bool*, bool, sMpoint* = 0);
 
 private:
     int check_trig(sDataVec*);

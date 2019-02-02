@@ -368,8 +368,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
         tok = gtok(&s);
     }
     if (!tok) {
-        if (errstr && !*errstr)
-            lstring::copy("unexpected empty line passed to parser.");
+        listerr1(errstr, "unexpected end of line.");
         return (E_SYNTAX);
     }
     if (lstring::cieq(tok, mkw_at)) {
@@ -400,6 +399,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
         s++;
     sbk = s;
     pnode *pn;
+    bool found_td = false;
     if (*s == '[') {
         // [ const_expr ]
         // take const_expr as point count.
@@ -408,8 +408,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
         while (*e && *e != ']')
             e++;
         if (*e != ']') {
-            if (errstr && !*errstr)
-                lstring::copy("no first expression found.");
+            listerr1(errstr, "no first expression found for time mark.");
             return (E_SYNTAX);
         }
         int len = e-s+1;
@@ -421,104 +420,118 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
         pn = Sp.GetPnode(&e, false);
         delete [] tok;
         if (!pn) {
-            if (errstr && !*errstr)
-                lstring::copy("no point index found.");
+            listerr1(errstr, "no point index found in [ ].");
             return (E_SYNTAX);
         }
         t_ptmode = true;
     }
     else {
-        pn = Sp.GetPnode(&s, false);
-        if (!pn) {
-            if (errstr && !*errstr)
-                lstring::copy("no first expression found.");
-            return (E_SYNTAX);
-        }
-    }
-    const char *st = s-1;
-    while (st >= sbk && isspace(*st))
-        st--;
-    st++;
-    int len = st - sbk;
-    tok = new char[len + 1];
-    strncpy(tok, sbk, len);
-    tok[len] = 0;
-    t_when_expr1 = tok;
-    t_tree1 = pn;
-    t_tree1->copyvecs();
-#ifdef M_DEBUG
-    printf("expr1 \'%s\' \'%s\'\n", tok, t_tree1->get_string(false));
-#endif
-
-    // strip any "val="
-    sbk = s;
-    tok = gtok(&s);
-    if (tok && lstring::cieq(tok, mkw_val)) {
-        delete [] tok;
-        sbk = s;
         tok = gtok(&s);
-    }
-    if (tok && *tok == '=') {
-        delete [] tok;
-        sbk = s;
-        tok = gtok(&s);
-    }
-    if (tok) {
-        if (is_kw(tok)) {
+        s = sbk;
+        if (lstring::cieq(tok, mkw_td)) {
+            found_td = true;
             delete [] tok;
-            s = sbk;
         }
         else {
             delete [] tok;
-
-            // parse second expression
-            while (isspace(*s))
-                s++;
-            s = sbk;
             pn = Sp.GetPnode(&s, false);
-            if (pn) {
-                st = s-1;
-                while (st >= sbk && isspace(*st))
-                    st--;
-                st++;
-                len = st - sbk;
-                tok = new char[len + 1];
-                strncpy(tok, sbk, len);
-                tok[len] = 0;
-                t_when_expr2 = tok;
-                t_tree2 = pn;
-                t_tree2->copyvecs();
-                t_type = MPexp2;
-#ifdef M_DEBUG
-    printf("expr2 \'%s\' \'%s\'\n", tok, t_tree2->get_string(false));
-#endif
+            if (!pn) {
+                listerr1(errstr, "no first expression found for time mark.");
+                return (E_SYNTAX);
             }
         }
     }
-    if (t_tree1 && !t_tree2) {
-        if (t_tree1->is_const()) {
-            // numeric or constant expression
-            t_type = MPnum;
-            sDataVec *dv = eval1();
-            if (dv) {
-                if (t_ptmode)
-                    t_indx = (int)lrint(dv->realval(0));
-                else
-                    t_delay_given = dv->realval(0);
+    if (!found_td) {
+        const char *st = s-1;
+        while (st >= sbk && isspace(*st))
+            st--;
+        st++;
+        int len = st - sbk;
+        tok = new char[len + 1];
+        strncpy(tok, sbk, len);
+        tok[len] = 0;
+        t_when_expr1 = tok;
+        t_tree1 = pn;
+        if (t_tree1)
+            t_tree1->copyvecs();
+#ifdef M_DEBUG
+        printf("expr1 \'%s\' \'%s\'\n", tok, t_tree1->get_string(false));
+#endif
+
+        // strip any "val="
+        sbk = s;
+        tok = gtok(&s);
+        if (tok && lstring::cieq(tok, mkw_val)) {
+            delete [] tok;
+            sbk = s;
+            tok = gtok(&s);
+        }
+        if (tok && *tok == '=') {
+            delete [] tok;
+            sbk = s;
+            tok = gtok(&s);
+        }
+        if (tok) {
+            if (is_kw(tok)) {
+                delete [] tok;
+                s = sbk;
+            }
+            else {
+                delete [] tok;
+
+                // parse second expression
+                while (isspace(*s))
+                    s++;
+                s = sbk;
+                pn = Sp.GetPnode(&s, false);
+                if (pn) {
+                    st = s-1;
+                    while (st >= sbk && isspace(*st))
+                        st--;
+                    st++;
+                    len = st - sbk;
+                    tok = new char[len + 1];
+                    strncpy(tok, sbk, len);
+                    tok[len] = 0;
+                    t_when_expr2 = tok;
+                    t_tree2 = pn;
+                    t_tree2->copyvecs();
+                    t_type = MPexp2;
+#ifdef M_DEBUG
+        printf("expr2 \'%s\' \'%s\'\n", tok, t_tree2->get_string(false));
+#endif
+                }
             }
         }
-        else if (t_tree1->optype() == TT_EQ) {
-            pn = t_tree1;
-            pn->split(&t_tree1, &t_tree2);
-            delete [] t_when_expr1;
-            delete [] t_when_expr2;
-            t_when_expr1 = t_tree1->get_string(false);
-            t_when_expr2 = t_tree2->get_string(false);
-            t_type = MPexp2;
-            delete pn;
+    }
+    if (!t_tree2) {
+        if (t_tree1) {
+            if (t_tree1->is_const()) {
+                // numeric or constant expression
+                t_type = MPnum;
+                sDataVec *dv = eval1();
+                if (dv) {
+                    if (t_ptmode)
+                        t_indx = (int)lrint(dv->realval(0));
+                    else
+                        t_delay_given = dv->realval(0);
+                }
+            }
+            else if (t_tree1->optype() == TT_EQ) {
+                pn = t_tree1;
+                pn->split(&t_tree1, &t_tree2);
+                delete [] t_when_expr1;
+                delete [] t_when_expr2;
+                t_when_expr1 = t_tree1->get_string(false);
+                t_when_expr2 = t_tree2->get_string(false);
+                t_type = MPexp2;
+                delete pn;
+            }
+            else
+                t_type = MPexp1;
         }
-        else
-            t_type = MPexp1;
+        else if (found_td)
+            t_type = MPmref;
     }
 
     const char *last = s;
@@ -708,19 +721,15 @@ sMpoint::print(sLstr &lstr)
 
 
 // Return true if the specified point has been logically reached.
+//XXX this assumes increasing scale
 //
 bool
-sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
+sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
 {
     if (!t_active)
         return (true);
 
     bool ready = true;
-    if (t_conj) {
-        if (!t_conj->check_found(circuit, err, end))
-            ready = false;
-    }
-
     if (!t_delay_set) {
 
         t_delay = t_delay_given;
@@ -743,27 +752,46 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
                 }
             }
             if (t_type == MPmref) {
-                if (!m)
-                    m = sRunopMeas::find(circuit->measures(), t_when_expr1);
-                if (!m) {
-                    if (err)
-                        *err = true;
-                    return (false);
+                sMpoint *mp = 0;
+                if (!t_when_expr1) {
+                    mp = mpprev;
+                    if (!mp) {
+                        if (err)
+                            *err = true;
+                        return (false);
+                    }
                 }
-                if (!m->measure_done()) {
-                    if (t_range == MPbefore)
-                        return (ready);
-                    return (false);
+                if (mp) {
+                    if (!mp->t_found_flag) {
+                        ready = false;
+                        goto done;
+                    }
+                    t_delay += mp->t_found;
+                    t_delay_set = true;
                 }
-                if (m->end().t_found_flag)
-                    t_delay += m->end().t_found;
-                else
-                    t_delay += m->start().t_found;
-                t_delay_set = true;
+                else {
+                    if (!m)
+                        m = sRunopMeas::find(circuit->measures(), t_when_expr1);
+                    if (!m) {
+                        if (err)
+                            *err = true;
+                        return (false);
+                    }
+                    if (!m->measure_done()) {
+                        ready = false;
+                        goto done;
+                    }
+                    if (m->end().t_found_flag)
+                        t_delay += m->end().t_found;
+                    else
+                        t_delay += m->start().t_found;
+                    t_delay_set = true;
 #ifdef M_DEBUG
-                printf("setup_delay:  expr measure reference %s, delay %g\n",
-                    t_when_expr1, t_delay);
+                    printf(
+                        "setup_delay:  expr measure reference %s, delay %g\n",
+                        t_when_expr1, t_delay);
 #endif
+                }
             }
             else if (t_type == MPexp1 || t_type == MPexp2) {
                 if (t_mname) {
@@ -774,9 +802,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
                         return (false);
                     }
                     if (!m->measure_done()) {
-                        if (t_range == MPbefore)
-                            return (ready);
-                        return (false);
+                        ready = false;
+                        goto done;
                     }
                     if (m->end().t_found_flag)
                         t_delay += m->end().t_found;
@@ -810,9 +837,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
         sDataVec *xs = circuit->runplot()->scale();
         int ix = check_trig(xs);
         if (ix < 0) {
-            if (t_range == MPbefore)
-                return (ready);
-            return (false);
+            ready = false;
+            goto done;
         }
 
         double fval = t_delay;
@@ -829,9 +855,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
                 return (false);
             }
             if ((int)dvl->realval(0) == 0) {
-                if (t_range == MPbefore)
-                    return (ready);
-                return (false);
+                ready = false;
+                goto done;
             }
             ix = xs->unscalarized_length() - 1;
             fval = xs->realval(0);;
@@ -863,9 +888,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
             else {
                 t_v1 = v1;
                 t_v2 = v2;
-                if (t_range == MPbefore)
-                    return (ready);
-                return (false);
+                ready = false;
+                goto done;
             }
 
             if (t_rise_cnt >= t_rises && t_fall_cnt >= t_falls &&
@@ -885,9 +909,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
             t_v2 = v2;
 
             if (!foundit) {
-                if (t_range == MPbefore)
-                    return (ready);
-                return (false);
+                ready = false;
+                goto done;
             }
         }
 
@@ -895,9 +918,18 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end)
         t_found = fval;
         t_found_flag = true;
     }
+
+done:
     if (t_range == MPbefore)
-        return (ready & !t_found_flag);
-    return (ready & t_found_flag);
+        ready = !ready;
+
+    if (t_conj) {
+        if (!t_conj->check_found(circuit, err, end, this))
+            ready = false;
+        if (t_conj->t_found > t_found)
+            t_found = t_conj->t_found;
+    }
+    return (ready);
 }
 
 
