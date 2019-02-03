@@ -287,15 +287,15 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
     ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
     for (sRunopMeas *m = mgen.next(); m; m = mgen.next()) {
         if (m->active()) {
-            if (m->expr2())
-                saved->list_expr(m->expr2());
+            if (m->prmexpr())
+                saved->list_expr(m->prmexpr());
             for (sMpoint *pt = &m->start(); pt; pt = pt->conj()) {
-                saved->list_expr(pt->when_expr1());
-                saved->list_expr(pt->when_expr2());
+                saved->list_expr(pt->expr1());
+                saved->list_expr(pt->expr2());
             }
             for (sMpoint *pt = &m->end(); pt; pt = pt->conj()) {
-                saved->list_expr(pt->when_expr1());
-                saved->list_expr(pt->when_expr2());
+                saved->list_expr(pt->expr1());
+                saved->list_expr(pt->expr2());
             }
             for (sMfunc *f = m->funcs(); f; f = f->next())
                 saved->list_expr(f->expr());
@@ -308,8 +308,8 @@ IFoutput::getSaves(sFtCirc *circuit, sSaveList *saved)
     for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
         if (d->active()) {
             for (sMpoint *pt = &d->start(); pt; pt = pt->conj()) {
-                saved->list_expr(pt->when_expr1());
-                saved->list_expr(pt->when_expr2());
+                saved->list_expr(pt->expr1());
+                saved->list_expr(pt->expr2());
             }
         }
     }

@@ -273,8 +273,8 @@ struct sMpoint
             t_conj          = 0;
             t_kw1           = 0;
             t_kw2           = 0;
-            t_when_expr1    = 0;
-            t_when_expr2    = 0;
+            t_expr1         = 0;
+            t_expr2         = 0;
             t_tree1         = 0;
             t_tree2         = 0;
             t_mname         = 0;
@@ -290,9 +290,10 @@ struct sMpoint
             t_cross_cnt     = 0;
             t_rise_cnt      = 0;
             t_fall_cnt      = 0;
-            t_found_flag    = false;
-            t_delay_set     = false;
             t_active        = false;
+            t_ready         = false;
+            t_found_local   = false;
+            t_delay_set     = false;
             t_ptmode        = false;
             t_type          = MPunknown;
             t_range         = MPatwhen;
@@ -301,12 +302,12 @@ struct sMpoint
     ~sMpoint();
 
     sMpoint *conj()             { return (t_conj); }
-    const char *when_expr1()    { return (t_when_expr1); }
-    const char *when_expr2()    { return (t_when_expr2); }
+    const char *expr1()         { return (t_expr1); }
+    const char *expr2()         { return (t_expr2); }
     double found()              { return (t_found); }
     int indx()                  { return (t_indx); }
-    bool found_flag()           { return (t_found_flag); }
     bool active()               { return (t_active); }
+    bool ready()                { return (t_ready); }
 
     void reset()
         {
@@ -318,7 +319,8 @@ struct sMpoint
             t_cross_cnt = 0;
             t_rise_cnt = 0;
             t_fall_cnt = 0;
-            t_found_flag = false;
+            t_ready = false;
+            t_found_local = false;
             t_delay_set = false;
         }
 
@@ -334,13 +336,13 @@ private:
     sMpoint *t_conj;        // Conjunction list.
     const char *t_kw1;      // Optional first keyword saved.
     const char *t_kw2;      // Optional second keyword saved.
-    char *t_when_expr1;     // First expression text.
-    char *t_when_expr2;     // Second expression text.
+    char *t_expr1;          // First expression text.
+    char *t_expr2;          // Second expression text.
     pnode *t_tree1;         // Expression 1 parse tree.
     pnode *t_tree2;         // Expression 2 parse tree.
     char *t_mname;          // Measure reference name.
     double t_delay_given;   // The 'td' value.
-    double t_delay;         // Actual measurement point.
+    double t_delay;         // Internal delay value.
     double t_found;         // The measure point, once found.
     double t_v1;            // Previous expr1 value,
     double t_v2;            // Previous expr2 value,
@@ -351,9 +353,10 @@ private:
     int t_cross_cnt;        // Running croses count.
     int t_rise_cnt;         // Running rises count.
     int t_fall_cnt;         // Running falls count.
-    bool t_found_flag;      // The measure point was found.
-    bool t_delay_set;       // This is initialized.
     bool t_active;          // This is active, if not skip it.
+    bool t_ready;           // The measure point was found for all conj.
+    bool t_found_local;     // The measure point was found for this.
+    bool t_delay_set;       // This is initialized.
     bool t_ptmode;          // Input in points, else absolute.
     unsigned char t_type;   // Syntax type, MPform.
     unsigned char t_range;  // Before/at/after, MPrange.
@@ -411,7 +414,7 @@ struct sRunopMeas : public sRunop
         ro_type = RO_MEASURE;
 
         ro_result               = 0;
-        ro_expr2                = 0;
+        ro_prmexpr              = 0;
         ro_call                 = 0;
         ro_cktptr               = 0;
         ro_funcs                = 0;
@@ -435,7 +438,7 @@ struct sRunopMeas : public sRunop
     ~sRunopMeas()
         {
             delete [] ro_result;
-            delete [] ro_expr2;
+            delete [] ro_prmexpr;
             delete [] ro_call;
 
             sMfunc::destroy_list(ro_funcs);
@@ -449,12 +452,12 @@ struct sRunopMeas : public sRunop
 
     const char *result()        { return (ro_result); }
     int analysis()              { return (ro_analysis); }
-    const char *expr2()         { return (ro_expr2); }
+    const char *prmexpr()       { return (ro_prmexpr); }
     const char *call()          { return (ro_call); }
-    const char *start_when_expr1()  { return (ro_start.when_expr1()); }
-    const char *start_when_expr2()  { return (ro_start.when_expr2()); }
-    const char *end_when_expr1()    { return (ro_end.when_expr1()); }
-    const char *end_when_expr2()    { return (ro_end.when_expr2()); }
+    const char *start_expr1()   { return (ro_start.expr1()); }
+    const char *start_expr2()   { return (ro_start.expr2()); }
+    const char *end_expr1()     { return (ro_end.expr1()); }
+    const char *end_expr2()     { return (ro_end.expr2()); }
     sMfunc *funcs()             { return (ro_funcs); }
     sMfunc *finds()             { return (ro_finds); }
     bool measure_queued()       { return (ro_queue_measure); }
@@ -489,7 +492,8 @@ struct sRunopMeas : public sRunop
 
 private:
     void addMeas(Mfunc, const char*);
-    double endval(sDataVec*, sDataVec*, bool);
+    double startval(sDataVec*, sDataVec*);
+    double endval(sDataVec*, sDataVec*);
     double findavg(sDataVec*, sDataVec*);
     double findrms(sDataVec*, sDataVec*);
     double findpw(sDataVec*, sDataVec*);
@@ -499,7 +503,7 @@ private:
     sMpoint ro_end;
 
     const char *ro_result;      // result name for measurement
-    const char *ro_expr2;       // misc expression
+    const char *ro_prmexpr;     // holds expression from param=expression
     const char *ro_call;        // function to call when measure comp[lete
     sFtCirc *ro_cktptr;         // back pointer to circuit
     sMfunc *ro_funcs;           // list of measurements over interval
@@ -550,8 +554,8 @@ struct sRunopStop : public sRunop
 
     int analysis()              { return (ro_analysis); }
     const char *call()          { return (ro_call); }
-    const char *start_when_expr1()  { return (ro_start.when_expr1()); }
-    const char *start_when_expr2()  { return (ro_start.when_expr2()); }
+    const char *start_expr1()   { return (ro_start.expr1()); }
+    const char *start_expr2()   { return (ro_start.expr2()); }
     bool stop_done()            { return (ro_stop_done); }
     bool stop_flag()            { return (ro_stop_flag); }
     bool end_flag()             { return (ro_end_flag); }
