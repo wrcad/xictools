@@ -75,7 +75,7 @@ DCTanalysis::anFunc(sCKT *ckt, int restart)
         }
     }
 
-    int error = job->JOBdc.loop(dct_operation, ckt, restart);
+    int error = job->JOBdc.loop(dct_operation, ckt, restart, 1);
     if (error < 0) {
         // pause
         ckt->CKTcurrentAnalysis &= ~DOING_TRCV;

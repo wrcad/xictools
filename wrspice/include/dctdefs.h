@@ -55,6 +55,98 @@ Authors: 1985 Thomas L. Quarles
 // be performed.
 //
 
+struct sDCTprms
+{
+    sDCTprms()
+        {
+            for (int i = 0; i < DCTNESTLEVEL; i++) {
+                dct_vstart[i] = 0.0;
+                dct_vstop[i] = 0.0;
+                dct_vstep[i] = 0.0;
+                dct_vsave[i] = 0.0;
+                dct_vstate[i] = 0.0;
+                dct_elt[i] = 0;
+#ifdef ALLPRMS
+                dct_eltRef[i] = 0;
+                dct_param[i] = -1;
+#else
+                dct_eltName[i] = 0;
+#endif
+            }
+
+            dct_nestLevel = 0;
+            dct_nestSave = 0;
+
+            for (int i = 0; i <= DCTNESTLEVEL; i++)
+                dct_dims[i] = 0;
+
+            dct_skip = 0;
+        }
+
+#ifdef ALLPRMS
+    ~sDCTprms()
+        {
+            for (int i = 0; i < DCTNESTLEVEL; i++)
+                delete [] dct_eltRef[i];
+        }
+#endif
+
+    int query(int, IFdata*) const;
+        int setp(int, IFdata*);
+    int init(const sCKT*);
+    int points(const sCKT*);
+    int loop(LoopWorkFunc, sCKT*, int, int = 0);
+
+    double vstart(unsigned int i)
+        { return (i < DCTNESTLEVEL ? dct_vstart[i] : 0.0); }
+    double vstop(unsigned int i)
+        { return (i < DCTNESTLEVEL ? dct_vstop[i] : 0.0); }
+    double vstep(unsigned int i)
+        { return (i < DCTNESTLEVEL ? dct_vstep[i] : 0.0); }
+#ifdef ALLPRMS
+    sGENinstance *elt(unsigned int i)
+        { return (i < DCTNESTLEVEL ? dct_elt[i] : 0); }
+    int param(unsigned int i)
+        { return (i < DCTNESTLEVEL ? dct_param[i] : -1); }
+#else
+    sGENSRCinstance *elt(unsigned int i)
+        { return (i < DCTNESTLEVEL ? dct_elt[i] : 0); }
+#endif
+    void get_dims(int *d)
+        { *d++ = dct_dims[0]; *d++ = dct_dims[1]; *d = dct_dims[2]; }
+    int nestLevel()
+        { return (dct_nestLevel); }
+    void uninit()
+        { 
+            for (int i = 0; i < DCTNESTLEVEL; i++)
+                dct_elt[i] = 0;
+        }
+
+private:
+#ifdef WITH_THREADS
+    int loop_mt(LoopWorkFunc, sCKT*, int);
+#endif
+
+    double dct_vstart[DCTNESTLEVEL];     // starting value
+    double dct_vstop[DCTNESTLEVEL];      // ending value
+    double dct_vstep[DCTNESTLEVEL];      // value step
+    double dct_vsave[DCTNESTLEVEL];      // value of this parameter before
+                                         //   analysis - to restore when done
+    double dct_vstate[DCTNESTLEVEL];     // internal values saved during pause
+#ifdef ALLPRMS
+    sGENinstance *dct_elt[DCTNESTLEVEL]; // pointer to device
+    char *dct_eltRef[DCTNESTLEVEL];      // device reference: devname[param]
+    int dct_param[DCTNESTLEVEL];         // parameter id being varied
+#else
+    sGENSRCinstance *dct_elt[DCTNESTLEVEL]; // pointer to source
+    IFuid dct_eltName[DCTNESTLEVEL];     // source being varied
+#endif
+    int dct_nestLevel;                   // number of levels of nesting
+    int dct_nestSave;                    // iteration state during pause
+    int dct_dims[DCTNESTLEVEL+1];        // dimensions of output vector
+    int dct_skip;                        // restart subanalysis
+};
+
 struct sDCTAN : public sJOB
 {
     virtual ~sDCTAN() { }

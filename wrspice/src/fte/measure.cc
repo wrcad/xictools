@@ -951,7 +951,10 @@ sMpoint::check_trig(sDataVec *xs)
 {
     double x = xs->realval(0);
     double xp = xs->unscalarized_prev_real();
-    int i = xs->unscalarized_length() - 1;
+    int i = xs->unscalarized_length();
+    if (xs->unscalarized_numdims() > 1)
+        i %= xs->unscalarized_dims(1);
+    i--;
     if (i > 0) {
         if (t_ptmode) {
             if (i < t_indx)
@@ -1407,8 +1410,10 @@ sRunopMeas::reset(sPlot *pl)
     ro_found_crosses    = 0;
     ro_measure_done     = false;
     ro_measure_error    = false;
+    ro_measure_skip     = false;
     ro_stop_flag        = false;
     ro_end_flag         = false;
+    ro_queue_measure    = false;
 }
 
 

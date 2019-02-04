@@ -626,6 +626,16 @@ struct sDataVec
             return (v_scaldata ? v_scaldata->length : v_length);
         }
 
+    int unscalarized_numdims()
+        {
+            return (v_scaldata ? v_scaldata->numdims : v_numdims);
+        }
+
+    int unscalarized_dims(int i)
+        {
+            return (v_scaldata ? v_scaldata->dims[i] : v_dims[i]);
+        }
+
     double unscalarized_prev_real()
         {
             if (v_scaldata)

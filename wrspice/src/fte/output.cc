@@ -54,6 +54,7 @@ Authors: 1988 Wayne A. Christopher
 #include "runop.h"
 #include "output.h"
 #include "device.h"
+#include "dctdefs.h"
 #include "rundesc.h"
 #include "aspice.h"
 #include "toolbar.h"

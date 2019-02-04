@@ -805,6 +805,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 run->scalarizeVecs();
                 scalarized = true;
             }
+
             if (!d->check_measure(run))
                 measures_done = false;
             if (d->measure_queued())
