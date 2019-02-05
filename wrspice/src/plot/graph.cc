@@ -1967,6 +1967,9 @@ sGraph::gr_ghost_mark(int x, int y, bool erase)
                     gr_datawin.ymin = link->dl_dvec->minsignal();
                     gr_datawin.ymax = link->dl_dvec->maxsignal();
                 }
+                double ty = gr_aspect_y;
+                gr_aspect_y =
+                    (gr_datawin.ymax - gr_datawin.ymin)/gr_vport.height();
                 gr_screen_to_data(x, y, &fx, &fy);
                 if (gr_reference.set) {
                     gr_screen_to_data(gr_reference.x, gr_reference.y,
@@ -1974,6 +1977,7 @@ sGraph::gr_ghost_mark(int x, int y, bool erase)
                     fx -= frefx;
                     fy -= frefy;
                 }
+                gr_aspect_y = ty;
                 gr_datawin.ymin = dtmp[0];
                 gr_datawin.ymax = dtmp[1];
                 gr_writef(fy, link->dl_dvec->units(), scrx, 

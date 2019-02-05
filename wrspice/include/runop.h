@@ -224,7 +224,7 @@ private:
 // Time point for measure/stop.
 //
 // The general form of the definition string is
-//   [when/at] expr[val][=][expr] [td=delay] [cross=crosses] [rise=rises]
+//   [when/at] expr[val][=][expr] [td=offset] [cross=crosses] [rise=rises]
 //     [fall=falls]
 // The initial keyword (which may be missing if unambiguous) is one of
 // "at" or "when".  These are equivalent.  One or two expressions follow,
@@ -233,9 +233,9 @@ private:
 //
 // MPexp2:  expr1 and expr2 are both given, then the point is when
 //   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
-//   falls, crosses are integers.  The delay is a numeric value, or the
+//   falls, crosses are integers.  The offset is a numeric value, or the
 //   name of another measure.  The trigger is the matching
-//   rise/fall/cross found after the delay.
+//   rise/fall/cross found after the offset.
 //
 // If expr2 is not given, then expr1 is one of:
 //
@@ -244,11 +244,11 @@ private:
 //
 // MPmref:  (measure name) Point where given measure completes,
 //   numeric td applies, triggers at the referenced measure time plus
-//   delay.
+//   offset.
 //
 // MPexpr1:  (expression) Point where expression is boolen true, td
 //   applies, can be numeric or measure name, trigers when expr is true
-//   after delay.
+//   after offset.
 //
 enum MPform
 {
@@ -278,8 +278,8 @@ struct sMpoint
             t_tree1         = 0;
             t_tree2         = 0;
             t_mname         = 0;
-            t_delay_given   = 0.0;
-            t_delay         = 0.0;
+            t_td            = 0.0;
+            t_offset        = 0.0;
             t_found         = 0.0;
             t_v1            = 0.0;
             t_v2            = 0.0;
@@ -293,7 +293,9 @@ struct sMpoint
             t_active        = false;
             t_ready         = false;
             t_found_local   = false;
-            t_delay_set     = false;
+            t_offset_set    = false;
+            t_last_saved    = false;
+            t_td_given      = false;
             t_ptmode        = false;
             t_type          = MPunknown;
             t_range         = MPatwhen;
@@ -311,7 +313,7 @@ struct sMpoint
 
     void reset()
         {
-            t_delay = 0.0;
+            t_offset = 0.0;
             t_found = 0.0;
             t_v1 = 0.0;
             t_v2 = 0.0;
@@ -321,7 +323,8 @@ struct sMpoint
             t_fall_cnt = 0;
             t_ready = false;
             t_found_local = false;
-            t_delay_set = false;
+            t_offset_set = false;
+            t_last_saved = false;
         }
 
     int parse(const char**, char**, const char*);
@@ -341,8 +344,8 @@ private:
     pnode *t_tree1;         // Expression 1 parse tree.
     pnode *t_tree2;         // Expression 2 parse tree.
     char *t_mname;          // Measure reference name.
-    double t_delay_given;   // The 'td' value.
-    double t_delay;         // Internal delay value.
+    double t_td;            // The 'td' value given.
+    double t_offset;        // Internal offset value.
     double t_found;         // The measure point, once found.
     double t_v1;            // Previous expr1 value,
     double t_v2;            // Previous expr2 value,
@@ -356,8 +359,10 @@ private:
     bool t_active;          // This is active, if not skip it.
     bool t_ready;           // The measure point was found for all conj.
     bool t_found_local;     // The measure point was found for this.
-    bool t_delay_set;       // This is initialized.
+    bool t_offset_set;      // This is initialized.
+    bool t_last_saved;      // Last values of expressions saved.
     bool t_ptmode;          // Input in points, else absolute.
+    bool t_td_given;        // Offset was given.
     unsigned char t_type;   // Syntax type, MPform.
     unsigned char t_range;  // Before/at/after, MPrange.
 };

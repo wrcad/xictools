@@ -638,16 +638,27 @@ struct sDataVec
 
     double unscalarized_prev_real()
         {
-            if (v_scaldata)
-                return (realval(v_scaldata->length - 2));
+            if (v_scaldata) {
+                int n = v_scaldata->length - 2;
+                return (n > 0 ? realval(n) : v_scaldata->real);
+            }
             return (realval(v_length - 2));
         }
 
     double unscalarized_prev_imag()
         {
-            if (v_scaldata)
-                return (imagval(v_scaldata->length - 2));
+            if (v_scaldata) {
+                int n = v_scaldata->length - 2;
+                return (n > 0 ? imagval(n) : v_scaldata->imag);
+            }
             return (imagval(v_length - 2));
+        }
+
+    double unscalarized_first()
+        {
+            if (v_scaldata)
+                return (v_scaldata->real);
+            return (realval(0));
         }
 
     double absval(int i)

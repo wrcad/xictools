@@ -329,7 +329,7 @@ sMpoint::~sMpoint()
 
 
 // The general form of the definition string is
-//   [when/at] expr[val][=][expr] [td=delay] [cross=crosses] [rise=rises]
+//   [when/at] expr[val][=][expr] [td=offset] [cross=crosses] [rise=rises]
 //     [fall=falls]
 // The initial keyword (which may be missing if unambiguous) is one of
 // "at" or "when".  These are equivalent.  One or two expressions follow,
@@ -338,9 +338,9 @@ sMpoint::~sMpoint()
 //
 // MPexp2:  expr1 and expr2 are both given, then the point is when
 //   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
-//   falls, crosses are integers.  The delay is a numeric value, or the
+//   falls, crosses are integers.  The offset is a numeric value, or the
 //   name of another measure.  The trigger is the matching
-//   rise/fall/cross found after the delay.
+//   rise/fall/cross found after the offset.
 //
 // If expr2 is not given, then expr1 is one of:
 //
@@ -349,11 +349,11 @@ sMpoint::~sMpoint()
 //
 // MPmref:  (measure name) Point where given measure completes,
 //   numeric td applies, triggers at the referenced measure time plus
-//   delay.
+//   offset.
 //
 // MPexpr1:  (expression) Point where expression is boolen true, td
 //   applies, can be numeric or measure name, trigers when expr is true
-//   after delay.
+//   after offset.
 //
 int
 sMpoint::parse(const char **pstr, char **errstr, const char *kw)
@@ -513,8 +513,10 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
                 if (dv) {
                     if (t_ptmode)
                         t_indx = (int)lrint(dv->realval(0));
-                    else
-                        t_delay_given = dv->realval(0);
+                    else {
+                        t_td = dv->realval(0);
+                        t_td_given = true;
+                    }
                 }
             }
             else if (t_tree1->optype() == TT_EQ) {
@@ -554,7 +556,8 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
             const char *t = tok;
             double *dd = SPnum.parse(&t, false, true);
             if (dd && !*t) {
-                t_delay_given = *dd;
+                t_td = *dd;
+                t_td_given = true;
                 delete [] tok;
             }
             else
@@ -660,41 +663,41 @@ sMpoint::print(sLstr &lstr)
             lstr.add_c(']');
         }
         else
-            lstr.add_g(t_delay_given);
+            lstr.add_g(t_td);
     }
     else if (t_type == MPmref) {
         lstr.add(t_expr1);
-        if (t_delay_given > 0.0) {
+        if (t_td_given) {
             lstr.add_c(' ');
             lstr.add(mkw_td);
             lstr.add_c('=');
-            lstr.add_g(t_delay_given);
+            lstr.add_g(t_td);
         }
     }
     else if (t_type == MPexp1) {
         lstr.add(t_expr1);
-        if (t_delay_given > 0.0 || t_mname) {
+        if (t_td_given || t_mname) {
             lstr.add_c(' ');
             lstr.add(mkw_td);
             lstr.add_c('=');
             if (t_mname)
                 lstr.add(t_mname);
             else
-                lstr.add_g(t_delay_given);
+                lstr.add_g(t_td);
         }
     }
     else if (t_type == MPexp2) {
         lstr.add(t_expr1);
         lstr.add_c('=');
         lstr.add(t_expr2);
-        if (t_delay_given > 0.0 || t_mname) {
+        if (t_td_given || t_mname) {
             lstr.add_c(' ');
             lstr.add(mkw_td);
             lstr.add_c('=');
             if (t_mname)
                 lstr.add(t_mname);
             else
-                lstr.add_g(t_delay_given);
+                lstr.add_g(t_td);
         }
         if (t_rises) {
             lstr.add_c(' ');
@@ -721,7 +724,6 @@ sMpoint::print(sLstr &lstr)
 
 
 // Return true if the specified point has been logically reached.
-//XXX this assumes increasing scale
 //
 bool
 sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
@@ -730,14 +732,31 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
         return (true);
 
     bool isready = true;
-    if (!t_delay_set) {
+    if (!t_offset_set) {
 
-        t_delay = t_delay_given;
+        if (t_td_given)
+            t_offset = t_td;
+        else {
+            sDataVec *xs = circuit->runplot()->scale();
+            t_offset = xs->unscalarized_first();
+        }
+
         if (t_type == MPnum) {
 #ifdef M_DEBUG
-            printf("setup_delay:  numeric %s\n", t_expr1);
+            printf("setup_offset:  numeric %s\n", t_expr1);
 #endif
-            t_delay_set = true;
+            // A bare number in a child clause adds offset, just as if
+            // 'td=' was given ahead of the number.
+            if (mpprev) {
+                if (!mpprev->t_found_local) {
+                    isready = false;
+                    goto done;
+                }
+                t_offset += mpprev->t_found;
+                t_offset_set = true;
+            }
+            else
+                t_offset_set = true;
         }
         else {
             sRunopMeas *m = 0;
@@ -746,7 +765,7 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
                 if (m) {
                     t_type = MPmref;
 #ifdef M_DEBUG
-                    printf("setup_delay: found expr1 is measure %s\n",
+                    printf("setup_offset: found expr1 is measure %s\n",
                         t_expr1);
 #endif
                 }
@@ -766,8 +785,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
                         isready = false;
                         goto done;
                     }
-                    t_delay += mp->t_found;
-                    t_delay_set = true;
+                    t_offset += mp->t_found;
+                    t_offset_set = true;
                 }
                 else {
                     if (!m)
@@ -782,14 +801,14 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
                         goto done;
                     }
                     if (m->end().ready())
-                        t_delay += m->end().found();
+                        t_offset += m->end().found();
                     else
-                        t_delay += m->start().found();
-                    t_delay_set = true;
+                        t_offset += m->start().found();
+                    t_offset_set = true;
 #ifdef M_DEBUG
                     printf(
-                        "setup_delay:  expr measure reference %s, delay %g\n",
-                        t_expr1, t_delay);
+                        "setup_offset:  expr measure reference %s, offset %g\n",
+                        t_expr1, t_offset);
 #endif
                 }
             }
@@ -806,12 +825,12 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
                         goto done;
                     }
                     if (m->end().ready())
-                        t_delay += m->end().found();
+                        t_offset += m->end().found();
                     else
-                        t_delay += m->start().found();
+                        t_offset += m->start().found();
 #ifdef M_DEBUG
-                    printf("setup_delay:  td measure reference %s, delay %g\n",
-                        t_mname, t_delay);
+                    printf("setup_offset:  td measure reference %s, offset %g\n",
+                        t_mname, t_offset);
 #endif
                 }
                 if (t_type == MPexp2) {
@@ -819,31 +838,36 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
                     if (t_crosses == 0 && t_rises == 0 && t_falls == 0)
                         t_crosses = 1;
 #ifdef M_DEBUG
-                    printf("setup_delay:  expr2 \'%s\' \'%s\'\n", t_expr1,
+                    printf("setup_offset:  expr2 \'%s\' \'%s\'\n", t_expr1,
                         t_expr2);
 #endif
                 }
 #ifdef M_DEBUG
                 else if (t_type == MPexp1) {
-                    printf("setup_delay:  expr1 \'%s\'\n", t_expr1);
+                    printf("setup_offset:  expr1 \'%s\'\n", t_expr1);
                 }
 #endif
-                t_delay_set = true;
+                t_offset_set = true;
             }
         }
     }
 
-    if (t_delay_set && !t_found_local) {
+    if (t_offset_set && !t_found_local) {
         sDataVec *xs = circuit->runplot()->scale();
         int ix = check_trig(xs);
+#ifdef M_DEBUG
+        printf("at xs=%g indx=%d\n", xs->realval(0), ix);
+#endif
         if (ix < 0) {
             isready = false;
             goto done;
         }
 
-        double fval = t_delay;
-        if (t_type == MPnum)
-            fval = xs->realval(ix);
+        double fval = t_offset;
+        if (t_type == MPnum) {
+            if (!mpprev)
+                fval = xs->realval(ix);
+        }
         else if (t_type == MPmref) {
             // nothing to do
         }
@@ -875,6 +899,13 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
             bool foundit = false;
             double v1 = dvl->realval(0);
             double v2 = dvr->realval(0);
+            if (!t_last_saved) {
+                t_v1 = v1;
+                t_v2 = v2;
+                t_last_saved = true;
+                isready = false;
+                goto done;
+            }
             double x = xs->realval(0);
             ix = xs->unscalarized_length() - 1;
             if (t_v1 <= t_v2 && v2 < v1) {
@@ -949,13 +980,14 @@ done:
 int
 sMpoint::check_trig(sDataVec *xs)
 {
-    double x = xs->realval(0);
-    double xp = xs->unscalarized_prev_real();
     int i = xs->unscalarized_length();
     if (xs->unscalarized_numdims() > 1)
         i %= xs->unscalarized_dims(1);
     i--;
+
     if (i > 0) {
+        double x = xs->realval(0);
+        double xp = xs->unscalarized_prev_real();
         if (t_ptmode) {
             if (i < t_indx)
                 return (-1);
@@ -963,16 +995,16 @@ sMpoint::check_trig(sDataVec *xs)
         }
         if (x > xp) {
             double dx = (x - xp)*1e-3;
-            if (x > t_delay - dx) {
-                if (fabs(xp - t_delay) < fabs(x - t_delay))
+            if (x > t_offset - dx) {
+                if (fabs(xp - t_offset) < fabs(x - t_offset))
                     i--;
                 return (i);
             }
         }
         else if (x < xp) {
             double dx = (x - xp)*1e-3;
-            if (x < t_delay - dx) {
-                if (fabs(xp - t_delay) < fabs(x - t_delay))
+            if (x < t_offset - dx) {
+                if (fabs(xp - t_offset) < fabs(x - t_offset))
                     i--;
                 return (i);
             }
