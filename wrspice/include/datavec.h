@@ -621,19 +621,20 @@ struct sDataVec
     bool scalarized()           { return (v_scaldata != 0); }
     bool segmentized()          { return (v_segmdata != 0); }
 
+    // Length within  smallest block if multi-dimensional.
+    //
     int unscalarized_length()
         {
-            return (v_scaldata ? v_scaldata->length : v_length);
-        }
-
-    int unscalarized_numdims()
-        {
-            return (v_scaldata ? v_scaldata->numdims : v_numdims);
-        }
-
-    int unscalarized_dims(int i)
-        {
-            return (v_scaldata ? v_scaldata->dims[i] : v_dims[i]);
+            if (v_scaldata) {
+                int l = v_scaldata->length;
+                if (v_scaldata->numdims > 1)
+                    l %= v_scaldata->dims[1];
+                return (l);
+            }
+            int l = v_length;
+            if (v_numdims > 1)
+                l %= v_dims[1];
+            return (l);
         }
 
     double unscalarized_prev_real()

@@ -51,6 +51,11 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.24, February 5, 2019
+//   Added CPIC model parameter, provides the default capacitance per
+//   critical current.  Now the default when CAP is not given, so
+//   changing icrit will now change the assumed junction capacitance
+//   when CAP is not given.
 // Version 1.23, October 2, 2018
 //   References added for model parameters.
 //   default IcR 1.6 -> 1.65mV, default Vm 16.0 -> 16.5 mV
@@ -265,8 +270,13 @@ parameter real tsfactor = `TSDEFAULT from [0.001:1]
 parameter real icrit    = `DEF_IC from [1e-9:1e-1]
     `P(type="model" info="Reference critical current" units="A");
 
+// Capacitance per critical current, F/A.
+parameter real cpic     = 1e-9*`C_PER_A/`I_PER_A from [0.0:1e-6]
+    `P(type="model" info="Reference capacitance per critical current"
+    units="F/A");
+
 // Capacitance for area=1.
-parameter real cap      = 1e-12*`C_PER_A/`I_PER_A from [0.0:1e-9]
+parameter real cap      = icrit*cpic from [0.0:1e-6*icrit]
     `P(type="model" info="Reference capacitance" units="F");
 
 // Capacitance scaling parameter.

@@ -220,14 +220,12 @@ sDataVec::segmentize()
 {
     if (!v_segmdata && v_numdims > 1) {
 
-        int per = v_dims[v_numdims - 1];
+        int per = v_dims[1];
         int l = v_length;
         if (l >= per) {
             v_segmdata = new segmData(this);
 
-            int lx = (l/per)*per;
-            if (lx == l)
-                lx = l - per;
+            int lx = ((l-1)/per)*per;
             int newlen = l - lx;
             v_length = newlen;
             v_rlength = newlen;

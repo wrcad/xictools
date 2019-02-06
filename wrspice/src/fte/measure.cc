@@ -747,6 +747,7 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
 #endif
             // A bare number in a child clause adds offset, just as if
             // 'td=' was given ahead of the number.
+/* XXX no, absolute value for conjunction.
             if (mpprev) {
                 if (!mpprev->t_found_local) {
                     isready = false;
@@ -756,6 +757,7 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
                 t_offset_set = true;
             }
             else
+*/
                 t_offset_set = true;
         }
         else {
@@ -962,7 +964,7 @@ done:
         if (!t_conj)
             t_ready = true;
         else if (t_conj->t_ready) {
-            if (t_found < t_conj->t_found) {
+            if (t_indx < t_conj->t_indx) {
                 t_found = t_conj->t_found;
                 t_indx = t_conj->t_indx;
             }
@@ -980,11 +982,7 @@ done:
 int
 sMpoint::check_trig(sDataVec *xs)
 {
-    int i = xs->unscalarized_length();
-    if (xs->unscalarized_numdims() > 1)
-        i %= xs->unscalarized_dims(1);
-    i--;
-
+    int i = xs->unscalarized_length() - 1;
     if (i > 0) {
         double x = xs->realval(0);
         double xp = xs->unscalarized_prev_real();

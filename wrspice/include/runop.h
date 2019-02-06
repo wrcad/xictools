@@ -325,6 +325,8 @@ struct sMpoint
             t_found_local = false;
             t_offset_set = false;
             t_last_saved = false;
+            if (t_conj)
+                t_conj->reset();
         }
 
     int parse(const char**, char**, const char*);

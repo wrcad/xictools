@@ -81,6 +81,10 @@ JJdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->JJcap = value->rValue;
         model->JJcapGiven = true;
         break;
+    case JJ_MOD_CPIC:
+        model->JJcpic = value->rValue;
+        model->JJcpicGiven = true;
+        break;
     case JJ_MOD_CMU:
         model->JJcmu = value->rValue;
         model->JJcmuGiven = true;
