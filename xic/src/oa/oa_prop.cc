@@ -1001,6 +1001,19 @@ cOAprop::checkFixProperties(CDc *cdesc)
     if (!cdesc->prpty(P_NAME) && !cdesc->prpty(P_NODE))
         cdesc->prptyAddStruct(true);
 
+    else {
+        // Since we create model properties, make sure that if the
+        // cell has one, the instance has one too.  Note:  isDevice is
+        // true for devices AND macros.
+
+        CDs *sd = cdesc->masterCell();
+        if (sd && sd->isDevice()) {
+            CDp *pm = sd->prpty(P_MODEL);
+            if (pm && !cdesc->prpty(P_MODEL))
+                cdesc->link_prpty_list(pm->dup());
+        }
+    }
+
     // Add associated label to properties that have missing labels.
     //
     for (CDp *pd = cdesc->prpty_list(); pd; pd = pd->next_prp())

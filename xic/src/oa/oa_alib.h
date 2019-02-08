@@ -84,12 +84,14 @@ private:
     static bool alib_vdc(sLstr&);
     static bool alib_iprobe(sLstr&);
     static bool alib_vexp(sLstr&);
+    static bool alib_vgpulse(sLstr&);
     static bool alib_vpulse(sLstr&);
     static bool alib_vpwl(sLstr&);
     static bool alib_vsffm(sLstr&);
     static bool alib_vsin(sLstr&);
     static bool alib_idc(sLstr&);
     static bool alib_iexp(sLstr&);
+    static bool alib_igpulse(sLstr&);
     static bool alib_ipulse(sLstr&);
     static bool alib_ipwl(sLstr&);
     static bool alib_isffm(sLstr&);
