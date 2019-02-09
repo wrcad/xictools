@@ -64,11 +64,8 @@
 // OAL_REFP:  Cell was referenced in layout data.
 // OAL_REFE:  Cell was referenced in schematic data.
 
-// Name of the Virtuoso analogLib.
-#define ANALOG_LIB      "analogLib"
-
-// Cells from the ANALOG_LIB will be given this prefix.
-#define ANALOG_LIB_PFX  "alib_"
+// Known devices (names from analogLib/basic) are given this prefix.
+#define ANALOG_LIB_PFX  "oa_"
 
 // The class provides two interfaces:  The find/update functions keep
 // track of the Xic cell names created, with a status flag.  The

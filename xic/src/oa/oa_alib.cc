@@ -48,14 +48,14 @@ cAlibFixup::alib_elt cAlibFixup::al_list[] = {
     alib_elt("vdc", alib_vdc),
     alib_elt("iprobe", alib_iprobe),
     alib_elt("vexp", alib_vexp),
-    alib_elt("vgpulse", alib_vpulse),
+    alib_elt("vgpulse", alib_vgpulse),
     alib_elt("vpulse", alib_vpulse),
     alib_elt("vpwl", alib_vpwl),
     alib_elt("vsffm", alib_vsffm),
     alib_elt("vsin", alib_vsin),
     alib_elt("idc", alib_idc),
     alib_elt("iexp", alib_iexp),
-    alib_elt("igpulse", alib_ipulse),
+    alib_elt("igpulse", alib_igpulse),
     alib_elt("ipulse", alib_ipulse),
     alib_elt("ipwl", alib_ipwl),
     alib_elt("isffm", alib_isffm),
@@ -89,8 +89,10 @@ cAlibFixup::alib_elt cAlibFixup::al_list[] = {
 };
 
 
-bool
-cAlibFixup::prpty_fix(const char *cname, sLstr &lstr)
+// Private function to return the data for a known cell name.
+//
+cAlibFixup::alib_elt *
+cAlibFixup::alib_find(const char *cname)
 {
     if (!al_linked) {
         for (alib_elt *e = al_list; e->name; e++) {
@@ -103,9 +105,9 @@ cAlibFixup::prpty_fix(const char *cname, sLstr &lstr)
     unsigned int n = string_hash(cname, AL_HMASK);
     for (alib_elt *e = al_array[n]; e; e = e->next) {
         if (!strcmp(cname, e->name))
-            return ((*e->func)(lstr));
+            return (e);
     }
-    return (false);
+    return (0);
 }
 
 
