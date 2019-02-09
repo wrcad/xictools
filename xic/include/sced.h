@@ -59,6 +59,7 @@
 #define VA_SpiceAlias           "SpiceAlias"
 #define VA_SpiceHost            "SpiceHost"
 // #define VA_SpiceHostDisplay     "SpiceHostDisplay"
+#define VA_SpiceInclude         "SpiceInclude"
 #define VA_SpiceProg            "SpiceProg"
 #define VA_SpiceExecDir         "SpiceExecDir"
 #define VA_SpiceExecName        "SpiceExecName"

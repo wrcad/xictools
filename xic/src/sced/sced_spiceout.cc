@@ -165,8 +165,35 @@ cSced::dumpSpiceDeck(FILE *fp)
     if (!deck)
         return;
 
-    // Add analysis and .plot lines.
     sp_line_t *dd;
+
+    // Look for global include addition.  If the file is found, add
+    // the contents.  If not found, add a .include line for
+    // resolution at run time.
+    //
+    const char *incl = CDvdb()->getVariable(VA_SpiceInclude);
+    if (incl && *incl) {
+        FILE *ip = fopen(incl, "r");
+        sLstr lstr;
+        if (ip) {
+            char c;
+            while ((c = fgetc(ip)) != EOF)
+                lstr.add_c(c);
+            if (lstr.string()[lstr.length()-1] != '\n')
+                lstr.add_c('\n');
+            fclose(ip);
+        }
+        else {
+            lstr.add(".include ");
+            lstr.add(incl);
+            lstr.add_c('\n');
+        }
+        dd = new sp_line_t(lstr.string());
+        dd->li_next = deck->li_next;
+        deck->li_next = dd;
+    }
+
+    // Add analysis and .plot lines.
     if (cursde->cellname() == DSP()->TopCellName()) {
         char *analysis = getAnalysis(false);
         const char *astr = analysis;
