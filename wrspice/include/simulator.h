@@ -905,5 +905,5 @@ namespace ResPrint
 #define DEF_specwindoworder_MIN 2
 #define DEF_specwindoworder_MAX 8
 
-#endif // FRONTEND_H
+#endif // SIMULATOR_H
 

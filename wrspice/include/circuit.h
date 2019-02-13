@@ -1454,11 +1454,15 @@ struct sCKTnodeTab
     // Nodes and termnals.
     void dealloc(unsigned int);
 
+    static const char *groundNames()    { return (nt_ground_names); }
+
 private:
     sCKTnode **nt_ary;          // Array of blocks of nodes.
     unsigned int nt_size;       // Size of node bank array.
     unsigned int nt_count;      // Total number of nodes allocated.
     sTab<sNEnt> *nt_term_tab;   // The terminal name table.
+
+    static const char *nt_ground_names; // Space-separated gnd names.
 };
 
 // Created and returned by sCKT::nodeVals.

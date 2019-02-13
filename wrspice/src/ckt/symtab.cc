@@ -371,6 +371,12 @@ sSymTab::insert(char **token)
 // End of sSymTab functions.
 
 
+// List the global ground names separated by space.  These are all
+// equivalent and map to the internal ground node.  Each is taken as
+// global.
+//
+const char *sCKTnodeTab::nt_ground_names = "0 gnd!";
+
 sCKTnodeTab::sCKTnodeTab()
 {
     nt_ary = 0;
@@ -555,6 +561,8 @@ sCKTnodeTab::gnd_insert(char **token, sCKTnode **node)
     *token = t->t_ent;
 
     t->t_node = find(0);
+    nt_term_tab->add(t);
+
     if (t->t_node->nd_name)
         return (E_EXISTS);
     t->t_node->nd_name = t->t_ent;
@@ -562,7 +570,6 @@ sCKTnodeTab::gnd_insert(char **token, sCKTnode **node)
     if (node)
         *node = t->t_node;
 
-    nt_term_tab->add(t);
     return (OK);
 }
 
