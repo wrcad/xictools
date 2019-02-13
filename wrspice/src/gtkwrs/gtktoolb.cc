@@ -1337,7 +1337,7 @@ namespace {
         system(
             "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
 #endif
-        gtk_window_set_keep_above(GTK_WINDOW(arg), false);
+//XXX        gtk_window_set_keep_above(GTK_WINDOW(arg), false);
 #ifdef WIN32
         gtk_window_set_accept_focus(GTK_WINDOW(arg), true);
 #endif
