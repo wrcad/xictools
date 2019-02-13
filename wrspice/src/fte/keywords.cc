@@ -3304,6 +3304,7 @@ const char *kw_nomoremode       = "nomoremode";
 const char *kw_nonomatch        = "nonomatch";
 const char *kw_nosort           = "nosort";
 const char *kw_prompt           = "prompt";
+const char *kw_revertmode       = "revertmode";
 const char *kw_sourcepath       = "sourcepath";
 const char *kw_unixcom          = "unixcom";
 const char *kw_width            = "width";
@@ -3590,6 +3591,32 @@ struct KWent_prompt : public KWent
     }
 };
 
+struct KWent_revertmode : public KWent
+{
+    KWent_revertmode() { set(
+        kw_revertmode,
+        VTYP_NUM, 0, 5,
+        "Mode for resetting keyboard focus when now window pops up."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset) {
+            if (v->type() == VTYP_REAL && v->real() >= min &&
+                    v->real() <= max) {
+                int val = (int)v->real();
+                v->set_integer(val);
+            }
+            else if (!(v->type() == VTYP_NUM && v->integer() >= min &&
+                    v->integer() <= max)) {
+                error_pr(word, 0, pr_integer((int)min, (int)max));
+                return;
+            }
+        }
+        CP.RawVarSet(word, isset, v);
+        KWent::callback(isset, v);
+    }
+};
+
 struct KWent_sourcepath : public KWent
 {
     KWent_sourcepath() { set(
@@ -3691,6 +3718,7 @@ sKW *cKeyWords::KWshell[] = {
     new KWent_nonomatch(),
     new KWent_nosort(),
     new KWent_prompt(),
+    new KWent_revertmode(),
     new KWent_sourcepath(),
     new KWent_unixcom(),
     new KWent_width(),

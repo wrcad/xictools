@@ -272,6 +272,7 @@ extern const char *kw_nomoremode;
 extern const char *kw_nonomatch;
 extern const char *kw_nosort;
 extern const char *kw_prompt;
+extern const char *kw_revertmode;
 extern const char *kw_sourcepath;
 extern const char *kw_unixcom;
 extern const char *kw_width;
