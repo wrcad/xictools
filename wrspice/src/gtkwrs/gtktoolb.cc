@@ -1336,8 +1336,8 @@ namespace {
 #endif
         system(
             "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
+        gtk_window_set_keep_above(GTK_WINDOW(arg), false);
 #endif
-//XXX        gtk_window_set_keep_above(GTK_WINDOW(arg), false);
 #ifdef WIN32
         gtk_window_set_accept_focus(GTK_WINDOW(arg), true);
 #endif
@@ -1370,6 +1370,8 @@ namespace {
 void
 GTKtoolbar::RevertFocus(GtkWidget *widget)
 {
+//XXX
+return;
     if (!Sp.GetVar("nototop", VTYP_BOOL, 0)) {
         gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
         gtk_window_set_keep_above(GTK_WINDOW(widget), true);
