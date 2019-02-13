@@ -721,7 +721,7 @@ IFsimulator::SpSource(FILE *fp, bool nospice, bool nocmds,
     double tstart = OP.seconds();
 #endif
     PushUserFuncs(0);
-    sParamTab *tab = 0;
+    sParamTab *tab = new sParamTab();
     LibMap = new sLibMap;
     if (deck)
         deck->set_next(ReadDeck(fp, title, &err, &tab, filename));
@@ -2728,7 +2728,8 @@ sLine::process_conditionals(sParamTab *ptab)
         }
 
         else if (lstring::cimatch(IF_KW, dd->li_line)) {
-            ptab->param_subst_all(&dd->li_line);
+            if (ptab)
+                ptab->param_subst_all(&dd->li_line);
             if (strchr(dd->li_line, '$'))
                 dd->var_subst();
             inif++;
@@ -2744,7 +2745,8 @@ sLine::process_conditionals(sParamTab *ptab)
         }
         else if (lstring::cimatch(ELIF_KW, dd->li_line) ||
                 lstring::cimatch(ELSEIF_KW, dd->li_line)) {
-            ptab->param_subst_all(&dd->li_line);
+            if (ptab)
+                ptab->param_subst_all(&dd->li_line);
             if (strchr(dd->li_line, '$'))
                 dd->var_subst();
             if (!inif)
