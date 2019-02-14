@@ -573,7 +573,7 @@ ebtn_menu::M_SpiceDeck(CmdDesc*)
                 delete [] s;
                 return;
             }
-            while (isspace(*in))
+            while (isspace(*in) || *in == '.')
                 in++;
             if (*in)
                 SCD()->setAnalysis(in);

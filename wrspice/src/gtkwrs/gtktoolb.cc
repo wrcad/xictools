@@ -1392,7 +1392,6 @@ namespace {
 void
 GTKtoolbar::RevertFocus(GtkWidget *widget)
 {
-//XXX remove set vars below, add revertfocus to keywords.cc
     VTvalue vv;
     if (Sp.GetVar(kw_revertmode, VTYP_NUM, &vv))
         RevertMode = (RVTtype)vv.get_int();
@@ -1430,15 +1429,14 @@ GTKtoolbar::RevertFocus(GtkWidget *widget)
             GTK_SIGNAL_FUNC(revert_proc), widget);
     }
     else if (RevertMode == RVTrhel6) {
-        // RHEL 6 or older, uses gnome.  The set_keep_above ends up
-        // causing the plot windows to disappear beneath other windows,
-        // which is unacceptable.  This is all that is needed to do the
-        // desirable thing, i.e., put the new window on top, but keep the
-        // focus in the console.
+        // RHEL 6 or older, uses Gnome.  The set_keep_above ends up
+        // causing the plot windows to disappear beneath other windows
+        // after the short timer delay, which is unacceptable.  Below
+        // keeps the focus in the console, but the new window may or
+        // may not be on top.  This is Gnome behavior and there seems
+        // to be no way to fix it.
 
-        if (!Sp.GetVar("nototop", VTYP_BOOL, 0)) {
-            gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
-        }
+        gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
         gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
     }
     else if (RevertMode == RVTmac) {
