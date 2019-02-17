@@ -93,6 +93,21 @@ namespace {
     const char *mkw_call        = "call";
 }
 
+/*XXX
+resolve measure names in the current circuit in expressions as binary tokens,
+true if measure done. name[index] resoves to result of index'th meeasure.
+
+New clauses when measure finished:
+    set var=expr
+    let vec=expr
+performed after measure.
+
+When in multi-d run, measure performed for each run, result appended
+to vector.
+
+new type:  if expr
+evaluate expr at prev point set false if not true
+*/
 
 void
 sMfunc::print(sLstr &lstr)
@@ -745,19 +760,6 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
 #ifdef M_DEBUG
             printf("setup_offset:  numeric %s\n", t_expr1);
 #endif
-            // A bare number in a child clause adds offset, just as if
-            // 'td=' was given ahead of the number.
-/* XXX no, absolute value for conjunction.
-            if (mpprev) {
-                if (!mpprev->t_found_local) {
-                    isready = false;
-                    goto done;
-                }
-                t_offset += mpprev->t_found;
-                t_offset_set = true;
-            }
-            else
-*/
                 t_offset_set = true;
         }
         else {
@@ -1142,7 +1144,6 @@ sRunopMeas::parse(const char *str, char **errstr)
 {
     bool err = false;
     bool gotanal = false;
-    bool in_call = false;
     ro_analysis = -1;
     const char *s = str;
     for (;;) {
@@ -1160,7 +1161,6 @@ sRunopMeas::parse(const char *str, char **errstr)
                     listerr1(errstr, "missing result name.");
                     break;
                 }
-                in_call = false;
                 continue;
             }
             err = true;
@@ -1174,7 +1174,6 @@ sRunopMeas::parse(const char *str, char **errstr)
                 err = true;
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_targ)) {
@@ -1184,7 +1183,6 @@ sRunopMeas::parse(const char *str, char **errstr)
                 err = true;
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_from)) {
@@ -1194,7 +1192,6 @@ sRunopMeas::parse(const char *str, char **errstr)
                 err = true;
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_to)) {
@@ -1204,7 +1201,6 @@ sRunopMeas::parse(const char *str, char **errstr)
                 err = true;
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_when) ||
@@ -1219,55 +1215,46 @@ sRunopMeas::parse(const char *str, char **errstr)
                 err = true;
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_min)) {
             delete [] tok;
             addMeas(Mmin, gtok(&s));
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_max)) {
             delete [] tok;
             addMeas(Mmax, gtok(&s));
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_pp)) {
             delete [] tok;
             addMeas(Mpp, gtok(&s));
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_avg)) {
             delete [] tok;
             addMeas(Mavg, gtok(&s));
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_rms)) {
             delete [] tok;
             addMeas(Mrms, gtok(&s));
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_pw)) {
             delete [] tok;
             addMeas(Mpw, gtok(&s));
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_rt)) {
             delete [] tok;
             addMeas(Mrft, gtok(&s));
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_find)) {
             delete [] tok;
             addMeas(Mfind, gtok(&s));
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_param)) {
@@ -1282,7 +1269,6 @@ sRunopMeas::parse(const char *str, char **errstr)
                 listerr(errstr, mkw_param);
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_goal)) {
@@ -1292,7 +1278,6 @@ sRunopMeas::parse(const char *str, char **errstr)
                 listerr(errstr, mkw_goal);
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_minval)) {
@@ -1302,7 +1287,6 @@ sRunopMeas::parse(const char *str, char **errstr)
                 listerr(errstr, mkw_minval);
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_weight)) {
@@ -1312,48 +1296,38 @@ sRunopMeas::parse(const char *str, char **errstr)
                 listerr(errstr, mkw_weight);
                 break;
             }
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_print)) {
             delete [] tok;
             ro_print_flag = 2;
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_print_terse)) {
             ro_print_flag = 1;
-            in_call = false;
             continue;
         }
         if (lstring::cieq(tok, mkw_stop)) {
             delete [] tok;
             ro_stop_flag = true;
-            in_call = false;
             continue;
         }
 
-        // This should follow all other keywords.
         if (lstring::cieq(tok, mkw_call)) {
             delete [] tok;
             ro_call_flag = true;
-            // Ugly logic, the script name is optional, take the next
-            // token as the script name if it is not a keyword.
-            in_call = true;
-            continue;
-        }
-        if (in_call) {
-            ro_call = tok;
-            in_call = false;
+            ro_call = gtok(&s);
             continue;
         }
 
-        if (errstr && !*errstr) {
-            char buf[128];
-            sprintf(buf, ".measure syntax error, unknown token \'%s\'.", tok);
-            *errstr = lstring::copy(buf);
+        // Something unknown, probably a bare number.  Consider an
+        // implicit "at".
+        delete [] tok;
+        s = last;
+        int ret = ro_start.parse(&s, errstr, 0);
+        if (ret != OK) {
             err = true;
-            delete [] tok;
+            break;
         }
     }
     if (err)
@@ -2272,7 +2246,6 @@ sRunopStop::parse(const char *str, char **errstr)
 {
     bool err = false;
     bool gotanal = false;
-    bool in_call = false;
     ro_analysis = -1;
     const char *s = str;
     char *tok;
@@ -2285,7 +2258,6 @@ sRunopStop::parse(const char *str, char **errstr)
             if (get_anal(tok, &ro_analysis)) {
                 gotanal = true;
                 delete [] tok;
-                in_call = false;
                 continue;
             }
             err = true;
@@ -2303,7 +2275,6 @@ sRunopStop::parse(const char *str, char **errstr)
                 err = true;
                 break;
             }
-            in_call = false;
             continue;
         }
 
@@ -2311,23 +2282,18 @@ sRunopStop::parse(const char *str, char **errstr)
         if (lstring::cieq(tok, mkw_call)) {
             delete [] tok;
             ro_call_flag = true;
-            // Ugly logic, the script name is optional, take the next
-            // token as the script name if it is not a keyword.
-            in_call = true;
-            continue;
-        }
-        if (in_call) {
-            ro_call = tok;
-            in_call = false;
+            ro_call = gtok(&s);;
             continue;
         }
 
-        if (errstr && !*errstr) {
-            char buf[128];
-            sprintf(buf, ".stop syntax error, unknown token \'%s\'.", tok);
-            *errstr = lstring::copy(buf);
+        // Something unknown, probably a bare number.  Consider an
+        // implicit "at".
+        delete [] tok;
+        s = last;
+        int ret = ro_start.parse(&s, errstr, 0);
+        if (ret != OK) {
             err = true;
-            delete [] tok;
+            break;
         }
     }
     if (err)

@@ -2243,7 +2243,9 @@ Parameter Measurement
     <table border=0>
     <tr><td valign=top><b>jump to</b></td> <td>
     <a href="measure#point"><b>Point and Interval Specification</b></a><br>
+    <a href="measure#compat"><b>Syntax Compatibility</b></a><br>
     <a href="measure#measure"><b>Measurements</b></a><br>
+    <a href="measure#addl"><b>Additional Capabilities</b></a><br>
     <a href="measure#ref"><b>Referencing Results in Sources</b></a><br>
     </td></tr></table>
 
@@ -2263,87 +2265,224 @@ Parameter Measurement
     <p>
     General form:
     <blockquote>
-        <tt>.measure</tt> <tt>dc|ac|tran</tt> <i>result</i>
-            <i>interval</i> | <i>point</i> [<i>measurements</i>]<br>
-        <tt>.measure</tt> <tt>dc|ac|tran</tt> <i>result</i>
+        <tt>.measure</tt> <i>analysis</i> <i>resultname</i>
+         <i>point</i> | <i>interval</i> [<i>measurements</i>]<br>
+        <tt>.measure</tt> <i>analysis</i> <i>resultname</i>
             <tt>param=</tt><i>expression</i>
     </blockquote>
 
+    <dl>
+    <dt><i>analysis</i><dd>
+    This specifies the type of analysis during which the measurement will
+    be active.  Exactly one of the following keywords should appear in
+    this field:  <tt>tran</tt>, <tt>ac</tt>, <tt>dc</tt>.
+    </dl>
     <p>
-    The <tt>dc|ac|tran</tt> specifies the analysis type for which the
-    measurement is active.  The <i>result</i> is a token, starting
-    with a letter, which will be used to uniquely identify the results
-    of the measurement.  A vector with this name will be added to the
-    current plot, if the measurement is successful.
+
+    <dl>
+    <dt><i>resultname</i><dd>
+    This field specifies a name for the measurement.  The name should
+    be unique among the measurements in the circuit, and among vectors
+    in scope during simulation.  The name should start with an
+    alphabetic character and contain no white space or other special
+    characters.
+    </dl>
 
     <p>
-    The rest of the line can have various formats.  The next part of
-    the statement is either an <i>interval</i> specification, or a
-    single <i>point</i> specification.
+    A vector with this name will be added to the current
+    plot, if the measurement is successful.  Vector names found in
+    <tt>.measure</tt> lines are added to the internal save list,
+    guaranteeing that the necessary data will be available when
+    needed, whether or not the vector has been mentioned in a <a
+    href=".save"><tt>.save</tt></a> line.
 
-    <p>
-    There is a second form available, as shown above.  In this case,
-    after all <i>interval</i> and <i>point</i> measurements have been
-    performed, the <i>expression</i> will be evaluated and the result
-    saved in <i>result</i>.  The <i>expression</i> can reference other
-    measurement results in addition to the usual vectors and functions
-    provided by the system.  These measurement lines are evaluated in
-    the order found in the input.
-
-    <p>
-    In <tt>.measure</tt> lines, single-quote marks or parentheses can
-    be used to delimit complicated expressions.  The usual <a
-    href="squote">single-quoted expression</a> expansion performed
-    when input is sourced is <b>not</b> applied to <tt>.measure</tt>
-    lines.  Instead, internally, the single quotes are replaced by
-    parentheses, preventing expression expansion but allowing
-    parameter substitution, which is performed at the same time.
-
-    <p>
-    Vector names found in <tt>.measure</tt> lines are added to the
-    internal save list, guaranteeing that the necessary data will be
-    available when needed, whether or not the vector has been
-    mentioned in a <a href=".save"><tt>.save</tt></a> line.
 
     <a name="point"></a>
     <h2>Point and Interval Specification</h2>
 
     <p>
-    The <i>interval</i> begins with the "trigger" and ends with the
-    "target".  Measurement will apply during this interval.  If no
-    target is given, the trigger sets the "point", where measurement
-    will be performed.  The trigger and target are independently
-    specified as follows:
+    The field that follows the <i>resultname</i> contains a
+    description of the conditions which initiate a measurement.  There
+    are three basic types:  a point specification, an interval
+    specification, and a post-measurement specificantion.
 
     <p>
-    form 1:
+    The <i>interval</i> begins with the "trigger" and ends with the
+    "target".  Measurement will apply during this interval.  If no
+    target is given, the trigger sets the <i>point</i>, where
+    measurement will be performed.  The trigger and target are
+    independently specified as follows:
+
+    <dl>
+    <dt><i>point</i><dd>
+    <blockquote>
+    [<tt>trig</tt>] <i>pointlist</i>
+    </blockquote>
+    This consists of the keyword <tt>trig</tt> (which is optional)
+    followed by a point specification list.  The keyword
+    "<tt>from</tt>" is equivalent to "<tt>trig</tt>".
+    </dl>
+
+    <dl>
+    <dt><i>interval</i><dd>
+    <blockquote>
+    [<tt>trig</tt>] <i>pointlist</i> <tt>targ</tt> <i>pointlist</i>
+    </blockquote>
+    An interval contains a second point specification initiated with
+    the mandatory keyword <tt>targ</tt>.  The keyword "<tt>to</tt>" is
+    equivalent to "<tt>targ</tt>".
+    </dl>
+
+    <dl>
+    <dt>post-measurement<dd>
+    <blockquote>
+    <tt>param=</tt><i>expression</i>
+    </blockquote>
+    Measurements in this form will be performed when all <i>point</i>
+    and <i>interval</i> measurements are complete.  After all
+    <i>point</i> and <i>interval</i> measurements have been performed,
+    the <i>expression</i> will be evaluated and the result saved in
+    <i>resultname</i>.  The <i>expression</i> can reference other
+    measurement results in addition to the usual vectors and functions
+    provided by the system.  These measurement lines are evaluated in
+    the order found in the input.
+    </dl>
+
+    <dl>
+    <dt><i>pointlist</i><dd>
+    <blockquote>
+    <i>pointspec</i> [<i>pointspec</i>] ...
+    </blockquote>
+    The point is specified with a list of <i>pointspec</i> specifications,
+    and the event is registered on the first occasion when all
+    <i>pointspec</i> elements are true, i.e., the conjunction is true.
+    </dl>
+
+    <dl>
+    <dt><i>pointspec</i><dd>
+    <i>keyword</i> <i>expression1</i> [<tt>=</tt>][<tt>val=</tt>]
+      [</i>expression2</i> [<tt>cross=</tt><i>N</i>]
+      [<tt>rise=</tt><i>N</i>] [<tt>fall=</tt><i>N</i>]]
+      [<tt>td=</tt><i>delay</i>]
+    </dl>
+
+    <p>
+    The <i>pointspec</i> begins with one of the following kewords: 
+    <tt>before</tt>, <tt>at</tt>, <tt>after</tt>, <tt>when</tt>.  Of
+    these, <tt>at</tt>, <tt>after</tt>, and <tt>when</tt> are
+    equivalent aliases, but varied use can give a natural language
+    feel to the conjuction list.  The <tt>before</tt> keyword negates
+    logic:  the <i>pointspec</i> is true before the specified event.  This
+    can be useful as an element in the conjunction list.
+
+    <p>
+    Once a <i>pointspec</i> becomes triggered, it remains triggered
+    for the remainder of the simulation run.  Once triggered, a
+    <tt>before</tt> <i>pointspec</i> will evaluate false, preventing
+    the overall list from triggering.  Otherwise, the overall list
+    triggers when each <i>pointspec</i> is true.
+
+    <p>
+    Following the keyword are one or two general expressions.  There
+    can be an optional equal sign ("<tt>=</tt>") or a
+    "<tt>val</tt>" keyword "<tt>val=</tt>" between the expressions.
+
+    <p>
+    An <i>expression</i> in this context can be:
+    <ul>
+    <li>A number or constant expression.  This is taken as the
+    triggering point, meaning that the event occurs during simulation
+    when the scale variable is equal to or exceeds the value.
+
+    <li>The <i>resultname</i> of another measure.  The event occurs
+    when the referenced measurement is performed.
+
+    <li>A general expression consisting of constants, vector names,
+    and circuit variables.  Frequently this will be simply a vector
+    name corresponding to a node voltage or branch current in the
+    circuit.
+    </ul>
+
+    <p>
+    In <i>WRspice</i>, an expression is the minimum text required for
+    a syntactically complete expression, and may include white space. 
+    Single quotes or parentheses can be used to delimit expressions,
+    if desired or needed.  The normal <a href="squote">single-quote
+    expression</a> expansion and substitution is suppressed in this
+    context.
+
+    <p>
+    If only one <i>expression</i> is given, and it is not a constant
+    expression or a measure name, the event is triggered at the first
+    time the expression becomes logically true, meaning that the
+    absolute value is one or larger.  This corresponds to logical true
+    produced by comparison and other logical operations in
+    <i>WRspice</i>.  For example, the expression "<tt>V(5) >
+    0.25</tt>" returns 0 if false and 1 if true.
+
+    <p>
+    If two expressions are given, neither can be a measure result
+    name.  We are implicitly comparing the values of the two
+    expressions, finding points where the two expressions are equal. 
+    By default, the first time the values of the two expressions cross
+    will trigger the event.  The following keywords can be assigned an
+    integer value to trigger at the indicated point.
+
+    <dl>
+    <dt><tt>cross=</tt><i>N</i><dd>
+     <i>N</i> is the number of crossings.
+    <dt><tt>rise=</tt><i>N</i><dd>
+    <i>N</i> is the number of times that <i>expression1</i> rises
+    above <i>expression2</i>.
+    <dt><tt>fall=</tt><i>N</i><dd>
+    <i>N</i> is the number of times that <i>expression1</i> falls
+    below <i>expression2</i>.
+    </dl>
+    <p>
+    
+    <dl>
+    <dt><tt>td=</tt><i>delay</i><dd>
+    If two expressions are given, the <i>delay</i> is the amount of
+    scale value (e.g., time in transient analysis) before starting to
+    look for crossing events.
+
+    <p>
+    If one expression is given, and the expression is not constant or
+    a measure result name, the <i>delay</i> is the amount of the scale
+    value to wait before checking to see if the expression evaluates true.
+    If the expression is a measurement name, than the delay is added to
+    the measurement time of the referenced measurement.
+
+    <p>
+    There is a special case, where no expressions are given, only a
+    <tt>td=</tt><i>delay</i> value.  This can be a second or
+    subsequent <i>pointspec</i> in the <i>pointlist</i>.  This will
+    trigger at the time of the previous <i>pointspec</i> in the list
+    (to the left) delayed by <i>delay</i>.
+
+    <p>
+    Examples:<br>
+    <tt>at v(2)=0.5 rise=3 td=0.2nS after td=0.1nS</tt><br>
+    &nbsp;&nbsp;Trigger 0.1nS after the third rising edge of v(2)
+    after 0.2nS crosses 0.5V.<br>
+    <tt>when v(2)&#60;v(1) before v(2)&#60;v(3)</tt><br>
+    &nbsp;&nbsp;Trigger the first time that <tt>v(2) &#60; v(3)</tt>
+    if and only if <tt>v(2) &#60; v(3)</tt> has never been true.
+
+    <a name="compat"></a>
+    <h2>Syntax Compatibility</h2>
+
+    <p>
+    The present syntax supported by the <tt>.measure</tt> command in
+    <i>WRspice</i> is a super set of the previous syntax cases, which
+    are shown below.  These should all work in the present system.
+
+    <p>
+    Form 1:
     <blockquote>
     <tt>trig|targ at=</tt><i>value</i>
     </blockquote>
 
-    <p>
-    form 2:
-    <blockquote>
-    <tt>trig|targ</tt> <i>variable</i> <tt>val=</tt><i>value</i>
-            [<tt>td=</tt><i>delay</i>] [<tt>cross=</tt><i>crosses</i>]
-            [<tt>rise=</tt><i>rises</i>] [<tt>fall=</tt><i>falls</i>]
-    </blockquote>
-
-    <p>
-    form 3:
-    <blockquote>
-    <tt>trig|targ when</tt> <i>expr1</i>=<i>expr2</i>
-            [<tt>td=</tt><i>delay</i>]
-            [<tt>cross=</tt><i>crosses</i>] [<tt>rise=</tt><i>rises</i>]
-            [<tt>fall=</tt><i>falls</i>]
-    </blockquote>
-
-    <p>
-    Separate specifications for <tt>trig</tt>/<tt>targ</tt> are used
-    to specify the boundaries of the measurement in the
-    <tt>.measure</tt> statement.
-
-    <p>
     Form 1 is straightforward; the interval starts (<tt>trig</tt>) or
     ends (<tt>targ</tt>) at <i>value</i>.  <i>Value</i> must be within
     the simulation range of the scale variable (e.g., time in
@@ -2354,12 +2493,14 @@ Parameter Measurement
     <blockquote>
         <tt>from=</tt><i>value</i> <tt>to=</tt><i>value</i>
     </blockquote>
-    The <tt>from</tt> keyword is equivalent to "<tt>trig at</tt>", the
-    <tt>to</tt> keyword is equivalent to "<tt>targ at</tt>".
 
     <p>
-    If <tt>at</tt> appears without <tt>trig</tt> or <tt>targ</tt>, it
-    is interpreted as "<tt>trig at</tt>".
+    Form 2:
+    <blockquote>
+    <tt>trig|targ</tt> <i>variable</i> <tt>val=</tt><i>value</i>
+            [<tt>td=</tt><i>delay</i>] [<tt>cross=</tt><i>crosses</i>]
+            [<tt>rise=</tt><i>rises</i>] [<tt>fall=</tt><i>falls</i>]
+    </blockquote>
 
     <p>
     Form 2 allows the interval boundaries to be referenced to times
@@ -2390,23 +2531,20 @@ Parameter Measurement
     above 2.5V after 0.1ns.
 
     <p>
-    The third form is similar to the second form, except that
-    crossings are defined when <i>expr1 = expr2</i>.  These are
-    expressions, which must be enclosed in parentheses if they contain
-    white space or commas.  A rise is defined as <i>expr1</i> going
-    from less than to greater than <i>expr2</i>.
-
-    <p>
-    A point can be specified with a <tt>trig</tt> or <tt>from</tt>
-    specification as for an interval.  One can also use the following
-    form:
+    Form 3:
     <blockquote>
-       <tt>when</tt> <i>expr1</i>=<i>expr2</i> [<tt>td=</tt><i>delay</i>]
-       [<tt>cross=</tt><i>crosses</i>] [<tt>rise=</tt><i>rises</i>]
-       [<tt>fall=</tt><i>falls</i>]
+    <tt>trig|targ when</tt> <i>expr1</i>=<i>expr2</i>
+            [<tt>td=</tt><i>delay</i>]
+            [<tt>cross=</tt><i>crosses</i>] [<tt>rise=</tt><i>rises</i>]
+            [<tt>fall=</tt><i>falls</i>]
     </blockquote>
 
-    This works exactly as in "<tt>trig when</tt>".
+    <p>
+    The third form is similar to the second form, except that
+    crossings are defined when <i>expr1 = expr2</i>.  A rise is
+    defined as <i>expr1</i> going from less than to greater than
+    <i>expr2</i>.
+
 
     <a name="measure"></a>
     <h2>Measurements</h2>
@@ -2415,6 +2553,9 @@ Parameter Measurement
     specified.
 
     <dl>
+    <dt><tt>find</tt> <i>expr</i>
+      <dd>evaluate the difference:  <i>expr</i> at target minus
+      <i>expr</i> at trigger.</dl>
     <dt><tt>min</tt> <i>expr</i>
       <dd>find the minimum value of <i>expr</i></dl>
     <dl>
@@ -2467,7 +2608,11 @@ Parameter Measurement
     values, depending on whether it is a point or interval
     measurement.
 
-    <p>
+    <a name="addl"></a>
+    <h2>Additional Capabilities</h2>
+
+    <dl>
+    <dt><tt>print</tt>, <tt>print_terse</tt><dd>
     By default, nothing is printed on-screen for a <tt>.measure</tt>
     line during interactive simulation.  If the keywords
     "<tt>print</tt>" appears in the <tt>.measure</tt> line, the
@@ -2475,8 +2620,10 @@ Parameter Measurement
     format can be obtained from the alternative keyword
     <tt>print_terse</tt>.  The result vectors are created in all
     cases.
+    </dl>
 
-    <p>
+    <dl>
+    <dt><tt>stop</tt><dd>
     If the keyword "<tt>stop</tt>" appears in a <tt>.measure</tt>
     line, the analysis will be paused when <i>all</i> measurements are
     complete.  Thus if the deck contains several <tt>.measure</tt>
@@ -2485,6 +2632,20 @@ Parameter Measurement
     one containing <tt>stop</tt>.  The analysis can then be resumed
     with the <a href="resume"><b>resume</b></a> command, or reset with
     the <a href="reset"><b>reset</b></a> command.
+    </dl>
+
+    <dl>
+    <dt><tt>call</tt> <i>script</i><dd>
+    After the measurement is performed, the named script will be
+    called.  The script can be a normal script file or <a
+    href="codeblock">codeblock</a>.  The script can be used for
+    additional processing or testing of whatever sort.  If the script
+    returns 1, the current simulation will pause immediately (no waiting
+    for other measures) however a calling analysis, such as Monto
+    Carlo, will continue.  If 2 is returned, this indicates a fatal
+    global error and any calling analysis will be stopped too.  Any
+    other return value allows the run to continue normally.
+    </dl>
 
     <p>
     When a <tt>.measure</tt> is included in an iterative analysis

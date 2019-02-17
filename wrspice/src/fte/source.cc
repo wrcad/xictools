@@ -825,7 +825,7 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
     wordlist *controls = 0;
     wordlist *postrun = 0;
 
-    if (noexec || (kwfound & LI_EXEC_FOUND))
+    if (noexec || (nospice && nocmds) || (kwfound & LI_EXEC_FOUND))
         execs = deck->get_controls(nospice && nocmds, CBLK_EXEC, noexec);
     if (kwfound & LI_CONT_FOUND)
         controls = deck->get_controls(nospice && nocmds, CBLK_CTRL);
