@@ -58,6 +58,7 @@ Authors: 1985 Wayne A. Christopher
 #include "keywords.h"
 #include "optdefs.h"
 #include "statdefs.h"
+#include "inpline.h"
 #include "miscutil/random.h"
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
@@ -318,6 +319,25 @@ IFsimulator::Periodic()
 bool
 IFsimulator::ImplicitCommand(wordlist *wl)
 {
+    // Execute the bound codeblock of the current circuit (if any) in
+    // response to the SPICE keyword, including leading period.
+
+    if (lstring::eq(wl->wl_word, EXEC_KW)) {
+        if (CurCircuit())
+            CurCircuit()->execBlk().exec(false);
+        return (true);
+    }
+    if (lstring::eq(wl->wl_word, CONT_KW)) {
+        if (CurCircuit())
+            Sp.CurCircuit()->controlBlk().exec(false);
+        return (true);
+    }
+    if (lstring::eq(wl->wl_word, POST_KW)) {
+        if (CurCircuit())
+            Sp.CurCircuit()->postrunBlk().exec(false);   
+        return (true);
+    }
+
     if (strchr(wl->wl_word, '=') ||
         (wl->wl_next && *wl->wl_next->wl_word == '=')) {
         // Implicit 'let'.

@@ -90,17 +90,15 @@ namespace {
     const char *mkw_print       = "print";
     const char *mkw_print_terse = "print_terse";
     const char *mkw_stop        = "stop";
+    const char *mkw_exec        = "exec";
     const char *mkw_call        = "call";
 }
 
-/*XXX
+/*XXX ideas
 resolve measure names in the current circuit in expressions as binary tokens,
 true if measure done. name[index] resoves to result of index'th meeasure.
-
-New clauses when measure finished:
-    set var=expr
-    let vec=expr
-performed after measure.
+No, resolve as scale start before, measure scale val after.  ?mname resolve
+as binary?
 
 When in multi-d run, measure performed for each run, result appended
 to vector.
@@ -1088,13 +1086,17 @@ sRunopMeas::print(char **pstr)
         lstr.add_c(' ');
         lstr.add(mkw_print_terse);
     }
-    if (ro_call_flag) {
+    if (ro_exec) {
+        lstr.add_c(' ');
+        lstr.add(mkw_exec);
+        lstr.add_c(' ');
+        lstr.add(ro_exec);
+    }
+    if (ro_call) {
         lstr.add_c(' ');
         lstr.add(mkw_call);
-        if (ro_call) {
-            lstr.add_c(' ');
-            lstr.add(ro_call);
-        }   
+        lstr.add_c(' ');
+        lstr.add(ro_call);
     }
     if (ro_stop_flag) {
         lstr.add_c(' ');
@@ -1133,6 +1135,66 @@ namespace {
         }
         *which = -1;
         return (false);
+    }
+
+
+    void exec(const char *cmds)
+    {
+        if (cmds && *cmds) {
+            bool inter = CP.GetFlag(CP_INTERACTIVE);
+            CP.SetFlag(CP_INTERACTIVE, false);
+            CP.PushControl();
+            if (*cmds == '"') {
+                char *t = lstring::copy(cmds);
+                CP.Unquote(t);
+                CP.EvLoop(t);
+                delete [] t;
+            }
+            else
+                CP.EvLoop(cmds);
+            CP.PopControl();
+            CP.SetFlag(CP_INTERACTIVE, inter);
+        }
+    }
+
+
+    ROret call(const char *script_name)
+    {
+        if (script_name && *script_name) {
+            wordlist wl;
+            wl.wl_word = lstring::copy(script_name);
+            Sp.ExecCmds(&wl);
+            delete [] wl.wl_word;
+            wl.wl_word = 0;
+            if (CP.ReturnVal() == CB_PAUSE)
+                return (RO_PAUSE);
+            if (CP.ReturnVal() == CB_ENDIT)
+                return (RO_ENDIT);
+        }
+/*XXX
+        else if (run->check()) {
+            // Run the "controls" bound codeblock.  Stop if the fail
+            // flag is set.
+
+            CBret ret = run->check()->evaluate();
+            if (ret == CBfail)
+                return (RO_PAUSE);
+            if (ret == CBendit)
+                return (RO_ENDIT);
+        }
+        else {
+            sFtCirc *circ = run->circuit();
+            if (circ) {
+                circ->controlBlk().exec(true);
+                if (CP.ReturnVal() == CB_PAUSE)
+                    return (RO_PAUSE);
+                if (CP.ReturnVal() == CB_ENDIT)
+                    return (RO_ENDIT);
+            }
+        }
+    }
+*/
+        return (RO_OK);
     }
 }
 
@@ -1312,10 +1374,13 @@ sRunopMeas::parse(const char *str, char **errstr)
             ro_stop_flag = true;
             continue;
         }
-
+        if (lstring::cieq(tok, mkw_exec)) {
+            delete [] tok;
+            ro_exec = gtok(&s);
+            continue;
+        }
         if (lstring::cieq(tok, mkw_call)) {
             delete [] tok;
-            ro_call_flag = true;
             ro_call = gtok(&s);
             continue;
         }
@@ -1469,6 +1534,8 @@ sRunopMeas::check_measure(sRunDesc *run)
 bool
 sRunopMeas::do_measure(sRunDesc *run)
 {
+//XXX
+(void)run;
     if (!ro_queue_measure)
         return (false);
     ro_queue_measure = false;
@@ -1488,8 +1555,11 @@ sRunopMeas::do_measure(sRunDesc *run)
         delete [] s;
     }
 
+    // exec command
+    exec(ro_exec);
+
     // call function
-    ROret ret = call(run);
+    ROret ret = ::call(ro_call);
     if (ret == RO_PAUSE)
         ro_stop_flag = true;
     if (ret == RO_ENDIT)
@@ -1792,50 +1862,6 @@ sRunopMeas::update_plot(sDataVec *dv0, int count)
         }
     }
     return (true);
-}
-
-
-// Call the post-measurement callback, if on is set up.
-//
-ROret
-sRunopMeas::call(sRunDesc *run)
-{
-    // Call the callback, if any.  This can override the stop.
-    if (ro_call_flag) {
-        if (ro_call) {
-            // Call the named script or codeblock.
-            wordlist wl;
-            wl.wl_word = lstring::copy(ro_call);
-            Sp.ExecCmds(&wl);
-            delete [] wl.wl_word;
-            wl.wl_word = 0;
-            if (CP.ReturnVal() == CB_PAUSE)
-                return (RO_PAUSE);
-            if (CP.ReturnVal() == CB_ENDIT)
-                return (RO_ENDIT);
-        }
-        else if (run->check()) {
-            // Run the "controls" bound codeblock.  Stop if the fail
-            // flag is set.
-
-            CBret ret = run->check()->evaluate();
-            if (ret == CBfail)
-                return (RO_PAUSE);
-            if (ret == CBendit)
-                return (RO_ENDIT);
-        }
-        else {
-            sFtCirc *circ = run->circuit();
-            if (circ) {
-                circ->controlBlk().exec(true);
-                if (CP.ReturnVal() == CB_PAUSE)
-                    return (RO_PAUSE);
-                if (CP.ReturnVal() == CB_ENDIT)
-                    return (RO_ENDIT);
-            }
-        }
-    }
-    return (RO_OK);
 }
 
 
@@ -2277,11 +2303,13 @@ sRunopStop::parse(const char *str, char **errstr)
             }
             continue;
         }
-
-        // This should follow all other keywords.
+        if (lstring::cieq(tok, mkw_exec)) {
+            delete [] tok;
+            ro_exec = gtok(&s);;
+            continue;
+        }
         if (lstring::cieq(tok, mkw_call)) {
             delete [] tok;
-            ro_call_flag = true;
             ro_call = gtok(&s);;
             continue;
         }
@@ -2332,57 +2360,16 @@ sRunopStop::check_stop(sRunDesc *run)
     if (!ro_start.check_found(circuit, &ro_stop_error, false))
         return (RO_OK);
 
+    // Execute command if any.
+    exec(ro_exec);
+
     // Call the callback, if any.  This can override the stop.
-    ROret ret = call(run);
+    ROret ret = ::call(ro_call);
     if (ret == RO_OK)
         return (RO_PAUSE);
     if (ret == RO_PAUSE)
         return (RO_OK);
     return (RO_ENDIT);
-}
-
-
-// Call the post-measurement callback, if on is set up.
-//
-ROret
-sRunopStop::call(sRunDesc *run)
-{
-    // Call the callback, if any.  This can override the stop.
-    if (ro_call_flag) {
-        if (ro_call) {
-            // Call the named script or codeblock.
-            wordlist wl;
-            wl.wl_word = lstring::copy(ro_call);
-            Sp.ExecCmds(&wl);
-            delete [] wl.wl_word;
-            wl.wl_word = 0;
-            if (CP.ReturnVal() == CB_PAUSE)
-                return (RO_PAUSE);
-            if (CP.ReturnVal() == CB_ENDIT)
-                return (RO_ENDIT);
-        }
-        else if (run->check()) {
-            // Run the "controls" bound codeblock.  stop if the fail
-            // flag is set.
-
-            CBret ret = run->check()->evaluate();
-            if (ret == CBfail)
-                return (RO_PAUSE);
-            if (ret == CBendit)
-                return (RO_ENDIT);
-        }
-        else {
-            sFtCirc *circ = run->circuit();
-            if (circ) {
-                circ->controlBlk().exec(true);
-                if (CP.ReturnVal() == CB_PAUSE)
-                    return (RO_PAUSE);
-                if (CP.ReturnVal() == CB_ENDIT)
-                    return (RO_ENDIT);
-            }
-        }
-    }
-    return (RO_OK);
 }
 
 
@@ -2410,13 +2397,17 @@ sRunopStop::print_cond(char **retstr, bool status)
     }
     ro_start.print(lstr);
 
-    if (ro_call_flag) {
+    if (ro_exec) {
+        lstr.add_c(' ');
+        lstr.add(mkw_exec);
+        lstr.add_c(' ');
+        lstr.add(ro_exec);
+    }
+    if (ro_call) {
         lstr.add_c(' ');
         lstr.add(mkw_call);
-        if (ro_call) {
-            lstr.add_c(' ');
-            lstr.add(ro_call);
-        }
+        lstr.add_c(' ');
+        lstr.add(ro_call);
     }
     lstr.add_c('\n');
 

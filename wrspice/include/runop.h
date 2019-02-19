@@ -422,6 +422,7 @@ struct sRunopMeas : public sRunop
 
         ro_result               = 0;
         ro_prmexpr              = 0;
+        ro_exec                 = 0;
         ro_call                 = 0;
         ro_cktptr               = 0;
         ro_funcs                = 0;
@@ -436,7 +437,6 @@ struct sRunopMeas : public sRunop
         ro_measure_skip         = false;
         ro_stop_flag            = false;
         ro_end_flag             = false;
-        ro_call_flag            = false;
         ro_print_flag           = 0;
 
         parse(str, errstr);
@@ -446,6 +446,7 @@ struct sRunopMeas : public sRunop
         {
             delete [] ro_result;
             delete [] ro_prmexpr;
+            delete [] ro_exec;
             delete [] ro_call;
 
             sMfunc::destroy_list(ro_funcs);
@@ -494,7 +495,6 @@ struct sRunopMeas : public sRunop
     bool do_measure(sRunDesc*);
     bool measure(sDataVec**, int*);
     bool update_plot(sDataVec*, int);
-    ROret call(sRunDesc*);
     char *print_meas();
 
 private:
@@ -511,7 +511,8 @@ private:
 
     const char *ro_result;      // result name for measurement
     const char *ro_prmexpr;     // holds expression from param=expression
-    const char *ro_call;        // function to call when measure comp[lete
+    const char *ro_exec;        // command to execute when measure complete
+    const char *ro_call;        // function to call when measure complete
     sFtCirc *ro_cktptr;         // back pointer to circuit
     sMfunc *ro_funcs;           // list of measurements over interval
     sMfunc *ro_finds;           // list of measurements at point
@@ -525,7 +526,6 @@ private:
     bool ro_measure_skip;       // parse error so skip
     bool ro_stop_flag;          // pause analysis when done
     bool ro_end_flag;           // terminate analysis when done
-    bool ro_call_flag;          // call a function or bound codeblock
     char ro_print_flag;         // print result on screen, 1 terse  2 verbose
 };
 
@@ -535,6 +535,7 @@ struct sRunopStop : public sRunop
     {
         ro_type = RO_STOP;
 
+        ro_exec                 = 0;
         ro_call                 = 0;
         ro_analysis             = 0;
         ro_found_rises          = 0;
@@ -545,13 +546,13 @@ struct sRunopStop : public sRunop
         ro_stop_skip            = false;
         ro_stop_flag            = false;
         ro_end_flag             = false;
-        ro_call_flag            = false;
 
         parse(str, errstr);
     }
 
     ~sRunopStop()
         {
+            delete [] ro_exec;
             delete [] ro_call;
         }
 
@@ -575,7 +576,6 @@ struct sRunopStop : public sRunop
     bool parse(const char*, char**);
     void reset();
     ROret check_stop(sRunDesc*);
-    ROret call(sRunDesc*);
     void print_cond(char**, bool);
 
 private:
@@ -583,6 +583,7 @@ private:
 
     sMpoint ro_start;
 
+    const char *ro_exec;        // command to execute when measure complete
     const char *ro_call;        // function to call when measure comp[lete
     int ro_analysis;            // type index of analysis 
     int ro_found_rises;         // number of rising crossings
@@ -593,7 +594,6 @@ private:
     bool ro_stop_skip;          // parse error so skip
     bool ro_stop_flag;          // pause analysis when done
     bool ro_end_flag;           // terminate analysis when done
-    bool ro_call_flag;          // call a function or bound codeblock
 };
 
 #endif // RUNOP_H

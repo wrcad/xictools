@@ -2234,7 +2234,7 @@ spinput
 
 !!REDIRECT .measure     measure#.measure
 
-!! format.tex 092611
+!! format.tex 021819
 !!KEYWORD
 measure
 !!TITLE
@@ -2245,7 +2245,7 @@ Parameter Measurement
     <a href="measure#point"><b>Point and Interval Specification</b></a><br>
     <a href="measure#compat"><b>Syntax Compatibility</b></a><br>
     <a href="measure#measure"><b>Measurements</b></a><br>
-    <a href="measure#addl"><b>Additional Capabilities</b></a><br>
+    <a href="measure#addl"><b>Post-Measurement Commands</b></a><br>
     <a href="measure#ref"><b>Referencing Results in Sources</b></a><br>
     </td></tr></table>
 
@@ -2266,9 +2266,10 @@ Parameter Measurement
     General form:
     <blockquote>
         <tt>.measure</tt> <i>analysis</i> <i>resultname</i>
-         <i>point</i> | <i>interval</i> [<i>measurements</i>]<br>
+         <i>point</i> | <i>interval</i> [<i>measurements</i>]
+         [<i>postcmds</i>]<br>
         <tt>.measure</tt> <i>analysis</i> <i>resultname</i>
-            <tt>param=</tt><i>expression</i>
+            <tt>param=</tt><i>expression</i> [<i>postcmds</i>]
     </blockquote>
 
     <dl>
@@ -2361,8 +2362,8 @@ Parameter Measurement
     <dl>
     <dt><i>pointspec</i><dd>
     <i>keyword</i> <i>expression1</i> [<tt>=</tt>][<tt>val=</tt>]
-      [</i>expression2</i> [<tt>cross=</tt><i>N</i>]
-      [<tt>rise=</tt><i>N</i>] [<tt>fall=</tt><i>N</i>]]
+      [</i>expression2</i> [<tt>cross=</tt><i>crosses</i>]
+      [<tt>rise=</tt><i>rises</i>] [<tt>fall=</tt><i>falls</i>]]
       [<tt>td=</tt><i>delay</i>]
     </dl>
 
@@ -2404,12 +2405,12 @@ Parameter Measurement
     </ul>
 
     <p>
-    In <i>WRspice</i>, an expression is the minimum text required for
-    a syntactically complete expression, and may include white space. 
-    Single quotes or parentheses can be used to delimit expressions,
-    if desired or needed.  The normal <a href="squote">single-quote
-    expression</a> expansion and substitution is suppressed in this
-    context.
+    In <i>WRspice</i>, an expression token is the minimum text
+    required for a syntactically complete expression, and may include
+    white space.  Single quotes or parentheses can be used to delimit
+    expressions in the <i>pointspec</i>, if nexessary.  The normal <a
+    href="squote">single-quote expression</a> expansion and
+    substitution is suppressed in this context.
 
     <p>
     If only one <i>expression</i> is given, and it is not a constant
@@ -2429,17 +2430,16 @@ Parameter Measurement
     integer value to trigger at the indicated point.
 
     <dl>
-    <dt><tt>cross=</tt><i>N</i><dd>
-     <i>N</i> is the number of crossings.
-    <dt><tt>rise=</tt><i>N</i><dd>
-    <i>N</i> is the number of times that <i>expression1</i> rises
-    above <i>expression2</i>.
-    <dt><tt>fall=</tt><i>N</i><dd>
-    <i>N</i> is the number of times that <i>expression1</i> falls
-    below <i>expression2</i>.
+    <dt><tt>cross=</tt><i>crosses</i><dd>
+    Integer <i>crosses</i> is the number of crossings.
+    <dt><tt>rise=</tt><i>rises</i><dd>
+    Integer <i>rises</i> is the number of times that
+    <i>expression1</i> rises above <i>expression2</i>.
+    <dt><tt>fall=</tt><i>falls</i><dd>
+    Integer <i>falls</i> is the number of times that
+    <i>expression1</i> falls below <i>expression2</i>.
     </dl>
-    <p>
-    
+
     <dl>
     <dt><tt>td=</tt><i>delay</i><dd>
     If two expressions are given, the <i>delay</i> is the amount of
@@ -2452,6 +2452,7 @@ Parameter Measurement
     value to wait before checking to see if the expression evaluates true.
     If the expression is a measurement name, than the delay is added to
     the measurement time of the referenced measurement.
+    </dl>
 
     <p>
     There is a special case, where no expressions are given, only a
@@ -2466,7 +2467,7 @@ Parameter Measurement
     &nbsp;&nbsp;Trigger 0.1nS after the third rising edge of v(2)
     after 0.2nS crosses 0.5V.<br>
     <tt>when v(2)&#60;v(1) before v(2)&#60;v(3)</tt><br>
-    &nbsp;&nbsp;Trigger the first time that <tt>v(2) &#60; v(3)</tt>
+    &nbsp;&nbsp;Trigger the first time that <tt>v(2) &#60; v(1)</tt>
     if and only if <tt>v(2) &#60; v(3)</tt> has never been true.
 
     <a name="compat"></a>
@@ -2609,8 +2610,11 @@ Parameter Measurement
     measurement.
 
     <a name="addl"></a>
-    <h2>Additional Capabilities</h2>
+    <h2>Post-Measurement Commands</h2>
 
+    There are a few commands which can be performed after measurement,
+    which will run whether or not any measurements are actually made.
+    
     <dl>
     <dt><tt>print</tt>, <tt>print_terse</tt><dd>
     By default, nothing is printed on-screen for a <tt>.measure</tt>
@@ -2635,16 +2639,27 @@ Parameter Measurement
     </dl>
 
     <dl>
+    <dt><tt>exec</tt> <i>command</i><dd>
+    Execute the <i>WRspice</i> shell command found in <i>command</i>,
+    which should be double-quoted if it contains white space.  Note
+    that multiple commands can be given, separated by semicolon
+    (<tt>';'</tt>) characters.  This will be run before a script is
+    called (see below) so can be used to pass information to the
+    script.  The command will be executed once only, after
+    measurements if any.
+
+    <dl>
     <dt><tt>call</tt> <i>script</i><dd>
-    After the measurement is performed, the named script will be
-    called.  The script can be a normal script file or <a
-    href="codeblock">codeblock</a>.  The script can be used for
-    additional processing or testing of whatever sort.  If the script
-    returns 1, the current simulation will pause immediately (no waiting
-    for other measures) however a calling analysis, such as Monto
-    Carlo, will continue.  If 2 is returned, this indicates a fatal
-    global error and any calling analysis will be stopped too.  Any
-    other return value allows the run to continue normally.
+    After the measurement (if any) is performed and any command string
+    is executed, the named script will be called.  The script can be a
+    normal script file or <a href="codeblock">codeblock</a>.  The
+    script can be used for additional processing or testing of
+    whatever sort.  If the script returns 1, the current simulation
+    will pause immediately (no waiting for other measures) however a
+    calling analysis, such as Monto Carlo, will continue.  If 2 is
+    returned, this indicates a fatal global error and any calling
+    analysis will be stopped too.  Any other return value allows the
+    run to continue normally.
     </dl>
 
     <p>
