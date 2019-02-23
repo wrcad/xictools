@@ -189,7 +189,8 @@ namespace {
 
         bool load_library(const char*) { return (false); }
         bool load_cell(const char*, const char*, const char*, int, bool,
-                PCellParam** = 0, char** = 0) { return (false); }
+                const char** = 0,
+                PCellParam** = 0) { return (false); }
         OItype open_lib_cell(const char*, CDcbin*) { return (OIerror); }
         void clear_name_table() { }
 

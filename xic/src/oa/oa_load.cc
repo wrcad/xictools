@@ -123,15 +123,15 @@ public:
 
     OItype loadLibrary(const char*);
     OItype loadCell(const char*, const char*, const char*, int,
-        PCellParam** = 0, char** = 0);
+        PCellParam**, const char**);
 
 private:
     // Argument to newCell.
     enum ncType { ncError, ncOK, ncSkip };
 
     OItype loadCellRec(const oaScalarName&, const oaScalarName&,
-        const char*, oaInt4);
-    OItype loadCellRec(oaLib*, oaCell*, oaView*, oaInt4);
+        const char*, oaInt4, const char**);
+    OItype loadCellRec(oaLib*, oaCell*, oaView*, oaInt4, const char**);
     bool checkMasterXicProps(CDs*);
     bool markReferences();
     oaDesign *openDesign(const oaScalarName&, const oaScalarName&,
@@ -195,7 +195,6 @@ private:
     stringlist *in_top_phys;
     stringlist *in_top_elec;
     stringlist *in_warnings;
-    char *in_subm_name;
     PCellParam *in_pc_params;
     SymTab *in_submaster_tab;
     const char *in_def_layout;
@@ -271,28 +270,29 @@ cOA::load_library(const char *libname)
 // cell is a PCell, on the first call no cells are created and the
 // default parameter set is returned.  This can be modified and repeat
 // calls made, which creates the sub-masters.  On these calls, the
-// sub-master name is returned in subm_name.  If paramp is null, PCells
+// sub-master name is returned in new_cell_name.  If paramp is null, PCells
 // will not be processed at all.  The user should free the paramp list
 // when done.
 //
 bool
 cOA::load_cell(const char *libname, const char *cellname, const char *viewname,
-    int depth, bool setcur, PCellParam **paramp, char **subm_name)
+    int depth, bool setcur, const char **new_cell_name, PCellParam **paramp)
 {
-    if (subm_name)
-        *subm_name = 0;
+    if (new_cell_name)
+        *new_cell_name = 0;
 
     if (!initialize()) {
         Errs()->add_error("OpenAccess initialization failed.");
         return (false);
     }
 
+    const char *ncell = 0;
     {
         cOAerrLogWrap logger("load_cell", OA_ERRLOG, OA_DBGLOG);
 
         oa_in in(oa_api_major);
         OItype oiret = in.loadCell(libname, cellname, viewname, depth, paramp,
-            subm_name);
+            &ncell);
         OAerrLog.set_return(oiret);
 
         if (oiret == OIerror) {
@@ -348,17 +348,19 @@ cOA::load_cell(const char *libname, const char *cellname, const char *viewname,
         stringlist::destroy(sl0);
         OAerrLog.add_err(IFLOG_INFO, lstr.string());
     }
+    if (new_cell_name)
+        *new_cell_name = ncell;
 
     // If we have created any P_NAME properties, the indices are all 0. 
     // This will assign proper values, which is essential for linking
     // labels when the cell is saved to a file.
     //
-    CDs *sd = CDcdb()->findCell(cellname, Electrical);
+    CDs *sd = CDcdb()->findCell(ncell, Electrical);
     if (sd)
         ScedIf()->connectAll(false, sd);
 
     if (setcur)
-        XM()->Load(DSP()->MainWdesc(), cellname, 0);
+        XM()->Load(DSP()->MainWdesc(), ncell, 0);
 
     return (true);
 }
@@ -443,7 +445,6 @@ oa_in::oa_in(int api_major)
     in_top_phys = 0;
     in_top_elec = 0;
     in_warnings = 0;
-    in_subm_name = 0;
     in_pc_params = 0;
     in_submaster_tab = 0;
 
@@ -502,7 +503,6 @@ oa_in::~oa_in()
         }
         delete in_via_tab;
     }
-    delete [] in_subm_name;
     PCellParam::destroy(in_pc_params);
     delete [] in_def_layout;
     delete [] in_def_schematic;
@@ -556,7 +556,7 @@ oa_in::loadLibrary(const char *libname)
             oaString cellname;
             cellName.get(in_ns, cellname);
 
-            oiret = loadCellRec(lib, cell, 0, 0);
+            oiret = loadCellRec(lib, cell, 0, 0, 0);
             if (oiret == OIerror) {
                 Errs()->add_error("Failed to load cell %s from library %s.",
                     (const char*)cellname, libname);
@@ -599,16 +599,17 @@ oa_in::loadLibrary(const char *libname)
 // cell is a PCell, on the first call no cells are created and the
 // default parameter set is returned.  This can be modified and repeat
 // calls made, which creates the sub-masters.  On these calls, the
-// sub-master name is returned in subm_name.  If paramp is null,
+// sub-master name is returned in new_cell_name.  If paramp is null,
 // PCells will not be processed at all.  The user should free the
 // paramp list when done.
 //
 OItype
 oa_in::loadCell(const char *libname, const char *cellname,
-    const char *viewname, int depth, PCellParam **paramp, char **subm_name)
+    const char *viewname, int depth, PCellParam **paramp,
+    const char **new_cell_name)
 {
-    if (subm_name)
-        *subm_name = 0;
+    if (new_cell_name)
+        *new_cell_name = 0;
     if (!libname || !*libname) {
         Errs()->add_error("Null or empty library name encountered.");
         return (OIerror);
@@ -631,12 +632,10 @@ oa_in::loadCell(const char *libname, const char *cellname,
     try {
         oaScalarName libName(in_ns, libname);
         oaScalarName cellName(in_ns, cellname);
-        delete [] in_subm_name;
-        in_subm_name = 0;
 
         CD()->SetDeferInst(true);
         bool lpc = CD()->EnableLabelPatchCache(true);
-        oiret = loadCellRec(libName, cellName, viewname, depth);
+        oiret = loadCellRec(libName, cellName, viewname, depth, new_cell_name);
         CD()->EnableLabelPatchCache(lpc);
         CD()->SetDeferInst(false);
         if (depth > 0 && !markReferences())
@@ -644,10 +643,6 @@ oa_in::loadCell(const char *libname, const char *cellname,
         if (paramp) {
             *paramp = in_pc_params;
             in_pc_params = 0;
-        }
-        if (subm_name) {
-            *subm_name = in_subm_name;
-            in_subm_name = 0;
         }
     }
     catch (oaCompatibilityError &ex) {
@@ -677,8 +672,10 @@ oa_in::loadCell(const char *libname, const char *cellname,
 //
 OItype
 oa_in::loadCellRec(const oaScalarName &libName, const oaScalarName &cellName,
-    const char *viewname, oaInt4 depth)
+    const char *viewname, oaInt4 depth, const char **new_cell_name)
 {
+    if (new_cell_name)
+        *new_cell_name = 0;
     oaLib *lib = oaLib::find(libName);
     if (!lib) {
         oaString libname;
@@ -715,6 +712,8 @@ oa_in::loadCellRec(const oaScalarName &libName, const oaScalarName &cellName,
             unsigned long f = NameTab.findCname(cname);
             if (f & OAL_READP) {
                 lib->releaseAccess();
+                if (new_cell_name)
+                    *new_cell_name = Tstring(cname);
                 return (OIok);
             }
         }
@@ -723,6 +722,8 @@ oa_in::loadCellRec(const oaScalarName &libName, const oaScalarName &cellName,
             unsigned long f = NameTab.findCname(cname);
             if (f & (OAL_READE | OAL_READS)) {
                 lib->releaseAccess();
+                if (new_cell_name)
+                    *new_cell_name = Tstring(cname);
                 return (OIok);
             }
         }
@@ -734,7 +735,7 @@ oa_in::loadCellRec(const oaScalarName &libName, const oaScalarName &cellName,
             lib->releaseAccess();
             return (OIerror);
         }
-        oiret = loadCellRec(lib, cell, view, depth);
+        oiret = loadCellRec(lib, cell, view, depth, new_cell_name);
         lib->releaseAccess();
     }
     else {
@@ -743,8 +744,11 @@ oa_in::loadCellRec(const oaScalarName &libName, const oaScalarName &cellName,
         // we are through translating this cell.
 
         unsigned long f = NameTab.findCname(cname);
-        if (f & (OAL_READP | OAL_READE | OAL_READS))
+        if (f & (OAL_READP | OAL_READE | OAL_READS)) {
+            if (new_cell_name)
+                *new_cell_name = Tstring(cname);
             return (OIok);
+        }
 
         if (dspPkgIf()->CheckForInterrupt()) {
             if (XM()->ConfirmAbort("Interrupt received, abort load? "))
@@ -759,9 +763,11 @@ oa_in::loadCellRec(const oaScalarName &libName, const oaScalarName &cellName,
         if (!cell) {
             NameTab.updateCname(cname, OAL_NOOA);
             lib->releaseAccess();
+            if (new_cell_name)
+                *new_cell_name = Tstring(cname);
             return (OIok);
         }
-        oiret = loadCellRec(lib, cell, 0, depth);
+        oiret = loadCellRec(lib, cell, 0, depth, new_cell_name);
         lib->releaseAccess();
     }
     return (oiret);
@@ -769,11 +775,15 @@ oa_in::loadCellRec(const oaScalarName &libName, const oaScalarName &cellName,
 
 
 // Open a cell recursively to depth.  The view can be 0, or a pointer
-// to a view.
+// to a view.  The name of the Xic cell opened (if any) is returned
+// in new_cell_name.
 //
 OItype
-oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
+oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth,
+    const char **new_cell_name)
 {
+    if (new_cell_name)
+        *new_cell_name = 0;
     if (depth < 0)
         return (OIok);
 
@@ -940,6 +950,12 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                             // it like a normal cell.
                             oiret = loadPhysicalDesign(design, alt_cellname,
                                 &sd_phys, depth);
+                            if (oiret == OIok && sd_phys) {
+                                if (new_cell_name && !*new_cell_name) {
+                                    *new_cell_name =
+                                        Tstring(sd_phys->cellname());
+                                }
+                            }
                         }
                         else {
                             // clean up and return ok.
@@ -957,21 +973,16 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                         design = handleSuperMaster(design, &cname);
                         oiret = loadPhysicalDesign(design, cname, &sd_phys,
                             depth);
-
-                        // Save the sub-master name, we need this at
-                        // the top level when opening pcells for
-                        // placement.  Note that we only do this for
-                        // layout.
-
-                        if (!in_subm_name)
-                            in_subm_name = cname;
-                        else
-                            delete [] cname;
+                        delete [] cname;
                     }
                 }
             }
             if (design)
                 design->close();
+        }
+        if (oiret == OIok && sd_phys) {
+            if (new_cell_name && !*new_cell_name)
+                *new_cell_name = Tstring(sd_phys->cellname());
         }
         if (oiret == OIerror) {
             Errs()->add_error("Physical translation failed, "
@@ -1021,6 +1032,10 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                 oiret = OIerror;
             }
             design->close();
+        }
+        if (oiret == OIok && sd_elec) {
+            if (new_cell_name && !*new_cell_name)
+                *new_cell_name = Tstring(sd_elec->cellname());
         }
         if (oiret == OIerror) {
             Errs()->add_error("Electrical translation failed, "
@@ -1111,6 +1126,10 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth)
                     alt_cellname);
                 delete sd_symb;
                 return (OIerror);
+            }
+            if (oiret == OIok && sd_elec) {
+                if (new_cell_name && !*new_cell_name)
+                    *new_cell_name = Tstring(sd_elec->cellname());
             }
         }
 
@@ -1451,6 +1470,16 @@ oa_in::openDesign(const oaScalarName &libName,
         if (!oaDesign::exists(libName, cellName, viewName))
             return (0);
         design = oaDesign::open(libName, cellName, viewName, viewType, 'r');
+//XXX
+if (design) {
+    if (design->isSuperMaster()) {
+        oaString evname;
+        design->getPcellEvaluatorName(evname);
+        printf("evname %s\n", (const char*)evname);
+    }
+    else
+        printf("not super master\n");
+}
     }
     catch (oaCompatibilityError &ex) {
         cOA::handleFBCError(ex);
@@ -1769,13 +1798,12 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
             // Non-parameterized custom via.
             oaString viewname;
             viewName.get(in_ns, viewname);
+            const char *new_cell_name;
             OItype oiret = loadCellRec(libName, cellName,
-                (const char*)viewname, depth);
+                (const char*)viewname, depth, &new_cell_name);
             if (oiret == OIok) {
                 // Add XICP_CSTMVIA property to cell.
-                oaString cellname;
-                cellName.get(in_ns, cellname);
-                CDs *sd = CDcdb()->findCell(cellname, in_mode);
+                CDs *sd = CDcdb()->findCell(new_cell_name, in_mode);
                 if (sd)
                     sd->prptyAdd(XICP_CSTMVIA, defName);
             }
@@ -2004,9 +2032,9 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
         viewName.get(viewname);
         OItype oiret;
         if (in_mode == Physical && viewname != in_def_layout)
-            oiret = loadCellRec(libName, cellName, viewname, depth);
+            oiret = loadCellRec(libName, cellName, viewname, depth, 0);
         else
-            oiret = loadCellRec(libName, cellName, 0, depth);
+            oiret = loadCellRec(libName, cellName, 0, depth, 0);
         in_sub_level--;
         return (oiret);
     }
@@ -5087,7 +5115,7 @@ oa_in::mapLayer(oaScalarName &libName, unsigned int layernum,
             snprintf(buf, 32, "purposeX%x", purposenum);
             if (!CDldb()->saveOApurpose(buf, purposenum)) {
                 Errs()->add_error(
-                    "Failed to save purpose/num %s/%u.", buf, purposenum);
+                    "Failed to save purpose/num %s/%d.", buf, purposenum);
                 return (0);
             }
         }
@@ -5102,7 +5130,7 @@ oa_in::mapLayer(oaScalarName &libName, unsigned int layernum,
         ld = CDldb()->newLayer(layernum, purposenum, mode);
         if (!ld) {
             Errs()->add_error(
-                "Failed to create layer for %u/%u.", layernum, purposenum);
+                "Failed to create layer for %d/%d.", layernum, purposenum);
         }
         return (ld);
     }
@@ -5114,16 +5142,26 @@ oa_in::mapLayer(oaScalarName &libName, unsigned int layernum,
     if (layer) {
         oaString lyrname;
         layer->getName(lyrname);
-        if (!CDldb()->saveOAlayer(lyrname, layernum)) {
-            Errs()->add_error(
-                "Failed to save layer/num %s/%u.", (const char*)lyrname,
-                layernum);
-            return (0);
+        unsigned int lnum = CDldb()->getOAlayerNum(lyrname);
+        if (lnum == CDL_NO_LAYER) {
+            if (!CDldb()->saveOAlayer(lyrname, layernum)) {
+                Errs()->add_error(
+                    "Failed to save layer/num %s/%d.", (const char*)lyrname,
+                    layernum);
+                return (0);
+            }
         }
         ld = CDldb()->newLayer(layernum, purposenum, mode);
         if (!ld) {
+            if (lnum != CDL_NO_LAYER && lnum != layernum) {
+                Errs()->add_error(
+        "Layer %s is already mapped to %d, probably this layer is defined\n"
+        "explicitly in the technology, but the name clashes with an internal\n"
+        "reserved layer name mapped to %d.", (const char*)lyrname, lnum,
+        layernum);
+            }
             Errs()->add_error(
-                "Failed to create layer for %u/%u.", layernum, purposenum);
+                "Failed to create layer for %d/%d.", layernum, purposenum);
         }
         return (ld);
     }
@@ -5136,13 +5174,13 @@ oa_in::mapLayer(oaScalarName &libName, unsigned int layernum,
         return (0);
     }
     if (!CDldb()->saveOAlayer(buf, layernum)) {
-        Errs()->add_error("Failed to save layer/num %s/%u.", buf, layernum);
+        Errs()->add_error("Failed to save layer/num %s/%d.", buf, layernum);
         return (0);
     }
     ld = CDldb()->newLayer(layernum, purposenum, mode);
     if (!ld) {
         Errs()->add_error(
-            "Failed to create layer for %u/%u.", layernum, purposenum);
+            "Failed to create layer for %d/%d.", layernum, purposenum);
     }
     return (ld);
 }

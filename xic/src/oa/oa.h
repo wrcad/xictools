@@ -104,7 +104,7 @@ public:
     // oa_load.cc
     bool load_library(const char*);
     bool load_cell(const char*, const char*, const char*, int, bool,
-        PCellParam** = 0, char** = 0);
+        const char** = 0, PCellParam** = 0);
     OItype open_lib_cell(const char*, CDcbin*);
     void clear_name_table();
 

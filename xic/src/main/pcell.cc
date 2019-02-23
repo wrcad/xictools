@@ -381,7 +381,7 @@ cPCellDb::getParams(const char *dbname, const char *input, PCellParam **pret)
         // opened.
 
         if (!OAif()->load_cell(libname, cellname, viewname, CDMAXCALLDEPTH,
-                false, &pdef, 0)) {
+                false, 0, &pdef)) {
             Errs()->add_error(
                 "getParams: failed to open OA super-master %s/%s/%s.",
                 libname, cellname, viewname);
@@ -465,7 +465,7 @@ cPCellDb::getDefaultParams(const char *dbname, PCellParam **pret)
         // opened.
 
         if (!OAif()->load_cell(libname, cellname, viewname, CDMAXCALLDEPTH,
-                false, &pdef, 0)) {
+                false, 0, &pdef)) {
             Errs()->add_error(
                 "getDefaultParams: failed to open OA super-master %s/%s/%s.",
                 libname, cellname, viewname);
@@ -820,15 +820,14 @@ cPCellDb::openSubMaster(const char *nmstr, const char *prpstr, CDs **psd,
 
         // Now call back to OA to fill in the cell.
 
-        char *subm_name;
+        const char *subm_name;
         if (!OAif()->load_cell(libname, cellname, viewname, CDMAXCALLDEPTH,
-                false, &prms, &subm_name)) {
+                false, &subm_name, &prms)) {
             Errs()->add_error("openSubMaster: OA cell load failed.");
             return (false);
         }
         if (psd)
             *psd = CDcdb()->findCell(subm_name, Physical);
-        delete [] subm_name;
         PCellParam::destroy(prms);
     }
     return (true);

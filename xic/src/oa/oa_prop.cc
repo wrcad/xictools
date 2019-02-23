@@ -1281,7 +1281,19 @@ cOAelecInfo::set_prp_info(const char *cname, const oaProp *pip,
             for (lispnode *a = p0->args; a; a = a->next) {
                 if (a->type != LN_STRING && a->type != LN_QSTRING)
                     continue;
-                ary[cnt++] = lstring::copy(a->string);
+
+                // Strip any backslashes that may be hiding
+                // punctuation characters.
+
+                char *s = new char[strlen(a->string) + 1];
+                ary[cnt++] = s;
+                char *t = a->string;
+                while (*t) {
+                    if (*t != '\\')
+                        *s++ = *t;
+                    t++;
+                }
+                *s = 0;
             }
             ary[cnt] = 0;
             cdf->cdf_ports = ary;
@@ -1547,7 +1559,21 @@ cOAelecInfo::parse_termOrder(lispnode *p)
     for (lispnode *a = p->args; a; a = a->next) {
         if (a->type != LN_STRING && a->type != LN_QSTRING)
             continue;
-        ary[cnt++] = lstring::copy(a->string);
+
+        // I've seen strings like "P\+" here, with the backslash
+        // perhaps to protect the '+' from misinterpretation.  These
+        // have to be stripped or will generate an "invalid character"
+        // exception.
+
+        char *s = new char[strlen(a->string) + 1];
+        ary[cnt++] = s;
+        char *t = a->string;
+        while (*t) {
+            if (*t != '\\')
+                *s++ = *t;
+            t++;
+        }
+        *s = 0;
     }
     ary[cnt] = 0;
     cdf_terms = ary;
