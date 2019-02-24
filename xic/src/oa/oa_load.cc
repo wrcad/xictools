@@ -1470,16 +1470,13 @@ oa_in::openDesign(const oaScalarName &libName,
         if (!oaDesign::exists(libName, cellName, viewName))
             return (0);
         design = oaDesign::open(libName, cellName, viewName, viewType, 'r');
-//XXX
-if (design) {
-    if (design->isSuperMaster()) {
-        oaString evname;
-        design->getPcellEvaluatorName(evname);
-        printf("evname %s\n", (const char*)evname);
-    }
-    else
-        printf("not super master\n");
-}
+        if (OAerrLog.debug_load() && design && design->isSuperMaster()) {
+            oaString evname, cellname;
+            design->getPcellEvaluatorName(evname);
+            cellName.get(cellname);
+            OAerrLog.add_log(OAlogLoad, "SuperMaster %s requires evaluator %s.",
+                (const char*)cellname, (const char*)evname);
+        }
     }
     catch (oaCompatibilityError &ex) {
         cOA::handleFBCError(ex);
