@@ -100,6 +100,21 @@ true if measure done. name[index] resoves to result of index'th meeasure.
 No, resolve as scale start before, measure scale val after.  ?mname resolve
 as binary?
 
+Think thru logic, need a new flag?
+t_found_flag   point was found for this
+t_ready        point was found for conj
+t_state        when t_found, this is state
+if (!t_found_flag)
+   check
+else
+   state is t_state
+so can skip the check if state is false (otherwise this is indicated by
+t_found_flag not set).
+if (conj->t_found_flag && !conf->t_state) {
+    t_found_flag = true;
+    t_state = false;
+}
+
 When in multi-d run, measure performed for each run, result appended
 to vector.
 

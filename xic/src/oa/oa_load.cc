@@ -2046,6 +2046,7 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
     }
 
     oaParamArray allParams;
+    hdr->getAllParams(allParams);
     bool has_params = (allParams.getNumElements() > 0);
 
     oaParamArray params;
