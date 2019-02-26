@@ -292,7 +292,7 @@ asciiplot
 hcopypanel
 graphcmds
 
-!! commands.tex 121415
+!! commands.tex 022519
 !!KEYWORD
 iplot
 !!TITLE
@@ -301,7 +301,7 @@ iplot command
     command: <tt>iplot</tt> <i>plotargs</i>
 
     <p>
-    The <b>iplot</b> command adds an incremental plot to the "debug"
+    The <b>iplot</b> command adds an incremental plot to the "runorunop"
     list.  While a simulation is running, the plots will be generated,
     allowing immediate feedback as to whether the simulation is
     producing the "right" results.
@@ -339,7 +339,7 @@ iplot command
     href="delete"><b>delete</b></a> command, and can also be specified
     and deleted using the panel brought up by the <b>Trace</b> button
     in the <b>Tools</b> menu.  The <a href="status"><b>status</b></a>
-    command will list the "debugs", including iplots.
+    command will list the runops, including iplots.
 
     <p>
     If an <b>iplot</b> command is given at the prompt in interactive

@@ -132,12 +132,13 @@ follow.
 \et ElecRoundFlashSides & Number of sides to use in electrical round objects\\
 \et SpotSize & Set mask resolution\\ \hline
 
-% 101212
+% 022619
 \multicolumn{2}{|c|}{\kb SPICE Interface}\\ \hline
 \et SpiceListAll & Include unconnected devices in Spice output\\ \hline
 \et SpiceAlias & Device key aliases for Spice output\\ \hline
 \et SpiceHost & Name of {\WRspice} server\\ \hline
 \et SpiceHostDisplay & X display string to use on remote host\\ \hline
+\et SpiceInclude & Add include file to SPICE netlist\\ \hline
 \et SpiceProg & Path name of {\WRspice} executable, supersedes below\\ \hline
 \et SpiceExecDir & Directory containing {\WRspice} executable\\ \hline
 \et SpiceExecName & Name of {\WRspice} executable\\ \hline
@@ -1810,6 +1811,18 @@ value printed.
 The display name provided by the {\et SpiceHostDisplay} variable will
 override the assumed display name created internally with the local
 host name.
+
+% 022619
+\index{SpiceInclude variable}
+\item{\et SpiceInclude}\\
+{\bf Value:} file path string.\\
+This can be set to a file path.  When a SPICE netlist is created with
+this variable set, text will be added to the top of the SPICE deck. 
+If the file exists and is readable, the text from the file is added to
+the deck verbatim.  Othewise, ``{\vt .include} {\it path\/}'' is
+added, the {\it path} being the file path from the variable.  This
+applies when creating SPICE with the {\cb deck} button, or when
+preparing input for the simulator when using the {\cb run} button.
 
 % 061308
 \index{SpiceProg variable}

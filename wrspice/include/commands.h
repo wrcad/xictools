@@ -110,6 +110,7 @@ public:
     static void com_ac(wordlist*);
     static void com_alias(wordlist*);
     static void com_alter(wordlist*);
+    static void com_alterf(wordlist*);
     static void com_asciiplot(wordlist*);
     static void com_aspice(wordlist*);
     static void com_bug(wordlist*);
@@ -117,11 +118,6 @@ public:
     static void com_cd(wordlist*);
     static void com_cdump(wordlist*);
     static void com_check(wordlist*);
-//XXX
-    static void com_mctrial(wordlist*);
-    static void com_findrange(wordlist*);
-    static void com_alterf(wordlist*);
-
     static void com_codeblock(wordlist*);
     static void com_combine(wordlist*);
     static void com_compose(wordlist*);
@@ -144,6 +140,7 @@ public:
     static void com_echo(wordlist*);
     static void com_echof(wordlist*);
     static void com_edit(wordlist*);
+    static void com_findrange(wordlist*);
     static void com_fourier(wordlist*);
     static void com_free(wordlist*);
     static void com_hardcopy(wordlist*);
@@ -157,6 +154,7 @@ public:
     static void com_listing(wordlist*);
     static void com_load(wordlist*);
     static void com_mapkey(wordlist*);
+    static void com_mctrial(wordlist*);
     static void com_measure(wordlist*);
     static void com_mmon(wordlist*);
     static void com_mplot(wordlist*);

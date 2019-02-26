@@ -343,8 +343,6 @@ Name property change  (ifdef NEWNMP)
 !mklib updated with new -d option to handle Directory entries, for native
 cell collections.
 
---new
-
 New !preload command and RegisterSubMaster function, registers Xic pcell
 sub master files so will resolve when reading data via library mechanism.
 Avoids cell name uncertainty.
@@ -352,12 +350,14 @@ Avoids cell name uncertainty.
 Bug fixed in pcell parameter compare function, infinite loop.  Potential
 bug fixed in OpenImport with null cbin, would seg fault.
 
+FIX Place button in Content window of OA Libs panel requires library
+to be open or place fails with uninformative error message. DONE
+
+--- release 4.3.6
+
 ToDo: handle via/pc masters in archive (DONE for pcells, check this)
 
 TODO: Accept model from CDF. OK (bug fixed)
-
-FIX Place button in Content window of OA Libs panel requires library
-to be open or place fails with uninformative error message. DONE
 
 Chris Ayala:  "Glued contacts" when moving schematic device, meaning
 wires stretch(?).
@@ -371,3 +371,4 @@ when checking lower levels when recognizing.  Then, overlapping devices
 whould be handled properly.
 
 update OA/Xic properties and mapping in docs, e.g., XICP_PARTNAME
+

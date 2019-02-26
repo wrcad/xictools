@@ -963,7 +963,7 @@ sidemenu
 !!REDIRECT execlabel    xic:label#execlabel
 !!REDIRECT wirelabel    xic:label#wire
 
-!! 101016
+!! 022619
 !!KEYWORD
 xic:label
 !!TITLE
@@ -1176,7 +1176,9 @@ The label Button: Create/Edit Labels
 
     <p>
     In electrical mode, labels can be used to enter arbitrary text
-    into the SPICE output.  There are two methods to achieve this.
+    into the SPICE output.  There are two methods to achieve this.  In
+    addition, the <a href="SpiceInclude"><b>SpiceInclude</b></a>
+    variable can be used to add a file inclusion to the SPICE output.
 
     <p>
     If an electrical layer named "SPTX" exists, labels on this layer

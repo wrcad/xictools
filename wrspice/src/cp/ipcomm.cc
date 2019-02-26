@@ -677,7 +677,6 @@ CommandTab::com_sced(wordlist *wl)
     for ( ; wl; wl = wl->wl_next)
         xpstr.append(" ", wl->wl_word);
 
-//XXX bat file prob won't work
     PROCESS_INFORMATION *info = msw::NewProcess(0, xpstr.string(), 
         DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP, true);
     if (!info) {

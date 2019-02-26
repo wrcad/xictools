@@ -156,10 +156,76 @@ IMPORTANT -- Windows notes
 *****************************************************
 End of general info.
 
-
 ===============================================================================
-xic-4.3.6  8/14/2018
+xic-4.3.7  3/1/2019
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Updates to the OpenAccess plug-in.
+
+  Lots of work on the OpenAccess support.
+
+  The OpenAccess TCL pcell example now works in Xic.  One can place,
+  remaster, etc.  TCL can therefor provide a portable pcell language. 
+  So why is there a need for Python portable pcells, as championed by
+  Ciranova/Synopsys?  Maybe the need to be fluent in both OA and TCL
+  is too much of a barrier.
+
+  The "tweaking" applied to devices from the analogLib has changed. 
+  Previously, all cells from analogLib were given a "alib_" prefix in
+  Xic to avoid name clashes.  this is no longer done.  Instead, there
+  is an internal list of cell names, mostly from analogLib and Basic
+  (these libraries are supplied with Virtuoso and Synopsys Custom
+  Compiler).  If an OA cell name is found in this list (from any
+  library), "oa_" is prepended to the corresponding cell name in Xic.
+
+  If a device instance has an instance name prefixed by the name
+  prefix (either the CDF entry or an instNamePrefix property), the
+  instance is given this as an assigned name.
+
+* Miscellaneous Changes
+
+  New variable:  SpiceInclude  (string)
+
+  This can be set to a file path.  When a SPICE netlist is created
+  with this variable set, text will be added to the top of the SPICE
+  deck.  If the file is found, the text from the file is added to the
+  deck verbatim.  Othewise, ".include path" is added, the path being
+  the file path from the variable.  This applies when ceating SPICE
+  with the deck button, or when preparing input for the simulator when
+  using the run button.
+
+
+  Updated the rsfq_lib.tar.gz file in the examples.  Cleaned out .bak
+  cells and added a pdf of the 2013 JJ Workshop talk that addresses
+  inductorless RSFQ.
+
+
+BUGS FIXED
+---- -----
+
+* When entering an analysis string for the run and deck buttons,
+  leading periods are now stripped, ensuring that only one period is
+  used in the SPICE output.
+
+* Just append ".cir" to the cell name to create the SPICE input file
+  name, previously anything after the final '.' was stripped before
+  appending ".cir".
+
+* Many bugs were fixed in the OpenAccess support and plug-in.
+
+* Renamed a function to avoid name a clash with virtual function
+  (different args so safe) reported (only) by Clang in OS X Mojave.
+
+* Fixed a strange Ubuntu-18 problem where a button widget name
+  apparently clashed with the theme and it inherited a black
+  background.  Changed name SelPanel to SelCP to fix.
+
+
+-------------------------------------------------------------------------------
+xic-4.3.6  8/14/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

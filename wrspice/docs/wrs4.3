@@ -1,4 +1,4 @@
-WRspice Generation 4 Release Notes
+Rspice Generation 4 Release Notes
 
 This is the 4.3 post-production series.  See the release note archive
 for the production releases (4.2.1 - 4.2.16) and earlier.
@@ -222,10 +222,209 @@ IMPORTANT -- Windows notes
 *****************************************************
 End of general info.
 
-
 ===============================================================================
-wrspice-4.3.8  10/10/2018
+wrspice-4.3.9  3/1/2019
 Current Release
+
+Lots going on under the hood.  This is an interim release, providing elements
+of two new feature sets: the "runops", and "Atomic Monte Carlo".
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Run Operations ("runops").
+
+simcmds
+delete
+status
+tracepanel
+tests
+.measure
+measure
+.stop
+stop
+
+  WRspice has a collection of operations that can be performed during
+  simulation called "runops".  These were originally called "debugs"
+  in Berkeley SPICE3, but since these may have nothing to do with
+  debugging, the name was changed in all WRspice documentation and
+  source code.
+
+  The runops are:       Input Keyword           Command
+                        .save                   save
+                        -                       trace
+                        -                       iplot
+                        .measure                measure
+                        .stop                   stop
+
+stop at [50]  means stop at step 50.
+
+   What's New:
+   The measure operation in now a "runop".  This means that measurements
+   can be listed, activated, deleted, etc.  With commands like status and
+   delete.
+
+   The measure command
+   Same syntax as the .measure line in input, but will apply to all
+   circuits until deleted or deactivated.
+
+   The .stop input directive.
+   Same syntax as the stop command.  A .stop line only applies when
+   running the containing circuit.
+     
+   The SPICE stop command has been scrapped, and the new stop
+   syntax, based on the new measure syntax (the old measure support
+   has also been scrapped) is far more powerful.  The stop and
+   measure operations now have a fair amount of similarity, however,
+   the original functionality should stoll work, however syntax may
+   differ slightly.
+
+   Users of stop .measure in earlier WRspice releases should
+   definitely read about the new versions and test (and perhaps
+   update) existing simulation decks.
+
+.stop/.meaasure
+    WRspice:  1.  new measure/stop postop "exec command" executes the
+    command after measure.  2.  The call postop now requires a script name
+    argument.  The following "script names" now call the bound code
+    blocks of the current cell:  ".exec", ".control", ".postrun".
+    WRspice:  in .measure, the find clause now works with interval measure
+    giving the difference of the expression evaluated at the targ and trig
+    points.
+  Added a timepoint
+    clause in WRspice .measure/.stop "after td=xxx" to add a fixed delay
+    as a conjunction.
+    WRspice:  Get mc/oprange working again, now support decreasing
+    scale (not tested).  The multiply of checkPNTS by 0.9999 is no longer
+    done, meaning that time and checkPNTS may have numerical matching
+    issues.
+
+* Atomic Monte Carlo and Range Analysis
+
+  New commands are being created that will make available operations
+  that have been available only as part of Monte Carlo or operating range
+  analysis.  These will allow the user to create scripts for special
+  purpose operations, such as Monte Carlo optimization, of advanced
+  statistical extraction.
+
+Updates to support "atomic Monte Carlo" analysis, a script-based Monte
+Carlo analysis where user has finer-grain control.
+new command:  alterf  Dump alter list to Monte Carlo output file.
+new command:  mctrial Run a single Monte Carlo trial, sets variable
+named "trial_return" to 0-error, 1-pass, 2-fail.
+
+Carlo analysis where user has finer-grain control.
+new command:  alterf  Dump alter list to Monte Carlo output file.
+new command:  mctrial Run a single Monte Carlo trial, sets variable
+new command:  findrange
+named "trial_return" to 0-error, 1-pass, 2-fail.
+The check command has new option: -b.  If this is given, the analysis will
+be paused after setup and the check command will return.  This is the start
+for atomic Monte Carlo, a script can call mctrial numerous times
+at this point, then "check -c" when done.
+
+check -c now returns immediately after deleting run in progress.
+new check vector checkINIT, set to 1 for exec block for initial execution,
+before op range or first MC trial.  Set to 0 otherwise.
+.cc and trace.cc.
+
+    WRspice:  New atomic Monte Carlo progress (can now embed range finder
+    in MC analysis).  Initial fix JJ model rtype=4 i-v not correct for v >
+    vmore.
+
+* Misc changes.
+  
+    WRspice:  "gnd!" is now a global ground token, same as "0".  Ground
+    names are listed from sCKTnodeTab::groundNames().
+
+    WRspice:  new variable revertmode, can be set to various values which
+    sets up the strategy to revert focus when a new window pops up.  The
+    default auto mode makes a guess based on the operating system.
+    WRspice:  turn off the "Revert" feature, whereby new pop-up windows
+    give focus back to the console.  Too many variations in behavior among
+    window managers.
+
+    WRspice:  JJ models now have a CPIC model parameter which supplies the
+    default capacitance per critical current in F/A.  This defaults to the
+    MITLL SFQ5ee value, and will set the capacitance if CAP is not given.
+    With CAP not given, changing ICRIT will now change the assumed
+    capacitance of the reference junction.
+
+   Misc:  Update to KLU to avoid compiler warnings.  Fix configure script
+    to identify Red Hat Enterprise Linux Workstation 6.
+
+    WRspice:  Added "return [expression]" syntax support in scripts.  The
+    script will return immediately, and if an expression is given, the
+    "retval" will be set to the evaluated result, similar to the
+    now-deprecated retval command.  This value can be obtained with the
+    "$?" pseudo-shell variable after the function returns (warning, this
+    is a global variable).
+    WRspice:  return x now works in scripts, bugs before.  Margin analysis
+    test function can now return 1 instead of setting checkFAIL.  Moved
+    misc.  global stuff in graph.h to be static components of existing
+    structs.
+    WRspice: Global return system augmented: integer snapping, defines
+    for pause/halt returns. make sure zeroed ahead of calls.
+
+   WRspice:  New feature coded:  named control blocks.  If a name follows
+    .control/.exec/.postrun the lines in the block are saved in a
+    codeblock with the given name.  The three types are identical in this
+    usage.  These are not associated with any circuit or run when the
+    circuit is sourced like unnamed codeblocks.  The inline *$/*# lines
+    are added to an unnamed codeblock.  NOT TESTED YET.
+
+The check command has new option: -b.  If this is given, the analysis will
+be paused after setup and the check command will return.  This is the start
+for atomic Monte Carlo, a script can call mctrial numerous times
+at this point, then "check -c" when done.
+
+check -c now returns immediately after deleting run in progress.
+new check vector checkINIT, set to 1 for exec block for initial execution,
+before op range or first MC trial.  Set to 0 otherwise.
+
+Changed the character that separates numerator and denominator units from '/'
+to '_', which is tied to the new "units_sepchar" variable.  The earlier
+choice could cause ambiguous expressions.  e.g., 1/V  could be ine over
+a vector V or one per volt.  Where is units stuff documented?
+
+
+BUGS FIXED
+---- -----
+    WRspice.cc:  the WRSPICE_PROGRAM test without a .param assignment
+    caused a seg fault.
+
+    WRspice:  fixed bug in plots:  marker
+    readout was frozen in non-single scale plot with two multi-dimensional
+    traces (gr_aspect_y not set).
+
+    WRspice:  use new "units_sepchar" (default _) as separator between
+    numerator and denominator in units strings.  The / used previously
+    could lead to ambiguity and failure to properly evaluate expressions.
+
+    WRspice: fix "illegal instruction" fault on OS X Mojave.
+
+    Fixed jjpulse.cir example to work when delay not broken.
+
+    (Re)enabled output of complex vectors in server mode (rawfile).
+
+-----
+
+
+FIX/check: rtype=4 bug, update jjiv4.cir example.
+
+Christine's file:  Windows singular matrix, ok under Linux.
+
+Jooyoung sweep time anomaly: sweep not proportional to sim length.
+
+Stats of multi-runs should accumulate.
+
+Gleb crash (close window with running WRspice crashes WRspice).
+
+Jooyoung: Verilog JJ model doesn't work in sweep/chained DC analysis.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.8  10/10/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------

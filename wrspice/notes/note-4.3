@@ -203,111 +203,9 @@ check -c now returns immediately after deleting run in progress.
 new check vector checkINIT, set to 1 for exec block for initial execution,
 before op range or first MC trial.  Set to 0 otherwise.
 
-TODO
-Use trial reset if alter only, otherwise rebuild.
-Tie .measure to debugs somehow, e.g. stop when measname
-When stopping for debug, call exec script. (done, new "call" syntax)
-New "frame" default plot support.
-
 FIX/check: rtype=4 bug, update jjiv4.cir example.
 
 Christine's file:  Windows singular matrix, ok under Linux.
-
-1.  snap global ret to nearby int (done).
-2.  define returns for pause. abort (done)
-3.  make sure return set b4 every function eval. (done)
-4.  integrate check checks with break checks
-5.  "debugs" -> simtasks
-6.  lock out stops after invoked. ("at" ok, others need this?)
-
-TO-DO in .meassure, prinitive that will identify edge, bottom, and
-top.
-
-updates to measure syntax
-new command "measure"
-todo:
-why jjpulse.cir example is foobar when delay is working DONE, example fixed
-use expression parse in sTpoint parser, save as parse tree
-use sTpoint in stop command
-.stop, .iplot syntax elements
-integrate these as margin/MC analysis tests
-
-// .measure line or measure command
-// Note: below we assume time is the scale, but it can be anything.
-measure: anal name [trig|from] tpoint [find expr] [post]
-measure: anal name [trig|from] tpoint targ|to tpoint [measurements] [post]
-
-anal:
-  Name of analysis, e.g. tran.
-name
-  Name of measurement, must be unique in circuit.  Vector of this name is
-  created upon measurement, with scale name_scale giving the time
-  values (1 or 2 points) of the measurement.
-
-// .stop line or stop command
-stop tpoint [call funcname]
-  Analysis is stopped at tpoint, however this can be overridden if the
-  called function returns a particular value. 
-funcname:
-  Known returns are:
-  1:    NOSTOP,  don't stop.
-  2:    TERMINATE,  error occurred halt all analysis.
-  otherwise: OK, proceed as if function was not called.
-
-// Time point element.
-// Specifies a time point, which is the true first conjunction of all terms.
-tpoint: [before|at|after|when time][...]
-
-before:
-  True at time points before the time.
-at|when:
-  True at the time point closest to the time.
-after:
-  True at time points after the time.
-
-// One expression time specification.
-time: expr1 [td=val]
-expr1: measure_name
-  Measure_name: measure time of another measure.
-| expr1: const_expr
-  Time value given by constant expression.
-| expr1: logical_expression
-  Time when logical_expression is first true (nonzero as integer).
-td
-  Activted time is delayed by val, val is const expression.
-
-// Two expression time specification.
-time: xexpr1 [val[=]] xexpr2 [td=val][rise=num][fall=num][cross=num]
-xexpr1: expression
-  The expression returns a real or integer, true at expression
-  crossings set by rise/fall/crossing values (integers, default is first
-  crossing if all are not given or zero).  The td value indicates when
-  the crossing test begins.
-td
-  Count crossings after val, val is const expr or nmeasure name..
-
-measurements: avg, pw, etc.
-  Zero or more internal measurement functions.
-
-// Post-measurement processing.
-post: [call funcname] [print] [print_terse] [stop [when wexpr]]
-call [funcname]:
-  Call the script function or codeblock named, funcname is name of
-  function or codeblock, or "exec" or "control" to indicate bound
-  codeblock.
-funcname:
-  Known returns are:
-  1:    STOP,  stop current analysis.
-  2:    TERMINATE,  error occurred halt all analysis.
-  otherwise: OK, proceed as if function was not called.
-print or print_terse:
-  Print measurement result on stdio when done.
-stop [when wexpr]:
-  If no when clause, stop analysis when all measurements are complete,
-  can appear in any measure line, redundant is ok.
-  If an expression is given, stop only if the expression is true
-  (nonzero as integer) when the measurement was done.  If true, stop
-  immediately, don't wait for other measures.
 
 stop at [50]  means stop at step 50.
 
@@ -319,9 +217,21 @@ Gleb crash (close window with running WRspice crashes WRspice).
 
 Jooyoung: Verilog JJ model doesn't work in sweep/chained DC analysis.
 
-Add random bit 'x' in pattern gpulse/pulse.
-
 Changed the character that separates numerator and denominator units from '/'
 to '_', which is tied to the new "units_sepchar" variable.  The earlier
 choice could cause ambiguous expressions.  e.g., 1/V  could be ine over
 a vector V or one per volt.  Where is units stuff documented?
+
+TODO
+Add random bit 'x' in pattern gpulse/pulse.
+TO-DO in .meassure, prinitive that will identify edge, bottom, and
+top.
+
+TODO
+Use trial reset if alter only, otherwise rebuild.
+Tie .measure to debugs somehow, e.g. stop when measname
+When stopping for debug, call exec script. (done, new "call" syntax)
+New "frame" default plot support.
+.measure extension?
+   stop [if expr]
+

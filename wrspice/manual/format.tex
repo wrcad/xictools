@@ -2816,432 +2816,46 @@ effectively sets the {\et width} variable.
 
 
 %------------------------------------------------------------------------------
-\section{Parameter Measurement}
+% spInput.hlp:tests 022519
+\section{Parameter Measurement and Testing}
 
-% spInput.hlp:measure 021819
-
-{\WRspice} input files may contain {\vt .measure} statements.  These
-statements allow certain types of measurements to be performed during
-a simulation, either at a selected point or over a selected interval. 
-The syntax is similar to the {\vt .measure} statement in HSPICE.
+{\WRspice} has provision for parameter measurement during a
+simulation, and for stopping the run on a particular event or
+condition.  Internally, these are implemented from the same components
+and have similar syntax and features.
 
 %----------------------------------------------------
 \subsection{{\vt .measure} Line}
-\index{.measure line}
-\index{measurements}
-
-\spgen{
-    .measure {\it analysis} {\it resultname} {\it point} | {\it interval}
+\index{/measure line}
+\spgen {
+    measure {\it analysis} {\it resultname} {\it point} | {\it interval}
     [{\it measurements\/}] [{\it postcmds\/}]\\
-    .measure {\it analysis} {\it resultname} param={\it expression}
+    measure {\it analysis} {\it resultname} param={\it expression}
     [{\it postcmds\/}]
 }
 
-\begin{description}
-\item{\it analysis}\\
-This specifies the type of analysis during which the measurement will
-be active.  Exactly one of the following keywords should appear in
-this field:  {\vt tran}, {\vt ac}, {\vt dc}.
+The {\vt .measure} line allows one to identify a measurement point or
+interval, and to evaluate an expression at that point, or call a
+number of measurement primitives that apply during the interval, such
+as rise time or pulse width.  There is also a {\cb measure} command
+that uses the same syntax, but will apply to all circuits when active. 
+See the description of that command for information about syntax and
+usage.
 
-\item{\it resultname}\\
-This field specifies a name for the measurement.  The name should be
-unique among the measurements in the circuit, and among vectors in
-scope during simulation.  The name should start with an alphabetic
-character and contain no white space or other special characters.
-\end{description}
+%----------------------------------------------------
+\subsection{{\vt .stop} Line}
+\index{/stop line}
+\spgen {
+    {\vt .stop} {\it analysis} {\it point} $|$ {\it interval}
+     [{\it postcmds\/}]
+}
 
-A vector with this name will be added to the current plot, if the
-measurement is successful.  Vector names found in {\vt .measure} lines
-are added to the internal save list, guaranteeing that the necessary
-data will be available when needed, whether or not the vector has been
-mentioned in a {\vt .save} line.
-
-\subsubsection{Point and Interval Specification}
-\index{measurement interval}
-
-The field that follows the {\it resultname} contains a description of
-the conditions which initiate a measurement.  There are three basic
-types:  a point specification, an interval specification, and a
-post-measurement specificantion.
-
-The {\it interval} begins with the ``trigger'' and ends with the
-``target''.  Measurement will apply during this interval.  If no
-target is given, the trigger sets the {\vt point}, where measurement
-will be performed.  The trigger and target are independently specified
-as follows:
-
-\begin{description}
-\item{\it point}\\
-\begin{quote}
-[{\vt trig}] {\it pointlist}
-\end{quote}
-This consists of the keyword {\vt trig} (which is optional) followed
-by a point specification list.  The keyword ``{\vt from}'' is
-equivalent to ``{\vt trig}''.
-
-\item{\it interval}\\
-\begin{quote}
-[{\vt trig}] {\it pointlist} {\vt targ} {\it pointlist}
-\end{quote}
-An interval contains a second point specification initiated with the
-mandatory keyword {\vt targ}.  The keyword ``{\vt to}'' is equivalent
-to ``{\vt targ}''.
-
-\item{post-measurement}\\
-\begin{quote}
-{\vt param=}{\it expression}
-\end{quote}
-Measurements in this form will be performed when all {\it point} and
-{\it interval} measurements are complete.  After all {\it point} and
-{\it interval} measurements have been performed, the {\it expression}
-will be evaluated and the result saved in {\it resultname}.  The {\it
-expression} can reference other measurement results in addition to the
-usual vectors and functions provided by the system.  These measurement
-lines are evaluated in the order found in the input.
-
-\item{\it pointlist}\\
-\begin{quote}
-{\it pointspec} [{\it pointspec\/}] ...
-\end{quote}
-The point is specified with a list of {\it pointspec} specifications,
-and the event is registered on the first occasion when all {\it
-pointspec} elements are true, i.e., the conjunction is true.
-
-\item{\it pointspec}\\
-{\it keyword} {\it expression1} [{\vt =}][{\vt val=}] [{\it expression2\/}]
-[{\vt cross=}{\it crosses\/}] [{\vt rise=}{\it rises\/}]
-[{\vt fall=}{\it falls\/}]] [{\vt td=}{\it delay\/}]
-\end{description}
-
-The {\it pointspec} begins with one of the following kewords:  {\vt
-before}, {\vt at}, {\vt after}, {\vt when}.  Of these, {\vt at}, {\vt
-after}, and {\vt when} are equivalent aliases, but varied use can give
-a natural language feel to the conjuction list.  The {\vt before}
-keyword negates logic:  the {\it pointspec} is true before the
-specified event.  This can be useful as an element in the conjunction
-list.
-
-Once a {\it pointspec} becomes triggered, it remains triggered for the
-remainder of the simulation run.  Once triggered, a {\vt before} {\it
-pointspec} will evaluate false, preventing the overall list from
-triggering.  Otherwise, the overall list triggers when each {\it
-pointspec} is true.
-
-Following the keyword are one or two general expressions.  There can
-be an optional equal sign (``{\vt =}'') or a ``{\vt val}'' keyword
-``{\vt val=}'' between the expressions.
-
-An {\it expression} in this context can be:
-\begin{itemize}
-\item{A number or constant expression.  This is taken as the
-triggering point, meaning that the event occurs during simulation when
-the scale variable is equal to or exceeds the value.}
-
-\item{The {\it resultname} of another measure.  The event occurs when
-the referenced measurement is performed.}
-
-\item{A general expression consisting of constants, vector names, and
-circuit variables.  Frequently this will be simply a vector name
-corresponding to a node voltage or branch current in the circuit.}
-\end{itemize}
-
-In {\WRspice}, an expression token is the minimum text required for a
-syntactically complete expression, and may include white space. 
-Single quotes or parentheses can be used to delimit expressions in the
-{\it pointspec}, if nexessary.  The normal single-quote expression
-expansion and substitution is suppressed in this context.
-
-If only one {\it expression} is given, and it is not a constant
-expression or a measure name, the event is triggered at the first time
-the expression becomes logically true, meaning that the absolute value
-is one or larger.  This corresponds to logical true produced by
-comparison and other logical operations in {\WRspice}.  For example,
-the expression ``{\vt v(5) > 0.25}'' returns 0 if false and 1 if true.
-
-If two expressions are given, neither can be a measure result name. 
-We are implicitly comparing the values of the two expressions, finding
-points where the two expressions are equal.  By default, the first
-time the values of the two expressions cross will trigger the event. 
-The following keywords can be assigned an integer value to trigger at
-the indicated point.
-
-\begin{description}
-\item{{\vt cross=}{\it crosses}}\\
-Integer {\it crosses} is the number of crossings.
-
-\item{{\vt rise=}{\it rises}}\\
-Integer {\it rises} is the number of times that {\it expression1}
-rises above {\it expression2}.
-
-\item{{\vt fall=}{\it falls}}\\
-Integer {\it falls} is the number of times that {\it expression1}
-falls below {\it expression2}.
-\end{description}
-
-\begin{description}
-\item{{\vt td=}{\it delay}}\\
-If two expressions are given, the {\it delay} is the amount of scale
-value (e.g., time in transient analysis) before starting to look for
-crossing events.
-
-If one expression is given, and the expression is not constant or a
-measure result name, the {\it delay} is the amount of the scale value
-to wait before checking to see if the expression evaluates true.  If
-the expression is a measurement name, than the delay is added to the
-measurement time of the referenced measurement.
-\end{description}
-
-There is a special case, where no expressions are given, only a {\vt
-td=}{\it delay} value.  This can be a second or subsequent {\it
-pointspec} in the {\it pointlist}.  This will trigger at the time of
-the previous {\it pointspec} in the list (to the left) delayed by {\it
-delay}.
-
-Examples:\\
-{\vt at v(2)=0.5 rise=3 td=0.2nS after td=0.1nS}\\
-\hspace*{1em}Trigger 0.1nS after the third rising edge of v(2) after
-0.2nS crosses 0.5V.\\
-{\vt when v(2)<v(1) before v(2)<v(3)}\\
-\hspace*{1em}Trigger the first time that {\vt v(2) < v(1)} if and only
-if {\vt v(2) < v(3)} has never been true.
-
-\subsubsection{Syntax Compatibility}
-
-The present syntax supported by the {\vt .measure} command in
-{\WRspice} is a super set of the previous syntax cases, which
-    are shown below.  These should all work in the present system.
-
-Form 1:
-\begin{quote}\vt
-    trig|targ at={\it value}
-\end{quote}
-
-Form 1 is straightforward; the interval starts ({\vt trig}) or ends
-({\vt targ}) at {\it value}.  {\it Value} must be within the
-simulation range of the scale variable (e.g., time in transient
-analysis).
-
-The same effect can be achieved with:
-\begin{quote}\vt
-    from={\it value} to={\it value}
-\end{quote}
-
-Form 2:
-\begin{quote}\vt
-    trig|targ {\it variable} [val=]{\it value}
-        [td={\it delay}] [cross={\it crosses}]
-        [rise={\it rises}] [fall={\it falls}]
-\end{quote}
-
-Form 2 allows the interval boundaries to be referenced to times when a
-variable crosses a threshold.  The {\it variable} can be any vector
-whose value is available during simulation.  The {\it value} is a
-constant which is used to measure crossing events.  The {\vt val=}
-which precedes the {\it value} is optional.  At least one of the {\vt
-rise/fall/cross} fields should be set.  Their values are integers
-which represent the variable crossing the threshold a number of times. 
-The {\vt rise} indicates the variable rising through the threshold,
-{\vt fall} indicates the variable decreasing from above to below the
-threshold, and {\vt cross} indicates {\vt rises + falls}.  The
-interval boundary is set when the specified number of transitions is
-reached.
-
-If the delay is specified, transition counting starts after the
-specified delay.
-
-\spexampo{trig v(2) 2.5 td=0.1ns rise=2}
-
-This indicates that the interval begins at the second time {\vt v(2)} rises
-above 2.5V after 0.1ns.
-
-Form 3:
-\begin{quote}\vt
-    trig|targ when {\it expr1\/}={\it expr2} [td={\it delay}]
-        [cross={\it crosses}] [rise={\it rises}] [fall={\it falls}]
-\end{quote}
-
-The third form is similar to the second form, except that crossings
-are defined when {\it expr1 = expr2}.  These are expressions, which
-must be enclosed in parentheses if they contain white space or commas. 
-A rise is defined as {\it expr1} going from less than to greater than
-{\it expr2}.
-
-\subsubsection{Measurements}
-\index{measurement types}
-The following measurements are available when an interval has been
-specified.
-
-\begin{description}
-
-\item{{\vt find} {\it expr}}\\
-Evaluate the difference:  {\it expr} at target minus {\it expr} at
-trigger.
-\item{{\vt min} {\it expr}}\\
-Find the minimum value of {\it expr\/}.
-\item{{\vt max} {\it expr}}\\
-Find the maximum value of {\it expr\/}.
-\item{{\vt pp} {\it expr}}\\
-Find the (maximum - minimum) value of {\it expr\/}.
-\item{{\vt avg} {\it expr}}\\
-Compute the average of {\it expr\/}.
-\item{{\vt rms} {\it expr}}\\
-Compute the rms value of {\it expr\/}.
-\item{{\vt pw} {\it expr}}\\
-This will measure the full-width half-maximum of a pulse contained in
-the interval.  The baseline is taken as the initial or final value
-with the smallest difference from the peak value.  The algorithm will
-measure the larger of a negative going or positive going pulse.
-\item{{\vt rt} {\it expr}}\\
-This will measure the 10-90 percent rise or fall time of the edge
-contained in the interval.  The reference start and final values are
-the values at the ends of the interval.
-\end{description}
-
-When a point has been specified, the only measurement form
-available is
-
-\begin{description}
-\item{{\vt find} {\it expr}}\\
-Evaluate {\it expr} at point.
-\end{description}
-
-A {\vt .measure} statement can contain any number of measurements,
-including no measurements.  If no measurement is specified, the vector
-produced contains only zeros, however the scale vector contains the
-start and stop values, which may be the only result needed.  The
-created vector, which is added to the current plot, will be of length
-equal to the number of measurements, with the results placed in the
-vector in order.
-
-The measurement scale point(s) in {\vt .measure} statements are also
-saved in a vector, which is the scale for the result vector.  If the
-measurement name is ``{\vt result}'', then the scale vector is named
-``{\vt result\_scale}''.  The scale contains one or two values,
-depending on whether it is a point or interval measurement.
-
-\subsubsection{Post-Measurement Commands}
-\index{post-measurement commands}
-
-There are a few commands which can be performed after measurement,
-which will run whether or not any measurements are actually made.
-
-\begin{description}
-\item{{\vt print}, {\vt print\_terse}}\\
-By default, nothing is printed on-screen for a {\vt .measure} line
-during interactive simulation.  If the keyword {\vt print} appears in
-the {\vt .measure} line, the results will be printed on the standard
-output.  A more concise format can be obtained from the alternative
-keyword {\vt print\_terse}.  The result vectors are created in all
-cases.
-
-\item{\vt stop}\\
-If the keyword {\vt stop} appears in a {\vt .measure} line, the
-analysis will be paused when {\it all} measurements are complete. 
-Thus if the deck contains several {\vt .measure} lines and {\vt stop}
-is given in at least one, the analysis will pause when all of the
-measurements are complete, not just the one containing {\vt stop}. 
-The analysis can then be resumed with the {\cb resume} command, or
-reset with the {\cb reset} command.
-
-\item{{\vt exec} {\it command}}\\
-Execute the {\WRspice} shell command found in {\it command\/}, which
-should be double-quoted if it contains white space.  Note that
-multiple commands can be given, separated by semicolon ({\vt ';'})
-characters.  This will be run before a script is called (see below) so
-can be used to pass information to the script.  The command will be
-executed once only, after measurements if any.
-
-\item{{\vt call} {\it script}}\\
-After the measurement (if any) is performed and any command string is
-executed, the named script will be called.  The script can be a normal
-script file or codeblock.  The script can be used for additional
-processing or testing of whatever sort.  If the script returns 1, the
-current simulation will pause immediately (no waiting for other
-measures) however a calling analysis, such as Monto Carlo, will
-continue.  If 2 is returned, this indicates a fatal global error and
-any calling analysis will be stopped too.  Any other return value
-allows the run to continue normally.
-\end{description}
-
-When a {\vt .measure} is included in an iterative analysis (Monte
-Carlo, loop, etc.), data are saved as follows.  Before each iteration,
-the previous result vector and its scale are saved to the end of a
-``history'' vector and scale, and are then deleted.  The result vector
-and scale are recreated when the measurement is completed during the
-iteration.  Thus, at the end of the analysis, for a measurement named
-``example'', one would have the following vectors:
-
-\begin{tabular}{|l|l|}\hline
-\vt example & the result from the final trial\\ \hline
-\vt example\_scale & the measurement interval or point in the last
- trial\\ \hline
-\vt example\_hist & results from the prior trials\\ \hline
-\vt example\_hist\_scale & intervals from the prior trials\\ \hline
-\end{tabular}
-
-Thus, during each trial, the result vector will have the same
-properties as in a standard run.  It can be used in the {\vt .control}
-block of a Monte Carlo or operating range file (recall that {\vt
-\$?}{\it vector} can be used to query existence, and that if there is
-no {\vt checkPNTS} vector defined, the {\vt .control} block is called
-once at the end of each trial).
-
-\index{measurements, chained}
-Multiple {\vt .measure} lines can be ``chained'' in the following
-manner.  The vector name following the {\vt from}, {\vt to}, {\vt
-trig}, or {\vt targ} keywords can be the name of another measure.  In
-this case, the effective start time is the measure time of the
-referenced measure.  The measure time is the end of the interval or
-the measure point.  The {\vt td}, {\vt rise}, and other keywords can
-be used in the referencing measure.  The {\vt td} will be added to the
-imported time, and the other keywords operate in the normal way.  If
-there are no keywords other than {\vt td} specified, the time is the
-delay time plus the imported time.
-
-Example:
-\begin{quote}\vt
-    .measure tran t1 trig v(5) val=.4m rise=3\\
-    .measure tran t2 trig v(5) val=.4m rise=4\\
-    .measure tran pw trig t1 td=20p targ t2 td=20p pw v(5) max v(5)\\
-\end{quote}
-
-In this case, the measures {\vt t1} and {\vt t2} ``frame'' a period
-of an (assumed) repeating signal v(5).  Note that no actual
-measurement is performed for these lines.  Their purpose is to be
-referenced in the third line, which takes as its interval the {\vt
-t1}--{\vt t2} interval delayed by 20 pS, and measures the pulse
-width and peak value.
-
-\subsubsection{Referencing Results in Sources}
-\index{measurements, source reference}
-
-It is possible to reference {\vt .measure} results in sources.  The
-referencing token has the same form as a circuit variable, with an
-optional index, i.e.
-\begin{quote}\vt
-    @{\it result\/}[{\it index\/}]
-\end{quote}
-where the {\it index\/}, if used, is an integer that references a
-specific component of the result (0-based).  The value is always zero
-for timepoints before the measurement has been performed, and a
-constant value afterward.
-
-Example:
-\begin{quote}\vt
-    .measure tran peak from=50n to=150n max v(5)\\
-    .measure tran stuff trig v(4) val=4.5 rise=1 targ v(4) val=4.5 fall=2\\
-    + min v(4) max v(4) pp v(4) avg v(4) rms v(4) print\\
-    vxx 1 0 @peak\\
-    vyy 2 0 @stuff[2]\\
-\end{quote}
-
-In this example, during transient analysis, {\vt vxx} is zero until
-150 nS, where the measurement takes place, at which point it jumps to
-the value measured.  Likewise, {\vt vyy} is zero until the
-measurement, at which point it jumps to the third component (``{\vt pp
-v(4)}'') result.  The resulting voltages can be used elsewhere in the
-circuit.  Note that we have two implementations of a behavioral peak
-detector.
+The {\vt .stop} line allows the simulation to pause on a specified
+condition.  These lines may be useful as sanity checks that will
+terminate a simulation and alert the user if the simulation is
+diverging from expected behavior.  There is also a {\cb stop} runop
+command that uses the same syntax.  See the description of that
+command for information about syntax and usage.
 
 
 %------------------------------------------------------------------------------

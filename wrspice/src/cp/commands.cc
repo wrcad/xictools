@@ -137,6 +137,7 @@ namespace cmdnames {
     const char *cmd_ac          = "ac";
     const char *cmd_alias       = "alias";
     const char *cmd_alter       = "alter";
+    const char *cmd_alterf      = "alterf";
     const char *cmd_asciiplot   = "asciiplot";
     const char *cmd_aspice      = "aspice";
     const char *cmd_bug         = "bug";
@@ -144,10 +145,6 @@ namespace cmdnames {
     const char *cmd_cd          = "cd";
     const char *cmd_cdump       = "cdump";
     const char *cmd_check       = "check";
-//XXX
-    const char *cmd_mctrial     = "mctrial";
-    const char *cmd_findrange   = "findrange";
-    const char *cmd_alterf      = "alterf";
     const char *cmd_codeblock   = "codeblock";
     const char *cmd_combine     = "combine";
     const char *cmd_compose     = "compose";
@@ -170,6 +167,7 @@ namespace cmdnames {
     const char *cmd_echo        = "echo";
     const char *cmd_echof       = "echof";
     const char *cmd_edit        = "edit";
+    const char *cmd_findrange   = "findrange";
     const char *cmd_fourier     = "fourier";
     const char *cmd_free        = "free";
     const char *cmd_hardcopy    = "hardcopy";
@@ -184,6 +182,7 @@ namespace cmdnames {
     const char *cmd_load        = "load";
     const char *cmd_loop        = "loop";       // alias for "sweep"
     const char *cmd_mapkey      = "mapkey";
+    const char *cmd_mctrial     = "mctrial";
     const char *cmd_measure     = "measure";
     const char *cmd_mmon        = "mmon";
     const char *cmd_mplot       = "mplot";
@@ -283,6 +282,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_alter, com_alter, false, true, false,
       Balt, Balt, Balt, Balt, E_DEFHMASK, 0, LOTS, 0,
       "devspecs : parmname value : Alter device parameters." ) ,
+    sCommand( cmd_alterf, com_alterf, false, true, true,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Print trial values in Monte Carlo output file." ) ,
     sCommand( cmd_asciiplot, com_asciiplot, false, false, true,
       Bplot, Bplot, Bplot, Bplot, E_DEFHMASK, 1, LOTS, 0,
       "expr ... [vs expr] : Produce ascii plots." ) ,
@@ -304,17 +306,6 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_check, com_check, false, true, true,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       "[-options] [analysis]: Perform operating range analysis." ) ,
-//XXX
-    sCommand( cmd_mctrial, com_mctrial, false, true, true,
-      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
-      ": Perform Monte Carlo trial." ) ,
-    sCommand( cmd_findrange, com_findrange, false, true, true,
-      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
-      ": Find operating range." ) ,
-    sCommand( cmd_alterf, com_alterf, false, true, true,
-      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
-      ": Print trial values in Monte Carlo output file." ) ,
-
     sCommand( cmd_codeblock, com_codeblock, false, false, false,
       Bfile, Bfile, Bfile, Bfile, E_DEFHMASK, 0, 3, 0,
       "codeblock [filename] [print] [free]: Name an executable codeblock." ) ,
@@ -381,6 +372,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_edit, com_edit, false, true, true,
       Bfile, Bfile, Bfile, Bfile, E_DEFHMASK, 0, 3, 0,
       "[filename] : Edit a spice deck and then load it in." ) ,
+    sCommand( cmd_findrange, com_findrange, false, true, true,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Find operating range." ) ,
     sCommand( cmd_fourier, com_fourier, false, false, true,
       Bnone, Bvec, Bvec, Bvec, E_DEFHMASK, 1, LOTS, 0,
       "fund_freq vector ... : Do a fourier analysis of some data." ) ,
@@ -423,6 +417,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_mapkey, com_mapkey, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       ": manipulate keyboard mapping." ) ,
+    sCommand( cmd_mctrial, com_mctrial, false, true, true,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Perform Monte Carlo trial." ) ,
     sCommand( cmd_measure, com_measure, false, true, false,
       Bstop, Bstop, Bstop, Bstop, E_DEFHMASK, 0, LOTS, 0,
       "[measure args] : Set up a measurement." ) ,

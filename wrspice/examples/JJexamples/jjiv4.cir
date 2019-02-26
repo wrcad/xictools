@@ -2,8 +2,6 @@
 *
 * Warning:  This works with WRspice internal JJ model only.
 .model jj1 jj(rtype=4)
-*,cct=1,icon=10m,vg=2.8m,delv=.1m,
-*+ icrit=0.3m,r0=100,rn=5.4902,cap=1.14195p)
 *
 * One can plot a pretty decent iv curve using transient analysis.
 * This will show the differences between the various model options.
@@ -18,7 +16,7 @@ v2 3 0 1
 r2 3 0 1
 *
 *
-.tran 5p 5n
+.tran 5p 5n dc v2 0 1 0.2
 .end
  
 .control

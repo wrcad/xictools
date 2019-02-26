@@ -176,12 +176,13 @@ xiVariables.hlp
     <tr><td><b>ElecRoundFlashSides</b></td><td>Number of sides to use in electrical round objects</td></tr>
     <tr><td><b>SpotSize</b></td><td>Set mask resolution</td></tr>
 
-!! 101212
+!! 022619
     <tr><th colspan=2><a href="!set:spice">SPICE Interface</a></th></tr>
     <tr><td><b>SpiceListAll</b></td><td>Include unconnected devices in Spice output</td></tr>
     <tr><td><b>SpiceAlias</b></td><td>Device key aliases for Spice output</td></tr>
     <tr><td><b>SpiceHost</b></td><td>Name of <i>WRspice</i> server</td></tr>
     <tr><td><b>SpiceHostDisplay</b></td><td>X display string to use on remote host</td></tr>
+    <tr><td><b>SpiceInclude</b></td><td>Add include file to SPICE netlist</td></tr>
     <tr><td><b>SpiceProg</b></td><td>Path name of <i>WRspice</i> executable, supersedes below</td></tr>
     <tr><td><b>SpiceExecDir</b></td><td>Directory containing <i>WRspice</i> executable</td></tr>
     <tr><td><b>SpiceExecName</b></td><td>Name of <i>WRspice</i> executable</td></tr>
@@ -2076,6 +2077,7 @@ Side Menu Commands
 !!REDIRECT SpiceAlias           !set:spice#SpiceAlias
 !!REDIRECT SpiceHost            !set:spice#SpiceHost
 !!REDIRECT SpiceHostDisplay     !set:spice#SpiceHostDisplay
+!!REDIRECT SpiceInclude         !set:spice#SpiceInclude
 !!REDIRECT SpiceProg            !set:spice#SpiceProg
 !!REDIRECT SpiceExecDir         !set:spice#SpiceExecDir
 !!REDIRECT SpiceExecName        !set:spice#SpiceExecName
@@ -2253,6 +2255,22 @@ SPICE Interface
     will override the assumed display name created internally with the
     local host name.
     </dl>
+
+
+!! 022619
+    <a name="SpiceInclude"></a>
+    <dl>
+    <dt><b>SpiceInclude</b><dd>
+    <b>Value:</b> file path string.<br>
+    This can be set to a file path.  When a SPICE netlist is created
+    with this variable set, text will be added to the top of the SPICE
+    deck.  If the file exists and is readable, the text from the file
+    is added to the deck verbatim.  Othewise, "<tt>.include</tt>
+    <i>path</i>" is added, the <i>path</i> being the file path from
+    the variable.  This applies when creating SPICE with the <a
+    href="xic:deck"><b>deck</b></a> button, or when preparing input
+    for the simulator when using the <a href="xic:run"><b>run</b></a>
+    button.
 
 !! 061308
     <a name="SpiceProg"></a>
