@@ -492,23 +492,23 @@ HLPtopic::load_text()
     if (!tp_show_plain) {
         if (tp_subtopics) {
             lstr.add("<H3>Subtopics</H3>\n");
-            for (HLPtopList *tl = tp_subtopics; tl; tl = tl->next) {
-                tl->tl_buttontext = tl->tl_description;
-                if (!tl->tl_buttontext)
-                    tl->tl_buttontext = "<unknown>";
+            for (HLPtopList *tl = tp_subtopics; tl; tl = tl->next()) {
+                tl->set_buttontext(tl->description());
+                if (!tl->buttontext())
+                    tl->set_buttontext("<unknown>");
                 sprintf(tbuf, "<A HREF=\"%s\">%s</A><BR>\n",
-                    tl->tl_keyword, tl->tl_buttontext);
+                    tl->keyword(), tl->buttontext());
                 lstr.add(tbuf);
             }
         }
         if (tp_seealso) {
             lstr.add("<H3>References</H3>\n");
-            for (HLPtopList *tl = tp_seealso; tl; tl = tl->next) {
-                tl->tl_buttontext = tl->tl_description;
-                if (!tl->tl_buttontext)
-                    tl->tl_buttontext = "<unknown>";
+            for (HLPtopList *tl = tp_seealso; tl; tl = tl->next()) {
+                tl->set_buttontext(tl->description());
+                if (!tl->buttontext())
+                    tl->set_buttontext("<unknown>");
                 sprintf(tbuf, "<A HREF=\"%s\">%s</A><BR>\n",
-                    tl->tl_keyword, tl->tl_buttontext);
+                    tl->keyword(), tl->buttontext());
                 lstr.add(tbuf);
             }
         }
@@ -558,11 +558,11 @@ namespace {
     // Strip HTML tags from the beginning of the string, return the first
     // text.
     //
-    inline char *
-    striptag(char *s)
+    inline const char *
+    striptag(const char *s)
     {
         while (*s == '<') {
-            char *t = s + 1;
+            const char *t = s + 1;
             while (*t && *t != '>')
                 t++;
             if (!*t)
@@ -575,8 +575,8 @@ namespace {
     inline bool
     sortcmp(const HLPtopList *tlp1, const HLPtopList *tlp2)
     {
-        char *s1 = tlp1->tl_description;
-        char *s2 = tlp2->tl_description;
+        const char *s1 = tlp1->description();
+        const char *s2 = tlp2->description();
         s1 = striptag(s1);
         s2 = striptag(s2);
         while (*s1 && *s2) {
@@ -606,23 +606,23 @@ namespace {
 
 
 HLPtopList *
-HLPtopList::sort()
+HLPtopList::sort(HLPtopList *list)
 {
-    int num;
     HLPtopList *tl;
-    for (num = 0, tl = this; tl; num++, tl = tl->next) ;
+    int num;
+    for (tl = list, num = 0; tl; num++, tl = tl->tl_next) ;
     if (num < 2)
-        return (this);
+        return (list);
 
     HLPtopList **vec = new HLPtopList*[num];
     int i;
-    for (tl = this, i = 0; tl; tl = tl->next, i++)
+    for (tl = list, i = 0; tl; tl = tl->tl_next, i++)
         vec[i] = tl;
     std::sort(vec, vec + num, sortcmp);
     tl = vec[0];
     for (i = 0; i < num - 1; i++)
-        vec[i]->next = vec[i + 1];
-    vec[i]->next = 0;
+        vec[i]->tl_next = vec[i + 1];
+    vec[i]->tl_next = 0;
     delete [] vec;
     return (tl);
 }

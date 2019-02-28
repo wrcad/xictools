@@ -113,7 +113,7 @@ ContextDesc::purge(const CDs *sd, const CDo *od)
                 cp->cNext = 0;
             else
                 c0 = 0;
-            cx->clear();
+            ContextDesc::clear(cx);
             return (c0);
         }
         if (cx->cState)
@@ -124,10 +124,10 @@ ContextDesc::purge(const CDs *sd, const CDo *od)
 }
 
 
+// Static function.
 void
-ContextDesc::clear()
+ContextDesc::clear(ContextDesc *c)
 {
-    ContextDesc *c = this;
     while (c) {
         ContextDesc *cn = c->cNext;
         delete c;
@@ -280,7 +280,7 @@ cPushPop::PushContext(const CDc *cdesc, unsigned int xind, unsigned int yind)
         msdesc = cdesc->masterCell();
         if (!msdesc)
             return;
-        context_history->clear();  // clear history
+        ContextDesc::clear(context_history);  // clear history
         context_history = 0;
         context = new ContextDesc(cdesc, xind, yind);
 
@@ -434,7 +434,7 @@ cPushPop::ClearContext(bool skip_commit)
     while (context)
         PopContext();
     no_display = false;
-    context_history->clear();
+    ContextDesc::clear(context_history);
     context_history = 0;
     if (!skip_commit)
         XM()->CommitCell();
@@ -452,9 +452,9 @@ cPushPop::ClearContext(bool skip_commit)
 void
 cPushPop::ClearLists()
 {
-    context->clear();
+    ContextDesc::clear(context);
     context = 0;
-    context_history->clear();
+    ContextDesc::clear(context_history);
     context_history = 0;
 }
 
@@ -490,9 +490,9 @@ cPushPop::PopState()
 void
 cPushPop::PushState(CXstate *ecx)
 {
-    context->clear();
+    ContextDesc::clear(context);
     context = 0;
-    context_history->clear();
+    ContextDesc::clear(context_history);
     context_history = 0;
 
     if (ecx) {

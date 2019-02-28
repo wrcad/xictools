@@ -51,7 +51,7 @@ struct HLPtopList
 {
     HLPtopList(const char *d, const char *kw, HLPtopic *t, HLPtopList *n)
         {
-            next = n;
+            tl_next = n;
             tl_keyword = lstring::copy(kw);
             tl_description = lstring::copy(d);
             tl_buttontext = 0;
@@ -66,18 +66,26 @@ struct HLPtopList
             delete [] tl_description;
         }
 
+    HLPtopList *next()          { return (tl_next); }
+    const char *keyword()       const { return (tl_keyword); }
+    const char *description()   const { return (tl_description); }
+    const char *buttontext()    const { return (tl_buttontext); }
+
+    void set_buttontext(const char *t)  { tl_buttontext = t; }
+
     static void destroy(HLPtopList *tl)
         {
             while (tl) {
                 HLPtopList *tx = tl;
-                tl = tl->next;
+                tl = tl->tl_next;
                 delete tx;
             }
         }
 
-    HLPtopList *sort();
+    static HLPtopList *sort(HLPtopList*);
 
-    HLPtopList *next;
+private:
+    HLPtopList *tl_next;
     char *tl_keyword;
     char *tl_description;
     const char *tl_buttontext;
@@ -196,12 +204,14 @@ struct HLPtopic
     HLPtopList *subtopics()     { return (tp_subtopics); }
     void add_subtopic(const char *t, const char *w)
         { tp_subtopics = new HLPtopList(t, w, this, tp_subtopics); }
-    void sort_subtopics()       { tp_subtopics = tp_subtopics->sort(); }
+    void sort_subtopics()
+        { tp_subtopics = HLPtopList::sort(tp_subtopics); }
 
     HLPtopList *seealso()       { return (tp_seealso); }
     void add_seealso(const char *t, const char *w)
         { tp_seealso = new HLPtopList(t, w, this, tp_seealso); }
-    void sort_seealso()         { tp_seealso = tp_seealso->sort(); }
+    void sort_seealso()
+        { tp_seealso = HLPtopList::sort(tp_seealso); }
 
     GRwbag *context()           { return (tp_context); }
     void set_context(GRwbag *c) { tp_context = c; }
