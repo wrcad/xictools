@@ -1344,7 +1344,8 @@ namespace {
     int set_accept_focus(void *arg)
     {
         if (RevertMode == RVTmac) {
-            // If launched from a Terminal window, the Console will be 0 // since the terminal is Cocoa, not X (regular xterms work
+            // If launched from a Terminal window, the Console will be 0
+            // since the terminal is Cocoa, not X (regular xterms work
             // fine).  The following AppleScript will revert focus to the
             // Cocoa terminal.
 #ifdef __APPLE__

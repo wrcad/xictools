@@ -19,7 +19,7 @@ marganal
 oprng_analysis
 oprngfile 
 monte
-echof
+atomic
 optimize
 
 
@@ -52,6 +52,7 @@ Circuit Margin Analysis
 !!SUBTOPICS
 oprng_analysis
 monte
+atomic
 optimize
 
 !! margin.tex 041911
@@ -941,6 +942,33 @@ Monte Carlo Analysis
     analysis, with each square indicating pass or fail.  In Monte
     Carlo analysis, the squares are simply filled in in sequence, and
     their placement has nothing to do with the actual circuit values.
+
+!!SEEALSO
+analyses
+marganal
+
+!! margin.tex 030419
+!!KEYWORD
+atomic
+!!TITLE
+Atomic Monte Carlo and Range Analysis
+!!HTML 
+    <font color=red>This is a very new capability under
+    development.</font>
+
+    <p>
+    <i>WRspice</i> provides an interface to the primitive operations
+    used for <ahref="oprng_analysis">operating range</a> and <a
+    href="monte">Monte Carlo</a> analysis.  This allows the user to
+    write scripts to implement custom statistical analysis procedures. 
+    The scripting is more flexible than the built-in analysis
+    described elsewhere, initiated with the <a
+    href="check"><b>check</b></a> command.
+
+    <p>
+    <font color=red>
+    ADD HERE.
+    </font>
 
 !!SEEALSO
 analyses

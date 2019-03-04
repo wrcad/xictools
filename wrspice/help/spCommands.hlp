@@ -65,6 +65,7 @@ xeditorcom
 simcmds
 ac
 alter
+alterf
 aspice
 cache
 check
@@ -77,8 +78,10 @@ devls
 devmod
 disto
 dump
+findrange
 free 
 jobs
+mctrial
 measure
 noise
 op
@@ -128,7 +131,7 @@ qhelp
 quit
 version
 
-!! commands.tex 022519
+!! commands.tex 030109
 !!KEYWORD
 commands
 !!TITLE
@@ -249,6 +252,8 @@ Built-in Commands
       <td>Perform ac analysis</td></tr>
     <tr><td><a href="alter"><b>alter</b></a></td>
       <td>Change circuit parameter</td></tr>
+    <tr><td><a href="alterf"><b>alterf</b></a></td>
+      <td>Dump alter list to Monte Carlo output file</td></tr>
     <tr><td><a href="aspice"><b>aspice</b></a></td>
       <td>Initiate asynchronous run</td></tr>
     <tr><td><a href="cache"><b>cache</b></a></td>
@@ -273,12 +278,16 @@ Built-in Commands
       <td>Initiate distortion analysis</td></tr>
     <tr><td><a href="dump"><b>dump</b></a></td>
       <td>Print circuit matrix</td></tr>
+    <tr><td><a href="findrange"><b>findrange</b></a></td>
+      <td>Find edges of operating range</td></tr>
     <tr><td><a href="free"><b>free</b></a></td>
       <td>Delete circuits and/or plots</td></tr>
     <tr><td><a href="jobs"><b>jobs</b></a></td>
       <td>Check asynchronous jobs</td></tr>
     <tr><td><a href="sweep"><b>loop</b></a></td>
       <td>Alias for sweep command</td></tr>
+    <tr><td><a href="mctrial"><b>mctrial</b></a></td>
+      <td>Run a Monte Carlo trial</td></tr>
     <tr><td><a href="measure"><b>measure</b></a></td>
       <td>Set up a measurement</td></tr>
     <tr><td><a href="noise"><b>noise</b></a></td>
@@ -2564,7 +2573,7 @@ iocmds
 !!REDIRECT runop        simcmds#runop
 
 !! ----------------------------------------------------------------------------
-!! commands.tex 022519
+!! commands.tex 030119
 !!KEYWORD
 simcmds
 !!TITLE
@@ -2663,6 +2672,8 @@ Simulation Commands
       <td>Perform ac analysis</td></tr>
     <tr><td><a href="alter"><b>alter</b></a></td>
       <td>Change circuit parameter</td></tr>
+    <tr><td><a href="alterf"><b>alterf</b></a></td>
+      <td>Dump alter list to Monte Carlo output file</td></tr>
     <tr><td><a href="aspice"><b>aspice</b></a></td>
       <td>Initiate asynchronous run</td></tr>
     <tr><td><a href="cache"><b>cache</b></a></td>
@@ -2687,12 +2698,16 @@ Simulation Commands
       <td>Initiate distortion analysis</td></tr>
     <tr><td><a href="dump"><b>dump</b></a></td>
       <td>Print circuit matrix</td></tr>
+    <tr><td><a href="findrange"><b>findrange</b></a></td>
+      <td>find edges of operating range</td></tr>
     <tr><td><a href="free"><b>free</b></a></td>
       <td>Delete circuits and/or plots</td></tr>
     <tr><td><a href="jobs"><b>jobs</b></a></td>
       <td>Check asynchronous jobs</td></tr>
     <tr><td><a href="sweep"><b>loop</b></a></td>
       <td>Alias for sweep command</td></tr>
+    <tr><td><a href="mctrial"><b>mctrial</b></a></td>
+      <td>Run a Monte Carlo trial</td></tr>
     <tr><td><a href="measure"><b>measure</b></a></td>
       <td>Set up a measurement</td></tr>
     <tr><td><a href="noise"><b>noise</b></a></td>
@@ -2823,6 +2838,26 @@ alter command
     <tt>alter R2, resistance=50<br>
     alter c{1,2,3}, capacitance 105p</tt>
     </blockquote>
+ 
+!!SEEALSO
+simcmds
+
+!! commands.tex 030219
+!!KEYWORD
+alterf
+!!TITLE
+alterf command
+!!HTML 
+    command: <tt>alterf</tt>
+
+    <p>
+    This will dump the <a href="alter">alter list</a> to the output
+    file, for use in <a href="monte">Monte Carlo</a> analysis.  In
+    this approach, the <b>alter</b> command, or equivalently forms
+    like "<tt>let @</tt><i>device</i><tt>[</tt><i>param</i><tt>]</tt>
+    = <i>trial_value</i>" are used to set trial values in the
+    <tt>exec</tt> block.  Once set, this can be called to dump the
+    values into the output file.
  
 !!SEEALSO
 simcmds
@@ -3812,6 +3847,22 @@ dump command
 !!SEEALSO
 simcmds
 
+!! commands.tex 030219
+!!KEYWORD
+findrange
+!!TITLE
+findrange command
+!!HTML 
+    command: <tt>findrange</tt>
+
+    <p>
+    This can be called after a Monte Carlo analysis trial and will
+    find the actual uppear and lower operating limits of two
+    parameters.
+ 
+!!SEEALSO
+simcmds
+
 !! commands.tex 011909
 !!KEYWORD
 free 
@@ -3869,7 +3920,22 @@ jobs command
 !!SEEALSO
 simcmds
  
-!! commands.tex 022519
+!! commands.tex 030219
+!!KEYWORD
+mctrial
+!!TITLE
+mctrial command
+!!HTML 
+    command: <tt>mctrial</tt>
+
+    <p>
+    This is a cCommand to run a single trial for used when when
+    performing script-driven Monte Carlo analysis.
+ 
+!!SEEALSO
+simcmds
+
+!! commands.tex 030119
 !!KEYWORD
 measure
 !!TITLE
@@ -4028,8 +4094,14 @@ measure command
     triggering point, meaning that the event occurs during simulation
     when the scale variable is equal to or exceeds the value.
 
-    <li>The <i>resultname</i> of another measure.  The event occurs
-    when the referenced measurement is performed.
+    <li>An integer enclosed in square brackets.  This is interpreted
+    as an output index, which increments whenever data would be
+    written out from the running simulation.  This is most useful when
+    the printing increment is constant.  The event triggers when the
+    output index equals the integer given.
+
+    <li>The <i>resultname</i> of a measure in the circuit.  The event
+    occurs when the referenced measurement is performed.
 
     <li>A general expression consisting of constants, vector names,
     and circuit variables.  Frequently this will be simply a vector
@@ -4053,6 +4125,26 @@ measure command
     produced by comparison and other logical operations in
     <i>WRspice</i>.  For example, the expression "<tt>V(5) >
     0.25</tt>" returns 0 if false and 1 if true.
+
+    <p>
+    It may be a bit confusing but the form
+    <i>expr1</i><tt>=</tt><i>expr2</i> is interpreted as two
+    expressions, but the same form with any relational operator other
+    than <tt>=</tt> is taken as a single expression with a binary
+    result.  Either the symbol or the keyword equivalent can be used. 
+    The relational operators available are listed below.
+
+    <p>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><tt>eq or =  </tt></th><td>equal to</td></tr>
+    <tr><th align="left"><tt>ne or &#60> </tt></th><td>not equal to</td></tr>
+    <tr><th align="left"><tt>gt or >  </tt></th><td>greater than</td></tr>
+    <tr><th align="left"><tt>lt or &#60  </tt></th><td>less than</td></tr>
+    <tr><th align="left"><tt>ge or >= </tt></th><td>greater than or equal
+        to</td></tr>
+    <tr><th align="left"><tt>le or &#60= </tt></th><td>less than or equal
+        to</td></tr>
+    </table>
 
     <p>
     If two expressions are given, neither can be a measure result
@@ -4183,6 +4275,16 @@ measure command
     <a name="measure"></a>
     <h2>Measurements</h2>
 
+    One should be aware that measurements are performed using data
+    saved in the plot structure as a simulation progresses.  The
+    accuracy of the results is directly affected by the density of
+    saved points.  In transient analysis, one may wish to use internal
+    time point data by setting the <a
+    href="steptype"><tt>steptype=nousertp</tt></a> option.  This
+    avoids the interpolation to tranient time increments which may
+    reduce accuracy if the increment is too coarse.
+
+    <p>
     The following measurements are available when an interval has been
     specified.
 
@@ -4280,13 +4382,19 @@ measure command
     called (see below) so can be used to pass information to the
     script.  The command will be executed once only, after
     measurements if any.
+    </dl>
 
     <dl>
     <dt><tt>call</tt> <i>script</i><dd>
     After the measurement (if any) is performed and any command string
     is executed, the named script will be called.  The script can be a
     normal script file or <a href="codeblock">codeblock</a>.  The
-    script can be used for additional processing or testing of
+    special names "<tt>.exec</tt>", "<tt>.control</tt>", and
+    "<tt>.postrun</tt>" call the exec, control, or postrun bound
+    codeblocks of the running circuit, if they exist.
+
+    <p>
+    The script can be used for additional processing or testing of
     whatever sort.  If the script returns 1, the current simulation
     will pause immediately (no waiting for other measures) however a
     calling analysis, such as Monto Carlo, will continue.  If 2 is
@@ -4915,66 +5023,110 @@ status
 delete
 simcmds
 
-!! commands.tex 011909
+!! commands.tex 022819
 !!KEYWORD
 stop
 !!TITLE
 stop command
 !!HTML 
-    command: <tt>stop</tt> [<tt>before|at|after</tt> <i>num</i>]
-        [<tt>when</tt> <i>expr1 op expr2</i>] ...
+    command: <tt>stop</tt> <i>analysis</i>  <i>point</i> [<i>postcmds</i>]
 
     <p>
-    The <b>stop</b> command will add a breakpoint to the debug list. 
-    When the condition is true, simulation will stop, and can be
-    resumed, after clearing the breakpoint, with the <a
-    href="resume"><b>resume</b></a> command.  The breakpoints can be
+    The <b>stop</b> command will add a stop point to the runop list. 
+    When a condition is true, simulation will stop, but can be
+    resumed, after clearing the stop point, with the <a
+    href="resume"><b>resume</b></a> command.  The stop points can be
     cleared with the <a href="delete"><b>delete</b></a> command, and
     listed with the <a href="status"><b>status</b></a> command.  The
     panel brought up by the <b>Trace</b> button in the <b>Tools</b>
-    menu can also be used to manipulate breakpoints.
+    menu can also be used to manipulate stop points.
 
     <p>
-    The first clause specifies the user output points at which the
-    break is in effect.  If an <tt>after</tt> clause is given, the
-    simulation will stop after <i>num</i> points.  The <tt>at</tt>
-    clause stops only at <i>num</i> points, and the <tt>before</tt>
-    clause stops only before <i>num</i> points.  These are useful in
-    conjunction with a <tt>when</tt> clause, or can be omitted.  If a
-    <tt>when</tt> clause is included, at each point, the
-    <i>expr</i>1,2 expressions will be evaluated and '<i>expr1 op
-    expr2</i>' will be checked, and if it is true, the simulation will
-    stop.  If more than one <tt>when</tt> or <tt>after</tt> clause is
-    put on one line, the conjunction of the conditions is checked. 
-    The <i>ops</i> are relational operators from the list below.  Note
-    that for this command, &#60 and > do not denote IO redirection.
+    The <b>stop</b> command is a <a href="runop">runop</a> similar to
+    the <a href="measure"><b>measure</b></a> command, and is in fact
+    implemented internally from the same components.  Analogous to
+    <b>measure</b>, there is also a <a href=".stop"><tt>.stop</tt></a>
+    input syntax element which uses the same syntax, which will be in
+    force when simulating the circuit containing the line.  When
+    entered on the command line, the stop is in force for all
+    circuits, while the runop is active.
 
     <p>
-    <table border=1 cellpadding=2 bgcolor="#ffffee">
-    <tr><th align="left"><tt>eq or =  </tt></th><td>equal to</td></tr>
-    <tr><th align="left"><tt>ne or &#60> </tt></th><td>not equal to</td></tr>
-    <tr><th align="left"><tt>gt or >  </tt></th><td>greater than</td></tr>
-    <tr><th align="left"><tt>lt or &#60  </tt></th><td>less than</td></tr>
-    <tr><th align="left"><tt>ge or >= </tt></th><td>greater than or equal
-        to</td></tr>
-    <tr><th align="left"><tt>le or &#60= </tt></th><td>less than or equal
-        to</td></tr>
-    </table>
+    Note that this is a different implementation of the <b>stop</b>
+    command than found in <i>WRspice</i>-4.3.8 and earlier, which was
+    based on the Berkeley Spice3 implementation.  Although similar,
+    the present syntax is a little different, and the command has more
+    features and options.  It does basically duplicate the effect of
+    the <b>measure</b> command with the <tt>stop</tt> clause.
+
+    <dl>
+    <dt><i>analysis</i><dd>
+    This specifies the type of analysis during which the break
+    condition will be active.  Exactly one of the following keywords
+    should appear in this field:  <tt>tran</tt>, <tt>ac</tt>,
+    <tt>dc</tt>.  Note that this did not appear in the <b>stop</b>
+    syntax used in <i>WRspice</i>-4.3.8 and earlier.
+    </dl>
+
+    <dl>
+    <dt><i>point</i><dd>
+    This is precisely the same <a href="measure#point><i>point</i>
+    specification</a> as is used in the <b>measure</b> command. 
+    Please refer to that section for a description of the syntax. 
+    Note that this should cover the pre-4.3.9 syntax, however an
+    analysis point index is now an integer enclosed is square
+    brackets, numeric values are now assumed to be scale values (such
+    as time) otherwise.
+    </dl>
+
+    There are a couple of optional "<i>postcmd</i>" operations which
+    can be performed when the stop is triggered, but before simulation
+    ends.
+
+    <dl>
+    <dt><tt>exec</tt> <i>command</i><dd>
+    Execute the <i>WRspice</i> shell command found in <i>command</i>,
+    which should be double-quoted if it contains white space.  Note
+    that multiple commands can be given, separated by semicolon
+    (<tt>';'</tt>) characters.  This will be run before a script is
+    called (see below) so can be used to pass information to the
+    script.  The <i>command</i> will be executed only once, and only
+    if the <i>point</i> condition is reached.
+    </dl>
+
+    <dl>
+    <dt><tt>call</tt> <i>script</i><dd>
+    After the <i>point</i> is reached and any command string is
+    executed, the named script will be called.  The script can be a
+    normal script file or <a href="codeblock">codeblock</a>.  The
+    special names "<tt>.exec</tt>", "<tt>.control</tt>", and
+    "<tt>.postrun</tt>" call the exec, control, or postrun bound
+    codeblocks of the running circuit, if they exist.
+
+    <p>
+    The script can be used for additional processing or testing of
+    whatever sort.  If the script returns 1, the current simulation
+    will <b>not</b> stop, and will continue as if the stop condition
+    never occurred.  If the script returns 2, a global error is
+    indicated and the present analysis is terminated.  If any other
+    value is returned, or there is no explicit return, the analysis
+    will stop as normal, and can be resumed.
+    </dl>
 
     <p>
     If a <b>stop</b> command is given at the prompt in interactive
-    mode, it is placed in a global list, and activity will persist
+    mode, it is placed in the global runop list, and activity will persist
     until deleted (with the <a href="delete"><b>delete</b></a>
     command).  If the command is given in a file, the command will be
     added to a list for the current circuit, and will apply only to
     that circuit.  Thus, for example, a <i>WRspice</i> file can
     contain lines like
     <blockquote>
-        <tt>*# stop when ... </tt>
+        <tt>*# stop tran when ... </tt>
     </blockquote>
     and the action will be performed as that circuit is run, but the
     "<tt>stop when ... </tt>" directive will not apply to other
-    circuits.
+    circuits.  This is the same effect as a <tt>.stop</tt> line.
  
 !!SEEALSO
 step

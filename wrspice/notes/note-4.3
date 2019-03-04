@@ -203,24 +203,23 @@ check -c now returns immediately after deleting run in progress.
 new check vector checkINIT, set to 1 for exec block for initial execution,
 before op range or first MC trial.  Set to 0 otherwise.
 
-FIX/check: rtype=4 bug, update jjiv4.cir example.
+Changed the character that separates numerator and denominator units from '/'
+to '_', which is tied to the new "units_sepchar" variable.  The earlier
+choice could cause ambiguous expressions.  e.g., 1/V  could be ine over
+a vector V or one per volt.  Where is units stuff documented?
 
+TODO:
 Christine's file:  Windows singular matrix, ok under Linux.
-
-stop at [50]  means stop at step 50.
-
-Jooyoung sweep time anomaly: sweep not proportional to sim length.
 
 Stats of multi-runs should accumulate.
 
 Gleb crash (close window with running WRspice crashes WRspice).
 
+Jooyoung sweep time anomaly: sweep not proportional to sim length.
 Jooyoung: Verilog JJ model doesn't work in sweep/chained DC analysis.
 
-Changed the character that separates numerator and denominator units from '/'
-to '_', which is tied to the new "units_sepchar" variable.  The earlier
-choice could cause ambiguous expressions.  e.g., 1/V  could be ine over
-a vector V or one per volt.  Where is units stuff documented?
+Ground names are listed from sCKTnodeTab::groundNames().
+ToDo: user command to set a ground name.
 
 TODO
 Add random bit 'x' in pattern gpulse/pulse.
