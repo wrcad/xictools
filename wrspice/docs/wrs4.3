@@ -223,7 +223,7 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
-wrspice-4.3.9  3/1/2019
+wrspice-4.3.9  3/6/2019
 Current Release
 
 Lots going on under the hood.  This is an interim release, providing elements
@@ -247,29 +247,29 @@ CHANGES AND NEW FEATURES
                         .measure                measure
                         .stop                   stop
 
-   What's New:
-   The measure operation in now a "runop".  This means that measurements
-   can be listed, activated, deleted, etc. with commands like status and
-   delete.
+  What's New:
+  The measure operation in now a "runop".  This means that measurements
+  can be listed, activated, deleted, etc. with commands like status and
+  delete.
 
-   The measure command
-   Same syntax as the .measure line in input, but will apply to all
-   circuits until deleted or deactivated.
+  The measure command
+  Same syntax as the .measure line in input, but will apply to all
+  circuits until deleted or deactivated.
 
-   The .stop input directive.
-   Same syntax as the stop command.  A .stop line only applies when
-   running the containing circuit.
-     
-   The SPICE stop command has been scrapped, and the new stop
-   syntax, based on the new measure syntax (the old measure support
-   has also been scrapped) is far more powerful.  The stop and
-   measure operations now have a fair amount of similarity, however,
-   the original functionality should still work, however syntax may
-   differ slightly.
+  The .stop input directive.
+  Same syntax as the stop command.  A .stop line only applies when
+  running the containing circuit.
 
-   Users of stop .measure in earlier WRspice releases should
-   definitely read about the new versions and test (and perhaps
-   update) existing simulation decks.
+  The SPICE stop command has been scrapped, and the new stop
+  syntax, based on the new measure syntax (the old measure support
+  has also been scrapped) is far more powerful.  The stop and
+  measure operations now have a fair amount of similarity, however,
+  the original functionality should still work, however syntax may
+  differ slightly.
+
+  Users of stop .measure in earlier WRspice releases should
+  definitely read about the new versions and test (and perhaps
+  update) existing simulation decks.
 
 * Atomic Monte Carlo and Range Analysis
 
@@ -340,7 +340,6 @@ CHANGES AND NEW FEATURES
   "$?" pseudo-shell variable after the function returns (warning, this
   is a global variable).
 
-  NOT TESTED YET.
   New feature:  named control blocks.  If a name follows
   .control/.exec/.postrun the lines in the block are saved in a
   codeblock with the given name.  The three types are identical in

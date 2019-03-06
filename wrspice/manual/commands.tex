@@ -1,7 +1,7 @@
 \chapter{{\WRspice} Commands}
 \label{commands}
 
-% spCommands.hlp:commands 030109
+% spCommands.hlp:commands 030519
 
 When a line is entered, it is interpreted as one of several things. 
 First, it may be an alias, in which case the line is replaced with the
@@ -67,6 +67,7 @@ The following table lists all built-in commands understood by
 \cb listing & List current circuit\\ \hline
 \cb load & Read plot data from file\\ \hline
 \cb print & Print vectors\\ \hline
+\cb return & Return from script immediately, possibly with a value\\ \hline
 \cb sced & Bring up {\Xic} schematic editor\\ \hline
 \cb source & Read circuit or script input file\\ \hline
 \cb write & Write data to rawfile\\ \hline
@@ -345,17 +346,17 @@ intended primarily for debugging.
 \index{string comparison}
 \index{global return value}
 
-% spCommands.hlp:strcmds 080816
+% spCommands.hlp:strcmds 030519
 
 These commands are used for string comparison, and for setting the
 global return value.  The global return value is an internal global
 variable that can be set and queried from any script (with the {\vt
-\$?} construct).  This can be used to pass numeric data to or from a
-script, but one must take care that the value is not overwritten
-before use, as its scope is global.  The string comparison functions
-return their comparison result in the global return value.  There is
-no native string data type in the scripting language, and the commands
-here provide basic string support.
+\$?} construct).  This can be used to pass numeric data from a script,
+but one must take care that the value is not overwritten before use,
+as its scope is global.  The string comparison functions return their
+comparison result in the global return value.  There is no native
+string data type in the scripting language, and the commands here
+provide basic string support.
 
 \begin{tabular}{|l|l|}\hline
 \cb strcmp & Compare strings\\ \hline
@@ -457,19 +458,20 @@ strciprefix {\it string1 string2}
 \subsection{\spcmd{retval}}
 \index{retval command}
 
-% spCommands.hlp:retval 080816
+% spCommands.hlp:retval 030519
 
 The {\cb retval} command will set the global return value to the numeric
 value given.
 \begin{quote}\vt
 retval {\it value}
 \end{quote}
-This can be used to pass a value back from a script, or to pass a
-value to a script.  The global return value is a global value
-available in any script, and is accessed with the {\vt \$?} construct. 
-The global return value is set only by this function and the string
-comparison functions.  It is initialized to zero on program startup,
-and retains the latest value indefinitely.
+This can be used to pass a value back from a script.  The value is
+initialized to zero whenever a script is executed, so that zero is the
+default return value.  The global return value is a global value
+available in any script and the command prompt line, and is accessed
+with the special variable name {\vt \$?}.  The global return value is
+set by this function and the string comparison functions, and
+optionally by the {\cb return} function.
 
 
 %S-----------------------------------------------------------------------------
@@ -1084,6 +1086,7 @@ output to be saved in files.
 \cb listing & List current circuit\\ \hline
 \cb load & Read plot data from file\\ \hline
 \cb print & Print vectors\\ \hline
+\cb return & Return from script immediately, possibly with a value\\ \hline
 \cb sced & Bring up {\Xic} schematic editor\\ \hline
 \cb source & Read circuit or script input file\\ \hline
 \cb write & Write data to rawfile\\ \hline
@@ -1564,6 +1567,25 @@ This prints the vectors to four decimal places in the file "myfile".
 print 2*v(2)+v(3) v(4)-v(1)
 \end{quote}
 This prints the computed quantities using the default format.
+
+%SU-------------------------------------
+\subsection{\spcmd{return}}
+\index{return command}
+
+% spCommands.hlp:return 030519
+
+This will cause the currently executing script or codeblock to
+terminate immediately and return to the caller.
+\begin{quote}\vt
+return [{\it expression\/}]
+\end{quote}
+If an expression follows, it will be evaluated and the global return
+value will be set to the result.  The global return value is an
+internal global variable that can be set and queried from any script
+or the comand prompt as the special variable name {\vt \$?}.  The {\cb
+retval} command is used to set the global return value without
+immediately returning.
+
 
 %SU-------------------------------------
 \subsection{\spcmd{sced}}
@@ -2124,14 +2146,14 @@ This will clear all data from the cache.
 \index{check command}
 \label{checkcom}
 
-% spCommands.hlp:check 022519
+% spCommands.hlp:check 030419
 
 The {\cb check} command is used to initiate margin analysis.  Margin
 analysis can consist of either a swept operating range analysis, or
 a Monte Carlo analysis.
 \begin{quote}
-{\vt check} [{\vt -v}] [{\vt -a}] [{\vt -m}] [{\vt -r}] [{\vt -c}]
-  [{\vt -f}] [{\vt -s}] [{\vt -k}] [{\vt -h}]
+{\vt check} [{\vt -a}] [{\vt -b}] [{\vt -c}] [{\vt -m}] [{\vt -r}]
+  [{\vt -f}] [{\vt -s}] [{\vt -k}] [{\vt -h}] [{\vt -v}]
   [[{\it pstr1\/}] {\it val1} {\it del1} {\it stp1\/}]
   [[{\it pstr2\/}] {\it val2} {\it del2} {\it stp2\/}]
   [{\it analysis\/}]
@@ -2152,13 +2174,6 @@ The option characters can be grouped following a single ``{\vt -}'',
 or entered separately.
 
 \begin{description}
-\item{\vt -v}\\
-If {\vt -v} (verbose) is given, results and other messages are printed
-on-screen as the analysis is performed, otherwise the analysis is
-silent, except for any printing statements executed in the associated
-command scripts.  The {\cb mplot} command can be used to follow
-progress graphically.
-
 \item{\vt -a}\\
 If the {\vt -a} flag is given, operating range analysis is performed
 at every point (all points mode).  Otherwise, the analysis attempts to
@@ -2168,6 +2183,25 @@ strange shapes, or which possess islands of fail points.  If the input
 file contains a {\vt .checkall} line, then the {\vt -a} flag to the
 {\cb check} command is redundant, all points will be checked in this
 case.
+
+\item{\vt -b}\\
+If this is given, the analysis will be paused after setup and the {\cb
+check} command will return.  This is the start for atomic Monte Carlo
+(see \ref{atomic}); a script can call the {\cb mctrial} command
+numerous times at this point, then ``{\vt check -c}'' to clean up and
+end the analysis.
+
+\item{\vt -c}\\
+The {\vt -c} (clear) option will clear any margin analysis in progress
+if the analysis has been paused, for example by pressing {\kb Ctrl-C},
+or if in an atomic Monte Carlo script.  Return is immediate whether or
+not there is a present analysis to clear.  Unlike in release 4.3.8 and
+earlier, no new analysis is started, and other options are ignored.
+
+A paused margin analysis is resumed if the {\cb check} command is
+given which does not have the {\vt -c} option set, and any arguments
+given in this case are ignored.  The {\cb resume} command will also
+restart a paused margin analysis.
 
 \item{\vt -m}\\
 If the {\vt -m} option is given, Monte Carlo analysis is performed,
@@ -2188,17 +2222,6 @@ speed.  The remote servers must have been specified through the {\cb
 rhost} command, and each must have a {\vt wrspiced} server running. 
 More information on remote asynchronous runs can ge found in
 \ref{rhost} and \ref{rspice}.
-
-\item{\vt -c}\\
-The {\vt -c} (clear) option will clear any margin analysis in progress
-if the analysis has been paused, for example by pressing {\kb
-Ctrl-C}.  If the command line contains only {\vt -c}, no new
-analysis is started.  If something else appears on the command line, a
-new analysis is started after clearing the old analysis.  A paused
-margin analysis is resumed if the {\cb check} command is given which
-does not have the {\vt -c} option set, and any arguments given in this
-case are ignored.  The {\cb resume} command will also restart a paused
-margin analysis.
 \end{description}
 
 Ordinarily, during operating range and Monte Carlo analysis, only the
@@ -2239,6 +2262,13 @@ has a facility for displaying trial data in a simplified manner.
 \item{\vt -h}\\
 Finally, the {\vt -h} (help) option will simply print a brief summary
 of the options to the {\cb check} command.
+
+\item{\vt -v}\\
+If {\vt -v} (verbose) is given, results and other messages are printed
+on-screen as the analysis is performed, otherwise the analysis is
+silent, except for any printing statements executed in the associated
+command scripts.  The {\cb mplot} command can be used to follow
+progress graphically.
 \end{description}
 
 If an {\cb iplot} is active, {\vt -f} (current trial data retention)

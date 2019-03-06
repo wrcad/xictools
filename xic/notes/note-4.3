@@ -371,3 +371,20 @@ whould be handled properly.
 
 update OA/Xic properties and mapping in docs, e.g., XICP_PARTNAME
 
+Somehow, I'd like to keep standard vias in the net files.  This would be
+straightforward when not gridding.  Is there a "nice" way to grid?
+One possibility:  at the end, replace physical geometry with standard
+via instances:
+
+For each net cell
+  For each stdvia in hierarchy that overlaps net
+    clip cell via layers around stdvia bb
+    add stdvia instance to net cell
+  done
+done
+
+Implement:
+1) keep stdvia instances when not gridding or otherwise area
+   constraining. DONE
+2) implement a post-processing function as above.
+

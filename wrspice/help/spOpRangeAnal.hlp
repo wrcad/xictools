@@ -958,12 +958,11 @@ Atomic Monte Carlo and Range Analysis
 
     <p>
     <i>WRspice</i> provides an interface to the primitive operations
-    used for <ahref="oprng_analysis">operating range</a> and <a
+    used for <a href="oprng_analysis">operating range</a> and <a
     href="monte">Monte Carlo</a> analysis.  This allows the user to
     write scripts to implement custom statistical analysis procedures. 
     The scripting is more flexible than the built-in analysis
-    described elsewhere, initiated with the <a
-    href="check"><b>check</b></a> command.
+    described elsewhere.
 
     <p>
     <font color=red>

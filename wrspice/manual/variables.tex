@@ -48,7 +48,7 @@ printed and plotted, etc.
 %SU-------------------------------------
 \subsection{Shell Variables}
 
-% spVars_shell.hlp:shell_vars 110815
+% spVars_shell.hlp:shell_vars 030419
 
 These variables control behavior of the {\WRspice} shell.  Most of
 these variables can be set indirectly from the {\cb Shell Options}
@@ -210,6 +210,23 @@ string, the `!' character is replaced by the event number, and ``{\vt
 lines which form a part of a control block, the prompt becomes a set
 of `$>$' characters, one for each level of control structure.  The
 default prompt is ``{\vt \$program !  $->$ }''.
+
+\index{revertmode variable}
+\item{\et revertmode}\\
+This sets up the strategy to revert keyboard focus to the terminal
+window when a new window pops up, stealing focus.  This is highly
+dependent on operating system/window manager.  The default auto mode
+makes a guess based on the operating system.  The variable can be set
+to one of the integer values below explicitly.
+\begin{quote}
+\begin{tabular}{ll}
+0 & default ``auto'' mode.\\
+1 & off, don't attempt to revert focus.\\
+2 & assume older linux, e.g. RHEL6 and Gnome.\\
+3 & assume newish linux, e.g., RHEL7 and KDE.\\
+4 & Apple Mac.\\
+5 & Microsoft Windows.\\
+\end{tabular]end{quote}}
 
 \index{sourcepath variable}
 \item{\et sourcepath}\\

@@ -58,6 +58,7 @@ edit
 listing
 load
 print
+return
 sced
 source
 write
@@ -131,7 +132,7 @@ qhelp
 quit
 version
 
-!! commands.tex 030109
+!! commands.tex 030519
 !!KEYWORD
 commands
 !!TITLE
@@ -238,6 +239,8 @@ Built-in Commands
       <td>Read plot data from file</td></tr>
     <tr><td><a href="print"><b>print</b></a></td>
       <td>Print vectors</td></tr>
+    <tr><td><a href="return"><b>return</b></a></td>
+      <td>Return from script immediately, possibly with a value</td></tr>
     <tr><td><a href="sced"><b>sced</b></a></td>
       <td>Bring up <i>Xic</i> schematic editor</td></tr>
     <tr><td><a href="source"><b>source</b></a></td>
@@ -663,13 +666,12 @@ cdump command
     The <tt>cdump</tt> command prints out the contents of the
     currently active control structures.  The command takes no
     arguments.  It is intended primarily for debugging.
-
  
 !!SEEALSO
 controlcmds
 
 !! ----------------------------------------------------------------------------
-!! commands.tex: 080816
+!! commands.tex: 030519
 !!KEYWORD
 strcmds
 !!TITLE
@@ -679,7 +681,7 @@ String Comparison and Global Return Value
     global return value.  The global return value is an internal
     global variable that can be set and queried from any script (with
     the <a href="variablesub"><tt>$?</tt></a> construct).  This can be
-    used to pass numeric data to or from a script, but one must take
+    used to pass numeric data from a script, but one must take
     care that the value is not overwritten before use, as its scope is
     global.  The string comparison functions return their comparison
     result in the global return value.  There is no native string data
@@ -808,7 +810,7 @@ strciprefix command
 !!SEEALSO
 strcmds
 
-!! commands.tex 080816
+!! commands.tex 030519
 !!KEYWORD
 retval
 !!TITLE
@@ -819,12 +821,13 @@ retval command
     <p>
     The <b>retval</b> command will set the global return value to the
     numeric value given.  This can be used to pass a value back from a
-    script, or to pass a value to a script.  The global return value
-    is a global value available in any script, and is accessed with
-    the <a href="variablesub"><tt>$?</tt></a> construct.  The global
-    return value is set only by this function and the string
-    comparison functions.  It is initialized to zero on program
-    startup, and retains the latest value indefinitely.
+    script.  The value is initialized to zero whenever a script is
+    executed, so that zero is the default return value.  The global
+    return value is a global value available in any script and the
+    command prompt line, and is accessed with the special variable
+    name <a href="variablesub"><tt>$?</tt></a>.  The global return
+    value is set by this function and the string comparison functions,
+    and optionally by the <a href="return"><b>return</b></a> function.
 
 !!SEEALSO
 strcmds
@@ -1618,6 +1621,8 @@ Input and Output Commands
       <td>Read plot data from rawfile</td></tr>
     <tr><td><a href="print"><b>print</b></a></td>
       <td>Print vectors</td></tr>
+    <tr><td><a href="return"><b>return</b></a></td>
+      <td>Return from script immediately, possibly with a value</td></tr>
     <tr><td><a href="sced"><b>sced</b></a></td>
       <td>Bring up <i>Xic</i> schematic editor</td></tr>
     <tr><td><a href="source"><b>source</b></a></td>
@@ -2224,6 +2229,30 @@ print command
 !!SEEALSO
 iocmds
 
+!! commands.tex 030519
+!!KEYWORD
+return
+!!TITLE
+return command
+!!HTML
+   command: <tt>return</tt> [<i>expression</i> ...]
+
+   <p>
+   This will cause the currently executing script or <a
+   href="codeblock">codeblock</a> to terminate immediately and return
+   to the caller.  If an expression follows, it will be evaluated and
+   the <a href="strcmds">global return value</a> will be set to the
+   result.  The global return value is an internal global variable
+   that can be set and queried from any script or the command prompt
+   as the special variable name <a href="variablesub"><tt>$?</tt></a>.
+   The <a href="retval"><b>retval</b></a> command is used to set the
+   global return value without immediately returning.
+
+!!SEEALSO
+iocmds
+retval
+source
+
 !! commands.tex 012109
 !!KEYWORD
 sced
@@ -2309,7 +2338,6 @@ source command
     rather complex, and the following steps illustrate but perhaps
     oversimplify the process.  In particular, the subcircuit/model <a
     href=".cache">cache</a> substitution is omitted here.
-
 
     <ol>
     <li>The input is read into a "deck" in memory.  Line continuation
@@ -2950,15 +2978,15 @@ cache command
 !!SEEALSO
 simcmds
 
-!! commands.tex 022519
+!! commands.tex 030419
 !!KEYWORD
 check
 !!TITLE
 check command
 !!HTML 
-    command: <tt>check</tt> [<tt>-v</tt>] [<tt>-a</tt>] [<tt>-m</tt>]
-        [<tt>-r</tt>] [<tt>-c</tt>] [<tt>-f</tt>] [<tt>-s</tt>]
-        [<tt>-k</tt>] [<tt>-h</tt>]
+    command: <tt>check</tt> [<tt>-a</tt>] [<tt>-b</tt>] [<tt>-c</tt>]
+        [<tt>-m</tt>] [<tt>-r</tt>] [<tt>-f</tt>] [<tt>-s</tt>]
+        [<tt>-k</tt>] [<tt>-h</tt>] [<tt>-v</tt>]
         [[<i>pstr1</i>] <i>val1</i> <i>del1</i> <i>stp1</i>]
         [[<i>pstr2</i>] <i>val2</i> <i>del2</i> <i>stp2</i>]
         [<i>analysis</i>]
@@ -2982,16 +3010,6 @@ check command
     entered separately.
 
     <dl>
-    <dt><tt>-v</tt><dd>
-    If <tt>-v</tt> (verbose) is given, results and
-    other messages are printed on-screen as the analysis is performed,
-    otherwise the analysis is silent except for any printing
-    statements executed in the associated command scripts.  The <a
-    href="mplot"><b>mplot</b></a> command can be used to follow
-    progress graphically.
-    </dl>
-
-    <dl>
     <dt><tt>-a</tt><dd>
     If the <tt>-a</tt> flag is given, operating range analysis is
     performed at every point (all points mode).  Otherwise, the
@@ -3001,6 +3019,32 @@ check command
     islands of fail points.  If the input file contained a
     <tt>.checkall</tt> line, the <tt>-a</tt> option is redundant, all
     points will be checked in this case.
+    </dl>
+
+    <dl>
+    <dt><tt>-b</tt><dd>
+    If this is given, the analysis will be paused after setup and the
+    <b>check</b> command will return.  This is the start for <a
+    href="atomic">atomic Monte Carlo</a>; a script can call the <a
+    href="mctrial"><b>mctrial</b></a> command numerous times at this
+    point, then "<tt>check -c</tt>" to clean up and end the analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>-c</tt><dd>
+    The <tt>-c</tt> (clear) option will clear any margin analysis in
+    progress if the analysis has been paused, for example by pressing
+    <b>Ctrl-C</b>, or if in an <a href="atomic">atomic Monte Carlo</a>
+    script.  Return is immediate whether or not there is a present
+    analysis to clear.  Unlike in release 4.3.8 and earlier, no new
+    analysis is started, and other options are ignored.
+
+    <p>
+    A paused margin analysis is resumed if the <b>check</b> command is
+    given which does not have the <tt>-c</tt> option set, and any
+    arguments given in this case are ignored.  The <a
+    href="resume"><b>resume</b></a> command will also restart a paused
+    margin analysis.
     </dl>
 
     <dl>
@@ -3025,20 +3069,6 @@ check command
     analysis speed.  The remote servers must have been specified
     through the <a href="rhostcom">rhost</a> command, and each must
     have a <a href="wrspiced"><tt>wrspiced</tt></a> server running. 
-    </dl>
-
-    <dl>
-    <dt><tt>-c</tt><dd>
-    The <tt>-c</tt> (clear) option will clear any margin analysis in
-    progress if the analysis has been paused, for example by pressing
-    <b>Ctrl-C</b>.  If the command line contains only <tt>-c</tt>, no
-    new analysis is started.  If something else appears on the command
-    line, a new analysis is started after clearing the old analysis. 
-    A paused margin analysis is resumed if the <b>check</b> command is
-    given which does not have the <tt>-c</tt> option set, and any
-    arguments given in this case are ignored.  The <a
-    href="resume"><b>resume</b></a> command will also restart a paused
-    margin analysis.
     </dl>
 
     <p>
@@ -3091,6 +3121,16 @@ check command
     <dt><tt>-h</t><dd>
     Finally, the -h (help) option will print a brief summary of the
     available options to the <b>check</b> command.
+    </dl>
+
+    <dl>
+    <dt><tt>-v</tt><dd>
+    If <tt>-v</tt> (verbose) is given, results and
+    other messages are printed on-screen as the analysis is performed,
+    otherwise the analysis is silent except for any printing
+    statements executed in the associated command scripts.  The <a
+    href="mplot"><b>mplot</b></a> command can be used to follow
+    progress graphically.
     </dl>
 
     <p>

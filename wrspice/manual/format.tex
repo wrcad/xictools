@@ -2861,7 +2861,7 @@ command for information about syntax and usage.
 %------------------------------------------------------------------------------
 \section{Control Script Execution}
 
-% spInput.hlp:execblock 072716
+% spInput.hlp:execblock 030519
 
 {\WRspice} includes a script parsing and execution facility, which
 uses a syntax similar to that of the UNIX C-shell and will be
@@ -2870,8 +2870,8 @@ executed by this facility can be included in circuit files through use
 of the {\vt .exec}, {\vt .control}, and {\vt .postrun} tokens.  These
 statements are enclosed in a block beginning with {\vt .exec}, {\tt
 .control}, or {\vt .postrun} and ending with {\tt .endc}.  The {\vt
-.exec}, {\tt.control}, {\vt .postrun}, and {\tt .endc} lines contain
-only the keyword.
+.exec}, {\tt.control}, and {\vt .postrun} keywords are followed by an
+optional block name, and {\tt .endc} lines contain only the keyword.
 
 %----------------------------------------------------
 \subsection{{\vt .exec}, {\vt .control}, {\vt .postrun}, and {\vt .endc} Lines}
@@ -2881,15 +2881,15 @@ only the keyword.
 \index{.endc line}
 \index{control blocks}
 \label{control}
-\spgen{.exec\\
+\spgen{.exec {\it blockname}\\
 {\it shell commands ...}\\
 .endc\\
 \\
-.control\\
+.control {\it blockname}\\
 {\it shell commands ...}\\
 .endc\\
 \\
-.postrun\\
+.postrun {\it blockname}\\
 {\it shell commands ...}\\
 .endc}
 
@@ -2902,10 +2902,27 @@ let maxv = v(2)*v(19)\\
 .endc}
 
 The {\it shell commands} are any commands which can be interpreted by
-the {\WRspice} shell.  The difference between {\vt .exec} and {\vt
+the {\WRspice} shell.
+
+If a {\it blockname} is given, the script lines are parsed, and the
+executable object saved as a codeblock under {\it blockname\/}.  The
+block can be executed by invoking the {\it blockname} from the command
+line or in a script or codeblock.
+
+In this usage, there is no difference between the {\vt .exec}, {\vt
+.control}, and {\vt .postrun} keywords, and there is no connection of
+the block to any other content in tne same file.  One file can be used
+to load any number of named codeblocks.  Blocks with an existing name
+will replace the existing content.
+
+If the block is unnamed, the difference between {\vt .exec} and {\vt
 .control} is that for {\tt .exec}, the commands are executed before
 the circuit is parsed, and for {\vt .control}, the commands are
-executed after the circuit is parsed.
+executed after the circuit is parsed, assuming that the file also
+contains a circuit description.  If not, there is again no real
+distinction, but unlike for named blocks, unnamed blocks will be
+executed when read.
+
 
 Commands in a {\vt .postrun} block are executed after every simulation
 that completes normally (i.e., without errors or interrupts).  This
