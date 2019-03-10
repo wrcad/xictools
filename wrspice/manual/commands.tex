@@ -1905,7 +1905,7 @@ the runops that are presently available.
 
 \begin{tabular}{|l|l|}\hline
 \multicolumn{2}{|c|}{Runops}\\ \hline
-\cb Command & \cb Input Keyword\\ \hline]Hline
+\cb Command & \cb Input Keyword\\ \hline\hline
 \cb save & \vt .save\\ \hline
 \cb trace & \vt -\\ \hline
 \cb iplot & \vt -\\ \hline
@@ -2426,10 +2426,16 @@ checkSTP1}.  The total number of simulations in Monte Carlo analysis
 is (2*{\et checkSTP1} + 1)*(2*{\et checkSTP2} + 1), the same as would
 be checked in operating range analysis.
 
-\item{{\et checkFAIL}  (integer, length 1, 0 or 1)}\\
+\item{{\et checkFAIL}  (integer, length 1, value 0 or 1)}\\
 This is the global pass/fail flag, which is set after each trial, 1
 indicates failure.  This variable is used in both operating range and
 Monte Carlo analysis.
+
+\item{{\et checkINIT}  (integer, length 1, value 0 or 1)}\\
+This is set to 1 by {\WRspice} before the initial execution of the
+header block, before operating range or the first Monte Carlo trial. 
+It is set to 0 otherwise.  Thus one can identify the first trial in
+Monte Carlo analysis from within the header script.
 
 \item{{\et opmin1, opmax1, opmin2, opmax2} (real, length $>=$ 1)}\\
 The operating range analysis can be directed to find the operating

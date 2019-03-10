@@ -55,7 +55,7 @@ monte
 atomic
 optimize
 
-!! margin.tex 041911
+!! margin.tex 030919
 !!KEYWORD
 oprng_analysis
 !!TITLE
@@ -93,12 +93,13 @@ Operating Range Analysis
     routine which will evaluate the circuit variables and establish
     whether or not the operation is correct.  If operation is
     incorrect, a vector named "<tt>checkFAIL</tt>" must be set to a
-    non-zero value.  These control statements can be supplied in the
-    circuit file in a block initiated with a <tt>.control</tt> line
-    and ending with a <tt>.endc</tt> line, or through another file
-    added as a codeblock and bound to the "controls" of the circuit,
-    through use of the <a href="codeblock"><b>codeblock</b></a>
-    command.
+    non-zero value.  Alternatively, the script can return the value 1
+    to indicate trial failure.  These control statements can be
+    supplied in the circuit file in a block initiated with a
+    <tt>.control</tt> line and ending with a <tt>.endc</tt> line, or
+    through another file added as a codeblock and bound to the
+    "controls" of the circuit, through use of the <a
+    href="codeblock"><b>codeblock</b></a> command.
 
     <p>
     A second block of statements, the "header" or "exec" block, is

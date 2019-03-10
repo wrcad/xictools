@@ -3330,10 +3330,19 @@ check command
     </dl>
 
     <dl>
-    <dt><tt>checkFAIL</tt>  (integer, length 1, 0 or 1)<dd>
+    <dt><tt>checkFAIL</tt>  (integer, length 1, value 0 or 1)<dd>
       This is the global pass/fail flag, which is set after each
       trial, 1 indicates failure.  This variable is used in both
       operating range and Monte Carlo analysis.
+    </dl>
+
+    <dl>
+    <dt><tt>checkINIT</tt>  (integer, length 1, value 0 or 1)<dd>
+      This is set to 1 by <i>WRspice</i> before the initial execution
+      of the header block, before operating range or the first Monte
+      Carlo trial.  It is set to 0 otherwise.  Thus one can identify
+      the first trial in Monte Carlo analysis from within the header
+      script.
     </dl>
 
     <dl>

@@ -223,7 +223,7 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
-wrspice-4.3.9  3/6/2019
+wrspice-4.3.9  3/11/2019
 Current Release
 
 Lots going on under the hood.  This is an interim release, providing elements
@@ -267,7 +267,7 @@ CHANGES AND NEW FEATURES
   the original functionality should still work, however syntax may
   differ slightly.
 
-  Users of stop .measure in earlier WRspice releases should
+  Users of stop and .measure in earlier WRspice releases should
   definitely read about the new versions and test (and perhaps
   update) existing simulation decks.
 
@@ -299,10 +299,10 @@ CHANGES AND NEW FEATURES
   check -c now returns immediately after deleting the run in progress.
 
   New vector: checkINIT
-  This is set to 1 before the initial execution of the exec block,
+  This is set to 1 before the initial execution of the header block,
   before operating range or the first Monte Carlo trial.  It is set to
   0 otherwise.  Thus one can identify the first trial in Monte Carlo
-  analysis from within the exec script.
+  analysis from within the header script.
 
   The margin/Monte Carlo analysis test function can now return 1
   instead of setting checkFAIL to indicate a failed run.

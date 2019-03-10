@@ -200,7 +200,7 @@ Some Examples:
 \vt 1.2\#uA\#S & 1.2 microamps per second\\
 \vt 1.2\#uA\_S & 1.2 microamps per second\\
 \vt 1.2uA\_S &   1.2 microamps per second\\
-\vt 1.2#A\_S &   1.2 amps per second\\
+\vt 1.2\#A\_S &  1.2 amps per second\\
 \vt 1.2A\_S &    1.2 aHz  (attohertz)\\
 \vt 1.2uVS &     1.2 microvolt-seconds\\
 \end{tabular}
@@ -2899,15 +2899,15 @@ optional block name, and {\tt .endc} lines contain only the keyword.
 \index{.endc line}
 \index{control blocks}
 \label{control}
-\spgen{.exec {\it blockname}\\
+\spgen{.exec [{\it blockname\/}]\\
 {\it shell commands ...}\\
 .endc\\
 \\
-.control {\it blockname}\\
+.control [{\it blockname\/}]\\
 {\it shell commands ...}\\
 .endc\\
 \\
-.postrun {\it blockname}\\
+.postrun [{\it blockname\/}]\\
 {\it shell commands ...}\\
 .endc}
 

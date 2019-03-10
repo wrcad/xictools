@@ -27,7 +27,7 @@ automated.
 \section{Operating Range Analysis}
 \index{operating range analysis}
 
-% spOpRangeAnal.hlp:oprng_analysis 041911
+% spOpRangeAnal.hlp:oprng_analysis 030919
 
 In operating range analysis, a suitably configured source file
 containing a circuit description is evaluated over a two dimensional
@@ -57,10 +57,11 @@ appropriate bound codeblocks.  Every circuit suitable for margin
 analysis must have a control block which contains a shell routine
 which will evaluate the circuit variables and establish whether or not
 the operation is correct.  If operation is incorrect, a vector named
-``{\et checkFAIL}'' must be set to a non-zero value.  These control
-statements can be supplied in the circuit file in a block initiated
-with a {\vt .control} line and ending with a {\vt .endc} line, or
-through another file added as a codeblock and bound to the
+``{\et checkFAIL}'' must be set to a non-zero value.  Alternatively,
+the script can return the value 1 to indicate trial failure.  These
+control statements can be supplied in the circuit file in a block
+initiated with a {\vt .control} line and ending with a {\vt .endc}
+line, or through another file added as a codeblock and bound to the
 ``controls'' of the circuit, through use of the {\cb codeblock}
 command.
 
