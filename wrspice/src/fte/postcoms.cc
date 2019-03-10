@@ -218,18 +218,28 @@ namespace {
                 s--;
             }
             if (v->length() == 1) {
+                char *b = lstring::copy(buf);
                 if (v->isreal()) {
-                    TTY.printf("%s = %s\n", buf,
+                    sprintf(buf, "%s", 
                         format ? numprint(v->realval(0), format, buf2) :
                         SPnum.printnum(v->realval(0), v->units(), false));
+                    if (strcmp(b, buf))
+                        TTY.printf("%s = %s\n", b, buf);
+                    else
+                        TTY.printf("%s\n", buf);
                 }
                 else {
-                    TTY.printf("%s = %s", buf,
-                        numprint(v->realval(0), format, buf2));
-                    TTY.printf(",%s\n",
+                    sprintf(buf, "%s,%s", 
+                        format ? numprint(v->realval(0), format, buf2) :
+                        SPnum.printnum(v->realval(0), "", false),
                         format ? numprint(v->imagval(0), format, buf2) :
                         SPnum.printnum(v->imagval(0), v->units(), false));
+                    if (strcmp(b, buf))
+                        TTY.printf("%s = %s\n", b, buf);
+                    else
+                        TTY.printf("%s\n", buf);
                 }
+                delete [] b;
             }
             else {
                 int ll = strlen(buf) + 5;

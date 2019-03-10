@@ -69,6 +69,14 @@ typedef void ParseNode;
 // Instantiate global class.
 sSPnumber SPnum;
 
+#ifdef WRSPICE
+#define UNITS_CATCHAR() Sp.UnitsCatchar()
+#define UNITS_SEPCHAR() Sp.UnitsSepchar()
+#else
+#define UNITS_CATCHAR() '#'
+#define UNITS_SEPCHAR() '_'
+#endif
+
 
 // Return a string containing text of the number.  If the units arg is
 // given and not nil, the units are printed, and the Spice magnitude
@@ -137,12 +145,24 @@ sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
             mag -= 2;
         }
 
-        const char* c = suffix(mag);
         char buf[32];
-        if (!c)
-            sprintf(buf, "e%d", mag);
-        else
+        const char* c = suffix(mag);
+        if (c)
             strcpy(buf, c);
+        else {
+            sprintf(buf, "e%d", mag);
+
+            // Add a units "cat char" if the units string conflicts
+            // with scale factors.
+            char u = *unitstr;
+            if (islower(u))
+                u = toupper(u);
+            if (strchr("AFM", u)) {
+                char *t = buf + strlen(buf);
+                *t++ = UNITS_CATCHAR();
+                *t = 0;
+            }
+        }
         strcat(buf, unitstr);
 
         char *t = fltbuf;
@@ -472,7 +492,7 @@ sSPnumber::parse(const char **line, bool whole, bool gobble, sUnits **units)
         // The number can optionally be followed by a units string,
         // optionally separated from the main number string with a
         // Sp.UnitsCatchar().  The second instance of a
-        // Sp.UnitsCatchar() is replaced with '/'.
+        // Sp.UnitsCatchar() is replaced with Sp.UnitsSepchar().
 
         if (get_unitstr(&here, buf)) {
             *units = new sUnits;
@@ -524,14 +544,6 @@ sSPnumber::parse(const char **line, bool whole, bool gobble, sUnits **units)
     return (&np_num);
 }
 
-
-#ifdef WRSPICE
-#define UNITS_CATCHAR() Sp.UnitsCatchar()
-#define UNITS_SEPCHAR() Sp.UnitsSepchar()
-#else
-#define UNITS_CATCHAR() '#'
-#define UNITS_SEPCHAR() '/'
-#endif
 
 // Static function.
 // Grab a units string into buf, advance the pointer.  The buf length

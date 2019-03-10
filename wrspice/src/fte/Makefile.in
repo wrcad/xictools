@@ -34,7 +34,7 @@ CCFILES = \
   vectors.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): $(CCOBJS)
+$(LIB_TARGET): cptest $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -69,5 +69,19 @@ clean:
 
 distclean: clean
 	-@rm -f Makefile
+
+# Make sure that the copies are the same as the source, avoid local
+# updates that won't propagate!
+cptest: paramsub.cc
+	@for a in paramsub.cc; do \
+	    set -- $$(/usr/bin/sum $(BASE)/spnumber/$$a); s1=$$1; \
+	    set -- $$(/usr/bin/sum $$a); s2=$$1; \
+            if [ "$$s1" != "$$s2" ]; then \
+	        echo ; \
+	        echo  "ERROR!!! $$a differs in $(BASE)/spnumber, FIXME"; \
+	        echo ; \
+	        exit 1; \
+	    fi; \
+	done
 
 #######################################################################

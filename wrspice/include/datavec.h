@@ -206,6 +206,8 @@ struct sUnits
     void operator/(sUnits &u)
         { for (int i = 0; i < 8; i++)
             units[i] -= u.units[i]; }
+
+    // Note that "no units" is equivalent to any units.
     bool operator==(sUnits &u)
         { if (isnotype() || u.isnotype()) return (true);
           for (int i = 0; i < 8; i++)

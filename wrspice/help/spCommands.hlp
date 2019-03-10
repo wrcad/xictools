@@ -2628,7 +2628,7 @@ Simulation Commands
     The <b>iplot</b> and <b>trace</b> commands are examples of what
     are called "runops".  Other runops include the <a
     href="stop"><b>stop</b></a> and <a
-    href="measure"><b>measure</b></b> commands.  A runop remains in
+    href="measure"><b>measure</b></a> commands.  A runop remains in
     effect until deleted with the <a href="delete"><b>delete</b></a>
     command, and the runops in effect can be listed with the <a
     href="status"><b>status</b></a> command.  The runops can also be

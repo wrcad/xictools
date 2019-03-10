@@ -70,7 +70,7 @@ text_help::display(HLPtopic *t)
         if (res) {
             // Create a new window...
             HLPtopic *newtop;
-            if (!(newtop = HLP()->read(res->tl_keyword))) {
+            if (!(newtop = HLP()->read(res->keyword()))) {
                 GRpkgIf()->ErrPrintf(ET_INTERR, "tdisplay: bad link.\n");
                 continue;
             }
@@ -206,11 +206,11 @@ text_help::handle(HLPtopic *t, HLPtopic **parent)
             continue;
         }
         HLPtopList *tl;
-        for (tl = t->subtopics(); tl; tl = tl->next)
+        for (tl = t->subtopics(); tl; tl = tl->next())
             if (--num == 0)
                 break;
         if (num) {
-            for (tl = t->seealso(); tl; tl = tl->next)
+            for (tl = t->seealso(); tl; tl = tl->next())
                 if (--num == 0)
                     break;
         }
@@ -236,9 +236,9 @@ text_help::putlist(HLPtopic *t, HLPtopList *tl, int base)
     int maxwidth = 0;
     int nbuts = 0;
     stringlist *s0 = 0, *se = 0;
-    for (HLPtopList *tt = tl; tt; tt = tt->next) {
+    for (HLPtopList *tt = tl; tt; tt = tt->next()) {
         stringlist *s =
-            new stringlist(t->strip_html(80, tt->tl_description), 0);
+            new stringlist(t->strip_html(80, tt->description()), 0);
         if ((int)strlen(s->string) + 5 > maxwidth)
             maxwidth = strlen(s->string) + 5;
         nbuts++;

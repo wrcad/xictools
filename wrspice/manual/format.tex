@@ -1,6 +1,6 @@
 \chapter{{\WRspice} Input Format}
 
-% spInput.hlp:spinput 121011
+% spInput.hlp:spinput 040619
 
 %------------------------------------------------------------------------------
 \section{Input Format}
@@ -99,7 +99,6 @@ The ground node must be named ``{\vt 0}'' (zero), however.  Note that
 trailing or embedded punctuation (but this is generally not
 recommended).
 
-
 %----------------------------------------------------
 \subsection{Case Sensitivity}
 \index{case sensitivity}
@@ -155,38 +154,55 @@ scale factors.  All of this is case-insensitive.
 \vt n & 1e-9 \\
 \vt p & 1e-12 \\
 \vt f & 1e-15 \\
+\vt a & 1e-18 \\
 \end{tabular}
 \end{quote}
 
+
+%----------------------------------------------------
+\subsection{Units}
+\index{units field}
+\label{units}
+
 Immediately following the number and multiplier is an optional units
-string.  The units string is composed of the separation character
+string.  The units string is composed of the concatenation character
 `{\vt \#}', unit specification abbreviations as listed with the {\cb
-settype} command (see \ref{settype}), and digit exponents.  Giving the
-{\cb settype} command without arguments will list the unit
-abbreviations known to {\WRspice}.
+settype} command (see \ref{settype}), digit exponents, and possibly a
+separation character `{\vt \_}' (underscore).  Giving the {\cb settype}
+command without arguments will list the unit abbreviations known to
+{\WRspice}.
 
-The units string must start with a letter, or the separation character
-followed by a letter, or two separation characters followed by a
-letter.  The string consists of a sequence of abbreviations, each
-optionally followed by a digit exponent.  If the separation character
-appears within the string, the abbreviations that follow provide
-denominator units.  The separation character in this context is
-logically equivalent to `{\vt /}'.
+The units string must start with a letter, or the concatenation or
+separation character followed by a letter, or two concatenation
+characters followed by a letter.  The string consists of a sequence of
+abbreviations, each optionally followed by a digit exponent.  If the
+concatenation character appears within the string, the abbreviations
+that follow provide denominator units.  The same applies for the
+separation character, only denominator units follow.  The
+concatenation or separation character in this context is logically
+equivalent to `{\vt /}'.
 
-The initial separation character is almost always optional.  It is
+The initial concatenation character is almost always optional.  It is
 needed when there would be possible misinterpretation, for example
 {\vt 1.0F} is dimensionless 1e-15, whereas {\vt 1.0\#F} is 1.0 farads. 
-If the initial separation character is immedaiately followed by
-another separation character, then all dimensions that follow are
+If the initial concatenation character is immedaiately followed by
+another concatenation character, then all dimensions that follow are
 denominator units.
 
 Some Examples:
 
 \begin{tabular}{ll}
 \vt 1.0\#F\#M2 & 1 farad per square meter\\
+\vt 1.0\#F\_M2 & 1 farad per square meter\\
+\vt 1.0F\_M2 &   1e-15 per square meter\\
 \vt 1.0\#\#S &   1 Hz\\
-\vt 1.2uA\#S &  1.2 microamps per second\\
-\vt 1.2uVS &   1.2 microvolt-seconds\\
+\vt 1.0\_S &     1 Hz\\
+\vt 1.2\#uA\#S & 1.2 microamps per second\\
+\vt 1.2\#uA\_S & 1.2 microamps per second\\
+\vt 1.2uA\_S &   1.2 microamps per second\\
+\vt 1.2#A\_S &   1.2 amps per second\\
+\vt 1.2A\_S &    1.2 aHz  (attohertz)\\
+\vt 1.2uVS &     1.2 microvolt-seconds\\
 \end{tabular}
 
 All multipliers and unit abbreviations are case-insensitive, but by
@@ -201,10 +217,12 @@ which will appear in output, and will propagate through calculations.
 Thus, for example, a number specified in volts, divided by a number
 specified in ohms, would yield a number whose specification is amps.
 
-It is possible to use a different character as the separator.  If the
+It is possible to use a different concatenation character.  If the
 variable {\et units\_catchar} is set to a string consisting of a
 single punctuation character, then this character becomes the
-separation character.
+xoncatenation character.  Similarly, if the variable {\et
+units\_sepchar} is set to a string consisting of a single punctuation
+character, then this character becomes the separation character.
 
 
 %------------------------------------------------------------------------------

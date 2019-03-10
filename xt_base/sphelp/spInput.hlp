@@ -21,12 +21,13 @@ initialize
 param
 subckt
 output
-measure
+tests
 execblock
 verilog
 
+!!REDIRECT unitstr      spinput#units
 
-!! format.tex 121011
+!! format.tex 040619
 !!KEYWORD
 spinput
 !!TITLE
@@ -36,6 +37,7 @@ spinput
     <tr><td valign=top><b>jump to</b></td> <td>
     <a href="spinput#case"><b>Case Sensitivity</b></a><br>
     <a href="spinput#number"><b>Numeric Values</b></a><br>
+    <a href="spinput#units"><b>Units</b></a><br>
     <a href="spinput#varexp"><b>Variable Expansion in Input</b></a>
     </td></tr></table>
 
@@ -201,42 +203,54 @@ spinput
     <tr><td><tt>n</tt><td>1e-9</tr>
     <tr><td><tt>p</tt><td>1e-12</tr>
     <tr><td><tt>f</tt><td>1e-15</tr>
+    <tr><td><tt>a</tt><td>1e-18</tr>
     </table>
     </blockquote>
 
-    <p>
+    <a name="units"></a>
+    <h2>Units</h2>
+
     Immediately following the number and multiplier is an optional
-    units string.  The units string is composed of the separation
+    units string.  The units string is composed of the concatenation
     character '<tt>#</tt>', unit specification abbreviations as listed
-    with the <a href="settype"><b>settype</b></a> command, and digit
-    exponents.  Giving the <b>settype</b> command without arguments
+    with the <a href="settype"><b>settype</b></a> command, digit
+    exponents, and possibly a separation character `<tt>_</tt>'
+    (underscore).  Giving the <b>settype</b> command without arguments
     will list the unit abbreviations known to <i>WRspice</i>.
 
     <p>
-    The units string must start with a letter, or the separation
-    character followed by a letter, or two separation characters
-    followed by a letter.  The string consists of a sequence of
-    abbreviations, each optionally followed by a digit exponent. 
-    If the separation character appears within the string, the
-    abbreviations that follow provide denominator units.  The
-    separation character in this context is logically equivalent to
-    '<tt>/</tt>'.
+    The units string must start with a letter, or the concatenation or
+    separation character followed by a letter, or two concatenation
+    characters followed by a letter.  The string consists of a
+    sequence of abbreviations, each optionally followed by a digit
+    exponent.  If the concatenation character appears within the
+    string, the abbreviations that follow provide denominator units. 
+    The same applies for the separation character, only denominator
+    units follow.  The concatenation or separation character in this
+    context is logically equivalent to '<tt>/</tt>'.
 
     <p>
-    The initial separation character is almost always optional.  It is
-    needed when there would be possible misinterpretation, for example
-    <tt>1.0F</tt> is dimensionless 1e-15, whereas <tt>1.0#F</tt> is
-    1.0 farads.  If the initial separation character is immediately
-    followed by another separation character, then all dimensions that
-    follow are denominator units.
+    The initial concatenation character is almost always optional.  It
+    is needed when there would be possible misinterpretation, for
+    example <tt>1.0F</tt> is dimensionless 1e-15, whereas
+    <tt>1.0#F</tt> is 1.0 farads.  If the initial concatenation
+    character is immediately followed by another concatenation
+    character, then all dimensions that follow are denominator units.
 
     <p>
     Some Examples:
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><td><tt>1.0#F#M2</tt></td> <td>1 farad per square meter</td></tr>
+    <tr><td><tt>1.0#F_M2</tt></td> <td>1 farad per square meter</td></tr>
+    <tr><td><tt>1.0F_M2</tt></td>  <td>1e-15 per square meter</td></tr>
     <tr><td><tt>1.0##S</tt></td>   <td>1 Hz</td></tr>
-    <tr><td><tt>1.2uA#S</tt></td>  <td>1.2 microamps per second</td></tr>
+    <tr><td><tt>1.0_S</tt></td>    <td>1 Hz</td></tr>
+    <tr><td><tt>1.2#uA#S</tt></td> <td>1.2 microamps per second</td></tr>
+    <tr><td><tt>1.2#uA_S</tt></td> <td>1.2 microamps per second</td></tr>
+    <tr><td><tt>1.2uA_S</tt></td>  <td>1.2 microamps per second</td></tr>
+    <tr><td><tt>1.2#A_S</tt></td>  <td>1.2 amps per second</td></tr>
+    <tr><td><tt>1.2A_S</tt></td>   <td>1.2 aHz (attohertz)</td></tr>
     <tr><td><tt>1.2uVS</tt></td>   <td>1.2 microvolt-seconds</td></tr>
     </table>
     </blockquote>
@@ -258,8 +272,11 @@ spinput
     specification is amps.
 
     <p>
-    It is possible to use a different character as the separator.  If
-    the variable <a href="units_catchar"><tt>units_catchar</tt></a> is
+    It is possible to use a different concatenation character.  If the
+    variable <a href="units_catchar"><tt>units_catchar</tt></a> is set
+    to a string consisting of a single punctuation character, then
+    this character becomes the concatenation character.  Similarly, if
+    the variable <a href="units_sepchar"><tt>units_sepchar</tt></a> is
     set to a string consisting of a single punctuation character, then
     this character becomes the separation character.
 
@@ -365,8 +382,9 @@ spinput
      <tr><td align="left">&nbsp;<a href=".plot"><tt>.plot</tt></a></td></tr>
      <tr><td align="left">&nbsp;<a href=".four"><tt>.four</tt></a></td></tr>
      <tr><td align="left">&nbsp;<a href=".width"><tt>.width</tt></a></td></tr>
-    <tr><th align="left"><a href="measure">Parameter Measurement</a></th></tr>
+    <tr><th align="left"><a href="tests">Parameter Measurement and Testing</a></th></tr>
      <tr><td align="left">&nbsp;<a href=".measure"><tt>.measure</tt></a></td></tr>
+     <tr><td align="left">&nbsp;<a href=".stop"><tt>.stop</tt></a></td></tr>
     <tr><th align="left"><a href="execblock">Control Script
       Execution</a></th></tr>
      <tr><td align="left">&nbsp;<a href=".exec"><tt>.exec</tt></a></td></tr>
@@ -2232,35 +2250,23 @@ Output Generation
 !!SEEALSO
 spinput
 
-!!REDIRECT .measure     measure#.measure
+!!REDIRECT .measure     tests#.measure
+!!REDIRECT .stop        tests#.stop
 
-!! format.tex 021819
+!! format.tex 022519
 !!KEYWORD
-measure
+tests
 !!TITLE
-Parameter Measurement
-!!HTML 
-    <table border=0>
-    <tr><td valign=top><b>jump to</b></td> <td>
-    <a href="measure#point"><b>Point and Interval Specification</b></a><br>
-    <a href="measure#compat"><b>Syntax Compatibility</b></a><br>
-    <a href="measure#measure"><b>Measurements</b></a><br>
-    <a href="measure#addl"><b>Post-Measurement Commands</b></a><br>
-    <a href="measure#ref"><b>Referencing Results in Sources</b></a><br>
-    </td></tr></table>
-
-    <p>
-    <i>WRspice</i> input files may contain <tt>.measure</tt>
-    statements.  These statements allow certain types of measurements
-    to be performed during a simulation, either at a selected point or
-    over a selected interval.  The syntax is similar to the
-    <tt>.measure</tt> statement in <a href="hspicesim">HSPICE</a>.
-    <br clear=all>
+Parameter Measurement and Testing
+!!HTML
+    <i>WRspice</i> has provision for parameter measurement during a
+    simulation, and for stopping the run on a particular event or
+    condition.  Internally, these are implemented from the same
+    components and have similar syntax and features.
 
     <p>
     <a name=".measure"></a>
     <font size=+3><b><tt>.measure</tt></b> <b>Line</b></font>
-    <p>
 
     <p>
     General form:
@@ -2272,490 +2278,35 @@ Parameter Measurement
             <tt>param=</tt><i>expression</i> [<i>postcmds</i>]
     </blockquote>
 
-    <dl>
-    <dt><i>analysis</i><dd>
-    This specifies the type of analysis during which the measurement will
-    be active.  Exactly one of the following keywords should appear in
-    this field:  <tt>tran</tt>, <tt>ac</tt>, <tt>dc</tt>.
-    </dl>
     <p>
-
-    <dl>
-    <dt><i>resultname</i><dd>
-    This field specifies a name for the measurement.  The name should
-    be unique among the measurements in the circuit, and among vectors
-    in scope during simulation.  The name should start with an
-    alphabetic character and contain no white space or other special
-    characters.
-    </dl>
+    The <tt>.measure</tt> line allows one to identify a measurement
+    point or interval, and to evaluate an expression at that point, or
+    call a number of measurement primitives that apply during the
+    interval, such as rise time or pulse width.  There is also a <a
+    href="measure"><b>measure</b></a> command that uses the same
+    syntax, but will apply to all circuits when active.  See the
+    description of that command for information about syntax and
+    usage.
 
     <p>
-    A vector with this name will be added to the current
-    plot, if the measurement is successful.  Vector names found in
-    <tt>.measure</tt> lines are added to the internal save list,
-    guaranteeing that the necessary data will be available when
-    needed, whether or not the vector has been mentioned in a <a
-    href=".save"><tt>.save</tt></a> line.
-
-
-    <a name="point"></a>
-    <h2>Point and Interval Specification</h2>
+    <a name=".stop"></a>
+    <font size=+3><b><tt>.stop</tt></b> <b>Line</b></font>
 
     <p>
-    The field that follows the <i>resultname</i> contains a
-    description of the conditions which initiate a measurement.  There
-    are three basic types:  a point specification, an interval
-    specification, and a post-measurement specificantion.
-
-    <p>
-    The <i>interval</i> begins with the "trigger" and ends with the
-    "target".  Measurement will apply during this interval.  If no
-    target is given, the trigger sets the <i>point</i>, where
-    measurement will be performed.  The trigger and target are
-    independently specified as follows:
-
-    <dl>
-    <dt><i>point</i><dd>
+    General form:
     <blockquote>
-    [<tt>trig</tt>] <i>pointlist</i>
-    </blockquote>
-    This consists of the keyword <tt>trig</tt> (which is optional)
-    followed by a point specification list.  The keyword
-    "<tt>from</tt>" is equivalent to "<tt>trig</tt>".
-    </dl>
-
-    <dl>
-    <dt><i>interval</i><dd>
-    <blockquote>
-    [<tt>trig</tt>] <i>pointlist</i> <tt>targ</tt> <i>pointlist</i>
-    </blockquote>
-    An interval contains a second point specification initiated with
-    the mandatory keyword <tt>targ</tt>.  The keyword "<tt>to</tt>" is
-    equivalent to "<tt>targ</tt>".
-    </dl>
-
-    <dl>
-    <dt>post-measurement<dd>
-    <blockquote>
-    <tt>param=</tt><i>expression</i>
-    </blockquote>
-    Measurements in this form will be performed when all <i>point</i>
-    and <i>interval</i> measurements are complete.  After all
-    <i>point</i> and <i>interval</i> measurements have been performed,
-    the <i>expression</i> will be evaluated and the result saved in
-    <i>resultname</i>.  The <i>expression</i> can reference other
-    measurement results in addition to the usual vectors and functions
-    provided by the system.  These measurement lines are evaluated in
-    the order found in the input.
-    </dl>
-
-    <dl>
-    <dt><i>pointlist</i><dd>
-    <blockquote>
-    <i>pointspec</i> [<i>pointspec</i>] ...
-    </blockquote>
-    The point is specified with a list of <i>pointspec</i> specifications,
-    and the event is registered on the first occasion when all
-    <i>pointspec</i> elements are true, i.e., the conjunction is true.
-    </dl>
-
-    <dl>
-    <dt><i>pointspec</i><dd>
-    <i>keyword</i> <i>expression1</i> [<tt>=</tt>][<tt>val=</tt>]
-      [</i>expression2</i> [<tt>cross=</tt><i>crosses</i>]
-      [<tt>rise=</tt><i>rises</i>] [<tt>fall=</tt><i>falls</i>]]
-      [<tt>td=</tt><i>delay</i>]
-    </dl>
-
-    <p>
-    The <i>pointspec</i> begins with one of the following kewords: 
-    <tt>before</tt>, <tt>at</tt>, <tt>after</tt>, <tt>when</tt>.  Of
-    these, <tt>at</tt>, <tt>after</tt>, and <tt>when</tt> are
-    equivalent aliases, but varied use can give a natural language
-    feel to the conjuction list.  The <tt>before</tt> keyword negates
-    logic:  the <i>pointspec</i> is true before the specified event.  This
-    can be useful as an element in the conjunction list.
-
-    <p>
-    Once a <i>pointspec</i> becomes triggered, it remains triggered
-    for the remainder of the simulation run.  Once triggered, a
-    <tt>before</tt> <i>pointspec</i> will evaluate false, preventing
-    the overall list from triggering.  Otherwise, the overall list
-    triggers when each <i>pointspec</i> is true.
-
-    <p>
-    Following the keyword are one or two general expressions.  There
-    can be an optional equal sign ("<tt>=</tt>") or a
-    "<tt>val</tt>" keyword "<tt>val=</tt>" between the expressions.
-
-    <p>
-    An <i>expression</i> in this context can be:
-    <ul>
-    <li>A number or constant expression.  This is taken as the
-    triggering point, meaning that the event occurs during simulation
-    when the scale variable is equal to or exceeds the value.
-
-    <li>The <i>resultname</i> of another measure.  The event occurs
-    when the referenced measurement is performed.
-
-    <li>A general expression consisting of constants, vector names,
-    and circuit variables.  Frequently this will be simply a vector
-    name corresponding to a node voltage or branch current in the
-    circuit.
-    </ul>
-
-    <p>
-    In <i>WRspice</i>, an expression token is the minimum text
-    required for a syntactically complete expression, and may include
-    white space.  Single quotes or parentheses can be used to delimit
-    expressions in the <i>pointspec</i>, if nexessary.  The normal <a
-    href="squote">single-quote expression</a> expansion and
-    substitution is suppressed in this context.
-
-    <p>
-    If only one <i>expression</i> is given, and it is not a constant
-    expression or a measure name, the event is triggered at the first
-    time the expression becomes logically true, meaning that the
-    absolute value is one or larger.  This corresponds to logical true
-    produced by comparison and other logical operations in
-    <i>WRspice</i>.  For example, the expression "<tt>V(5) >
-    0.25</tt>" returns 0 if false and 1 if true.
-
-    <p>
-    If two expressions are given, neither can be a measure result
-    name.  We are implicitly comparing the values of the two
-    expressions, finding points where the two expressions are equal. 
-    By default, the first time the values of the two expressions cross
-    will trigger the event.  The following keywords can be assigned an
-    integer value to trigger at the indicated point.
-
-    <dl>
-    <dt><tt>cross=</tt><i>crosses</i><dd>
-    Integer <i>crosses</i> is the number of crossings.
-    <dt><tt>rise=</tt><i>rises</i><dd>
-    Integer <i>rises</i> is the number of times that
-    <i>expression1</i> rises above <i>expression2</i>.
-    <dt><tt>fall=</tt><i>falls</i><dd>
-    Integer <i>falls</i> is the number of times that
-    <i>expression1</i> falls below <i>expression2</i>.
-    </dl>
-
-    <dl>
-    <dt><tt>td=</tt><i>delay</i><dd>
-    If two expressions are given, the <i>delay</i> is the amount of
-    scale value (e.g., time in transient analysis) before starting to
-    look for crossing events.
-
-    <p>
-    If one expression is given, and the expression is not constant or
-    a measure result name, the <i>delay</i> is the amount of the scale
-    value to wait before checking to see if the expression evaluates true.
-    If the expression is a measurement name, than the delay is added to
-    the measurement time of the referenced measurement.
-    </dl>
-
-    <p>
-    There is a special case, where no expressions are given, only a
-    <tt>td=</tt><i>delay</i> value.  This can be a second or
-    subsequent <i>pointspec</i> in the <i>pointlist</i>.  This will
-    trigger at the time of the previous <i>pointspec</i> in the list
-    (to the left) delayed by <i>delay</i>.
-
-    <p>
-    Examples:<br>
-    <tt>at v(2)=0.5 rise=3 td=0.2nS after td=0.1nS</tt><br>
-    &nbsp;&nbsp;Trigger 0.1nS after the third rising edge of v(2)
-    after 0.2nS crosses 0.5V.<br>
-    <tt>when v(2)&#60;v(1) before v(2)&#60;v(3)</tt><br>
-    &nbsp;&nbsp;Trigger the first time that <tt>v(2) &#60; v(1)</tt>
-    if and only if <tt>v(2) &#60; v(3)</tt> has never been true.
-
-    <a name="compat"></a>
-    <h2>Syntax Compatibility</h2>
-
-    <p>
-    The present syntax supported by the <tt>.measure</tt> command in
-    <i>WRspice</i> is a super set of the previous syntax cases, which
-    are shown below.  These should all work in the present system.
-
-    <p>
-    Form 1:
-    <blockquote>
-    <tt>trig|targ at=</tt><i>value</i>
-    </blockquote>
-
-    Form 1 is straightforward; the interval starts (<tt>trig</tt>) or
-    ends (<tt>targ</tt>) at <i>value</i>.  <i>Value</i> must be within
-    the simulation range of the scale variable (e.g., time in
-    transient analysis).
-
-    <p>
-    The same effect can be achieved with:
-    <blockquote>
-        <tt>from=</tt><i>value</i> <tt>to=</tt><i>value</i>
+        <tt>.stop</tt> <i>analysis</i> <i>point</i> | <i>interval</i> 
+         [<i>postcmds</i>]<br>
     </blockquote>
 
     <p>
-    Form 2:
-    <blockquote>
-    <tt>trig|targ</tt> <i>variable</i> <tt>val=</tt><i>value</i>
-            [<tt>td=</tt><i>delay</i>] [<tt>cross=</tt><i>crosses</i>]
-            [<tt>rise=</tt><i>rises</i>] [<tt>fall=</tt><i>falls</i>]
-    </blockquote>
-
-    <p>
-    Form 2 allows the interval boundaries to be referenced to times
-    when a variable crosses a threshold.  The <i>variable</i> can be
-    any vector whose value is available during simulation.  The
-    <i>value</i> is a constant which is used to measure crossing
-    events.  The <tt>val=</tt> which precedes the <i>value</i> is
-    optional.  At least one of the <tt>rise/fall/cross</tt> fields
-    should be set.  Their values are integers which represent the
-    variable crossing the threshold a number of times.  The
-    <tt>rise</tt> indicates the variable rising through the threshold,
-    <tt>fall</tt> indicates the variable decreasing from above to
-    below the threshold, and <tt>cross</tt> indicates <tt>rises +
-    falls</tt>.  The interval boundary is set when the specified
-    number of transitions is reached.
-
-    <p>
-    If the delay is specified, transition counting starts after the
-    specified delay.
-
-    <p>
-    Example:
-    <blockquote>
-        <tt>trig v(2) 2.5 td=0.1ns rise=2</tt>
-    </blockquote>
-
-    This indicates that the interval begins at the second time v(2) rises
-    above 2.5V after 0.1ns.
-
-    <p>
-    Form 3:
-    <blockquote>
-    <tt>trig|targ when</tt> <i>expr1</i>=<i>expr2</i>
-            [<tt>td=</tt><i>delay</i>]
-            [<tt>cross=</tt><i>crosses</i>] [<tt>rise=</tt><i>rises</i>]
-            [<tt>fall=</tt><i>falls</i>]
-    </blockquote>
-
-    <p>
-    The third form is similar to the second form, except that
-    crossings are defined when <i>expr1 = expr2</i>.  A rise is
-    defined as <i>expr1</i> going from less than to greater than
-    <i>expr2</i>.
-
-
-    <a name="measure"></a>
-    <h2>Measurements</h2>
-
-    The following measurements are available when an interval has been
-    specified.
-
-    <dl>
-    <dt><tt>find</tt> <i>expr</i>
-      <dd>evaluate the difference:  <i>expr</i> at target minus
-      <i>expr</i> at trigger.</dl>
-    <dt><tt>min</tt> <i>expr</i>
-      <dd>find the minimum value of <i>expr</i></dl>
-    <dl>
-    <dt><tt>max</tt> <i>expr</i>
-      <dd>find the maximum value of <i>expr</i></dl>
-    <dl>
-    <dt><tt>pp</tt> <i>expr</i>
-      <dd>find the (maximum - minimum) value of <i>expr</i></dl>
-    <dl>
-    <dt><tt>avg</tt> <i>expr</i>
-      <dd>compute the average of <i>expr</i></dl>
-    <dl>
-    <dt><tt>rms</tt> <i>expr</i>
-      <dd>compute the rms value of <i>expr</i></dl>
-    <dl>
-    <dt><tt>pw</tt> <i>expr</i>
-      <dd>This will measure the full-width half-maximum of a pulse
-          from <i>expr</i> contained in the interval.  The baseline is
-          taken as the initial or final value with the smallest
-          difference from the peak value.  The algorithm will measure
-          the larger of a negative going or positive going pulse.</dl>
-    <dl>
-    <dt><tt>rt</tt> <i>expr</i>
-      <dd>This will measure the 10-90 percent rise or fall time of the
-          edge from <i>expr</i> contained in the interval.  The
-          reference start and final values are the values at the ends
-          of the interval.</dl>
-
-    When a point has been specified, the only measurement form
-    available is
-
-    <dl>
-    <dt><tt>find</tt> <i>expr</i>
-      <dd>evaluate <i>expr</i> at point</dl>
-
-    <p>
-    A <tt>.measure</tt> statement can contain any number of
-    measurements, including no measurements.  If no measurement is
-    specified, the vector produced contains only zeros, however the
-    scale vector contains the start and stop values, which may be the
-    only result needed.  The created vector, which is added to the
-    current plot, will be of length equal to the number of
-    measurements, with the results placed in the vector in order.
-
-    <p>
-    The measurement scale point(s) in <tt>.measure</tt> statements are
-    saved in a vector, which is the scale for the result vector.  If
-    the measurement name is "<tt>result</tt>", the scale vector is
-    named "<tt>result_scale</tt>".  The scale contains one or two
-    values, depending on whether it is a point or interval
-    measurement.
-
-    <a name="addl"></a>
-    <h2>Post-Measurement Commands</h2>
-
-    There are a few commands which can be performed after measurement,
-    which will run whether or not any measurements are actually made.
-    
-    <dl>
-    <dt><tt>print</tt>, <tt>print_terse</tt><dd>
-    By default, nothing is printed on-screen for a <tt>.measure</tt>
-    line during interactive simulation.  If the keywords
-    "<tt>print</tt>" appears in the <tt>.measure</tt> line, the
-    results will be printed on the standard output.  A more concise
-    format can be obtained from the alternative keyword
-    <tt>print_terse</tt>.  The result vectors are created in all
-    cases.
-    </dl>
-
-    <dl>
-    <dt><tt>stop</tt><dd>
-    If the keyword "<tt>stop</tt>" appears in a <tt>.measure</tt>
-    line, the analysis will be paused when <i>all</i> measurements are
-    complete.  Thus if the deck contains several <tt>.measure</tt>
-    lines and <tt>stop</tt> is given in at least one, the analysis
-    will pause when all of the measurements are complete, not just the
-    one containing <tt>stop</tt>.  The analysis can then be resumed
-    with the <a href="resume"><b>resume</b></a> command, or reset with
-    the <a href="reset"><b>reset</b></a> command.
-    </dl>
-
-    <dl>
-    <dt><tt>exec</tt> <i>command</i><dd>
-    Execute the <i>WRspice</i> shell command found in <i>command</i>,
-    which should be double-quoted if it contains white space.  Note
-    that multiple commands can be given, separated by semicolon
-    (<tt>';'</tt>) characters.  This will be run before a script is
-    called (see below) so can be used to pass information to the
-    script.  The command will be executed once only, after
-    measurements if any.
-
-    <dl>
-    <dt><tt>call</tt> <i>script</i><dd>
-    After the measurement (if any) is performed and any command string
-    is executed, the named script will be called.  The script can be a
-    normal script file or <a href="codeblock">codeblock</a>.  The
-    script can be used for additional processing or testing of
-    whatever sort.  If the script returns 1, the current simulation
-    will pause immediately (no waiting for other measures) however a
-    calling analysis, such as Monto Carlo, will continue.  If 2 is
-    returned, this indicates a fatal global error and any calling
-    analysis will be stopped too.  Any other return value allows the
-    run to continue normally.
-    </dl>
-
-    <p>
-    When a <tt>.measure</tt> is included in an iterative analysis
-    (Monte Carlo, loop, etc.), data are saved as follows.  Before each
-    iteration, the previous result vector and its scale are saved to
-    the end of a "history" vector and scale, and are then deleted. 
-    The result vector and scale are recreated when the measurement is
-    completed during the iteration.  Thus, at the end of the analysis,
-    for a measurement named "example", one would have the following
-    vectors:
-
-    <blockquote>
-    <table border=1 cellpadding=2 bgcolor="#ffffee">
-    <tr><th align="left"><tt>example</tt></th>
-       <td>the result from the final trial</td></tr>
-    <tr><th align="left"><tt>example_scale</tt></th>
-      <td>the measurement interval or point in the last trial</td></tr>
-    <tr><th align="left"><tt>example_hist</tt></th>
-      <td>results from the prior trials</td></tr>
-    <tr><th align="left"><tt>example_hist_scale</tt></th>
-      <td>intervals from the prior trials</td></tr>
-    </table><br>
-    </blockquote>
-
-    <p>
-    Thus, during each trial, the result vector will have the same
-    properties as in a standard run.  It can be used in the <a
-    href="oprngfile">.control block</a> of a <a href="monte">Monte
-    Carlo</a> or <a href="oprng_analysis">operating range</a> file
-    (recall that <tt>$?</tt><i>vector</i> can be used to query
-    existence, and that if there is no <tt>checkPNTS</tt> vector
-    defined, the <tt>.control</tt> block is called once at the end of
-    each trial).
-
-    <p>
-    Multiple <tt>.measure</tt> lines can be "chained" in the following
-    manner.  The vector name following the <tt>from</tt>, <tt>to</tt>,
-    <tt>trig</tt>, or <tt>targ</tt> keywords can be the name of
-    another measure.  In this case, the effective start time is the
-    measure time of the referenced measure.  The measure time is the
-    end of the interval or the measure point.  The <tt>td</tt>,
-    <tt>rise</tt>, etc.  keywords can be used in the referencing
-    measure.  The <tt>td</tt> will be added to the imported time, and
-    the other keywords operate in the normal way.  If there are no
-    keywords other than <tt>td</tt> specified, the time is the delay
-    time plus the imported time.
- 
-    <p>
-    Example:
-    <blockquote><tt>
-    .measure tran t1 trig v(5) val=.4m rise=3<br>
-    .measure tran t2 trig v(5) val=.4m rise=4<br>
-    .measure tran pw trig t1 td=20p targ t2 td=20p pw v(5) max v(5)
-    </tt></blockquote>
- 
-    <p>
-    In this case, the measures t1 and t2 "frame" a period of an
-    (assumed) repeating signal v(5).  Note that no actual measurement
-    is performed for these lines.  Their purpose is to be referenced
-    in the third line, which takes as its interval the t1-t2 interval
-    delayed by 20 pS, and measures the pulse width and peak value.
-
-    <a name="ref"></a>
-    <h2>Referencing Results in Sources</h2>
-
-    <p>
-    It is possible to reference <tt>.measure</tt> results in sources. 
-    The referencing token has the same form as a circuit variable,
-    with an optional index, i.e.
-    <blockquote>
-    <tt>@</tt><i>result</i>[<i>index</i>]
-    </blockquote>
-    where the <i>index</i>, if used, is an integer that references a
-    specific component of the <i>result</i> (0-based).  The value is
-    always zero for timepoints before the measurement has been
-    performed, and a constant value afterward.
-
-    <p>
-    Example:
-    <blockquote><tt>
-    .measure tran peak from=50n to=150n max v(5)<br>
-    .measure tran stuff trig v(4) val=4.5 rise=1 targ v(4) val=4.5<br>
-    + fall=2 min v(4) max v(4) pp v(4) avg v(4) rms v(4) print<br>
-    vxx 1 0 @peak<br>
-    vyy 2 0 @stuff[2]<br>
-    </tt></blockquote>
-
-    <p>
-    In this example, during transient analysis, <tt>vxx</tt> is zero
-    until 150 nS, where the measurement takes place, at which point it
-    jumps to the value measured.  Likewise, <tt>vyy</tt> is zero until
-    the measurement, at which point it jumps to the third component
-    ("<tt>pp v(4)</tt>") result.  The resulting voltages can be used
-    elsewhere in the circuit.  Note that we have two implementations
-    of a behavioral peak detector.
+    The <tt>.stop</tt> line allows the simulation to pause on a
+    specified condition.  These lines may be useful as sanity checks
+    that will terminate a simulation and alert the user if the
+    simulation is diverging from expected behavior.  There is also a
+    <a href="stop"><b>stop</b></a> runop command that uses the same
+    syntax.  See the description of that command for information about
+    syntax and usage.
 
 !!SEEALSO
 spinput
@@ -2769,7 +2320,7 @@ spinput
 !!REDIRECT .monte       execblock#check
 !!REDIRECT .noexec      execblock#check
 
-!! format.tex 072716
+!! format.tex 030519
 !!KEYWORD
 execblock
 !!TITLE
@@ -2782,9 +2333,9 @@ Control Script Execution
     <tt>.control</tt>, and <tt>.postrun</tt> tokens.  These statements
     are enclosed in a block beginning with <tt>.exec</tt>,
     <tt>.control</tt>, or <tt>.postrun</tt> and ending with
-    <tt>.endc</tt>.  The <tt>.exec</tt>, <tt>.control</tt>,
-    <tt>.postrun</tt>, and <tt>.endc</tt> lines contain only the
-    keyword.
+    <tt>.endc</tt>.  The <tt>.exec</tt>, <tt>.control</tt>, and
+    <tt>.postrun</tt> keywords are followed by an optional block name,
+    and <tt>.endc</tt> lines contain only the keyword.
 
     <p>
     <a name="exec"></a>
@@ -2794,15 +2345,15 @@ Control Script Execution
     <p>
     General form:
     <blockquote>
-        <tt>.exec</tt><br>
+        <tt>.exec</tt> [<i>blockname</i>]<br>
         shell commands ...<br>
         .<tt>.endc</tt><br>
         <br>
-        <tt>.control</tt><br>
+        <tt>.control</tt> [<i>blockname</i>]<br>
         shell commands ...<br>
         <tt>.endc</tt><br>
         <br>
-        <tt>.postrun</tt><br>
+        <tt>.postrun</tt> [<i>blockname</i>]<br>
         shell commands ...<br>
         <tt>.endc</tt><br>
     </blockquote>
@@ -2822,10 +2373,29 @@ Control Script Execution
     <p>
     The <i>shell commands</i> are any commands which can be
     interpreted by the <i>WRspice</i> <a href="spshell">shell</a>. 
-    The difference between <tt>.exec</tt> and <tt>.control</tt> is
-    that for <tt>.exec</tt>, the commands are executed before the
-    circuit is parsed, and for .control, the commands are executed
-    after the circuit is parsed.
+
+    <p>
+    If a <i>blockname</i> is given, the script lines are parsed, and
+    the executable object saved as a <a href="codeblock">codeblock</a>
+    under <i>blockname</i>.  The block can be executed by invoking the
+    <i>blockname</i> from the command line or in a script or
+    codeblock.
+
+    <p>
+    In this usage, there is no difference between the <tt>.exec</tt>,
+    <tt>.control</tt>, and <tt>.postrun</tt> keywords, and there is no
+    connection of the block to any other content in tne same file. 
+    One file can be used to load any number of named codeblocks. 
+    Blocks with an existing name will replace the existing content.
+
+    <p>
+    If the block is unnamed, the difference between <tt>.exec</tt> and
+    <tt>.control</tt> is that for <tt>.exec</tt>, the commands are
+    executed before the circuit is parsed, and for .control, the
+    commands are executed after the circuit is parsed, assuming that
+    the file also contains a circuit description.  If not, there is
+    again no real distinction, but unlike for named blocks, unnamed
+    blocks will be executed when read.
 
     <p>
     Commands in a <tt>.postrun</tt> block are executed after every

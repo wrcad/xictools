@@ -26,7 +26,7 @@ CCFILES = \
   $(NFILES) texthelp.cc time.cc ttyio.cc vardb.cc verilog.cc wlist.cc
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): $(CCOBJS)
+$(LIB_TARGET): cptest $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -68,7 +68,7 @@ distclean: clean
 
 # Make sure that the copies are the same as the source, avoid local
 # updates that won't propagate!
-cptest::
+cptest: $(NFILES)
 	@for a in $(NFILES); do \
 	    set -- $$(/usr/bin/sum $(BASE)/spnumber/$$a); s1=$$1; \
 	    set -- $$(/usr/bin/sum $$a); s2=$$1; \

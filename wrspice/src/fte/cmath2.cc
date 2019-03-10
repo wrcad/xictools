@@ -368,9 +368,12 @@ sDataVec *
 sDataVec::v_comma(sDataVec *data2)
 {
     sDataVec *res = new sDataVec(0, VF_COMPLEX | v_flags | data2->v_flags,
-        v_length, &v_units);
-    if (!(res->v_units == data2->v_units))
-        res->v_units.set(UU_NOTYPE);
+        v_length, &data2->v_units);
+
+    // Take the imag units unless empty.
+    if (res->v_units.isnotype())
+        res->v_units = v_units;
+
     complex *out = res->v_data.comp;
     if (iscomplex()) {
         if (data2->iscomplex()) {
