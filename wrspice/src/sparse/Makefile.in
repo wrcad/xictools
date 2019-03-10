@@ -25,7 +25,7 @@ SP_CCFILES = spbuild.cc spfactor.cc spoutput.cc spsolve.cc sputils.cc
 CCFILES = kluif.cc spspice.cc $(SP_CCFILES)
 CCOBJS = $(CCFILES:.cc=.o)
 
-$(LIB_TARGET): $(CCOBJS)
+$(LIB_TARGET): cptest $(CCOBJS)
 	@if [ -f $(LIB_TARGET) ]; then \
 	    rm -f $(LIB_TARGET); \
 	fi
@@ -59,7 +59,7 @@ distclean: clean
 
 # Make sure that the copies are the same as the source, avoid local
 # updates that won't propagate!
-cptest::
+cptest: $(SP_CCFILES)
 	@for a in $(SP_CCFILES); do \
 	    set -- $$(/usr/bin/sum $(BASE)/sparse/$$a); s1=$$1; \
 	    set -- $$(/usr/bin/sum $$a); s2=$$1; \

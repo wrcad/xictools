@@ -174,7 +174,7 @@ sCKT::va_analysis(const char *tok)
 //
 double
 sCKT::va_simparam(const char *tok, double retval, bool rvgiven,
-    sGENinstance *inst)
+    sGENinstance*)
 {
     if (lstring::cieq(tok, "gdev") || lstring::cieq(tok, "gmin"))
         return (CKTcurTask->TSKgmin);
