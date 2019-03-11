@@ -346,16 +346,18 @@ cEdit::openCell(const char *name, CDcbin *cbret, char *cname, cCHD *chd)
         chd, &cbin);
 
     if (oiret == OIerror) {
-        Errs()->add_error("Error opening %s", name);
+        Errs()->add_error("Error opening %s", cname ? cname : name);
         return (false);
     }
     if (oiret == OIaborted) {
-        Errs()->add_error("Open %s aborted on user request,", name);
+        Errs()->add_error("Open %s aborted on user request.",
+            cname ? cname : name);
         return (false);
     }
     if (oiret == OInew) {
-        Errs()->add_error("Cell %s was not found.", name);
-        CD()->Close(CD()->CellNameTableFind(name));  // delete empty cell
+        Errs()->add_error("Cell %s was not found.", cname ? cname : name);
+        // delete empty cell
+        CD()->Close(CD()->CellNameTableFind(cname ? cname : name));
         return (false);
     }
     if (cbin.elec() && !cbin.isDevice() && oiret != OIold)

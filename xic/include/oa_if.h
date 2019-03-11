@@ -116,10 +116,10 @@ public:
     bool load_library(const char *libname)
         { return (oaPtr->load_library(libname)); }
     bool load_cell(const char *libname, const char *cellname,
-        const char* viewname, int depth, bool setcur, PCellParam **pm = 0,
-        char **subm_name = 0)
+        const char* viewname, int depth, bool setcur,
+        const char **new_cell_name = 0, PCellParam **pm = 0)
         { return (oaPtr->load_cell(libname, cellname, viewname, depth, setcur,
-          pm, subm_name)); }
+          new_cell_name, pm)); }
     OItype open_lib_cell(const char *cellname, CDcbin *cbin)
         { return (oaPtr->open_lib_cell(cellname, cbin)); }
     void clear_name_table()

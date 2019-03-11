@@ -42,11 +42,11 @@
 // Functions for loop analysis.
 //
 
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "commands.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 #include "ttyio.h"
 #include "input.h"
 #include "toolbar.h"
@@ -140,7 +140,7 @@ IFsimulator::SweepAnalysis(wordlist *wl)
         if (!sweep->devs[0])
             sweep->names = sNames::set_names();
         sweep->out_mode = OutcLoop;
-        sweep->out_plot = ft_plot_cur;  // reset later
+        sweep->out_plot = OP.curPlot();  // reset later
         for (int i = 0; i <= sweep->nestLevel; i++) {
             sweep->state[i] = sweep->start[i];
             if (sweep->step[i] == 0.0 && sweep->stop[i] == sweep->start[i])
@@ -197,7 +197,7 @@ IFsimulator::SweepAnalysis(wordlist *wl)
         int error, count;
         if (firsttime) {
             count = 0;
-            // Beware plot handling:  out_plot is the old ft_plot_cur,
+            // Beware plot handling:  out_plot is the old OP.curPlot(),
             // which may be needed in setup_newplot(), but this should
             // be zeroed when running the circuit the first time since
             // we want to switch to a new plot.
@@ -211,7 +211,7 @@ IFsimulator::SweepAnalysis(wordlist *wl)
             // copy any specification vectors to new current plot
             if (sweep->names)
                 sweep->names->setup_newplot(sweep->out_cir, sweep->out_plot);
-            sweep->out_plot = ft_plot_cur;
+            sweep->out_plot = OP.curPlot();
 
             sDimen *dm = new sDimen(
                 sweep->names ? sweep->names->value1() : "value1",

@@ -46,8 +46,8 @@ Authors: 1985 Wayne A. Christopher
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
-#include "frontend.h"
+#include "graph.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"

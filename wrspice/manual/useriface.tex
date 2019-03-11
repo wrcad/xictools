@@ -979,7 +979,7 @@ niceties such as plotting (other than the infamous crude line-printer
 plots of yore).  Under Microsoft Windows, graphics is (of course)
 always available.
 
-% spToolbar.hlp:toolbar 042118
+% spToolbar.hlp:toolbar 022519
 
 \index{tool control window}
 When a graphical interface is available, {\WRspice} by default
@@ -1224,10 +1224,10 @@ customize the variables associated with the various commands.
 \item{\cb Trace}\\
 \index{Trace tool}
 Pop up the {\cb Trace} panel (see \ref{tracepanel}) which lists the
-``debugs'' currently in effect.  The ``debugs'' are directives to
+``runops'' currently in effect.  The runops are directives to
 interactively plot, or trace variables during simulation, or to pause
 the simulation when a condition is met.  The panel provides capability
-for deactivating or deleting ``debugs''.
+for deactivating or deleting runops.
 
 \item{\cb Debug}\\
 \index{Debug tool}
@@ -2256,7 +2256,7 @@ These entries apply to the {\cb write} command, which is used to save
 simulation data to a file.
 \end{description}
 
-% spToolbar.hlp:tracepanel 012709
+% spToolbar.hlp:tracepanel 022519
 %SU-------------------------------------
 \subsection{The Trace Tool}
 \label{tracepanel}
@@ -2264,20 +2264,20 @@ simulation data to a file.
 
 This panel is available from the {\cb Trace} button in the {\cb Tools}
 menu of the {\cb Tool Control} window.  It provides a listing of the
-``debugs'' (i.e., traces, breakpoints, interactive plots) currently in
-effect.  These ``debugs'' are set with the {\cb save}, {\cb stop},
-{\cb trace}, and {\cb iplot} commands.
+``runops'' (i.e., traces, breakpoints, interactive plots) currently in
+effect.  These runops are set with the {\cb save}, {\cb trace}, {\cb
+iplot}, {\cb measure}, and {\cb stop} commands.
 
-A debug can be made inactive by clicking on the text in the list, in
+A runop can be made inactive by clicking on the text in the list, in
 which case an `I' appears in the first column.  Click on the text a
-second time to restore activation.  Inactive debugs are ignored during
+second time to restore activation.  Inactive runops are ignored during
 simulation.  The following buttons are available:
 
 \begin{description}
 \item{\cb Help}\\
     Bring up help on this panel.
 \item{\cb Delete Inactive}\\
-    Delete the debugs selected as inactive, i.e., those listed with
+    Delete the runops selected as inactive, i.e., those listed with
     ``I'' in the first column.
 \item{\cb Dismiss}\\
     Remove the trace panel from the screen.
@@ -4214,7 +4214,7 @@ into idle mode, i.e., the simulation or other operation completes.
 \index{plot description}
 \index{vector description}
 
-% spExpressions.hlp:plotvec 121215
+% spExpressions.hlp:plotvec 022519
 
 %SU-------------------------------------
 \subsection{Plots and Vectors}
@@ -4644,7 +4644,7 @@ other special vectors representing device parameters, the vector must
 be explicitly saved with the {\cb save} command or in a {\vt .save}
 line.  However, if this form is used in a {\vt .measure} line, the
 needed vector will be saved automatically.  This is also true if the
-form is used in one of the ``debugs'' as listed with the {\cb status}
+form is used in one of the ``runops'' as listed with the {\cb status}
 command.
 
 %SU-------------------------------------

@@ -46,17 +46,19 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "spglobal.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
 #include "circuit.h"
-#include "fteparse.h"
-#include "outplot.h"
+#include "parser.h"
+#include "graph.h"
+#include "output.h"
 #include "keywords.h"
 #include "optdefs.h"
 #include "statdefs.h"
+#include "inpline.h"
 #include "miscutil/random.h"
 #ifdef HAVE_MOZY
 #include "help/help_defs.h"
@@ -190,7 +192,7 @@ IFsimulator::PreInit()
     // The ft_constants are real values only.
     for (sConstant *c = ft_constants; c->name; c++) {
         if (!c->units)
-            VecSet(c->name, "1", true);
+            OP.vecSet(c->name, "1", true);
         else {
             char buf[64];
             char *ss = buf;
@@ -205,14 +207,14 @@ IFsimulator::PreInit()
                 *ss++ = *tt++;
             }
             *ss = 0;
-            VecSet(c->name, buf, true);
+            OP.vecSet(c->name, buf, true);
         }
-        sDataVec *v = VecGet(c->name, 0);
+        sDataVec *v = OP.vecGet(c->name, 0);
         v->set_realval(0, c->value);
     }
 
     // The complex constants (only one).
-    VecSet("const_j", "0,1", true);
+    OP.vecSet("const_j", "0,1", true);
 }
 
 
@@ -225,7 +227,7 @@ IFsimulator::PostInit()
     post_init_done = true;
 
     // Fix case sensitivity of the constants plot.
-    sPlot::constants()->set_case(sHtab::get_ciflag(CSE_VEC));
+    OP.constants()->set_case(sHtab::get_ciflag(CSE_VEC));
 
     if (!CP.GetFlag(CP_NOCC)) {
         // Add commands...
@@ -307,8 +309,8 @@ IFsimulator::Periodic()
 {
     SetFlag(FT_INTERRUPT, false);
     CheckSpace();
-    CheckAsyncJobs();
-    VecGc();
+    OP.checkAsyncJobs();
+    OP.vecGc();
 }
 
 
@@ -317,6 +319,25 @@ IFsimulator::Periodic()
 bool
 IFsimulator::ImplicitCommand(wordlist *wl)
 {
+    // Execute the bound codeblock of the current circuit (if any) in
+    // response to the SPICE keyword, including leading period.
+
+    if (lstring::eq(wl->wl_word, EXEC_KW)) {
+        if (CurCircuit())
+            CurCircuit()->execBlk().exec(false);
+        return (true);
+    }
+    if (lstring::eq(wl->wl_word, CONT_KW)) {
+        if (CurCircuit())
+            Sp.CurCircuit()->controlBlk().exec(false);
+        return (true);
+    }
+    if (lstring::eq(wl->wl_word, POST_KW)) {
+        if (CurCircuit())
+            Sp.CurCircuit()->postrunBlk().exec(false);   
+        return (true);
+    }
+
     if (strchr(wl->wl_word, '=') ||
         (wl->wl_next && *wl->wl_next->wl_word == '=')) {
         // Implicit 'let'.

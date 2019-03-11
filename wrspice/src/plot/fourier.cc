@@ -45,12 +45,13 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
+#include "simulator.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "frontend.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "spnumber/spnumber.h"
 
 #ifdef WIN32
@@ -142,7 +143,7 @@ CommandTab::com_fourier(wordlist *wl)
     char xbuf[20];
     sprintf(xbuf, "%1.1e", 0.0);
     int shift = strlen(xbuf) - 7;
-    if (!Sp.CurPlot() || !Sp.CurPlot()->scale()) {
+    if (!OP.curPlot() || !OP.curPlot()->scale()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "no vectors loaded.\n");
         return;
     }
@@ -160,7 +161,7 @@ CommandTab::com_fourier(wordlist *wl)
     if (Sp.GetVar(kw_fourgridsize, VTYP_NUM, &vv) && vv.get_int() > 0)
         fourgridsize = vv.get_int();
 
-    sDataVec *time = Sp.CurPlot()->scale();
+    sDataVec *time = OP.curPlot()->scale();
     if (!time->isreal()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "fourier needs real scale type.\n");
         return;
@@ -301,19 +302,19 @@ Author:   1994 Anthony E. Parker, Department of Electronics, Macquarie Uni.
 void
 CommandTab::com_spec(wordlist *wl)
 {
-    if (!Sp.CurPlot() || !Sp.CurPlot()->scale()) {
+    if (!OP.curPlot() || !OP.curPlot()->scale()) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "Error: no vectors loaded.\n");
         return;
     }
-    if (!Sp.CurPlot()->scale()->isreal() || 
-            !(*Sp.CurPlot()->scale()->units() == UU_TIME)) {
+    if (!OP.curPlot()->scale()->isreal() || 
+            !(*OP.curPlot()->scale()->units() == UU_TIME)) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "Error: spec needs real time scale.\n");
         return;
     }
 
     double *freq;
     const char *s = wl->wl_word;
-    int tlen = (Sp.CurPlot()->scale())->length();
+    int tlen = (OP.curPlot()->scale())->length();
     if (!(freq = SPnum.parse(&s, false)) || (*freq < 0.0)) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "Error: bad start freq %s.\n",
             wl->wl_word);
@@ -340,7 +341,7 @@ CommandTab::com_spec(wordlist *wl)
     double stepf = *freq;
 
     wl = wl->wl_next;
-    double *time = Sp.CurPlot()->scale()->realvec();
+    double *time = OP.curPlot()->scale()->realvec();
     double span = time[tlen-1] - time[0];
     if (stopf > 0.5*tlen/span) {
         GRpkgIf()->ErrPrintf(ET_ERROR,
@@ -434,7 +435,7 @@ CommandTab::com_spec(wordlist *wl)
     sPlot *pl = new sPlot("spectrum");
     pl->new_plot();
     pl->set_title(pl->next_plot()->title());
-    Sp.SetCurPlot(pl);
+    OP.setCurPlot(pl);
 
     freq = new double[fpts];
     sDataVec *f = new sDataVec(UU_FREQUENCY);

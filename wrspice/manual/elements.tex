@@ -4415,7 +4415,7 @@ See the Josephson junction model description for more information.
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 100318
+% spModels.hlp:jjmodel 030419
 
 {\cb Type Name:} {\vt jj}
 
@@ -4452,6 +4452,8 @@ when formulating instance capacitance and conductances.
 \hline
 \vt cap & $*$ & \rr Reference junction capacitance & $F$ & 0.7e-12\\
 \hline
+\vt cpic & & \rr Reference junction capacitance per critical current & $F/A$ &
+ 0.7e-9\\ \hline
 \vt cmu & & \rr Capacitance area/edge scaling & & 0.0\\
 \hline
 \vt vm & & \rr Reference icrit*rsub & $V$ & 16.5e-3\\
@@ -4611,11 +4613,20 @@ foundry.
 
 \item{\vt cap}\\
 {\bf range:} 0.0 -- 1nF\\
-This is the capacitance of the reference junction, in farads.  The
-default value is obtained from the MIT Lincoln Laboratory SFQ5EE
-process\cite{tolpygo} specific capacitance, and the junction critical
-current, and is 0.7pF for the default assumption of 1.0mA critical
-current.
+This is the capacitance of the reference junction, in farads.  This
+will override the {\vt cpic} parameter if given, setting a fixed value
+for reference junction capacitance, invariant with {\vt icrit}.  If
+not given, junction specific capacitance is set via the {\vt cpic}
+parameter, see below.
+
+\item{\vt cpic}\\
+{\bf range:} 0.0 -- 1e-9\\
+This supplies the default capacitance per critical current in F/A. 
+This defaults to the MIT Lincoln Laboratory SFQ5EE process <a
+href="tolpygo">[Tolpygo]</a> value (0.7pF for 1.0 mA), and will set
+the junction capacitance if <tt>cap</tt> is not given.  With
+<tt>cap</tt> not given, changing <tt>icrit</tt> will change the
+assumed capacitance of the reference junction.
 
 \item{\vt cmu}\\
 {\bf range:} 0.0 -- 1.0\\

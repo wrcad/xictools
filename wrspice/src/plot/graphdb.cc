@@ -45,10 +45,11 @@ Authors: 1987 UCB
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
-#include "frontend.h"
-#include "ftedebug.h"
+#include "simulator.h"
+#include "runop.h"
 
 
 //
@@ -130,21 +131,20 @@ SPgraphics::DestroyGraph(int id)
         if (list->id() == id) {  // found it
 
             // Fix the iplot list
-            sDbComm *d;
-            for (d = DB.iplots(); d && d->graphid() != id; d = d->next()) ;
+            sRunopIplot *d = OP.runops()->iplots();
+            while (d && d->graphid() != id)
+                d = d->next();
             if (!d) {
                 for (sFtCirc *f = Sp.CircuitList(); f; f = f->next()) {
-                    if (f->debugs()) {
-                        d = f->debugs()->iplots();
-                        for ( ; d && d->graphid() != id; d = d->next()) ;
-                        if (d)
-                            break;
-                    }
+                    d = f->iplots();
+                    for ( ; d && d->graphid() != id; d = d->next()) ;
+                    if (d)
+                        break;
                 }
             }
 
-            if (d && d->type() == DB_IPLOT) {
-                d->set_type(DB_DEADIPLOT);
+            if (d && d->type() == RO_IPLOT) {
+                d->set_type(RO_DEADIPLOT);
                 // Delete this later
                 return (0);
             }

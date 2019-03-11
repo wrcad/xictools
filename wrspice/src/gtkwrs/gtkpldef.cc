@@ -45,10 +45,10 @@
  **************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "gtktoolb.h"
 #include "spnumber/spnumber.h"
 
@@ -412,7 +412,7 @@ GTKtoolbar::PopUpPlotDefs(int x, int y)
     entry = KWGET(kw_pointchars);
     if (entry) {
         entry->ent = new xEnt(kw_string_func);
-        entry->ent->create_widgets(entry, DefPointchars);
+        entry->ent->create_widgets(entry, SpGrPkg::DefPointchars);
 
         gtk_table_attach(GTK_TABLE(form), entry->ent->frame, 0, 2,
             entrycount, entrycount + 1,

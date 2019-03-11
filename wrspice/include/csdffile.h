@@ -41,7 +41,7 @@
 #ifndef CSDFFILE_H
 #define CSDFFILE_H
 
-#include "ftedata.h"
+#include "datavec.h"
 
 // Read and write CSDF (Common Simulation Data File).  This format is
 // used by HSPICE and other Synopsys products for plot-viewing,

@@ -47,17 +47,18 @@ Authors: 1985 Wayne A. Christopher
 
 #include "spglobal.h"
 #include <errno.h>
-#include "frontend.h"
+#include "simulator.h"
+#include "runop.h"
 #include "circuit.h"
-#include "outplot.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
 #include "commands.h"
 #include "input.h"
 #include "toolbar.h"
-#include "ftemeas.h"
-#include "fteparse.h"
+#include "parser.h"
 #include "subexpand.h"
 #include "verilog.h"
 #include "spnumber/paramsub.h"
@@ -80,9 +81,6 @@ Authors: 1985 Wayne A. Christopher
 #include "../../malloc/local_malloc.h"
 #endif
 
-#ifdef TIME_DEBUG
-#include "outdata.h"
-#endif
 
 //
 // Functions for sourcing of input.
@@ -682,8 +680,8 @@ IFsimulator::SpSource(FILE *fp, bool nospice, bool nocmds,
     while (isspace(*s))
         s++;
     if (*s == '.') {
-        if (lstring::cimatch(CBLK_KW, s) ||
-                lstring::cimatch(EBLK_KW, s) ||
+        if (lstring::cimatch(CONT_KW, s) ||
+                lstring::cimatch(EXEC_KW, s) ||
                 lstring::cimatch(INCL_L_KW, s) ||
                 lstring::cimatch(INCL_S_KW, s) ||
                 lstring::cimatch(SPINCL_KW, s) ||
@@ -723,7 +721,7 @@ IFsimulator::SpSource(FILE *fp, bool nospice, bool nocmds,
     double tstart = OP.seconds();
 #endif
     PushUserFuncs(0);
-    sParamTab *tab = 0;
+    sParamTab *tab = new sParamTab();
     LibMap = new sLibMap;
     if (deck)
         deck->set_next(ReadDeck(fp, title, &err, &tab, filename));
@@ -820,13 +818,20 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
     // If noexec is true here, old format is indicated.  The first line
     // is .whatever, and will be cut below.
 
-    int kwfound = 0;
-    wordlist *execs =
-        deck->get_controls(nospice && nocmds, CBLK_EXEC, noexec, &kwfound);
-    wordlist *controls =
-        deck->get_controls(nospice && nocmds, CBLK_CTRL);
-    wordlist *postrun =
-        deck->get_controls(nospice && nocmds, CBLK_POST);
+    int kwfound;
+    deck->get_keywords(&kwfound);
+
+    wordlist *execs = 0;
+    wordlist *controls = 0;
+    wordlist *postrun = 0;
+
+    if (noexec || (nospice && nocmds) || (kwfound & LI_EXEC_FOUND))
+        execs = deck->get_controls(nospice && nocmds, CBLK_EXEC, noexec);
+    if (kwfound & LI_CONT_FOUND)
+        controls = deck->get_controls(nospice && nocmds, CBLK_CTRL);
+    if (kwfound & LI_POST_FOUND)
+        postrun = deck->get_controls(nospice && nocmds, CBLK_POST);
+
     if (!noexec) {
         check = ((kwfound & LI_CHECK_FOUND) ? true : false);
         checkall = ((kwfound & LI_CHECKALL_FOUND) ? true : false);
@@ -958,20 +963,20 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
             for (wordlist *wl = wx; wl; wl = wl->wl_next)
                 ptab->param_subst_all(&wl->wl_word);
         }
-        strcpy(tpname, ft_plot_cur->type_name());
+        strcpy(tpname, OP.curPlot()->type_name());
         // Run the execs (before source).
         // Set up a temporary plot for vectors defined in the exec
         // block that might be needed in the circuit.
         pl_ex = new sPlot("exec");
         pl_ex->new_plot();
-        ft_plot_cur = pl_ex;
+        OP.setCurPlot(pl_ex);
         pl_ex->set_circuit(ft_curckt->name());
         pl_ex->set_title(ft_curckt->name());
         ExecCmds(wx);
         wordlist::destroy(wx);
 
         // Still in list? may have been destroyed.
-        sPlot *px = ft_plot_list;
+        sPlot *px = OP.plotList();
         for ( ; px; px = px->next_plot()) {
             if (px == pl_ex)
                 break;
@@ -1026,10 +1031,10 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
         ToolBar()->SuppressUpdate(true);
         pl_ex->destroy();
         ToolBar()->SuppressUpdate(false);
-        // ft_plot_cur might be deleted in the execs
-        for (sPlot *pl = ft_plot_list; pl; pl = pl->next_plot()) {
-            if (PlotPrefix(tpname, pl->type_name())) {
-                ft_plot_cur = pl;
+        // current plot might be deleted in the execs
+        for (sPlot *pl = OP.plotList(); pl; pl = pl->next_plot()) {
+            if (IFoutput::plotPrefix(tpname, pl->type_name())) {
+                OP.setCurPlot(pl);
                 break;
             }
         }
@@ -1046,14 +1051,15 @@ IFsimulator::ExecCmds(wordlist *wl)
     if (wl) {
         bool intr = CP.GetFlag(CP_INTERACTIVE);
         CP.SetFlag(CP_INTERACTIVE, false);
-        PushPlot();
+        OP.pushPlot();
         TTY.ioPush();
         CP.PushControl();
+        CP.SetReturnVal(0.0);
         for ( ; wl; wl = wl->wl_next)
             CP.EvLoop(wl->wl_word);
         CP.PopControl();
         TTY.ioPop();
-        PopPlot();
+        OP.popPlot();
         CP.SetFlag(CP_INTERACTIVE, intr);
     }
 }
@@ -1820,8 +1826,8 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
     ci_descr = lstring::copy(spdeck->line());
     ci_verilog = vlog;
     ci_params = ptab;
-    ci_execs.set_text(exec);
-    ci_controls.set_text(ctrl);
+    ci_execBlk.set_text(exec);
+    ci_controlBlk.set_text(ctrl);
     if (fname)
         ci_filename = lstring::copy(fname);
 
@@ -1943,7 +1949,7 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
                                 *t = tolower(*t);
                             t++;
                         }
-                        Sp.GetOutDesc()->set_outFile(fn);
+                        OP.getOutDesc()->set_outFile(fn);
                         delete [] fn;
                         Sp.SetFlag(FT_RAWFGIVEN, true);
                     }
@@ -1967,7 +1973,7 @@ sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
 
     // Substitute for shell variables in the spice deck as it is read. 
     // The variables must have been defined before the deck is sourced
-    // (in the EBLK_KW (".exec") block, NOT in the CBLK_KW
+    // (in the EXEC_KW (".exec") block, NOT in the CONT_KW
     // (".control") block), or in the .options line.
 
     // The .options have been parsed, and are now available in the
@@ -2046,27 +2052,50 @@ sFtCirc::expand(sLine *realdeck, bool *err)
     }
 
     for (sLine *dd = ci_deck->next(); dd; dd = dd->next()) {
-        // Set up any .measures.
+        // Set up any .measures or .stops.
         //
         if (lstring::cimatch(MEAS_KW, dd->line()) ||
                 lstring::cimatch(MEASURE_KW, dd->line())) {
 
             char *er = 0;
-            sMeas *m = new sMeas(dd->line(), &er);
+            const char *line = dd->line();
+            lstring::advtok(&line);
+            sRunopMeas *m = new sRunopMeas(line, &er);
             if (er) {
                 dd->set_error(er);
                 delete [] er;
             }
                 
-            if (!ci_measures)
-                ci_measures = m;
+            if (!ci_runops.measures())
+                ci_runops.set_measures(m);
             else {
-                sMeas *mx = ci_measures;
-                while (mx->next)
-                    mx = mx->next;
-                mx->next = m;
+                sRunopMeas *mx = ci_runops.measures();
+                while (mx->next())
+                    mx = mx->next();
+                mx->set_next(m);
             }
         }
+        else if (lstring::cimatch(STOP_KW, dd->line())) {
+
+            char *er = 0;
+            const char *line = dd->line();
+            lstring::advtok(&line);
+            sRunopStop *m = new sRunopStop(line, &er);
+            if (er) {
+                dd->set_error(er);
+                delete [] er;
+            }
+                
+            if (!ci_runops.stops())
+                ci_runops.set_stops(m);
+            else {
+                sRunopStop *mx = ci_runops.stops();
+                while (mx->next())
+                    mx = mx->next();
+                mx->set_next(m);
+            }
+        }
+        // Maybe add .trace, .iplot?
     }
 
     ci_deck->set_actual(realdeck);
@@ -2230,6 +2259,88 @@ sLine::get_speccmds()
 }
 
 
+// Set flags if certain keywords are found in the deck.  The "flag"
+// keywords are removed from the deck, those that start a block are
+// retained.
+//
+void
+sLine::get_keywords(int *kwfound)
+{
+    if (!kwfound)
+        return;
+    *kwfound = 0;
+    sLine *ld = this;
+    for (sLine *dd = li_next; dd; dd = ld->li_next) {
+        if (lstring::cimatch(CHECKALL_KW, dd->li_line)) {
+            *kwfound |= LI_CHECKALL_FOUND;
+            ld->li_next = dd->li_next;
+            delete dd;
+            continue;
+        }
+        if (lstring::cimatch(CHECK_KW, dd->li_line)) {
+            *kwfound |= LI_CHECK_FOUND;
+            ld->li_next = dd->li_next;
+            delete dd;
+            continue;
+        }
+        if (lstring::cimatch(MONTE_KW, dd->li_line)) {
+            *kwfound |= LI_MONTE_FOUND;
+            ld->li_next = dd->li_next;
+            delete dd;
+            continue;
+        }
+        if (lstring::cimatch(NOEXEC_KW, dd->li_line)) {
+            *kwfound |= LI_NOEXEC_FOUND;
+            ld->li_next = dd->li_next;
+            delete dd;
+            continue;
+        }
+
+        if (lstring::cimatch(CONT_KW, dd->li_line))
+            *kwfound |= LI_CONT_FOUND;
+        else if (lstring::cimatch(EXEC_KW, dd->li_line))
+            *kwfound |= LI_EXEC_FOUND;
+        else if (lstring::cimatch(POST_KW, dd->li_line))
+            *kwfound |= LI_POST_FOUND;
+        ld = dd;
+    }
+}
+
+
+namespace {
+    // Handle in-line '#' comments.  We would like to use this as an
+    // in-line comment character, but this can be part of a vector
+    // name, etc., so we need to be careful.  We'll take it as a
+    // comment delimeter if it appears at the line start or after
+    // white space.  We've already dealt with the case where the first
+    // line char is '#'.
+    //
+    // If the # is preceded by a backslash, the user is telling us
+    // that the # is explicitly not a comment.  Strip the backslash.
+    //
+    void clip_comment(char *str)
+    {
+        char *t = strchr(str, '#');
+        while (t) {
+            if (isspace(*(t-1))) {
+                // Don't leave trailing space.
+                t--;
+                while (t >= str && isspace(*t))
+                    *t-- = 0;
+                break;
+            }
+            if (*(t-1) == '\\') {
+                for (char *c = t-1; *c; c++)
+                    *c = *(c+1);
+                t = strchr(t, '#');
+            }
+            else
+                t = strchr(t+1, '#');
+        }
+    }
+}
+
+
 // Strip the control lines out of the deck and return as a wordlist. 
 // If allcmds is true, assume that all lines are commands, up to the
 // block terminator.  If not allcmds, the contblk sets whether we are
@@ -2239,78 +2350,55 @@ sLine::get_speccmds()
 // They are taken as comments (killed) if inside blocks.  Blocks
 // should not overlap.  If kwfound is not 0, check for margin analysis
 // keywords and set *kwfound code if found.  If oldformat is true,
-// start out saving exec block, up until CBLK_KW.
+// start out saving exec block, up until CONT_KW.
 //
 wordlist *
-sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat, int *kwfound)
+sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat)
 {
     const char *cmdkey, *altkey1, *altkey2, *prefx;
     if (type == CBLK_EXEC) {
-        cmdkey = EBLK_KW;
-        altkey1 = CBLK_KW;
+        cmdkey = EXEC_KW;
+        altkey1 = CONT_KW;
         altkey2 = POST_KW;
-        prefx = EBLK_PREFX;
+        prefx = EXEC_PREFX;
     }
     else if (type == CBLK_CTRL) {
-        cmdkey = CBLK_KW;
-        altkey1 = EBLK_KW;
+        cmdkey = CONT_KW;
+        altkey1 = EXEC_KW;
         altkey2 = POST_KW;
-        prefx = CBLK_PREFX;
+        prefx = CONT_PREFX;
         // exec block only
         oldformat = false;
-        kwfound = 0;
     }
     else {
         cmdkey = POST_KW;
-        altkey1 = EBLK_KW;
-        altkey2 = CBLK_KW;
+        altkey1 = EXEC_KW;
+        altkey2 = CONT_KW;
         prefx = 0;
         // exec block only
         oldformat = false;
-        kwfound = 0;
     }
-    wordlist *wl = 0, *controls = 0;
+    wordlist *unnamed_blk = 0, *ub_end = 0;
+    wordlist *named_blk = 0, *nb_end = 0;;
     bool commands = oldformat;
     bool altcmds1 = false;
     bool altcmds2 = false;
+    char *blkname = 0;
 
     sLine *ld = this;
     for (sLine *dd = li_next; dd; dd = ld->li_next) {
-        if (kwfound) {
-            // look for magic keywords
-            if (lstring::cimatch(CHECKALL_KW, dd->li_line)) {
-                *kwfound |= LI_CHECKALL_FOUND;
-                ld->li_next = dd->li_next;
-                delete dd;
-                continue;
-            }
-            else if (lstring::cimatch(CHECK_KW, dd->li_line)) {
-                *kwfound |= LI_CHECK_FOUND;
-                ld->li_next = dd->li_next;
-                delete dd;
-                continue;
-            }
-            else if (lstring::cimatch(MONTE_KW, dd->li_line)) {
-                *kwfound |= LI_MONTE_FOUND;
-                ld->li_next = dd->li_next;
-                delete dd;
-                continue;
-            }
-            else if (lstring::cimatch(NOEXEC_KW, dd->li_line)) {
-                *kwfound |= LI_NOEXEC_FOUND;
-                ld->li_next = dd->li_next;
-                delete dd;
-                continue;
-            }
-        }
-        if (lstring::cieq(cmdkey, dd->li_line)) {
+        if (lstring::cimatch(cmdkey, dd->li_line)) {
+            const char *str = dd->li_line;
+            lstring::advtok(&str);
+            blkname = lstring::gettok(&str);
+
             if (allcmds || commands)
                 GRpkgIf()->ErrPrintf(ET_WARN, "redundant %s card.\n", cmdkey);
             ld->li_next = dd->li_next;
             delete dd;
             commands = true;
         }
-        else if (lstring::cieq(altkey1, dd->li_line)) {
+        else if (lstring::cimatch(altkey1, dd->li_line)) {
             if (oldformat)
                 break;
             if (allcmds || altcmds1)
@@ -2323,7 +2411,7 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat, int *kwfound)
                 ld = dd;
             altcmds1 = true;
         }
-        else if (lstring::cieq(altkey2, dd->li_line)) {
+        else if (lstring::cimatch(altkey2, dd->li_line)) {
             if (oldformat)
                 break;
             if (allcmds || altcmds2)
@@ -2358,61 +2446,61 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat, int *kwfound)
                 ld->li_next = dd->li_next;
                 delete dd;
             }
+            if (blkname) {
+                // save as named codeblock
+
+                CP.AddBlock(blkname, named_blk);
+
+                delete [] blkname;
+                blkname = 0;
+            }
         }
         else if (!*dd->li_line || ((allcmds ||
                 (commands && !altcmds1 && !altcmds2)) &&
                 (*dd->li_line == '#' || *dd->li_line == '*'))) {
-            // So blank lines in com files don't get
-            // considered as circuits.
-            // Also kill comments in commands.  Note that "*#" doesn't
-            // work in command files.
-            //
+            // So blank lines in com files don't get considered as
+            // circuits.  Also kill comments in commands.  Note that
+            // "*#" doesn't work in command files.
+
             ld->li_next = dd->li_next;
             delete dd;
         }
-        else if (allcmds || (commands && !altcmds1 && !altcmds2) ||
+        else if (allcmds || (commands && !altcmds1 && !altcmds2 && !blkname) ||
                 (!altcmds1 && !altcmds2 && prefx &&
                 lstring::prefix(prefx, dd->li_line))) {
-            if (!controls)
-                wl = controls = new wordlist;
-            else {
-                wl->wl_next = new wordlist;
-                wl->wl_next->wl_prev = wl;
-                wl = wl->wl_next;
-            }
-            if (prefx && lstring::prefix(prefx, dd->li_line))
-                wl->wl_word = lstring::copy(dd->li_line + 2);
-            else
-                wl->wl_word = lstring::copy(dd->li_line);
+            // element of an unnamed block
 
-            // Handle in-line '#' comments.  We would like to use this
-            // as an in-line comment character, but this can be part
-            // of a vector name, etc., so we need to be careful. 
-            // We'll take it as a comment delimeter if it appears at
-            // the line start or after white space.  We've already dealt
-            // with the case where the first line char is '#'.
-            //
-            // If the # is preceded by a backslash, the user is
-            // telling us that the # is explicitly not a comment. 
-            // Strip the backslash.
-            //
-            char *t = strchr(wl->wl_word, '#');
-            while (t) {
-                if (isspace(*(t-1))) {
-                    // Don't leave trailing space.
-                    t--;
-                    while (t >= wl->wl_word && isspace(*t))
-                        *t-- = 0;
-                    break;
-                }
-                if (*(t-1) == '\\') {
-                    for (char *c = t-1; *c; c++)
-                        *c = *(c+1);
-                    t = strchr(t, '#');
-                }
-                else
-                    t = strchr(t+1, '#');
+            const char *c;
+            if (prefx && lstring::prefix(prefx, dd->li_line)) {
+                c = dd->li_line + 2;
+                while (isspace(*c))
+                    c++;
             }
+            else
+                c = dd->li_line;
+
+            if (!unnamed_blk)
+                ub_end = unnamed_blk = new wordlist(c, 0);
+            else {
+                ub_end->wl_next = new wordlist(c, ub_end);
+                ub_end->wl_next->wl_prev = ub_end;
+                ub_end = ub_end->wl_next;
+            }
+            clip_comment(ub_end->wl_word);
+
+            ld->li_next = dd->li_next;
+            delete dd;
+        }
+        else if (commands && !altcmds1 && !altcmds2) {
+            // element of a named block
+
+            if (!named_blk)
+                named_blk = nb_end = new wordlist(dd->li_line, 0);
+            else {
+                nb_end->wl_next = new wordlist(dd->li_line, nb_end);
+                nb_end = nb_end->wl_next;
+            }
+            clip_comment(nb_end->wl_word);
 
             ld->li_next = dd->li_next;
             delete dd;
@@ -2420,7 +2508,7 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat, int *kwfound)
         else
             ld = dd;
     }
-    return (controls);
+    return (unnamed_blk);
 }
 
 
@@ -2640,7 +2728,8 @@ sLine::process_conditionals(sParamTab *ptab)
         }
 
         else if (lstring::cimatch(IF_KW, dd->li_line)) {
-            ptab->param_subst_all(&dd->li_line);
+            if (ptab)
+                ptab->param_subst_all(&dd->li_line);
             if (strchr(dd->li_line, '$'))
                 dd->var_subst();
             inif++;
@@ -2656,7 +2745,8 @@ sLine::process_conditionals(sParamTab *ptab)
         }
         else if (lstring::cimatch(ELIF_KW, dd->li_line) ||
                 lstring::cimatch(ELSEIF_KW, dd->li_line)) {
-            ptab->param_subst_all(&dd->li_line);
+            if (ptab)
+                ptab->param_subst_all(&dd->li_line);
             if (strchr(dd->li_line, '$'))
                 dd->var_subst();
             if (!inif)

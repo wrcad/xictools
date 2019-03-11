@@ -45,10 +45,11 @@ Authors: 1987 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
+#include "simulator.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
 
 //
 // Line-printer (ASCII) plots.
@@ -107,7 +108,7 @@ SPgraphics::AsciiPlot(sDvList *dl0, const char *grp)
 
     // Make sure the margin is correct.
     bool novalue = Sp.GetVar(kw_noasciiplotvalue, VTYP_BOOL, 0);
-    if (!novalue && !Sp.VecEq(xscale, dl0->dl_dvec))
+    if (!novalue && !OP.vecEq(xscale, dl0->dl_dvec))
         margin *= 2;
 
     bool ylogscale = false;

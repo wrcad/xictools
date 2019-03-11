@@ -46,8 +46,9 @@ Authors: 1985 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "frontend.h"
-#include "ftedata.h"
+#include "simulator.h"
+#include "datavec.h"
+#include "output.h"
 #include "kwords_fte.h"
 #include "ttyio.h"
 #include "miscutil/random.h"
@@ -1584,8 +1585,8 @@ sDataVec::v_interpolate(sDataVec *ns, bool silent)
     sDataVec *os = v_scale;
     if (!os && v_plot)
         os = v_plot->scale();
-    if (!ns && Sp.CurPlot())
-        ns = Sp.CurPlot()->scale();
+    if (!ns && OP.curPlot())
+        ns = OP.curPlot()->scale();
     if (!os) {
         if (!silent)
             GRpkgIf()->ErrPrintf(ET_INTERR, "%s is null.\n", oldscale);

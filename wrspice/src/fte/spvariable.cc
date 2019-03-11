@@ -45,12 +45,13 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
-#include "fteparse.h"
+#include "simulator.h"
+#include "parser.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "outplot.h"
+#include "graph.h"
+#include "output.h"
 #include "circuit.h"
 #include "keywords.h"
 #include "spnumber/spnumber.h"
@@ -138,7 +139,7 @@ IFsimulator::SetVar(const char *varname, int value)
         else {
             char buf[64];
             sprintf(buf, "%d", value);
-            VecSet(vname+1, buf, false);
+            OP.vecSet(vname+1, buf, false);
         }
     }
     else {
@@ -173,7 +174,7 @@ IFsimulator::SetVar(const char *varname, double value)
         else {
             char buf[64];
             sprintf(buf, "%.16e", value);
-            VecSet(vname+1, buf, false);
+            OP.vecSet(vname+1, buf, false);
         }
     }
     else {
@@ -543,8 +544,8 @@ IFsimulator::VarPrint(char **retstr)
 
     // List the plot variables.
     variable *plvars = 0;
-    if (CurPlot())
-        plvars = variable::copy(CurPlot()->environment());
+    if (OP.curPlot())
+        plvars = variable::copy(OP.curPlot()->environment());
     {
         variable *tv;
         if ((tv = EnqPlotVar(kw_plots)) != 0) {
@@ -754,31 +755,31 @@ IFsimulator::EnqPlotVar(const char *name)
             return (vv);
         }
     }
-    if (CurPlot()) {
-        for (vv = CurPlot()->environment(); vv; vv = vv->next())
+    if (OP.curPlot()) {
+        for (vv = OP.curPlot()->environment(); vv; vv = vv->next())
             if (lstring::eq(vv->name(), name))
                 break;
         if (vv)
             vv =  variable::copy(vv);
         else if (lstring::eq(name, kw_curplotname)) {
             vv = new variable(name);
-            vv->set_string(CurPlot()->name());
+            vv->set_string(OP.curPlot()->name());
         }
         else if (lstring::eq(name, kw_curplottitle)) {
             vv = new variable(name);
-            vv->set_string(CurPlot()->title());
+            vv->set_string(OP.curPlot()->title());
         }
         else if (lstring::eq(name, kw_curplotdate)) {
             vv = new variable(name);
-            vv->set_string(CurPlot()->date());
+            vv->set_string(OP.curPlot()->date());
         }
         else if (lstring::eq(name, kw_curplot)) {
             vv = new variable(name);
-            vv->set_string(CurPlot()->type_name());
+            vv->set_string(OP.curPlot()->type_name());
         }
         else if (lstring::eq(name, kw_plots)) {
             vv = new variable(name);
-            for (sPlot *pl = PlotList(); pl; pl = pl->next_plot()) {
+            for (sPlot *pl = OP.plotList(); pl; pl = pl->next_plot()) {
                 variable *tv = new variable;
                 tv->set_string(pl->type_name());
                 tv->set_next(vv->list());
@@ -896,7 +897,7 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
         }
         else {
             sCKT *ckt = ft_curckt ? ft_curckt->runckt() : 0;
-            d = VecGet(word_strp, ckt, varcheck);
+            d = OP.vecGet(word_strp, ckt, varcheck);
         }
         delete [] word_strp;
 

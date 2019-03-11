@@ -63,10 +63,10 @@ Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 // blocks are executed afterward.  The PREFX's specify alternate comment
 // forms.
 //
-#define CBLK_PREFX  "*#"
-#define EBLK_PREFX  "*@"
-#define CBLK_KW     ".control"
-#define EBLK_KW     ".exec"
+#define CONT_PREFX  "*#"
+#define EXEC_PREFX  "*@"
+#define CONT_KW     ".control"
+#define EXEC_KW     ".exec"
 #define POST_KW     ".postrun"
 #define ENDC_KW     ".endc"
 #define CACHE_KW    ".cache"
@@ -108,6 +108,7 @@ enum CBLK_TYPE { CBLK_EXEC, CBLK_CTRL, CBLK_POST };
 #define PARAM_KW    ".param"
 #define MEASURE_KW  ".measure"
 #define MEAS_KW     ".meas"
+#define STOP_KW     ".stop"
 #define VERILOG_KW  ".verilog"
 #define ENDV_KW     ".endv"
 #define ADC_KW      ".adc"
@@ -139,12 +140,15 @@ enum CBLK_TYPE { CBLK_EXEC, CBLK_CTRL, CBLK_POST };
 #define TRAN_KW     ".tran"
 
 
-// Code returned by get_controls() if keyword found.
+// Code returned by get_keywords() if keyword found.
 //
 #define LI_MONTE_FOUND      0x1
 #define LI_CHECK_FOUND      0x2
 #define LI_CHECKALL_FOUND   0x4
 #define LI_NOEXEC_FOUND     0x8
+#define LI_CONT_FOUND       0x10
+#define LI_EXEC_FOUND       0x20
+#define LI_POST_FOUND       0x40
 
 struct wordlist;
 struct sParamTab;
@@ -215,7 +219,8 @@ struct sLine
     // source.cc
     bool is_ckt();
     wordlist *get_speccmds();
-    wordlist *get_controls(bool, CBLK_TYPE, bool = false, int* = 0);
+    void get_keywords(int*);
+    wordlist *get_controls(bool, CBLK_TYPE, bool = false);
     sLine *extract_verilog();
     void var_subst();
     sParamTab *process_conditionals(sParamTab*);

@@ -1,6 +1,7 @@
 * Josephson junction I-V curve demo (rtype=4)
 *
 * Warning:  This works with WRspice internal JJ model only.
+.model jj1 jj(rtype=4)
 *
 * One can plot a pretty decent iv curve using transient analysis.
 * This will show the differences between the various model options.
@@ -10,21 +11,12 @@ v1 2 0 pwl(0 0 2n 70m 4n 0 5n 0)
 r1 2 1 100
 *
 * for rtype=4, vary v2 between 0 and 1 for no gap to full gap
-v2 3 0 .5
+v2 3 0 1
 *
 r2 3 0 1
 *
-* It is interesting to set rtype and delv to different values, and note
-* the changes.
 *
-*Nb 1000 A/cm2   area = 30 square microns
-.model jj1 jj(rtype=4,cct=1,icon=10m,vg=2.8m,delv=.1m,
-+ icrit=0.3m,r0=100,rn=5.4902,cap=1.14195p)
-*
-.tran 5p 5n
-* type "run", then
-* in Jspice3, type "graf -b (v(1)) (-v1#branch)"
-* in WRspice, type "plot -v1#branch vs v(1)"
+.tran 5p 5n dc v2 0 1 0.2
 .end
  
 .control

@@ -48,7 +48,7 @@ printed and plotted, etc.
 %SU-------------------------------------
 \subsection{Shell Variables}
 
-% spVars_shell.hlp:shell_vars 110815
+% spVars_shell.hlp:shell_vars 030419
 
 These variables control behavior of the {\WRspice} shell.  Most of
 these variables can be set indirectly from the {\cb Shell Options}
@@ -210,6 +210,24 @@ string, the `!' character is replaced by the event number, and ``{\vt
 lines which form a part of a control block, the prompt becomes a set
 of `$>$' characters, one for each level of control structure.  The
 default prompt is ``{\vt \$program !  $->$ }''.
+
+\index{revertmode variable}
+\item{\et revertmode}\\
+This sets up the strategy to revert keyboard focus to the terminal
+window when a new window pops up, stealing focus.  This is highly
+dependent on operating system/window manager.  The default auto mode
+makes a guess based on the operating system.  The variable can be set
+to one of the integer values below explicitly.
+\begin{quote}
+\begin{tabular}{ll}
+0 & default ``auto'' mode.\\
+1 & off, don't attempt to revert focus.\\
+2 & assume older linux, e.g. RHEL6 and Gnome.\\
+3 & assume newish linux, e.g., RHEL7 and KDE.\\
+4 & Apple Mac.\\
+5 & Microsoft Windows.\\
+\end{tabular}
+\end{quote}
 
 \index{sourcepath variable}
 \item{\et sourcepath}\\
@@ -2310,7 +2328,7 @@ will be rectangular.
 %SU-------------------------------------
 \subsection{Syntax Control Variables}
 
-% spVars_debug.hlp:syntax_vars 012615
+% spVars_debug.hlp:syntax_vars 030619
 
 These variables alter the expected syntax of various types of
 {\WRspice} input.  It may, on occasion, be useful or necessary to use
@@ -2490,28 +2508,16 @@ that contain Verilog-A devices.  HSPICE uses ``{\vt X}'' for these,
 
 \index{units\_catchar variable}
 \item{\et units\_catchar}\\
-A ``units string'' can follow numbers given to {\WRspice}, and these
-units are carried through expressions, simplified, and printed with
-results.  The units string follows a number, separated by a separation
-character which is most often optional.  In releases prior to 3.2.4,
-this character was hard coded to `{\vt \_}' (underscore), but
-presently defaults to `{\vt \#}' to avoid conflict with the subcircuit
-field separator character.
 
-The character used as the units separation character can be changed by
-setting this variable to a length-one string containing the new
-character.  The character in the single-character string becomes the
-new separation character.  For example,
-\begin{quote}
-\vt set units\_catchar = "\_"
-\end{quote}
-will return to the pre-3.2.4 default.
-
-Further, it is now possible to add ``denominator units'', which was
-not possible in pre-3.2.4 releases.  A second appearance of the
-separation character, or the first appearance if there was no
-separation character ahead of the units string, is logically like
-`{\vt /}', and units that follow are denominator units.
+The units concatenation character may be used in the units string to
+identify the start of the units string, and to identify the start of
+the denominator units.  The units separation character (see below) can
+also be used to indicate the start of denominator units.  See the
+section about input numerical format and the units string
+(\ref{units}) for a complete syntax description.  If not given, the
+concatenation character is `{\vt \#}', but if this variable is set to
+a string containing a single punctuation character, that character
+will become the units concatenation character.
 
 Examples:
 
@@ -2525,6 +2531,18 @@ Examples:
 \vt 1.0\#S &    1 second\\
 \vt 1.0\#\#S &   1 Hertz\\
 \end{tabular}
+
+\index{units\_sepchar variable}
+\item{\et units\_sepchar}\\
+
+The units separation character may be used in the units string to
+identify the start of the denominator units.  The units concatenation
+character can also be used to indicate the start of denominator units. 
+See the section about input numerical format and the units string
+(\ref{units}) for a complete syntax description.  If not given, the
+separation character is `{\vt \_}' (underscore), but if this variable
+is set to a string containing a single punctuation character, that
+character will become the units separation character.
 
 \index{var\_catchar variable}
 \item{\et var\_catchar}\\

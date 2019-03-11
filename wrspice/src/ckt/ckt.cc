@@ -47,8 +47,8 @@ Authors: 1985 Thomas L. Quarles
 
 #include <math.h>
 #include "config.h"
-#include "frontend.h"
-#include "outdata.h"
+#include "simulator.h"
+#include "output.h"
 #include "device.h"
 #include "inpptree.h"
 #include "input.h"
@@ -57,7 +57,7 @@ Authors: 1985 Thomas L. Quarles
 #include "uidhash.h"
 #include "verilog.h"
 #include "commands.h"
-#include "outplot.h"
+#include "graph.h"
 #include "sparse/spmatrix.h"
 #include "spnumber/hash.h"
 #include "miscutil/errorrec.h"
@@ -309,6 +309,7 @@ sCKT::acDump(double freq, sRunDesc *run)
         // Single-thread.
 
         OP.appendData(run, &freqData, &valueData);
+        OP.checkRunops(run, freq);
     }
     delete [] data;
     outd->count++;
@@ -592,10 +593,10 @@ sCKT::doTask(bool reset)
                     CKTstat->STATtotAnalTime += OP.seconds() - startTime;
                     return (error);
                 }
-                if (CKTbackPtr && CKTbackPtr->postrun()->text()) {
+                if (CKTbackPtr && CKTbackPtr->postrunBlk().text()) {
                     // Execute the .postrun commands.
 
-                    Sp.ExecCmds(CKTbackPtr->postrun()->text());
+                    Sp.ExecCmds(CKTbackPtr->postrunBlk().text());
                 }
                 if (!reset)
                     reset = true;
@@ -702,6 +703,7 @@ sCKT::dump(double ref, sRunDesc *run)
         // Single-thread.
 
         OP.appendData(run, &refData, &valData);
+        OP.checkRunops(run, ref);
     }
     outd->count++;
 }

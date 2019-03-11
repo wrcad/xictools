@@ -79,6 +79,9 @@ JJdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case JJ_MOD_CAP:
         value->rValue = model->JJcap;
         break;
+    case JJ_MOD_CPIC:
+        value->rValue = model->JJcpic;
+        break;
     case JJ_MOD_CMU:
         value->rValue = model->JJcmu;
         break;

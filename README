@@ -176,11 +176,11 @@ development tools installed.  It can be a bit of a challenge to
 figure out which packages to install, Google is your friend.
 
 Here's a probably incomplete list of things to add, based on the port to
-Ubuntu-17.10.
+Ubuntu-17.10.  This works for Debian-9 as well.
 
 Programs and Utilities:
 These were missing from the basic operating system after a fresh
-install.  These can be installed with "sudo apt install <progname>".
+install.  These can be installed with "sudo apt-get install <progname>".
   git, autoconf, flex, bison, pkg-config
 
 Libraries and Development Packages:
@@ -190,14 +190,14 @@ libraries.  If a build fails with a missing header (.h) file, the game
 is to figure out which development package provides it, and install
 the package.  In other cases, the library may be wholly missing, so
 both the library and development packages should be installed.  For
-Ubuntu, I installed gtk and all its dependents with
+Ubuntu/Debian, I installed gtk and all its dependents with
   sudo apt-get install build-essential libgtk2.0-dev
 This brings in lot of dependent packages, on other systems, the dependents
 may require separate installation.
 Also needed, libncurses using
   sudo apt-get install libncurses5-dev libncursesw5-dev
 and libjpeg, libtiff using
-  sudo apt install libjpeg-dev libtiff-dev
+  sudo apt-get install libjpeg-dev libtiff-dev
 
 3.2.  Build Procedure for Linux
 
@@ -208,6 +208,8 @@ The procedure is as follows.
     2.  "make config" will configure the source tree to your build
         environment.
     3.  "make all" will build all of the programs.
+    4.  Thereafter, after changes, do "make reconfig" followed by
+        "make all".
 
 The intended installation procedure is to first build a binary package
 (e.g., RPM) for each program, then install the packages on your system

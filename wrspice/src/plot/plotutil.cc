@@ -38,8 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#include "outplot.h"
-#include "frontend.h"
+#include "graph.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "ttyio.h"
 #include "miscutil/miscutil.h"

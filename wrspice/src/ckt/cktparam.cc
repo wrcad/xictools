@@ -41,9 +41,9 @@
 #include "device.h"
 #include "variable.h"
 
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
-#include "outdata.h"
+#include "output.h"
 
 
 namespace {

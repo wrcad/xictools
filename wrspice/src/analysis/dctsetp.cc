@@ -47,7 +47,7 @@ Authors: 1985 Thomas L. Quarles
 
 #include "dctdefs.h"
 #include "errors.h"
-#include "outdata.h"
+#include "output.h"
 #include "kwords_analysis.h"
 
 

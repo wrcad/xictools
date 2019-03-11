@@ -34,12 +34,13 @@ shell_vars
 !!REDIRECT nonomatch    shell_vars#nonomatch
 !!REDIRECT nosort       shell_vars#nosort
 !!REDIRECT prompt       shell_vars#prompt
+!!REDIRECT revertmode   shell_vars#revertmode
 !!REDIRECT sourcepath   shell_vars#sourcepath
 !!REDIRECT unixcom      shell_vars#unixcom
 !!REDIRECT width        shell_vars#width
 !!REDIRECT wmfocusfix   shell_vars#wmfocusfix
 
-!! variables.tex 110815
+!! variables.tex 030419
 !!KEYWORD
 shell_vars
 !!TITLE
@@ -258,6 +259,26 @@ Shell Option Variables
     prompt becomes a set of '>' characters, one for each level of
     control structure.  The default prompt is "<tt>$program !  ->
     </tt>".
+    </dl>
+
+    <a name="revertmode"></a>
+    <dl>
+    <dt><tt>revertmode</tt><dd>
+    This sets up the strategy to revert keyboard focus to the terminal
+    window when a new window pops up, stealing focus.  This is highly
+    dependent on operating system/window manager.  The default auto
+    mode makes a guess based on the operating system.  The variable
+    can be set to one of the integer values below explicitly.
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>0</td> <td>default "auto" mode.</td></tr>
+    <tr><td>1</td> <td>off, don't attempt to revert focus.</td></tr>
+    <tr><td>2</td> <td>assume older linux, e.g. RHEL6 and Gnome.</td></tr>
+    <tr><td>3</td> <td>assume newish linux, e.g., RHEL7 and KDE.</td></tr>
+    <tr><td>4</td> <td>Apple Mac.</td></tr>
+    <tr><td>5</td> <td>Microsoft Windows.</td></tr>
+    </table>
+    </blockquote>
     </dl>
 
     <a name="sourcepath"></a>

@@ -44,16 +44,18 @@ Copyright 1990 Regents of the University of California.  All rights reserved.
 Authors: 1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifndef OUTDATA_H
-#define OUTDATA_H
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
 #include <stdio.h>
+#include "miscutil/lstring.h"
 
 
 // references
 struct sCKT;
 struct sJOB;
 struct sPlot;
+struct sPlotList;
 struct sFtCirc;
 struct sRunDesc;
 struct sOUTdata;
@@ -61,6 +63,13 @@ struct wordlist;
 struct sDCTprms;
 struct sNames;
 struct sHtab;
+struct sExBlk;
+struct sRunopIplot;
+struct sRunopDb;
+struct sSaveList;
+struct sDataVec;
+struct sJobc;
+struct pnode;
 
 enum OutcType
 {
@@ -93,6 +102,56 @@ struct sOUTcontrol
     sPlot    *out_plot;         // Pointer to plot.
 };
 
+// Flags and parser for the check command line.
+//
+struct checkargs
+{
+    checkargs()
+        {
+            ca_doall = false;
+            ca_monte = false;
+            ca_remote = false;
+            ca_batchmode = true;
+            ca_findedge = false;
+            ca_segbase = false;
+            ca_keepall = false;
+            ca_keepplot = false;
+            ca_break = false;
+            ca_clear = false;
+        }
+
+    int parse(wordlist**, const char**, const char**);
+
+    bool doall()        const { return (ca_doall); }
+    bool monte()        const { return (ca_monte); }
+    bool remote()       const { return (ca_remote); }
+    bool batchmode()    const { return (ca_batchmode); }
+    bool findedge()     const { return (ca_findedge); }
+    bool segbase()      const { return (ca_segbase); }
+    bool keepall()      const { return (ca_keepall); }
+    bool keepplot()     const { return (ca_keepplot); }
+    bool brk()          const { return (ca_break); }
+    bool clear()        const { return (ca_clear); }
+
+    void setup_doall()  { ca_doall = true; }
+    void setup_monte()  { ca_doall = true; ca_monte = true; }
+
+private:
+    bool ca_doall;
+    bool ca_monte;
+    bool ca_remote;
+    bool ca_batchmode;
+    bool ca_findedge;
+    bool ca_segbase;
+    bool ca_keepall;
+    bool ca_keepplot;
+    bool ca_break;
+    bool ca_clear;
+};
+
+// Return from sCHECKprms::evaluate.
+enum CBret { CBok, CBfail, CBendit };
+
 // Interface for asynchronous/remote chained analysis.  This structure
 // is used to store parameters used in operating range and Monte Carlo
 // analysis.
@@ -101,48 +160,62 @@ struct sCHECKprms : public sOUTcontrol
 {
 
     // check.cc
-    sCHECKprms(bool, bool, bool, bool);
+    sCHECKprms();
     ~sCHECKprms();
 
-    int parseRng(wordlist**);
-    int setup(bool, bool, bool, bool);
-    void set_input(double, double);
-    void evaluate();
-    void findEdge(const char*, const char*);
+    int setup(checkargs&, wordlist*);
+    int parseRange(wordlist**);
+    void initRange();
+    void initNames();
+    int initOutFile();
+    void initOutMode(bool, bool, bool);
+    void initCheckPnts();
+    void initInput(double, double);
     bool initial();
+    bool loop();
+    int trial(int, int, double, double);
+    CBret evaluate();
+    void findEdge(const char*, const char*);
     bool findRange();
-
-    // aspice.cc
-    void registerJob();
-    void endJob();
-    bool processReturn(const char*);
-    int nextTask(int*, int*);
 
     static void setMfilePlotname(const char*, const char*);
     static const char *mfilePlotname(const char*);
 
-    void set_cmd(wordlist *w)   { ch_cmdline = w; }
+    void set_vec(const char*, double);
+    void set_opvec(int, int);
+    void check_print();
+    FILE *df_open(int, char**, FILE**, sNames*);
 
-    int index()                 const { return (ch_index); }
-    void set_index(int i)       { ch_index = i; }
-    int max_index()             const { return (ch_max); }
-
-    int cycles()                const { return (ch_cycles); }
-    const double *points()      const { return (ch_points); }
-    const char *segbase()       const { return (ch_segbase); }
+    int nextTask(int*, int*);
+    void registerJob();
+    bool processReturn(const char*);
+    void endJob();
 
     FILE *outfp()               const { return (ch_op); }
+    void set_pflag(int i, int v) { ch_flags[i] = v; }
+
+    void set_batchmode(bool b)  { ch_batchmode = b; }
+    void set_no_output(bool b)  { ch_no_output = b; }
+    void set_use_remote(bool b) { ch_use_remote = b; }
+    bool monte()                const { return (ch_monte); }
+    void set_monte(bool b)      { ch_monte = b; }
+    bool doall()                const { return (ch_doall); }
+    void set_doall(bool b)      { ch_doall = b; }
+
     bool ended()                const { return (!ch_use_remote && !ch_pause); }
 
     bool nogo()                 const { return (ch_nogo); }
-    bool failed()               const { return (ch_fail); }
     void set_nogo(bool b)       { ch_nogo = b; }
+    bool failed()               const { return (ch_fail); }
     void set_failed(bool b)     { ch_fail = b; }
 
-    bool monte()                const { return (ch_monte); }
-    bool doall()                const { return (ch_doall); }
-    void set_monte(bool b)      { ch_monte = b; }
-    void set_doall(bool b)      { ch_doall = b; }
+    int cycles()                const { return (ch_cycles); }
+    int index()                 const { return (ch_index); }
+    void set_index(int i)       { ch_index = i; }
+    int max_index()             const { return (ch_max); }
+    const double *points()      const { return (ch_points); }
+    const char *segbase()       const { return (ch_segbase); }
+    void set_cmd(wordlist *w)   { ch_cmdline = w; }
 
     double val1()               const { return (ch_val1); }
     double val2()               const { return (ch_val2); }
@@ -158,27 +231,24 @@ struct sCHECKprms : public sOUTcontrol
     void set_step1(int n)       { ch_step1 = n; }
     void set_step2(int n)       { ch_step2 = n; }
 
-    void set_pflag(int i, int v) { ch_flags[i] = v; }
-
     int iterno()                const { return (ch_iterno); }
     void set_iterno(int n)      { ch_iterno = n; }
 
-void set_no_output(bool b) { ch_no_output = b; }
-//XXX private:
+private:
     // check.cc
     void set_rangevec();
-    void plot();
-    bool loop();
-    int trial(int, int, double, double);
-private:
     bool findrange1(double, int, bool, bool);
     bool findrange2(double, int, bool, bool);
     bool findext1(int, double*, double, double);
     bool findext2(int, double, double*, double);
     void addpoint(int, int, bool);
+    void plot();
 
     FILE *ch_op;            // Output file pointer.
     char *ch_opname;        // Output file name.
+    char *ch_flags;         // P/F history.
+    FILE *ch_tmpout;        // Redirect stdout server mode.
+    char *ch_tmpoutname;    // Redirect stdout filename.
     int ch_graphid;         // Graph id if plotting.
     bool ch_batchmode;      // If true, no user prompts.
     bool ch_no_output;      // Supress output recording.
@@ -191,7 +261,6 @@ private:
                             // the evaluate function or globally
                             // to stop analysis.  Only used if
                             // mode = OutcCheck*.
-    int ch_iterno;          // Iterations for extrema seek.
     int ch_cycles;          // Cell count for OutcCheckMulti.
     int ch_evalcnt;         // Number out_evaluate() calls.
     int ch_index;           // The current index into the array,
@@ -209,28 +278,29 @@ private:
                             //  Only used if mode = OutcCheck*.
     const char *ch_segbase; // Segment basename for OutcCheckSeg.
     wordlist *ch_cmdline;   // Command line, wordlist.
+
+    static sHtab *ch_plotnames; // mplot filename to plotname map
+
+    // Range analysis only below.
+
     double ch_val1;         // Range specification.
     double ch_val2;
     double ch_delta1;
     double ch_delta2;
-    int ch_step1;
-    int ch_step2;
     sNames *ch_names;       // Names of special vectors.
     wordlist *ch_devs1;     // Device/parameter lists.
     wordlist *ch_devs2;
     wordlist *ch_prms1;
     wordlist *ch_prms2;
+    int ch_step1;
+    int ch_step2;
+    int ch_iterno;          // Iterations for edge finder.
     bool ch_gotval1;        // Flags indicate value set.
     bool ch_gotval2;
     bool ch_gotdelta1;
     bool ch_gotdelta2;
     bool ch_gotstep1;
     bool ch_gotstep2;
-    char *ch_flags;         // P/F history.
-    FILE *ch_tmpout;        // Redirect stdout server mode.
-    char *ch_tmpoutname;    // Redirect stdout filename.
-
-    static sHtab *ch_plotnames; // mplot filename to plotname map
 };
 
 // Structure used to store parameters for the sweep command.
@@ -290,6 +360,82 @@ struct sMsg
     ERRtype flag;
 };
 
+// This maintains a hash table of vector names to save for output.
+//
+struct sSaveList
+{
+    sSaveList() { sl_tab = 0; }
+    ~sSaveList();
+
+    sHtab *table() { return (sl_tab); }
+
+    int numsaves();
+    bool set_used(const char*, bool);
+    int is_used(const char*);
+
+    void add_save(const char*);
+    void remove_save(const char*);
+    void list_expr(const char*);
+    void purge_non_special();
+
+private:
+    void list_vecs(pnode*);
+
+    sHtab *sl_tab;
+};
+
+// Output plot file format: native rawfile, Synopsys CDF, Cadence PSF.
+//
+enum OutFtype { OutFnone, OutFraw, OutFcsdf, OutFpsf };
+
+// This describes the output file for plot results from batch mode.
+//
+struct IFoutfile
+{
+    IFoutfile()
+        {
+            of_filename = 0;
+            of_type = OutFnone;
+            of_numdgts = 0;
+            of_fp = 0;
+        }
+
+    const char *outFile()       { return (of_filename); }
+    void set_outFile(const char *n)
+        {
+            if (n != of_filename)
+                delete [] of_filename;
+            of_filename = n && *n ? lstring::copy(n) : 0;
+        }
+
+    OutFtype outFtype()         { return (of_type); }
+    void set_outFtype(OutFtype t) { of_type = t; }
+
+    int outNdgts()              { return (of_numdgts); }
+    void set_outNdgts(int n)    { if (n >= 0 && n <= 15) of_numdgts = n; }
+
+    bool outBinary()            { return (of_binary); }
+    void set_outBinary(bool b)  { of_binary = b; }
+
+    FILE *outFp()               { return (of_fp); }
+    void set_outFp(FILE *f)     { of_fp = f; }
+
+private:
+    char *of_filename;      // Given filename
+    OutFtype of_type;       // Type of output
+    short of_numdgts;       // ASCII precision
+    bool of_binary;         // Use binary format.
+    FILE *of_fp;            // Pointer to output file.
+};
+
+// Flags for IFoutput::deleteRunop.
+#define DF_SAVE     0x1
+#define DF_TRACE    0x2
+#define DF_IPLOT    0x4
+#define DF_MEASURE  0x8
+#define DF_STOP     0x10
+#define DF_ALL      0x1f
+
 // Structure: IFoutput
 //
 // This structure provides the simulator with an interface for saving
@@ -297,30 +443,101 @@ struct sMsg
 //
 struct IFoutput
 {
+    // output.cc
+    IFoutput();
     sRunDesc *beginPlot(sOUTdata*, int = 0, const char* = 0, double = 0.0);
     int appendData(sRunDesc*, IFvalue*, IFvalue*);
     int insertData(sCKT*, sRunDesc*, IFvalue*, IFvalue*, unsigned int);
     int setDims(sRunDesc*, int*, int, bool = false);
     int setDC(sRunDesc*, sDCTprms*);
     int setAttrs(sRunDesc*, IFuid*, OUTscaleType, IFvalue*);
-    int initMeasure(sRunDesc*);
-    int pauseTest(sRunDesc*);
     void unrollPlot(sRunDesc*);
     void addPlotNote(sRunDesc*, const char*);
     void endPlot(sRunDesc*, bool);
-    void endIplot(sRunDesc*);
     double seconds();
     int error(ERRtype, const char*, ...);
 
-    bool endit()            { return (o_endit); }
-    void set_endit(bool b)  { o_endit = b; }
+    // aspice.cc
+    void checkAsyncJobs();
 
-    sMsg *msgs()            { return (o_msgs); }
+    // runop.cc
+    void stopCmd(wordlist*);
+    void measureCmd(wordlist*);
+    void stop2Cmd(wordlist*);
+    void statusCmd(char**);
+    void deleteCmd(wordlist*);
+    void initRunops(sRunDesc*);
+    void setRunopActive(int, bool);
+    void deleteRunop(int, bool, int);
+    void checkRunops(sRunDesc*, double);
+    int pauseTest(sRunDesc*);
+
+    // save.cc
+    void saveCmd(wordlist*);
+    void addSave(sFtCirc*, const char*);
+    void getSaves(sFtCirc*, sSaveList*);
+
+    // trace.cc
+    void TraceCmd(wordlist*);
+    void iplotCmd(wordlist*);
+    void iplot(sRunopIplot*, sRunDesc*);
+    void endIplot(sRunDesc*);
+    bool isIplot(bool = false);
+
+    // plots.cc
+    sPlot *findPlot(const char*);
+    void setCurPlot(const char*);
+    void pushPlot();
+    void popPlot();
+    void removePlot(const char*, bool = false);
+    void removePlot(sPlot*);
+    void loadFile(const char**, bool);
+    static bool plotPrefix(const char*, const char*);
+
+    // vectors.cc
+    sDataVec *vecGet(const char*, const sCKT*, bool = false);
+    bool isVec(const char*, const sCKT*);
+    void vecSet(const char*, const char*, bool = false, const char** = 0);
+    void vecGc(bool = false);
+    static bool vecEq(sDataVec*, sDataVec*);
+    void vecPrintList(wordlist*, char**);
+
+    sRunopDb *runops()          { return (o_runops); }
+
+    bool endit()                { return (o_endit); }
+    void set_endit(bool b)      { o_endit = b; }
+
+    sPlot *curPlot()            { return (o_plot_cur); }
+    void setCurPlot(sPlot *p)   { o_plot_cur = p; }
+    sPlot *plotList()           { return (o_plot_list); }
+    void setPlotList(sPlot *p)  { o_plot_list = p; }
+    sPlot *cxPlot()             { return (o_plot_cx); }
+    void setCxPlot(sPlot *p)    { o_plot_cx = p; }
+    sPlotList *cxPlotList()     { return (o_cxplots); }
+    sPlot *constants()          { return (o_constants); }
+
+    sJobc *jobc()               { return (o_jobc); }
+
+    IFoutfile *getOutDesc()     { return (&o_outfile); }
+
+    sMsg *msgs()                { return (o_msgs); }
 
 private:
+    sRunopDb *o_runops;     // Runops entered interactively.
+
     bool o_endit;           // If nonzero, quit the current analysis as if
                             // finished.
     bool o_shouldstop;      // Tell simulator to stop next time it asks.
+
+    sPlot *o_plot_cur;      // The "current" (default) plot.
+    sPlot *o_plot_list;     // List head for plots.
+    sPlot *o_plot_cx;       // Plot when starting .control's.
+    sPlotList *o_cxplots;   // Context plot list.
+    sPlot *o_constants;     // The "constants" plot.
+
+    sJobc *o_jobc;          // Asynchronous/remote job control.
+
+    IFoutfile o_outfile;    // Batch output description.
 
     static sMsg o_msgs[];   // Error message prefixes.
 };

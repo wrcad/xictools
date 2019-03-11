@@ -45,7 +45,7 @@ struct ParseNode;
 #include "ginterf/graphics.h"
 
 #ifdef WRSPICE
-#include "frontend.h"
+#include "simulator.h"
 #include "ttyio.h"
 #else
 // Xic

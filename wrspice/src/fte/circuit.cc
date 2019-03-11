@@ -53,12 +53,11 @@ Authors: 1985 Wayne A. Christopher
 
 #include "config.h"
 #include "spglobal.h"
-#include "frontend.h"
-#include "outdata.h"
-#include "ftedata.h"
-#include "ftedebug.h"
-#include "ftemeas.h"
-#include "fteparse.h"
+#include "simulator.h"
+#include "output.h"
+#include "datavec.h"
+#include "runop.h"
+#include "parser.h"
 #include "cshell.h"
 #include "kwords_analysis.h"
 #include "commands.h"
@@ -84,9 +83,9 @@ CommandTab::com_state(wordlist*)
         TTY.printf("No run in progress.\n");
         return;
     }
-    TTY.printf("Type of run: %s\n", Sp.CurPlot()->name());
+    TTY.printf("Type of run: %s\n", OP.curPlot()->name());
     TTY.printf("Number of points so far: %d\n", 
-        Sp.CurPlot()->scale()->length());
+        OP.curPlot()->scale()->length());
 }
 
 
@@ -203,9 +202,9 @@ IFsimulator::Bind(const char *name, bool exec)
 {
     if (ft_curckt) {
         if (exec)
-            ft_curckt->execs()->set_name(name);
+            ft_curckt->execBlk().set_name(name);
         else
-            ft_curckt->controls()->set_name(name);
+            ft_curckt->controlBlk().set_name(name);
     }
     else
         GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit.\n");
@@ -217,11 +216,15 @@ IFsimulator::Bind(const char *name, bool exec)
 void
 IFsimulator::Unbind(const char *name)
 {
+    if (!name)
+        return;
     for (sFtCirc *ct = ft_circuits; ct; ct = ct->next()) {
-        if (ct->execs()->name() && lstring::eq(ct->execs()->name(), name))
-            ct->execs()->set_name(0);
-        if (ct->controls()->name() && lstring::eq(ct->controls()->name(), name))
-            ct->controls()->set_name(0);
+        if (ct->execBlk().name() &&
+                lstring::eq(ct->execBlk().name(), name))
+            ct->execBlk().set_name(0);
+        if (ct->controlBlk().name() &&
+                lstring::eq(ct->controlBlk().name(), name))
+            ct->controlBlk().set_name(0);
     }
 }
 
@@ -232,13 +235,13 @@ void
 IFsimulator::ListBound()
 {
     if (ft_curckt) {
-        if (ft_curckt->execs()->name()) {
+        if (ft_curckt->execBlk().name()) {
             TTY.printf("\tBound exec codeblock: %s\n",
-                ft_curckt->execs()->name());
+                ft_curckt->execBlk().name());
         }
-        if (ft_curckt->controls()->name()) {
+        if (ft_curckt->controlBlk().name()) {
             TTY.printf("\tBound control codeblock: %s\n",
-                ft_curckt->controls()->name());
+                ft_curckt->controlBlk().name());
         }
     }
 }
@@ -401,7 +404,7 @@ IFsimulator::SetOption(bool isset, const char *word, IFdata *val)
 void
 IFsimulator::OptUpdate()
 {
-    variable *ovars = CurPlot()->options()->tovar();
+    variable *ovars = OP.curPlot()->options()->tovar();
     for (variable *v = ovars; v; v = v->next()) {
         if (v->type() == VTYP_BOOL && !v->boolean())
             RemVar(v->name());
@@ -484,8 +487,6 @@ sFtCirc::sFtCirc()
     ci_params = 0;
     ci_vars = 0;
     ci_defines = 0;
-    ci_debugs = 0;
-    ci_measures = 0;
 
     ci_commands = 0;
 
@@ -546,7 +547,7 @@ sFtCirc::sFtCirc()
 sFtCirc::~sFtCirc()
 {
     // Delete the references in the plots.
-    for (sPlot *p = Sp.PlotList(); p; p = p->next_plot()) {
+    for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
         if (p->circuit() && lstring::eq(p->circuit(), ci_name))
             p->set_circuit(0);
     }
@@ -604,12 +605,11 @@ sFtCirc::clear()
     delete ci_params;           ci_params = 0;
     variable::destroy(ci_vars); ci_vars = 0;
     delete ci_defines;          ci_defines = 0;
-    delete ci_debugs;           ci_debugs = 0;
-    sMeas::destroy(ci_measures); ci_measures = 0;
 
-    ci_execs.clear();
-    ci_controls.clear();
-    ci_postrun.clear();
+    ci_runops.clear();
+    ci_execBlk.clear();
+    ci_controlBlk.clear();
+    ci_postrunBlk.clear();
 
     wordlist::destroy(ci_commands); ci_commands = 0;
 
@@ -787,7 +787,7 @@ sFtCirc::getVerilog(const char *word, const char *range, IFdata *data)
 // Add to the save list from the .save lines.
 //
 void
-sFtCirc::getSaves(sSaveList *saves, const sCKT *ckt)
+sFtCirc::getSaves(sSaveList *saved, const sCKT *ckt)
 {
     for (wordlist *wl = ci_commands; wl; wl = wl->wl_next) {
         char *s = wl->wl_word;
@@ -797,7 +797,7 @@ sFtCirc::getSaves(sSaveList *saves, const sCKT *ckt)
             lstring::advtok(&s); // skip ".save"
             char *t;
             while ((t = lstring::gettok(&s)) != 0) {
-                saves->add_save(t);
+                saved->add_save(t);
                 delete [] t;
             }
         }
@@ -818,7 +818,7 @@ sFtCirc::getSaves(sSaveList *saves, const sCKT *ckt)
                             char buf[128];
                             sprintf(buf, "@%s[%s]", (char*)inst->GENname,
                                 w->wl_word);
-                            saves->add_save(buf);
+                            saved->add_save(buf);
                         }
                     }
                 }
@@ -839,5 +839,36 @@ sExBlk::clear()
     xb_text = 0;
     CP.FreeControl(xb_tree);
     xb_tree = 0;
+}
+
+
+// Execute the codeblock.
+//
+void
+sExBlk::exec(bool suppress)
+{
+    if (xb_name || xb_tree) {
+        bool temp = CP.GetFlag(CP_INTERACTIVE);
+        CP.SetFlag(CP_INTERACTIVE, false);
+        TTY.ioPush();
+        OP.pushPlot();
+
+        if (suppress)
+            ToolBar()->SuppressUpdate(true);
+        ToolBar()->UpdateVectors(2);
+
+        if (xb_name)
+            CP.ExecBlock(xb_name);
+        else if (xb_tree)
+            CP.ExecControl(xb_tree);
+        ToolBar()->UpdateVectors(2);
+
+        if (suppress)
+            ToolBar()->SuppressUpdate(false);
+
+        OP.popPlot();
+        TTY.ioPop();
+        CP.SetFlag(CP_INTERACTIVE, temp);
+    }
 }
 

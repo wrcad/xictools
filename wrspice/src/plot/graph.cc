@@ -46,10 +46,10 @@ Authors: 1988 Jeffrey M. Hsu
 ****************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "toolbar.h"
 #include "spnumber/spnumber.h"
 #include "miscutil/texttf.h"
@@ -59,9 +59,6 @@ Authors: 1988 Jeffrey M. Hsu
 //
 //  "plot" command graphics.
 //
-
-// These are what get plotted as points when you specify point plots
-const char *DefPointchars = "oxabcdefghijklmnopqrstuvwxyz";
 
 namespace {
     inline int num_colors()
@@ -121,7 +118,7 @@ sGraph::gr_dev_init()
             GRpkgIf()->MainDev()->name)
         return (gr_pkg_init());
     for (int i = 0; i < NUMPLOTCOLORS; i++)
-        gr_colors[i] = DefColors[i];
+        gr_colors[i] = SpGrPkg::DefColors[i];
     gr_area.set_width(GRpkgIf()->CurDev()->width);
     gr_area.set_height(GRpkgIf()->CurDev()->height);
     gr_area.set_left(GRpkgIf()->CurDev()->xoff);
@@ -1970,6 +1967,9 @@ sGraph::gr_ghost_mark(int x, int y, bool erase)
                     gr_datawin.ymin = link->dl_dvec->minsignal();
                     gr_datawin.ymax = link->dl_dvec->maxsignal();
                 }
+                double ty = gr_aspect_y;
+                gr_aspect_y =
+                    (gr_datawin.ymax - gr_datawin.ymin)/gr_vport.height();
                 gr_screen_to_data(x, y, &fx, &fy);
                 if (gr_reference.set) {
                     gr_screen_to_data(gr_reference.x, gr_reference.y,
@@ -1977,6 +1977,7 @@ sGraph::gr_ghost_mark(int x, int y, bool erase)
                     fx -= frefx;
                     fy -= frefy;
                 }
+                gr_aspect_y = ty;
                 gr_datawin.ymin = dtmp[0];
                 gr_datawin.ymax = dtmp[1];
                 gr_writef(fy, link->dl_dvec->units(), scrx, 
@@ -3079,10 +3080,10 @@ sGraph::dv_initdata()
             PointChars = va->string();
         else if (va)
             // a bool
-            PointChars = DefPointchars;
+            PointChars = SpGrPkg::DefPointchars;
         else {
             if (GRpkgIf()->CurDev()->devtype == GRhardcopy)
-                PointChars = DefPointchars;
+                PointChars = SpGrPkg::DefPointchars;
             else
                 PointChars = 0;
         }
@@ -3119,12 +3120,12 @@ sGraph::dv_initdata()
         // zeros are 'o's.
         //
         if (v->flags() & VF_POLE) {
-            PointChars = DefPointchars;
+            PointChars = SpGrPkg::DefPointchars;
             v->set_linestyle(1);
             continue;
         }
         else if (v->flags() & VF_ZERO) {
-            PointChars = DefPointchars;
+            PointChars = SpGrPkg::DefPointchars;
             v->set_linestyle(0);
             continue;
         }

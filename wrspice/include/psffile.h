@@ -41,7 +41,7 @@
 #ifndef PSFILE_H
 #define PSFILE_H
 
-#include "ftedata.h"
+#include "datavec.h"
 
 
 //

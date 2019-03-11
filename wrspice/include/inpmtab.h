@@ -43,7 +43,7 @@
 
 #include "spnumber/hash.h"
 
-// Model table definition, used in inpmodel.cc and inpsubc.cc.  This
+// Model table definition, used in inpmodel.cc and subexpand.cc.  This
 // is a separate file to avoid exporting hash.h to the device library
 // code.
 

@@ -45,7 +45,7 @@ Authors: 1987 Thomas L. Quarles
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "input.h"
 #include "inpmtab.h"
 #include "misc.h"

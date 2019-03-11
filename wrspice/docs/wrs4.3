@@ -1,4 +1,4 @@
-WRspice Generation 4 Release Notes
+Rspice Generation 4 Release Notes
 
 This is the 4.3 post-production series.  See the release note archive
 for the production releases (4.2.1 - 4.2.16) and earlier.
@@ -222,10 +222,163 @@ IMPORTANT -- Windows notes
 *****************************************************
 End of general info.
 
-
 ===============================================================================
-wrspice-4.3.8  10/3/2018
+wrspice-4.3.9  3/11/2019
 Current Release
+
+Lots going on under the hood.  This is an interim release, providing elements
+of two new feature sets: the "runops", and "Atomic Monte Carlo".
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Run Operations ("runops").
+
+  WRspice has a collection of operations that can be performed during
+  simulation called "runops".  These were originally called "debugs"
+  in Berkeley SPICE3, but since these may have nothing to do with
+  debugging, the name was changed in all WRspice documentation and
+  source code.
+
+  The runops are:       Input Keyword           Command
+                        .save                   save
+                        -                       trace
+                        -                       iplot
+                        .measure                measure
+                        .stop                   stop
+
+  What's New:
+  The measure operation in now a "runop".  This means that measurements
+  can be listed, activated, deleted, etc. with commands like status and
+  delete.
+
+  The measure command
+  Same syntax as the .measure line in input, but will apply to all
+  circuits until deleted or deactivated.
+
+  The .stop input directive.
+  Same syntax as the stop command.  A .stop line only applies when
+  running the containing circuit.
+
+  The SPICE stop command has been scrapped, and the new stop
+  syntax, based on the new measure syntax (the old measure support
+  has also been scrapped) is far more powerful.  The stop and
+  measure operations now have a fair amount of similarity, however,
+  the original functionality should still work, however syntax may
+  differ slightly.
+
+  Users of stop and .measure in earlier WRspice releases should
+  definitely read about the new versions and test (and perhaps
+  update) existing simulation decks.
+
+* Atomic Monte Carlo and Range Analysis
+
+  New commands are being created that will make available operations
+  that have been available only as part of Monte Carlo or operating range
+  analysis.  These will allow the user to create scripts for special
+  purpose operations, such as Monte Carlo optimization, of advanced
+  statistical extraction.
+
+  New command:  alterf
+  Dump alter list to Monte Carlo output file.
+
+  New command:  findrange
+  Measure the operating range of the current parameters with the
+  current trial set.  This can be embedded in a Monte Carlo analysis.
+
+  New command:  mctrial
+  Run a single Monte Carlo trial, sets variable named "trial_return"
+  to 0-error, 1-pass, 2-fail.
+
+  The check command has new option: -b.
+  If this is given, the analysis will be paused after setup and the
+  check command will return.  This is the start for atomic Monte
+  Carlo, a script can call mctrial numerous times at this point, then
+  "check -c" when done.
+
+  check -c now returns immediately after deleting the run in progress.
+
+  New vector: checkINIT
+  This is set to 1 before the initial execution of the header block,
+  before operating range or the first Monte Carlo trial.  It is set to
+  0 otherwise.  Thus one can identify the first trial in Monte Carlo
+  analysis from within the header script.
+
+  The margin/Monte Carlo analysis test function can now return 1
+  instead of setting checkFAIL to indicate a failed run.
+
+* Misc changes.
+  
+  "gnd!" is now a global ground token, same as "0".
+
+  New variable: revertmode (integer 0-5)
+  This sets up the strategy to revert focus to the terminal window
+  when a new window pops up.  This is highly dependent on operating
+  system/window manager, and previous attempts to do this in a one
+  size fits all manner had problems and was replaced with the present
+  approach.  The default auto mode makes a guess based on the
+  operating system.  The variable can be set to one of the values below
+  explicitly.
+
+    0    default "auto" mode.
+    1    off, don't attempt to revert focus.
+    2    assume older linux, e.g. RHEL6 and Gnome.
+    3    assume newish linux, e.g., RHEL7 and KDE.
+    4    Apple Mac.
+    5    Microsoft Windows.
+
+  Josephson junction models now have a CPIC model parameter which
+  supplies the default capacitance per critical current in F/A.  This
+  defaults to the MITLL SFQ5ee value, and will set the capacitance if
+  CAP is not given.  With CAP not given, changing ICRIT will now
+  change the assumed capacitance of the reference junction.
+
+  New script syntax:  return [expression]
+  The script will return immediately, and if an expression is given,
+  the "retval" will be set to the evaluated result, similar to the
+  now-deprecated retval command.  This value can be obtained with the
+  "$?" pseudo-shell variable after the function returns (warning, this
+  is a global variable).
+
+  New feature:  named control blocks.  If a name follows
+  .control/.exec/.postrun the lines in the block are saved in a
+  codeblock with the given name.  The three types are identical in
+  this usage.  These are not associated with any circuit or run when
+  the circuit is sourced like unnamed codeblocks.  The inline *$/*#
+  lines are added to an unnamed codeblock.
+
+  New variable: units_sepchar
+  Changed the character that separates numerator and denominator units
+  from '/' to '_', which is tied to the new "units_sepchar" variable. 
+  The earlier choice could cause ambiguous expressions.  e.g., 1/V
+  could be one over a vector V or one per volt.
+
+
+BUGS FIXED
+---- -----
+  The WRSPICE_PROGRAM test without a .param assignment caused a seg
+  fault.
+
+  Fixed a bug in plot windows:  the marker readout was frozen in
+  non-single scale plots with two multi-dimensional traces.
+
+  Now use new "units_sepchar" (default _) as separator between
+  numerator and denominator in units strings.  The / used previously
+  could lead to ambiguity and failure to properly evaluate
+  expressions.
+
+  Fixed "illegal instruction" start-up fault on OS X Mojave.
+
+  Fixed jjpulse.cir example to work when delay not broken.
+
+  (Re)enabled output of complex vectors in server mode (rawfile).
+
+  Fixed the internal Josephson junction model rtype=4 to be consistent
+  with rtype=1.  Updated the jjiv4.cir example file.
+
+
+-------------------------------------------------------------------------------
+wrspice-4.3.8  10/10/2018
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
@@ -243,9 +396,9 @@ CHANGES AND NEW FEATURES
   indicate that the value part and delimiting comma are optional.
 
   Before subcircuit expansion, if a line starts with Xname (X followed
-  ba a name given in the option), then if value is given it will
-  replace Xname.  If no value was given, the X is simply stripped off. 
-  This is all case insensitive.
+  by a name given in the option), then if the corresponding value is
+  given it will replace Xname.  If no value was given, the X is simply
+  stripped off.  This is all case insensitive.
 
   Example:  set submaps j,b
   In the deck, xj1 1 2 ... would be replaced by b1 1 2 ...

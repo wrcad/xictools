@@ -522,8 +522,9 @@ cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)
             }
             if (in_lib) {
                 PCellParam *p0 = 0;
+                const char *new_cell_name;
                 bool ok = OAif()->load_cell(mnamein, cname, 0, CDMAXCALLDEPTH,
-                        false, &p0, 0);
+                        false, &new_cell_name, &p0);
                 OAif()->set_lib_open(mnamein, is_open);
                 if (!ok) {
                     Log()->ErrorLog(mh::CellPlacement, Errs()->get_error());
@@ -547,7 +548,7 @@ cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)
                     return; 
                 }
                 // We've opened the cell, avoid doing it again below.
-                CDcdb()->findSymbol(cname, &cbin);
+                CDcdb()->findSymbol(new_cell_name, &cbin);
             }
         }
 
@@ -599,8 +600,9 @@ cEdit::addMaster(const char *mnamein, const char *cname, cCHD *chd)
 
         if (oiret == OInew) {
             Log()->ErrorLogV(mh::CellPlacement, "Cell %s was not found.",
-                mname);
-            CD()->Close(CD()->CellNameTableFind(mname));  // delete empty cell
+                cname ? cname : mname);
+            // delete empty cell
+            CD()->Close(CD()->CellNameTableFind(cname ? cname : mname));
             delete [] mname;
             return;
         }
@@ -687,7 +689,7 @@ cEdit::placeInstance(const char *name, int x, int y, int nx, int ny,
         if (in_lib && DSP()->CurMode() == Physical) {
             PCellParam *p0 = 0;
             if (!OAif()->load_cell(lname, cname, 0, CDMAXCALLDEPTH,
-                    false, &p0, 0)) {
+                    false, 0, &p0)) {
                 Errs()->add_error("Error opening %s", lname);
                 return (0);
             }

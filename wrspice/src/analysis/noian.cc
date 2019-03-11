@@ -47,7 +47,7 @@ Authors: 1987 Gary W. Ng
 
 #include "noisdefs.h"
 #include "device.h"
-#include "outdata.h"
+#include "output.h"
 #include "miscutil/lstring.h"
 
 
@@ -430,6 +430,7 @@ sNdata::noise (sCKT *ckt, int mode, int operation)
                 outData.v.numValue = outNumber; // vector number
                 outData.v.vec.rVec = outpVector; // vector of outputs
                 OP.appendData(job->JOBrun, &refVal, &outData);
+                OP.checkRunops(job->JOBrun, freq);
             }
             return (OK);
         }

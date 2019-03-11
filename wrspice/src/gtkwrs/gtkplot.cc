@@ -49,11 +49,11 @@ Authors: 1988 Jeffrey M. Hsu
 // GTK drivers for plotting.
 //
 
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "gtktoolb.h"
 #include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkutil.h"
@@ -665,19 +665,19 @@ sGraph::gr_pkg_init()
 void
 sGraph::gr_pkg_init_colors()
 {
-    SetDefaultColors();
+    SpGrPkg::SetDefaultColors();
     const sGraph *tgraph = this;
     if (!tgraph)
         return;
 
     plot_bag *w = dynamic_cast<plot_bag*>(gr_dev);
     if (w && w->Viewport() && w->Viewport()->window) {
-        w->SetWindowBackground(DefColors[0].pixel);
-        w->SetBackground(DefColors[0].pixel);
+        w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
+        w->SetBackground(SpGrPkg::DefColors[0].pixel);
         w->Clear();
     }
     for (int i = 0; i < GRpkgIf()->MainDev()->numcolors; i++)
-        gr_colors[i] = DefColors[i];
+        gr_colors[i] = SpGrPkg::DefColors[i];
 }
 
 

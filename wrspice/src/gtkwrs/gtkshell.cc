@@ -45,8 +45,8 @@
  **************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
-#include "frontend.h"
+#include "graph.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "gtktoolb.h"

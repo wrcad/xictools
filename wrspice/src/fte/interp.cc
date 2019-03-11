@@ -47,7 +47,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include <math.h>
 #include <string.h>
-#include "ftedata.h"
+#include "datavec.h"
 #include "ttyio.h"
 #include "ginterf/graphics.h"
 

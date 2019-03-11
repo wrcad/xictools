@@ -975,7 +975,7 @@ sLBoa::lb_content_cb(const char *cellname, void*)
         OAif()->clear_name_table();
 
         if (!OAif()->load_cell(LB->lb_contlib, sel, 0, CDMAXCALLDEPTH, true,
-                &p0, 0)) {
+                0, &p0)) {
             Log()->ErrorLog(mh::Processing, Errs()->get_error());
             delete [] sel;
             return;

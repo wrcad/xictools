@@ -492,7 +492,7 @@ cSpiceIPC::RunSpice(CmdDesc *cmd)
     if (anl) {
         char *analysis_str = hyList::string(anl, HYcvPlain, false);
         const char *s = analysis_str;
-        while (isspace(*s))
+        while (isspace(*s) || *s == '.')
             s++;
         const char *t = s;
         char *tok = lstring::gettok(&t);

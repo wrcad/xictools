@@ -45,9 +45,10 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "commands.h"
-#include "ftedata.h"
+#include "datavec.h"
+#include "output.h"
 #include "kwords_fte.h"
 #include "ttyio.h"
 #include "wlist.h"
@@ -91,11 +92,11 @@ CommandTab::com_diff(wordlist *wl)
     if (Sp.GetVar(kw_diff_reltol, VTYP_REAL, &vv))
         reltol = vv.get_real();
 
-    // Let's try to be clever about defaults
+    // Let's try to be clever about defaults.
     sPlot *p1 = 0;
     if (!wl || !wl->wl_next) {
-        p1 = Sp.CurPlot();
-        if (p1 == sPlot::constants()) {
+        p1 = OP.curPlot();
+        if (p1 == OP.constants()) {
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "invalid current plot (constants).\n");
             return;
@@ -104,7 +105,7 @@ CommandTab::com_diff(wordlist *wl)
 
     sPlot *p2 = 0;
     if (!wl) {
-        // try the current and previous plot of same name
+        // Try the current and previous plot of same name.
         for (p2 = p1->next_plot(); p2 && !lstring::eq(p1->name(), p2->name());
             p2 = p2->next_plot()) ;
         if (!p2) {
@@ -116,12 +117,12 @@ CommandTab::com_diff(wordlist *wl)
     }
 
     else if (!wl->wl_next) {
-        // try current and named plot
-        for (p2 = Sp.PlotList(); p2 &&
+        // Try current and named plot.
+        for (p2 = OP.plotList(); p2 &&
                 !lstring::eq(p2->type_name(), wl->wl_word);
                 p2 = p2->next_plot()) ;
 
-        if (!p2 || p2 == sPlot::constants()) {
+        if (!p2 || p2 == OP.constants()) {
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "invalid plot \"%s\".\n", wl->wl_word);
             return;
@@ -131,7 +132,7 @@ CommandTab::com_diff(wordlist *wl)
         wl = 0;
     }
     else {
-        for (p1 = Sp.PlotList(); p1; p1 = p1->next_plot()) {
+        for (p1 = OP.plotList(); p1; p1 = p1->next_plot()) {
             if (lstring::eq(wl->wl_word, p1->type_name()))
                 break;
         }
@@ -141,7 +142,7 @@ CommandTab::com_diff(wordlist *wl)
         }
         wl = wl->wl_next;
 
-        for (p2 = Sp.PlotList(); p2; p2 = p2->next_plot()) {
+        for (p2 = OP.plotList(); p2; p2 = p2->next_plot()) {
             if (lstring::eq(wl->wl_word, p2->type_name()))
                 break;
         }

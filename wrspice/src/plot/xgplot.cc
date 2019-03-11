@@ -45,10 +45,10 @@ Authors: 1988 Jeffrey M. Hsu
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
+#include "simulator.h"
 
 #define XG_MAXVECTORS 64
 

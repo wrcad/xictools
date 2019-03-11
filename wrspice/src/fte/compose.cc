@@ -46,8 +46,9 @@ Authors: 1986 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "frontend.h"
-#include "ftedata.h"
+#include "simulator.h"
+#include "datavec.h"
+#include "output.h"
 #include "cshell.h"
 #include "commands.h"
 #include "ttyio.h"
@@ -114,7 +115,7 @@ namespace {
             char *bf = new char[ix + 1];
             strncpy(bf, vname, ix);
             bf[ix] = 0;
-            sPlot *p = Sp.FindPlot(bf);
+            sPlot *p = OP.findPlot(bf);
             delete [] bf;
             if (p) {
                 if (pl)
@@ -223,7 +224,7 @@ CommandTab::com_compose(wordlist *wl)
     if (pl)
         n = pl->find_vec(resname);
     else
-        n = Sp.VecGet(resname, 0);
+        n = OP.vecGet(resname, 0);
     if (n && (n->flags() & VF_READONLY)) {
         GRpkgIf()->ErrPrintf(ET_ERROR, "specified vector %s is read-only.\n",
             resname);

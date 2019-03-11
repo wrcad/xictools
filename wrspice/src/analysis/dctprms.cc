@@ -39,8 +39,9 @@
  *========================================================================*/
 
 #include "device.h"
-#include "outdata.h"
-#include "frontend.h"
+#include "output.h"
+#include "simulator.h"
+#include "dctdefs.h"
 #include "miscutil/threadpool.h"
 
 
@@ -414,8 +415,13 @@ sDCTprms::points(const sCKT *ckt)
 }
 
 
+// The dctr arg is passed nonzero if func adds only one value to the
+// output length, such as for DCT analysis.  This will control some
+// initialization applied before calling func, which should occur
+// before each "fast" dimension change.
+//
 int
-sDCTprms::loop(LoopWorkFunc func, sCKT *ckt, int restart)
+sDCTprms::loop(LoopWorkFunc func, sCKT *ckt, int restart, int dctr)
 {
     if (dct_elt[0] == 0) {
         // No swept elements specified!
@@ -508,11 +514,13 @@ sDCTprms::loop(LoopWorkFunc func, sCKT *ckt, int restart)
                 do_me = false;
             }
         }
+        bool dimchg = false;
         if (do_me) {
             if (!dct_skip) {
                 if (!dct_dims[0])
                     dct_dims[1]++;
             
+                dimchg = i;
                 while (i > 0) { 
                     i--; 
 #ifdef ALLPRMS
@@ -529,10 +537,12 @@ sDCTprms::loop(LoopWorkFunc func, sCKT *ckt, int restart)
             }
             // do operation
             dct_skip = 0;
-            OP.initMeasure(job->JOBrun);
+            if (!dctr || dimchg) {
+                OP.initRunops(job->JOBrun);
 #ifdef ALLPRMS
-            ckt->doTaskSetup();
+                ckt->doTaskSetup();
 #endif
+            }
             error = (*func)(ckt, restart);
             ckt->CKTcntDC++;  // For progress reporting.
             if (first) {
@@ -814,7 +824,7 @@ namespace {
 #ifdef ALLPRMS
         cx->ckt()->doTaskSetup();
 #endif
-        OP.initMeasure(job->JOBrun);
+        OP.initRunops(job->JOBrun);
         int error = (*run->func)(ckt, true);
         return (error);
     }

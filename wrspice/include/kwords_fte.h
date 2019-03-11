@@ -173,6 +173,7 @@ extern const char *kw_nosubckt;
 extern const char *kw_program;
 extern const char *kw_strictnumparse;
 extern const char *kw_units_catchar;
+extern const char *kw_units_sepchar;
 extern const char *kw_subc_catchar;
 extern const char *kw_subc_catmode;
 extern const char *kw_plot_catchar;
@@ -271,6 +272,7 @@ extern const char *kw_nomoremode;
 extern const char *kw_nonomatch;
 extern const char *kw_nosort;
 extern const char *kw_prompt;
+extern const char *kw_revertmode;
 extern const char *kw_sourcepath;
 extern const char *kw_unixcom;
 extern const char *kw_width;
@@ -292,11 +294,13 @@ extern const char *kw_substart;
  *  Misc.
  *************************************************************************/
 
-// breakp.cc
-extern const char *kw_stop;
+// runop.cc
+extern const char *kw_save;
 extern const char *kw_trace;
 extern const char *kw_iplot;
-extern const char *kw_save;
+extern const char *kw_stop;
+extern const char *kw_measure;
+extern const char *kw_stop2;
 extern const char *kw_after;
 extern const char *kw_at;
 extern const char *kw_before;

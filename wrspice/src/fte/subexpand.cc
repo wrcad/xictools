@@ -45,12 +45,13 @@ Authors: 1985 Wayne A. Christopher, Norbert Jeske
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
-#include "fteparse.h"
+#include "simulator.h"
+#include "parser.h"
 #include "input.h"
 #include "inpmtab.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
+#include "circuit.h"
 #include "ttyio.h"
 #include "misc.h"
 #include "wlist.h"
@@ -62,7 +63,7 @@ Authors: 1985 Wayne A. Christopher, Norbert Jeske
 //#define TIME_DEBUG
 
 #ifdef TIME_DBG
-#include "outdata.h"
+#include "output.h"
 #endif
 
 
@@ -213,8 +214,6 @@ struct sScGlobal
 
     const char *gettrans(const char *name, sTabc *table)
         {
-            if (lstring::eq(name, "0"))
-                return (name);
             if (is_global(name))
                 return (name);
             for (int i = 0; table[i].oldw(); i++) {
@@ -383,10 +382,20 @@ sScGlobal::init(sFtCirc *circ)
 
     // Add the global node names to a hash table.
     //
+    if (!sg_glob_tab) {
+        sg_glob_tab = new sHtab(sHtab::get_ciflag(CSE_NODE));
+
+        // Internal ground names are global.
+        const char *gn = sCKTnodeTab::groundNames();
+        char *gname;
+        while ((gname = lstring::gettok(&gn)) != 0) {
+            if (sHtab::get(sg_glob_tab, gname) == 0)
+                sg_glob_tab->add(gname, (void*)1L);
+            delete [] gname;
+        }
+    }
     for (sLine *c = circ->deck()->next(); c; c = c->next()) {
         if (lstring::cimatch(GLOBAL_KW, c->line())) {
-            if (!sg_glob_tab)
-                sg_glob_tab = new sHtab(sHtab::get_ciflag(CSE_NODE));
 
             const char *s = c->line();
             IP.advTok(&s, true);

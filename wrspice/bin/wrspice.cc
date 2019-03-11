@@ -58,18 +58,18 @@ Authors: 1985 Thomas L. Quarles
 #include "cshell.h"
 #include "commands.h"
 #include "variable.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "input.h"
 #include "device.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
 #include "keywords.h"
 #include "toolbar.h"
 #include "kluif.h"
 #include "csdffile.h"
 #include "psffile.h"
 #include "kwords_fte.h"
-#include "ftedata.h"
+#include "datavec.h"
 #include "device.h"
 #include "acdefs.h"
 #include "distdefs.h"
@@ -260,8 +260,8 @@ operator new(size_t size)
         if (Sp.GetFlag(FT_SIMFLAG)) {
             if (Sp.CurCircuit())
                 Sp.CurCircuit()->set_inprogress(false);
-            if (Sp.CurPlot())
-                Sp.CurPlot()->set_active(false);
+            if (OP.curPlot())
+                OP.curPlot()->set_active(false);
             Sp.SetFlag(FT_SIMFLAG, false);
         }
         CP.ResetControl();
@@ -299,8 +299,8 @@ namespace {
             if (Sp.GetFlag(FT_SIMFLAG)) {
                 if (Sp.CurCircuit())
                     Sp.CurCircuit()->set_inprogress(false);
-                if (Sp.CurPlot())
-                    Sp.CurPlot()->set_active(false);
+                if (OP.curPlot())
+                    OP.curPlot()->set_active(false);
                 Sp.SetFlag(FT_SIMFLAG, false);
             }
             CP.ResetControl();
@@ -519,7 +519,7 @@ wrs_if::ApplyHelpInput(const char *fname)
 pix_list *
 wrs_if::ListPixels()
 {
-    sColor *colors = DefColors;
+    sColor *colors = SpGrPkg::DefColors;
     pix_list *p0 = 0;
     for (int i = 0; i < GR.CurDev()->numcolors; i++) {
         pix_list *p = new pix_list;
@@ -539,7 +539,7 @@ wrs_if::BackgroundPixel()
 {
     if (GP.Cur())
         return (GP.Cur()->color(0).pixel);
-    return (DefColors[0].pixel);
+    return (SpGrPkg::DefColors[0].pixel);
 }
 // End of wrs_if functions.
 
@@ -960,8 +960,8 @@ main(int argc, char **argv)
     if (CmdLineOpts.term)
         Sp.SetVar("term", CmdLineOpts.term);
     if (CmdLineOpts.rawfile) {
-        Sp.GetOutDesc()->set_outFile(CmdLineOpts.rawfile);
-        Sp.SetVar("rawfile", Sp.GetOutDesc()->outFile());
+        OP.getOutDesc()->set_outFile(CmdLineOpts.rawfile);
+        Sp.SetVar("rawfile", OP.getOutDesc()->outFile());
     }
     if (CmdLineOpts.output) {
         if (!(freopen(CmdLineOpts.output, "w", stdout))) {
@@ -987,7 +987,7 @@ main(int argc, char **argv)
     if (!istty || Sp.GetFlag(FT_BATCHMODE))
         TTY.setmore(false);
     if (Sp.GetFlag(FT_SERVERMODE) && !CmdLineOpts.rawfile)
-        Sp.GetOutDesc()->set_outFile(0);
+        OP.getOutDesc()->set_outFile(0);
 
     CP.SetFlag(CP_INTERACTIVE, false);
     char buf[BSIZE_SP];
@@ -1227,7 +1227,7 @@ main(int argc, char **argv)
             }
             else if (!Sp.CurCircuit()->runonce()) {
                 if (Sp.GetFlag(FT_SERVERMODE))
-                    Sp.Run(Sp.GetOutDesc()->outFile());
+                    Sp.Run(OP.getOutDesc()->outFile());
                 else
                     Sp.RunBatch();
                 Sp.CurCircuit()->set_runonce(false);
@@ -2228,11 +2228,6 @@ IFsimulator::IFsimulator()
 
     DEV.init();
 
-    ft_outfile.set_outFile("rawspice.raw");
-
-    ft_plot_list = sPlot::constants();
-    ft_plot_cur = sPlot::constants();
-
     // Set up the hash table for 'set' variables.
     // This is case insensitive, so that setting shell variables itl1, ITL1
     // are recognized properly as options when the circuit is run.
@@ -2245,6 +2240,11 @@ IFsimulator::IFsimulator()
     // This can follow a number, separating a units string from the number.
     //
     ft_units_catchar = DEF_UNITS_CATCHAR;
+
+    // Character used to separate numerator units from denominator
+    // units in units string.
+    //
+    ft_units_sepchar = DEF_UNITS_SEPCHAR;
 
     // Character that separates plot name from vector name when referencing
     // vectors.

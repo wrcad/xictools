@@ -47,7 +47,7 @@ Authors: 1987 Thomas L. Quarles
 
 #include "optdefs.h"
 #include "input.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "misc.h"
 
 // .options parm=xxx ...

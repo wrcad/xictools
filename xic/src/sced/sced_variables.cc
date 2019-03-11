@@ -231,6 +231,7 @@ cSced::setupVariables()
     vsetup(VA_SpiceAlias,          S,   evSpice);
     vsetup(VA_SpiceHost,           S,   evSpice);
     vsetup(VA_SpiceHostDisplay,    S,   evSpice);
+    vsetup(VA_SpiceInclude,        S,   evSpice);
     vsetup(VA_SpiceProg,           S,   evSpice);
     vsetup(VA_SpiceExecDir,        S,   evSpice);
     vsetup(VA_SpiceExecName,       S,   evSpice);

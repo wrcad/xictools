@@ -46,14 +46,15 @@
 
 #include "config.h"
 #include "spglobal.h"
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "circuit.h"
 #include "input.h"
-#include "outdata.h"
+#include "output.h"
 #include "kwords_analysis.h"
+#include "kwords_fte.h"
 #include "gtktoolb.h"
 #include "gtkinterf/gtkutil.h"
 #include "gtkinterf/gtkfont.h"
@@ -1148,8 +1149,8 @@ GTKtoolbar::UpdateMain(ResUpdType update)
         context->switch_to_pixmap();
         int fwid, dy;
         context->TextExtent(0, &fwid, &dy);
-        context->SetWindowBackground(DefColors[0].pixel);
-        context->SetBackground(DefColors[0].pixel);
+        context->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
+        context->SetBackground(SpGrPkg::DefColors[0].pixel);
         int y = dy + 2;
         int x = 4;
         int ux = 18*fwid;
@@ -1157,7 +1158,7 @@ GTKtoolbar::UpdateMain(ResUpdType update)
 
         int wid, hei;
         gdk_window_get_size(context->Window(), &wid, &hei);
-        context->SetColor(DefColors[0].pixel);
+        context->SetColor(SpGrPkg::DefColors[0].pixel);
         context->Box(0, 0, wid, hei);
 
         double elapsed, user, cpu;
@@ -1316,32 +1317,54 @@ GTKtoolbar::RegisterBigForeignWindow(unsigned int w)
 }
 
 
-// We don't want the toolbar to take focus from the console when it
-// pops up, but we do want the toolbar to have keyboard sensitivity. 
-// The gtk_window_set_focus_on_map function seems like just the
-// ticket, unfortunately it appears to do nothing.  So, we start with
-// sensitivity off, and use a timer to turn it back on, presumably
-// well after mapping.
+enum RVTtype { RVTauto, RVTnone, RVTrhel6, RVTrhel7, RVTmac, RVTmsw };
+namespace {
+    RVTtype RevertMode; 
+}
+
+// We don't want the toolbar or plot windows to take focus from the
+// console when it pops up, but these windows do have
+// keyboard sensitivity.  The gtk_window_set_focus_on_map function
+// seems like just the ticket, unfortunately it is only a hint to the
+// window manager, and is ignored in some cases.  This is a huge
+// headache since there a basically no commonality between window
+// managers, and the behavior hopefully set here can be extremely
+// annoying if not working right.  Basically, we want new windows to
+// not take focus when popped up, leaving the focus where it is. 
+// However, the windows are capable of focus and can be selected
+// explicitly by the user to accept focus.  A new window should appear
+// on top, but appear beneath the console if the console is clicked
+// in.
+//
+// There are several different modes here depending on different
+// window systems.  By default, one is selected as a best guess, but
+// the user can set a variable to override.
 
 namespace {
     int set_accept_focus(void *arg)
     {
+        if (RevertMode == RVTmac) {
+            // If launched from a Terminal window, the Console will be 0
+            // since the terminal is Cocoa, not X (regular xterms work
+            // fine).  The following AppleScript will revert focus to the
+            // Cocoa terminal.
 #ifdef __APPLE__
-        // If launched from a Terminal window, the Console will be 0
-        // since the terminal is Cocoa, not X (regular xterms work
-        // fine).  The following AppleScript will revert focus to the
-        // Cocoa terminal.
 #ifdef WITH_X11
-        if (GRX->ConsoleXid() == 0)
+            if (GRX->ConsoleXid() == 0)
 #endif
-        system(
+                system(
             "osascript -e \"tell application \\\"Terminal\\\" to activate\"");
 #endif
-        gtk_window_set_keep_above(GTK_WINDOW(arg), false);
-#ifdef WIN32
-        gtk_window_set_accept_focus(GTK_WINDOW(arg), true);
-#endif
+            gtk_window_set_keep_above(GTK_WINDOW(arg), false);
+        }
+        else if (RevertMode == RVTrhel7)
+            gtk_window_set_keep_above(GTK_WINDOW(arg), false);
+        else if (RevertMode == RVTmsw) {
+            gtk_window_set_keep_above(GTK_WINDOW(arg), false);
+            gtk_window_set_accept_focus(GTK_WINDOW(arg), true);
+        }
 #ifdef WITH_X11
+        // This is probably crap.
         if (GRX->ConsoleXid() && Sp.GetVar("wmfocusfix", VTYP_BOOL, 0)) {
             XSetInputFocus(gdk_display, GRX->ConsoleXid(), RevertToPointerRoot,
                 CurrentTime);
@@ -1356,7 +1379,7 @@ namespace {
     {
         gtk_signal_disconnect_by_func(GTK_OBJECT(widget),
             GTK_SIGNAL_FUNC(revert_proc), widget);
-        // Use a timeout rather than an idle, kde seems to need the delay.
+        // Use a timeout rather than an idle, KDE seems to need the delay.
         gtk_timeout_add(800, set_accept_focus, widget);
         // gtk_idle_add(set_accept_focus, widget);
         return (0);
@@ -1370,17 +1393,72 @@ namespace {
 void
 GTKtoolbar::RevertFocus(GtkWidget *widget)
 {
-    if (!Sp.GetVar("nototop", VTYP_BOOL, 0)) {
-        gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
-        gtk_window_set_keep_above(GTK_WINDOW(widget), true);
-    }
-    gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
-
-#ifdef WIN32
-    gtk_window_set_accept_focus(GTK_WINDOW(widget), false);
+    VTvalue vv;
+    if (Sp.GetVar(kw_revertmode, VTYP_NUM, &vv))
+        RevertMode = (RVTtype)vv.get_int();
+    if (RevertMode == RVTauto) {
+#ifdef __linux__
+#if GTK_CHECK_VERSION(2,24,24)
+        RevertMode = RVTrhel7;
+#else
+        RevertMode = RVTrhel6;
 #endif
-    gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
-        GTK_SIGNAL_FUNC(revert_proc), widget);
+#else
+#ifdef ___APPLE__
+        RevertMode = RVTmac;
+#else
+#ifdef WIN32
+        RevertMode = RVTmsw;
+#endif
+#endif
+#endif
+    }
+
+    if (RevertMode == RVTrhel7) {
+        // RHEL 7 or newer, uses KDE.  Without the set_keep_above, new
+        // plot windows are created below the console, which stinks.
+
+        if (!Sp.GetVar("nototop", VTYP_BOOL, 0)) {
+            gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
+            gtk_window_set_keep_above(GTK_WINDOW(widget), true);
+        }
+        gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
+
+        // Start with sensitivity off, and use a timer to turn it back
+        // on, presumably well after mapping.
+        gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
+            GTK_SIGNAL_FUNC(revert_proc), widget);
+    }
+    else if (RevertMode == RVTrhel6) {
+        // RHEL 6 or older, uses Gnome.  The set_keep_above ends up
+        // causing the plot windows to disappear beneath other windows
+        // after the short timer delay, which is unacceptable.  Below
+        // keeps the focus in the console, but the new window may or
+        // may not be on top.  This is Gnome behavior and there seems
+        // to be no way to fix it.
+
+        gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
+        gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
+    }
+    else if (RevertMode == RVTmac) {
+        if (!Sp.GetVar("nototop", VTYP_BOOL, 0)) {
+            gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
+            gtk_window_set_keep_above(GTK_WINDOW(widget), true);
+        }
+        gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
+        gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
+            GTK_SIGNAL_FUNC(revert_proc), widget);
+    }
+    else if (RevertMode == RVTmsw) {
+        if (!Sp.GetVar("nototop", VTYP_BOOL, 0)) {
+            gtk_window_set_urgency_hint(GTK_WINDOW(widget), true);
+            gtk_window_set_keep_above(GTK_WINDOW(widget), true);
+        }
+        gtk_window_set_focus_on_map(GTK_WINDOW(widget), false);
+        gtk_window_set_accept_focus(GTK_WINDOW(widget), false);
+        gtk_signal_connect(GTK_OBJECT(widget), "expose_event",
+            GTK_SIGNAL_FUNC(revert_proc), widget);
+    }
 }
 
 
@@ -2198,7 +2276,7 @@ GTKtoolbar::tbpop(bool up)
         // set up initial xor color
         // offset 1 is assumed to be the highlighting color
         GdkColor clr;
-        clr.pixel = DefColors[0].pixel ^ DefColors[1].pixel;
+        clr.pixel = SpGrPkg::DefColors[0].pixel ^ SpGrPkg::DefColors[1].pixel;
         gtk_QueryColor(&clr);
         gdk_gc_set_foreground(w->XorGC(), &clr);
     }
@@ -2221,8 +2299,8 @@ GTKtoolbar::tbpop(bool up)
         s = "blue";
     tb_clr_4 = GRX->NameColor(s);
 
-    w->SetWindowBackground(DefColors[0].pixel);
-    w->SetBackground(DefColors[0].pixel);
+    w->SetWindowBackground(SpGrPkg::DefColors[0].pixel);
+    w->SetBackground(SpGrPkg::DefColors[0].pixel);
     w->Clear();
     gtk_timeout_add(2000, res_timeout, 0);
 }

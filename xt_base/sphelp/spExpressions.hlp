@@ -27,7 +27,7 @@ setandlet
 !!REDIRECT temper       plotvec#temper
 !!REDIRECT specialvec   plotvec#special
 
-!! useriface.tex 121215
+!! useriface.tex 022519
 !!KEYWORD
 plotvec
 !!TITLE
@@ -504,7 +504,7 @@ Plots and Vectors
     or in a <a href=".save"><tt>.save</tt></a> line.  However, if this
     form is used in a <a href=".measure"><tt>.measure</tt></a> line,
     the needed vector will be saved automatically.  This is also true
-    if the form is used in one of the "debugs" as listed with the <a
+    if the form is used in one of the "runops" as listed with the <a
     href="status"><b>status</b></a> command.
 
     <a name="special"></a>

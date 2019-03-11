@@ -60,7 +60,7 @@ graphcmds
 !!REDIRECT wrbtn        toolbar#wrbtn
 !!REDIRECT toolsmenu    toolbar#toolsmenu
 
-!! useriface.tex 042118
+!! useriface.tex 022519
 !!KEYWORD
 toolbar toolcontrol
 !!TITLE
@@ -382,10 +382,10 @@ Tool Control Window
     <dl>
     <dt><b>Trace</b><dd>
     Pop up the <a href="tracepanel"><b>Trace</b></a> which lists the
-    "debugs" currently in effect.  The "debugs" are directives to
+    "runops" currently in effect.  The runops are directives to
     interactively plot, or trace variables during simulation, or to
     pause the simulation when a condition is met.  The panel provides
-    capability for deactivating or deleting "debugs".
+    capability for deactivating or deleting runops.
     </dl>
 
     <dl>
@@ -1174,7 +1174,7 @@ Command Options
 !!SEEALSO
 graphics
 
-!! useriface.tex 012709
+!! useriface.tex 022519
 !!KEYWORD
 tracepanel
 !!TITLE
@@ -1183,16 +1183,17 @@ The Trace Tool
     <img src=screenshots/trace.png align=right>
     This panel is available from the <b>Trace</b> button in the
     <b>Tools</b> menu of the <a href="toolbar"><b>Tool Control</b></a>
-    window.  It provides a listing of the "debugs" (i.e., traces,
-    breakpoints, interactive plots) currently in effect.  These
-    "debugs" are set with the <a href="save"><b>save</b></a>, <a
-    href="stop"><b>stop</b></a>, <a href="trace"><b>trace</b></a>, and
-    <a href="iplot"><b>iplot</b></a> commands.
+    window.  It provides a listing of the "runops" (i.e., traces,
+    breakpoints, interactive plots) currently in effect.  These runops
+    are set with the <a href="save"><b>save</b></a>, <a
+    href="trace"><b>trace</b></a>, <a href="iplot"><b>iplot</b></a>,
+    <a href="measure"><b>measure</b></a>, and <a
+    href="stop"><b>stop</b></a>, commands.
 
     <p>
-    A debug can be made inactive by clicking on the text in the list,
+    A runop can be made inactive by clicking on the text in the list,
     in which case an 'I' appears in the first column.  Click on the
-    text a second time to restore activation.  Inactive debugs are
+    text a second time to restore activation.  Inactive runops are
     ignored during simulation.  The following buttons are available:
 
     <p>
@@ -1203,7 +1204,7 @@ The Trace Tool
 
     <dl>
     <dt><b>Delete Inactive</b>
-    <dd>Delete the debugs selected as inactive, i.e., those listed with
+    <dd>Delete the runops selected as inactive, i.e., those listed with
     "I" in the first column.
     </dl>
 

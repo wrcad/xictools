@@ -268,21 +268,19 @@ cEdit::resolvePCell(CDcbin *cbin, const char *dbname, bool openmode)
     }
     PCellDesc::LCVcleanup lcv(libname, cellname, viewname);
 
-    char *subm_name;
+    const char *subm_name;
     if (!OAif()->load_cell(libname, cellname, viewname, CDMAXCALLDEPTH,
-            openmode, &ed_pcparams, &subm_name)) {
+            openmode, &subm_name, &ed_pcparams)) {
         Errs()->add_error("resolvePCell: OA cell load failed.");
         return (false);
     }
     if (cbin) {
         if (OIfailed(CD()->OpenExisting(subm_name, cbin))) {
-            delete [] subm_name;
             Errs()->add_error("resolvePCell: failed to open cell.");
             return (false);
         }
     }
     PC()->setPCinstParams(dbname, ed_pcparams, false);
-    delete [] subm_name;
     return (true);
 }
 
@@ -526,7 +524,7 @@ cEdit::reparamSubMaster(CDs *sdesc, const char *inprms)
         // Now call back to OA to fill in the cell.
 
         bool ret = OAif()->load_cell(libname, cellname, viewname,
-            CDMAXCALLDEPTH, false, &prms, 0);
+            CDMAXCALLDEPTH, false, 0, &prms);
 
         // Put back the previous instance name if we changed it.
         // Future instances with this parameter set will use the
@@ -704,20 +702,18 @@ cEdit::reparamInstance(CDs *sdesc, CDc *cdesc, const CDp *newp, CDc **pnew)
 
         // Now call back to OA to fill in the cell.
 
-        char *subm_name;
+        const char *subm_name;
         if (!OAif()->load_cell(libname, cellname, viewname, CDMAXCALLDEPTH,
-                false, &prms, &subm_name)) {
+                false, &subm_name, &prms)) {
             Errs()->add_error("reparamInstance: OA cell load failed.");
             return (false);
         }
 
         CDcbin cbin;
         if (OIfailed(CD()->OpenExisting(subm_name, &cbin))) {
-            delete [] subm_name;
             Errs()->add_error("reparamInstance: failed to open cell.");
             return (false);
         }
-        delete [] subm_name;
         PCellParam::destroy(prms);
 
         sdsub = cbin.celldesc(sdesc->displayMode());

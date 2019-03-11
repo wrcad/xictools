@@ -47,7 +47,7 @@ Authors: 1985 Thomas L. Quarles
 
 #include "optdefs.h"
 #include "errors.h"
-#include "outdata.h"
+#include "output.h"
 #include "misc.h"
 #include "kwords_analysis.h"
 

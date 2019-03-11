@@ -45,8 +45,8 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
-#include "fteparse.h"
+#include "simulator.h"
+#include "parser.h"
 #include "cshell.h"
 #include "commands.h"
 #include "spnumber/paramsub.h"

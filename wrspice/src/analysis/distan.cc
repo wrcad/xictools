@@ -49,7 +49,7 @@ Authors: 1988 Jaijeet S. Roychowhury
 #include "dcodefs.h"
 #include "device.h"
 #include "input.h"
-#include "outdata.h"
+#include "output.h"
 #include "misc.h"
 #include "sparse/spmatrix.h"
 

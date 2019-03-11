@@ -39,20 +39,17 @@
  *========================================================================*/
 
 #ifdef WRSPICE
+// Time profiling.
+//#define TIME_DEBUG
+
 #include "cshell.h"
-#include "frontend.h"
-#include "fteparse.h"
+#include "simulator.h"
+#include "parser.h"
 #include "input.h"
 #include "inpline.h"
 #include "ttyio.h"
 #include "reltag.h"
-
-// Time profiling.
-//#define TIME_DEBUG
-
-#ifdef TIME_DEBUG
-#include "outdata.h"
-#endif
+#include "output.h"
 #include "spnumber/paramsub.h"
 #include "spnumber/spnumber.h"
 
@@ -711,10 +708,11 @@ sParamTab::squote_subst(char **str) const
     const char *msg = "Evaluation failed: %s.";
 
     char *expr;
-    if (strchr(*str, '$')) {
-        // The expression contains unexpanded shell variables.  In this
-        // case expand any parameters, and leave the result in single
-        // quotes.
+    if (pt_no_sqexp || strchr(*str, '$')) {
+        // We aren't single-quote expanding, ot The expression
+        // contains unexpanded shell variables.  In this case expand
+        // any parameters, and leave the result in single quotes.
+
         bool quoted = false;
         if (**str == '\'') {
             // strip quotes;
@@ -839,7 +837,7 @@ sParamTab::squote_subst(char **str) const
     delete [] expr;
     delete [] *str;
     *str = lstring::copy(SPnum.printnum(dv->realval(0), dv->units(), false));
-    Sp.VecGc(true);
+    OP.vecGc(true);
 #else
     const char *eptr = expr;
     double *dp = SCD()->evalExpr(&eptr);

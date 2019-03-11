@@ -45,10 +45,11 @@ Authors: 1988 Jeffrey M. Hsu
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
+#include "simulator.h"
+#include "graph.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
 #include "toolbar.h"
 #include "spnumber/spnumber.h"
 
@@ -57,9 +58,13 @@ Authors: 1988 Jeffrey M. Hsu
 // Initialization functions for WRspice graphics.
 //
 
+// These are what get plotted as points when one specifies point
+// plots.
+const char *SpGrPkg::DefPointchars = "oxabcdefghijklmnopqrstuvwxyz";
+
 // Default plotting colors, these are overridden by colorN X resources.
 //
-const char *DefColorNames[NUMPLOTCOLORS] =
+const char *SpGrPkg::DefColorNames[NUMPLOTCOLORS] =
 {
     "white", 
     "black", 
@@ -83,11 +88,10 @@ const char *DefColorNames[NUMPLOTCOLORS] =
     "rosy brown"
 };
 
-
 // Default colors corresponding to the name array above, as pixel/rgb
 // triples.
 //
-sColor DefColors[NUMPLOTCOLORS] =
+sColor SpGrPkg::DefColors[NUMPLOTCOLORS] =
 {
     sColor( 1, 255, 255, 255 ),
     sColor( 0, 0, 0, 0 ),
@@ -112,10 +116,11 @@ sColor DefColors[NUMPLOTCOLORS] =
 };
 
 
+// Static function.
 // Set the pixels in the DefColors array.
 //
 void
-SetDefaultColors()
+SpGrPkg::SetDefaultColors()
 {
     ToolBar()->LoadResourceColors();  // toolkit-specific, loads DefColorNames
     if (GRpkgIf()->MainDev()->numcolors > NUMPLOTCOLORS)
@@ -486,12 +491,12 @@ SPgraphics::Setup(sGrInit *gr, sDvList **dlptr, const char *attrs,
         gr->free_title = true;
     }
     else
-        gr->title = Sp.CurPlot()->name();
+        gr->title = OP.curPlot()->name();
 
-    char *tpn = new char[strlen(Sp.CurPlot()->type_name()) +
-        strlen(Sp.CurPlot()->title()) + 3];
-    sprintf(tpn, "%s: %s", Sp.CurPlot()->type_name(),
-        Sp.CurPlot()->title());
+    char *tpn = new char[strlen(OP.curPlot()->type_name()) +
+        strlen(OP.curPlot()->title()) + 3];
+    sprintf(tpn, "%s: %s", OP.curPlot()->type_name(),
+        OP.curPlot()->title());
     gr->plotname = tpn;
 
     gr->nointerp = grs.nointerp;

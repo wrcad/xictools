@@ -343,8 +343,6 @@ Name property change  (ifdef NEWNMP)
 !mklib updated with new -d option to handle Directory entries, for native
 cell collections.
 
---new
-
 New !preload command and RegisterSubMaster function, registers Xic pcell
 sub master files so will resolve when reading data via library mechanism.
 Avoids cell name uncertainty.
@@ -352,12 +350,13 @@ Avoids cell name uncertainty.
 Bug fixed in pcell parameter compare function, infinite loop.  Potential
 bug fixed in OpenImport with null cbin, would seg fault.
 
-ToDo: handle via/pc masters in archive (DONE for pcells, check this)
-
-TODO: Accept model from CDF. OK (bug fixed)
-
 FIX Place button in Content window of OA Libs panel requires library
 to be open or place fails with uninformative error message. DONE
+
+--- release 4.3.6
+--- release 4.3.7
+
+ToDo: handle via/pc masters in archive (DONE for pcells, check this)
 
 Chris Ayala:  "Glued contacts" when moving schematic device, meaning
 wires stretch(?).
@@ -371,3 +370,21 @@ when checking lower levels when recognizing.  Then, overlapping devices
 whould be handled properly.
 
 update OA/Xic properties and mapping in docs, e.g., XICP_PARTNAME
+
+Somehow, I'd like to keep standard vias in the net files.  This would be
+straightforward when not gridding.  Is there a "nice" way to grid?
+One possibility:  at the end, replace physical geometry with standard
+via instances:
+
+For each net cell
+  For each stdvia in hierarchy that overlaps net
+    clip cell via layers around stdvia bb
+    add stdvia instance to net cell
+  done
+done
+
+Implement:
+1) keep stdvia instances when not gridding or otherwise area
+   constraining. DONE
+2) implement a post-processing function as above.
+

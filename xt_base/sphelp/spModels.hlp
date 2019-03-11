@@ -2081,7 +2081,7 @@ MOSFET Models
 !!SEEALSO
 .model
 
-!! elements.tex 100318
+!! elements.tex 030419
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -2137,6 +2137,9 @@ Josephson Models
     <tr><td><tt>cap</tt></td> <td>*</td>
         <td>reference junction capacitance</td>
         <td>F</td>      <td>0.7e-12</td></tr>
+    <tr><td><tt>cpic</tt></td> <td></td>
+        <td>reference junction capacitance per critical current</td>
+        <td>F/A</td>      <td>0.7e-9</td></tr>
     <tr><td><tt>cmu</tt></td> <td>&nbsp;</td>
         <td>capacitance area/edge scaling</td>
         <td>-</td>      <td>0.0</td></tr>
@@ -2335,11 +2338,22 @@ Josephson Models
     <dl>
     <dt><tt>cap</tt><dd>
     <b>range:</b> 0.0 - 1nF<br>
-    This is the capacitance of the reference junction, in farads.  The
-    default value is obtained from the MIT Lincoln Laboratory SFQ5EE
-    process <a href="tolpygo">[Tolpygo]</a> specific capacitance, and
-    the junction critical current, and is 0.7pF for the default
-    assumption of 1.0mA critical current.
+    This is the capacitance of the reference junction, in farads. 
+    This will override the <tt>cpic</tt> parameter if given, setting a
+    fixed value for reference junction capacitance, invariant with
+    <tt>icrit</tt>.  If not given, junction specific capacitance is
+    set via the <tt>cpic</tt> parameter, see below.
+    </dl>
+
+    <dl>
+    <dt><tt>cpic</tt><dd>
+    <b>range:</b> 0.0 - 1e-6<br>
+    This supplies the default capacitance per critical current in F/A. 
+    This defaults to the MIT Lincoln Laboratory SFQ5EE process <a
+    href="tolpygo">[Tolpygo]</a> value (0.7pF for 1.0 mA), and will
+    set the junction capacitance if <tt>cap</tt> is not given.  With
+    <tt>cap</tt> not given, changing <tt>icrit</tt> will change the
+    assumed capacitance of the reference junction.
     </dl>
 
     <dl>

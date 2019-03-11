@@ -44,6 +44,7 @@
 #include "oa.h"
 #include "oa_nametab.h"
 #include "oa_prop.h"
+#include "oa_alib.h"
 #include "oa_errlog.h"
 #include "pcell.h"
 #include "pcell_params.h"
@@ -165,7 +166,7 @@ cOAnameTab::cellNameAlias(const oaScalarName &libName,
     // Remap cell names from the Virtuoso analogLib, which contains
     // schematic symbols that conflict with the Xic device library.
 
-    if (libname == ANALOG_LIB) {
+    if (AlibFixup.is_alib_device((const char*)cellname)) {
         const char *pfx = ANALOG_LIB_PFX;
         char *cn = new char[strlen(cellname) + strlen(pfx) + 1];
         char *e = lstring::stpcpy(cn, pfx);

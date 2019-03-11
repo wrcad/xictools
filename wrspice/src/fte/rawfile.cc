@@ -46,8 +46,9 @@ Authors: 1986 Wayne A. Christopher
 ****************************************************************************/
 
 #include "spglobal.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "rawfile.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "errors.h"
@@ -134,8 +135,8 @@ cRawOut::file_open(const char *filename, const char *mode, bool binary)
     }
     ro_fp = fp;
     ro_pointPosn = 0;
-    if (Sp.GetOutDesc()->outNdgts() > 0)
-        ro_prec = Sp.GetOutDesc()->outNdgts();
+    if (OP.getOutDesc()->outNdgts() > 0)
+        ro_prec = OP.getOutDesc()->outNdgts();
     else
         ro_prec = DEFPREC;
     ro_numdims = 0;
@@ -317,7 +318,7 @@ cRawOut::file_points(int indx)
         for (int i = 0; i < ro_length; i++) {
             for (sDvList *dl = ro_dlist; dl; dl = dl->dl_next) {
                 sDataVec *v = dl->dl_dvec;
-                if (v && v->realvec()) {
+                if (v) {
                     // Don't run off the end of this vector's data
                     double dd;
                     if (i < v->length()) {
@@ -356,7 +357,7 @@ cRawOut::file_points(int indx)
             fprintf(ro_fp, " %d", indx >= 0 ? indx : i);
             for (sDvList *dl = ro_dlist; dl; dl = dl->dl_next) {
                 sDataVec *v = dl->dl_dvec;
-                if (v && v->realvec()) {
+                if (v) {
                     if (i < v->length()) {
                         if (ro_realflag)
                             fprintf(ro_fp,
@@ -474,7 +475,7 @@ cRawIn::raw_read(const char *name)
         return (0);
     }
 
-    Sp.PushPlot();
+    OP.pushPlot();
     TTY.ioPush();
     CP.PushControl();
 
@@ -792,7 +793,7 @@ cRawIn::raw_read(const char *name)
                 }
                 CP.PopControl();
                 TTY.ioPop();
-                Sp.PopPlot();
+                OP.popPlot();
                 fclose(ri_fp);
                 ri_fp = 0;
                 return (0);
@@ -812,7 +813,7 @@ cRawIn::raw_read(const char *name)
 
     CP.PopControl();
     TTY.ioPop();
-    Sp.PopPlot();
+    OP.popPlot();
     fclose(ri_fp);
     ri_fp = 0;
 

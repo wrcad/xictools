@@ -48,12 +48,14 @@ cAlibFixup::alib_elt cAlibFixup::al_list[] = {
     alib_elt("vdc", alib_vdc),
     alib_elt("iprobe", alib_iprobe),
     alib_elt("vexp", alib_vexp),
+    alib_elt("vgpulse", alib_vgpulse),
     alib_elt("vpulse", alib_vpulse),
     alib_elt("vpwl", alib_vpwl),
     alib_elt("vsffm", alib_vsffm),
     alib_elt("vsin", alib_vsin),
     alib_elt("idc", alib_idc),
     alib_elt("iexp", alib_iexp),
+    alib_elt("igpulse", alib_igpulse),
     alib_elt("ipulse", alib_ipulse),
     alib_elt("ipwl", alib_ipwl),
     alib_elt("isffm", alib_isffm),
@@ -87,8 +89,10 @@ cAlibFixup::alib_elt cAlibFixup::al_list[] = {
 };
 
 
-bool
-cAlibFixup::prpty_fix(const char *cname, sLstr &lstr)
+// Private function to return the data for a known cell name.
+//
+cAlibFixup::alib_elt *
+cAlibFixup::alib_find(const char *cname)
 {
     if (!al_linked) {
         for (alib_elt *e = al_list; e->name; e++) {
@@ -101,9 +105,9 @@ cAlibFixup::prpty_fix(const char *cname, sLstr &lstr)
     unsigned int n = string_hash(cname, AL_HMASK);
     for (alib_elt *e = al_array[n]; e; e = e->next) {
         if (!strcmp(cname, e->name))
-            return ((*e->func)(lstr));
+            return (e);
     }
-    return (false);
+    return (0);
 }
 
 
@@ -215,6 +219,16 @@ cAlibFixup::alib_vexp(sLstr &lstr)
     return (src_params(lstr, "exp", params));
 }
 
+// vgpulse
+// instParameters      (dc acm acp v1 v2 td pw per pattern)
+//
+bool
+cAlibFixup::alib_vgpulse(sLstr &lstr)
+{
+    const char *params[] = { "v1", "v2", "td", "pw", "per", "pattern", 0 };
+    return (src_params(lstr, "gpulse", params));
+}
+
 // vpulse
 // instParameters      (dc acm acp v1 v2 td tr tf pw per)
 //
@@ -315,6 +329,16 @@ cAlibFixup::alib_iexp(sLstr &lstr)
 {
     const char *params[] = { "i1", "i2", "td1", "tau1", "td2", "tau2", 0 };
     return (src_params(lstr, "exp", params));
+}
+
+// igpulse
+// instParameters      (dc acm acp i1 i2 td pw per pattern)
+//
+bool
+cAlibFixup::alib_igpulse(sLstr &lstr)
+{
+    const char *params[] = { "i1", "iv2", "td", "pw", "per", "pattern", 0 };
+    return (src_params(lstr, "gpulse", params));
 }
 
 // ipulse

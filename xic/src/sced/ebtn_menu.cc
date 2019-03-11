@@ -573,7 +573,7 @@ ebtn_menu::M_SpiceDeck(CmdDesc*)
                 delete [] s;
                 return;
             }
-            while (isspace(*in))
+            while (isspace(*in) || *in == '.')
                 in++;
             if (*in)
                 SCD()->setAnalysis(in);
@@ -582,16 +582,9 @@ ebtn_menu::M_SpiceDeck(CmdDesc*)
     }
 
     char tbuf[256];
-    strcpy(tbuf, Tstring(DSP()->CurCellName()));
-    char *s;
-    if ((s = strrchr(tbuf, '.')) != 0) {
-        if (!strcmp(s+1, "cir"))
-            strcpy(s+1, "deck");
-        else
-            strcpy(s+1, "cir");
-    }
-    else
-        strcat(tbuf, ".cir");
+    strncpy(tbuf, Tstring(DSP()->CurCellName()), 251);
+    tbuf[251] = 0;
+    strcat(tbuf, ".cir");
 
     char *in = XM()->SaveFileDlg("New SPICE file name? ", tbuf);
     if (!in || !*in) {

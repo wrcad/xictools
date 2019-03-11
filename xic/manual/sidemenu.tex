@@ -1185,7 +1185,7 @@ when written to disk, thus the {\cb iplot} command is persistent.
 
 
 % -----------------------------------------------------------------------------
-% xic:label 101016
+% xic:label 022619
 \section{The {\cb label} Button: Create/Edit Labels}
 \label{labelbut}
 \index{label button}
@@ -1350,7 +1350,9 @@ command in the {\cb Modify Menu} can be used to move an existing label
 to the SCED layer.
 
 In electrical mode, labels can be used to enter arbitrary text into
-the SPICE output.  There are two methods to achieve this.
+the SPICE output.  There are two methods to achieve this.  In
+addition, the {\et SpiceInclude} variable can be used to add a file
+inclusion to the SPICE output.
 
 If an electrical layer named ``SPTX'' exists, labels on this layer
 will be included, verbatim, as separate lines in SPICE output, unless

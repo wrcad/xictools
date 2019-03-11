@@ -49,21 +49,19 @@ Authors: 1987 Wayne A. Christopher
 // Stuff for asynchronous spice runs.
 //
 
-#include "config.h"
 #include "spglobal.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
 #include "inpline.h"
-#include "outplot.h"
-#include "outdata.h"
+#include "graph.h"
+#include "output.h"
+#include "aspice.h"
 #include "miscutil/services.h"
 #include "miscutil/pathlist.h"
 #include "miscutil/filestat.h"
 #include "miscutil/childproc.h"
-
-#ifdef HAVE_SOCKET
 
 #include <sys/types.h>
 #ifdef WIN32
@@ -76,213 +74,12 @@ Authors: 1987 Wayne A. Christopher
 #include <netdb.h>
 #endif
 
-#ifdef HAVE_SIGNAL
-#include <signal.h>
-#endif
-
 
 #ifdef WIN32
 #define CLOSESOCKET(x) shutdown(x, SD_SEND), closesocket(x)
 #else
 #define CLOSESOCKET(x) close(x)
 #endif
-
-struct sJobc
-{
-    struct rjob_t;
-
-    // Struct to hold info on remote processes.
-    struct proc_t
-    {
-        proc_t(int p, const char *n, const char *r, const char *i,
-            const char *o, rjob_t *j)
-            {
-                pr_name = lstring::copy(n);
-                pr_rawfile = lstring::copy(r);
-                pr_inpfile = lstring::copy(i);
-                pr_outfile = lstring::copy(o);
-                pr_rjob = j;
-                pr_next = 0;
-                pr_pid = p;
-                pr_saveout = false;
-                pr_tempinp = false;
-            }
-
-        ~proc_t()
-            {
-                delete [] pr_name;
-                delete [] pr_rawfile;
-                delete [] pr_inpfile;
-                delete [] pr_outfile;
-            }
-
-        rjob_t *rjob()                  { return (pr_rjob); }
-        const char *name()              { return (pr_name); }
-        const char *rawfile()           { return (pr_rawfile); }
-        const char *inpfile()           { return (pr_inpfile); }
-        const char *outfile()           { return (pr_outfile); }
-
-        bool tempinp()                  { return (pr_tempinp); }
-        void set_tempinp(bool b)        { pr_tempinp = b; }
-        bool saveout()                  { return (pr_saveout); }
-        void set_saveout(bool b)        { pr_saveout = b; }
-        proc_t *next()                  { return (pr_next); }
-        void set_next(proc_t *p)        { pr_next = p; }
-        int pid()                       { return (pr_pid); }
-
-    private:
-        char *pr_name;          // The name of the spice run.
-        char *pr_rawfile;       // The temporary raw file.
-        char *pr_inpfile;       // The name of the input file.
-        char *pr_outfile;       // The name of the (tmp) output file.
-        rjob_t *pr_rjob;        // Set when job is an operating range point.
-        proc_t *pr_next;        // Link.
-        int pr_pid;             // The pid of the spice job.
-        bool pr_saveout;        // Don't unlink the output file.
-        bool pr_tempinp;        // Unlink input file.
-    };
-
-    // Struct to hold info on remote servers.
-    struct rserv_t
-    {
-        rserv_t(const char *h, const char *p)
-            {
-                rs_host = lstring::copy(h);
-                rs_program = lstring::copy(p);
-                rs_joblist = 0;
-                rs_next = 0;
-                rs_numjobs = 0;
-                rs_clearing = false;
-            }
-
-        ~rserv_t()
-            {
-                delete [] rs_host;
-                delete [] rs_program;
-            }
-
-        char *host()                    { return (rs_host); }
-        char *program()                 { return (rs_program); }
-        proc_t *joblist()               { return (rs_joblist); }
-        void set_joblist(proc_t *j)     { rs_joblist = j; }
-
-        rserv_t *next()                 { return (rs_next); }
-        void set_next(rserv_t *n)       { rs_next = n; }
-
-        int numjobs()                   { return (rs_numjobs); }
-        void set_numjobs(int n)         { rs_numjobs = n; }
-
-        bool clearing()                 { return (rs_clearing); }
-        void set_clearing(bool b)       { rs_clearing = b; }
-
-    private:
-        char *rs_host;
-        char *rs_program;
-        proc_t *rs_joblist;
-        rserv_t *rs_next;
-        int rs_numjobs;
-        bool rs_clearing;
-    };
-
-    // Struct to hold values for looping jobs such as operating range
-    // analysis.
-    //
-    struct rjob_t
-    {
-        rjob_t(const char *n, sCHECKprms *cj)
-            {
-                i = 0;
-                j = 0;
-                rj_name = lstring::copy(n);
-                rj_job = cj;
-                rj_next = 0;
-            }
-
-        ~rjob_t()
-            {
-                delete [] rj_name;
-                delete rj_job;
-            }
-
-        const char *name()              { return (rj_name); }
-        sCHECKprms *job()               { return (rj_job); }
-
-        rjob_t *next()                  { return (rj_next); }
-        void set_next(rjob_t *n)        { rj_next = n; }
-
-        int i, j;
-
-    private:
-        char *rj_name;
-        sCHECKprms *rj_job;
-        rjob_t *rj_next;
-    };
-
-    // Keep a list of jobs started and their completion status.  For
-    // Win32, status is 0 inprogress, 1 done OK, 2 done error.  For
-    // UNIX, the status is the precess exit status.
-    //
-    struct sdone_t
-    {
-        sdone_t(int p, int s)
-            {
-                pid = p;
-                status = s;
-                next = 0;
-            }
-
-        int pid;
-        int status;
-        sdone_t *next;
-    };
-
-    sJobc()
-        {
-            jc_jobs = 0;
-            jc_servers = 0;
-            jc_complete_list = 0;
-            jc_numchanged = 0;
-        }
-
-    void rhost(wordlist*);
-    void jobs();
-    void check_jobs();
-    void register_job(sCHECKprms*);
-
-    bool submit(const char*, const char*, const char*, const char*,
-        sFtCirc*, rjob_t*);
-    bool submit_local(const char*, const char*, const char*, sFtCirc*,
-        rjob_t*, const char*);
-    const char *gethost();
-
-private:
-    void add_done(int cur_pid, int cur_status)
-        {
-            sdone_t *s = new sdone_t(cur_pid, cur_status);
-            if (!jc_complete_list)
-                jc_complete_list = s;
-            else {
-                sdone_t *j = jc_complete_list;
-                while (j->next)
-                    j = j->next;
-                j->next = s;
-            }
-        }
-
-#ifdef WIN32
-    static void th_hdlr(void *arg);
-    static void th_local_hdlr(void*);
-#else
-    static void sigchild(int, int, void*);
-#endif
-
-    rjob_t *jc_jobs;
-    rserv_t *jc_servers;
-    sdone_t *jc_complete_list;
-    int jc_numchanged;  // How many children have changed in state.
-};
-
-namespace { sJobc Jobc; }
 
 
 // Start an asynchronous job.
@@ -312,7 +109,7 @@ CommandTab::com_aspice(wordlist *wl)
     char *output = 0;
     if (wl)
         output = wl->wl_word;
-    Jobc.submit_local(spicepath, 0, deck, Sp.CurCircuit(), 0, output);
+    OP.jobc()->submit_local(spicepath, 0, deck, Sp.CurCircuit(), 0, output);
 }
 
 
@@ -365,7 +162,7 @@ CommandTab::com_rspice(wordlist *wl)
     }
 
     if (!*rhost)
-        strcpy(rhost, Jobc.gethost());
+        strcpy(rhost, OP.jobc()->gethost());
     if (!*program) {
         VTvalue vv;
         if (Sp.GetVar(kw_rprogram, VTYP_STRING, &vv))
@@ -381,7 +178,7 @@ CommandTab::com_rspice(wordlist *wl)
             }
         }
     }
-    Jobc.submit(rhost, program, analysis, filename, Sp.CurCircuit(), 0);
+    OP.jobc()->submit(rhost, program, analysis, filename, Sp.CurCircuit(), 0);
     delete [] analysis;
 }
 
@@ -389,14 +186,14 @@ CommandTab::com_rspice(wordlist *wl)
 void
 CommandTab::com_rhost(wordlist *wl)
 {
-    Jobc.rhost(wl);
+    OP.jobc()->rhost(wl);
 }
 
 
 void
 CommandTab::com_jobs(wordlist*)
 {
-    Jobc.jobs();
+    OP.jobc()->jobs();
 }
 // End of CommandTab functions.
 
@@ -407,198 +204,11 @@ CommandTab::com_jobs(wordlist*)
 // whether the exit was normal or not.
 //
 void
-IFsimulator::CheckAsyncJobs()
+IFoutput::checkAsyncJobs()
 {
-    Jobc.check_jobs();
+    o_jobc->check_jobs();
 }
-
-
-void
-sCHECKprms::registerJob()
-{
-    Jobc.register_job(this);
-}
-
-
-// End the analysis, free storage.
-//
-void
-sCHECKprms::endJob()
-{
-    if (ch_op && ch_opname) {
-        TTY.printf_force(
-            "%s analysis complete.  Data in file %s.\n", ch_monte ?
-                "Monte Carlo" : "Operating range", ch_opname);
-    }
-
-    if (ch_tmpout) {
-        TTY.ioOverride(0, ch_op, 0);
-        fclose(ch_tmpout);
-        ch_tmpout = 0;
-        unlink(ch_tmpoutname);
-        delete [] ch_tmpoutname;
-        ch_tmpoutname = 0;
-    }
-    else {
-        if (ch_op && ch_op != TTY.outfile()) {
-            fclose(ch_op);
-            ch_op = 0;
-        }
-    }
-    GP.MpDone(ch_graphid);
-
-    if (ch_iterno > 0 && !ch_doall)
-        set_rangevec();
-    out_cir->set_check(0);
-    OP.endPlot(out_rundesc, true);
-}
-
-
-// Process the output from an asynchronous run.  If there is nothing
-// useful in the file, return true.
-//
-bool
-sCHECKprms::processReturn(const char *fname)
-{
-    FILE *fp = fopen(fname, "r");
-    if (!fp) {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "can't open %s.\n", fname);
-        return (true);
-    }
-
-    bool goodstuff = false;
-    char string1[80], string2[80], string3[80];
-    char buf[BSIZE_SP];
-    int num1 = 2*ch_step1 + 1;
-    while (fgets(buf, 80, fp)) {
-        int pf, d1, d2;
-        if (GP.MpParse(buf, &d1, &d2, string1, string2, string3)) {
-            goodstuff = true;
-            if (lstring::eq(string3, "PASS"))
-                pf = 1;
-            else
-                pf = 0;
-            bool mcrun = false;
-            if (lstring::eq(string1, "run")) {
-                sprintf(string2, "%d", 
-                    (d2 + ch_step2)*(2*ch_step1 + 1) + d1 + ch_step1);
-                mcrun = true;
-            }
-            if (GP.MpWhere(ch_graphid, d1, d2) && !ch_batchmode) {
-                if (mcrun)
-                    TTY.printf_force("%3d %3d %3s %3s\t\t%s\n", d1, d2,
-                        string1, string2, string3);
-                else
-                    TTY.printf_force("%3d %3d %12s %12s\t\t%s\n", d1, d2,
-                        string1, string2, string3);
-            }
-            GP.MpMark(ch_graphid, pf);
-            if (ch_op) {
-                if (mcrun)
-                    fprintf(ch_op,
-                        "[DATA] %3d %3d %3s %3s\t\t%s\n", d1, d2, string1,
-                        string2, string3);
-                else
-                    fprintf(ch_op,
-                        "[DATA] %3d %3d %12s %12s\t\t%s\n", d1, d2, string1,
-                        string2, string3);
-            }
-            char *flag = ch_flags + (d2 + ch_step2)*num1 + d1;
-            *flag = 1 + (1-pf);
-        }
-        else if (ch_op)
-            fprintf(ch_op, "%s", buf);
-    }
-    fclose(fp);
-    if (goodstuff)
-        return (false);
-    return (true);
-}
-
-
-// Compute the indices of the next trial.  Return true if no more
-// trials to do.
-//
-int
-sCHECKprms::nextTask(int *pi, int *pj)
-{
-    int i, j, last;
-    char *rowflags;
-    int num1 = 2*ch_step1 + 1;
-    if (ch_doall) {
-        for (j = -ch_step2; j <= ch_step2; j++) {
-            rowflags = ch_flags + (j + ch_step2)*num1;
-            for (i = -ch_step1; i <= ch_step1; i++, rowflags++) {
-                if (*rowflags) continue;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-        }
-        return (true);
-    }
-
-    // Find the range along the rows
-    if (ch_step1 > 0 || ch_step2 == 0) {
-        for (j = -ch_step2; j <= ch_step2; j++) {
-            rowflags = ch_flags + (j + ch_step2)*num1;
-            for (last = i = -ch_step1; i <= ch_step1; i++, rowflags++) {
-                if (*rowflags == 2) continue;
-                if (*rowflags == 1) break;
-                if (*rowflags == -1) break;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-            last = i;
-
-            rowflags = ch_flags + (j + ch_step2 + 1)*num1 - 1;
-            for (i = ch_step1; i > last; i--, rowflags--) {
-                if (*rowflags == 2) continue;
-                if (*rowflags == 1) break;
-                if (*rowflags == -1) break;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-        }
-    }
-
-    // Now check the columns, fill in any missing points.
-    //
-    if (ch_step2 > 0) {
-        for (i = -ch_step1; i <= ch_step1; i++) {
-            rowflags = ch_flags + i + ch_step1;
-            for (last = j = -ch_step2; j <= ch_step2;
-                    j++, rowflags += num1) {
-                if (*rowflags == 2) continue;
-                if (*rowflags == 1) break;
-                if (*rowflags == -1) break;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-            last = j;
-
-            rowflags = ch_flags + i + ch_step1 + 2*ch_step2*num1;
-            for (j = ch_step2; j > last; j--, rowflags -= num1) {
-                if (*rowflags == 2) continue;
-                if (*rowflags == 1) break;
-                if (*rowflags == -1) break;
-                *rowflags = -1;
-                *pi = i;
-                *pj = j;
-                return (false);
-            }
-        }
-    }
-    return (true);
-}
-// End of cJobs functions.
+// End of IFoutput functions.
 
 
 void
@@ -730,7 +340,7 @@ sJobc::check_jobs()
         }
         if (p == 0) {
             GRpkgIf()->ErrPrintf(ET_INTERR,
-                "CheckAsyncJobs: process %d not found.\n", pid);
+                "checkAsyncJobs: process %d not found.\n", pid);
             here = false;
             return;
         }
@@ -768,7 +378,7 @@ sJobc::check_jobs()
             TTY.printf("Job finished - %.60s\n", p->name());
             const char *stmp = p->rawfile();
             if (stmp) {
-                Sp.LoadFile(&stmp, false);
+                OP.loadFile(&stmp, false);
                 unlink(p->rawfile());
             }
             if (p->inpfile() && p->tempinp())
@@ -1054,7 +664,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
         while ((i = fread(buf, 1, BSIZE_SP, inp)) > 0)
             send(sfd, buf, i, 0);
         if (analysis) {
-            sprintf(buf, "%s\n%s\n%s\n", CBLK_KW, analysis, ENDC_KW);
+            sprintf(buf, "%s\n%s\n%s\n", CONT_KW, analysis, ENDC_KW);
             send(sfd, buf, strlen(buf), 0);
         }
         send(sfd, "@\n", 3, 0);
@@ -1077,11 +687,11 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
                 fprintf(inp, "%s\n", MONTE_KW);
             else
                 fprintf(inp, "%s\n", CHECK_KW);
-            fprintf(inp, "%s\n", EBLK_KW);
-            if (cir->execs()->name())
-                CP.PrintBlock(cir->execs()->name(), inp);
-            else if (cir->execs()->tree())
-                CP.PrintControl(cir->execs()->tree(), inp);
+            fprintf(inp, "%s\n", EXEC_KW);
+            if (cir->execBlk().name())
+                CP.PrintBlock(cir->execBlk().name(), inp);
+            else if (cir->execBlk().tree())
+                CP.PrintControl(cir->execBlk().tree(), inp);
             if (!rj->job()->monte()) {
                 double v1 = rj->job()->val1() + rj->i*rj->job()->delta1();
                 double v2 = rj->job()->val2() + rj->j*rj->job()->delta2();
@@ -1093,11 +703,11 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
             fprintf(inp, "let checkSTP1 = %d\n", -rj->i);
             fprintf(inp, "let checkSTP2 = %d\n", -rj->j);
             fprintf(inp, "%s\n", ENDC_KW);
-            fprintf(inp, "%s\n", CBLK_KW);
-            if (cir->controls()->name())
-                CP.PrintBlock(cir->controls()->name(), inp);
+            fprintf(inp, "%s\n", CONT_KW);
+            if (cir->controlBlk().name())
+                CP.PrintBlock(cir->controlBlk().name(), inp);
             else
-                CP.PrintControl(cir->controls()->tree(), inp);
+                CP.PrintControl(cir->controlBlk().tree(), inp);
             fprintf(inp, "%s\n", ENDC_KW);
             Sp.Listing(inp, cir->origdeck()->next(), cir->options(),
                 LS_DECK);
@@ -1105,7 +715,7 @@ sJobc::submit(const char *host, const char *program, const char *analysis,
         else {
             Sp.Listing(inp, cir->deck(), cir->options(), LS_DECK);
             if (analysis)
-                fprintf(inp, "%s\n%s\n%s\n", CBLK_KW, analysis, ENDC_KW);
+                fprintf(inp, "%s\n%s\n%s\n", CONT_KW, analysis, ENDC_KW);
         }
         fputs("@\n", inp);
         fflush(inp);
@@ -1252,11 +862,11 @@ sJobc::submit_local(const char *program, const char *analysis,
                 fprintf(inp, "%s\n", MONTE_KW);
             else
                 fprintf(inp, "%s\n", CHECK_KW);
-            fprintf(inp, "%s\n", EBLK_KW);
-            if (cir->execs()->name())
-                CP.PrintBlock(cir->execs()->name(), inp);
-            else if (cir->execs()->tree())
-                CP.PrintControl(cir->execs()->tree(), inp);
+            fprintf(inp, "%s\n", EXEC_KW);
+            if (cir->execBlk().name())
+                CP.PrintBlock(cir->execBlk().name(), inp);
+            else if (cir->execBlk().tree())
+                CP.PrintControl(cir->execBlk().tree(), inp);
             if (!rj->job()->monte()) {
                 double v1 = rj->job()->val1() + rj->i*rj->job()->delta1();
                 double v2 = rj->job()->val2() + rj->j*rj->job()->delta2();
@@ -1268,11 +878,11 @@ sJobc::submit_local(const char *program, const char *analysis,
             fprintf(inp, "let checkSTP1 = %d\n", -rj->i);
             fprintf(inp, "let checkSTP2 = %d\n", -rj->j);
             fprintf(inp, "%s\n", ENDC_KW);
-            fprintf(inp, "%s\n", CBLK_KW);
-            if (cir->controls()->name())
-                CP.PrintBlock(cir->controls()->name(), inp);
+            fprintf(inp, "%s\n", CONT_KW);
+            if (cir->controlBlk().name())
+                CP.PrintBlock(cir->controlBlk().name(), inp);
             else
-                CP.PrintControl(cir->controls()->tree(), inp);
+                CP.PrintControl(cir->controlBlk().tree(), inp);
             fprintf(inp, "%s\n", ENDC_KW);
             Sp.Listing(inp, cir->origdeck()->next(), cir->options(),
                 LS_DECK);
@@ -1280,7 +890,7 @@ sJobc::submit_local(const char *program, const char *analysis,
         else {
             Sp.Listing(inp, cir->deck(), cir->options(), LS_DECK);
             if (analysis)
-                fprintf(inp, "%s\n%s\n%s\n", CBLK_KW, analysis, ENDC_KW);
+                fprintf(inp, "%s\n%s\n%s\n", CONT_KW, analysis, ENDC_KW);
         }
         fflush(inp);
         fclose(inp);
@@ -1456,8 +1066,8 @@ sJobc::th_hdlr(void *arg)
     FILE *out;
     if (!(out = fopen(t->outfile, "w"))) {
         GRpkgIf()->Perror(t->outfile);
-        Jobc.jc_numchanged++;
-        for (sdone_t *sd = Jobc.jc_complete_list; sd; sd = sd->next) {
+        OP.jobc()->jc_numchanged++;
+        for (sdone_t *sd = OP.jobc()->jc_complete_list; sd; sd = sd->next) {
             if (sd->pid == t->pid) {
                 sd->status = 2;
                 break;
@@ -1466,17 +1076,17 @@ sJobc::th_hdlr(void *arg)
         delete t;
         if (Sp.GetFlag(FT_ASYNCDB))
             GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
-                Jobc.jc_numchanged);
+                OP.jobc()->jc_numchanged);
         if (CP.GetFlag(CP_CWAIT))
-            Sp.CheckAsyncJobs();
+            OP.checkAsyncJobs();
         return;
     }
     int i;
     while ((i = recv(t->sfd, buf, BSIZE_SP, 0)) > 0)
         fwrite(buf, 1, i, out);
     fclose(out);
-    Jobc.jc_numchanged++;
-    for (sdone_t *sd = Jobc.jc_complete_list; sd; sd = sd->next) {
+    OP.jobc()->jc_numchanged++;
+    for (sdone_t *sd = OP.jobc()->jc_complete_list; sd; sd = sd->next) {
         if (sd->pid == t->pid) {
             sd->status = 1;
             break;
@@ -1485,9 +1095,9 @@ sJobc::th_hdlr(void *arg)
     delete t;
     if (Sp.GetFlag(FT_ASYNCDB))
         GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
-            Jobc.jc_numchanged);
+            OP.jobc()->jc_numchanged);
     if (CP.GetFlag(CP_CWAIT))
-        Sp.CheckAsyncJobs();
+        OP.checkAsyncJobs();
 }
 
 
@@ -1497,10 +1107,10 @@ sJobc::th_local_hdlr(void *arg)
 {
     thdata *t = (thdata*)arg;
     WaitForSingleObject(t->process, INFINITE);
-    Jobc.jc_numchanged++;
+    OP.jobc()->jc_numchanged++;
     CloseHandle(t->infile);
     CloseHandle(t->outfile);
-    for (sdone_t *sd = Jobc.jc_complete_list; sd; sd = sd->next) {
+    for (sdone_t *sd = OP.jobc()->jc_complete_list; sd; sd = sd->next) {
         if (sd->pid == t->pid) {
             sd->status = 1;
             break;
@@ -1508,9 +1118,9 @@ sJobc::th_local_hdlr(void *arg)
     }
     if (Sp.GetFlag(FT_ASYNCDB))
         GRpkgIf()->ErrPrintf(ET_MSG, "%d jobs done now.\n",
-            Jobc.jc_numchanged);
+            OP.jobc()->jc_numchanged);
     if (CP.GetFlag(CP_CWAIT))
-        Sp.CheckAsyncJobs();
+        OP.checkAsyncJobs();
     delete t;
 }
 
@@ -1521,106 +1131,29 @@ void
 sJobc::sigchild(int pid, int status, void*)
 {
     if (WIFEXITED(status)) {
-        Jobc.jc_numchanged++;
-        Jobc.add_done(pid, WEXITSTATUS(status));
+        OP.jobc()->jc_numchanged++;
+        OP.jobc()->add_done(pid, WEXITSTATUS(status));
         if (Sp.GetFlag(FT_ASYNCDB)) {
             GRpkgIf()->ErrPrintf(ET_MSG,
                 "process %d exited with status %d.\n",
                 pid, WEXITSTATUS(status));
         }
         if (CP.GetFlag(CP_CWAIT))
-            Sp.CheckAsyncJobs();
+            OP.checkAsyncJobs();
     }
     else if (WIFSIGNALED(status)) {
-        Jobc.jc_numchanged++;
-        Jobc.add_done(pid, -1);
+        OP.jobc()->jc_numchanged++;
+        OP.jobc()->add_done(pid, -1);
         if (Sp.GetFlag(FT_ASYNCDB)) {
             GRpkgIf()->ErrPrintf(ET_MSG,
                 "process %d terminated by signal %d.\n",
                 pid, WIFSIGNALED(status));
         }
         if (CP.GetFlag(CP_CWAIT))
-            Sp.CheckAsyncJobs();
+            OP.checkAsyncJobs();
     }
 }
 
 #endif
-
-
-#else // HAVE_SOCKET
-
-#define SUBMIT "/bin/csh /usr/bin/rspice"
-
-namespace {
-    const char *nyet = "Asynchronous spice %s are not available.\n";
-}
-
-
-void
-CommandTab::com_aspice(wordlist*)
-{
-    GRpkgIf()->ErrPrintf(ET_MSG, nyet, "runs");
-}
-
-
-void
-CommandTab::com_rspice(wordlist *wl)
-{
-    char *input;
-    if (wl && !wl->wl_next)
-        input = wl->wl_word;
-    else {
-        GRpkgIf()->ErrPrintf(ET_ERROR,
-            "you must supply the input deck name.\n");
-        return;
-    }
-    char *output = filestat::make_temp("out");
-    char *raw = filestat::make_temp("raw");
-    GCarray<char*> gc_output(output);
-    GCarray<char*> gc_raw(raw);
-
-    TTY.printf("Running job, please wait. ");
-    TTY.flush();
-    char buf[BSIZE_SP];
-    sprintf(buf, "%s %s %s %s", SUBMIT, input, output, raw);
-    if (CP.System(buf) != 0)
-        return;
-
-    TTY.printf("done.\n\n");
-
-    FILE *fp;
-    if (!(fp = fopen(output, "r"))) {
-        GRpkgIf()->Perror(output);
-        return;
-    }
-    while (fgets(buf, BSIZE_SP, fp))
-        TTY.send(buf);
-    fclose(fp);
-    unlink(output);
-
-    const char *stmp = raw;
-    Sp.LoadFile(&stmp, false);
-    unlink(raw);
-}
-
-
-void
-CommandTab::com_jobs(wordlist*)
-{
-    GRpkgIf()->ErrPrintf(ET_MSG, nyet, "jobs");
-}
-
-
-void IFsimulator::CheckAsyncJobs()
-{
-}
-
-
-void
-sCHECKprms::registerJob()
-{
-    GRpkgIf()->ErrPrintf(ET_MSG, nyet, "jobs");
-}
-
-#endif // HAVE_SOCKET
+// End of sJobc functions.
 

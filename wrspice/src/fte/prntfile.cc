@@ -38,7 +38,8 @@
  $Id:$
  *========================================================================*/
 
-#include "frontend.h"
+#include "simulator.h"
+#include "output.h"
 #include "prntfile.h"
 #include "cshell.h"
 #include "spnumber/spnumber.h"
@@ -69,7 +70,7 @@ cPrintIn::read(const char *fname)
         return (0);
     }
 
-    Sp.PushPlot();
+    OP.pushPlot();
     TTY.ioPush();
     CP.PushControl();
 
@@ -78,7 +79,7 @@ cPrintIn::read(const char *fname)
 
     CP.PopControl();
     TTY.ioPop();
-    Sp.PopPlot();
+    OP.popPlot();
 
     if (pl) {
         // Make the vectors permanent, and fix dimension.
@@ -411,7 +412,7 @@ cColIn::read(const char *fname, int ncols, int xcols)
         return (0);
     }
 
-    Sp.PushPlot();
+    OP.pushPlot();
     TTY.ioPush();
     CP.PushControl();
 
@@ -420,7 +421,7 @@ cColIn::read(const char *fname, int ncols, int xcols)
 
     CP.PopControl();
     TTY.ioPop();
-    Sp.PopPlot();
+    OP.popPlot();
 
     if (pl) {
         // Make the vectors permanent, and fix dimension.

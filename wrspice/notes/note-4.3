@@ -187,6 +187,8 @@ Steve
 Model names and device instance keywords and model keywords are always
 case insensitive.  Is this noted in docs?
 
+--- release 4.3.8
+
 Updates to support "atomic Monte Carlo" analysis, a script-based Monte
 Carlo analysis where user has finer-grain control.
 new command:  alterf  Dump alter list to Monte Carlo output file.
@@ -196,3 +198,44 @@ The check command has new option: -b.  If this is given, the analysis will
 be paused after setup and the check command will return.  This is the start
 for atomic Monte Carlo, a script can call mctrial numerous times
 at this point, then "check -c" when done.
+
+check -c now returns immediately after deleting run in progress.
+new check vector checkINIT, set to 1 for exec block for initial execution,
+before op range or first MC trial.  Set to 0 otherwise.
+
+Changed the character that separates numerator and denominator units from '/'
+to '_', which is tied to the new "units_sepchar" variable.  The earlier
+choice could cause ambiguous expressions.  e.g., 1/V  could be ine over
+a vector V or one per volt.  Where is units stuff documented?
+
+TODO:
+Christine's file:  Windows singular matrix, ok under Linux.
+
+Stats of multi-runs should accumulate.
+
+Gleb crash (close window with running WRspice crashes WRspice).
+
+Jooyoung sweep time anomaly: sweep not proportional to sim length.
+Jooyoung: Verilog JJ model doesn't work in sweep/chained DC analysis.
+
+Ground names are listed from sCKTnodeTab::groundNames().
+ToDo: user command to set a ground name.
+
+TODO
+Add random bit 'x' in pattern gpulse/pulse.
+TO-DO in .meassure, prinitive that will identify edge, bottom, and
+top.
+
+TODO
+Use trial reset if alter only, otherwise rebuild.
+New "frame" default plot support.
+
+Check how expressions obtain current nodevoltages/branch currents,
+past time point (bad) vs value being computed per iteration.
+
+Experiment with alternative inductor stamp.
+
+implement trace groups in plots
+
+ADMS:  Implement "localparam", even if just an alias for "parameter".
+

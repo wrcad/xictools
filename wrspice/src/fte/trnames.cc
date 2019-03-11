@@ -38,8 +38,9 @@
  $Id:$
  *========================================================================*/
 
-#include "frontend.h"
-#include "outplot.h"
+#include "simulator.h"
+#include "graph.h"
+#include "output.h"
 #include "trnames.h"
 
 
@@ -134,29 +135,29 @@ void
 sNames::set_input(sFtCirc *out_cir, sPlot *out_plot, double v1, double v2)
 {
     sFtCirc *cir = Sp.CurCircuit();
-    sPlot *plt = Sp.CurPlot();
+    sPlot *plt = OP.curPlot();
     Sp.SetCurCircuit(out_cir);
-    Sp.SetCurPlot(out_plot);
+    OP.setCurPlot(out_plot);
 
     out_cir->set_use_trial_deferred(true);
     Sp.SetVar(n_value1, v1);
     Sp.SetVar(n_value2, v2);
     out_cir->set_use_trial_deferred(false);
 
-    sDataVec *d = Sp.VecGet(n_value, 0);
+    sDataVec *d = out_plot->find_vec(n_value);
     if (d && d->isreal()) {
         int ix1 = -1, ix2 = -1;
         if (is_int(n_n1))
             ix1 = atoi(n_n1);
         else {
-            sDataVec *dn1 = Sp.VecGet(n_n1, 0);
+            sDataVec *dn1 = out_plot->find_vec(n_n1);
             if (dn1 && dn1->isreal())
                 ix1 = (int)dn1->realval(0);
         }
         if (is_int(n_n2))
             ix2 = atoi(n_n2);
         else {
-            sDataVec *dn2 = Sp.VecGet(n_n2, 0);
+            sDataVec *dn2 = out_plot->find_vec(n_n2);
             if (dn2 && dn2->isreal())
                 ix2 = (int)dn2->realval(0);
         }
@@ -173,7 +174,7 @@ sNames::set_input(sFtCirc *out_cir, sPlot *out_plot, double v1, double v2)
             d->set_realval(ix1, v1);
     }
     Sp.SetCurCircuit(cir);
-    Sp.SetCurPlot(plt);
+    OP.setCurPlot(plt);
 }
 
 
@@ -185,35 +186,35 @@ void
 sNames::setup_newplot(sFtCirc *out_cir, sPlot *out_plot)
 {
     if (!out_plot)
-        out_plot = sPlot::constants();
-    if (out_plot == sPlot::constants())
+        out_plot = OP.constants();
+    if (out_plot == OP.constants())
         return;
     sFtCirc *cir = Sp.CurCircuit();
-    sPlot *plt = Sp.CurPlot();
+    sPlot *plt = OP.curPlot();
     Sp.SetCurCircuit(out_cir);
-    Sp.SetCurPlot(out_plot);
-    sDataVec *dvalue = Sp.VecGet(n_value, 0);
+    OP.setCurPlot(out_plot);
+    sDataVec *dvalue = OP.vecGet(n_value, 0);
     sDataVec *dn1 = 0, *dn2 = 0;
     if (dvalue && dvalue->isreal()) {
-        dn1 = Sp.VecGet(n_n1, 0);
-        dn2 = Sp.VecGet(n_n2, 0);
+        dn1 = OP.vecGet(n_n1, 0);
+        dn2 = OP.vecGet(n_n2, 0);
     }
     Sp.SetCurCircuit(cir);
-    Sp.SetCurPlot(plt);
+    OP.setCurPlot(plt);
     if (dvalue && dvalue->isreal() && dvalue->plot()) {
         char buf[BSIZE_SP];
         sprintf(buf, "%s%c%s", dvalue->plot()->type_name(),
             Sp.PlotCatchar(), n_value);
-        Sp.VecSet(n_value, buf);
+        OP.vecSet(n_value, buf);
         if (dn1 && dn1->isreal() && dn1->plot()) {
             sprintf(buf, "%s%c%s", dn1->plot()->type_name(),
                 Sp.PlotCatchar(), n_n1);
-            Sp.VecSet(n_n1, buf);
+            OP.vecSet(n_n1, buf);
         }
         if (dn2 && dn2->isreal() && dn2->plot()) {
             sprintf(buf, "%s%c%s", dn2->plot()->type_name(),
                 Sp.PlotCatchar(), n_n2);
-            Sp.VecSet(n_n2, buf);
+            OP.vecSet(n_n2, buf);
         }
     }
 }

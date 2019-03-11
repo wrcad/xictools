@@ -56,9 +56,9 @@ typedef void ParseNode;
 #include "spnumber/spparse.h"
 
 #ifdef WRSPICE
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
-#include "frontend.h"
+#include "simulator.h"
 #endif
 
 
@@ -68,6 +68,14 @@ typedef void ParseNode;
 
 // Instantiate global class.
 sSPnumber SPnum;
+
+#ifdef WRSPICE
+#define UNITS_CATCHAR() Sp.UnitsCatchar()
+#define UNITS_SEPCHAR() Sp.UnitsSepchar()
+#else
+#define UNITS_CATCHAR() '#'
+#define UNITS_SEPCHAR() '_'
+#endif
 
 
 // Return a string containing text of the number.  If the units arg is
@@ -137,12 +145,24 @@ sSPnumber::printnum(double num, const char *unitstr, bool fix, int numd)
             mag -= 2;
         }
 
-        const char* c = suffix(mag);
         char buf[32];
-        if (!c)
-            sprintf(buf, "e%d", mag);
-        else
+        const char* c = suffix(mag);
+        if (c)
             strcpy(buf, c);
+        else {
+            sprintf(buf, "e%d", mag);
+
+            // Add a units "cat char" if the units string conflicts
+            // with scale factors.
+            char u = *unitstr;
+            if (islower(u))
+                u = toupper(u);
+            if (strchr("AFM", u)) {
+                char *t = buf + strlen(buf);
+                *t++ = UNITS_CATCHAR();
+                *t = 0;
+            }
+        }
         strcat(buf, unitstr);
 
         char *t = fltbuf;
@@ -472,7 +492,7 @@ sSPnumber::parse(const char **line, bool whole, bool gobble, sUnits **units)
         // The number can optionally be followed by a units string,
         // optionally separated from the main number string with a
         // Sp.UnitsCatchar().  The second instance of a
-        // Sp.UnitsCatchar() is replaced with '/'.
+        // Sp.UnitsCatchar() is replaced with Sp.UnitsSepchar().
 
         if (get_unitstr(&here, buf)) {
             *units = new sUnits;
@@ -525,12 +545,6 @@ sSPnumber::parse(const char **line, bool whole, bool gobble, sUnits **units)
 }
 
 
-#ifdef WRSPICE
-#define UNITS_CATCHAR() Sp.UnitsCatchar()
-#else
-#define UNITS_CATCHAR() '#'
-#endif
-
 // Static function.
 // Grab a units string into buf, advance the pointer.  The buf length
 // is limited to 32 chars including the null byte.
@@ -542,14 +556,20 @@ sSPnumber::get_unitstr(const char **s, char *buf)
     const char *t = *s;
     bool had_alpha = false;
     bool had_cat = false;
-    if (isalpha(*t) || *t == UNITS_CATCHAR()) {
+    if (isalpha(*t) || *t == UNITS_CATCHAR() || *t == UNITS_SEPCHAR()) {
         if (*t != UNITS_CATCHAR()) {
             buf[i++] = *t;
-            had_alpha = true;
+            if (*t != UNITS_SEPCHAR())
+                had_alpha = true;
         }
         for (t++; i < 31; t++) {
             if (isalpha(*t)) {
                 had_alpha = true;
+                buf[i++] = *t;
+                continue;
+            }
+            if (*t == UNITS_SEPCHAR()) {
+                had_alpha = false;
                 buf[i++] = *t;
                 continue;
             }
@@ -559,7 +579,7 @@ sSPnumber::get_unitstr(const char **s, char *buf)
             }
             if (!had_cat && *t == UNITS_CATCHAR()) {
                 had_alpha = false;
-                buf[i++] = '/';
+                buf[i++] = UNITS_SEPCHAR();
                 continue;
             }
             break;

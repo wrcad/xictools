@@ -45,8 +45,8 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
-#include "ftedata.h"
+#include "simulator.h"
+#include "datavec.h"
 #include "ttyio.h"
 #include "ginterf/graphics.h"
 
@@ -184,6 +184,7 @@ sDataVec::v_times(sDataVec *data2)
     sDataVec *res = new sDataVec(0, v_flags | data2->v_flags, v_length,
         &v_units);
     res->v_units*data2->v_units;
+
     if (iscomplex()) {
         complex *out = res->v_data.comp;
         if (data2->iscomplex()) {
@@ -367,9 +368,12 @@ sDataVec *
 sDataVec::v_comma(sDataVec *data2)
 {
     sDataVec *res = new sDataVec(0, VF_COMPLEX | v_flags | data2->v_flags,
-        v_length, &v_units);
-    if (!(res->v_units == data2->v_units))
-        res->v_units.set(UU_NOTYPE);
+        v_length, &data2->v_units);
+
+    // Take the imag units unless empty.
+    if (res->v_units.isnotype())
+        res->v_units = v_units;
+
     complex *out = res->v_data.comp;
     if (iscomplex()) {
         if (data2->iscomplex()) {

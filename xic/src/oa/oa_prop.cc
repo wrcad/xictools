@@ -55,10 +55,10 @@
 #include "spnumber/spnumber.h"
 
 
-namespace {
-    // Instantiate this.
-    cAlibFixup AlibFixup;
+// Instantiate this.
+cAlibFixup AlibFixup;
 
+namespace {
     struct sPrmList
     {
         sPrmList(const char *nm, const char *va)
@@ -550,6 +550,8 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
                 continue;
             if (!strcasecmp("instancesLastChanged", name))
                 continue;
+            if (!strcasecmp("logicalConnectivityValid", name)) // Synopsys
+                continue;
             if (!strcasecmp("vendorName", name))
                 continue;
             if (!strcasecmp("partName", name)) {
@@ -666,12 +668,12 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
         // of a pcell!
 
         cdf = 0;
+        oaScalarName libName, cellName;
 
         // For an instance, open the CDF for its master.
         if (type == oacScalarInstType || type == oacVectorInstBitType ||
                 type == oacArrayInstType || type == oacVectorInstType) {
             oaInst *inst = (oaInst*)object;
-            oaScalarName libName, cellName;
             inst->getLibName(libName);
             inst->getCellName(cellName);
             oaLib *lib = oaLib::find(libName);
@@ -713,23 +715,13 @@ cOAprop::handleProperties(const oaObject *object, DisplayMode mode)
         if (lstr.string()) {
             bool valu = false;
             if (cdf) {
-                oaInst *inst = (oaInst*)object;
-                oaScalarName libName;
-                inst->getLibName(libName);
-                oaString libname;
-                libName.get(oaNativeNS(), libname);
-
                 // Do some hackery on the analogLib devices.  We don't
                 // have access to the Skill function that formats
                 // output, but we can fake it, to an extent.
 
-                if (libname == ANALOG_LIB) {
-                    oaScalarName cellName;
-                    inst->getCellName(cellName);
-                    oaString cellname;
-                    cellName.get(oaNativeNS(), cellname);
-                    valu = AlibFixup.prpty_fix((const char *)cellname, lstr);
-                }
+                oaString cellname;
+                cellName.get(oaNativeNS(), cellname);
+                valu = AlibFixup.prpty_fix((const char *)cellname, lstr);
             }
             if (valu) {
                 CDp *px = new CDp(lstr.string(), P_VALUE);
@@ -998,6 +990,19 @@ cOAprop::checkFixProperties(CDc *cdesc)
     //
     if (!cdesc->prpty(P_NAME) && !cdesc->prpty(P_NODE))
         cdesc->prptyAddStruct(true);
+
+    else {
+        // Since we create model properties, make sure that if the
+        // cell has one, the instance has one too.  Note:  isDevice is
+        // true for devices AND macros.
+
+        CDs *sd = cdesc->masterCell();
+        if (sd && sd->isDevice()) {
+            CDp *pm = sd->prpty(P_MODEL);
+            if (pm && !cdesc->prpty(P_MODEL))
+                cdesc->link_prpty_list(pm->dup());
+        }
+    }
 
     // Add associated label to properties that have missing labels.
     //
@@ -1276,7 +1281,19 @@ cOAelecInfo::set_prp_info(const char *cname, const oaProp *pip,
             for (lispnode *a = p0->args; a; a = a->next) {
                 if (a->type != LN_STRING && a->type != LN_QSTRING)
                     continue;
-                ary[cnt++] = lstring::copy(a->string);
+
+                // Strip any backslashes that may be hiding
+                // punctuation characters.
+
+                char *s = new char[strlen(a->string) + 1];
+                ary[cnt++] = s;
+                char *t = a->string;
+                while (*t) {
+                    if (*t != '\\')
+                        *s++ = *t;
+                    t++;
+                }
+                *s = 0;
             }
             ary[cnt] = 0;
             cdf->cdf_ports = ary;
@@ -1542,7 +1559,21 @@ cOAelecInfo::parse_termOrder(lispnode *p)
     for (lispnode *a = p->args; a; a = a->next) {
         if (a->type != LN_STRING && a->type != LN_QSTRING)
             continue;
-        ary[cnt++] = lstring::copy(a->string);
+
+        // I've seen strings like "P\+" here, with the backslash
+        // perhaps to protect the '+' from misinterpretation.  These
+        // have to be stripped or will generate an "invalid character"
+        // exception.
+
+        char *s = new char[strlen(a->string) + 1];
+        ary[cnt++] = s;
+        char *t = a->string;
+        while (*t) {
+            if (*t != '\\')
+                *s++ = *t;
+            t++;
+        }
+        *s = 0;
     }
     ary[cnt] = 0;
     cdf_terms = ary;

@@ -45,10 +45,10 @@
  **************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "cshell.h"
 #include "kwords_fte.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "gtktoolb.h"
 
 typedef void ParseNode;

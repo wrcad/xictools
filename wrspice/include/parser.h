@@ -43,11 +43,11 @@ Copyright 1990 Regents of the University of California.  All rights reserved.
 Author: 1985 Wayne A. Christopher, U. C. Berkeley CAD Group
 **********/
 
-#ifndef FTEPARSE_H
-#define FTEPARSE_H
+#ifndef PARSER_H
+#define PARSER_H
 
 typedef pnode ParseNode;
-#include "ftedata.h"
+#include "datavec.h"
 #include "spnumber/spparse.h"
 
 
@@ -225,7 +225,7 @@ struct pnode
             pn_localval = local;
         }
 
-    // parse.cc
+    // parser.cc
     ~pnode();
 
     bool checkvalid()               const;
@@ -266,13 +266,22 @@ struct pnode
     bool is_const_one()
         {
             return (is_const() && pn_value->isreal() &&
-                pn_value->length() == 1 && pn_value->realval(0) == 1.0);
+                pn_value->length() == 1 && pn_value->realval(0) == 1.0 &&
+                pn_value->units()->isnotype());
         }
 
     bool is_const_zero()
         {
             return (is_const() && pn_value->isreal() &&
                 pn_value->length() == 1 && pn_value->realval(0) == 0.0);
+        }
+
+    void split(pnode **pl, pnode **pr)
+        {
+            *pl = pn_left;
+            *pr = pn_right;
+            pn_left = 0;
+            pn_right = 0;
         }
 
     const char *token_string()      const { return (pn_string); }
@@ -329,10 +338,6 @@ private:
     pnlist *pnl_next;
     pnode *pnl_node;
 };
-
-// Imports for processing the "tran" functions, also in inpptree.h
-extern char *GetTranFunc(char**);
-extern int EvalTranFunc(double**, const char*, double*, int);
 
 #endif // FTEPARSE_H
 

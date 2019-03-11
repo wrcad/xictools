@@ -1,7 +1,7 @@
 \chapter{{\WRspice} Commands}
 \label{commands}
 
-% spCommands.hlp:commands 102817
+% spCommands.hlp:commands 030519
 
 When a line is entered, it is interpreted as one of several things. 
 First, it may be an alias, in which case the line is replaced with the
@@ -67,6 +67,7 @@ The following table lists all built-in commands understood by
 \cb listing & List current circuit\\ \hline
 \cb load & Read plot data from file\\ \hline
 \cb print & Print vectors\\ \hline
+\cb return & Return from script immediately, possibly with a value\\ \hline
 \cb sced & Bring up {\Xic} schematic editor\\ \hline
 \cb source & Read circuit or script input file\\ \hline
 \cb write & Write data to rawfile\\ \hline
@@ -75,6 +76,7 @@ The following table lists all built-in commands understood by
 \multicolumn{2}{|c|}{\bf Simulation Commands}\\ \hline
 \cb ac & Perform ac analysis\\ \hline
 \cb alter & Change circuit parameter\\ \hline
+\cb alterf & Dump alter list to Monte Carlo output file\\ \hline
 \cb aspice & Initiate asynchronous run\\ \hline
 \cb cache & Manipulate subcircuit/model cache\\ \hline
 \cb check & Initiate range analysis\\ \hline
@@ -87,9 +89,12 @@ The following table lists all built-in commands understood by
 \cb devmod & Change device model levels\\ \hline
 \cb disto & Initiate distortion analysis\\ \hline
 \cb dump & Print circuit matrix\\ \hline
+\cb findrange & Find edges of operating range\\ \hline
 \cb free & Delete circuits and/or plots\\ \hline
 \cb jobs & Check asynchronous jobs\\ \hline
 \cb loop & Alias for sweep command\\ \hline
+\cb mctrial & Run a Monte Carlo trial\\ \hline
+\cb measure & Set up a measurement\\ \hline
 \cb noise & Initiate noise analysis\\ \hline
 \cb op & Compute operating point\\ \hline
 \cb pz & Initiate pole-zero analysis\\ \hline
@@ -341,17 +346,17 @@ intended primarily for debugging.
 \index{string comparison}
 \index{global return value}
 
-% spCommands.hlp:strcmds 080816
+% spCommands.hlp:strcmds 030519
 
 These commands are used for string comparison, and for setting the
 global return value.  The global return value is an internal global
 variable that can be set and queried from any script (with the {\vt
-\$?} construct).  This can be used to pass numeric data to or from a
-script, but one must take care that the value is not overwritten
-before use, as its scope is global.  The string comparison functions
-return their comparison result in the global return value.  There is
-no native string data type in the scripting language, and the commands
-here provide basic string support.
+\$?} construct).  This can be used to pass numeric data from a script,
+but one must take care that the value is not overwritten before use,
+as its scope is global.  The string comparison functions return their
+comparison result in the global return value.  There is no native
+string data type in the scripting language, and the commands here
+provide basic string support.
 
 \begin{tabular}{|l|l|}\hline
 \cb strcmp & Compare strings\\ \hline
@@ -453,19 +458,20 @@ strciprefix {\it string1 string2}
 \subsection{\spcmd{retval}}
 \index{retval command}
 
-% spCommands.hlp:retval 080816
+% spCommands.hlp:retval 030519
 
 The {\cb retval} command will set the global return value to the numeric
 value given.
 \begin{quote}\vt
 retval {\it value}
 \end{quote}
-This can be used to pass a value back from a script, or to pass a
-value to a script.  The global return value is a global value
-available in any script, and is accessed with the {\vt \$?} construct. 
-The global return value is set only by this function and the string
-comparison functions.  It is initialized to zero on program startup,
-and retains the latest value indefinitely.
+This can be used to pass a value back from a script.  The value is
+initialized to zero whenever a script is executed, so that zero is the
+default return value.  The global return value is a global value
+available in any script and the command prompt line, and is accessed
+with the special variable name {\vt \$?}.  The global return value is
+set by this function and the string comparison functions, and
+optionally by the {\cb return} function.
 
 
 %S-----------------------------------------------------------------------------
@@ -1080,6 +1086,7 @@ output to be saved in files.
 \cb listing & List current circuit\\ \hline
 \cb load & Read plot data from file\\ \hline
 \cb print & Print vectors\\ \hline
+\cb return & Return from script immediately, possibly with a value\\ \hline
 \cb sced & Bring up {\Xic} schematic editor\\ \hline
 \cb source & Read circuit or script input file\\ \hline
 \cb write & Write data to rawfile\\ \hline
@@ -1562,6 +1569,25 @@ print 2*v(2)+v(3) v(4)-v(1)
 This prints the computed quantities using the default format.
 
 %SU-------------------------------------
+\subsection{\spcmd{return}}
+\index{return command}
+
+% spCommands.hlp:return 030519
+
+This will cause the currently executing script or codeblock to
+terminate immediately and return to the caller.
+\begin{quote}\vt
+return [{\it expression\/}]
+\end{quote}
+If an expression follows, it will be evaluated and the global return
+value will be set to the result.  The global return value is an
+internal global variable that can be set and queried from any script
+or the comand prompt as the special variable name {\vt \$?}.  The {\cb
+retval} command is used to set the global return value without
+immediately returning.
+
+
+%SU-------------------------------------
 \subsection{\spcmd{sced}}
 \index{sced command}
 
@@ -1848,26 +1874,48 @@ See \ref{textedit} for more information about the text editor.
 \section{Simulation Control Commands}
 \label{simcmds}
 
-% spCommands.hlp:simcmds 080115
+% spCommands.hlp:simcmds 030119
 
-The commands described in this section control the execution of
-{\WRspice} simulations.  By default, there is no activity on screen
-during a simulation.  One can monitor the progress of a run in two
-ways.  First, the {\cb iplot} command can be used to plot a variable
-as the simulation is progressing.  To plot {\vt v(1)}, for example,
-one would type, before the run is started, ``{\vt iplot v(1)}''. 
-During the run, {\vt v(1)} will be plotted on screen, with the plot
-rescaled as necessary.  One can also print variables.  For example,
-the {\cb trace} command can be used, by
-typing ``{\vt trace time}'' before the run starts, to cause the time
-value to be printed at each output point during transient analysis. 
-These two commands are examples of what are called ``debugs''.  Other
-debugs include {\vt stop when} and {\vt stop after}.  A debug remains
-in effect until deleted with the {\cb delete} command, and the debugs
-in effect can be listed with the {\cb status} command.  The debugs can
-also be listed, deleted, or made inactive with the {\cb Trace} tool
-from the {\cb Tools} menu.  The run can be paused at any time by
-typing {\kb Ctrl-C} in the controlling text window.
+The commands described in this section initiate, control, and monitor
+{\WRspice} simulations.  One can monitor the progress of a run in two
+ways, in addition to the percentage complete that is printed in the
+{\cb Tool Control} window.  First, the {\cb iplot} command can be used
+to plot one or more variables as the simulation is progressing.  To
+plot {\vt v(1)}, for example, one would type, before the run is
+started, ``{\vt iplot v(1)}''.  During the run, {\vt v(1)} will be
+plotted on screen, with the plot rescaled as necessary.  Second, one
+can print variables.  For example, the {\cb trace} command can be
+used, by typing ``{\vt trace time}'' before the run starts, to cause
+the time value to be printed at each output point during transient
+analysis.
+
+\index{runops}
+\label{runop}
+The {\cb iplot} and {\cb trace} commands are examples of what are
+called ``runops''.  Other runops include the {\cb stop} and {\cb
+measure} commands.  A runop remains in effect until deleted with the
+{\cb delete} command, and the runops in effect can be listed with the
+{\cb status} command.  The runops can also be listed, deleted, or made
+inactive with the {\cb Trace} tool from the {\cb Tools} menu in the
+{\cb Tool Control} window.  All runops are available as commands,
+which apply to any circuit while in force.  Some runops can be
+specified from within the {\WRspice} input file, in which case the
+runop applies when simulating that file only.  The table below lists
+the runops that are presently available.
+
+\begin{tabular}{|l|l|}\hline
+\multicolumn{2}{|c|}{Runops}\\ \hline
+\cb Command & \cb Input Keyword\\ \hline\hline
+\cb save & \vt .save\\ \hline
+\cb trace & \vt -\\ \hline
+\cb iplot & \vt -\\ \hline
+\cb measure & \vt .measure\\ \hline
+\cb stop & \vt .stop\\ \hline
+\end{tabular}
+
+The run can be paused at any time by typing {\kb Ctrl-C} in the
+controlling text window.  The run can be resumed with the {\cb resume}
+command, or reset with the {\cb reset} command.
 
 It is possible to transparently execute simulations on a remote
 machine while in {\WRspice}, if the remote machine has a {\vt
@@ -1897,6 +1945,7 @@ is used.
 \multicolumn{2}{|c|}{Simulation Commands}\\ \hline
 \cb ac & Perform ac analysis\\ \hline
 \cb alter & Change circuit parameter\\ \hline
+\cb alterf & Dump alter list to Monte Carlo output file\\ \hline
 \cb aspice & Initiate asynchronous run\\ \hline
 \cb cache & Manipulate subcircuit/model cache\\ \hline
 \cb check & Initiate range analysis\\ \hline
@@ -1909,9 +1958,12 @@ is used.
 \cb devmod & Change device model levels\\ \hline
 \cb disto & Initiate distortion analysis\\ \hline
 \cb dump & Print circuit matrix\\ \hline
+\cb findrange & Find edges of operating range\\ \hline
 \cb free & Delete circuits and/or plots\\ \hline
 \cb jobs & Check asynchronous jobs\\ \hline
 \cb loop & Alias for sweep command\\ \hline
+\cb mctrial & Run a Monte Carlo trial\\ \hline
+\cb measure & Set up a measurement\\ \hline
 \cb noise & Initiate noise analysis\\ \hline
 \cb op & Compute operating point\\ \hline
 \cb pz & Initiate pole-zero analysis\\ \hline
@@ -2004,6 +2056,22 @@ Examples:
 \end{quote}
 
 %SU-------------------------------------
+\subsection{\spcmd{alterf}}
+\index{alterf command}
+
+% spCommands.hlp:alterf 030219
+
+This will dump the alter list to the output file, for use in Monte
+Carlo analysis.
+\begin{quote}\vt
+alterf
+\end{quote}
+In this approach, the {\cb alter} command, or equivalently forms like
+``{\vt let @}{\it device\/}{\vt [}{\it param\/}{\vt ]} {\vt =} {\it
+trial\_value}'' are used to set trial values in the {\vt exec} block. 
+Once set, this can be called to dump the values into the output file.
+
+%SU-------------------------------------
 \subsection{\spcmd{aspice}}
 \index{aspice command}
 
@@ -2078,14 +2146,14 @@ This will clear all data from the cache.
 \index{check command}
 \label{checkcom}
 
-% spCommands.hlp:check 120215
+% spCommands.hlp:check 030419
 
 The {\cb check} command is used to initiate margin analysis.  Margin
 analysis can consist of either a swept operating range analysis, or
 a Monte Carlo analysis.
 \begin{quote}
-{\vt check} [{\vt -v}] [{\vt -a}] [{\vt -m}] [{\vt -r}] [{\vt -c}]
-  [{\vt -f}] [{\vt -s}] [{\vt -k}] [{\vt -h}]
+{\vt check} [{\vt -a}] [{\vt -b}] [{\vt -c}] [{\vt -m}] [{\vt -r}]
+  [{\vt -f}] [{\vt -s}] [{\vt -k}] [{\vt -h}] [{\vt -v}]
   [[{\it pstr1\/}] {\it val1} {\it del1} {\it stp1\/}]
   [[{\it pstr2\/}] {\it val2} {\it del2} {\it stp2\/}]
   [{\it analysis\/}]
@@ -2106,13 +2174,6 @@ The option characters can be grouped following a single ``{\vt -}'',
 or entered separately.
 
 \begin{description}
-\item{\vt -v}\\
-If {\vt -v} (verbose) is given, results and other messages are printed
-on-screen as the analysis is performed, otherwise the analysis is
-silent, except for any printing statements executed in the associated
-command scripts.  The {\cb mplot} command can be used to follow
-progress graphically.
-
 \item{\vt -a}\\
 If the {\vt -a} flag is given, operating range analysis is performed
 at every point (all points mode).  Otherwise, the analysis attempts to
@@ -2122,6 +2183,25 @@ strange shapes, or which possess islands of fail points.  If the input
 file contains a {\vt .checkall} line, then the {\vt -a} flag to the
 {\cb check} command is redundant, all points will be checked in this
 case.
+
+\item{\vt -b}\\
+If this is given, the analysis will be paused after setup and the {\cb
+check} command will return.  This is the start for atomic Monte Carlo
+(see \ref{atomic}); a script can call the {\cb mctrial} command
+numerous times at this point, then ``{\vt check -c}'' to clean up and
+end the analysis.
+
+\item{\vt -c}\\
+The {\vt -c} (clear) option will clear any margin analysis in progress
+if the analysis has been paused, for example by pressing {\kb Ctrl-C},
+or if in an atomic Monte Carlo script.  Return is immediate whether or
+not there is a present analysis to clear.  Unlike in release 4.3.8 and
+earlier, no new analysis is started, and other options are ignored.
+
+A paused margin analysis is resumed if the {\cb check} command is
+given which does not have the {\vt -c} option set, and any arguments
+given in this case are ignored.  The {\cb resume} command will also
+restart a paused margin analysis.
 
 \item{\vt -m}\\
 If the {\vt -m} option is given, Monte Carlo analysis is performed,
@@ -2142,24 +2222,13 @@ speed.  The remote servers must have been specified through the {\cb
 rhost} command, and each must have a {\vt wrspiced} server running. 
 More information on remote asynchronous runs can ge found in
 \ref{rhost} and \ref{rspice}.
-
-\item{\vt -c}\\
-The {\vt -c} (clear) option will clear any margin analysis in progress
-if the analysis has been paused, for example by pressing {\kb
-Ctrl-C}.  If the command line contains only {\vt -c}, no new
-analysis is started.  If something else appears on the command line, a
-new analysis is started after clearing the old analysis.  A paused
-margin analysis is resumed if the {\cb check} command is given which
-does not have the {\vt -c} option set, and any arguments given in this
-case are ignored.  The {\cb resume} command will also restart a paused
-margin analysis.
 \end{description}
 
 Ordinarily, during operating range and Monte Carlo analysis, only the
 current data point is retained.  The amount of data retained can be
 altered with the {\vt -f}, {\vt -s}, and {\vt -k} options.  However,
 if a {\vt .measure} line appears in the circuit deck, or the {\cb
-iplot} debug is active, data will be retained internally so that the
+iplot} runop is active, data will be retained internally so that the
 {\vt .measure} or {\cb iplot} is operational.
 
 \begin{description}
@@ -2193,6 +2262,13 @@ has a facility for displaying trial data in a simplified manner.
 \item{\vt -h}\\
 Finally, the {\vt -h} (help) option will simply print a brief summary
 of the options to the {\cb check} command.
+
+\item{\vt -v}\\
+If {\vt -v} (verbose) is given, results and other messages are printed
+on-screen as the analysis is performed, otherwise the analysis is
+silent, except for any printing statements executed in the associated
+command scripts.  The {\cb mplot} command can be used to follow
+progress graphically.
 \end{description}
 
 If an {\cb iplot} is active, {\vt -f} (current trial data retention)
@@ -2350,10 +2426,16 @@ checkSTP1}.  The total number of simulations in Monte Carlo analysis
 is (2*{\et checkSTP1} + 1)*(2*{\et checkSTP2} + 1), the same as would
 be checked in operating range analysis.
 
-\item{{\et checkFAIL}  (integer, length 1, 0 or 1)}\\
+\item{{\et checkFAIL}  (integer, length 1, value 0 or 1)}\\
 This is the global pass/fail flag, which is set after each trial, 1
 indicates failure.  This variable is used in both operating range and
 Monte Carlo analysis.
+
+\item{{\et checkINIT}  (integer, length 1, value 0 or 1)}\\
+This is set to 1 by {\WRspice} before the initial execution of the
+header block, before operating range or the first Monte Carlo trial. 
+It is set to 0 otherwise.  Thus one can identify the first trial in
+Monte Carlo analysis from within the header script.
 
 \item{{\et opmin1, opmax1, opmin2, opmax2} (real, length $>=$ 1)}\\
 The operating range analysis can be directed to find the operating
@@ -2520,30 +2602,30 @@ The {\it dc\_args} are the same as used in the {\vt .dc} line (see
 \subsection{\spcmd{delete}}
 \index{delete command}
 
-% spCommands.hlp:delete 011909
+% spCommands.hlp:delete 022519
 
-The {\cb delete} command is used to remove ``debugs'' (traces or
-breakpoints) from the debug list.
+The {\cb delete} command is used to remove ``runops'' (traces or
+breakpoints) from the runop list.
 \begin{quote}\vt
-delete [[in]active] [all | stop | trace | iplot | save |
+delete [[in]active] [all | save | trace | iplot | measure | stop |
  {\it number\/}] ...]
 \end{quote}
-With no arguments, a list of existing debugs is printed, and the
+With no arguments, a list of existing runops is printed, and the
 user is prompted for one to delete.  The {\cb status} command also
-prints a list of debugs.  Debugs can also be controlled with the
+prints a list of runops.  Runopss can also be controlled with the
 panel brought up with the {\cb Trace} button in the {\cb Tools}
 menu.
 
 If the {\vt inactive}/{\vt active} keyword is given, breakpoints
 listed to the right but before another {\vt (in)active} keyword are
-deleted only if they are inactive/active.  Otherwise, they are
-deleted unconditionally.  If one of {\cb stop}, {\cb trace}, {\cb
-iplot}, or {\cb save} is given, debugs of that type only are
+deleted only if they are inactive/active.  Otherwise, they are deleted
+unconditionally.  If one of {\vt stop}, {\vt measure}, {\vt trace},
+{\vt iplot}, or {\vt save} is given, runops of that type only are
 deleted.  These keywords can appear in combination.
 
-Each debug is assigned a unique number, which is available through
+Each runop is assigned a unique number, which is available through
 the {\cb status} command.  This number can also be entered on the
-command line causing that debug to be deleted (if the activity
+command line causing that runop to be deleted (if the activity
 matches the {\vt inactive} keyword, if given).  A range of numbers
 can be given, for example ``2-6''.  There must be no white space in
 the range token.
@@ -2553,7 +2635,7 @@ Examples:
 Delete all traces and iplots:\\
 {\vt delete trace iplot}\\
 \\
-Delete all inactive debugs:\\
+Delete all inactive runops:\\
 {\vt delete inactive all}\\
 \\
 Delete all traces and inactive iplots:\\
@@ -2810,6 +2892,18 @@ Print output in the given file.
 \end{description}
 
 %SU-------------------------------------
+\subsection{\spcmd{findrange}}
+\index{findrange command}
+
+% spCommands.hlp:findrange 030219
+
+This can be called after a Monte Carlo analysis trial and will find
+the actual uppear and lower operating limits of two parameters.
+\begin{quote}\vt
+findrange
+\end{quote}
+
+%SU-------------------------------------
 \subsection{\spcmd{free}}
 \index{free command}
 
@@ -2850,6 +2944,483 @@ with the {\cb aspice} command locally, or on a remote system with the
 finished every time a command is executed.  If a job is finished, then
 the data are loaded and become available.  This command takes no
 arguments.
+
+%SU-------------------------------------
+\subsection{\spcmd{mctrial}}
+\index{mctrial command}
+
+% spCommands.hlp:mctrial 030219
+
+This is a cCommand to run a single trial for used when when performing
+script-driven Monte Carlo analysis.
+\begin{quote}\vt
+mctrial
+\end{quote}
+
+%SU-------------------------------------
+\subsection{\spcmd{measure}}
+\index{measure command}
+
+% spCommands.hlp:measure 030119
+
+The {\cb measure} command allows one to set up a runop (see
+\ref{runop}) which will identify a measurement point or interval, and
+evaluate an expression at that point, or call a number of measurement
+primitives that apply during the interval, such as rise time or pulse
+width.
+
+\begin{quote}
+measure {\it analysis} {\it resultname} {\it point} | {\it interval}
+[{\it measurements\/}] [{\it postcmds\/}]\\
+measure {\it analysis} {\it resultname} param={\it expression}
+[{\it postcmds\/}]
+\end{quote}
+
+The command will apply, if active, when any circuit is being run. 
+There is also a {\vt .measure} input syntax element which will set up
+the measurement on that circuit only.  Both use the identical syntax
+described below.  The syntax is based on the {\vt .measure} statement
+in HSPICE.
+
+\begin{description}
+\item{\it analysis}\\
+This specifies the type of analysis during which the measurement will
+be active.  Exactly one of the following keywords should appear in
+this field:  {\vt tran}, {\vt ac}, {\vt dc}.
+
+\item{\it resultname}\\
+This field specifies a name for the measurement.  The name should be
+unique among the measurements in the circuit, and among vectors in
+scope during simulation.  The name should start with an alphabetic
+character and contain no white space or other special characters.
+\end{description}
+
+A vector with this name will be added to the current plot, if the
+measurement is successful.  Vector names found in {\vt .measure} lines
+are added to the internal save list, guaranteeing that the necessary
+data will be available when needed, whether or not the vector has been
+mentioned in a {\vt .save} line.
+
+\subsubsection{Point and Interval Specification}
+\index{measurement interval}
+
+The field that follows the {\it resultname} contains a description of
+the conditions which initiate a measurement.  There are three basic
+types:  a point specification, an interval specification, and a
+post-measurement specificantion.
+
+The {\it interval} begins with the ``trigger'' and ends with the
+``target''.  Measurement will apply during this interval.  If no
+target is given, the trigger sets the {\vt point}, where measurement
+will be performed.  The trigger and target are independently specified
+as follows:
+
+\begin{description}
+\item{\it point}\\
+\begin{quote}
+[{\vt trig}] {\it pointlist}
+\end{quote}
+This consists of the keyword {\vt trig} (which is optional) followed
+by a point specification list.  The keyword ``{\vt from}'' is
+equivalent to ``{\vt trig}''.
+
+\item{\it interval}\\
+\begin{quote}
+[{\vt trig}] {\it pointlist} {\vt targ} {\it pointlist}
+\end{quote}
+An interval contains a second point specification initiated with the
+mandatory keyword {\vt targ}.  The keyword ``{\vt to}'' is equivalent
+to ``{\vt targ}''.
+
+\item{post-measurement}\\
+\begin{quote}
+{\vt param=}{\it expression}
+\end{quote}
+Measurements in this form will be performed when all {\it point} and
+{\it interval} measurements are complete.  After all {\it point} and
+{\it interval} measurements have been performed, the {\it expression}
+will be evaluated and the result saved in {\it resultname}.  The {\it
+expression} can reference other measurement results in addition to the
+usual vectors and functions provided by the system.  These measurement
+lines are evaluated in the order found in the input.
+
+\item{\it pointlist}\\
+\begin{quote}
+{\it pointspec} [{\it pointspec\/}] ...
+\end{quote}
+The point is specified with a list of {\it pointspec} specifications,
+and the event is registered on the first occasion when all {\it
+pointspec} elements are true, i.e., the conjunction is true.
+
+\item{\it pointspec}\\
+{\it keyword} {\it expression1} [{\vt =}][{\vt val=}] [{\it expression2\/}]
+[{\vt cross=}{\it crosses\/}] [{\vt rise=}{\it rises\/}]
+[{\vt fall=}{\it falls\/}]] [{\vt td=}{\it delay\/}]
+\end{description}
+
+The {\it pointspec} begins with one of the following kewords:  {\vt
+before}, {\vt at}, {\vt after}, {\vt when}.  Of these, {\vt at}, {\vt
+after}, and {\vt when} are equivalent aliases, but varied use can give
+a natural language feel to the conjuction list.  The {\vt before}
+keyword negates logic:  the {\it pointspec} is true before the
+specified event.  This can be useful as an element in the conjunction
+list.
+
+Once a {\it pointspec} becomes triggered, it remains triggered for the
+remainder of the simulation run.  Once triggered, a {\vt before} {\it
+pointspec} will evaluate false, preventing the overall list from
+triggering.  Otherwise, the overall list triggers when each {\it
+pointspec} is true.
+
+Following the keyword are one or two general expressions.  There can
+be an optional equal sign (``{\vt =}'') or a ``{\vt val}'' keyword
+``{\vt val=}'' between the expressions.
+
+An {\it expression} in this context can be:
+\begin{itemize}
+\item{A number or constant expression.  This is taken as the
+triggering point, meaning that the event occurs during simulation when
+the scale variable is equal to or exceeds the value.}
+
+\item{An integer enclosed in square brackets.  This is interpreted as
+an output index, which increments whenever data would be written out
+from the running simulation.  This is most useful when the printing
+increment is constant.  The event triggers when the output index
+equals the integer given.}
+
+\item{The {\it resultname} of a measure in the circuit.  The event
+occurs when the referenced measurement is performed.}
+
+\item{A general expression consisting of constants, vector names, and
+circuit variables.  Frequently this will be simply a vector name
+corresponding to a node voltage or branch current in the circuit.}
+\end{itemize}
+
+In {\WRspice}, an expression token is the minimum text required for a
+syntactically complete expression, and may include white space. 
+Single quotes or parentheses can be used to delimit expressions in the
+{\it pointspec}, if nexessary.  The normal single-quote expression
+expansion and substitution is suppressed in this context.
+
+If only one {\it expression} is given, and it is not a constant
+expression or a measure name, the event is triggered at the first time
+the expression becomes logically true, meaning that the absolute value
+is one or larger.  This corresponds to logical true produced by
+comparison and other logical operations in {\WRspice}.  For example,
+the expression ``{\vt v(5) > 0.25}'' returns 0 if false and 1 if true.
+
+It may be a bit confusing but the form {\it expr1\/}{\vt =}{\it expr2}
+is interpreted as two expressions, but the same form with any
+relational operator other than {\vt =} is taken as a single expression
+with a binary result.  Either the symbol or the keyword equivalent can
+be used.  The relational operators available are listed below.
+
+\begin{tabular}{|l|l|}\hline
+{\vt eq}   or   $=$  & equal to\\ \hline
+{\vt ne}   or   $<>$ & not equal to\\ \hline
+{\vt gt}   or   $>$  & greater than\\ \hline
+{\vt lt}   or   $<$  & less than\\ \hline
+{\vt ge}   or   $>=$ & greater than or equal to\\ \hline
+{\vt le}   or   $<=$ & less than or equal to\\ \hline
+\end{tabular}
+
+If two expressions are given, neither can be a measure result name. 
+We are implicitly comparing the values of the two expressions, finding
+points where the two expressions are equal.  By default, the first
+time the values of the two expressions cross will trigger the event. 
+The following keywords can be assigned an integer value to trigger at
+the indicated point.
+
+\begin{description}
+\item{{\vt cross=}{\it crosses}}\\
+Integer {\it crosses} is the number of crossings.
+
+\item{{\vt rise=}{\it rises}}\\
+Integer {\it rises} is the number of times that {\it expression1}
+rises above {\it expression2}.
+
+\item{{\vt fall=}{\it falls}}\\
+Integer {\it falls} is the number of times that {\it expression1}
+falls below {\it expression2}.
+\end{description}
+
+\begin{description}
+\item{{\vt td=}{\it delay}}\\
+If two expressions are given, the {\it delay} is the amount of scale
+value (e.g., time in transient analysis) before starting to look for
+crossing events.
+
+If one expression is given, and the expression is not constant or a
+measure result name, the {\it delay} is the amount of the scale value
+to wait before checking to see if the expression evaluates true.  If
+the expression is a measurement name, than the delay is added to the
+measurement time of the referenced measurement.
+\end{description}
+
+There is a special case, where no expressions are given, only a {\vt
+td=}{\it delay} value.  This can be a second or subsequent {\it
+pointspec} in the {\it pointlist}.  This will trigger at the time of
+the previous {\it pointspec} in the list (to the left) delayed by {\it
+delay}.
+
+Examples:\\
+{\vt at v(2)=0.5 rise=3 td=0.2nS after td=0.1nS}\\
+\hspace*{1em}Trigger 0.1nS after the third rising edge of v(2) after
+0.2nS crosses 0.5V.\\
+{\vt when v(2)<v(1) before v(2)<v(3)}\\
+\hspace*{1em}Trigger the first time that {\vt v(2) < v(1)} if and only
+if {\vt v(2) < v(3)} has never been true.
+
+\subsubsection{Syntax Compatibility}
+
+The present syntax supported by the {\vt .measure} command in
+{\WRspice} is a super set of the previous syntax cases, which
+    are shown below.  These should all work in the present system.
+
+Form 1:
+\begin{quote}\vt
+    trig|targ at={\it value}
+\end{quote}
+
+Form 1 is straightforward; the interval starts ({\vt trig}) or ends
+({\vt targ}) at {\it value}.  {\it Value} must be within the
+simulation range of the scale variable (e.g., time in transient
+analysis).
+
+The same effect can be achieved with:
+\begin{quote}\vt
+    from={\it value} to={\it value}
+\end{quote}
+
+Form 2:
+\begin{quote}\vt
+    trig|targ {\it variable} [val=]{\it value}
+        [td={\it delay}] [cross={\it crosses}]
+        [rise={\it rises}] [fall={\it falls}]
+\end{quote}
+
+Form 2 allows the interval boundaries to be referenced to times when a
+variable crosses a threshold.  The {\it variable} can be any vector
+whose value is available during simulation.  The {\it value} is a
+constant which is used to measure crossing events.  The {\vt val=}
+which precedes the {\it value} is optional.  At least one of the {\vt
+rise/fall/cross} fields should be set.  Their values are integers
+which represent the variable crossing the threshold a number of times. 
+The {\vt rise} indicates the variable rising through the threshold,
+{\vt fall} indicates the variable decreasing from above to below the
+threshold, and {\vt cross} indicates {\vt rises + falls}.  The
+interval boundary is set when the specified number of transitions is
+reached.
+
+If the delay is specified, transition counting starts after the
+specified delay.
+
+\spexampo{trig v(2) 2.5 td=0.1ns rise=2}
+
+This indicates that the interval begins at the second time {\vt v(2)} rises
+above 2.5V after 0.1ns.
+
+Form 3:
+\begin{quote}\vt
+    trig|targ when {\it expr1\/}={\it expr2} [td={\it delay}]
+        [cross={\it crosses}] [rise={\it rises}] [fall={\it falls}]
+\end{quote}
+
+The third form is similar to the second form, except that crossings
+are defined when {\it expr1 = expr2}.  These are expressions, which
+must be enclosed in parentheses if they contain white space or commas. 
+A rise is defined as {\it expr1} going from less than to greater than
+{\it expr2}.
+
+\subsubsection{Measurements}
+\index{measurement types}
+
+One should be aware that measurements are performed using data saved
+in the plot structure as a simulation progresses.  The accuracy of the
+results is directly affected by the density of saved points.  In
+transient analysis, one may wish to use internal time point data by
+setting the {\vt steptype=nousertp} option.  This avoids the
+interpolation to tranient time increments which may reduce accuracy if
+the increment is too coarse.
+
+The following measurements are available when an interval has been
+specified.
+
+\begin{description}
+\item{{\vt find} {\it expr}}\\
+Evaluate the difference:  {\it expr} at target minus {\it expr} at
+trigger.
+\item{{\vt min} {\it expr}}\\
+Find the minimum value of {\it expr\/}.
+\item{{\vt max} {\it expr}}\\
+Find the maximum value of {\it expr\/}.
+\item{{\vt pp} {\it expr}}\\
+Find the (maximum - minimum) value of {\it expr\/}.
+\item{{\vt avg} {\it expr}}\\
+Compute the average of {\it expr\/}.
+\item{{\vt rms} {\it expr}}\\
+Compute the rms value of {\it expr\/}.
+\item{{\vt pw} {\it expr}}\\
+This will measure the full-width half-maximum of a pulse contained in
+the interval.  The baseline is taken as the initial or final value
+with the smallest difference from the peak value.  The algorithm will
+measure the larger of a negative going or positive going pulse.
+\item{{\vt rt} {\it expr}}\\
+This will measure the 10-90 percent rise or fall time of the edge
+contained in the interval.  The reference start and final values are
+the values at the ends of the interval.
+\end{description}
+
+When a point has been specified, the only measurement form
+available is
+
+\begin{description}
+\item{{\vt find} {\it expr}}\\
+Evaluate {\it expr} at point.
+\end{description}
+
+A {\vt .measure} statement can contain any number of measurements,
+including no measurements.  If no measurement is specified, the vector
+produced contains only zeros, however the scale vector contains the
+start and stop values, which may be the only result needed.  The
+created vector, which is added to the current plot, will be of length
+equal to the number of measurements, with the results placed in the
+vector in order.
+
+The measurement scale point(s) in {\vt .measure} statements are also
+saved in a vector, which is the scale for the result vector.  If the
+measurement name is ``{\vt result}'', then the scale vector is named
+``{\vt result\_scale}''.  The scale contains one or two values,
+depending on whether it is a point or interval measurement.
+
+\subsubsection{Post-Measurement Commands}
+\index{post-measurement commands}
+
+There are a few commands which can be performed after measurement,
+which will run whether or not any measurements are actually made.
+
+\begin{description}
+\item{{\vt print}, {\vt print\_terse}}\\
+By default, nothing is printed on-screen for a {\vt .measure} line
+during interactive simulation.  If the keyword {\vt print} appears in
+the {\vt .measure} line, the results will be printed on the standard
+output.  A more concise format can be obtained from the alternative
+keyword {\vt print\_terse}.  The result vectors are created in all
+cases.
+
+\item{\vt stop}\\
+If the keyword {\vt stop} appears in a {\vt .measure} line, the
+analysis will be paused when {\it all} measurements are complete. 
+Thus if the deck contains several {\vt .measure} lines and {\vt stop}
+is given in at least one, the analysis will pause when all of the
+measurements are complete, not just the one containing {\vt stop}. 
+The analysis can then be resumed with the {\cb resume} command, or
+reset with the {\cb reset} command.
+
+\item{{\vt exec} {\it command}}\\
+Execute the {\WRspice} shell command found in {\it command\/}, which
+should be double-quoted if it contains white space.  Note that
+multiple commands can be given, separated by semicolon ({\vt ';'})
+characters.  This will be run before a script is called (see below) so
+can be used to pass information to the script.  The command will be
+executed once only, after measurements if any.
+
+\item{{\vt call} {\it script}}\\
+After the measurement (if any) is performed and any command string is
+executed, the named script will be called.  The script can be a normal
+script file or codeblock.  The special names ``{\vt .exec}'', ``{\vt
+.control}'', and ``{\vt .postrun}'' call the exec, control, or postrun
+bound codeblocks of the running circuit, if they exist.
+
+The script can be used for additional processing or testing of
+whatever sort.  If the script returns 1, the current simulation will
+pause immediately (no waiting for other measures) however a calling
+analysis, such as Monto Carlo, will continue.  If 2 is returned, this
+indicates a fatal global error and any calling analysis will be
+stopped too.  Any other return value allows the run to continue
+normally.
+\end{description}
+
+When a {\vt .measure} is included in an iterative analysis (Monte
+Carlo, loop, etc.), data are saved as follows.  Before each iteration,
+the previous result vector and its scale are saved to the end of a
+``history'' vector and scale, and are then deleted.  The result vector
+and scale are recreated when the measurement is completed during the
+iteration.  Thus, at the end of the analysis, for a measurement named
+``example'', one would have the following vectors:
+
+\begin{tabular}{|l|l|}\hline
+\vt example & the result from the final trial\\ \hline
+\vt example\_scale & the measurement interval or point in the last
+ trial\\ \hline
+\vt example\_hist & results from the prior trials\\ \hline
+\vt example\_hist\_scale & intervals from the prior trials\\ \hline
+\end{tabular}
+
+Thus, during each trial, the result vector will have the same
+properties as in a standard run.  It can be used in the {\vt .control}
+block of a Monte Carlo or operating range file (recall that {\vt
+\$?}{\it vector} can be used to query existence, and that if there is
+no {\vt checkPNTS} vector defined, the {\vt .control} block is called
+once at the end of each trial).
+
+\index{measurements, chained}
+Multiple {\vt .measure} lines can be ``chained'' in the following
+manner.  The vector name following the {\vt from}, {\vt to}, {\vt
+trig}, or {\vt targ} keywords can be the name of another measure.  In
+this case, the effective start time is the measure time of the
+referenced measure.  The measure time is the end of the interval or
+the measure point.  The {\vt td}, {\vt rise}, and other keywords can
+be used in the referencing measure.  The {\vt td} will be added to the
+imported time, and the other keywords operate in the normal way.  If
+there are no keywords other than {\vt td} specified, the time is the
+delay time plus the imported time.
+
+Example:
+\begin{quote}\vt
+    .measure tran t1 trig v(5) val=.4m rise=3\\
+    .measure tran t2 trig v(5) val=.4m rise=4\\
+    .measure tran pw trig t1 td=20p targ t2 td=20p pw v(5) max v(5)\\
+\end{quote}
+
+In this case, the measures {\vt t1} and {\vt t2} ``frame'' a period
+of an (assumed) repeating signal v(5).  Note that no actual
+measurement is performed for these lines.  Their purpose is to be
+referenced in the third line, which takes as its interval the {\vt
+t1}--{\vt t2} interval delayed by 20 pS, and measures the pulse
+width and peak value.
+
+\subsubsection{Referencing Results in Sources}
+\index{measurements, source reference}
+
+It is possible to reference {\vt .measure} results in sources.  The
+referencing token has the same form as a circuit variable, with an
+optional index, i.e.
+\begin{quote}\vt
+    @{\it result\/}[{\it index\/}]
+\end{quote}
+where the {\it index\/}, if used, is an integer that references a
+specific component of the result (0-based).  The value is always zero
+for timepoints before the measurement has been performed, and a
+constant value afterward.
+
+Example:
+\begin{quote}\vt
+    .measure tran peak from=50n to=150n max v(5)\\
+    .measure tran stuff trig v(4) val=4.5 rise=1 targ v(4) val=4.5 fall=2\\
+    + min v(4) max v(4) pp v(4) avg v(4) rms v(4) print\\
+    vxx 1 0 @peak\\
+    vyy 2 0 @stuff[2]\\
+\end{quote}
+
+In this example, during transient analysis, {\vt vxx} is zero until
+150 nS, where the measurement takes place, at which point it jumps to
+the value measured.  Likewise, {\vt vyy} is zero until the
+measurement, at which point it jumps to the third component (``{\vt pp
+v(4)}'') result.  The resulting voltages can be used elsewhere in the
+circuit.  Note that we have two implementations of a behavioral peak
+detector.
+
 
 %SU-------------------------------------
 \subsection{\spcmd{noise}}
@@ -3245,15 +3816,15 @@ of the current circuit.  The command takes no arguments.
 \subsection{\spcmd{status}}
 \index{status command}
 
-% spCommands.hlp:status 011909
+% spCommands.hlp:status 022519
 
-The {\cb status} command is used to print a list of the ``debugs''
+The {\cb status} command is used to print a list of the ``runops''
 currently in force.  The command will print out a summary of all the
-{\cb trace}, {\cb stop}, {\cb save}, and {\cb iplot} commands that
-are active.  Each debug is assigned a unique number, which can be
-supplied to the {\cb delete} command to remove the debug.  The debug
-list can also be manipulated from the panel brought up with the {\cb
-Trace} button in the {\cb Tools} menu.  The command takes no
+{\cb save}, {\cb iplot}, {\cb trace}, {\cb measure}, and {\cb stop},
+commands that are active.  Each runop is assigned a unique number,
+which can be supplied to the {\cb delete} command to remove the runop. 
+The runop list can also be manipulated from the panel brought up with
+the {\cb Trace} button in the {\cb Tools} menu.  The command takes no
 arguments.
 
 %SU-------------------------------------
@@ -3274,52 +3845,93 @@ given, or one, if no number is given.
 \subsection{\spcmd{stop}}
 \index{stop command}
 
-% spCommands.hlp:stop 011909
+% spCommands.hlp:stop 022819
 
-The {\cb stop} command will add a breakpoint to the debug list.
-\begin{quote}\vt
-stop [before | at | after {\it num\/}] [when {\it expr1 op expr2\/}] ...
+The {\cb stop} command will add a stop point to the runop list.
+\begin{quote}
+{\vt stop} {\it analysis} {\it point} [{\it postcmds\/}]
 \end{quote}
-When the condition is true, simulation will stop, and can be resumed,
-after clearing the breakpoint, with the {\cb resume} command.  The
-breakpoints can be cleared with the {\cb delete} command, and listed
+When a condition is true, simulation will stop, but can be resumed,
+after clearing the stop point, with the {\cb resume} command.  The
+stop points can be cleared with the {\cb delete} command, and listed
 with the {\cb status} command.  The panel brought up by the {\cb
 Trace} button in the {\cb Tools} menu can also be used to manipulate
-breakpoints.
+stop points.
 
-The first clause specifies the user output points at which the break
-is in effect.  If an {\vt after} clause is given, the simulation will
-stop after {\it num} points.  The {\vt at} clause stops only at {\it
-num} points, and the {\vt before} clause stops only before {\it num}
-points.  These are useful in conjunction with a {\vt when} clause or
-can be omitted.  If a {\vt when} clause is included, at each point,
-the {\it expr\/}1,2 expressions will be evaluated and {\it expr1 op
-expr2} will be checked, and if it is true, the simulation will stop. 
-If more than one {\vt when} or {\vt after} clause is put on one line,
-the conjunction of the conditions is checked.  The {\it ops} are
-relational operators from the list below.  Note that for this command,
-$<$ and $>$ do not denote IO redirection.
+The {\cb stop} command is a ``runop'' similar to the {\cb measure}
+command, and is in fact implemented internally from the same
+components.  Analogous to {\cb measure}, there is also a {\vt .stop}
+input syntax element which uses the same syntax, which will be in
+force when simulating the circuit containing the line.  When entered
+on the command line, the stop is in force for all circuits, while the
+runop is active.
 
-\begin{tabular}{|l|l|}\hline
-{\vt eq}   or   $=$  & equal to\\ \hline
-{\vt ne}   or   $<>$ & not equal to\\ \hline
-{\vt gt}   or   $>$  & greater than\\ \hline
-{\vt lt}   or   $<$  & less than\\ \hline
-{\vt ge}   or   $>=$ & greater than or equal to\\ \hline
-{\vt le}   or   $<=$ & less than or equal to\\ \hline
-\end{tabular}
+Note that this is a different implementation of the {\cb stop} command
+than found in {\WRspice}-4.3.8 and earlier, which was based on the
+Berkeley Spice3 implementation.  Although similar, the present syntax
+is a little different, and the command has more features and options. 
+It does basically duplicate the effect of the {\cb measure} command
+with the {\vt stop} clause.
+
+\begin{description}
+\item{\it analysis}\\
+This specifies the type of analysis during which the break condition
+will be active.  Exactly one of the following keywords should appear
+in this field:  {\vt tran}, {\vt ac}, {\vt dc}.  Note that this did
+not appear in the {\cb stop} syntax used in {\WRspice}-4.3.8 and
+earlier.
+
+\item{\it point}\\
+This is precisely the same {\it point} specification as is used in the
+{\cb measure} command.  Please refer to that section for a description
+of the syntax.  Note that this should cover the pre-4.3.9 syntax,
+however an analysis point index is now an integer enclosed is square
+brackets, numeric values are now assumed to be scale values (such as
+time) otherwise.
+\end{description}
+
+There are a couple of optional ``{\it postcmd}'' operations which can
+be performed when the stop is triggered, but before simulation ends.
+
+\begin{description}
+\item{\vt exec} {\it command}\\
+Execute the {\WRspice} shell command found in {\it command\/}, which
+should be double-quoted if it contains white space.  Note that
+multiple commands can be given, separated by semicolon ({\vt `;'})
+characters.  This will be run before a script is called (see below) so
+can be used to pass information to the script.  The {\it command} will
+be executed only once, and only if the {\it point} condition is
+reached.
+
+\item{\vt call} {\it script}\\
+After the {\it point} is reached and any command string is executed,
+the named script will be called.  The script can be a normal script
+file or codeblock.  The special names ``{\vt .exec}'', ``{\vt
+.control}'', and ``{\vt .postrun}'' call the exec, control, or postrun
+bound codeblocks of the running circuit, if they exist.
+
+The script can be used for additional processing or testing of
+whatever sort.  If the script returns 1, the current simulation will
+{\bf not} stop, and will continue as if the stop condition never
+occurred.  If the script returns 2, a global error is indicated and
+the present analysis is terminated.  If any other value is returned,
+or there is no explicit return, the analysis will stop as normal, and
+can be resumed.
+\end{description}
 
 If a {\cb stop} command is given at the prompt in interactive mode, it
-is placed in a global list, and activity will persist until deleted
-(with the {\cb delete} command).  If the command is given in a file,
-the command will be added to a list for the current circuit, and will
-apply only to that circuit.  Thus, for example, a {\WRspice} file can
-contain lines like
-\begin{quote}
-{\vt *\# stop when} ...
+is placed in the global runop list, and activity will persist until
+deleted (with the {\cb delete} command).  If the command is given in a
+file, the command will be added to a list for the current circuit, and
+will apply only to that circuit.  Thus, for example, a {\WRspice} file
+can contain lines like
+\begin{quote}\vt
+*\# stop tran when ...
 \end{quote}
 and the action will be performed as that circuit is run, but the
-``{\vt stop when} ...'' directive will not apply to other circuits.
+``{\vt stop tran when ...  }'' directive will not apply to other
+circuits.  This is the same effect as a {\vt .stop} line.
+
 
 %SU-------------------------------------
 \subsection{\spcmd{sweep}}
@@ -4586,9 +5198,9 @@ provides a superior user interface.
 \subsection{\spcmd{iplot}}
 \index{iplot command}
 
-% spPlot.hlp:iplot 121415
+% spPlot.hlp:iplot 022519
 
-The {\cb iplot} command adds an incremental plot to the ``debug'' list.
+The {\cb iplot} command adds an incremental plot to the ``runop'' list.
 While a simulation is running, the plots will be generated, allowing
 immediate feedback as to whether the simulation is producing the
 ``right'' results.
@@ -4621,7 +5233,7 @@ specified {\vt .plot tran} line found in the circuit deck.
 The iplots can be deleted with the {\cb delete} command, and can also
 be specified and deleted using the panel brought up by the {\cb Trace}
 button in the {\cb Tools} menu.  The {\cb status} command will list
-the ``debugs'', including iplots.
+the runops, including iplots.
 
 If an {\cb iplot} command is given at the prompt in interactive mode,
 it is placed in a global list, and activity will persist until deleted

@@ -357,10 +357,6 @@ private:
     } u;
 };
 
-//XXX rid this
-bool operator== (const PCellParam&, const PCellParam&);
-
-
 
 // Instantiation descriptor.  We keep a list of these, one for each
 // unique set of instantiation parameters, for a given super-master.

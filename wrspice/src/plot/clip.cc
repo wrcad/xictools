@@ -46,7 +46,7 @@ Authors: 1982 Giles Billingsley
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "outplot.h"
+#include "graph.h"
 
 
 //
@@ -68,12 +68,14 @@ Authors: 1982 Giles Billingsley
                      else if (y > t)\
                          c |= CODEMAXY;
 
+// Static function.
 // clip_line will clip a line to a rectangular area.  The returned
 // value is 'true' if the line is out of the AOI (therefore does not
 // need to be displayed) and 'false' if the line is in the AOI.
 //
 bool
-clip_line(int *pX1, int *pY1, int *pX2, int *pY2, int l, int b, int r, int t)
+sGraph::clip_line(int *pX1, int *pY1, int *pX2, int *pY2,
+    int l, int b, int r, int t)
 {
     int x1 = *pX1;
     int y1 = *pY1;
@@ -124,13 +126,15 @@ clip_line(int *pX1, int *pY1, int *pX2, int *pY2, int l, int b, int r, int t)
 }
 
 
+// Static function.
 // This function will clip a line to a circle, returning true if the
 // line is entirely outside the circle.  Note that we have to be
 // careful not to switch the points around, since in grid.c we need to
 // know which is the outer point for putting the label on.
 //
 bool
-clip_to_circle(int *x1, int *y1, int *x2, int *y2, int cx, int cy, int rad)
+sGraph::clip_to_circle(int *x1, int *y1, int *x2, int *y2,
+    int cx, int cy, int rad)
 {
     // Get the angles between the origin and the endpoints
     double theta1;

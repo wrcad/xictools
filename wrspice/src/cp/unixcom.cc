@@ -48,7 +48,7 @@ Authors: 1987 Wayne A. Christopher
 #include "config.h"
 #include "cshell.h"
 #include "commands.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "toolbar.h"
 #include "spnumber/hash.h"
 #include "miscutil/lstring.h"

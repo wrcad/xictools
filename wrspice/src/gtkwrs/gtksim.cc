@@ -45,13 +45,13 @@
  **************************************************************************/
 
 #include "config.h"
-#include "outplot.h"
+#include "graph.h"
 #include "circuit.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
 #include "variable.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "gtktoolb.h"
 
 

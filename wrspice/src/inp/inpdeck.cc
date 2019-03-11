@@ -45,7 +45,7 @@ Authors: 1987 Thomas L. Quarles
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "input.h"
 #include "device.h"
 #include "misc.h"
@@ -147,14 +147,18 @@ SPinput::pass1(sCKT *ckt, sLine *deck)
 void
 SPinput::pass2(sCKT *ckt, sLine *data, sTASK *task)
 {
-    char *gname = lstring::copy("0");;
-    int error = ckt->gndInsert(&gname, 0);
-    if (error && error != E_EXISTS) {
-        data->errcat(
-    "Internal error: can't insert internal ground node in symbol table!\n");
-        ckt->CKTnogo = true;
-        ip_current_line = 0;
-        return;
+    // Node names recognized as the ground node.
+    const char *gn = sCKTnodeTab::groundNames();
+    char *gname;
+    while ((gname = lstring::gettok(&gn)) != 0) {
+        int error = ckt->gndInsert(&gname, 0);
+        if (error && error != E_EXISTS) {
+            data->errcat("Internal error: can't insert internal ground "
+                "node in symbol table!\n");
+            ckt->CKTnogo = true;
+            ip_current_line = 0;
+            return;
+        }
     }
 
     for (sLine *l = data; l; l = l->next()) {

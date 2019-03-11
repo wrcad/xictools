@@ -50,7 +50,7 @@ Authors: 1985 Wayne A. Christopher
 //
 
 #include "config.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "input.h"
 #include "errors.h"
 #include "kwords_fte.h"

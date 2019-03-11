@@ -285,14 +285,10 @@ cMain::CheckModified(bool panic)
 
 
 namespace {
-    bool is_oa_lib(const char *name, bool silent_errors)
+    bool is_oa_lib(const char *name)
     {
-        bool islib = false;
-        if (OAif()->hasOA() && !OAif()->is_library(name, &islib)) {
-            if (!silent_errors)
-                Log()->ErrorLog(mh::OpenAccess, Errs()->get_error());
-        }
-        return (islib);
+        bool is_open = false;  // don't care about this
+        return (OAif()->hasOA() && OAif()->is_library(name, &is_open));
     }
 }
 
@@ -569,7 +565,7 @@ cMain::SaveCellAs(const char *name, bool silent_errors)
                 Log()->ErrorLog(save_file, Errs()->get_error());
                     continue;
             }
-            else if (!is_oa_lib(token1, silent_errors)) {
+            else if (!is_oa_lib(token1)) {
                 sprintf(buf, "Library %s does not exist, create it? ",
                     token1);
                 char *s = PL()->EditPrompt(buf, "y");
@@ -962,7 +958,7 @@ SaveHlpr::interpret_response(const char *resp, char **ppath, char **pcname)
             else if (lstring::strdirsep(tok1))
                 // Looks like a file path, must be native.
                 ft = Fnative;
-            else if (is_oa_lib(tok1, false))
+            else if (is_oa_lib(tok1))
                 // Match to existing OA library.
                 ft = Foa;
             else if (cbin.fileType() == Foa)
@@ -1199,7 +1195,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                     Log()->ErrorLog(save_file, Errs()->get_error());
                 ret = false;
             }
-            else if (!is_oa_lib(libname, silent_errors)) {
+            else if (!is_oa_lib(libname)) {
                 Errs()->add_error("Can't save %s, unknown library %s.",
                     Tstring(cbin.cellname()), libname);
                 if (!silent_errors)
@@ -1237,7 +1233,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
                         Log()->ErrorLog(save_file, Errs()->get_error());
                     ret = false;
                 }
-                else if (!is_oa_lib(libname, silent_errors)) {
+                else if (!is_oa_lib(libname)) {
                     Errs()->add_error(
                         "Can't save %s hierarchy, unknown library %s.",
                         Tstring(cbin.cellname()), libname);
@@ -1262,7 +1258,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
             else {
                 // Save cell in library named in token1.
 
-                if (!is_oa_lib(token1, silent_errors)) {
+                if (!is_oa_lib(token1)) {
                     Errs()->add_error("Can't save %s, unknown library %s.",
                         Tstring(cbin.cellname()), token1);
                     if (!silent_errors)
@@ -1288,7 +1284,7 @@ SaveHlpr::save_cell_as(CDcellName cname, FileType ft, const char *token1,
             if (token2[0] == '*' && token2[1] == 0) {
                 // Save cell hier. in library named in token1.
 
-                if (!is_oa_lib(token1, silent_errors)) {
+                if (!is_oa_lib(token1)) {
                     Errs()->add_error(
                         "Can't save %s hierarchy, unknown library %s.",
                         Tstring(cbin.cellname()), token1);

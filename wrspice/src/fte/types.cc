@@ -45,9 +45,10 @@ Authors: 1986 Wayne A. Christopher
          1993 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
+#include "simulator.h"
 #include "commands.h"
-#include "ftedata.h"
+#include "datavec.h"
+#include "output.h"
 #include "ttyio.h"
 #include "errors.h"
 #include "wlist.h"
@@ -199,7 +200,7 @@ CommandTab::com_settype(wordlist *wl)
     }
     for (wl = wl->wl_next; wl; wl = wl->wl_next) {
         // We only want permanent vectors.
-        sDataVec *v = Sp.VecGet(wl->wl_word, 0);
+        sDataVec *v = OP.vecGet(wl->wl_word, 0);
         if (!v || !(v->flags() & VF_PERMANENT))
             Sp.Error(E_NOVEC, 0, wl->wl_word);
         else {
@@ -534,7 +535,7 @@ sUnits::set(const char *string)
     char buf[128];
     strcpy(buf, string);
     char *s1 = buf;
-    char *s2 = strchr(buf, '/');
+    char *s2 = strchr(buf, Sp.UnitsSepchar());
     if (s2)
         *s2++ = 0;
     char ab[8];
@@ -684,7 +685,7 @@ sUnits::unitstr()
             isdenom = true;
     }
     if (isdenom) {
-        *s++ = '/';
+        *s++ = Sp.UnitsSepchar();
         *s = 0;
         for (i = 1; i < NUM_BTYPES; i++) {
             if (xx[i] < 0) {
@@ -704,9 +705,9 @@ sUnits::unitstr()
         }
     }
     if (*buf) {
-        if (lstring::eq(buf, "/S"))
+        if (buf[0] == Sp.UnitsSepchar() && buf[1] == 'S')
             return (lstring::copy("Hz"));
-        if (lstring::eq(buf, "/O"))
+        if (buf[0] == Sp.UnitsSepchar() && buf[1] == 'O')
             return (lstring::copy("Si"));
         return (lstring::copy(buf));
     }

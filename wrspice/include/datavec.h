@@ -45,8 +45,8 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifndef FTEDATA_H
-#define FTEDATA_H
+#ifndef DATAVEC_H
+#define DATAVEC_H
 
 #include <math.h>
 #include "ifdata.h"
@@ -206,6 +206,8 @@ struct sUnits
     void operator/(sUnits &u)
         { for (int i = 0; i < 8; i++)
             units[i] -= u.units[i]; }
+
+    // Note that "no units" is equivalent to any units.
     bool operator==(sUnits &u)
         { if (isnotype() || u.isnotype()) return (true);
           for (int i = 0; i < 8; i++)
@@ -223,7 +225,6 @@ private:
 
     char units[8];
 };
-
 
 // Structure:  sDataVec
 //
@@ -272,8 +273,76 @@ enum PlotType
     PLOT_POINT
 };
 
+
 struct sDataVec
 {
+    // Temp storage of vector data for scalarizing.
+    //
+    struct scalData
+    {
+        scalData(sDataVec *v)
+            {
+                if (v) {
+                    length = v->length();
+                    rlength = v->allocated();
+                    numdims = v->numdims();
+                    for (int i = 0; i < MAXDIMS; i++)
+                        dims[i] = v->dims(i);
+                    real = v->realval(0);
+                    imag = v->imagval(0);
+
+                }
+                else {
+                    length = 0;
+                    rlength = 0;
+                    numdims = 0;
+                    memset(dims, 0, MAXDIMS*sizeof(int));
+                    real = 0.0;
+                    imag = 0.0;
+                }
+            }
+
+        int length;
+        int rlength;
+        int numdims;
+        int dims[MAXDIMS];
+        double real;
+        double imag;
+    };
+
+    // Temp storage of vector data for segmentizing.
+    //
+    struct segmData
+    {
+        segmData(sDataVec *v)
+            {
+                if (v) {
+                    length = v->length();
+                    rlength = v->allocated();
+                    numdims = v->numdims();
+                    for (int i = 0; i < MAXDIMS; i++)
+                        dims[i] = v->dims(i);
+                    if (v->isreal())
+                        tdata.real = v->realvec();
+                    else
+                        tdata.comp = v->compvec();
+                }
+                else {
+                    length = 0;
+                    rlength = 0;
+                    numdims = 0;
+                    memset(dims, 0, MAXDIMS*sizeof(int));
+                    tdata.real = 0;
+                }
+            }
+
+        int length;
+        int rlength;
+        int numdims;
+        int dims[MAXDIMS];
+        union { double *real; complex *comp; } tdata;
+    };
+
     sDataVec(int t = UU_NOTYPE)
         {
             v_data.real = 0;
@@ -287,6 +356,8 @@ struct sDataVec
             v_next = 0;
             v_link2 = 0;
             v_defcolor = 0;
+            v_scaldata = 0;
+            v_segmdata = 0;
 
             v_flags = 0;
             v_length = 0;
@@ -312,6 +383,8 @@ struct sDataVec
             v_next = 0;
             v_link2 = 0;
             v_defcolor = 0;
+            v_scaldata = 0;
+            v_segmdata = 0;
 
             v_flags = 0;
             v_length = 0;
@@ -348,6 +421,8 @@ struct sDataVec
             v_next = 0;
             v_link2 = 0;
             v_defcolor = 0;
+            v_scaldata = 0;
+            v_segmdata = 0;
 
             v_flags = type;
             v_length = v_rlength = len;
@@ -366,6 +441,10 @@ struct sDataVec
     sDataVec *pad(int, bool*);
     void newtemp(sPlot* = 0);
     void newperm(sPlot* = 0);
+    void scalarize();
+    void unscalarize();
+    void segmentize();
+    void unsegmentize();
     sDataVec *copy();
     void copyto(sDataVec*, int, int, int);
     void alloc(bool, int);
@@ -541,6 +620,50 @@ struct sDataVec
             v_data.comp = c;
         }
 
+    bool scalarized()           { return (v_scaldata != 0); }
+    bool segmentized()          { return (v_segmdata != 0); }
+
+    // Length within  smallest block if multi-dimensional.
+    //
+    int unscalarized_length()
+        {
+            if (v_scaldata) {
+                int l = v_scaldata->length;
+                if (v_scaldata->numdims > 1)
+                    l %= v_scaldata->dims[1];
+                return (l);
+            }
+            int l = v_length;
+            if (v_numdims > 1)
+                l %= v_dims[1];
+            return (l);
+        }
+
+    double unscalarized_prev_real()
+        {
+            if (v_scaldata) {
+                int n = v_scaldata->length - 2;
+                return (n > 0 ? realval(n) : v_scaldata->real);
+            }
+            return (realval(v_length - 2));
+        }
+
+    double unscalarized_prev_imag()
+        {
+            if (v_scaldata) {
+                int n = v_scaldata->length - 2;
+                return (n > 0 ? imagval(n) : v_scaldata->imag);
+            }
+            return (imagval(v_length - 2));
+        }
+
+    double unscalarized_first()
+        {
+            if (v_scaldata)
+                return (v_scaldata->real);
+            return (realval(0));
+        }
+
     double absval(int i)
         {
             return (isreal() ? fabs(v_data.real[i]) :
@@ -642,6 +765,8 @@ private:
     sDataVec *v_next;       // Link for list of plot vectors.
     sDvList *v_link2;       // Extra link for things like print.
     char *v_defcolor;       // The name of a color to use.
+    scalData *v_scaldata;
+    segmData *v_segmdata;
 
     int v_flags;            // Flags (a combination of VF_*).
     int v_length;           // Length of the vector.
@@ -924,8 +1049,6 @@ struct sPlot
 
     wordlist *notes()                       const { return (pl_notes); }
 
-    static sPlot *constants()               { return (pl_constants); }
-
 private:
 
     char *pl_title;         // The title card.
@@ -952,15 +1075,10 @@ private:
     int pl_ndims;           // Number of dimensions.
     bool pl_active;         // True when the plot is being used.
     bool pl_written;        // Some or all of the vecs have been saved.
-
-    static sPlot *pl_constants;  // Pointer to the "constants" plot.
 };
 
 // fourier.cc
 extern double *FFTwindow(int, double*, double);
-
-// vectors.cc
-extern sPlot *constantplot;
 
 #endif // FTEDATA_H
 

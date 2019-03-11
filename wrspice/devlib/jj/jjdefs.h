@@ -271,6 +271,7 @@ struct sJJmodel : sGENmodel
     double JJdelv;
     double JJcriti;
     double JJcap;
+    double JJcpic;
     double JJcmu;
     double JJvm;
     double JJr0;
@@ -305,6 +306,7 @@ struct sJJmodel : sGENmodel
     unsigned JJnoiseGiven : 1;
     unsigned JJcritiGiven : 1;
     unsigned JJcapGiven : 1;
+    unsigned JJcpicGiven : 1;
     unsigned JJcmuGiven : 1;
     unsigned JJicfGiven : 1;
     unsigned JJvShuntGiven : 1;
@@ -374,6 +376,7 @@ enum {
     JJ_MOD_DV,
     JJ_MOD_CRT,
     JJ_MOD_CAP,
+    JJ_MOD_CPIC,
     JJ_MOD_CMU,
     JJ_MOD_VM,
     JJ_MOD_R0,

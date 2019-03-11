@@ -146,8 +146,9 @@ private:
     sp_nmlist_t *def_node_term_list(CDs*);
     stringlist *list_def_node_names();
     sp_line_t *add_mutual(CDs*, bool, stringlist**, int);
-    sp_line_t *add_dotsave(const char*, char**);
+    sp_line_t *add_dot_save(const char*, char**);
     sp_line_t *add_dot_global();
+    sp_line_t *add_dot_include();
     sp_line_t *assert_lib_properties(sp_line_t*);
     void add_global_node(sLstr*, int, CDc*, const sp_nmlist_t*);
     sp_line_t *subckt_line(CDs*);

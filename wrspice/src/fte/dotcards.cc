@@ -45,9 +45,10 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#include "frontend.h"
-#include "ftemeas.h"
-#include "outplot.h"
+#include "simulator.h"
+#include "graph.h"
+#include "runop.h"
+#include "output.h"
 #include "cshell.h"
 #include "commands.h"
 #include "inpline.h"
@@ -213,7 +214,7 @@ IFsimulator::RunBatch()
 {
     if (ft_flags[FT_RAWFGIVEN]) {
         GetDotSaves();
-        Run(ft_outfile.outFile());
+        Run(OP.getOutDesc()->outFile());
     }
     else {
         SaveDotArgs();
@@ -231,7 +232,7 @@ IFsimulator::RunBatch()
         // Circuit name/Date/Temperature.
         TTY.printf("%s: %s\nDate: %s\n\n", ft_curckt->name(),
             ft_curckt->descr(), datestring());
-        sDataVec *dv = VecGet("temper", ft_curckt->runckt(), true);
+        sDataVec *dv = OP.vecGet("temper", ft_curckt->runckt(), true);
         if (dv)
             TTY.printf("Temperature: %.3fC\n", dv->realval(0));
         TTY.printf("\n");
@@ -354,8 +355,8 @@ IFsimulator::RunBatch()
         }
     }
 
-    for (sMeas *m = ft_curckt->measures(); m; m = m->next) {
-        char *s = m->print();
+    for (sRunopMeas *m = ft_curckt->measures(); m; m = m->next()) {
+        char *s = m->print_meas();
         TTY.printf(s);
         delete [] s;
     }
@@ -389,8 +390,8 @@ IFsimulator::RunBatch()
 wordlist *
 IFsimulator::ExtractPlotCmd(int nth, const char *an)
 {
-    if (!an && ft_plot_cur)
-        an = ft_plot_cur->type_name();
+    if (!an && OP.curPlot())
+        an = OP.curPlot()->type_name();
     if (!an)
         return (0);
     an = PlotAbbrev(an);
@@ -426,8 +427,8 @@ IFsimulator::ExtractPlotCmd(int nth, const char *an)
 wordlist *
 IFsimulator::ExtractPrintCmd(int nth)
 {
-    if (ft_plot_cur && ft_curckt) {
-        const char *an = ft_plot_cur->type_name();
+    if (OP.curPlot() && ft_curckt) {
+        const char *an = OP.curPlot()->type_name();
         an = PlotAbbrev(an);
         wordlist *coms = ft_curckt->commands();
         while (coms) {
@@ -538,9 +539,9 @@ namespace {
 
     bool setcplot(const char *name)
     {
-        for (sPlot *pl = Sp.PlotList(); pl; pl = pl->next_plot()) {
+        for (sPlot *pl = OP.plotList(); pl; pl = pl->next_plot()) {
             if (lstring::ciprefix(name, pl->type_name())) {
-                Sp.SetCurPlot(pl);
+                OP.setCurPlot(pl);
                 return (true);
             }
         }

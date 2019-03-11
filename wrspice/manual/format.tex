@@ -1,6 +1,6 @@
 \chapter{{\WRspice} Input Format}
 
-% spInput.hlp:spinput 121011
+% spInput.hlp:spinput 040619
 
 %------------------------------------------------------------------------------
 \section{Input Format}
@@ -99,7 +99,6 @@ The ground node must be named ``{\vt 0}'' (zero), however.  Note that
 trailing or embedded punctuation (but this is generally not
 recommended).
 
-
 %----------------------------------------------------
 \subsection{Case Sensitivity}
 \index{case sensitivity}
@@ -155,38 +154,55 @@ scale factors.  All of this is case-insensitive.
 \vt n & 1e-9 \\
 \vt p & 1e-12 \\
 \vt f & 1e-15 \\
+\vt a & 1e-18 \\
 \end{tabular}
 \end{quote}
 
+
+%----------------------------------------------------
+\subsection{Units}
+\index{units field}
+\label{units}
+
 Immediately following the number and multiplier is an optional units
-string.  The units string is composed of the separation character
+string.  The units string is composed of the concatenation character
 `{\vt \#}', unit specification abbreviations as listed with the {\cb
-settype} command (see \ref{settype}), and digit exponents.  Giving the
-{\cb settype} command without arguments will list the unit
-abbreviations known to {\WRspice}.
+settype} command (see \ref{settype}), digit exponents, and possibly a
+separation character `{\vt \_}' (underscore).  Giving the {\cb settype}
+command without arguments will list the unit abbreviations known to
+{\WRspice}.
 
-The units string must start with a letter, or the separation character
-followed by a letter, or two separation characters followed by a
-letter.  The string consists of a sequence of abbreviations, each
-optionally followed by a digit exponent.  If the separation character
-appears within the string, the abbreviations that follow provide
-denominator units.  The separation character in this context is
-logically equivalent to `{\vt /}'.
+The units string must start with a letter, or the concatenation or
+separation character followed by a letter, or two concatenation
+characters followed by a letter.  The string consists of a sequence of
+abbreviations, each optionally followed by a digit exponent.  If the
+concatenation character appears within the string, the abbreviations
+that follow provide denominator units.  The same applies for the
+separation character, only denominator units follow.  The
+concatenation or separation character in this context is logically
+equivalent to `{\vt /}'.
 
-The initial separation character is almost always optional.  It is
+The initial concatenation character is almost always optional.  It is
 needed when there would be possible misinterpretation, for example
 {\vt 1.0F} is dimensionless 1e-15, whereas {\vt 1.0\#F} is 1.0 farads. 
-If the initial separation character is immedaiately followed by
-another separation character, then all dimensions that follow are
+If the initial concatenation character is immedaiately followed by
+another concatenation character, then all dimensions that follow are
 denominator units.
 
 Some Examples:
 
 \begin{tabular}{ll}
 \vt 1.0\#F\#M2 & 1 farad per square meter\\
+\vt 1.0\#F\_M2 & 1 farad per square meter\\
+\vt 1.0F\_M2 &   1e-15 per square meter\\
 \vt 1.0\#\#S &   1 Hz\\
-\vt 1.2uA\#S &  1.2 microamps per second\\
-\vt 1.2uVS &   1.2 microvolt-seconds\\
+\vt 1.0\_S &     1 Hz\\
+\vt 1.2\#uA\#S & 1.2 microamps per second\\
+\vt 1.2\#uA\_S & 1.2 microamps per second\\
+\vt 1.2uA\_S &   1.2 microamps per second\\
+\vt 1.2\#A\_S &  1.2 amps per second\\
+\vt 1.2A\_S &    1.2 aHz  (attohertz)\\
+\vt 1.2uVS &     1.2 microvolt-seconds\\
 \end{tabular}
 
 All multipliers and unit abbreviations are case-insensitive, but by
@@ -201,10 +217,12 @@ which will appear in output, and will propagate through calculations.
 Thus, for example, a number specified in volts, divided by a number
 specified in ohms, would yield a number whose specification is amps.
 
-It is possible to use a different character as the separator.  If the
+It is possible to use a different concatenation character.  If the
 variable {\et units\_catchar} is set to a string consisting of a
 single punctuation character, then this character becomes the
-separation character.
+xoncatenation character.  Similarly, if the variable {\et
+units\_sepchar} is set to a string consisting of a single punctuation
+character, then this character becomes the separation character.
 
 
 %------------------------------------------------------------------------------
@@ -2816,286 +2834,52 @@ effectively sets the {\et width} variable.
 
 
 %------------------------------------------------------------------------------
-\section{Parameter Measurement}
+% spInput.hlp:tests 022519
+\section{Parameter Measurement and Testing}
 
-% spInput.hlp:measure 092611
-
-{\WRspice} input files may contain {\vt .measure} statements.  These
-statements allow certain types of measurements to be performed during
-a simulation, either at a selected point or over a selected interval. 
-The syntax is similar to the {\vt .measure} statement in HSPICE.
+{\WRspice} has provision for parameter measurement during a
+simulation, and for stopping the run on a particular event or
+condition.  Internally, these are implemented from the same components
+and have similar syntax and features.
 
 %----------------------------------------------------
 \subsection{{\vt .measure} Line}
-\index{.measure line}
-\index{measurements}
-
-\spgen{
-    .measure dc|ac|tran {\it result} {\it interval} |
-    {\it point} [{\it measurements}]\\
-    .measure dc|ac|tran {\it result} param={\it expression}
+\index{/measure line}
+\spgen {
+    measure {\it analysis} {\it resultname} {\it point} | {\it interval}
+    [{\it measurements\/}] [{\it postcmds\/}]\\
+    measure {\it analysis} {\it resultname} param={\it expression}
+    [{\it postcmds\/}]
 }
 
-The {\vt dc|ac|tran} specifies the analysis type for which the
-measurement is active.  The {\it result} is a token, starting with a
-letter, which will be used to uniquely identify the results of the
-measurement.  A vector with this name will be added to the current
-plot, if the measurement is successful.
+The {\vt .measure} line allows one to identify a measurement point or
+interval, and to evaluate an expression at that point, or call a
+number of measurement primitives that apply during the interval, such
+as rise time or pulse width.  There is also a {\cb measure} command
+that uses the same syntax, but will apply to all circuits when active. 
+See the description of that command for information about syntax and
+usage.
 
-The rest of the line can have various formats.  The next part of the
-statement is either an {\it interval} specification, or a single {\it
-point} specification.
+%----------------------------------------------------
+\subsection{{\vt .stop} Line}
+\index{/stop line}
+\spgen {
+    {\vt .stop} {\it analysis} {\it point} $|$ {\it interval}
+     [{\it postcmds\/}]
+}
 
-There is a second form available, as shown above.  In this case, after
-all {\it interval} and {\it point} measurements have been performed,
-the {\it expression} will be evaluated and the result saved in {\it
-result}.  The {\it expression} can reference other measurement results
-in addition to the usual vectors and functions provided by the system. 
-These measurement lines are evaluated in the order found in the input.
-
-In {\vt .measure} lines, single-quote marks or parentheses can be used
-to delimit complicated expressions.  The usual single-quoted
-expression expansion performed when input is sourced is {\bf not}
-applied to {\vt .measure}> lines.  Instead, internally, the single
-quotes are replaced by parentheses, preventing expression expansion
-but allowing parameter substitution, which is performed at the same
-time.
-
-Vector names found in {\vt .measure} lines are added to the internal
-save list, guaranteeing that the necessary data will be available when
-needed, whether or not the vector has been mentioned in a {\vt .save}
-line.
-
-\subsubsection{Point and Interval Specification}
-\index{measurement interval}
-
-The {\it interval} begins with the ``trigger'' and ends with the
-``target''.  Measurement will apply during this interval.  If no
-target is given, the trigger sets the ``point'', where measurement
-will be performed.  The trigger and target are independently specified
-as follows:
-
-form 1:
-\begin{quote}\vt
-    trig|targ at={\it value}
-\end{quote}
-
-form 2:
-\begin{quote}\vt
-    trig|targ {\it variable} [val=]{\it value}
-        [td={\it delay}] [cross={\it crosses}]
-        [rise={\it rises}] [fall={\it falls}]
-\end{quote}
-
-form 3:
-\begin{quote}\vt
-    trig|targ when {\it expr1\/}={\it expr2} [td={\it delay}]
-        [cross={\it crosses}] [rise={\it rises}] [fall={\it falls}]
-\end{quote}
-
-Separate specifications for {\vt trig}/{\vt targ} are used to specify
-the boundaries of the measurement interval in the {\vt .measure}
-statement.
-
-Form 1 is straightforward; the interval starts ({\vt trig}) or ends
-({\vt targ}) at {\it value}.  {\it Value} must be within the
-simulation range of the scale variable (e.g., time in transient
-analysis).
-
-The same effect can be achieved with:
-\begin{quote}\vt
-    from={\it value} to={\it value}
-\end{quote}
-The {\vt from} keyword is equivalent to ``{\vt trig at}'', the
-{\vt to} keyword is equivalent to ``{\vt targ at}''.
-
-If {\vt at} appears without {\vt trig} or {\vt targ}, it is
-interpreted as ``{\vt trig at}''.
-
-Form 2 allows the interval boundaries to be referenced to times when a
-variable crosses a threshold.  The {\it variable} can be any vector
-whose value is available during simulation.  The {\it value} is a
-constant which is used to measure crossing events.  The {\vt val=}
-which precedes the {\it value} is optional.  At least one of the {\vt
-rise/fall/cross} fields should be set.  Their values are integers
-which represent the variable crossing the threshold a number of times. 
-The {\vt rise} indicates the variable rising through the threshold,
-{\vt fall} indicates the variable decreasing from above to below the
-threshold, and {\vt cross} indicates {\vt rises + falls}.  The
-interval boundary is set when the specified number of transitions is
-reached.
-
-If the delay is specified, transition counting starts after the
-specified delay.
-
-\spexampo{trig v(2) 2.5 td=0.1ns rise=2}
-
-This indicates that the interval begins at the second time {\vt v(2)} rises
-above 2.5V after 0.1ns.
-
-The third form is similar to the second form, except that crossings
-are defined when {\it expr1 = expr2}.  These are expressions, which
-must be enclosed in parentheses if they contain white space or commas. 
-A rise is defined as {\it expr1} going from less than to greater than
-{\it expr2}.
-
-A point can be specified with a {\vt trig} or {\vt from}
-specification as for an interval.  One can also use the following
-form:
-\begin{quote}\vt
-       when {\it expr1=expr2} [td={\it delay}]
-       [cross={\it crosses}] [rise={\it rises}] [fall={\it falls}]
-\end{quote}
-
-This works exactly as in ``{\vt trig when}''.
-
-\subsubsection{Measurements}
-\index{measurement types}
-The following measurements are available when an interval has been
-specified.
-
-\begin{description}
-\item{{\vt min} {\it expr}}\\
-Find the minimum value of {\it expr\/}.
-\item{{\vt max} {\it expr}}\\
-Find the maximum value of {\it expr\/}.
-\item{{\vt pp} {\it expr}}\\
-Find the (maximum - minimum) value of {\it expr\/}.
-\item{{\vt avg} {\it expr}}\\
-Compute the average of {\it expr\/}.
-\item{{\vt rms} {\it expr}}\\
-Compute the rms value of {\it expr\/}.
-\item{{\vt pw} {\it expr}}\\
-This will measure the full-width half-maximum of a pulse contained in
-the interval.  The baseline is taken as the initial or final value
-with the smallest difference from the peak value.  The algorithm will
-measure the larger of a negative going or positive going pulse.
-\item{{\vt rt} {\it expr}}\\
-This will measure the 10-90 percent rise or fall time of the edge
-contained in the interval.  The reference start and final values are
-the values at the ends of the interval.
-\end{description}
-
-When a point has been specified, the only measurement form
-available is
-
-\begin{description}
-\item{{\vt find} {\it expr}}\\
-Evaluate {\it expr} at point.
-\end{description}
-
-A {\vt .measure} statement can contain any number of measurements,
-including no measurements.  If no measurement is specified, the vector
-produced contains only zeros, however the scale vector contains the
-start and stop values, which may be the only result needed.  The
-created vector, which is added to the current plot, will be of length
-equal to the number of measurements, with the results placed in the
-vector in order.
-
-The measurement scale point(s) in {\vt .measure} statements are also
-saved in a vector, which is the scale for the result vector.  If the
-measurement name is ``{\vt result}'', then the scale vector is named
-``{\vt result\_scale}''.  The scale contains one or two values,
-depending on whether it is a point or interval measurement.
-
-By default, nothing is printed on-screen for a {\vt .measure} line
-during interactive simulation.  If the keyword {\vt print} appears in
-the {\vt .measure} line, the results will be printed on the standard
-output.  A more concise format can be obtained from the alternative
-keyword {\vt print\_terse}.  The result vectors are created in all
-cases.
-
-If the keyword {\vt stop} appears in a {\vt .measure} line, the
-analysis will be paused when {\it all} measurements are complete. 
-Thus if the deck contains several {\vt .measure} lines and {\vt stop}
-is given in at least one, the analysis will pause when all of the
-measurements are complete, not just the one containing {\vt stop}. 
-The analysis can then be resumed with the {\cb resume} command, or
-reset with the {\cb reset} command.
-
-When a {\vt .measure} is included in an iterative analysis (Monte
-Carlo, loop, etc.), data are saved as follows.  Before each iteration,
-the previous result vector and its scale are saved to the end of a
-``history'' vector and scale, and are then deleted.  The result vector
-and scale are recreated when the measurement is completed during the
-iteration.  Thus, at the end of the analysis, for a measurement named
-``example'', one would have the following vectors:
-
-\begin{tabular}{|l|l|}\hline
-\vt example & the result from the final trial\\ \hline
-\vt example\_scale & the measurement interval or point in the last
- trial\\ \hline
-\vt example\_hist & results from the prior trials\\ \hline
-\vt example\_hist\_scale & intervals from the prior trials\\ \hline
-\end{tabular}
-
-Thus, during each trial, the result vector will have the same
-properties as in a standard run.  It can be used in the {\vt .control}
-block of a Monte Carlo or operating range file (recall that {\vt
-\$?}{\it vector} can be used to query existence, and that if there is
-no {\vt checkPNTS} vector defined, the {\vt .control} block is called
-once at the end of each trial).
-
-\index{measurements, chained}
-Multiple {\vt .measure} lines can be ``chained'' in the following
-manner.  The vector name following the {\vt from}, {\vt to}, {\vt
-trig}, or {\vt targ} keywords can be the name of another measure.  In
-this case, the effective start time is the measure time of the
-referenced measure.  The measure time is the end of the interval or
-the measure point.  The {\vt td}, {\vt rise}, and other keywords can
-be used in the referencing measure.  The {\vt td} will be added to the
-imported time, and the other keywords operate in the normal way.  If
-there are no keywords other than {\vt td} specified, the time is the
-delay time plus the imported time.
-
-Example:
-\begin{quote}\vt
-    .measure tran t1 trig v(5) val=.4m rise=3\\
-    .measure tran t2 trig v(5) val=.4m rise=4\\
-    .measure tran pw trig t1 td=20p targ t2 td=20p pw v(5) max v(5)\\
-\end{quote}
-
-In this case, the measures {\vt t1} and {\vt t2} ``frame'' a period
-of an (assumed) repeating signal v(5).  Note that no actual
-measurement is performed for these lines.  Their purpose is to be
-referenced in the third line, which takes as its interval the {\vt
-t1}--{\vt t2} interval delayed by 20 pS, and measures the pulse
-width and peak value.
-
-\index{measurements, source reference}
-It is possible to reference {\vt .measure} results in sources.  The
-referencing token has the same form as a circuit variable, with an
-optional index, i.e.
-\begin{quote}\vt
-    @{\it result\/}[{\it index\/}]
-\end{quote}
-where the {\it index\/}, if used, is an integer that references a
-specific component of the result (0-based).  The value is always zero
-for timepoints before the measurement has been performed, and a
-constant value afterward.
-
-Example:
-\begin{quote}\vt
-    .measure tran peak from=50n to=150n max v(5)\\
-    .measure tran stuff trig v(4) val=4.5 rise=1 targ v(4) val=4.5 fall=2\\
-    + min v(4) max v(4) pp v(4) avg v(4) rms v(4) print\\
-    vxx 1 0 @peak\\
-    vyy 2 0 @stuff[2]\\
-\end{quote}
-
-In this example, during transient analysis, {\vt vxx} is zero until
-150 nS, where the measurement takes place, at which point it jumps to
-the value measured.  Likewise, {\vt vyy} is zero until the
-measurement, at which point it jumps to the third component (``{\vt pp
-v(4)}'') result.  The resulting voltages can be used elsewhere in the
-circuit.  Note that we have two implementations of a behavioral peak
-detector.
+The {\vt .stop} line allows the simulation to pause on a specified
+condition.  These lines may be useful as sanity checks that will
+terminate a simulation and alert the user if the simulation is
+diverging from expected behavior.  There is also a {\cb stop} runop
+command that uses the same syntax.  See the description of that
+command for information about syntax and usage.
 
 
 %------------------------------------------------------------------------------
 \section{Control Script Execution}
 
-% spInput.hlp:execblock 072716
+% spInput.hlp:execblock 030519
 
 {\WRspice} includes a script parsing and execution facility, which
 uses a syntax similar to that of the UNIX C-shell and will be
@@ -3104,8 +2888,8 @@ executed by this facility can be included in circuit files through use
 of the {\vt .exec}, {\vt .control}, and {\vt .postrun} tokens.  These
 statements are enclosed in a block beginning with {\vt .exec}, {\tt
 .control}, or {\vt .postrun} and ending with {\tt .endc}.  The {\vt
-.exec}, {\tt.control}, {\vt .postrun}, and {\tt .endc} lines contain
-only the keyword.
+.exec}, {\tt.control}, and {\vt .postrun} keywords are followed by an
+optional block name, and {\tt .endc} lines contain only the keyword.
 
 %----------------------------------------------------
 \subsection{{\vt .exec}, {\vt .control}, {\vt .postrun}, and {\vt .endc} Lines}
@@ -3115,15 +2899,15 @@ only the keyword.
 \index{.endc line}
 \index{control blocks}
 \label{control}
-\spgen{.exec\\
+\spgen{.exec [{\it blockname\/}]\\
 {\it shell commands ...}\\
 .endc\\
 \\
-.control\\
+.control [{\it blockname\/}]\\
 {\it shell commands ...}\\
 .endc\\
 \\
-.postrun\\
+.postrun [{\it blockname\/}]\\
 {\it shell commands ...}\\
 .endc}
 
@@ -3136,10 +2920,27 @@ let maxv = v(2)*v(19)\\
 .endc}
 
 The {\it shell commands} are any commands which can be interpreted by
-the {\WRspice} shell.  The difference between {\vt .exec} and {\vt
+the {\WRspice} shell.
+
+If a {\it blockname} is given, the script lines are parsed, and the
+executable object saved as a codeblock under {\it blockname\/}.  The
+block can be executed by invoking the {\it blockname} from the command
+line or in a script or codeblock.
+
+In this usage, there is no difference between the {\vt .exec}, {\vt
+.control}, and {\vt .postrun} keywords, and there is no connection of
+the block to any other content in tne same file.  One file can be used
+to load any number of named codeblocks.  Blocks with an existing name
+will replace the existing content.
+
+If the block is unnamed, the difference between {\vt .exec} and {\vt
 .control} is that for {\tt .exec}, the commands are executed before
 the circuit is parsed, and for {\vt .control}, the commands are
-executed after the circuit is parsed.
+executed after the circuit is parsed, assuming that the file also
+contains a circuit description.  If not, there is again no real
+distinction, but unlike for named blocks, unnamed blocks will be
+executed when read.
+
 
 Commands in a {\vt .postrun} block are executed after every simulation
 that completes normally (i.e., without errors or interrupts).  This

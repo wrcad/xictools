@@ -1,6 +1,152 @@
+diff -ru ../KLU.orig/COLAMD/Source/colamd.c ./COLAMD/Source/colamd.c
+--- ../KLU.orig/COLAMD/Source/colamd.c	2014-03-21 12:13:37.000000000 -0700
++++ ./COLAMD/Source/colamd.c	2019-02-02 11:21:52.847927694 -0800
+@@ -914,7 +914,7 @@
+ 
+ PRIVATE void print_report
+ (
+-    char *method,
++    const char *method,
+     Int stats [COLAMD_STATS]
+ ) ;
+ 
+@@ -3171,7 +3171,7 @@
+ 
+ PRIVATE void print_report
+ (
+-    char *method,
++    const char *method,
+     Int stats [COLAMD_STATS]
+ )
+ {
+diff -ru ../KLU.orig/KLU/Include/klu.h ./KLU/Include/klu.h
+--- ../KLU.orig/KLU/Include/klu.h	2015-07-13 12:33:32.000000000 -0700
++++ ./KLU/Include/klu.h	2019-02-02 13:24:24.507552399 -0800
+@@ -310,6 +310,11 @@
+ klu_l_numeric *klu_zl_factor (SuiteSparse_long *, SuiteSparse_long *, double *,
+     klu_l_symbolic *, klu_l_common *) ;
+ 
++/* long doubles versions */
++klu_numeric *klu_ld_factor (int *, int *, long double *,
++    klu_symbolic *, klu_common *) ;
++klu_l_numeric *klu_ldl_factor (SuiteSparse_long *, SuiteSparse_long *,
++    long double *, klu_l_symbolic *, klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_solve: solves Ax=b using the Symbolic and Numeric objects */
+@@ -347,6 +352,10 @@
+ SuiteSparse_long klu_zl_solve (klu_l_symbolic *, klu_l_numeric *,
+     SuiteSparse_long, SuiteSparse_long, double *, klu_l_common *) ;
+ 
++int klu_ld_solve (klu_symbolic *, klu_numeric *,
++    int, int, long double *, klu_common *) ;
++SuiteSparse_long klu_ldl_solve (klu_l_symbolic *, klu_l_numeric *,
++    SuiteSparse_long, SuiteSparse_long, long double *, klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_tsolve: solves A'x=b using the Symbolic and Numeric objects */
+@@ -387,6 +396,10 @@
+     SuiteSparse_long, SuiteSparse_long, double *, SuiteSparse_long,
+     klu_l_common * ) ;
+ 
++int klu_ld_tsolve (klu_symbolic *, klu_numeric *,
++    int, int, long double *, klu_common *) ;
++SuiteSparse_long klu_ldl_tsolve (klu_l_symbolic *, klu_l_numeric *,
++    SuiteSparse_long, SuiteSparse_long, long double *, klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_refactor: refactorizes matrix with same ordering as klu_factor */
+@@ -422,6 +435,10 @@
+ SuiteSparse_long klu_zl_refactor (SuiteSparse_long *, SuiteSparse_long *,
+     double *, klu_l_symbolic *, klu_l_numeric *, klu_l_common *) ;
+ 
++int klu_ld_refactor (int *, int *,
++    long double *, klu_symbolic *, klu_numeric *, klu_common *) ;
++SuiteSparse_long klu_ldl_refactor (SuiteSparse_long *, SuiteSparse_long *,
++    long double *, klu_l_symbolic *, klu_l_numeric *, klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_free_symbolic: destroys the Symbolic object */
+@@ -458,6 +475,8 @@
+ SuiteSparse_long klu_l_free_numeric (klu_l_numeric **, klu_l_common *) ;
+ SuiteSparse_long klu_zl_free_numeric (klu_l_numeric **, klu_l_common *) ;
+ 
++int klu_ld_free_numeric (klu_numeric **, klu_common *) ;
++SuiteSparse_long klu_ldl_free_numeric (klu_l_numeric **, klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_sort: sorts the columns of the LU factorization */
+@@ -488,6 +507,10 @@
+ SuiteSparse_long klu_zl_sort (klu_l_symbolic *, klu_l_numeric *,
+     klu_l_common *) ;
+ 
++int klu_ld_sort (klu_symbolic *, klu_numeric *,
++    klu_common *) ;
++SuiteSparse_long klu_ldl_sort (klu_l_symbolic *, klu_l_numeric *,
++    klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_flops: determines # of flops performed in numeric factorzation */
+@@ -516,6 +539,10 @@
+ SuiteSparse_long klu_zl_flops (klu_l_symbolic *, klu_l_numeric *,
+     klu_l_common *) ;
+ 
++int klu_ld_flops (klu_symbolic *, klu_numeric *,
++    klu_common *) ;
++SuiteSparse_long klu_ldl_flops (klu_l_symbolic *, klu_l_numeric *,
++    klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_rgrowth : compute the reciprocal pivot growth */
+@@ -560,6 +587,10 @@
+ SuiteSparse_long klu_zl_rgrowth (SuiteSparse_long *, SuiteSparse_long *,
+     double *, klu_l_symbolic *, klu_l_numeric *, klu_l_common *) ;
+ 
++int klu_ld_rgrowth (int *, int *,
++    long double *, klu_symbolic *, klu_numeric *, klu_common *) ;
++SuiteSparse_long klu_ldl_rgrowth (SuiteSparse_long *, SuiteSparse_long *,
++    long double *, klu_l_symbolic *, klu_l_numeric *, klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_condest */
+@@ -593,6 +624,10 @@
+ SuiteSparse_long klu_zl_condest (SuiteSparse_long *, double *, klu_l_symbolic *,
+     klu_l_numeric *, klu_l_common *) ;
+ 
++int klu_ld_condest (int *, long double *, klu_symbolic *,
++    klu_numeric *, klu_common *) ;
++SuiteSparse_long klu_ldl_condest (SuiteSparse_long *, long double *,
++    klu_l_symbolic *, klu_l_numeric *, klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_rcond: compute min(abs(diag(U))) / max(abs(diag(U))) */
+@@ -618,6 +653,10 @@
+ SuiteSparse_long klu_zl_rcond (klu_l_symbolic *, klu_l_numeric *,
+     klu_l_common *) ;
+ 
++int klu_ld_rcond (klu_symbolic *, klu_numeric *,
++    klu_common *) ;
++SuiteSparse_long klu_ldl_rcond (klu_l_symbolic *, klu_l_numeric *,
++    klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_scale */
+@@ -661,6 +700,12 @@
+     SuiteSparse_long *, SuiteSparse_long *, double *,
+     double *, SuiteSparse_long *, klu_l_common *) ;
+ 
++int klu_ld_scale (int, int,
++    int *, int *, long double *,
++    double *, int *, klu_common *) ;
++SuiteSparse_long klu_ldl_scale (SuiteSparse_long, SuiteSparse_long,
++    SuiteSparse_long *, SuiteSparse_long *, long double *,
++    double *, SuiteSparse_long *, klu_l_common *) ;
+ 
+ /* -------------------------------------------------------------------------- */
+ /* klu_extract  */
 diff -ru ../KLU.orig/KLU/Include/klu_version.h ./KLU/Include/klu_version.h
---- ../KLU.orig/KLU/Include/klu_version.h	2012-05-27 03:47:35.000000000 -0700
-+++ ./KLU/Include/klu_version.h	2014-04-18 12:31:12.709612771 -0700
+--- ../KLU.orig/KLU/Include/klu_version.h	2014-03-21 12:21:26.000000000 -0700
++++ ./KLU/Include/klu_version.h	2019-02-02 10:41:26.511393107 -0800
 @@ -91,6 +91,34 @@
  
  #ifdef DLONG
@@ -97,8 +243,8 @@ diff -ru ../KLU.orig/KLU/Include/klu_version.h ./KLU/Include/klu_version.h
  #define SPLIT(s)                    (1)
  #define REAL(c)                     (c)
 diff -ru ../KLU.orig/KLU/Lib/Makefile ./KLU/Lib/Makefile
---- ../KLU.orig/KLU/Lib/Makefile	2012-05-26 16:41:38.000000000 -0700
-+++ ./KLU/Lib/Makefile	2014-04-18 13:20:16.713587110 -0700
+--- ../KLU.orig/KLU/Lib/Makefile	2014-03-21 12:21:27.000000000 -0700
++++ ./KLU/Lib/Makefile	2019-02-02 10:41:26.512393157 -0800
 @@ -24,6 +24,11 @@
      klu_d_scale.o klu_d_refactor.o \
      klu_d_tsolve.o klu_d_diagnostics.o klu_d_sort.o klu_d_extract.o
@@ -350,3 +496,145 @@ diff -ru ../KLU.orig/KLU/Lib/Makefile ./KLU/Lib/Makefile
  klu_zl_tsolve.o: ../Source/klu_tsolve.c
  	$(C) -c -DCOMPLEX -DDLONG $(I) $< -o $@
  
+diff -ru ../KLU.orig/KLU/Source/klu_diagnostics.c ./KLU/Source/klu_diagnostics.c
+--- ../KLU.orig/KLU/Source/klu_diagnostics.c	2014-03-22 07:00:12.000000000 -0700
++++ ./KLU/Source/klu_diagnostics.c	2019-02-02 13:29:31.437139554 -0800
+@@ -26,7 +26,11 @@
+ (
+     Int *Ap,
+     Int *Ai,
++#ifdef COMPLEX
+     double *Ax,
++#else
++    Entry *Ax,
++#endif
+     KLU_symbolic *Symbolic,
+     KLU_numeric *Numeric,
+     KLU_common *Common
+@@ -172,7 +176,11 @@
+ Int KLU_condest         /* return TRUE if successful, FALSE otherwise */
+ (
+     Int Ap [ ],
++#ifdef COMPLEX
+     double Ax [ ],
++#else
++    Entry Ax [ ],
++#endif
+     KLU_symbolic *Symbolic,
+     KLU_numeric *Numeric,
+     KLU_common *Common
+@@ -282,7 +290,11 @@
+             REAL (X [jmax]) = 1 ;
+         }
+ 
++#ifdef COMPLEX
+         KLU_solve (Symbolic, Numeric, n, 1, (double *) X, Common) ;
++#else
++        KLU_solve (Symbolic, Numeric, n, 1, X, Common) ;
++#endif
+         est_old = ainv_norm ;
+         ainv_norm = 0.0 ;
+ 
+@@ -383,7 +395,11 @@
+         }
+     }
+ 
++#ifdef COMPLEX
+     KLU_solve (Symbolic, Numeric, n, 1, (double *) X, Common) ;
++#else
++    KLU_solve (Symbolic, Numeric, n, 1, X, Common) ;
++#endif
+ 
+     est_new = 0.0 ;
+     for (j = 0 ; j < n ; j++)
+diff -ru ../KLU.orig/KLU/Source/klu_factor.c ./KLU/Source/klu_factor.c
+--- ../KLU.orig/KLU/Source/klu_factor.c	2014-03-22 07:01:05.000000000 -0700
++++ ./KLU/Source/klu_factor.c	2019-02-02 13:21:23.656368031 -0800
+@@ -107,7 +107,11 @@
+          * the scale factors are permuted according to the final pivot row
+          * permutation, so that Rs [k] is the scale factor for the kth row of
+          * A(p,q) where p and q are the final row and column permutations. */
++#ifdef COMPLEX
+         KLU_scale (scale, n, Ap, Ai, (double *) Ax, Rs, Pnum, Common) ;
++#else
++        KLU_scale (scale, n, Ap, Ai, Ax, Rs, Pnum, Common) ;
++#endif
+         if (Common->status < KLU_OK)
+         {
+             /* matrix is invalid */
+@@ -387,7 +391,11 @@
+     /* --- inputs --- */
+     Int Ap [ ],         /* size n+1, column pointers */
+     Int Ai [ ],         /* size nz, row indices */
++#ifdef COMPLEX
+     double Ax [ ],
++#else
++    Entry Ax [ ],
++#endif
+     KLU_symbolic *Symbolic,
+     /* -------------- */
+     KLU_common *Common
+diff -ru ../KLU.orig/KLU/Source/klu_refactor.c ./KLU/Source/klu_refactor.c
+--- ../KLU.orig/KLU/Source/klu_refactor.c	2014-03-22 07:04:31.000000000 -0700
++++ ./KLU/Source/klu_refactor.c	2019-02-02 13:06:24.414728797 -0800
+@@ -20,7 +20,11 @@
+     /* inputs, not modified */
+     Int Ap [ ],         /* size n+1, column pointers */
+     Int Ai [ ],         /* size nz, row indices */
++#ifdef COMPLEX
+     double Ax [ ],
++#else
++    Entry Ax [ ],
++#endif
+     KLU_symbolic *Symbolic,
+ 
+     /* input/output */
+diff -ru ../KLU.orig/KLU/Source/klu_scale.c ./KLU/Source/klu_scale.c
+--- ../KLU.orig/KLU/Source/klu_scale.c	2014-03-21 12:21:24.000000000 -0700
++++ ./KLU/Source/klu_scale.c	2019-02-02 13:26:51.485016521 -0800
+@@ -23,7 +23,11 @@
+     Int n,
+     Int Ap [ ],         /* size n+1, column pointers */
+     Int Ai [ ],         /* size nz, row indices */
++#ifdef COMPLEX
+     double Ax [ ],
++#else
++    Entry Ax [ ],
++#endif
+     /* outputs, not defined on input */
+     double Rs [ ],      /* size n, can be NULL if scale <= 0 */
+     /* workspace, not defined on input or output */
+diff -ru ../KLU.orig/KLU/Source/klu_solve.c ./KLU/Source/klu_solve.c
+--- ../KLU.orig/KLU/Source/klu_solve.c	2014-03-21 12:21:23.000000000 -0700
++++ ./KLU/Source/klu_solve.c	2019-02-02 13:03:07.268725163 -0800
+@@ -20,8 +20,13 @@
+     Int nrhs,               /* number of right-hand-sides */
+ 
+     /* right-hand-side on input, overwritten with solution to Ax=b on output */
++#ifdef COMPLEX
+     double B [ ],           /* size n*nrhs, in column-oriented form, with
+                              * leading dimension d. */
++#else
++    Entry B [ ],            /* size n*nrhs, in column-oriented form, with
++                             * leading dimension d. */
++#endif
+     /* --------------- */
+     KLU_common *Common
+ )
+diff -ru ../KLU.orig/KLU/Source/klu_tsolve.c ./KLU/Source/klu_tsolve.c
+--- ../KLU.orig/KLU/Source/klu_tsolve.c	2014-03-21 12:21:23.000000000 -0700
++++ ./KLU/Source/klu_tsolve.c	2019-02-02 13:05:18.273372648 -0800
+@@ -20,8 +20,13 @@
+     Int nrhs,               /* number of right-hand-sides */
+ 
+     /* right-hand-side on input, overwritten with solution to Ax=b on output */
++#ifdef COMPLEX
+     double B [ ],           /* size n*nrhs, in column-oriented form, with
+                              * leading dimension d. */
++#else
++    Entry B [ ],            /* size n*nrhs, in column-oriented form, with
++                             * leading dimension d. */
++#endif
+ #ifdef COMPLEX
+     Int conj_solve,         /* TRUE for conjugate transpose solve, FALSE for
+                              * array transpose solve.  Used for the complex

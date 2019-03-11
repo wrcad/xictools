@@ -555,7 +555,7 @@ cHelp::search(const char *target)
     top->sort_seealso();
     int i;
     HLPtopList *tl;
-    for (i = 0, tl = top->seealso(); tl; i++, tl = tl->next) ;
+    for (i = 0, tl = top->seealso(); tl; i++, tl = tl->next()) ;
     sprintf(buf, "Keyword search for %s : %d entries found.", target, i);
     top->set_words(new HLPwords(buf, 0));
     top->register_word(buf);

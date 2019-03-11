@@ -47,7 +47,7 @@ Authors: 1987 Gary W. Ng
 
 #include "noisdefs.h"
 #include "errors.h"
-#include "outdata.h"
+#include "output.h"
 #include "kwords_analysis.h"
 
 

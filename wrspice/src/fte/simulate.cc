@@ -52,11 +52,12 @@ Authors: 1985 Wayne A. Christopher
 #include "commands.h"
 #include "kwords_fte.h"
 #include "kwords_analysis.h"
-#include "frontend.h"
-#include "fteparse.h"
+#include "simulator.h"
+#include "parser.h"
 #include "csdffile.h"
 #include "psffile.h"
-#include "outplot.h"
+#include "graph.h"
+#include "output.h"
 #include "misc.h"
 #include "ttyio.h"
 #include "circuit.h"
@@ -317,7 +318,7 @@ CommandTab::com_free(wordlist *wl)
         plots = true;
         circuits = true;
     }
-    Sp.VecGc();
+    OP.vecGc();
 
     if (circuits) {
         if (!Sp.CurCircuit()) {
@@ -340,7 +341,7 @@ CommandTab::com_free(wordlist *wl)
         }
     }
     if (plots) {
-        if (!Sp.CurPlot()) {
+        if (!OP.curPlot()) {
             // shouldn't happen
             GRpkgIf()->ErrPrintf(ET_WARN, "no plot to delete.\n");
             return;
@@ -348,12 +349,12 @@ CommandTab::com_free(wordlist *wl)
         if (all) {
             if (yes || (!CP.GetFlag(CP_NOTTYIO) &&
                     TTY.prompt_for_yn(false, xx1)))
-                Sp.RemovePlot("all");
+                OP.removePlot("all");
         }
         else {
             if (yes || (!CP.GetFlag(CP_NOTTYIO) &&
                     TTY.prompt_for_yn(true, xx2)))
-                Sp.RemovePlot(Sp.CurPlot());
+                OP.removePlot(OP.curPlot());
         }
     }
 }
@@ -404,13 +405,13 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
             if (GetFlag(FT_SERVERMODE) || ((what == SIMrun) && wl)) {
                 // Use an output file.
 
-                ft_outfile.set_outBinary(!Global.AsciiOut());
+                OP.getOutDesc()->set_outBinary(!Global.AsciiOut());
                 VTvalue vv;
                 if (Sp.GetVar(kw_filetype, VTYP_STRING, &vv)) {
                     if (lstring::cieq(vv.get_string(), "binary"))
-                        ft_outfile.set_outBinary(true);
+                        OP.getOutDesc()->set_outBinary(true);
                     else if (lstring::cieq(vv.get_string(), "ascii"))
-                        ft_outfile.set_outBinary(false);
+                        OP.getOutDesc()->set_outBinary(false);
                     else
                         GRpkgIf()->ErrPrintf(ET_WARN,
                             "unknown file type %s.\n", vv.get_string());
@@ -418,9 +419,9 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
                 if (GetFlag(FT_SERVERMODE)) {
                     // Server mode sends everything to stdout.
 
-                    ft_outfile.set_outFtype(OutFraw);
+                    OP.getOutDesc()->set_outFtype(OutFraw);
                     TTY.out_printf("async\n");
-                    ft_outfile.set_outFp(TTY.outfile());
+                    OP.getOutDesc()->set_outFp(TTY.outfile());
                     TTY.out_printf("@\n");
                 }
                 else {
@@ -428,39 +429,39 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
                     if (wl)
                         ofile = wl->wl_word;
                     if (!ofile || !*ofile)
-                        ofile = ft_outfile.outFile();
+                        ofile = OP.getOutDesc()->outFile();
                     if (!ofile || !*ofile)
                         ofile = "rawfile.raw";
 
                     if (cPSFout::is_psf(ofile))
-                        ft_outfile.set_outFtype(OutFpsf);
+                        OP.getOutDesc()->set_outFtype(OutFpsf);
                     else if (cCSDFout::is_csdf_ext(ofile))
-                        ft_outfile.set_outFtype(OutFcsdf);
-                    if (ft_outfile.outFtype() == OutFnone)
-                        ft_outfile.set_outFtype(OutFraw);
+                        OP.getOutDesc()->set_outFtype(OutFcsdf);
+                    if (OP.getOutDesc()->outFtype() == OutFnone)
+                        OP.getOutDesc()->set_outFtype(OutFraw);
 
-                    if (ft_outfile.outFtype() == OutFraw) {
+                    if (OP.getOutDesc()->outFtype() == OutFraw) {
                         FILE *fp = fopen(ofile,
-                            ft_outfile.outBinary() ? "wb" : "w");
+                            OP.getOutDesc()->outBinary() ? "wb" : "w");
                         if (!fp) {
                             GRpkgIf()->Perror(ofile);
                             return;
                         }
-                        ft_outfile.set_outFp(fp);
+                        OP.getOutDesc()->set_outFp(fp);
                     }
-                    else if (ft_outfile.outFtype() == OutFcsdf) {
+                    else if (OP.getOutDesc()->outFtype() == OutFcsdf) {
                         FILE *fp = fopen(ofile, "w");
                         if (!fp) {
                             GRpkgIf()->Perror(ofile);
                             return;
                         }
-                        ft_outfile.set_outFp(fp);
+                        OP.getOutDesc()->set_outFp(fp);
                     }
                 }
             }
             else {
-                ft_outfile.set_outFtype(OutFnone);
-                ft_outfile.set_outFp(0);
+                OP.getOutDesc()->set_outFtype(OutFnone);
+                OP.getOutDesc()->set_outFp(0);
             }
 
             ft_curckt->set_inprogress(true);
@@ -492,9 +493,10 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
     else
         ft_curckt->set_inprogress(false);
     
-    if (ft_outfile.outFp() && ft_outfile.outFp() != TTY.outfile()) {
-        fclose(ft_outfile.outFp());
-        ft_outfile.set_outFp(0);
+    if (OP.getOutDesc()->outFp() &&
+            OP.getOutDesc()->outFp() != TTY.outfile()) {
+        fclose(OP.getOutDesc()->outFp());
+        OP.getOutDesc()->set_outFp(0);
     }
     ft_flags[FT_SIMFLAG] = false;
     ft_curckt->set_runonce(true);
@@ -682,18 +684,18 @@ sFtCirc::rebuild(bool save_loop)
     ci_origdeck = 0;
     const char *tfilename = FTSAVE(ci_filename);
 
-    char *ename = lstring::copy(ci_execs.name());
-    ci_execs.set_name(0);
-    sControl *eblock = ci_execs.tree();
-    ci_execs.set_tree(0);
-    wordlist *texecs = ci_execs.text();
-    ci_execs.set_text(0);
-    char *cname = lstring::copy(ci_controls.name());
-    ci_controls.set_name(0);
-    sControl *cblock = ci_controls.tree();
-    ci_controls.set_tree(0);
-    wordlist *tcontrols = ci_controls.text();
-    ci_controls.set_text(0);
+    char *ename = lstring::copy(ci_execBlk.name());
+    ci_execBlk.set_name(0);
+    sControl *eblock = ci_execBlk.tree();
+    ci_execBlk.set_tree(0);
+    wordlist *texecs = ci_execBlk.text();
+    ci_execBlk.set_text(0);
+    char *cname = lstring::copy(ci_controlBlk.name());
+    ci_controlBlk.set_name(0);
+    sControl *cblock = ci_controlBlk.tree();
+    ci_controlBlk.set_tree(0);
+    wordlist *tcontrols = ci_controlBlk.text();
+    ci_controlBlk.set_text(0);
 
     sLine *tverilog = FTSAVE(ci_verilog);
 
@@ -704,10 +706,10 @@ sFtCirc::rebuild(bool save_loop)
 
     sFtCirc *ct = Sp.CurCircuit();
     if (ct) {
-        ct->ci_execs.set_name(ename);
-        ct->ci_execs.set_tree(eblock);
-        ct->ci_controls.set_name(cname);
-        ct->ci_controls.set_tree(cblock);
+        ct->ci_execBlk.set_name(ename);
+        ct->ci_execBlk.set_tree(eblock);
+        ct->ci_controlBlk.set_name(cname);
+        ct->ci_controlBlk.set_tree(cblock);
         ct->ci_sweep = tsweep;
         ct->ci_check = tcheck;
         delete ct->ci_symtab;

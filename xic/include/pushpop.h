@@ -84,7 +84,7 @@ struct ContextDesc
 
     void purge(const CDs*, const CDl*);
     ContextDesc *purge(const CDs*, const CDo*);
-    void clear();
+    static void clear(ContextDesc*);
 
     int level()
         {
@@ -119,8 +119,8 @@ struct CXstate
 
     ~CXstate()
         {
-            context->clear();
-            context_history->clear();
+            ContextDesc::clear(context);
+            ContextDesc::clear(context_history);
         }
 
     CDcellName cellname;

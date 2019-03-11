@@ -45,8 +45,8 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
-#ifndef FRONTEND_H
-#define FRONTEND_H
+#ifndef SIMULATOR_H
+#define SIMULATOR_H
 
 #include <stdio.h>
 #include <unistd.h>
@@ -82,15 +82,26 @@ struct variable;
 struct sTrie;
 struct sHtab;
 struct IFspecial;
-struct sDebug;
-struct sMeas;
+struct sRunopSave;
+struct sRunopTrace;
+struct sRunopIplot;
+struct sRunopMeas;
+struct sRunopStop;
 struct sPlotList;
+struct sRunDesc;
+struct sSaveList;
 union va_t;
 
 // Default char used to separate units string from numbers, was '_' in
 // releases before 3.2.4.
 //
 #define DEF_UNITS_CATCHAR '#'
+
+// Default character that separtes numerator from denomintor in units
+// strings, was '/' before 4.3.9, which could lead to ambiguous
+// expressions.
+//
+#define DEF_UNITS_SEPCHAR '_'
 
 // Default char used as a field separator when creating flat token
 // names when expanding subckts, was ':' in releases before 3.2.5. 
@@ -117,30 +128,6 @@ union va_t;
 #define SYS_STARTUP(buf) sprintf(buf, "%sinit", CP.Program())
 #define USR_STARTUP(buf) sprintf(buf, ".%sinit", CP.Program())
 
-// This maintains a hash table of vector names to save for output.
-//
-struct sSaveList
-{
-    sSaveList() { sl_tab = 0; }
-    ~sSaveList();
-
-    sHtab *table() { return (sl_tab); }
-
-    int numsaves();
-    bool set_used(const char*, bool);
-    int is_used(const char*);
-
-    void add_save(const char*);
-    void remove_save(const char*);
-    void list_expr(const char*);
-    void purge_non_special();
-
-private:
-    void list_vecs(pnode*);
-
-    sHtab *sl_tab;
-};
-
 // Executable block (codeblock).
 struct sExBlk
 {
@@ -152,6 +139,7 @@ struct sExBlk
         }
 
     void clear();
+    void exec(bool);
 
     const char *name()              { return (xb_name); }
     void set_name(const char *n)
@@ -171,6 +159,69 @@ private:
     char *xb_name;
     wordlist *xb_text;
     sControl *xb_tree;
+};
+
+// Container for runop list bases, etc.
+//
+struct sRunopDb
+{
+    sRunopDb()
+        {
+            rd_save = 0;
+            rd_trace = 0;
+            rd_iplot = 0;
+            rd_meas = 0;
+            rd_stop = 0;
+            rd_runopcnt = 1;
+            rd_stepcnt = 0;
+            rd_steps = 0;
+        }
+
+    ~sRunopDb()
+        {
+            clear();
+        }
+
+    void clear();
+
+    bool isset()
+        { return (rd_iplot || rd_trace || rd_save || rd_meas || rd_stop); }
+
+    sRunopSave *saves()             { return (rd_save); }
+    void set_saves(sRunopSave *d)   { rd_save = d; }
+
+    sRunopTrace *traces()           { return (rd_trace); }
+    void set_traces(sRunopTrace *d) { rd_trace = d; }
+
+    sRunopIplot *iplots()           { return (rd_iplot); }
+    void set_iplots(sRunopIplot *d) { rd_iplot = d; }
+
+    sRunopMeas *measures()          { return (rd_meas); }
+    void set_measures(sRunopMeas *m){ rd_meas = m; }
+
+    sRunopStop *stops()             { return (rd_stop); }
+    void set_stops(sRunopStop *d)   { rd_stop = d; }
+
+    int new_count()             { return (rd_runopcnt++); }
+    int decrement_count()       { return (rd_runopcnt--); }
+
+    int step_count()            { return (rd_stepcnt); }
+    void set_step_count(int i)  { rd_stepcnt = i; }
+    int dec_step_count()        { return (--rd_stepcnt); }
+
+    int num_steps()             { return (rd_steps); }
+    void set_num_steps(int i)   { rd_steps = i; }
+
+private:
+    sRunopSave *rd_save;        // save list head
+    sRunopTrace *rd_trace;      // trace list head
+    sRunopIplot *rd_iplot;      // iplot list head
+    sRunopMeas *rd_meas;        // measures list head
+    sRunopStop *rd_stop;        // stops list head
+
+    int rd_runopcnt;            // running sum of runops created, provides id
+    int rd_stepcnt;             // number of steps done
+    int rd_steps;               // number of steps to do
 };
 
 // Element list for Alter command.
@@ -231,6 +282,10 @@ struct sFtCirc
     bool getVerilog(const char*, const char*, IFdata*);
     void getSaves(sSaveList*, const sCKT*);
 
+    // check.cc
+    int checkCodeblocks();
+    int setAnalysis(wordlist**);
+
     // device.cc
     dfrdlist *findDeferred(const char*, const char*);
     void addDeferred(const char*, const char*, const char*);
@@ -278,14 +333,23 @@ struct sFtCirc
     sParamTab *params()         { return (ci_params); }
     variable *vars()            { return (ci_vars); }
     cUdf *defines()             { return (ci_defines); }
-    sDebug *debugs()            { return (ci_debugs); }
-    void set_debugs(sDebug *d)  { ci_debugs = d; }
-    sMeas *measures()           { return (ci_measures); }
 
-    sExBlk *execs()             { return (&ci_execs); }
-    sExBlk *controls()          { return (&ci_controls); }
-    sExBlk *postrun()           { return (&ci_postrun); }
-    void set_postrun(wordlist *w) { ci_postrun.set_text(w); }
+    sExBlk &execBlk()           { return (ci_execBlk); }
+    sExBlk &controlBlk()        { return (ci_controlBlk); }
+    sExBlk &postrunBlk()        { return (ci_postrunBlk); }
+    void set_postrun(wordlist *w) { ci_postrunBlk.set_text(w); }
+
+    sRunopDb &runops()          { return (ci_runops); }
+    sRunopSave *saves()             { return (ci_runops.saves()); }
+    void set_saves(sRunopSave *d)   { ci_runops.set_saves(d); }
+    sRunopTrace *traces()           { return (ci_runops.traces()); }
+    void set_traces(sRunopTrace *d) { ci_runops.set_traces(d); }
+    sRunopIplot *iplots()           { return (ci_runops.iplots()); }
+    void set_iplots(sRunopIplot *d) { ci_runops.set_iplots(d); }
+    sRunopMeas *measures()          { return (ci_runops.measures()); }
+    void set_measures(sRunopMeas *m){ ci_runops.set_measures(m); }
+    sRunopStop *stops()             { return (ci_runops.stops()); }
+    void set_stops(sRunopStop *d)   { ci_runops.set_stops(d); }
 
     wordlist *commands()        { return (ci_commands); }
 
@@ -328,12 +392,11 @@ private:
     sParamTab *ci_params;       // .param parameter list
     variable *ci_vars;          // ... and the parsed versions
     cUdf *ci_defines;           // Functions defined by .param lines
-    sDebug *ci_debugs;          // Circuit-specific debugs, if any
-    sMeas *ci_measures;         // Circuit-specific measures, if any
 
-    sExBlk ci_execs;            // Pre-parse executable block
-    sExBlk ci_controls;         // Post-parse executable block;
-    sExBlk ci_postrun;          // Post-run executable block;
+    sExBlk ci_execBlk;          // Pre-parse executable block
+    sExBlk ci_controlBlk;       // Post-parse executable block
+    sExBlk ci_postrunBlk;       // Post-run executable block
+    sRunopDb ci_runops;         // Circuit-specific runops, if any
 
     wordlist *ci_commands;      // Things to do when this circuit is done
 
@@ -531,50 +594,6 @@ enum FPEmode
 };
 #define FPEdefault  FPEcheck
 
-// Output plot file format: native rawfile, Synopsys CDF, Cadence PSF.
-//
-enum OutFtype { OutFnone, OutFraw, OutFcsdf, OutFpsf };
-
-// This describes the output file for plot results from batch mode.
-//
-struct IFoutfile
-{
-    IFoutfile()
-        {
-            of_filename = 0;
-            of_type = OutFnone;
-            of_numdgts = 0;
-            of_fp = 0;
-        }
-
-    const char *outFile()       { return (of_filename); }
-    void set_outFile(const char *n)
-        {
-            if (n != of_filename)
-                delete [] of_filename;
-            of_filename = n && *n ? lstring::copy(n) : 0;
-        }
-
-    OutFtype outFtype()         { return (of_type); }
-    void set_outFtype(OutFtype t) { of_type = t; }
-
-    int outNdgts()              { return (of_numdgts); }
-    void set_outNdgts(int n)    { if (n >= 0 && n <= 15) of_numdgts = n; }
-
-    bool outBinary()            { return (of_binary); }
-    void set_outBinary(bool b)  { of_binary = b; }
-
-    FILE *outFp()               { return (of_fp); }
-    void set_outFp(FILE *f)     { of_fp = f; }
-
-private:
-    char *of_filename;      // Given filename
-    OutFtype of_type;       // Type of output
-    short of_numdgts;       // ASCII precision
-    bool of_binary;         // Use binary format.
-    FILE *of_fp;            // Pointer to output file.
-};
-
 // Structure: IFsimulator
 //
 // This structure dscribes the top level simulator interface.
@@ -589,16 +608,6 @@ struct IFsimulator
 #else
     static void SigHdlr(int, void*, void*);
 #endif
-
-    // fte/aspice.cc
-    void CheckAsyncJobs();
-
-    // fte/breakp.cc
-    void SetDbgActive(int, bool);
-    char *DebugStatus(bool);
-    void DeleteDbg(bool, bool, bool, bool, bool, int);
-    void GetSaves(sFtCirc*, sSaveList*);
-    int IsIplot(bool = false);
 
     // fte/check.cc
     void MargAnalysis(wordlist*);
@@ -718,22 +727,6 @@ struct IFsimulator
     int TypeNum(const char*);
     const char *PlotAbbrev(const char*);
 
-    // fte/vectors.cc
-    sPlot *FindPlot(const char*);
-    sDataVec *VecGet(const char*, const sCKT*, bool = false);
-    bool IsVec(const char*, const sCKT*);
-    void VecSet(const char*, const char*, bool = false, const char** = 0);
-    void LoadFile(const char**, bool);
-    void SetCurPlot(const char*);
-    void PushPlot();
-    void PopPlot();
-    void RemovePlot(const char*, bool = false);
-    void RemovePlot(sPlot*);
-    bool PlotPrefix(const char*, const char*);
-    void VecGc(bool = false);
-    bool VecEq(sDataVec*, sDataVec*);
-    void VecPrintList(wordlist*, char**);
-
     // Access to private members.
 
     const char *Simulator()         { return (ft_simulator); }
@@ -753,15 +746,6 @@ struct IFsimulator
 
     IFanalysis *CurAnalysis()       { return (ft_cur_analysis); }
     void SetCurAnalysis(IFanalysis *a) { ft_cur_analysis = a; }
-    sPlot *CurPlot()                { return (ft_plot_cur); }
-    void SetCurPlot(sPlot *p)       { ft_plot_cur = p; }
-    sPlot *PlotList()               { return (ft_plot_list); }
-    void SetPlotList(sPlot *p)      { ft_plot_list = p; }
-    sPlot *CxPlot()                 { return (ft_plot_cx); }
-    void SetCxPlot(sPlot *p)        { ft_plot_cx = p; }
-    sPlotList *CxPlotList()         { return (ft_cxplots); }
-
-    IFoutfile *GetOutDesc()         { return (&ft_outfile); }
 
     void PushFPEinhibit()           { ft_fpe_inhibit++; }
     void PopFPEinhibit()            { if (ft_fpe_inhibit) ft_fpe_inhibit--; }
@@ -777,6 +761,8 @@ struct IFsimulator
     void SetSubcCatchar(char c)     { ft_subc_catchar = c; }
     char UnitsCatchar()             { return (ft_units_catchar); }
     void SetUnitsCatchar(char c)    { ft_units_catchar = c; }
+    char UnitsSepchar()             { return (ft_units_sepchar); }
+    void SetUnitsSepchar(char c)    { ft_units_sepchar = c; }
     char PlotCatchar()              { return (ft_plot_catchar); }
     void SetPlotCatchar(char c)     { ft_plot_catchar = c; }
     char SpecCatchar()              { return (ft_spec_catchar); }
@@ -801,12 +787,6 @@ private:
     sFtCirc *ft_circuits;       // List head for circuits
 
     IFanalysis *ft_cur_analysis; // The most recent analysis started.
-    sPlot *ft_plot_cur;         // The "current" (default) plot
-    sPlot *ft_plot_list;        // List head for plots
-    sPlot *ft_plot_cx;          // Plot when starting .control's
-    sPlotList *ft_cxplots;      // Context plot list
-
-    IFoutfile ft_outfile;       // Batch output description
 
     int ft_fpe_inhibit;         // Longjmp on SIGFPE inhibited when nonzero
 
@@ -822,6 +802,10 @@ private:
     // This can follow a number, separating a units string from the number.
     //
     char ft_units_catchar;
+
+    // Character used in units strings to separate numerator from
+    // denominator.  Avoid use of '/' which can be ambiguous.
+    char ft_units_sepchar;
 
     // Character that separates plot name from vector name when referencing
     // vectors.
@@ -921,5 +905,5 @@ namespace ResPrint
 #define DEF_specwindoworder_MIN 2
 #define DEF_specwindoworder_MAX 8
 
-#endif // FRONTEND_H
+#endif // SIMULATOR_H
 

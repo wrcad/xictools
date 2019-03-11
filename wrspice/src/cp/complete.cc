@@ -47,8 +47,9 @@ Authors: 1985 Wayne A. Christopher
 
 #include "config.h"
 #include "cshell.h"
-#include "frontend.h"
-#include "outplot.h"
+#include "simulator.h"
+#include "graph.h"
+#include "output.h"
 
 #include <sys/types.h>
 #ifdef HAVE_DIRENT_H
@@ -334,8 +335,8 @@ CshPar::CcClass(int kclass)
     case CT_TYPENAMES:
         return (keywords+11);
     case CT_VECTOR:
-        if (Sp.CurPlot())
-            return (Sp.CurPlot()->ccom());
+        if (OP.curPlot())
+            return (OP.curPlot()->ccom());
         break;
     case CT_DEVNAMES:
         if (Sp.CurCircuit())

@@ -46,7 +46,7 @@ Authors: 1987 Thomas L. Quarles
 ****************************************************************************/
 
 #include "input.h"
-#include "frontend.h"
+#include "simulator.h"
 #include "device.h"
 #include "misc.h"
 

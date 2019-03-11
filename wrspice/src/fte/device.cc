@@ -46,11 +46,10 @@ Authors: 1986 Wayne A. Christopher
 ****************************************************************************/
 
 #include "config.h"
-#include "frontend.h"
-#include "fteparse.h"
-#include "ftedata.h"
-#include "ftemeas.h"
-#include "outdata.h"
+#include "simulator.h"
+#include "parser.h"
+#include "datavec.h"
+#include "output.h"
 #include "cshell.h"
 #include "kwords_fte.h"
 #include "commands.h"
