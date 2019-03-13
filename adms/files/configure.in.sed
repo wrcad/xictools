@@ -113,10 +113,10 @@ AC_TYPE_UINT8_T
 #AC_CHECK_TYPE(uint8_t, unsigned char)
 
 # Checks for library functions.
-AC_FUNC_MALLOC
-AC_FUNC_REALLOC
+# rpl_malloc problem  AC_FUNC_MALLOC
+# rpl_realloc problem AC_FUNC_REALLOC
 AC_FUNC_STRTOD
-#AC_CHECK_FUNCS([malloc realloc strtod])
+AC_CHECK_FUNCS([malloc realloc])
 AC_CHECK_FUNCS([floor memset pow putenv setenv sqrt strdup strstr strtol])
 
 AC_CONFIG_HEADER(admsXml/config.h)
