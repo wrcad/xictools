@@ -76,8 +76,7 @@ Author: 1992 Stephen R. Whiteley
 
 #define VmMin   0.008       // Min Vm V
 #define VmMax   0.1         // Max Vm V
-#define IcRmin  1.5e-3      // Min IcR V
-#define IcRmax  1.9e-3      // Max IcR V
+#define IcRmin  0.5e-3      // Min IcR V
 #define Ic      1e-3        // Assumed Ic of reference, A
 #define IcMin   1e-9        // Min reference Ic, A
 #define IcMax   1e-1        // Max referenct Ic, A
@@ -319,6 +318,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->JJicrn = IcR;
         }
         else {
+            double IcRmax = model->JJvg * model->JJicFactor;
             if (model->JJicrn < IcRmin || model->JJicrn > IcRmax) {
                 DVO.textOut(OUT_WARNING,
                     "%s: ICRN=%g out of range [%g-%g], reset to %g.\n",
@@ -333,7 +333,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
             double RNmin = IcRmin/i;
-            double RNmax = IcRmax/i;
+            double RNmax = (model->JJvg * model->JJicFactor)/i;
             if (model->JJrn < RNmin || model->JJrn > RNmax) {
                 double RN = model->JJicrn/i;
                 DVO.textOut(OUT_WARNING,
@@ -346,7 +346,8 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->JJrn = model->JJr0;
 
         if (model->JJvShuntGiven) {
-            if (model->JJvShunt < 0.0 || model->JJvShunt > model->JJvg) {
+            if (model->JJvShunt < 0.0 ||
+                    model->JJvShunt > (model->JJvg - model->JJdelv)) {
                 DVO.textOut(OUT_WARNING,
                     "%s: VSHUNT=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->JJvShunt, 0.0, model->JJvg, 0.0);
