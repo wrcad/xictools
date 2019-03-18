@@ -48,10 +48,11 @@ Authors: 1987 Thomas L. Quarles
 #include "pzdefs.h"
 #include "input.h"
 #include "misc.h"
+#include "kwords_analysis.h"
 
 
 // .pz nodeI nodeG nodeJ nodeK {V I} {POL ZER PZ}
-//        [ dc SRC1NAME Vstart1 [Vstop1 [Vinc1]]
+//        [ dc|sweep SRC1NAME Vstart1 [Vstop1 [Vinc1]]
 //        [SRC2NAME Vstart2 [Vstop2 [Vinc2]]] ]
 
 int
@@ -109,17 +110,20 @@ PZanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
     // dc sweep params
     if (**line) {
         char *token = IP.getTok(line, true);
-        if (token && lstring::cieq(token, "dc")) {
-            error = parseDC(current, ckt, line, job, 1);
-            IP.logError(current, error);
-            if (**line) {
-                error = parseDC(current, ckt, line, job, 2);
+        if (token) {
+            if (lstring::cieq(token, kw_dc) ||
+                    lstring::cieq(token, kw_sweep)) {
+                error = parseDC(current, ckt, line, job, 1);
                 IP.logError(current, error);
+                if (**line) {
+                    error = parseDC(current, ckt, line, job, 2);
+                    IP.logError(current, error);
+                }
             }
+            else
+                IP.logError(current, "Syntax error: 'dc' or 'sweep' expected");
+            delete [] token;
         }
-        else
-            IP.logError(current, "Syntax error: 'dc' expected");
-        delete [] token;
     }
     if (**line)
         IP.logError(current, "Warning: unknown parameter in pz line, ignored");

@@ -208,6 +208,11 @@ to '_', which is tied to the new "units_sepchar" variable.  The earlier
 choice could cause ambiguous expressions.  e.g., 1/V  could be ine over
 a vector V or one per volt.  Where is units stuff documented?
 
+--- release 4.3.8
+
+Fixed .if/.elif/.else logic, wan't correct.  Had to add a stack of
+flags that indicate that a branch was taken.
+
 TODO:
 Christine's file:  Windows singular matrix, ok under Linux.
 

@@ -48,9 +48,10 @@ Authors: 1987 Thomas L. Quarles
 #include "tfdefs.h"
 #include "input.h"
 #include "misc.h"
+#include "kwords_analysis.h"
 
 // .tf {vsrc v(node1[, node2])} src [ac {dec oct lin} pts fstart fstop]
-//        [ dc SRC1NAME Vstart1 [Vstop1 [Vinc1]]
+//        [ dc|sweep SRC1NAME Vstart1 [Vstop1 [Vinc1]]
 //        [SRC2NAME Vstart2 [Vstop2 [Vinc2]]] ]
 
 
@@ -147,38 +148,42 @@ TFanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
     ptemp.type = IF_INSTANCE;
     error = job->setParam("insrc", &ptemp);
     IP.logError(current, error);
+    bool had_ac = false;
     if (**line) {
         token = IP.getTok(line, true);
         if (token && lstring::cieq(token, "ac")) {
             error = parseAC(current, line, job);
             IP.logError(current, error);
+            had_ac = true;
         }
-        else if (token && lstring::cieq(token, "dc")) {
+        else if (token && lstring::cieq(token, kw_dc)) {
             error = parseDC(current, ckt, line, job, 1);
             IP.logError(current, error);
             if (**line) {
                 error = parseDC(current, ckt, line, job, 2);
                 IP.logError(current, error);
             }
-            return (OK);
         }
         else
             IP.logError(current, "Syntax error: 'ac' or 'dc' expected");
         delete [] token;
     }
-    if (**line) {
+    if (**line && had_ac) {
         token = IP.getTok(line, true);
-        if (token && lstring::cieq(token, "dc")) {
-            error = parseDC(current, ckt, line, job, 1);
-            IP.logError(current, error);
-            if (**line) {
-                error = parseDC(current, ckt, line, job, 2);
+        if (token) {
+            if (lstring::cieq(token, kw_dc) ||
+                    lstring::cieq(token, kw_sweep)) {
+                error = parseDC(current, ckt, line, job, 1);
                 IP.logError(current, error);
+                if (**line) {
+                    error = parseDC(current, ckt, line, job, 2);
+                    IP.logError(current, error);
+                }
             }
+            else
+                IP.logError(current, "Syntax error: 'dc' or 'sweep' expected");
+            delete [] token;
         }
-        else
-            IP.logError(current, "Syntax error: 'dc' expected");
-        delete [] token;
     }
     if (**line)
         IP.logError(current, "Warning: unknown parameter in tf line, ignored");

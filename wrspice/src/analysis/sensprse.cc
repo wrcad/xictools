@@ -48,6 +48,7 @@ Authors: 1987 Thomas L. Quarles
 #include "sensdefs.h"
 #include "input.h"
 #include "misc.h"
+#include "kwords_analysis.h"
 
 // .sens output [ac {dec lin oct} NP FSTART FSTOP]
 //        [ dc SRC1NAME Vstart1 [Vstop1 [Vinc1]]
@@ -153,7 +154,7 @@ SENSanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
             error = parseAC(current, line, job);
             IP.logError(current, error);
         }
-        else if (token && lstring::cieq(token, "dc")) {
+        else if (token && lstring::cieq(token, kw_dc)) {
             error = parseDC(current, ckt, line, job, 1);
             IP.logError(current, error);
             if (**line) {

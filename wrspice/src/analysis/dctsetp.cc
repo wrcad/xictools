@@ -63,6 +63,10 @@ const char *dckw_start2 = "start2";
 const char *dckw_stop2  = "stop2";
 const char *dckw_step2  = "step2";
 
+// Sweep keywords
+const char *kw_dc       = "dc";
+const char *kw_sweep    = "sweep";
+
 namespace {
     IFparm DCTparms[] = {
         IFparm(dckw_name1,      DC_NAME1,   IF_IO|IF_INSTANCE,

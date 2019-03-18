@@ -67,6 +67,10 @@ extern const char *dckw_start2;
 extern const char *dckw_stop2;
 extern const char *dckw_step2;
 
+// Sweep keywords
+extern const char *kw_dc;
+extern const char *kw_sweep;
+
 // Distortion keywords
 extern const char *dokw_start;
 extern const char *dokw_stop;

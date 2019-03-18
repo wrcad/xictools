@@ -52,7 +52,7 @@ Authors: 1987 Thomas L. Quarles
 
 
 // .tran Tstep Tstop [[START] Tstart] [Tmax] [UIC]
-//        [ dc SRC1NAME Vstart1 [Vstop1 [Vinc1]]
+//        [ dc|sweep SRC1NAME Vstart1 [Vstop1 [Vinc1]]
 //        [SRC2NAME Vstart2 [Vstop2 [Vinc2]]] ]
 
 int
@@ -69,7 +69,7 @@ TRANanalysis::parse(sLine *current, sCKT *ckt, int which, const char **line,
         char *token = IP.getTok(line, true);
         if (!token)
             break;
-        if (lstring::cieq(token, "dc")) {
+        if (lstring::cieq(token, kw_dc) || lstring::cieq(token, kw_sweep)) {
             delete [] token;
             error = parseDC(current, ckt, line, job, 1);
             IP.logError(current, error);
