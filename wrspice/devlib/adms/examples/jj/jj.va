@@ -51,6 +51,11 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.26, March 19, 2019
+//   The vshunt support is now conditional on NEWVSHUNT, which is on by
+//   default.  One can now turn off NEWVSHUNT, NEWLSH and NEWLSER and
+//   have only the core model, which can be augmented in a .subckt,
+//   which might be more efficient than the Verilog-A implementation.
 // Version 1.25, March 14, 2019
 //   Changed limits of icrn from 1.5 : 1.9mV to 0.5mV : (icfct*vgap).
 //   Changed upper limit of vshunt from 2mV to (vgap-delv).
@@ -182,8 +187,13 @@
 // This enables series inductance modeling with the LSER parameter.
 `define NEWLSER
 
+// Enable addition of external shunt conductance.
+`define NEWVSHUNT
+
 // Enable series inductance modeling of external shunt resistance.
+`ifdef NEWVSHUNT
 `define NEWLSH
+`endif
 
 // Uncomment this to support a phony DC analysis mode by loading JJ as
 // a tiny resistance.  Not recommended.
@@ -311,8 +321,10 @@ parameter real icrn     = `IcR*1e-3 from [0.5m:vgap*icfct]
 parameter real rnorm    = icrn/icrit from [0.5e-3/icrit:(vgap*icfct)/icrit]
     `P(type="model" info="Normal resistance" units="O");
 aliasparam rn           = rnorm;
+`ifdef NEWVSHUNT
 parameter real vshunt   = 0 from [0:vgap-delv]
     `P(type="model" info="Ic * shunt resistance voltage" units="V");
+`endif
 `ifdef NEWLSH
 parameter real lsh0   = 0 from [0:2p]
     `P(type="model" info="Shunt inductance constant part" units="H");
@@ -359,7 +371,13 @@ parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
 real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
-real vdpbak, start_phase, tsf, ic_scaled, gshunt, lshval;
+real vdpbak, start_phase, tsf, ic_scaled;
+`ifdef NEWVSHUNT
+real gshunt;
+`ifdef NEWLSH
+real lshval;
+`endif
+`endif
 `ifdef WRspice
 real SmallSigL;
 integer pmode;
@@ -436,6 +454,7 @@ analog begin
 `ifdef WRspice
         SmallSigL = 0.0;
 `endif
+`ifdef NEWVSHUNT
         gshunt=0.0;
 `ifdef NEWLSH
         lshval=0.0;
@@ -455,6 +474,7 @@ analog begin
                     lshval = lsh0 + lsh1/gshunt;
 `endif
             end
+`endif
 
         // Interface parameter passed to model from simulator using
         // the Verilog $simparam system function.  At present, only
@@ -516,6 +536,7 @@ analog begin
             if (rtype == 1)
                 I(br) <+ V(br)/rsubs;
 
+`ifdef NEWVSHUNT
             if (vshunt > 1u)
                 begin
 `ifdef NEWLSH
@@ -532,6 +553,7 @@ analog begin
 `endif
 `endif
                 end
+`endif
 
             if ($port_connected(ph))
                 begin
@@ -671,6 +693,7 @@ analog begin
                 I(br) <+ (V(br)/avj)*(i1 + i2 + (avj - vmore)/rnorms);
             end
 
+`ifdef NEWVSHUNT
         if (vshunt > 1u)
             begin
 `ifdef NEWLSH
@@ -687,6 +710,7 @@ analog begin
 `endif
 `endif
             end
+`endif
 
 `ifdef NEWLSER
         if (lser > 0.0)
