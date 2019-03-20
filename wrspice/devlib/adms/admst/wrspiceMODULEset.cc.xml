@@ -644,9 +644,10 @@
     function returns something appropriate.
   -->
   <admst:text format="\n$(indent)int fpestate = ckt->disableFPE();\n"/>
+  <admst:text format="$(indent)int dt__tmp = ckt->CKTcurrentAnalysis;\n"/>
   <admst:text format="$(indent)ckt->CKTcurrentAnalysis |= DOING_TRAN;\n"/>
   <admst:text format="$(indent)int error = topology(ckt, model, inst);\n"/>
-  <admst:text format="$(indent)ckt->CKTcurrentAnalysis &= ~DOING_TRAN;\n"/>
+  <admst:text format="$(indent)ckt->CKTcurrentAnalysis = dt__tmp;\n"/>
   <admst:text format="$(indent)ckt->enableFPE(fpestate);\n"/>
   <admst:text format="$(indent)if (error)\n"/>
   <admst:apply-templates select="." match="push_indent"/>

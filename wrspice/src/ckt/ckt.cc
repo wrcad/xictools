@@ -613,7 +613,6 @@ sCKT::doTaskSetup()
 {
     CKTdelta = 0.0;
     CKTtime = 0.0;
-    CKTcurrentAnalysis = 0;
 
     CKTpreload = 1; // do preload
     // normal reset
