@@ -52,7 +52,8 @@ Authors: 1985 Thomas L. Quarles
 
 
 enum {
-    ST_ACCEPT       = 100,
+    ST_RUNS         = 100,
+    ST_ACCEPT,
     ST_CVCHKTIME,
     ST_EQUATIONS,
     ST_FILLIN,

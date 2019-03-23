@@ -59,6 +59,10 @@ STATanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
     IFvalue *value = &data->v;
 
     switch (which) {
+    case ST_RUNS:
+        value->iValue = stat->STATruns;
+        data->type = IF_INTEGER;
+        break;
     case ST_ACCEPT:
         value->iValue = stat->STATaccepted;
         data->type = IF_INTEGER;

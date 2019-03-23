@@ -674,8 +674,11 @@ sFtCirc::rebuild(bool save_loop)
     }
     sSymTab *tsymtab = FTSAVE(ci_symtab);
     sTASK *ttask = 0;
+    sSTATS *tstat = 0;
     if (ci_runckt) {
         ttask = FTSAVE(ci_runckt->CKTcurTask);
+        if (ttask)
+            tstat = FTSAVE(ci_runckt->CKTstat);
     }
     int trtype = ci_runtype;
     sLine *dd = ci_deck;
@@ -733,10 +736,17 @@ sFtCirc::rebuild(bool save_loop)
         // This really shouldn't fail, but if it does just keep it
         // zeroed.  Caller should check this.
 
-        if (newCKT(&ci_runckt, 0) == OK && ci_runckt)
+        if (newCKT(&ci_runckt, 0) == OK && ci_runckt) {
             ci_runckt->setTask(ttask);
-        else
+            if (tstat) {
+                delete ci_runckt->CKTstat;
+                ci_runckt->CKTstat = tstat;
+            }
+        }
+        else {
             delete ttask;
+            delete tstat;
+        }
     }
 }
 
@@ -749,8 +759,11 @@ void
 sFtCirc::reset()
 {
     sTASK *ttask = 0;
+    sSTATS *tstat = 0;
     if (ci_runckt) {
         ttask = FTSAVE(ci_runckt->CKTcurTask);
+        if (ttask)
+            tstat = FTSAVE(ci_runckt->CKTstat);
         delete ci_runckt;
         ci_runckt = 0;
     }
@@ -758,10 +771,17 @@ sFtCirc::reset()
         // This really shouldn't fail, but if it does just keep it
         // zeroed.  Caller should check this.
 
-        if (newCKT(&ci_runckt, 0) == OK && ci_runckt)
+        if (newCKT(&ci_runckt, 0) == OK && ci_runckt) {
             ci_runckt->setTask(ttask);
-        else
+            if (tstat) {
+                delete ci_runckt->CKTstat;
+                ci_runckt->CKTstat = tstat;
+            }
+        }
+        else {
             delete ttask;
+            delete tstat;
+        }
     }
 }
 

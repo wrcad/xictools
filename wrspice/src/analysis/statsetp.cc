@@ -69,6 +69,7 @@ const char *stkw_nonzero        = "nonzero";
 const char *stkw_pagefaults     = "pagefaults";
 const char *stkw_rejected       = "rejected";
 const char *stkw_reordertime    = "reordertime";
+const char *stkw_runs           = "runs";
 const char *stkw_solvetime      = "solvetime";
 const char *stkw_time           = "time";
 const char *stkw_totiter        = "totiter";
@@ -94,6 +95,7 @@ const char *stat_print_array[] =
     stkw_nonzero,
     stkw_fillin,
     "",
+    stkw_runs,
     stkw_pagefaults,
     stkw_volcxswitch,
     stkw_involcxswitch,
@@ -127,6 +129,8 @@ const char *stat_print_array[] =
 
 namespace {
     IFparm STATtbl[] = {
+        IFparm(stkw_runs,           ST_RUNS,            IF_ASK|IF_INTEGER,
+            "Accumulated core analysis runs"),
         IFparm(stkw_accept,         ST_ACCEPT,          IF_ASK|IF_INTEGER,
             "Accepted timepoints"),
         IFparm(stkw_cvchktime,      ST_CVCHKTIME,       IF_ASK|IF_REAL,

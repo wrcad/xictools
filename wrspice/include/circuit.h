@@ -1079,12 +1079,12 @@ struct sSTATS
             STATtranTsTime = 0.0;
             STATtranPctDone = 0.0;
 
+            STATruns = 0;
             STATnumIter = 0;
             STATtranIter = 0;
             STATtranLastIter = 0;
             STATtranIterCut = 0;
             STATtranTrapCut = 0;
-
             STATtimePts = 0;
             STATaccepted = 0;
             STATrejected = 0;
@@ -1113,12 +1113,12 @@ struct sSTATS
     double STATtranTsTime;  // time spent estimating timestep
     double STATtranPctDone; // percentage of transient analysis complete
 
+    int STATruns;           // number of runs in multi-run analysis
     int STATnumIter;        // number of total iterations performed
     int STATtranIter;       // number of iterations for transient analysis
     int STATtranLastIter;   // number of iterations at last tran timepoint
     int STATtranIterCut;    // number of tran timepoints where iteration failed
     int STATtranTrapCut;    // number of tran timepoints where trapcheck failed
-
     int STATtimePts;        // total number of timepoints
     int STATaccepted;       // number of timepoints accepted
     int STATrejected;       // number of timepoints rejected

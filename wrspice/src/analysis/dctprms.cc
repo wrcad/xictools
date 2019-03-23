@@ -537,6 +537,8 @@ sDCTprms::loop(LoopWorkFunc func, sCKT *ckt, int restart, int dctr)
             }
             // do operation
             dct_skip = 0;
+            if (ckt->CKTcntDC)
+                ckt->CKTstat->STATruns++;
             if (!dctr || dimchg) {
                 OP.initRunops(job->JOBrun);
 #ifdef ALLPRMS
@@ -821,6 +823,8 @@ namespace {
         printf("\n");
 #endif
 
+        if (run->seqnum)
+            ckt->CKTstat->STATruns++;
 #ifdef ALLPRMS
         cx->ckt()->doTaskSetup();
 #endif

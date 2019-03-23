@@ -572,6 +572,7 @@ sCKT::doTask(bool reset)
                 CKTstat->STATloadThreads = 0;
                 CKTstat->STATloopThreads = 0;
 #endif
+                CKTstat->STATruns++;
                 error = IFanalysis::analysis(i)->anFunc(this, reset);
 #ifdef HAVE_GETRUSAGE
                 getrusage(RUSAGE_SELF, &ruse2);
