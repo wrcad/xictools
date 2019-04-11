@@ -214,15 +214,15 @@ Fixed .if/.elif/.else logic, wan't correct.  Had to add a stack of
 flags that indicate that a branch was taken.
 Jooyoung: Verilog JJ model doesn't work in sweep/chained DC analysis. FIXED
 
-TODO:
-Christine's file:  Windows singular matrix, ok under Linux.
-
 Stats of multi-runs should accumulate.
 reuse sCKT, accumulates (dc tran/chained DC analysis).
 new sCKT (loop, marg, mc) probably should accumulate but doesn't. FIXED
 Two possibilities:  "rebuild" actually reparse the deck, "reset" just
 recreate the sCKT from the sFtCkt.  The former is required if text
 changes, as in variable substitution.
+
+TODO:
+Christine's file:  Windows singular matrix, ok under Linux.
 
 TODO
 Use trial reset if alter only, otherwise rebuild.

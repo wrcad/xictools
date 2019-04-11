@@ -130,6 +130,72 @@ typedef sCKTnode *IFnode;
 //
 struct IFcomplex
 {
+    // No constructor, used in union.
+
+    void set(double r, double i)
+        {
+            real = r;
+            imag = i;
+        }
+
+    const IFcomplex operator+(const IFcomplex &A) const
+        {
+            IFcomplex ret;
+            ret.set(real + A.real, imag + A.imag);
+            return (ret);
+        }
+
+    const IFcomplex operator+(double r) const
+        {
+            IFcomplex ret;
+            ret.set(real + r, imag);
+            return (ret);
+        }
+
+    const IFcomplex operator-(const IFcomplex &A) const
+        {
+            IFcomplex ret;
+            ret.set(real - A.real, imag - A.imag);
+            return (ret);
+        }
+
+    const IFcomplex operator-(double r) const
+        {
+            IFcomplex ret;
+            ret.set(real - r, imag);
+            return (ret);
+        }
+
+    const IFcomplex operator*(const IFcomplex &A) const
+        {
+            IFcomplex ret;
+            ret.set(real*A.real - imag*A.imag, imag*A.real + real*A.imag);
+            return (ret);
+        }
+
+    const IFcomplex operator*(double r) const
+        {
+            IFcomplex ret;
+            ret.set(real*r, imag*r);
+            return (ret);
+        }
+
+    const IFcomplex operator/(const IFcomplex &A) const
+        {
+            double d = A.real*A.real + A.imag*A.imag;
+            IFcomplex ret;
+            ret.set((real*A.real + imag*A.imag)/d,
+                (imag*A.real - real*A.imag)/d);
+            return (ret);
+        }
+
+    const IFcomplex operator/(double r) const
+        {
+            IFcomplex ret;
+            ret.set(real/r, imag/r);
+            return (ret);
+        }
+
     double real;
     double imag;
 };
