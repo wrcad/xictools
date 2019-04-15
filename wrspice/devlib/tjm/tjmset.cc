@@ -188,7 +188,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         if (!model->tjm_betaGiven)
             model->tjm_beta = 1.0;
         if (!model->tjm_wvgGiven)
-            model->tjm_wvg = 2.6e-3;
+            model->tjm_wvg = 2.6/0.63;
         if (!model->tjm_wvratGiven)
             model->tjm_wvrat = 0.6;
         if (!model->tjm_wrratGiven)
@@ -222,7 +222,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
 
         //void TJModel::InitModel(ind_ii, ind_ij, ind_ji, ind_jj)
-        /*
+/*
         tjm_ind_ii = ind_ii
         tjm_ind_ij = ind_ij
         tjm_ind_ji = ind_ji
@@ -247,9 +247,8 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         tjm_elem_n          = <int*>view_en.data
         tjm_elem_inc        = <UINT8_t*>view_einc.data
         tjm_elem_dec        = <UINT8_t*>view_edec.data
-        */
+*/
 
-#ifdef notdef
         if (!model->TJMrtypeGiven)
             model->TJMrtype = 1;
         else {
@@ -471,7 +470,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
         else
             model->TJMvdpbak = halfvg;
-#endif //notdef
 
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {

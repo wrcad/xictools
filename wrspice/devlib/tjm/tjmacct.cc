@@ -72,6 +72,97 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
             *(ckt->CKTstate0 + inst->TJMphase) = phi;
             *(int *)(ckt->CKTstate0 + inst->TJMphsInt) = pint;
 
+/*
+            double dphase = phi;
+            double dvoltage = *(ckt->CKTstate0 + inst->TJMvoltage) * 1000;
+            double ddvoltage = *(ckt->CKTstate0 + inst->TJMdvdt) * 1000*1e-12;
+*/
+//XXX
+            // This method called when time step is accepted.
+            //void TJModel::Values(ModelContext* ctx)
+/*
+            double dphase;
+            double dvoltage;
+            double ddvoltage;
+            if (tjm_i == 0) {
+                dphase = -tjm_node_phases[tjm_j-1];
+                dvoltage = -tjm_node_voltages[tjm_j-1];
+                ddvoltage = -tjm_node_dvoltages[tjm_j-1];
+            }
+            elif (tjm_j == 0) {
+                dphase = tjm_node_phases[tjm_i-1];
+                dvoltage = tjm_node_voltages[tjm_i-1];
+                ddvoltage = tjm_node_dvoltages[tjm_i-1];
+            }
+            else {
+                dphase = tjm_node_phases[tjm_i-1] - tjm_node_phases[tjm_j-1];
+                dvoltage = tjm_node_voltages[tjm_i-1] - tjm_node_voltages[tjm_j-1];
+                ddvoltage = tjm_node_dvoltages[tjm_i-1] - tjm_node_dvoltages[tjm_j-1];
+            }
+
+            if (tjm_i == 0)
+                dphase = -tjm_node_phases[tjm_j-1];
+            else if (tjm_j == 0)
+                dphase = tjm_node_phases[tjm_i-1];
+            else
+                dphase = tjm_node_phases[tjm_i-1] - tjm_node_phases[tjm_j-1];
+*/
+
+/*
+            double sinphi2 = sin(dphase/2.0);
+            double cosphi2 = cos(dphase/2.0);
+
+            cIFcomplex FcSum(0.0, 0.0);
+            cIFcomplex FsSum(0.0, 0.0);
+            for (int i = 0; i < model->tjm_narray; i++) {
+                model->tjm_Fc[i] = model->tjm_Fcdt[i] +
+                    model->tjm_alpha1[i]*model->tjm_cosphi2;
+                model->tjm_Fs[i] = model->tjm_Fsdt[i] +
+                    model->tjm_alpha1[i]*model->tjm_sinphi2;
+                model->tjm_Fcprev[i] = model->tjm_Fc[i];
+                model->tjm_Fsprev[i] = model->tjm_Fs[i];
+                FcSum = FcSum + (model->tjm_A[i] +
+                    model->tjm_B[i])*model->tjm_Fc[i];
+                FsSum = FsSum + (model->tjm_A[i] -
+                    model->tjm_B[i])*model->tjm_Fs[i];
+            }
+
+            double curr = FcSum.real*sinphi2 + FsSum.real*cosphi2;
+            double crhs = inst->TJMcriti*
+                (-curr + model->tjm_sgw*(dvoltage +
+                model->tjm_sgw*model->tjm_beta*ddvoltage));
+inst->TJMcurr = crhs;
+*/
+
+/*
+            if (tjm_i == 0) {
+                tjm_elem_currents[tjm_eindex] = -tjm_crit_current*
+                    (-curr + tjm_sgw*(dvoltage + tjm_sgw*tjm_beta*ddvoltage));
+                tjm_elem_phases[tjm_eindex] = -tjm_node_phases[tjm_j-1];
+                tjm_elem_voltages[tjm_eindex] = tjm_.node_voltages[tjm_j-1];
+            }
+            else if (tjm_j == 0) {
+                tjm_elem_currents[tjm_eindex] = tjm_crit_current*
+                    (-curr + tjm_sgw*(dvoltage + tjm_sgw*tjm_beta*ddvoltage));
+                tjm_elem_phases[tjm_eindex] = tjm_node_phases[tjm_i-1];
+                tjm_elem_voltages[tjm_eindex] = tjm_node_voltages[tjm_i-1];
+            }
+            else {
+                tjm_elem_currents[tjm_eindex] = tjm_crit_current*
+                    (-curr + tjm_sgw*(dvoltage + tjm_sgw*tjm_beta*ddvoltage));
+                tjm_elem_phases[tjm_eindex] =
+                    (tjm_node_phases[tjm_i-1] - tjm_node_phases[tjm_j-1]);
+                tjm_elem_voltages[tjm_eindex] =
+                    (tjm_node_voltages[tjm_i-1] - tjm_node_voltages[tjm_j-1]);
+            }
+
+            NQuanta(tjm_elem_phases[tjm_eindex], 
+                &tjm_elem_n[tjm_eindex], &tjm_elem_inc[tjm_eindex], 
+                &tjm_elem_dec[tjm_eindex], ctx.histeresis);
+*/
+      //////
+
+
             // find max vj for time step
             if (model->TJMictype != 0 && inst->TJMcriti > 0) {
                 if (!didm) {
@@ -103,8 +194,7 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
 #ifdef notdef
 
 // This method called when time step is accepted.
-void
-TJModel::Values(ModelContext* ctx)
+void TJModel::Values(ModelContext* ctx)
 {
     double dphase;
     double dvoltage;

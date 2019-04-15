@@ -137,7 +137,7 @@ IO("wvg",               TJM_MOD_WVG,        IF_REAL,
                 "Gap voltage"),
 IO("wvrat",             TJM_MOD_WVRAT,      IF_REAL,
                 "Ic to quasiparticle step height ratio"),
-IO("wrrat",             TJM_MOD_WVRAT,      IF_REAL,
+IO("wrrat",             TJM_MOD_WRRAT,      IF_REAL,
                 "Normal to subgap resistance ratio"),
 
 // Legacy RSJ Parameters
@@ -310,7 +310,7 @@ TJMdev::TJMdev()
     dv_numKeys = NUMELEMS(TJMkeys);
     dv_keys = TJMkeys;
 
-    dv_levels[0] = 1;
+    dv_levels[0] = 3;
     dv_levels[1] = 0;
     dv_modelKeys = TJMmodNames;
 

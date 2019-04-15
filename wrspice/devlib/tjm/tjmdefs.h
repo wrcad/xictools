@@ -218,6 +218,8 @@ struct sTJMinstance : public sGENinstance
 #define TJMinitVoltage TJMinitCnd[0]
 #define TJMinitPhase TJMinitCnd[1]
 
+//XXX
+double TJMcurr;
     double TJMinitControl;  // initial control current
 #ifdef NEWLSER
     double TJMlser;         // parasitic series inductance

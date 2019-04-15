@@ -60,6 +60,7 @@ INDEVICES = \
   res \
   src \
   sw \
+  tjm \
   tra \
   urc \
   vbic

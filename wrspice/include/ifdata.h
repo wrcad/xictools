@@ -200,6 +200,36 @@ struct IFcomplex
     double imag;
 };
 
+inline const IFcomplex operator+(double r, const IFcomplex &A)
+{
+    IFcomplex ret;
+    ret.set(A.real+r, A.imag);
+    return (ret);
+}
+
+inline const IFcomplex operator-(double r, const IFcomplex &A)
+{
+    IFcomplex ret;
+    ret.set(r-A.real, -A.imag);
+    return (ret);
+}
+
+inline const IFcomplex operator*(double r, const IFcomplex &A)
+{
+    IFcomplex ret;
+    ret.set(A.real*r, A.imag*r);
+    return (ret);
+}
+
+inline const IFcomplex operator/(double r, const IFcomplex &A)
+{
+    double d = A.real*A.real + A.imag*A.imag;
+    r /= d;
+    IFcomplex ret;
+    ret.set(r*A.real, -r*A.imag);
+    return (ret);
+}
+
 // Since IFcomplex is used in a union, it can't have a constructor.
 //
 struct cIFcomplex : public IFcomplex
