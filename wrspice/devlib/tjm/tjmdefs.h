@@ -183,6 +183,9 @@ struct TJMdev : public IFdevice
 //    void initTran(sGENmodel*, double, double);
 };
 
+// Maximal number of TJM model Dirichlet series terms.
+#define MaxTJMCoeffArraySize 20
+
 struct sTJMinstance : public sGENinstance
 {
     sTJMinstance()
@@ -232,6 +235,18 @@ double TJMcurr;
     double TJMlshVeq;       // stamp Veq
 #endif
     double TJMdelVdelT;     // dvdt storage
+
+    double          tjm_sinphi2;
+    double          tjm_cosphi2;
+    IFcomplex       tjm_Fc[MaxTJMCoeffArraySize];
+    IFcomplex       tjm_Fs[MaxTJMCoeffArraySize];
+    IFcomplex       tjm_Fcprev[MaxTJMCoeffArraySize];
+    IFcomplex       tjm_Fsprev[MaxTJMCoeffArraySize];
+    IFcomplex       tjm_Fcdt[MaxTJMCoeffArraySize];
+    IFcomplex       tjm_Fsdt[MaxTJMCoeffArraySize];
+    IFcomplex       tjm_alpha0[MaxTJMCoeffArraySize];
+    IFcomplex       tjm_beta0[MaxTJMCoeffArraySize];
+    IFcomplex       tjm_alpha1[MaxTJMCoeffArraySize];
 
     // These parameters scale with area
     double TJMcriti;        // junction critical current
@@ -326,9 +341,6 @@ double TJMcurr;
 #endif
 #endif
 
-// Maximal number of TJM model Dirichlet series terms.
-#define MaxTJMCoeffArraySize 20
-
 struct sTJMmodel : sGENmodel
 {
     sTJMmodel()          { memset(this, 0, sizeof(sTJMmodel)); }
@@ -347,17 +359,6 @@ struct sTJMmodel : sGENmodel
     IFcomplex       *tjm_A;
     IFcomplex       *tjm_B;
     IFcomplex       *tjm_P;
-    IFcomplex       tjm_Fc[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fs[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fcdt[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fsdt[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fcprev[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fsprev[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_alpha0[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_beta0[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_alpha1[MaxTJMCoeffArraySize];
-    double          tjm_sinphi2;
-    double          tjm_cosphi2;
     int             tjm_narray;
 
     int TJMrtype;

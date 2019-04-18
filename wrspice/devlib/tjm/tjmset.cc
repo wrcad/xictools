@@ -183,71 +183,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
     sTJMmodel *model = static_cast<sTJMmodel*>(genmod);
     for ( ; model; model = model->next()) {
 
-        if (!model->tjm_coeffsGiven)
-            model->tjm_coeffs = strdup("tjm1");
-        if (!model->tjm_betaGiven)
-            model->tjm_beta = 1.0;
-        if (!model->tjm_wvgGiven)
-            model->tjm_wvg = 2.6/0.63;
-        if (!model->tjm_wvratGiven)
-            model->tjm_wvrat = 0.6;
-        if (!model->tjm_wrratGiven)
-            model->tjm_wrrat = 0.1;
-
-        TJMcoeffSet *cs = TJMcoeffSet::getTJMcoeffSet(model->tjm_coeffs);
-        if (!cs) {
-            // ERROR
-            return (E_PANIC);
-        }
-        model->tjm_narray = cs->cfs_size;
-        model->tjm_A = new IFcomplex[model->tjm_narray];
-        model->tjm_B = new IFcomplex[model->tjm_narray];
-        model->tjm_P = new IFcomplex[model->tjm_narray];
-        double x = 0.0;
-        for (int i = 0; i < model->tjm_narray; i++) {
-            model->tjm_A[i] = cs->cfs_A[i];
-            model->tjm_B[i] = cs->cfs_B[i];
-            model->tjm_P[i] = cs->cfs_P[i]*model->tjm_wvg*0.5;
-            x = x - (model->tjm_A[i]/model->tjm_P[i]).real;
-        }
-
-        model->tjm_sgw = 1.0/(model->tjm_wvg*model->tjm_wvrat);
-
-//printf("X=%lf SGW=%lf\n", x, model->tjm_sgw);
-
-        for (int i = 0; i < model->tjm_narray; i++) {
-            model->tjm_A[i] = model->tjm_A[i]/(-1.0 * x);
-            model->tjm_B[i] = model->tjm_B[i]*model->tjm_wvg*
-                (model->tjm_wrrat - 1.0)/(2.0*model->tjm_wvrat);
-        }
-
-        //void TJModel::InitModel(ind_ii, ind_ij, ind_ji, ind_jj)
-/*
-        tjm_ind_ii = ind_ii
-        tjm_ind_ij = ind_ij
-        tjm_ind_ji = ind_ji
-        tjm_ind_jj = ind_jj
-
-        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_phase = psglobals.NodePhase
-        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_voltage = psglobals.NodeVoltage
-        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_dvoltage = psglobals.NodeDVoltage
-        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_ephase = psglobals.ElementPhase
-        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_evoltage = psglobals.ElementVoltage
-        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_ecurrent = psglobals.ElementCurrent
-        cnp.ndarray[INT_t, ndim=1, mode="c"] view_en = psglobals.ElementN
-        cnp.ndarray[UINT8_t, ndim=1, mode="c"] view_einc = psglobals.ElementInc
-        cnp.ndarray[UINT8_t, ndim=1, mode="c"] view_edec = psglobals.ElementDec
-
-        tjm_node_phases     = <double*>view_phase.data
-        tjm_node_voltages   = <double*>view_voltage.data
-        tjm_node_dvoltages  = <double*>view_dvoltage.data
-        tjm_elem_phases     = <double*>view_ephase.data
-        tjm_elem_voltages   = <double*>view_evoltage.data
-        tjm_elem_currents   = <double*>view_ecurrent.data
-        tjm_elem_n          = <int*>view_en.data
-        tjm_elem_inc        = <UINT8_t*>view_einc.data
-        tjm_elem_dec        = <UINT8_t*>view_edec.data
-*/
 
         if (!model->TJMrtypeGiven)
             model->TJMrtype = 1;
@@ -470,6 +405,86 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
         else
             model->TJMvdpbak = halfvg;
+
+//XXX tjm start
+        if (!model->tjm_coeffsGiven)
+            model->tjm_coeffs = strdup("tjm1");
+
+// dimensionless capacitance (betac)
+//        if (!model->tjm_betaGiven)
+//            model->tjm_beta = 1.0;
+model->tjm_beta = 0.0;
+//model->tjm_beta = model->TJMcriti*R*R*model->TJMcap/PHI0_2PI;
+// gap voltage
+//        if (!model->tjm_wvgGiven)
+//            model->tjm_wvg = 2.6/0.63;
+//            model->tjm_wvg = 2.6/0.6857;
+double vx = sqrt(PHI0_2PI/model->TJMcpic);  // should be 0.6857mV
+model->tjm_wvg = model->TJMvg/vx;
+// IcRn/Vg ratio (Ambegaoker-Baratoff coefficient)
+//        if (!model->tjm_wvratGiven)
+//            model->tjm_wvrat = 0.6;
+model->tjm_wvrat = model->TJMicFactor;
+// Rn/Rsub normal to subgap resistance ratio
+//        if (!model->tjm_wrratGiven)
+//            model->tjm_wrrat = 0.1;
+            model->tjm_wrrat = model->TJMrn/model->TJMr0;
+
+        TJMcoeffSet *cs = TJMcoeffSet::getTJMcoeffSet(model->tjm_coeffs);
+        if (!cs) {
+            // ERROR
+            return (E_PANIC);
+        }
+        model->tjm_narray = cs->cfs_size;
+        model->tjm_A = new IFcomplex[model->tjm_narray];
+        model->tjm_B = new IFcomplex[model->tjm_narray];
+        model->tjm_P = new IFcomplex[model->tjm_narray];
+        double x = 0.0;
+        for (int i = 0; i < model->tjm_narray; i++) {
+            model->tjm_A[i] = cs->cfs_A[i];
+            model->tjm_B[i] = cs->cfs_B[i];
+            model->tjm_P[i] = cs->cfs_P[i]*model->tjm_wvg*0.5;
+            x = x - (model->tjm_A[i]/model->tjm_P[i]).real;
+        }
+
+        // 1/IcRn
+        model->tjm_sgw = 1.0/(model->tjm_wvg*model->tjm_wvrat);
+
+//printf("X=%lf SGW=%lf\n", x, model->tjm_sgw);
+
+        for (int i = 0; i < model->tjm_narray; i++) {
+            model->tjm_A[i] = model->tjm_A[i]/(-1.0 * x);
+            model->tjm_B[i] = model->tjm_B[i]*model->tjm_wvg*
+                (model->tjm_wrrat - 1.0)/(2.0*model->tjm_wvrat);
+        }
+
+        //void TJModel::InitModel(ind_ii, ind_ij, ind_ji, ind_jj)
+/*
+        tjm_ind_ii = ind_ii
+        tjm_ind_ij = ind_ij
+        tjm_ind_ji = ind_ji
+        tjm_ind_jj = ind_jj
+
+        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_phase = psglobals.NodePhase
+        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_voltage = psglobals.NodeVoltage
+        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_dvoltage = psglobals.NodeDVoltage
+        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_ephase = psglobals.ElementPhase
+        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_evoltage = psglobals.ElementVoltage
+        cnp.ndarray[FLOAT_t, ndim=1, mode="c"] view_ecurrent = psglobals.ElementCurrent
+        cnp.ndarray[INT_t, ndim=1, mode="c"] view_en = psglobals.ElementN
+        cnp.ndarray[UINT8_t, ndim=1, mode="c"] view_einc = psglobals.ElementInc
+        cnp.ndarray[UINT8_t, ndim=1, mode="c"] view_edec = psglobals.ElementDec
+
+        tjm_node_phases     = <double*>view_phase.data
+        tjm_node_voltages   = <double*>view_voltage.data
+        tjm_node_dvoltages  = <double*>view_dvoltage.data
+        tjm_elem_phases     = <double*>view_ephase.data
+        tjm_elem_voltages   = <double*>view_evoltage.data
+        tjm_elem_currents   = <double*>view_ecurrent.data
+        tjm_elem_n          = <int*>view_en.data
+        tjm_elem_inc        = <UINT8_t*>view_einc.data
+        tjm_elem_dec        = <UINT8_t*>view_edec.data
+*/
 
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
