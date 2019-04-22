@@ -38,11 +38,6 @@
  $Id:$
  *========================================================================*/
 
-/***************************************************************************
-JSPICE3 adaptation of Spice3e2 - Copyright (c) Stephen R. Whiteley 1992
-Author: 1992 Stephen R. Whiteley
-****************************************************************************/
-
 #include "tjmdefs.h"
 
 
@@ -63,23 +58,6 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
             model->tjm_coeffsGiven = true;
         }
         break;
-    case TJM_MOD_BETA:
-        model->tjm_beta = value->rValue;
-        model->tjm_betaGiven = true;
-        break;
-    case TJM_MOD_WVG:
-        model->tjm_wvg = value->rValue;
-        model->tjm_wvgGiven = true;
-        break;
-    case TJM_MOD_WVRAT:
-        model->tjm_wvrat = value->rValue;
-        model->tjm_wvratGiven = true;
-        break;
-    case TJM_MOD_WRRAT:
-        model->tjm_wrrat = value->rValue;
-        model->tjm_wrratGiven = true;
-        break;
-
     case TJM_MOD_PI:
         model->TJMpi = (value->iValue != 0);
         model->TJMpiGiven = true;

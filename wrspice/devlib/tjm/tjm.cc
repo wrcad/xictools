@@ -127,20 +127,8 @@ OP("lshbrn",            TJM_QUEST_NSHB,     IF_INTEGER,
 IFparm TJMmPTable[] = {
 OP("jj",                TJM_MOD_TJM,        IF_FLAG,
                 "Model name"),
-
-// PSCAN2 Parameters
 IO("coeffset",          TJM_MOD_COEFFS,     IF_STRING,
                 "Coefficient set name"),
-IO("beta",              TJM_MOD_BETA,       IF_REAL,
-                "McCumber parameter (dimensionless capacitance)"),
-IO("wvg",               TJM_MOD_WVG,        IF_REAL,
-                "Gap voltage"),
-IO("wvrat",             TJM_MOD_WVRAT,      IF_REAL,
-                "Ic to quasiparticle step height ratio"),
-IO("wrrat",             TJM_MOD_WRRAT,      IF_REAL,
-                "Normal to subgap resistance ratio"),
-
-// Legacy RSJ Parameters
 IO("pijj",              TJM_MOD_PI,         IF_INTEGER,
                 "Default is PI junction"),
 IO("rtype",             TJM_MOD_RT,         IF_INTEGER,
@@ -198,7 +186,15 @@ OP("vless",             TJM_MQUEST_VL,      IF_REAL|IF_VOLT,
 OP("vmore",             TJM_MQUEST_VM,      IF_REAL|IF_VOLT,
                 "Gap knee voltage"),
 OP("vdp",               TJM_MQUEST_VDP,     IF_REAL|IF_VOLT,
-                "Dropback voltage")
+                "Dropback voltage"),
+OP("betac",             TJM_MQUEST_BETAC,   IF_REAL,
+                "Stewart-McCumber parameter"),
+OP("wvg",               TJM_MQUEST_WVG,     IF_REAL,
+                "Normalized gap voltage"),
+OP("wvrat",             TJM_MQUEST_WVRAT,   IF_REAL,
+                "Ic to quasiparticle step height ratio"),
+OP("wrrat",             TJM_MQUEST_WRRAT,   IF_REAL,
+                "Normal to subgap resistance ratio")
 };
 
 const char *TJMnames[] = {

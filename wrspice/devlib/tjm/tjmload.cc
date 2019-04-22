@@ -253,40 +253,6 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         ts.ts_dcrt = 0;
         ts.ts_crt  = inst->TJMcriti;
     
-//XXX
-        inst->tjm_sinphi2 = sin(ts.ts_phi/2.0);
-        inst->tjm_cosphi2 = cos(ts.ts_phi/2.0);
-        double cosphi = cos(ts.ts_phi);
-
-//        cIFcomplex FcAnSum(0.0, 0.0);
-//        cIFcomplex FsAnSum(0.0, 0.0);
-        for (int i = 0; i < model->tjm_narray; i++) {
-            inst->tjm_Fc[i] = inst->tjm_Fcdt[i] +
-                inst->tjm_alpha1[i]*inst->tjm_cosphi2;
-            inst->tjm_Fs[i] = inst->tjm_Fsdt[i] +
-                inst->tjm_alpha1[i]*inst->tjm_sinphi2;
-//            FcAnSum = FcAnSum + model->tjm_A[i]*inst->tjm_Fc[i];
-//            FsAnSum = FsAnSum + model->tjm_A[i]*inst->tjm_Fs[i];
-        }
-
-//        double dcurr = -ts.ts_crt*
-//            (FcAnSum.real*inst->tjm_cosphi2 - FsAnSum.real*inst->tjm_sinphi2);
-//inst->TJMcurr = dcurr;
-        //printf("TJM dcurr=%lf\n", dcurr);
-
-/*
-        if (tjm_i == 0)
-            matrix[tjm_ind_jj] += dcurr;
-        elif (tjm_j == 0)
-            matrix[tjm_ind_ii] += dcurr;
-        else {
-            matrix[tjm_ind_ii] += dcurr;
-            matrix[tjm_ind_ij] -= dcurr;
-            matrix[tjm_ind_ji] -= dcurr;
-            matrix[tjm_ind_jj] += dcurr;
-        }
-*/
-
         ckt->integrate(inst->TJMvoltage, inst->TJMdelVdelT);
         //
         // compute quasiparticle current and derivatives
@@ -351,13 +317,10 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
             y0 += *(ckt->CKTstate1 + inst->TJMdvdt);
 
         double temp = *(ckt->CKTstate1 + inst->TJMvoltage);
-double vx = sqrt(PHI0_2PI/model->TJMcpic);  // should be 0.6857mV
-double dvoltage_prev = temp/vx;
         double rag0  = ckt->CKTorder == 1 ? ckt->CKTdelta : .5*ckt->CKTdelta;
         ts.ts_vj  = temp + rag0*y0;
 
         ts.ts_phi = *(ckt->CKTstate1 + inst->TJMphase);
-double dphase_prev = ts.ts_phi;
         temp = ts.ts_vj;
         if (ckt->CKTorder > 1)
             temp += *(ckt->CKTstate1 + inst->TJMvoltage);
@@ -368,70 +331,9 @@ double dphase_prev = ts.ts_phi;
         else
             ts.ts_ci = 0;
 
-        // void TJModel::Admitance1(double *matrix, ModelContext* ctx)
-        // This method is called on the first Newton iteration of the time step.
-/*
-        double adm = ts.ts_crt*(model->tjm_sgw*ckt->CKTdelta +
-            (model->tjm_sgw*model->tjm_beta*
-                (ckt->CLTdeltaOld[1] - ckt->CKTdeltaOld[2])));
-
-//        double adm = tjm_crit_current*(tjm_sgw *
-//            (ctx.coeff_dt + tjm_sgw * tjm_beta * ctx.coeff_ddt));
-
-        double dphase_prev;
-        double dvoltage_prev;
-        if (tjm_i == 0) {
-            dphase_prev = -ctx.phases_prev[tjm_j-1];
-            dvoltage_prev = -ctx.voltages_prev[tjm_j-1];
-            matrix[tjm_ind_jj] += adm;
-        }
-        else if (tjm_j == 0) {
-            dphase_prev = ctx.phases_prev[tjm_i-1];
-            dvoltage_prev = ctx.voltages_prev[tjm_i-1];
-            matrix[tjm_ind_ii] += adm;
-        }
-        else {
-            dphase_prev = ctx.phases_prev[tjm_i-1] - ctx.phases_prev[tjm_j-1];
-            dvoltage_prev = ctx.voltages_prev[tjm_i-1] - ctx.voltages_prev[tjm_j-1];
-            matrix[tjm_ind_ii] += adm;
-            matrix[tjm_ind_ij] -= adm;
-            matrix[tjm_ind_ji] -= adm;
-            matrix[tjm_ind_jj] += adm;
-        }
-*/
-
-        double sinphi2 = sin(dphase_prev/2.0);
-        double cosphi2 = cos(dphase_prev/2.0);
-
-//double tu = model->tjm_wvg/PHI0_2PI;
-double tu = model->TJMvg/PHI0_2PI;
-double time_step = ckt->CKTdelta*tu;
-        for (int i = 0; i < model->tjm_narray; i++) {
-            double pq = model->tjm_P[i].real*time_step;
-            double epq = exp(pq);
-            inst->tjm_alpha0[i] = (epq*(pq*pq - 2.0) + pq*2.0 + 2.0)/
-                (pq*pq*model->tjm_P[i]);
-            inst->tjm_beta0[i] = (epq*pq - epq*2.0 + pq + 2.0)/
-                (pq*model->tjm_P[i]*model->tjm_P[i]);
-            inst->tjm_alpha1[i] = (epq*2.0 - 2.0 - pq*2.0 - pq*pq)/
-                (pq*pq*model->tjm_P[i]);
-            //inst->tjm_alpha0[i] = (epq * (pq - 1.0) + 1.0)/(pq * model->tjm_P[i]);
-            //inst->tjm_alpha1[i] = (epq - pq - 1.0)/(pq * model->tjm_P[i]);
-
-            // Part of Fc(t+dt) and Fs(t+dt) which do not depends on phase(t+dt)
-            inst->tjm_Fcdt[i] = epq*inst->tjm_Fcprev[i] +
-                inst->tjm_alpha0[i]*cosphi2 -
-                inst->tjm_beta0[i]*sinphi2*dvoltage_prev/2.0;
-            inst->tjm_Fsdt[i] = epq*inst->tjm_Fsprev[i] +
-                inst->tjm_alpha0[i]*sinphi2 +
-                inst->tjm_beta0[i]*cosphi2*dvoltage_prev/2.0;
-            //inst->tjm_Fcdt[i] = epq*inst->tjm_Fcprev[i] + inst->tjm_alpha0[i]*cosphi2;
-            //inst->tjm_Fsdt[i] = epq*inst->tjm_Fsprev[i] + inst->tjm_alpha0[i]*sinphi2;
-//printf("%g %g %g %g %g\n", model->tjm_alpha0[i].real, model->tjm_beta0[i].real,
-//model->tjm_alpha1[i].real, model->tjm_Fcdt[i].real, model->tjm_Fsdt[i].real);
-        }
-
         inst->TJMdelVdelT = ckt->find_ceq(inst->TJMvoltage);
+
+        inst->tjm_newstep(ckt);
 
         ts.ts_crhs = 0;
         ts.ts_dcrt = 0;
@@ -515,17 +417,8 @@ double time_step = ckt->CKTdelta*tu;
 #endif
         }
 
-        // void TJModel::Admitance0(double *matrix)
-        // This method called during initialization of simulation.
-        cIFcomplex neg_one(-1.0, 0.0);
-
-        // Fc(0) and Fs(0)
-        for (int i = 0; i < model->tjm_narray; i++) {
-            inst->tjm_Fcprev[i] = neg_one/model->tjm_P[i];
-            inst->tjm_Fsprev[i] = cIFcomplex(0.0, 0.0);
-        }
-
         inst->TJMdelVdelT = ckt->find_ceq(inst->TJMvoltage);
+        inst->tjm_init(ts.ts_phi);
 
         ts.ts_crhs = 0;
         ts.ts_dcrt = 0;
@@ -842,56 +735,13 @@ tjmstuff::tjm_load(sCKT *ckt, sTJMmodel *model, sTJMinstance *inst)
     double si    = sin(ts_phi);
 #endif
 
-/*
-// phase-mode admittance
-    double adm = ts.ts_crt*(model->tjm_sgw*ckt->CKTdelta +
-        (model->tjm_sgw*model->tjm_beta*
-            (ckt->CLTdeltaOld[1] - ckt->CKTdeltaOld[2])));
-
-    double adm = tjm_crit_current*(tjm_sgw *
-        (ctx.coeff_dt + tjm_sgw * tjm_beta * ctx.coeff_ddt));
-
-    double dphase_prev;
-    double dvoltage_prev;
-    if (tjm_i == 0) {
-        dphase_prev = -ctx.phases_prev[tjm_j-1];
-        dvoltage_prev = -ctx.voltages_prev[tjm_j-1];
-        matrix[tjm_ind_jj] += adm;
-    }
-    else if (tjm_j == 0) {
-        dphase_prev = ctx.phases_prev[tjm_i-1];
-        dvoltage_prev = ctx.voltages_prev[tjm_i-1];
-        matrix[tjm_ind_ii] += adm;
-    }
-    else {
-        dphase_prev = ctx.phases_prev[tjm_i-1] - ctx.phases_prev[tjm_j-1];
-        dvoltage_prev = ctx.voltages_prev[tjm_i-1] - ctx.voltages_prev[tjm_j-1];
-        matrix[tjm_ind_ii] += adm;
-        matrix[tjm_ind_ij] -= adm;
-        matrix[tjm_ind_ji] -= adm;
-        matrix[tjm_ind_jj] += adm;
-    }
-*/
-    double vx = sqrt(PHI0_2PI/model->TJMcpic);  // should be 0.6857mV
-    double dvoltage = ts_vj/vx; // millivolts
-
-    inst->tjm_sinphi2 = sin(ts_phi/2.0);
-    inst->tjm_cosphi2 = cos(ts_phi/2.0);   
-
-    cIFcomplex FcSum(0.0, 0.0);
-    cIFcomplex FsSum(0.0, 0.0);
-    for (int i = 0; i < model->tjm_narray; i++) {
-        FcSum = FcSum + (model->tjm_A[i] + model->tjm_B[i])*inst->tjm_Fc[i];
-        FsSum = FsSum + (model->tjm_A[i] - model->tjm_B[i])*inst->tjm_Fs[i];
-    }
-
+    double curr;
+//double vx = sqrt(PHI0_2PI/model->TJMcpic);  // should be 0.6857mV
+//double dvoltage = ts_vj/vx; // millivolts
+inst->tjm_update(ts_phi, &curr);
+    gqt = inst->TJMgn + ckt->CKTag[0]*inst->TJMcap;
     double ccap = inst->TJMdelVdelT*inst->TJMcap;
-    double curr = FcSum.real*inst->tjm_sinphi2 + FsSum.real*inst->tjm_cosphi2;
-    double crhsw = ts_crt*(-curr + model->tjm_sgw*dvoltage) + ccap;
-
-crhs = crhsw;
-gqt = ts_crt*model->tjm_sgw/vx + ckt->CKTag[0]*inst->TJMcap;
-inst->TJMcurr = crhs;
+    crhs = ts_crt*(-curr) + ts_vj*inst->TJMgn + ccap;
 
     // load matrix, rhs vector
     if (inst->TJMphsNode > 0)
@@ -935,5 +785,190 @@ inst->TJMcurr = crhs;
     if (inst->TJMphsNode > 0)
         ckt->ldset(inst->TJMphsPhsPtr, 1.0);
 #endif
+}
+
+int
+sTJMmodel::tjm_init()
+{
+    if (!tjm_coeffsGiven)
+        tjm_coeffs = strdup("tjm1");
+
+    TJMcoeffSet *cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
+    if (!cs) {
+        // ERROR
+        return (E_PANIC);
+    }
+    tjm_narray = cs->cfs_size;
+    tjm_A = new IFcomplex[tjm_narray];
+    tjm_B = new IFcomplex[tjm_narray];
+    tjm_P = new IFcomplex[tjm_narray];
+    for (int i = 0; i < tjm_narray; i++) {
+        tjm_A[i] = cs->cfs_A[i];
+        tjm_B[i] = cs->cfs_B[i];
+        tjm_P[i] = cs->cfs_P[i];
+    }
+
+#ifdef PSCAN2
+    double vx = sqrt(PHI0_2PI/TJMcpic);  // should be 0.6857mV
+    tjm_wvg = TJMvg/vx;
+    tjm_wvrat = TJMicFactor;
+    tjm_wrrat = TJMrn/TJMr0;
+
+    double x = 0.0;
+    for (int i = 0; i < tjm_narray; i++) {
+        tjm_P[i] = tjm_P[i]*tjm_wvg*0.5;
+        x = x - (tjm_A[i]/tjm_P[i]).real;
+    }
+
+    // 1/IcRn
+    tjm_sgw = 1.0/(tjm_wvg*tjm_wvrat);
+
+    for (int i = 0; i < tjm_narray; i++) {
+        tjm_A[i] = tjm_A[i]/(-1.0 * x);
+        tjm_B[i] = tjm_B[i]*tjm_wvg*(tjm_wrrat - 1.0)/(2.0*tjm_wvrat);
+    }
+
+#else
+    double omega_g = TJMvg/PHI0_2PI;
+    double omega_J = sqrt(1.0/(TJMcpic*PHI0_2PI));
+    tjm_kgap =  omega_g/omega_J;
+    tjm_a_supp = 1.0;
+
+    double r = 0.0;
+    for (int i = 0; i < tjm_narray; i++)
+        r -= (tjm_A[i]/tjm_P[i]).real;
+    tjm_Rejptilde0 = r*tjm_a_supp;
+
+    tjm_kgap_over_Rejptilde0 = tjm_kgap/tjm_Rejptilde0;
+    tjm_alphaN = 1.0/(2.0*tjm_kgap*tjm_Rejptilde0);
+
+    for (int i = 0; i < tjm_narray; i++) {
+        tjm_C[i] = (tjm_a_supp*tjm_A[i] + tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
+        tjm_D[i] = (tjm_a_supp*tjm_A[i] - tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
+    }
+#endif
+    return (OK);
+}
+
+void
+sTJMinstance::tjm_init(double phi)
+{
+    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
+#ifdef zzzzzPSCAN2
+    cIFcomplex neg_one(-1.0, 0.0);
+    for (int i = 0; i < model->tjm_narray; i++) {
+        tjm_Fcprev[i] = neg_one/model->tjm_P[i];
+        tjm_Fsprev[i] = cIFcomplex(0.0, 0.0);
+    }
+
+#else
+    double sinphi_2 = sin(0.5*phi);
+    double cosphi_2 = cos(0.5*phi);
+    tjm_sinphi_2_old = sinphi_2;
+    tjm_cosphi_2_old = cosphi_2;
+
+    for (int i = 0; i < model->tjm_narray; i++) {
+        tjm_Fcprev[i] = cIFcomplex(cosphi_2, 0.0);
+        tjm_Fsprev[i] = cIFcomplex(sinphi_2, 0.0);
+    }
+
+#endif
+}
+
+void
+sTJMinstance::tjm_newstep(sCKT *ckt)
+{
+    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
+#ifdef PSCAN2
+    double vx = sqrt(PHI0_2PI/model->TJMcpic);  // should be 0.6857mV
+    double dvoltage_prev = *(ckt->CKTstate1 + TJMvoltage) / vx;
+    double dphase_prev = *(ckt->CKTstate1 + TJMphase);
+
+    double sinphi2 = sin(dphase_prev/2.0);
+    double cosphi2 = cos(dphase_prev/2.0);
+
+    double tu = 0.5*model->TJMvg/PHI0_2PI;
+    double time_step = ckt->CKTdelta*tu;
+    for (int i = 0; i < model->tjm_narray; i++) {
+        double pq = model->tjm_P[i].real*time_step;
+        double epq = exp(pq);
+        tjm_alpha0[i] = (epq*(pq*pq - 2.0) + pq*2.0 + 2.0)/
+            (pq*pq*model->tjm_P[i]);
+        tjm_beta0[i] = (epq*pq - epq*2.0 + pq + 2.0)/
+            (pq*model->tjm_P[i]*model->tjm_P[i]);
+        tjm_alpha1[i] = (epq*2.0 - 2.0 - pq*2.0 - pq*pq)/
+            (pq*pq*model->tjm_P[i]);
+
+        // Part of Fc(t+dt) and Fs(t+dt) which do not depends on phase(t+dt)
+        tjm_Fcdt[i] = epq*tjm_Fcprev[i] + tjm_alpha0[i]*cosphi2 -
+            tjm_beta0[i]*sinphi2*dvoltage_prev/2.0;
+        tjm_Fsdt[i] = epq*tjm_Fsprev[i] + tjm_alpha0[i]*sinphi2 +
+            tjm_beta0[i]*cosphi2*dvoltage_prev/2.0;
+    }
+
+#else
+    double omega_J = sqrt(TJMcriti/(TJMcap*PHI0_2PI));
+    double dt = omega_J*ckt->CKTdelta;
+
+    for (int i = 0; i < model->tjm_narray; i++) {
+        cIFcomplex z(model->tjm_P[i]*model->tjm_kgap*dt);
+        double d = exp(z.real);
+        cIFcomplex ez(d*cos(z.imag), d*sin(z.imag));
+        tjm_exp_z[i] = ez;
+        tjm_alpha0[i] = (ez - 1.0)/z - ez;
+        tjm_alpha1[i] = 1.0 + (1.0 - ez)/z;
+    }
+#endif
+}
+
+void
+sTJMinstance::tjm_update(double phi, double *jbar)
+{
+    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
+#ifdef PSCAN2
+    tjm_sinphi2 = sin(0.5*phi);
+    tjm_cosphi2 = cos(0.5*phi);   
+
+    double FcSum = 0.0;
+    double FsSum = 0.0;
+    for (int i = 0; i < model->tjm_narray; i++) {
+        tjm_Fc[i] = tjm_Fcdt[i] + tjm_alpha1[i]*tjm_cosphi2;
+        tjm_Fs[i] = tjm_Fsdt[i] + tjm_alpha1[i]*tjm_sinphi2;
+        FcSum += ((model->tjm_A[i] + model->tjm_B[i])*tjm_Fc[i]).real;
+        FsSum += ((model->tjm_A[i] - model->tjm_B[i])*tjm_Fs[i]).real;
+    }
+    *jbar = FcSum*tjm_sinphi2 + FsSum*tjm_cosphi2;
+
+#else
+    double sinphi_2 = sin(0.5*phi);
+    double cosphi_2 = cos(0.5*phi);
+
+    double FcSum = 0.0;
+    double FsSum = 0.0;
+    for (int i = 0; i < model->tjm_narray; i++) {
+        tjm_Fc[i] = tjm_exp_z[i]*tjm_Fcprev[i] + 
+            tjm_alpha0[i]*tjm_cosphi_2_old + tjm_alpha1[i]*cosphi_2;
+        tjm_Fs[i] = tjm_exp_z[i]*tjm_Fsprev[i] +
+            tjm_alpha0[i]*tjm_sinphi_2_old + tjm_alpha1[i]*sinphi_2;
+        FcSum += (model->tjm_C[i]*tjm_Fc[i]).real;
+        FsSum += (model->tjm_D[i]*tjm_Fs[i]).real;
+    }
+    *jbar = model->tjm_kgap_over_Rejptilde0*
+        (sinphi_2*FcSum + cosphi_2*FsSum);
+
+#endif
+}
+
+void
+sTJMinstance::tjm_accept(double phi)
+{
+    tjm_sinphi_2_old = sin(0.5*phi);
+    tjm_cosphi_2_old = cos(0.5*phi);
+
+    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
+    for (int i = 0; i < model->tjm_narray; i++) {
+        tjm_Fcprev[i] = tjm_Fc[i];
+        tjm_Fsprev[i] = tjm_Fs[i];
+    }
 }
 

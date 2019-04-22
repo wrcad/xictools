@@ -38,11 +38,6 @@
  $Id:$
  *========================================================================*/
 
-/***************************************************************************
-JSPICE3 adaptation of Spice3e2 - Copyright (c) Stephen R. Whiteley 1992
-Author: 1992 Stephen R. Whiteley
-****************************************************************************/
-
 #include "tjmdefs.h"
 
 
@@ -59,19 +54,6 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->sValue = model->tjm_coeffs;
         data->type = IF_STRING;
         break;
-    case TJM_MOD_BETA:
-        value->rValue = model->tjm_beta;
-        break;
-    case TJM_MOD_WVG:
-        value->rValue = model->tjm_wvg;
-        break;
-    case TJM_MOD_WVRAT:
-        value->rValue = model->tjm_wvrat;
-        break;
-    case TJM_MOD_WRRAT:
-        value->rValue = model->tjm_wrrat;
-        break;
-
     case TJM_MOD_PI:
         value->iValue = model->TJMpi;
         data->type = IF_INTEGER;
@@ -149,6 +131,20 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MQUEST_VDP:
         value->rValue = model->TJMvdpbak;
         break;
+    case TJM_MQUEST_BETAC:
+        value->rValue = 
+            model->TJMvm*model->TJMvm*model->TJMcap/(model->TJMcriti*PHI0_2PI);
+        break;
+    case TJM_MQUEST_WVG:
+        value->rValue = model->tjm_wvg;
+        break;
+    case TJM_MQUEST_WVRAT:
+        value->rValue = model->tjm_wvrat;
+        break;
+    case TJM_MQUEST_WRRAT:
+        value->rValue = model->tjm_wrrat;
+        break;
+
     case TJM_MOD_TJM:
         value->iValue = 1;
         data->type = IF_INTEGER;

@@ -188,9 +188,7 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = ckt->interp(inst->TJMdvdt)*inst->TJMcap;
         return (OK);
     L_TJM_QUEST_IJ:
-//XXX
-data->v.rValue = inst->TJMcurr;
-//        data->v.rValue = jj_ji(ckt, inst);
+        data->v.rValue = jj_ji(ckt, inst);
         return (OK);
     L_TJM_QUEST_IG:
         data->v.rValue = ckt->interp(inst->TJMqpi);

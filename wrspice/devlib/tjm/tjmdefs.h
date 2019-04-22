@@ -47,6 +47,8 @@ Author: 1992 Stephen R. Whiteley
 #define TJMDEFS_H
 
 #include "device.h"
+//XXX
+//#define PSCAN2
 
 //
 // data structures used to describe Jopsephson junctions
@@ -59,7 +61,7 @@ Author: 1992 Stephen R. Whiteley
 #define NEWLSH
 
 // Use WRspice pre-loading of constant elements.
-#define USE_PRELOAD
+//XXX#define USE_PRELOAD
 
 #define FABS            fabs
 #define REFTEMP         wrsREFTEMP       
@@ -76,78 +78,6 @@ Author: 1992 Stephen R. Whiteley
 #define PHI0_2PI        wrsCONSTphi0_2pi
 
 namespace TJM {
-
-#ifdef notdefXXX
-class TJMModel : public ElementModel
-{
-    TJMModel(int i, int j, int eindex)
-        {
-            tjm_crit_current    = 1.0;
-            tjm_beta            = 1.0;
-            tjm_wvg             = 2.6/0.63;
-            tjm_wvrat           = 0.6;
-            tjm_wrrat           = 0.1;
-            tjm_narray          = 6;
-            tjm_i               = i;
-            tjm_j               = j;
-            tjm_eindex          = eindex;
-        }
-
-
-    void InitModel(int ind_ii, int ind_ij, int ind_ji, int ind_jj)
-    void SetParameters(double *params):
-    void Admitance0(double *matrix):
-    void Admitance1(double *matrix, ModelContext *ctx);
-    void Admitance2(double *matrix, ModelContext *ctx);
-    void RHSCurrent(double *vec, ModelContext *ctx);
-    void Values(ModelContext *ctx);
-
-private:
-// instance
-    double          *tjm_node_phases;
-    double          *tjm_node_voltages;
-    double          *tjm_node_dvoltages;
-    double          *tjm_elem_currents;
-    double          *tjm_elem_phases;
-    double          *tjm_elem_voltages;
-    int             *tjm_elem_n;
-    unsigned long   *tjm_elem_inc;
-    unsigned long   *tjm_elem_dec;
-
-    double          tjm_crit_current;
-
-// model
-    double          tjm_beta;
-    double          tjm_wvg;
-    double          tjm_wvrat;
-    double          tjm_wrrat;
-    double          tjm_sgw;
-    IFcomplex       tjm_A[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_B[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_P[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fc[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fs[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fcdt[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fsdt[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fcprev[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fsprev[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_alpha0[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_beta0[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_alpha1[MaxTJMCoeffArraySize];
-    double          tjm_sinphi2;
-    double          tjm_cosphi2;
-    int             tjm_narray;
-
-// instance
-    int             tjm_i;
-    int             tjm_j;
-    int             tjm_eindex;
-    int             tjm_ind_ii;
-    int             tjm_ind_ij;
-    int             tjm_ind_ji;
-    int             tjm_ind_jj;
-};
-#endif
 
 struct TJMdev : public IFdevice
 {
@@ -221,8 +151,6 @@ struct sTJMinstance : public sGENinstance
 #define TJMinitVoltage TJMinitCnd[0]
 #define TJMinitPhase TJMinitCnd[1]
 
-//XXX
-double TJMcurr;
     double TJMinitControl;  // initial control current
 #ifdef NEWLSER
     double TJMlser;         // parasitic series inductance
@@ -238,6 +166,9 @@ double TJMcurr;
 
     double          tjm_sinphi2;
     double          tjm_cosphi2;
+double          tjm_sinphi_2_old;
+double          tjm_cosphi_2_old;
+IFcomplex tjm_exp_z[MaxTJMCoeffArraySize];
     IFcomplex       tjm_Fc[MaxTJMCoeffArraySize];
     IFcomplex       tjm_Fs[MaxTJMCoeffArraySize];
     IFcomplex       tjm_Fcprev[MaxTJMCoeffArraySize];
@@ -247,6 +178,11 @@ double TJMcurr;
     IFcomplex       tjm_alpha0[MaxTJMCoeffArraySize];
     IFcomplex       tjm_beta0[MaxTJMCoeffArraySize];
     IFcomplex       tjm_alpha1[MaxTJMCoeffArraySize];
+//XXX
+void tjm_init(double);
+void tjm_newstep(sCKT*);;
+void tjm_update(double, double*);
+void tjm_accept(double);
 
     // These parameters scale with area
     double TJMcriti;        // junction critical current
@@ -351,7 +287,11 @@ struct sTJMmodel : sGENmodel
 
     char            *tjm_coeffs;
 
-    double          tjm_beta;
+double tjm_kgap;
+double tjm_Rejptilde0;
+double tjm_kgap_over_Rejptilde0;
+double tjm_a_supp;
+double tjm_alphaN;
     double          tjm_wvg;
     double          tjm_wvrat;
     double          tjm_wrrat;
@@ -359,6 +299,8 @@ struct sTJMmodel : sGENmodel
     IFcomplex       *tjm_A;
     IFcomplex       *tjm_B;
     IFcomplex       *tjm_P;
+IFcomplex tjm_C[MaxTJMCoeffArraySize];
+IFcomplex tjm_D[MaxTJMCoeffArraySize];
     int             tjm_narray;
 
     int TJMrtype;
@@ -388,11 +330,6 @@ struct sTJMmodel : sGENmodel
 #endif
 
     unsigned tjm_coeffsGiven : 1;
-    unsigned tjm_betaGiven : 1;
-    unsigned tjm_wvgGiven : 1;
-    unsigned tjm_wvratGiven : 1;
-    unsigned tjm_wrratGiven : 1;
-
     unsigned TJMrtypeGiven : 1;
     unsigned TJMpi : 1;
     unsigned TJMpiGiven : 1;
@@ -417,6 +354,9 @@ struct sTJMmodel : sGENmodel
     unsigned TJMlsh0Given : 1;
     unsigned TJMlsh1Given : 1;
 #endif
+
+//XXX
+int tjm_init();
 };
 
 struct TJMcoeffSet
@@ -494,10 +434,6 @@ enum {
 enum {
     TJM_MOD_TJM = 1000,
     TJM_MOD_COEFFS,
-    TJM_MOD_BETA,
-    TJM_MOD_WVG,
-    TJM_MOD_WVRAT,
-    TJM_MOD_WRRAT,
     TJM_MOD_PI,
     TJM_MOD_RT,
     TJM_MOD_IC,
@@ -524,7 +460,11 @@ enum {
 
     TJM_MQUEST_VL,
     TJM_MQUEST_VM,
-    TJM_MQUEST_VDP
+    TJM_MQUEST_VDP,
+    TJM_MQUEST_BETAC,
+    TJM_MQUEST_WVG,
+    TJM_MQUEST_WVRAT,
+    TJM_MQUEST_WRRAT,
 };
 
 #endif // TJMDEFS_H
