@@ -4,7 +4,7 @@
 
 HFILES = gencurrent.h
 SPHFILES = circuit.h device.h acdefs.h dctdefs.h distdefs.h noisdefs.h \
-    errors.h ifdata.h inpline.h input.h
+    errors.h ifcx.h ifdata.h inpline.h input.h
 
 depend: $(SPHFILES)
 
@@ -18,6 +18,7 @@ dctdefs.h:      ../../include/dctdefs.h
 distdefs.h:     ../../include/distdefs.h
 noisdefs.h:     ../../include/noisdefs.h
 errors.h:       ../../include/errors.h
+ifcx.h:         ../../include/ifcx.h
 ifdata.h:       ../../include/ifdata.h
 inpline.h:      ../../include/inpline.h
 input.h:        ../../include/input.h

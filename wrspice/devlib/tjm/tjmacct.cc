@@ -56,6 +56,7 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
             // keep phase  >= 0 and < 2*PI
             double phi = *(ckt->CKTstate0 + inst->TJMphase);
             int pint = *(int *)(ckt->CKTstate1 + inst->TJMphsInt);
+/*
             if (phi >= 2*M_PI) {
                 phi -= 2*M_PI;
                 pint++;
@@ -64,6 +65,16 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
                 phi += 2*M_PI;
                 pint--;
             }
+*/
+            if (phi >= 4*M_PI) {
+                phi -= 4*M_PI;
+                pint++;
+            }
+            else if (phi < 0) {
+                phi += 4*M_PI;
+                pint--;
+            }
+
             *(ckt->CKTstate0 + inst->TJMphase) = phi;
             *(int *)(ckt->CKTstate0 + inst->TJMphsInt) = pint;
 

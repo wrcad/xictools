@@ -47,6 +47,7 @@ Author: 1992 Stephen R. Whiteley
 #define TJMDEFS_H
 
 #include "device.h"
+#include "ifcx.h"
 //XXX
 //#define PSCAN2
 

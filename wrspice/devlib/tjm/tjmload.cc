@@ -739,9 +739,14 @@ tjmstuff::tjm_load(sCKT *ckt, sTJMmodel *model, sTJMinstance *inst)
 //double vx = sqrt(PHI0_2PI/model->TJMcpic);  // should be 0.6857mV
 //double dvoltage = ts_vj/vx; // millivolts
 inst->tjm_update(ts_phi, &curr);
-    gqt = inst->TJMgn + ckt->CKTag[0]*inst->TJMcap;
+    gqt = 0.9*inst->TJMgn + ckt->CKTag[0]*inst->TJMcap;
+//double omega_J = sqrt(1.0/(model->TJMcpic*PHI0_2PI));
+//double gx = PHI0_2PI*omega_J/(ts_crt*model->tjm_alphaN);
+
+//    gqt = ckt->CKTag[0]*inst->TJMcap;
     double ccap = inst->TJMdelVdelT*inst->TJMcap;
-    crhs = ts_crt*(-curr) + ts_vj*inst->TJMgn + ccap;
+//    crhs = ts_crt*curr + ts_vj*inst->TJMgn + ccap;
+    crhs = ts_crt*curr + ccap;
 
     // load matrix, rhs vector
     if (inst->TJMphsNode > 0)
@@ -806,6 +811,8 @@ sTJMmodel::tjm_init()
         tjm_A[i] = cs->cfs_A[i];
         tjm_B[i] = cs->cfs_B[i];
         tjm_P[i] = cs->cfs_P[i];
+printf("%.6f %.6f %.6f %.6f %.6f %.6f\n", tjm_P[i].real, tjm_P[i].imag,
+tjm_A[i].real, tjm_A[i].imag, tjm_B[i].real, tjm_B[i].imag);
     }
 
 #ifdef PSCAN2
@@ -832,6 +839,7 @@ sTJMmodel::tjm_init()
     double omega_g = TJMvg/PHI0_2PI;
     double omega_J = sqrt(1.0/(TJMcpic*PHI0_2PI));
     tjm_kgap =  omega_g/omega_J;
+//    tjm_a_supp = 0.7;
     tjm_a_supp = 1.0;
 
     double r = 0.0;
@@ -841,6 +849,8 @@ sTJMmodel::tjm_init()
 
     tjm_kgap_over_Rejptilde0 = tjm_kgap/tjm_Rejptilde0;
     tjm_alphaN = 1.0/(2.0*tjm_kgap*tjm_Rejptilde0);
+printf("kgap=%g a_supp=%g Rejptilde0=%g alphaN=%g\n", tjm_kgap, tjm_a_supp,
+tjm_Rejptilde0, tjm_alphaN);
 
     for (int i = 0; i < tjm_narray; i++) {
         tjm_C[i] = (tjm_a_supp*tjm_A[i] + tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
@@ -907,8 +917,8 @@ sTJMinstance::tjm_newstep(sCKT *ckt)
     }
 
 #else
-    double omega_J = sqrt(TJMcriti/(TJMcap*PHI0_2PI));
-    double dt = omega_J*ckt->CKTdelta;
+    double omega_J = sqrt(1.0/(model->TJMcpic*PHI0_2PI));
+    double dt = 0.5*omega_J*ckt->CKTdelta;
 
     for (int i = 0; i < model->tjm_narray; i++) {
         cIFcomplex z(model->tjm_P[i]*model->tjm_kgap*dt);
@@ -937,7 +947,7 @@ sTJMinstance::tjm_update(double phi, double *jbar)
         FcSum += ((model->tjm_A[i] + model->tjm_B[i])*tjm_Fc[i]).real;
         FsSum += ((model->tjm_A[i] - model->tjm_B[i])*tjm_Fs[i]).real;
     }
-    *jbar = FcSum*tjm_sinphi2 + FsSum*tjm_cosphi2;
+    *jbar = -(FcSum*tjm_sinphi2 + FsSum*tjm_cosphi2);
 
 #else
     double sinphi_2 = sin(0.5*phi);

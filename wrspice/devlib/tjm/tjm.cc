@@ -219,7 +219,8 @@ IFkeys TJMkeys[] = {
 // Model BCS42_008
 IFcomplex A_1[] = 
     { cIFcomplex(1.057436, -18.941930),
-    cIFcomplex(1.057436, -18.941930),
+    cIFcomplex(0.219525, 0.072188),
+//    cIFcomplex(1.057436, -18.941930),
     cIFcomplex(0.077953, 0.007944),
     cIFcomplex(0.006675, -0.000475),
     cIFcomplex(0.025091, 0.000289),
