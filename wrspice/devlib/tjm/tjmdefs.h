@@ -3,7 +3,7 @@
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
- *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Copyright (C) 2019 Whiteley Research Inc., all rights reserved.       *
  *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
  *  As fully as possible recognizing licensing terms and conditions       *
@@ -38,18 +38,11 @@
  $Id:$
  *========================================================================*/
 
-/***************************************************************************
-JSPICE3 adaptation of Spice3e2 - Copyright (c) Stephen R. Whiteley 1992
-Author: 1992 Stephen R. Whiteley
-****************************************************************************/
-
 #ifndef TJMDEFS_H
 #define TJMDEFS_H
 
 #include "device.h"
 #include "ifcx.h"
-//XXX
-//#define PSCAN2
 
 //
 // data structures used to describe Jopsephson junctions
@@ -62,7 +55,7 @@ Author: 1992 Stephen R. Whiteley
 #define NEWLSH
 
 // Use WRspice pre-loading of constant elements.
-//XXX#define USE_PRELOAD
+#define USE_PRELOAD
 
 #define FABS            fabs
 #define REFTEMP         wrsREFTEMP       
@@ -114,9 +107,6 @@ struct TJMdev : public IFdevice
 //    void initTran(sGENmodel*, double, double);
 };
 
-// Maximal number of TJM model Dirichlet series terms.
-#define MaxTJMCoeffArraySize 20
-
 struct sTJMinstance : public sGENinstance
 {
     sTJMinstance()
@@ -126,6 +116,17 @@ struct sTJMinstance : public sGENinstance
         }
     sTJMinstance *next()
         { return (static_cast<sTJMinstance*>(GENnextInstance)); }
+
+    ~sTJMinstance()
+        {
+            delete [] tjm_Fc;
+            // Fs and others are pointers into Fc.
+        }
+
+    void tjm_init(double);
+    void tjm_newstep(sCKT*);;
+    void tjm_update(double, double*);
+    void tjm_accept(double);
 
 #ifdef NEWLSER
     int TJMrealPosNode; // number of model positive node
@@ -165,25 +166,17 @@ struct sTJMinstance : public sGENinstance
 #endif
     double TJMdelVdelT;     // dvdt storage
 
-    double          tjm_sinphi2;
-    double          tjm_cosphi2;
-double          tjm_sinphi_2_old;
-double          tjm_cosphi_2_old;
-IFcomplex tjm_exp_z[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fc[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fs[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fcprev[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fsprev[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fcdt[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_Fsdt[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_alpha0[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_beta0[MaxTJMCoeffArraySize];
-    IFcomplex       tjm_alpha1[MaxTJMCoeffArraySize];
-//XXX
-void tjm_init(double);
-void tjm_newstep(sCKT*);;
-void tjm_update(double, double*);
-void tjm_accept(double);
+    // Core MiTMoJCo implementation (github.com/mitmojco, D. R. Gulevich,
+    // ITMO University St. Petersburg 197101, Russia) 
+    double tjm_sinphi_2_old;
+    double tjm_cosphi_2_old;
+    IFcomplex *tjm_Fc;
+    IFcomplex *tjm_Fs;
+    IFcomplex *tjm_Fcprev;
+    IFcomplex *tjm_Fsprev;
+    IFcomplex *tjm_alpha0;
+    IFcomplex *tjm_alpha1;
+    IFcomplex *tjm_exp_z;
 
     // These parameters scale with area
     double TJMcriti;        // junction critical current
@@ -286,80 +279,79 @@ struct sTJMmodel : sGENmodel
 
     static double subgap(sTJMmodel*, sTJMinstance*);
 
-    char            *tjm_coeffs;
+    ~sTJMmodel()
+        {
+            delete [] tjm_A;
+            // B and P are pointers into A array
+        }
 
-double tjm_kgap;
-double tjm_Rejptilde0;
-double tjm_kgap_over_Rejptilde0;
-double tjm_a_supp;
-double tjm_alphaN;
-    double          tjm_wvg;
-    double          tjm_wvrat;
-    double          tjm_wrrat;
-    double          tjm_sgw;
-    IFcomplex       *tjm_A;
-    IFcomplex       *tjm_B;
-    IFcomplex       *tjm_P;
-IFcomplex tjm_C[MaxTJMCoeffArraySize];
-IFcomplex tjm_D[MaxTJMCoeffArraySize];
-    int             tjm_narray;
+    int tjm_init();
 
-    int TJMrtype;
-    int TJMictype;
-    double TJMvg;
-    double TJMdelv;
-    double TJMcriti;
-    double TJMcap;
-    double TJMcpic;
-    double TJMcmu;
-    double TJMvm;
-    double TJMr0;
-    double TJMicrn;
-    double TJMrn;
-    double TJMgmu;
-    double TJMnoise;
-    double TJMccsens;
-    double TJMvless;
-    double TJMvmore;
-    double TJMvdpbak;
-    double TJMicFactor;
-    double TJMvShunt;
-    double TJMtsfact;
+    // MiTMoJCo core parameters
+    char        *tjm_coeffs;
+    double      tjm_kgap;
+    double      tjm_kgap_rejpt;
+    IFcomplex   *tjm_A;
+    IFcomplex   *tjm_B;
+    IFcomplex   *tjm_P;
+    int         tjm_narray;
+
+    int         TJMrtype;
+    int         TJMictype;
+    double      TJMvg;
+    double      TJMdelv;
+    double      TJMcriti;
+    double      TJMcap;
+    double      TJMcpic;
+    double      TJMcmu;
+    double      TJMvm;
+    double      TJMr0;
+    double      TJMicrn;
+    double      TJMrn;
+    double      TJMgmu;
+    double      TJMnoise;
+    double      TJMccsens;
+    double      TJMvless;
+    double      TJMvmore;
+    double      TJMvdpbak;
+    double      TJMicFactor;
+    double      TJMvShunt;
+    double      TJMtsfact;
 #ifdef NEWLSH
-    double TJMlsh0;
-    double TJMlsh1;
+    double      TJMlsh0;
+    double      TJMlsh1;
 #endif
 
-    unsigned tjm_coeffsGiven : 1;
-    unsigned TJMrtypeGiven : 1;
-    unsigned TJMpi : 1;
-    unsigned TJMpiGiven : 1;
-    unsigned TJMictypeGiven : 1;
-    unsigned TJMvgGiven : 1;
-    unsigned TJMdelvGiven : 1;
-    unsigned TJMccsensGiven : 1;
-    unsigned TJMvmGiven : 1;
-    unsigned TJMr0Given : 1;
-    unsigned TJMicrnGiven : 1;
-    unsigned TJMrnGiven : 1;
-    unsigned TJMgmuGiven : 1;
-    unsigned TJMnoiseGiven : 1;
-    unsigned TJMcritiGiven : 1;
-    unsigned TJMcapGiven : 1;
-    unsigned TJMcpicGiven : 1;
-    unsigned TJMcmuGiven : 1;
-    unsigned TJMicfGiven : 1;
-    unsigned TJMvShuntGiven : 1;
-    unsigned TJMtsfactGiven : 1;
+    unsigned    tjm_coeffsGiven : 1;
+    unsigned    TJMrtypeGiven : 1;
+    unsigned    TJMpi : 1;
+    unsigned    TJMpiGiven : 1;
+    unsigned    TJMictypeGiven : 1;
+    unsigned    TJMvgGiven : 1;
+    unsigned    TJMdelvGiven : 1;
+    unsigned    TJMccsensGiven : 1;
+    unsigned    TJMvmGiven : 1;
+    unsigned    TJMr0Given : 1;
+    unsigned    TJMicrnGiven : 1;
+    unsigned    TJMrnGiven : 1;
+    unsigned    TJMgmuGiven : 1;
+    unsigned    TJMnoiseGiven : 1;
+    unsigned    TJMcritiGiven : 1;
+    unsigned    TJMcapGiven : 1;
+    unsigned    TJMcpicGiven : 1;
+    unsigned    TJMcmuGiven : 1;
+    unsigned    TJMicfGiven : 1;
+    unsigned    TJMvShuntGiven : 1;
+    unsigned    TJMtsfactGiven : 1;
 #ifdef NEWLSH
-    unsigned TJMlsh0Given : 1;
-    unsigned TJMlsh1Given : 1;
+    unsigned    TJMlsh0Given : 1;
+    unsigned    TJMlsh1Given : 1;
 #endif
-
-//XXX
-int tjm_init();
 };
 
+// Tunnel parameters database return.  The coefficients are created
+// externally using the MiTMoJCo methodology.
+//
 struct TJMcoeffSet
 {
     TJMcoeffSet(const char *name, int size, const IFcomplex *A,
@@ -462,10 +454,7 @@ enum {
     TJM_MQUEST_VL,
     TJM_MQUEST_VM,
     TJM_MQUEST_VDP,
-    TJM_MQUEST_BETAC,
-    TJM_MQUEST_WVG,
-    TJM_MQUEST_WVRAT,
-    TJM_MQUEST_WRRAT,
+    TJM_MQUEST_BETAC
 };
 
 #endif // TJMDEFS_H

@@ -3,7 +3,7 @@
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
- *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Copyright (C) 2019 Whiteley Research Inc., all rights reserved.       *
  *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
  *  As fully as possible recognizing licensing terms and conditions       *
@@ -37,11 +37,6 @@
  *========================================================================*
  $Id:$
  *========================================================================*/
-
-/***************************************************************************
-JSPICE3 adaptation of Spice3e2 - Copyright (c) Stephen R. Whiteley 1992
-Author: 1993 Stephen R. Whiteley
-****************************************************************************/
 
 #include "tjmdefs.h"
 
@@ -188,13 +183,7 @@ OP("vmore",             TJM_MQUEST_VM,      IF_REAL|IF_VOLT,
 OP("vdp",               TJM_MQUEST_VDP,     IF_REAL|IF_VOLT,
                 "Dropback voltage"),
 OP("betac",             TJM_MQUEST_BETAC,   IF_REAL,
-                "Stewart-McCumber parameter"),
-OP("wvg",               TJM_MQUEST_WVG,     IF_REAL,
-                "Normalized gap voltage"),
-OP("wvrat",             TJM_MQUEST_WVRAT,   IF_REAL,
-                "Ic to quasiparticle step height ratio"),
-OP("wrrat",             TJM_MQUEST_WRRAT,   IF_REAL,
-                "Normal to subgap resistance ratio")
+                "Stewart-McCumber parameter")
 };
 
 const char *TJMnames[] = {

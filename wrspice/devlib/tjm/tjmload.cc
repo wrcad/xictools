@@ -3,7 +3,7 @@
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
- *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Copyright (C) 2019 Whiteley Research Inc., all rights reserved.       *
  *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
  *  As fully as possible recognizing licensing terms and conditions       *
@@ -38,11 +38,6 @@
  $Id:$
  *========================================================================*/
 
-/***************************************************************************
-JSPICE3 adaptation of Spice3f2 - Copyright (c) Stephen R. Whiteley 1992
-Author: 1993 Stephen R. Whiteley
-****************************************************************************/
-
 #include "tjmdefs.h"
 
 //#define TJM_DEBUG
@@ -59,7 +54,6 @@ Author: 1993 Stephen R. Whiteley
 
 struct tjmstuff
 {
-    void tjm_limiting(sCKT*, sTJMmodel*, sTJMinstance*);
     void tjm_iv(sTJMmodel*, sTJMinstance*);
     void tjm_ic(sTJMmodel*, sTJMinstance*);
     void tjm_load(sCKT*, sTJMmodel*, sTJMinstance*);
@@ -508,130 +502,20 @@ sTJMmodel::subgap(sTJMmodel *model, sTJMinstance *inst)
 
 
 void
-tjmstuff::tjm_limiting(sCKT *ckt, sTJMmodel *model, sTJMinstance *inst)
-{
-    // limit new junction voltage
-    double vprev  = *(ckt->CKTstate0 + inst->TJMvoltage);
-    double absold = vprev < 0 ? -vprev : vprev;
-    double vtop = vprev + ts_ddv;
-    double vbot = vprev - ts_ddv;
-    if (absold < model->TJMvless) {
-        vtop = SPMAX(vtop, model->TJMvless);
-        vbot = SPMIN(vbot, -model->TJMvless);
-    }
-    else if (vprev > model->TJMvmore) {
-        vtop += 1.0;
-        vbot = SPMIN(vbot, model->TJMvmore);
-    }
-    else if (vprev < -model->TJMvmore) {
-        vtop = SPMAX(vtop, -model->TJMvmore);
-        vbot -= 1.0;
-    }
-    if (ts_vj > vtop)
-        ts_vj = vtop;
-    else if (ts_vj < vbot)
-        ts_vj = vbot;
-}
-
-
-void
 tjmstuff::tjm_iv(sTJMmodel *model, sTJMinstance *inst)
 {
     double vj    = ts_vj;
     double absvj = vj < 0 ? -vj : vj;
-    if (model->TJMrtype == 1) {
-        if (absvj < model->TJMvless)
-            ts_gqt = inst->TJMg0;
-        else if (absvj < model->TJMvmore) {
-            ts_gqt = inst->TJMgs;
-            ts_crhs = (vj >= 0 ? inst->TJMcr1 : -inst->TJMcr1);
-        }
-        else {
-            ts_gqt = inst->TJMgn;
-            ts_crhs = (vj >= 0 ? inst->TJMcr2 : -inst->TJMcr2);
-        }
+    if (absvj < model->TJMvless)
+        ts_gqt = inst->TJMg0;
+    else if (absvj < model->TJMvmore) {
+        ts_gqt = inst->TJMgs;
+        ts_crhs = (vj >= 0 ? inst->TJMcr1 : -inst->TJMcr1);
     }
-    else if (model->TJMrtype == 3) {
-
-        if (absvj < model->TJMvmore) {
-            // cj   = g0*vj + g1*vj**3 + g2*vj**5,
-            // crhs = cj - vj*gqt
-            //
-            double temp1 = vj*vj;
-            double temp2 = temp1*temp1;
-            ts_gqt = inst->TJMg0 + 3.0*inst->TJMg1*temp1 +
-                5.0*inst->TJMg2*temp2;
-            temp1  *= vj;
-            temp2  *= vj;
-            ts_crhs = -2.0*temp1*inst->TJMg1 - 4.0*temp2*inst->TJMg2;
-        }
-        else {
-            ts_gqt = inst->TJMgn;
-            ts_crhs = (vj >= 0 ? inst->TJMcr1 : -inst->TJMcr1);
-        }
+    else {
+        ts_gqt = inst->TJMgn;
+        ts_crhs = (vj >= 0 ? inst->TJMcr2 : -inst->TJMcr2);
     }
-    else if (model->TJMrtype == 2) {
-        double dv = 0.5*model->TJMdelv;
-        double avj = absvj/dv;
-        double gam = avj - model->TJMvg/dv;
-        if (gam > 30.0)
-            gam = 30.0;
-        if (gam < -30.0)
-            gam = -30.0;
-        double expgam = exp(gam);
-        double exngam = 1.0 / expgam;
-        double xp     = 1.0 + expgam;
-        double xn     = 1.0 + exngam;
-        double cxtra  =
-            (1.0 - model->TJMicFactor)*model->TJMvg*inst->TJMgn*expgam/xp;
-        ts_crhs = vj*(inst->TJMg0 + inst->TJMgn*expgam)/xp -
-            (vj >= 0 ? cxtra : -cxtra);
-        ts_gqt = inst->TJMgn*(xn + avj*exngam)/(xn*xn) +
-            inst->TJMg0*(xp - avj*expgam)/(xp*xp);
-        ts_crhs -= ts_gqt*vj;
-    }
-    else if (model->TJMrtype == 4) {
-        double temp = 1;
-        if (inst->TJMcontrol)
-            temp = ts_ci < 0 ? -ts_ci : ts_ci;
-        if (temp > 1)
-            temp = 1;
-        ts_crt *= temp;
-        double gs = inst->TJMgs*temp;
-        if (gs < inst->TJMgn)
-            gs = inst->TJMgn;
-        double vg = model->TJMvg*temp;
-        temp = .5*model->TJMdelv;
-        double vless = vg - temp;
-        double vmore = vg + temp;
-
-        if (vless > 0) {
-            if (absvj < vless)
-                ts_gqt = inst->TJMg0;
-            else if (absvj < vmore) {
-                ts_gqt = gs;
-                if (vj >= 0)
-                    ts_crhs  = (inst->TJMg0 - ts_gqt)*vless;
-                else
-                    ts_crhs  = (ts_gqt - inst->TJMg0)*vless;
-            }
-            else {
-                ts_gqt = inst->TJMgn;
-//XXX new
-                double cr2 = ts_crt/model->TJMicFactor +
-                    vless * inst->TJMg0 -
-                    vmore * inst->TJMgn;
-                ts_crhs = (vj >= 0 ? cr2 : -cr2);
-            }
-        }
-        else
-            ts_gqt = inst->TJMgn;
-
-        if (model->TJMictype > 1)
-            model->TJMictype = 0;
-    }
-    else
-        ts_gqt = 0;
 }
 
 
@@ -685,13 +569,25 @@ tjmstuff::tjm_ic(sTJMmodel *model, sTJMinstance *inst)
 }
 
 
+namespace {
+    inline void sincos(double a, double &si, double &ci)
+    {
+#ifdef ASM_SINCOS
+        asm("fsincos" : "=t" (ci), "=u"  (si) : "0" (a));
+#else
+        si = sin(a);
+        ci = cos(a);
+#endif
+    }
+}
+
+
 void
 tjmstuff::tjm_load(sCKT *ckt, sTJMmodel *model, sTJMinstance *inst)
 {
     (void)model;
     double gqt  = ts_gqt;
     double crhs = ts_crhs;
-    double crt  = ts_crt;
 
     *(ckt->CKTstate0 + inst->TJMvoltage) = ts_vj;
     *(ckt->CKTstate0 + inst->TJMphase)   = ts_phi;
@@ -710,42 +606,15 @@ tjmstuff::tjm_load(sCKT *ckt, sTJMmodel *model, sTJMinstance *inst)
     double si    = sin(ts_phi);
 #endif
 
-    if (model->TJMpi) {
-        si = -si;
-        gcs = -gcs;
-    }
-    crt  *= si;
-#ifdef NEWJJDC
-    if (ckt->CKTmode & MODEDC) {
-        crhs += crt - gcs*ts_phi;
-        gqt  = gcs;
-    }
-    else {
-        crhs += crt - gcs*ts_vj;
-        gqt  += gcs + ckt->CKTag[0]*inst->TJMcap;
-        crhs += inst->TJMdelVdelT*inst->TJMcap;
-    }
-#else
-    crhs += crt - gcs*ts_vj;
-    gqt  += gcs + ckt->CKTag[0]*inst->TJMcap;
-    crhs += inst->TJMdelVdelT*inst->TJMcap;
-#endif
-
 #else
     double si    = sin(ts_phi);
 #endif
 
     double curr;
-//double vx = sqrt(PHI0_2PI/model->TJMcpic);  // should be 0.6857mV
-//double dvoltage = ts_vj/vx; // millivolts
-inst->tjm_update(ts_phi, &curr);
-    gqt = 0.9*inst->TJMgn + ckt->CKTag[0]*inst->TJMcap;
-//double omega_J = sqrt(1.0/(model->TJMcpic*PHI0_2PI));
-//double gx = PHI0_2PI*omega_J/(ts_crt*model->tjm_alphaN);
+    inst->tjm_update(ts_phi, &curr);
+    gqt = 0.9*inst->TJMgn/model->TJMicFactor + ckt->CKTag[0]*inst->TJMcap;
 
-//    gqt = ckt->CKTag[0]*inst->TJMcap;
     double ccap = inst->TJMdelVdelT*inst->TJMcap;
-//    crhs = ts_crt*curr + ts_vj*inst->TJMgn + ccap;
     crhs = ts_crt*curr + ccap;
 
     // load matrix, rhs vector
@@ -792,6 +661,7 @@ inst->tjm_update(ts_phi, &curr);
 #endif
 }
 
+
 int
 sTJMmodel::tjm_init()
 {
@@ -804,119 +674,69 @@ sTJMmodel::tjm_init()
         return (E_PANIC);
     }
     tjm_narray = cs->cfs_size;
-    tjm_A = new IFcomplex[tjm_narray];
-    tjm_B = new IFcomplex[tjm_narray];
-    tjm_P = new IFcomplex[tjm_narray];
+    tjm_A = new IFcomplex[3*tjm_narray];
+    tjm_B = tjm_A + tjm_narray;
+    tjm_P = tjm_B + tjm_narray;
     for (int i = 0; i < tjm_narray; i++) {
         tjm_A[i] = cs->cfs_A[i];
         tjm_B[i] = cs->cfs_B[i];
         tjm_P[i] = cs->cfs_P[i];
-printf("%.6f %.6f %.6f %.6f %.6f %.6f\n", tjm_P[i].real, tjm_P[i].imag,
-tjm_A[i].real, tjm_A[i].imag, tjm_B[i].real, tjm_B[i].imag);
+//printf("%.6f %.6f %.6f %.6f %.6f %.6f\n", tjm_P[i].real, tjm_P[i].imag,
+//tjm_A[i].real, tjm_A[i].imag, tjm_B[i].real, tjm_B[i].imag);
     }
 
-#ifdef PSCAN2
-    double vx = sqrt(PHI0_2PI/TJMcpic);  // should be 0.6857mV
-    tjm_wvg = TJMvg/vx;
-    tjm_wvrat = TJMicFactor;
-    tjm_wrrat = TJMrn/TJMr0;
-
-    double x = 0.0;
-    for (int i = 0; i < tjm_narray; i++) {
-        tjm_P[i] = tjm_P[i]*tjm_wvg*0.5;
-        x = x - (tjm_A[i]/tjm_P[i]).real;
-    }
-
-    // 1/IcRn
-    tjm_sgw = 1.0/(tjm_wvg*tjm_wvrat);
-
-    for (int i = 0; i < tjm_narray; i++) {
-        tjm_A[i] = tjm_A[i]/(-1.0 * x);
-        tjm_B[i] = tjm_B[i]*tjm_wvg*(tjm_wrrat - 1.0)/(2.0*tjm_wvrat);
-    }
-
-#else
     double omega_g = TJMvg/PHI0_2PI;
     double omega_J = sqrt(1.0/(TJMcpic*PHI0_2PI));
     tjm_kgap =  omega_g/omega_J;
-//    tjm_a_supp = 0.7;
-    tjm_a_supp = 1.0;
 
-    double r = 0.0;
+    double rejpt = 0.0;
     for (int i = 0; i < tjm_narray; i++)
-        r -= (tjm_A[i]/tjm_P[i]).real;
-    tjm_Rejptilde0 = r*tjm_a_supp;
-
-    tjm_kgap_over_Rejptilde0 = tjm_kgap/tjm_Rejptilde0;
-    tjm_alphaN = 1.0/(2.0*tjm_kgap*tjm_Rejptilde0);
-printf("kgap=%g a_supp=%g Rejptilde0=%g alphaN=%g\n", tjm_kgap, tjm_a_supp,
-tjm_Rejptilde0, tjm_alphaN);
+        rejpt -= (tjm_A[i]/tjm_P[i]).real;
+    rejpt *= TJMicFactor;
+    tjm_kgap_rejpt = tjm_kgap/rejpt;
 
     for (int i = 0; i < tjm_narray; i++) {
-        tjm_C[i] = (tjm_a_supp*tjm_A[i] + tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
-        tjm_D[i] = (tjm_a_supp*tjm_A[i] - tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
+        IFcomplex C = (TJMicFactor*tjm_A[i] + tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
+        IFcomplex D = (TJMicFactor*tjm_A[i] - tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
+        tjm_A[i] = C;
+        tjm_B[i] = D;
     }
-#endif
     return (OK);
 }
+
 
 void
 sTJMinstance::tjm_init(double phi)
 {
-    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-#ifdef zzzzzPSCAN2
-    cIFcomplex neg_one(-1.0, 0.0);
-    for (int i = 0; i < model->tjm_narray; i++) {
-        tjm_Fcprev[i] = neg_one/model->tjm_P[i];
-        tjm_Fsprev[i] = cIFcomplex(0.0, 0.0);
-    }
-
-#else
     double sinphi_2 = sin(0.5*phi);
     double cosphi_2 = cos(0.5*phi);
     tjm_sinphi_2_old = sinphi_2;
     tjm_cosphi_2_old = cosphi_2;
 
-    for (int i = 0; i < model->tjm_narray; i++) {
+    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
+    int narray = model->tjm_narray;
+
+    if (!tjm_Fc) {
+        tjm_Fc = new IFcomplex[7*narray];
+        tjm_Fs = tjm_Fc + narray;
+        tjm_Fcprev = tjm_Fs + narray;
+        tjm_Fsprev = tjm_Fcprev + narray;
+        tjm_alpha0 =  tjm_Fsprev + narray;
+        tjm_alpha1 = tjm_alpha0 + narray;
+        tjm_exp_z = tjm_alpha1 + narray;
+    }
+
+    for (int i = 0; i < narray; i++) {
         tjm_Fcprev[i] = cIFcomplex(cosphi_2, 0.0);
         tjm_Fsprev[i] = cIFcomplex(sinphi_2, 0.0);
     }
-
-#endif
 }
+
 
 void
 sTJMinstance::tjm_newstep(sCKT *ckt)
 {
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-#ifdef PSCAN2
-    double vx = sqrt(PHI0_2PI/model->TJMcpic);  // should be 0.6857mV
-    double dvoltage_prev = *(ckt->CKTstate1 + TJMvoltage) / vx;
-    double dphase_prev = *(ckt->CKTstate1 + TJMphase);
-
-    double sinphi2 = sin(dphase_prev/2.0);
-    double cosphi2 = cos(dphase_prev/2.0);
-
-    double tu = 0.5*model->TJMvg/PHI0_2PI;
-    double time_step = ckt->CKTdelta*tu;
-    for (int i = 0; i < model->tjm_narray; i++) {
-        double pq = model->tjm_P[i].real*time_step;
-        double epq = exp(pq);
-        tjm_alpha0[i] = (epq*(pq*pq - 2.0) + pq*2.0 + 2.0)/
-            (pq*pq*model->tjm_P[i]);
-        tjm_beta0[i] = (epq*pq - epq*2.0 + pq + 2.0)/
-            (pq*model->tjm_P[i]*model->tjm_P[i]);
-        tjm_alpha1[i] = (epq*2.0 - 2.0 - pq*2.0 - pq*pq)/
-            (pq*pq*model->tjm_P[i]);
-
-        // Part of Fc(t+dt) and Fs(t+dt) which do not depends on phase(t+dt)
-        tjm_Fcdt[i] = epq*tjm_Fcprev[i] + tjm_alpha0[i]*cosphi2 -
-            tjm_beta0[i]*sinphi2*dvoltage_prev/2.0;
-        tjm_Fsdt[i] = epq*tjm_Fsprev[i] + tjm_alpha0[i]*sinphi2 +
-            tjm_beta0[i]*cosphi2*dvoltage_prev/2.0;
-    }
-
-#else
     double omega_J = sqrt(1.0/(model->TJMcpic*PHI0_2PI));
     double dt = 0.5*omega_J*ckt->CKTdelta;
 
@@ -928,28 +748,13 @@ sTJMinstance::tjm_newstep(sCKT *ckt)
         tjm_alpha0[i] = (ez - 1.0)/z - ez;
         tjm_alpha1[i] = 1.0 + (1.0 - ez)/z;
     }
-#endif
 }
+
 
 void
 sTJMinstance::tjm_update(double phi, double *jbar)
 {
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-#ifdef PSCAN2
-    tjm_sinphi2 = sin(0.5*phi);
-    tjm_cosphi2 = cos(0.5*phi);   
-
-    double FcSum = 0.0;
-    double FsSum = 0.0;
-    for (int i = 0; i < model->tjm_narray; i++) {
-        tjm_Fc[i] = tjm_Fcdt[i] + tjm_alpha1[i]*tjm_cosphi2;
-        tjm_Fs[i] = tjm_Fsdt[i] + tjm_alpha1[i]*tjm_sinphi2;
-        FcSum += ((model->tjm_A[i] + model->tjm_B[i])*tjm_Fc[i]).real;
-        FsSum += ((model->tjm_A[i] - model->tjm_B[i])*tjm_Fs[i]).real;
-    }
-    *jbar = -(FcSum*tjm_sinphi2 + FsSum*tjm_cosphi2);
-
-#else
     double sinphi_2 = sin(0.5*phi);
     double cosphi_2 = cos(0.5*phi);
 
@@ -960,14 +765,12 @@ sTJMinstance::tjm_update(double phi, double *jbar)
             tjm_alpha0[i]*tjm_cosphi_2_old + tjm_alpha1[i]*cosphi_2;
         tjm_Fs[i] = tjm_exp_z[i]*tjm_Fsprev[i] +
             tjm_alpha0[i]*tjm_sinphi_2_old + tjm_alpha1[i]*sinphi_2;
-        FcSum += (model->tjm_C[i]*tjm_Fc[i]).real;
-        FsSum += (model->tjm_D[i]*tjm_Fs[i]).real;
+        FcSum += (model->tjm_A[i]*tjm_Fc[i]).real;
+        FsSum += (model->tjm_B[i]*tjm_Fs[i]).real;
     }
-    *jbar = model->tjm_kgap_over_Rejptilde0*
-        (sinphi_2*FcSum + cosphi_2*FsSum);
-
-#endif
+    *jbar = model->tjm_kgap_rejpt*(sinphi_2*FcSum + cosphi_2*FsSum);
 }
+
 
 void
 sTJMinstance::tjm_accept(double phi)

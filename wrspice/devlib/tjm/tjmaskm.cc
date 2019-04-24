@@ -3,7 +3,7 @@
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
- *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Copyright (C) 2019 Whiteley Research Inc., all rights reserved.       *
  *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
  *  As fully as possible recognizing licensing terms and conditions       *
@@ -135,16 +135,6 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->rValue = 
             model->TJMvm*model->TJMvm*model->TJMcap/(model->TJMcriti*PHI0_2PI);
         break;
-    case TJM_MQUEST_WVG:
-        value->rValue = model->tjm_wvg;
-        break;
-    case TJM_MQUEST_WVRAT:
-        value->rValue = model->tjm_wvrat;
-        break;
-    case TJM_MQUEST_WRRAT:
-        value->rValue = model->tjm_wrrat;
-        break;
-
     case TJM_MOD_TJM:
         value->iValue = 1;
         data->type = IF_INTEGER;

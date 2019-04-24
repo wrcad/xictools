@@ -3,7 +3,7 @@
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
- *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Copyright (C) 2019 Whiteley Research Inc., all rights reserved.       *
  *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
  *  As fully as possible recognizing licensing terms and conditions       *
@@ -37,11 +37,6 @@
  *========================================================================*
  $Id:$
  *========================================================================*/
-
-/***************************************************************************
-JSPICE3 adaptation of Spice3f2 - Copyright (c) Stephen R. Whiteley 1992
-Author: 1993 Stephen R. Whiteley
-****************************************************************************/
 
 #include "tjmdefs.h"
 

@@ -3,7 +3,7 @@
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
  *                       http://wrcad.com                                 *
- *  Copyright (C) 2017 Whiteley Research Inc., all rights reserved.       *
+ *  Copyright (C) 2019 Whiteley Research Inc., all rights reserved.       *
  *  Author: Stephen R. Whiteley, except as indicated.                     *
  *                                                                        *
  *  As fully as possible recognizing licensing terms and conditions       *
@@ -53,26 +53,21 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
-            // keep phase  >= 0 and < 2*PI
+            // Due to the half-angle formulas used in the TMJ, we
+            // can't do modulo 2pi, but instead we can use modulo 4pi. 
+            // As in the RSJ case, this avoid numerical phase-slip
+            // errors for very long runs.
+
             double phi = *(ckt->CKTstate0 + inst->TJMphase);
             int pint = *(int *)(ckt->CKTstate1 + inst->TJMphsInt);
-/*
-            if (phi >= 2*M_PI) {
-                phi -= 2*M_PI;
-                pint++;
+            double fourpi = 4.0*M_PI;
+            if (phi >= fourpi) {
+                phi -= fourpi;
+                pint += 2;
             }
             else if (phi < 0) {
-                phi += 2*M_PI;
-                pint--;
-            }
-*/
-            if (phi >= 4*M_PI) {
-                phi -= 4*M_PI;
-                pint++;
-            }
-            else if (phi < 0) {
-                phi += 4*M_PI;
-                pint--;
+                phi += fourpi;
+                pint -= 2;
             }
 
             *(ckt->CKTstate0 + inst->TJMphase) = phi;
