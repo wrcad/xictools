@@ -107,6 +107,9 @@ struct TJMdev : public IFdevice
 //    void initTran(sGENmodel*, double, double);
 };
 
+//XXX
+struct tjmstuff;
+
 struct sTJMinstance : public sGENinstance
 {
     sTJMinstance()
@@ -123,9 +126,10 @@ struct sTJMinstance : public sGENinstance
             // Fs and others are pointers into Fc.
         }
 
+    void tjm_load(sCKT*, tjmstuff&);
     void tjm_init(double);
     void tjm_newstep(sCKT*);;
-    void tjm_update(double, double*);
+    double tjm_update(double);
     void tjm_accept(double);
 
 #ifdef NEWLSER
@@ -277,14 +281,13 @@ struct sTJMmodel : sGENmodel
     sTJMmodel *next()    { return (static_cast<sTJMmodel*>(GENnextModel)); }
     sTJMinstance *inst() { return (static_cast<sTJMinstance*>(GENinstances)); }
 
-    static double subgap(sTJMmodel*, sTJMinstance*);
-
     ~sTJMmodel()
         {
             delete [] tjm_A;
             // B and P are pointers into A array
         }
 
+    void tjm_ic(tjmstuff&);
     int tjm_init();
 
     // MiTMoJCo core parameters

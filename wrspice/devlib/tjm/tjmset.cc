@@ -452,7 +452,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 inst->TJMposNode = inst->TJMrealPosNode;
             }
 #endif
-            inst->TJMgqp = sTJMmodel::subgap(model, inst);
+            inst->TJMgqp = inst->TJMg0;
             if (model->TJMvShuntGiven) {
                 double gshunt = inst->TJMcriti/model->TJMvShunt - inst->TJMgqp;
                 if (gshunt > 0.0)
