@@ -187,12 +187,6 @@ struct sTJMinstance : public sGENinstance
     double TJMcap;          // junction capacitance
     double TJMg0;           // junction subgap conductance
     double TJMgn;           // junction normal conductance
-    double TJMgs;           // junction step conductance
-    double TJMg1;           // NbN model parameter
-    double TJMg2;           // NbN model parameter
-
-    double TJMcr1;          // cached constants for qp current
-    double TJMcr2;
 
     double TJMdcrt;         // param to pass to ac load function
     double TJMgqp;          // intrinsic conductance at Vj = 0
@@ -294,6 +288,7 @@ struct sTJMmodel : sGENmodel
     char        *tjm_coeffs;
     double      tjm_kgap;
     double      tjm_kgap_rejpt;
+    double      tjm_alphaN;
     IFcomplex   *tjm_A;
     IFcomplex   *tjm_B;
     IFcomplex   *tjm_P;
@@ -302,7 +297,6 @@ struct sTJMmodel : sGENmodel
     int         TJMrtype;
     int         TJMictype;
     double      TJMvg;
-    double      TJMdelv;
     double      TJMcriti;
     double      TJMcap;
     double      TJMcpic;
@@ -314,9 +308,8 @@ struct sTJMmodel : sGENmodel
     double      TJMgmu;
     double      TJMnoise;
     double      TJMccsens;
-    double      TJMvless;
-    double      TJMvmore;
     double      TJMvdpbak;
+    double      TJMomegaJ;
     double      TJMicFactor;
     double      TJMvShunt;
     double      TJMtsfact;
@@ -331,7 +324,6 @@ struct sTJMmodel : sGENmodel
     unsigned    TJMpiGiven : 1;
     unsigned    TJMictypeGiven : 1;
     unsigned    TJMvgGiven : 1;
-    unsigned    TJMdelvGiven : 1;
     unsigned    TJMccsensGiven : 1;
     unsigned    TJMvmGiven : 1;
     unsigned    TJMr0Given : 1;
@@ -407,9 +399,6 @@ enum {
     TJM_QUEST_CAP,
     TJM_QUEST_G0,
     TJM_QUEST_GN,
-    TJM_QUEST_GS,
-    TJM_QUEST_G1,
-    TJM_QUEST_G2,
     TJM_QUEST_N1,
     TJM_QUEST_N2,
     TJM_QUEST_NP,
@@ -454,9 +443,8 @@ enum {
 #endif
     TJM_MOD_TSFACT,
 
-    TJM_MQUEST_VL,
-    TJM_MQUEST_VM,
     TJM_MQUEST_VDP,
+    TJM_MQUEST_OMEGAJ,
     TJM_MQUEST_BETAC
 };
 

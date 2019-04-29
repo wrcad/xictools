@@ -75,8 +75,7 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->TJMvgGiven = true;
         break;
     case TJM_MOD_DV:
-        model->TJMdelv = value->rValue;
-        model->TJMdelvGiven = true;
+        //XXX
         break;
     case TJM_MOD_CRT:
         model->TJMcriti = value->rValue;

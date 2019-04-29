@@ -72,6 +72,8 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
 
             *(ckt->CKTstate0 + inst->TJMphase) = phi;
             *(int *)(ckt->CKTstate0 + inst->TJMphsInt) = pint;
+            if (inst->TJMphsNode > 0)
+                *(ckt->CKTrhsOld + inst->TJMphsNode) = phi + fourpi*pint;
 
             // find max vj for time step
             if (model->TJMictype != 0 && inst->TJMcriti > 0) {
@@ -86,10 +88,6 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
                 if (vmax < vj)
                     vmax = vj;
             }
-
-            if (inst->TJMphsNode > 0)
-                *(ckt->CKTrhsOld + inst->TJMphsNode) = phi + (2*M_PI)*pint;
-
             inst->tjm_accept(phi);
         }
         if (vmax > 0.0) {

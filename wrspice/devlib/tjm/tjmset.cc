@@ -80,9 +80,6 @@
 #define Vg      2.6e-3      // Assumed Vgap of reference, V
 #define VgMin   0.1e-3      // Min Vgap, V
 #define VgMax   10.0e-3     // Max Vgap, V
-#define DelV    0.08e-3     // Assumed delVg of reference, V
-#define DelVmin 0.001*Vgap  // Min delVg, V
-#define DelVmax 0.2*Vgap    // Max delVg, V
 
 #define RTMAX   4           // Max rtype, integer
 #define ITMAX   4           // Max ictype, integer
@@ -209,21 +206,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->TJMvg = Vg;
             }
         }
-        if (!model->TJMdelvGiven)
-            model->TJMdelv = DelV;
-        else {
-            double Vgap = model->TJMvg;
-            if (model->TJMdelv < DelVmin || model->TJMdelv > DelVmax) {
-                DVO.textOut(OUT_WARNING,
-                    "%s: DELV=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->TJMdelv, DelVmin, DelVmax, DelV);
-                model->TJMdelv = DelV;
-            }
-        }
-
-        double halfdv = 0.5*model->TJMdelv;
-        model->TJMvless  = model->TJMvg - halfdv;
-        model->TJMvmore  = model->TJMvg + halfdv;
 
         if (!model->TJMccsensGiven)
             model->TJMccsens = CCsens;
@@ -342,8 +324,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->TJMrn = model->TJMr0;
 
         if (model->TJMvShuntGiven) {
-            if (model->TJMvShunt < 0.0 ||
-                    model->TJMvShunt > (model->TJMvg - model->TJMdelv)) {
+            if (model->TJMvShunt < 0.0 || model->TJMvShunt > model->TJMvg) {
                 DVO.textOut(OUT_WARNING,
                     "%s: VSHUNT=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->TJMvShunt, 0.0, model->TJMvg, 0.0);
@@ -394,9 +375,10 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
         double halfvg = model->TJMvg/2;
         if (model->TJMcap > 0.0) {
-            model->TJMvdpbak = sqrt(PHI0_2PI * model->TJMcriti / model->TJMcap);
+            model->TJMvdpbak = sqrt(PHI0_2PI/model->TJMcpic);
             if (model->TJMvdpbak > halfvg)
                 model->TJMvdpbak = halfvg;
+            model->TJMomegaJ = sqrt(1.0/(model->TJMcpic*PHI0_2PI));
         }
         else
             model->TJMvdpbak = halfvg;
@@ -493,7 +475,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
 #endif
 
-#ifdef NEWTJMDC
+#ifdef NEWJJDC
             if (model->TJMictype > 0 && !ckt->CKTcurTask->TSKnoPhaseModeDC) {
                 // Set the phase flag of connected nodes for
                 // phase-mode DC analysis, if critical current is
@@ -527,13 +509,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 sqrta*model->TJMgmu;
             inst->TJMg0 = gfac / model->TJMr0;
             inst->TJMgn = gfac / model->TJMrn;
-            inst->TJMgs = inst->TJMcriti/(model->TJMicFactor * model->TJMdelv);
-
-            // These currents are added to RHS in piecewise qp model
-            inst->TJMcr1 = (inst->TJMg0 - inst->TJMgs)*model->TJMvless;
-            inst->TJMcr2 = inst->TJMcriti/model->TJMicFactor +
-                model->TJMvless * inst->TJMg0 -
-                model->TJMvmore * inst->TJMgn;
 
             if (!inst->TJMnoiseGiven)
                 inst->TJMnoise = model->TJMnoise;
@@ -545,48 +520,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                     inst->TJMnoise = NOI;
                 }
             }
-
-            if (model->TJMrtype == 3) {
-
-                // 5th order polynomial model for NbN.
-                //
-                // cj = g0*vj + g1*vj**3 + g2*vj**5,
-                // gj = dcj/dvj = g0 + 3*g1*vj**2 + 5*g2*vj**4.
-                //
-                // Required:
-                // (1) cj(vmore) = g0*vmore + g1*vmore**3 + g2*vmore**5
-                //               = Ic/factor + g0*vless
-                // (2) gj(vmore) = g0 + 3*g1*vmore**2 + 5*g2*vmore**4
-                //               = gs.
-                // (3) gj(0) = g0 (trivially satisfied).
-                //
-                // define Gn = (Ic/factor + g0*vless)/vmore
-                //
-                // 4*g0 + 2*g1*vmore**2 = 5*Gn - gs, or
-                // g1 = (5*Gn - gs - 4*g0)/(2*vmore**2)
-                // g2 = (Gn - g0 - g1*vmore**2)/(vmore**4)
-                //
-
-                double Gn = (inst->TJMcriti/model->TJMicFactor +
-                    model->TJMvless*inst->TJMg0)/model->TJMvmore;
-                double temp = model->TJMvmore*model->TJMvmore;
-                inst->TJMg1 = 0.5*(5.0*Gn - inst->TJMgs - 4.0*inst->TJMg0);
-                inst->TJMg2 = (Gn - inst->TJMg0 - inst->TJMg1)/(temp*temp);
-                inst->TJMg1 /= temp;
-                inst->TJMcr1 = (Gn - inst->TJMgn)*model->TJMvmore;
-                // if the conductivity goes negative, the parameters
-                // aren't good
-                if (inst->TJMg1 < 0.0 && 9*inst->TJMg1*inst->TJMg1 >
-                        20*inst->TJMg0*inst->TJMg2) {
-                    DVO.textOut(OUT_WARNING,
-"%s: delv is too small for rtype=3, expect negative conductivity\nregion.\n",
-                        model->GENmodName);
-                }
-            }
-            else {
-                inst->TJMg1 = 0;
-                inst->TJMg2 = 0;
-            }    
 
             inst->GENstate = *states;
             *states += TJMnumStates;

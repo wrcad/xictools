@@ -70,7 +70,7 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->rValue = model->TJMvg;
         break;
     case TJM_MOD_DV:
-        value->rValue = model->TJMdelv;
+        value->rValue = 0.0;  //XXX
         break;
     case TJM_MOD_CRT:
         value->rValue = model->TJMcriti;
@@ -122,14 +122,11 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_TSFACT:
         value->rValue = model->TJMtsfact;
         break;
-    case TJM_MQUEST_VL:
-        value->rValue = model->TJMvless;
-        break;
-    case TJM_MQUEST_VM:
-        value->rValue = model->TJMvmore;
-        break;
     case TJM_MQUEST_VDP:
         value->rValue = model->TJMvdpbak;
+        break;
+    case TJM_MQUEST_OMEGAJ:
+        value->rValue = model->TJMomegaJ;
         break;
     case TJM_MQUEST_BETAC:
         value->rValue = 

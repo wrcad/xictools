@@ -529,15 +529,15 @@ sTJMmodel::tjm_init()
         tjm_P[i] = cs->cfs_P[i];
     }
 
-    double omega_g = TJMvg/PHI0_2PI;
-    double omega_J = sqrt(1.0/(TJMcpic*PHI0_2PI));
-    tjm_kgap = omega_g/omega_J;
+    double omega_g = 0.5*TJMvg/PHI0_2PI;  // e*Vg = hbar*omega_g
+    tjm_kgap = omega_g/TJMomegaJ;
 
     double rejpt = 0.0;
     for (int i = 0; i < tjm_narray; i++)
         rejpt -= (tjm_A[i]/tjm_P[i]).real;
     rejpt *= TJMicFactor;
     tjm_kgap_rejpt = tjm_kgap/rejpt;
+    tjm_alphaN = TJMicFactor/(2*rejcpt*tjm_kgap*tjm_kgap);
 
     for (int i = 0; i < tjm_narray; i++) {
         IFcomplex C = (TJMicFactor*tjm_A[i] + tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
@@ -576,9 +576,22 @@ sTJMinstance::tjm_load(sCKT *ckt, tjmstuff &ts)
     *(ckt->CKTstate0 + TJMcrti)    = ts.ts_crt;
     *(ckt->CKTstate0 + TJMqpi)     = 0.0;  //XXX fixme
 
-    double crhs = ts.ts_crt*tjm_update(ts.ts_phi) + TJMdelVdelT*TJMcap;
-    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    double gqt = 0.9*TJMgn/model->TJMicFactor + ckt->CKTag[0]*TJMcap;
+    double crhs, gqt;
+    if (ckt->CKTmode & MODEDC) {
+        double crt = ts.ts_crt*sin(ts.ts_phi); 
+        gqt = ts.ts_pfac*ts.ts_crt*cos(ts.ts_phi);
+        crhs = crt - gqt*ts.ts_phi;
+//        tjm_init(ts.ts_phi);
+//        tjm_update(ts.ts_phi);
+    }
+    else {
+        crhs = ts.ts_crt*tjm_update(ts.ts_phi) + TJMdelVdelT*TJMcap;
+        sTJMmodel *model = (sTJMmodel*)GENmodPtr;
+//        double alphaN = model->TJMicFactor*model->tjm_kgap_rejpt/
+//            (2*model->tjm_kgap*model->tjm_kgap*model->tjm_kgap);
+        gqt = tjm_alphaN + TJMg0 +  ckt->CKTag[0]*TJMcap;
+printf("%g %g %g\n", tjm_alphaN + TJMg0, TJMgn, model->tjm_kgap);
+    }
 
     // load matrix, rhs vector
     if (TJMphsNode > 0)
@@ -664,8 +677,7 @@ void
 sTJMinstance::tjm_newstep(sCKT *ckt)
 {
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    double omega_J = sqrt(1.0/(model->TJMcpic*PHI0_2PI));
-    double dt = 0.5*omega_J*ckt->CKTdelta;
+    double dt = model->TJMomegaJ*ckt->CKTdelta;
 
     for (int i = 0; i < model->tjm_narray; i++) {
         cIFcomplex z(model->tjm_P[i]*model->tjm_kgap*dt);
