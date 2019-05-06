@@ -60,7 +60,6 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_TJM_IC,
         &&L_TJM_ICP,
         &&L_TJM_ICV,
-        &&L_TJM_CON,
         &&L_TJM_NOISE};
 
         // &&L_TJM_QUEST_V,
@@ -138,10 +137,6 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->TJMinitVoltage = value->rValue;
         inst->TJMinitVoltGiven = true;
         return (OK);
-    L_TJM_CON:
-        inst->TJMcontrol = value->uValue;
-        inst->TJMcontrolGiven = true;
-        return (OK);
     L_TJM_NOISE:
         inst->TJMnoise = value->rValue;
         inst->TJMnoiseGiven = true;
@@ -193,10 +188,6 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case TJM_ICV:
         inst->TJMinitVoltage = value->rValue;
         inst->TJMinitVoltGiven = true;
-        break;
-    case TJM_CON:
-        inst->TJMcontrol = value->uValue;
-        inst->TJMcontrolGiven = true;
         break;
     case TJM_NOISE:
         inst->TJMnoise = value->uValue;

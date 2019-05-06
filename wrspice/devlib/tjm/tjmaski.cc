@@ -41,27 +41,6 @@
 #include "tjmdefs.h"
 
 
-namespace {
-    //
-    // Return interpolated Josephson current.
-    //
-    double jj_ji(const sCKT *ckt, const sTJMinstance *inst)
-    {
-        if (!ckt->CKTstates[0])
-            return (0.0);
-        double val = ckt->CKTtranDiffs[0]*
-            *(ckt->CKTstates[0] + inst->TJMcrti)*
-            sin(*(ckt->CKTstates[0] + inst->TJMphase));
-        for (int i = 1; i <= ckt->CKTtranDegree; i++) {
-            val += ckt->CKTtranDiffs[i]*
-                *(ckt->CKTstates[i] + inst->TJMcrti)*
-                sin(*(ckt->CKTstates[i] + inst->TJMphase));
-        }
-        return (val);
-    }
-}
-
-
 int
 TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     IFdata *data)
@@ -82,7 +61,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_TJM_IC,
         &&L_TJM_ICP,
         &&L_TJM_ICV,
-        &&L_TJM_CON,
         &&L_TJM_NOISE,
 
         &&L_TJM_QUEST_V,
@@ -162,10 +140,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_TJM_ICV:
         data->v.rValue = inst->TJMinitVoltage;
         return (OK);
-    L_TJM_CON:
-        data->type = IF_INSTANCE;
-        data->v.uValue = inst->TJMcontrol;
-        return (OK);
     L_TJM_NOISE:
         data->v.rValue = inst->TJMnoise;
         return (OK);
@@ -180,14 +154,14 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = ckt->interp(inst->TJMdvdt)*inst->TJMcap;
         return (OK);
     L_TJM_QUEST_IJ:
-        data->v.rValue = jj_ji(ckt, inst);
+        data->v.rValue = ckt->interp(inst->TJMcrti);
         return (OK);
     L_TJM_QUEST_IG:
         data->v.rValue = ckt->interp(inst->TJMqpi);
         return (OK);
     L_TJM_QUEST_I:
         data->v.rValue = ckt->interp(inst->TJMdvdt)*inst->TJMcap +
-            jj_ji(ckt, inst) + ckt->interp(inst->TJMqpi);
+            ckt->interp(inst->TJMcrti) + ckt->interp(inst->TJMqpi);
         return (OK);
     L_TJM_QUEST_CAP:
         data->v.rValue = inst->TJMcap;
@@ -267,10 +241,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case TJM_ICV:
         data->v.rValue = inst->TJMinitVoltage;
         break;
-    case TJM_CON:
-        data->type = IF_INSTANCE;
-        data->v.uValue = inst->TJMcontrol;
-        break;
     case TJM_NOISE:
         data->v.uValue = inst->TJMnoise;
         break;
@@ -285,14 +255,14 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = ckt->interp(inst->TJMdvdt)*inst->TJMcap;
         break;
     case TJM_QUEST_IJ:
-        data->v.rValue = jj_ji(ckt, inst);
+        data->v.rValue = ckt->interp(inst->TJMcrti);
         break;
     case TJM_QUEST_IG:
         data->v.rValue = ckt->interp(inst->TJMqpi);
         break;
     case TJM_QUEST_I:
         data->v.rValue = ckt->interp(inst->TJMdvdt)*inst->TJMcap +
-            jj_ji(ckt, inst) + ckt->interp(inst->TJMqpi);
+            ckt->interp(inst->TJMcrti) + ckt->interp(inst->TJNqpi);
         break;
     case TJM_QUEST_CAP:
         data->v.rValue = inst->TJMcap;

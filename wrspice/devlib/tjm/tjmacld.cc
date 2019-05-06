@@ -72,11 +72,6 @@ TJMdev::acLoad(sGENmodel *genmod, sCKT *ckt)
                 double crt = *(ckt->CKTstate0 + inst->TJMcrti);
                 double Lrecip = (2*M_PI*crt*cos(phi))/wrsCONSTphi0;
                 val -= Lrecip/ckt->CKTomega;
-                if (inst->TJMcontrol && inst->TJMdcrt != 0.0) {
-                    double temp = inst->TJMdcrt*crt*sin(phi);
-                    *inst->TJMposIbrPtr += temp;
-                    *inst->TJMnegIbrPtr -= temp;
-                }
             }
             *(inst->TJMposPosPtr +1) += val;
             *(inst->TJMnegNegPtr +1) += val;

@@ -107,9 +107,6 @@ struct TJMdev : public IFdevice
 //    void initTran(sGENmodel*, double, double);
 };
 
-//XXX
-struct tjmstuff;
-
 struct sTJMinstance : public sGENinstance
 {
     sTJMinstance()
@@ -126,10 +123,10 @@ struct sTJMinstance : public sGENinstance
             // Fs and others are pointers into Fc.
         }
 
-    void tjm_load(sCKT*, tjmstuff&);
+    void tjm_load(sCKT*, struct tjmstuff&);
     void tjm_init(double);
     void tjm_newstep(sCKT*);;
-    double tjm_update(double);
+    void tjm_update(double);
     void tjm_accept(double);
 
 #ifdef NEWLSER
@@ -148,8 +145,6 @@ struct sTJMinstance : public sGENinstance
     int TJMlshBr;       // number of shunt inductor branch
 #endif
 
-    int TJMbranch;      // number of control current branch
-    IFuid TJMcontrol;   // name of controlling device
     double TJMarea;     // area factor for the junction
     double TJMics;      // area factor = ics/icrit
 
@@ -174,6 +169,9 @@ struct sTJMinstance : public sGENinstance
     // ITMO University St. Petersburg 197101, Russia) 
     double tjm_sinphi_2_old;
     double tjm_cosphi_2_old;
+    double tjm_gcrit;
+    double tjm_cqp;
+    double tjm_cp;
     IFcomplex *tjm_Fc;
     IFcomplex *tjm_Fs;
     IFcomplex *tjm_Fcprev;
@@ -234,7 +232,6 @@ struct sTJMinstance : public sGENinstance
 #endif
     unsigned TJMinitVoltGiven : 1;  // ic was specified
     unsigned TJMinitPhaseGiven : 1; // ic was specified
-    unsigned TJMcontrolGiven : 1;   // control ind or vsource was specified
     unsigned TJMnoiseGiven : 1;     // noise scaling was specified
     unsigned TJMoffGiven : 1;       // "off" was specified
 
@@ -245,27 +242,26 @@ struct sTJMinstance : public sGENinstance
 #define TJMvoltage  GENstate
 #define TJMdvdt     GENstate + 1
 #define TJMphase    GENstate + 2
-#define TJMconI     GENstate + 3
-#define TJMphsInt   GENstate + 4
-#define TJMcrti     GENstate + 5
-#define TJMqpi      GENstate + 6
+#define TJMphsInt   GENstate + 3
+#define TJMcrti     GENstate + 4
+#define TJMqpi      GENstate + 5
 #ifdef NEWLSER
-#define TJMlserFlux GENstate + 7
-#define TJMlserVolt GENstate + 8
+#define TJMlserFlux GENstate + 6
+#define TJMlserVolt GENstate + 7
 #ifdef NEWLSH
-#define TJMlshFlux  GENstate + 9
-#define TJMlshVolt  GENstate + 10
-#define TJMnumStates 11
+#define TJMlshFlux  GENstate + 8
+#define TJMlshVolt  GENstate + 9
+#define TJMnumStates 10
 #else
-#define TJMnumStates 9
+#define TJMnumStates 8
 #endif
 #else
 #ifdef NEWLSH
-#define TJMlshFlux  GENstate + 7
-#define TJMlshVolt  GENstate + 8
-#define TJMnumStates 9
+#define TJMlshFlux  GENstate + 6
+#define TJMlshVolt  GENstate + 7
+#define TJMnumStates 8
 #else
-#define TJMnumStates 7
+#define TJMnumStates 6
 #endif
 #endif
 
@@ -281,7 +277,6 @@ struct sTJMmodel : sGENmodel
             // B and P are pointers into A array
         }
 
-    void tjm_ic(tjmstuff&);
     int tjm_init();
 
     // MiTMoJCo core parameters
@@ -387,7 +382,6 @@ enum {
     TJM_IC,
     TJM_ICP,
     TJM_ICV,
-    TJM_CON,
     TJM_NOISE,
 
     TJM_QUEST_V,

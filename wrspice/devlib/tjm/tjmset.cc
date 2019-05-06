@@ -157,10 +157,6 @@ namespace {
 #endif
 #endif
 
-        if (inst->TJMcontrol) {
-            TSTALLOC(TJMposIbrPtr, TJMposNode, TJMbranch)
-            TSTALLOC(TJMnegIbrPtr, TJMnegNode, TJMbranch)
-        }
         if (inst->TJMphsNode > 0) {
             TSTALLOC(TJMphsPhsPtr, TJMphsNode, TJMphsNode)
         }
@@ -523,19 +519,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
             inst->GENstate = *states;
             *states += TJMnumStates;
-
-            inst->TJMinitControl = 0;
-            if (inst->TJMcontrolGiven) {
-                inst->TJMbranch = ckt->findBranch(inst->TJMcontrol);
-
-                if (inst->TJMbranch == 0) {
-                    DVO.textOut(OUT_WARNING,
-                        "%s: control current modulated by non-existant\n"
-                        "or non-branch device %s, ignored.",
-                        inst->GENname, inst->TJMcontrol);
-                    inst->TJMcontrol = 0;
-                }
-            }
 
             int error = get_node_ptr(ckt, inst);
             if (error != OK)

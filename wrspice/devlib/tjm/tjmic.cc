@@ -63,8 +63,6 @@ TJMdev::getic(sGENmodel *genmod, sCKT *ckt)
                 else
                     inst->TJMinitPhase = 0;
             }
-            if (inst->TJMcontrol)
-                inst->TJMinitControl = *(ckt->CKTrhs + inst->TJMbranch);
         }
     }
 
