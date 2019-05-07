@@ -58,24 +58,17 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
             model->tjm_coeffsGiven = true;
         }
         break;
-    case TJM_MOD_PI:
-        model->TJMpi = (value->iValue != 0);
-        model->TJMpiGiven = true;
-        break;
-    case TJM_MOD_RT:
+    case TJM_MOD_RTP:
         model->TJMrtype = value->iValue;
         model->TJMrtypeGiven = true;
         break;
-    case TJM_MOD_IC:
+    case TJM_MOD_CTP:
         model->TJMictype = value->iValue;
         model->TJMictypeGiven = true;
         break;
     case TJM_MOD_VG:
         model->TJMvg = value->rValue;
         model->TJMvgGiven = true;
-        break;
-    case TJM_MOD_DV:
-        //XXX
         break;
     case TJM_MOD_CRT:
         model->TJMcriti = value->rValue;
@@ -101,14 +94,6 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->TJMr0 = value->rValue;
         model->TJMr0Given = true;
         break;
-    case TJM_MOD_ICR:
-        model->TJMicrn = value->rValue;
-        model->TJMicrnGiven = true;
-        break;
-    case TJM_MOD_RN:
-        model->TJMrn = value->rValue;
-        model->TJMrnGiven = true;
-        break;
     case TJM_MOD_GMU:
         model->TJMgmu = value->rValue;
         model->TJMgmuGiven = true;
@@ -116,10 +101,6 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
     case TJM_MOD_NOISE:
         model->TJMnoise = value->rValue;
         model->TJMnoiseGiven = true;
-        break;
-    case TJM_MOD_CCS:
-        model->TJMccsens = value->rValue;
-        model->TJMccsensGiven = true;
         break;
     case TJM_MOD_ICF:
         model->TJMicFactor = value->rValue;

@@ -460,11 +460,12 @@ sTJMmodel::tjm_init()
     tjm_kgap_rejpt = tjm_kgap/rejpt;
     tjm_alphaN = 1.0/(2*rejpt*tjm_kgap);
 
+    // Renormalize.  Here we would rotate to C and D vectors, however
+    // we want to preserve the pair and qp amplitudes for separate
+    // access.
     for (int i = 0; i < tjm_narray; i++) {
-        IFcomplex C = (TJMicFactor*tjm_A[i] + tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
-        IFcomplex D = (TJMicFactor*tjm_A[i] - tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
-        tjm_A[i] = C;
-        tjm_B[i] = D;
+        tjm_A[i] = (TJMicFactor*tjm_A[i]) / (-tjm_kgap*tjm_P[i]);
+        tjm_B[i] = (tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
     }
     return (OK);
 }
@@ -570,15 +571,16 @@ void
 sTJMinstance::tjm_newstep(sCKT *ckt)
 {
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    double dt = model->TJMomegaJ*ckt->CKTdelta;
+    double kdt = model->tjm_kgap*model->TJMomegaJ*ckt->CKTdelta;
 
     for (int i = 0; i < model->tjm_narray; i++) {
-        cIFcomplex z(model->tjm_P[i]*model->tjm_kgap*dt);
+        IFcomplex z(model->tjm_P[i]*kdt);
         double d = exp(z.real);
         cIFcomplex ez(d*cos(z.imag), d*sin(z.imag));
         tjm_exp_z[i] = ez;
-        tjm_alpha0[i] = (ez - 1.0)/z - ez;
-        tjm_alpha1[i] = 1.0 + (1.0 - ez)/z;
+        IFcomplex zt = (ez - 1.0)/z;
+        tjm_alpha0[i] = zt - ez;
+        tjm_alpha1[i] = 1.0 - zt;
     }
 }
 
@@ -589,20 +591,28 @@ sTJMinstance::tjm_update(double phi)
     double sinphi_2, cosphi_2;
     sincos(0.5*phi, sinphi_2, cosphi_2);
 
-    double FcSum = 0.0;
-    double FsSum = 0.0;
+    // Keep the pair and qp terms separate so we can access them
+    // individually.
+
+    double FcSp = 0.0;  // cosine for pairs
+    double FcSq = 0.0;  // cosine for qp
+    double FsSp = 0.0;  // sine for pairs
+    double FsSq = 0.0;  // sine for qp
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
     for (int i = 0; i < model->tjm_narray; i++) {
         tjm_Fc[i] = tjm_exp_z[i]*tjm_Fcprev[i] + 
             tjm_alpha0[i]*tjm_cosphi_2_old + tjm_alpha1[i]*cosphi_2;
         tjm_Fs[i] = tjm_exp_z[i]*tjm_Fsprev[i] +
             tjm_alpha0[i]*tjm_sinphi_2_old + tjm_alpha1[i]*sinphi_2;
-        FcSum += (model->tjm_A[i]*tjm_Fc[i]).real;
-        FsSum += (model->tjm_B[i]*tjm_Fs[i]).real;
+
+        FcSp += (model->tjm_A[i]*tjm_Fc[i]).real;
+        FcSq += (model->tjm_B[i]*tjm_Fc[i]).real;
+        FsSp += (model->tjm_A[i]*tjm_Fs[i]).real;
+        FsSq += (model->tjm_B[i]*tjm_Fs[i]).real;
     }
     double fct = TJMcriti * model->tjm_kgap_rejpt;
-    tjm_cp = fct * cosphi_2*FsSum;
-    tjm_cqp = fct * sinphi_2*FcSum; 
+    tjm_cp  = fct*(sinphi_2*FcSp + cosphi_2*FsSp);
+    tjm_cqp = fct*(sinphi_2*FcSq - cosphi_2*FsSq);
 }
 
 

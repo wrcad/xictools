@@ -170,7 +170,7 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = inst->TJMg0;
         return (OK);
     L_TJM_QUEST_GN:
-        data->v.rValue = inst->TJMgn;
+        data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
         return (OK);
     L_TJM_QUEST_N1:
         data->type = IF_INTEGER;
@@ -271,7 +271,7 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = inst->TJMg0;
         break;
     case TJM_QUEST_GN:
-        data->v.rValue = inst->TJMgn;
+        data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
         break;
     case TJM_QUEST_N1:
         data->type = IF_INTEGER;

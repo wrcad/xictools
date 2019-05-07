@@ -203,17 +203,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
-        if (!model->TJMccsensGiven)
-            model->TJMccsens = CCsens;
-        else {
-            if (model->TJMccsens < CCsensMin || model->TJMccsens > CCsensMax) {
-                DVO.textOut(OUT_WARNING,
-                    "%s: ICON=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->TJMccsens, CCsensMin, CCsensMax,
-                    CCsens);
-                model->TJMccsens = CCsens;
-            }
-        }
         if (!model->TJMcritiGiven)
             model->TJMcriti = Ic;
         else {
@@ -288,36 +277,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
-        if (!model->TJMicrnGiven) {
-            model->TJMicrn = IcR;
-        }
-        else {
-            double IcRmax = model->TJMvg * model->TJMicFactor;
-            if (model->TJMicrn < IcRmin || model->TJMicrn > IcRmax) {
-                DVO.textOut(OUT_WARNING,
-                    "%s: ICRN=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->TJMicrn, IcRmin, IcRmax, IcR);
-                model->TJMicrn = IcR;
-            }
-        }
-        if (!model->TJMrnGiven) {
-            double i = model->TJMcriti > 0.0 ? model->TJMcriti : 1e-3;
-            model->TJMrn = model->TJMicrn/i;
-        }
-        else {
-            double i = model->TJMcriti > 0.0 ? model->TJMcriti : 1e-3;
-            double RNmin = IcRmin/i;
-            double RNmax = (model->TJMvg * model->TJMicFactor)/i;
-            if (model->TJMrn < RNmin || model->TJMrn > RNmax) {
-                double RN = model->TJMicrn/i;
-                DVO.textOut(OUT_WARNING,
-                    "%s: RN=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->TJMrn, RNmin, RNmax, RN);
-                model->TJMrn = RN;
-            }
-        }
-        if (model->TJMrn > model->TJMr0)
-            model->TJMrn = model->TJMr0;
 
         if (model->TJMvShuntGiven) {
             if (model->TJMvShunt < 0.0 || model->TJMvShunt > model->TJMvg) {
@@ -504,7 +463,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             double gfac = inst->TJMarea*(1.0 - model->TJMgmu) +
                 sqrta*model->TJMgmu;
             inst->TJMg0 = gfac / model->TJMr0;
-            inst->TJMgn = gfac / model->TJMrn;
 
             if (!inst->TJMnoiseGiven)
                 inst->TJMnoise = model->TJMnoise;

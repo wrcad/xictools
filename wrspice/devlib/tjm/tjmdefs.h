@@ -184,7 +184,6 @@ struct sTJMinstance : public sGENinstance
     double TJMcriti;        // junction critical current
     double TJMcap;          // junction capacitance
     double TJMg0;           // junction subgap conductance
-    double TJMgn;           // junction normal conductance
 
     double TJMdcrt;         // param to pass to ac load function
     double TJMgqp;          // intrinsic conductance at Vj = 0
@@ -298,11 +297,8 @@ struct sTJMmodel : sGENmodel
     double      TJMcmu;
     double      TJMvm;
     double      TJMr0;
-    double      TJMicrn;
-    double      TJMrn;
     double      TJMgmu;
     double      TJMnoise;
-    double      TJMccsens;
     double      TJMvdpbak;
     double      TJMomegaJ;
     double      TJMicFactor;
@@ -315,15 +311,10 @@ struct sTJMmodel : sGENmodel
 
     unsigned    tjm_coeffsGiven : 1;
     unsigned    TJMrtypeGiven : 1;
-    unsigned    TJMpi : 1;
-    unsigned    TJMpiGiven : 1;
     unsigned    TJMictypeGiven : 1;
     unsigned    TJMvgGiven : 1;
-    unsigned    TJMccsensGiven : 1;
     unsigned    TJMvmGiven : 1;
     unsigned    TJMr0Given : 1;
-    unsigned    TJMicrnGiven : 1;
-    unsigned    TJMrnGiven : 1;
     unsigned    TJMgmuGiven : 1;
     unsigned    TJMnoiseGiven : 1;
     unsigned    TJMcritiGiven : 1;
@@ -413,22 +404,17 @@ enum {
 enum {
     TJM_MOD_TJM = 1000,
     TJM_MOD_COEFFS,
-    TJM_MOD_PI,
-    TJM_MOD_RT,
-    TJM_MOD_IC,
+    TJM_MOD_RTP,
+    TJM_MOD_CTP,
     TJM_MOD_VG,
-    TJM_MOD_DV,
     TJM_MOD_CRT,
     TJM_MOD_CAP,
     TJM_MOD_CPIC,
     TJM_MOD_CMU,
     TJM_MOD_VM,
     TJM_MOD_R0,
-    TJM_MOD_ICR,
-    TJM_MOD_RN,
     TJM_MOD_GMU,
     TJM_MOD_NOISE,
-    TJM_MOD_CCS,
     TJM_MOD_ICF,
     TJM_MOD_VSHUNT,
 #ifdef NEWLSH

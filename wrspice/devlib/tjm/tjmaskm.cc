@@ -54,23 +54,16 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->sValue = model->tjm_coeffs;
         data->type = IF_STRING;
         break;
-    case TJM_MOD_PI:
-        value->iValue = model->TJMpi;
-        data->type = IF_INTEGER;
-        break;
-    case TJM_MOD_RT:
+    case TJM_MOD_RTP:
         value->iValue = model->TJMrtype;
         data->type = IF_INTEGER;
         break;
-    case TJM_MOD_IC:
+    case TJM_MOD_CTP:
         value->iValue = model->TJMictype;
         data->type = IF_INTEGER;
         break;
     case TJM_MOD_VG:
         value->rValue = model->TJMvg;
-        break;
-    case TJM_MOD_DV:
-        value->rValue = 0.0;  //XXX
         break;
     case TJM_MOD_CRT:
         value->rValue = model->TJMcriti;
@@ -90,20 +83,11 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_R0:
         value->rValue = model->TJMr0;
         break;
-    case TJM_MOD_ICR:
-        value->rValue = model->TJMicrn;
-        break;
-    case TJM_MOD_RN:
-        value->rValue = model->TJMrn;
-        break;
     case TJM_MOD_GMU:
         value->rValue = model->TJMgmu;
         break;
     case TJM_MOD_NOISE:
         value->rValue = model->TJMnoise;
-        break;
-    case TJM_MOD_CCS:
-        value->rValue = model->TJMccsens;
         break;
     case TJM_MOD_ICF:
         value->rValue = model->TJMicFactor;
