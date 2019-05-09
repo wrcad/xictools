@@ -63,6 +63,10 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_TJM_NOISE};
 
         // &&L_TJM_QUEST_V,
+        // &&L_TJM_QUEST_PHS,
+        // &&L_TJM_QUEST_PHSN,
+        // &&L_TJM_QUEST_PHSF,
+        // &&L_TJM_QUEST_PHST,
         // &&L_TJM_QUEST_CRT,
         // &&L_TJM_QUEST_IC,
         // &&L_TJM_QUEST_IJ,

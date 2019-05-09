@@ -63,17 +63,37 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
             double fourpi = 4.0*M_PI;
             if (phi >= fourpi) {
                 phi -= fourpi;
-                pint += 2;
+                pint++;
             }
             else if (phi < 0) {
                 phi += fourpi;
-                pint -= 2;
+                pint--;
             }
 
             *(ckt->CKTstate0 + inst->TJMphase) = phi;
             *(int *)(ckt->CKTstate0 + inst->TJMphsInt) = pint;
             if (inst->TJMphsNode > 0)
                 *(ckt->CKTrhsOld + inst->TJMphsNode) = phi + fourpi*pint;
+
+            // SFQ hooks.
+            pint += pint;
+            double twopi = 2.0*M_PI;
+            if (phi >= twopi) {
+                pint++;
+                phi -= twopi;
+            }
+            // Assume that 5*pi/4 is the half-way point when producing
+            // an SFQ pulse.
+            if (phi > 1.25*M_PI)
+                pint++;
+            int last_pn = inst->TJMphsN;
+            inst->TJMphsN = pint;
+            if (pint != last_pn) {
+                // Pulse count changed, record time and set flag.
+//XXX interpolate instead
+                inst->TJMphsT = ckt->CKTtime;
+                inst->TJMphsF = true;
+            }
 
             // find max vj for time step
             if (model->TJMictype != 0 && inst->TJMcriti > 0) {

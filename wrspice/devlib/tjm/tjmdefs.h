@@ -152,7 +152,10 @@ struct sTJMinstance : public sGENinstance
 #define TJMinitVoltage TJMinitCnd[0]
 #define TJMinitPhase TJMinitCnd[1]
 
-    double TJMinitControl;  // initial control current
+    int TJMphsN;        // SFQ pulse count
+    int TJMphsF;        // SFQ pulse emission flag
+    double TJMphsT;     // SFQpulse emission time
+
 #ifdef NEWLSER
     double TJMlser;         // parasitic series inductance
     double TJMlserReq;      // stamp Req
@@ -376,6 +379,10 @@ enum {
     TJM_NOISE,
 
     TJM_QUEST_V,
+    TJM_QUEST_PHS,
+    TJM_QUEST_PHSN,
+    TJM_QUEST_PHSF,
+    TJM_QUEST_PHST,
     TJM_QUEST_CRT,
     TJM_QUEST_IC,
     TJM_QUEST_IJ,

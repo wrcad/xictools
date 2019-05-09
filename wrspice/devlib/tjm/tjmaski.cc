@@ -64,6 +64,10 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_TJM_NOISE,
 
         &&L_TJM_QUEST_V,
+        &&L_TJM_QUEST_PHS,
+        &&L_TJM_QUEST_PHSN,
+        &&L_TJM_QUEST_PHSF,
+        &&L_TJM_QUEST_PHST,
         &&L_TJM_QUEST_CRT,
         &&L_TJM_QUEST_IC,
         &&L_TJM_QUEST_IJ,
@@ -146,6 +150,22 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_TJM_QUEST_V:
         data->v.rValue = (ckt->rhsOld(inst->TJMposNode) -
             ckt->rhsOld(inst->TJMnegNode));
+        return (OK);
+    L_TJM_QUEST_PHS:
+        {
+            double phi = *(ckt->CKTstate0 + inst->TJMphase);
+            int pint = *(int *)(ckt->CKTstate0 + inst->TJMphsInt);
+            data->v.rValue =  phi + (pint*4)*M_PI;
+        }
+        return (OK);
+    L_TJM_QUEST_PHSN:
+        data->v.iValue = inst->TJMphsN;
+        return (OK);
+    L_TJM_QUEST_PHSF:
+        data->v.iValue = inst->TJMphsF;
+        return (OK);
+    L_TJM_QUEST_PHST:
+        data->v.rValue = inst->TJMphsT;
         return (OK);
     L_TJM_QUEST_CRT:
         data->v.rValue = inst->TJMcriti;
@@ -247,6 +267,22 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case TJM_QUEST_V:
         data->v.rValue = (ckt->rhsOld(inst->TJMposNode) -
             ckt->rhsOld(inst->TJMnegNode));
+        break;
+    case TJM_QUEST_PHS:
+        {
+            double phi = *(ckt->CKTstate0 + inst->TJMphase);
+            int pint = *(int *)(ckt->CKTstate0 + inst->TJMphsInt);
+            data->v.rValue =  phi + (pint*4)*M_PI;
+        }
+        break;
+    case TJM_QUEST_PHSN:
+        data->v.iValue = inst->TJMphsN;
+        break;
+    case TJM_QUEST_PHSF:
+        data->v.iValue = inst->TJMphsF;
+        break;
+    case TJM_QUEST_PHST:
+        data->v.rValue = inst->TJMphsT;
         break;
     case TJM_QUEST_CRT:
         data->v.rValue = inst->TJMcriti;
