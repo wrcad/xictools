@@ -61,16 +61,35 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
             // keep phase  >= 0 and < 2*PI
             double phi = *(ckt->CKTstate0 + inst->JJphase);
             int pint = *(int *)(ckt->CKTstate1 + inst->JJphsInt);
-            if (phi >= 2*M_PI) {
-                phi -= 2*M_PI;
+            double twopi = 2.0*M_PI;
+            if (phi >= twopi) {
+                phi -= twopi;
                 pint++;
             }
             else if (phi < 0) {
-                phi += 2*M_PI;
+                phi += twopi;
                 pint--;
             }
+
             *(ckt->CKTstate0 + inst->JJphase) = phi;
             *(int *)(ckt->CKTstate0 + inst->JJphsInt) = pint;
+            if (inst->JJphsNode > 0)
+                *(ckt->CKTrhsOld + inst->JJphsNode) = phi + (2*M_PI)*pint;
+
+            // SFQ hooks.
+            // Assume that 5*pi/4 is the half-way point when producing
+            // an SFQ pulse.
+            if (phi > 1.25*M_PI)
+                pint++;
+            int last_pn = inst->JJphsN;
+            inst->JJphsN = pint;
+            inst->JJphsF = false;
+            if (pint != last_pn) {
+                // Pulse count changed, record time and set flag.
+//XXX interpolate instead
+                inst->JJphsT = ckt->CKTtime;
+                inst->JJphsF = true;
+            }
 
             // find max vj for time step
             if (model->JJictype != 0 && inst->JJcriti > 0) {
@@ -85,9 +104,6 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
                 if (vmax < vj)
                     vmax = vj;
             }
-
-            if (inst->JJphsNode > 0)
-                *(ckt->CKTrhsOld + inst->JJphsNode) = phi + (2*M_PI)*pint;
         }
         if (vmax > 0.0) {
             // Limit next time step.

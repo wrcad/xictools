@@ -159,9 +159,11 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         }
         return (OK);
     L_TJM_QUEST_PHSN:
+        data->type = IF_INTEGER;
         data->v.iValue = inst->TJMphsN;
         return (OK);
     L_TJM_QUEST_PHSF:
+        data->type = IF_INTEGER;
         data->v.iValue = inst->TJMphsF;
         return (OK);
     L_TJM_QUEST_PHST:
@@ -276,9 +278,11 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         }
         break;
     case TJM_QUEST_PHSN:
+        data->type = IF_INTEGER;
         data->v.iValue = inst->TJMphsN;
         break;
     case TJM_QUEST_PHSF:
+        data->type = IF_INTEGER;
         data->v.iValue = inst->TJMphsF;
         break;
     case TJM_QUEST_PHST:

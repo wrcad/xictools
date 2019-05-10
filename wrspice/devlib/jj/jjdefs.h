@@ -146,6 +146,9 @@ struct sJJinstance : public sGENinstance
 #define JJinitVoltage JJinitCnd[0]
 #define JJinitPhase JJinitCnd[1]
 
+    int JJphsN;                    // SFQ pulse count
+    int JJphsF;                    // SFQ pulse emission flag
+    double JJphsT;                 // SFQpulse emission time
     double JJinitControl;          // initial control current
 #ifdef NEWLSER
     double JJlser;                 // parasitic series inductance
@@ -339,6 +342,10 @@ enum {
     JJ_NOISE,
 
     JJ_QUEST_V,
+    JJ_QUEST_PHS,
+    JJ_QUEST_PHSN,
+    JJ_QUEST_PHSF,
+    JJ_QUEST_PHST,
     JJ_QUEST_CRT,
     JJ_QUEST_IC,
     JJ_QUEST_IJ,

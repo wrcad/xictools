@@ -91,6 +91,10 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_JJ_NOISE,
 
         &&L_JJ_QUEST_V,
+        &&L_JJ_QUEST_PHS,
+        &&L_JJ_QUEST_PHSN,
+        &&L_JJ_QUEST_PHSF,
+        &&L_JJ_QUEST_PHST,
         &&L_JJ_QUEST_CRT,
         &&L_JJ_QUEST_IC,
         &&L_JJ_QUEST_IJ,
@@ -180,6 +184,24 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_JJ_QUEST_V:
         data->v.rValue = (ckt->rhsOld(inst->JJposNode) -
             ckt->rhsOld(inst->JJnegNode));
+        return (OK);
+    L_JJ_QUEST_PHS:
+        {
+            double phi = *(ckt->CKTstate0 + inst->JJphase);
+            int pint = *(int *)(ckt->CKTstate0 + inst->JJphsInt);
+            data->v.rValue =  phi + (pint*2)*M_PI;
+        }
+        return (OK);
+    L_JJ_QUEST_PHSN:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJphsN;
+        return (OK);
+    L_JJ_QUEST_PHSF:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJphsF;
+        return (OK);
+    L_JJ_QUEST_PHST:
+        data->v.rValue = inst->JJphsT;
         return (OK);
     L_JJ_QUEST_CRT:
         data->v.rValue = inst->JJcriti;
@@ -294,6 +316,24 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case JJ_QUEST_V:
         data->v.rValue = (ckt->rhsOld(inst->JJposNode) -
             ckt->rhsOld(inst->JJnegNode));
+        break;
+    case JJ_QUEST_PHS:
+        {
+            double phi = *(ckt->CKTstate0 + inst->JJphase);
+            int pint = *(int *)(ckt->CKTstate0 + inst->JJphsInt);
+            data->v.rValue =  phi + (pint*2)*M_PI;
+        }
+        break;
+    case JJ_QUEST_PHSN:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJphsN;
+        break;
+    case JJ_QUEST_PHSF:
+        data->type = IF_INTEGER;
+        data->v.iValue = inst->JJphsF;
+        break;
+    case JJ_QUEST_PHST:
+        data->v.rValue = inst->JJphsT;
         break;
     case JJ_QUEST_CRT:
         data->v.rValue = inst->JJcriti;

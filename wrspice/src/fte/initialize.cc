@@ -108,6 +108,7 @@ sConstant IFsimulator::ft_constants[] = {
     sConstant( "boltz",     wrsCONSTboltz,      "VCl%cC" ) ,
     sConstant( "planck",    wrsCONSTplanck,     "ClWb" ) ,
     sConstant( "phi0",      wrsCONSTphi0,       "Wb" ) ,
+    sConstant( "phi0_2pi",  wrsCONSTphi0_2pi,   "Wb" ) ,
     sConstant( 0,           0.0,                0 )
 };
 

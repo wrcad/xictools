@@ -106,10 +106,10 @@ struct sDCTprms;
 #endif
 
 // Release 3.2.15: The reference temperature is changed to 25C to match
-// Hspice.
+// HSPICE.
 // #define wrsREFTEMP          300.15  // 27 degrees C
 #define wrsREFTEMP          298.15  // 25 degrees C
-#define wrsCHARGE           1.60217646e-19
+#define wrsCHARGE           1.602176634e-19
 
 #define wrsCONSTCtoK        273.15
 #define wrsCONSTboltz       1.3806226e-23
@@ -118,10 +118,18 @@ struct sDCTprms;
 #define wrsCONSTroot2       M_SQRT2
 #define wrsCONSTe           M_E
 #define wrsCONSTc           2.997925e8
-#define wrsCONSTphi0        2.067833667e-15
+#define wrsCONSTphi0        2.067833848461929e-15
 #define wrsCONSTphi0_2pi    (wrsCONSTphi0/(2*M_PI))
-#define wrsCONSTplanck      6.62606896e-34
+#define wrsCONSTplanck      6.62607015e-34
 
+// New values for wrsCHARGE and wrsCONSTplanck were supplied by Paul
+// Dresselhaus of NIST, May 9 2019 (effective May 20).  wrsCONSTphi0
+// (h/2e) was updated from these.
+//
+// Previous values:
+// #define wrsCHARGE           1.60217646e-19
+// #define wrsCONSTplanck      6.62606896e-34
+// #define wrsCONSTphi0        2.067833667e-15
 
 //
 // General macros.

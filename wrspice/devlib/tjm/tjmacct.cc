@@ -74,6 +74,7 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
             *(int *)(ckt->CKTstate0 + inst->TJMphsInt) = pint;
             if (inst->TJMphsNode > 0)
                 *(ckt->CKTrhsOld + inst->TJMphsNode) = phi + fourpi*pint;
+            inst->tjm_accept(phi);
 
             // SFQ hooks.
             pint += pint;
@@ -88,6 +89,7 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
                 pint++;
             int last_pn = inst->TJMphsN;
             inst->TJMphsN = pint;
+            inst->TJMphsF = false;
             if (pint != last_pn) {
                 // Pulse count changed, record time and set flag.
 //XXX interpolate instead
@@ -108,7 +110,6 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
                 if (vmax < vj)
                     vmax = vj;
             }
-            inst->tjm_accept(phi);
         }
         if (vmax > 0.0) {
             // Limit next time step.

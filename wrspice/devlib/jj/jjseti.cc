@@ -69,6 +69,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_JJ_NOISE};
 
         // &&L_JJ_QUEST_V,
+        // &&L_JJ_QUEST_PHS,
+        // &&L_JJ_QUEST_PHSN,
+        // &&L_JJ_QUEST_PHSF,
+        // &&L_JJ_QUEST_PHST,
         // &&L_JJ_QUEST_CRT,
         // &&L_JJ_QUEST_IC,
         // &&L_JJ_QUEST_IJ,
