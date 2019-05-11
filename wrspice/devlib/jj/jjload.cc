@@ -832,7 +832,7 @@ jjstuff::jj_load(sCKT *ckt, sJJmodel *model, sJJinstance *inst)
     // load matrix, rhs vector
     if (inst->JJphsNode > 0)
         *(ckt->CKTrhs + inst->JJphsNode) = js_phi +
-            (2*M_PI)* *(int*)(ckt->CKTstate1 + inst->JJphsInt);
+            (4*M_PI)* *(int*)(ckt->CKTstate1 + inst->JJphsInt);
 
     if (!inst->JJnegNode) {
         ckt->ldadd(inst->JJposPosPtr, gqt);

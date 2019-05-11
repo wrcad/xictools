@@ -189,7 +189,7 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         {
             double phi = *(ckt->CKTstate0 + inst->JJphase);
             int pint = *(int *)(ckt->CKTstate0 + inst->JJphsInt);
-            data->v.rValue =  phi + (pint*2)*M_PI;
+            data->v.rValue =  phi + (pint*4)*M_PI;
         }
         return (OK);
     L_JJ_QUEST_PHSN:
@@ -321,7 +321,7 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         {
             double phi = *(ckt->CKTstate0 + inst->JJphase);
             int pint = *(int *)(ckt->CKTstate0 + inst->JJphsInt);
-            data->v.rValue =  phi + (pint*2)*M_PI;
+            data->v.rValue =  phi + (pint*4)*M_PI;
         }
         break;
     case JJ_QUEST_PHSN:

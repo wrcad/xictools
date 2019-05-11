@@ -811,9 +811,10 @@ sDataVec::v_and(sDataVec *data2)
             complex *c1 = v_data.comp;
             double *d2 = data2->v_data.real;
             for (int i = 0; i < v_length; i++) {
-                *out++ = ((c1->real != 0.0 || c1->imag != 0.0) && *d2++ != 0.0
+                *out++ = ((c1->real != 0.0 || c1->imag != 0.0) && *d2 != 0.0
                     ? 1.0 : 0.0);
                 c1++;
+                d2++;
             }
         }
     }
@@ -822,16 +823,20 @@ sDataVec::v_and(sDataVec *data2)
             double *d1 = v_data.real;
             complex *c2 = data2->v_data.comp;
             for (int i = 0; i < v_length; i++) {
-                *out++ = (*d1++ != 0.0 && (c2->real != 0.0 || c2->imag != 0.0)
+                *out++ = (*d1 != 0.0 && (c2->real != 0.0 || c2->imag != 0.0)
                     ? 1.0 : 0.0);
+                d1++;
                 c2++;
             }
         }
         else {
             double *d1 = v_data.real;
             double *d2 = data2->v_data.real;
-            for (int i = 0; i < v_length; i++)
+            for (int i = 0; i < v_length; i++) {
                 *out++ = (*d1 != 0.0 && *d2 != 0.0 ? 1.0 : 0.0);
+                d1++;
+                d2++;
+            }
         }
     }
     return (res);
@@ -858,9 +863,10 @@ sDataVec::v_or(sDataVec *data2)
             complex *c1 = v_data.comp;
             double *d2 = data2->v_data.real;
             for (int i = 0; i < v_length; i++) {
-                *out++ = (c1->real != 0.0 || c1->imag != 0.0 || *d2++ != 0.0
+                *out++ = (c1->real != 0.0 || c1->imag != 0.0 || *d2 != 0.0
                     ? 1.0 : 0.0);
                 c1++;
+                d2++;
             }
         }
     }
@@ -869,16 +875,20 @@ sDataVec::v_or(sDataVec *data2)
             double *d1 = v_data.real;
             complex *c2 = data2->v_data.comp;
             for (int i = 0; i < v_length; i++) {
-                *out++ = (*d1++ != 0.0 || c2->real != 0.0 || c2->imag != 0.0
+                *out++ = (*d1 != 0.0 || c2->real != 0.0 || c2->imag != 0.0
                     ? 1.0 : 0.0);
+                d1++;
                 c2++;
             }
         }
         else {
             double *d1 = v_data.real;
             double *d2 = data2->v_data.real;
-            for (int i = 0; i < v_length; i++)
+            for (int i = 0; i < v_length; i++) {
                 *out++ = (*d1 != 0.0 || *d2 != 0.0 ? 1.0 : 0.0);
+                d1++;
+                d2++;
+            }
         }
     }
     return (res);

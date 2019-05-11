@@ -58,31 +58,37 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
-            // keep phase  >= 0 and < 2*PI
+            // Keep phi in the range -2pi - 2pi, with an integer 4pi
+            // modulus.  This preserves phase accuracy for large phase
+            // numbers.
+
             double phi = *(ckt->CKTstate0 + inst->JJphase);
             int pint = *(int *)(ckt->CKTstate1 + inst->JJphsInt);
-            double twopi = 2.0*M_PI;
+            double twopi = M_PI + M_PI;
+            double fourpi = twopi + twopi;
             if (phi >= twopi) {
-                phi -= twopi;
+                phi -= fourpi;
                 pint++;
             }
-            else if (phi < 0) {
-                phi += twopi;
+            else if (phi < -twopi) {
+                phi += fourpi;
                 pint--;
             }
 
             *(ckt->CKTstate0 + inst->JJphase) = phi;
             *(int *)(ckt->CKTstate0 + inst->JJphsInt) = pint;
             if (inst->JJphsNode > 0)
-                *(ckt->CKTrhsOld + inst->JJphsNode) = phi + (2*M_PI)*pint;
+                *(ckt->CKTrhsOld + inst->JJphsNode) = phi + fourpi*pint;
 
             // SFQ hooks.
-            // Assume that 5*pi/4 is the half-way point when producing
-            // an SFQ pulse.
+            pint += pint;
             if (phi > 1.25*M_PI)
                 pint++;
+            else if (phi < -0.75*M_PI)
+                pint--;
+
             int last_pn = inst->JJphsN;
-            inst->JJphsN = pint;
+            inst->JJphsN = abs(pint);
             inst->JJphsF = false;
             if (pint != last_pn) {
                 // Pulse count changed, record time and set flag.

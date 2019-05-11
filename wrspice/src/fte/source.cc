@@ -2447,12 +2447,15 @@ sLine::get_controls(bool allcmds, CBLK_TYPE type, bool oldformat)
                 delete dd;
             }
             if (blkname) {
-                // save as named codeblock
+                // Save as named codeblock and clear state, there may
+                // be arbitrarily many of these.
 
                 CP.AddBlock(blkname, named_blk);
 
                 delete [] blkname;
                 blkname = 0;
+                wordlist::destroy(named_blk);
+                named_blk = 0;
             }
         }
         else if (!*dd->li_line || ((allcmds ||

@@ -53,19 +53,19 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
-            // Due to the half-angle formulas used in the TMJ, we
-            // can't do modulo 2pi, but instead we can use modulo 4pi. 
-            // As in the RSJ case, this avoid numerical phase-slip
-            // errors for very long runs.
+            // Keep phi in the range -2pi - 2pi, with an integer 4pi
+            // modulus.  This preserves phase accuracy for large phase
+            // numbers.
 
             double phi = *(ckt->CKTstate0 + inst->TJMphase);
             int pint = *(int *)(ckt->CKTstate1 + inst->TJMphsInt);
-            double fourpi = 4.0*M_PI;
-            if (phi >= fourpi) {
+            double twopi = M_PI + M_PI;
+            double fourpi = twopi + twopi;
+            if (phi >= twopi) {
                 phi -= fourpi;
                 pint++;
             }
-            else if (phi < 0) {
+            else if (phi < -twopi) {
                 phi += fourpi;
                 pint--;
             }
@@ -78,17 +78,13 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
 
             // SFQ hooks.
             pint += pint;
-            double twopi = 2.0*M_PI;
-            if (phi >= twopi) {
-                pint++;
-                phi -= twopi;
-            }
-            // Assume that 5*pi/4 is the half-way point when producing
-            // an SFQ pulse.
             if (phi > 1.25*M_PI)
                 pint++;
+            else if (phi < -0.75*M_PI)
+                pint--;
+
             int last_pn = inst->TJMphsN;
-            inst->TJMphsN = pint;
+            inst->TJMphsN = abs(pint);
             inst->TJMphsF = false;
             if (pint != last_pn) {
                 // Pulse count changed, record time and set flag.
