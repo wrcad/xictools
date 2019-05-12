@@ -577,7 +577,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
     else if (segfilebase)
         run->setupSegments(segfilebase, segwidth, outd);
 
-    if (run->rd() && isIplot()) {
+    if (run->rd() && hasIplot()) {
         GRpkgIf()->ErrPrintf(ET_WARN,
             "no iplots will be produced in this mode.\n");
     }

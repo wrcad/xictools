@@ -964,6 +964,15 @@ sScGlobal::param_expand(sLine *deck, sParamTab *ptab)
         }
         return;
     }
+    if (lstring::cimatch(STOP_KW, s)) {
+        char *str = lstring::copy(deck->line());
+        ptab->param_subst_measure(&str);
+        if (str && strcmp(deck->line(), str)) {
+            deck->set_line(str);
+            delete [] str;
+        }
+        return;
+    }
     if (*s == '.') {
         // Don't expand unsupported control cards.
         char *tok = IP.getTok(&s, true);

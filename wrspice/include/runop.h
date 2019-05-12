@@ -546,6 +546,7 @@ struct sRunopStop : public sRunop
         ro_stop_skip            = false;
         ro_stop_flag            = false;
         ro_end_flag             = false;
+        ro_silent               = false;
 
         parse(str, errstr);
     }
@@ -567,6 +568,7 @@ struct sRunopStop : public sRunop
     bool stop_done()            { return (ro_stop_done); }
     bool stop_flag()            { return (ro_stop_flag); }
     bool end_flag()             { return (ro_end_flag); }
+    bool silent()               { return (ro_silent); }
     void nostop()               { ro_stop_flag = false; ro_end_flag = false; }
 
     void print(char**);         // Print, in string if given, the runop msg.
@@ -594,6 +596,7 @@ private:
     bool ro_stop_skip;          // parse error so skip
     bool ro_stop_flag;          // pause analysis when done
     bool ro_end_flag;           // terminate analysis when done
+    bool ro_silent;             // don't print stop message
 };
 
 #endif // RUNOP_H

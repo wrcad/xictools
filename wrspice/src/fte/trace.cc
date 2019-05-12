@@ -856,7 +856,7 @@ IFoutput::endIplot(sRunDesc *run)
 // Return true if an iplot is active.
 //
 bool
-IFoutput::isIplot(bool resurrect)
+IFoutput::hasIplot(bool resurrect)
 {
     sRunopDb *db = Sp.CurCircuit() ? &Sp.CurCircuit()->runops() : 0;
     if (resurrect) {

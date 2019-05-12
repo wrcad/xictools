@@ -92,6 +92,7 @@ namespace {
     const char *mkw_stop        = "stop";
     const char *mkw_exec        = "exec";
     const char *mkw_call        = "call";
+    const char *mkw_silent      = "silent";
 }
 
 /*XXX ideas
@@ -340,6 +341,7 @@ namespace {
         if (lstring::cieq(s, mkw_print_terse)) return (true);
         if (lstring::cieq(s, mkw_stop)) return (true);
         if (lstring::cieq(s, mkw_call)) return (true);
+        if (lstring::cieq(s, mkw_silent)) return (true);
         return (false);
     }
 }
@@ -1509,11 +1511,12 @@ sRunopMeas::reset(sPlot *pl)
 bool
 sRunopMeas::check_measure(sRunDesc *run)
 {
-    if (!run || !run->circuit())
+    if (!ro_active || !run || !run->circuit())
         return (true);
-    sFtCirc *circuit = run->circuit();
     if (ro_measure_done || ro_measure_error || ro_measure_skip)
         return (true);
+
+    sFtCirc *circuit = run->circuit();
     sRunopMeas *measures = circuit->measures();
     if (!measures)
        return (true);  // "can't happen"
@@ -2328,6 +2331,11 @@ sRunopStop::parse(const char *str, char **errstr)
             ro_call = gtok(&s);;
             continue;
         }
+        if (lstring::cieq(tok, mkw_silent)) {
+            delete [] tok;
+            ro_silent = true;
+            continue;
+        }
 
         // Something unknown, probably a bare number.  Consider an
         // implicit "at".
@@ -2380,6 +2388,9 @@ sRunopStop::check_stop(sRunDesc *run)
 
     // Call the callback, if any.  This can override the stop.
     ROret ret = ::call(ro_call);
+
+    ro_stop_done = true;
+
     if (ret == RO_OK)
         return (RO_PAUSE);
     if (ret == RO_PAUSE)
@@ -2423,6 +2434,12 @@ sRunopStop::print_cond(char **retstr, bool status)
         lstr.add(mkw_call);
         lstr.add_c(' ');
         lstr.add(ro_call);
+    }
+    if (status) {
+        if (ro_silent) {
+            lstr.add_c(' ');
+            lstr.add(mkw_silent);
+        }
     }
     lstr.add_c('\n');
 

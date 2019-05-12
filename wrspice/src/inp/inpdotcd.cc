@@ -461,6 +461,11 @@ SPinput::parseDot(sCKT *ckt, sTASK *task, sLine *curline)
         return (false);
     }
 
+    if (lstring::eq(token, STOP_KW)) {
+        delete [] token;
+        return (false);
+    }
+
     if (lstring::eq(token, CACHE_KW) || lstring::eq(token, ENDCACHE_KW)) {
         delete [] token;
         return (false);

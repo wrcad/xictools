@@ -471,6 +471,7 @@ struct IFoutput
     void deleteRunop(int, bool, int);
     void checkRunops(sRunDesc*, double);
     int pauseTest(sRunDesc*);
+    bool hasRunop(unsigned int);
 
     // save.cc
     void saveCmd(wordlist*);
@@ -482,7 +483,7 @@ struct IFoutput
     void iplotCmd(wordlist*);
     void iplot(sRunopIplot*, sRunDesc*);
     void endIplot(sRunDesc*);
-    bool isIplot(bool = false);
+    bool hasIplot(bool = false);
 
     // plots.cc
     sPlot *findPlot(const char*);

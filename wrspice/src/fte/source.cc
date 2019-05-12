@@ -2065,6 +2065,8 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 dd->set_error(er);
                 delete [] er;
             }
+            else
+                m->set_active(true);
                 
             if (!ci_runops.measures())
                 ci_runops.set_measures(m);
@@ -2085,6 +2087,8 @@ sFtCirc::expand(sLine *realdeck, bool *err)
                 dd->set_error(er);
                 delete [] er;
             }
+            else
+                m->set_active(true);
                 
             if (!ci_runops.stops())
                 ci_runops.set_stops(m);

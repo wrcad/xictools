@@ -77,15 +77,32 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
 
             *(ckt->CKTstate0 + inst->JJphase) = phi;
             *(int *)(ckt->CKTstate0 + inst->JJphsInt) = pint;
+            double phitot = phi + fourpi*pint;
             if (inst->JJphsNode > 0)
-                *(ckt->CKTrhsOld + inst->JJphsNode) = phi + fourpi*pint;
+                *(ckt->CKTrhsOld + inst->JJphsNode) = phitot;
 
             // SFQ hooks.
             pint += pint;
-            if (phi > 1.25*M_PI)
-                pint++;
-            else if (phi < -0.75*M_PI)
+            if (phi < 0.0) {
                 pint--;
+                phi += twopi;
+            }
+            if (phitot > 0.0) {
+                // Phase is positive and we assume increasing, bias
+                // point is in the first quadrant, half way around is
+                // the third quadrant, clockwise.
+
+                if (phi > M_PI + M_PI_4)
+                    pint++;
+            }
+            else {
+                // Phase is negative and we assume decreasing, bias
+                // point is in the fourth quadrant, half way around is
+                // the second quadrant, counter-clockwise
+
+                if (phi < M_PI - M_PI_4)
+                    pint--;
+            }
 
             int last_pn = inst->JJphsN;
             inst->JJphsN = abs(pint);

@@ -996,6 +996,7 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
     delete [] ch_segbase;
     ch_segbase = 0;
 
+printf("XXX %d\n", OP.hasRunop(DF_MEASURE|DF_STOP));
     if (keepall) {
         // Keep all data in a multi-dimensional plot.
         out_mode = OutcCheckMulti;
@@ -1008,7 +1009,7 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
             ch_segbase = lstring::copy(vv.get_string());
         out_mode = OutcCheckSeg;
     }
-    else if (keepplot || OP.isIplot(true)) {
+    else if (keepplot || OP.hasIplot(true) || OP.hasRunop(DF_MEASURE|DF_STOP)) {
         // Keep all data for curent trial.
         out_mode = OutcCheckSeg;
     }
