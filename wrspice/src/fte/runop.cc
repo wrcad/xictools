@@ -65,15 +65,8 @@ Authors: 1987 Wayne A. Christopher
 //
 
 // keywords
-const char *kw_measure = "measure";
-const char *kw_stop   = "stop";
-const char *kw_after  = "after";
-const char *kw_at     = "at";
-const char *kw_before = "before";
-const char *kw_when   = "when";
 const char *kw_active = "active";
 const char *kw_inactive = "inactive";
-const char *kw_call   = "call";
 
 
 // Set up a measure runop.

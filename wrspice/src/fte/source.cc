@@ -2064,17 +2064,20 @@ sFtCirc::expand(sLine *realdeck, bool *err)
             if (er) {
                 dd->set_error(er);
                 delete [] er;
+                delete m;
             }
-            else
+            else {
+                m->set_number(OP.runops()->new_count());
                 m->set_active(true);
                 
-            if (!ci_runops.measures())
-                ci_runops.set_measures(m);
-            else {
-                sRunopMeas *mx = ci_runops.measures();
-                while (mx->next())
-                    mx = mx->next();
-                mx->set_next(m);
+                if (!ci_runops.measures())
+                    ci_runops.set_measures(m);
+                else {
+                    sRunopMeas *mx = ci_runops.measures();
+                    while (mx->next())
+                        mx = mx->next();
+                    mx->set_next(m);
+                }
             }
         }
         else if (lstring::cimatch(STOP_KW, dd->line())) {
@@ -2086,17 +2089,20 @@ sFtCirc::expand(sLine *realdeck, bool *err)
             if (er) {
                 dd->set_error(er);
                 delete [] er;
+                delete m;
             }
-            else
+            else {
+                m->set_number(OP.runops()->new_count());
                 m->set_active(true);
                 
-            if (!ci_runops.stops())
-                ci_runops.set_stops(m);
-            else {
-                sRunopStop *mx = ci_runops.stops();
-                while (mx->next())
-                    mx = mx->next();
-                mx->set_next(m);
+                if (!ci_runops.stops())
+                    ci_runops.set_stops(m);
+                else {
+                    sRunopStop *mx = ci_runops.stops();
+                    while (mx->next())
+                        mx = mx->next();
+                    mx->set_next(m);
+                }
             }
         }
         // Maybe add .trace, .iplot?

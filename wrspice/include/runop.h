@@ -293,10 +293,12 @@ struct sMpoint
             t_active        = false;
             t_ready         = false;
             t_found_local   = false;
+            t_found_state   = false;
             t_offset_set    = false;
             t_last_saved    = false;
             t_td_given      = false;
             t_ptmode        = false;
+            t_strobe        = false;
             t_type          = MPunknown;
             t_range         = MPatwhen;
         }
@@ -310,6 +312,7 @@ struct sMpoint
     int indx()                  { return (t_indx); }
     bool active()               { return (t_active); }
     bool ready()                { return (t_ready); }
+    bool strobe()               { return (t_strobe); }
 
     void reset()
         {
@@ -323,6 +326,7 @@ struct sMpoint
             t_fall_cnt = 0;
             t_ready = false;
             t_found_local = false;
+            t_found_state = false;
             t_offset_set = false;
             t_last_saved = false;
             if (t_conj)
@@ -361,10 +365,12 @@ private:
     bool t_active;          // This is active, if not skip it.
     bool t_ready;           // The measure point was found for all conj.
     bool t_found_local;     // The measure point was found for this.
+    bool t_found_state;     // The state to return when found.
     bool t_offset_set;      // This is initialized.
     bool t_last_saved;      // Last values of expressions saved.
     bool t_ptmode;          // Input in points, else absolute.
     bool t_td_given;        // Offset was given.
+    bool t_strobe;          // Strobe mode set.
     unsigned char t_type;   // Syntax type, MPform.
     unsigned char t_range;  // Before/at/after, MPrange.
 };

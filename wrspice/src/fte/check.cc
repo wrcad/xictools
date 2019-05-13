@@ -311,26 +311,23 @@ IFsimulator::MargAnalysis(wordlist *wl)
 
 
 // Check the codeblocks.  There are two, one from the EBLK_KW
-// (".exec") lines, which is optional, and one from the CBLK_KW
-// (".control") lines, which is essential.  Alternatively, external
-// codeblocks can be bound, and are referenced by name, if the name
-// field of the circuit struct is not 0.
+// (".exec") lines, and one from the CBLK_KW (".control") lines, both
+// are optional.  Alternatively, external codeblocks can be bound, and
+// are referenced by name, if the name field of the circuit struct is
+// not 0.
 //
 int
 sFtCirc::checkCodeblocks()
 {
     if (!controlBlk().name()) {
         if (!controlBlk().tree()) {
-            if (!controlBlk().text()) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
-                    "no control statements or codeblock.\n");
-                return (E_NOTFOUND);
-            }
-            controlBlk().set_tree(CP.MakeControl(controlBlk().text()));
-            if (!controlBlk().tree()) {
-                GRpkgIf()->ErrPrintf(ET_ERROR,
-                    "control statements parse failed.\n");
-                return(E_FAILED);
+            if (controlBlk().text()) {
+                controlBlk().set_tree(CP.MakeControl(controlBlk().text()));
+                if (!controlBlk().tree()) {
+                    GRpkgIf()->ErrPrintf(ET_ERROR,
+                        "control statements parse failed.\n");
+                    return(E_FAILED);
+                }
             }
         }
     }
@@ -343,10 +340,7 @@ sFtCirc::checkCodeblocks()
     }
     if (!execBlk().name()) {
         if (!execBlk().tree()) {
-            if (!execBlk().text())
-                GRpkgIf()->ErrPrintf(ET_WARN,
-                    "no exec statements or codeblock.\n");
-            else {
+            if (execBlk().text()) {
                 execBlk().set_tree(CP.MakeControl(execBlk().text()));
                 if (!execBlk().tree()) {
                     GRpkgIf()->ErrPrintf(ET_ERROR,
@@ -996,7 +990,6 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
     delete [] ch_segbase;
     ch_segbase = 0;
 
-printf("XXX %d\n", OP.hasRunop(DF_MEASURE|DF_STOP));
     if (keepall) {
         // Keep all data in a multi-dimensional plot.
         out_mode = OutcCheckMulti;
@@ -1465,8 +1458,12 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
 CBret
 sCHECKprms::evaluate()
 {
+    ch_evalcnt++;
+
     CBret ret = CBfail;
     if (out_cir && out_plot) {
+        if (!out_cir->controlBlk().tree())
+            return (CBok);
         sFtCirc *cir = Sp.CurCircuit();
         sPlot *plt = OP.curPlot();
         Sp.SetCurCircuit(out_cir);
@@ -1495,7 +1492,6 @@ sCHECKprms::evaluate()
         Sp.SetCurCircuit(cir);
         OP.setCurPlot(plt);
     }
-    ch_evalcnt++;
     ch_fail = (ret == CBfail);
     ch_nogo = (ret == CBendit);
     return (ret);

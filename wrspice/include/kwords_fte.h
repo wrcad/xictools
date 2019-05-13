@@ -294,23 +294,20 @@ extern const char *kw_substart;
  *  Misc.
  *************************************************************************/
 
-// runop.cc
-extern const char *kw_save;
-extern const char *kw_trace;
-extern const char *kw_iplot;
-extern const char *kw_stop;
-extern const char *kw_measure;
-extern const char *kw_stop2;
-extern const char *kw_after;
-extern const char *kw_at;
-extern const char *kw_before;
-extern const char *kw_when;
-extern const char *kw_active;
-extern const char *kw_inactive;
+// hardcopy.cc
+extern const char *kw_hcopyfilename;
 
 // initialize.cc
 extern const char *kw_all;
 extern const char *kw_everything;
+
+// measure.cc
+extern const char *kw_measure;
+extern const char *kw_stop;
+extern const char *kw_before;
+extern const char *kw_at;
+extern const char *kw_after;
+extern const char *kw_when;
 
 // resource.cc
 extern const char *kw_elapsed;
@@ -319,8 +316,16 @@ extern const char *kw_space;
 extern const char *kw_faults;
 extern const char *kw_stats;
 
-// hardcopy.cc
-extern const char *kw_hcopyfilename;
+// runop.cc
+extern const char *kw_active;
+extern const char *kw_inactive;
+
+// save.cc
+extern const char *kw_save;
+
+// trace.cc
+extern const char *kw_trace;
+extern const char *kw_iplot;
 
 #endif
 

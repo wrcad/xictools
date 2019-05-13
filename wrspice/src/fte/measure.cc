@@ -58,16 +58,17 @@
 
 //#define M_DEBUG
 
-namespace {
+const char *kw_measure     = "measure";
+const char *kw_stop        = "stop";
+const char *kw_before      = "before";
+const char *kw_at          = "at";
+const char *kw_after       = "after";
+const char *kw_when        = "when";
 
-    // Keywords
-    const char *mkw_measure     = "measure";
+namespace {
+    // Private keywords
     const char *mkw_trig        = "trig";
     const char *mkw_targ        = "targ";
-    const char *mkw_before      = "before";
-    const char *mkw_at          = "at";
-    const char *mkw_after       = "after";
-    const char *mkw_when        = "when";
     const char *mkw_val         = "val";
     const char *mkw_td          = "td";
     const char *mkw_cross       = "cross";
@@ -89,10 +90,10 @@ namespace {
     const char *mkw_weight      = "weight";
     const char *mkw_print       = "print";
     const char *mkw_print_terse = "print_terse";
-    const char *mkw_stop        = "stop";
     const char *mkw_exec        = "exec";
     const char *mkw_call        = "call";
     const char *mkw_silent      = "silent";
+    const char *mkw_strobe      = "strobe";
 }
 
 /*XXX ideas
@@ -103,8 +104,12 @@ as binary?
 
 Think thru logic, need a new flag?
 t_found_flag   point was found for this
-t_ready        point was found for conj
-t_state        when t_found, this is state
+t_found_state  when t_found_flag set, this is state
+t_strobe       when true, evaluate conj when t_found_flag set, t_found_state
+               set accordingly.  Otherwise, t_found_state will be set true
+               when t_found_flag set.
+
+t_ready        point was found for conj (is this needed?)
 if (!t_found_flag)
    check
 else
@@ -311,13 +316,14 @@ namespace {
 
     bool is_kw(const char *s)
     {
-        if (lstring::cieq(s, mkw_measure)) return (true);
+        if (lstring::cieq(s, kw_measure)) return (true);
+        if (lstring::cieq(s, kw_stop)) return (true);
+        if (lstring::cieq(s, kw_before)) return (true);
+        if (lstring::cieq(s, kw_at)) return (true);
+        if (lstring::cieq(s, kw_after)) return (true);
+        if (lstring::cieq(s, kw_when)) return (true);
         if (lstring::cieq(s, mkw_trig)) return (true);
         if (lstring::cieq(s, mkw_targ)) return (true);
-        if (lstring::cieq(s, mkw_before)) return (true);
-        if (lstring::cieq(s, mkw_at)) return (true);
-        if (lstring::cieq(s, mkw_after)) return (true);
-        if (lstring::cieq(s, mkw_when)) return (true);
         if (lstring::cieq(s, mkw_val)) return (true);
         if (lstring::cieq(s, mkw_td)) return (true);
         if (lstring::cieq(s, mkw_cross)) return (true);
@@ -339,9 +345,9 @@ namespace {
         if (lstring::cieq(s, mkw_weight)) return (true);
         if (lstring::cieq(s, mkw_print)) return (true);
         if (lstring::cieq(s, mkw_print_terse)) return (true);
-        if (lstring::cieq(s, mkw_stop)) return (true);
         if (lstring::cieq(s, mkw_call)) return (true);
         if (lstring::cieq(s, mkw_silent)) return (true);
+        if (lstring::cieq(s, mkw_strobe)) return (true);
         return (false);
     }
 }
@@ -401,21 +407,23 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
         listerr1(errstr, "unexpected end of line.");
         return (E_SYNTAX);
     }
-    if (lstring::cieq(tok, mkw_at)) {
-        t_kw2 = mkw_at;
+    if (lstring::cieq(tok, kw_at)) {
+        t_kw2 = kw_at;
+//XXX
+        t_strobe = true;
         delete [] tok;
     }
-    else if (lstring::cieq(tok, mkw_when)) {
-        t_kw2 = mkw_when;
+    else if (lstring::cieq(tok, kw_when)) {
+        t_kw2 = kw_when;
         delete [] tok;
     }
-    else if (lstring::cieq(tok, mkw_before)) {
-        t_kw2 = mkw_before;
+    else if (lstring::cieq(tok, kw_before)) {
+        t_kw2 = kw_before;
         t_range = MPbefore;
         delete [] tok;
     }
-    else if (lstring::cieq(tok, mkw_after)) {
-        t_kw2 = mkw_after;
+    else if (lstring::cieq(tok, kw_after)) {
+        t_kw2 = kw_after;
         t_range = MPafter;
         delete [] tok;
     }
@@ -639,8 +647,8 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     last = s;
     tok = gtok(&s);
     if (tok) {
-        bool c = (lstring::cieq(tok, mkw_at) || lstring::cieq(tok, mkw_when) ||
-            lstring::cieq(tok, mkw_before) || lstring::cieq(tok, mkw_after));
+        bool c = (lstring::cieq(tok, kw_at) || lstring::cieq(tok, kw_when) ||
+            lstring::cieq(tok, kw_before) || lstring::cieq(tok, kw_after));
         delete [] tok;
         s = last;
         if (c) {
@@ -902,7 +910,7 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
                 goto done;
             }
             ix = xs->unscalarized_length() - 1;
-            fval = xs->realval(0);;
+            fval = xs->realval(0);
             if (end)
                 ix--;
         }
@@ -1117,7 +1125,7 @@ sRunopMeas::print(char **pstr)
     }
     if (ro_stop_flag) {
         lstr.add_c(' ');
-        lstr.add(mkw_stop);
+        lstr.add(kw_stop);
     }
 
     lstr.add_c('\n');
@@ -1282,10 +1290,10 @@ sRunopMeas::parse(const char *str, char **errstr)
             }
             continue;
         }
-        if (lstring::cieq(tok, mkw_when) ||
-                lstring::cieq(tok, mkw_at) ||
-                lstring::cieq(tok, mkw_before) ||
-                lstring::cieq(tok, mkw_after)) {
+        if (lstring::cieq(tok, kw_when) ||
+                lstring::cieq(tok, kw_at) ||
+                lstring::cieq(tok, kw_before) ||
+                lstring::cieq(tok, kw_after)) {
 
             delete [] tok;
             s = last;
@@ -1386,7 +1394,7 @@ sRunopMeas::parse(const char *str, char **errstr)
             ro_print_flag = 1;
             continue;
         }
-        if (lstring::cieq(tok, mkw_stop)) {
+        if (lstring::cieq(tok, kw_stop)) {
             delete [] tok;
             ro_stop_flag = true;
             continue;
@@ -2308,10 +2316,10 @@ sRunopStop::parse(const char *str, char **errstr)
             listerr1(errstr, "missing analysis name.");
             break;
         }
-        if (lstring::cieq(tok, mkw_when) ||
-                lstring::cieq(tok, mkw_at) ||
-                lstring::cieq(tok, mkw_before) ||
-                lstring::cieq(tok, mkw_after)) {
+        if (lstring::cieq(tok, kw_when) ||
+                lstring::cieq(tok, kw_at) ||
+                lstring::cieq(tok, kw_before) ||
+                lstring::cieq(tok, kw_after)) {
             delete [] tok;
             s = last;
             int ret = ro_start.parse(&s, errstr, 0);

@@ -5452,7 +5452,7 @@ tf command
 multidc
 simcmds
 
-!! commands.tex 011909
+!! commands.tex 051219
 !!KEYWORD
 trace
 !!TITLE
@@ -5461,10 +5461,11 @@ trace command
     command: <tt>trace</tt> <i>expr</i> ...
  
     <p>
-    The <b>trace</b> command will add a "debug" which prints the value
-    of the expression(s) at each user analysis point.  At each time
-    point, the expressions on the command line will be evaluated, and
-    their values printed on the standard output.
+    The <b>trace</b> command will add a <a href="runop">runop</a>
+    which prints the value of the expression(s) at each user analysis
+    point.  At each time point, the expressions on the command line
+    will be evaluated, and their values printed on the standard
+    output.
  
     <p>
     If a trace command is given at the prompt in interactive mode, it
