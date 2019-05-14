@@ -769,7 +769,11 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
     if (!t_active)
         return (true);
 
+    if (t_found_local && t_strobe)
+        return (t_found_state);
+
     bool isready = true;
+    bool found_local = t_found_local;
     if (!t_offset_set) {
 
         if (t_td_given)
@@ -996,6 +1000,10 @@ done:
             t_ready = true;
         }
     }
+
+    if (!found_local && t_found_local && t_strobe)
+        t_found_state = isready;
+
     return (isready);
 }
 
