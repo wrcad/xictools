@@ -299,6 +299,7 @@ struct sMpoint
             t_td_given      = false;
             t_ptmode        = false;
             t_strobe        = false;
+            t_dstrobe       = false;
             t_type          = MPunknown;
             t_range         = MPatwhen;
         }
@@ -313,6 +314,7 @@ struct sMpoint
     bool active()               { return (t_active); }
     bool ready()                { return (t_ready); }
     bool strobe()               { return (t_strobe); }
+    bool dstrobe()              { return (t_dstrobe); }
 
     void reset()
         {
@@ -371,6 +373,7 @@ private:
     bool t_ptmode;          // Input in points, else absolute.
     bool t_td_given;        // Offset was given.
     bool t_strobe;          // Strobe mode set.
+    bool t_dstrobe;         // Auto strobe at delay mode set.
     unsigned char t_type;   // Syntax type, MPform.
     unsigned char t_range;  // Before/at/after, MPrange.
 };

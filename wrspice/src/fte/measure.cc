@@ -71,6 +71,7 @@ namespace {
     const char *mkw_targ        = "targ";
     const char *mkw_val         = "val";
     const char *mkw_td          = "td";
+    const char *mkw_ts          = "ts";
     const char *mkw_cross       = "cross";
     const char *mkw_rise        = "rise";
     const char *mkw_fall        = "fall";
@@ -326,6 +327,7 @@ namespace {
         if (lstring::cieq(s, mkw_targ)) return (true);
         if (lstring::cieq(s, mkw_val)) return (true);
         if (lstring::cieq(s, mkw_td)) return (true);
+        if (lstring::cieq(s, mkw_ts)) return (true);
         if (lstring::cieq(s, mkw_cross)) return (true);
         if (lstring::cieq(s, mkw_rise)) return (true);
         if (lstring::cieq(s, mkw_fall)) return (true);
@@ -466,8 +468,12 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     else {
         tok = gtok(&s);
         s = sbk;
-        if (lstring::cieq(tok, mkw_td)) {
+        if (lstring::cieq(tok, mkw_td) || lstring::cieq(tok, mkw_ts)) {
             found_td = true;
+            if (lstring::cieq(tok, mkw_ts)) {
+                t_strobe = true;
+                t_dstrobe = true;
+            }
             delete [] tok;
         }
         else {
@@ -576,11 +582,17 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
 
     const char *last = s;
     while ((tok = gtok(&s)) != 0) {
-        if (lstring::cieq(tok, mkw_td)) {
+        if (lstring::cieq(tok, mkw_td) || lstring::cieq(tok, mkw_ts)) {
             delete [] tok;
+            const char *erkw = mkw_td;
+            if (lstring::cieq(tok, mkw_ts)) {
+                t_strobe = true;
+                t_dstrobe = true;
+                erkw = mkw_ts;
+            }
             tok = gtok(&s);
             if (!tok) {
-                listerr(errstr, mkw_td);
+                listerr(errstr, erkw);
                 break;
             }
             if (*tok == '=') {
@@ -588,7 +600,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
                 tok = gtok(&s);
             }
             if (!tok) {
-                listerr(errstr, mkw_td);
+                listerr(errstr, erkw);
                 break;
             }
             const char *t = tok;
@@ -707,7 +719,10 @@ sMpoint::print(sLstr &lstr)
         lstr.add(t_expr1);
         if (t_td_given) {
             lstr.add_c(' ');
-            lstr.add(mkw_td);
+            if (t_dstrobe)
+                lstr.add(mkw_ts);
+            else
+                lstr.add(mkw_td);
             lstr.add_c('=');
             lstr.add_g(t_td);
         }
@@ -716,7 +731,10 @@ sMpoint::print(sLstr &lstr)
         lstr.add(t_expr1);
         if (t_td_given || t_mname) {
             lstr.add_c(' ');
-            lstr.add(mkw_td);
+            if (t_dstrobe)
+                lstr.add(mkw_ts);
+            else
+                lstr.add(mkw_td);
             lstr.add_c('=');
             if (t_mname)
                 lstr.add(t_mname);
@@ -774,6 +792,7 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
 
     bool isready = true;
     bool found_local = t_found_local;
+    bool offset_set = t_offset_set;
     if (!t_offset_set) {
 
         if (t_td_given)
@@ -1001,7 +1020,11 @@ done:
         }
     }
 
-    if (!found_local && t_found_local && t_strobe)
+    if (!offset_set && t_offset_set &&t_dstrobe) {
+        t_found_state = isready;
+        t_found_local = true;
+    }
+    else if (!found_local && t_found_local && t_strobe)
         t_found_state = isready;
 
     return (isready);
