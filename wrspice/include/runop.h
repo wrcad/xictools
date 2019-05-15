@@ -261,9 +261,10 @@ enum MPform
 
 enum MPrange
 {
-    MPatwhen,       // applies at defined value
+    MPafter,        // appies at or after defined value
+    MPat,           // applies at defined value only (strobing)
     MPbefore,       // applies before defined value
-    MPafter         // appies after defined value
+    MPwhen          // appies at or after defined value (same as after)
 };
 
 struct sMpoint
@@ -301,7 +302,7 @@ struct sMpoint
             t_strobe        = false;
             t_dstrobe       = false;
             t_type          = MPunknown;
-            t_range         = MPatwhen;
+            t_range         = MPwhen;
         }
 
     ~sMpoint();

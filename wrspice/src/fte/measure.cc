@@ -367,12 +367,17 @@ sMpoint::~sMpoint()
 
 
 // The general form of the definition string is
-//   [when/at] expr[val][=][expr] [td=offset] [cross=crosses] [rise=rises]
-//     [fall=falls]
-// The initial keyword (which may be missing if unambiguous) is one of
-// "at" or "when".  These are equivalent.  One or two expressions follow,
-// with optional '=' or 'val=' ahead of the second expression.  the second
+//   [before/at/after/when] expr[val][=][expr] [td|ts=offset] [cross=crosses]
+//     [rise=rises] [fall=falls]
+// One or two expressions follow the initial keyword, with optional
+// '=' or 'val=' ahead of the second expression.  the second
 // expression can be missing.
+//
+// 'at' is strobing, meaning that it is only able to activate at the
+// time point where the term becomes active, so conjunction must also
+// be active at this point.  'after' and 'when' are equivalent,
+// activation is possible at any point after the term becomes active. 
+// 'before' reverses this.
 //
 // MPexp2:  expr1 and expr2 are both given, then the point is when
 //   expr==expr2, and the td,cross,rise,fall keywords apply.  The risis,
@@ -411,12 +416,13 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     }
     if (lstring::cieq(tok, kw_at)) {
         t_kw2 = kw_at;
-//XXX
         t_strobe = true;
+        t_range = MPat;
         delete [] tok;
     }
     else if (lstring::cieq(tok, kw_when)) {
         t_kw2 = kw_when;
+        t_range = MPwhen;
         delete [] tok;
     }
     else if (lstring::cieq(tok, kw_before)) {
@@ -448,7 +454,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
         while (*e && *e != ']')
             e++;
         if (*e != ']') {
-            listerr1(errstr, "no first expression found for time mark.");
+            listerr1(errstr, "no closing ']'.");
             return (E_SYNTAX);
         }
         int len = e-s+1;
@@ -478,9 +484,14 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
         }
         else {
             delete [] tok;
+            const char *sx = s;
             pn = Sp.GetPnode(&s, false);
             if (!pn) {
-                listerr1(errstr, "no first expression found for time mark.");
+                sLstr lstr;
+                lstr.add("expression parse error in \"");
+                lstr.add(sx);
+                lstr.add("\"");
+                listerr1(errstr, lstr.string());
                 return (E_SYNTAX);
             }
         }
@@ -1004,6 +1015,41 @@ done:
     if (t_range == MPbefore)
         isready = !isready;
 
+/*XXX
+Do we enforce time sequencing of the list?
+Issue:  .stop tran at 100p when expr
+Assume expr goes positive at 50p but returns to 0 before 100p, the when
+clause will be true, and the stop will occur at 100p.  Would it make more
+sense to wait for 100ps to test expr?
+
+implement:
+The time at found_local implicitly added to the delay of conj!
+*/
+#define NNN
+#ifdef NNN
+    if (t_found_local) {
+        if (t_conj && isready) {
+            if (!t_conj->check_found(circuit, err, end, this))
+                isready = false;
+        }
+        if (!t_conj)
+            t_ready = true;
+        else if (t_conj->t_ready) {
+            if (t_indx < t_conj->t_indx) {
+                t_found = t_conj->t_found;
+                t_indx = t_conj->t_indx;
+            }
+            t_ready = true;
+        }
+    }
+    if (!offset_set && t_offset_set &&t_dstrobe) {
+        t_found_state = isready;
+        t_found_local = true;
+    }
+    else if (!found_local && t_found_local && t_strobe)
+        t_found_state = isready;
+
+#else
     if (t_conj) {
         if (!t_conj->check_found(circuit, err, end, this))
             isready = false;
@@ -1026,6 +1072,7 @@ done:
     }
     else if (!found_local && t_found_local && t_strobe)
         t_found_state = isready;
+#endif
 
     return (isready);
 }
