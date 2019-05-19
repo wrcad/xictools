@@ -20,16 +20,6 @@
 -->
 
 <!--
-  This enables support for node voltage limiting and a predictor in
-  transient analysis.  The limiting seems to be pretty essential for
-  some models, e.g., bsimsoi.
-
-  The limiting part of this is now optional, set by package_limiting
-  which is set in the Makefile.
--->
-<admst:variable name="LIMPRED" value="yes"/>
-
-<!--
   The DDTFUNC variable controls how static/dynamic terms are handled.
   It can be set to one of three strings.
 

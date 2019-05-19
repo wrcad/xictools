@@ -7,7 +7,7 @@
   Whiteley Research Inc. (wrcad.com). 
 
 This must match the Makefile.
-SyntaxLevel 16
+SyntaxLevel 17
 -->
 
 <!DOCTYPE admst SYSTEM "admst.dtd">
@@ -27,7 +27,7 @@ you plan to keep your loadable module files in the same directory, it
 must be unique.  It will be the base name of the loadable module
 produced.
 
-2.  The model name (@MODELNAME).
+2.  The model name (@MODELNAME@).
 This is the name of the model by which the device model may be
 accessed in WRspice.  Typically, the device can be accessed in either
 of two ways:  through a unique nodel name, or via a standard modelname
@@ -90,17 +90,27 @@ model, effectively scaling the device count.  For example, giving
 'm=2' as a device instance parameter is equivalent to specifying two
 identical, parallel devices.
 
-7.  The @LIMITING@ can be either "yes" or "no".  When set to yes, a
-limiting algorithm is used on every device pin during transient
-analysis.  This is probably required for convergence of semiconductor
-device models that contain p/n or Schottky junctions.  One can turn
-this off for non-semiconductor devices.
+7.  The @PREDICTOR@ can be either "yes" or "no".  When set to yes, a
+linear predictor is applied to the voltages of each device pin on the
+first solution at a new time step.  Otherwise, the initial voltages
+are simply the final value from the previous time step.  Semiconductor
+devices tend to benefit (require fewer transient iterations) from
+having the predictor, passive devices, unless nonlinear, not so much. 
+The predictor may affect integration accuracy of reactive devices, in
+particular this is not recommended for Josephson junctions.
 
-8.  The @FLAGS@ will be added to the dv_flags member of the device
+8.  The @LIMITING@ can be either "yes" or "no".  When set to yes and
+@PREDICTOR@ is also set to yes, a limiting algorithm is used on every
+device pin during transient analysis.  This is probably required for
+convergence of semiconductor device models that contain p/n or
+Schottky junctions.  One can turn this off for non-semiconductor
+devices.
+
+9.  The @FLAGS@ will be added to the dv_flags member of the device
 structure.  See the Makefile description.  This is almost always
 empty.
 
-9.  The @HEADER@ can be either "yes" or "no".  When set to yes, a
+10.  The @HEADER@ can be either "yes" or "no".  When set to yes, a
 header file will be included in all of the C++ files, through a call
 added to the module include file.  The file will be named
 (MODULE)extra.h, where (MODULE) is the short module abbreviation
@@ -116,6 +126,7 @@ files.
   <admst:variable name="package_major"          value="@MAJOR@"/>
   <admst:variable name="package_minor"          value="@MINOR@"/>
   <admst:variable name="package_add_m"          value="@ADD_M@"/>
+  <admst:variable name="package_predictor"      value="@PREDICTOR@"/>
   <admst:variable name="package_limiting"       value="@LIMITING@"/>
   <admst:variable name="package_flags"          value="@FLAGS@"/>
   <admst:variable name="package_header"         value="@HEADER@"/>

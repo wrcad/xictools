@@ -22,6 +22,7 @@ KEY=q
 LEVEL=6
 # Give other devices a different level.
 ADD_M=no
+PREDICTOR=yes
 LIMITING=yes
 FLAGS=DV_NODIST
 
@@ -32,6 +33,7 @@ cat ../../Makefile | sed \
   -e "s%^KEY = .*%KEY = $KEY%" \
   -e "s%^LEVEL = .*%LEVEL = $LEVEL%" \
   -e "s%^ADD_M = .*%ADD_M = $ADD_M%" \
+  -e "s%^PREDICTOR = .*%PREDICTOR = $PREDICTOR%" \
   -e "s%^LIMITING = .*%LIMITING = $LIMITING%" \
   -e "s%^FLAGS = .*%FLAGS = $FLAGS%" \
   > Makefile

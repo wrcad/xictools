@@ -36,7 +36,7 @@
   <admst:text format="\n#include &quot;$(modlc)defs.h&quot;\n"/>
 
   <admst:choose>
-    <admst:when test="[$LIMPRED='yes']">
+    <admst:when test="[$package_predictor='yes']">
 #define NP(p) inst->LIMPRED_##p
     </admst:when>
     <admst:otherwise>
@@ -247,14 +247,15 @@ if (ckt->CKTchargeCompNeeded) {\\
     (inst->JDVAL_##Sp##_##Pn) -= v_tmp_;\\
     (inst->JDVAL_##Sn##_##Pp) -= v_tmp_; }
 
-  <admst:if test="[$LIMPRED='yes']">
+  <admst:if test="[$package_predictor='yes']">
     <!--
       Optional predictor and limiting, this seems necessary for some
       models, in particular bsimsoi.  The limiting causes
       nonconvergence in Eby Friedman's STT_PMTJ.va, and is not needed
       in passive devices, so it can be turned off.  The predictor,
-      also enabled by LIMPRED, is probably always worthwhile, at least
-      in circuits that contain a nonlinear element.
+      enabled by package_predictor, is probably worthwhile for most
+      nonlinear elements, but seems to adversely affect integration
+      accuracy for reactive elements and Josephson junctions.
     -->
     <admst:text format="\n"/>
 namespace {
@@ -344,7 +345,7 @@ namespace {
   </admst:for-each>
 
   <!-- Load the predictor state variables. -->
-  <admst:if test="[$LIMPRED='yes']">
+  <admst:if test="[$package_predictor='yes']">
     <admst:for-each select="node[grounded='no']">
       <admst:text format="$(indent)*(ckt->CKTstate0 + inst->STATE_%(name)) ="/>
       <admst:text format=" ckt->CKTrhsOld[inst->%(name)_Node];\n"/>

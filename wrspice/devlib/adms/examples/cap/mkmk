@@ -9,6 +9,7 @@ MODULE=cap
 KEY=c
 LEVEL=2
 ADD_M=no
+PREDICTOR=no
 LIMITING=no
 FLAGS=
 
@@ -19,6 +20,7 @@ cat ../../Makefile | sed \
   -e "s%^KEY = .*%KEY = $KEY%" \
   -e "s%^LEVEL = .*%LEVEL = $LEVEL%" \
   -e "s%^ADD_M = .*%ADD_M = $ADD_M%" \
+  -e "s%^PREDICTOR = .*%PREDICTOR = $PREDICTOR%" \
   -e "s%^LIMITING = .*%LIMITING = $LIMITING%" \
   -e "s%^FLAGS = .*%FLAGS = $FLAGS%" \
   > Makefile

@@ -16,6 +16,7 @@ MODULE=psp103
 KEY=m
 LEVEL=45
 ADD_M=yes
+PREDICTOR=yes
 LIMITING=yes
 FLAGS=DV_NODIST
 
@@ -26,6 +27,7 @@ cat ../../Makefile | sed \
   -e "s%^KEY = .*%KEY = $KEY%" \
   -e "s%^LEVEL = .*%LEVEL = $LEVEL%" \
   -e "s%^ADD_M = .*%ADD_M = $ADD_M%" \
+  -e "s%^PREDICTOR = .*%PREDICTOR = $PREDICTOR%" \
   -e "s%^LIMITING = .*%LIMITING = $LIMITING%" \
   -e "s%^FLAGS = .*%FLAGS = $FLAGS%" \
   > Makefile

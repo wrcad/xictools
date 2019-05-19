@@ -659,7 +659,7 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
     <admst:text format="$(indent)double NOISEvar[NSTATVARS][$(moduc)NSRCS];\n"/>
   </admst:if>
 
-  <admst:if test="[$LIMPRED='yes']">
+  <admst:if test="[$package_predictor='yes']">
     <!-- These are post-limited or predicted node voltages. -->
     <admst:text format="\n$(indent)// Limiting and prediction.\n"/>
     <admst:for-each select="node[grounded='no']">
@@ -818,7 +818,7 @@ inline double _d1_pow(double x,double y)   { return x==0.0?0.0:log(x)*pow(x,y); 
 
   <!-- Add defines for instance state variables -->
   <admst:text format="\n// Indices into state table for this device.\n"/>
-  <admst:if test="[$LIMPRED='yes']">
+  <admst:if test="[$package_predictor='yes']">
     <!--
        Save an entry for each node.  This will be used for limiting
        and predicting.
