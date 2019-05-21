@@ -429,49 +429,6 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
 // End of TJMdev functions.
 
 
-int
-sTJMmodel::tjm_init()
-{
-    if (!tjm_coeffsGiven)
-        tjm_coeffs = strdup("tjm1");
-
-    TJMcoeffSet *cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
-    if (!cs) {
-        // ERROR
-        return (E_PANIC);
-    }
-    tjm_narray = cs->cfs_size;
-    tjm_A = new IFcomplex[3*tjm_narray];
-    tjm_B = tjm_A + tjm_narray;
-    tjm_P = tjm_B + tjm_narray;
-    for (int i = 0; i < tjm_narray; i++) {
-        tjm_A[i] = cs->cfs_A[i];
-        tjm_B[i] = cs->cfs_B[i];
-        tjm_P[i] = cs->cfs_P[i];
-    }
-
-    double omega_g = 0.5*TJMvg/PHI0_2PI;  // e*Vg = hbar*omega_g
-    tjm_kgap = omega_g/TJMomegaJ;
-
-    double rejpt = 0.0;
-    for (int i = 0; i < tjm_narray; i++)
-        rejpt -= (tjm_A[i]/tjm_P[i]).real;
-    rejpt *= TJMicFactor;
-    tjm_kgap_rejpt = tjm_kgap/rejpt;
-    tjm_alphaN = 1.0/(2*rejpt*tjm_kgap);
-
-    // Renormalize.  Here we would rotate to C and D vectors, however
-    // we want to preserve the pair and qp amplitudes for separate
-    // access.
-    for (int i = 0; i < tjm_narray; i++) {
-        tjm_A[i] = (TJMicFactor*tjm_A[i]) / (-tjm_kgap*tjm_P[i]);
-        tjm_B[i] = (tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
-    }
-    return (OK);
-}
-// End of sTJMmodel functions.
-
-
 namespace {
     // Intel/GCC-specific function for fast evaluation of sin and cos
     // of an angle.
@@ -613,18 +570,5 @@ sTJMinstance::tjm_update(double phi)
     double fct = TJMcriti * model->tjm_kgap_rejpt;
     tjm_cp  = fct*(sinphi_2*FcSp + cosphi_2*FsSp);
     tjm_cqp = fct*(sinphi_2*FcSq - cosphi_2*FsSq);
-}
-
-
-void
-sTJMinstance::tjm_accept(double phi)
-{
-    sincos(0.5*phi, tjm_sinphi_2_old, tjm_cosphi_2_old);
-
-    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    for (int i = 0; i < model->tjm_narray; i++) {
-        tjm_Fcprev[i] = tjm_Fc[i];
-        tjm_Fsprev[i] = tjm_Fs[i];
-    }
 }
 

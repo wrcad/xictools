@@ -133,4 +133,34 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
     }
     return (OK);
 }
+// End of TJMdev functions.
+
+
+namespace {
+    // Intel/GCC-specific function for fast evaluation of sin and cos
+    // of an angle.
+    //
+    inline void sincos(double a, double &si, double &ci)
+    {
+#ifdef ASM_SINCOS
+        asm("fsincos" : "=t" (ci), "=u"  (si) : "0" (a));
+#else
+        si = sin(a);
+        ci = cos(a);
+#endif
+    }
+}
+
+
+void
+sTJMinstance::tjm_accept(double phi)
+{
+    sincos(0.5*phi, tjm_sinphi_2_old, tjm_cosphi_2_old);
+
+    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
+    for (int i = 0; i < model->tjm_narray; i++) {
+        tjm_Fcprev[i] = tjm_Fc[i];
+        tjm_Fsprev[i] = tjm_Fs[i];
+    }
+}
 

@@ -23,8 +23,10 @@ MODULE = tjm
 TARGET = $(MODULE).$(SOEXT)
 HFILES = tjmdefs.h
 CFILES =
-CCFILES = tjm.cc tjmacct.cc tjmacld.cc tjmaski.cc tjmaskm.cc tjmic.cc \
-  tjmload.cc tjmnois.cc tjmset.cc tjmseti.cc tjmsetm.cc tjmtrun.cc
+CCFILES = \
+  tjm.cc tjmacct.cc tjmacld.cc tjmaski.cc tjmaskm.cc tjmcoeffs.cc \
+  tjmic.cc tjmload.cc tjmnois.cc tjmset.cc tjmseti.cc tjmsetm.cc \
+  tjmtrun.cc
 
 COBJS = $(CCFILES:.cc=.o) $(CFILES:.c=.o)
 INCLUDE = -I../include

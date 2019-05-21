@@ -963,6 +963,13 @@ sCKT::inst2Node(sGENinstance *instPtr, int term, sCKTnode **node,
 int
 sCKT::load(bool noclear)
 {
+    // This is optionally set in the device code to limit next step
+    // size.  This is used by the JJ model (set in accept()), and by
+    // the $bound_step() Verilog-A function (set in load()).  The
+    // value is used to limit the next time step.
+    //
+    CKTdevMaxDelta = 0.0;
+
     double startTime = OP.seconds();
     int size = CKTmatrix->spGetSize(1);
     memset(CKTrhs, 0, (size+1)*sizeof(double));

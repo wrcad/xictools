@@ -695,7 +695,22 @@ sTRANint::step(sCKT *ckt, sSTATS *stat)
 
         int niter = stat->STATnumIter;
         int maxiters = ckt->CKTcurTask->TSKtranMaxIter;
+
+        // The maximum time step from internal device library code,
+        // computed in the accept functions.
+        double intDevMaxDelta = ckt->CKTdevMaxDelta;
+
         int cverr = ckt->NIiter(maxiters);
+
+        // The bound_step maximum time step set by Verilog-A support,
+        // computed in the load functions.
+        double bound_step = ckt->CKTdevMaxDelta;
+
+        // Set to smallest nonzero value.
+        if (bound_step == 0.0 ||
+                (intDevMaxDelta > 0.0 && intDevMaxDelta < bound_step))
+            ckt->CKTdevMaxDelta = intDevMaxDelta;
+
         stat->STATtimePts++;
         int lastiters = stat->STATnumIter - niter;
         stat->STATtranLastIter = lastiters;

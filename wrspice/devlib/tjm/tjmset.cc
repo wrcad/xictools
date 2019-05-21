@@ -532,4 +532,48 @@ TJMdev::resetup(sGENmodel *inModel, sCKT *ckt)
     }
     return (OK);
 }
+// End of TJMdev functions.
+
+
+int
+sTJMmodel::tjm_init()
+{
+    if (!tjm_coeffsGiven)
+        tjm_coeffs = strdup("tjm1");
+
+    TJMcoeffSet *cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
+    if (!cs) {
+        // ERROR
+        return (E_PANIC);
+    }
+    tjm_narray = cs->cfs_size;
+    tjm_A = new IFcomplex[3*tjm_narray];
+    tjm_B = tjm_A + tjm_narray;
+    tjm_P = tjm_B + tjm_narray;
+    for (int i = 0; i < tjm_narray; i++) {
+        tjm_A[i] = cs->cfs_A[i];
+        tjm_B[i] = cs->cfs_B[i];
+        tjm_P[i] = cs->cfs_P[i];
+    }
+
+    double omega_g = 0.5*TJMvg/PHI0_2PI;  // e*Vg = hbar*omega_g
+    tjm_kgap = omega_g/TJMomegaJ;
+
+    double rejpt = 0.0;
+    for (int i = 0; i < tjm_narray; i++)
+        rejpt -= (tjm_A[i]/tjm_P[i]).real;
+    rejpt *= TJMicFactor;
+    tjm_kgap_rejpt = tjm_kgap/rejpt;
+    tjm_alphaN = 1.0/(2*rejpt*tjm_kgap);
+
+    // Renormalize.  Here we would rotate to C and D vectors, however
+    // we want to preserve the pair and qp amplitudes for separate
+    // access.
+    for (int i = 0; i < tjm_narray; i++) {
+        tjm_A[i] = (TJMicFactor*tjm_A[i]) / (-tjm_kgap*tjm_P[i]);
+        tjm_B[i] = (tjm_B[i]) / (-tjm_kgap*tjm_P[i]);
+    }
+    return (OK);
+}
+// End of sTJMmodel functions.
 
