@@ -49,6 +49,7 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
 
         bool didm = false;
         double vmax = 0;
+        double vth = model->TJMvdpbak/model->TJMtsaccl;
 
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
@@ -114,8 +115,8 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
             if (model->TJMictype != 0 && inst->TJMcriti > 0) {
                 if (!didm) {
                     didm = true;
-                    if (vmax < model->TJMvdpbak)
-                        vmax = model->TJMvdpbak;
+                    if (vmax < vth)
+                        vmax = vth;
                 }
                 double vj = *(ckt->CKTstate0 + inst->TJMvoltage);
                 if (vj < 0)
@@ -126,7 +127,7 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
         }
         if (vmax > 0.0) {
             // Limit next time step.
-            double delmax = M_PI*model->TJMtsfact*PHI0_2PI/vmax;
+            double delmax = model->TJMtsfact*wrsCONSTphi0/vmax;
             if (ckt->CKTdevMaxDelta == 0.0 || delmax < ckt->CKTdevMaxDelta)
                 ckt->CKTdevMaxDelta = delmax;
         }

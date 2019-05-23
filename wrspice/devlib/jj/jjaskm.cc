@@ -123,6 +123,9 @@ JJdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case JJ_MOD_TSFACT:
         value->rValue = model->JJtsfact;
         break;
+    case JJ_MOD_TSACCL:
+        value->rValue = model->JJtsaccl;
+        break;
     case JJ_MQUEST_VL:
         value->rValue = model->JJvless;
         break;

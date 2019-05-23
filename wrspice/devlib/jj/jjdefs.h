@@ -72,7 +72,6 @@ Author: 1992 Stephen R. Whiteley
 #define CONSTe          wrsCONSTe        
 
 // Phi0/2*pi
-// #define PHI0_2PI        3.291086546e-16
 #define PHI0_2PI        wrsCONSTphi0_2pi
 
 namespace JJ {
@@ -289,6 +288,7 @@ struct sJJmodel : sGENmodel
     double JJicFactor;
     double JJvShunt;
     double JJtsfact;
+    double JJtsaccl;
 #ifdef NEWLSH
     double JJlsh0;
     double JJlsh1;
@@ -314,6 +314,7 @@ struct sJJmodel : sGENmodel
     unsigned JJicfGiven : 1;
     unsigned JJvShuntGiven : 1;
     unsigned JJtsfactGiven : 1;
+    unsigned JJtsacclGiven : 1;
 #ifdef NEWLSH
     unsigned JJlsh0Given : 1;
     unsigned JJlsh1Given : 1;
@@ -399,6 +400,7 @@ enum {
     JJ_MOD_LSH1,
 #endif
     JJ_MOD_TSFACT,
+    JJ_MOD_TSACCL,
 
     JJ_MQUEST_VL,
     JJ_MQUEST_VM,

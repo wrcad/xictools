@@ -124,6 +124,10 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->TJMtsfact = value->rValue;
         model->TJMtsfactGiven = true;
         break;
+    case TJM_MOD_TSACCL:
+        model->TJMtsaccl = value->rValue;
+        model->TJMtsacclGiven = true;
+        break;
     case TJM_MOD_TJM:
         break;
     default:

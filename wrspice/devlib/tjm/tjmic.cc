@@ -72,9 +72,10 @@ TJMdev::getic(sGENmodel *genmod, sCKT *ckt)
     for (sTJMmodel *model = static_cast<sTJMmodel*>(genmod); model;
             model = model->next()) {
 
+        double vth = model->TJMvdpbak/model->TJMtsaccl;
         if (model->TJMictype != 0) {
-            if (vmax < model->TJMvdpbak)
-                vmax = model->TJMvdpbak;
+            if (vmax < vth)
+                vmax = vth;
             sTJMinstance *inst;
             for (inst = model->inst(); inst; inst = inst->next()) {
 
@@ -82,16 +83,17 @@ TJMdev::getic(sGENmodel *genmod, sCKT *ckt)
                     double temp = inst->TJMinitVoltage;
                     if (temp < 0)
                         temp = -temp;
-                    if (vmax < temp) vmax = temp;
+                    if (vmax < temp)
+                        vmax = temp;
                 }
             }
         }
-    }
 
-    if (vmax > 0) {
-        double temp = .1*ckt->CKTcurTask->TSKdphiMax*PHI0_2PI/vmax;
-        if (ckt->CKTinitDelta < temp)
-            ckt->CKTinitDelta = temp;
+        if (vmax > 0) {
+            double delmax = 0.1*model->TJMtsfact*wrsCONSTphi0/vmax;
+            if (ckt->CKTinitDelta == 0.0 || ckt->CKTinitDelta > delmax)
+                ckt->CKTinitDelta = delmax;
+        }
     }
     return (OK);
 }

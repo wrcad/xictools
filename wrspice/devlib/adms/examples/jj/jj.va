@@ -51,6 +51,11 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+// Version 1.29, May 22, 2019 the tsfactor param is now relative to 2pi
+//   instead of pi.  If you set this to X previously, you should now set
+//   it to X/2 for the same results.  New tsaccel parameter for time
+//   step control, allows longer time steps when circuit is quiescent. 
+//   Default is 1.0 (no acceleration), try 2.5 for RSFQ.
 // Version 1.28, May 15, 2019 fixed exponent of PHI0_2PI, typo!
 // Version 1.27, May 9, 2019
 //   Updated the value of PHI0_2PI to NIST latest (05/20/2019).
@@ -274,12 +279,17 @@ parameter integer cct   = 1 from [0:1]
     `P(type="model" info="Critical current model type");
 
 // Factor used in timestep control.  This is similar to the WRspice
-// dphimax parameter, dphimax/pi = tsfactor.  Smaller values might
+// dphimax parameter, dphimax/(2*pi) = tsfactor.  Smaller values might
 // improve accuracy, but at the expense of longer run time.  If not
 // set explicitly, actual value will be obtained from WRspice.
-`define TSDEFAULT 0.2
+`define TSDEFAULT 0.1
 parameter real tsfactor = `TSDEFAULT from [0.001:1]
-    `P(type="model" info="Time step control factor");
+    `P(type="model" info="Phase change max per time step per 2pi");
+
+// Use longer time steps when JJ voltage is smaller, a value of about
+// 2.5 seems to work best for RSFQ.
+Parameter real tsaccel = 1.0 from 1.0:20.0]
+    `P(type="model" info="Ratio max time step to that at dropback voltage");
 
 // Critical current for area=1.
 `define DEF_IC 1.0m
@@ -374,7 +384,7 @@ parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
 real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
-real vdpbak, start_phase, tsf, ic_scaled;
+real vdpbak, vth, start_phase, tsf, ic_scaled;
 `ifdef NEWVSHUNT
 real gshunt;
 `ifdef NEWLSH
@@ -415,6 +425,7 @@ analog begin
             end
         else
             vdpbak = halfvg;
+        vth = vdpbak/tsaccel;
 
         // dphiMax
         //   If simulator returns nonzero, the dphimax .option is
@@ -423,7 +434,7 @@ analog begin
         //   is used if not supported by the simulator.
         //   Requires WRspice-4.3.3.
         //
-        tsf = $simparam("dphiMax", 0.0)/`M_PI;
+        tsf = $simparam("dphiMax", 0.0)/(2*`M_PI);
         if (tsf < 1e-3 || tsfactor != `TSDEFAULT)
             tsf = tsfactor;
 `ifdef insideADMS
@@ -727,9 +738,9 @@ analog begin
         // oscillation and limit the time step accordingly.
         //
         vtmp = avj;
-        if (vtmp < vdpbak)
-            vtmp = vdpbak;
-        $bound_step(`M_PI*tsf*`PHI0_2PI/vtmp);
+        if (vtmp < vth)
+            vtmp = vth;
+        $bound_step(2*`M_PI*tsf*`PHI0_2PI/vtmp);
         end
     else
         begin

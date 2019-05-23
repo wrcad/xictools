@@ -385,14 +385,25 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
 
         if (!model->JJtsfactGiven)
-            model->JJtsfact = ckt->CKTcurTask->TSKdphiMax/M_PI;
+            model->JJtsfact = ckt->CKTcurTask->TSKdphiMax/(2*M_PI);
         else {
             if (model->JJtsfact < 0.001 || model->JJtsfact > 1) {
                 DVO.textOut(OUT_WARNING,
                     "%s: TSFACTOR=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->JJtsfact, 0.001, 1.0,
-                    ckt->CKTcurTask->TSKdphiMax/M_PI);
-                model->JJtsfact = ckt->CKTcurTask->TSKdphiMax/M_PI;
+                    ckt->CKTcurTask->TSKdphiMax/(2*M_PI));
+                model->JJtsfact = ckt->CKTcurTask->TSKdphiMax/(2*M_PI);
+            }
+        }
+
+        if (!model->JJtsacclGiven)
+            model->JJtsaccl = 1.0;
+        else {
+            if (model->JJtsaccl < 1.0 || model->JJtsaccl > 20) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TSACCEL=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJtsaccl, 1.0, 20.0, 1.0);
+                model->JJtsaccl = 1.0;
             }
         }
 

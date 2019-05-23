@@ -5,7 +5,7 @@
 
 # This must match the SyntaxLevel defined in device.xml.  If it is
 # smaller, you need to update this Makefile to match devkit/Makefile.
-SyntaxLevel = 16
+SyntaxLevel = 17
 
 #######################################################################
 #  MANDATORY User Configuration
@@ -57,11 +57,20 @@ LEVEL = 2
 #
 ADD_M = no
 
-# When set to yes, a limiting algorithm is used on every device pin
-# during transient analysis.  This is probably required for
-# convergence of semiconductor device models that contain p/n or
-# Schottky junctions.  One can turn this off for non-semiconductor
-# devices.
+# When set to yes, a linear predictor is used on each device node to
+# provide the initial value for a new time step.  Otherwise, the
+# initial value is the final value for the previous time step. 
+# Semiconductor device models benefit from this.  However, this may
+# effect integration accuracy of reactive elements and Josephson
+# junctions, where it is not recommended.
+#
+PREDICTOR = yes
+
+# When set to yes, and the predictor above is also set to yes, a
+# limiting algorithm is used on every device pin during transient
+# analysis.  This is probably required for convergence of
+# semiconductor device models that contain p/n or Schottky junctions. 
+# One can turn this off for non-semiconductor devices.
 #
 LIMITING = yes
 
@@ -256,8 +265,8 @@ device.xml: Makefile
 	sed -e s/@MODULE@/$(MODULE)/ -e s/@MODELNAME@/$(MODELNAME)/ \
   -e s/@LEVEL@/$(LEVEL)/ -e s/@KEY@/$(KEY)/ -e s/@VERSION@/$(DEVLIB_VERSION)/ \
   -e s/@MAJOR@/$$1.$$2/ -e s/@MINOR@/$$3/ -e s/@ADD_M@/$(ADD_M)/ \
-  -e s/@LIMITING@/$(LIMITING)/ -e s/@FLAGS@/$(FLAGS)/ \
-  $(ADMST)/device.xml > device.xml
+  -e s/@PREDICTOR@/$(PREDICTOR)/ -e s/@LIMITING@/$(LIMITING)/ \
+  -e s/@FLAGS@/$(FLAGS)/ $(ADMST)/device.xml > device.xml
 	@s=`grep SyntaxLevel device.xml`; set $$s; \
 	if [ x$$2 != x$(SyntaxLevel) ]; then \
 	    echo ;\

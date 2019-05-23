@@ -165,11 +165,14 @@ IO("lsh1",              TJM_MOD_LSH1,       IF_REAL|IF_TIME,
                 "Shunt resistor inductance per ohm"),
 #endif
 IO("tsfactor",          TJM_MOD_TSFACT,     IF_REAL,
-                "Phase change limit per step"),
+                "Phase change max per time step per 2pi"),
+IO("tsaccel",           TJM_MOD_TSACCL,     IF_REAL,
+                "Ratio max time step to that at dropback voltage"),
+
 OP("vdp",               TJM_MQUEST_VDP,     IF_REAL|IF_VOLT,
                 "Dropback voltage"),
 OP("omegaj",            TJM_MQUEST_OMEGAJ,  IF_REAL|IF_FREQ,
-                "Plasma resonance freqauency, radians"),
+                "Plasma resonance frequency, radians"),
 OP("betac",             TJM_MQUEST_BETAC,   IF_REAL,
                 "Stewart-McCumber parameter")
 };

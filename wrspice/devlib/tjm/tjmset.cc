@@ -317,14 +317,25 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
 
         if (!model->TJMtsfactGiven)
-            model->TJMtsfact = ckt->CKTcurTask->TSKdphiMax/M_PI;
+            model->TJMtsfact = ckt->CKTcurTask->TSKdphiMax/(2*M_PI);
         else {
             if (model->TJMtsfact < 0.001 || model->TJMtsfact > 1) {
                 DVO.textOut(OUT_WARNING,
                     "%s: TSFACTOR=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->TJMtsfact, 0.001, 1.0,
-                    ckt->CKTcurTask->TSKdphiMax/M_PI);
-                model->TJMtsfact = ckt->CKTcurTask->TSKdphiMax/M_PI;
+                    ckt->CKTcurTask->TSKdphiMax/(2*M_PI));
+                model->TJMtsfact = ckt->CKTcurTask->TSKdphiMax/(2*M_PI);
+            }
+        }
+
+        if (!model->TJMtsacclGiven)
+            model->TJMtsaccl = 1.0;
+        else {
+            if (model->TJMtsaccl < 1.0 || model->TJMtsaccl > 20) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TSACCEL=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMtsaccl, 1.0, 20.0, 1.0);
+                model->TJMtsaccl = 1.0;
             }
         }
 

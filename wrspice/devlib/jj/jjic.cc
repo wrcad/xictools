@@ -79,9 +79,10 @@ JJdev::getic(sGENmodel *genmod, sCKT *ckt)
     for (sJJmodel *model = static_cast<sJJmodel*>(genmod); model;
             model = model->next()) {
 
+        double vth = model->JJvdpbak/model->JJtsaccl;
         if (model->JJictype != 0) {
-            if (vmax < model->JJvdpbak)
-                vmax = model->JJvdpbak;
+            if (vmax < vth)
+                vmax = vth;
             sJJinstance *inst;
             for (inst = model->inst(); inst; inst = inst->next()) {
 
@@ -89,16 +90,17 @@ JJdev::getic(sGENmodel *genmod, sCKT *ckt)
                     double temp = inst->JJinitVoltage;
                     if (temp < 0)
                         temp = -temp;
-                    if (vmax < temp) vmax = temp;
+                    if (vmax < temp)
+                        vmax = temp;
                 }
             }
         }
-    }
 
-    if (vmax > 0) {
-        double temp = .1*ckt->CKTcurTask->TSKdphiMax*PHI0_2PI/vmax;
-        if (ckt->CKTinitDelta < temp)
-            ckt->CKTinitDelta = temp;
+        if (vmax > 0) {
+            double delmax = 0.1*model->JJtsfact*wrsCONSTphi0/vmax;
+            if (ckt->CKTinitDelta == 0.0 || ckt->CKTinitDelta > delmax)
+                ckt->CKTinitDelta = delmax;
+        }
     }
     return (OK);
 }

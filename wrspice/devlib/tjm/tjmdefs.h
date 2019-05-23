@@ -307,6 +307,7 @@ struct sTJMmodel : sGENmodel
     double      TJMicFactor;
     double      TJMvShunt;
     double      TJMtsfact;
+    double      TJMtsaccl;
 #ifdef NEWLSH
     double      TJMlsh0;
     double      TJMlsh1;
@@ -327,6 +328,7 @@ struct sTJMmodel : sGENmodel
     unsigned    TJMicfGiven : 1;
     unsigned    TJMvShuntGiven : 1;
     unsigned    TJMtsfactGiven : 1;
+    unsigned    TJMtsacclGiven : 1;
 #ifdef NEWLSH
     unsigned    TJMlsh0Given : 1;
     unsigned    TJMlsh1Given : 1;
@@ -429,6 +431,7 @@ enum {
     TJM_MOD_LSH1,
 #endif
     TJM_MOD_TSFACT,
+    TJM_MOD_TSACCL,
 
     TJM_MQUEST_VDP,
     TJM_MQUEST_OMEGAJ,

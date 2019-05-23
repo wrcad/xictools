@@ -54,6 +54,7 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
 
         bool didm = false;
         double vmax = 0;
+        double vth = model->JJvdpbak/model->JJtsaccl;
 
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
@@ -118,8 +119,8 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
             if (model->JJictype != 0 && inst->JJcriti > 0) {
                 if (!didm) {
                     didm = true;
-                    if (vmax < model->JJvdpbak)
-                        vmax = model->JJvdpbak;
+                    if (vmax < vth)
+                        vmax = vth;
                 }
                 double vj = *(ckt->CKTstate0 + inst->JJvoltage);
                 if (vj < 0)
@@ -130,7 +131,7 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
         }
         if (vmax > 0.0) {
             // Limit next time step.
-            double delmax = M_PI*model->JJtsfact*PHI0_2PI/vmax;
+            double delmax = model->JJtsfact*wrsCONSTphi0/vmax;
             if (ckt->CKTdevMaxDelta == 0.0 || delmax < ckt->CKTdevMaxDelta)
                 ckt->CKTdevMaxDelta = delmax;
         }
