@@ -51,6 +51,10 @@
 
 // Whiteley Research/Synopsys Josephson Junction Model
 //
+
+// Version 1.30, May 23, 2019 fixed typos from last check-in, added
+//   ADMS magic so phase and vdpbak are treated as read-only params.
+//   Added 'n' SFQ pulse emission count read-only instance param.
 // Version 1.29, May 22, 2019 the tsfactor param is now relative to 2pi
 //   instead of pi.  If you set this to X previously, you should now set
 //   it to X/2 for the same results.  New tsaccel parameter for time
@@ -203,6 +207,10 @@
 `define NEWLSH
 `endif
 
+// Enable the 'n' SFQ emission count parameter.  Can comment this if
+// you don't do SFQ logic.
+`define NEWNPAR
+
 // Uncomment this to support a phony DC analysis mode by loading JJ as
 // a tiny resistance.  Not recommended.
 //`define fakeDC
@@ -288,7 +296,7 @@ parameter real tsfactor = `TSDEFAULT from [0.001:1]
 
 // Use longer time steps when JJ voltage is smaller, a value of about
 // 2.5 seems to work best for RSFQ.
-Parameter real tsaccel = 1.0 from 1.0:20.0]
+parameter real tsaccel = 1.0 from [1.0:20.0]
     `P(type="model" info="Ratio max time step to that at dropback voltage");
 
 // Critical current for area=1.
@@ -383,8 +391,13 @@ parameter real lsh      = 0.0 from [0.0:100.0p]
 parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
-real phase, scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
-real vdpbak, vth, start_phase, tsf, ic_scaled;
+real vdpbak `P(type="model" info="Dropback voltage");
+real phase `P(type="instance" info="Junction phase");
+`ifdef NEWNPAR
+integer n `P(type="instance" info="SFQ emission count");
+`endif
+real scale, caps, rsubs, rnorms, vless, vmore, i1, i2;
+real vth, start_phase, tsf, ic_scaled;
 `ifdef NEWVSHUNT
 real gshunt;
 `ifdef NEWLSH
@@ -741,7 +754,33 @@ analog begin
         if (vtmp < vth)
             vtmp = vth;
         $bound_step(2*`M_PI*tsf*`PHI0_2PI/vtmp);
+
+`ifdef NEWNPAR
+        // Compute the SFQ emission count, used for pass/fail testing
+        // of SFQ circuits.
+        begin
+        real pp, twopi;
+        integer pint;
+        twopi = `M_PI + `M_PI;
+        if (phase >= 0.0)
+            begin
+            pint = phase/twopi;
+            pp = phase - pint*twopi;
+            if (pp > `M_PI + `M_PI_4)
+                pint = pint + 1;
+            end
+        else
+            begin
+            pint = phase/twopi;
+            pp = phase - pint*twopi + twopi;
+            if (pp < `M_PI - `M_PI_4)
+                pint = pint - 1;
+            end
+        n = abs(pint);
         end
+`endif
+        end
+
     else
         begin
         $error("JJ.va model:  unknown or unsupported analysis.");

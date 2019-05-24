@@ -2,8 +2,8 @@
 * WRspice has the ability to model noise in the time domain.  This
 * simple example illustrates thermal resistor noise in an RLC circuit. 
 * More complex cases can be used to model noise-induced errors, etc.
-* See the document MarkJerreryNoiseMemo.pdf in the docs area of the
-* distribution archive of wrcad.com for more info (password required).
+* See the document MarkJefferyNoiseMemo.pdf in the docs area of the
+* distribution archive of wrcad.com for more info.
 
 * Below defines a function "noise" which encapsulates the thermal
 * noise equation and a call to the gauss "tran" function.  The noise
@@ -16,6 +16,11 @@
 
 * This one is active (recall that *@ is like .exec/.endc for one line).
 *@ define noise(r,t,dt,n) gauss(sqrt(2*boltz*t/(r*dt)), 0, dt, n)
+* This is not a comment in WRspice, it acts like the three lines
+* below if they were uncommented.
+* .exec
+* define noise(r,t,dt,n) gauss(sqrt(2*boltz*t/(r*dt)), 0, dt, n)
+* .endc
 
 * This one is commented out, comment the one above and uncomment this
 * to try it out.

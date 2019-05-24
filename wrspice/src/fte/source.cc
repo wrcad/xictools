@@ -2306,9 +2306,11 @@ sLine::get_keywords(int *kwfound)
             continue;
         }
 
-        if (lstring::cimatch(CONT_KW, dd->li_line))
+        if (lstring::cimatch(CONT_KW, dd->li_line) ||
+                lstring::cimatch(CONT_PREFX, dd->li_line))
             *kwfound |= LI_CONT_FOUND;
-        else if (lstring::cimatch(EXEC_KW, dd->li_line))
+        else if (lstring::cimatch(EXEC_KW, dd->li_line) ||
+                lstring::cimatch(EXEC_PREFX, dd->li_line))
             *kwfound |= LI_EXEC_FOUND;
         else if (lstring::cimatch(POST_KW, dd->li_line))
             *kwfound |= LI_POST_FOUND;
