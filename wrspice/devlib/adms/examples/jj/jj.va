@@ -52,6 +52,7 @@
 // Whiteley Research/Synopsys Josephson Junction Model
 //
 
+// Version 1.31, May 24, block name "nparblk" added for HSPICE.
 // Version 1.30, May 23, 2019 fixed typos from last check-in, added
 //   ADMS magic so phase and vdpbak are treated as read-only params.
 //   Added 'n' SFQ pulse emission count read-only instance param.
@@ -758,7 +759,7 @@ analog begin
 `ifdef NEWNPAR
         // Compute the SFQ emission count, used for pass/fail testing
         // of SFQ circuits.
-        begin
+        begin : nparblk
         real pp, twopi;
         integer pint;
         twopi = `M_PI + `M_PI;
