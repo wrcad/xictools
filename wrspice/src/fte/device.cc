@@ -1863,28 +1863,48 @@ sFtCirc::clearDeferred()
 namespace {
     void apply_dfrd(sCKT *ckt, dfrdlist *dl)
     {
-        sDataVec *t = 0;
+//XXX
+        int err = ckt->setParam(dl->dname, dl->param, dl->rhs);
+        if (err) {
+            const char *msg = Sp.ErrorShort(err);
+            GRpkgIf()->ErrPrintf(ET_ERROR, "could not set @%s[%s]: %s.\n",
+                dl->dname, dl->param, msg);
+        }
+    }
+/*
+    IFdata data;
+    const char *rhs = dl->rhs;
+    if (pt) {
+        data.type = IF_PARSETREE;
+        if (!IP.getValue(&rhs, &data, ckt, 0)) {
+            GRpkgIf()->ErrPrintf(ET_ERROR, "parse of %s failed.\n", rhs);
+            return;
+        }
+    }
+    else {
         const char *rhs = dl->rhs;
         pnode *nn = Sp.GetPnode(&rhs, true);
-        if (nn) {
-            t = Sp.Evaluate(nn);
-            delete nn;
+        if (!nn) {
+            GRpkgIf()->ErrPrintf(ET_ERROR, "parse of %s failed.\n", rhs);
+            return;
         }
-        if (t) {
-            IFdata data;
-            data.type = IF_REAL;
-            data.v.rValue = t->realval(0);
-
-            int err = ckt->setParam(dl->dname, dl->param, &data);
-            if (err) {
-                const char *msg = Sp.ErrorShort(err);
-                GRpkgIf()->ErrPrintf(ET_ERROR, "could not set @%s[%s]: %s.\n",
-                    dl->dname, dl->param, msg);
-            }
-        }
-        else
+        sDataVec *t = Sp.Evaluate(nn);
+        delete nn;
+        if (!t) {
             GRpkgIf()->ErrPrintf(ET_ERROR, "evaluation of %s failed.\n", rhs);
+            return;
+        }
+        data.type = IF_REAL;
+        data.v.rValue = t->realval(0);
     }
+
+    int err = ckt->setParam(dl->dname, dl->param, &data);
+    if (err) {
+        const char *msg = Sp.ErrorShort(err);
+        GRpkgIf()->ErrPrintf(ET_ERROR, "could not set @%s[%s]: %s.\n",
+            dl->dname, dl->param, msg);
+    }
+*/
 }
 
 

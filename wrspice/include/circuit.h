@@ -1595,6 +1595,7 @@ public:
     int finddev(IFuid, sGENinstance**, sGENmodel**) const;
     variable *getParam(const char*, const char*, IFspecial* = 0) const;
     int getParam(const char*, const char*, IFdata*, IFspecial* = 0) const;
+    int setParam(const char*, const char*, const char*);
     int setParam(const char*, const char*, IFdata*);
     variable *getAnalParam(const char*, const char*, IFspecial* = 0) const;
     int getAnalParam(const char*, const char*, IFdata*, IFspecial* = 0) const;

@@ -83,6 +83,8 @@ struct IFtranData
     virtual IFtranData *dup() const;
     virtual void time_limit(const sCKT*, double*);
     virtual void print(const char*, sLstr&);
+    virtual void set_param(double, int);
+    virtual double *get_param(int);
 
 protected:
     double *td_coeffs;      // tran function parameters (as input)
@@ -153,6 +155,8 @@ struct IFpulseData : public IFtranData
     double eval_func(double);
     double eval_deriv(double);
     IFtranData *dup() const;
+    void set_param(double, int);
+    double *get_param(int);
 
 private:
     bslist *td_bslist;          // Pattern description.
@@ -192,6 +196,8 @@ struct IFgpulseData : public IFtranData
     double eval_func(double);
     double eval_deriv(double);
     IFtranData *dup() const;
+    void set_param(double, int);
+    double *get_param(int);
 
 private:
     bslist *td_bslist;          // Pattern description.
@@ -210,6 +216,8 @@ struct IFpwlData : public IFtranData
     double eval_deriv(double);
     IFtranData *dup() const;
     void print(const char*, sLstr&);
+    void set_param(double, int);
+    double *get_param(int);
 
 private:
     bool td_pwlRgiven;      // true if pwl r=repeat given
@@ -244,6 +252,8 @@ struct IFsinData : public IFtranData
     double eval_deriv(double);
     IFtranData *dup() const;
     void time_limit(const sCKT*, double*);
+    void set_param(double, int);
+    double *get_param(int);
 };
 
 // SPULSE
@@ -270,6 +280,8 @@ struct IFspulseData : public IFtranData
     double eval_deriv(double);
     IFtranData *dup() const;
     void time_limit(const sCKT*, double*);
+    void set_param(double, int);
+    double *get_param(int);
 };
 
 // EXP
@@ -298,6 +310,8 @@ struct IFexpData : public IFtranData
     double eval_deriv(double);
     IFtranData *dup() const;
     void time_limit(const sCKT*, double*);
+    void set_param(double, int);
+    double *get_param(int);
 };
 
 struct IFsffmData : public IFtranData
@@ -323,6 +337,8 @@ struct IFsffmData : public IFtranData
     double eval_deriv(double);
     IFtranData *dup() const;
     void time_limit(const sCKT*, double*);
+    void set_param(double, int);
+    double *get_param(int);
 };
 
 // AM (following HSPICE)
@@ -349,6 +365,8 @@ struct IFamData : public IFtranData
     double eval_deriv(double);
     IFtranData *dup() const;
     void time_limit(const sCKT*, double*);
+    void set_param(double, int);
+    double *get_param(int);
 };
 
 // GAUSS
@@ -379,8 +397,9 @@ struct IFgaussData : public IFtranData
     void setup(sCKT*, double, double, bool);
     double eval_func(double);
     double eval_deriv(double);
-
     IFtranData *dup() const;
+    void set_param(double, int);
+    double *get_param(int);
 };
 
 // INTERP

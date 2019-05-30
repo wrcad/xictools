@@ -217,8 +217,8 @@
 //`define fakeDC
 
 // MIT-LL SFQ5EE process, parameters from:
-// Tolpygo et al., IEEE J. Appl. Superconductivity, 26, 1100110, (2016)
-// Tolpygo et al., IEEE J. Appl. Superconductivity, 27, 1100815, (2017)
+// Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 26, 1100110, (2016)
+// Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 27, 1100815, (2017)
 `define C_PER_A_10000  70.0     // ff/um2
 `define I_PER_A_10000 100.0     // uA/um2
 `define IcR_LL          1.65    // mV, critical current * normal resistance

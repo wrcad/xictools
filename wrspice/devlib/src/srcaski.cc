@@ -47,12 +47,14 @@ Authors: 1985 Thomas L. Quarles
 ****************************************************************************/
 
 #include "srcdefs.h"
+#include "input.h"
 
 
 int
 SRCdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     IFdata *data)
 {
+    double *dtmp;
 #ifdef WITH_CMP_GOTO
     // Order MUST match parameter definition enum!
     static void *array[] = {
@@ -71,6 +73,14 @@ SRCdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_SRC_D_F2,
         &&L_SRC_GAIN,
         &&L_SRC_CONTROL,
+        &&L_SRC_PRM1,
+        &&L_SRC_PRM2,
+        &&L_SRC_PRM3,
+        &&L_SRC_PRM4,
+        &&L_SRC_PRM5,
+        &&L_SRC_PRM6,
+        &&L_SRC_PRM7,
+        &&L_SRC_PRM8,
         &&L_SRC_VOLTAGE,
         &&L_SRC_CURRENT,
         &&L_SRC_POWER,
@@ -184,6 +194,38 @@ SRCdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_SRC_CONTROL:
         data->type = IF_INSTANCE;
         data->v.uValue = inst->SRCcontName;
+        return (OK);
+    L_SRC_PRM1:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 0);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        return (OK);
+    L_SRC_PRM2:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 1);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        return (OK);
+    L_SRC_PRM3:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 2);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        return (OK);
+    L_SRC_PRM4:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 3);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        return (OK);
+    L_SRC_PRM5:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 4);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        return (OK);
+    L_SRC_PRM6:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 5);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        return (OK);
+    L_SRC_PRM7:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 6);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        return (OK);
+    L_SRC_PRM8:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 7);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
         return (OK);
     L_SRC_VOLTAGE:
         if (ckt->CKTcurrentAnalysis & DOING_AC) {
@@ -359,6 +401,38 @@ SRCdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case SRC_CONTROL:
         data->type = IF_INSTANCE;
         data->v.uValue = inst->SRCcontName;
+        break;
+    case SRC_PRM1:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 0);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        break;
+    case SRC_PRM2:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 1);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        break;
+    case SRC_PRM3:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 2);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        break;
+    case SRC_PRM4:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 3);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        break;
+    case SRC_PRM5:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 4);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        break;
+    case SRC_PRM6:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 5);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        break;
+    case SRC_PRM7:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 6);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
+        break;
+    case SRC_PRM8:
+        dtmp = IP.getTranFuncParam(inst->SRCtree, 7);
+        data->v.rValue = dtmp ? *dtmp : 0.0;
         break;
     case SRC_VOLTAGE:
         if (ckt->CKTcurrentAnalysis & DOING_AC) {

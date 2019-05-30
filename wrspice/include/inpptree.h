@@ -242,6 +242,7 @@ struct IFparseNode
     PTtype type()               { return ((PTtype)p_type); }
     IFparseNode *left()         { return (p_left); }
     IFparseNode *right()        { return (p_right); }
+    IFtranData *tranData()      { return (p_type == PT_TFUNC ? v.td : 0); }
 
 private:
     // evaluation functions

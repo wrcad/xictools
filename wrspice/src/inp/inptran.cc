@@ -679,6 +679,41 @@ SPinput::fixParentheses(const char *line, sCKT *ckt, const char *xalias)
     }
     return (nline);
 }
+
+
+// If the top node in the tree is a tran function, write into its
+// parameter list.
+//
+void
+SPinput::setTranFuncParam(IFparseTree *pt, double val, int ix)
+{
+    if (!pt)
+        return;
+    IFparseNode *p = pt->tree();
+    if (!p)
+        return;
+    IFtranData *td = p->tranData();
+    if (td)
+        td->set_param(val, ix);
+}
+
+
+// If the top node is a tran function, read from its parameter list.  A
+// null return indicates parameter not found.
+//
+double *
+SPinput::getTranFuncParam(IFparseTree *pt, int ix)
+{
+    if (!pt)
+        return (0);
+    IFparseNode *p = pt->tree();
+    if (!p)
+        return (0);
+    IFtranData *td = p->tranData();
+    if (!td)
+        return (0);
+    return (td->get_param(ix));
+}
 // End of SPinput functions.
 
 
@@ -861,6 +896,17 @@ IFtranData::print(const char *name, sLstr &lstr)
     }
     lstr.add_c(' ');
     lstr.add_c(')');
+}
+
+void
+IFtranData::set_param(double, int)
+{
+}
+
+double *
+IFtranData::get_param(int)
+{
+    return (0);
 }
 // End of IFtranData functions.
 
@@ -1358,6 +1404,31 @@ IFpulseData::dup() const
     }
     return (td);
 }
+
+
+void
+IFpulseData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+td_parms[ix] = val;
+td_coeffs[ix] = val;
+/*
+    if (td_enable_tran)
+        td_parms[ix] = val;
+    td_coeffs[ix] = val;
+*/
+}
+
+
+double *
+IFpulseData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+return (td_parms + ix);
+//    return (td_coeffs + ix);
+}
 // End of IFpulseData functions.
 
 
@@ -1803,6 +1874,24 @@ IFgpulseData::dup() const
         memcpy(td->td_parray, td_parray, sz*sizeof(unsigned long));
     }
     return (td);
+}
+
+
+void
+IFgpulseData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+    td_parms[ix] = val;
+}
+
+
+double *
+IFgpulseData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+    return (td_parms + ix);
 }
 // End of IFgpulseData functions.
 
@@ -2302,6 +2391,24 @@ IFpwlData::print(const char *name, sLstr &lstr)
     lstr.add_c(' ');
     lstr.add_c(')');
 }
+
+
+void
+IFpwlData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+    td_parms[ix] = val;
+}
+
+
+double *
+IFpwlData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+    return (td_parms + ix);
+}
 // End of IFpwlData functions.
 
 
@@ -2498,6 +2605,24 @@ IFsinData::time_limit(const sCKT *ckt, double *plim)
             *plim = per;
     }
 }
+
+
+void
+IFsinData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+    td_parms[ix] = val;
+}
+
+
+double *
+IFsinData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+    return (td_parms + ix);
+}
 // End of IFsinData functions.
 
 
@@ -2676,6 +2801,24 @@ IFspulseData::time_limit(const sCKT *ckt, double *plim)
         if (*plim > per)
             *plim = per;
     }
+}
+
+
+void
+IFspulseData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+    td_parms[ix] = val;
+}
+
+
+double *
+IFspulseData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+    return (td_parms + ix);
 }
 // End of IFspulseData functions.
 
@@ -2872,6 +3015,24 @@ IFexpData::time_limit(const sCKT *ckt, double *plim)
             *plim = per;
     }
 }
+
+
+void
+IFexpData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+    td_parms[ix] = val;
+}
+
+
+double *
+IFexpData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+    return (td_parms + ix);
+}
 // End of IFexpData functions.
 
 
@@ -3037,6 +3198,24 @@ IFsffmData::time_limit(const sCKT *ckt, double *plim)
     double per = ckt->CKTcurTask->TSKdphiMax / (2*M_PI*(FC() + FS()));
     if (*plim > per)
         *plim = per;
+}
+
+
+void
+IFsffmData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+    td_parms[ix] = val;
+}
+
+
+double *
+IFsffmData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+    return (td_parms + ix);
 }
 // End of IFsffmData functions.
 
@@ -3206,6 +3385,24 @@ IFamData::time_limit(const sCKT *ckt, double *plim)
     double per = ckt->CKTcurTask->TSKdphiMax / (2*M_PI*(CF() + MF()));
     if (*plim > per)
         *plim = per;
+}
+
+
+void
+IFamData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+    td_parms[ix] = val;
+}
+
+
+double *
+IFamData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+    return (td_parms + ix);
 }
 // End of IFamData functions.
 
@@ -3408,6 +3605,24 @@ IFgaussData::dup() const
         memcpy(td->td_parms, td_parms, 8*sizeof(double));
     }
     return (td);
+}
+
+
+void
+IFgaussData::set_param(double val, int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return;
+    td_parms[ix] = val;
+}
+
+
+double *
+IFgaussData::get_param(int ix)
+{
+    if (ix < 0 || ix >= 8)
+        return (0);
+    return (td_parms + ix);
 }
 // End of IFgaussData functions.
 

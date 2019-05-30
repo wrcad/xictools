@@ -44,6 +44,8 @@
 #include "simulator.h"
 #include "cshell.h"
 #include "output.h"
+#include "input.h"
+#include "parser.h"
 
 
 namespace {
@@ -384,9 +386,9 @@ sCKT::setParam(const char *word, const char *param, IFdata *data)
         return (E_NODEV);
     IFparm *opt = 0;
     if (dev)
-        opt = device->findInstanceParm(param, IF_ASK);
+        opt = device->findInstanceParm(param, IF_SET);
     else if (mod)
-        opt = device->findModelParm(param, IF_ASK);
+        opt = device->findModelParm(param, IF_SET);
     if (!opt)
         return (E_BADPARM);
 
@@ -421,6 +423,68 @@ sCKT::setParam(const char *word, const char *param, IFdata *data)
     }
     else if (mod) {
         int err = mod->setParam(opt->id, data);
+        if (err)
+            return (err);
+    }
+    else
+        return (E_BADPARM);
+
+    return (OK);
+}
+
+
+int
+sCKT::setParam(const char *word, const char *param, const char *rhs)
+{
+    sGENinstance *dev = 0;
+    sGENmodel *mod = 0;
+    if (!word || !*word)
+        return (E_NODEV);
+    if (!param || !*param || lstring::cieq(param, "all"))
+        return (E_BADPARM);
+    char *nm = lstring::copy(word);
+    insert(&nm);
+    int typecode = finddev(nm, &dev, &mod);
+    if (typecode < 0)
+        return (E_NODEV);
+    IFdevice *device = DEV.device(typecode);
+    if (!device)
+        return (E_NODEV);
+    IFparm *opt = 0;
+    if (dev)
+        opt = device->findInstanceParm(param, IF_SET);
+    else if (mod)
+        opt = device->findModelParm(param, IF_SET);
+    if (!opt)
+        return (E_BADPARM);
+
+    IFdata data;
+    // If expecting a real, parse as an expression and evaluate,
+    // otherwise take type as given.
+    if ((opt->dataType & IF_VARTYPES) == IF_REAL)  {
+        pnode *nn = Sp.GetPnode(&rhs, true);
+        if (!nn)
+            return (E_PARMVAL);
+        sDataVec *t = Sp.Evaluate(nn);
+        delete nn;
+        if (!t)
+            return (E_PARMVAL);
+        data.type = IF_REAL;
+        data.v.rValue = t->realval(0);
+    }
+    else {
+        data.type = (opt->dataType & IF_VARTYPES);
+        if (!IP.getValue(&rhs, &data, this, 0))
+            return (E_PARMVAL);
+    }
+
+    if (dev) {
+        int err = dev->setParam(opt->id, &data);
+        if (err)
+            return (err);
+    }
+    else if (mod) {
+        int err = mod->setParam(opt->id, &data);
         if (err)
             return (err);
     }

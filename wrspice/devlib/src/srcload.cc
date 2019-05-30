@@ -47,7 +47,10 @@ Authors: 1985 Thomas L. Quarles
 ****************************************************************************/
 
 #include "srcdefs.h"
+#ifdef ALLPRMS
+#else
 #include "dctdefs.h"
+#endif
 
 
 int
@@ -218,11 +221,16 @@ SRCdev::load(sGENinstance *in_inst, sCKT *ckt)
             if (!numvars) {
                 double rhs = 0;
 
+//XXX
+#ifdef ALLPRMS
+                {
+#else
                 sDCTAN *dct = dynamic_cast<sDCTAN*>(ckt->CKTcurJob);
                 if (dct && (dct->JOBdc.elt(0) == inst ||
                         dct->JOBdc.elt(1) == inst))
                     rhs = ckt->CKTsrcFact * inst->SRCdcValue;
                 else {
+#endif
                     BEGIN_EVAL
                     int ret = inst->SRCtree->eval(&rhs, 0, 0);
                     END_EVAL

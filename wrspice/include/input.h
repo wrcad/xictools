@@ -134,6 +134,8 @@ public:
     bool isTranFunc(const char*);
     char *getTranFunc(const char**, bool);
     char *fixParentheses(const char*, sCKT*, const char*);
+    void setTranFuncParam(IFparseTree*, double, int);
+    double *getTranFuncParam(IFparseTree*, int);
 
     // inptabpa.cc
     bool tablFind(const char*, sCKTtable**, sCKT *ckt);

@@ -47,6 +47,7 @@ Authors: 1985 Thomas L. Quarles
 ****************************************************************************/
 
 #include "srcdefs.h"
+#include "input.h"
 
 
 int
@@ -70,6 +71,14 @@ SRCdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         &&L_SRC_D_F2,
         &&L_SRC_GAIN,
         &&L_SRC_CONTROL,
+        &&L_SRC_PRM1,
+        &&L_SRC_PRM2,
+        &&L_SRC_PRM3,
+        &&L_SRC_PRM4,
+        &&L_SRC_PRM5,
+        &&L_SRC_PRM6,
+        &&L_SRC_PRM7,
+        &&L_SRC_PRM8,
         0, // &&L_SRC_VOLTAGE,
         0, // &&L_SRC_CURRENT,
         0, // &&L_SRC_POWER,
@@ -210,14 +219,8 @@ SRCdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->SRCacGiven = true;
         return (OK);
     L_SRC_FUNC:
-        if (inst->SRCtree) {
-            if ((data->type & IF_VARTYPES) == IF_PARSETREE) {
-                delete value->tValue;
-                value->tValue = 0;
-            }
-            return E_BADPARM;
-        }
         if ((data->type & IF_VARTYPES) == IF_PARSETREE) {
+            delete inst->SRCtree;
             inst->SRCtree = value->tValue;
             inst->SRCtree->differentiate();
             value->tValue = 0;
@@ -285,6 +288,30 @@ SRCdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         return (OK);
     L_SRC_CONTROL:
         inst->SRCcontName = value->uValue;
+        return (OK);
+    L_SRC_PRM1:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 0);
+        return (OK);
+    L_SRC_PRM2:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 1);
+        return (OK);
+    L_SRC_PRM3:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 2);
+        return (OK);
+    L_SRC_PRM4:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 3);
+        return (OK);
+    L_SRC_PRM5:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 4);
+        return (OK);
+    L_SRC_PRM6:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 5);
+        return (OK);
+    L_SRC_PRM7:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 6);
+        return (OK);
+    L_SRC_PRM8:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 7);
         return (OK);
 #else
     switch (param) {
@@ -480,6 +507,33 @@ SRCdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         break;
     case SRC_CONTROL:
         inst->SRCcontName = value->uValue;
+        break;
+    case SRC_CONTROL:
+        inst->SRCcontName = value->uValue;
+        break;
+    case SRC_PRM1:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 0);
+        break;
+    case SRC_PRM2:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 1);
+        break;
+    case SRC_PRM3:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 2);
+        break;
+    case SRC_PRM4:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 3);
+        break;
+    case SRC_PRM5:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 4);
+        break;
+    case SRC_PRM6:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 5);
+        break;
+    case SRC_PRM7:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 6);
+        break;
+    case SRC_PRM8:
+        IP.setTranFuncParam(inst->SRCtree, value->rValue, 7);
         break;
     default:
         return (E_BADPARM);
