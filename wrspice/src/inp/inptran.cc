@@ -1406,28 +1406,31 @@ IFpulseData::dup() const
 }
 
 
+// 0  V1    prm1
+// 1  V2    prm2
+// 2  TD    prm3
+// 3  TR    prm4
+// 4  TF    prm5
+// 5  PW    prm6
+// 6  PER   prm7
+//
 void
 IFpulseData::set_param(double val, int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 6)
         return;
-td_parms[ix] = val;
-td_coeffs[ix] = val;
-/*
+    td_coeffs[ix] = val;
     if (td_enable_tran)
         td_parms[ix] = val;
-    td_coeffs[ix] = val;
-*/
 }
 
 
 double *
 IFpulseData::get_param(int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 6)
         return (0);
-return (td_parms + ix);
-//    return (td_coeffs + ix);
+    return (td_coeffs + ix);
 }
 // End of IFpulseData functions.
 
@@ -1877,21 +1880,29 @@ IFgpulseData::dup() const
 }
 
 
+// 0  V1    prm1
+// 1  V2    prm2
+// 2  TD    prm3
+// 3  GPW   prm4
+// 4  RPT   prm5
+//
 void
 IFgpulseData::set_param(double val, int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 4)
         return;
-    td_parms[ix] = val;
+    td_coeffs[ix] = val;
+    if (td_enable_tran)
+        td_parms[ix] = val;
 }
 
 
 double *
 IFgpulseData::get_param(int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 4)
         return (0);
-    return (td_parms + ix);
+    return (td_coeffs + ix);
 }
 // End of IFgpulseData functions.
 
@@ -2391,24 +2402,6 @@ IFpwlData::print(const char *name, sLstr &lstr)
     lstr.add_c(' ');
     lstr.add_c(')');
 }
-
-
-void
-IFpwlData::set_param(double val, int ix)
-{
-    if (ix < 0 || ix >= 8)
-        return;
-    td_parms[ix] = val;
-}
-
-
-double *
-IFpwlData::get_param(int ix)
-{
-    if (ix < 0 || ix >= 8)
-        return (0);
-    return (td_parms + ix);
-}
 // End of IFpwlData functions.
 
 
@@ -2607,21 +2600,30 @@ IFsinData::time_limit(const sCKT *ckt, double *plim)
 }
 
 
+// 0  VO    prm1
+// 1  VA    prm2
+// 2  FREQ  prm3
+// 3  TDL   prm4
+// 4  THETA prm5
+// 5  PHI   prm6
+//
 void
 IFsinData::set_param(double val, int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 5)
         return;
-    td_parms[ix] = val;
+    td_coeffs[ix] = val;
+    if (td_enable_tran)
+        td_parms[ix] = val;
 }
 
 
 double *
 IFsinData::get_param(int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 5)
         return (0);
-    return (td_parms + ix);
+    return (td_coeffs + ix);
 }
 // End of IFsinData functions.
 
@@ -2804,21 +2806,29 @@ IFspulseData::time_limit(const sCKT *ckt, double *plim)
 }
 
 
+// 0  V1    prm1
+// 1  V2    prm2
+// 2  SPER  prm3
+// 3  SDEL  prm4
+// 4  THETA prm5
+//
 void
 IFspulseData::set_param(double val, int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 4)
         return;
-    td_parms[ix] = val;
+    td_coeffs[ix] = val;
+    if (td_enable_tran)
+        td_parms[ix] = val;
 }
 
 
 double *
 IFspulseData::get_param(int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 4)
         return (0);
-    return (td_parms + ix);
+    return (td_coeffs + ix);
 }
 // End of IFspulseData functions.
 
@@ -3017,21 +3027,30 @@ IFexpData::time_limit(const sCKT *ckt, double *plim)
 }
 
 
+// 0  V1    prm1
+// 1  V2    prm2
+// 2  TD1   prm3
+// 3  TAU1  prm4
+// 4  TD2   prm5
+// 5  TAU2  prm6
+//
 void
 IFexpData::set_param(double val, int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 5)
         return;
-    td_parms[ix] = val;
+    td_coeffs[ix] = val;
+    if (td_enable_tran)
+        td_parms[ix] = val;
 }
 
 
 double *
 IFexpData::get_param(int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 5)
         return (0);
-    return (td_parms + ix);
+    return (td_coeffs + ix);
 }
 // End of IFexpData functions.
 
@@ -3201,21 +3220,29 @@ IFsffmData::time_limit(const sCKT *ckt, double *plim)
 }
 
 
+// 0  VO    prm1
+// 1  VA    prm2
+// 2  FC    prm3
+// 3  MDI   prm4
+// 4  FS    prm5
+//
 void
 IFsffmData::set_param(double val, int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 4)
         return;
-    td_parms[ix] = val;
+    td_coeffs[ix] = val;
+    if (td_enable_tran)
+        td_parms[ix] = val;
 }
 
 
 double *
 IFsffmData::get_param(int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 4)
         return (0);
-    return (td_parms + ix);
+    return (td_coeffs + ix);
 }
 // End of IFsffmData functions.
 
@@ -3388,21 +3415,29 @@ IFamData::time_limit(const sCKT *ckt, double *plim)
 }
 
 
+// 0  SA    prm1
+// 1  QC    prm2
+// 2  MF    prm3
+// 3  CF    prm4
+// 4  DL    prm5
+//
 void
 IFamData::set_param(double val, int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 4)
         return;
-    td_parms[ix] = val;
+    td_coeffs[ix] = val;
+    if (td_enable_tran)
+        td_parms[ix] = val;
 }
 
 
 double *
 IFamData::get_param(int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 4)
         return (0);
-    return (td_parms + ix);
+    return (td_coeffs + ix);
 }
 // End of IFamData functions.
 
@@ -3608,21 +3643,28 @@ IFgaussData::dup() const
 }
 
 
+// 0  SD        prm1
+// 1  MEAN      prm2
+// 2  LATTICE   prm3
+// 3  ILEVEL    prm4
+//
 void
 IFgaussData::set_param(double val, int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 3)
         return;
-    td_parms[ix] = val;
+    td_coeffs[ix] = val;
+    if (td_enable_tran)
+        td_parms[ix] = val;
 }
 
 
 double *
 IFgaussData::get_param(int ix)
 {
-    if (ix < 0 || ix >= 8)
+    if (ix < 0 || ix > 3)
         return (0);
-    return (td_parms + ix);
+    return (td_coeffs + ix);
 }
 // End of IFgaussData functions.
 

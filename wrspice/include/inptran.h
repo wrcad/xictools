@@ -216,8 +216,6 @@ struct IFpwlData : public IFtranData
     double eval_deriv(double);
     IFtranData *dup() const;
     void print(const char*, sLstr&);
-    void set_param(double, int);
-    double *get_param(int);
 
 private:
     bool td_pwlRgiven;      // true if pwl r=repeat given

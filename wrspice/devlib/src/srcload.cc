@@ -47,10 +47,7 @@ Authors: 1985 Thomas L. Quarles
 ****************************************************************************/
 
 #include "srcdefs.h"
-#ifdef ALLPRMS
-#else
 #include "dctdefs.h"
-#endif
 
 
 int
@@ -221,16 +218,21 @@ SRCdev::load(sGENinstance *in_inst, sCKT *ckt)
             if (!numvars) {
                 double rhs = 0;
 
-//XXX
-#ifdef ALLPRMS
-                {
-#else
                 sDCTAN *dct = dynamic_cast<sDCTAN*>(ckt->CKTcurJob);
+#ifdef ALLPRMS
+                // If sweeping the DC value (the default parameter)
+                // take the source as a DC source.
+                if (dct &&
+                        ((dct->JOBdc.elt(0) == inst &&
+                            dct->JOBdc.param(0) == SRC_DC) ||
+                        (dct->JOBdc.elt(1) == inst &&
+                            dct->JOBdc.param(1) == SRC_DC)))
+#else
                 if (dct && (dct->JOBdc.elt(0) == inst ||
                         dct->JOBdc.elt(1) == inst))
+#endif
                     rhs = ckt->CKTsrcFact * inst->SRCdcValue;
                 else {
-#endif
                     BEGIN_EVAL
                     int ret = inst->SRCtree->eval(&rhs, 0, 0);
                     END_EVAL
