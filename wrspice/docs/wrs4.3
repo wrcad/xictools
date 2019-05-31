@@ -222,9 +222,23 @@ IMPORTANT -- Windows notes
 *****************************************************
 End of general info.
 
+
 ===============================================================================
-wrspice-4.3.9  3/11/2019
+wrspice-4.3.10  6/XXX/2019
 Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New "Werthamer" Josephson junction model.
+
+* New ability to sweep and alter source "tran function" parameters.
+
+BUGS FIXED
+---- -----
+
+-------------------------------------------------------------------------------
+wrspice-4.3.9  3/11/2019
 
 Lots going on under the hood.  This is an interim release, providing elements
 of two new feature sets: the "runops", and "Atomic Monte Carlo".
@@ -276,7 +290,7 @@ CHANGES AND NEW FEATURES
   New commands are being created that will make available operations
   that have been available only as part of Monte Carlo or operating range
   analysis.  These will allow the user to create scripts for special
-  purpose operations, such as Monte Carlo optimization, of advanced
+  purpose operations, such as Monte Carlo optimization, or advanced
   statistical extraction.
 
   New command:  alterf
@@ -356,6 +370,7 @@ CHANGES AND NEW FEATURES
 
 BUGS FIXED
 ---- -----
+
   The WRSPICE_PROGRAM test without a .param assignment caused a seg
   fault.
 
