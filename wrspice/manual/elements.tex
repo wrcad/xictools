@@ -1924,7 +1924,7 @@ The following paragraphs describe the tran functions in detail.
 \index{exponential specification}
 \index{exp tran function}
 
-% spSources.hlp:texp 012509
+% spSources.hlp:texp 060119
 
 \spgen{exp({\it v1 v2\/} [{\it td1 tau1 td2 tau2\/}])}
 \spexampo{vin 3 0 exp(-4 -1 2ns 30ns 60ns 40ns)}
@@ -1967,13 +1967,32 @@ analysis, see \ref{tranline} for explanation.  The argument count is
 used to distinguish this function from the math function of the same
 name.
 
+If this function is used bare and not part of an expression in a
+voltage or current source, then the general source instance parameters
+{\vt prm1} etc.  map as below.  It is possible to read and alter these
+values using the special vector @{\it device}[{\it param\/}]
+construct, or with the {\cb alter} and {\cb sweep} commands.  However,
+there is no sanity checking so bad numbers can cause wild behavior or
+worse.
+
+\begin{quote}
+\begin{tabular}{ll}
+prm1 & v1\\
+prm2 & v2\\
+prm3 & td1\\
+prm4 & tau1\\
+prm5 & td2\\
+prm6 & tau2\\
+\end{tabular}
+\end{quote}
+
 \subsubsection{Gaussian Random}
 \index{Gaussian random specification}
 \index{gauss tran function}
 \index{tgauss tran function}
 \label{tgauss}
 
-% spSources.hlp:tgauss 091516
+% spSources.hlp:tgauss 060119
 
 \spgen{gauss({\it stddev\/} {\it mean\/} {\it lattice\/} [{\it interp\/}])}
 \spexamp{v1 1 0 gauss(.5, 2, 100n, 1)\\
@@ -2020,6 +2039,23 @@ than one lattice cell, thus destroying the correlation.
 This function applies only to transient analysis, where time is the
 running variable.  The argument count is used to distinguish this
 function from the math function of the same name.
+
+If this function is used bare and not part of an expression in a
+voltage or current source, then the general source instance parameters
+{\vt prm1} etc.  map as below.  It is possible to read and alter these
+values using the special vector @{\it device}[{\it param\/}]
+construct, or with the {\cb alter} and {\cb sweep} commands.  However,
+there is no sanity checking so bad numbers can cause wild behavior or
+worse.
+
+\begin{quote}
+\begin{tabular}{ll}
+prm1 & stddev\\
+prm2 & mean\\
+prm3 & lattice\\
+prm4 & interp\\
+\end{tabular}
+\end{quote}
 
 One important application of this function is to provide time-domain
 noise generation for noise modeling\cite{jeffery}.  For example, below
@@ -2075,7 +2111,7 @@ well.
 \index{pulse specification}
 \index{pulse tran function}
 
-% spSources.hlp:pulse 071018
+% spSources.hlp:pulse 060119
 
 \spgen{pulse({\it v1 v2} [{\it td tr tf pw per td1 td2} ...]
   [{\it pattern\_spec}])}
@@ -2145,6 +2181,26 @@ describes a voltage which, starting from 0, begins rising at 2
 nanoseconds, reaching 1 volt at 4 nanoseconds, and remains at that
 value.
 
+If this function is used bare and not part of an expression in a
+voltage or current source, then the general source instance parameters
+{\vt prm1} etc.  map as below.  It is possible to read and alter these
+values using the special vector @{\it device}[{\it param\/}]
+construct, or with the {\cb alter} and {\cb sweep} commands.  However,
+there is no sanity checking so bad numbers can cause wild behavior or
+worse.
+
+\begin{quote}
+\begin{tabular}{ll}
+prm1 & v1\\
+prm2 & v2\\
+prm3 & td\\
+prm4 & tr\\
+prm5 & tf\\
+prm6 & pw\\
+prm7 & per\\
+\end{tabular}
+\end{quote}
+
 \subsubsection{Pattern Generation}
 \label{pattern}
 \index{pattern specification}
@@ -2210,7 +2266,7 @@ Example:\\
 \index{gaussian pulse specification}
 \index{gpulse tran function}
 
-% spSources.hlp:gpulse 071018
+% spSources.hlp:gpulse 060119
 
 \spgen{gpulse([{\it v1 v2 td pw per td1 td2} ...]
  [{\it pattern\_spec\/}])}
@@ -2265,6 +2321,24 @@ at each delay value (including {\it td\/}).  If the {\it per} is given
 a value 0.0, only one pulse per delay value is emitted.  If the {\it
 per} specifies a viable period, pulses are emitted at each delay value
 and increments of {\it per\/}.
+
+If this function is used bare and not part of an expression in a
+voltage or current source, then the general source instance parameters
+{\vt prm1} etc.  map as below.  It is possible to read and alter these
+values using the special vector @{\it device}[{\it param\/}]
+construct, or with the {\cb alter} and {\cb sweep} commands.  However,
+there is no sanity checking so bad numbers can cause wild behavior or
+worse.
+
+\begin{quote}
+\begin{tabular}{ll}
+prm1 & v1\\
+prm2 & v2\\
+prm3 & td\\
+prm4 & pw\\
+prm5 & per\\
+\end{tabular}
+\end{quote}
 
 Periodic pulses can be set to a pattern via the {\it pattern\_spec},
 which can appear following all delay values, if any.  The syntax is
@@ -2473,7 +2547,7 @@ linearly sweeping the periodic transfer function.
 \index{single frequency FM specification}
 \index{sffm tran function}
 
-% spSources.hlp:sffm 012509
+% spSources.hlp:sffm 060119
 
 \spgen{sffm({\it vo va\/} [{\it fc mdi fs\/}])}
 \spexampo{v1 12 0 sffm(0 1m 20k 5 1k)}
@@ -2502,11 +2576,29 @@ running variable.  When referring to default values, {\vt tstep} is
 the printing increment and {\vt tstop} is the final time in transient
 analysis, see \ref{tranline} for explanation.
 
+If this function is used bare and not part of an expression in a
+voltage or current source, then the general source instance parameters
+{\vt prm1} etc.  map as below.  It is possible to read and alter these
+values using the special vector @{\it device}[{\it param\/}]
+construct, or with the {\cb alter} and {\cb sweep} commands.  However,
+there is no sanity checking so bad numbers can cause wild behavior or
+worse.
+
+\begin{quote}
+\begin{tabular}{ll}
+prm1 & vo\\
+prm2 & va\\
+prm3 & fc\\
+prm4 & mdi\\
+prm5 & fs\\
+\end{tabular}
+\end{quote}
+
 \subsubsection{Amplitude Modulation}
 \index{am specification}
 \index{am tran function}
 
-% spSources.hlp:am 031416
+% spSources.hlp:am 060119
 
 \spgen{am({\it sa oc fm fc td\/})}
 \spexampo{vin 12 0 am(10 1 10meg 100meg 10n)}
@@ -2541,11 +2633,29 @@ the printing increment and {\vt tstop} is the final time in transient
 analysis</a>.  This function is a work-alike to the similar function
 found in HSPICE.
 
+If this function is used bare and not part of an expression in a
+voltage or current source, then the general source instance parameters
+{\vt prm1} etc.  map as below.  It is possible to read and alter these
+values using the special vector @{\it device}[{\it param\/}]
+construct, or with the {\cb alter} and {\cb sweep} commands.  However,
+there is no sanity checking so bad numbers can cause wild behavior or
+worse.
+
+\begin{quote}
+\begin{tabular}{ll}
+prm1 & sa\\
+prm2 & oc\\
+prm3 & fm\\
+prm4 & fc\\
+prm5 & td\\
+\end{tabular}
+\end{quote}
+
 \subsubsection{Sinusoidal}
 \index{sine specification}
 \index{sin tran function}
 
-% spSources.hlp:tsin 031016
+% spSources.hlp:tsin 060119
 
 \spgen{sin({\it vo va\/} [{\it freq td theta phi\/}])}
 \spexampo{vin 3 0 sin(0 1 100meg 1ns 1e10)}
@@ -2586,11 +2696,30 @@ analysis, see \ref{tranline} for explanation.  The argument count is
 used to distinguish this function from the math function of the same
 name.
 
+If this function is used bare and not part of an expression in a
+voltage or current source, then the general source instance parameters
+{\vt prm1} etc.  map as below.  It is possible to read and alter these
+values using the special vector @{\it device}[{\it param\/}]
+construct, or with the {\cb alter} and {\cb sweep} commands.  However,
+there is no sanity checking so bad numbers can cause wild behavior or
+worse.
+
+\begin{quote}
+\begin{tabular}{ll}
+prm1 & vo\\
+prm2 & va\\
+prm3 & freq\\
+prm4 & td\\
+prm5 & theta\\
+prm6 & phi\\
+\end{tabular}
+\end{quote}
+
 \subsubsection{Sinusoidal Pulse}
 \index{sine pulse specification}
 \index{spulse tran function}
 
-% spSources.hlp:spulse 012509
+% spSources.hlp:spulse 060119
 
 \spgen{spulse({\it vo vp\/} [{\it per td decay\/}])} 
 \spexampo{vin 1 0 spulse(0 1 25ns 40ns 1e8)}
@@ -2624,6 +2753,24 @@ This function applies only to transient analysis, where time is the
 running variable.  When referring to default values, {\vt tstep} is
 the printing increment and {\vt tstop} is the final time in transient
 analysis, see \ref{tranline} for explanation.
+
+If this function is used bare and not part of an expression in a
+voltage or current source, then the general source instance parameters
+{\vt prm1} etc.  map as below.  It is possible to read and alter these
+values using the special vector @{\it device}[{\it param\/}]
+construct, or with the {\cb alter} and {\cb sweep} commands.  However,
+there is no sanity checking so bad numbers can cause wild behavior or
+worse.
+
+\begin{quote}
+\begin{tabular}{ll}
+prm1 & vo\\
+prm2 & vp\\
+prm3 & per\\
+prm4 & td\\
+prm5 & decay\\
+\end{tabular}
+\end{quote}
 
 \subsubsection{Table Reference}
 \index{table reference specification}
@@ -4129,7 +4276,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 \subsection{Josephson Junctions}
 \index{Josephson junction instance}
 
-% spElements.hlp:jj 082418
+% spElements.hlp:jj 060119
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
@@ -4151,18 +4298,34 @@ BSIM3v3.1.  The following parameters are new for v3.2:
   transient analysis, alias {\vt ic\_phase}.\\ \hline
 {\vt control=}{\it name} & Controlling voltage source or inductor
   name.\\ \hline
+{\vt n} & SFQ emission count (read only).\\ \hline
+{\vt phase} & Junction phase (read only).\\ \hline
+{\vt phsf} & True if SFQ count change at chrrent time point (read only).\\
+ \hline
+{\vt phst} & Time of last SFQ emission (read only).\\ \hline
 \end{tabular}
 
 \spexamp{b1 1 0 10 jj1 ics=200uA\\
 bxx 2 0 type1 control=l3\\
 b2 4 5 ybco phi=1.57}
 
-Unless stated otherwise, information presented here also applies to
-The Verilog-A Josephson junction model provided with {\WRspice} in the
-Verilog-A examples.
+Unless stated otherwise, information presented here applies to the
+standard RSJ model, the Verilog-A Josephson junction model provided
+with {\WRspice} in the Verilog-A examples, and the microscopic model.
+These are referred to as levels 1, 2, and 3 respectively.
+
+The {\it n+} and {\it n-} are the positive and negative element nodes,
+respectively.  These are followed by an optional phase node.  The
+phase node, if specified, generally should have no other connections
+in the circuit, but the voltage of this node gives the phase of the
+junction in radians.  The {\it modname} is the name of the Josephson
+junction model.  If no model is specified, then a default model is
+used (see the description of the Josephson model for the default
+values).  Other (optional) parameters follow in any order.
 
 \begin{description}
-\item{\vt pijj}
+\item{\vt pijj}\\
+{\bf Levels 1 and 2 only.}\\
 If the {\vt pijj} parameter is given and set to a nonzero integer
 value, the device instance will behave as a ``pi'' junction.  This
 type of junction has a ground state with phase $\pi$ rather than 0. 
@@ -4217,12 +4380,12 @@ parameters would be used to specify the inductance, this parameter can
 be used to override these values on a per-instance basis if desired.
 
 \item{\vt ic}\\
-Presently, this keyword is not recognized by the Verilog-A model.  The
-keyword is expected to be followed by two numbers, giving the initial
-junction voltage and phase in radians.  These apply in transient
-analysis when the ``{\vt uic}'' option is included in the transient
-analysis specification.  The initial junction voltage and phase both
-default to 0.0.
+{\bf Levels 1 and 3 only.}\\
+The keyword is expected to be followed by two numbers, giving the
+initial junction voltage and phase in radians.  These apply in
+transient analysis when the ``{\vt uic}'' option is included in the
+transient analysis specification.  The initial junction voltage and
+phase both default to 0.0.
 
 \item{{\vt vj} or {\vt ic\_v}}\\
 This provides the initial voltage of the junction when the ``{\vt
@@ -4234,15 +4397,33 @@ This provides the initial junction phase in radians when the ``{\vt
 uic}'' option is included in the transient analysis specification.
 
 \item{\vt control}\\
-This keyword is not recognized by the Verilog-A model.  The {\vt
-control} parameter is only needed if critical current modulation is
-part of the circuit operation, and is only relevant to Josephson
-junction model types that support critical current modulation, that
-is, the model parameter {\vt cct} is given a value larger than 1.  The
-{\it name} in the {\vt control} specification is the name of either a
-voltage source or inductor which appears somewhere in the circuit. 
-The current flowing through the indicated device is taken as the
-junction control current.
+{\bf evel 1 only.}\\
+The {\vt control} parameter is only needed if critical current
+modulation is part of the circuit operation, and is only relevant to
+Josephson junction model types that support critical current
+modulation, that is, the model parameter {\vt cct} is given a value
+larger than 1.  The {\it name} in the {\vt control} specification is
+the name of either a voltage source or inductor which appears
+somewhere in the circuit.  The current flowing through the indicated
+device is taken as the junction control current.
+
+\item{\vt n} (read only)\\
+This integer value is incremented whenever the junction phase changes
+by $2\pi$.  It is intended for pass/fail testing of SFQ circuit
+operation.
+ 
+\item{\vt phase} (read only)\\
+This is set to the junction phase, and reading this is an alternative
+to using a third node to obtain the phase.
+ 
+\item{\vt phsf} (read only)\\
+This flag is set true at the time point when the SFQ emission count
+changes.  This is intended to facilitate pass/fail testing of SFQ
+circuits.
+
+\item{\vt phst} (read only)\\
+This read-only parameter contains the last time that the SFQ emission
+count changed, intended for use in SFQ pass/fail testing.
 \end{description}
 
 The Josephson junction device has unique behavior which complicates
@@ -4415,16 +4596,12 @@ See the Josephson junction model description for more information.
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 030419
+% spModels.hlp:jjmodel 060119
 
 {\cb Type Name:} {\vt jj}
 
 The Josephson junction model is an extended version of the RSJ model
 as used by Jewett\cite{jewett}.
-
-Unless stated otherwise, this information also applies to the
-Verilog-A Josephson junction model provided with {\WRspice} in the
-Verilog-A examples.
 
 The parameters marked with an asterisk in the {\bf area} column scale
 with the {\vt ics} parameter given in the device line, not necessarily
@@ -4439,10 +4616,13 @@ when formulating instance capacitance and conductances.
 \begin{tabular}{|l|c|l|l|l|}\hline
 \multicolumn{5}{|c|}{\bf JJ Model Parameters}\\ \hline
 \bf name & \bf area & \bf parameter & \bf units & \bf default\\ \hline\hline
+\vt level & & \rr model type & - & 1\\ \hline
 \vt pijj & & \rr pi junction & - & 0\\ \hline
 \vt rtype & & \rr Quasiparticle branch model & - & 1\\
 \hline
 \vt cct & & \rr Critical current model & - & 1\\
+\hline
+\vt icon & & \rr Critical current first zero & $A$ & 1.0e-2\\
 \hline
 \vt icrit & $*$ & \rr Reference junction critical current & $A$ & 1.0e-3\\
 \hline
@@ -4475,17 +4655,31 @@ when formulating instance capacitance and conductances.
 \hline
 \vt lsh1 & & \rr Shunt resistor series inductance, proportional part & $H/\Omega$ & 0.0\\
 \hline
-\vt tsfactor & & \rr Time step phase change limit & & {\vt dphimax}\\
+\vt tsfactor & & \rr Time step phase change limit & & ${\vt dphimax}/2\pi$\\
 \hline
-\vt icon & & \rr Critical current first zero & $A$ & 1.0e-2\\
+\vt tsaccel & & \rr time step accelerator & & 1.0\\
+\hline
+\vt vdbpak & & \rr dropback voltage (read only) & &\\
 \hline
 \end{tabular}
 \end{quote}
 
-Detailed information about these parameters is presented below.
+Detailed information about these parameters is presented below. 
+Unless stated otherwise, this information also applies to the
+Verilog-A Josephson junction model provided with {\WRspice} in the
+Verilog-A examples, and the microscopic model.
 
 \begin{description}
+\item{\vt level}\\
+This specifies the model to use.  There are three choices provided in
+{\WRspice}.  Level 1 (the default) in the internal RSJ model, and
+level 2 indicates the Verilog-A example RSJ model, which is available
+if it has been loaded.  The third choice is level 3, which is an
+internal microscopic tunnel junction model, based on the open-source
+MitMoJCo project on {\vt https://github.com/drgulevich/mitmojco}. 
+
 \item{\vt pijj}\\
+{\bf Levels 1 and 2 only.}\\
 If this flag is given a nonzero integer value, the junctions will be
 modeled as a ``pi junction'' meaning that the zero-current phase is
 $\pi$ rather than zero.  Such devices have been fabricated using
@@ -4494,9 +4688,10 @@ interesting behavior, they are not at this point available or used
 with any frequency.
 
 \item{\vt rtype}\\
+{\bf Levels 1 and 2 only.}\\
 The {\vt rtype} parameter determines the type of quasiparticle branch
-modeling employed.  Legal values are as follows:
-
+modeling employed.  Legal values for level 1 are listed below, only 0
+and 1 are supported in level 2.
 \begin{quote}
 \begin{tabular}{ll}
 \bf 0 & The junction is completely unshunted, all shunt conductances
@@ -4550,7 +4745,9 @@ is specified for {\vt cct}, {\vt cct} reverts to 0.  Thus, magnetic
 coupling and quasiparticle injection are not simultaneously available.
 
 \item{\vt cct}\\
-The {\vt cct} variable can take on the following values:
+{\bf Levels 1 and 2 only.}\\
+The {\vt cct} parameter can take one of the following values in level
+1, only 0 and 1 are supported in level 2.
 \begin{quote}
 \begin{tabular}{ll}
 \bf 0 & No critical current.\\
@@ -4574,6 +4771,18 @@ linear reduction to zero at control current = $+${\vt icon}.  If {\vt
 cct} is specified as 2, 3, or 4, the area parameter, if given, is set
 to unity.  Otherwise, the model parameters are scaled appropriately by
 the area before use.
+
+\item{\vt icon}\\
+{\bf range:} 1e-4 -- 1.0\\
+{\bf Level 1 only.}\\
+This parameter applies when the {\vt cct} parameter is set to one of
+the choices larger the 1, where critical current modulation is
+modeled.  The value of {\vt icon} is the first value for (assumed)
+full suppression of critical current.
+
+The parameter is not currently recognized by the Verilog-A Josephson
+junction model provided with {\WRspice}, as that model does not
+currently support values of {\vt cct} larger than 1.
 
 \item{\vt icrit}\\
 {\bf range:} 1nA -- 0.1A\\
@@ -4605,6 +4814,7 @@ default 2.6mV is appropriate for niobium junctions.
 
 \item{\vt delv}\\
 {\bf range:} $0.001{\vt vgap}$ -- $0.2{\vt vgap}$\\
+{\bf Levels 1 and 2 only.}\\
 This specifies the assumed width, in voltage, of the quasiparticle
 step region, or gap.  In this region, current increases sharply with
 increasing voltage.  The default value of 80uV is reasonable for
@@ -4665,6 +4875,7 @@ with this parameter, and a given value will override the
 
 \item{\vt icrn}\\
 {\bf range:} 1.5mV -- 1.9mV\\
+{\bf Levels 1 and 2 only.}\\
 This is the product of the reference junction ``normal state''
 resistance and the critical current, where the normal state resistance
 is the differential resistance measured well above the gap.  The
@@ -4676,6 +4887,7 @@ state resistance from the critical current.
 
 \item{{\vt rnorm} or {\vt rn}}\\
 {\bf range:} 1.5mV/{\vt icrit} -- 1.9mV/{\vt icrit}\\
+{\bf Levels 1 and 2 only.}\\
 The reference junction normal state resistance can be given explicitly
 with this parameter, which will override {\vt icrn} if this is also
 given.
@@ -4739,22 +4951,45 @@ dependence.
 \item{\vt tsfactor}\\
 {\bf range:} 0.001 -- 1.0\\
 This is mainly for compatibility with the Verilog-A Josephson junction
-model provided with {\WRspice} in the Verilog-A examples.  It has the
-same effect and range as the {\WRspice} {\vt dphimax} parameter, and
-will override {\vt dphimax} if given.  If not given, {\vt dphimax}
-will be used.  This is the maximum phase change allowed between
-internal time points.
+model provided with {\WRspice} in the Verilog-A examples.  This is
+equivalent to the {\WRspice} {\vt dphimax} parameter, but is
+normalized to $2\pi$.  If not given, it defaults to ${\vt dphimax}/2\pi$
+in {\WRspice}, or 0.1 in the Verilog-A model not used in {\WRspice}. 
+This is the maximum phase change allowed between internal time points. 
 
-\item{\vt icon}\\
-{\bf range:} 1e-4 -- 1.0\\
-This parameter applies when the {\vt cct} parameter is set to one of
-the choices larger the 1, where critical current modulation is
-modeled.  The value of {\vt icon} is the first value for (assumed)
-full suppression of critical current.
+\item{\vt tsaccel}\\
+{\bf range:} 1.0 -- 100.0\\
+Time step limiting is performed relative to the Josephson frequency of
+the instantaneous absolute junction voltage or the dropback voltage,
+whichever is larger.  The phase change is limited by {\vt tsfactor},
+thus corresponding to a maximum time step relative to the period of
+the frequency corresponding to the voltage.  Note that in SFQ
+circuits, where the junctions are critically damped, the junction
+voltage is unlikely to exceed the dropback voltage, which is
+numerically equal to the critical current times the shunt resistance
+({\vt vshunt}).  This implies that the maximum time step is a fixed
+value by default.
 
-The parameter is not currently recognized by the Verilog-A Josephson
-junction model provided with {\WRspice}, as that model does not
-currently support values of {\vt cct} larger than 1.
+When simulating SFQ circuits, between SFQ pulses there is often
+significant time where signals are quiescent and one could probably
+take larger time steps, speeding simulation.  This appears true to an
+extent, however one can see signs of instability if steps are too
+large.
+
+The {\vt tsaccel} parameter is the ratio of the longest time step
+allowed to that allowed at the dropback voltage.  In computing the
+time step, the low voltage threshold is reduced to the dropback
+voltage divided by {\vt tsaccel}, so time steps will be inversely
+proportional to voltages above this value.
+
+Experimentation suggests that a value of 2.5 is a good choice for RSFQ
+circuits, your results may vary.
+
+\item{\vt vdpbak} (read only)\\
+This parameter returns the computed value of the dropback voltage,
+which is the voltage at which the return trace of a hysteretic
+Josephson junction i-v curve snaps back to the zero-voltage state.  If
+is also the voltage equivalent of the plasma resonance, and the
+product of critical current and shunt resistance for critical damping.
 \end{description}
-
 

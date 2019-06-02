@@ -11,7 +11,7 @@
 * The amplitudes are relative to assumed 1V AC input, not physical.
 
 * Below,
-* Level=1 selects the internal JJ model.
+* Level=1 selects the internal RSJ JJ model.
 * Level=2 selects the example Verilog-A JJ model, if loaded (with
 * the devload command).
 *

@@ -409,7 +409,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
         double halfvg = model->JJvg/2;
         if (model->JJcap > 0.0) {
-            model->JJvdpbak = sqrt(PHI0_2PI * model->JJcriti / model->JJcap);
+            model->JJvdpbak = sqrt(PHI0_2PI/model->JJcpic);
             if (model->JJvdpbak > halfvg)
                 model->JJvdpbak = halfvg;
         }

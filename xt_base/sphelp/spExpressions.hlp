@@ -622,12 +622,13 @@ setandlet
 !!REDIRECT kelvin       constants
 !!REDIRECT no           constants
 !!REDIRECT phi0         constants
+!!REDIRECT phi0_2pi     constants
 !!REDIRECT pi           constants
 !!REDIRECT planck       constants
 !!REDIRECT true         constants
 !!REDIRECT yes          constants
 
-!! useriface.tex 040110
+!! useriface.tex 060219
 !!KEYWORD
 constants
 !!TITLE
@@ -660,7 +661,9 @@ Constants
     <tr><td><tt>no</tt></td>
      <td>False value (0)</td></tr>
     <tr><td><tt>phi0</tt></a></td>
-     <td>Value of the flux quantum (2.06783e-15 webers)</td></tr>
+     <td>The flux quantum (Planck's constant over twice <tt>echarge</tt>)</td></tr>
+    <tr><td><tt>phi0_2pi</tt></a></td>
+     <td>Value of the flux quantum normalized to 2&pi;</td></tr>
     <tr><td><tt>pi</tt></a></td>
      <td>Value of pi (3.14159265358979323846)</td></tr>
     <tr><td><tt>planck</tt></td>

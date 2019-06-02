@@ -81,8 +81,8 @@
 #define VgMin   0.1e-3      // Min Vgap, V
 #define VgMax   10.0e-3     // Max Vgap, V
 
-#define RTMAX   4           // Max rtype, integer
-#define ITMAX   4           // Max ictype, integer
+#define RTMAX   1           // Max rtype, integer
+#define ITMAX   1           // Max ictype, integer
 #define CCsens  1e-2        // Assumed magnetic sens. of reference
 #define CCsensMin 1e-4      // Min magnetic sens.
 #define CCsensMax 1.0       // Max magnetic sens.

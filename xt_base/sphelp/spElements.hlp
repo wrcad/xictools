@@ -1061,7 +1061,7 @@ Uniform RC Line
 passive
 tra
 
-!! elements.tex 082418
+!! elements.tex 060119
 !!KEYWORD
 jj
 !!TITLE
@@ -1100,6 +1100,14 @@ Josephson Junctions
       analysis, alias <tt>ic_phase</tt>.</td></tr>
     <tr><td><tt>control=</tt><i>name</i></td> <td>
       Controlling voltage source or inductor name.</td></tr>
+    <tr><td><tt>n</tt></td> <td>
+      SFQ emission count (read only).</td></tr>
+    <tr><td><tt>phase</tt></td> <td>
+      Junction phase (read only).</td></tr>
+    <tr><td><tt>phsf</tt></td> <td>
+      True if SFQ count change at current time point (read only).</td></tr>
+    <tr><td><tt>phst</tt></td> <td>
+      Time of last SFQ emission (read only).</td></tr>
     </table>
 
     <p>
@@ -1111,9 +1119,11 @@ Josephson Junctions
     </tt></blockquote>
 
     <p>
-    Unless stated otherwise, information presented here also applies to
-    The Verilog-A Josephson junction model provided with <i>WRspice</i>
-    in the Verilog-A examples.
+    Unless stated otherwise, information presented here applies to the
+    standard RSJ model, the Verilog-A Josephson junction model
+    provided with <i>WRspice</i> in the Verilog-A examples, and the
+    microscopic model.  These are referred to as model levels 1, 2,
+    and 3 respectively.
 
     <p>
     The <i>n+</i> and <i>n-</i> are the positive and negative element
@@ -1128,6 +1138,7 @@ Josephson Junctions
 
     <dl>
     <dt><tt>pijj</tt><dd>
+    <b>Levels 1 and 2 only.</b><br>
     If the <tt>pijj</tt> parameter is given and set to a nonzero
     integer value, the device instance will behave as a "pi" junction. 
     This type of junction has a ground state with phase &pi; rather
@@ -1196,7 +1207,7 @@ Josephson Junctions
 
     <dl>
     <dt><tt>ic</tt><dd>
-    Presently, this keyword is not recognized by the Verilog-A model. 
+    <b>Levels 1 and 3 only.</b><br>
     The keyword is expected to be followed by two numbers, giving the
     initial junction voltage and phase in radians.  These apply in
     transient analysis when the "<tt>uic</tt>" option is included in
@@ -1221,8 +1232,8 @@ Josephson Junctions
 
     <dl>
     <dt><tt>control</tt><dd>
-    This keyword is not recognized by the Verilog-A model.  The
-    <tt>control</tt> parameter is only needed if critical current
+    <b>Level 1 only.</b><br>
+    The <tt>control</tt> parameter is only needed if critical current
     modulation is part of the circuit operation, and is only relevant
     to Josephson junction model types that support critical current
     modulation, that is, the model parameter <tt>cct</tt> is given a
@@ -1232,7 +1243,33 @@ Josephson Junctions
     through the indicated device is taken as the junction control
     current.
     </dl>
-    
+
+    <dl>
+    <dt><tt>n</tt> (read only)<dd>
+    This integer value is incremented whenever the junction phase
+    changes by 2&pi;.  It is intended for pass/fail testing of SFQ
+    circuit operation.
+    </dl>
+
+    <dl>
+    <dt><tt>phase</tt> (read only)<dd>
+    This is set to the junction phase, and reading this is an
+    alternative to using a third node to obtain the phase.
+    </dl>
+
+    <dl>
+    <dt><tt>phsf</tt> (read only)<dd>
+    This flag is set true at the time point when the SFQ emission
+    count changes.  This is intended to facilitate pass/fail testing
+    of SFQ circuits.
+    </dl>
+
+    <dl>
+    <dt><tt>phst</tt> (read only)<dd>
+    This read-only parameter contains the last time that the SFQ
+    emission count changed, intended for use in SFQ pass/fail testing.
+    </dl>
+
     <p>
     The Josephson junction device has unique behavior which
     complicates simulation with a SPICE-type simulator.  Central is

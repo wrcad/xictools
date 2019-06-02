@@ -834,7 +834,7 @@ expressions
 devexpr
 spsource
 
-!! elements.tex 012509
+!! elements.tex 060119
 !!KEYWORD
 texp
 !!TITLE
@@ -895,11 +895,32 @@ Exponential
     final time in <a href=".tran"> transient analysis</a>.  The
     argument count is used to distinguish this function from the math
     function of the same name.
+
+    <p>
+    If this function is used bare and not part of an expression in a
+    voltage or current source, then the general source instance
+    parameters <tt>prm1</tt> etc.  map as below.  It is possible to
+    read and alter these values using the special vector
+    @<i>device</i>[<i>param</i>] construct, or with the <a
+    href="alter"><b>alter</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands.  However, there is no sanity checking so bad numbers can
+    cause wild behavior or worse.
+
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>prm1</td><td>v1</td></tr>
+    <tr><td>prm2</td><td>v2</td></tr>
+    <tr><td>prm3</td><td>td1</td></tr>
+    <tr><td>prm4</td><td>tau1</td></tr>
+    <tr><td>prm5</td><td>td2</td></tr>
+    <tr><td>prm6</td><td>tau2</td></tr>
+    </table>
+    </blockquote>
  
 !!SEEALSO
 tranfuncs
 
-!! elements.tex 091516
+!! elements.tex 060119
 !!KEYWORD
 tgauss
 !!TITLE
@@ -971,6 +992,25 @@ Gaussian Random
     this function from the math function of the same name.
 
     <p>
+    If this function is used bare and not part of an expression in a
+    voltage or current source, then the general source instance
+    parameters <tt>prm1</tt> etc.  map as below.  It is possible to
+    read and alter these values using the special vector
+    @<i>device</i>[<i>param</i>] construct, or with the <a
+    href="alter"><b>alter</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands.  However, there is no sanity checking so bad numbers can
+    cause wild behavior or worse.
+
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>prm1</td><td>stddev</td></tr>
+    <tr><td>prm2</td><td>mean</td></tr>
+    <tr><td>prm3</td><td>lattice</td></tr>
+    <tr><td>prm4</td><td>interp</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
     One important application of this function is to provide
     time-domain noise generation for <a href="refs#jeffery">noise
     modeling</a>.  For example, below is a circuit which simulates the
@@ -1040,7 +1080,7 @@ tranfuncs
 
 !!REDIRECT pattern      pulse#pattern
 
-!! elements.tex 071018
+!! elements.tex 060119
 !!KEYWORD
 pulse
 !!TITLE
@@ -1135,6 +1175,28 @@ Pulse
     nanoseconds, reaching 1 volt at 4 nanoseconds, and remains at
     that value.
 
+    <p>
+    If this function is used bare and not part of an expression in a
+    voltage or current source, then the general source instance
+    parameters <tt>prm1</tt> etc.  map as below.  It is possible to
+    read and alter these values using the special vector
+    @<i>device</i>[<i>param</i>] construct, or with the <a
+    href="alter"><b>alter</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands.  However, there is no sanity checking so bad numbers can
+    cause wild behavior or worse.
+
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>prm1</td><td>v1</td></tr>
+    <tr><td>prm2</td><td>v2</td></tr>
+    <tr><td>prm3</td><td>td</td></tr>
+    <tr><td>prm4</td><td>tr</td></tr>
+    <tr><td>prm5</td><td>tf</td></tr>
+    <tr><td>prm6</td><td>pw</td></tr>
+    <tr><td>prm7</td><td>per</td></tr>
+    </table>
+    </blockquote>
+
     <a name="pattern"></a>
     <h4>Pattern Generation</h4>
 
@@ -1205,7 +1267,7 @@ Pulse
 !!SEEALSO
 tranfuncs
 
-!! elements.tex 071018
+!! elements.tex 060119
 !!KEYWORD
 gpulse
 !!TITLE
@@ -1282,6 +1344,26 @@ Gaussian Pulse
     <i>per</i> is given a value 0.0, only one pulse per delay value is
     emitted.  If the <i>per</i> specifies a viable period, pulses are
     emitted at each delay value and increments of <i>per</i>.
+
+    <p>
+    If this function is used bare and not part of an expression in a
+    voltage or current source, then the general source instance
+    parameters <tt>prm1</tt> etc.  map as below.  It is possible to
+    read and alter these values using the special vector
+    @<i>device</i>[<i>param</i>] construct, or with the <a
+    href="alter"><b>alter</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands.  However, there is no sanity checking so bad numbers can
+    cause wild behavior or worse.
+
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>prm1</td><td>v1</td></tr>
+    <tr><td>prm2</td><td>v2</td></tr>
+    <tr><td>prm3</td><td>td</td></tr>
+    <tr><td>prm4</td><td>pw</td></tr>
+    <tr><td>prm5</td><td>per</td></tr>
+    </table>
+    </blockquote>
 
     <p>
     Periodic pulses can be set to a pattern via the <a
@@ -1532,7 +1614,7 @@ Piece-Wise Linear
 !!SEEALSO
 tranfuncs
 
-!! elements.tex 012509
+!! elements.tex 060119
 !!KEYWORD
 sffm
 !!TITLE
@@ -1577,11 +1659,31 @@ Single-Frequency FM
     the running variable.  When referring to default values,
     <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
     final time in <a href=".tran"> transient analysis</a>.
+
+    <p>
+    If this function is used bare and not part of an expression in a
+    voltage or current source, then the general source instance
+    parameters <tt>prm1</tt> etc.  map as below.  It is possible to
+    read and alter these values using the special vector
+    @<i>device</i>[<i>param</i>] construct, or with the <a
+    href="alter"><b>alter</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands.  However, there is no sanity checking so bad numbers can
+    cause wild behavior or worse.
+
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>prm1</td><td>vo</td></tr>
+    <tr><td>prm2</td><td>va</td></tr>
+    <tr><td>prm3</td><td>fc</td></tr>
+    <tr><td>prm4</td><td>mdi</td></tr>
+    <tr><td>prm5</td><td>fs</td></tr>
+    </table>
+    </blockquote>
  
 !!SEEALSO
 tranfuncs
 
-!! elements.tex 021416
+!! elements.tex 060119
 !!KEYWORD
 am
 !!TITLE
@@ -1634,11 +1736,31 @@ Amplitude Modulation
     final time in <a href=".tran"> transient analysis</a>.  This
     function is a work-alike to the similar function found in <a
     href="hspicesim">HSPICE</a>.
+
+    <p>
+    If this function is used bare and not part of an expression in a
+    voltage or current source, then the general source instance
+    parameters <tt>prm1</tt> etc.  map as below.  It is possible to
+    read and alter these values using the special vector
+    @<i>device</i>[<i>param</i>] construct, or with the <a
+    href="alter"><b>alter</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands.  However, there is no sanity checking so bad numbers can
+    cause wild behavior or worse.
+
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>prm1</td><td>sa</td></tr>
+    <tr><td>prm2</td><td>oc</td></tr>
+    <tr><td>prm3</td><td>fm</td></tr>
+    <tr><td>prm4</td><td>fc</td></tr>
+    <tr><td>prm5</td><td>td</td></tr>
+    </table>
+    </blockquote>
  
 !!SEEALSO
 tranfuncs
  
-!! elements.tex 031016
+!! elements.tex 060119
 !!KEYWORD
 tsin
 !!TITLE
@@ -1700,11 +1822,32 @@ Sinusoidal
     final time in <a href=".tran"> transient analysis</a>.  The
     argument count is used to distinguish this function from the math
     function of the same name.
+
+    <p>
+    If this function is used bare and not part of an expression in a
+    voltage or current source, then the general source instance
+    parameters <tt>prm1</tt> etc.  map as below.  It is possible to
+    read and alter these values using the special vector
+    @<i>device</i>[<i>param</i>] construct, or with the <a
+    href="alter"><b>alter</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands.  However, there is no sanity checking so bad numbers can
+    cause wild behavior or worse.
+
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>prm1</td><td>vo</td></tr>
+    <tr><td>prm2</td><td>va</td></tr>
+    <tr><td>prm3</td><td>freq</td></tr>
+    <tr><td>prm4</td><td>td</td></tr>
+    <tr><td>prm5</td><td>theta</td></tr>
+    <tr><td>prm6</td><td>phi</td></tr>
+    </table>
+    </blockquote>
  
 !!SEEALSO
 tranfuncs
 
-!! elements.tex 012509
+!! elements.tex 060119
 !!KEYWORD
 spulse 
 !!TITLE
@@ -1755,6 +1898,26 @@ Sinusoidal Pulse
     the running variable.  When referring to default values,
     <tt>tstep</tt> is the printing increment and <tt>tstop</tt> is the
     final time in <a href=".tran"> transient analysis</a>.
+
+    <p>
+    If this function is used bare and not part of an expression in a
+    voltage or current source, then the general source instance
+    parameters <tt>prm1</tt> etc.  map as below.  It is possible to
+    read and alter these values using the special vector
+    @<i>device</i>[<i>param</i>] construct, or with the <a
+    href="alter"><b>alter</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands.  However, there is no sanity checking so bad numbers can
+    cause wild behavior or worse.
+
+    <blockquote>
+    <table border=0 cellspacing=4>
+    <tr><td>prm1</td><td>vo</td></tr>
+    <tr><td>prm2</td><td>vp</td></tr>
+    <tr><td>prm3</td><td>per</td></tr>
+    <tr><td>prm4</td><td>td</td></tr>
+    <tr><td>prm5</td><td>decay</td></tr>
+    </table>
+    </blockquote>
  
 !!SEEALSO
 tranfuncs

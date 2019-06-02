@@ -10,9 +10,10 @@
 .param dcop=1
 
 * Below,
-* Level=1 selects the internal JJ model.
+* Level=1 selects the internal RSJ JJ model.
 * Level=2 selects the example Verilog-A JJ model, if loaded (with
 * the devload command).
+* Level=3 selects the internal microscopic JJ model.
 *
 .model jj1 jj(level=1)
 

@@ -224,18 +224,134 @@ End of general info.
 
 
 ===============================================================================
-wrspice-4.3.10  6/XXX/2019
+wrspice-4.3.10  6/3/2019
 Current Release
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
 
-* New "Werthamer" Josephson junction model.
+* New microscopic "Werthamer" Josephson junction model.
+
+  A new microscopic Josephson junction model has been added to WRspice
+  as an internal model.  This is based on the MitMoJCo model by D.  R. 
+  Gulevich that is hosted on github.com/drgulevich/mitmojco.
+
+  The model is accessed by adding "Level=3" to the Josephson junction
+  .model line.  Most parameters used in the RSJ model apply, in
+  particular if no model parameters are given, the device is taken as
+  the Lincoln Laboratory SFQ5ee Josephson junction (icrit=10ka/cm2,
+  cpic=0.7pf/ma, vm=16.5mv).
+
+* Evolution of standard RSJ Josephson junction models (Verilog-A and
+  internal).
+
+  The Josephson junction tsfactor model parameter now relative to 2pi,
+  if set to X previously, it should now be set to X/2 for the same
+  result.  The change has no effect unless this parameter is set
+  explicitly.  Applies to all JJ models.
+
+  A New JJ model parameter tsaccel is the ratio of longest time step
+  allowed to that computed at the plasma voltage.  This allows the
+  simulator to take longer time steps when the circuit is relatively
+  quiescent, and can speed up SFQ circuit simulations if set to a
+  value of about 2.5 (your results may vary).  Applies to all JJ
+  models.
+
+  Added read-only instance parameters:
+    n                   SFQ emission count
+    phase or phs        Junction phase
+    phsf                True if SFQ count change at current time point
+    phst                Time of last SFQ emission
+  These are to support pass/fail testing of SFQ circuits, and apply to
+  all JJ models (phsf/phst not in Verilog-A model).  The last two
+  are "on probation" and may not be kept.
+
+  In the Verilog-A JJ model example, a new compiler switch NEWVSHUNT
+  turns on vshunt parameter support (on by default).  One can turn off
+  NEWVSHUNT, NEWLSH, and NEWLSER for a core JJ model, and implement
+  the extras in a .subckt, which might have some advantage.
 
 * New ability to sweep and alter source "tran function" parameters.
 
+  The source "tran" functions (pulse, sin, exp, etc) can now be
+  altered with the alter command, or by setting a @name[param] special
+  vector, or swept in a sweep specification.  The source device uses
+  new parameters named "prm1", "prm2", etc.  If the device is a "tran"
+  function, these parameters map to the arguments to the function, so
+  that input can be changed or read via the parameter.  Sweeping pulse
+  delay, for example, should facilitate automated extraction of
+  setup/hold tomes.
+
+  Note that this applies only if the tran function is "bare" and not
+  part of an expression.
+
+  In addition, the parameter named "function" can be set to an expression
+  string, which will reset the expression for the source.
+
+* Stop and Measure runop evolution.
+
+  The .stop input syntax element is now supported.  The syntax is the
+  same as in the stop command.  The command applies to all circuits
+  while in effect, .stop pertains only to the circuit containing the
+  line.
+
+  New stop keyword "silent" suppresses the message that is normally
+  printed.
+
+  The .stop can be used in Monte Carlo/operating range analysis pass/fail
+  testing.  Added jjoprng1.cir in the examples to illustrate this.
+
+  The "at" keyword in stop/measure now differs from "after" and
+  "when"; it is strobed.  In order to recognize the event, the
+  conjunctions must be true at the time that the strobed time point is
+  found.  In after/when, the event is recognized when the conjunctions
+  become true then and anytime after the time is found.
+
+  A new parameter in the "point" clause: ts
+  Acts like the td parameter, however is strobing.
+
+* Miscellaneous
+
+  The internal constants planck and echarge (Planck's constant and
+  electron charge) were updated to the latest NIST official values.
+
+  Added a new vector phi0_2pi to the constants plot.  This is the
+  flux quantum over two pi.
+
+  The statistics in repeated analysis (Monte Carlo, operating range,
+  sweep) now accumulate.  There is a new keyword "runs", in the rusage
+  and stats commands that returns the number of accumulated runs for
+  current statistics.
+
+  The 'dc' keyword that triggers "chained dc" analysis now has the
+  synonym 'sweep'.
+
+
 BUGS FIXED
 ---- -----
+
+* The predictor that was added by ADMS while translating Verilog-A was
+  found to exacerbate accumulating phase error in the Verilog-A JJ
+  model, so I added a Makefile switch to turn this off.  In the ADMS
+  scripts, package_predictor replaced the LIMPRED variable, the former
+  is set in the Makefile.  The JJ model now does not use the
+  predictor.
+
+* Chained sweeps didn't work with Verilog-A models.
+
+* Repaired a logic bug in .if/.elif/.else logic.
+
+* Fixed *@ and *# lines not being executed.
+
+* Tweaks to noise.cir example.
+
+* Fixed logic in time step control.
+
+* Fixed || and && operators for real vectors, these previously worked
+  only with scalar values.
+
+* Repaired a bug: only one named codeblock could be read from a file.
+
 
 -------------------------------------------------------------------------------
 wrspice-4.3.9  3/11/2019

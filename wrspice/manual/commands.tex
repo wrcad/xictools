@@ -2961,7 +2961,7 @@ mctrial
 \subsection{\spcmd{measure}}
 \index{measure command}
 
-% spCommands.hlp:measure 030119
+% spCommands.hlp:measure 060219
 
 The {\cb measure} command allows one to set up a runop (see
 \ref{runop}) which will identify a measurement point or interval, and
@@ -3059,18 +3059,23 @@ pointspec} elements are true, i.e., the conjunction is true.
 \end{description}
 
 The {\it pointspec} begins with one of the following kewords:  {\vt
-before}, {\vt at}, {\vt after}, {\vt when}.  Of these, {\vt at}, {\vt
-after}, and {\vt when} are equivalent aliases, but varied use can give
-a natural language feel to the conjuction list.  The {\vt before}
-keyword negates logic:  the {\it pointspec} is true before the
-specified event.  This can be useful as an element in the conjunction
-list.
+before}, {\vt at}, {\vt after}, {\vt when}.  The {\vt at} keyword
+strobes, meaning that the event is triggered only if the conjunctions
+(other {\it pointspecs}) in the list are true at the specified event. 
+The {\vt after} and {\vt when} keywords are equivalent, but varied use
+can give a natural language feel to the conjuction list.  They are not
+strobing, meaning that the conjunctions can become true anytime at or
+after the specified event.  The {\vt before} keyword negates logic: 
+the {\it pointspec} is true before the specified event.  This can be
+useful as an element in the conjunction list.
 
 Once a {\it pointspec} becomes triggered, it remains triggered for the
 remainder of the simulation run.  Once triggered, a {\vt before} {\it
 pointspec} will evaluate false, preventing the overall list from
 triggering.  Otherwise, the overall list triggers when each {\it
-pointspec} is true.
+pointspec} is true.  Similarly, an {\vt at} clause that did not have
+all conjunctions true at its event time will thereafter always be
+false.
 
 Following the keyword are one or two general expressions.  There can
 be an optional equal sign (``{\vt =}'') or a ``{\vt val}'' keyword
@@ -3155,13 +3160,23 @@ measure result name, the {\it delay} is the amount of the scale value
 to wait before checking to see if the expression evaluates true.  If
 the expression is a measurement name, than the delay is added to the
 measurement time of the referenced measurement.
-\end{description}
 
 There is a special case, where no expressions are given, only a {\vt
 td=}{\it delay} value.  This can be a second or subsequent {\it
 pointspec} in the {\it pointlist}.  This will trigger at the time of
 the previous {\it pointspec} in the list (to the left) delayed by {\it
 delay}.
+
+\item{{\vt tr=}{\it delay}}\\
+This is similar to {\vt td}, however it is strobing.  In the two
+expression case, in addition to having the effect of {\vt td}, it will
+convert {\vt when} and {\vt after} clauses to work as {\vt at},
+requiring conjunctions to be true at the time of the event.  It simply
+acts as {\td td} for {\td at} and {\vt before}.
+
+In the single expression case, it requires that the expression and
+any conjunctions be true at the value given for {\vt ts}.
+\end{description}
 
 Examples:\\
 {\vt at v(2)=0.5 rise=3 td=0.2nS after td=0.1nS}\\
@@ -3845,7 +3860,7 @@ given, or one, if no number is given.
 \subsection{\spcmd{stop}}
 \index{stop command}
 
-% spCommands.hlp:stop 022819
+% spCommands.hlp:stop 060119
 
 The {\cb stop} command will add a stop point to the runop list.
 \begin{quote}
@@ -3870,8 +3885,6 @@ Note that this is a different implementation of the {\cb stop} command
 than found in {\WRspice}-4.3.8 and earlier, which was based on the
 Berkeley Spice3 implementation.  Although similar, the present syntax
 is a little different, and the command has more features and options. 
-It does basically duplicate the effect of the {\cb measure} command
-with the {\vt stop} clause.
 
 \begin{description}
 \item{\it analysis}\\
@@ -3917,6 +3930,13 @@ occurred.  If the script returns 2, a global error is indicated and
 the present analysis is terminated.  If any other value is returned,
 or there is no explicit return, the analysis will stop as normal, and
 can be resumed.
+
+\item{\vt silent}\\
+Normally when the stop is activated a message is printed.  If the {\vt
+silent} keyword is given, no message will be printed.  Suppressing the
+message may be desirable when the stop is being used to terminate
+failed Monte Carlo trials, for example, where message output simply
+clutters the screen.
 \end{description}
 
 If a {\cb stop} command is given at the prompt in interactive mode, it
@@ -5690,7 +5710,7 @@ no arguments.
 \subsection{\spcmd{rusage}}
 \index{rusage command}
 
-% spRusage.hlp:rusage 082315
+% spRusage.hlp:rusage 060219
 
 The {\cb rusage} command is used to obtain information about the
 consumption of system resources and other statistics during the
@@ -5707,6 +5727,10 @@ recognized keywords are listed below.
 The {\cb stats} command is almost identical to {\cb rusage}, and
 accepts the same keywords.  The difference is that {\cb stats} given
 without arguments will print all run statistics.
+
+In release 4.3.10 and later, statistics accumulate in Monte Carlo,
+operating range, and sweep operations.  This was not the case in
+earlier releases.
 
 \begin{description}
 \item{\vt accept}\\
@@ -5797,6 +5821,10 @@ transient analysis.
 \index{rusage command!reordertime}
 Print the time spent reordering the matrix for numerical stability in
 the most recent simulation.
+
+\item{runs}\\
+In Monte Carlo, operating range, and sweep analysis, this returns    
+the number of trial runs over which statistics have accumulated.
 
 \item{\vt solvetime}\\
 \index{rusage command!solvetime}

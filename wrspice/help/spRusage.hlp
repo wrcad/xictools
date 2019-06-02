@@ -35,6 +35,7 @@ stats
 !!REDIRECT pagefaults   rusage#pagefaults
 !!REDIRECT rejected     rusage#rejected
 !!REDIRECT reordertime  rusage#reordertime
+!!REDIRECT runs         rusage#runs
 !!REDIRECT solvetime    rusage#solvetime
 !!REDIRECT space        rusage#space
 !!REDIRECT time         rusage#time
@@ -52,7 +53,7 @@ stats
 !!REDIRECT trantstime   rusage#trantstime
 !!REDIRECT volcxswitch  rusage#volcxswitch
 
-!! commands.tex 082315
+!! commands.tex 060219
 !!KEYWORD
 rusage
 !!TITLE
@@ -75,6 +76,11 @@ rusage command
     to <b>rusage</b>, and accepts the same keywords.  The difference
     is that <b>stats</b> given without arguments will print all
     run statistics.
+
+    <p>
+    In release 4.3.10 and later, statistics accumulate in Monte Carlo,
+    operating range, and sweep operations.  This was not the case in
+    earlier releases.
  
     <p>
     <a name="accept"></a>
@@ -202,6 +208,13 @@ rusage command
     <dt><tt>reordertime</tt><dd>
     Print the time spent reordering the matrix for numerical stability in
     the most recent simulation.
+    </dl>
+
+    <a name="runs"></a>
+    <dl>
+    <dt><tt>runs</tt><dd>
+    In Monte Carlo, operating range, and sweep analysis, this returns
+    the number of trial runs over which statistics have accumulated.
     </dl>
 
     <a name="solvetime"></a>

@@ -97,21 +97,34 @@ loop
 multidc
 marganal
 
-!! format.tex 051016
+!! format.tex 060219
 !!KEYWORD
 multidc
 !!TITLE
-Multi-DC Analysis
+Chained Sweep Analysis
 !!HTML
-    <i>WRspice</i> has an exclusive multi-dc analysis feature.  This
-    allows <a href=".ac">ac</a>, <a href=".noise">noise</a>, <a
+
+    <i>WRspice</i> has a swept analysis feature.  This allows <a
+    href=".ac">ac</a>, <a href=".noise">noise</a>, <a
     href=".tf">transfer function</a>, <a href=".sens">sensitivity</a>,
     and <a href=".tran">transient</a> analyses to have an additional
-    <a href=".dc">dc sweep</a> specification, resulting in the
-    analysis being performed at each dc operating point, producing a
+    one or two dimensional
+    <a href=".dc">sweep</a> specification, resulting in the analysis
+    being performed at each parameter value, producing a
     multidimensional output plot.
 
     <p>
+    The syntax is
+    <blockquote>
+    <i>analysis</i> [ <tt>dc</tt>|<tt>sweep</tt>
+      <i>pstr1 start1</i> [<i>stop1</i> [<i>incr1</i>]]
+      [<i>pstr2 start2</i> [<i>stop2</i> [<i>incr2</i>]]]
+    </blockquote>
+
+    The initiating keyword can be "<tt>dc</tt>" or "<tt>sweep</tt>", and is
+    followed by one or two parameter specifiers and ranges.  This is the
+    same syntax as accepted in the <i>WRspice</i> <tt>.dc</tt> line,
+    which is an extension of the traditional DC source sweep.
     In <i>WRspice</i>, any circuit parameter can be swept.  This is
     far more powerful than the original SPICE dc sweep, which only
     allowed sweeping of source outputs.
@@ -157,7 +170,7 @@ Multi-DC Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 050914
+!! format.tex 060219
 !!KEYWORD
 .ac
 !!TITLE
@@ -180,7 +193,7 @@ AC Small-Signal Analysis
     General form:
     <blockquote>
     <tt>.ac dec|oct|lin</tt> <i>np fstart fstop</i>
-     [<tt>dc</tt> <i>dc_args</i>]<br>
+     [<tt>dc</tt>|<tt>sweep</tt> <i>args</i>]<br>
     </blockquote>
 
     <p>
@@ -544,7 +557,7 @@ Small-Signal Distortion Analysis
 !!SEEALSO
 analyses
  
-!! format.tex 041315
+!! format.tex 060219
 !!KEYWORD
 .noise
 !!TITLE
@@ -582,7 +595,7 @@ Small-Signal Noise Analysis
     <tt>.noise</tt> <i>out</i>
      <i>src</i> <tt>dec|lin|oct</tt>
      <i>pts fstart fstop</i> [<i>summary_pts</i>]
-     [<tt>dc</tt> <i>dc_args</i>]
+     [<tt>dc</tt>|<tt>sweep</tt> <i>args</i>]
     </blockquote>
 
     <p>
@@ -995,7 +1008,7 @@ Pole-Zero Analysis
 !!SEEALSO
 analyses
  
-!! format.tex 041811
+!! format.tex 060219
 !!KEYWORD
 .sens
 !!TITLE
@@ -1005,7 +1018,7 @@ DC or Small-Signal AC Sensitivity Analysis
     <blockquote>
     <tt>.sens</tt> <i>outvar</i>
      [<tt>ac dec|oct|lin</tt> <i>np fstart fstop</i>]
-     [<tt>dc</tt> <i>dc_sweep</i>]
+     [<tt>dc</tt>|<tt>sweep</tt> <i>args</i>]
     </blockquote>
 
     <p>
@@ -1048,7 +1061,7 @@ DC or Small-Signal AC Sensitivity Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 041811
+!! format.tex 060219
 !!KEYWORD
 .tf
 !!TITLE
@@ -1058,7 +1071,7 @@ DC or Small-Signal AC Transfer Function Analysis
     <blockquote>
     <tt>.tf</tt> <i>outsrc</i> | v(<i>n1</i>[<tt>,</tt><i>n2</i>])
      <i>insrc</i> [<tt>ac dec|oct|lin</tt> <i>pts fstart fstop</i>]
-     [<tt>dc</tt> <i>dc_args</i>]<br>
+     [<tt>dc</tt>|<tt>sweep</tt> <i>args</i>]<br>
     </blockquote>
 
     <p>
@@ -1106,7 +1119,7 @@ DC or Small-Signal AC Transfer Function Analysis
 !!SEEALSO
 analyses
 
-!! format.tex 112114
+!! format.tex 060219
 !!KEYWORD
 .tran
 !!TITLE
@@ -1123,10 +1136,10 @@ Transient Analysis
     <p>
     General form:
     <blockquote>
-    <tt>.tran</tt> <i>tstep1 tstop1</i> [[start=]<i>tstart</i> [<i>tmax</i>]
+    <tt>.tran</tt> <i>tstep1 tstop1</i> [[<tt>start=</tt>]<i>tstart</i> [<i>tmax</i>]
      [<i>tstep2</i> <i>tstop2</i> ... <i>tstepN</i> <i>tstopN</i>]]
-     [<tt>uic</tt>] [<tt>scroll | segment</tt> <i>base delta</i>]
-     [dc</tt> <i>dc_args</i>]
+     [<tt>uic</tt>] [<tt>scroll</tt>|<tt>segment</tt> <i>base delta</i>]
+     [<tt>dc</tt>|<tt>sweep</tt> <i>args</i>]
     </blockquote>
 
     <p>

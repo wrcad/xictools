@@ -2081,7 +2081,7 @@ MOSFET Models
 !!SEEALSO
 .model
 
-!! elements.tex 030419
+!! elements.tex 060119
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -2093,11 +2093,6 @@ Josephson Models
     The <a href="jj">Josephson junction</a> model is an extended
     version of the RSJ model as used by <a
     href="jewett">Jewett</a>.
-
-    <p>
-    Unless stated otherwise, this information also applies to the
-    Verilog-A Josephson junction model provided with <i>WRspice</i> in
-    the Verilog-A examples.
 
     <p>
     The parameters marked with an asterisk in the <b>area</b> column
@@ -2116,6 +2111,9 @@ Josephson Models
     <tr><th>name</th> <th>area</th>
         <th>parameter</th>
         <th>units</th> <th>default</th></tr>
+    <tr><td><tt>level</tt></td> <td></td>
+        <td>model type</td>
+        <td>-</td>      <td>1</td></tr>
     <tr><td><tt>pijj</tt></td> <td></td>
         <td>pi junction</td>
         <td>-</td>      <td>0</td></tr>
@@ -2125,6 +2123,9 @@ Josephson Models
     <tr><td><tt>cct</tt></td> <td>&nbsp;</td>
         <td>critical current model</td>
         <td>-</td>      <td>1</td></tr>
+    <tr><td><tt>icon</tt></td> <td>&nbsp;</td>
+        <td>critical current first zero</td>
+        <td>A</td>      <td>1.0e-2</td></tr>
     <tr><td><tt>icrit</tt></td> <td>*</td>
         <td>reference junction critical current</td>
         <td>A</td>      <td>1.0e-3</td></tr>
@@ -2172,18 +2173,36 @@ Josephson Models
         <td>H/&#8486;</td>  <td>0.0</td></tr>
     <tr><td><tt>tsfactor</tt></td> <td>&nbsp;</td>
         <td>time step phase change limit</td>
-        <td>V</td>      <td><tt>dphimax</tt></td></tr>
-    <tr><td><tt>icon</tt></td> <td>&nbsp;</td>
-        <td>critical current first zero</td>
-        <td>A</td>      <td>1.0e-2</td></tr>
+        <td>V</td>      <td><tt>dphimax</tt>/2&pi;</td></tr>
+    <tr><td><tt>tsaccel</tt></td> <td>&nbsp;</td>
+        <td>time step accelerator</td>
+        <td>V</td>      <td><tt>1.0</tt></td></tr>
+    <tr><td><tt>vdpbak</tt></td> <td>&nbsp;</td>
+        <td>dropback voltage (read only)</td>
+        <td>V</td>      <td></td></tr>
     </table>
     <br>
 
     <p>
-    Detailed information about these parameters is presented below.
+    Detailed information about these parameters is presented below. 
+    Unless stated otherwise, this information also applies to the
+    Verilog-A Josephson junction model provided with <i>WRspice</i> in
+    the Verilog-A examples, and the microscopic model.
+
+    <dl>
+    <dt><tt>level</tt><dd>
+    This specifies the model to use.  There are three choices provided
+    in <i>WRspice</i>.  Level 1 (the default) in the internal RSJ
+    model, and level 2 indicates the Verilog-A example RSJ model,
+    which is available if it has been loaded.  The third choice is
+    level 3, which is an internal microscopic tunnel junction model,
+    based on the open-source MitMoJCo project on <a
+    href="https://github.com/drgulevich/mitmojco"><tt>github.com</tt></a>.
+    </dl>
 
     <dl>
     <dt><tt>pijj</tt><dd>
+    <b>Levels 1 and 2 only.</b><br>
     If this flag is given a nonzero integer value, the junctions will
     be modeled as a "pi junction" meaning that the zero-current phase
     is pi rather than zero.  Such devices have been fabricated using
@@ -2194,9 +2213,10 @@ Josephson Models
 
     <dl>
     <dt><tt>rtype</tt><dd>
+    <b>Levels 1 and 2 only.</b><br>
     The <tt>rtype</tt> parameter determines the quasiparticle branch
-    modeling employed.  Legal values are as follows:
-
+    modeling employed.  Legal values for level 1 are listed below,
+    only 0 and 1 are supported in level 2.
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><td>0</td><td>  The junction is completely unshunted, all shunt
@@ -2261,8 +2281,9 @@ Josephson Models
 
     <dl>
     <dt><tt>cct</tt><dd>
-    The <tt>cct</tt> parameter can take one of the
-    following values:
+    <b>Levels 1 and 2 only.</b><br>
+    The <tt>cct</tt> parameter can take one of the following values in
+    level 1, only 0 and 1 are supported in level 2.
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><td>0</td><td>  No critical current</td></tr>
@@ -2290,6 +2311,22 @@ Josephson Models
     +<tt>icon</tt>.  If <tt>cct</tt> is specified as 2, 3, or 4, the
     area parameter, if given, is set to unity.  Otherwise, the model
     parameters are scaled appropriately by the area before use.
+    </dl>
+
+    <dl>
+    <dt><tt>icon</tt><dd>
+    <b>range:</b> 1e-4 - 1.0<br>
+    <b>Level 1 only.</b><br>
+    This parameter applies when the <tt>cct</tt> parameter is set to one
+    of the choices larger the 1, where critical current modulation is
+    modeled.  The value of <tt>icon</tt> is the first value for (assumed)
+    full suppression of critical current.
+
+    <p>
+    The parameter is not currently recognized by the Verilog-A
+    Josephson junction model provided with <i>WRspice</i>, as that
+    model does not currently support values of <tt>cct</tt> larger
+    than 1.
     </dl>
 
     <dl>
@@ -2328,6 +2365,7 @@ Josephson Models
     <dl>
     <dt><tt>delv</tt><dd>
     <b>range:</b> 0.001*<tt>vgap</tt> - 0.2*<tt>vgap</tt><br>
+    <b>Levels 1 and 2 only.</b><br>
     This specifies the assumed width, in voltage, of the quasiparticle
     step region, or gap.  In this region, current increases sharply
     with increasing voltage.  The default value of 80uV is reasonable
@@ -2401,6 +2439,7 @@ Josephson Models
     <dl>
     <dt><tt>icrn</tt><dd>
     <b>range:</b> 1.5mV - 1.9mV<br>
+    <b>Levels 1 and 2 only.</b><br>
     This is the product of the reference junction "normal state"
     resistance and the critical current, where the normal state
     resistance is the differential resistance measured well above the
@@ -2415,6 +2454,7 @@ Josephson Models
     <dl>
     <dt><tt>rnorm</tt> or <tt>rn</tt><dd>
     <b>range:</b> 1.5mV/<tt>icrit</tt> - 1.9mV/<tt>icrit</tt><br>
+    <b>Levels 1 and 2 only.</b><br>
     The reference junction normal state resistance can be given
     explicitly with this parameter, which will override <tt>icrn</tt>
     if this is also given.
@@ -2490,27 +2530,56 @@ Josephson Models
     <dt><tt>tsfactor</tt><dd>
     <b>range:</b> 0.001 - 1.0<br>
     This is mainly for compatibility with the Verilog-A Josephson
-    junction model provided with <i>WRspice</i> in the
-    Verilog-A examples.  It has the same effect and range as the
-    <i>WRspice</i> <a href="dphimax"><tt>dphimax</tt></a> parameter,
-    and will override <tt>dphimax</tt> if given.  If not given,
-    <tt>dphimax</tt> will be used.  This is the maximum phase change
-    allowed between internal time points.
+    junction model provided with <i>WRspice</i> in the Verilog-A
+    examples.  This is equivalent to the <i>WRspice</i> <a
+    href="dphimax"><tt>dphimax</tt></a> parameter, but is normalized
+    to 2&pi;.  If not given, it defaults to <tt>dphimax</tt>/2&pi; in
+    <i>WRspice</i>, or 0.1 in the Verilog-A model not used in
+    <i>WRspice</i>.  This is the maximum phase change allowed between
+    internal time points.
     </dl>
 
     <dl>
-    <dt><tt>icon</tt><dd>
-    <b>range:</b> 1e-4 - 1.0<br>
-    This parameter applies when the <tt>cct</tt> parameter is set to one
-    of the choices larger the 1, where critical current modulation is
-    modeled.  The value of <tt>icon</tt> is the first value for (assumed)
-    full suppression of critical current.
+    <dt><tt>tsaccel</tt><dd>
+    <b>range:</b> 1.0 - 100.0<br>
+    Time step limiting is performed relative to the Josephson
+    frequency of the instantaneous absolute junction voltage or the
+    dropback voltage, whichever is larger.  The phase change is
+    limited by <tt>tsfactor</tt>, thus corresponding to a maximum time
+    step relative to the period of the frequency corresponding to the
+    voltage.  Note that in SFQ circuits, where the junctions are
+    critically damped, the junction voltage is unlikely to exceed the
+    dropback voltage, which is numerically equal to the critical
+    current times the shunt resistance (<tt>vshunt</tt>).  This
+    implies that the maximum time step is a fixed value by default.
 
     <p>
-    The parameter is not currently recognized by the Verilog-A
-    Josephson junction model provided with <i>WRspice</i>, as that
-    model does not currently support values of <tt>cct</tt> larger
-    than 1.
+    When simulating SFQ circuits, between SFQ pulses there is often
+    significant time where signals are quiescent and one could
+    probably take larger time steps, speeding simulation.  This
+    appears true to an extent, however one can see signs of
+    instability if steps are too large.
+
+    <p>
+    The <tt>tsaccel</tt> parameter is the ratio of the longest time
+    step allowed to that allowed at the dropback voltage.  In
+    computing the time step, the low voltage threshold is reduced to
+    the dropback voltage divided by <tt>tsaccel</tt>, so time steps
+    will be inversely proportional to voltages above this value.
+
+    <p>
+    Experimentation suggests that a value of 2.5 is a good choice for
+    RSFQ circuits, your results may vary.
+    </dl>
+
+    <dl>
+    <dt><tt>vdpbak</tt> (read only)<dd>
+    This parameter returns the computed value of the dropback voltage,
+    which is the voltage at which the return trace of a hysteretic
+    Josephson junction i-v curve snaps back to the zero-voltage state. 
+    If is also the voltage equivalent of the plasma resonance, and the
+    product of critical current and shunt resistance for critical
+    damping.
     </dl>
  
 !!SEEALSO

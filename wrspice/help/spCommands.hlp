@@ -3984,7 +3984,7 @@ mctrial command
 !!SEEALSO
 simcmds
 
-!! commands.tex 030119
+!! commands.tex 060219
 !!KEYWORD
 measure
 !!TITLE
@@ -4117,19 +4117,25 @@ measure command
 
     <p>
     The <i>pointspec</i> begins with one of the following kewords: 
-    <tt>before</tt>, <tt>at</tt>, <tt>after</tt>, <tt>when</tt>.  Of
-    these, <tt>at</tt>, <tt>after</tt>, and <tt>when</tt> are
-    equivalent aliases, but varied use can give a natural language
-    feel to the conjuction list.  The <tt>before</tt> keyword negates
-    logic:  the <i>pointspec</i> is true before the specified event.  This
-    can be useful as an element in the conjunction list.
+    <tt>before</tt>, <tt>at</tt>, <tt>after</tt>, <tt>when</tt>.  The
+    <tt>at</tt> keyword strobes, meaning that the event is triggered
+    only if the conjunctions (other <i>pointspecs</i>) in the list are
+    true at the specified event.  The <tt>after</tt> and <tt>when</tt>
+    keywords are equivalent, but varied use can give a natural
+    language feel to the conjuction list.  They are not strobing,
+    meaning that the conjunctions can become true anytime at or after
+    the specified event.  The <tt>before</tt> keyword negates logic: 
+    the <i>pointspec</i> is true before the specified event.  This can
+    be useful as an element in the conjunction list.
 
     <p>
     Once a <i>pointspec</i> becomes triggered, it remains triggered
     for the remainder of the simulation run.  Once triggered, a
     <tt>before</tt> <i>pointspec</i> will evaluate false, preventing
     the overall list from triggering.  Otherwise, the overall list
-    triggers when each <i>pointspec</i> is true.
+    triggers when each <i>pointspec</i> is true.  Similarly, an
+    <tt>at</tt> clause that did not have all conjunctions true at its
+    event time will thereafter always be false.
 
     <p>
     Following the keyword are one or two general expressions.  There
@@ -4226,7 +4232,6 @@ measure command
     value to wait before checking to see if the expression evaluates true.
     If the expression is a measurement name, than the delay is added to
     the measurement time of the referenced measurement.
-    </dl>
 
     <p>
     There is a special case, where no expressions are given, only a
@@ -4234,6 +4239,21 @@ measure command
     subsequent <i>pointspec</i> in the <i>pointlist</i>.  This will
     trigger at the time of the previous <i>pointspec</i> in the list
     (to the left) delayed by <i>delay</i>.
+    </dl>
+
+    <dl>
+    <dt><tt>ts=</tt><i>delay</i><dd>
+    This is similar to <tt>td</tt>, however it is strobing.  In the
+    two expression case, in addition to having the effect of
+    <tt>td</tt>, it will convert <tt>when</tt> and <tt>after</tt>
+    clauses to work as <tt>at</tt>, requiring conjunctions to be true
+    at the time of the event.  It simply acts as <tt>td</tt> for
+    <tt>at</tt> and <tt>before</tt>.
+
+    <p>
+    In the single expression case, it requires that the expression and
+    any conjunctions be true at the value given for <tt>ts</tt>.
+    </dl>
 
     <p>
     Examples:<br>
@@ -5072,7 +5092,7 @@ status
 delete
 simcmds
 
-!! commands.tex 022819
+!! commands.tex 060119
 !!KEYWORD
 stop
 !!TITLE
@@ -5105,8 +5125,7 @@ stop command
     command than found in <i>WRspice</i>-4.3.8 and earlier, which was
     based on the Berkeley Spice3 implementation.  Although similar,
     the present syntax is a little different, and the command has more
-    features and options.  It does basically duplicate the effect of
-    the <b>measure</b> command with the <tt>stop</tt> clause.
+    features and options.
 
     <dl>
     <dt><i>analysis</i><dd>
@@ -5160,6 +5179,14 @@ stop command
     indicated and the present analysis is terminated.  If any other
     value is returned, or there is no explicit return, the analysis
     will stop as normal, and can be resumed.
+    </dl>
+
+    <dt><tt>silent</tt><dd>
+    Normally when the stop is activated a message is printed.  If the
+    <tt>silent</tt> keyword is given, no message will be printed. 
+    Suppressing the message may be desirable when the stop is being
+    used to terminate failed Monte Carlo trials, for example, where
+    message output simply clutters the screen.
     </dl>
 
     <p>

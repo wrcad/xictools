@@ -1690,7 +1690,7 @@ The subcircuit/model cache can be manipulated with the {\WRspice}
 %------------------------------------------------------------------------------
 \section{Analysis Specification}
 
-% spAnalysis.hlp:analyses 092711
+% spAnalysis.hlp:analyses 060219
 
 \index{dc analysis, chained}
 {\WRspice} provides the analysis capabilities tabulated below. 
@@ -1733,17 +1733,33 @@ of the circuit.  The circuit is linearized at this point for AC/small
 signal analysis (including pole-zero, transfer function, and noise
 analysis).  It is the starting point for dc and transient analysis.
 
-% spAnalysis.hlp:multidc 051016
+%----------------------------------------------------
+\subsection{Chained Sweep Analysis}
+\index{chained analysis}
+\index{sweep analysis}
 
-{\WRspice} has an exclusive multi-dc analysis feature.  This allows
-ac, noise, transfer function, sensitivity, and transient analyses to
-have an additional dc sweep specification, resulting in the analysis
-being performed at each dc operating point, producing a
-multi-dimensional output plot.
- 
-In {\WRspice}, any circuit parameter can be swept.  This is far more
-powerful than the original SPICE dc sweep, which only allowed sweeping
-of source outputs.
+% spAnalysis.hlp:multidc 051016
+\newcommand{\swspec}{{{\it pstr1 start1\/} [{\it stop1\/} [{\it incr1\/}]]
+ [{\it pstr2 start2\/} [{\it stop2\/} [{\it incr2\/}]]]}}
+
+{\WRspice} has a swept analysis feature.  This allows ac, noise,
+transfer function, sensitivity, and transient analyses to have an
+additional one or two dimensional sweep specification, resulting in
+the analysis being performed at each parameter value, producing a
+multidimensional output plot.
+
+The syntax is
+\begin{quote}
+{\it analysis} {\vt dc}$|${\vt sweep} \swspec
+\end{quote}
+
+The initiating keyword can be ``{\vt dc}'' or ``{\vt sweep}'', and is
+followed by one or two parameter specifiers and ranges.  This is the
+same syntax as accepted in the {\WRspice} {\vt .dc} line, which is an
+extension of the traditional DC source sweep.  In {\WRspice}, any
+circuit parameter can be swept.  This is far more powerful than the
+original SPICE dc sweep, which only allowed sweeping of source
+outputs.
 
 For example, a regular SPICE dc sweep would have a form like:
 \spexampo{.ac dec 10 1Hz 1Khz dc v1 0 2 .1 v2 4.5 5.5 .25}
@@ -1775,9 +1791,6 @@ if the {\et loopthrds} variable is set to a positive value.  This can
 parallelize the runs on computers with multiple cores or CPUs,
 speeding evaluation.
 
-\newcommand{\dcspec}{{dc {\it pstr1 start1\/} [{\it stop1\/} [{\it incr1\/}]]
- [{\it pstr2 start2\/} [{\it stop2\/} [{\it incr2\/}]]]}}
-
 %----------------------------------------------------
 \subsection{{\vt .ac} Line}
 \index{.ac line}
@@ -1785,7 +1798,7 @@ speeding evaluation.
 \index{analysis!ac}
 \label{acline}
 
-% spAnalysis.hlp:.ac 050914
+% spAnalysis.hlp:.ac 060219
 
 The ac small-signal portion of {\WRspice} computes the ac output
 variables as a function of frequency.  The program first computes the
@@ -1799,7 +1812,7 @@ that input to unity and zero phase, so that output variables have the
 same value as the transfer function of the output variable with
 respect to the input.
 
-\spgen{.ac dec|oct|lin {\it np fstart fstop\/} [dc {\it dc\_args\/}]}
+\spgen{.ac dec|oct|lin {\it np fstart fstop\/} [dc$|$sweep {\it args\/}]}
 \spexamp{.ac dec 10 1 10k\\
 .ac dec 10 1k 100meg\\
 .ac lin 100 1 100hz dc vcc 10 15 5\\
@@ -1870,7 +1883,7 @@ device parameter (commonly a voltage or current source output) is
 stepped over a user-specified range and the dc output variables are
 stored for each sequential parameter value.
 
-\spgen{.\dcspec}
+\spgen{.dc \swspec}
 \spexamp{.dc vin 0.25 5.0 0.25\\
 .dc vds 0 10 .5 vgs 0 5 1\\
 .dc vce 0 10 .25 ib 0 10u 1u\\
@@ -2092,7 +2105,7 @@ included in the circuit.
 \index{analysis!noise}
 \label{noiseline}
 
-% spAnalysis.hlp:.noise 041315
+% spAnalysis.hlp:.noise 060219
 
 The noise analysis portion of {\WRspice} performs analysis of
 device-generated noise for the given circuit.  When provided with an
@@ -2118,7 +2131,7 @@ stationary Gaussian process.
 
 \spgen{.noise {\it out\/} {\it src\/}
  {\vt dec|oct|lin} {\it pts fstart fstop\/} [{\it
- summary\_pts\/}] [dc {\it dc\_args}]}
+ summary\_pts\/}] [dc$|$sweep {\it args}]}
 \spexamp{.noise v(5) vin dec 10 1khz 100mhz\\
 .noise v(5,3) v1 oct 8 1.0 1.0e6 1 dc vee -5 -3 1}
 
@@ -2453,10 +2466,10 @@ included in the circuit.
 \index{analysis!sensitivity}
 \label{sensline}
 
-% spAnalysis.hlp:.sens 041811
+% spAnalysis.hlp:.sens 060219
 
 \spgen{.sens {\it outvar} [ac dec|oct|lin {\it np fstart fstop\/}]
- [dc {\it dc\_args}]}
+ [dc$|$sweep {\it args}]}
 \spexamp{.sens v(1,out)\\
 .sens v(out) ac dec 10 100 100k\\
 .sens i(vtest)}
@@ -2491,11 +2504,11 @@ included in the circuit.
 \index{analysis!transfer function}
 \label{tfline}
 
-% spAnalysis.hlp:.tf 041811
+% spAnalysis.hlp:.tf 060219
 
 \spgen{.tf {\it outsrc} | v({\it n1\/}[,{\it n2\/}]) {\vt insrc}
  [ac dec|oct|lin {\it np fstart fstop\/}]
- [dc {\it dc\_args}]}
+ [dc$|$sweep {\it args}]}
 \spexamp{.tf v(5,3) vin\\
 .tf I(vload) vin ac dec 10 1 1e12\\
 .tf v(2) vin ac dec 10 1 1meg\\
@@ -2535,7 +2548,7 @@ included in the circuit.
 \index{analysis!transient}
 \label{tranline}
 
-% spAnalysis.hlp:.tran 112114
+% spAnalysis.hlp:.tran 060219
 
 The transient analysis portion of {\WRspice} computes the transient
 output variables as a function of time over a user-specified time
@@ -2546,7 +2559,7 @@ interval is specified on a {\vt .tran} control line.
 
 \spgen{.tran {\it tstep1 tstop1} [[start=]{\it tstart1} [{\it tmax\/}]]
  [{\it tstep2 tstop2} ... {\it tstepN tstopN\/}] [uic]\\
- \hspace*{5mm} [scroll | segment {\it base delta\/}] [dc {\it dc\_args}]}
+ \hspace*{5mm} [scroll | segment {\it base delta\/}] [dc$|$sweep {\it args}]}
 \spexamp{.tran 1ns 100ns\\
 .tran 1ns 1000ns 500ns\\
 .tran 10ns 1us uic}
