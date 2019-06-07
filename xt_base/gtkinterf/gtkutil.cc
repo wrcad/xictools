@@ -1979,7 +1979,7 @@ gtk_bag::PopUpEditString(GRobject caller, GRloc loc,
 //
 void
 gtk_bag::PopUpInput(const char *prompt_str, const char *initial_str,
-    const char *action_str, void(*action_callback)(const char*, void*),
+    const char *action_str, ESret(*action_callback)(const char*, void*),
     void *arg, int textwidth)
 {
     if (wb_input)

@@ -2136,9 +2136,9 @@ GTKfilePopup::fs_open_idle(void *arg)
 // true.  The idle function looks at the actual widget state and
 // responds accordingly.
 //
-bool
+int
 GTKfilePopup::fs_tree_select_proc(GtkTreeSelection*, GtkTreeModel*,
-    GtkTreePath*, bool, void *data)
+    GtkTreePath*, int, void *data)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(data);
     if (!fs)
@@ -2785,7 +2785,7 @@ GTKfilePopup::fs_files_timer(void *arg)
 // Private static callback.
 // Action for "New Folder".
 //
-void
+ESret
 GTKfilePopup::fs_new_cb(const char *string, void *arg)
 {
     fs_data *data = (fs_data*)arg;
@@ -2805,6 +2805,7 @@ GTKfilePopup::fs_new_cb(const char *string, void *arg)
     if (data->fs->wb_input)
         data->fs->wb_input->popdown();
     delete data;
+    return (ESTR_IGN);
 }
 
 
@@ -2832,7 +2833,7 @@ GTKfilePopup::fs_delete_cb(bool yesno, void *arg)
 // Private static callback.
 // Action for "Rename".
 //
-void
+ESret
 GTKfilePopup::fs_rename_cb(const char *string, void *arg)
 {
     fs_data *data = (fs_data*)arg;
@@ -2856,13 +2857,14 @@ GTKfilePopup::fs_rename_cb(const char *string, void *arg)
     if (data->fs->wb_input)
         data->fs->wb_input->popdown();
     delete data;
+    return (ESTR_IGN);
 }
 
 
 // Private static callback.
 // Action for "New Root".
 //
-void
+ESret
 GTKfilePopup::fs_root_cb(const char *rootin, void *fsp)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
@@ -2876,13 +2878,14 @@ GTKfilePopup::fs_root_cb(const char *rootin, void *fsp)
                 fs->wb_input->popdown();
         }
     }
+    return (ESTR_IGN);
 }
 
 
 // Private static callback.
 // Action for "New CWD".
 //
-void
+ESret
 GTKfilePopup::fs_cwd_cb(const char *wd, void *fsp)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
@@ -2908,6 +2911,7 @@ GTKfilePopup::fs_cwd_cb(const char *wd, void *fsp)
             }
         }
     }
+    return (ESTR_IGN);
 }
 
 

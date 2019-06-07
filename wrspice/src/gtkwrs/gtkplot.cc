@@ -145,9 +145,9 @@ private:
     static void b_recolor(GtkWidget*, void*);
     static void b_hardcopy(GtkWidget*, void*);
     static void b_save_plot(GtkWidget*, void*);
-    static void do_save_plot(const char*, void*);
+    static ESret do_save_plot(const char*, void*);
     static void b_save_print(GtkWidget*, void*);
-    static void do_save_print(const char*, void*);
+    static ESret do_save_print(const char*, void*);
     static void b_points(GtkWidget*, void*);
     static void b_logx(GtkWidget*, void*);
     static void b_logy(GtkWidget*, void*);
@@ -1227,18 +1227,18 @@ plot_bag::b_save_plot(GtkWidget*, void *client_data)
 
 
 // Static function.
-void
+ESret
 plot_bag::do_save_plot(const char *fnamein, void *client_data)
 {
     sGraph *graph = static_cast<sGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
-        return;
+        return (ESTR_IGN);
     if (filestat::check_file(fname, W_OK) == NOGO) {
         w->PopUpMessage(filestat::error_msg(), true);
         delete [] fname;
-        return;
+        return (ESTR_IGN);
     }
     wordlist wl;
     wl.wl_word = fname;
@@ -1251,6 +1251,7 @@ plot_bag::do_save_plot(const char *fnamein, void *client_data)
         w->wb_input->popdown();
     w->PopUpMessage("Operation completed.", false);
     delete [] fname;
+    return (ESTR_IGN);
 }
 
 
@@ -1266,18 +1267,18 @@ plot_bag::b_save_print(GtkWidget*, void *client_data)
 
 
 // Static function.
-void
+ESret
 plot_bag::do_save_print(const char *fnamein, void *client_data)
 {
     sGraph *graph = static_cast<sGraph*>(client_data);
     plot_bag *w = dynamic_cast<plot_bag*>(graph->dev());
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
-        return;
+        return (ESTR_IGN);
     if (filestat::check_file(fname, W_OK) == NOGO) {
         w->PopUpMessage(filestat::error_msg(), true);
         delete [] fname;
-        return;
+        return (ESTR_IGN);
     }
     FILE *fp = fopen(fname, "w");
     if (fp) {
@@ -1292,6 +1293,7 @@ plot_bag::do_save_print(const char *fnamein, void *client_data)
     if (fp)
         w->PopUpMessage("Plot saved to file as print data.", false);
     delete [] fname;
+    return (ESTR_IGN);
 }
 
 

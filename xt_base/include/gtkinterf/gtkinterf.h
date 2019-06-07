@@ -541,7 +541,7 @@ namespace gtkinterf {
             const char*, ESret(*)(const char*, void*), void*, int,
             void(*)(bool), bool = false, const char* = 0);
         void PopUpInput(const char*, const char*, const char*,
-            void(*)(const char*, void*), void*, int = 0);
+            ESret(*)(const char*, void*), void*, int = 0);
         GRmsgPopup *PopUpMessage(const char*, bool, bool = false,
             bool = false, GRloc = GRloc());
         int PopUpWarn(ShowMode, const char*, STYtype = STY_NORM,

@@ -2008,7 +2008,7 @@ public:
     sFtCirc *CKTbackPtr;    // backpointer to container
     sCKTtable *CKTtableHead; // head of table list
     sSTATS *CKTstat;        // STATistics
-    double *(CKTstates[8]); // state vectors
+    double *CKTstates[8];   // state vectors
 
     double *CKTtemps;       // list of temperatures from .TEMP
 

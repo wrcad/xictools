@@ -97,8 +97,8 @@ namespace gtkinterf {
         static void fs_quit_proc(GtkWidget*, void*);
         static int fs_focus_hdlr(GtkWidget*, GdkEvent*, void*);
         static int fs_open_idle(void*);
-        static bool fs_tree_select_proc(GtkTreeSelection*, GtkTreeModel*,
-            GtkTreePath*, bool, void*);
+        static int fs_tree_select_proc(GtkTreeSelection*, GtkTreeModel*,
+            GtkTreePath*, int, void*);
         static int fs_sel_test_idle(void*);
         static int fs_tree_collapse_proc(GtkTreeView*, GtkTreeIter*,
             GtkTreePath*, void*);
@@ -134,11 +134,11 @@ namespace gtkinterf {
 
         // Misc. callbacks.
         static int fs_files_timer(void*);
-        static void fs_new_cb(const char*, void*);
+        static ESret fs_new_cb(const char*, void*);
         static void fs_delete_cb(bool, void*);
-        static void fs_rename_cb(const char*, void*);
-        static void fs_root_cb(const char*, void*);
-        static void fs_cwd_cb(const char*, void*);
+        static ESret fs_rename_cb(const char*, void*);
+        static ESret fs_root_cb(const char*, void*);
+        static ESret fs_cwd_cb(const char*, void*);
 
         // Misc. functions
         static char *fs_make_dir(const char*, const char*);

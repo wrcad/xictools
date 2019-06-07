@@ -280,7 +280,7 @@ struct sGrInit;
 //
 struct sGraph
 {
-    sGraph() { memset(this, 0, sizeof(sGraph)); }
+    sGraph() { memset((void*)this, 0, sizeof(sGraph)); }
     // No destructor, don't explicitly delete, gr_reset deallocates.
 
     // graphics package

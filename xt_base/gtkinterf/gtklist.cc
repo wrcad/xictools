@@ -418,9 +418,9 @@ GTKlistPopup::ls_apply_proc(GtkWidget*, void *client_data)
 // Private static GTK signal handler.
 // List selection callback.
 //
-bool
+int
 GTKlistPopup::ls_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-    GtkTreePath *path, bool issel, void *data)
+    GtkTreePath *path, int issel, void *data)
 {
     GTKlistPopup *list = static_cast<GTKlistPopup*>(data);
     if (!list)
@@ -446,7 +446,7 @@ GTKlistPopup::ls_selection_proc(GtkTreeSelection*, GtkTreeModel*,
 // like this one.  We set a flag to lock out selection changes in this
 // case.
 //
-bool
+int
 GTKlistPopup::ls_focus_proc(GtkWidget*, GdkEvent*, void *data)
 {
     GTKlistPopup *list = static_cast<GTKlistPopup*>(data);

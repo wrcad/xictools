@@ -2446,7 +2446,7 @@ GTKtoolbar::open_proc(GtkWidget*, void*, unsigned)
 namespace {
     // Source circuit, passed to pop-up.
     //
-    void
+    ESret
     source_cb(const char *fname, void*)
     {
         if (fname && *fname) {
@@ -2459,6 +2459,7 @@ namespace {
             if (TB()->context->ActiveInput())
                 TB()->context->ActiveInput()->popdown();
         }
+        return (ESTR_IGN);
     }
 }
        
@@ -2484,7 +2485,7 @@ GTKtoolbar::source_proc(GtkWidget*, void*, unsigned)
 namespace {
     // Load rawfile, passed to pop-up.
     //
-    void
+    ESret
     load_cb(const char *fname, void*)
     {
         if (fname && *fname) {
@@ -2497,6 +2498,7 @@ namespace {
             if (TB()->context->ActiveInput())
                 TB()->context->ActiveInput()->popdown();
         }
+        return (ESTR_IGN);
     }
 }
        

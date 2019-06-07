@@ -1372,8 +1372,10 @@ namespace {
 #endif
     }
 
-
-#define SIG_HDLR (void(*)(int))IFsimulator::SigHdlr
+#ifdef HAVE_SIGACTION
+#else
+#define SIG_HDLR IFsimulator::SigHdlr
+#endif
 
     // When in interactive mode and the rdline interface is active,
     // the terminal can be left in a fouled up state if the program
@@ -1386,7 +1388,7 @@ namespace {
         struct sigaction sa; 
         sigemptyset(&sa.sa_mask);
         sa.sa_flags = 0;
-        sa.sa_handler = SIG_HDLR;
+        sa.sa_sigaction = (sighdlr)IFsimulator::SigHdlr;
 
         sigaction(SIGINT, &sa, 0);
 #ifdef SIGTSTP
@@ -2320,7 +2322,7 @@ IFsimulator::SigHdlr(int sig)
     struct sigaction sa; 
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;
-    sa.sa_handler = SIG_HDLR;
+    sa.sa_sigaction = (sighdlr)IFsimulator::SigHdlr;
 
     // This should put the address of a faulting line in DeathAddr.
     //

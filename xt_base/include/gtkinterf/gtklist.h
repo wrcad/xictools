@@ -71,9 +71,9 @@ namespace gtkinterf {
         // GTK signal handlers
         static void ls_quit_proc(GtkWidget*, void*);
         static void ls_apply_proc(GtkWidget*, void*);
-        static bool ls_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-            GtkTreePath*, bool, void*);
-        static bool ls_focus_proc(GtkWidget*, GdkEvent*, void*);
+        static int ls_selection_proc(GtkTreeSelection*, GtkTreeModel*,
+            GtkTreePath*, int, void*);
+        static int ls_focus_proc(GtkWidget*, GdkEvent*, void*);
 
         GtkWidget *ls_list;         // list widget
         GdkPixbuf *ls_open_pb;      // GRonecolPx pixmaps

@@ -1559,15 +1559,15 @@ namespace {
 // Private static callback.
 // Callback from the input popup to attach a file to a mail message.
 //
-void
+ESret
 GTKeditPopup::ed_do_attach_proc(const char *fnamein, void *client_data)
 {
     GTKeditPopup *w = static_cast<GTKeditPopup*>(client_data);
     if (!w)
-        return;
+        return (ESTR_IGN);
     char *fname = pathlist::expand_path(fnamein, false, true);
     if (!fname)
-        return;
+        return (ESTR_IGN);
     check_t which = filestat::check_file(fname, R_OK);
     if (which != READ_OK) {
         char tbuf[256];
@@ -1576,7 +1576,7 @@ GTKeditPopup::ed_do_attach_proc(const char *fnamein, void *client_data)
         sprintf(tbuf, "Can't open %s!", fname);
         gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
         delete [] fname;
-        return;
+        return (ESTR_IGN);
     }
     GtkWidget *item = gtk_menu_item_new();
     gtk_widget_show(item);
@@ -1613,6 +1613,7 @@ GTKeditPopup::ed_do_attach_proc(const char *fnamein, void *client_data)
     delete [] fname;
     if (w->wb_input)
         w->wb_input->popdown();
+    return (ESTR_IGN);
 }
 
 
@@ -1660,18 +1661,18 @@ namespace {
 // Callback passed to PopUpInput() to actually save the file.
 // If a block is selected, only the block is saved in the new file.
 //
-void
+ESret
 GTKeditPopup::ed_do_saveas_proc(const char *fnamein, void *client_data)
 {
     GTKeditPopup *w = static_cast<GTKeditPopup*>(client_data);
     if (w) {
         char *fname = pathlist::expand_path(fnamein, false, true);
         if (!fname)
-            return;
+            return (ESTR_IGN);
         if (filestat::check_file(fname, W_OK) == NOGO) {
             w->PopUpMessage(filestat::error_msg(), true);
             delete [] fname;
-            return;
+            return (ESTR_IGN);
         }
         const char *mesg;
         int start, end;
@@ -1683,12 +1684,12 @@ GTKeditPopup::ed_do_saveas_proc(const char *fnamein, void *client_data)
                 if (!w->ed_text_changed) {
                     gtk_label_set_text(GTK_LABEL(w->ed_msg), "No save needed");
                     delete [] fname;
-                    return;
+                    return (ESTR_IGN);
                 }
                 if (!w->write_file(fname, 0 , -1)) {
                     w->PopUpMessage("Write error, text not saved", true);
                     delete [] fname;
-                    return;
+                    return (ESTR_IGN);
                 }
                 if (w->ed_saved_as) {
                     delete [] w->ed_saved_as;
@@ -1704,7 +1705,7 @@ GTKeditPopup::ed_do_saveas_proc(const char *fnamein, void *client_data)
                 if (!w->write_file(fname, 0 , -1)) {
                     w->PopUpMessage("Write error, text not saved", true);
                     delete [] fname;
-                    return;
+                    return (ESTR_IGN);
                 }
                 if (w->ed_saved_as)
                     delete [] w->ed_saved_as;
@@ -1718,7 +1719,7 @@ GTKeditPopup::ed_do_saveas_proc(const char *fnamein, void *client_data)
             if (!w->write_file(fname, start, end)) {
                 w->PopUpMessage("Unknown error, block not saved", true);
                 delete [] fname;
-                return;
+                return (ESTR_IGN);
             }
             mesg = "Block saved";
         }
@@ -1727,6 +1728,7 @@ GTKeditPopup::ed_do_saveas_proc(const char *fnamein, void *client_data)
         gtk_label_set_text(GTK_LABEL(w->ed_msg), mesg);
         delete [] fname;
     }
+    return (ESTR_IGN);
 }
 
 
@@ -1734,19 +1736,19 @@ GTKeditPopup::ed_do_saveas_proc(const char *fnamein, void *client_data)
 // Callback passed to PopUpInput() to actually read in the new file
 // to edit.
 //
-void
+ESret
 GTKeditPopup::ed_do_load_proc(const char *fnamein, void *client_data)
 {
     GTKeditPopup *w = static_cast<GTKeditPopup*>(client_data);
     if (w) {
         char *fname = pathlist::expand_path(fnamein, false, true);
         if (!fname)
-            return;
+            return (ESTR_IGN);
         check_t which = filestat::check_file(fname, R_OK);
         if (which == NOGO) {
             w->PopUpMessage(filestat::error_msg(), true);
             delete [] fname;
-            return;
+            return (ESTR_IGN);
         }
         w->ed_in_undo = true;
         text_set_editable(w->wb_textarea, false);
@@ -1764,7 +1766,7 @@ GTKeditPopup::ed_do_load_proc(const char *fnamein, void *client_data)
             sprintf(tbuf, "Can't open %s!", fname);
             gtk_label_set_text(GTK_LABEL(w->ed_msg), tbuf);
             delete [] fname;
-            return;
+            return (ESTR_IGN);
         }
 
         histlist::destroy(w->ed_undo_list);
@@ -1787,6 +1789,7 @@ GTKeditPopup::ed_do_load_proc(const char *fnamein, void *client_data)
         }
         delete [] fname;
     }
+    return (ESTR_IGN);
 }
 
 
@@ -1794,19 +1797,19 @@ GTKeditPopup::ed_do_load_proc(const char *fnamein, void *client_data)
 // Callback passed to PopUpInput() to read in the file starting at
 // the current cursor position.
 //
-void
+ESret
 GTKeditPopup::ed_do_read_proc(const char *fnamein, void *client_data)
 {
     GTKeditPopup *w = static_cast<GTKeditPopup*>(client_data);
     if (w) {
         char *fname = pathlist::expand_path(fnamein, false, true);
         if (!fname)
-            return;
+            return (ESTR_IGN);
         check_t which = filestat::check_file(fname, R_OK);
         if (which == NOGO) {
             w->PopUpMessage(filestat::error_msg(), true);
             delete [] fname;
-            return;
+            return (ESTR_IGN);
         }
         text_set_editable(w->wb_textarea, false);
         int pos = text_get_insertion_point(w->wb_textarea);
@@ -1831,6 +1834,7 @@ GTKeditPopup::ed_do_read_proc(const char *fnamein, void *client_data)
             w->wb_input->popdown();
         delete [] fname;
     }
+    return (ESTR_IGN);
 }
 
 

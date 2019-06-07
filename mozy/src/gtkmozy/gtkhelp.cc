@@ -1827,7 +1827,7 @@ GTKhelpPopup::h_menu_hdlr(GtkWidget *caller, void *hlpptr, unsigned activate)
             return;
         }
         GRloc loc(LW_XYR, 100 + ix*20, 100 + ix*20);
-        w->h_fsels[ix] = w->PopUpFileSelector(fsSEL, loc, h_open_cb, 0, w, 0);
+        w->h_fsels[ix] = w->PopUpFileSelector(fsSEL, loc, h_open_cbv, 0, w, 0);
         if (w->h_fsels[ix])
             w->h_fsels[ix]->register_usrptr((void**)&w->h_fsels[ix]);
     }
@@ -2144,13 +2144,13 @@ GTKhelpPopup::h_list_cb(const char *string, void *arg)
 // Callback for the "Open" and "Open File" menu commands, opens a new
 // keyword or file.
 //
-void
+ESret
 GTKhelpPopup::h_open_cb(const char *name, void *hlpptr)
 {
     if (name) {
         GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);
         if (!w)
-            return;
+            return (ESTR_IGN);
         while (isspace(*name))
             name++;
         if (*name) {
@@ -2184,6 +2184,15 @@ GTKhelpPopup::h_open_cb(const char *name, void *hlpptr)
             }
         }
     }
+    return (ESTR_IGN);
+}
+
+
+// Static function.
+void
+GTKhelpPopup::h_open_cbv(const char *name, void *hlpptr)
+{
+    h_open_cb(name, hlpptr);
 }
 
 
@@ -2191,7 +2200,7 @@ GTKhelpPopup::h_open_cb(const char *name, void *hlpptr)
 // Callback passed to PopUpInput to actually perform a database keyword
 // search.
 //
-void
+ESret
 GTKhelpPopup::h_do_search_proc(const char *target, void *hlpptr)
 {
     GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);
@@ -2203,6 +2212,7 @@ GTKhelpPopup::h_do_search_proc(const char *target, void *hlpptr)
         if (w->wb_input)
             w->wb_input->popdown();
     }
+    return (ESTR_IGN);
 }
 
 
@@ -2214,12 +2224,12 @@ GTKhelpPopup::h_do_search_proc(const char *target, void *hlpptr)
 // should not be given.  An explicit port number must be provided by
 // either means.
 //
-void
+ESret
 GTKhelpPopup::h_proxy_proc(const char *str, void *hlpptr)
 {
     GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);
     if (!w || !str)
-        return;
+        return (ESTR_IGN);
     char buf[256];
     char *addr = lstring::getqtok(&str);
 
@@ -2255,14 +2265,14 @@ GTKhelpPopup::h_proxy_proc(const char *str, void *hlpptr)
         delete [] addr;
         if (w->wb_input)
             w->wb_input->popdown();
-        return;
+        return (ESTR_IGN);
     }
     if (!lstring::prefix("http:", addr)) {
         w->PopUpMessage("Error: \"http:\" prefix required in address.", true);
         delete [] addr;
         if (w->wb_input)
             w->wb_input->popdown();
-        return;
+        return (ESTR_IGN);
     }
 
     bool a_has_port = false;
@@ -2291,7 +2301,7 @@ GTKhelpPopup::h_proxy_proc(const char *str, void *hlpptr)
                 delete [] port;
                 if (w->wb_input)
                     w->wb_input->popdown();
-                return;
+                return (ESTR_IGN);
             }
         }
     }
@@ -2313,6 +2323,7 @@ GTKhelpPopup::h_proxy_proc(const char *str, void *hlpptr)
     delete [] port;
     if (w->wb_input)
         w->wb_input->popdown();
+    return (ESTR_IGN);
 }
 
 
@@ -2334,18 +2345,18 @@ GTKhelpPopup::h_find_text_proc(const char *target, bool up, bool case_insens,
 // Static function.
 // Callback passed to PopUpInput to actually save the text in a file.
 //
-void
+ESret
 GTKhelpPopup::h_do_save_proc(const char *fnamein, void *hlpptr)
 {
     GTKhelpPopup *w = static_cast<GTKhelpPopup*>(hlpptr);
     if (w) {
         char *fname = pathlist::expand_path(fnamein, false, true);
         if (!fname)
-            return;
+            return (ESTR_IGN);
         if (filestat::check_file(fname, W_OK) == NOGO) {
             w->PopUpMessage(filestat::error_msg(), true);
             delete [] fname;
-            return;
+            return (ESTR_IGN);
         }
 
         FILE *fp = fopen(fname, "w");
@@ -2356,7 +2367,7 @@ GTKhelpPopup::h_do_save_proc(const char *fnamein, void *hlpptr)
             sprintf(tbuf, "Error: can't open file %s", fname);
             w->PopUpMessage(tbuf, true);
             delete [] fname;
-            return;
+            return (ESTR_IGN);
         }
         char *tptr = w->h_viewer->get_plain_text();
         const char *mesg;
@@ -2366,7 +2377,7 @@ GTKhelpPopup::h_do_save_proc(const char *fnamein, void *hlpptr)
                 delete [] tptr;
                 fclose(fp);
                 delete [] fname;
-                return;
+                return (ESTR_IGN);
             }
             delete [] tptr;
             mesg = "Text saved";
@@ -2380,6 +2391,7 @@ GTKhelpPopup::h_do_save_proc(const char *fnamein, void *hlpptr)
         w->PopUpMessage(mesg, false);
         delete [] fname;
     }
+    return (ESTR_IGN);
 }
 
 

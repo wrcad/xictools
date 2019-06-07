@@ -340,11 +340,11 @@ sDataVec::alloc(bool real, int size)
     if (size) {
         if (real) {
             v_data.real = new double[size];
-            memset(v_data.real, 0, size*sizeof(double));
+            memset((void*)v_data.real, 0, size*sizeof(double));
         }
         else {
             v_data.comp = new complex[size];
-            memset(v_data.comp, 0, size*sizeof(complex));
+            memset((void*)v_data.comp, 0, size*sizeof(complex));
         }
     }
     v_rlength = size;
@@ -369,8 +369,10 @@ sDataVec::resize(int newsize)
         complex *oldv = v_data.comp;
         v_data.comp = new complex[newsize];
         memcpy(v_data.comp, oldv, sz*sizeof(complex));
-        if (sz < newsize)
-            memset(v_data.comp + sz, 0, (newsize - sz)*sizeof(complex));
+        if (sz < newsize) {
+            memset((void*)(v_data.comp + sz), 0,
+                (newsize - sz)*sizeof(complex));
+        }
         delete [] oldv;
     }
     v_rlength = newsize;
