@@ -134,11 +134,11 @@ namespace gtkinterf {
 
         // Misc. callbacks.
         static int fs_files_timer(void*);
-        static ESret fs_new_cb(const char*, void*);
+        static void fs_new_cb(const char*, void*);
         static void fs_delete_cb(bool, void*);
-        static ESret fs_rename_cb(const char*, void*);
-        static ESret fs_root_cb(const char*, void*);
-        static ESret fs_cwd_cb(const char*, void*);
+        static void fs_rename_cb(const char*, void*);
+        static void fs_root_cb(const char*, void*);
+        static void fs_cwd_cb(const char*, void*);
 
         // Misc. functions
         static char *fs_make_dir(const char*, const char*);

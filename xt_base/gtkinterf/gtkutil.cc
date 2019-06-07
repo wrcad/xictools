@@ -907,6 +907,7 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
 {
     p_parent = owner;
     p_cb_arg = arg;
+    pw_vcallback = 0;
     pw_yes = 0;
     pw_label = 0;
     pw_text = 0;
@@ -1145,10 +1146,10 @@ GTKledPopup::button_hdlr(GtkWidget *widget)
         // We were created from PopUpInput.  Don't pop down after
         // action (ignore return).
         if (widget == pw_yes) {
-            if (p_callback) {
+            if (pw_vcallback) {
                 char *string = gtk_editable_get_chars(GTK_EDITABLE(pw_text),
                     0, -1);
-                (*p_callback)(string, p_cb_arg);
+                (*pw_vcallback)(string, p_cb_arg);
                 free(string);
             }
         }
@@ -1813,8 +1814,7 @@ GTKtextPopup::pw_btn_hdlr(GtkWidget *widget, void *arg)
         txtp->pw_save_pop = new GTKledPopup(0,
             "Enter path to file for saved text:", "", 200, false, 0, arg);
         txtp->pw_save_pop->register_caller(widget, false, true);
-        txtp->pw_save_pop->register_callback(
-            (GRledPopup::GRledCallback)&txtp->pw_save_cb);
+        txtp->pw_save_pop->register_callback(&txtp->pw_save_cb);
         txtp->pw_save_pop->register_usrptr((void**)&txtp->pw_save_pop);
 
         gtk_window_set_transient_for(GTK_WINDOW(txtp->pw_save_pop->pw_shell),
@@ -1955,7 +1955,7 @@ gtk_bag::PopUpEditString(GRobject caller, GRloc loc,
     GTKledPopup *p = new GTKledPopup(this, prompt_str, init_str, textwidth,
         multiline, btnstr, action_arg);
     p->register_caller(caller, false, true);
-    p->register_callback((GRledPopup::GRledCallback)action_callback);
+    p->register_callback(action_callback);
     p->register_quit_callback(downproc);
 
     gtk_window_set_transient_for(GTK_WINDOW(p->pw_shell),
@@ -1979,7 +1979,7 @@ gtk_bag::PopUpEditString(GRobject caller, GRloc loc,
 //
 void
 gtk_bag::PopUpInput(const char *prompt_str, const char *initial_str,
-    const char *action_str, ESret(*action_callback)(const char*, void*),
+    const char *action_str, void(*action_callback)(const char*, void*),
     void *arg, int textwidth)
 {
     if (wb_input)
@@ -1989,11 +1989,7 @@ gtk_bag::PopUpInput(const char *prompt_str, const char *initial_str,
         false, action_str, arg);
     wb_input = p;
 
-    p->register_callback((GRledPopup::GRledCallback)action_callback);
-
-    // Flag to indicate that p was created in PopUpInput, which modifies
-    // action logic and causes p to be explicitly deleted.
-    p->set_ignore_return();
+    p->register_void_callback(action_callback);
 
     gtk_window_set_transient_for(GTK_WINDOW(p->pw_shell),
         GTK_WINDOW(wb_shell));

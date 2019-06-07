@@ -150,13 +150,20 @@ namespace gtkinterf {
                 else
                     gtk_widget_hide(pw_shell);
             }
+
+        // Set alternative handler for PopUpInput, and set that mode.
+        void register_void_callback(void(*cb)(const char*, void*))
+            {
+                pw_vcallback = cb;
+                pw_ign_ret = true;
+            }
+
         void register_caller(GRobject, bool = false, bool = false);
         void popdown();
 
         // GRledPopup overrides
         void update(const char*, const char*);
 
-        void set_ignore_return()    { pw_ign_ret = true; }
         void set_no_drops(bool set) { pw_no_drops = set; }
         bool no_drops()             { return (pw_no_drops); }
 
@@ -170,6 +177,7 @@ namespace gtkinterf {
             gint, gint, GtkSelectionData*, guint, guint);
         static int pw_attach_idle_proc(void*);
 
+        void(*pw_vcallback)(const char*, void*);
         GtkWidget *pw_yes;
         GtkWidget *pw_label;
         GtkWidget *pw_text;

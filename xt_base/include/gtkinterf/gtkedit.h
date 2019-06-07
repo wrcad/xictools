@@ -161,11 +161,11 @@ namespace gtkinterf {
             GtkTextIter*, void*);
 
         // dialog callbacks
-        static ESret ed_do_attach_proc(const char*, void*);
+        static void ed_do_attach_proc(const char*, void*);
         static void ed_fsel_callback(const char*, void*);
-        static ESret ed_do_saveas_proc(const char*, void*);
-        static ESret ed_do_load_proc(const char*, void*);
-        static ESret ed_do_read_proc(const char*, void*);
+        static void ed_do_saveas_proc(const char*, void*);
+        static void ed_do_load_proc(const char*, void*);
+        static void ed_do_read_proc(const char*, void*);
         static void ed_set_sens(gtk_bag*, bool, int);
 
         GtkWidget *ed_title;

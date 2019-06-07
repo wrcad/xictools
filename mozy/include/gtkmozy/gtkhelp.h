@@ -157,12 +157,11 @@ namespace gtkinterf {
 
         // dialog callbacks
         static void h_list_cb(const char*, void*);
-        static ESret h_open_cb(const char*, void*);
-        static void h_open_cbv(const char*, void*);
-        static ESret h_do_search_proc(const char*, void*);
-        static ESret h_proxy_proc(const char*, void*);
+        static void h_open_cb(const char*, void*);
+        static void h_do_search_proc(const char*, void*);
+        static void h_proxy_proc(const char*, void*);
         static bool h_find_text_proc(const char*, bool, bool, void*);
-        static ESret h_do_save_proc(const char*, void*);
+        static void h_do_save_proc(const char*, void*);
 
         // misc
         static void h_sens_set(gtk_bag*, bool, int);

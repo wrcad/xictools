@@ -1506,7 +1506,7 @@ namespace ginterf
             const char*, const char*, ESret(*)(const char *, void*),
             void*, int, void(*)(bool), bool = false, const char* = 0)   = 0;
         virtual void PopUpInput(const char*, const char*,
-            const char*, ESret(*)(const char*, void*), void*, int = 0)  = 0;
+            const char*, void(*)(const char*, void*), void*, int = 0)   = 0;
         virtual GRmsgPopup *PopUpMessage(const char*, bool,
             bool = false, bool = false, GRloc = GRloc())                = 0;
         virtual int PopUpWarn(ShowMode, const char*,

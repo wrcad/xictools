@@ -2785,7 +2785,7 @@ GTKfilePopup::fs_files_timer(void *arg)
 // Private static callback.
 // Action for "New Folder".
 //
-ESret
+void
 GTKfilePopup::fs_new_cb(const char *string, void *arg)
 {
     fs_data *data = (fs_data*)arg;
@@ -2805,7 +2805,6 @@ GTKfilePopup::fs_new_cb(const char *string, void *arg)
     if (data->fs->wb_input)
         data->fs->wb_input->popdown();
     delete data;
-    return (ESTR_IGN);
 }
 
 
@@ -2833,7 +2832,7 @@ GTKfilePopup::fs_delete_cb(bool yesno, void *arg)
 // Private static callback.
 // Action for "Rename".
 //
-ESret
+void
 GTKfilePopup::fs_rename_cb(const char *string, void *arg)
 {
     fs_data *data = (fs_data*)arg;
@@ -2857,14 +2856,13 @@ GTKfilePopup::fs_rename_cb(const char *string, void *arg)
     if (data->fs->wb_input)
         data->fs->wb_input->popdown();
     delete data;
-    return (ESTR_IGN);
 }
 
 
 // Private static callback.
 // Action for "New Root".
 //
-ESret
+void
 GTKfilePopup::fs_root_cb(const char *rootin, void *fsp)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
@@ -2878,14 +2876,13 @@ GTKfilePopup::fs_root_cb(const char *rootin, void *fsp)
                 fs->wb_input->popdown();
         }
     }
-    return (ESTR_IGN);
 }
 
 
 // Private static callback.
 // Action for "New CWD".
 //
-ESret
+void
 GTKfilePopup::fs_cwd_cb(const char *wd, void *fsp)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(fsp);
@@ -2911,7 +2908,6 @@ GTKfilePopup::fs_cwd_cb(const char *wd, void *fsp)
             }
         }
     }
-    return (ESTR_IGN);
 }
 
 

@@ -124,7 +124,7 @@ namespace ginterf
             int, void(*)(bool), bool = false,
             const char* = 0)                                { return (0); }
         void PopUpInput(const char*, const char*, const char*,
-            ESret(*)(const char*, void*), void*, int = 0)   { }
+            void(*)(const char*, void*), void*, int = 0)    { }
         GRmsgPopup *PopUpMessage(const char*, bool, bool = false,
             bool = false, GRloc = GRloc())                  { return (0); }
         int PopUpWarn(ShowMode, const char*, STYtype = STY_NORM,
