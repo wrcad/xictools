@@ -106,21 +106,8 @@ private:
     int checkModel(sB3model*, sB3instance*, sCKT*);
 };
 
-struct sB3instance : public sGENinstance
+struct sB3instancePOD
 {
-    sB3instance()
-        {
-            memset(this, 0, sizeof(sB3instance));
-            GENnumNodes = 4;
-        }
-    ~sB3instance()  { delete [] (char*)B3backing; }
-    sB3instance *next()
-        { return (static_cast<sB3instance*>(GENnextInstance)); }
-    void ac_cd(const sCKT*, double*, double*) const;
-    void ac_cs(const sCKT*, double*, double*) const;
-    void ac_cg(const sCKT*, double*, double*) const;
-    void ac_cb(const sCKT*, double*, double*) const;
-
     int B3dNode;   // number of the drain node of the mosfet
     int B3gNode;   // number of the gate node of the mosfet
     int B3sNode;   // number of the source node of the mosfet
@@ -133,23 +120,6 @@ struct sB3instance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *B3backing;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!B3backing)
-                    B3backing = new char[sizeof(sB3instance)];
-                memcpy(B3backing, this, sizeof(sB3instance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (B3backing)
-                    memcpy(this, B3backing, sizeof(sB3instance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)B3backing;
-                B3backing = 0;
-            }
-        }
 
     // MCJ
     double B3ueff;
@@ -288,9 +258,7 @@ struct sB3instance : public sGENinstance
 #else
     double **B3nVar;
 #endif
-
 };
-
 
 // state table
 #define B3vbd       GENstate + 0
@@ -339,6 +307,39 @@ struct sB3instance : public sGENinstance
 #define B3a_vdsat   GENstate + 37
 
 #define B3numStates 38
+
+struct sB3instance : sGENinstance, sB3instancePOD
+{
+    sB3instance() : sGENinstance(), sB3instancePOD()
+        { GENnumNodes = 4; }
+    ~sB3instance()  { delete [] (char*)B3backing; }
+
+    sB3instance *next()
+        { return (static_cast<sB3instance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!B3backing)
+                    B3backing = new char[sizeof(sB3instance)];
+                memcpy(B3backing, this, sizeof(sB3instance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (B3backing)
+                    memcpy(this, B3backing, sizeof(sB3instance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)B3backing;
+                B3backing = 0;
+            }
+        }
+
+    void ac_cd(const sCKT*, double*, double*) const;
+    void ac_cs(const sCKT*, double*, double*) const;
+    void ac_cg(const sCKT*, double*, double*) const;
+    void ac_cb(const sCKT*, double*, double*) const;
+};
 
 struct bsim3SizeDependParam
 {
@@ -436,7 +437,6 @@ struct bsim3SizeDependParam
     double B3acde;
     double B3moin;
 
-
     // Pre-calculated constants
 
     double B3dw;
@@ -476,13 +476,8 @@ struct bsim3SizeDependParam
     struct bsim3SizeDependParam  *pNext;
 };
 
-
-struct sB3model : sGENmodel
+struct sB3modelPOD
 {
-    sB3model()          { memset(this, 0, sizeof(sB3model)); }
-    sB3model *next()    { return (static_cast<sB3model*>(GENnextModel)); }
-    sB3instance *inst() { return (static_cast<sB3instance*>(GENinstances)); }
-
     int B3type;
 
     int    B3mobMod;
@@ -900,7 +895,6 @@ struct sB3model : sGENmodel
     double B3Wmin;
     double B3Wmax;
 
-
     // Pre-calculated constants
 
     // MCJ: move to size-dependent param.
@@ -1035,7 +1029,6 @@ struct sB3model : sGENmodel
     unsigned  B3tpbGiven    :1;
     unsigned  B3tpbswGiven  :1;
     unsigned  B3tpbswgGiven :1;
-
 
     // Length dependence
     unsigned  B3lcdscGiven   :1;
@@ -1359,6 +1352,13 @@ struct sB3model : sGENmodel
     unsigned  B3nqsModGiven :1;  // SRW
 };
 
+struct sB3model : sGENmodel, sB3modelPOD
+{
+    sB3model() : sGENmodel(), sB3modelPOD() { }
+
+    sB3model *next()    { return (static_cast<sB3model*>(GENnextModel)); }
+    sB3instance *inst() { return (static_cast<sB3instance*>(GENinstances)); }
+};
 } // namespace BSIM32
 using namespace BSIM32;
 

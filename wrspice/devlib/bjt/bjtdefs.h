@@ -106,21 +106,8 @@ private:
     int dSetup(sBJTmodel*, sCKT*);
 };
 
-struct sBJTinstance : public sGENinstance
+struct sBJTinstancePOD
 {
-    sBJTinstance()
-        {
-            memset(this, 0, sizeof(sBJTinstance));
-            GENnumNodes = 4;
-        }
-    ~sBJTinstance() { delete [] (char*)BJTbacking; }
-    sBJTinstance *next()
-        { return (static_cast<sBJTinstance*>(GENnextInstance)); }
-    void ac_gm(const sCKT*, double*, double*) const;
-    void ac_cc(const sCKT*, double*, double*) const;
-    void ac_cb(const sCKT*, double*, double*) const;
-    void ac_ce(const sCKT*, double*, double*) const;
-
     int BJTcolNode;       // number of collector node of bjt
     int BJTbaseNode;      // number of base node of bjt
     int BJTemitNode;      // number of emitter node of bjt
@@ -213,23 +200,6 @@ struct sBJTinstance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *BJTbacking;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!BJTbacking)
-                    BJTbacking = new char[sizeof(sBJTinstance)];
-                memcpy(BJTbacking, this, sizeof(sBJTinstance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (BJTbacking)
-                    memcpy(this, BJTbacking, sizeof(sBJTinstance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)BJTbacking;
-                BJTbacking = 0;
-            }
-        }
 
 // distortion stuff
 // the following naming convention is used:
@@ -323,7 +293,6 @@ struct sBJTinstance : public sGENinstance
 #define    capsc3      BJTdCoeffs[64]
 #endif
 
-
 // indices to array of BJT noise sources
 
 #define BJTRCNOIZ    0
@@ -343,15 +312,12 @@ struct sBJTinstance : public sGENinstance
 #endif
 // the above to avoid allocating memory when it is not needed
 
-
     unsigned BJToff         :1;  // 'off' flag for bjt
     unsigned BJTtempGiven   :1;  // temperature given  for bjt instance
     unsigned BJTareaGiven   :1;  // flag to indicate area was specified
     unsigned BJTicVBEGiven  :1;  // flag to indicate VBE init. cond. given
     unsigned BJTicVCEGiven  :1;  // flag to indicate VCE init. cond. given
-
 };
-
 
 // entries in the state vector for bjt:
 #define BJTvbe       GENstate
@@ -386,13 +352,41 @@ struct sBJTinstance : public sGENinstance
 
 #define BJTnumStates 28
 
-
-struct sBJTmodel : public sGENmodel
+struct sBJTinstance : sGENinstance, sBJTinstancePOD
 {
-    sBJTmodel()         { memset(this, 0, sizeof(sBJTmodel)); }
-    sBJTmodel *next()   { return (static_cast<sBJTmodel*>(GENnextModel)); }
-    sBJTinstance *inst() { return (static_cast<sBJTinstance*>(GENinstances)); }
+    sBJTinstance() : sGENinstance(), sBJTinstancePOD()
+        { GENnumNodes = 4; }
+    ~sBJTinstance() { delete [] (char*)BJTbacking; }
+    sBJTinstance *next()
 
+        { return (static_cast<sBJTinstance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!BJTbacking)
+                    BJTbacking = new char[sizeof(sBJTinstance)];
+                memcpy(BJTbacking, this, sizeof(sBJTinstance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (BJTbacking)
+                    memcpy(this, BJTbacking, sizeof(sBJTinstance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)BJTbacking;
+                BJTbacking = 0;
+            }
+        }
+
+    void ac_gm(const sCKT*, double*, double*) const;
+    void ac_cc(const sCKT*, double*, double*) const;
+    void ac_cb(const sCKT*, double*, double*) const;
+    void ac_ce(const sCKT*, double*, double*) const;
+};
+
+struct sBJTmodelPOD
+{
     int BJTtype;
     double BJTtnom;            // nominal temperature
     double BJTsatCur;          // input - don't use
@@ -492,6 +486,13 @@ struct sBJTmodel : public sGENmodel
     unsigned BJTfNexpGiven :1;
 };
 
+struct sBJTmodel : sGENmodel, sBJTmodelPOD
+{
+    sBJTmodel() : sGENmodel(), sBJTmodelPOD() { }
+
+    sBJTmodel *next()   { return (static_cast<sBJTmodel*>(GENnextModel)); }
+    sBJTinstance *inst() { return (static_cast<sBJTinstance*>(GENinstances)); }
+};
 } // namespace BJT
 using namespace BJT;
 

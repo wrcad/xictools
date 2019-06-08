@@ -107,28 +107,8 @@ struct TJMdev : public IFdevice
 //    void initTran(sGENmodel*, double, double);
 };
 
-struct sTJMinstance : public sGENinstance
+struct sTJMinstancePOD
 {
-    sTJMinstance()
-        {
-            memset(this, 0, sizeof(sTJMinstance));
-            GENnumNodes = 3;
-        }
-    sTJMinstance *next()
-        { return (static_cast<sTJMinstance*>(GENnextInstance)); }
-
-    ~sTJMinstance()
-        {
-            delete [] tjm_Fc;
-            // Fs and others are pointers into Fc.
-        }
-
-    void tjm_load(sCKT*, struct tjmstuff&);
-    void tjm_init(double);
-    void tjm_newstep(sCKT*);;
-    void tjm_update(double);
-    void tjm_accept(double);
-
 #ifdef NEWLSER
     int TJMrealPosNode; // number of model positive node
     int TJMnegNode;     // number of model negative node
@@ -267,20 +247,29 @@ struct sTJMinstance : public sGENinstance
 #endif
 #endif
 
-struct sTJMmodel : sGENmodel
+struct sTJMinstance : sGENinstance, sTJMinstancePOD
 {
-    sTJMmodel()          { memset(this, 0, sizeof(sTJMmodel)); }
-    sTJMmodel *next()    { return (static_cast<sTJMmodel*>(GENnextModel)); }
-    sTJMinstance *inst() { return (static_cast<sTJMinstance*>(GENinstances)); }
+    sTJMinstance() : sGENinstance(), sTJMinstancePOD()
+        { GENnumNodes = 3; }
 
-    ~sTJMmodel()
+    sTJMinstance *next()
+        { return (static_cast<sTJMinstance*>(GENnextInstance)); }
+
+    ~sTJMinstance()
         {
-            delete [] tjm_A;
-            // B and P are pointers into A array
+            delete [] tjm_Fc;
+            // Fs and others are pointers into Fc.
         }
 
-    int tjm_init();
+    void tjm_load(sCKT*, struct tjmstuff&);
+    void tjm_init(double);
+    void tjm_newstep(sCKT*);;
+    void tjm_update(double);
+    void tjm_accept(double);
+};
 
+struct sTJMmodelPOD
+{
     // MiTMoJCo core parameters
     char        *tjm_coeffs;
     double      tjm_kgap;
@@ -333,6 +322,21 @@ struct sTJMmodel : sGENmodel
     unsigned    TJMlsh0Given : 1;
     unsigned    TJMlsh1Given : 1;
 #endif
+};
+
+struct sTJMmodel : sGENmodel, sTJMmodelPOD
+{
+    sTJMmodel() : sGENmodel(), sTJMmodelPOD() { }
+    ~sTJMmodel()
+        {
+            delete [] tjm_A;
+            // B and P are pointers into A array
+        }
+
+    sTJMmodel *next()    { return (static_cast<sTJMmodel*>(GENnextModel)); }
+    sTJMinstance *inst() { return (static_cast<sTJMinstance*>(GENinstances)); }
+
+    int tjm_init();
 };
 
 // Tunnel parameters database return.  The coefficients are created

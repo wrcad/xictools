@@ -113,16 +113,8 @@ private:
         double*, double*, double*, double*, double*);
 };
 
-struct sB2instance : sGENinstance
+struct sB2instancePOD
 {
-    sB2instance()
-        {
-            memset(this, 0, sizeof(sB2instance));
-            GENnumNodes = 4;
-        }
-    sB2instance *next()
-        { return (static_cast<sB2instance*>(GENnextInstance)); }
-
     int B2dNode;   // number of the gate node of the mosfet
     int B2gNode;   // number of the gate node of the mosfet
     int B2sNode;   // number of the source node of the mosfet
@@ -170,7 +162,6 @@ struct sB2instance : sGENinstance
     unsigned B2vonGiven   :1;
     unsigned B2vdsatGiven :1;
 
-
     double *B2DdPtr;      // pointer to sparse matrix element at
                           //  (Drain node,drain node)
     double *B2GgPtr;      // pointer to sparse matrix element at
@@ -216,6 +207,7 @@ struct sB2instance : sGENinstance
                           //  (source prime node,bulk node)
     double *B2SPdpPtr;    // pointer to sparse matrix element at
                           //  (source prime node,drain prime node)
+};
 
 #define B2vbd GENstate + 0
 #define B2vbs GENstate + 1
@@ -263,6 +255,13 @@ struct sB2instance : sGENinstance
 
 #define B2numStates 35           
 
+struct sB2instance : sGENinstance, sB2instancePOD
+{
+    sB2instance() : sGENinstance(), sB2instancePOD()
+        { GENnumNodes = 4; }
+
+    sB2instance *next()
+        { return (static_cast<sB2instance*>(GENnextInstance)); }
 };
 
 struct bsim2SizeDependParam
@@ -320,12 +319,8 @@ struct bsim2SizeDependParam
     struct bsim2SizeDependParam  *pNext;
 };
 
-struct sB2model : sGENmodel
+struct sB2modelPOD
 {
-    sB2model()          { memset(this, 0, sizeof(sB2model)); }
-    sB2model *next()    { return (static_cast<sB2model*>(GENnextModel)); }
-    sB2instance *inst() { return (static_cast<sB2instance*>(GENinstances)); }
-
     int B2type;               // device type: 1 = nmos,  -1 = pmos
     int pad;
 
@@ -607,6 +602,13 @@ struct sB2model : sGENmodel
     unsigned  B2typeGiven   :1;
 };
 
+struct sB2model : sGENmodel, sB2modelPOD
+{
+    sB2model() : sGENmodel(), sB2modelPOD() { }
+
+    sB2model *next()    { return (static_cast<sB2model*>(GENnextModel)); }
+    sB2instance *inst() { return (static_cast<sB2instance*>(GENinstances)); }
+};
 } // namespace B2
 using namespace B2;
 

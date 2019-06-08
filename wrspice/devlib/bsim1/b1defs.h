@@ -116,16 +116,8 @@ private:
 #define B1numStates 35           
 #define B1NDCOEFFS    82
 
-struct sB1instance : sGENinstance
+struct sB1instancePOD
 {
-    sB1instance()
-        {
-            memset(this, 0, sizeof(sB1instance));
-            GENnumNodes = 4;
-        }
-    sB1instance *next()
-        { return (static_cast<sB1instance*>(GENnextInstance)); }
-
     int B1dNode;   // number of the gate node of the mosfet
     int B1gNode;   // number of the gate node of the mosfet
     int B1sNode;   // number of the source node of the mosfet
@@ -200,7 +192,6 @@ struct sB1instance : sGENinstance
     unsigned B1vonGiven   :1;
     unsigned B1vdsatGiven :1;
 
-
     double *B1DdPtr;      // pointer to sparse matrix element at
                           //  (Drain node,drain node)
     double *B1GgPtr;      // pointer to sparse matrix element at
@@ -252,7 +243,6 @@ struct sB1instance : sGENinstance
 #else
     double *B1dCoeffs;
 #endif
-
 };
 
 #define B1vbd   GENstate + 0
@@ -395,12 +385,17 @@ struct sB1instance : sGENinstance
 #define    gbd3        B1dCoeffs[81]
 #endif
 
-struct sB1model : sGENmodel
+struct sB1instance : sGENinstance, sB1instancePOD
 {
-    sB1model()          { memset(this, 0, sizeof(sB1model)); }
-    sB1model *next()    { return (static_cast<sB1model*>(GENnextModel)); }
-    sB1instance *inst() { return (static_cast<sB1instance*>(GENinstances)); }
+    sB1instance() : sGENinstance(), sB1instancePOD()
+        { GENnumNodes = 4; }
 
+    sB1instance *next()
+        { return (static_cast<sB1instance*>(GENnextInstance)); }
+};
+
+struct sB1modelPOD
+{
     int B1type;       // device type : 1 = nmos,  -1 = pmos
 
     double B1vfb0;
@@ -483,7 +478,6 @@ struct sB1model : sGENmodel
     double B1defaultWidth;
     double B1deltaLength;
 
-
     unsigned  B1vfb0Given   :1;
     unsigned  B1vfbLGiven   :1;
     unsigned  B1vfbWGiven   :1;
@@ -564,6 +558,13 @@ struct sB1model : sGENmodel
     unsigned  B1typeGiven   :1;
 };
 
+struct sB1model : sGENmodel, sB1modelPOD
+{
+    sB1model() : sGENmodel(), sB1modelPOD() { }
+
+    sB1model *next()    { return (static_cast<sB1model*>(GENnextModel)); }
+    sB1instance *inst() { return (static_cast<sB1instance*>(GENinstances)); }
+};
 } // namespace B1
 using namespace B1;
 

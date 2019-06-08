@@ -50,35 +50,39 @@ ln -s $twrs/bin/wrspiced $tbin/wrspiced
 
 
 %postun
-if [ -z "$RPM_INSTALL_PREFIX" ]; then
-    prefix=/usr/local
-else
-    prefix=$RPM_INSTALL_PREFIX
-fi
-# Make sure that this is entirely gone.
-rm -rf $prefix/xictools/wrspice.current
+if [ $1 == 0 ]; then
+    # Do this when erasing only, not updating (this is called AFTER pre/post)!
 
-# Remove the links.
+    if [ -z "$RPM_INSTALL_PREFIX" ]; then
+        prefix=/usr/local
+    else
+        prefix=$RPM_INSTALL_PREFIX
+    fi
+    # Make sure that this is entirely gone.
+    rm -rf $prefix/xictools/wrspice.current
 
-twrs=$prefix/xictools/wrspice
-if [ -h $twrs ]; then
-    rm -f $twrs
-fi
+    # Remove the links.
 
-tbin=$prefix/xictools/bin
-if [ -h $tbin/multidec ]; then
-    rm -f $tbin/multidec
-fi
-if [ -h $tbin/proc2mod ]; then
-    rm -f $tbin/proc2mod
-fi
-if [ -h $tbin/printtoraw ]; then
-    rm -f $tbin/printtoraw
-fi
-if [ -h $tbin/wrspice ]; then
-    rm -f $tbin/wrspice
-fi
-if [ -h $tbin/wrspiced ]; then
-    rm -f $tbin/wrspiced
+    twrs=$prefix/xictools/wrspice
+    if [ -h $twrs ]; then
+        rm -f $twrs
+    fi
+
+    tbin=$prefix/xictools/bin
+    if [ -h $tbin/multidec ]; then
+        rm -f $tbin/multidec
+    fi
+    if [ -h $tbin/proc2mod ]; then
+        rm -f $tbin/proc2mod
+    fi
+    if [ -h $tbin/printtoraw ]; then
+        rm -f $tbin/printtoraw
+    fi
+    if [ -h $tbin/wrspice ]; then
+        rm -f $tbin/wrspice
+    fi
+    if [ -h $tbin/wrspiced ]; then
+        rm -f $tbin/wrspiced
+    fi
 fi
 

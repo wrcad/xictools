@@ -280,7 +280,101 @@ struct sGrInit;
 //
 struct sGraph
 {
-    sGraph() { memset((void*)this, 0, sizeof(sGraph)); }
+    sGraph()
+        {
+            gr_id           = 0;
+            gr_apptype      = 0;
+            gr_dev          = 0;
+            gr_filename     = 0;;
+
+            gr_command      = 0;
+            gr_plotname     = 0;
+            gr_title        = 0;
+            gr_date         = 0;
+            gr_plotdata     = 0;
+
+            gr_numtraces    = 0;
+            gr_scalewidth   = 0;
+            gr_fontwid      = 0;
+            gr_fonthei      = 0;
+            gr_aspect_x     = 0.0;
+            gr_aspect_y     = 0.0;
+            gr_grpmin[0]    = 0.0;
+            gr_grpmin[1]    = 0.0;
+            gr_grpmin[2]    = 0.0;
+            gr_grpmax[0]    = 0.0;
+            gr_grpmax[1]    = 0.0;
+            gr_grpmax[2]    = 0.0;
+            memset(&gr_xaxis, 0, sizeof(uGrid));
+            memset(&gr_yaxis, 0, sizeof(uGrid));
+
+            gr_linestyle    = 0;;
+            gr_color        = 0;;
+            memset(gr_colors, 0, sizeof(gr_colors));
+            gr_ticmarks     = 0;
+            gr_field        = 0;
+
+            gr_pltype       = PLOT_LIN;
+            gr_grtype       = GRID_LIN;
+            gr_format       = FT_SINGLE;
+
+            gr_xlabel       = 0;
+            gr_ylabel       = 0;
+            gr_degree       = 0;
+
+            gr_dimwidth     = 0;
+
+            gr_xdelta       = 0.0;
+            gr_ydelta       = 0.0;
+            gr_numycells    = 0;
+
+            gr_ysep         = false;
+            gr_nogrid       = false;
+            gr_xmono        = false;
+            gr_xlimfixed    = false;
+            gr_ylimfixed    = false;
+            gr_stop         = false;
+            gr_oneval       = false;
+
+            gr_noevents     = false;
+            gr_noplotlogo   = false;
+
+            gr_dirty        = false;
+            gr_seltext      = false;
+            gr_nolinecache  = false;
+#ifdef WIN32
+            gr_destroyed    = false;
+            gr_redraw_queued = false;
+#endif
+
+            gr_keyed        = 0;
+            gr_timer_id     = 0;
+
+            gr_pressx       = 0;
+            gr_pressy       = 0;
+            gr_cmdmode      = 0;
+            gr_cmd_data     = 0;
+
+            gr_selections   = 0;
+            gr_selsize      = 0;
+            gr_sel_flat     = false;
+            gr_sel_show     = false;
+            gr_sel_drag     = false;
+            gr_sel_x        = 0;
+            gr_sel_y        = 0;
+
+            gr_scale_flags  = 0;
+
+            gr_cpage        = 0;
+            gr_npage        = 0;
+
+            gr_in_redraw    = 0;
+
+#if defined (HAVE_SETJMP_H) && defined (HAVE_SIGNAL)
+            oldhdlr         = 0;
+#endif
+        }
+
     // No destructor, don't explicitly delete, gr_reset deallocates.
 
     // graphics package
@@ -685,7 +779,35 @@ enum MDtype { MDnormal, MDmonte, MDdimens };
 // Linked list of x-y file points to plot.
 struct sChkPts
 {
-    sChkPts() { memset(this, 0, sizeof(sChkPts)); }
+    sChkPts()
+        {
+            minv1       = 0.0;
+            maxv1       = 0.0;
+            minv2       = 0.0;
+            maxv2       = 0.0;
+            type        = MDnormal;
+            flat        = false;
+            pfset       = false;
+            param1      = 0;
+            param2      = 0;
+            filename    = 0;
+            plotname    = 0;
+            date        = 0;
+            v1          = 0;
+            v2          = 0;
+            pf          = 0;
+            sel         = 0;
+            delta1      = 0;
+            delta2      = 0;
+            size        = 0;
+            rsize       = 0;
+            xc          = 0;
+            yc          = 0;
+            d           = 0;
+            d1          = 0;
+            d2          = 0;
+            next        = 0;
+        }
 
     ~sChkPts()
         {

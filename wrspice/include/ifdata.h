@@ -261,8 +261,8 @@ private:
 
 // Structure:   IFvalue
 //
-// Structure used to pass the values corresponding to the dataType
-// of an IFparm.
+// Union used to pass the values corresponding to the dataType of an
+// IFparm.
 //
 union IFvalue
 {

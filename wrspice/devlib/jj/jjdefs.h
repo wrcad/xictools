@@ -110,16 +110,8 @@ struct JJdev : public IFdevice
 //    void initTran(sGENmodel*, double, double);
 };
 
-struct sJJinstance : public sGENinstance
+struct sJJinstancePOD
 {
-    sJJinstance()
-        {
-            memset(this, 0, sizeof(sJJinstance));
-            GENnumNodes = 3;
-        }
-    sJJinstance *next()
-        { return (static_cast<sJJinstance*>(GENnextInstance)); }
-
 #ifdef NEWLSER
     int JJrealPosNode;  // number of model positive node
     int JJnegNode;      // number of model negative node
@@ -259,14 +251,17 @@ struct sJJinstance : public sGENinstance
 #endif
 #endif
 
-struct sJJmodel : sGENmodel
+struct sJJinstance : sGENinstance, sJJinstancePOD
 {
-    sJJmodel()          { memset(this, 0, sizeof(sJJmodel)); }
-    sJJmodel *next()    { return (static_cast<sJJmodel*>(GENnextModel)); }
-    sJJinstance *inst() { return (static_cast<sJJinstance*>(GENinstances)); }
+    sJJinstance() : sGENinstance(), sJJinstancePOD()
+        { GENnumNodes = 3; }
 
-    static double subgap(sJJmodel*, sJJinstance*);
+    sJJinstance *next()
+        { return (static_cast<sJJinstance*>(GENnextInstance)); }
+};
 
+struct sJJmodelPOD
+{
     int JJrtype;
     int JJictype;
     double JJvg;
@@ -319,6 +314,15 @@ struct sJJmodel : sGENmodel
     unsigned JJlsh0Given : 1;
     unsigned JJlsh1Given : 1;
 #endif
+};
+
+struct sJJmodel : sGENmodel, sJJmodelPOD
+{
+    sJJmodel() : sGENmodel(), sJJmodelPOD() { }
+    sJJmodel *next()    { return (static_cast<sJJmodel*>(GENnextModel)); }
+    sJJinstance *inst() { return (static_cast<sJJinstance*>(GENinstances)); }
+
+    static double subgap(sJJmodel*, sJJinstance*);
 };
 
 } // namespace JJ

@@ -172,21 +172,8 @@ private:
     int checkModel(sB3SOImodel*, sB3SOIinstance*, sCKT*);
 };
 
-struct sB3SOIinstance : public sGENinstance
+struct sB3SOIinstancePOD
 {
-    sB3SOIinstance()
-        {
-            memset(this, 0, sizeof(sB3SOIinstance));
-            GENnumNodes = 7;
-        }
-    ~sB3SOIinstance()
-        {
-            delete B3SOIadjoint;
-            delete [] (char*)B3SOIbacking;
-        }
-    sB3SOIinstance *next()
-        { return (static_cast<sB3SOIinstance*>(GENnextInstance)); }
-
     int B3SOIdNode;     // drain node
     int B3SOIgNode;     // gate node
     int B3SOIsNode;     // source node
@@ -225,23 +212,6 @@ struct sB3SOIinstance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *B3SOIbacking;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!B3SOIbacking)
-                    B3SOIbacking = new char[sizeof(sB3SOIinstance)];
-                memcpy(B3SOIbacking, this, sizeof(sB3SOIinstance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (B3SOIbacking)
-                    memcpy(this, B3SOIbacking, sizeof(sB3SOIinstance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)B3SOIbacking;
-                B3SOIbacking = 0;
-            }
-        }
 
     double B3SOIphi;
     double B3SOIvtm;
@@ -302,7 +272,6 @@ struct sB3SOIinstance : public sGENinstance
     double B3SOIbodySquares;
     double B3SOIrbodyext;
     double B3SOIfrbody;
-
 
 /* v2.0 release */
     double B3SOInbc;   
@@ -375,7 +344,6 @@ struct sB3SOIinstance : public sGENinstance
     double B3SOIIgd;
     double B3SOIgIgdg;
     double B3SOIgIgdd;
-
 
     double B3SOIgjsd;
     double B3SOIgjsb;
@@ -550,7 +518,6 @@ struct sB3SOIinstance : public sGENinstance
 #endif /* NONOISE */
 };
 
-
 #define B3SOIvbd GENstate + 0
 #define B3SOIvbs GENstate + 1
 #define B3SOIvgs GENstate + 2
@@ -609,6 +576,38 @@ struct sB3SOIinstance : public sGENinstance
 #define B3SOIa_ie      GENstate + 47
 
 #define B3SOInumStates 48
+
+struct sB3SOIinstance : sGENinstance, sB3SOIinstancePOD
+{
+    sB3SOIinstance() : sGENinstance(), sB3SOIinstancePOD()
+        { GENnumNodes = 7; }
+    ~sB3SOIinstance()
+        {
+            delete B3SOIadjoint;
+            delete [] (char*)B3SOIbacking;
+        }
+
+    sB3SOIinstance *next()
+        { return (static_cast<sB3SOIinstance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!B3SOIbacking)
+                    B3SOIbacking = new char[sizeof(sB3SOIinstance)];
+                memcpy(B3SOIbacking, this, sizeof(sB3SOIinstance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (B3SOIbacking)
+                    memcpy(this, B3SOIbacking, sizeof(sB3SOIinstance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)B3SOIbacking;
+                B3SOIbacking = 0;
+            }
+        }
+};
 
 
 struct b3soiSizeDependParam
@@ -727,7 +726,6 @@ struct b3soiSizeDependParam
     double B3SOIclc;
     double B3SOIcle;
 
-
 /* Added for binning - START0 */
     double B3SOIkb1;
     double B3SOIk1w1;
@@ -790,10 +788,8 @@ struct b3soiSizeDependParam
     double B3SOItheta0vb0;
     double B3SOIthetaRout; 
 
-
 /* v2.2 release */
     double B3SOIoxideRatio;
-
 
 /* v2.0 release */
     double B3SOIk1eff;
@@ -831,14 +827,8 @@ struct b3soiSizeDependParam
     struct b3soiSizeDependParam  *pNext;
 };
 
-
-struct sB3SOImodel : sGENmodel
+struct sB3SOImodelPOD
 {
-    sB3SOImodel()       { memset(this, 0, sizeof(sB3SOImodel)); }
-    sB3SOImodel *next() { return (static_cast<sB3SOImodel*>(GENnextModel)); }
-    sB3SOIinstance *inst()
-                        {return (static_cast<sB3SOIinstance*>(GENinstances));}
-
     int B3SOItype;
 
     int    B3SOImobMod;
@@ -931,7 +921,6 @@ struct sB3SOImodel : sGENmodel
     double B3SOIxrec;
     double B3SOIxtun;
 
-
 /* v3.0 */
     double B3SOIsoiMod;
     double B3SOIvbsa;
@@ -975,7 +964,6 @@ struct sB3SOImodel : sGENmodel
     double B3SOItoxqm;
     double B3SOIvoxh;
     double B3SOIdeltavox;
-
 
 /* v2.0 release */
     double B3SOIk1w1;  
@@ -1433,7 +1421,6 @@ struct sB3SOImodel : sGENmodel
     unsigned B3SOIdvbd1Given:    1;
     unsigned B3SOImoinFDGiven:   1;
 
-
     unsigned B3SOItboxGiven:1;
     unsigned B3SOItsiGiven :1;
     unsigned B3SOIxjGiven :1;
@@ -1531,7 +1518,6 @@ struct sB3SOImodel : sGENmodel
     unsigned  B3SOIb1Given   :1;
     unsigned  B3SOIalpha0Given   :1;
 
-
 /* v2.2 release */
     unsigned  B3SOIwth0Given   :1;
     unsigned  B3SOIrhaloGiven  :1;
@@ -1562,7 +1548,6 @@ struct sB3SOImodel : sGENmodel
     unsigned  B3SOIpigcdGiven   :1;
     unsigned  B3SOIpoxedgeGiven   :1;
     unsigned  B3SOIdlcigGiven   :1;
-
 
 /* v2.0 release */
     unsigned  B3SOIk1w1Given   :1;   
@@ -1611,7 +1596,6 @@ struct sB3SOImodel : sGENmodel
     unsigned  B3SOIdelvtGiven  :1;
     unsigned  B3SOIdlbgGiven  :1;
 
-    
     /* CV model */
     unsigned  B3SOIcgslGiven   :1;
     unsigned  B3SOIcgdlGiven   :1;
@@ -1980,6 +1964,14 @@ struct sB3SOImodel : sGENmodel
     unsigned  B3SOIWmaxGiven   :1;
 };
 
+struct sB3SOImodel : sGENmodel, sB3SOImodelPOD
+{
+    sB3SOImodel() : sGENmodel(), sB3SOImodelPOD() { }
+
+    sB3SOImodel *next() { return (static_cast<sB3SOImodel*>(GENnextModel)); }
+    sB3SOIinstance *inst()
+                        {return (static_cast<sB3SOIinstance*>(GENinstances));}
+};
 } // namespace B3SOI30
 using namespace B3SOI30;
 
