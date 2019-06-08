@@ -126,17 +126,8 @@ struct EKVdev : public IFdevice
     int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
 };
 
-struct sEKVinstance : public sGENinstance
+struct sEKVinstancePOD
 {
-    sEKVinstance()
-        {
-            memset(this, 0, sizeof(sEKVinstance));
-            GENnumNodes = 4;
-        }
-    ~sEKVinstance() { delete [] (char*)EKVbacking; }
-    sEKVinstance *next()
-        { return (static_cast<sEKVinstance*>(GENnextInstance)); }
-
     int EKVdNode;  /* number of the gate node of the mosfet */
     int EKVgNode;  /* number of the gate node of the mosfet */
     int EKVsNode;  /* number of the source node of the mosfet */
@@ -159,23 +150,6 @@ struct sEKVinstance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *EKVbacking;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!EKVbacking)
-                    EKVbacking = new char[sizeof(sEKVinstance)];
-                memcpy(EKVbacking, this, sizeof(sEKVinstance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (EKVbacking)
-                    memcpy(this, EKVbacking, sizeof(sEKVinstance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)EKVbacking;
-                EKVbacking = 0;
-            }
-        }
 
     double EKVtkp;                 /* temperature corrected transconductance*/
     double EKVtPhi;                /* temperature corrected Phi */
@@ -308,7 +282,6 @@ struct sEKVinstance : public sGENinstance
 
     int EKVmode;       /* device mode : 1 = normal, -1 = inverse */
 
-
     unsigned EKVoff:1;  /* non-zero to indicate device is off for dc analysis*/
     unsigned EKVtempGiven :1;  /* instance temperature specified */
     unsigned EKVlGiven :1;
@@ -327,7 +300,6 @@ struct sEKVinstance : public sGENinstance
     unsigned EKVvonGiven   :1;
     unsigned EKVvdsatGiven :1;
     unsigned EKVmodeGiven  :1;
-
 
     double *EKVDdPtr;      /* pointer to sparse matrix element at
                                          * (Drain node,drain node) */
@@ -461,6 +433,33 @@ pointer to the beginning of the array */
 #define EKVnumSenStates 10
 #endif
 
+struct sEKVinstance : sGENinstance, sEKVinstancePOD
+{
+    sEKVinstance() : sGENinstance(), sEKVinstancePOD()
+        { GENnumNodes = 4; }
+    ~sEKVinstance() { delete [] (char*)EKVbacking; }
+
+    sEKVinstance *next()
+        { return (static_cast<sEKVinstance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!EKVbacking)
+                    EKVbacking = new char[sizeof(sEKVinstance)];
+                memcpy(EKVbacking, this, sizeof(sEKVinstance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (EKVbacking)
+                    memcpy(this, EKVbacking, sizeof(sEKVinstance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)EKVbacking;
+                EKVbacking = 0;
+            }
+        }
+};
 
 /* NOTE:  parameters marked 'input - use xxxx' are paramters for
      * which a temperature correction is applied in EKVtemp, thus
@@ -468,12 +467,8 @@ pointer to the beginning of the array */
      * instead in all calculations 
      */
 
-struct sEKVmodel : sGENmodel
+struct sEKVmodelPOD
 {
-    sEKVmodel()         { memset(this, 0, sizeof(sEKVmodel)); }
-    sEKVmodel *next()   { return ((sEKVmodel*)GENnextModel); }
-    sEKVinstance *inst() { return ((sEKVinstance*)GENinstances); }
-
     double EKVtnom;    /* temperature at which parameters measured */
     double EKVekvint;
     double EKVvt0;     /* input - use tvt0 */
@@ -592,6 +587,13 @@ struct sEKVmodel : sGENmodel
     unsigned EKVxqcGiven :1;  // SRW
 };
 
+struct sEKVmodel : sGENmodel, sEKVmodelPOD
+{
+    sEKVmodel() : sGENmodel(), sEKVmodelPOD() { }
+
+    sEKVmodel *next()   { return ((sEKVmodel*)GENnextModel); }
+    sEKVinstance *inst() { return ((sEKVinstance*)GENinstances); }
+};
 } // namespace EKV26
 using namespace EKV26;
 

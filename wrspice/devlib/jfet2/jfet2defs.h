@@ -110,19 +110,8 @@ private:
     int dSetup(sJFET2model*, sCKT*);
 };
 
-struct sJFET2instance : public sGENinstance
+struct sJFET2instancePOD
 {
-    sJFET2instance()
-        {
-            memset(this, 0, sizeof(sJFET2instance));
-            GENnumNodes = 3;
-        }
-    sJFET2instance *next()
-        { return (static_cast<sJFET2instance*>(GENnextInstance)); }
-    void ac_cd(const sCKT*, double*, double*) const;
-    void ac_cs(const sCKT*, double*, double*) const;
-    void ac_cg(const sCKT*, double*, double*) const;
-
     int JFET2drainNode;   // number of drain node of jfet
     int JFET2gateNode;    // number of gate node of jfet
     int JFET2sourceNode;  // number of source node of jfet
@@ -230,7 +219,6 @@ struct sJFET2instance : public sGENinstance
     unsigned JFET2icVGSGiven : 1;    /* initial condition given flag for V G-S*/
     unsigned JFET2tempGiven  : 1;    /* flag to indicate instance temp given */
 
-
     double JFET2area;    /* area factor for the jfet */
     double JFET2icVDS;   /* initial condition voltage D-S*/
     double JFET2icVGS;   /* initial condition voltage G-S*/
@@ -270,13 +258,20 @@ struct sJFET2instance : public sGENinstance
 
 #define JFET2_STATE_COUNT    18
 
-struct sJFET2model : sGENmodel
+struct sJFET2instance : sGENinstance, sJFET2instancePOD
 {
-    sJFET2model()       { memset(this, 0, sizeof(sJFET2model)); }
-    sJFET2model *next() { return (static_cast<sJFET2model*>(GENnextModel)); }
-    sJFET2instance *inst()
-                        { return (static_cast<sJFET2instance*>(GENinstances)); }
+    sJFET2instance() : sGENinstance(), sJFET2instancePOD()
+        { GENnumNodes = 3; }
 
+    sJFET2instance *next()
+        { return (static_cast<sJFET2instance*>(GENnextInstance)); }
+    void ac_cd(const sCKT*, double*, double*) const;
+    void ac_cs(const sCKT*, double*, double*) const;
+    void ac_cg(const sCKT*, double*, double*) const;
+};
+
+struct sJFET2modelPOD
+{
     int JFET2type;
 
     // SRW -- extracted from jfet2parm.h
@@ -367,9 +362,16 @@ struct sJFET2model : sGENmodel
     unsigned JFET2hfgGiven :1;
 
     unsigned JFET2tnomGiven : 1; /* user specified Tnom for model */
-
 };
 
+struct sJFET2model : sGENmodel, sJFET2modelPOD
+{
+    sJFET2model() : sGENmodel(), sJFET2modelPOD() { }
+
+    sJFET2model *next() { return (static_cast<sJFET2model*>(GENnextModel)); }
+    sJFET2instance *inst()
+                        { return (static_cast<sJFET2instance*>(GENinstances)); }
+};
 } // namespace JFET2
 using namespace JFET2;
 

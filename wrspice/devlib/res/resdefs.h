@@ -107,26 +107,8 @@ struct RESdev : public IFdevice
     void initTranFuncs(sGENmodel*, double, double);
 };
 
-struct sRESinstance : public sGENinstance
+struct sRESinstancePOD
 {
-    sRESinstance()
-        {
-            memset(this, 0, sizeof(sRESinstance));
-            GENnumNodes = 2;
-        }
-    ~sRESinstance()
-        {
-            delete REStree;
-            delete [] RESvalues;
-            delete [] RESderivs;
-            delete [] RESeqns;
-            delete [] RESposptr;
-            delete [] RESpolyCoeffs;
-        }
-
-    sRESinstance *next()
-        { return (static_cast<sRESinstance*>(GENnextInstance)); }
-
     int RESposNode;     // number of positive node of resistor
     int RESnegNode;     // number of negative node of resistor
 
@@ -181,12 +163,26 @@ struct sRESinstance : public sGENinstance
     double RESnVar[NSTATVARS][2];
 };
 
-struct sRESmodel : public sGENmodel
+struct sRESinstance : sGENinstance, sRESinstancePOD
 {
-    sRESmodel()         { memset(this, 0, sizeof(sRESmodel)); }
-    sRESmodel *next()   { return (static_cast<sRESmodel*>(GENnextModel)); }
-    sRESinstance *inst() { return (static_cast<sRESinstance*>(GENinstances)); }
+    sRESinstance() : sGENinstance(), sRESinstancePOD()
+        { GENnumNodes = 2; }
+    ~sRESinstance()
+        {
+            delete REStree;
+            delete [] RESvalues;
+            delete [] RESderivs;
+            delete [] RESeqns;
+            delete [] RESposptr;
+            delete [] RESpolyCoeffs;
+        }
 
+    sRESinstance *next()
+        { return (static_cast<sRESinstance*>(GENnextInstance)); }
+};
+
+struct sRESmodelPOD
+{
     double REStnom;       // temperature at which resistance measured
     double REStemp;       // default operating temperature for instances
     double REStempCoeff1; // first temperature coefficient of resistors
@@ -223,6 +219,14 @@ struct sRESmodel : public sGENmodel
     unsigned RESlfGiven         : 1; // length exponent given
     unsigned RESnoiseGiven      : 1; // noise scale factor given
     unsigned RESmGiven          : 1; // value scale factor given
+};
+
+struct sRESmodel : sGENmodel, sRESmodelPOD
+{
+    sRESmodel() : sGENmodel(), sRESmodelPOD() { }
+
+    sRESmodel *next()   { return (static_cast<sRESmodel*>(GENnextModel)); }
+    sRESinstance *inst() { return (static_cast<sRESinstance*>(GENinstances)); }
 };
 
 #ifdef NEWJJDC

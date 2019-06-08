@@ -104,24 +104,8 @@ struct INDdev : public IFdevice
     void initTranFuncs(sGENmodel*, double, double);
 };
 
-struct sINDinstance : public sGENinstance
+struct sINDinstancePOD
 {
-    sINDinstance()
-        {
-            memset(this, 0, sizeof(sINDinstance));
-            GENnumNodes = 2;
-        }
-    ~sINDinstance()
-        {
-            delete INDtree;
-            delete [] INDvalues;
-            delete [] INDeqns;
-            delete [] INDpolyCoeffs;
-        }
-
-    sINDinstance *next()
-        { return (static_cast<sINDinstance*>(GENnextInstance)); }
-
     int INDposNode;   // number of positive node of inductor
     int INDnegNode;   // number of negative node of inductor
 
@@ -160,15 +144,36 @@ struct sINDinstance : public sGENinstance
     unsigned INDmGiven   : 1;   // device multiplier was specified
 };
 
-struct sINDmodel : public sGENmodel
+struct sINDinstance : sGENinstance, sINDinstancePOD
 {
-    sINDmodel()         { memset(this, 0, sizeof(sINDmodel)); }
-    sINDmodel *next()   { return (static_cast<sINDmodel*>(GENnextModel)); }
-    sINDinstance *inst() { return (static_cast<sINDinstance*>(GENinstances)); }
+    sINDinstance() : sGENinstance(), sINDinstancePOD()
+        { GENnumNodes = 2; }
+    ~sINDinstance()
+        {
+            delete INDtree;
+            delete [] INDvalues;
+            delete [] INDeqns;
+            delete [] INDpolyCoeffs;
+        }
+
+    sINDinstance *next()
+        { return (static_cast<sINDinstance*>(GENnextInstance)); }
+};
+
+struct sINDmodelPOD
+{
 
     double INDm;          // device multiplier
 
     unsigned INDmGiven   : 1;   // device multiplier was specified
+};
+
+struct sINDmodel : sGENmodel, sINDmodelPOD
+{
+    sINDmodel() : sGENmodel(), sINDmodelPOD() { }
+
+    sINDmodel *next()   { return (static_cast<sINDmodel*>(GENnextModel)); }
+    sINDinstance *inst() { return (static_cast<sINDinstance*>(GENinstances)); }
 };
 
 #define INDflux GENstate   // flux in the inductor
@@ -206,12 +211,8 @@ struct MUTdev : public IFdevice
 //    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
 };
 
-struct sMUTinstance : public sGENinstance
+struct sMUTinstancePOD
 {
-    sMUTinstance()  { memset(this, 0, sizeof(sMUTinstance)); }
-    sMUTinstance *next()
-        { return (static_cast<sMUTinstance*>(GENnextInstance)); }
-
     double MUTcoupling;    // mutual inductance input by user
     double MUTfactor;      // mutual inductance scaled for internal use
     IFuid MUTindName1;     // name of coupled inductor 1
@@ -224,14 +225,21 @@ struct sMUTinstance : public sGENinstance
     unsigned MUTindGiven : 1; // flag to indicate inductance was specified
 };
 
+struct sMUTinstance : sGENinstance, sMUTinstancePOD
+{
+    sMUTinstance() : sGENinstance(), sMUTinstancePOD() { }
+
+    sMUTinstance *next()
+        { return (static_cast<sMUTinstance*>(GENnextInstance)); }
+};
+
 struct sMUTmodel : public sGENmodel
 {
-    sMUTmodel()         { memset(this, 0, sizeof(sMUTmodel)); }
+    sMUTmodel() : sGENmodel() { }
+
     sMUTmodel *next()   { return (static_cast<sMUTmodel*>(GENnextModel)); }
     sMUTinstance *inst() { return (static_cast<sMUTinstance*>(GENinstances)); }
 };
-
-
 } // namespace IND
 using namespace IND;
 

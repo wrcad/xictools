@@ -123,20 +123,8 @@ struct TERM
     double cnv_i, cnv_o;
 };
 
-struct TXLine
+struct TXLinePOD
 {
-    TXLine()
-        {
-            memset(this, 0, sizeof(TXLine));
-        }
-
-    bool main_pade(double, double, double, double, double);
-    void get_h3();
-    void update_h1C_c();
-    void copy_to(TXLine*);
-    void update_cnv(double);
-    void update_delayed_cnv(double, sTRAtimeval*);
-
     int       lsl;      // 1 if the line is lossless, otherwise 0
     int       ext;      // a flag, set if time step is greater than tau
     int       newtp;    // flag indicating new time point
@@ -159,6 +147,18 @@ struct TXLine
     TERM      h3_term[6];
 };
 
+struct TXLine : TXLinePOD
+{
+    TXLine() : TXLinePOD() { }
+
+    bool main_pade(double, double, double, double, double);
+    void get_h3();
+    void update_h1C_c();
+    void copy_to(TXLine*);
+    void update_cnv(double);
+    void update_delayed_cnv(double, sTRAtimeval*);
+};
+
 struct sTRAconval : public timelist<sTRAconval>::telt
 {
     double h1dashCoeff;     // coefficient for h1dash
@@ -169,25 +169,8 @@ struct sTRAconval : public timelist<sTRAconval>::telt
 struct sTRAinstance;
 
 // Special model struct for level=2 convolution.
-struct sTRAconvModel
+struct sTRAconvModelPOD
 {
-    sTRAconvModel()
-        {
-            memset(this, 0, sizeof(sTRAconvModel));
-        }
-
-    ~sTRAconvModel()
-        {
-            delete TRAcvdb;
-        }
-
-    int setup(sCKT*, sTRAinstance*);
-    void rcCoeffsSetup(sCKT*);       
-    void rlcCoeffsSetup(sCKT*);
-    double rlcH2Func(double);
-    double rlcH3dashFunc(double, double, double, double);
-    double lteCalculate(sCKT*, sTRAinstance*, double);
-
     // These values will be the same in all instances of this model.
     double TRAl;             // inductance per length
     double TRAc;             // capacitance per length
@@ -215,33 +198,31 @@ struct sTRAconvModel
 
     double TRAcallTime;      // time when coeffs were set up
     timelist<sTRAconval> *TRAcvdb; // lists of convolution coefficients
+};
+
+struct sTRAconvModel : sTRAconvModelPOD
+{
+    sTRAconvModel() : sTRAconvModelPOD(), next(0) { }
+
+    ~sTRAconvModel()
+        {
+            delete TRAcvdb;
+        }
+
+    int setup(sCKT*, sTRAinstance*);
+    void rcCoeffsSetup(sCKT*);       
+    void rlcCoeffsSetup(sCKT*);
+    double rlcH2Func(double);
+    double rlcH3dashFunc(double, double, double, double);
+    double lteCalculate(sCKT*, sTRAinstance*, double);
 
     sTRAconvModel *next;
 };
 
 struct ltrastuff;
 
-struct sTRAinstance : sGENinstance
+struct sTRAinstancePOD
 {
-    sTRAinstance()
-        {
-            memset(this, 0, sizeof(sTRAinstance));
-            GENnumNodes = 4;
-        }
-    ~sTRAinstance() { delete TRAtvdb; }
-    sTRAinstance *next()
-        { return (static_cast<sTRAinstance*>(GENnextInstance)); }
-    const char *tranline_params();
-    int pade_setup(sCKT*);
-    int ltra_setup(sCKT*);
-    int accept(sCKT*);
-    int set_breaks(sCKT*);
-    int limit_timestep(sCKT*, double*, double);
-    int pade_load(sCKT*);
-    int pade_pred(double, double, double, double*);
-    int ltra_load(sCKT*);
-    int ltra_pred(sCKT*, ltrastuff*);
-
     int TRAposNode1;    // positive node of end 1 of t. line
     int TRAnegNode1;    // negative node of end 1 of t. line
     int TRAposNode2;    // positive node of end 2 of t. line
@@ -329,20 +310,28 @@ struct sTRAinstance : sGENinstance
     unsigned TRAabstolGiven : 1;
 };
 
-struct sTRAmodel : sGENmodel
+struct sTRAinstance : sGENinstance, sTRAinstancePOD
 {
-    sTRAmodel()     { memset(this, 0, sizeof(sTRAmodel)); }
-    ~sTRAmodel()
-        {
-            while (TRAconvModels) {
-                sTRAconvModel *n = TRAconvModels->next;
-                delete TRAconvModels;
-                TRAconvModels = n;
-            }
-        }
-    sTRAmodel *next() { return (static_cast<sTRAmodel*>(GENnextModel)); }
-    sTRAinstance *inst() { return (static_cast<sTRAinstance*>(GENinstances)); }
+    sTRAinstance() : sGENinstance(), sTRAinstancePOD()
+        { GENnumNodes = 4; }
+    ~sTRAinstance() { delete TRAtvdb; }
 
+    sTRAinstance *next()
+        { return (static_cast<sTRAinstance*>(GENnextInstance)); }
+    const char *tranline_params();
+    int pade_setup(sCKT*);
+    int ltra_setup(sCKT*);
+    int accept(sCKT*);
+    int set_breaks(sCKT*);
+    int limit_timestep(sCKT*, double*, double);
+    int pade_load(sCKT*);
+    int pade_pred(double, double, double, double*);
+    int ltra_load(sCKT*);
+    int ltra_pred(sCKT*, ltrastuff*);
+};
+
+struct sTRAmodelPOD
+{
     double TRAlength;   // length, arbitrary units
     double TRAl;        // inductance per length
     double TRAc;        // capacitance per length
@@ -388,6 +377,21 @@ struct sTRAmodel : sGENmodel
     sTRAconvModel *TRAconvModels;
 };
 
+struct sTRAmodel : sGENmodel, sTRAmodelPOD
+{
+    sTRAmodel() : sGENmodel(), sTRAmodelPOD() { }
+    ~sTRAmodel()
+        {
+            while (TRAconvModels) {
+                sTRAconvModel *n = TRAconvModels->next;
+                delete TRAconvModels;
+                TRAconvModels = n;
+            }
+        }
+
+    sTRAmodel *next() { return (static_cast<sTRAmodel*>(GENnextModel)); }
+    sTRAinstance *inst() { return (static_cast<sTRAinstance*>(GENinstances)); }
+};
 } // namespace TRA
 using namespace TRA;
 

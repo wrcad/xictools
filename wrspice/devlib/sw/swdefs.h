@@ -100,16 +100,8 @@ struct SWdev : public IFdevice
     int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
 };
 
-struct sSWinstance : public sGENinstance
+struct sSWinstancePOD
 {
-    sSWinstance()
-        {
-            memset(this, 0, sizeof(sSWinstance));
-            GENnumNodes = 2;
-        }
-    sSWinstance *next()
-        { return (static_cast<sSWinstance*>(GENnextInstance)); }
- 
     int SWposNode;      // number of positive node of switch
     int SWnegNode;      // number of negative node of switch
     int SWposCntrlNode; // positive controlling node of switch
@@ -135,7 +127,15 @@ struct sSWinstance : public sGENinstance
 #else
     double *SWnVar;
 #endif
+};
 
+struct sSWinstance : sGENinstance, sSWinstancePOD
+{
+    sSWinstance() : sGENinstance(), sSWinstancePOD()
+        { GENnumNodes = 2; }
+
+    sSWinstance *next()
+        { return (static_cast<sSWinstance*>(GENnextInstance)); }
 };
 
 // default on conductance = 1 mho
@@ -144,12 +144,8 @@ struct sSWinstance : public sGENinstance
 #define SW_OFF_CONDUCTANCE ckt->CKTcurTask->TSKgmin
 #define SW_NUM_STATES 1   
 
-struct sSWmodel : public sGENmodel
+struct sSWmodelPOD
 {
-    sSWmodel()          { memset(this, 0, sizeof(sSWmodel)); }
-    sSWmodel *next()    { return (static_cast<sSWmodel*>(GENnextModel)); }
-    sSWinstance *inst() { return (static_cast<sSWinstance*>(GENinstances)); }
-
     double SWonResistance;  // switch "on" resistance
     double SWoffResistance; // switch "off" resistance
     double SWvThreshold;    // switching threshold voltage
@@ -166,9 +162,15 @@ struct sSWmodel : public sGENmodel
     unsigned SWvHystGiven : 1;   // hysteresis volt was given
     unsigned SWiThreshGiven : 1; // threshold current was given
     unsigned SWiHystGiven : 1;   // hysteresis current was given
-
 };
 
+struct sSWmodel : sGENmodel, sSWmodelPOD
+{
+    sSWmodel() : sGENmodel(), sSWmodelPOD() { }
+
+    sSWmodel *next()    { return (static_cast<sSWmodel*>(GENnextModel)); }
+    sSWinstance *inst() { return (static_cast<sSWinstance*>(GENinstances)); }
+};
 } // namespace SW
 using namespace SW;
 

@@ -109,19 +109,8 @@ private:
     int dSetup(sJFETmodel*, sCKT*);
 };
 
-struct sJFETinstance : public sGENinstance
+struct sJFETinstancePOD
 {
-    sJFETinstance()
-        {
-            memset(this, 0, sizeof(sJFETinstance));
-            GENnumNodes = 3;
-        }
-    sJFETinstance *next()
-        { return (static_cast<sJFETinstance*>(GENnextInstance)); }
-    void ac_cd(const sCKT*, double*, double*) const;
-    void ac_cs(const sCKT*, double*, double*) const;
-    void ac_cg(const sCKT*, double*, double*) const;
-
     int JFETdrainNode;   // number of drain node of jfet
     int JFETgateNode;    // number of gate node of jfet
     int JFETsourceNode;  // number of source node of jfet
@@ -253,13 +242,20 @@ struct sJFETinstance : public sGENinstance
 
 #define JFETnumStates 13
 
-struct sJFETmodel : sGENmodel
+struct sJFETinstance : sGENinstance, sJFETinstancePOD
 {
-    sJFETmodel()        { memset(this, 0, sizeof(sJFETmodel)); }
-    sJFETmodel *next()  { return (static_cast<sJFETmodel*>(GENnextModel)); }
-    sJFETinstance *inst()
-                        { return (static_cast<sJFETinstance*>(GENinstances)); }
+    sJFETinstance() : sGENinstance(), sJFETinstancePOD()
+        { GENnumNodes = 3; }
 
+    sJFETinstance *next()
+        { return (static_cast<sJFETinstance*>(GENnextInstance)); }
+    void ac_cd(const sCKT*, double*, double*) const;
+    void ac_cs(const sCKT*, double*, double*) const;
+    void ac_cg(const sCKT*, double*, double*) const;
+};
+
+struct sJFETmodelPOD
+{
     int JFETtype;
 
     double JFETthreshold;
@@ -274,7 +270,6 @@ struct sJFETmodel : sGENmodel
     double JFETdepletionCapCoeff;
     double JFETfNcoef;
     double JFETfNexp;
-
 
     double JFETdrainConduct;
     double JFETsourceConduct;
@@ -304,6 +299,14 @@ struct sJFETmodel : sGENmodel
     unsigned JFETfNexpGiven : 1;
 };
 
+struct sJFETmodel : sGENmodel, sJFETmodelPOD
+{
+    sJFETmodel() : sGENmodel(), sJFETmodelPOD() { }
+
+    sJFETmodel *next()  { return (static_cast<sJFETmodel*>(GENnextModel)); }
+    sJFETinstance *inst()
+                        { return (static_cast<sJFETinstance*>(GENinstances)); }
+};
 } // namespace JFET
 using namespace JFET;
 

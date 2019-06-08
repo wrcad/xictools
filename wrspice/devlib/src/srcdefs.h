@@ -114,17 +114,8 @@ private:
 enum SRCfuncType {
     SRC_none, SRC_dc, SRC_ccvs, SRC_vcvs, SRC_cccs, SRC_vccs, SRC_func };
 
-struct sSRCinstance : public sGENSRCinstance
+struct sSRCinstancePOD
 {
-    sSRCinstance()
-        {
-            memset(this, 0, sizeof(sSRCinstance));
-            GENnumNodes = 2;
-        }
-    ~sSRCinstance();
-    sSRCinstance *next()
-        { return (static_cast<sSRCinstance*>(GENnextInstance)); }
-
     double **SRCposptr; // pointer to pointers of the elements in the sparse
                         // matrix
     SRCfuncType SRCdcFunc;  // DC load function type
@@ -159,10 +150,6 @@ struct sSRCinstance : public sGENSRCinstance
     IFcomplex *SRCtimeResp; // cumulative response
     IFcomplex *SRCworkArea; // interim results
     int SRCfreqRespLen;     // length of vectors above
-
-    bool SRCgetFreqResp(sCKT*);
-    bool SRCdo_fft(sCKT*, double, double*);
-    // 
 
     double *SRCposContPosptr; // pointer to sparse matrix element at 
                               //  (positive node, control positive node)
@@ -205,9 +192,23 @@ struct sSRCinstance : public sGENSRCinstance
     unsigned SRCvcCoeffGiven :1; // voltage controlled gain coeff given
 };
 
+struct sSRCinstance : sGENSRCinstance, sSRCinstancePOD
+{
+    sSRCinstance() : sGENSRCinstance(), sSRCinstancePOD()
+        { GENnumNodes = 2; }
+    ~sSRCinstance();
+
+    sSRCinstance *next()
+        { return (static_cast<sSRCinstance*>(GENnextInstance)); }
+
+    bool SRCgetFreqResp(sCKT*);
+    bool SRCdo_fft(sCKT*, double, double*);
+};
+
 struct sSRCmodel : public sGENmodel
 {
-    sSRCmodel()         { memset(this, 0, sizeof(sSRCmodel)); }
+    sSRCmodel() : sGENmodel() { }
+
     sSRCmodel *next()   { return (static_cast<sSRCmodel*>(GENnextModel)); }
     sSRCinstance *inst() { return (static_cast<sSRCinstance*>(GENinstances)); }
 };

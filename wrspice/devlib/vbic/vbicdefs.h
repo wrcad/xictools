@@ -106,21 +106,8 @@ private:
     int dSetup(sVBICmodel*, sCKT*);
 };
 
-struct sVBICinstance : public sGENinstance
+struct sVBICinstancePOD
 {
-    sVBICinstance()
-        {
-            memset(this, 0, sizeof(sVBICinstance));
-            GENnumNodes = 4;
-        }
-    ~sVBICinstance()    { delete [] (char*)VBICbacking; }
-    sVBICinstance *next()
-        { return (static_cast<sVBICinstance*>(GENnextInstance)); }
-    void ac_gm(sCKT*, double*, double*);
-    void ac_cc(sCKT*, double*, double*);
-    void ac_cb(sCKT*, double*, double*);
-    void ac_ce(sCKT*, double*, double*);
-
     int VBICcollNode;   /* number of collector node of vbic */
     int VBICbaseNode;   /* number of base node of vbic */
     int VBICemitNode;   /* number of emitter node of vbic */
@@ -285,23 +272,6 @@ struct sVBICinstance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *VBICbacking;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!VBICbacking)
-                    VBICbacking = new char[sizeof(sVBICinstance)];
-                memcpy(VBICbacking, this, sizeof(sVBICinstance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (VBICbacking)
-                    memcpy(this, VBICbacking, sizeof(sVBICinstance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)VBICbacking;
-                VBICbacking = 0;
-            }
-        }
 
     unsigned VBICareaGiven   :1; /* flag to indicate area was specified */
     unsigned VBICoff         :1; /* 'off' flag for vbic */
@@ -410,7 +380,6 @@ struct sVBICinstance : public sGENinstance
 #define VBICirbp_Vbep GENstate+34
 #define VBICirbp_Vbci GENstate+35
 
-
 #define VBICqbe GENstate+36
 #define VBICcqbe GENstate+37
 #define VBICcqbeci GENstate+38
@@ -460,14 +429,41 @@ struct sVBICinstance : public sGENinstance
 // 
 // #define VBICnumSenStates 10
 
-
-struct sVBICmodel : public sGENmodel
+struct sVBICinstance : sGENinstance, sVBICinstancePOD
 {
-    sVBICmodel()        { memset(this, 0, sizeof(sVBICmodel)); }
-    sVBICmodel *next()  { return (static_cast<sVBICmodel*>(GENnextModel)); }
-    sVBICinstance *inst()
-                        { return (static_cast<sVBICinstance*>(GENinstances)); }
+    sVBICinstance() : sGENinstance(), sVBICinstancePOD()
+        { GENnumNodes = 4; }
+    ~sVBICinstance()    { delete [] (char*)VBICbacking; }
 
+    sVBICinstance *next()
+        { return (static_cast<sVBICinstance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!VBICbacking)
+                    VBICbacking = new char[sizeof(sVBICinstance)];
+                memcpy(VBICbacking, this, sizeof(sVBICinstance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (VBICbacking)
+                    memcpy(this, VBICbacking, sizeof(sVBICinstance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)VBICbacking;
+                VBICbacking = 0;
+            }
+        }
+
+    void ac_gm(sCKT*, double*, double*);
+    void ac_cc(sCKT*, double*, double*);
+    void ac_cb(sCKT*, double*, double*);
+    void ac_ce(sCKT*, double*, double*);
+};
+
+struct sVBICmodelPOD
+{
     int VBICtype;
 
     double VBICtnom;
@@ -694,6 +690,14 @@ struct sVBICmodel : public sGENmodel
     unsigned VBICrefVersionGiven : 1;
 };
 
+struct sVBICmodel : sGENmodel, sVBICmodelPOD
+{
+    sVBICmodel() : sGENmodel(), sVBICmodelPOD() { }
+
+    sVBICmodel *next()  { return (static_cast<sVBICmodel*>(GENnextModel)); }
+    sVBICinstance *inst()
+                        { return (static_cast<sVBICinstance*>(GENinstances)); }
+};
 } // namespace VBIC
 using namespace VBIC;
 

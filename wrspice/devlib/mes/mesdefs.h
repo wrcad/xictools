@@ -104,19 +104,8 @@ private:
     int dSetup(sMESmodel*, sCKT *ckt);
 };
 
-struct sMESinstance : sGENinstance
+struct sMESinstancePOD
 {
-    sMESinstance()
-        {
-            memset(this, 0, sizeof(sMESinstance));
-            GENnumNodes = 3;
-        }
-    sMESinstance *next()
-        { return (static_cast<sMESinstance*>(GENnextInstance)); }
-    void ac_cd(const sCKT*, double*, double*) const;
-    void ac_cs(const sCKT*, double*, double*) const;
-    void ac_cg(const sCKT*, double*, double*) const;
-
     int MESdrainNode;   // number of drain node of mesfet
     int MESgateNode;    // number of gate node of mesfet
     int MESsourceNode;  // number of source node of mesfet
@@ -246,12 +235,20 @@ struct sMESinstance : sGENinstance
 
 #define MESnumStates 13
 
-struct sMESmodel : sGENmodel
+struct sMESinstance : sGENinstance, sMESinstancePOD
 {
-    sMESmodel()         { memset(this, 0, sizeof(sMESmodel)); }
-    sMESmodel *next()   { return (static_cast<sMESmodel*>(GENnextModel)); }
-    sMESinstance *inst() { return (static_cast<sMESinstance*>(GENinstances)); }
+    sMESinstance() : sGENinstance(), sMESinstancePOD()
+        { GENnumNodes = 3; }
 
+    sMESinstance *next()
+        { return (static_cast<sMESinstance*>(GENnextInstance)); }
+    void ac_cd(const sCKT*, double*, double*) const;
+    void ac_cs(const sCKT*, double*, double*) const;
+    void ac_cg(const sCKT*, double*, double*) const;
+};
+
+struct sMESmodelPOD
+{
     int MEStype;
 
     double MESthreshold;
@@ -293,6 +290,13 @@ struct sMESmodel : sGENmodel
     unsigned MESfNexpGiven : 1;
 };
 
+struct sMESmodel : sGENmodel, sMESmodelPOD
+{
+    sMESmodel() : sGENmodel(), sMESmodelPOD() { }
+
+    sMESmodel *next()   { return (static_cast<sMESmodel*>(GENnextModel)); }
+    sMESinstance *inst() { return (static_cast<sMESinstance*>(GENinstances)); }
+};
 } // namespace MES
 using namespace MES;
 

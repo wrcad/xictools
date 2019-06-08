@@ -116,17 +116,8 @@ struct HSM1dev : public IFdevice
     int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
 };
 
-struct sHSM1instance : public sGENinstance
+struct sHSM1instancePOD
 {
-    sHSM1instance()
-        {
-            memset(this, 0, sizeof(sHSM1instance));
-            GENnumNodes = 4;
-        }
-    ~sHSM1instance()    { delete [] (char*)HSM1backing; }
-    sHSM1instance *next()
-        { return (static_cast<sHSM1instance*>(GENnextInstance)); }
-
   int HSM1dNode;      /* number of the drain node of the mosfet */
   int HSM1gNode;      /* number of the gate node of the mosfet */
   int HSM1sNode;      /* number of the source node of the mosfet */
@@ -158,23 +149,6 @@ struct sHSM1instance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *HSM1backing;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!HSM1backing)
-                    HSM1backing = new char[sizeof(sHSM1instance)];
-                memcpy(HSM1backing, this, sizeof(sHSM1instance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (HSM1backing)
-                    memcpy(this, HSM1backing, sizeof(sHSM1instance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)HSM1backing;
-                HSM1backing = 0;
-            }
-        }
 
   /* instance */
   double HSM1_l;    /* the length of the channel region */
@@ -362,7 +336,6 @@ struct sHSM1instance : public sGENinstance
 #else /* NONOISE */
   double **HSM1nVar;
 #endif /* NONOISE */
-
 };
 
   /* common state values in hisim1 module */
@@ -383,12 +356,36 @@ struct sHSM1instance : public sGENinstance
 
 #define HSM1numStates 12
 
-struct sHSM1model : sGENmodel
+struct sHSM1instance : sGENinstance, sHSM1instancePOD
 {
-    sHSM1model()            { memset(this, 0, sizeof(sHSM1model)); }
-    sHSM1model *next()      { return ((sHSM1model*)GENnextModel); }
-    sHSM1instance *inst()   { return ((sHSM1instance*)GENinstances); }
+    sHSM1instance() : sGENinstance(), sHSM1instancePOD()
+        { GENnumNodes = 4; }
+    ~sHSM1instance()    { delete [] (char*)HSM1backing; }
 
+    sHSM1instance *next()
+        { return (static_cast<sHSM1instance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!HSM1backing)
+                    HSM1backing = new char[sizeof(sHSM1instance)];
+                memcpy(HSM1backing, this, sizeof(sHSM1instance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (HSM1backing)
+                    memcpy(this, HSM1backing, sizeof(sHSM1instance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)HSM1backing;
+                HSM1backing = 0;
+            }
+        }
+};
+
+struct sHSM1modelPOD
+{
   int HSM1_type;                /* device type: 1 = nmos,  -1 = pmos */
   int HSM1_level;               /* level */
   int HSM1_info;                /* information */
@@ -638,6 +635,13 @@ struct sHSM1model : sGENmodel
   unsigned HSM1_kf_Given :1;
 };
 
+struct sHSM1model : sGENmodel, sHSM1modelPOD
+{
+    sHSM1model() : sGENmodel(), sHSM1modelPOD() { }
+
+    sHSM1model *next()      { return ((sHSM1model*)GENnextModel); }
+    sHSM1instance *inst()   { return ((sHSM1instance*)GENinstances); }
+};
 } // namespace HSM120
 using namespace HSM120;
 

@@ -150,21 +150,8 @@ private:
     int checkModel(sBSIM3model*, sBSIM3instance*, sCKT*);
 };
 
-struct sBSIM3instance : public sGENinstance
+struct sBSIM3instancePOD
 {
-    sBSIM3instance()
-        {
-            memset(this, 0, sizeof(sBSIM3instance));
-            GENnumNodes = 4;
-        }
-    ~sBSIM3instance()
-        {
-            delete BSIM3adjoint;
-            delete [] (char*)BSIM3backing;
-        }
-    sBSIM3instance *next()
-        { return (static_cast<sBSIM3instance*>(GENnextInstance)); }
-
     int BSIM3dNode;   // number of the drain node of the mosfet
     int BSIM3gNode;   // number of the gate node of the mosfet
     int BSIM3sNode;   // number of the source node of the mosfet
@@ -179,23 +166,6 @@ struct sBSIM3instance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *BSIM3backing;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!BSIM3backing)
-                    BSIM3backing = new char[sizeof(sBSIM3instance)];
-                memcpy(BSIM3backing, this, sizeof(sBSIM3instance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (BSIM3backing)
-                    memcpy(this, BSIM3backing, sizeof(sBSIM3instance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)BSIM3backing;
-                BSIM3backing = 0;
-            }
-        }
 
     /* MCJ */
     double BSIM3ueff;
@@ -394,6 +364,38 @@ struct sBSIM3instance : public sGENinstance
 
 #define BSIM3numStates 42
 
+struct sBSIM3instance : sGENinstance, sBSIM3instancePOD
+{
+    sBSIM3instance() : sGENinstance(), sBSIM3instancePOD()
+        { GENnumNodes = 4; }
+    ~sBSIM3instance()
+        {
+            delete BSIM3adjoint;
+            delete [] (char*)BSIM3backing;
+        }
+
+    sBSIM3instance *next()
+        { return (static_cast<sBSIM3instance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!BSIM3backing)
+                    BSIM3backing = new char[sizeof(sBSIM3instance)];
+                memcpy(BSIM3backing, this, sizeof(sBSIM3instance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (BSIM3backing)
+                    memcpy(this, BSIM3backing, sizeof(sBSIM3instance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)BSIM3backing;
+                BSIM3backing = 0;
+            }
+        }
+};
+
 struct bsim3SizeDependParam
 {
     double Width;
@@ -476,7 +478,6 @@ struct bsim3SizeDependParam
     double BSIM3alpha1;
     double BSIM3beta0;
 
-
     /* CV model */
     double BSIM3elm;
     double BSIM3cgsl;
@@ -490,7 +491,6 @@ struct bsim3SizeDependParam
     double BSIM3voffcv;
     double BSIM3acde;
     double BSIM3moin;
-
 
 /* Pre-calculated constants */
 
@@ -531,12 +531,8 @@ struct bsim3SizeDependParam
     struct bsim3SizeDependParam  *pNext;
 };
 
-struct sBSIM3model : sGENmodel
+struct sBSIM3modelPOD
 {
-    sBSIM3model()           { memset(this, 0, sizeof(sBSIM3model)); }
-    sBSIM3model *next()     { return ((sBSIM3model*)GENnextModel); }
-    sBSIM3instance *inst()  { return ((sBSIM3instance*)GENinstances); }
-
     int BSIM3type;
 
     int    BSIM3mobMod;
@@ -956,7 +952,6 @@ struct sBSIM3model : sGENmodel
     double BSIM3Wmin;
     double BSIM3Wmax;
 
-
 /* Pre-calculated constants */
     /* MCJ: move to size-dependent param. */
     double BSIM3vtm;   
@@ -1093,7 +1088,6 @@ struct sBSIM3model : sGENmodel
     unsigned  BSIM3tpbGiven    :1;
     unsigned  BSIM3tpbswGiven  :1;
     unsigned  BSIM3tpbswgGiven :1;
-
 
     /* Length dependence */
     unsigned  BSIM3lcdscGiven   :1;
@@ -1415,6 +1409,13 @@ struct sBSIM3model : sGENmodel
     unsigned  BSIM3nqsModGiven :1;
 };
 
+struct sBSIM3model : sGENmodel, sBSIM3modelPOD
+{
+    sBSIM3model() : sGENmodel(), sBSIM3modelPOD() { }
+
+    sBSIM3model *next()     { return ((sBSIM3model*)GENnextModel); }
+    sBSIM3instance *inst()  { return ((sBSIM3instance*)GENinstances); }
+};
 } // namespace BSIM324
 using namespace BSIM324;
 

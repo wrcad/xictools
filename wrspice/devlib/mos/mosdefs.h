@@ -112,21 +112,8 @@ private:
     void fs(sMOSmodel*, sMOSinstance*);
 };
 
-struct sMOSinstance : public sGENinstance
+struct sMOSinstancePOD
 {
-    sMOSinstance()
-        {
-            memset(this, 0, sizeof(sMOSinstance));
-            GENnumNodes = 4;
-        }
-    ~sMOSinstance()     { delete [] (char*)MOSbacking; }
-    sMOSinstance *next()
-        { return (static_cast<sMOSinstance*>(GENnextInstance)); }
-    void ac_cd(const sCKT*, double*, double*) const;
-    void ac_cs(const sCKT*, double*, double*) const;
-    void ac_cg(const sCKT*, double*, double*) const;
-    void ac_cb(const sCKT*, double*, double*) const;
-
     int  MOSdNode;   // number of the gate node of the mosfet
     int  MOSgNode;   // number of the gate node of the mosfet
     int  MOSsNode;   // number of the source node of the mosfet
@@ -205,23 +192,6 @@ struct sMOSinstance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *MOSbacking;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!MOSbacking)
-                    MOSbacking = new char[sizeof(sMOSinstance)];
-                memcpy(MOSbacking, this, sizeof(sMOSinstance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (MOSbacking)
-                    memcpy(this, MOSbacking, sizeof(sMOSinstance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)MOSbacking;
-                MOSbacking = 0;
-            }
-        }
 
     double *MOSDdPtr;      // pointer to sparse matrix element at
                            //  (Drain node,drain node)
@@ -404,19 +374,46 @@ struct sMOSinstance : public sGENinstance
 
 #define MOSnumStates 35
 
+struct sMOSinstance : sGENinstance, sMOSinstancePOD
+{
+    sMOSinstance() : sGENinstance(), sMOSinstancePOD()
+        { GENnumNodes = 4; }
+    ~sMOSinstance()     { delete [] (char*)MOSbacking; }
 
+    sMOSinstance *next()
+        { return (static_cast<sMOSinstance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!MOSbacking)
+                    MOSbacking = new char[sizeof(sMOSinstance)];
+                memcpy(MOSbacking, this, sizeof(sMOSinstance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (MOSbacking)
+                    memcpy(this, MOSbacking, sizeof(sMOSinstance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)MOSbacking;
+                MOSbacking = 0;
+            }
+        }
+
+    void ac_cd(const sCKT*, double*, double*) const;
+    void ac_cs(const sCKT*, double*, double*) const;
+    void ac_cg(const sCKT*, double*, double*) const;
+    void ac_cb(const sCKT*, double*, double*) const;
+};
 
 // NOTE:  parameters marked 'input - use xxxx' are paramters for
 // which a temperature correction is applied in MOStemp, thus
 // the MOSxxxx value in the per-instance structure should be used
 // instead in all calculations 
 
-struct sMOSmodel : public sGENmodel
+struct sMOSmodelPOD
 {
-    sMOSmodel()         { memset(this, 0, sizeof(sMOSmodel)); }
-    sMOSmodel *next()   { return (static_cast<sMOSmodel*>(GENnextModel)); }
-    sMOSinstance *inst() { return (static_cast<sMOSinstance*>(GENinstances)); }
-
     int MOStype;       // device type : 1 = nmos,  -1 = pmos
     int MOSlevel;      // UCB model complexity level, 1-3
     int MOSgateType;
@@ -543,7 +540,14 @@ struct sMOSmodel : public sGENmodel
     unsigned MOSsigmaGiven :1;
     unsigned MOSlamda0Given :1;
     unsigned MOSlamda1Given :1;
+};
 
+struct sMOSmodel : sGENmodel, sMOSmodelPOD
+{
+    sMOSmodel() : sGENmodel(), sMOSmodelPOD() { }
+
+    sMOSmodel *next()   { return (static_cast<sMOSmodel*>(GENnextModel)); }
+    sMOSinstance *inst() { return (static_cast<sMOSinstance*>(GENinstances)); }
 };
 
 // store some things to pass to functions

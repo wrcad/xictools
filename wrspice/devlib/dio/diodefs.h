@@ -105,17 +105,8 @@ private:
     int dSetup(sDIOmodel*, sCKT*);
 };
 
-struct sDIOinstance : public sGENinstance
+struct sDIOinstancePOD
 {
-    sDIOinstance()
-        {
-            memset(this, 0, sizeof(sDIOinstance));
-            GENnumNodes = 2;
-        }
-    sDIOinstance *next()
-        { return (static_cast<sDIOinstance*>(GENnextInstance)); }
-    void ac_cd(const sCKT*, double*, double*) const;
-
     int DIOposNode;     /* number of positive node of diode */
     int DIOnegNode;     /* number of negative node of diode */
     int DIOposPrimeNode;    /* number of positive prime node of diode */
@@ -139,23 +130,6 @@ struct sDIOinstance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *DIObacking;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!DIObacking)
-                    DIObacking = new char[sizeof(sDIOinstance)];
-                memcpy(DIObacking, this, sizeof(sDIOinstance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (DIObacking)
-                    memcpy(this, DIObacking, sizeof(sDIOinstance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)DIObacking;
-                DIObacking = 0;
-            }
-        }
 
     double DIOcap;   /* stores the diode capacitance */
 
@@ -219,23 +193,23 @@ struct sDIOinstance : public sGENinstance
 
 #ifndef CONFIG
 
-#define id_x2           DIOdCoeffs[0]
-#define id_x3           DIOdCoeffs[1]
-#define cdif_x2         DIOdCoeffs[2]
-#define cdif_x3         DIOdCoeffs[3]
-#define cjnc_x2         DIOdCoeffs[4]
-#define cjnc_x3         DIOdCoeffs[5]
+#define id_x2       DIOdCoeffs[0]
+#define id_x3       DIOdCoeffs[1]
+#define cdif_x2     DIOdCoeffs[2]
+#define cdif_x3     DIOdCoeffs[3]
+#define cjnc_x2     DIOdCoeffs[4]
+#define cjnc_x3     DIOdCoeffs[5]
 
 #endif
 
 /* indices to array of diode noise  sources */
 
-#define DIORSNOIZ       0
-#define DIOIDNOIZ       1
-#define DIOFLNOIZ 2
-#define DIOTOTNOIZ    3
+#define DIORSNOIZ   0
+#define DIOIDNOIZ   1
+#define DIOFLNOIZ   2
+#define DIOTOTNOIZ  3
 
-#define DIONSRCS     4
+#define DIONSRCS    4
 
 #ifndef NONOISE
      double DIOnVar[NSTATVARS][DIONSRCS];
@@ -244,7 +218,6 @@ struct sDIOinstance : public sGENinstance
 #endif /* NONOISE */
 
 };
-
 
 #define DIOvoltage    GENstate+0
 #define DIOcurrent    GENstate+1
@@ -257,14 +230,37 @@ struct sDIOinstance : public sGENinstance
 
 #define DIOnumStates 6
 
-
-struct sDIOmodel : public sGENmodel
+struct sDIOinstance : sGENinstance, sDIOinstancePOD
 {
-    sDIOmodel()         { memset(this, 0, sizeof(sDIOmodel)); }
-    sDIOmodel *next()   { return (static_cast<sDIOmodel*>(GENnextModel)); }
-    sDIOinstance *inst() { return (static_cast<sDIOinstance*>(GENinstances)); }
+    sDIOinstance() : sGENinstance(), sDIOinstancePOD()
+        { GENnumNodes = 2; }
 
+    sDIOinstance *next()
+        { return (static_cast<sDIOinstance*>(GENnextInstance)); }
 
+    void ac_cd(const sCKT*, double*, double*) const;
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!DIObacking)
+                    DIObacking = new char[sizeof(sDIOinstance)];
+                memcpy(DIObacking, this, sizeof(sDIOinstance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (DIObacking)
+                    memcpy(this, DIObacking, sizeof(sDIOinstance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)DIObacking;
+                DIObacking = 0;
+            }
+        }
+};
+
+struct sDIOmodelPOD
+{
     double DIOsatCur;   /* saturation current */
     double DIOsatSWCur;   /* Sidewall saturation current */
 
@@ -351,6 +347,13 @@ struct sDIOmodel : public sGENmodel
     unsigned DIOtlevcGiven : 1;
 };
 
+struct sDIOmodel : sGENmodel, sDIOmodelPOD
+{
+    sDIOmodel() : sGENmodel(), sDIOmodelPOD() { }
+
+    sDIOmodel *next()   { return (static_cast<sDIOmodel*>(GENnextModel)); }
+    sDIOinstance *inst() { return (static_cast<sDIOinstance*>(GENinstances)); }
+};
 } // namespace DIO
 using namespace DIO;
 

@@ -204,21 +204,8 @@ private:
         double, double, int, double*);
 };
 
-struct sBSIM4instance : public sGENinstance
+struct sBSIM4instancePOD
 {
-    sBSIM4instance()
-        {
-            memset(this, 0, sizeof(sBSIM4instance));
-            GENnumNodes = 4;
-        }
-    ~sBSIM4instance()
-        {
-            delete BSIM4adjoint;
-            delete [] (char*)BSIM4backing;
-        }
-    sBSIM4instance *next()
-        { return (static_cast<sBSIM4instance*>(GENnextInstance)); }
-
     int BSIM4dNode;
     int BSIM4gNodeExt;
     int BSIM4sNode;
@@ -238,23 +225,6 @@ struct sBSIM4instance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *BSIM4backing;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!BSIM4backing)
-                    BSIM4backing = new char[sizeof(sBSIM4instance)];
-                memcpy(BSIM4backing, this, sizeof(sBSIM4instance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (BSIM4backing)
-                    memcpy(this, BSIM4backing, sizeof(sBSIM4instance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)BSIM4backing;
-                BSIM4backing = 0;
-            }
-        }
 
     double BSIM4ueff;
     double BSIM4thetavth; 
@@ -338,7 +308,6 @@ struct sBSIM4instance : public sGENinstance
     int BSIM4geoMod;
     int BSIM4rgeoMod;
     int BSIM4min;
-
 
     /* OP point */
     double BSIM4Vgsteff;
@@ -487,7 +456,6 @@ struct sBSIM4instance : public sGENinstance
     unsigned BSIM4geoModGiven :1;
     unsigned BSIM4rgeoModGiven :1;
 
-
     double *BSIM4DPdPtr;
     double *BSIM4DPdpPtr;
     double *BSIM4DPgpPtr;
@@ -571,7 +539,6 @@ struct sBSIM4instance : public sGENinstance
     double *BSIM4GPqPtr;
     double *BSIM4SPqPtr;
 
-
 /* indices to the array of BSIM4 NOISE SOURCES */
 
 #define BSIM4RDNOIZ       0
@@ -596,9 +563,7 @@ struct sBSIM4instance : public sGENinstance
 #else /* NONOISE */
         double **BSIM4nVar;
 #endif /* NONOISE */
-
 };
-
 
 #define BSIM4vbd GENstate + 0
 #define BSIM4vbs GENstate + 1
@@ -684,6 +649,38 @@ struct sBSIM4instance : public sGENinstance
 #define BSIM4a_qsrc    GENstate + 73
 
 #define BSIM4numStates 74
+
+struct sBSIM4instance : sGENinstance, sBSIM4instancePOD
+{
+    sBSIM4instance() : sGENinstance(), sBSIM4instancePOD()
+        { GENnumNodes = 4; }
+    ~sBSIM4instance()
+        {
+            delete BSIM4adjoint;
+            delete [] (char*)BSIM4backing;
+        }
+
+    sBSIM4instance *next()
+        { return (static_cast<sBSIM4instance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!BSIM4backing)
+                    BSIM4backing = new char[sizeof(sBSIM4instance)];
+                memcpy(BSIM4backing, this, sizeof(sBSIM4instance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (BSIM4backing)
+                    memcpy(this, BSIM4backing, sizeof(sBSIM4instance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)BSIM4backing;
+                BSIM4backing = 0;
+            }
+        }
+};
 
 struct bsim4SizeDependParam
 {
@@ -888,12 +885,8 @@ struct bsim4SizeDependParam
     struct bsim4SizeDependParam  *pNext;
 };
 
-struct sBSIM4model : sGENmodel
+struct sBSIM4modelPOD
 {
-    sBSIM4model()           { memset(this, 0, sizeof(sBSIM4model)); }
-    sBSIM4model *next()     { return ((sBSIM4model*)GENnextModel); }
-    sBSIM4instance *inst()  { return ((sBSIM4instance*)GENinstances); }
-
     int BSIM4type;
 
     int    BSIM4mobMod;
@@ -1560,8 +1553,6 @@ struct sBSIM4model : sGENmodel
     double BSIM4steta0;
     double BSIM4lodeta0;
 
-
-
 /* Pre-calculated constants
  * move to size-dependent param */
     double BSIM4vtm;   
@@ -1799,7 +1790,6 @@ struct sBSIM4model : sGENmodel
     unsigned  BSIM4xglGiven :1;
     unsigned  BSIM4rshgGiven :1;
     unsigned  BSIM4ngconGiven :1;
-
 
     /* Length dependence */
     unsigned  BSIM4lcdscGiven   :1;
@@ -2275,10 +2265,15 @@ struct sBSIM4model : sGENmodel
     unsigned  BSIM4lodk2Given  :1;
     unsigned  BSIM4steta0Given :1;
     unsigned  BSIM4lodeta0Given :1;
-
-
 };
 
+struct sBSIM4model : sGENmodel, sBSIM4modelPOD
+{
+    sBSIM4model() : sGENmodel(), sBSIM4modelPOD() { }
+
+    sBSIM4model *next()     { return ((sBSIM4model*)GENnextModel); }
+    sBSIM4instance *inst()  { return ((sBSIM4instance*)GENinstances); }
+};
 } // namespace BSIM430
 using namespace BSIM430;
 

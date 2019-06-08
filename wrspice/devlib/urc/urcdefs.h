@@ -100,16 +100,8 @@ struct URCdev : public IFdevice
 //    int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
 };
 
-struct sURCinstance : sGENinstance
+struct sURCinstancePOD
 {
-    sURCinstance()
-        {
-            memset(this, 0, sizeof(sURCinstance));
-            GENnumNodes = 3;
-        }
-    sURCinstance *next()
-        { return (static_cast<sURCinstance*>(GENnextInstance)); }
-
     int URCposNode;   // number of positive node of URC
     int URCnegNode;   // number of negative node of URC
     int URCgndNode;   // number of the "ground" node of the URC
@@ -121,12 +113,17 @@ struct sURCinstance : sGENinstance
     unsigned URCsetupDone : 1;  // set when setup called
 };
 
-struct sURCmodel : sGENmodel
+struct sURCinstance : sGENinstance, sURCinstancePOD
 {
-    sURCmodel()         { memset(this, 0, sizeof(sURCmodel)); }
-    sURCmodel *next()   { return (static_cast<sURCmodel*>(GENnextModel)); }
-    sURCinstance *inst() { return (static_cast<sURCinstance*>(GENinstances)); }
+    sURCinstance() : sGENinstance(), sURCinstancePOD()
+        { GENnumNodes = 3; }
 
+    sURCinstance *next()
+        { return (static_cast<sURCinstance*>(GENnextInstance)); }
+};
+
+struct sURCmodelPOD
+{
     double URCk;        // propagation constant for URC
     double URCfmax;     // max frequence of interest
     double URCrPerL;    // resistance per unit length
@@ -141,6 +138,13 @@ struct sURCmodel : sGENmodel
     unsigned URCrsPerLGiven : 1; // flag to indicate rsPerL was specified
 };
 
+struct sURCmodel : sGENmodel, sURCmodelPOD
+{
+    sURCmodel() : sGENmodel(), sURCmodelPOD() { }
+
+    sURCmodel *next()   { return (static_cast<sURCmodel*>(GENnextModel)); }
+    sURCinstance *inst() { return (static_cast<sURCinstance*>(GENinstances)); }
+};
 } // namespace URC
 using namespace URC;
 

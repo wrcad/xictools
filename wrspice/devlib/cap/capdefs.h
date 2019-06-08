@@ -101,24 +101,8 @@ struct CAPdev : public IFdevice
     void initTranFuncs(sGENmodel*, double, double);
 };
 
-struct sCAPinstance : public sGENinstance
+struct sCAPinstancePOD
 {
-    sCAPinstance()
-        {
-            memset(this, 0, sizeof(sCAPinstance));
-            GENnumNodes = 2;
-        }
-    ~sCAPinstance()
-        {
-            delete CAPtree;
-            delete [] CAPvalues;
-            delete [] CAPeqns;
-            delete [] CAPpolyCoeffs;
-        }
-
-    sCAPinstance *next()
-        { return (static_cast<sCAPinstance*>(GENnextInstance)); }
-
     int CAPposNode;    // number of positive node of capacitor
     int CAPnegNode;    // number of negative node of capacitor
 
@@ -164,12 +148,24 @@ struct sCAPinstance : public sGENinstance
     unsigned CAPmGiven      : 1; // device multiplier given
 };
 
-struct sCAPmodel : public sGENmodel
+struct sCAPinstance : sGENinstance, sCAPinstancePOD
 {
-    sCAPmodel()         { memset(this, 0, sizeof(sCAPmodel)); }
-    sCAPmodel *next()   { return (static_cast<sCAPmodel*>(GENnextModel)); }
-    sCAPinstance *inst() { return (static_cast<sCAPinstance*>(GENinstances)); }
+    sCAPinstance() : sGENinstance(), sCAPinstancePOD()
+        { GENnumNodes = 2; }
+    ~sCAPinstance()
+        {
+            delete CAPtree;
+            delete [] CAPvalues;
+            delete [] CAPeqns;
+            delete [] CAPpolyCoeffs;
+        }
 
+    sCAPinstance *next()
+        { return (static_cast<sCAPinstance*>(GENnextInstance)); }
+};
+
+struct sCAPmodelPOD
+{
     double CAPcj;       // Unit Area Capacitance ( F/ M**2 )
     double CAPcjsw;     // Unit Length Sidewall Capacitance ( F / M )
     double CAPdefWidth; // the default width of a capacitor
@@ -189,6 +185,13 @@ struct sCAPmodel : public sGENmodel
     unsigned CAPmGiven   : 1;      // device multiplier given
 };
 
+struct sCAPmodel : sGENmodel, sCAPmodelPOD
+{
+    sCAPmodel() : sGENmodel(), sCAPmodelPOD() { }
+
+    sCAPmodel *next()   { return (static_cast<sCAPmodel*>(GENnextModel)); }
+    sCAPinstance *inst() { return (static_cast<sCAPinstance*>(GENinstances)); }
+};
 } // namespace CAP
 using namespace CAP;
 

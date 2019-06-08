@@ -241,21 +241,8 @@ private:
     int checkModel(sB4SOImodel*, sB4SOIinstance*, sCKT*);
 };
 
-struct sB4SOIinstance : public sGENinstance
+struct sB4SOIinstancePOD
 {
-    sB4SOIinstance()
-    {
-        memset(this, 0, sizeof(sB4SOIinstance));
-        GENnumNodes = 7;
-    }
-    ~sB4SOIinstance()
-        {
-            delete B4SOIadjoint;
-            delete [] (char*)B4SOIbacking;
-        }
-    sB4SOIinstance *next()
-        { return (static_cast<sB4SOIinstance*>(GENnextInstance)); }
-
     int B4SOIdNode;
     int B4SOIgNodeExt; /* v3.1 changed gNode to gNodeExt */
     int B4SOIsNode;
@@ -298,23 +285,6 @@ struct sB4SOIinstance : public sGENinstance
     // This provides a means to back up and restore a known-good
     // state.
     void *B4SOIbacking;
-    void backup(DEV_BKMODE m)
-        {
-            if (m == DEV_SAVE) {
-                if (!B4SOIbacking)
-                    B4SOIbacking = new char[sizeof(sB4SOIinstance)];
-                memcpy(B4SOIbacking, this, sizeof(sB4SOIinstance));
-            }
-            else if (m == DEV_RESTORE) {
-                if (B4SOIbacking)
-                    memcpy(this, B4SOIbacking, sizeof(sB4SOIinstance));
-            }
-            else {
-                // DEV_CLEAR
-                delete [] (char*)B4SOIbacking;
-                B4SOIbacking = 0;
-            }
-        }
 
     double B4SOIphi;
     double B4SOIvtm;
@@ -424,10 +394,6 @@ struct sB4SOIinstance : public sGENinstance
     double B4SOIvtfbphi1;
     double B4SOIvgsteffvth;
     
-
-    
-    
-    
     double B4SOIicVBS;
     double B4SOIicVDS;
     double B4SOIicVGS;
@@ -494,7 +460,6 @@ struct sB4SOIinstance : public sGENinstance
     double B4SOIcbs;
     double B4SOIIgb;
 
-
 /* v2.2 release */
     double B4SOIcgate;
     double B4SOIgigs;
@@ -544,7 +509,6 @@ struct sB4SOIinstance : public sGENinstance
     double B4SOIgIgdg;
     double B4SOIgIgdd;
 
-
     double B4SOIgjsd;
     double B4SOIgjsb;
     double B4SOIgjsg;
@@ -572,7 +536,6 @@ struct sB4SOIinstance : public sGENinstance
     double B4SOIqbulk;
     double B4SOIcapbd;
     double B4SOIcapbs;
-
 
     double B4SOIcggb;
     double B4SOIcgdb;
@@ -809,7 +772,6 @@ struct sB4SOIinstance : public sGENinstance
 
 };
 
-
 #define B4SOIvbd GENstate + 0
 #define B4SOIvbs GENstate + 1
 #define B4SOIvgs GENstate + 2
@@ -893,6 +855,37 @@ struct sB4SOIinstance : public sGENinstance
 
 #define B4SOInumStates 64
 
+struct sB4SOIinstance : sGENinstance, sB4SOIinstancePOD
+{
+    sB4SOIinstance() : sGENinstance(), sB4SOIinstancePOD()
+        { GENnumNodes = 7; }
+    ~sB4SOIinstance()
+        {
+            delete B4SOIadjoint;
+            delete [] (char*)B4SOIbacking;
+        }
+
+    sB4SOIinstance *next()
+        { return (static_cast<sB4SOIinstance*>(GENnextInstance)); }
+
+    void backup(DEV_BKMODE m)
+        {
+            if (m == DEV_SAVE) {
+                if (!B4SOIbacking)
+                    B4SOIbacking = new char[sizeof(sB4SOIinstance)];
+                memcpy(B4SOIbacking, this, sizeof(sB4SOIinstance));
+            }
+            else if (m == DEV_RESTORE) {
+                if (B4SOIbacking)
+                    memcpy(this, B4SOIbacking, sizeof(sB4SOIinstance));
+            }
+            else {
+                // DEV_CLEAR
+                delete [] (char*)B4SOIbacking;
+                B4SOIbacking = 0;
+            }
+        }
+};
 
 struct b4soiSizeDependParam
 {
@@ -958,9 +951,7 @@ struct b4soiSizeDependParam
     double B4SOIeu;
     double B4SOIucs;
     double B4SOIucste;
-    
-    
-    
+
     double B4SOIvoff;
     double B4SOIvfb;
     double B4SOIuatemp;
@@ -1039,7 +1030,6 @@ struct b4soiSizeDependParam
     double NFinger;
 /* v4.0 end */
 
-
     /* CV model */
     double B4SOIcgsl;
     double B4SOIcgdl;
@@ -1047,7 +1037,6 @@ struct b4soiSizeDependParam
     double B4SOIcf;
     double B4SOIclc;
     double B4SOIcle;
-
 
 /* Added for binning - START0 */
 /* v3.1 */
@@ -1105,8 +1094,7 @@ struct b4soiSizeDependParam
     double B4SOIrgisl;
     double B4SOIkgisl;
     double B4SOIfgisl;
-    
-    
+
     double B4SOIntun;   /* v4.0 */
     double B4SOIntund;  /* v4.0 */
     double B4SOIndiode; /* v4.0 */
@@ -1162,13 +1150,11 @@ struct b4soiSizeDependParam
     double B4SOItheta0vb0;
     double B4SOIthetaRout;
 
-
 /* v3.2 */
     double B4SOIqsi;
 
 /* v2.2 release */
     double B4SOIoxideRatio;
-
 
 /* v2.0 release */
     double B4SOIk1eff;
@@ -1230,13 +1216,8 @@ struct b4soiSizeDependParam
     struct b4soiSizeDependParam  *pNext;
 };
 
-struct sB4SOImodel : sGENmodel
+struct sB4SOImodelPOD
 {
-    sB4SOImodel()       { memset(this, 0, sizeof(sB4SOImodel)); }
-    sB4SOImodel *next() { return (static_cast<sB4SOImodel*>(GENnextModel)); }
-    sB4SOIinstance *inst()
-                        { return (static_cast<sB4SOIinstance*>(GENinstances));}
-
     int B4SOItype;
 
     int    B4SOImobMod;
@@ -1407,7 +1388,6 @@ struct sB4SOImodel : sGENmodel
     double B4SOIxrecd;
     double B4SOIxtund;
 
-
 /* v3.0 */
     int B4SOIsoiMod; /* v3.2 bug fix */
     double B4SOIvbs0pd; /* v3.2 */
@@ -1478,7 +1458,6 @@ struct sB4SOImodel : sGENmodel
     double B4SOIwvoffcv;
     double B4SOIpvoffcv;
 
-
     /* added end */
 
 /* v2.2 release */
@@ -1501,7 +1480,6 @@ struct sB4SOImodel : sGENmodel
     double B4SOItoxqm;
     double B4SOIvoxh;
     double B4SOIdeltavox;
-
 
 /* v2.0 release */
     double B4SOIk1w1;
@@ -1582,7 +1560,6 @@ struct sB4SOImodel : sGENmodel
     double B4SOIcle;
     double B4SOIdwc;
     double B4SOIdlc;
-
 
     double B4SOItnom;
     double B4SOIcgso;
@@ -2442,7 +2419,6 @@ struct sB4SOImodel : sGENmodel
     unsigned  B4SOIb1Given   :1;
     unsigned  B4SOIalpha0Given   :1;
     
-    
     /*4.1*/
     unsigned  B4SOIepsroxGiven :1;
     unsigned  B4SOIeotGiven    :1;
@@ -2524,7 +2500,6 @@ struct sB4SOImodel : sGENmodel
     unsigned  B4SOIpigcdGiven   :1;
     unsigned  B4SOIpoxedgeGiven   :1;
     unsigned  B4SOIdlcigGiven   :1;
-
 
 /* v2.0 release */
     unsigned  B4SOIk1w1Given   :1;
@@ -3250,6 +3225,14 @@ struct sB4SOImodel : sGENmodel
 
 };
 
+struct sB4SOImodel : sGENmodel, sB4SOImodelPOD
+{
+    sB4SOImodel() : sGENmodel(), sB4SOImodelPOD() { }
+
+    sB4SOImodel *next() { return (static_cast<sB4SOImodel*>(GENnextModel)); }
+    sB4SOIinstance *inst()
+                        { return (static_cast<sB4SOIinstance*>(GENinstances));}
+};
 } // namespace BSIMSOI43
 using namespace BSIMSOI43;
 

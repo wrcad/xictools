@@ -110,16 +110,8 @@ struct SOI3dev : public IFdevice
     int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
 };
 
-struct sSOI3instance : public sGENinstance
+struct sSOI3instancePOD
 {
-    sSOI3instance()
-        {
-            memset(this, 0, sizeof(sSOI3instance));
-            GENnumNodes = 7;
-        }
-    sSOI3instance *next()
-        { return (static_cast<sSOI3instance*>(GENnextInstance)); }
-
     int SOI3dNode;  /* number of the drain node of the mosfet */
     int SOI3gfNode;  /* number of the front gate node of the mosfet */
     int SOI3sNode;  /* number of the source node of the mosfet */
@@ -468,12 +460,17 @@ struct sSOI3instance : public sGENinstance
 
 #define SOI3numStates 62
 
-struct sSOI3model : sGENmodel
+struct sSOI3instance : sGENinstance, sSOI3instancePOD
 {
-    sSOI3model()        { memset(this, 0, sizeof(sSOI3model)); }
-    sSOI3model *next()  { return ((sSOI3model*)GENnextModel); }
-    sSOI3instance *inst() { return ((sSOI3instance*)GENinstances); }
+    sSOI3instance() : sGENinstance(), sSOI3instancePOD()
+        { GENnumNodes = 7; }
 
+    sSOI3instance *next()
+        { return (static_cast<sSOI3instance*>(GENnextInstance)); }
+};
+
+struct sSOI3modelPOD
+{
     double SOI3tnom;        /* temperature at which parameters measured */
     double SOI3latDiff;
     double SOI3jctSatCurDensity;    /* input - use tSatCurDens (jnct)*/
@@ -660,6 +657,13 @@ struct sSOI3model : sGENmodel
     unsigned SOI3ctaGiven                  :1;
 };
 
+struct sSOI3model : sGENmodel, sSOI3modelPOD
+{
+    sSOI3model() : sGENmodel(), sSOI3modelPOD() { }
+
+    sSOI3model *next()  { return ((sSOI3model*)GENnextModel); }
+    sSOI3instance *inst() { return ((sSOI3instance*)GENinstances); }
+};
 } // namespace SOI3
 using namespace SOI3;
 

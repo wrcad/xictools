@@ -114,31 +114,8 @@ struct UFSdev : public IFdevice
     int noise(int, int, sGENmodel*, sCKT*, sNdata*, double*);
 };
 
-struct sUFSinstance : public sGENinstance
+struct sUFSinstancePOD
 {
-    sUFSinstance()
-        {
-            memset(this, 0, sizeof(sUFSinstance));
-            GENnumNodes = 5;
-
-            // The sub-structs are normally allocated on the first call to
-            // setInst().  We do it here instead.
-            pInst = new ufsAPI_InstData;
-            pOpInfo = new ufsAPI_OPData;
-            pInst->pTempModel = new ufsTDModelData;
-            ufsInitInstFlag(pInst);
-            DeviceInitialized = 1;
-        }
-    ~sUFSinstance()
-        {
-            if (pInst)
-                delete pInst->pTempModel;
-            delete pInst;
-            delete pOpInfo;
-        }
-    sUFSinstance *next()
-        { return (static_cast<sUFSinstance*>(GENnextInstance)); }
-
 //    struct sUFSmodel *UFSmodPtr;
 //    struct sUFSinstance *UFSnextInstance;
 //    IFuid UFSname;
@@ -259,13 +236,33 @@ struct sUFSinstance : public sGENinstance
 #endif /* NONOISE */
 };
 
-struct sUFSmodel : public sGENmodel
+struct sUFSinstance : sGENinstance, sUFSinstancePOD
 {
-    sUFSmodel()     { memset(this, 0, sizeof(sUFSmodel)); }
-    ~sUFSmodel()    { delete pModel; }
-    sUFSmodel *next() { return (static_cast<sUFSmodel*>(GENnextModel)); }
-    sUFSinstance *inst() { return (static_cast<sUFSinstance*>(GENinstances)); }
+    sUFSinstance() : sGENinstance(), sUFSinstancePOD()
+        {
+            GENnumNodes = 5;
 
+            // The sub-structs are normally allocated on the first call to
+            // setInst().  We do it here instead.
+            pInst = new ufsAPI_InstData;
+            pOpInfo = new ufsAPI_OPData;
+            pInst->pTempModel = new ufsTDModelData;
+            ufsInitInstFlag(pInst);
+            DeviceInitialized = 1;
+        }
+    ~sUFSinstance()
+        {
+            if (pInst)
+                delete pInst->pTempModel;
+            delete pInst;
+            delete pOpInfo;
+        }
+    sUFSinstance *next()
+        { return (static_cast<sUFSinstance*>(GENnextInstance)); }
+};
+
+struct sUFSmodelPOD
+{
 //    int UFSmodType;
 //    struct sUFSmodel *UFSnextModel;
 //    UFSinstance *UFSinstances;
@@ -284,6 +281,14 @@ struct sUFSmodel : public sGENmodel
     unsigned ModelInitialized :1;
 };
 
+struct sUFSmodel : sGENmodel, sUFSmodelPOD
+{
+    sUFSmodel() : sGENmodel(), sUFSmodelPOD() { }
+    ~sUFSmodel()    { delete pModel; }
+
+    sUFSmodel *next() { return (static_cast<sUFSmodel*>(GENnextModel)); }
+    sUFSinstance *inst() { return (static_cast<sUFSinstance*>(GENinstances)); }
+};
 } // namespace UFS75
 using namespace UFS75;
 
