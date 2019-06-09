@@ -500,7 +500,7 @@ cColIn::parse_cols(FILE *fp, int ncols, int xcols)
             vec->set_name("column_0");
             sDataVec *vend = vec;
             for (i = 1; i < ncols; i++) {
-                char tbf[16];
+                char tbf[32];
                 sprintf(tbf, "column_%d", i);
                 vec = new sDataVec(UU_NOTYPE);
                 vec->set_plot(pl);

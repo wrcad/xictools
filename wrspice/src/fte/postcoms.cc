@@ -970,7 +970,7 @@ sPlot::write(sDvList *dl0, bool appendwrite, const char *file)
     delete newplot.pl_hashtab;
 
     // for destructor
-    memset(&newplot, 0, sizeof(sPlot));
+    memset((void*)&newplot, 0, sizeof(sPlot));
 
     return (dl0);
 }

@@ -82,8 +82,8 @@ namespace {
             void action_hdlr(GtkWidget*, void*);
             void err_message(const char*);
 
-            static bool cgl_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, bool, void*);
+            static int cgl_selection_proc(GtkTreeSelection*, GtkTreeModel*,
+                GtkTreePath*, int, void*);
             static bool cgl_focus_proc(GtkWidget*, GdkEvent*, void*);
             static bool cgl_add_cb(const char*, const char*, int, void*);
             static ESret cgl_sav_cb(const char*, void*);
@@ -258,8 +258,7 @@ sCGL::sCGL(GRobject c)
 
     GtkTreeSelection *sel =
         gtk_tree_view_get_selection(GTK_TREE_VIEW(cgl_list));
-    gtk_tree_selection_set_select_function(sel,
-        (GtkTreeSelectionFunc)cgl_selection_proc, 0, 0);
+    gtk_tree_selection_set_select_function(sel, cgl_selection_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
     gtk_signal_connect(GTK_OBJECT(cgl_list), "focus",
         GTK_SIGNAL_FUNC(cgl_focus_proc), this);
@@ -534,9 +533,9 @@ sCGL::err_message(const char *fmt)
 // is made, but not when the selection disappears, which happens when the
 // list is updated.
 //
-bool
+int
 sCGL::cgl_selection_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, bool issel, void *)
+    GtkTreePath *path, int issel, void *)
 {
     if (CGL) {
         if (issel)

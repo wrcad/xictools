@@ -1523,9 +1523,117 @@ enum UID_TYPE {
     UID_OTHER    = 0x10
 };
 
-// The circuit control struct
+// Plain ol' data for sCKT struct.
 //
-struct sCKT
+struct sCKTPOD
+{
+    double CKTtime;         // time variable for transient
+    double CKTdelta;        // time delta for transient
+    double CKTdeltaOld[7];  // previous time deltas
+    double CKTsaveDelta;    // save old delta at breakpoint
+    double CKTdevMaxDelta;  // max delta, optionally set by device in accept
+    double CKTvt;           // thermal voltage cache
+    double CKTag[7];        // the integration variable coefficient matrix
+    double CKTpred[4];      // factors used to predict new values
+    double CKTtranDiffs[4]; // factors used to interpolate tran data
+    double CKTstep;         // user's time increment
+    double CKTmaxStep;      // user's max internal increment
+    double CKTfinalTime;    // final time for transient analysis
+    double CKTinitTime;     // begin print time fro transient analysis
+    double CKTfinalFreq;    // final freq for ac analysis
+    double CKTinitFreq;     // initial freq for ac analysis
+    double CKTfinalV1;      // final V1 for dct analysis, and chained
+    double CKTinitV1;       // initial V1 for dct analysis, and chained
+    double CKTfinalV2;      // final V2 for dct analysis, and chained
+    double CKTinitV2;       // initial V2 for dct analysis, and chained
+    double CKTinitDelta;    // initial timestep
+    double CKTomega;        // current frequency for ac
+    double CKTsrcFact;      // source stepping factor
+    double CKTdiagGmin;     // gmin stepping
+
+    double *CKTrhs;         // current rhs value - being loaded
+    double *CKTrhsOld;      // previous rhs value for convergence testing
+    double *CKTrhsSpare;    // spare rhs value for reordering
+    double *CKTirhs;        // current rhs value - being loaded (imag)
+    double *CKTirhsOld;     // previous rhs value (imaginary)
+    double *CKTirhsSpare;   // spare rhs value (imaginary)
+    double *CKTsols[8];     // previous 8 rhs solutions
+    double *CKToldSol;      // known-good solution backup
+    double *CKToldState0;   // known-good state0 backup
+
+    sCKTmodHead CKTmodels;  // list of device models
+    sFtCirc *CKTbackPtr;    // backpointer to container
+    sCKTtable *CKTtableHead; // head of table list
+    sSTATS *CKTstat;        // STATistics
+    double *CKTstates[8];   // state vectors
+
+    double *CKTtemps;       // list of temperatures from .TEMP
+
+    cThreadPool *CKTloadPool; // multi-thread load pool
+    sTASK *CKTcurTask;      // pointer to current task
+    sJOB *CKTcurJob;        // pointer to current job
+    spMatrixFrame *CKTmatrix; // pointer to sparse matrix
+    sHtab *CKTmacroTab;     // hash table for macros
+
+    int CKTtranDegree;      // degree of interpolation for tran
+    int CKTcurrentAnalysis; // the analysis in progress (if any)
+    int CKTniState;         // internal state
+    int CKTnumTemps;        // length of CKTtemps
+    int CKTmaxUserNodenum;  // top node number before setup()
+    int CKTnumStates;       // in-use length of state vector
+    int CKTstateSize;       // actual length of state vector
+    int CKTmode;            // current analysis mode
+    int CKTorder;           // integration order
+    int CKTnoncon;          // nonconvergence count
+    int CKTpreload;         // preload constants in matrix during setup
+    int CKTbreak;           // stop at breakpoint
+    int CKTtranTrace;       // debugging mode
+    int CKTchargeCompNeeded;// flag passed to device load function
+    int CKTextPrec;
+#ifdef WITH_THREADS
+    int CKTloadThreads;     // number of loading threads in use
+    int CKTthreadId;        // thread index, 0 is main thread
+#endif
+    int CKTnumDC;           // number of DC calls to analysis (chained DC)
+    int CKTcntDC;           // analysis calls thus far
+
+    // flags
+    bool CKThadNodeset;     // nodeset was used
+    bool CKTkeepOpInfo;     // flag for small signal analyses
+    bool CKTisSetup;        // CKTsetup done
+    bool CKTjjPresent;      // Josephson junctions are in circuit
+#ifdef NEWJJDC
+    double CKTjjDCphase;    // Compute phase in DC analysis.
+#endif
+    bool CKTtrapCheck;      // check for non-convergence in TRAP
+    bool CKTtrapBad;        // check found non-convergence
+    bool CKTneedsRevertResetup;  // need to call resetup after dev restore
+    bool CKTnogo;           // error found, circuit bad
+
+    double CKTbreaks[2];          // breakpoint table
+
+    // Verilog interface
+    VerilogBlock *CKTvblk;        // Verilog stuff from circuit
+
+    sGENmodel *CKTmutModels;      // for MUTs, that must be loaded before
+                                  // inductors
+
+    // for TRA history
+    double *CKTtimePoints;        // list of accepted timepoints
+    double *CKTdeltaList;         // list of timesteps
+    int CKTtimeListSize;          // size of above lists
+    int CKTtimeIndex;             // current position in above lists
+    int CKTsizeIncr;              // amount to increment size of above arrays
+                                  //  when out of space
+    // debugging
+    int CKTtroubleNode;           // Non-convergent node number
+    sGENinstance *CKTtroubleElt;  // Non-convergent device instance
+
+};
+
+// The circuit control struct.
+//
+struct sCKT : sCKTPOD
 {
     // ckt.cc
     sCKT();
@@ -1968,111 +2076,10 @@ public:
 
     bool jjaccel()      { return (CKTjjPresent && CKTcurTask->TSKjjaccel); }
 
-    static int CKTstepDebug;          // enable timepoint debugging
-
-    double CKTtime;         // time variable for transient
-    double CKTdelta;        // time delta for transient
-    double CKTdeltaOld[7];  // previous time deltas
-    double CKTsaveDelta;    // save old delta at breakpoint
-    double CKTdevMaxDelta;  // max delta, optionally set by device in accept
-    double CKTvt;           // thermal voltage cache
-    double CKTag[7];        // the integration variable coefficient matrix
-    double CKTpred[4];      // factors used to predict new values
-    double CKTtranDiffs[4]; // factors used to interpolate tran data
-    double CKTstep;         // user's time increment
-    double CKTmaxStep;      // user's max internal increment
-    double CKTfinalTime;    // final time for transient analysis
-    double CKTinitTime;     // begin print time fro transient analysis
-    double CKTfinalFreq;    // final freq for ac analysis
-    double CKTinitFreq;     // initial freq for ac analysis
-    double CKTfinalV1;      // final V1 for dct analysis, and chained
-    double CKTinitV1;       // initial V1 for dct analysis, and chained
-    double CKTfinalV2;      // final V2 for dct analysis, and chained
-    double CKTinitV2;       // initial V2 for dct analysis, and chained
-    double CKTinitDelta;    // initial timestep
-    double CKTomega;        // current frequency for ac
-    double CKTsrcFact;      // source stepping factor
-    double CKTdiagGmin;     // gmin stepping
-
-    double *CKTrhs;         // current rhs value - being loaded
-    double *CKTrhsOld;      // previous rhs value for convergence testing
-    double *CKTrhsSpare;    // spare rhs value for reordering
-    double *CKTirhs;        // current rhs value - being loaded (imag)
-    double *CKTirhsOld;     // previous rhs value (imaginary)
-    double *CKTirhsSpare;   // spare rhs value (imaginary)
-    double *CKTsols[8];     // previous 8 rhs solutions
-    double *CKToldSol;      // known-good solution backup
-    double *CKToldState0;   // known-good state0 backup
-
-    sCKTmodHead CKTmodels;  // list of device models
-    sFtCirc *CKTbackPtr;    // backpointer to container
-    sCKTtable *CKTtableHead; // head of table list
-    sSTATS *CKTstat;        // STATistics
-    double *CKTstates[8];   // state vectors
-
-    double *CKTtemps;       // list of temperatures from .TEMP
-
-    cThreadPool *CKTloadPool; // multi-thread load pool
-    sTASK *CKTcurTask;      // pointer to current task
-    sJOB *CKTcurJob;        // pointer to current job
-    spMatrixFrame *CKTmatrix; // pointer to sparse matrix
-    sHtab *CKTmacroTab;     // hash table for macros
-
-    int CKTtranDegree;      // degree of interpolation for tran
-    int CKTcurrentAnalysis; // the analysis in progress (if any)
-    int CKTniState;         // internal state
-    int CKTnumTemps;        // length of CKTtemps
-    int CKTmaxUserNodenum;  // top node number before setup()
-    int CKTnumStates;       // in-use length of state vector
-    int CKTstateSize;       // actual length of state vector
-    int CKTmode;            // current analysis mode
-    int CKTorder;           // integration order
-    int CKTnoncon;          // nonconvergence count
-    int CKTpreload;         // preload constants in matrix during setup
-    int CKTbreak;           // stop at breakpoint
-    int CKTtranTrace;       // debugging mode
-    int CKTchargeCompNeeded;// flag passed to device load function
-    int CKTextPrec;
-#ifdef WITH_THREADS
-    int CKTloadThreads;     // number of loading threads in use
-    int CKTthreadId;        // thread index, 0 is main thread
-#endif
-    int CKTnumDC;           // number of DC calls to analysis (chained DC)
-    int CKTcntDC;           // analysis calls thus far
-
-    // flags
-    bool CKThadNodeset;     // nodeset was used
-    bool CKTkeepOpInfo;     // flag for small signal analyses
-    bool CKTisSetup;        // CKTsetup done
-    bool CKTjjPresent;      // Josephson junctions are in circuit
-#ifdef NEWJJDC
-    double CKTjjDCphase;    // Compute phase in DC analysis.
-#endif
-    bool CKTtrapCheck;      // check for non-convergence in TRAP
-    bool CKTtrapBad;        // check found non-convergence
-    bool CKTneedsRevertResetup;  // need to call resetup after dev restore
-    bool CKTnogo;           // error found, circuit bad
-
-    double CKTbreaks[2];          // breakpoint table
     sCKTlattice CKTlattice;       // breakpoint control
     sCKTnodeTab CKTnodeTab;       // sCKTnode factory
 
-    // Verilog interface
-    VerilogBlock *CKTvblk;        // Verilog stuff from circuit
-
-    sGENmodel *CKTmutModels;      // for MUTs, that must be loaded before
-                                  // inductors
-
-    // for TRA history
-    double *CKTtimePoints;        // list of accepted timepoints
-    double *CKTdeltaList;         // list of timesteps
-    int CKTtimeListSize;          // size of above lists
-    int CKTtimeIndex;             // current position in above lists
-    int CKTsizeIncr;              // amount to increment size of above arrays
-                                  //  when out of space
-    // debugging
-    int CKTtroubleNode;           // Non-convergent node number
-    sGENinstance *CKTtroubleElt;  // Non-convergent device instance
+    static int CKTstepDebug;      // enable timepoint debugging
 
 #ifdef WITH_THREADS
 #ifdef __APPLE__

@@ -219,10 +219,8 @@ sGENmodel::~sGENmodel()
 
 int sCKT::CKTstepDebug = 0;
 
-sCKT::sCKT()
+sCKT::sCKT() : sCKTPOD()
 {
-    memset(this, 0, sizeof(sCKT));
-
     CKTsrcFact = 1.0;
     CKTorder = 1;
     CKTstat = new sSTATS();

@@ -434,7 +434,7 @@ oas_out::set_destination(FILE *fp, void **new_cx, void **old_cx)
         if (!*new_cx)
             out_modal->reset();
         else
-            memcpy(out_modal, *new_cx, sizeof(oas_modal));
+            memcpy((void*)out_modal, *new_cx, sizeof(oas_modal));
     }
     out_fp = fp;
     return (true);

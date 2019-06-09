@@ -235,7 +235,8 @@ private:
             if (col >= pb_size) {
                 sHtxt *tmp = new sHtxt[2*pb_size];
                 memcpy(tmp, pb_hbuf, pb_size*sizeof(sHtxt));
-                memset(pb_hbuf, 0, pb_size*sizeof(sHtxt));
+                // Zero pointers for delete.
+                memset((void*)pb_hbuf, 0, pb_size*sizeof(sHtxt));
                 delete [] pb_hbuf;
                 pb_hbuf = tmp;
                 pb_size += pb_size;

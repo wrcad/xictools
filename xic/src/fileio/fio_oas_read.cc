@@ -4670,7 +4670,7 @@ oas_in::pop_state(oas_state *st)
 {
     modal.reset();
     unsigned int sz = sizeof(oas_modal);
-    memcpy(&modal, st->modal_store, sz);
+    memcpy((void*)&modal, st->modal_store, sz);
     delete [] (char*)st->modal_store;
 
     in_zfile = st->zfile;

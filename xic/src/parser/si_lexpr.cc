@@ -483,9 +483,10 @@ SIlexp_list::check(const char *e)
     }
     if (!ll_lspec)
         return (0);
-    for (int i = 0; i < ll_indx; i++)
+    for (int i = 0; i < ll_indx; i++) {
         if (ll_lspec[i].lname() == e)
             return (i+1);
+    }
     return (0);
 }
 
@@ -499,8 +500,8 @@ SIlexp_list::add(const sLspec &l)
     if (ll_indx >= ll_size) {
         sLspec *lold = ll_lspec;
         ll_lspec = new sLspec[ll_size + LL_INCR];
-        memcpy(ll_lspec, lold, ll_size * sizeof(sLspec));
-        memset(lold, 0, ll_size * sizeof(sLspec));
+        memcpy((void*)ll_lspec, lold, ll_size * sizeof(sLspec));
+        memset((void*)lold, 0, ll_size * sizeof(sLspec));
         delete [] lold;
         ll_size += LL_INCR;
     }

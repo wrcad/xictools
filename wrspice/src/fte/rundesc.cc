@@ -592,7 +592,7 @@ sRunDesc::addDataDesc(const char *nm, int typ, int ind)
     }
 
     dataDesc *d = rd_data + rd_numData;
-    memset(d, 0, sizeof(dataDesc));
+    *d = dataDesc();
 
     d->name = lstring::copy(nm);
     d->type = typ & IF_VARTYPES;
@@ -625,7 +625,7 @@ sRunDesc::addSpecialDesc(const char *nm, int depind, bool usevec)
     }
 
     dataDesc *d = rd_data + rd_numData;
-    memset(d, 0, sizeof(dataDesc));
+    *d = dataDesc();
 
     d->name = lstring::copy(nm);
     d->useVecIndx = usevec;

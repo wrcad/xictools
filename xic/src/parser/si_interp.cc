@@ -630,7 +630,7 @@ SIinterp::Clear()
     }
     SIparse()->clearVariables();
     SIparse()->clearGlobals();
-    memset(&siMain, 0, sizeof(SIfunc));
+    siMain = SIfunc();
     if (!siContext || !siContext->next())
         // context shared with called scripts, only clear at top level
         Cleanup();
@@ -1185,7 +1185,7 @@ void
 SIinterp::push_cx()
 {
     siContext = new sCx(siContext);
-    memset(&siMain, 0, sizeof(SIfunc));
+    siMain = SIfunc();
     siLineCount = 0;
     siExecLine = -1;
     siLevel = 0;
@@ -1202,7 +1202,7 @@ SIinterp::pop_cx()
 {
     Clear();
     siMain = *siContext->sfunc();
-    memset(siContext->sfunc(), 0, sizeof(SIfunc));
+    *siContext->sfunc() = SIfunc();
     siLineCount = siContext->line_cnt();
     siExecLine = siContext->ex_line();
     siLevel = siContext->level();

@@ -1810,13 +1810,17 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
         return (ret);
     }
 
-    char buf[256], tbuf[256];
+    char tbuf[256];
     bool immut = prp_get_prompt(global, Scur->pointer, tbuf);
     Udata.string = 0;
     Udata.hyl = 0;
     if (allow_switch && !immut) {
-        sprintf(buf, "(Up/down arrows to select)  %s", tbuf);
-        strcpy(tbuf, buf);
+        const char *fs = "(Up/down arrows to select)  %s";
+        if (strlen(tbuf) + strlen(fs) - 2  < 256) {
+            char *tt = lstring::copy(tbuf);
+            sprintf(tbuf, fs, tt);
+            delete [] tt;
+        }
     }
     if (DSP()->CurMode() == Electrical) {
         hyList *hnew;

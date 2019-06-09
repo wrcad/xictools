@@ -80,8 +80,29 @@ namespace { FILE *net_callback(const char*, char**); }
 #endif  // HAVE_MOZY
 
 namespace {
-    bool callback(const char*, void*, XEtype);
-    int filedate(const char*);
+    // This gets called when the 'source' button is pressed in the
+    // xeditor window.
+    //
+    bool callback(const char *filename, void *arg, XEtype fromsource)
+    {
+        if (fromsource == XE_SOURCE) {
+            TTY.monitor();
+            Sp.EditSource(filename, arg ? true : false, false);
+            CP.SetAltPrompt();
+            if (TTY.wasoutput())
+                CP.Prompt();
+        }
+        return (true);
+    }
+
+    int filedate(const char *filename)
+    {
+        struct stat st;
+        int i = stat(filename, &st);
+        if (i)
+            st.st_mtime = 0;
+        return (st.st_mtime);
+    }
 }
 
 
@@ -156,7 +177,7 @@ CommandTab::com_edit(wordlist *wl)
     // suppress source if file is not written
     int date = filedate(filename);
     bool usex;
-    if (Sp.Edit(filename, (void(*)(char*, bool, int))callback, true,
+    if (Sp.Edit(filename, (bool(*)(const char*, void*, int))callback, true,
             &usex) || usex)
         return;
     if (date == filedate(filename) && date) {
@@ -242,8 +263,8 @@ CommandTab::com_listing(wordlist *wl)
 
 
 bool
-IFsimulator::Edit(const char *filename, void (*callback)(char*, bool, int),
-    bool havesource, bool *usex)
+IFsimulator::Edit(const char *filename,
+    bool(*callback)(const char*, void*, int), bool havesource, bool *usex)
 {
     const char *editor;
     VTvalue vv;
@@ -731,33 +752,5 @@ IFsimulator::FullPath(const char *name)
         v = v->next();
     }
     return (0);
-}
-
-
-namespace {
-    // This gets called when the 'source' button is pressed in the
-    // xeditor window.
-    //
-    bool callback(const char *filename, void *arg, XEtype fromsource)
-    {
-        if (fromsource == XE_SOURCE) {
-            TTY.monitor();
-            Sp.EditSource(filename, arg ? true : false, false);
-            CP.SetAltPrompt();
-            if (TTY.wasoutput())
-                CP.Prompt();
-        }
-        return (true);
-    }
-
-
-    int filedate(const char *filename)
-    {
-        struct stat st;
-        int i = stat(filename, &st);
-        if (i)
-            st.st_mtime = 0;
-        return (st.st_mtime);
-    }
 }
 

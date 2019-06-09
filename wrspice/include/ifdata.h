@@ -77,20 +77,20 @@ template<class T> inline void Realloc(T** oldp, unsigned int newsize,
     T *t = new T[newsize];
     if (*oldp && oldsize > 0) {
         if (newsize < oldsize)
-            memcpy(t, *oldp, newsize*sizeof(T));
+            memcpy((void*)t, *oldp, newsize*sizeof(T));
         else {
-            memcpy(t, *oldp, oldsize*sizeof(T));
-            memset(t + oldsize, 0, (newsize - oldsize)*sizeof(T));
+            memcpy((void*)t, *oldp, oldsize*sizeof(T));
+            memset((void*)(t + oldsize), 0, (newsize - oldsize)*sizeof(T));
         }
 
         // Zero out any pointers that might be freed in the destructor,
         // that we just copied.
-        memset(*oldp, 0, oldsize*sizeof(T));
+        memset((void*)*oldp, 0, oldsize*sizeof(T));
 
         delete [] *oldp;
     }
     else
-        memset(t, 0, newsize*sizeof(T));
+        memset((void*)t, 0, newsize*sizeof(T));
     *oldp = t;
 }
 

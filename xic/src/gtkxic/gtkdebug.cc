@@ -126,8 +126,8 @@ namespace {
 
         private:
             static void dv_cancel_proc(GtkWidget*, void*);
-            static bool dv_select_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, bool, void*);
+            static int dv_select_proc(GtkTreeSelection*, GtkTreeModel*,
+                GtkTreePath*, int, void*);
             static bool dv_focus_proc(GtkWidget*, GdkEvent*, void*);
 
             GtkWidget *dv_popup;
@@ -2031,8 +2031,7 @@ sDbV::sDbV(void *p)
 
     GtkTreeSelection *sel =
         gtk_tree_view_get_selection(GTK_TREE_VIEW(dv_list));
-    gtk_tree_selection_set_select_function(sel,
-        (GtkTreeSelectionFunc)dv_select_proc, 0, 0);
+    gtk_tree_selection_set_select_function(sel, dv_select_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
     gtk_signal_connect(GTK_OBJECT(dv_list), "focus",
         GTK_SIGNAL_FUNC(dv_focus_proc), this);
@@ -2114,9 +2113,9 @@ sDbV::dv_cancel_proc(GtkWidget*, void *client_data)
 // prevents actually accepting the selection, so this is just a fancy
 // button-press handler.
 //
-bool
+int
 sDbV::dv_select_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, bool issel, void*)
+    GtkTreePath *path, int issel, void*)
 {
     if (Dbg && Dbg->db_vars_pop) {
         if (issel)

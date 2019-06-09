@@ -86,6 +86,7 @@ namespace {
 
             static void dim_font_changed();
             static void dim_cancel_proc(GtkWidget*, void*, unsigned);
+            static void dim_cancel_proc2(GtkWidget*, void*);
             static void dim_help_proc(GtkWidget*, void*, unsigned);
             static void dim_inhibit_proc(GtkWidget*, void*, unsigned);
             static void dim_edit_proc(GtkWidget*, void*, unsigned);
@@ -187,7 +188,7 @@ sDim::sDim(GRobject c)
     dim_end = 0;
 
     dim_popup = gtk_NewPopup(0, "Design Rule Editor",
-        (void(*)(GtkWidget*, void*))dim_cancel_proc, 0);
+        dim_cancel_proc2, 0);
     if (!dim_popup)
         return;
 
@@ -544,6 +545,13 @@ sDim::dim_font_changed()
 //
 void
 sDim::dim_cancel_proc(GtkWidget*, void*, unsigned)
+{
+    DRC()->PopUpRules(0, MODE_OFF);
+}
+
+// Static function.
+void
+sDim::dim_cancel_proc2(GtkWidget*, void*)
 {
     DRC()->PopUpRules(0, MODE_OFF);
 }

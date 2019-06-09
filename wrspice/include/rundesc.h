@@ -71,7 +71,7 @@ struct dataDesc
     int gtype;          // Default plot grid type
     int outIndex;       // Index of regular vector or dependent
     int numbasedims;    // Vector numdims for looping
-    int basedims[MAXDIMS]; // Vecor dimensions for looping
+    int basedims[MAXDIMS]; // Vector dimensions for looping
     IFspecial sp;       // Descriptor for special parameter
     bool useVecIndx;    // Use vector for special array index
     bool regular;       // True if regular vector, false if special

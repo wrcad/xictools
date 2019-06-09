@@ -96,6 +96,7 @@ namespace {
 
             static void lp_font_changed();
             static void lp_cancel_proc(GtkWidget*, void*, unsigned);
+            static void lp_cancel_proc2(GtkWidget*, void*);
             static void lp_help_proc(GtkWidget*, void*, unsigned);
             static void lp_edit_proc(GtkWidget*, void*, unsigned);
             static void lp_delete_proc(GtkWidget*, void*, unsigned);
@@ -230,8 +231,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     lp_start = 0;
     lp_end = 0;
 
-    lp_popup = gtk_NewPopup(0, "Tech Parameter Editor",
-        (void(*)(GtkWidget*, void*))lp_cancel_proc, 0);
+    lp_popup = gtk_NewPopup(0, "Tech Parameter Editor", lp_cancel_proc2, 0);
     if (!lp_popup)
         return;
 
@@ -897,6 +897,13 @@ sLpe::check_sens()
 //
 void
 sLpe::lp_cancel_proc(GtkWidget*, void*, unsigned)
+{
+    XM()->PopUpLayerParamEditor(0, MODE_OFF, 0, 0);
+}
+
+// Static function.
+void
+sLpe::lp_cancel_proc2(GtkWidget*, void*)
 {
     XM()->PopUpLayerParamEditor(0, MODE_OFF, 0, 0);
 }

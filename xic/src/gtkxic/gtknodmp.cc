@@ -159,11 +159,11 @@ namespace {
             void enable_point(bool);
 
             static int nm_node_of_row(int);
-            static bool nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, bool, void*);
+            static int nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
+                GtkTreePath*, int, void*);
             static bool nm_n_focus_proc(GtkWidget*, GdkEvent*, void*);
-            static bool nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, bool, void*);
+            static int nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel*,
+                GtkTreePath*, int, void*);
             static bool nm_t_focus_proc(GtkWidget*, GdkEvent*, void*);
             static void nm_cancel_proc(GtkWidget*, void*);
             static void nm_desel_proc(GtkWidget*, void*);
@@ -437,8 +437,7 @@ sNM::sNM(GRobject caller, int node)
 
     GtkTreeSelection *sel =
         gtk_tree_view_get_selection(GTK_TREE_VIEW(nm_node_list));
-    gtk_tree_selection_set_select_function(sel,
-        (GtkTreeSelectionFunc)nm_select_nlist_proc, 0, 0);
+    gtk_tree_selection_set_select_function(sel, nm_select_nlist_proc, 0, 0);
     // TreeView bug hack, see note with handler.   
     gtk_signal_connect(GTK_OBJECT(nm_node_list), "focus",
         GTK_SIGNAL_FUNC(nm_n_focus_proc), this);
@@ -470,8 +469,7 @@ sNM::sNM(GRobject caller, int node)
 
     sel =
         gtk_tree_view_get_selection(GTK_TREE_VIEW(nm_term_list));
-    gtk_tree_selection_set_select_function(sel,
-        (GtkTreeSelectionFunc)nm_select_tlist_proc, 0, 0);
+    gtk_tree_selection_set_select_function(sel, nm_select_tlist_proc, 0, 0);
     // TreeView bug hack, see note with handler.   
     gtk_signal_connect(GTK_OBJECT(nm_term_list), "focus",
         GTK_SIGNAL_FUNC(nm_t_focus_proc), this);
@@ -879,9 +877,9 @@ sNM::nm_node_of_row(int row)
 
 
 // Static function.
-bool
+int
 sNM::nm_select_nlist_proc(GtkTreeSelection*, GtkTreeModel*,
-    GtkTreePath *path, bool issel, void*)
+    GtkTreePath *path, int issel, void*)
 {
     if (NM) {
         if (issel) {
@@ -967,9 +965,9 @@ sNM::nm_n_focus_proc(GtkWidget*, GdkEvent*, void*)
         
 
 // Static function.
-bool
+int
 sNM::nm_select_tlist_proc(GtkTreeSelection*, GtkTreeModel *store,
-    GtkTreePath *path, bool issel, void*)
+    GtkTreePath *path, int issel, void*)
 {
     if (NM) {
         // The calling sequence from selections in the GtkTreeView is

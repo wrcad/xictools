@@ -448,8 +448,8 @@ namespace {
 int
 sTRAinstance::pade_setup(sCKT*)
 {
-    memset(&TRAtx, 0, sizeof(TXLine));
-    memset(&TRAtx2, 0, sizeof(TXLine));
+    TRAtx = TXLine();
+    TRAtx2 = TXLine();
     if (TRAr/TRAl < 5.0e+5 && TRAg < 1.0e-2) {
         TRAtx.lsl = 1;  // lossless line
         TRAtx.taul = sqrt(TRAc*TRAl)*TRAlength;

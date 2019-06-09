@@ -69,8 +69,8 @@ namespace {
             static ESret str_cb(const char*, void*);
             static void yn_cb(bool, void*);
             static void la_action_proc(GtkWidget*, void*, unsigned);
-            static bool la_select_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, bool, void*);
+            static int la_select_proc(GtkTreeSelection*, GtkTreeModel*,
+                GtkTreePath*, int, void*);
             static bool la_focus_proc(GtkWidget*, GdkEvent*, void*);
 
             GRaffirmPopup *la_affirm;
@@ -235,8 +235,7 @@ sLA::sLA(GRobject c)
 
     GtkTreeSelection *sel =
         gtk_tree_view_get_selection(GTK_TREE_VIEW(la_list));
-    gtk_tree_selection_set_select_function(sel,
-        (GtkTreeSelectionFunc)la_select_proc, 0, 0);
+    gtk_tree_selection_set_select_function(sel, la_select_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
     gtk_signal_connect(GTK_OBJECT(la_list), "focus",
         GTK_SIGNAL_FUNC(la_focus_proc), this);
@@ -514,9 +513,9 @@ sLA::la_action_proc(GtkWidget *caller, void*, unsigned code)
 // Static function.
 // Selection callback for the list.
 //
-bool
+int
 sLA::la_select_proc(GtkTreeSelection*, GtkTreeModel*, GtkTreePath *path,
-    bool issel, void*)
+    int issel, void*)
 {
     if (LA) {
         if (issel) {

@@ -231,20 +231,22 @@ cExtErrLog::add_dev_err(const CDs *sdesc, const sDevInst *di,
             fprintf(el_errfp, "In %s, device %s, prefix %s, index %d:\n",
                 TstringNN(sdesc->cellname()), TstringNN(di->desc()->name()),
                 di->desc()->prefix(), di->index());
-            if (el_logfp)
+            if (el_logfp) {
                 fprintf(el_logfp, "In %s, device %s, prefix %s, index %d:\n",
                     TstringNN(sdesc->cellname()),
                     TstringNN(di->desc()->name()),
                     di->desc()->prefix(), di->index());
+            }
         }
         else {
             fprintf(el_errfp, "In %s, device %s, index %d:\n",
-                Tstring(sdesc->cellname()), di->desc()->prefix(),
+                TstringNN(sdesc->cellname()), TstringNN(di->desc()->name()),
                 di->index());
-            if (el_logfp)
+            if (el_logfp) {
                 fprintf(el_logfp, "In %s, device %s, index %d:\n",
-                    TstringNN(sdesc->cellname()), di->desc()->prefix(),
-                    di->index());
+                    TstringNN(sdesc->cellname()),
+                    TstringNN(di->desc()->name()), di->index());
+            }
         }
     }
     else {

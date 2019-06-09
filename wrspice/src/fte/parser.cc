@@ -111,7 +111,7 @@ namespace {
     sFunc ft_uops[] = {
         sFunc( "-",             &sDataVec::v_uminus,    1 ),
         sFunc( "~",             &sDataVec::v_not,       1 ),
-        sFunc( 0,               0, 0 )
+        sFunc( 0 )
     };
 
     sFunc ft_funcs[] = {
@@ -170,9 +170,9 @@ namespace {
         sFunc( "sgn",           &sDataVec::v_sgn,       1 ),
         sFunc( "ceil",          &sDataVec::v_ceil,      1 ),
         sFunc( "int",           &sDataVec::v_rint,      1 ),
-        sFunc( "v",             0, 0 ),
-        sFunc( "i",             0, 0 ),
-        sFunc( "p",             0, 0 ),
+        sFunc( "v" ),
+        sFunc( "i" ),
+        sFunc( "p"),
 
         // Stat funcs
         sFunc( "beta",          &sDataVec::v_beta,      1 ),
@@ -186,15 +186,15 @@ namespace {
         sFunc( "tdist",         &sDataVec::v_tdist,     1 ),
 
         // HSPICE funcs
-        sFunc( "unif",          (fuFuncType)&sDataVec::v_hs_unif,   2 ),
-        sFunc( "aunif",         (fuFuncType)&sDataVec::v_hs_aunif,  2 ),
-        sFunc( "gauss",         (fuFuncType)&sDataVec::v_hs_gauss,  3 ),
-        sFunc( "agauss",        (fuFuncType)&sDataVec::v_hs_agauss, 3 ),
-        sFunc( "limit",         (fuFuncType)&sDataVec::v_hs_limit,  2 ),
-        sFunc( "pow",           (fuFuncType)&sDataVec::v_hs_pow,    2 ),
-        sFunc( "pwr",           (fuFuncType)&sDataVec::v_hs_pwr,    2 ),
-        sFunc( "sign",          (fuFuncType)&sDataVec::v_hs_sign,   2 ),
-        sFunc( 0,               0, 0 )
+        sFunc( "unif",          &sDataVec::v_hs_unif,   2 ),
+        sFunc( "aunif",         &sDataVec::v_hs_aunif,  2 ),
+        sFunc( "gauss",         &sDataVec::v_hs_gauss,  3 ),
+        sFunc( "agauss",        &sDataVec::v_hs_agauss, 3 ),
+        sFunc( "limit",         &sDataVec::v_hs_limit,  2 ),
+        sFunc( "pow",           &sDataVec::v_hs_pow,    2 ),
+        sFunc( "pwr",           &sDataVec::v_hs_pwr,    2 ),
+        sFunc( "sign",          &sDataVec::v_hs_sign,   2 ),
+        sFunc( 0 )
     };
 
     sHtab *funcname_tab;

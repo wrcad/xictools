@@ -667,7 +667,7 @@ struct IFsimulator
     FPEmode SetCircuitFPEmode();
 
     // fte/inpcom.cc
-    bool Edit(const char*, void(*)(char*, bool, int), bool, bool*);
+    bool Edit(const char*, bool(*)(const char*, void*, int), bool, bool*);
     void Listing(FILE*, sLine*, sLine*, int);
     FILE *PathOpen(const char*, const char*, bool* = 0);
     char *FullPath(const char*);

@@ -272,7 +272,7 @@ cSced::extractFromSpice(CDs *sdesc, FILE *fp, int modeflag)
                     if (level > MAX_NEST) {
                         Log()->ErrorLog(process_spice,
                             "Nesting too deep, aborting.");
-                        for (int i = MAX_NEST-1; i > 0; i++)
+                        for (int i = MAX_NEST-1; i > 0; i--)
                             delete ary[i];
                         delete subc;
                         return;

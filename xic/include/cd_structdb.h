@@ -148,7 +148,7 @@ sDBase<T>::record(T *c)
         item_t<T> *nd = new item_t<T>[DBdataSize + DBdataSize];
         memcpy(nd, DBdata, DBdataSize*sizeof(item_t<T>));
         // zero pointers for destructor
-        memset(DBdata, 0, DBdataSize*sizeof(item_t<T>));
+        memset((void*)DBdata, 0, DBdataSize*sizeof(item_t<T>));
         DBdataSize += DBdataSize;
         delete [] DBdata;
         DBdata = nd;

@@ -83,26 +83,38 @@ private:
 
 
 typedef sDataVec*(sDataVec::*fuFuncType)();
+typedef sDataVec*(sDataVec::*fuFuncType1)(sDataVec**);
 
 // The functions that are available.
 //
 struct sFunc
 {
-    sFunc(const char *na, fuFuncType f, int ac)
+    sFunc(const char *na, fuFuncType f = 0, int ac = 0)
         {
             fu_name = na;
-            fu_func = f;
+            u.fu_func = f;
+            fu_nargs = ac;
+        }
+
+    sFunc(const char *na, fuFuncType1 f, int ac)
+        {
+            fu_name = na;
+            u.fu_func1 = f;
             fu_nargs = ac;
         }
 
     const char *name()      { return (fu_name); }
     void set_name(const char *n) { fu_name = n; }
-    fuFuncType func()       { return (fu_func); }
+    fuFuncType func()       { return (u.fu_func); }
+    fuFuncType1 func1()     { return (u.fu_func1); }
     int argc()              { return (fu_nargs); }
 
 private:
-    const char *fu_name;    // The print name of the function;
-    fuFuncType fu_func;     // the sDataVec evaluation method;
+    const char *fu_name;    // The print name of the function.
+    union {
+        fuFuncType fu_func;     // A sDataVec evaluation method.
+        fuFuncType1 fu_func1;   // A sDataVec evaluation method.
+    } u;
     int fu_nargs;           // Argument count;
 };
 

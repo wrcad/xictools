@@ -314,8 +314,7 @@ pnode::apply_func() const
             return (0);
         }
         if (nargs < pn_func->argc()) {
-            if (nargs == 0 || pn_func->func() !=
-                    (fuFuncType)&sDataVec::v_hs_gauss) {
+            if (nargs == 0 || pn_func->func1() != &sDataVec::v_hs_gauss) {
                 GRpkgIf()->ErrPrintf(ET_ERROR, "too few arguments to %s.\n",
                     pn_func->name());
                 return (0);
@@ -771,8 +770,7 @@ namespace {
         else if (func->argc() == 1)
             res = (v[0]->*func->func())();
         else
-            res = (v[0]->*(sDataVec*(sDataVec::*)(sDataVec**))
-                func->func())(v+1);
+            res = (v[0]->*func->func1())(v+1);
 
         if (res) {
             res->newtemp();

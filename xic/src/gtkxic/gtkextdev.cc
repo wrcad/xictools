@@ -69,8 +69,8 @@ namespace {
         private:
             static void ed_cancel_proc(GtkWidget*, void*);
             static void ed_action_proc(GtkWidget*, void*);
-            static bool ed_selection_proc(GtkTreeSelection*, GtkTreeModel*,
-                GtkTreePath*, bool, void*);
+            static int ed_selection_proc(GtkTreeSelection*, GtkTreeModel*,
+                GtkTreePath*, int, void*);
             static bool ed_focus_proc(GtkWidget*, GdkEvent*, void*);
 
             GRobject ed_caller;
@@ -271,8 +271,7 @@ sED::sED(GRobject caller)
 
     GtkTreeSelection *sel =
         gtk_tree_view_get_selection(GTK_TREE_VIEW(ed_list));
-    gtk_tree_selection_set_select_function(sel,
-        (GtkTreeSelectionFunc)ed_selection_proc, 0, 0);
+    gtk_tree_selection_set_select_function(sel, ed_selection_proc, 0, 0);
     // TreeView bug hack, see note with handlers.   
     gtk_signal_connect(GTK_OBJECT(ed_list), "focus",
         GTK_SIGNAL_FUNC(ed_focus_proc), this);
@@ -662,9 +661,9 @@ sED::ed_action_proc(GtkWidget *caller, void*)
 // is made, but not when the selection disappears, which happens when the
 // list is updated.
 //
-bool
+int
 sED::ed_selection_proc(GtkTreeSelection*, GtkTreeModel *store,
-GtkTreePath *path, bool issel, void *)
+    GtkTreePath *path, int issel, void *)
 {
     if (ED) {
         if (!ED->ed_devs_listed)
