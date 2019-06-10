@@ -270,6 +270,8 @@ CshPar::RemKeyword(int kclass, const char *word)
         GRpkgIf()->ErrPrintf(ET_INTERR, msg1, kclass);
         return;
     }
+    if (!*kw)
+        return;
     sTrie *cc = (*kw)->lookup(word, false, false);
     if (cc)
         cc->set_invalid(true);
