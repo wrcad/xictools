@@ -83,6 +83,7 @@ Authors: 1985 Thomas L. Quarles
 #include "trandefs.h"
 #include "dctdefs.h"
 #include "spnumber/hash.h"
+#include "spnumber/paramsub.h"
 #include "miscutil/lstring.h"
 #include "miscutil/miscutil.h"
 #include "miscutil/random.h"
@@ -764,6 +765,36 @@ namespace {
         delete [] fpath;
 #endif
     }
+
+    // Add the predefined parameters.  This is called from the
+    // sParamTab constructor.
+    //
+    // Presently, there are three such parameters, all are read-only.
+    //
+    // WRSPICE_PROGRAM
+    // This is always set (to 1).  It allows testing for WRspice-specific
+    // parts in input files with a construct like
+    //    .param WRSPICE_PROGRAM=0  $ does nothing in WRspice
+    //    .if WRSPICE_PROGRAM=1
+    //    <wrspice-specific input>
+    //    .else
+    //    <other spice input>
+    //    .endif
+    //
+    // WRSPICE_RELEASE
+    // This is set to the five-digit release code.
+    //
+    // WRSPICE_BATCH
+    // This is set to 1 if in batch mode, 0 otherwise.
+    //
+    void predef_callback(sParamTab *ptab)
+    {
+        ptab->add_predef("WRSPICE_PROGRAM", "1");
+#define STRINGIFY(foo) #foo
+#define XSTRINGIFY(x) STRINGIFY(x)
+        ptab->add_predef("WRSPICE_RELEASE", XSTRINGIFY(WRS_RELEASE_NUM));
+        ptab->add_predef("WRSPICE_BATCH", Sp.GetFlag(FT_BATCHMODE) ? "1" : "0");
+    }
 }
 
 
@@ -969,6 +1000,9 @@ main(int argc, char **argv)
             exit(EXIT_BAD);
         }
     }
+
+    // Register the pre-defined parameters setup handler.
+    sParamTab::register_set_predef_callback(predef_callback);
 
     bool istty = isatty(fileno(stdin));
     // Note:  we start in batch mode by default if stdin is not a

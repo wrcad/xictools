@@ -137,7 +137,8 @@ struct sParamTab
             pt_rctab = new sHtab(sHtab::get_ciflag(CSE_PARAM));
             pt_collapse = false;
             pt_no_sqexp = false;
-            add_predefs();
+            if (pt_set_predefs)
+                (*pt_set_predefs)(this);
         }
 
     ~sParamTab();
@@ -209,7 +210,20 @@ struct sParamTab
             pt_collapse = false;
         }
 
-    void add_predefs();
+    // Add a "pre-defined" read-only parameter.
+    //
+    void add_predef(const char *nm, const char *val)
+        {
+            if (nm) {
+                sParam *prm = new sParam(lstring::copy(nm), lstring::copy(val));
+                prm->set_readonly();
+                pt_table->add(prm->name(), prm);
+            }
+        }
+
+    static void register_set_predef_callback(void(*cb)(sParamTab*))
+        { pt_set_predefs = cb; }
+
     static sParamTab *copy(const sParamTab*);
     static sParamTab *extract_params(sParamTab*, const char*);
     static sParamTab *update(sParamTab*, const sParamTab*);
@@ -239,6 +253,8 @@ private:
     sHtab *pt_rctab;        // Used for recursion testing.
     bool pt_collapse;
     bool pt_no_sqexp;       // Don't do single-quote expansion.
+
+    static void(*pt_set_predefs)(sParamTab*);
 };
 
 // Mapping used when promoting macros.
