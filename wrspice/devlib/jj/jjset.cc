@@ -74,6 +74,19 @@ Author: 1992 Stephen R. Whiteley
 #define Vm      (Vm_LL*1e-3)
 #define IcR     (IcR_LL*1e-3)
 
+#define Tc      9.26        // Nb Tc
+#define TcMin   0.1         // Min Tc
+#define TcMax   280.0       // Max Tc
+#define Tnom    4.2         // Param. measurement temp.
+#define TnomMin 0.0         // Min param. measurement temp.
+#define TnomMax Tc          // Max param. measurement temp.
+#define Temp    Tnom        // Operating temp
+#define TempMin 0.0         // Min operating temp.
+#define TempMax Tc          // Max operating temp.
+#define TcFct   1.74        // Temp. correction param.
+#define TcFctMin 1.5        // Min temp. correction param.
+#define TcFctMax 2.5        // Max temp. correction param.
+
 #define VmMin   0.008       // Min Vm V
 #define VmMax   0.1         // Max Vm V
 #define IcRmin  0.5e-3      // Min IcR V
@@ -203,20 +216,65 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->JJictype = 1;
             }
         }
-        if (!model->JJvgGiven)
-            model->JJvg = Vg;
+        if (!model->JJtcGiven)
+            model->JJtc = Tc;
         else {
-            if (model->JJvg < VgMin || model->JJvg > VgMax) {
+            if (model->JJtc < TcMin || model->JJtc > TcMax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: VG=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->JJvg, VgMin, VgMax, Vg);
-                model->JJvg = Vg;
+                    "%s: TC=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJtc, TcMin, TcMax, Tc);
+                model->JJtc = Tc;
             }
         }
+        if (!model->JJtnomGiven)
+            model->JJtnom = Tnom;
+        else {
+            if (model->JJtnom < TnomMin || model->JJtnom > model->JJtc) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TNOM=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJtnom, TnomMin, model->JJtc,
+                    Tnom);
+                model->JJtnom = Tnom;
+            }
+        }
+        if (!model->JJtempGiven)
+            model->JJtemp = model->JJtnom;
+        else {
+            if (model->JJtemp < TempMin || model->JJtemp > model->JJtc) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TEMP=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJtemp, TempMin, model->JJtc,
+                    model->JJtnom);
+                model->JJtemp = model->JJtnom;
+            }
+        }
+        if (!model->JJtcfctGiven)
+            model->JJtcfct = TcFct;
+        else {
+            if (model->JJtcfct < TcFctMin || model->JJtcfct > TcFctMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TCFCT=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJtcfct, TcFctMin, TcFctMax,
+                    TcFct);
+                model->JJtcfct = TcFct;
+            }
+        }
+
+        if (!model->JJvgGiven)
+            model->JJvgnom = Vg;
+        else {
+            if (model->JJvgnom < VgMin || model->JJvgnom > VgMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: VG=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJvgnom, VgMin, VgMax, Vg);
+                model->JJvgnom = Vg;
+            }
+        }
+
         if (!model->JJdelvGiven)
             model->JJdelv = DelV;
         else {
-            double Vgap = model->JJvg;
+            double Vgap = model->JJvgnom;
             if (model->JJdelv < DelVmin || model->JJdelv > DelVmax) {
                 DVO.textOut(OUT_WARNING,
                     "%s: DELV=%g out of range [%g-%g], reset to %g.\n",
@@ -224,10 +282,6 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->JJdelv = DelV;
             }
         }
-
-        double halfdv = 0.5*model->JJdelv;
-        model->JJvless  = model->JJvg - halfdv;
-        model->JJvmore  = model->JJvg + halfdv;
 
         if (!model->JJccsensGiven)
             model->JJccsens = CCsens;
@@ -318,7 +372,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->JJicrn = IcR;
         }
         else {
-            double IcRmax = model->JJvg * model->JJicFactor;
+            double IcRmax = model->JJvgnom * model->JJicFactor;
             if (model->JJicrn < IcRmin || model->JJicrn > IcRmax) {
                 DVO.textOut(OUT_WARNING,
                     "%s: ICRN=%g out of range [%g-%g], reset to %g.\n",
@@ -333,7 +387,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         else {
             double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
             double RNmin = IcRmin/i;
-            double RNmax = (model->JJvg * model->JJicFactor)/i;
+            double RNmax = (model->JJvgnom * model->JJicFactor)/i;
             if (model->JJrn < RNmin || model->JJrn > RNmax) {
                 double RN = model->JJicrn/i;
                 DVO.textOut(OUT_WARNING,
@@ -347,10 +401,11 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
         if (model->JJvShuntGiven) {
             if (model->JJvShunt < 0.0 ||
-                    model->JJvShunt > (model->JJvg - model->JJdelv)) {
+                    model->JJvShunt > (model->JJvgnom - model->JJdelv)) {
                 DVO.textOut(OUT_WARNING,
                     "%s: VSHUNT=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->JJvShunt, 0.0, model->JJvg, 0.0);
+                    model->GENmodName, model->JJvShunt, 0.0, model->JJvgnom,
+                    0.0);
                 model->JJvShunt = 0.0;
             }
         }
@@ -407,7 +462,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
-        double halfvg = model->JJvg/2;
+        double halfvg = model->JJvgnom/2;
         if (model->JJcap > 0.0) {
             model->JJvdpbak = sqrt(PHI0_2PI/model->JJcpic);
             if (model->JJvdpbak > halfvg)
@@ -418,6 +473,30 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
+
+            if (!inst->JJtempGiven)
+                inst->JJtemp = model->JJtemp;
+            else {
+                if (inst->JJtemp < TempMin || inst->JJtemp > model->JJtc) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: TEMP=%g out of range [%g-%g], reset to %g.\n",
+                        inst->GENname, inst->JJtemp, TempMin, model->JJtc,
+                        model->JJtemp);
+                    inst->JJtemp = model->JJtemp;
+                }
+            }
+
+            // Temperature correction factor.
+            inst->JJtcf =
+            tanh(model->JJtcfct*sqrt(model->JJtc/(inst->JJtemp+1e-3) - 1.0)) /
+            tanh(model->JJtcfct*sqrt(model->JJtc/(model->JJtnom+1e-3) - 1.0));
+
+            inst->JJvg = inst->JJtcf * model->JJvgnom;
+
+            double halfdv = 0.5*model->JJdelv;
+            inst->JJvless  = inst->JJvg - halfdv;
+            inst->JJvmore  = inst->JJvg + halfdv;
+
 
             if (inst->JJicsGiven) {
                 if (inst->JJareaGiven) {
@@ -440,7 +519,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
             // ics is the input parameter, criti is the actual critical
             // current to use.
-            inst->JJcriti = model->JJcriti * inst->JJarea;
+            inst->JJcriti = model->JJcriti * inst->JJtcf * inst->JJarea;
 
 #ifdef NEWLSER
             if (inst->JJlser > 0.0 && inst->JJlser < 1e-14) {
@@ -463,7 +542,63 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 inst->JJposNode = inst->JJrealPosNode;
             }
 #endif
-            inst->JJgqp = sJJmodel::subgap(model, inst);
+
+#ifdef NEWJJDC
+            if (model->JJictype > 0 && !ckt->CKTcurTask->TSKnoPhaseModeDC) {
+                // Set the phase flag of connected nodes for
+                // phase-mode DC analysis, if critical current is
+                // turned on and phase mode DC is not disabled.
+
+#ifdef NEWLSER
+                if (inst->JJrealPosNode > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJrealPosNode);
+                    if (node)
+                        node->set_phase(true);
+                }
+#endif
+                if (inst->JJposNode > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJposNode);
+                    if (node)
+                        node->set_phase(true);
+                }
+                if (inst->JJnegNode > 0) {
+                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJnegNode);
+                    if (node)
+                        node->set_phase(true);
+                }
+            }
+#endif
+
+            double sqrta = sqrt(inst->JJarea);
+            inst->JJcap = model->JJcap*(inst->JJarea*(1.0 - model->JJcmu) +
+                sqrta*model->JJcmu);
+
+            double gfac = inst->JJarea*(1.0 - model->JJgmu) +
+                sqrta*model->JJgmu;
+            gfac *= inst->JJtcf;
+            inst->JJg0 = gfac / model->JJr0;
+            inst->JJgn = gfac / model->JJrn;
+            inst->JJgs = inst->JJcriti/(model->JJicFactor * model->JJdelv);
+
+            if (model->JJrtype == 2) {
+                double dv = 0.5*model->JJdelv;
+                double gam = -inst->JJvg/dv;
+                if (gam < -30.0)
+                    gam = -30.0;
+                double expgam = exp(gam);
+                double exngam = 1.0 / expgam;
+                double xp     = 1.0 + expgam;
+                double xn     = 1.0 + exngam;
+                inst->JJgqp = inst->JJgn/xn + inst->JJg0/xp;
+            }
+            else
+                inst->JJgqp = inst->JJg0;
+
+            // These currents are added to RHS in piecewise qp model.
+            inst->JJcr1 = (inst->JJg0 - inst->JJgs)*inst->JJvless;
+            inst->JJcr2 = inst->JJcriti/model->JJicFactor +
+                inst->JJvless * inst->JJg0 - inst->JJvmore * inst->JJgn;
+
             if (model->JJvShuntGiven) {
                 double gshunt = inst->JJcriti/model->JJvShunt - inst->JJgqp;
                 if (gshunt > 0.0)
@@ -504,48 +639,6 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
 #endif
 
-#ifdef NEWJJDC
-            if (model->JJictype > 0 && !ckt->CKTcurTask->TSKnoPhaseModeDC) {
-                // Set the phase flag of connected nodes for
-                // phase-mode DC analysis, if critical current is
-                // turned on and phase mode DC is not disabled.
-
-#ifdef NEWLSER
-                if (inst->JJrealPosNode > 0) {
-                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJrealPosNode);
-                    if (node)
-                        node->set_phase(true);
-                }
-#endif
-                if (inst->JJposNode > 0) {
-                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJposNode);
-                    if (node)
-                        node->set_phase(true);
-                }
-                if (inst->JJnegNode > 0) {
-                    sCKTnode *node = ckt->CKTnodeTab.find(inst->JJnegNode);
-                    if (node)
-                        node->set_phase(true);
-                }
-            }
-#endif
-
-            double sqrta = sqrt(inst->JJarea);
-            inst->JJcap = model->JJcap*(inst->JJarea*(1.0 - model->JJcmu) +
-                sqrta*model->JJcmu);
-
-            double gfac = inst->JJarea*(1.0 - model->JJgmu) +
-                sqrta*model->JJgmu;
-            inst->JJg0 = gfac / model->JJr0;
-            inst->JJgn = gfac / model->JJrn;
-            inst->JJgs = inst->JJcriti/(model->JJicFactor * model->JJdelv);
-
-            // These currents are added to RHS in piecewise qp model
-            inst->JJcr1 = (inst->JJg0 - inst->JJgs)*model->JJvless;
-            inst->JJcr2 = inst->JJcriti/model->JJicFactor +
-                model->JJvless * inst->JJg0 -
-                model->JJvmore * inst->JJgn;
-
             if (!inst->JJnoiseGiven)
                 inst->JJnoise = model->JJnoise;
             else {
@@ -579,12 +672,12 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 //
 
                 double Gn = (inst->JJcriti/model->JJicFactor +
-                    model->JJvless*inst->JJg0)/model->JJvmore;
-                double temp = model->JJvmore*model->JJvmore;
+                    inst->JJvless*inst->JJg0)/inst->JJvmore;
+                double temp = inst->JJvmore*inst->JJvmore;
                 inst->JJg1 = 0.5*(5.0*Gn - inst->JJgs - 4.0*inst->JJg0);
                 inst->JJg2 = (Gn - inst->JJg0 - inst->JJg1)/(temp*temp);
                 inst->JJg1 /= temp;
-                inst->JJcr1 = (Gn - inst->JJgn)*model->JJvmore;
+                inst->JJcr1 = (Gn - inst->JJgn)*inst->JJvmore;
                 // if the conductivity goes negative, the parameters
                 // aren't good
                 if (inst->JJg1 < 0.0 && 9*inst->JJg1*inst->JJg1 >

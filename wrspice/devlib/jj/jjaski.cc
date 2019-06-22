@@ -77,6 +77,7 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         0, // notused
         &&L_JJ_AREA, 
         &&L_JJ_ICS, 
+        &&L_JJ_TEMP, 
 #ifdef NEWLSER
         &&L_JJ_LSER, 
 #endif
@@ -95,6 +96,10 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_JJ_QUEST_PHSN,
         &&L_JJ_QUEST_PHSF,
         &&L_JJ_QUEST_PHST,
+        &&L_JJ_QUEST_TCF,
+        &&L_JJ_QUEST_VG,
+        &&L_JJ_QUEST_VL,
+        &&L_JJ_QUEST_VM,
         &&L_JJ_QUEST_CRT,
         &&L_JJ_QUEST_IC,
         &&L_JJ_QUEST_IJ,
@@ -149,6 +154,9 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_JJ_ICS:
         data->v.rValue = inst->JJics;
         return (OK);
+    L_JJ_TEMP:
+        data->v.rValue = inst->JJtemp;
+        return (OK);
 #ifdef NEWLSER
     L_JJ_LSER:
         data->v.rValue = inst->JJlser;
@@ -202,6 +210,18 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         return (OK);
     L_JJ_QUEST_PHST:
         data->v.rValue = inst->JJphsT;
+        return (OK);
+    L_JJ_QUEST_TCF:
+        data->v.rValue = inst->JJtcf;
+        return (OK);
+    L_JJ_QUEST_VG:
+        data->v.rValue = inst->JJvg;
+        return (OK);
+    L_JJ_QUEST_VL:
+        data->v.rValue = inst->JJvless;
+        return (OK);
+    L_JJ_QUEST_VM:
+        data->v.rValue = inst->JJvmore;
         return (OK);
     L_JJ_QUEST_CRT:
         data->v.rValue = inst->JJcriti;
@@ -281,6 +301,9 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case JJ_ICS:
         data->v.rValue = inst->JJics;
         break;
+    case JJ_TEMP:
+        data->v.rValue = inst->JJtemp;
+        break;
 #ifdef NEWLSER
     case JJ_LSER:
         data->v.rValue = inst->JJlser;
@@ -334,6 +357,12 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         break;
     case JJ_QUEST_PHST:
         data->v.rValue = inst->JJphsT;
+        break;
+    case JJ_QUEST_TCF:
+        data->v.rValue = inst->JJtcg;
+        break;
+    case JJ_QUEST_VG:
+        data->v.rValue = inst->JJvg;
         break;
     case JJ_QUEST_CRT:
         data->v.rValue = inst->JJcriti;

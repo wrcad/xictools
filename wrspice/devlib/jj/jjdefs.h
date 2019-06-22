@@ -132,6 +132,8 @@ struct sJJinstancePOD
     IFuid JJcontrol;               // name of controlling device
     double JJarea;                 // area factor for the junction
     double JJics;                  // area factor = ics/icrit
+    double JJtemp;                 // temperature Kelvin
+    double JJtcf;                  // temperature compensation factor
 
     double JJinitCnd[2];           // initial condition vector
 #define JJinitVoltage JJinitCnd[0]
@@ -153,7 +155,12 @@ struct sJJinstancePOD
 #endif
     double JJdelVdelT;             // dvdt storage
 
-    // These parameters scale with area
+    // These scale with temperature
+    double JJvg;
+    double JJvless;
+    double JJvmore;
+
+    // These parameters scale with area and possibly temperature
     double JJcriti;                // junction critical current
     double JJcap;                  // junction capacitance
     double JJg0;                   // junction subgap conductance
@@ -208,6 +215,7 @@ struct sJJinstancePOD
                                    // Flags to indicate...
     unsigned JJareaGiven : 1;      // area was specified
     unsigned JJicsGiven : 1;       // ics was specified
+    unsigned JJtempGiven : 1;      // temp was specified
 #ifdef NEWLSER
     unsigned JJlserGiven : 1;      // lser was specified
 #endif
@@ -264,7 +272,11 @@ struct sJJmodelPOD
 {
     int JJrtype;
     int JJictype;
-    double JJvg;
+    double JJtc;
+    double JJtemp;
+    double JJtnom;
+    double JJtcfct;
+    double JJvgnom;
     double JJdelv;
     double JJcriti;
     double JJcap;
@@ -277,8 +289,6 @@ struct sJJmodelPOD
     double JJgmu;
     double JJnoise;
     double JJccsens;
-    double JJvless;
-    double JJvmore;
     double JJvdpbak;
     double JJicFactor;
     double JJvShunt;
@@ -293,6 +303,10 @@ struct sJJmodelPOD
     unsigned JJpi : 1;
     unsigned JJpiGiven : 1;
     unsigned JJictypeGiven : 1;
+    unsigned JJtcGiven : 1;
+    unsigned JJtempGiven : 1;
+    unsigned JJtnomGiven : 1;
+    unsigned JJtcfctGiven : 1;
     unsigned JJvgGiven : 1;
     unsigned JJdelvGiven : 1;
     unsigned JJccsensGiven : 1;
@@ -321,8 +335,6 @@ struct sJJmodel : sGENmodel, sJJmodelPOD
     sJJmodel() : sGENmodel(), sJJmodelPOD() { }
     sJJmodel *next()    { return (static_cast<sJJmodel*>(GENnextModel)); }
     sJJinstance *inst() { return (static_cast<sJJinstance*>(GENinstances)); }
-
-    static double subgap(sJJmodel*, sJJinstance*);
 };
 
 } // namespace JJ
@@ -333,6 +345,7 @@ using namespace JJ;
 enum {
     JJ_AREA = 1, 
     JJ_ICS,
+    JJ_TEMP,
 #ifdef NEWLSER
     JJ_LSER,
 #endif
@@ -351,6 +364,10 @@ enum {
     JJ_QUEST_PHSN,
     JJ_QUEST_PHSF,
     JJ_QUEST_PHST,
+    JJ_QUEST_TCF,
+    JJ_QUEST_VG,
+    JJ_QUEST_VL,
+    JJ_QUEST_VM,
     JJ_QUEST_CRT,
     JJ_QUEST_IC,
     JJ_QUEST_IJ,
@@ -384,6 +401,10 @@ enum {
     JJ_MOD_PI,
     JJ_MOD_RT,
     JJ_MOD_IC,
+    JJ_MOD_TC,
+    JJ_MOD_TNOM,
+    JJ_MOD_TEMP,
+    JJ_MOD_TCFCT,
     JJ_MOD_VG,
     JJ_MOD_DV,
     JJ_MOD_CRT,
@@ -405,9 +426,6 @@ enum {
 #endif
     JJ_MOD_TSFACT,
     JJ_MOD_TSACCL,
-
-    JJ_MQUEST_VL,
-    JJ_MQUEST_VM,
     JJ_MQUEST_VDP
 };
 

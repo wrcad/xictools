@@ -49,10 +49,13 @@
 //   legend must also reproduce the markings.
 //-------------------------------------------------------------------------
 
-// Whiteley Research/Synopsys Josephson Junction Model
+// Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
 
-// Version 1.31, May 24, block name "nparblk" added for HSPICE.
+// Version 1.32, June 20, 2019 added temperature effects: parameters
+//   tc, temp, tnom, tcfct, and (read only) tcf.  The correction factor
+//   multiplies icrit and vgap.
+// Version 1.31, May 24, 2019 block name "nparblk" added for HSPICE.
 // Version 1.30, May 23, 2019 fixed typos from last check-in, added
 //   ADMS magic so phase and vdpbak are treated as read-only params.
 //   Added 'n' SFQ pulse emission count read-only instance param.
@@ -279,13 +282,23 @@ electrical nshint       `P(phase="true");
 // an internal ground-state phase of pi rather than 0.  Such junctions
 // have been made using ferromagnetic barrier materials. 
 parameter integer pijj  = 0 from [0:1]
-    `P(type="model" info="pi junction if set");
+    `P(type="model" info="Pi junction if set");
 
 // Turn on/off quasiparticle branch and critical current.
 parameter integer rtype = 1 from [0:1]
     `P(type="model" info="Quasiparticle conductance model type");
 parameter integer cct   = 1 from [0:1]
     `P(type="model" info="Critical current model type");
+
+// Temperature correction
+parameter real tc       = 9.26 from [0.1:280]
+    `P(type="model" info="Superconducting transition temperature Kelvin");
+parameter real temp     = 4.2 from [0.0:tc]
+    `P(type="model" info="Operating temperature Kelvin");
+parameter real tnom     = 4.2 from [0.0:tc]
+    `P(type="model" info="Parameter measurement temperature Kelvin");
+parameter real tcfct    = 1.74 from [1.5:2.5]
+    `P(type="model" info="Temperature correction parameter");
 
 // Factor used in timestep control.  This is similar to the WRspice
 // dphimax parameter, dphimax/(2*pi) = tsfactor.  Smaller values might
@@ -392,6 +405,7 @@ parameter real lsh      = 0.0 from [0.0:100.0p]
 parameter real area     = 1.0 from [0.05:20.0]
     `P(type="instance" info="Ic scale factor");
 
+real tcf `P(type="model" info="Temperature correction factor");
 real vdpbak `P(type="model" info="Dropback voltage");
 real phase `P(type="instance" info="Junction phase");
 `ifdef NEWNPAR
@@ -440,6 +454,11 @@ analog begin
         else
             vdpbak = halfvg;
         vth = vdpbak/tsaccel;
+
+        // Temperature correction
+        tcf = tanh(tcfct*sqrt(tc/temp - 1)) / tanh(tcfct*sqrt(tc/tnom - 1));
+        delv = delv*tcf;
+        icrit = icrit*tcf;
 
         // dphiMax
         //   If simulator returns nonzero, the dphimax .option is

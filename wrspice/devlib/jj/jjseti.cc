@@ -55,6 +55,7 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         0, // notused
         &&L_JJ_AREA, 
         &&L_JJ_ICS, 
+        &&L_JJ_TEMP, 
 #ifdef NEWLSER
         &&L_JJ_LSER, 
 #endif
@@ -73,6 +74,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         // &&L_JJ_QUEST_PHSN,
         // &&L_JJ_QUEST_PHSF,
         // &&L_JJ_QUEST_PHST,
+        // &&L_JJ_QUEST_TCF,
+        // &&L_JJ_QUEST_VG,
+        // &&L_JJ_QUEST_VL,
+        // &&L_JJ_QUEST_VM,
         // &&L_JJ_QUEST_CRT,
         // &&L_JJ_QUEST_IC,
         // &&L_JJ_QUEST_IJ,
@@ -107,6 +112,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     L_JJ_ICS:
         inst->JJics = value->rValue;
         inst->JJicsGiven = true;
+        return (OK);
+    L_JJ_TEMP:
+        inst->JJtemp = value->rValue;
+        inst->JJtempGiven = true;
         return (OK);
 #ifdef NEWLSER
     L_JJ_LSER:
@@ -164,6 +173,10 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
     case JJ_ICS:
         inst->JJics = value->rValue;
         inst->JJicsGiven = true;
+        break;
+    case JJ_TEMP:
+        inst->JJtemp = value->rValue;
+        inst->JJtempGiven = true;
         break;
 #ifdef NEWLSER
     case JJ_LSER:
