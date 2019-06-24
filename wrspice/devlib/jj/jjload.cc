@@ -637,7 +637,6 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
         }
     }
     else if (model->JJrtype == 3) {
-
         if (absvj < inst->JJvmore) {
             // cj   = g0*vj + g1*vj**3 + g2*vj**5,
             // crhs = cj - vj*gqt
@@ -661,18 +660,28 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
         double gam = avj - inst->JJvg/dv;
         if (gam > 30.0)
             gam = 30.0;
-        if (gam < -30.0)
+        else if (gam < -30.0)
             gam = -30.0;
         double expgam = exp(gam);
         double exngam = 1.0 / expgam;
         double xp     = 1.0 + expgam;
         double xn     = 1.0 + exngam;
+        
+        double A      = (1.0 - model->JJicFactor)*inst->JJvg*inst->JJgn;
+        if (vj < 0.0)
+            A = -A;
+        double cxtra  = A*(xp-1.0)/xp;
+        js_crhs = vj*(inst->JJg0 + inst->JJgn*(xp-1.0))/xp + cxtra;
+        js_gqt = inst->JJgn*(xn + avj*(xn-1.0))/(xn*xn) +
+            inst->JJg0*(xp - avj*(xp-1.0))/(xp*xp);
+/*
         double cxtra  =
             (1.0 - model->JJicFactor)*inst->JJvg*inst->JJgn*expgam/xp;
         js_crhs = vj*(inst->JJg0 + inst->JJgn*expgam)/xp +
             (vj >= 0 ? cxtra : -cxtra);
         js_gqt = inst->JJgn*(xn + avj*exngam)/(xn*xn) +
             inst->JJg0*(xp - avj*expgam)/(xp*xp);
+*/
         js_crhs -= js_gqt*vj;
     }
     else if (model->JJrtype == 4) {
