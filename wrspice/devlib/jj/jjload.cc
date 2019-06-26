@@ -636,6 +636,38 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
             js_crhs = (vj >= 0 ? inst->JJcr2 : -inst->JJcr2);
         }
     }
+    else if (model->JJrtype == 2) {
+        double dv = 0.5*model->JJdelv;
+        double avj = absvj/dv;
+        double vgdv = inst->JJvg/dv;
+        double gam = avj - vgdv;
+        if (gam > 30.0)
+            gam = 30.0;
+        else if (gam < -30.0)
+            gam = -30.0;
+        double xp = exp(gam);
+        if (vgdv > 30.0)
+            vgdv = 30.0;
+        double xp0 = exp(-vgdv);
+        double A = 0.5*(1.0 - model->JJicFactor)*inst->JJvg;
+        double As = vj < 0.0 ? -A : A;
+        double xp1 = 1 + xp - xp0;
+
+        // Here is the assumed quasiparticle current.  This is
+        // empirical with the properties that
+        // 1) at vj = 0, conductance = g0, I = 0
+        // 2) at vj = huge, conductance = gn
+
+        double I = ( (inst->JJg0 + inst->JJgn*xp0*A/dv)*vj +
+            inst->JJgn*(vj - As)*(xp - xp0) ) / xp1;
+
+        double dIdv =
+            (inst->JJg0 + inst->JJgn*xp0*A/dv)*(xp1 - absvj*xp)/(xp1*xp1) +
+            inst->JJgn*(xp*(absvj - A)/(dv*xp1*xp1) + (xp - xp0)/xp1) ;
+
+        js_crhs = I - dIdv*vj;
+        js_gqt = dIdv;
+    }
     else if (model->JJrtype == 3) {
         if (absvj < inst->JJvmore) {
             // cj   = g0*vj + g1*vj**3 + g2*vj**5,
@@ -653,36 +685,6 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
             js_gqt = inst->JJgn;
             js_crhs = (vj >= 0 ? inst->JJcr1 : -inst->JJcr1);
         }
-    }
-    else if (model->JJrtype == 2) {
-        double dv = 0.5*model->JJdelv;
-        double avj = absvj/dv;
-        double gam = avj - inst->JJvg/dv;
-        if (gam > 30.0)
-            gam = 30.0;
-        else if (gam < -30.0)
-            gam = -30.0;
-        double expgam = exp(gam);
-        double exngam = 1.0 / expgam;
-        double xp     = 1.0 + expgam;
-        double xn     = 1.0 + exngam;
-        
-        double A      = (1.0 - model->JJicFactor)*inst->JJvg*inst->JJgn;
-        if (vj < 0.0)
-            A = -A;
-        double cxtra  = A*(xp-1.0)/xp;
-        js_crhs = vj*(inst->JJg0 + inst->JJgn*(xp-1.0))/xp + cxtra;
-        js_gqt = inst->JJgn*(xn + avj*(xn-1.0))/(xn*xn) +
-            inst->JJg0*(xp - avj*(xp-1.0))/(xp*xp);
-/*
-        double cxtra  =
-            (1.0 - model->JJicFactor)*inst->JJvg*inst->JJgn*expgam/xp;
-        js_crhs = vj*(inst->JJg0 + inst->JJgn*expgam)/xp +
-            (vj >= 0 ? cxtra : -cxtra);
-        js_gqt = inst->JJgn*(xn + avj*exngam)/(xn*xn) +
-            inst->JJg0*(xp - avj*expgam)/(xp*xp);
-*/
-        js_crhs -= js_gqt*vj;
     }
     else if (model->JJrtype == 4) {
         double temp = 1;
@@ -711,10 +713,8 @@ jjstuff::jj_iv(sJJmodel *model, sJJinstance *inst)
             }
             else {
                 js_gqt = inst->JJgn;
-//XXX new
                 double cr2 = js_crt/model->JJicFactor +
-                    vless * inst->JJg0 -
-                    vmore * inst->JJgn;
+                    vless*inst->JJg0 - vmore*inst->JJgn;
                 js_crhs = (vj >= 0 ? cr2 : -cr2);
             }
         }
@@ -749,7 +749,6 @@ jjstuff::jj_ic(sJJmodel *model, sJJinstance *inst)
         }
     }
     else if (model->JJictype == 3) {
-
         double temp = ci < 0 ? -ci : ci;
         if (temp < model->JJccsens) {
             js_dcrt = js_crt / model->JJccsens;
@@ -762,7 +761,6 @@ jjstuff::jj_ic(sJJmodel *model, sJJinstance *inst)
         else js_crt = 0.0;
     }
     else if (model->JJictype == 4) {
-
         double temp = ci < 0 ? -ci : ci;
         if (temp < model->JJccsens) {
             temp = model->JJccsens + model->JJccsens;

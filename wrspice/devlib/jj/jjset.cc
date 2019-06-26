@@ -575,24 +575,11 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
             double gfac = inst->JJarea*(1.0 - model->JJgmu) +
                 sqrta*model->JJgmu;
-            gfac *= inst->JJtcf;
             inst->JJg0 = gfac / model->JJr0;
             inst->JJgn = gfac / model->JJrn;
             inst->JJgs = inst->JJcriti/(model->JJicFactor * model->JJdelv);
 
-            if (model->JJrtype == 2) {
-                double dv = 0.5*model->JJdelv;
-                double gam = -inst->JJvg/dv;
-                if (gam < -30.0)
-                    gam = -30.0;
-                double expgam = exp(gam);
-                double exngam = 1.0 / expgam;
-                double xp     = 1.0 + expgam;
-                double xn     = 1.0 + exngam;
-                inst->JJgqp = inst->JJgn/xn + inst->JJg0/xp;
-            }
-            else
-                inst->JJgqp = inst->JJg0;
+            inst->JJgqp = inst->JJg0;
 
             // These currents are added to RHS in piecewise qp model.
             inst->JJcr1 = (inst->JJg0 - inst->JJgs)*inst->JJvless;
