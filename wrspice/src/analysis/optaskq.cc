@@ -997,6 +997,36 @@ OPTanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         data->type = IF_REAL;
         break;
 
+    case OPT_MAXDELTA:
+        value->rValue = ckt->CKTmaxStep;
+        data->type = IF_REAL;
+        break;
+
+    case OPT_TSTEP:
+        value->rValue = ckt->CKTstep;
+        data->type = IF_REAL;
+        break;
+
+    case OPT_TSTOP:
+        value->rValue = ckt->CKTfinalTime;
+        data->type = IF_REAL;
+        break;
+
+    case OPT_TSTART:
+        value->rValue = ckt->CKTinitTime;
+        data->type = IF_REAL;
+        break;
+
+    case OPT_FSTOP:
+        value->rValue = ckt->CKTfinalFreq;
+        data->type = IF_REAL;
+        break;
+
+    case OPT_FSTART:
+        value->rValue = ckt->CKTinitFreq;
+        data->type = IF_REAL;
+        break;
+
     case OPT_EXTERNAL:
         break;
     case OPT_NOTUSED:

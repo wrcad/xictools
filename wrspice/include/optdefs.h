@@ -129,6 +129,12 @@ enum OPTtype
 
     // special parameters
     OPT_DELTA,
+    OPT_MAXDELTA,
+    OPT_TSTEP,
+    OPT_TSTOP,
+    OPT_TSTART,
+    OPT_FSTOP,
+    OPT_FSTART,
     OPT_EXTERNAL
 };
 

@@ -159,6 +159,12 @@ const char *spkw_hitusertp      = "hitusertp";
 const char *spkw_nousertp       = "nousertp";
 const char *spkw_fixedstep      = "fixedstep";
 const char *spkw_delta          = "delta";
+const char *spkw_maxdelta       = "maxdelta";
+const char *spkw_tstep          = "tstep";
+const char *spkw_tstop          = "tstop";
+const char *spkw_tstart         = "tstart";
+const char *spkw_fstop          = "fstop";
+const char *spkw_fstart         = "fstart";
 
 // This tracks options set by the front end.
 sOPTIONS sOPTIONS::OPTsh_opts;
@@ -1264,7 +1270,19 @@ namespace {
             "Don't print a model summary"),
 
         IFparm(spkw_delta,          OPT_DELTA,          IF_ASK|IF_REAL,
-            "Transient analysis internal time step")
+            "Transient analysis internal time step"),
+        IFparm(spkw_maxdelta,       OPT_MAXDELTA,       IF_ASK|IF_REAL,
+            "Transient analysis maximum internal time step"),
+        IFparm(spkw_tstep,          OPT_TSTEP,          IF_ASK|IF_REAL,
+            "Transient analysis print increment"),
+        IFparm(spkw_tstop,          OPT_TSTOP,          IF_ASK|IF_REAL,
+            "Transient analysis final time"),
+        IFparm(spkw_tstart,         OPT_TSTART,         IF_ASK|IF_REAL,
+            "Transient analysis start output time"),
+        IFparm(spkw_fstop,          OPT_FSTOP,          IF_ASK|IF_REAL,
+            "AC analysis end frequency"),
+        IFparm(spkw_fstart,         OPT_FSTART,         IF_ASK|IF_REAL,
+            "AC analysis start frequency")
     };
 }
 

@@ -88,7 +88,7 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
                 pint--;
                 phi += twopi;
             }
-            if (phitot > 0.0) {
+            if (phitot >= 0.0) {
                 // Phase is positive and we assume increasing, bias
                 // point is in the first quadrant, half way around is
                 // the third quadrant, clockwise.
@@ -99,10 +99,15 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
             else {
                 // Phase is negative and we assume decreasing, bias
                 // point is in the fourth quadrant, half way around is
-                // the second quadrant, counter-clockwise
+                // the second quadrant, counter-clockwise.
 
                 if (phi < M_PI - M_PI_4)
                     pint--;
+
+                // There is a count added to shift phi range to
+                // positive, here this is subtracted off.
+
+                pint++;
             }
 
             int last_pn = inst->JJphsN;
@@ -110,7 +115,6 @@ JJdev::accept(sCKT *ckt, sGENmodel *genmod)
             inst->JJphsF = false;
             if (pint != last_pn) {
                 // Pulse count changed, record time and set flag.
-//XXX interpolate instead
                 inst->JJphsT = ckt->CKTtime;
                 inst->JJphsF = true;
             }
