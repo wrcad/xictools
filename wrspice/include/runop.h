@@ -379,6 +379,8 @@ private:
     unsigned char t_range;  // Before/at/after, MPrange.
 };
 
+#define NEWMEAS
+
 enum Mfunc { Mmin, Mmax, Mpp, Mavg, Mrms, Mpw, Mrft, Mfind };
 
 // List element for measurement jobs
@@ -415,12 +417,23 @@ struct sMfunc
     void set_val(double d)      { f_val = d; }
 
     void print(sLstr&);
+#ifdef NEWMEAS
+    bool f_min(sDataVec*, sDataVec*, int, int, double*, double*);
+    bool f_max(sDataVec*, sDataVec*, int, int, double*, double*);
+    bool f_pp(sDataVec*, sDataVec*, int, int, double*, double*);
+    bool f_avg(sDataVec*, sDataVec*, int, int, double*, double*);
+    bool f_rms(sDataVec*, sDataVec*, int, int, double*, double*);
+    bool f_pw(sDataVec*, sDataVec*, int, int, double*, double*);
+    bool f_rft(sDataVec*, sDataVec*, int, int, double*, double*);
+private:
+#endif
 
     Mfunc f_type;       // type of job
     bool f_error;       // set if expr evaluation fails
     sMfunc *f_next;     // pointer to next job
     const char *f_expr; // expression to evaluate
     double f_val;       // result of measurement
+
 };
 
 
@@ -511,10 +524,13 @@ private:
     void addMeas(Mfunc, const char*);
     double startval(sDataVec*, sDataVec*);
     double endval(sDataVec*, sDataVec*);
+#ifdef NEWMEAS
+#else
     double findavg(sDataVec*, sDataVec*);
     double findrms(sDataVec*, sDataVec*);
     double findpw(sDataVec*, sDataVec*);
     double findrft(sDataVec*, sDataVec*);
+#endif
 
     sMpoint ro_start;
     sMpoint ro_end;
