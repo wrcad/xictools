@@ -4,6 +4,7 @@ adms/include/dctdefs.h
 adms/include/device.h
 adms/include/distdefs.h
 adms/include/errors.h
+adms/include/ifcx.h
 adms/include/ifdata.h
 adms/include/inpline.h
 adms/include/input.h
@@ -15,6 +16,7 @@ include/dctdefs.h
 include/device.h
 include/distdefs.h
 include/errors.h
+include/ifcx.h
 include/ifdata.h
 include/inpline.h
 include/input.h
