@@ -152,6 +152,327 @@ sMfunc::print(sLstr &lstr)
     lstr.add_c(' ');
     lstr.add(f_expr);
 }
+
+
+#ifdef NEWMEAS
+
+// Find the maximum of dv over the interval.
+//
+bool
+sMfunc::f_min(sDataVec *dv, sDataVec*, int ixmin, int ixmax,
+    double *startval, double *endval)
+{
+    if (dv->length() == 1) {
+        f_val = dv->realval(0);
+        return (true);
+    }
+    double mn = dv->realval(ixmin);
+    for (int i = ixmin+1; i <= ixmax; i++) {
+        if (dv->realval(i) < mn)
+            mn = dv->realval(i);
+    }
+    if (startval) {
+        if (*startval < mn)
+            mn = *startval;
+    }
+    if (endval) {
+        if (*endval < mn)
+            mn = *endval;
+    }
+    f_val = mn;
+    return (true);
+}
+
+
+// Find the maximum of dv over the interval.
+//
+bool
+sMfunc::f_max(sDataVec *dv, sDataVec*, int ixmin, int ixmax,
+    double *startval, double *endval)
+{
+    if (dv->length() == 1) {
+        f_val = dv->realval(0);
+        return (true);
+    }
+    double mx = dv->realval(ixmin);
+    for (int i = ixmin+1; i <= ixmax; i++) {
+        if (dv->realval(i) > mx)
+            mx = dv->realval(i);
+    }
+    if (startval) {
+        if (*startval > mx)
+            mx = *startval;
+    }
+    if (endval) {
+        if (*endval > mx)
+            mx = *endval;
+    }
+    f_val = mx;
+    return (true);
+}
+
+
+// Find the maximum minus minimum of dv over the interval.
+//
+bool
+sMfunc::f_pp(sDataVec *dv, sDataVec*, int ixmin, int ixmax,
+    double *startval, double *endval)
+{
+    if (dv->length() == 1) {
+        f_val = 0.0;
+        return (true);
+    }
+    double mn = dv->realval(ixmin);
+    double mx = mn;
+    for (int i = ixmin+1; i <= ixmax; i++) {
+        if (dv->realval(i) < mn)
+            mn = dv->realval(i);
+        else if (dv->realval(i) > mx)
+            mx = dv->realval(i);
+    }
+    if (startval) {
+        if (*startval > mx)
+            mx = *startval;
+        else if (*startval < mn)
+            mn = *startval;
+    }
+    if (endval) {
+        if (*endval > mx)
+            mx = *endval;
+        else if (*endval < mn)
+            mn = *endval;
+    }
+    f_val = mx - mn;
+    return (true);
+}
+
+
+// Find the average of dv over the interval.  We use trapezoid
+// integration and divide by the scale interval.
+//
+bool
+sMfunc::f_avg(sDataVec *dv, sDataVec *xs, int ixmin, int ixmax,
+    double *startval, double *endval)
+{
+    if (dv->length() == 1) {
+        f_val = dv->realval(0);
+        return (true);
+    }
+    double sum = 0.0;
+    double d, delt;
+    // compute the sum over the scale intervals
+    int i;
+    for (i = ixmin+1; i <= ixmax; i++) {
+        delt = xs->realval(i) - xs->realval(i-1);
+        sum += 0.5*delt*(dv->realval(i-1) + dv->realval(i));
+    }
+
+    // *startval is ahead of the start index (between i-1 and i)
+    if (startval) {
+        delt = xs->realval(ixmin) - *startval;
+        if (delt != 0) {
+            i = ixmin;
+            d = dv->realval(i) + (dv->realval(i-1) - dv->realval(i))*
+                (*startval - xs->realval(ixmin))/
+                (xs->realval(i-1) - xs->realval(i));
+            sum += 0.5*delt*(d + dv->realval(i));
+        }
+    }
+
+    // *endval is behind the end index
+    if (endval) {
+        delt = *endval - xs->realval(ixmax);
+        if (delt != 0.0) {
+            i = ixmax;
+            d = dv->realval(i) + (dv->realval(i+1) - dv->realval(i))*
+                (*endval - xs->realval(ixmax))/
+                (xs->realval(i+1) - xs->realval(i));
+            sum += 0.5*delt*(d + dv->realval(i));
+        }
+    }
+
+    double tstart = startval ? *startval : xs->realval(ixmin);
+    double tend = endval ? *endval : xs->realval(ixmax);
+    double dt = tend - tstart;
+    if (dt != 0.0)
+        sum /= dt;
+    f_val = sum;
+    return (true);
+}
+
+
+// Find the rms of dv over the interval.  We use trapezoid
+// integration of the magnitudes.
+//
+bool
+sMfunc::f_rms(sDataVec *dv, sDataVec *xs, int ixmin, int ixmax,
+    double *startval, double *endval)
+{
+    if (dv->length() == 1) {
+        f_val = dv->realval(0);
+        return (true);
+    }
+    double sum = 0.0;
+    double d, delt;
+    // compute the sum over the scale intervals
+    int i;
+    for (i = ixmin+1; i <= ixmax; i++) {
+        delt = xs->realval(i) - xs->realval(i-1);
+        sum += 0.5*delt*(dv->realval(i-1)*dv->realval(i-1) +
+            dv->realval(i)*dv->realval(i));
+    }
+
+    // *startval is ahead of the start index
+    if (startval) {
+        delt = xs->realval(ixmin) - *startval;
+        if (delt != 0.0) {
+            i = ixmin;
+            d = dv->realval(i) + (dv->realval(i-1) - dv->realval(i))*
+                (*startval - xs->realval(ixmin))/
+                (xs->realval(i-1) - xs->realval(i));
+            sum += 0.5*delt*(d*d + dv->realval(i)*dv->realval(i));
+        }
+    }
+
+    // *endval is behind the end index
+    if (endval) {
+        delt = *endval - xs->realval(ixmax);
+        if (delt != 0.0) {
+            i = ixmax;
+            d = dv->realval(i) + (dv->realval(i+1) - dv->realval(i))*
+                (*endval - xs->realval(ixmax))/
+                (xs->realval(i+1) - xs->realval(i));
+            sum += 0.5*delt*(d*d + dv->realval(i)*dv->realval(i));
+        }
+    }
+
+    double tstart = startval ? *startval : xs->realval(ixmin);
+    double tend = endval ? *endval : xs->realval(ixmax);
+    double dt = tend - tstart;
+    if (dt != 0.0)
+        sum /= dt;
+    f_val = sqrt(fabs(sum));
+    return (true);
+}
+
+
+// Find the fwhm of a pulse assumed to be contained in the interval.
+//
+bool
+sMfunc::f_pw(sDataVec *dv, sDataVec *xs, int ixmin, int ixmax,
+    double *startval, double *endval)
+{
+    if (dv->length() == 1) {
+        f_val = 0.0;
+        return (true);
+    }
+    // find the max/min
+    double mx = dv->realval(ixmin);
+    double mn = mx;
+    int imx = -1;
+    int imn = -1;
+    for (int i = ixmin+1; i <= ixmax; i++) {
+        if (dv->realval(i) > mx) {
+            mx = dv->realval(i);
+            imx = i;
+        }
+        if (dv->realval(i) < mn) {
+            mn = dv->realval(i);
+            imn = i;
+        }
+    }
+    double ds = startval ? *startval : dv->realval(ixmin);
+    double de = endval ? *endval : dv->realval(ixmax);
+    double mid;
+    int imid;
+    if (mx - SPMAX(ds, de) > SPMIN(ds, de) - mn) {
+        mid = 0.5*(mx + SPMAX(ds, de));
+        imid = imx;
+    }
+    else {
+        mid = 0.5*(mn + SPMIN(ds, de));
+        imid = imn;
+    }
+
+    int ibeg = -1, iend = -1;
+    for (int i = ixmin + 1; i <= ixmax; i++) {
+        if ((dv->realval(i-1) < mid && dv->realval(i) >= mid) ||
+                (dv->realval(i-1) > mid && dv->realval(i) <= mid)) {
+            if (ibeg >= 0)
+                iend = i;
+            else
+                ibeg = i;
+        }
+        if (ibeg >=0 && iend >= 0)
+            break;
+    }
+    if (ibeg >= 0 && iend >= 0 && ibeg < imid && iend > imid) {
+        double x0 = xs->realval(ibeg-1);
+        double x1 = xs->realval(ibeg);
+        double y0 = dv->realval(ibeg-1);
+        double y1 = dv->realval(ibeg);
+        double tbeg = x0 + (x1 - x0)*(mid - y0)/(y1 - y0);
+        x0 = xs->realval(iend-1);
+        x1 = xs->realval(iend);
+        y0 = dv->realval(iend-1);
+        y1 = dv->realval(iend);
+        double tend = x0 + (x1 - x0)*(mid - y0)/(y1 - y0);
+        f_val = tend - tbeg;
+    }
+    else
+        f_val = 0.0;
+    return (true);
+}
+
+
+// Find the 10-90% rise or fall time of an edge contained in the
+// interval.
+//
+bool
+sMfunc::f_rft(sDataVec *dv, sDataVec *xs, int ixmin, int ixmax,
+    double *startval, double *endval)
+{
+    if (dv->length() == 1) {
+        f_val = 0.0;
+        return (true);
+    }
+    double vstart = startval ? *startval : dv->realval(ixmin);
+    double vend = endval ? *endval : dv->realval(ixmax);
+    double th1 = vstart + 0.1*(vend - vstart);
+    double th2 = vstart + 0.9*(vend - vstart);
+
+    int ibeg = -1, iend = -1;
+    for (int i = ixmin + 1; i <= ixmax; i++) {
+        if ((dv->realval(i-1) < th1 && dv->realval(i) >= th1) ||
+                (dv->realval(i-1) > th1 && dv->realval(i) <= th1) ||
+                (dv->realval(i-1) < th2 && dv->realval(i) >= th2) ||
+                (dv->realval(i-1) > th2 && dv->realval(i) <= th2)) {
+            if (ibeg >= 0)
+                iend = i;
+            else
+                ibeg = i;
+        }
+        if (ibeg >=0 && iend >= 0)
+            break;
+    }
+    if (ibeg >= 0 && iend >= 0 && iend > ibeg) {
+        double x0 = xs->realval(ibeg-1);
+        double x1 = xs->realval(ibeg);
+        double y0 = dv->realval(ibeg-1);
+        double y1 = dv->realval(ibeg);
+        double tbeg = x0 + (x1 - x0)*(th1 - y0)/(y1 - y0);
+        x0 = xs->realval(iend-1);
+        x1 = xs->realval(iend);
+        y0 = dv->realval(iend-1);
+        y1 = dv->realval(iend);
+        double tend = x0 + (x1 - x0)*(th2 - y0)/(y1 - y0);
+        f_val = tend - tbeg;
+    }
+    else
+        f_val = 0.0;
+    return (true);
+}
+#endif
 // End of sMfunc functions.
 
 
@@ -2365,393 +2686,6 @@ sRunopMeas::findrft(sDataVec *dv, sDataVec *xs)
 }
 #endif
 // End of sRunopMeas functions.
-
-//XXX
-//        ixmin = ro_start.indx();
-//        ixmax - ro_end.indx();
-//        double d = startval(dv, xs);
-//        d = endval(dv, xs);
-
-bool
-sMfunc::f_min(sDataVec *dv, sDataVec*, int ixmin, int ixmax,
-    double *startval, double *endval)
-{
-    if (dv->length() == 1) {
-        f_val = dv->realval(0);
-        return (true);
-    }
-    double mn = dv->realval(ixmin);
-    for (int i = ixmin+1; i <= ixmax; i++) {
-        if (dv->realval(i) < mn)
-            mn = dv->realval(i);
-    }
-    if (startval) {
-        if (*startval < mn)
-            mn = *startval;
-    }
-    if (endval) {
-        if (*endval < mn)
-            mn = *endval;
-    }
-    f_val = mn;
-    return (true);
-}
-
-
-bool
-sMfunc::f_max(sDataVec *dv, sDataVec*, int ixmin, int ixmax,
-    double *startval, double *endval)
-{
-    if (dv->length() == 1) {
-        f_val = dv->realval(0);
-        return (true);
-    }
-    double mx = dv->realval(ixmin);
-    for (int i = ixmin+1; i <= ixmax; i++) {
-        if (dv->realval(i) > mx)
-            mx = dv->realval(i);
-    }
-    if (startval) {
-        if (*startval > mx)
-            mx = *startval;
-    }
-    if (endval) {
-        if (*endval > mx)
-            mx = *endval;
-    }
-    f_val = mx;
-    return (true);
-}
-
-
-bool
-sMfunc::f_pp(sDataVec *dv, sDataVec*, int ixmin, int ixmax,
-    double *startval, double *endval)
-{
-    if (dv->length() == 1) {
-        f_val = 0.0;
-        return (true);
-    }
-    double mn = dv->realval(ixmin);
-    double mx = mn;
-    for (int i = ixmin+1; i <= ixmax; i++) {
-        if (dv->realval(i) < mn)
-            mn = dv->realval(i);
-        else if (dv->realval(i) > mx)
-            mx = dv->realval(i);
-    }
-    if (startval) {
-        if (*startval > mx)
-            mx = *startval;
-        else if (*startval < mn)
-            mn = *startval;
-    }
-    if (endval) {
-        if (*endval > mx)
-            mx = *endval;
-        else if (*endval < mn)
-            mn = *endval;
-    }
-    f_val = mx - mn;
-    return (true);
-}
-
-
-bool
-sMfunc::f_avg(sDataVec *dv, sDataVec *xs, int ixmin, int ixmax,
-    double *startval, double *endval)
-{
-    if (dv->length() == 1) {
-        f_val = dv->realval(0);
-        return (true);
-    }
-    double sum = 0.0;
-    double d, delt;
-    // compute the sum over the scale intervals
-    int i;
-    for (i = ixmin+1; i <= ixmax; i++) {
-        delt = xs->realval(i) - xs->realval(i-1);
-        sum += 0.5*delt*(dv->realval(i-1) + dv->realval(i));
-    }
-
-    // *startval is ahead of the start index (between i-1 and i)
-    if (startval) {
-        delt = xs->realval(ixmin) - *startval;
-        if (delt != 0) {
-            i = ixmin;
-            d = dv->realval(i) + (dv->realval(i-1) - dv->realval(i))*
-                (*startval - xs->realval(ixmin))/
-                (xs->realval(i-1) - xs->realval(i));
-            sum += 0.5*delt*(d + dv->realval(i));
-        }
-    }
-
-    // *endval is behind the end index
-    if (endval) {
-        delt = *endval - xs->realval(ixmax);
-        if (delt != 0.0) {
-            i = ixmax;
-            d = dv->realval(i) + (dv->realval(i+1) - dv->realval(i))*
-                (*endval - xs->realval(ixmax))/
-                (xs->realval(i+1) - xs->realval(i));
-            sum += 0.5*delt*(d + dv->realval(i));
-        }
-    }
-
-    double tstart = startval ? *startval : xs->realval(ixmin);
-    double tend = endval ? *endval : xs->realval(ixmax);
-    double dt = tend - tstart;
-    if (dt != 0.0)
-        sum /= dt;
-    f_val = sum;
-    return (true);
-}
-
-
-bool
-sMfunc::f_rms(sDataVec *dv, sDataVec *xs, int ixmin, int ixmax,
-    double *startval, double *endval)
-{
-    if (dv->length() == 1) {
-        f_val = dv->realval(0);
-        return (true);
-    }
-    double sum = 0.0;
-    double d, delt;
-    // compute the sum over the scale intervals
-    int i;
-    for (i = ixmin+1; i <= ixmax; i++) {
-        delt = xs->realval(i) - xs->realval(i-1);
-        sum += 0.5*delt*(dv->realval(i-1)*dv->realval(i-1) +
-            dv->realval(i)*dv->realval(i));
-    }
-
-    // *startval is ahead of the start index
-    if (startval) {
-        delt = xs->realval(ixmin) - *startval;
-        if (delt != 0.0) {
-            i = ixmin;
-            d = dv->realval(i) + (dv->realval(i-1) - dv->realval(i))*
-                (*startval - xs->realval(ixmin))/
-                (xs->realval(i-1) - xs->realval(i));
-            sum += 0.5*delt*(d*d + dv->realval(i)*dv->realval(i));
-        }
-    }
-
-    // *endval is behind the end index
-    if (endval) {
-        delt = *endval - xs->realval(ixmax);
-        if (delt != 0.0) {
-            i = ixmax;
-            d = dv->realval(i) + (dv->realval(i+1) - dv->realval(i))*
-                (*endval - xs->realval(ixmax))/
-                (xs->realval(i+1) - xs->realval(i));
-            sum += 0.5*delt*(d*d + dv->realval(i)*dv->realval(i));
-        }
-    }
-
-    double tstart = startval ? *startval : xs->realval(ixmin);
-    double tend = endval ? *endval : xs->realval(ixmax);
-    double dt = tend - tstart;
-    if (dt != 0.0)
-        sum /= dt;
-    f_val = sqrt(fabs(sum));
-    return (true);
-}
-
-
-bool
-sMfunc::f_pw(sDataVec *dv, sDataVec *xs, int ixmin, int ixmax,
-    double *startval, double *endval)
-{
-    if (dv->length() == 1) {
-        f_val = 0.0;
-        return (true);
-    }
-    // find the max/min
-    double mx = dv->realval(ixmin);
-    double mn = mx;
-    int imx = -1;
-    int imn = -1;
-    for (int i = ixmin+1; i <= ixmax; i++) {
-        if (dv->realval(i) > mx) {
-            mx = dv->realval(i);
-            imx = i;
-        }
-        if (dv->realval(i) < mn) {
-            mn = dv->realval(i);
-            imn = i;
-        }
-    }
-    double ds = startval ? *startval : dv->realval(ixmin);
-    double de = endval ? *endval : dv->realval(ixmax);
-    double mid;
-    int imid;
-    if (mx - SPMAX(ds, de) > SPMIN(ds, de) - mn) {
-        mid = 0.5*(mx + SPMAX(ds, de));
-        imid = imx;
-    }
-    else {
-        mid = 0.5*(mn + SPMIN(ds, de));
-        imid = imn;
-    }
-
-    int ibeg = -1, iend = -1;
-    for (int i = ixmin + 1; i <= ixmax; i++) {
-        if ((dv->realval(i-1) < mid && dv->realval(i) >= mid) ||
-                (dv->realval(i-1) > mid && dv->realval(i) <= mid)) {
-            if (ibeg >= 0)
-                iend = i;
-            else
-                ibeg = i;
-        }
-        if (ibeg >=0 && iend >= 0)
-            break;
-    }
-    if (ibeg >= 0 && iend >= 0 && ibeg < imid && iend > imid) {
-        double x0 = xs->realval(ibeg-1);
-        double x1 = xs->realval(ibeg);
-        double y0 = dv->realval(ibeg-1);
-        double y1 = dv->realval(ibeg);
-        double tbeg = x0 + (x1 - x0)*(mid - y0)/(y1 - y0);
-        x0 = xs->realval(iend-1);
-        x1 = xs->realval(iend);
-        y0 = dv->realval(iend-1);
-        y1 = dv->realval(iend);
-        double tend = x0 + (x1 - x0)*(mid - y0)/(y1 - y0);
-        f_val = tend - tbeg;
-    }
-    else
-        f_val = 0.0;
-    return (true);
-}
-
-
-bool
-sMfunc::f_rft(sDataVec *dv, sDataVec *xs, int ixmin, int ixmax,
-    double *startval, double *endval)
-{
-    if (dv->length() == 1) {
-        f_val = 0.0;
-        return (true);
-    }
-    double vstart = startval ? *startval : dv->realval(ixmin);
-    double vend = endval ? *endval : dv->realval(ixmax);
-    double th1 = vstart + 0.1*(vend - vstart);
-    double th2 = vstart + 0.9*(vend - vstart);
-
-    int ibeg = -1, iend = -1;
-    for (int i = ixmin + 1; i <= ixmax; i++) {
-        if ((dv->realval(i-1) < th1 && dv->realval(i) >= th1) ||
-                (dv->realval(i-1) > th1 && dv->realval(i) <= th1) ||
-                (dv->realval(i-1) < th2 && dv->realval(i) >= th2) ||
-                (dv->realval(i-1) > th2 && dv->realval(i) <= th2)) {
-            if (ibeg >= 0)
-                iend = i;
-            else
-                ibeg = i;
-        }
-        if (ibeg >=0 && iend >= 0)
-            break;
-    }
-    if (ibeg >= 0 && iend >= 0 && iend > ibeg) {
-        double x0 = xs->realval(ibeg-1);
-        double x1 = xs->realval(ibeg);
-        double y0 = dv->realval(ibeg-1);
-        double y1 = dv->realval(ibeg);
-        double tbeg = x0 + (x1 - x0)*(th1 - y0)/(y1 - y0);
-        x0 = xs->realval(iend-1);
-        x1 = xs->realval(iend);
-        y0 = dv->realval(iend-1);
-        y1 = dv->realval(iend);
-        double tend = x0 + (x1 - x0)*(th2 - y0)/(y1 - y0);
-        f_val = tend - tbeg;
-    }
-    else
-        f_val = 0.0;
-    return (true);
-}
-// End of sMfunc functions.
-
-#ifdef notdef
-sDataVec *
-sDataVec::v_fmin()
-{
-    sMfunc m(Mmin, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-    m.f_min(this, xs, 0, v_length-1, 0, 0);
-    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
-    res->v_data.real[0] = m.val();
-    return (res);
-}
-
-sDataVec *
-sDataVec::v_fmax()
-{
-    sMfunc m(Mmax, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-    m.f_max(this, xs, 0, v_length-1, 0, 0);
-    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
-    res->v_data.real[0] = m.val();
-    return (res);
-}
-
-sDataVec *
-sDataVec::v_fpp()
-{
-    sMfunc m(Mpp, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-    m.f_pp(this, xs, 0, v_length-1, 0, 0);
-    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
-    res->v_data.real[0] = m.val();
-    return (res);
-}
-
-sDataVec *
-sDataVec::v_favg()
-{
-    sMfunc m(Mavg, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-    m.f_avg(this, xs, 0, v_length-1, 0, 0);
-    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
-    res->v_data.real[0] = m.val();
-    return (res);
-}
-
-sDataVec *
-sDataVec::v_frms()
-{
-    sMfunc m(Mrms, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-    m.f_rms(this, xs, 0, v_length-1, 0, 0);
-    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
-    res->v_data.real[0] = m.val();
-    return (res);
-}
-
-sDataVec *
-sDataVec::v_frft()
-{
-    sMfunc m(Mrft, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-    m.f_rft(this, xs, 0, v_length-1, 0, 0);
-    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
-    res->v_data.real[0] = m.val();
-    return (res);
-}
-#endif
 
 
 void

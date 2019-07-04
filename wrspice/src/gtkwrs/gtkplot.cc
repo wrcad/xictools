@@ -112,6 +112,7 @@ struct plot_bag : public gtk_bag,  public gtk_draw
             pb_pmwid = pb_pmhei = 0;
             pb_id = 0;
             pb_x = pb_y = 0;
+            pb_rdid = 0;
         }
 
     ~plot_bag()
@@ -130,6 +131,7 @@ private:
     static bool check_event(GdkEvent*, sGraph*);
     static void sens_set(gtk_bag*, bool, int);
     static int resize(GtkWidget*, GdkEvent*, void*);
+    static int redraw_timeout(void*);
     static int redraw(GtkWidget*, GdkEvent*, void*);
     static int motion(GtkWidget*, GdkEvent*, void*);
     static int motion_idle(void*);
@@ -164,6 +166,7 @@ private:
     int pb_pmwid, pb_pmhei;         // pixmap size
     int pb_id;                      // motion idle id
     int pb_x, pb_y;                 // motion coords
+    int pb_rdid;                    // redisplay timeout id
 };
 
 
@@ -884,6 +887,31 @@ plot_bag::resize(GtkWidget *caller, GdkEvent*, void *client_data)
 
 
 // Static function.
+// The redraw is in a timeout so that plots with a lot of data and
+// take time to render can be resized more easily.
+int
+plot_bag::redraw_timeout(void *arg)
+{
+    sGraph *graph = static_cast<sGraph*>(arg);
+    plot_bag *wb = dynamic_cast<plot_bag*>(graph->dev());
+
+    wb->pb_rdid = 0;
+    GdkWindow *wtmp = wb->Window();
+    wb->SetWindow(wb->pb_pixmap);
+    wb->SetColor(graph->color(0).pixel);
+    wb->Box(0, 0, graph->area().width(), graph->area().height());
+    graph->gr_redraw_direct();
+    wb->SetWindow(wtmp);
+    gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
+        graph->area().width(), graph->area().height());
+    graph->gr_redraw_keyed();
+    graph->set_dirty(false);
+
+    return (0);
+}
+
+
+// Static function.
 int
 plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
 {
@@ -896,10 +924,10 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
 
     int w, h;
     gdk_window_get_size(wb->Window(), &w, &h);
-    graph->area().set_width(w);
-    graph->area().set_height(h);
-    if (!wb->pb_pixmap || wb->pb_pmwid != graph->area().width() ||
-            wb->pb_pmhei != graph->area().height()) {
+    if (!wb->pb_pixmap || wb->pb_pmwid != w || wb->pb_pmhei != h) {
+        graph->area().set_width(w);
+        graph->area().set_height(h);
+
         if (wb->pb_pixmap)
             gdk_pixmap_unref(wb->pb_pixmap);
         wb->pb_pixmap = gdk_pixmap_new(wb->Window(), graph->area().width(),
@@ -909,16 +937,9 @@ plot_bag::redraw(GtkWidget*, GdkEvent *event, void *client_data)
         graph->set_dirty(true);
     }
     if (graph->dirty()) {
-        GdkWindow *wtmp = wb->Window();
-        wb->SetWindow(wb->pb_pixmap);
-        wb->SetColor(graph->color(0).pixel);
-        wb->Box(0, 0, graph->area().width(), graph->area().height());
-        graph->gr_redraw_direct();
-        wb->SetWindow(wtmp);
-        gdk_window_copy_area(wb->Window(), wb->GC(), 0, 0, wb->pb_pixmap, 0, 0,
-            graph->area().width(), graph->area().height());
-        graph->gr_redraw_keyed();
-        graph->set_dirty(false);
+        if (wb->pb_rdid)
+            gtk_timeout_remove(wb->pb_rdid);
+        wb->pb_rdid = gtk_timeout_add(250, redraw_timeout, client_data);
     }
     else {
         gdk_window_copy_area(wb->Window(), wb->GC(), pev->area.x,

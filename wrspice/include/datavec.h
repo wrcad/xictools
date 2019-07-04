@@ -461,6 +461,14 @@ struct sDataVec
     // math functions
 
     // cmath1.cc
+    sDataVec *v_mmin();
+    sDataVec *v_mmax();
+    sDataVec *v_mpp();
+    sDataVec *v_mavg();
+    sDataVec *v_mrms();
+    sDataVec *v_mpw();
+    sDataVec *v_mrft();
+
     sDataVec *v_rms();
     sDataVec *v_sum();
     sDataVec *v_mag();

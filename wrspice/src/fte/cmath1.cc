@@ -50,6 +50,7 @@ Authors: 1985 Wayne A. Christopher
 #include "datavec.h"
 #include "output.h"
 #include "kwords_fte.h"
+#include "runop.h"
 #include "ttyio.h"
 #include "miscutil/random.h"
 #include "ginterf/graphics.h"
@@ -115,6 +116,102 @@ namespace {
         return (false);
     }
 }
+
+
+// Funcs exported by the measaurement system.
+//
+
+sDataVec *
+sDataVec::v_mmin()
+{
+    sMfunc m(Mmin, 0);
+    sDataVec *xs = v_scale;
+    if (!xs && v_plot)
+        xs = v_plot->scale();
+    m.f_min(this, xs, 0, v_length-1, 0, 0);
+    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
+    res->v_data.real[0] = m.val();
+    return (res);
+}
+
+sDataVec *
+sDataVec::v_mmax()
+{
+    sMfunc m(Mmax, 0);
+    sDataVec *xs = v_scale;
+    if (!xs && v_plot)
+        xs = v_plot->scale();
+    m.f_max(this, xs, 0, v_length-1, 0, 0);
+    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
+    res->v_data.real[0] = m.val();
+    return (res);
+}
+
+sDataVec *
+sDataVec::v_mpp()
+{
+    sMfunc m(Mpp, 0);
+    sDataVec *xs = v_scale;
+    if (!xs && v_plot)
+        xs = v_plot->scale();
+    m.f_pp(this, xs, 0, v_length-1, 0, 0);
+    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
+    res->v_data.real[0] = m.val();
+    return (res);
+}
+
+sDataVec *
+sDataVec::v_mavg()
+{
+    sMfunc m(Mavg, 0);
+    sDataVec *xs = v_scale;
+    if (!xs && v_plot)
+        xs = v_plot->scale();
+    m.f_avg(this, xs, 0, v_length-1, 0, 0);
+    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
+    res->v_data.real[0] = m.val();
+    return (res);
+}
+
+sDataVec *
+sDataVec::v_mrms()
+{
+    sMfunc m(Mrms, 0);
+    sDataVec *xs = v_scale;
+    if (!xs && v_plot)
+        xs = v_plot->scale();
+    m.f_rms(this, xs, 0, v_length-1, 0, 0);
+    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
+    res->v_data.real[0] = m.val();
+    return (res);
+}
+
+sDataVec *
+sDataVec::v_mpw()
+{
+    sMfunc m(Mpw, 0);
+    sDataVec *xs = v_scale;
+    if (!xs && v_plot)
+        xs = v_plot->scale();
+    m.f_pw(this, xs, 0, v_length-1, 0, 0);
+    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
+    res->v_data.real[0] = m.val();
+    return (res);
+}
+
+sDataVec *
+sDataVec::v_mrft()
+{
+    sMfunc m(Mrft, 0);
+    sDataVec *xs = v_scale;
+    if (!xs && v_plot)
+        xs = v_plot->scale();
+    m.f_rft(this, xs, 0, v_length-1, 0, 0);
+    sDataVec *res = new sDataVec(0, 0, 1, &v_units);
+    res->v_data.real[0] = m.val();
+    return (res);
+}
+// End of measurement exports.
 
 
 // Compute sqrt of sum of squares of entries

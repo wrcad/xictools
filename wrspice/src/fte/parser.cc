@@ -169,6 +169,7 @@ namespace {
         sFunc( "floor",         &sDataVec::v_floor,     1 ),
         sFunc( "sgn",           &sDataVec::v_sgn,       1 ),
         sFunc( "ceil",          &sDataVec::v_ceil,      1 ),
+
         sFunc( "int",           &sDataVec::v_rint,      1 ),
         sFunc( "v" ),
         sFunc( "i" ),
@@ -185,6 +186,15 @@ namespace {
         sFunc( "rnd",           &sDataVec::v_rnd,       1 ),
         sFunc( "tdist",         &sDataVec::v_tdist,     1 ),
 
+        // Measure system exports
+        sFunc( "mmin",          &sDataVec::v_mmin,      1 ),
+        sFunc( "mmax",          &sDataVec::v_mmax,      1 ),
+        sFunc( "mpp",           &sDataVec::v_mpp,       1 ),
+        sFunc( "mavg",          &sDataVec::v_mavg,      1 ),
+        sFunc( "mrms",          &sDataVec::v_mrms,      1 ),
+        sFunc( "mpw",           &sDataVec::v_mpw,       1 ),
+        sFunc( "mrft",          &sDataVec::v_mrft,      1 ),
+
         // HSPICE funcs
         sFunc( "unif",          &sDataVec::v_hs_unif,   2 ),
         sFunc( "aunif",         &sDataVec::v_hs_aunif,  2 ),
@@ -194,6 +204,7 @@ namespace {
         sFunc( "pow",           &sDataVec::v_hs_pow,    2 ),
         sFunc( "pwr",           &sDataVec::v_hs_pwr,    2 ),
         sFunc( "sign",          &sDataVec::v_hs_sign,   2 ),
+
         sFunc( 0 )
     };
 
