@@ -117,6 +117,9 @@ stag/soi3.dll
 sw/sw.dylib
 sw/sw.so
 sw/sw.dll
+tjm/tjm.dylib
+tjm/tjm.so
+tjm/tjm.dll
 tra/tra.dylib
 tra/tra.so
 tra/tra.dll

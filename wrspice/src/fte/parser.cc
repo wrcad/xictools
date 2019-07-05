@@ -187,13 +187,13 @@ namespace {
         sFunc( "tdist",         &sDataVec::v_tdist,     1 ),
 
         // Measure system exports
-        sFunc( "mmin",          &sDataVec::v_mmin,      1 ),
-        sFunc( "mmax",          &sDataVec::v_mmax,      1 ),
-        sFunc( "mpp",           &sDataVec::v_mpp,       1 ),
-        sFunc( "mavg",          &sDataVec::v_mavg,      1 ),
-        sFunc( "mrms",          &sDataVec::v_mrms,      1 ),
-        sFunc( "mpw",           &sDataVec::v_mpw,       1 ),
-        sFunc( "mrft",          &sDataVec::v_mrft,      1 ),
+        sFunc( "mmin",          &sDataVec::v_mmin,      3 ),
+        sFunc( "mmax",          &sDataVec::v_mmax,      3 ),
+        sFunc( "mpp",           &sDataVec::v_mpp,       3 ),
+        sFunc( "mavg",          &sDataVec::v_mavg,      3 ),
+        sFunc( "mrms",          &sDataVec::v_mrms,      3 ),
+        sFunc( "mpw",           &sDataVec::v_mpw,       3 ),
+        sFunc( "mrft",          &sDataVec::v_mrft,      3 ),
 
         // HSPICE funcs
         sFunc( "unif",          &sDataVec::v_hs_unif,   2 ),

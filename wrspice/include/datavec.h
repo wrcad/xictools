@@ -461,14 +461,6 @@ struct sDataVec
     // math functions
 
     // cmath1.cc
-    sDataVec *v_mmin();
-    sDataVec *v_mmax();
-    sDataVec *v_mpp();
-    sDataVec *v_mavg();
-    sDataVec *v_mrms();
-    sDataVec *v_mpw();
-    sDataVec *v_mrft();
-
     sDataVec *v_rms();
     sDataVec *v_sum();
     sDataVec *v_mag();
@@ -533,6 +525,17 @@ struct sDataVec
     sDataVec *v_ifft();
     sDataVec *v_undefined();
 
+    // Measurements
+    void find_range(double, double, int*, int*);
+    sDataVec *v_mmin(sDataVec**);
+    sDataVec *v_mmax(sDataVec**);
+    sDataVec *v_mpp(sDataVec**);
+    sDataVec *v_mavg(sDataVec**);
+    sDataVec *v_mrms(sDataVec**);
+    sDataVec *v_mpw(sDataVec**);
+    sDataVec *v_mrft(sDataVec**);
+
+    // HSPICE inspired
     sDataVec *v_hs_unif(sDataVec**);
     sDataVec *v_hs_aunif(sDataVec**);
     sDataVec *v_hs_gauss(sDataVec**);
