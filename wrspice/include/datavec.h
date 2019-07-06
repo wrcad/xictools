@@ -54,7 +54,7 @@ Authors: 1985 Wayne A. Christopher
 
 
 // references
-struct sDvList;
+struct sDataVec;
 struct sPlot;
 struct sJOB;
 struct sOPTIONS;
@@ -63,8 +63,11 @@ struct sHtab;
 struct wordlist;
 struct sTrie;
 
-
+//XXX rid these
 extern bool cx_degrees;  // Whether args are in degrees or radians.
+
+// fourier.cc
+extern double *FFTwindow(int, double*, double);
 
 // Complex numbers
 //
@@ -117,8 +120,7 @@ struct complex : public IFcomplex
         }
 };
 
-
-// Polygons for curve fitting
+// Polynomial curve fitting.
 //
 struct sPoly
 {
@@ -150,7 +152,6 @@ private:
     int pc_degree;
     double *pc_scratch;
 };
-
 
 // Vector types.
 enum Utype
@@ -226,6 +227,299 @@ private:
     char units[8];
 };
 
+// List of data vectors.
+//
+struct sDvList
+{
+    sDvList()
+        {
+            dl_dvec = 0;
+            dl_next = 0;
+        }
+
+    static void destroy(sDvList *dvl)
+        {
+            while (dvl) {
+                sDvList *dvx = dvl;
+                dvl = dvl->dl_next;
+                delete dvx;
+            }
+        }
+
+    sDataVec *dl_dvec;
+    sDvList *dl_next;
+};
+
+// Dimension label for multi-dimensional plots, with hooks for range
+// data.
+//
+struct sDimen
+{
+    sDimen(const char *n1, const char *n2)
+        {
+            d_varname[0] = lstring::copy(n1);
+            d_varname[1] = lstring::copy(n2);
+            d_start[0] = 0.0;
+            d_start[1] = 0.0;
+            d_stop[0] = 0.0;
+            d_stop[1] = 0.0;
+            d_step[0] = 0.0;
+            d_step[1] = 0.0;
+            d_delta[0] = 0;
+            d_delta[1] = 0;
+            d_v1 = 0;
+            d_v2 = 0;
+            d_pf = 0;
+            d_size = 0;
+        }
+
+    ~sDimen()
+        {
+            delete [] d_varname[0];
+            delete [] d_varname[1];
+            delete [] d_v1;
+            delete [] d_v2;
+            delete [] d_pf;
+        }
+
+    void add_point(int i, int j, bool f, int sz1, int sz2)
+        {
+            if (!d_v1) {
+                int sz = sz1 * sz2;
+                d_v1 = new char[sz];
+                d_v2 = new char[sz];
+                d_pf = new char[sz];
+                d_delta[0] = sz1;
+                d_delta[1] = sz2;
+            }
+            d_v1[d_size] = i;
+            d_v2[d_size] = j;
+            d_pf[d_size] = !f;
+            d_size++;  
+        }
+
+    const char *varname1()          { return (d_varname[0]); }
+    const char *varname2()          { return (d_varname[1]); }
+
+    double start1()                 { return (d_start[0]); }
+    void set_start1(double d)       { d_start[0] = d; }
+
+    double start2()                 { return (d_start[1]); }
+    void set_start2(double d)       { d_start[1] = d; }
+
+    double stop1()                  { return (d_stop[0]); }
+    void set_stop1(double d)        { d_stop[0] = d; }
+
+    double stop2()                  { return (d_stop[1]); }
+    void set_stop2(double d)        { d_stop[1] = d; }
+
+    double step1()                  { return (d_step[0]); }
+    void set_step1(double d)        { d_step[0] = d; }
+
+    double step2()                  { return (d_step[1]); }
+    void set_step2(double d)        { d_step[1] = d; }
+
+    int delta1()                    { return (d_delta[0]); }
+    int delta2()                    { return (d_delta[1]); }
+
+    const char *v1()                { return (d_v1); }
+    const char *v2()                { return (d_v2); }
+    const char *pf()                { return (d_pf); }
+    int size()                      { return (d_size); }
+
+private:
+    const char *d_varname[2];
+    double d_start[2];
+    double d_stop[2];
+    double d_step[2];
+    int d_delta[2];
+    char *d_v1;
+    char *d_v2;
+    char *d_pf;
+    int d_size;
+};
+
+// General list element for plots.
+//
+struct sPlotList
+{
+    sPlotList(sPlot *p, sPlotList *n) { plot = p; next = n; }
+
+    sPlot *plot;
+    sPlotList *next;
+};
+
+// Base interface class for data file output.
+//
+class cFileOut
+{
+public:
+    virtual ~cFileOut() { };
+    virtual bool file_write(const char*, bool) = 0;
+    virtual bool file_open(const char*, const char*, bool) = 0;
+    virtual void file_set_fp(FILE*) = 0;
+    virtual bool file_head() = 0;
+    virtual bool file_vars() = 0;
+    virtual bool file_points(int = -1) = 0;
+    virtual bool file_update_pcnt(int) = 0;
+    virtual bool file_close() = 0;
+};
+
+// The information for a particular set of vectors that come from one
+// plot.
+//
+struct sPlot
+{
+    sPlot(const char*);
+    ~sPlot();
+
+    // vectors.cc
+    void new_perm_vec(sDataVec*);
+    sDataVec *get_perm_vec(const char*) const;
+    wordlist *list_perm_vecs() const;
+    int num_perm_vecs() const;
+    sDataVec *find_vec(const char*);
+    sDataVec *remove_perm_vec(const char*);
+    void remove_vec(const char*);
+    int num_perm_vecs();
+    void set_case(bool);
+    void new_plot();
+    void add_plot();
+    bool add_segment(const sPlot*);
+    void run_commands();
+    bool compare(const sPlot*);
+    void destroy();
+    void clear_selected();
+    void add_note(const char*);
+    bool set_dims(int, const int*);
+
+    // linear.cc
+    void linearize(wordlist*);
+
+    // postcoms.cc
+    sDvList *write(sDvList*, bool, const char*);
+
+    const char *title()                     const { return (pl_title); }
+    void set_title(const char *c)
+        {
+            char *s = lstring::copy(c);
+            delete [] pl_title;
+            pl_title = s;
+        }
+
+    const char *date()                      const { return (pl_date); }
+    void set_date(const char *c)
+        {
+            char *s = lstring::copy(c);
+            delete [] pl_date;
+            pl_date = s;
+        }
+
+    const char *name()                      const { return (pl_name); }
+    void set_name(const char *c)
+        {
+            char *s = lstring::copy(c);
+            delete [] pl_name;
+            pl_name = s;
+        }
+
+    const char *type_name()                 const { return (pl_typename); }
+    void set_type_name(const char *c)
+        {
+            char *s = lstring::copy(c);
+            delete [] pl_typename;
+            pl_typename = s;
+        }
+
+    const char *circuit()                   const { return (pl_circuit); }
+    void set_circuit(const char *c)
+        {
+            char *s = lstring::copy(c);
+            delete [] pl_circuit;
+            pl_circuit = s;
+        }
+
+    sPlot *next_plot()                      { return (pl_next); }
+    void set_next_plot(sPlot *n)            { pl_next = n; }
+
+    sDataVec *tempvecs()                    { return (pl_dvecs); }
+    void set_tempvecs(sDataVec *v)          { pl_dvecs = v; }
+
+    sDataVec *scale()                       { return (pl_scale); }
+    void set_scale(sDataVec *v)             { pl_scale = v; }
+
+    wordlist *commands()                    { return (pl_commands); }
+    void set_commands(wordlist *c)          { pl_commands = c; }
+
+    variable *environment()                 { return (pl_env); }
+    void set_environment(variable *v)       { pl_env = v; }
+
+    sDimen *dimensions()                    { return (pl_dims); }
+    void set_dimensions(sDimen *d)
+        {
+            delete pl_dims;
+            pl_dims = d;
+        }
+
+    sOPTIONS *options()                     { return (pl_ftopts); }
+    void set_options(sOPTIONS *o)           { pl_ftopts = o; }
+
+    void range(double *start, double *stop, double *step)
+        {
+            if (start)
+                *start = pl_start;
+            if (stop)
+                *stop = pl_stop;
+            if (step)
+                *step = pl_step;
+        }
+    void set_range(double start, double stop, double step)
+        {
+            pl_start = start;
+            pl_stop = stop;
+            pl_step = step;
+        }
+
+    sTrie **ccom()                          { return (&pl_ccom); }
+
+    int num_dimensions()                    const { return (pl_ndims); }
+    void set_num_dimensions(int n)          { pl_ndims = n; }
+
+    bool active()                           const { return (pl_active); }
+    void set_active(bool b)                 { pl_active = b; }
+
+    bool written()                          const { return (pl_written); }
+    void set_written(bool b)                { pl_written = b; }
+
+    wordlist *notes()                       const { return (pl_notes); }
+
+private:
+    char *pl_title;         // The title card.
+    char *pl_date;          // Date.
+    char *pl_name;          // The plot name.
+    char *pl_typename;      // Tran1, op2, etc.
+    char *pl_circuit;       // The name of originating ckt, if any.
+    wordlist *pl_notes;     // Added note strings for this plot.
+
+    sPlot *pl_next;         // List of plots.
+    sHtab *pl_hashtab;      // Hash head for permanent vectors.
+    sDataVec *pl_dvecs;     // The data vectors in this plot.
+    sDataVec *pl_scale;     // The "scale" for the rest of the vectors.
+    wordlist *pl_commands;  // Commands to execute for this plot.
+    variable *pl_env;       // The 'environment' for this plot.
+    sTrie *pl_ccom;         // The ccom struct for this plot.
+    sDimen *pl_dims;        // Dimension labels.
+    sOPTIONS *pl_ftopts;    // Spice opts set by shell.
+
+    double pl_start;        // The "tran params" for this plot.
+    double pl_stop;
+    double pl_step;
+
+    int pl_ndims;           // Number of dimensions.
+    bool pl_active;         // True when the plot is being used.
+    bool pl_written;        // Some or all of the vecs have been saved.
+};
+
 // Structure:  sDataVec
 //
 // A (possibly multi-dimensional) data vector.  The data is
@@ -272,7 +566,6 @@ enum PlotType
     PLOT_COMB,
     PLOT_POINT
 };
-
 
 struct sDataVec
 {
@@ -714,7 +1007,14 @@ struct sDataVec
     sPlot *plot()                   { return (v_plot); }
     void set_plot(sPlot *p)         { v_plot = p; }
 
-    sDataVec *scale()               { return (v_scale); }
+    sDataVec *scale()
+        {
+            if (v_scale)
+                return (v_scale);
+            if (v_plot)
+                return (v_plot->scale());
+            return (0);
+        }
     void set_scale(sDataVec *s)     { v_scale = s; }
 
     sDataVec *next()                { return (v_next); }
@@ -791,305 +1091,6 @@ private:
 
     static bool v_temporary;
 };
-
-
-// List of data vectors.
-//
-struct sDvList
-{
-    sDvList()
-        {
-            dl_dvec = 0;
-            dl_next = 0;
-        }
-
-    static void destroy(sDvList *dvl)
-        {
-            while (dvl) {
-                sDvList *dvx = dvl;
-                dvl = dvl->dl_next;
-                delete dvx;
-            }
-        }
-
-    sDataVec *dl_dvec;
-    sDvList *dl_next;
-
-};
-
-// Dimension label for multi-dimensional plots, with hooks for range
-// data.
-//
-struct sDimen
-{
-    sDimen(const char *n1, const char *n2)
-        {
-            d_varname[0] = lstring::copy(n1);
-            d_varname[1] = lstring::copy(n2);
-            d_start[0] = 0.0;
-            d_start[1] = 0.0;
-            d_stop[0] = 0.0;
-            d_stop[1] = 0.0;
-            d_step[0] = 0.0;
-            d_step[1] = 0.0;
-            d_delta[0] = 0;
-            d_delta[1] = 0;
-            d_v1 = 0;
-            d_v2 = 0;
-            d_pf = 0;
-            d_size = 0;
-        }
-
-    ~sDimen()
-        {
-            delete [] d_varname[0];
-            delete [] d_varname[1];
-            delete [] d_v1;
-            delete [] d_v2;
-            delete [] d_pf;
-        }
-
-    void add_point(int i, int j, bool f, int sz1, int sz2)
-        {
-            if (!d_v1) {
-                int sz = sz1 * sz2;
-                d_v1 = new char[sz];
-                d_v2 = new char[sz];
-                d_pf = new char[sz];
-                d_delta[0] = sz1;
-                d_delta[1] = sz2;
-            }
-            d_v1[d_size] = i;
-            d_v2[d_size] = j;
-            d_pf[d_size] = !f;
-            d_size++;  
-        }
-
-    const char *varname1()          { return (d_varname[0]); }
-    const char *varname2()          { return (d_varname[1]); }
-
-    double start1()                 { return (d_start[0]); }
-    void set_start1(double d)       { d_start[0] = d; }
-
-    double start2()                 { return (d_start[1]); }
-    void set_start2(double d)       { d_start[1] = d; }
-
-    double stop1()                  { return (d_stop[0]); }
-    void set_stop1(double d)        { d_stop[0] = d; }
-
-    double stop2()                  { return (d_stop[1]); }
-    void set_stop2(double d)        { d_stop[1] = d; }
-
-    double step1()                  { return (d_step[0]); }
-    void set_step1(double d)        { d_step[0] = d; }
-
-    double step2()                  { return (d_step[1]); }
-    void set_step2(double d)        { d_step[1] = d; }
-
-    int delta1()                    { return (d_delta[0]); }
-    int delta2()                    { return (d_delta[1]); }
-
-    const char *v1()                { return (d_v1); }
-    const char *v2()                { return (d_v2); }
-    const char *pf()                { return (d_pf); }
-    int size()                      { return (d_size); }
-
-private:
-    const char *d_varname[2];
-    double d_start[2];
-    double d_stop[2];
-    double d_step[2];
-    int d_delta[2];
-    char *d_v1;
-    char *d_v2;
-    char *d_pf;
-    int d_size;
-};
-
-// General list element for plots.
-//
-struct sPlotList
-{
-    sPlotList(sPlot *p, sPlotList *n) { plot = p; next = n; }
-
-    sPlot *plot;
-    sPlotList *next;
-};
-
-// Base interface class for data file output.
-//
-class cFileOut
-{
-public:
-    virtual ~cFileOut() { };
-    virtual bool file_write(const char*, bool) = 0;
-    virtual bool file_open(const char*, const char*, bool) = 0;
-    virtual void file_set_fp(FILE*) = 0;
-    virtual bool file_head() = 0;
-    virtual bool file_vars() = 0;
-    virtual bool file_points(int = -1) = 0;
-    virtual bool file_update_pcnt(int) = 0;
-    virtual bool file_close() = 0;
-};
-
-// The information for a particular set of vectors that come from one
-// plot.
-//
-struct sPlot
-{
-    sPlot(const char*);
-    ~sPlot();
-
-    // vectors.cc
-    void new_perm_vec(sDataVec*);
-    sDataVec *get_perm_vec(const char*) const;
-    wordlist *list_perm_vecs() const;
-    int num_perm_vecs() const;
-    sDataVec *find_vec(const char*);
-    sDataVec *remove_perm_vec(const char*);
-    void remove_vec(const char*);
-    int num_perm_vecs();
-    void set_case(bool);
-    void new_plot();
-    void add_plot();
-    bool add_segment(const sPlot*);
-    void run_commands();
-    bool compare(const sPlot*);
-    void destroy();
-    void clear_selected();
-    void add_note(const char*);
-    bool set_dims(int, const int*);
-
-    // linear.cc
-    void linearize(wordlist*);
-
-    // postcoms.cc
-    sDvList *write(sDvList*, bool, const char*);
-
-    const char *title()                     const { return (pl_title); }
-    void set_title(const char *c)
-        {
-            char *s = lstring::copy(c);
-            delete [] pl_title;
-            pl_title = s;
-        }
-
-    const char *date()                      const { return (pl_date); }
-    void set_date(const char *c)
-        {
-            char *s = lstring::copy(c);
-            delete [] pl_date;
-            pl_date = s;
-        }
-
-    const char *name()                      const { return (pl_name); }
-    void set_name(const char *c)
-        {
-            char *s = lstring::copy(c);
-            delete [] pl_name;
-            pl_name = s;
-        }
-
-    const char *type_name()                 const { return (pl_typename); }
-    void set_type_name(const char *c)
-        {
-            char *s = lstring::copy(c);
-            delete [] pl_typename;
-            pl_typename = s;
-        }
-
-    const char *circuit()                   const { return (pl_circuit); }
-    void set_circuit(const char *c)
-        {
-            char *s = lstring::copy(c);
-            delete [] pl_circuit;
-            pl_circuit = s;
-        }
-
-    sPlot *next_plot()                      { return (pl_next); }
-    void set_next_plot(sPlot *n)            { pl_next = n; }
-
-    sDataVec *tempvecs()                    { return (pl_dvecs); }
-    void set_tempvecs(sDataVec *v)          { pl_dvecs = v; }
-
-    sDataVec *scale()                       { return (pl_scale); }
-    void set_scale(sDataVec *v)             { pl_scale = v; }
-
-    wordlist *commands()                    { return (pl_commands); }
-    void set_commands(wordlist *c)          { pl_commands = c; }
-
-    variable *environment()                 { return (pl_env); }
-    void set_environment(variable *v)       { pl_env = v; }
-
-    sDimen *dimensions()                    { return (pl_dims); }
-    void set_dimensions(sDimen *d)
-        {
-            delete pl_dims;
-            pl_dims = d;
-        }
-
-    sOPTIONS *options()                     { return (pl_ftopts); }
-    void set_options(sOPTIONS *o)           { pl_ftopts = o; }
-
-    void range(double *start, double *stop, double *step)
-        {
-            if (start)
-                *start = pl_start;
-            if (stop)
-                *stop = pl_stop;
-            if (step)
-                *step = pl_step;
-        }
-    void set_range(double start, double stop, double step)
-        {
-            pl_start = start;
-            pl_stop = stop;
-            pl_step = step;
-        }
-
-    sTrie **ccom()                          { return (&pl_ccom); }
-
-    int num_dimensions()                    const { return (pl_ndims); }
-    void set_num_dimensions(int n)          { pl_ndims = n; }
-
-    bool active()                           const { return (pl_active); }
-    void set_active(bool b)                 { pl_active = b; }
-
-    bool written()                          const { return (pl_written); }
-    void set_written(bool b)                { pl_written = b; }
-
-    wordlist *notes()                       const { return (pl_notes); }
-
-private:
-
-    char *pl_title;         // The title card.
-    char *pl_date;          // Date.
-    char *pl_name;          // The plot name.
-    char *pl_typename;      // Tran1, op2, etc.
-    char *pl_circuit;       // The name of originating ckt, if any.
-    wordlist *pl_notes;     // Added note strings for this plot.
-
-    sPlot *pl_next;         // List of plots.
-    sHtab *pl_hashtab;      // Hash head for permanent vectors.
-    sDataVec *pl_dvecs;     // The data vectors in this plot.
-    sDataVec *pl_scale;     // The "scale" for the rest of the vectors.
-    wordlist *pl_commands;  // Commands to execute for this plot.
-    variable *pl_env;       // The 'environment' for this plot.
-    sTrie *pl_ccom;         // The ccom struct for this plot.
-    sDimen *pl_dims;        // Dimension labels.
-    sOPTIONS *pl_ftopts;    // Spice opts set by shell.
-
-    double pl_start;        // The "tran params" for this plot.
-    double pl_stop;
-    double pl_step;
-
-    int pl_ndims;           // Number of dimensions.
-    bool pl_active;         // True when the plot is being used.
-    bool pl_written;        // Some or all of the vecs have been saved.
-};
-
-// fourier.cc
-extern double *FFTwindow(int, double*, double);
 
 #endif // FTEDATA_H
 

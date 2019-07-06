@@ -2567,17 +2567,15 @@ sDataVec *
 sDataVec::v_mmin(sDataVec **v)
 {
     sMfunc m(Mmin, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-
-    int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
-    double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
-    double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
-    int n1, n2;
-    xs->find_range(t1, t2, &n1, &n2);
-
-    m.f_min(this, xs, n1, n2, 0, 0);
+    sDataVec *xs = scale();
+    if (xs) {
+        int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
+        double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
+        double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
+        int n1, n2;
+        xs->find_range(t1, t2, &n1, &n2);
+        m.mmin(this, n1, n2, 0, 0);
+    }
     sDataVec *res = new sDataVec(0, 0, 1, &v_units);
     res->v_data.real[0] = m.val();
     return (res);
@@ -2588,17 +2586,15 @@ sDataVec *
 sDataVec::v_mmax(sDataVec **v)
 {
     sMfunc m(Mmax, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-
-    int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
-    double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
-    double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
-    int n1, n2;
-    xs->find_range(t1, t2, &n1, &n2);
-
-    m.f_max(this, xs, n1, n2, 0, 0);
+    sDataVec *xs = scale();
+    if (xs) {
+        int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
+        double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
+        double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
+        int n1, n2;
+        xs->find_range(t1, t2, &n1, &n2);
+        m.mmax(this, n1, n2, 0, 0);
+    }
     sDataVec *res = new sDataVec(0, 0, 1, &v_units);
     res->v_data.real[0] = m.val();
     return (res);
@@ -2609,17 +2605,15 @@ sDataVec *
 sDataVec::v_mpp(sDataVec **v)
 {
     sMfunc m(Mpp, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-
-    int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
-    double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
-    double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
-    int n1, n2;
-    xs->find_range(t1, t2, &n1, &n2);
-
-    m.f_pp(this, xs, n1, n2, 0, 0);
+    sDataVec *xs = scale();
+    if (xs) {
+        int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
+        double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
+        double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
+        int n1, n2;
+        xs->find_range(t1, t2, &n1, &n2);
+        m.mpp(this, n1, n2, 0, 0);
+    }
     sDataVec *res = new sDataVec(0, 0, 1, &v_units);
     res->v_data.real[0] = m.val();
     return (res);
@@ -2630,17 +2624,15 @@ sDataVec *
 sDataVec::v_mavg(sDataVec **v)
 {
     sMfunc m(Mavg, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-
-    int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
-    double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
-    double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
-    int n1, n2;
-    xs->find_range(t1, t2, &n1, &n2);
-
-    m.f_avg(this, xs, n1, n2, 0, 0);
+    sDataVec *xs = scale();
+    if (xs) {
+        int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
+        double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
+        double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
+        int n1, n2;
+        xs->find_range(t1, t2, &n1, &n2);
+        m.mavg(this, n1, n2, 0, 0);
+    }
     sDataVec *res = new sDataVec(0, 0, 1, &v_units);
     res->v_data.real[0] = m.val();
     return (res);
@@ -2651,17 +2643,15 @@ sDataVec *
 sDataVec::v_mrms(sDataVec **v)
 {
     sMfunc m(Mrms, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-
-    int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
-    double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
-    double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
-    int n1, n2;
-    xs->find_range(t1, t2, &n1, &n2);
-
-    m.f_rms(this, xs, n1, n2, 0, 0);
+    sDataVec *xs = scale();
+    if (xs) {
+        int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
+        double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
+        double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
+        int n1, n2;
+        xs->find_range(t1, t2, &n1, &n2);
+        m.mrms(this, n1, n2, 0, 0);
+    }
     sDataVec *res = new sDataVec(0, 0, 1, &v_units);
     res->v_data.real[0] = m.val();
     return (res);
@@ -2672,17 +2662,15 @@ sDataVec *
 sDataVec::v_mpw(sDataVec **v)
 {
     sMfunc m(Mpw, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-
-    int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
-    double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
-    double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
-    int n1, n2;
-    xs->find_range(t1, t2, &n1, &n2);
-
-    m.f_pw(this, xs, n1, n2, 0, 0);
+    sDataVec *xs = scale();
+    if (xs) {
+        int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
+        double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
+        double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
+        int n1, n2;
+        xs->find_range(t1, t2, &n1, &n2);
+        m.mpw(this, n1, n2, 0, 0);
+    }
     sDataVec *res = new sDataVec(0, 0, 1, xs->units());
     res->v_data.real[0] = m.val();
     return (res);
@@ -2693,17 +2681,15 @@ sDataVec *
 sDataVec::v_mrft(sDataVec **v)
 {
     sMfunc m(Mrft, 0);
-    sDataVec *xs = v_scale;
-    if (!xs && v_plot)
-        xs = v_plot->scale();
-
-    int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
-    double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
-    double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
-    int n1, n2;
-    xs->find_range(t1, t2, &n1, &n2);
-
-    m.f_rft(this, xs, n1, n2, 0, 0);
+    sDataVec *xs = scale();
+    if (xs) {
+        int len = xs->numdims() > 1 ? xs->dims(1) : xs->length();
+        double t1 = v[0] ? v[0]->realval(0) : xs->realval(0);
+        double t2 = v[1] ? v[1]->realval(0) : xs->realval(len-1);
+        int n1, n2;
+        xs->find_range(t1, t2, &n1, &n2);
+        m.mrft(this, n1, n2, 0, 0);
+    }
     sDataVec *res = new sDataVec(0, 0, 1, xs->units());
     res->v_data.real[0] = m.val();
     return (res);

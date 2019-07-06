@@ -379,7 +379,6 @@ private:
     unsigned char t_range;  // Before/at/after, MPrange.
 };
 
-#define NEWMEAS
 
 enum Mfunc { Mmin, Mmax, Mpp, Mavg, Mrms, Mpw, Mrft, Mfind };
 
@@ -417,17 +416,16 @@ struct sMfunc
     void set_val(double d)      { f_val = d; }
 
     void print(sLstr&);
-#ifdef NEWMEAS
-    bool f_min(sDataVec*, sDataVec*, int, int, double*, double*);
-    bool f_max(sDataVec*, sDataVec*, int, int, double*, double*);
-    bool f_pp(sDataVec*, sDataVec*, int, int, double*, double*);
-    bool f_avg(sDataVec*, sDataVec*, int, int, double*, double*);
-    bool f_rms(sDataVec*, sDataVec*, int, int, double*, double*);
-    bool f_pw(sDataVec*, sDataVec*, int, int, double*, double*);
-    bool f_rft(sDataVec*, sDataVec*, int, int, double*, double*);
-private:
-#endif
 
+    bool mmin(sDataVec*, int, int, double*, double*);
+    bool mmax(sDataVec*, int, int, double*, double*);
+    bool mpp(sDataVec*, int, int, double*, double*);
+    bool mavg(sDataVec*, int, int, double*, double*);
+    bool mrms(sDataVec*, int, int, double*, double*);
+    bool mpw(sDataVec*, int, int, double*, double*);
+    bool mrft(sDataVec*, int, int, double*, double*);
+
+private:
     Mfunc f_type;       // type of job
     bool f_error;       // set if expr evaluation fails
     sMfunc *f_next;     // pointer to next job
@@ -515,22 +513,16 @@ struct sRunopMeas : public sRunop
     bool parse(const char*, char**);
     void reset(sPlot*);
     bool check_measure(sRunDesc*);
-    bool do_measure(sRunDesc*);
+    bool do_measure();
     bool measure(sDataVec**, int*);
     bool update_plot(sDataVec*, int);
     char *print_meas();
 
 private:
     void addMeas(Mfunc, const char*);
-    double startval(sDataVec*, sDataVec*);
-    double endval(sDataVec*, sDataVec*);
-#ifdef NEWMEAS
-#else
-    double findavg(sDataVec*, sDataVec*);
-    double findrms(sDataVec*, sDataVec*);
-    double findpw(sDataVec*, sDataVec*);
-    double findrft(sDataVec*, sDataVec*);
-#endif
+    sDataVec *evaluate(const char*);
+    double startval(sDataVec*);
+    double endval(sDataVec*);
 
     sMpoint ro_start;
     sMpoint ro_end;
@@ -563,6 +555,8 @@ struct sRunopStop : public sRunop
 
         ro_exec                 = 0;
         ro_call                 = 0;
+        ro_offs                 = 0.0;
+        ro_per                  = 0.0;
         ro_analysis             = 0;
         ro_found_rises          = 0;
         ro_found_falls          = 0;
@@ -573,6 +567,7 @@ struct sRunopStop : public sRunop
         ro_stop_flag            = false;
         ro_end_flag             = false;
         ro_silent               = false;
+        ro_repeating            = false;
 
         parse(str, errstr);
     }
@@ -613,6 +608,8 @@ private:
 
     const char *ro_exec;        // command to execute when measure complete
     const char *ro_call;        // function to call when measure comp[lete
+    double ro_offs;             // offset for repeat
+    double ro_per;              // period for repeat
     int ro_analysis;            // type index of analysis 
     int ro_found_rises;         // number of rising crossings
     int ro_found_falls;         // number of falling crossings
@@ -623,6 +620,7 @@ private:
     bool ro_stop_flag;          // pause analysis when done
     bool ro_end_flag;           // terminate analysis when done
     bool ro_silent;             // don't print stop message
+    bool ro_repeating;          // repeating exec/call periodically
 };
 
 #endif // RUNOP_H

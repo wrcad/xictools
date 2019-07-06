@@ -720,7 +720,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
             for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
                 if (run->anType() != d->analysis())
                     continue;
-                if (!d->do_measure(run))
+                if (!d->do_measure())
                     measures_done = false;
             }
             run->unsegmentizeVecs();
@@ -838,7 +838,7 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
                 for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
                     if (run->anType() != d->analysis())
                         continue;
-                    if (!d->do_measure(run))
+                    if (!d->do_measure())
                         measures_done = false;
                 }
                 run->unsegmentizeVecs();
