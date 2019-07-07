@@ -682,6 +682,7 @@ namespace {
         if (lstring::cieq(s, kw_when)) return (true);
         if (lstring::cieq(s, mkw_trig)) return (true);
         if (lstring::cieq(s, mkw_targ)) return (true);
+        if (lstring::cieq(s, mkw_repeat)) return (true);
         if (lstring::cieq(s, mkw_val)) return (true);
         if (lstring::cieq(s, mkw_td)) return (true);
         if (lstring::cieq(s, mkw_ts)) return (true);

@@ -82,7 +82,6 @@ const double PHI0_SQRTPI    = wrsCONSTphi0/sqrt(M_PI);
 // "Tran" function setup/evaluation.
 //
 
-
 namespace {
 #define ARY_INIT_SZ 10
 
@@ -137,64 +136,6 @@ namespace {
     {
         return (fabs(v1-v2) <= 1e-12*(fabs(v1) + fabs(v2)));
     }
-
-
-    // Manage a bit field, used for pattern in pulse sources.
-    //
-    struct bitAry
-    {
-        bitAry()
-            {
-                ba_ary = new unsigned long[1];
-                ba_ary[0] = 0;
-                ba_size = 1;
-                ba_cnt = 0;
-            }
-
-        ~bitAry()
-            {
-                delete [] ba_ary;
-            }
-
-        void addbit(bool b)
-            {
-                if (ba_cnt >= ba_size*sizeof(unsigned long)) {
-                    unsigned long *tmp = new unsigned long[ba_size+1];
-                    memcpy(tmp, ba_ary, ba_size*sizeof(unsigned long));
-                    tmp[ba_size] = 0;
-                    delete [] ba_ary;
-                    ba_ary = tmp;
-                    ba_size++;
-                }
-                if (b) {
-                    int c = ba_cnt - (ba_size - 1)*sizeof(unsigned long);
-                    ba_ary[ba_size-1] |= (1 << c);
-                }
-                ba_cnt++;
-            }
-
-        void add(const char *s)
-            {
-                const char *z = "0fnFN";
-                for ( ; *s; s++)
-                    addbit(!strchr(z, *s));
-            }
-
-        unsigned long *final() const
-            {
-                unsigned long *tmp = new unsigned long[ba_size+1];
-                memcpy(tmp, ba_ary, ba_size*sizeof(unsigned long));
-                tmp[ba_size] = 0;
-                return (tmp);
-            }
-
-        int count() const { return (ba_cnt); }
-
-    private:
-        unsigned long *ba_ary;
-        unsigned int ba_size;
-        unsigned int ba_cnt;
-    };
 
 
     // Hash table for tran function names.
@@ -316,7 +257,153 @@ namespace {
             *comma_cnt = ccnt;
         return (lstr.string_trim());
     }
+
+
+    void strip_quotes(char *string)
+    {
+        if (string == 0)
+            return;
+        int l = strlen(string) - 1;
+        if (string[l] == '"' && *string == '"') {
+            string[l] = '\0';
+            char *s = string;
+            while (*s) {
+                *s = *(s+1);
+                s++;
+            }
+        }
+    }
 }
+
+
+// Static function.
+// Parse a pattern specification, create and return a linked list
+// description.  The string pointer is advanced.  On error, zero is
+// returned and a message is found in errstr, caller should free this.
+//
+pbitList *
+pbitList::parse(const char **p, char **errstr)
+{
+    *errstr = 0;
+    pbitList *bs0 = 0, *bse = 0;
+    char *tok = IP.getTok(p, true);
+    while (tok) {
+        strip_quotes(tok);
+        if (*tok == 'b' || *tok == 'B') {
+            // Found a bstring, expect "b..." [r[=N]] [rb=M]
+            if (!bs0)
+                bs0 = bse = new pbitList(tok);
+            else {
+                bse->pl_next = new pbitList(tok);
+                bse = bse->pl_next;
+            }
+
+            tok = IP.getTok(p, true);
+            while (tok) {
+                if (lstring::cieq(tok, "rb")) {
+                    delete [] tok;
+                    int err;
+                    int rbval = IP.getFloat(p, &err, true);
+                    if (err == OK) {
+                        if (rbval < 1)
+                            rbval = 1;
+                        if (rbval >= (int)strlen(bse->pl_bstring)-1) {
+                            *errstr = lstring::copy("RB value too large");
+                            destroy(bs0);
+                            return (0);
+                        }
+                        else
+                            bse->pl_rb = rbval;
+                    }
+                    else {
+                        *errstr = lstring::copy("error reading RB value");
+                        destroy(bs0);
+                        return (0);
+                    }
+                    tok = IP.getTok(p, true);
+                    continue;
+                }
+                if (lstring::cieq(tok, "r")) {
+                    delete [] tok;
+                    int err;
+                    const char *p0 = *p;
+                    int rval = IP.getFloat(p, &err, true);
+                    if (err == OK) {
+                        if (rval < -1)
+                            rval = 0;
+                        bse->pl_r = rval;
+                        tok = IP.getTok(p, true);
+                        continue;
+                    }
+                    else {
+                        *p = p0;
+                        continue;
+                    }
+                }
+                break;
+            }
+        }
+        else {
+            // unknown token, ignore it.
+            delete [] tok;
+            tok = IP.getTok(p, true);
+        }
+    }
+    return (bs0);
+}
+
+
+// Static function.
+// Duplicate a pattern specification list.
+//
+pbitList *
+pbitList::dup(pbitList *bs)
+{
+    pbitList *be = 0;
+    pbitList *new_pbitList = 0;
+    for (pbitList *b = bs; b; b = b->pl_next) {
+        pbitList *bn = new pbitList(lstring::copy(b->pl_bstring));
+        bn->pl_r = b->pl_r;
+        bn->pl_rb = b->pl_rb;
+        if (!be)
+            new_pbitList = be = bn;
+        else {
+            be->pl_next = bn;
+            be = be->pl_next;
+        }
+    }
+    return (new_pbitList);
+}
+// End of pbitList functions.
+
+
+// Create and fill a bit array with pattern data.  The per and
+// finaltime are only used in the case of infinite repetition to
+// determine the total length.
+//
+void
+pbitAry::add(pbitList *list)
+{
+    // Construct the pattern array.
+    bool done = false;
+    for (pbitList *b = list; b && !done; b = b->next()) {
+        int strt = ba_cnt;
+        add(b->bstring() + 1);
+        if (b->r() == -1) {
+            ba_rst = strt + b->rb() - 1;
+            if (ba_rst == 0) {
+                addbit(ba_ary[0] & 1);
+                ba_rst = 1;
+            }
+            done = true;
+        }
+        else {
+            for (int i = 0; i < b->r(); i++)
+                add(b->bstring() + b->rb());
+        }
+    }
+}
+// End of pbitAry functions.
 
 
 // Return true if the argument is the name of a "tran" function.
@@ -515,24 +602,6 @@ SPinput::getTranFunc(const char **s, bool in_source)
     *s += strlen(buf);
 
     return (buf);
-}
-
-
-namespace {
-    void strip_quotes(char *string)
-    {
-        if (string == 0)
-            return;
-        int l = strlen(string) - 1;
-        if (string[l] == '"' && *string == '"') {
-            string[l] = '\0';
-            char *s = string;
-            while (*s) {
-                *s = *(s+1);
-                s++;
-            }
-        }
-    }
 }
 
 
@@ -913,16 +982,17 @@ IFtranData::get_param(int)
 
 // PULSE
 //
-IFpulseData::IFpulseData(double *list, int num, bslist *bsl) :
+IFpulseData::IFpulseData(double *list, int num, pbitList *pbl) :
     IFtranData(PTF_tPULSE)
 {
     td_parms = new double[8];
     td_cache = new double[2];
     td_coeffs = list;
     td_numcoeffs = num;
-    td_bslist = bsl;
+    td_pblist = pbl;
     td_parray = 0;
     td_plen = 0;
+    td_prst = 0;
 
     set_V1(list[0]);
     set_V2(num >= 2 ? list[1] : list[0]);
@@ -1002,74 +1072,16 @@ IFpulseData::parse(const char *args, IFparseNode *p, int *error)
     }
 
     // We've parsed the numbers, look for bstrings.
-
-    bslist *bs0 = 0, *bse = 0;
-    char *tok = IP.getTok(&ts, true);
-    while (tok) {
-        strip_quotes(tok);
-        if (*tok == 'b' || *tok == 'B') {
-            // Found a bstring, expect "b..." [r[=N]] [rb=M]
-            if (!bs0)
-                bs0 = bse = new bslist(tok);
-            else {
-                bse->next = new bslist(tok);
-                bse = bse->next;
-            }
-
-            tok = IP.getTok(&ts, true);
-            while (tok) {
-                if (lstring::cieq(tok, "rb")) {
-                    delete [] tok;
-                    int err;
-                    int rbval = IP.getFloat(&ts, &err, true);
-                    if (err == OK) {
-                        if (rbval < 1)
-                            rbval = 1;
-                        if (rbval >= (int)strlen(bse->bstring)-1) {
-                            Errs()->add_error(
-                                "%s function RB value too large.", "PULSE");
-                            *error = E_BADPARM;
-                        }
-                        else
-                            bse->rb = rbval;
-                    }
-                    else {
-                        Errs()->add_error("%s function error reading RB value.",
-                            "PULSE");
-                        *error = E_BADPARM;
-                    }
-                    tok = IP.getTok(&ts, true);
-                    continue;
-                }
-                if (lstring::cieq(tok, "r")) {
-                    delete [] tok;
-                    int err;
-                    const char *ts0 = ts;
-                    int rval = IP.getFloat(&ts, &err, true);
-                    if (err == OK) {
-                        if (rval < -1)
-                            rval = 0;
-                        bse->r = rval;
-                        tok = IP.getTok(&ts, true);
-                        continue;
-                    }
-                    else {
-                        ts = ts0;
-                        continue;
-                    }
-                }
-                break;
-            }
-        }
-        else {
-            // unknown token, ignore it.
-            delete [] tok;
-            tok = IP.getTok(&ts, true);
-        }
+    char *erstr;
+    pbitList *list = pbitList::parse(&ts, &erstr);
+    if (!list && erstr) {
+        Errs()->add_error("%s function %s.", "PULSE", erstr);
+        delete [] erstr;
+        *error = E_BADPARM;
     }
 
     delete [] tt;
-    p->v.td = new IFpulseData(da.final(), da.count(), bs0);
+    p->v.td = new IFpulseData(da.final(), da.count(), list);
 }
 
 
@@ -1170,29 +1182,14 @@ IFpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
         }
         if (PER() < finaltime) {
             // Construct the pattern array.
-            bitAry ba;
-            bool done = false;
-            for (bslist *b = td_bslist; b && !done; b = b->next) {
-                ba.add(b->bstring + 1);
-                if (b->r == -1) {
-                    double t = ba.count() * PER();
-                    double p = (strlen(b->bstring) - b->rb) * PER();
-                    for (int i = 0; ; i++) {
-                        ba.add(b->bstring + b->rb);
-                        t += p;
-                        if (t >= finaltime)
-                            break;
-                    }
-                    done = true;
+            if (td_pblist) {
+                pbitAry ba;
+                ba.add(td_pblist);
+                if (ba.count()) {
+                    td_parray = ba.final();
+                    td_plen = ba.count();
+                    td_prst = ba.rep_start();
                 }
-                else {
-                    for (int i = 0; i < b->r; i++)
-                        ba.add(b->bstring + b->rb);
-                }
-            }
-            if (ba.count()) {
-                td_parray = ba.final();
-                td_plen = ba.count();
             }
         }
     }
@@ -1211,6 +1208,7 @@ IFpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
         delete [] td_parray;
         td_parray = 0;
         td_plen = 0;
+        td_prst = 0;
     }
 }
 
@@ -1232,8 +1230,17 @@ IFpulseData::eval_func(double t)
             time -= (PER() * pnum);
         }
         if (td_parray) {
-            if (pnum >= td_plen)
-                skip = true;
+            if (pnum >= td_plen) {
+                if (!td_prst)
+                    skip = true;
+                else {
+                    int d = td_plen - td_prst;
+                    int j = td_prst + pnum%d;
+                    unsigned long mask =
+                        (1 << (j % sizeof(unsigned long)));
+                    skip = !(td_parray[j/sizeof(unsigned long)] & mask);
+                }
+            }
             else {
                 unsigned long mask = (1 << (pnum % sizeof(unsigned long)));
                 skip = !(td_parray[pnum/sizeof(unsigned long)] & mask);
@@ -1268,8 +1275,17 @@ IFpulseData::eval_func(double t)
                 time -= (PER() * pnum);
             }
             if (td_parray) {
-                if (pnum >= td_plen)
-                    skip = true;
+                if (pnum >= td_plen) {
+                    if (!td_prst)
+                        skip = true;
+                    else {
+                        int d = td_plen - td_prst;
+                        int j = td_prst + pnum%d;
+                        unsigned long mask =
+                            (1 << (j % sizeof(unsigned long)));
+                        skip = !(td_parray[j/sizeof(unsigned long)] & mask);
+                    }
+                }
                 else {
                     unsigned long mask = (1 << (pnum % sizeof(unsigned long)));
                     skip = !(td_parray[pnum/sizeof(unsigned long)] & mask);
@@ -1309,8 +1325,17 @@ IFpulseData::eval_deriv(double t)
             time -= (PER() * pnum);
         }
         if (td_parray) {
-            if (pnum >= td_plen)
-                skip = true;
+            if (pnum >= td_plen) {
+                if (!td_prst)
+                    skip = true;
+                else {
+                    int d = td_plen - td_prst;
+                    int j = td_prst + pnum%d;
+                    unsigned long mask =
+                        (1 << (j % sizeof(unsigned long)));
+                    skip = !(td_parray[j/sizeof(unsigned long)] & mask);
+                }
+            }
             else {
                 unsigned long mask = (1 << (pnum % sizeof(unsigned long)));
                 skip = !(td_parray[pnum/sizeof(unsigned long)] & mask);
@@ -1343,8 +1368,17 @@ IFpulseData::eval_deriv(double t)
                 time -= (PER() * pnum);
             }
             if (td_parray) {
-                if (pnum >= td_plen)
-                    skip = true;
+                if (pnum >= td_plen) {
+                    if (!td_prst)
+                        skip = true;
+                    else {
+                        int d = td_plen - td_prst;
+                        int j = td_prst + pnum%d;
+                        unsigned long mask =
+                            (1 << (j % sizeof(unsigned long)));
+                        skip = !(td_parray[j/sizeof(unsigned long)] & mask);
+                    }
+                }
                 else {
                     unsigned long mask = (1 << (pnum % sizeof(unsigned long)));
                     skip = !(td_parray[pnum/sizeof(unsigned long)] & mask);
@@ -1382,20 +1416,8 @@ IFpulseData::dup() const
         td->td_cache = new double[2];
         memcpy(td->td_cache, td_cache, 2*sizeof(double));  
     }
-    if (td_bslist) {
-        bslist *be = 0;
-        td->td_bslist = 0;
-        for (bslist *b = td_bslist; b; b = b->next) {
-            bslist *bn = new bslist(lstring::copy(b->bstring));
-            bn->r = b->r;
-            bn->rb = b->rb;
-            if (!be)
-                td->td_bslist = be = bn;
-            else {
-                be->next = bn;
-                be = be->next;
-            }
-        }
+    if (td_pblist) {
+        td->td_pblist = pbitList::dup(td_pblist);
     }
     if (td_parray) {
         int sz = td_plen/sizeof(unsigned long) + td_plen%sizeof(unsigned long);
@@ -1437,15 +1459,16 @@ IFpulseData::get_param(int ix)
 
 // GPULSE
 //
-IFgpulseData::IFgpulseData(double *list, int num, bslist *bsl) :
+IFgpulseData::IFgpulseData(double *list, int num, pbitList *pbl) :
     IFtranData(PTF_tGPULSE)
 {
     td_parms = new double[8];
     td_coeffs = list;
     td_numcoeffs = num;
-    td_bslist = bsl;
+    td_pblist = pbl;
     td_parray = 0;
     td_plen = 0;
+    td_prst = 0;
 
     set_V1(list[0]);
     set_V2(num >= 2 ? list[1] : list[0]);
@@ -1527,74 +1550,16 @@ IFgpulseData::parse(const char *args, IFparseNode *p, int *error)
     }
 
     // We've parsed the numbers, look for bstrings.
-
-    bslist *bs0 = 0, *bse = 0;
-    char *tok = IP.getTok(&ts, true);
-    while (tok) {
-        strip_quotes(tok);
-        if (*tok == 'b' || *tok == 'B') {
-            // Found a bstring, expect "b..." [r[=N]] [rb=M]
-            if (!bs0)
-                bs0 = bse = new bslist(tok);
-            else {
-                bse->next = new bslist(tok);
-                bse = bse->next;
-            }
-
-            tok = IP.getTok(&ts, true);
-            while (tok) {
-                if (lstring::cieq(tok, "rb")) {
-                    delete [] tok;
-                    int err;
-                    int rbval = IP.getFloat(&ts, &err, true);
-                    if (err == OK) {
-                        if (rbval < 1)
-                            rbval = 1;
-                        if (rbval >= (int)strlen(bse->bstring)-1) {
-                            Errs()->add_error(
-                                "%s function RB value too large.", "GPULSE");
-                            *error = E_BADPARM;
-                        }
-                        else
-                            bse->rb = rbval;
-                    }
-                    else {
-                        Errs()->add_error("%s function error reading RB value.",
-                            "PULSE");
-                        *error = E_BADPARM;
-                    }
-                    tok = IP.getTok(&ts, true);
-                    continue;
-                }
-                if (lstring::cieq(tok, "r")) {
-                    delete [] tok;
-                    int err;
-                    const char *ts0 = ts;
-                    int rval = IP.getFloat(&ts, &err, true);
-                    if (err == OK) {
-                        if (rval < -1)
-                            rval = 0;
-                        bse->r = rval;
-                        tok = IP.getTok(&ts, true);
-                        continue;
-                    }
-                    else {
-                        ts = ts0;
-                        continue;
-                    }
-                }
-                break;
-            }
-        }
-        else {
-            // unknown token, ignore it.
-            delete [] tok;
-            tok = IP.getTok(&ts, true);
-        }
+    char *erstr;
+    pbitList *list = pbitList::parse(&ts, &erstr);
+    if (!list && erstr) {
+        Errs()->add_error("%s function %s.", "GPULSE", erstr);
+        delete [] erstr;
+        *error = E_BADPARM;
     }
 
     delete [] tt;
-    p->v.td = new IFgpulseData(da.final(), da.count(), bs0);
+    p->v.td = new IFgpulseData(da.final(), da.count(), list);
 }
 
 
@@ -1637,29 +1602,14 @@ IFgpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
 
         if (RPT() > 0.0) {
             // Construct the pattern array.
-            bitAry ba;
-            bool done = false;
-            for (bslist *b = td_bslist; b && !done; b = b->next) {
-                ba.add(b->bstring + 1);
-                if (b->r == -1) {
-                    double t = ba.count() * RPT();
-                    double p = (strlen(b->bstring) - b->rb) * RPT();
-                    for (int i = 0; ; i++) {
-                        ba.add(b->bstring + b->rb);
-                        t += p;
-                        if (t >= finaltime)
-                            break;
-                    }
-                    done = true;
+            if (td_pblist) {
+                pbitAry ba;
+                ba.add(td_pblist);
+                if (ba.count()) {
+                    td_parray = ba.final();
+                    td_plen = ba.count();
+                    td_prst = ba.rep_start();
                 }
-                else {
-                    for (int i = 0; i < b->r; i++)
-                        ba.add(b->bstring + b->rb);
-                }
-            }
-            if (ba.count()) {
-                td_parray = ba.final();
-                td_plen = ba.count();
             }
         }
     }
@@ -1682,6 +1632,7 @@ IFgpulseData::setup(sCKT *ckt, double step, double finaltime, bool skipbr)
         delete [] td_parray;
         td_parray = 0;
         td_plen = 0;
+        td_prst = 0;
     }
 }
 
@@ -1708,8 +1659,17 @@ IFgpulseData::eval_func(double t)
         for (int i = ifirst; i <= ilast; i++) {
             bool skip = false;
             if (td_parray) {
-                if (i >= td_plen)
-                    skip = true;
+                if (i >= td_plen) {
+                    if (!td_prst)
+                        skip = true;
+                    else {
+                        int d = td_plen - td_prst;
+                        int j = td_prst + i%d;
+                        unsigned long mask =
+                            (1 << (j % sizeof(unsigned long)));
+                        skip = !(td_parray[j/sizeof(unsigned long)] & mask);
+                    }
+                }
                 else {
                     unsigned long mask = (1 << (i % sizeof(unsigned long)));
                     skip = !(td_parray[i/sizeof(unsigned long)] & mask);
@@ -1735,8 +1695,17 @@ IFgpulseData::eval_func(double t)
             for (int i = ifirst; i <= ilast; i++) {
                 bool skip = false;
                 if (td_parray) {
-                    if (i >= td_plen)
-                        skip = true;
+                    if (i >= td_plen) {
+                        if (!td_prst)
+                            skip = true;
+                        else {
+                            int d = td_plen - td_prst;
+                            int j = td_prst + i%d;
+                            unsigned long mask =
+                                (1 << (j % sizeof(unsigned long)));
+                            skip = !(td_parray[j/sizeof(unsigned long)] & mask);
+                        }
+                    }
                     else {
                         unsigned long mask = (1 << (i % sizeof(unsigned long)));
                         skip = !(td_parray[i/sizeof(unsigned long)] & mask);
@@ -1787,8 +1756,17 @@ IFgpulseData::eval_deriv(double t)
         for (int i = ifirst; i <= ilast; i++) {
             bool skip = false;
             if (td_parray) {
-                if (i >= td_plen)
-                    skip = true;
+                if (i >= td_plen) {
+                    if (!td_prst)
+                        skip = true;
+                    else {
+                        int d = td_plen - td_prst;
+                        int j = td_prst + i%d;
+                        unsigned long mask =
+                            (1 << (j % sizeof(unsigned long)));
+                        skip = !(td_parray[j/sizeof(unsigned long)] & mask);
+                    }
+                }
                 else {
                     unsigned long mask = (1 << (i % sizeof(unsigned long)));
                     skip = !(td_parray[i/sizeof(unsigned long)] & mask);
@@ -1814,8 +1792,17 @@ IFgpulseData::eval_deriv(double t)
             for (int i = ifirst; i <= ilast; i++) {
                 bool skip = false;
                 if (td_parray) {
-                    if (i >= td_plen)
-                        skip = true;
+                    if (i >= td_plen) {
+                        if (!td_prst)
+                            skip = true;
+                        else {
+                            int d = td_plen - td_prst;
+                            int j = td_prst + i%d;
+                            unsigned long mask =
+                                (1 << (j % sizeof(unsigned long)));
+                            skip = !(td_parray[j/sizeof(unsigned long)] & mask);
+                        }
+                    }
                     else {
                         unsigned long mask = (1 << (i % sizeof(unsigned long)));
                         skip = !(td_parray[i/sizeof(unsigned long)] & mask);
@@ -1856,20 +1843,8 @@ IFgpulseData::dup() const
         td->td_parms = new double[8];
         memcpy(td->td_parms, td_parms, 8*sizeof(double));
     }
-    if (td_bslist) {
-        bslist *be = 0;
-        td->td_bslist = 0;
-        for (bslist *b = td_bslist; b; b = b->next) {
-            bslist *bn = new bslist(lstring::copy(b->bstring));
-            bn->r = b->r;
-            bn->rb = b->rb;
-            if (!be)
-                td->td_bslist = be = bn;
-            else {
-                be->next = bn;
-                be = be->next;
-            }
-        }
+    if (td_pblist) {
+        td->td_pblist = pbitList::dup(td_pblist);
     }
     if (td_parray) {
         int sz = td_plen/sizeof(unsigned long) + td_plen%sizeof(unsigned long);

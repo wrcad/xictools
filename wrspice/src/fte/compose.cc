@@ -53,6 +53,7 @@ Authors: 1986 Wayne A. Christopher
 #include "commands.h"
 #include "ttyio.h"
 #include "toolbar.h"
+#include "inptran.h"
 #include "spnumber/spnumber.h"
 #include "miscutil/random.h"
 
@@ -66,6 +67,7 @@ struct sCompose
 {
     sCompose() { memset(this, 0, sizeof(sCompose)); }
     bool cmp_parse(wordlist*);
+    bool cmp_pattern(wordlist*, int*, double**);
     bool cmp_linsweep(int*, double**);
     bool cmp_logsweep(int*, double**);
     bool cmp_random(int*, double**);
@@ -161,6 +163,10 @@ CommandTab::com_compose(wordlist *wl)
     bool realflag = true;
     if (lstring::eq(wl->wl_word, "values")) {
         if (cmp_values(wl->wl_next, &length, &data, &cdata, &realflag))
+            return;
+    }
+    else if (lstring::eq(wl->wl_word, "pattern")) {
+        if (sc.cmp_pattern(wl->wl_next, &length, &data))
             return;
     }
     else {
@@ -431,6 +437,78 @@ sCompose::cmp_parse(wordlist *wl)
                 "unknown keyword \"%s\".\n", var);
             return (true);
         }
+    }
+    return (false);
+}
+
+
+bool
+sCompose::cmp_pattern(wordlist *wl, int *length, double **datap)
+{
+    *length = 0;
+    *datap = 0;
+    double vals[2];
+    int fd = 0;
+    while (wl) {
+        if (fd < 2) {
+            const char *t = wl->wl_word;
+            double *td = SPnum.parse(&t, false);
+            if (td) {
+                vals[fd] = *td;
+                fd++;
+                wl = wl->wl_next;
+                continue;
+            }
+        }
+        break;
+    }
+
+    int nmax;
+    if (fd == 1)
+        nmax = rint(vals[0]);
+    else if (fd == 2)
+        nmax = rint(vals[1]/vals[0]);
+    else
+        nmax = 0;
+
+    if (*wl->wl_word == 'b' || *wl->wl_word == 'B') {
+        // A pattern description, syntax as in pulse/gpulse.
+        char *pspec = wordlist::flatten(wl);
+        const char *ps = pspec;
+        char *errs;
+        pbitList *list = pbitList::parse(&ps, &errs);
+        delete [] pspec;
+        if (!list && errs) {
+            GRpkgIf()->ErrPrintf(ET_ERROR, "%s.\n", errs);
+            delete [] errs;
+            return (true);
+        }
+        pbitAry pa;
+        pa.add(list);
+        pbitList::destroy(list);
+        if (pa.count() == 0) {
+            GRpkgIf()->ErrPrintf(ET_ERROR, "pattern has zero length.\n");
+            return (true);
+        }
+
+        unsigned long *ary = pa.final();
+
+        if (!nmax || (nmax > pa.count() && pa.rep_start() == 0))
+            nmax = pa.count();
+        double *data = new double[nmax];
+        int j = 0;
+        for (int i = 0; i < nmax; i++, j++) {
+            if (j == pa.count())
+                j = pa.rep_start();
+            data[i] = (ary[j/sizeof(unsigned long)] &
+                (1 << j%sizeof(unsigned long))) ? 1.0 : 0.0;
+        }
+        *length = nmax;
+        *datap = data;
+    }
+    else {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "expecting bstring, not found.\n");
+        return (true);
     }
     return (false);
 }

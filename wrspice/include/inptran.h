@@ -41,7 +41,6 @@
 #ifndef INPTRAN_H
 #define INPTRAN_H
 
-struct bslist;
 
 // These are the tran functions that we support.
 //
@@ -98,39 +97,116 @@ protected:
 // Pulse pattern list element, consisting of a "bstring" and r/rb
 // values, as for the HSPICE pattern source.
 //
-struct bslist
+struct pbitList
 {
-    bslist(char *bs)
+    pbitList(char *bs)
         {
-            next = 0;
-            bstring = bs;   // 'b' followed by 0 and 1 pattern
-            rb = 1;         // repeat from first bit
-            r = 0;          // repeat this many times, -1 is forever
+            pl_next = 0;
+            pl_bstring = bs;    // 'b' followed by 0 and 1 pattern
+            pl_rb = 1;          // repeat from first bit
+            pl_r = 0;           // repeat this many times, -1 is forever
         }
 
-    ~bslist()
+    ~pbitList()
         {
-            delete [] bstring;
+            delete [] pl_bstring;
         }
 
-    bslist *next;
-    char *bstring;
-    int rb;
-    int r;
+    static void destroy(pbitList *l)
+        {
+            while (l) {
+                pbitList *x = l;
+                l = l->pl_next;
+                delete x;
+            }
+        }
+
+    pbitList *next()        { return (pl_next); }
+    const char *bstring()   { return (pl_bstring); }
+    int rb()                { return (pl_rb); }
+    int r()                 { return (pl_r); }
+
+    static pbitList *parse(const char**, char**);
+    static pbitList *dup(pbitList*);
+
+private:
+    pbitList *pl_next;
+    char *pl_bstring;
+    int pl_rb;
+    int pl_r;
 };
+
+// Manage a bit field, used for pattern in pulse sources.
+//
+struct pbitAry
+{
+    pbitAry()
+        {
+            ba_ary = new unsigned long[1];
+            ba_ary[0] = 0;
+            ba_size = 1;
+            ba_cnt = 0;
+            ba_rst = 0;
+        }
+
+    ~pbitAry()
+        {
+            delete [] ba_ary;
+        }
+
+    void add(pbitList*);
+
+    unsigned long *final() const
+        {
+            unsigned long *tmp = new unsigned long[ba_size+1];
+            memcpy(tmp, ba_ary, ba_size*sizeof(unsigned long));
+            tmp[ba_size] = 0;
+            return (tmp);
+        }
+
+    int count()     const { return (ba_cnt); }
+    int rep_start() const { return (ba_rst); }
+
+private:
+    void addbit(bool b)
+        {
+            if (ba_cnt >= ba_size*sizeof(unsigned long)) {
+                unsigned long *tmp = new unsigned long[ba_size+1];
+                memcpy(tmp, ba_ary, ba_size*sizeof(unsigned long));
+                tmp[ba_size] = 0;
+                delete [] ba_ary;
+                ba_ary = tmp;
+                ba_size++;
+            }
+            if (b) {
+                int c = ba_cnt - (ba_size - 1)*sizeof(unsigned long);
+                ba_ary[ba_size-1] |= (1 << c);
+            }
+            ba_cnt++;
+        }
+
+    void add(const char *s)
+        {
+            const char *z = "0fnFN";
+            for ( ; *s; s++)
+                addbit(!strchr(z, *s));
+        }
+
+    unsigned long *ba_ary;
+    unsigned int ba_size;
+    unsigned int ba_cnt;
+    unsigned int ba_rst;
+};
+
 
 // PULSE
 //
 struct IFpulseData : public IFtranData
 {
-    IFpulseData(double*, int, bslist*);
+    IFpulseData(double*, int, pbitList*);
     ~IFpulseData()
         {
-            while (td_bslist) {
-                bslist *x = td_bslist;
-                td_bslist = td_bslist->next;
-                delete x;
-            }
+            pbitList::destroy(td_pblist);
             delete [] td_parray;
         }
 
@@ -159,23 +235,20 @@ struct IFpulseData : public IFtranData
     double *get_param(int);
 
 private:
-    bslist *td_bslist;          // Pattern description.
+    pbitList *td_pblist;        // Pattern description.
     unsigned long *td_parray;   // Pattern bit field.
     int td_plen;                // Length of pattern.
+    int td_prst;                // Reset point if repeating.
 };
 
 // GPULSE
 //
 struct IFgpulseData : public IFtranData
 {
-    IFgpulseData(double*, int, bslist*);
+    IFgpulseData(double*, int, pbitList*);
     ~IFgpulseData()
         {
-            while (td_bslist) {
-                bslist *x = td_bslist;
-                td_bslist = td_bslist->next;
-                delete x;
-            }
+            pbitList::destroy(td_pblist);
             delete [] td_parray;
         }
 
@@ -200,9 +273,10 @@ struct IFgpulseData : public IFtranData
     double *get_param(int);
 
 private:
-    bslist *td_bslist;          // Pattern description.
+    pbitList *td_pblist;        // Pattern description.
     unsigned long *td_parray;   // Pattern bit field.
     int td_plen;                // Length of pattern.
+    int td_prst;                // Reset point if repeating.
 };
 
 struct IFpwlData : public IFtranData

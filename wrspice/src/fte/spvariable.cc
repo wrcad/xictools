@@ -880,7 +880,9 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
             }
         }
 
-        sDataVec *d;
+        sDataVec *d = 0;
+        unsigned int length = 0;
+        unsigned int exist = 0;
         char *word_strp = lstring::copy(word);
         if (range && (*word != SpecCatchar()))
             word_strp[range - word] = 0;
@@ -897,7 +899,21 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
         }
         else {
             sCKT *ckt = ft_curckt ? ft_curckt->runckt() : 0;
-            d = OP.vecGet(word_strp, ckt, varcheck);
+            if (*word_strp == '?') {
+                exist = 1;
+                if (OP.isVec(word_strp+1, ckt))
+                    exist++;
+            }
+            else if (*word_strp == '#') {
+                d = OP.vecGet(word_strp+1, ckt, true);
+                if (d) {
+                    length = d->length();
+                    d = 0;
+                }
+            }
+            else {
+                d = OP.vecGet(word_strp, ckt, varcheck);
+            }
         }
         delete [] word_strp;
 
@@ -915,6 +931,14 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
             if (up == -1)
                 up = d->dims(0) - 1;
             vv = vec2var(d, low, up);
+        }
+        else if (exist) {
+            vv = new variable;
+            vv->set_boolean(exist == 2);
+        }
+        else if (length) {
+            vv = new variable;
+            vv->set_integer(length);
         }
         return (vv);
     } 
