@@ -1235,7 +1235,7 @@ IFpulseData::eval_func(double t)
                     skip = true;
                 else {
                     int d = td_plen - td_prst;
-                    int j = td_prst + pnum%d;
+                    int j = td_prst + (pnum-td_prst)%d;
                     unsigned long mask =
                         (1 << (j % sizeof(unsigned long)));
                     skip = !(td_parray[j/sizeof(unsigned long)] & mask);
@@ -1280,7 +1280,7 @@ IFpulseData::eval_func(double t)
                         skip = true;
                     else {
                         int d = td_plen - td_prst;
-                        int j = td_prst + pnum%d;
+                        int j = td_prst + (pnum-td_prst)%d;
                         unsigned long mask =
                             (1 << (j % sizeof(unsigned long)));
                         skip = !(td_parray[j/sizeof(unsigned long)] & mask);
@@ -1330,7 +1330,7 @@ IFpulseData::eval_deriv(double t)
                     skip = true;
                 else {
                     int d = td_plen - td_prst;
-                    int j = td_prst + pnum%d;
+                    int j = td_prst + (pnum-td_prst)%d;
                     unsigned long mask =
                         (1 << (j % sizeof(unsigned long)));
                     skip = !(td_parray[j/sizeof(unsigned long)] & mask);
@@ -1373,7 +1373,7 @@ IFpulseData::eval_deriv(double t)
                         skip = true;
                     else {
                         int d = td_plen - td_prst;
-                        int j = td_prst + pnum%d;
+                        int j = td_prst + (pnum-td_prst)%d;
                         unsigned long mask =
                             (1 << (j % sizeof(unsigned long)));
                         skip = !(td_parray[j/sizeof(unsigned long)] & mask);
@@ -1664,7 +1664,7 @@ IFgpulseData::eval_func(double t)
                         skip = true;
                     else {
                         int d = td_plen - td_prst;
-                        int j = td_prst + i%d;
+                        int j = td_prst + (i-td_prst)%d;
                         unsigned long mask =
                             (1 << (j % sizeof(unsigned long)));
                         skip = !(td_parray[j/sizeof(unsigned long)] & mask);
@@ -1700,7 +1700,7 @@ IFgpulseData::eval_func(double t)
                             skip = true;
                         else {
                             int d = td_plen - td_prst;
-                            int j = td_prst + i%d;
+                            int j = td_prst + (i-td_prst)%d;
                             unsigned long mask =
                                 (1 << (j % sizeof(unsigned long)));
                             skip = !(td_parray[j/sizeof(unsigned long)] & mask);
@@ -1761,7 +1761,7 @@ IFgpulseData::eval_deriv(double t)
                         skip = true;
                     else {
                         int d = td_plen - td_prst;
-                        int j = td_prst + i%d;
+                        int j = td_prst + (i-td_prst)%d;
                         unsigned long mask =
                             (1 << (j % sizeof(unsigned long)));
                         skip = !(td_parray[j/sizeof(unsigned long)] & mask);
@@ -1797,7 +1797,7 @@ IFgpulseData::eval_deriv(double t)
                             skip = true;
                         else {
                             int d = td_plen - td_prst;
-                            int j = td_prst + i%d;
+                            int j = td_prst + (i-td_prst)%d;
                             unsigned long mask =
                                 (1 << (j % sizeof(unsigned long)));
                             skip = !(td_parray[j/sizeof(unsigned long)] & mask);
