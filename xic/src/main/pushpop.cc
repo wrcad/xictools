@@ -462,8 +462,10 @@ cPushPop::ClearLists()
 void
 cPushPop::InvalidateLayer(const CDs *sd, const CDl *ld)
 {
-    context->purge(sd, ld);
-    context_history->purge(sd, ld);
+    if (context)
+        context->purge(sd, ld);
+    if (context_history)
+        context_history->purge(sd, ld);
 }
 
 
@@ -472,8 +474,10 @@ cPushPop::InvalidateObject(const CDs *sd, const CDo *od, bool)
 {
     if (!sd)
         return;
-    context = context->purge(sd, od);
-    context_history = context_history->purge(sd, od);
+    if (context)
+        context = context->purge(sd, od);
+    if (context_history)
+        context_history = context_history->purge(sd, od);
 }
 
 
