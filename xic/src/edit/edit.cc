@@ -223,12 +223,12 @@ cEdit::invalidateLayer(CDs *sd, CDl *ld)
             Oper::purge(es->ElecUL->redo_list, sd, ld);
         }
         if (es->PhysCX) {
-            es->PhysCX->context->purge(sd, ld);
-            es->PhysCX->context_history->purge(sd, ld);
+            ContextDesc::purge(es->PhysCX->context(), sd, ld);
+            ContextDesc::purge(es->PhysCX->context_history(), sd, ld);
         }
         if (es->ElecCX) {
-            es->ElecCX->context->purge(sd, ld);
-            es->ElecCX->context_history->purge(sd, ld);
+            ContextDesc::purge(es->ElecCX->context(), sd, ld);
+            ContextDesc::purge(es->ElecCX->context_history(), sd, ld);
         }
     }
 }
@@ -253,16 +253,16 @@ cEdit::invalidateObject(CDs *sd, CDo *od, bool save)
             Oper::purge(es->ElecUL->redo_list, sd, od);
         }
         if (es->PhysCX) {
-            es->PhysCX->context =
-                es->PhysCX->context->purge(sd, od);
-            es->PhysCX->context_history =
-                es->PhysCX->context_history->purge(sd, od);
+            es->PhysCX->set_context(
+                ContextDesc::purge(es->PhysCX->context(), sd, od));
+            es->PhysCX->set_context_history(
+                ContextDesc::purge(es->PhysCX->context_history(), sd, od));
         }
         if (es->ElecCX) {
-            es->ElecCX->context =
-                es->ElecCX->context->purge(sd, od);
-            es->ElecCX->context_history =
-                es->ElecCX->context_history->purge(sd, od);
+            es->ElecCX->set_context(
+                ContextDesc::purge(es->ElecCX->context(), sd, od));
+            es->ElecCX->set_context_history(
+                ContextDesc::purge(es->ElecCX->context_history(), sd, od));
         }
     }
 }

@@ -55,11 +55,11 @@
 ContextDesc::ContextDesc(const CDc *cdesc,
     unsigned int xind, unsigned int yind)
 {
-    cInst = cdesc;
-    cIndX = xind;
-    cIndY = yind;
-    cParentDesc = CurCell();
-    cState = EditIf()->newPPstate();
+    c_inst = cdesc;
+    c_indx = xind;
+    c_indy = yind;
+    c_parent = CurCell();
+    c_state = EditIf()->newPPstate();
 
     for (int i = 0; i < DSP_NUMWINS; i++) {
         WindowDesc *wdesc = DSP()->Window(i);
@@ -67,16 +67,16 @@ ContextDesc::ContextDesc(const CDc *cdesc,
             continue;
         if (wdesc->IsSimilar(DSP()->MainWdesc(), WDsimXmode)) {
             const BBox *BB = wdesc->Window();
-            cWinState[i].width = BB->width();
-            cWinState[i].x = (BB->left + BB->right)/2;
-            cWinState[i].y = (BB->bottom + BB->top)/2;
-            cWinState[i].sdesc = wdesc->CurCellDesc(wdesc->Mode());
+            c_winstate[i].width = BB->width();
+            c_winstate[i].x = (BB->left + BB->right)/2;
+            c_winstate[i].y = (BB->bottom + BB->top)/2;
+            c_winstate[i].sdesc = wdesc->CurCellDesc(wdesc->Mode());
 
-            cWinViews[i] = *wdesc->Views();
+            c_winviews[i] = *wdesc->Views();
             wdesc->Views()->zero();
         }
     }
-    cNext = PP()->Context();
+    c_next = PP()->Context();
 }
 
 
@@ -85,39 +85,41 @@ ContextDesc::~ContextDesc()
     ContextDesc *cdt = this;
     if (!cdt)
         return;
-    delete cState;
+    delete c_state;
     for (int i = 0; i < DSP_NUMWINS; i++)
-       cWinViews[i].clear();
+       c_winviews[i].clear();
 }
 
 
+// Static function.
 void
-ContextDesc::purge(const CDs *sd, const CDl *ld)
+ContextDesc::purge(ContextDesc *cxdesc, const CDs *sd, const CDl *ld)
 {
-    for (ContextDesc *cx = this; cx; cx = cx->cNext) {
-        if (cx->cState)
-            cx->cState->purge(sd, ld);
+    for (ContextDesc *cx = cxdesc; cx; cx = cx->c_next) {
+        if (cx->c_state)
+            cx->c_state->purge(sd, ld);
     }
 }
 
 
+// Static function.
 ContextDesc *
-ContextDesc::purge(const CDs *sd, const CDo *od)
+ContextDesc::purge(ContextDesc *cxdesc, const CDs *sd, const CDo *od)
 {
     CDc *cd = (od->type() == CDINSTANCE ? (CDc*)od : 0);
-    ContextDesc *c0 = this, *cp = 0;
-    for (ContextDesc *cx = c0; cx; cx = cx->cNext) {
-        if (cd && cd == cx->cInst) {
+    ContextDesc *c0 = cxdesc, *cp = 0;
+    for (ContextDesc *cx = c0; cx; cx = cx->c_next) {
+        if (cd && cd == cx->c_inst) {
             // if we delete a cell, we don't want to pop back into it!
             if (cp)
-                cp->cNext = 0;
+                cp->c_next = 0;
             else
                 c0 = 0;
             ContextDesc::clear(cx);
             return (c0);
         }
-        if (cx->cState)
-            cx->cState->purge(sd, od);
+        if (cx->c_state)
+            cx->c_state->purge(sd, od);
         cp = cx;
     }
     return (c0);
@@ -129,7 +131,7 @@ void
 ContextDesc::clear(ContextDesc *c)
 {
     while (c) {
-        ContextDesc *cn = c->cNext;
+        ContextDesc *cn = c->c_next;
         delete c;
         c = cn;
     }
@@ -154,9 +156,9 @@ cPushPop::cPushPop()
     }
     instancePtr = this;
 
-    context = 0;
-    context_history = 0;
-    no_display = false;
+    pp_cx = 0;
+    pp_cx_history = 0;
+    pp_no_display = false;
 
     setupInterface();
 }
@@ -189,34 +191,34 @@ cPushPop::PushContext(const CDc *cdesc, unsigned int xind, unsigned int yind)
 
     CDs *msdesc;
     cTfmStack stk;
-    if (!cdesc || (context_history && cdesc == context_history->cInst &&
-            context_history->cIndX == xind &&
-            context_history->cIndY == yind)) {
+    if (!cdesc || (pp_cx_history && cdesc == pp_cx_history->instance() &&
+            pp_cx_history->indX() == xind &&
+            pp_cx_history->indY() == yind)) {
         // push to the instance last popped from
-        if (!context_history)
+        if (!pp_cx_history)
             return;
-        if (context_history->cParentDesc != CurCell())
+        if (pp_cx_history->parent() != CurCell())
             return;
-        ContextDesc *cx = context_history;
-        context_history = context_history->cNext;
-        cx->cNext = context;
-        context = cx;
-        cdesc = context->cInst;
-        xind = context->cIndX;
-        yind = context->cIndY;
+        ContextDesc *cx = pp_cx_history;
+        pp_cx_history = pp_cx_history->next();
+        cx->set_next(pp_cx);
+        pp_cx = cx;
+        cdesc = pp_cx->instance();
+        xind = pp_cx->indX();
+        yind = pp_cx->indY();
         msdesc = cdesc->masterCell();
         if (!msdesc) {
             // shouldn't happen
-            context = context->cNext;
+            pp_cx = pp_cx->next();
             return;
         }
-        cx = new ContextDesc(context->cInst, context->cIndX, context->cIndY);
-        cx->cParentDesc = context->cParentDesc;
-        cx->cNext = context->cNext;
+        cx = new ContextDesc(pp_cx->instance(), pp_cx->indX(), pp_cx->indY());
+        cx->set_parent(pp_cx->parent());
+        cx->set_next(pp_cx->next());
 
         stk.TPush();
         stk.TLoad(CDtfRegI0);     // load the current inverse transform
-        stk.TCurrent(&context->cTF);
+        stk.TCurrent(pp_cx->tf());
         stk.TInverse();           // compute the inverse (actual transform)
         stk.TLoadInverse();       // load it
 
@@ -235,7 +237,7 @@ cPushPop::PushContext(const CDc *cdesc, unsigned int xind, unsigned int yind)
         stk.TPop();
         stk.TPop();
 
-        cx->cTF = context->cTF;
+        *cx->tf() = *pp_cx->tf();
 
         for (int i = 1; i < DSP_NUMWINS; i++) {
             WindowDesc *wdesc = DSP()->Window(i);
@@ -250,46 +252,46 @@ cPushPop::PushContext(const CDc *cdesc, unsigned int xind, unsigned int yind)
             WindowDesc *wdesc = DSP()->Window(i);
             if (wdesc && wdesc->IsSimilar(DSP()->MainWdesc())) {
                 if (wdesc->CurCellDesc(wdesc->Mode()) ==
-                        context->cWinState[i].sdesc) {
-                    wdesc->InitWindow(context->cWinState[i].x,
-                        context->cWinState[i].y, context->cWinState[i].width);
+                        pp_cx->win_state(i)->sdesc) {
+                    wdesc->InitWindow(pp_cx->win_state(i)->x,
+                        pp_cx->win_state(i)->y, pp_cx->win_state(i)->width);
 
                     wdesc->Views()->clear();
-                    *wdesc->Views() = context->cWinViews[i];
-                    context->cWinViews[i].zero();
+                    *wdesc->Views() = *pp_cx->win_views(i);
+                    pp_cx->win_views(i)->zero();
                 }
                 else {
                     wdesc->CenterFullView();
                     wdesc->Views()->clear();
-                    context->cWinViews[i].clear();
+                    pp_cx->win_views(i)->clear();
                 }
-                if (!no_display)
+                if (!pp_no_display)
                     wdesc->Redisplay(0);
             }
         }
-        if (!no_display && DSP()->ShowTerminals())
+        if (!pp_no_display && DSP()->ShowTerminals())
             DSP()->ShowTerminals(DISPLAY);
 
-        if (context->cState)
-            context->cState->rotate();
+        if (pp_cx->state())
+            pp_cx->state()->rotate();
 
-        delete context;
-        context = cx;
+        delete pp_cx;
+        pp_cx = cx;
     }
     else {
         msdesc = cdesc->masterCell();
         if (!msdesc)
             return;
-        ContextDesc::clear(context_history);  // clear history
-        context_history = 0;
-        context = new ContextDesc(cdesc, xind, yind);
+        ContextDesc::clear(pp_cx_history);  // clear history
+        pp_cx_history = 0;
+        pp_cx = new ContextDesc(cdesc, xind, yind);
 
         // Find the inverse transform of the cell, used when displaying
         // context.
 
         stk.TPush();
         stk.TLoad(CDtfRegI0);     // load the current inverse transform
-        stk.TCurrent(&context->cTF);
+        stk.TCurrent(pp_cx->tf());
         stk.TInverse();           // compute the inverse (actual transform)
         stk.TLoadInverse();       // load it
 
@@ -322,14 +324,14 @@ cPushPop::PushContext(const CDc *cdesc, unsigned int xind, unsigned int yind)
             if (wdesc && wdesc->IsSimilar(DSP()->MainWdesc())) {
                 wdesc->CenterFullView();
                 wdesc->Views()->clear();
-                if (!no_display)
+                if (!pp_no_display)
                     wdesc->Redisplay(0);
             }
         }
-        if (!no_display && DSP()->ShowTerminals())
+        if (!pp_no_display && DSP()->ShowTerminals())
             DSP()->ShowTerminals(DISPLAY);
     }
-    if (!no_display) {
+    if (!pp_no_display) {
         PL()->ShowPromptV("Current cell is %s.", DSP()->CurCellName());
         DSP()->MainWdesc()->ShowTitle();
         DSP()->MainWdesc()->UpdateProxy();
@@ -345,41 +347,41 @@ cPushPop::PushContext(const CDc *cdesc, unsigned int xind, unsigned int yind)
 void
 cPushPop::PopContext()
 {
-    if (!context) {
-        if (!no_display)
+    if (!pp_cx) {
+        if (!pp_no_display)
             PL()->ShowPrompt("There isn't a subedit to pop from.");
         return;
     }
 
     // Save the current context.
     ContextDesc *cx =
-        new ContextDesc(context->cInst, context->cIndX, context->cIndY);
-    cx->cParentDesc = context->cParentDesc;
-    cx->cTF = context->cTF;
-    cx->cNext = context_history;
-    context_history = cx;
+        new ContextDesc(pp_cx->instance(), pp_cx->indX(), pp_cx->indY());
+    cx->set_parent(pp_cx->parent());
+    *cx->tf() = *pp_cx->tf();
+    cx->set_next(pp_cx_history);
+    pp_cx_history = cx;
 
     XM()->CommitCell();
 
-    if (context->cParentDesc)
-        context->cParentDesc->computeBB();
+    if (pp_cx->parent())
+        pp_cx->parent()->computeBB();
 
     for (int i = 1; i < DSP_NUMWINS; i++) {
         WindowDesc *wdesc = DSP()->Window(i);
         if (wdesc && wdesc->IsSimilar(DSP()->MainWdesc())) {
             if (wdesc->TopCellName() != wdesc->CurCellName())
-                wdesc->SetCurCellName(context->cParentDesc->cellname());
+                wdesc->SetCurCellName(pp_cx->parent()->cellname());
         }
     }
-    CDcbin cbin(context->cParentDesc);
+    CDcbin cbin(pp_cx->parent());
     XM()->SetNewContext(&cbin, false);
 
-    if (context->cState)
-        context->cState->rotate();
+    if (pp_cx->state())
+        pp_cx->state()->rotate();
 
     cTfmStack stk;
     stk.TPush();
-    stk.TLoadCurrent(&context->cTF);
+    stk.TLoadCurrent(pp_cx->tf());
     stk.TStore(CDtfRegI0);
     stk.TPop();
 
@@ -388,34 +390,34 @@ cPushPop::PopContext()
         WindowDesc *wdesc = DSP()->Window(i);
         if (wdesc && wdesc->IsSimilar(DSP()->MainWdesc())) {
             if (wdesc->CurCellDesc(wdesc->Mode()) ==
-                    context->cWinState[i].sdesc) {
-                wdesc->InitWindow(context->cWinState[i].x,
-                    context->cWinState[i].y, context->cWinState[i].width);
+                    pp_cx->win_state(i)->sdesc) {
+                wdesc->InitWindow(pp_cx->win_state(i)->x,
+                    pp_cx->win_state(i)->y, pp_cx->win_state(i)->width);
                 wdesc->Views()->clear();
-                *wdesc->Views() = context->cWinViews[i];
-                context->cWinViews[i].zero();
+                *wdesc->Views() = *pp_cx->win_views(i);
+                pp_cx->win_views(i)->zero();
             }
             else {
                 wdesc->CenterFullView();
                 wdesc->Views()->clear();
-                context->cWinViews[i].clear();
+                pp_cx->win_views(i)->clear();
             }
-            if (!no_display)
+            if (!pp_no_display)
                 wdesc->Redisplay(0);
         }
     }
 
     if (DSP()->CurMode() == Electrical)
-        ScedIf()->checkRepositionLabels(context->cInst);
+        ScedIf()->checkRepositionLabels(pp_cx->instance());
 
-    if (!no_display && DSP()->ShowTerminals())
+    if (!pp_no_display && DSP()->ShowTerminals())
         DSP()->ShowTerminals(DISPLAY);
 
-    cx = context;
-    context = context->cNext;
+    cx = pp_cx;
+    pp_cx = pp_cx->next();
     delete cx;
 
-    if (!no_display) {
+    if (!pp_no_display) {
         DSP()->MainWdesc()->ShowTitle();
         DSP()->MainWdesc()->UpdateProxy();
         XM()->ShowParameters();
@@ -430,12 +432,12 @@ cPushPop::PopContext()
 void
 cPushPop::ClearContext(bool skip_commit)
 {
-    no_display = true;
-    while (context)
+    pp_no_display = true;
+    while (pp_cx)
         PopContext();
-    no_display = false;
-    ContextDesc::clear(context_history);
-    context_history = 0;
+    pp_no_display = false;
+    ContextDesc::clear(pp_cx_history);
+    pp_cx_history = 0;
     if (!skip_commit)
         XM()->CommitCell();
 
@@ -452,20 +454,18 @@ cPushPop::ClearContext(bool skip_commit)
 void
 cPushPop::ClearLists()
 {
-    ContextDesc::clear(context);
-    context = 0;
-    ContextDesc::clear(context_history);
-    context_history = 0;
+    ContextDesc::clear(pp_cx);
+    pp_cx = 0;
+    ContextDesc::clear(pp_cx_history);
+    pp_cx_history = 0;
 }
 
 
 void
 cPushPop::InvalidateLayer(const CDs *sd, const CDl *ld)
 {
-    if (context)
-        context->purge(sd, ld);
-    if (context_history)
-        context_history->purge(sd, ld);
+    ContextDesc::purge(pp_cx, sd, ld);
+    ContextDesc::purge(pp_cx_history, sd, ld);
 }
 
 
@@ -474,19 +474,17 @@ cPushPop::InvalidateObject(const CDs *sd, const CDo *od, bool)
 {
     if (!sd)
         return;
-    if (context)
-        context = context->purge(sd, od);
-    if (context_history)
-        context_history = context_history->purge(sd, od);
+    pp_cx = ContextDesc::purge(pp_cx, sd, od);
+    pp_cx_history = ContextDesc::purge(pp_cx_history, sd, od);
 }
 
 
 CXstate *
 cPushPop::PopState()
 {
-    CXstate *ecx = new CXstate(DSP()->CurCellName(), context, context_history);
-    context = 0;
-    context_history = 0;
+    CXstate *ecx = new CXstate(DSP()->CurCellName(), pp_cx, pp_cx_history);
+    pp_cx = 0;
+    pp_cx_history = 0;
     return (ecx);
 }
 
@@ -494,17 +492,17 @@ cPushPop::PopState()
 void
 cPushPop::PushState(CXstate *ecx)
 {
-    ContextDesc::clear(context);
-    context = 0;
-    ContextDesc::clear(context_history);
-    context_history = 0;
+    ContextDesc::clear(pp_cx);
+    pp_cx = 0;
+    ContextDesc::clear(pp_cx_history);
+    pp_cx_history = 0;
 
     if (ecx) {
-        if (ecx->cellname == DSP()->CurCellName()) {
-            context = ecx->context;
-            ecx->context = 0;
-            context_history = ecx->context_history;
-            ecx->context_history = 0;
+        if (ecx->cellname() == DSP()->CurCellName()) {
+            pp_cx = ecx->context();
+            ecx->set_context(0);
+            pp_cx_history = ecx->context_history();
+            ecx->set_context_history(0);
         }
         delete ecx;
     }

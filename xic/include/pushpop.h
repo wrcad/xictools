@@ -71,38 +71,51 @@ struct ContextDesc
 {
     ContextDesc()
         {
-            cNext = 0;
-            cInst = 0;
-            cIndX = 0;
-            cIndY = 0;
-            cParentDesc = 0;
-            cState = 0;
+            c_next = 0;
+            c_inst = 0;
+            c_indx = 0;
+            c_indy = 0;
+            c_parent = 0;
+            c_state = 0;
         }
 
     ContextDesc(const CDc*, unsigned int, unsigned int);
     ~ContextDesc();
 
-    void purge(const CDs*, const CDl*);
-    ContextDesc *purge(const CDs*, const CDo*);
+    static void purge(ContextDesc*, const CDs*, const CDl*);
+    static ContextDesc *purge(ContextDesc*, const CDs*, const CDo*);
     static void clear(ContextDesc*);
+
+    ContextDesc *next()             { return (c_next); }
+    void set_next(ContextDesc *n)   { c_next = n; }
+    const CDc *instance()           const { return (c_inst); }
+    unsigned int indX()             { return (c_indx); }
+    unsigned int indY()             { return (c_indy); }
+    CDs *parent()                   { return (c_parent); }
+    void set_parent(CDs *s)         { c_parent = s; }
+    pp_state_t *state()             { return (c_state); }
+    CDtf *tf()                      { return (&c_tf); }
+    win_state_t *win_state(int i)   { return (c_winstate + i); }
+    wStack *win_views(int i)        { return (c_winviews + i); }
 
     int level()
         {
             int n = 0;
-            for (ContextDesc *d = this; d; d = d->cNext, n++) ;
+            for (ContextDesc *d = this; d; d = d->c_next, n++) ;
             return (n);
         }
 
-    ContextDesc *cNext;     // pointer to parent context
-    const CDc *cInst;       // pushed-to instance object desc
-    unsigned int cIndX;     // instance array X index
-    unsigned int cIndY;     // instance array Y index
-    CDs *cParentDesc;       // pushed-from cell desc
-    pp_state_t *cState;     // interface for undo/redo of edits
-    CDtf cTF;               // transform structure
+private:
+    ContextDesc *c_next;    // pointer to parent context
+    const CDc *c_inst;      // pushed-to instance object desc
+    unsigned int c_indx;    // instance array X index
+    unsigned int c_indy;    // instance array Y index
+    CDs *c_parent;          // pushed-from cell desc
+    pp_state_t *c_state;    // interface for undo/redo of edits
+    CDtf c_tf;              // transform structure
 
-    win_state_t cWinState[DSP_NUMWINS];  // per-window regions
-    wStack cWinViews[DSP_NUMWINS];       // per-window view stacks
+    win_state_t c_winstate[DSP_NUMWINS];    // per-window regions
+    wStack c_winviews[DSP_NUMWINS];         // per-window view stacks
 };
 
 
@@ -112,20 +125,27 @@ struct CXstate
 {
     CXstate(CDcellName n, ContextDesc *c, ContextDesc *ch)
         {
-            cellname = n;
-            context = c;
-            context_history = ch;
+            cx_cellname = n;
+            cx_context = c;
+            cx_context_history = ch;
         }
 
     ~CXstate()
         {
-            ContextDesc::clear(context);
-            ContextDesc::clear(context_history);
+            ContextDesc::clear(cx_context);
+            ContextDesc::clear(cx_context_history);
         }
 
-    CDcellName cellname;
-    ContextDesc *context;
-    ContextDesc *context_history;
+    CDcellName cellname()               { return (cx_cellname); }
+    ContextDesc *context()              { return (cx_context); }
+    void set_context(ContextDesc *c)    { cx_context = c; }
+    ContextDesc *context_history()      { return (cx_context_history); }
+    void set_context_history(ContextDesc *c) { cx_context_history = c; }
+
+private:
+    CDcellName cx_cellname;
+    ContextDesc *cx_context;
+    ContextDesc *cx_context_history;
 };
 
 
@@ -157,29 +177,25 @@ public:
     CXstate *PopState();
     void PushState(CXstate*);
 
-private:
-    // editcx_setif.cc
-    void setupInterface();
-public:
+    ContextDesc *Context()  { return (pp_cx); }
+    const CDc *Instance()   { return (pp_cx ? pp_cx->instance() : 0); }
+    int Level()             { return (pp_cx ? pp_cx->level() : 0); }
 
-    const CDc *Instance() { return (context ? context->cInst : 0); }
-
-    int Level() { return (context->level()); }
-
-    void InstanceList(const CDc **list, int *szp)
+    void InstanceList(const CDc *list[CDMAXCALLDEPTH], int *szp)
         {
             int j = Level();
             *szp = j;
-            for (ContextDesc *cx = context; cx && j > 0; cx = cx->cNext)
-                list[--j] = cx->cInst;
+            for (ContextDesc *cx = pp_cx; cx && j > 0; cx = cx->next())
+                list[--j] = cx->instance();
         }
 
-    ContextDesc *Context() { return (context); }
-
 private:
-    ContextDesc *context;           // Context storage for push/pop.
-    ContextDesc *context_history;   // Reservoir for popped contexts.
-    bool no_display;                // Suppress window redrawing.
+    // editcx_setif.cc
+    void setupInterface();
+
+    ContextDesc *pp_cx;             // Context storage for push/pop.
+    ContextDesc *pp_cx_history;     // Reservoir for popped contexts.
+    bool pp_no_display;             // Suppress window redrawing.
 
     static cPushPop *instancePtr;
 };
