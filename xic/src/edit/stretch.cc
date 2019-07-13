@@ -1066,7 +1066,7 @@ inst:
 //
 bool
 cEdit::stretch(CDo *odesc, CDs *sdesc, int refx, int refy, int mapx,
-    int mapy, int code, Vtex *vtx)
+    int mapy, int code, Vertex *vtx)
 {
     if (!odesc)
         return (false);
@@ -1080,9 +1080,9 @@ box:
         if (vtx) {
             Point *px0 = new Point[5];
             Point *px = px0;
-            for (Vtex *v = vtx; v; v = v->v_next) {
-                *px = v->v_p;
-                if (v->v_movable) {
+            for (Vertex *v = vtx; v; v = v->next()) {
+                *px = *v->point();
+                if (v->movable()) {
                     px->x += (mapx - refx);
                     px->y += (mapy - refy);
                 }
@@ -1125,10 +1125,10 @@ poly:
         if (vtx) {
             poly.points = new Point[poly.numpts];
             Point *px = poly.points;
-            for (Vtex *v = vtx; v; v = v->v_next) {
-                *px = v->v_p;
+            for (Vertex *v = vtx; v; v = v->next()) {
+                *px = *v->point();
                 // The final vertex movability isn't set!
-                if (v->v_movable || (!v->v_next && vtx->v_movable)) {
+                if (v->movable() || (!v->next() && vtx->movable())) {
                     px->x += (mapx - refx);
                     px->y += (mapy - refy);
                 }
@@ -1192,9 +1192,9 @@ wire:
         if (vtx) {
             wire.points = new Point[wire.numpts];
             Point *px = wire.points;
-            for (Vtex *v = vtx; v; v = v->v_next) {
-                *px = v->v_p;
-                if (v->v_movable) {
+            for (Vertex *v = vtx; v; v = v->next()) {
+                *px = *v->point();
+                if (v->movable()) {
                     px->x += (mapx - refx);
                     px->y += (mapy - refy);
                 }
@@ -1312,7 +1312,7 @@ inst:
 
 namespace {
     void display_ghost_stretch(CDo *odesc, int refx, int refy,
-        int mapx, int mapy, int code, Vtex *vtx)
+        int mapx, int mapy, int code, Vertex *vtx)
     {
         if (!odesc)
             return;
@@ -1326,9 +1326,9 @@ namespace {
             if (vtx) {
                 Point *px0 = new Point[5];
                 Point *px = px0;
-                for (Vtex *v = vtx; v; v = v->v_next) {
-                    *px = v->v_p;
-                    if (v->v_movable) {
+                for (Vertex *v = vtx; v; v = v->next()) {
+                    *px = *v->point();
+                    if (v->movable()) {
                         px->x += (mapx - refx);
                         px->y += (mapy - refy);
                     }
@@ -1353,10 +1353,10 @@ namespace {
             if (vtx) {
                 po.points = new Point[po.numpts];
                 Point *px = po.points;
-                for (Vtex *v = vtx; v; v = v->v_next) {
-                    *px = v->v_p;
+                for (Vertex *v = vtx; v; v = v->next()) {
+                    *px = *v->point();
                     // The final vertex movability isn't set!
-                    if (v->v_movable || (!v->v_next && vtx->v_movable)) {
+                    if (v->movable() || (!v->next() && vtx->movable())) {
                         px->x += (mapx - refx);
                         px->y += (mapy - refy);
                     }
@@ -1420,9 +1420,9 @@ namespace {
             if (vtx) {
                 wire.points = new Point[wire.numpts];
                 Point *px = wire.points;
-                for (Vtex *v = vtx; v; v = v->v_next) {
-                    *px = v->v_p;
-                    if (v->v_movable) {
+                for (Vertex *v = vtx; v; v = v->next()) {
+                    *px = *v->point();
+                    if (v->movable()) {
                         px->x += (mapx - refx);
                         px->y += (mapy - refy);
                     }
@@ -1471,43 +1471,78 @@ namespace {
     }
 
 
-    struct ol_t
+    struct ObjectsList
     {
-        ol_t(CDo *o, Vtex *v, ol_t *n)
-            {
-                odesc = o;
-                vtx = v;
-                next = n;
-            }
+        ObjectsList(CDo *o, Vertex *v, ObjectsList *n) :
+            o_next(n), o_odesc(o), o_vtx(v) { }
 
-        static void destroy(ol_t *o)
+        static void destroy(ObjectsList *o)
             {
                 while (o) {
-                    ol_t *ox = o;
-                    o = o->next;
+                    ObjectsList *ox = o;
+                    o = o->o_next;
                     delete ox;
                 }
             }
 
-        CDo *odesc;
-        Vtex *vtx;
-        ol_t *next;
+        ObjectsList *next()     { return (o_next); }
+        CDo *odesc()            { return (o_odesc); }
+        Vertex *vtx()           { return (o_vtx); }
+
+        static void add_object(CDo *obj, Vertex *pts)
+            {
+                o_display_list = new ObjectsList(obj, pts, o_display_list);
+            }
+
+        static void  display_ghost_stretch(int ref_x, int ref_y, int map_x, int map_y,
+                bool mode)
+            {
+                for (ObjectsList *ol = o_display_list; ol; ol = ol->o_next) {
+                    if (!mode) {
+                        ::display_ghost_stretch(ol->o_odesc, ref_x, ref_y, map_x, map_y,
+                            0, ol->o_vtx);
+                    }
+                    else {
+                        ::display_ghost_stretch(ol->o_odesc, ref_x, ref_y, map_x, map_y,
+                            ED()->stretchBoxCode(), 0);
+                    }
+                }
+            }
+
+        static void clear()
+            {
+                destroy(o_display_list);
+                o_display_list = 0;
+            }
+
+        static ObjectsList *ghost_display_list()            { return (o_display_list); }
+        static void set_ghost_display_list(ObjectsList *o)  { o_display_list = o; }
+
+private:
+        ObjectsList *o_next;
+        CDo *o_odesc;
+        Vertex *o_vtx;
+
+        static ObjectsList *o_display_list;
     };
+
+    // The objects list for ghosting during stretch.
+    ObjectsList *ObjectsList::o_display_list = 0;
 
 
     // Return the object with the largest area from among the next
     // n items in the list, and advance the list.
     //
-    ol_t *pick_one(ol_t **plist, int n)
+    ObjectsList *pick_one(ObjectsList **plist, int n)
     {
         double amx = 0.0;
         int i = 0;
-        ol_t *opick = 0;
+        ObjectsList *opick = 0;
         while (*plist && i < n) {
-            ol_t *ol = *plist;
-            *plist = (*plist)->next;
+            ObjectsList *ol = *plist;
+            *plist = (*plist)->next();
             i++;
-            double a = ol->odesc->area();
+            double a = ol->odesc()->area();
             if (a > amx) {
                 amx = a;
                 opick = ol;
@@ -1515,10 +1550,6 @@ namespace {
         }
         return (opick);
     }
-
-
-    // The objects list for ghosting during stretch.
-    ol_t *ghost_display_list;
 }
 
 
@@ -1543,10 +1574,7 @@ cEditGhost::showGhostStretch(int map_x, int map_y, int ref_x, int ref_y)
             else
                 XM()->To45(ref_x, ref_y, &map_x, &map_y);
         }
-        for (ol_t *ol = ghost_display_list; ol; ol = ol->next) {
-            display_ghost_stretch(ol->odesc, ref_x, ref_y, map_x, map_y,
-                0, ol->vtx);
-        }
+        ObjectsList::display_ghost_stretch(ref_x, ref_y, map_x, map_y, false);
         return;
     }
 
@@ -1557,10 +1585,7 @@ cEditGhost::showGhostStretch(int map_x, int map_y, int ref_x, int ref_y)
         else
             XM()->To45(ref_x, ref_y, &map_x, &map_y);
     }
-    for (ol_t *ol = ghost_display_list; ol; ol = ol->next) {
-        display_ghost_stretch(ol->odesc, ref_x, ref_y, map_x, map_y,
-            ED()->stretchBoxCode(), 0);
-    }
+    ObjectsList::display_ghost_stretch(ref_x, ref_y, map_x, map_y, true);
 }
 
 
@@ -1570,52 +1595,45 @@ cEditGhost::showGhostStretch(int map_x, int map_y, int ref_x, int ref_y)
 void
 cEditGhost::ghost_stretch_setup(bool on)
 {
-    if (on) {
-        ol_t::destroy(ghost_display_list);  // should never need this
-        ghost_display_list = 0;
-        unsigned int n = 0;
-        if (!sObj::empty(ED()->objectList())) {
-            for (sObj *obj = ED()->objectList(); obj; obj = obj->next_obj()) {
-                if (!obj->object())
-                    continue;
-                ghost_display_list =
-                    new ol_t(obj->object(), obj->points(), ghost_display_list);
-                n++;
-            }
-        }
-        else {
-            sSelGen sg(Selections, CurCell());
-            CDo *od;
-            while ((od = sg.next()) != 0) {
-                ghost_display_list = new ol_t(od, 0, ghost_display_list);
-                n++;
-            }
-        }
-        if (n > EGst()->eg_max_ghost_objects) {
-            // Too many objects to show efficiently.  Keep only the
-            // objects with the largest area among groups.
+    ObjectsList::clear();
+    if (!on)
+        return;
 
-            unsigned int n1 = n/EGst()->eg_max_ghost_objects;
-            unsigned int n2 = n%EGst()->eg_max_ghost_objects;
-            ol_t *o0 = ghost_display_list;
-            ol_t *ol0 = 0;
-            unsigned int j = 0, np;
-            for (unsigned int i = 0; i < n; i += np) {
-                np = n1 + (++j < n2);
-                ol_t *od = pick_one(&o0, np);
-                if (!od)
-                    break;
-                ol0 = new ol_t(od->odesc, od->vtx, ol0);
-            }
-            ol_t::destroy(ghost_display_list);
-            ghost_display_list = ol0;
+    unsigned int n = 0;
+    if (!sObj::empty(ED()->objectList())) {
+        for (sObj *obj = ED()->objectList(); obj; obj = obj->next_obj()) {
+            if (!obj->object())
+                continue;
+            ObjectsList::add_object(obj->object(), obj->points());
+            n++;
         }
     }
     else {
-        ol_t::destroy(ghost_display_list);
-        ghost_display_list = 0;
+        sSelGen sg(Selections, CurCell());
+        CDo *od;
+        while ((od = sg.next()) != 0) {
+            ObjectsList::add_object(od, 0);
+            n++;
+        }
+    }
+    if (n > EGst()->eg_max_ghost_objects) {
+        // Too many objects to show efficiently.  Keep only the
+        // objects with the largest area among groups.
+
+        unsigned int n1 = n/EGst()->eg_max_ghost_objects;
+        unsigned int n2 = n%EGst()->eg_max_ghost_objects;
+        ObjectsList *o0 = ObjectsList::ghost_display_list();
+        ObjectsList *ol0 = 0;
+        unsigned int j = 0, np;
+        for (unsigned int i = 0; i < n; i += np) {
+            np = n1 + (++j < n2);
+            ObjectsList *od = pick_one(&o0, np);
+            if (!od)
+                break;
+            ol0 = new ObjectsList(od->odesc(), od->vtx(), ol0);
+        }
+        ObjectsList::clear();
+        ObjectsList::set_ghost_display_list(ol0);
     }
 }
-// End of Stretch functions.
-// End of cEdit functions.
 

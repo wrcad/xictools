@@ -95,8 +95,8 @@ bool
 sObj::empty(const sObj *thiso)
 {
     for (const sObj *o = thiso; o; o = o->o_next) {
-        for (const Vtex *v = o->o_pts; v; v = v->v_next) {
-            if (v->v_movable)
+        for (const Vertex *v = o->o_pts; v; v = v->cnext()) {
+            if (v->movable())
                 return (false);
         }
     }
@@ -141,36 +141,36 @@ sObj::mklist(sObj *thiso, CDol *slist, BBox *AOI)
                 if (o->o_obj == sl->odesc)
                     break;
             if (o) {
-                for (Vtex *v = o->o_pts; v; v = v->v_next)
-                    if (AOI->intersect(&v->v_p, true))
-                        v->v_movable = !v->v_movable;
+                for (Vertex *v = o->o_pts; v; v = v->next())
+                    if (AOI->intersect(v->point(), true))
+                        v->set_movable(!v->movable());
             }
             else {
                 objlist = new sObj(sl->odesc, objlist);
-                Vtex *v = 0;
+                Vertex *v = 0;
                 p.set(objlist->o_obj->oBB().left,
                     objlist->o_obj->oBB().bottom);
-                v = objlist->o_pts = new Vtex(p);
-                if (AOI->intersect(&v->v_p, true))
-                    v->v_movable = true;
+                v = objlist->o_pts = new Vertex(p);
+                if (AOI->intersect(v->point(), true))
+                    v->set_movable(true);
                 p.set(objlist->o_obj->oBB().left,
                     objlist->o_obj->oBB().top);
-                v->v_next = new Vtex(p);
-                v = v->v_next;
-                if (AOI->intersect(&v->v_p, true))
-                    v->v_movable = true;
+                v->set_next(new Vertex(p));
+                v = v->next();
+                if (AOI->intersect(v->point(), true))
+                    v->set_movable(true);
                 p.set(objlist->o_obj->oBB().right,
                     objlist->o_obj->oBB().top);
-                v->v_next = new Vtex(p);
-                v = v->v_next;
-                if (AOI->intersect(&v->v_p, true))
-                    v->v_movable = true;
+                v->set_next(new Vertex(p));
+                v = v->next();
+                if (AOI->intersect(v->point(), true))
+                    v->set_movable(true);
                 p.set(objlist->o_obj->oBB().right,
                     objlist->o_obj->oBB().bottom);
-                v->v_next = new Vtex(p);
-                v = v->v_next;
-                if (AOI->intersect(&v->v_p, true))
-                    v->v_movable = true;
+                v->set_next(new Vertex(p));
+                v = v->next();
+                if (AOI->intersect(v->point(), true))
+                    v->set_movable(true);
             }
         }
         else if (sl->odesc->type() == CDPOLYGON) {
@@ -195,24 +195,24 @@ sObj::mklist(sObj *thiso, CDol *slist, BBox *AOI)
 
                 if (o) {
                     Plist *p0 = 0;
-                    for (Vtex *v = o->o_pts; v; v = v->v_next) {
+                    for (Vertex *v = o->o_pts; v; v = v->next()) {
 
-                        if (AOI->intersect(&v->v_p, true)) {
-                            if (v->v_movable) {
-                                v->v_movable = false;
+                        if (AOI->intersect(v->point(), true)) {
+                            if (v->movable()) {
+                                v->set_movable(false);
                                 continue;
                             }
 
                             bool found = false;
                             for (Plist *p = p0; p; p = p->next) {
-                                if (*(Point*)p == v->v_p) {
+                                if (*(Point*)p == *v->point()) {
                                     found = true;
                                     break;
                                 }
                             }
                             if (!found) {
-                                v->v_movable = true;
-                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
+                                v->set_movable(true);
+                                p0 = new Plist(v->px(), v->py(), p0);
                             }
                         }
                     }
@@ -220,26 +220,26 @@ sObj::mklist(sObj *thiso, CDol *slist, BBox *AOI)
                 }
                 else {
                     objlist = new sObj(sl->odesc, objlist);
-                    Vtex *v = 0;
+                    Vertex *v = 0;
                     Plist *p0 = 0;
                     for (i = 0; i < num; i++) {
                         if (!v)
-                            v = objlist->o_pts = new Vtex(pnts[i]);
+                            v = objlist->o_pts = new Vertex(pnts[i]);
                         else {
-                            v->v_next = new Vtex(pnts[i]);
-                            v = v->v_next;
+                            v->set_next(new Vertex(pnts[i]));
+                            v = v->next();
                         }
-                        if (AOI->intersect(&v->v_p, true)) {
+                        if (AOI->intersect(v->point(), true)) {
                             bool found = false;
                             for (Plist *p = p0; p; p = p->next) {
-                                if (*(Point*)p == v->v_p) {
+                                if (*(Point*)p == *v->point()) {
                                     found = true;
                                     break;
                                 }
                             }
                             if (!found) {
-                                v->v_movable = true;
-                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
+                                v->set_movable(true);
+                                p0 = new Plist(v->px(), v->py(), p0);
                             }
                         }
                     }
@@ -266,24 +266,24 @@ sObj::mklist(sObj *thiso, CDol *slist, BBox *AOI)
 
                 if (o) {
                     Plist *p0 = 0;
-                    for (Vtex *v = o->o_pts; v; v = v->v_next) {
+                    for (Vertex *v = o->o_pts; v; v = v->next()) {
 
-                        if (AOI->intersect(&v->v_p, true)) {
-                            if (v->v_movable) {
-                                v->v_movable = false;
+                        if (AOI->intersect(v->point(), true)) {
+                            if (v->movable()) {
+                                v->set_movable(false);
                                 continue;
                             }
 
                             bool found = false;
                             for (Plist *p = p0; p; p = p->next) {
-                                if (*(Point*)p == v->v_p) {
+                                if (*(Point*)p == *v->point()) {
                                     found = true;
                                     break;
                                 }
                             }
                             if (!found) {
-                                v->v_movable = true;
-                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
+                                v->set_movable(true);
+                                p0 = new Plist(v->px(), v->py(), p0);
                             }
                         }
                     }
@@ -291,26 +291,26 @@ sObj::mklist(sObj *thiso, CDol *slist, BBox *AOI)
                 }
                 else {
                     objlist = new sObj(sl->odesc, objlist);
-                    Vtex *v = 0;
+                    Vertex *v = 0;
                     Plist *p0 = 0;
                     for (i = 0; i < num; i++) {
                         if (!v)
-                            v = objlist->o_pts = new Vtex(pnts[i]);
+                            v = objlist->o_pts = new Vertex(pnts[i]);
                         else {
-                            v->v_next = new Vtex(pnts[i]);
-                            v = v->v_next;
+                            v->set_next(new Vertex(pnts[i]));
+                            v = v->next();
                         }
-                        if (AOI->intersect(&v->v_p, true)) {
+                        if (AOI->intersect(v->point(), true)) {
                             bool found = false;
                             for (Plist *p = p0; p; p = p->next) {
-                                if (*(Point*)p == v->v_p) {
+                                if (*(Point*)p == *v->point()) {
                                     found = true;
                                     break;
                                 }
                             }
                             if (!found) {
-                                v->v_movable = true;
-                                p0 = new Plist(v->v_p.x, v->v_p.y, p0);
+                                v->set_movable(true);
+                                p0 = new Plist(v->px(), v->py(), p0);
                             }
                         }
                     }
@@ -334,9 +334,9 @@ sObj::mark_vertices(const sObj *thiso, bool DisplayOrErase)
         return;
     }
     for (const sObj *o = thiso; o; o = o->o_next) {
-        for (const Vtex *v = o->o_pts; v; v = v->v_next) {
-            if (v->v_movable) {
-                DSP()->ShowBoxMark(DISPLAY, v->v_p.x, v->v_p.y,
+        for (const Vertex *v = o->o_pts; v; v = v->cnext()) {
+            if (v->movable()) {
+                DSP()->ShowBoxMark(DISPLAY, v->px(), v->py(),
                     HighlightingColor, 12, DSP()->CurMode());
             }
         }
@@ -359,8 +359,8 @@ sObj::get_wire_ref(int *xrp, int *yrp, int *xmp, int *ymp)
         return (false);
 
     int nv = 0;
-    for (Vtex *v = o_pts; v; v = v->v_next) {
-        if (v->v_movable)
+    for (Vertex *v = o_pts; v; v = v->next()) {
+        if (v->movable())
             nv++;
     }
     if (!nv)
@@ -372,10 +372,10 @@ sObj::get_wire_ref(int *xrp, int *yrp, int *xmp, int *ymp)
         return (false);
 
     bool has_end = false;
-    for (Vtex *v = o_pts; v; v = v->v_next) {
-        if (!v->v_movable)
+    for (Vertex *v = o_pts; v; v = v->next()) {
+        if (!v->movable())
             continue;
-        if (v->v_p.x == wpts[0].x && v->v_p.y == wpts[0].y) {
+        if (v->px() == wpts[0].x && v->py() == wpts[0].y) {
             has_end = true;
             break;
         }
@@ -383,10 +383,10 @@ sObj::get_wire_ref(int *xrp, int *yrp, int *xmp, int *ymp)
     if (has_end) {
         for (int i = 1; i < nv; i++) {
             has_end = false;
-            for (Vtex *v = o_pts; v; v = v->v_next) {
-                if (!v->v_movable)
+            for (Vertex *v = o_pts; v; v = v->next()) {
+                if (!v->movable())
                     continue;
-                if (v->v_p.x == wpts[i].x && v->v_p.y == wpts[i].y) {
+                if (v->px() == wpts[i].x && v->py() == wpts[i].y) {
                     has_end = true;
                     break;
                 }
@@ -404,10 +404,10 @@ sObj::get_wire_ref(int *xrp, int *yrp, int *xmp, int *ymp)
             *ymp = wpts[nv-1].y;
         return (true);
     }
-    for (Vtex *v = o_pts; v; v = v->v_next) {
-        if (!v->v_movable)
+    for (Vertex *v = o_pts; v; v = v->next()) {
+        if (!v->movable())
             continue;
-        if (v->v_p.x == wpts[npts-1].x && v->v_p.y == wpts[npts-1].y) {
+        if (v->px() == wpts[npts-1].x && v->py() == wpts[npts-1].y) {
             has_end = true;
             break;
         }
@@ -415,11 +415,10 @@ sObj::get_wire_ref(int *xrp, int *yrp, int *xmp, int *ymp)
     if (has_end) {
         for (int i = 1; i < nv; i++) {
             has_end = false;
-            for (Vtex *v = o_pts; v; v = v->v_next) {
-                if (!v->v_movable)
+            for (Vertex *v = o_pts; v; v = v->next()) {
+                if (!v->movable())
                     continue;
-                if (v->v_p.x == wpts[npts-i-1].x &&
-                        v->v_p.y == wpts[npts-i-1].y) {
+                if (v->px() == wpts[npts-i-1].x && v->py() == wpts[npts-i-1].y) {
                     has_end = true;
                     break;
                 }

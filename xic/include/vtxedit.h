@@ -48,25 +48,31 @@
 
 // List element for object vertices.
 //
-struct Vtex
+struct Vertex
 {
-    Vtex(const Point &px) : v_p(px.x, px.y)
-        {
-            v_next = 0;
-            v_movable = false;
-        }
+    Vertex(const Point &px) : v_p(px.x, px.y), v_next(0), v_movable(false) { }
 
-    static void destroy(Vtex *v)
+    static void destroy(Vertex *v)
         {
             while (v) {
-                Vtex *vx = v;
+                Vertex *vx = v;
                 v = v->v_next;
                 delete vx;
             }
         }
 
+    Point *point()              { return (&v_p); }
+    int px()                    const { return (v_p.x); }
+    int py()                    const { return (v_p.y); }
+    const Vertex *cnext()       const { return (v_next); }
+    Vertex *next()              { return (v_next); }
+    void set_next(Vertex *n)    { v_next = n; }
+    bool movable()              const { return (v_movable); }
+    void set_movable(bool b)    { v_movable = b; }
+
+private:
     Point_c v_p;
-    Vtex *v_next;
+    Vertex *v_next;
     bool v_movable;
 };
 
@@ -83,7 +89,7 @@ struct sObj
 
     ~sObj()
         {
-            Vtex::destroy(o_pts);
+            Vertex::destroy(o_pts);
         }
 
     static void destroy(sObj *o)
@@ -98,8 +104,8 @@ struct sObj
     CDo *object()               { return (o_obj); }
     void set_object(CDo *o)     { o_obj = o; }
 
-    Vtex *points()              { return (o_pts); }
-    void set_points(Vtex *v)    { o_pts = v; }
+    Vertex *points()            { return (o_pts); }
+    void set_points(Vertex *v)  { o_pts = v; }
 
     sObj *next_obj()            { return (o_next); }
     void set_next_obj(sObj *n)  { o_next = n; }
@@ -112,7 +118,7 @@ struct sObj
 
 private:
     CDo *o_obj;
-    Vtex *o_pts;
+    Vertex *o_pts;
     sObj *o_next;
 };
 #endif

@@ -65,7 +65,7 @@ struct ParseNode;
 struct MenuBox;
 struct sObj;
 struct YankBuf;
-struct Vtex;
+struct Vertex;
 namespace ginterf { struct GRvecFont; }
 
 // The default maximum number of outlined objects that can be attached
@@ -687,7 +687,7 @@ private:
 
     // modify.cc
     bool set_stretch_ref(CDo*, int*, int*, double*, int*, int*, bool);
-    bool stretch(CDo*, CDs*, int, int, int, int, int, Vtex*);
+    bool stretch(CDo*, CDs*, int, int, int, int, int, Vertex*);
     bool change_layer(CDo*, CDs*, CDl*, bool, bool, bool);
 
     // prpedit.cc

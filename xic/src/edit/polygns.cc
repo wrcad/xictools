@@ -1077,11 +1077,11 @@ PolyState::delete_vertices()
         CDpo *podesc = (CDpo*)o->object();
         Point *pts = new Point[podesc->numpts()];
         int npts = 0;
-        for (Vtex *v = o->points(); v; v = v->v_next) {
-            if (v->v_movable)
+        for (Vertex *v = o->points(); v; v = v->next()) {
+            if (v->movable())
                 continue;
-            pts[npts].x = v->v_p.x;
-            pts[npts].y = v->v_p.y;
+            pts[npts].x = v->px();
+            pts[npts].y = v->py();
             npts++;
         }
         if (npts < 4 || npts == podesc->numpts()) {
