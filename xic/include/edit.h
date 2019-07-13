@@ -64,7 +64,7 @@ struct CmdState;
 struct ParseNode;
 struct MenuBox;
 struct sObj;
-struct yb;
+struct YankBuf;
 struct Vtex;
 namespace ginterf { struct GRvecFont; }
 
@@ -613,7 +613,7 @@ public:
     bool noWireWidthMag()                   { return (ed_no_wire_width_mag); }
     void setNoWireWidthMag(bool b)          { ed_no_wire_width_mag = b; }
 
-    yb **yankBuffer()                       { return (ed_yank_buffer); }
+    YankBuf **yankBuffer()                  { return (ed_yank_buffer); }
 
     const char *layerExpString(unsigned int i)
         {
@@ -669,7 +669,7 @@ private:
     // erase.cc
     bool clip(CDo*, CDs*, BBox*);
     bool erase(CDo*, CDs*, BBox*);
-    yb *add_yank(CDo*, BBox*, yb*, bool);
+    YankBuf *add_yank(CDo*, BBox*, YankBuf*, bool);
 
     // flatten.cc
     bool promote_object(cTfmStack*, CDo*, CDs*, CDtf*, CDtf*, bool, bool);
@@ -758,8 +758,8 @@ private:
 
     bool ed_no_wire_width_mag;  // Don't change width of magnified wires.
 
-    struct yb *ed_yank_buffer[ED_YANK_DEPTH]; // Storage for yanked geometry.
-    char *ed_lexpr_stores[ED_LEXPR_STORES]; // Saved layer expression strings.
+    YankBuf *ed_yank_buffer[ED_YANK_DEPTH];     // Storage for yanked geometry.
+    char *ed_lexpr_stores[ED_LEXPR_STORES];     // Saved layer expression strings.
 
     static GRvecFont *ed_logofont;
 };

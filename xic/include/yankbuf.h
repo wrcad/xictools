@@ -47,101 +47,100 @@
 //
 
 // List interface element to hold yanked object.
-struct yb
+struct YankBuf
 {
-    yb()
-        {
-            next = 0;
-            type = 0;
-            ldesc = 0;
-        }
-
-    virtual ~yb() { }
+    YankBuf(int t, CDl *ld) : yb_next(0), yb_ldesc(ld), yb_type(t) { }
+    virtual ~YankBuf() { }
 
     virtual void add_bbox(BBox*) const = 0;
 
-    static void destroy(yb *y)
+    static void destroy(YankBuf *y)
         {
             while (y) {
-                yb *yx = y;
-                y = y->next;
+                YankBuf *yx = y;
+                y = y->yb_next;
                 delete yx;
             }
         }
 
-    static void computeBB(const yb* thisyb, BBox *BB)
+    static void computeBB(const YankBuf *thisyb, BBox *BB)
         {
             *BB = CDnullBB;
-            for (const yb *yx = thisyb; yx; yx = yx->next)
+            for (const YankBuf *yx = thisyb; yx; yx = yx->yb_next)
                 yx->add_bbox(BB);
         }
 
-    yb *next;
-    CDl *ldesc;
-    int type;
+    YankBuf *next()             { return (yb_next); }
+    void set_next(YankBuf *n)   { yb_next = n; }
+    CDl *ldesc()                { return (yb_ldesc); }
+    int type()                  { return (yb_type); }
+
+    virtual void display_ghost_put(CDtf*, CDtf*) = 0;
+    virtual double area() = 0;
+
+protected:
+    YankBuf *yb_next;
+    CDl *yb_ldesc;
+    int yb_type;
 };
 
-struct yb_b : public yb
+struct YankBufB : public YankBuf
 {
-    yb_b(CDl *ld, BBox *iBB)
-        {
-            type = CDBOX;
-            ldesc = ld;
-            BB = *iBB;
-        }
+    YankBufB(CDl *ld, BBox *BB) : YankBuf(CDBOX, ld),  yb_BB(*BB) { }
+
+    void add_bbox(BBox *tBB)    const { tBB->add(&yb_BB); }
+    BBox *box()                 { return (&yb_BB); }
+
+    // erase.cc
+    void display_ghost_put(CDtf*, CDtf*);
+    double area();
+
+private:
+    BBox yb_BB;
+};
+
+struct YankBufP : public YankBuf
+{
+    YankBufP(CDl *ld, Poly *po) : YankBuf(CDPOLYGON, ld), yb_poly(*po) { }
+    ~YankBufP()     { delete [] yb_poly.points; }
 
     void add_bbox(BBox *tBB) const
         {
+            BBox BB;
+            yb_poly.computeBB(&BB);
             tBB->add(&BB);
         }
 
-    BBox BB;
+    Poly *poly()    { return (&yb_poly); }
+
+    // erase.cc
+    void display_ghost_put(CDtf*, CDtf*);
+    double area();
+
+private:
+    Poly yb_poly;
 };
 
-struct yb_p : public yb
+struct YankBufW : public YankBuf
 {
-    yb_p(CDl *ld, Poly *po)
-        {
-            type = CDPOLYGON;
-            ldesc = ld;
-            poly = *po;
-        }
-
-    ~yb_p()
-        {
-            delete [] poly.points;
-        }
+    YankBufW(CDl *ld, Wire *w) : YankBuf(CDWIRE, ld), yb_wire(*w) { }
+    ~YankBufW()     { delete [] yb_wire.points; }
 
     void add_bbox(BBox *tBB) const
         {
-            BBox BB; poly.computeBB(&BB);
+            BBox BB;
+            yb_wire.computeBB(&BB);
             tBB->add(&BB);
         }
 
-    Poly poly;
-};
+    Wire *wire()    { return (&yb_wire); }
 
-struct yb_w : public yb
-{
-    yb_w(CDl *ld, Wire *w)
-        {
-            type = CDWIRE;
-            ldesc = ld;
-            wire = *w;
-        }
+    // erase.cc
+    void display_ghost_put(CDtf*, CDtf*);
+    double area();
 
-    ~yb_w()
-        {
-            delete [] wire.points;
-        }
-
-    void add_bbox(BBox *tBB) const
-        {
-            BBox BB; wire.computeBB(&BB);
-            tBB->add(&BB);
-        }
-
-    Wire wire;
+private:
+    Wire yb_wire;
 };
 
 #endif
