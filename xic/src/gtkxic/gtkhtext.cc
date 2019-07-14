@@ -858,7 +858,7 @@ GTKedit::pe_selection_proc(GtkWidget*, GtkSelectionData *sdata, guint, void*)
                 // Property Info pop-up, fetch the original
                 // hypertext to insert.
                 CDo *odesc;
-                Ptxt *p = EditIf()->PropertyResolve(code, start, &odesc);
+                PrptyText *p = EditIf()->PropertyResolve(code, start, &odesc);
                 if (p && p->prpty()) {
                     CDs *cursd = CurCell(true);
                     if (cursd)

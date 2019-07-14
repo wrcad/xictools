@@ -426,8 +426,8 @@ public:
 
     // prpcedit.cc
     void cellPrptyAdd(int);
-    void cellPrptyEdit(Ptxt*);
-    void cellPrptyRemove(Ptxt*);
+    void cellPrptyEdit(PrptyText*);
+    void cellPrptyRemove(PrptyText*);
 
     // prpedit.cc
     void propertiesExec(CmdDesc*);
@@ -438,8 +438,8 @@ public:
     void prptySetInfoMode(bool);
     void prptyUpdateList(CDo*, CDo*);
     void prptyAdd(int);
-    void prptyEdit(Ptxt*);
-    void prptyRemove(Ptxt*);
+    void prptyEdit(PrptyText*);
+    void prptyRemove(PrptyText*);
     bool editPhysPrpty();
     bool acceptPseudoProp(CDo*, CDs*, int, const char*);
 
@@ -532,12 +532,12 @@ public:
     void PopUpCellProperties(ShowMode);
 
     // gtkprpedit.cc
-    Ptxt *PropertyResolve(int, int, CDo**);                         // export
+    PrptyText *PropertyResolve(int, int, CDo**);                    // export
     void PopUpProperties(CDo*, ShowMode, PRPmode);
     void PropertyPurge(CDo*, CDo*);
-    Ptxt *PropertySelect(int);
-    Ptxt *PropertyCycle(CDp*, bool(*)(const CDp*), bool);
-    void RegisterPrptyBtnCallback(int(*)(Ptxt*));
+    PrptyText *PropertySelect(int);
+    PrptyText *PropertyCycle(CDp*, bool(*)(const CDp*), bool);
+    void RegisterPrptyBtnCallback(int(*)(PrptyText*));
 
     // gtkprpinfo.cc
     void PopUpPropertyInfo(CDo*, ShowMode);

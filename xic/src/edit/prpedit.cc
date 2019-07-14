@@ -157,8 +157,8 @@ namespace {
             void pSetInfoMode(bool b) { InfoMode = b; }
             void pUpdateList(CDo*, CDo*);
             void pAdd(int);
-            void pEdit(Ptxt*);
-            void pRemove(Ptxt*);
+            void pEdit(PrptyText*);
+            void pRemove(PrptyText*);
 
             void b1down() { cEventHdlr::sel_b1down(); }
             void b1up();
@@ -174,21 +174,21 @@ namespace {
             void prp_showselect(bool);
             bool prp_get_prompt(bool, CDo*, char*);
             void prp_updtext(sSel*);
-            void prp_add_elec(Ptxt*, int, bool);
+            void prp_add_elec(PrptyText*, int, bool);
             void prp_add_elec_noglob();
             void prp_add_elec_glob_all();
             void prp_add_elec_glob_seq();
-            void prp_add_phys(Ptxt*, int, bool);
+            void prp_add_phys(PrptyText*, int, bool);
             void prp_add_phys_noglob();
             void prp_add_phys_glob_all();
             void prp_add_phys_glob_seq();
             bool prp_get_add_type(bool);
             bool prp_get_string(bool, bool);
-            void prp_rm(Ptxt*);
+            void prp_rm(PrptyText*);
             bool prp_get_rm_type(bool);
             void prp_remove(sSel*, CDp*);
 
-            static int btn_callback(Ptxt*);
+            static int btn_callback(PrptyText*);
             static void down_callback();
             static void up_callback();
 
@@ -350,7 +350,7 @@ cEdit::prptyAdd(int which)
 
 
 void
-cEdit::prptyEdit(Ptxt *line)
+cEdit::prptyEdit(PrptyText *line)
 {
     if (PrptyCmd)
         PrptyCmd->pEdit(line);
@@ -358,7 +358,7 @@ cEdit::prptyEdit(Ptxt *line)
 
 
 void
-cEdit::prptyRemove(Ptxt *line)
+cEdit::prptyRemove(PrptyText *line)
 {
     if (PrptyCmd)
         PrptyCmd->pRemove(line);
@@ -555,7 +555,7 @@ PrptyState::pAdd(int which)
 // Edit the property given in line.
 //
 void
-PrptyState::pEdit(Ptxt *line)
+PrptyState::pEdit(PrptyText *line)
 {
     PL()->RegisterArrowKeyCallbacks(0, 0);
     ED()->RegisterPrptyBtnCallback(0);
@@ -572,7 +572,7 @@ PrptyState::pEdit(Ptxt *line)
 // mode remove properties from all objects in the object list.
 //
 void
-PrptyState::pRemove(Ptxt *line)
+PrptyState::pRemove(PrptyText *line)
 {
     PL()->RegisterArrowKeyCallbacks(0, 0);
     ED()->RegisterPrptyBtnCallback(0);
@@ -1223,7 +1223,7 @@ namespace {
 // Edit: line 0 or not, which is always -1, edit true
 //
 void
-PrptyState::prp_add_elec(Ptxt *line, int which, bool edit)
+PrptyState::prp_add_elec(PrptyText *line, int which, bool edit)
 {
     if (!Shead) {
         PL()->ShowPrompt(nosel);
@@ -1492,7 +1492,7 @@ PrptyState::prp_add_elec_glob_seq()
 // Edit: line 0 or not, which is always -1, edit true
 //
 void
-PrptyState::prp_add_phys(Ptxt *line, int which, bool edit)
+PrptyState::prp_add_phys(PrptyText *line, int which, bool edit)
 {
     if (!Shead) {
         PL()->ShowPrompt(nosel);
@@ -1933,7 +1933,7 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
 
 
 void
-PrptyState::prp_rm(Ptxt *line)
+PrptyState::prp_rm(PrptyText *line)
 {
     if (!Shead) {
         PL()->ShowPrompt(nosel);
@@ -2245,7 +2245,7 @@ PrptyState::prp_remove(sSel *sd, CDp *pdesc)
 // property to the one just clicked on.
 //
 int
-PrptyState::btn_callback(Ptxt *pt)
+PrptyState::btn_callback(PrptyText *pt)
 {
     if (!pt->prpty())
         return (false);
@@ -2266,7 +2266,7 @@ PrptyState::down_callback()
     if (!PrptyCmd || !PrptyCmd->Scur || !PrptyCmd->Scur->pointer->prpty_list())
         return;
 
-    Ptxt *pt = ED()->PropertyCycle(PrptyCmd->SelPrp, &is_prp_editable, false);
+    PrptyText *pt = ED()->PropertyCycle(PrptyCmd->SelPrp, &is_prp_editable, false);
     if (!pt)
         return;
     PrptyCmd->SelPrp = pt->prpty();
@@ -2285,7 +2285,7 @@ PrptyState::up_callback()
     if (!PrptyCmd || !PrptyCmd->Scur || !PrptyCmd->Scur->pointer->prpty_list())
         return;
 
-    Ptxt *pt = ED()->PropertyCycle(PrptyCmd->SelPrp, &is_prp_editable, true);
+    PrptyText *pt = ED()->PropertyCycle(PrptyCmd->SelPrp, &is_prp_editable, true);
     if (!pt)
         return;
     PrptyCmd->SelPrp = pt->prpty();

@@ -601,20 +601,20 @@ cMain::ClearAll(bool clear_tech)
 
 sModeSave::sModeSave()
 {
-    PhysMainWin = BBox(0, 0, 0, 0);
-    ElecMainWin = BBox(0, 0, 0, 0);
-    PhysMagn = 1.0;
-    PhysCurCellName = 0;
-    PhysTopCellName = 0;
-    ElecCurCellName = 0;
-    ElecTopCellName = 0;
-    PhysCharWidth = CDphysDefTextWidth;
-    PhysCharHeight = CDphysDefTextHeight;
-    ElecCharWidth = CDelecDefTextWidth;;
-    ElecCharHeight = CDelecDefTextHeight;
-    PhysLd = 0;
-    ElecLd = 0;
-    EditState = 0;
+    msPhysMainWin = BBox(0, 0, 0, 0);
+    msElecMainWin = BBox(0, 0, 0, 0);
+    msPhysMagn = 1.0;
+    msPhysCurCellName = 0;
+    msPhysTopCellName = 0;
+    msElecCurCellName = 0;
+    msElecTopCellName = 0;
+    msPhysCharWidth = CDphysDefTextWidth;
+    msPhysCharHeight = CDphysDefTextHeight;
+    msElecCharWidth = CDelecDefTextWidth;;
+    msElecCharHeight = CDelecDefTextHeight;
+    msPhysLd = 0;
+    msElecLd = 0;
+    msEditState = 0;
 }
 
 
@@ -628,31 +628,31 @@ sModeSave::saveCurrent()
 
     cTfmStack stk;
     if (oldmode == Physical) {
-        PhysMainWin = *DSP()->MainWdesc()->Window();
-        PhysCurCellName = DSP()->CurCellName();
-        PhysTopCellName = DSP()->TopCellName();
-        PhysCharWidth = DSP()->PhysCharWidth();
-        PhysCharHeight = DSP()->PhysCharHeight();
+        msPhysMainWin = *DSP()->MainWdesc()->Window();
+        msPhysCurCellName = DSP()->CurCellName();
+        msPhysTopCellName = DSP()->TopCellName();
+        msPhysCharWidth = DSP()->PhysCharWidth();
+        msPhysCharHeight = DSP()->PhysCharHeight();
         stk.TPush();
         stk.TLoad(CDtfRegI0);
-        stk.TCurrent(&PhysTf);
+        stk.TCurrent(&msPhysTf);
         stk.TPop();
         Tech()->SetPhysHcFormat(Tech()->HC().format);
-        PhysMagn = GEO()->curTx()->magn();
-        PhysLd = LT()->CurLayer();
+        msPhysMagn = GEO()->curTx()->magn();
+        msPhysLd = LT()->CurLayer();
     }
     else {
-        ElecMainWin = *DSP()->MainWdesc()->Window();
-        ElecCurCellName = DSP()->CurCellName();
-        ElecTopCellName = DSP()->TopCellName();
-        ElecCharWidth = DSP()->ElecCharWidth();
-        ElecCharHeight = DSP()->ElecCharHeight();
+        msElecMainWin = *DSP()->MainWdesc()->Window();
+        msElecCurCellName = DSP()->CurCellName();
+        msElecTopCellName = DSP()->TopCellName();
+        msElecCharWidth = DSP()->ElecCharWidth();
+        msElecCharHeight = DSP()->ElecCharHeight();
         stk.TPush();
         stk.TLoad(CDtfRegI0);
-        stk.TCurrent(&ElecTf);
+        stk.TCurrent(&msElecTf);
         stk.TPop();
         Tech()->SetElecHcFormat(Tech()->HC().format);
-        ElecLd = LT()->CurLayer();
+        msElecLd = LT()->CurLayer();
     }
     EditIf()->popState(oldmode);
 }
@@ -665,13 +665,13 @@ sModeSave::assertSaved()
 
     cTfmStack stk;
     if (newmode == Physical) {
-        if (DSP()->CurCellName() == PhysCurCellName) {
-            DSP()->SetTopCellName(PhysTopCellName);
+        if (DSP()->CurCellName() == msPhysCurCellName) {
+            DSP()->SetTopCellName(msPhysTopCellName);
             stk.TPush();
-            stk.TLoadCurrent(&PhysTf);
+            stk.TLoadCurrent(&msPhysTf);
             stk.TStore(CDtfRegI0);
             stk.TPop();
-            DSP()->MainWdesc()->InitWindow(&PhysMainWin);
+            DSP()->MainWdesc()->InitWindow(&msPhysMainWin);
         }
         else {
             DSP()->SetTopCellName(DSP()->CurCellName());
@@ -680,21 +680,21 @@ sModeSave::assertSaved()
             stk.TPop();
             DSP()->MainWdesc()->CenterFullView();
         }
-        DSP()->SetPhysCharWidth(PhysCharWidth);
-        DSP()->SetPhysCharHeight(PhysCharHeight);
+        DSP()->SetPhysCharWidth(msPhysCharWidth);
+        DSP()->SetPhysCharHeight(msPhysCharHeight);
         Tech()->HC().format = Tech()->PhysHcFormat();
         sCurTx ct = *GEO()->curTx();
-        ct.set_magn(PhysMagn);
+        ct.set_magn(msPhysMagn);
         GEO()->setCurTx(ct);
     }
     else {
-        if (DSP()->CurCellName() == ElecCurCellName) {
-            DSP()->SetTopCellName(ElecTopCellName);
+        if (DSP()->CurCellName() == msElecCurCellName) {
+            DSP()->SetTopCellName(msElecTopCellName);
             stk.TPush();
-            stk.TLoadCurrent(&ElecTf);
+            stk.TLoadCurrent(&msElecTf);
             stk.TStore(CDtfRegI0);
             stk.TPop();
-            DSP()->MainWdesc()->InitWindow(&ElecMainWin);
+            DSP()->MainWdesc()->InitWindow(&msElecMainWin);
         }
         else {
             DSP()->SetTopCellName(DSP()->CurCellName());
@@ -703,8 +703,8 @@ sModeSave::assertSaved()
             stk.TPop();
             DSP()->MainWdesc()->CenterFullView();
         }
-        DSP()->SetElecCharWidth(ElecCharWidth);
-        DSP()->SetElecCharHeight(ElecCharHeight);
+        DSP()->SetElecCharWidth(msElecCharWidth);
+        DSP()->SetElecCharHeight(msElecCharHeight);
         Tech()->HC().format = Tech()->ElecHcFormat();
         sCurTx ct = *GEO()->curTx();
         ct.set_magn(1.0);
@@ -717,24 +717,24 @@ sModeSave::assertSaved()
 void
 sModeSave::clearHist()
 {
-    PhysMainWin = BBox(0, 0, 0, 0);
-    ElecMainWin = BBox(0, 0, 0, 0);
-    PhysMagn = 1.0;
-    PhysCurCellName = 0;
-    PhysTopCellName = 0;
-    ElecCurCellName = 0;
-    ElecTopCellName = 0;
-    PhysCharWidth = CDphysDefTextWidth;
-    PhysCharHeight = CDphysDefTextHeight;
-    ElecCharWidth = CDelecDefTextWidth;
-    ElecCharHeight = CDelecDefTextHeight;
+    msPhysMainWin = BBox(0, 0, 0, 0);
+    msElecMainWin = BBox(0, 0, 0, 0);
+    msPhysMagn = 1.0;
+    msPhysCurCellName = 0;
+    msPhysTopCellName = 0;
+    msElecCurCellName = 0;
+    msElecTopCellName = 0;
+    msPhysCharWidth = CDphysDefTextWidth;
+    msPhysCharHeight = CDphysDefTextHeight;
+    msElecCharWidth = CDelecDefTextWidth;
+    msElecCharHeight = CDelecDefTextHeight;
     cTfmStack stk;
     stk.TPush();
-    stk.TCurrent(&PhysTf);
-    stk.TCurrent(&ElecTf);
+    stk.TCurrent(&msPhysTf);
+    stk.TCurrent(&msElecTf);
     stk.TPop();
-    PhysLd = 0;
-    ElecLd = 0;
+    msPhysLd = 0;
+    msElecLd = 0;
     EditIf()->clearSaveState();
 }
 
@@ -742,6 +742,6 @@ sModeSave::clearHist()
 CDl *
 sModeSave::currentLd()
 {
-    return (DSP()->CurMode() == Physical ? PhysLd : ElecLd);
+    return (DSP()->CurMode() == Physical ? msPhysLd : msElecLd);
 }
 

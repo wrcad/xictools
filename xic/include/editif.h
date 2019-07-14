@@ -239,7 +239,7 @@ public:
 
     // Graphics System
     virtual PMretType PopUpModified(stringlist*, bool(*)(const char*)) = 0;
-    virtual Ptxt *PropertyResolve(int, int, CDo**) = 0;
+    virtual PrptyText *PropertyResolve(int, int, CDo**) = 0;
     virtual void PopUpTransform(GRobject, ShowMode,
             bool(*)(const char*, bool, const char*, void*), void*) = 0;
 
@@ -316,7 +316,7 @@ class cEditIfStubs : public cEditIf
 
     PMretType PopUpModified(stringlist*, bool(*)(const char*))
         { return (PMok); }
-    Ptxt *PropertyResolve(int, int, CDo**) { return (0); }
+    PrptyText *PropertyResolve(int, int, CDo**) { return (0); }
     void PopUpTransform(GRobject, ShowMode,
             bool(*)(const char*, bool, const char*, void*), void*) { }
 

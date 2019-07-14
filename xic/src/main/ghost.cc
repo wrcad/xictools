@@ -332,7 +332,7 @@ cGhost::push(GFtype type, int x, int y, GhostMode m)
 {
     if (g_level < GHOST_LEVELS-1) {
         DSPmainDraw(SetGhost(0, 0, 0))
-        gf_t &gf = g_functions[(int)type]; 
+        GhostFunc &gf = g_functions[(int)type]; 
         g_context[g_level].set(type, gf.draw_func, x, y, m);
         g_level++;
         if (gf.setup_func)
@@ -364,7 +364,7 @@ cGhost::pop()
     DSPmainDraw(SetGhost(0, 0, 0))
     if (g_level) {
         GFtype type = g_context[g_level-1].type;
-        gf_t &gf = g_functions[(int)type]; 
+        GhostFunc &gf = g_functions[(int)type]; 
         if (gf.setup_func)
             (*gf.setup_func)(false);
         g_level--;
@@ -382,7 +382,7 @@ cGhost::setghost()
     if (g_level == 0)
         DSPmainDraw(SetGhost(DEFAULT_FUNC, 0, 0))
     else {
-        ghparm_t *g = &g_context[g_level-1];
+        GhostCx *g = &g_context[g_level-1];
         if (g->func) {
             DSPmainDraw(SetGhost(g->func, g->x, g->y))
             if (    g->type == GFstretch ||

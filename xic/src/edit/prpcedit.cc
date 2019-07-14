@@ -440,7 +440,7 @@ cEdit::cellPrptyAdd(int which)
 // Main function to edit a cell property.
 //
 void
-cEdit::cellPrptyEdit(Ptxt *line)
+cEdit::cellPrptyEdit(PrptyText *line)
 {
     if (!line)
         return;
@@ -533,7 +533,7 @@ cEdit::cellPrptyEdit(Ptxt *line)
 // Main function to remove a cell property.
 //
 void
-cEdit::cellPrptyRemove(Ptxt *line)
+cEdit::cellPrptyRemove(PrptyText *line)
 {
     if (!line)
         return;

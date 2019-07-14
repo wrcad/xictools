@@ -82,15 +82,15 @@ namespace {
 
             void update(CDo*, PRPmode);
             void purge(CDo*, CDo*);
-            Ptxt *select(int);
-            Ptxt *cycle(CDp*, bool(*)(const CDp*), bool);
-            void set_btn_callback(int(*)(Ptxt*));
+            PrptyText *select(int);
+            PrptyText *cycle(CDp*, bool(*)(const CDp*), bool);
+            void set_btn_callback(int(*)(PrptyText*));
 
         private:
             void activate(bool);
             void call_prpty_add(int);
-            void call_prpty_edit(Ptxt*);
-            void call_prpty_del(Ptxt*);
+            void call_prpty_edit(PrptyText*);
+            void call_prpty_del(PrptyText*);
 
             static void po_font_changed();
             static void po_cancel_proc(GtkWidget*, void*);
@@ -188,11 +188,11 @@ cEdit::PopUpProperties(CDo *odesc, ShowMode mode, PRPmode activ)
 }
 
 
-// Given the offset, return the containing Ptxt element and object desc,
+// Given the offset, return the containing PrptyText element and object desc,
 // called from selection processing code, supports Property Editor and
 // Property Info pop-ups.
 //
-Ptxt *
+PrptyText *
 cEdit::PropertyResolve(int code, int offset, CDo **odp)
 {
     if (odp)
@@ -221,7 +221,7 @@ cEdit::PropertyPurge(CDo *odold, CDo *odnew)
 
 // Select and return the first matching property.
 //
-Ptxt *
+PrptyText *
 cEdit::PropertySelect(int which)
 {
     if (Po)
@@ -230,7 +230,7 @@ cEdit::PropertySelect(int which)
 }
 
 
-Ptxt *
+PrptyText *
 cEdit::PropertyCycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
 {
     if (Po)
@@ -240,7 +240,7 @@ cEdit::PropertyCycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
 
 
 void
-cEdit::RegisterPrptyBtnCallback(int(*cb)(Ptxt*))
+cEdit::RegisterPrptyBtnCallback(int(*cb)(PrptyText*))
 {
     if (Po)
         Po->set_btn_callback(cb);
@@ -434,7 +434,7 @@ sPo::update(CDo *odesc, PRPmode activ)
 {
     if (pi_odesc)
         DSP()->ShowCurrentObject(ERASE, pi_odesc, MarkerColor);
-    Ptxt::destroy(pi_list);
+    PrptyText::destroy(pi_list);
     pi_list = 0;
     pi_odesc = odesc;
     if (odesc) {
@@ -511,10 +511,10 @@ sPo::purge(CDo *odold, CDo *odnew)
 }
 
 
-Ptxt *
+PrptyText *
 sPo::select(int which)
 {
-    for (Ptxt *p = pi_list; p; p = p->next()) {
+    for (PrptyText *p = pi_list; p; p = p->next()) {
         if (!p->prpty())
             continue;
         if (p->prpty()->value() == which) {
@@ -526,19 +526,19 @@ sPo::select(int which)
 }
 
 
-Ptxt *
+PrptyText *
 sPo::cycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
 {
     int cnt = 0;
-    for (Ptxt *p = pi_list; p; p = p->next(), cnt++) ;
+    for (PrptyText *p = pi_list; p; p = p->next(), cnt++) ;
     if (!cnt)
         return (0);
-    Ptxt **ary = new Ptxt*[cnt];
+    PrptyText **ary = new PrptyText*[cnt];
     cnt = 0;
-    for (Ptxt *p = pi_list; p; p = p->next(), cnt++)
+    for (PrptyText *p = pi_list; p; p = p->next(), cnt++)
         ary[cnt] = p;
 
-    Ptxt *p0 = 0;
+    PrptyText *p0 = 0;
     int j = 0;
     if (pd) {
         for (j = 0; j < cnt; j++) {
@@ -606,7 +606,7 @@ sPo::cycle(CDp *pd, bool(*checkfunc)(const CDp*), bool rev)
 
 
 void
-sPo::set_btn_callback(int(*cb)(Ptxt*))
+sPo::set_btn_callback(int(*cb)(PrptyText*))
 {
     pi_btn_callback = cb;
 }
@@ -633,7 +633,7 @@ sPo::call_prpty_add(int which) {
 
 
 void
-sPo::call_prpty_edit(Ptxt *line) {
+sPo::call_prpty_edit(PrptyText *line) {
     gtk_widget_set_sensitive(po_global, false);
     ED()->prptyEdit(line);
     if (Po)
@@ -642,7 +642,7 @@ sPo::call_prpty_edit(Ptxt *line) {
 
 
 void
-sPo::call_prpty_del(Ptxt *line) {
+sPo::call_prpty_del(PrptyText *line) {
     gtk_widget_set_sensitive(po_global, false);
     ED()->prptyRemove(line);
     if (Po)
@@ -718,13 +718,13 @@ sPo::po_action_proc(GtkWidget *caller, void *client_data)
     }
 
     if (client_data == (void*)EditCode) {
-        Ptxt *p = Po->get_selection();
+        PrptyText *p = Po->get_selection();
         Po->call_prpty_edit(p);
         if (Po)
             GRX->Deselect(caller);
     }
     else if (client_data == (void*)DeleteCode) {
-        Ptxt *p = Po->get_selection();
+        PrptyText *p = Po->get_selection();
         Po->call_prpty_del(p);
         if (Po)
             GRX->Deselect(caller);
