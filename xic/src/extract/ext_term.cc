@@ -516,7 +516,7 @@ namespace {
 
             void terminalEdit(CDsterm*);
 
-            static void te_cb(te_info_t*, CDsterm*);
+            static void te_cb(TermEditInfo*, CDsterm*);
 
             void b1down();
             void b1up();
@@ -757,7 +757,7 @@ PtState::terminalEdit(CDsterm *term)
     }
     int x, y;
     Menu()->PointerRootLoc(&x, &y);
-    te_info_t tinfo(term);
+    TermEditInfo tinfo(term);
     EX()->PopUpPhysTermEdit(0, MODE_UPD, &tinfo, 0, term, 0, 0);
     DSP()->HlitePhysTermList(DISPLAY, Terms);
     EditTerm = Terms->term();
@@ -771,7 +771,7 @@ PtState::terminalEdit(CDsterm *term)
 // change on the currently selected terminal.
 //
 void
-PtState::te_cb(te_info_t *tinfo, CDsterm *term)
+PtState::te_cb(TermEditInfo *tinfo, CDsterm *term)
 {
     if (tinfo) {
         if (!term)
@@ -846,7 +846,7 @@ PtState::b1down()
             }
             int x, y;
             Menu()->PointerRootLoc(&x, &y);
-            te_info_t tinfo(Terms->term());
+            TermEditInfo tinfo(Terms->term());
             EX()->PopUpPhysTermEdit(0, MODE_ON, &tinfo, te_cb,
                 Terms->term(), x + 50, y + 20);
             DSP()->HlitePhysTermList(DISPLAY, Terms);
@@ -873,7 +873,7 @@ PtState::b1down()
                 }
                 int x, y;
                 Menu()->PointerRootLoc(&x, &y);
-                te_info_t tinfo(Terms->term());
+                TermEditInfo tinfo(Terms->term());
                 EX()->PopUpPhysTermEdit(0, MODE_ON, &tinfo, te_cb,
                     Terms->term(), x + 50, y + 20);
                 DSP()->HlitePhysTermList(DISPLAY, Terms);
@@ -1058,7 +1058,7 @@ PtState::undo()
             }
         }
         if (tcur == EditTerm) {
-            te_info_t tinfo(EditTerm);
+            TermEditInfo tinfo(EditTerm);
             EX()->PopUpPhysTermEdit(0, MODE_UPD, &tinfo, 0, EditTerm, 0, 0);
         }
     }
@@ -1130,7 +1130,7 @@ PtState::redo()
             }
         }
         if (tcur == EditTerm) {
-            te_info_t tinfo(EditTerm);
+            TermEditInfo tinfo(EditTerm);
             EX()->PopUpPhysTermEdit(0, MODE_UPD, &tinfo, 0, EditTerm, 0, 0);
         }
     }

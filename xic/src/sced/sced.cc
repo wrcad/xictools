@@ -94,7 +94,7 @@ cSced::modelLibraryClose()
 }
 
 
-sp_line_t *
+SpiceLine *
 cSced::modelText(const char *model)
 {
     return (sc_model_library->ModelText(model));
@@ -201,8 +201,8 @@ cSced::setLogConnect(bool b)
 // End of cSced functions.
 
 
- // Constructor.
-te_info_t::te_info_t(const CDp_snode *pn, int indx)
+// Constructor.
+TermEditInfo::TermEditInfo(const CDp_snode *pn, int indx)
 {
     ti_name = 0;
     ti_netex = 0;
@@ -225,8 +225,8 @@ te_info_t::te_info_t(const CDp_snode *pn, int indx)
 }
 
 
- // Constructor.
-te_info_t::te_info_t(const CDsterm *term)
+// Constructor.
+TermEditInfo::TermEditInfo(const CDsterm *term)
 {
     ti_name = 0;
     ti_netex = 0;
@@ -249,8 +249,8 @@ te_info_t::te_info_t(const CDsterm *term)
 }
 
 
- // Constructor.
-te_info_t::te_info_t(const CDp_bsnode *pb)
+// Constructor.
+TermEditInfo::TermEditInfo(const CDp_bsnode *pb)
 {
     ti_name = 0;
     ti_netex = 0;
@@ -271,5 +271,5 @@ te_info_t::te_info_t(const CDp_bsnode *pb)
         ti_end = pb->end_range();
     }
 }
-// End of te_info_t functions.
+// End of TermEditInfo functions.
 

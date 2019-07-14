@@ -62,12 +62,12 @@ namespace {
     namespace gtktedit {
         struct sTE
         {
-            sTE(GRobject, te_info_t*, void(*)(te_info_t*, CDp*), CDp*);
+            sTE(GRobject, TermEditInfo*, void(*)(TermEditInfo*, CDp*), CDp*);
             ~sTE();
 
             GtkWidget *shell() { return (te_popup); }
 
-            void update(te_info_t*, CDp*);
+            void update(TermEditInfo*, CDp*);
 
         private:
             static void te_cancel_proc(GtkWidget*, void*);
@@ -93,7 +93,7 @@ namespace {
             GtkWidget *te_toindex_sb;
             GtkWidget *te_crtbits;
             GtkWidget *te_ordbits;
-            void (*te_action)(te_info_t*, CDp*);
+            void (*te_action)(TermEditInfo*, CDp*);
             CDp *te_prp;
             const char *te_lname;
             bool te_bterm;
@@ -110,8 +110,8 @@ using namespace gtktedit;
 
 
 void
-cSced::PopUpTermEdit(GRobject caller, ShowMode mode, te_info_t *tinfo,
-    void(*action)(te_info_t*, CDp*), CDp *prp, int x, int y)
+cSced::PopUpTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
+    void(*action)(TermEditInfo*, CDp*), CDp *prp, int x, int y)
 {
     if (!GRX || !mainBag())
         return;
@@ -160,7 +160,7 @@ cSced::PopUpTermEdit(GRobject caller, ShowMode mode, te_info_t *tinfo,
 // End of cSced functions.
 
 
-sTE::sTE(GRobject caller, te_info_t *tinfo, void(*action)(te_info_t*, CDp*),
+sTE::sTE(GRobject caller, TermEditInfo *tinfo, void(*action)(TermEditInfo*, CDp*),
     CDp *prp)
 {
     TE = this;
@@ -536,7 +536,7 @@ sTE::~sTE()
 
 
 void
-sTE::update(te_info_t *tinfo, CDp *prp)
+sTE::update(TermEditInfo *tinfo, CDp *prp)
 {
     const char *name = tinfo->name();
     if (!name)
@@ -681,7 +681,7 @@ sTE::te_action_proc(GtkWidget *caller, void*)
                 if (GRX->GetStatus(TE->te_syinvis))
                     f |= TE_SYINVIS;
 
-                te_info_t tinfo(name, ix, f, netex);
+                TermEditInfo tinfo(name, ix, f, netex);
                 (*TE->te_action)(&tinfo, TE->te_prp);
                 SCD()->PopUpTermEdit(0, MODE_UPD, &tinfo, 0, TE->te_prp, 0, 0);
             }
@@ -696,7 +696,7 @@ sTE::te_action_proc(GtkWidget *caller, void*)
                 if (GRX->GetStatus(TE->te_syinvis))
                     f |= TE_SYINVIS;
 
-                te_info_t tinfo(name, TE->te_lname, ix, f,
+                TermEditInfo tinfo(name, TE->te_lname, ix, f,
                     GRX->GetStatus(TE->te_phys));
                 (*TE->te_action)(&tinfo, TE->te_prp);
                 SCD()->PopUpTermEdit(0, MODE_UPD, &tinfo, 0, TE->te_prp, 0, 0);
