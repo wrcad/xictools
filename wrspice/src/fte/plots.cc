@@ -200,8 +200,8 @@ CommandTab::com_setdim(wordlist *wl)
 }
 
 
-// Command to ombine the last two "similar" plots into a single
-// multi-dimensional plot
+// Command to combine the last two "similar" plots into a single
+// multi-dimensional plot.
 //
 void
 CommandTab::com_combine(wordlist*)
@@ -222,10 +222,21 @@ CommandTab::com_combine(wordlist*)
         GRpkgIf()->ErrPrintf(ET_ERROR, "can't combine constants plot.\n");
         return;
     }
-    if (OP.plotList()->next_plot()->add_segment(OP.plotList()))
+
+    char *errstr;
+    if (OP.plotList()->next_plot()->add_segment(OP.plotList(), &errstr))
         OP.plotList()->destroy();
-    else
-        GRpkgIf()->ErrPrintf(ET_ERROR, "incompatible plots, can't combine.\n");
+    else {
+        if (*errstr) {
+            GRpkgIf()->ErrPrintf(ET_ERROR, 
+                "%s,\nincompatible plots, can't combine.\n", errstr);
+            delete [] errstr;
+        }
+        else {
+            GRpkgIf()->ErrPrintf(ET_ERROR, 
+                "incompatible plots, can't combine.\n");
+        }
+    }
 }
 
 
@@ -1145,10 +1156,11 @@ sPlot::add_plot()
 // the dimensionality.
 //
 bool
-sPlot::add_segment(const sPlot *pl)
+sPlot::add_segment(const sPlot *pl, char **errstr)
 {
-    if (!compare(pl))
+    if (!compare(pl, errstr))
         return (false);
+
     wordlist *wl0 = sHtab::wl(pl_hashtab);
     int slen = -1;
     sDataVec *xs = pl_scale;
@@ -1213,13 +1225,22 @@ sPlot::run_commands()
 // types and similar dimensionality.
 //
 bool
-sPlot::compare(const sPlot *pl)
+sPlot::compare(const sPlot *pl, char **errstr)
 {
+    if (errstr)
+        *errstr = 0;
     wordlist *wl0 = sHtab::wl(pl_hashtab);
     for (wordlist *wl = wl0; wl; wl = wl->wl_next) {
         sDataVec *d0 = get_perm_vec(wl->wl_word);
         sDataVec *d1 = pl->get_perm_vec(wl->wl_word);
         if (!d0 || !d1 || d0->flags() != d1->flags()) {
+            if (errstr) {
+                sLstr lstr;
+                lstr.add("vector ");
+                lstr.add(wl->wl_word);
+                lstr.add(" not found in both plots");
+                *errstr = lstr.string_trim();
+            }
             wordlist::destroy(wl0);
             return (false);
         }
@@ -1233,6 +1254,8 @@ sPlot::compare(const sPlot *pl)
         }
         if (abs(d0->numdims() - d1->numdims()) > 1) {
             wordlist::destroy(wl0);
+            if (errstr)
+                *errstr = lstring::copy("dimension counts are incompatible");
             return (false);
         }
         int j = d0->numdims() - 1;
@@ -1240,6 +1263,8 @@ sPlot::compare(const sPlot *pl)
         for (;;) {
             if (d0->dims(j) != d1->dims(k)) {
                 wordlist::destroy(wl0);
+                if (errstr)
+                    *errstr = lstring::copy("vector lengths are incompatible");
                 return (false);
             }
             j--;

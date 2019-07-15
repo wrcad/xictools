@@ -89,11 +89,25 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         // &&L_JJ_QUEST_GS,
         // &&L_JJ_QUEST_GXSH,
         // &&L_JJ_QUEST_RXSH,
-        // &&L_JJ_QUEST_G1,
-        // &&L_JJ_QUEST_G2,
-        // &&L_JJ_QUEST_N1,
-        // &&L_JJ_QUEST_N2,
-        // &&L_JJ_QUEST_NP};
+//#ifdef NEWLSH
+        //&&L_JJ_QUEST_LSHVAL,
+//#endif
+        //&&L_JJ_QUEST_G1,
+        //&&L_JJ_QUEST_G2,
+        //&&L_JJ_QUEST_N1,
+        //&&L_JJ_QUEST_N2,
+        //&&L_JJ_QUEST_NP
+//#ifdef NEWLSER
+        //,
+        //&&L_JJ_QUEST_NI,
+        //&&L_JJ_QUEST_NB
+//#endif
+//#ifdef NEWLSH
+        //,
+        //&&L_JJ_QUEST_NSHI,
+        //&&L_JJ_QUEST_NSHB
+//#endif
+        //};
 
     if ((unsigned int)param > JJ_NOISE)
         return (E_BADPARM);

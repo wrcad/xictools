@@ -61,7 +61,7 @@ IO("lser",              JJ_LSER,            IF_REAL|IF_IND,
 #endif
 #ifdef NEWLSH
 IO("lsh",              JJ_LSH,              IF_REAL|IF_IND,
-                "External shunt resistor series parasitic inductance"),
+                "External shunt resistor parasitic inductance"),
 #endif
 IO("off",               JJ_OFF,             IF_FLAG,
                 "Shorted for dc operating point comp."),
@@ -121,6 +121,10 @@ OP("gshunt",            JJ_QUEST_GXSH,      IF_REAL|IF_COND,
                 "External shunt conductance from VSHUNT"),
 OP("rshunt",            JJ_QUEST_RXSH,      IF_REAL|IF_RES,
                 "External shunt resistance from VSHUNT"),
+#ifdef NEWLSH
+OP("lshval",            JJ_QUEST_LSHVAL,    IF_REAL|IF_IND,
+                "External shunt resistor parasitic inductance"),
+#endif
 OP("g1",                JJ_QUEST_G1,        IF_REAL,
                 "NbN quasiparticle parameter"),
 OP("g2",                JJ_QUEST_G2,        IF_REAL,

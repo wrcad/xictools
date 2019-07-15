@@ -379,6 +379,9 @@ enum {
     JJ_QUEST_GS,
     JJ_QUEST_GXSH,
     JJ_QUEST_RXSH,
+#ifdef NEWLSH
+    JJ_QUEST_LSHVAL,
+#endif
     JJ_QUEST_G1,
     JJ_QUEST_G2,
     JJ_QUEST_N1,

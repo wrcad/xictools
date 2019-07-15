@@ -385,9 +385,9 @@ struct sPlot
     void set_case(bool);
     void new_plot();
     void add_plot();
-    bool add_segment(const sPlot*);
+    bool add_segment(const sPlot*, char**);
     void run_commands();
-    bool compare(const sPlot*);
+    bool compare(const sPlot*, char**);
     void destroy();
     void clear_selected();
     void add_note(const char*);

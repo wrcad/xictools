@@ -111,6 +111,9 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_JJ_QUEST_GS,
         &&L_JJ_QUEST_GXSH,
         &&L_JJ_QUEST_RXSH,
+#ifdef NEWLSH
+        &&L_JJ_QUEST_LSHVAL,
+#endif
         &&L_JJ_QUEST_G1,
         &&L_JJ_QUEST_G2,
         &&L_JJ_QUEST_N1,
@@ -259,6 +262,11 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_JJ_QUEST_RXSH:
         data->v.rValue = inst->JJgshunt > 0.0 ? 1.0/inst->JJgshunt : 0.0;
         return (OK);
+#ifdef NEWLSH
+    L_JJ_QUEST_LSHVAL:
+        data->v.rValue = inst->JJlsh;
+        return (OK);
+#endif
     L_JJ_QUEST_G1:
         data->v.rValue = inst->JJg1;
         return (OK);
@@ -406,6 +414,11 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case JJ_QUEST_RXSH:
         data->v.rValue = inst->JJgshunt > 0.0 ? 1.0/inst->JJgshunt : 0.0;
         break;
+#ifdef NEWLSH
+    case JJ_QUEST_LSHVAL:
+        data->v.rValue = inst->JJlsh;
+        break;
+#endif
     case JJ_QUEST_G1:
         data->v.rValue = inst->JJg1;
         break;
