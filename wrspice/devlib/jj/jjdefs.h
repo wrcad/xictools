@@ -377,6 +377,8 @@ enum {
     JJ_QUEST_G0,
     JJ_QUEST_GN,
     JJ_QUEST_GS,
+    JJ_QUEST_GXSH,
+    JJ_QUEST_RXSH,
     JJ_QUEST_G1,
     JJ_QUEST_G2,
     JJ_QUEST_N1,

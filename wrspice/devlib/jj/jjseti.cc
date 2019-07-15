@@ -87,6 +87,8 @@ JJdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         // &&L_JJ_QUEST_G0,
         // &&L_JJ_QUEST_GN,
         // &&L_JJ_QUEST_GS,
+        // &&L_JJ_QUEST_GXSH,
+        // &&L_JJ_QUEST_RXSH,
         // &&L_JJ_QUEST_G1,
         // &&L_JJ_QUEST_G2,
         // &&L_JJ_QUEST_N1,

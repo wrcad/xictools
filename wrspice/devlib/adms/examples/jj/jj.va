@@ -52,10 +52,13 @@
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
 
-// Version 1.32, June 26, 2019 added temperature effects: model parameters
-//   tc, tnom, deftemp, tcfct, instance parameters temp and (read only)
-//   tcf.  The correction factor multiplies icrit and vgap.  Added ADMS
-//   spec to most internal variables making them accessible in WRspice.
+// Version 1.33, July 14, 2019 instance read-only parameters gshunt
+//   and lshval have ADMS spec for accessibility in WRspice.
+// Version 1.32, June 26, 2019 added temperature effects:  model
+//   parameters tc, tnom, deftemp, tcfct, instance parameters temp and
+//   (read only) tcf.  The correction factor multiplies icrit and vgap.
+//   Added ADMS spec to most internal variables making them accessible
+//   in WRspice.
 // Version 1.31, May 24, 2019 block name "nparblk" added for HSPICE.
 // Version 1.30, May 23, 2019 fixed typos from last check-in, added
 //   ADMS magic so phase and vdpbak are treated as read-only params.
@@ -345,8 +348,6 @@ parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4]
     `P(type="model" info="Ic to Istep ratio");
 aliasparam icfact       = icfct;
 
-// The subgap and normal resistances.  If vshunt is given, a fixed
-// shunt is added so that Ic*Reff = vshunt.
 parameter real vm       = `Vm*1e-3 from [8m:100m]
     `P(type="model" info="Ic * subgap resistance" units="V");
 parameter real rsub     = vm/icrit from [8e-3/icrit:1e-1/icrit]
@@ -358,6 +359,8 @@ parameter real rnorm    = icrn/icrit from [0.5e-3/icrit:(vgap*icfct)/icrit]
     `P(type="model" info="Normal resistance" units="O");
 aliasparam rn           = rnorm;
 `ifdef NEWVSHUNT
+// The subgap and normal resistances.  If vshunt is given, a fixed
+// shunt is added so that Ic*Reff = vshunt.
 parameter real vshunt   = 0 from [0:vgap-delv]
     `P(type="model" info="Ic * shunt resistance voltage" units="V");
 `endif
@@ -428,9 +431,9 @@ real rsubs `P(type="instance" info="Device sub-gap resistance");
 real rnorms `P(type="instance" info="Device normal resistance");
 real i1, i2, vth, start_phase, tsf;
 `ifdef NEWVSHUNT
-real gshunt;
+real gshunt `P(type="instance" info="External VSHUNT shunt conductance");
 `ifdef NEWLSH
-real lshval;
+real lshval `P(type="instance" info="Shunt resistor parasitic inductance");
 `endif
 `endif
 `ifdef WRspice
