@@ -370,10 +370,10 @@ public:
 //
 struct sPlot
 {
+    // plots.cc
     sPlot(const char*);
     ~sPlot();
 
-    // vectors.cc
     void new_perm_vec(sDataVec*);
     sDataVec *get_perm_vec(const char*) const;
     wordlist *list_perm_vecs() const;
@@ -395,6 +395,7 @@ struct sPlot
 
     // linear.cc
     void linearize(wordlist*);
+    void lincopy(sDataVec*, double*, int, sPlot*);
 
     // postcoms.cc
     sDvList *write(sDvList*, bool, const char*);

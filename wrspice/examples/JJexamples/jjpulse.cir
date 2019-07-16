@@ -16,7 +16,7 @@
 *.noexec
 *.options Lval=2.6p Rnval=3 Cval=160f Ibval=180
 .options Lval=2.6p Rnval=4.9 Cval=68f Ibval=160
-*.options steptype=nousertp
+.options steptype=nousertp
 
 .control
 
@@ -60,6 +60,12 @@ while I < 4
     reset
     run
     echo pw=$&pw[0] vp=$&pw[1]
+# Since steptype=nousertp is set, linearize the plot, else conbine will
+# likely fail.  Have to destroy the original plot for combine to work.
+    set plname = $curplot
+    linearize
+    destroy $plname
+    unset plname
     if (I > 0)
         combine
     end

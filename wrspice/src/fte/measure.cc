@@ -1824,10 +1824,7 @@ sRunopMeas::reset(sPlot *pl)
                     vh = new sDataVec(*v->units());
                     vh->set_name(buf);
                     vh->set_flags(0);
-                    sPlot *px = OP.curPlot();
-                    OP.setCurPlot(pl);
-                    vh->newperm();
-                    OP.setCurPlot(px);
+                    vh->newperm(pl);
                 }
                 sDataVec *vhs = vh->scale();
                 if (!vhs) {
@@ -1835,10 +1832,7 @@ sRunopMeas::reset(sPlot *pl)
                     vhs = new sDataVec(*vs->units());
                     vhs->set_name(buf);
                     vhs->set_flags(0);
-                    sPlot *px = OP.curPlot();
-                    OP.setCurPlot(pl);
-                    vhs->newperm();
-                    OP.setCurPlot(px);
+                    vhs->newperm(pl);
                     vh->set_scale(vhs);
                 }
 
@@ -2096,19 +2090,14 @@ sRunopMeas::update_plot(sDataVec *dv0, int count)
         }
         nv->set_name(ro_result);
         nv->set_flags(0);
-        sPlot *px = OP.curPlot();
-        OP.setCurPlot(pl);
-        nv->newperm();
-        OP.setCurPlot(px);
+        nv->newperm(pl);
+
         char scname[128];
         sprintf(scname, "%s_scale", ro_result);
         sDataVec *ns = new sDataVec(*xs->units());
         ns->set_name(scname);
         ns->set_flags(0);
-        px = OP.curPlot();
-        OP.setCurPlot(pl);
-        ns->newperm();
-        OP.setCurPlot(px);
+        ns->newperm(pl);
         nv->set_scale(ns);
 
         if (ro_prmexpr) {

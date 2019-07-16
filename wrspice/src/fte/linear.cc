@@ -87,34 +87,6 @@ CommandTab::com_linearize(wordlist *wl)
 // End of CommandTab functions.
 
 
-namespace {
-    void lincopy(sDataVec *ov, double *newscale, int newlen,
-        sDataVec *oldscale)
-    {
-        if (!ov->isreal()) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "%s is not real.\n", ov->name());
-            return;
-        }
-        if (ov->length() < oldscale->length()) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "%s is too short.\n", ov->name());
-            return;
-        }
-        sDataVec *v = new sDataVec(
-            lstring::copy(ov->name()), ov->flags(), newlen, ov->units());
-        double *nd = v->realvec();
-        sPoly po(1);
-        if (!po.interp(ov->realvec(), nd, oldscale->realvec(), 
-                oldscale->length(), newscale, newlen)) {
-            GRpkgIf()->ErrPrintf(ET_WARN, "can't interpolate %s.\n",
-                ov->name());
-            delete v;
-            return;
-        }
-        v->newperm();
-    }
-}
-
-
 // Create a new linearized plot, if success link it in and make it the
 // current plot.
 //
@@ -153,7 +125,7 @@ sPlot::linearize(wordlist *wl)
     double d;
     for (i = 0, d = tstart; i < len; i++, d += tstep)
         newtime->set_realval(i, d);
-    newtime->newperm(); // set to scale
+    newtime->newperm(newp); // set to scale
 
     if (wl && !lstring::cieq(wl->wl_word, "all")) {
         while (wl) {
@@ -162,7 +134,7 @@ sPlot::linearize(wordlist *wl)
                 Sp.Error(E_NOVEC, 0, wl->wl_word);
                 continue;
             }
-            lincopy(v, newtime->realvec(), len, oldtime);
+            newp->lincopy(v, newtime->realvec(), len, this);
             wl = wl->wl_next;
         }
     }
@@ -173,8 +145,75 @@ sPlot::linearize(wordlist *wl)
             sDataVec *v = (sDataVec*)h->data();
             if (v == scale())
                 continue;
-            lincopy(v, newtime->realvec(), len, oldtime);
+            newp->lincopy(v, newtime->realvec(), len, this);
         }
     }
+}
+
+
+void
+sPlot::lincopy(sDataVec *ov, double *newscale, int newlen, sPlot *oldplot)
+{
+    sDataVec *oldscale = oldplot->scale();
+    if ((!ov->scale() || ov->scale() == oldscale) &&
+            ov->length() == oldscale->length()) {
+        if (!ov->isreal()) {
+            GRpkgIf()->ErrPrintf(ET_WARN, "%s is not real.\n", ov->name());
+            return;
+        }
+        sDataVec *v = new sDataVec(
+            lstring::copy(ov->name()), ov->flags(), newlen, ov->units());
+        double *nd = v->realvec();
+        sPoly po(1);
+        if (!po.interp(ov->realvec(), nd, oldscale->realvec(), 
+                oldscale->length(), newscale, newlen)) {
+            GRpkgIf()->ErrPrintf(ET_WARN, "can't interpolate %s.\n",
+                ov->name());
+            delete v;
+            return;
+        }
+        v->newperm(this);
+        return;
+    }
+    // Otherwise, copy as-is, these are (we hope) not related to
+    // the scale being linearized, but may contain, e.g., .measure
+    // results.
+
+    // If a scale for another vector, it might have already been
+    // copied.
+    if (find_vec(ov->name()))
+        return;
+
+    sDataVec *v = new sDataVec(
+        lstring::copy(ov->name()), ov->flags(), ov->length(), ov->units());
+    if (ov->isreal()) {
+        for (int i = 0; i < ov->length(); i++)
+            v->set_realval(i, ov->realval(i));
+    }
+    else {
+        for (int i = 0; i < ov->length(); i++)
+            v->set_compval(i, ov->compval(i));
+    }
+
+    // Copy the scale too if we haven't done so already.
+    sDataVec *sc = ov->scale();
+    if (sc) {
+        sDataVec *vs = find_vec(sc->name());
+        if (!vs) {
+            vs = new sDataVec(lstring::copy(sc->name()), sc->flags(),
+                sc->length(), sc->units());
+            if (sc->isreal()) {
+                for (int i = 0; i < sc->length(); i++)
+                    vs->set_realval(i, sc->realval(i));
+            }
+            else {
+                for (int i = 0; i < sc->length(); i++)
+                    vs->set_compval(i, sc->compval(i));
+            }
+            vs->newperm(this);
+        }
+        v->set_scale(vs);
+    }
+    v->newperm(this);
 }
 
