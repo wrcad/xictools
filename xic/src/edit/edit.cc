@@ -187,32 +187,13 @@ cEdit::noEditing()
 //-----------------------------------------------------------------------------
 // Misc wrappers
 
-namespace ed_edit {
-    // This holds state for mode switching.
-    //
-    struct sEditState
-    {
-        sEditState()
-            {
-                PhysCX = ElecCX = 0;
-                PhysUL = ElecUL = 0;
-            }
-
-        CXstate *PhysCX;
-        CXstate *ElecCX;
-        ULstate *PhysUL;
-        ULstate *ElecUL;
-    };
-}
-
-
 void
 cEdit::invalidateLayer(CDs *sd, CDl *ld)
 {
     Ulist()->InvalidateLayer(sd, ld);
     PP()->InvalidateLayer(sd, ld);
 
-    ed_edit::sEditState *es = XM()->hist().editState();
+    sModeSave::EditState *es = XM()->hist().editState();
     if (es) {
         if (es->PhysUL) {
             Oper::purge(es->PhysUL->operations, sd, ld);
@@ -242,7 +223,7 @@ cEdit::invalidateObject(CDs *sd, CDo *od, bool save)
 
     if (!sd)
         return;
-    ed_edit::sEditState *es = XM()->hist().editState();
+    sModeSave::EditState *es = XM()->hist().editState();
     if (es) {
         if (es->PhysUL) {
             Oper::purge(es->PhysUL->operations, sd, od);
@@ -279,9 +260,9 @@ cEdit::clearSaveState()
 void
 cEdit::popState(DisplayMode mode)
 {
-    ed_edit::sEditState *es = XM()->hist().editState();
+    sModeSave::EditState *es = XM()->hist().editState();
     if (!es) {
-        es = new ed_edit::sEditState;
+        es = new sModeSave::EditState;
         XM()->hist().setEditState(es);
     }
 
@@ -299,7 +280,7 @@ cEdit::popState(DisplayMode mode)
 void
 cEdit::pushState(DisplayMode mode)
 {
-    ed_edit::sEditState *es = XM()->hist().editState();
+    sModeSave::EditState *es = XM()->hist().editState();
     if (es) {
         if (mode == Physical) {
             PP()->PushState(es->PhysCX);

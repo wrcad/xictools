@@ -101,45 +101,12 @@ enum GhostMode
 // Typedefs.
 // The GhostDrawFunc typedef is in graphics.h
 //
-typedef void(*GhostSetupFunc)(bool);
-
 // The setup function, if registered, is called with argument true when
 // the respective ghost mode is entered, false when terminated.  This can
 // be used by the application to setup/free stuff needed for ghost drawing
 // in that mode.
-
-// Drawing function context element.
 //
-struct ghparm_t
-{
-    ghparm_t()
-        {
-            func = 0;
-            x = y = 0;
-            type = GFnone;
-            mode = GhostVanilla;
-        }
-
-    void set(GFtype t, GhostDrawFunc f, int xx, int yy, GhostMode m)
-        {
-            type = t;
-            func = f;
-            x = xx;
-            y = yy;
-            mode = m;
-        }
-
-    bool operator==(const ghparm_t &g)
-        {
-            return (type == g.type && func == g.func && x == g.x && y == g.y
-                && mode == g.mode);
-        }
-
-    GhostDrawFunc func;
-    int x, y;
-    GFtype type;
-    GhostMode mode;
-};
+typedef void(*GhostSetupFunc)(bool);
 
 
 inline class cGhost *Gst();
@@ -160,9 +127,42 @@ class cGhost
 public:
     friend inline cGhost *Gst() { return (cGhost::ptr()); }
 
-    struct gf_t
+    // Drawing function context element.
+    //
+    struct GhostCx
     {
-        gf_t()
+        GhostCx()
+            {
+                func = 0;
+                x = y = 0;
+                type = GFnone;
+                mode = GhostVanilla;
+            }
+
+        void set(GFtype t, GhostDrawFunc f, int xx, int yy, GhostMode m)
+            {
+                type = t;
+                func = f;
+                x = xx;
+                y = yy;
+                mode = m;
+            }
+
+        bool operator==(const GhostCx &g)
+            {
+                return (type == g.type && func == g.func && x == g.x && y == g.y
+                    && mode == g.mode);
+            }
+
+        GhostDrawFunc func;
+        int x, y;
+        GFtype type;
+        GhostMode mode;
+    };
+
+    struct GhostFunc
+    {
+        GhostFunc()
             {
                 draw_func = 0;
                 setup_func = 0;
@@ -231,9 +231,9 @@ private:
     int g_level;
     bool g_started;
     bool g_ghost_line_vert;
-    gf_t g_functions[GF_END];
-    ghparm_t g_context[GHOST_LEVELS];
-    ghparm_t g_saved_context;
+    GhostFunc g_functions[GF_END];
+    GhostCx g_context[GHOST_LEVELS];
+    GhostCx g_saved_context;
 
     static cGhost *instancePtr;
 };

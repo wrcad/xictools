@@ -48,12 +48,12 @@
 
 // Return a sorted list of the properties.
 //
-Ptxt *
+PrptyText *
 cMain::PrptyStrings(CDs *sdesc)
 {
     if (!sdesc)
         return (0);
-    Ptxt *list = 0, *lend = 0;
+    PrptyText *list = 0, *lend = 0;
     const char *lttok = HYtokPre HYtokLT HYtokSuf;
     char tbuf[256];
 
@@ -108,9 +108,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             char *str = lstring::copy(string);
             if (!list)
-                list = lend = new Ptxt(hd, str, pdesc);
+                list = lend = new PrptyText(hd, str, pdesc);
             else {
-                lend->set_next(new Ptxt(hd, str, pdesc));
+                lend->set_next(new PrptyText(hd, str, pdesc));
                 lend = lend->next();
             }
         }
@@ -126,9 +126,9 @@ cMain::PrptyStrings(CDs *sdesc)
                 tbuf[0] = 0;
             char *str = lstring::copy(tbuf);
             if (!list)
-                list = lend = new Ptxt(hd, str, pna);
+                list = lend = new PrptyText(hd, str, pna);
             else {
-                lend->set_next(new Ptxt(hd, str, pna));
+                lend->set_next(new PrptyText(hd, str, pna));
                 lend = lend->next();
             }
         }
@@ -161,9 +161,9 @@ cMain::PrptyStrings(CDs *sdesc)
             }
             char *str = lstr.string_trim();
             if (!list)
-                list = lend = new Ptxt(hd, str, pbn);
+                list = lend = new PrptyText(hd, str, pbn);
             else {
-                lend->set_next(new Ptxt(hd, str, pbn));
+                lend->set_next(new PrptyText(hd, str, pbn));
                 lend = lend->next();
             }
         }
@@ -196,9 +196,9 @@ cMain::PrptyStrings(CDs *sdesc)
 
             char *str = lstr.string_trim();
             if (!list)
-                list = lend = new Ptxt(hd, str, pn);
+                list = lend = new PrptyText(hd, str, pn);
             else {
-                lend->set_next(new Ptxt(hd, str, pn));
+                lend->set_next(new PrptyText(hd, str, pn));
                 lend = lend->next();
             }
         }
@@ -209,9 +209,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
-                list = lend = new Ptxt(hd, str, pu);
+                list = lend = new PrptyText(hd, str, pu);
             else {
-                lend->set_next(new Ptxt(hd, str, pu));
+                lend->set_next(new PrptyText(hd, str, pu));
                 lend = lend->next();
             }
         }
@@ -222,9 +222,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
-                list = lend = new Ptxt(hd, str, pu);
+                list = lend = new PrptyText(hd, str, pu);
             else {
-                lend->set_next(new Ptxt(hd, str, pu));
+                lend->set_next(new PrptyText(hd, str, pu));
                 lend = lend->next();
             }
         }
@@ -235,9 +235,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
-                list = lend = new Ptxt(hd, str, pu);
+                list = lend = new PrptyText(hd, str, pu);
             else {
-                lend->set_next(new Ptxt(hd, str, pu));
+                lend->set_next(new PrptyText(hd, str, pu));
                 lend = lend->next();
             }
         }
@@ -248,9 +248,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             char *str = hyList::string(pu->data(), HYcvPlain, false);
             if (!list)
-                list = lend = new Ptxt(hd, str, pu);
+                list = lend = new PrptyText(hd, str, pu);
             else {
-                lend->set_next(new Ptxt(hd, str, pu));
+                lend->set_next(new PrptyText(hd, str, pu));
                 lend = lend->next();
             }
         }
@@ -265,9 +265,9 @@ cMain::PrptyStrings(CDs *sdesc)
                 pstr = "shorted";
             char *str = lstring::copy(pstr);
             if (!list)
-                list = lend = new Ptxt(hd, str, px);
+                list = lend = new PrptyText(hd, str, px);
             else {
-                lend->set_next(new Ptxt(hd, str, px));
+                lend->set_next(new PrptyText(hd, str, px));
                 lend = lend->next();
             }
         }
@@ -278,9 +278,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             char *str = lstring::copy("virtual");
             if (!list)
-                list = lend = new Ptxt(hd, str, px);
+                list = lend = new PrptyText(hd, str, px);
             else {
-                lend->set_next(new Ptxt(hd, str, px));
+                lend->set_next(new PrptyText(hd, str, px));
                 lend = lend->next();
             }
         }
@@ -291,9 +291,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             char *str = lstring::copy("flatten");
             if (!list)
-                list = lend = new Ptxt(hd, str, px);
+                list = lend = new PrptyText(hd, str, px);
             else {
-                lend->set_next(new Ptxt(hd, str, px));
+                lend->set_next(new PrptyText(hd, str, px));
                 lend = lend->next();
             }
         }
@@ -308,9 +308,9 @@ cMain::PrptyStrings(CDs *sdesc)
                 tbuf[0] = 0;
             char *str = lstring::copy(tbuf);
             if (!list)
-                list = lend = new Ptxt(hd, str, pb);
+                list = lend = new PrptyText(hd, str, pb);
             else {
-                lend->set_next(new Ptxt(hd, str, pb));
+                lend->set_next(new PrptyText(hd, str, pb));
                 lend = lend->next();
             }
         }
@@ -322,9 +322,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *str;
             pl->string(&str);
             if (!list)
-                list = lend = new Ptxt(hd, str, pl);
+                list = lend = new PrptyText(hd, str, pl);
             else {
-                lend->set_next(new Ptxt(hd, str, pl));
+                lend->set_next(new PrptyText(hd, str, pl));
                 lend = lend->next();
             }
         }
@@ -336,9 +336,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *str;
             pm->string(&str);
             if (!list)
-                list = lend = new Ptxt(hd, str, pm);
+                list = lend = new PrptyText(hd, str, pm);
             else {
-                lend->set_next(new Ptxt(hd, str, pm));
+                lend->set_next(new PrptyText(hd, str, pm));
                 lend = lend->next();
             }
         }
@@ -359,9 +359,9 @@ cMain::PrptyStrings(CDs *sdesc)
             }
             char *str = lstring::copy(tbuf);
             if (!list)
-                list = lend = new Ptxt(hd, str, pnm);
+                list = lend = new PrptyText(hd, str, pnm);
             else {
-                lend->set_next(new Ptxt(hd, str, pnm));
+                lend->set_next(new PrptyText(hd, str, pnm));
                 lend = lend->next();
             }
         }
@@ -373,9 +373,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *str;
             ps->string(&str);
             if (!list)
-                list = lend = new Ptxt(hd, str, ps);
+                list = lend = new PrptyText(hd, str, ps);
             else {
-                lend->set_next(new Ptxt(hd, str, ps));
+                lend->set_next(new PrptyText(hd, str, ps));
                 lend = lend->next();
             }
         }
@@ -387,9 +387,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *str;
             pno->string(&str);
             if (!list)
-                list = lend = new Ptxt(hd, str, pno);
+                list = lend = new PrptyText(hd, str, pno);
             else {
-                lend->set_next(new Ptxt(hd, str, pno));
+                lend->set_next(new PrptyText(hd, str, pno));
                 lend = lend->next();
             }
         }
@@ -428,9 +428,9 @@ cMain::PrptyStrings(CDs *sdesc)
             char *hd = lstring::copy(tbuf);
             char *str = lstring::copy(string);
             if (!list)
-                list = lend = new Ptxt(hd, str, pdesc);
+                list = lend = new PrptyText(hd, str, pdesc);
             else {
-                lend->set_next(new Ptxt(hd, str, pdesc));
+                lend->set_next(new PrptyText(hd, str, pdesc));
                 lend = lend->next();
             }
         }
@@ -440,12 +440,12 @@ cMain::PrptyStrings(CDs *sdesc)
 }
 
 
-Ptxt *
+PrptyText *
 cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
 {
     if (!odesc || !sdesc)
         return (0);
-    Ptxt *list = 0;
+    PrptyText *list = 0;
     char tbuf[256];
     if (sdesc->isElectrical()) {
         if (odesc->type() == CDWIRE) {
@@ -462,7 +462,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                     pb->add_bundle_text(&lstr);
                 }
                 char *str = lstr.string_trim();
-                list = new Ptxt(hd, str, pb, list);
+                list = new PrptyText(hd, str, pb, list);
             }
             CDp_node *pn = (CDp_node*)odesc->prpty(P_NODE);
             if (pn) {
@@ -481,7 +481,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 hp->set_hent(ent);
                 char *str = hyList::string(hp, HYcvPlain, false);
                 hyList::destroy(hp);
-                list = new Ptxt(hd, str, pn, list);
+                list = new PrptyText(hd, str, pn, list);
             }
         }
         else if (odesc->type() == CDLABEL) {
@@ -496,7 +496,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                     sprintf(tbuf, "%d %d %d", pl->pos_x(), pl->pos_y(),
                         pl->propnum());
                 char *str = lstring::copy(tbuf);
-                list = new Ptxt(hd, str, pl, list);
+                list = new PrptyText(hd, str, pl, list);
             }
         }
         else if (odesc->type() == CDINSTANCE) {
@@ -509,7 +509,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 char *str = hyList::string(hp, HYcvPlain, false);
                 if (copied)
                     hyList::destroy(hp);
-                list = new Ptxt(hd, str, pna, list);
+                list = new PrptyText(hd, str, pna, list);
             }
             CDp_range *pr = (CDp_range*)odesc->prpty(P_RANGE);
             for ( ; pr; pr = pr->next()) {
@@ -517,42 +517,42 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 char *hd = lstring::copy(tbuf);
                 sprintf(tbuf, "%d %d", pr->beg_range(), pr->end_range());
                 char *str = lstring::copy(tbuf);
-                list = new Ptxt(hd, str, pr, list);
+                list = new PrptyText(hd, str, pr, list);
             }
             CDp_user *pu = (CDp_user*)odesc->prpty(P_MODEL);
             if (pu) {
                 sprintf(tbuf, "(%d) model (user): ", P_MODEL);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
-                list = new Ptxt(hd, str, pu, list);
+                list = new PrptyText(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_VALUE);
             if (pu) {
                 sprintf(tbuf, "(%d) value (user): ", P_VALUE);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
-                list = new Ptxt(hd, str, pu, list);
+                list = new PrptyText(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_PARAM);
             if (pu) {
                 sprintf(tbuf, "(%d) param (user): ", P_PARAM);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
-                list = new Ptxt(hd, str, pu, list);
+                list = new PrptyText(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_OTHER);
             for ( ; pu; pu = pu->next()) {
                 sprintf(tbuf, "(%d) other (user): ", P_OTHER);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
-                list = new Ptxt(hd, str, pu, list);
+                list = new PrptyText(hd, str, pu, list);
             }
             pu = (CDp_user*)odesc->prpty(P_DEVREF);
             for ( ; pu; pu = pu->next()) {
                 sprintf(tbuf, "(%d) other (user): ", P_DEVREF);
                 char *hd = lstring::copy(tbuf);
                 char *str = hyList::string(pu->data(), HYcvPlain, false);
-                list = new Ptxt(hd, str, pu, list);
+                list = new PrptyText(hd, str, pu, list);
             }
             CDp *px = odesc->prpty(P_NOPHYS);
             for ( ; px && px->value() == P_NOPHYS; px = px->next_prp()) {
@@ -563,14 +563,14 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 if (s && (*s == 's' || *s == 'S'))
                     pstr = "shorted";
                 char *str = lstring::copy(pstr);
-                list = new Ptxt(hd, str, px, list);
+                list = new PrptyText(hd, str, px, list);
             }
             px = odesc->prpty(P_FLATTEN);
             for ( ; px && px->value() == P_FLATTEN; px = px->next_prp()) {
                 sprintf(tbuf, "(%d) flatten (user): ", P_FLATTEN);
                 char *hd = lstring::copy(tbuf);
                 char *str = lstring::copy("flatten");
-                list = new Ptxt(hd, str, px, list);
+                list = new PrptyText(hd, str, px, list);
             }
             CDp_sym *psm = (CDp_sym*)odesc->prpty(P_SYMBLC);
             for ( ; psm && psm->value() == P_SYMBLC; psm = psm->next()) {
@@ -578,7 +578,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 char *hd = lstring::copy(tbuf);
                 bool active = ((CDp_sym*)psm)->active();
                 char *str = lstring::copy(active ? "1" : "0");
-                list = new Ptxt(hd, str, psm, list);
+                list = new PrptyText(hd, str, psm, list);
             }
             CDp_bcnode *pcn = (CDp_bcnode*)odesc->prpty(P_BNODE);
             for ( ; pcn; pcn = pcn->next()) {
@@ -597,7 +597,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                     delete [] s;
                 }
                 char *str = lstr.string_trim();
-                list = new Ptxt(hd, str, pcn, list);
+                list = new PrptyText(hd, str, pcn, list);
             }
             CDp_cnode *pn = (CDp_cnode*)odesc->prpty(P_NODE);
             for ( ; pn; pn = pn->next()) {
@@ -624,7 +624,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                     delete [] s;
                 }
                 char *str = lstr.string_trim();
-                list = new Ptxt(hd, str, pn, list);
+                list = new PrptyText(hd, str, pn, list);
             }
             CDp_branch *pb = (CDp_branch*)odesc->prpty(P_BRANCH);
             for ( ; pb; pb = pb->next()) {
@@ -637,28 +637,28 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
                 hp->set_hent(ent);
                 char *str = hyList::string(hp, HYcvPlain, false);
                 hyList::destroy(hp);
-                list = new Ptxt(hd, str, pb, list);
+                list = new PrptyText(hd, str, pb, list);
             }
             CDp_mutlrf *pm = (CDp_mutlrf*)odesc->prpty(P_MUTLRF);
             for ( ; pm; pm = pm->next()) {
                 sprintf(tbuf, "(%d) mut (internal): ", P_MUTLRF);
                 char *hd = lstring::copy(tbuf);
                 char *str = lstring::copy(pm->string());
-                list = new Ptxt(hd, str, pm, list);
+                list = new PrptyText(hd, str, pm, list);
             }
             CDp *p = odesc->prpty(XICP_PC);
             if (p) {
                 sprintf(tbuf, "(%d) pc_name: ", p->value());
                 char *hd = lstring::copy(tbuf);
                 char *str = lstring::copy(p->string());
-                list = new Ptxt(hd, str, p, list);
+                list = new PrptyText(hd, str, p, list);
             }
             p = odesc->prpty(XICP_PC_PARAMS);
             if (p) {
                 sprintf(tbuf, "(%d) pc_params: ", p->value());
                 char *hd = lstring::copy(tbuf);
                 char *str = lstring::copy(p->string());
-                list = new Ptxt(hd, str, p, list);
+                list = new PrptyText(hd, str, p, list);
             }
         }
     }
@@ -686,7 +686,7 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             }
             else
                 sprintf(tbuf, "%d: ", pdesc->value());
-            list = new Ptxt(lstring::copy(tbuf), lstring::copy(string),
+            list = new PrptyText(lstring::copy(tbuf), lstring::copy(string),
                 pdesc, list);
         }
         CDpl::destroy(pl0);
@@ -696,111 +696,111 @@ cMain::PrptyStrings(CDo *odesc, CDs *sdesc)
             s = GetPseudoProp(odesc, XprpBB);
             if (s) {
                 sprintf(tbuf, "(%d) BB: ", XprpBB);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpLayer);
             if (s) {
                 sprintf(tbuf, "(%d) Layer: ", XprpLayer);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         s = GetPseudoProp(odesc, XprpFlags);
         if (s) {
             sprintf(tbuf, "(%d) Flags: ", XprpFlags);
-            list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+            list = new PrptyText(lstring::copy(tbuf), s, 0, list);
         }
         s = GetPseudoProp(odesc, XprpState);
         if (s) {
             sprintf(tbuf, "(%d) State: ", XprpState);
-            list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+            list = new PrptyText(lstring::copy(tbuf), s, 0, list);
         }
         s = GetPseudoProp(odesc, XprpGroup);
         if (s) {
             sprintf(tbuf, "(%d) Group: ", XprpGroup);
-            list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+            list = new PrptyText(lstring::copy(tbuf), s, 0, list);
         }
         if (odesc->type() != CDINSTANCE) {
             s = GetPseudoProp(odesc, XprpCoords);
             if (s) {
                 sprintf(tbuf, "(%d) Coords: ", XprpCoords);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpMagn);
             if (s) {
                 sprintf(tbuf, "(%d) Magn: ", XprpMagn);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         if (odesc->type() == CDWIRE) {
             s = GetPseudoProp(odesc, XprpWwidth);
             if (s) {
                 sprintf(tbuf, "(%d) Wwidth: ", XprpWwidth);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpWstyle);
             if (s) {
                 sprintf(tbuf, "(%d) Wstyle: ", XprpWstyle);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         if (odesc->type() == CDLABEL) {
             s = GetPseudoProp(odesc, XprpText);
             if (s) {
                 sprintf(tbuf, "(%d) Text: ", XprpText);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpXform);
             if (s) {
                 sprintf(tbuf, "(%d) Xform: ", XprpXform);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         if (odesc->type() == CDINSTANCE) {
             s = GetPseudoProp(odesc, XprpArray);
             if (s) {
                 sprintf(tbuf, "(%d) Array: ", XprpArray);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpTransf);
             if (s) {
                 sprintf(tbuf, "(%d) Transf: ", XprpTransf);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpMagn);
             if (s) {
                 sprintf(tbuf, "(%d) Magn: ", XprpMagn);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpName);
             if (s) {
                 sprintf(tbuf, "(%d) Name: ", XprpName);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
         s = GetPseudoProp(odesc, XprpXY);
         if (s) {
             sprintf(tbuf, "(%d) XY: ", XprpXY);
-            list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+            list = new PrptyText(lstring::copy(tbuf), s, 0, list);
         }
         if (odesc->type() != CDINSTANCE) {
             s = GetPseudoProp(odesc, XprpWidth);
             if (s) {
                 sprintf(tbuf, "(%d) Width: ", XprpWidth);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
             s = GetPseudoProp(odesc, XprpHeight);
             if (s) {
                 sprintf(tbuf, "(%d) Height: ", XprpHeight);
-                list = new Ptxt(lstring::copy(tbuf), s, 0, list);
+                list = new PrptyText(lstring::copy(tbuf), s, 0, list);
             }
         }
     }
     if (list) {
         // reverse order
-        Ptxt *l0 = list;
+        PrptyText *l0 = list;
         list = 0;
         while (l0) {
-            Ptxt *lx = l0->next();
+            PrptyText *lx = l0->next();
             l0->set_next(list);
             list = l0;
             l0 = lx;

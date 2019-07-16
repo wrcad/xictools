@@ -1058,14 +1058,14 @@ cEdit::put(int x, int y, int buffer)
     Errs()->init_error();
     CDtf tftmp;
     stk.TCurrent(&tftmp);
-    for (yb *yx = ed_yank_buffer[buffer]; yx; yx = yx->next) {
-        if (yx->type == CDBOX) {
+    for (YankBuf *yx = ed_yank_buffer[buffer]; yx; yx = yx->next()) {
+        if (yx->type() == CDBOX) {
             Poly poly;
-            BBox BB = ((yb_b*)yx)->BB;
+            BBox BB(*((YankBufB*)yx)->box());
             stk.TBB(&BB, &poly.points);
             if (poly.points) {
                 poly.numpts = 5;
-                CDpo *newo = cursd->newPoly(0, &poly, yx->ldesc, 0, false);
+                CDpo *newo = cursd->newPoly(0, &poly, yx->ldesc(), 0, false);
                 if (!newo) {
                     Errs()->add_error("newPoly failed");
                     Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
@@ -1081,7 +1081,7 @@ cEdit::put(int x, int y, int buffer)
                 }
             }
             else {
-                CDo *newo = cursd->newBox(0, &BB, yx->ldesc, 0);
+                CDo *newo = cursd->newBox(0, &BB, yx->ldesc(), 0);
                 if (!newo) {
                     Errs()->add_error("newBox failed");
                     Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
@@ -1097,10 +1097,10 @@ cEdit::put(int x, int y, int buffer)
                 }
             }
         }
-        else if (yx->type == CDPOLYGON) {
-            Poly poly = ((yb_p*)yx)->poly;
+        else if (yx->type() == CDPOLYGON) {
+            Poly poly(*((YankBufP*)yx)->poly());
             poly.points = Point::dup_with_xform(poly.points, &stk, poly.numpts);
-            CDpo *newo = cursd->newPoly(0, &poly, yx->ldesc, 0, false);
+            CDpo *newo = cursd->newPoly(0, &poly, yx->ldesc(), 0, false);
             if (!newo) {
                 Errs()->add_error("newPoly failed");
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
@@ -1114,10 +1114,10 @@ cEdit::put(int x, int y, int buffer)
                 stk.TLoadCurrent(&tftmp);
             }
         }
-        else if (yx->type == CDWIRE) {
-            Wire wire = ((yb_w*)yx)->wire;
+        else if (yx->type() == CDWIRE) {
+            Wire wire(*((YankBufW*)yx)->wire());
             wire.points = Point::dup_with_xform(wire.points, &stk, wire.numpts);
-            CDo *newo = cursd->newWire(0, &wire, yx->ldesc, 0, false);
+            CDo *newo = cursd->newWire(0, &wire, yx->ldesc(), 0, false);
             if (!newo) {
                 Errs()->add_error("newWire failed");
                 Log()->ErrorLog(mh::ObjectCreation, Errs()->get_error());
@@ -1142,16 +1142,16 @@ cEdit::put(int x, int y, int buffer)
 void
 cEdit::yank(CDol *slist, BBox *AOI, bool clipping)
 {
-    yb *y0 = 0;
+    YankBuf *y0 = 0;
     for (CDol *sl = slist; sl; sl = sl->next) {
         if (!sl->odesc->is_normal() || sl->odesc->state() == CDobjSelected)
             continue;
-        yb *yx = add_yank(sl->odesc, AOI, y0, clipping);
+        YankBuf *yx = add_yank(sl->odesc, AOI, y0, clipping);
         if (yx)
             y0 = yx;
     }
     if (y0) {
-        yb::destroy(ed_yank_buffer[ED_YANK_DEPTH-1]);
+        YankBuf::destroy(ed_yank_buffer[ED_YANK_DEPTH-1]);
         for (int i = ED_YANK_DEPTH-1; i > 0; i--)
             ed_yank_buffer[i] = ed_yank_buffer[i-1];
         ed_yank_buffer[0] = y0;
@@ -1517,8 +1517,8 @@ inst:
 }
 
 
-yb *
-cEdit::add_yank(CDo *odesc, BBox *AOI, yb *y0, bool clipout)
+YankBuf *
+cEdit::add_yank(CDo *odesc, BBox *AOI, YankBuf *y0, bool clipout)
 {
     if (!odesc)
         return (y0);
@@ -1536,8 +1536,8 @@ box:
             b->BB.bottom -= AOI->bottom;
             b->BB.right -= AOI->left;
             b->BB.top -= AOI->bottom;
-            yb *yx = new yb_b(odesc->ldesc(), &b->BB);
-            yx->next = y0;
+            YankBuf *yx = new YankBufB(odesc->ldesc(), &b->BB);
+            yx->set_next(y0);
             y0 = yx;
         }
         Blist::destroy(b0);
@@ -1557,9 +1557,9 @@ poly:
                 p->po.points[i].x -= AOI->left;
                 p->po.points[i].y -= AOI->bottom;
             }
-            yb *yx = new yb_p(odesc->ldesc(), &p->po);
+            YankBuf *yx = new YankBufP(odesc->ldesc(), &p->po);
             p->po.points = 0;
-            yx->next = y0;
+            yx->set_next(y0);
             y0 = yx;
         }
         PolyList::destroy(p0);
@@ -1636,8 +1636,8 @@ wire:
                 wire.points[j].x -= AOI->left;
                 wire.points[j].y -= AOI->bottom;
             }
-            yb *yx = new yb_w(odesc->ldesc(), &wire);
-            yx->next = y0;
+            YankBuf *yx = new YankBufW(odesc->ldesc(), &wire);
+            yx->set_next(y0);
             y0 = yx;
         }
         PolyList::destroy(p0);
@@ -1650,96 +1650,138 @@ inst:
 // End of cEdit functions
 
 
+void
+YankBufB::display_ghost_put(CDtf *tfold, CDtf *tftmp)
+{
+    BBox BB(yb_BB);
+    DSP()->TLoadCurrent(tfold);
+    Point *points;
+    DSP()->TBB(&BB, &points);
+    DSP()->TLoadCurrent(tftmp);
+    if (points) {
+        Gst()->ShowGhostPath(points, 5);
+        delete [] points;
+    }
+    else
+        Gst()->ShowGhostBox(BB.left, BB.bottom, BB.right, BB.top);
+}
+
+
+double
+YankBufB::area()
+{
+    return (yb_BB.area());
+}
+// End of YankBufB functions.
+
+
+void
+YankBufP::display_ghost_put(CDtf *tfold, CDtf *tftmp)
+{
+    DSP()->TLoadCurrent(tfold);
+    Point *points = Point::dup_with_xform(yb_poly.points, DSP(), yb_poly.numpts);
+    DSP()->TLoadCurrent(tftmp);
+    Gst()->ShowGhostPath(points, yb_poly.numpts);
+    delete [] points;
+}
+
+
+double
+YankBufP::area()
+{
+    return (yb_poly.area());
+}
+// End of YankBufP functions.
+
+
+void
+YankBufW::display_ghost_put(CDtf *tfold, CDtf *tftmp)
+{
+    Point *points = yb_wire.points;
+    DSP()->TLoadCurrent(tfold);
+    yb_wire.points = Point::dup_with_xform(points, DSP(), yb_wire.numpts);
+    DSP()->TLoadCurrent(tftmp);
+    EGst()->showGhostWire(&yb_wire);
+    delete [] yb_wire.points;
+    yb_wire.points = points;
+}
+
+
+double
+YankBufW::area()
+{
+    return (yb_wire.area());
+}
+// End of YankBufW functions.
+
+
 //----------------
 // Ghost Rendering
 
 namespace {
-    struct ybl_t
+    struct YankBufList
     {
-        ybl_t(yb *elt, ybl_t *n)
+        YankBufList(YankBuf *elt, YankBufList *n)
             {
-                yb_elt = elt;
-                next = n;
+                l_ybuf = elt;
+                l_next = n;
             }
 
-        static void destroy(ybl_t *y)
+        static void destroy(YankBufList *y)
             {
                 while (y) {
-                    ybl_t *yx = y;
-                    y = y->next;
+                    YankBufList *yx = y;
+                    y = y->l_next;
                     delete yx;
                 }
             }
 
-        yb *yb_elt;
-        ybl_t *next;
+        YankBufList *next()         { return (l_next); }
+        YankBuf *ybuf()             { return (l_ybuf); }
+        static YankBufList *ghost_display_list()            { return (l_display_list); }
+        static void set_ghost_display_list(YankBufList *l)  { l_display_list = l; }
+
+        static void add_yank_buf(YankBuf *y)
+            {
+                l_display_list = new YankBufList(y, l_display_list);
+            }
+
+        static void clear()
+            {
+                destroy(l_display_list);
+                l_display_list = 0;
+            }
+
+        static void display_ghost_put(CDtf *tfold, CDtf *tftmp)
+            {
+                for (YankBufList *y = l_display_list; y; y = y->l_next)
+                    y->l_ybuf->display_ghost_put(tfold, tftmp);
+            }
+
+private:
+        YankBuf *l_ybuf;
+        YankBufList *l_next;
+
+        static YankBufList *l_display_list;
     };
 
-    void display_ghost_put(yb *yx, CDtf *tfold, CDtf *tftmp)
-    {
-        if (yx->type == CDBOX) {
-            BBox BB = ((yb_b*)yx)->BB;
-            DSP()->TLoadCurrent(tfold);
-            Point *points;
-            DSP()->TBB(&BB, &points);
-            DSP()->TLoadCurrent(tftmp);
-            if (points) {
-                Gst()->ShowGhostPath(points, 5);
-                delete [] points;
-            }
-            else
-                Gst()->ShowGhostBox(BB.left, BB.bottom, BB.right, BB.top);
-        }
-        else if (yx->type == CDPOLYGON) {
-            Poly *po = &((yb_p*)yx)->poly;
-            DSP()->TLoadCurrent(tfold);
-            Point *points = Point::dup_with_xform(po->points, DSP(),
-                po->numpts);
-            DSP()->TLoadCurrent(tftmp);
-            Gst()->ShowGhostPath(points, po->numpts);
-            delete [] points;
-        }
-        else if (yx->type == CDWIRE) {
-            Wire *w = &((yb_w*)yx)->wire;
-            Point *points = w->points;
-            DSP()->TLoadCurrent(tfold);
-            w->points = Point::dup_with_xform(points, DSP(), w->numpts);
-            DSP()->TLoadCurrent(tftmp);
-            EGst()->showGhostWire(w);
-            delete [] w->points;
-            w->points = points;
-        }
-    }
+    // The objects list for ghosting during put.
+    YankBufList *YankBufList::l_display_list = 0;
 
 
-    // Return the object with the largest area from among the next
-    // n items in the list, and advance the list.
+    // Return the object with the largest area from among the next n
+    // items in the list, and advance the list.
     //
-    yb *pick_one(ybl_t **plist, int n)
+    YankBuf *pick_one(YankBufList **plist, int n)
     {
         double amx = 0.0;
         int i = 0;
-        yb *ypick = 0;
+        YankBuf *ypick = 0;
         while (*plist && i < n) {
-            yb *y = (*plist)->yb_elt;
-            *plist = (*plist)->next;
+            YankBuf *y = (*plist)->ybuf();
+            *plist = (*plist)->next();
             i++;
-            double a = 0.0;
-            if (y->type == CDBOX) {
-                BBox BB = ((yb_b*)y)->BB;
-                a = BB.area();
-            }
-            else if (y->type == CDPOLYGON) {
-                Poly *po = &((yb_p*)y)->poly;
-                a = po->area();
-            }
-            else if (y->type == CDWIRE) {
-                Wire *w = &((yb_w*)y)->wire;
-                a = w->area();
-            }
-            else
-                // shouldn't happen
-                continue;
+            double a = y->area();
             if (a > amx) {
                 amx = a;
                 ypick = y;
@@ -1747,10 +1789,6 @@ namespace {
         }
         return (ypick);
     }
-
-
-    // The objects list for ghosting during put.
-    ybl_t *ghost_display_list;
 }
 
 
@@ -1768,8 +1806,8 @@ cEditGhost::showGhostYankBuf(int x, int y, int, int)
     CDtf tftmp;
     DSP()->TCurrent(&tftmp);
 
-    for (ybl_t *ybl = ghost_display_list; ybl; ybl = ybl->next)
-        display_ghost_put(ybl->yb_elt, &tfold, &tftmp);
+    YankBufList::display_ghost_put(&tfold, &tftmp);
+
     DSP()->TPop();
 }
 
@@ -1780,39 +1818,33 @@ cEditGhost::showGhostYankBuf(int x, int y, int, int)
 void
 cEditGhost::ghost_put_setup(bool on)
 {
-    if (on) {
-        ybl_t::destroy(ghost_display_list);  // should never need this
-        ghost_display_list = 0;
-        if (!PutCmd)
-            return;
-        unsigned int n = 0;
-        for (yb *yx = ED()->yankBuffer()[PutCmd->index()]; yx; yx = yx->next) {
-            ghost_display_list = new ybl_t(yx, ghost_display_list);
-            n++;
-        }
-        if (n > EGst()->eg_max_ghost_objects) {
-            // Too many objects to show efficiently.  Keep only the
-            // objects with the largest area among groups.
-
-            unsigned int n1 = n/EGst()->eg_max_ghost_objects;
-            unsigned int n2 = n%EGst()->eg_max_ghost_objects;
-            ybl_t *y0 = ghost_display_list;
-            ybl_t *yl0 = 0;
-            unsigned int j = 0, np;
-            for (unsigned int i = 0; i < n; i += np) {
-                np = n1 + (++j < n2);
-                yb *y = pick_one(&y0, np);
-                if (!y)
-                    break;
-                yl0 = new ybl_t(y, yl0);
-            }
-            ybl_t::destroy(ghost_display_list);
-            ghost_display_list = yl0;
-        }
+    YankBufList::clear();
+    if (!on || !PutCmd)
+        return;
+    unsigned int n = 0;
+    for (YankBuf *yx = ED()->yankBuffer()[PutCmd->index()]; yx; yx = yx->next()) {
+        YankBufList::add_yank_buf(yx);
+        n++;
     }
-    else {
-        ybl_t::destroy(ghost_display_list);
-        ghost_display_list = 0;
+    if (n > EGst()->eg_max_ghost_objects) {
+        // Too many objects to show efficiently.  Keep only the
+        // objects with the largest area among groups.
+
+        unsigned int n1 = n/EGst()->eg_max_ghost_objects;
+        unsigned int n2 = n%EGst()->eg_max_ghost_objects;
+        YankBufList *y0 = YankBufList::ghost_display_list();
+        YankBufList *yl0 = 0;
+        unsigned int j = 0, np;
+        for (unsigned int i = 0; i < n; i += np) {
+            np = n1 + (++j < n2);
+            YankBuf *y = pick_one(&y0, np);
+            if (!y)
+                break;
+            yl0 = new YankBufList(y, yl0);
+        }
+        YankBufList::clear();
+        YankBufList::set_ghost_display_list(yl0);
     }
 }
+// End of cEditGhost functions.
 

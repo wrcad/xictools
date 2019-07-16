@@ -64,12 +64,12 @@ namespace {
     namespace gtkptedit {
         struct sTE
         {
-            sTE(GRobject, te_info_t*, void(*)(te_info_t*, CDsterm*), CDsterm*);
+            sTE(GRobject, TermEditInfo*, void(*)(TermEditInfo*, CDsterm*), CDsterm*);
             ~sTE();
 
             GtkWidget *shell() { return (te_popup); }
 
-            void update(te_info_t*, CDsterm*);
+            void update(TermEditInfo*, CDsterm*);
 
         private:
             static void te_cancel_proc(GtkWidget*, void*);
@@ -84,7 +84,7 @@ namespace {
             GtkWidget *te_fixed;
             GtkWidget *te_physgrp;
             GtkWidget *te_toindex_sb;
-            void (*te_action)(te_info_t*, CDsterm*);
+            void (*te_action)(TermEditInfo*, CDsterm*);
             CDsterm *te_term;
             const char *te_lname;
 
@@ -99,8 +99,8 @@ using namespace gtkptedit;
 
 
 void
-cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, te_info_t *tinfo,
-    void(*action)(te_info_t*, CDsterm*), CDsterm *term, int x, int y)
+cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, TermEditInfo *tinfo,
+    void(*action)(TermEditInfo*, CDsterm*), CDsterm *term, int x, int y)
 {
     if (!GRX || !mainBag())
         return;
@@ -149,7 +149,7 @@ cExt::PopUpPhysTermEdit(GRobject caller, ShowMode mode, te_info_t *tinfo,
 // End of cSced functions.
 
 
-sTE::sTE(GRobject caller, te_info_t *tinfo, void(*action)(te_info_t*, CDsterm*),
+sTE::sTE(GRobject caller, TermEditInfo *tinfo, void(*action)(TermEditInfo*, CDsterm*),
     CDsterm *term)
 {
     TE = this;
@@ -365,7 +365,7 @@ sTE::~sTE()
 
 
 void
-sTE::update(te_info_t *tinfo, CDsterm *term)
+sTE::update(TermEditInfo *tinfo, CDsterm *term)
 {
     const char *name = tinfo->name();
     if (!name)
@@ -471,7 +471,7 @@ sTE::te_action_proc(GtkWidget *caller, void*)
             CDp_snode *ps = TE->te_term->node_prpty();
             if (!ps)
                 return;
-            te_info_t tinfo(Tstring(ps->term_name()), TE->te_lname,
+            TermEditInfo tinfo(Tstring(ps->term_name()), TE->te_lname,
                 ps->index(), f, true);
             (*TE->te_action)(&tinfo, TE->te_term);
             EX()->PopUpPhysTermEdit(0, MODE_UPD, &tinfo, 0, TE->te_term,

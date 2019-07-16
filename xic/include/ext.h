@@ -161,7 +161,7 @@ class cGroupDesc;
 struct pathfinder;
 struct MenuBox;
 struct sParamTab;
-struct te_info_t;
+struct TermEditInfo;
 struct sDevList;
 struct sDevInst;
 struct sDevInstList;
@@ -534,8 +534,8 @@ public:
     void PopUpExtSetup(GRobject, ShowMode);                         // export
     void PopUpSelections(GRobject, ShowMode);
     void PopUpDevices(GRobject, ShowMode);
-    void PopUpPhysTermEdit(GRobject, ShowMode, te_info_t*,
-        void(*)(te_info_t*, CDsterm*), CDsterm*, int, int);
+    void PopUpPhysTermEdit(GRobject, ShowMode, TermEditInfo*,
+        void(*)(TermEditInfo*, CDsterm*), CDsterm*, int, int);
 
     // ext_viatest.h
     static XIrt isConnection(CDs*, const sVia*, const CDo*, const CDo*,

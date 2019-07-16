@@ -108,17 +108,17 @@ public:
     void Open(const char*);
     void QueueModel(const char*, const char*, const char*);
     void QueueSubckt(const char*);
-    sp_line_t *PrintModels();
-    sp_line_t *PrintSubckts();
+    SpiceLine *PrintModels();
+    SpiceLine *PrintSubckts();
     bool IsModel(const char*);
-    sp_line_t *ModelText(const char*);
-    sp_line_t *SubcktText(const char*);
+    SpiceLine *ModelText(const char*);
+    SpiceLine *SubcktText(const char*);
     void Close();
 
 private:
     char *word_tab(const char*);
     bool scan_file(const char*, const char*);
-    sp_line_t *read_entry(libent_t*);
+    SpiceLine *read_entry(libent_t*);
     libent_t *mosFind(const char*, const char*);
 
     SymTab *WordTab;    // Table for path strings that are used frequently,

@@ -59,11 +59,12 @@
 #define XIV_PRODUCT_CODE    3
 
 // Look ahead
+struct CXstate;
+struct ULstate;
 struct CmdDesc;
 struct FIOreadPrms;
 struct LayerFillData;
 struct line;
-struct Ptxt;
 struct sAuthChk;
 struct SIfile;
 class SIinterp;
@@ -86,41 +87,53 @@ namespace ginterf
 {
     struct HCcb;
 }
-namespace ed_edit {
-    struct sEditState;
-}
 
 // Storage of undo/redo lists, etc., for mode switch.
 //
 struct sModeSave
 {
+    // This holds state for mode switching.
+    //
+    struct EditState
+    {
+        EditState()
+            {   
+                PhysCX = ElecCX = 0;
+                PhysUL = ElecUL = 0;
+            }
+
+        CXstate *PhysCX;
+        CXstate *ElecCX;
+        ULstate *PhysUL;
+        ULstate *ElecUL;
+    };
+
     sModeSave();
     void saveCurrent();
     void assertSaved();
     void clearHist();
     CDl *currentLd();
 
-    ed_edit::sEditState *editState() { return (EditState); }
-    void setEditState(ed_edit::sEditState *s) { EditState = s; }
-
-    BBox PhysMainWin;
-    BBox ElecMainWin;
+    EditState *editState()              { return (msEditState); }
+    void setEditState(EditState *s)     { msEditState = s; }
 
 private:
-    double PhysMagn;
-    CDcellName PhysCurCellName;
-    CDcellName PhysTopCellName;
-    CDcellName ElecCurCellName;
-    CDcellName ElecTopCellName;
-    double PhysCharWidth;
-    double PhysCharHeight;
-    double ElecCharWidth;
-    double ElecCharHeight;
-    CDtf PhysTf;
-    CDtf ElecTf;
-    CDl *PhysLd;
-    CDl *ElecLd;
-    ed_edit::sEditState *EditState;
+    BBox msPhysMainWin;
+    BBox msElecMainWin;
+    double msPhysMagn;
+    CDcellName msPhysCurCellName;
+    CDcellName msPhysTopCellName;
+    CDcellName msElecCurCellName;
+    CDcellName msElecTopCellName;
+    double msPhysCharWidth;
+    double msPhysCharHeight;
+    double msElecCharWidth;
+    double msElecCharHeight;
+    CDtf msPhysTf;
+    CDtf msElecTf;
+    CDl *msPhysLd;
+    CDl *msElecLd;
+    EditState *msEditState;
 };
 
 
@@ -184,9 +197,9 @@ enum CursorType {
 
 // This list type is used to pass lists of property values for display.
 //
-struct Ptxt
+struct PrptyText
 {
-    Ptxt(char *h, char *s, CDp *p, Ptxt *n = 0)
+    PrptyText(char *h, char *s, CDp *p, PrptyText *n = 0)
         {
             pt_head = h;
             pt_string = s;
@@ -195,29 +208,29 @@ struct Ptxt
             pt_next = n;
         }
 
-    ~Ptxt()
+    ~PrptyText()
         {
             delete [] pt_head;
             delete [] pt_string;
         }
 
-    static void destroy(Ptxt *p)
+    static void destroy(PrptyText *p)
         {
             while(p) {
-                Ptxt *px = p;
+                PrptyText *px = p;
                 p = p->pt_next;
                 delete px;
             }
         }
 
-    // Convert the Ptxt list into a long string, and fill in the
-    // offsets in the Ptxt elements.
+    // Convert the PrptyText list into a long string, and fill in the
+    // offsets in the PrptyText elements.
     //
-    static char *tostring(Ptxt *thisp)
+    static char *tostring(PrptyText *thisp)
         {
             int cnt = 0;
             sLstr lstr;
-            for (Ptxt *p = thisp; p; p = p->pt_next) {
+            for (PrptyText *p = thisp; p; p = p->pt_next) {
                 p->pt_start = cnt;
                 lstr.add(p->pt_head);
                 cnt += strlen(p->pt_head);
@@ -230,8 +243,8 @@ struct Ptxt
             return (lstr.string_trim());
         }
 
-    Ptxt *next()            const { return (pt_next); }
-    void set_next(Ptxt *p)        { pt_next = p; }
+    PrptyText *next()            const { return (pt_next); }
+    void set_next(PrptyText *p)        { pt_next = p; }
 
     const char *head()      const { return (pt_head); }
     const char *string()    const { return (pt_string); }
@@ -250,7 +263,7 @@ private:
     int pt_start;
     int pt_end;
     CDp *pt_pdesc;
-    Ptxt *pt_next;
+    PrptyText *pt_next;
 };
 
 // Prototype for registered 'bang' commands.  True is returned if a
@@ -425,8 +438,8 @@ public:
     char *NewCellName();
 
     // prpty.cc
-    Ptxt *PrptyStrings(CDs*);
-    Ptxt *PrptyStrings(CDo*, CDs*);
+    PrptyText *PrptyStrings(CDs*);
+    PrptyText *PrptyStrings(CDo*, CDs*);
     char *GetPseudoProp(CDo*, int);
     bool IsBoundaryVisible(const CDs*, const CDo*);
 

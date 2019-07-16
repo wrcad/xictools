@@ -55,14 +55,14 @@ struct sPbase : public gtk_bag
             pi_drag_y = 0;
             pi_dragging = false;
         }
-    virtual ~sPbase() { Ptxt::destroy(pi_list); }
+    virtual ~sPbase() { PrptyText::destroy(pi_list); }
 
-    Ptxt *resolve(int, CDo**);
+    PrptyText *resolve(int, CDo**);
 
     static sPbase *prptyInfoPtr();
 
 protected:
-    Ptxt *get_selection();
+    PrptyText *get_selection();
     void update_display();
     void select_range(int, int);
     int button_dn(GtkWidget*, GdkEvent*, void*);
@@ -83,9 +83,9 @@ protected:
         gint x, gint y, GtkSelectionData*, guint, guint);
 
     int pi_line_selected;
-    Ptxt *pi_list;
+    PrptyText *pi_list;
     CDo *pi_odesc;
-    int(*pi_btn_callback)(Ptxt*);
+    int(*pi_btn_callback)(PrptyText*);
     int pi_start;
     int pi_end;
     int pi_drag_x;

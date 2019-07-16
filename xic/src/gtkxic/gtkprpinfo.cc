@@ -229,7 +229,7 @@ sPi::update(CDo *odesc)
 {
     if (pi_odesc)
         DSP()->ShowCurrentObject(ERASE, pi_odesc, HighlightingColor);
-    Ptxt::destroy(pi_list);
+    PrptyText::destroy(pi_list);
     pi_list = 0;
     if (odesc)
         pi_odesc = odesc;
@@ -256,12 +256,12 @@ sPi::purge(CDo *odold, CDo *odnew)
 // End of sPi functions.
 
 
-Ptxt *
+PrptyText *
 sPbase::resolve(int offset, CDo **odp)
 {
     if (odp)
         *odp = pi_odesc;
-    for (Ptxt *p = pi_list; p; p = p->next()) {
+    for (PrptyText *p = pi_list; p; p = p->next()) {
         if (offset >= p->start() && offset < p->end())
             return (p);
     }
@@ -269,10 +269,10 @@ sPbase::resolve(int offset, CDo **odp)
 }
 
 
-// Return the Ptxt element corresponding to the selected line, or 0 if
+// Return the PrptyText element corresponding to the selected line, or 0 if
 // there is no selection.
 //
-Ptxt *
+PrptyText *
 sPbase::get_selection()
 {
     int start, end;
@@ -280,7 +280,7 @@ sPbase::get_selection()
     end = pi_end;
     if (start == end)
         return (0);
-    for (Ptxt *p = pi_list; p; p = p->next()) {
+    for (PrptyText *p = pi_list; p; p = p->next()) {
         if (start >= p->start() && start < p->end())
             return (p);
     }
@@ -303,7 +303,7 @@ sPbase::update_display()
 
     else {
         int cnt = 0;
-        for (Ptxt *p = pi_list; p; p = p->next()) {
+        for (PrptyText *p = pi_list; p; p = p->next()) {
             p->set_start(cnt);
 
             GdkColor *c, *cx = 0;
@@ -408,7 +408,7 @@ sPbase::button_dn(GtkWidget *caller, GdkEvent *event, void*)
     y = gtk_text_iter_get_line(&iline);
     // line_start points to start of selected line, or 0
     if (line_start && *line_start != '\n') {
-        Ptxt *p = pi_list;
+        PrptyText *p = pi_list;
         int pos = line_start - string;
         for ( ; p; p = p->next()) {
             if (pos >= p->start() && pos < p->end())
@@ -493,7 +493,7 @@ sPbase::drag_data_get(GtkSelectionData *selection_data)
         gtk_signal_emit_stop_by_name(GTK_OBJECT(wb_textarea), "drag-data-get");
     }
 
-    Ptxt *p = get_selection();
+    PrptyText *p = get_selection();
     if (!p)
         return;
 

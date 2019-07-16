@@ -120,13 +120,13 @@
 #define LpDeviceKeyV2Str  "DeviceKeyV2"
 
 // Arg to PopUpTermEdit
-struct te_info_t
+struct TermEditInfo
 {
-    te_info_t(const CDp_snode*, int);
-    te_info_t(const CDsterm*);
-    te_info_t(const CDp_bsnode*);
+    TermEditInfo(const CDp_snode*, int);
+    TermEditInfo(const CDsterm*);
+    TermEditInfo(const CDp_bsnode*);
 
-    te_info_t(const char *n, const char *lnm, unsigned int ix, unsigned int f,
+    TermEditInfo(const char *n, const char *lnm, unsigned int ix, unsigned int f,
         bool p)
         {
             ti_name = n;
@@ -140,7 +140,7 @@ struct te_info_t
             ti_has_phys = p;
         }
 
-    te_info_t(const char *n, unsigned int ix, unsigned int f, const char *nx)
+    TermEditInfo(const char *n, unsigned int ix, unsigned int f, const char *nx)
         {
             ti_name = n;
             ti_netex = lstring::copy(nx);
@@ -153,7 +153,7 @@ struct te_info_t
             ti_has_phys = false;
         }
 
-    ~te_info_t()
+    ~TermEditInfo()
         {
             delete [] ti_netex;
         }
@@ -214,10 +214,10 @@ private:
 // Store a line of spice text.  This can look like the similar struct
 // in WRspice, but we don't use these features here.
 //
-struct sp_line_t
+struct SpiceLine
 {
 // #define SP_LINE_FULL
-    sp_line_t(const char *s = 0)
+    SpiceLine(const char *s = 0)
         {
             li_next = 0;
             li_line = lstring::copy(s);
@@ -228,29 +228,29 @@ struct sp_line_t
 #endif
         }
 
-    ~sp_line_t()
+    ~SpiceLine()
         {
             delete [] li_line;
 #ifdef SP_LINE_FULL
             delete [] li_error;
-            sp_line_t::destroy(li_actual);
+            SpiceLine::destroy(li_actual);
 #endif
         }
 
-    static void destroy(sp_line_t *t)
+    static void destroy(SpiceLine *t)
         {
             while (t) {
-                sp_line_t *tx = t;
+                SpiceLine *tx = t;
                 t = t->li_next;
                 delete tx;
             }
         }
 
-    sp_line_t *li_next;
+    SpiceLine *li_next;
     char *li_line;
 #ifdef SP_LINE_FULL
     char *li_error;
-    sp_line_t *li_actual;
+    SpiceLine *li_actual;
     int li_linenum;
 #endif
 };
@@ -278,7 +278,7 @@ public:
     cSced();
     void modelLibraryOpen(const char*);                             // export
     void modelLibraryClose();                                       // export
-    sp_line_t *modelText(const char*);
+    SpiceLine *modelText(const char*);
     bool isModel(const char*);
     void closeSpice();                                              // export
     bool simulationActive();                                        // export
@@ -405,7 +405,7 @@ public:
     hyList *setAnalysisList(hyList*);
     bool dumpSpiceFile(const char*);
     void dumpSpiceDeck(FILE*);                                      // export
-    sp_line_t *makeSpiceDeck(CDs*, SymTab** = 0);                   // export
+    SpiceLine *makeSpiceDeck(CDs*, SymTab** = 0);                   // export
     stringlist *makeSpiceListing(CDs*);
 
     // sced_subckt.cc
@@ -432,8 +432,8 @@ public:
     void PopUpDevEdit(GRobject, ShowMode);                          // export
     bool PopUpNodeMap(GRobject, ShowMode, int = -1);                // export
     void PopUpSim(SpType);                                          // export
-    void PopUpTermEdit(GRobject, ShowMode, te_info_t*,
-        void(*)(te_info_t*, CDp*), CDp*, int, int);
+    void PopUpTermEdit(GRobject, ShowMode, TermEditInfo*,
+        void(*)(TermEditInfo*, CDp*), CDp*, int, int);
 
     cSpiceIPC *spif()                   { return (sc_spice_interface); }
     cModLib *modlib()                   { return (sc_model_library); }

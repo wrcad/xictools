@@ -279,7 +279,7 @@ namespace {
             bool move_terminal(int, int, int, int, bool);
             void show_terms(bool, int);
             void show_term(bool, CDp_snode*, int);
-            static void te_cb(te_info_t*, CDp*);
+            static void te_cb(TermEditInfo*, CDp*);
             void edit_terminal(CDp_snode*, bool);
             int term_disp_num(int);
 
@@ -590,7 +590,7 @@ SubcState::delete_terminal(CDp_snode *pn)
     cursde->prptyUnlink(pn);
     if (EditNode == Nodes[index]) {
         EditNode = 0;
-        te_info_t tinfo((CDp_snode*)0, 0);
+        TermEditInfo tinfo((CDp_snode*)0, 0);
         SCD()->PopUpTermEdit(0, MODE_UPD, &tinfo, te_cb, 0, 0, 0);
     }
     Nodes[index] = 0;
@@ -616,7 +616,7 @@ SubcState::delete_bterm(CDp_bsnode *pn)
     cursde->prptyUnlink(pn);
     if (EditBterm == pn) {
         EditBterm = 0;
-        te_info_t tinfo((CDp_bsnode*)0);
+        TermEditInfo tinfo((CDp_bsnode*)0);
         SCD()->PopUpTermEdit(0, MODE_UPD, &tinfo, te_cb, 0, 0, 0);
     }
     Opers = new sNop(N_BDEL, pn->index(), pn, Opers);
@@ -2138,7 +2138,7 @@ SubcState::delete_terminal(int x, int y)
         cursde->prptyUnlink(pn);
         if (EditNode == Nodes[index]) {
             EditNode = 0;
-            te_info_t tinfo((CDp_snode*)0, 0);
+            TermEditInfo tinfo((CDp_snode*)0, 0);
             SCD()->PopUpTermEdit(0, MODE_UPD, &tinfo, te_cb, 0, 0, 0);
         }
         Nodes[index] = 0;
@@ -2312,7 +2312,7 @@ SubcState::show_term(bool display, CDp_snode *pn, int count)
 // currently selected node/terminal.
 //
 void
-SubcState::te_cb(te_info_t *tinfo, CDp *prp)
+SubcState::te_cb(TermEditInfo *tinfo, CDp *prp)
 {
     if (!tinfo) {
         // Terminal editor popping down.
@@ -2590,7 +2590,7 @@ SubcState::edit_terminal(CDp_snode *pn, bool upd)
         cnt++;
     }
 
-    te_info_t tinfo(pn, cnt);
+    TermEditInfo tinfo(pn, cnt);
     SCD()->PopUpTermEdit(0, upd ? MODE_UPD : MODE_ON, &tinfo, te_cb, pn,
         x + 50, y + 20);
     if (!upd) {
@@ -2736,7 +2736,7 @@ SubcState::delete_bterm(int x, int y)
         cursde->prptyUnlink(pn);
         if (EditBterm == pn) {
             EditBterm = 0;
-            te_info_t tinfo((CDp_bsnode*)0);
+            TermEditInfo tinfo((CDp_bsnode*)0);
             SCD()->PopUpTermEdit(0, MODE_UPD, &tinfo, te_cb, 0, 0, 0);
         }
         Opers = new sNop(N_BDEL, pn->index(), pn, Opers);
@@ -2900,7 +2900,7 @@ SubcState::edit_bterm(CDp_bsnode *pn, bool upd)
     EditBterm = 0;
     int x, y;
     Menu()->PointerRootLoc(&x, &y);
-    te_info_t tinfo(pn);
+    TermEditInfo tinfo(pn);
     SCD()->PopUpTermEdit(0, MODE_ON, &tinfo, te_cb, pn, x + 50, y + 20);
     if (!upd) {
         EditVisible = true;

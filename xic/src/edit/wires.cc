@@ -1107,11 +1107,11 @@ WireState::delete_vertices()
         Point *pts = new Point[wdesc->numpts()];
         int npts = 0;
         bool merge = false;
-        for (Vtex *v = o->points(); v; v = v->v_next) {
-            if (v->v_movable)
+        for (Vertex *v = o->points(); v; v = v->next()) {
+            if (v->movable())
                 continue;
-            pts[npts].x = v->v_p.x;
-            pts[npts].y = v->v_p.y;
+            pts[npts].x = v->px();
+            pts[npts].y = v->py();
             // If removing an end vertex, attempt to merge with existing
             // wires.
             if (npts == 0 || npts == wdesc->numpts()-1)

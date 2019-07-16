@@ -77,7 +77,7 @@ namespace {
             void update();
 
         private:
-            Ptxt *get_selection();
+            PrptyText *get_selection();
             void update_display();
             void select_range(int, int);
 
@@ -97,7 +97,7 @@ namespace {
             int pc_action_calls;
             int pc_start;
             int pc_end;
-            Ptxt *pc_list;
+            PrptyText *pc_list;
             int pc_dspmode;
 
             static sAddEnt pc_elec_addmenu[];
@@ -293,7 +293,7 @@ sPc::~sPc()
         Pc->pc_action_calls = 0;
     }
     Pc = 0;
-    Ptxt::destroy(pc_list);
+    PrptyText::destroy(pc_list);
     Menu()->MenuButtonSet(0, MenuCPROP, false);
     PL()->AbortLongText();
     if (wb_shell)
@@ -305,7 +305,7 @@ sPc::~sPc()
 void
 sPc::update()
 {
-    Ptxt::destroy(pc_list);
+    PrptyText::destroy(pc_list);
     CDs *cursd = CurCell();
     pc_list = cursd ? XM()->PrptyStrings(cursd) : 0;
     update_display();
@@ -347,10 +347,10 @@ sPc::update()
 }
 
 
-// Return the Ptxt element corresponding to the selected line, or 0 if
+// Return the PrptyText element corresponding to the selected line, or 0 if
 // there is no selection
 //
-Ptxt *
+PrptyText *
 sPc::get_selection()
 {
     int start, end;
@@ -358,7 +358,7 @@ sPc::get_selection()
     end = pc_end;
     if (start == end)
         return (0);
-    for (Ptxt *p = pc_list; p; p = p->next()) {
+    for (PrptyText *p = pc_list; p; p = p->next()) {
         if (start >= p->start() && start < p->end())
             return (p);
     }
@@ -379,7 +379,7 @@ sPc::update_display()
             "Current cell has no properties.", -1, -1);
     else {
         int cnt = 0;
-        for (Ptxt *p = pc_list; p; p = p->next()) {
+        for (PrptyText *p = pc_list; p; p = p->next()) {
             p->set_start(cnt);
 
             GdkColor *c;
@@ -490,14 +490,14 @@ sPc::pc_action_proc(GtkWidget *caller, void *client_data)
 
         Pc->pc_action_calls++;
         if (client_data == (void*)EditCode) {
-            Ptxt *p = Pc->get_selection();
+            PrptyText *p = Pc->get_selection();
             if (p)
                 ED()->cellPrptyEdit(p);
             if (Pc)
                 GRX->Deselect(caller);
         }
         else if (client_data == (void*)DeleteCode) {
-            Ptxt *p = Pc->get_selection();
+            PrptyText *p = Pc->get_selection();
             if (p)
                 ED()->cellPrptyRemove(p);
             if (Pc)
@@ -579,7 +579,7 @@ sPc::pc_text_btn_hdlr(GtkWidget *caller, GdkEvent *event, void*)
     y = gtk_text_iter_get_line(&iline);
     // line_start points to start of selected line, or 0
     if (line_start && *line_start != '\n') {
-        Ptxt *p = Pc->pc_list;
+        PrptyText *p = Pc->pc_list;
         int pos = line_start - string;
         for ( ; p; p = p->next()) {
             if (pos >= p->start() && pos < p->end())

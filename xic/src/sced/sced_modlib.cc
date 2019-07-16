@@ -182,12 +182,12 @@ cModLib::QueueSubckt(const char *name)
 // Return the spice lines for the models referenced in the current
 // context.  Free the entries from the referenced list.
 //
-sp_line_t *
+SpiceLine *
 cModLib::PrintModels()
 {
-    sp_line_t *d0 = 0, *d = 0;
+    SpiceLine *d0 = 0, *d = 0;
     while (Models && Models->ml_level == ContextLevel) {
-        sp_line_t *d1 = ModelText(Models->ml_name);
+        SpiceLine *d1 = ModelText(Models->ml_name);
         if (d1 != 0) {
             if (d0 == 0)
                 d = d0 = d1;
@@ -206,12 +206,12 @@ cModLib::PrintModels()
 // Return the spice lines for the subckts referenced in the current
 // context.  Free the entries from the referenced list.
 //
-sp_line_t *
+SpiceLine *
 cModLib::PrintSubckts()
 {
-    sp_line_t *d0 = 0, *d = 0;
+    SpiceLine *d0 = 0, *d = 0;
     while (Subckts && Subckts->ml_level == ContextLevel) {
-        sp_line_t *d1 = SubcktText(Subckts->ml_name);
+        SpiceLine *d1 = SubcktText(Subckts->ml_name);
         if (d1 != 0) {
             if (d0 == 0)
                 d = d0 = d1;
@@ -244,7 +244,7 @@ cModLib::IsModel(const char *name)
 
 // Return the text for the named model.
 //
-sp_line_t *
+SpiceLine *
 cModLib::ModelText(const char *name)
 {
     char *buf = lstring::copy(name);
@@ -259,7 +259,7 @@ cModLib::ModelText(const char *name)
 
 // Return the text for the named subcircuit.
 //
-sp_line_t *
+SpiceLine *
 cModLib::SubcktText(const char *name)
 {
     char *buf = lstring::copy(name);
@@ -420,7 +420,7 @@ cModLib::scan_file(const char *dir, const char *name)
 
 // Return a listing of the text associated with ent.
 //
-sp_line_t *
+SpiceLine *
 cModLib::read_entry(libent_t *ent)
 {
     char buf[512];
@@ -435,7 +435,7 @@ cModLib::read_entry(libent_t *ent)
     int insub = 0;
     bool inmod = false;
     char *s;
-    sp_line_t *w = 0, *w0 = 0;
+    SpiceLine *w = 0, *w0 = 0;
     while ((s = fgets(buf, 512, fp)) != 0) {
         NTstrip(buf);
         char wbuf[16];
@@ -483,9 +483,9 @@ cModLib::read_entry(libent_t *ent)
             // oops, pointer is wrong
             break;
         if (!w0)
-            w = w0 = new sp_line_t;
+            w = w0 = new SpiceLine;
         else {
-            w->li_next = new sp_line_t;
+            w->li_next = new SpiceLine;
             w = w->li_next;
         }
         s = buf + strlen(buf) - 1;
@@ -503,7 +503,7 @@ cModLib::read_entry(libent_t *ent)
 
 namespace {
     void getLW(const char*, double*, double*);
-    char *getParam(const char*, sp_line_t*);
+    char *getParam(const char*, SpiceLine*);
 }
 
 // Find a model with matching base name with l,w matching the selection
@@ -531,7 +531,7 @@ cModLib::mosFind(const char *name, const char *params)
             // condition count is returned.
             int cnds = 0;
 
-            sp_line_t *mlines = 0;
+            SpiceLine *mlines = 0;
             if (l > 0) {
                 mlines = read_entry(ent);
 
@@ -654,9 +654,9 @@ namespace {
 
 
     char *
-    getParam(const char *token, sp_line_t *lines)
+    getParam(const char *token, SpiceLine *lines)
     {
-        for (sp_line_t *l = lines; l; l = l->li_next) {
+        for (SpiceLine *l = lines; l; l = l->li_next) {
             const char *s = l->li_line;
             char *tok;
             while ((tok = cSced::sp_gettok(&s)) != 0) {

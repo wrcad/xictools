@@ -750,7 +750,7 @@ cSpiceBuilder::devname(const sKey *dev)
 
     // The model wasn't found in the text, first look in the model.lib
     // database.
-    sp_line_t *l = SCD()->modelText(sb_model);
+    SpiceLine *l = SCD()->modelText(sb_model);
     if (l) {
         const char *s = l->li_line;
         char *tok = cSced::sp_gettok(&s);
@@ -758,7 +758,7 @@ cSpiceBuilder::devname(const sKey *dev)
         tok = cSced::sp_gettok(&s);
         delete [] tok;
         tok = cSced::sp_gettok(&s);
-        sp_line_t::destroy(l);
+        SpiceLine::destroy(l);
         s = setnp(dev, tok);
         delete [] tok;
         return (s);

@@ -115,10 +115,10 @@ public:
             {
                 for (ds_sp--; ds_sp >= 0; ds_sp--)
                     delete [] ds_names[ds_sp];
-                sp_line_t::destroy(ds_saves);
+                SpiceLine::destroy(ds_saves);
             }
 
-        sp_line_t *lines()      { return (ds_saves); }
+        SpiceLine *lines()      { return (ds_saves); }
 
         void process(CDs*, const char*);
 
@@ -127,7 +127,7 @@ public:
         void pop();
         void save(const char*);
 
-        sp_line_t *ds_saves;    // List of .saves.
+        SpiceLine *ds_saves;    // List of .saves.
         int ds_sp;              // stack pointer
         char *ds_names[CDMAXCALLDEPTH];
                                 // subcircuit call stack
@@ -139,25 +139,25 @@ public:
     void setSkipNoPhys(bool b)  { sp_skip_nophys = b; }
     bool skipNoPhys()           { return (sp_skip_nophys); }
 
-    sp_line_t *makeSpiceDeck(SymTab** = 0, bool = false);
+    SpiceLine *makeSpiceDeck(SymTab** = 0, bool = false);
 
 private:
-    sp_line_t *ckt_deck(CDs*, bool = false);
+    SpiceLine *ckt_deck(CDs*, bool = false);
     sp_nmlist_t *def_node_term_list(CDs*);
     stringlist *list_def_node_names();
-    sp_line_t *add_mutual(CDs*, bool, stringlist**, int);
-    sp_line_t *add_dot_save(const char*, char**);
-    sp_line_t *add_dot_global();
-    sp_line_t *add_dot_include();
-    sp_line_t *assert_lib_properties(sp_line_t*);
+    SpiceLine *add_mutual(CDs*, bool, stringlist**, int);
+    SpiceLine *add_dot_save(const char*, char**);
+    SpiceLine *add_dot_global();
+    SpiceLine *add_dot_include();
+    SpiceLine *assert_lib_properties(SpiceLine*);
     void add_global_node(sLstr*, int, CDc*, const sp_nmlist_t*);
-    sp_line_t *subckt_line(CDs*);
-    sp_line_t *subcircuits(CDs*);
+    SpiceLine *subckt_line(CDs*);
+    SpiceLine *subcircuits(CDs*);
     SymTab *subcircuits_tab(CDs*);
     void subc_list(CDs*, SymTab*);
-    sp_line_t *get_sptext_labels(CDs*);
-    void spice_deck_sort(sp_line_t*);
-    void check_dups(sp_line_t*, CDs*);
+    SpiceLine *get_sptext_labels(CDs*);
+    void spice_deck_sort(SpiceLine*);
+    void check_dups(SpiceLine*, CDs*);
     void read_alias();
     sp_alias_t *get_alias(const char**);
     char *subst_alias(char*);

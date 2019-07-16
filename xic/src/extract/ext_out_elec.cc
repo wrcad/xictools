@@ -105,12 +105,12 @@ cExt::dumpElecNetlist(FILE *fp, CDs *sdesc, sDumpOpts *opts)
 
 namespace {
     void
-    pr_line(FILE *fp, sp_line_t *d0)
+    pr_line(FILE *fp, SpiceLine *d0)
     {
-        for (sp_line_t *d = d0; d; d = d->li_next) {
+        for (SpiceLine *d = d0; d; d = d->li_next) {
 #ifdef SP_LINE_FULL
             if (d->li_actual != 0) {
-                for (sp_line_t *d1 = d->li_actual; d1; d1 = d1->li_next)
+                for (SpiceLine *d1 = d->li_actual; d1; d1 = d1->li_next)
                     fprintf(fp, "%s\n", d1->li_line);
             }
             else
@@ -142,10 +142,10 @@ cExt::dump_elec_recurse(FILE *fp, CDs *sdesc, int depth, sDumpOpts *opts,
             }
         }
         // Print title line
-        sp_line_t *d0 = SCD()->makeSpiceDeck(sdesc, &sptab);
+        SpiceLine *d0 = SCD()->makeSpiceDeck(sdesc, &sptab);
         if (spice_only)
             pr_line(fp, d0);
-        sp_line_t::destroy(d0);
+        SpiceLine::destroy(d0);
     }
 
     tab->add((unsigned long)sdesc, 0, false);
@@ -180,7 +180,7 @@ cExt::dump_elec_recurse(FILE *fp, CDs *sdesc, int depth, sDumpOpts *opts,
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
             delete [] h->stTag;
-            sp_line_t::destroy((sp_line_t*)h->stData);
+            SpiceLine::destroy((SpiceLine*)h->stData);
             h->stData = 0;
             h->stTag = 0;
             delete h;
@@ -229,10 +229,10 @@ cExt::dump_elec(FILE *fp, CDs *sdesc, int, sDumpOpts *opts, SymTab*,
         fprintf(fp, "\n");
     }
     if (opts->isset(opt_atom_spice)) {
-        sp_line_t *d0;
+        SpiceLine *d0;
         d0 = sptab ?
-            (sp_line_t*)SymTab::get(sptab, Tstring(sdesc->cellname())) : 0;
-        if (d0 == (sp_line_t*)ST_NIL)
+            (SpiceLine*)SymTab::get(sptab, Tstring(sdesc->cellname())) : 0;
+        if (d0 == (SpiceLine*)ST_NIL)
             d0 = 0;
         pr_line(fp, d0);
     }
