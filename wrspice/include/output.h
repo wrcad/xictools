@@ -176,7 +176,7 @@ struct sCHECKprms : public sOUTcontrol
     int trial(int, int, double, double);
     CBret evaluate();
     void findEdge(const char*, const char*);
-    bool findRange();
+    bool findRange(bool, bool);
 
     static void setMfilePlotname(const char*, const char*);
     static const char *mfilePlotname(const char*);
@@ -235,10 +235,13 @@ struct sCHECKprms : public sOUTcontrol
     void set_iterno(int n)      { ch_iterno = n; }
 
 private:
+
     // check.cc
     void set_rangevec();
-    bool findrange1(double, int, bool, bool);
-    bool findrange2(double, int, bool, bool);
+    bool find_upper1(double, int);
+    bool find_lower1(double, int);
+    bool find_upper2(double, int);
+    bool find_lower2(double, int);
     bool findext1(int, double*, double, double);
     bool findext2(int, double, double*, double);
     void addpoint(int, int, bool);
