@@ -1101,10 +1101,12 @@ namespace {
             return (0);
         }
         const char *start = str;
+        bool keepws = false;
         if (*str == '\'' || *str == '"') {
             // Quoted.  Keep the quote marks, the quoted quantity is
             // the value.
 
+            keepws = true;
             char c = *str++;
             while (*str) {
                 if (*str == c && *(str-1) != '\\')
@@ -1151,7 +1153,7 @@ namespace {
         char *val = new char[str - start + 1];
         char *n = val;
         for (const char *t = start; t < str; t++) {
-            if (!isspace(*t))
+            if (keepws || !isspace(*t))
                 *n++ = *t;
         }
         *n = 0;
