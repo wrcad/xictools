@@ -157,50 +157,55 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
-xic-4.3.8  8/x/2019
+xic-4.3.8  8/5/2019
 Current Release
 
 CHANGES AND NEW FEATURES
 ------- --- --- --------
 
+* Internal code refactoring for better maintainability.
+
+* Internal code changes to avoid compiler warnings and faults from
+  new compilers.
+
+* OpenAccess Support
+
+    The OA TCL pcell example now works in Xic.  One can place,
+    remaster, etc.  Added a debug print of the PCell evaluator name.
+
+* Misc. Changes
+
+    Now just append ".cir" to the cell name to create the default
+    SPICE dump file name.  Previously anything after a final '.' was
+    stripped before appending "cir".
+
+    When entering an analysis string for the run and deck buttons,
+    leading periods are now ignored, e.g. ".tran" and "tran" are
+    equivalent.
+
+
 BUGS FIXED
 ---- -----
 
-    WRsoice/Xic:  white space is now preserved in double-quoted parameter
-    strings, e.g. signal="b10110 r=-1".  Previously the internal space
-    would not appear in substituted string.
+* Fixed a bug that prevented the Place button operation from Content
+  windows from the OA Libraries pop-up from working except for
+  libraries defined in the top level lib.defs file.
 
-    Xic: refactoring involving sced.h.
-    Xic: refactoring in main.h and ghost.h.
-    Xic: refactored vertex editing code.
-    Xic:  add note regarding Debian and warnings about missing adwaita
-    theme.
-    Xic:  refactor pushpop.cc/h.
-    Xic:  Fixed crash when making wires found with Debian 10.
-    Fix compiler warnings from gcc-9.1 (Fedora).
-   Xic/WRspice:  rpm script fix (wr_install needed to be run twice, or
-    existing install should be explicitly removed before new install).
-    WRspice:  interim, get rid of memset(this, ...) in constructors.
-    Xic:  The OA TCL pcell example now works in Xic.  One can place,
-    remaster, etc.  So why is there a need for Python portable PCells,
-    TCL is already protable.  Maybe the need to know both OA and TCL
-    is too much of a barrier.
-    Xic: Add debug print of PCell evaluator name.
-    Xic:  OA interface load_cell prototype changed, i.e., plug-in
-    interface change.  The name of the created Xic cell is passed back,
-    fixing bugs that would happen when the cell name is changed from the
-    OA cell name due to a clash.  Most cells in the analogLib couldn't be
-    opened or placed from the Contents Listing since "oa_" is prepended to
-    the OA cell name to avoid clashes with the Xic device library.  Fixed
-    a spurious OA message that appeared sometimes when saving native
-    cells.
-    Xic:  when entering analysis string (run and deck buttons) leading
-    periods are now stripped, e.g., .tran -> tran.
-    Xic:  process "SpiceInclude" so that text appears in SPICE listing
-    used in interactive runs, previously only appeared in generated files.
-    Xic:  just append ".cir" to cell name to create SPICE dump file name,
-    previously anything after the final '.' was stripped before appending
-    ".cir".
+* Fixed:  for RPM distributions, wr_install needed to be run twice to
+  properly update an existing installation.
+
+* Note regarding Debian and warnings about missing Adwaita theme.  User
+  can add this theme:
+
+  sudo apt install gnome-themes-extra
+
+* Eliminated a spurious OA message that appeared sometimes when saving
+  native cells.
+
+* Changes to the OpenAccess interface to avoid cell name clashes with
+  Xic device library names.  Many cells in the analogLib couldn't be
+  opened or placed from the Contents Listing, "oa_" is now prepended
+  to the OA cell name to avoid clashes.
 
 
 -------------------------------------------------------------------------------
