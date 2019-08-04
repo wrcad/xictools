@@ -44,6 +44,51 @@
 #include "oa_prop.h"
 
 
+namespace {
+    // Recursively search for libName, return true if found.
+    //
+    bool is_library_rc(oaLibDefList *list, oaScalarName &libName)
+    {
+        if (!list)
+            return (false);
+        try {
+            oaIter<oaLibDefListMem> listIter(list->getMembers());
+            oaLibDefListMem *listMem;
+            while ((listMem = listIter.getNext()) != 0) {
+                switch (listMem->getType()) {
+                case oacLibDefType:
+                    if (oaLibDef::find(list, libName))
+                        return (true);
+                    break;
+
+                case oacLibDefListRefType:
+                    {
+                        oaString tempString;
+                        ((oaLibDefListRef*)listMem)->getRefListPath(
+                            tempString);
+                        oaLibDefList *nextList =
+                            oaLibDefList::get(tempString, 'r');
+                        if (is_library_rc(nextList, libName))
+                            return (true);
+                    }
+                    break;
+
+                default:
+                    break;
+                }
+            }
+            return (false);
+        }
+        catch (oaCompatibilityError &ex) {
+            throw;
+        }
+        catch (oaException &excp) {
+            throw;
+        }
+    }
+}
+
+
 // Return true if libname is the name of a library found in the
 // lib.defs tree.  Set retval true if the library is open.
 //
@@ -59,7 +104,7 @@ cOA::is_library(const char *libname, bool *retval)
     try {
         oaScalarName libName(oaNativeNS(), libname);
         oaLibDefList *list = oaLibDefList::getTopList();
-        if (oaLibDef::find(list, libName)) {
+        if (is_library_rc(list, libName)) {
             if (retval)
                 *retval = (oaLib::find(libName) != 0);
             return (true);
