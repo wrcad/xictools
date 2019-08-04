@@ -50,7 +50,7 @@
 //
 struct Vertex
 {
-    Vertex(const Point &px) : v_p(px.x, px.y), v_next(0), v_movable(false) { }
+    Vertex(const Point &tx) : v_p(tx.x, tx.y), v_next(0), v_movable(false) { }
 
     static void destroy(Vertex *v)
         {
