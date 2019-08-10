@@ -2759,13 +2759,14 @@ sLine::process_conditionals(sParamTab *ptab)
         }
 
         else if (lstring::cimatch(IF_KW, dd->li_line)) {
-            if (ptab)
-                ptab->param_subst_all(&dd->li_line);
-            if (strchr(dd->li_line, '$'))
-                dd->var_subst();
             inif++;
 
             if (!blhead) {
+                if (ptab)
+                    ptab->param_subst_all(&dd->li_line);
+                if (strchr(dd->li_line, '$'))
+                    dd->var_subst();
+
                 ifcx = new ifel(ifcx, inif);
                 if (istrue(dd->li_line)) {
                     ifcx->btaken = true;
@@ -2778,13 +2779,15 @@ sLine::process_conditionals(sParamTab *ptab)
         }
         else if (lstring::cimatch(ELIF_KW, dd->li_line) ||
                 lstring::cimatch(ELSEIF_KW, dd->li_line)) {
-            if (ptab)
-                ptab->param_subst_all(&dd->li_line);
-            if (strchr(dd->li_line, '$'))
-                dd->var_subst();
             if (!inif)
                 err_msg(dd, ELIF_KW " or " ELSEIF_KW);
             else if (inif == ifcx->blev) {
+                if (!blhead || !ifcx->btaken) {
+                    if (ptab)
+                        ptab->param_subst_all(&dd->li_line);
+                    if (strchr(dd->li_line, '$'))
+                        dd->var_subst();
+                }
                 if (!blhead)
                     blhead = dp;
                 else if (!ifcx->btaken && istrue(dd->li_line)) {

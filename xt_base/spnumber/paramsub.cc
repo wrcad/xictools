@@ -819,11 +819,28 @@ sParamTab::squote_subst(char **str) const
 }
 
 
-// If tok is a parameter, perform the substitution.
+// If tok is a parameter, perform the substitution and return true.
 //
 bool
 sParamTab::subst(char **tok) const
 {
+    // Special case, parameter definition check:  def(foo) is replaced
+    // by 1/0 if foo is defined/undefined.
+    char *t = *tok;
+    if (lstring::ciprefix("def(", t)) {
+        t += 4;
+        int n = strlen(t) - 1;
+        if (t[n] == ')')
+            t[n] = 0;
+        sParam *p = (sParam*)get(t);
+        if (p)
+            (*tok)[0] = '1';
+        else
+            (*tok)[0] = '0';
+        (*tok)[1] = 0;
+        return (true);
+    }
+
     sParam *p = (sParam*)get(*tok);
     if (p) {
         if (sHtab::get(pt_rctab, *tok) != 0) {
@@ -992,6 +1009,38 @@ namespace {
         else {
             while (*str && !(isspace(*str) || lstring::instr(tchars, *str)))
                 lstr.add_c(*str++);
+        }
+
+        // Special case, return "def(foo)" as one token.  White space
+        // can appear around the parens, but is stripped in returned
+        // token.
+        //
+        if (lstring::cieq(lstr.string(), "def")) {
+            char *s0 = str;
+            bool found = false;
+            while (isspace(*str))
+                str++;
+            if (*str == '(') {
+                str++;
+                while (isspace(*str))
+                    str++;
+                while (*str && !lstring::instr(tchars, *str))
+                    str++;
+                while (isspace(*str))
+                    str++;
+                if (*str == ')') {
+                    str++;
+                    lstr.add_c('(');
+                    while (s0 < str) {
+                        if (*s0 != '(' && *s0 != ')' && !isspace(*s0))
+                            lstr.add_c(*s0);
+                        s0++;
+                    }
+                    found = true;
+                }
+            }
+            if (!found)
+                str = s0;
         }
         *end = str;
 

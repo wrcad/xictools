@@ -32,8 +32,8 @@ case $1 in
 oses)
   echo \
 "Darwin \
-LinuxDebian9 \
-LinuxFedora29 \
+LinuxDebian10 \
+LinuxFedora30 \
 LinuxOpenSUSE42 \
 LinuxRHEL5.i686 \
 LinuxRHEL5 \
@@ -49,9 +49,9 @@ host)
   case $2 in
   Darwin)
     echo macbook;;
-  LinuxDebian9)
+  LinuxDebian10)
     echo debby;;
-  LinuxFedora29)
+  LinuxFedora30)
     echo fedor;;
   LinuxOpenSUSE42)
     echo byron;;
@@ -73,9 +73,9 @@ sfx)
   case $2 in
   Darwin)
     echo pkg;;
-  LinuxDebian9)
+  LinuxDebian10)
     echo deb;;
-  LinuxFedora29)
+  LinuxFedora30)
     echo rpm;;
   LinuxOpenSUSE42)
     echo rpm;;
