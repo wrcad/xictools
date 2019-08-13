@@ -1180,7 +1180,7 @@ cTech::dispatch(FILE *techfp)
     if (Matching(Tkw.ReadCdsLmap())) {
         if (!cTechCdsIn::readLayerMap(tc_inbuf)) {
             const char *err = Errs()->get_error();
-            return (SaveError("%s: %s", Tkw.ReadCdsTech(),
+            return (SaveError("%s: %s", Tkw.ReadCdsLmap(),
                 err ? err : "unknown error"));
         }
         return (TCmatch);
