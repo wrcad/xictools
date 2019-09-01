@@ -591,15 +591,16 @@ fhLayout::setup()
     if (var) {
         double val = atof(var);
         if (val >= FH_MIN_TARG_VOLEL && val <= FH_MAX_TARG_VOLEL) {
-            double vol = 0.0;
+            double a = 0.0;
             for (Layer3d *l = layers(); l; l = l->next()) {
-                if (l->is_conductor())
-                    vol += glYlist3d::volume(l->yl3d());
+                if (l->is_conductor()) {
+                    DspLayerParams *dp = dsp_prm(l->layer_desc());
+                    a += glYlist3d::volume(l->yl3d())/dp->thickness();
+                }
             }
-            double cvol = vol / val;
-            max_rect_size = INTERNAL_UNITS(cbrt(cvol));
-            TPRINT("Volume %g, FhVolElTarget %s, max_rec_size %d\n",
-                vol, var, max_rect_size);
+            max_rect_size = INTERNAL_UNITS(sqrt(a/val));
+            TPRINT("Area %g, FhVolElTarget %s, max_rec_size %d\n",
+                a, var, max_rect_size);
         }
     }
 
