@@ -4576,7 +4576,13 @@ sMark_Fence::show(WindowDesc *wdesc, bool display)
         int x1, y1, x2, y2;
         wdesc->LToP(mX, mY, x1, y1);
         wdesc->LToP(mEndX, mEndY, x2, y2);
-        if (x1 == x2) {
+        if (x1 == x2 && y1 == y2) {
+            show_line(wdesc, x1-3, y1, x1, y1+3);
+            show_line(wdesc, x1, y1+3, x1+3, y1);
+            show_line(wdesc, x1+3, y1, x1, y1-3);
+            show_line(wdesc, x1, y1-3, x1-3, y1);
+        }
+        else if (x1 == x2) {
             show_line(wdesc, x1-1, y1, x1-1, y2);
             show_line(wdesc, x1+1, y1, x1+1, y2);
         }
@@ -4585,6 +4591,7 @@ sMark_Fence::show(WindowDesc *wdesc, bool display)
             show_line(wdesc, x1, y1+1, x2, y1+1);
         }
         else {
+            // shouldn't get here
             show_line(wdesc, x1, y1, x2, y2);
         }
     }

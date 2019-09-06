@@ -314,7 +314,7 @@ sCniGripDesc::sCniGripDesc()
     gd_maxval = 0.0;
     gd_scale = 1.0;
     gd_snap = 0.0;
-    gd_loc = 0;
+    gd_loc = CN_LL;
     gd_absolute = false;
     gd_vert = false;
 }
@@ -489,14 +489,24 @@ sCniGripDesc::parse(const char **pstr)
             char *t = tok;
             if (lstring::ciprefix("location:", t))
                 t += strlen("location:");
+            if (!strcasecmp(t, "lower_left"))
+                gd_loc = CN_LL;
             if (!strcasecmp(t, "center_left"))
-                gd_loc = 0;  // L
+                gd_loc = CN_CL;  // L
+            if (!strcasecmp(t, "upper_left"))
+                gd_loc = CN_UL;
             else if (!strcasecmp(t, "lower_center"))
-                gd_loc = 1;  // B
-            else if (!strcasecmp(t, "center_right"))
-                gd_loc = 2;  // R
+                gd_loc = CN_LC;  // B
+            else if (!strcasecmp(t, "center_center"))
+                gd_loc = CN_CC;
             else if (!strcasecmp(t, "upper_center"))
-                gd_loc = 3;  // T
+                gd_loc = CN_UC;  // T
+            else if (!strcasecmp(t, "lower_right"))
+                gd_loc = CN_LR;
+            else if (!strcasecmp(t, "center_right"))
+                gd_loc = CN_CR;  // R
+            else if (!strcasecmp(t, "upper_right"))
+                gd_loc = CN_UR;
             else {
                 Errs()->add_error("Unsupported location \"%s\".", t);
                 delete [] tok;
@@ -708,30 +718,60 @@ sGrip::setup(const sCniGripDesc &gd, const BBox &BB)
 
     int x1, y1, x2, y2;
     switch (gd_loc) {
-    default:
-    case 0:  // L
+    case CN_LL:
         x1 = BB.left;
-        y1 = BB.top;
-        x2 = x1;
+        y1 = BB.bottom;
+        x2 = BB.left;
         y2 = BB.bottom;
         break;
-    case 1:  // B
+    case CN_CL: // L
+        x1 = BB.left;
+        y1 = BB.top;
+        x2 = BB.left;
+        y2 = BB.bottom;
+        break;
+    case CN_UL:
+        x1 = BB.left;
+        y1 = BB.top;
+        x2 = BB.left;
+        y2 = BB.top;
+        break;
+    case CN_LC: // B
         x1 = BB.left;
         y1 = BB.bottom;
         x2 = BB.right;
-        y2 = y1;
+        y2 = BB.bottom;
         break;
-    case 2:  // R
-        x1 = BB.right;
-        y1 = BB.bottom;
-        x2 = x1;
-        y2 = BB.top;
+    default:
+    case CN_CC:
+        x1 = (BB.left + BB.right)/2;
+        y1 = (BB.bottom + BB.top)/2;
+        x2 = (BB.left + BB.right)/2;
+        y2 = (BB.bottom + BB.top)/2;
         break;
-    case 3:  // T
+    case CN_UC: // T
         x1 = BB.right;
         y1 = BB.top;
         x2 = BB.left;
-        y2 = y1;
+        y2 = BB.top;
+        break;
+    case CN_LR:
+        x1 = BB.right;
+        y1 = BB.bottom;
+        x2 = BB.right;
+        y2 = BB.bottom;
+        break;
+    case CN_CR: // R
+        x1 = BB.right;
+        y1 = BB.bottom;
+        x2 = BB.right;
+        y2 = BB.top;
+        break;
+    case CN_UR:
+        x1 = BB.right;
+        y1 = BB.top;
+        x2 = BB.right;
+        y2 = BB.top;
         break;
     }
 

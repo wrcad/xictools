@@ -41,6 +41,18 @@
 #ifndef GRIP_H
 #define GRIP_H
 
+ // Ciranova Location enum.
+enum cnLocation {
+    CN_LL,  // lower_left
+    CN_CL,  // center left
+    CN_UL,  // upper_left
+    CN_LC,  // lower_center
+    CN_CC,  // center_center
+    CN_UC,  // upper_center
+    CN_LR,  // lower_right
+    CN_CR,  // center_right
+    CN_UR   // upper_right
+};
 
 // This struct holds parameters obtained from parsing a Ciranova
 // stretch handle property.  We will follow this methodology in Xic. 
@@ -86,7 +98,7 @@ protected:
     double gd_maxval;       // Parameter maximum value.
     double gd_scale;        // Scale factgor for parameter value.
     double gd_snap;         // Snap grid for parameter value.
-    int gd_loc;             // Object active edge: 0-3 for LBRT.
+    cnLocation gd_loc;      // Object active edge/ grip location.
     bool gd_absolute;       // True if increment measured with absolute
                             // coordinates, otherwise increment is
                             // meaasured relative to object center.
