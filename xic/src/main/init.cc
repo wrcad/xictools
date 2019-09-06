@@ -177,6 +177,31 @@ cMain::AppInit()
             tpath = 0;
         }
 
+        if (!fp) {
+            const char *dpath = getenv("XIC_TECH_DIR");
+            if (dpath && *dpath) {
+                if (lstring::is_rooted(dpath)) {
+                    char *tt = new char[strlen(dpath) + strlen(buf) + 2];
+                    sprintf(tt, "%s/%s", dpath, buf);
+                    fp = fopen(tt, "r");
+                    if (fp) {
+                        delete [] tpath;
+                        tpath = tt;
+                    }
+                    else
+                        delete [] tt;
+                }
+                else {
+                    sprintf(e, "/%s/%s", dpath, buf);
+                    fp = fopen(tpath, "r");
+                }
+            }
+            if (fp) {
+                realname = tpath;
+                tpath = 0;
+            }
+        }
+
         // Next, try a subdirectory named "techfiles".
         if (!fp) {
             sprintf(e, "/techfiles/%s", buf);

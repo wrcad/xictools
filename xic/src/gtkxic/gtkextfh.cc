@@ -114,13 +114,14 @@ namespace {
             int fh_line_selected;
 
             GTKspinBtn sb_fh_min_rect;
+            GTKspinBtn sb_fh_min_manh_part;
             GTKspinBtn sb_fh_volel_target;
         };
 
         sFh *Fh;
 
         enum { FhRun, FhRunFile, FhDump, Foreg, ToCons, Enable, Kill };
-        enum { MinRect, VolElTarg, FhPath, FhArgs, FhFreq };
+        enum { MinRect, MinManhPart, VolElTarg, FhPath, FhArgs, FhFreq };
     }
 
     // FastHenry units menu, must have same order and length as Units[]
@@ -451,6 +452,22 @@ sFh::sFh(GRobject c)
         (GtkAttachOptions)0, 2, 2);
     row++;
 
+    frame = gtk_frame_new("FhMinManhPartSize");
+    gtk_widget_show(frame);
+
+    val = FH_MIN_MANH_PART_SIZE_DEF;
+    sb = sb_fh_min_manh_part.init(val, FH_MIN_MANH_PART_SIZE_MIN,
+        FH_MIN_MANH_PART_SIZE_MAX, ndgt);
+    gtk_widget_set_usize(sb, 100, -1);
+    sb_fh_min_manh_part.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+        (void*)MinManhPart, "FhMinManhPartSize");
+    gtk_container_add(GTK_CONTAINER(frame), sb);
+
+    gtk_table_attach(GTK_TABLE(table), frame, 0, 1, row, row+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    row++;
+
     hsep = gtk_hseparator_new();
     gtk_widget_show(hsep);
 
@@ -640,6 +657,15 @@ sFh::update()
         if (var)
             CDvdb()->clearVariable(VA_FhMinRectSize);
         sb_fh_min_rect.set_value(FH_MIN_RECT_SIZE_DEF);
+    }
+
+    var = CDvdb()->getVariable(VA_FhMinManhPartSize);
+    if (sb_fh_min_manh_part.is_valid(var))
+        sb_fh_min_manh_part.set_value(atof(var));
+    else {
+        if (var)
+            CDvdb()->clearVariable(VA_FhMinManhPartSize);
+        sb_fh_min_manh_part.set_value(FH_MIN_MANH_PART_SIZE_DEF);
     }
 
     static double fhvt_bak;
@@ -873,6 +899,9 @@ sFh::fh_def_string(int id)
     case MinRect:
         sprintf(tbuf, "%.*f", ndgt, FH_MIN_RECT_SIZE_DEF);
         return (tbuf);
+    case MinManhPart:
+        sprintf(tbuf, "%.*f", ndgt, FH_MIN_MANH_PART_SIZE_DEF);
+        return (tbuf);
     case VolElTarg:
         sprintf(tbuf, "%.*f", ndgt, FH_DEF_TARG_VOLEL);
         return (tbuf);
@@ -948,6 +977,14 @@ sFh::fh_change_proc(GtkWidget *widget, void *arg)
             CDvdb()->clearVariable(VA_FhMinRectSize);
         else
             CDvdb()->setVariable(VA_FhMinRectSize, s);
+        break;
+    case MinManhPart:
+        if (check_num(s, FH_MIN_MANH_PART_SIZE_MIN, FH_MIN_MANH_PART_SIZE_MAX))
+            break;
+        if (!strcmp(s, fh_def_string(id)))
+            CDvdb()->clearVariable(VA_FhMinManhPartSize);
+        else
+            CDvdb()->setVariable(VA_FhMinManhPartSize, s);
         break;
     case VolElTarg:
         if (check_num(s, FH_MIN_TARG_VOLEL, FH_MAX_TARG_VOLEL))

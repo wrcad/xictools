@@ -57,6 +57,7 @@
 #define VA_FhLayerName          "FhLayerName"
 #define VA_FhMonitor            "FhMonitor"
 #define VA_FhMinRectSize        "FhMinRectSize"
+#define VA_FhMinManhPartSize    "FhMinManhPartSize"
 #define VA_FhUnits              "FhUnits"
 #define VA_FhVolElTarget        "FhVolElTarget"
 
@@ -69,6 +70,9 @@
 #define FH_MIN_RECT_SIZE_DEF    1.0
 #define FH_MIN_RECT_SIZE_MIN    0.01
 #define FH_MIN_RECT_SIZE_MAX    10.0
+#define FH_MIN_MANH_PART_SIZE_DEF   5.0
+#define FH_MIN_MANH_PART_SIZE_MIN   1.0
+#define FH_MIN_MANH_PART_SIZE_MAX   10.0
 
 #define FH_MIN_TARG_VOLEL       1e2
 #define FH_MAX_TARG_VOLEL       1e5

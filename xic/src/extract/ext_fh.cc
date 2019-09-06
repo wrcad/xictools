@@ -603,15 +603,20 @@ fhLayout::setup()
                 a, var, max_rect_size);
         }
     }
+//XXX
+printf("x1\n");
 
     // This is used only when approximating non-Manhattan edges.
     int min_rect_size = INTERNAL_UNITS(FH_MIN_RECT_SIZE_DEF);
-    var = CDvdb()->getVariable(VA_FhMinRectSize);
+//XXX    var = CDvdb()->getVariable(VA_FhMinRectSize);
+    var = CDvdb()->getVariable(VA_FhMinManhPartSize);
     if (var) {
         double val = atof(var);
         if (val >= FH_MIN_RECT_SIZE_MIN && val <= FH_MIN_RECT_SIZE_MAX)
             min_rect_size = INTERNAL_UNITS(val);
     }
+//XXX
+printf("x2\n");
 
     // Create the arrays.
     fhl_layers = new fhLayer[num_layers()];
@@ -632,6 +637,8 @@ fhLayout::setup()
                 c->set_siglam(sigma, lambda);
         }
     }
+//XXX
+printf("x3\n");
 
     // Manhattanize all zoids.  The volume element tiling requires
     // this.
@@ -640,12 +647,17 @@ fhLayout::setup()
             if (l->is_conductor()) {
                 fhLayer *cl = &fhl_layers[l->index()];
                 for (fhConductor *c = cl->cndlist(); c; c = c->next())
-                    c->manhattanize(min_rect_size);
+//XXX                    c->manhattanize(min_rect_size);
+                    c->manhattanize(INTERNAL_UNITS(10.0));
             }
         }
     }
+//XXX
+printf("x4\n");
 
     slice_groups(max_rect_size);
+//XXX
+printf("x5\n");
 
     // Cut at outside edges of other objects, along the long
     // dimension first, then the short dimension.
@@ -706,6 +718,8 @@ fhLayout::setup()
             }
         }
     }
+//XXX
+printf("x6\n");
 
     // Do the self-cutting again, to propagate new boundaries.
     //
@@ -731,6 +745,8 @@ fhLayout::setup()
         }
         TPRINT("Total zcnt=%d\n", ztot);
     }
+//XXX
+printf("x7\n");
 
     // Create the segments, this also creates the nodes.
     for (Layer3d *l = layers(); l; l = l->next()) {
@@ -740,6 +756,8 @@ fhLayout::setup()
                 cd->segmentize(fhl_ngen);
         }
     }
+//XXX
+printf("x8\n");
 
     // Create terminals array.
     fhl_terms = new fhTermList*[num_groups()];
@@ -823,6 +841,8 @@ fhLayout::setup()
             delete zg;
         }
     }
+//XXX
+printf("x9\n");
     if (err)
         return (false);
 
@@ -846,6 +866,8 @@ fhLayout::setup()
             tp = t;
         }
     }
+//XXX
+printf("x10\n");
 
     char *s = check_sort_terms();
     if (s) {
@@ -863,6 +885,8 @@ fhLayout::setup()
             }
         }
     }
+//XXX
+printf("x11\n");
     return (true);
 }
 

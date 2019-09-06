@@ -4200,20 +4200,20 @@ oa_in::readOaTextOverride(oaTextOverride *textOverride, CDs *sdesc, CDl *ldesc)
 }
 
 
-// Here begins som pretty ugly stuff.  The api-major 5 is not drop-in
-// conpatible with api-major 4, which is what we have access to. 
+// Here begins some pretty ugly stuff.  The api-major 5 is not drop-in
+// compatible with api-major 4, which is what we have access to. 
 // Virtuoso 6.1.7 uses api-major 5, which is presently a coalition
 // release, requiring a hefty payment to join the coalition to gain
 // access to the source and headers.  This would still be ugly, as we
 // would need separate plugins for api-major 4 and 5.
 //
 // One can call the initialization function patching in the "5", and
-// things almost work.  There is a seg.  fault when handling
-// oaEvalText, however, but if this is commented out I can read the
-// memory chip databases apparently without error.
+// things almost work.  There is a seg fault when handling oaEvalText,
+// however, but if this is commented out I can read the memory chip
+// databases apparently without error.
 //
 // I found the oa-22.50 docs on-line (supposedly only available to
-// coalition members, ha ha!).  This explains the problem:
+// coalition members).  This explains the problem:
 //
 // ---- from docs ----
 // The IBase class now defines a pure virtual getRefCount function and
@@ -4326,6 +4326,17 @@ namespace {
             {
                 on_eval(textIn, textOut);
             }
+
+#if oacAPIMajorRevNumber == 5
+        // Building on app-major 5, can we provide service to
+        // app-major 4 OA installations?  This entry shouldn't exist
+        // in that case, hopefully its presence would be benign.
+
+        unsigned long getRefCount()
+            {
+                return (0);
+            }
+#endif
     };
 
     // For api-major 5.
