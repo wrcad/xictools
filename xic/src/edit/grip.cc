@@ -491,9 +491,9 @@ sCniGripDesc::parse(const char **pstr)
                 t += strlen("location:");
             if (!strcasecmp(t, "lower_left"))
                 gd_loc = CN_LL;
-            if (!strcasecmp(t, "center_left"))
+            else if (!strcasecmp(t, "center_left"))
                 gd_loc = CN_CL;  // L
-            if (!strcasecmp(t, "upper_left"))
+            else if (!strcasecmp(t, "upper_left"))
                 gd_loc = CN_UL;
             else if (!strcasecmp(t, "lower_center"))
                 gd_loc = CN_LC;  // B
@@ -610,6 +610,8 @@ sGrip::sGrip(CDc *cd)
     g_y1 = 0;
     g_x2 = 0;
     g_y2 = 0;
+    g_ux = 0;
+    g_uy = 0;
     g_active = false;
 }
 
@@ -775,11 +777,63 @@ sGrip::setup(const sCniGripDesc &gd, const BBox &BB)
         break;
     }
 
+    if (gd_vert) {
+        g_ux = 0;
+        g_uy = 1;
+    }
+    else {
+        g_ux = 1;
+        g_uy = 0;
+    }
+
     if (g_cdesc) {
         // Convert to parent cell coordinates.
         cTfmStack stk;
         stk.TPush();
         stk.TApplyTransform(g_cdesc);
+
+        int xm = (x1 + x2)/2;
+        int ym = (y1 + y2)/2;
+        int xmp = xm;
+        int ymp = ym;
+        if (gd_vert)
+            ymp += 10;
+        else
+            xmp += 10;
+        stk.TPoint(&xm, &ym);
+        stk.TPoint(&xmp, &ymp);
+        xmp -= xm;
+        ymp -= ym;
+
+        if (abs(ymp) <= 1) {
+            g_uy = 0;
+            if (xmp > 0)
+                g_ux = 1;
+            else
+                g_ux = -1;
+        }
+        else if (abs(xmp) <= 1) {
+            g_ux = 0;
+            if (ymp > 0)
+                g_uy = 1;
+            else
+                g_uy = -1;
+        }
+        else if (xmp > 0) {
+            g_ux = 1;
+            if (ymp > 0)
+                g_uy = 1;
+            else
+                g_uy = -1;
+        }
+        else {
+            g_ux = -1;
+            if (ymp > 0)
+                g_uy = 1;
+            else
+                g_uy = -1;
+        }
+
         stk.TPoint(&x1, &y1);
         stk.TPoint(&x2, &y2);
         stk.TPop();
@@ -836,25 +890,22 @@ sGrip::param_value(int x1, int y1, int x2, int y2, double *pval) const
     if (d <= 2.0)
         return (false);
 
+#if 1
     Point_c p1(end1x(), end1y());
     Point_c p2(end2x(), end2y());
     Point_c pmid((p1.x + p2.x)/2, (p1.y + p2.y)/2);
-    Point_c p2m(p2.x - pmid.x, p2.y - pmid.y);
-    d = distance(p2m.x, p2m.y);
-    double ux = p2m.y/d;
-    double uy = -p2m.x/d;
 
-    // We don't care about x1,y1.  The "up" location x2,y2 defines the
-    // new parameter value.
-    (void)x1;
-    (void)y1;
+    // We don't care about x1,y1.  The "up" location x2,y2 defines
+    // the new parameter value.
     int dx = x2 - pmid.x;
     int dy = y2 - pmid.y;
-    double a = (ux*dx + uy*dy)/CDphysResolution;
+    double a = (g_ux*dx + g_uy*dy)/CDphysResolution;
+    if (g_ux && g_uy)
+        a /= M_SQRT2;
 
     double scale = gd_scale;
     double snap = gd_snap;
-    // Note gd_absolute is not handled, wtf does it do?
+    // Note gd_absolute is not handled.
 
     double dnew = a*scale;
     if (snap != 0.0)
@@ -883,6 +934,104 @@ sGrip::param_value(int x1, int y1, int x2, int y2, double *pval) const
     if (g_constr && !g_constr->checkConstraint(dnew))
         return (false);
 
+#else
+    Point_c p1(end1x(), end1y());
+    Point_c p2(end2x(), end2y());
+    double dnew;
+    if (p1 != p2) {
+        Point_c pmid((p1.x + p2.x)/2, (p1.y + p2.y)/2);
+        Point_c p2m(p2.x - pmid.x, p2.y - pmid.y);
+        d = distance(p2m.x, p2m.y);
+        double ux = p2m.y/d;
+        double uy = -p2m.x/d;
+
+        // We don't care about x1,y1.  The "up" location x2,y2 defines
+        // the new parameter value.
+        int dx = x2 - pmid.x;
+        int dy = y2 - pmid.y;
+        double a = (ux*dx + uy*dy)/CDphysResolution;
+
+        double scale = gd_scale;
+        double snap = gd_snap;
+        // Note gd_absolute is not handled, wtf does it do?
+
+        dnew = a*scale;
+        if (snap != 0.0)
+            dnew = snap*(int)(dnew/snap);
+        dnew += g_value;
+
+        double amax = (gd_maxval - g_value)/scale;
+        double amin = (gd_minval - g_value)/scale;
+        bool rv = false;
+        if (amax < amin) {
+            double t = amin;
+            amin = amax;
+            amax = t;
+            rv = true;
+        }
+        if (a > amax) {
+            a = amax;
+            dnew = rv ? gd_minval : gd_maxval;
+        }
+        else if (a < amin) {
+            a = amin;
+            dnew = rv ? gd_maxval : gd_minval;
+        }
+
+        // Check against the constraint, if any.
+        if (g_constr && !g_constr->checkConstraint(dnew))
+            return (false);
+    }
+    else {
+        // We don't care about x1,y1.  The "up" location x2,y2 defines the
+        // new parameter value.
+        int dx = x2 - p1.x;
+        int dy = y2 - p1.y;
+        int ux = gd_vert ? 0 : 1;
+        int uy = gd_vert ? 1 : 0;
+        
+//XXX
+/*
+    cTfmStack stk;
+    stk.TPush();
+    stk.TApplyTransform(g_cdesc);
+    stk.TPoint(&ux, &uy);
+    stk.TPop();
+*/
+        double a = (ux*dx + uy*dy)/CDphysResolution;
+
+        double scale = gd_scale;
+        double snap = gd_snap;
+
+        dnew = a*scale;
+        if (snap != 0.0)
+            dnew = snap*(int)(dnew/snap);
+        dnew += g_value;
+
+        double amax = (gd_maxval - g_value)/scale;
+        double amin = (gd_minval - g_value)/scale;
+        bool rv = false;
+        if (amax < amin) {
+            double t = amin;
+            amin = amax;
+            amax = t;
+            rv = true;
+        }
+        if (a > amax) {
+            a = amax;
+            dnew = rv ? gd_minval : gd_maxval;
+        }
+        else if (a < amin) {
+            a = amin;
+            dnew = rv ? gd_maxval : gd_minval;
+        }
+
+        // Check against the constraint, if any.
+        if (g_constr && !g_constr->checkConstraint(dnew))
+            return (false);
+    }
+#endif
+
     if (pval)
         *pval = dnew;
     return (dnew != g_value);
@@ -895,18 +1044,16 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
     Point_c p1(end1x(), end1y());
     Point_c p2(end2x(), end2y());
     Point_c pmid((p1.x + p2.x)/2, (p1.y + p2.y)/2);
-    Point_c p2m(p2.x - pmid.x, p2.y - pmid.y);
-    double d = distance(p2m.x, p2m.y);
-    double ux = p2m.y/d;
-    double uy = -p2m.x/d;
 
     int dx = map_x - pmid.x;
     int dy = map_y - pmid.y;
-    double a = (ux*dx + uy*dy)/CDphysResolution;
+    double a = (g_ux*dx + g_uy*dy)/CDphysResolution;
+    if (g_ux && g_uy)
+        a /= M_SQRT2;
 
     double scale = gd_scale;
     double snap = gd_snap;
-    // Note gd_absolute is not handled, wtf does it do?
+    // Note gd_absolute is not handled.
 
     double dnew = a*scale;
     if (snap != 0.0)
@@ -935,8 +1082,14 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
     if (g_constr && !g_constr->checkConstraint(dnew))
         return;
 
-    dx = mmRnd(a*ux*CDphysResolution);
-    dy = mmRnd(a*uy*CDphysResolution);
+    if (g_ux && g_uy) {
+        dx = mmRnd(a*g_ux*CDphysResolution/M_SQRT2);
+        dy = mmRnd(a*g_uy*CDphysResolution/M_SQRT2);
+    }
+    else {
+        dx = mmRnd(a*g_ux*CDphysResolution);
+        dy = mmRnd(a*g_uy*CDphysResolution);
+    }
     p1.x += dx;
     p1.y += dy;
     p2.x += dx;
@@ -951,7 +1104,15 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
                 if (xlev == 0 && !g_cdesc->has_flag(wdesc->DisplFlags()))
                     continue;
             }
-            wdesc->ShowLineW(p1.x, p1.y, p2.x, p2.y);
+            if (p1 == p2) {
+                int delta = (int)((DSP_GRIP_MARK_PIXELS+1)/wdesc->Ratio());
+                wdesc->ShowLineW(p1.x-delta, p1.y, p1.x, p1.y+delta);
+                wdesc->ShowLineW(p1.x, p1.y+delta, p1.x+delta, p1.y);
+                wdesc->ShowLineW(p1.x+delta, p1.y, p1.x, p1.y-delta);
+                wdesc->ShowLineW(p1.x, p1.y-delta, p1.x-delta, p1.y);
+            }
+            else
+                wdesc->ShowLineW(p1.x, p1.y, p2.x, p2.y);
 
             char buf[128];
             sprintf(buf, "%s %.5f", gd_param, dnew);

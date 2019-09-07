@@ -137,6 +137,8 @@ struct sGrip : public sCniGripDesc
     int end1y()                 const { return (g_y1); }
     int end2x()                 const { return (g_x2); }
     int end2y()                 const { return (g_y2); }
+    int ux()                    const { return (g_ux); }
+    int uy()                    const { return (g_uy); }
     bool active()               const { return (g_active); }
 
 private:
@@ -144,10 +146,12 @@ private:
     CDc *g_cdesc;               // PCell instance pointer.
     const PConstraint *g_constr;// Pointer to parameter constraint.
     int g_id;                   // Unique id for this grip.
-    int g_x1;                   // These define the grip line segment,
-    int g_y1;                   // motion is constrained to be perpendicular
-    int g_x2;                   // to the segment.
+    int g_x1;                   // These define the grip: either a
+    int g_y1;                   // line segment or point.
+    int g_x2;
     int g_y2;
+    signed char g_ux;           // Unit vector of allowed motion.
+    signed char g_uy;
     bool g_active;              // Inactive when instance not expanded.
 };
 

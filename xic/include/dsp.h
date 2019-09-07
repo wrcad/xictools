@@ -74,6 +74,10 @@
 // is less than this value in pixels, don't show fence (grip) marks.
 #define DSP_MIN_FENCE_INST_PIXELS   100
 
+// The grip marks that are not shown as fence lines are diamond shapes
+// extending this many pixels from the center.
+#define DSP_GRIP_MARK_PIXELS    4
+
 // Default dashed line style for unfilled boxes.
 #define DEF_BoxLineStyle        0xe38
 
