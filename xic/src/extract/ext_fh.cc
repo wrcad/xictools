@@ -476,8 +476,18 @@ fhLayout::fhLayout()
     const char *lname = CDvdb()->getVariable(VA_FhLayerName);
     if (!lname)
         lname = FH_LAYER_NAME;
+
+    // This is used only when approximating non-Manhattan edges.
+    int manh_min = INTERNAL_UNITS(FH_MIN_MANH_PART_SIZE_DEF);
+    const char *var = CDvdb()->getVariable(VA_FhMinManhPartSize);
+    if (var) {
+        double val = atof(var);
+        if (val >= FH_MIN_MANH_PART_SIZE_MIN &&
+                val <= FH_MIN_MANH_PART_SIZE_MAX)
+            manh_min = INTERNAL_UNITS(val);
+    }
     if (!init_for_extraction(CurCell(Physical), 0, lname,
-            Tech()->SubstrateEps(), Tech()->SubstrateThickness())) {
+            Tech()->SubstrateEps(), Tech()->SubstrateThickness(), manh_min)) {
         Errs()->add_error("Layer setup failed.");
     }
 }
@@ -603,20 +613,7 @@ fhLayout::setup()
                 a, var, max_rect_size);
         }
     }
-//XXX
-printf("x1\n");
-
-    // This is used only when approximating non-Manhattan edges.
-    int min_rect_size = INTERNAL_UNITS(FH_MIN_RECT_SIZE_DEF);
-//XXX    var = CDvdb()->getVariable(VA_FhMinRectSize);
-    var = CDvdb()->getVariable(VA_FhMinManhPartSize);
-    if (var) {
-        double val = atof(var);
-        if (val >= FH_MIN_RECT_SIZE_MIN && val <= FH_MIN_RECT_SIZE_MAX)
-            min_rect_size = INTERNAL_UNITS(val);
-    }
-//XXX
-printf("x2\n");
+    // All geometry has been Manhattanized.
 
     // Create the arrays.
     fhl_layers = new fhLayer[num_layers()];
@@ -637,27 +634,8 @@ printf("x2\n");
                 c->set_siglam(sigma, lambda);
         }
     }
-//XXX
-printf("x3\n");
-
-    // Manhattanize all zoids.  The volume element tiling requires
-    // this.
-    if (min_rect_size > 0) {
-        for (Layer3d *l = layers(); l; l = l->next()) {
-            if (l->is_conductor()) {
-                fhLayer *cl = &fhl_layers[l->index()];
-                for (fhConductor *c = cl->cndlist(); c; c = c->next())
-//XXX                    c->manhattanize(min_rect_size);
-                    c->manhattanize(INTERNAL_UNITS(10.0));
-            }
-        }
-    }
-//XXX
-printf("x4\n");
 
     slice_groups(max_rect_size);
-//XXX
-printf("x5\n");
 
     // Cut at outside edges of other objects, along the long
     // dimension first, then the short dimension.
@@ -718,8 +696,6 @@ printf("x5\n");
             }
         }
     }
-//XXX
-printf("x6\n");
 
     // Do the self-cutting again, to propagate new boundaries.
     //
@@ -745,8 +721,6 @@ printf("x6\n");
         }
         TPRINT("Total zcnt=%d\n", ztot);
     }
-//XXX
-printf("x7\n");
 
     // Create the segments, this also creates the nodes.
     for (Layer3d *l = layers(); l; l = l->next()) {
@@ -756,8 +730,6 @@ printf("x7\n");
                 cd->segmentize(fhl_ngen);
         }
     }
-//XXX
-printf("x8\n");
 
     // Create terminals array.
     fhl_terms = new fhTermList*[num_groups()];
@@ -841,8 +813,6 @@ printf("x8\n");
             delete zg;
         }
     }
-//XXX
-printf("x9\n");
     if (err)
         return (false);
 
@@ -866,8 +836,6 @@ printf("x9\n");
             tp = t;
         }
     }
-//XXX
-printf("x10\n");
 
     char *s = check_sort_terms();
     if (s) {
@@ -885,8 +853,6 @@ printf("x10\n");
             }
         }
     }
-//XXX
-printf("x11\n");
     return (true);
 }
 

@@ -103,7 +103,7 @@ struct Layer3d
     bool is_insulator()     const { return (is_insulator(l3_ldesc)); }
 
     double epsrel() const;
-    bool extract_geom(const CDs*, const Zlist*);
+    bool extract_geom(const CDs*, const Zlist*, int, int);
     bool intersect(int, int) const;
     bool cut(const Layer3d*);
     void mk3d(bool);
@@ -159,9 +159,9 @@ struct Ldb3d
         }
 
     bool init_for_extraction(CDs *sd, const BBox *BB, const char *fn,
-            double d, double t)
+            double d, double t, int manh_min=0, int manh_mode=0)
         {
-            return (init_stack(sd, BB, false, fn, d, t));
+            return (init_stack(sd, BB, false, fn, d, t, manh_min, manh_mode));
         }
 
     bool order_layers();
@@ -175,7 +175,8 @@ struct Ldb3d
     static void set_logging(bool b)             { db3_logging = b; }
 
 protected:
-    bool init_stack(CDs*, const BBox*, bool, const char*, double, double);
+    bool init_stack(CDs*, const BBox*, bool, const char*, double, double,
+        int=0, int=0);
     bool insert_layer(Layer3d*);
     glZlist3d *find_object_under(const glZoid3d*) const;
 

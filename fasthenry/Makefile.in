@@ -18,7 +18,7 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-FASTHENRY = fasthenry-3.0wr-122918.tar.gz
+FASTHENRY = fasthenry-3.0wr-090919.tar.gz
 
 FASTHENRY_DIR = fasthenry-3.0wr
 
@@ -27,6 +27,9 @@ VERS := \"`./version`\"
 
 all: unpack
 	# Make the KLU version since it is faster.
+	if [ ! -f ../KLU/KLU/Lib/libklu.a ]; then \
+	    cd ../KLU; $(MAKE); \
+        fi
 	cd $(FASTHENRY_DIR); $(MAKE) SOLVER=KLU_SOLVER all
 
 unpack:

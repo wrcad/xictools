@@ -347,7 +347,8 @@ namespace {
 
 bool
 Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
-    const char *mask_lname, double subs_eps, double subs_thickness)
+    const char *mask_lname, double subs_eps, double subs_thickness,
+    int manh_min, int manh_mode)
 {
     // Grab and order the layers to be considered, in the db3_stack
     // list.
@@ -396,7 +397,7 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     Layer3d *lp = 0, *lnxt;
     for (Layer3d *l = db3_stack; l; l = lnxt) {
         lnxt = l->next();
-        l->extract_geom(sdesc, db3_zlref);
+        l->extract_geom(sdesc, db3_zlref, manh_min, manh_mode);
         unsigned int zc = Ylist::count_zoids(l->uncut());
         if (db3_logfp && zc) {
             fprintf(db3_logfp, "Trapezoid count for %s is %u.\n",
@@ -698,7 +699,8 @@ Layer3d::epsrel() const
 // error.
 //
 bool
-Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
+Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref, int manh_min,
+    int manh_mode)
 {
     if (!sdesc)
         return (false);
@@ -729,11 +731,14 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref)
     }
     Zlist::destroy(ztemp);
 
+    zl = Zlist::filter_slivers(zl, 1);
+    if (manh_min > 0.0)
+        zl = Zlist::manhattanize(zl, manh_min, manh_mode);
+
     Ylist::destroy(l3_cut);
     l3_cut = 0;
     Ylist::destroy(l3_uncut);
 
-    zl = Zlist::filter_slivers(zl, 1);
     l3_uncut = zl ? new Ylist(zl) : 0;
     glYlist3d::destroy(l3_yl3d);
     l3_yl3d = 0;
