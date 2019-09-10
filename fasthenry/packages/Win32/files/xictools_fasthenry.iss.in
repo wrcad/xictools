@@ -30,8 +30,11 @@ Source: "..\root\usr\local\xictools\fasthenry\README.mit"; DestDir: "{app}\xicto
 
 Source: "..\root\usr\local\xictools\fasthenry\doc\*"; DestDir: "{app}\xictools\fasthenry\doc"
 Source: "..\root\usr\local\xictools\fasthenry\examples\*"; DestDir: "{app}\xictools\fasthenry\examples"
-Source: "..\root\usr\local\xictools\fasthenry\examples\work\run"; DestDir: "{app}\xictools\fasthenry\examples\work"
-Source: "..\root\usr\local\xictools\fasthenry\examples\work\results\*"; DestDir: "{app}\xictools\fasthenry\examples\work\results"
+Source: "..\root\usr\local\xictools\fasthenry\examples\input\*"; DestDir: "{app}\xictools\fasthenry\examples\input"
+Source: "..\root\usr\local\xictools\fasthenry\examples\results\linux_dss\*"; DestDir: "{app}\xictools\fasthenry\examples\results\linux_dss"
+Source: "..\root\usr\local\xictools\fasthenry\examples\results\linux_klu\*"; DestDir: "{app}\xictools\fasthenry\examples\results\linux_klu"
+Source: "..\root\usr\local\xictools\fasthenry\examples\results\linux_sparse\*"; DestDir: "{app}\xictools\fasthenry\examples\results\linux_sparse"
+Source: "..\root\usr\local\xictools\fasthenry\examples\torture\*"; DestDir: "{app}\xictools\fasthenry\examples\torture"
 
 [code]
 

@@ -49,21 +49,33 @@ done
 
 echo
 echo "%dir /usr/local/xictools/fasthenry/examples"
-exfiles=`$files examples`
-for a in $exfiles; do
-    echo "%attr(0644, root, root) /usr/local/xictools/fasthenry/examples/$a"
+echo "%attr(0644, root, root) /usr/local/xictools/fasthenry/examples/README"
+echo "%attr(0755, root, root) /usr/local/xictools/fasthenry/examples/cf"
+echo "%attr(0755, root, root) /usr/local/xictools/fasthenry/examples/run"
+echo
+echo "%dir /usr/local/xictools/fasthenry/examples/input"
+input=`$files examples_input`
+for a in $input; do
+    echo "%attr(0755, root, root) /usr/local/xictools/fasthenry/examples/input/$a"
 done
-
 echo
-echo "%dir /usr/local/xictools/fasthenry/examples/work"
-echo "%attr(0755, root, root) /usr/local/xictools/fasthenry/examples/work/run"
-
-echo
-echo "%dir /usr/local/xictools/fasthenry/examples/work/results"
-results=`$files results`
+echo "%dir /usr/local/xictools/fasthenry/examples/results"
+echo "%dir /usr/local/xictools/fasthenry/examples/results/linux_dss"
+results=`$files examples_results`
 for a in $results; do
-    echo "%attr(0755, root, root) /usr/local/xictools/fasthenry/examples/work/results/$a"
+    echo "%attr(0644, root, root) /usr/local/xictools/fasthenry/examples/results/linux_dss/$a"
 done
+echo "%dir /usr/local/xictools/fasthenry/examples/results/linux_klu"
+for a in $results; do
+    echo "%attr(0644, root, root) /usr/local/xictools/fasthenry/examples/results/linux_klu/$a"
+done
+echo "%dir /usr/local/xictools/fasthenry/examples/results/linux_sparse"
+for a in $results; do
+    echo "%attr(0644, root, root) /usr/local/xictools/fasthenry/examples/results/linux_sparse/$a"
+done
+echo "%dir /usr/local/xictools/fasthenry/examples/torture"
+echo "%attr(0644, root, root) /usr/local/xictools/fasthenry/examples/torture/README"
+echo "%attr(0644, root, root) /usr/local/xictools/fasthenry/examples/torture/bfh.inp"
 
 echo
 cat files/scripts

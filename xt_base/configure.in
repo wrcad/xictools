@@ -861,6 +861,8 @@ if test $OSNAME = "Win32"; then
     LIBS="$MSLIBS $MSLIBS2 $LIBS"
     EXTRALIBS="-lpthread"
 
+    AC_CHECK_LIB(rt, main, LIBRT="-lrt")
+
 elif test $OSNAME = "Darwin"; then
 dnl  If the gtk2-bundle export package is found, use it.  Otherwise
 dnl  assume libraries/includes are under /opt (MacPorts).
@@ -900,6 +902,8 @@ dnl  assume libraries/includes are under /opt (MacPorts).
     AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
           IMG_LIBS="$IMG_LIBS -ljpeg")
     CURSES="-lcurses"
+    AC_CHECK_LIB(rt, main, LIBRT="-lrt")
+
 else
     tmplibs1=$LIBS
     AC_CHECK_LIB(m, main)
@@ -992,6 +996,7 @@ dnl  Try to link static graphics libraries if found.
         AC_CHECK_LIB(Xext, main, EXTRALIBS="$EXTRALIBS -lXext")
     fi
     AC_CHECK_LIB(dl, main, LIBDL="-ldl")
+    AC_CHECK_LIB(rt, main, LIBRT="-lrt")
 
     AC_CHECK_LIB(ncurses, main, [ CURSES="-lncurses" ],
         AC_CHECK_LIB(curses, main, [
@@ -1032,6 +1037,7 @@ AC_SUBST(IMG_INCLUDES)
 AC_SUBST(IMG_LIBS)
 AC_SUBST(EXTRALIBS)
 AC_SUBST(LIBDL)
+AC_SUBST(LIBRT)
 
 dnl ***
 dnl *** WRspice device library

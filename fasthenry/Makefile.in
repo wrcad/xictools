@@ -10,6 +10,7 @@ OSNAME = @OSNAME@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
 TOOLROOT = @TOOLROOT@
+LIBRT = @LIBRT@
 
 BASE = ../xt_base
 
@@ -47,6 +48,7 @@ unpack:
 	      < /tmp/induct.h > fasthenry-3.0wr/src/fasthenry/induct.h; \
 	    mv -f fasthenry-3.0wr/src/fasthenry/mk_klu.inc /tmp; \
 	    sed -e "s^KLU_HOME .*$$^KLU_HOME = ../../../../KLU^" \
+	        -e "s^#RTLIB .*$$^RTLIB = $(LIBRT)^" \
 	      < /tmp/mk_klu.inc > fasthenry-3.0wr/src/fasthenry/mk_klu.inc; \
 	fi
 
@@ -74,8 +76,7 @@ install_force: install_clean install_bin install_lib install_examples
 
 install_bin: $(dst_bin)
 install_lib: $(dst_lib) $(dst_lib)/doc
-install_examples: $(dst_lib)/examples $(dst_lib)/examples/work \
-  $(dst_lib)/examples/work/results
+install_examples: $(dst_lib)/examples
 
 install_test::
 	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
@@ -111,23 +112,36 @@ $(dst_lib)/doc::
 	    $(INSTALL_LIB) $(FASTHENRY_DIR)/doc/$$aa $@; \
 	done
 
+# 090919 framework
 $(dst_lib)/examples::
 	@$(BASE)/util/mkdirpth $@
-	@files=`packages/util/fh_files examples`; \
+	@$(INSTALL_SCRIPT) $(FASTHENRY_DIR)/examples/cf $@
+	@$(INSTALL_SCRIPT) $(FASTHENRY_DIR)/examples/run $@
+	@$(INSTALL_LIB) $(FASTHENRY_DIR)/examples/README $@
+	@$(BASE)/util/mkdirpth $@/input
+	@files=`packages/util/fh_files examples_input`; \
 	for aa in $$files; do \
-	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/$$aa $@; \
+	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/input/$$aa $@/input; \
 	done
-
-$(dst_lib)/examples/work::
-	@$(BASE)/util/mkdirpth $@
-	@$(INSTALL_SCRIPT) $(FASTHENRY_DIR)/examples/work/run $@
-
-$(dst_lib)/examples/work/results::
-	@$(BASE)/util/mkdirpth $@
-	@files=`packages/util/fh_files results`; \
+	@$(BASE)/util/mkdirpth $@/results
+	@$(BASE)/util/mkdirpth $@/results/linux_dss
+	@files=`packages/util/fh_files examples_results`; \
 	for aa in $$files; do \
-	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/work/results/$$aa $@; \
+	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/results/linux_dss/$$aa $@/results/linux_dss; \
         done
+	@$(BASE)/util/mkdirpth $@/results/linux_klu
+	@files=`packages/util/fh_files examples_results`; \
+	for aa in $$files; do \
+	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/results/linux_klu/$$aa $@/results/linux_klu; \
+        done
+	@$(BASE)/util/mkdirpth $@/results/linux_sparse
+	@files=`packages/util/fh_files examples_results`; \
+	for aa in $$files; do \
+	    $(INSTALL_LIB) $(FASTHENRY_DIR)/examples/results/linux_sparse/$$aa $@/results/linux_sparse; \
+        done
+	@$(BASE)/util/mkdirpth $@/torture
+	@$(INSTALL_LIB) $(FASTHENRY_DIR)/examples/torture/README $@/torture
+	@$(INSTALL_LIB) $(FASTHENRY_DIR)/examples/torture/bfh.inp $@/torture
 
 package::
 	$(MAKE) all

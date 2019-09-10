@@ -23,8 +23,11 @@ libdir=$top/xictools/fasthenry
 $utod $libdir/README
 $utod $libdir/README.mit
 $utod $libdir/examples/*
-$utod $libdir/examples/work/*
-$utod $libdir/examples/work/results/*
+$utod $libdir/examples/input/*
+$utod $libdir/examples/results/linux_dss/*
+$utod $libdir/examples/results/linux_klu/*
+$utod $libdir/examples/results/linux_sparse/*
+$utod $libdir/examples/torture/*
 
 sed -e s/VERSION/$version/ < files/$appname.iss.in > $appname.iss
 $utod $appname.iss
