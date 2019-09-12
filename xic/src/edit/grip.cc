@@ -189,6 +189,9 @@ cEdit::checkGrips()
     if (!ed_gripdb)
         return (false);
 
+    ed_cur_grip1 = 0;
+    ed_cur_grip2 = 0;
+
     int x, y;
     EV()->Cursor().get_raw(&x, &y);
     BBox BB(x, y, x, y);
@@ -227,11 +230,22 @@ cEdit::checkGrips()
             int x2 = grip->end2x();
             int y2 = grip->end2y();
             if (!GEO()->line_clip(&x1, &y1, &x2, &y2, &BB)) {
-                ed_cur_grip = grip;
-                Gst()->SetGhost(GFgrip);
-                accum_init();
-                return (true);
+                if (!ed_cur_grip1)
+                    ed_cur_grip1 = grip;
+                else if (!ed_cur_grip2 &&
+                        grip->vert() != ed_cur_grip1->vert() &&
+                        ed_cur_grip1->end1x() == ed_cur_grip1->end2x() &&
+                        ed_cur_grip1->end1y() == ed_cur_grip1->end2y() &&
+                        x1 == x2 && y1 == y2) {
+                    ed_cur_grip2 = grip;
+                    break;
+                }
             }
+        }
+        if (ed_cur_grip1) {
+            Gst()->SetGhost(GFgrip);
+            accum_init();
+            return (true);
         }
     }
     {
@@ -243,11 +257,22 @@ cEdit::checkGrips()
             int x2 = grip->end2x();
             int y2 = grip->end2y();
             if (!GEO()->line_clip(&x1, &y1, &x2, &y2, &BB)) {
-                ed_cur_grip = grip;
-                Gst()->SetGhost(GFgrip);
-                accum_init();
-                return (true);
+                if (!ed_cur_grip1)
+                    ed_cur_grip1 = grip;
+                else if (!ed_cur_grip2 &&
+                        grip->vert() != ed_cur_grip1->vert() &&
+                        ed_cur_grip1->end1x() == ed_cur_grip1->end2x() &&
+                        ed_cur_grip1->end1y() == ed_cur_grip1->end2y() &&
+                        x1 == x2 && y1 == y2) {
+                    ed_cur_grip2 = grip;
+                    break;
+                }
             }
+        }
+        if (ed_cur_grip1) {
+            Gst()->SetGhost(GFgrip);
+            accum_init();
+            return (true);
         }
     }
     return (false);
@@ -261,31 +286,43 @@ cEdit::checkGrips()
 bool
 cEdit::resetGrips(bool bail)
 {
-    if (!ed_cur_grip)
+    if (!ed_cur_grip1)
         return (false);
 
     Gst()->SetGhost(GFnone);
     accum_final();
 
-    sGrip *grip = ed_cur_grip;
-    ed_cur_grip = 0;
+    sGrip *grip1 = ed_cur_grip1;
+    sGrip *grip2 = ed_cur_grip2;
+    ed_cur_grip1 = 0;
+    ed_cur_grip2 = 0;
 
-    if (bail)
-        return (true);
+    if (!bail) {
 
-    int ox, oy;
-    EV()->Cursor().get_raw(&ox, &oy);
-    int nx, ny;
-    EV()->Cursor().get_release(&nx, &ny);
-    EV()->CurrentWin()->Snap(&nx, &ny);
+        int ox, oy;
+        EV()->Cursor().get_raw(&ox, &oy);
+        int nx, ny;
+        EV()->Cursor().get_release(&nx, &ny);
+        EV()->CurrentWin()->Snap(&nx, &ny);
 
-    double prm_val;
-    if (grip->param_value(ox, oy, nx, ny, &prm_val)) {
-        if (!resetInstance(grip->cdesc(), grip->param_name(), prm_val)) {
-            Errs()->add_error("resetInstance failed:\n%s",
-                Errs()->get_error());
-            Log()->ErrorLog(mh::Initialization, Errs()->get_error());
-            return (false);
+        double prm1_val, prm2_val;
+        if (grip1->param_value(ox, oy, nx, ny, &prm1_val)) {
+            bool ret;
+            if (grip2 && grip2->param_value(ox, oy, nx, ny, &prm2_val)) {
+                ret = resetInstance(grip1->cdesc(),
+                    grip1->param_name(), prm1_val,
+                    grip2->param_name(), prm2_val);
+            }
+            else {
+                ret = resetInstance(grip1->cdesc(),
+                    grip1->param_name(), prm1_val);
+            }
+            if (!ret) {
+                Errs()->add_error("resetInstance failed:\n%s",
+                    Errs()->get_error());
+                Log()->ErrorLog(mh::Initialization, Errs()->get_error());
+                return (false);
+            }
         }
     }
     return (true);
@@ -298,7 +335,7 @@ cEdit::resetGrips(bool bail)
 void
 cEditGhost::showGhostGrip(int map_x, int map_y, int, int, bool erase)
 {
-    sGrip *grip = ED()->getCurGrip();
+    sGrip *grip = ED()->getCurGrip1();
     if (grip)
         grip->show_ghost(map_x, map_y, erase);
 }
@@ -618,7 +655,7 @@ sGrip::sGrip(CDc *cd)
 
 sGrip::~sGrip()
 {
-    if (ED()->getCurGrip() == this)
+    if (ED()->getCurGrip1() == this || ED()->getCurGrip2() == this)
         ED()->resetGrips(true);
     set_active(false);
 }
@@ -890,7 +927,6 @@ sGrip::param_value(int x1, int y1, int x2, int y2, double *pval) const
     if (d <= 2.0)
         return (false);
 
-#if 1
     Point_c p1(end1x(), end1y());
     Point_c p2(end2x(), end2y());
     Point_c pmid((p1.x + p2.x)/2, (p1.y + p2.y)/2);
@@ -933,104 +969,6 @@ sGrip::param_value(int x1, int y1, int x2, int y2, double *pval) const
     // Check against the constraint, if any.
     if (g_constr && !g_constr->checkConstraint(dnew))
         return (false);
-
-#else
-    Point_c p1(end1x(), end1y());
-    Point_c p2(end2x(), end2y());
-    double dnew;
-    if (p1 != p2) {
-        Point_c pmid((p1.x + p2.x)/2, (p1.y + p2.y)/2);
-        Point_c p2m(p2.x - pmid.x, p2.y - pmid.y);
-        d = distance(p2m.x, p2m.y);
-        double ux = p2m.y/d;
-        double uy = -p2m.x/d;
-
-        // We don't care about x1,y1.  The "up" location x2,y2 defines
-        // the new parameter value.
-        int dx = x2 - pmid.x;
-        int dy = y2 - pmid.y;
-        double a = (ux*dx + uy*dy)/CDphysResolution;
-
-        double scale = gd_scale;
-        double snap = gd_snap;
-        // Note gd_absolute is not handled, wtf does it do?
-
-        dnew = a*scale;
-        if (snap != 0.0)
-            dnew = snap*(int)(dnew/snap);
-        dnew += g_value;
-
-        double amax = (gd_maxval - g_value)/scale;
-        double amin = (gd_minval - g_value)/scale;
-        bool rv = false;
-        if (amax < amin) {
-            double t = amin;
-            amin = amax;
-            amax = t;
-            rv = true;
-        }
-        if (a > amax) {
-            a = amax;
-            dnew = rv ? gd_minval : gd_maxval;
-        }
-        else if (a < amin) {
-            a = amin;
-            dnew = rv ? gd_maxval : gd_minval;
-        }
-
-        // Check against the constraint, if any.
-        if (g_constr && !g_constr->checkConstraint(dnew))
-            return (false);
-    }
-    else {
-        // We don't care about x1,y1.  The "up" location x2,y2 defines the
-        // new parameter value.
-        int dx = x2 - p1.x;
-        int dy = y2 - p1.y;
-        int ux = gd_vert ? 0 : 1;
-        int uy = gd_vert ? 1 : 0;
-        
-//XXX
-/*
-    cTfmStack stk;
-    stk.TPush();
-    stk.TApplyTransform(g_cdesc);
-    stk.TPoint(&ux, &uy);
-    stk.TPop();
-*/
-        double a = (ux*dx + uy*dy)/CDphysResolution;
-
-        double scale = gd_scale;
-        double snap = gd_snap;
-
-        dnew = a*scale;
-        if (snap != 0.0)
-            dnew = snap*(int)(dnew/snap);
-        dnew += g_value;
-
-        double amax = (gd_maxval - g_value)/scale;
-        double amin = (gd_minval - g_value)/scale;
-        bool rv = false;
-        if (amax < amin) {
-            double t = amin;
-            amin = amax;
-            amax = t;
-            rv = true;
-        }
-        if (a > amax) {
-            a = amax;
-            dnew = rv ? gd_minval : gd_maxval;
-        }
-        else if (a < amin) {
-            a = amin;
-            dnew = rv ? gd_maxval : gd_minval;
-        }
-
-        // Check against the constraint, if any.
-        if (g_constr && !g_constr->checkConstraint(dnew))
-            return (false);
-    }
-#endif
 
     if (pval)
         *pval = dnew;
@@ -1090,10 +1028,61 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
         dx = mmRnd(a*g_ux*CDphysResolution);
         dy = mmRnd(a*g_uy*CDphysResolution);
     }
-    p1.x += dx;
-    p1.y += dy;
-    p2.x += dx;
-    p2.y += dy;
+
+    sGrip *grip2 = ED()->getCurGrip2();
+    double dnew2 = 0.0;
+    int dx2 = 0;
+    int dy2 = 0;
+    if (grip2) {
+        dx2 = map_x - pmid.x;
+        dy2 = map_y - pmid.y;
+        double a2 = (grip2->g_ux*dx2 + grip2->g_uy*dy2)/CDphysResolution;
+        if (grip2->g_ux && grip2->g_uy)
+            a2 /= M_SQRT2;
+
+        double scale2 = grip2->gd_scale;
+        double snap2 = grip2->gd_snap;
+
+        dnew2 = a2*scale2;
+        if (snap2 != 0.0)
+            dnew2 = snap2*(int)(dnew2/snap2);
+        dnew2 += grip2->g_value;
+
+        double amax2 = (grip2->gd_maxval - grip2->g_value)/scale2;
+        double amin2 = (grip2->gd_minval - grip2->g_value)/scale2;
+        bool rv2 = false;
+        if (amax2 < amin2) {
+            double t = amin2;
+            amin2 = amax2;
+            amax2 = t;
+            rv2 = true;
+        }
+        if (a2 > amax2) {
+            a2 = amax2;
+            dnew2 = rv2 ? grip2->gd_minval : grip2->gd_maxval;
+        }
+        else if (a2 < amin2) {
+            a2 = amin2;
+            dnew2 = rv2 ? grip2->gd_maxval : grip2->gd_minval;
+        }
+
+        // Check against the constraint, if any.
+        if (grip2->g_constr && !grip2->g_constr->checkConstraint(dnew2))
+            return;
+
+        if (grip2->g_ux && grip2->g_uy) {
+            dx2 = mmRnd(a2*grip2->g_ux*CDphysResolution/M_SQRT2);
+            dy2 = mmRnd(a2*grip2->g_uy*CDphysResolution/M_SQRT2);
+        }
+        else {
+            dx2 = mmRnd(a2*grip2->g_ux*CDphysResolution);
+            dy2 = mmRnd(a2*grip2->g_uy*CDphysResolution);
+        }
+    }
+    p1.x += dx + dx2;
+    p1.y += dy + dy2;
+    p2.x += dx + dx2;
+    p2.y += dy + dy2;
 
     WindowDesc *wdesc;
     WDgen wgen(WDgen::MAIN, WDgen::CHD);
@@ -1115,7 +1104,12 @@ sGrip::show_ghost(int map_x, int map_y, bool erase)
                 wdesc->ShowLineW(p1.x, p1.y, p2.x, p2.y);
 
             char buf[128];
-            sprintf(buf, "%s %.5f", gd_param, dnew);
+            if (grip2) {
+                sprintf(buf, "%s %.5f   %s %.5f", gd_param, dnew,
+                    grip2->gd_param, dnew2);
+            }
+            else
+                sprintf(buf, "%s %.5f", gd_param, dnew);
             int x = 4;
             int y = wdesc->ViewportHeight() - 5;
             if (erase) {

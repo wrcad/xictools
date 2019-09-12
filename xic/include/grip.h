@@ -75,6 +75,7 @@ struct sCniGripDesc
         }
 
     const char *param_name()    const { return (gd_param); }
+    bool vert()                 const { return (gd_vert); }
 
     void setgd(const sCniGripDesc &gd)
         {

@@ -753,10 +753,12 @@ cEdit::reparamInstance(CDs *sdesc, CDc *cdesc, const CDp *newp, CDc **pnew)
 
 
 // Replace cdesc with a new instantiation, using the prm_value for the
-// parameter whose name is passed.
+// parameter whose name is passed.  An optional second parameter can be
+// set at the same time.
 //
 bool
-cEdit::resetInstance(CDc *cdesc, const char *prm_name, double prm_value)
+cEdit::resetInstance(CDc *cdesc, const char *prm1_name, double prm1_value,
+    const char *prm2_name, double prm2_value)
 {
     if (cdesc) {
         CDp *p_prms = cdesc->prpty(XICP_PC_PARAMS);
@@ -769,7 +771,11 @@ cEdit::resetInstance(CDc *cdesc, const char *prm_name, double prm_value)
         if (!PCellParam::parseParams(p_prms->string(), &prms))
             return (false);
 
-        if (!prms->setValue(prm_name, prm_value)) {
+        if (!prms->setValue(prm1_name, prm1_value)) {
+            PCellParam::destroy(prms);
+            return (false);
+        }
+        if (prm2_name && !prms->setValue(prm2_name, prm2_value)) {
             PCellParam::destroy(prms);
             return (false);
         }
@@ -794,7 +800,11 @@ cEdit::resetInstance(CDc *cdesc, const char *prm_name, double prm_value)
         if (!PCellParam::parseParams(p_prms->string(), &prms))
             return (false);
 
-        if (!prms->setValue(prm_name, prm_value)) {
+        if (!prms->setValue(prm1_name, prm1_value)) {
+            PCellParam::destroy(prms);
+            return (false);
+        }
+        if (prm2_name && !prms->setValue(prm2_name, prm2_value)) {
             PCellParam::destroy(prms);
             return (false);
         }

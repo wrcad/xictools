@@ -81,7 +81,8 @@ cEdit::cEdit()
     ed_push_data            = 0;
     ed_pcsuper              = 0;
     ed_pcparams             = 0;
-    ed_cur_grip             = 0;
+    ed_cur_grip1            = 0;
+    ed_cur_grip2            = 0;
     ed_gripdb               = 0;
     ed_wire_style           = CDWIRE_EXTEND;
     ed_move_or_copy         = CDmove;

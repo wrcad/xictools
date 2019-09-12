@@ -414,7 +414,7 @@ public:
     bool resolvePCell(CDcbin*, const char*, bool = false);
     bool reparamSubMaster(CDs*, const char*);
     bool reparamInstance(CDs*, CDc*, const CDp*, CDc** = 0);
-    bool resetInstance(CDc*, const char*, double);
+    bool resetInstance(CDc*, const char*, double, const char* = 0, double=0.0);
 
     // polygns.cc
     void sidesExec(CmdDesc*);                                       // export
@@ -567,7 +567,8 @@ public:
     CDl *pressLayer()                       { return (ed_press_layer); }
     void setPressLayer(CDl *l)              { ed_press_layer = l; }
 
-    sGrip *getCurGrip()                     { return (ed_cur_grip); }
+    sGrip *getCurGrip1()                    { return (ed_cur_grip1); }
+    sGrip *getCurGrip2()                    { return (ed_cur_grip2); }
 
     cGripDb *getGripDb()                    { return (ed_gripdb); }
     void setGripDb(cGripDb *gdb)            { ed_gripdb = gdb; }
@@ -723,7 +724,8 @@ private:
     CDs *ed_pcsuper;            // Used during cell placement from GUI.
     PCellParam *ed_pcparams;
 
-    sGrip *ed_cur_grip;         // Stretch handle being manipulated.
+    sGrip *ed_cur_grip1;        // Stretch handle being manipulated.
+    sGrip *ed_cur_grip2;        // Second for x/y grips.
     cGripDb *ed_gripdb;         // Grip database for current cell.
 
     WireStyle ed_wire_style;    // End style for wires.
