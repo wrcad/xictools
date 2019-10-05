@@ -442,6 +442,51 @@ namespace {
 }
 
 
+// Recursively substitute environment variables in "$variable" form in
+// the string.  The PASSED STRING MUST HAVE BEEN HEAP-ALLOCATED as it
+// will be freed if an expansion is done.  True is returned in this
+// case, otherwise false.
+//
+// The variable must start with an alpha and contain only alpha,
+// digits, and '_'.  a '\' ahead of the '$' prevents substitution. 
+// Unresolved names are kept as-is.
+//
+bool
+pathlist::env_subst(char **p)
+{
+    bool ret = false;
+    if (!p || !*p)
+        return (ret);
+    for (char *s = *p; *s; s++) {
+        if (*s == '$' && (s == *p || *(s-1) != '\\') && isalpha(*(s+1))) {
+            const char *start = s+1;
+            const char *end = start;
+            while (isalnum(*end) || *end == '_')
+                end++;
+            int l = end - start;
+            char *tstr = new char[l+1];
+            strncpy(tstr, start, l);
+            tstr[l] = 0;
+            const char *env = getenv(tstr);
+            delete [] tstr;
+            if (env) {
+                ret = true;
+                sLstr lstr;
+                *s = 0;
+                lstr.add(*p);
+                lstr.add(env);
+                lstr.add(end);
+                char *nstr = lstr.string_trim();
+                s = nstr + strlen(*p) - 1;
+                delete [] *p;
+                *p = nstr;
+            }
+        }
+    }
+    return (ret);
+}
+
+
 // Perform tilde and optionally dot expansion of the directory path in
 // string.  Optionally clip leading and trailing space.  In Windows,
 // convert all directory separators to forward slashes.  Remove

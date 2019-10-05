@@ -58,6 +58,9 @@ namespace pathlist {
     char *dir_listing(const char*, CheckFuncType, int, bool, int** = 0);
         // Listing functions.
 
+    bool env_subst(char**);
+        // Expand environment variables.
+
     char *expand_path(const char*, bool, bool);
         // Tilde and dot expansion utility function.
 

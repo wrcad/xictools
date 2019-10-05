@@ -150,6 +150,7 @@ sLibMap::append_file_rc(stringlist *se, const char *line, bool hs_compat,
             delete [] path;
             path = lstring::getqtok(&lp);
         }
+        pathlist::env_subst(&path);
         if (path) {
             char *ptmp = pathlist::expand_path(path, false, false);
             if (ptmp) {
@@ -242,6 +243,7 @@ sLibMap::append_file_rc(stringlist *se, const char *line, bool hs_compat,
             delete [] path;
             path = lstring::getqtok(&lp);
         }
+        pathlist::env_subst(&path);
         char *name = lstring::gettok(&lp);
 
         if (name) {
