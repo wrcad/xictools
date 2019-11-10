@@ -1346,8 +1346,6 @@ struct CDp_sname : public CDp
 
     bool is_macro()             const { return (pns_macro); }
     void set_macro(bool b)            { pns_macro = b; }
-    bool located()              const { return (pns_located); }
-    void set_located(bool b)          { pns_located = b; }
 
     CDpfxName name_string()     const { return (pns_name); }
     void set_name_string(CDpfxName n) { pns_name = n; }
@@ -1370,7 +1368,8 @@ struct CDp_sname : public CDp
 
 protected:
     bool pns_macro;             // is a macro (replaces P_MACRO)
-    bool pns_located;           // physical location valid
+    bool pns_located;           // physical instance location valid,
+                                //  not used in cell
     CDpfxName pns_name;         // name prefix
     CDnetName pns_labtext;      // terminal label default text
 };
@@ -1395,6 +1394,10 @@ struct CDp_cname : public CDp_sname
     CDp_cname &operator=(const CDp_sname&);
 
     virtual ~CDp_cname() { }
+
+    // We use this CDp_sname field in CDp_cname only.
+    bool located()              const { return (pns_located); }
+    void set_located(bool b)          { pns_located = b; }
 
     // virtual overrides
     CDp *dup()                  const { return (new CDp_cname(*this)); }

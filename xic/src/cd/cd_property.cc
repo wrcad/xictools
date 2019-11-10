@@ -3447,9 +3447,8 @@ CDp_cname::label_text(bool *copied, CDc *cdesc) const
 bool
 CDp_cname::parse_name(const char *str)
 {
-    pns_macro = false;
-    pns_located = false;
-        // Set true when the location is set.
+    // The pns fields are already initialized when the property
+    // was created, notably pns_macro.
     pns_name = 0;
 
     pnc_setname = 0;
