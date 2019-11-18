@@ -6300,7 +6300,7 @@ oaplugin
     cell.  There are two passes made through the hierarchy.  On the
     first pass, cells that are <a href="pcell">parameterized cell</a>
     (pcell) sub-masters may have their <a
-    href="prpty:pc_name><b>pc_name</b></a> and <a
+    href="prpty:pc_name"><b>pc_name</b></a> and <a
     href="prpty:pc_params"><b>pc_params</b></a> properties removed. 
     This will be true for "foreign" pcells created in and imported
     from another tool or library such as OpenAccess, and if

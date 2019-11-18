@@ -116,6 +116,7 @@ struct fhNode
     const xyz3d *loc()              const { return (&n_loc); }
 
     fhNode *next()                  const { return (n_next); }
+    void set_next(fhNode *n)        { n_next = n; }
 
 private:
     unsigned int n_num_and_ref;
@@ -144,20 +145,27 @@ struct fhNodeList
     fhNodeList *next;
 };
 
-#define FH_NDHASHW 91
+// Initial node hashing bit count, dynamically increases with table size.
+#define FH_NDHASHW 6
 
 struct fhNodeGen
 {
     fhNodeGen()
         {
-            ng_ncnt = 1;
-            memset(ng_tab, 0, FH_NDHASHW*sizeof(fhNode*));
+            ng_allocated = 0;
+            ng_mask = ~((unsigned int)-1 << FH_NDHASHW);
+            ng_tab = new fhNode*[ng_mask+1];
+            memset(ng_tab, 0, (ng_mask+1)*sizeof(fhNode*));
         }
 
     ~fhNodeGen()
         {
-            clear();
+            for (unsigned int i = 0; i <= ng_mask; i++)
+                fhNode::destroy(ng_tab[i]);
+            delete [] ng_tab;
         }
+
+    unsigned int allocated()    { return (ng_allocated); }
 
     int newnode(xyz3d*);
     void nodeBB(BBox*) const;
@@ -167,8 +175,11 @@ struct fhNodeGen
     void clear();
 
 private:
-    int ng_ncnt;
-    fhNode *ng_tab[FH_NDHASHW];
+    void rehash();
+
+    fhNode **ng_tab;
+    unsigned int ng_allocated;
+    unsigned int ng_mask;
 };
 
 struct fhSegment
@@ -329,7 +340,6 @@ struct fhConductor
     static fhConductor *addz3d(fhConductor*, const glZoid3d*);
     fhNodeList *get_nodes(const fhNodeGen&, int, const Point*);
     void segmentize(fhNodeGen&);
-    fhSegment *find_segment_by_node(int);
     int segments_print(FILE*, e_unit, const fhNodeGen*);
     bool refine(const BBox*);
     PolyList *polylist();

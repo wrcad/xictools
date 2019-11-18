@@ -1158,7 +1158,7 @@ funcs:ext:pterm
 Physical Terminals
 !!HTML
     As noted in the description in the <a
-    href="funcs:ext:term><b>Terminals</b></a> section, physical
+    href="funcs:ext:term"><b>Terminals</b></a> section, physical
     terminals are a separate data structure that save layout
     information about the terminal, such as effective location, the
     layer attached to, or an object attached to.  When a schematic

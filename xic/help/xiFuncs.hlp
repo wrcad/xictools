@@ -209,7 +209,7 @@ Script Interface Functions
 !!IFDEF MRouter
     <dl>
     <dt>Functions for optional router:<br>
-    <a href="funcs:router<b>Router Interface Functions</b></a>
+    <a href="funcs:router"><b>Router Interface Functions</b></a>
     <dd>
     <a href="funcs:router:mrouter">Maze Router Plug-In</a>
     </dl>

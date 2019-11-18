@@ -495,9 +495,9 @@ cCompare::setup()
             }
             c_cell_names1 = new stringlist(lstring::copy(cn1), 0);
         }
-        else {
-            // Otherwise, an empty list implies all cells in the reference
-            // source (chd1).
+        else if (c_chd1) {
+            // Otherwise, an empty list implies all cells in the
+            // reference source (chd1).
 
             SymTab *st = new SymTab(false, false);
             if (c_chd1->nameTab(c_dmode)) {
@@ -519,6 +519,7 @@ cCompare::setup()
                 return (false);
             }
         }
+        // Otherwise current cell only.
     }
     if (c_recurse && !c_flat_geometric) {
         // In recursive mode, add the hierarchy cells for each listed cell,

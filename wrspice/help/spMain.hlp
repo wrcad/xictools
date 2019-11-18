@@ -1178,7 +1178,7 @@ Convergence
     circuit to converge to the desired state.
 
     <p>
-    See the section describing <a href=".op>operating point
+    See the section describing <a href=".op">operating point
     analysis</a> for a detailed description of the algorithms
     and information on convergence issues.
 
@@ -2368,7 +2368,7 @@ Support for ADMS/Verilog-A
     <dl>
     <dt><tt>info=</tt>"<i>string describing the parameter or variable</i>"<dd>
     The string will be used in the <i>WRspice</i> <a
-    href="show:><b>show</b></a> command and perhaps elsewhere.
+    href="show"><b>show</b></a> command and perhaps elsewhere.
     </dl>
 
     <dl>

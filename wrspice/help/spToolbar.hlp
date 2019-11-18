@@ -234,7 +234,7 @@ Tool Control Window
     <dl>
     <dt><b>Update WRspice</b>
     <dd>Pressing this button is equivalent to giving the <a
-    href="wrupdate><b>wrupdate</b></a> command, and is equivalent to
+    href="wrupdate"><b>wrupdate</b></a> command, and is equivalent to
     giving the special keyword "<tt>:xt_pkgs</tt>" to the help system,
     which brings up the <i>XicTools</i> <a href="update">package
     management</a> page.  The page lists installed and available

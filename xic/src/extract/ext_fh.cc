@@ -51,6 +51,7 @@
 #include "tech_layer.h"
 #include "tech_ldb3d.h"
 #include "miscutil/filestat.h"
+#include "miscutil/hashfunc.h"
 
 #include <algorithm>
 
@@ -486,8 +487,14 @@ fhLayout::fhLayout()
                 val <= FH_MIN_MANH_PART_SIZE_MAX)
             manh_min = INTERNAL_UNITS(val);
     }
+    int manh_mode = 0;
+//XXX    var = CDvdb()->getVariable(VA_FhManhMode);
+var = CDvdb()->getVariable("FhManhMode");
+    if (var)
+        manh_mode = (atoi(var) != 0);
     if (!init_for_extraction(CurCell(Physical), 0, lname,
-            Tech()->SubstrateEps(), Tech()->SubstrateThickness(), manh_min)) {
+            Tech()->SubstrateEps(), Tech()->SubstrateThickness(),
+            manh_min, manh_mode)) {
         Errs()->add_error("Layer setup failed.");
     }
 }
@@ -590,6 +597,8 @@ fhLayout::setup()
     if (!num_layers())
         return (false);
 
+//XXX
+printf("x1\n");
     // Create debugging layers/zoids if set.
     fhl_zoids = CDvdb()->getVariable(VA_FhZoids);
 
@@ -634,8 +643,12 @@ fhLayout::setup()
                 c->set_siglam(sigma, lambda);
         }
     }
+//XXX
+printf("x2\n");
 
     slice_groups(max_rect_size);
+//XXX
+printf("x3\n");
 
     // Cut at outside edges of other objects, along the long
     // dimension first, then the short dimension.
@@ -646,61 +659,67 @@ fhLayout::setup()
         fhLayer *cl1 = &fhl_layers[l1->index()];
         for (fhConductor *c1 = cl1->cndlist(); c1; c1 = c1->next()) {
             glZlist3d *z0 = c1->zlist3d();
-            for (glZlist3d *z = z0; z; z = z->next) {
-                for (Layer3d *l2 = layers(); l2; l2 = l2->next()) {
-                    if (!l2->is_conductor())
-                        continue;
-                    fhLayer *cl2 = &fhl_layers[l2->index()];
-                    if (cl2 == cl1)
-                        continue;
-                    for (fhConductor *c2 = cl2->cndlist(); c2;
-                            c2 = c2->next()) {
-                        PolyList *pl = c2->polylist();
+            for (Layer3d *l2 = layers(); l2; l2 = l2->next()) {
+                if (!l2->is_conductor())
+                    continue;
+                fhLayer *cl2 = &fhl_layers[l2->index()];
+                if (cl2 == cl1)
+                    continue;
+                for (fhConductor *c2 = cl2->cndlist(); c2; c2 = c2->next()) {
+                    PolyList *pl = c2->polylist();
+                    for (glZlist3d *z = z0; z; z = z->next) {
                         for (PolyList *p = pl; p; p = p->next) {
                             for (int i = 1; i < p->po.numpts; i++) {
-                                if (z->Z.xlr - z->Z.xll > z->Z.yu - z->Z.yl)
+                                if (z->Z.xlr - z->Z.xll > z->Z.yu - z->Z.yl) {
                                     cut_zoid_h(z, p->po.points[i-1],
                                         p->po.points[i]);
-                                else
+                                }
+                                else {
                                     cut_zoid_v(z, p->po.points[i-1],
                                         p->po.points[i]);
+                                }
                             }
                         }
-                        PolyList::destroy(pl);
                     }
+                    PolyList::destroy(pl);
                 }
             }
-            for (glZlist3d *z = z0; z; z = z->next) {
-                for (Layer3d *l2 = layers(); l2; l2 = l2->next()) {
-                    if (!l2->is_conductor())
-                        continue;
-                    fhLayer *cl2 = &fhl_layers[l2->index()];
-                    if (cl2 == cl1)
-                        continue;
-                    for (fhConductor *c2 = cl2->cndlist(); c2;
-                            c2 = c2->next()) {
-                        PolyList *pl = c2->polylist();
+            for (Layer3d *l2 = layers(); l2; l2 = l2->next()) {
+                if (!l2->is_conductor())
+                    continue;
+                fhLayer *cl2 = &fhl_layers[l2->index()];
+                if (cl2 == cl1)
+                    continue;
+                for (fhConductor *c2 = cl2->cndlist(); c2; c2 = c2->next()) {
+                    PolyList *pl = c2->polylist();
+                    for (glZlist3d *z = z0; z; z = z->next) {
                         for (PolyList *p = pl; p; p = p->next) {
                             for (int i = 1; i < p->po.numpts; i++) {
-                                if (z->Z.xlr - z->Z.xll > z->Z.yu - z->Z.yl)
+                                if (z->Z.xlr - z->Z.xll > z->Z.yu - z->Z.yl) {
                                     cut_zoid_v(z, p->po.points[i-1],
                                         p->po.points[i]);
-                                else
+                                }
+                                else {
                                     cut_zoid_h(z, p->po.points[i-1],
                                         p->po.points[i]);
+                                }
                             }
                         }
-                        PolyList::destroy(pl);
                     }
+                    PolyList::destroy(pl);
                 }
             }
         }
     }
+//XXX
+printf("x4\n");
 
     // Do the self-cutting again, to propagate new boundaries.
     //
     slice_groups(0);
     slice_groups_z(max_rect_size);
+//XXX
+printf("x5\n");
 
     if (db3_logfp) {
         int ztot = 0;
@@ -730,6 +749,8 @@ fhLayout::setup()
                 cd->segmentize(fhl_ngen);
         }
     }
+//XXX
+printf("x6 %d\n", fhl_ngen.allocated());
 
     // Create terminals array.
     fhl_terms = new fhTermList*[num_groups()];
@@ -816,6 +837,8 @@ fhLayout::setup()
     if (err)
         return (false);
 
+//XXX
+printf("x6a\n");
     // Set the terminal nodes.
     //
     for (int i = 0; i < num_groups(); i++) {
@@ -836,6 +859,8 @@ fhLayout::setup()
             tp = t;
         }
     }
+//XXX
+printf("x6b\n");
 
     char *s = check_sort_terms();
     if (s) {
@@ -853,6 +878,8 @@ fhLayout::setup()
             }
         }
     }
+//XXX
+printf("x7\n");
     return (true);
 }
 
@@ -1295,11 +1322,19 @@ fhConductor::addz3d(fhConductor *thisc, const glZoid3d *Z)
 fhNodeList *
 fhConductor::get_nodes(const fhNodeGen &ngen, int numpts, const Point *pts)
 {
+    // Make sure all returned nodes are actually referenced by a
+    // segment.
+    SymTab *st = new SymTab(false, false);
+    for (fhSegment *s = hc_segments; s; s = s->next()) {
+        st->add(s->node1(), s, true);
+        st->add(s->node2(), s, true);
+    }
+
     fhNodeList *nodes = ngen.find_nodes(numpts, pts);
     fhNodeList *np = 0, *nn;
     for (fhNodeList *n = nodes; n; n = nn) {
         nn = n->next;
-        if (!find_segment_by_node(n->nd->number())) {
+        if (SymTab::get(st, n->nd->number()) == ST_NIL) {
             if (np)
                 np->next = nn;
             else
@@ -1309,6 +1344,7 @@ fhConductor::get_nodes(const fhNodeGen &ngen, int numpts, const Point *pts)
         }
         np = n;
     }
+    delete st;
     return (nodes);
 }
 
@@ -1360,19 +1396,6 @@ fhConductor::segmentize(fhNodeGen &ngen)
             dx, dy, s0);
     }
     hc_segments = s0;
-}
-
-
-// Return the first segment found containing the node.
-//
-fhSegment *
-fhConductor::find_segment_by_node(int nd)
-{
-    for (fhSegment *s = hc_segments; s; s = s->next()) {
-        if (s->node1() == nd || s->node2() == nd)
-            return (s);
-    }
-    return (0);
 }
 
 
@@ -1593,21 +1616,39 @@ fhConductor::save_zlist_db()
 // End of fhConductor functions.
 
 
+namespace {
+    unsigned int nhash(int x, int y, int z, unsigned int mask)
+    {
+        unsigned int k = INCR_HASH_INIT;
+        k = incr_hash(k, &x);
+        k = incr_hash(k, &y);
+        k = incr_hash(k, &z);
+        return (k & mask);
+    }
+}
+
+
+// Table max density.
+#define FH_NGDENS 5
+
 // Return a node number, check if this node has already been assigned.
 //
 int
 fhNodeGen::newnode(xyz3d *p)
 {
-    int ix = abs(p->x + p->y + p->z) % FH_NDHASHW;
-    for (fhNode *n = ng_tab[ix]; n; n = n->next()) {
+    unsigned int h = nhash(p->x, p->y, p->z, ng_mask);
+    for (fhNode *n = ng_tab[h]; n; n = n->next()) {
         if (*p == *n->loc()) {
             n->inc_ref();
             return (n->number());
         }
     }
-    ng_tab[ix] = new fhNode(ng_ncnt++, p, ng_tab[ix]);
-    ng_tab[ix]->inc_ref();
-    return (ng_tab[ix]->number());
+    ng_tab[h] = new fhNode(ng_allocated++, p, ng_tab[h]);
+    ng_tab[h]->inc_ref();
+    int n = ng_tab[h]->number();
+    if (ng_allocated/(ng_mask+1) > FH_NGDENS)
+        rehash();
+    return (n);
 }
 
 
@@ -1617,7 +1658,7 @@ void
 fhNodeGen::nodeBB(BBox *BB) const
 {
     bool first = true;
-    for (int i = 0; i < FH_NDHASHW; i++) {
+    for (unsigned int i = 0; i <= ng_mask; i++) {
         for (fhNode *n = ng_tab[i]; n; n = n->next()) {
             if (first) {
                 first = false;
@@ -1647,7 +1688,7 @@ fhNodeGen::find_nodes(int npts, const Point *pts) const
     fhNodeList *n0 = 0;
     if (npts == 2) {
         // This is a rect (L,B), (R,T).
-        for (int i = 0; i < FH_NDHASHW; i++) {
+        for (unsigned int i = 0; i <= ng_mask; i++) {
             for (fhNode *n = ng_tab[i]; n; n = n->next()) {
                 if (pts[0].x <= n->loc()->x && n->loc()->x <= pts[1].x &&
                         pts[0].y <= n->loc()->y && n->loc()->y <= pts[1].y)
@@ -1657,7 +1698,7 @@ fhNodeGen::find_nodes(int npts, const Point *pts) const
     }
     else if (npts >= 4) {
         Poly po(npts, (Point*)pts);  // ugly
-        for (int i = 0; i < FH_NDHASHW; i++) {
+        for (unsigned int i = 0; i <= ng_mask; i++) {
             for (fhNode *n = ng_tab[i]; n; n = n->next()) {
                 Point_c p(n->loc()->x, n->loc()->y);
                 if (po.intersect(&p, true))
@@ -1672,8 +1713,8 @@ fhNodeGen::find_nodes(int npts, const Point *pts) const
 fhNode *
 fhNodeGen::find_node(int num, const xyz3d *p) const
 {
-    int ix = abs(p->x + p->y + p->z) % FH_NDHASHW;
-    for (fhNode *n = ng_tab[ix]; n; n = n->next()) {
+    unsigned int h = nhash(p->x, p->y, p->z, ng_mask);
+    for (fhNode *n = ng_tab[h]; n; n = n->next()) {
         if (num == (int)n->number() && *p == *n->loc())
             return (n);
     }
@@ -1689,7 +1730,7 @@ fhNodeGen::fh_nodes_print(FILE *fp, e_unit unit) const
     double sc = unit_t::units(unit)->coord_factor();
     const char *ff = unit_t::units(unit)->float_format();
     int cnt = 0;
-    for (int i = 0; i < FH_NDHASHW; i++) {
+    for (unsigned int i = 0; i <= ng_mask; i++) {
         for (fhNode *n = ng_tab[i]; n; n = n->next()) {
             if (n->refcnt() > 1) {
                 fprintf(fp, "N%-4d", n->number());
@@ -1713,11 +1754,39 @@ fhNodeGen::fh_nodes_print(FILE *fp, e_unit unit) const
 void
 fhNodeGen::clear()
 {
-    ng_ncnt = 1;
-    for (int i = 0; i < FH_NDHASHW; i++) {
+    for (unsigned int i = 0; i <= ng_mask; i++)
         fhNode::destroy(ng_tab[i]);
+    delete [] ng_tab;
+    ng_allocated = 0;
+    ng_mask = ~((unsigned int)-1 << FH_NDHASHW);
+    ng_tab = new fhNode*[ng_mask+1];
+    memset(ng_tab, 0, (ng_mask+1)*sizeof(fhNode*));
+}
+
+
+// Grow the hash table width.  This is called after adding elements if
+// the element count to width ratio exceeds FH_NGDENS.
+//
+void
+fhNodeGen::rehash()
+{
+    unsigned int oldmask = ng_mask;
+    ng_mask = (oldmask << 1) | 1;
+    fhNode **oldent = ng_tab;
+    ng_tab = new fhNode*[ng_mask + 1];
+    for (unsigned int i = 0; i <= ng_mask; i++)
         ng_tab[i] = 0;
+    for (unsigned int i = 0; i <= oldmask; i++) {
+        fhNode *hn;
+        for (fhNode *h = oldent[i]; h; h = hn) {
+            hn = h->next();
+            unsigned int j = nhash(h->loc()->x, h->loc()->y, h->loc()->z,
+                ng_mask);
+            h->set_next(ng_tab[j]);
+            ng_tab[j] = h;
+        }
     }
+    delete [] oldent;
 }
 // End of fhNodeGen functions.
 

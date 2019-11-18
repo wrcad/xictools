@@ -522,24 +522,13 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     }
     for (Layer3d *l = db3_stack; l; l = l->next()) {
         if (ary[l->index()]) {
-            if (l->yl3d())
+            if (l->yl3d()) {
                 Errs()->add_error("Warning: Setup failure,\n"
                     "after 3D processing internal inconsistency detected.");
+            }
             l->set_yl3d(new glYlist3d(ary[l->index()]));
             ary[l->index()] = 0;
         }
-    }
-    int leftovr = 0;
-    for (int i = 0; i < db3_groups->num; i++) {
-        if (ary[i])
-            leftovr++;
-    }
-    if (leftovr) {
-        Errs()->add_error(
-            "Warning: Setup failure,\n"
-            "3D processing identified %d additional %s.  Are\n"
-            "dielectric edges causing conductor discontinuity?", leftovr,
-            leftovr == 1 ? "group" : "groups");
     }
     delete [] ary;
     delete g;

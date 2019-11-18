@@ -718,7 +718,6 @@ Extract LR Button: Inductance/Resistance Extraction
     A guaranteed-compatible version is distributed as free software on
     the Whiteley Research web site (<tt>http://wrcad.com</tt>).
 
-
 !!SUBTOPICS
 fhinterf
 fhpanel
@@ -1361,6 +1360,10 @@ The LR Extraction Panel
     is tied to the <a href="FhMinRectSize"><b>FhMinRectSize</b></a>
     variable, which can also be set directly with the <b>!set</b>
     command.
+    </dl>
+
+    <dl>
+    <dt><b>FhMinManhPartSize</b><dd>
     </dl>
 
     <p>

@@ -157,6 +157,67 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
+xic-4.3.9  11/11/2019
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Improved FastHenry interface.
+
+    FastHenry:  XicTools update to the 090919 package, release number 14.
+    The default solver is now KLU, which can be much faster.
+
+    Updates to the FastHenry interf5ace for better operation,
+    particularly with non-Manhattan features.  Manhattanizing is now
+    done before any cutting.
+
+    New variable FhMinManhPartSize
+    This is the smallest Manhattan edge used to approximate a
+    non-Manhattan shape.  A new entry in the Params page of the
+    FastHenry interface pop-up sets this.  Previously, this was set to
+    the FhMinRect value, which was too small.
+
+    During refinement for the FastHenry interface, volume elements now
+    assume one dimension is a film thickness, which gives a better
+    size value.
+
+* Improved portable-PCell (Synopsys/Ciranova) grip support.
+
+    Xic now handles all Ciranova location codes.  The locations that
+    are not centered on a Manhattan edge are displayed as glyph grips
+    (others remain as lines).  45 degree rotations work now.
+
+* Miscellaneous
+
+    Environment variables are now recognized and expanded when
+    handling most file paths.  In particular, these are used when
+    generating .include/.lib lines when generating SPICE output.
+
+    New environment variable XIC_TECH_DIR.
+    The value is a path to a directory.  If given, the directory is
+    searched for the technology file, if not found in the current
+    directory, and before other locations.
+
+
+BUGS FIXED
+---- -----
+
+* The macro functionality (opamp example) was broken, an internal
+  macro flag was not getting set when reading a disk file.
+
+* The OppenAccess plug-in can now build under OA release major 5.
+    
+* Errors in ReadCdsLmap were reported as from ReadCdsTech.
+
+* The is_library OpenAccess interface function was succeeding only for
+* libraries defined in the top-level lib.defs file.  The search now
+* recurses to full depth.  This prevented the Place button operation
+* from Content windows from the OA Libraries pop-up from working
+* except for libraries defined at the top level.
+
+
+-------------------------------------------------------------------------------
 xic-4.3.8  8/5/2019
 Current Release
 

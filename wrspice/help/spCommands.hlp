@@ -5138,7 +5138,7 @@ stop command
 
     <dl>
     <dt><i>point</i><dd>
-    This is precisely the same <a href="measure#point><i>point</i>
+    This is precisely the same <a href="measure#point"><i>point</i>
     specification</a> as is used in the <b>measure</b> command. 
     Please refer to that section for a description of the syntax. 
     Note that this should cover the pre-4.3.9 syntax, however an

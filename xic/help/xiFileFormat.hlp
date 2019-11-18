@@ -2413,7 +2413,7 @@ Device Library file
     The supplied <tt>device.lib</tt> file contains a collection or
     rather plain looking generic device models that correspond to the
     devices supported by SPICE.  Additional devices are often created
-    when a layout is <a href="cdsimport'>imported</a> from Cadence
+    when a layout is <a href="cdsimport">imported</a> from Cadence
     Virtuoso.  These correspond to the schematic symbols of devices
     used in Virtuoso schematics.  Devices can be created by the user
     through use of the <a href="xic:sadev"><b>Save As Device</b></a>
