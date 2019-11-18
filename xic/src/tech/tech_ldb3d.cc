@@ -348,7 +348,7 @@ namespace {
 bool
 Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     const char *mask_lname, double subs_eps, double subs_thickness,
-    int manh_min, int manh_mode)
+    int manh_gcnt, int manh_mode)
 {
     // Grab and order the layers to be considered, in the db3_stack
     // list.
@@ -386,6 +386,13 @@ Ldb3d::init_stack(CDs *sdesc, const BBox *AOI, bool is_cs,
     Zlist::BB(zref, db3_aoi);
     Zlist::destroy(db3_zlref);
     db3_zlref = zref;
+
+    // Smallest rectangle size to use when approximating non-Manhattan
+    // geometry.  The manh_gcnt is a "volume area" count, the number of
+    // covered grid cells for manh_min squares.
+    //
+    int manh_min =
+        manh_gcnt > 0 ? INTERNAL_UNITS(sqrt(db3_aoi.area()/manh_gcnt)) : 0;
 
     // Next, obtain geometry, and remove layers that are nonexistant
     // in the sdesc layout.  We invert dark-field layers, so that in

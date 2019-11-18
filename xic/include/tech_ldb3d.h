@@ -159,9 +159,9 @@ struct Ldb3d
         }
 
     bool init_for_extraction(CDs *sd, const BBox *BB, const char *fn,
-            double d, double t, int manh_min=0, int manh_mode=0)
+            double d, double t, int manh_gcnt=0, int manh_mode=0)
         {
-            return (init_stack(sd, BB, false, fn, d, t, manh_min, manh_mode));
+            return (init_stack(sd, BB, false, fn, d, t, manh_gcnt, manh_mode));
         }
 
     bool order_layers();

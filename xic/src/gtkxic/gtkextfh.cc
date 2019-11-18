@@ -113,15 +113,14 @@ namespace {
             int fh_end;
             int fh_line_selected;
 
-            GTKspinBtn sb_fh_min_rect;
-            GTKspinBtn sb_fh_min_manh_part;
+            GTKspinBtn sb_fh_manh_grid_cnt;
             GTKspinBtn sb_fh_volel_target;
         };
 
         sFh *Fh;
 
         enum { FhRun, FhRunFile, FhDump, Foreg, ToCons, Enable, Kill };
-        enum { MinRect, MinManhPart, VolElTarg, FhPath, FhArgs, FhFreq };
+        enum { ManhGridCnt, VolElTarg, FhPath, FhArgs, FhFreq };
     }
 
     // FastHenry units menu, must have same order and length as Units[]
@@ -435,35 +434,21 @@ sFh::sFh(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    frame = gtk_frame_new("FhMinRectSize");
+    frame = gtk_frame_new("FhManhGridCnt");
     gtk_widget_show(frame);
 
-    int ndgt = CD()->numDigits();
-    double val = FH_MIN_RECT_SIZE_DEF;
-    GtkWidget *sb = sb_fh_min_rect.init(val, FH_MIN_RECT_SIZE_MIN,
-        FH_MIN_RECT_SIZE_MAX, ndgt);
+//XXX    int ndgt = CD()->numDigits();
+//    double val = FH_MIN_RECT_SIZE_DEF;
+
+    GtkWidget *sb = sb_fh_manh_grid_cnt.init(FH_DEF_MANH_GRID_CNT,
+        FH_MIN_MANH_GRID_CNT,
+        FH_MAX_MANH_GRID_CNT, 0);
     gtk_widget_set_usize(sb, 100, -1);
-    sb_fh_min_rect.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
-        (void*)MinRect, "FhMinRectSize");
+    sb_fh_manh_grid_cnt.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+        (void*)ManhGridCnt, "FhManhGridCnt");
     gtk_container_add(GTK_CONTAINER(frame), sb);
 
     gtk_table_attach(GTK_TABLE(table), frame, 1, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    frame = gtk_frame_new("FhMinManhPartSize");
-    gtk_widget_show(frame);
-
-    val = FH_MIN_MANH_PART_SIZE_DEF;
-    sb = sb_fh_min_manh_part.init(val, FH_MIN_MANH_PART_SIZE_MIN,
-        FH_MIN_MANH_PART_SIZE_MAX, ndgt);
-    gtk_widget_set_usize(sb, 100, -1);
-    sb_fh_min_manh_part.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
-        (void*)MinManhPart, "FhMinManhPartSize");
-    gtk_container_add(GTK_CONTAINER(frame), sb);
-
-    gtk_table_attach(GTK_TABLE(table), frame, 0, 1, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     row++;
@@ -650,22 +635,13 @@ sFh::update()
     if (uoff != ucur)
         gtk_option_menu_set_history(GTK_OPTION_MENU(fh_units), uoff);
 
-    var = CDvdb()->getVariable(VA_FhMinRectSize);
-    if (sb_fh_min_rect.is_valid(var))
-        sb_fh_min_rect.set_value(atof(var));
+    var = CDvdb()->getVariable(VA_FhManhGridCnt);
+    if (sb_fh_manh_grid_cnt.is_valid(var))
+        sb_fh_manh_grid_cnt.set_value(atof(var));
     else {
         if (var)
-            CDvdb()->clearVariable(VA_FhMinRectSize);
-        sb_fh_min_rect.set_value(FH_MIN_RECT_SIZE_DEF);
-    }
-
-    var = CDvdb()->getVariable(VA_FhMinManhPartSize);
-    if (sb_fh_min_manh_part.is_valid(var))
-        sb_fh_min_manh_part.set_value(atof(var));
-    else {
-        if (var)
-            CDvdb()->clearVariable(VA_FhMinManhPartSize);
-        sb_fh_min_manh_part.set_value(FH_MIN_MANH_PART_SIZE_DEF);
+            CDvdb()->clearVariable(VA_FhManhGridCnt);
+        sb_fh_manh_grid_cnt.set_value(FH_DEF_MANH_GRID_CNT);
     }
 
     static double fhvt_bak;
@@ -893,17 +869,13 @@ sFh::select_pid(int p)
 const char *
 sFh::fh_def_string(int id)
 {
-    int ndgt = CD()->numDigits();
     static char tbuf[16];
     switch (id) {
-    case MinRect:
-        sprintf(tbuf, "%.*f", ndgt, FH_MIN_RECT_SIZE_DEF);
-        return (tbuf);
-    case MinManhPart:
-        sprintf(tbuf, "%.*f", ndgt, FH_MIN_MANH_PART_SIZE_DEF);
+    case ManhGridCnt:
+        sprintf(tbuf, "%.*f", 0, FH_DEF_MANH_GRID_CNT);
         return (tbuf);
     case VolElTarg:
-        sprintf(tbuf, "%.*f", ndgt, FH_DEF_TARG_VOLEL);
+        sprintf(tbuf, "%.*f", 0, FH_DEF_TARG_VOLEL);
         return (tbuf);
     case FhPath:
         return (fxJob::fh_default_path());
@@ -970,21 +942,13 @@ sFh::fh_change_proc(GtkWidget *widget, void *arg)
         return;
     int id = (long)arg;
     switch (id) {
-    case MinRect:
-        if (check_num(s, FH_MIN_RECT_SIZE_MIN, FH_MIN_RECT_SIZE_MAX))
+    case ManhGridCnt:
+        if (check_num(s, FH_MIN_MANH_GRID_CNT, FH_MAX_MANH_GRID_CNT))
             break;
         if (!strcmp(s, fh_def_string(id)))
-            CDvdb()->clearVariable(VA_FhMinRectSize);
+            CDvdb()->clearVariable(VA_FhManhGridCnt);
         else
-            CDvdb()->setVariable(VA_FhMinRectSize, s);
-        break;
-    case MinManhPart:
-        if (check_num(s, FH_MIN_MANH_PART_SIZE_MIN, FH_MIN_MANH_PART_SIZE_MAX))
-            break;
-        if (!strcmp(s, fh_def_string(id)))
-            CDvdb()->clearVariable(VA_FhMinManhPartSize);
-        else
-            CDvdb()->setVariable(VA_FhMinManhPartSize, s);
+            CDvdb()->setVariable(VA_FhManhGridCnt, s);
         break;
     case VolElTarg:
         if (check_num(s, FH_MIN_TARG_VOLEL, FH_MAX_TARG_VOLEL))

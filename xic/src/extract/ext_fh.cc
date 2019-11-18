@@ -479,22 +479,16 @@ fhLayout::fhLayout()
         lname = FH_LAYER_NAME;
 
     // This is used only when approximating non-Manhattan edges.
-    int manh_min = INTERNAL_UNITS(FH_MIN_MANH_PART_SIZE_DEF);
-    const char *var = CDvdb()->getVariable(VA_FhMinManhPartSize);
+    int manh_gcnt = FH_DEF_MANH_GRID_CNT;
+    const char *var = CDvdb()->getVariable(VA_FhManhGridCnt);
     if (var) {
-        double val = atof(var);
-        if (val >= FH_MIN_MANH_PART_SIZE_MIN &&
-                val <= FH_MIN_MANH_PART_SIZE_MAX)
-            manh_min = INTERNAL_UNITS(val);
+        int val = atoi(var);
+        if (val >= FH_MIN_MANH_GRID_CNT && val <= FH_MAX_MANH_GRID_CNT)
+            manh_gcnt = val;
     }
-    int manh_mode = 0;
-//XXX    var = CDvdb()->getVariable(VA_FhManhMode);
-var = CDvdb()->getVariable("FhManhMode");
-    if (var)
-        manh_mode = (atoi(var) != 0);
     if (!init_for_extraction(CurCell(Physical), 0, lname,
             Tech()->SubstrateEps(), Tech()->SubstrateThickness(),
-            manh_min, manh_mode)) {
+            manh_gcnt, 0)) {
         Errs()->add_error("Layer setup failed.");
     }
 }
@@ -597,8 +591,6 @@ fhLayout::setup()
     if (!num_layers())
         return (false);
 
-//XXX
-printf("x1\n");
     // Create debugging layers/zoids if set.
     fhl_zoids = CDvdb()->getVariable(VA_FhZoids);
 
@@ -643,12 +635,8 @@ printf("x1\n");
                 c->set_siglam(sigma, lambda);
         }
     }
-//XXX
-printf("x2\n");
 
     slice_groups(max_rect_size);
-//XXX
-printf("x3\n");
 
     // Cut at outside edges of other objects, along the long
     // dimension first, then the short dimension.
@@ -711,15 +699,11 @@ printf("x3\n");
             }
         }
     }
-//XXX
-printf("x4\n");
 
     // Do the self-cutting again, to propagate new boundaries.
     //
     slice_groups(0);
     slice_groups_z(max_rect_size);
-//XXX
-printf("x5\n");
 
     if (db3_logfp) {
         int ztot = 0;
@@ -749,8 +733,9 @@ printf("x5\n");
                 cd->segmentize(fhl_ngen);
         }
     }
-//XXX
-printf("x6 %d\n", fhl_ngen.allocated());
+    if (db3_logfp) {
+        TPRINT("Nodes allocated=%d\n", fhl_ngen.allocated());
+    }
 
     // Create terminals array.
     fhl_terms = new fhTermList*[num_groups()];
@@ -837,8 +822,6 @@ printf("x6 %d\n", fhl_ngen.allocated());
     if (err)
         return (false);
 
-//XXX
-printf("x6a\n");
     // Set the terminal nodes.
     //
     for (int i = 0; i < num_groups(); i++) {
@@ -859,8 +842,6 @@ printf("x6a\n");
             tp = t;
         }
     }
-//XXX
-printf("x6b\n");
 
     char *s = check_sort_terms();
     if (s) {
@@ -878,8 +859,6 @@ printf("x6b\n");
             }
         }
     }
-//XXX
-printf("x7\n");
     return (true);
 }
 
