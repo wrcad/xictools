@@ -157,7 +157,7 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
-xic-4.3.9  11/11/2019
+xic-4.3.9  11/20/2019
 Current Release
 
 CHANGES AND NEW FEATURES
@@ -168,19 +168,24 @@ CHANGES AND NEW FEATURES
     FastHenry:  XicTools update to the 090919 package, release number 14.
     The default solver is now KLU, which can be much faster.
 
-    Updates to the FastHenry interf5ace for better operation,
+    Updates to the FastHenry interface for faster/better operation,
     particularly with non-Manhattan features.  Manhattanizing is now
     done before any cutting.
 
-    New variable FhMinManhPartSize
-    This is the smallest Manhattan edge used to approximate a
-    non-Manhattan shape.  A new entry in the Params page of the
-    FastHenry interface pop-up sets this.  Previously, this was set to
-    the FhMinRect value, which was too small.
+    The FhMinRect variable no longer exists, non-Manhattan refinement
+    is handled by FhManhGridCnt.
 
-    During refinement for the FastHenry interface, volume elements now
-    assume one dimension is a film thickness, which gives a better
-    size value.
+    New variable: FhManhGridCnt
+    The minimum size used to approximate non-Manhattan is sqrt((area
+    of interest)/FhManhGridCnt).  Larger is more accurate but slower,
+    similar to FhVolElTarget.  The range is 1e2-1e5, the default is
+    1e3.  An entry area in the Params page of the FastHenry interface
+    panel sets and is set by this variable.
+
+    During refinement for the FastHenry interface (Volume Element
+    Refinement is checked on the Params page of the panel), volume
+    element size is computed with a new algorithm which provides a
+    better value.
 
 * Improved portable-PCell (Synopsys/Ciranova) grip support.
 
@@ -211,10 +216,15 @@ BUGS FIXED
 * Errors in ReadCdsLmap were reported as from ReadCdsTech.
 
 * The is_library OpenAccess interface function was succeeding only for
-* libraries defined in the top-level lib.defs file.  The search now
-* recurses to full depth.  This prevented the Place button operation
-* from Content windows from the OA Libraries pop-up from working
-* except for libraries defined at the top level.
+  libraries defined in the top-level lib.defs file.  The search now
+  recurses to full depth.  This prevented the Place button operation
+  from Content windows from the OA Libraries pop-up from working
+  except for libraries defined at the top level.
+
+* Avoid spurious warning about changing group count in the FastHenry
+  interface.
+
+* Fixed a crash in the Compare Layouts function in the Convert menu.
 
 
 -------------------------------------------------------------------------------

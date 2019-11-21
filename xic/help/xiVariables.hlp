@@ -443,13 +443,13 @@ xiVariables.hlp
     <tr><td><b>FcPlaneBloat</b></td><td>Capacitance extractor substrate bloat dimension</td></tr>
     <tr><td><b>FcUnits</b></td><td>Capacitance extractor file units: m, cm, mm, um, in, mils</td></tr>
 
-!! 090414
+!! 111810
     <tr><th colspan=2><a href="!set:fh">Inductance/Resistance Extraction Interface</a></th></tr>
     <tr><td><b>FhArgs</b></td><td><i>FastHenry</i> command line arguments</td></tr>
     <tr><td><b>FhForeg</b></td><td><i>FastHenry</i> run in foreground if set</td></tr>
     <tr><td><b>FhFreq</b></td><td><i>FastHenry</i> frequency specification</td></tr>
     <tr><td><b>FhLayerName</b></td><td><i>FastHenry</i> interface masking layer name</td></tr>
-    <tr><td><b>FhMinRectSize</b></td><td>Minimum rectangle dimension for Manhattanization</td></tr>
+    <tr><td><b>FhManhGridCnt</b></td><td>Manhattanization grid cell count</td></tr>
     <tr><td><b>FhMonitor</b></td><td><i>FastHenry</i> output appears in console window if set</td></tr>
     <tr><td><b>FhPath</b></td><td>Path to <i>FastHenry</i> executable</td></tr>
     <tr><td><b>FhUnits</b></td><td><i>FastHenry</i> file units: m, cm, mm, um, in, mils</td></tr>
@@ -7297,13 +7297,13 @@ Capacitance Extraction Interface
 !!REDIRECT FhForeg              !set:fh#FhForeg
 !!REDIRECT FhFreq               !set:fh#FhFreq
 !!REDIRECT FhLayerName          !set:fh#FhLayerName
-!!REDIRECT FhMinRectSize        !set:fh#FhMinRectSize
+!!REDIRECT FhManhGridCnt        !set:fh#FhManhGridCnt
 !!REDIRECT FhMonitor            !set:fh#FhMonitor
 !!REDIRECT FhPath               !set:fh#FhPath
 !!REDIRECT FhUnits              !set:fh#FhUnits
 !!REDIRECT FhVolElTarget        !set:fh#FhVolElTarget
 
-!! 090314
+!! 111819
 !!KEYWORD
 !set:fh
 !!TITLE
@@ -7312,32 +7312,33 @@ Inductance/Resistance Extraction Interface
     The following variables apply to the inductance/resistance
     extraction (<a href="fhinterf">FastHenry interface</a>).  Most of
     these are associated with entry fields in the <a
-    href="fhpanel"><b>LR Extraction</b></a> panel, which is brought up
-    with the <a href="xic:exlr"><b>Extract LR</b></a> button in the <a
-    href="xic:extmenu"><b>Extract Menu</b></a>.
+    href="fhpanel"><b>LR Extraction</b></a> panel, which is
+    brought up with the <a href="xic:exlr"><b>Extract LR</b></a>
+    button in the <a href="xic:extmenu"><b>Extract Menu</b></a>.
 
-!! 090314
+!! 111819
     <a name="FhArgs"></a>
     <dl>
     <dt><b>FhArgs</b><dd>
     <b>Value:</b> string.<br>
     This value can be set to a string, which will be included in the
     argument list when <i>FastHenry</i> is initiated with the <b>Run
-    FastHenry</b> button in the <b>LR Extraction</b> panel <b>Run</b>
-    page.  The variable is most conveniently manipulated with the text
-    entry field in the <b>LR Extraction</b> panel <b>Run</b> page.
+    FastHenry</b> button in the <b>LR Extraction</b> panel
+    <b>Run</b> page.  The variable is most conveniently manipulated
+    with the text entry field in the <b>LR Extraction</b> panel
+    <b>Run</b> page.
     </dl>
 
-!! 090314
+!! 111819
     <a name="FhForeg"></a>
     <dl>
     <dt><b>FhForeg</b><dd>
     <b>Value:</b> boolean.<br>
     If this variable is set, then the <b>Run FastHenry</b> button in
-    the <b>LC Extraction</b> panel <b>Run</b> page will initiate a
-    <i>FastHenry</i> run in the foreground.  If not set, jobs are run
-    in the background, so that the user can continue using <i>Xic</i>
-    while the run is in progress.
+    the <b>LR Extraction</b> panel <b>Run</b> page will initiate
+    a <i>FastHenry</i> run in the foreground.  If not set, jobs are
+    run in the background, so that the user can continue using
+    <i>Xic</i> while the run is in progress.
 
     <p>
     It is not clear why there would be any reason to run in the
@@ -7350,7 +7351,7 @@ Inductance/Resistance Extraction Interface
     <b>Extract Menu</b>.
     </dl>
 
-!! 090314
+!! 111819
     <a name="FhFreq"></a>
     <dl>
     <dt><b>FhFreq</b><dd>
@@ -7392,21 +7393,30 @@ Inductance/Resistance Extraction Interface
     the layer table, that layer will do the clipping.
     </dl>
 
-!! 090314
-    <a name="FhMinRectSize"></a>
+!! 111819
+    <a name="FhManhGridCnt"></a>
     <dl>
-    <dt><b>FhMinRectSize</b><dd>
-    <b>Value:</b> real number 0.01-10.0.<br>
-    When a non-Manhattan polygon "Manhattanized" for <i>FastHenry</i>, it is
-    converted to an approximating Manhattan polygon.  This variable
-    can be used to set the minimum rectangle width and height used in
-    the decomposition.  The value is specified in microns.  If not
-    set, a value of 1.0 microns is used.  This variable is most
-    conveniently manipulated with the text input field in the <b>LR
-    Extraction</b> panel <b>Params</b> page.
+    <dt><b>FhManhGridCnt</b><dd>
+    <b>Value:</b> real number 1e2 - 1e5.<br>
+    When a non-Manhattan polygon is "Manhattanized" for
+    <i>FastHenry</i>, it is converted to an approximating Manhattan
+    polygon.  This variable can be used to set the minimum rectangle
+    width and height used in the decomposition.  This value is given
+    by
+    <blockquote>
+    <tt>sqrt(</tt><i>area_of_interest</i><tt>/FhManhGridCnt)</tt>
+    </blockquote>
+    If not set, a value of 1000 is used.  Larger values are more
+    accurate but slow processing, sometimes dramatically.  The
+    <i>area_of_interest</i> is the layout area being processed for
+    input to <i>FastHenry</i>.
+
+    <p>
+    This variable is most conveniently manipulated with the text input
+    field in the <b>LR Extraction</b> panel <b>Params</b> page.
     </dl>
 
-!! 090314
+!! 111819
     <a name="FhMonitor"></a>
     <dl>
     <dt><b>FhMonitor</b><dd>
@@ -7434,10 +7444,10 @@ Inductance/Resistance Extraction Interface
     <p>
     This variable mirrors the state of the <b>Out to console</b> check
     box in the <b>Run</b> page of the <a href="xic:exlr"><b>LR
-    Extraction</b></a> panel from the <b>Extract Menu</b>.
+    Extgraction</b></a> panel from the <b>Extract Menu</b>.
     </dl>
 
-!! 090314
+!! 111819
     <a name="FhPath"></a>
     <dl>
     <dt><b>FhPath</b><dd>
@@ -7459,7 +7469,7 @@ Inductance/Resistance Extraction Interface
     page of the <b>LR Extraction</b> panel.
     </dl>
 
-!! 090314
+!! 111819
     <a name="FhUnits"></a>
     <dl>
     <dt><b>FhUnits</b><dd>
@@ -7471,7 +7481,8 @@ Inductance/Resistance Extraction Interface
     (millimeters), "<tt>um</tt>" (microns), "<tt>in</tt>" (inches),
     and "<tt>mils</tt>".  The long form word will also be accepted. 
     This variable is most conveniently manipulated with the choice
-    menu found in the <b>LR Extraction</b> panel <b>Params</b> page.
+    menu found in the <b>LR Extraction</b> panel <b>Params</b>
+    page.
     </dl>
 
 !! 090314

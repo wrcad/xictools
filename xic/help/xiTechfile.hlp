@@ -44,7 +44,7 @@ resourcefile
 !!REDIRECT ReadCniTech          techfile#ReadCniTech
 !!REDIRECT LispLogging          techfile#LispLogging
 
-!! 041918
+!! 112019
 !!KEYWORD
 techfile
 !!TITLE
@@ -69,11 +69,14 @@ Technology File
     used to dump an appropriate technology file for the next time.
 
     <p>
-    The technology file is searched for in the order of the current
-    directory (where <i>Xic</i> was started), in a subdirectory of
-    this directory named "<tt>techfiles</tt>", then along the library
-    <a href="xicpaths">search path</a>.  The library path can be set
-    with the <a href="xic:env">environment</a> variable
+    The technology file is sought first in the current directory
+    (where <i>Xic</i> was started).  If the environment variable <a
+    href="XIC_TECH_DIR"><b>XIC_TECH_DIR</b></a> is set to a directory
+    path, that directory is searched.  If a subdirectory of the
+    current directory named "<tt>techfiles</tt>" exists, it is
+    searched next.  Finally, the technology file is searched for along
+    the library <a href="xicpaths">search path</a>.  The library path
+    can be set with the <a href="xic:env">environment</a> variable
     <b>XIC_LIB_PATH</b>.  The default path is
     <blockquote>
     <tt>( .  /usr/local/xictools/xic/startup)</tt>.

@@ -725,7 +725,7 @@ fhpanel
 !!SEEALSO
 xic:extmenu
 
-!! 032015
+!! 111919
 !!KEYWORD
 fhinterf
 !!TITLE
@@ -895,12 +895,16 @@ The Inductance/Resistance Extraction Interface
     Support for non-Manhattan geometry is provided by first internally
     Manhattanizing non-Manhattan objects before processing.  The
     granularity of the Manhattanization is controlled by the <a
-    href="FhMinRectSize"><b>FhMinRectSize</b></a> variable or the
+    href="FhManhGridCnt"><b>FhManhGridCnt</b></a> variable or the
     corresponding text entry field in the <b>LR Extraction</b> panel
-    <b>Params</b> page.  Note that this can dramatically increase the
+    <b>Params</b> page.  The length of a Manhattan segment used to
+    approximate non-Manhattan geometry must be larger than
+    <tt>sqrt(</tt><i>area_of_interest</i><tt>FhManhGridCnt)</tt>. Using
+    <b>FhManhFridCnt</b> values larger than the default 1000 will
+    increase accuracy, but this can dramatically increase the
     segment count, and therefor <i>FastHenry</i> run time.  When
-    possible, non-Manhattan features should be avoided when using
-    this interface to <i>FastHenry</i>.
+    possible, non-Manhattan features should be avoided when using this
+    interface to <i>FastHenry</i>.
 
     <a name="terms"></a>
     <h2>Terminal Definition</h2>
@@ -1171,9 +1175,9 @@ The Inductance/Resistance Extraction Interface
     <li>Non-Manhattan features can be very bad news.  These are
     "Manhattanized" by converting non-Manhattan edges into stepwise
     approximations.  The large number of edges that can be produced by
-    this may lead te excessive run time.  The <b>FhMinRectSize</b>
+    this may lead te excessive run time.  The <b>FhManhGridCnt</b>
     entry in the <b>Params</b> page of the control panel can be
-    increased to reduce the number of segments.
+    decreased to reduce the number of segments.
 
     <p>
     <li>Too-few segments is also to be avoided, as the calculation may
@@ -1195,7 +1199,7 @@ fhpanel
 xic:ldb3d
 !fh
 
-!! 090614
+!! 111919
 !!KEYWORD
 fhpanel
 !!TITLE
@@ -1352,18 +1356,22 @@ The LR Extraction Panel
     </dl>
 
     <dl>
-    <dt><b>FhMinRectSize</b><dd>
-    This numerical entry field is used to specify the minimum
-    rectangle width or height used when non-Manhattan objects are
-    converted to a Manhattan approximation for <i>FastHenry</i>.  The
-    value is entered in microns, and the default value is 1.0.  This
-    is tied to the <a href="FhMinRectSize"><b>FhMinRectSize</b></a>
-    variable, which can also be set directly with the <b>!set</b>
-    command.
-    </dl>
-
-    <dl>
-    <dt><b>FhMinManhPartSize</b><dd>
+    <dt><b>FhManhGridCnt</b><dd>
+    <b>Value:</b> real number 1e2 - 1e5.<br>
+    When a non-Manhattan polygon is "Manhattanized" for
+    <i>FastHenry</i>, it is converted to an approximating Manhattan
+    polygon.  The value in this entry is used to set the minimum
+    rectangle width and height allowed in the decomposition.  It sets,
+    and is set by, the <a
+    href="FhManhGridCnt"><b>FhManhGridCnt</b></a> variable.  The
+    minimum size is given by
+    <blockquote>
+    <tt>sqrt(</tt><i>area_of_interest</i><tt>/FhManhGridCnt)</tt>
+    </blockquote>
+    The default entry value is 1000.  Larger values are more
+    accurate but slow processing, sometimes dramatically.  The
+    <i>area_of_interest</i> is the layout area being processed for
+    input to <i>FastHenry</i>.
     </dl>
 
     <p>

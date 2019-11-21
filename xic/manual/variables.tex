@@ -428,13 +428,13 @@ follow.
 \et FcPlaneBloat & Capacitance extractor substrate bloat dimension\\ \hline
 \et FcUnits & Capacitance extractor file units: m, cm, mm, um, in, mils\\ \hline
 
-% 090414
+% 111819
 \multicolumn{2}{|c|}{\kb Inductance/Resistance Extraction Interface}\\ \hline
 \et FhArgs & {\it FastHenry} command line arguments\\ \hline
 \et FhForeg & {\it FastHenry} run in foreground if set\\ \hline
 \et FhFreq & {\it FastHenry} frequency specification\\ \hline
 \et FhLayerName & {\it FastHenry} interface masking layer name\\ \hline
-\et FhMinRectSize & Minimum rectangle dimension for Manhattanization\\ \hline
+\et FhManhGridCnt & Manhattanization grid cell count\\ \hline
 \et FhMonitor & {\it FastHenry} output appears in console window if set\\
   \hline
 \et FhPath & Path to {\it FastHenry} executable\\ \hline
@@ -5547,27 +5547,27 @@ Extraction} panel {\cb Params} page.
 
 
 % -----------------------------------------------------------------------------
-% !set:fh 090314
+% !set:fh 111819
 \section{Inductance/Resistance Extraction Interface}
 \label{fhvars}
 \index{variables!fasthenry}
 The following variables apply to the inductance/resistance extraction
-({\it FastHenry}) interface.  Most of these are associated with entry
-fields in the {\cb LR Extraction} panel, which is brought up with the
-{\cb Extract LR} button in the {\cb Extract Menu}.
+({\it FastHenry} interface).  Most of these are associated with entry
+fields in the {\cb LR Extraction} panel, which is brought up
+with the {\cb Extract LR} button in the {\cb Extract Menu}.
 
 \begin{description}
-% 090314
+% 111819
 \index{FhArgs variable}
 \item{\et FhArgs}\\
 {\bf Value:} string.\\
 This value can be set to a string, which will be included in the
 argument list when {\it FastHenry} is initiated with the {\cb Run
-FastHenry} button in the {\cb LR Extraction} panel {\cb Run} page. 
-The variable is most conveniently manipulated with the text entry
-field in the {\cb LR Extraction} panel {\cb Run} page.
+FastHenry} button in the {\cb LR Extraction} panel {\cb Run}
+page.  The variable is most conveniently manipulated with the text
+entry field in the {\cb LR Extraction} panel {\cb Run} page.
 
-% 090314
+% 111819
 \index{FhForeg variable}
 \item{\et FhForeg}\\
 {\bf Value:} boolean.\\
@@ -5584,7 +5584,7 @@ This variable controls, and is controlled by, the setting of the {\cb
 Run in foreground} check box in the {\cb Run} page of the {\cb LR
 Extraction} panel from the {\cb Extract Menu}.
 
-% 090314
+% 111819
 \index{FhFreq variable}
 \item{\et FhFreq}\\
 {\bf Value:} string.\\
@@ -5620,19 +5620,26 @@ hierarchy will be included in extraction.
 If this variable is set to the name of an existing layer name in the
 layer table, that layer will do the clipping.
 
-% 090314
-\index{FhMinRectSize variable}
-\item{\et FhMinRectSize}\\
-{\bf Value:} real number 0.01--10.0.\\
+% 111819
+\index{FhManhGridCnt variable}
+\item{\et FhManhGridCnt}\\
+{\bf Value:} real number 1e2--1e5.\\
 When a non-Manhattan polygon is ``Manhattanized'' for {\it FastHenry},
 it is converted to an approximating Manhattan polygon.  This variable
 can be used to set the minimum rectangle width and height used in the
-decomposition.  The value is specified in microns.  If not set, a
-value of 1.0 microns is used.  This variable is most conveniently
-manipulated with the text input field in the {\cb LR Extraction} panel
-{\cb Params} page.
+decomposition.  This value is given by
+\begin{quote}
+{\vt sqrt(}{\it area\_of\_interest\/}{\vt /FhManhGridCnt)}
+\end{quote}
+If not set, a value of 1000 is used.  Larger values are more accurate
+but slow processing, sometimes dramatically.  The {\it
+area\_of\_interest} is the layout area being processed for input to
+{\it FastHenry}.
 
-% 090314
+This variable is most conveniently manipulated with the text input
+field in the {\cb LR Extraction} panel {\cb Params} page.
+
+% 111819
 \index{FhMonitor variable}
 \item{\et FhMonitor}\\
 {\bf Value:} boolean.\\
@@ -5654,10 +5661,10 @@ output will again be block buffered under Windows, but there is no
 requirement for a {\vt tee} command.
 
 This variable mirrors the state of the {\cb Out to console} check box
-in the {\cb Run} page of the {\cb LR Extraction} panel from the {\cb
-Extract Menu}.
+in the {\cb Run} page of the {\cb LR Extraction} panel from the
+{\cb Extract Menu}.
 
-% 090314
+% 111819
 \index{FhPath variable}
 \item{\et FhPath}\\
 {\bf Value:} directory path string.\\
@@ -5673,7 +5680,7 @@ the foreground, and background runs will fail.
 This tracks the setting of the text entry field in the {\cb Run} page
 of the {\cb LR Extraction} panel.
 
-% 090314
+% 111819
 \index{FhUnits variable}
 \item{\et FhUnits}\\
 {\bf Value:} units string.\\

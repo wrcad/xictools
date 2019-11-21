@@ -4607,7 +4607,7 @@ Whiteley Research web site ({\vt http://wrcad.com}).
 
 
 % -----------------------------------------------------------------------------
-% fhinterf 032015
+% fhinterf 111919
 \subsection{The Inductance/Resistance Extraction Interface}
 \index{inductance extraction interface}
 \index{FastHenry program}
@@ -4747,11 +4747,15 @@ The ability to tile requires that the geometry be Manhattan.  Support
 for non-Manhattan geometry is provided by first internally
 Manhattanizing non-Manhattan objects before processing.  The
 granularity of the Manhattanization is controlled by the {\et
-FhMinRectSize} variable or the corresponding text entry field in the
-{\cb LR Extraction} panel {\cb Params} page.  Note that this can
-dramatically increase the segment count, and therefor {\it FastHenry}
-run time.  When possible, non-Manhattan features should be avoided
-when using this interface to {\it FastHenry}.
+FhManhGridCnt} variable or the corresponding text entry field in the
+{\cb LR Extraction} panel {\cb Params} page.  The length of a
+Manhattan segment used to approximate non-Manhattan geometry must be
+larger than {\vt sqrt(}{\it area\_of\_interest\/}{\vt FhManhGridCnt)}. 
+Using {\et FhManhFridCnt} values larger than the default 1000 will
+increase accuracy, but this can dramatically increase the segment
+count, and therefor {\it FastHenry} run time.  When possible,
+non-Manhattan features should be avoided when using this interface to
+{\it FastHenry}.
 
 %-----------------------------------
 \subsubsection{Terminal Definition}
@@ -4994,8 +4998,8 @@ input file.}
 \item{Non-Manhattan features can be very bad news.  These are
 ``Manhattanized'' by converting non-Manhattan edges into stepwise
 approximations.  The large number of edges that can be produced by
-this may lead te excessive run time.  The {\cb FhMinRectSize} entry in
-the {\cb Params} page of the control panel can be increased to reduce
+this may lead te excessive run time.  The {\cb FhManhGridCnt} entry in
+the {\cb Params} page of the control panel can be decreased to reduce
 the number of segments.}
 
 \item{Too-few segments is also to be avoided, as the calculation may
@@ -5013,7 +5017,7 @@ hardware.}
 
 
 % -----------------------------------------------------------------------------
-% fhpanel 090614
+% fhpanel 111919
 \subsection{The LR Extraction Panel}
 \index{LR Extraction Panel}
 \label{fhpanel}
@@ -5127,13 +5131,21 @@ of the menu.  The choice currently in effect will be applied when
 input files are generated.  The choice of units will not affect the
 computed inductance/resistance.
 
-\item{\cb FhMinRectSize}\\
-This numerical entry field is used to specify the minimum rectangle
-width or height used when non-Manhattan objects are converted to a
-Manhattan approximation for {\it FastHenry}.  The value is entered in
-microns, and the default value is 1.0.  This is tied to the {\et
-FhMinRectSize} variable, which can also be set directly with the {\cb
-!set} command.
+\index{FhManhGridCnt variable}
+\item{\et FhManhGridCnt}\\
+{\bf Value:} real number 1e2--1e5.\\
+When a non-Manhattan polygon is ``Manhattanized'' for {\it FastHenry},
+it is converted to an approximating Manhattan polygon.  The value in
+this entry is used to set the minimum rectangle width and height
+allowed in the decomposition.  It sets, and is set by, the {\cb
+FhManhGridCnt} variable.  The minimum size is given by
+\begin{quote}
+{\vt sqrt(}{\it area\_of\_interest\/}{\vt /FhManhGridCnt)}
+\end{quote}
+The default entry value is 1000.  Larger values are more accurate
+but slow processing, sometimes dramatically.  The {\it
+area\_of\_interest} is the layout area being processed for input to
+{\it FastHenry}.
 \end{description}
 
 The lower half of the page allows one to crudely refine the raw

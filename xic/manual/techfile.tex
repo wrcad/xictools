@@ -7,7 +7,7 @@
 \appendix
 \chapter{Technology File}
 % -----------------------------------------------------------------------------
-% techfile 041918
+% techfile 112019
 \label{techfile}
 \index{technology file}
 \index{xic\_tech file}
@@ -33,11 +33,13 @@ technology file for the next time.
 \index{techfiles directory}
 \index{library path}
 \index{Save Tech button}
-The technology file is searched for in the order of the current
-directory (where {\Xic} was started), in a subdirectory of this
-directory named ``{\vt techfiles}'', then along the library search path. 
-The library search path can be set with the environment variable {\et
-XIC\_LIB\_PATH}.  The default path is
+The technology file is sought first in the current directory (where
+{\Xic} was started).  If the environment variable {\et XIC\_TECH\_DIR}
+is set to a directory path, that directory is searched.  If a
+subdirectory of the current directory named ``{\vt techfiles}''
+exists, it is searched next.  Finally, the technology file is searched
+for along the library search path.  The library path can be set with
+the environment variable {\et XIC\_LIB\_PATH}.  The default path is
 \begin{quote}
  {\vt ( . /usr/local/xictools/xic/startup )}.
 \end{quote}

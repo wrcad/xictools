@@ -1024,6 +1024,7 @@ Command Line Options
 !!REDIRECT FORCE_XIV            xic:env#FORCE_XIV
 !!REDIRECT XIC_HOME             xic:env#XIC_HOME
 !!REDIRECT XIC_GEOMETRY         xic:env#XIC_GEOMETRY
+!!REDIRECT XIC_TECH_DIR         xic:env#XIC_TECH_DIR
 !!REDIRECT XIC_TMP_DIR          xic:env#XIC_TMP_DIR
 !!REDIRECT TMPDIR               xic:env#TMPDIR
 !!REDIRECT XIC_LOGDIR           xic:env#XIC_LOGDIR
@@ -1049,7 +1050,7 @@ Command Line Options
 !!REDIRECT SPICE_EXEC_NAME      xic:env#SPICE_EXEC_NAME
 !!REDIRECT IMSAVE_PATH          xic:env#IMSAVE_PATH
 
-!! 093017
+!! 112019
 !!KEYWORD
 xic:env
 !!TITLE
@@ -1384,6 +1385,16 @@ Environment Variables
     The bottom edge of the window is to be <i>yoff</i> pixels above
     the bottom edge of the screen.
     </dl>
+    </dl>
+
+    <a name="XIC_TECH_DIR"></a>
+    <dl>
+    <dt><b>XIC_TECH_DIR</b>
+    <dd>
+    The value is a path to a directory.  If given, the directory is
+    searched for the <a href="techfile">technology file</a>, if not
+    found in the current directory, and before other locations are
+    checked.
     </dl>
 
     <a name="XIC_TMP_DIR"></a>

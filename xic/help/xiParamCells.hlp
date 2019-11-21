@@ -1317,7 +1317,7 @@ Parameters Panel:  Set PCell Parameters
 
 !!REDIRECT prpty:grip           pc_stretch#grip
 
-!! 102314
+!! 111919
 !!KEYWORD
 pc_stretch
 !!TITLE
@@ -1456,7 +1456,9 @@ PCell Stretch Handles
     "<tt>Location.CENTER_LEFT</tt>", "<tt>Location.LOWER_CENTER</tt>",
     "<tt>Location.CENTER_RIGHT</tt>",
     "<tt>Location.UPPER_CENTER</tt>", which specify the left, bottom,
-    right, and top sides.
+    right, and top sides.  All Ciranova codes are handled, those
+    listed above display a line stretch handle, others will show a
+    glyph.
 
     <dt><tt>userScale</tt><dd>
     This is a real number scale factor used to multiply the change in
