@@ -206,7 +206,7 @@ before op range or first MC trial.  Set to 0 otherwise.
 Changed the character that separates numerator and denominator units from '/'
 to '_', which is tied to the new "units_sepchar" variable.  The earlier
 choice could cause ambiguous expressions.  e.g., 1/V  could be ine over
-a vector V or one per volt.  Where is units stuff documented?
+a vector V or one per volt.
 
 --- release 4.3.8
 
@@ -214,7 +214,7 @@ Fixed .if/.elif/.else logic, wan't correct.  Had to add a stack of
 flags that indicate that a branch was taken.
 Jooyoung: Verilog JJ model doesn't work in sweep/chained DC analysis. FIXED
 
-Stats of multi-runs should accumulate.
+Stats of multi-runs should accumulate. DONE
 reuse sCKT, accumulates (dc tran/chained DC analysis).
 new sCKT (loop, marg, mc) probably should accumulate but doesn't. FIXED
 Two possibilities:  "rebuild" actually reparse the deck, "reset" just
@@ -229,12 +229,16 @@ Use trial reset if alter only, otherwise rebuild.
 New "frame" default plot support.
 
 Gleb crash (close window with running WRspice crashes WRspice).
+(Can't reproduce this on Mac)
 
 Jooyoung sweep time anomaly: sweep not proportional to sim length.
 
 Ground names are listed from sCKTnodeTab::groundNames().
 ToDo: user command to set a ground name.
 
+TODO?:
+.alias nlias=name alias=name...
+.alias mygnd=0
 TODO
 Add random bit 'x' in pattern gpulse/pulse.
 TO-DO in .meassure, prinitive that will identify edge, bottom, and
@@ -249,3 +253,6 @@ implement trace groups in plots
 
 ADMS:  Implement "localparam", even if just an alias for "parameter".
 
+****  Where is units stuff documented?
+
+*** NGC no rsub/rn range check (in next release!)

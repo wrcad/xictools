@@ -586,7 +586,7 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             inst->JJcr2 = inst->JJcriti/model->JJicFactor +
                 inst->JJvless * inst->JJg0 - inst->JJvmore * inst->JJgn;
 
-            if (model->JJvShuntGiven) {
+            if (model->JJvShuntGiven && model->JJvShunt > 0.0) {
                 double gshunt = inst->JJcriti/model->JJvShunt - inst->JJgqp;
                 if (gshunt > 0.0)
                     inst->JJgshunt = gshunt;

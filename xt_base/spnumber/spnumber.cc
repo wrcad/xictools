@@ -50,15 +50,19 @@ Authors: 1987 Wayne A. Christopher
 #include <stdlib.h>
 #include <ctype.h>
 
+#ifdef WRSPICE
 #include "spnumber/spnumber.h"
-
 typedef void ParseNode;
 #include "spnumber/spparse.h"
-
-#ifdef WRSPICE
 #include "graph.h"
 #include "cshell.h"
 #include "simulator.h"
+#else
+#ifdef SPEXPORT
+#include "spnumber.h"
+#else
+#include "spnumber/spnumber.h"
+#endif
 #endif
 
 

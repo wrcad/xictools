@@ -401,7 +401,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
 #endif
             inst->TJMgqp = inst->TJMg0;
-            if (model->TJMvShuntGiven) {
+            if (model->TJMvShuntGiven && model->TJMvShunt > 0.0) {
                 double gshunt = inst->TJMcriti/model->TJMvShunt - inst->TJMgqp;
                 if (gshunt > 0.0)
                     inst->TJMgshunt = gshunt;
