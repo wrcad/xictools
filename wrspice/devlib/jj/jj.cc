@@ -207,6 +207,8 @@ IO("icfct",             JJ_MOD_ICF,         IF_REAL|IF_REDUNDANT,
                 "Ratio of Ic to qp gap current"),
 IO("vshunt",            JJ_MOD_VSHUNT,      IF_REAL|IF_VOLT,
                 "Implied extra shunt R=Vshunt/Ic"),
+IO("force",             JJ_MOD_FORCE,       IF_FLAG,
+                "No limits imposed for rsub, rnorm"),
 #ifdef NEWLSH
 IO("lsh0",              JJ_MOD_LSH0,        IF_REAL|IF_IND,
                 "Shunt resistor inductance constant part"),

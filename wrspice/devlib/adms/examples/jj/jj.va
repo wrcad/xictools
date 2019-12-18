@@ -52,6 +52,8 @@
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
 
+// Version 1.34, December 18, 2019 instance param ics range widened,
+//   added NORLMT compile-time option.
 // Version 1.33, July 14, 2019 instance read-only parameters gshunt
 //   and lshval have ADMS spec for accessibility in WRspice.
 // Version 1.32, June 26, 2019 added temperature effects:  model
@@ -223,6 +225,10 @@
 // a tiny resistance.  Not recommended.
 //`define fakeDC
 
+// Suppress limit check of subgap and normal resistances.  Not
+// recomended unless needed for wierd devices.
+//`define NORLMT
+
 // MIT-LL SFQ5EE process, parameters from:
 // Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 26, 1100110, (2016)
 // Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 27, 1100815, (2017)
@@ -348,15 +354,26 @@ parameter real icfct    = `M_PI_4 from [0.5:`M_PI_4]
     `P(type="model" info="Ic to Istep ratio");
 aliasparam icfact       = icfct;
 
+`ifdef NORLMT
+parameter real vm       = `Vm*1e-3 from (0:1e6]
+    `P(type="model" info="Ic * subgap resistance" units="V");
+parameter real rsub     = vm/icrit from (0:1e6]
+    `P(type="model" info="Subgap resistance" units="O");
+parameter real icrn     = `IcR*1e-3 from (0:1e6]
+    `P(type="model" info="Ic * normal resistance" units="V");
+parameter real rnorm    = icrn/icrit from (0:1e6]
+    `P(type="model" info="Normal resistance" units="O");
+`else
 parameter real vm       = `Vm*1e-3 from [8m:100m]
     `P(type="model" info="Ic * subgap resistance" units="V");
 parameter real rsub     = vm/icrit from [8e-3/icrit:1e-1/icrit]
     `P(type="model" info="Subgap resistance" units="O");
-aliasparam r0           = rsub;
 parameter real icrn     = `IcR*1e-3 from [0.5m:vgap*icfct]
     `P(type="model" info="Ic * normal resistance" units="V");
 parameter real rnorm    = icrn/icrit from [0.5e-3/icrit:(vgap*icfct)/icrit]
     `P(type="model" info="Normal resistance" units="O");
+`endif
+aliasparam r0           = rsub;
 aliasparam rn           = rnorm;
 `ifdef NEWVSHUNT
 // The subgap and normal resistances.  If vshunt is given, a fixed
@@ -391,7 +408,7 @@ parameter real temp     = deftemp from [0.0:tc]
     `P(type="instance" info="Operating temperature Kelvin");
 
 // Scaling critical current.
-parameter real ics      = icrit from [icrit/20:icrit*20]
+parameter real ics      = icrit from [icrit/50:icrit*50]
     `P(type="instance" info="Scaled critical current" units="A");
 
 `ifdef NEWLSER

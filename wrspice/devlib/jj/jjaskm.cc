@@ -124,6 +124,10 @@ JJdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case JJ_MOD_VSHUNT:
         value->rValue = model->JJvShunt;
         break;
+    case JJ_MOD_FORCE:
+        value->iValue = model->JJforceGiven;
+        data->type = IF_INTEGER;
+        break;
 #ifdef NEWLSH
     case JJ_MOD_LSH0:
         value->rValue = model->JJlsh0;

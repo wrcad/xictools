@@ -93,8 +93,8 @@ Author: 1992 Stephen R. Whiteley
 #define Ic      1e-3        // Assumed Ic of reference, A
 #define IcMin   1e-9        // Min reference Ic, A
 #define IcMax   1e-1        // Max referenct Ic, A
-#define IcsMin  Icrit/20    // Min instance Ic, A
-#define IcsMax  Icrit*20    // Max instance Ic, A
+#define IcsMin  Icrit/50    // Min instance Ic, A
+#define IcsMax  Icrit*50    // Max instance Ic, A
 #define Vg      2.6e-3      // Assumed Vgap of reference, V
 #define VgMin   0.1e-3      // Min Vgap, V
 #define VgMax   10.0e-3     // Max Vgap, V
@@ -343,11 +343,21 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->JJvm = Vm;
         }
         else {
-            if (model->JJvm < VmMin || model->JJvm > VmMax) {
-                DVO.textOut(OUT_WARNING,
-                    "%s: VM=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->JJvm, VmMin, VmMax, Vm);
-                model->JJvm = Vm;
+            if (model->JJforceGiven) {
+                if (model->JJvm <= 0.0) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: VM=%g zero or negative, reset to %g.\n",
+                        model->GENmodName, model->JJvm, Vm);
+                    model->JJvm = Vm;
+                }
+            }
+            else {
+                if (model->JJvm < VmMin || model->JJvm > VmMax) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: VM=%g out of range [%g-%g], reset to %g.\n",
+                        model->GENmodName, model->JJvm, VmMin, VmMax, Vm);
+                    model->JJvm = Vm;
+                }
             }
         }
 
@@ -356,15 +366,27 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->JJr0 = model->JJvm/i;
         }
         else {
-            double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
-            double R0min = VmMin/i;
-            double R0max = VmMax/i;
-            if (model->JJr0 < R0min || model->JJr0 > R0max) {
-                double R0 = model->JJvm/i;
-                DVO.textOut(OUT_WARNING,
-                    "%s: RSUB=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->JJr0, R0min, R0max, R0);
-                model->JJr0 = R0;
+            if (model->JJforceGiven) {
+                if (model->JJr0 <= 0.0) {
+                    double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
+                    double R0 = model->JJvm/i;
+                    DVO.textOut(OUT_WARNING,
+                        "%s: RSUB=%g zero or negative, reset to %g.\n",
+                        model->GENmodName, model->JJr0, R0);
+                    model->JJr0 = R0;
+                }
+            }
+            else {
+                double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
+                double R0min = VmMin/i;
+                double R0max = VmMax/i;
+                if (model->JJr0 < R0min || model->JJr0 > R0max) {
+                    double R0 = model->JJvm/i;
+                    DVO.textOut(OUT_WARNING,
+                        "%s: RSUB=%g out of range [%g-%g], reset to %g.\n",
+                        model->GENmodName, model->JJr0, R0min, R0max, R0);
+                    model->JJr0 = R0;
+                }
             }
         }
 
@@ -372,12 +394,22 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->JJicrn = IcR;
         }
         else {
-            double IcRmax = model->JJvgnom * model->JJicFactor;
-            if (model->JJicrn < IcRmin || model->JJicrn > IcRmax) {
-                DVO.textOut(OUT_WARNING,
-                    "%s: ICRN=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->JJicrn, IcRmin, IcRmax, IcR);
-                model->JJicrn = IcR;
+            if (model->JJforceGiven) {
+                if (model->JJicrn < 0.0) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: ICRN=%g zero or negative, reset to %g.\n",
+                        model->GENmodName, model->JJicrn, IcR);
+                    model->JJicrn = IcR;
+                }
+            }
+            else {
+                double IcRmax = model->JJvgnom * model->JJicFactor;
+                if (model->JJicrn < IcRmin || model->JJicrn > IcRmax) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: ICRN=%g out of range [%g-%g], reset to %g.\n",
+                        model->GENmodName, model->JJicrn, IcRmin, IcRmax, IcR);
+                    model->JJicrn = IcR;
+                }
             }
         }
         if (!model->JJrnGiven) {
@@ -385,19 +417,35 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->JJrn = model->JJicrn/i;
         }
         else {
-            double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
-            double RNmin = IcRmin/i;
-            double RNmax = (model->JJvgnom * model->JJicFactor)/i;
-            if (model->JJrn < RNmin || model->JJrn > RNmax) {
-                double RN = model->JJicrn/i;
-                DVO.textOut(OUT_WARNING,
-                    "%s: RN=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->JJrn, RNmin, RNmax, RN);
-                model->JJrn = RN;
+            if (model->JJforceGiven) {
+                if (model->JJrn <= 0.0) {
+                    double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
+                    double RN = model->JJicrn/i;
+                    DVO.textOut(OUT_WARNING,
+                        "%s: RN=%g zero or negative, reset to %g.\n",
+                        model->GENmodName, model->JJrn, RN);
+                    model->JJrn = RN;
+                }
+            }
+            else {
+                double i = model->JJcriti > 0.0 ? model->JJcriti : 1e-3;
+                double RNmin = IcRmin/i;
+                double RNmax = (model->JJvgnom * model->JJicFactor)/i;
+                if (model->JJrn < RNmin || model->JJrn > RNmax) {
+                    double RN = model->JJicrn/i;
+                    DVO.textOut(OUT_WARNING,
+                        "%s: RN=%g out of range [%g-%g], reset to %g.\n",
+                        model->GENmodName, model->JJrn, RNmin, RNmax, RN);
+                    model->JJrn = RN;
+                }
             }
         }
-        if (model->JJrn > model->JJr0)
+        if (model->JJrn > model->JJr0) {
+            DVO.textOut(OUT_WARNING,
+                "%s: RN=%g larger than RSUB, reset to %g.\n",
+                model->GENmodName, model->JJrn, model->JJr0);
             model->JJrn = model->JJr0;
+        }
 
         if (model->JJvShuntGiven) {
             if (model->JJvShunt < 0.0 ||

@@ -324,6 +324,7 @@ struct sJJmodelPOD
     unsigned JJvShuntGiven : 1;
     unsigned JJtsfactGiven : 1;
     unsigned JJtsacclGiven : 1;
+    unsigned JJforceGiven : 1;
 #ifdef NEWLSH
     unsigned JJlsh0Given : 1;
     unsigned JJlsh1Given : 1;
@@ -425,6 +426,7 @@ enum {
     JJ_MOD_CCS,
     JJ_MOD_ICF,
     JJ_MOD_VSHUNT,
+    JJ_MOD_FORCE,
 #ifdef NEWLSH
     JJ_MOD_LSH0,
     JJ_MOD_LSH1,

@@ -141,6 +141,9 @@ JJdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->JJvShunt = value->rValue;
         model->JJvShuntGiven = true;
         break;
+    case JJ_MOD_FORCE:
+        model->JJforceGiven = true;
+        break;
 #ifdef NEWLSH
     case JJ_MOD_LSH0:
         model->JJlsh0 = value->rValue;
