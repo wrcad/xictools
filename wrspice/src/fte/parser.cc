@@ -779,8 +779,11 @@ pnode::checktree() const
             // Found a vector reference.
             // We allow "temper" and names from the constants plot
             // only.
-            if (!lstring::eq(pn_string, "temper") &&
-                    OP.constants()->find_vec(pn_string)) {
+//XXX
+sDataVec *dv = OP.vecGet(pn_string, 0, true);
+if (!dv || dv->length() != 1) {
+//            if (!lstring::eq(pn_string, "temper") &&
+//                    !OP.constants()->find_vec(pn_string)) {
                 if (!ret)
                     ret = 1;
             }

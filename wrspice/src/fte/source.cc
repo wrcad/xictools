@@ -869,6 +869,18 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
     Tvals tv;
     tv.start();
     bool bad_deck = false;
+
+    /*  XXX Keep as-is for new
+    // If there is no circuit, treat controls as execs.  The
+    // difference is that execs create a new "exec" plot and save new
+    // vectors in it, controls save new vectors in the constants plot.
+    if (nospice || !deck->is_ckt()) {
+        if (controls && !execs)
+            execs = controls;
+            controls = 0;
+    }
+    */
+
     sFtCirc *ct = SpDeck(deck, filename, execs, wordlist::copy(controls), vblk,
         nospice, false, &bad_deck);
     tv.stop();
@@ -887,7 +899,7 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
         return;
     }
 
-    if (postrun) {
+    if (postrun && ct) {
         // Parameter expand and apply the post-run block.
         for (wordlist *wl = postrun; wl; wl = wl->wl_next)
             ct->params()->param_subst_all(&wl->wl_word);
@@ -953,10 +965,13 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
     ptab = deck->process_conditionals(ptab);
     ptab->define_macros(true);
 
+#define EXECPLOTNAME "exec"
     // If execs, run them now, after parameter expanding.
     sPlot *pl_ex = 0;
     char tpname[64];
     if (execs && !noexec) {
+        // Run the execs (before source).
+
         wordlist *wx = wordlist::copy(execs);
         if (ptab) {
             // Parameter expand the .exec lines.
@@ -964,14 +979,21 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
                 ptab->param_subst_all(&wl->wl_word);
         }
         strcpy(tpname, OP.curPlot()->type_name());
-        // Run the execs (before source).
         // Set up a temporary plot for vectors defined in the exec
         // block that might be needed in the circuit.
-        pl_ex = new sPlot("exec");
-        pl_ex->new_plot();
-        OP.setCurPlot(pl_ex);
-        pl_ex->set_circuit(ft_curckt->name());
-        pl_ex->set_title(ft_curckt->name());
+        if (lstring::ciprefix(EXECPLOTNAME, tpname)) {
+            // Reuse present plot so can source more than one exec
+            // block, and all assignments will be found in one plot.
+            pl_ex = OP.curPlot();
+        }
+        if (!pl_ex) {
+            pl_ex = new sPlot(EXECPLOTNAME);
+            pl_ex->new_plot();
+            pl_ex->set_circuit(ft_curckt->name());
+            pl_ex->set_title(ft_curckt->name());
+            OP.setCurPlot(pl_ex);
+        }
+
         ExecCmds(wx);
         wordlist::destroy(wx);
 
