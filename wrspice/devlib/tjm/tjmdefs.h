@@ -316,6 +316,7 @@ struct sTJMmodelPOD
     unsigned    TJMcmuGiven : 1;
     unsigned    TJMicfGiven : 1;
     unsigned    TJMvShuntGiven : 1;
+    unsigned    TJMforceGiven : 1;
     unsigned    TJMtsfactGiven : 1;
     unsigned    TJMtsacclGiven : 1;
 #ifdef NEWLSH
@@ -430,6 +431,7 @@ enum {
     TJM_MOD_NOISE,
     TJM_MOD_ICF,
     TJM_MOD_VSHUNT,
+    TJM_MOD_FORCE,
 #ifdef NEWLSH
     TJM_MOD_LSH0,
     TJM_MOD_LSH1,

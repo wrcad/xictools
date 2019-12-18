@@ -95,6 +95,10 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_VSHUNT:
         value->rValue = model->TJMvShunt;
         break;
+    case TJM_MOD_FORCE:
+        value->rValue = model->TJMforceGiven;
+        data->type = IF_INTEGER;
+        break;
 #ifdef NEWLSH
     case TJM_MOD_LSH0:
         value->rValue = model->TJMlsh0;

@@ -75,8 +75,8 @@
 #define Ic      1e-3        // Assumed Ic of reference, A
 #define IcMin   1e-9        // Min reference Ic, A
 #define IcMax   1e-1        // Max referenct Ic, A
-#define IcsMin  Icrit/20    // Min instance Ic, A
-#define IcsMax  Icrit*20    // Max instance Ic, A
+#define IcsMin  Icrit/50    // Min instance Ic, A
+#define IcsMax  Icrit*50    // Max instance Ic, A
 #define Vg      2.6e-3      // Assumed Vgap of reference, V
 #define VgMin   0.1e-3      // Min Vgap, V
 #define VgMax   10.0e-3     // Max Vgap, V
@@ -252,11 +252,21 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->TJMvm = Vm;
         }
         else {
-            if (model->TJMvm < VmMin || model->TJMvm > VmMax) {
-                DVO.textOut(OUT_WARNING,
-                    "%s: VM=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->TJMvm, VmMin, VmMax, Vm);
-                model->TJMvm = Vm;
+            if (model->TJMforceGiven) {
+                if (model->TJMvm <= 0.0) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: VM=%g zero or negative, reset to %g.\n",
+                        model->GENmodName, model->TJMvm, Vm);
+                    model->TJMvm = Vm;
+                }
+            }
+            else {
+                if (model->TJMvm < VmMin || model->TJMvm > VmMax) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: VM=%g out of range [%g-%g], reset to %g.\n",
+                        model->GENmodName, model->TJMvm, VmMin, VmMax, Vm);
+                    model->TJMvm = Vm;
+                }
             }
         }
 
@@ -265,15 +275,27 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             model->TJMr0 = model->TJMvm/i;
         }
         else {
-            double i = model->TJMcriti > 0.0 ? model->TJMcriti : 1e-3;
-            double R0min = VmMin/i;
-            double R0max = VmMax/i;
-            if (model->TJMr0 < R0min || model->TJMr0 > R0max) {
-                double R0 = model->TJMvm/i;
-                DVO.textOut(OUT_WARNING,
-                    "%s: RSUB=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->TJMr0, R0min, R0max, R0);
-                model->TJMr0 = R0;
+            if (model->TJMforceGiven) {
+                if (model->TJMr0 <= 0.0) {
+                    double i = model->TJMcriti > 0.0 ? model->TJMcriti : 1e-3;
+                    double R0 = model->TJMvm/i;
+                    DVO.textOut(OUT_WARNING,
+                        "%s: RSUB=%g zero or negative, reset to %g.\n",
+                        model->GENmodName, model->TJMr0, R0);
+                    model->TJMr0 = R0;
+                }
+            }
+            else {
+                double i = model->TJMcriti > 0.0 ? model->TJMcriti : 1e-3;
+                double R0min = VmMin/i;
+                double R0max = VmMax/i;
+                if (model->TJMr0 < R0min || model->TJMr0 > R0max) {
+                    double R0 = model->TJMvm/i;
+                    DVO.textOut(OUT_WARNING,
+                        "%s: RSUB=%g out of range [%g-%g], reset to %g.\n",
+                        model->GENmodName, model->TJMr0, R0min, R0max, R0);
+                    model->TJMr0 = R0;
+                }
             }
         }
 

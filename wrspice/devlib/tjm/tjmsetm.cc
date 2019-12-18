@@ -110,6 +110,9 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->TJMvShunt = value->rValue;
         model->TJMvShuntGiven = true;
         break;
+    case TJM_MOD_FORCE:
+        model->TJMforceGiven = true;
+        break;
 #ifdef NEWLSH
     case TJM_MOD_LSH0:
         model->TJMlsh0 = value->rValue;
