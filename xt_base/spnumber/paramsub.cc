@@ -338,29 +338,35 @@ sParamTab::update(const char *str)
 }
 
 
-// Evaluate numerically the expanded substitution string, no error,
-// just returns 0.
+// Evaluate numerically the expanded substitution string.
 //
 double
-sParamTab::eval(const sParam *p) const
+sParamTab::eval(const sParam *p, bool *err) const
 {
     if (p) {
         char *expr = lstring::copy(p->sub());
         line_subst(&expr);
         const char *eptr = expr;
+        if (err)
+            *err = false;
 #ifdef WRSPICE
-        pnode *pn = Sp.GetPnode(&eptr, true, true);
+        pnode *pn = Sp.GetPnode(&eptr, true, true, true);
         delete [] expr;
-        if (!pn)
-            return (0.0);
-        sDataVec *dv = Sp.Evaluate(pn);
-        delete pn;
+        sDataVec *dv = 0;
+        if (pn) {
+            dv = Sp.Evaluate(pn);
+            delete pn;
+        }
         if (dv)
             return (dv->realval(0));
+        else if (err)
+            *err = true;
 #else
         double *dp = SCD()->evalExpr(&eptr);
         if (dp)
             return (*dp);
+        else if (err)
+            *err = true;
 #endif
     }
     return (0.0);

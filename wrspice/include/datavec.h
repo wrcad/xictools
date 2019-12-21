@@ -546,6 +546,7 @@ private:
 #define VF_SELECTED  0x100    // Vector is currently selected
 #define VF_READONLY  0x200    // Vector can't be changed
 #define VF_TEMPORARY 0x400    // Vector will be freed immediately
+#define VF_STRING    0x800    // Vector has string data in v_defcolor.
 
 // Grid types.
 // SMITHGRID is only a smith grid, SMITH transforms the data.

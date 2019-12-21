@@ -228,7 +228,7 @@ struct sParamTab
     static sParamTab *extract_params(sParamTab*, const char*);
     static sParamTab *update(sParamTab*, const sParamTab*);
     void update(const char*);
-    double eval(const sParam*) const;
+    double eval(const sParam*, bool*) const;
     void collapse();
     void define_macros(bool = false);
     void undefine_macros();

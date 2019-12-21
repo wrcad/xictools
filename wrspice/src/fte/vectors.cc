@@ -738,6 +738,14 @@ IFoutput::vecGet(const char *word, const sCKT *ckt, bool silent)
             d->set_realval(0, r);
         }
     }
+    else if (dtype == IF_STRING) {
+        // Sort of a hack, use the datavec to pass back a string.
+        d->set_length(1);
+        d->set_realvec(new double[1]);
+        d->set_realval(0, 0.0);
+        d->set_defcolor(data.v.sValue);
+        d->set_flags(d->flags() | VF_STRING);
+    }
     else {
         if (!silent)
             GRpkgIf()->ErrPrintf(ET_ERROR,

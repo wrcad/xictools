@@ -924,6 +924,14 @@ IFsimulator::EnqVectorVar(const char *word, bool varcheck)
                     "only one vector may be accessed with the $& notation.\n");
                 d = d->link()->dl_dvec;
             }
+            if (d->flags() & VF_STRING) {
+                // The parameter has string type, is is passed in the
+                // defcolor field.
+
+                vv = new variable(word);
+                vv->set_string(d->defcolor());
+                return (vv);
+            }
             if (d->numdims() <= 1) {
                 d->set_numdims(1);
                 d->set_dims(0, d->length());

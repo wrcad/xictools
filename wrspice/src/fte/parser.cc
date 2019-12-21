@@ -415,7 +415,7 @@ IFsimulator::GetPtree(const char *xsbuf, bool check)
 // are expanding a .param expression.
 //
 pnode *
-IFsimulator::GetPnode(const char **xsptr, bool check, bool param)
+IFsimulator::GetPnode(const char **xsptr, bool check, bool param, bool quiet)
 {
     if (!xsptr || !*xsptr)
         return (0);
@@ -439,9 +439,17 @@ IFsimulator::GetPnode(const char **xsptr, bool check, bool param)
         return (0);
     }
     if (check) {
-        if (!p->checkvalid()) {
-            delete p;
-            return (0);
+        if (quiet) {
+            if (!p->checkvalid_quiet()) {
+                delete p;
+                return (0);
+            }
+        }
+        else {
+            if (!p->checkvalid()) {
+                delete p;
+                return (0);
+            }
         }
         // Can't do this unless the tree is checked!
         p->collapse(&p);
@@ -759,6 +767,35 @@ pnode::checkvalid() const
         GRpkgIf()->ErrPrintf(ET_INTERR, "checkvalid: bad node.\n");
         return (false);
     }
+    return (true);
+}
+
+
+// Silent version.
+//
+bool
+pnode::checkvalid_quiet() const
+{
+    if (pn_string) {
+        if (!pn_value && pn_type == PN_VEC) {
+            sCKT *ckt = Sp.CurCircuit() ? Sp.CurCircuit()->runckt() : 0;
+            sDataVec *d = OP.vecGet(pn_string, ckt);
+            if (!d || (d->length() == 0 && !lstring::eq(d->name(), "list")))
+                return (false);
+        }
+    }
+    else if (pn_func) {
+        if (pn_left && !pn_left->checkvalid())
+            return (false);
+    }
+    else if (pn_op) {
+        if (pn_left && !pn_left->checkvalid())
+            return (false);
+        if (pn_right && !pn_right->checkvalid())
+            return (false);
+    }
+    else
+        return (false);
     return (true);
 }
 

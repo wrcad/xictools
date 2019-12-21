@@ -675,7 +675,7 @@ struct IFsimulator
     // fte/parse.cc
     pnlist *GetPtree(wordlist*, bool);
     pnlist *GetPtree(const char*, bool);
-    pnode *GetPnode(const char**, bool, bool = false);
+    pnode *GetPnode(const char**, bool, bool = false, bool = false);
     bool CheckFuncName(const char*);
 
     // fte/resource.cc

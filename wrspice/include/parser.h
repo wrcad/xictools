@@ -241,6 +241,7 @@ struct pnode
     ~pnode();
 
     bool checkvalid()               const;
+    bool checkvalid_quiet()         const;
     int checktree()                 const;
     void collapse(pnode**);
     pnode *expand_macros();
