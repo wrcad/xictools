@@ -919,7 +919,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
     }
     if (!t_tree2) {
         if (t_tree1) {
-            if (t_tree1->is_const()) {
+            if (t_tree1->is_constant()) {
                 // numeric or constant expression
                 t_type = MPnum;
                 sDataVec *dv = eval1();

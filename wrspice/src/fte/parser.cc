@@ -800,6 +800,51 @@ pnode::checkvalid_quiet() const
 }
 
 
+// Return true is the expression contains numeric values only.
+//
+bool
+pnode::is_constant() const
+{
+    if (pn_string) {
+        if (!is_numeric())
+            return (false);
+    }
+    else if (pn_func) {
+        if (!pn_func->func()) {
+            return (false);
+        }
+        else if (pn_func->func() == &sDataVec::v_undefined) {
+            // Descend into the macros, too.
+            pnode *p = Sp.GetUserFuncTree(pn_func->name(), pn_left);
+            if (p) {
+                bool r = p->is_constant();
+                delete p;
+                if (!r)
+                    return (false);
+            }
+        }
+        if (pn_left) {
+            if (!pn_left->is_constant())
+                return (false);
+        }
+    }
+    else if (pn_op) {
+        if (pn_left) {
+            if (!pn_left->is_constant())
+                return (false);
+        }
+        if (pn_right) {
+            if (!pn_right->is_constant())
+                return (false);
+        }
+    }
+    else {
+        return (false);
+    }
+    return (true);
+}
+
+
 // Special silent tree-checking function.  Return values are
 // 0  No errors.
 // 1  Tree contains vector reference(s).  These are not handled
@@ -885,7 +930,7 @@ pnode::collapse(pnode **pp)
     if (pn_func) {
         if (pn_func == ft_uops || pn_func == ft_uops+1) {
             // Unary minus or NOT operator.
-            if (pn_left->is_const()) {
+            if (pn_left->is_numeric()) {
                 sDataVec *v = Sp.Evaluate(this);
                 if (v) {
                     pn_value = v;
@@ -899,16 +944,16 @@ pnode::collapse(pnode **pp)
         }
 
         if (pn_func->func()) {
-            bool doit = !pn_left || pn_left->is_const();
+            bool doit = !pn_left || pn_left->is_numeric();
             if (!doit && pn_left->optype() == TT_COMMA) {
                 pnode *px = pn_left;
                 doit = true;
                 while (px) {
-                    if (!px->pn_left->is_const()) {
+                    if (!px->pn_left->is_numeric()) {
                         doit = false;
                         break;
                     }
-                    if (px->pn_right->is_const())
+                    if (px->pn_right->is_numeric())
                        break;
                     if (px->pn_right->optype() == TT_COMMA) {
                         px = px->pn_right;
@@ -941,7 +986,7 @@ pnode::collapse(pnode **pp)
         if (pn_op->optype() == TT_COLON)
             return;
         if (pn_left && pn_right) {
-            if (pn_left->is_const() && pn_right->is_const()) {
+            if (pn_left->is_numeric() && pn_right->is_numeric()) {
                 sDataVec *v = Sp.Evaluate(this);
                 if (v) {
                     pn_value = v;

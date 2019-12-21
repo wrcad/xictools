@@ -240,6 +240,7 @@ struct pnode
     // parser.cc
     ~pnode();
 
+    bool is_constant()              const;
     bool checkvalid()               const;
     bool checkvalid_quiet()         const;
     int checktree()                 const;
@@ -271,21 +272,21 @@ struct pnode
             return (TT_END);
         }
 
-    bool is_const()
+    bool is_numeric() const
         {
             return (pn_string && pn_value && pn_type == PN_NONE);
         }
 
-    bool is_const_one()
+    bool is_const_one() const
         {
-            return (is_const() && pn_value->isreal() &&
+            return (is_numeric() && pn_value->isreal() &&
                 pn_value->length() == 1 && pn_value->realval(0) == 1.0 &&
                 pn_value->units()->isnotype());
         }
 
-    bool is_const_zero()
+    bool is_const_zero() const
         {
-            return (is_const() && pn_value->isreal() &&
+            return (is_numeric() && pn_value->isreal() &&
                 pn_value->length() == 1 && pn_value->realval(0) == 0.0);
         }
 
