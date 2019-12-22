@@ -72,8 +72,8 @@ sADC::sADC(const char *string)
 {
     lstring::advtok(&string);
     char *tok = lstring::gettok(&string);
-    dig_var = tok;
-    range = 0;
+    a_dig_var = tok;
+    a_range = 0;
     char *s = strchr(tok, '[');
     if (s) {
         *s = 0;
@@ -81,11 +81,11 @@ sADC::sADC(const char *string)
         s = strchr(tok, ']');
         if (s)
             *s = 0;
-        range = tok;
+        a_range = tok;
     }
-    node = lstring::gettok(&string);
-    offset = 0.0;
-    quantum = 0.0;
+    a_node = lstring::gettok(&string);
+    a_offset = 0.0;
+    a_quantum = 0.0;
     if (*string) {
         wordlist *wl = CP.LexString(string);
         pnlist *pl = Sp.GetPtree(wl, true);
@@ -93,29 +93,30 @@ sADC::sADC(const char *string)
         if (pl) {
             sDataVec *v = Sp.Evaluate(pl->node());
             if (v) {
-                offset = v->realval(0);
+                a_offset = v->realval(0);
                 if (!v->isreal())
-                    quantum = v->imagval(0);
+                    a_quantum = v->imagval(0);
             }
             if (pl->next()) {
                 v = Sp.Evaluate(pl->next()->node());
                 if (v)
-                    quantum = v->realval(0);
+                    a_quantum = v->realval(0);
             }
             pnlist::destroy(pl);
         }
     }
-    indx = 0;
-    next = 0;
+    a_indx = 0;
+    a_next = 0;
 }
 
 
 void
 sADC::set_var(VerilogBlock *blk, double *vars)
 {
-    if (indx > 0 && blk)
-        blk->set_var(this, vars[indx]);
+    if (a_indx > 0 && blk)
+        blk->set_var(this, vars[a_indx]);
 }
+// End of sADC functions.
 
 
 // The lines consist of a list of .adc lines, followed by the .verilog
@@ -123,9 +124,9 @@ sADC::set_var(VerilogBlock *blk, double *vars)
 //
 VerilogBlock::VerilogBlock(sLine *lines)
 {
-    adc = 0;
-    desc = 0;
-    sim = 0;
+    vb_adc = 0;
+    vb_desc = 0;
+    vb_sim = 0;
     if (!lines)
         return;
 
@@ -133,11 +134,11 @@ VerilogBlock::VerilogBlock(sLine *lines)
     sLine *d;
     for (d = lines; d; d = d->next()) {
         if (lstring::cimatch(ADC_KW, d->line())) {
-            if (!adc)
-                ad = adc = new sADC(d->line());
+            if (!vb_adc)
+                ad = vb_adc = new sADC(d->line());
             else {
-                ad->next = new sADC(d->line());
-                ad = ad->next;
+                ad->set_next(new sADC(d->line()));
+                ad = ad->next();
             }
         }
         else if (lstring::cimatch(VERILOG_KW, d->line())) {
@@ -146,8 +147,8 @@ VerilogBlock::VerilogBlock(sLine *lines)
         }
     }
     if (!d) {
-        sADC::destroy(adc);
-        adc = 0;
+        sADC::destroy(vb_adc);
+        vb_adc = 0;
         return;
     }
 
@@ -174,40 +175,40 @@ VerilogBlock::VerilogBlock(sLine *lines)
     delete [] ftmp;
     if (err)
         return;
-    desc = VP.description;
+    vb_desc = VP.description;
     VP.description = 0;
-    sim = new vl_simulator;
-    if (!sim->initialize(desc)) {
-        delete sim;
-        sim = 0;
+    vb_sim = new vl_simulator;
+    if (!vb_sim->initialize(vb_desc)) {
+        delete vb_sim;
+        vb_sim = 0;
     }
 }
 
 
 VerilogBlock::~VerilogBlock()
 {
-    delete desc;
-    delete sim;
-    sADC::destroy(adc);
+    delete vb_desc;
+    delete vb_sim;
+    sADC::destroy(vb_adc);
 }
 
 
 void
 VerilogBlock::initialize()
 {
-    if (sim)
-        sim->step(0);
+    if (vb_sim)
+        vb_sim->step(0);
 }
 
 
 void
 VerilogBlock::finalize(bool pause)
 {
-    if (sim) {
+    if (vb_sim) {
         if (pause)
-            sim->flush_files();
+            vb_sim->flush_files();
         else
-            sim->close_files();
+            vb_sim->close_files();
     }
 }
 
@@ -215,18 +216,18 @@ VerilogBlock::finalize(bool pause)
 void
 VerilogBlock::run_step(sOUTdata *outd)
 {
-    if (!sim)
+    if (!vb_sim)
         return;
     if (outd->count <= 1) {
         int num;
         IFuid *list;
         outd->circuitPtr->names(&num, &list);
-        for (sADC *a = adc; a; a = a->next) {
+        for (sADC *a = vb_adc; a; a = a->next()) {
             char name[128];
             // gotta strip v(), i()
-            if ((*a->node == 'v' || *a->node == 'V') &&
-                    *(a->node+1) == '(') {
-                const char *s = a->node + 2;
+            if ((*a->node() == 'v' || *a->node() == 'V') &&
+                    *(a->node()+1) == '(') {
+                const char *s = a->node() + 2;
                 char *t = name;
                 while (*s) {
                     if (!isspace(*s))
@@ -237,9 +238,9 @@ VerilogBlock::run_step(sOUTdata *outd)
                 if (t > name && *(t-1) == ')')
                     *(t-1) = 0;
             }
-            else if ((*a->node == 'i' || *a->node == 'I') &&
-                    *(a->node+1) == '(') {
-                const char *s = a->node + 2;
+            else if ((*a->node() == 'i' || *a->node() == 'I') &&
+                    *(a->node()+1) == '(') {
+                const char *s = a->node() + 2;
                 char *t = name;
                 while (*s) {
                     if (!isspace(*s))
@@ -252,33 +253,34 @@ VerilogBlock::run_step(sOUTdata *outd)
                 strcat(name, "#branch");
             }
             else
-                strcpy(name, a->node);
+                strcpy(name, a->node());
 
             int i;
             for (i = 0; i < num; i++) {
-                if (!strcmp(name, (char*)list[i])) {
-                    a->indx = i+1;
+                if (!strcmp(name, (const char*)list[i])) {
+                    a->set_indx(i+1);
                     break;
                 }
             }
-            if (i == num)
+            if (i == num) {
                 vl_error("warning: couldn't find %s in saved vector list",
-                    a->node);
+                    a->node());
+            }
         }
         delete [] list;
     }
-    for (sADC *a = adc; a; a = a->next)
+    for (sADC *a = vb_adc; a; a = a->next())
         a->set_var(this, outd->circuitPtr->CKTrhsOld);
-    sim->step(outd->count);
+    vb_sim->step(outd->count);
 }
 
 
 bool
 VerilogBlock::query_var(const char *name, const char *range, double *d)
 {
-    if (sim && sim->top_modules) {
+    if (vb_sim && vb_sim->top_modules) {
         vl_context cx;
-        cx.module = sim->top_modules->mods[0];
+        cx.module = vb_sim->top_modules->mods[0];
         vl_var *data = cx.lookup_var((char*)name, true);
         if (data) {
             if (range && *range) {
@@ -314,12 +316,13 @@ VerilogBlock::query_var(const char *name, const char *range, double *d)
 bool
 VerilogBlock::set_var(sADC *a, double val)
 {
-    if (sim && sim->top_modules) {
+    if (vb_sim && vb_sim->top_modules) {
         vl_context cx;
-        cx.module = sim->top_modules->mods[0];
-        vl_var *data = cx.lookup_var((char*)a->dig_var, true);
+        cx.module = vb_sim->top_modules->mods[0];
+//XXX
+        vl_var *data = cx.lookup_var((char*)a->dig_var(), true);
         if (data) {
-            const char *range = a->range;
+            const char *range = a->range();
             if (range && *range) {
                 int l = -1, r = -1;
                 while (isspace(*range))
@@ -336,12 +339,13 @@ VerilogBlock::set_var(sADC *a, double val)
                 }
                 if (l >= 0 && r < 0)
                     r = l;
-                data->assign_to(val, a->offset, a->quantum, l, r);
+                data->assign_to(val, a->offset(), a->quantum(), l, r);
                 return (true);
             }
-            data->assign_to(val, a->offset, a->quantum, -1, -1);
+            data->assign_to(val, a->offset(), a->quantum(), -1, -1);
             return (true);
         }
     }
     return (false);
 }
+

@@ -50,44 +50,64 @@ struct sOUTdata;
 struct VerilogBlock;
 
 // .adc lines have format ".adc output nodename [offset] [quantum]".
+//
 struct sADC
 {
     sADC(const char*);
-    ~sADC() { delete [] dig_var; delete [] node; }
+    ~sADC()
+        {
+            delete [] a_dig_var;
+            delete [] a_node;
+        }
 
     static void destroy(sADC *a)
         {
             while (a) {
                 sADC *ax = a;
-                a = a->next;
+                a = a->a_next;
                 delete ax;
             }
         }
 
+    sADC *next()                { return (a_next); }
+    void set_next(sADC *n)      { a_next = n; }
+
+    const char *dig_var()       { return (a_dig_var); }
+    const char *range()         { return (a_range); }
+    const char *node()          { return (a_node); }
+    double offset()             { return (a_offset); }
+    double quantum()            { return (a_quantum); }
+    int indx()                  { return (a_indx); }
+
+    void set_indx(int i)        { a_indx = i; }
+
     void set_var(VerilogBlock*, double*);
 
-    const char *dig_var;  // Verilog variable name
-    const char *range;    // Verilog variable range (alloc'ed with dig_var)
-    const char *node;     // Spice node name
-    double offset;        // conversion offset
-    double quantum;       // conversion lsb size
-    int indx;             // node index into RHS vector
-    sADC *next;
+private:
+    sADC *a_next;
+    const char *a_dig_var;  // Verilog variable name
+    const char *a_range;    // Verilog variable range (alloc'ed with dig_var)
+    const char *a_node;     // Spice node name
+    double a_offset;        // conversion offset
+    double a_quantum;       // conversion lsb size
+    int a_indx;             // node index into RHS vector
 };
 
 struct VerilogBlock
 {
     VerilogBlock(sLine*);
     ~VerilogBlock();
+
     void initialize();
     void finalize(bool);
     void run_step(sOUTdata*);
     bool query_var(const char*, const char*, double*);
     bool set_var(sADC*, double);
 
-    sADC *adc;
-    vl_desc *desc;
-    vl_simulator *sim;
+private:
+    sADC *vb_adc;
+    vl_desc *vb_desc;
+    vl_simulator *vb_sim;
 };
 
 #endif // VERILOG_H

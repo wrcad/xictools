@@ -3906,7 +3906,7 @@ findrange command
 
     <p>
     This can be called after a Monte Carlo analysis trial and will
-    find the actual uppear and lower operating limits of two
+    find the actual upper and lower operating limits of two
     parameters.
  
 !!SEEALSO
@@ -3978,7 +3978,7 @@ mctrial command
     command: <tt>mctrial</tt>
 
     <p>
-    This is a cCommand to run a single trial for used when when
+    This is a cCommand to run a single trial for use when when
     performing script-driven Monte Carlo analysis.
  
 !!SEEALSO
