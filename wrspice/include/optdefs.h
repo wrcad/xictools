@@ -96,6 +96,7 @@ enum OPTtype
 #endif
     OPT_MAXORD,
     OPT_SRCSTEPS,
+    OPT_VASTEP,
 
     // flags
     OPT_DCODDSTEP,

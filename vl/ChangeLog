@@ -1,3 +1,10 @@
+vl-4.3.3  12/23/19
+
+New internal vl_simulator::setptime,  vl_simulator::step no longer takes
+an argument but increments steptime instead.
+
+New vl_var_factory for vl_var.
+
 vl-1.6 11/8/14
 
 Misc. tweaks for portability to ever-changing Linux distributions. 

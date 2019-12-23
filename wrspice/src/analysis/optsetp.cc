@@ -96,6 +96,7 @@ const char *spkw_loopthrds      = "loopthrds";
 const char *spkw_maxord         = "maxord";
 const char *spkw_srcsteps       = "srcsteps";
 const char *spkw_itl6           = "itl6";  // alias
+const char *spkw_vastep         = "vastep";
 
 // bools
 const char *spkw_dcoddstep      = "dcoddstep";
@@ -820,6 +821,16 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         else
             opt->OPTsrcsteps_given = 0;
         break;
+    case OPT_VASTEP:
+        if (value) {
+            CHECKSET(spkw_vastep, opt->OPTvastep, value->iValue,
+                DEF_vastep_MIN, DEF_vastep_MAX)
+            opt->OPTvastep_given = 1;
+        }
+        else
+            opt->OPTvastep_given = 0;
+        break;
+
 
     case OPT_DCODDSTEP:
         if (value) {
@@ -1178,6 +1189,8 @@ namespace {
             "Number of source steps"),
         IFparm(spkw_itl6,           OPT_SRCSTEPS,       IF_IO|IF_INTEGER,
             "Number of source steps"),
+        IFparm(spkw_vastep,         OPT_VASTEP,         IF_IO|IF_INTEGER,
+            "Verilog time step multiplier"),
 
         IFparm(spkw_dcoddstep,      OPT_DCODDSTEP,      IF_IO|IF_FLAG,
             "DC sweep will include end of range point if off-step"),

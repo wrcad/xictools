@@ -171,6 +171,9 @@ sOPTIONS::dump()
     askOpt(OPT_SRCSTEPS, &value, &notset);
     if (!notset)
         TTY.printf(ifmt, spkw_srcsteps, value.iValue);
+    askOpt(OPT_VASTEP, &value, &notset);
+    if (!notset)
+        TTY.printf(ifmt, spkw_vastep, value.iValue);
 
     askOpt(OPT_DCODDSTEP, &value, &notset);
     if (!notset)
@@ -480,6 +483,13 @@ sOPTIONS::askOpt(int which, IFvalue *value, int *notset)
         else
             *notset = 1;
         break;
+    case OPT_VASTEP:
+        if (opt && OPTvastep_given)
+            value->iValue = OPTvastep;
+        else
+            *notset = 1;
+        break;
+
 
     case OPT_DCODDSTEP:
         if (opt && OPTdcoddstep_given)
@@ -859,6 +869,11 @@ OPTanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         value->iValue = task->TSKnumSrcSteps;
         data->type = IF_INTEGER;
         break;
+    case OPT_VASTEP:
+        value->iValue = task->TSKvaStep;
+        data->type = IF_INTEGER;
+        break;
+
 
     case OPT_DCODDSTEP:
         value->iValue = task->TSKdcOddStep;

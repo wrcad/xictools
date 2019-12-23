@@ -504,6 +504,51 @@ extern vl_var &operator^(vl_var&, vl_var&);
 extern vl_var &operator~(vl_var&);
 extern vl_var &tcond(vl_var&, vl_expr*, vl_expr*);
 
+#define CX_INCR 100
+
+// A vl_var factory
+//
+struct vl_var_factory
+{
+    vl_var_factory()
+        {
+            da_numused = 0;
+            da_blocks = 0;
+        }
+
+    void clear()
+        {
+            da_numused = 0;
+            while (da_blocks) {
+                bl *b = da_blocks;
+                da_blocks = b->next;
+                delete b;
+            }
+        }
+
+    vl_var & new_var()
+        {
+            if (da_numused == 0) {
+                da_blocks = new bl;
+                da_blocks->next = 0;
+                da_numused = 1;
+            }
+            else if (da_numused == CX_INCR) {
+                bl *b = new bl;
+                b->next = da_blocks;
+                da_blocks = b;
+                da_numused = 1;
+            }
+            else
+                da_numused++;
+            return (da_blocks->block[da_numused - 1]);
+        }
+
+private:
+    int da_numused;
+    struct bl { vl_var block[CX_INCR]; bl *next; } *da_blocks;
+};
+
 
 // General expression description
 //
@@ -712,7 +757,7 @@ struct vl_simulator
     ~vl_simulator();
     bool initialize(vl_desc*, VLdelayType = DLYtyp, int = 0);
     bool simulate();
-    VLstopType step(vl_time_t);
+    VLstopType step();
     void close_files();
     void flush_files();
     vl_var &sys_time(vl_sys_task_stmt*, lsList<vl_expr*>*);
@@ -757,6 +802,7 @@ struct vl_simulator
     vl_monitor *monitors;             // list of monitors
     vl_monitor *fmonitors;            // list of fmonitors
     vl_time_t time;                   // accumulated delay for setup
+    vl_time_t steptime;               // accumulating time when stepping
     vl_context *context;              // evaluation context
     vl_timeslot *timewheel;           // time sorted events for evaluation
 	vl_action_item *next_actions;     // actions to do first at next time
@@ -781,9 +827,9 @@ struct vl_simulator
     int tfprec;
     const char *tfsuffix;
     int tfwidth;
+    vl_var_factory var_factory;
 };
 
-enum CXmode { CXalloc, CXclear };
 
 // Context list for simulator
 //
@@ -1832,9 +1878,6 @@ struct vl_mp_inst : public vl_inst
 //---------------------------------------------------------------------------
 //  Exported globals
 //---------------------------------------------------------------------------
-
-// vl_data.cc
-extern vl_var &vl_new_var(CXmode);
 
 // vl_parse.cc
 extern vl_parser VP;

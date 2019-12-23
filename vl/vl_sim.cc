@@ -286,6 +286,7 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
         delete m;
     }
     time = 0;
+    steptime = 0;
     vl_context::destroy(context);
     context = 0;
     delete timewheel;
@@ -320,7 +321,7 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     delete [] tfsuffix;
     tfsuffix = 0;
     tfwidth = 20;
-    vl_new_var(CXclear);
+    var_factory.clear();
 
     if (!desc)
         return (true);
@@ -370,7 +371,7 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     monitor_state = true;
     fmonitor_state = true;
     context = 0;
-    vl_new_var(CXclear);
+    var_factory.clear();
     time_data.data_type = Dtime;
     time_data.u.t = 0;
     tfunit = (int)(log10(description->tstep) - 0.5);
@@ -394,7 +395,7 @@ vl_simulator::simulate()
                 t->print(cout);
             cout << "\n\n";
         }
-        vl_new_var(CXclear);
+        var_factory.clear();
         time_data.u.t = timewheel->time;
         timewheel->eval_slot(this);
         if (monitor_state && monitors) {
@@ -431,11 +432,11 @@ vl_simulator::simulate()
 // Step one time point
 //
 VLstopType
-vl_simulator::step(vl_time_t vtime)
+vl_simulator::step()
 {
     vl_context::simulator = this;
     vl_var::simulator = this;
-    while (timewheel && stop == VLrun && timewheel->time <= vtime) {
+    while (timewheel && stop == VLrun && timewheel->time <= steptime) {
         time_data.u.t = timewheel->time;
         timewheel->eval_slot(this);
         if (monitor_state && monitors) {
@@ -462,8 +463,9 @@ vl_simulator::step(vl_time_t vtime)
         delete timewheel;
         timewheel = t;
         first_point = false;
-        vl_new_var(CXclear);
+        var_factory.clear();
     }
+    steptime++;
 
     // Always keep a non-nil timewheel when stepping.
     if (!timewheel) {
@@ -1876,7 +1878,7 @@ vl_timeslot::do_actions(vl_simulator *sim)
             }
         }
         delete a;
-        vl_new_var(CXclear);
+        sim->var_factory.clear();
     }
 }
 
@@ -1969,7 +1971,7 @@ vl_desc::~vl_desc()
         delete mp_st;
     }
     delete mp_undefined;
-    vl_new_var(CXclear);
+    simulator->var_factory.clear();
 }
 
 

@@ -163,6 +163,7 @@ extern const char *spkw_loopthrds;
 extern const char *spkw_maxord;
 extern const char *spkw_srcsteps;
 extern const char *spkw_itl6;
+extern const char *spkw_vastep;
 
 // bools
 extern const char *spkw_dcoddstep;

@@ -609,6 +609,10 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_numSrcSteps_MIN     -1
 #define DEF_numSrcSteps_MAX     20
 
+#define DEF_vastep              1
+#define DEF_vastep_MIN          0
+#define DEF_vastep_MAX          1000000000
+
 #ifdef WITH_THREADS
 #define DEF_loadThreads         0
 #define DEF_loadThreads_MIN     0
@@ -699,6 +703,7 @@ struct sOPTIONS : public sJOB
 #endif
             OPTmaxord       = DEF_maxOrder;
             OPTsrcsteps     = DEF_numSrcSteps;
+            OPTvastep       = DEF_vastep;
 
             OPTdcoddstep    = DEF_dcOddStep;
             OPTextprec      = DEF_extPrec;
@@ -767,6 +772,7 @@ struct sOPTIONS : public sJOB
 #endif
             OPTmaxord_given         = 0;
             OPTsrcsteps_given       = 0;
+            OPTvastep_given         = 0;
 
             OPTdcoddstep_given      = 0;
             OPTextprec_given        = 0;
@@ -846,6 +852,7 @@ struct sOPTIONS : public sJOB
 #endif
     int OPTmaxord;
     int OPTsrcsteps;
+    int OPTvastep;
 
     bool OPTdcoddstep;
     bool OPTextprec;
@@ -914,6 +921,7 @@ struct sOPTIONS : public sJOB
 #endif
     unsigned int OPTmaxord_given:1;
     unsigned int OPTsrcsteps_given:1;
+    unsigned int OPTvastep_given:1;
 
     unsigned int OPTdcoddstep_given:1;
     unsigned int OPTextprec_given:1;
@@ -1019,6 +1027,7 @@ struct sTASK : public cBase
 #endif
 #define TSKmaxOrder         TSKopts.OPTmaxord
 #define TSKnumSrcSteps      TSKopts.OPTsrcsteps
+#define TSKvaStep           TSKopts.OPTvastep
 
 #define TSKdcOddStep        TSKopts.OPTdcoddstep
 #define TSKextPrec          TSKopts.OPTextprec

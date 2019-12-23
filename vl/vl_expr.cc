@@ -46,51 +46,6 @@
 // set this to machine bit width
 #define DefBits (8*(int)sizeof(int))
 
-
-//---------------------------------------------------------------------------
-//  Exports
-//---------------------------------------------------------------------------
-
-#define CX_INCR 100
-
-// A vl_var factory
-//
-vl_var &
-vl_new_var(CXmode cx)
-{
-    static int da_numused;
-    static struct bl { vl_var block[CX_INCR]; bl *next; } *da_blocks;
-
-    if (cx == CXclear) {
-        da_numused = 0;
-        while (da_blocks) {
-            bl *b = da_blocks;
-            da_blocks = b->next;
-            delete b;
-        }
-        return ((vl_var&)*(vl_var*)0); // ignore this
-    }
-    if (da_numused == 0) {
-        da_blocks = new bl;
-        da_blocks->next = 0;
-        da_numused = 1;
-    }
-    else if (da_numused == CX_INCR) {
-        bl *b = new bl;
-        b->next = da_blocks;
-        da_blocks = b;
-        da_numused = 1;
-    }
-    else
-        da_numused++;
-    return (da_blocks->block[da_numused - 1]);
-}
-
-
-//---------------------------------------------------------------------------
-//  Local
-//---------------------------------------------------------------------------
-
 inline int max(int x, int y) { return (x > y ? x : y); }
 inline int min(int x, int y) { return (x < y ? x : y); }
 
@@ -217,7 +172,7 @@ operator*(vl_var &data1, vl_var &data2)
     else if (data2.data_type == Dtime)
         w2 = 8*sizeof(vl_time_t);
 
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dstring || data2.data_type == Dstring)
         d.setx(w1 + w2);
     else if ((data1.data_type == Dbit && data1.is_x()) ||
@@ -263,7 +218,7 @@ operator/(vl_var &data1, vl_var &data2)
     else if (data2.data_type == Dtime)
         w2 = 8*sizeof(vl_time_t);
 
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dstring || data2.data_type == Dstring)
         d.setx(max(w1, w2));
     else if ((data1.data_type == Dbit && data1.is_x()) ||
@@ -311,7 +266,7 @@ operator%(vl_var &data1, vl_var &data2)
     else if (data2.data_type == Dtime)
         w2 = 8*sizeof(vl_time_t);
 
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dstring || data2.data_type == Dstring)
         d.setx(max(w1, w2));
     else if ((data1.data_type == Dbit && data1.is_x()) ||
@@ -341,7 +296,7 @@ operator%(vl_var &data1, vl_var &data2)
 vl_var &
 operator+(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dstring || data2.data_type == Dstring)
         return (d);
     if (data1.data_type == Dint) {
@@ -423,7 +378,7 @@ operator+(vl_var &data1, vl_var &data2)
 vl_var &
 operator-(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dstring || data2.data_type == Dstring)
         return (d);
     if (data1.data_type == Dint) {
@@ -505,7 +460,7 @@ operator-(vl_var &data1, vl_var &data2)
 vl_var &
 operator-(vl_var &data1)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dint) {
         d.data_type = Dint;
         d.u.i = -data1.u.i;
@@ -536,7 +491,7 @@ operator-(vl_var &data1)
 vl_var &
 operator<<(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data2.data_type == Dbit && data2.is_x())
         d.setx(data1.bits.size);
     else {
@@ -564,7 +519,7 @@ operator<<(vl_var &data1, vl_var &data2)
 vl_var &
 operator<<(vl_var &data1, int shift)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (shift < 0)
         shift = -shift;
     int bw;
@@ -587,7 +542,7 @@ operator<<(vl_var &data1, int shift)
 vl_var &
 operator>>(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data2.data_type == Dbit && data2.is_x())
         d.setx(data1.bits.size);
     else {
@@ -615,7 +570,7 @@ operator>>(vl_var &data1, vl_var &data2)
 vl_var &
 operator>>(vl_var &data1, int shift)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (shift < 0)
         shift = -shift;
     int bw;
@@ -660,7 +615,7 @@ operator==(vl_var &data1, vl_var &data2)
         return (d);
     }
 
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint)
@@ -849,7 +804,7 @@ case_eq(vl_var &data1, vl_var &data2)
     }
 
     if (data1.data_type == Dbit && data2.data_type == Dbit) {
-        vl_var &d = vl_new_var(CXalloc);
+        vl_var &d = vl_var::simulator->var_factory.new_var();
         d.setx(1);
         d.u.s[0] = BitL;
         int wd = min(data1.bits.size, data2.bits.size);
@@ -900,7 +855,7 @@ casex_eq(vl_var &data1, vl_var &data2)
     }
 
     if (data1.data_type == Dbit && data2.data_type == Dbit) {
-        vl_var &d = vl_new_var(CXalloc);
+        vl_var &d = vl_var::simulator->var_factory.new_var();
         d.setx(1);
         d.u.s[0] = BitL;
         int wd = min(data1.bits.size, data2.bits.size);
@@ -956,7 +911,7 @@ casez_eq(vl_var &data1, vl_var &data2)
     }
 
     if (data1.data_type == Dbit && data2.data_type == Dbit) {
-        vl_var &d = vl_new_var(CXalloc);
+        vl_var &d = vl_var::simulator->var_factory.new_var();
         d.setx(1);
         d.u.s[0] = BitL;
         int wd = min(data1.bits.size, data2.bits.size);
@@ -1014,7 +969,7 @@ case_neq(vl_var &data1, vl_var &data2)
 vl_var &
 operator&&(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint)
@@ -1097,7 +1052,7 @@ operator&&(vl_var &data1, vl_var &data2)
 vl_var &
 operator||(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint)
@@ -1180,7 +1135,7 @@ operator||(vl_var &data1, vl_var &data2)
 vl_var &
 operator!(vl_var &data1)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     if (data1.data_type == Dint)
         d.u.s[0] = data1.u.i ? BitL : BitH;
@@ -1233,7 +1188,7 @@ reduce(vl_var &data1, int oper)
         else if (xx == BitH)
             xx = BitL;
     }
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     d.u.s[0] = xx;
     return (d);
@@ -1249,7 +1204,7 @@ reduce(vl_var &data1, int oper)
 vl_var &
 operator<(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint)
@@ -1315,7 +1270,7 @@ operator<(vl_var &data1, vl_var &data2)
 vl_var &
 operator<=(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint)
@@ -1381,7 +1336,7 @@ operator<=(vl_var &data1, vl_var &data2)
 vl_var &
 operator>(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint)
@@ -1447,7 +1402,7 @@ operator>(vl_var &data1, vl_var &data2)
 vl_var &
 operator>=(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     d.setx(1);
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint)
@@ -1517,7 +1472,7 @@ operator>=(vl_var &data1, vl_var &data2)
 vl_var &
 operator&(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint) {
             d.data_type = Dint;
@@ -1611,7 +1566,7 @@ operator&(vl_var &data1, vl_var &data2)
 vl_var &
 operator|(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint) {
             d.data_type = Dint;
@@ -1705,7 +1660,7 @@ operator|(vl_var &data1, vl_var &data2)
 vl_var &
 operator^(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dint) {
         if (data2.data_type == Dint) {
             d.data_type = Dint;
@@ -1799,7 +1754,7 @@ operator^(vl_var &data1, vl_var &data2)
 vl_var &
 operator~(vl_var &data1)
 {
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data1.data_type == Dint) {
         d.data_type = Dint;
         int w = 0;
@@ -1884,7 +1839,7 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
     else if (xx == BitL)
         return (e2->eval());
 
-    vl_var &d = vl_new_var(CXalloc);
+    vl_var &d = vl_var::simulator->var_factory.new_var();
     vl_var &d1 = e1->eval();
     int w1;
     if (d1.data_type == Dbit)

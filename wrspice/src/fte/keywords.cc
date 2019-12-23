@@ -4456,6 +4456,8 @@ struct KWent_xmu : public KWent
         KWent::callback(isset, v);
     }
 };
+// End of real-valued options.
+
 
 struct KWent_bypass : public KWent
 {
@@ -4783,6 +4785,36 @@ struct KWent_srcsteps : public KWent
         KWent::callback(isset, v);
     }
 };
+
+struct KWent_vastep : public KWent
+{
+    KWent_vastep() { set(
+        spkw_vastep,
+        VTYP_NUM, DEF_vastep_MIN, DEF_vastep_MAX,
+        "Multiplier of tran delta for Verilog, "
+         "default " STRINGIFY(DEF_vastep) "."); }
+
+    void callback(bool isset, variable *v)
+    {
+        if (isset) {
+            if (v->type() == VTYP_REAL && v->real() >= min &&
+                    v->real() <= max) {
+                int val = (int)v->real();
+                v->set_integer(val);
+            }
+            else if (!(v->type() == VTYP_NUM && v->integer() >= min &&
+                    v->integer() <= max)) {
+                error_pr(word, 0, pr_integer((int)min, (int)max));
+                return;
+            }
+        }
+        if (checknset(word, isset, v))
+            return;
+        KWent::callback(isset, v);
+    }
+};
+// End of integer-valued options.
+
 
 struct KWent_dcoddstep : public KWent
 {
@@ -5137,6 +5169,7 @@ struct KWent_useadjoint : public KWent
         KWent::callback(isset, v);
     }
 };
+// End of boolean-valued options.
 
 struct KWent_method : public KWent
 {
@@ -5450,6 +5483,8 @@ struct KWent_submaps : public KWent
         KWent::callback(isset, v);
     }
 };
+// End of boolean-valued options.
+
 
 sKW *cKeyWords::KWsim[] = {
     new KWent_abstol(),
@@ -5506,6 +5541,7 @@ sKW *cKeyWords::KWsim[] = {
     new KWent_savecurrent(),
     new KWent_spice3(),
     new KWent_srcsteps(),
+    new KWent_vastep(),
     new KWent_steptype(),
     new KWent_subend(),
     new KWent_subinvoke(),
@@ -5560,6 +5596,7 @@ sKW *cKeyWords::KWsim[] = {
 #endif
     new KWent_maxord(),
     new KWent_srcsteps(),
+    new KWent_vastep(),
 
     new KWent_dcoddstep(),
     new KWent_extprec(),

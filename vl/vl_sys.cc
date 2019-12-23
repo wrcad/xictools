@@ -474,7 +474,7 @@ st_dump(ostream &outs, table<vl_var*> *st, vl_simulator *sim)
 vl_var &
 vl_simulator::sys_time(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
-    vl_var &dd = vl_new_var(CXalloc);  // so it gets gc'ed
+    vl_var &dd = var_factory.new_var();  // so it gets gc'ed
     dd.data_type = Dtime;
     dd.u.t = time;
     return (dd);
@@ -711,7 +711,7 @@ vl_var &
 vl_simulator::sys_fopen(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 {
     const char *msg = "in $fopen, can't open file %s";
-    vl_var &dd = vl_new_var(CXalloc);  // so it gets gc'ed
+    vl_var &dd = var_factory.new_var();  // so it gets gc'ed
     dd.data_type = Dint;
     dd.u.i = 0;
     if (!args) {
@@ -839,7 +839,7 @@ namespace {
 vl_var &
 vl_simulator::sys_random(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 {
-    vl_var &dd = vl_new_var(CXalloc);  // so it gets gc'ed
+    vl_var &dd = var_factory.new_var();  // so it gets gc'ed
     dd.data_type = Dint;
     if (args && !seeded) {
         lsGen<vl_expr*> gen(args);
