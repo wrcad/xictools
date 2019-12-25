@@ -1,11 +1,59 @@
-* WRspice pseudo-random bit sequence demo
+* WRspice (digital) Verilog demo.
+* A pseudo-random bit sequence generator (PRBS) is implemented in
+* Verilog, and run in tandem with a simple circuit.
 
+* There are three ways to advance the Verilog simulation:
+* 1.  The original way, support goes way back.  The Verilog will advance
+*     when time passes multiples of the tran step.  This is the default.
+*     Option vastep is not set, command vastep is not called.
+*
+*     The other two options require WRspice 4.3.11 or later.
+*
+* 2.  Step multiplication.  Set option vastep to N, where N is a positive
+*     integer.  Verilog will advance when time passes multiples of N*tstep.
+*
+* 3.  Asynchronous.  Set option vastep=0, then call function vastep
+*     to advance Verilog.  Do this from a .stop/.measure line through
+*     a callback function.
+
+* Set this to 1-3 to match above.
+.param demo=3
+
+.control
+run
+plot v(1) v(2)
+edit
+.endc
+
+.if demo==3
+
+* Callback from .stop, just call vastep and return 1 to continue.
+.control cxx
+vastep
+return 1
+.endc
+
+* Set up the polling to increment Verilog.  Set the vastep option to
+* 0 to turn off the auto ticks.  Ticks are produced by calling the
+* callback.
+.options vastep=0
+.stop tran at 1p repeat 2p call cxx silent
+
+.elseif demo==2
+
+* Advance Verilog on every second tran step.
+.options vastep=2
+
+.endif
+* End of demo logic setup.
+
+* Simple circuit, 'a' is Verilog 8-bit integer output.
 v1 1 0 a/255-1
 r1  1 2 100
 c1 2 0 10p
 .tran 1p 10n
-.plot tran v(1) v(2)
 
+* The PRBS generator described in a Vefrilog block.
 .verilog
 module  prbs;
 reg [8:0] a, b;
@@ -35,8 +83,3 @@ always
 endmodule
 .endv
 
-.control
-run
-plot v(1) v(2)
-edit
-.endc

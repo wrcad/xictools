@@ -54,6 +54,11 @@ Authors: 1987 Thomas L. Quarles
 #include "ttyio.h"
 #include "sparse/spmatrix.h"
 
+//XXX rid this
+// Revert to historical Verilog ticking: tran steps with hitusertp,
+// panic debugging only.
+//#define OLDVASTEP
+
 
 namespace {
     inline void swaprhs(sCKT *ckt)
@@ -115,6 +120,7 @@ sTRANAN::init(sCKT *ckt)
     ckt->CKTmaxStep = TRANmaxStep;
     ckt->CKTtranDiffs[0] = 1;
     ckt->CKTtranDegree = 0;
+    ckt->CKTqueva = false;
 
     if (TS.t_step <= 0) {
         OP.error(ERR_FATAL, "zero or negative TRAN step given.");
@@ -160,28 +166,32 @@ sTRANAN::init(sCKT *ckt)
 
     TS.t_nointerp = false;
     TS.t_hitusertp = false;
+#ifdef OLDVASTEP
     if (ckt->CKTvblk) {
         // if there is a verilog block, hit the user time points
         TS.t_hitusertp = true;
         ckt->CKTcurTask->TSKtranStepType = STEP_HITUSERTP;
     }
     else {
-        switch (ckt->CKTcurTask->TSKtranStepType) {
-        default:
-        case STEP_NORMAL:
-            break;
-        case STEP_HITUSERTP:
-            TS.t_hitusertp = true;
-            break;
-        case STEP_NOUSERTP:
-            TS.t_nointerp = true;
-            break;
-        case STEP_FIXEDSTEP:
-            TS.t_fixed_step = TS.t_step;
-            TS.t_nointerp = true;
-            break;
-        }
+#endif
+    switch (ckt->CKTcurTask->TSKtranStepType) {
+    default:
+    case STEP_NORMAL:
+        break;
+    case STEP_HITUSERTP:
+        TS.t_hitusertp = true;
+        break;
+    case STEP_NOUSERTP:
+        TS.t_nointerp = true;
+        break;
+    case STEP_FIXEDSTEP:
+        TS.t_fixed_step = TS.t_step;
+        TS.t_nointerp = true;
+        break;
     }
+#ifdef OLDVASTEP
+    }
+#endif
 
     TS.t_polydegree = ckt->CKTcurTask->TSKinterpLev;
 
@@ -350,6 +360,8 @@ TRANanalysis::tran_dcoperation(sCKT *ckt, int restart)
         tran->t_check = (tran->t_start || !tran->t_nointerp) ?
             tran->t_start : tran->t_stop;
 
+        tran->t_vacheck = 0.0;
+
         // set initial conditions
         error = ckt->ic();
         if (error)
@@ -515,10 +527,29 @@ sTRANint::accept(sCKT *ckt, sSTATS *stat, int *done, int *afterpause)
             return (error);
     }
 
+#ifdef OLDVASTEP
+#else
+    if (ckt->CKTvblk && outd->count) {
+        if (ckt->CKTcurTask->TSKvaStep) {
+            double vastep = ckt->CKTcurTask->TSKvaStep * t_step;
+            if (ckt->CKTtime > (t_vacheck - ckt->CKTcurTask->TSKminBreak)) {
+                ckt->CKTvblk->run_step(outd);
+                t_vacheck += vastep;
+            }
+        }
+        else if (ckt->CKTqueva) {
+            ckt->CKTvblk->run_step(outd);
+            ckt->CKTqueva = false;
+        }
+    }
+#endif
+
     if (t_hitusertp || t_nointerp) {
         if (t_dumpit) {
+#ifdef OLDVASTEP
             if (ckt->CKTvblk && outd->count)
                 ckt->CKTvblk->run_step(outd);
+#endif
             ckt->dump(ckt->CKTtime, job->JOBrun);
             if (!t_nointerp)
                 t_dumpit = false;

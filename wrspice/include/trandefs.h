@@ -95,6 +95,7 @@ struct sTRANint
     sTRANint()
         {
             t_check = 0.0;
+            t_vacheck = 0.0;
             t_start = 0.0;
             t_step = 0.0;
             t_stop = 0.0;
@@ -124,6 +125,7 @@ struct sTRANint
     int  interpolate(sCKT*);
 
     double  t_check;        // running variable for plot points
+    double  t_vacheck;      // time check point for Varilog
     double  t_start;
     double  t_step;
     double  t_stop;

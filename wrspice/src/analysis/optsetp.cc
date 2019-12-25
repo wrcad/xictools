@@ -340,6 +340,10 @@ sOPTIONS::setup(const sOPTIONS *opts, OMRG_TYPE mt)
         OPTsrcsteps = opts->OPTsrcsteps;
         OPTsrcsteps_given = 1;
     }
+    if (opts->OPTvastep_given && (mt == OMRG_GLOBAL || !OPTvastep_given)) {
+        OPTvastep = opts->OPTvastep;
+        OPTvastep_given = 1;
+    }
 
     // bools
     if (opts->OPTdcoddstep_given && (mt == OMRG_GLOBAL ||
@@ -830,7 +834,6 @@ OPTanalysis::setParm(sJOB *anal, int which, IFdata *data)
         else
             opt->OPTvastep_given = 0;
         break;
-
 
     case OPT_DCODDSTEP:
         if (value) {

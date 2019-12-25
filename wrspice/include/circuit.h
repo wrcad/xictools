@@ -1612,8 +1612,9 @@ struct sCKTPOD
     bool CKTisSetup;        // CKTsetup done
     bool CKTjjPresent;      // Josephson junctions are in circuit
 #ifdef NEWJJDC
-    double CKTjjDCphase;    // Compute phase in DC analysis.
+    bool CKTjjDCphase;      // Compute phase in DC analysis.
 #endif
+    bool CKTqueva;          // Queue a Verilog tick.
     bool CKTtrapCheck;      // check for non-convergence in TRAP
     bool CKTtrapBad;        // check found non-convergence
     bool CKTneedsRevertResetup;  // need to call resetup after dev restore

@@ -243,6 +243,7 @@ namespace cmdnames {
     const char *cmd_unlet       = "unlet";
     const char *cmd_unset       = "unset";
     const char *cmd_usrset      = "usrset";
+    const char *cmd_vastep      = "vastep";
     const char *cmd_version     = "version";
     const char *cmd_where       = "where";
     const char *cmd_write       = "write";
@@ -601,6 +602,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_usrset, com_usrset, false, false, false,
       Bvar, Bvar, Bvar, Bvar, E_DEFHMASK, 0, LOTS, 0,
       ": Display list of option keywords." ) ,
+    sCommand( cmd_vastep, com_vastep, false, false, false,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 0, 0,
+      ": Advance Verilog simulator by one tick." ) ,
     sCommand( cmd_version, com_version, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       "[number] : Print the version number." ) ,

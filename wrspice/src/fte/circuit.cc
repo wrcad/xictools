@@ -156,6 +156,19 @@ CommandTab::com_where(wordlist*)
     const char *msg = Sp.CurCircuit()->runckt()->trouble(0);
     TTY.printf("Last nonconvergence at %s", msg);
 }
+
+//XXX
+void
+CommandTab::com_vastep(wordlist*)
+{
+    if (!Sp.CurCircuit() || !Sp.CurCircuit()->runckt()) {
+        Sp.Error(E_NOCURCKT);
+        return;
+    }
+    sCKT *ckt = Sp.CurCircuit()->runckt();
+    if (ckt->CKTvblk)
+        ckt->CKTqueva = true;
+}
 // End of CommandTab functions.
 
 

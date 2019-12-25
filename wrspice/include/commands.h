@@ -217,6 +217,7 @@ public:
     static void com_unlet(wordlist*);
     static void com_unset(wordlist*);
     static void com_usrset(wordlist*);
+    static void com_vastep(wordlist*);
     static void com_version(wordlist*);
     static void com_where(wordlist*);
     static void com_write(wordlist*);
