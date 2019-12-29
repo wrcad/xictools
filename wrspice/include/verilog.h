@@ -98,7 +98,7 @@ struct VerilogBlock
     VerilogBlock(sLine*);
     ~VerilogBlock();
 
-    void initialize();
+    void initialize(sOUTdata*);
     void finalize(bool);
     void run_step(sOUTdata*);
     bool query_var(const char*, const char*, double*);

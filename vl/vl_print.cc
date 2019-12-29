@@ -376,44 +376,44 @@ void
 vl_var::print_value(ostream &outs, DSPtype dtype)
 {
     if (data_type == Dbit) {
-        if (array.size) {
+        if (array.size()) {
             char **ss = (char**)u.d;
-            for (int i = 0; i < array.size; i++) {
+            for (int i = 0; i < array.size(); i++) {
                 if (i)
                     outs << ' ';
-                printbits(outs, ss[i], bits.size, dtype);
+                printbits(outs, ss[i], bits.size(), dtype);
             }
         }
         else
-            printbits(outs, u.s, bits.size, dtype);
+            printbits(outs, u.s, bits.size(), dtype);
     }
     else if (data_type == Dint) {
-        if (array.size) {
+        if (array.size()) {
             int *ii = (int*)u.d;
             outs << ii[0];
-            for (int i = 1; i < array.size; i++)
+            for (int i = 1; i < array.size(); i++)
                 outs << ' ' << ii[i];
         }
         else
             outs << u.i;
     }
     else if (data_type == Dreal) {
-        if (array.size) {
+        if (array.size()) {
             double *dd = (double*)u.d;
             outs << dd[0];
-            for (int i = 1; i < array.size; i++)
+            for (int i = 1; i < array.size(); i++)
                 outs << ' ' << dd[i];
         }
         else
             outs << u.r;
     }
     else if (data_type == Dstring) {
-        if (array.size) {
+        if (array.size()) {
             char **ss = (char**)u.d;
             char *s = vl_fix_str(ss[0]);
             outs << s;
             delete [] s;
-            for (int i = 1; i < array.size; i++) {
+            for (int i = 1; i < array.size(); i++) {
                 s = vl_fix_str(ss[i]);
                 outs << ' ' << s;
                 delete [] s;
@@ -426,10 +426,10 @@ vl_var::print_value(ostream &outs, DSPtype dtype)
         }
     }
     else if (data_type == Dtime) {
-        if (array.size) {
+        if (array.size()) {
             vl_time_t *tt = (vl_time_t*)u.d;
             outs << tt[0];
-            for (int i = 1; i < array.size; i++)
+            for (int i = 1; i < array.size(); i++)
                 outs << ' ' << tt[i];
         }
         else
@@ -495,13 +495,13 @@ vl_var::pwidth(char fmt)
     if (data_type == Dbit) {
         switch (fmt) {
         case 'b':
-            return (bits.size);
+            return (bits.size());
         case 'h':
-            return (bits.size/4 + bits.size%4);
+            return (bits.size()/4 + bits.size()%4);
         case 'o':
-            return (bits.size/3 + bits.size%3);
+            return (bits.size()/3 + bits.size()%3);
         case 'd': 
-            return ((int)ceil(bits.size*log10(2.0)));
+            return ((int)ceil(bits.size()*log10(2.0)));
         }
     }
     else if (data_type == Dint)
@@ -523,9 +523,9 @@ char *
 vl_var::bitstr()
 {
     if (data_type == Dbit) {
-        if (!array.size) {
-            char *s = new char[bits.size + 1];
-            for (int i = bits.size-1, j = 0; i >= 0; i--, j++) {
+        if (!array.size()) {
+            char *s = new char[bits.size() + 1];
+            for (int i = bits.size()-1, j = 0; i >= 0; i--, j++) {
                 if (u.s[i] == BitL)
                     s[j] = '0';
                 else if (u.s[i] == BitH)
@@ -535,12 +535,12 @@ vl_var::bitstr()
                 else
                     s[j] = 'x';
             }
-            s[bits.size] = 0;
+            s[bits.size()] = 0;
             return (s);
         }
     }
     else if (data_type == Dint) {
-        if (!array.size) {
+        if (!array.size()) {
             unsigned x = (unsigned)u.i;
             int isz = 8*(int)sizeof(int);
             char *s = new char[isz + 1];
@@ -556,7 +556,7 @@ vl_var::bitstr()
         }
     }
     else if (data_type == Dtime) {
-        if (!array.size) {
+        if (!array.size()) {
             vl_time_t x = u.t;
             int isz = 8*(int)sizeof(vl_time_t);
             char *s = new char[isz + 1];
@@ -1027,7 +1027,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                     {
                         vl_var &d = e->eval();
                         if (d.data_type == Dbit) {
-                            int w = (d.bits.size + 3)/4;
+                            int w = (d.bits.size() + 3)/4;
                             if (d.is_x()) {
                                 int i = 0;
                                 for ( ; i < w; i++)
@@ -1059,7 +1059,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                     {
                         vl_var &d = e->eval();
                         if (d.data_type == Dbit) {
-                            int w = (d.bits.size + 2)/3;
+                            int w = (d.bits.size() + 2)/3;
                             if (d.data_type == Dbit && d.is_x()) {
                                 int i = 0;
                                 for ( ; i < w; i++)

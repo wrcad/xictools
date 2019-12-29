@@ -53,7 +53,7 @@ r1  1 2 100
 c1 2 0 10p
 .tran 1p 10n
 
-* The PRBS generator described in a Vefrilog block.
+* The PRBS generator described in a Verilog block.
 .verilog
 module  prbs;
 reg [8:0] a, b;

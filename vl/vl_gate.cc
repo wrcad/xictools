@@ -84,8 +84,8 @@ gsetup_gate(vl_simulator*, vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // output
     vl_expr *expr = 0;
@@ -98,7 +98,7 @@ gsetup_gate(vl_simulator*, vl_gate_inst *gate)
     vl_var *vo = new vl_var;
     vo->net_type = REGreg;
     vo->strength = gate->inst_list->strength;
-    vo->setx(a.size);
+    vo->setx(a.size());
     gate->outputs->newEnd(vo);
     vl_var *vs = expr->source();
     vl_range *r = expr->source_range();
@@ -137,8 +137,8 @@ gsetup_buf(vl_simulator*, vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // input
     vl_expr *expr = 0;
@@ -160,7 +160,7 @@ gsetup_buf(vl_simulator*, vl_gate_inst *gate)
         vl_var *vo = new vl_var;
         vo->net_type = REGreg;
         vo->strength = gate->inst_list->strength;
-        vo->setx(a.size);
+        vo->setx(a.size());
         gate->outputs->newEnd(vo);
         vl_var *vs = expr->source();
         if (!vs) {
@@ -190,8 +190,8 @@ gsetup_cbuf(vl_simulator*, vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // control
     vl_expr *expr = 0;
@@ -221,7 +221,7 @@ gsetup_cbuf(vl_simulator*, vl_gate_inst *gate)
         vl_var *vo = new vl_var;
         vo->net_type = REGreg;
         vo->strength = gate->inst_list->strength;
-        vo->setz(a.size);
+        vo->setz(a.size());
         gate->outputs->newEnd(vo);
         n++;
     }
@@ -243,8 +243,8 @@ gsetup_mos(vl_simulator*, vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // output
     vl_expr *expr = 0;
@@ -257,7 +257,7 @@ gsetup_mos(vl_simulator*, vl_gate_inst *gate)
     vl_var *vo = new vl_var;
     vo->net_type = REGreg;
     vo->strength = gate->inst_list->strength;
-    vo->setz(a.size);
+    vo->setz(a.size());
     gate->outputs->newEnd(vo);
 
     // input
@@ -293,8 +293,8 @@ gsetup_cmos(vl_simulator*, vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // output
     vl_expr *expr = 0;
@@ -307,7 +307,7 @@ gsetup_cmos(vl_simulator*, vl_gate_inst *gate)
     vl_var *vo = new vl_var;
     vo->net_type = REGreg;
     vo->strength = gate->inst_list->strength;
-    vo->setz(a.size);
+    vo->setz(a.size());
     gate->outputs->newEnd(vo);
 
     // input
@@ -350,8 +350,8 @@ gsetup_tran(vl_simulator*, vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // inout
     vl_expr *expr1 = 0;
@@ -366,7 +366,7 @@ gsetup_tran(vl_simulator*, vl_gate_inst *gate)
     vl_var *vo = new vl_var;
     vo->net_type = REGreg;
     vo->strength = gate->inst_list->strength;
-    vo->setz(a.size);
+    vo->setz(a.size());
     gate->outputs->newEnd(vo);
 
     // inout
@@ -381,7 +381,7 @@ gsetup_tran(vl_simulator*, vl_gate_inst *gate)
     vo = new vl_var;
     vo->net_type = REGreg;
     vo->strength = gate->inst_list->strength;
-    vo->setz(a.size);
+    vo->setz(a.size());
     gate->outputs->newEnd(vo);
 
     return (true);
@@ -401,8 +401,8 @@ gsetup_ctran(vl_simulator*, vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // inout
     vl_expr *expr1 = 0;
@@ -417,7 +417,7 @@ gsetup_ctran(vl_simulator*, vl_gate_inst *gate)
     vl_var *vo = new vl_var;
     vo->net_type = REGreg;
     vo->strength = gate->inst_list->strength;
-    vo->setz(a.size);
+    vo->setz(a.size());
     gate->outputs->newEnd(vo);
 
     // inout
@@ -432,7 +432,7 @@ gsetup_ctran(vl_simulator*, vl_gate_inst *gate)
     vo = new vl_var;
     vo->net_type = REGreg;
     vo->strength = gate->inst_list->strength;
-    vo->setz(a.size);
+    vo->setz(a.size());
     gate->outputs->newEnd(vo);
 
     // control
@@ -461,8 +461,8 @@ geval_gate(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // output
     vl_expr *oexp = 0;
@@ -479,7 +479,7 @@ geval_gate(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
             vl_error(msg3, nm, cnt+2);
             return (false);
         }
-        if (iv[cnt]->bits.size != 1 && iv[cnt]->bits.size < a.size) {
+        if (iv[cnt]->bits.size() != 1 && iv[cnt]->bits.size() < a.size()) {
             vl_error(msg4, nm, cnt+2);
             return (false);
         }
@@ -502,14 +502,14 @@ geval_gate(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
             return (false);
         }
         bool changed = false;
-        for (int i = 0; i < a.size; i++) {
-            int obit = (iv[0]->bits.size > 1 ? iv[0]->u.s[i] : iv[0]->u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int obit = (iv[0]->bits.size() > 1 ? iv[0]->u.s[i] : iv[0]->u.s[0]);
             for (int j = 1; j < n; j++) {
-                int o = (iv[j]->bits.size > 1 ? iv[j]->u.s[i] : iv[j]->u.s[0]);
+                int o = (iv[j]->bits.size() > 1 ? iv[j]->u.s[i] : iv[j]->u.s[0]);
                 obit = (*set)(obit, o);
             }
 
-            int io = (v->bits.size > 1 ? i : 0);
+            int io = (v->bits.size() > 1 ? i : 0);
             if (v->u.s[io] != obit) {
                 v->u.s[io] = obit;
                 changed = true;
@@ -564,8 +564,8 @@ geval_buf(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // input
     vl_expr *expr = 0;
@@ -575,7 +575,7 @@ geval_buf(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, num);
         return (false);
     }
-    if (ip.bits.size != 1 && ip.bits.size < a.size) {
+    if (ip.bits.size() != 1 && ip.bits.size() < a.size()) {
         vl_error(msg4, nm, num);
         return (false);
     }
@@ -598,11 +598,11 @@ geval_buf(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
         }
         *v = expr->eval();
         bool changed = false;
-        for (int i = 0; i < a.size; i++) {
-            int ii = (ip.bits.size > 1 ? ip.u.s[i] : ip.u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int ii = (ip.bits.size() > 1 ? ip.u.s[i] : ip.u.s[0]);
             int obit = (*set)(ii, BitL);
 
-            int io = (v->bits.size > 1 ? i : 0);
+            int io = (v->bits.size() > 1 ? i : 0);
             if (v->u.s[io] != obit) {
                 v->u.s[io] = obit;
                 changed = true;
@@ -658,8 +658,8 @@ geval_cbuf(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // control
     vl_expr *expr = 0;
@@ -669,7 +669,7 @@ geval_cbuf(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, num);
         return (false);
     }
-    if (c.bits.size != 1 && c.bits.size < a.size) {
+    if (c.bits.size() != 1 && c.bits.size() < a.size()) {
         vl_error(msg4, nm, num);
         return (false);
     }
@@ -681,7 +681,7 @@ geval_cbuf(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, num-1);
         return (false);
     }
-    if (ip.bits.size != 1 && ip.bits.size < a.size) {
+    if (ip.bits.size() != 1 && ip.bits.size() < a.size()) {
         vl_error(msg4, nm, num-1);
         return (false);
     }
@@ -704,12 +704,12 @@ geval_cbuf(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
         }
         *v = expr->eval();
         bool changed = false;
-        for (int i = 0; i < a.size; i++) {
-            int ii = (ip.bits.size > 1 ? ip.u.s[i] : ip.u.s[0]);
-            int ic = (c.bits.size > 1 ? c.u.s[i] : c.u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int ii = (ip.bits.size() > 1 ? ip.u.s[i] : ip.u.s[0]);
+            int ic = (c.bits.size() > 1 ? c.u.s[i] : c.u.s[0]);
             int obit = (*set)(ii, ic);
 
-            int io = (v->bits.size > 1 ? i : 0);
+            int io = (v->bits.size() > 1 ? i : 0);
             if (v->u.s[io] != obit) {
                 v->u.s[io] = obit;
                 changed = true;
@@ -764,8 +764,8 @@ geval_mos(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // output
     vl_expr *oexp = 0;
@@ -779,7 +779,7 @@ geval_mos(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 2);
         return (false);
     }
-    if (d.bits.size != 1 && d.bits.size < a.size) {
+    if (d.bits.size() != 1 && d.bits.size() < a.size()) {
         vl_error(msg4, nm, 2);
         return (false);
     }
@@ -791,7 +791,7 @@ geval_mos(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 3);
         return (false);
     }
-    if (c.bits.size != 1 && c.bits.size < a.size) {
+    if (c.bits.size() != 1 && c.bits.size() < a.size()) {
         vl_error(msg4, nm, 3);
         return (false);
     }
@@ -813,12 +813,12 @@ geval_mos(vl_simulator *sim, int(*set)(int, int), vl_gate_inst *gate)
         }
         *v = oexp->eval();
         bool changed = false;
-        for (int i = 0; i < a.size; i++) {
-            int ii = (d.bits.size > 1 ? d.u.s[i] : d.u.s[0]);
-            int ic = (c.bits.size > 1 ? c.u.s[i] : c.u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int ii = (d.bits.size() > 1 ? d.u.s[i] : d.u.s[0]);
+            int ic = (c.bits.size() > 1 ? c.u.s[i] : c.u.s[0]);
             int obit = (*set)(ii, ic);
 
-            int io = (v->bits.size > 1 ? i : 0);
+            int io = (v->bits.size() > 1 ? i : 0);
             if (v->u.s[io] != obit) {
                 v->u.s[io] = obit;
                 changed = true;
@@ -868,8 +868,8 @@ geval_cmos(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     // output
     vl_expr *oexp = 0;
@@ -883,7 +883,7 @@ geval_cmos(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 2);
         return (false);
     }
-    if (d.bits.size != 1 && d.bits.size < a.size) {
+    if (d.bits.size() != 1 && d.bits.size() < a.size()) {
         vl_error(msg4, nm, 2);
         return (false);
     }
@@ -895,7 +895,7 @@ geval_cmos(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 3);
         return (false);
     }
-    if (cn.bits.size != 1 && cn.bits.size < a.size) {
+    if (cn.bits.size() != 1 && cn.bits.size() < a.size()) {
         vl_error(msg4, nm, 3);
         return (false);
     }
@@ -907,7 +907,7 @@ geval_cmos(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 4);
         return (false);
     }
-    if (cp.bits.size != 1 && cp.bits.size < a.size) {
+    if (cp.bits.size() != 1 && cp.bits.size() < a.size()) {
         vl_error(msg4, nm, 4);
         return (false);
     }
@@ -929,10 +929,10 @@ geval_cmos(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         }
         *v = oexp->eval();
         bool changed = false;
-        for (int i = 0; i < a.size; i++) {
-            int ii = (d.bits.size > 1 ? d.u.s[i] : d.u.s[0]);
-            int in = (cn.bits.size > 1 ? cn.u.s[i] : cn.u.s[0]);
-            int ip = (cp.bits.size > 1 ? cp.u.s[i] : cp.u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int ii = (d.bits.size() > 1 ? d.u.s[i] : d.u.s[0]);
+            int in = (cn.bits.size() > 1 ? cn.u.s[i] : cn.u.s[0]);
+            int ip = (cp.bits.size() > 1 ? cp.u.s[i] : cp.u.s[0]);
             int obit;
             if (in == BitH || ip == BitL)
                 obit = ii;
@@ -940,7 +940,7 @@ geval_cmos(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
                 obit = BitZ;
             else
                 obit = ii;
-            int io = (v->bits.size > 1 ? i : 0);
+            int io = (v->bits.size() > 1 ? i : 0);
             if (v->u.s[io] != obit) {
                 v->u.s[io] = obit;
                 changed = true;
@@ -990,8 +990,8 @@ geval_tran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     vl_expr *expr1 = 0;
     gen.next(&expr1);
@@ -1003,7 +1003,7 @@ geval_tran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 1);
         return (false);
     }
-    if (vx1->bits.size != 1 && vx1->bits.size < a.size) {
+    if (vx1->bits.size() != 1 && vx1->bits.size() < a.size()) {
         vl_error(msg4, nm, 1);
         return (false);
     }
@@ -1018,22 +1018,22 @@ geval_tran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 2);
         return (false);
     }
-    if (vx2->bits.size != 1 && vx2->bits.size < a.size) {
+    if (vx2->bits.size() != 1 && vx2->bits.size() < a.size()) {
         vl_error(msg4, nm, 2);
         return (false);
     }
 
     bool ch1 = false;
-    for (int i = 0; i < a.size; i++) {
-        int i1 = (vx1->bits.size > 1 ? vx1->u.s[i] : vx1->u.s[0]);
+    for (int i = 0; i < a.size(); i++) {
+        int i1 = (vx1->bits.size() > 1 ? vx1->u.s[i] : vx1->u.s[0]);
         if (vx1->u.s[i1] != v1.u.s[i1]) {
             ch1 = true;
             break;
         }
     }
     bool ch2 = false;
-    for (int i = 0; i < a.size; i++) {
-        int i2 = (vx2->bits.size > 1 ? vx2->u.s[i] : vx2->u.s[0]);
+    for (int i = 0; i < a.size(); i++) {
+        int i2 = (vx2->bits.size() > 1 ? vx2->u.s[i] : vx2->u.s[0]);
         if (vx2->u.s[i2] != v2.u.s[i2]) {
             ch2 = true;
             break;
@@ -1057,9 +1057,9 @@ geval_tran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
             vl_error(msg5, nm, 2);
             return (false);
         }
-        for (int i = 0; i < a.size; i++) {
-            int i1 = (vx1->bits.size > 1 ? vx1->u.s[i] : vx1->u.s[0]);
-            int i2 = (vx2->bits.size > 1 ? vx2->u.s[i] : vx2->u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int i1 = (vx1->bits.size() > 1 ? vx1->u.s[i] : vx1->u.s[0]);
+            int i2 = (vx2->bits.size() > 1 ? vx2->u.s[i] : vx2->u.s[0]);
             if (vx2->u.s[i2] != vx1->u.s[i1]) {
                 vx2->u.s[i2] = vx1->u.s[i1];
                 if (rfdly) {
@@ -1100,9 +1100,9 @@ geval_tran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
             vl_error(msg5, nm, 1);
             return (false);
         }
-        for (int i = 0; i < a.size; i++) {
-            int i1 = (vx1->bits.size > 1 ? vx1->u.s[i] : vx1->u.s[0]);
-            int i2 = (vx2->bits.size > 1 ? vx2->u.s[i] : vx2->u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int i1 = (vx1->bits.size() > 1 ? vx1->u.s[i] : vx1->u.s[0]);
+            int i2 = (vx2->bits.size() > 1 ? vx2->u.s[i] : vx2->u.s[0]);
             if (vx1->u.s[i1] != vx2->u.s[i2]) {
                 vx1->u.s[i1] = vx2->u.s[i2];
                 if (rfdly) {
@@ -1151,8 +1151,8 @@ geval_ctran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
     vl_array a;
     if (gate->array)
         a.set(gate->array);
-    if (!a.size)
-        a.size = 1;
+    if (!a.size())
+        a.set(1);
 
     vl_expr *expr1 = 0;
     gen.next(&expr1);
@@ -1164,7 +1164,7 @@ geval_ctran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 1);
         return (false);
     }
-    if (vx1->bits.size != 1 && vx1->bits.size < a.size) {
+    if (vx1->bits.size() != 1 && vx1->bits.size() < a.size()) {
         vl_error(msg4, nm, 1);
         return (false);
     }
@@ -1179,7 +1179,7 @@ geval_ctran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 2);
         return (false);
     }
-    if (vx2->bits.size != 1 && vx2->bits.size < a.size) {
+    if (vx2->bits.size() != 1 && vx2->bits.size() < a.size()) {
         vl_error(msg4, nm, 2);
         return (false);
     }
@@ -1191,36 +1191,36 @@ geval_ctran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
         vl_error(msg3, nm, 3);
         return (false);
     }
-    if (v3.bits.size != 1 && v3.bits.size < a.size) {
+    if (v3.bits.size() != 1 && v3.bits.size() < a.size()) {
         vl_error(msg4, nm, 3);
         return (false);
     }
 
     bool ch1 = false;
-    for (int i = 0; i < a.size; i++) {
-        int i3 = (v3.bits.size > 1 ? v3.u.s[i] : v3.u.s[0]);
+    for (int i = 0; i < a.size(); i++) {
+        int i3 = (v3.bits.size() > 1 ? v3.u.s[i] : v3.u.s[0]);
         if (((gate->type == Tranif1Gate || gate->type == Rtranif1Gate)
                 && v3.u.s[i3] != BitH) ||
             ((gate->type == Tranif0Gate || gate->type == Rtranif0Gate)
                 && v3.u.s[i3] != BitL))
             // off
             continue;
-        int i1 = (vx1->bits.size > 1 ? vx1->u.s[i] : vx1->u.s[0]);
+        int i1 = (vx1->bits.size() > 1 ? vx1->u.s[i] : vx1->u.s[0]);
         if (vx1->u.s[i1] != v1.u.s[i1]) {
             ch1 = true;
             break;
         }
     }
     bool ch2 = false;
-    for (int i = 0; i < a.size; i++) {
-        int i3 = (v3.bits.size > 1 ? v3.u.s[i] : v3.u.s[0]);
+    for (int i = 0; i < a.size(); i++) {
+        int i3 = (v3.bits.size() > 1 ? v3.u.s[i] : v3.u.s[0]);
         if (((gate->type == Tranif1Gate || gate->type == Rtranif1Gate)
                 && v3.u.s[i3] != BitH) ||
             ((gate->type == Tranif0Gate || gate->type == Rtranif0Gate)
                 && v3.u.s[i3] != BitL))
             // off
             continue;
-        int i2 = (vx2->bits.size > 1 ? vx2->u.s[i] : vx2->u.s[0]);
+        int i2 = (vx2->bits.size() > 1 ? vx2->u.s[i] : vx2->u.s[0]);
         if (vx2->u.s[i2] != v2.u.s[i2]) {
             ch2 = true;
             break;
@@ -1244,16 +1244,16 @@ geval_ctran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
             vl_error(msg5, nm, 2);
             return (false);
         }
-        for (int i = 0; i < a.size; i++) {
-            int i3 = (v3.bits.size > 1 ? v3.u.s[i] : v3.u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int i3 = (v3.bits.size() > 1 ? v3.u.s[i] : v3.u.s[0]);
             if (((gate->type == Tranif1Gate || gate->type == Rtranif1Gate)
                     && v3.u.s[i3] != BitH) ||
                 ((gate->type == Tranif0Gate || gate->type == Rtranif0Gate)
                     && v3.u.s[i3] != BitL))
                 // off
                 continue;
-            int i1 = (vx1->bits.size > 1 ? vx1->u.s[i] : vx1->u.s[0]);
-            int i2 = (vx2->bits.size > 1 ? vx2->u.s[i] : vx2->u.s[0]);
+            int i1 = (vx1->bits.size() > 1 ? vx1->u.s[i] : vx1->u.s[0]);
+            int i2 = (vx2->bits.size() > 1 ? vx2->u.s[i] : vx2->u.s[0]);
             if (vx2->u.s[i2] != vx1->u.s[i1]) {
                 vx2->u.s[i2] = vx1->u.s[i1];
                 if (rfdly) {
@@ -1294,16 +1294,16 @@ geval_ctran(vl_simulator *sim, int(*)(int, int), vl_gate_inst *gate)
             vl_error(msg5, nm, 1);
             return (false);
         }
-        for (int i = 0; i < a.size; i++) {
-            int i3 = (v3.bits.size > 1 ? v3.u.s[i] : v3.u.s[0]);
+        for (int i = 0; i < a.size(); i++) {
+            int i3 = (v3.bits.size() > 1 ? v3.u.s[i] : v3.u.s[0]);
             if (((gate->type == Tranif1Gate || gate->type == Rtranif1Gate)
                     && v3.u.s[i3] != BitH) ||
                 ((gate->type == Tranif0Gate || gate->type == Rtranif0Gate)
                     && v3.u.s[i3] != BitL))
                 // off
                 continue;
-            int i1 = (vx1->bits.size > 1 ? vx1->u.s[i] : vx1->u.s[0]);
-            int i2 = (vx2->bits.size > 1 ? vx2->u.s[i] : vx2->u.s[0]);
+            int i1 = (vx1->bits.size() > 1 ? vx1->u.s[i] : vx1->u.s[0]);
+            int i2 = (vx2->bits.size() > 1 ? vx2->u.s[i] : vx2->u.s[0]);
             if (vx1->u.s[i1] != vx2->u.s[i2]) {
                 vx1->u.s[i1] = vx2->u.s[i2];
                 if (rfdly) {

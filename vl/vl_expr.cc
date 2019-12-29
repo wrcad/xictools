@@ -158,7 +158,7 @@ operator*(vl_var &data1, vl_var &data2)
 {
     int w1 = 1;
     if (data1.data_type == Dbit)
-        w1 = data1.bits.size;
+        w1 = data1.bits.size();
     else if (data1.data_type == Dint)
         w1 = DefBits;
     else if (data1.data_type == Dtime)
@@ -166,7 +166,7 @@ operator*(vl_var &data1, vl_var &data2)
 
     int w2 = 1;
     if (data2.data_type == Dbit)
-        w2 = data2.bits.size;
+        w2 = data2.bits.size();
     else if (data2.data_type == Dint)
         w2 = DefBits;
     else if (data2.data_type == Dtime)
@@ -204,7 +204,7 @@ operator/(vl_var &data1, vl_var &data2)
 {
     int w1 = 1;
     if (data1.data_type == Dbit)
-        w1 = data1.bits.size;
+        w1 = data1.bits.size();
     else if (data1.data_type == Dint)
         w1 = DefBits;
     else if (data1.data_type == Dtime)
@@ -212,7 +212,7 @@ operator/(vl_var &data1, vl_var &data2)
 
     int w2 = 1;
     if (data2.data_type == Dbit)
-        w2 = data2.bits.size;
+        w2 = data2.bits.size();
     else if (data2.data_type == Dint)
         w2 = DefBits;
     else if (data2.data_type == Dtime)
@@ -252,7 +252,7 @@ operator%(vl_var &data1, vl_var &data2)
 {
     int w1 = 1;
     if (data1.data_type == Dbit)
-        w1 = data1.bits.size;
+        w1 = data1.bits.size();
     else if (data1.data_type == Dint)
         w1 = DefBits;
     else if (data1.data_type == Dtime)
@@ -260,7 +260,7 @@ operator%(vl_var &data1, vl_var &data2)
 
     int w2 = 1;
     if (data2.data_type == Dbit)
-        w2 = data2.bits.size;
+        w2 = data2.bits.size();
     else if (data2.data_type == Dint)
         w2 = DefBits;
     else if (data2.data_type == Dtime)
@@ -493,7 +493,7 @@ operator<<(vl_var &data1, vl_var &data2)
 {
     vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data2.data_type == Dbit && data2.is_x())
-        d.setx(data1.bits.size);
+        d.setx(data1.bits.size());
     else {
         int shift = (int)data2;
         if (shift < 0)
@@ -502,8 +502,8 @@ operator<<(vl_var &data1, vl_var &data2)
         char *s = data1.bit_elt(0, &bw);
         d.data_type = Dbit;
         d.bits.set(bw + shift);
-        d.u.s = new char[d.bits.size];
-        for (int i = 0; i < d.bits.size; i++) {
+        d.u.s = new char[d.bits.size()];
+        for (int i = 0; i < d.bits.size(); i++) {
             if (i >= shift)
                 d.u.s[i] = s[i-shift];
             else
@@ -526,8 +526,8 @@ operator<<(vl_var &data1, int shift)
     char *s = data1.bit_elt(0, &bw);
     d.data_type = Dbit;
     d.bits.set(bw);
-    d.u.s = new char[d.bits.size];
-    for (int i = 0; i < d.bits.size; i++) {
+    d.u.s = new char[d.bits.size()];
+    for (int i = 0; i < d.bits.size(); i++) {
         if (i >= shift)
             d.u.s[i] = s[i-shift];
         else
@@ -544,7 +544,7 @@ operator>>(vl_var &data1, vl_var &data2)
 {
     vl_var &d = vl_var::simulator->var_factory.new_var();
     if (data2.data_type == Dbit && data2.is_x())
-        d.setx(data1.bits.size);
+        d.setx(data1.bits.size());
     else {
         int shift = (int)data2;
         if (shift < 0)
@@ -553,8 +553,8 @@ operator>>(vl_var &data1, vl_var &data2)
         char *s = data1.bit_elt(0, &bw);
         d.data_type = Dbit;
         d.bits.set(bw);
-        d.u.s = new char[d.bits.size];
-        for (int i = 0; i < d.bits.size; i++) {
+        d.u.s = new char[d.bits.size()];
+        for (int i = 0; i < d.bits.size(); i++) {
             if (i + shift < bw)
                 d.u.s[i] = s[i+shift];
             else
@@ -577,8 +577,8 @@ operator>>(vl_var &data1, int shift)
     char *s = data1.bit_elt(0, &bw);
     d.data_type = Dbit;
     d.bits.set(bw - shift);
-    d.u.s = new char[d.bits.size];
-    for (int i = 0; i < d.bits.size; i++) {
+    d.u.s = new char[d.bits.size()];
+    for (int i = 0; i < d.bits.size(); i++) {
         if (i + shift < bw)
             d.u.s[i] = s[i+shift];
         else
@@ -625,17 +625,17 @@ operator==(vl_var &data1, vl_var &data2)
                 return (d);
             d.u.s[0] = BitL;
             int i, i1 = data1.u.i;
-            for (i = 0; i < data2.bits.size; i++)
+            for (i = 0; i < data2.bits.size(); i++)
                 if (bit(i1, i) != data2.u.s[i])
                     return (d);
-            if (data2.bits.size != DefBits) {
-                if (data2.bits.size > DefBits) {
-                    for (i = DefBits; i < data2.bits.size; i++)
+            if (data2.bits.size() != DefBits) {
+                if (data2.bits.size() > DefBits) {
+                    for (i = DefBits; i < data2.bits.size(); i++)
                         if (data2.u.s[i] != BitL)
                             return (d);
                 }
                 else {
-                    for (i = data2.bits.size; i < DefBits; i++)
+                    for (i = data2.bits.size(); i < DefBits; i++)
                         if (bit(i1, i) != BitL)
                             return (d);
                 }
@@ -659,19 +659,19 @@ operator==(vl_var &data1, vl_var &data2)
             if (data2.is_x())
                 return (d);
             d.u.s[0] = BitL;
-            int wd = min(data1.bits.size, data2.bits.size);
+            int wd = min(data1.bits.size(), data2.bits.size());
             int i;
             for (i = 0; i < wd; i++)
                 if (data1.u.s[i] != data2.u.s[i])
                     return (d);
-            if (data1.bits.size != data2.bits.size) {
-                if (data1.bits.size > data2.bits.size) {
-                    for (i = data2.bits.size; i < data1.bits.size; i++)
+            if (data1.bits.size() != data2.bits.size()) {
+                if (data1.bits.size() > data2.bits.size()) {
+                    for (i = data2.bits.size(); i < data1.bits.size(); i++)
                         if (data1.u.s[i] != BitL)
                             return (d);
                 }
                 else {
-                    for (i = data1.bits.size; i < data2.bits.size; i++)
+                    for (i = data1.bits.size(); i < data2.bits.size(); i++)
                         if (data2.u.s[i] != BitL)
                             return (d);
                 }
@@ -687,17 +687,17 @@ operator==(vl_var &data1, vl_var &data2)
             return (d);
         d.u.s[0] = BitL;
         int i;
-        for (i = 0; i < data1.bits.size; i++)
+        for (i = 0; i < data1.bits.size(); i++)
             if (data1.u.s[i] != bit(i2, i))
                 return (d);
-        if (data1.bits.size != DefBits) {
-            if (data1.bits.size > DefBits) {
-                for (i = DefBits; i < data1.bits.size; i++)
+        if (data1.bits.size() != DefBits) {
+            if (data1.bits.size() > DefBits) {
+                for (i = DefBits; i < data1.bits.size(); i++)
                     if (data1.u.s[i] != BitL)
                         return (d);
             }
             else {
-                for (i = data1.bits.size; i < DefBits; i++)
+                for (i = data1.bits.size(); i < DefBits; i++)
                     if (bit(i2, i) != BitL)
                         return (d);
             }
@@ -713,17 +713,17 @@ operator==(vl_var &data1, vl_var &data2)
                 return (d);
             d.u.s[0] = BitL;
             int i, i1 = (int)data1.u.t;
-            for (i = 0; i < data2.bits.size; i++)
+            for (i = 0; i < data2.bits.size(); i++)
                 if (bit(i1, i) != data2.u.s[i])
                     return (d);
-            if (data2.bits.size != DefBits) {
-                if (data2.bits.size > DefBits) {
-                    for (i = DefBits; i < data2.bits.size; i++)
+            if (data2.bits.size() != DefBits) {
+                if (data2.bits.size() > DefBits) {
+                    for (i = DefBits; i < data2.bits.size(); i++)
                         if (data2.u.s[i] != BitL)
                             return (d);
                 }
                 else {
-                    for (i = data2.bits.size; i < DefBits; i++)
+                    for (i = data2.bits.size(); i < DefBits; i++)
                         if (bit(i1, i) != BitL)
                             return (d);
                 }
@@ -744,17 +744,17 @@ operator==(vl_var &data1, vl_var &data2)
                 return (d);
             d.u.s[0] = BitL;
             int i, i1 = (int)data1.u.r;
-            for (i = 0; i < data2.bits.size; i++)
+            for (i = 0; i < data2.bits.size(); i++)
                 if (bit(i1, i) != data2.u.s[i])
                     return (d);
-            if (data2.bits.size != DefBits) {
-                if (data2.bits.size > DefBits) {
-                    for (i = DefBits; i < data2.bits.size; i++)
+            if (data2.bits.size() != DefBits) {
+                if (data2.bits.size() > DefBits) {
+                    for (i = DefBits; i < data2.bits.size(); i++)
                         if (data2.u.s[i] != BitL)
                             return (d);
                 }
                 else {
-                    for (i = data2.bits.size; i < DefBits; i++)
+                    for (i = data2.bits.size(); i < DefBits; i++)
                         if (bit(i1, i) != BitL)
                             return (d);
                 }
@@ -807,19 +807,19 @@ case_eq(vl_var &data1, vl_var &data2)
         vl_var &d = vl_var::simulator->var_factory.new_var();
         d.setx(1);
         d.u.s[0] = BitL;
-        int wd = min(data1.bits.size, data2.bits.size);
+        int wd = min(data1.bits.size(), data2.bits.size());
         int i;
         for (i = 0; i < wd; i++)
             if (data1.u.s[i] != data2.u.s[i])
                 return (d);
-        if (data1.bits.size != data2.bits.size) {
-            if (data1.bits.size > data2.bits.size) {
-                for (i = data2.bits.size; i < data1.bits.size; i++)
+        if (data1.bits.size() != data2.bits.size()) {
+            if (data1.bits.size() > data2.bits.size()) {
+                for (i = data2.bits.size(); i < data1.bits.size(); i++)
                     if (data1.u.s[i] != BitL)
                         return (d);
             }
             else {
-                for (i = data1.bits.size; i < data2.bits.size; i++)
+                for (i = data1.bits.size(); i < data2.bits.size(); i++)
                     if (data2.u.s[i] != BitL)
                         return (d);
             }
@@ -858,7 +858,7 @@ casex_eq(vl_var &data1, vl_var &data2)
         vl_var &d = vl_var::simulator->var_factory.new_var();
         d.setx(1);
         d.u.s[0] = BitL;
-        int wd = min(data1.bits.size, data2.bits.size);
+        int wd = min(data1.bits.size(), data2.bits.size());
         int i;
         for (i = 0; i < wd; i++) {
             if (data1.u.s[i] == BitDC || data2.u.s[i] == BitDC)
@@ -868,14 +868,14 @@ casex_eq(vl_var &data1, vl_var &data2)
             if (data1.u.s[i] != data2.u.s[i])
                 return (d);
         }
-        if (data1.bits.size != data2.bits.size) {
-            if (data1.bits.size > data2.bits.size) {
-                for (i = data2.bits.size; i < data1.bits.size; i++)
+        if (data1.bits.size() != data2.bits.size()) {
+            if (data1.bits.size() > data2.bits.size()) {
+                for (i = data2.bits.size(); i < data1.bits.size(); i++)
                     if (data1.u.s[i] != BitL)
                         return (d);
             }
             else {
-                for (i = data1.bits.size; i < data2.bits.size; i++)
+                for (i = data1.bits.size(); i < data2.bits.size(); i++)
                     if (data2.u.s[i] != BitL)
                         return (d);
             }
@@ -914,7 +914,7 @@ casez_eq(vl_var &data1, vl_var &data2)
         vl_var &d = vl_var::simulator->var_factory.new_var();
         d.setx(1);
         d.u.s[0] = BitL;
-        int wd = min(data1.bits.size, data2.bits.size);
+        int wd = min(data1.bits.size(), data2.bits.size());
         int i;
         for (i = 0; i < wd; i++) {
             if (data1.u.s[i] == BitZ || data2.u.s[i] == BitZ)
@@ -922,14 +922,14 @@ casez_eq(vl_var &data1, vl_var &data2)
             if (data1.u.s[i] != data2.u.s[i])
                 return (d);
         }
-        if (data1.bits.size != data2.bits.size) {
-            if (data1.bits.size > data2.bits.size) {
-                for (i = data2.bits.size; i < data1.bits.size; i++)
+        if (data1.bits.size() != data2.bits.size()) {
+            if (data1.bits.size() > data2.bits.size()) {
+                for (i = data2.bits.size(); i < data1.bits.size(); i++)
                     if (data1.u.s[i] != BitL)
                         return (d);
             }
             else {
-                for (i = data1.bits.size; i < data2.bits.size; i++)
+                for (i = data1.bits.size(); i < data2.bits.size(); i++)
                     if (data2.u.s[i] != BitL)
                         return (d);
             }
@@ -1480,10 +1480,10 @@ operator&(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data2.bits.size, DefBits));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data2.bits.size)
+            d.bits.set(max(data2.bits.size(), DefBits));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data2.bits.size())
                     d.u.s[i] = op_and(data2.u.s[i], bit(data1.u.i, i));
                 else
                     d.u.s[i] = BitL;
@@ -1499,10 +1499,10 @@ operator&(vl_var &data1, vl_var &data2)
     else if (data1.data_type == Dbit) {
         if (data2.data_type == Dint) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, DefBits));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data1.bits.size)
+            d.bits.set(max(data1.bits.size(), DefBits));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data1.bits.size())
                     d.u.s[i] = op_and(data1.u.s[i], bit(data2.u.i, i));
                 else
                     d.u.s[i] = BitL;
@@ -1510,20 +1510,20 @@ operator&(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, data2.bits.size));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                int i1 = (i < data1.bits.size ? data1.u.s[i] : (int)BitL);
-                int i2 = (i < data2.bits.size ? data2.u.s[i] : (int)BitL);
+            d.bits.set(max(data1.bits.size(), data2.bits.size()));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                int i1 = (i < data1.bits.size() ? data1.u.s[i] : (int)BitL);
+                int i2 = (i < data2.bits.size() ? data2.u.s[i] : (int)BitL);
                 d.u.s[i] = op_and(i1, i2);
             }
         }
         else if (data2.data_type == Dtime) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, 8*sizeof(vl_time_t)));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data1.bits.size)
+            d.bits.set(max(data1.bits.size(), 8*sizeof(vl_time_t)));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data1.bits.size())
                     d.u.s[i] = op_and(data1.u.s[i], bit(data2.u.t, i));
                 else
                     d.u.s[i] = BitL;
@@ -1539,10 +1539,10 @@ operator&(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data2.bits.size, 8*sizeof(vl_time_t)));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data2.bits.size)
+            d.bits.set(max(data2.bits.size(), 8*sizeof(vl_time_t)));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data2.bits.size())
                     d.u.s[i] = op_and(data2.u.s[i], bit(data1.u.t, i));
                 else
                     d.u.s[i] = BitL;
@@ -1574,10 +1574,10 @@ operator|(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data2.bits.size, DefBits));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data2.bits.size)
+            d.bits.set(max(data2.bits.size(), DefBits));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data2.bits.size())
                     d.u.s[i] = op_or(data2.u.s[i], bit(data1.u.i, i));
                 else
                     d.u.s[i] = bit(data1.u.i, i);
@@ -1593,10 +1593,10 @@ operator|(vl_var &data1, vl_var &data2)
     else if (data1.data_type == Dbit) {
         if (data2.data_type == Dint) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, DefBits));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data1.bits.size)
+            d.bits.set(max(data1.bits.size(), DefBits));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data1.bits.size())
                     d.u.s[i] = op_or(data1.u.s[i], bit(data2.u.i, i));
                 else
                     d.u.s[i] = bit(data2.u.i, i);
@@ -1604,20 +1604,20 @@ operator|(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, data2.bits.size));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                int i1 = (i < data1.bits.size ? data1.u.s[i] : (int)BitL);
-                int i2 = (i < data2.bits.size ? data2.u.s[i] : (int)BitL);
+            d.bits.set(max(data1.bits.size(), data2.bits.size()));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                int i1 = (i < data1.bits.size() ? data1.u.s[i] : (int)BitL);
+                int i2 = (i < data2.bits.size() ? data2.u.s[i] : (int)BitL);
                 d.u.s[i] = op_or(i1, i2);
             }
         }
         else if (data2.data_type == Dtime) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, 8*sizeof(vl_time_t)));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data1.bits.size)
+            d.bits.set(max(data1.bits.size(), 8*sizeof(vl_time_t)));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data1.bits.size())
                     d.u.s[i] = op_or(data1.u.s[i], bit(data2.u.t, i));
                 else
                     d.u.s[i] = bit(data2.u.t, i);
@@ -1633,10 +1633,10 @@ operator|(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data2.bits.size, 8*sizeof(vl_time_t)));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data2.bits.size)
+            d.bits.set(max(data2.bits.size(), 8*sizeof(vl_time_t)));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data2.bits.size())
                     d.u.s[i] = op_or(data2.u.s[i], bit(data1.u.t, i));
                 else
                     d.u.s[i] = bit(data1.u.t, i);
@@ -1668,10 +1668,10 @@ operator^(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data2.bits.size, DefBits));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data2.bits.size)
+            d.bits.set(max(data2.bits.size(), DefBits));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data2.bits.size())
                     d.u.s[i] = op_xor(data2.u.s[i], bit(data1.u.i, i));
                 else
                     d.u.s[i] = op_xor(BitL, bit(data1.u.i, i));
@@ -1687,10 +1687,10 @@ operator^(vl_var &data1, vl_var &data2)
     else if (data1.data_type == Dbit) {
         if (data2.data_type == Dint) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, DefBits));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data1.bits.size)
+            d.bits.set(max(data1.bits.size(), DefBits));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data1.bits.size())
                     d.u.s[i] = op_xor(data1.u.s[i], bit(data2.u.i, i));
                 else
                     d.u.s[i] = op_xor(BitL, bit(data2.u.i, i));
@@ -1698,20 +1698,20 @@ operator^(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, data2.bits.size));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                int i1 = (i < data1.bits.size ? data1.u.s[i] : (int)BitL);
-                int i2 = (i < data2.bits.size ? data2.u.s[i] : (int)BitL);
+            d.bits.set(max(data1.bits.size(), data2.bits.size()));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                int i1 = (i < data1.bits.size() ? data1.u.s[i] : (int)BitL);
+                int i2 = (i < data2.bits.size() ? data2.u.s[i] : (int)BitL);
                 d.u.s[i] = op_xor(i1, i2);
             }
         }
         else if (data2.data_type == Dtime) {
             d.data_type = Dbit;
-            d.bits.set(max(data1.bits.size, 8*sizeof(vl_time_t)));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data1.bits.size)
+            d.bits.set(max(data1.bits.size(), 8*sizeof(vl_time_t)));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data1.bits.size())
                     d.u.s[i] = op_xor(data1.u.s[i], bit(data2.u.t, i));
                 else
                     d.u.s[i] = op_xor(BitL, bit(data2.u.t, i));
@@ -1727,10 +1727,10 @@ operator^(vl_var &data1, vl_var &data2)
         }
         else if (data2.data_type == Dbit) {
             d.data_type = Dbit;
-            d.bits.set(max(data2.bits.size, 8*sizeof(vl_time_t)));
-            d.u.s = new char[d.bits.size];
-            for (int i = 0; i < d.bits.size; i++) {
-                if (i < data2.bits.size)
+            d.bits.set(max(data2.bits.size(), 8*sizeof(vl_time_t)));
+            d.u.s = new char[d.bits.size()];
+            for (int i = 0; i < d.bits.size(); i++) {
+                if (i < data2.bits.size())
                     d.u.s[i] = op_xor(data2.u.s[i], bit(data1.u.t, i));
                 else
                     d.u.s[i] = op_xor(BitL, bit(data1.u.t, i));
@@ -1775,9 +1775,9 @@ operator~(vl_var &data1)
     }
     else if (data1.data_type == Dbit) {
         d.data_type = Dbit;
-        d.bits.set(data1.bits.size);
-        d.u.s = new char[d.bits.size];
-        for (int i = 0; i < d.bits.size; i++) {
+        d.bits.set(data1.bits.size());
+        d.u.s = new char[d.bits.size()];
+        for (int i = 0; i < d.bits.size(); i++) {
             if (data1.u.s[i] == BitDC || data1.u.s[i] == BitZ)
                 d.u.s[i] = BitDC;
             else if (data1.u.s[i] == BitH)
@@ -1817,8 +1817,8 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
 {
     int xx = BitL;
     if (data1.data_type == Dbit) {
-        char *s = data1.array.size ? *(char**)data1.u.d : data1.u.s;
-        for (int i = 0; i < data1.bits.size; i++) {
+        char *s = data1.array.size() ? *(char**)data1.u.d : data1.u.s;
+        for (int i = 0; i < data1.bits.size(); i++) {
             if (s[i] == BitH)
                 xx = BitH;
             else if (s[i] == BitDC || s[i] == BitZ) {
@@ -1843,7 +1843,7 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
     vl_var &d1 = e1->eval();
     int w1;
     if (d1.data_type == Dbit)
-        w1 = d1.bits.size;
+        w1 = d1.bits.size();
     else if (d1.data_type == Dint)
         w1 = sizeof(int)*8;
     else if (d1.data_type == Dtime)
@@ -1856,7 +1856,7 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
     vl_var &d2 = e2->eval();
     int w2;
     if (d2.data_type == Dbit)
-        w2 = d2.bits.size;
+        w2 = d2.bits.size();
     else if (d2.data_type == Dint)
         w2 = sizeof(int)*8;
     else if (d2.data_type == Dtime)
@@ -1873,7 +1873,7 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
     for (int i = 0; i < w1; i++) {
         int b1 = BitL;
         if (d1.data_type == Dbit)
-            b1 = i < d1.bits.size ? d1.u.s[i] : (int)BitL;
+            b1 = i < d1.bits.size() ? d1.u.s[i] : (int)BitL;
         else if (d1.data_type == Dint)
             b1 = i < (int)sizeof(int)*8 ? bit(d1.u.i, i) : (int)BitL;
         else if (d1.data_type == Dtime)
@@ -1881,7 +1881,7 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
                 (((d1.u.t >> i) & 1) ? BitH : BitL) : (int)BitL;
         int b2 = BitL;
         if (d2.data_type == Dbit)
-            b2 = i < d2.bits.size ? d2.u.s[i] : (int)BitL;
+            b2 = i < d2.bits.size() ? d2.u.s[i] : (int)BitL;
         else if (d2.data_type == Dint)
             b2 = i < (int)sizeof(int)*8 ? bit(d2.u.i, i) : (int)BitL;
         else if (d2.data_type == Dtime)
@@ -1905,17 +1905,17 @@ void
 vl_var::addb(vl_var &data1, int ival)
 {
     setb(ival);
-    int w2 = bits.size;
+    int w2 = bits.size();
     char *s2 = u.s;
-    bits.size = max(data1.bits.size, w2);
-    bits.size++;
-    u.s = new char[bits.size];
+    int size = max(data1.bits.size(), w2);
+    size++;
+    u.s = new char[size];
     data_type = Dbit;
-    add_bits(u.s, data1.u.s, s2, bits.size, data1.bits.size, w2);
+    add_bits(u.s, data1.u.s, s2, size, data1.bits.size(), w2);
     delete [] s2;
-    if (u.s[bits.size-1] != BitH)
-        bits.size--;
-    bits.hi_index = bits.size-1;
+    if (u.s[size-1] != BitH)
+        size--;
+    bits.set(size);
 }
 
 
@@ -1923,32 +1923,32 @@ void
 vl_var::addb(vl_var &data1, vl_time_t tval)
 {
     sett(tval);
-    int w2 = bits.size;
+    int w2 = bits.size();
     char *s2 = u.s;
-    bits.size = max(data1.bits.size, w2);
-    bits.size++;
-    u.s = new char[bits.size];
+    int size = max(data1.bits.size(), w2);
+    size++;
+    u.s = new char[size];
     data_type = Dbit;
-    add_bits(u.s, data1.u.s, s2, bits.size, data1.bits.size, w2);
+    add_bits(u.s, data1.u.s, s2, size, data1.bits.size(), w2);
     delete [] s2;
-    if (u.s[bits.size-1] != BitH)
-        bits.size--;
-    bits.hi_index = bits.size-1;
+    if (u.s[size-1] != BitH)
+        size--;
+    bits.set(size);
 }
 
 
 void
 vl_var::addb(vl_var &data1, vl_var &data2)
 {
-    bits.size = max(data1.bits.size, data2.bits.size);
-    bits.size++;
-    u.s = new char[bits.size];
+    int size = max(data1.bits.size(), data2.bits.size());
+    size++;
+    u.s = new char[size];
     data_type = Dbit;
-    add_bits(u.s, data1.u.s, data2.u.s, bits.size, data1.bits.size,
-        data2.bits.size);
-    if (u.s[bits.size-1] != BitH)
-        bits.size--;
-    bits.hi_index = bits.size-1;
+    add_bits(u.s, data1.u.s, data2.u.s, size, data1.bits.size(),
+        data2.bits.size());
+    if (u.s[size-1] != BitH)
+        size--;
+    bits.set(size);
 }
 
 
@@ -1956,10 +1956,10 @@ void
 vl_var::subb(vl_var &data1, int ival)
 {
     setb(ival);
-    int w2 = bits.size;
+    int w2 = bits.size();
     char *s2 = u.s;
-    bits.set(max(data1.bits.size, w2));
-    u.s = new char[bits.size];
+    bits.set(max(data1.bits.size(), w2));
+    u.s = new char[bits.size()];
     data_type = Dbit;
 
     for (int i = 0; i < w2; i++) {
@@ -1968,7 +1968,7 @@ vl_var::subb(vl_var &data1, int ival)
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(u.s, data1.u.s, s2, bits.size, data1.bits.size, w2, true);
+    add_bits(u.s, data1.u.s, s2, bits.size(), data1.bits.size(), w2, true);
     delete [] s2;
 }
 
@@ -1977,21 +1977,21 @@ void
 vl_var::subb(int ival, vl_var &data2)
 {
     setb(ival);
-    int w1 = bits.size;
+    int w1 = bits.size();
     char *s1 = u.s;
-    bits.set(max(data2.bits.size, w1));
-    u.s = new char[bits.size];
+    bits.set(max(data2.bits.size(), w1));
+    u.s = new char[bits.size()];
     data_type = Dbit;
 
-    char *s2 = new char[data2.bits.size];
-    memcpy(s2, data2.u.s, data2.bits.size);
-    for (int i = 0; i < data2.bits.size; i++) {
+    char *s2 = new char[data2.bits.size()];
+    memcpy(s2, data2.u.s, data2.bits.size());
+    for (int i = 0; i < data2.bits.size(); i++) {
         if (s2[i] == BitL)
             s2[i] = BitH;
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(u.s, s1, s2, bits.size, w1, data2.bits.size, true);
+    add_bits(u.s, s1, s2, bits.size(), w1, data2.bits.size(), true);
     delete [] s1;
     delete [] s2;
 }
@@ -2001,10 +2001,10 @@ void
 vl_var::subb(vl_var &data1, vl_time_t tval)
 {
     sett(tval);
-    int w2 = bits.size;
+    int w2 = bits.size();
     char *s2 = u.s;
-    bits.set(max(data1.bits.size, w2));
-    u.s = new char[bits.size];
+    bits.set(max(data1.bits.size(), w2));
+    u.s = new char[bits.size()];
     data_type = Dbit;
 
     for (int i = 0; i < w2; i++) {
@@ -2013,7 +2013,7 @@ vl_var::subb(vl_var &data1, vl_time_t tval)
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(u.s, data1.u.s, s2, bits.size, data1.bits.size, w2, true);
+    add_bits(u.s, data1.u.s, s2, bits.size(), data1.bits.size(), w2, true);
     delete [] s2;
 }
 
@@ -2022,21 +2022,21 @@ void
 vl_var::subb(vl_time_t tval, vl_var &data2)
 {
     sett(tval);
-    int w1 = bits.size;
+    int w1 = bits.size();
     char *s1 = u.s;
-    bits.set(max(data2.bits.size, w1));
-    u.s = new char[bits.size];
+    bits.set(max(data2.bits.size(), w1));
+    u.s = new char[bits.size()];
     data_type = Dbit;
 
-    char *s2 = new char[data2.bits.size];
-    memcpy(s2, data2.u.s, data2.bits.size);
-    for (int i = 0; i < data2.bits.size; i++) {
+    char *s2 = new char[data2.bits.size()];
+    memcpy(s2, data2.u.s, data2.bits.size());
+    for (int i = 0; i < data2.bits.size(); i++) {
         if (s2[i] == BitL)
             s2[i] = BitH;
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(u.s, s1, s2, bits.size, w1, data2.bits.size, true);
+    add_bits(u.s, s1, s2, bits.size(), w1, data2.bits.size(), true);
     delete [] s1;
     delete [] s2;
 }
@@ -2046,19 +2046,19 @@ void
 vl_var::subb(vl_var &data1, vl_var &data2)
 {
     data_type = Dbit;
-    bits.set(max(data1.bits.size, data2.bits.size));
-    u.s = new char[bits.size];
+    bits.set(max(data1.bits.size(), data2.bits.size()));
+    u.s = new char[bits.size()];
 
-    char *s2 = new char[data2.bits.size];
-    memcpy(s2, data2.u.s, data2.bits.size);
-    for (int i = 0; i < data2.bits.size; i++) {
+    char *s2 = new char[data2.bits.size()];
+    memcpy(s2, data2.u.s, data2.bits.size());
+    for (int i = 0; i < data2.bits.size(); i++) {
         if (s2[i] == BitL)
             s2[i] = BitH;
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(u.s, data1.u.s, s2, bits.size, data1.bits.size, data2.bits.size,
-        true);
+    add_bits(u.s, data1.u.s, s2, bits.size(), data1.bits.size(),
+        data2.bits.size(), true);
     delete [] s2;
 }
 // End of vl_var functions
@@ -2435,13 +2435,13 @@ vl_expr::eval()
         if (data_type != Dbit) {
             data_type = Dbit;
             bits.set(DefBits);
-            u.s = new char[bits.size];
-            memset(u.s, BitDC, bits.size);
+            u.s = new char[bits.size()];
+            memset(u.s, BitDC, bits.size());
         }
         char *endc = u.s;
 
-        char alen = bits.size;
-        bits.size = 0;
+        char alen = bits.size();
+        int size = 0;
         int rep = 1;
         if (ux.mcat.rep)
             rep = (int)ux.mcat.rep->eval();
@@ -2451,7 +2451,7 @@ vl_expr::eval()
             vl_expr *e;
             while (gen.prev(&e)) {
                 vl_var &d = e->eval();
-                int sz = d.array.size ? d.array.size : 1;
+                int sz = d.array.size() ? d.array.size() : 1;
                 for (int j = 0; j < sz; j++) {
                     int w;
                     char *sd = d.bit_elt(j, &w);
@@ -2470,11 +2470,11 @@ vl_expr::eval()
                     endc += w;
                     while (r < endc)
                         *r++ = *sd++; 
-                    bits.size += w;
+                    size += w;
                 }
             }
         }
-        bits.hi_index = bits.size - 1;
+        bits.set(size);
         return (vo);
     }
     case MinTypMaxExpr: {

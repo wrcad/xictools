@@ -54,11 +54,6 @@ Authors: 1987 Thomas L. Quarles
 #include "ttyio.h"
 #include "sparse/spmatrix.h"
 
-//XXX rid this
-// Revert to historical Verilog ticking: tran steps with hitusertp,
-// panic debugging only.
-//#define OLDVASTEP
-
 
 namespace {
     inline void swaprhs(sCKT *ckt)
@@ -166,14 +161,7 @@ sTRANAN::init(sCKT *ckt)
 
     TS.t_nointerp = false;
     TS.t_hitusertp = false;
-#ifdef OLDVASTEP
-    if (ckt->CKTvblk) {
-        // if there is a verilog block, hit the user time points
-        TS.t_hitusertp = true;
-        ckt->CKTcurTask->TSKtranStepType = STEP_HITUSERTP;
-    }
-    else {
-#endif
+
     switch (ckt->CKTcurTask->TSKtranStepType) {
     default:
     case STEP_NORMAL:
@@ -189,9 +177,6 @@ sTRANAN::init(sCKT *ckt)
         TS.t_nointerp = true;
         break;
     }
-#ifdef OLDVASTEP
-    }
-#endif
 
     TS.t_polydegree = ckt->CKTcurTask->TSKinterpLev;
 
@@ -367,7 +352,7 @@ TRANanalysis::tran_dcoperation(sCKT *ckt, int restart)
         if (error)
             return (error);
         if (ckt->CKTvblk)
-            ckt->CKTvblk->initialize();
+            ckt->CKTvblk->initialize(job->JOBoutdata);
 
         if (ckt->CKTmode & MODEUIC) {
             error = ckt->setic();
@@ -527,8 +512,6 @@ sTRANint::accept(sCKT *ckt, sSTATS *stat, int *done, int *afterpause)
             return (error);
     }
 
-#ifdef OLDVASTEP
-#else
     if (ckt->CKTvblk && outd->count) {
         if (ckt->CKTcurTask->TSKvaStep) {
             double vastep = ckt->CKTcurTask->TSKvaStep * t_step;
@@ -542,14 +525,9 @@ sTRANint::accept(sCKT *ckt, sSTATS *stat, int *done, int *afterpause)
             ckt->CKTqueva = false;
         }
     }
-#endif
 
     if (t_hitusertp || t_nointerp) {
         if (t_dumpit) {
-#ifdef OLDVASTEP
-            if (ckt->CKTvblk && outd->count)
-                ckt->CKTvblk->run_step(outd);
-#endif
             ckt->dump(ckt->CKTtime, job->JOBrun);
             if (!t_nointerp)
                 t_dumpit = false;

@@ -446,7 +446,7 @@ module
                   "module_item_clr YYENDMODULE");
               VP.context->currentModule()->mod_items = $7;
               $$ = VP.context->currentModule();
-              VP.context = VP.context->pop();
+              VP.context = vl_context::pop(VP.context);
           }
         ;
 
@@ -696,7 +696,7 @@ primitive
                   "YYENDPRIMITIVE");
               VP.context->currentPrimitive()->init_table($5, $8, $9, $10);
               $$ = VP.context->currentPrimitive();
-              VP.context = VP.context->pop();
+              VP.context = vl_context::pop(VP.context);
           }
         ;
 
@@ -1028,7 +1028,7 @@ function
               $$ = VP.context->currentFunction();
               $$->decls = $6;
               $$->stmts = $7;
-              VP.context = VP.context->pop();
+              VP.context = vl_context::pop(VP.context);
           }
         ;
 

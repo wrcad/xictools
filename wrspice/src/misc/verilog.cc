@@ -127,8 +127,12 @@ VerilogBlock::VerilogBlock(sLine *lines)
     vb_adc = 0;
     vb_desc = 0;
     vb_sim = 0;
+
     if (!lines)
         return;
+
+    VLdelayType dly_type = DLYtyp;
+    unsigned int debug_flags = 0;
 
     sADC *ad = 0;
     sLine *d;
@@ -142,6 +146,26 @@ VerilogBlock::VerilogBlock(sLine *lines)
             }
         }
         else if (lstring::cimatch(VERILOG_KW, d->line())) {
+
+            // New 12/29/2019, optional delay code and debug flags
+            // follow ".verilog".
+            const char *s = d->line();
+            lstring::advtok(&s);
+            char *dcode = lstring::gettok(&s);
+            if (dcode) {
+                if (*dcode == 'f' || *dcode == 'F')
+                    dly_type = DLYmin;
+                else if (*dcode == 's' || *dcode == 'S')
+                    dly_type = DLYmax;
+                delete [] dcode;
+                char *tok = lstring::gettok(&s);
+                if (tok) {
+                    int j;
+                    if (sscanf(tok, "%i", &j) == 1)
+                        debug_flags = j;
+                }
+            }
+
             d = d->next();
             break;
         }
@@ -178,7 +202,7 @@ VerilogBlock::VerilogBlock(sLine *lines)
     vb_desc = VP.description;
     VP.description = 0;
     vb_sim = new vl_simulator;
-    if (!vb_sim->initialize(vb_desc)) {
+    if (!vb_sim->initialize(vb_desc, dly_type, debug_flags)) {
         delete vb_sim;
         vb_sim = 0;
     }
@@ -194,33 +218,9 @@ VerilogBlock::~VerilogBlock()
 
 
 void
-VerilogBlock::initialize()
+VerilogBlock::initialize(sOUTdata *outd)
 {
     if (vb_sim) {
-        vb_sim->steptime = 0;
-        vb_sim->step();
-    }
-}
-
-
-void
-VerilogBlock::finalize(bool pause)
-{
-    if (vb_sim) {
-        if (pause)
-            vb_sim->flush_files();
-        else
-            vb_sim->close_files();
-    }
-}
-
-
-void
-VerilogBlock::run_step(sOUTdata *outd)
-{
-    if (!vb_sim)
-        return;
-    if (outd->count <= 1) {
         int num;
         IFuid *list;
         outd->circuitPtr->names(&num, &list);
@@ -270,7 +270,31 @@ VerilogBlock::run_step(sOUTdata *outd)
             }
         }
         delete [] list;
+        vb_sim->steptime = 0;
+        vb_sim->step();
     }
+}
+
+
+void
+VerilogBlock::finalize(bool pause)
+{
+    if (vb_sim) {
+        if (pause)
+            vb_sim->flush_files();
+        else
+            vb_sim->close_files();
+    }
+}
+
+
+void
+VerilogBlock::run_step(sOUTdata *outd)
+{
+    if (!vb_sim)
+        return;
+
+    vb_sim->time++;
     for (sADC *a = vb_adc; a; a = a->next())
         a->set_var(this, outd->circuitPtr->CKTrhsOld);
     vb_sim->step();

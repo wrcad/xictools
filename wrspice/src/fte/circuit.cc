@@ -157,7 +157,7 @@ CommandTab::com_where(wordlist*)
     TTY.printf("Last nonconvergence at %s", msg);
 }
 
-//XXX
+
 void
 CommandTab::com_vastep(wordlist*)
 {

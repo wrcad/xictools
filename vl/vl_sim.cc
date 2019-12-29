@@ -357,12 +357,12 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     for (int i = 0; i < top_modules->num; i++) {
         context = context->push(top_modules->mods[i]);
         top_modules->mods[i]->init();
-        context = context->pop();
+        context = vl_context::pop(context);
     }
     for (int i = 0; i < top_modules->num; i++) {
         context = context->push(top_modules->mods[i]);
         top_modules->mods[i]->setup(this);
-        context = context->pop();
+        context = vl_context::pop(context);
     }
     if (dbg_flags & DBG_mod_dmp) {
         for (int i = 0; i < top_modules->num; i++)
@@ -464,15 +464,27 @@ vl_simulator::step()
         timewheel = t;
         first_point = false;
         var_factory.clear();
-    }
-    steptime++;
 
-    // Always keep a non-nil timewheel when stepping.
-    if (!timewheel) {
-        vl_timeslot *ts = new vl_timeslot(0);
-        ts->next = timewheel;
-        timewheel = ts;
+        // When stepping, we generally have to move the time wheel
+        // forward explicitly as if "always #1;" was given.  If we
+        // stall, add an explicit 1-count delay to keep thjings
+        // running.
+
+        if (timewheel == 0) {
+            vl_expr *ex = new vl_expr(IntExpr, 1, 0.0, 0, 0, 0);
+            vl_delay *exdly = new vl_delay(ex);
+            vl_delay_control_stmt  *vc = new vl_delay_control_stmt(exdly, 0);
+            vl_context *cx = context->push(top_modules->mods[0]);
+            vl_action_item *ai = new vl_action_item(vc, cx);
+
+            vl_timeslot *ts = new vl_timeslot(steptime+1);
+            ts->actions = ai;
+            ts->next = timewheel;
+            timewheel = ts;
+        }
     }
+
+    steptime++;
 
     if (stop != VLrun)
         close_files();
@@ -640,14 +652,14 @@ vl_context::push(vl_fork_join_stmt *f)
 
 
 // Pop to previous context, return the previous context
+// Static function.
 //
 vl_context *
-vl_context::pop()
+vl_context::pop(vl_context *vcx)
 {
-    const vl_context *vcx = this;
     if (vcx) {
-        vl_context *cx = parent;
-        delete this;
+        vl_context *cx = vcx->parent;
+        delete vcx;
         return (cx);
     }
     return (0);
@@ -2250,7 +2262,7 @@ vl_module::setup(vl_simulator *sim)
 
     sim->context = sim->context->push(this);
     vl_setup_list(sim, mod_items);
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 }
 // End vl_module functions
 
@@ -2297,7 +2309,7 @@ vl_primitive::setup(vl_simulator *sim)
     vl_setup_list(sim, decls);
     if (type == SeqPrimDecl && initial)
         initial->setup(sim);
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 }
 
 
@@ -2577,7 +2589,7 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
 
     sim->context = sim->context->push(this);
     vl_setup_list(sim, decls);
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 
     lsGen<vl_expr*> agen(args);
     lsGen<vl_decl*> dgen(decls);
@@ -2627,7 +2639,7 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
     while (sim->timewheel->actions)
         sim->timewheel->do_actions(sim);
     sim->timewheel->actions = atmp;
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
     *out = *outvar;
 }
 
@@ -2979,7 +2991,7 @@ vl_begin_end_stmt::setup(vl_simulator *sim)
     sim->context = sim->context->push(this);
     vl_setup_list(sim, decls);
     sim->timewheel->append(sim->time, new vl_action_item(this, sim->context));
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 }
 
 
@@ -3390,7 +3402,7 @@ vl_fork_join_stmt::setup(vl_simulator *sim)
     sim->context = sim->context->push(this);
     vl_setup_list(sim, decls);
     sim->timewheel->append(sim->time, new vl_action_item(this, sim->context));
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 }
 
 
@@ -3533,7 +3545,7 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
 
     sim->context = sim->context->push(task);
     vl_setup_list(sim, task->decls);
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 
     // setup ports
     lsGen<vl_expr*> agen(args);
@@ -3577,7 +3589,7 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
     sim->context = sim->context->push(task);
     sim->timewheel->append(sim->time,
         new vl_action_item(this, sim->context));
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 
     agen = lsGen<vl_expr*>(args);
     dgen = lsGen<vl_decl*>(task->decls);
@@ -4087,7 +4099,7 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
         if (range)
             vl_warn("in %s instance %s, port %s, actual arg %s "
                 "has range, ignored", modpri, name, portname, var->name);
-        if (var->data_type != Dbit || var->bits.size != 1) {
+        if (var->data_type != Dbit || var->bits.size() != 1) {
             vl_error("in %s instance %s, port %s, actual arg %s "
                 "is not unit width", modpri, name, portname, var->name);
             sim->abort();
@@ -4173,7 +4185,7 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
         sim->context = sim->context->push(primitive);
         if (argcnt > 1)
             var->chain(this);
-        sim->context = sim->context->pop();
+        sim->context = vl_context::pop(sim->context);
     }
 }
 // End vl_mp_inst functions

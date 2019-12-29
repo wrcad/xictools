@@ -244,49 +244,108 @@ typedef unsigned char IOtype;
 //
 struct vl_array
 {
-    vl_array() { lo_index = hi_index = 0; size = 0; }
-    void clear() { lo_index = hi_index = 0; size = 0; }
-    void set(int sz) { size = sz; lo_index = 0; hi_index = sz-1; }
+    vl_array()
+        {
+            clear();
+        }
+
+    void clear()
+        {
+            a_lo_index = a_hi_index = 0;
+            a_size = 0;
+        }
+
+    void set(int sz)
+        {
+            a_size = sz;
+            a_lo_index = 0;
+            a_hi_index = sz-1;
+        }
+
+    void set_lo_hi(int l, int h)
+        {
+            a_lo_index = l;
+            a_hi_index = h;
+        }
+
+    int size()      const { return (a_size); }
+    int lo_index()  const { return (a_lo_index); }
+    int hi_index()  const { return (a_hi_index); }
+
     void set(vl_range*);
     bool check_range(int*, int*);
 
-    // The following apply to a bit-field range
+    // The following apply to a bit-field range.
 
-    // Convert internal index to user index
+    // Convert internal index to user index.
     int Btou(int i)
-        { return (hi_index >= lo_index ? lo_index + i : lo_index - i); }
+        {
+            return (a_hi_index >= a_lo_index ? a_lo_index+i : a_lo_index-i);
+        }
 
-    // Move the range so that 0 is the end value
-    void Bnorm() {
-        if (hi_index >= lo_index) { hi_index -= lo_index; lo_index = 0; }
-        else { lo_index -= hi_index; hi_index = 0; } }
+    // Move the range so that 0 is the end value.
+    void Bnorm()
+        {
+            if (a_hi_index >= a_lo_index) {
+                a_hi_index -= a_lo_index;
+                a_lo_index = 0;
+            }
+            else {
+                a_lo_index -= a_hi_index;
+                a_hi_index = 0;
+            }
+        }
 
-    // Return the internal index for the least significant value
-    int Bstart(int, int ls) { return (abs(ls - lo_index)); }
+    // Return the internal index for the least significant value.
+    int Bstart(int, int ls)
+        {
+            return (abs(ls - a_lo_index));
+        }
 
-    // Return the internal index for the most significant value
-    int Bend(int ms, int) { return (abs(ms - lo_index)); }
+    // Return the internal index for the most significant value.
+    int Bend(int ms, int)
+        {
+            return (abs(ms - a_lo_index));
+        }
 
-    // The following apply to an array range
+    // The following apply to an array range.
 
-    // Convert internal index to user index
+    // Convert internal index to user index.
     int Atou(int i)
-        { return (lo_index >= hi_index ? hi_index + i : hi_index - i); }
+        {
+            return (a_lo_index >= a_hi_index ? a_hi_index+i : a_hi_index-i);
+        }
 
-    // Move the range so that 0 is the end value
-    void Anorm() {
-        if (lo_index >= hi_index) { lo_index -= hi_index; hi_index = 0; }
-        else { hi_index -= lo_index; lo_index = 0; } }
+    // Move the range so that 0 is the end value.
+    void Anorm()
+        {
+            if (a_lo_index >= a_hi_index)
+                {
+                    a_lo_index -= a_hi_index;
+                    a_hi_index = 0;
+                }
+            else {
+                a_hi_index -= a_lo_index;
+                a_lo_index = 0;
+            }
+        }
 
-    // Return the internal index for the least significant value
-    int Astart(int ms, int) { return (abs(ms - hi_index)); }
+    // Return the internal index for the least significant value.
+    int Astart(int ms, int)
+        {
+            return (abs(ms - a_hi_index));
+        }
 
-    // Return the internal index for the most significant value
-    int Aend(int, int ls) { return (abs(ls - hi_index)); }
+    // Return the internal index for the most significant value.
+    int Aend(int, int ls)
+        {
+            return (abs(ls - a_hi_index));
+        }
 
-    int lo_index;
-    int hi_index;
-    int size;
+private:
+    int a_lo_index;
+    int a_hi_index;
+    int a_size;
 };
 
 // Drive strengths
@@ -856,7 +915,7 @@ struct vl_context
     vl_context *push(vl_function*);
     vl_context *push(vl_begin_end_stmt*);
     vl_context *push(vl_fork_join_stmt*);
-    vl_context *pop();
+    static vl_context *pop(vl_context*);
     bool in_context(vl_stmt*);
     vl_var *lookup_var(const char*, bool);
     vl_stmt *lookup_block(const char*);

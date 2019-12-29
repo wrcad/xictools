@@ -197,14 +197,14 @@ readmem(char *fname, vl_var *d, int start, int end, bool bin)
         vl_error("in %s, can't open file %s", sname, fname);
         return (false);
     }
-    if (d->data_type != Dbit || d->array.size <= 0) {
+    if (d->data_type != Dbit || d->array.size() <= 0) {
         vl_error("bad data type passed to %s", sname);
         return (false);
     }
     if (start < 0)
         start = d->array.Atou(0);
     if (end < 0)
-        end = d->array.Atou(d->array.size-1);
+        end = d->array.Atou(d->array.size()-1);
     if (!d->array.check_range(&start, &start) ||
             !d->array.check_range(&end, &end)) {
         vl_error("bad indices passed to %s", sname);
@@ -218,7 +218,7 @@ readmem(char *fname, vl_var *d, int start, int end, bool bin)
     int loc = d->array.Astart(start, start);
     int lend = d->array.Aend(end, end);
     int inc = lend > loc ? 1 : -1;
-    int bwidth = d->bits.size;
+    int bwidth = d->bits.size();
     if (!bin && bwidth % 4) {
         vl_error("word length of vector passed to %s not multiple of 4",
             sname);
@@ -430,7 +430,7 @@ st_dump(ostream &outs, table<vl_var*> *st, vl_simulator *sim)
     vl_var *data;
     const char *name;
     while (tgen.next(&name, &data)) {
-        if (data->array.size)
+        if (data->array.size())
             continue;
         if (data->data_type != Dbit && data->data_type != Dint &&
                 data->data_type != Dtime)
@@ -454,14 +454,14 @@ st_dump(ostream &outs, table<vl_var*> *st, vl_simulator *sim)
         else if (data->data_type == Dtime)
             outs << 8*sizeof(vl_time_t) << ' ';
         else
-            outs << data->bits.size << ' ';
+            outs << data->bits.size() << ' ';
         outs.width(5);
         outs.setf(ios::left, ios::adjustfield);
         outs << sim->dumpindex(data);
         outs << name;
-        if (data->bits.size > 1)
-            outs << '[' << data->bits.hi_index << ':' <<
-                data->bits.lo_index << ']';
+        if (data->bits.size() > 1)
+            outs << '[' << data->bits.hi_index() << ':' <<
+                data->bits.lo_index() << ']';
         outs << "  $end\n";
     }
 }
@@ -1105,7 +1105,7 @@ vl_simulator::do_dump()
     if (dmpstatus & DMP_ALL) {
         for (int i = 0; i < dmpindx; i++) {
             char *s = dmpdata[i]->bitstr(); 
-            if (dmpdata[i]->data_type == Dbit && dmpdata[i]->bits.size == 1)
+            if (dmpdata[i]->data_type == Dbit && dmpdata[i]->bits.size() == 1)
                 *dmpfile << s;
             else
                 *dmpfile << 'b' << ctrunc(s) << ' ';
@@ -1123,7 +1123,7 @@ vl_simulator::do_dump()
         vl_var &z = case_neq(dmplast[i], *dmpdata[i]);
         if (z.u.s[0] == BitH) {
             char *s = dmpdata[i]->bitstr(); 
-            if (dmpdata[i]->data_type == Dbit && dmpdata[i]->bits.size == 1)
+            if (dmpdata[i]->data_type == Dbit && dmpdata[i]->bits.size() == 1)
                 *dmpfile << s;
             else
                 *dmpfile << 'b' << ctrunc(s) << ' ';
@@ -1181,7 +1181,7 @@ vl_module::dumpvars(ostream &outs, vl_simulator *sim)
         st_dump(outs, sig_st, sim);
         vl_dump_items(outs, mod_items, sim);
     }
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 }
 
 
@@ -1199,7 +1199,7 @@ vl_primitive::dumpvars(ostream &outs, vl_simulator *sim)
         outs << "\n$scope primitive " << n << " $end\n";
         st_dump(outs, sig_st, sim);
     }
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 }
 
 
@@ -1241,7 +1241,7 @@ vl_begin_end_stmt::dumpvars(ostream &outs, vl_simulator *sim)
         }
     }
     vl_dump_items(outs, stmts, sim);
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 }
 
 
@@ -1345,7 +1345,7 @@ vl_fork_join_stmt::dumpvars(ostream &outs, vl_simulator *sim)
         }
     }
     vl_dump_items(outs, stmts, sim);
-    sim->context = sim->context->pop();
+    sim->context = vl_context::pop(sim->context);
 }
 
 

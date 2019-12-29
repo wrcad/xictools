@@ -870,7 +870,7 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
     tv.start();
     bool bad_deck = false;
 
-    /*  XXX Keep as-is for new
+    /*  XXX Keep as-is for now
     // If there is no circuit, treat controls as execs.  The
     // difference is that execs create a new "exec" plot and save new
     // vectors in it, controls save new vectors in the constants plot.
@@ -2558,7 +2558,7 @@ sLine *
 sLine::extract_verilog()
 {
     sLine *dp = this;
-    sLine *start = 0, *vl = 0, *vl0 = 0;;
+    sLine *start = 0, *vl = 0, *vl0 = 0;
     sLine *ad0 = 0, *ad = 0;
     bool inblk = false;
     for (sLine *d = li_next; d; dp = d, d = d->li_next) {
