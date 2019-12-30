@@ -568,7 +568,7 @@ static void
 print_strength(vl_strength s)
 {
     cout << '(';
-    switch (s.str0) {
+    switch (s.str0()) {
     case STRnone:
         cout << "s0";
         break;
@@ -597,7 +597,7 @@ print_strength(vl_strength s)
         cout << "sp0";
         break;
     }
-    switch (s.str1) {
+    switch (s.str1()) {
     case STRnone:
         cout << ",s1";
         break;
@@ -3104,13 +3104,13 @@ strength_bit(int b1, vl_strength s1, int b2, vl_strength s2)
         return (b2);
     if (b2 == BitZ)
         return (b1);
-    if (b1 == BitL && s1.str0 > s2.str1)
+    if (b1 == BitL && s1.str0() > s2.str1())
         return (BitL);
-    if (b1 == BitH && s1.str1 > s2.str0)
+    if (b1 == BitH && s1.str1() > s2.str0())
         return (BitH);
-    if (b2 == BitL && s2.str0 > s1.str1)
+    if (b2 == BitL && s2.str0() > s1.str1())
         return (BitL);
-    if (b2 == BitH && s2.str1 > s1.str0)
+    if (b2 == BitH && s2.str1() > s1.str0())
         return (BitH);
     return (BitDC);
 }
@@ -3154,16 +3154,16 @@ vl_var::resolve_bit(int ix, vl_var *din, int ixs)
             continue;
 
         vl_strength st = dt->strength;
-        if (st.str0 == STRnone)
+        if (st.str0() == STRnone)
             st = strength;
-        if (st.str0 == STRnone)
-            st.str0 = STRstrong;
-        if (st.str1 == STRnone)
-            st.str1 = STRstrong;
+        if (st.str0() == STRnone)
+            st.set_str0(STRstrong);
+        if (st.str1() == STRnone)
+            st.set_str1(STRstrong);
 
         int bx = dt->bit_of((ix - dr->l_to) + dr->l_from);
-        if ((bx == BitH && st.str1 == STRhiZ) ||
-                (bx == BitL && st.str0 == STRhiZ))
+        if ((bx == BitH && st.str1() == STRhiZ) ||
+                (bx == BitL && st.str0() == STRhiZ))
             continue;
         if (bx == BitZ)
             continue;
@@ -3185,18 +3185,18 @@ vl_var::resolve_bit(int ix, vl_var *din, int ixs)
             b = strength_bit(b, accum_str, bx, st);
 
         if (b == BitH && bx == BitH) {
-            if (st.str1 > accum_str.str1)
-                accum_str.str1 = st.str1;
+            if (st.str1() > accum_str.str1())
+                accum_str.set_str1(st.str1());
         }
         else if (b == BitL && bx == BitL) {
-            if (st.str0 > accum_str.str0)
-                accum_str.str0 = st.str0;
+            if (st.str0() > accum_str.str0())
+                accum_str.set_str0(st.str0());
         }
         else if (b == BitDC) {
-            if (st.str1 > accum_str.str1)
-                accum_str.str1 = st.str1;
-            if (st.str0 > accum_str.str0)
-                accum_str.str0 = st.str0;
+            if (st.str1() > accum_str.str1())
+                accum_str.set_str1(st.str1());
+            if (st.str0() > accum_str.str0())
+                accum_str.set_str0(st.str0());
         }
     }
     if (b == BitZ) {

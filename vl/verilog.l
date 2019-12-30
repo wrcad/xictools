@@ -76,11 +76,11 @@ static int scan_table = 0;
 static void skipcommentblock();
 static void skipcommentline();
 static void lex_panic(const char*);
-static void memorize_macro(char*, table<char*>*);
-static int find_macro(char*);
-static int find_not_macro(char*);
-static void expand_macro(char*, table<char*>*);
-static void push_open_file(char*);
+static void memorize_macro(const char*, table<const char*>*);
+static int find_macro(const char*);
+static int find_not_macro(const char*);
+static void expand_macro(const char*, table<const char*>*);
+static void push_open_file(const char*);
 static void pop_close_file();
 static void pushd(char*);
 static void popd();
@@ -95,7 +95,7 @@ int buffer_stack_ptr = 0;
 #endif
 
 #define YY_SKIP_YYWRAP
-#define yywrap() (VP.file_stack->length() ? (pop_close_file(), 0) : 1)
+#define yywrap() (VP()->file_stack()->length() ? (pop_close_file(), 0) : 1)
 
 // Have to export yytext to verilog.y, sometimes this is a pointer,
 // sometimes a char*, sometimes an unsigned char*, this avoids having
@@ -129,9 +129,7 @@ Binary      ({Number})?'[bB][ ]*[01xXzZ?][01xXzZ?_]*
 
 %%
     
-        strcpy(VP.last_macro, VP.curr_macro);
-        VP.curr_macro[0]='\0';
-        if (VP.ifelseSP == 0 || VP.ifelse_stack[VP.ifelseSP-1]) {
+        if (VP()->p_ifelseSP == 0 || VP()->p_ifelse_stack[VP()->p_ifelseSP-1]) {
             if (scan_table)
                 BEGIN Stable; 
             else
@@ -148,32 +146,32 @@ Binary      ({Number})?'[bB][ ]*[01xXzZ?][01xXzZ?_]*
 
 <Sskip,Snormal,Stable>`ifdef[^\n]*\n {
         if (find_macro(yytext))
-            VP.ifelse_stack[VP.ifelseSP++] = 1;
+            VP()->p_ifelse_stack[VP()->p_ifelseSP++] = 1;
         else {
-            VP.ifelse_stack[VP.ifelseSP++] = 0;
+            VP()->p_ifelse_stack[VP()->p_ifelseSP++] = 0;
             BEGIN Sskip;
         }
-        if (VP.ifelseSP == MAXSTRLEN) 
+        if (VP()->p_ifelseSP == MAXSTRLEN) 
             lex_panic("nested `if/`else too deep"); }
 
 <Sskip,Snormal,Stable>`ifndef[^\n]*\n {
         if (find_not_macro(yytext))
-            VP.ifelse_stack[VP.ifelseSP++] = 1;
+            VP()->p_ifelse_stack[VP()->p_ifelseSP++] = 1;
         else {
-            VP.ifelse_stack[VP.ifelseSP++] = 0;
+            VP()->p_ifelse_stack[VP()->p_ifelseSP++] = 0;
             BEGIN Sskip;
         }
-        if (VP.ifelseSP == MAXSTRLEN) 
+        if (VP()->p_ifelseSP == MAXSTRLEN) 
             lex_panic("nested `if/`else too deep"); }
 
 <Sskip,Snormal,Stable>`else {
-        if (VP.ifelseSP > 0) {
-            if (VP.ifelse_stack[VP.ifelseSP-1]) {
-                VP.ifelse_stack[VP.ifelseSP-1] = 0;
+        if (VP()->p_ifelseSP > 0) {
+            if (VP()->p_ifelse_stack[VP()->p_ifelseSP-1]) {
+                VP()->p_ifelse_stack[VP()->p_ifelseSP-1] = 0;
                 BEGIN Sskip;
             }
             else {
-                VP.ifelse_stack[VP.ifelseSP-1] = 1;
+                VP()->p_ifelse_stack[VP()->p_ifelseSP-1] = 1;
                 if (scan_table)
                     BEGIN Stable;
                 else
@@ -184,8 +182,8 @@ Binary      ({Number})?'[bB][ ]*[01xXzZ?][01xXzZ?_]*
             lex_panic("misplaced `else"); }
 
 <Sskip,Snormal,Stable>`endif {
-        if (VP.ifelseSP > 0) {
-            if (!VP.ifelse_stack[--VP.ifelseSP]) {
+        if (VP()->p_ifelseSP > 0) {
+            if (!VP()->p_ifelse_stack[--VP()->p_ifelseSP]) {
                 if (scan_table)
                     BEGIN Stable;
                 else
@@ -201,14 +199,14 @@ Binary      ({Number})?'[bB][ ]*[01xXzZ?][01xXzZ?_]*
 <Snormal,Stable>"//"        { skipcommentline();  continue; }
 
 <Snormal,Stable>`timescale[^\n]*\n {
-        if (!VP.parse_timescale(yytext))
-            VP.error(ERR_WARN, "syntax error in timescale: %s", yytext); }
+        if (!VP()->parse_timescale(yytext))
+            VP()->error(ERR_WARN, "syntax error in timescale: %s", yytext); }
 
 <Snormal,Stable>`define[^\n]*\n { 
 #ifdef FLEX_SCANNER
         yylineno++;
 #endif
-        memorize_macro(yytext, VP.macros); 
+        memorize_macro(yytext, VP()->macros()); 
         continue; }
 
 <Snormal,Stable>`include[^\n]*\n {
@@ -350,9 +348,9 @@ Binary      ({Number})?'[bB][ ]*[01xXzZ?][01xXzZ?_]*
 
 <Snormal>`{AlphaU}{AlphaNumU}* {
         strcpy(yyid, yytext); 
-        char *macro;
-        if (VP.macros->lookup(yyid+1, &macro)) {
-            expand_macro(yyid+1, VP.macros);
+        const char *macro;
+        if (VP()->macros()->lookup(yyid+1, &macro)) {
+            expand_macro(yyid+1, VP()->macros());
             continue;
         }
         return YYNAME; }
@@ -417,11 +415,11 @@ skipcommentblock()
         }
         else if (c == 0) {
             vl_error("incomplete comment (line %d)", yylineno);
-            longjmp(VP.jbuf, 1);
+            longjmp(*VP()->jbuf(), 1);
         }
         else if (c == EOF) {
             vl_error("end of file in comment (line %d)", yylineno);
-            longjmp(VP.jbuf, 1);
+            longjmp(*VP()->jbuf(), 1);
         }
         else {
             if (c == '\n')
@@ -457,53 +455,54 @@ static void
 lex_panic(const char *mesg)
 {
     vl_error(mesg);
-    longjmp(VP.jbuf, 1);
+    longjmp(*VP()->jbuf(), 1);
 }
 
 
 /*
  * memorize_macro
  *
- *     insert a argumentless macro into macro table
+ *     insert an argumentless macro into macro table
  */
 static void
-memorize_macro(char *instr, table<char*> *macros)
+memorize_macro(const char *instr, table<const char*> *macros)
 {
     char mname[MAXSTRLEN];
-    char *cp = strstr(instr, MACRO_DEFINE) + strlen(MACRO_DEFINE);
+    const char *cp = strstr(instr, MACRO_DEFINE) + strlen(MACRO_DEFINE);
     sscanf(cp, "%s", mname);
     cp = strstr(cp, mname) + strlen(mname);
-    char *cp1 = strstr(cp, "//");
-    char *cp2 = strstr(cp, "/*");
+    char *xcp = vl_strdup(cp);
+    char *cp1 = strstr(xcp, "//");
+    char *cp2 = strstr(xcp, "/*");
     if (cp1 || cp2) {
         if (cp1)
             *cp1 = '\0';
         if (cp2)
             *cp2 = '\0';
     }
-    macros->insert(vl_strdup(mname), vl_strdup(cp));
+    macros->insert(vl_strdup(mname), xcp);
 }
 
 
 static int
-find_macro(char *str)
+find_macro(const char *str)
 {
     char mname[MAXSTRLEN];
-    char *cp = strstr(str, MACRO_IFDEF) + strlen(MACRO_IFDEF);
+    const char *cp = strstr(str, MACRO_IFDEF) + strlen(MACRO_IFDEF);
     sscanf(cp, "%s", mname);
-    char *dummy;
-    return (VP.macros->lookup(mname, &dummy));
+    const char *dummy;
+    return (VP()->macros()->lookup(mname, &dummy));
 }
 
 
 static int
-find_not_macro(char *str)
+find_not_macro(const char *str)
 {
     char mname[MAXSTRLEN];
-    char *cp = strstr(str,MACRO_IFNDEF) + strlen(MACRO_IFNDEF);
+    const char *cp = strstr(str,MACRO_IFNDEF) + strlen(MACRO_IFNDEF);
     sscanf(cp, "%s", mname);
-    char *dummy;
-    return (!VP.macros->lookup(mname, &dummy));
+    const char *dummy;
+    return (!VP()->macros()->lookup(mname, &dummy));
 }
 
 
@@ -513,13 +512,12 @@ find_not_macro(char *str)
  *     expand an argumentless macro into input stream (using unput)
  */
 static void
-expand_macro(char *mname, table<char*> *macros)
+expand_macro(const char *mname, table<const char*> *macros)
 {
-    char *mbody;
+    const char *mbody;
     if (macros->lookup(mname, &mbody)) {
         for (int i = strlen(mbody)-1; i >= 0; i--)
             unput(mbody[i]);
-        strcpy(VP.curr_macro, mname);
     }
 }
 
@@ -573,7 +571,7 @@ dirsep()
 
 
 static void
-push_open_file(char *fname)
+push_open_file(const char *fname)
 {
     char *filename = vl_strdup(fname);
     if (*filename == '"') {
@@ -587,9 +585,9 @@ push_open_file(char *fname)
     if (infile)
         pushd(filename);
     else {
-        char *cwd;
-        if (VP.dir_stack->length() > 0) {
-            VP.dir_stack->top(&cwd);
+        const char *cwd;
+        if (VP()->dir_stack()->length() > 0) {
+            VP()->dir_stack()->top(&cwd);
             char *s = new char[strlen(cwd) + strlen(filename) + 2];
             strcpy(s, cwd);
             char *t = s + strlen(s) - 1;
@@ -603,11 +601,11 @@ push_open_file(char *fname)
     }
     if (!infile) {
         vl_error("failed to open file '%s'", filename);
-        longjmp(VP.jbuf, 1);
+        longjmp(*VP()->jbuf(), 1);
     }
-    VP.file_stack->push(yyin);
-    VP.fname_stack->push(VP.filename);
-    VP.lineno_stack->push(yylineno);
+    VP()->file_stack()->push(yyin);
+    VP()->fname_stack()->push(VP()->filename());
+    VP()->lineno_stack()->push(yylineno);
     
 #ifdef FLEX_SCANNER
     buffer_stack[buffer_stack_ptr++] = YY_CURRENT_BUFFER;
@@ -616,7 +614,7 @@ push_open_file(char *fname)
     yyin = infile;
 #endif
     yylineno = 1;
-    VP.filename = filename;
+    VP()->set_filename(filename);
 }
 
 
@@ -625,11 +623,11 @@ pop_close_file()
 {
     fclose(yyin);
     FILE *infile;
-    VP.file_stack->pop(&infile);
-    char *filename;
-    VP.fname_stack->pop(&filename);
+    VP()->file_stack()->pop(&infile);
+    const char *filename;
+    VP()->fname_stack()->pop(&filename);
     int old_yylineno;
-    VP.lineno_stack->pop(&old_yylineno);
+    VP()->lineno_stack()->pop(&old_yylineno);
     popd();
 #ifdef FLEX_SCANNER
     yy_delete_buffer(YY_CURRENT_BUFFER);
@@ -638,8 +636,8 @@ pop_close_file()
     yyin = infile;
 #endif
     yylineno = old_yylineno;
-    delete [] VP.filename;
-    VP.filename = filename;
+    delete [] VP()->filename();
+    VP()->set_filename(filename);
 }
 
 
@@ -656,7 +654,7 @@ pushd(char *filename)
             *s++ = dirsep();
             *s = 0;
         }
-        VP.dir_stack->push(cwd);
+        VP()->dir_stack()->push(cwd);
     }
     else {
         char *pwd = getcwd(0, 0);
@@ -675,10 +673,10 @@ pushd(char *filename)
                 *s++ = dirsep();
                 *s = 0;
             }
-            VP.dir_stack->push(cwd);
+            VP()->dir_stack()->push(cwd);
         }
         else
-            VP.dir_stack->push(vl_strdup("."));
+            VP()->dir_stack()->push(vl_strdup("."));
     }
 }
 
@@ -686,7 +684,7 @@ pushd(char *filename)
 static void
 popd()
 {
-    char *cwd;
-    VP.dir_stack->pop(&cwd);
+    const char *cwd;
+    VP()->dir_stack()->pop(&cwd);
     delete [] cwd;
 }

@@ -735,7 +735,7 @@ vl_expr::symbol()
     case BrshiftExpr:   return(">>");        
     case TcondExpr:     return("?");        
     default:
-        VP.error(ERR_INTERNAL, "Unexpected expression type");
+        VP()->error(ERR_INTERNAL, "Unexpected expression type");
         break;
     }
     return (0);
@@ -745,10 +745,10 @@ vl_expr::symbol()
 ostream &
 operator<<(ostream &outs, vl_strength s)
 {
-    if (s.str0 == STRnone)
+    if (s.str0() == STRnone)
         return (outs);
     outs << '(';
-    switch (s.str0) {
+    switch (s.str0()) {
     case STRsupply:
         outs << "supply0";
         break;
@@ -777,7 +777,7 @@ operator<<(ostream &outs, vl_strength s)
         break;
     }
 
-    switch (s.str1) {
+    switch (s.str1()) {
     case STRsupply:
         outs << ", supply1)";
         break;
@@ -849,7 +849,7 @@ operator<<(ostream &outs, vl_event_expr *e)
         outs << "(";
         break;
     default:
-        VP.error(ERR_INTERNAL, "Unexpected EventExpr Type");        
+        VP()->error(ERR_INTERNAL, "Unexpected EventExpr Type");        
         break;
     }
     if (e->expr)
@@ -878,8 +878,8 @@ operator<<(ostream &outs, vl_event_expr *e)
 void
 vl_parser::print(ostream &outs)
 {
-    if (description)
-        outs << description;
+    if (p_description)
+        outs << p_description;
 }
 
 
@@ -1353,7 +1353,7 @@ vl_primitive::symbol(unsigned char sym)
     default:
         char msg[MAXSTRLEN];
         sprintf(msg, "Unexpected primitive symbol type %d", sym);
-        VP.error(ERR_INTERNAL, msg);
+        VP()->error(ERR_INTERNAL, msg);
         break;
     }
     return (0);
@@ -1407,7 +1407,7 @@ operator<<(ostream &outs, vl_decl *n)
 {
     Indent(outs);
     outs << n->decl_type();
-    if (n->strength.str0 != STRnone) {
+    if (n->strength.str0() != STRnone) {
         if (n->type == WireDecl ||
                 n->type == TriDecl ||
                 n->type == WandDecl ||
@@ -1498,7 +1498,7 @@ operator<<(ostream &outs, vl_procstmt *p)
         outs << "initial\n"; 
         break;
     default:
-        VP.error(ERR_INTERNAL, "Unexpected Process Statement Type");
+        VP()->error(ERR_INTERNAL, "Unexpected Process Statement Type");
         break;
     }
     IndentLevel++;
@@ -1520,7 +1520,7 @@ ostream &
 operator<<(ostream &outs, vl_cont_assign *a)
 {
     outs << "assign ";
-    if (a->strength.str0 != STRnone)
+    if (a->strength.str0() != STRnone)
         outs << a->strength << ' ';
     if (a->delay)
         outs << a->delay << ' ';
@@ -1747,7 +1747,7 @@ operator<<(ostream &outs, vl_function *f)
         outs << f->range << ' ';
         break;
     default:
-        VP.error(ERR_INTERNAL, "Unexpected Function Type");
+        VP()->error(ERR_INTERNAL, "Unexpected Function Type");
     }
     if (f->name)
         outs << f->name;
@@ -1856,11 +1856,11 @@ operator<<(ostream &outs, vl_gate_inst_list *l)
         outs << "rtranif1";
         break;
     default:
-        VP.error(ERR_INTERNAL, "Unexpected Gate Type");
+        VP()->error(ERR_INTERNAL, "Unexpected Gate Type");
         break;
     }
     outs << ' ';
-    if (l->strength.str0 != STRnone)
+    if (l->strength.str0() != STRnone)
         outs << l->strength << ' ';;
     if (l->delays)
         outs << l->delays;
@@ -1883,7 +1883,7 @@ operator<<(ostream &outs, vl_mp_inst_list *m)
     Indent(outs);
     if (m->name)
         outs << m->name << ' ';
-    if (m->strength.str0 != STRnone)
+    if (m->strength.str0() != STRnone)
         outs << m->strength << ' ';
     if (m->params_or_delays)
         outs << m->params_or_delays << ' ';
@@ -1937,7 +1937,7 @@ operator<<(ostream &outs, vl_bassign_stmt *b)
         outs << " <= @";        
         break;
     default:
-        VP.error(ERR_INTERNAL, "Unexpected Assign Type");
+        VP()->error(ERR_INTERNAL, "Unexpected Assign Type");
         break;
     }
     if (b->event)
@@ -2055,7 +2055,7 @@ operator<<(ostream &outs, vl_case_stmt *c)
         outs << "casez (";
         break;
     default:
-        VP.error(ERR_INTERNAL, "Unexpected Case Type");
+        VP()->error(ERR_INTERNAL, "Unexpected Case Type");
         break;
     }
     if (c->cond)
@@ -2091,7 +2091,7 @@ operator<<(ostream &outs, vl_case_item *c)
         outs << "default: ";
         break;
     default:
-        VP.error(ERR_INTERNAL, "Unexpected CaseItem Type");
+        VP()->error(ERR_INTERNAL, "Unexpected CaseItem Type");
         break;
     }
     IndentSkip = true;

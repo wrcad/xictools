@@ -57,6 +57,11 @@
 #include "ginterf/graphics.h"
 
 
+// Instantiate the Verilog parser.
+namespace {
+    vl_parser _p;
+}
+
 // Verilog data files are opened using the sourcepath.
 //
 FILE *
@@ -192,15 +197,14 @@ VerilogBlock::VerilogBlock(sLine *lines)
             "can't open termporary verilog file.\n");
         return;
     }
-    VP.clear();
-    int err = VP.parse(fp);
+    VP()->clear();
+    int err = VP()->parse(fp);
     fclose(fp);
     unlink(ftmp);
     delete [] ftmp;
     if (err)
         return;
-    vb_desc = VP.description;
-    VP.description = 0;
+    vb_desc = VP()->get_description();
     vb_sim = new vl_simulator;
     if (!vb_sim->initialize(vb_desc, dly_type, debug_flags)) {
         delete vb_sim;

@@ -1733,7 +1733,7 @@ vl_gate_inst::set_type(int t)
         string = "rtranif0";
         break;
     default:
-        VP.error(ERR_INTERNAL, "Unexpected Gate Type");
+        VP()->error(ERR_INTERNAL, "Unexpected Gate Type");
         break;
     }
 }

@@ -57,6 +57,12 @@ extern int YYTrace;
 #endif
 
 
+// Instntiate the parser.
+namespace {
+    vl_parser _p;
+}
+
+
 int
 main(int argc, char **argv)
 {
@@ -111,20 +117,20 @@ main(int argc, char **argv)
                     mtm = DLYmax;
             }
             else if (argv[i][1] == 'v') {
-                // handled in VP.parse()
+                // handled in vl_parser::parse()
                 ;
             }
         }
     if (dbg & DBG_ptrace)
         YYTrace = 1;
-    if (VP.parse(argc, argv))
+    if (VP()->parse(argc, argv))
         return (1);
 
     if (print)
-        VP.print(cout);
+        VP()->print(cout);
     else {
         vl_simulator VS;
-        if (VS.initialize(VP.description, mtm, dbg))
+        if (VS.initialize(VP()->get_description(), mtm, dbg))
             VS.simulate();
         delete VS.description;
         VS.initialize(0);

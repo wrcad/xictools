@@ -44,36 +44,52 @@
 #include "vl_defs.h"
 #include "vl_types.h"
 
-vl_parser VP;
 extern void yyrestart(FILE*);
 
 //---------------------------------------------------------------------------
 //  Parser objects
 //---------------------------------------------------------------------------
 
+vl_parser *vl_parser::p_parser = 0;
+
 vl_parser::vl_parser()
 {
-    tunit = tprec = 1.0;
-    filename = vl_strdup("<stdin>");
-    module_stack = new vl_stack_t<vl_module*>;
-    file_stack = new vl_stack_t<FILE*>;
-    fname_stack = new vl_stack_t<char*>;
-    lineno_stack = new vl_stack_t<int>;
-    dir_stack = new vl_stack_t<char*>;
-    macros = new table<char*>;
-    no_go = false;
-    verbose = false;
+    if (p_parser) {
+        fprintf(stderr, "Singleton vl_parser is already instantiated.\n");
+        exit(1);
+    }
+    p_parser = this;
+
+    p_tunit = 1.0;
+    p_tprec = 1.0;
+    p_filename = vl_strdup("<stdin>");
+    p_module_stack = new vl_stack_t<vl_module*>;
+    p_file_stack = new vl_stack_t<FILE*>;
+    p_fname_stack = new vl_stack_t<const char*>;
+    p_lineno_stack = new vl_stack_t<int>;
+    p_dir_stack = new vl_stack_t<const char*>;
+    p_macros = new table<const char*>;
+    p_no_go = false;
+    p_verbose = false;
+}
+
+
+void
+vl_parser::on_null_ptr()
+{
+    fprintf(stderr, "Singleton vl_parser used before instantiated.\n");
+    exit(1);
 }
 
 
 vl_parser::~vl_parser()
 {
-    delete module_stack;
-    delete file_stack;
-    delete fname_stack;
-    delete lineno_stack;
-    delete dir_stack;
-    delete macros;
+    delete p_module_stack;
+    delete p_file_stack;
+    delete p_fname_stack;
+    delete p_lineno_stack;
+    delete p_dir_stack;
+    delete p_macros;
 }
 
 
@@ -82,25 +98,25 @@ vl_parser::parse(int ac, char **av)
 {
     clear();
     int i;
-    if (setjmp(jbuf) == 1) {
-        no_go = true;
+    if (setjmp(p_jbuf) == 1) {
+        p_no_go = true;
         fclose(yyin);
         return (true);
     }
     for (i = 1; i < ac; i++) {
         if (av[i][0] == '-') {
             if (av[i][1] == 'v' && !av[i][2])
-                verbose = true;
+                p_verbose = true;
             continue;
         }
 
-        filename = vl_strdup(av[i]);
-        yyin = vl_file_open(filename, "r");
+        p_filename = vl_strdup(av[i]);
+        yyin = vl_file_open(p_filename, "r");
         if (!yyin)
-            yyin = fopen(filename, "r");
-        cout << filename << '\n';
+            yyin = fopen(p_filename, "r");
+        cout << p_filename << '\n';
         if (!yyin) {
-            cerr << "failed to open file " << filename << '\n';
+            cerr << "failed to open file " << p_filename << '\n';
             return (true);
         }
         if (yyparse()) {
@@ -109,7 +125,7 @@ vl_parser::parse(int ac, char **av)
         }
         fclose(yyin);
     }
-    return (no_go);
+    return (p_no_go);
 }
 
 
@@ -118,37 +134,38 @@ vl_parser::parse(FILE *fp)
 {
     clear();
     yyin = fp;
-    if (setjmp(jbuf) == 1) {
-        no_go = true;
+    if (setjmp(p_jbuf) == 1) {
+        p_no_go = true;
         return (true);
     }
     yyrestart(yyin);
     if (yyparse())
         return (true);
-    return (no_go);
+    return (p_no_go);
 }
 
 
 void
 vl_parser::clear()
 {
-    filename = vl_strdup("<stdin>");
-    delete module_stack;
-    module_stack = new vl_stack_t<vl_module*>;
-    delete file_stack;
-    file_stack = new vl_stack_t<FILE*>;
-    delete fname_stack;
-    fname_stack = new vl_stack_t<char*>;
-    delete lineno_stack;
-    lineno_stack = new vl_stack_t<int>;
-    delete macros;
-    macros = new table<char*>;
+    p_filename = vl_strdup("<stdin>");
+    delete p_module_stack;
+    p_module_stack = new vl_stack_t<vl_module*>;
+    delete p_file_stack;
+    p_file_stack = new vl_stack_t<FILE*>;
+    delete p_fname_stack;
+    p_fname_stack = new vl_stack_t<const char*>;
+    delete p_lineno_stack;
+    p_lineno_stack = new vl_stack_t<int>;
+    delete p_macros;
+    p_macros = new table<const char*>;
 
-    description = 0;
-    context = 0;
-    tunit = tprec = 1.0;
+    p_description = 0;
+    p_context = 0;
+    p_tunit = 1.0;
+    p_tprec = 1.0;
 
-    no_go = false;
+    p_no_go = false;
 }
 
 
@@ -181,7 +198,7 @@ vl_parser::error(vlERRtype err, const char *fmt, ...)
         vl_error("(internal) %s", buf);
         break;
     }
-    no_go = true;
+    p_no_go = true;
 }
 
 
@@ -274,10 +291,10 @@ vl_parser::parse_timescale(const char *str)
 
     if (t2 > t1)
         return (false);
-    if (t2 < description->tstep)
-        description->tstep = t2;
-    tunit = t1;
-    tprec = t2;
+    if (t2 < p_description->tstep)
+        p_description->tstep = t2;
+    p_tunit = t1;
+    p_tprec = t2;
     return (true);
 }
 // End of vl_parser functions

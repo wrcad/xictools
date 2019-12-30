@@ -403,9 +403,9 @@ source_text
         :
           {
               YYTRACE("source_text:");
-              if (!VP.description)
-                  VP.description = new vl_desc();
-              $$ = VP.description;
+              if (!VP()->p_description)
+                  VP()->p_description = new vl_desc();
+              $$ = VP()->p_description;
           }
         | source_text description
           {
@@ -428,25 +428,27 @@ module
         : YYMODULE identifier 
           {
               vl_module *currentModule;
-              if (!VP.description->mp_st->lookup($2, (vl_mp**)&currentModule))
-                  currentModule = new vl_module(VP.description, $2, 0, 0); 
-              VP.context = VP.context->push(currentModule);
-              VP.description->mp_undefined->set_eliminate($2);
-              currentModule->tunit = VP.tunit;
-              currentModule->tprec = VP.tprec;
+              if (!VP()->p_description->mp_st->lookup($2,
+                      (vl_mp**)&currentModule))
+                  currentModule = new vl_module(VP()->p_description, $2, 0, 0); 
+              VP()->p_context = vl_context::push(VP()->p_context,
+                  currentModule);
+              VP()->p_description->mp_undefined->set_eliminate($2);
+              currentModule->tunit = VP()->p_tunit;
+              currentModule->tprec = VP()->p_tprec;
           } 
           port_list_opt ';'
           {
-              VP.context->currentModule()->ports = $4;
+              VP()->p_context->currentModule()->ports = $4;
           }
           module_item_clr
           YYENDMODULE
           {
               YYTRACE("module: YYMODULE YYNAME port_list_opt ';' "
                   "module_item_clr YYENDMODULE");
-              VP.context->currentModule()->mod_items = $7;
-              $$ = VP.context->currentModule();
-              VP.context = vl_context::pop(VP.context);
+              VP()->p_context->currentModule()->mod_items = $7;
+              $$ = VP()->p_context->currentModule();
+              VP()->p_context = vl_context::pop(VP()->p_context);
           }
         ;
 
@@ -684,19 +686,20 @@ primitive
         : YYPRIMITIVE identifier 
           {
               vl_primitive *currentPrimitive =
-                  new vl_primitive(VP.description, $2);
-              VP.context = VP.context->push(currentPrimitive);
-              VP.description->mp_undefined->set_eliminate($2);
+                  new vl_primitive(VP()->p_description, $2);
+              VP()->p_context = vl_context::push(VP()->p_context,
+                  currentPrimitive);
+              VP()->p_description->mp_undefined->set_eliminate($2);
           }
           '(' port_list ')' ';' primitive_declaration_eclr prim_initial
-                table_definition YYENDPRIMITIVE
+              table_definition YYENDPRIMITIVE
           {
               YYTRACE("primitive: YYPRMITIVE YYNAME '(' variable_list ')' ';' "
                   "primitive_declaration_eclr prim_initial table_definition "
                   "YYENDPRIMITIVE");
-              VP.context->currentPrimitive()->init_table($5, $8, $9, $10);
-              $$ = VP.context->currentPrimitive();
-              VP.context = vl_context::pop(VP.context);
+              VP()->p_context->currentPrimitive()->init_table($5, $8, $9, $10);
+              $$ = VP()->p_context->currentPrimitive();
+              VP()->p_context = vl_context::pop(VP()->p_context);
           }
         ;
 
@@ -762,7 +765,7 @@ table_entries
         | sequential_entry_eclr
           {
               YYTRACE("table_definition: sequential_entry_eclr");
-              VP.context->currentPrimitive()->type = SeqPrimDecl;
+              VP()->p_context->currentPrimitive()->type = SeqPrimDecl;
           }
         ;
 
@@ -1010,25 +1013,26 @@ function
                  else if ($2->type == Range_Dcl)
                      type = RangeFuncDecl;
                  else
-                     VP.error(ERR_INTERNAL, "bad type for function %s", $3);
+                     VP()->error(ERR_INTERNAL, "bad type for function %s", $3);
                  range = $2->range;
                  $2->range = 0;
                  delete $2;
              }
-             else if (VP.verbose)
-                 VP.error(ERR_WARN, "no type/range for function %s", $3);
+             else if (VP()->p_verbose)
+                 VP()->error(ERR_WARN, "no type/range for function %s", $3);
              vl_function *currentFunction = new vl_function(type, range, $3,
                  0, 0);
-             VP.context = VP.context->push(currentFunction);
+             VP()->p_context = vl_context::push(VP()->p_context,
+                 currentFunction);
           }
           ';' tf_declaration_eclr statement_opt YYENDFUNCTION
           {
               YYTRACE("YYFUNCTION range_or_type_opt YYNAME ';' "
                   "tf_declaration_eclr statement_opt YYENDFUNCTION");
-              $$ = VP.context->currentFunction();
+              $$ = VP()->p_context->currentFunction();
               $$->decls = $6;
               $$->stmts = $7;
-              VP.context = vl_context::pop(VP.context);
+              VP()->p_context = vl_context::pop(VP()->p_context);
           }
         ;
 
@@ -1454,8 +1458,8 @@ charge_strength_opt
           {
               YYTRACE("charge_strength_opt:");
               $$ = drive_strength(YYSMALL, YYSMALL);
-              $$->str0 = STRnone;
-              $$->str1 = STRnone;
+              $$->set_str0(STRnone);
+              $$->set_str1(STRnone);
           }
         | charge_strength
           {
@@ -1487,8 +1491,8 @@ drive_strength_opt
           {
               YYTRACE("drive_strength_opt:");
               $$ = drive_strength(YYSMALL, 0);
-              $$->str0 = STRnone;
-              $$->str1 = STRnone;
+              $$->set_str0(STRnone);
+              $$->set_str1(STRnone);
           }
         | drive_strength
           {
@@ -1633,7 +1637,7 @@ gate_instantiation
           {
               YYTRACE("gate_instantiation: gatetype drive_delay_clr "
                   "gate_instance_list ';'");
-              $$ = VP.description->add_gate_inst($1, $2, $3);
+              $$ = VP()->p_description->add_gate_inst($1, $2, $3);
               delete $2;
           }
         ;
@@ -1862,7 +1866,8 @@ module_or_primitive_instantiation
               YYTRACE("module_or_primitive_instantiation: "
                   "name_of_module_or_primitive module_or_primitive_option_clr "
                   "module_or_primitive_instance_list ';'");
-              $$ = VP.description->add_mp_inst(VP.description, $1, $2, $3);
+              $$ = VP()->p_description->add_mp_inst(VP()->p_description, $1,
+                  $2, $3);
               delete $2;
           }
         ;
@@ -3259,12 +3264,13 @@ void
 yyerror(const char *str)
 {
     vl_error("%s: (line: %d, file: %s) token: '%s', ", str, yylineno,
-        VP.filename, yy_textbuf());
+        VP()->filename(), yy_textbuf());
     vl_error("yacc token: '%s'", yy_textbuf());
-    if (VP.context->currentModule()) 
+    if (VP()->p_context->currentModule()) {
         vl_error("unexpected token '%s' seen in module '%s'",
-            yy_textbuf(), VP.context->currentModule()->name);
-    longjmp(VP.jbuf, 1);
+            yy_textbuf(), VP()->p_context->currentModule()->name);
+    }
+    longjmp(*VP()->jbuf(), 1);
 }
 
 
@@ -3274,53 +3280,54 @@ drive_strength(int strength0, int strength1)
     static vl_strength retval;
     switch (strength0) {
     case YYSUPPLY0: 
-        retval.str0 = STRsupply;
+        retval.set_str0(STRsupply);
         break;
     case YYSTRONG0:
-        retval.str0 = STRstrong;
+        retval.set_str0(STRstrong);
         break;
     case YYPULL0:
-        retval.str0 = STRpull;
+        retval.set_str0(STRpull);
         break;
     case YYWEAK0:
-        retval.str0 = STRweak;
+        retval.set_str0(STRweak);
         break;
     case YYHIGHZ0:
-        retval.str0 = STRhiZ;
+        retval.set_str0(STRhiZ);
         break;
     case YYSMALL:
-        retval.str0 = STRsmall;
+        retval.set_str0(STRsmall);
         break;
     case YYMEDIUM:
-        retval.str0 = STRmed;
+        retval.set_str0(STRmed);
         break;
     case YYLARGE:
-        retval.str0 = STRlarge;
+        retval.set_str0(STRlarge);
         break;
     }
     switch (strength1) {
     case YYSUPPLY1: 
-        retval.str1 = STRsupply;
+        retval.set_str1(STRsupply);
         break;
     case YYSTRONG1:
-        retval.str1 = STRstrong;
+        retval.set_str1(STRstrong);
         break;
     case YYPULL1:
-        retval.str1 = STRpull;
+        retval.set_str1(STRpull);
         break;
     case YYWEAK1:
-        retval.str1 = STRweak;
+        retval.set_str1(STRweak);
         break;
     case YYHIGHZ1:
-        retval.str1 = STRhiZ;
+        retval.set_str1(STRhiZ);
         break;
     }
-    if (retval.str0 == STRnone || (retval.str1 == STRnone &&
-            (retval.str0 != STRsmall &&
-            retval.str0 != STRmed &&
-            retval.str0 != STRlarge))) {
-        VP.error(ERR_COMPILE, "illegal strength0/strength1");
-        retval.str0 = retval.str1 = STRnone;
+    if (retval.str0() == STRnone || (retval.str1() == STRnone &&
+            (retval.str0() != STRsmall &&
+            retval.str0() != STRmed &&
+            retval.str0() != STRlarge))) {
+        VP()->error(ERR_COMPILE, "illegal strength0/strength1");
+        retval.set_str0(STRnone);
+        retval.set_str1(STRnone);
     }
     return (&retval);
 }
@@ -3369,7 +3376,7 @@ edge_err(unsigned char a, unsigned char b)
 
     char mesg[MAXSTRLEN];
     sprintf(mesg, "Unknown edge symbol (%s%s)", as, bs);
-    VP.error(ERR_COMPILE, mesg);
+    VP()->error(ERR_COMPILE, mesg);
 }
 
 

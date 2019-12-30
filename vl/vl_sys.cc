@@ -643,7 +643,8 @@ vl_simulator::sys_display(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_monitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
-    vl_monitor *mnew = new vl_monitor(context->copy(), args, t->dtype);
+    vl_monitor *mnew = new vl_monitor(vl_context::copy(context), args,
+        t->dtype);
     if (!monitors)
         monitors = mnew;
     else {
@@ -785,7 +786,8 @@ vl_simulator::sys_fclose(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_fmonitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
-    vl_monitor *mnew = new vl_monitor(context->copy(), args, t->dtype);
+    vl_monitor *mnew = new vl_monitor(vl_context::copy(context), args,
+        t->dtype);
     if (!fmonitors)
         fmonitors = mnew;
     else {
@@ -1169,7 +1171,7 @@ vl_simulator::dumpindex(vl_var *data)
 void
 vl_module::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->context = sim->context->push(this);
+    sim->context = vl_context::push(sim->context, this);
     if (sim->dmpstatus & DMP_HEADER) {
         // $scope module <name> $end
         const char *n;
@@ -1188,7 +1190,7 @@ vl_module::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_primitive::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->context = sim->context->push(this);
+    sim->context = vl_context::push(sim->context, this);
     if (sim->dmpstatus & DMP_HEADER) {
         // $scope primitive <name> $end
         const char *n;
@@ -1229,7 +1231,7 @@ vl_mp_inst_list::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_begin_end_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->context = sim->context->push(this);
+    sim->context = vl_context::push(sim->context, this);
     if (name) {
         if (sim->dmpstatus & DMP_HEADER) {
             // $scope begin <name> $end
@@ -1333,7 +1335,7 @@ vl_wait_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_fork_join_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->context = sim->context->push(this);
+    sim->context = vl_context::push(sim->context, this);
     if (name) {
         if (sim->dmpstatus & DMP_HEADER) {
             // $scope fork <name> $end

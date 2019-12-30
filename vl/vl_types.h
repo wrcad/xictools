@@ -356,10 +356,20 @@ typedef unsigned short STRength;
 
 struct vl_strength
 {
-    vl_strength() { str0 = STRnone; str1 = STRnone; }
+    vl_strength()
+        {
+            s_str0 = STRnone;
+            s_str1 = STRnone;
+        }
 
-    STRength str0;
-    STRength str1;
+    STRength str0()             const { return (s_str0); }
+    STRength str1()             const { return (s_str1); }
+    void set_str0(STRength s)   { s_str0 = s; }
+    void set_str1(STRength s)   { s_str1 = s; }
+
+private:
+    STRength s_str0;
+    STRength s_str1;
 };
 
 // Basic data item
@@ -569,6 +579,11 @@ extern vl_var &tcond(vl_var&, vl_expr*, vl_expr*);
 //
 struct vl_var_factory
 {
+    struct bl {
+        vl_var block[CX_INCR];
+        bl *next;
+    };
+
     vl_var_factory()
         {
             da_numused = 0;
@@ -605,7 +620,7 @@ struct vl_var_factory
 
 private:
     int da_numused;
-    struct bl { vl_var block[CX_INCR]; bl *next; } *da_blocks;
+    bl *da_blocks;
 };
 
 
@@ -629,8 +644,10 @@ struct vl_expr : public vl_var
     vl_var *source();
 
     vl_range *source_range()
-        { return  ((etype == BitSelExpr || etype == PartSelExpr) ?
-        ux.ide.range : 0); }
+        {
+            return  ((etype == BitSelExpr || etype == PartSelExpr) ?
+                ux.ide.range : 0);
+        }
 
     int etype;
     union {
@@ -662,9 +679,20 @@ struct vl_expr : public vl_var
 //
 struct vl_driver
 {
-    vl_driver() { srcvar = 0; m_to = l_to = 0; l_from = 0; }
+    vl_driver()
+        {
+            srcvar = 0;
+            m_to = l_to = 0;
+            l_from = 0;
+        }
+
     vl_driver(vl_var *d, int mt, int lt, int lf)
-        { srcvar = d; m_to = mt; l_to = lt; l_from = lf; }
+        {
+            srcvar = d;
+            m_to = mt;
+            l_to = lt;
+            l_from = lf;
+        }
 
     vl_var *srcvar;          // source vl_var
     int m_to;                // high index in target to assign
@@ -676,8 +704,18 @@ struct vl_driver
 //
 struct vl_range
 {
-    vl_range(vl_expr *l, vl_expr *r) { left = l; right = r; }
-    ~vl_range() { delete left; delete right; }
+    vl_range(vl_expr *l, vl_expr *r)
+        {
+            left = l;
+            right = r;
+        }
+
+    ~vl_range()
+        {
+            delete left;
+            delete right;
+        }
+
     vl_range *copy();
     bool eval(int*, int*);
     bool eval(vl_range**);
@@ -691,9 +729,24 @@ struct vl_range
 //
 struct vl_delay
 {
-    vl_delay() { delay1 = 0; list = 0; }
-    vl_delay(vl_expr *d) { delay1 = d; list = 0; }
-    vl_delay(lsList<vl_expr*> *l) { delay1 = 0; list = l; }
+    vl_delay()
+        {
+            delay1 = 0;
+            list = 0;
+        }
+
+    vl_delay(vl_expr *d)
+        {
+            delay1 = d;
+            list = 0;
+        }
+
+    vl_delay(lsList<vl_expr*> *l)
+        {
+            delay1 = 0;
+            list = l;
+        }
+
     ~vl_delay();
     vl_delay *copy();
     vl_time_t eval();
@@ -706,9 +759,24 @@ struct vl_delay
 //
 struct vl_event_expr
 {
-    vl_event_expr() { type = 0; expr = 0; list = 0; repeat = 0; count = 0; }
+    vl_event_expr()
+        {
+            type = 0;
+            expr = 0;
+            list = 0;
+            repeat = 0;
+            count = 0;
+        }
+
     vl_event_expr(short t, vl_expr *e)
-        { type = t; expr = e; list = 0; repeat = 0; count = 0; }
+        {
+            type = t;
+            expr = e;
+            list = 0;
+            repeat = 0;
+            count = 0;
+        }
+
     ~vl_event_expr();
     vl_event_expr *copy();
     void init();
@@ -731,10 +799,17 @@ struct vl_event_expr
 
 enum vlERRtype { ERR_OK, ERR_WARN, ERR_COMPILE, ERR_INTERNAL }; 
 
-// Main class for Verilog parser
+inline struct vl_parser *VP();
+
+// Main class for Verilog parser.
 //
 struct vl_parser
 {
+    friend inline vl_parser *VP() { return (vl_parser::ptr()); }
+    friend int yylex();
+    friend int yyparse();
+    friend void yyerror(const char*);
+
     vl_parser();
     ~vl_parser();
     bool parse(int, char**);
@@ -744,33 +819,76 @@ struct vl_parser
     bool parse_timescale(const char*);
     void print(ostream&);
 
-    double tunit, tprec;        // current `timescale parameters
-    vl_desc *description;
-    vl_context *context;
-    char *filename;
-    vl_stack_t<vl_module*> *module_stack;
-    vl_stack_t<FILE*> *file_stack;
-    vl_stack_t<char*> *fname_stack;
-    vl_stack_t<int> *lineno_stack;
-    vl_stack_t<char*> *dir_stack;
-    table<char*> *macros;
-    int ifelseSP;
-    char modName[MAXSTRLEN];
-    char last_macro[MAXSTRLEN];
-    char curr_macro[MAXSTRLEN];
-    char ifelse_stack[MAXSTRLEN];
-    jmp_buf jbuf;
-    bool no_go;
-    bool verbose;
+    vl_desc *get_description()
+        {
+            vl_desc *d = p_description;
+            p_description = 0;
+            return d;
+        }
+
+    const char *filename()                  { return (p_filename); }
+    void set_filename(const char *fn)       { p_filename = fn; }
+
+    vl_stack_t<vl_module*> *module_stack()  { return (p_module_stack); }
+    vl_stack_t<FILE*> *file_stack()         { return (p_file_stack); }
+    vl_stack_t<const char*> *fname_stack()  { return (p_fname_stack); }
+    vl_stack_t<int> *lineno_stack()         { return (p_lineno_stack); }
+    vl_stack_t<const char*> *dir_stack()    { return (p_dir_stack); }
+
+    table<const char*> *macros()            { return (p_macros); }
+
+    jmp_buf *jbuf()                         { return (&p_jbuf); }
+
+private:
+    static vl_parser *ptr()
+        {
+            if (!p_parser)
+                on_null_ptr();
+            return (p_parser);
+        }
+
+    static void on_null_ptr();
+
+    double                  p_tunit;
+    double                  p_tprec;
+    vl_desc                 *p_description;
+    vl_context              *p_context;
+    const char              *p_filename;
+    vl_stack_t<vl_module*>  *p_module_stack;
+    vl_stack_t<FILE*>       *p_file_stack;
+    vl_stack_t<const char*> *p_fname_stack;
+    vl_stack_t<int>         *p_lineno_stack;
+    vl_stack_t<const char*> *p_dir_stack;
+    table<const char*>      *p_macros;
+    char                    p_ifelse_stack[MAXSTRLEN];
+    int                     p_ifelseSP;
+    jmp_buf                 p_jbuf;
+    bool                    p_no_go;
+    bool                    p_verbose;
+
+    static vl_parser        *p_parser;
 };
 
 // Range or type storage
 //
 struct vl_range_or_type
 {
-    vl_range_or_type() { type = 0; range = 0; }
-    vl_range_or_type(short t, vl_range *r) { type = t; range = r; }
-    ~vl_range_or_type() { delete range; }
+    vl_range_or_type()
+        {
+            type = 0;
+            range = 0;
+        }
+
+    vl_range_or_type(short t, vl_range *r)
+        {
+            type = t;
+            range = r;
+        }
+
+    ~vl_range_or_type()
+        {
+            delete range;
+        }
 
     short type;
     vl_range *range;
@@ -780,8 +898,17 @@ struct vl_range_or_type
 //
 struct multi_concat
 {
-    multi_concat() { rep = 0; concat = 0; }
-    multi_concat(vl_expr *r, lsList<vl_expr*> *c) { rep = r; concat = c; }
+    multi_concat()
+        {
+            rep = 0;
+            concat = 0;
+        }
+
+    multi_concat(vl_expr *r, lsList<vl_expr*> *c)
+        {
+            rep = r;
+            concat = c;
+        }
 
     vl_expr *rep;
     lsList<vl_expr*> *concat;
@@ -791,7 +918,13 @@ struct multi_concat
 //
 struct bitexp_parse : public vl_var
 {
-    bitexp_parse() { data_type = Dbit; u.s = brep = new char[MAXSTRLEN]; }
+    bitexp_parse()
+        {
+            data_type = Dbit;
+            u.s = brep = new char[MAXSTRLEN];
+        }
+//XXX destructor?
+
     void bin(char*);
     void dec(char*);
     void oct(char*);
@@ -894,8 +1027,16 @@ struct vl_simulator
 //
 struct vl_context
 {
-    vl_context() { module = 0; primitive = 0; task = 0; function = 0;
-        block = 0; fjblk = 0; parent = 0; }
+    vl_context()
+        {
+            module = 0;
+            primitive = 0;
+            task = 0;
+            function = 0;
+            block = 0;
+            fjblk = 0;
+            parent = 0;
+        }
 
     static void destroy(vl_context *c)
         {
@@ -906,16 +1047,25 @@ struct vl_context
             }
         }
 
-    vl_context *copy();
-    vl_context *push();
-    vl_context *push(vl_mp*);
-    vl_context *push(vl_module*);
-    vl_context *push(vl_primitive*);
-    vl_context *push(vl_task*);
-    vl_context *push(vl_function*);
-    vl_context *push(vl_begin_end_stmt*);
-    vl_context *push(vl_fork_join_stmt*);
+    // Push to new context, return the new context
+    static vl_context *push(vl_context *t)
+        {
+            vl_context *cx = new vl_context();
+            cx->parent = t;
+            return (cx);
+        }
+
+    static vl_context *push(vl_context*, vl_mp*);
+    static vl_context *push(vl_context*, vl_module*);
+    static vl_context *push(vl_context*, vl_primitive*);
+    static vl_context *push(vl_context*, vl_task*);
+    static vl_context *push(vl_context*, vl_function*);
+    static vl_context *push(vl_context*, vl_begin_end_stmt*);
+    static vl_context *push(vl_context*, vl_fork_join_stmt*);
     static vl_context *pop(vl_context*);
+
+    static vl_context *copy(vl_context*);
+
     bool in_context(vl_stmt*);
     vl_var *lookup_var(const char*, bool);
     vl_stmt *lookup_block(const char*);
@@ -983,17 +1133,23 @@ enum EVtype { EVnone, EVdelay, EVevent };
 
 // Base class for Verilog module items, statements, and action
 //
-struct vl_stmt {
-    vl_stmt() {  type = 0; flags = 0; }
-    virtual ~vl_stmt() { }
-    virtual vl_stmt *copy() { return (0); }
-    virtual void init() { }
-    virtual void setup(vl_simulator*) { }
+struct vl_stmt
+{
+    vl_stmt()
+        {
+            type = 0;
+            flags = 0;
+        }
+
+    virtual ~vl_stmt()          { }
+    virtual vl_stmt *copy()     { return (0); }
+    virtual void init()         { }
+    virtual void setup(vl_simulator*)   { }
     virtual EVtype eval(vl_event*, vl_simulator*) { return (EVnone); }
-    virtual void disable(vl_stmt*) { }
-    virtual void dump(ostream&, int) { }
-    virtual void print(ostream&) { }
-    virtual const char *lterm() { return ("\n"); }
+    virtual void disable(vl_stmt*)      { }
+    virtual void dump(ostream&, int)    { }
+    virtual void print(ostream&)        { }
+    virtual const char *lterm()         { return ("\n"); }
     virtual void dumpvars(ostream&, vl_simulator*) { }
 
     short type;
@@ -1035,7 +1191,12 @@ enum ABtype { Sequential, Fork, Fence };
 //
 struct vl_sblk
 {
-    vl_sblk() { type = Sequential; actions = 0; fjblk = 0; }
+    vl_sblk()
+        {
+            type = Sequential;
+            actions = 0;
+            fjblk = 0;
+        }
 
     ABtype type;
     vl_action_item *actions;
@@ -1046,10 +1207,19 @@ struct vl_sblk
 //
 struct vl_stack
 {
-    vl_stack(vl_sblk *a, int n) {
-        acts = new vl_sblk[n]; num = n;
-        for (int i = 0; i < n; i++) acts[i] = a[i]; }
-    ~vl_stack() { delete [] acts; }
+    vl_stack(vl_sblk *a, int n)
+        {
+            acts = new vl_sblk[n];
+            num = n;
+            for (int i = 0; i < n; i++)
+                acts[i] = a[i];
+        }
+
+    ~vl_stack()
+        {
+            delete [] acts;
+        }
+
     vl_stack *copy();
     void print(ostream&);
 
@@ -1104,11 +1274,25 @@ private:
 //
 struct vl_top_mod_list
 {
-    vl_top_mod_list() { num = 0; mods = 0; }
-    ~vl_top_mod_list() { delete [] mods; }
+    vl_top_mod_list()
+        {
+            num = 0;
+            mods = 0;
+        }
+
+    ~vl_top_mod_list()
+        {
+            delete [] mods;
+        }
+
     bool istop(vl_module *mod)
-        { for (int i = 0; i < num; i++) if (mod == mods[i]) return (true);
-        return (false); }
+        {
+            for (int i = 0; i < num; i++) {
+                if (mod == mods[i])
+                    return (true);
+            }
+            return (false);
+        }
 
     int num;
     vl_module **mods;
@@ -1119,7 +1303,13 @@ struct vl_top_mod_list
 struct vl_monitor
 {
     vl_monitor(vl_context *c, lsList<vl_expr*> *a, DSPtype t)
-        { cx = c; args = a; dtype = t; next = 0; }
+        {
+            cx = c;
+            args = a;
+            dtype = t;
+            next = 0;
+        }
+
     ~vl_monitor();
 
     vl_context *cx;
@@ -1156,9 +1346,9 @@ struct vl_desc
 struct vl_mp
 {
     virtual ~vl_mp() { }
-    virtual vl_mp *copy() { return (0); }
-    virtual void init() { }
-    virtual void dump(ostream&) { }
+    virtual vl_mp *copy()           { return (0); }
+    virtual void init()             { }
+    virtual void dump(ostream&)     { }
     virtual void dumpvars(ostream&, vl_simulator*) { }
     virtual void setup(vl_simulator*) { }
 
@@ -1214,7 +1404,7 @@ struct vl_primitive : public vl_mp
     unsigned char *ptable;          // entry table
     int rows;                       // array depth
     bool seq_init;                  // set when initialized
-    vl_var *iodata[MAXPRIMLEN];    // i/o data pointers
+    vl_var *iodata[MAXPRIMLEN];     // i/o data pointers
     unsigned char lastvals[MAXPRIMLEN];  // previous values
 };
 
@@ -1222,7 +1412,12 @@ struct vl_primitive : public vl_mp
 //
 struct vl_prim_entry
 {
-    vl_prim_entry() { memset(this, PrimNone, sizeof(vl_prim_entry)); }
+    vl_prim_entry()
+        {
+//XXX don't do this
+            memset(this, PrimNone, sizeof(vl_prim_entry));
+        }
+
     vl_prim_entry(lsList<int>*, unsigned char, unsigned char);
 
     unsigned char inputs[MAXPRIMLEN];
@@ -1234,7 +1429,13 @@ struct vl_prim_entry
 //
 struct vl_port
 {
-    vl_port() { type = 0; name = 0; port_exp = 0; }
+    vl_port()
+        {
+            type = 0;
+            name = 0;
+            port_exp = 0;
+        }
+
     vl_port(short, char*, lsList<vl_var*>*);
     ~vl_port();
     vl_port *copy();
@@ -1248,8 +1449,15 @@ struct vl_port
 //
 struct vl_port_connect
 {
-    vl_port_connect() { type = 0; name = 0; expr = 0;
-        i_assign = 0; o_assign = 0; }
+    vl_port_connect()
+        {
+            type = 0;
+            name = 0;
+            expr = 0;
+            i_assign = 0;
+            o_assign = 0;
+        }
+
     vl_port_connect(short, char*, vl_expr*);
     ~vl_port_connect();
     vl_port_connect *copy();
@@ -1270,7 +1478,15 @@ struct vl_port_connect
 //
 struct vl_decl : public vl_stmt
 {
-    vl_decl() { type = 0; range = 0; ids = 0; list = 0; delay = 0; }
+    vl_decl()
+        {
+            type = 0;
+            range = 0;
+            ids = 0;
+            list = 0;
+            delay = 0;
+        }
+
     vl_decl(short, vl_strength, vl_range*, vl_delay*,
         lsList<vl_bassign_stmt*>*, lsList<vl_var*>*);
     vl_decl(short, vl_range*, lsList<vl_var*>*);
@@ -1284,7 +1500,8 @@ struct vl_decl : public vl_stmt
     void setup(vl_simulator*);
     void print(ostream&);
     const char *decl_type();
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     vl_range *range;
     lsList<vl_var*> *ids;
@@ -1297,7 +1514,12 @@ struct vl_decl : public vl_stmt
 //
 struct vl_procstmt : public vl_stmt
 {
-    vl_procstmt() { stmt = 0; lasttime = (vl_time_t)-1; }
+    vl_procstmt()
+        {
+            stmt = 0;
+            lasttime = (vl_time_t)-1;
+        }
+
     vl_procstmt(short, vl_stmt*);
     ~vl_procstmt();
     vl_procstmt *copy();
@@ -1306,7 +1528,8 @@ struct vl_procstmt : public vl_stmt
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_stmt *stmt;
     vl_time_t lasttime;  // used for 'always' stmt
@@ -1316,13 +1539,19 @@ struct vl_procstmt : public vl_stmt
 //
 struct vl_cont_assign : public vl_stmt
 {
-    vl_cont_assign() { delay = 0; assigns = 0; }
+    vl_cont_assign()
+        {
+            delay = 0;
+            assigns = 0;
+        }
+
     vl_cont_assign(vl_strength, vl_delay*, lsList<vl_bassign_stmt*>*);
     ~vl_cont_assign();
     vl_cont_assign *copy();
     void setup(vl_simulator*);
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     vl_strength strength;
     vl_delay *delay;
@@ -1355,7 +1584,8 @@ struct vl_specify_item
     ~vl_specify_item();
     vl_specify_item *copy();
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     short type;
     lsList<vl_bassign_stmt*> *params;
@@ -1378,7 +1608,8 @@ struct vl_spec_term_desc
     ~vl_spec_term_desc();
     vl_spec_term_desc *copy();
     void print(ostream&);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     const char *name;
     vl_expr *exp1;
@@ -1413,7 +1644,8 @@ struct vl_task : public vl_stmt
     void disable(vl_stmt*);
     void dump(ostream&, int);
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     const char *name;
     lsList<vl_decl*> *decls;
@@ -1433,7 +1665,8 @@ struct vl_function : public vl_stmt
     void eval_func(vl_var*, lsList<vl_expr*>*);
     void print(ostream&);
     void dump(ostream&, int);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     const char *name;
     vl_range *range;
@@ -1447,7 +1680,10 @@ struct vl_function : public vl_stmt
 //
 struct vl_dlstr
 {
-    vl_dlstr() { delay = 0; strength.str0 = strength.str1 = STRnone; }
+    vl_dlstr()
+        {
+            delay = 0;
+        }
 
     vl_delay *delay;
     vl_strength strength;
@@ -1463,7 +1699,8 @@ struct vl_gate_inst_list : public vl_stmt
     vl_gate_inst_list *copy();
     void setup(vl_simulator*);
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     vl_strength strength;
     vl_delay *delays;
@@ -1475,7 +1712,13 @@ struct vl_gate_inst_list : public vl_stmt
 struct vl_mp_inst_list : public vl_stmt
 {
     vl_mp_inst_list()
-        { name = 0; mptype = MPundef; mps = 0; params_or_delays = 0; }
+        {
+            name = 0;
+            mptype = MPundef;
+            mps = 0;
+            params_or_delays = 0;
+        }
+
     vl_mp_inst_list(MPtype, char*, vl_dlstr*, lsList<vl_mp_inst*>*);
     ~vl_mp_inst_list();
     vl_mp_inst_list *copy();
@@ -1483,7 +1726,8 @@ struct vl_mp_inst_list : public vl_stmt
     void setup(vl_simulator*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     const char *name;             // name of master
     MPtype mptype;                // type of object in list
@@ -1509,7 +1753,8 @@ struct vl_bassign_stmt : public vl_stmt
     EVtype eval(vl_event*, vl_simulator*);
     void freeze_indices(vl_range*);
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     vl_var *lhs;              // receiving variable
     vl_range *range;          // bit/part select for receiver
@@ -1524,14 +1769,22 @@ struct vl_bassign_stmt : public vl_stmt
 //
 struct vl_sys_task_stmt : public vl_stmt
 {
-    vl_sys_task_stmt() { name = 0; args = 0; dtype = DSPall; flags = 0; }
+    vl_sys_task_stmt()
+        {
+            name = 0;
+            args = 0;
+            dtype = DSPall;
+            flags = 0;
+        }
+
     vl_sys_task_stmt(char*, lsList<vl_expr*>*);
     ~vl_sys_task_stmt();
     vl_sys_task_stmt *copy();
     void setup(vl_simulator*);
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     const char *name;
     vl_var& (vl_simulator::*action)(vl_sys_task_stmt*, lsList<vl_expr*>*);
@@ -1548,8 +1801,15 @@ struct vl_sys_task_stmt : public vl_stmt
 //
 struct vl_begin_end_stmt : public vl_stmt
 {
-    vl_begin_end_stmt() { name = 0; decls = 0; stmts = 0; sig_st = 0;
-        blk_st = 0; }
+    vl_begin_end_stmt()
+        {
+            name = 0;
+            decls = 0;
+            stmts = 0;
+            sig_st = 0;
+            blk_st = 0;
+        }
+
     vl_begin_end_stmt(char*, lsList<vl_decl*>*, lsList<vl_stmt*>*);
     ~vl_begin_end_stmt();
     vl_begin_end_stmt *copy();
@@ -1572,9 +1832,21 @@ struct vl_begin_end_stmt : public vl_stmt
 //
 struct vl_if_else_stmt : public vl_stmt
 {
-    vl_if_else_stmt() { cond = 0; if_stmt = else_stmt = 0; }
+    vl_if_else_stmt()
+        {
+            cond = 0;
+            if_stmt = else_stmt = 0;
+        }
+
     vl_if_else_stmt(vl_expr*, vl_stmt*, vl_stmt*);
-    ~vl_if_else_stmt() { delete cond; delete if_stmt; delete else_stmt; }
+
+    ~vl_if_else_stmt()
+        {
+            delete cond;
+            delete if_stmt;
+            delete else_stmt;
+        }
+
     vl_if_else_stmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1582,7 +1854,8 @@ struct vl_if_else_stmt : public vl_stmt
     void disable(vl_stmt*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_expr *cond;
     vl_stmt *if_stmt;
@@ -1593,7 +1866,12 @@ struct vl_if_else_stmt : public vl_stmt
 //
 struct vl_case_stmt : public vl_stmt
 {
-    vl_case_stmt() { cond = 0; case_items = 0; }
+    vl_case_stmt()
+        {
+            cond = 0;
+            case_items = 0;
+        }
+
     vl_case_stmt(short, vl_expr*, lsList<vl_case_item*>*);
     ~vl_case_stmt();
     vl_case_stmt *copy();
@@ -1612,7 +1890,12 @@ struct vl_case_stmt : public vl_stmt
 //
 struct vl_case_item : public vl_stmt
 {
-    vl_case_item() { exprs = 0; stmt = 0; }
+    vl_case_item()
+        {
+            exprs = 0;
+            stmt = 0;
+        }
+
     vl_case_item(short, lsList<vl_expr*>*, vl_stmt*);
     ~vl_case_item();
     vl_case_item *copy();
@@ -1629,9 +1912,18 @@ struct vl_case_item : public vl_stmt
 //
 struct vl_forever_stmt : public vl_stmt
 {
-    vl_forever_stmt() { stmt = 0; }
+    vl_forever_stmt()
+        {
+            stmt = 0;
+        }
+
     vl_forever_stmt(vl_stmt*);
-    ~vl_forever_stmt() { delete stmt; }
+
+    ~vl_forever_stmt()
+        {
+            delete stmt;
+        }
+
     vl_forever_stmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1639,7 +1931,8 @@ struct vl_forever_stmt : public vl_stmt
     void disable(vl_stmt*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_stmt *stmt;
 };
@@ -1648,9 +1941,21 @@ struct vl_forever_stmt : public vl_stmt
 //
 struct vl_repeat_stmt : public vl_stmt
 {
-    vl_repeat_stmt() { count = 0; stmt = 0; cur_count = 0; }
+    vl_repeat_stmt()
+        {
+            count = 0;
+            stmt = 0;
+            cur_count = 0;
+        }
+
     vl_repeat_stmt(vl_expr*, vl_stmt*);
-    ~vl_repeat_stmt() { delete count; delete stmt; }
+
+    ~vl_repeat_stmt()
+        {
+            delete count;
+            delete stmt;
+        }
+
     vl_repeat_stmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1658,7 +1963,8 @@ struct vl_repeat_stmt : public vl_stmt
     void disable(vl_stmt*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_expr *count;
     vl_stmt *stmt;
@@ -1669,9 +1975,20 @@ struct vl_repeat_stmt : public vl_stmt
 //
 struct vl_while_stmt : public vl_stmt
 {
-    vl_while_stmt() { cond = 0; stmt = 0; }
+    vl_while_stmt()
+        {
+            cond = 0;
+            stmt = 0;
+        }
+
     vl_while_stmt(vl_expr*, vl_stmt*);
-    ~vl_while_stmt() { delete cond; delete stmt; }
+
+    ~vl_while_stmt()
+        {
+            delete cond;
+            delete stmt;
+        }
+
     vl_while_stmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1679,7 +1996,8 @@ struct vl_while_stmt : public vl_stmt
     void disable(vl_stmt*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_expr *cond;
     vl_stmt *stmt;
@@ -1689,9 +2007,23 @@ struct vl_while_stmt : public vl_stmt
 //
 struct vl_for_stmt : public vl_stmt
 {
-    vl_for_stmt() { initial = end = 0; cond = 0; stmt = 0; }
+    vl_for_stmt()
+        {
+            initial = end = 0;
+            cond = 0;
+            stmt = 0;
+        }
+
     vl_for_stmt(vl_bassign_stmt*, vl_expr*, vl_bassign_stmt*, vl_stmt*);
-    ~vl_for_stmt() { delete initial; delete end; delete cond; delete stmt; }
+
+    ~vl_for_stmt()
+        {
+            delete initial;
+            delete end;
+            delete cond;
+            delete stmt;
+        }
+
     vl_for_stmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1699,7 +2031,8 @@ struct vl_for_stmt : public vl_stmt
     void disable(vl_stmt*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_bassign_stmt *initial;
     vl_bassign_stmt *end;
@@ -1711,9 +2044,20 @@ struct vl_for_stmt : public vl_stmt
 //
 struct vl_delay_control_stmt : public vl_stmt
 {
-    vl_delay_control_stmt() { delay = 0; stmt = 0; }
+    vl_delay_control_stmt()
+        {
+            delay = 0;
+            stmt = 0;
+        }
+
     vl_delay_control_stmt(vl_delay*, vl_stmt*);
-    ~vl_delay_control_stmt() { delete delay; delete stmt; }
+
+    ~vl_delay_control_stmt()
+        {
+            delete delay;
+            delete stmt;
+        }
+
     vl_delay_control_stmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1721,7 +2065,8 @@ struct vl_delay_control_stmt : public vl_stmt
     void disable(vl_stmt*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_delay *delay;
     vl_stmt *stmt;
@@ -1731,9 +2076,20 @@ struct vl_delay_control_stmt : public vl_stmt
 //
 struct vl_event_control_stmt : public vl_stmt
 {
-    vl_event_control_stmt() { event = 0; stmt = 0;}
+    vl_event_control_stmt()
+        {
+            event = 0;
+            stmt = 0;
+        }
+
     vl_event_control_stmt(vl_event_expr*, vl_stmt*);
-    ~vl_event_control_stmt() { delete event; delete stmt; }
+
+    ~vl_event_control_stmt()
+        {
+            delete event;
+            delete stmt;
+        }
+
     vl_event_control_stmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1741,7 +2097,8 @@ struct vl_event_control_stmt : public vl_stmt
     void disable(vl_stmt*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_event_expr *event;
     vl_stmt *stmt;
@@ -1751,10 +2108,25 @@ struct vl_event_control_stmt : public vl_stmt
 //
 struct vl_wait_stmt : public vl_stmt
 {
-    vl_wait_stmt() { cond = 0; stmt = 0; event = 0; }
+    vl_wait_stmt()
+        {
+            cond = 0;
+            stmt = 0;
+            event = 0;
+        }
+
     vl_wait_stmt(vl_expr*, vl_stmt*);
-    ~vl_wait_stmt() { delete cond; delete stmt;
-        if (event) { event->expr = 0; delete event; } }
+
+    ~vl_wait_stmt()
+        {
+            delete cond;
+            delete stmt;
+            if (event) {
+                event->expr = 0;
+                delete event;
+            }
+        }
+
     vl_wait_stmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1762,7 +2134,8 @@ struct vl_wait_stmt : public vl_stmt
     void disable(vl_stmt*);
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
-    const char *lterm() { return (""); }
+
+    const char *lterm()     { return (""); }
 
     vl_expr *cond;
     vl_stmt *stmt;
@@ -1773,14 +2146,24 @@ struct vl_wait_stmt : public vl_stmt
 //
 struct vl_send_event_stmt : public vl_stmt
 {
-    vl_send_event_stmt() { name = 0; }
+    vl_send_event_stmt()
+        {
+            name = 0;
+        }
+
     vl_send_event_stmt(char*);
-    ~vl_send_event_stmt() { delete [] name; }
+
+    ~vl_send_event_stmt()
+        {
+            delete [] name;
+        }
+
     vl_send_event_stmt *copy();
     void setup(vl_simulator*);
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     const char *name;
 };
@@ -1789,8 +2172,16 @@ struct vl_send_event_stmt : public vl_stmt
 //
 struct vl_fork_join_stmt : public vl_stmt
 {
-    vl_fork_join_stmt() { name = 0; decls = 0; stmts = 0; sig_st = 0;
-        blk_st = 0; endcnt = 0; }
+    vl_fork_join_stmt()
+        {
+            name = 0;
+            decls = 0;
+            stmts = 0;
+            sig_st = 0;
+            blk_st = 0;
+            endcnt = 0;
+        }
+
     vl_fork_join_stmt(char*, lsList<vl_decl*>*, lsList<vl_stmt*>*);
     ~vl_fork_join_stmt();
     vl_fork_join_stmt *copy();
@@ -1815,7 +2206,11 @@ struct vl_fork_join_stmt : public vl_stmt
 struct vl_fj_break : public vl_stmt
 {
     vl_fj_break(vl_fork_join_stmt *f, vl_begin_end_stmt *e)
-        { type = ForkJoinBreak; fjblock = f; begin_end = e; }
+        {
+            type = ForkJoinBreak;
+            fjblock = f;
+            begin_end = e;
+        }
 
     void setup(vl_simulator*);
     EVtype eval(vl_event*, vl_simulator*);
@@ -1829,7 +2224,13 @@ struct vl_fj_break : public vl_stmt
 //
 struct vl_task_enable_stmt : public vl_stmt
 {
-    vl_task_enable_stmt() { name = 0; args = 0; task = 0; }
+    vl_task_enable_stmt()
+        {
+            name = 0;
+            args = 0;
+            task = 0;
+        }
+
     vl_task_enable_stmt(short, char*, lsList<vl_expr*>*);
     ~vl_task_enable_stmt();
     vl_task_enable_stmt *copy();
@@ -1846,14 +2247,25 @@ struct vl_task_enable_stmt : public vl_stmt
 //
 struct vl_disable_stmt : public vl_stmt
 {
-    vl_disable_stmt() { name = 0; target = 0; }
+    vl_disable_stmt()
+        {
+            name = 0;
+            target = 0;
+        }
+
     vl_disable_stmt(char*);
-    ~vl_disable_stmt() { delete [] name; }
+
+    ~vl_disable_stmt()
+        {
+            delete [] name;
+        }
+
     vl_disable_stmt *copy();
     void setup(vl_simulator*);
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     const char *name;
     vl_stmt *target;
@@ -1863,7 +2275,11 @@ struct vl_disable_stmt : public vl_stmt
 //
 struct vl_deassign_stmt : public vl_stmt
 {
-    vl_deassign_stmt() { lhs = 0; }
+    vl_deassign_stmt()
+        {
+            lhs = 0;
+        }
+
     vl_deassign_stmt(short, vl_var*);
     ~vl_deassign_stmt();
     vl_deassign_stmt *copy();
@@ -1871,7 +2287,8 @@ struct vl_deassign_stmt : public vl_stmt
     void setup(vl_simulator*);
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
-    const char *lterm() { return (";\n"); }
+
+    const char *lterm()     { return (";\n"); }
 
     vl_var *lhs;
 };
@@ -1918,7 +2335,14 @@ struct vl_gate_inst : public vl_inst
 //
 struct vl_mp_inst : public vl_inst
 {
-    vl_mp_inst() { name = 0; ports = 0; inst_list = 0; master = 0; }
+    vl_mp_inst()
+        {
+            name = 0;
+            ports = 0;
+            inst_list = 0;
+            master = 0;
+        }
+
     vl_mp_inst(char*, lsList<vl_port_connect*>*);
     ~vl_mp_inst();
     vl_mp_inst *copy();
@@ -1938,9 +2362,6 @@ struct vl_mp_inst : public vl_inst
 //  Exported globals
 //---------------------------------------------------------------------------
 
-// vl_parse.cc
-extern vl_parser VP;
-
 // vl_print.cc
 extern void vl_error(const char*, ...);
 extern void vl_warn(const char*, ...);
@@ -1950,3 +2371,4 @@ extern char *vl_fix_str(const char*);
 extern char *vl_strdup(const char*);
 
 #define errout(x) cout << (x) << "\n---\n"
+

@@ -68,6 +68,19 @@
 //  Verilog description objects
 //---------------------------------------------------------------------------
 
+namespace {
+    vl_context *var_context()
+    {
+        return (vl_var::simulator->context);
+    }
+
+    void set_var_context(vl_context *cx)
+    {
+        vl_var::simulator->context = cx;
+    }
+}
+
+
 vl_module::vl_module()
 {
     type = 0;
@@ -131,7 +144,7 @@ vl_module::copy()
     retval->type = type;
     retval->name = vl_strdup(name);
 
-    vl_context *cx = vl_var::simulator->context;
+    vl_context *cx = var_context();
     while (cx) {
         if (cx->module && !strcmp(cx->module->name, name)) {
             vl_error("recursive instantiation of module %s", name);
@@ -141,10 +154,10 @@ vl_module::copy()
         cx = cx->parent;
     }
 
-    vl_var::simulator->context = vl_var::simulator->context->push(retval);
+    set_var_context(vl_context::push(var_context(), retval));
     retval->ports = copy_list(ports);
     retval->mod_items = copy_list(mod_items);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
     retval->tunit = tunit;
     retval->tprec = tprec;
 
@@ -155,9 +168,9 @@ vl_module::copy()
 void
 vl_module::init()
 {
-    vl_var::simulator->context = vl_var::simulator->context->push(this);
+    set_var_context(vl_context::push(var_context(), this));
     init_list(mod_items);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 }
 // End vl_module functions
 
@@ -251,7 +264,7 @@ vl_primitive::copy()
     retval->type = type;
     retval->name = vl_strdup(name);
 
-    vl_var::simulator->context = vl_var::simulator->context->push(retval);
+    set_var_context(vl_context::push(var_context(), retval));
     retval->ports = copy_list(ports);
     retval->decls = copy_list(decls);
     if (initial)
@@ -261,7 +274,7 @@ vl_primitive::copy()
         retval->ptable = new unsigned char[rows*MAXPRIMLEN];
         memcpy(retval->ptable, ptable, rows*MAXPRIMLEN);
     }
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
     return (retval);
 }
 
@@ -269,9 +282,9 @@ vl_primitive::copy()
 void
 vl_primitive::init()
 {
-    vl_var::simulator->context = vl_var::simulator->context->push(this);
+    set_var_context(vl_context::push(var_context(), this));
     init_list(decls);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 }
 // End vl_primitive functions
 
@@ -638,7 +651,8 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type == REGwire && var->io_type != IOnone)) {
             var->net_type = REGtri0;
             var->setbits(BitL);
-            var->strength.str0 = var->strength.str1 = STRpull;
+            var->strength.set_str0(STRpull);
+            var->strength.set_str1(STRpull);
             return;
         }
         break;
@@ -647,7 +661,8 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type == REGwire && var->io_type != IOnone)) {
             var->net_type = REGtri1;
             var->setbits(BitH);
-            var->strength.str0 = var->strength.str1 = STRpull;
+            var->strength.set_str0(STRpull);
+            var->strength.set_str1(STRpull);
             return;
         }
         break;
@@ -656,7 +671,8 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type == REGwire && var->io_type != IOnone)) {
             var->net_type = REGsupply0;
             var->setbits(BitL);
-            var->strength.str0 = var->strength.str1 = STRsupply;
+            var->strength.set_str0(STRsupply);
+            var->strength.set_str1(STRsupply);
             return;
         }
         break;
@@ -665,7 +681,8 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type == REGwire && var->io_type != IOnone)) {
             var->net_type = REGsupply1;
             var->setbits(BitH);
-            var->strength.str0 = var->strength.str1 = STRsupply;
+            var->strength.set_str0(STRsupply);
+            var->strength.set_str1(STRsupply);
             return;
         }
         break;
@@ -1021,12 +1038,12 @@ vl_task *
 vl_task::copy()
 {
     vl_task *task = new vl_task(vl_strdup(name), 0, 0);
-    vl_var::simulator->context = vl_var::simulator->context->push(task);
+    set_var_context(vl_context::push(var_context(), task));
     task->decls = copy_list(decls);
     task->stmts = copy_list(stmts);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 
-    vl_module *current_mod = vl_var::simulator->context->currentModule();
+    vl_module *current_mod = var_context()->currentModule();
     if (current_mod) {
         if (!current_mod->task_st)
             current_mod->task_st = new table<vl_task*>;
@@ -1039,10 +1056,10 @@ vl_task::copy()
 void
 vl_task::init()
 {
-    vl_var::simulator->context = vl_var::simulator->context->push(this);
+    set_var_context(vl_context::push(var_context(), this));
     init_list(decls);
     init_list(stmts);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 }
 // End vl_task functions
 
@@ -1076,12 +1093,12 @@ vl_function::copy()
 {
     vl_function *fcn = new vl_function(type, range->copy(), vl_strdup(name),
         0, 0);
-    vl_var::simulator->context = vl_var::simulator->context->push(fcn);
+    set_var_context(vl_context::push(var_context(), fcn));
     fcn->decls = copy_list(decls);
     fcn->stmts = copy_list(stmts);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 
-    vl_module *current_mod = vl_var::simulator->context->currentModule();
+    vl_module *current_mod = var_context()->currentModule();
     if (current_mod) {
         if (!current_mod->func_st)
             current_mod->func_st = new table<vl_function*>;
@@ -1094,10 +1111,10 @@ vl_function::copy()
 void
 vl_function::init()
 {
-    vl_var::simulator->context = vl_var::simulator->context->push(this);
+    set_var_context(vl_context::push(var_context(), this));
     init_list(decls);
     init_list(stmts);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 }
 // End vl_function functions
 
@@ -1138,8 +1155,7 @@ vl_gate_inst_list::copy()
             newinst->inst_list = retval;
             newgates->newEnd(newinst);
             if (newinst->name) {
-                vl_module *current_mod =
-                    vl_var::simulator->context->currentModule();
+                vl_module *current_mod = var_context()->currentModule();
                 if (current_mod) {
                     if (!current_mod->inst_st)
                         current_mod->inst_st = new table<vl_inst*>;
@@ -1192,8 +1208,7 @@ vl_mp_inst_list::copy()
             vl_mp_inst *newinst = inst->copy();
             newinst->inst_list = retval;
             newmps->newEnd(newinst);
-            vl_module *current_mod =
-                vl_var::simulator->context->currentModule();
+            vl_module *current_mod = var_context()->currentModule();
             if (current_mod && newinst->name) {
                 if (!current_mod->inst_st)
                     current_mod->inst_st = new table<vl_inst*>;
@@ -1230,11 +1245,9 @@ vl_mp_inst_list::init()
         vl_mp_inst *inst;
         while (gen.next(&inst)) {
             if (inst->master) {
-                vl_var::simulator->context =
-                    vl_var::simulator->context->push(inst->master);
+                set_var_context(vl_context::push(var_context(), inst->master));
                 inst->master->init();
-                vl_var::simulator->context =
-                    vl_context::pop(vl_var::simulator->context);
+                set_var_context(vl_context::pop(var_context()));
             }
         }
     }
@@ -1524,13 +1537,13 @@ vl_begin_end_stmt *
 vl_begin_end_stmt::copy()
 {
     vl_begin_end_stmt *stmt = new vl_begin_end_stmt(vl_strdup(name), 0, 0);
-    vl_var::simulator->context = vl_var::simulator->context->push(stmt);
+    set_var_context(vl_context::push(var_context(), stmt));
     stmt->decls = copy_list(decls);
     stmt->stmts = copy_list(stmts);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 
     if (stmt->name) {
-        vl_context *cx = vl_var::simulator->context;
+        vl_context *cx = var_context();
         if (cx->block) {
             if (!cx->block->blk_st)
                 cx->block->blk_st = new table<vl_stmt*>;
@@ -1568,10 +1581,10 @@ vl_begin_end_stmt::copy()
 void
 vl_begin_end_stmt::init()
 {
-    vl_var::simulator->context = vl_var::simulator->context->push(this);
+    set_var_context(vl_context::push(var_context(), this));
     init_list(decls);
     init_list(stmts);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 }
 // End vl_begin_end_stmt functions
 
@@ -1891,13 +1904,13 @@ vl_fork_join_stmt *
 vl_fork_join_stmt::copy()
 {
     vl_fork_join_stmt *stmt = new vl_fork_join_stmt(vl_strdup(name), 0, 0);
-    vl_var::simulator->context = vl_var::simulator->context->push(stmt);
+    set_var_context(vl_context::push(var_context(), stmt));
     stmt->decls = copy_list(decls);
     stmt->stmts = copy_list(stmts);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 
     if (stmt->name) {
-        vl_context *cx = vl_var::simulator->context;
+        vl_context *cx = var_context();
         if (cx->block) {
             if (!cx->block->blk_st)
                 cx->block->blk_st = new table<vl_stmt*>;
@@ -1935,10 +1948,10 @@ vl_fork_join_stmt::copy()
 void
 vl_fork_join_stmt::init()
 {
-    vl_var::simulator->context = vl_var::simulator->context->push(this);
+    set_var_context(vl_context::push(var_context(), this));
     init_list(decls);
     init_list(stmts);
-    vl_var::simulator->context = vl_context::pop(vl_var::simulator->context);
+    set_var_context(vl_context::pop(var_context()));
 }
 // End vl_fork_join_stmt functions
 
