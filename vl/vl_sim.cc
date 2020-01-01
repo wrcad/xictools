@@ -45,7 +45,8 @@
 #include "vl_defs.h"
 #include "vl_types.h"
 
-// needed to find top modules in resolve routines
+
+// Needed to find top modules in resolve functions.
 vl_simulator *vl_context::simulator;
 
 extern bool mmon_start(int);
@@ -80,109 +81,108 @@ vl_disable_list(lsList<T> *stmts, vl_stmt *s)
 }
 
 
-// Return the vl_port corresponding to name, or num if name is nil
-//
-static vl_port *
-find_port(lsList<vl_port*> *ports, const char *name, int num = 0)
-{
-    lsGen<vl_port*> pgen(ports);
-    vl_port *port;
-    int cnt = 0;
-    while (pgen.next(&port)) {
-        if (name) {
-            if (port->port_exp) {
-                if (port->name && !strcmp(port->name, name))
-                    return (port);
-                lsGen<vl_var*> vgen(port->port_exp);
-                vl_var *v;
-                if (vgen.next(&v)) {
-                    if (v->name && !strcmp(v->name, name))
+namespace {
+    // Return the vl_port corresponding to name, or num if name is nil.
+    //
+    vl_port *find_port(lsList<vl_port*> *ports, const char *name, int num = 0)
+    {
+        lsGen<vl_port*> pgen(ports);
+        vl_port *port;
+        int cnt = 0;
+        while (pgen.next(&port)) {
+            if (name) {
+                if (port->port_exp) {
+                    if (port->name && !strcmp(port->name, name))
                         return (port);
+                    lsGen<vl_var*> vgen(port->port_exp);
+                    vl_var *v;
+                    if (vgen.next(&v)) {
+                        if (v->name() && !strcmp(v->name(), name))
+                            return (port);
+                    }
                 }
             }
+            else if (num == cnt)
+                return (port);
+            cnt++;
         }
-        else if (num == cnt)
-            return (port);
-        cnt++;
+        return (0);
     }
-    return (0);
-}
 
 
-// Comparison function for combinational primitive tokens
-//
-static bool
-dcmp(unsigned char a, unsigned char b)
-{
-    if (a == b)
-        return (true);
-    if (a == PrimQ || b == PrimQ)
-        return (true);
-    if ((a == PrimB && b <= Prim1) || (b == PrimB && a <= Prim1))
-        return (true);
-    return (false);
-}
+    // Comparison function for combinational primitive tokens.
+    //
+    bool dcmp(unsigned char a, unsigned char b)
+    {
+        if (a == b)
+            return (true);
+        if (a == PrimQ || b == PrimQ)
+            return (true);
+        if ((a == PrimB && b <= Prim1) || (b == PrimB && a <= Prim1))
+            return (true);
+        return (false);
+    }
 
 
-// Comparison function for sequential primitive tokens
-//
-static bool
-dcmpseq(unsigned char a, unsigned char l, unsigned char c)
-{
-    if (c == Prim0)
-        return (a == Prim0);
-    if (c == Prim1)
-        return (a == Prim1);
-    if (c == PrimX)
-        return (a == PrimX);
-    if (c == PrimB)
-        return (a == Prim0 || a == Prim1);
-    if (c == PrimQ)
-        return (a == Prim0 || a == Prim1 || a == PrimX);
+    // Comparison function for sequential primitive tokens.
+    //
+    bool dcmpseq(unsigned char a, unsigned char l, unsigned char c)
+    {
+        if (c == Prim0)
+            return (a == Prim0);
+        if (c == Prim1)
+            return (a == Prim1);
+        if (c == PrimX)
+            return (a == PrimX);
+        if (c == PrimB)
+            return (a == Prim0 || a == Prim1);
+        if (c == PrimQ)
+            return (a == Prim0 || a == Prim1 || a == PrimX);
 
-    if (c == PrimR)
-        return (l == Prim0 && a == Prim1);
-    if (c == PrimF)
-        return (l == Prim1 && a == Prim0);
-    if (c == PrimP)
-        return (((l == Prim0 && (a == Prim1 || a == PrimX)) ||
-            (l == PrimX && a == Prim1)));
-    if (c == PrimN)
-        return (((l == Prim1 && (a == Prim0 || a == PrimX)) ||
-            (l == PrimX && a == Prim0)));
-    if (c == PrimS)
-        return (l != a);
-    if (c == PrimM)
-        return (l == a);
-    if (c == Prim0X)
-        return (l == Prim0 && a == PrimX);
-    if (c == Prim1X)
-        return (l == Prim1 && a == PrimX);
-    if (c == PrimX0)
-        return (l == PrimX && a == Prim0);
-    if (c == PrimX1)
-        return (l == PrimX && a == Prim1);
-    if (c == PrimXB)
-        return (l == PrimX && (a == Prim0 || a == Prim1));
-    if (c == PrimBX)
-        return ((l == Prim0 || l == Prim1) && a == PrimX);
-    if (c == PrimBB)
-        return ((l == Prim0 && a == Prim1) || (l == Prim1 && a == Prim0));
-    if (c == PrimQ0)
-        return ((l == Prim1 || l == PrimX) && a == Prim0);
-    if (c == PrimQ1)
-        return ((l == Prim0 || l == PrimX) && a == Prim1);
-    if (c == PrimQB)
-        return ((l == Prim0 || l == Prim1 || l == PrimX) &&
-            (a == Prim0 || a == Prim1) && l != a);
-    if (c == Prim0Q)
-        return (l == Prim0 && (a == Prim1 || a == PrimX));
-    if (c == Prim1Q)
-        return (l == Prim1 && (a == Prim0 || a == PrimX));
-    if (c == PrimBQ)
-        return ((l == Prim0 || l == Prim1) &&
-            (a == Prim0 || a == Prim1 || a == PrimX) && l != a);
-    return (false);
+        if (c == PrimR)
+            return (l == Prim0 && a == Prim1);
+        if (c == PrimF)
+            return (l == Prim1 && a == Prim0);
+        if (c == PrimP)
+            return (((l == Prim0 && (a == Prim1 || a == PrimX)) ||
+                (l == PrimX && a == Prim1)));
+        if (c == PrimN)
+            return (((l == Prim1 && (a == Prim0 || a == PrimX)) ||
+                (l == PrimX && a == Prim0)));
+        if (c == PrimS)
+            return (l != a);
+        if (c == PrimM)
+            return (l == a);
+        if (c == Prim0X)
+            return (l == Prim0 && a == PrimX);
+        if (c == Prim1X)
+            return (l == Prim1 && a == PrimX);
+        if (c == PrimX0)
+            return (l == PrimX && a == Prim0);
+        if (c == PrimX1)
+            return (l == PrimX && a == Prim1);
+        if (c == PrimXB)
+            return (l == PrimX && (a == Prim0 || a == Prim1));
+        if (c == PrimBX)
+            return ((l == Prim0 || l == Prim1) && a == PrimX);
+        if (c == PrimBB)
+            return ((l == Prim0 && a == Prim1) || (l == Prim1 && a == Prim0));
+        if (c == PrimQ0)
+            return ((l == Prim1 || l == PrimX) && a == Prim0);
+        if (c == PrimQ1)
+            return ((l == Prim0 || l == PrimX) && a == Prim1);
+        if (c == PrimQB)
+            return ((l == Prim0 || l == Prim1 || l == PrimX) &&
+                (a == Prim0 || a == Prim1) && l != a);
+        if (c == Prim0Q)
+            return (l == Prim0 && (a == Prim1 || a == PrimX));
+        if (c == Prim1Q)
+            return (l == Prim1 && (a == Prim0 || a == PrimX));
+        if (c == PrimBQ)
+            return ((l == Prim0 || l == Prim1) &&
+                (a == Prim0 || a == Prim1 || a == PrimX) && l != a);
+        return (false);
+    }
 }
 
 
@@ -262,7 +262,7 @@ vl_simulator::~vl_simulator()
 
 
 // Initialize the simulator, call before simulation, call with desc = 0
-// to clear/free everything
+// to clear/free everything.
 //
 bool
 vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
@@ -302,7 +302,7 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     delete top_modules;
     top_modules = 0;
     dbg_flags = 0;
-    time_data.u.t = 0;
+    time_data.data().t = 0;
 
     close_files();
 
@@ -372,14 +372,14 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     fmonitor_state = true;
     context = 0;
     var_factory.clear();
-    time_data.data_type = Dtime;
-    time_data.u.t = 0;
+    time_data.set_data_type(Dtime);
+    time_data.data().t = 0;
     tfunit = (int)(log10(description->tstep) - 0.5);
     return (true);
 }
 
 
-// Perform the simulation
+// Perform the simulation.
 //
 bool
 vl_simulator::simulate()
@@ -396,7 +396,7 @@ vl_simulator::simulate()
             cout << "\n\n";
         }
         var_factory.clear();
-        time_data.u.t = timewheel->time;
+        time_data.data().t = timewheel->time;
         timewheel->eval_slot(this);
         if (monitor_state && monitors) {
             for (vl_monitor *m = monitors; m; m = m->next) {
@@ -429,7 +429,7 @@ vl_simulator::simulate()
 }
 
 
-// Step one time point
+// Step one time point.
 //
 VLstopType
 vl_simulator::step()
@@ -437,7 +437,7 @@ vl_simulator::step()
     vl_context::simulator = this;
     vl_var::simulator = this;
     while (timewheel && stop == VLrun && timewheel->time <= steptime) {
-        time_data.u.t = timewheel->time;
+        time_data.data().t = timewheel->time;
         timewheel->eval_slot(this);
         if (monitor_state && monitors) {
             for (vl_monitor *m = monitors; m; m = m->next) {
@@ -519,7 +519,7 @@ vl_simulator::flush_files()
             channels[i]->flush();
     }
 }
-// End vl_simulator functions
+// End vl_simulator functions.
 
 
 // Static function.
@@ -636,7 +636,7 @@ vl_context::push(vl_context *t, vl_fork_join_stmt *f)
 }
 
 
-// Pop to previous context, return the previous context
+// Pop to previous context, return the previous context.
 // Static function.
 //
 vl_context *
@@ -671,7 +671,7 @@ vl_context::copy(vl_context *t)
 }
 
 
-// Return true if the passed object is in the context hierarchy
+// Return true if the passed object is in the context hierarchy.
 //
 bool
 vl_context::in_context(vl_stmt *blk)
@@ -701,7 +701,7 @@ vl_context::in_context(vl_stmt *blk)
 
 
 // Retrieve a value for the named variable, search present context
-// exclusively if thisonly is true
+// exclusively if thisonly is true.
 //
 vl_var *
 vl_context::lookup_var(const char *name, bool thisonly)
@@ -725,7 +725,7 @@ vl_context::lookup_var(const char *name, bool thisonly)
 }
 
 
-// Return the named vl_begin_end_stmt or vl_fork_join_stmt
+// Return the named vl_begin_end_stmt or vl_fork_join_stmt.
 //
 vl_stmt *
 vl_context::lookup_block(const char *name)
@@ -782,7 +782,7 @@ vl_context::lookup_block(const char *name)
 }
 
 
-// Return the named vl_task
+// Return the named vl_task.
 //
 vl_task *
 vl_context::lookup_task(const char *name)
@@ -798,7 +798,7 @@ vl_context::lookup_task(const char *name)
 }
 
 
-// Return the named vl_function
+// Return the named vl_function.
 //
 vl_function *
 vl_context::lookup_func(const char *name)
@@ -830,7 +830,7 @@ vl_context::lookup_mp(const char *name)
 
 // Return the symbol table for name, resolving the '.' notation if any,
 // if crt is true, create new symbol table if empty.  The base name is
-// returned in 'name'
+// returned in 'name'.
 //
 table<vl_var*> *
 vl_context::resolve_st(const char **name, bool crt)
@@ -1180,7 +1180,7 @@ vl_context::resolve_path(const char *string, bool modonly)
 }
 
 
-// Return the current module
+// Return the current module.
 //
 vl_module *
 vl_context::currentModule()
@@ -1197,7 +1197,7 @@ vl_context::currentModule()
 }
 
 
-// Return the current primitive
+// Return the current primitive.
 //
 vl_primitive *
 vl_context::currentPrimitive()
@@ -1214,7 +1214,7 @@ vl_context::currentPrimitive()
 }
 
 
-// Return the current function
+// Return the current function.
 //
 vl_function *
 vl_context::currentFunction()
@@ -1231,7 +1231,7 @@ vl_context::currentFunction()
 }
 
 
-// Return the current task
+// Return the current task.
 //
 vl_task *
 vl_context::currentTask()
@@ -1246,7 +1246,7 @@ vl_context::currentTask()
     }
     return (0);
 }
-// End vl_context functions
+// End vl_context functions.
 
 
 vl_action_item::vl_action_item(vl_stmt *s, vl_context *c)
@@ -1261,7 +1261,7 @@ vl_action_item::vl_action_item(vl_stmt *s, vl_context *c)
 }
 
 
-// Copy an action
+// Copy an action.
 //
 vl_action_item *
 vl_action_item::copy()
@@ -1279,8 +1279,8 @@ vl_action_item::~vl_action_item()
 }
 
 
-// Remove and free any entries in the actions list with blk in the context
-// hierarchy, return the purged list head
+// Remove and free any entries in the actions list with blk in the
+// context hierarchy, return the purged list head.
 //
 vl_action_item *
 vl_action_item::purge(vl_stmt *blk)
@@ -1345,7 +1345,7 @@ vl_action_item::eval(vl_event *ev, vl_simulator *sim)
 }
 
 
-// Diagnostic print of action
+// Diagnostic print of action.
 //
 void
 vl_action_item::print(ostream &outs)
@@ -1359,7 +1359,7 @@ vl_action_item::print(ostream &outs)
     else if (event)
         outs << "<event>\n";
 }
-// End of vl_action_item functions
+// End of vl_action_item functions.
 
 
 vl_stack *
@@ -1372,7 +1372,7 @@ vl_stack::copy()
 }
 
 
-// Diagnostic print of stack
+// Diagnostic print of stack.
 //
 void
 vl_stack::print(ostream &outs)
@@ -1384,7 +1384,7 @@ vl_stack::print(ostream &outs)
         }
     }
 }
-// End vl_stack functions
+// End vl_stack functions.
 
 
 vl_timeslot::vl_timeslot(vl_time_t t) 
@@ -1408,7 +1408,7 @@ vl_timeslot::~vl_timeslot()
     vl_action_item::destroy(mon_actions);
 }
   
-// Return the list head corresponding to the indicated time
+// Return the list head corresponding to the indicated time.
 //
 vl_timeslot *
 vl_timeslot::find_slot(vl_time_t t)
@@ -1452,7 +1452,7 @@ vl_timeslot::find_slot(vl_time_t t)
 }
 
 
-// Append an action at time t
+// Append an action at time t.
 //
 void
 vl_timeslot::append(vl_time_t t, vl_action_item *a)
@@ -1473,7 +1473,7 @@ vl_timeslot::append(vl_time_t t, vl_action_item *a)
 }
 
 
-// Append an action to the list of triggered events at time t
+// Append an action to the list of triggered events at time t.
 //
 void
 vl_timeslot::append_trig(vl_time_t t, vl_action_item *a)
@@ -1494,7 +1494,7 @@ vl_timeslot::append_trig(vl_time_t t, vl_action_item *a)
 }
 
 
-// Append an "inactive" event at time t (for #0 ...)
+// Append an "inactive" event at time t (for #0 ...).
 //
 void
 vl_timeslot::append_zdly(vl_time_t t, vl_action_item *a)
@@ -1515,7 +1515,7 @@ vl_timeslot::append_zdly(vl_time_t t, vl_action_item *a)
 }
 
 
-// Append a "non-blocking assign update" event at time t  (for n-b assign)
+// Append a "non-blocking assign update" event at time t  (for n-b assign).
 //
 void
 vl_timeslot::append_nbau(vl_time_t t, vl_action_item *a)
@@ -1536,7 +1536,7 @@ vl_timeslot::append_nbau(vl_time_t t, vl_action_item *a)
 }
 
 
-// Append a "monitor" event at time t  (for $monitor/$strobe)
+// Append a "monitor" event at time t  (for $monitor/$strobe).
 //
 void
 vl_timeslot::append_mon(vl_time_t t, vl_action_item *a)
@@ -1558,7 +1558,7 @@ vl_timeslot::append_mon(vl_time_t t, vl_action_item *a)
 
 
 // Process the actions at the current time, servicing events, and
-// resheduling propagating actions
+// resheduling propagating actions.
 //
 void
 vl_timeslot::eval_slot(vl_simulator *sim)
@@ -1590,7 +1590,7 @@ vl_timeslot::eval_slot(vl_simulator *sim)
 }
 
 
-// Add an action to be performed at the next time point
+// Add an action to be performed at the next time point.
 //
 void
 vl_timeslot::add_next_actions(vl_simulator *sim)
@@ -1609,21 +1609,22 @@ vl_timeslot::add_next_actions(vl_simulator *sim)
 //#define DEBUG_CONTEXT
 #ifdef DEBUG_CONTEXT
 
-static bool
-check_cx(vl_context *cx)
-{
-    while (cx) {
-        if (cx->block && cx->block->type != BeginEndStmt)
-            return (false);
-        if (cx->fjblk && cx->fjblk->type != ForkJoinStmt)
-            return (false);
-        if (cx->task && cx->task->type != TaskDecl)
-            return (false);
-        if (cx->module && cx->module->type != ModDecl)
-            return (false);
-        cx = cx->parent;
+namespace {
+    bool check_cx(vl_context *cx)
+    {
+        while (cx) {
+            if (cx->block && cx->block->type != BeginEndStmt)
+                return (false);
+            if (cx->fjblk && cx->fjblk->type != ForkJoinStmt)
+                return (false);
+            if (cx->task && cx->task->type != TaskDecl)
+                return (false);
+            if (cx->module && cx->module->type != ModDecl)
+                return (false);
+            cx = cx->parent;
+        }
+        return (true);
     }
-    return (true);
 }
 
 #endif
@@ -1710,7 +1711,8 @@ vl_timeslot::do_actions(vl_simulator *sim)
 
         // If the action has a stack, unwind the stack and store a
         // place holder so as to keep this frame separate if there is
-        // an event or delay encountered
+        // an event or delay encountered.
+
         if (a->stack) {
             acts[sp].type = Fence;
             for (int i = 0; i < a->stack->num; i++) {
@@ -1741,8 +1743,8 @@ vl_timeslot::do_actions(vl_simulator *sim)
             // We're about to start on a fork/join block.  To deal
             // with completion, save a list of actions, which are
             // updated when each thread completes (in vl_fj_break::eval()).
-            // The actions are given a stack along the way
-            //
+            // The actions are given a stack along the way.
+
             vl_action_item *anew = new vl_action_item(a->stmt, 0);
             anew->next = sim->fj_end;
             sim->fj_end = anew;
@@ -1755,7 +1757,8 @@ vl_timeslot::do_actions(vl_simulator *sim)
 
         if (a->stmt->type == DisableStmt) {
             // just evaluated a disable statement, target should be
-            // filled in.  Purge all pending actions for this block
+            // filled in.  Purge all pending actions for this block.
+
             vl_stmt *blk = ((vl_disable_stmt*)a->stmt)->target;
             if (blk) {
                 sim->timewheel->purge(blk);
@@ -1772,7 +1775,8 @@ vl_timeslot::do_actions(vl_simulator *sim)
                     a->stmt->type == InitialStmt ||
                     a->stmt->type == AlwaysStmt) {
                 // The action created more actions, push these into a new
-                // stack block, and increment the stack pointer
+                // stack block, and increment the stack pointer.
+
                 ABtype ntype;
                 if (a->stmt->type == ForkJoinStmt)
                     ntype = Fork;
@@ -1799,8 +1803,8 @@ vl_timeslot::do_actions(vl_simulator *sim)
 
         // If a delay or event is returned, save the frame for the event
         // in a new action, then dispatch the action to the appropriate
-        // list and fix the stack pointer
-        //
+        // list and fix the stack pointer.
+
         if (evt == EVdelay) {
             int lsp = sp;
             if (!acts[lsp].actions)
@@ -1859,6 +1863,7 @@ vl_timeslot::do_actions(vl_simulator *sim)
                 // action from the list.  The threads may or may not
                 // have completed.  If so, remove the action and add
                 // it to the queue.
+
                 int tsp = --sp;
                 while (tsp > 0 && acts[tsp].type == Sequential)
                     tsp--;
@@ -1900,7 +1905,7 @@ vl_timeslot::do_actions(vl_simulator *sim)
 }
 
 
-// Get rid of all pending actions with blk in the context hierarchy
+// Get rid of all pending actions with blk in the context hierarchy.
 //
 void
 vl_timeslot::purge(vl_stmt *blk)
@@ -1934,7 +1939,7 @@ vl_timeslot::purge(vl_stmt *blk)
 }
 
 
-// Diagnostic printout for current time slot
+// Diagnostic printout for current time slot.
 //
 void
 vl_timeslot::print(ostream &outs)
@@ -1947,7 +1952,7 @@ vl_timeslot::print(ostream &outs)
     for (vl_action_item *a = nbau_actions; a; a = a->next)
         a->print(outs);
 }
-// End vl_timeslot functions
+// End vl_timeslot functions.
 
 
 vl_monitor::~vl_monitor()
@@ -1955,7 +1960,7 @@ vl_monitor::~vl_monitor()
     // delete args ?
     vl_context::destroy(cx);
 }
-// End vl_monitor functions
+// End vl_monitor functions.
 
 
 //---------------------------------------------------------------------------
@@ -2043,7 +2048,7 @@ vl_desc::add_mp_inst(vl_desc *desc, char *mp_name, vl_dlstr *dlstr,
     }
     return (retval);
 }
-// End vl_desc functions
+// End vl_desc functions.
 
 
 void
@@ -2075,7 +2080,7 @@ vl_module::dump(ostream &outs)
                 outs << "  Ports table\n";
                 found = true;
             }
-            outs << "    " << v->name << ' ' << (void*)v << '\n';
+            outs << "    " << v->name() << ' ' << (void*)v << '\n';
         }
     }
 
@@ -2152,7 +2157,7 @@ vl_module::dump(ostream &outs)
 //  vl_decl (Defparam)
 //  vl_cont_assign
 //  vl_procstmt
-// This should (hopefully) ensure thing are defined when needed
+// This should (hopefully) ensure thing are defined when needed.
 //
 void
 vl_module::sort_moditems()
@@ -2227,8 +2232,8 @@ vl_module::setup(vl_simulator *sim)
     // If this is not a top-level module, do the #(...) parameter
     // overrides.  The parameters are in the delay struct 'params'
     // in the vl_mod_inst_list.  Do this before calling setup_list
-    // so the parameter setting will be top-down
-    //
+    // so the parameter setting will be top-down.
+
     if (instance && instance->inst_list &&
             instance->inst_list->params_or_delays) {
         vl_delay *params = instance->inst_list->params_or_delays;
@@ -2270,7 +2275,7 @@ vl_module::setup(vl_simulator *sim)
     vl_setup_list(sim, mod_items);
     sim->context = vl_context::pop(sim->context);
 }
-// End vl_module functions
+// End vl_module functions.
 
 
 void
@@ -2301,7 +2306,7 @@ vl_primitive::dump(ostream &outs)
                 outs << "  Ports table\n";
                 found = true;
             }
-            outs << "    " << v->name << ' ' << (void*)v << '\n';
+            outs << "    " << v->name() << ' ' << (void*)v << '\n';
         }
     }
     outs << '\n';
@@ -2376,7 +2381,7 @@ vl_primitive::primtest(unsigned char t, bool isout)
     }
     return (true);
 }
-// End vl_primitive functions
+// End vl_primitive functions.
 
 
 //---------------------------------------------------------------------------
@@ -2392,9 +2397,9 @@ vl_decl::setup(vl_simulator *sim)
         lsGen<vl_bassign_stmt*> gen(list);
         vl_bassign_stmt *assign;
         while (gen.next(&assign)) {
-            vl_var *v = sim->context->lookup_var(assign->lhs->name, false);
+            vl_var *v = sim->context->lookup_var(assign->lhs->name(), false);
             if (!v) {
-                vl_error("can not resolve defparam %s", assign->lhs->name);
+                vl_error("can not resolve defparam %s", assign->lhs->name());
                 sim->abort();
             }
             else {
@@ -2415,7 +2420,7 @@ vl_decl::setup(vl_simulator *sim)
         lsGen<vl_bassign_stmt*> agen(list);
         vl_bassign_stmt *bs;
         while (agen.next(&bs)) {
-            bs->lhs->strength = strength;
+            bs->lhs->set_strength(strength);
             // set up implicit continuous assignment
             bs->wait = delay;
             bs->rhs->chain(bs);
@@ -2423,7 +2428,7 @@ vl_decl::setup(vl_simulator *sim)
         }
     }
 }
-// End vl_decl functions
+// End vl_decl functions.
 
 
 void
@@ -2441,7 +2446,7 @@ vl_procstmt::eval(vl_event*, vl_simulator *sim)
 {
     if (type == AlwaysStmt) {
         // If the statement is one of the following, do one loop per time
-        // point rather than looping infinitely
+        // point rather than looping infinitely.
 
         bool single_pass = false;
         switch (stmt->type) {
@@ -2494,7 +2499,7 @@ vl_procstmt::eval(vl_event*, vl_simulator *sim)
         stmt->setup(sim);
     return (EVnone);
 }
-// End vl_procstmt functions
+// End vl_procstmt functions.
 
 
 void
@@ -2507,19 +2512,20 @@ vl_cont_assign::setup(vl_simulator *sim)
         stmt->setup(sim);
         if (!stmt->lhs->check_net_type(REGwire)) {
             vl_error("continuous assignment to non-net %s",
-                stmt->lhs->name ? stmt->lhs->name : "concatenation");
+                stmt->lhs->name() ? stmt->lhs->name() : "concatenation");
             sim->abort();
             return;
         }
         // The drive strength is stored in the vl_var part of the
-        // driving expression, since it is unique to this assignment
-        stmt->rhs->strength = strength;
+        // driving expression, since it is unique to this assignment.
+
+        stmt->rhs->set_strength(strength);
         if (delay)
             stmt->wait = delay;
         stmt->rhs->chain(stmt);
     }
 }
-// End vl_cont_assign functions
+// End vl_cont_assign functions.
 
 
 void
@@ -2566,7 +2572,7 @@ vl_task::dump(ostream &outs, int indnt)
 
 // This is called when a FuncExpr is encountered, takes care of function
 // evaluation.  The function is evaluated completely here, i.e., the
-// return value is saved in outport
+// return value is saved in outport.
 //
 void
 vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
@@ -2576,7 +2582,7 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
     vl_var *outvar;
     if (!sig_st->lookup(name, &outvar)) {
         outvar = new vl_var;
-        outvar->name = vl_strdup(name);
+        outvar->set_name(vl_strdup(name));
         if (type == RangeFuncDecl)
             outvar->configure(range, RegDecl);
         else if (type == RealFuncDecl)
@@ -2585,8 +2591,8 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
             outvar->configure(0, IntDecl);
         else
             outvar->configure(0, RegDecl);
-        sig_st->insert(outvar->name, outvar);
-        outvar->flags |= VAR_IN_TABLE;
+        sig_st->insert(outvar->name(), outvar);
+        outvar->or_flags(VAR_IN_TABLE);
     }
 
     vl_simulator *sim = outvar->simulator;
@@ -2606,16 +2612,16 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
         lsGen<vl_var*> vgen(decl->ids);
         vl_var *av;
         while (vgen.next(&av)) {
-            if (av->net_type >= REGwire)
-                av->net_type = REGreg;
+            if (av->net_type() >= REGwire)
+                av->set_net_type(REGreg);
             if (agen.next(&ae)) {
-                if (av->io_type == IOoutput || av->io_type == IOinout) {
+                if (av->io_type() == IOoutput || av->io_type() == IOinout) {
                     vl_error("function %s can not have output port %s",
-                        name, av->name);
+                        name, av->name());
                     sim->abort();
                     continue;
                 }
-                if (av->io_type == IOinput) {
+                if (av->io_type() == IOinput) {
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, av, 0, 0, ae);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
@@ -2630,7 +2636,7 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
                 }
             }
             else {
-                if (av->io_type == IOinput)
+                if (av->io_type() == IOinput)
                     vl_warn("too few args to function %s", name);
                 done = true;
                 break;
@@ -2682,7 +2688,7 @@ vl_function::dump(ostream &outs, int indnt)
         blk->dump(outs, indnt+2);
     }
 }
-// End vl_function functions
+// End vl_function functions.
 
 
 void
@@ -2690,7 +2696,7 @@ vl_gate_inst_list::setup(vl_simulator *sim)
 {
     vl_setup_list(sim, gates);
 }
-// End vl_gate_inst_list functions
+// End vl_gate_inst_list functions.
 
 
 void
@@ -2710,7 +2716,7 @@ vl_mp_inst_list::setup(vl_simulator *sim)
     }
     vl_setup_list(sim, mps);
 }
-// End vl_mp_inst_list functions
+// End vl_mp_inst_list functions.
 
 
 //---------------------------------------------------------------------------
@@ -2720,23 +2726,24 @@ vl_mp_inst_list::setup(vl_simulator *sim)
 void
 vl_bassign_stmt::setup(vl_simulator *sim)
 {
-    if (lhs->name && lhs->data_type == Dnone && lhs->net_type == REGnone) {
+    if (lhs->name() && lhs->data_type() == Dnone &&
+            lhs->net_type() == REGnone) {
         if (!sim->context) {
             vl_error("internal, no current context!");
             sim->abort();
             return;
         }
-        vl_var *nvar = sim->context->lookup_var(lhs->name, false);
+        vl_var *nvar = sim->context->lookup_var(lhs->name(), false);
         if (!nvar) {
-            vl_warn("implicit declaration of %s", lhs->name);
+            vl_warn("implicit declaration of %s", lhs->name());
             vl_module *cmod = sim->context->currentModule();
             if (cmod) {
                 nvar = new vl_var;
-                nvar->name = vl_strdup(lhs->name);
+                nvar->set_name(vl_strdup(lhs->name()));
                 if (!cmod->sig_st)
                     cmod->sig_st = new table<vl_var*>;
-                cmod->sig_st->insert(nvar->name, nvar);
-                nvar->flags |= VAR_IN_TABLE;
+                cmod->sig_st->insert(nvar->name(), nvar);
+                nvar->or_flags(VAR_IN_TABLE);
             }
             else {
                 vl_error("internal, no current module!");
@@ -2745,20 +2752,20 @@ vl_bassign_stmt::setup(vl_simulator *sim)
             }
         }
         if (nvar != lhs) {
-            if (strcmp(nvar->name, lhs->name))
+            if (strcmp(nvar->name(), lhs->name()))
                 // from another module, don't free it!
                 flags |= BAS_SAVE_LHS;
             vl_var *olhs = lhs;
             lhs = nvar;
-            range = olhs->range;
-            olhs->range = 0;
+            range = olhs->range();
+            olhs->set_range(0);
             delete olhs;
         }
     }
-    if (lhs->flags & VAR_IN_TABLE)
+    if (lhs->flags() & VAR_IN_TABLE)
         flags |= BAS_SAVE_LHS;
-    if (lhs->net_type >= REGwire && lhs->delay)
-        wait = lhs->delay;
+    if (lhs->net_type() >= REGwire && lhs->delay())
+        wait = lhs->delay();
     sim->timewheel->append(sim->time,
         new vl_action_item(this, sim->context));
 }
@@ -2781,7 +2788,7 @@ vl_bassign_stmt::eval(vl_event *ev, vl_simulator *sim)
     if (type == AssignStmt) {
         if (!lhs->check_net_type(REGreg)) {
             vl_error("non-reg %s in procedural continuous assign",
-                lhs->name ? lhs->name : "in concatenation");
+                lhs->name() ? lhs->name() : "in concatenation");
             sim->abort();
             return (EVnone);
         }
@@ -2800,8 +2807,8 @@ vl_bassign_stmt::eval(vl_event *ev, vl_simulator *sim)
         // a = ( )
         if (wait) {
             // Delayed continuous assignment, wait time td before
-            // evaluating and assigning rhs
-            //
+            // evaluating and assigning rhs.
+
             vl_bassign_stmt *bs =
                 new vl_bassign_stmt(BassignStmt, lhs, 0, 0, rhs);
             bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
@@ -2822,7 +2829,7 @@ vl_bassign_stmt::eval(vl_event *ev, vl_simulator *sim)
         // Delayed assignment, compute the present rhs value and save
         // it in a temp variable.  Apply the value after the delay.
         // The next statement executes after the delay.
-        //
+
         if (!tmpvar)
             tmpvar = new vl_var;
         *tmpvar = rhs->eval();
@@ -2842,8 +2849,8 @@ vl_bassign_stmt::eval(vl_event *ev, vl_simulator *sim)
         // a = @( )
         // Event-triggered assignment, compute the rhs value and save
         // it in a temp variable.  Apply the value when triggered.  The
-        // next statement executes after trigger
-        //
+        // next statement executes after trigger.
+
         if (!tmpvar)
             tmpvar = new vl_var;
         *tmpvar = rhs->eval();
@@ -2862,15 +2869,17 @@ vl_bassign_stmt::eval(vl_event *ev, vl_simulator *sim)
         // a <= ( )
         // Non-blocking assignment, compute the rhs and save it in a
         // temp variable.  Apply the value after other events have been
-        // processed, by appending the action to the nbau list
-        //
+        // processed, by appending the action to the nbau list.
+
         vl_var *src;
-        if (flags & SIM_INTERNAL)
+        if (flags & SIM_INTERNAL) {
             // This was spawned by a DelayBassign or EventBassign, use
             // the parent's temp variable.  Since the rhs may be added
             // to the lhs driver list (for nets), we have to drive with
-            // a variable that isn't freed
+            // a variable that isn't freed.
+
             src = rhs;
+        }
         else {
             if (!tmpvar)
                 tmpvar = new vl_var;
@@ -2902,8 +2911,8 @@ vl_bassign_stmt::eval(vl_event *ev, vl_simulator *sim)
         // a <= #xx ( )
         // Delayed non-blocking assignment, compute the rhs and save it in
         // a temporary variable.  Spawn a regular non-blocking assignment
-        // after the delay
-        //
+        // after the delay.
+
         if (!tmpvar)
             tmpvar = new vl_var;
         *tmpvar = rhs->eval();
@@ -2933,8 +2942,8 @@ vl_bassign_stmt::eval(vl_event *ev, vl_simulator *sim)
         // a <= @( )
         // Event-triggered non-blocking assignment, compute the rhs and
         // save it in a temp variable.  Spawn a regular non-blocking
-        // assignment when triggered
-        //
+        // assignment when triggered.
+
         if (!tmpvar)
             tmpvar = new vl_var;
         *tmpvar = rhs->eval();
@@ -2955,19 +2964,19 @@ vl_bassign_stmt::eval(vl_event *ev, vl_simulator *sim)
 
 
 // For a delayed assignment, evaluate any indices used in the lhs.  The
-// range is the quantity that would normally be copied to the stmt
+// range is the quantity that would normally be copied to the stmt.
 //
 void
 vl_bassign_stmt::freeze_indices(vl_range *rng)
 {
     rng->eval(&range);
-    if (lhs->data_type == Dconcat) {
+    if (lhs->data_type() == Dconcat) {
         lhs = lhs->copy();
         lhs->freeze_concat();
         flags &= ~BAS_SAVE_LHS;
     }
 }
-// End vl_bassign_stmt functions
+// End vl_bassign_stmt functions.
 
 
 void
@@ -2988,7 +2997,7 @@ vl_sys_task_stmt::eval(vl_event*, vl_simulator *sim)
     (sim->*this->action)(this, args);
     return (EVnone);
 }
-// End vl_sys_task_stmt functions
+// End vl_sys_task_stmt functions.
 
 
 void
@@ -3012,7 +3021,8 @@ vl_begin_end_stmt::eval(vl_event*, vl_simulator *sim)
 void
 vl_begin_end_stmt::disable(vl_stmt *s)
 {
-    // If the last stmt is a vl_fj_break, have to notify of termination
+    // If the last stmt is a vl_fj_break, have to notify of termination.
+
     vl_stmt *fj;
     stmts->lastItem(&fj);
     if (fj && fj->type == ForkJoinBreak)
@@ -3053,7 +3063,7 @@ vl_begin_end_stmt::dump(ostream &outs, int indnt)
         blk->dump(outs, indnt+2);
     }
 }
-// End vl_begin_end_stmt functions
+// End vl_begin_end_stmt functions.
 
 
 void
@@ -3088,7 +3098,7 @@ vl_if_else_stmt::disable(vl_stmt *s)
     if (else_stmt)
         else_stmt->disable(s);
 }
-// End vl_if_else_stmt functions
+// End vl_if_else_stmt functions.
 
 
 void
@@ -3122,7 +3132,7 @@ vl_case_stmt::eval(vl_event*, vl_simulator *sim)
                     sim->abort();
                     return (EVnone);
                 }
-                if (z.u.s[0] == BitH) {
+                if (z.data().s[0] == BitH) {
                     if (item->stmt)
                         item->stmt->setup(sim);
                     return (EVnone);
@@ -3152,15 +3162,16 @@ vl_case_item::disable(vl_stmt *s)
     if (stmt)
         stmt->disable(s);
 }
-// End vl_case_stmt functions
+// End vl_case_stmt functions.
 
 
 void
 vl_forever_stmt::setup(vl_simulator *sim)
 {
-    if (stmt)
+    if (stmt) {
         sim->timewheel->append(sim->time,
             new vl_action_item(this, sim->context));
+    }
 }
 
 
@@ -3180,7 +3191,7 @@ vl_forever_stmt::disable(vl_stmt *s)
     if (stmt)
         stmt->disable(s);
 }
-// End vl_forever_stmt functions
+// End vl_forever_stmt functions.
 
 
 void
@@ -3215,7 +3226,7 @@ vl_repeat_stmt::disable(vl_stmt *s)
     if (stmt)
         stmt->disable(s);
 }
-// End vl_repeat_stmt functions
+// End vl_repeat_stmt functions.
 
 
 void
@@ -3245,7 +3256,7 @@ vl_while_stmt::disable(vl_stmt *s)
     if (stmt)
         stmt->disable(s);
 }
-// End vl_while_stmt functions
+// End vl_while_stmt functions.
 
 
 void
@@ -3279,7 +3290,7 @@ vl_for_stmt::disable(vl_stmt *s)
     if (stmt)
         stmt->disable(s);
 }
-// End vl_for_stmt functions
+// End vl_for_stmt functions.
 
 
 void
@@ -3306,7 +3317,7 @@ vl_delay_control_stmt::disable(vl_stmt *s)
     if (stmt)
         stmt->disable(s);
 }
-// End vl_delay_control_stmt functions
+// End vl_delay_control_stmt functions.
 
 
 void
@@ -3336,7 +3347,7 @@ vl_event_control_stmt::disable(vl_stmt *s)
     if (stmt)
         stmt->disable(s);
 }
-// End vl_event_control_stmt functions
+// End vl_event_control_stmt functions.
 
 
 void
@@ -3371,7 +3382,7 @@ vl_wait_stmt::disable(vl_stmt *s)
     if (stmt)
         stmt->disable(s);
 }
-// End vl_wait_stmt functions
+// End vl_wait_stmt functions.
 
 
 void
@@ -3390,7 +3401,7 @@ vl_send_event_stmt::eval(vl_event*, vl_simulator *sim)
         sim->abort();
         return (EVnone);
     }
-    if (d->net_type != REGevent) {
+    if (d->net_type() != REGevent) {
         vl_error("send-event %s is not an event", name);
         sim->abort();
         return (EVnone);
@@ -3398,7 +3409,7 @@ vl_send_event_stmt::eval(vl_event*, vl_simulator *sim)
     d->trigger();
     return (EVnone);
 }
-// End vl_send_event_stmt functions
+// End vl_send_event_stmt functions.
 
 
 void
@@ -3485,7 +3496,7 @@ vl_fork_join_stmt::dump(ostream &outs, int indnt)
         blk->dump(outs, indnt+2);
     }
 }
-// End vl_fork_join_stmt functions
+// End vl_fork_join_stmt functions.
 
 
 void
@@ -3499,7 +3510,7 @@ vl_fj_break::setup(vl_simulator *sim)
 // through the list of fork/join return contexts to find the right one
 // and decrement its thread counter.  When the thread count reaches 0,
 // put the context on the queue if it has a stack.  The stack may not
-// be set yet, in which case just return
+// be set yet, in which case just return.
 //
 EVtype
 vl_fj_break::eval(vl_event*, vl_simulator *sim)
@@ -3563,10 +3574,10 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
         lsGen<vl_var*> vgen(decl->ids);
         vl_var *av;
         while (vgen.next(&av)) {
-            if (av->net_type >= REGwire)
-                av->net_type = REGreg;
+            if (av->net_type() >= REGwire)
+                av->set_net_type(REGreg);
             if (agen.next(&ae)) {
-                if (av->io_type == IOinput || av->io_type == IOinout) {
+                if (av->io_type() == IOinput || av->io_type() == IOinout) {
                     // set formal = actual
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, av, 0, 0, ae);
@@ -3575,14 +3586,14 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
                     a->flags |= AI_DEL_STMT;
                     sim->timewheel->append(sim->time, a);
                 }
-                if (av->io_type == IOnone) {
+                if (av->io_type() == IOnone) {
                     vl_warn("too many args to task %s", task->name);
                     done = true;
                     break;
                 }
             }
             else {
-                if (av->io_type != IOnone)
+                if (av->io_type() != IOnone)
                     vl_warn("too few args to task %s", task->name);
                 done = true;
                 break;
@@ -3605,7 +3616,7 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
         vl_var *av;
         while (vgen.next(&av)) {
             if (agen.next(&ae)) {
-                if (av->io_type == IOoutput || av->io_type == IOinout) {
+                if (av->io_type() == IOoutput || av->io_type() == IOinout) {
                     vl_var *vo = ae->source();
                     if (!vo) {
                         vl_error("internal, variable not found in expr");
@@ -3622,7 +3633,7 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
                     a->flags |= AI_DEL_STMT;
                     sim->timewheel->append(sim->time, a);
                 }
-                if (av->io_type == IOnone) {
+                if (av->io_type() == IOnone) {
                     done = true;
                     break;
                 }
@@ -3685,7 +3696,7 @@ vl_disable_stmt::eval(vl_event*, vl_simulator *sim)
     }
     return (EVnone);
 }
-// End vl_disable_stmt functions
+// End vl_disable_stmt functions.
 
 
 void
@@ -3705,7 +3716,7 @@ vl_deassign_stmt::eval(vl_event*, vl_simulator*)
         lhs->set_forced(0);
     return (EVnone);
 }
-// End vl_deassign_stmt functions
+// End vl_deassign_stmt functions.
 
 
 //---------------------------------------------------------------------------
@@ -3743,7 +3754,7 @@ vl_gate_inst::eval(vl_event*, vl_simulator *sim)
         sim->abort();
     return (EVnone);
 }
-// End vl_gate_inst functions
+// End vl_gate_inst functions.
 
 
 void
@@ -3785,7 +3796,7 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
         if (prim->type == CombPrimDecl) {
             for (int i = 1; i < MAXPRIMLEN-1; i++) {
                 if (prim->iodata[i])
-                    s[i-1] = prim->iodata[i]->u.s[0];
+                    s[i-1] = prim->iodata[i]->data().s[0];
                 else
                     break;
                 // s = { in... }
@@ -3822,8 +3833,8 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
                 }
                 if (match) {
                     // set output to row[0];
-                    int x = prim->iodata[0]->u.s[0];
-                    prim->iodata[0]->u.s[0] = row[0];
+                    int x = prim->iodata[0]->data().s[0];
+                    prim->iodata[0]->data().s[0] = row[0];
                     if (x != row[0])
                         prim->iodata[0]->trigger();
                     return (EVnone);
@@ -3831,21 +3842,21 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
                 row += MAXPRIMLEN;
             }
             // set output to 'x'
-            int x = prim->iodata[0]->u.s[0];
-            prim->iodata[0]->u.s[0] = BitDC;
+            int x = prim->iodata[0]->data().s[0];
+            prim->iodata[0]->data().s[0] = BitDC;
             if (x != BitDC)
                 prim->iodata[0]->trigger();
         }
         else if (prim->type == SeqPrimDecl) {
             for (int i = 0; i < MAXPRIMLEN; i++) {
                 if (prim->iodata[i])
-                    s[i] = prim->iodata[i]->u.s[0];
+                    s[i] = prim->iodata[i]->data().s[0];
                 else
                     break;
                 // s = { out, in... }
             }
             if (!prim->seq_init) {
-                prim->lastvals[0] = prim->iodata[0]->u.s[0];
+                prim->lastvals[0] = prim->iodata[0]->data().s[0];
                 prim->seq_init = true;
 
                 // sanity test for table entries
@@ -3878,24 +3889,24 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
                 if (match) {
                     // set output to row[0];
                     if (row[0] != PrimM) {
-                        int x = prim->iodata[0]->u.s[0];
-                        prim->iodata[0]->u.s[0] = row[0];
+                        int x = prim->iodata[0]->data().s[0];
+                        prim->iodata[0]->data().s[0] = row[0];
                         if (x != row[0])
                             prim->iodata[0]->trigger();
                     }
                     memcpy(prim->lastvals+1, s+1, MAXPRIMLEN-1);
-                    prim->lastvals[0] = prim->iodata[0]->u.s[0];
+                    prim->lastvals[0] = prim->iodata[0]->data().s[0];
                     return (EVnone);
                 }
                 row += MAXPRIMLEN;
             }
             // set output to 'x'
-            int x = prim->iodata[0]->u.s[0];
-            prim->iodata[0]->u.s[0] = BitDC;
+            int x = prim->iodata[0]->data().s[0];
+            prim->iodata[0]->data().s[0] = BitDC;
             if (x != BitDC)
                 prim->iodata[0]->trigger();
             memcpy(prim->lastvals+1, s+1, MAXPRIMLEN-1);
-            prim->lastvals[0] = prim->iodata[0]->u.s[0];
+            prim->lastvals[0] = prim->iodata[0]->data().s[0];
         }
     }
     return (EVnone);
@@ -3978,7 +3989,7 @@ vl_mp_inst::link_ports(vl_simulator *sim)
 
 // Establish linkage to a module/primitive instance port, argcnt is a
 // *1 based* port index.  The context is in the caller, pc is the actual
-// arg, the port contains the formal arg
+// arg, the port contains the formal arg.
 //
 void
 vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
@@ -4006,28 +4017,28 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
             return;
         }
         vl_var *nvar = new vl_var;
-        nvar->data_type = Dconcat;
-        nvar->u.c = new lsList<vl_expr*>;
+        nvar->set_data_type(Dconcat);
+        nvar->data().c = new lsList<vl_expr*>;
         lsGen<vl_var*> gen(port->port_exp);
 
         IOtype tt = IOnone;
         vl_var *var;
         while (gen.next(&var)) {
             vl_var *catvar;
-            if (!master->sig_st->lookup(var->name, &catvar)) {
+            if (!master->sig_st->lookup(var->name(), &catvar)) {
                 vl_error("in %s instance %s, port %s, actual arg %s "
-                    "is undeclared", modpri, name, portname, var->name);
+                    "is undeclared", modpri, name, portname, var->name());
                 sim->abort();
                 return;
             }
-            vl_range *range = var->range;
+            vl_range *range = var->range();
             var = catvar;
             vl_expr *xp = new vl_expr(var);
             if (range) {
                 xp->etype = range->right ? PartSelExpr : BitSelExpr;
                 xp->ux.ide.range = range->copy();
             }
-            IOtype nt = var->io_type;
+            IOtype nt = var->io_type();
             if (tt == IOnone)
                 tt = nt;
             else if (nt != tt) {
@@ -4037,18 +4048,19 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
                 return;
             }
             if (nt == IOinput || nt == IOinout) {
-                if (var->net_type < REGwire) {
-                    if (var->net_type == REGnone)
-                        var->net_type = REGwire;
+                if (var->net_type() < REGwire) {
+                    if (var->net_type() == REGnone)
+                        var->set_net_type(REGwire);
                     else {
                         vl_error("in %s instance %s, port %s, formal arg %s "
-                            "is not a net", modpri, name, portname, var->name);
+                            "is not a net", modpri, name, portname,
+                            var->name());
                         sim->abort();
                         return;
                     }
                 }
             }
-            nvar->u.c->newEnd(xp);
+            nvar->data().c->newEnd(xp);
         }
 
         if (tt == IOinput || tt == IOinout) {
@@ -4089,42 +4101,42 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
     vl_var *var = 0;
     gen.next(&var);
     vl_var *nvar = 0;
-    if (!master->sig_st->lookup(var->name, &nvar)) {
+    if (!master->sig_st->lookup(var->name(), &nvar)) {
         vl_error("in %s instance %s, port %s, actual arg %s "
-            "is undeclared", modpri, name, portname, var->name);
+            "is undeclared", modpri, name, portname, var->name());
         sim->abort();
         return;
     }
     port->port_exp->replace(var, nvar);
-    vl_range *range = var->range;
-    var->range = 0;
+    vl_range *range = var->range();
+    var->set_range(0);
     delete var;
     var = nvar;
 
     if (isprim) {
         if (range)
             vl_warn("in %s instance %s, port %s, actual arg %s "
-                "has range, ignored", modpri, name, portname, var->name);
-        if (var->data_type != Dbit || var->bits.size() != 1) {
+                "has range, ignored", modpri, name, portname, var->name());
+        if (var->data_type() != Dbit || var->bits().size() != 1) {
             vl_error("in %s instance %s, port %s, actual arg %s "
-                "is not unit width", modpri, name, portname, var->name);
+                "is not unit width", modpri, name, portname, var->name());
             sim->abort();
             delete range;
             return;
         }
     }
-    IOtype tt = var->io_type;
+    IOtype tt = var->io_type();
     if (isprim) {
         if (argcnt == 1 && tt != IOoutput) {
             vl_error("in %s instance %s, port %s, actual arg %s "
-                "is not an output", modpri, name, portname, var->name);
+                "is not an output", modpri, name, portname, var->name());
             sim->abort();
             delete range;
             return;
         }
         if (argcnt > 1 && tt != IOinput) {
             vl_error("in %s instance %s, port %s, actual arg %s "
-                "is not an input", modpri, name, portname, var->name);
+                "is not an input", modpri, name, portname, var->name());
             sim->abort();
             delete range;
             return;
@@ -4152,7 +4164,7 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
         pc->expr->chain(pc->i_assign);
         if (tt == IOinout)
             // prevent driver loop
-            pc->expr->flags |= VAR_PORT_DRIVER;
+            pc->expr->or_flags(VAR_PORT_DRIVER);
         sim->timewheel->append(sim->time,
             new vl_action_item(pc->i_assign, sim->context));
         // bs freed with pc
@@ -4182,7 +4194,7 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
         var->chain(pc->o_assign);
         if (tt == IOinout)
             // prevent driver loop
-            var->flags |= VAR_PORT_DRIVER;
+            var->or_flags(VAR_PORT_DRIVER);
         sim->timewheel->append(sim->time,
             new vl_action_item(pc->o_assign, sim->context));
     }
@@ -4194,5 +4206,5 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
         sim->context = vl_context::pop(sim->context);
     }
 }
-// End vl_mp_inst functions
+// End vl_mp_inst functions.
 

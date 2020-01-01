@@ -300,21 +300,24 @@ vl_parser::parse_timescale(const char *str)
 // End of vl_parser functions
 
 
-static char *
-utol(char *str)
-{
-    for (char *cp = str; *cp!='\0'; cp++)
-        if (isupper(*cp)) *cp = tolower(*cp);
-    return (str);
+namespace {
+    char * utol(char *str)
+    {
+        for (char *cp = str; *cp!='\0'; cp++) {
+            if (isupper(*cp))
+                *cp = tolower(*cp);
+        }
+        return (str);
+    }
+
+
+    const char *hexnum[16] = {
+        "0000","0001","0010","0011",
+        "0100","0101","0110","0111",
+        "1000","1001","1010","1011",
+        "1100","1101","1110","1111"
+    };
 }
-
-
-static const char *hexnum[16] = {
-    "0000","0001","0010","0011",
-    "0100","0101","0110","0111",
-    "1000","1001","1010","1011",
-    "1100","1101","1110","1111"
-};
 
 
 void
@@ -323,11 +326,11 @@ bitexp_parse::bin(char *instr)
     int size = atoi(instr);
     if (size == 0 || size > MAXBITNUM)
         size = MAXBITNUM;
-    bits.set(size);
+    bits().set(size);
     char *firstcp = strpbrk(instr, "bB")+1;
     char *cp = instr + strlen(instr) - 1;
     int bpos = 0;
-    while (bpos < bits.size() && cp >= firstcp) {
+    while (bpos < bits().size() && cp >= firstcp) {
         if (*cp != '_' && *cp != ' ') {
             switch (*cp) {
             case '0':
@@ -350,7 +353,7 @@ bitexp_parse::bin(char *instr)
         }
         cp--;
     }
-    for (; bpos < bits.size(); bpos++)
+    for (; bpos < bits().size(); bpos++)
         if (*firstcp == 'x')
             brep[bpos] = BitDC;
         else if (*firstcp == 'z' || *firstcp == '?')
@@ -367,13 +370,13 @@ bitexp_parse::dec(char *instr)
     int size = atoi(instr);
     if (size == 0 || size > MAXBITNUM)
         size = MAXBITNUM;
-    bits.set(size);
+    bits().set(size);
     char *firstcp = strpbrk(instr, "dD")+1;
     while (isspace(*firstcp))
         firstcp++;
     int num = atoi(firstcp); // don't put x, z, ? in decimal string
     char buf[MAXSTRLEN];
-    sprintf(buf, "%d'h%x", bits.size(), num);
+    sprintf(buf, "%d'h%x", bits().size(), num);
     hex(buf);
 }
 
@@ -385,14 +388,14 @@ bitexp_parse::oct(char *instr)
     int size = atoi(instr);
     if (size == 0 || size > MAXBITNUM)
         size = MAXBITNUM;
-    bits.set(size);
+    bits().set(size);
     char *firstcp = strpbrk(instr, "oO")+1;
     char *cp = instr + strlen(instr) - 1;
     int bpos = 0;
-    while (bpos < bits.size() && cp >= firstcp) {
+    while (bpos < bits().size() && cp >= firstcp) {
         if (*cp != '_' && !isspace(*cp)) {
             for (int i = 0; i < 3; i++) {
-                if (bpos < bits.size()) {
+                if (bpos < bits().size()) {
                     if (*cp == 'x')
                         brep[bpos++] = BitDC;
                     else if (*cp == 'z' || *cp == '?')
@@ -405,7 +408,7 @@ bitexp_parse::oct(char *instr)
         }
         cp--;
     }
-    for (; bpos < bits.size(); bpos++)
+    for (; bpos < bits().size(); bpos++)
         if (*firstcp == 'x')
             brep[bpos] = BitDC;
         else if (*firstcp == 'z' || *firstcp == '?')
@@ -422,14 +425,14 @@ bitexp_parse::hex(char *instr)
     int size = atoi(instr);
     if (size == 0 || size > MAXBITNUM)
         size = MAXBITNUM;
-    bits.set(size);
+    bits().set(size);
     char *firstcp = strpbrk(instr, "hH")+1;
     char *cp = instr + strlen(instr) - 1;
     int bpos = 0;
-    while (bpos < bits.size() && cp >= firstcp) {
+    while (bpos < bits().size() && cp >= firstcp) {
         if (*cp != '_' && !isspace(*cp)) {
             for (int i = 0; i < 4; i++) {
-                if (bpos < bits.size()) {
+                if (bpos < bits().size()) {
                     if (*cp == 'x')
                         brep[bpos++] = BitDC;
                     else if (*cp == 'z' || *cp == '?')
@@ -445,7 +448,7 @@ bitexp_parse::hex(char *instr)
         }
         cp--;
     }
-    for (; bpos < bits.size(); bpos++)
+    for (; bpos < bits().size(); bpos++)
         if (*firstcp == 'x')
             brep[bpos] = BitDC;
         else if (*firstcp == 'z' || *firstcp == '?')
@@ -453,5 +456,5 @@ bitexp_parse::hex(char *instr)
         else
             brep[bpos] = BitL;
 }
-// End of bitexp_parse functions
+// End of bitexp_parse functions.
 

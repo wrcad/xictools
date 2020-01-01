@@ -172,7 +172,7 @@ vl_module::init()
     init_list(mod_items);
     set_var_context(vl_context::pop(var_context()));
 }
-// End vl_module functions
+// End vl_module functions.
 
 
 vl_primitive::vl_primitive()
@@ -286,7 +286,7 @@ vl_primitive::init()
     init_list(decls);
     set_var_context(vl_context::pop(var_context()));
 }
-// End vl_primitive functions
+// End vl_primitive functions.
 
 
 vl_prim_entry::vl_prim_entry(lsList<int> *ip, unsigned char st,
@@ -302,7 +302,7 @@ vl_prim_entry::vl_prim_entry(lsList<int> *ip, unsigned char st,
     while (i < MAXPRIMLEN)
         inputs[i++] = PrimNone;
 }
-// End vl_prim_entry functions
+// End vl_prim_entry functions.
 
 
 vl_port::vl_port(short t, char *n, lsList<vl_var*> *exprs)
@@ -319,7 +319,7 @@ vl_port::~vl_port()
     lsGen<vl_var*> gen(port_exp);
     vl_var *v;
     while (gen.next(&v)) {
-        if (!(v->flags & VAR_IN_TABLE))
+        if (!(v->flags() & VAR_IN_TABLE))
             delete v;
     }
     delete(port_exp);
@@ -334,7 +334,7 @@ vl_port::copy()
         return (0);
     return (new vl_port(type, vl_strdup(name), copy_list(port_exp)));
 }
-// End vl_port functions
+// End vl_port functions.
 
 
 vl_port_connect::vl_port_connect(short t, char *n, vl_expr *e)
@@ -365,7 +365,8 @@ vl_port_connect::copy()
     return (new vl_port_connect(type, vl_strdup(name),
         expr ? expr->copy() : 0));
 }
-// End vl_port_connect functions
+// End vl_port_connect functions.
+
 
 //---------------------------------------------------------------------------
 //  Module items
@@ -428,7 +429,7 @@ vl_decl::~vl_decl()
     lsGen<vl_var*> gen(ids);
     vl_var *v;
     while (gen.next(&v)) {
-        if (!(v->flags & VAR_IN_TABLE))
+        if (!(v->flags() & VAR_IN_TABLE))
             delete v;
     }
     delete(ids);
@@ -446,7 +447,7 @@ vl_decl::copy()
 
 
 // Put the variables in the symbol table, initialize types, evaluate
-// parameters
+// parameters.
 //
 void
 vl_decl::init()
@@ -460,9 +461,9 @@ vl_decl::init()
             if (!st)
                 break;
             vl_var *nvar;
-            if (!st->lookup(v->name, &nvar)) {
-                st->insert(v->name, v);
-                v->flags |= VAR_IN_TABLE;
+            if (!st->lookup(v->name(), &nvar)) {
+                st->insert(v->name(), v);
+                v->or_flags(VAR_IN_TABLE);
             }
             else if (v != nvar) {
                 ids->replace(v, nvar);
@@ -470,9 +471,9 @@ vl_decl::init()
                 v = nvar;
             }
             var_setup(v, type);
-            if (v->net_type >= REGwire) {
-                if (!v->delay)
-                    v->delay = delay->copy();
+            if (v->net_type() >= REGwire) {
+                if (!v->delay())
+                    v->set_delay(delay->copy());
             }
         }
     }
@@ -485,23 +486,23 @@ vl_decl::init()
             if (!st)
                 break;
             vl_var *nvar;
-            if (!st->lookup(bs->lhs->name, &nvar)) {
-                st->insert(bs->lhs->name, bs->lhs);
-                bs->lhs->flags |= VAR_IN_TABLE;
+            if (!st->lookup(bs->lhs->name(), &nvar)) {
+                st->insert(bs->lhs->name(), bs->lhs);
+                bs->lhs->or_flags(VAR_IN_TABLE);
             }
             else if (bs->lhs != nvar) {
-                if (bs->lhs->delay && !nvar->delay) {
-                    nvar->delay = bs->lhs->delay;
-                    bs->lhs->delay = 0;
+                if (bs->lhs->delay() && !nvar->delay()) {
+                    nvar->set_delay(bs->lhs->delay());
+                    bs->lhs->set_delay(0);
                 }
                 delete bs->lhs;
                 bs->lhs = nvar;
             }
             bs->flags |= BAS_SAVE_LHS;
             var_setup(bs->lhs, type);
-            if (bs->lhs->net_type >= REGwire) {
-                if (!bs->lhs->delay)
-                    bs->lhs->delay = delay->copy();
+            if (bs->lhs->net_type() >= REGwire) {
+                if (!bs->lhs->delay())
+                    bs->lhs->set_delay(delay->copy());
             }
             if (type == ParamDecl || type == RegDecl || type == IntDecl ||
                     type == TimeDecl || type == RealDecl)
@@ -511,12 +512,12 @@ vl_decl::init()
 }
 
 
-// Return the symbol table for the declaration
+// Return the symbol table for the declaration.
 //
 table<vl_var*> *
 vl_decl::symtab(vl_var *var)
 {
-    if (!var->name) {
+    if (!var->name()) {
         vl_error("unnamed variable in %s declaration", decl_type());
         errout(this);
         var->simulator->abort();
@@ -555,191 +556,187 @@ vl_decl::symtab(vl_var *var)
         st = cx->module->sig_st;
     }
     if (!st) {
-        vl_error("no symbol table for %s declaration", var->name);
+        vl_error("no symbol table for %s declaration", var->name());
         var->simulator->abort();
     }
     return (st);
 }
 
 
-// Take care of initialization of the declared variables
+// Take care of initialization of the declared variables.
 //
 void
 vl_decl::var_setup(vl_var *var, int vtype)
 {
     if (vtype == ParamDecl) {
         var->configure(range, vtype);
-        var->net_type = REGparam;
+        var->set_net_type(REGparam);
         return;
     }
-    var->configure(range, vtype, var->range);
+    var->configure(range, vtype, var->range());
 
     switch (vtype) {
     case RealDecl:
-        var->u.r = 0.0;
+        var->data().r = 0.0;
         return;
     case IntDecl:
-        var->u.i = 0;
+        var->data().i = 0;
         return;
     case TimeDecl:
-        var->u.t = 0;
+        var->data().t = 0;
         return;
     case EventDecl:
-        if (var->net_type == REGnone) {
-            var->net_type = REGevent;
+        if (var->net_type() == REGnone) {
+            var->set_net_type(REGevent);
             return;
         }
         break;
     case InputDecl:
-        if (var->io_type == IOnone) {
-            var->io_type = IOinput;
-            if (var->net_type == REGnone) {
-                var->net_type = REGwire;
+        if (var->io_type() == IOnone) {
+            var->set_io_type(IOinput);
+            if (var->net_type() == REGnone) {
+                var->set_net_type(REGwire);
                 var->setbits(BitZ);
             }
             return;
         }
         break;
     case OutputDecl:
-        if (var->io_type == IOnone) {
-            var->io_type = IOoutput;
-            if (var->net_type == REGnone) {
-                var->net_type = REGwire;
+        if (var->io_type() == IOnone) {
+            var->set_io_type(IOoutput);
+            if (var->net_type() == REGnone) {
+                var->set_net_type(REGwire);
                 var->setbits(BitZ);
             }
             return;
         }
         break;
     case InoutDecl:
-        if (var->io_type == IOnone) {
-            var->io_type = IOinout;
-            if (var->net_type == REGnone) {
-                var->net_type = REGwire;
+        if (var->io_type() == IOnone) {
+            var->set_io_type(IOinout);
+            if (var->net_type() == REGnone) {
+                var->set_net_type(REGwire);
                 var->setbits(BitZ);
             }
             return;
         }
         break;
     case RegDecl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGreg;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGreg);
             var->setbits(BitDC);
             return;
         }
         break;
     case WireDecl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGwire;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGwire);
             var->setbits(BitZ);
-            var->strength = strength;
+            var->set_strength(strength);
             return;
         }
         break;
     case TriDecl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGtri;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGtri);
             var->setbits(BitZ);
-            var->strength = strength;
+            var->set_strength(strength);
             return;
         }
         break;
     case Tri0Decl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGtri0;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGtri0);
             var->setbits(BitL);
-            var->strength.set_str0(STRpull);
-            var->strength.set_str1(STRpull);
+            var->set_strength(STRpull, STRpull);
             return;
         }
         break;
     case Tri1Decl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGtri1;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGtri1);
             var->setbits(BitH);
-            var->strength.set_str0(STRpull);
-            var->strength.set_str1(STRpull);
+            var->set_strength(STRpull, STRpull);
             return;
         }
         break;
     case Supply0Decl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGsupply0;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGsupply0);
             var->setbits(BitL);
-            var->strength.set_str0(STRsupply);
-            var->strength.set_str1(STRsupply);
+            var->set_strength(STRsupply, STRsupply);
             return;
         }
         break;
     case Supply1Decl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGsupply1;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGsupply1);
             var->setbits(BitH);
-            var->strength.set_str0(STRsupply);
-            var->strength.set_str1(STRsupply);
+            var->set_strength(STRsupply, STRsupply);
             return;
         }
         break;
     case WandDecl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGwand;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGwand);
             var->setbits(BitZ);
-            var->strength = strength;
+            var->set_strength(strength);
             return;
         }
         break;
     case TriandDecl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGtriand;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGtriand);
             var->setbits(BitZ);
-            var->strength = strength;
+            var->set_strength(strength);
             return;
         }
         break;
     case WorDecl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGtriand;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGtriand);
             var->setbits(BitZ);
-            var->strength = strength;
+            var->set_strength(strength);
             return;
         }
         break;
     case TriorDecl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGwand;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGwand);
             var->setbits(BitZ);
-            var->strength = strength;
+            var->set_strength(strength);
             return;
         }
         break;
     case TriregDecl:
-        if (var->net_type == REGnone ||
-                (var->net_type == REGwire && var->io_type != IOnone)) {
-            var->net_type = REGtrireg;
+        if (var->net_type() == REGnone ||
+                (var->net_type() == REGwire && var->io_type() != IOnone)) {
+            var->set_net_type(REGtrireg);
             var->setbits(BitDC);
-            var->strength = strength;
+            var->set_strength(strength);
             return;
         }
         break;
     default:
-        var->net_type = REGnone;
+        var->set_net_type(REGnone);
         return;
     }
-    vl_error("symbol %s redeclared as %s", var->name, decl_type());
+    vl_error("symbol %s redeclared as %s", var->name(), decl_type());
     errout(this);
     var->simulator->abort();
 }
-// End vl_decl functions
+// End vl_decl functions.
 
 
 vl_procstmt::vl_procstmt(short t, vl_stmt *s)
@@ -769,7 +766,7 @@ vl_procstmt::init()
     if (stmt)
         stmt->init();
 }
-// End vl_procstmt functions
+// End vl_procstmt functions.
 
 
 
@@ -795,7 +792,7 @@ vl_cont_assign::copy()
 {
     return (new vl_cont_assign(strength, delay->copy(), copy_list(assigns)));
 }
-// End vl_cont_assign functions
+// End vl_cont_assign functions.
 
 
 vl_specify_block::vl_specify_block(lsList<vl_specify_item*> *list)
@@ -817,7 +814,7 @@ vl_specify_block::copy()
 {
     return (new vl_specify_block(copy_list(items)));
 }
-// End of vl_specify_block functions
+// End of vl_specify_block functions.
 
 
 vl_specify_item::vl_specify_item(short t)
@@ -930,7 +927,7 @@ vl_specify_item::copy()
     retval->ifex = ifex ? ifex->copy() : 0;
     return (retval);
 }
-// End or vl_specify_item functions
+// End or vl_specify_item functions.
 
 
 vl_spec_term_desc::vl_spec_term_desc(char *n, vl_expr *x1, vl_expr *x2)
@@ -970,7 +967,7 @@ vl_spec_term_desc::copy()
     retval->pol = pol;
     return (retval);
 }
-// End of vl_spec_term_desc functions;
+// End of vl_spec_term_desc functions.
 
 
 vl_path_desc::vl_path_desc(vl_spec_term_desc *t1, vl_spec_term_desc *t2)
@@ -1010,7 +1007,7 @@ vl_path_desc::copy()
     retval->type = type;
     return (retval);
 }
-// End of vl_path_desc functions
+// End of vl_path_desc functions.
 
 
 vl_task::vl_task(char *n, lsList<vl_decl*> *d, lsList<vl_stmt*> *s)
@@ -1061,7 +1058,7 @@ vl_task::init()
     init_list(stmts);
     set_var_context(vl_context::pop(var_context()));
 }
-// End vl_task functions
+// End vl_task functions.
 
 
 vl_function::vl_function(short t, vl_range *r, char *n, lsList<vl_decl*> *d,
@@ -1116,7 +1113,7 @@ vl_function::init()
     init_list(stmts);
     set_var_context(vl_context::pop(var_context()));
 }
-// End vl_function functions
+// End vl_function functions.
 
 
 vl_gate_inst_list::vl_gate_inst_list(short t, vl_dlstr *dlstr,
@@ -1166,7 +1163,7 @@ vl_gate_inst_list::copy()
     }
     return (retval);
 }
-// End vl_gate_inst_list functions
+// End vl_gate_inst_list functions.
 
 
 vl_mp_inst_list::vl_mp_inst_list(MPtype mpt, char *n, vl_dlstr *dlstr,
@@ -1252,7 +1249,7 @@ vl_mp_inst_list::init()
         }
     }
 }
-// End vl_mp_inst_list functions
+// End vl_mp_inst_list functions.
 
 
 //---------------------------------------------------------------------------
@@ -1303,7 +1300,7 @@ vl_bassign_stmt::init()
     if (event)
         event->init();
 }
-// End vl_bassign_stmt functions
+// End vl_bassign_stmt functions.
 
 
 vl_sys_task_stmt::vl_sys_task_stmt(char *n, lsList<vl_expr*> *a)
@@ -1503,7 +1500,7 @@ vl_sys_task_stmt::copy()
 {
     return (new vl_sys_task_stmt(vl_strdup(name), copy_list(args)));
 }
-// End vl_sys_task_stmt functions
+// End vl_sys_task_stmt functions.
 
 
 vl_begin_end_stmt::vl_begin_end_stmt(char *n, lsList<vl_decl*> *d,
@@ -1586,7 +1583,7 @@ vl_begin_end_stmt::init()
     init_list(stmts);
     set_var_context(vl_context::pop(var_context()));
 }
-// End vl_begin_end_stmt functions
+// End vl_begin_end_stmt functions.
 
 
 vl_if_else_stmt::vl_if_else_stmt(vl_expr *c, vl_stmt *if_s, vl_stmt *else_s)
@@ -1615,7 +1612,7 @@ vl_if_else_stmt::init()
     if (else_stmt)
         else_stmt->init();
 }
-// End vl_if_else_stmt functions
+// End vl_if_else_stmt functions.
 
 
 vl_case_stmt::vl_case_stmt(short t, vl_expr *c, lsList<vl_case_item*> *case_it)
@@ -1645,7 +1642,7 @@ vl_case_stmt::init()
 {
     init_list(case_items);
 }
-// End vl_case_stmt functions
+// End vl_case_stmt functions.
 
 
 vl_case_item::vl_case_item(short t, lsList<vl_expr*> *e, vl_stmt *s)
@@ -1679,7 +1676,7 @@ vl_case_item::init()
     if (stmt)
         stmt->init();
 }
-// End vl_case_item functions
+// End vl_case_item functions.
 
 
 vl_forever_stmt::vl_forever_stmt(vl_stmt *s)
@@ -1702,7 +1699,7 @@ vl_forever_stmt::init()
     if (stmt)
         stmt->init();
 }
-// End vl_forever_stmt functions
+// End vl_forever_stmt functions.
 
 
 vl_repeat_stmt::vl_repeat_stmt(vl_expr *c, vl_stmt *s)
@@ -1727,7 +1724,7 @@ vl_repeat_stmt::init()
     if (stmt)
         stmt->init();
 }
-// End vl_repeat_stmt functions
+// End vl_repeat_stmt functions.
 
 
 vl_while_stmt::vl_while_stmt(vl_expr *c, vl_stmt *s)
@@ -1751,7 +1748,7 @@ vl_while_stmt::init()
     if (stmt)
         stmt->init();
 }
-// End vl_while_stmt functions
+// End vl_while_stmt functions.
 
 
 vl_for_stmt::vl_for_stmt(vl_bassign_stmt *i, vl_expr *c, vl_bassign_stmt *e,
@@ -1779,7 +1776,7 @@ vl_for_stmt::init()
     if (stmt)
         stmt->init();
 }
-// End vl_for_stmt functions
+// End vl_for_stmt functions.
 
 
 vl_delay_control_stmt::vl_delay_control_stmt(vl_delay *del, vl_stmt *s)
@@ -1803,7 +1800,7 @@ vl_delay_control_stmt::init()
     if (stmt)
         stmt->init();
 }
-// End vl_delay_control_stmt functions
+// End vl_delay_control_stmt functions.
 
 
 vl_event_control_stmt::vl_event_control_stmt(vl_event_expr *e, vl_stmt *s)
@@ -1833,7 +1830,7 @@ vl_event_control_stmt::init()
     if (event)
         event->init();
 }
-// End vl_event_control_stmt functions
+// End vl_event_control_stmt functions.
 
 
 vl_wait_stmt::vl_wait_stmt(vl_expr *c, vl_stmt *s)
@@ -1858,7 +1855,7 @@ vl_wait_stmt::init()
     if (stmt)
         stmt->init();
 }
-// End vl_wait_stmt functions
+// End vl_wait_stmt functions.
 
 
 vl_send_event_stmt::vl_send_event_stmt(char *n)
@@ -1873,7 +1870,7 @@ vl_send_event_stmt::copy()
 {
     return (new vl_send_event_stmt(vl_strdup(name)));
 }
-// End vl_send_event_stmt functions
+// End vl_send_event_stmt functions.
 
 
 vl_fork_join_stmt::vl_fork_join_stmt(char *n, lsList<vl_decl*> *d,
@@ -1953,7 +1950,7 @@ vl_fork_join_stmt::init()
     init_list(stmts);
     set_var_context(vl_context::pop(var_context()));
 }
-// End vl_fork_join_stmt functions
+// End vl_fork_join_stmt functions.
 
 
 vl_task_enable_stmt::vl_task_enable_stmt(short t, char *n, lsList<vl_expr*> *a)
@@ -1977,7 +1974,7 @@ vl_task_enable_stmt::copy()
 {
     return (new vl_task_enable_stmt(type, vl_strdup(name), copy_list(args)));
 }
-// End vl_task_enable_stmt functions
+// End vl_task_enable_stmt functions.
 
 
 vl_disable_stmt::vl_disable_stmt(char *n)
@@ -1993,7 +1990,7 @@ vl_disable_stmt::copy()
 {
     return (new vl_disable_stmt(vl_strdup(name)));
 }
-// End vl_disable_stmt functions
+// End vl_disable_stmt functions.
 
 
 vl_deassign_stmt::vl_deassign_stmt(short t, vl_var *v)
@@ -2021,29 +2018,29 @@ vl_deassign_stmt::copy()
 void
 vl_deassign_stmt::init()
 {
-    if (!lhs->name) {
-        if (lhs->data_type != Dconcat) {
+    if (!lhs->name()) {
+        if (lhs->data_type() != Dconcat) {
             vl_error("internal, unnamed variable in deassign");
             lhs->simulator->abort();
         }
         return;
     }
-    vl_var *nvar = lhs->simulator->context->lookup_var(lhs->name, false);
+    vl_var *nvar = lhs->simulator->context->lookup_var(lhs->name(), false);
     if (!nvar) {
-        vl_error("undeclared variable %s in deassign", lhs->name);
+        vl_error("undeclared variable %s in deassign", lhs->name());
         lhs->simulator->abort();
     }
     if (nvar != lhs) {
-        if (strcmp(nvar->name, lhs->name))
+        if (strcmp(nvar->name(), lhs->name()))
             // from another module, don't free it!
             flags &= ~DAS_DEL_VAR;
         delete lhs;
         lhs = nvar;
     }
-    if (lhs->flags & VAR_IN_TABLE)
+    if (lhs->flags() & VAR_IN_TABLE)
         flags &= ~DAS_DEL_VAR;
 }
-// End vl_deassign_stmt functions
+// End vl_deassign_stmt functions.
 
 
 //---------------------------------------------------------------------------
@@ -2106,7 +2103,7 @@ vl_gate_inst::copy()
     g->string = string;
     return (g);
 }
-// End vl_gate_inst functions
+// End vl_gate_inst functions.
 
 
 vl_mp_inst::vl_mp_inst(char *n, lsList<vl_port_connect*> *p)
@@ -2132,5 +2129,5 @@ vl_mp_inst::copy()
 {
     return (new vl_mp_inst(vl_strdup(name), copy_list(ports)));
 }
-// End vl_mp_inst functions
+// End vl_mp_inst functions.
 

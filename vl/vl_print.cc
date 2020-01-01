@@ -73,7 +73,7 @@
 #endif
 
 #define VL_REVISION \
-"vl-" VL_VERSION " Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001."
+"vl-" VL_VERSION " Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020."
 
 
 //---------------------------------------------------------------------------
@@ -133,7 +133,7 @@ vl_version()
 }
 
 
-// Global string copy function
+// Global string copy function.
 //
 char *
 vl_strdup(const char *str)
@@ -147,7 +147,7 @@ vl_strdup(const char *str)
 
 
 // Strip quotes, substitute for escapes in string.  Returns a copy of
-// the string
+// the string.
 //
 char *
 vl_fix_str(const char *str)
@@ -214,82 +214,120 @@ vl_print_items(ostream &outs, lsList<T> *exprs)
 }
 
 
-static int IndentLevel;
-static bool IndentSkip;
+namespace {
+    int IndentLevel;
+    bool IndentSkip;
 
-static void Indent(ostream &outs)
-{
-    if (!IndentSkip) {
-        for (int i = 0; i < 4*IndentLevel; i++)
-            outs << ' ';
-    }
-    else
-        IndentSkip = false;
-}
-
-
-static char hexc[] = {
-    '0', '1', '2', '3', '4', '5', '6', '7',
-    '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
-};
-
-static void
-printbits(ostream &outs, char *bits, int width, DSPtype dtype = DSPh)
-{
-    if (width == 1)
-        dtype = DSPb;
-    char buf[256], tb[4];
-    int num = 0;
-    char cfmt;
-    if (dtype == DSPb) {
-        // binary format;
-        cfmt = 'b';
-        int i = 0;
-        while (i < width) {
-            if (bits[i] == BitZ)
-                buf[num++] = 'z';
-            else if (bits[i] == BitDC)
-                buf[num++] = 'x';
-            else if (bits[i] == BitH)
-                buf[num++] = '1';
-            else if (bits[i] == BitL)
-                buf[num++] = '0';
-            i++;
+    void Indent(ostream &outs)
+    {
+        if (!IndentSkip) {
+            for (int i = 0; i < 4*IndentLevel; i++)
+                outs << ' ';
         }
+        else
+            IndentSkip = false;
     }
-    else if (dtype == DSPh || dtype == DSPall) {
-        // hex format;
-        cfmt = 'h';
-        int i = 0;
-        while (i < width) {
-            int j;
-            for (j = 0; j < 4; j++, i++)
-                if (i < width)
-                    tb[j] = bits[i];
-                else
-                    tb[j] = BitL;
-            if (tb[0] == BitZ || tb[1] == BitZ ||
-                    tb[2] == BitZ || tb[3] == BitZ) {
-                if (tb[0] != tb[1] || tb[1] != tb[2] || tb[2] != tb[3]) {
-                    printbits(outs, bits, width, DSPb);
-                    return;
-                }
-                else
+
+
+    char hexc[] = {
+        '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'
+    };
+
+    void printbits(ostream &outs, char *bits, int width, DSPtype dtype = DSPh)
+    {
+        if (width == 1)
+            dtype = DSPb;
+        char buf[256], tb[4];
+        int num = 0;
+        char cfmt;
+        if (dtype == DSPb) {
+            // binary format;
+            cfmt = 'b';
+            int i = 0;
+            while (i < width) {
+                if (bits[i] == BitZ)
                     buf[num++] = 'z';
-            }
-            else if (tb[0] == BitDC || tb[1] == BitDC ||
-                    tb[2] == BitDC || tb[3] == BitDC) {
-                if (tb[0] != tb[1] || tb[1] != tb[2] || tb[2] != tb[3]) {
-                    printbits(outs, bits, width, DSPb);
-                    return;
-                }
-                else
+                else if (bits[i] == BitDC)
                     buf[num++] = 'x';
+                else if (bits[i] == BitH)
+                    buf[num++] = '1';
+                else if (bits[i] == BitL)
+                    buf[num++] = '0';
+                i++;
             }
-            else {
+        }
+        else if (dtype == DSPh || dtype == DSPall) {
+            // hex format;
+            cfmt = 'h';
+            int i = 0;
+            while (i < width) {
+                int j;
+                for (j = 0; j < 4; j++, i++)
+                    if (i < width)
+                        tb[j] = bits[i];
+                    else
+                        tb[j] = BitL;
+                if (tb[0] == BitZ || tb[1] == BitZ ||
+                        tb[2] == BitZ || tb[3] == BitZ) {
+                    if (tb[0] != tb[1] || tb[1] != tb[2] || tb[2] != tb[3]) {
+                        printbits(outs, bits, width, DSPb);
+                        return;
+                    }
+                    else
+                        buf[num++] = 'z';
+                }
+                else if (tb[0] == BitDC || tb[1] == BitDC ||
+                        tb[2] == BitDC || tb[3] == BitDC) {
+                    if (tb[0] != tb[1] || tb[1] != tb[2] || tb[2] != tb[3]) {
+                        printbits(outs, bits, width, DSPb);
+                        return;
+                    }
+                    else
+                        buf[num++] = 'x';
+                }
+                else {
+                    int x = 0;
+                    unsigned mask = 1;
+                    for (j = 0; j < 4; j++) {
+                        if (tb[j] == BitH)
+                            x |= mask;
+                        mask <<= 1;
+                    }
+                    buf[num++] = hexc[x];
+                }
+            }
+        }
+        else if (dtype == DSPo) {
+            // octal format
+            cfmt = 'o';
+            int i = 0;
+            while (i < width) {
+                int j;
+                for (j = 0; j < 3; j++, i++)
+                    if (i < width)
+                        tb[j] = bits[i];
+                    else
+                        tb[j] = BitL;
+                if (tb[0] == BitZ || tb[1] == BitZ || tb[2] == BitZ) {
+                    if (tb[0] != tb[1] || tb[1] != tb[2]) {
+                        printbits(outs, bits, width, DSPb);
+                        return;
+                    }
+                    else
+                        buf[num++] = 'z';
+                }
+                else if (tb[0] == BitDC || tb[1] == BitDC || tb[2] == BitDC) {
+                    if (tb[0] != tb[1] || tb[1] != tb[2]) {
+                        printbits(outs, bits, width, DSPb);
+                        return;
+                    }
+                    else
+                        buf[num++] = 'x';
+                }
                 int x = 0;
                 unsigned mask = 1;
-                for (j = 0; j < 4; j++) {
+                for (j = 0; j < 3; j++) {
                     if (tb[j] == BitH)
                         x |= mask;
                     mask <<= 1;
@@ -297,49 +335,12 @@ printbits(ostream &outs, char *bits, int width, DSPtype dtype = DSPh)
                 buf[num++] = hexc[x];
             }
         }
+        else
+            return;
+        outs << (int)width << '\'' << cfmt;
+        while (num--)
+            outs << buf[num];
     }
-    else if (dtype == DSPo) {
-        // octal format
-        cfmt = 'o';
-        int i = 0;
-        while (i < width) {
-            int j;
-            for (j = 0; j < 3; j++, i++)
-                if (i < width)
-                    tb[j] = bits[i];
-                else
-                    tb[j] = BitL;
-            if (tb[0] == BitZ || tb[1] == BitZ || tb[2] == BitZ) {
-                if (tb[0] != tb[1] || tb[1] != tb[2]) {
-                    printbits(outs, bits, width, DSPb);
-                    return;
-                }
-                else
-                    buf[num++] = 'z';
-            }
-            else if (tb[0] == BitDC || tb[1] == BitDC || tb[2] == BitDC) {
-                if (tb[0] != tb[1] || tb[1] != tb[2]) {
-                    printbits(outs, bits, width, DSPb);
-                    return;
-                }
-                else
-                    buf[num++] = 'x';
-            }
-            int x = 0;
-            unsigned mask = 1;
-            for (j = 0; j < 3; j++) {
-                if (tb[j] == BitH)
-                    x |= mask;
-                mask <<= 1;
-            }
-            buf[num++] = hexc[x];
-        }
-    }
-    else
-        return;
-    outs << (int)width << '\'' << cfmt;
-    while (num--)
-        outs << buf[num];
 }
 
 
@@ -359,81 +360,148 @@ operator<<(ostream &outs, vl_var *s)
 
 
 void
+vl_strength::print()
+{
+    cout << '(';
+    switch (str0()) {
+    case STRnone:
+        cout << "s0";
+        break;
+    case STRhiZ:
+        cout << "z0";
+        break;
+    case STRsmall:
+        cout << "s";
+        break;
+    case STRmed:
+        cout << "m";
+        break;
+    case STRweak:
+        cout << "w0";
+        break;
+    case STRlarge:
+        cout << "l";
+        break;
+    case STRpull:
+        cout << "p0";
+        break;
+    case STRstrong:
+        cout << "s0";
+        break;
+    case STRsupply:
+        cout << "sp0";
+        break;
+    }
+    switch (str1()) {
+    case STRnone:
+        cout << ",s1";
+        break;
+    case STRhiZ:
+        cout << ",z1";
+        break;
+    case STRsmall:
+        cout << "s";
+        break;
+    case STRmed:
+        cout << "m";
+        break;
+    case STRweak:
+        cout << ",w1";
+        break;
+    case STRlarge:
+        cout << "l";
+        break;
+    case STRpull:
+        cout << ",p1";
+        break;
+    case STRstrong:
+        cout << ",s1";
+        break;
+    case STRsupply:
+        cout << ",sp1";
+        break;
+    }
+    cout << ')';
+}
+// End of vl_strength functions.
+
+
+void
 vl_var::print(ostream &outs)
 {
-    if (name)
-        outs << name;
-    else if (data_type == Dconcat)
-        outs << '{' << u.c << '}';        
+    if (v_name)
+        outs << v_name;
+    else if (data_type() == Dconcat)
+        outs << '{' << v_data.c << '}';        
     else
         outs << '?';
-    if (range)
-        outs << range;
+    if (v_range)
+        outs << v_range;
 }
 
 
 void
 vl_var::print_value(ostream &outs, DSPtype dtype)
 {
-    if (data_type == Dbit) {
-        if (array.size()) {
-            char **ss = (char**)u.d;
-            for (int i = 0; i < array.size(); i++) {
+    if (data_type() == Dbit) {
+        if (v_array.size()) {
+            char **ss = (char**)v_data.d;
+            for (int i = 0; i < v_array.size(); i++) {
                 if (i)
                     outs << ' ';
-                printbits(outs, ss[i], bits.size(), dtype);
+                printbits(outs, ss[i], v_bits.size(), dtype);
             }
         }
         else
-            printbits(outs, u.s, bits.size(), dtype);
+            printbits(outs, v_data.s, v_bits.size(), dtype);
     }
-    else if (data_type == Dint) {
-        if (array.size()) {
-            int *ii = (int*)u.d;
+    else if (data_type() == Dint) {
+        if (v_array.size()) {
+            int *ii = (int*)v_data.d;
             outs << ii[0];
-            for (int i = 1; i < array.size(); i++)
+            for (int i = 1; i < v_array.size(); i++)
                 outs << ' ' << ii[i];
         }
         else
-            outs << u.i;
+            outs << v_data.i;
     }
-    else if (data_type == Dreal) {
-        if (array.size()) {
-            double *dd = (double*)u.d;
+    else if (data_type() == Dreal) {
+        if (v_array.size()) {
+            double *dd = (double*)v_data.d;
             outs << dd[0];
-            for (int i = 1; i < array.size(); i++)
+            for (int i = 1; i < v_array.size(); i++)
                 outs << ' ' << dd[i];
         }
         else
-            outs << u.r;
+            outs << v_data.r;
     }
-    else if (data_type == Dstring) {
-        if (array.size()) {
-            char **ss = (char**)u.d;
+    else if (data_type() == Dstring) {
+        if (v_array.size()) {
+            char **ss = (char**)v_data.d;
             char *s = vl_fix_str(ss[0]);
             outs << s;
             delete [] s;
-            for (int i = 1; i < array.size(); i++) {
+            for (int i = 1; i < v_array.size(); i++) {
                 s = vl_fix_str(ss[i]);
                 outs << ' ' << s;
                 delete [] s;
             }
         }
         else {
-            char *s = vl_fix_str(u.s);
-            outs << u.s;
+            char *s = vl_fix_str(v_data.s);
+            outs << v_data.s;
             delete [] s;
         }
     }
-    else if (data_type == Dtime) {
-        if (array.size()) {
-            vl_time_t *tt = (vl_time_t*)u.d;
+    else if (data_type() == Dtime) {
+        if (v_array.size()) {
+            vl_time_t *tt = (vl_time_t*)v_data.d;
             outs << tt[0];
-            for (int i = 1; i < array.size(); i++)
+            for (int i = 1; i < v_array.size(); i++)
                 outs << ' ' << tt[i];
         }
         else
-            outs << u.t;
+            outs << v_data.t;
     }
     else
         outs << "bad data type\n";
@@ -443,15 +511,15 @@ vl_var::print_value(ostream &outs, DSPtype dtype)
 const char *
 vl_var::decl_type()
 {
-    switch (net_type) {
+    switch (v_net_type) {
     case REGnone:
-        if (data_type == Dint)
+        if (data_type() == Dint)
             return ("integer");
-        else if (data_type == Dtime)
+        else if (data_type() == Dtime)
             return ("time");
-        else if (data_type == Dreal)
+        else if (data_type() == Dreal)
             return ("real");
-        else if (data_type == Dstring)
+        else if (data_type() == Dstring)
             return ("string");
         return ("unknown");
     case REGparam:
@@ -487,33 +555,33 @@ vl_var::decl_type()
 }
 
 
-// Return print field width for columns
+// Return print field width for columns.
 //
 int
 vl_var::pwidth(char fmt)
 {
-    if (data_type == Dbit) {
+    if (data_type() == Dbit) {
         switch (fmt) {
         case 'b':
-            return (bits.size());
+            return (v_bits.size());
         case 'h':
-            return (bits.size()/4 + bits.size()%4);
+            return (v_bits.size()/4 + v_bits.size()%4);
         case 'o':
-            return (bits.size()/3 + bits.size()%3);
+            return (v_bits.size()/3 + v_bits.size()%3);
         case 'd': 
-            return ((int)ceil(bits.size()*log10(2.0)));
+            return ((int)ceil(v_bits.size()*log10(2.0)));
         }
     }
-    else if (data_type == Dint)
+    else if (data_type() == Dint)
         return ((int)ceil(8*sizeof(int)*log10(2.0)));
-    else if (data_type == Dtime)
+    else if (data_type() == Dtime)
         return ((int)ceil(8*sizeof(vl_time_t)*log10(2.0)));
-    else if (data_type == Dreal)
+    else if (data_type() == Dreal)
         return (12);
-    else if (data_type == Dstring) {
-        if (!u.s)
+    else if (data_type() == Dstring) {
+        if (!v_data.s)
             return (8);
-        return (8*(strlen(u.s)/8) + 8);
+        return (8*(strlen(v_data.s)/8) + 8);
     }
     return (1);
 }
@@ -522,26 +590,26 @@ vl_var::pwidth(char fmt)
 char *
 vl_var::bitstr()
 {
-    if (data_type == Dbit) {
-        if (!array.size()) {
-            char *s = new char[bits.size() + 1];
-            for (int i = bits.size()-1, j = 0; i >= 0; i--, j++) {
-                if (u.s[i] == BitL)
+    if (data_type() == Dbit) {
+        if (!v_array.size()) {
+            char *s = new char[v_bits.size() + 1];
+            for (int i = v_bits.size()-1, j = 0; i >= 0; i--, j++) {
+                if (v_data.s[i] == BitL)
                     s[j] = '0';
-                else if (u.s[i] == BitH)
+                else if (v_data.s[i] == BitH)
                     s[j] = '1';
-                else if (u.s[i] == BitZ)
+                else if (v_data.s[i] == BitZ)
                     s[j] = 'z';
                 else
                     s[j] = 'x';
             }
-            s[bits.size()] = 0;
+            s[v_bits.size()] = 0;
             return (s);
         }
     }
-    else if (data_type == Dint) {
-        if (!array.size()) {
-            unsigned x = (unsigned)u.i;
+    else if (data_type() == Dint) {
+        if (!v_array.size()) {
+            unsigned x = (unsigned)v_data.i;
             int isz = 8*(int)sizeof(int);
             char *s = new char[isz + 1];
             for (int i = 0; i < isz; i++) {
@@ -555,9 +623,9 @@ vl_var::bitstr()
             return (s);
         }
     }
-    else if (data_type == Dtime) {
-        if (!array.size()) {
-            vl_time_t x = u.t;
+    else if (data_type() == Dtime) {
+        if (!v_array.size()) {
+            vl_time_t x = v_data.t;
             int isz = 8*(int)sizeof(vl_time_t);
             char *s = new char[isz + 1];
             for (int i = 0; i < isz; i++) {
@@ -573,6 +641,7 @@ vl_var::bitstr()
     }
     return (0);
 }
+// End of vl_var functions.
 
 
 ostream &
@@ -592,10 +661,10 @@ vl_expr::print(ostream &outs)
         print_value(outs);
         break;
     case IntExpr:
-        outs << u.i;
+        outs << data().i;
         break;
     case RealExpr:
-        outs << u.r;
+        outs << data().r;
         break;
     case IDExpr:
         if (ux.ide.name)
@@ -609,12 +678,12 @@ vl_expr::print(ostream &outs)
             outs << ux.ide.range;
         break;
     case ConcatExpr: {
-        if (ux.mcat.var && ux.mcat.var->u.c) {
+        if (ux.mcat.var && ux.mcat.var->data().c) {
             if (ux.mcat.rep)
                 outs << "{" << ux.mcat.rep << "{" <<
-                    ux.mcat.var->u.c << "}}";
+                    ux.mcat.var->data().c << "}}";
             else
-                outs << "{" << ux.mcat.var->u.c << "}";
+                outs << "{" << ux.mcat.var->data().c << "}";
         }
         break;                        
     }
@@ -629,8 +698,8 @@ vl_expr::print(ostream &outs)
         break;                        
     }
     case StringExpr:
-        if (u.s)
-            outs << u.s;
+        if (data().s)
+            outs << data().s;
         break;
     case FuncExpr:
         if (ux.func_call.name) {
@@ -904,30 +973,31 @@ vl_simulator::monitor_change(lsList<vl_expr*> *args)
             continue;
         vl_var od = *e;
         vl_var &nd = e->eval();
-        if (od.data_type != nd.data_type)
+        if (od.data_type() != nd.data_type())
             continue;
         vl_var &z = case_neq(od, nd);
-        if (z.u.s[0] == BitH)
+        if (z.data().s[0] == BitH)
             return (true);
     }
     return (false);
 }
 
 
-inline void
-wformat(ostream &outs, const char *str, char fill, int wid)
-{
-    if (wid <= 0) {
+namespace {
+    inline void wformat(ostream &outs, const char *str, char fill, int wid)
+    {
+        if (wid <= 0) {
+            outs << str;
+            return;
+        }
+        int w = strlen(str);
+        if (w <= wid) {
+            int i = wid - w;
+            while (i--)
+                outs << fill;
+        }
         outs << str;
-        return;
     }
-    int w = strlen(str);
-    if (w <= wid) {
-        int i = wid - w;
-        while (i--)
-            outs << fill;
-    }
-    outs << str;
 }
 
 
@@ -945,7 +1015,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
         first = false;
         hadnl = false;
         if (e->etype == StringExpr) {
-            char *string = e->u.s;
+            char *string = e->data().s;
             if (!string)
                 continue;
             string = vl_fix_str(string);
@@ -988,7 +1058,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                     gen.next(&e);
                     {
                         vl_var &d = e->eval();
-                        if (d.data_type == Dbit) {
+                        if (d.data_type() == Dbit) {
                             if (d.is_x()) {
                                 strcpy(buf, "x");
                                 fw = 0;
@@ -1026,8 +1096,8 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                     gen.next(&e);
                     {
                         vl_var &d = e->eval();
-                        if (d.data_type == Dbit) {
-                            int w = (d.bits.size() + 3)/4;
+                        if (d.data_type() == Dbit) {
+                            int w = (d.bits().size() + 3)/4;
                             if (d.is_x()) {
                                 int i = 0;
                                 for ( ; i < w; i++)
@@ -1058,9 +1128,9 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                     gen.next(&e);
                     {
                         vl_var &d = e->eval();
-                        if (d.data_type == Dbit) {
-                            int w = (d.bits.size() + 2)/3;
-                            if (d.data_type == Dbit && d.is_x()) {
+                        if (d.data_type() == Dbit) {
+                            int w = (d.bits().size() + 2)/3;
+                            if (d.data_type() == Dbit && d.is_x()) {
                                 int i = 0;
                                 for ( ; i < w; i++)
                                     buf[i] =  'x';
@@ -1091,7 +1161,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                     gen.next(&e);
                     {
                         vl_var &d = e->eval();
-                        if (d.data_type == Dbit && d.is_x())
+                        if (d.data_type() == Dbit && d.is_x())
                             strcpy(buf, "x");
                         else {
                             double t = (double) d;
@@ -1555,40 +1625,40 @@ vl_specify_block::print(ostream &outs)
 }
 
 
-static const char *
-pathstr(int p, bool all)
-{
-    if (p == 0) {
+namespace {
+    const char *pathstr(int p, bool all)
+    {
+        if (p == 0) {
+            if (all)
+                return (" *> ");
+            return (" => ");
+        }
+        if (p == '+') {
+            if (all)
+                return (" +*> ");
+            return (" +=> ");
+        }
+        if (p == '-') {
+            if (all)
+                return (" -*> ");
+            return (" -=> ");
+        }
         if (all)
-            return (" *> ");
-        return (" => ");
+            return (" ?*> ");
+        return (" ?=> ");
     }
-    if (p == '+') {
-        if (all)
-            return (" +*> ");
-        return (" +=> ");
-    }
-    if (p == '-') {
-        if (all)
-            return (" -*> ");
-        return (" -=> ");
-    }
-    if (all)
-        return (" ?*> ");
-    return (" ?=> ");
-}
 
 
-static const char *
-cndstr(int p)
-{
-    if (p == 0)
-        return (" : ");
-    if (p == '+')
-        return (" +: ");
-    if (p == '-')
-        return (" -: ");
-    return (" ?: ");
+    const char *cndstr(int p)
+    {
+        if (p == 0)
+            return (" : ");
+        if (p == '+')
+            return (" +: ");
+        if (p == '-')
+            return (" -: ");
+        return (" ?: ");
+    }
 }
 
 
@@ -2425,3 +2495,4 @@ operator<<(ostream &outs, vl_mp_inst *m)
     outs << ")";
     return (outs);
 }
+

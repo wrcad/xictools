@@ -367,10 +367,16 @@ struct vl_strength
     void set_str0(STRength s)   { s_str0 = s; }
     void set_str1(STRength s)   { s_str1 = s; }
 
+    // vl_print.cc
+    void print();
+
 private:
     STRength s_str0;
     STRength s_str1;
 };
+
+// Set this to machine bit width.
+#define DefBits (8*(int)sizeof(int))
 
 // Basic data item
 //
@@ -387,9 +393,6 @@ struct vl_var
     virtual void chain(vl_stmt*);
     virtual void unchain(vl_stmt*);
     virtual void unchain_disabled(vl_stmt*);
-    virtual void print(ostream&);
-
-    void print_value(ostream&, DSPtype = DSPh);
 
     void configure(vl_range*, int = RegDecl, vl_range* = 0);
     void operator=(vl_var&);
@@ -397,35 +400,6 @@ struct vl_var
     void assign(vl_range*, vl_var*, int*, int*);
     void assign_to(double, double, double, int, int);
 
-private:
-    void assign_init(vl_var*, int, int);
-    void assign_bit_range(int, int, vl_var*, int, int);
-    void assign_bit_SS(int, int, vl_var*, int, int);
-    void assign_bit_SA(int, int, vl_var*, int, int);
-    void assign_bit_AS(int, int, vl_var*, int, int);
-    void assign_bit_AA(int, int, vl_var*, int, int);
-    void assign_int_range(int, int, vl_var*, int, int);
-    void assign_int_SS(int, int, vl_var*, int, int);
-    void assign_int_SA(int, int, vl_var*, int, int);
-    void assign_int_AS(int, int, vl_var*, int, int);
-    void assign_int_AA(int, int, vl_var*, int, int);
-    void assign_time_range(int, int, vl_var*, int, int);
-    void assign_time_SS(int, int, vl_var*, int, int);
-    void assign_time_SA(int, int, vl_var*, int, int);
-    void assign_time_AS(int, int, vl_var*, int, int);
-    void assign_time_AA(int, int, vl_var*, int, int);
-    void assign_real_range(int, int, vl_var*, int, int);
-    void assign_real_SS(int, int, vl_var*, int, int);
-    void assign_real_SA(int, int, vl_var*, int, int);
-    void assign_real_AS(int, int, vl_var*, int, int);
-    void assign_real_AA(int, int, vl_var*, int, int);
-    void assign_string_range(int, int, vl_var*, int, int);
-    void assign_string_SS(int, int, vl_var*, int, int);
-    void assign_string_SA(int, int, vl_var*, int, int);
-    void assign_string_AS(int, int, vl_var*, int, int);
-    void assign_string_AA(int, int, vl_var*, int, int);
-
-public:
     void clear(vl_range*, int);
     void reset();
     void set(bitexp_parse*);
@@ -470,12 +444,14 @@ public:
     double real_elt(int);
     char *str_elt(int);
 
-    operator int();
-    operator unsigned();
-    operator vl_time_t();
-    operator double();
-    operator char*();
+    // Conversion operators.
+    operator int()          { return (int_elt(0)); }
+    operator unsigned()     { return ((unsigned)int_elt(0)); }
+    operator vl_time_t()    { return (time_elt(0)); }
+    operator double()       { return (real_elt(0)); }
+    operator char*()        { return (str_elt(0)); }
 
+    // vl_expr.cc
     void addb(vl_var&, int);
     void addb(vl_var&, vl_time_t);
     void addb(vl_var&, vl_var&);
@@ -486,59 +462,147 @@ public:
     void subb(vl_var&, vl_var&);
 
     // vl_print.cc
+    virtual void print(ostream&);
+    void print_value(ostream&, DSPtype = DSPh);
     const char *decl_type();
     int pwidth(char);
     char *bitstr();
 
-    const char *name;             // data item's name
+    const char *name()              const { return (v_name); }
+    void set_name(const char *n)    { v_name = n; }
 
-    Dtype data_type;              // declared type
-      // If type == Dnone, object can be coerced into any type on assignment,
-      // otherwise object will retain type.  Dnone looks like an int.
+    Dtype data_type()               const { return (v_data_type); }
+    void set_data_type(Dtype d)     { v_data_type = d; }
 
-    REGtype net_type;             // type of net
-      // If not REGnone, object must be a bit field, specifies type of net,
-      // or reg
+    REGtype net_type()              const { return (v_net_type); }
+    void set_net_type(REGtype d)    { v_net_type = d; }
 
-    IOtype io_type;               // type of port
-      // Specifies whether net is input, output, inout, or none
+    IOtype io_type()                const { return (v_io_type); }
+    void set_io_type(IOtype d)      { v_io_type = d; }
 
-    unsigned char flags;          // misc. indicators
+    unsigned int flags()            const { return (v_flags); }
+    void set_flags(unsigned int f)  { v_flags = f; }
+    void or_flags(unsigned int f)   { v_flags |= f; }
+    void anot_flags(unsigned int f) { v_flags &= ~f; }
 
-    vl_array array;               // range if array
-    vl_array bits;                // bit field range
-    union {
-        int i;                    // integer (Dint)
-        double r;                 // real (Dreal)
-        vl_time_t t;              // time (Dtime)
-        char *s;                  // bit field or char string (Dbit, Dstring)
-        void *d;                  // array data
-        lsList<vl_expr*> *c;      // concatenation list (Dconcat)
-    } u;
+    vl_array &array()               { return (v_array); }
+    vl_array &bits()                { return (v_bits); }
 
-    vl_range *range;              // array range from parser
-    vl_action_item *events;       // list of events to trigger
-    vl_strength strength;         // net assign strength
-    vl_delay *delay;              // net delay
-    vl_bassign_stmt *cassign;     // continuous procedural assignment
-    lsList<vl_driver*> *drivers;  // driver list for net
+    union var_data
+    {
+        int i;                      // integer (Dint)
+        double r;                   // real (Dreal)
+        vl_time_t t;                // time (Dtime)
+        char *s;                    // bit field or char string (Dbit, Dstring)
+        void *d;                    // array data
+        lsList<vl_expr*> *c;        // concatenation list (Dconcat)
+    };
+    var_data &data()                { return (v_data); }
 
+    vl_range *range()               const { return (v_range); }
+    void set_range(vl_range *r)     { v_range = r; }
+
+    vl_strength strength()          const { return (v_strength); }
+    void set_strength(vl_strength s) { v_strength = s; }
+    void set_strength(STRength s0, STRength s1)
+        {
+            v_strength.set_str0(s0);;
+            v_strength.set_str1(s1);;
+        }
+
+    vl_delay *delay()               const { return (v_delay); }
+    void set_delay(vl_delay *d)     { v_delay = d; }
+
+private:
+    static int bits_set(vl_var*, vl_range*, vl_var*, int);
+    void print_drivers();
+    static void probe1(vl_var*, int, int, vl_var*, int, int);
+    void probe2();
+    void assign_init(vl_var*, int, int);
+    void assign_bit_range(int, int, vl_var*, int, int);
+    void assign_bit_SS(int, int, vl_var*, int, int);
+    void assign_bit_SA(int, int, vl_var*, int, int);
+    void assign_bit_AS(int, int, vl_var*, int, int);
+    void assign_bit_AA(int, int, vl_var*, int, int);
+    void assign_int_range(int, int, vl_var*, int, int);
+    void assign_int_SS(int, int, vl_var*, int, int);
+    void assign_int_SA(int, int, vl_var*, int, int);
+    void assign_int_AS(int, int, vl_var*, int, int);
+    void assign_int_AA(int, int, vl_var*, int, int);
+    void assign_time_range(int, int, vl_var*, int, int);
+    void assign_time_SS(int, int, vl_var*, int, int);
+    void assign_time_SA(int, int, vl_var*, int, int);
+    void assign_time_AS(int, int, vl_var*, int, int);
+    void assign_time_AA(int, int, vl_var*, int, int);
+    void assign_real_range(int, int, vl_var*, int, int);
+    void assign_real_SS(int, int, vl_var*, int, int);
+    void assign_real_SA(int, int, vl_var*, int, int);
+    void assign_real_AS(int, int, vl_var*, int, int);
+    void assign_real_AA(int, int, vl_var*, int, int);
+    void assign_string_range(int, int, vl_var*, int, int);
+    void assign_string_SS(int, int, vl_var*, int, int);
+    void assign_string_SA(int, int, vl_var*, int, int);
+    void assign_string_AS(int, int, vl_var*, int, int);
+    void assign_string_AA(int, int, vl_var*, int, int);
+
+protected:
+    // Return the effective bit width.
+    //
+    int bit_size()
+        {
+            if (v_data_type == Dbit)
+                return (bits().size());
+            if (v_data_type == Dint)
+                return (DefBits);
+            if (v_data_type == Dtime)
+                return (sizeof(vl_time_t)*8);
+            return (0);
+        }
+
+    const char *v_name;             // data item's name
+
+    Dtype v_data_type;              // declared type
+        // If type == Dnone, object can be coerced into any type on
+        // assignment, otherwise object will retain type.  Dnone looks
+        // like an int.
+
+    REGtype v_net_type;             // type of net
+        // If not REGnone, object must be a bit field, specifies type
+        // of net, or reg.
+
+    IOtype v_io_type;               // type of port
+        // Specifies whether net is input, output, inout, or none.
+
+    unsigned char v_flags;          // misc. indicators
+
+    // values for vl_var flags field
+    //
+#define VAR_IN_TABLE                0x1
+    // This vl_var has been placed in a symbol table.
+
+#define VAR_PORT_DRIVER             0x2
+    // This vl_var drives across an inout module port.
+
+#define VAR_CP_ASSIGN               0x4
+    // A continuous procedural assign is active.
+
+#define VAR_F_ASSIGN                0x8
+    // A force statement is active.
+
+    vl_array v_array;               // range if array
+    vl_array v_bits;                // bit field range
+    var_data v_data;                // contents
+
+    vl_range *v_range;              // array range from parser
+    vl_strength v_strength;         // net assign strength
+    vl_delay *v_delay;              // net delay
+    vl_action_item *v_events;       // list of events to trigger
+    vl_bassign_stmt *v_cassign;     // continuous procedural assignment
+    lsList<vl_driver*> *v_drivers;  // driver list for net
+
+public:
     static vl_simulator *simulator ; // access to simulator
 };
-
-// values for vl_var flags field
-//
-#define VAR_IN_TABLE        0x1
-    // This vl_var has been placed in a symbol table
-
-#define VAR_PORT_DRIVER     0x2
-    // This vl_var drives across an inout module port
-
-#define VAR_CP_ASSIGN       0x4
-    // A continuous procedural assign is active
-
-#define VAR_F_ASSIGN        0x8
-    // A force statement is active
 
 
 // Math and logical operations involving vl_var structs
@@ -920,10 +984,9 @@ struct bitexp_parse : public vl_var
 {
     bitexp_parse()
         {
-            data_type = Dbit;
-            u.s = brep = new char[MAXSTRLEN];
+            v_data_type = Dbit;
+            v_data.s = brep = new char[MAXSTRLEN];
         }
-//XXX destructor?
 
     void bin(char*);
     void dec(char*);
@@ -2320,6 +2383,23 @@ struct vl_gate_inst : public vl_inst
     void set_type(int);
     void set_delay(vl_simulator*, int);
 
+private:
+    static bool gsetup_gate(vl_simulator*, vl_gate_inst*);
+    static bool gsetup_buf(vl_simulator*, vl_gate_inst*);
+    static bool gsetup_cbuf(vl_simulator*, vl_gate_inst*);
+    static bool gsetup_mos(vl_simulator*, vl_gate_inst*);
+    static bool gsetup_cmos(vl_simulator*, vl_gate_inst*);
+    static bool gsetup_tran(vl_simulator*, vl_gate_inst*);
+    static bool gsetup_ctran(vl_simulator*, vl_gate_inst*);
+    static bool geval_gate(vl_simulator*, int(*)(int, int), vl_gate_inst*);
+    static bool geval_buf(vl_simulator*, int(*)(int, int), vl_gate_inst*);
+    static bool geval_cbuf(vl_simulator*, int(*)(int, int), vl_gate_inst*);
+    static bool geval_mos(vl_simulator*, int(*)(int, int), vl_gate_inst*);
+    static bool geval_cmos(vl_simulator*, int(*)(int, int), vl_gate_inst*);
+    static bool geval_tran(vl_simulator*, int(*)(int, int), vl_gate_inst*);
+    static bool geval_ctran(vl_simulator*, int(*)(int, int), vl_gate_inst*);
+
+public:
     lsList<vl_expr*> *terms;
     lsList<vl_var*> *outputs;
     bool (*gsetup)(vl_simulator*, vl_gate_inst*);
