@@ -532,7 +532,7 @@ vl_simulator::sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*> *args)
             modname = vl_fix_str((char*)e->eval());
     }
     if (modname) {
-        vl_inst *inst = vl_var::simulator->s_context->lookup_mp(modname);
+        vl_inst *inst = s_context->lookup_mp(modname);
         bool found = false;
         if (inst && !inst->type) {
             vl_mp_inst *mp = (vl_mp_inst*)inst;
@@ -550,7 +550,7 @@ vl_simulator::sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*> *args)
             vl_warn("$printtimescale: can't find %s", modname);
     }
     else {
-        vl_module *cmod = vl_var::simulator->s_context->currentModule();
+        vl_module *cmod = s_context->currentModule();
         if (cmod) {
             cout << "Time scale of " << cmod->name << " is ";
             cout << pts(cmod->tunit) << " / " << pts(cmod->tprec);

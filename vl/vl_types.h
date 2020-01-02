@@ -610,9 +610,6 @@ protected:
     vl_action_item *v_events;       // list of events to trigger
     vl_bassign_stmt *v_cassign;     // continuous procedural assignment
     lsList<vl_driver*> *v_drivers;  // driver list for net
-
-public:
-    static vl_simulator *simulator ; // access to simulator
 };
 
 
@@ -926,6 +923,7 @@ struct vl_parser
 
     vl_parser();
     ~vl_parser();
+
     bool parse(int, char**);
     bool parse(FILE*);
     void clear();
@@ -1055,10 +1053,14 @@ struct multi_concat
 enum VLdelayType { DLYmin, DLYtyp, DLYmax };
 enum VLstopType { VLrun, VLstop, VLabort };
 
+inline struct vl_simulator *VS();
+
 // Main class for simulator.
 //
 struct vl_simulator
 {
+    friend inline vl_simulator *VS() { return (vl_simulator::ptr()); }
+
     vl_simulator();
     ~vl_simulator();
 
@@ -1121,6 +1123,15 @@ struct vl_simulator
     int dmpstatus()                     const { return (s_dmpstatus); }
 
 private:
+    static vl_simulator *ptr()
+        {
+            if (!s_simulator)
+                on_null_ptr();
+            return (s_simulator);
+        }
+
+    static void on_null_ptr();
+
     vl_desc         *s_description;     // the verilog deck to simulate
     VLdelayType     s_dmode;            // min/typ/max delay mode
     VLstopType      s_stop;             // stop simulation code
@@ -1157,11 +1168,13 @@ private:
     const char      *s_tfsuffix;
     int             s_tfwidth;
 
+    static vl_simulator *s_simulator;
+
 public:
     vl_var_factory  var_factory;
 };
 
-// Context list for simulator
+// Context list for simulator.
 //
 struct vl_context
 {
@@ -1240,9 +1253,6 @@ private:
     vl_begin_end_stmt   *c_block;
     vl_fork_join_stmt   *c_fjblk;
     vl_context          *c_parent;
-
-public:
-    static vl_simulator *simulator;
 };
 
 // The flags field of a vl_stmt is used in different ways by the various

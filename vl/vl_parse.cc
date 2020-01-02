@@ -90,6 +90,7 @@ vl_parser::~vl_parser()
     delete p_lineno_stack;
     delete p_dir_stack;
     delete p_macros;
+    p_parser = 0;
 }
 
 

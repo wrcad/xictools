@@ -44,8 +44,6 @@
 #include "vl_types.h"
 
 
-vl_simulator *vl_var::simulator;
-
 //---------------------------------------------------------------------------
 //  Local
 //---------------------------------------------------------------------------
@@ -364,7 +362,7 @@ vl_var::chain(vl_stmt *stmt)
         }
         if (a->event)
             a->event->init();
-        vl_action_item *an = new vl_action_item(a->stmt, simulator->context());
+        vl_action_item *an = new vl_action_item(a->stmt, VS()->context());
         an->stack = chk_copy(a->stack);
         an->event = a->event;
         an->flags = a->flags;
@@ -377,7 +375,7 @@ vl_var::chain(vl_stmt *stmt)
             if (a->stmt == stmt)
                 return;
         }
-        a = new vl_action_item(stmt, simulator->context());
+        a = new vl_action_item(stmt, VS()->context());
         a->next = v_events;
         v_events = a;
     }
@@ -597,11 +595,11 @@ vl_var::operator=(vl_var &d)
         if (v_net_type >= REGwire && d.v_data_type == Dbit) {
             if (v_array.size() != 0) {
                 vl_error("in assignment, assigning object is an v_array");
-                simulator->abort();
+                VS()->abort();
                 return;
             }
             add_driver(&d, v_bits.size() - 1, 0, 0);
-            if (simulator->dbg_flags() & DBG_assign)
+            if (VS()->dbg_flags() & DBG_assign)
                 probe1(this, v_bits.size() - 1, 0, &d, d.v_bits.size() - 1, 0);
             int i = 0;
             for (int j = 0; i < v_bits.size() && j < d.v_bits.size();
@@ -619,7 +617,7 @@ vl_var::operator=(vl_var &d)
                 }
             }
 
-            if (simulator->dbg_flags() & DBG_assign)
+            if (VS()->dbg_flags() & DBG_assign)
                 probe2();
             if (arm_trigger && v_events)
                 trigger();
@@ -644,7 +642,7 @@ vl_var::operator=(vl_var &d)
                     v_data.s[i] = BitL;
                 }
             }
-            if (simulator->dbg_flags() & DBG_assign) {
+            if (VS()->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
                 print_value(cout);
                 cout << '\n';
@@ -680,7 +678,7 @@ vl_var::operator=(vl_var &d)
                 arm_trigger = true;
                 v_data.i = b;
             }
-            if (simulator->dbg_flags() & DBG_assign) {
+            if (VS()->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
                 print_value(cout);
                 cout << '\n';
@@ -712,7 +710,7 @@ vl_var::operator=(vl_var &d)
                 arm_trigger = true;
                 v_data.t = t;
             }
-            if (simulator->dbg_flags() & DBG_assign) {
+            if (VS()->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
                 print_value(cout);
                 cout << '\n';
@@ -744,7 +742,7 @@ vl_var::operator=(vl_var &d)
                 arm_trigger = true;
                 v_data.r = r;
             }
-            if (simulator->dbg_flags() & DBG_assign) {
+            if (VS()->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
                 print_value(cout);
                 cout << '\n';
@@ -793,7 +791,7 @@ vl_var::operator=(vl_var &d)
             vl_error(
                 "rhs of concatenation assignment is an v_array, not allowed");
             errout(this);
-            simulator->abort();
+            VS()->abort();
             return;
         }
         lsGen<vl_expr*> gen(v_data.c, true);
@@ -805,14 +803,14 @@ vl_var::operator=(vl_var &d)
                 vl_error("in variable assignment, bad expression type in "
                     "concatenation:");
                 errout(this);
-                simulator->abort();
+                VS()->abort();
                 return;
             }
             if (v->v_data_type != Dbit) {
                 vl_error("in variable assignment, concatenation contains "
                     "unsized value:");
                 errout(this);
-                simulator->abort();
+                VS()->abort();
                 return;
             }
             vl_range *r = e->source_range();
@@ -992,7 +990,7 @@ vl_var::assign(vl_range *rd, vl_var *src, vl_range *rs)
         else {
             vl_error("range given to uninitialized variable");
             errout(rd);
-            simulator->abort();
+            VS()->abort();
             return;
         }
     }
@@ -1008,7 +1006,7 @@ vl_var::assign(vl_range *rd, vl_var *src, vl_range *rs)
         assign_string_range(md, ld, src, ms, ls);
     else {
         vl_error("bad data type in range assignment");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1061,7 +1059,7 @@ vl_var::assign(vl_range *rd, vl_var *src, int *m_from, int *l_from)
         else {
             vl_error("range given to uninitialized variable");
             errout(rd);
-            simulator->abort();
+            VS()->abort();
             return;
         }
     }
@@ -1077,7 +1075,7 @@ vl_var::assign(vl_range *rd, vl_var *src, int *m_from, int *l_from)
         assign_string_range(md, ld, src, ms, ls);
     else {
         vl_error("bad data type in range assignment");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1357,7 +1355,7 @@ vl_var::set(vl_bitexp_parse *p)
     }
     else {
         vl_error("(internal) incorrect data type in set-v_bits");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1375,7 +1373,7 @@ vl_var::set(int i)
     }
     else {
         vl_error("(internal) incorrect data type in set-scalar_int");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1393,7 +1391,7 @@ vl_var::set(vl_time_t t)
     }
     else {
         vl_error("(internal) incorrect data type in set-scalar_time");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1410,7 +1408,7 @@ vl_var::set(double r)
     }
     else {
         vl_error("(internal) incorrect data type in set-scalar_real");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1431,7 +1429,7 @@ vl_var::set(char *string)
     }
     else {
         vl_error("(internal) incorrect data type in set-scalar_string");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1453,7 +1451,7 @@ vl_var::setx(int w)
     }
     else {
         vl_error("(internal) incorrect data type in set-dc");
-        simulator->abort();
+        VS()->abort();
     }
 }               
 
@@ -1475,7 +1473,7 @@ vl_var::setz(int w)
     }
     else {
         vl_error("(internal) incorrect data type in set-z");
-        simulator->abort();
+        VS()->abort();
     }
 }               
 
@@ -1503,7 +1501,7 @@ vl_var::setb(int ix)
     }
     else {
         vl_error("(internal) incorrect data type in set-integer");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1531,7 +1529,7 @@ vl_var::sett(vl_time_t t)
     }
     else {
         vl_error("(internal) incorrect data type in set-time");
-        simulator->abort();
+        VS()->abort();
     }
 }
 
@@ -1765,7 +1763,7 @@ vl_var::set_assigned(vl_bassign_stmt *bs)
                     vl_error("in procedural continuous assign, concatenated "
                         "component is not a reg");
                     errout(this);
-                    simulator->abort();
+                    VS()->abort();
                     return;
                 }
                 v->anot_flags(VAR_CP_ASSIGN);
@@ -1774,7 +1772,7 @@ vl_var::set_assigned(vl_bassign_stmt *bs)
                 vl_error("in procedural continuous assign, concatenated "
                     "component has undefined width");
                 errout(this);
-                simulator->abort();
+                VS()->abort();
                 return;
             }
         }
@@ -1782,7 +1780,7 @@ vl_var::set_assigned(vl_bassign_stmt *bs)
     else if (bs && v_net_type != REGreg) {
         vl_error("in procedural continuous assign, %s is not a reg", v_name);
         errout(this);
-        simulator->abort();
+        VS()->abort();
         return;
     }
     anot_flags(VAR_CP_ASSIGN);
@@ -1826,7 +1824,7 @@ vl_var::set_forced(vl_bassign_stmt *bs)
             if (!v) {
                 vl_error("in force, bad value in concatenation");
                 errout(this);
-                simulator->abort();
+                VS()->abort();
                 return;
             }
             v->anot_flags(VAR_F_ASSIGN);
@@ -1918,7 +1916,7 @@ vl_var::check_net_type(REGtype reg_or_net)
             if (!v) {
                 vl_error("bad expression in concatenation:");
                 errout(this);
-                simulator->abort();
+                VS()->abort();
                 return (false);
             }
             if (!v->check_net_type(reg_or_net))
@@ -1955,7 +1953,7 @@ vl_var::check_bit_range(int *m, int *l)
         else {
             if (*m < *l) {
                 vl_error("in check range, index direction mismatch found");
-                simulator->abort();
+                VS()->abort();
                 return (false);
             }
             if (*l > mx || *m < 0)
@@ -1976,7 +1974,7 @@ vl_var::check_bit_range(int *m, int *l)
         else {
             if (*m < *l) {
                 vl_error("in check range, index direction mismatch found");
-                simulator->abort();
+                VS()->abort();
                 return (false);
             }
             if (*l > mx || *m < 0)
@@ -1998,7 +1996,7 @@ vl_var::check_bit_range(int *m, int *l)
         else {
             if (*m < *l) {
                 vl_error("in check range, index direction mismatch found");
-                simulator->abort();
+                VS()->abort();
                 return (false);
             }
             if (*l > mx || *m < 0)
@@ -2025,7 +2023,7 @@ vl_var::add_driver(vl_var *d, int mt, int lt, int lf)
 {
     if (d->v_array.size() != 0) {
         vl_error("net driver is an array, not allowed");
-        simulator->abort();
+        VS()->abort();
         return;
     }
     if (!v_drivers) {
@@ -2177,7 +2175,7 @@ vl_var::trigger()
     for (vl_action_item *a = v_events; a; a = an) {
         an = a->next;
         if (a->event) {
-            if ((int)a->event->eval(simulator)) {
+            if ((int)a->event->eval(VS())) {
                 if (a->event->count()) {
                     a->event->set_count(a->event->count() - 1);
                     return;
@@ -2185,7 +2183,7 @@ vl_var::trigger()
                 a->next = 0;
                 a->event->unchain(a);
                 a->event = 0;
-                simulator->timewheel()->append_trig(simulator->time(), a);
+                VS()->timewheel()->append_trig(VS()->time(), a);
                 if (ap)
                     ap->next = an;
                 else
@@ -2196,7 +2194,7 @@ vl_var::trigger()
             continue;
         }
         // continuous assign
-        simulator->timewheel()->append_trig(simulator->time(), chk_copy(a));
+        VS()->timewheel()->append_trig(VS()->time(), chk_copy(a));
         ap = a;
     }
 }
@@ -2829,18 +2827,18 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
     if (v_net_type >= REGwire) {
         if (v_array.size() != 0) {
             vl_error("in assignment, assigned-to net is an array!");
-            simulator->abort();
+            VS()->abort();
             return;
         }
         if (src->v_array.size() != 0) {
             vl_error("in assignment, assigning net is an array!");
-            simulator->abort();
+            VS()->abort();
             return;
         }
         if (src->v_data_type != Dbit && src->v_data_type != Dint &&
                 src->v_data_type != Dtime) {
             vl_error("in assignment, assigning net from wrong data type");
-            simulator->abort();
+            VS()->abort();
             return;
         }
         if (v_bits.check_range(&md, &ld)) {
@@ -2851,7 +2849,7 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
                 int j = src->v_bits.Bstart(ms, ls);
                 int je = src->v_bits.Bend(ms, ls);
                 add_driver(src, ie, i, j);
-                if (simulator->dbg_flags() & DBG_assign)
+                if (VS()->dbg_flags() & DBG_assign)
                     probe1(this, ie, i, src, je, j);
                 for ( ; i <= ie && j <= je; i++, j++) {
                     int b = resolve_bit(i, src, j);
@@ -2866,7 +2864,7 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
                         v_data.s[i] = BitL;
                     }
                 }
-                if (simulator->dbg_flags() & DBG_assign)
+                if (VS()->dbg_flags() & DBG_assign)
                     probe2();
             }
             else {
@@ -2890,7 +2888,7 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
             assign_bit_SS(md, ld, src, ms, ls);
         else
             assign_bit_SA(md, ld, src, ms, ls);
-        if (simulator->dbg_flags() & DBG_assign) {
+        if (VS()->dbg_flags() & DBG_assign) {
             cout << this << " = ";
             print_value(cout);
             cout << '\n';
@@ -3062,7 +3060,7 @@ vl_var::assign_int_range(int md, int ld, vl_var *src, int ms, int ls)
             assign_int_SS(md, ld, src, ms, ls);
         else
             assign_int_SA(md, ld, src, ms, ls);
-        if (simulator->dbg_flags() & DBG_assign) {
+        if (VS()->dbg_flags() & DBG_assign) {
             cout << this << " = ";
             print_value(cout);
             cout << '\n';
@@ -3229,7 +3227,7 @@ vl_var::assign_time_range(int md, int ld, vl_var *src, int ms, int ls)
             assign_time_SS(md, ld, src, ms, ls);
         else
             assign_time_SA(md, ld, src, ms, ls);
-        if (simulator->dbg_flags() & DBG_assign) {
+        if (VS()->dbg_flags() & DBG_assign) {
             cout << this << " = ";
             print_value(cout);
             cout << '\n';
@@ -3398,7 +3396,7 @@ vl_var::assign_real_range(int md, int ld, vl_var *src, int ms, int ls)
             assign_real_SS(md, ld, src, ms, ls);
         else
             assign_real_SA(md, ld, src, ms, ls);
-        if (simulator->dbg_flags() & DBG_assign) {
+        if (VS()->dbg_flags() & DBG_assign) {
             cout << this << " = ";
             print_value(cout);
             cout << '\n';
@@ -3611,7 +3609,7 @@ vl_array::set(vl_range *range)
     if (!range->eval(&a_hi_index, &a_lo_index)) {
         vl_error("range initialization failed");
         errout(range);
-        range->left()->simulator->abort();
+        VS()->abort();
         a_hi_index = a_lo_index = 0;
     }
     a_size = rsize(a_hi_index, a_lo_index);
@@ -3635,7 +3633,7 @@ vl_array::check_range(int *m, int *l)
     if (a_lo_index <= a_hi_index) {
         if (*m < *l) {
             vl_error(err1);
-            vl_var::simulator->abort();
+            VS()->abort();
             return (false);
         }
         if (*l > a_hi_index || *m < a_lo_index)
@@ -3648,7 +3646,7 @@ vl_array::check_range(int *m, int *l)
     else {
         if (*m > *l) {
             vl_error(err1);
-            vl_var::simulator->abort();
+            VS()->abort();
             return (false);
         }
         if (*l < a_hi_index || *m > a_lo_index)
@@ -3758,13 +3756,13 @@ vl_delay::copy()
 vl_time_t
 vl_delay::eval()
 {
-    vl_module *cmod = vl_var::simulator->context()->currentModule();
+    vl_module *cmod = VS()->context()->currentModule();
     if (!cmod) {
         vl_error("internal, no current module for delay evaluation");
-        vl_var::simulator->abort();
+        VS()->abort();
         return (0);
     }
-    double tstep = vl_var::simulator->description()->tstep;
+    double tstep = VS()->description()->tstep;
     double tunit = cmod->tunit;
     double tprec = cmod->tprec;
     if (list) {

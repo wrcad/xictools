@@ -141,6 +141,11 @@ namespace {
             carry = (c & 2) ? 1 : 0;
         }
     }
+
+    vl_var &new_var()
+    {
+        return (VS()->var_factory.new_var());
+    }
 }
 
 
@@ -169,7 +174,7 @@ operator*(vl_var &data1, vl_var &data2)
     else if (data2.data_type() == Dtime)
         w2 = 8*sizeof(vl_time_t);
 
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dstring || data2.data_type() == Dstring)
         d.setx(w1 + w2);
     else if ((data1.data_type() == Dbit && data1.is_x()) ||
@@ -215,7 +220,7 @@ operator/(vl_var &data1, vl_var &data2)
     else if (data2.data_type() == Dtime)
         w2 = 8*sizeof(vl_time_t);
 
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dstring || data2.data_type() == Dstring)
         d.setx(max(w1, w2));
     else if ((data1.data_type() == Dbit && data1.is_x()) ||
@@ -263,7 +268,7 @@ operator%(vl_var &data1, vl_var &data2)
     else if (data2.data_type() == Dtime)
         w2 = 8*sizeof(vl_time_t);
 
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dstring || data2.data_type() == Dstring)
         d.setx(max(w1, w2));
     else if ((data1.data_type() == Dbit && data1.is_x()) ||
@@ -293,7 +298,7 @@ operator%(vl_var &data1, vl_var &data2)
 vl_var &
 operator+(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dstring || data2.data_type() == Dstring)
         return (d);
     if (data1.data_type() == Dint) {
@@ -375,7 +380,7 @@ operator+(vl_var &data1, vl_var &data2)
 vl_var &
 operator-(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dstring || data2.data_type() == Dstring)
         return (d);
     if (data1.data_type() == Dint) {
@@ -457,7 +462,7 @@ operator-(vl_var &data1, vl_var &data2)
 vl_var &
 operator-(vl_var &data1)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dint) {
         d.set_data_type(Dint);
         d.data().i = -data1.data().i;
@@ -488,7 +493,7 @@ operator-(vl_var &data1)
 vl_var &
 operator<<(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data2.data_type() == Dbit && data2.is_x())
         d.setx(data1.bits().size());
     else {
@@ -516,7 +521,7 @@ operator<<(vl_var &data1, vl_var &data2)
 vl_var &
 operator<<(vl_var &data1, int shift)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (shift < 0)
         shift = -shift;
     int bw;
@@ -539,7 +544,7 @@ operator<<(vl_var &data1, int shift)
 vl_var &
 operator>>(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data2.data_type() == Dbit && data2.is_x())
         d.setx(data1.bits().size());
     else {
@@ -567,7 +572,7 @@ operator>>(vl_var &data1, vl_var &data2)
 vl_var &
 operator>>(vl_var &data1, int shift)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (shift < 0)
         shift = -shift;
     int bw;
@@ -612,7 +617,7 @@ operator==(vl_var &data1, vl_var &data2)
         return (d);
     }
 
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
@@ -807,7 +812,7 @@ case_eq(vl_var &data1, vl_var &data2)
     }
 
     if (data1.data_type() == Dbit && data2.data_type() == Dbit) {
-        vl_var &d = vl_var::simulator->var_factory.new_var();
+        vl_var &d = new_var();
         d.setx(1);
         d.data().s[0] = BitL;
         int wd = min(data1.bits().size(), data2.bits().size());
@@ -858,7 +863,7 @@ casex_eq(vl_var &data1, vl_var &data2)
     }
 
     if (data1.data_type() == Dbit && data2.data_type() == Dbit) {
-        vl_var &d = vl_var::simulator->var_factory.new_var();
+        vl_var &d = new_var();
         d.setx(1);
         d.data().s[0] = BitL;
         int wd = min(data1.bits().size(), data2.bits().size());
@@ -914,7 +919,7 @@ casez_eq(vl_var &data1, vl_var &data2)
     }
 
     if (data1.data_type() == Dbit && data2.data_type() == Dbit) {
-        vl_var &d = vl_var::simulator->var_factory.new_var();
+        vl_var &d = new_var();
         d.setx(1);
         d.data().s[0] = BitL;
         int wd = min(data1.bits().size(), data2.bits().size());
@@ -972,7 +977,7 @@ case_neq(vl_var &data1, vl_var &data2)
 vl_var &
 operator&&(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
@@ -1065,7 +1070,7 @@ operator&&(vl_var &data1, vl_var &data2)
 vl_var &
 operator||(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
@@ -1158,7 +1163,7 @@ operator||(vl_var &data1, vl_var &data2)
 vl_var &
 operator!(vl_var &data1)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint)
         d.data().s[0] = data1.data().i ? BitL : BitH;
@@ -1202,7 +1207,7 @@ reduce(vl_var &data1, int oper)
         default:
             xx = BitL;
             vl_error("(internal) in reduce, bad reduction op");
-            data1.simulator->abort();
+            VS()->abort();
         }
     }
     if (oper == UnandExpr || oper == UnorExpr || oper == UxnorExpr) {
@@ -1211,7 +1216,7 @@ reduce(vl_var &data1, int oper)
         else if (xx == BitH)
             xx = BitL;
     }
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     d.data().s[0] = xx;
     return (d);
@@ -1227,7 +1232,7 @@ reduce(vl_var &data1, int oper)
 vl_var &
 operator<(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
@@ -1300,7 +1305,7 @@ operator<(vl_var &data1, vl_var &data2)
 vl_var &
 operator<=(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
@@ -1373,7 +1378,7 @@ operator<=(vl_var &data1, vl_var &data2)
 vl_var &
 operator>(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
@@ -1446,7 +1451,7 @@ operator>(vl_var &data1, vl_var &data2)
 vl_var &
 operator>=(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
@@ -1523,7 +1528,7 @@ operator>=(vl_var &data1, vl_var &data2)
 vl_var &
 operator&(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dint);
@@ -1627,7 +1632,7 @@ operator&(vl_var &data1, vl_var &data2)
 vl_var &
 operator|(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dint);
@@ -1731,7 +1736,7 @@ operator|(vl_var &data1, vl_var &data2)
 vl_var &
 operator^(vl_var &data1, vl_var &data2)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dint);
@@ -1835,7 +1840,7 @@ operator^(vl_var &data1, vl_var &data2)
 vl_var &
 operator~(vl_var &data1)
 {
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     if (data1.data_type() == Dint) {
         d.set_data_type(Dint);
         int w = 0;
@@ -1921,7 +1926,7 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
     else if (xx == BitL)
         return (e2->eval());
 
-    vl_var &d = vl_var::simulator->var_factory.new_var();
+    vl_var &d = new_var();
     vl_var &d1 = e1->eval();
     int w1;
     if (d1.data_type() == Dbit)
@@ -2496,7 +2501,7 @@ vl_expr::eval()
     case BitSelExpr:
     case PartSelExpr:
         if (!e_data.ide.var) {
-            e_data.ide.var = check_var(simulator, e_data.ide.name);
+            e_data.ide.var = check_var(VS(), e_data.ide.name);
             if (!e_data.ide.var)
                 e_data.ide.var = this;
         }
@@ -2555,7 +2560,7 @@ vl_expr::eval()
         // three numbers: min/typ/max
         // two numbers: min/typ/max=typ
         // one number: min=typ/typ/max=typ
-        switch (simulator->dmode()) {
+        switch (VS()->dmode()) {
         case DLYmin:
             return (e_data.exprs.e1->eval());
         default:
@@ -2577,10 +2582,10 @@ vl_expr::eval()
     case FuncExpr:
         if (!e_data.func_call.func) {
             e_data.func_call.func =
-                simulator->context()->lookup_func(e_data.func_call.name);
+                VS()->context()->lookup_func(e_data.func_call.name);
             if (!e_data.func_call.func) {
                 vl_error("unresolved function %s", e_data.func_call.name);
-                simulator->abort();
+                VS()->abort();
                 return (vo);
             }
         }
@@ -2675,7 +2680,8 @@ vl_expr::eval()
         vo = tcond(e_data.exprs.e1->eval(), e_data.exprs.e2, e_data.exprs.e3);
         return (vo);
     case SysExpr:
-        vo = (simulator->*e_data.systask->action)(e_data.systask, e_data.systask->args);
+        vo = (VS()->*e_data.systask->action)(e_data.systask,
+            e_data.systask->args);
         return (vo);
     }
     vl_warn("(internal) bad expression type");
@@ -2713,7 +2719,7 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
     case BitSelExpr:
     case PartSelExpr:
         if (!e_data.ide.var) {
-            e_data.ide.var = check_var(simulator, e_data.ide.name);
+            e_data.ide.var = check_var(VS(), e_data.ide.name);
             if (!e_data.ide.var)
                 e_data.ide.var = this;
         }
@@ -2758,7 +2764,7 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
             e_data.mcat.var->unchain_disabled(stmt);
         return;
     case MinTypMaxExpr: 
-        switch (simulator->dmode()) {
+        switch (VS()->dmode()) {
         case DLYmin:
             if (e_data.exprs.e1) {
                 if (mode == 0)
@@ -2819,10 +2825,10 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
     case FuncExpr: {
         if (!e_data.func_call.func) {
             e_data.func_call.func =
-                simulator->context()->lookup_func(e_data.func_call.name);
+                VS()->context()->lookup_func(e_data.func_call.name);
             if (!e_data.func_call.func) {
                 vl_error("unresolved function %s", e_data.func_call.name);
-                simulator->abort();
+                VS()->abort();
                 return;
             }
         }
@@ -2925,11 +2931,11 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
     case SysExpr:
         if (!strcmp(e_data.systask->name, "$time")) {
             if (mode == 0)
-                simulator->time_data().chain(stmt);
+                VS()->time_data().chain(stmt);
             else if (mode == 1)
-                simulator->time_data().unchain(stmt);
+                VS()->time_data().unchain(stmt);
             else if (mode == 2)
-                simulator->time_data().unchain_disabled(stmt);
+                VS()->time_data().unchain_disabled(stmt);
         }
         return;
     }
@@ -2947,7 +2953,7 @@ vl_expr::source()
     case BitSelExpr:
     case PartSelExpr:
         if (!e_data.ide.var) {
-            e_data.ide.var = check_var(simulator, e_data.ide.name);
+            e_data.ide.var = check_var(VS(), e_data.ide.name);
             if (!e_data.ide.var)
                 e_data.ide.var = this;
         }

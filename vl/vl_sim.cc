@@ -46,9 +46,6 @@
 #include "vl_types.h"
 
 
-// Needed to find top modules in resolve functions.
-vl_simulator *vl_context::simulator;
-
 extern bool mmon_start(int);
 extern bool mmon_stop();
 extern bool mmon_dump(char*);
@@ -190,8 +187,16 @@ namespace {
 //  Simulator objects
 //---------------------------------------------------------------------------
 
+vl_simulator *vl_simulator::s_simulator = 0;
+
 vl_simulator::vl_simulator()
 {
+    if (s_simulator) {
+        fprintf(stderr, "Singleton vl_simulator is already instantiated.\n");
+        exit(1);
+    }
+    s_simulator = this;
+
     s_description = 0;
     s_dmode = DLYtyp;
     s_stop = VLrun;
@@ -228,10 +233,16 @@ vl_simulator::vl_simulator()
 }
 
 
+void
+vl_simulator::on_null_ptr()
+{
+    fprintf(stderr, "Singleton vl_simulator used before instantiated.\n");
+    exit(1);
+}
+
+
 vl_simulator::~vl_simulator()
 {
-    vl_context::simulator = 0;
-    vl_var::simulator = 0;
     if (s_description && s_description->simulator == this)
         s_description->simulator = 0;
     while (s_monitors) {
@@ -261,6 +272,7 @@ vl_simulator::~vl_simulator()
     delete s_dmpcx;
     delete [] s_dmplast;
     delete s_dmpdata;
+    s_simulator = 0;
 }
 
 
@@ -333,8 +345,6 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     s_dmode = dly;
     s_dbg_flags = dbg;
     s_description = desc;
-    vl_context::simulator = this;
-    vl_var::simulator = this;
     s_timewheel = new vl_timeslot(0);
     vl_module *mod;
     lsGen<vl_module*> gen(desc->modules);
@@ -388,8 +398,6 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
 bool
 vl_simulator::simulate()
 {
-    vl_context::simulator = this;
-    vl_var::simulator = this;
     if (s_dbg_flags & DBG_desc)
         s_description->dump(cout);
     while (s_timewheel && s_stop == VLrun) {
@@ -438,8 +446,6 @@ vl_simulator::simulate()
 VLstopType
 vl_simulator::step()
 {
-    vl_context::simulator = this;
-    vl_var::simulator = this;
     while (s_timewheel && s_stop == VLrun && s_timewheel->time <= s_steptime) {
         s_time_data.data().t = s_timewheel->time;
         s_timewheel->eval_slot(this);
@@ -539,7 +545,7 @@ vl_context::push(vl_context *t, vl_mp *m)
         cx->c_primitive = (vl_primitive*)m;
     else {
         vl_error("internal, bad object type %d (not mod/prim)", m->type);
-        simulator->abort();
+        VS()->abort();
     }
     return (cx);
 }
@@ -555,7 +561,7 @@ vl_context::push(vl_context *t, vl_module *m)
         cx->c_module = m;
     else {
         vl_error("internal, bad object type %d (not module)", m->type);
-        simulator->abort();
+        VS()->abort();
     }
     return (cx);
 }
@@ -571,7 +577,7 @@ vl_context::push(vl_context *t, vl_primitive *p)
         cx->c_primitive = p;
     else {
         vl_error("internal, bad object type %d (not primitive)", p->type);
-        simulator->abort();
+        VS()->abort();
     }
     return (cx);
 }
@@ -587,7 +593,7 @@ vl_context::push(vl_context *t, vl_task *k)
         cx->c_task = k;
     else {
         vl_error("internal, bad object type %d (not task)", k->type);
-        simulator->abort();
+        VS()->abort();
     }
     return (cx);
 }
@@ -603,7 +609,7 @@ vl_context::push(vl_context *t, vl_function *f)
         cx->c_function = f;
     else {
         vl_error("internal, bad object type %d (not function)", f->type);
-        simulator->abort();
+        VS()->abort();
     }
     return (cx);
 }
@@ -619,7 +625,7 @@ vl_context::push(vl_context *t, vl_begin_end_stmt *b)
         cx->c_block = b;
     else {
         vl_error("internal, bad object type %d (not begin/end)", b->type);
-        simulator->abort();
+        VS()->abort();
     }
     return (cx);
 }
@@ -635,7 +641,7 @@ vl_context::push(vl_context *t, vl_fork_join_stmt *f)
         cx->c_fjblk = f;
     else {
         vl_error("internal, bad object type %d (not fork/join)", f->type);
-        simulator->abort();
+        VS()->abort();
     }
     return (cx);
 }
@@ -1010,9 +1016,9 @@ vl_context::resolve_cx(const char **name, vl_context &cvar, bool modonly)
     // look for top module
     cvar.c_module = 0;
     cvar.c_parent = 0;
-    for (int i = 0; i < simulator->top_modules()->num; i++) {
-        if (!strcmp(r, simulator->top_modules()->mods[i]->name)) {
-            cvar.c_module = simulator->top_modules()->mods[i];
+    for (int i = 0; i < VS()->top_modules()->num; i++) {
+        if (!strcmp(r, VS()->top_modules()->mods[i]->name)) {
+            cvar.c_module = VS()->top_modules()->mods[i];
             r = s;
             break;
         }
@@ -2216,7 +2222,7 @@ vl_module::sort_moditems()
     }
     if (nlist->length() != mod_items->length()) {
         vl_error("internal, something strange in mod items list");
-        vl_var::simulator->abort();
+        VS()->abort();
     }
     delete mod_items;
     mod_items = nlist;
@@ -2597,7 +2603,7 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
         outvar->or_flags(VAR_IN_TABLE);
     }
 
-    vl_simulator *sim = outvar->simulator;
+    vl_simulator *sim = VS();
     vl_action_item *atmp = sim->timewheel()->actions;
     sim->timewheel()->actions = 0;
 
@@ -3030,7 +3036,7 @@ vl_begin_end_stmt::disable(vl_stmt *s)
     vl_stmt *fj;
     stmts->lastItem(&fj);
     if (fj && fj->type == ForkJoinBreak)
-        fj->setup(vl_var::simulator);
+        fj->setup(VS());
     vl_disable_list(stmts, s);
 }
 

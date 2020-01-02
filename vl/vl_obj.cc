@@ -71,12 +71,12 @@
 namespace {
     vl_context *var_context()
     {
-        return (vl_var::simulator->context());
+        return (VS()->context());
     }
 
     void set_var_context(vl_context *cx)
     {
-        vl_var::simulator->set_context(cx);
+        VS()->set_context(cx);
     }
 }
 
@@ -148,7 +148,7 @@ vl_module::copy()
     while (cx) {
         if (cx->module() && !strcmp(cx->module()->name, name)) {
             vl_error("recursive instantiation of module %s", name);
-            vl_var::simulator->abort();
+            VS()->abort();
             return (retval);
         }
         cx = cx->parent();
@@ -512,10 +512,10 @@ vl_decl::symtab(vl_var *var)
     if (!var->name()) {
         vl_error("unnamed variable in %s declaration", decl_type());
         errout(this);
-        var->simulator->abort();
+        VS()->abort();
         return (0);
     }
-    vl_context *cx = var->simulator->context();
+    vl_context *cx = VS()->context();
     table<vl_var*> *st = 0;
     if (cx->block()) {
         if (!cx->block()->sig_st)
@@ -549,7 +549,7 @@ vl_decl::symtab(vl_var *var)
     }
     if (!st) {
         vl_error("no symbol table for %s declaration", var->name());
-        var->simulator->abort();
+        VS()->abort();
     }
     return (st);
 }
@@ -726,7 +726,7 @@ vl_decl::var_setup(vl_var *var, int vtype)
     }
     vl_error("symbol %s redeclared as %s", var->name(), decl_type());
     errout(this);
-    var->simulator->abort();
+    VS()->abort();
 }
 // End vl_decl functions.
 
@@ -1196,10 +1196,9 @@ vl_mp_inst_list::copy()
             }
             if (current_mod) {
                 vl_mp *mp;
-                if (!vl_var::simulator->description()->mp_st->
-                        lookup(name, &mp) || !mp) {
+                if (!VS()->description()->mp_st->lookup(name, &mp) || !mp) {
                     vl_error("instance of %s with no master", name);
-                    vl_var::simulator->abort();
+                    VS()->abort();
                 }
                 else {
                     mp = mp->copy();
@@ -1551,7 +1550,7 @@ vl_begin_end_stmt::copy()
         }
         else {
             vl_error("if/else block %s has no parent", stmt->name);
-            vl_var::simulator->abort();
+            VS()->abort();
         }
     }
     return (stmt);
@@ -1914,7 +1913,7 @@ vl_fork_join_stmt::copy()
         }
         else {
             vl_error("fork/join block %s has no parent", stmt->name);
-            vl_var::simulator->abort();
+            VS()->abort();
         }
     }
     return (stmt);
@@ -2000,14 +1999,14 @@ vl_deassign_stmt::init()
     if (!lhs->name()) {
         if (lhs->data_type() != Dconcat) {
             vl_error("internal, unnamed variable in deassign");
-            lhs->simulator->abort();
+            VS()->abort();
         }
         return;
     }
-    vl_var *nvar = lhs->simulator->context()->lookup_var(lhs->name(), false);
+    vl_var *nvar = VS()->context()->lookup_var(lhs->name(), false);
     if (!nvar) {
         vl_error("undeclared variable %s in deassign", lhs->name());
-        lhs->simulator->abort();
+        VS()->abort();
     }
     if (nvar != lhs) {
         if (strcmp(nvar->name(), lhs->name()))
