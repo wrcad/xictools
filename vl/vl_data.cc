@@ -206,10 +206,10 @@ vl_var::vl_var(vl_var &d)
     v_flags = 0;
     v_array = d.v_array;
     v_bits = d.v_bits;
-    v_range = d.v_range->copy();
+    v_range = chk_copy(d.v_range);
     v_events = 0;
     v_strength = d.v_strength;
-    v_delay = d.v_delay->copy();
+    v_delay = chk_copy(d.v_delay);
     v_cassign = 0;
     v_drivers = 0;
 
@@ -268,7 +268,7 @@ vl_var::vl_var(vl_var &d)
         vl_expr *e;
         lsGen<vl_expr*> gen(d.v_data.c);
         while (gen.next(&e))
-            v_data.c->newEnd(e->copy());
+            v_data.c->newEnd(chk_copy(e));
     }
 }
 
@@ -364,8 +364,8 @@ vl_var::chain(vl_stmt *stmt)
         }
         if (a->event)
             a->event->init();
-        vl_action_item *an = new vl_action_item(a->stmt, simulator->context);
-        an->stack = a->stack->copy();
+        vl_action_item *an = new vl_action_item(a->stmt, simulator->context());
+        an->stack = chk_copy(a->stack);
         an->event = a->event;
         an->flags = a->flags;
         an->next = v_events;
@@ -377,7 +377,7 @@ vl_var::chain(vl_stmt *stmt)
             if (a->stmt == stmt)
                 return;
         }
-        a = new vl_action_item(stmt, simulator->context);
+        a = new vl_action_item(stmt, simulator->context());
         a->next = v_events;
         v_events = a;
     }
@@ -590,7 +590,7 @@ vl_var::operator=(vl_var &d)
             vl_expr *e;
             lsGen<vl_expr*> gen(d.v_data.c);
             while (gen.next(&e))
-                v_data.c->newEnd(e->copy());
+                v_data.c->newEnd(chk_copy(e));
         }
     }
     else if (v_data_type == Dbit) {
@@ -601,7 +601,7 @@ vl_var::operator=(vl_var &d)
                 return;
             }
             add_driver(&d, v_bits.size() - 1, 0, 0);
-            if (simulator->dbg_flags & DBG_assign)
+            if (simulator->dbg_flags() & DBG_assign)
                 probe1(this, v_bits.size() - 1, 0, &d, d.v_bits.size() - 1, 0);
             int i = 0;
             for (int j = 0; i < v_bits.size() && j < d.v_bits.size();
@@ -619,7 +619,7 @@ vl_var::operator=(vl_var &d)
                 }
             }
 
-            if (simulator->dbg_flags & DBG_assign)
+            if (simulator->dbg_flags() & DBG_assign)
                 probe2();
             if (arm_trigger && v_events)
                 trigger();
@@ -644,7 +644,7 @@ vl_var::operator=(vl_var &d)
                     v_data.s[i] = BitL;
                 }
             }
-            if (simulator->dbg_flags & DBG_assign) {
+            if (simulator->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
                 print_value(cout);
                 cout << '\n';
@@ -680,7 +680,7 @@ vl_var::operator=(vl_var &d)
                 arm_trigger = true;
                 v_data.i = b;
             }
-            if (simulator->dbg_flags & DBG_assign) {
+            if (simulator->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
                 print_value(cout);
                 cout << '\n';
@@ -712,7 +712,7 @@ vl_var::operator=(vl_var &d)
                 arm_trigger = true;
                 v_data.t = t;
             }
-            if (simulator->dbg_flags & DBG_assign) {
+            if (simulator->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
                 print_value(cout);
                 cout << '\n';
@@ -744,7 +744,7 @@ vl_var::operator=(vl_var &d)
                 arm_trigger = true;
                 v_data.r = r;
             }
-            if (simulator->dbg_flags & DBG_assign) {
+            if (simulator->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
                 print_value(cout);
                 cout << '\n';
@@ -1344,7 +1344,7 @@ vl_var::reset()
 // Set bit field from bit expression parser.
 //
 void
-vl_var::set(bitexp_parse *p)
+vl_var::set(vl_bitexp_parse *p)
 {
     if ((v_data_type == Dnone || v_data_type == Dbit) && !v_array.size()) {
         if (v_data_type == Dbit)
@@ -1865,11 +1865,13 @@ vl_var::freeze_concat()
     lsGen<vl_expr*> gen(v_data.c);
     vl_expr *e;
     while (gen.next(&e)) {
-        if (e->etype == BitSelExpr || e->etype == PartSelExpr) {
-            vl_range *tr;
-            e->ux.ide.range->eval(&tr);
-            delete e->ux.ide.range;
-            e->ux.ide.range = tr;
+        if (e->etype() == BitSelExpr || e->etype() == PartSelExpr) {
+            vl_range *tr = 0;
+            if (e->edata().ide.range) {
+                e->edata().ide.range->reval(&tr);
+                delete e->edata().ide.range;
+            }
+            e->edata().ide.range = tr;
         }
     }
 }
@@ -2035,10 +2037,10 @@ vl_var::add_driver(vl_var *d, int mt, int lt, int lf)
     lsGen<vl_driver*> gen(v_drivers);
     vl_driver *drv;
     while (gen.next(&drv)) {
-        if (drv->srcvar == d && drv->l_from == lf) {
-            if (lt == drv->l_to) {
-                if (mt > drv->m_to)
-                    drv->m_to = mt;
+        if (drv->srcvar() == d && drv->l_from() == lf) {
+            if (lt == drv->l_to()) {
+                if (mt > drv->m_to())
+                    drv->set_m_to(mt);
                 return;
             }
         }
@@ -2103,11 +2105,11 @@ vl_var::resolve_bit(int ix, vl_var *din, int ixs)
         skip_portdrv = true;
     bool first = true;
     while (gen.next(&dr)) {
-        vl_var *dt = dr->srcvar;
+        vl_var *dt = dr->srcvar();
         if (skip_portdrv && (dt->flags() & VAR_PORT_DRIVER) && dt != din)
             continue;
 
-        if (ix > dr->m_to || ix < dr->l_to)
+        if (ix > dr->m_to() || ix < dr->l_to())
             continue;
 
         vl_strength st = dt->v_strength;
@@ -2118,7 +2120,7 @@ vl_var::resolve_bit(int ix, vl_var *din, int ixs)
         if (st.str1() == STRnone)
             st.set_str1(STRstrong);
 
-        int bx = dt->bit_of((ix - dr->l_to) + dr->l_from);
+        int bx = dt->bit_of((ix - dr->l_to()) + dr->l_from());
         if ((bx == BitH && st.str1() == STRhiZ) ||
                 (bx == BitL && st.str0() == STRhiZ))
             continue;
@@ -2176,14 +2178,14 @@ vl_var::trigger()
         an = a->next;
         if (a->event) {
             if ((int)a->event->eval(simulator)) {
-                if (a->event->count) {
-                    a->event->count--;
+                if (a->event->count()) {
+                    a->event->set_count(a->event->count() - 1);
                     return;
                 }
                 a->next = 0;
                 a->event->unchain(a);
                 a->event = 0;
-                simulator->timewheel->append_trig(simulator->time, a);
+                simulator->timewheel()->append_trig(simulator->time(), a);
                 if (ap)
                     ap->next = an;
                 else
@@ -2194,7 +2196,7 @@ vl_var::trigger()
             continue;
         }
         // continuous assign
-        simulator->timewheel->append_trig(simulator->time, a->copy());
+        simulator->timewheel()->append_trig(simulator->time(), chk_copy(a));
         ap = a;
     }
 }
@@ -2675,15 +2677,16 @@ vl_var::print_drivers()
     vl_driver *dr;
     cout << "Drivers: ";
     while (gen.next(&dr)) {
-        if (dr->srcvar->flags() & VAR_PORT_DRIVER)
+        if (dr->srcvar()->flags() & VAR_PORT_DRIVER)
             cout << "(p)";
-        cout << dr->srcvar;
-        if (dr->srcvar->net_type() >= REGwire)
-            dr->srcvar->v_strength.print();
+        cout << dr->srcvar();
+        if (dr->srcvar()->net_type() >= REGwire)
+            dr->srcvar()->v_strength.print();
         else
             v_strength.print();
-        cout << '[' << dr->m_to << '|' << dr->l_to << '|' << dr->l_from << "] ";
-        dr->srcvar->print_value(cout);
+        cout << '[' << dr->m_to() << '|' << dr->l_to() << '|' <<
+            dr->l_from() << "] ";
+        dr->srcvar()->print_value(cout);
         cout << ' ';
     }
     cout << "\n";
@@ -2848,7 +2851,7 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
                 int j = src->v_bits.Bstart(ms, ls);
                 int je = src->v_bits.Bend(ms, ls);
                 add_driver(src, ie, i, j);
-                if (simulator->dbg_flags & DBG_assign)
+                if (simulator->dbg_flags() & DBG_assign)
                     probe1(this, ie, i, src, je, j);
                 for ( ; i <= ie && j <= je; i++, j++) {
                     int b = resolve_bit(i, src, j);
@@ -2863,7 +2866,7 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
                         v_data.s[i] = BitL;
                     }
                 }
-                if (simulator->dbg_flags & DBG_assign)
+                if (simulator->dbg_flags() & DBG_assign)
                     probe2();
             }
             else {
@@ -2887,7 +2890,7 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
             assign_bit_SS(md, ld, src, ms, ls);
         else
             assign_bit_SA(md, ld, src, ms, ls);
-        if (simulator->dbg_flags & DBG_assign) {
+        if (simulator->dbg_flags() & DBG_assign) {
             cout << this << " = ";
             print_value(cout);
             cout << '\n';
@@ -3059,7 +3062,7 @@ vl_var::assign_int_range(int md, int ld, vl_var *src, int ms, int ls)
             assign_int_SS(md, ld, src, ms, ls);
         else
             assign_int_SA(md, ld, src, ms, ls);
-        if (simulator->dbg_flags & DBG_assign) {
+        if (simulator->dbg_flags() & DBG_assign) {
             cout << this << " = ";
             print_value(cout);
             cout << '\n';
@@ -3226,7 +3229,7 @@ vl_var::assign_time_range(int md, int ld, vl_var *src, int ms, int ls)
             assign_time_SS(md, ld, src, ms, ls);
         else
             assign_time_SA(md, ld, src, ms, ls);
-        if (simulator->dbg_flags & DBG_assign) {
+        if (simulator->dbg_flags() & DBG_assign) {
             cout << this << " = ";
             print_value(cout);
             cout << '\n';
@@ -3395,7 +3398,7 @@ vl_var::assign_real_range(int md, int ld, vl_var *src, int ms, int ls)
             assign_real_SS(md, ld, src, ms, ls);
         else
             assign_real_SA(md, ld, src, ms, ls);
-        if (simulator->dbg_flags & DBG_assign) {
+        if (simulator->dbg_flags() & DBG_assign) {
             cout << this << " = ";
             print_value(cout);
             cout << '\n';
@@ -3603,12 +3606,12 @@ vl_var::assign_string_AA(int md, int ld, vl_var *src, int ms, int ls)
 void
 vl_array::set(vl_range *range)
 {
-    if (!range || !range->left)
+    if (!range || !range->left())
         return;
     if (!range->eval(&a_hi_index, &a_lo_index)) {
         vl_error("range initialization failed");
         errout(range);
-        range->left->simulator->abort();
+        range->left()->simulator->abort();
         a_hi_index = a_lo_index = 0;
     }
     a_size = rsize(a_hi_index, a_lo_index);
@@ -3663,10 +3666,9 @@ vl_array::check_range(int *m, int *l)
 vl_range *
 vl_range::copy()
 {
-    const vl_range *rng = this;
-    if (!rng || !left)
+    if (!r_left)
         return (0);
-    return (new vl_range(left->copy(), right ? right->copy() : 0));
+    return (new vl_range(r_left->copy(), chk_copy(r_right)));
 }
 
 
@@ -3678,14 +3680,14 @@ vl_range::eval(int *m, int *l)
 {
     *m = 0;
     *l = 0;
-    if (!left)
+    if (!r_left)
         return (true);
-    vl_var &dl = left->eval();
+    vl_var &dl = r_left->eval();
     if (dl.is_x())
         return (false);
     *m = (int)dl;
-    if (right) {
-        vl_var &dr = right->eval();
+    if (r_right) {
+        vl_var &dr = r_right->eval();
         if (dr.is_x())
             return (false);
         *l = (int)dr;
@@ -3699,27 +3701,24 @@ vl_range::eval(int *m, int *l)
 // Create a new range struct by evaluating this.
 //
 bool
-vl_range::eval(vl_range **r)
+vl_range::reval(vl_range **r)
 {
     *r = 0;
-    const vl_range *rng = this;
-    if (rng) {
-        int m, l;
-        if (!eval(&m, &l))
-            return (false);
-        vl_expr *mx = new vl_expr;
-        mx->etype = IntExpr;
-        mx->set_data_type(Dint);
-        mx->data().i = m;
-        vl_expr *lx = 0;
-        if (m != l) {
-            lx = new vl_expr;
-            lx->etype = IntExpr;
-            lx->set_data_type(Dint);
-            lx->data().i = l;
-        }
-        *r = new vl_range(mx, lx);
+    int m, l;
+    if (!eval(&m, &l))
+        return (false);
+    vl_expr *mx = new vl_expr;
+    mx->set_etype(IntExpr);
+    mx->set_data_type(Dint);
+    mx->data().i = m;
+    vl_expr *lx = 0;
+    if (m != l) {
+        lx = new vl_expr;
+        lx->set_etype(IntExpr);
+        lx->set_data_type(Dint);
+        lx->data().i = l;
     }
+    *r = new vl_range(mx, lx);
     return (true);
 }
 
@@ -3747,9 +3746,6 @@ vl_delay::~vl_delay()
 vl_delay *
 vl_delay::copy()
 {
-    const vl_delay *dly = this;
-    if (!dly)
-        return (0);
     vl_delay *retval;
     if (delay1)
         retval = new vl_delay(delay1->copy());
@@ -3762,13 +3758,13 @@ vl_delay::copy()
 vl_time_t
 vl_delay::eval()
 {
-    vl_module *cmod = vl_var::simulator->context->currentModule();
+    vl_module *cmod = vl_var::simulator->context()->currentModule();
     if (!cmod) {
         vl_error("internal, no current module for delay evaluation");
         vl_var::simulator->abort();
         return (0);
     }
-    double tstep = vl_var::simulator->description->tstep;
+    double tstep = vl_var::simulator->description()->tstep;
     double tunit = cmod->tunit;
     double tprec = cmod->tprec;
     if (list) {
@@ -3794,22 +3790,18 @@ vl_delay::eval()
 
 vl_event_expr::~vl_event_expr()
 {
-    delete expr;
-    delete_list(list);
-    delete repeat;
+    delete e_expr;
+    delete_list(e_list);
+    delete e_repeat;
 }
 
 
 vl_event_expr *
 vl_event_expr::copy()
 {
-    const vl_event_expr *evxpr = this;
-    if (!evxpr)
-        return (0);
-    vl_event_expr *retval = new vl_event_expr(type, 0);
-    if (expr)
-        retval->expr = expr->copy();
-    retval->list = copy_list(list);
+    vl_event_expr *retval = new vl_event_expr(e_type, 0);
+    retval->e_expr = chk_copy(e_expr);
+    retval->e_list = copy_list(e_list);
     return (retval);
 }
 
@@ -3817,10 +3809,10 @@ vl_event_expr::copy()
 void
 vl_event_expr::init()
 {
-    if (expr)
-        expr->eval();
-    else if (list) {
-        lsGen<vl_event_expr*> gen(list);
+    if (e_expr)
+        e_expr->eval();
+    else if (e_list) {
+        lsGen<vl_event_expr*> gen(e_list);
         vl_event_expr *e;
         while (gen.next(&e))
             e->init();
@@ -3831,19 +3823,19 @@ vl_event_expr::init()
 bool
 vl_event_expr::eval(vl_simulator *sim)
 {
-    if (type == OrEventExpr) {
-        if (list) {
+    if (e_type == OrEventExpr) {
+        if (e_list) {
             vl_event_expr *e;
-            lsGen<vl_event_expr*> gen(list);
+            lsGen<vl_event_expr*> gen(e_list);
             while (gen.next(&e)) {
                 if (e->eval(sim))
                     return (true);
             }
         }
     }
-    else if (type == EdgeEventExpr) {
-        vl_var last = *expr;
-        vl_var d = expr->eval();
+    else if (e_type == EdgeEventExpr) {
+        vl_var last = *e_expr;
+        vl_var d = e_expr->eval();
         if (d.net_type() == REGevent)
             // named event sent
             return (true);
@@ -3853,11 +3845,11 @@ vl_event_expr::eval(vl_simulator *sim)
         if (z.data().s[0] == BitL)
             return (true);
     }
-    else if (type == PosedgeEventExpr) {
-        vl_var last = *expr;
+    else if (e_type == PosedgeEventExpr) {
+        vl_var last = *e_expr;
         if (last.data_type() == Dnone)
             return (false);
-        vl_var &d = expr->eval();
+        vl_var &d = e_expr->eval();
         if (last.data_type() != Dbit || d.data_type() != Dbit) {
             vl_error("non-bitfield found as posedge event trigger");
             sim->abort();
@@ -3867,11 +3859,11 @@ vl_event_expr::eval(vl_simulator *sim)
                 (last.data().s[0] != BitH && d.data().s[0] == BitH))
             return (true);
     }
-    else if (type == NegedgeEventExpr) {
-        vl_var last = *expr;
+    else if (e_type == NegedgeEventExpr) {
+        vl_var last = *e_expr;
         if (last.data_type() == Dnone)
             return (false);
-        vl_var &d = expr->eval();
+        vl_var &d = e_expr->eval();
         if (last.data_type() != Dbit || d.data_type() != Dbit) {
             vl_error("non-bitfield found as negedge event trigger");
             sim->abort();
@@ -3881,8 +3873,8 @@ vl_event_expr::eval(vl_simulator *sim)
                 (last.data().s[0] != BitL && d.data().s[0] == BitL))
             return (true);
     }
-    else if (type == LevelEventExpr) {
-        if ((int)expr->eval())
+    else if (e_type == LevelEventExpr) {
+        if ((int)e_expr->eval())
             return (true);
     }
     return (false);
@@ -3894,14 +3886,14 @@ vl_event_expr::eval(vl_simulator *sim)
 void
 vl_event_expr::chain(vl_action_item *a)
 {
-    if (expr)
-        expr->chain(a);
-    else if (list) {
-        lsGen<vl_event_expr*> gen(list);
+    if (e_expr)
+        e_expr->chain(a);
+    else if (e_list) {
+        lsGen<vl_event_expr*> gen(e_list);
         vl_event_expr *e;
         while (gen.next(&e)) {
-            if (e->expr)
-                e->expr->chain(a);
+            if (e->e_expr)
+                e->e_expr->chain(a);
         }
     }
 }
@@ -3913,14 +3905,14 @@ vl_event_expr::chain(vl_action_item *a)
 void
 vl_event_expr::unchain(vl_action_item *a)
 {
-    if (expr)
-        expr->unchain(a);
-    else if (list) {
-        lsGen<vl_event_expr*> gen(list);
+    if (e_expr)
+        e_expr->unchain(a);
+    else if (e_list) {
+        lsGen<vl_event_expr*> gen(e_list);
         vl_event_expr *e;
         while (gen.next(&e)) {
-            if (e->expr)
-                e->expr->unchain(a);
+            if (e->e_expr)
+                e->e_expr->unchain(a);
         }
     }
 }
@@ -3931,14 +3923,14 @@ vl_event_expr::unchain(vl_action_item *a)
 void
 vl_event_expr::unchain_disabled(vl_stmt *blk)
 {
-    if (expr)
-        expr->unchain_disabled(blk);
-    else if (list) {
-        lsGen<vl_event_expr*> gen(list);
+    if (e_expr)
+        e_expr->unchain_disabled(blk);
+    else if (e_list) {
+        lsGen<vl_event_expr*> gen(e_list);
         vl_event_expr *e;
         while (gen.next(&e)) {
-            if (e->expr)
-                e->expr->unchain_disabled(blk);
+            if (e->e_expr)
+                e->e_expr->unchain_disabled(blk);
         }
     }
 }

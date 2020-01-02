@@ -226,7 +226,7 @@ copy_list(lsList<T> *list)
     lsGen<T> gen(list);
     T stmt;
     while (gen.next(&stmt))
-        retval->newEnd(stmt->copy());
+        retval->newEnd(chk_copy(stmt));
     return (retval);
 }
 

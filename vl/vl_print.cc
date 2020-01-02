@@ -656,7 +656,7 @@ operator<<(ostream &outs, vl_expr *s)
 void
 vl_expr::print(ostream &outs)
 {
-    switch (etype) {
+    switch (e_type) {
     case BitExpr:
         print_value(outs);
         break;
@@ -667,33 +667,33 @@ vl_expr::print(ostream &outs)
         outs << data().r;
         break;
     case IDExpr:
-        if (ux.ide.name)
-            outs << ux.ide.name;
+        if (e_data.ide.name)
+            outs << e_data.ide.name;
         break;
     case BitSelExpr:
     case PartSelExpr:
-        if (ux.ide.name)
-            outs << ux.ide.name;
-        if (ux.ide.range)
-            outs << ux.ide.range;
+        if (e_data.ide.name)
+            outs << e_data.ide.name;
+        if (e_data.ide.range)
+            outs << e_data.ide.range;
         break;
     case ConcatExpr: {
-        if (ux.mcat.var && ux.mcat.var->data().c) {
-            if (ux.mcat.rep)
-                outs << "{" << ux.mcat.rep << "{" <<
-                    ux.mcat.var->data().c << "}}";
+        if (e_data.mcat.var && e_data.mcat.var->data().c) {
+            if (e_data.mcat.rep)
+                outs << "{" << e_data.mcat.rep << "{" <<
+                    e_data.mcat.var->data().c << "}}";
             else
-                outs << "{" << ux.mcat.var->data().c << "}";
+                outs << "{" << e_data.mcat.var->data().c << "}";
         }
         break;                        
     }
     case MinTypMaxExpr: {
-        if (ux.exprs.e1) {
-            outs << ux.exprs.e1;
-            if (ux.exprs.e2)
-                outs << ":" << ux.exprs.e2;
-            if (ux.exprs.e3)
-                outs << ":" << ux.exprs.e3;
+        if (e_data.exprs.e1) {
+            outs << e_data.exprs.e1;
+            if (e_data.exprs.e2)
+                outs << ":" << e_data.exprs.e2;
+            if (e_data.exprs.e3)
+                outs << ":" << e_data.exprs.e3;
         }
         break;                        
     }
@@ -702,10 +702,10 @@ vl_expr::print(ostream &outs)
             outs << data().s;
         break;
     case FuncExpr:
-        if (ux.func_call.name) {
-            outs << ux.func_call.name;
-            if (ux.func_call.args)
-                outs << "(" << ux.func_call.args << ")";
+        if (e_data.func_call.name) {
+            outs << e_data.func_call.name;
+            if (e_data.func_call.args)
+                outs << "(" << e_data.func_call.args << ")";
         }
         break;
     case UplusExpr:
@@ -718,8 +718,8 @@ vl_expr::print(ostream &outs)
     case UnorExpr:
     case UxorExpr:
     case UxnorExpr:
-        if (ux.exprs.e1)
-            outs << symbol() << ux.exprs.e1;
+        if (e_data.exprs.e1)
+            outs << symbol() << e_data.exprs.e1;
         break;
     
     case BplusExpr:
@@ -743,16 +743,18 @@ vl_expr::print(ostream &outs)
     case BxnorExpr:
     case BlshiftExpr:
     case BrshiftExpr:
-        if (ux.exprs.e1 && ux.exprs.e2)
-            outs << ux.exprs.e1 << ' ' << symbol() << ' ' << ux.exprs.e2;
+        if (e_data.exprs.e1 && e_data.exprs.e2) {
+            outs << e_data.exprs.e1 << ' ' << symbol() << ' ' <<
+                e_data.exprs.e2;
+        }
         break;
     case TcondExpr:
-        if (ux.exprs.e1 && ux.exprs.e2 && ux.exprs.e3)
-            outs << ux.exprs.e1 << " ? " << ux.exprs.e2 << " : "
-                << ux.exprs.e3;
+        if (e_data.exprs.e1 && e_data.exprs.e2 && e_data.exprs.e3)
+            outs << e_data.exprs.e1 << " ? " << e_data.exprs.e2 << " : "
+                << e_data.exprs.e3;
         break;
     case SysExpr:
-        outs << ux.systask;
+        outs << e_data.systask;
         break;
     }
 }
@@ -761,7 +763,7 @@ vl_expr::print(ostream &outs)
 const char *
 vl_expr::symbol()
 {
-    switch (etype) {
+    switch (e_type) {
     case IDExpr:
     case BitSelExpr:
     case PartSelExpr:
@@ -872,10 +874,10 @@ operator<<(ostream &outs, vl_strength s)
 ostream &
 operator<<(ostream &outs, vl_range *r)
 {
-    if (r->left) {
-        outs << "[" << r->left;
-        if (r->right)
-            outs << ":" << r->right;
+    if (r->left()) {
+        outs << "[" << r->left();
+        if (r->right())
+            outs << ":" << r->right();
         outs << "]";
     }
     return (outs);
@@ -901,7 +903,7 @@ ostream &
 operator<<(ostream &outs, vl_event_expr *e)
 {
     bool nop = false;
-    switch (e->type) {
+    switch (e->type()) {
     case NegedgeEventExpr:
         outs << "(negedge ";
         break;
@@ -909,7 +911,7 @@ operator<<(ostream &outs, vl_event_expr *e)
         outs << "(posedge ";
         break;
     case EdgeEventExpr:
-        if (e->expr && e->expr->etype != IDExpr)
+        if (e->expr() && e->expr()->etype() != IDExpr)
             outs << "(";
         else
             nop = true;
@@ -921,11 +923,11 @@ operator<<(ostream &outs, vl_event_expr *e)
         VP()->error(ERR_INTERNAL, "Unexpected EventExpr Type");        
         break;
     }
-    if (e->expr)
-        outs << e->expr;
-    else if (e->list) {
+    if (e->expr())
+        outs << e->expr();
+    else if (e->list()) {
         vl_event_expr *ex;
-        lsGen<vl_event_expr*> gen(e->list);
+        lsGen<vl_event_expr*> gen(e->list());
         if (gen.next(&ex)) {
             outs << ex;
             while(gen.next(&ex)) {
@@ -959,17 +961,17 @@ vl_parser::print(ostream &outs)
 bool
 vl_simulator::monitor_change(lsList<vl_expr*> *args)
 {
-    if (first_point)
+    if (s_first_point)
         return (true);
-    if (stop)
+    if (s_stop)
         return (false);
     vl_expr *e;
     lsGen<vl_expr*> gen(args);
     // see if anything has changed
     while (gen.next(&e)) {
-        if (e->etype == StringExpr)
+        if (e->etype() == StringExpr)
             continue;
-        if (e->etype == SysExpr)
+        if (e->etype() == SysExpr)
             continue;
         vl_var od = *e;
         vl_var &nd = e->eval();
@@ -1014,7 +1016,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
             outs << ' ';
         first = false;
         hadnl = false;
-        if (e->etype == StringExpr) {
+        if (e->etype() == StringExpr) {
             char *string = e->data().s;
             if (!string)
                 continue;
@@ -1116,7 +1118,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                 case 'm':
                 case 'M':
                     {
-                        char *ss = context->hiername();
+                        char *ss = s_context->hiername();
                         if (ss) {
                             outs << ss;
                             delete [] ss;
@@ -1165,13 +1167,13 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                             strcpy(buf, "x");
                         else {
                             double t = (double) d;
-                            t *= (description->tstep/pow(10.0, tfunit));
-                            if (tfsuffix && *tfsuffix)
-                                sprintf(buf, "%.*f%s", tfprec, t, tfsuffix);
+                            t *= (s_description->tstep/pow(10.0, s_tfunit));
+                            if (s_tfsuffix && *s_tfsuffix)
+                                sprintf(buf, "%.*f%s", s_tfprec, t, s_tfsuffix);
                             else
-                                sprintf(buf, "%.*f", tfprec, t);
+                                sprintf(buf, "%.*f", s_tfprec, t);
                         }
-                        wformat(outs, buf, ' ', tfwidth);
+                        wformat(outs, buf, ' ', s_tfwidth);
                     }
                     break;
                 case 'v':
@@ -1215,8 +1217,8 @@ vl_simulator::fdisplay_print(lsList<vl_expr*> *args, DSPtype dtype,
     lsList<vl_expr*> pargs = *args;
     pargs.next();
     for (int i = 0; i < 32; i++) {
-        if ((fh & 1) && channels[i])
-            display_print(&pargs, *channels[i], dtype, flags);
+        if ((fh & 1) && s_channels[i])
+            display_print(&pargs, *s_channels[i], dtype, flags);
         fh >>= 1;
     }
     pargs.clear();
@@ -1228,36 +1230,36 @@ vl_context::print(ostream &outs)
 {
     vl_context *cx = this;
     while (cx) {
-        if (cx->module) {
-            if (cx->module->instance)
-                outs << (cx->module->instance->name ?
-                    cx->module->instance->name : "_mod");
+        if (cx->c_module) {
+            if (cx->c_module->instance)
+                outs << (cx->c_module->instance->name ?
+                    cx->c_module->instance->name : "_mod");
             else
-                outs << cx->module->name;
+                outs << cx->c_module->name;
         }
-        else if (cx->primitive) {
-            outs << (cx->primitive->name ?
-                cx->primitive->name : "_prim");
+        else if (cx->c_primitive) {
+            outs << (cx->c_primitive->name ?
+                cx->c_primitive->name : "_prim");
         }
-        else if (cx->task) {
-            outs << (cx->task->name ?
-                cx->task->name : "_task");
+        else if (cx->c_task) {
+            outs << (cx->c_task->name ?
+                cx->c_task->name : "_task");
         }
-        else if (cx->function) {
-            outs << (cx->function->name ?
-                cx->function->name : "_func");
+        else if (cx->c_function) {
+            outs << (cx->c_function->name ?
+                cx->c_function->name : "_func");
         }
-        else if (cx->block) {
-            outs << (cx->block->name ?
-                cx->block->name : "_block");
+        else if (cx->c_block) {
+            outs << (cx->c_block->name ?
+                cx->c_block->name : "_block");
         }
-        else if (cx->fjblk) {
-            outs << (cx->fjblk->name ?
-                cx->fjblk->name : "_fjblk");
+        else if (cx->c_fjblk) {
+            outs << (cx->c_fjblk->name ?
+                cx->c_fjblk->name : "_fjblk");
         }
         else
             outs << "blank";
-        cx = cx->parent;
+        cx = cx->c_parent;
         if (cx)
             outs << ".";
     }
@@ -1270,20 +1272,20 @@ char *
 vl_context::hiername()
 {
     char *string = 0;
-    for (vl_context *cx = this; cx; cx = cx->parent) {
+    for (vl_context *cx = this; cx; cx = cx->c_parent) {
         const char *nm;
-        if (cx->module) {
-            if (cx->module->instance)
-                nm = cx->module->instance->name;
+        if (cx->c_module) {
+            if (cx->c_module->instance)
+                nm = cx->c_module->instance->name;
             else
-                nm = cx->module->name;
+                nm = cx->c_module->name;
         }
-        else if (cx->primitive)
-            nm = cx->primitive->name;
-        else if (cx->task)
-            nm = cx->task->name;
-        else if (cx->function)
-            nm = cx->function->name;
+        else if (cx->c_primitive)
+            nm = cx->c_primitive->name;
+        else if (cx->c_task)
+            nm = cx->c_task->name;
+        else if (cx->c_function)
+            nm = cx->c_function->name;
         else
             nm = 0;
         if (nm) {

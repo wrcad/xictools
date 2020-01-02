@@ -69,7 +69,7 @@
 #include "vl_types.h"
 #include "verilog_yacc.h"
 
-extern bitexp_parse yybit;
+extern vl_bitexp_parse yybit;
 extern char yyid[];
 
 static int scan_table = 0;

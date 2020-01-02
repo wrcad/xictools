@@ -66,7 +66,7 @@
 
 int YYTrace = 0;
 char yyid[MAXSTRLEN];
-bitexp_parse yybit;
+vl_bitexp_parse yybit;
 
 static vl_strength *drive_strength(int, int);
 static unsigned char setprim(unsigned char, unsigned char);
@@ -120,7 +120,7 @@ static unsigned char setprim(unsigned char, unsigned char);
     vl_primitive          *prim;
     vl_procstmt           *prcstmt;
     vl_range              *rang;
-    vl_range_or_type      *rngtyp;
+    range_or_type         *rngtyp;
     vl_task               *task;
     vl_task_enable_stmt   *taskenablestmt;
     multi_concat          *mconcat;
@@ -1053,17 +1053,17 @@ range_or_type
         : range
           {
               YYTRACE("range_or_type: range");
-              $$ = new vl_range_or_type(Range_Dcl, $1);
+              $$ = new range_or_type(Range_Dcl, $1);
           }
         | YYINTEGER
           {
               YYTRACE("range_or_type: YYINTEGER");
-              $$ = new vl_range_or_type(Integer_Dcl, 0);
+              $$ = new range_or_type(Integer_Dcl, 0);
           }
         | YYREAL
           {
               YYTRACE("range_or_type: YYREAL");
-              $$ = new vl_range_or_type(Real_Dcl, 0);
+              $$ = new range_or_type(Real_Dcl, 0);
           }
         ;
 
@@ -3196,7 +3196,7 @@ repeated_event_control
               YYTRACE("repeated_event_control: YYREPEAT '(' expression ')' "
                   "event_control");
               $$ = $5;
-              $$->repeat = $3;
+              $$->set_repeat($3);
           }
         ;
 
@@ -3247,13 +3247,13 @@ ored_event_expression
               event_list->newEnd($1);
               event_list->newEnd($3);
               $$ = new vl_event_expr(OrEventExpr, 0);
-              $$->list = event_list;
+              $$->set_list(event_list);
           }
         | ored_event_expression YYOR event_expression
           {
               YYTRACE("ored_event_expression: ored_event_expression YYOR "
                   "event_expression");
-              $1->list->newEnd($3);
+              $1->list()->newEnd($3);
               $$ = $1;
           }
         ; 

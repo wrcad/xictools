@@ -472,7 +472,7 @@ vl_simulator::sys_time(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
     vl_var &dd = var_factory.new_var();  // so it gets gc'ed
     dd.set_data_type(Dtime);
-    dd.data().t = time;
+    dd.data().t = s_time;
     return (dd);
 }
 
@@ -532,7 +532,7 @@ vl_simulator::sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*> *args)
             modname = vl_fix_str((char*)e->eval());
     }
     if (modname) {
-        vl_inst *inst = vl_var::simulator->context->lookup_mp(modname);
+        vl_inst *inst = vl_var::simulator->s_context->lookup_mp(modname);
         bool found = false;
         if (inst && !inst->type) {
             vl_mp_inst *mp = (vl_mp_inst*)inst;
@@ -550,7 +550,7 @@ vl_simulator::sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*> *args)
             vl_warn("$printtimescale: can't find %s", modname);
     }
     else {
-        vl_module *cmod = vl_var::simulator->context->currentModule();
+        vl_module *cmod = vl_var::simulator->s_context->currentModule();
         if (cmod) {
             cout << "Time scale of " << cmod->name << " is ";
             cout << pts(cmod->tunit) << " / " << pts(cmod->tprec);
@@ -576,7 +576,7 @@ vl_simulator::sys_timeformat(vl_sys_task_stmt*, lsList<vl_expr*> *args)
     lsGen<vl_expr*> gen(args);
     vl_expr *e;
 
-    int units = tfunit;
+    int units = s_tfunit;
     if (gen.next(&e)) {
         if (e)
             units = (int)e->eval();
@@ -587,9 +587,9 @@ vl_simulator::sys_timeformat(vl_sys_task_stmt*, lsList<vl_expr*> *args)
         vl_warn("$timeformat: arg 1 out of range");
         return (tdata);
     }
-    tfunit = units;
+    s_tfunit = units;
 
-    int prec = tfprec;
+    int prec = s_tfprec;
     if (gen.next(&e)) {
         if (e)
             prec = (int)e->eval();
@@ -600,18 +600,18 @@ vl_simulator::sys_timeformat(vl_sys_task_stmt*, lsList<vl_expr*> *args)
         vl_warn("$timeformat: arg 2 out of range");
         return (tdata);
     }
-    tfprec = prec;
+    s_tfprec = prec;
 
     if (gen.next(&e)) {
         if (e) {
-            delete [] tfsuffix;
-            tfsuffix = vl_fix_str((char*)e->eval());
+            delete [] s_tfsuffix;
+            s_tfsuffix = vl_fix_str((char*)e->eval());
         }
     }
     else
         return (tdata);
 
-    int wid = tfwidth;
+    int wid = s_tfwidth;
     if (gen.next(&e)) {
         if (e)
             wid = (int)e->eval();
@@ -622,7 +622,7 @@ vl_simulator::sys_timeformat(vl_sys_task_stmt*, lsList<vl_expr*> *args)
         vl_warn("$timeformat: arg 4 out of range");
         return (tdata);
     }
-    tfwidth = wid;
+    s_tfwidth = wid;
     return (tdata);
 }
 
@@ -640,12 +640,11 @@ vl_simulator::sys_display(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_monitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
-    vl_monitor *mnew = new vl_monitor(vl_context::copy(context), args,
-        t->dtype);
-    if (!monitors)
-        monitors = mnew;
+    vl_monitor *mnew = new vl_monitor(chk_copy(s_context), args, t->dtype);
+    if (!s_monitors)
+        s_monitors = mnew;
     else {
-        vl_monitor *m = monitors;
+        vl_monitor *m = s_monitors;
         while (m->next)
             m = m->next;
         m->next = mnew;
@@ -659,7 +658,7 @@ vl_simulator::sys_monitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_monitor_on(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
-    monitor_state = true;
+    s_monitor_state = true;
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
     return (tdata);
@@ -669,7 +668,7 @@ vl_simulator::sys_monitor_on(vl_sys_task_stmt*, lsList<vl_expr*> *)
 vl_var &
 vl_simulator::sys_monitor_off(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
-    monitor_state = false;
+    s_monitor_state = false;
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
     return (tdata);
@@ -679,7 +678,7 @@ vl_simulator::sys_monitor_off(vl_sys_task_stmt*, lsList<vl_expr*> *)
 vl_var &
 vl_simulator::sys_stop(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
-    stop = VLstop;
+    s_stop = VLstop;
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
     return (tdata);
@@ -689,7 +688,7 @@ vl_simulator::sys_stop(vl_sys_task_stmt*, lsList<vl_expr*>*)
 vl_var &
 vl_simulator::sys_finish(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
-    stop = VLstop;
+    s_stop = VLstop;
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
     return (tdata);
@@ -730,7 +729,7 @@ vl_simulator::sys_fopen(vl_sys_task_stmt*, lsList<vl_expr*> *args)
         mode = vl_fix_str((char*)e->eval());
 
     int fd;
-    for (fd = 3; fd < 32 && channels[fd]; fd++) ;
+    for (fd = 3; fd < 32 && s_channels[fd]; fd++) ;
     if (fd > 31) {
         vl_error("in $fopen, too many files open, open of %s failed", name);
         abort();
@@ -750,7 +749,7 @@ vl_simulator::sys_fopen(vl_sys_task_stmt*, lsList<vl_expr*> *args)
         return (dd);
     }
     delete [] name;
-    channels[fd] = fs;
+    s_channels[fd] = fs;
     int fh = 1 << fd;
     dd.data().i = fh;
     return (dd);
@@ -771,8 +770,8 @@ vl_simulator::sys_fclose(vl_sys_task_stmt*, lsList<vl_expr*> *args)
     int fh = (int)e->eval();
     for (int i = 0; i < 32; i++) {
         if (i > 2 && (fh & 1)) {
-            delete channels[i];
-            channels[i] = 0;
+            delete s_channels[i];
+            s_channels[i] = 0;
         }
         fh >>= 1;
     }
@@ -783,12 +782,11 @@ vl_simulator::sys_fclose(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_fmonitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
-    vl_monitor *mnew = new vl_monitor(vl_context::copy(context), args,
-        t->dtype);
-    if (!fmonitors)
-        fmonitors = mnew;
+    vl_monitor *mnew = new vl_monitor(chk_copy(s_context), args, t->dtype);
+    if (!s_fmonitors)
+        s_fmonitors = mnew;
     else {
-        vl_monitor *m = fmonitors;
+        vl_monitor *m = s_fmonitors;
         while (m->next)
             m = m->next;
         m->next = mnew;
@@ -802,7 +800,7 @@ vl_simulator::sys_fmonitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_fmonitor_on(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
-    fmonitor_state = true;
+    s_fmonitor_state = true;
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
     return (tdata);
@@ -812,7 +810,7 @@ vl_simulator::sys_fmonitor_on(vl_sys_task_stmt*, lsList<vl_expr*> *)
 vl_var &
 vl_simulator::sys_fmonitor_off(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
-    fmonitor_state = false;
+    s_fmonitor_state = false;
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
     return (tdata);
@@ -872,14 +870,14 @@ vl_simulator::sys_dumpfile(vl_sys_task_stmt*, lsList<vl_expr*> *args)
     }
     char *name = vl_fix_str((char*)e->eval());
 
-    dmpfile = new ofstream(name, ios::trunc|ios::out);
-    if (!dmpfile->good()) {
-        delete dmpfile;
-        dmpfile = 0;
+    s_dmpfile = new ofstream(name, ios::trunc|ios::out);
+    if (!s_dmpfile->good()) {
+        delete s_dmpfile;
+        s_dmpfile = 0;
         vl_error(msg, name);
         abort();
     }
-/*
+/*XXX wtf is this?
     int fd = open(name, O_CREAT|O_TRUNC|O_WRONLY, 0664);
     if (fd < 0) {
         vl_error(msg, name);
@@ -902,11 +900,11 @@ vl_simulator::sys_dumpvars(vl_sys_task_stmt*, lsList<vl_expr*> *args)
         lsGen<vl_expr*> gen(args);
         vl_expr *e;
         if (gen.next(&e)) {
-            dmpdepth = (int)e->eval();
+            s_dmpdepth = (int)e->eval();
             if (gen.next(&e)) {
                 const char *mname;
-                if (e->etype == IDExpr)
-                    mname = vl_strdup(e->ux.ide.name);
+                if (e->etype() == IDExpr)
+                    mname = vl_strdup(e->edata().ide.name);
                 else
                     mname = vl_fix_str((char*)e->eval());
                 if (!mname) {
@@ -914,28 +912,28 @@ vl_simulator::sys_dumpvars(vl_sys_task_stmt*, lsList<vl_expr*> *args)
                     return (tdata);
                 }
                 const char *tname = mname;
-                dmpcx = new vl_context;
-                if (!context->resolve_cx(&tname, *dmpcx, false)) {
+                s_dmpcx = new vl_context;
+                if (!s_context->resolve_cx(&tname, *s_dmpcx, false)) {
                     if (tname != mname) {
                         vl_warn(msg);
-                        delete dmpcx;
-                        dmpcx = 0;
+                        delete s_dmpcx;
+                        s_dmpcx = 0;
                         return (tdata);
                     }
-                    if (!top_modules)
+                    if (!s_top_modules)
                         return (tdata);
-                    for (int i = 0; i < top_modules->num; i++) {
-                        if (!strcmp(top_modules->mods[i]->name, tname))
-                            dmpcx->module = top_modules->mods[i];
+                    for (int i = 0; i < s_top_modules->num; i++) {
+                        if (!strcmp(s_top_modules->mods[i]->name, tname))
+                            s_dmpcx->set_module(s_top_modules->mods[i]);
                         break;
                     }
-                    if (!dmpcx->module)
-                        *dmpcx = *context;
+                    if (!s_dmpcx->module())
+                        *s_dmpcx = *s_context;
                 }
             }
         }
     }
-    dmpstatus |= (DMP_ACTIVE | DMP_HEADER | DMP_ON);
+    s_dmpstatus |= (DMP_ACTIVE | DMP_HEADER | DMP_ON);
     return (tdata);
 }
 
@@ -945,11 +943,11 @@ vl_simulator::sys_dumpall(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
-    if (dmpstatus & DMP_ON) {
-        *dmpfile << "$dumpall\n";
-        dmpstatus |= DMP_ALL;
+    if (s_dmpstatus & DMP_ON) {
+        *s_dmpfile << "$dumpall\n";
+        s_dmpstatus |= DMP_ALL;
         do_dump();
-        *dmpfile << "$end\n";
+        *s_dmpfile << "$end\n";
     }
     return (tdata);
 }
@@ -960,10 +958,10 @@ vl_simulator::sys_dumpon(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
-    if ((dmpstatus & DMP_ACTIVE) && !(dmpstatus & DMP_ON)) {
-        dmpstatus |= DMP_ON;
-        *dmpfile << "$dumpon\n";
-        *dmpfile << "$end\n";
+    if ((s_dmpstatus & DMP_ACTIVE) && !(s_dmpstatus & DMP_ON)) {
+        s_dmpstatus |= DMP_ON;
+        *s_dmpfile << "$dumpon\n";
+        *s_dmpfile << "$end\n";
     }
     return (tdata);
 }
@@ -974,10 +972,10 @@ vl_simulator::sys_dumpoff(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
-    if ((dmpstatus & DMP_ACTIVE) && (dmpstatus & DMP_ON)) {
-        dmpstatus &= ~DMP_ON;
-        *dmpfile << "$dumpoff\n";
-        *dmpfile << "$end\n";
+    if ((s_dmpstatus & DMP_ACTIVE) && (s_dmpstatus & DMP_ON)) {
+        s_dmpstatus &= ~DMP_ON;
+        *s_dmpfile << "$dumpoff\n";
+        *s_dmpfile << "$end\n";
     }
     return (tdata);
 }
@@ -1060,81 +1058,81 @@ vl_simulator::sys_readmemh(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 void
 vl_simulator::do_dump()
 {
-    if (!(dmpstatus & (DMP_ON | DMP_HEADER)))
+    if (!(s_dmpstatus & (DMP_ON | DMP_HEADER)))
         return;
-    if (!dmpfile)
+    if (!s_dmpfile)
         return;
-    if (dmpstatus & DMP_HEADER) {
-        *dmpfile << "$date\n";
-        *dmpfile << "    " << vl_datestring() << '\n';
-        *dmpfile << "$end\n";
-        *dmpfile << "$version\n";
-        *dmpfile << "    " << vl_version() << '\n';
-        *dmpfile << "$end\n\n";
+    if (s_dmpstatus & DMP_HEADER) {
+        *s_dmpfile << "$date\n";
+        *s_dmpfile << "    " << vl_datestring() << '\n';
+        *s_dmpfile << "$end\n";
+        *s_dmpfile << "$version\n";
+        *s_dmpfile << "    " << vl_version() << '\n';
+        *s_dmpfile << "$end\n\n";
     }
-    if (!dmpcx) {
-        if (!top_modules)
+    if (!s_dmpcx) {
+        if (!s_top_modules)
             return;
-        for (int i = 0; i < top_modules->num; i++)
-            top_modules->mods[i]->dumpvars(*dmpfile, this);
+        for (int i = 0; i < s_top_modules->num; i++)
+            s_top_modules->mods[i]->dumpvars(*s_dmpfile, this);
     }
     else {
-        if (dmpcx->module)
-            dmpcx->module->dumpvars(*dmpfile, this);
-        else if (dmpcx->primitive)
-            dmpcx->primitive->dumpvars(*dmpfile, this);
-        else if (dmpcx->task)
-            dmpcx->task->dumpvars(*dmpfile, this);
-        else if (dmpcx->function)
-            dmpcx->function->dumpvars(*dmpfile, this);
-        else if (dmpcx->block)
-            dmpcx->block->dumpvars(*dmpfile, this);
-        else if (dmpcx->fjblk)
-            dmpcx->fjblk->dumpvars(*dmpfile, this);
+        if (s_dmpcx->module())
+            s_dmpcx->module()->dumpvars(*s_dmpfile, this);
+        else if (s_dmpcx->primitive())
+            s_dmpcx->primitive()->dumpvars(*s_dmpfile, this);
+        else if (s_dmpcx->task())
+            s_dmpcx->task()->dumpvars(*s_dmpfile, this);
+        else if (s_dmpcx->function())
+            s_dmpcx->function()->dumpvars(*s_dmpfile, this);
+        else if (s_dmpcx->block())
+            s_dmpcx->block()->dumpvars(*s_dmpfile, this);
+        else if (s_dmpcx->fjblk())
+            s_dmpcx->fjblk()->dumpvars(*s_dmpfile, this);
     }
-    if (dmpstatus & DMP_HEADER) {
-        *dmpfile << "$upscope $end\n\n";
-        *dmpfile << "$enddefinitions      $end\n";
-        *dmpfile << "$dumpvars\n";
-        *dmpfile << "$end\n";
-        dmpstatus &= ~DMP_HEADER;
+    if (s_dmpstatus & DMP_HEADER) {
+        *s_dmpfile << "$upscope $end\n\n";
+        *s_dmpfile << "$enddefinitions      $end\n";
+        *s_dmpfile << "$dumpvars\n";
+        *s_dmpfile << "$end\n";
+        s_dmpstatus &= ~DMP_HEADER;
     }
 
-    *dmpfile << '#' << time << '\n';
-    if (dmpstatus & DMP_ALL) {
-        for (int i = 0; i < dmpindx; i++) {
-            char *s = dmpdata[i]->bitstr(); 
-            if (dmpdata[i]->data_type() == Dbit &&
-                    dmpdata[i]->bits().size() == 1)
-                *dmpfile << s;
+    *s_dmpfile << '#' << s_time << '\n';
+    if (s_dmpstatus & DMP_ALL) {
+        for (int i = 0; i < s_dmpindx; i++) {
+            char *s = s_dmpdata[i]->bitstr(); 
+            if (s_dmpdata[i]->data_type() == Dbit &&
+                    s_dmpdata[i]->bits().size() == 1)
+                *s_dmpfile << s;
             else
-                *dmpfile << 'b' << ctrunc(s) << ' ';
-            *dmpfile << ccode(i) << '\n';
+                *s_dmpfile << 'b' << ctrunc(s) << ' ';
+            *s_dmpfile << ccode(i) << '\n';
             delete [] s;
         }
-        dmpstatus &= ~DMP_ALL;
-        dmpfile->flush();
+        s_dmpstatus &= ~DMP_ALL;
+        s_dmpfile->flush();
         return;
     }
 
-    if (!dmplast)
-        dmplast = new vl_var[dmpindx];
-    for (int i = 0; i < dmpindx; i++) {
-        vl_var &z = case_neq(dmplast[i], *dmpdata[i]);
+    if (!s_dmplast)
+        s_dmplast = new vl_var[s_dmpindx];
+    for (int i = 0; i < s_dmpindx; i++) {
+        vl_var &z = case_neq(s_dmplast[i], *s_dmpdata[i]);
         if (z.data().s[0] == BitH) {
-            char *s = dmpdata[i]->bitstr(); 
-            if (dmpdata[i]->data_type() == Dbit &&
-                    dmpdata[i]->bits().size() == 1)
-                *dmpfile << s;
+            char *s = s_dmpdata[i]->bitstr(); 
+            if (s_dmpdata[i]->data_type() == Dbit &&
+                    s_dmpdata[i]->bits().size() == 1)
+                *s_dmpfile << s;
             else
-                *dmpfile << 'b' << ctrunc(s) << ' ';
-            *dmpfile << ccode(i) << '\n';
-            dmplast[i] = *dmpdata[i];
+                *s_dmpfile << 'b' << ctrunc(s) << ' ';
+            *s_dmpfile << ccode(i) << '\n';
+            s_dmplast[i] = *s_dmpdata[i];
             delete [] s;
         }
     }
 
-    dmpfile->flush();
+    s_dmpfile->flush();
 }
 
 
@@ -1143,23 +1141,23 @@ vl_simulator::do_dump()
 char *
 vl_simulator::dumpindex(vl_var *data)
 {
-    if (!dmpdata) {
-        dmpdata = new vl_var*[DMP_INCR];
-        dmpsize = DMP_INCR;
+    if (!s_dmpdata) {
+        s_dmpdata = new vl_var*[DMP_INCR];
+        s_dmpsize = DMP_INCR;
     }
-    if (dmpindx >= dmpsize) {
-        dmpsize += DMP_INCR;
-        vl_var **tmp = new vl_var*[dmpsize];
-        for (int i = 0; i < dmpindx; i++) {
-            tmp[i] = dmpdata[i];
-            dmpdata[i] = 0;
+    if (s_dmpindx >= s_dmpsize) {
+        s_dmpsize += DMP_INCR;
+        vl_var **tmp = new vl_var*[s_dmpsize];
+        for (int i = 0; i < s_dmpindx; i++) {
+            tmp[i] = s_dmpdata[i];
+            s_dmpdata[i] = 0;
         }
-        delete [] dmpdata;
-        dmpdata = tmp;
+        delete [] s_dmpdata;
+        s_dmpdata = tmp;
     }
-    dmpdata[dmpindx] = data;
-    dmpindx++;
-    return (ccode(dmpindx - 1));
+    s_dmpdata[s_dmpindx] = data;
+    s_dmpindx++;
+    return (ccode(s_dmpindx - 1));
 }
 
 
@@ -1170,8 +1168,8 @@ vl_simulator::dumpindex(vl_var *data)
 void
 vl_module::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->context = vl_context::push(sim->context, this);
-    if (sim->dmpstatus & DMP_HEADER) {
+    sim->set_context(vl_context::push(sim->context(), this));
+    if (sim->dmpstatus() & DMP_HEADER) {
         // $scope module <name> $end
         const char *n;
         if (instance)
@@ -1182,15 +1180,15 @@ vl_module::dumpvars(ostream &outs, vl_simulator *sim)
         st_dump(outs, sig_st, sim);
         vl_dump_items(outs, mod_items, sim);
     }
-    sim->context = vl_context::pop(sim->context);
+    sim->set_context(vl_context::pop(sim->context()));
 }
 
 
 void
 vl_primitive::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->context = vl_context::push(sim->context, this);
-    if (sim->dmpstatus & DMP_HEADER) {
+    sim->set_context(vl_context::push(sim->context(), this));
+    if (sim->dmpstatus() & DMP_HEADER) {
         // $scope primitive <name> $end
         const char *n;
         if (instance)
@@ -1200,7 +1198,7 @@ vl_primitive::dumpvars(ostream &outs, vl_simulator *sim)
         outs << "\n$scope primitive " << n << " $end\n";
         st_dump(outs, sig_st, sim);
     }
-    sim->context = vl_context::pop(sim->context);
+    sim->set_context(vl_context::pop(sim->context()));
 }
 
 
@@ -1230,9 +1228,9 @@ vl_mp_inst_list::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_begin_end_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->context = vl_context::push(sim->context, this);
+    sim->set_context(vl_context::push(sim->context(), this));
     if (name) {
-        if (sim->dmpstatus & DMP_HEADER) {
+        if (sim->dmpstatus() & DMP_HEADER) {
             // $scope begin <name> $end
             vl_setup_decls(sim, decls);
             outs << "\n$scope begin " << name << " $end\n";
@@ -1242,7 +1240,7 @@ vl_begin_end_stmt::dumpvars(ostream &outs, vl_simulator *sim)
         }
     }
     vl_dump_items(outs, stmts, sim);
-    sim->context = vl_context::pop(sim->context);
+    sim->set_context(vl_context::pop(sim->context()));
 }
 
 
@@ -1334,9 +1332,9 @@ vl_wait_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_fork_join_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->context = vl_context::push(sim->context, this);
+    sim->set_context(vl_context::push(sim->context(), this));
     if (name) {
-        if (sim->dmpstatus & DMP_HEADER) {
+        if (sim->dmpstatus() & DMP_HEADER) {
             // $scope fork <name> $end
             vl_setup_decls(sim, decls);
             outs << "\n$scope fork " << name << " $end\n";
@@ -1346,7 +1344,7 @@ vl_fork_join_stmt::dumpvars(ostream &outs, vl_simulator *sim)
         }
     }
     vl_dump_items(outs, stmts, sim);
-    sim->context = vl_context::pop(sim->context);
+    sim->set_context(vl_context::pop(sim->context()));
 }
 
 

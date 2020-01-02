@@ -71,12 +71,12 @@
 namespace {
     vl_context *var_context()
     {
-        return (vl_var::simulator->context);
+        return (vl_var::simulator->context());
     }
 
     void set_var_context(vl_context *cx)
     {
-        vl_var::simulator->context = cx;
+        vl_var::simulator->set_context(cx);
     }
 }
 
@@ -146,12 +146,12 @@ vl_module::copy()
 
     vl_context *cx = var_context();
     while (cx) {
-        if (cx->module && !strcmp(cx->module->name, name)) {
+        if (cx->module() && !strcmp(cx->module()->name, name)) {
             vl_error("recursive instantiation of module %s", name);
             vl_var::simulator->abort();
             return (retval);
         }
-        cx = cx->parent;
+        cx = cx->parent();
     }
 
     set_var_context(vl_context::push(var_context(), retval));
@@ -267,8 +267,7 @@ vl_primitive::copy()
     set_var_context(vl_context::push(var_context(), retval));
     retval->ports = copy_list(ports);
     retval->decls = copy_list(decls);
-    if (initial)
-        retval->initial = initial->copy();
+    retval->initial = chk_copy(initial);
     retval->rows = rows;
     if (ptable) {
         retval->ptable = new unsigned char[rows*MAXPRIMLEN];
@@ -329,9 +328,6 @@ vl_port::~vl_port()
 vl_port *
 vl_port::copy()
 {
-    const vl_port *prt = this;
-    if (!prt)
-        return (0);
     return (new vl_port(type, vl_strdup(name), copy_list(port_exp)));
 }
 // End vl_port functions.
@@ -359,11 +355,7 @@ vl_port_connect::~vl_port_connect()
 vl_port_connect *
 vl_port_connect::copy()
 {
-    const vl_port_connect *pc = this;
-    if (!pc)
-        return (0);
-    return (new vl_port_connect(type, vl_strdup(name),
-        expr ? expr->copy() : 0));
+    return (new vl_port_connect(type, vl_strdup(name), chk_copy(expr)));
 }
 // End vl_port_connect functions.
 
@@ -441,7 +433,7 @@ vl_decl::~vl_decl()
 vl_decl *
 vl_decl::copy()
 {
-    return (new vl_decl(type, strength, range->copy(), delay->copy(),
+    return (new vl_decl(type, strength, chk_copy(range), chk_copy(delay),
         copy_list(list), copy_list(ids)));
 }
 
@@ -473,7 +465,7 @@ vl_decl::init()
             var_setup(v, type);
             if (v->net_type() >= REGwire) {
                 if (!v->delay())
-                    v->set_delay(delay->copy());
+                    v->set_delay(chk_copy(delay));
             }
         }
     }
@@ -502,7 +494,7 @@ vl_decl::init()
             var_setup(bs->lhs, type);
             if (bs->lhs->net_type() >= REGwire) {
                 if (!bs->lhs->delay())
-                    bs->lhs->set_delay(delay->copy());
+                    bs->lhs->set_delay(chk_copy(delay));
             }
             if (type == ParamDecl || type == RegDecl || type == IntDecl ||
                     type == TimeDecl || type == RealDecl)
@@ -523,37 +515,37 @@ vl_decl::symtab(vl_var *var)
         var->simulator->abort();
         return (0);
     }
-    vl_context *cx = var->simulator->context;
+    vl_context *cx = var->simulator->context();
     table<vl_var*> *st = 0;
-    if (cx->block) {
-        if (!cx->block->sig_st)
-            cx->block->sig_st = new table<vl_var*>;
-        st = cx->block->sig_st;
+    if (cx->block()) {
+        if (!cx->block()->sig_st)
+            cx->block()->sig_st = new table<vl_var*>;
+        st = cx->block()->sig_st;
     }
-    else if (cx->fjblk) {
-        if (!cx->fjblk->sig_st)
-            cx->fjblk->sig_st = new table<vl_var*>;
-        st = cx->fjblk->sig_st;
+    else if (cx->fjblk()) {
+        if (!cx->fjblk()->sig_st)
+            cx->fjblk()->sig_st = new table<vl_var*>;
+        st = cx->fjblk()->sig_st;
     }
-    else if (cx->function) {
-        if (!cx->function->sig_st)
-            cx->function->sig_st = new table<vl_var*>;
-        st = cx->function->sig_st;
+    else if (cx->function()) {
+        if (!cx->function()->sig_st)
+            cx->function()->sig_st = new table<vl_var*>;
+        st = cx->function()->sig_st;
     }
-    else if (cx->task) {
-        if (!cx->task->sig_st)
-            cx->task->sig_st = new table<vl_var*>;
-        st = cx->task->sig_st;
+    else if (cx->task()) {
+        if (!cx->task()->sig_st)
+            cx->task()->sig_st = new table<vl_var*>;
+        st = cx->task()->sig_st;
     }
-    else if (cx->primitive) {
-        if (!cx->primitive->sig_st)
-            cx->primitive->sig_st = new table<vl_var*>;
-        st = cx->primitive->sig_st;
+    else if (cx->primitive()) {
+        if (!cx->primitive()->sig_st)
+            cx->primitive()->sig_st = new table<vl_var*>;
+        st = cx->primitive()->sig_st;
     }
-    else if (cx->module) {
-        if (!cx->module->sig_st)
-            cx->module->sig_st = new table<vl_var*>;
-        st = cx->module->sig_st;
+    else if (cx->module()) {
+        if (!cx->module()->sig_st)
+            cx->module()->sig_st = new table<vl_var*>;
+        st = cx->module()->sig_st;
     }
     if (!st) {
         vl_error("no symbol table for %s declaration", var->name());
@@ -756,7 +748,7 @@ vl_procstmt::~vl_procstmt()
 vl_procstmt *
 vl_procstmt::copy()
 {
-    return (new vl_procstmt(type, stmt ? stmt->copy() : 0));
+    return (new vl_procstmt(type, chk_copy(stmt)));
 }
 
 
@@ -790,7 +782,7 @@ vl_cont_assign::~vl_cont_assign()
 vl_cont_assign *
 vl_cont_assign::copy()
 {
-    return (new vl_cont_assign(strength, delay->copy(), copy_list(assigns)));
+    return (new vl_cont_assign(strength, chk_copy(delay), copy_list(assigns)));
 }
 // End vl_cont_assign functions.
 
@@ -912,19 +904,16 @@ vl_specify_item::~vl_specify_item()
 vl_specify_item *
 vl_specify_item::copy()
 {
-    const vl_specify_item *sitm = this;
-    if (!sitm)
-        return (0);
     vl_specify_item *retval = new vl_specify_item(type);
     retval->params = copy_list(params);
-    retval->lhs = lhs->copy();
+    retval->lhs = chk_copy(lhs);
     retval->rhs = copy_list(rhs);
-    retval->expr = expr ? expr->copy() : 0;
+    retval->expr = chk_copy(expr);
     retval->pol = pol;
     retval->list1 = copy_list(list1);
     retval->list2 = copy_list(list2);
     retval->edge_id = edge_id;
-    retval->ifex = ifex ? ifex->copy() : 0;
+    retval->ifex = chk_copy(ifex);
     return (retval);
 }
 // End or vl_specify_item functions.
@@ -959,11 +948,8 @@ vl_spec_term_desc::~vl_spec_term_desc()
 vl_spec_term_desc *
 vl_spec_term_desc::copy()
 {
-    vl_spec_term_desc *stdsc = this;
-    if (!stdsc)
-        return (0);
     vl_spec_term_desc *retval = new vl_spec_term_desc(vl_strdup(name),
-        exp1 ? exp1->copy() : 0, exp2 ? exp2->copy() : 0);
+        chk_copy(exp1), chk_copy(exp2));
     retval->pol = pol;
     return (retval);
 }
@@ -999,11 +985,8 @@ vl_path_desc::~vl_path_desc()
 vl_path_desc *
 vl_path_desc::copy()
 {
-    const vl_path_desc *pdsc = this;
-    if (!pdsc)
-        return (0);
-    vl_path_desc *retval = new vl_path_desc(copy_list(list1),
-        copy_list(list2));
+    vl_path_desc *retval =
+        new vl_path_desc(copy_list(list1), copy_list(list2));
     retval->type = type;
     return (retval);
 }
@@ -1088,7 +1071,7 @@ vl_function::~vl_function()
 vl_function *
 vl_function::copy()
 {
-    vl_function *fcn = new vl_function(type, range->copy(), vl_strdup(name),
+    vl_function *fcn = new vl_function(type, chk_copy(range), vl_strdup(name),
         0, 0);
     set_var_context(vl_context::push(var_context(), fcn));
     fcn->decls = copy_list(decls);
@@ -1142,13 +1125,13 @@ vl_gate_inst_list::copy()
     lsList<vl_gate_inst*> *newgates = gates ? new lsList<vl_gate_inst*> : 0;
     vl_dlstr dlstr;
     dlstr.strength = strength;
-    dlstr.delay = delays->copy();
+    dlstr.delay = chk_copy(delays);
     vl_gate_inst_list *retval = new vl_gate_inst_list(type, &dlstr, newgates);
     if (gates) {
         lsGen<vl_gate_inst*> gen(gates);
         vl_gate_inst *inst;
         while (gen.next(&inst)) {
-            vl_gate_inst *newinst = inst->copy();
+            vl_gate_inst *newinst = chk_copy(inst);
             newinst->inst_list = retval;
             newgates->newEnd(newinst);
             if (newinst->name) {
@@ -1195,14 +1178,14 @@ vl_mp_inst_list::copy()
     lsList<vl_mp_inst*> *newmps = mps ? new lsList<vl_mp_inst*> : 0;
     vl_dlstr dlstr;
     dlstr.strength = strength;
-    dlstr.delay = params_or_delays->copy();
+    dlstr.delay = chk_copy(params_or_delays);
     vl_mp_inst_list *retval = new vl_mp_inst_list(mptype, vl_strdup(name),
         &dlstr, newmps);
     if (mps) {
         lsGen<vl_mp_inst*> gen(mps);
         vl_mp_inst *inst;
         while (gen.next(&inst)) {
-            vl_mp_inst *newinst = inst->copy();
+            vl_mp_inst *newinst = chk_copy(inst);
             newinst->inst_list = retval;
             newmps->newEnd(newinst);
             vl_module *current_mod = var_context()->currentModule();
@@ -1213,7 +1196,7 @@ vl_mp_inst_list::copy()
             }
             if (current_mod) {
                 vl_mp *mp;
-                if (!vl_var::simulator->description->mp_st->
+                if (!vl_var::simulator->description()->mp_st->
                         lookup(name, &mp) || !mp) {
                     vl_error("instance of %s with no master", name);
                     vl_var::simulator->abort();
@@ -1287,8 +1270,8 @@ vl_bassign_stmt::~vl_bassign_stmt()
 vl_bassign_stmt *
 vl_bassign_stmt::copy()
 {
-    vl_bassign_stmt *bs = new vl_bassign_stmt(type, lhs->copy(),
-        event->copy(), delay->copy(), rhs->copy());
+    vl_bassign_stmt *bs = new vl_bassign_stmt(type, chk_copy(lhs),
+        chk_copy(event), chk_copy(delay), chk_copy(rhs));
     return (bs);
 }
 
@@ -1541,30 +1524,30 @@ vl_begin_end_stmt::copy()
 
     if (stmt->name) {
         vl_context *cx = var_context();
-        if (cx->block) {
-            if (!cx->block->blk_st)
-                cx->block->blk_st = new table<vl_stmt*>;
-            cx->block->blk_st->insert(stmt->name, stmt);
+        if (cx->block()) {
+            if (!cx->block()->blk_st)
+                cx->block()->blk_st = new table<vl_stmt*>;
+            cx->block()->blk_st->insert(stmt->name, stmt);
         }
-        else if (cx->fjblk) {
-            if (!cx->fjblk->blk_st)
-                cx->fjblk->blk_st = new table<vl_stmt*>;
-            cx->fjblk->blk_st->insert(stmt->name, stmt);
+        else if (cx->fjblk()) {
+            if (!cx->fjblk()->blk_st)
+                cx->fjblk()->blk_st = new table<vl_stmt*>;
+            cx->fjblk()->blk_st->insert(stmt->name, stmt);
         }
-        else if (cx->task) {
-            if (!cx->task->blk_st)
-                cx->task->blk_st = new table<vl_stmt*>;
-            cx->task->blk_st->insert(stmt->name, stmt);
+        else if (cx->task()) {
+            if (!cx->task()->blk_st)
+                cx->task()->blk_st = new table<vl_stmt*>;
+            cx->task()->blk_st->insert(stmt->name, stmt);
         }
-        else if (cx->function) {
-            if (!cx->function->blk_st)
-                cx->function->blk_st = new table<vl_stmt*>;
-            cx->function->blk_st->insert(stmt->name, stmt);
+        else if (cx->function()) {
+            if (!cx->function()->blk_st)
+                cx->function()->blk_st = new table<vl_stmt*>;
+            cx->function()->blk_st->insert(stmt->name, stmt);
         }
-        else if (cx->module) {
-            if (!cx->module->blk_st)
-                cx->module->blk_st = new table<vl_stmt*>;
-            cx->module->blk_st->insert(stmt->name, stmt);
+        else if (cx->module()) {
+            if (!cx->module()->blk_st)
+                cx->module()->blk_st = new table<vl_stmt*>;
+            cx->module()->blk_st->insert(stmt->name, stmt);
         }
         else {
             vl_error("if/else block %s has no parent", stmt->name);
@@ -1598,9 +1581,8 @@ vl_if_else_stmt::vl_if_else_stmt(vl_expr *c, vl_stmt *if_s, vl_stmt *else_s)
 vl_if_else_stmt *
 vl_if_else_stmt::copy()
 {
-    return (new vl_if_else_stmt(cond->copy(),
-        if_stmt ? if_stmt->copy() : 0,
-        else_stmt ? else_stmt->copy() : 0));
+    return (new vl_if_else_stmt(chk_copy(cond),
+        chk_copy(if_stmt), chk_copy(else_stmt)));
 }
 
 
@@ -1633,7 +1615,7 @@ vl_case_stmt::~vl_case_stmt()
 vl_case_stmt *
 vl_case_stmt::copy()
 {
-    return (new vl_case_stmt(type, cond->copy(), copy_list(case_items)));
+    return (new vl_case_stmt(type, chk_copy(cond), copy_list(case_items)));
 }
 
 
@@ -1663,10 +1645,7 @@ vl_case_item::~vl_case_item()
 vl_case_item *
 vl_case_item::copy()
 {
-    vl_case_item *citm = this;
-    if (!citm)
-        return (0);
-    return (new vl_case_item(type, copy_list(exprs), stmt ? stmt->copy() : 0));
+    return (new vl_case_item(type, copy_list(exprs), chk_copy(stmt)));
 }
 
 
@@ -1689,7 +1668,7 @@ vl_forever_stmt::vl_forever_stmt(vl_stmt *s)
 vl_forever_stmt *
 vl_forever_stmt::copy()
 {
-    return (new vl_forever_stmt(stmt ? stmt->copy() : 0));
+    return (new vl_forever_stmt(chk_copy(stmt)));
 }
 
 
@@ -1714,7 +1693,7 @@ vl_repeat_stmt::vl_repeat_stmt(vl_expr *c, vl_stmt *s)
 vl_repeat_stmt *
 vl_repeat_stmt::copy()
 {
-    return (new vl_repeat_stmt(count->copy(), stmt ? stmt->copy() : 0));
+    return (new vl_repeat_stmt(chk_copy(count), chk_copy(stmt)));
 }
 
 
@@ -1738,7 +1717,7 @@ vl_while_stmt::vl_while_stmt(vl_expr *c, vl_stmt *s)
 vl_while_stmt *
 vl_while_stmt::copy()
 {
-    return (new vl_while_stmt(cond->copy(), stmt ? stmt->copy() : 0));
+    return (new vl_while_stmt(chk_copy(cond), chk_copy(stmt)));
 }
 
 
@@ -1765,8 +1744,8 @@ vl_for_stmt::vl_for_stmt(vl_bassign_stmt *i, vl_expr *c, vl_bassign_stmt *e,
 vl_for_stmt *
 vl_for_stmt::copy()
 {
-    return (new vl_for_stmt(initial ? initial->copy() : 0, cond->copy(),
-        end ? end->copy() : 0, stmt ? stmt->copy() : 0));
+    return (new vl_for_stmt(chk_copy(initial), chk_copy(cond),
+        chk_copy(end), chk_copy(stmt)));
 }
 
 
@@ -1790,7 +1769,7 @@ vl_delay_control_stmt::vl_delay_control_stmt(vl_delay *del, vl_stmt *s)
 vl_delay_control_stmt *
 vl_delay_control_stmt::copy()
 {
-    return (new vl_delay_control_stmt(delay->copy(), stmt ? stmt->copy() : 0));
+    return (new vl_delay_control_stmt(chk_copy(delay), chk_copy(stmt)));
 }
 
 
@@ -1814,7 +1793,7 @@ vl_event_control_stmt::vl_event_control_stmt(vl_event_expr *e, vl_stmt *s)
 vl_event_control_stmt *
 vl_event_control_stmt::copy()
 {
-    return (new vl_event_control_stmt(event->copy(), stmt ? stmt->copy() : 0));
+    return (new vl_event_control_stmt(chk_copy(event), chk_copy(stmt)));
 }
 
 
@@ -1845,7 +1824,7 @@ vl_wait_stmt::vl_wait_stmt(vl_expr *c, vl_stmt *s)
 vl_wait_stmt *
 vl_wait_stmt::copy()
 {
-    return (new vl_wait_stmt(cond->copy(), stmt ? stmt->copy() : 0));
+    return (new vl_wait_stmt(chk_copy(cond), chk_copy(stmt)));
 }
 
 
@@ -1908,30 +1887,30 @@ vl_fork_join_stmt::copy()
 
     if (stmt->name) {
         vl_context *cx = var_context();
-        if (cx->block) {
-            if (!cx->block->blk_st)
-                cx->block->blk_st = new table<vl_stmt*>;
-            cx->block->blk_st->insert(stmt->name, stmt);
+        if (cx->block()) {
+            if (!cx->block()->blk_st)
+                cx->block()->blk_st = new table<vl_stmt*>;
+            cx->block()->blk_st->insert(stmt->name, stmt);
         }
-        else if (cx->fjblk) {
-            if (!cx->fjblk->blk_st)
-                cx->fjblk->blk_st = new table<vl_stmt*>;
-            cx->fjblk->blk_st->insert(stmt->name, stmt);
+        else if (cx->fjblk()) {
+            if (!cx->fjblk()->blk_st)
+                cx->fjblk()->blk_st = new table<vl_stmt*>;
+            cx->fjblk()->blk_st->insert(stmt->name, stmt);
         }
-        else if (cx->task) {
-            if (!cx->task->blk_st)
-                cx->task->blk_st = new table<vl_stmt*>;
-            cx->task->blk_st->insert(stmt->name, stmt);
+        else if (cx->task()) {
+            if (!cx->task()->blk_st)
+                cx->task()->blk_st = new table<vl_stmt*>;
+            cx->task()->blk_st->insert(stmt->name, stmt);
         }
-        else if (cx->function) {
-            if (!cx->function->blk_st)
-                cx->function->blk_st = new table<vl_stmt*>;
-            cx->function->blk_st->insert(stmt->name, stmt);
+        else if (cx->function()) {
+            if (!cx->function()->blk_st)
+                cx->function()->blk_st = new table<vl_stmt*>;
+            cx->function()->blk_st->insert(stmt->name, stmt);
         }
-        else if (cx->module) {
-            if (!cx->module->blk_st)
-                cx->module->blk_st = new table<vl_stmt*>;
-            cx->module->blk_st->insert(stmt->name, stmt);
+        else if (cx->module()) {
+            if (!cx->module()->blk_st)
+                cx->module()->blk_st = new table<vl_stmt*>;
+            cx->module()->blk_st->insert(stmt->name, stmt);
         }
         else {
             vl_error("fork/join block %s has no parent", stmt->name);
@@ -2011,7 +1990,7 @@ vl_deassign_stmt::~vl_deassign_stmt()
 vl_deassign_stmt *
 vl_deassign_stmt::copy()
 {
-    return (new vl_deassign_stmt(type, lhs->copy()));
+    return (new vl_deassign_stmt(type, chk_copy(lhs)));
 }
 
 
@@ -2025,7 +2004,7 @@ vl_deassign_stmt::init()
         }
         return;
     }
-    vl_var *nvar = lhs->simulator->context->lookup_var(lhs->name(), false);
+    vl_var *nvar = lhs->simulator->context()->lookup_var(lhs->name(), false);
     if (!nvar) {
         vl_error("undeclared variable %s in deassign", lhs->name());
         lhs->simulator->abort();
@@ -2095,7 +2074,7 @@ vl_gate_inst *
 vl_gate_inst::copy()
 {
     vl_gate_inst *g = new vl_gate_inst(vl_strdup(name), copy_list(terms),
-        array->copy());
+        chk_copy(array));
     g->type = type;
     g->gsetup = gsetup;
     g->geval = geval;

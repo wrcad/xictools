@@ -602,13 +602,13 @@ operator==(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dconcat) {
         vl_expr ex(&data1);
         vl_var &d = (ex.eval() == data2);
-        ex.ux.mcat.var = 0;
+        ex.edata().mcat.var = 0;
         return (d);
     }
     if (data2.data_type() == Dconcat) {
         vl_expr ex(&data2);
         vl_var &d = (data2 == ex.eval());
-        ex.ux.mcat.var = 0;
+        ex.edata().mcat.var = 0;
         return (d);
     }
 
@@ -796,13 +796,13 @@ case_eq(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dconcat) {
         vl_expr ex(&data1);
         vl_var &d = case_eq(ex.eval(), data2);
-        ex.ux.mcat.var = 0;
+        ex.edata().mcat.var = 0;
         return (d);
     }
     if (data2.data_type() == Dconcat) {
         vl_expr ex(&data2);
         vl_var &d = case_eq(data2, ex.eval());
-        ex.ux.mcat.var = 0;
+        ex.edata().mcat.var = 0;
         return (d);
     }
 
@@ -847,13 +847,13 @@ casex_eq(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dconcat) {
         vl_expr ex(&data1);
         vl_var &d = casex_eq(ex.eval(), data2);
-        ex.ux.mcat.var = 0;
+        ex.edata().mcat.var = 0;
         return (d);
     }
     if (data2.data_type() == Dconcat) {
         vl_expr ex(&data2);
         vl_var &d = casex_eq(data2, ex.eval());
-        ex.ux.mcat.var = 0;
+        ex.edata().mcat.var = 0;
         return (d);
     }
 
@@ -903,13 +903,13 @@ casez_eq(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dconcat) {
         vl_expr ex(&data1);
         vl_var &d = casez_eq(ex.eval(), data2);
-        ex.ux.mcat.var = 0;
+        ex.edata().mcat.var = 0;
         return (d);
     }
     if (data2.data_type() == Dconcat) {
         vl_expr ex(&data2);
         vl_var &d = casez_eq(data2, ex.eval());
-        ex.ux.mcat.var = 0;
+        ex.edata().mcat.var = 0;
         return (d);
     }
 
@@ -2152,8 +2152,8 @@ vl_var::subb(vl_var &data1, vl_var &data2)
 //
 // The vl_expr class is derived from the vl_var class, and can
 // represent all of the various expression types, according to the
-// etype field.  The vl_expr can serve as an input (i.e., can be
-// assigned to) or as an output.  As an input, the following etypes
+// e_type field.  The vl_expr can serve as an input (i.e., can be
+// assigned to) or as an output.  As an input, the following e_types
 // are valid:
 //
 //  IDExpr                simple variable reference
@@ -2161,51 +2161,51 @@ vl_var::subb(vl_var &data1, vl_var &data2)
 //  PartSelExpr           part-select reference
 //  ConcatExpr            concatenation (NOT multiple)
 //
-// For each of the first three input types, the ux.ide.var field
+// For each of the first three input types, the e_data.ide.var field
 // contains a pointer to the vl_var referenced, which is the variable
 // that will be assigned to.  Calling the eval() function establishes
-// the ux.ide.var pointer.  For ConcatExpr, the source is the
-// ux.mcat.var field, which is created with the vl_expr, and contains
-// the list of participating variables.
+// the e_data.ide.var pointer.  For ConcatExpr, the source is the
+// e_data.mcat.var field, which is created with the vl_expr, and
+// contains the list of participating variables.
 //
-// All other etypes are read-only.  After calling eval(), the "this"
+// All other e_types are read-only.  After calling eval(), the "this"
 // vl_var contains the resulting value.
 
 
 vl_expr::vl_expr()
 {
-    ux.exprs.e1 = 0;
-    ux.exprs.e2 = 0;
-    ux.exprs.e3 = 0;
+    e_data.exprs.e1 = 0;
+    e_data.exprs.e2 = 0;
+    e_data.exprs.e3 = 0;
 }
 
 
 vl_expr::vl_expr(vl_var *v)
 {
-    ux.exprs.e1 = 0;
-    ux.exprs.e2 = 0;
-    ux.exprs.e3 = 0;
+    e_data.exprs.e1 = 0;
+    e_data.exprs.e2 = 0;
+    e_data.exprs.e3 = 0;
     if (v->data_type() == Dconcat) {
-        etype = ConcatExpr;
-        ux.mcat.var = v;
+        e_type = ConcatExpr;
+        e_data.mcat.var = v;
     }
     else {
-        etype = IDExpr;
-        ux.ide.name = vl_strdup(v->name());
-        ux.ide.var = v;
+        e_type = IDExpr;
+        e_data.ide.name = vl_strdup(v->name());
+        e_data.ide.var = v;
     }
 }
 
 
 vl_expr::vl_expr(short t, int i, double r, void *p1, void *p2, void *p3)
 {
-    etype = t;
-    ux.exprs.e1 = 0;
-    ux.exprs.e2 = 0;
-    ux.exprs.e3 = 0;
+    e_type = t;
+    e_data.exprs.e1 = 0;
+    e_data.exprs.e2 = 0;
+    e_data.exprs.e3 = 0;
     switch (t) {
     case BitExpr:
-        set((bitexp_parse*)p1);
+        set((vl_bitexp_parse*)p1);
         break;
     case IntExpr:
         set(i);
@@ -2217,25 +2217,25 @@ vl_expr::vl_expr(short t, int i, double r, void *p1, void *p2, void *p3)
         set((char*)p1);
         break;
     case IDExpr:
-        ux.ide.name = (char*)p1;
+        e_data.ide.name = (char*)p1;
         break;
     case BitSelExpr:
     case PartSelExpr:
-        ux.ide.name = (char*)p1;
-        ux.ide.range = (vl_range*)p2;
+        e_data.ide.name = (char*)p1;
+        e_data.ide.range = (vl_range*)p2;
         break;
     case ConcatExpr:
-        ux.mcat.rep = (vl_expr*)p2;
-        ux.mcat.var = new vl_var(0, 0, (lsList<vl_expr*>*)p1);
+        e_data.mcat.rep = (vl_expr*)p2;
+        e_data.mcat.var = new vl_var(0, 0, (lsList<vl_expr*>*)p1);
         break;
     case MinTypMaxExpr:
-        ux.exprs.e1 = (vl_expr*)p1;
-        ux.exprs.e2 = (vl_expr*)p2;
-        ux.exprs.e3 = (vl_expr*)p3;
+        e_data.exprs.e1 = (vl_expr*)p1;
+        e_data.exprs.e2 = (vl_expr*)p2;
+        e_data.exprs.e3 = (vl_expr*)p3;
         break;
     case FuncExpr:
-        ux.func_call.name = (char*)p1;
-        ux.func_call.args = (lsList<vl_expr*>*)p2;
+        e_data.func_call.name = (char*)p1;
+        e_data.func_call.args = (lsList<vl_expr*>*)p2;
         break;
     case UplusExpr:
     case UminusExpr:
@@ -2247,7 +2247,7 @@ vl_expr::vl_expr(short t, int i, double r, void *p1, void *p2, void *p3)
     case UnorExpr:
     case UxorExpr:
     case UxnorExpr:
-        ux.exprs.e1 = (vl_expr*)p1;
+        e_data.exprs.e1 = (vl_expr*)p1;
         break;
     case BplusExpr:
     case BminusExpr:
@@ -2270,16 +2270,16 @@ vl_expr::vl_expr(short t, int i, double r, void *p1, void *p2, void *p3)
     case BxnorExpr:
     case BlshiftExpr:
     case BrshiftExpr:
-        ux.exprs.e1 = (vl_expr*)p1;
-        ux.exprs.e2 = (vl_expr*)p2;
+        e_data.exprs.e1 = (vl_expr*)p1;
+        e_data.exprs.e2 = (vl_expr*)p2;
         break;
     case TcondExpr:
-        ux.exprs.e1 = (vl_expr*)p1;
-        ux.exprs.e2 = (vl_expr*)p2;
-        ux.exprs.e3 = (vl_expr*)p3;
+        e_data.exprs.e1 = (vl_expr*)p1;
+        e_data.exprs.e2 = (vl_expr*)p2;
+        e_data.exprs.e3 = (vl_expr*)p3;
         break;
     case SysExpr:
-        ux.systask = new vl_sys_task_stmt((char*)p2, (lsList<vl_expr*>*)p1);
+        e_data.systask = new vl_sys_task_stmt((char*)p2, (lsList<vl_expr*>*)p1);
         break;
     }
 }
@@ -2287,27 +2287,27 @@ vl_expr::vl_expr(short t, int i, double r, void *p1, void *p2, void *p3)
 
 vl_expr::~vl_expr()
 {
-    switch (etype) {
+    switch (e_type) {
     case IDExpr:
-        delete [] ux.ide.name;
+        delete [] e_data.ide.name;
         break;
     case BitSelExpr:
     case PartSelExpr:
-        delete [] ux.ide.name;
-        delete ux.ide.range;
+        delete [] e_data.ide.name;
+        delete e_data.ide.range;
         break;
     case ConcatExpr:
-        delete ux.mcat.rep;
-        delete ux.mcat.var;
+        delete e_data.mcat.rep;
+        delete e_data.mcat.var;
         break;                        
     case MinTypMaxExpr:
-        delete ux.exprs.e1;
-        delete ux.exprs.e2;
-        delete ux.exprs.e3;
+        delete e_data.exprs.e1;
+        delete e_data.exprs.e2;
+        delete e_data.exprs.e3;
         break;                        
     case FuncExpr:
-        delete [] ux.func_call.name;
-        delete_list(ux.func_call.args);
+        delete [] e_data.func_call.name;
+        delete_list(e_data.func_call.args);
         break;
     case UplusExpr:
     case UminusExpr:
@@ -2319,7 +2319,7 @@ vl_expr::~vl_expr()
     case UnorExpr:
     case UxorExpr:
     case UxnorExpr:
-        delete ux.exprs.e1;
+        delete e_data.exprs.e1;
         break;
     case BplusExpr:
     case BminusExpr:
@@ -2342,16 +2342,16 @@ vl_expr::~vl_expr()
     case BxnorExpr:
     case BlshiftExpr:
     case BrshiftExpr:
-        delete ux.exprs.e1;
-        delete ux.exprs.e2;
+        delete e_data.exprs.e1;
+        delete e_data.exprs.e2;
         break;
     case TcondExpr:
-        delete ux.exprs.e1;
-        delete ux.exprs.e2;
-        delete ux.exprs.e3;
+        delete e_data.exprs.e1;
+        delete e_data.exprs.e2;
+        delete e_data.exprs.e3;
         break;
     case SysExpr:
-        delete ux.systask;
+        delete e_data.systask;
         break;
     }
 }
@@ -2361,9 +2361,9 @@ vl_expr *
 vl_expr::copy()
 {
     vl_expr *retval = new vl_expr;
-    retval->etype = etype;
+    retval->e_type = e_type;
 
-    switch (etype) {
+    switch (e_type) {
     case BitExpr:
     case IntExpr:
     case RealExpr:
@@ -2371,31 +2371,26 @@ vl_expr::copy()
         retval->assign(0, this, 0);
         break;
     case IDExpr:
-        retval->ux.ide.name = vl_strdup(ux.ide.name);
+        retval->e_data.ide.name = vl_strdup(e_data.ide.name);
         break;
     case BitSelExpr:
     case PartSelExpr:
-        retval->ux.ide.name = vl_strdup(ux.ide.name);
-        retval->ux.ide.range = ux.ide.range->copy();
+        retval->e_data.ide.name = vl_strdup(e_data.ide.name);
+        retval->e_data.ide.range = chk_copy(e_data.ide.range);
         break;
     case ConcatExpr: {
-        if (ux.mcat.rep)
-            retval->ux.mcat.rep = ux.mcat.rep->copy();
-        if (ux.mcat.var)
-            retval->ux.mcat.var = ux.mcat.var->copy();
+        retval->e_data.mcat.rep = chk_copy(e_data.mcat.rep);
+        retval->e_data.mcat.var = chk_copy(e_data.mcat.var);
         break;                        
     }
     case MinTypMaxExpr:
-        if (ux.exprs.e1)
-            retval->ux.exprs.e1 = ux.exprs.e1->copy();
-        if (ux.exprs.e2)
-            retval->ux.exprs.e2 = ux.exprs.e2->copy();
-        if (ux.exprs.e3)
-            retval->ux.exprs.e3 = ux.exprs.e3->copy();
+        retval->e_data.exprs.e1 = chk_copy(e_data.exprs.e1);
+        retval->e_data.exprs.e2 = chk_copy(e_data.exprs.e2);
+        retval->e_data.exprs.e3 = chk_copy(e_data.exprs.e3);
         break;                        
     case FuncExpr:
-        retval->ux.func_call.name = vl_strdup(ux.func_call.name);
-        retval->ux.func_call.args = copy_list(ux.func_call.args);
+        retval->e_data.func_call.name = vl_strdup(e_data.func_call.name);
+        retval->e_data.func_call.args = copy_list(e_data.func_call.args);
         break;
     case UplusExpr:
     case UminusExpr:
@@ -2407,8 +2402,7 @@ vl_expr::copy()
     case UnorExpr:
     case UxorExpr:
     case UxnorExpr:
-        if (ux.exprs.e1)
-            retval->ux.exprs.e1 = ux.exprs.e1->copy();
+        retval->e_data.exprs.e1 = chk_copy(e_data.exprs.e1);
         break;
     case BplusExpr:
     case BminusExpr:
@@ -2431,21 +2425,16 @@ vl_expr::copy()
     case BxnorExpr:
     case BlshiftExpr:
     case BrshiftExpr:
-        if (ux.exprs.e1)
-            retval->ux.exprs.e1 = ux.exprs.e1->copy();
-        if (ux.exprs.e2)
-            retval->ux.exprs.e2 = ux.exprs.e2->copy();
+        retval->e_data.exprs.e1 = chk_copy(e_data.exprs.e1);
+        retval->e_data.exprs.e2 = chk_copy(e_data.exprs.e2);
         break;
     case TcondExpr:
-        if (ux.exprs.e1)
-            retval->ux.exprs.e1 = ux.exprs.e1->copy();
-        if (ux.exprs.e2)
-            retval->ux.exprs.e2 = ux.exprs.e2->copy();
-        if (ux.exprs.e3)
-            retval->ux.exprs.e3 = ux.exprs.e3->copy();
+        retval->e_data.exprs.e1 = chk_copy(e_data.exprs.e1);
+        retval->e_data.exprs.e2 = chk_copy(e_data.exprs.e2);
+        retval->e_data.exprs.e3 = chk_copy(e_data.exprs.e3);
         break;
     case SysExpr:
-        retval->ux.systask = ux.systask->copy();
+        retval->e_data.systask = chk_copy(e_data.systask);
         break;
     }
     return (retval);
@@ -2458,15 +2447,15 @@ namespace {
     //
     vl_var *check_var(vl_simulator *sim, const char *name)
     {
-        if (!sim->context) {
+        if (!sim->context()) {
             vl_error("internal, no current context!");
             sim->abort();
             return (0);
         }
-        vl_var *v = sim->context->lookup_var(name, false);
+        vl_var *v = sim->context()->lookup_var(name, false);
         if (!v) {
             vl_warn("implicit declaration of %s", name);
-            vl_module *cmod = sim->context->currentModule();
+            vl_module *cmod = sim->context()->currentModule();
             if (cmod) {
                 v = new vl_var;
                 v->set_name(vl_strdup(name));
@@ -2489,7 +2478,7 @@ vl_var &
 vl_expr::eval()
 {
     vl_var &vo = *this;
-    switch (etype) {
+    switch (e_type) {
     case BitExpr:
     case IntExpr:
     case RealExpr:
@@ -2501,18 +2490,18 @@ vl_expr::eval()
     // events.
     // 
     reset();
-    switch (etype) {
+    switch (e_type) {
 
     case IDExpr:
     case BitSelExpr:
     case PartSelExpr:
-        if (!ux.ide.var) {
-            ux.ide.var = check_var(simulator, ux.ide.name);
-            if (!ux.ide.var)
-                ux.ide.var = this;
+        if (!e_data.ide.var) {
+            e_data.ide.var = check_var(simulator, e_data.ide.name);
+            if (!e_data.ide.var)
+                e_data.ide.var = this;
         }
-        assign(0, ux.ide.var, ux.ide.range);
-        if (ux.ide.var->net_type() == REGevent)
+        assign(0, e_data.ide.var, e_data.ide.range);
+        if (e_data.ide.var->net_type() == REGevent)
             vo.set_net_type(REGevent);
         return (vo);
 
@@ -2528,11 +2517,11 @@ vl_expr::eval()
         char alen = bits().size();
         int size = 0;
         int rep = 1;
-        if (ux.mcat.rep)
-            rep = (int)ux.mcat.rep->eval();
+        if (e_data.mcat.rep)
+            rep = (int)e_data.mcat.rep->eval();
         for (int i = 0; i < rep; i++) {
             // order is msb first, loop in reverse order
-            lsGen<vl_expr*> gen(ux.mcat.var->data().c, true);
+            lsGen<vl_expr*> gen(e_data.mcat.var->data().c, true);
             vl_expr *e;
             while (gen.prev(&e)) {
                 vl_var &d = e->eval();
@@ -2566,50 +2555,50 @@ vl_expr::eval()
         // three numbers: min/typ/max
         // two numbers: min/typ/max=typ
         // one number: min=typ/typ/max=typ
-        switch (simulator->dmode) {
+        switch (simulator->dmode()) {
         case DLYmin:
-            return (ux.exprs.e1->eval());
+            return (e_data.exprs.e1->eval());
         default:
         case DLYtyp:
-            if (ux.exprs.e2)
-                return (ux.exprs.e2->eval());
-            return (ux.exprs.e1->eval());
+            if (e_data.exprs.e2)
+                return (e_data.exprs.e2->eval());
+            return (e_data.exprs.e1->eval());
         case DLYmax:
-            if (ux.exprs.e3)
-                return (ux.exprs.e3->eval());
-            if (ux.exprs.e2)
-                return (ux.exprs.e2->eval());
+            if (e_data.exprs.e3)
+                return (e_data.exprs.e3->eval());
+            if (e_data.exprs.e2)
+                return (e_data.exprs.e2->eval());
             else
-                return (ux.exprs.e1->eval());
+                return (e_data.exprs.e1->eval());
         }
         vl_warn("(internal) bad min/typ/max format");
         return (vo);
     }
     case FuncExpr:
-        if (!ux.func_call.func) {
-            ux.func_call.func =
-                simulator->context->lookup_func(ux.func_call.name);
-            if (!ux.func_call.func) {
-                vl_error("unresolved function %s", ux.func_call.name);
+        if (!e_data.func_call.func) {
+            e_data.func_call.func =
+                simulator->context()->lookup_func(e_data.func_call.name);
+            if (!e_data.func_call.func) {
+                vl_error("unresolved function %s", e_data.func_call.name);
                 simulator->abort();
                 return (vo);
             }
         }
-        ux.func_call.func->eval_func(&vo, ux.func_call.args);
+        e_data.func_call.func->eval_func(&vo, e_data.func_call.args);
         return (vo);
     case UplusExpr:
-        vo = ux.exprs.e1->eval();
+        vo = e_data.exprs.e1->eval();
         return (vo);
     case UminusExpr:
         vo.setx(DefBits);
-        vo = ux.exprs.e1->eval();
+        vo = e_data.exprs.e1->eval();
         vo = -vo;
         return (vo);
     case UnotExpr:
-        vo = !ux.exprs.e1->eval();
+        vo = !e_data.exprs.e1->eval();
         return (vo);
     case UcomplExpr:
-        vo = ~ux.exprs.e1->eval();
+        vo = ~e_data.exprs.e1->eval();
         return (vo);
     case UnandExpr:
     case UandExpr:
@@ -2617,76 +2606,76 @@ vl_expr::eval()
     case UorExpr:
     case UxnorExpr:
     case UxorExpr:
-        vo = reduce(ux.exprs.e1->eval(), etype);
+        vo = reduce(e_data.exprs.e1->eval(), e_type);
         return (vo);
     case BtimesExpr:
-        vo = (ux.exprs.e1->eval() * ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() * e_data.exprs.e2->eval());
         return (vo);
     case BdivExpr:  
-        vo = (ux.exprs.e1->eval() / ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() / e_data.exprs.e2->eval());
         return (vo);
     case BremExpr: 
-        vo = (ux.exprs.e1->eval() % ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() % e_data.exprs.e2->eval());
         return (vo);
     case BlshiftExpr: 
-        vo = (ux.exprs.e1->eval() << ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() << e_data.exprs.e2->eval());
         return (vo);
     case BrshiftExpr:
-        vo = (ux.exprs.e1->eval() >> ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() >> e_data.exprs.e2->eval());
         return (vo);
     case Beq3Expr: 
-        vo = case_eq(ux.exprs.e1->eval(), ux.exprs.e2->eval());
+        vo = case_eq(e_data.exprs.e1->eval(), e_data.exprs.e2->eval());
         return (vo);
     case Bneq3Expr: 
-        vo = case_neq(ux.exprs.e1->eval(), ux.exprs.e2->eval());
+        vo = case_neq(e_data.exprs.e1->eval(), e_data.exprs.e2->eval());
         return (vo);
     case Beq2Expr: 
-        vo = (ux.exprs.e1->eval() == ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() == e_data.exprs.e2->eval());
         return (vo);
     case Bneq2Expr:
-        vo = (ux.exprs.e1->eval() != ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() != e_data.exprs.e2->eval());
         return (vo);
     case BlandExpr: 
-        vo = (ux.exprs.e1->eval() && ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() && e_data.exprs.e2->eval());
         return (vo);
     case BlorExpr:
-        vo = (ux.exprs.e1->eval() || ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() || e_data.exprs.e2->eval());
         return (vo);
     case BltExpr: 
-        vo = (ux.exprs.e1->eval() < ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() < e_data.exprs.e2->eval());
         return (vo);
     case BleExpr: 
-        vo = (ux.exprs.e1->eval() <= ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() <= e_data.exprs.e2->eval());
         return (vo);
     case BgtExpr: 
-        vo = (ux.exprs.e1->eval() > ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() > e_data.exprs.e2->eval());
         return (vo);
     case BgeExpr:  
-        vo = (ux.exprs.e1->eval() >= ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() >= e_data.exprs.e2->eval());
         return (vo);
     case BplusExpr: 
-        vo = (ux.exprs.e1->eval() + ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() + e_data.exprs.e2->eval());
         return (vo);
     case BminusExpr:
-        vo = (ux.exprs.e1->eval() - ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() - e_data.exprs.e2->eval());
         return (vo);
     case BandExpr: 
-        vo = (ux.exprs.e1->eval() & ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() & e_data.exprs.e2->eval());
         return (vo);
     case BorExpr:  
-        vo = (ux.exprs.e1->eval() | ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() | e_data.exprs.e2->eval());
         return (vo);
     case BxorExpr:
-        vo = (ux.exprs.e1->eval() ^ ux.exprs.e2->eval());
+        vo = (e_data.exprs.e1->eval() ^ e_data.exprs.e2->eval());
         return (vo);
     case BxnorExpr:
-        vo = ~(ux.exprs.e1->eval() ^ ux.exprs.e2->eval());
+        vo = ~(e_data.exprs.e1->eval() ^ e_data.exprs.e2->eval());
         return (vo);
     case TcondExpr:
-        vo = tcond(ux.exprs.e1->eval(), ux.exprs.e2, ux.exprs.e3);
+        vo = tcond(e_data.exprs.e1->eval(), e_data.exprs.e2, e_data.exprs.e3);
         return (vo);
     case SysExpr:
-        vo = (simulator->*ux.systask->action)(ux.systask, ux.systask->args);
+        vo = (simulator->*e_data.systask->action)(e_data.systask, e_data.systask->args);
         return (vo);
     }
     vl_warn("(internal) bad expression type");
@@ -2705,7 +2694,7 @@ void
 vl_expr::chcore(vl_stmt *stmt, int mode)
 {
     vl_var vo = *this;
-    switch (etype) {
+    switch (e_type) {
     case BitExpr:
     case IntExpr:
     case RealExpr:
@@ -2723,118 +2712,121 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
     case IDExpr:
     case BitSelExpr:
     case PartSelExpr:
-        if (!ux.ide.var) {
-            ux.ide.var = check_var(simulator, ux.ide.name);
-            if (!ux.ide.var)
-                ux.ide.var = this;
+        if (!e_data.ide.var) {
+            e_data.ide.var = check_var(simulator, e_data.ide.name);
+            if (!e_data.ide.var)
+                e_data.ide.var = this;
         }
-        if (ux.ide.var != this) {
+        if (e_data.ide.var != this) {
             if (mode == 0)
-                ux.ide.var->chain(stmt);
+                e_data.ide.var->chain(stmt);
             else if (mode == 1)
-                ux.ide.var->unchain(stmt);
+                e_data.ide.var->unchain(stmt);
             else if (mode == 2)
-                ux.ide.var->unchain_disabled(stmt);
-            if (ux.ide.range) {
+                e_data.ide.var->unchain_disabled(stmt);
+            if (e_data.ide.range) {
                 if (mode == 0) {
-                    ux.ide.range->left->chain(stmt);
-                    if (ux.ide.range->right &&
-                            ux.ide.range->right != ux.ide.range->left)
-                        ux.ide.range->right->chain(stmt);
+                    e_data.ide.range->left()->chain(stmt);
+                    if (e_data.ide.range->right() &&
+                            e_data.ide.range->right() !=
+                            e_data.ide.range->left())
+                        e_data.ide.range->right()->chain(stmt);
                 }
                 else if (mode == 1) {
-                    ux.ide.range->left->unchain(stmt);
-                    if (ux.ide.range->right &&
-                            ux.ide.range->right != ux.ide.range->left)
-                        ux.ide.range->right->unchain(stmt);
+                    e_data.ide.range->left()->unchain(stmt);
+                    if (e_data.ide.range->right() &&
+                            e_data.ide.range->right() !=
+                            e_data.ide.range->left())
+                        e_data.ide.range->right()->unchain(stmt);
                 }
                 else if (mode == 2) {
-                    ux.ide.range->left->unchain_disabled(stmt);
-                    if (ux.ide.range->right &&
-                            ux.ide.range->right != ux.ide.range->left)
-                        ux.ide.range->right->unchain_disabled(stmt);
+                    e_data.ide.range->left()->unchain_disabled(stmt);
+                    if (e_data.ide.range->right() &&
+                            e_data.ide.range->right() !=
+                            e_data.ide.range->left())
+                        e_data.ide.range->right()->unchain_disabled(stmt);
                 }
             }
         }
         return;
     case ConcatExpr:
         if (mode == 0)
-            ux.mcat.var->chain(stmt);
+            e_data.mcat.var->chain(stmt);
         else if (mode == 1)
-            ux.mcat.var->unchain(stmt);
+            e_data.mcat.var->unchain(stmt);
         else if (mode == 2)
-            ux.mcat.var->unchain_disabled(stmt);
+            e_data.mcat.var->unchain_disabled(stmt);
         return;
     case MinTypMaxExpr: 
-        switch (simulator->dmode) {
+        switch (simulator->dmode()) {
         case DLYmin:
-            if (ux.exprs.e1) {
+            if (e_data.exprs.e1) {
                 if (mode == 0)
-                    ux.exprs.e1->chain(stmt);
+                    e_data.exprs.e1->chain(stmt);
                 else if (mode == 1)
-                    ux.exprs.e1->unchain(stmt);
+                    e_data.exprs.e1->unchain(stmt);
                 else if (mode == 2)
-                    ux.exprs.e1->unchain_disabled(stmt);
+                    e_data.exprs.e1->unchain_disabled(stmt);
             }
             break;
         default:
         case DLYtyp:
-            if (ux.exprs.e2) {
+            if (e_data.exprs.e2) {
                 if (mode == 0)
-                    ux.exprs.e2->chain(stmt);
+                    e_data.exprs.e2->chain(stmt);
                 else if (mode == 1)
-                    ux.exprs.e2->unchain(stmt);
+                    e_data.exprs.e2->unchain(stmt);
                 else if (mode == 2)
-                    ux.exprs.e2->unchain_disabled(stmt);
+                    e_data.exprs.e2->unchain_disabled(stmt);
             }
-            else if (ux.exprs.e1) {
+            else if (e_data.exprs.e1) {
                 if (mode == 0)
-                    ux.exprs.e1->chain(stmt);
+                    e_data.exprs.e1->chain(stmt);
                 else if (mode == 1)
-                    ux.exprs.e1->unchain(stmt);
+                    e_data.exprs.e1->unchain(stmt);
                 else if (mode == 2)
-                    ux.exprs.e1->unchain_disabled(stmt);
+                    e_data.exprs.e1->unchain_disabled(stmt);
             }
             break;
         case DLYmax:
-            if (ux.exprs.e3) {
+            if (e_data.exprs.e3) {
                 if (mode == 0)
-                    ux.exprs.e3->chain(stmt);
+                    e_data.exprs.e3->chain(stmt);
                 else if (mode == 1)
-                    ux.exprs.e3->unchain(stmt);
+                    e_data.exprs.e3->unchain(stmt);
                 else if (mode == 2)
-                    ux.exprs.e3->unchain_disabled(stmt);
+                    e_data.exprs.e3->unchain_disabled(stmt);
             }
-            else if (ux.exprs.e2) {
+            else if (e_data.exprs.e2) {
                 if (mode == 0)
-                    ux.exprs.e2->chain(stmt);
+                    e_data.exprs.e2->chain(stmt);
                 else if (mode == 1)
-                    ux.exprs.e2->unchain(stmt);
+                    e_data.exprs.e2->unchain(stmt);
                 else if (mode == 2)
-                    ux.exprs.e2->unchain_disabled(stmt);
+                    e_data.exprs.e2->unchain_disabled(stmt);
             }
-            else if (ux.exprs.e1) {
+            else if (e_data.exprs.e1) {
                 if (mode == 0)
-                    ux.exprs.e1->chain(stmt);
+                    e_data.exprs.e1->chain(stmt);
                 else if (mode == 1)
-                    ux.exprs.e1->unchain(stmt);
+                    e_data.exprs.e1->unchain(stmt);
                 else if (mode == 2)
-                    ux.exprs.e1->unchain_disabled(stmt);
+                    e_data.exprs.e1->unchain_disabled(stmt);
             }
             break;
         }
         return;
     case FuncExpr: {
-        if (!ux.func_call.func) {
-            ux.func_call.func =
-                simulator->context->lookup_func(ux.func_call.name);
-            if (!ux.func_call.func) {
-                vl_error("unresolved function %s", ux.func_call.name);
+        if (!e_data.func_call.func) {
+            e_data.func_call.func =
+                simulator->context()->lookup_func(e_data.func_call.name);
+            if (!e_data.func_call.func) {
+                vl_error("unresolved function %s", e_data.func_call.name);
                 simulator->abort();
                 return;
             }
         }
-        lsGen<vl_expr*> fgen(ux.func_call.args);
+        lsGen<vl_expr*> fgen(e_data.func_call.args);
         vl_expr *e;
         while (fgen.next(&e)) {
             if (mode == 0)
@@ -2857,13 +2849,13 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
     case UorExpr:
     case UxnorExpr:
     case UxorExpr:
-        if (ux.exprs.e1) {
+        if (e_data.exprs.e1) {
             if (mode == 0)
-                ux.exprs.e1->chain(stmt);
+                e_data.exprs.e1->chain(stmt);
             else if (mode == 1)
-                ux.exprs.e1->unchain(stmt);
+                e_data.exprs.e1->unchain(stmt);
             else if (mode == 2)
-                ux.exprs.e1->unchain_disabled(stmt);
+                e_data.exprs.e1->unchain_disabled(stmt);
         }
         return;
     case BtimesExpr:
@@ -2887,57 +2879,57 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
     case BorExpr:  
     case BxorExpr:
     case BxnorExpr:
-        if (ux.exprs.e1) {
+        if (e_data.exprs.e1) {
             if (mode == 0)
-                ux.exprs.e1->chain(stmt);
+                e_data.exprs.e1->chain(stmt);
             else if (mode == 1)
-                ux.exprs.e1->unchain(stmt);
+                e_data.exprs.e1->unchain(stmt);
             else if (mode == 2)
-                ux.exprs.e1->unchain_disabled(stmt);
+                e_data.exprs.e1->unchain_disabled(stmt);
         }
-        if (ux.exprs.e2) {
+        if (e_data.exprs.e2) {
             if (mode == 0)
-                ux.exprs.e2->chain(stmt);
+                e_data.exprs.e2->chain(stmt);
             else if (mode == 1)
-                ux.exprs.e1->unchain(stmt);
+                e_data.exprs.e1->unchain(stmt);
             else if (mode == 2)
-                ux.exprs.e1->unchain_disabled(stmt);
+                e_data.exprs.e1->unchain_disabled(stmt);
         }
         return;
     case TcondExpr:
-        if (ux.exprs.e1) {
+        if (e_data.exprs.e1) {
             if (mode == 0)
-                ux.exprs.e1->chain(stmt);
+                e_data.exprs.e1->chain(stmt);
             else if (mode == 1)
-                ux.exprs.e1->unchain(stmt);
+                e_data.exprs.e1->unchain(stmt);
             else if (mode == 2)
-                ux.exprs.e1->unchain_disabled(stmt);
+                e_data.exprs.e1->unchain_disabled(stmt);
         }
-        if (ux.exprs.e2) {
+        if (e_data.exprs.e2) {
             if (mode == 0)
-                ux.exprs.e2->chain(stmt);
+                e_data.exprs.e2->chain(stmt);
             else if (mode == 1)
-                ux.exprs.e2->unchain(stmt);
+                e_data.exprs.e2->unchain(stmt);
             else if (mode == 2)
-                ux.exprs.e2->unchain_disabled(stmt);
+                e_data.exprs.e2->unchain_disabled(stmt);
         }
-        if (ux.exprs.e3) {
+        if (e_data.exprs.e3) {
             if (mode == 0)
-                ux.exprs.e3->chain(stmt);
+                e_data.exprs.e3->chain(stmt);
             else if (mode == 1)
-                ux.exprs.e3->unchain(stmt);
+                e_data.exprs.e3->unchain(stmt);
             else if (mode == 2)
-                ux.exprs.e3->unchain_disabled(stmt);
+                e_data.exprs.e3->unchain_disabled(stmt);
         }
         return;
     case SysExpr:
-        if (!strcmp(ux.systask->name, "$time")) {
+        if (!strcmp(e_data.systask->name, "$time")) {
             if (mode == 0)
-                simulator->time_data.chain(stmt);
+                simulator->time_data().chain(stmt);
             else if (mode == 1)
-                simulator->time_data.unchain(stmt);
+                simulator->time_data().unchain(stmt);
             else if (mode == 2)
-                simulator->time_data.unchain_disabled(stmt);
+                simulator->time_data().unchain_disabled(stmt);
         }
         return;
     }
@@ -2950,19 +2942,19 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
 vl_var *
 vl_expr::source()
 {
-    switch (etype) {
+    switch (e_type) {
     case IDExpr:
     case BitSelExpr:
     case PartSelExpr:
-        if (!ux.ide.var) {
-            ux.ide.var = check_var(simulator, ux.ide.name);
-            if (!ux.ide.var)
-                ux.ide.var = this;
+        if (!e_data.ide.var) {
+            e_data.ide.var = check_var(simulator, e_data.ide.name);
+            if (!e_data.ide.var)
+                e_data.ide.var = this;
         }
-        return (ux.ide.var);
+        return (e_data.ide.var);
     case ConcatExpr:
-        if (!ux.mcat.rep)
-            return (ux.mcat.var);
+        if (!e_data.mcat.rep)
+            return (e_data.mcat.var);
     default:
         break;
     }

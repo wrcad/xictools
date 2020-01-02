@@ -925,10 +925,10 @@ vl_gate_inst::geval_gate(vl_simulator *sim, int(*set)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = oexp->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(oexp->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -939,10 +939,10 @@ vl_gate_inst::geval_gate(vl_simulator *sim, int(*set)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = oexp->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(oexp->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = oexp->source_range();
@@ -1021,10 +1021,10 @@ vl_gate_inst::geval_buf(vl_simulator *sim, int(*set)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = expr->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(expr->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -1035,10 +1035,10 @@ vl_gate_inst::geval_buf(vl_simulator *sim, int(*set)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = expr->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(expr->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = expr->source_range();
@@ -1131,10 +1131,10 @@ vl_gate_inst::geval_cbuf(vl_simulator *sim, int(*set)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = expr->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(expr->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -1145,10 +1145,10 @@ vl_gate_inst::geval_cbuf(vl_simulator *sim, int(*set)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = expr->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(expr->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = expr->source_range();
@@ -1243,10 +1243,10 @@ vl_gate_inst::geval_mos(vl_simulator *sim, int(*set)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = oexp->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(oexp->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -1257,10 +1257,10 @@ vl_gate_inst::geval_mos(vl_simulator *sim, int(*set)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = oexp->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(oexp->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = oexp->source_range();
@@ -1368,10 +1368,10 @@ vl_gate_inst::geval_cmos(vl_simulator *sim, int(*)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = oexp->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(oexp->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -1382,10 +1382,10 @@ vl_gate_inst::geval_cmos(vl_simulator *sim, int(*)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = oexp->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(oexp->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = oexp->source_range();
@@ -1491,10 +1491,10 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = expr2->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(expr2->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -1505,10 +1505,10 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = expr2->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(expr2->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = expr2->source_range();
@@ -1536,10 +1536,10 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = expr1->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(expr1->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -1550,10 +1550,10 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = expr1->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(expr1->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = expr1->source_range();
@@ -1692,10 +1692,10 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = expr2->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(expr2->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -1706,10 +1706,10 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = expr2->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(expr2->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = expr2->source_range();
@@ -1744,10 +1744,10 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
                     bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = expr1->source_range()->copy();
-                    vl_action_item *ai = new vl_action_item(bs, sim->context);
+                    bs->range = chk_copy(expr1->source_range());
+                    vl_action_item *ai = new vl_action_item(bs, sim->context());
                     ai->flags |= AI_DEL_STMT;
-                    sim->timewheel->append(sim->time + td, ai);
+                    sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
@@ -1758,10 +1758,10 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
                 bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = expr1->source_range()->copy();
-                vl_action_item *ai = new vl_action_item(bs, sim->context);
+                bs->range = chk_copy(expr1->source_range());
+                vl_action_item *ai = new vl_action_item(bs, sim->context());
                 ai->flags |= AI_DEL_STMT;
-                sim->timewheel->append(sim->time + td, ai);
+                sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
                 vl_range *r = expr1->source_range();

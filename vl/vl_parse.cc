@@ -321,7 +321,7 @@ namespace {
 
 
 void
-bitexp_parse::bin(char *instr)
+vl_bitexp_parse::bin(char *instr)
 {
     int size = atoi(instr);
     if (size == 0 || size > MAXBITNUM)
@@ -364,7 +364,7 @@ bitexp_parse::bin(char *instr)
 
 
 void
-bitexp_parse::dec(char *instr)
+vl_bitexp_parse::dec(char *instr)
 {
     utol(instr);
     int size = atoi(instr);
@@ -382,7 +382,7 @@ bitexp_parse::dec(char *instr)
 
 
 void
-bitexp_parse::oct(char *instr)
+vl_bitexp_parse::oct(char *instr)
 {
     utol(instr);
     int size = atoi(instr);
@@ -419,7 +419,7 @@ bitexp_parse::oct(char *instr)
 
 
 void
-bitexp_parse::hex(char *instr)
+vl_bitexp_parse::hex(char *instr)
 {
     utol(instr);
     int size = atoi(instr);
@@ -456,5 +456,5 @@ bitexp_parse::hex(char *instr)
         else
             brep[bpos] = BitL;
 }
-// End of bitexp_parse functions.
+// End of vl_bitexp_parse functions.
 

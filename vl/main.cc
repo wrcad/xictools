@@ -132,7 +132,7 @@ main(int argc, char **argv)
         vl_simulator VS;
         if (VS.initialize(VP()->get_description(), mtm, dbg))
             VS.simulate();
-        delete VS.description;
+        delete VS.description();
         VS.initialize(0);
     }
     return (0);
