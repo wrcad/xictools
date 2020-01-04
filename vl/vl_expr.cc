@@ -2202,7 +2202,7 @@ vl_expr::vl_expr(vl_var *v)
 }
 
 
-vl_expr::vl_expr(short t, int i, double r, void *p1, void *p2, void *p3)
+vl_expr::vl_expr(int t, int i, double r, void *p1, void *p2, void *p3)
 {
     e_type = t;
     e_data.exprs.e1 = 0;
@@ -2464,9 +2464,9 @@ namespace {
             if (cmod) {
                 v = new vl_var;
                 v->set_name(vl_strdup(name));
-                if (!cmod->sig_st)
-                    cmod->sig_st = new table<vl_var*>;
-                cmod->sig_st->insert(v->name(), v);
+                if (!cmod->sig_st())
+                    cmod->set_sig_st(new table<vl_var*>);
+                cmod->sig_st()->insert(v->name(), v);
                 v->or_flags(VAR_IN_TABLE);
             }
             else {
@@ -2681,7 +2681,7 @@ vl_expr::eval()
         return (vo);
     case SysExpr:
         vo = (VS()->*e_data.systask->action)(e_data.systask,
-            e_data.systask->args);
+            e_data.systask->args());
         return (vo);
     }
     vl_warn("(internal) bad expression type");
@@ -2929,7 +2929,7 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
         }
         return;
     case SysExpr:
-        if (!strcmp(e_data.systask->name, "$time")) {
+        if (!strcmp(e_data.systask->name(), "$time")) {
             if (mode == 0)
                 VS()->time_data().chain(stmt);
             else if (mode == 1)

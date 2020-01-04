@@ -41,7 +41,10 @@
 #include <string.h>
 #include "vl_st.h"
 
-extern char *vl_strdup(const char*);
+namespace vl {
+    char *vl_strdup(const char*);
+}
+using namespace vl;
 
 #define ST_DEFAULT_MAX_DENSITY 5
 #define ST_DEFAULT_INIT_TABLE_SIZE 11

@@ -534,13 +534,13 @@ vl_simulator::sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*> *args)
     if (modname) {
         vl_inst *inst = s_context->lookup_mp(modname);
         bool found = false;
-        if (inst && !inst->type) {
+        if (inst && !inst->type()) {
             vl_mp_inst *mp = (vl_mp_inst*)inst;
-            if (mp->inst_list && mp->inst_list->mptype == MPmod) {
-                vl_module *mod = (vl_module*)mp->master;
+            if (mp->inst_list() && mp->inst_list()->mptype() == MPmod) {
+                vl_module *mod = (vl_module*)mp->master();
                 if (mod) {
                     cout << "Time scale of " << modname << " is ";
-                    cout << pts(mod->tunit) << " / " << pts(mod->tprec);
+                    cout << pts(mod->tunit()) << " / " << pts(mod->tprec());
                     cout << ".\n";
                     found = true;
                 }
@@ -552,8 +552,8 @@ vl_simulator::sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*> *args)
     else {
         vl_module *cmod = s_context->currentModule();
         if (cmod) {
-            cout << "Time scale of " << cmod->name << " is ";
-            cout << pts(cmod->tunit) << " / " << pts(cmod->tprec);
+            cout << "Time scale of " << cmod->name() << " is ";
+            cout << pts(cmod->tunit()) << " / " << pts(cmod->tprec());
             cout << ".\n";
         }
         else
@@ -630,7 +630,7 @@ vl_simulator::sys_timeformat(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_display(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
-    display_print(args, cout, t->dtype, t->flags);
+    display_print(args, cout, t->dtype(), t->flags());
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
     return (tdata);
@@ -640,14 +640,14 @@ vl_simulator::sys_display(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_monitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
-    vl_monitor *mnew = new vl_monitor(chk_copy(s_context), args, t->dtype);
+    vl_monitor *mnew = new vl_monitor(chk_copy(s_context), args, t->dtype());
     if (!s_monitors)
         s_monitors = mnew;
     else {
         vl_monitor *m = s_monitors;
-        while (m->next)
-            m = m->next;
-        m->next = mnew;
+        while (m->next())
+            m = m->next();
+        m->set_next(mnew);
     }
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
@@ -782,14 +782,14 @@ vl_simulator::sys_fclose(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 vl_var &
 vl_simulator::sys_fmonitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
-    vl_monitor *mnew = new vl_monitor(chk_copy(s_context), args, t->dtype);
+    vl_monitor *mnew = new vl_monitor(chk_copy(s_context), args, t->dtype());
     if (!s_fmonitors)
         s_fmonitors = mnew;
     else {
         vl_monitor *m = s_fmonitors;
-        while (m->next)
-            m = m->next;
-        m->next = mnew;
+        while (m->next())
+            m = m->next();
+        m->set_next(mnew);
     }
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
@@ -822,7 +822,7 @@ vl_simulator::sys_fdisplay(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
     tdata.set_data_type(Dint);
     tdata.data().i = 0;
-    fdisplay_print(args, t->dtype, t->flags);
+    fdisplay_print(args, t->dtype(), t->flags());
     return (tdata);
 }
 
@@ -922,9 +922,9 @@ vl_simulator::sys_dumpvars(vl_sys_task_stmt*, lsList<vl_expr*> *args)
                     }
                     if (!s_top_modules)
                         return (tdata);
-                    for (int i = 0; i < s_top_modules->num; i++) {
-                        if (!strcmp(s_top_modules->mods[i]->name, tname))
-                            s_dmpcx->set_module(s_top_modules->mods[i]);
+                    for (int i = 0; i < s_top_modules->num(); i++) {
+                        if (!strcmp(s_top_modules->mod(i)->name(), tname))
+                            s_dmpcx->set_module(s_top_modules->mod(i));
                         break;
                     }
                     if (!s_dmpcx->module())
@@ -1073,8 +1073,8 @@ vl_simulator::do_dump()
     if (!s_dmpcx) {
         if (!s_top_modules)
             return;
-        for (int i = 0; i < s_top_modules->num; i++)
-            s_top_modules->mods[i]->dumpvars(*s_dmpfile, this);
+        for (int i = 0; i < s_top_modules->num(); i++)
+            s_top_modules->mod(i)->dumpvars(*s_dmpfile, this);
     }
     else {
         if (s_dmpcx->module())
@@ -1172,13 +1172,13 @@ vl_module::dumpvars(ostream &outs, vl_simulator *sim)
     if (sim->dmpstatus() & DMP_HEADER) {
         // $scope module <name> $end
         const char *n;
-        if (instance)
-            n = instance->name;
+        if (mp_instance)
+            n = mp_instance->name();
         else
-            n = name;
+            n = mp_name;
         outs << "\n$scope module " << n << " $end\n";
-        st_dump(outs, sig_st, sim);
-        vl_dump_items(outs, mod_items, sim);
+        st_dump(outs, mp_sig_st, sim);
+        vl_dump_items(outs, m_mod_items, sim);
     }
     sim->set_context(vl_context::pop(sim->context()));
 }
@@ -1191,12 +1191,12 @@ vl_primitive::dumpvars(ostream &outs, vl_simulator *sim)
     if (sim->dmpstatus() & DMP_HEADER) {
         // $scope primitive <name> $end
         const char *n;
-        if (instance)
-            n = instance->name;
+        if (mp_instance)
+            n = mp_instance->name();
         else
-            n = name;
+            n = mp_name;
         outs << "\n$scope primitive " << n << " $end\n";
-        st_dump(outs, sig_st, sim);
+        st_dump(outs, mp_sig_st, sim);
     }
     sim->set_context(vl_context::pop(sim->context()));
 }
@@ -1209,15 +1209,15 @@ vl_primitive::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_procstmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (pr_stmt)
+        pr_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_mp_inst_list::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    vl_dump_items(outs, mps, sim);
+    vl_dump_items(outs, mp_mps, sim);
 }
 
 
@@ -1229,17 +1229,17 @@ void
 vl_begin_end_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
     sim->set_context(vl_context::push(sim->context(), this));
-    if (name) {
+    if (be_name) {
         if (sim->dmpstatus() & DMP_HEADER) {
             // $scope begin <name> $end
-            vl_setup_decls(sim, decls);
-            outs << "\n$scope begin " << name << " $end\n";
-            vl_dump_items(outs, decls, sim);
-            st_dump(outs, sig_st, sim);
+            vl_setup_decls(sim, be_decls);
+            outs << "\n$scope begin " << be_name << " $end\n";
+            vl_dump_items(outs, be_decls, sim);
+            st_dump(outs, be_sig_st, sim);
             outs << "$upscope $end\n\n";
         }
     }
-    vl_dump_items(outs, stmts, sim);
+    vl_dump_items(outs, be_stmts, sim);
     sim->set_context(vl_context::pop(sim->context()));
 }
 
@@ -1247,85 +1247,85 @@ vl_begin_end_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_if_else_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (if_stmt)
-        if_stmt->dumpvars(outs, sim);
-    if (else_stmt)
-        else_stmt->dumpvars(outs, sim);
+    if (ie_if_stmt)
+        ie_if_stmt->dumpvars(outs, sim);
+    if (ie_else_stmt)
+        ie_else_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_case_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    vl_dump_items(outs, case_items, sim);
+    vl_dump_items(outs, c_case_items, sim);
 }
 
 
 void
 vl_case_item::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (ci_stmt)
+        ci_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_forever_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (f_stmt)
+        f_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_repeat_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (r_stmt)
+        r_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_while_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (w_stmt)
+        w_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_for_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (initial)
-        initial->dumpvars(outs, sim);
-    if (end)
-        end->dumpvars(outs, sim);
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (f_initial)
+        f_initial->dumpvars(outs, sim);
+    if (f_end)
+        f_end->dumpvars(outs, sim);
+    if (f_stmt)
+        f_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_delay_control_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (d_stmt)
+        d_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_event_control_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (ec_stmt)
+        ec_stmt->dumpvars(outs, sim);
 }
 
 
 void
 vl_wait_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (stmt)
-        stmt->dumpvars(outs, sim);
+    if (w_stmt)
+        w_stmt->dumpvars(outs, sim);
 }
 
 
@@ -1333,17 +1333,17 @@ void
 vl_fork_join_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
     sim->set_context(vl_context::push(sim->context(), this));
-    if (name) {
+    if (fj_name) {
         if (sim->dmpstatus() & DMP_HEADER) {
             // $scope fork <name> $end
-            vl_setup_decls(sim, decls);
-            outs << "\n$scope fork " << name << " $end\n";
-            vl_dump_items(outs, decls, sim);
-            st_dump(outs, sig_st, sim);
+            vl_setup_decls(sim, fj_decls);
+            outs << "\n$scope fork " << fj_name << " $end\n";
+            vl_dump_items(outs, fj_decls, sim);
+            st_dump(outs, fj_sig_st, sim);
             outs << "$upscope $end\n\n";
         }
     }
-    vl_dump_items(outs, stmts, sim);
+    vl_dump_items(outs, fj_stmts, sim);
     sim->set_context(vl_context::pop(sim->context()));
 }
 
@@ -1355,8 +1355,8 @@ vl_fork_join_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_mp_inst::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    if (inst_list && master) {
-        master->dumpvars(outs, sim);
+    if (pi_inst_list && pi_master) {
+        pi_master->dumpvars(outs, sim);
         outs << "$upscope $end\n\n";
     }
 }

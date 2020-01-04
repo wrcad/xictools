@@ -227,13 +227,13 @@ namespace {
 void
 vl_gate_inst::set_delay(vl_simulator*, int bit)
 {
-    if (inst_list && inst_list->delays) {
-        if (!delay)
-            delay = new vl_delay;
+    if (gi_inst_list && gi_inst_list->delays()) {
+        if (!gi_delay)
+            gi_delay = new vl_delay;
         vl_expr *rd = 0, *fd = 0, *td = 0;
-        if (inst_list->delays->list) {
+        if (gi_inst_list->delays()->list) {
             vl_expr *e;
-            lsGen<vl_expr*> gen(inst_list->delays->list);
+            lsGen<vl_expr*> gen(gi_inst_list->delays()->list);
             if (gen.next(&e)) {
                 rd = e;
                 if (gen.next(&e)) {
@@ -244,40 +244,40 @@ vl_gate_inst::set_delay(vl_simulator*, int bit)
             }
         }
         else
-            rd = inst_list->delays->delay1;
+            rd = gi_inst_list->delays()->delay1;
         if (bit == BitH)
-            delay->delay1 = rd;
+            gi_delay->delay1 = rd;
         else if (bit == BitL)
-            delay->delay1 = (fd ? fd : rd);
+            gi_delay->delay1 = (fd ? fd : rd);
         else if (bit == BitZ) {
             if (td)
-                delay->delay1 = td;
+                gi_delay->delay1 = td;
             else {
-                delay->delay1 = rd;
+                gi_delay->delay1 = rd;
                 int m = rd->eval();
                 if (fd) {
                     int tmp = fd->eval();
                     if (tmp < m)
-                        delay->delay1 = fd;
+                        gi_delay->delay1 = fd;
                 }
             }
         }
         else if (bit == BitDC) {
             // minimum delay
             int m = rd->eval();
-            delay->delay1 = rd;
+            gi_delay->delay1 = rd;
             if (fd) {
                 int tmp = fd->eval();
                 if (tmp < m) {
                     m = tmp;
-                    delay->delay1 = fd;
+                    gi_delay->delay1 = fd;
                 }
             }
             if (td) {
                 int tmp = td->eval();
                 if (tmp < m) {
                     m = tmp;
-                    delay->delay1 = td;
+                    gi_delay->delay1 = td;
                 }
             }
         }
@@ -291,163 +291,163 @@ vl_gate_inst::set_delay(vl_simulator*, int bit)
 void
 vl_gate_inst::set_type(int t)
 {
-    type = t;
-    switch (type) {
+    st_type = t;
+    switch (st_type) {
     case AndGate:
-        gsetup = gsetup_gate;
-        geval = geval_gate;
-        gset = set_and;
-        string = "and";
+        gi_setup = gsetup_gate;
+        gi_eval = geval_gate;
+        gi_set = set_and;
+        gi_string = "and";
         break;
     case NandGate:
-        gsetup = gsetup_gate;
-        geval = geval_gate;
-        gset = set_nand;
-        string = "nand";
+        gi_setup = gsetup_gate;
+        gi_eval = geval_gate;
+        gi_set = set_nand;
+        gi_string = "nand";
         break;
     case OrGate:
-        gsetup = gsetup_gate;
-        geval = geval_gate;
-        gset = set_or;
-        string = "or";
+        gi_setup = gsetup_gate;
+        gi_eval = geval_gate;
+        gi_set = set_or;
+        gi_string = "or";
         break;
     case NorGate:
-        gsetup = gsetup_gate;
-        geval = geval_gate;
-        gset = set_nor;
-        string = "nor";
+        gi_setup = gsetup_gate;
+        gi_eval = geval_gate;
+        gi_set = set_nor;
+        gi_string = "nor";
         break;
     case XorGate:
-        gsetup = gsetup_gate;
-        geval = geval_gate;
-        gset = set_xor;
-        string = "xor";
+        gi_setup = gsetup_gate;
+        gi_eval = geval_gate;
+        gi_set = set_xor;
+        gi_string = "xor";
         break;
     case XnorGate:
-        gsetup = gsetup_gate;
-        geval = geval_gate;
-        gset = set_xnor;
-        string = "xnor";
+        gi_setup = gsetup_gate;
+        gi_eval = geval_gate;
+        gi_set = set_xnor;
+        gi_string = "xnor";
         break;
     case BufGate:
-        gsetup = gsetup_buf;
-        geval = geval_buf;
-        gset = set_buf;
-        string = "buf";
+        gi_setup = gsetup_buf;
+        gi_eval = geval_buf;
+        gi_set = set_buf;
+        gi_string = "buf";
         break;
     case Bufif0Gate:
-        gsetup = gsetup_cbuf;
-        geval = geval_cbuf;
-        gset = set_bufif0;
-        string = "bufif0";
+        gi_setup = gsetup_cbuf;
+        gi_eval = geval_cbuf;
+        gi_set = set_bufif0;
+        gi_string = "bufif0";
         break;
     case Bufif1Gate:
-        gsetup = gsetup_cbuf;
-        geval = geval_cbuf;
-        gset = set_bufif1;
-        string = "bufif1";
+        gi_setup = gsetup_cbuf;
+        gi_eval = geval_cbuf;
+        gi_set = set_bufif1;
+        gi_string = "bufif1";
         break;
     case NotGate:
-        gsetup = gsetup_buf;
-        geval = geval_buf;
-        gset = set_not;
-        string = "not";
+        gi_setup = gsetup_buf;
+        gi_eval = geval_buf;
+        gi_set = set_not;
+        gi_string = "not";
         break;
     case Notif0Gate:
-        gsetup = gsetup_cbuf;
-        geval = geval_cbuf;
-        gset = set_notif0;
-        string = "notif0";
+        gi_setup = gsetup_cbuf;
+        gi_eval = geval_cbuf;
+        gi_set = set_notif0;
+        gi_string = "notif0";
         break;
     case Notif1Gate:
-        gsetup = gsetup_cbuf;
-        geval = geval_cbuf;
-        gset = set_notif1;
-        string = "notif1";
+        gi_setup = gsetup_cbuf;
+        gi_eval = geval_cbuf;
+        gi_set = set_notif1;
+        gi_string = "notif1";
         break;
     case PulldownGate:
-        gsetup = 0;
-        geval = 0;
-        gset = 0;
-        string = "pulldown";
+        gi_setup = 0;
+        gi_eval = 0;
+        gi_set = 0;
+        gi_string = "pulldown";
         break;
     case PullupGate:
-        gsetup = 0;
-        geval = 0;
-        gset = 0;
-        string = "pullup";
+        gi_setup = 0;
+        gi_eval = 0;
+        gi_set = 0;
+        gi_string = "pullup";
         break;
     case NmosGate:
-        gsetup = gsetup_mos;
-        geval = geval_mos;
-        gset = set_nmos;
-        string = "nmos";
+        gi_setup = gsetup_mos;
+        gi_eval = geval_mos;
+        gi_set = set_nmos;
+        gi_string = "nmos";
         break;
     case RnmosGate:
-        gsetup = gsetup_mos;
-        geval = geval_mos;
-        gset = set_nmos;
-        string = "rnmos";
+        gi_setup = gsetup_mos;
+        gi_eval = geval_mos;
+        gi_set = set_nmos;
+        gi_string = "rnmos";
         break;
     case PmosGate:
-        gsetup = gsetup_mos;
-        geval = geval_mos;
-        gset = set_pmos;
-        string = "pmos";
+        gi_setup = gsetup_mos;
+        gi_eval = geval_mos;
+        gi_set = set_pmos;
+        gi_string = "pmos";
         break;
     case RpmosGate:
-        gsetup = gsetup_mos;
-        geval = geval_mos;
-        gset = set_pmos;
-        string = "rpmos";
+        gi_setup = gsetup_mos;
+        gi_eval = geval_mos;
+        gi_set = set_pmos;
+        gi_string = "rpmos";
         break;
     case CmosGate:
-        gsetup = gsetup_cmos;
-        geval = geval_cmos;
-        gset = 0;
-        string = "cmos";
+        gi_setup = gsetup_cmos;
+        gi_eval = geval_cmos;
+        gi_set = 0;
+        gi_string = "cmos";
         break;
     case RcmosGate:
-        gsetup = gsetup_cmos;
-        geval = geval_cmos;
-        gset = 0;
-        string = "rcmos";
+        gi_setup = gsetup_cmos;
+        gi_eval = geval_cmos;
+        gi_set = 0;
+        gi_string = "rcmos";
         break;
     case TranGate:
-        gsetup = gsetup_tran;
-        geval = geval_tran;
-        gset = 0;
-        string = "tran";
+        gi_setup = gsetup_tran;
+        gi_eval = geval_tran;
+        gi_set = 0;
+        gi_string = "tran";
         break;
     case RtranGate:
-        gsetup = gsetup_tran;
-        geval = geval_tran;
-        gset = 0;
-        string = "rtran";
+        gi_setup = gsetup_tran;
+        gi_eval = geval_tran;
+        gi_set = 0;
+        gi_string = "rtran";
         break;
     case Tranif0Gate:
-        gsetup = gsetup_ctran;
-        geval = geval_ctran;
-        gset = 0;
-        string = "tranif0";
+        gi_setup = gsetup_ctran;
+        gi_eval = geval_ctran;
+        gi_set = 0;
+        gi_string = "tranif0";
         break;
     case Rtranif0Gate:
-        gsetup = gsetup_ctran;
-        geval = geval_ctran;
-        gset = 0;
-        string = "rtranif0";
+        gi_setup = gsetup_ctran;
+        gi_eval = geval_ctran;
+        gi_set = 0;
+        gi_string = "rtranif0";
         break;
     case Tranif1Gate:
-        gsetup = gsetup_ctran;
-        geval = geval_ctran;
-        gset = 0;
-        string = "tranif0";
+        gi_setup = gsetup_ctran;
+        gi_eval = geval_ctran;
+        gi_set = 0;
+        gi_string = "tranif0";
         break;
     case Rtranif1Gate:
-        gsetup = gsetup_ctran;
-        geval = geval_ctran;
-        gset = 0;
-        string = "rtranif0";
+        gi_setup = gsetup_ctran;
+        gi_eval = geval_ctran;
+        gi_set = 0;
+        gi_string = "rtranif0";
         break;
     default:
         VP()->error(ERR_INTERNAL, "Unexpected Gate Type");
@@ -462,16 +462,16 @@ bool
 vl_gate_inst::gsetup_gate(vl_simulator*, vl_gate_inst *gate)
 {
     // gate type
-    const char *nm = gate->name ? gate->name : "";
-    if (gate->terms->length() < 3) {
+    const char *nm = gate->name() ? gate->name() : "";
+    if (gate->gi_terms->length() < 3) {
         vl_error(msg, nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms);
+    lsGen<vl_expr*> gen(gate->gi_terms);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -482,12 +482,12 @@ vl_gate_inst::gsetup_gate(vl_simulator*, vl_gate_inst *gate)
         vl_error(msg1, nm, 1);
         return (false);
     }
-    gate->outputs = new lsList<vl_var*>;
+    gate->gi_outputs = new lsList<vl_var*>;
     vl_var *vo = new vl_var;
     vo->set_net_type(REGreg);
-    vo->set_strength(gate->inst_list->strength);
+    vo->set_strength(gate->gi_inst_list->strength());
     vo->setx(a.size());
-    gate->outputs->newEnd(vo);
+    gate->gi_outputs->newEnd(vo);
     vl_var *vs = expr->source();
     vl_range *r = expr->source_range();
     if (!vs) {
@@ -516,17 +516,17 @@ bool
 vl_gate_inst::gsetup_buf(vl_simulator*, vl_gate_inst *gate)
 {
     // buffer type
-    const char *nm = gate->name ? gate->name : "";
-    int num = gate->terms->length();
+    const char *nm = gate->name() ? gate->name() : "";
+    int num = gate->gi_terms->length();
     if (num < 2) {
         vl_error(msg, nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms, true);  // start at end
+    lsGen<vl_expr*> gen(gate->gi_terms, true);  // start at end
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -541,7 +541,7 @@ vl_gate_inst::gsetup_buf(vl_simulator*, vl_gate_inst *gate)
 
     // outputs
     int n = 1;
-    gate->outputs = new lsList<vl_var*>;
+    gate->gi_outputs = new lsList<vl_var*>;
     while (gen.prev(&expr)) {
         if (!expr) {
             vl_error(msg1, nm, num - n);
@@ -549,9 +549,9 @@ vl_gate_inst::gsetup_buf(vl_simulator*, vl_gate_inst *gate)
         }
         vl_var *vo = new vl_var;
         vo->set_net_type(REGreg);
-        vo->set_strength(gate->inst_list->strength);
+        vo->set_strength(gate->gi_inst_list->strength());
         vo->setx(a.size());
-        gate->outputs->newEnd(vo);
+        gate->gi_outputs->newEnd(vo);
         vl_var *vs = expr->source();
         if (!vs) {
             vl_error(msg5, nm, num - n);
@@ -571,17 +571,17 @@ bool
 vl_gate_inst::gsetup_cbuf(vl_simulator*, vl_gate_inst *gate)
 {
     // buffer type with control input
-    const char *nm = gate->name ? gate->name : "";
-    int num = gate->terms->length();
+    const char *nm = gate->name() ? gate->name() : "";
+    int num = gate->gi_terms->length();
     if (num < 3) {
         vl_error(msg, nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms, true);  // start at end
+    lsGen<vl_expr*> gen(gate->gi_terms, true);  // start at end
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -604,7 +604,7 @@ vl_gate_inst::gsetup_cbuf(vl_simulator*, vl_gate_inst *gate)
 
     // outputs
     int n = 2;
-    gate->outputs = new lsList<vl_var*>;
+    gate->gi_outputs = new lsList<vl_var*>;
     while (gen.prev(&expr)) {
         if (!expr) {
             vl_error(msg1, nm, num - n);
@@ -612,9 +612,9 @@ vl_gate_inst::gsetup_cbuf(vl_simulator*, vl_gate_inst *gate)
         }
         vl_var *vo = new vl_var;
         vo->set_net_type(REGreg);
-        vo->set_strength(gate->inst_list->strength);
+        vo->set_strength(gate->gi_inst_list->strength());
         vo->setz(a.size());
-        gate->outputs->newEnd(vo);
+        gate->gi_outputs->newEnd(vo);
         n++;
     }
     return (true);
@@ -627,16 +627,16 @@ bool
 vl_gate_inst::gsetup_mos(vl_simulator*, vl_gate_inst *gate)
 {
     // MOS gate
-    const char *nm = gate->name ? gate->name : "";
-    if (gate->terms->length() != 3) {
+    const char *nm = gate->name() ? gate->name() : "";
+    if (gate->gi_terms->length() != 3) {
         vl_error("mos gate %s does not have 3 terminals", nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms);
+    lsGen<vl_expr*> gen(gate->gi_terms);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -647,12 +647,12 @@ vl_gate_inst::gsetup_mos(vl_simulator*, vl_gate_inst *gate)
         vl_error(msg1, nm, 1);
         return (false);
     }
-    gate->outputs = new lsList<vl_var*>;
+    gate->gi_outputs = new lsList<vl_var*>;
     vl_var *vo = new vl_var;
     vo->set_net_type(REGreg);
-    vo->set_strength(gate->inst_list->strength);
+    vo->set_strength(gate->gi_inst_list->strength());
     vo->setz(a.size());
-    gate->outputs->newEnd(vo);
+    gate->gi_outputs->newEnd(vo);
 
     // input
     gen.next(&expr);
@@ -679,16 +679,16 @@ bool
 vl_gate_inst::gsetup_cmos(vl_simulator*, vl_gate_inst *gate)
 {
     // CMOS gate
-    const char *nm = gate->name ? gate->name : "";
-    if (gate->terms->length() != 4) {
+    const char *nm = gate->name() ? gate->name() : "";
+    if (gate->gi_terms->length() != 4) {
         vl_error("cmos gate %s does not have 4 terminals", nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms);
+    lsGen<vl_expr*> gen(gate->gi_terms);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -699,12 +699,12 @@ vl_gate_inst::gsetup_cmos(vl_simulator*, vl_gate_inst *gate)
         vl_error(msg1, nm, 1);
         return (false);
     }
-    gate->outputs = new lsList<vl_var*>;
+    gate->gi_outputs = new lsList<vl_var*>;
     vl_var *vo = new vl_var;
     vo->set_net_type(REGreg);
-    vo->set_strength(gate->inst_list->strength);
+    vo->set_strength(gate->gi_inst_list->strength());
     vo->setz(a.size());
-    gate->outputs->newEnd(vo);
+    gate->gi_outputs->newEnd(vo);
 
     // input
     gen.next(&expr);
@@ -738,16 +738,16 @@ vl_gate_inst::gsetup_cmos(vl_simulator*, vl_gate_inst *gate)
 bool
 vl_gate_inst::gsetup_tran(vl_simulator*, vl_gate_inst *gate)
 {
-    const char *nm = gate->name ? gate->name : "";
-    if (gate->terms->length() != 2) {
+    const char *nm = gate->name() ? gate->name() : "";
+    if (gate->gi_terms->length() != 2) {
         vl_error("tran gate %s does not have 2 terminals", nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms);
+    lsGen<vl_expr*> gen(gate->gi_terms);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -760,12 +760,12 @@ vl_gate_inst::gsetup_tran(vl_simulator*, vl_gate_inst *gate)
     }
     expr1->eval();
     expr1->chain(gate);
-    gate->outputs = new lsList<vl_var*>;
+    gate->gi_outputs = new lsList<vl_var*>;
     vl_var *vo = new vl_var;
     vo->set_net_type(REGreg);
-    vo->set_strength(gate->inst_list->strength);
+    vo->set_strength(gate->gi_inst_list->strength());
     vo->setz(a.size());
-    gate->outputs->newEnd(vo);
+    gate->gi_outputs->newEnd(vo);
 
     // inout
     vl_expr *expr2 = 0;
@@ -778,9 +778,9 @@ vl_gate_inst::gsetup_tran(vl_simulator*, vl_gate_inst *gate)
     expr2->chain(gate);
     vo = new vl_var;
     vo->set_net_type(REGreg);
-    vo->set_strength(gate->inst_list->strength);
+    vo->set_strength(gate->gi_inst_list->strength());
     vo->setz(a.size());
-    gate->outputs->newEnd(vo);
+    gate->gi_outputs->newEnd(vo);
 
     return (true);
 }
@@ -791,16 +791,16 @@ vl_gate_inst::gsetup_tran(vl_simulator*, vl_gate_inst *gate)
 bool
 vl_gate_inst::gsetup_ctran(vl_simulator*, vl_gate_inst *gate)
 {
-    const char *nm = gate->name ? gate->name : "";
-    if (gate->terms->length() != 2) {
+    const char *nm = gate->name() ? gate->name() : "";
+    if (gate->gi_terms->length() != 2) {
         vl_error("tranif gate %s does not have 3 terminals", nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms);
+    lsGen<vl_expr*> gen(gate->gi_terms);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -813,12 +813,12 @@ vl_gate_inst::gsetup_ctran(vl_simulator*, vl_gate_inst *gate)
     }
     expr1->eval();
     expr1->chain(gate);
-    gate->outputs = new lsList<vl_var*>;
+    gate->gi_outputs = new lsList<vl_var*>;
     vl_var *vo = new vl_var;
     vo->set_net_type(REGreg);
-    vo->set_strength(gate->inst_list->strength);
+    vo->set_strength(gate->gi_inst_list->strength());
     vo->setz(a.size());
-    gate->outputs->newEnd(vo);
+    gate->gi_outputs->newEnd(vo);
 
     // inout
     vl_expr *expr2 = 0;
@@ -831,9 +831,9 @@ vl_gate_inst::gsetup_ctran(vl_simulator*, vl_gate_inst *gate)
     expr2->chain(gate);
     vo = new vl_var;
     vo->set_net_type(REGreg);
-    vo->set_strength(gate->inst_list->strength);
+    vo->set_strength(gate->gi_inst_list->strength());
     vo->setz(a.size());
-    gate->outputs->newEnd(vo);
+    gate->gi_outputs->newEnd(vo);
 
     // control
     vl_expr *expr3 = 0;
@@ -854,16 +854,16 @@ vl_gate_inst::geval_gate(vl_simulator *sim, int(*set)(int, int),
     vl_gate_inst *gate)
 {
     // gate type: 1 output, 2 or more inputs
-    const char *nm = gate->name ? gate->name : "";
+    const char *nm = gate->name() ? gate->name() : "";
     if (!set) {
         vl_error(msg2, nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms);
+    lsGen<vl_expr*> gen(gate->gi_terms);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -872,7 +872,7 @@ vl_gate_inst::geval_gate(vl_simulator *sim, int(*set)(int, int),
     gen.next(&oexp);
 
     // inputs
-    int n = gate->terms->length() - 1;
+    int n = gate->gi_terms->length() - 1;
     vl_var **iv = new vl_var*[n];
     vl_expr *expr;
     int cnt = 0;
@@ -890,13 +890,13 @@ vl_gate_inst::geval_gate(vl_simulator *sim, int(*set)(int, int),
     }
 
     bool rfdly = false;
-    if (gate->inst_list && gate->inst_list->delays &&
-            gate->inst_list->delays->list &&
-            gate->inst_list->delays->list->length() > 1)
+    if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
+            gate->gi_inst_list->delays()->list &&
+            gate->gi_inst_list->delays()->list->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
-    lsGen<vl_var*> ogen(gate->outputs);
+    lsGen<vl_var*> ogen(gate->gi_outputs);
     vl_var *v;
     if (ogen.next(&v)) {
         vl_var *vs = oexp->source();
@@ -921,27 +921,27 @@ vl_gate_inst::geval_gate(vl_simulator *sim, int(*set)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, obit);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(oexp->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(oexp->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (changed && !rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(oexp->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(oexp->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
@@ -961,17 +961,17 @@ vl_gate_inst::geval_buf(vl_simulator *sim, int(*set)(int, int),
     vl_gate_inst *gate)
 {
     // buffer type: 1 or more outputs, 1 input
-    const char *nm = gate->name ? gate->name : "";
+    const char *nm = gate->name() ? gate->name() : "";
     if (!set) {
         vl_error(msg2, nm);
         return (false);
     }
-    int num = gate->terms->length();
-    lsGen<vl_expr*> gen(gate->terms, true);  // start at end
+    int num = gate->gi_terms->length();
+    lsGen<vl_expr*> gen(gate->gi_terms, true);  // start at end
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -989,13 +989,13 @@ vl_gate_inst::geval_buf(vl_simulator *sim, int(*set)(int, int),
     }
 
     bool rfdly = false;
-    if (gate->inst_list && gate->inst_list->delays &&
-            gate->inst_list->delays->list &&
-            gate->inst_list->delays->list->length() > 1)
+    if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
+            gate->gi_inst_list->delays()->list &&
+            gate->gi_inst_list->delays()->list->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
-    lsGen<vl_var*> ogen(gate->outputs);
+    lsGen<vl_var*> ogen(gate->gi_outputs);
     vl_var *v;
     int n = 1;
     while (ogen.next(&v) && gen.prev(&expr)) {
@@ -1017,27 +1017,27 @@ vl_gate_inst::geval_buf(vl_simulator *sim, int(*set)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, obit);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(expr->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(expr->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (changed && !rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(expr->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(expr->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
@@ -1058,17 +1058,17 @@ vl_gate_inst::geval_cbuf(vl_simulator *sim, int(*set)(int, int),
     vl_gate_inst *gate)
 {
     // buffer type with control input: 1 or more outputs, 2 inputs
-    const char *nm = gate->name ? gate->name : "";
+    const char *nm = gate->name() ? gate->name() : "";
     if (!set) {
         vl_error(msg2, nm);
         return (false);
     }
-    int num = gate->terms->length();
-    lsGen<vl_expr*> gen(gate->terms, true);  // start at end
+    int num = gate->gi_terms->length();
+    lsGen<vl_expr*> gen(gate->gi_terms, true);  // start at end
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -1098,13 +1098,13 @@ vl_gate_inst::geval_cbuf(vl_simulator *sim, int(*set)(int, int),
     }
 
     bool rfdly = false;
-    if (gate->inst_list && gate->inst_list->delays &&
-            gate->inst_list->delays->list &&
-            gate->inst_list->delays->list->length() > 1)
+    if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
+            gate->gi_inst_list->delays()->list &&
+            gate->gi_inst_list->delays()->list->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
-    lsGen<vl_var*> ogen(gate->outputs);
+    lsGen<vl_var*> ogen(gate->gi_outputs);
     vl_var *v;
     int n = 2;
     while (ogen.next(&v) && gen.prev(&expr)) {
@@ -1127,27 +1127,27 @@ vl_gate_inst::geval_cbuf(vl_simulator *sim, int(*set)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, obit);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(expr->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(expr->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (changed && !rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(expr->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(expr->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
@@ -1168,16 +1168,16 @@ vl_gate_inst::geval_mos(vl_simulator *sim, int(*set)(int, int),
     vl_gate_inst *gate)
 {
     // MOS gate: 1 output, 2 inputs
-    const char *nm = gate->name ? gate->name : "";
+    const char *nm = gate->name() ? gate->name() : "";
     if (!set) {
         vl_error(msg2, nm);
         return (false);
     }
-    lsGen<vl_expr*> gen(gate->terms);
+    lsGen<vl_expr*> gen(gate->gi_terms);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -1211,13 +1211,13 @@ vl_gate_inst::geval_mos(vl_simulator *sim, int(*set)(int, int),
     }
 
     bool rfdly = false;
-    if (gate->inst_list && gate->inst_list->delays &&
-            gate->inst_list->delays->list &&
-            gate->inst_list->delays->list->length() > 1)
+    if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
+            gate->gi_inst_list->delays()->list &&
+            gate->gi_inst_list->delays()->list->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
-    lsGen<vl_var*> ogen(gate->outputs);
+    lsGen<vl_var*> ogen(gate->gi_outputs);
     vl_var *v;
     if (ogen.next(&v)) {
         vl_var *vs = oexp->source();
@@ -1239,27 +1239,27 @@ vl_gate_inst::geval_mos(vl_simulator *sim, int(*set)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, obit);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(oexp->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(oexp->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (changed && !rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(oexp->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(oexp->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
@@ -1279,12 +1279,12 @@ vl_gate_inst::geval_cmos(vl_simulator *sim, int(*)(int, int),
     vl_gate_inst *gate)
 {
     // CMOS gate: 1 output, 3 inputs
-    const char *nm = gate->name ? gate->name : "";
-    lsGen<vl_expr*> gen(gate->terms);
+    const char *nm = gate->name() ? gate->name() : "";
+    lsGen<vl_expr*> gen(gate->gi_terms);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -1330,13 +1330,13 @@ vl_gate_inst::geval_cmos(vl_simulator *sim, int(*)(int, int),
     }
 
     bool rfdly = false;
-    if (gate->inst_list && gate->inst_list->delays &&
-            gate->inst_list->delays->list &&
-            gate->inst_list->delays->list->length() > 1)
+    if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
+            gate->gi_inst_list->delays()->list &&
+            gate->gi_inst_list->delays()->list->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
-    lsGen<vl_var*> ogen(gate->outputs);
+    lsGen<vl_var*> ogen(gate->gi_outputs);
     vl_var *v;
     if (ogen.next(&v)) {
         vl_var *vs = oexp->source();
@@ -1364,27 +1364,27 @@ vl_gate_inst::geval_cmos(vl_simulator *sim, int(*)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, obit);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(oexp->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(oexp->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (changed && !rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, v);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(oexp->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(oexp->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
@@ -1403,13 +1403,13 @@ bool
 vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
     vl_gate_inst *gate)
 {
-    const char *nm = gate->name ? gate->name : "";
-    lsGen<vl_expr*> gen(gate->terms);
-    lsGen<vl_var*> ogen(gate->outputs);
+    const char *nm = gate->name() ? gate->name() : "";
+    lsGen<vl_expr*> gen(gate->gi_terms);
+    lsGen<vl_var*> ogen(gate->gi_outputs);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -1465,9 +1465,9 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
     }
 
     bool rfdly = false;
-    if (gate->inst_list && gate->inst_list->delays &&
-            gate->inst_list->delays->list &&
-            gate->inst_list->delays->list->length() > 1)
+    if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
+            gate->gi_inst_list->delays()->list &&
+            gate->gi_inst_list->delays()->list->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
@@ -1487,27 +1487,27 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, vx2->data().s[i2]);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(expr2->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(expr2->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (!rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(expr2->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(expr2->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
@@ -1532,27 +1532,27 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, vx1->data().s[i1]);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(expr1->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(expr1->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (!rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(expr1->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(expr1->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
@@ -1571,13 +1571,13 @@ bool
 vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
     vl_gate_inst *gate)
 {
-    const char *nm = gate->name ? gate->name : "";
-    lsGen<vl_expr*> gen(gate->terms);
-    lsGen<vl_var*> ogen(gate->outputs);
+    const char *nm = gate->name() ? gate->name() : "";
+    lsGen<vl_expr*> gen(gate->gi_terms);
+    lsGen<vl_var*> ogen(gate->gi_outputs);
 
     vl_array a;
-    if (gate->array)
-        a.set(gate->array);
+    if (gate->gi_array)
+        a.set(gate->gi_array);
     if (!a.size())
         a.set(1);
 
@@ -1626,9 +1626,9 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
     bool ch1 = false;
     for (int i = 0; i < a.size(); i++) {
         int i3 = (v3.bits().size() > 1 ? v3.data().s[i] : v3.data().s[0]);
-        if (((gate->type == Tranif1Gate || gate->type == Rtranif1Gate)
+        if (((gate->type() == Tranif1Gate || gate->type() == Rtranif1Gate)
                 && v3.data().s[i3] != BitH) ||
-            ((gate->type == Tranif0Gate || gate->type == Rtranif0Gate)
+            ((gate->type() == Tranif0Gate || gate->type() == Rtranif0Gate)
                 && v3.data().s[i3] != BitL))
             // off
             continue;
@@ -1641,9 +1641,9 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
     bool ch2 = false;
     for (int i = 0; i < a.size(); i++) {
         int i3 = (v3.bits().size() > 1 ? v3.data().s[i] : v3.data().s[0]);
-        if (((gate->type == Tranif1Gate || gate->type == Rtranif1Gate)
+        if (((gate->type() == Tranif1Gate || gate->type() == Rtranif1Gate)
                 && v3.data().s[i3] != BitH) ||
-            ((gate->type == Tranif0Gate || gate->type == Rtranif0Gate)
+            ((gate->type() == Tranif0Gate || gate->type() == Rtranif0Gate)
                 && v3.data().s[i3] != BitL))
             // off
             continue;
@@ -1659,9 +1659,9 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
     }
 
     bool rfdly = false;
-    if (gate->inst_list && gate->inst_list->delays &&
-            gate->inst_list->delays->list &&
-            gate->inst_list->delays->list->length() > 1)
+    if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
+            gate->gi_inst_list->delays()->list &&
+            gate->gi_inst_list->delays()->list->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
@@ -1673,9 +1673,9 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
         }
         for (int i = 0; i < a.size(); i++) {
             int i3 = (v3.bits().size() > 1 ? v3.data().s[i] : v3.data().s[0]);
-            if (((gate->type == Tranif1Gate || gate->type == Rtranif1Gate)
+            if (((gate->type() == Tranif1Gate || gate->type() == Rtranif1Gate)
                     && v3.data().s[i3] != BitH) ||
-                ((gate->type == Tranif0Gate || gate->type == Rtranif0Gate)
+                ((gate->type() == Tranif0Gate || gate->type() == Rtranif0Gate)
                     && v3.data().s[i3] != BitL))
                 // off
                 continue;
@@ -1688,27 +1688,27 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, vx2->data().s[i2]);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(expr2->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(expr2->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (!rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(expr2->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(expr2->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {
@@ -1725,9 +1725,9 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
         }
         for (int i = 0; i < a.size(); i++) {
             int i3 = (v3.bits().size() > 1 ? v3.data().s[i] : v3.data().s[0]);
-            if (((gate->type == Tranif1Gate || gate->type == Rtranif1Gate)
+            if (((gate->type() == Tranif1Gate || gate->type() == Rtranif1Gate)
                     && v3.data().s[i3] != BitH) ||
-                ((gate->type == Tranif0Gate || gate->type == Rtranif0Gate)
+                ((gate->type() == Tranif0Gate || gate->type() == Rtranif0Gate)
                     && v3.data().s[i3] != BitL))
                 // off
                 continue;
@@ -1740,27 +1740,27 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
                     gate->set_delay(sim, vx1->data().s[i1]);
-                    vl_time_t td = gate->delay->eval();
+                    vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
-                    bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                    bs->range = chk_copy(expr1->source_range());
+                    bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                    bs->set_range(chk_copy(expr1->source_range()));
                     vl_action_item *ai = new vl_action_item(bs, sim->context());
-                    ai->flags |= AI_DEL_STMT;
+                    ai->or_flags(AI_DEL_STMT);
                     sim->timewheel()->append(sim->time() + td, ai);
                 }
             }
         }
         if (!rfdly) {
-            if (gate->inst_list && gate->inst_list->delays) {
+            if (gate->gi_inst_list && gate->gi_inst_list->delays()) {
                 gate->set_delay(sim, BitH);
-                vl_time_t td = gate->delay->eval();
+                vl_time_t td = gate->gi_delay->eval();
                 vl_bassign_stmt *bs =
                     new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
-                bs->flags |= (SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
-                bs->range = chk_copy(expr1->source_range());
+                bs->or_flags(SIM_INTERNAL | BAS_SAVE_LHS | BAS_SAVE_RHS);
+                bs->set_range(chk_copy(expr1->source_range()));
                 vl_action_item *ai = new vl_action_item(bs, sim->context());
-                ai->flags |= AI_DEL_STMT;
+                ai->or_flags(AI_DEL_STMT);
                 sim->timewheel()->append(sim->time() + td, ai);
             }
             else {

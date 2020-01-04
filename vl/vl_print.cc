@@ -80,8 +80,9 @@
 //  Exports
 //---------------------------------------------------------------------------
 
-void
-vl_error(const char *fmt, ...)
+namespace vl {
+
+void vl_error(const char *fmt, ...)
 {
     fflush(stdout);
     va_list args;
@@ -94,8 +95,7 @@ vl_error(const char *fmt, ...)
 }
 
 
-void
-vl_warn(const char *fmt, ...)
+void vl_warn(const char *fmt, ...)
 {
     fflush(stdout);
     va_list args;
@@ -110,8 +110,7 @@ vl_warn(const char *fmt, ...)
 
 // Return the date. Return value is static data.
 //
-const char *
-vl_datestring()
+const char *vl_datestring()
 {
     time_t tloc;
     time(&tloc);
@@ -126,31 +125,16 @@ vl_datestring()
 }
 
 
-const char *
-vl_version()
+const char * vl_version()
 {
     return (VL_REVISION);
-}
-
-
-// Global string copy function.
-//
-char *
-vl_strdup(const char *str)
-{
-    if (!str)
-        return (0);
-    char *retval = new char[strlen(str) + 1];
-    strcpy(retval, str);
-    return (retval);
 }
 
 
 // Strip quotes, substitute for escapes in string.  Returns a copy of
 // the string.
 //
-char *
-vl_fix_str(const char *str)
+char *vl_fix_str(const char *str)
 {
     if (!str)
         str = "(nil)";
@@ -184,6 +168,20 @@ vl_fix_str(const char *str)
         *(t-1) = 0;
     return (nstr);
 }
+
+
+// Global string copy function.
+//
+char *vl_strdup(const char *str)
+{
+    if (!str)
+        return (0);
+    char *retval = new char[strlen(str) + 1];
+    strcpy(retval, str);
+    return (retval);
+}
+
+} // namespace vl
 
 
 //---------------------------------------------------------------------------
@@ -1005,7 +1003,7 @@ namespace {
 
 void
 vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
-    DSPtype dtype, unsigned short flags)
+    DSPtype dtype, unsigned int flags)
 {
     bool first = true;
     vl_expr *e;
@@ -1167,7 +1165,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
                             strcpy(buf, "x");
                         else {
                             double t = (double) d;
-                            t *= (s_description->tstep/pow(10.0, s_tfunit));
+                            t *= (s_description->tstep()/pow(10.0, s_tfunit));
                             if (s_tfsuffix && *s_tfsuffix)
                                 sprintf(buf, "%.*f%s", s_tfprec, t, s_tfsuffix);
                             else
@@ -1205,7 +1203,7 @@ vl_simulator::display_print(lsList<vl_expr*> *args, ostream &outs,
 
 void
 vl_simulator::fdisplay_print(lsList<vl_expr*> *args, DSPtype dtype,
-    unsigned short flags)
+    unsigned int flags)
 {
     if (!args)
         return;
@@ -1231,31 +1229,31 @@ vl_context::print(ostream &outs)
     vl_context *cx = this;
     while (cx) {
         if (cx->c_module) {
-            if (cx->c_module->instance)
-                outs << (cx->c_module->instance->name ?
-                    cx->c_module->instance->name : "_mod");
+            if (cx->c_module->instance())
+                outs << (cx->c_module->instance()->name() ?
+                    cx->c_module->instance()->name() : "_mod");
             else
-                outs << cx->c_module->name;
+                outs << cx->c_module->name();
         }
         else if (cx->c_primitive) {
-            outs << (cx->c_primitive->name ?
-                cx->c_primitive->name : "_prim");
+            outs << (cx->c_primitive->name() ?
+                cx->c_primitive->name() : "_prim");
         }
         else if (cx->c_task) {
-            outs << (cx->c_task->name ?
-                cx->c_task->name : "_task");
+            outs << (cx->c_task->name() ?
+                cx->c_task->name() : "_task");
         }
         else if (cx->c_function) {
-            outs << (cx->c_function->name ?
-                cx->c_function->name : "_func");
+            outs << (cx->c_function->name() ?
+                cx->c_function->name() : "_func");
         }
         else if (cx->c_block) {
-            outs << (cx->c_block->name ?
-                cx->c_block->name : "_block");
+            outs << (cx->c_block->name() ?
+                cx->c_block->name() : "_block");
         }
         else if (cx->c_fjblk) {
-            outs << (cx->c_fjblk->name ?
-                cx->c_fjblk->name : "_fjblk");
+            outs << (cx->c_fjblk->name() ?
+                cx->c_fjblk->name() : "_fjblk");
         }
         else
             outs << "blank";
@@ -1275,17 +1273,17 @@ vl_context::hiername()
     for (vl_context *cx = this; cx; cx = cx->c_parent) {
         const char *nm;
         if (cx->c_module) {
-            if (cx->c_module->instance)
-                nm = cx->c_module->instance->name;
+            if (cx->c_module->instance())
+                nm = cx->c_module->instance()->name();
             else
-                nm = cx->c_module->name;
+                nm = cx->c_module->name();
         }
         else if (cx->c_primitive)
-            nm = cx->c_primitive->name;
+            nm = cx->c_primitive->name();
         else if (cx->c_task)
-            nm = cx->c_task->name;
+            nm = cx->c_task->name();
         else if (cx->c_function)
-            nm = cx->c_function->name;
+            nm = cx->c_function->name();
         else
             nm = 0;
         if (nm) {
@@ -1318,11 +1316,11 @@ ostream &
 operator<<(ostream &outs, vl_desc *d)
 {
     vl_module *mod;
-    lsGen<vl_module*> mgen(d->modules);
+    lsGen<vl_module*> mgen(d->modules());
     while (mgen.next(&mod))
         outs << mod;
     vl_primitive *prim;
-    lsGen<vl_primitive*> pgen(d->primitives);
+    lsGen<vl_primitive*> pgen(d->primitives());
     while (pgen.next(&prim))
         outs << prim;
     return (outs);
@@ -1334,14 +1332,14 @@ operator<<(ostream &outs, vl_module *m)
 {
     outs << "module ";
     IndentLevel = 0;
-    if (m->name)
-        outs << m->name;
+    if (m->name())
+        outs << m->name();
     outs << " (";
-    if (m->ports)
-        outs << m->ports;
+    if (m->ports())
+        outs << m->ports();
     outs << ");\n";
-    if (m->mod_items)
-        vl_print_items(outs, m->mod_items);
+    if (m->mod_items())
+        vl_print_items(outs, m->mod_items());
     outs << "endmodule\n\n";
     return (outs);
 }
@@ -1352,26 +1350,26 @@ operator<<(ostream &outs, vl_primitive *p)
 {
     outs << "primitive ";
     IndentLevel = 0;
-    if (p->name)
-        outs << p->name;
+    if (p->name())
+        outs << p->name();
     outs << " (";
-    if (p->ports)
-        outs << p->ports;
+    if (p->ports())
+        outs << p->ports();
     outs << ");\n";
-    if (p->decls)
-        vl_print_items(outs, p->decls);
-    if (p->initial) {
+    if (p->decls())
+        vl_print_items(outs, p->decls());
+    if (p->initial()) {
         outs << "initial\n";
         IndentLevel++;
-        outs << p->initial << ";\n";
+        outs << p->initial() << ";\n";
         IndentLevel--;
     }
-    if (p->ptable) {
+    if (p->ptable()) {
         outs << "table\n";
         IndentLevel++;
-        int os = p->type == SeqPrimDecl ? 2 : 1;
-        unsigned char *row = p->ptable;
-        for (int i = 0; i < p->rows; i++) {
+        int os = p->type() == SeqPrimDecl ? 2 : 1;
+        unsigned char *row = p->ptable();
+        for (int i = 0; i < p->rows(); i++) {
             unsigned char *col = row + os;
             Indent(outs);
             for (int j = 0; j < MAXPRIMLEN - os; j++) {
@@ -1379,7 +1377,7 @@ operator<<(ostream &outs, vl_primitive *p)
                     break;
                 outs << p->symbol(col[j]) << ' ';
             }
-            if (p->type == SeqPrimDecl) 
+            if (p->type() == SeqPrimDecl) 
                 outs << ": " << p->symbol(row[1]) << ' ';
             
             outs << ": " << p->symbol(row[0]) << ";\n";
@@ -1435,15 +1433,15 @@ vl_primitive::symbol(unsigned char sym)
 ostream &
 operator<<(ostream &outs, vl_port *p)
 {
-    if (p->type == NamedPort && p->name)
-        outs << "." << p->name << "(";
-    if (p->port_exp) {
-        if (p->port_exp->length() == 1)
-            outs << p->port_exp;
+    if (p->type() == NamedPort && p->name())
+        outs << "." << p->name() << "(";
+    if (p->port_exp()) {
+        if (p->port_exp()->length() == 1)
+            outs << p->port_exp();
         else
-            outs << '{' << p->port_exp << '}';
+            outs << '{' << p->port_exp() << '}';
     }
-    if (p->type == NamedPort && p->name)
+    if (p->type() == NamedPort && p->name())
         outs << ")";
     return (outs);
 }
@@ -1452,11 +1450,11 @@ operator<<(ostream &outs, vl_port *p)
 ostream &
 operator<<(ostream &outs, vl_port_connect *pc)
 {
-    if (pc->type == NamedConnect && pc->name)
-        outs << "." << pc->name << "(";
-    if (pc->expr)
-        outs << pc->expr;
-    if (pc->type == NamedConnect && pc->name)
+    if (pc->type() == NamedConnect && pc->name())
+        outs << "." << pc->name() << "(";
+    if (pc->expr())
+        outs << pc->expr();
+    if (pc->type() == NamedConnect && pc->name())
         outs << ")";
     return (outs);
 }
@@ -1479,24 +1477,24 @@ operator<<(ostream &outs, vl_decl *n)
 {
     Indent(outs);
     outs << n->decl_type();
-    if (n->strength.str0() != STRnone) {
-        if (n->type == WireDecl ||
-                n->type == TriDecl ||
-                n->type == WandDecl ||
-                n->type == TriandDecl ||
-                n->type == WorDecl ||
-                n->type == TriorDecl ||
-                n->type == TriregDecl)
-            outs << ' ' << n->strength;
+    if (n->strength().str0() != STRnone) {
+        if (n->type() == WireDecl ||
+                n->type() == TriDecl ||
+                n->type() == WandDecl ||
+                n->type() == TriandDecl ||
+                n->type() == WorDecl ||
+                n->type() == TriorDecl ||
+                n->type() == TriregDecl)
+            outs << ' ' << n->strength();
     }
-    if (n->range)
-        outs << ' ' << n->range;
-    if (n->delay)
-        outs << ' ' << n->delay;
-    if (n->list)
-        outs << ' ' << n->list;
+    if (n->range())
+        outs << ' ' << n->range();
+    if (n->delay())
+        outs << ' ' << n->delay();
+    if (n->list())
+        outs << ' ' << n->list();
     else
-        outs << ' ' << n->ids;
+        outs << ' ' << n->ids();
     return (outs);
 }
 
@@ -1511,7 +1509,7 @@ vl_decl::print(ostream &outs)
 const char *
 vl_decl::decl_type()
 {
-    switch (type) {
+    switch (st_type) {
     case RealDecl:
         return ("real");
     case EventDecl:
@@ -1562,7 +1560,7 @@ vl_decl::decl_type()
 ostream &
 operator<<(ostream &outs, vl_procstmt *p)
 {
-    switch (p->type) {
+    switch (p->type()) {
     case AlwaysStmt:
         outs << "always\n";  
         break;
@@ -1574,8 +1572,8 @@ operator<<(ostream &outs, vl_procstmt *p)
         break;
     }
     IndentLevel++;
-    if (p->stmt)
-        outs << p->stmt << p->stmt->lterm();
+    if (p->stmt())
+        outs << p->stmt() << p->stmt()->lterm();
     IndentLevel--;
     return (outs);
 }
@@ -1592,12 +1590,12 @@ ostream &
 operator<<(ostream &outs, vl_cont_assign *a)
 {
     outs << "assign ";
-    if (a->strength.str0() != STRnone)
-        outs << a->strength << ' ';
-    if (a->delay)
-        outs << a->delay << ' ';
-    if (a->assigns)
-        outs << a->assigns;
+    if (a->strength().str0() != STRnone)
+        outs << a->strength() << ' ';
+    if (a->delay())
+        outs << a->delay() << ' ';
+    if (a->assigns())
+        outs << a->assigns();
     return (outs);
 }
 
@@ -1613,8 +1611,8 @@ ostream &
 operator<<(ostream &outs, vl_specify_block *s)
 {
     outs << "specify\n";
-    if (s->items)
-        vl_print_items(outs, s->items);
+    if (s->items())
+        vl_print_items(outs, s->items());
     outs << "endspecify\n";
     return (outs);
 }
@@ -1667,57 +1665,57 @@ namespace {
 ostream &
 operator<<(ostream &outs, vl_specify_item *s)
 {
-    if (s->type == SpecParamDecl) {
-        if (s->params)
-            outs << "specparam " << s->params;
+    if (s->type() == SpecParamDecl) {
+        if (s->params())
+            outs << "specparam " << s->params();
     }
-    else if (s->type == SpecPathDecl) {
-        if (s->lhs && s->rhs)
-            outs << s->lhs << " = " << s->rhs;
+    else if (s->type() == SpecPathDecl) {
+        if (s->lhs() && s->rhs())
+            outs << s->lhs() << " = " << s->rhs();
     }
-    else if (s->type == SpecLSPathDecl1) {
-        if (s->expr && s->list1 && s->list2 && s->rhs) {
-            outs << "if (" << s->expr << ") (";
-            outs << s->list1 << pathstr(s->pol, false) << s->list2;
-            outs << ") = " << s->rhs;
+    else if (s->type() == SpecLSPathDecl1) {
+        if (s->expr() && s->list1() && s->list2() && s->rhs()) {
+            outs << "if (" << s->expr() << ") (";
+            outs << s->list1() << pathstr(s->pol(), false) << s->list2();
+            outs << ") = " << s->rhs();
         }
     }
-    else if (s->type == SpecLSPathDecl2) {
-        if (s->expr && s->list1 && s->list2 && s->rhs) {
-            outs << "if (" << s->expr << ") (";
-            outs << s->list1 << pathstr(s->pol, true) << s->list2;
-            outs << ") = " << s->rhs;
+    else if (s->type() == SpecLSPathDecl2) {
+        if (s->expr() && s->list1() && s->list2() && s->rhs()) {
+            outs << "if (" << s->expr() << ") (";
+            outs << s->list1() << pathstr(s->pol(), true) << s->list2();
+            outs << ") = " << s->rhs();
         }
     }
-    else if (s->type == SpecESPathDecl1) {
-        if (s->list1 && s->list2 && s->expr && s->rhs) {
-            if (s->ifex)
-                outs << "if (" << s->ifex << ") ";
-            if (s->edge_id == PosedgeEventExpr)
+    else if (s->type() == SpecESPathDecl1) {
+        if (s->list1() && s->list2() && s->expr() && s->rhs()) {
+            if (s->ifex())
+                outs << "if (" << s->ifex() << ") ";
+            if (s->edge_id() == PosedgeEventExpr)
                 outs << "(posedge ";
-            else if (s->edge_id == NegedgeEventExpr)
+            else if (s->edge_id() == NegedgeEventExpr)
                 outs << "(negedge ";
             else
                 outs << '(';
-            outs << s->list1 << " => (" << s->list2 << cndstr(s->pol);
-            outs << s->expr << ")) = " << s->rhs;
+            outs << s->list1() << " => (" << s->list2() << cndstr(s->pol());
+            outs << s->expr() << ")) = " << s->rhs();
         }
     }
-    else if (s->type == SpecESPathDecl2) {
-        if (s->list1 && s->list2 && s->expr && s->rhs) {
-            if (s->ifex)
-                outs << "if (" << s->ifex << ") ";
-            if (s->edge_id == PosedgeEventExpr)
+    else if (s->type() == SpecESPathDecl2) {
+        if (s->list1() && s->list2() && s->expr() && s->rhs()) {
+            if (s->ifex())
+                outs << "if (" << s->ifex() << ") ";
+            if (s->edge_id() == PosedgeEventExpr)
                 outs << "(posedge ";
-            else if (s->edge_id == NegedgeEventExpr)
+            else if (s->edge_id() == NegedgeEventExpr)
                 outs << "(negedge ";
             else
                 outs << '(';
-            outs << s->list1 << " => (" << s->list2 << cndstr(s->pol);
-            outs << s->expr << ")) = " << s->rhs;
+            outs << s->list1() << " => (" << s->list2() << cndstr(s->pol());
+            outs << s->expr() << ")) = " << s->rhs();
         }
     }
-    else if (s->type == SpecTiming)
+    else if (s->type() == SpecTiming)
         outs << "// $setup()";
     return (outs);
 }
@@ -1733,18 +1731,18 @@ vl_specify_item::print(ostream &outs)
 ostream &
 operator<<(ostream &outs, vl_spec_term_desc *s)
 {
-    if (s->pol == 0) {
-        if (s->name && s->exp1 && s->exp2)
-            outs << s->name << '[' << s->exp1 << " : " << s->exp2 << ']';
-        else if (s->name && s->exp1)
-            outs << s->name << '[' << s->exp1 << ']';
-        else if (s->name)
-            outs << s->name;
+    if (s->pol() == 0) {
+        if (s->name() && s->exp1() && s->exp2())
+            outs << s->name() << '[' << s->exp1() << " : " << s->exp2() << ']';
+        else if (s->name() && s->exp1())
+            outs << s->name() << '[' << s->exp1() << ']';
+        else if (s->name())
+            outs << s->name();
     }
-    else if (s->pol == '+' && s->exp1)
-        outs << "+ " << s->exp1;
-    else if (s->pol == '-' && s->exp1)
-        outs << "- " << s->exp1;
+    else if (s->pol() == '+' && s->exp1())
+        outs << "+ " << s->exp1();
+    else if (s->pol() == '-' && s->exp1())
+        outs << "- " << s->exp1();
     return (outs);
 }
 
@@ -1759,11 +1757,11 @@ vl_spec_term_desc::print(ostream &outs)
 ostream &
 operator<<(ostream &outs, vl_path_desc *s)
 {
-    if (s->list1 && s->list2) {
-        if (s->type == PathLeadTo)
-            outs << '(' << s->list1 << " => " << s->list2 << ')';
-        else if (s->type == PathAll)
-            outs << '(' << s->list1 << " *> " << s->list2 << ')';
+    if (s->list1() && s->list2()) {
+        if (s->type() == PathLeadTo)
+            outs << '(' << s->list1() << " => " << s->list2() << ')';
+        else if (s->type() == PathAll)
+            outs << '(' << s->list1() << " *> " << s->list2() << ')';
     }
     return (outs);
 }
@@ -1781,14 +1779,14 @@ operator<<(ostream &outs, vl_task *t)
 {
     Indent(outs);
     outs << "task ";
-    if (t->name)
-        outs << t->name;
+    if (t->name())
+        outs << t->name();
     outs << ";\n";
     IndentLevel++;
-    if (t->decls)
-        vl_print_items(outs, t->decls);
-    if (t->stmts)
-        vl_print_items(outs, t->stmts);
+    if (t->decls())
+        vl_print_items(outs, t->decls());
+    if (t->stmts())
+        vl_print_items(outs, t->stmts());
     IndentLevel--;
     Indent(outs);
     outs << "endtask";
@@ -1808,7 +1806,7 @@ operator<<(ostream &outs, vl_function *f)
 {
     Indent(outs);
     outs << "function ";
-    switch (f->type) {
+    switch (f->type()) {
     case IntFuncDecl:
         outs << "integer ";
         break;
@@ -1816,20 +1814,20 @@ operator<<(ostream &outs, vl_function *f)
          outs << "real ";
          break;
     case RangeFuncDecl:
-        outs << f->range << ' ';
+        outs << f->range() << ' ';
         break;
     default:
         VP()->error(ERR_INTERNAL, "Unexpected Function Type");
     }
-    if (f->name)
-        outs << f->name;
+    if (f->name())
+        outs << f->name();
     outs << ";\n";
 
     IndentLevel++;
-    if (f->decls)
-        vl_print_items(outs, f->decls);
-    if (f->stmts)
-        vl_print_items(outs, f->stmts);
+    if (f->decls())
+        vl_print_items(outs, f->decls());
+    if (f->stmts())
+        vl_print_items(outs, f->stmts());
     IndentLevel--;
     Indent(outs);
     outs << "endfunction";
@@ -1848,7 +1846,7 @@ ostream &
 operator<<(ostream &outs, vl_gate_inst_list *l)
 {
     Indent(outs);
-    switch (l->type) {
+    switch (l->type()) {
     case AndGate:
         outs << "and";
         break;
@@ -1932,12 +1930,12 @@ operator<<(ostream &outs, vl_gate_inst_list *l)
         break;
     }
     outs << ' ';
-    if (l->strength.str0() != STRnone)
-        outs << l->strength << ' ';;
-    if (l->delays)
-        outs << l->delays;
-    if (l->gates)
-        outs << l->gates;
+    if (l->strength().str0() != STRnone)
+        outs << l->strength() << ' ';;
+    if (l->delays())
+        outs << l->delays();
+    if (l->gates())
+        outs << l->gates();
     return (outs);
 }
 
@@ -1953,14 +1951,14 @@ ostream &
 operator<<(ostream &outs, vl_mp_inst_list *m)
 {
     Indent(outs);
-    if (m->name)
-        outs << m->name << ' ';
-    if (m->strength.str0() != STRnone)
-        outs << m->strength << ' ';
-    if (m->params_or_delays)
-        outs << m->params_or_delays << ' ';
-    if (m->mps)
-        outs << m->mps;
+    if (m->name())
+        outs << m->name() << ' ';
+    if (m->strength().str0() != STRnone)
+        outs << m->strength() << ' ';
+    if (m->prms_or_dlys())
+        outs << m->prms_or_dlys() << ' ';
+    if (m->mps())
+        outs << m->mps();
     return (outs);
 }
 
@@ -1980,14 +1978,14 @@ ostream &
 operator<<(ostream &outs, vl_bassign_stmt *b)
 {
     Indent(outs);
-    if (b->type == AssignStmt)
+    if (b->type() == AssignStmt)
         outs << "assign ";
-    else if (b->type == ForceStmt)
+    else if (b->type() == ForceStmt)
         outs << "force ";
-    if (b->lhs)
-        outs << b->lhs;
+    if (b->lhs())
+        outs << b->lhs();
 
-    switch (b->type) {
+    switch (b->type()) {
     case AssignStmt:
     case ForceStmt:
     case BassignStmt:
@@ -2012,13 +2010,13 @@ operator<<(ostream &outs, vl_bassign_stmt *b)
         VP()->error(ERR_INTERNAL, "Unexpected Assign Type");
         break;
     }
-    if (b->event)
-        outs << b->event << " ";
-    else if (b->delay)
-        outs << ' ' << b->delay;
+    if (b->event())
+        outs << b->event() << " ";
+    else if (b->delay())
+        outs << ' ' << b->delay();
     int tmp = IndentLevel;
     IndentLevel = 0;
-    outs << b->rhs;
+    outs << b->rhs();
     IndentLevel = tmp;
     return (outs);
 }
@@ -2035,12 +2033,12 @@ ostream &
 operator<<(ostream &outs, vl_sys_task_stmt *s)
 {
     Indent(outs);
-    if (s->name)
-        outs << s->name;
+    if (s->name())
+        outs << s->name();
     int tmp = IndentLevel;
     IndentLevel = 0;
-    if (s->args)
-        outs << " (" << s->args << ')';        
+    if (s->args())
+        outs << " (" << s->args() << ')';        
     IndentLevel = tmp;
     return (outs);
 }
@@ -2058,15 +2056,15 @@ operator<<(ostream &outs, vl_begin_end_stmt *b)
 {
     Indent(outs);
     outs << "begin";
-    if (b->name)
-        outs << ": " << b->name << '\n';
+    if (b->name())
+        outs << ": " << b->name() << '\n';
     else
         outs << '\n';
     IndentLevel++;
-    if (b->decls)
-        vl_print_items(outs, b->decls);
-    if (b->stmts)
-        vl_print_items(outs, b->stmts);
+    if (b->decls())
+        vl_print_items(outs, b->decls());
+    if (b->stmts())
+        vl_print_items(outs, b->stmts());
     IndentLevel--;
     Indent(outs);
     outs << "end";
@@ -2086,19 +2084,19 @@ operator<<(ostream &outs, vl_if_else_stmt *i)
 {
     Indent(outs);
     outs << "if (";
-    if (i->cond)
-        outs << i->cond;
+    if (i->cond())
+        outs << i->cond();
     outs << ")\n";
-    if (i->if_stmt) {
+    if (i->if_stmt()) {
         IndentLevel++;
-        outs << i->if_stmt << i->if_stmt->lterm();
+        outs << i->if_stmt() << i->if_stmt()->lterm();
         IndentLevel--;
     }
-    if (i->else_stmt) {
+    if (i->else_stmt()) {
         Indent(outs);
         outs << "else\n";
         IndentLevel++;
-        outs << i->else_stmt << i->else_stmt->lterm();
+        outs << i->else_stmt() << i->else_stmt()->lterm();
         IndentLevel--;
     }
     return (outs);
@@ -2116,7 +2114,7 @@ ostream &
 operator<<(ostream &outs, vl_case_stmt *c)
 {
     Indent(outs);
-    switch (c->type) {
+    switch (c->type()) {
     case CaseStmt:
         outs << "case (";
         break;
@@ -2130,10 +2128,10 @@ operator<<(ostream &outs, vl_case_stmt *c)
         VP()->error(ERR_INTERNAL, "Unexpected Case Type");
         break;
     }
-    if (c->cond)
-        outs << c->cond;
+    if (c->cond())
+        outs << c->cond();
     outs << ")\n";
-    lsGen<vl_case_item*> gen(c->case_items);
+    lsGen<vl_case_item*> gen(c->case_items());
     vl_case_item *item;
     while (gen.next(&item))
         outs << item;
@@ -2154,10 +2152,10 @@ ostream &
 operator<<(ostream &outs, vl_case_item *c)
 {
     Indent(outs);
-    switch (c->type) {
+    switch (c->type()) {
     case CaseItem:
-        if (c->exprs)
-            outs << c->exprs << ": ";
+        if (c->exprs())
+            outs << c->exprs() << ": ";
         break;
     case DefaultItem:
         outs << "default: ";
@@ -2167,8 +2165,8 @@ operator<<(ostream &outs, vl_case_item *c)
         break;
     }
     IndentSkip = true;
-    if (c->stmt)
-        outs << c->stmt << c->stmt->lterm();
+    if (c->stmt())
+        outs << c->stmt() << c->stmt()->lterm();
     else
         outs << " ;\n";
     return (outs);
@@ -2188,8 +2186,8 @@ operator<<(ostream &outs, vl_forever_stmt *f)
     Indent(outs);
     outs << "forever\n";
     IndentLevel++;
-    if (f->stmt)
-        outs << f->stmt << f->stmt->lterm();
+    if (f->stmt())
+        outs << f->stmt() << f->stmt()->lterm();
     IndentLevel--;
     return (outs);
 }
@@ -2207,12 +2205,12 @@ operator<<(ostream &outs, vl_repeat_stmt *r)
 {
     Indent(outs);
     outs << "repeat (";
-    if (r->count)
-        outs << r->count;
+    if (r->count())
+        outs << r->count();
     outs << ")\n";
     IndentLevel++;
-    if (r->stmt)
-        outs << r->stmt << r->stmt->lterm();
+    if (r->stmt())
+        outs << r->stmt() << r->stmt()->lterm();
     IndentLevel--;
     return (outs);
 }
@@ -2230,12 +2228,12 @@ operator<<(ostream &outs, vl_while_stmt *w)
 {
     Indent(outs);
     outs << "while (";
-    if (w->cond)
-        outs << w->cond;
+    if (w->cond())
+        outs << w->cond();
     outs << ")\n";
     IndentLevel++;
-    if (w->stmt)
-        outs << w->stmt << w->stmt->lterm();
+    if (w->stmt())
+        outs << w->stmt() << w->stmt()->lterm();
     IndentLevel--;
     return (outs);
 }
@@ -2254,20 +2252,20 @@ operator<<(ostream &outs, vl_for_stmt *f)
     Indent(outs);
     outs << "for (";
     IndentSkip = true;
-    if (f->initial)
-        outs << f->initial;
+    if (f->initial())
+        outs << f->initial();
     outs << "; ";
-    if (f->cond)
-        outs << f->cond;
+    if (f->cond())
+        outs << f->cond();
     outs << "; ";
     IndentSkip = true;
-    if (f->end)
-        outs << f->end;
+    if (f->end())
+        outs << f->end();
     IndentSkip = false;
     outs << ")\n";
     IndentLevel++;
-    if (f->stmt)
-        outs << f->stmt << f->stmt->lterm();
+    if (f->stmt())
+        outs << f->stmt() << f->stmt()->lterm();
     IndentLevel--;
     return (outs);
 }
@@ -2284,11 +2282,11 @@ ostream &
 operator<<(ostream &outs, vl_delay_control_stmt *c)
 {
     Indent(outs);
-    if (c->delay)
-        outs << c->delay;
-    if (c->stmt) {
+    if (c->delay())
+        outs << c->delay();
+    if (c->stmt()) {
         IndentSkip = true;
-        outs << c->stmt << c->stmt->lterm();
+        outs << c->stmt() << c->stmt()->lterm();
     }
     else
         outs << ";\n";
@@ -2308,10 +2306,10 @@ operator<<(ostream &outs, vl_event_control_stmt *c)
 {
     Indent(outs);
     outs << "@";
-    if (c->event)
-        outs << c->event << '\n';
-    if (c->stmt)
-        outs << c->stmt << c->stmt->lterm();
+    if (c->event())
+        outs << c->event() << '\n';
+    if (c->stmt())
+        outs << c->stmt() << c->stmt()->lterm();
     return (outs);
 }
 
@@ -2328,12 +2326,12 @@ operator<<(ostream &outs, vl_wait_stmt *w)
 {
     Indent(outs);
     outs << "wait (";
-    if (w->cond)
-        outs << w->cond;
+    if (w->cond())
+        outs << w->cond();
     outs << ")\n";
     IndentLevel++;
-    if (w->stmt)
-        outs << w->stmt << w->stmt->lterm();
+    if (w->stmt())
+        outs << w->stmt() << w->stmt()->lterm();
     IndentLevel--;
     return (outs);
 }
@@ -2349,9 +2347,9 @@ vl_wait_stmt::print(ostream &outs)
 ostream &
 operator<<(ostream &outs, vl_send_event_stmt *s)
 {
-    if (s->name) {
+    if (s->name()) {
         Indent(outs);
-        outs << "->" << s->name;
+        outs << "->" << s->name();
     }
     return (outs);
 }
@@ -2369,15 +2367,15 @@ operator<<(ostream &outs, vl_fork_join_stmt *f)
 {
     Indent(outs);
     outs << "fork";
-    if (f->name)
-        outs << ": " << f->name << '\n';
+    if (f->name())
+        outs << ": " << f->name() << '\n';
     else
         outs << '\n';
     IndentLevel++;
-    if (f->decls)
-        vl_print_items(outs, f->decls);
-    if (f->stmts)
-        vl_print_items(outs, f->stmts);
+    if (f->decls())
+        vl_print_items(outs, f->decls());
+    if (f->stmts())
+        vl_print_items(outs, f->stmts());
     IndentLevel--;
     Indent(outs);
     outs << "join";
@@ -2413,10 +2411,10 @@ ostream &
 operator<<(ostream &outs, vl_task_enable_stmt *t)
 {
     Indent(outs);
-    if (t->name)
-        outs << t->name;
-    if (t->args)
-        outs << "(" << t->args << ")";
+    if (t->name())
+        outs << t->name();
+    if (t->args())
+        outs << "(" << t->args() << ")";
     return (outs);
 }
 
@@ -2431,9 +2429,9 @@ vl_task_enable_stmt::print(ostream &outs)
 ostream &
 operator<<(ostream &outs, vl_disable_stmt *d)
 {
-    if (d->name) {
+    if (d->name()) {
         Indent(outs);
-        outs << "disable " << d->name;
+        outs << "disable " << d->name();
     }
     return (outs);
 }
@@ -2449,12 +2447,12 @@ vl_disable_stmt::print(ostream &outs)
 ostream &
 operator<<(ostream &outs, vl_deassign_stmt *d)
 {
-    if (d->lhs) {
+    if (d->lhs()) {
         Indent(outs);
-        if (d->type == DeassignStmt)
-            outs << "deassign " << d->lhs;
-        else if (d->type == ReleaseStmt)
-            outs << "release " << d->lhs;
+        if (d->type() == DeassignStmt)
+            outs << "deassign " << d->lhs();
+        else if (d->type() == ReleaseStmt)
+            outs << "release " << d->lhs();
     }
     return (outs);
 }
@@ -2474,13 +2472,13 @@ vl_deassign_stmt::print(ostream &outs)
 ostream &
 operator<<(ostream &outs, vl_gate_inst *g)
 {
-    if (g->name)
-        outs << g->name;
-    if (g->array)
-        outs << g->array << ' ';
+    if (g->name())
+        outs << g->name();
+    if (g->array())
+        outs << g->array() << ' ';
     outs << "(";
-    if (g->terms)
-        outs << g->terms;
+    if (g->terms())
+        outs << g->terms();
     outs << ")";
     return (outs);
 }
@@ -2489,11 +2487,11 @@ operator<<(ostream &outs, vl_gate_inst *g)
 ostream &
 operator<<(ostream &outs, vl_mp_inst *m)
 {
-    if (m->name)
-        outs << m->name;
+    if (m->name())
+        outs << m->name();
     outs << "(";
-    if (m->ports)
-        outs << m->ports;
+    if (m->ports())
+        outs << m->ports();
     outs << ")";
     return (outs);
 }

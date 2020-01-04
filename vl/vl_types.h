@@ -1,4 +1,4 @@
-
+ 
 /*========================================================================*
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
@@ -67,10 +67,9 @@ using std::cerr;
 
 typedef unsigned long long int vl_time_t;
 
-// Print format modifiers
+// Print format modifiers.
 //
-enum { DSPall, DSPb, DSPh, DSPo };
-typedef unsigned char DSPtype;
+enum DSPtype { DSPall, DSPb, DSPh, DSPo };
 
 //---------------------------------------------------------------------------
 //  Forward references
@@ -151,6 +150,27 @@ struct vl_inst;
 struct vl_gate_inst;
 struct vl_gate_out;
 struct vl_mp_inst;
+
+
+//---------------------------------------------------------------------------
+//  Exported globals
+//---------------------------------------------------------------------------
+
+namespace vl {
+
+    // vl_print.cc
+    void vl_error(const char*, ...);
+    void vl_warn(const char*, ...);
+    const char *vl_datestring();
+    const char *vl_version();
+    char *vl_fix_str(const char*);
+    char *vl_strdup(const char*);
+
+#define errout(x) cout << (x) << "\n---\n"
+
+} // namespace vl
+using namespace vl;
+
 
 //---------------------------------------------------------------------------
 //  Output stream overrides
@@ -361,9 +381,8 @@ private:
 
 // Drive strengths
 //
-enum { STRnone, STRhiZ, STRsmall, STRmed, STRweak, STRlarge, STRpull,
+enum STRength { STRnone, STRhiZ, STRsmall, STRmed, STRweak, STRlarge, STRpull,
     STRstrong, STRsupply };
-typedef unsigned short STRength;
 
 struct vl_strength
 {
@@ -701,7 +720,7 @@ struct vl_expr : public vl_var
 {
     vl_expr();
     vl_expr(vl_var*);
-    vl_expr(short, int, double, void*, void*, void*);
+    vl_expr(int, int, double, void*, void*, void*);
     virtual ~vl_expr();
 
     vl_expr *copy();
@@ -814,7 +833,7 @@ struct vl_range
 
     vl_range *copy();
     bool eval(int*, int*);
-    bool reval(vl_range**);
+    vl_range *reval();
     int width();
 
 private:
@@ -866,7 +885,7 @@ struct vl_event_expr
             e_repeat = 0;
         }
 
-    vl_event_expr(short t, vl_expr *e)
+    vl_event_expr(int t, vl_expr *e)
         {
             e_type = t;
             e_count = 0;
@@ -1010,7 +1029,7 @@ struct range_or_type
             range = 0;
         }
 
-    range_or_type(short t, vl_range *r)
+    range_or_type(int t, vl_range *r)
         {
             type = t;
             range = r;
@@ -1097,14 +1116,15 @@ struct vl_simulator
     void do_dump();
     char *dumpindex(vl_var*);
     bool monitor_change(lsList<vl_expr*>*);
-    void display_print(lsList<vl_expr*>*, ostream&, DSPtype, unsigned short);
-    void fdisplay_print(lsList<vl_expr*>*, DSPtype, unsigned short);
+    void display_print(lsList<vl_expr*>*, ostream&, DSPtype, unsigned int);
+    void fdisplay_print(lsList<vl_expr*>*, DSPtype, unsigned int);
 
     void abort()                        { s_stop = VLabort; }
     void finish()                       { s_stop = VLstop; }
 
     void set_description(vl_desc *d)    { s_description = d; }
     void set_time(vl_time_t t)          { s_time = t; }
+    void set_steptime(vl_time_t t)      { s_steptime = t; }
     void set_context(vl_context *c)     { s_context = c; }
     void set_next_actions(vl_action_item *a) { s_next_actions = a; }
     void set_fj_end(vl_action_item *a)  { s_fj_end = a; }
@@ -1255,30 +1275,6 @@ private:
     vl_context          *c_parent;
 };
 
-// The flags field of a vl_stmt is used in different ways by the various
-// derived objects.  All flags used are listed here
-
-#define SIM_INTERNAL       0x1
-    // Statement was created for internal use during simulation, free
-    // after execution
-
-#define BAS_SAVE_RHS       0x2
-    // This applies to vl_bassign_stmt structs.  When set, the rhs field
-    // is not deleted when the object is deleted.
-
-#define BAS_SAVE_LHS       0x4
-    // This applies to vl_bassign_stmt structs.  When set, the lhs field
-    // is not deleted when the object is deleted.
-
-#define AI_DEL_STMT        0x8
-    // This applies to vl_action_item structs.  When set, the stmt is
-    // deleted when the action item is deleted.  The stmt has the
-    // SIM_INTERNAL flag set, but we can't check for this directly
-    // since the stmt may already be free
-
-#define DAS_DEL_VAR        0x8
-    // Similar to above, for vl_deassign_stmt and the var field.
-
 // This, and the enum below, provide return values for the eval()
 // function of vl_stmt and derivatives
 // 
@@ -1290,32 +1286,60 @@ union vl_event
 
 enum EVtype { EVnone, EVdelay, EVevent };
 
-// Base class for Verilog module items, statements, and action
+// Base class for Verilog module items, statements, and action.
 //
 struct vl_stmt
 {
-    vl_stmt()
-        {
-            type = 0;
-            flags = 0;
-        }
+    vl_stmt() : st_type(0), st_flags(0) { }
 
-    virtual ~vl_stmt()          { }
-    virtual vl_stmt *copy()     { return (0); }
-    virtual void init()         { }
+    virtual ~vl_stmt()                  { }
+    virtual vl_stmt *copy()             { return (0); }
+    virtual void init()                 { }
     virtual void setup(vl_simulator*)   { }
     virtual EVtype eval(vl_event*, vl_simulator*) { return (EVnone); }
     virtual void disable(vl_stmt*)      { }
     virtual void dump(ostream&, int)    { }
     virtual void print(ostream&)        { }
-    virtual const char *lterm()         { return ("\n"); }
+    virtual const char *lterm()         const { return ("\n"); }
     virtual void dumpvars(ostream&, vl_simulator*) { }
 
-    short type;
-    unsigned short flags;
+    int type()                          const { return (st_type); }
+    void set_type(int t)                { st_type = t; }
+    unsigned int flags()                const { return (st_flags); }
+    void set_flags(unsigned int f)      { st_flags = f; }
+    void or_flags(unsigned int f)       { st_flags |= f; }
+    void anot_flags(unsigned int f)     { st_flags &= ~f; }
+
+protected:
+    int             st_type;
+    unsigned int    st_flags;
+
+    // The flags field of a vl_stmt is used in different ways by the
+    // various derived objects.  All flags used are listed here
+
+#define SIM_INTERNAL       0x1
+    // Statement was created for internal use during simulation, free
+    // after execution.
+
+#define BAS_SAVE_RHS       0x2
+    // This applies to vl_bassign_stmt structs.  When set, the rhs
+    // field is not deleted when the object is deleted.
+
+#define BAS_SAVE_LHS       0x4
+    // This applies to vl_bassign_stmt structs.  When set, the lhs
+    // field is not deleted when the object is deleted.
+
+#define AI_DEL_STMT        0x8
+    // This applies to vl_action_item structs.  When set, the stmt is
+    // deleted when the action item is deleted.  The stmt has the
+    // SIM_INTERNAL flag set, but we can't check for this directly
+    // since the stmt may already be free.
+
+#define DAS_DEL_VAR        0x8
+    // Similar to above, for vl_deassign_stmt and the var field.
 };
 
-// Action node for time wheel and event queue
+// Action node for time wheel and event queue.
 //
 struct vl_action_item : public vl_stmt
 {
@@ -1326,7 +1350,7 @@ struct vl_action_item : public vl_stmt
         {
             while (a) {
                 vl_action_item *ax = a;
-                a = a->next;
+                a = a->ai_next;
                 delete ax;
             }
         }
@@ -1336,57 +1360,82 @@ struct vl_action_item : public vl_stmt
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
 
-    vl_stmt *stmt;          // statement to evaluate
-    vl_stack *stack;        // stack, if no stmt
-    vl_event_expr *event;   // used in event queue
-    vl_context *context;    // context for evaluation
-    vl_action_item *next;
+    void set_next(vl_action_item *a)    { ai_next = a; }
+    void set_stmt(vl_stmt *s)           { ai_stmt = s; }
+    void set_stack(vl_stack *s)         { ai_stack = s; }
+    void set_event(vl_event_expr *e)    { ai_event = e; }
+
+    vl_action_item *next()      const { return (ai_next); }
+    vl_stmt *stmt()             const { return (ai_stmt); }
+    vl_stack *stack()           const { return (ai_stack); }
+    vl_event_expr *event()      const { return (ai_event); }
+    vl_context *context()       const { return (ai_context); }
+
+private:
+    vl_action_item  *ai_next;
+    vl_stmt         *ai_stmt;       // statement to evaluate
+    vl_stack        *ai_stack;      // stack, if no stmt
+    vl_event_expr   *ai_event;      // used in event queue
+    vl_context      *ai_context;    // context for evaluation
 };
 
-// Types of block in stack
+// Types of block in stack.
 enum ABtype { Sequential, Fork, Fence };
 
-// Structure to store a block of actions
+// Structure to store a block of actions.
 //
 struct vl_sblk
 {
     vl_sblk()
         {
-            type = Sequential;
-            actions = 0;
-            fjblk = 0;
+            sb_type = Sequential;
+            sb_actions = 0;
+            sb_fjblk = 0;
         }
 
-    ABtype type;
-    vl_action_item *actions;
-    vl_stmt *fjblk;     // parent block, if fork/join
+    void set_type(ABtype t)                 { sb_type = t; }
+    void set_actions(vl_action_item *a)     { sb_actions = a; }
+    void set_fjblk(vl_stmt *f)              { sb_fjblk = f; }
+
+    ABtype type()               const { return (sb_type); }
+    vl_action_item *actions()   const { return (sb_actions); }
+    vl_stmt *fjblk()            const { return (sb_fjblk); }
+
+private:
+    ABtype          sb_type;
+    vl_action_item  *sb_actions;
+    vl_stmt         *sb_fjblk;      // parent block, if fork/join
 };
 
-// Stack object for actions
+// Stack object for actions.
 //
 struct vl_stack
 {
     vl_stack(vl_sblk *a, int n)
         {
-            acts = new vl_sblk[n];
-            num = n;
+            st_acts = new vl_sblk[n];
+            st_num = n;
             for (int i = 0; i < n; i++)
-                acts[i] = a[i];
+                st_acts[i] = a[i];
         }
 
     ~vl_stack()
         {
-            delete [] acts;
+            delete [] st_acts;
         }
 
     vl_stack *copy();
     void print(ostream&);
 
-    vl_sblk *acts;
-    int num;  // depth of stack
+    vl_sblk &act(int i)     const { return (st_acts[i]); }
+    int num()               const { return (st_num); }
+
+private:
+    vl_sblk     *st_acts;
+    int         st_num;     // depth of stack
 };
 
-// List head for actions at a time point
+// List head for actions at a time point.
 //
 struct vl_timeslot
 {
@@ -1397,7 +1446,7 @@ struct vl_timeslot
         {
             while (t) {
                 vl_timeslot *tx = t;
-                t = t->next;
+                t = t->next();
                 delete tx;
             }
         }
@@ -1414,67 +1463,83 @@ struct vl_timeslot
     void purge(vl_stmt*);
     void print(ostream&);
 
-    vl_time_t time;
-    vl_action_item *actions;		// "active" events
-    vl_action_item *trig_actions;   // triggered events
-    vl_action_item *zdly_actions;   // "inactive" events
-    vl_action_item *nbau_actions;   // "non-blocking assign update" events
-    vl_action_item *mon_actions;    // "monitor" events
-    vl_timeslot *next;
+    void set_next(vl_timeslot *ts)      { ts_next = ts; }
+    void set_actions(vl_action_item *a) { ts_actions = a; }
+
+    vl_timeslot *next()                 const { return (ts_next); }
+    vl_time_t time()                    const { return (ts_time); }
+    vl_action_item *actions()           const { return (ts_actions); }
+    vl_action_item *trig_actions()      const { return (ts_trig_actions); }
+    vl_action_item *zdly_actions()      const { return (ts_zdly_actions); }
+    vl_action_item *nbau_actions()      const { return (ts_nbau_actions); }
+    vl_action_item *mon_actions()       const { return (ts_mon_actions); }
+
 private:
-    vl_action_item *a_end;			// end of actions list
-    vl_action_item *t_end;			// end of triggered events list
-    vl_action_item *z_end;			// end of zdly_actions list
-    vl_action_item *n_end;			// end of nbau_actions list
-    vl_action_item *m_end;			// end of mon_actions list
+    vl_timeslot     *ts_next;
+    vl_time_t       ts_time;
+    vl_action_item  *ts_actions;        // "active" events
+    vl_action_item  *ts_trig_actions;   // triggered events
+    vl_action_item  *ts_zdly_actions;   // "inactive" events
+    vl_action_item  *ts_nbau_actions;   // "non-blocking assign update" events
+    vl_action_item  *ts_mon_actions;    // "monitor" events
+    vl_action_item  *ts_a_end;      // end of actions list
+    vl_action_item  *ts_t_end;      // end of triggered events list
+    vl_action_item  *ts_z_end;      // end of zdly_actions list
+    vl_action_item  *ts_n_end;      // end of nbau_actions list
+    vl_action_item  *ts_m_end;      // end of mon_actions list
 };
 
-// List multiple 'top' modules
+// List multiple 'top' modules.
 //
 struct vl_top_mod_list
 {
-    vl_top_mod_list()
+    vl_top_mod_list(int n, vl_module **m)
         {
-            num = 0;
-            mods = 0;
+            tm_num = n;
+            tm_mods = m;
         }
 
     ~vl_top_mod_list()
         {
-            delete [] mods;
+            delete [] tm_mods;
         }
 
-    bool istop(vl_module *mod)
-        {
-            for (int i = 0; i < num; i++) {
-                if (mod == mods[i])
-                    return (true);
-            }
-            return (false);
-        }
+    void set_mod(int i, vl_module *m)   { tm_mods[i] = m; }
 
-    int num;
-    vl_module **mods;
+    int num()               const { return (tm_num); }
+    vl_module *mod(int i)   const { return (tm_mods[i]); }
+
+private:
+    int         tm_num;
+    vl_module   **tm_mods;
 };
 
-// Monitor context list element
+// Monitor context list element.
 //
 struct vl_monitor
 {
     vl_monitor(vl_context *c, lsList<vl_expr*> *a, DSPtype t)
         {
-            cx = c;
-            args = a;
-            dtype = t;
-            next = 0;
+            m_next = 0;
+            m_cx = c;
+            m_args = a;
+            m_dtype = t;
         }
 
     ~vl_monitor();
 
-    vl_context *cx;
-    lsList<vl_expr*> *args;
-    DSPtype dtype;
-    vl_monitor *next;
+    void set_next(vl_monitor *n)    { m_next = n; }
+
+    vl_monitor *next()      const { return (m_next); }
+    vl_context *cx()        const { return (m_cx); }
+    lsList<vl_expr*> *args() const { return (m_args); }
+    DSPtype dtype()         const { return (m_dtype); }
+
+private:
+    vl_monitor          *m_next;
+    vl_context          *m_cx;
+    lsList<vl_expr*>    *m_args;
+    DSPtype             m_dtype;
 };
 
 
@@ -1482,50 +1547,85 @@ struct vl_monitor
 //  Verilog description objects
 //---------------------------------------------------------------------------
 
-// Main class for a Verilog description
+// Main class for a Verilog description.
 //
 struct vl_desc
 {
     vl_desc();
     ~vl_desc();
-    void dump(ostream&);
-    vl_gate_inst_list *add_gate_inst(short, vl_dlstr*, lsList<vl_gate_inst*>*);
-    vl_stmt *add_mp_inst(vl_desc*, char*, vl_dlstr*, lsList<vl_mp_inst*>*);
 
-    double tstep;
-    lsList<vl_module*> *modules;
-    lsList<vl_primitive*> *primitives;
-    table<vl_mp*> *mp_st;
-    set_t mp_undefined;
-    vl_simulator *simulator;
+    void dump(ostream&);
+    static vl_gate_inst_list *add_gate_inst(int, vl_dlstr*,
+        lsList<vl_gate_inst*>*);
+    vl_stmt *add_mp_inst(char*, vl_dlstr*, lsList<vl_mp_inst*>*);
+
+    void set_tstep(double t)        { d_tstep = t; }
+
+    double tstep()                  const { return (d_tstep); }
+    lsList<vl_module*> *modules()   const { return (d_modules); }
+    lsList<vl_primitive*> *primitives() const { return (d_primitives); }
+    table<vl_mp*> *mp_st()          const { return (d_mp_st); }
+    set_t &mp_undefined()           { return (d_mp_undefined); }
+
+private:
+    double                  d_tstep;
+    lsList<vl_module*>      *d_modules;
+    lsList<vl_primitive*>   *d_primitives;
+    table<vl_mp*>           *d_mp_st;
+    set_t                   d_mp_undefined;
 };
 
-// Base for modules and primitives
+// Base for modules and primitives.
 //
 struct vl_mp
 {
-    virtual ~vl_mp() { }
-    virtual vl_mp *copy()           { return (0); }
-    virtual void init()             { }
-    virtual void dump(ostream&)     { }
-    virtual void dumpvars(ostream&, vl_simulator*) { }
-    virtual void setup(vl_simulator*) { }
+    vl_mp() : mp_type(0), mp_inst_count(0), mp_name(0), mp_ports(0),
+        mp_sig_st(0), mp_instance(0) { }
 
-    short type;
-    const char *name;
-    lsList<vl_port*> *ports;
-    table<vl_var*> *sig_st;
-    int inst_count;                 // number of instances of this primitive
-    vl_mp_inst *instance;           // copy of master
+    virtual ~vl_mp()
+        {
+            delete [] mp_name;
+            delete_list(mp_ports);
+            delete_table(mp_sig_st);
+        }
+
+    virtual vl_mp *copy()               { return (0); }
+    virtual void init()                 { }
+    virtual void dump(ostream&)         { }
+    virtual void dumpvars(ostream&, vl_simulator*) { }
+    virtual void setup(vl_simulator*)   { }
+
+    void set_type(int t)                { mp_type = t; }
+    void set_ports(lsList<vl_port*> *p) { mp_ports = p; }
+    void set_sig_st(table<vl_var*> *t)  { mp_sig_st = t; }
+    void set_instance(vl_mp_inst *i)    { mp_instance = i; }
+
+    void inc_inst_count()               { mp_inst_count++; }
+
+    int type()                  const { return (mp_type); }
+    int inst_count()            const { return (mp_inst_count); }
+    const char *name()          const { return (mp_name); }
+    lsList<vl_port*> *ports()   const { return (mp_ports); }
+    table<vl_var*> *sig_st()    const { return (mp_sig_st); }
+    vl_mp_inst *instance()      const { return (mp_instance); }
+
+protected:
+    int                 mp_type;
+    int                 mp_inst_count; // number of instances of this primitive
+    const char          *mp_name;
+    lsList<vl_port*>    *mp_ports;
+    table<vl_var*>      *mp_sig_st;
+    vl_mp_inst          *mp_instance;  // copy of master
 };
 
-// Module description
+// Module description.
 //
 struct vl_module : public vl_mp
 {
     vl_module();
     vl_module(vl_desc *desc, char*, lsList<vl_port*>*, lsList<vl_stmt*>*);
     ~vl_module();
+
     vl_module *copy();
     void dump(ostream&);
     void dumpvars(ostream&, vl_simulator*);
@@ -1533,21 +1633,40 @@ struct vl_module : public vl_mp
     void init();
     void setup(vl_simulator*);
 
-    double tunit, tprec;
-    lsList<vl_stmt*> *mod_items;
-    table<vl_inst*> *inst_st;
-    table<vl_function*> *func_st;
-    table<vl_task*> *task_st;
-    table<vl_stmt*> *blk_st;
+    void set_tunit(double t)                    { m_tunit = t; }
+    void set_tprec(double t)                    { m_tprec = t; }
+    void set_mod_items(lsList<vl_stmt*> *i)     { m_mod_items = i; }
+    void set_inst_st(table<vl_inst*> *t)        { m_inst_st = t; }
+    void set_func_st(table<vl_function*> *t)    { m_func_st = t; }
+    void set_task_st(table<vl_task*> *t)        { m_task_st = t; }
+    void set_blk_st(table<vl_stmt*> *t)         { m_blk_st = t; }
+
+    double              tunit()         const { return (m_tunit); }
+    double              tprec()         const { return (m_tprec); }
+    lsList<vl_stmt*>    *mod_items()    const { return (m_mod_items); }
+    table<vl_inst*>     *inst_st()      const { return (m_inst_st); }
+    table<vl_function*> *func_st()      const { return (m_func_st); }
+    table<vl_task*>     *task_st()      const { return (m_task_st); }
+    table<vl_stmt*>     *blk_st()       const { return (m_blk_st); }
+
+private:
+    double              m_tunit;
+    double              m_tprec;
+    lsList<vl_stmt*>    *m_mod_items;
+    table<vl_inst*>     *m_inst_st;
+    table<vl_function*> *m_func_st;
+    table<vl_task*>     *m_task_st;
+    table<vl_stmt*>     *m_blk_st;
 };
 
-// User-defined primitive description
+// User-defined primitive description.
 //
 struct vl_primitive : public vl_mp
 {
     vl_primitive();
     vl_primitive(vl_desc*, char*);
     ~vl_primitive();
+
     void init_table(lsList<vl_port*>*, lsList<vl_decl*>*, vl_bassign_stmt*,
         lsList<vl_prim_entry*>*);
     vl_primitive *copy();
@@ -1558,23 +1677,37 @@ struct vl_primitive : public vl_mp
     bool primtest(unsigned char, bool);
     const char *symbol(unsigned char);
 
-    lsList<vl_decl*> *decls;
-    vl_bassign_stmt *initial;
-    unsigned char *ptable;          // entry table
-    int rows;                       // array depth
-    bool seq_init;                  // set when initialized
-    vl_var *iodata[MAXPRIMLEN];     // i/o data pointers
-    unsigned char lastvals[MAXPRIMLEN];  // previous values
+    void set_seq_init(bool b)                   { p_seq_init = b; }
+    void set_iodata(int i, vl_var *v)           { p_iodata[i] = v; }
+    void set_lastval(int i, unsigned char c)    { p_lastvals[i] = c; }
+
+    lsList<vl_decl*>    *decls()            const { return (p_decls); }
+    vl_bassign_stmt     *initial()          const { return (p_initial); }
+    unsigned char       *ptable()           const { return (p_ptable); }
+    int                 rows()              const { return (p_rows); }
+    bool                seq_init()          const { return (p_seq_init); }
+    vl_var              *iodata(int i)      { return (p_iodata[i]); }
+    unsigned char       lastval(int i)      const { return (p_lastvals[i]);}
+
+private:
+    lsList<vl_decl*>    *p_decls;
+    vl_bassign_stmt     *p_initial;
+    unsigned char       *p_ptable;                  // entry table
+    int                 p_rows;                     // array depth
+    bool                p_seq_init;                 // set when initialized
+    vl_var              *p_iodata[MAXPRIMLEN];      // i/o data pointers
+    unsigned char       p_lastvals[MAXPRIMLEN];     // previous values
 };
 
-// Primitive table entry
+// Primitive table entry.
 //
 struct vl_prim_entry
 {
     vl_prim_entry()
         {
-//XXX don't do this
-            memset(this, PrimNone, sizeof(vl_prim_entry));
+            memset(inputs, PrimNone, MAXPRIMLEN);
+            state = 0;
+            next_state = 0;
         }
 
     vl_prim_entry(lsList<int>*, unsigned char, unsigned char);
@@ -1584,48 +1717,63 @@ struct vl_prim_entry
     unsigned char next_state;
 };
 
-// Port description for modules and primitives
+// Port description for modules and primitives.
 //
 struct vl_port
 {
     vl_port()
         {
-            type = 0;
-            name = 0;
-            port_exp = 0;
+            p_type = 0;
+            p_name = 0;
+            p_port_exp = 0;
         }
 
-    vl_port(short, char*, lsList<vl_var*>*);
+    vl_port(int, char*, lsList<vl_var*>*);
     ~vl_port();
     vl_port *copy();
 
-    short type;
-    const char *name;
-    lsList<vl_var*> *port_exp;
+    int             type()              const { return (p_type); }
+    const char      *name()             const { return (p_name); }
+    lsList<vl_var*> *port_exp()         const { return (p_port_exp); }
+
+private:
+    int             p_type;
+    const char      *p_name;
+    lsList<vl_var*> *p_port_exp;
 };
 
-// Port connection description
+// Port connection description.
 //
 struct vl_port_connect
 {
     vl_port_connect()
         {
-            type = 0;
-            name = 0;
-            expr = 0;
-            i_assign = 0;
-            o_assign = 0;
+            pc_type = 0;
+            pc_name = 0;
+            pc_expr = 0;
+            pc_i_assign = 0;
+            pc_o_assign = 0;
         }
 
-    vl_port_connect(short, char*, vl_expr*);
+    vl_port_connect(int, char*, vl_expr*);
     ~vl_port_connect();
     vl_port_connect *copy();
 
-    short type;
-    const char *name;
-    vl_expr *expr;
-    vl_bassign_stmt *i_assign;   // used in arg passing
-    vl_bassign_stmt *o_assign;   // used in arg passing
+    void set_i_assign(vl_bassign_stmt *b)       { pc_i_assign = b; }
+    void set_o_assign(vl_bassign_stmt *b)       { pc_o_assign = b; }
+
+    int             type()                  const { return (pc_type); }
+    const char      *name()                 const { return (pc_name); }
+    vl_expr         *expr()                 const { return (pc_expr); }
+    vl_bassign_stmt *i_assign()             const { return (pc_i_assign); }
+    vl_bassign_stmt *o_assign()             const { return (pc_o_assign); }
+
+private:
+    int             pc_type;
+    const char      *pc_name;
+    vl_expr         *pc_expr;
+    vl_bassign_stmt *pc_i_assign;       // used in arg passing
+    vl_bassign_stmt *pc_o_assign;       // used in arg passing
 };
 
 
@@ -1633,25 +1781,25 @@ struct vl_port_connect
 //  Module items
 //---------------------------------------------------------------------------
 
-// Basic declaration
+// Basic declaration.
 //
 struct vl_decl : public vl_stmt
 {
     vl_decl()
         {
-            type = 0;
-            range = 0;
-            ids = 0;
-            list = 0;
-            delay = 0;
+            d_range = 0;
+            d_ids = 0;
+            d_list = 0;
+            d_delay = 0;
         }
 
-    vl_decl(short, vl_strength, vl_range*, vl_delay*,
+    vl_decl(int, vl_strength, vl_range*, vl_delay*,
         lsList<vl_bassign_stmt*>*, lsList<vl_var*>*);
-    vl_decl(short, vl_range*, lsList<vl_var*>*);
-    vl_decl(short, lsList<char*>*);
-    vl_decl(short, vl_range*, lsList<vl_bassign_stmt*>*);
+    vl_decl(int, vl_range*, lsList<vl_var*>*);
+    vl_decl(int, lsList<char*>*);
+    vl_decl(int, vl_range*, lsList<vl_bassign_stmt*>*);
     ~vl_decl();
+
     vl_decl *copy();
     table<vl_var*> *symtab(vl_var*);
     void var_setup(vl_var*, int);
@@ -1660,27 +1808,35 @@ struct vl_decl : public vl_stmt
     void print(ostream&);
     const char *decl_type();
 
-    const char *lterm()     { return (";\n"); }
+    const char              *lterm()        const { return (";\n"); }
 
-    vl_range *range;
-    lsList<vl_var*> *ids;
-    lsList<vl_bassign_stmt*> *list;
-    vl_delay *delay;
-    vl_strength strength;
+    vl_range                *range()        const { return (d_range); }
+    lsList<vl_var*>         *ids()          const { return (d_ids); }
+    lsList<vl_bassign_stmt*> *list()        const { return (d_list); }
+    vl_delay                *delay()        const { return (d_delay); }
+    const vl_strength       strength()      const { return (d_strength); }
+
+private:
+    vl_range                *d_range;
+    lsList<vl_var*>         *d_ids;
+    lsList<vl_bassign_stmt*> *d_list;
+    vl_delay                *d_delay;
+    vl_strength             d_strength;
 };
 
-// Process statememt (always/initial) description
+// Process statememt (always/initial) description.
 //
 struct vl_procstmt : public vl_stmt
 {
     vl_procstmt()
         {
-            stmt = 0;
-            lasttime = (vl_time_t)-1;
+            pr_stmt = 0;
+            pr_lasttime = (vl_time_t)-1;
         }
 
-    vl_procstmt(short, vl_stmt*);
+    vl_procstmt(int, vl_stmt*);
     ~vl_procstmt();
+
     vl_procstmt *copy();
     void init();
     void setup(vl_simulator*);
@@ -1688,78 +1844,104 @@ struct vl_procstmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char  *lterm()            const { return (""); }
 
-    vl_stmt *stmt;
-    vl_time_t lasttime;  // used for 'always' stmt
+    vl_stmt     *stmt()             const { return (pr_stmt); }
+    vl_time_t   lasttime()          const { return (pr_lasttime); }
+
+private:
+    vl_stmt     *pr_stmt;
+    vl_time_t   pr_lasttime;    // used for 'always' stmt
 };
 
-// Continuous assignment
+// Continuous assignment.
 //
 struct vl_cont_assign : public vl_stmt
 {
     vl_cont_assign()
         {
-            delay = 0;
-            assigns = 0;
+            c_delay = 0;
+            c_assigns = 0;
         }
 
     vl_cont_assign(vl_strength, vl_delay*, lsList<vl_bassign_stmt*>*);
     ~vl_cont_assign();
+
     vl_cont_assign *copy();
     void setup(vl_simulator*);
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
+    const char                  *lterm()        const { return (";\n"); }
 
-    vl_strength strength;
-    vl_delay *delay;
-    lsList<vl_bassign_stmt*> *assigns;
+    vl_delay                    *delay()        const { return (c_delay); }
+    lsList<vl_bassign_stmt*>    *assigns()      const { return (c_assigns); }
+    const vl_strength           strength()      const { return (c_strength); }
+
+private:
+    vl_delay                    *c_delay;
+    lsList<vl_bassign_stmt*>    *c_assigns;
+    vl_strength                 c_strength;
 };
 
-// Specify block description
+// Specify block description.
 //
 struct vl_specify_block : public vl_stmt
 {
     vl_specify_block(lsList<vl_specify_item*>*);
     ~vl_specify_block();
+
     vl_specify_block *copy();
     void print(ostream&);
 
-    lsList<vl_specify_item*> *items;
+    lsList<vl_specify_item*> *items()   const { return (sb_items); }
+
+private:
+    lsList<vl_specify_item*> *sb_items;
 };
 
-// Specify block item description
+// Specify block item description.
 //
 struct vl_specify_item
 {
-    vl_specify_item(short);
-    vl_specify_item(short, lsList<vl_bassign_stmt*>*);
-    vl_specify_item(short, vl_path_desc*, lsList<vl_expr*>*);
-    vl_specify_item(short, vl_expr*, lsList<vl_spec_term_desc*>*, int,
+    vl_specify_item(int);
+    vl_specify_item(int, lsList<vl_bassign_stmt*>*);
+    vl_specify_item(int, vl_path_desc*, lsList<vl_expr*>*);
+    vl_specify_item(int, vl_expr*, lsList<vl_spec_term_desc*>*, int,
         lsList<vl_spec_term_desc*>*, lsList<vl_expr*>*);
-    vl_specify_item(short, vl_expr*, int, lsList<vl_spec_term_desc*>*,
+    vl_specify_item(int, vl_expr*, int, lsList<vl_spec_term_desc*>*,
         lsList<vl_spec_term_desc*>*, int, vl_expr*, lsList<vl_expr*>*);
     ~vl_specify_item();
 
     vl_specify_item *copy();
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
+    const char                  *lterm()        const { return (";\n"); }
 
-    short type;
-    lsList<vl_bassign_stmt*> *params;
-    vl_path_desc *lhs;
-    lsList<vl_expr*> *rhs;
-    vl_expr *expr;
-    int pol;
-    lsList<vl_spec_term_desc*> *list1;
-    lsList<vl_spec_term_desc*> *list2;
-    int edge_id;
-    vl_expr *ifex;
+    int                         type()          const { return (si_type); }
+    lsList<vl_bassign_stmt*>    *params()       const { return (si_params); }
+    vl_path_desc                *lhs()          const { return (si_lhs); }
+    lsList<vl_expr*>            *rhs()          const { return (si_rhs); }
+    vl_expr                     *expr()         const { return (si_expr); }
+    int                         pol()           const { return (si_pol); }
+    int                         edge_id()       const { return (si_edge_id); }
+    lsList<vl_spec_term_desc*>  *list1()        const { return (si_list1); }
+    lsList<vl_spec_term_desc*>  *list2()        const { return (si_list2); }
+    vl_expr                     *ifex()         const { return (si_ifex); }
+
+private:
+    int                         si_type;
+    lsList<vl_bassign_stmt*>    *si_params;
+    vl_path_desc                *si_lhs;
+    lsList<vl_expr*>            *si_rhs;
+    vl_expr                     *si_expr;
+    int                         si_pol;
+    int                         si_edge_id;
+    lsList<vl_spec_term_desc*>  *si_list1;
+    lsList<vl_spec_term_desc*>  *si_list2;
+    vl_expr                     *si_ifex;
 };
 
-// Specify item terminal description
+// Specify item terminal description.
 //
 struct vl_spec_term_desc
 {
@@ -1770,15 +1952,21 @@ struct vl_spec_term_desc
     vl_spec_term_desc *copy();
     void print(ostream&);
 
-    const char *lterm()     { return (""); }
+    const char  *lterm()        const { return (""); }
 
-    const char *name;
-    vl_expr *exp1;
-    vl_expr *exp2;
-    int pol;
+    const char  *name()         const { return (st_name); }
+    vl_expr     *exp1()         const { return (st_exp1); }
+    vl_expr     *exp2()         const { return (st_exp2); }
+    int         pol()           const { return (st_pol); }
+
+private:
+    const char  *st_name;
+    vl_expr     *st_exp1;
+    vl_expr     *st_exp2;
+    int         st_pol;
 };
 
-// Specify item path description
+// Specify item path description.
 //
 struct vl_path_desc
 {
@@ -1789,16 +1977,29 @@ struct vl_path_desc
     vl_path_desc *copy();
     void print(ostream&);
 
-    int type;
-    lsList<vl_spec_term_desc*> *list1;
-    lsList<vl_spec_term_desc*> *list2;
+    int                         type()      const { return (pa_type); }
+    lsList<vl_spec_term_desc*>  *list1()    const { return (pa_list1); }
+    lsList<vl_spec_term_desc*>  *list2()    const { return (pa_list2); }
+
+private:
+    int                         pa_type;
+    lsList<vl_spec_term_desc*>  *pa_list1;
+    lsList<vl_spec_term_desc*>  *pa_list2;
 };
 
-// Task description
+// Task description.
 //
 struct vl_task : public vl_stmt
 {
-    vl_task() { name = 0; decls = 0; stmts = 0; sig_st = 0; blk_st = 0; }
+    vl_task()
+        {
+            t_name = 0;
+            t_decls = 0;
+            t_stmts = 0;
+            t_sig_st = 0;
+            t_blk_st = 0;
+        }
+
     vl_task(char*, lsList<vl_decl*>*, lsList<vl_stmt*>*);
     ~vl_task();
 
@@ -1808,20 +2009,30 @@ struct vl_task : public vl_stmt
     void dump(ostream&, int);
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
+    const char          *lterm()        const { return (";\n"); }
 
-    const char *name;
-    lsList<vl_decl*> *decls;
-    lsList<vl_stmt*> *stmts;
-    table<vl_var*> *sig_st;
-    table<vl_stmt*> *blk_st;
+    const char          *name()         const { return (t_name); }
+    lsList<vl_decl*>    *decls()        const { return (t_decls); }
+    lsList<vl_stmt*>    *stmts()        const { return (t_stmts); }
+    table<vl_var*>      *sig_st()       const { return (t_sig_st); }
+    table<vl_stmt*>     *blk_st()       const { return (t_blk_st); }
+
+    void set_sig_st(table<vl_var*> *t)  { t_sig_st = t; }
+    void set_blk_st(table<vl_stmt*> *t) { t_blk_st = t; }
+
+private:
+    const char          *t_name;
+    lsList<vl_decl*>    *t_decls;
+    lsList<vl_stmt*>    *t_stmts;
+    table<vl_var*>      *t_sig_st;
+    table<vl_stmt*>     *t_blk_st;
 };
 
-// Function description
+// Function description.
 //
 struct vl_function : public vl_stmt
 {
-    vl_function(short, vl_range*, char*, lsList<vl_decl*>*, lsList<vl_stmt*>*);
+    vl_function(int, vl_range*, char*, lsList<vl_decl*>*, lsList<vl_stmt*>*);
     ~vl_function();
 
     vl_function *copy();
@@ -1830,58 +2041,88 @@ struct vl_function : public vl_stmt
     void print(ostream&);
     void dump(ostream&, int);
 
-    const char *lterm()     { return (";\n"); }
+    const char          *lterm()        const { return (";\n"); }
 
-    const char *name;
-    vl_range *range;
-    lsList<vl_decl*> *decls;
-    lsList<vl_stmt*> *stmts;
-    table<vl_var*> *sig_st;
-    table<vl_stmt*> *blk_st;
+    const char          *name()         const { return (f_name); }
+    vl_range            *range()        const { return (f_range); }
+    lsList<vl_decl*>    *decls()        const { return (f_decls); }
+    lsList<vl_stmt*>    *stmts()        const { return (f_stmts); }
+    table<vl_var*>      *sig_st()       const { return (f_sig_st); }
+    table<vl_stmt*>     *blk_st()       const { return (f_blk_st); }
+
+    void set_decls(lsList<vl_decl*> *d) { f_decls = d; }
+    void set_stmts(lsList<vl_stmt*> *s) { f_stmts = s; }
+    void set_sig_st(table<vl_var*> *t)  { f_sig_st = t; }
+    void set_blk_st(table<vl_stmt*> *t) { f_blk_st = t; }
+
+private:
+    const char          *f_name;
+    vl_range            *f_range;
+    lsList<vl_decl*>    *f_decls;
+    lsList<vl_stmt*>    *f_stmts;
+    table<vl_var*>      *f_sig_st;
+    table<vl_stmt*>     *f_blk_st;
 };
 
-// Struct to store a drive strength and delay
+// Struct to store a drive strength and delay.
 //
 struct vl_dlstr
 {
     vl_dlstr()
         {
-            delay = 0;
+            d_delay = 0;
         }
 
-    vl_delay *delay;
-    vl_strength strength;
+    vl_delay            *delay()        const { return (d_delay); }
+    const vl_strength   strength()      const { return (d_strength); }
+
+    void set_delay(vl_delay *d)             { d_delay = d; }
+    void set_strength(const vl_strength s)  { d_strength = s; }
+
+private:
+    vl_delay        *d_delay;
+    vl_strength     d_strength;
 };
 
-// Description of a gate type
+// Description of a gate type.
 //
 struct vl_gate_inst_list : public vl_stmt
 {
-    vl_gate_inst_list() { delays = 0; gates = 0; }
-    vl_gate_inst_list(short, vl_dlstr*, lsList<vl_gate_inst*>*);
+    vl_gate_inst_list()
+        {
+            g_delays = 0;
+            g_gates = 0;
+        }
+
+    vl_gate_inst_list(int, vl_dlstr*, lsList<vl_gate_inst*>*);
     ~vl_gate_inst_list();
 
     vl_gate_inst_list *copy();
     void setup(vl_simulator*);
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
+    const char              *lterm()        const { return (";\n"); }
 
-    vl_strength strength;
-    vl_delay *delays;
-    lsList<vl_gate_inst*> *gates;
+    const vl_strength       strength()      const { return (g_strength); }
+    vl_delay                *delays()       const { return (g_delays); }
+    lsList<vl_gate_inst*>   *gates()        const { return (g_gates); }
+
+private:
+    vl_strength             g_strength;
+    vl_delay                *g_delays;
+    lsList<vl_gate_inst*>   *g_gates;
 };
 
-// Description of a module or primitive  instance type
+// Description of a module or primitive  instance type.
 //
 struct vl_mp_inst_list : public vl_stmt
 {
     vl_mp_inst_list()
         {
-            name = 0;
-            mptype = MPundef;
-            mps = 0;
-            params_or_delays = 0;
+            mp_name = 0;
+            mp_mptype = MPundef;
+            mp_mps = 0;
+            mp_prms_or_dlys = 0;
         }
 
     vl_mp_inst_list(MPtype, char*, vl_dlstr*, lsList<vl_mp_inst*>*);
@@ -1893,13 +2134,22 @@ struct vl_mp_inst_list : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (";\n"); }
+    const char          *lterm()            const { return (";\n"); }
 
-    const char *name;             // name of master
-    MPtype mptype;                // type of object in list
-    lsList<vl_mp_inst*> *mps;     // list of instances
-    vl_strength strength;
-    vl_delay *params_or_delays;   // param overrides (in a vl_delay struct)
+    const char          *name()             const { return (mp_name); }
+    MPtype              mptype()            const { return (mp_mptype); }
+    lsList<vl_mp_inst*> *mps()              const { return (mp_mps); }
+    const vl_strength   strength()          const { return (mp_strength); }
+    vl_delay            *prms_or_dlys()     const { return (mp_prms_or_dlys); }
+
+    void set_mptype(MPtype t)               { mp_mptype = t; }
+
+private:
+    const char          *mp_name;           // name of master
+    MPtype              mp_mptype;          // type of object in list
+    lsList<vl_mp_inst*> *mp_mps;            // list of instances
+    vl_strength         mp_strength;
+    vl_delay            *mp_prms_or_dlys;   // param overrides (in a vl_delay)
 };
 
 
@@ -1907,11 +2157,11 @@ struct vl_mp_inst_list : public vl_stmt
 //  Statements
 //---------------------------------------------------------------------------
 
-// Basic assignment description
+// Basic assignment description.
 //
 struct vl_bassign_stmt : public vl_stmt
 {
-    vl_bassign_stmt(short, vl_var*, vl_event_expr*, vl_delay*, vl_var*);
+    vl_bassign_stmt(int, vl_var*, vl_event_expr*, vl_delay*, vl_var*);
     ~vl_bassign_stmt();
 
     vl_bassign_stmt *copy();
@@ -1921,27 +2171,41 @@ struct vl_bassign_stmt : public vl_stmt
     void freeze_indices(vl_range*);
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
+    const char      *lterm()        const { return (";\n"); }
 
-    vl_var *lhs;              // receiving variable
-    vl_range *range;          // bit/part select for receiver
-    vl_var *rhs;              // source expr
-    vl_delay *delay;          // #wait a = #delay b
-    vl_delay *wait;
-    vl_event_expr *event;     // only one of event, delay is not 0
-    vl_var *tmpvar;           // temporary transfer variable
+    vl_var          *lhs()          const { return (ba_lhs); }
+    vl_range        *range()        const { return (ba_range); }
+    vl_var          *rhs()          const { return (ba_rhs); }
+    vl_delay        *delay()        const { return (ba_delay); }
+    vl_delay        *wait()         const { return (ba_wait); }
+    vl_event_expr   *event()        const { return (ba_event); }
+    vl_var          *tmpvar()       const { return (ba_tmpvar); }
+
+    void set_lhs(vl_var *v)         { ba_lhs = v; }
+    void set_range(vl_range *r)     { ba_range = r; }
+    void set_wait(vl_delay *d)      { ba_wait = d; }
+
+private:
+    vl_var          *ba_lhs;        // receiving variable
+    vl_range        *ba_range;      // bit/part select for receiver
+    vl_var          *ba_rhs;        // source expr
+    vl_delay        *ba_delay;      // #wait a = #delay b
+    vl_delay        *ba_wait;
+    vl_event_expr   *ba_event;      // only one of event, delay is not 0
+    vl_var          *ba_tmpvar;     // temporary transfer variable
 };
 
-// System task statememt description
+// System task statememt description.
 //
 struct vl_sys_task_stmt : public vl_stmt
 {
     vl_sys_task_stmt()
         {
-            name = 0;
-            args = 0;
-            dtype = DSPall;
-            flags = 0;
+            action = 0;
+            sy_name = 0;
+            sy_args = 0;
+            sy_dtype = DSPall;
+            sy_flags = 0;
         }
 
     vl_sys_task_stmt(char*, lsList<vl_expr*>*);
@@ -1952,30 +2216,37 @@ struct vl_sys_task_stmt : public vl_stmt
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
-
-    const char *name;
     vl_var& (vl_simulator::*action)(vl_sys_task_stmt*, lsList<vl_expr*>*);
-    lsList<vl_expr*> *args;                
-    DSPtype dtype;
-    unsigned short flags;
-};
 
-// Flags for vl_sys_task_stmt;
+    const char          *lterm()        const { return (";\n"); }
+
+    const char          *name()         const { return (sy_name); }
+    lsList<vl_expr*>    *args()         const { return (sy_args); }
+    DSPtype             dtype()         const { return (sy_dtype); }
+    unsigned int        flags()         const { return (sy_flags); }
+
+private:
+    const char          *sy_name;
+    lsList<vl_expr*>    *sy_args;                
+    DSPtype             sy_dtype;
+    unsigned int        sy_flags;
+
+    // Flags for vl_sys_task_stmt.
 #define SYSafter     0x1
 #define SYSno_nl     0x2
+};
 
-// Begin/end statement description
+// Begin/end statement description.
 //
 struct vl_begin_end_stmt : public vl_stmt
 {
     vl_begin_end_stmt()
         {
-            name = 0;
-            decls = 0;
-            stmts = 0;
-            sig_st = 0;
-            blk_st = 0;
+            be_name = 0;
+            be_decls = 0;
+            be_stmts = 0;
+            be_sig_st = 0;
+            be_blk_st = 0;
         }
 
     vl_begin_end_stmt(char*, lsList<vl_decl*>*, lsList<vl_stmt*>*);
@@ -1990,30 +2261,41 @@ struct vl_begin_end_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *name;
-    lsList<vl_decl*> *decls;
-    lsList<vl_stmt*> *stmts;
-    table<vl_var*> *sig_st;
-    table<vl_stmt*> *blk_st;
+    const char          *name()         const { return (be_name); }
+    lsList<vl_decl*>    *decls()        const { return (be_decls); }
+    lsList<vl_stmt*>    *stmts()        const { return (be_stmts); }
+    table<vl_var*>      *sig_st()       const { return (be_sig_st); }
+    table<vl_stmt*>     *blk_st()       const { return (be_blk_st); }
+
+    void set_sig_st(table<vl_var*> *t)  { be_sig_st = t; }
+    void set_blk_st(table<vl_stmt*> *t) { be_blk_st = t; }
+
+private:
+    const char          *be_name;
+    lsList<vl_decl*>    *be_decls;
+    lsList<vl_stmt*>    *be_stmts;
+    table<vl_var*>      *be_sig_st;
+    table<vl_stmt*>     *be_blk_st;
 };
 
-// If/else statement description
+// If/else statement description.
 //
 struct vl_if_else_stmt : public vl_stmt
 {
     vl_if_else_stmt()
         {
-            cond = 0;
-            if_stmt = else_stmt = 0;
+            ie_cond = 0;
+            ie_if_stmt = 0;
+            ie_else_stmt = 0;
         }
 
     vl_if_else_stmt(vl_expr*, vl_stmt*, vl_stmt*);
 
     ~vl_if_else_stmt()
         {
-            delete cond;
-            delete if_stmt;
-            delete else_stmt;
+            delete ie_cond;
+            delete ie_if_stmt;
+            delete ie_else_stmt;
         }
 
     vl_if_else_stmt *copy();
@@ -2024,24 +2306,29 @@ struct vl_if_else_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char  *lterm()        const { return (""); }
 
-    vl_expr *cond;
-    vl_stmt *if_stmt;
-    vl_stmt *else_stmt;
+    vl_expr     *cond()         const { return (ie_cond); }
+    vl_stmt     *if_stmt()      const { return (ie_if_stmt); }
+    vl_stmt     *else_stmt()    const { return (ie_else_stmt); }
+
+private:
+    vl_expr     *ie_cond;
+    vl_stmt     *ie_if_stmt;
+    vl_stmt     *ie_else_stmt;
 };
 
-// Case statement description
+// Case statement description.
 //
 struct vl_case_stmt : public vl_stmt
 {
     vl_case_stmt()
         {
-            cond = 0;
-            case_items = 0;
+            c_cond = 0;
+            c_case_items = 0;
         }
 
-    vl_case_stmt(short, vl_expr*, lsList<vl_case_item*>*);
+    vl_case_stmt(int, vl_expr*, lsList<vl_case_item*>*);
     ~vl_case_stmt();
 
     vl_case_stmt *copy();
@@ -2052,21 +2339,25 @@ struct vl_case_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    vl_expr *cond;
-    lsList<vl_case_item*> *case_items;
+    vl_expr                 *cond()         const { return (c_cond); }
+    lsList<vl_case_item*>   *case_items()   const { return (c_case_items); }
+
+private:
+    vl_expr                 *c_cond;
+    lsList<vl_case_item*>   *c_case_items;
 };
 
-// Case item description
+// Case item description.
 //
 struct vl_case_item : public vl_stmt
 {
     vl_case_item()
         {
-            exprs = 0;
-            stmt = 0;
+            ci_exprs = 0;
+            ci_stmt = 0;
         }
 
-    vl_case_item(short, lsList<vl_expr*>*, vl_stmt*);
+    vl_case_item(int, lsList<vl_expr*>*, vl_stmt*);
     ~vl_case_item();
 
     vl_case_item *copy();
@@ -2075,24 +2366,28 @@ struct vl_case_item : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    lsList<vl_expr*> *exprs;
-    vl_stmt *stmt;
+    lsList<vl_expr*>    *exprs()        const { return (ci_exprs); }
+    vl_stmt             *stmt()         const { return (ci_stmt); }
+
+private:
+    lsList<vl_expr*>    *ci_exprs;
+    vl_stmt             *ci_stmt;
 };
 
-// Forever statement description
+// Forever statement description.
 //
 struct vl_forever_stmt : public vl_stmt
 {
     vl_forever_stmt()
         {
-            stmt = 0;
+            f_stmt = 0;
         }
 
     vl_forever_stmt(vl_stmt*);
 
     ~vl_forever_stmt()
         {
-            delete stmt;
+            delete f_stmt;
         }
 
     vl_forever_stmt *copy();
@@ -2103,28 +2398,31 @@ struct vl_forever_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char  *lterm()    const { return (""); }
 
-    vl_stmt *stmt;
+    vl_stmt     *stmt()     const { return (f_stmt); }
+
+private:
+    vl_stmt     *f_stmt;
 };
 
-// Repeat statement description
+// Repeat statement description.
 //
 struct vl_repeat_stmt : public vl_stmt
 {
     vl_repeat_stmt()
         {
-            count = 0;
-            stmt = 0;
-            cur_count = 0;
+            r_count = 0;
+            r_stmt = 0;
+            r_cur_count = 0;
         }
 
     vl_repeat_stmt(vl_expr*, vl_stmt*);
 
     ~vl_repeat_stmt()
         {
-            delete count;
-            delete stmt;
+            delete r_count;
+            delete r_stmt;
         }
 
     vl_repeat_stmt *copy();
@@ -2135,29 +2433,34 @@ struct vl_repeat_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char  *lterm()        const { return (""); }
 
-    vl_expr *count;
-    vl_stmt *stmt;
-    int cur_count;
+    vl_expr     *count()        const { return (r_count); }
+    vl_stmt     *stmt()         const { return (r_stmt); }
+    int         cur_count()     const { return (r_cur_count); }
+
+private:
+    vl_expr     *r_count;
+    vl_stmt     *r_stmt;
+    int         r_cur_count;
 };
 
-// While statement description
+// While statement description.
 //
 struct vl_while_stmt : public vl_stmt
 {
     vl_while_stmt()
         {
-            cond = 0;
-            stmt = 0;
+            w_cond = 0;
+            w_stmt = 0;
         }
 
     vl_while_stmt(vl_expr*, vl_stmt*);
 
     ~vl_while_stmt()
         {
-            delete cond;
-            delete stmt;
+            delete w_cond;
+            delete w_stmt;
         }
 
     vl_while_stmt *copy();
@@ -2168,31 +2471,36 @@ struct vl_while_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char  *lterm()    const { return (""); }
 
-    vl_expr *cond;
-    vl_stmt *stmt;
+    vl_expr     *cond()     const { return (w_cond); }
+    vl_stmt     *stmt()     const { return (w_stmt); }
+
+private:
+    vl_expr     *w_cond;
+    vl_stmt     *w_stmt;
 };
 
-// For statement description
+// For statement description.
 //
 struct vl_for_stmt : public vl_stmt
 {
     vl_for_stmt()
         {
-            initial = end = 0;
-            cond = 0;
-            stmt = 0;
+            f_initial = 0;
+            f_end = 0;
+            f_cond = 0;
+            f_stmt = 0;
         }
 
     vl_for_stmt(vl_bassign_stmt*, vl_expr*, vl_bassign_stmt*, vl_stmt*);
 
     ~vl_for_stmt()
         {
-            delete initial;
-            delete end;
-            delete cond;
-            delete stmt;
+            delete f_initial;
+            delete f_end;
+            delete f_cond;
+            delete f_stmt;
         }
 
     vl_for_stmt *copy();
@@ -2203,30 +2511,36 @@ struct vl_for_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char          *lterm()        const { return (""); }
 
-    vl_bassign_stmt *initial;
-    vl_bassign_stmt *end;
-    vl_expr *cond;
-    vl_stmt *stmt;
+    vl_bassign_stmt     *initial()      const { return (f_initial); }
+    vl_bassign_stmt     *end()          const { return (f_end); }
+    vl_expr             *cond()         const { return (f_cond); }
+    vl_stmt             *stmt()         const { return (f_stmt); }
+
+private:
+    vl_bassign_stmt     *f_initial;
+    vl_bassign_stmt     *f_end;
+    vl_expr             *f_cond;
+    vl_stmt             *f_stmt;
 };
 
-// Delay control statement description
+// Delay control statement description.
 //
 struct vl_delay_control_stmt : public vl_stmt
 {
     vl_delay_control_stmt()
         {
-            delay = 0;
-            stmt = 0;
+            d_delay = 0;
+            d_stmt = 0;
         }
 
     vl_delay_control_stmt(vl_delay*, vl_stmt*);
 
     ~vl_delay_control_stmt()
         {
-            delete delay;
-            delete stmt;
+            delete d_delay;
+            delete d_stmt;
         }
 
     vl_delay_control_stmt *copy();
@@ -2237,28 +2551,32 @@ struct vl_delay_control_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char  *lterm()        const { return (""); }
 
-    vl_delay *delay;
-    vl_stmt *stmt;
+    vl_delay    *delay()        const { return (d_delay); }
+    vl_stmt     *stmt()         const { return (d_stmt); }
+
+private:
+    vl_delay    *d_delay;
+    vl_stmt     *d_stmt;
 };
 
-// Event control statement description
+// Event control statement description.
 //
 struct vl_event_control_stmt : public vl_stmt
 {
     vl_event_control_stmt()
         {
-            event = 0;
-            stmt = 0;
+            ec_event = 0;
+            ec_stmt = 0;
         }
 
     vl_event_control_stmt(vl_event_expr*, vl_stmt*);
 
     ~vl_event_control_stmt()
         {
-            delete event;
-            delete stmt;
+            delete ec_event;
+            delete ec_stmt;
         }
 
     vl_event_control_stmt *copy();
@@ -2269,32 +2587,36 @@ struct vl_event_control_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char      *lterm()        const { return (""); }
 
-    vl_event_expr *event;
-    vl_stmt *stmt;
+    vl_event_expr   *event()        const { return (ec_event); }
+    vl_stmt         *stmt()         const { return (ec_stmt); }
+
+private:
+    vl_event_expr   *ec_event;
+    vl_stmt         *ec_stmt;
 };
 
-// Wait statement description
+// Wait statement description.
 //
 struct vl_wait_stmt : public vl_stmt
 {
     vl_wait_stmt()
         {
-            cond = 0;
-            stmt = 0;
-            event = 0;
+            w_cond = 0;
+            w_stmt = 0;
+            w_event = 0;
         }
 
     vl_wait_stmt(vl_expr*, vl_stmt*);
 
     ~vl_wait_stmt()
         {
-            delete cond;
-            delete stmt;
-            if (event) {
-                event->set_expr(0);
-                delete event;
+            delete w_cond;
+            delete w_stmt;
+            if (w_event) {
+                w_event->set_expr(0);
+                delete w_event;
             }
         }
 
@@ -2306,27 +2628,32 @@ struct vl_wait_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *lterm()     { return (""); }
+    const char      *lterm()    const { return (""); }
 
-    vl_expr *cond;
-    vl_stmt *stmt;
-    vl_event_expr *event;
+    vl_expr         *cond()     const { return (w_cond); }
+    vl_stmt         *stmt()     const { return (w_stmt); }
+    vl_event_expr   *event()    const { return (w_event); }
+
+private:
+    vl_expr         *w_cond;
+    vl_stmt         *w_stmt;
+    vl_event_expr   *w_event;
 };
 
-// Send event statement description
+// Send event statement description.
 //
 struct vl_send_event_stmt : public vl_stmt
 {
     vl_send_event_stmt()
         {
-            name = 0;
+            se_name = 0;
         }
 
     vl_send_event_stmt(char*);
 
     ~vl_send_event_stmt()
         {
-            delete [] name;
+            delete [] se_name;
         }
 
     vl_send_event_stmt *copy();
@@ -2334,23 +2661,26 @@ struct vl_send_event_stmt : public vl_stmt
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
+    const char *lterm()     const { return (";\n"); }
 
-    const char *name;
+    const char *name()      const { return (se_name); }
+
+private:
+    const char *se_name;
 };
 
-// Fork/join statement description
+// Fork/join statement description.
 //
 struct vl_fork_join_stmt : public vl_stmt
 {
     vl_fork_join_stmt()
         {
-            name = 0;
-            decls = 0;
-            stmts = 0;
-            sig_st = 0;
-            blk_st = 0;
-            endcnt = 0;
+            fj_name = 0;
+            fj_decls = 0;
+            fj_stmts = 0;
+            fj_sig_st = 0;
+            fj_blk_st = 0;
+            fj_endcnt = 0;
         }
 
     vl_fork_join_stmt(char*, lsList<vl_decl*>*, lsList<vl_stmt*>*);
@@ -2365,45 +2695,61 @@ struct vl_fork_join_stmt : public vl_stmt
     void print(ostream&);
     void dumpvars(ostream&, vl_simulator*);
 
-    const char *name;
-    lsList<vl_decl*> *decls;
-    lsList<vl_stmt*> *stmts;
-    table<vl_var*> *sig_st;
-    table<vl_stmt*> *blk_st;
-    int endcnt;
+    const char          *name()         const { return (fj_name); }
+    lsList<vl_decl*>    *decls()        const { return (fj_decls); }
+    lsList<vl_stmt*>    *stmts()        const { return (fj_stmts); }
+    table<vl_var*>      *sig_st()       const { return (fj_sig_st); }
+    table<vl_stmt*>     *blk_st()       const { return (fj_blk_st); }
+    int                 endcnt()        const { return (fj_endcnt); }
+
+    void set_sig_st(table<vl_var*> *t)  { fj_sig_st = t; }
+    void set_blk_st(table<vl_stmt*> *t) { fj_blk_st = t; }
+    void dec_endcnt()                   { fj_endcnt--; }
+
+private:
+    const char          *fj_name;
+    lsList<vl_decl*>    *fj_decls;
+    lsList<vl_stmt*>    *fj_stmts;
+    table<vl_var*>      *fj_sig_st;
+    table<vl_stmt*>     *fj_blk_st;
+    int                 fj_endcnt;
 };
 
-// This is used to indicate the end of a thread in a fork/join block
+// This is used to indicate the end of a thread in a fork/join block.
 //
 struct vl_fj_break : public vl_stmt
 {
     vl_fj_break(vl_fork_join_stmt *f, vl_begin_end_stmt *e)
         {
-            type = ForkJoinBreak;
-            fjblock = f;
-            begin_end = e;
+            st_type = ForkJoinBreak;
+            fjb_fjblock = f;
+            fjb_begin_end = e;
         }
 
     void setup(vl_simulator*);
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
 
-    vl_fork_join_stmt *fjblock;         // originating block
-    vl_begin_end_stmt *begin_end;       // created thread container
+    vl_fork_join_stmt *fjblock()    const { return (fjb_fjblock); }
+    vl_begin_end_stmt *begin_end()  const { return (fjb_begin_end); }
+
+private:
+    vl_fork_join_stmt *fjb_fjblock;     // originating block
+    vl_begin_end_stmt *fjb_begin_end;   // created thread container
 };
 
-// Task enable statement description
+// Task enable statement description.
 //
 struct vl_task_enable_stmt : public vl_stmt
 {
     vl_task_enable_stmt()
         {
-            name = 0;
-            args = 0;
-            task = 0;
+            te_name = 0;
+            te_args = 0;
+            te_task = 0;
         }
 
-    vl_task_enable_stmt(short, char*, lsList<vl_expr*>*);
+    vl_task_enable_stmt(int, char*, lsList<vl_expr*>*);
     ~vl_task_enable_stmt();
 
     vl_task_enable_stmt *copy();
@@ -2411,26 +2757,31 @@ struct vl_task_enable_stmt : public vl_stmt
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
 
-    const char *name;
-    lsList<vl_expr*> *args;
-    vl_task *task;
+    const char          *name()     const { return (te_name); }
+    lsList<vl_expr*>    *args()     const { return (te_args); }
+    vl_task             *task()     const { return (te_task); }
+
+private:
+    const char          *te_name;
+    lsList<vl_expr*>    *te_args;
+    vl_task             *te_task;
 };
 
-// Disable statement description
+// Disable statement description.
 //
 struct vl_disable_stmt : public vl_stmt
 {
     vl_disable_stmt()
         {
-            name = 0;
-            target = 0;
+            d_name = 0;
+            d_target = 0;
         }
 
     vl_disable_stmt(char*);
 
     ~vl_disable_stmt()
         {
-            delete [] name;
+            delete [] d_name;
         }
 
     vl_disable_stmt *copy();
@@ -2438,22 +2789,26 @@ struct vl_disable_stmt : public vl_stmt
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
+    const char  *lterm()    const { return (";\n"); }
 
-    const char *name;
-    vl_stmt *target;
+    const char  *name()     const { return (d_name); }
+    vl_stmt     *target()   const { return (d_target); }
+
+private:
+    const char  *d_name;
+    vl_stmt     *d_target;
 };
 
-// Deassign statement description
+// Deassign statement description.
 //
 struct vl_deassign_stmt : public vl_stmt
 {
     vl_deassign_stmt()
         {
-            lhs = 0;
+            d_lhs = 0;
         }
 
-    vl_deassign_stmt(short, vl_var*);
+    vl_deassign_stmt(int, vl_var*);
     ~vl_deassign_stmt();
 
     vl_deassign_stmt *copy();
@@ -2462,9 +2817,12 @@ struct vl_deassign_stmt : public vl_stmt
     EVtype eval(vl_event*, vl_simulator*);
     void print(ostream&);
 
-    const char *lterm()     { return (";\n"); }
+    const char  *lterm()    const { return (";\n"); }
 
-    vl_var *lhs;
+    vl_var      *lhs()      const { return (d_lhs); }
+
+private:
+    vl_var      *d_lhs;
 };
 
 
@@ -2472,14 +2830,24 @@ struct vl_deassign_stmt : public vl_stmt
 //  Instances
 //---------------------------------------------------------------------------
 
-// Base class for instances
+// Base class for instances.
 //
 struct vl_inst : public vl_stmt
 {
-    const char *name;
+    vl_inst() : i_name(0)   { }
+
+    virtual ~vl_inst()
+        {
+            delete [] i_name;
+        }
+
+    const char *name()      const { return (i_name); }
+
+protected:
+    const char *i_name;
 };
 
-// Gate instance
+// Gate instance.
 //
 struct vl_gate_inst : public vl_inst
 {
@@ -2488,12 +2856,22 @@ struct vl_gate_inst : public vl_inst
     ~vl_gate_inst();
 
     vl_gate_inst *copy();
-    void print(ostream &outs) { outs << string; }
-    const char *lterm() { return (";\n"); }
     void setup(vl_simulator*);
     EVtype eval(vl_event*, vl_simulator*);
     void set_type(int);
     void set_delay(vl_simulator*, int);
+
+    void                print(ostream &outs)    { outs << gi_string; }
+    const char          *lterm()        const { return (";\n"); }
+
+    lsList<vl_expr*>    *terms()        const { return (gi_terms); }
+    lsList<vl_var*>     *outputs()      const { return (gi_outputs); }
+    const char          *string()       const { return (gi_string); }
+    vl_gate_inst_list   *inst_list()    const { return (gi_inst_list); }
+    vl_delay            *delay()        const { return (gi_delay); }
+    vl_range            *array()        const { return (gi_array); }
+
+    void set_inst_list(vl_gate_inst_list *l)        { gi_inst_list = l; }
 
 private:
     static bool gsetup_gate(vl_simulator*, vl_gate_inst*);
@@ -2511,28 +2889,27 @@ private:
     static bool geval_tran(vl_simulator*, int(*)(int, int), vl_gate_inst*);
     static bool geval_ctran(vl_simulator*, int(*)(int, int), vl_gate_inst*);
 
-public:
-    lsList<vl_expr*> *terms;
-    lsList<vl_var*> *outputs;
-    bool (*gsetup)(vl_simulator*, vl_gate_inst*);
-    bool (*geval)(vl_simulator*, int(*)(int, int), vl_gate_inst*);
-    int (*gset)(int, int);
-    const char *string;
-    vl_gate_inst_list *inst_list;
-    vl_delay *delay;    // rise/fall/turn-off
-    vl_range *array;    // arrayed size
+    bool (*gi_setup)(vl_simulator*, vl_gate_inst*);
+    bool (*gi_eval)(vl_simulator*, int(*)(int, int), vl_gate_inst*);
+    int  (*gi_set)(int, int);
+
+    lsList<vl_expr*>    *gi_terms;
+    lsList<vl_var*>     *gi_outputs;
+    const char          *gi_string;
+    vl_gate_inst_list   *gi_inst_list;
+    vl_delay            *gi_delay;      // rise/fall/turn-off
+    vl_range            *gi_array;      // arrayed size
 };
 
-// Module or primitive instance
+// Module or primitive instance.
 //
 struct vl_mp_inst : public vl_inst
 {
     vl_mp_inst()
         {
-            name = 0;
-            ports = 0;
-            inst_list = 0;
-            master = 0;
+            pi_ports = 0;
+            pi_inst_list = 0;
+            pi_master = 0;
         }
 
     vl_mp_inst(char*, lsList<vl_port_connect*>*);
@@ -2545,23 +2922,18 @@ struct vl_mp_inst : public vl_inst
     void port_setup(vl_simulator*, vl_port_connect*, vl_port*, int);
     void dumpvars(ostream&, vl_simulator*);
 
-    lsList<vl_port_connect*> *ports;
-    vl_mp_inst_list *inst_list;   // m/p inst_list
-    vl_mp *master;                // module or primitive copy
+    lsList<vl_port_connect*>    *ports()        const { return (pi_ports); }
+    vl_mp_inst_list             *inst_list()    const { return (pi_inst_list); }
+    vl_mp                       *master()       const { return (pi_master); }
+
+    void set_inst_list(vl_mp_inst_list *l)      { pi_inst_list = l; }
+    void set_master(vl_mp *m)                   { pi_master = m; }
+
+private:
+    lsList<vl_port_connect*>    *pi_ports;
+    vl_mp_inst_list             *pi_inst_list;  // m/p inst_list
+    vl_mp                       *pi_master;     // module or primitive copy
 };
 
-
-//---------------------------------------------------------------------------
-//  Exported globals
-//---------------------------------------------------------------------------
-
-// vl_print.cc
-extern void vl_error(const char*, ...);
-extern void vl_warn(const char*, ...);
-extern const char *vl_datestring();
-extern const char *vl_version();
-extern char *vl_fix_str(const char*);
-extern char *vl_strdup(const char*);
-
-#define errout(x) cout << (x) << "\n---\n"
+// End of file.
 

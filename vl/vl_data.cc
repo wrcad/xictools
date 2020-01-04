@@ -330,11 +330,12 @@ namespace {
             return (true);
         if (!s1 || !s2)
             return (false);
-        if (s1->num != s2->num)
+        if (s1->num() != s2->num())
             return (false);
-        for (int i = 0; i < s1->num; i++)
-            if (s1->acts[i].actions != s2->acts[i].actions)
+        for (int i = 0; i < s1->num(); i++) {
+            if (s1->act(i).actions() != s2->act(i).actions())
                 return (false);
+        }
         return (true);
     }
 }
@@ -354,29 +355,29 @@ vl_var::chain(vl_stmt *stmt)
             e->chain(stmt);
         return;
     }
-    if (stmt->type == ActionItem) {
+    if (stmt->type() == ActionItem) {
         vl_action_item *a = (vl_action_item*)stmt;
-        for (vl_action_item *aa = v_events; aa; aa = aa->next) {
-            if (aa->event == a->event)
+        for (vl_action_item *aa = v_events; aa; aa = aa->next()) {
+            if (aa->event() == a->event())
                 return;
         }
-        if (a->event)
-            a->event->init();
-        vl_action_item *an = new vl_action_item(a->stmt, VS()->context());
-        an->stack = chk_copy(a->stack);
-        an->event = a->event;
-        an->flags = a->flags;
-        an->next = v_events;
+        if (a->event())
+            a->event()->init();
+        vl_action_item *an = new vl_action_item(a->stmt(), VS()->context());
+        an->set_stack(chk_copy(a->stack()));
+        an->set_event(a->event());
+        an->set_flags(a->flags());
+        an->set_next(v_events);
         v_events = an;
     }
     else {
         vl_action_item *a;
-        for (a = v_events; a; a = a->next) {
-            if (a->stmt == stmt)
+        for (a = v_events; a; a = a->next()) {
+            if (a->stmt() == stmt)
                 return;
         }
         a = new vl_action_item(stmt, VS()->context());
-        a->next = v_events;
+        a->set_next(v_events);
         v_events = a;
     }
 }
@@ -392,14 +393,14 @@ vl_var::unchain(vl_stmt *stmt)
             e->unchain(stmt);
         return;
     }
-    if (stmt->type == ActionItem) {
+    if (stmt->type() == ActionItem) {
         vl_action_item *a = (vl_action_item*)stmt;
         vl_action_item *ap = 0, *an;
         for (vl_action_item *aa = v_events; aa; aa = an) {
-            an = aa->next;
-            if (aa->stmt == a->stmt && same(aa->stack, a->stack)) {
+            an = aa->next();
+            if (aa->stmt() == a->stmt() && same(aa->stack(), a->stack())) {
                 if (ap)
-                    ap->next = an;
+                    ap->set_next(an);
                 else
                     v_events = an;
                 if (aa != a)
@@ -412,10 +413,10 @@ vl_var::unchain(vl_stmt *stmt)
     else {
         vl_action_item *ap = 0, *an;
         for (vl_action_item *a = v_events; a; a = an) {
-            an = a->next;
-            if (a->stmt == stmt) {
+            an = a->next();
+            if (a->stmt() == stmt) {
                 if (ap)
-                    ap->next = an;
+                    ap->set_next(an);
                 else
                     v_events = an;
                 delete a;
@@ -437,7 +438,8 @@ vl_var::unchain_disabled(vl_stmt *stmt)
             e->unchain_disabled(stmt);
         return;
     }
-    v_events = v_events->purge(stmt);
+    if (v_events)
+        v_events = v_events->purge(stmt);
 }
 
 
@@ -1749,7 +1751,7 @@ vl_var::set_assigned(vl_bassign_stmt *bs)
     if (v_flags & VAR_F_ASSIGN)
         return;
     if (bs && v_cassign == bs && (v_flags & VAR_CP_ASSIGN)) {
-        vl_var z = case_eq(*v_cassign->lhs, v_cassign->rhs->eval());
+        vl_var z = case_eq(*v_cassign->lhs(), v_cassign->rhs()->eval());
         if (z.v_data.s[0] == BitH)
             return;
     }
@@ -1785,13 +1787,13 @@ vl_var::set_assigned(vl_bassign_stmt *bs)
     }
     anot_flags(VAR_CP_ASSIGN);
     if (v_cassign) {
-        v_cassign->rhs->unchain(v_cassign);
+        v_cassign->rhs()->unchain(v_cassign);
         v_cassign = 0;
     }
     if (bs) {
         v_cassign = bs;
-        v_cassign->lhs->assign(0, &v_cassign->rhs->eval(), 0);
-        v_cassign->rhs->chain(v_cassign);
+        v_cassign->lhs()->assign(0, &v_cassign->rhs()->eval(), 0);
+        v_cassign->rhs()->chain(v_cassign);
         or_flags(VAR_CP_ASSIGN);
         if (v_data_type == Dconcat) {
             lsGen<vl_expr*> gen(v_data.c);
@@ -1810,7 +1812,7 @@ vl_var::set_forced(vl_bassign_stmt *bs)
 {
     if (bs) {
         if (v_cassign == bs && (v_flags & VAR_F_ASSIGN)) {
-            vl_var z = case_eq(*v_cassign->lhs, v_cassign->rhs->eval());
+            vl_var z = case_eq(*v_cassign->lhs(), v_cassign->rhs()->eval());
             if (z.v_data.s[0] == BitH)
                 return;
         }
@@ -1832,13 +1834,13 @@ vl_var::set_forced(vl_bassign_stmt *bs)
     }
     anot_flags(VAR_F_ASSIGN);
     if (v_cassign) {
-        v_cassign->rhs->unchain(v_cassign);
+        v_cassign->rhs()->unchain(v_cassign);
         v_cassign = 0;
     }
     if (bs) {
         v_cassign = bs;
-        v_cassign->lhs->assign(0, &v_cassign->rhs->eval(), 0);
-        v_cassign->rhs->chain(v_cassign);
+        v_cassign->lhs()->assign(0, &v_cassign->rhs()->eval(), 0);
+        v_cassign->rhs()->chain(v_cassign);
         or_flags(VAR_F_ASSIGN);
         if (v_data_type == Dconcat) {
             lsGen<vl_expr*> gen(v_data.c);
@@ -1866,7 +1868,7 @@ vl_var::freeze_concat()
         if (e->etype() == BitSelExpr || e->etype() == PartSelExpr) {
             vl_range *tr = 0;
             if (e->edata().ide.range) {
-                e->edata().ide.range->reval(&tr);
+                tr = e->edata().ide.range->reval();
                 delete e->edata().ide.range;
             }
             e->edata().ide.range = tr;
@@ -2173,19 +2175,19 @@ vl_var::trigger()
 {
     vl_action_item *ap = 0, *an;
     for (vl_action_item *a = v_events; a; a = an) {
-        an = a->next;
-        if (a->event) {
-            if ((int)a->event->eval(VS())) {
-                if (a->event->count()) {
-                    a->event->set_count(a->event->count() - 1);
+        an = a->next();
+        if (a->event()) {
+            if (a->event()->eval(VS())) {
+                if (a->event()->count()) {
+                    a->event()->set_count(a->event()->count() - 1);
                     return;
                 }
-                a->next = 0;
-                a->event->unchain(a);
-                a->event = 0;
+                a->set_next(0);
+                a->event()->unchain(a);
+                a->set_event(0);
                 VS()->timewheel()->append_trig(VS()->time(), a);
                 if (ap)
-                    ap->next = an;
+                    ap->set_next(an);
                 else
                     v_events = an;
                 continue;
@@ -3698,13 +3700,12 @@ vl_range::eval(int *m, int *l)
 
 // Create a new range struct by evaluating this.
 //
-bool
-vl_range::reval(vl_range **r)
+vl_range *
+vl_range::reval()
 {
-    *r = 0;
     int m, l;
     if (!eval(&m, &l))
-        return (false);
+        return (0);
     vl_expr *mx = new vl_expr;
     mx->set_etype(IntExpr);
     mx->set_data_type(Dint);
@@ -3716,8 +3717,7 @@ vl_range::reval(vl_range **r)
         lx->set_data_type(Dint);
         lx->data().i = l;
     }
-    *r = new vl_range(mx, lx);
-    return (true);
+    return (new vl_range(mx, lx));
 }
 
 
@@ -3762,9 +3762,9 @@ vl_delay::eval()
         VS()->abort();
         return (0);
     }
-    double tstep = VS()->description()->tstep;
-    double tunit = cmod->tunit;
-    double tprec = cmod->tprec;
+    double tstep = VS()->description()->tstep();
+    double tunit = cmod->tunit();
+    double tprec = cmod->tprec();
     if (list) {
         lsGen<vl_expr*> gen(list);
         vl_expr *e;

@@ -274,7 +274,7 @@ VerilogBlock::initialize(sOUTdata *outd)
             }
         }
         delete [] list;
-        vb_sim->steptime = 0;
+        vb_sim->set_steptime(0);
         vb_sim->step();
     }
 }
@@ -298,7 +298,7 @@ VerilogBlock::run_step(sOUTdata *outd)
     if (!vb_sim)
         return;
 
-    vb_sim->time++;
+    vb_sim->set_time(vb_sim->time() + 1);
     for (sADC *a = vb_adc; a; a = a->next())
         a->set_var(this, outd->circuitPtr->CKTrhsOld);
     vb_sim->step();
@@ -308,9 +308,9 @@ VerilogBlock::run_step(sOUTdata *outd)
 bool
 VerilogBlock::query_var(const char *name, const char *range, double *d)
 {
-    if (vb_sim && vb_sim->top_modules) {
+    if (vb_sim && vb_sim->top_modules()) {
         vl_context cx;
-        cx.module = vb_sim->top_modules->mods[0];
+        cx.set_module(vb_sim->top_modules()->mod(0));
         vl_var *data = cx.lookup_var(name, true);
         if (data) {
             if (range && *range) {
@@ -346,9 +346,9 @@ VerilogBlock::query_var(const char *name, const char *range, double *d)
 bool
 VerilogBlock::set_var(sADC *a, double val)
 {
-    if (vb_sim && vb_sim->top_modules) {
+    if (vb_sim && vb_sim->top_modules()) {
         vl_context cx;
-        cx.module = vb_sim->top_modules->mods[0];
+        cx.set_module(vb_sim->top_modules()->mod(0));
         vl_var *data = cx.lookup_var(a->dig_var(), true);
         if (data) {
             const char *range = a->range();

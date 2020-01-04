@@ -292,8 +292,8 @@ vl_parser::parse_timescale(const char *str)
 
     if (t2 > t1)
         return (false);
-    if (t2 < p_description->tstep)
-        p_description->tstep = t2;
+    if (t2 < p_description->tstep())
+        p_description->set_tstep(t2);
     p_tunit = t1;
     p_tprec = t2;
     return (true);

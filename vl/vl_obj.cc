@@ -83,55 +83,43 @@ namespace {
 
 vl_module::vl_module()
 {
-    type = 0;
-    name = 0;
-    ports = 0;
-    sig_st = 0;
-    inst_count = 0;
-    instance = 0;
-    mod_items = 0;
-    inst_st = 0;
-    func_st = 0;
-    task_st = 0;
-    blk_st = 0;
-    tunit = 1.0;
-    tprec = 1.0;
+    m_tunit = 1.0;
+    m_tprec = 1.0;
+    m_mod_items = 0;
+    m_inst_st = 0;
+    m_func_st = 0;
+    m_task_st = 0;
+    m_blk_st = 0;
 }
 
 
 vl_module::vl_module(vl_desc *desc, char *mn, lsList<vl_port*> *pts,
     lsList<vl_stmt*> *mitems)
 {
-    type = ModDecl;
-    name = mn;
-    ports = pts;
-    sig_st = 0;
-    inst_count = 0;
-    instance = 0;
-    mod_items = mitems;
-    inst_st = 0;
-    func_st = 0;
-    task_st = 0;
-    blk_st = 0;
-    tunit = 1.0;
-    tprec = 1.0;
+    mp_type = ModDecl;
+    mp_name = mn;
+    mp_ports = pts;
+    m_tunit = 1.0;
+    m_tprec = 1.0;
+    m_mod_items = mitems;
+    m_inst_st = 0;
+    m_func_st = 0;
+    m_task_st = 0;
+    m_blk_st = 0;
     if (desc) {
-        desc->modules->newEnd(this);
-        desc->mp_st->insert(mn, this);
+        desc->modules()->newEnd(this);
+        desc->mp_st()->insert(mn, this);
     }
 }
 
 
 vl_module::~vl_module()
 {
-    delete [] name;
-    delete_list(ports);
-    delete_list(mod_items);
-    delete_table(sig_st);
-    delete inst_st;
-    delete func_st;
-    delete task_st;
-    delete blk_st;
+    delete_list(m_mod_items);
+    delete m_inst_st;
+    delete m_func_st;
+    delete m_task_st;
+    delete m_blk_st;
 }
 
 
@@ -141,13 +129,13 @@ vl_module::copy()
     sort_moditems();
 
     vl_module *retval = new vl_module;
-    retval->type = type;
-    retval->name = vl_strdup(name);
+    retval->mp_type = mp_type;
+    retval->mp_name = vl_strdup(mp_name);
 
     vl_context *cx = var_context();
     while (cx) {
-        if (cx->module() && !strcmp(cx->module()->name, name)) {
-            vl_error("recursive instantiation of module %s", name);
+        if (cx->module() && !strcmp(cx->module()->name(), name())) {
+            vl_error("recursive instantiation of module %s", name());
             VS()->abort();
             return (retval);
         }
@@ -155,11 +143,11 @@ vl_module::copy()
     }
 
     set_var_context(vl_context::push(var_context(), retval));
-    retval->ports = copy_list(ports);
-    retval->mod_items = copy_list(mod_items);
+    retval->mp_ports = copy_list(mp_ports);
+    retval->m_mod_items = copy_list(m_mod_items);
     set_var_context(vl_context::pop(var_context()));
-    retval->tunit = tunit;
-    retval->tprec = tprec;
+    retval->m_tunit = m_tunit;
+    retval->m_tprec = m_tprec;
 
     return (retval);
 }
@@ -169,7 +157,7 @@ void
 vl_module::init()
 {
     set_var_context(vl_context::push(var_context(), this));
-    init_list(mod_items);
+    init_list(m_mod_items);
     set_var_context(vl_context::pop(var_context()));
 }
 // End vl_module functions.
@@ -177,52 +165,39 @@ vl_module::init()
 
 vl_primitive::vl_primitive()
 {
-    type = 0;
-    name = 0;
-    ports = 0;
-    sig_st = 0;
-    inst_count = 0;
-    instance = 0;
-    decls = 0;
-    initial = 0;
-    ptable = 0;
-    rows = 0;
-    seq_init = false;
-    for (int i = 0; i < MAXPRIMLEN; iodata[i++] = 0) ;
-    for (int i = 0; i < MAXPRIMLEN; lastvals[i++] = BitDC) ;
+    p_decls = 0;
+    p_initial = 0;
+    p_ptable = 0;
+    p_rows = 0;
+    p_seq_init = false;
+    memset(p_iodata, 0, MAXPRIMLEN*sizeof(vl_var*));
+    memset(p_lastvals, BitDC, MAXPRIMLEN);
 }
 
 
 vl_primitive::vl_primitive(vl_desc *desc, char *prim_name)
 {
-    type = CombPrimDecl;
-    name = prim_name;
-    ports = 0;
-    sig_st = 0;
-    inst_count = 0;
-    instance = 0;
-    decls = 0;
-    initial = 0;
-    ptable = 0;
-    rows = 0;
-    seq_init = false;
-    for (int i = 0; i < MAXPRIMLEN; iodata[i++] = 0) ;
-    for (int i = 0; i < MAXPRIMLEN; lastvals[i++] = BitDC) ;
+    mp_type = CombPrimDecl;
+    mp_name = prim_name;
+    p_decls = 0;
+    p_initial = 0;
+    p_ptable = 0;
+    p_rows = 0;
+    p_seq_init = false;
+    memset(p_iodata, 0, MAXPRIMLEN*sizeof(vl_var*));
+    memset(p_lastvals, BitDC, MAXPRIMLEN);
     if (desc) {
-        desc->primitives->newEnd(this);
-        desc->mp_st->insert(prim_name, this);
+        desc->primitives()->newEnd(this);
+        desc->mp_st()->insert(prim_name, this);
     }
 }
 
 
 vl_primitive::~vl_primitive()
 {
-    delete [] name;
-    delete_list(ports);
-    delete_list(decls);
-    delete initial;
-    delete_table(sig_st);
-    delete [] ptable;
+    delete_list(p_decls);
+    delete p_initial;
+    delete [] p_ptable;
 }
 
 
@@ -231,21 +206,21 @@ vl_primitive::init_table(lsList<vl_port*> *prim_ports,
     lsList<vl_decl*> *prim_decls, vl_bassign_stmt *initial_stmt,
     lsList<vl_prim_entry*> *prim_entries)
 {
-    ports = prim_ports;
-    decls = prim_decls;
-    initial = initial_stmt;
+    mp_ports = prim_ports;
+    p_decls = prim_decls;
+    p_initial = initial_stmt;
     if (prim_entries) {
-        rows = prim_entries->length();
-        if (rows) {
-            ptable = new unsigned char[rows*MAXPRIMLEN];
-            unsigned char *row = ptable;
+        p_rows = prim_entries->length();
+        if (p_rows) {
+            p_ptable = new unsigned char[p_rows*MAXPRIMLEN];
+            unsigned char *row = p_ptable;
             lsGen<vl_prim_entry*> gen(prim_entries);
-            int os = type == SeqPrimDecl ? 2 : 1;
+            int os = (mp_type == SeqPrimDecl ? 2 : 1);
             vl_prim_entry *e;
             while (gen.next(&e)) {
                 unsigned char *col = row;
                 *col++ = e->next_state;
-                if (type == SeqPrimDecl)
+                if (mp_type == SeqPrimDecl)
                     *col++ = e->state;
                 for (int i = 0; i < MAXPRIMLEN - os; i++)
                     *col++ = e->inputs[i];
@@ -261,17 +236,17 @@ vl_primitive *
 vl_primitive::copy()
 {
     vl_primitive *retval = new vl_primitive();
-    retval->type = type;
-    retval->name = vl_strdup(name);
+    retval->mp_type = mp_type;
+    retval->mp_name = vl_strdup(mp_name);
 
     set_var_context(vl_context::push(var_context(), retval));
-    retval->ports = copy_list(ports);
-    retval->decls = copy_list(decls);
-    retval->initial = chk_copy(initial);
-    retval->rows = rows;
-    if (ptable) {
-        retval->ptable = new unsigned char[rows*MAXPRIMLEN];
-        memcpy(retval->ptable, ptable, rows*MAXPRIMLEN);
+    retval->mp_ports = copy_list(mp_ports);
+    retval->p_decls = copy_list(p_decls);
+    retval->p_initial = chk_copy(p_initial);
+    retval->p_rows = p_rows;
+    if (p_ptable) {
+        retval->p_ptable = new unsigned char[p_rows*MAXPRIMLEN];
+        memcpy(retval->p_ptable, p_ptable, p_rows*MAXPRIMLEN);
     }
     set_var_context(vl_context::pop(var_context()));
     return (retval);
@@ -282,7 +257,7 @@ void
 vl_primitive::init()
 {
     set_var_context(vl_context::push(var_context(), this));
-    init_list(decls);
+    init_list(p_decls);
     set_var_context(vl_context::pop(var_context()));
 }
 // End vl_primitive functions.
@@ -304,58 +279,59 @@ vl_prim_entry::vl_prim_entry(lsList<int> *ip, unsigned char st,
 // End vl_prim_entry functions.
 
 
-vl_port::vl_port(short t, char *n, lsList<vl_var*> *exprs)
+vl_port::vl_port(int t, char *n, lsList<vl_var*> *exprs)
 {
-    type = t;
-    name = n;
-    port_exp = exprs;
+    p_type = t;
+    p_name = n;
+    p_port_exp = exprs;
 }
 
 
 vl_port::~vl_port()
 {
-    delete [] name;
-    lsGen<vl_var*> gen(port_exp);
+    delete [] p_name;
+    lsGen<vl_var*> gen(p_port_exp);
     vl_var *v;
     while (gen.next(&v)) {
         if (!(v->flags() & VAR_IN_TABLE))
             delete v;
     }
-    delete(port_exp);
+    delete(p_port_exp);
 }
 
 
 vl_port *
 vl_port::copy()
 {
-    return (new vl_port(type, vl_strdup(name), copy_list(port_exp)));
+    return (new vl_port(p_type, vl_strdup(p_name), copy_list(p_port_exp)));
 }
 // End vl_port functions.
 
 
-vl_port_connect::vl_port_connect(short t, char *n, vl_expr *e)
+vl_port_connect::vl_port_connect(int t, char *n, vl_expr *e)
 {
-    type = t;
-    name = n;
-    expr = e;
-    i_assign = 0;
-    o_assign = 0;
+    pc_type = t;
+    pc_name = n;
+    pc_expr = e;
+    pc_i_assign = 0;
+    pc_o_assign = 0;
 }
 
 
 vl_port_connect::~vl_port_connect()
 {
-    delete [] name;
-    delete expr;
-    delete i_assign;
-    delete o_assign;
+    delete [] pc_name;
+    delete pc_expr;
+    delete pc_i_assign;
+    delete pc_o_assign;
 }
 
 
 vl_port_connect *
 vl_port_connect::copy()
 {
-    return (new vl_port_connect(type, vl_strdup(name), chk_copy(expr)));
+    return (new vl_port_connect(pc_type, vl_strdup(pc_name),
+        chk_copy(pc_expr)));
 }
 // End vl_port_connect functions.
 
@@ -364,77 +340,77 @@ vl_port_connect::copy()
 //  Module items
 //---------------------------------------------------------------------------
 
-vl_decl::vl_decl(short t, vl_strength stren, vl_range *r, vl_delay *del,
+vl_decl::vl_decl(int t, vl_strength stren, vl_range *r, vl_delay *del,
     lsList<vl_bassign_stmt*> *l, lsList<vl_var*> *i)
 {
-    type = t;
-    range = r;
-    ids = i;
-    list = l;
-    delay = del;
-    strength = stren;
+    st_type = t;
+    d_range = r;
+    d_ids = i;
+    d_list = l;
+    d_delay = del;
+    d_strength = stren;
 }
 
 
-vl_decl::vl_decl(short t, vl_range *r, lsList<vl_var*> *i)
+vl_decl::vl_decl(int t, vl_range *r, lsList<vl_var*> *i)
 {
-    type = t;
-    range = r;
-    ids = i;
-    list = 0;
-    delay = 0;
+    st_type = t;
+    d_range = r;
+    d_ids = i;
+    d_list = 0;
+    d_delay = 0;
 }
 
 
-vl_decl::vl_decl(short t, lsList<char*> *l)
+vl_decl::vl_decl(int t, lsList<char*> *l)
 {
-    type = t;
-    range = 0;
-    ids = new lsList<vl_var*>;
-    list = 0;
-    delay = 0;
+    st_type = t;
+    d_range = 0;
+    d_ids = new lsList<vl_var*>;
+    d_list = 0;
+    d_delay = 0;
 
     lsGen<char*> gen(l);
     char *ev;
     while (gen.next(&ev)) {
         vl_var *v = new vl_var(ev, 0);
-        ids->newEnd(v);
+        d_ids->newEnd(v);
     }
     delete l;
 }
 
 
-vl_decl::vl_decl(short t, vl_range *r, lsList<vl_bassign_stmt*> *assigns)
+vl_decl::vl_decl(int t, vl_range *r, lsList<vl_bassign_stmt*> *assigns)
 {
-    type = t;
-    range = r;
-    ids = 0;
-    list = assigns;
-    delay = 0;
+    st_type = t;
+    d_range = r;
+    d_ids = 0;
+    d_list = assigns;
+    d_delay = 0;
 }
 
 
 vl_decl::~vl_decl()
 {
     // the variables are deleted with the sig_st
-    delete range;
-    lsGen<vl_var*> gen(ids);
+    delete d_range;
+    lsGen<vl_var*> gen(d_ids);
     vl_var *v;
     while (gen.next(&v)) {
         if (!(v->flags() & VAR_IN_TABLE))
             delete v;
     }
-    delete(ids);
-    delete_list(list);
-    delete delay;
+    delete(d_ids);
+    delete_list(d_list);
+    delete d_delay;
 }
 
 
 vl_decl *
 vl_decl::copy()
 {
-    return (new vl_decl(type, strength, chk_copy(range), chk_copy(delay),
-        copy_list(list), copy_list(ids)));
+    return (new vl_decl(st_type, d_strength, chk_copy(d_range),
+        chk_copy(d_delay), copy_list(d_list), copy_list(d_ids)));
 }
 
 
@@ -444,9 +420,9 @@ vl_decl::copy()
 void
 vl_decl::init()
 {
-    if (ids) {
+    if (d_ids) {
         // declared without assignment
-        lsGen<vl_var*> gen(ids);
+        lsGen<vl_var*> gen(d_ids);
         vl_var *v;
         while (gen.next(&v)) {
             table<vl_var*> *st = symtab(v);
@@ -458,47 +434,48 @@ vl_decl::init()
                 v->or_flags(VAR_IN_TABLE);
             }
             else if (v != nvar) {
-                ids->replace(v, nvar);
+                d_ids->replace(v, nvar);
                 delete v;
                 v = nvar;
             }
-            var_setup(v, type);
+            var_setup(v, st_type);
             if (v->net_type() >= REGwire) {
                 if (!v->delay())
-                    v->set_delay(chk_copy(delay));
+                    v->set_delay(chk_copy(d_delay));
             }
         }
     }
-    if (list && type != DefparamDecl) {
+    if (d_list && st_type != DefparamDecl) {
         // declared with assignment
-        lsGen<vl_bassign_stmt*> gen(list);
+        lsGen<vl_bassign_stmt*> gen(d_list);
         vl_bassign_stmt *bs;
         while (gen.next(&bs)) {
-            table<vl_var*> *st = symtab(bs->lhs);
+            table<vl_var*> *st = symtab(bs->lhs());
             if (!st)
                 break;
             vl_var *nvar;
-            if (!st->lookup(bs->lhs->name(), &nvar)) {
-                st->insert(bs->lhs->name(), bs->lhs);
-                bs->lhs->or_flags(VAR_IN_TABLE);
+            if (!st->lookup(bs->lhs()->name(), &nvar)) {
+                st->insert(bs->lhs()->name(), bs->lhs());
+                bs->lhs()->or_flags(VAR_IN_TABLE);
             }
-            else if (bs->lhs != nvar) {
-                if (bs->lhs->delay() && !nvar->delay()) {
-                    nvar->set_delay(bs->lhs->delay());
-                    bs->lhs->set_delay(0);
+            else if (bs->lhs() != nvar) {
+                if (bs->lhs()->delay() && !nvar->delay()) {
+                    nvar->set_delay(bs->lhs()->delay());
+                    bs->lhs()->set_delay(0);
                 }
-                delete bs->lhs;
-                bs->lhs = nvar;
+                delete bs->lhs();
+                bs->set_lhs(nvar);
             }
-            bs->flags |= BAS_SAVE_LHS;
-            var_setup(bs->lhs, type);
-            if (bs->lhs->net_type() >= REGwire) {
-                if (!bs->lhs->delay())
-                    bs->lhs->set_delay(chk_copy(delay));
+            bs->or_flags(BAS_SAVE_LHS);
+            var_setup(bs->lhs(), st_type);
+            if (bs->lhs()->net_type() >= REGwire) {
+                if (!bs->lhs()->delay())
+                    bs->lhs()->set_delay(chk_copy(d_delay));
             }
-            if (type == ParamDecl || type == RegDecl || type == IntDecl ||
-                    type == TimeDecl || type == RealDecl)
-                *bs->lhs = bs->rhs->eval();
+            if (st_type == ParamDecl || st_type == RegDecl ||
+                    st_type == IntDecl || st_type == TimeDecl ||
+                    st_type == RealDecl)
+                *bs->lhs() = bs->rhs()->eval();
         }
     }
 }
@@ -518,34 +495,34 @@ vl_decl::symtab(vl_var *var)
     vl_context *cx = VS()->context();
     table<vl_var*> *st = 0;
     if (cx->block()) {
-        if (!cx->block()->sig_st)
-            cx->block()->sig_st = new table<vl_var*>;
-        st = cx->block()->sig_st;
+        if (!cx->block()->sig_st())
+            cx->block()->set_sig_st(new table<vl_var*>);
+        st = cx->block()->sig_st();
     }
     else if (cx->fjblk()) {
-        if (!cx->fjblk()->sig_st)
-            cx->fjblk()->sig_st = new table<vl_var*>;
-        st = cx->fjblk()->sig_st;
+        if (!cx->fjblk()->sig_st())
+            cx->fjblk()->set_sig_st(new table<vl_var*>);
+        st = cx->fjblk()->sig_st();
     }
     else if (cx->function()) {
-        if (!cx->function()->sig_st)
-            cx->function()->sig_st = new table<vl_var*>;
-        st = cx->function()->sig_st;
+        if (!cx->function()->sig_st())
+            cx->function()->set_sig_st(new table<vl_var*>);
+        st = cx->function()->sig_st();
     }
     else if (cx->task()) {
-        if (!cx->task()->sig_st)
-            cx->task()->sig_st = new table<vl_var*>;
-        st = cx->task()->sig_st;
+        if (!cx->task()->sig_st())
+            cx->task()->set_sig_st(new table<vl_var*>);
+        st = cx->task()->sig_st();
     }
     else if (cx->primitive()) {
-        if (!cx->primitive()->sig_st)
-            cx->primitive()->sig_st = new table<vl_var*>;
-        st = cx->primitive()->sig_st;
+        if (!cx->primitive()->sig_st())
+            cx->primitive()->set_sig_st(new table<vl_var*>);
+        st = cx->primitive()->sig_st();
     }
     else if (cx->module()) {
-        if (!cx->module()->sig_st)
-            cx->module()->sig_st = new table<vl_var*>;
-        st = cx->module()->sig_st;
+        if (!cx->module()->sig_st())
+            cx->module()->set_sig_st(new table<vl_var*>);
+        st = cx->module()->sig_st();
     }
     if (!st) {
         vl_error("no symbol table for %s declaration", var->name());
@@ -561,11 +538,11 @@ void
 vl_decl::var_setup(vl_var *var, int vtype)
 {
     if (vtype == ParamDecl) {
-        var->configure(range, vtype);
+        var->configure(d_range, vtype);
         var->set_net_type(REGparam);
         return;
     }
-    var->configure(range, vtype, var->range());
+    var->configure(d_range, vtype, var->range());
 
     switch (vtype) {
     case RealDecl:
@@ -626,7 +603,7 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type() == REGwire && var->io_type() != IOnone)) {
             var->set_net_type(REGwire);
             var->setbits(BitZ);
-            var->set_strength(strength);
+            var->set_strength(d_strength);
             return;
         }
         break;
@@ -635,7 +612,7 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type() == REGwire && var->io_type() != IOnone)) {
             var->set_net_type(REGtri);
             var->setbits(BitZ);
-            var->set_strength(strength);
+            var->set_strength(d_strength);
             return;
         }
         break;
@@ -680,7 +657,7 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type() == REGwire && var->io_type() != IOnone)) {
             var->set_net_type(REGwand);
             var->setbits(BitZ);
-            var->set_strength(strength);
+            var->set_strength(d_strength);
             return;
         }
         break;
@@ -689,7 +666,7 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type() == REGwire && var->io_type() != IOnone)) {
             var->set_net_type(REGtriand);
             var->setbits(BitZ);
-            var->set_strength(strength);
+            var->set_strength(d_strength);
             return;
         }
         break;
@@ -698,7 +675,7 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type() == REGwire && var->io_type() != IOnone)) {
             var->set_net_type(REGtriand);
             var->setbits(BitZ);
-            var->set_strength(strength);
+            var->set_strength(d_strength);
             return;
         }
         break;
@@ -707,7 +684,7 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type() == REGwire && var->io_type() != IOnone)) {
             var->set_net_type(REGwand);
             var->setbits(BitZ);
-            var->set_strength(strength);
+            var->set_strength(d_strength);
             return;
         }
         break;
@@ -716,7 +693,7 @@ vl_decl::var_setup(vl_var *var, int vtype)
                 (var->net_type() == REGwire && var->io_type() != IOnone)) {
             var->set_net_type(REGtrireg);
             var->setbits(BitDC);
-            var->set_strength(strength);
+            var->set_strength(d_strength);
             return;
         }
         break;
@@ -731,32 +708,32 @@ vl_decl::var_setup(vl_var *var, int vtype)
 // End vl_decl functions.
 
 
-vl_procstmt::vl_procstmt(short t, vl_stmt *s)
+vl_procstmt::vl_procstmt(int t, vl_stmt *s)
 {
-    type = t;
-    stmt = s;
-    lasttime = (vl_time_t)-1;
+    st_type = t;
+    pr_stmt = s;
+    pr_lasttime = (vl_time_t)-1;
 }
 
 
 vl_procstmt::~vl_procstmt()
 {
-    delete stmt;
+    delete pr_stmt;
 }
 
 
 vl_procstmt *
 vl_procstmt::copy()
 {
-    return (new vl_procstmt(type, chk_copy(stmt)));
+    return (new vl_procstmt(st_type, chk_copy(pr_stmt)));
 }
 
 
 void
 vl_procstmt::init()
 {
-    if (stmt)
-        stmt->init();
+    if (pr_stmt)
+        pr_stmt->init();
 }
 // End vl_procstmt functions.
 
@@ -765,155 +742,156 @@ vl_procstmt::init()
 vl_cont_assign::vl_cont_assign(vl_strength stren, vl_delay *del,
     lsList<vl_bassign_stmt*> *as)
 {
-    type = ContAssign;
-    strength = stren;
-    delay = del;
-    assigns = as;
+    st_type = ContAssign;
+    c_strength = stren;
+    c_delay = del;
+    c_assigns = as;
 }
 
 
 vl_cont_assign::~vl_cont_assign()
 {
-    delete delay;
-    delete_list(assigns);
+    delete c_delay;
+    delete_list(c_assigns);
 }
 
 
 vl_cont_assign *
 vl_cont_assign::copy()
 {
-    return (new vl_cont_assign(strength, chk_copy(delay), copy_list(assigns)));
+    return (new vl_cont_assign(c_strength, chk_copy(c_delay),
+        copy_list(c_assigns)));
 }
 // End vl_cont_assign functions.
 
 
 vl_specify_block::vl_specify_block(lsList<vl_specify_item*> *list)
 {
-    type = SpecBlock;
-    items = list;
+    st_type = SpecBlock;
+    sb_items = list;
     vl_warn("specify blocks are ignored");
 }
 
 
 vl_specify_block::~vl_specify_block()
 {
-    delete_list(items);
+    delete_list(sb_items);
 }
 
 
 vl_specify_block *
 vl_specify_block::copy()
 {
-    return (new vl_specify_block(copy_list(items)));
+    return (new vl_specify_block(copy_list(sb_items)));
 }
 // End of vl_specify_block functions.
 
 
-vl_specify_item::vl_specify_item(short t)
+vl_specify_item::vl_specify_item(int t)
 {
-    type = t;
-    params = 0;
-    lhs = 0;
-    rhs = 0;
-    expr = 0;
-    pol = 0;
-    list1 = 0;
-    list2 = 0;
-    edge_id = 0;
-    ifex = 0;
+    si_type = t;
+    si_params = 0;
+    si_lhs = 0;
+    si_rhs = 0;
+    si_expr = 0;
+    si_pol = 0;
+    si_edge_id = 0;
+    si_list1 = 0;
+    si_list2 = 0;
+    si_ifex = 0;
 }
 
 
-vl_specify_item::vl_specify_item(short t, lsList<vl_bassign_stmt*> *p)
+vl_specify_item::vl_specify_item(int t, lsList<vl_bassign_stmt*> *p)
 {
-    type = t;
-    params = p;
-    lhs = 0;
-    rhs = 0;
-    expr = 0;
-    pol = 0;
-    list1 = 0;
-    list2 = 0;
-    edge_id = 0;
-    ifex = 0;
+    si_type = t;
+    si_params = p;
+    si_lhs = 0;
+    si_rhs = 0;
+    si_expr = 0;
+    si_pol = 0;
+    si_edge_id = 0;
+    si_list1 = 0;
+    si_list2 = 0;
+    si_ifex = 0;
 }
 
 
-vl_specify_item::vl_specify_item(short t, vl_path_desc *l,
+vl_specify_item::vl_specify_item(int t, vl_path_desc *l,
     lsList<vl_expr*> *r)
 {
-    type = t;
-    params = 0;
-    lhs = l;
-    rhs = r;
-    expr = 0;
-    pol = 0;
-    list1 = 0;
-    list2 = 0;
-    edge_id = 0;
-    ifex = 0;
+    si_type = t;
+    si_params = 0;
+    si_lhs = l;
+    si_rhs = r;
+    si_expr = 0;
+    si_pol = 0;
+    si_edge_id = 0;
+    si_list1 = 0;
+    si_list2 = 0;
+    si_ifex = 0;
 }
 
 
-vl_specify_item::vl_specify_item(short t, vl_expr *e,
+vl_specify_item::vl_specify_item(int t, vl_expr *e,
     lsList<vl_spec_term_desc*> *l1, int p, lsList<vl_spec_term_desc*> *l2,
     lsList<vl_expr*> *r)
 {
-    type = t;  // SpecLSPathDecl
-    params = 0;
-    lhs = 0;
-    rhs = r;
-    expr = e;
-    pol = p;
-    list1 = l1;
-    list2 = l2;
-    edge_id = 0;
-    ifex = 0;
+    si_type = t;  // SpecLSPathDecl
+    si_params = 0;
+    si_lhs = 0;
+    si_rhs = r;
+    si_expr = e;
+    si_pol = p;
+    si_edge_id = 0;
+    si_list1 = l1;
+    si_list2 = l2;
+    si_ifex = 0;
 }
 
 
-vl_specify_item::vl_specify_item(short t, vl_expr *ifx, int es,
+vl_specify_item::vl_specify_item(int t, vl_expr *ifx, int es,
     lsList<vl_spec_term_desc*> *l1, lsList<vl_spec_term_desc*> *l2, int p,
     vl_expr *e, lsList<vl_expr*> *r)
 {
-    type = t;  // SpecESPathDecl
-    params = 0;
-    lhs = 0;
-    rhs = r;
-    expr = e;
-    pol = p;
-    list1 = l1;
-    list2 = l2;
-    edge_id = es;
-    ifex = ifx;
+    si_type = t;  // SpecESPathDecl
+    si_params = 0;
+    si_lhs = 0;
+    si_rhs = r;
+    si_expr = e;
+    si_pol = p;
+    si_edge_id = es;
+    si_list1 = l1;
+    si_list2 = l2;
+    si_ifex = ifx;
 }
 
 
 vl_specify_item::~vl_specify_item()
 {
-    delete_list(params);
-    delete lhs;
-    delete_list(rhs);
-    delete expr;
-    delete_list(list1);
-    delete_list(list2);
-    delete ifex;
+    delete_list(si_params);
+    delete si_lhs;
+    delete_list(si_rhs);
+    delete si_expr;
+    delete_list(si_list1);
+    delete_list(si_list2);
+    delete si_ifex;
 }
 
 
 vl_specify_item *
 vl_specify_item::copy()
 {
-    vl_specify_item *retval = new vl_specify_item(type);
-    retval->params = copy_list(params);
-    retval->lhs = chk_copy(lhs);
-    retval->rhs = copy_list(rhs);
-    retval->expr = chk_copy(expr);
-    retval->pol = pol;
-    retval->list1 = copy_list(list1);
-    retval->list2 = copy_list(list2);
-    retval->edge_id = edge_id;
-    retval->ifex = chk_copy(ifex);
+    vl_specify_item *retval = new vl_specify_item(si_type);
+    retval->si_params = copy_list(si_params);
+    retval->si_lhs = chk_copy(si_lhs);
+    retval->si_rhs = copy_list(si_rhs);
+    retval->si_expr = chk_copy(si_expr);
+    retval->si_pol = si_pol;
+    retval->si_list1 = copy_list(si_list1);
+    retval->si_list2 = copy_list(si_list2);
+    retval->si_edge_id = si_edge_id;
+    retval->si_ifex = chk_copy(si_ifex);
     return (retval);
 }
 // End or vl_specify_item functions.
@@ -921,36 +899,36 @@ vl_specify_item::copy()
 
 vl_spec_term_desc::vl_spec_term_desc(char *n, vl_expr *x1, vl_expr *x2)
 {
-    name = n;
-    exp1 = x1;
-    exp2 = x2;
-    pol = 0;
+    st_name = n;
+    st_exp1 = x1;
+    st_exp2 = x2;
+    st_pol = 0;
 }
 
 
 vl_spec_term_desc::vl_spec_term_desc(int p, vl_expr *x1)
 {
-    name = 0;
-    exp1 = x1;
-    exp2 = 0;
-    pol = p;
+    st_name = 0;
+    st_exp1 = x1;
+    st_exp2 = 0;
+    st_pol = p;
 }
 
 
 vl_spec_term_desc::~vl_spec_term_desc()
 {
-    delete [] name;
-    delete exp1;
-    delete exp2;
+    delete [] st_name;
+    delete st_exp1;
+    delete st_exp2;
 }
 
 
 vl_spec_term_desc *
 vl_spec_term_desc::copy()
 {
-    vl_spec_term_desc *retval = new vl_spec_term_desc(vl_strdup(name),
-        chk_copy(exp1), chk_copy(exp2));
-    retval->pol = pol;
+    vl_spec_term_desc *retval = new vl_spec_term_desc(vl_strdup(st_name),
+        chk_copy(st_exp1), chk_copy(st_exp2));
+    retval->st_pol = st_pol;
     return (retval);
 }
 // End of vl_spec_term_desc functions.
@@ -958,27 +936,27 @@ vl_spec_term_desc::copy()
 
 vl_path_desc::vl_path_desc(vl_spec_term_desc *t1, vl_spec_term_desc *t2)
 {
-    type = PathLeadTo;
-    list1 = new lsList<vl_spec_term_desc*>;
-    list1->newEnd(t1);
-    list2 = new lsList<vl_spec_term_desc*>;
-    list2->newEnd(t2);
+    pa_type = PathLeadTo;
+    pa_list1 = new lsList<vl_spec_term_desc*>;
+    pa_list1->newEnd(t1);
+    pa_list2 = new lsList<vl_spec_term_desc*>;
+    pa_list2->newEnd(t2);
 }
 
 
 vl_path_desc::vl_path_desc(lsList<vl_spec_term_desc*> *l1,
     lsList<vl_spec_term_desc*> *l2)
 {
-    type = PathAll;
-    list1 = l1;
-    list2 = l2;
+    pa_type = PathAll;
+    pa_list1 = l1;
+    pa_list2 = l2;
 }
 
 
 vl_path_desc::~vl_path_desc()
 {
-    delete_list(list1);
-    delete_list(list2);
+    delete_list(pa_list1);
+    delete_list(pa_list2);
 }
 
 
@@ -986,8 +964,8 @@ vl_path_desc *
 vl_path_desc::copy()
 {
     vl_path_desc *retval =
-        new vl_path_desc(copy_list(list1), copy_list(list2));
-    retval->type = type;
+        new vl_path_desc(copy_list(pa_list1), copy_list(pa_list2));
+    retval->pa_type = pa_type;
     return (retval);
 }
 // End of vl_path_desc functions.
@@ -995,39 +973,39 @@ vl_path_desc::copy()
 
 vl_task::vl_task(char *n, lsList<vl_decl*> *d, lsList<vl_stmt*> *s)
 {
-    type = TaskDecl;
-    name = n;
-    decls = d;
-    stmts = s;
-    sig_st = 0;
-    blk_st = 0;
+    st_type = TaskDecl;
+    t_name = n;
+    t_decls = d;
+    t_stmts = s;
+    t_sig_st = 0;
+    t_blk_st = 0;
 }
 
 
 vl_task::~vl_task()
 {
-    delete [] name;
-    delete_list(decls);
-    delete_list(stmts);
-    delete_table(sig_st);
-    delete blk_st;
+    delete [] t_name;
+    delete_list(t_decls);
+    delete_list(t_stmts);
+    delete_table(t_sig_st);
+    delete t_blk_st;
 }
 
 
 vl_task *
 vl_task::copy()
 {
-    vl_task *task = new vl_task(vl_strdup(name), 0, 0);
+    vl_task *task = new vl_task(vl_strdup(t_name), 0, 0);
     set_var_context(vl_context::push(var_context(), task));
-    task->decls = copy_list(decls);
-    task->stmts = copy_list(stmts);
+    task->t_decls = copy_list(t_decls);
+    task->t_stmts = copy_list(t_stmts);
     set_var_context(vl_context::pop(var_context()));
 
     vl_module *current_mod = var_context()->currentModule();
     if (current_mod) {
-        if (!current_mod->task_st)
-            current_mod->task_st = new table<vl_task*>;
-        current_mod->task_st->insert(task->name, task);
+        if (!current_mod->task_st())
+            current_mod->set_task_st(new table<vl_task*>);
+        current_mod->task_st()->insert(task->t_name, task);
     }
     return (task);
 }
@@ -1037,52 +1015,52 @@ void
 vl_task::init()
 {
     set_var_context(vl_context::push(var_context(), this));
-    init_list(decls);
-    init_list(stmts);
+    init_list(t_decls);
+    init_list(t_stmts);
     set_var_context(vl_context::pop(var_context()));
 }
 // End vl_task functions.
 
 
-vl_function::vl_function(short t, vl_range *r, char *n, lsList<vl_decl*> *d,
+vl_function::vl_function(int t, vl_range *r, char *n, lsList<vl_decl*> *d,
     lsList<vl_stmt*> *s)
 {
-    type = t;
-    name = n;
-    range = r;
-    decls = d;
-    stmts = s;
-    sig_st = 0;
-    blk_st = 0;
+    st_type = t;
+    f_name = n;
+    f_range = r;
+    f_decls = d;
+    f_stmts = s;
+    f_sig_st = 0;
+    f_blk_st = 0;
 }
 
 
 vl_function::~vl_function()
 {
-    delete [] name;
-    delete range;
-    delete_list(decls);
-    delete_list(stmts);
-    delete_table(sig_st);
-    delete_table(blk_st);
+    delete [] f_name;
+    delete f_range;
+    delete_list(f_decls);
+    delete_list(f_stmts);
+    delete_table(f_sig_st);
+    delete_table(f_blk_st);
 }
 
 
 vl_function *
 vl_function::copy()
 {
-    vl_function *fcn = new vl_function(type, chk_copy(range), vl_strdup(name),
-        0, 0);
+    vl_function *fcn =
+        new vl_function(st_type, chk_copy(f_range), vl_strdup(f_name), 0, 0);
     set_var_context(vl_context::push(var_context(), fcn));
-    fcn->decls = copy_list(decls);
-    fcn->stmts = copy_list(stmts);
+    fcn->f_decls = copy_list(f_decls);
+    fcn->f_stmts = copy_list(f_stmts);
     set_var_context(vl_context::pop(var_context()));
 
     vl_module *current_mod = var_context()->currentModule();
     if (current_mod) {
-        if (!current_mod->func_st)
-            current_mod->func_st = new table<vl_function*>;
-        current_mod->func_st->insert(fcn->name, fcn);
+        if (!current_mod->func_st())
+            current_mod->set_func_st(new table<vl_function*>);
+        current_mod->func_st()->insert(fcn->f_name, fcn);
     }
     return (fcn);
 }
@@ -1092,54 +1070,55 @@ void
 vl_function::init()
 {
     set_var_context(vl_context::push(var_context(), this));
-    init_list(decls);
-    init_list(stmts);
+    init_list(f_decls);
+    init_list(f_stmts);
     set_var_context(vl_context::pop(var_context()));
 }
 // End vl_function functions.
 
 
-vl_gate_inst_list::vl_gate_inst_list(short t, vl_dlstr *dlstr,
+vl_gate_inst_list::vl_gate_inst_list(int t, vl_dlstr *dlstr,
     lsList<vl_gate_inst*> *g)
 {
-    type = t;
-    delays = 0;
+    st_type = t;
+    g_delays = 0;
     if (dlstr) {
-        strength = dlstr->strength;
-        delays = dlstr->delay;
+        g_strength = dlstr->strength();
+        g_delays = dlstr->delay();
     }
-    gates = g;
+    g_gates = g;
 }
 
 
 vl_gate_inst_list::~vl_gate_inst_list()
 {
-    delete delays;
-    delete_list(gates);
+    delete g_delays;
+    delete_list(g_gates);
 }
 
 
 vl_gate_inst_list *
 vl_gate_inst_list::copy()
 {
-    lsList<vl_gate_inst*> *newgates = gates ? new lsList<vl_gate_inst*> : 0;
+    lsList<vl_gate_inst*> *newgates = g_gates ? new lsList<vl_gate_inst*> : 0;
     vl_dlstr dlstr;
-    dlstr.strength = strength;
-    dlstr.delay = chk_copy(delays);
-    vl_gate_inst_list *retval = new vl_gate_inst_list(type, &dlstr, newgates);
-    if (gates) {
-        lsGen<vl_gate_inst*> gen(gates);
+    dlstr.set_strength(g_strength);
+    dlstr.set_delay(chk_copy(g_delays));
+    vl_gate_inst_list *retval =
+        new vl_gate_inst_list(st_type, &dlstr, newgates);
+    if (g_gates) {
+        lsGen<vl_gate_inst*> gen(g_gates);
         vl_gate_inst *inst;
         while (gen.next(&inst)) {
             vl_gate_inst *newinst = chk_copy(inst);
-            newinst->inst_list = retval;
+            newinst->set_inst_list(retval);
             newgates->newEnd(newinst);
-            if (newinst->name) {
+            if (newinst->name()) {
                 vl_module *current_mod = var_context()->currentModule();
                 if (current_mod) {
-                    if (!current_mod->inst_st)
-                        current_mod->inst_st = new table<vl_inst*>;
-                    current_mod->inst_st->insert(newinst->name, newinst);
+                    if (!current_mod->inst_st())
+                        current_mod->set_inst_st(new table<vl_inst*>);
+                    current_mod->inst_st()->insert(newinst->name(), newinst);
                 }
             }
         }
@@ -1152,62 +1131,63 @@ vl_gate_inst_list::copy()
 vl_mp_inst_list::vl_mp_inst_list(MPtype mpt, char *n, vl_dlstr *dlstr,
     lsList<vl_mp_inst*> *m)
 {
-    type = ModPrimInst;
-    mptype = mpt;
-    name = n;
-    params_or_delays = 0;
+    st_type = ModPrimInst;
+    mp_mptype = mpt;
+    mp_name = n;
+    mp_prms_or_dlys = 0;
     if (dlstr) {
-        strength = dlstr->strength;
-        params_or_delays = dlstr->delay;
+        mp_strength = dlstr->strength();
+        mp_prms_or_dlys = dlstr->delay();
     }
-    mps = m;
+    mp_mps = m;
 }
 
 
 vl_mp_inst_list::~vl_mp_inst_list()
 {
-    delete [] name;
-    delete_list(mps);
-    delete params_or_delays;
+    delete [] mp_name;
+    delete_list(mp_mps);
+    delete mp_prms_or_dlys;
 }
 
 
 vl_mp_inst_list *
 vl_mp_inst_list::copy()
 {
-    lsList<vl_mp_inst*> *newmps = mps ? new lsList<vl_mp_inst*> : 0;
+    lsList<vl_mp_inst*> *newmps = mp_mps ? new lsList<vl_mp_inst*> : 0;
     vl_dlstr dlstr;
-    dlstr.strength = strength;
-    dlstr.delay = chk_copy(params_or_delays);
-    vl_mp_inst_list *retval = new vl_mp_inst_list(mptype, vl_strdup(name),
+    dlstr.set_strength(mp_strength);
+    dlstr.set_delay(chk_copy(mp_prms_or_dlys));
+    vl_mp_inst_list *retval = new vl_mp_inst_list(mp_mptype, vl_strdup(mp_name),
         &dlstr, newmps);
-    if (mps) {
-        lsGen<vl_mp_inst*> gen(mps);
+    if (mp_mps) {
+        lsGen<vl_mp_inst*> gen(mp_mps);
         vl_mp_inst *inst;
         while (gen.next(&inst)) {
             vl_mp_inst *newinst = chk_copy(inst);
-            newinst->inst_list = retval;
+            newinst->set_inst_list(retval);
             newmps->newEnd(newinst);
             vl_module *current_mod = var_context()->currentModule();
-            if (current_mod && newinst->name) {
-                if (!current_mod->inst_st)
-                    current_mod->inst_st = new table<vl_inst*>;
-                current_mod->inst_st->insert(newinst->name, newinst);
+            if (current_mod && newinst->name()) {
+                if (!current_mod->inst_st())
+                    current_mod->set_inst_st(new table<vl_inst*>);
+                current_mod->inst_st()->insert(newinst->name(), newinst);
             }
             if (current_mod) {
                 vl_mp *mp;
-                if (!VS()->description()->mp_st->lookup(name, &mp) || !mp) {
-                    vl_error("instance of %s with no master", name);
+                if (!VS()->description()->mp_st()->lookup(mp_name, &mp) ||
+                        !mp) {
+                    vl_error("instance of %s with no master", mp_name);
                     VS()->abort();
                 }
                 else {
                     mp = mp->copy();
-                    mp->instance = newinst;
-                    newinst->master = mp;
-                    if (mp->type == ModDecl)
-                        retval->mptype = MPmod;
+                    mp->set_instance(newinst);
+                    newinst->set_master(mp);
+                    if (mp->type() == ModDecl)
+                        retval->set_mptype(MPmod);
                     else
-                        retval->mptype = MPprim;
+                        retval->set_mptype(MPprim);
                 }
             }
         }
@@ -1219,13 +1199,14 @@ vl_mp_inst_list::copy()
 void
 vl_mp_inst_list::init()
 {
-    if (mps) {
-        lsGen<vl_mp_inst*> gen(mps);
+    if (mp_mps) {
+        lsGen<vl_mp_inst*> gen(mp_mps);
         vl_mp_inst *inst;
         while (gen.next(&inst)) {
-            if (inst->master) {
-                set_var_context(vl_context::push(var_context(), inst->master));
-                inst->master->init();
+            if (inst->master()) {
+                set_var_context(vl_context::push(var_context(),
+                    inst->master()));
+                inst->master()->init();
                 set_var_context(vl_context::pop(var_context()));
             }
         }
@@ -1238,39 +1219,39 @@ vl_mp_inst_list::init()
 //  Statements
 //---------------------------------------------------------------------------
 
-vl_bassign_stmt::vl_bassign_stmt(short t, vl_var *v, vl_event_expr *c,
+vl_bassign_stmt::vl_bassign_stmt(int t, vl_var *v, vl_event_expr *c,
     vl_delay *d, vl_var *r)
 {
-    type = t;
-    lhs = v;
-    range = 0;
-    rhs = r;
-    wait = 0;
-    delay = d;
-    event = c;
-    tmpvar = 0;
+    st_type = t;
+    ba_lhs = v;
+    ba_range = 0;
+    ba_rhs = r;
+    ba_wait = 0;
+    ba_delay = d;
+    ba_event = c;
+    ba_tmpvar = 0;
 }
 
 
 vl_bassign_stmt::~vl_bassign_stmt()
 {
     // wait is a pointer to someone else's delay value, don't free
-    if (!(flags & BAS_SAVE_LHS))
-        delete lhs;
-    if (!(flags & BAS_SAVE_RHS))
-        delete rhs;
-    delete delay;
-    delete range;
-    delete event;
-    delete tmpvar;
+    if (!(st_flags & BAS_SAVE_LHS))
+        delete ba_lhs;
+    if (!(st_flags & BAS_SAVE_RHS))
+        delete ba_rhs;
+    delete ba_delay;
+    delete ba_range;
+    delete ba_event;
+    delete ba_tmpvar;
 }
 
 
 vl_bassign_stmt *
 vl_bassign_stmt::copy()
 {
-    vl_bassign_stmt *bs = new vl_bassign_stmt(type, chk_copy(lhs),
-        chk_copy(event), chk_copy(delay), chk_copy(rhs));
+    vl_bassign_stmt *bs = new vl_bassign_stmt(st_type, chk_copy(ba_lhs),
+        chk_copy(ba_event), chk_copy(ba_delay), chk_copy(ba_rhs));
     return (bs);
 }
 
@@ -1279,192 +1260,191 @@ void
 vl_bassign_stmt::init()
 {
     // set initial event expression value
-    if (event)
-        event->init();
+    if (ba_event)
+        ba_event->init();
 }
 // End vl_bassign_stmt functions.
 
 
 vl_sys_task_stmt::vl_sys_task_stmt(char *n, lsList<vl_expr*> *a)
 {
-    type = SysTaskEnableStmt;
-    name = n;
-    args = a;
-    dtype = DSPall;
-    flags = 0;
-    if (!strcmp(name, "$time") || !strcmp(name, "$stime"))
+    st_type = SysTaskEnableStmt;
+    sy_name = n;
+    sy_args = a;
+    sy_dtype = DSPall;
+    sy_flags = 0;
+    if (!strcmp(sy_name, "$time") || !strcmp(sy_name, "$stime"))
         action = &vl_simulator::sys_time;
-    else if (!strcmp(name, "$printtimescale"))
+    else if (!strcmp(sy_name, "$printtimescale"))
         action = &vl_simulator::sys_printtimescale;
-    else if (!strcmp(name, "$timeformat"))
+    else if (!strcmp(sy_name, "$timeformat"))
         action = &vl_simulator::sys_timeformat;
-
-    else if (!strcmp(name, "$display"))
+    else if (!strcmp(sy_name, "$display"))
         action = &vl_simulator::sys_display;
-    else if (!strcmp(name, "$displayb")) {
+    else if (!strcmp(sy_name, "$displayb")) {
         action = &vl_simulator::sys_display;
-        dtype = DSPb;
+        sy_dtype = DSPb;
     }
-    else if (!strcmp(name, "$displayh")) {
+    else if (!strcmp(sy_name, "$displayh")) {
         action = &vl_simulator::sys_display;
-        dtype = DSPh;
+        sy_dtype = DSPh;
     }
-    else if (!strcmp(name, "$displayo")) {
+    else if (!strcmp(sy_name, "$displayo")) {
         action = &vl_simulator::sys_display;
-        dtype = DSPo;
+        sy_dtype = DSPo;
     }
-    else if (!strcmp(name, "$write")) {
+    else if (!strcmp(sy_name, "$write")) {
         action = &vl_simulator::sys_display;
-        flags |= SYSno_nl;
+        sy_flags |= SYSno_nl;
     }
-    else if (!strcmp(name, "$writeb")) {
+    else if (!strcmp(sy_name, "$writeb")) {
         action = &vl_simulator::sys_display;
-        flags |= SYSno_nl;
-        dtype = DSPb;
+        sy_flags |= SYSno_nl;
+        sy_dtype = DSPb;
     }
-    else if (!strcmp(name, "$writeh")) {
+    else if (!strcmp(sy_name, "$writeh")) {
         action = &vl_simulator::sys_display;
-        flags |= SYSno_nl;
-        dtype = DSPh;
+        sy_flags |= SYSno_nl;
+        sy_dtype = DSPh;
     }
-    else if (!strcmp(name, "$writeo")) {
+    else if (!strcmp(sy_name, "$writeo")) {
         action = &vl_simulator::sys_display;
-        flags |= SYSno_nl;
-        dtype = DSPo;
+        sy_flags |= SYSno_nl;
+        sy_dtype = DSPo;
     }
-    else if (!strcmp(name, "$strobe")) {
+    else if (!strcmp(sy_name, "$strobe")) {
         action = &vl_simulator::sys_display;
-        flags |= SYSafter;
+        sy_flags |= SYSafter;
     }
-    else if (!strcmp(name, "$strobeb")) {
+    else if (!strcmp(sy_name, "$strobeb")) {
         action = &vl_simulator::sys_display;
-        flags |= SYSafter;
-        dtype = DSPb;
+        sy_flags |= SYSafter;
+        sy_dtype = DSPb;
     }
-    else if (!strcmp(name, "$strobeh")) {
+    else if (!strcmp(sy_name, "$strobeh")) {
         action = &vl_simulator::sys_display;
-        flags |= SYSafter;
-        dtype = DSPh;
+        sy_flags |= SYSafter;
+        sy_dtype = DSPh;
     }
-    else if (!strcmp(name, "$strobeo")) {
+    else if (!strcmp(sy_name, "$strobeo")) {
         action = &vl_simulator::sys_display;
-        flags |= SYSafter;
-        dtype = DSPo;
+        sy_flags |= SYSafter;
+        sy_dtype = DSPo;
     }
-    else if (!strcmp(name, "$monitor"))
+    else if (!strcmp(sy_name, "$monitor"))
         action = &vl_simulator::sys_monitor;
-    else if (!strcmp(name, "$monitorb")) {
+    else if (!strcmp(sy_name, "$monitorb")) {
         action = &vl_simulator::sys_monitor;
-        dtype = DSPb;
+        sy_dtype = DSPb;
     }
-    else if (!strcmp(name, "$monitorh")) {
+    else if (!strcmp(sy_name, "$monitorh")) {
         action = &vl_simulator::sys_monitor;
-        dtype = DSPh;
+        sy_dtype = DSPh;
     }
-    else if (!strcmp(name, "$monitoro")) {
+    else if (!strcmp(sy_name, "$monitoro")) {
         action = &vl_simulator::sys_monitor;
-        dtype = DSPo;
+        sy_dtype = DSPo;
     }
-    else if (!strcmp(name, "$monitoron"))
+    else if (!strcmp(sy_name, "$monitoron"))
         action = &vl_simulator::sys_monitor_on;
-    else if (!strcmp(name, "$monitoroff"))
+    else if (!strcmp(sy_name, "$monitoroff"))
         action = &vl_simulator::sys_monitor_off;
-    else if (!strcmp(name, "$stop"))
+    else if (!strcmp(sy_name, "$stop"))
         action = &vl_simulator::sys_stop;
-    else if (!strcmp(name, "$finish"))
+    else if (!strcmp(sy_name, "$finish"))
         action = &vl_simulator::sys_finish;
-    else if (!strcmp(name, "$fopen"))
+    else if (!strcmp(sy_name, "$fopen"))
         action = &vl_simulator::sys_fopen;
-    else if (!strcmp(name, "$fclose"))
+    else if (!strcmp(sy_name, "$fclose"))
         action = &vl_simulator::sys_fclose;
-    else if (!strcmp(name, "$fdisplay"))
+    else if (!strcmp(sy_name, "$fdisplay"))
         action = &vl_simulator::sys_fdisplay;
-    else if (!strcmp(name, "$fdisplayb")) {
+    else if (!strcmp(sy_name, "$fdisplayb")) {
         action = &vl_simulator::sys_fdisplay;
-        dtype = DSPb;
+        sy_dtype = DSPb;
     }
-    else if (!strcmp(name, "$fdisplayh")) {
+    else if (!strcmp(sy_name, "$fdisplayh")) {
         action = &vl_simulator::sys_fdisplay;
-        dtype = DSPh;
+        sy_dtype = DSPh;
     }
-    else if (!strcmp(name, "$fdisplayo")) {
+    else if (!strcmp(sy_name, "$fdisplayo")) {
         action = &vl_simulator::sys_fdisplay;
-        dtype = DSPo;
+        sy_dtype = DSPo;
     }
-    else if (!strcmp(name, "$fwrite")) {
+    else if (!strcmp(sy_name, "$fwrite")) {
         action = &vl_simulator::sys_fdisplay;
-        flags |= SYSno_nl;
+        sy_flags |= SYSno_nl;
     }
-    else if (!strcmp(name, "$fwriteb")) {
+    else if (!strcmp(sy_name, "$fwriteb")) {
         action = &vl_simulator::sys_fdisplay;
-        flags |= SYSno_nl;
-        dtype = DSPb;
+        sy_flags |= SYSno_nl;
+        sy_dtype = DSPb;
     }
-    else if (!strcmp(name, "$fwriteh")) {
+    else if (!strcmp(sy_name, "$fwriteh")) {
         action = &vl_simulator::sys_fdisplay;
-        flags |= SYSno_nl;
-        dtype = DSPh;
+        sy_flags |= SYSno_nl;
+        sy_dtype = DSPh;
     }
-    else if (!strcmp(name, "$fwriteo")) {
+    else if (!strcmp(sy_name, "$fwriteo")) {
         action = &vl_simulator::sys_fdisplay;
-        flags |= SYSno_nl;
-        dtype = DSPo;
+        sy_flags |= SYSno_nl;
+        sy_dtype = DSPo;
     }
-    else if (!strcmp(name, "$fstrobe")) {
+    else if (!strcmp(sy_name, "$fstrobe")) {
         action = &vl_simulator::sys_fdisplay;
-        flags |= SYSafter;
+        sy_flags |= SYSafter;
     }
-    else if (!strcmp(name, "$fstrobeb")) {
+    else if (!strcmp(sy_name, "$fstrobeb")) {
         action = &vl_simulator::sys_fdisplay;
-        flags |= SYSafter;
-        dtype = DSPb;
+        sy_flags |= SYSafter;
+        sy_dtype = DSPb;
     }
-    else if (!strcmp(name, "$fstrobeh")) {
+    else if (!strcmp(sy_name, "$fstrobeh")) {
         action = &vl_simulator::sys_fdisplay;
-        flags |= SYSafter;
-        dtype = DSPh;
+        sy_flags |= SYSafter;
+        sy_dtype = DSPh;
     }
-    else if (!strcmp(name, "$fstrobeo")) {
+    else if (!strcmp(sy_name, "$fstrobeo")) {
         action = &vl_simulator::sys_fdisplay;
-        flags |= SYSafter;
-        dtype = DSPo;
+        sy_flags |= SYSafter;
+        sy_dtype = DSPo;
     }
-    else if (!strcmp(name, "$fmonitor"))
+    else if (!strcmp(sy_name, "$fmonitor"))
         action = &vl_simulator::sys_fmonitor;
-    else if (!strcmp(name, "$fmonitorb")) {
+    else if (!strcmp(sy_name, "$fmonitorb")) {
         action = &vl_simulator::sys_fmonitor;
-        dtype = DSPb;
+        sy_dtype = DSPb;
     }
-    else if (!strcmp(name, "$fmonitorh")) {
+    else if (!strcmp(sy_name, "$fmonitorh")) {
         action = &vl_simulator::sys_fmonitor;
-        dtype = DSPh;
+        sy_dtype = DSPh;
     }
-    else if (!strcmp(name, "$fmonitoro")) {
+    else if (!strcmp(sy_name, "$fmonitoro")) {
         action = &vl_simulator::sys_fmonitor;
-        dtype = DSPo;
+        sy_dtype = DSPo;
     }
-    else if (!strcmp(name, "$fmonitor_on"))
+    else if (!strcmp(sy_name, "$fmonitor_on"))
         action = &vl_simulator::sys_fmonitor_on;
-    else if (!strcmp(name, "$fmonitor_off"))
+    else if (!strcmp(sy_name, "$fmonitor_off"))
         action = &vl_simulator::sys_fmonitor_off;
-    else if (!strcmp(name, "$random"))
+    else if (!strcmp(sy_name, "$random"))
         action = &vl_simulator::sys_random;
-    else if (!strcmp(name, "$dumpfile"))
+    else if (!strcmp(sy_name, "$dumpfile"))
         action = &vl_simulator::sys_dumpfile;
-    else if (!strcmp(name, "$dumpvars"))
+    else if (!strcmp(sy_name, "$dumpvars"))
         action = &vl_simulator::sys_dumpvars;
-    else if (!strcmp(name, "$dumpall"))
+    else if (!strcmp(sy_name, "$dumpall"))
         action = &vl_simulator::sys_dumpall;
-    else if (!strcmp(name, "$dumpon"))
+    else if (!strcmp(sy_name, "$dumpon"))
         action = &vl_simulator::sys_dumpon;
-    else if (!strcmp(name, "$dumpoff"))
+    else if (!strcmp(sy_name, "$dumpoff"))
         action = &vl_simulator::sys_dumpoff;
-    else if (!strcmp(name, "$readmemb"))
+    else if (!strcmp(sy_name, "$readmemb"))
         action = &vl_simulator::sys_readmemb;
-    else if (!strcmp(name, "$readmemh"))
+    else if (!strcmp(sy_name, "$readmemh"))
         action = &vl_simulator::sys_readmemh;
     else {
-        vl_warn("unknown system command %s, ignored", name);
+        vl_warn("unknown system command %s, ignored", sy_name);
         action = &vl_simulator::sys_noop;
     }
 }
@@ -1472,15 +1452,15 @@ vl_sys_task_stmt::vl_sys_task_stmt(char *n, lsList<vl_expr*> *a)
 
 vl_sys_task_stmt::~vl_sys_task_stmt()
 {
-    delete [] name;
-    delete_list(args);
+    delete [] sy_name;
+    delete_list(sy_args);
 }
 
 
 vl_sys_task_stmt *
 vl_sys_task_stmt::copy()
 {
-    return (new vl_sys_task_stmt(vl_strdup(name), copy_list(args)));
+    return (new vl_sys_task_stmt(vl_strdup(sy_name), copy_list(sy_args)));
 }
 // End vl_sys_task_stmt functions.
 
@@ -1488,26 +1468,25 @@ vl_sys_task_stmt::copy()
 vl_begin_end_stmt::vl_begin_end_stmt(char *n, lsList<vl_decl*> *d,
     lsList<vl_stmt*> *s)
 {
-    type = BeginEndStmt;
-    name = n;
-    decls = d;
-    stmts = s;
-    sig_st = 0;
-    blk_st = 0;
-    flags = 0;
+    st_type = BeginEndStmt;
+    be_name = n;
+    be_decls = d;
+    be_stmts = s;
+    be_sig_st = 0;
+    be_blk_st = 0;
 }
 
 
 vl_begin_end_stmt::~vl_begin_end_stmt()
 {
-    if (flags & SIM_INTERNAL)
-        delete stmts;
+    if (st_flags & SIM_INTERNAL)
+        delete be_stmts;
     else {
-        delete [] name;
-        delete_list(decls);
-        delete_list(stmts);
-        delete_table(sig_st);
-        delete blk_st;
+        delete [] be_name;
+        delete_list(be_decls);
+        delete_list(be_stmts);
+        delete_table(be_sig_st);
+        delete be_blk_st;
     }
 }
 
@@ -1515,41 +1494,41 @@ vl_begin_end_stmt::~vl_begin_end_stmt()
 vl_begin_end_stmt *
 vl_begin_end_stmt::copy()
 {
-    vl_begin_end_stmt *stmt = new vl_begin_end_stmt(vl_strdup(name), 0, 0);
+    vl_begin_end_stmt *stmt = new vl_begin_end_stmt(vl_strdup(be_name), 0, 0);
     set_var_context(vl_context::push(var_context(), stmt));
-    stmt->decls = copy_list(decls);
-    stmt->stmts = copy_list(stmts);
+    stmt->be_decls = copy_list(be_decls);
+    stmt->be_stmts = copy_list(be_stmts);
     set_var_context(vl_context::pop(var_context()));
 
-    if (stmt->name) {
+    if (stmt->be_name) {
         vl_context *cx = var_context();
         if (cx->block()) {
-            if (!cx->block()->blk_st)
-                cx->block()->blk_st = new table<vl_stmt*>;
-            cx->block()->blk_st->insert(stmt->name, stmt);
+            if (!cx->block()->be_blk_st)
+                cx->block()->be_blk_st = new table<vl_stmt*>;
+            cx->block()->be_blk_st->insert(stmt->be_name, stmt);
         }
         else if (cx->fjblk()) {
-            if (!cx->fjblk()->blk_st)
-                cx->fjblk()->blk_st = new table<vl_stmt*>;
-            cx->fjblk()->blk_st->insert(stmt->name, stmt);
+            if (!cx->fjblk()->blk_st())
+                cx->fjblk()->set_blk_st(new table<vl_stmt*>);
+            cx->fjblk()->blk_st()->insert(stmt->name(), stmt);
         }
         else if (cx->task()) {
-            if (!cx->task()->blk_st)
-                cx->task()->blk_st = new table<vl_stmt*>;
-            cx->task()->blk_st->insert(stmt->name, stmt);
+            if (!cx->task()->blk_st())
+                cx->task()->set_blk_st(new table<vl_stmt*>);
+            cx->task()->blk_st()->insert(stmt->name(), stmt);
         }
         else if (cx->function()) {
-            if (!cx->function()->blk_st)
-                cx->function()->blk_st = new table<vl_stmt*>;
-            cx->function()->blk_st->insert(stmt->name, stmt);
+            if (!cx->function()->blk_st())
+                cx->function()->set_blk_st(new table<vl_stmt*>);
+            cx->function()->blk_st()->insert(stmt->name(), stmt);
         }
         else if (cx->module()) {
-            if (!cx->module()->blk_st)
-                cx->module()->blk_st = new table<vl_stmt*>;
-            cx->module()->blk_st->insert(stmt->name, stmt);
+            if (!cx->module()->blk_st())
+                cx->module()->set_blk_st(new table<vl_stmt*>);
+            cx->module()->blk_st()->insert(stmt->name(), stmt);
         }
         else {
-            vl_error("if/else block %s has no parent", stmt->name);
+            vl_error("if/else block %s has no parent", stmt->name());
             VS()->abort();
         }
     }
@@ -1561,8 +1540,8 @@ void
 vl_begin_end_stmt::init()
 {
     set_var_context(vl_context::push(var_context(), this));
-    init_list(decls);
-    init_list(stmts);
+    init_list(be_decls);
+    init_list(be_stmts);
     set_var_context(vl_context::pop(var_context()));
 }
 // End vl_begin_end_stmt functions.
@@ -1570,161 +1549,162 @@ vl_begin_end_stmt::init()
 
 vl_if_else_stmt::vl_if_else_stmt(vl_expr *c, vl_stmt *if_s, vl_stmt *else_s)
 {
-    type = IfElseStmt;
-    cond = c;
-    if_stmt = if_s;
-    else_stmt = else_s;
+    st_type = IfElseStmt;
+    ie_cond = c;
+    ie_if_stmt = if_s;
+    ie_else_stmt = else_s;
 }
 
 
 vl_if_else_stmt *
 vl_if_else_stmt::copy()
 {
-    return (new vl_if_else_stmt(chk_copy(cond),
-        chk_copy(if_stmt), chk_copy(else_stmt)));
+    return (new vl_if_else_stmt(chk_copy(ie_cond),
+        chk_copy(ie_if_stmt), chk_copy(ie_else_stmt)));
 }
 
 
 void
 vl_if_else_stmt::init()
 {
-    if (if_stmt)
-        if_stmt->init();
-    if (else_stmt)
-        else_stmt->init();
+    if (ie_if_stmt)
+        ie_if_stmt->init();
+    if (ie_else_stmt)
+        ie_else_stmt->init();
 }
 // End vl_if_else_stmt functions.
 
 
-vl_case_stmt::vl_case_stmt(short t, vl_expr *c, lsList<vl_case_item*> *case_it)
+vl_case_stmt::vl_case_stmt(int t, vl_expr *c, lsList<vl_case_item*> *case_it)
 {
-    type = t;
-    cond = c;
-    case_items = case_it;
+    st_type = t;
+    c_cond = c;
+    c_case_items = case_it;
 }
 
 
 vl_case_stmt::~vl_case_stmt()
 {
-    delete cond;
-    delete_list(case_items);
+    delete c_cond;
+    delete_list(c_case_items);
 }
 
 
 vl_case_stmt *
 vl_case_stmt::copy()
 {
-    return (new vl_case_stmt(type, chk_copy(cond), copy_list(case_items)));
+    return (new vl_case_stmt(st_type, chk_copy(c_cond),
+        copy_list(c_case_items)));
 }
 
 
 void
 vl_case_stmt::init()
 {
-    init_list(case_items);
+    init_list(c_case_items);
 }
 // End vl_case_stmt functions.
 
 
-vl_case_item::vl_case_item(short t, lsList<vl_expr*> *e, vl_stmt *s)
+vl_case_item::vl_case_item(int t, lsList<vl_expr*> *e, vl_stmt *s)
 {
-    type = t;
-    exprs = e;
-    stmt = s;
+    st_type = t;
+    ci_exprs = e;
+    ci_stmt = s;
 }
 
 
 vl_case_item::~vl_case_item()
 {
-    delete_list(exprs);
-    delete stmt;
+    delete_list(ci_exprs);
+    delete ci_stmt;
 }
 
 
 vl_case_item *
 vl_case_item::copy()
 {
-    return (new vl_case_item(type, copy_list(exprs), chk_copy(stmt)));
+    return (new vl_case_item(st_type, copy_list(ci_exprs), chk_copy(ci_stmt)));
 }
 
 
 void
 vl_case_item::init()
 {
-    if (stmt)
-        stmt->init();
+    if (ci_stmt)
+        ci_stmt->init();
 }
 // End vl_case_item functions.
 
 
 vl_forever_stmt::vl_forever_stmt(vl_stmt *s)
 {
-    type = ForeverStmt;
-    stmt = s;
+    st_type = ForeverStmt;
+    f_stmt = s;
 }
 
 
 vl_forever_stmt *
 vl_forever_stmt::copy()
 {
-    return (new vl_forever_stmt(chk_copy(stmt)));
+    return (new vl_forever_stmt(chk_copy(f_stmt)));
 }
 
 
 void
 vl_forever_stmt::init()
 {
-    if (stmt)
-        stmt->init();
+    if (f_stmt)
+        f_stmt->init();
 }
 // End vl_forever_stmt functions.
 
 
 vl_repeat_stmt::vl_repeat_stmt(vl_expr *c, vl_stmt *s)
 {
-    type = RepeatStmt;
-    count = c;
-    cur_count = 0;
-    stmt = s;
+    st_type = RepeatStmt;
+    r_count = c;
+    r_cur_count = 0;
+    r_stmt = s;
 }
 
 
 vl_repeat_stmt *
 vl_repeat_stmt::copy()
 {
-    return (new vl_repeat_stmt(chk_copy(count), chk_copy(stmt)));
+    return (new vl_repeat_stmt(chk_copy(r_count), chk_copy(r_stmt)));
 }
 
 
 void
 vl_repeat_stmt::init()
 {
-    if (stmt)
-        stmt->init();
+    if (r_stmt)
+        r_stmt->init();
 }
 // End vl_repeat_stmt functions.
 
 
 vl_while_stmt::vl_while_stmt(vl_expr *c, vl_stmt *s)
 {
-    type = WhileStmt;
-    cond = c;
-    stmt = s;
+    st_type = WhileStmt;
+    w_cond = c;
+    w_stmt = s;
 }
 
 
 vl_while_stmt *
 vl_while_stmt::copy()
 {
-    return (new vl_while_stmt(chk_copy(cond), chk_copy(stmt)));
+    return (new vl_while_stmt(chk_copy(w_cond), chk_copy(w_stmt)));
 }
 
 
 void
 vl_while_stmt::init()
 {
-    if (stmt)
-        stmt->init();
+    if (w_stmt)
+        w_stmt->init();
 }
 // End vl_while_stmt functions.
 
@@ -1732,67 +1712,67 @@ vl_while_stmt::init()
 vl_for_stmt::vl_for_stmt(vl_bassign_stmt *i, vl_expr *c, vl_bassign_stmt *e,
     vl_stmt *s)
 {
-    type = ForStmt;
-    initial = i;
-    cond = c;
-    end = e;
-    stmt = s;
+    st_type = ForStmt;
+    f_initial = i;
+    f_cond = c;
+    f_end = e;
+    f_stmt = s;
 }
 
 
 vl_for_stmt *
 vl_for_stmt::copy()
 {
-    return (new vl_for_stmt(chk_copy(initial), chk_copy(cond),
-        chk_copy(end), chk_copy(stmt)));
+    return (new vl_for_stmt(chk_copy(f_initial), chk_copy(f_cond),
+        chk_copy(f_end), chk_copy(f_stmt)));
 }
 
 
 void
 vl_for_stmt::init()
 {
-    if (stmt)
-        stmt->init();
+    if (f_stmt)
+        f_stmt->init();
 }
 // End vl_for_stmt functions.
 
 
 vl_delay_control_stmt::vl_delay_control_stmt(vl_delay *del, vl_stmt *s)
 {
-    type = DelayControlStmt;
-    delay = del;
-    stmt = s;
+    st_type = DelayControlStmt;
+    d_delay = del;
+    d_stmt = s;
 }
 
 
 vl_delay_control_stmt *
 vl_delay_control_stmt::copy()
 {
-    return (new vl_delay_control_stmt(chk_copy(delay), chk_copy(stmt)));
+    return (new vl_delay_control_stmt(chk_copy(d_delay), chk_copy(d_stmt)));
 }
 
 
 void
 vl_delay_control_stmt::init()
 {
-    if (stmt)
-        stmt->init();
+    if (d_stmt)
+        d_stmt->init();
 }
 // End vl_delay_control_stmt functions.
 
 
 vl_event_control_stmt::vl_event_control_stmt(vl_event_expr *e, vl_stmt *s)
 {
-    type = EventControlStmt;
-    event = e;
-    stmt = s;
+    st_type = EventControlStmt;
+    ec_event = e;
+    ec_stmt = s;
 }
 
 
 vl_event_control_stmt *
 vl_event_control_stmt::copy()
 {
-    return (new vl_event_control_stmt(chk_copy(event), chk_copy(stmt)));
+    return (new vl_event_control_stmt(chk_copy(ec_event), chk_copy(ec_stmt)));
 }
 
 
@@ -1803,50 +1783,50 @@ vl_event_control_stmt::copy()
 void
 vl_event_control_stmt::init()
 {
-    if (stmt)
-        stmt->init();
-    if (event)
-        event->init();
+    if (ec_stmt)
+        ec_stmt->init();
+    if (ec_event)
+        ec_event->init();
 }
 // End vl_event_control_stmt functions.
 
 
 vl_wait_stmt::vl_wait_stmt(vl_expr *c, vl_stmt *s)
 {
-    type = WaitStmt;
-    cond = c;
-    stmt = s;                
-    event = 0;
+    st_type = WaitStmt;
+    w_cond = c;
+    w_stmt = s;                
+    w_event = 0;
 }
 
 
 vl_wait_stmt *
 vl_wait_stmt::copy()
 {
-    return (new vl_wait_stmt(chk_copy(cond), chk_copy(stmt)));
+    return (new vl_wait_stmt(chk_copy(w_cond), chk_copy(w_stmt)));
 }
 
 
 void
 vl_wait_stmt::init()
 {
-    if (stmt)
-        stmt->init();
+    if (w_stmt)
+        w_stmt->init();
 }
 // End vl_wait_stmt functions.
 
 
 vl_send_event_stmt::vl_send_event_stmt(char *n)
 {
-    type = SendEventStmt;
-    name = n;
+    st_type = SendEventStmt;
+    se_name = n;
 }
 
 
 vl_send_event_stmt *
 vl_send_event_stmt::copy()
 {
-    return (new vl_send_event_stmt(vl_strdup(name)));
+    return (new vl_send_event_stmt(vl_strdup(se_name)));
 }
 // End vl_send_event_stmt functions.
 
@@ -1854,65 +1834,64 @@ vl_send_event_stmt::copy()
 vl_fork_join_stmt::vl_fork_join_stmt(char *n, lsList<vl_decl*> *d,
     lsList<vl_stmt*> *s)
 {
-    type = ForkJoinStmt;
-    name = n;
-    decls = d;
-    stmts = s;
-    sig_st = 0;
-    blk_st = 0;
-    endcnt = 0;
-    flags = 0;
+    st_type = ForkJoinStmt;
+    fj_name = n;
+    fj_decls = d;
+    fj_stmts = s;
+    fj_sig_st = 0;
+    fj_blk_st = 0;
+    fj_endcnt = 0;
 }
 
 
 vl_fork_join_stmt::~vl_fork_join_stmt()
 {
-    delete [] name;
-    delete_list(decls);
-    delete_list(stmts);
-    delete_table(sig_st);
-    delete blk_st;
+    delete [] fj_name;
+    delete_list(fj_decls);
+    delete_list(fj_stmts);
+    delete_table(fj_sig_st);
+    delete fj_blk_st;
 }
 
 
 vl_fork_join_stmt *
 vl_fork_join_stmt::copy()
 {
-    vl_fork_join_stmt *stmt = new vl_fork_join_stmt(vl_strdup(name), 0, 0);
+    vl_fork_join_stmt *stmt = new vl_fork_join_stmt(vl_strdup(fj_name), 0, 0);
     set_var_context(vl_context::push(var_context(), stmt));
-    stmt->decls = copy_list(decls);
-    stmt->stmts = copy_list(stmts);
+    stmt->fj_decls = copy_list(fj_decls);
+    stmt->fj_stmts = copy_list(fj_stmts);
     set_var_context(vl_context::pop(var_context()));
 
-    if (stmt->name) {
+    if (stmt->name()) {
         vl_context *cx = var_context();
         if (cx->block()) {
-            if (!cx->block()->blk_st)
-                cx->block()->blk_st = new table<vl_stmt*>;
-            cx->block()->blk_st->insert(stmt->name, stmt);
+            if (!cx->block()->blk_st())
+                cx->block()->set_blk_st(new table<vl_stmt*>);
+            cx->block()->blk_st()->insert(stmt->name(), stmt);
         }
         else if (cx->fjblk()) {
-            if (!cx->fjblk()->blk_st)
-                cx->fjblk()->blk_st = new table<vl_stmt*>;
-            cx->fjblk()->blk_st->insert(stmt->name, stmt);
+            if (!cx->fjblk()->blk_st())
+                cx->fjblk()->set_blk_st(new table<vl_stmt*>);
+            cx->fjblk()->blk_st()->insert(stmt->name(), stmt);
         }
         else if (cx->task()) {
-            if (!cx->task()->blk_st)
-                cx->task()->blk_st = new table<vl_stmt*>;
-            cx->task()->blk_st->insert(stmt->name, stmt);
+            if (!cx->task()->blk_st())
+                cx->task()->set_blk_st(new table<vl_stmt*>);
+            cx->task()->blk_st()->insert(stmt->name(), stmt);
         }
         else if (cx->function()) {
-            if (!cx->function()->blk_st)
-                cx->function()->blk_st = new table<vl_stmt*>;
-            cx->function()->blk_st->insert(stmt->name, stmt);
+            if (!cx->function()->blk_st())
+                cx->function()->set_blk_st(new table<vl_stmt*>);
+            cx->function()->blk_st()->insert(stmt->name(), stmt);
         }
         else if (cx->module()) {
-            if (!cx->module()->blk_st)
-                cx->module()->blk_st = new table<vl_stmt*>;
-            cx->module()->blk_st->insert(stmt->name, stmt);
+            if (!cx->module()->blk_st())
+                cx->module()->set_blk_st(new table<vl_stmt*>);
+            cx->module()->blk_st()->insert(stmt->name(), stmt);
         }
         else {
-            vl_error("fork/join block %s has no parent", stmt->name);
+            vl_error("fork/join block %s has no parent", stmt->name());
             VS()->abort();
         }
     }
@@ -1924,99 +1903,101 @@ void
 vl_fork_join_stmt::init()
 {
     set_var_context(vl_context::push(var_context(), this));
-    init_list(decls);
-    init_list(stmts);
+    init_list(fj_decls);
+    init_list(fj_stmts);
     set_var_context(vl_context::pop(var_context()));
 }
 // End vl_fork_join_stmt functions.
 
 
-vl_task_enable_stmt::vl_task_enable_stmt(short t, char *n, lsList<vl_expr*> *a)
+vl_task_enable_stmt::vl_task_enable_stmt(int t, char *n, lsList<vl_expr*> *a)
 {
-    type = t;
-    name = n;
-    args = a;
-    task = 0;
+    st_type = t;
+    te_name = n;
+    te_args = a;
+    te_task = 0;
 }
 
 
 vl_task_enable_stmt::~vl_task_enable_stmt()
 {
-    delete [] name;
-    delete_list(args);
+    delete [] te_name;
+    delete_list(te_args);
 }
 
 
 vl_task_enable_stmt *
 vl_task_enable_stmt::copy()
 {
-    return (new vl_task_enable_stmt(type, vl_strdup(name), copy_list(args)));
+    return (new vl_task_enable_stmt(st_type, vl_strdup(te_name),
+        copy_list(te_args)));
 }
 // End vl_task_enable_stmt functions.
 
 
 vl_disable_stmt::vl_disable_stmt(char *n)
 {
-    type = DisableStmt;
-    name = n;
-    target = 0;
+    st_type = DisableStmt;
+    d_name = n;
+    d_target = 0;
 }
 
 
 vl_disable_stmt *
 vl_disable_stmt::copy()
 {
-    return (new vl_disable_stmt(vl_strdup(name)));
+    return (new vl_disable_stmt(vl_strdup(d_name)));
 }
 // End vl_disable_stmt functions.
 
 
-vl_deassign_stmt::vl_deassign_stmt(short t, vl_var *v)
+vl_deassign_stmt::vl_deassign_stmt(int t, vl_var *v)
 {
-    type = t;  // DeassignStmt or ReleaseStmt
-    lhs = v;
-    flags |= DAS_DEL_VAR;
+    st_type = t;  // DeassignStmt or ReleaseStmt
+    d_lhs = v;
+    st_flags |= DAS_DEL_VAR;
 }
 
 
 vl_deassign_stmt::~vl_deassign_stmt()
 {
-    if (flags & DAS_DEL_VAR)
-        delete lhs;
+    if (st_flags & DAS_DEL_VAR)
+        delete d_lhs;
 }
 
 
 vl_deassign_stmt *
 vl_deassign_stmt::copy()
 {
-    return (new vl_deassign_stmt(type, chk_copy(lhs)));
+    return (new vl_deassign_stmt(st_type, chk_copy(d_lhs)));
 }
 
 
 void
 vl_deassign_stmt::init()
 {
-    if (!lhs->name()) {
-        if (lhs->data_type() != Dconcat) {
+    if (!d_lhs->name()) {
+        if (d_lhs->data_type() != Dconcat) {
             vl_error("internal, unnamed variable in deassign");
             VS()->abort();
         }
         return;
     }
-    vl_var *nvar = VS()->context()->lookup_var(lhs->name(), false);
+    vl_var *nvar = VS()->context()->lookup_var(d_lhs->name(), false);
     if (!nvar) {
-        vl_error("undeclared variable %s in deassign", lhs->name());
+        vl_error("undeclared variable %s in deassign", d_lhs->name());
         VS()->abort();
     }
-    if (nvar != lhs) {
-        if (strcmp(nvar->name(), lhs->name()))
+    if (nvar != d_lhs) {
+        if (strcmp(nvar->name(), d_lhs->name())) {
             // from another module, don't free it!
-            flags &= ~DAS_DEL_VAR;
-        delete lhs;
-        lhs = nvar;
+            anot_flags(DAS_DEL_VAR);
+        }
+        delete d_lhs;
+        d_lhs = nvar;
     }
-    if (lhs->flags() & VAR_IN_TABLE)
-        flags &= ~DAS_DEL_VAR;
+    if (d_lhs->flags() & VAR_IN_TABLE)
+        anot_flags(DAS_DEL_VAR);
 }
 // End vl_deassign_stmt functions.
 
@@ -2027,58 +2008,58 @@ vl_deassign_stmt::init()
 
 vl_gate_inst::vl_gate_inst()
 {
-    name = 0;
-    terms = 0;
-    outputs = 0;
-    gsetup = 0;
-    geval = 0;
-    gset = 0;
-    string = 0;
-    inst_list = 0;
-    delay = 0;
-    array = 0;
+    gi_setup = 0;
+    gi_eval = 0;
+    gi_set = 0;
+
+    gi_terms = 0;
+    gi_outputs = 0;
+    gi_string = 0;
+    gi_inst_list = 0;
+    gi_delay = 0;
+    gi_array = 0;
 }
 
 
 vl_gate_inst::vl_gate_inst(char *n, lsList<vl_expr*> *t, vl_range *r)
 {
-    type = 0;
-    name = n;
-    terms = t;
-    outputs = 0;
-    gsetup = 0;
-    geval = 0;
-    gset = 0;
-    string = 0;
-    inst_list = 0;
-    delay = 0;
-    array = r;
+    gi_setup = 0;
+    gi_eval = 0;
+    gi_set = 0;
+
+    st_type = 0;
+    i_name = n;
+    gi_terms = t;
+    gi_outputs = 0;
+    gi_string = 0;
+    gi_inst_list = 0;
+    gi_delay = 0;
+    gi_array = r;
 }
 
 
 vl_gate_inst::~vl_gate_inst()
 {
-    delete [] name;
-    delete_list(terms);
-    delete_list(outputs);
-    if (delay) {
-        delay->delay1 = 0;
-        delete delay;
+    delete_list(gi_terms);
+    delete_list(gi_outputs);
+    if (gi_delay) {
+        gi_delay->delay1 = 0;
+        delete gi_delay;
     }
-    delete array;
+    delete gi_array;
 }
 
 
 vl_gate_inst *
 vl_gate_inst::copy()
 {
-    vl_gate_inst *g = new vl_gate_inst(vl_strdup(name), copy_list(terms),
-        chk_copy(array));
-    g->type = type;
-    g->gsetup = gsetup;
-    g->geval = geval;
-    g->gset = gset;
-    g->string = string;
+    vl_gate_inst *g = new vl_gate_inst(vl_strdup(i_name), copy_list(gi_terms),
+        chk_copy(gi_array));
+    g->set_type(st_type);
+    g->gi_setup = gi_setup;
+    g->gi_eval = gi_eval;
+    g->gi_set = gi_set;
+    g->gi_string = gi_string;
     return (g);
 }
 // End vl_gate_inst functions.
@@ -2086,26 +2067,24 @@ vl_gate_inst::copy()
 
 vl_mp_inst::vl_mp_inst(char *n, lsList<vl_port_connect*> *p)
 {
-    type = 0;
-    name = n;
-    ports = p;
-    inst_list = 0;
-    master = 0;
+    i_name = n;
+    pi_ports = p;
+    pi_inst_list = 0;
+    pi_master = 0;
 }
 
 
 vl_mp_inst::~vl_mp_inst()
 {
-    delete [] name;
-    delete_list(ports);
-    delete master;
+    delete_list(pi_ports);
+    delete pi_master;
 }
 
 
 vl_mp_inst *
 vl_mp_inst::copy()
 {
-    return (new vl_mp_inst(vl_strdup(name), copy_list(ports)));
+    return (new vl_mp_inst(vl_strdup(i_name), copy_list(pi_ports)));
 }
 // End vl_mp_inst functions.
 
