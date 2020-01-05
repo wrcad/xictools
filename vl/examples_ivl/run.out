@@ -5066,15 +5066,15 @@ PASSED
 
 vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
 
-ivltests/task_scope.v
+ivltests/task_scope1.v
+R=00000001
+R=00000010
+R=00000011
 PASSED
 
 vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
 
-ivltests/task-scope.v
-R=00000001
-R=00000010
-R=00000011
+ivltests/task_scope.v
 PASSED
 
 vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.

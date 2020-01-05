@@ -3266,7 +3266,7 @@ yyerror(const char *str)
     vl_error("%s: (line: %d, file: %s) token: '%s', ", str, yylineno,
         VP()->filename(), yy_textbuf());
     vl_error("yacc token: '%s'", yy_textbuf());
-    if (VP()->p_context->currentModule()) {
+    if (VP()->p_context && VP()->p_context->currentModule()) {
         vl_error("unexpected token '%s' seen in module '%s'",
             yy_textbuf(), VP()->p_context->currentModule()->name());
     }

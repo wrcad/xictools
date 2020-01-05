@@ -280,10 +280,6 @@ vl_simulator::~vl_simulator()
 bool
 vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
 {
-    const vl_simulator *vlsim = this;
-    if (!vlsim)
-        return (false);
-
     s_description = 0;
     s_dmode = DLYtyp;
     s_stop = VLrun;
