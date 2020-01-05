@@ -1,270 +1,270 @@
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/addsr.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.10A.v
 saw event
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.11A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.11B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.12A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.12B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.12C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1E.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1F.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1G.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1H.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1I.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1J.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.1K.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2E.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2F.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2G.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2H.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.2I.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3E.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3F.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3G.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3H.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.3J.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4E.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4F.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4G.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4H.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.4I.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.5A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.5B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.5C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.5D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.5E.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.5F.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.6A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.6B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.6C.v
 Entering case at time=                   0 value1=xxxx
@@ -291,132 +291,132 @@ Leaving case at time=                  28
 Entering case at time=                  28 value1=0100
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.6D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.7A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.7B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.7C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.7D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.8A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.9A.v
 value = 0
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.9C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/always3.1.9D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign3.2A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign3.2B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign3.2C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign3.2D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign3.2E.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign_delay.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign_deq.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign_ge.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign_le.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign_mem1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign_mem2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign_nb1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/assign_neq.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/bitwidth2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/bitwidth.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/bitwidth2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/bnot.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/bufif.v
 0 ad=0000000000000000xxxxxxxxxxxxxxxx
@@ -425,77 +425,77 @@ ivltests/bufif.v
 Wrote aaaaaaaa, got 0000aaaa
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/case3.8A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/case3.8B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/case3.8C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/case3.8D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casex3.9A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casex3.9B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casex3.9C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casex3.9D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casex3.9E.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casez3.10A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casez3.10B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casez3.10C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casez3.10D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/casez3.10E.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/comp1000.v
 r0 =  16'b0011110100100100
@@ -754,7 +754,7 @@ r252 =  31'b000000000000000000000000000000x
 r253 =  9'b000000001
 r254 =  20'b00000100110101100110
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/comp1001.v
 r0 =  19'b0000010111011101100
@@ -1013,98 +1013,98 @@ r252 =  27'b000000000000101111101101000
 r253 =  18'b000110010010011110
 r254 =  13'b0000011111011
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/con_tri.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/cond_band.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/cond_wide.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/constadd.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/constmult.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/contrib8.1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/contrib8.2.v
 * Warning: implicit declaration of c.
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/contrib8.3.v
 * Error: instance of MUX_REG_8x8 with no master.
 * Error: no master found for MUX_REG_8x8.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/contrib8.4.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/contrib8.5.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/con_tri.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/cprop.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/deassign3.4A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/decl_assign1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/define1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/defparam3.5.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/defparam.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/defparam3.5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/delay.v
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/delay_assign_nb.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/delay.v
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/deposit.v
 * Warning: unknown system command $deposit, ignored.
@@ -1131,29 +1131,29 @@ xxxx x 0 0
 0/0
 FAILED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/deposit_wire.v
 * Warning: unknown system command $deposit, ignored.
 * Warning: unknown system command $deposit, ignored.
 FAILED -- test after deposit is 0
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/dff1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/disable3.6A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/disable3.6B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/disp_dec.v
 4'bxxxx = x
@@ -1163,17 +1163,22 @@ ivltests/disp_dec.v
 4'b0000 = 0
 4'b0011 = 3
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/dotinid.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/drive_strength.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/drive_strength1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/drive_strength2.v
 1 0 1
@@ -1181,12 +1186,7 @@ ivltests/drive_strength2.v
 1 0 1
 0 0 1
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/drive_strength.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/eeq.v
 zx10 zx10 ===1 !==0
@@ -1199,94 +1199,93 @@ xxxx xxxx ===1 !==0
 zzzz zzzz ===1 !==0
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/else1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/else2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/else3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/event3.15.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/event_list2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/event_list.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/event_list2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/fdisplay1.v
 message to stdout (from $display)
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/fdisplay2.v
-* Error: in $fopen, can't open file work/fdisplay2.out.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/fdisplay3.v
 expect compile or runtime error from bad $fdisplay args:
 * Warning: implicit declaration of fdisplay3.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/fopen1.v
 fp = 00000000000000000000000000001000 
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/fopen2.v
-* Error: in $fopen, can't open file work/fopen2.out1.
+PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/for3.16A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/force3.17A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/force3.17B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/force3.17C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/fork3.19A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/fork3.19B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/format.v
 >16<
@@ -1295,185 +1294,178 @@ ivltests/format.v
 > 010<
 16, 16
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function1.v
 0008 = sum(0003, 0005)
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function2.v
 op1 = deadbeef
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function3.11B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function3.11C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function3.11D.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function3.11E.v
-* Error: syntax error: (line: 59, file: ivltests/function3.11E.v) token: 'foo2', .
+* Error: syntax error: (line: 30, file: ivltests/function3.11E.v) token: 'foo2', .
 * Error: yacc token: 'foo2'.
 * Error: unexpected token 'foo2' seen in module 'test'.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function3.11F.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function3.v
 a=0001, b=0011, line=00110000, got1=10, got2=10
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function4.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/function_exp.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ga_and.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/galan.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/ga_mod1.v
-* Error: syntax error: (line: 79, file: ivltests/ga_mod1.v) token: '[', .
-* Error: yacc token: '['.
-* Error: unexpected token '[' seen in module 'main'.
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ga_mod.v
-* Error: syntax error: (line: 87, file: ivltests/ga_mod.v) token: '[', .
+* Error: syntax error: (line: 44, file: ivltests/ga_mod.v) token: '[', .
 * Error: yacc token: '['.
 * Error: unexpected token '[' seen in module 'main'.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/ga_mod1.v
+* Error: syntax error: (line: 40, file: ivltests/ga_mod1.v) token: '[', .
+* Error: yacc token: '['.
+* Error: unexpected token '[' seen in module 'main'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ga_nand.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ga_nor.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ga_or.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ga_xnor.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ga_xor.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/galan.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/hello.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/hello1.v
 Hello, World.
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/hello.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/hierspace.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/idiv1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/idiv2.v
 13 % 3 = 1
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ifdef1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ifdef2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ifdef3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ifdef4.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/include1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/include2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/include3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/inertdly.v
 FAILED - a propagated pulse and shouldn't 
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/initmod2.v
-z z x 1 x x x : x 1 1 : x z
-z z x 1 x x x : x 1 1 : x z
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/initmod.v
 0 x 0 x : xxxx : x x x x : xxxx : x x x x
@@ -1487,104 +1479,111 @@ ivltests/initmod.v
 0 1 0 0 : 1010 : 1 0 1 0 : 1010 : 1 0 1 0
 1 0 0 1 : 0100 : 0 1 0 0 : 0100 : 0 1 0 0
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/initmod2.v
+z z x 1 x x x : x 1 1 : x z
+z z x 1 x x x : x 1 1 : x z
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/inout.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/integer1lt.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/integer2le.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/integer3gt.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/integer4ge.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/integer5.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/land2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/land3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/lh_catadd.v
 PASSED {carry,sum} === 1,0100
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/lh_varindx2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/lh_varindx3.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/lh_varindx4.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/lh_varindx5.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/lh_varindx.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx4.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/lh_varindx5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/m16a.v
 * Error: no top module!.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/m16x16_beh.v
-* Error: no top module!.
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/m16x16.v
 * Error: no top module!.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
-ivltests/mangle_1.v
-PASSED
+ivltests/m16x16_beh.v
+* Error: no top module!.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/mangle.v
 * Warning: implicit declaration of abc.
 * Warning: implicit declaration of \cde .
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/mangle_1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/mcl2.v
 0 0 0000
@@ -3636,7 +3635,7 @@ d f 0799
 e f 07c1
 f f 07e9
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/mem1.v
 mem[0] = 000100
@@ -3672,47 +3671,52 @@ mem[15] = xxxxxx
 14 xxxxxx
 15 xxxxxx
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/meminit2.v
-FAILED -- mem[0] == 00000000000000000000000000000000
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/meminit.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/meminit2.v
+FAILED -- mem[0] == 00000000000000000000000000000000
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/modparam.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/module3.12A.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/module3.12B.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/module3.12C.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/modulus2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/modulus.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/modulus2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/mult1.v
+FAILED - Mult 2*x wire assign failed - is 0xxxxxxxx
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/mult16.v
 a = 00004567, b = 23c6, yout = 00000000
@@ -3911,102 +3915,97 @@ a = 00000000, b = 0001, yout = 00000000
 0 * 17293 = 00000000, Reality = 0
 Done.  0 Errors
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/mult1.v
-FAILED - Mult 2*x wire assign failed - is 0xxxxxxxx
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/muxtest.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/nblkorder.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_add.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/param_and2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_and.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/param_and2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_band.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_binv.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_bor.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_concat.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_eq3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_expr.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_mod.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_string.v
 990
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_tern.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_test1.v
 * Error: no top module!.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_test2.v
 foo = 0000000000000000000000000000000000000000ffffffff
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/param_times.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/pca1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/port-test2.v
 00000001
@@ -4019,90 +4018,74 @@ ivltests/port-test2.v
 10000000
 port_3 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/port-test3.v
 * Error: in module instance fm, actual connection to port 1 is not a net.
 * Error: in module instance fm, formal connection to port 2 is not a net.
 * Error: in module instance fm, actual connection to port 3 is not a net.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/posedge.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest001.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest002.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest003.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest004.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest005.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest006.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest007.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest008.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest009.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest010.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ptest011.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/pullupdown2.v
-* Error: (internal) gate not initialized.
-* Error: (internal) gate not initialized.
-* Error: (internal) gate not initialized.
-* Error: (internal) gate not initialized.
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/pullupdown3.v
-* Error: (internal) gate not initialized.
-* Error: (internal) gate not initialized.
-* Error: (internal) gate not initialized.
-* Error: (internal) gate not initialized.
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/pullupdown.v
 Testing drivers with value 00
@@ -4363,32 +4346,48 @@ Testing drivers with value fe
 Testing drivers with value ff
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
-ivltests/qmark1.v
-PASSED
+ivltests/pullupdown2.v
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
-ivltests/qmark3.v
-PASSED
+ivltests/pullupdown3.v
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
+* Error: (internal) gate not initialized.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/qmark5.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/qmark6.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/qmark.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark5.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/qmark6.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/ram16x1.v
 r1[0] == 0
@@ -4408,62 +4407,62 @@ r1[d] == 1
 r1[e] == 0
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/range1.v
 
 << BEGIN >>
 << END  >>
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/range2.v
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/readmemb1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/readmemb2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/readmemb3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/readmemh1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/readmemh2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/readmemh3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/readmemh4.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/readmemh5.v
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/repeat1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/rop.v
  & 3'b10z === 0
@@ -4498,44 +4497,44 @@ ivltests/rop.v
 ~^ 3'b111 === 0
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/rptconcat.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/schedule.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/scope1.v
 * Warning: implicit declaration of fake.
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/scope2.v
 * Warning: implicit declaration of q.
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/scope3.v
 * Error: recursive instantiation of module a.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_always1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_always2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_always3.v
 time=5, c=0, r=0, reg=x
@@ -4545,52 +4544,52 @@ time=20, c=1, r=0, reg=1
 time=25, c=0, r=0, reg=1
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_array.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_assign.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_dsbl.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_force.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_function1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_function2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_function3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_function4.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_function5.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_instmod1.v
 time 3 r=1, c0=0, c1=0, o0=0,o1=0
@@ -4601,7 +4600,7 @@ saw a clk at 7, out is 1
 time 9 r=0, c0=1, c1=1, o0=1,o1=1
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_instmod2.v
 time 3 r=1, c0=0, c1=0, o0=0,o1=0
@@ -4610,52 +4609,52 @@ time 7 r=0, c0=1, c1=0, o0=1,o1=0
 time 9 r=0, c0=1, c1=1, o0=1,o1=1
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_int.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/sdw_lvalconcat2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_lvalconcat.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/sdw_lvalconcat2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_param1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_param2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_release.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_stmt002.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_task1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/sdw_task2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/shellho1.v
 Running first test.
@@ -4667,36 +4666,36 @@ top.memory.memory[1] = f
 PASS! top.memory.memory[1] set correctly.
 top.memory.memory[1] = f
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/shift_pad.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/signed1.v
-* Error: syntax error: (line: 51, file: ivltests/signed1.v) token: 'vala', .
+* Error: syntax error: (line: 26, file: ivltests/signed1.v) token: 'vala', .
 * Error: yacc token: 'vala'.
 * Error: unexpected token 'vala' seen in module 'main'.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/signed2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/signed3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/signed4.v
-* Error: syntax error: (line: 49, file: ivltests/signed4.v) token: 'y', .
+* Error: syntax error: (line: 25, file: ivltests/signed4.v) token: 'y', .
 * Error: yacc token: 'y'.
 * Error: unexpected token 'y' seen in module 'signed1'.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/signed5.v
 * Warning: unknown system command $signed, ignored.
@@ -4709,26 +4708,26 @@ ivltests/signed5.v
 * Warning: unknown system command $signed, ignored.
 FAILED -- $signed(1100) === 00000000000000000000000000000000
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/specify1.v
+* Error: syntax error: (line: 14, file: ivltests/specify1.v) token: '`celldefine', .
+* Error: yacc token: '`celldefine'.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/specify_01.v
-* Error: syntax error: (line: 25, file: ivltests/specify_01.v) token: '=>', .
+* Error: syntax error: (line: 13, file: ivltests/specify_01.v) token: '=>', .
 * Error: yacc token: '=>'.
 * Error: unexpected token '=>' seen in module 'dff'.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/specify1.v
-* Error: syntax error: (line: 28, file: ivltests/specify1.v) token: '`celldefine', .
-* Error: yacc token: '`celldefine'.
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/stask_parm1.v
 ~i = 1
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/stask_parm2.v
 {a, b} == 00000000
@@ -4957,119 +4956,37 @@ ivltests/stask_parm2.v
 {a, b} == 11101101
 {a, b} == 11101110
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/string1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/string2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/string3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/supply1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/supply2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/talu.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task3.14A.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task3.14B.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task3.14C.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task3.14D.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task3.14E.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task3.14F.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_bypath.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_inpad.v
-x=00000200
-x=00000004
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_iotypes.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_mem.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_noop2.v
-* Error: no top module!.
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_noop.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_omemw2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_omemw3.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_omemw.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/task_scope.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/task-scope.v
 R=00000001
@@ -5077,68 +4994,150 @@ R=00000010
 R=00000011
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14A.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14B.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14C.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14D.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14E.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task3.14F.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_bypath.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_inpad.v
+x=00000200
+x=00000004
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_iotypes.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_mem.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_noop.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_noop2.v
+* Error: no top module!.
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_omemw.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_omemw2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_omemw3.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/task_scope.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/tern1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/tern2.v
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_bufif0.v
 PASSED: bufif0
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_bufif1.v
 PASSED: bufif1
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_mos_strength_reduction.v
 * Warning: implicit declaration of n0.
 * Warning: implicit declaration of p0.
 * Error: gate rn1 has non-bitfield terminal 2.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_nmos.v
 PASSED: nmos
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_notif0.v
 PASSED: notif0
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_notif1.v
 PASSED: notif1
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_pmos.v
 PASSED: pmos
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_rnmos.v
 PASSED: rnmos
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/test_rpmos.v
 PASSED: rpmos
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/time1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/time2.v
 time =                    0, clock = 0
@@ -5160,31 +5159,31 @@ time =                  100, clock = a
  edge ! time =                  110, count = 6
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/time3.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/time4.v
 FAILED -- t == 0000000000000000000000000000000000000000000000000000000000000000
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/time5.v
 3 set out1 == 1
 4 set out2 == 1
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/time6.v
 34 set out1 == 1
 36 set out2 == 1
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/time7.v
 
@@ -5237,37 +5236,37 @@ ivltests/time7.v
 << END  >>
 OK
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/time8.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/timescale1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/tri0b.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/tri0.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/tri0b.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/tri1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/udp_bufg.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/udp_jkff.v
 cp=0 j=x k=x s=x r=x  q=x
@@ -5317,102 +5316,102 @@ cp=1 j=1 k=0 s=0 r=0  q=1
 cp=0 j=0 k=0 s=0 r=0  q=1
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/udp_x.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_and.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_lnot1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_lnot2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_nand.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_nor.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_or.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_xnor1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_xnor2.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/unary_xor.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/vardly.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/varlsfht1.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/varlsfht2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/varlsfht.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
-ivltests/varlshft1.v
+ivltests/varlsfht1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varlsfht2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/varlshft.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
-ivltests/varrshft1.v
+ivltests/varlshft1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/varrshft2.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/varrshft.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varrshft1.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/varrshft2.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/vcd1.v
 * Warning: implicit declaration of na1_out.
@@ -5426,7 +5425,7 @@ input/output/inout, assuming inout.
 1 xor 1 = 0
 0 xor 1 = 1
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/vector.v
 foo40=       1
@@ -5466,54 +5465,59 @@ foo40=       9
                               foo51=       9
                                              foo15=       9
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wait1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/width.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wildsense.v
-* Error: syntax error: (line: 61, file: ivltests/wildsense.v) token: '*', .
+* Error: syntax error: (line: 31, file: ivltests/wildsense.v) token: '*', .
 * Error: yacc token: '*'.
 * Error: unexpected token '*' seen in module 'test'.
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wireadd1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wireeq.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wirege.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wireland.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wirele.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wiremod1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
+
+ivltests/wiresl.v
+PASSED
+
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wiresl2.v
 out=01
@@ -5525,37 +5529,32 @@ out=20
 out=40
 out=80
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
-
-ivltests/wiresl.v
-PASSED
-
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wiresr.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wiresub1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/wirexor1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/xnor_test.v
 TEST PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/z1.v
 PASSED
 
-vl-4.3.3 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2020.
+vl-1.5 Verilog Parser-Simulator, Whiteley Research Inc. (C) 2001.
 
 ivltests/z2.v
 PASSED

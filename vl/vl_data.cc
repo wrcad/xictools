@@ -1557,14 +1557,14 @@ vl_var::setbits(int b)
 // Set a single bit at position pos. Return true if change.
 //
 bool
-vl_var::set_bit_of(int pos, int data)
+vl_var::set_bit_of(int pos, int bdata)
 {
     if (v_data_type == Dbit) {
         if (pos >= 0 && pos < v_bits.size()) {
             char *s = (v_array.size() ? ((char**)v_data.d)[0] : v_data.s);
             char oldc = s[pos];
-            s[pos] = data;
-            if (oldc != data)
+            s[pos] = bdata;
+            if (oldc != bdata)
                 return (true);
         }
     }
@@ -1573,7 +1573,7 @@ vl_var::set_bit_of(int pos, int data)
             int i = (v_array.size() ? ((int*)v_data.d)[0] : v_data.i);
             int oldi = i;
             int mask = 1 << pos;
-            if (data == BitH)
+            if (bdata == BitH)
                 i |= mask;
             else
                 i &= ~mask;
@@ -1591,7 +1591,7 @@ vl_var::set_bit_of(int pos, int data)
                 (v_array.size() ? ((vl_time_t*)v_data.d)[0] : v_data.t);
             vl_time_t oldi = i;
             vl_time_t mask = 1 << pos;
-            if (data == BitH)
+            if (bdata == BitH)
                 i |= mask;
             else
                 i &= ~mask;

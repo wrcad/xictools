@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# to generate run.out (bash):
+# ./run > run.out 2>&1
+
 for a in ivltests/*.v; do
     vl $a
 done
