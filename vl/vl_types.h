@@ -521,13 +521,90 @@ struct vl_var
     union var_data
     {
         int i;                      // integer (Dint)
+        int *pi;
         double r;                   // real (Dreal)
+        double *pr;
         vl_time_t t;                // time (Dtime)
+        vl_time_t *pt;
         char *s;                    // bit field or char string (Dbit, Dstring)
-        void *d;                    // array data
+        char **ps;
+//        void *d;                    // array data
         lsList<vl_expr*> *c;        // concatenation list (Dconcat)
     };
-    var_data &data()                { return (v_data); }
+//    var_data &data()                { return (v_data); }
+//XXX
+    int data_i()                    const { return (v_data.i); }
+    int *data_pi()                  const { return (v_data.pi); }
+    double data_r()                 const { return (v_data.r); }
+    double *data_pr()               const { return (v_data.pr); }
+    vl_time_t data_t()              const { return (v_data.t); }
+    vl_time_t *data_pt()            const { return (v_data.pt); }
+    char *data_s()                  const { return (v_data.s); }
+    char **data_ps()                const { return (v_data.ps); }
+//    void *data_d()                  const { return (v_data.d); }
+    lsList<vl_expr*> *data_c()      const { return (v_data.c); }
+
+    void set_data_i(int i)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.i = i;
+        }
+
+    void set_data_pi(int *pi)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.pi = pi;
+        }
+
+    void set_data_r(double r)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.r = r;
+        }
+
+    void set_data_pr(double *pr)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.pr = pr;
+        }
+
+    void set_data_t(vl_time_t t)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.t = t;
+        }
+
+    void set_data_pt(vl_time_t *pt)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.pt = pt;
+        }
+
+    void set_data_s(char *s)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.s = s;
+        }
+
+    void set_data_ps(char **ps)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.ps = ps;
+        }
+
+/*
+    void set_data_d(void *d)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.d = d;
+        }
+*/
+
+    void set_data_c(lsList<vl_expr*> *c)
+        {
+            memset(&v_data, 0, sizeof(var_data));
+            v_data.c = c;
+        }
 
     vl_range *range()               const { return (v_range); }
     void set_range(vl_range *r)     { v_range = r; }
@@ -1086,9 +1163,8 @@ struct vl_simulator
     bool initialize(vl_desc*, VLdelayType = DLYtyp, int = 0);
     bool simulate();
     VLstopType step();
-    void close_files();
-    void flush_files();
 
+    char *dumpindex(vl_var*);
     vl_var &sys_time(vl_sys_task_stmt*, lsList<vl_expr*>*);
     vl_var &sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*>*);
     vl_var &sys_timeformat(vl_sys_task_stmt*, lsList<vl_expr*>*);
@@ -1113,11 +1189,6 @@ struct vl_simulator
     vl_var &sys_dumpoff(vl_sys_task_stmt*, lsList<vl_expr*>*);
     vl_var &sys_readmemb(vl_sys_task_stmt*, lsList<vl_expr*>*);
     vl_var &sys_readmemh(vl_sys_task_stmt*, lsList<vl_expr*>*);
-    void do_dump();
-    char *dumpindex(vl_var*);
-    bool monitor_change(lsList<vl_expr*>*);
-    void display_print(lsList<vl_expr*>*, ostream&, DSPtype, unsigned int);
-    void fdisplay_print(lsList<vl_expr*>*, DSPtype, unsigned int);
 
     void abort()                        { s_stop = VLabort; }
     void finish()                       { s_stop = VLstop; }
@@ -1151,6 +1222,14 @@ private:
         }
 
     static void on_null_ptr();
+
+    void close_files();
+    void flush_files();
+
+    void do_dump();
+    bool monitor_change(lsList<vl_expr*>*);
+    void display_print(lsList<vl_expr*>*, ostream&, DSPtype, unsigned int);
+    void fdisplay_print(lsList<vl_expr*>*, DSPtype, unsigned int);
 
     vl_desc         *s_description;     // the verilog deck to simulate
     VLdelayType     s_dmode;            // min/typ/max delay mode

@@ -191,12 +191,6 @@ vl_simulator *vl_simulator::s_simulator = 0;
 
 vl_simulator::vl_simulator()
 {
-    if (s_simulator) {
-        fprintf(stderr, "Singleton vl_simulator is already instantiated.\n");
-        exit(1);
-    }
-    s_simulator = this;
-
     s_description = 0;
     s_dmode = DLYtyp;
     s_stop = VLrun;
@@ -236,7 +230,7 @@ vl_simulator::vl_simulator()
 void
 vl_simulator::on_null_ptr()
 {
-    fprintf(stderr, "Singleton vl_simulator used before instantiated.\n");
+    vl_error("null simulator pointer.");
     exit(1);
 }
 
@@ -270,7 +264,9 @@ vl_simulator::~vl_simulator()
     delete s_dmpcx;
     delete [] s_dmplast;
     delete s_dmpdata;
-    s_simulator = 0;
+
+    if (s_simulator == this)
+        s_simulator = 0;
 }
 
 
@@ -280,6 +276,12 @@ vl_simulator::~vl_simulator()
 bool
 vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
 {
+    if (s_simulator) {
+        vl_error("non-reentrant initialize function called");
+        return (false);
+    }
+    s_simulator = this;
+
     s_description = 0;
     s_dmode = DLYtyp;
     s_stop = VLrun;
@@ -312,7 +314,7 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     delete s_top_modules;
     s_top_modules = 0;
     s_dbg_flags = 0;
-    s_time_data.data().t = 0;
+    s_time_data.set_data_t(0);
 
     close_files();
 
@@ -333,8 +335,10 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     s_tfwidth = 20;
     var_factory.clear();
 
-    if (!desc)
+    if (!desc) {
+        s_simulator = 0;
         return (true);
+    }
 
     s_dmode = dly;
     s_dbg_flags = dbg;
@@ -348,6 +352,7 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
             count++;
     if (count <= 0) {
         vl_error("no top module!");
+        s_simulator = 0;
         return (false);
     }
     s_top_modules = new vl_top_mod_list(count, new vl_module*[count]);
@@ -379,8 +384,9 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
     s_context = 0;
     var_factory.clear();
     s_time_data.set_data_type(Dtime);
-    s_time_data.data().t = 0;
+    s_time_data.set_data_t(0);
     s_tfunit = (int)(log10(s_description->tstep()) - 0.5);
+    s_simulator = 0;
     return (true);
 }
 
@@ -390,6 +396,12 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
 bool
 vl_simulator::simulate()
 {
+    if (s_simulator) {
+        vl_error("non-reentrant simulate function called");
+        return (false);
+    }
+    s_simulator = this;
+
     if (s_dbg_flags & DBG_desc)
         s_description->dump(cout);
     while (s_timewheel && s_stop == VLrun) {
@@ -400,7 +412,7 @@ vl_simulator::simulate()
             cout << "\n\n";
         }
         var_factory.clear();
-        s_time_data.data().t = s_timewheel->time();
+        s_time_data.set_data_t(s_timewheel->time());
         s_timewheel->eval_slot(this);
         if (s_monitor_state && s_monitors) {
             for (vl_monitor *m = s_monitors; m; m = m->next()) {
@@ -429,6 +441,7 @@ vl_simulator::simulate()
     }
     // close any open files
     close_files();
+    s_simulator = 0;
     return (true);
 }
 
@@ -438,9 +451,15 @@ vl_simulator::simulate()
 VLstopType
 vl_simulator::step()
 {
+    if (s_simulator) {
+        vl_error("non-reentrant step function called");
+        return (VLabort);
+    }
+    s_simulator = this;
+
     while (s_timewheel && s_stop == VLrun &&
             s_timewheel->time() <= s_steptime) {
-        s_time_data.data().t = s_timewheel->time();
+        s_time_data.set_data_t(s_timewheel->time());
         s_timewheel->eval_slot(this);
         if (s_monitor_state && s_monitors) {
             for (vl_monitor *m = s_monitors; m; m = m->next()) {
@@ -493,6 +512,7 @@ vl_simulator::step()
 
     if (s_stop != VLrun)
         close_files();
+    s_simulator = 0;
     return (s_stop);
 }
 
@@ -3152,7 +3172,7 @@ vl_case_stmt::eval(vl_event*, vl_simulator *sim)
                     sim->abort();
                     return (EVnone);
                 }
-                if (z.data().s[0] == BitH) {
+                if (z.data_s()[0] == BitH) {
                     if (item->stmt())
                         item->stmt()->setup(sim);
                     return (EVnone);
@@ -3820,7 +3840,7 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
         if (prim->type() == CombPrimDecl) {
             for (int i = 1; i < MAXPRIMLEN-1; i++) {
                 if (prim->iodata(i))
-                    s[i-1] = prim->iodata(i)->data().s[0];
+                    s[i-1] = prim->iodata(i)->data_s()[0];
                 else
                     break;
                 // s = { in... }
@@ -3857,8 +3877,8 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
                 }
                 if (match) {
                     // set output to row[0];
-                    int x = prim->iodata(0)->data().s[0];
-                    prim->iodata(0)->data().s[0] = row[0];
+                    int x = prim->iodata(0)->data_s()[0];
+                    prim->iodata(0)->data_s()[0] = row[0];
                     if (x != row[0])
                         prim->iodata(0)->trigger();
                     return (EVnone);
@@ -3866,21 +3886,21 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
                 row += MAXPRIMLEN;
             }
             // set output to 'x'
-            int x = prim->iodata(0)->data().s[0];
-            prim->iodata(0)->data().s[0] = BitDC;
+            int x = prim->iodata(0)->data_s()[0];
+            prim->iodata(0)->data_s()[0] = BitDC;
             if (x != BitDC)
                 prim->iodata(0)->trigger();
         }
         else if (prim->type() == SeqPrimDecl) {
             for (int i = 0; i < MAXPRIMLEN; i++) {
                 if (prim->iodata(i))
-                    s[i] = prim->iodata(i)->data().s[0];
+                    s[i] = prim->iodata(i)->data_s()[0];
                 else
                     break;
                 // s = { out, in... }
             }
             if (!prim->seq_init()) {
-                prim->set_lastval(0, prim->iodata(0)->data().s[0]);
+                prim->set_lastval(0, prim->iodata(0)->data_s()[0]);
                 prim->set_seq_init(true);
 
                 // sanity test for table entries
@@ -3913,12 +3933,12 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
                 if (match) {
                     // set output to row[0];
                     if (row[0] != PrimM) {
-                        int x = prim->iodata(0)->data().s[0];
-                        prim->iodata(0)->data().s[0] = row[0];
+                        int x = prim->iodata(0)->data_s()[0];
+                        prim->iodata(0)->data_s()[0] = row[0];
                         if (x != row[0])
                             prim->iodata(0)->trigger();
                     }
-                    prim->set_lastval(0, prim->iodata(0)->data().s[0]);
+                    prim->set_lastval(0, prim->iodata(0)->data_s()[0]);
                     for (int j = 1; j < MAXPRIMLEN; j++)
                         prim->set_lastval(j, s[j]);
                     return (EVnone);
@@ -3926,11 +3946,11 @@ vl_mp_inst::eval(vl_event*, vl_simulator *sim)
                 row += MAXPRIMLEN;
             }
             // set output to 'x'
-            int x = prim->iodata(0)->data().s[0];
-            prim->iodata(0)->data().s[0] = BitDC;
+            int x = prim->iodata(0)->data_s()[0];
+            prim->iodata(0)->data_s()[0] = BitDC;
             if (x != BitDC)
                 prim->iodata(0)->trigger();
-            prim->set_lastval(0, prim->iodata(0)->data().s[0]);
+            prim->set_lastval(0, prim->iodata(0)->data_s()[0]);
             for (int i = 1; i < MAXPRIMLEN; i++)
                 prim->set_lastval(i, s[i]);
         }
@@ -4044,7 +4064,7 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
         }
         vl_var *nvar = new vl_var;
         nvar->set_data_type(Dconcat);
-        nvar->data().c = new lsList<vl_expr*>;
+        nvar->set_data_c(new lsList<vl_expr*>);
         lsGen<vl_var*> gen(port->port_exp());
 
         IOtype tt = IOnone;
@@ -4086,7 +4106,7 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
                     }
                 }
             }
-            nvar->data().c->newEnd(xp);
+            nvar->data_c()->newEnd(xp);
         }
 
         if (tt == IOinput || tt == IOinout) {

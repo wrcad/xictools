@@ -167,7 +167,7 @@ vl_var::vl_var()
     v_net_type = REGnone;
     v_io_type = IOnone;
     v_flags = 0;
-    v_data.r = 0;
+    set_data_r(0);
     v_range = 0;
     v_events = 0;
     v_delay = 0;
@@ -183,7 +183,7 @@ vl_var::vl_var(const char *n, vl_range *r, lsList<vl_expr*> *c)
     v_net_type = REGnone;
     v_io_type = IOnone;
     v_flags = 0;
-    v_data.c = c;
+    set_data_c(c);
     v_range = r;
     v_events = 0;
     v_delay = 0;
@@ -202,6 +202,7 @@ vl_var::vl_var(vl_var &d)
     v_net_type = d.v_net_type;
     v_io_type = d.v_io_type;
     v_flags = 0;
+    set_data_r(0);
     v_array = d.v_array;
     v_bits = d.v_bits;
     v_range = chk_copy(d.v_range);
@@ -213,60 +214,60 @@ vl_var::vl_var(vl_var &d)
 
     if (v_data_type == Dint) {
         if (v_array.size()) {
-            v_data.d = new int[v_array.size()];
-            memcpy(v_data.d, d.v_data.d, v_array.size()*sizeof(int));
+            set_data_pi(new int[v_array.size()]);
+            memcpy(data_pi(), d.data_pi(), v_array.size()*sizeof(int));
         }
         else
-            v_data.i = d.v_data.i;
+            set_data_i(d.data_i());
     }
     else if (v_data_type == Dreal) {
         if (v_array.size()) {
-            v_data.d = new double[v_array.size()];
-            memcpy(v_data.d, d.v_data.d, v_array.size()*sizeof(double));
+            set_data_pr(new double[v_array.size()]);
+            memcpy(data_pr(), d.data_pr(), v_array.size()*sizeof(double));
         }
         else
-            v_data.r = d.v_data.r;
+            set_data_r(d.data_r());
     }
     else if (v_data_type == Dtime) {
         if (v_array.size()) {
-            v_data.d = new vl_time_t[v_array.size()];
-            memcpy(v_data.d, d.v_data.d, v_array.size()*sizeof(vl_time_t));
+            set_data_pt(new vl_time_t[v_array.size()]);
+            memcpy(data_pt(), d.data_pt(), v_array.size()*sizeof(vl_time_t));
         }
         else
-            v_data.t = d.v_data.t;
+            set_data_t(d.data_t());
     }
     else if (v_data_type == Dstring) {
         if (v_array.size()) {
             char **s = new char*[v_array.size()];
-            v_data.d = s;
-            char **ss = (char**)d.v_data.d;
+            set_data_ps(s);
+            char **ss = d.data_ps();
             for (int i = 0; i < v_array.size(); i++)
                 s[i] = vl_strdup(ss[i]);
         }
         else
-            v_data.s = vl_strdup(d.v_data.s);
+            set_data_s(vl_strdup(d.data_s()));
     }
     else if (v_data_type == Dbit) {
         if (v_array.size()) {
             char **s = new char*[v_array.size()];
-            v_data.d = s;
-            char **ss = (char**)d.v_data.d;
+            set_data_ps(s);
+            char **ss = d.data_ps();
             for (int i = 0; i < v_array.size(); i++) {
                 s[i] = new char[v_bits.size()];
                 memcpy(s[i], ss[i], v_bits.size());
             }
         }
         else {
-            v_data.s = new char[v_bits.size()];
-            memcpy(v_data.s, d.v_data.s, v_bits.size());
+            set_data_s(new char[v_bits.size()]);
+            memcpy(data_s(), d.data_s(), v_bits.size());
         }
     }
     else if (v_data_type == Dconcat) {
-        v_data.c = new lsList<vl_expr*>;
+        set_data_c(new lsList<vl_expr*>);
         vl_expr *e;
-        lsGen<vl_expr*> gen(d.v_data.c);
+        lsGen<vl_expr*> gen(d.data_c());
         while (gen.next(&e))
-            v_data.c->newEnd(chk_copy(e));
+            data_c()->newEnd(chk_copy(e));
     }
 }
 
@@ -276,28 +277,28 @@ vl_var::~vl_var()
     delete [] v_name;
     if (v_data_type == Dbit || v_data_type == Dstring) {
         if (v_array.size()) {
-            char **s = (char**)v_data.d;
+            char **s = data_ps();
             for (int i = 0; i < v_array.size(); i++)
                 delete [] s[i];
             delete [] s;
         }
         else
-            delete [] v_data.s;
+            delete [] data_s();
     }
     else if (v_data_type == Dint) {
         if (v_array.size())
-            delete [] (int*)v_data.d;
+            delete [] data_pi();
     }
     else if (v_data_type == Dtime) {
         if (v_array.size())
-            delete [] (vl_time_t*)v_data.d;
+            delete [] data_pt();
     }
     else if (v_data_type == Dreal) {
         if (v_array.size())
-            delete [] (double*)v_data.d;
+            delete [] data_pr();
     }
     else if (v_data_type == Dconcat)
-        delete_list(v_data.c);
+        delete_list(data_c());
     if (v_drivers) {
         lsGen<vl_driver*> gen(v_drivers);
         vl_driver *d;
@@ -349,7 +350,7 @@ void
 vl_var::chain(vl_stmt *stmt)
 {
     if (v_data_type == Dconcat) {
-        lsGen<vl_expr*> gen(v_data.c, true);
+        lsGen<vl_expr*> gen(data_c(), true);
         vl_expr *e;
         while (gen.prev(&e))
             e->chain(stmt);
@@ -387,7 +388,7 @@ void
 vl_var::unchain(vl_stmt *stmt)
 {
     if (v_data_type == Dconcat) {
-        lsGen<vl_expr*> gen(v_data.c, true);
+        lsGen<vl_expr*> gen(data_c(), true);
         vl_expr *e;
         while (gen.prev(&e))
             e->unchain(stmt);
@@ -432,7 +433,7 @@ void
 vl_var::unchain_disabled(vl_stmt *stmt)
 {
     if (v_data_type == Dconcat) {
-        lsGen<vl_expr*> gen(v_data.c, true);
+        lsGen<vl_expr*> gen(data_c(), true);
         vl_expr *e;
         while (gen.prev(&e))
             e->unchain_disabled(stmt);
@@ -454,8 +455,10 @@ vl_var::configure(vl_range *rng, int t, vl_range *ary)
         // output r;
         // reg [7:0] r;
         if (rng && v_data_type == Dbit && v_bits.size() == 1 && !ary &&
-                !v_array.size())
-            delete [] v_data.s;
+                !v_array.size()) {
+            delete [] data_s();
+            set_data_s(0);
+        }
         else
             return;
     }
@@ -465,24 +468,24 @@ vl_var::configure(vl_range *rng, int t, vl_range *ary)
         // Verilog doesn't support real arrays, allow them here anyway.
         v_array.set(ary);
         if (v_array.size()) {
-            v_data.d = new double[v_array.size()];
-            memset(v_data.d, 0, v_array.size()*sizeof(double));
+            set_data_pr(new double[v_array.size()]);
+            memset(data_pr(), 0, v_array.size()*sizeof(double));
         }
     }
     else if (t == IntDecl) {
         v_data_type = Dint;
         v_array.set(ary);
         if (v_array.size()) {
-            v_data.d = new int[v_array.size()];
-            memset(v_data.d, 0, v_array.size()*sizeof(int));
+            set_data_pi(new int[v_array.size()]);
+            memset(data_pi(), 0, v_array.size()*sizeof(int));
         }
     }
     else if (t == TimeDecl) {
         v_data_type = Dtime;
         v_array.set(ary);
         if (v_array.size()) {
-            v_data.d = new vl_time_t[v_array.size()];
-            memset(v_data.d, 0, v_array.size()*sizeof(vl_time_t));
+            set_data_pt(new vl_time_t[v_array.size()]);
+            memset(data_pt(), 0, v_array.size()*sizeof(vl_time_t));
         }
     }
     else if (t == ParamDecl) {
@@ -491,8 +494,8 @@ vl_var::configure(vl_range *rng, int t, vl_range *ary)
             v_bits.set(rng);
             if (!v_bits.size())
                 v_bits.set(1);
-            v_data.s = new char[v_bits.size()];
-            memset(v_data.s, BitL, v_bits.size());
+            set_data_s(new char[v_bits.size()]);
+            memset(data_s(), BitL, v_bits.size());
         }
         else
             v_data_type = Dint;
@@ -505,15 +508,15 @@ vl_var::configure(vl_range *rng, int t, vl_range *ary)
         v_array.set(ary);
         if (v_array.size()) {
             char **s = new char*[v_array.size()];
-            v_data.d = s;
+            set_data_ps(s);
             for (int i = 0; i < v_array.size(); i++) {
                 s[i] = new char[v_bits.size()];
                 memset(s[i], BitDC, v_bits.size());
             }
         }
         else {
-            v_data.s = new char[v_bits.size()];
-            memset(v_data.s, BitDC, v_bits.size());
+            set_data_s(new char[v_bits.size()]);
+            memset(data_s(), BitDC, v_bits.size());
         }
     }
 }
@@ -537,60 +540,61 @@ vl_var::operator=(vl_var &d)
         arm_trigger = true;
         if (v_data_type == Dint) {
             if (v_array.size()) {
-                v_data.d = new int[v_array.size()];
-                memcpy(v_data.d, d.v_data.d, v_array.size()*sizeof(int));
+                set_data_pi(new int[v_array.size()]);
+                memcpy(data_pi(), d.data_pi(), v_array.size()*sizeof(int));
             }
             else
-                v_data.i = d.v_data.i;
+                set_data_i(d.data_i());
         }
         else if (v_data_type == Dreal) {
             if (v_array.size()) {
-                v_data.d = new double[v_array.size()];
-                memcpy(v_data.d, d.v_data.d, v_array.size()*sizeof(double));
+                set_data_pr(new double[v_array.size()]);
+                memcpy(data_pr(), d.data_pr(), v_array.size()*sizeof(double));
             }
             else
-                v_data.r = d.v_data.r;
+                set_data_r(d.data_r());
         }
         else if (v_data_type == Dtime) {
             if (v_array.size()) {
-                v_data.d = new vl_time_t[v_array.size()];
-                memcpy(v_data.d, d.v_data.d, v_array.size()*sizeof(vl_time_t));
+                set_data_pt(new vl_time_t[v_array.size()]);
+                memcpy(data_pt(), d.data_pt(),
+                    v_array.size()*sizeof(vl_time_t));
             }
             else
-                v_data.t = d.v_data.t;
+                set_data_t(d.data_t());
         }
         else if (v_data_type == Dstring) {
             if (v_array.size()) {
                 char **s = new char*[v_array.size()];
-                v_data.d = s;
-                char **ss = (char**)d.v_data.d;
+                set_data_ps(s);
+                char **ss = d.data_ps();
                 for (int i = 0; i < v_array.size(); i++)
                     s[i] = vl_strdup(ss[i]);
             }
             else
-                v_data.s = vl_strdup(d.v_data.s);
+                set_data_s(vl_strdup(d.data_s()));
         }
         else if (v_data_type == Dbit) {
             if (v_array.size()) {
                 char **s = new char*[v_array.size()];
-                v_data.d = s;
-                char **ss = (char**)d.v_data.d;
+                set_data_ps(s);
+                char **ss = d.data_ps();
                 for (int i = 0; i < v_array.size(); i++) {
                     s[i] = new char[v_bits.size()];
                     memcpy(s[i], ss[i], v_bits.size());
                 }
             }
             else {
-                v_data.d = new char[v_bits.size()];
-                memcpy(v_data.d, d.v_data.d, v_bits.size());
+                set_data_s(new char[v_bits.size()]);
+                memcpy(data_s(), d.data_s(), v_bits.size());
             }
         }
         else if (v_data_type == Dconcat) {
-            v_data.c = new lsList<vl_expr*>;
+            set_data_c(new lsList<vl_expr*>);
             vl_expr *e;
-            lsGen<vl_expr*> gen(d.v_data.c);
+            lsGen<vl_expr*> gen(d.data_c());
             while (gen.next(&e))
-                v_data.c->newEnd(chk_copy(e));
+                data_c()->newEnd(chk_copy(e));
         }
     }
     else if (v_data_type == Dbit) {
@@ -607,15 +611,15 @@ vl_var::operator=(vl_var &d)
             for (int j = 0; i < v_bits.size() && j < d.v_bits.size();
                     i++, j++) {
                 int b = resolve_bit(i, &d, 0);
-                if (v_data.s[i] != b) {
+                if (data_s()[i] != b) {
                     arm_trigger = true;
-                    v_data.s[i] = b;
+                    data_s()[i] = b;
                 }
             }
             for ( ; i < v_bits.size(); i++) {
-                if (v_data.s[i] != BitL) {
+                if (data_s()[i] != BitL) {
                     arm_trigger = true;
-                    v_data.s[i] = BitL;
+                    data_s()[i] = BitL;
                 }
             }
 
@@ -633,15 +637,15 @@ vl_var::operator=(vl_var &d)
             int mw = min(v_bits.size(), wd);
             int i;
             for (i = 0; i < mw; i++) {
-                if (v_data.s[i] != s[i]) {
+                if (data_s()[i] != s[i]) {
                     arm_trigger = true;
-                    v_data.s[i] = s[i];
+                    data_s()[i] = s[i];
                 }
             }
             for ( ; i < v_bits.size(); i++) {
-                if (v_data.s[i] != BitL) {
+                if (data_s()[i] != BitL) {
                     arm_trigger = true;
-                    v_data.s[i] = BitL;
+                    data_s()[i] = BitL;
                 }
             }
             if (VS()->dbg_flags() & DBG_assign) {
@@ -655,7 +659,7 @@ vl_var::operator=(vl_var &d)
             int wd;
             for (int j = 0; j < ms; j++) {
                 char *s = d.bit_elt(j, &wd);
-                char *b = ((char**)v_data.d)[j];
+                char *b = data_ps()[j];
                 int mw = min(v_bits.size(), wd);
                 int i;
                 for (i = 0; i < mw; i++) {
@@ -676,9 +680,9 @@ vl_var::operator=(vl_var &d)
     else if (v_data_type == Dint) {
         if (v_array.size() == 0) {
             int b = d.int_elt(0);
-            if (v_data.i != b) {
+            if (data_i() != b) {
                 arm_trigger = true;
-                v_data.i = b;
+                set_data_i(b);
             }
             if (VS()->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
@@ -688,7 +692,7 @@ vl_var::operator=(vl_var &d)
         }
         else {
             int ms = min(v_array.size(), d.v_array.size());
-            int *dd = (int*)v_data.d;
+            int *dd = data_pi();
             int i;
             for (i = 0; i < ms; i++) {
                 int b = d.int_elt(i);
@@ -708,9 +712,9 @@ vl_var::operator=(vl_var &d)
     else if (v_data_type == Dtime) {
         if (v_array.size() == 0) {
             vl_time_t t = d.time_elt(0);
-            if (v_data.t != t) {
+            if (data_t() != t) {
                 arm_trigger = true;
-                v_data.t = t;
+                set_data_t(t);
             }
             if (VS()->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
@@ -720,7 +724,7 @@ vl_var::operator=(vl_var &d)
         }
         else {
             int ms = min(v_array.size(), d.v_array.size());
-            vl_time_t *tt = (vl_time_t*)v_data.d;
+            vl_time_t *tt = data_pt();
             int i;
             for (i = 0; i < ms; i++) {
                 vl_time_t t = d.time_elt(i);
@@ -740,9 +744,9 @@ vl_var::operator=(vl_var &d)
     else if (v_data_type == Dreal) {
         if (v_array.size() == 0) {
             double r = d.real_elt(0);
-            if (v_data.r != r) {
+            if (data_r() != r) {
                 arm_trigger = true;
-                v_data.r = r;
+                set_data_r(r);
             }
             if (VS()->dbg_flags() & DBG_assign) {
                 cout << this << " = ";
@@ -752,7 +756,7 @@ vl_var::operator=(vl_var &d)
         }
         else {
             int ms = min(v_array.size(), d.v_array.size());
-            double *dd = (double*)v_data.d;
+            double *dd = data_pr();
             int i;
             for (i = 0; i < ms; i++) {
                 double r = d.real_elt(i);
@@ -771,12 +775,12 @@ vl_var::operator=(vl_var &d)
     }
     else if (v_data_type == Dstring) {
         if (v_array.size() == 0) {
-            delete [] v_data.s;
-            v_data.s = vl_strdup(d.str_elt(0));
+            delete [] data_s();
+            set_data_s(vl_strdup(d.str_elt(0)));
         }
         else {
             int ms = min(v_array.size(), d.v_array.size());
-            char **ss = (char**)v_data.d;
+            char **ss = data_ps();
             int i;
             for (i = 0; i < ms; i++) {
                 delete [] ss[i];
@@ -796,7 +800,7 @@ vl_var::operator=(vl_var &d)
             VS()->abort();
             return;
         }
-        lsGen<vl_expr*> gen(v_data.c, true);
+        lsGen<vl_expr*> gen(data_c(), true);
         vl_expr *e;
         int bc = 0;
         while (gen.prev(&e)) {
@@ -844,7 +848,7 @@ vl_var::operator=(vl_var &d)
                 int i = v->v_array.Astart(m, l);
                 int ie = v->v_array.Aend(m, l);
                 for ( ; i <= ie; i++) {
-                    char *s = ((char**)v->v_data.d)[i];
+                    char *s = v->data_ps()[i];
                     int cnt = 0;
                     while (bc < d.v_bits.size() && cnt < v->v_bits.size()) {
                         if (s[cnt] != t[bc]) {
@@ -1092,13 +1096,13 @@ vl_var::assign_to(double val, double offs, double quan, int m, int l)
 {
     if (v_data_type == Dnone) {
         v_data_type = Dreal;
-        v_data.r = val;
+        set_data_r(val);
         trigger();
         return;
     }
     if (v_data_type == Dreal) {
-        if (v_data.r != val) {
-            v_data.r = val;
+        if (data_r() != val) {
+            set_data_r(val);
             trigger();
         }
         return;
@@ -1110,8 +1114,8 @@ vl_var::assign_to(double val, double offs, double quan, int m, int l)
             b = (int)((val + 0.5*(val > 0.0 ? quan : -quan))/quan);
         else
             b = (int)val;
-        if (v_data.i != b) {
-            v_data.i = b;
+        if (data_i() != b) {
+            set_data_i(b);
             trigger();
         }
         return;
@@ -1123,8 +1127,8 @@ vl_var::assign_to(double val, double offs, double quan, int m, int l)
             t = (vl_time_t)((val + 0.5*(val > 0.0 ? quan : -quan))/quan);
         else
             t = (vl_time_t)val;
-        if (v_data.t != t) {
-            v_data.t = t;
+        if (data_t() != t) {
+            set_data_t(t);
             trigger();
         }
         return;
@@ -1144,18 +1148,18 @@ vl_var::assign_to(double val, double offs, double quan, int m, int l)
                 if (m >= l) {
                     for (int i = l; i <= m; i++) {
                         int b = (ival & (1 << (i-l))) ? BitH : BitL;
-                        if (v_data.s[i] != b) {
+                        if (data_s()[i] != b) {
                             arm_trigger = true;
-                            v_data.s[i] = b;
+                            data_s()[i] = b;
                         }
                     }
                 }
                 else {
                     for (int i = m; i <= l; i++) {
                         int b = (ival & (1 << (i-m))) ? BitH : BitL;
-                        if (v_data.s[i] != b) {
+                        if (data_s()[i] != b) {
                             arm_trigger = true;
-                            v_data.s[i] = b;
+                            data_s()[i] = b;
                         }
                     }
                 }
@@ -1166,9 +1170,9 @@ vl_var::assign_to(double val, double offs, double quan, int m, int l)
         }
         for (int i = 0; i < v_bits.size(); i++) {
             int b = (ival & (1 << i)) ? BitH : BitL;
-            if (v_data.s[i] != b) {
+            if (data_s()[i] != b) {
                 arm_trigger = true;
-                v_data.s[i] = b;
+                data_s()[i] = b;
             }
         }
         if (arm_trigger && v_events)
@@ -1195,12 +1199,12 @@ vl_var::clear(vl_range *rng, int bitd)
                     int i = v_array.Astart(md, ld);
                     int ie = v_array.Aend(md, ld);
                     for ( ; i <= ie; i++)
-                        memset(((char**)v_data.d)[i], bitd, v_bits.size());
+                        memset(data_ps()[i], bitd, v_bits.size());
                 }
             }
             else {
                 for (int i = 0; i < v_array.size(); i++)
-                    memset(((char**)v_data.d)[i], bitd, v_bits.size());
+                    memset(data_ps()[i], bitd, v_bits.size());
             }
         }
         else {
@@ -1209,12 +1213,12 @@ vl_var::clear(vl_range *rng, int bitd)
                     int i = v_bits.Bstart(md, ld);
                     int ie = v_bits.Bend(md, ld);
                     for ( ; i <= ie; i++)
-                        v_data.s[i] = bitd;
+                        data_s()[i] = bitd;
                 }
             }
             else {
                 for (int i = 0; i < v_bits.size(); i++)
-                    v_data.s[i] = bitd;
+                    data_s()[i] = bitd;
             }
         }
     }
@@ -1225,12 +1229,12 @@ vl_var::clear(vl_range *rng, int bitd)
                     int i = v_array.Astart(md, ld);
                     int ie = v_array.Aend(md, ld);
                     for ( ; i <= ie; i++)
-                        ((int*)v_data.d)[i] = 0;
+                        data_pi()[i] = 0;
                 }
             }
             else {
                 for (int i = 0; i < v_array.size(); i++)
-                    ((int*)v_data.d)[i] = 0;
+                    data_pi()[i] = 0;
             }
         }
         else {
@@ -1243,7 +1247,7 @@ vl_var::clear(vl_range *rng, int bitd)
                 }
             }
             else
-                v_data.i = 0;
+                set_data_i(0);
         }
     }
     else if (v_data_type == Dtime) {
@@ -1253,12 +1257,12 @@ vl_var::clear(vl_range *rng, int bitd)
                     int i = v_array.Astart(md, ld);
                     int ie = v_array.Aend(md, ld);
                     for ( ; i <= ie; i++)
-                        ((vl_time_t*)v_data.d)[i] = 0;
+                        data_pt()[i] = 0;
                 }
             }
             else {
                 for (int i = 0; i < v_array.size(); i++)
-                    ((vl_time_t*)v_data.d)[i] = 0;
+                    data_pt()[i] = 0;
             }
         }
         else {
@@ -1271,7 +1275,7 @@ vl_var::clear(vl_range *rng, int bitd)
                 }
             }
             else
-                v_data.t = 0;
+                set_data_t(0);
         }
     }
     else if (v_data_type == Dreal) {
@@ -1281,16 +1285,16 @@ vl_var::clear(vl_range *rng, int bitd)
                     int i = v_array.Astart(md, ld);
                     int ie = v_array.Aend(md, ld);
                     for ( ; i <= ie; i++)
-                        ((double*)v_data.d)[i] = 0.0;
+                        data_pr()[i] = 0.0;
                 }
             }
             else {
                 for (int i = 0; i < v_array.size(); i++)
-                    ((double*)v_data.d)[i] = 0.0;
+                    data_pr()[i] = 0.0;
             }
         }
         else
-            v_data.r = 0.0;
+            set_data_r(0.0);
     }
     else if (v_data_type == Dstring) {
         if (v_array.size()) {
@@ -1299,19 +1303,20 @@ vl_var::clear(vl_range *rng, int bitd)
                     int i = v_array.Astart(md, ld);
                     int ie = v_array.Aend(md, ld);
                     for ( ; i <= ie; i++) {
-                        if (((char**)v_data.d)[i])
-                            *((char**)v_data.d)[i] = 0;
+                        if (data_ps()[i])
+                            *data_ps()[i] = 0;
                     }
                 }
             }
             else {
-                for (int i = 0; i < v_array.size(); i++)
-                    if (((char**)v_data.d)[i])
-                        *((char**)v_data.d)[i] = 0;
+                for (int i = 0; i < v_array.size(); i++) {
+                    if (data_ps()[i])
+                        *data_ps()[i] = 0;
+                }
             }
         }
         else
-            *v_data.s = 0;
+            *data_s() = 0;
     }
     if (v_events)
         trigger();
@@ -1325,19 +1330,19 @@ vl_var::reset()
 {
     if (v_array.size()) {
         if (v_data_type == Dbit || v_data_type == Dstring) {
-            char **s = (char**)v_data.d;
+            char **s = data_ps();
             for (int i = 0; i < v_array.size(); i++)
                 delete [] s[i];
         }
         else
-            delete [] (char*)v_data.d;
+            delete [] data_ps();
     }
     else if (v_data_type == Dbit || v_data_type == Dstring)
-        delete [] v_data.s;
+        delete [] data_s();
     v_data_type = Dnone;
     v_array.clear();
     v_bits.clear();
-    v_data.r = 0;
+    set_data_r(0);
 }
 
 
@@ -1348,12 +1353,11 @@ vl_var::set(vl_bitexp_parse *p)
 {
     if ((v_data_type == Dnone || v_data_type == Dbit) && !v_array.size()) {
         if (v_data_type == Dbit)
-            delete [] v_data.s;
+            delete [] data_s();
         v_data_type = Dbit;
         v_bits = p->v_bits;
-        v_data.r = 0;
-        v_data.s = new char[v_bits.size()];
-        memcpy(v_data.s, p->v_data.s, v_bits.size());
+        set_data_s(new char[v_bits.size()]);
+        memcpy(data_s(), p->data_s(), v_bits.size());
     }
     else {
         vl_error("(internal) incorrect data type in set-v_bits");
@@ -1370,8 +1374,7 @@ vl_var::set(int i)
     if ((v_data_type == Dnone || v_data_type == Dint) && !v_array.size()) {
         v_data_type = Dint;
         v_bits.clear();
-        v_data.r = 0;
-        v_data.i = i;
+        set_data_i(i);
     }
     else {
         vl_error("(internal) incorrect data type in set-scalar_int");
@@ -1388,8 +1391,7 @@ vl_var::set(vl_time_t t)
     if ((v_data_type == Dnone || v_data_type == Dtime) && !v_array.size()) {
         v_data_type = Dtime;
         v_bits.clear();
-        v_data.r = 0;
-        v_data.i = t;
+        set_data_t(t);
     }
     else {
         vl_error("(internal) incorrect data type in set-scalar_time");
@@ -1406,7 +1408,7 @@ vl_var::set(double r)
     if ((v_data_type == Dnone || v_data_type == Dreal) && !v_array.size()) {
         v_data_type = Dreal;
         v_bits.clear();
-        v_data.r = r;
+        set_data_r(r);
     }
     else {
         vl_error("(internal) incorrect data type in set-scalar_real");
@@ -1422,12 +1424,11 @@ vl_var::set(char *string)
 {
     if ((v_data_type == Dnone || v_data_type == Dstring) && !v_array.size()) {
         if (v_data_type == Dstring)
-            delete [] v_data.s;
+            delete [] data_s();
         else
             v_data_type = Dstring;
         v_bits.clear();
-        v_data.r = 0;
-        v_data.s = string;
+        set_data_s(string);
     }
     else {
         vl_error("(internal) incorrect data type in set-scalar_string");
@@ -1443,13 +1444,13 @@ vl_var::setx(int w)
 {
     if ((v_data_type == Dnone || v_data_type == Dbit) && !v_array.size()) {
         if (v_data_type == Dbit)
-            delete [] v_data.s;
+            delete [] data_s();
         else
             v_data_type = Dbit;
         v_bits.set(w);
-        v_data.s = new char[w];
+        set_data_s(new char[w]);
         for (int i = 0; i < w; i++)
-            v_data.s[i] = BitDC;
+            data_s()[i] = BitDC;
     }
     else {
         vl_error("(internal) incorrect data type in set-dc");
@@ -1465,13 +1466,13 @@ vl_var::setz(int w)
 {
     if ((v_data_type == Dnone || v_data_type == Dbit) && !v_array.size()) {
         if (v_data_type == Dbit)
-            delete [] v_data.s;
+            delete [] data_s();
         else
             v_data_type = Dbit;
         v_bits.set(w);
-        v_data.s = new char[w];
+        set_data_s(new char[w]);
         for (int i = 0; i < w; i++)
-            v_data.s[i] = BitZ;
+            data_s()[i] = BitZ;
     }
     else {
         vl_error("(internal) incorrect data type in set-z");
@@ -1487,17 +1488,17 @@ vl_var::setb(int ix)
 {
     if ((v_data_type == Dnone || v_data_type == Dbit) && !v_array.size()) {
         if (v_data_type == Dbit)
-            delete [] v_data.s;
+            delete [] data_s();
         else
             v_data_type = Dbit;
         v_bits.set(DefBits);
-        v_data.s = new char[v_bits.size()];
+        set_data_s(new char[v_bits.size()]);
         int mask = 1;
         for (int i = 0; i < v_bits.size(); i++) {
             if (ix & mask)
-                v_data.s[i] = BitH;
+                data_s()[i] = BitH;
             else
-                v_data.s[i] = BitL;
+                data_s()[i] = BitL;
             mask <<= 1;
         }
     }
@@ -1515,17 +1516,17 @@ vl_var::sett(vl_time_t t)
 {
     if ((v_data_type == Dnone || v_data_type == Dbit) && !v_array.size()) {
         if (v_data_type == Dbit)
-            delete [] v_data.s;
+            delete [] data_s();
         else
             v_data_type = Dbit;
         v_bits.set((int)(8*sizeof(vl_time_t)));
-        v_data.s = new char[v_bits.size()];
+        set_data_s(new char[v_bits.size()]);
         vl_time_t mask = 1;
         for (int i = 0; i < v_bits.size(); i++) {
             if (t & mask)
-                v_data.s[i] = BitH;
+                data_s()[i] = BitH;
             else
-                v_data.s[i] = BitL;
+                data_s()[i] = BitL;
             mask <<= 1;
         }
     }
@@ -1543,10 +1544,10 @@ vl_var::setbits(int b)
 {
     if (v_data_type == Dbit) {
         if (!v_array.size())
-            memset(v_data.s, b, v_bits.size());
+            memset(data_s(), b, v_bits.size());
         else {
             for (int i = 0; i < v_array.size(); i++) {
-                char *s = ((char**)v_data.d)[i];
+                char *s = data_ps()[i];
                 memset(s, b, v_bits.size());
             }
         }
@@ -1561,7 +1562,7 @@ vl_var::set_bit_of(int pos, int bdata)
 {
     if (v_data_type == Dbit) {
         if (pos >= 0 && pos < v_bits.size()) {
-            char *s = (v_array.size() ? ((char**)v_data.d)[0] : v_data.s);
+            char *s = (v_array.size() ? data_ps()[0] : data_s());
             char oldc = s[pos];
             s[pos] = bdata;
             if (oldc != bdata)
@@ -1570,7 +1571,7 @@ vl_var::set_bit_of(int pos, int bdata)
     }
     else if (v_data_type == Dint) {
         if (pos >= 0 && pos < DefBits) {
-            int i = (v_array.size() ? ((int*)v_data.d)[0] : v_data.i);
+            int i = (v_array.size() ? data_pi()[0] : data_i());
             int oldi = i;
             int mask = 1 << pos;
             if (bdata == BitH)
@@ -1578,9 +1579,9 @@ vl_var::set_bit_of(int pos, int bdata)
             else
                 i &= ~mask;
             if (v_array.size())
-                ((int*)v_data.d)[0] = i;
+                data_pi()[0] = i;
             else
-                v_data.i = i;
+                set_data_i(i);
             if (i != oldi)
                 return (true);
         }
@@ -1588,7 +1589,7 @@ vl_var::set_bit_of(int pos, int bdata)
     else if (v_data_type == Dtime) {
         if (pos >= 0 && pos < (int)sizeof(vl_time_t)*8) {
             vl_time_t i =
-                (v_array.size() ? ((vl_time_t*)v_data.d)[0] : v_data.t);
+                (v_array.size() ? data_pt()[0] : data_t());
             vl_time_t oldi = i;
             vl_time_t mask = 1 << pos;
             if (bdata == BitH)
@@ -1596,9 +1597,9 @@ vl_var::set_bit_of(int pos, int bdata)
             else
                 i &= ~mask;
             if (v_array.size())
-                ((vl_time_t*)v_data.d)[0] = i;
+                data_pt()[0] = i;
             else
-                v_data.t = i;
+                set_data_t(i);
             if (i != oldi)
                 return (true);
         }
@@ -1618,9 +1619,9 @@ vl_var::set_bit_elt(int indx, const char *src, int swid)
     if (v_data_type == Dbit) {
         char *s = 0;
         if (v_array.size() == 0 && indx == 0)
-            s = v_data.s;
+            s = data_s();
         else if (indx >= 0 && indx < v_array.size())
-            s = ((char**)v_data.d)[indx];
+            s = data_ps()[indx];
         if (s) {
             if (!src) {
                 for (int i = 0; i < v_bits.size(); i++) {
@@ -1660,15 +1661,15 @@ vl_var::set_int_elt(int indx, int val)
     bool changed = false;
     if (v_data_type == Dint) {
         if (v_array.size() == 0 && indx == 0) {
-            if (v_data.i != val) {
+            if (data_i() != val) {
                 changed = true;
-                v_data.i = val;
+                set_data_i(val);
             }
         }
         else if (indx >= 0 && indx < v_array.size()) {
-            if (((int*)v_data.d)[indx] != val) {
+            if (data_pi()[indx] != val) {
                 changed = true;
-                ((int*)v_data.d)[indx] = val;
+                data_pi()[indx] = val;
             }
         }
     }
@@ -1684,15 +1685,15 @@ vl_var::set_time_elt(int indx, vl_time_t val)
     bool changed = false;
     if (v_data_type == Dtime) {
         if (v_array.size() == 0 && indx == 0) {
-            if (v_data.t != val) {
+            if (data_t() != val) {
                 changed = true;
-                v_data.t = val;
+                set_data_t(val);
             }
         }
         else if (indx >= 0 && indx < v_array.size()) {
-            if (((vl_time_t*)v_data.d)[indx] != val) {
+            if (data_pt()[indx] != val) {
                 changed = true;
-                ((vl_time_t*)v_data.d)[indx] = val;
+                data_pt()[indx] = val;
             }
         }
     }
@@ -1708,15 +1709,15 @@ vl_var::set_real_elt(int indx, double val)
     bool changed = false;
     if (v_data_type == Dreal) {
         if (v_array.size() == 0 && indx == 0) {
-            if (v_data.r != val) {
+            if (data_r() != val) {
                 changed = true;
-                v_data.r = val;
+                set_data_r(val);
             }
         }
         else if (indx >= 0 && indx < v_array.size()) {
-            if (((double*)v_data.d)[indx] != val) {
+            if (data_pr()[indx] != val) {
                 changed = true;
-                ((double*)v_data.d)[indx] = val;
+                data_pr()[indx] = val;
             }
         }
     }
@@ -1732,11 +1733,11 @@ vl_var::set_str_elt(int indx, char *val)
 {
     if (v_data_type == Dstring) {
         if (v_array.size() == 0 && indx == 0) {
-            delete [] v_data.s;
-            v_data.s = val;
+            delete [] data_s();
+            set_data_s(val);
         }
         else if (indx >= 0 && indx < v_array.size()) {
-            char **ss = (char**)v_data.d;
+            char **ss = data_ps();
             delete [] ss[indx];
             ss[indx] = val;
         }
@@ -1752,11 +1753,11 @@ vl_var::set_assigned(vl_bassign_stmt *bs)
         return;
     if (bs && v_cassign == bs && (v_flags & VAR_CP_ASSIGN)) {
         vl_var z = case_eq(*v_cassign->lhs(), v_cassign->rhs()->eval());
-        if (z.v_data.s[0] == BitH)
+        if (z.data_s()[0] == BitH)
             return;
     }
     if (v_data_type == Dconcat) {
-        lsGen<vl_expr*> gen(v_data.c);
+        lsGen<vl_expr*> gen(data_c());
         vl_expr *e;
         while (gen.next(&e)) {
             vl_var *v = e->source();
@@ -1796,7 +1797,7 @@ vl_var::set_assigned(vl_bassign_stmt *bs)
         v_cassign->rhs()->chain(v_cassign);
         or_flags(VAR_CP_ASSIGN);
         if (v_data_type == Dconcat) {
-            lsGen<vl_expr*> gen(v_data.c);
+            lsGen<vl_expr*> gen(data_c());
             vl_expr *e;
             while (gen.next(&e)) {
                 vl_var *v = e->source();
@@ -1813,13 +1814,13 @@ vl_var::set_forced(vl_bassign_stmt *bs)
     if (bs) {
         if (v_cassign == bs && (v_flags & VAR_F_ASSIGN)) {
             vl_var z = case_eq(*v_cassign->lhs(), v_cassign->rhs()->eval());
-            if (z.v_data.s[0] == BitH)
+            if (z.data_s()[0] == BitH)
                 return;
         }
         set_assigned(0);
     }
     if (v_data_type == Dconcat) {
-        lsGen<vl_expr*> gen(v_data.c);
+        lsGen<vl_expr*> gen(data_c());
         vl_expr *e;
         while (gen.next(&e)) {
             vl_var *v = e->source();
@@ -1843,7 +1844,7 @@ vl_var::set_forced(vl_bassign_stmt *bs)
         v_cassign->rhs()->chain(v_cassign);
         or_flags(VAR_F_ASSIGN);
         if (v_data_type == Dconcat) {
-            lsGen<vl_expr*> gen(v_data.c);
+            lsGen<vl_expr*> gen(data_c());
             vl_expr *e;
             while (gen.next(&e)) {
                 vl_var *v = e->source();
@@ -1862,7 +1863,7 @@ vl_var::freeze_concat()
 {
     if (v_data_type != Dconcat)
         return;
-    lsGen<vl_expr*> gen(v_data.c);
+    lsGen<vl_expr*> gen(data_c());
     vl_expr *e;
     while (gen.next(&e)) {
         if (e->etype() == BitSelExpr || e->etype() == PartSelExpr) {
@@ -1900,7 +1901,7 @@ vl_var::default_range(int *m, int *l)
     else if (v_data_type == Dreal)
         *m = DefBits - 1;
     else if (v_data_type == Dstring)
-        *m = (v_data.s ? (strlen(v_data.s) + 1)*8 : 0);
+        *m = (data_s() ? (strlen(data_s()) + 1)*8 : 0);
 }
 
 
@@ -1911,7 +1912,7 @@ bool
 vl_var::check_net_type(REGtype reg_or_net)
 {
     if (v_data_type == Dconcat) {
-        lsGen<vl_expr*> gen(v_data.c);
+        lsGen<vl_expr*> gen(data_c());
         vl_expr *e;
         while (gen.next(&e)) {
             vl_var *v = e->source();
@@ -1989,7 +1990,7 @@ vl_var::check_bit_range(int *m, int *l)
         return (true);
     }
     if (v_data_type == Dstring) {
-        char *s = (v_array.size() ? ((char**)v_data.d)[0] : v_data.s);
+        char *s = (v_array.size() ? data_ps()[0] : data_s());
         int mx = (s ? (strlen(s) + 1)*8 : 0);
         if (*m == *l) {
             if (*m < 0 || *m >= mx)
@@ -2209,7 +2210,7 @@ vl_var::is_x()
 {
     if (v_data_type == Dbit && !v_array.size()) {
         for (int i = 0; i < v_bits.size(); i++) {
-            if (v_data.s[i] != BitL && v_data.s[i] != BitH)
+            if (data_s()[i] != BitL && data_s()[i] != BitH)
                 return (true);
         }
     }
@@ -2224,7 +2225,7 @@ vl_var::is_z()
 {
     if (v_data_type == Dbit && !v_array.size()) {
         for (int i = 0; i < v_bits.size(); i++) {
-            if (v_data.s[i] != BitZ)
+            if (data_s()[i] != BitZ)
                 return (false);
         }
         return (true);
@@ -2241,25 +2242,25 @@ vl_var::bit_of(int i)
     if (v_data_type == Dbit) {
         if (i < v_bits.size()) {
             if (v_array.size())
-                return (((char**)v_data.d)[0][i]);
+                return (data_ps()[0][i]);
             else
-                return (v_data.s[i]);
+                return (data_s()[i]);
         }
     }
     else if (v_data_type == Dint) {
         if (i < (int)sizeof(int)*8) {
             if (v_array.size())
-                return (bit(((int*)v_data.d)[0], i));
+                return (bit(data_pi()[0], i));
             else
-                return (bit(v_data.i, i));
+                return (bit(data_i(), i));
         }
     }
     else if (v_data_type == Dtime) {
         if (i < (int)sizeof(vl_time_t)*8) {
             if (v_array.size())
-                return (bit(((vl_time_t*)v_data.d)[0], i));
+                return (bit(data_pt()[0], i));
             else
-                return (bit(v_data.t, i));
+                return (bit(data_t(), i));
         }
     }
     return (BitZ);
@@ -2275,9 +2276,9 @@ vl_var::int_bit_sel(int m, int l)
     if (v_data_type == Dbit) {
         char *s;
         if (v_array.size() == 0)
-            s = v_data.s;
+            s = data_s();
         else
-            s = *(char**)v_data.s;
+            s = *(char**)data_s();
         int mask = 1;
         int i = v_bits.Bstart(m, l);
         int ie = v_bits.Bend(m, l);
@@ -2302,9 +2303,9 @@ vl_var::time_bit_sel(int m, int l)
     if (v_data_type == Dbit) {
         char *s;
         if (v_array.size() == 0)
-            s = v_data.s;
+            s = data_s();
         else
-            s = *(char**)v_data.s;
+            s = *(char**)data_s();
         vl_time_t mask = 1;
         int i = v_bits.Bstart(m, l);
         int ie = v_bits.Bend(m, l);
@@ -2329,9 +2330,9 @@ vl_var::real_bit_sel(int m, int l)
     if (v_data_type == Dbit) {
         char *s;
         if (v_array.size() == 0)
-            s = v_data.s;
+            s = data_s();
         else
-            s = *(char**)v_data.s;
+            s = *(char**)data_s();
         vl_time_t mask = 1;
         int i = v_bits.Bstart(m, l);
         int ie = v_bits.Bend(m, l);
@@ -2356,9 +2357,9 @@ vl_var::bitset()
     if (v_data_type == Dbit) {
         int ret = 0;
         for (int i = 0; i < v_bits.size(); i++) {
-            if (v_data.s[i] == BitH)
+            if (data_s()[i] == BitH)
                 return (Hmask);
-            else if (v_data.s[i] != BitL)
+            else if (data_s()[i] != BitL)
                 ret |= Xmask;
         }
         if (ret & Xmask)
@@ -2366,9 +2367,9 @@ vl_var::bitset()
         return (Lmask);
     }
     if (v_data_type == Dint)
-        return (v_data.i ? Hmask : Lmask);
+        return (data_i() ? Hmask : Lmask);
     if (v_data_type == Dtime)
-        return (v_data.t ? Hmask : Lmask);
+        return (data_t() ? Hmask : Lmask);
     return (Lmask);
 }
  
@@ -2386,7 +2387,7 @@ vl_var::element(int num, int *rt)
         }
         if (v_data_type == Dbit) {
             *rt = Dbit;
-            return (v_data.s);
+            return (data_s());
         }
         if (v_data_type == Dint) {
             *rt = Dint;
@@ -2402,7 +2403,7 @@ vl_var::element(int num, int *rt)
         }
         if (v_data_type == Dstring) {
             *rt = Dstring;
-            return (v_data.s);
+            return (data_s());
         }
         return (0);
     }
@@ -2411,23 +2412,23 @@ vl_var::element(int num, int *rt)
 
     if (v_data_type == Dbit) {
         *rt = Dbit;
-        return (((char**)v_data.d)[num]);
+        return (data_ps()[num]);
     }
     if (v_data_type == Dint) {
         *rt = Dint;
-        return (((int*)v_data.d) + num);
+        return (data_pi() + num);
     }
     if (v_data_type == Dtime) {
         *rt = Dtime;
-        return (((vl_time_t*)v_data.d) + num);
+        return (data_pt() + num);
     }
     if (v_data_type == Dreal) {
         *rt = Dreal;
-        return (((double*)v_data.d) + num);
+        return (data_pr() + num);
     }
     if (v_data_type == Dstring) {
         *rt = Dstring;
-        return (((char**)v_data.d)[num]);
+        return (data_ps()[num]);
     }
     return (0);
 }
@@ -2729,7 +2730,7 @@ vl_var::assign_init(vl_var *src, int ms, int ls)
             v_bits.Bnorm();
             int j = src->v_bits.Bstart(ms, ls);
             for (int i = 0; i < v_bits.size(); i++, j++)
-                v_data.s[i] = src->bit_of(j);
+                data_s()[i] = src->bit_of(j);
         }
         else
             setx(1);
@@ -2751,15 +2752,15 @@ vl_var::assign_init(vl_var *src, int ms, int ls)
                 v_bits = src->v_bits;
                 int bw;
                 if (v_array.size() == 0) {
-                    v_data.s = new char[v_bits.size()];
+                    set_data_s(new char[v_bits.size()]);
                     char *s = src->bit_elt(src->v_array.Astart(ms, ls), &bw);
-                    memcpy(v_data.s, s, bw);
+                    memcpy(data_s(), s, bw);
                     if (src->v_data_type == Dstring)
                         delete [] s;
                 }
                 else {
                     char *s, **ss = new char*[v_array.size()];
-                    v_data.d = ss;
+                    set_data_ps(ss);
                     int j = src->v_array.Astart(ms, ls);
                     for (int i = 0; i < sr; i++, j++) {
                         ss[i] = new char[v_bits.size()];
@@ -2772,28 +2773,28 @@ vl_var::assign_init(vl_var *src, int ms, int ls)
             }
             else if (src->v_data_type == Dint) {
                 if (v_array.size())
-                    v_data.d = new int[v_array.size()];
+                    set_data_pi(new int[v_array.size()]);
                 int j = src->v_array.Astart(ms, ls);
                 for (int i = 0; i < sr; i++, j++)
                     set_int_elt(i, src->int_elt(j));
             }
             else if (src->v_data_type == Dtime) {
                 if (v_array.size())
-                    v_data.d = new vl_time_t[v_array.size()];
+                    set_data_pt(new vl_time_t[v_array.size()]);
                 int j = src->v_array.Astart(ms, ls);
                 for (int i = 0; i < sr; i++, j++)
                     set_time_elt(i, src->time_elt(j));
             }
             else if (src->v_data_type == Dreal) {
                 if (v_array.size())
-                    v_data.d = new double[v_array.size()];
+                    set_data_pr(new double[v_array.size()]);
                 int j = src->v_array.Astart(ms, ls);
                 for (int i = 0; i < sr; i++, j++)
                     set_real_elt(i, src->real_elt(j));
             }
             else if (src->v_data_type == Dstring) {
                 if (v_array.size())
-                    v_data.d = new char*[v_array.size()];
+                    set_data_ps(new char*[v_array.size()]);
                 int j = src->v_array.Astart(ms, ls);
                 for (int i = 0; i < sr; i++, j++)
                     set_str_elt(i, vl_strdup(src->str_elt(j)));
@@ -2808,11 +2809,11 @@ vl_var::assign_init(vl_var *src, int ms, int ls)
                 sett(0);
             else if (src->v_data_type == Dreal) {
                 v_data_type = Dreal;
-                v_data.r = 0.0;
+                set_data_r(0.0);
             }
             else if (src->v_data_type == Dstring) {
                 v_data_type = Dstring;
-                v_data.s = vl_strdup("");
+                set_data_s(vl_strdup(""));
             }
         }
     }
@@ -2855,15 +2856,15 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
                     probe1(this, ie, i, src, je, j);
                 for ( ; i <= ie && j <= je; i++, j++) {
                     int b = resolve_bit(i, src, j);
-                    if (v_data.s[i] != b) {
+                    if (data_s()[i] != b) {
                         arm_trigger = true;
-                        v_data.s[i] = b;
+                        data_s()[i] = b;
                     }
                 }
                 for ( ; i <= ie; i++) {
-                    if (v_data.s[i] != BitL) {
+                    if (data_s()[i] != BitL) {
                         arm_trigger = true;
-                        v_data.s[i] = BitL;
+                        data_s()[i] = BitL;
                     }
                 }
                 if (VS()->dbg_flags() & DBG_assign)
@@ -2871,9 +2872,9 @@ vl_var::assign_bit_range(int md, int ld, vl_var *src, int ms, int ls)
             }
             else {
                 for ( ; i <= ie; i++) {
-                    if (v_data.s[i] != BitDC) {
+                    if (data_s()[i] != BitDC) {
                         arm_trigger = true;
-                        v_data.s[i] = BitDC;
+                        data_s()[i] = BitDC;
                     }
                 }
             }
@@ -2922,15 +2923,15 @@ vl_var::assign_bit_SS(int md, int ld, vl_var *src, int ms, int ls)
         int je = src->v_bits.Bend(ms, ls);
         for ( ; i <= ie && j <= je; i++, j++) {
             int b = s[j];
-            if (v_data.s[i] != b) {
+            if (data_s()[i] != b) {
                 arm_trigger = true;
-                v_data.s[i] = b;
+                data_s()[i] = b;
             }
         }
         for ( ; i <= ie; i++) {
-            if (v_data.s[i] != BitL) {
+            if (data_s()[i] != BitL) {
                 arm_trigger = true;
-                v_data.s[i] = BitL;
+                data_s()[i] = BitL;
             }
         }
         if (src->v_data_type == Dstring)
@@ -2938,9 +2939,9 @@ vl_var::assign_bit_SS(int md, int ld, vl_var *src, int ms, int ls)
     }
     else {
         for ( ; i <= ie; i++) {
-            if (v_data.s[i] != BitDC) {
+            if (data_s()[i] != BitDC) {
                 arm_trigger = true;
-                v_data.s[i] = BitDC;
+                data_s()[i] = BitDC;
             }
         }
     }
@@ -2964,15 +2965,15 @@ vl_var::assign_bit_SA(int md, int ld, vl_var *src, int ms, int ls)
         int je = src->v_bits.Bend(ms, ls);
         for ( ; i <= ie && j <= je; i++, j++) {
             int b = s[j];
-            if (v_data.s[i] != b) {
+            if (data_s()[i] != b) {
                 arm_trigger = true;
-                v_data.s[i] = b;
+                data_s()[i] = b;
             }
         }
         for ( ; i <= ie; i++) {
-            if (v_data.s[i] != BitL) {
+            if (data_s()[i] != BitL) {
                 arm_trigger = true;
-                v_data.s[i] = BitL;
+                data_s()[i] = BitL;
             }
         }
         if (src->v_data_type == Dstring)
@@ -2980,9 +2981,9 @@ vl_var::assign_bit_SA(int md, int ld, vl_var *src, int ms, int ls)
     }
     else {
         for ( ; i <= ie; i++) {
-            if (v_data.s[i] != BitDC) {
+            if (data_s()[i] != BitDC) {
                 arm_trigger = true;
-                v_data.s[i] = BitDC;
+                data_s()[i] = BitDC;
             }
         }
     }
@@ -3709,13 +3710,13 @@ vl_range::reval()
     vl_expr *mx = new vl_expr;
     mx->set_etype(IntExpr);
     mx->set_data_type(Dint);
-    mx->data().i = m;
+    mx->set_data_i(m);
     vl_expr *lx = 0;
     if (m != l) {
         lx = new vl_expr;
         lx->set_etype(IntExpr);
         lx->set_data_type(Dint);
-        lx->data().i = l;
+        lx->set_data_i(l);
     }
     return (new vl_range(mx, lx));
 }
@@ -3840,7 +3841,7 @@ vl_event_expr::eval(vl_simulator *sim)
         if (last.data_type() == Dnone)
             return (false);
         vl_var &z = case_eq(last, d);
-        if (z.data().s[0] == BitL)
+        if (z.data_s()[0] == BitL)
             return (true);
     }
     else if (e_type == PosedgeEventExpr) {
@@ -3853,8 +3854,8 @@ vl_event_expr::eval(vl_simulator *sim)
             sim->abort();
             return (false);
         }
-        if ((last.data().s[0] == BitL && d.data().s[0] != BitL) ||
-                (last.data().s[0] != BitH && d.data().s[0] == BitH))
+        if ((last.data_s()[0] == BitL && d.data_s()[0] != BitL) ||
+                (last.data_s()[0] != BitH && d.data_s()[0] == BitH))
             return (true);
     }
     else if (e_type == NegedgeEventExpr) {
@@ -3867,8 +3868,8 @@ vl_event_expr::eval(vl_simulator *sim)
             sim->abort();
             return (false);
         }
-        if ((last.data().s[0] == BitH && d.data().s[0] != BitH) ||
-                (last.data().s[0] != BitL && d.data().s[0] == BitL))
+        if ((last.data_s()[0] == BitH && d.data_s()[0] != BitH) ||
+                (last.data_s()[0] != BitL && d.data_s()[0] == BitL))
             return (true);
     }
     else if (e_type == LevelEventExpr) {

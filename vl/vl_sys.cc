@@ -209,7 +209,7 @@ namespace {
             vl_error("bad indices passed to %s", sname);
             return (false);
         }
-        char **dt = (char**)d->data().d;
+        char **dt = d->data_ps();
         if (!dt) {
             vl_error("bad array passed to %s", sname);
             return (false);
@@ -472,7 +472,7 @@ vl_simulator::sys_time(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
     vl_var &dd = var_factory.new_var();  // so it gets gc'ed
     dd.set_data_type(Dtime);
-    dd.data().t = s_time;
+    dd.set_data_t(s_time);
     return (dd);
 }
 
@@ -561,7 +561,7 @@ vl_simulator::sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*> *args)
     }
     delete [] modname;
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -570,7 +570,7 @@ vl_var &
 vl_simulator::sys_timeformat(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if (!args)
         return (tdata);
     lsGen<vl_expr*> gen(args);
@@ -632,7 +632,7 @@ vl_simulator::sys_display(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
     display_print(args, cout, t->dtype(), t->flags());
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -650,7 +650,7 @@ vl_simulator::sys_monitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
         m->set_next(mnew);
     }
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -660,7 +660,7 @@ vl_simulator::sys_monitor_on(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
     s_monitor_state = true;
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -670,7 +670,7 @@ vl_simulator::sys_monitor_off(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
     s_monitor_state = false;
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -680,7 +680,7 @@ vl_simulator::sys_stop(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     s_stop = VLstop;
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -690,7 +690,7 @@ vl_simulator::sys_finish(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     s_stop = VLstop;
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -699,7 +699,7 @@ vl_var &
 vl_simulator::sys_noop(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -710,7 +710,7 @@ vl_simulator::sys_fopen(vl_sys_task_stmt*, lsList<vl_expr*> *args)
     const char *msg = "in $fopen, can't open file %s";
     vl_var &dd = var_factory.new_var();  // so it gets gc'ed
     dd.set_data_type(Dint);
-    dd.data().i = 0;
+    dd.set_data_i(0);
     if (!args) {
         vl_error(msg, "<null>");
         abort();
@@ -751,7 +751,7 @@ vl_simulator::sys_fopen(vl_sys_task_stmt*, lsList<vl_expr*> *args)
     delete [] name;
     s_channels[fd] = fs;
     int fh = 1 << fd;
-    dd.data().i = fh;
+    dd.set_data_i(fh);
     return (dd);
 }
 
@@ -760,7 +760,7 @@ vl_var &
 vl_simulator::sys_fclose(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if (!args)
         return (tdata);
     lsGen<vl_expr*> gen(args);
@@ -792,7 +792,7 @@ vl_simulator::sys_fmonitor(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
         m->set_next(mnew);
     }
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -802,7 +802,7 @@ vl_simulator::sys_fmonitor_on(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
     s_fmonitor_state = true;
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -812,7 +812,7 @@ vl_simulator::sys_fmonitor_off(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
     s_fmonitor_state = false;
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     return (tdata);
 }
 
@@ -821,7 +821,7 @@ vl_var &
 vl_simulator::sys_fdisplay(vl_sys_task_stmt *t, lsList<vl_expr*> *args)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     fdisplay_print(args, t->dtype(), t->flags());
     return (tdata);
 }
@@ -845,7 +845,7 @@ vl_simulator::sys_random(vl_sys_task_stmt*, lsList<vl_expr*> *args)
             rnd.rand_seed((int)e->eval());
         seeded = true;
     }
-    dd.data().i = (int)rnd.rand_value();
+    dd.set_data_i((int)rnd.rand_value());
     return (dd);
 }
 
@@ -855,7 +855,7 @@ vl_simulator::sys_dumpfile(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 {
     const char *msg = "in $dumpfile, can't open file %s";
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if (!args) {
         vl_error(msg, "<null>");
         abort();
@@ -877,15 +877,6 @@ vl_simulator::sys_dumpfile(vl_sys_task_stmt*, lsList<vl_expr*> *args)
         vl_error(msg, name);
         abort();
     }
-/*XXX wtf is this?
-    int fd = open(name, O_CREAT|O_TRUNC|O_WRONLY, 0664);
-    if (fd < 0) {
-        vl_error(msg, name);
-        abort();
-    }
-    else
-        dmpfile = new ofstream(fd);
-*/
     return (tdata);
 }
 
@@ -895,7 +886,7 @@ vl_simulator::sys_dumpvars(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 {
     const char *msg = "in $dumpvars, unresolved second argument";
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if (args) {
         lsGen<vl_expr*> gen(args);
         vl_expr *e;
@@ -942,7 +933,7 @@ vl_var &
 vl_simulator::sys_dumpall(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if (s_dmpstatus & DMP_ON) {
         *s_dmpfile << "$dumpall\n";
         s_dmpstatus |= DMP_ALL;
@@ -957,7 +948,7 @@ vl_var &
 vl_simulator::sys_dumpon(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if ((s_dmpstatus & DMP_ACTIVE) && !(s_dmpstatus & DMP_ON)) {
         s_dmpstatus |= DMP_ON;
         *s_dmpfile << "$dumpon\n";
@@ -971,7 +962,7 @@ vl_var &
 vl_simulator::sys_dumpoff(vl_sys_task_stmt*, lsList<vl_expr*>*)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if ((s_dmpstatus & DMP_ACTIVE) && (s_dmpstatus & DMP_ON)) {
         s_dmpstatus &= ~DMP_ON;
         *s_dmpfile << "$dumpoff\n";
@@ -985,7 +976,7 @@ vl_var &
 vl_simulator::sys_readmemb(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if (!args)
         return (tdata);
     lsGen<vl_expr*> gen(args);
@@ -1020,7 +1011,7 @@ vl_var &
 vl_simulator::sys_readmemh(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 {
     tdata.set_data_type(Dint);
-    tdata.data().i = 0;
+    tdata.set_data_i(0);
     if (!args)
         return (tdata);
     lsGen<vl_expr*> gen(args);
@@ -1119,7 +1110,7 @@ vl_simulator::do_dump()
         s_dmplast = new vl_var[s_dmpindx];
     for (int i = 0; i < s_dmpindx; i++) {
         vl_var &z = case_neq(s_dmplast[i], *s_dmpdata[i]);
-        if (z.data().s[0] == BitH) {
+        if (z.data_s()[0] == BitH) {
             char *s = s_dmpdata[i]->bitstr(); 
             if (s_dmpdata[i]->data_type() == Dbit &&
                     s_dmpdata[i]->bits().size() == 1)

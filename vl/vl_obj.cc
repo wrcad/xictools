@@ -546,13 +546,13 @@ vl_decl::var_setup(vl_var *var, int vtype)
 
     switch (vtype) {
     case RealDecl:
-        var->data().r = 0.0;
+        var->set_data_r(0.0);
         return;
     case IntDecl:
-        var->data().i = 0;
+        var->set_data_i(0);
         return;
     case TimeDecl:
-        var->data().t = 0;
+        var->set_data_t(0);
         return;
     case EventDecl:
         if (var->net_type() == REGnone) {

@@ -107,8 +107,8 @@ namespace {
     }
 
 
-    void add_bits(char *s0, char *s1, char *s2, int w0, int w1, int w2,
-        bool setc = false)
+    void add_bits(char *s0, const char *s1, const char *s2,
+        int w0, int w1, int w2, bool setc = false)
     {
         int carry = setc ? 1 : 0;
         for (int i = 0; i < w0; i++) {
@@ -182,18 +182,18 @@ operator*(vl_var &data1, vl_var &data2)
         d.setx(w1 + w2);
     else if (data1.data_type() == Dreal || data2.data_type() == Dreal) {
         d.set_data_type(Dreal);
-        d.data().r = (double)data1 * (double)data2;
+        d.set_data_r((double)data1 * (double)data2);
     }
     else if (data1.data_type() == Dtime || data2.data_type() == Dtime) {
         d.set_data_type(Dtime);
-        d.data().t = (vl_time_t)data1 * (vl_time_t)data2;
+        d.set_data_t((vl_time_t)data1 * (vl_time_t)data2);
     }
     else {
         d.set_data_type(Dint);
         if (data1.data_type() == Dbit || data2.data_type() == Dbit)
-            d.data().i = (int)((unsigned)data1 * (unsigned)data2);
+            d.set_data_i((int)((unsigned)data1 * (unsigned)data2));
         else
-            d.data().i = (int)data1 * (int)data2;
+            d.set_data_i((int)data1 * (int)data2);
     }
     return (d);
 }
@@ -230,18 +230,18 @@ operator/(vl_var &data1, vl_var &data2)
         d.setx(max(w1, w2));
     else if (data1.data_type() == Dreal || data2.data_type() == Dreal) {
         d.set_data_type(Dreal);
-        d.data().r = (double)data1 / (double)data2;
+        d.set_data_r((double)data1 / (double)data2);
     }
     else if (data1.data_type() == Dtime || data2.data_type() == Dtime) {
         d.set_data_type(Dtime);
-        d.data().t = (vl_time_t)data1 / (vl_time_t)data2;
+        d.set_data_t((vl_time_t)data1 / (vl_time_t)data2);
     }
     else {
         d.set_data_type(Dint);
         if (data1.data_type() == Dbit || data2.data_type() == Dbit)
-            d.data().i = (int)((unsigned)data1 / (unsigned)data2);
+            d.set_data_i((int)((unsigned)data1 / (unsigned)data2));
         else
-            d.data().i = (int)data1 / (int)data2;
+            d.set_data_i((int)data1 / (int)data2);
     }
     return (d);
 }
@@ -280,14 +280,14 @@ operator%(vl_var &data1, vl_var &data2)
         d.setx(max(w1, w2));
     else if (data1.data_type() == Dtime || data2.data_type() == Dtime) {
         d.set_data_type(Dtime);
-        d.data().t = (vl_time_t)data1 % (vl_time_t)data2;
+        d.set_data_t((vl_time_t)data1 % (vl_time_t)data2);
     }
     else {
         d.set_data_type(Dint);
         if (data1.data_type() == Dbit || data2.data_type() == Dbit)
-            d.data().i = (int)((unsigned)data1 % (unsigned)data2);
+            d.set_data_i((int)((unsigned)data1 % (unsigned)data2));
         else
-            d.data().i = (int)data1 % (int)data2;
+            d.set_data_i((int)data1 % (int)data2);
     }
     return (d);
 }
@@ -304,71 +304,71 @@ operator+(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dint);
-            d.data().i = data1.data().i + data2.data().i;
+            d.set_data_i(data1.data_i() + data2.data_i());
         }
         else if (data2.data_type() == Dbit)
-            d.addb(data2, data1.data().i);
+            d.addb(data2, data1.data_i());
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().i + data2.data().t;
+            d.set_data_t(data1.data_i() + data2.data_t());
         }
         else if (data2.data_type() == Dreal) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().i + data2.data().r;
+            d.set_data_r(data1.data_i() + data2.data_r());
         }
     }
     else if (data1.data_type() == Dbit) {
         if (data2.data_type() == Dint)
-            d.addb(data1, data2.data().i);
+            d.addb(data1, data2.data_i());
         else if (data2.data_type() == Dbit)
             d.addb(data1, data2);
         else if (data2.data_type() == Dtime)
-            d.addb(data1, data2.data().t);
+            d.addb(data1, data2.data_t());
         else if (data2.data_type() == Dreal) {
             if (data1.is_x())
                 d.setx(1);
             else {
                 d.set_data_type(Dreal);
-                d.data().r = (double)data1 + data2.data().r;
+                d.set_data_r((double)data1 + data2.data_r());
             }
         }
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t + data2.data().i;
+            d.set_data_t(data1.data_t() + data2.data_i());
         }
         else if (data2.data_type() == Dbit)
-            d.addb(data2, data1.data().t);
+            d.addb(data2, data1.data_t());
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t + data2.data().t;
+            d.set_data_t(data1.data_t() + data2.data_t());
         }
         else if (data2.data_type() == Dreal) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().t + data2.data().r;
+            d.set_data_r(data1.data_t() + data2.data_r());
         }
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().r + data2.data().i;
+            d.set_data_r(data1.data_r() + data2.data_i());
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 d.setx(1);
             else {
                 d.set_data_type(Dreal);
-                d.data().r = data1.data().r + (double)data2;
+                d.set_data_r(data1.data_r() + (double)data2);
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().r + data2.data().t;
+            d.set_data_r(data1.data_r() + data2.data_t());
         }
         else if (data2.data_type() == Dreal) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().r + data2.data().r;
+            d.set_data_r(data1.data_r() + data2.data_r());
         }
     }
     return (d);
@@ -386,71 +386,71 @@ operator-(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dint);
-            d.data().i = data1.data().i - data2.data().i;
+            d.set_data_i(data1.data_i() - data2.data_i());
         }
         else if (data2.data_type() == Dbit)
-            d.subb(data1.data().i, data2);
+            d.subb(data1.data_i(), data2);
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().i - data2.data().t;
+            d.set_data_t(data1.data_i() - data2.data_t());
         }
         else if (data2.data_type() == Dreal) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().i - data2.data().r;
+            d.set_data_r(data1.data_i() - data2.data_r());
         }
     }
     else if (data1.data_type() == Dbit) {
         if (data2.data_type() == Dint)
-            d.subb(data1, data2.data().i);
+            d.subb(data1, data2.data_i());
         else if (data2.data_type() == Dbit)
             d.subb(data1, data2);
         else if (data2.data_type() == Dtime)
-            d.subb(data1, data2.data().t);
+            d.subb(data1, data2.data_t());
         else if (data2.data_type() == Dreal) {
             if (data1.is_x())
                 d.setx(1);
             else {
                 d.set_data_type(Dreal);
-                d.data().r = (double)data1 - data2.data().r;
+                d.set_data_r((double)data1 - data2.data_r());
             }
         }
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t - data2.data().i;
+            d.set_data_t(data1.data_t() - data2.data_i());
         }
         else if (data2.data_type() == Dbit)
-            d.subb(data1.data().t, data2);
+            d.subb(data1.data_t(), data2);
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t - data2.data().t;
+            d.set_data_t(data1.data_t() - data2.data_t());
         }
         else if (data2.data_type() == Dreal) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().t - data2.data().r;
+            d.set_data_r(data1.data_t() - data2.data_r());
         }
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().r - data2.data().i;
+            d.set_data_r(data1.data_r() - data2.data_i());
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 d.setx(1);
             else {
                 d.set_data_type(Dreal);
-                d.data().r = data1.data().r - (double)data2;
+                d.set_data_r(data1.data_r() - (double)data2);
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().r - data2.data().t;
+            d.set_data_r(data1.data_r() - data2.data_t());
         }
         else if (data2.data_type() == Dreal) {
             d.set_data_type(Dreal);
-            d.data().r = data1.data().r - data2.data().r;
+            d.set_data_r(data1.data_r() - data2.data_r());
         }
     }
     return (d);
@@ -465,20 +465,20 @@ operator-(vl_var &data1)
     vl_var &d = new_var();
     if (data1.data_type() == Dint) {
         d.set_data_type(Dint);
-        d.data().i = -data1.data().i;
+        d.set_data_i(-data1.data_i());
     }
     if (data1.data_type() == Dtime) {
         d.set_data_type(Dtime);
-        d.data().t = -data1.data().t;
+        d.set_data_t(-data1.data_t());
     }
     else if (data1.data_type() == Dbit) {
         d.bits().set(DefBits);
-        d.data().s = new char[DefBits];
+        d.set_data_s(new char[DefBits]);
         d.subb((int)0, data1);
     }
     else if (data1.data_type() == Dreal) {
         d.set_data_type(Dreal);
-        d.data().r = -data1.data().r;
+        d.set_data_r(-data1.data_r());
     }
     return (d);
 }
@@ -504,12 +504,12 @@ operator<<(vl_var &data1, vl_var &data2)
         char *s = data1.bit_elt(0, &bw);
         d.set_data_type(Dbit);
         d.bits().set(bw + shift);
-        d.data().s = new char[d.bits().size()];
+        d.set_data_s(new char[d.bits().size()]);
         for (int i = 0; i < d.bits().size(); i++) {
             if (i >= shift)
-                d.data().s[i] = s[i-shift];
+                d.data_s()[i] = s[i-shift];
             else
-                d.data().s[i] = BitL;
+                d.data_s()[i] = BitL;
         }
     }
     return (d);
@@ -528,12 +528,12 @@ operator<<(vl_var &data1, int shift)
     char *s = data1.bit_elt(0, &bw);
     d.set_data_type(Dbit);
     d.bits().set(bw);
-    d.data().s = new char[d.bits().size()];
+    d.set_data_s(new char[d.bits().size()]);
     for (int i = 0; i < d.bits().size(); i++) {
         if (i >= shift)
-            d.data().s[i] = s[i-shift];
+            d.data_s()[i] = s[i-shift];
         else
-            d.data().s[i] = BitL;
+            d.data_s()[i] = BitL;
     }
     return (d);
 }
@@ -555,12 +555,12 @@ operator>>(vl_var &data1, vl_var &data2)
         char *s = data1.bit_elt(0, &bw);
         d.set_data_type(Dbit);
         d.bits().set(bw);
-        d.data().s = new char[d.bits().size()];
+        d.set_data_s(new char[d.bits().size()]);
         for (int i = 0; i < d.bits().size(); i++) {
             if (i + shift < bw)
-                d.data().s[i] = s[i+shift];
+                d.data_s()[i] = s[i+shift];
             else
-                d.data().s[i] = BitL;
+                d.data_s()[i] = BitL;
         }
     }
     return (d);
@@ -579,12 +579,12 @@ operator>>(vl_var &data1, int shift)
     char *s = data1.bit_elt(0, &bw);
     d.set_data_type(Dbit);
     d.bits().set(bw - shift);
-    d.data().s = new char[d.bits().size()];
+    d.set_data_s(new char[d.bits().size()]);
     for (int i = 0; i < d.bits().size(); i++) {
         if (i + shift < bw)
-            d.data().s[i] = s[i+shift];
+            d.data_s()[i] = s[i+shift];
         else
-            d.data().s[i] = BitL;
+            d.data_s()[i] = BitL;
     }
     return (d);
 }
@@ -621,19 +621,19 @@ operator==(vl_var &data1, vl_var &data2)
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().i == data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() == data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = BitL;
-            int i, i1 = data1.data().i;
+            d.data_s()[0] = BitL;
+            int i, i1 = data1.data_i();
             for (i = 0; i < data2.bits().size(); i++)
-                if (bit(i1, i) != data2.data().s[i])
+                if (bit(i1, i) != data2.data_s()[i])
                     return (d);
             if (data2.bits().size() != DefBits) {
                 if (data2.bits().size() > DefBits) {
                     for (i = DefBits; i < data2.bits().size(); i++)
-                        if (data2.data().s[i] != BitL)
+                        if (data2.data_s()[i] != BitL)
                             return (d);
                 }
                 else {
@@ -642,16 +642,16 @@ operator==(vl_var &data1, vl_var &data2)
                             return (d);
                 }
             }
-            d.data().s[0] = BitH;
+            d.data_s()[0] = BitH;
             return (d);
         }
         else if (data2.data_type() == Dtime) {
-            d.data().s[0] =
-                ((unsigned)data1.data().i == data2.data().t ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() == data2.data_t() ? BitH : BitL);
         }
         else if (data2.data_type() == Dreal) {
-            d.data().s[0] =
-                ((unsigned)data1.data().i == data2.data().r ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() == data2.data_r() ? BitH : BitL);
         }
     }
     else if (data1.data_type() == Dbit) {
@@ -659,47 +659,47 @@ operator==(vl_var &data1, vl_var &data2)
             return (d);
         int i2;
         if (data2.data_type() == Dint)
-            i2 = data2.data().i;
+            i2 = data2.data_i();
         else if (data2.data_type() == Dbit) {
 
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = BitL;
+            d.data_s()[0] = BitL;
             int wd = min(data1.bits().size(), data2.bits().size());
             int i;
             for (i = 0; i < wd; i++)
-                if (data1.data().s[i] != data2.data().s[i])
+                if (data1.data_s()[i] != data2.data_s()[i])
                     return (d);
             if (data1.bits().size() != data2.bits().size()) {
                 if (data1.bits().size() > data2.bits().size()) {
                     for (i = data2.bits().size(); i < data1.bits().size(); i++)
-                        if (data1.data().s[i] != BitL)
+                        if (data1.data_s()[i] != BitL)
                             return (d);
                 }
                 else {
                     for (i = data1.bits().size(); i < data2.bits().size(); i++)
-                        if (data2.data().s[i] != BitL)
+                        if (data2.data_s()[i] != BitL)
                             return (d);
                 }
             }
-            d.data().s[0] = BitH;
+            d.data_s()[0] = BitH;
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            i2 = (int)data2.data().t;
+            i2 = (int)data2.data_t();
         else if (data2.data_type() == Dreal)
-            i2 = (int)data2.data().r;
+            i2 = (int)data2.data_r();
         else
             return (d);
-        d.data().s[0] = BitL;
+        d.data_s()[0] = BitL;
         int i;
         for (i = 0; i < data1.bits().size(); i++)
-            if (data1.data().s[i] != bit(i2, i))
+            if (data1.data_s()[i] != bit(i2, i))
                 return (d);
         if (data1.bits().size() != DefBits) {
             if (data1.bits().size() > DefBits) {
                 for (i = DefBits; i < data1.bits().size(); i++)
-                    if (data1.data().s[i] != BitL)
+                    if (data1.data_s()[i] != BitL)
                         return (d);
             }
             else {
@@ -708,26 +708,26 @@ operator==(vl_var &data1, vl_var &data2)
                         return (d);
             }
         }
-        d.data().s[0] = BitH;
+        d.data_s()[0] = BitH;
         return (d);
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                (data1.data().t == (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_t() == (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = BitL;
-            int i, i1 = (int)data1.data().t;
+            d.data_s()[0] = BitL;
+            int i, i1 = (int)data1.data_t();
             for (i = 0; i < data2.bits().size(); i++)
-                if (bit(i1, i) != data2.data().s[i])
+                if (bit(i1, i) != data2.data_s()[i])
                     return (d);
             if (data2.bits().size() != DefBits) {
                 if (data2.bits().size() > DefBits) {
                     for (i = DefBits; i < data2.bits().size(); i++)
-                        if (data2.data().s[i] != BitL)
+                        if (data2.data_s()[i] != BitL)
                             return (d);
                 }
                 else {
@@ -736,29 +736,29 @@ operator==(vl_var &data1, vl_var &data2)
                             return (d);
                 }
             }
-            d.data().s[0] = BitH;
+            d.data_s()[0] = BitH;
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().t == data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() == data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().t == data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() == data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().r == data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() == data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = BitL;
-            int i, i1 = (int)data1.data().r;
+            d.data_s()[0] = BitL;
+            int i, i1 = (int)data1.data_r();
             for (i = 0; i < data2.bits().size(); i++)
-                if (bit(i1, i) != data2.data().s[i])
+                if (bit(i1, i) != data2.data_s()[i])
                     return (d);
             if (data2.bits().size() != DefBits) {
                 if (data2.bits().size() > DefBits) {
                     for (i = DefBits; i < data2.bits().size(); i++)
-                        if (data2.data().s[i] != BitL)
+                        if (data2.data_s()[i] != BitL)
                             return (d);
                 }
                 else {
@@ -767,13 +767,13 @@ operator==(vl_var &data1, vl_var &data2)
                             return (d);
                 }
             }
-            d.data().s[0] = BitH;
+            d.data_s()[0] = BitH;
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().r == data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() == data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().r == data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() == data2.data_r() ? BitH : BitL);
     }
     return (d);
 }
@@ -785,10 +785,10 @@ vl_var &
 operator!=(vl_var &data1, vl_var &data2)
 {
     vl_var &d = (data1 == data2);
-    if (d.data().s[0] == BitL)
-        d.data().s[0] = BitH;
-    else if (d.data().s[0] == BitH)
-        d.data().s[0] = BitL;
+    if (d.data_s()[0] == BitL)
+        d.data_s()[0] = BitH;
+    else if (d.data_s()[0] == BitH)
+        d.data_s()[0] = BitL;
     return (d);
 }
 
@@ -814,31 +814,31 @@ case_eq(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dbit && data2.data_type() == Dbit) {
         vl_var &d = new_var();
         d.setx(1);
-        d.data().s[0] = BitL;
+        d.data_s()[0] = BitL;
         int wd = min(data1.bits().size(), data2.bits().size());
         int i;
         for (i = 0; i < wd; i++)
-            if (data1.data().s[i] != data2.data().s[i])
+            if (data1.data_s()[i] != data2.data_s()[i])
                 return (d);
         if (data1.bits().size() != data2.bits().size()) {
             if (data1.bits().size() > data2.bits().size()) {
                 for (i = data2.bits().size(); i < data1.bits().size(); i++)
-                    if (data1.data().s[i] != BitL)
+                    if (data1.data_s()[i] != BitL)
                         return (d);
             }
             else {
                 for (i = data1.bits().size(); i < data2.bits().size(); i++)
-                    if (data2.data().s[i] != BitL)
+                    if (data2.data_s()[i] != BitL)
                         return (d);
             }
         }
-        d.data().s[0] = BitH;
+        d.data_s()[0] = BitH;
         return (d);
     }
     else {
         vl_var &d = operator==(data1, data2);
-        if (d.data().s[0] == BitDC)
-            d.data().s[0] = BitL;
+        if (d.data_s()[0] == BitDC)
+            d.data_s()[0] = BitL;
         return (d);
     }
 }
@@ -865,36 +865,36 @@ casex_eq(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dbit && data2.data_type() == Dbit) {
         vl_var &d = new_var();
         d.setx(1);
-        d.data().s[0] = BitL;
+        d.data_s()[0] = BitL;
         int wd = min(data1.bits().size(), data2.bits().size());
         int i;
         for (i = 0; i < wd; i++) {
-            if (data1.data().s[i] == BitDC || data2.data().s[i] == BitDC)
+            if (data1.data_s()[i] == BitDC || data2.data_s()[i] == BitDC)
                 continue;
-            if (data1.data().s[i] == BitZ || data2.data().s[i] == BitZ)
+            if (data1.data_s()[i] == BitZ || data2.data_s()[i] == BitZ)
                 continue;
-            if (data1.data().s[i] != data2.data().s[i])
+            if (data1.data_s()[i] != data2.data_s()[i])
                 return (d);
         }
         if (data1.bits().size() != data2.bits().size()) {
             if (data1.bits().size() > data2.bits().size()) {
                 for (i = data2.bits().size(); i < data1.bits().size(); i++)
-                    if (data1.data().s[i] != BitL)
+                    if (data1.data_s()[i] != BitL)
                         return (d);
             }
             else {
                 for (i = data1.bits().size(); i < data2.bits().size(); i++)
-                    if (data2.data().s[i] != BitL)
+                    if (data2.data_s()[i] != BitL)
                         return (d);
             }
         }
-        d.data().s[0] = BitH;
+        d.data_s()[0] = BitH;
         return (d);
     }
     else {
         vl_var &d = operator==(data1, data2);
-        if (d.data().s[0] == BitDC)
-            d.data().s[0] = BitL;
+        if (d.data_s()[0] == BitDC)
+            d.data_s()[0] = BitL;
         return (d);
     }
 }
@@ -921,34 +921,34 @@ casez_eq(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dbit && data2.data_type() == Dbit) {
         vl_var &d = new_var();
         d.setx(1);
-        d.data().s[0] = BitL;
+        d.data_s()[0] = BitL;
         int wd = min(data1.bits().size(), data2.bits().size());
         int i;
         for (i = 0; i < wd; i++) {
-            if (data1.data().s[i] == BitZ || data2.data().s[i] == BitZ)
+            if (data1.data_s()[i] == BitZ || data2.data_s()[i] == BitZ)
                 continue;
-            if (data1.data().s[i] != data2.data().s[i])
+            if (data1.data_s()[i] != data2.data_s()[i])
                 return (d);
         }
         if (data1.bits().size() != data2.bits().size()) {
             if (data1.bits().size() > data2.bits().size()) {
                 for (i = data2.bits().size(); i < data1.bits().size(); i++)
-                    if (data1.data().s[i] != BitL)
+                    if (data1.data_s()[i] != BitL)
                         return (d);
             }
             else {
                 for (i = data1.bits().size(); i < data2.bits().size(); i++)
-                    if (data2.data().s[i] != BitL)
+                    if (data2.data_s()[i] != BitL)
                         return (d);
             }
         }
-        d.data().s[0] = BitH;
+        d.data_s()[0] = BitH;
         return (d);
     }
     else {
         vl_var &d = operator==(data1, data2);
-        if (d.data().s[0] == BitDC)
-            d.data().s[0] = BitL;
+        if (d.data_s()[0] == BitDC)
+            d.data_s()[0] = BitL;
         return (d);
     }
 }
@@ -960,10 +960,10 @@ vl_var &
 case_neq(vl_var &data1, vl_var &data2)
 {
     vl_var &d = case_eq(data1, data2);
-    if (d.data().s[0] == BitL)
-        d.data().s[0] = BitH;
+    if (d.data_s()[0] == BitL)
+        d.data_s()[0] = BitH;
     else
-        d.data().s[0] = BitL;
+        d.data_s()[0] = BitL;
     return (d);
 }
 
@@ -981,84 +981,84 @@ operator&&(vl_var &data1, vl_var &data2)
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().i && data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() && data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             int x2 = data2.bitset();
-            int i1 = data1.data().i;
+            int i1 = data1.data_i();
             if (i1 && (x2 & Hmask))
-                d.data().s[0] = BitH;
+                d.data_s()[0] = BitH;
             else if (!i1 || (x2 & Lmask))
-                d.data().s[0] = BitL;
+                d.data_s()[0] = BitL;
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().i && data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() && data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal) {
-            d.data().s[0] =
-                (data1.data().i && data2.data().r != 0.0 ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_i() && data2.data_r() != 0.0 ? BitH : BitL);
         }
     }
     else if (data1.data_type() == Dbit) {
         int x1 = data1.bitset(); 
         int i2;
         if (data2.data_type() == Dint)
-            i2 = data2.data().i;
+            i2 = data2.data_i();
         else if (data2.data_type() == Dbit) {
             int x2 = data2.bitset();
             if ((x1 & Hmask) && (x2 & Hmask))
-                d.data().s[0] = BitH;
+                d.data_s()[0] = BitH;
             else if ((x1 & Lmask) || (x2 & Lmask))
-                d.data().s[0] = BitL;
+                d.data_s()[0] = BitL;
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            i2 = data2.data().t != 0 ? 1 : 0;
+            i2 = data2.data_t() != 0 ? 1 : 0;
         else if (data2.data_type() == Dreal)
-            i2 = data2.data().r != 0.0 ? 1 : 0;
+            i2 = data2.data_r() != 0.0 ? 1 : 0;
         else
             return (d);
         if ((x1 & Hmask) && i2)
-            d.data().s[0] = BitH;
+            d.data_s()[0] = BitH;
         else if ((x1 & Lmask) || !i2)
-            d.data().s[0] = BitL;
+            d.data_s()[0] = BitL;
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().t && data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() && data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             int x2 = data2.bitset();
-            int i1 = data1.data().t != 0 ? 1 : 0;
+            int i1 = data1.data_t() != 0 ? 1 : 0;
             if (i1 && (x2 & Hmask))
-                d.data().s[0] = BitH;
+                d.data_s()[0] = BitH;
             else if (!i1 || (x2 & Lmask))
-                d.data().s[0] = BitL;
+                d.data_s()[0] = BitL;
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().t && data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() && data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal) {
-            d.data().s[0] =
-                (data1.data().t && data2.data().r != 0.0 ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_t() && data2.data_r() != 0.0 ? BitH : BitL);
         }
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                (data1.data().r != 0.0 && data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_r() != 0.0 && data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             int x2 = data2.bitset();
-            int i1 = data1.data().r != 0.0 ? 1 : 0;
+            int i1 = data1.data_r() != 0.0 ? 1 : 0;
             if (i1 && (x2 & Hmask))
-                d.data().s[0] = BitH;
+                d.data_s()[0] = BitH;
             else if (!i1 || (x2 & Lmask))
-                d.data().s[0] = BitL;
+                d.data_s()[0] = BitL;
         }
         else if (data2.data_type() == Dtime) {
-            d.data().s[0] =
-                (data1.data().r != 0.0 && data2.data().t ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_r() != 0.0 && data2.data_t() ? BitH : BitL);
         }
         else if (data2.data_type() == Dreal) {
-            d.data().s[0] =
-                (data1.data().r != 0.0 && data2.data().r != 0.0 ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_r() != 0.0 && data2.data_r() != 0.0 ? BitH : BitL);
         }
     }
     return (d);
@@ -1074,84 +1074,84 @@ operator||(vl_var &data1, vl_var &data2)
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().i || data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() || data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             int x2 = data2.bitset();
-            int i1 = data1.data().i;
+            int i1 = data1.data_i();
             if (i1 || (x2 & Hmask))
-                d.data().s[0] = BitH;
+                d.data_s()[0] = BitH;
             else if (!i1 && (x2 & Lmask))
-                d.data().s[0] = BitL;
+                d.data_s()[0] = BitL;
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().i || data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() || data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal) {
-            d.data().s[0] =
-                (data1.data().i || data2.data().r != 0.0 ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_i() || data2.data_r() != 0.0 ? BitH : BitL);
         }
     }
     else if (data1.data_type() == Dbit) {
         int x1 = data1.bitset(); 
         int i2;
         if (data2.data_type() == Dint)
-            i2 = data2.data().i;
+            i2 = data2.data_i();
         else if (data2.data_type() == Dbit) {
             int x2 = data2.bitset();
             if ((x1 & Hmask) || (x2 & Hmask))
-                d.data().s[0] = BitH;
+                d.data_s()[0] = BitH;
             else if ((x1 & Lmask) && (x2 & Lmask))
-                d.data().s[0] = BitL;
+                d.data_s()[0] = BitL;
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            i2 = data2.data().t != 0 ? 1 : 0;
+            i2 = data2.data_t() != 0 ? 1 : 0;
         else if (data2.data_type() == Dreal)
-            i2 = data2.data().r != 0.0 ? 1 : 0;
+            i2 = data2.data_r() != 0.0 ? 1 : 0;
         else
             return (d);
         if ((x1 & Hmask) || i2)
-            d.data().s[0] = BitH;
+            d.data_s()[0] = BitH;
         else if ((x1 & Lmask) && !i2)
-            d.data().s[0] = BitL;
+            d.data_s()[0] = BitL;
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().t || data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() || data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             int x2 = data2.bitset();
-            int i1 = data1.data().t != 0 ? 1 : 0;
+            int i1 = data1.data_t() != 0 ? 1 : 0;
             if (i1 || (x2 & Hmask))
-                d.data().s[0] = BitH;
+                d.data_s()[0] = BitH;
             else if (!i1 && (x2 & Lmask))
-                d.data().s[0] = BitL;
+                d.data_s()[0] = BitL;
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().t || data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() || data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal) {
-            d.data().s[0] =
-                (data1.data().t || data2.data().r != 0.0 ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_t() || data2.data_r() != 0.0 ? BitH : BitL);
         }
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                (data1.data().r != 0.0 || data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_r() != 0.0 || data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             int x2 = data2.bitset();
-            int i1 = data1.data().r != 0.0 ? 1 : 0;
+            int i1 = data1.data_r() != 0.0 ? 1 : 0;
             if (i1 || (x2 & Hmask))
-                d.data().s[0] = BitH;
+                d.data_s()[0] = BitH;
             else if (!i1 && (x2 & Lmask))
-                d.data().s[0] = BitL;
+                d.data_s()[0] = BitL;
         }
         else if (data2.data_type() == Dtime) {
-            d.data().s[0] =
-                (data1.data().r != 0.0 || data2.data().t ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_r() != 0.0 || data2.data_t() ? BitH : BitL);
         }
         else if (data2.data_type() == Dreal) {
-            d.data().s[0] =
-                (data1.data().r != 0.0 || data2.data().r != 0.0 ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_r() != 0.0 || data2.data_r() != 0.0 ? BitH : BitL);
         }
     }
     return (d);
@@ -1166,18 +1166,18 @@ operator!(vl_var &data1)
     vl_var &d = new_var();
     d.setx(1);
     if (data1.data_type() == Dint)
-        d.data().s[0] = data1.data().i ? BitL : BitH;
+        d.data_s()[0] = data1.data_i() ? BitL : BitH;
     else if (data1.data_type() == Dbit) {
         int x1 = data1.bitset();
         if (x1 & Hmask)
-            d.data().s[0] = BitL;
+            d.data_s()[0] = BitL;
         else if (x1 & Lmask)
-            d.data().s[0] = BitH;
+            d.data_s()[0] = BitH;
     }
     else if (data1.data_type() == Dtime)
-        d.data().s[0] = data1.data().t ? BitL : BitH;
+        d.data_s()[0] = data1.data_t() ? BitL : BitH;
     else if (data1.data_type() == Dreal)
-        d.data().s[0] = data1.data().r != 0.0 ? BitL : BitH;
+        d.data_s()[0] = data1.data_r() != 0.0 ? BitL : BitH;
     return (d);
 }
 
@@ -1218,7 +1218,7 @@ reduce(vl_var &data1, int oper)
     }
     vl_var &d = new_var();
     d.setx(1);
-    d.data().s[0] = xx;
+    d.data_s()[0] = xx;
     return (d);
 }
 
@@ -1236,65 +1236,65 @@ operator<(vl_var &data1, vl_var &data2)
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().i < data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() < data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] =
-                ((unsigned)data1.data().i < (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() < (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime) {
-            d.data().s[0] =
-                ((unsigned)data1.data().i < data2.data().t ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() < data2.data_t() ? BitH : BitL);
         }
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().i < data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() < data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dbit) {
         if (data1.is_x())
             return (d);
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                ((unsigned)data1 < (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1 < (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = ((unsigned)data1 < (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 < (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = ((unsigned)data1 < data2.data().t ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 < data2.data_t() ? BitH : BitL);
         if (data2.data_type() == Dreal)
-            d.data().s[0] = ((unsigned)data1 < data2.data().r ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 < data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                (data1.data().t < (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_t() < (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = (data1.data().t < (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() < (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().t < data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() < data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().t < data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() < data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().r < data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() < data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = (data1.data().r < (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() < (unsigned)data2 ? BitH : BitL);
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().r < data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() < data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().r < data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() < data2.data_r() ? BitH : BitL);
     }
     return (d);
 }
@@ -1309,65 +1309,65 @@ operator<=(vl_var &data1, vl_var &data2)
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().i <= data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() <= data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] =
-                ((unsigned)data1.data().i <= (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() <= (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime) {
-            d.data().s[0] =
-                ((unsigned)data1.data().i <= data2.data().t ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() <= data2.data_t() ? BitH : BitL);
         }
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().i <= data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() <= data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dbit) {
         if (data1.is_x())
             return (d);
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                ((unsigned)data1 <= (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1 <= (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = ((unsigned)data1 <= (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 <= (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = ((unsigned)data1 <= data2.data().t ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 <= data2.data_t() ? BitH : BitL);
         if (data2.data_type() == Dreal)
-            d.data().s[0] = ((unsigned)data1 <= data2.data().r ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 <= data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                (data1.data().t <= (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_t() <= (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = (data1.data().t <= (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() <= (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().t <= data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() <= data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().t <= data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() <= data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().r <= data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() <= data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = (data1.data().r <= (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() <= (unsigned)data2 ? BitH : BitL);
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().r <= data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() <= data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().r <= data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() <= data2.data_r() ? BitH : BitL);
     }
     return (d);
 }
@@ -1382,65 +1382,65 @@ operator>(vl_var &data1, vl_var &data2)
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().i > data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() > data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] =
-                ((unsigned)data1.data().i > (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() > (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime) {
-            d.data().s[0] =
-                ((unsigned)data1.data().i > data2.data().t ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() > data2.data_t() ? BitH : BitL);
         }
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().i > data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() > data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dbit) {
         if (data1.is_x())
             return (d);
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                ((unsigned)data1 > (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1 > (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = ((unsigned)data1 > (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 > (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = ((unsigned)data1 > data2.data().t ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 > data2.data_t() ? BitH : BitL);
         if (data2.data_type() == Dreal)
-            d.data().s[0] = ((unsigned)data1 > data2.data().r ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 > data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                (data1.data().t > (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_t() > (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = (data1.data().t > (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() > (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().t > data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() > data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().t > data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() > data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().r > data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() > data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = (data1.data().r > (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() > (unsigned)data2 ? BitH : BitL);
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().r > data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() > data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().r > data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() > data2.data_r() ? BitH : BitL);
     }
     return (d);
 }
@@ -1455,65 +1455,65 @@ operator>=(vl_var &data1, vl_var &data2)
     d.setx(1);
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().i >= data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() >= data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] =
-                ((unsigned)data1.data().i >= (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() >= (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime) {
-            d.data().s[0] =
-                ((unsigned)data1.data().i >= data2.data().t ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1.data_i() >= data2.data_t() ? BitH : BitL);
         }
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().i >= data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_i() >= data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dbit) {
         if (data1.is_x())
             return (d);
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                ((unsigned)data1 >= (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                ((unsigned)data1 >= (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = ((unsigned)data1 >= (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 >= (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = ((unsigned)data1 >= data2.data().t ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 >= data2.data_t() ? BitH : BitL);
         if (data2.data_type() == Dreal)
-            d.data().s[0] = ((unsigned)data1 >= data2.data().r ? BitH : BitL);
+            d.data_s()[0] = ((unsigned)data1 >= data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
-            d.data().s[0] =
-                (data1.data().t >= (unsigned)data2.data().i ? BitH : BitL);
+            d.data_s()[0] =
+                (data1.data_t() >= (unsigned)data2.data_i() ? BitH : BitL);
         }
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = (data1.data().t >= (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() >= (unsigned)data2 ? BitH : BitL);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().t >= data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() >= data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().t >= data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_t() >= data2.data_r() ? BitH : BitL);
     }
     else if (data1.data_type() == Dreal) {
         if (data2.data_type() == Dint)
-            d.data().s[0] = (data1.data().r >= data2.data().i ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() >= data2.data_i() ? BitH : BitL);
         else if (data2.data_type() == Dbit) {
             if (data2.is_x())
                 return (d);
-            d.data().s[0] = (data1.data().r >= (unsigned)data2 ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() >= (unsigned)data2 ? BitH : BitL);
             return (d);
         }
         else if (data2.data_type() == Dtime)
-            d.data().s[0] = (data1.data().r >= data2.data().t ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() >= data2.data_t() ? BitH : BitL);
         else if (data2.data_type() == Dreal)
-            d.data().s[0] = (data1.data().r >= data2.data().r ? BitH : BitL);
+            d.data_s()[0] = (data1.data_r() >= data2.data_r() ? BitH : BitL);
     }
     return (d);
 }
@@ -1532,24 +1532,24 @@ operator&(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dint);
-            d.data().i = data1.data().i & data2.data().i;
+            d.set_data_i(data1.data_i() & data2.data_i());
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data2.bits().size(), DefBits));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data2.bits().size()) {
-                    d.data().s[i] =
-                        op_and(data2.data().s[i], bit(data1.data().i, i));
+                    d.data_s()[i] =
+                        op_and(data2.data_s()[i], bit(data1.data_i(), i));
                 }
                 else
-                    d.data().s[i] = BitL;
+                    d.data_s()[i] = BitL;
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().i & data2.data().t;
+            d.set_data_t(data1.data_i() & data2.data_t());
         }
         else if (data2.data_type() == Dreal)
             d.setx(1);
@@ -1558,39 +1558,39 @@ operator&(vl_var &data1, vl_var &data2)
         if (data2.data_type() == Dint) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), DefBits));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data1.bits().size()) {
-                    d.data().s[i] =
-                        op_and(data1.data().s[i], bit(data2.data().i, i));
+                    d.data_s()[i] =
+                        op_and(data1.data_s()[i], bit(data2.data_i(), i));
                 }
                 else
-                    d.data().s[i] = BitL;
+                    d.data_s()[i] = BitL;
             }
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), data2.bits().size()));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 int i1 =
-                    (i < data1.bits().size() ? data1.data().s[i] : (int)BitL);
+                    (i < data1.bits().size() ? data1.data_s()[i] : (int)BitL);
                 int i2 =
-                    (i < data2.bits().size() ? data2.data().s[i] : (int)BitL);
-                d.data().s[i] = op_and(i1, i2);
+                    (i < data2.bits().size() ? data2.data_s()[i] : (int)BitL);
+                d.data_s()[i] = op_and(i1, i2);
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), 8*sizeof(vl_time_t)));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data1.bits().size()) {
-                    d.data().s[i] =
-                        op_and(data1.data().s[i], bit(data2.data().t, i));
+                    d.data_s()[i] =
+                        op_and(data1.data_s()[i], bit(data2.data_t(), i));
                 }
                 else
-                    d.data().s[i] = BitL;
+                    d.data_s()[i] = BitL;
             }
         }
         else if (data2.data_type() == Dreal)
@@ -1599,24 +1599,24 @@ operator&(vl_var &data1, vl_var &data2)
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t & data2.data().i;
+            d.set_data_t(data1.data_t() & data2.data_i());
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data2.bits().size(), 8*sizeof(vl_time_t)));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data2.bits().size()) {
-                    d.data().s[i] =
-                        op_and(data2.data().s[i], bit(data1.data().t, i));
+                    d.data_s()[i] =
+                        op_and(data2.data_s()[i], bit(data1.data_t(), i));
                 }
                 else
-                    d.data().s[i] = BitL;
+                    d.data_s()[i] = BitL;
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t & data2.data().t;
+            d.set_data_t(data1.data_t() & data2.data_t());
         }
         else if (data2.data_type() == Dreal)
             d.setx(1);
@@ -1636,24 +1636,24 @@ operator|(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dint);
-            d.data().i = data1.data().i | data2.data().i;
+            d.set_data_i(data1.data_i() | data2.data_i());
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data2.bits().size(), DefBits));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data2.bits().size()) {
-                    d.data().s[i] =
-                        op_or(data2.data().s[i], bit(data1.data().i, i));
+                    d.data_s()[i] =
+                        op_or(data2.data_s()[i], bit(data1.data_i(), i));
                 }
                 else
-                    d.data().s[i] = bit(data1.data().i, i);
+                    d.data_s()[i] = bit(data1.data_i(), i);
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().i | data2.data().t;
+            d.set_data_t(data1.data_i() | data2.data_t());
         }
         else if (data2.data_type() == Dreal)
             d.setx(1);
@@ -1662,39 +1662,39 @@ operator|(vl_var &data1, vl_var &data2)
         if (data2.data_type() == Dint) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), DefBits));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data1.bits().size()) {
-                    d.data().s[i] =
-                        op_or(data1.data().s[i], bit(data2.data().i, i));
+                    d.data_s()[i] =
+                        op_or(data1.data_s()[i], bit(data2.data_i(), i));
                 }
                 else
-                    d.data().s[i] = bit(data2.data().i, i);
+                    d.data_s()[i] = bit(data2.data_i(), i);
             }
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), data2.bits().size()));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 int i1 =
-                    (i < data1.bits().size() ? data1.data().s[i] : (int)BitL);
+                    (i < data1.bits().size() ? data1.data_s()[i] : (int)BitL);
                 int i2 =
-                    (i < data2.bits().size() ? data2.data().s[i] : (int)BitL);
-                d.data().s[i] = op_or(i1, i2);
+                    (i < data2.bits().size() ? data2.data_s()[i] : (int)BitL);
+                d.data_s()[i] = op_or(i1, i2);
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), 8*sizeof(vl_time_t)));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data1.bits().size()) {
-                    d.data().s[i] =
-                        op_or(data1.data().s[i], bit(data2.data().t, i));
+                    d.data_s()[i] =
+                        op_or(data1.data_s()[i], bit(data2.data_t(), i));
                 }
                 else
-                    d.data().s[i] = bit(data2.data().t, i);
+                    d.data_s()[i] = bit(data2.data_t(), i);
             }
         }
         else if (data2.data_type() == Dreal)
@@ -1703,24 +1703,24 @@ operator|(vl_var &data1, vl_var &data2)
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t | data2.data().i;
+            d.set_data_t(data1.data_t() | data2.data_i());
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data2.bits().size(), 8*sizeof(vl_time_t)));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data2.bits().size()) {
-                    d.data().s[i] =
-                        op_or(data2.data().s[i], bit(data1.data().t, i));
+                    d.data_s()[i] =
+                        op_or(data2.data_s()[i], bit(data1.data_t(), i));
                 }
                 else
-                    d.data().s[i] = bit(data1.data().t, i);
+                    d.data_s()[i] = bit(data1.data_t(), i);
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t | data2.data().t;
+            d.set_data_t(data1.data_t() | data2.data_t());
         }
         else if (data2.data_type() == Dreal)
             d.setx(1);
@@ -1740,24 +1740,24 @@ operator^(vl_var &data1, vl_var &data2)
     if (data1.data_type() == Dint) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dint);
-            d.data().i = data1.data().i ^ data2.data().i;
+            d.set_data_i(data1.data_i() ^ data2.data_i());
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data2.bits().size(), DefBits));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data2.bits().size()) {
-                    d.data().s[i] =
-                        op_xor(data2.data().s[i], bit(data1.data().i, i));
+                    d.data_s()[i] =
+                        op_xor(data2.data_s()[i], bit(data1.data_i(), i));
                 }
                 else
-                    d.data().s[i] = op_xor(BitL, bit(data1.data().i, i));
+                    d.data_s()[i] = op_xor(BitL, bit(data1.data_i(), i));
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().i ^ data2.data().t;
+            d.set_data_t(data1.data_i() ^ data2.data_t());
         }
         else if (data2.data_type() == Dreal)
             d.setx(1);
@@ -1766,39 +1766,39 @@ operator^(vl_var &data1, vl_var &data2)
         if (data2.data_type() == Dint) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), DefBits));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data1.bits().size()) {
-                    d.data().s[i] =
-                        op_xor(data1.data().s[i], bit(data2.data().i, i));
+                    d.data_s()[i] =
+                        op_xor(data1.data_s()[i], bit(data2.data_i(), i));
                 }
                 else
-                    d.data().s[i] = op_xor(BitL, bit(data2.data().i, i));
+                    d.data_s()[i] = op_xor(BitL, bit(data2.data_i(), i));
             }
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), data2.bits().size()));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 int i1 =
-                    (i < data1.bits().size() ? data1.data().s[i] : (int)BitL);
+                    (i < data1.bits().size() ? data1.data_s()[i] : (int)BitL);
                 int i2 =
-                    (i < data2.bits().size() ? data2.data().s[i] : (int)BitL);
-                d.data().s[i] = op_xor(i1, i2);
+                    (i < data2.bits().size() ? data2.data_s()[i] : (int)BitL);
+                d.data_s()[i] = op_xor(i1, i2);
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dbit);
             d.bits().set(max(data1.bits().size(), 8*sizeof(vl_time_t)));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data1.bits().size()) {
-                    d.data().s[i] =
-                        op_xor(data1.data().s[i], bit(data2.data().t, i));
+                    d.data_s()[i] =
+                        op_xor(data1.data_s()[i], bit(data2.data_t(), i));
                 }
                 else
-                    d.data().s[i] = op_xor(BitL, bit(data2.data().t, i));
+                    d.data_s()[i] = op_xor(BitL, bit(data2.data_t(), i));
             }
         }
         else if (data2.data_type() == Dreal)
@@ -1807,24 +1807,24 @@ operator^(vl_var &data1, vl_var &data2)
     else if (data1.data_type() == Dtime) {
         if (data2.data_type() == Dint) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t ^ data2.data().i;
+            d.set_data_t(data1.data_t() ^ data2.data_i());
         }
         else if (data2.data_type() == Dbit) {
             d.set_data_type(Dbit);
             d.bits().set(max(data2.bits().size(), 8*sizeof(vl_time_t)));
-            d.data().s = new char[d.bits().size()];
+            d.set_data_s(new char[d.bits().size()]);
             for (int i = 0; i < d.bits().size(); i++) {
                 if (i < data2.bits().size()) {
-                    d.data().s[i] =
-                        op_xor(data2.data().s[i], bit(data1.data().t, i));
+                    d.data_s()[i] =
+                        op_xor(data2.data_s()[i], bit(data1.data_t(), i));
                 }
                 else
-                    d.data().s[i] = op_xor(BitL, bit(data1.data().t, i));
+                    d.data_s()[i] = op_xor(BitL, bit(data1.data_t(), i));
             }
         }
         else if (data2.data_type() == Dtime) {
             d.set_data_type(Dtime);
-            d.data().t = data1.data().t ^ data2.data().t;
+            d.set_data_t(data1.data_t() ^ data2.data_t());
         }
         else if (data2.data_type() == Dreal)
             d.setx(1);
@@ -1844,7 +1844,7 @@ operator~(vl_var &data1)
     if (data1.data_type() == Dint) {
         d.set_data_type(Dint);
         int w = 0;
-        int c = data1.data().i;
+        int c = data1.data_i();
         while (c) {
             c >>= 1;
             w++;
@@ -1857,25 +1857,25 @@ operator~(vl_var &data1)
             mask |= 1;
             w--;
         }
-        d.data().i = data1.data().i ^ mask;
+        d.set_data_i(data1.data_i() ^ mask);
     }
     else if (data1.data_type() == Dbit) {
         d.set_data_type(Dbit);
         d.bits().set(data1.bits().size());
-        d.data().s = new char[d.bits().size()];
+        d.set_data_s(new char[d.bits().size()]);
         for (int i = 0; i < d.bits().size(); i++) {
-            if (data1.data().s[i] == BitDC || data1.data().s[i] == BitZ)
-                d.data().s[i] = BitDC;
-            else if (data1.data().s[i] == BitH)
-                d.data().s[i] = BitL;
+            if (data1.data_s()[i] == BitDC || data1.data_s()[i] == BitZ)
+                d.data_s()[i] = BitDC;
+            else if (data1.data_s()[i] == BitH)
+                d.data_s()[i] = BitL;
             else
-                d.data().s[i] = BitH;
+                d.data_s()[i] = BitH;
         }
     }
     else if (data1.data_type() == Dtime) {
         d.set_data_type(Dtime);
         int w = 0;
-        vl_time_t c = data1.data().t;
+        vl_time_t c = data1.data_t();
         while (c) {
             c >>= 1;
             w++;
@@ -1888,7 +1888,7 @@ operator~(vl_var &data1)
             mask |= 1;
             w--;
         }
-        d.data().t = data1.data().t ^ mask;
+        d.set_data_t(data1.data_t() ^ mask);
     }
     else if (data1.data_type() == Dreal)
         d.setx(1);
@@ -1904,7 +1904,7 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
     int xx = BitL;
     if (data1.data_type() == Dbit) {
         char *s =
-            data1.array().size() ? *(char**)data1.data().d : data1.data().s;
+            data1.array().size() ? *data1.data_ps() : data1.data_s();
         for (int i = 0; i < data1.bits().size(); i++) {
             if (s[i] == BitH)
                 xx = BitH;
@@ -1915,11 +1915,11 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
         }
     }
     else if (data1.data_type() == Dint)
-        xx = data1.data().i ? BitH : BitL;
+        xx = data1.data_i() ? BitH : BitL;
     else if (data1.data_type() == Dtime)
-        xx = data1.data().t ? BitH : BitL;
+        xx = data1.data_t() ? BitH : BitL;
     else if (data1.data_type() == Dreal)
-        xx = data1.data().r != 0.0 ? BitH : BitL;
+        xx = data1.data_r() != 0.0 ? BitH : BitL;
 
     if (xx == BitH)
         return (e1->eval());
@@ -1960,25 +1960,25 @@ tcond(vl_var &data1, vl_expr *e1, vl_expr *e2)
     for (int i = 0; i < w1; i++) {
         int b1 = BitL;
         if (d1.data_type() == Dbit)
-            b1 = i < d1.bits().size() ? d1.data().s[i] : (int)BitL;
+            b1 = i < d1.bits().size() ? d1.data_s()[i] : (int)BitL;
         else if (d1.data_type() == Dint)
-            b1 = i < (int)sizeof(int)*8 ? bit(d1.data().i, i) : (int)BitL;
+            b1 = i < (int)sizeof(int)*8 ? bit(d1.data_i(), i) : (int)BitL;
         else if (d1.data_type() == Dtime)
             b1 = i < (int)sizeof(vl_time_t)*8 ?
-                (((d1.data().t >> i) & 1) ? BitH : BitL) : (int)BitL;
+                (((d1.data_t() >> i) & 1) ? BitH : BitL) : (int)BitL;
         int b2 = BitL;
         if (d2.data_type() == Dbit)
-            b2 = i < d2.bits().size() ? d2.data().s[i] : (int)BitL;
+            b2 = i < d2.bits().size() ? d2.data_s()[i] : (int)BitL;
         else if (d2.data_type() == Dint)
-            b2 = i < (int)sizeof(int)*8 ? bit(d2.data().i, i) : (int)BitL;
+            b2 = i < (int)sizeof(int)*8 ? bit(d2.data_i(), i) : (int)BitL;
         else if (d2.data_type() == Dtime)
             b2 = i < (int)sizeof(vl_time_t)*8 ?
-                (((d2.data().t >> i) & 1) ? BitH : BitL) : (int)BitL;
+                (((d2.data_t() >> i) & 1) ? BitH : BitL) : (int)BitL;
 
         if (b1 == b2)
-            d.data().s[i] = (b1 != BitZ ? b1 : BitDC);
+            d.data_s()[i] = (b1 != BitZ ? b1 : BitDC);
         else
-            d.data().s[i] = BitDC;
+            d.data_s()[i] = BitDC;
     }
     return (d);
 }
@@ -1993,14 +1993,14 @@ vl_var::addb(vl_var &data1, int ival)
 {
     setb(ival);
     int w2 = bits().size();
-    char *s2 = data().s;
+    const char *s2 = data_s();
     int size = max(data1.bits().size(), w2);
     size++;
-    data().s = new char[size];
+    set_data_s(new char[size]);
     v_data_type = Dbit;
-    add_bits(data().s, data1.data().s, s2, size, data1.bits().size(), w2);
+    add_bits(data_s(), data1.data_s(), s2, size, data1.bits().size(), w2);
     delete [] s2;
-    if (data().s[size-1] != BitH)
+    if (data_s()[size-1] != BitH)
         size--;
     bits().set(size);
 }
@@ -2011,14 +2011,14 @@ vl_var::addb(vl_var &data1, vl_time_t tval)
 {
     sett(tval);
     int w2 = bits().size();
-    char *s2 = data().s;
+    const char *s2 = data_s();
     int size = max(data1.bits().size(), w2);
     size++;
-    data().s = new char[size];
+    set_data_s(new char[size]);
     v_data_type = Dbit;
-    add_bits(data().s, data1.data().s, s2, size, data1.bits().size(), w2);
+    add_bits(data_s(), data1.data_s(), s2, size, data1.bits().size(), w2);
     delete [] s2;
-    if (data().s[size-1] != BitH)
+    if (data_s()[size-1] != BitH)
         size--;
     bits().set(size);
 }
@@ -2029,11 +2029,11 @@ vl_var::addb(vl_var &data1, vl_var &data2)
 {
     int size = max(data1.bits().size(), data2.bits().size());
     size++;
-    data().s = new char[size];
+    set_data_s(new char[size]);
     v_data_type = Dbit;
-    add_bits(data().s, data1.data().s, data2.data().s, size,
+    add_bits(data_s(), data1.data_s(), data2.data_s(), size,
         data1.bits().size(), data2.bits().size());
-    if (data().s[size-1] != BitH)
+    if (data_s()[size-1] != BitH)
         size--;
     bits().set(size);
 }
@@ -2044,9 +2044,9 @@ vl_var::subb(vl_var &data1, int ival)
 {
     setb(ival);
     int w2 = bits().size();
-    char *s2 = data().s;
+    char *s2 = data_s();
     bits().set(max(data1.bits().size(), w2));
-    data().s = new char[bits().size()];
+    set_data_s(new char[bits().size()]);
     v_data_type = Dbit;
 
     for (int i = 0; i < w2; i++) {
@@ -2055,7 +2055,7 @@ vl_var::subb(vl_var &data1, int ival)
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(data().s, data1.data().s, s2, bits().size(), data1.bits().size(),
+    add_bits(data_s(), data1.data_s(), s2, bits().size(), data1.bits().size(),
         w2, true);
     delete [] s2;
 }
@@ -2066,20 +2066,20 @@ vl_var::subb(int ival, vl_var &data2)
 {
     setb(ival);
     int w1 = bits().size();
-    char *s1 = data().s;
+    const char *s1 = data_s();
     bits().set(max(data2.bits().size(), w1));
-    data().s = new char[bits().size()];
+    set_data_s(new char[bits().size()]);
     v_data_type = Dbit;
 
     char *s2 = new char[data2.bits().size()];
-    memcpy(s2, data2.data().s, data2.bits().size());
+    memcpy(s2, data2.data_s(), data2.bits().size());
     for (int i = 0; i < data2.bits().size(); i++) {
         if (s2[i] == BitL)
             s2[i] = BitH;
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(data().s, s1, s2, bits().size(), w1, data2.bits().size(), true);
+    add_bits(data_s(), s1, s2, bits().size(), w1, data2.bits().size(), true);
     delete [] s1;
     delete [] s2;
 }
@@ -2090,9 +2090,9 @@ vl_var::subb(vl_var &data1, vl_time_t tval)
 {
     sett(tval);
     int w2 = bits().size();
-    char *s2 = data().s;
+    char *s2 = data_s();
     bits().set(max(data1.bits().size(), w2));
-    data().s = new char[bits().size()];
+    set_data_s(new char[bits().size()]);
     v_data_type = Dbit;
 
     for (int i = 0; i < w2; i++) {
@@ -2101,7 +2101,7 @@ vl_var::subb(vl_var &data1, vl_time_t tval)
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(data().s, data1.data().s, s2, bits().size(), data1.bits().size(),
+    add_bits(data_s(), data1.data_s(), s2, bits().size(), data1.bits().size(),
         w2, true);
     delete [] s2;
 }
@@ -2112,20 +2112,20 @@ vl_var::subb(vl_time_t tval, vl_var &data2)
 {
     sett(tval);
     int w1 = bits().size();
-    char *s1 = data().s;
+    const char *s1 = data_s();
     bits().set(max(data2.bits().size(), w1));
-    data().s = new char[bits().size()];
+    set_data_s(new char[bits().size()]);
     v_data_type = Dbit;
 
     char *s2 = new char[data2.bits().size()];
-    memcpy(s2, data2.data().s, data2.bits().size());
+    memcpy(s2, data2.data_s(), data2.bits().size());
     for (int i = 0; i < data2.bits().size(); i++) {
         if (s2[i] == BitL)
             s2[i] = BitH;
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(data().s, s1, s2, bits().size(), w1, data2.bits().size(), true);
+    add_bits(data_s(), s1, s2, bits().size(), w1, data2.bits().size(), true);
     delete [] s1;
     delete [] s2;
 }
@@ -2136,17 +2136,17 @@ vl_var::subb(vl_var &data1, vl_var &data2)
 {
     v_data_type = Dbit;
     bits().set(max(data1.bits().size(), data2.bits().size()));
-    data().s = new char[bits().size()];
+    set_data_s(new char[bits().size()]);
 
     char *s2 = new char[data2.bits().size()];
-    memcpy(s2, data2.data().s, data2.bits().size());
+    memcpy(s2, data2.data_s(), data2.bits().size());
     for (int i = 0; i < data2.bits().size(); i++) {
         if (s2[i] == BitL)
             s2[i] = BitH;
         else if (s2[i] == BitH)
             s2[i] = BitL;
     }
-    add_bits(data().s, data1.data().s, s2, bits().size(), data1.bits().size(),
+    add_bits(data_s(), data1.data_s(), s2, bits().size(), data1.bits().size(),
         data2.bits().size(), true);
     delete [] s2;
 }
@@ -2514,10 +2514,10 @@ vl_expr::eval()
         if (v_data_type != Dbit) {
             v_data_type = Dbit;
             bits().set(DefBits);
-            data().s = new char[bits().size()];
-            memset(data().s, BitDC, bits().size());
+            set_data_s(new char[bits().size()]);
+            memset(data_s(), BitDC, bits().size());
         }
-        char *endc = data().s;
+        char *endc = data_s();
 
         char alen = bits().size();
         int size = 0;
@@ -2526,7 +2526,7 @@ vl_expr::eval()
             rep = (int)e_data.mcat.rep->eval();
         for (int i = 0; i < rep; i++) {
             // order is msb first, loop in reverse order
-            lsGen<vl_expr*> gen(e_data.mcat.var->data().c, true);
+            lsGen<vl_expr*> gen(e_data.mcat.var->data_c(), true);
             vl_expr *e;
             while (gen.prev(&e)) {
                 vl_var &d = e->eval();
@@ -2534,15 +2534,15 @@ vl_expr::eval()
                 for (int j = 0; j < sz; j++) {
                     int w;
                     char *sd = d.bit_elt(j, &w);
-                    if (endc + w > data().s + alen) {
-                        alen = endc + w - data().s;
+                    if (endc + w > data_s() + alen) {
+                        alen = endc + w - data_s();
                         char *str = new char[alen];
                         char *r = str;
-                        char *s = data().s;
+                        char *s = data_s();
                         while (s < endc)
                             *r++ = *s++;
-                        delete [] data().s;
-                        data().s = str;
+                        delete [] data_s();
+                        set_data_s(str);
                         endc = r;
                     }
                     char *r = endc;

@@ -907,16 +907,16 @@ vl_gate_inst::geval_gate(vl_simulator *sim, int(*set)(int, int),
         bool changed = false;
         for (int i = 0; i < a.size(); i++) {
             int obit = (iv[0]->bits().size() > 1 ?
-                iv[0]->data().s[i] : iv[0]->data().s[0]);
+                iv[0]->data_s()[i] : iv[0]->data_s()[0]);
             for (int j = 1; j < n; j++) {
                 int o = (iv[j]->bits().size() > 1 ?
-                    iv[j]->data().s[i] : iv[j]->data().s[0]);
+                    iv[j]->data_s()[i] : iv[j]->data_s()[0]);
                 obit = (*set)(obit, o);
             }
 
             int io = (v->bits().size() > 1 ? i : 0);
-            if (v->data().s[io] != obit) {
-                v->data().s[io] = obit;
+            if (v->data_s()[io] != obit) {
+                v->data_s()[io] = obit;
                 changed = true;
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
@@ -1007,12 +1007,12 @@ vl_gate_inst::geval_buf(vl_simulator *sim, int(*set)(int, int),
         *v = expr->eval();
         bool changed = false;
         for (int i = 0; i < a.size(); i++) {
-            int ii = (ip.bits().size() > 1 ? ip.data().s[i] : ip.data().s[0]);
+            int ii = (ip.bits().size() > 1 ? ip.data_s()[i] : ip.data_s()[0]);
             int obit = (*set)(ii, BitL);
 
             int io = (v->bits().size() > 1 ? i : 0);
-            if (v->data().s[io] != obit) {
-                v->data().s[io] = obit;
+            if (v->data_s()[io] != obit) {
+                v->data_s()[io] = obit;
                 changed = true;
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
@@ -1116,13 +1116,13 @@ vl_gate_inst::geval_cbuf(vl_simulator *sim, int(*set)(int, int),
         *v = expr->eval();
         bool changed = false;
         for (int i = 0; i < a.size(); i++) {
-            int ii = (ip.bits().size() > 1 ? ip.data().s[i] : ip.data().s[0]);
-            int ic = (c.bits().size() > 1 ? c.data().s[i] : c.data().s[0]);
+            int ii = (ip.bits().size() > 1 ? ip.data_s()[i] : ip.data_s()[0]);
+            int ic = (c.bits().size() > 1 ? c.data_s()[i] : c.data_s()[0]);
             int obit = (*set)(ii, ic);
 
             int io = (v->bits().size() > 1 ? i : 0);
-            if (v->data().s[io] != obit) {
-                v->data().s[io] = obit;
+            if (v->data_s()[io] != obit) {
+                v->data_s()[io] = obit;
                 changed = true;
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
@@ -1228,13 +1228,13 @@ vl_gate_inst::geval_mos(vl_simulator *sim, int(*set)(int, int),
         *v = oexp->eval();
         bool changed = false;
         for (int i = 0; i < a.size(); i++) {
-            int ii = (d.bits().size() > 1 ? d.data().s[i] : d.data().s[0]);
-            int ic = (c.bits().size() > 1 ? c.data().s[i] : c.data().s[0]);
+            int ii = (d.bits().size() > 1 ? d.data_s()[i] : d.data_s()[0]);
+            int ic = (c.bits().size() > 1 ? c.data_s()[i] : c.data_s()[0]);
             int obit = (*set)(ii, ic);
 
             int io = (v->bits().size() > 1 ? i : 0);
-            if (v->data().s[io] != obit) {
-                v->data().s[io] = obit;
+            if (v->data_s()[io] != obit) {
+                v->data_s()[io] = obit;
                 changed = true;
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
@@ -1347,9 +1347,9 @@ vl_gate_inst::geval_cmos(vl_simulator *sim, int(*)(int, int),
         *v = oexp->eval();
         bool changed = false;
         for (int i = 0; i < a.size(); i++) {
-            int ii = (d.bits().size() > 1 ? d.data().s[i] : d.data().s[0]);
-            int in = (cn.bits().size() > 1 ? cn.data().s[i] : cn.data().s[0]);
-            int ip = (cp.bits().size() > 1 ? cp.data().s[i] : cp.data().s[0]);
+            int ii = (d.bits().size() > 1 ? d.data_s()[i] : d.data_s()[0]);
+            int in = (cn.bits().size() > 1 ? cn.data_s()[i] : cn.data_s()[0]);
+            int ip = (cp.bits().size() > 1 ? cp.data_s()[i] : cp.data_s()[0]);
             int obit;
             if (in == BitH || ip == BitL)
                 obit = ii;
@@ -1358,8 +1358,8 @@ vl_gate_inst::geval_cmos(vl_simulator *sim, int(*)(int, int),
             else
                 obit = ii;
             int io = (v->bits().size() > 1 ? i : 0);
-            if (v->data().s[io] != obit) {
-                v->data().s[io] = obit;
+            if (v->data_s()[io] != obit) {
+                v->data_s()[io] = obit;
                 changed = true;
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
@@ -1445,16 +1445,16 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
 
     bool ch1 = false;
     for (int i = 0; i < a.size(); i++) {
-        int i1 = (vx1->bits().size() > 1 ? vx1->data().s[i] : vx1->data().s[0]);
-        if (vx1->data().s[i1] != v1.data().s[i1]) {
+        int i1 = (vx1->bits().size() > 1 ? vx1->data_s()[i] : vx1->data_s()[0]);
+        if (vx1->data_s()[i1] != v1.data_s()[i1]) {
             ch1 = true;
             break;
         }
     }
     bool ch2 = false;
     for (int i = 0; i < a.size(); i++) {
-        int i2 = (vx2->bits().size() > 1 ? vx2->data().s[i] : vx2->data().s[0]);
-        if (vx2->data().s[i2] != v2.data().s[i2]) {
+        int i2 = (vx2->bits().size() > 1 ? vx2->data_s()[i] : vx2->data_s()[0]);
+        if (vx2->data_s()[i2] != v2.data_s()[i2]) {
             ch2 = true;
             break;
         }
@@ -1479,14 +1479,14 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
         }
         for (int i = 0; i < a.size(); i++) {
             int i1 = (vx1->bits().size() > 1 ?
-                vx1->data().s[i] : vx1->data().s[0]);
+                vx1->data_s()[i] : vx1->data_s()[0]);
             int i2 =
-                (vx2->bits().size() > 1 ? vx2->data().s[i] : vx2->data().s[0]);
-            if (vx2->data().s[i2] != vx1->data().s[i1]) {
-                vx2->data().s[i2] = vx1->data().s[i1];
+                (vx2->bits().size() > 1 ? vx2->data_s()[i] : vx2->data_s()[0]);
+            if (vx2->data_s()[i2] != vx1->data_s()[i1]) {
+                vx2->data_s()[i2] = vx1->data_s()[i1];
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
-                    gate->set_delay(sim, vx2->data().s[i2]);
+                    gate->set_delay(sim, vx2->data_s()[i2]);
                     vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
@@ -1524,14 +1524,14 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
         }
         for (int i = 0; i < a.size(); i++) {
             int i1 = (vx1->bits().size() > 1 ?
-                vx1->data().s[i] : vx1->data().s[0]);
+                vx1->data_s()[i] : vx1->data_s()[0]);
             int i2 = (vx2->bits().size() > 1 ?
-                vx2->data().s[i] : vx2->data().s[0]);
-            if (vx1->data().s[i1] != vx2->data().s[i2]) {
-                vx1->data().s[i1] = vx2->data().s[i2];
+                vx2->data_s()[i] : vx2->data_s()[0]);
+            if (vx1->data_s()[i1] != vx2->data_s()[i2]) {
+                vx1->data_s()[i1] = vx2->data_s()[i2];
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
-                    gate->set_delay(sim, vx1->data().s[i1]);
+                    gate->set_delay(sim, vx1->data_s()[i1]);
                     vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
@@ -1625,30 +1625,30 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
 
     bool ch1 = false;
     for (int i = 0; i < a.size(); i++) {
-        int i3 = (v3.bits().size() > 1 ? v3.data().s[i] : v3.data().s[0]);
+        int i3 = (v3.bits().size() > 1 ? v3.data_s()[i] : v3.data_s()[0]);
         if (((gate->type() == Tranif1Gate || gate->type() == Rtranif1Gate)
-                && v3.data().s[i3] != BitH) ||
+                && v3.data_s()[i3] != BitH) ||
             ((gate->type() == Tranif0Gate || gate->type() == Rtranif0Gate)
-                && v3.data().s[i3] != BitL))
+                && v3.data_s()[i3] != BitL))
             // off
             continue;
-        int i1 = (vx1->bits().size() > 1 ? vx1->data().s[i] : vx1->data().s[0]);
-        if (vx1->data().s[i1] != v1.data().s[i1]) {
+        int i1 = (vx1->bits().size() > 1 ? vx1->data_s()[i] : vx1->data_s()[0]);
+        if (vx1->data_s()[i1] != v1.data_s()[i1]) {
             ch1 = true;
             break;
         }
     }
     bool ch2 = false;
     for (int i = 0; i < a.size(); i++) {
-        int i3 = (v3.bits().size() > 1 ? v3.data().s[i] : v3.data().s[0]);
+        int i3 = (v3.bits().size() > 1 ? v3.data_s()[i] : v3.data_s()[0]);
         if (((gate->type() == Tranif1Gate || gate->type() == Rtranif1Gate)
-                && v3.data().s[i3] != BitH) ||
+                && v3.data_s()[i3] != BitH) ||
             ((gate->type() == Tranif0Gate || gate->type() == Rtranif0Gate)
-                && v3.data().s[i3] != BitL))
+                && v3.data_s()[i3] != BitL))
             // off
             continue;
-        int i2 = (vx2->bits().size() > 1 ? vx2->data().s[i] : vx2->data().s[0]);
-        if (vx2->data().s[i2] != v2.data().s[i2]) {
+        int i2 = (vx2->bits().size() > 1 ? vx2->data_s()[i] : vx2->data_s()[0]);
+        if (vx2->data_s()[i2] != v2.data_s()[i2]) {
             ch2 = true;
             break;
         }
@@ -1672,22 +1672,22 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
             return (false);
         }
         for (int i = 0; i < a.size(); i++) {
-            int i3 = (v3.bits().size() > 1 ? v3.data().s[i] : v3.data().s[0]);
+            int i3 = (v3.bits().size() > 1 ? v3.data_s()[i] : v3.data_s()[0]);
             if (((gate->type() == Tranif1Gate || gate->type() == Rtranif1Gate)
-                    && v3.data().s[i3] != BitH) ||
+                    && v3.data_s()[i3] != BitH) ||
                 ((gate->type() == Tranif0Gate || gate->type() == Rtranif0Gate)
-                    && v3.data().s[i3] != BitL))
+                    && v3.data_s()[i3] != BitL))
                 // off
                 continue;
             int i1 = (vx1->bits().size() > 1 ?
-                vx1->data().s[i] : vx1->data().s[0]);
+                vx1->data_s()[i] : vx1->data_s()[0]);
             int i2 = (vx2->bits().size() > 1 ?
-                vx2->data().s[i] : vx2->data().s[0]);
-            if (vx2->data().s[i2] != vx1->data().s[i1]) {
-                vx2->data().s[i2] = vx1->data().s[i1];
+                vx2->data_s()[i] : vx2->data_s()[0]);
+            if (vx2->data_s()[i2] != vx1->data_s()[i1]) {
+                vx2->data_s()[i2] = vx1->data_s()[i1];
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
-                    gate->set_delay(sim, vx2->data().s[i2]);
+                    gate->set_delay(sim, vx2->data_s()[i2]);
                     vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx2);
@@ -1724,22 +1724,22 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
             return (false);
         }
         for (int i = 0; i < a.size(); i++) {
-            int i3 = (v3.bits().size() > 1 ? v3.data().s[i] : v3.data().s[0]);
+            int i3 = (v3.bits().size() > 1 ? v3.data_s()[i] : v3.data_s()[0]);
             if (((gate->type() == Tranif1Gate || gate->type() == Rtranif1Gate)
-                    && v3.data().s[i3] != BitH) ||
+                    && v3.data_s()[i3] != BitH) ||
                 ((gate->type() == Tranif0Gate || gate->type() == Rtranif0Gate)
-                    && v3.data().s[i3] != BitL))
+                    && v3.data_s()[i3] != BitL))
                 // off
                 continue;
             int i1 = (vx1->bits().size() > 1 ?
-                vx1->data().s[i] : vx1->data().s[0]);
+                vx1->data_s()[i] : vx1->data_s()[0]);
             int i2 = (vx2->bits().size() > 1 ?
-                vx2->data().s[i] : vx2->data().s[0]);
-            if (vx1->data().s[i1] != vx2->data().s[i2]) {
-                vx1->data().s[i1] = vx2->data().s[i2];
+                vx2->data_s()[i] : vx2->data_s()[0]);
+            if (vx1->data_s()[i1] != vx2->data_s()[i2]) {
+                vx1->data_s()[i1] = vx2->data_s()[i2];
                 if (rfdly) {
                     // have to assign each val separately, delays may differ
-                    gate->set_delay(sim, vx1->data().s[i1]);
+                    gate->set_delay(sim, vx1->data_s()[i1]);
                     vl_time_t td = gate->gi_delay->eval();
                     vl_bassign_stmt *bs =
                         new vl_bassign_stmt(BassignStmt, vs, 0, 0, vx1);
