@@ -1,9 +1,12 @@
-vl-4.3.3  12/23/19
+vl-4.3.3  1/5/19
 
 New internal vl_simulator::setptime,  vl_simulator::step no longer takes
 an argument but increments steptime instead.
 
 New vl_var_factory for vl_var.
+
+Huge refactoring of all source files to avoid exporting data members
+from structs.  A few bug fixes and avoidance of null this pointers.
 
 vl-1.6 11/8/14
 

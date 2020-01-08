@@ -303,6 +303,7 @@ struct vl_array
     int lo_index()  const { return (a_lo_index); }
     int hi_index()  const { return (a_hi_index); }
 
+    // vl_data.cc
     void set(vl_range*);
     bool check_range(int*, int*);
 
@@ -412,6 +413,7 @@ private:
 //
 struct vl_var
 {
+    // vl_data.cc
     vl_var();
     vl_var(const char*, vl_range*, lsList<vl_expr*>* = 0);
     vl_var(vl_var&);
@@ -419,16 +421,16 @@ struct vl_var
 
     virtual vl_var *copy();
     virtual vl_var &eval();
-    virtual vl_var *source() { return (this); }
     virtual void chain(vl_stmt*);
     virtual void unchain(vl_stmt*);
     virtual void unchain_disabled(vl_stmt*);
+
+    virtual vl_var *source()    { return (this); }
 
     void configure(vl_range*, int = RegDecl, vl_range* = 0);
     void operator=(vl_var&);
     void assign(vl_range*, vl_var*, vl_range*);
     void assign(vl_range*, vl_var*, int*, int*);
-    void assign_to(double, double, double, int, int);
 
     void clear(vl_range*, int);
     void reset();
@@ -474,13 +476,6 @@ struct vl_var
     double real_elt(int);
     char *str_elt(int);
 
-    // Conversion operators.
-    operator int()          { return (int_elt(0)); }
-    operator unsigned()     { return ((unsigned int)int_elt(0)); }
-    operator vl_time_t()    { return (time_elt(0)); }
-    operator double()       { return (real_elt(0)); }
-    operator char*()        { return (str_elt(0)); }
-
     // vl_expr.cc
     void addb(vl_var&, int);
     void addb(vl_var&, vl_time_t);
@@ -497,6 +492,13 @@ struct vl_var
     const char *decl_type();
     int pwidth(char);
     char *bitstr();
+
+    // Conversion operators.
+    operator int()          { return (int_elt(0)); }
+    operator unsigned()     { return ((unsigned int)int_elt(0)); }
+    operator vl_time_t()    { return (time_elt(0)); }
+    operator double()       { return (real_elt(0)); }
+    operator char*()        { return (str_elt(0)); }
 
     const char *name()              const { return (v_name); }
     void set_name(const char *n)    { v_name = n; }
@@ -528,11 +530,9 @@ struct vl_var
         vl_time_t *pt;
         char *s;                    // bit field or char string (Dbit, Dstring)
         char **ps;
-//        void *d;                    // array data
         lsList<vl_expr*> *c;        // concatenation list (Dconcat)
     };
-//    var_data &data()                { return (v_data); }
-//XXX
+
     int data_i()                    const { return (v_data.i); }
     int *data_pi()                  const { return (v_data.pi); }
     double data_r()                 const { return (v_data.r); }
@@ -541,7 +541,6 @@ struct vl_var
     vl_time_t *data_pt()            const { return (v_data.pt); }
     char *data_s()                  const { return (v_data.s); }
     char **data_ps()                const { return (v_data.ps); }
-//    void *data_d()                  const { return (v_data.d); }
     lsList<vl_expr*> *data_c()      const { return (v_data.c); }
 
     void set_data_i(int i)
@@ -592,14 +591,6 @@ struct vl_var
             v_data.ps = ps;
         }
 
-/*
-    void set_data_d(void *d)
-        {
-            memset(&v_data, 0, sizeof(var_data));
-            v_data.d = d;
-        }
-*/
-
     void set_data_c(lsList<vl_expr*> *c)
         {
             memset(&v_data, 0, sizeof(var_data));
@@ -619,6 +610,7 @@ struct vl_var
 
     vl_delay *delay()               const { return (v_delay); }
     void set_delay(vl_delay *d)     { v_delay = d; }
+    vl_action_item *events()        const { return (v_events); }
 
 private:
     static int bits_set(vl_var*, vl_range*, vl_var*, int);
@@ -708,39 +700,6 @@ protected:
     lsList<vl_driver*> *v_drivers;  // driver list for net
 };
 
-
-// Math and logical operations involving vl_var structs.
-//
-extern vl_var &operator*(vl_var&, vl_var&);
-extern vl_var &operator/(vl_var&, vl_var&);
-extern vl_var &operator%(vl_var&, vl_var&);
-extern vl_var &operator+(vl_var&, vl_var&);
-extern vl_var &operator-(vl_var&, vl_var&);
-extern vl_var &operator-(vl_var&);
-extern vl_var &operator<<(vl_var&, vl_var&);
-extern vl_var &operator<<(vl_var&, int);
-extern vl_var &operator>>(vl_var&, vl_var&);
-extern vl_var &operator>>(vl_var&, int);
-extern vl_var &operator==(vl_var&, vl_var&);
-extern vl_var &case_eq(vl_var&, vl_var&);
-extern vl_var &casex_eq(vl_var&, vl_var&);
-extern vl_var &casez_eq(vl_var&, vl_var&);
-extern vl_var &case_neq(vl_var&, vl_var&);
-extern vl_var &operator!=(vl_var&, vl_var&);
-extern vl_var &operator&&(vl_var&, vl_var&);
-extern vl_var &operator||(vl_var&, vl_var&);
-extern vl_var &operator!(vl_var&);
-extern vl_var &reduce(vl_var&, int);
-extern vl_var &operator<(vl_var&, vl_var&);
-extern vl_var &operator<=(vl_var&, vl_var&);
-extern vl_var &operator>(vl_var&, vl_var&);
-extern vl_var &operator>=(vl_var&, vl_var&);
-extern vl_var &operator&(vl_var&, vl_var&);
-extern vl_var &operator|(vl_var&, vl_var&);
-extern vl_var &operator^(vl_var&, vl_var&);
-extern vl_var &operator~(vl_var&);
-extern vl_var &tcond(vl_var&, vl_expr*, vl_expr*);
-
 #define CX_INCR 100
 
 // A vl_var factory.
@@ -791,10 +750,44 @@ private:
     bl *da_blocks;
 };
 
+// Math and logical operations involving vl_var structs.
+//
+// vl_expr.cc
+vl_var &operator*(vl_var&, vl_var&);
+vl_var &operator/(vl_var&, vl_var&);
+vl_var &operator%(vl_var&, vl_var&);
+vl_var &operator+(vl_var&, vl_var&);
+vl_var &operator-(vl_var&, vl_var&);
+vl_var &operator-(vl_var&);
+vl_var &operator<<(vl_var&, vl_var&);
+vl_var &operator<<(vl_var&, int);
+vl_var &operator>>(vl_var&, vl_var&);
+vl_var &operator>>(vl_var&, int);
+vl_var &operator==(vl_var&, vl_var&);
+vl_var &case_eq(vl_var&, vl_var&);
+vl_var &casex_eq(vl_var&, vl_var&);
+vl_var &casez_eq(vl_var&, vl_var&);
+vl_var &case_neq(vl_var&, vl_var&);
+vl_var &operator!=(vl_var&, vl_var&);
+vl_var &operator&&(vl_var&, vl_var&);
+vl_var &operator||(vl_var&, vl_var&);
+vl_var &operator!(vl_var&);
+vl_var &reduce(vl_var&, int);
+vl_var &operator<(vl_var&, vl_var&);
+vl_var &operator<=(vl_var&, vl_var&);
+vl_var &operator>(vl_var&, vl_var&);
+vl_var &operator>=(vl_var&, vl_var&);
+vl_var &operator&(vl_var&, vl_var&);
+vl_var &operator|(vl_var&, vl_var&);
+vl_var &operator^(vl_var&, vl_var&);
+vl_var &operator~(vl_var&);
+vl_var &tcond(vl_var&, vl_expr*, vl_expr*);
+
 // General expression description.
 //
 struct vl_expr : public vl_var
 {
+    // vl_expr.cc
     vl_expr();
     vl_expr(vl_var*);
     vl_expr(int, int, double, void*, void*, void*);
@@ -803,13 +796,15 @@ struct vl_expr : public vl_var
     vl_expr *copy();
     vl_var &eval();
     void chcore(vl_stmt*, int);
-    void print(ostream&);
-    const char *symbol();
     vl_var *source();
 
-    void chain(vl_stmt *s)          { chcore(s, 0); }
-    void unchain(vl_stmt *s)        { chcore(s, 1); }
-    void unchain_disabled(vl_stmt *s) { chcore(s, 2); }
+    // vl_print.cc
+    void print(ostream&);
+    const char *symbol();
+
+    void chain(vl_stmt *s)              { chcore(s, 0); }
+    void unchain(vl_stmt *s)            { chcore(s, 1); }
+    void unchain_disabled(vl_stmt *s)   { chcore(s, 2); }
 
     vl_range *source_range()
         {
@@ -908,6 +903,7 @@ struct vl_range
     vl_expr *left()         { return (r_left); }
     vl_expr *right()        { return (r_right); }
 
+    // vl_data.cc
     vl_range *copy();
     bool eval(int*, int*);
     vl_range *reval();
@@ -924,29 +920,41 @@ struct vl_delay
 {
     vl_delay()
         {
-            delay1 = 0;
-            list = 0;
+            d_delay1 = 0;
+            d_list = 0;
         }
 
     vl_delay(vl_expr *d)
         {
-            delay1 = d;
-            list = 0;
+            d_delay1 = d;
+            d_list = 0;
         }
 
     vl_delay(lsList<vl_expr*> *l)
         {
-            delay1 = 0;
-            list = l;
+            d_delay1 = 0;
+            d_list = l;
         }
 
-    ~vl_delay();
+    ~vl_delay()
+        {
+            delete d_delay1;
+            delete_list(d_list);
+        }
 
+    // vl_data.cc
     vl_delay *copy();
     vl_time_t eval();
 
-    vl_expr *delay1;
-    lsList<vl_expr*> *list;
+    vl_expr *delay1()           const { return (d_delay1); }
+    lsList<vl_expr*> *list()    const { return (d_list); }
+
+    void set_delay1(vl_expr *e)         { d_delay1 = e; }
+    void set_list(lsList<vl_expr*> *l)  { d_list = l; }
+
+private:
+    vl_expr             *d_delay1;
+    lsList<vl_expr*>    *d_list;
 };
 
 // Event expression description
@@ -971,8 +979,14 @@ struct vl_event_expr
             e_repeat = 0;
         }
 
-    ~vl_event_expr();
+    ~vl_event_expr()
+        {
+            delete e_expr;
+            delete_list(e_list);
+            delete e_repeat;
+        }
 
+    // vl_data.cc
     vl_event_expr *copy();
     void init();
     bool eval(vl_simulator*);
@@ -1017,6 +1031,7 @@ struct vl_parser
     friend int yyparse();
     friend void yyerror(const char*);
 
+    // vl_parse.cc
     vl_parser();
     ~vl_parser();
 
@@ -1025,6 +1040,12 @@ struct vl_parser
     void clear();
     void error(vlERRtype, const char*, ...);
     bool parse_timescale(const char*);
+    void push_context(vl_module*);
+    void push_context(vl_primitive*);
+    void push_context(vl_function*);
+    void pop_context();
+
+    // vl_print.cc
     void print(ostream&);
 
     vl_desc *get_description()
@@ -1087,6 +1108,7 @@ struct vl_bitexp_parse : public vl_var
             v_data.s = brep = new char[MAXSTRLEN];
         }
 
+    // vl_parse.cc
     void bin(char*);
     void dec(char*);
     void oct(char*);
@@ -1157,13 +1179,26 @@ struct vl_simulator
 {
     friend inline vl_simulator *VS() { return (vl_simulator::ptr()); }
 
+    // vl_sim.cc
     vl_simulator();
     ~vl_simulator();
 
     bool initialize(vl_desc*, VLdelayType = DLYtyp, int = 0);
     bool simulate();
     VLstopType step();
+    bool assign_to(vl_var*, double, double, double, int, int);
+    void close_files();
+    void flush_files();
+    void push_context(vl_mp*);
+    void push_context(vl_module*);
+    void push_context(vl_primitive*);
+    void push_context(vl_task*);
+    void push_context(vl_function*);
+    void push_context(vl_begin_end_stmt*);
+    void push_context(vl_fork_join_stmt*);
+    void pop_context();
 
+    // vl_sys.cc
     char *dumpindex(vl_var*);
     vl_var &sys_time(vl_sys_task_stmt*, lsList<vl_expr*>*);
     vl_var &sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*>*);
@@ -1221,12 +1256,13 @@ private:
             return (s_simulator);
         }
 
+    // vl_sim.cc
     static void on_null_ptr();
 
-    void close_files();
-    void flush_files();
-
+    // vl_sys,cc
     void do_dump();
+
+    // vl_print.cc
     bool monitor_change(lsList<vl_expr*>*);
     void display_print(lsList<vl_expr*>*, ostream&, DSPtype, unsigned int);
     void fdisplay_print(lsList<vl_expr*>*, DSPtype, unsigned int);
@@ -1277,7 +1313,7 @@ public:
 //
 struct vl_context
 {
-    vl_context()
+    vl_context(vl_context *p=0)
         {
             c_module = 0;
             c_primitive = 0;
@@ -1285,7 +1321,7 @@ struct vl_context
             c_function = 0;
             c_block = 0;
             c_fjblk = 0;
-            c_parent = 0;
+            c_parent = p;
         }
 
     static void destroy(vl_context *c)
@@ -1297,7 +1333,12 @@ struct vl_context
             }
         }
 
-    void set_module(vl_module *m)   { c_module = m; }
+    void set_module(vl_module *m)           { c_module = m; }
+    void set_primitive(vl_primitive *p)     { c_primitive = p; }
+    void set_task(vl_task *t)               { c_task = t; }
+    void set_function(vl_function *f)       { c_function = f; }
+    void set_block(vl_begin_end_stmt *b)    { c_block = b; }
+    void set_fjblk(vl_fork_join_stmt *f)    { c_fjblk = f; }
 
     vl_module *module()         const { return (c_module); }
     vl_primitive *primitive()   const { return (c_primitive); }
@@ -1307,23 +1348,7 @@ struct vl_context
     vl_fork_join_stmt *fjblk()  const { return (c_fjblk); }
     vl_context *parent()        const { return (c_parent); }
 
-    // Push to new context, return the new context.
-    static vl_context *push(vl_context *t)
-        {
-            vl_context *cx = new vl_context();
-            cx->c_parent = t;
-            return (cx);
-        }
-
-    static vl_context *push(vl_context*, vl_mp*);
-    static vl_context *push(vl_context*, vl_module*);
-    static vl_context *push(vl_context*, vl_primitive*);
-    static vl_context *push(vl_context*, vl_task*);
-    static vl_context *push(vl_context*, vl_function*);
-    static vl_context *push(vl_context*, vl_begin_end_stmt*);
-    static vl_context *push(vl_context*, vl_fork_join_stmt*);
-    static vl_context *pop(vl_context*);
-
+    // vl_sim.cc
     vl_context *copy();
     bool in_context(vl_stmt*);
     vl_var *lookup_var(const char*, bool);
@@ -1341,6 +1366,8 @@ struct vl_context
     vl_primitive *currentPrimitive();
     vl_function *currentFunction();
     vl_task *currentTask();
+
+    // vl_print.cc
     void print(ostream&);
     char *hiername();
 
@@ -1355,7 +1382,7 @@ private:
 };
 
 // This, and the enum below, provide return values for the eval()
-// function of vl_stmt and derivatives
+// function of vl_stmt and derivatives.
 // 
 union vl_event
 {
@@ -1422,8 +1449,14 @@ protected:
 //
 struct vl_action_item : public vl_stmt
 {
+    // vl_sim.cc
     vl_action_item(vl_stmt*, vl_context*);
     virtual ~vl_action_item();
+
+    vl_action_item *copy();
+    vl_action_item *purge(vl_stmt*);
+    EVtype eval(vl_event*, vl_simulator*);
+    void print(ostream&);
 
     static void destroy(vl_action_item *a)
         {
@@ -1433,11 +1466,6 @@ struct vl_action_item : public vl_stmt
                 delete ax;
             }
         }
-
-    vl_action_item *copy();
-    vl_action_item *purge(vl_stmt*);
-    EVtype eval(vl_event*, vl_simulator*);
-    void print(ostream&);
 
     void set_next(vl_action_item *a)    { ai_next = a; }
     void set_stmt(vl_stmt *s)           { ai_stmt = s; }
@@ -1503,6 +1531,7 @@ struct vl_stack
             delete [] st_acts;
         }
 
+    // vl_sim.cc
     vl_stack *copy();
     void print(ostream&);
 
@@ -1518,17 +1547,9 @@ private:
 //
 struct vl_timeslot
 {
+    // vl_sim.cc
     vl_timeslot(vl_time_t);
     ~vl_timeslot();
-
-    static void destroy(vl_timeslot *t)
-        {
-            while (t) {
-                vl_timeslot *tx = t;
-                t = t->next();
-                delete tx;
-            }
-        }
 
     vl_timeslot *find_slot(vl_time_t);
     void append(vl_time_t, vl_action_item*);
@@ -1541,6 +1562,15 @@ struct vl_timeslot
     void do_actions(vl_simulator*);
     void purge(vl_stmt*);
     void print(ostream&);
+
+    static void destroy(vl_timeslot *t)
+        {
+            while (t) {
+                vl_timeslot *tx = t;
+                t = t->next();
+                delete tx;
+            }
+        }
 
     void set_next(vl_timeslot *ts)      { ts_next = ts; }
     void set_actions(vl_action_item *a) { ts_actions = a; }
@@ -1605,7 +1635,11 @@ struct vl_monitor
             m_dtype = t;
         }
 
-    ~vl_monitor();
+    ~vl_monitor()
+        {
+            // delete args ?
+            vl_context::destroy(m_cx);
+        }
 
     void set_next(vl_monitor *n)    { m_next = n; }
 
@@ -1630,6 +1664,7 @@ private:
 //
 struct vl_desc
 {
+    // vl_sim.cc
     vl_desc();
     ~vl_desc();
 
@@ -1701,16 +1736,21 @@ protected:
 //
 struct vl_module : public vl_mp
 {
+    // vl_obj.cc
     vl_module();
     vl_module(vl_desc *desc, char*, lsList<vl_port*>*, lsList<vl_stmt*>*);
     ~vl_module();
 
     vl_module *copy();
-    void dump(ostream&);
-    void dumpvars(ostream&, vl_simulator*);
-    void sort_moditems();
     void init();
+
+    // vl_sim.cc
+    void dump(ostream&);
+    void sort_moditems();
     void setup(vl_simulator*);
+
+    // vl_sys.cc
+    void dumpvars(ostream&, vl_simulator*);
 
     void set_tunit(double t)                    { m_tunit = t; }
     void set_tprec(double t)                    { m_tprec = t; }

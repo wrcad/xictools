@@ -1253,7 +1253,7 @@ Parameters and Expressions
     <p>
     In 4.1.12 and later, node names are not parameter expanded by
     default.  The boolean variable <a
-    href="pexnodes"><tt><pexnodes</tt></a> if set will enable
+    href="pexnodes"><tt>pexnodes</tt></a> if set will enable
     parameter expansion of node names, for backward compatibility with
     files that may have used this feature.  Also in 4.1.12, device and
     subcircuit instance names are not parameter expanded, nor or

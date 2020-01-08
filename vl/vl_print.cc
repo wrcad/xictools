@@ -885,14 +885,14 @@ operator<<(ostream &outs, vl_range *r)
 ostream &
 operator<<(ostream &outs, vl_delay *d)
 {
-    if (d->list) {
-        if (d->list->length() > 1)
-            outs << "#(" << d->list << ") ";
+    if (d->list()) {
+        if (d->list()->length() > 1)
+            outs << "#(" << d->list() << ") ";
         else
-            outs << "#" << d->list << " ";
+            outs << "#" << d->list() << " ";
     }
     else
-        outs << "#" << d->delay1 << " ";
+        outs << "#" << d->delay1() << " ";
     return (outs);
 }
 

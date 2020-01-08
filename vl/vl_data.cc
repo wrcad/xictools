@@ -1086,101 +1086,6 @@ vl_var::assign(vl_range *rd, vl_var *src, int *m_from, int *l_from)
 }
 
 
-// This is for WRspice interface.  Take val, subtract offs, and quantize
-// with bitsize quan.  Use the resulting int to set data.  Note, if the
-// data type is real, just save val.  If m and l are >= 0, set the
-// indicated bits, if a bit field.
-//
-void
-vl_var::assign_to(double val, double offs, double quan, int m, int l)
-{
-    if (v_data_type == Dnone) {
-        v_data_type = Dreal;
-        set_data_r(val);
-        trigger();
-        return;
-    }
-    if (v_data_type == Dreal) {
-        if (data_r() != val) {
-            set_data_r(val);
-            trigger();
-        }
-        return;
-    }
-    if (v_data_type == Dint) {
-        val -= offs;
-        int b;
-        if (quan != 0.0)
-            b = (int)((val + 0.5*(val > 0.0 ? quan : -quan))/quan);
-        else
-            b = (int)val;
-        if (data_i() != b) {
-            set_data_i(b);
-            trigger();
-        }
-        return;
-    }
-    if (v_data_type == Dtime) {
-        val -= offs;
-        vl_time_t t;
-        if (quan != 0.0)
-            t = (vl_time_t)((val + 0.5*(val > 0.0 ? quan : -quan))/quan);
-        else
-            t = (vl_time_t)val;
-        if (data_t() != t) {
-            set_data_t(t);
-            trigger();
-        }
-        return;
-    }
-    if (v_data_type == Dstring)
-        return;
-    if (v_data_type == Dbit) {
-        int ival;
-        val -= offs;
-        if (quan != 0.0)
-            ival = (int)((val + 0.5*(val > 0.0 ? quan : -quan))/quan);
-        else
-            ival = (int)val;
-        bool arm_trigger = false;
-        if (m >= 0 && l >= 0) {
-            if (v_bits.check_range(&m, &l)) {
-                if (m >= l) {
-                    for (int i = l; i <= m; i++) {
-                        int b = (ival & (1 << (i-l))) ? BitH : BitL;
-                        if (data_s()[i] != b) {
-                            arm_trigger = true;
-                            data_s()[i] = b;
-                        }
-                    }
-                }
-                else {
-                    for (int i = m; i <= l; i++) {
-                        int b = (ival & (1 << (i-m))) ? BitH : BitL;
-                        if (data_s()[i] != b) {
-                            arm_trigger = true;
-                            data_s()[i] = b;
-                        }
-                    }
-                }
-                if (arm_trigger && v_events)
-                    trigger();
-            }
-            return;
-        }
-        for (int i = 0; i < v_bits.size(); i++) {
-            int b = (ival & (1 << i)) ? BitH : BitL;
-            if (data_s()[i] != b) {
-                arm_trigger = true;
-                data_s()[i] = b;
-            }
-        }
-        if (arm_trigger && v_events)
-            trigger();
-    }
-}
-
-
 // Clear the indicated bits or elements, if of type Dbit, fill with bitd,
 // otherwise zero.
 //
@@ -2645,7 +2550,7 @@ vl_var::str_elt(int num)
 
 // Compute the actual number of bits set in the assignment, know that
 // l_from is in range.
-// Static private fuinction.
+// Static private function.
 //
 int
 vl_var::bits_set(vl_var *dst, vl_range *r, vl_var *src, int l_from)
@@ -3598,7 +3503,6 @@ vl_var::assign_string_AA(int md, int ld, vl_var *src, int ms, int ls)
             set_str_elt(i, 0);
     }
 }
-
 // End of vl_var functions.
 
 
@@ -3735,21 +3639,14 @@ vl_range::width()
 // End of vl_range functions.
 
 
-vl_delay::~vl_delay()
-{
-    delete delay1;
-    delete_list(list);
-}
-
-
 vl_delay *
 vl_delay::copy()
 {
     vl_delay *retval;
-    if (delay1)
-        retval = new vl_delay(delay1->copy());
+    if (d_delay1)
+        retval = new vl_delay(d_delay1->copy());
     else
-        retval = new vl_delay(copy_list(list));
+        retval = new vl_delay(copy_list(d_list));
     return (retval);
 }
 
@@ -3766,8 +3663,8 @@ vl_delay::eval()
     double tstep = VS()->description()->tstep();
     double tunit = cmod->tunit();
     double tprec = cmod->tprec();
-    if (list) {
-        lsGen<vl_expr*> gen(list);
+    if (d_list) {
+        lsGen<vl_expr*> gen(d_list);
         vl_expr *e;
         if (gen.next(&e)) {
             double td = (double)e->eval();
@@ -3776,8 +3673,8 @@ vl_delay::eval()
             return (t);
         }
     }
-    else if (delay1) {
-        double td = (double)delay1->eval();
+    else if (d_delay1) {
+        double td = (double)d_delay1->eval();
         vl_time_t t = (vl_time_t)(td*tunit/tprec + 0.5);
         t *= (vl_time_t)(tprec/tstep);
         return (t);
@@ -3785,14 +3682,6 @@ vl_delay::eval()
     return (0);
 }
 // End of vl_delay functions.
-
-
-vl_event_expr::~vl_event_expr()
-{
-    delete e_expr;
-    delete_list(e_list);
-    delete e_repeat;
-}
 
 
 vl_event_expr *
