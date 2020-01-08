@@ -231,9 +231,9 @@ vl_gate_inst::set_delay(vl_simulator*, int bit)
         if (!gi_delay)
             gi_delay = new vl_delay;
         vl_expr *rd = 0, *fd = 0, *td = 0;
-        if (gi_inst_list->delays()->list) {
+        if (gi_inst_list->delays()->list()) {
             vl_expr *e;
-            lsGen<vl_expr*> gen(gi_inst_list->delays()->list);
+            lsGen<vl_expr*> gen(gi_inst_list->delays()->list());
             if (gen.next(&e)) {
                 rd = e;
                 if (gen.next(&e)) {
@@ -244,40 +244,40 @@ vl_gate_inst::set_delay(vl_simulator*, int bit)
             }
         }
         else
-            rd = gi_inst_list->delays()->delay1;
+            rd = gi_inst_list->delays()->delay1();
         if (bit == BitH)
-            gi_delay->delay1 = rd;
+            gi_delay->set_delay1(rd);
         else if (bit == BitL)
-            gi_delay->delay1 = (fd ? fd : rd);
+            gi_delay->set_delay1(fd ? fd : rd);
         else if (bit == BitZ) {
             if (td)
-                gi_delay->delay1 = td;
+                gi_delay->set_delay1(td);
             else {
-                gi_delay->delay1 = rd;
+                gi_delay->set_delay1(rd);
                 int m = rd->eval();
                 if (fd) {
                     int tmp = fd->eval();
                     if (tmp < m)
-                        gi_delay->delay1 = fd;
+                        gi_delay->set_delay1(fd);
                 }
             }
         }
         else if (bit == BitDC) {
             // minimum delay
             int m = rd->eval();
-            gi_delay->delay1 = rd;
+            gi_delay->set_delay1(rd);
             if (fd) {
                 int tmp = fd->eval();
                 if (tmp < m) {
                     m = tmp;
-                    gi_delay->delay1 = fd;
+                    gi_delay->set_delay1(fd);
                 }
             }
             if (td) {
                 int tmp = td->eval();
                 if (tmp < m) {
                     m = tmp;
-                    gi_delay->delay1 = td;
+                    gi_delay->set_delay1(td);
                 }
             }
         }
@@ -891,8 +891,8 @@ vl_gate_inst::geval_gate(vl_simulator *sim, int(*set)(int, int),
 
     bool rfdly = false;
     if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
-            gate->gi_inst_list->delays()->list &&
-            gate->gi_inst_list->delays()->list->length() > 1)
+            gate->gi_inst_list->delays()->list() &&
+            gate->gi_inst_list->delays()->list()->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
@@ -990,8 +990,8 @@ vl_gate_inst::geval_buf(vl_simulator *sim, int(*set)(int, int),
 
     bool rfdly = false;
     if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
-            gate->gi_inst_list->delays()->list &&
-            gate->gi_inst_list->delays()->list->length() > 1)
+            gate->gi_inst_list->delays()->list() &&
+            gate->gi_inst_list->delays()->list()->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
@@ -1099,8 +1099,8 @@ vl_gate_inst::geval_cbuf(vl_simulator *sim, int(*set)(int, int),
 
     bool rfdly = false;
     if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
-            gate->gi_inst_list->delays()->list &&
-            gate->gi_inst_list->delays()->list->length() > 1)
+            gate->gi_inst_list->delays()->list() &&
+            gate->gi_inst_list->delays()->list()->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
@@ -1212,8 +1212,8 @@ vl_gate_inst::geval_mos(vl_simulator *sim, int(*set)(int, int),
 
     bool rfdly = false;
     if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
-            gate->gi_inst_list->delays()->list &&
-            gate->gi_inst_list->delays()->list->length() > 1)
+            gate->gi_inst_list->delays()->list() &&
+            gate->gi_inst_list->delays()->list()->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
@@ -1331,8 +1331,8 @@ vl_gate_inst::geval_cmos(vl_simulator *sim, int(*)(int, int),
 
     bool rfdly = false;
     if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
-            gate->gi_inst_list->delays()->list &&
-            gate->gi_inst_list->delays()->list->length() > 1)
+            gate->gi_inst_list->delays()->list() &&
+            gate->gi_inst_list->delays()->list()->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
@@ -1466,8 +1466,8 @@ vl_gate_inst::geval_tran(vl_simulator *sim, int(*)(int, int),
 
     bool rfdly = false;
     if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
-            gate->gi_inst_list->delays()->list &&
-            gate->gi_inst_list->delays()->list->length() > 1)
+            gate->gi_inst_list->delays()->list() &&
+            gate->gi_inst_list->delays()->list()->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 
@@ -1660,8 +1660,8 @@ vl_gate_inst::geval_ctran(vl_simulator *sim, int(*)(int, int),
 
     bool rfdly = false;
     if (gate->gi_inst_list && gate->gi_inst_list->delays() &&
-            gate->gi_inst_list->delays()->list &&
-            gate->gi_inst_list->delays()->list->length() > 1)
+            gate->gi_inst_list->delays()->list() &&
+            gate->gi_inst_list->delays()->list()->length() > 1)
         // use separate rise/fall delays
         rfdly = true;
 

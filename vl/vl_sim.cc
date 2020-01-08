@@ -366,18 +366,18 @@ vl_simulator::initialize(vl_desc *desc, VLdelayType dly, int dbg)
         }
     }
     for (int i = 0; i < s_top_modules->num(); i++) {
-        s_context = vl_context::push(s_context, s_top_modules->mod(i));
+        push_context(s_top_modules->mod(i));
         s_top_modules->mod(i)->init();
-        s_context = vl_context::pop(s_context);
+        pop_context();
     }
     for (int i = 0; i < s_top_modules->num(); i++) {
-        s_context = vl_context::push(s_context, s_top_modules->mod(i));
+        push_context(s_top_modules->mod(i));
         s_top_modules->mod(i)->setup(this);
-        s_context = vl_context::pop(s_context);
+        pop_context();
     }
     if (s_dbg_flags & DBG_mod_dmp) {
         for (int i = 0; i < s_top_modules->num(); i++)
-                s_top_modules->mod(i)->dump(cout);
+            s_top_modules->mod(i)->dump(cout);
     }
     s_monitor_state = true;
     s_fmonitor_state = true;
@@ -489,17 +489,16 @@ vl_simulator::step()
 
         // When stepping, we generally have to move the time wheel
         // forward explicitly as if "always #1;" was given.  If we
-        // stall, add an explicit 1-count delay to keep thjings
+        // stall, add an explicit 1-count delay to keep things
         // running.
 
         if (s_timewheel == 0) {
             vl_expr *ex = new vl_expr(IntExpr, 1, 0.0, 0, 0, 0);
             vl_delay *exdly = new vl_delay(ex);
             vl_delay_control_stmt  *vc = new vl_delay_control_stmt(exdly, 0);
-            vl_context *cx =
-                vl_context::push(s_context, s_top_modules->mod(0));
-            vl_action_item *ai = new vl_action_item(vc, cx);
-            vl_context::pop(cx);
+            push_context(s_top_modules->mod(0));
+            vl_action_item *ai = new vl_action_item(vc, s_context);
+            pop_context();
 
             vl_timeslot *ts = new vl_timeslot(s_steptime+1);
             ts->set_actions(ai);
@@ -543,136 +542,213 @@ vl_simulator::flush_files()
             s_channels[i]->flush();
     }
 }
-// End vl_simulator functions.
 
 
-// Static function.
+// This is for WRspice interface.  Take val, subtract offs, and quantize
+// with bitsize quan.  Use the resulting int to set data.  Note, if the
+// data type is real, just save val.  If m and l are >= 0, set the
+// indicated bits, if a bit field.
 //
-vl_context *
-vl_context::push(vl_context *t, vl_mp *m)
+bool
+vl_simulator::assign_to(vl_var *var, double val, double offs, double quan,
+    int m, int l)
 {
-    vl_context *cx = push(t);
+    if (s_simulator) {
+        vl_error("non-reentrant assign_to function called");
+        return (false);
+    }
+    s_simulator = this;
+
+    if (var->data_type() == Dnone) {
+        var->set_data_type(Dreal);
+        var->set_data_r(val);
+        var->trigger();
+    }
+    else if (var->data_type() == Dreal) {
+        if (var->data_r() != val) {
+            var->set_data_r(val);
+            var->trigger();
+        }
+    }
+    else if (var->data_type() == Dint) {
+        val -= offs;
+        int b;
+        if (quan != 0.0)
+            b = (int)((val + 0.5*(val > 0.0 ? quan : -quan))/quan);
+        else
+            b = (int)val;
+        if (var->data_i() != b) {
+            var->set_data_i(b);
+            var->trigger();
+        }
+    }
+    else if (var->data_type() == Dtime) {
+        val -= offs;
+        vl_time_t t;
+        if (quan != 0.0)
+            t = (vl_time_t)((val + 0.5*(val > 0.0 ? quan : -quan))/quan);
+        else
+            t = (vl_time_t)val;
+        if (var->data_t() != t) {
+            var->set_data_t(t);
+            var->trigger();
+        }
+    }
+    else if (var->data_type() == Dstring) {
+        ;
+    }
+    else if (var->data_type() == Dbit) {
+        int ival;
+        val -= offs;
+        if (quan != 0.0)
+            ival = (int)((val + 0.5*(val > 0.0 ? quan : -quan))/quan);
+        else
+            ival = (int)val;
+        bool arm_trigger = false;
+        if (m >= 0 && l >= 0) {
+            if (var->bits().check_range(&m, &l)) {
+                if (m >= l) {
+                    for (int i = l; i <= m; i++) {
+                        int b = (ival & (1 << (i-l))) ? BitH : BitL;
+                        if (var->data_s()[i] != b) {
+                            arm_trigger = true;
+                            var->data_s()[i] = b;
+                        }
+                    }
+                }
+                else {
+                    for (int i = m; i <= l; i++) {
+                        int b = (ival & (1 << (i-m))) ? BitH : BitL;
+                        if (var->data_s()[i] != b) {
+                            arm_trigger = true;
+                            var->data_s()[i] = b;
+                        }
+                    }
+                }
+                if (arm_trigger && var->events())
+                    var->trigger();
+            }
+        }
+        else {
+            for (int i = 0; i < var->bits().size(); i++) {
+                int b = (ival & (1 << i)) ? BitH : BitL;
+                if (var->data_s()[i] != b) {
+                    arm_trigger = true;
+                    var->data_s()[i] = b;
+                }
+            }
+            if (arm_trigger && var->events())
+                var->trigger();
+        }
+    }
+    s_simulator = 0;
+    return (true);
+}
+
+
+void
+vl_simulator::push_context(vl_mp *m)
+{
+    s_context = new vl_context(s_context);
     if (m->type() == ModDecl)
-        cx->c_module = (vl_module*)m;
+        s_context->set_module((vl_module*)m);
     else if (m->type() == CombPrimDecl || m->type() == SeqPrimDecl)
-        cx->c_primitive = (vl_primitive*)m;
+        s_context->set_primitive((vl_primitive*)m);
     else {
         vl_error("internal, bad object type %d (not mod/prim)", m->type());
-        VS()->abort();
+        abort();
     }
-    return (cx);
 }
 
 
-// Static function.
-//
-vl_context *
-vl_context::push(vl_context *t, vl_module *m)
+void
+vl_simulator::push_context(vl_module *m)
 {
-    vl_context *cx = push(t);
+    s_context = new vl_context(s_context);
     if (m->type() == ModDecl)
-        cx->c_module = m;
+        s_context->set_module(m);
     else {
         vl_error("internal, bad object type %d (not module)", m->type());
-        VS()->abort();
+        abort();
     }
-    return (cx);
 }
 
 
-// Static function.
-//
-vl_context *
-vl_context::push(vl_context *t, vl_primitive *p)
+void
+vl_simulator::push_context(vl_primitive *p)
 {
-    vl_context *cx = push(t);
+    s_context = new vl_context(s_context);
     if (p->type() == CombPrimDecl || p->type() == SeqPrimDecl)
-        cx->c_primitive = p;
+        s_context->set_primitive(p);
     else {
         vl_error("internal, bad object type %d (not primitive)", p->type());
-        VS()->abort();
+        abort();
     }
-    return (cx);
 }
 
 
-// Static function.
-//
-vl_context *
-vl_context::push(vl_context *t, vl_task *k)
+void
+vl_simulator::push_context(vl_task *t)
 {
-    vl_context *cx = push(t);
-    if (k->type() == TaskDecl)
-        cx->c_task = k;
+    s_context = new vl_context(s_context);
+    if (t->type() == TaskDecl)
+        s_context->set_task(t);
     else {
-        vl_error("internal, bad object type %d (not task)", k->type());
-        VS()->abort();
+        vl_error("internal, bad object type %d (not task)", t->type());
+        abort();
     }
-    return (cx);
 }
 
 
-// Static function.
-//
-vl_context *
-vl_context::push(vl_context *t, vl_function *f)
+void
+vl_simulator::push_context(vl_function *f)
 {
-    vl_context *cx = push(t);
+    s_context = new vl_context(s_context);
     if (f->type() >= IntFuncDecl && f->type() <= RangeFuncDecl)
-        cx->c_function = f;
+        s_context->set_function(f);
     else {
         vl_error("internal, bad object type %d (not function)", f->type());
-        VS()->abort();
+        abort();
     }
-    return (cx);
 }
 
 
-// Static function.
-//
-vl_context *
-vl_context::push(vl_context *t, vl_begin_end_stmt *b)
+void
+vl_simulator::push_context(vl_begin_end_stmt *b)
 {
-    vl_context *cx = push(t);
+    s_context = new vl_context(s_context);
     if (b->type() == BeginEndStmt)
-        cx->c_block = b;
+        s_context->set_block(b);
     else {
         vl_error("internal, bad object type %d (not begin/end)", b->type());
-        VS()->abort();
+        abort();
     }
-    return (cx);
 }
 
 
-// Static function.
-//
-vl_context *
-vl_context::push(vl_context *t, vl_fork_join_stmt *f)
+void
+vl_simulator::push_context(vl_fork_join_stmt *f)
 {
-    vl_context *cx = push(t);
+    s_context = new vl_context(s_context);
     if (f->type() == ForkJoinStmt)
-        cx->c_fjblk = f;
+        s_context->set_fjblk(f);
     else {
         vl_error("internal, bad object type %d (not fork/join)", f->type());
-        VS()->abort();
+        abort();
     }
-    return (cx);
 }
 
 
-// Pop to previous context, return the previous context.
-// Static function.
-//
-vl_context *
-vl_context::pop(vl_context *vcx)
+void
+vl_simulator::pop_context()
 {
-    if (vcx) {
-        vl_context *cx = vcx->c_parent;
-        delete vcx;
-        return (cx);
+    if (s_context) {
+        vl_context *cx = s_context;
+        s_context = cx->parent();
+        delete cx;
     }
-    return (0);
 }
+// End vl_simulator functions.
 
 
 vl_context *
@@ -1284,21 +1360,21 @@ vl_action_item::vl_action_item(vl_stmt *s, vl_context *c)
 }
 
 
-// Copy an action.
-//
-vl_action_item *
-vl_action_item::copy()
-{
-    return (new vl_action_item(ai_stmt, ai_context));
-}
-
-
 vl_action_item::~vl_action_item()
 {
     if (st_flags & AI_DEL_STMT)
         delete ai_stmt;
     delete ai_stack;
     vl_context::destroy(ai_context);
+}
+
+
+// Copy an action.
+//
+vl_action_item *
+vl_action_item::copy()
+{
+    return (new vl_action_item(ai_stmt, ai_context));
 }
 
 
@@ -1431,6 +1507,7 @@ vl_timeslot::~vl_timeslot()
     vl_action_item::destroy(ts_mon_actions);
 }
   
+
 // Return the list head corresponding to the indicated time.
 //
 vl_timeslot *
@@ -1990,14 +2067,6 @@ vl_timeslot::print(ostream &outs)
 // End vl_timeslot functions.
 
 
-vl_monitor::~vl_monitor()
-{
-    // delete args ?
-    vl_context::destroy(m_cx);
-}
-// End vl_monitor functions.
-
-
 //---------------------------------------------------------------------------
 //  Verilog description objects
 //---------------------------------------------------------------------------
@@ -2270,7 +2339,7 @@ vl_module::setup(vl_simulator *sim)
     if (mp_instance && mp_instance->inst_list() &&
             mp_instance->inst_list()->prms_or_dlys()) {
         vl_delay *params = mp_instance->inst_list()->prms_or_dlys();
-        if (params->delay1) {
+        if (params->delay1()) {
             lsGen<vl_stmt*> gen(m_mod_items);
             vl_stmt *stmt;
             while (gen.next(&stmt)) {
@@ -2279,13 +2348,13 @@ vl_module::setup(vl_simulator *sim)
                     lsGen<vl_bassign_stmt*> bgen(decl->list());
                     vl_bassign_stmt *bs;
                     if (bgen.next(&bs))
-                        *bs->lhs() = params->delay1->eval();
+                        *bs->lhs() = params->delay1()->eval();
                     break;
                 }
             }
         }
-        else if (params->list) {
-            lsGen<vl_expr*> gen(params->list);
+        else if (params->list()) {
+            lsGen<vl_expr*> gen(params->list());
             vl_expr *e;
             lsGen<vl_stmt*> sgen(m_mod_items);
             vl_stmt *stmt;
@@ -2304,9 +2373,9 @@ vl_module::setup(vl_simulator *sim)
         }
     }
 
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     vl_setup_list(sim, m_mod_items);
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 }
 // End vl_module functions.
 
@@ -2349,11 +2418,11 @@ vl_primitive::dump(ostream &outs)
 void
 vl_primitive::setup(vl_simulator *sim)
 {
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     vl_setup_list(sim, p_decls);
     if (mp_type == SeqPrimDecl && p_initial)
         p_initial->setup(sim);
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 }
 
 
@@ -2635,9 +2704,9 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
     vl_action_item *atmp = sim->timewheel()->actions();
     sim->timewheel()->set_actions(0);
 
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     vl_setup_list(sim, f_decls);
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 
     lsGen<vl_expr*> agen(args);
     lsGen<vl_decl*> dgen(f_decls);
@@ -2681,13 +2750,13 @@ vl_function::eval_func(vl_var *out, lsList<vl_expr*> *args)
         if (done)
             break;
     }
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     if (f_stmts)
         vl_setup_list(sim, f_stmts);
     while (sim->timewheel()->actions())
         sim->timewheel()->do_actions(sim);
     sim->timewheel()->set_actions(atmp);
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
     *out = *outvar;
 }
 
@@ -3041,11 +3110,11 @@ vl_sys_task_stmt::eval(vl_event*, vl_simulator *sim)
 void
 vl_begin_end_stmt::setup(vl_simulator *sim)
 {
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     vl_setup_list(sim, be_decls);
     sim->timewheel()->append(sim->time(),
         new vl_action_item(this, sim->context()));
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 }
 
 
@@ -3458,11 +3527,11 @@ void
 vl_fork_join_stmt::setup(vl_simulator *sim)
 {
     fj_endcnt = 0;
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     vl_setup_list(sim, fj_decls);
     sim->timewheel()->append(sim->time(),
         new vl_action_item(this, sim->context()));
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 }
 
 
@@ -3604,9 +3673,9 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
     vl_context *tcx = sim->context();
     sim->set_context(&cvar);
 
-    sim->set_context(vl_context::push(sim->context(), te_task));
+    sim->push_context(te_task);
     vl_setup_list(sim, te_task->decls());
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 
     // setup ports
     lsGen<vl_expr*> agen(te_args);
@@ -3647,10 +3716,10 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
             break;
     }
 
-    sim->set_context(vl_context::push(sim->context(), te_task));
+    sim->push_context(te_task);
     sim->timewheel()->append(sim->time(),
         new vl_action_item(this, sim->context()));
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 
     agen = lsGen<vl_expr*>(te_args);
     dgen = lsGen<vl_decl*>(te_task->decls());
@@ -4253,10 +4322,10 @@ vl_mp_inst::port_setup(vl_simulator *sim, vl_port_connect *pc, vl_port *port,
     }
     if (isprim) {
         primitive->set_iodata(argcnt-1, var);
-        sim->set_context(vl_context::push(sim->context(), primitive));
+        sim->push_context(primitive);
         if (argcnt > 1)
             var->chain(this);
-        sim->set_context(vl_context::pop(sim->context()));
+        sim->pop_context();
     }
 }
 // End vl_mp_inst functions.

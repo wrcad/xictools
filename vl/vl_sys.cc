@@ -467,6 +467,31 @@ vl_dump_items(ostream &outs, lsList<T> *exprs, vl_simulator *sim)
 //  Simulator objects
 //---------------------------------------------------------------------------
 
+#define DMP_INCR 20
+
+char *
+vl_simulator::dumpindex(vl_var *data)
+{
+    if (!s_dmpdata) {
+        s_dmpdata = new vl_var*[DMP_INCR];
+        s_dmpsize = DMP_INCR;
+    }
+    if (s_dmpindx >= s_dmpsize) {
+        s_dmpsize += DMP_INCR;
+        vl_var **tmp = new vl_var*[s_dmpsize];
+        for (int i = 0; i < s_dmpindx; i++) {
+            tmp[i] = s_dmpdata[i];
+            s_dmpdata[i] = 0;
+        }
+        delete [] s_dmpdata;
+        s_dmpdata = tmp;
+    }
+    s_dmpdata[s_dmpindx] = data;
+    s_dmpindx++;
+    return (ccode(s_dmpindx - 1));
+}
+
+
 vl_var &
 vl_simulator::sys_time(vl_sys_task_stmt*, lsList<vl_expr*> *)
 {
@@ -1043,7 +1068,7 @@ vl_simulator::sys_readmemh(vl_sys_task_stmt*, lsList<vl_expr*> *args)
 
 
 //
-// Functions for $dumpvars.
+// Functions for $dumpvars (private).
 //
 
 void
@@ -1127,31 +1152,6 @@ vl_simulator::do_dump()
 }
 
 
-#define DMP_INCR 20
-
-char *
-vl_simulator::dumpindex(vl_var *data)
-{
-    if (!s_dmpdata) {
-        s_dmpdata = new vl_var*[DMP_INCR];
-        s_dmpsize = DMP_INCR;
-    }
-    if (s_dmpindx >= s_dmpsize) {
-        s_dmpsize += DMP_INCR;
-        vl_var **tmp = new vl_var*[s_dmpsize];
-        for (int i = 0; i < s_dmpindx; i++) {
-            tmp[i] = s_dmpdata[i];
-            s_dmpdata[i] = 0;
-        }
-        delete [] s_dmpdata;
-        s_dmpdata = tmp;
-    }
-    s_dmpdata[s_dmpindx] = data;
-    s_dmpindx++;
-    return (ccode(s_dmpindx - 1));
-}
-
-
 //---------------------------------------------------------------------------
 //  Verilog descriptiopn objects
 //---------------------------------------------------------------------------
@@ -1159,7 +1159,7 @@ vl_simulator::dumpindex(vl_var *data)
 void
 vl_module::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     if (sim->dmpstatus() & DMP_HEADER) {
         // $scope module <name> $end
         const char *n;
@@ -1171,14 +1171,14 @@ vl_module::dumpvars(ostream &outs, vl_simulator *sim)
         st_dump(outs, mp_sig_st, sim);
         vl_dump_items(outs, m_mod_items, sim);
     }
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 }
 
 
 void
 vl_primitive::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     if (sim->dmpstatus() & DMP_HEADER) {
         // $scope primitive <name> $end
         const char *n;
@@ -1189,7 +1189,7 @@ vl_primitive::dumpvars(ostream &outs, vl_simulator *sim)
         outs << "\n$scope primitive " << n << " $end\n";
         st_dump(outs, mp_sig_st, sim);
     }
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 }
 
 
@@ -1219,7 +1219,7 @@ vl_mp_inst_list::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_begin_end_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     if (be_name) {
         if (sim->dmpstatus() & DMP_HEADER) {
             // $scope begin <name> $end
@@ -1231,7 +1231,7 @@ vl_begin_end_stmt::dumpvars(ostream &outs, vl_simulator *sim)
         }
     }
     vl_dump_items(outs, be_stmts, sim);
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 }
 
 
@@ -1323,7 +1323,7 @@ vl_wait_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 void
 vl_fork_join_stmt::dumpvars(ostream &outs, vl_simulator *sim)
 {
-    sim->set_context(vl_context::push(sim->context(), this));
+    sim->push_context(this);
     if (fj_name) {
         if (sim->dmpstatus() & DMP_HEADER) {
             // $scope fork <name> $end
@@ -1335,7 +1335,7 @@ vl_fork_join_stmt::dumpvars(ostream &outs, vl_simulator *sim)
         }
     }
     vl_dump_items(outs, fj_stmts, sim);
-    sim->set_context(vl_context::pop(sim->context()));
+    sim->pop_context();
 }
 
 

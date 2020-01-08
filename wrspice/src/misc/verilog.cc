@@ -368,10 +368,10 @@ VerilogBlock::set_var(sADC *a, double val)
                 }
                 if (l >= 0 && r < 0)
                     r = l;
-                data->assign_to(val, a->offset(), a->quantum(), l, r);
+                vb_sim->assign_to(data, val, a->offset(), a->quantum(), l, r);
                 return (true);
             }
-            data->assign_to(val, a->offset(), a->quantum(), -1, -1);
+            vb_sim->assign_to(data, val, a->offset(), a->quantum(), -1, -1);
             return (true);
         }
     }

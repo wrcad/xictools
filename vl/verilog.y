@@ -432,8 +432,7 @@ module
               if (!VP()->p_description->mp_st()->lookup($2,
                       (vl_mp**)&currentModule))
                   currentModule = new vl_module(VP()->p_description, $2, 0, 0); 
-              VP()->p_context = vl_context::push(VP()->p_context,
-                  currentModule);
+              VP()->push_context(currentModule);
               VP()->p_description->mp_undefined()->set_eliminate($2);
               currentModule->set_tunit(VP()->p_tunit);
               currentModule->set_tprec(VP()->p_tprec);
@@ -449,7 +448,7 @@ module
                   "module_item_clr YYENDMODULE");
               VP()->p_context->currentModule()->set_mod_items($7);
               $$ = VP()->p_context->currentModule();
-              VP()->p_context = vl_context::pop(VP()->p_context);
+              VP()->pop_context();
           }
         ;
 
@@ -688,8 +687,7 @@ primitive
           {
               vl_primitive *currentPrimitive =
                   new vl_primitive(VP()->p_description, $2);
-              VP()->p_context = vl_context::push(VP()->p_context,
-                  currentPrimitive);
+              VP()->push_context(currentPrimitive);
               VP()->p_description->mp_undefined()->set_eliminate($2);
           }
           '(' port_list ')' ';' primitive_declaration_eclr prim_initial
@@ -700,7 +698,7 @@ primitive
                   "YYENDPRIMITIVE");
               VP()->p_context->currentPrimitive()->init_table($5, $8, $9, $10);
               $$ = VP()->p_context->currentPrimitive();
-              VP()->p_context = vl_context::pop(VP()->p_context);
+              VP()->pop_context();
           }
         ;
 
@@ -1023,8 +1021,7 @@ function
                  VP()->error(ERR_WARN, "no type/range for function %s", $3);
              vl_function *currentFunction = new vl_function(type, range, $3,
                  0, 0);
-             VP()->p_context = vl_context::push(VP()->p_context,
-                 currentFunction);
+             VP()->push_context(currentFunction);
           }
           ';' tf_declaration_eclr statement_opt YYENDFUNCTION
           {
@@ -1033,7 +1030,7 @@ function
               $$ = VP()->p_context->currentFunction();
               $$->set_decls($6);
               $$->set_stmts($7);
-              VP()->p_context = vl_context::pop(VP()->p_context);
+              VP()->pop_context();
           }
         ;
 

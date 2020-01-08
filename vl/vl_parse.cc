@@ -298,11 +298,61 @@ vl_parser::parse_timescale(const char *str)
     p_tprec = t2;
     return (true);
 }
+
+
+void
+vl_parser::push_context(vl_module *m)
+{
+    p_context = new vl_context(p_context);
+    if (m->type() == ModDecl)
+        p_context->set_module(m);
+    else {
+        vl_error("internal, bad object type %d (not module)", m->type());
+        abort();
+    }
+}
+
+
+void
+vl_parser::push_context(vl_primitive *p)
+{
+    p_context = new vl_context(p_context);
+    if (p->type() == CombPrimDecl || p->type() == SeqPrimDecl)
+        p_context->set_primitive(p);
+    else {
+        vl_error("internal, bad object type %d (not primitive)", p->type());
+        abort();
+    }
+}
+
+
+void
+vl_parser::push_context(vl_function *f)
+{
+    p_context = new vl_context(p_context);
+    if (f->type() >= IntFuncDecl && f->type() <= RangeFuncDecl)
+        p_context->set_function(f);
+    else {
+        vl_error("internal, bad object type %d (not function)", f->type());
+        abort();
+    }
+}
+
+
+void
+vl_parser::pop_context()
+{
+    if (p_context) {
+        vl_context *cx = p_context;
+        p_context = cx->parent();
+        delete cx;
+    }
+}
 // End of vl_parser functions
 
 
 namespace {
-    char * utol(char *str)
+    char *utol(char *str)
     {
         for (char *cp = str; *cp!='\0'; cp++) {
             if (isupper(*cp))
@@ -328,8 +378,8 @@ vl_bitexp_parse::bin(char *instr)
     if (size == 0 || size > MAXBITNUM)
         size = MAXBITNUM;
     bits().set(size);
-    char *firstcp = strpbrk(instr, "bB")+1;
-    char *cp = instr + strlen(instr) - 1;
+    const char *firstcp = strpbrk(instr, "bB")+1;
+    const char *cp = instr + strlen(instr) - 1;
     int bpos = 0;
     while (bpos < bits().size() && cp >= firstcp) {
         if (*cp != '_' && *cp != ' ') {
@@ -372,7 +422,7 @@ vl_bitexp_parse::dec(char *instr)
     if (size == 0 || size > MAXBITNUM)
         size = MAXBITNUM;
     bits().set(size);
-    char *firstcp = strpbrk(instr, "dD")+1;
+    const char *firstcp = strpbrk(instr, "dD")+1;
     while (isspace(*firstcp))
         firstcp++;
     int num = atoi(firstcp); // don't put x, z, ? in decimal string
@@ -390,8 +440,8 @@ vl_bitexp_parse::oct(char *instr)
     if (size == 0 || size > MAXBITNUM)
         size = MAXBITNUM;
     bits().set(size);
-    char *firstcp = strpbrk(instr, "oO")+1;
-    char *cp = instr + strlen(instr) - 1;
+    const char *firstcp = strpbrk(instr, "oO")+1;
+    const char *cp = instr + strlen(instr) - 1;
     int bpos = 0;
     while (bpos < bits().size() && cp >= firstcp) {
         if (*cp != '_' && !isspace(*cp)) {
@@ -427,8 +477,8 @@ vl_bitexp_parse::hex(char *instr)
     if (size == 0 || size > MAXBITNUM)
         size = MAXBITNUM;
     bits().set(size);
-    char *firstcp = strpbrk(instr, "hH")+1;
-    char *cp = instr + strlen(instr) - 1;
+    const char *firstcp = strpbrk(instr, "hH")+1;
+    const char *cp = instr + strlen(instr) - 1;
     int bpos = 0;
     while (bpos < bits().size() && cp >= firstcp) {
         if (*cp != '_' && !isspace(*cp)) {
