@@ -1167,6 +1167,13 @@ CshPar::Getchar(int fd, bool literal, bool drain)
     if (!drain) {
         int esc_cnt = 0;
         for (;;) {
+
+            // The interrupt handler sets this.
+            if (cp_queue_interrupt) {
+                cp_queue_interrupt = false;
+                throw SIGINT;
+            }
+
             if (fifo_fd < 0 && Global.FifoName())
                 fifo_fd = open(Global.FifoName(), O_RDONLY | O_NONBLOCK);
             if (ofs >= MAX_RSP)

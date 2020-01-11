@@ -2323,6 +2323,7 @@ IFsimulator::StartupFileName(char **p)
 
 #ifdef HAVE_SIGNAL
 
+#ifdef WIN32
 namespace {
     int idle_id;
 
@@ -2332,13 +2333,11 @@ namespace {
         CP.ResetControl();
         if (!CP.GetFlag(CP_NOTTYIO))
             TTY.out_printf("\n");
-#ifdef WIN32
         longjmp(msw_jbf[msw_jbf_sp], 1);
-#else
-        throw SIGINT;
-#endif
+        return (0);
     }
 }
+#endif
 
 
 // Static function.
@@ -2384,6 +2383,8 @@ IFsimulator::SigHdlr(int sig)
         }
 #endif
 
+#ifdef WIN32
+        // XXX Can we rid this win32 special case?
         // Must use an idle function to throw the exception, as
         // throwing an exception in a signal handler produces
         // undefined results.  Without the graphics event loop
@@ -2397,6 +2398,10 @@ IFsimulator::SigHdlr(int sig)
                 ToolBar()->RemoveIdleProc(idle_id);
             idle_id = ToolBar()->RegisterIdleProc(ft_restart, 0);
         }
+#else
+        CP.ResetControl();
+        CP.QueueInterrupt();
+#endif
     }
 
 #ifdef SIGCHLD

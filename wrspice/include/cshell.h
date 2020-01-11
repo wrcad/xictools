@@ -355,6 +355,8 @@ struct CshPar
             cp_srcfiles = wordlist::append(cp_srcfiles, new wordlist(fn, 0));
         }
 
+    void QueueInterrupt()                   { cp_queue_interrupt = true; }
+
     static sVarDb *VarDb()                  { return (cp_vardb); }
 
 private:
@@ -423,6 +425,7 @@ private:
 
     bool cp_didhsubst;                      // Did a history substitution.
     bool cp_bqflag;                         // True if processing backquote.
+    bool cp_queue_interrupt;                // Waiting to safely handle ^C.
 
     static sVarDb *cp_vardb;                // Pointer to variables database.
 };
