@@ -882,7 +882,7 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
     */
 
     sFtCirc *ct = SpDeck(deck, filename, execs, wordlist::copy(controls), vblk,
-        nospice, false, &bad_deck);
+        nospice, noexec, &bad_deck);
     tv.stop();
     if (ft_flags[FT_SIMDB])
         GRpkgIf()->ErrPrintf(ET_MSGS, "Total time to source input: %g.\n",

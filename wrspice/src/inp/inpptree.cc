@@ -1667,7 +1667,8 @@ IFparseNode::~IFparseNode()
         delete v.td;
     else if (p_type == PT_PARAM) {
         delete [] p_valname;
-        delete v.sp;
+        if (p_valindx < 0 && p_evfunc == &IFparseNode::p_parm)
+            delete v.sp;
     }
     else if (p_type == PT_PLACEHOLDER || p_type == PT_MACROARG)
         delete [] p_valname;
@@ -2499,8 +2500,14 @@ IFparseNode::copy_prv(bool skip_nd)
             newp->v.td = v.td ? v.td->dup() : 0;
     }
     else if (p_type == PT_PARAM || p_type == PT_PLACEHOLDER ||
-            p_type == PT_MACROARG)
+            p_type == PT_MACROARG) {
         newp->p_valname = lstring::copy(p_valname);
+        if (p_type == PT_PARAM && p_valindx < 0 &&
+                p_evfunc == &IFparseNode::p_parm) {
+            newp->v.sp = new IFspecial;
+            *newp->v.sp = *v.sp;
+        }
+    }
     else if (p_type == PT_MACRO_DERIV) {
         IFmacroDeriv *mdold = v.macro_deriv;
         IFmacroDeriv *md = new IFmacroDeriv(*mdold);
