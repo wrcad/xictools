@@ -973,8 +973,66 @@ sCHECKprms::initNames()
 {
     delete ch_names;
     ch_names = 0;
-    if (!ch_devs1 && !ch_devs2)
+    if (!ch_devs1 && !ch_devs2) {
         ch_names = sNames::set_names();
+
+#define MAGIC_CHAR '%'
+        // If the value1/2 variables are set to a device list/param
+        // list preceded by the MAGIC_CHAR, set the devs/prms and blow
+        // away the names.
+
+//XXX
+        if (ch_names->value1() && (*ch_names->value1() == MAGIC_CHAR)) {
+            const char *dstr = ch_names->value1() + 1;
+            wordlist *d1, *p1;
+            sFtCirc::parseDevParams(dstr, &d1, &p1, false);
+            if (d1 && p1) {
+                if (ch_names->value2() && (*ch_names->value2() == MAGIC_CHAR)) {
+                    dstr = ch_names->value2() + 1;
+                    wordlist *d2, *p2;
+                    sFtCirc::parseDevParams(dstr, &d2, &p2, false);
+                    if (d2 && p2) {
+                        ch_devs1 = d1;
+                        ch_prms1 = p1;
+                        ch_devs2 = d2;
+                        ch_prms2 = p2;
+                    }
+                    else {
+                        GRpkgIf()->ErrPrintf(ET_WARN,
+                            "parse failed for device,param list for value2.\n");
+                        wordlist::destroy(d1);
+                        wordlist::destroy(p1);
+                        wordlist::destroy(d2);
+                        wordlist::destroy(p2);
+                    }
+                }
+                else {
+                    if (ch_names->value2()) {
+                        // Error: both names should be dev/prm, or neither.
+                        GRpkgIf()->ErrPrintf(ET_WARN,
+                            "did not find device,param list for value2.\n");
+                        wordlist::destroy(d1);
+                        wordlist::destroy(p1);
+                    }
+                    else {
+                        ch_devs1 = d1;
+                        ch_prms1 = p1;
+                    }
+                }
+            }
+            else {
+                // Syntax error, need a dev and a prm.
+                GRpkgIf()->ErrPrintf(ET_WARN,
+                    "parse failed for device,param list for value1.\n");
+                wordlist::destroy(d1);
+                wordlist::destroy(p1);
+            }
+        }
+        if (ch_devs1) {
+            delete ch_names;
+            ch_names = 0;
+        }
+    }
 }
 
 
@@ -2125,7 +2183,8 @@ sCHECKprms::endJob()
 
     if (ch_iterno > 0 && !ch_doall)
         set_rangevec();
-    out_cir->set_check(0);
+    if (out_cir)
+        out_cir->set_check(0);
     OP.endPlot(out_rundesc, true);
 }
 
