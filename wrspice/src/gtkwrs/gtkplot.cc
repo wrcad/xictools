@@ -395,8 +395,12 @@ plot_bag::init_gbuttons(sGraph *graph)
         gtk_signal_connect(GTK_OBJECT(button), "clicked",
             (GtkSignalFunc)b_quit, graph);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+        gtk_widget_set_tooltip_text(button, "Delete this window");
+#else
         gtk_tooltips_set_tip(gtk_tooltips_new(), button,
             "Delete this window", "");
+#endif
         pb_checkwins[pbtn_dismiss] = button;
     }
 
@@ -406,8 +410,12 @@ plot_bag::init_gbuttons(sGraph *graph)
         gtk_signal_connect(GTK_OBJECT(button), "clicked",
             (GtkSignalFunc)b_help, graph);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+        gtk_widget_set_tooltip_text(button, "Press for help");
+#else
         gtk_tooltips_set_tip(gtk_tooltips_new(), button,
             "Press for help", "");
+#endif
         pb_checkwins[pbtn_help] = button;
     }
 
@@ -417,8 +425,12 @@ plot_bag::init_gbuttons(sGraph *graph)
         gtk_signal_connect(GTK_OBJECT(button), "clicked",
             (GtkSignalFunc)b_recolor, graph);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+        gtk_widget_set_tooltip_text(button, "Redraw the plot");
+#else
         gtk_tooltips_set_tip(gtk_tooltips_new(), button,
             "Redraw the plot", "");
+#endif
         pb_checkwins[pbtn_redraw] = button;
     }
 
@@ -428,8 +440,12 @@ plot_bag::init_gbuttons(sGraph *graph)
         gtk_signal_connect(GTK_OBJECT(button), "clicked",
             (GtkSignalFunc)b_hardcopy, graph);
         gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+        gtk_widget_set_tooltip_text(button, "Print control panel");
+#else
         gtk_tooltips_set_tip(gtk_tooltips_new(), button,
             "Print control panel", "");
+#endif
         pb_checkwins[pbtn_print] = button;
     }
 
@@ -441,8 +457,13 @@ plot_bag::init_gbuttons(sGraph *graph)
             gtk_signal_connect(GTK_OBJECT(button), "clicked",
                 (GtkSignalFunc)b_save_plot, graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+            gtk_widget_set_tooltip_text(button,
+                "Save the plot in a plot file");
+#else
             gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                 "Save the plot in a plot file", "");
+#endif
             pb_checkwins[pbtn_saveplot] = button;
         }
 
@@ -453,8 +474,13 @@ plot_bag::init_gbuttons(sGraph *graph)
             gtk_signal_connect(GTK_OBJECT(button), "clicked",
                 (GtkSignalFunc)b_save_print, graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+            gtk_widget_set_tooltip_text(button,
+                "Save the plot in a print file");
+#else
             gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                 "Save the plot in a print file", "");
+#endif
             pb_checkwins[pbtn_saveprint] = button;
         }
 
@@ -467,8 +493,12 @@ plot_bag::init_gbuttons(sGraph *graph)
             gtk_signal_connect(GTK_OBJECT(button), "clicked",
                 (GtkSignalFunc)b_points, graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+            gtk_widget_set_tooltip_text(button, "Plot data as points");
+#else
             gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                 "Plot data as points", "");
+#endif
             pb_checkwins[pbtn_points] = button;
         }
 
@@ -481,8 +511,12 @@ plot_bag::init_gbuttons(sGraph *graph)
             gtk_signal_connect(GTK_OBJECT(button), "clicked",
                 (GtkSignalFunc)b_points, graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+            gtk_widget_set_tooltip_text(button, "Plot data as histogram");
+#else
             gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                 "Plot data as histogram", "");
+#endif
             pb_checkwins[pbtn_comb] = button;
         }
 
@@ -496,8 +530,13 @@ plot_bag::init_gbuttons(sGraph *graph)
                 gtk_signal_connect(GTK_OBJECT(button), "clicked",
                     (GtkSignalFunc)b_logx, graph);
                 gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+                gtk_widget_set_tooltip_text(button,
+                    "Use logarithmic horizontal scale");
+#else
                 gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                     "Use logarithmic horizontal scale", "");
+#endif
                 pb_checkwins[pbtn_logx] = button;
             }
         }
@@ -518,8 +557,13 @@ plot_bag::init_gbuttons(sGraph *graph)
                 gtk_signal_connect(GTK_OBJECT(button), "clicked",
                     (GtkSignalFunc)b_logy, graph);
                 gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+                gtk_widget_set_tooltip_text(button,
+                    "Use logarithmic vertical scale");
+#else
                 gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                     "Use logarithmic vertical scale", "");
+#endif
                 pb_checkwins[pbtn_logy] = button;
             }
         }
@@ -538,8 +582,12 @@ plot_bag::init_gbuttons(sGraph *graph)
             gtk_signal_connect(GTK_OBJECT(button), "clicked",
                 (GtkSignalFunc)b_marker, graph);
             gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+            gtk_widget_set_tooltip_text(button, "Show marker");
+#else
             gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                 "Show marker", "");
+#endif
             pb_checkwins[pbtn_marker] = button;
         }
 
@@ -553,8 +601,12 @@ plot_bag::init_gbuttons(sGraph *graph)
                 gtk_signal_connect(GTK_OBJECT(button), "clicked",
                     (GtkSignalFunc)b_separate, graph);
                 gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+                gtk_widget_set_tooltip_text(button, "Show traces separately");
+#else
                 gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                     "Show traces separately", "");
+#endif
                 pb_checkwins[pbtn_separate] = button;
             }
 
@@ -580,8 +632,13 @@ plot_bag::init_gbuttons(sGraph *graph)
                     gtk_signal_connect(GTK_OBJECT(button), "clicked",
                         (GtkSignalFunc)b_onescale, graph);
                     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+                    gtk_widget_set_tooltip_text(button, 
+                        "Use single vertical scale");
+#else
                     gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                         "Use single vertical scale", "");
+#endif
                     pb_checkwins[pbtn_single] = button;
                 }
             }
@@ -598,8 +655,13 @@ plot_bag::init_gbuttons(sGraph *graph)
                     gtk_signal_connect(GTK_OBJECT(button), "clicked",
                         (GtkSignalFunc)b_multiscale, graph);
                     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+                    gtk_widget_set_tooltip_text(button, 
+                        "Use single vertical scale");
+#else
                     gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                         "Use single vertical scale", "");
+#endif
                     pb_checkwins[pbtn_single] = button;
                 }
 
@@ -614,8 +676,13 @@ plot_bag::init_gbuttons(sGraph *graph)
                     gtk_signal_connect(GTK_OBJECT(button), "clicked",
                         (GtkSignalFunc)b_multiscale, graph);
                     gtk_box_pack_start(GTK_BOX(vbox), button, true, true, 2);
+#if GTK_CHECK_VERSION(2,12,0)
+                    gtk_widget_set_tooltip_text(button, 
+                        "Same scale for groups: V, I, other");
+#else
                     gtk_tooltips_set_tip(gtk_tooltips_new(), button,
                         "Same scale for groups: V, I, other", "");
+#endif
                     pb_checkwins[pbtn_group] = button;
                 }
             }
