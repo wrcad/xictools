@@ -284,6 +284,7 @@ struct sMpoint
             t_found         = 0.0;
             t_v1            = 0.0;
             t_v2            = 0.0;
+            t_px            = 0.0;
             t_indx          = 0;
             t_crosses       = 0;
             t_rises         = 0;
@@ -297,6 +298,7 @@ struct sMpoint
             t_found_state   = false;
             t_offset_set    = false;
             t_last_saved    = false;
+            t_px_saved      = false;
             t_td_given      = false;
             t_ptmode        = false;
             t_strobe        = false;
@@ -323,6 +325,7 @@ struct sMpoint
             t_found = 0.0;
             t_v1 = 0.0;
             t_v2 = 0.0;
+            t_px = 0.0;
             t_indx = 0;
             t_cross_cnt = 0;
             t_rise_cnt = 0;
@@ -332,6 +335,7 @@ struct sMpoint
             t_found_state = false;
             t_offset_set = false;
             t_last_saved = false;
+            t_px_saved = false;
             if (t_conj)
                 t_conj->reset();
         }
@@ -339,9 +343,9 @@ struct sMpoint
     int parse(const char**, char**, const char*);
     void print(sLstr&);
     bool check_found(sFtCirc*, bool*, bool, sMpoint* = 0);
+    int check_trig(sDataVec*, double);
 
 private:
-    int check_trig(sDataVec*);
     sDataVec *eval1();
     sDataVec *eval2();
 
@@ -358,6 +362,7 @@ private:
     double t_found;         // The measure point, once found.
     double t_v1;            // Previous expr1 value,
     double t_v2;            // Previous expr2 value,
+    double t_px;            // Previous time value.
     int t_indx;             // Index of trigger point.
     int t_crosses;          // The 'crosses' value.
     int t_rises;            // The 'rises' value.
@@ -371,6 +376,7 @@ private:
     bool t_found_state;     // The state to return when found.
     bool t_offset_set;      // This is initialized.
     bool t_last_saved;      // Last values of expressions saved.
+    bool t_px_saved;        // Last time value saved.
     bool t_ptmode;          // Input in points, else absolute.
     bool t_td_given;        // Offset was given.
     bool t_strobe;          // Strobe mode set.

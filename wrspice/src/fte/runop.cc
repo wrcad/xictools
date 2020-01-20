@@ -697,10 +697,9 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
         for (sRunopTrace *d = tgen.next(); d; d = tgen.next())
             d->print_trace(run->runPlot(), &tflag, run->pointsSeen());
 
-/*XXX handle these somehow?
-// can't do actual measurements since we don't have data, but
-// process call/print and, maybe create new vector with expression
-// result.
+        // We know that there are no interval measures, since these force
+        // OutcCheckSeg.
+
         bool measures_done = true;
         bool measure_queued = false;
         ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
@@ -739,21 +738,32 @@ IFoutput::checkRunops(sRunDesc *run, double ref)
         }
 
         ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
-        for (sRunopStop *d = sgen.next(); d; d = sgen.next())
+        for (sRunopStop *d = sgen.next(); d; d = sgen.next()) {
             ROret r = d->check_stop(run);
             if (r == RO_PAUSE || r == RO_ENDIT) {
-                bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
-                TTY.printf("%-2d: condition met: ", d->number());
-                d->print_cond(0, false);
                 if (r == RO_PAUSE)
                     o_shouldstop = true;
                 else
                     o_endit = true;
-                if (need_pr)
-                    CP.Prompt();
+                if (!d->silent()) {
+                    bool need_pr = TTY.is_tty() && CP.GetFlag(CP_WAITING);
+                    TTY.printf("%-2d: condition met: ", d->number());
+                    d->print_cond(0, false);
+                    if (need_pr)
+                        CP.Prompt();
+                }
             }
         }
-*/
+
+        // Get status from stops/measures for trial state.
+        if (o_endit)
+            chk->set_nogo(true);
+        if (o_shouldstop) {
+            o_endit = true;
+            o_shouldstop = false;
+            chk->set_failed(true);
+        }
+
         if (chk->points()) {
             bool increasing = run->job()->JOBoutdata->initValue <=
                 run->job()->JOBoutdata->finalValue;
@@ -947,7 +957,7 @@ IFoutput::pauseTest(sRunDesc *run)
 }
 
 
-// Return true if an runop of DF_XXX type given in which exists.
+// Return true if a runop of DF_??? type given in which exists.
 //
 bool
 IFoutput::hasRunop(unsigned int which)
@@ -987,6 +997,24 @@ IFoutput::hasRunop(unsigned int which)
             if (d->active())
                 return (true);
         }
+    }
+    return (false);
+}
+
+
+// Called when running operating range or Monte Carlo analysis to
+// determine if we should keep all output data or not.  If not doing
+// interval measurement, we (probably) only need the current data
+// point.
+//
+bool
+IFoutput::hasIntervalMeasure()
+{
+    sRunopDb *db = Sp.CurCircuit() ? &Sp.CurCircuit()->runops() : 0;
+    ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
+    for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
+        if (d->end().active())
+            return (true);
     }
     return (false);
 }

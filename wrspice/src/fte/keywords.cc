@@ -3208,12 +3208,12 @@ struct KWent_units : public KWent
                 return;
             }
             if (i == 1)
-                cx_degrees = true;
+                sDataVec::set_degrees(true);
             else
-                cx_degrees = false;
+                sDataVec::set_degrees(false);
         }
         else
-            cx_degrees = false;
+            sDataVec::set_degrees(false);
         CP.RawVarSet(word, isset, v);
         KWent::callback(isset, v);
     }

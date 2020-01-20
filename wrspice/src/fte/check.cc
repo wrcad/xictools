@@ -245,6 +245,9 @@ IFsimulator::MargAnalysis(wordlist *wl)
 
     const char *po, *pe;
     int err = args.parse(&wl, &po, &pe);
+    GCarray<const char*> gc_po(po);
+    GCarray<const char*> gc_pe(pe);
+
     if (err != OK)
         return;
 
@@ -277,9 +280,6 @@ IFsimulator::MargAnalysis(wordlist *wl)
         }
         return;
     }
-
-    GCarray<const char*> gc_po(po);
-    GCarray<const char*> gc_pe(po);
 
     if (ft_curckt->runonce())
         ft_curckt->rebuild(true);
@@ -981,7 +981,6 @@ sCHECKprms::initNames()
         // list preceded by the MAGIC_CHAR, set the devs/prms and blow
         // away the names.
 
-//XXX
         if (ch_names->value1() && (*ch_names->value1() == MAGIC_CHAR)) {
             const char *dstr = ch_names->value1() + 1;
             wordlist *d1, *p1;
@@ -1073,8 +1072,12 @@ sCHECKprms::initOutMode(bool keepall, bool sgbase, bool keepplot)
             ch_segbase = lstring::copy(vv.get_string());
         out_mode = OutcCheckSeg;
     }
-    else if (keepplot || OP.hasIplot(true) || OP.hasRunop(DF_MEASURE|DF_STOP)) {
+    else if (keepplot || OP.hasIplot(true) || OP.hasIntervalMeasure()) {
         // Keep all data for curent trial.
+        // Note that for .stop and point-type .measure, we don't keep
+        // all data.  One can use the -f option if all data are
+        // needed, for example if history is used in a callback.
+
         out_mode = OutcCheckSeg;
     }
 }

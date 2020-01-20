@@ -55,6 +55,7 @@ Authors: 1985 Wayne A. Christopher
 // sDataVec functions.
 //
 
+bool sDataVec::v_degrees = false;
 bool sDataVec::v_temporary = false;
 
 sDataVec::~sDataVec()

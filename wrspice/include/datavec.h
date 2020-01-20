@@ -64,7 +64,6 @@ struct wordlist;
 struct sTrie;
 
 //XXX rid these
-extern bool cx_degrees;  // Whether args are in degrees or radians.
 
 // fourier.cc
 extern double *FFTwindow(int, double*, double);
@@ -929,7 +928,7 @@ struct sDataVec
     bool scalarized()           { return (v_scaldata != 0); }
     bool segmentized()          { return (v_segmdata != 0); }
 
-    // Length within  smallest block if multi-dimensional.
+    // Length within smallest block if multi-dimensional.
     //
     int unscalarized_length()
         {
@@ -951,7 +950,12 @@ struct sDataVec
                 int n = v_scaldata->length - 2;
                 return (n > 0 ? realval(n) : v_scaldata->real);
             }
-            return (realval(v_length - 2));
+            if (v_length > 1)
+                return (realval(v_length - 2));
+            if (v_length == 1)
+                return (realval(0));
+            return (0.0);
+            
         }
 
     double unscalarized_prev_imag()
@@ -960,7 +964,11 @@ struct sDataVec
                 int n = v_scaldata->length - 2;
                 return (n > 0 ? imagval(n) : v_scaldata->imag);
             }
+            if (v_length > 1)
             return (imagval(v_length - 2));
+            if (v_length == 1)
+                return (imagval(0));
+            return (0.0);
         }
 
     double unscalarized_first()
@@ -1060,6 +1068,19 @@ struct sDataVec
     int dims(int i)                 { return (v_dims[i]); }
     void set_dims(int i, int d)     { v_dims[i] = d; }
 
+    // This flag determines whether degrees or radians are used.  The
+    // radtodeg and degtorad macros are no-ops if this is false.
+    static bool degrees()           { return (v_degrees); }
+    static void set_degrees(bool b) { v_degrees = b; }
+    static double radtodeg(double c) 
+        {
+            return (v_degrees ? (c/M_PI)*180 : c);
+        }
+    static double degtorad(double c)
+        {
+            return (v_degrees ? (c*M_PI)/180 : c);
+        }
+
     static void set_temporary(bool b) { v_temporary = b; }
 
 private:
@@ -1091,6 +1112,7 @@ private:
     int v_numdims;          // How many dims -- 0 = scalar (len = 1).
     int v_dims[MAXDIMS];    // The actual size in each dimension.
 
+    static bool v_degrees;
     static bool v_temporary;
 };
 

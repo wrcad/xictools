@@ -475,6 +475,7 @@ struct IFoutput
     void checkRunops(sRunDesc*, double);
     int pauseTest(sRunDesc*);
     bool hasRunop(unsigned int);
+    bool hasIntervalMeasure();
 
     // save.cc
     void saveCmd(wordlist*);

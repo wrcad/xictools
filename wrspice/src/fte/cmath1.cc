@@ -88,14 +88,6 @@ extern double erfc(double);
 // off in time savings.  These functions should never allow FPE's to
 // happen.
 
-// This flag determines whether degrees or radians are used. The radtodeg
-// and degtorad macros are no-ops if this is false.
-//
-bool cx_degrees = false;
-
-#define radtodeg(c) (cx_degrees ? ((c) / M_PI * 180) : (c))
-#define degtorad(c) (cx_degrees ? ((c) * M_PI / 180) : (c))
-
 #define rcheck(cond, name) if (!(cond)) { \
     GRpkgIf()->ErrPrintf(ET_WARN, "argument out of range for %s.\n", name); \
     delete res; return (0); }

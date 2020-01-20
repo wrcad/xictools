@@ -1159,6 +1159,7 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
     if (t_found_local && t_strobe)
         return (t_found_state);
 
+    sDataVec *xs = circuit->runplot()->scale();
     bool isready = true;
     bool found_local = t_found_local;
     bool offset_set = t_offset_set;
@@ -1166,10 +1167,8 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
 
         if (t_td_given)
             t_offset = t_td;
-        else {
-            sDataVec *xs = circuit->runplot()->scale();
+        else
             t_offset = xs->unscalarized_first();
-        }
 
         if (t_type == MPnum) {
 #ifdef M_DEBUG
@@ -1272,8 +1271,7 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
     }
 
     if (t_offset_set && !t_found_local) {
-        sDataVec *xs = circuit->runplot()->scale();
-        int ix = check_trig(xs);
+        int ix = check_trig(xs, t_offset);
 #ifdef M_DEBUG
         printf("at xs=%g indx=%d\n", xs->realval(0), ix);
 #endif
@@ -1370,6 +1368,9 @@ sMpoint::check_found(sFtCirc *circuit, bool *err, bool end, sMpoint *mpprev)
     }
 
 done:
+    t_px = xs->realval(0);
+    t_px_saved = true;
+
     if (t_range == MPbefore)
         isready = !isready;
 
@@ -1404,32 +1405,39 @@ done:
 // time point due to numerical error.
 //
 int
-sMpoint::check_trig(sDataVec *xs)
+sMpoint::check_trig(sDataVec *xs, double offs)
 {
+    // In operating range and Monte Carlo analysis, only the current
+    // point might be saved (length==1 always), but the previous point
+    // is available from the prev_real call.  On the first point
+    // (length==1) the value and prev_real are equal in both cases. 
+    // The code below should work in in either case.
+
     int i = xs->unscalarized_length() - 1;
-    if (i > 0) {
-        double x = xs->realval(0);
-        double xp = xs->unscalarized_prev_real();
-        if (t_ptmode) {
-            if (i < t_indx)
-                return (-1);
+    if (i < 0)
+        return (-1);
+    if (t_ptmode) {
+        if (i < t_indx)
+            return (-1);
+        return (i);
+    }
+    if (!t_px_saved)
+        return (-1);
+    double x = xs->realval(0);
+    if (x > t_px) {
+        double dx = (x - t_px)*1e-3;
+        if (x > offs - dx) {
+            if (i > 0 && (fabs(t_px - offs) < fabs(x - offs)))
+                i--;
             return (i);
         }
-        if (x > xp) {
-            double dx = (x - xp)*1e-3;
-            if (x > t_offset - dx) {
-                if (fabs(xp - t_offset) < fabs(x - t_offset))
-                    i--;
-                return (i);
-            }
-        }
-        else if (x < xp) {
-            double dx = (x - xp)*1e-3;
-            if (x < t_offset - dx) {
-                if (fabs(xp - t_offset) < fabs(x - t_offset))
-                    i--;
-                return (i);
-            }
+    }
+    else if (x < t_px) {
+        double dx = (x - t_px)*1e-3;
+        if (x < offs - dx) {
+            if (i > 0 && (fabs(t_px - offs) < fabs(x - offs)))
+                i--;
+            return (i);
         }
     }
     return (-1);
@@ -2483,29 +2491,6 @@ sRunopStop::reset()
 }
 
 
-namespace {
-    bool check_trig(sDataVec *xs, double offs)
-    {
-        int i = xs->unscalarized_length() - 1;
-        if (i > 0) {
-            double x = xs->realval(0);
-            double xp = xs->unscalarized_prev_real();
-            if (x > xp) {
-                double dx = (x - xp)*1e-3;
-                if (x > offs - dx)
-                    return (true);
-            }
-            else if (x < xp) {
-                double dx = (x - xp)*1e-3;
-                if (x < offs - dx)
-                    return (true);
-            }
-        }
-        return (false);
-    }
-}
-
-
 ROret
 sRunopStop::check_stop(sRunDesc *run)
 {
@@ -2518,7 +2503,7 @@ sRunopStop::check_stop(sRunDesc *run)
 
     if (ro_repeating) {
         sDataVec *xs = circuit->runplot()->scale();
-        if (!check_trig(xs, ro_offs))
+        if (ro_start.check_trig(xs, ro_offs) < 0)
             return (RO_OK);
         ro_offs += ro_per;
     }
