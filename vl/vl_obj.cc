@@ -1969,7 +1969,7 @@ vl_deassign_stmt::init()
         }
         return;
     }
-    vl_var *nvar = VS()->context()->lookup_var(d_lhs->name(), false);
+    vl_var *nvar = VS()->context()->lookup_var(VS(), d_lhs->name(), false);
     if (!nvar) {
         vl_error("undeclared variable %s in deassign", d_lhs->name());
         VS()->abort();

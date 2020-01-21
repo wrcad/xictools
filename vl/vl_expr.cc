@@ -2457,7 +2457,7 @@ namespace {
             sim->abort();
             return (0);
         }
-        vl_var *v = sim->context()->lookup_var(name, false);
+        vl_var *v = sim->context()->lookup_var(sim, name, false);
         if (!v) {
             vl_warn("implicit declaration of %s", name);
             vl_module *cmod = sim->context()->currentModule();
@@ -2582,7 +2582,7 @@ vl_expr::eval()
     case FuncExpr:
         if (!e_data.func_call.func) {
             e_data.func_call.func =
-                VS()->context()->lookup_func(e_data.func_call.name);
+                VS()->context()->lookup_func(VS(), e_data.func_call.name);
             if (!e_data.func_call.func) {
                 vl_error("unresolved function %s", e_data.func_call.name);
                 VS()->abort();
@@ -2825,7 +2825,7 @@ vl_expr::chcore(vl_stmt *stmt, int mode)
     case FuncExpr: {
         if (!e_data.func_call.func) {
             e_data.func_call.func =
-                VS()->context()->lookup_func(e_data.func_call.name);
+                VS()->context()->lookup_func(VS(), e_data.func_call.name);
             if (!e_data.func_call.func) {
                 vl_error("unresolved function %s", e_data.func_call.name);
                 VS()->abort();

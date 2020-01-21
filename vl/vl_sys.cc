@@ -557,7 +557,7 @@ vl_simulator::sys_printtimescale(vl_sys_task_stmt*, lsList<vl_expr*> *args)
             modname = vl_fix_str((char*)e->eval());
     }
     if (modname) {
-        vl_inst *inst = s_context->lookup_mp(modname);
+        vl_inst *inst = lookup_mp(modname);
         bool found = false;
         if (inst && !inst->type()) {
             vl_mp_inst *mp = (vl_mp_inst*)inst;
@@ -929,7 +929,7 @@ vl_simulator::sys_dumpvars(vl_sys_task_stmt*, lsList<vl_expr*> *args)
                 }
                 const char *tname = mname;
                 s_dmpcx = new vl_context;
-                if (!s_context->resolve_cx(&tname, *s_dmpcx, false)) {
+                if (!resolve_cx(&tname, *s_dmpcx, false)) {
                     if (tname != mname) {
                         vl_warn(msg);
                         delete s_dmpcx;

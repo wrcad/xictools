@@ -91,8 +91,8 @@ struct range_or_type;
 struct multi_concat;
 
 // Simulator objects
-struct vl_simulator;
 struct vl_context;
+struct vl_simulator;
 struct vl_stmt;
 struct vl_action_item;
 struct vl_sblk;
@@ -1171,6 +1171,80 @@ struct multi_concat
 enum VLdelayType { DLYmin, DLYtyp, DLYmax };
 enum VLstopType { VLrun, VLstop, VLabort };
 
+// Context list for simulator.
+//
+struct vl_context
+{
+    vl_context(vl_context *p=0)
+        {
+            c_module = 0;
+            c_primitive = 0;
+            c_task = 0;
+            c_function = 0;
+            c_block = 0;
+            c_fjblk = 0;
+            c_parent = p;
+        }
+
+    static void destroy(vl_context *c)
+        {
+            while (c) {
+                vl_context *cx = c;
+                c = c->c_parent;
+                delete cx;
+            }
+        }
+
+    void set_module(vl_module *m)           { c_module = m; }
+    void set_primitive(vl_primitive *p)     { c_primitive = p; }
+    void set_task(vl_task *t)               { c_task = t; }
+    void set_function(vl_function *f)       { c_function = f; }
+    void set_block(vl_begin_end_stmt *b)    { c_block = b; }
+    void set_fjblk(vl_fork_join_stmt *f)    { c_fjblk = f; }
+
+    vl_module *module()         const { return (c_module); }
+    vl_primitive *primitive()   const { return (c_primitive); }
+    vl_task *task()             const { return (c_task); }
+    vl_function *function()     const { return (c_function); }
+    vl_begin_end_stmt *block()  const { return (c_block); }
+    vl_fork_join_stmt *fjblk()  const { return (c_fjblk); }
+    vl_context *parent()        const { return (c_parent); }
+
+    // vl_sim.cc
+    vl_context *copy();
+    bool in_context(vl_stmt*);
+    vl_module *currentModule();
+    vl_primitive *currentPrimitive();
+    vl_function *currentFunction();
+    vl_task *currentTask();
+    vl_var *lookup_var(vl_simulator*, const char*, bool);
+    vl_stmt *lookup_block(vl_simulator*, const char*);
+    vl_task *lookup_task(vl_simulator*, const char*);
+    vl_function *lookup_func(vl_simulator*, const char*);
+    vl_inst *lookup_mp(vl_simulator*, const char*);
+    bool resolve_cx(vl_simulator*, const char**, vl_context&, bool);
+
+    // vl_print.cc
+    void print(ostream&);
+    char *hiername();
+
+private:
+    // vl_sim.cc
+    table<vl_var*> *resolve_st(vl_simulator*, const char**, bool);
+    table<vl_task*> *resolve_task(vl_simulator*, const char**);
+    table<vl_function*> *resolve_func(vl_simulator*, const char**);
+    table<vl_inst*> *resolve_mp(vl_simulator*, const char**);
+    bool resolve_path(const char*, bool);
+
+    vl_module           *c_module;
+    vl_primitive        *c_primitive;
+    vl_task             *c_task;
+    vl_function         *c_function;
+    vl_begin_end_stmt   *c_block;
+    vl_fork_join_stmt   *c_fjblk;
+    vl_context          *c_parent;
+};
+
 inline struct vl_simulator *VS();
 
 // Main class for simulator.
@@ -1180,7 +1254,7 @@ struct vl_simulator
     friend inline vl_simulator *VS() { return (vl_simulator::ptr()); }
 
     // vl_sim.cc
-    vl_simulator();
+    vl_simulator(vl_simulator** = 0);
     ~vl_simulator();
 
     bool initialize(vl_desc*, VLdelayType = DLYtyp, int = 0);
@@ -1248,6 +1322,48 @@ struct vl_simulator
     vl_top_mod_list *top_modules()      const { return (s_top_modules); }
     int dmpstatus()                     const { return (s_dmpstatus); }
 
+    vl_var *lookup_var(const char *name, bool thisonly)
+        {
+            if (s_context)
+                return (s_context->lookup_var(this, name, thisonly));
+            return (0);
+        }
+
+    vl_stmt *lookup_block(const char *name)
+        {
+            if (s_context)
+                return (s_context->lookup_block(this, name));
+            return (0);
+        }
+
+    vl_task *lookup_task(const char *name)
+        {
+            if (s_context)
+                return (s_context->lookup_task(this, name));
+            return (0);
+        }
+
+    vl_function *lookup_func(const char *name)
+        {
+            if (s_context)
+                return (s_context->lookup_func(this, name));
+            return (0);
+        }
+
+    vl_inst *lookup_mp(const char *name)
+        {
+            if (s_context)
+                return (s_context->lookup_mp(this, name));
+            return (0);
+        }
+
+    bool resolve_cx(const char **pname, vl_context &cvar, bool modonly)
+        {
+            if (s_context)
+                return (s_context->resolve_cx(this, pname, cvar, modonly));
+            return (false);
+        }
+
 private:
     static vl_simulator *ptr()
         {
@@ -1267,6 +1383,7 @@ private:
     void display_print(lsList<vl_expr*>*, ostream&, DSPtype, unsigned int);
     void fdisplay_print(lsList<vl_expr*>*, DSPtype, unsigned int);
 
+    vl_simulator    **s_userptr;        // user's pointer to simulator
     vl_desc         *s_description;     // the verilog deck to simulate
     VLdelayType     s_dmode;            // min/typ/max delay mode
     VLstopType      s_stop;             // stop simulation code
@@ -1307,78 +1424,6 @@ private:
 
 public:
     vl_var_factory  var_factory;
-};
-
-// Context list for simulator.
-//
-struct vl_context
-{
-    vl_context(vl_context *p=0)
-        {
-            c_module = 0;
-            c_primitive = 0;
-            c_task = 0;
-            c_function = 0;
-            c_block = 0;
-            c_fjblk = 0;
-            c_parent = p;
-        }
-
-    static void destroy(vl_context *c)
-        {
-            while (c) {
-                vl_context *cx = c;
-                c = c->c_parent;
-                delete cx;
-            }
-        }
-
-    void set_module(vl_module *m)           { c_module = m; }
-    void set_primitive(vl_primitive *p)     { c_primitive = p; }
-    void set_task(vl_task *t)               { c_task = t; }
-    void set_function(vl_function *f)       { c_function = f; }
-    void set_block(vl_begin_end_stmt *b)    { c_block = b; }
-    void set_fjblk(vl_fork_join_stmt *f)    { c_fjblk = f; }
-
-    vl_module *module()         const { return (c_module); }
-    vl_primitive *primitive()   const { return (c_primitive); }
-    vl_task *task()             const { return (c_task); }
-    vl_function *function()     const { return (c_function); }
-    vl_begin_end_stmt *block()  const { return (c_block); }
-    vl_fork_join_stmt *fjblk()  const { return (c_fjblk); }
-    vl_context *parent()        const { return (c_parent); }
-
-    // vl_sim.cc
-    vl_context *copy();
-    bool in_context(vl_stmt*);
-    vl_var *lookup_var(const char*, bool);
-    vl_stmt *lookup_block(const char*);
-    vl_task *lookup_task(const char*);
-    vl_function *lookup_func(const char*);
-    vl_inst *lookup_mp(const char*);
-    table<vl_var*> *resolve_st(const char**, bool);
-    table<vl_task*> *resolve_task(const char**);
-    table<vl_function*> *resolve_func(const char**);
-    table<vl_inst*> *resolve_mp(const char**);
-    bool resolve_cx(const char**, vl_context&, bool);
-    bool resolve_path(const char*, bool);
-    vl_module *currentModule();
-    vl_primitive *currentPrimitive();
-    vl_function *currentFunction();
-    vl_task *currentTask();
-
-    // vl_print.cc
-    void print(ostream&);
-    char *hiername();
-
-private:
-    vl_module           *c_module;
-    vl_primitive        *c_primitive;
-    vl_task             *c_task;
-    vl_function         *c_function;
-    vl_begin_end_stmt   *c_block;
-    vl_fork_join_stmt   *c_fjblk;
-    vl_context          *c_parent;
 };
 
 // This, and the enum below, provide return values for the eval()

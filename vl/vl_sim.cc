@@ -189,8 +189,9 @@ namespace {
 
 vl_simulator *vl_simulator::s_simulator = 0;
 
-vl_simulator::vl_simulator()
+vl_simulator::vl_simulator(vl_simulator **uptr)
 {
+    s_userptr = uptr;
     s_description = 0;
     s_dmode = DLYtyp;
     s_stop = VLrun;
@@ -230,13 +231,15 @@ vl_simulator::vl_simulator()
 void
 vl_simulator::on_null_ptr()
 {
-    vl_error("null simulator pointer.");
+    vl_error("VL: null simulator pointer");
     exit(1);
 }
 
 
 vl_simulator::~vl_simulator()
 {
+    if (s_userptr)
+        *s_userptr = 0;
     while (s_monitors) {
         vl_monitor *m = s_monitors;
         s_monitors = s_monitors->next();
@@ -797,16 +800,84 @@ vl_context::in_context(vl_stmt *blk)
 }
 
 
+// Return the current module.
+//
+vl_module *
+vl_context::currentModule()
+{
+    vl_context *cx = this;
+    while (cx) {
+        if (cx->c_module)
+            return (cx->c_module);
+        if (cx->c_primitive)
+            return (0);
+        cx = cx->c_parent;
+    }
+    return (0);
+}
+
+
+// Return the current primitive.
+//
+vl_primitive *
+vl_context::currentPrimitive()
+{
+    vl_context *cx = this;
+    while (cx) {
+        if (cx->c_primitive)
+            return (cx->c_primitive);
+        if (cx->c_module)
+            return (0);
+        cx = cx->c_parent;
+    }
+    return (0);
+}
+
+
+// Return the current function.
+//
+vl_function *
+vl_context::currentFunction()
+{
+    vl_context *cx = this;
+    while (cx) {
+        if (cx->c_function)
+            return (cx->c_function);
+        if (cx->c_module || cx->c_primitive)
+            return (0);
+        cx = cx->c_parent;
+    }
+    return (0);
+}
+
+
+// Return the current task.
+//
+vl_task *
+vl_context::currentTask()
+{
+    vl_context *cx = this;
+    while (cx) {
+        if (cx->c_task)
+            return (cx->c_task);
+        if (cx->c_module || cx->c_primitive)
+            return (0);
+        cx = cx->c_parent;
+    }
+    return (0);
+}
+
+
 // Retrieve a value for the named variable, search present context
 // exclusively if thisonly is true.
 //
 vl_var *
-vl_context::lookup_var(const char *name, bool thisonly)
+vl_context::lookup_var(vl_simulator *sim, const char *name, bool thisonly)
 {
     const char *bname = name;
     vl_context *cx = this;
     while (cx) {
-        table<vl_var*> *st = cx->resolve_st(&bname, false);
+        table<vl_var*> *st = cx->resolve_st(sim, &bname, false);
         if (st) {
             vl_var *data;
             if (st->lookup(bname, &data) && data)
@@ -825,11 +896,11 @@ vl_context::lookup_var(const char *name, bool thisonly)
 // Return the named vl_begin_end_stmt or vl_fork_join_stmt.
 //
 vl_stmt *
-vl_context::lookup_block(const char *name)
+vl_context::lookup_block(vl_simulator *sim, const char *name)
 {
     const char *bname = name;
     vl_context cvar;
-    if (!resolve_cx(&bname, cvar, false)) {
+    if (!resolve_cx(sim, &bname, cvar, false)) {
         if (bname != name)
             // unresolved path prefix
             return (0);
@@ -882,10 +953,10 @@ vl_context::lookup_block(const char *name)
 // Return the named vl_task.
 //
 vl_task *
-vl_context::lookup_task(const char *name)
+vl_context::lookup_task(vl_simulator *sim, const char *name)
 {
     const char *bname = name;
-    table<vl_task*> *st = resolve_task(&bname);
+    table<vl_task*> *st = resolve_task(sim, &bname);
     if (st) {
         vl_task *vtask;
         if (st->lookup(bname, &vtask) && vtask)
@@ -898,10 +969,10 @@ vl_context::lookup_task(const char *name)
 // Return the named vl_function.
 //
 vl_function *
-vl_context::lookup_func(const char *name)
+vl_context::lookup_func(vl_simulator *sim, const char *name)
 {
     const char *bname = name;
-    table<vl_function*> *st = resolve_func(&bname);
+    table<vl_function*> *st = resolve_func(sim, &bname);
     if (st) {
         vl_function *func;
         if (st->lookup(bname, &func) && func)
@@ -912,10 +983,10 @@ vl_context::lookup_func(const char *name)
 
 
 vl_inst *
-vl_context::lookup_mp(const char *name)
+vl_context::lookup_mp(vl_simulator *sim, const char *name)
 {
     const char *bname = name;
-    table<vl_inst*> *st = resolve_mp(&bname);
+    table<vl_inst*> *st = resolve_mp(sim, &bname);
     if (st) {
         vl_inst *mp;
         if (st->lookup(bname, &mp) && mp)
@@ -925,142 +996,13 @@ vl_context::lookup_mp(const char *name)
 }
 
 
-// Return the symbol table for name, resolving the '.' notation if any,
-// if crt is true, create new symbol table if empty.  The base name is
-// returned in 'name'.
-//
-table<vl_var*> *
-vl_context::resolve_st(const char **name, bool crt)
-{
-    vl_context cvar;
-    const char *bname = *name;
-    if (!resolve_cx(name, cvar, false)) {
-        if (bname != *name)
-            // unresolved path prefix
-            return (0);
-        else
-            // no path prefix
-            cvar = *this;
-    }
-    table<vl_var*> *st = 0;
-    if (cvar.c_module) {
-        if (crt && !cvar.c_module->sig_st())
-            cvar.c_module->set_sig_st(new table<vl_var*>);
-        st = cvar.c_module->sig_st();
-    }
-    else if (cvar.c_primitive) {
-        if (crt && !cvar.c_primitive->sig_st())
-            cvar.c_primitive->set_sig_st(new table<vl_var*>);
-        st = cvar.c_primitive->sig_st();
-    }
-    else if (cvar.c_task) {
-        if (crt && !cvar.c_task->sig_st())
-            cvar.c_task->set_sig_st(new table<vl_var*>);
-        st = cvar.c_task->sig_st();
-    }
-    else if (cvar.c_function) {
-        if (crt && !cvar.c_function->sig_st())
-            cvar.c_function->set_sig_st(new table<vl_var*>);
-        st = cvar.c_function->sig_st();
-    }
-    else if (cvar.c_block) {
-        if (crt && !cvar.c_block->sig_st())
-            cvar.c_block->set_sig_st(new table<vl_var*>);
-        st = cvar.c_block->sig_st();
-    }
-    else if (cvar.c_fjblk) {
-        if (crt && !cvar.c_fjblk->sig_st())
-            cvar.c_fjblk->set_sig_st(new table<vl_var*>);
-        st = cvar.c_fjblk->sig_st();
-    }
-    return (st);
-}
-
-
-table<vl_task*> *
-vl_context::resolve_task(const char **name)
-{
-    vl_context cvar;
-    const char *bname = *name;
-    if (!resolve_cx(name, cvar, false)) {
-        if (bname != *name)
-            // unresolved path prefix
-            return (0);
-        else
-            // no path prefix
-            cvar = *this;
-    }
-    table<vl_task*> *st = 0;
-    vl_context *cx = &cvar;
-    while (cx) {
-        if (cx->c_module) {
-            st = cx->c_module->task_st();
-            break;
-        }
-        cx = cx->c_parent;
-    }
-    return (st);
-}
-
-
-table<vl_function*> *
-vl_context::resolve_func(const char **name)
-{
-    vl_context cvar;
-    const char *bname = *name;
-    if (!resolve_cx(name, cvar, false)) {
-        if (bname != *name)
-            // unresolved path prefix
-            return (0);
-        else
-            // no path prefix
-            cvar = *this;
-    }
-    table<vl_function*> *st = 0;
-    vl_context *cx = &cvar;
-    while (cx) {
-        if (cx->c_module) {
-            st = cx->c_module->func_st();
-            break;
-        }
-        cx = cx->c_parent;
-    }
-    return (st);
-}
-
-
-table<vl_inst*> *
-vl_context::resolve_mp(const char **name)
-{
-    vl_context cvar;
-    const char *bname = *name;
-    if (!resolve_cx(name, cvar, false)) {
-        if (bname != *name)
-            // unresolved path prefix
-            return (0);
-        else
-            // no path prefix
-            cvar = *this;
-    }
-    table<vl_inst*> *st = 0;
-    vl_context *cx = &cvar;
-    while (cx) {
-        if (cx->c_module) {
-            st = cx->c_module->inst_st();
-            break;
-        }
-        cx = cx->c_parent;
-    }
-    return (st);
-}
-
-
 // Strip the prefix from name, and return the object which should contain
 // the base symbol name in cvar.  If error or no prefix, return false.
 // If modonly is true, return the module containing item.
 //
 bool
-vl_context::resolve_cx(const char **name, vl_context &cvar, bool modonly)
+vl_context::resolve_cx(vl_simulator *sim, const char **name, vl_context &cvar,
+    bool modonly)
 {
     const char *r = *name;
     const char *rp = 0;
@@ -1105,9 +1047,9 @@ vl_context::resolve_cx(const char **name, vl_context &cvar, bool modonly)
     // look for top module
     cvar.c_module = 0;
     cvar.c_parent = 0;
-    for (int i = 0; i < VS()->top_modules()->num(); i++) {
-        if (!strcmp(r, VS()->top_modules()->mod(i)->name())) {
-            cvar.c_module = VS()->top_modules()->mod(i);
+    for (int i = 0; i < sim->top_modules()->num(); i++) {
+        if (!strcmp(r, sim->top_modules()->mod(i)->name())) {
+            cvar.c_module = sim->top_modules()->mod(i);
             r = s;
             break;
         }
@@ -1135,6 +1077,140 @@ vl_context::resolve_cx(const char **name, vl_context &cvar, bool modonly)
         }
     }
     return (cvar.resolve_path(r, modonly));
+}
+
+
+//
+// The rest of the functions are private.
+//
+
+// Return the symbol table for name, resolving the '.' notation if any,
+// if crt is true, create new symbol table if empty.  The base name is
+// returned in 'name'.
+//
+table<vl_var*> *
+vl_context::resolve_st(vl_simulator *sim, const char **name, bool crt)
+{
+    vl_context cvar;
+    const char *bname = *name;
+    if (!resolve_cx(sim, name, cvar, false)) {
+        if (bname != *name)
+            // unresolved path prefix
+            return (0);
+        else
+            // no path prefix
+            cvar = *this;
+    }
+    table<vl_var*> *st = 0;
+    if (cvar.c_module) {
+        if (crt && !cvar.c_module->sig_st())
+            cvar.c_module->set_sig_st(new table<vl_var*>);
+        st = cvar.c_module->sig_st();
+    }
+    else if (cvar.c_primitive) {
+        if (crt && !cvar.c_primitive->sig_st())
+            cvar.c_primitive->set_sig_st(new table<vl_var*>);
+        st = cvar.c_primitive->sig_st();
+    }
+    else if (cvar.c_task) {
+        if (crt && !cvar.c_task->sig_st())
+            cvar.c_task->set_sig_st(new table<vl_var*>);
+        st = cvar.c_task->sig_st();
+    }
+    else if (cvar.c_function) {
+        if (crt && !cvar.c_function->sig_st())
+            cvar.c_function->set_sig_st(new table<vl_var*>);
+        st = cvar.c_function->sig_st();
+    }
+    else if (cvar.c_block) {
+        if (crt && !cvar.c_block->sig_st())
+            cvar.c_block->set_sig_st(new table<vl_var*>);
+        st = cvar.c_block->sig_st();
+    }
+    else if (cvar.c_fjblk) {
+        if (crt && !cvar.c_fjblk->sig_st())
+            cvar.c_fjblk->set_sig_st(new table<vl_var*>);
+        st = cvar.c_fjblk->sig_st();
+    }
+    return (st);
+}
+
+
+table<vl_task*> *
+vl_context::resolve_task(vl_simulator *sim, const char **name)
+{
+    vl_context cvar;
+    const char *bname = *name;
+    if (!resolve_cx(sim, name, cvar, false)) {
+        if (bname != *name)
+            // unresolved path prefix
+            return (0);
+        else
+            // no path prefix
+            cvar = *this;
+    }
+    table<vl_task*> *st = 0;
+    vl_context *cx = &cvar;
+    while (cx) {
+        if (cx->c_module) {
+            st = cx->c_module->task_st();
+            break;
+        }
+        cx = cx->c_parent;
+    }
+    return (st);
+}
+
+
+table<vl_function*> *
+vl_context::resolve_func(vl_simulator *sim, const char **name)
+{
+    vl_context cvar;
+    const char *bname = *name;
+    if (!resolve_cx(sim, name, cvar, false)) {
+        if (bname != *name)
+            // unresolved path prefix
+            return (0);
+        else
+            // no path prefix
+            cvar = *this;
+    }
+    table<vl_function*> *st = 0;
+    vl_context *cx = &cvar;
+    while (cx) {
+        if (cx->c_module) {
+            st = cx->c_module->func_st();
+            break;
+        }
+        cx = cx->c_parent;
+    }
+    return (st);
+}
+
+
+table<vl_inst*> *
+vl_context::resolve_mp(vl_simulator *sim, const char **name)
+{
+    vl_context cvar;
+    const char *bname = *name;
+    if (!resolve_cx(sim, name, cvar, false)) {
+        if (bname != *name)
+            // unresolved path prefix
+            return (0);
+        else
+            // no path prefix
+            cvar = *this;
+    }
+    table<vl_inst*> *st = 0;
+    vl_context *cx = &cvar;
+    while (cx) {
+        if (cx->c_module) {
+            st = cx->c_module->inst_st();
+            break;
+        }
+        cx = cx->c_parent;
+    }
+    return (st);
 }
 
 
@@ -1277,74 +1353,6 @@ vl_context::resolve_path(const char *string, bool modonly)
         }
     }
     return (true);
-}
-
-
-// Return the current module.
-//
-vl_module *
-vl_context::currentModule()
-{
-    vl_context *cx = this;
-    while (cx) {
-        if (cx->c_module)
-            return (cx->c_module);
-        if (cx->c_primitive)
-            return (0);
-        cx = cx->c_parent;
-    }
-    return (0);
-}
-
-
-// Return the current primitive.
-//
-vl_primitive *
-vl_context::currentPrimitive()
-{
-    vl_context *cx = this;
-    while (cx) {
-        if (cx->c_primitive)
-            return (cx->c_primitive);
-        if (cx->c_module)
-            return (0);
-        cx = cx->c_parent;
-    }
-    return (0);
-}
-
-
-// Return the current function.
-//
-vl_function *
-vl_context::currentFunction()
-{
-    vl_context *cx = this;
-    while (cx) {
-        if (cx->c_function)
-            return (cx->c_function);
-        if (cx->c_module || cx->c_primitive)
-            return (0);
-        cx = cx->c_parent;
-    }
-    return (0);
-}
-
-
-// Return the current task.
-//
-vl_task *
-vl_context::currentTask()
-{
-    vl_context *cx = this;
-    while (cx) {
-        if (cx->c_task)
-            return (cx->c_task);
-        if (cx->c_module || cx->c_primitive)
-            return (0);
-        cx = cx->c_parent;
-    }
-    return (0);
 }
 // End vl_context functions.
 
@@ -2500,7 +2508,7 @@ vl_decl::setup(vl_simulator *sim)
         vl_bassign_stmt *assign;
         while (gen.next(&assign)) {
             vl_var *v =
-                sim->context()->lookup_var(assign->lhs()->name(), false);
+                sim->lookup_var(assign->lhs()->name(), false);
             if (!v) {
                 vl_error("can not resolve defparam %s", assign->lhs()->name());
                 sim->abort();
@@ -2838,7 +2846,7 @@ vl_bassign_stmt::setup(vl_simulator *sim)
             sim->abort();
             return;
         }
-        vl_var *nvar = sim->context()->lookup_var(ba_lhs->name(), false);
+        vl_var *nvar = sim->lookup_var(ba_lhs->name(), false);
         if (!nvar) {
             vl_warn("implicit declaration of %s", ba_lhs->name());
             vl_module *cmod = sim->context()->currentModule();
@@ -3506,7 +3514,7 @@ vl_send_event_stmt::setup(vl_simulator *sim)
 EVtype
 vl_send_event_stmt::eval(vl_event*, vl_simulator *sim)
 {
-    vl_var *d = sim->context()->lookup_var(se_name, false);
+    vl_var *d = sim->lookup_var(se_name, false);
     if (!d) {
         vl_error("send-event %s not found", se_name);
         sim->abort();
@@ -3656,7 +3664,7 @@ void
 vl_task_enable_stmt::setup(vl_simulator *sim)
 {
     if (!te_task) {
-        te_task = sim->context()->lookup_task(te_name);
+        te_task = sim->lookup_task(te_name);
         if (!te_task) {
             vl_error("can't find task %s", te_name);
             sim->abort();
@@ -3668,7 +3676,7 @@ vl_task_enable_stmt::setup(vl_simulator *sim)
     // prepended path
     vl_context cvar;
     const char *n = te_name;
-    if (!sim->context()->resolve_cx(&n, cvar, false))
+    if (!sim->resolve_cx(&n, cvar, false))
         cvar = *sim->context();
     vl_context *tcx = sim->context();
     sim->set_context(&cvar);
@@ -3793,13 +3801,13 @@ vl_disable_stmt::eval(vl_event*, vl_simulator *sim)
             d_target = sim->context()->task();
     }
     else {
-        vl_stmt *s = sim->context()->lookup_block(d_name);
+        vl_stmt *s = sim->lookup_block(d_name);
         if (s) {
             if (s->type() == BeginEndStmt || s->type() == ForkJoinStmt)
                 d_target = s;
             return (EVnone);
         }
-        vl_task *t = sim->context()->lookup_task(d_name);
+        vl_task *t = sim->lookup_task(d_name);
         if (t) {
             d_target = t;
             return (EVnone);

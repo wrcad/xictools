@@ -205,11 +205,9 @@ VerilogBlock::VerilogBlock(sLine *lines)
     if (err)
         return;
     vb_desc = VP()->get_description();
-    vb_sim = new vl_simulator;
-    if (!vb_sim->initialize(vb_desc, dly_type, debug_flags)) {
+    vb_sim = new vl_simulator(&vb_sim);
+    if (!vb_sim->initialize(vb_desc, dly_type, debug_flags))
         delete vb_sim;
-        vb_sim = 0;
-    }
 }
 
 
@@ -311,7 +309,7 @@ VerilogBlock::query_var(const char *name, const char *range, double *d)
     if (vb_sim && vb_sim->top_modules()) {
         vl_context cx;
         cx.set_module(vb_sim->top_modules()->mod(0));
-        vl_var *data = cx.lookup_var(name, true);
+        vl_var *data = cx.lookup_var(vb_sim, name, true);
         if (data) {
             if (range && *range) {
                 int l = -1, r = -1;
@@ -349,7 +347,7 @@ VerilogBlock::set_var(sADC *a, double val)
     if (vb_sim && vb_sim->top_modules()) {
         vl_context cx;
         cx.set_module(vb_sim->top_modules()->mod(0));
-        vl_var *data = cx.lookup_var(a->dig_var(), true);
+        vl_var *data = cx.lookup_var(vb_sim, a->dig_var(), true);
         if (data) {
             const char *range = a->range();
             if (range && *range) {
