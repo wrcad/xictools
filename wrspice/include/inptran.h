@@ -168,6 +168,9 @@ struct pbitAry
     int rep_start() const { return (ba_rst); }
 
 private:
+    void add(const char *s);
+    void addPRBS(int);
+
     void addbit(bool b)
         {
             if (ba_cnt >= ba_size*sizeof(unsigned long)) {
@@ -183,13 +186,6 @@ private:
                 ba_ary[ba_size-1] |= (1 << c);
             }
             ba_cnt++;
-        }
-
-    void add(const char *s)
-        {
-            const char *z = "0fnFN";
-            for ( ; *s; s++)
-                addbit(!strchr(z, *s));
         }
 
     unsigned long *ba_ary;

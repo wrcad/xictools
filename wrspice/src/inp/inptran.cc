@@ -403,6 +403,69 @@ pbitAry::add(pbitList *list)
         }
     }
 }
+
+
+// Private function.
+//
+void
+pbitAry::add(const char *s)
+{
+    if (!strncasecmp(s, "prbs", 4)) {
+        int n = atoi(s+4);
+        addPRBS(n);
+        return;
+    }
+
+    const char *z = "0fnFN";
+    for ( ; *s; s++)
+        addbit(!strchr(z, *s));
+}
+
+
+// Private function.
+// Pseudo-random sequences: we support 6-11.
+//  PRBS6 = x^6 + x^5 + 1
+//  PRBS7 = x^7 + x^6 + 1
+//  PRBS9 = x^9 + x^5 + 1
+//  PRBS10 = x^10 + x^7 + 1
+//  PRBS11 = x^11 + x^9 + 1
+//  PRBS15 = x^15 + x^14 + 1
+//  PRBS20 = x^20 + x^3 + 1
+//  PRBS23 = x^23 + x^18 + 1
+//  PRBS31 = x^31 + x^28 + 1
+//
+void
+pbitAry::addPRBS(int len)
+{
+    int n1 = len;
+    int n2;
+    if (n1 <= 6) {
+        n1 = 6;
+        n2 = 5;
+    }
+    else if (n1 == 7)
+        n2 = 6;
+    else if (n1 <= 9) {
+        n1 = 9;
+        n2 = 5;
+    }
+    else if (n1 == 10)
+        n2 = 7;
+    else if (n1 >= 11) {
+        n1 = 11;
+        n2 = 9;
+    }
+    unsigned int mask = (1 << n1) - 1;
+    unsigned long start = 0x02;
+    unsigned long a = start;
+    for (int i = 1;; i++) {
+        int newbit = (((a >> (n1-1)) ^ (a >> (n2-1))) & 1);
+        a = ((a << 1) | newbit) & mask;
+        addbit(a&1);
+        if (a == start)
+            break;
+    }
+}
 // End of pbitAry functions.
 
 

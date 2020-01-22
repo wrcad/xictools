@@ -367,72 +367,9 @@ sCKT::getParam(const char *word, const char *param, IFdata *data,
 }
 
 
-int
-sCKT::setParam(const char *word, const char *param, IFdata *data)
-{
-    sGENinstance *dev = 0;
-    sGENmodel *mod = 0;
-    if (!word || !*word)
-        return (E_NODEV);
-    if (!param || !*param || lstring::cieq(param, "all"))
-        return (E_BADPARM);
-    char *nm = lstring::copy(word);
-    insert(&nm);
-    int typecode = finddev(nm, &dev, &mod);
-    if (typecode < 0)
-        return (E_NODEV);
-    IFdevice *device = DEV.device(typecode);
-    if (!device)
-        return (E_NODEV);
-    IFparm *opt = 0;
-    if (dev)
-        opt = device->findInstanceParm(param, IF_SET);
-    else if (mod)
-        opt = device->findModelParm(param, IF_SET);
-    if (!opt)
-        return (E_BADPARM);
-
-    // Need to ensure data type.
-    if ((opt->dataType & IF_VARTYPES) != data->type) {
-        if ((opt->dataType & IF_VARTYPES) == IF_PARSETREE &&
-                data->type == IF_REAL) {
-            // Assume that we can always pass a real instead of a
-            // parse tree.
-        }
-        else if (((opt->dataType & IF_VARTYPES) == IF_REAL ||
-                (opt->dataType & IF_VARTYPES) == IF_PARSETREE) &&
-                data->type == IF_INTEGER) {
-            double d = (double)data->v.iValue;
-            data->v.rValue = d;
-            data->type = IF_REAL;
-        }
-        else if ((opt->dataType & IF_VARTYPES) == IF_INTEGER &&
-                data->type == IF_REAL) {
-            int i = (int)data->v.rValue;
-            data->v.iValue = i;
-            data->type = IF_INTEGER;
-        }
-        else
-            return (E_BADPARM);
-    }
-
-    if (dev) {
-        int err = dev->setParam(opt->id, data);
-        if (err)
-            return (err);
-    }
-    else if (mod) {
-        int err = mod->setParam(opt->id, data);
-        if (err)
-            return (err);
-    }
-    else
-        return (E_BADPARM);
-
-    return (OK);
-}
-
-
+// This is called to set temporary parameter values for Monte Carlo
+// and operating range analysis.
+//
 int
 sCKT::setParam(const char *word, const char *param, const char *rhs)
 {
@@ -460,8 +397,11 @@ sCKT::setParam(const char *word, const char *param, const char *rhs)
 
     IFdata data;
     // If expecting a real, parse as an expression and evaluate,
-    // otherwise take type as given.
-    if ((opt->dataType & IF_VARTYPES) == IF_REAL)  {
+    // otherwise take type as given.  Assume that an IF_PARSETREE
+    // input can accept an IF_REAL.
+
+    if ((opt->dataType & IF_VARTYPES) == IF_REAL ||
+            (opt->dataType & IF_VARTYPES) == IF_PARSETREE) {
         pnode *nn = Sp.GetPnode(&rhs, true);
         if (!nn)
             return (E_PARMVAL);
