@@ -657,6 +657,20 @@ IFparseTree::differentiate(IFparseNode *p, int varnum)
         newp = differentiate(p->p_left, varnum);
         break;
 
+#ifdef NEWOPS
+    case PT_EQ:
+    case PT_GT:
+    case PT_LT:
+    case PT_GE:
+    case PT_LE:
+    case PT_NE:
+    case PT_AND:
+    case PT_OR:
+    case PT_NOT:
+        newp = p_mkcon(0.0);
+        break;
+#endif
+
     case PT_FUNCTION:
         if (p->p_left->p_type == PT_COMMA) {
             // case for jn, yn. pow
@@ -1708,6 +1722,17 @@ IFparseNode::check(const IFparseNode *pn)
     case PT_DIVIDE:
     case PT_POWER:
     case PT_COMMA:
+#ifdef NEWOPS
+    case PT_EQ:
+    case PT_GT:
+    case PT_LT:
+    case PT_GE:
+    case PT_LE:
+    case PT_NE:
+    case PT_AND:
+    case PT_OR:
+    case PT_NOT:
+#endif
         return (check(pn->p_left) && check(pn->p_right));
 
     case PT_MACRO_DERIV:

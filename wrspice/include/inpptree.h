@@ -62,6 +62,10 @@ typedef struct IFparseNode ParseNode;
 // device library.
 //
 
+// Enable relational operators in source functions.  These can cause
+// trouble as they have singular derivatives, but can be very useful.
+#define NEWOPS
+
 // These are the possible types of nodes we can have in the parse tree.
 //
 enum PTtype
@@ -73,6 +77,19 @@ enum PTtype
     PT_DIVIDE = TT_DIVIDE,
     PT_POWER = TT_POWER,
     PT_COMMA = TT_COMMA,
+
+#ifdef NEWOPS
+    PT_EQ = TT_EQ,
+    PT_GT = TT_GT,
+    PT_LT = TT_LT,
+    PT_GE = TT_GE,
+    PT_LE = TT_LE,
+    PT_NE = TT_NE,
+    PT_AND = TT_AND,
+    PT_OR = TT_OR,
+    PT_NOT = TT_NOT,
+#endif
+
     PT_FUNCTION,
     PT_CONSTANT,
     PT_VAR,
@@ -268,6 +285,18 @@ private:
     double PTtimes(const double*);
     double PTdivide(const double*);
     double PTpower(const double*);
+
+#ifdef NEWOPS
+    double PTeq(const double*);
+    double PTgt(const double*);
+    double PTlt(const double*);
+    double PTge(const double*);
+    double PTle(const double*);
+    double PTne(const double*);
+    double PTand(const double*);
+    double PTor(const double*);
+    double PTnot(const double*);
+#endif
 
     bool p_two_args(int);
 

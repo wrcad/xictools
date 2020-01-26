@@ -276,6 +276,25 @@ namespace {
 }
 
 
+// Return the length of the sequence.
+//
+int
+pbitList::length ()
+{
+    if (!pl_bstring)
+        return (0);
+    if (!strncasecmp(pl_bstring+1, "prbs", 4)) {
+        int n = atoi(pl_bstring+5);
+        if (n < 6)
+            n = 6;
+        else if (n > 12)
+            n = 12;
+        return ((1 << n) - 1);
+    }
+    return (strlen(pl_bstring) - 1);
+}
+
+
 // Static function.
 // Parse a pattern specification, create and return a linked list
 // description.  The string pointer is advanced.  On error, zero is
@@ -307,7 +326,7 @@ pbitList::parse(const char **p, char **errstr)
                     if (err == OK) {
                         if (rbval < 1)
                             rbval = 1;
-                        if (rbval >= (int)strlen(bse->pl_bstring)-1) {
+                        if (rbval >= bse->length()) {
                             *errstr = lstring::copy("RB value too large");
                             destroy(bs0);
                             return (0);
@@ -388,31 +407,58 @@ pbitAry::add(pbitList *list)
     bool done = false;
     for (pbitList *b = list; b && !done; b = b->next()) {
         int strt = ba_cnt;
-        add(b->bstring() + 1);
-        if (b->r() == -1) {
-            ba_rst = strt + b->rb() - 1;
-            if (ba_rst == 0) {
-                addbit(ba_ary[0] & 1);
-                ba_rst = 1;
+
+        const char *s = b->bstring() + 1;
+        if (!strncasecmp(s, "prbs", 4)) {
+            int n = atoi(s + 4);
+            addPRBS(n, b->rb() - 1);
+
+            if (b->r() == -1) {
+                ba_rst = strt ;
+                if (ba_rst == 0) {
+                    addbit(ba_ary[0] & 1);
+                    ba_rst = 1;
+                }
+                done = true;
             }
-            done = true;
+            else {
+                for (int i = 0; i < b->r(); i++)
+                    addPRBS(n, b->rb() - 1);
+            }
         }
         else {
-            for (int i = 0; i < b->r(); i++)
-                add(b->bstring() + b->rb());
+            const char *z = "0fnFN";
+            for ( ; *s; s++)
+                addbit(!strchr(z, *s));
+
+            if (b->r() == -1) {
+                ba_rst = strt + b->rb() - 1;
+                if (ba_rst == 0) {
+                    addbit(ba_ary[0] & 1);
+                    ba_rst = 1;
+                }
+                done = true;
+            }
+            else {
+                for (int i = 0; i < b->r(); i++) {
+                    s = b->bstring() + b->rb();
+                    for ( ; *s; s++)
+                        addbit(!strchr(z, *s));
+                }
+            }
         }
     }
 }
 
-
+/*XXX
 // Private function.
 //
 void
-pbitAry::add(const char *s)
+pbitAry::add(const char *s, int bit)
 {
     if (!strncasecmp(s, "prbs", 4)) {
         int n = atoi(s+4);
-        addPRBS(n);
+        addPRBS(n, bit);
         return;
     }
 
@@ -420,50 +466,69 @@ pbitAry::add(const char *s)
     for ( ; *s; s++)
         addbit(!strchr(z, *s));
 }
+*/
 
 
 // Private function.
-// Pseudo-random sequences: we support 6-11.
+// Supported pseudo-random sequences.
 //  PRBS6 = x^6 + x^5 + 1
 //  PRBS7 = x^7 + x^6 + 1
+//  PRBS8 = x^8 + x^6 + x^5 + x^4 + 1;
 //  PRBS9 = x^9 + x^5 + 1
 //  PRBS10 = x^10 + x^7 + 1
 //  PRBS11 = x^11 + x^9 + 1
-//  PRBS15 = x^15 + x^14 + 1
-//  PRBS20 = x^20 + x^3 + 1
-//  PRBS23 = x^23 + x^18 + 1
-//  PRBS31 = x^31 + x^28 + 1
+//  PRBS12 = x^12 + x^11 + x^8 + x^6 + 1;
+// The pattern is rotated by bit.
 //
 void
-pbitAry::addPRBS(int len)
+pbitAry::addPRBS(int len, int bit)
 {
     int n1 = len;
     int n2;
+    int n3 = 1;
+    int n4 = 1;
     if (n1 <= 6) {
         n1 = 6;
         n2 = 5;
     }
     else if (n1 == 7)
         n2 = 6;
-    else if (n1 <= 9) {
-        n1 = 9;
-        n2 = 5;
+    else if (n1 == 8) {
+        n2 = 6;
+        n3 = 5;
+        n4 = 4;
     }
+    else if (n1 == 9)
+        n2 = 5;
     else if (n1 == 10)
         n2 = 7;
-    else if (n1 >= 11) {
-        n1 = 11;
+    else if (n1 == 11)
         n2 = 9;
+    else if (n1 >= 12) {
+        n1 = 12;
+        n2 = 11;
+        n3 = 8;
+        n4 = 6;
     }
     unsigned int mask = (1 << n1) - 1;
     unsigned long start = 0x02;
     unsigned long a = start;
-    for (int i = 1;; i++) {
-        int newbit = (((a >> (n1-1)) ^ (a >> (n2-1))) & 1);
+    for (;;) {
+        if (!bit)
+            start = a;
+        unsigned long newbit;
+        if (n1 == 8 || n1 == 12) {
+            newbit = (((a >> (n1-1)) + (a >> (n2-1)) + (a >> (n3-1)) +
+                (a >> (n4-1))) & 1);
+        }
+        else
+            newbit = (((a >> (n1-1)) + (a >> (n2-1))) & 1);
         a = ((a << 1) | newbit) & mask;
-        addbit(a&1);
-        if (a == start)
-            break;
+        if (bit-- <= 0) {
+            addbit(a&1);
+            if (a == start)
+                break;
+        }
     }
 }
 // End of pbitAry functions.

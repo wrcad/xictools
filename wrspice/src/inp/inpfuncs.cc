@@ -82,13 +82,26 @@ extern double erfc(double);
 // The binary operators
 
 IFparseNode::PTop IFparseNode::PTops[] = { 
-    PTop( PT_COMMA,       ",",    0 ),
-    PTop( PT_PLUS,        "+",    &IFparseNode::PTplus ),
-    PTop( PT_MINUS,       "-",    &IFparseNode::PTminus ),
-    PTop( PT_TIMES,       "*",    &IFparseNode::PTtimes ),
-    PTop( PT_DIVIDE,      "/",    &IFparseNode::PTdivide ),
-    PTop( PT_POWER,       "^",    &IFparseNode::PTpower ),
-    PTop( PT_PLACEHOLDER, 0,      0 )
+    PTop( PT_COMMA,     ",",        0 ),
+    PTop( PT_PLUS,      "+",        &IFparseNode::PTplus ),
+    PTop( PT_MINUS,     "-",        &IFparseNode::PTminus ),
+    PTop( PT_TIMES,     "*",        &IFparseNode::PTtimes ),
+    PTop( PT_DIVIDE,    "/",        &IFparseNode::PTdivide ),
+    PTop( PT_POWER,     "^",        &IFparseNode::PTpower ),
+
+#ifdef NEWOPS
+    PTop( PT_EQ,        "==",       &IFparseNode::PTeq ),
+    PTop( PT_GT,        ">",        &IFparseNode::PTgt ),
+    PTop( PT_LT,        "<",        &IFparseNode::PTlt ),
+    PTop( PT_GE,        ">=",       &IFparseNode::PTge ),
+    PTop( PT_LE,        "<=",       &IFparseNode::PTle ),
+    PTop( PT_NE,        "!=",       &IFparseNode::PTne ),
+    PTop( PT_AND,       "&",        &IFparseNode::PTand ),
+    PTop( PT_OR,        "|",        &IFparseNode::PTor ),
+    PTop( PT_NOT,       "~",        &IFparseNode::PTnot ),
+#endif
+
+    PTop( PT_PLACEHOLDER, 0,        0 )
 };
 
 double
@@ -127,6 +140,55 @@ IFparseNode::PTpower(const double *args)
         return (0.0);
     return (pow(args[0], args[1]));
 }
+
+
+#ifdef NEWOPS
+
+double
+IFparseNode::PTeq(const double *args)
+{ return (args[0] == args[1]); }
+
+
+double
+IFparseNode::PTgt(const double *args)
+{ return (args[0] > args[1]); }
+
+
+double
+IFparseNode::PTlt(const double *args)
+{ return (args[0] < args[1]); }
+
+
+double
+IFparseNode::PTge(const double *args)
+{ return (args[0] >= args[1]); }
+
+
+double
+IFparseNode::PTle(const double *args)
+{ return (args[0] <= args[1]); }
+
+
+double
+IFparseNode::PTne(const double *args)
+{ return (args[0] != args[1]); }
+
+
+double
+IFparseNode::PTand(const double *args)
+{ return (rint(args[0]) && rint(args[1])); }
+
+
+double
+IFparseNode::PTor(const double *args)
+{ return (rint(args[0]) || rint(args[1])); }
+
+
+double
+IFparseNode::PTnot(const double *args)
+{ return (!rint(args[0])); }
+
+#endif
 
 
 // The math functions

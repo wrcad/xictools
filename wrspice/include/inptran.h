@@ -126,6 +126,7 @@ struct pbitList
     int rb()                { return (pl_rb); }
     int r()                 { return (pl_r); }
 
+    int length();
     static pbitList *parse(const char**, char**);
     static pbitList *dup(pbitList*);
 
@@ -169,7 +170,7 @@ struct pbitAry
 
 private:
     void add(const char *s);
-    void addPRBS(int);
+    void addPRBS(int, int);
 
     void addbit(bool b)
         {
