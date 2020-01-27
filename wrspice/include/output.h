@@ -164,6 +164,7 @@ struct sCHECKprms : public sOUTcontrol
     ~sCHECKprms();
 
     int setup(checkargs&, wordlist*);
+    int resetup(wordlist*);
     int parseRange(wordlist**);
     void initRange();
     void initNames();

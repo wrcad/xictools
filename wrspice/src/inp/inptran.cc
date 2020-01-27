@@ -450,24 +450,6 @@ pbitAry::add(pbitList *list)
     }
 }
 
-/*XXX
-// Private function.
-//
-void
-pbitAry::add(const char *s, int bit)
-{
-    if (!strncasecmp(s, "prbs", 4)) {
-        int n = atoi(s+4);
-        addPRBS(n, bit);
-        return;
-    }
-
-    const char *z = "0fnFN";
-    for ( ; *s; s++)
-        addbit(!strchr(z, *s));
-}
-*/
-
 
 // Private function.
 // Supported pseudo-random sequences.

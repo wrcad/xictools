@@ -96,48 +96,59 @@ CommandTab::com_mctrial(wordlist*)
 }
 
 
+namespace {
+    void find_oprange(wordlist *wl, bool dolower=true, bool doupper=true)
+    {
+        if (!Sp.CurCircuit())
+            return;
+        sCHECKprms *cj = Sp.CurCircuit()->check();
+        if (!cj)
+            return;
+        int ret = true;
+
+        cj->resetup(wl);
+
+        bool mbak = cj->monte();
+        bool abak = cj->doall();
+        int s1 = cj->step1();
+        int s2 = cj->step2();
+        cj->set_monte(false);
+        cj->set_doall(false);
+        cj->set_step1(0);
+        cj->set_step2(0);
+
+        if (!cj->out_cir)
+            ret = cj->initial();
+        if (ret)
+            ret = cj->findRange(dolower, doupper);
+
+        cj->set_monte(mbak);
+        cj->set_doall(abak);
+        cj->set_step1(s1);
+        cj->set_step2(s2);
+        cj->initInput(cj->val1(), cj->val2());
+    }
+}
+
+
 void
 CommandTab::com_findrange(wordlist *wl)
 {
-    if (!Sp.CurCircuit())
-        return;
-    sCHECKprms *cj = Sp.CurCircuit()->check();
-    if (!cj)
-        return;
-    int ret = true;
+    find_oprange(wl);
+}
 
-    bool dolower = true, doupper = true;
-    while (wl) {
-        if (*wl->wl_word == 'l' || *wl->wl_word == 'L') {
-            dolower = true;
-            doupper = false;
-        }
-        else if (*wl->wl_word == 'u' || *wl->wl_word == 'U') {
-            dolower = false;
-            doupper = true;
-        }
-        wl = wl->wl_next;
-    }
 
-    bool mbak = cj->monte();
-    bool abak = cj->doall();
-    int s1 = cj->step1();
-    int s2 = cj->step2();
-    cj->set_monte(false);
-    cj->set_doall(false);
-    cj->set_step1(0);
-    cj->set_step2(0);
+void
+CommandTab::com_findupper(wordlist *wl)
+{
+    find_oprange(wl, false);
+}
 
-    if (!cj->out_cir)
-        ret = cj->initial();
-    if (ret)
-        ret = cj->findRange(dolower, doupper);
 
-    cj->set_monte(mbak);
-    cj->set_doall(abak);
-    cj->set_step1(s1);
-    cj->set_step2(s2);
-    cj->initInput(cj->val1(), cj->val2());
+void
+CommandTab::com_findlower(wordlist *wl)
+{
+    find_oprange(wl, true, false);
 }
 
 
@@ -620,6 +631,9 @@ sCHECKprms::setup(checkargs &args, wordlist *wl)
     if (!curckt)
         return (E_NOCKT);
 
+    if (curckt->runonce())
+        curckt->rebuild(true);
+
     // Create a new plot for the analysis.
     out_plot = new sPlot("range");
     out_plot->new_plot();
@@ -674,6 +688,47 @@ sCHECKprms::setup(checkargs &args, wordlist *wl)
 
     if (!args.batchmode() && !args.monte() && !args.findedge())
         check_print();
+
+    return (OK);
+}
+
+
+// This is called from the findrange command, allows reset of the
+// sweep parameters.
+//
+int
+sCHECKprms::resetup(wordlist *wl)
+{
+    sFtCirc *curckt = Sp.CurCircuit();
+    if (!curckt)
+        return (E_NOCKT);
+    if (!out_plot) {
+        // Plot should already exist.
+        out_plot = new sPlot("range");
+        out_plot->new_plot();
+    }
+    OP.setCurPlot(out_plot->type_name());
+
+    int err = parseRange(&wl);
+    if (err != OK) {
+        GRpkgIf()->ErrPrintf(ET_ERROR,
+            "syntax error in findrange command line.\n");
+        wordlist::destroy(wl);
+        return (err);
+    }
+
+    // Run the exec script.
+    set_vec(checkINIT, 1.0);
+    curckt->execBlk().exec(false);
+    set_vec(checkINIT, 0.0);
+    set_vec(checkFAIL, 0.0);
+
+    initRange();
+    initNames();
+    initCheckPnts();
+
+    ch_fail = false;
+    ch_nogo = false;
 
     return (OK);
 }

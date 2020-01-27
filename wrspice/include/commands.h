@@ -140,7 +140,9 @@ public:
     static void com_echo(wordlist*);
     static void com_echof(wordlist*);
     static void com_edit(wordlist*);
+    static void com_findlower(wordlist*);
     static void com_findrange(wordlist*);
+    static void com_findupper(wordlist*);
     static void com_fourier(wordlist*);
     static void com_free(wordlist*);
     static void com_hardcopy(wordlist*);

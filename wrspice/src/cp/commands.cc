@@ -167,7 +167,9 @@ namespace cmdnames {
     const char *cmd_echo        = "echo";
     const char *cmd_echof       = "echof";
     const char *cmd_edit        = "edit";
+    const char *cmd_findlower   = "findlower";
     const char *cmd_findrange   = "findrange";
+    const char *cmd_findupper   = "findupper";
     const char *cmd_fourier     = "fourier";
     const char *cmd_free        = "free";
     const char *cmd_hardcopy    = "hardcopy";
@@ -373,9 +375,15 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_edit, com_edit, false, true, true,
       Bfile, Bfile, Bfile, Bfile, E_DEFHMASK, 0, 3, 0,
       "[filename] : Edit a spice deck and then load it in." ) ,
+    sCommand( cmd_findlower, com_findlower, false, true, true,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Find lower operating limit." ) ,
     sCommand( cmd_findrange, com_findrange, false, true, true,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
       ": Find operating range." ) ,
+    sCommand( cmd_findupper, com_findupper, false, true, true,
+      Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, LOTS, 0,
+      ": Find upper operating limit." ) ,
     sCommand( cmd_fourier, com_fourier, false, false, true,
       Bnone, Bvec, Bvec, Bvec, E_DEFHMASK, 1, LOTS, 0,
       "fund_freq vector ... : Do a fourier analysis of some data." ) ,

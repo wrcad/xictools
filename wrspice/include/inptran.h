@@ -169,7 +169,6 @@ struct pbitAry
     int rep_start() const { return (ba_rst); }
 
 private:
-    void add(const char *s);
     void addPRBS(int, int);
 
     void addbit(bool b)
