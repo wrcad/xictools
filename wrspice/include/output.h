@@ -152,6 +152,27 @@ private:
 // Return from sCHECKprms::evaluate.
 enum CBret { CBok, CBfail, CBendit };
 
+// Hard-wired names for generated range vectors.
+extern const char *kwc_opmin1;
+extern const char *kwc_opmax1;
+extern const char *kwc_opmin2;
+extern const char *kwc_opmax2;
+extern const char *kwc_range;
+extern const char *kwc_r_scale;
+
+// Hard-wired names for misc. range vectors.
+extern const char *kwc_checkFAIL;
+extern const char *kwc_checkPNTS;
+extern const char *kwc_checkINIT;
+
+// Hard-wired names for user-given input range vectors.
+extern const char *kwc_checkVAL1;
+extern const char *kwc_checkSTP1;
+extern const char *kwc_checkDEL1;
+extern const char *kwc_checkVAL2;
+extern const char *kwc_checkSTP2;
+extern const char *kwc_checkDEL2;
+
 // Interface for asynchronous/remote chained analysis.  This structure
 // is used to store parameters used in operating range and Monte Carlo
 // analysis.
@@ -282,6 +303,26 @@ private:
                             //  Only used if mode = OutcCheck*.
     const char *ch_segbase; // Segment basename for OutcCheckSeg.
     wordlist *ch_cmdline;   // Command line, wordlist.
+
+    // Hard-wired names for generated range vectors.
+    static const char *OPLO1;
+    static const char *OPHI1;
+    static const char *OPLO2;
+    static const char *OPHI2;
+    static const char *OPVEC;
+    static const char *OPSCALE;
+
+    static const char *checkFAIL;
+    static const char *checkPNTS;
+    static const char *checkINIT;
+
+    // Hard-wired names for user-given input range vectors.
+    static const char *checkVAL1;
+    static const char *checkSTP1;
+    static const char *checkDEL1;
+    static const char *checkVAL2;
+    static const char *checkSTP2;
+    static const char *checkDEL2;
 
     static sHtab *ch_plotnames; // mplot filename to plotname map
 

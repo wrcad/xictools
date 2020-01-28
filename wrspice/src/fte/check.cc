@@ -212,31 +212,49 @@ CommandTab::com_alterf(wordlist*)
 }
 // End of CommandTab functions.
 
+// Hard-wired names for generated range vectors.
+const char *kwc_opmin1 = "opmin1";
+const char *kwc_opmax1 = "opmax1";
+const char *kwc_opmin2 = "opmin2";
+const char *kwc_opmax2 = "opmax2";
+const char *kwc_range = "range";
+const char *kwc_r_scale = "r_scale";
+
+// Hard-wired names for misc. range vectors.
+const char *kwc_checkFAIL = "checkFAIL";
+const char *kwc_checkPNTS = "checkPNTS";
+const char *kwc_checkINIT = "checkINIT";
+
+// Hard-wired names for user-given input range vectors.
+const char *kwc_checkVAl1 = "checkVAL1";
+const char *kwc_checkSTP1 = "checkSTP1";
+const char *kwc_checkDEL1 = "checkDEL1";
+const char *kwc_checkVAL2 = "checkVAL2";
+const char *kwc_checkSTP2 = "checkSTP2";
+const char *kwc_checkDEL2 = "checkDEL2";
+
+// Hard-wired names for generated range vectors.
+const char *sCHECKprms::OPLO1 = kwc_opmin1;
+const char *sCHECKprms::OPHI1 = kwc_opmax1;
+const char *sCHECKprms::OPLO2 = kwc_opmin2;
+const char *sCHECKprms::OPHI2 = kwc_opmax2;
+const char *sCHECKprms::OPVEC = kwc_range;
+const char *sCHECKprms::OPSCALE = kwc_r_scale;
+
+// Hard-wired names for misc. range vectors.
+const char *sCHECKprms::checkFAIL = kwc_checkFAIL;
+const char *sCHECKprms::checkPNTS = kwc_checkPNTS;
+const char *sCHECKprms::checkINIT = kwc_checkINIT;
+
+// Hard-wired names for user-given input range vectors.
+const char *sCHECKprms::checkVAL1 = kwc_checkVAL1;
+const char *sCHECKprms::checkSTP1 = kwc_checkSTP1;
+const char *sCHECKprms::checkDEL1 = kwc_checkDEL1;
+const char *sCHECKprms::checkVAL2 = kwc_checkVAL2;
+const char *sCHECKprms::checkSTP2 = kwc_checkSTP2;
+const char *sCHECKprms::checkDEL2 = kwc_checkDEL2;
 
 sHtab *sCHECKprms::ch_plotnames;
-
-namespace {
-    // Hard-wired names for generated range vectors.
-    const char *OPLO1 = "opmin1";
-    const char *OPHI1 = "opmax1";
-    const char *OPLO2 = "opmin2";
-    const char *OPHI2 = "opmax2";
-    const char *OPVEC = "range";
-    const char *OPSCALE = "r_scale";
-
-    const char *checkFAIL = "checkFAIL";
-    const char *checkPNTS = "checkPNTS";
-    const char *checkINIT = "checkINIT";
-
-    // Hard-wired names for user-given input range vectors.
-    const char *checkVAL1 = "checkVAL1";
-    const char *checkSTP1 = "checkSTP1";
-    const char *checkDEL1 = "checkDEL1";
-    const char *checkVAL2 = "checkVAL2";
-    const char *checkSTP2 = "checkSTP2";
-    const char *checkDEL2 = "checkDEL2";
-}
-
 
 // The margin analysis function.
 //
