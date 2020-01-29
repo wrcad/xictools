@@ -96,59 +96,34 @@ CommandTab::com_mctrial(wordlist*)
 }
 
 
-namespace {
-    void find_oprange(wordlist *wl, bool dolower=true, bool doupper=true)
-    {
-        if (!Sp.CurCircuit())
-            return;
-        sCHECKprms *cj = Sp.CurCircuit()->check();
-        if (!cj)
-            return;
-        int ret = true;
-
-        cj->resetup(wl);
-
-        bool mbak = cj->monte();
-        bool abak = cj->doall();
-        int s1 = cj->step1();
-        int s2 = cj->step2();
-        cj->set_monte(false);
-        cj->set_doall(false);
-        cj->set_step1(0);
-        cj->set_step2(0);
-
-        if (!cj->out_cir)
-            ret = cj->initial();
-        if (ret)
-            ret = cj->findRange(dolower, doupper);
-
-        cj->set_monte(mbak);
-        cj->set_doall(abak);
-        cj->set_step1(s1);
-        cj->set_step2(s2);
-        cj->initInput(cj->val1(), cj->val2());
-    }
-}
-
-
+//XXX add message if error out
 void
 CommandTab::com_findrange(wordlist *wl)
 {
-    find_oprange(wl);
+    sCHECKprms *cj = Sp.CurCircuit()->check();
+    if (!cj)
+        return;
+    cj->find_oprange(wl);
 }
 
 
 void
 CommandTab::com_findupper(wordlist *wl)
 {
-    find_oprange(wl, false);
+    sCHECKprms *cj = Sp.CurCircuit()->check();
+    if (!cj)
+        return;
+    cj->find_oprange(wl, false);
 }
 
 
 void
 CommandTab::com_findlower(wordlist *wl)
 {
-    find_oprange(wl, true, false);
+    sCHECKprms *cj = Sp.CurCircuit()->check();
+    if (!cj)
+        return;
+    cj->find_oprange(wl, true, false);
 }
 
 
@@ -212,49 +187,6 @@ CommandTab::com_alterf(wordlist*)
 }
 // End of CommandTab functions.
 
-// Hard-wired names for generated range vectors.
-const char *kwc_opmin1 = "opmin1";
-const char *kwc_opmax1 = "opmax1";
-const char *kwc_opmin2 = "opmin2";
-const char *kwc_opmax2 = "opmax2";
-const char *kwc_range = "range";
-const char *kwc_r_scale = "r_scale";
-
-// Hard-wired names for misc. range vectors.
-const char *kwc_checkFAIL = "checkFAIL";
-const char *kwc_checkPNTS = "checkPNTS";
-const char *kwc_checkINIT = "checkINIT";
-
-// Hard-wired names for user-given input range vectors.
-const char *kwc_checkVAl1 = "checkVAL1";
-const char *kwc_checkSTP1 = "checkSTP1";
-const char *kwc_checkDEL1 = "checkDEL1";
-const char *kwc_checkVAL2 = "checkVAL2";
-const char *kwc_checkSTP2 = "checkSTP2";
-const char *kwc_checkDEL2 = "checkDEL2";
-
-// Hard-wired names for generated range vectors.
-const char *sCHECKprms::OPLO1 = kwc_opmin1;
-const char *sCHECKprms::OPHI1 = kwc_opmax1;
-const char *sCHECKprms::OPLO2 = kwc_opmin2;
-const char *sCHECKprms::OPHI2 = kwc_opmax2;
-const char *sCHECKprms::OPVEC = kwc_range;
-const char *sCHECKprms::OPSCALE = kwc_r_scale;
-
-// Hard-wired names for misc. range vectors.
-const char *sCHECKprms::checkFAIL = kwc_checkFAIL;
-const char *sCHECKprms::checkPNTS = kwc_checkPNTS;
-const char *sCHECKprms::checkINIT = kwc_checkINIT;
-
-// Hard-wired names for user-given input range vectors.
-const char *sCHECKprms::checkVAL1 = kwc_checkVAL1;
-const char *sCHECKprms::checkSTP1 = kwc_checkSTP1;
-const char *sCHECKprms::checkDEL1 = kwc_checkDEL1;
-const char *sCHECKprms::checkVAL2 = kwc_checkVAL2;
-const char *sCHECKprms::checkSTP2 = kwc_checkSTP2;
-const char *sCHECKprms::checkDEL2 = kwc_checkDEL2;
-
-sHtab *sCHECKprms::ch_plotnames;
 
 // The margin analysis function.
 //
@@ -274,6 +206,7 @@ IFsimulator::MargAnalysis(wordlist *wl)
 
     const char *po, *pe;
     int err = args.parse(&wl, &po, &pe);
+    // The wl is now a copy.
     GCarray<const char*> gc_po(po);
     GCarray<const char*> gc_pe(pe);
 
@@ -573,6 +506,51 @@ checkargs::parse(wordlist **pwl, const char **pe, const char **po)
 // End of checkargs functions.
 
 
+// Hard-wired names for generated range vectors.
+const char *kwc_opmin1 = "opmin1";
+const char *kwc_opmax1 = "opmax1";
+const char *kwc_opmin2 = "opmin2";
+const char *kwc_opmax2 = "opmax2";
+const char *kwc_range = "range";
+const char *kwc_r_scale = "r_scale";
+
+// Hard-wired names for misc. range vectors.
+const char *kwc_checkFAIL = "checkFAIL";
+const char *kwc_checkPNTS = "checkPNTS";
+const char *kwc_checkINIT = "checkINIT";
+
+// Hard-wired names for user-given input range vectors.
+const char *kwc_checkVAL1 = "checkVAL1";
+const char *kwc_checkSTP1 = "checkSTP1";
+const char *kwc_checkDEL1 = "checkDEL1";
+const char *kwc_checkVAL2 = "checkVAL2";
+const char *kwc_checkSTP2 = "checkSTP2";
+const char *kwc_checkDEL2 = "checkDEL2";
+
+// Hard-wired names for generated range vectors.
+const char *sCHECKprms::OPLO1 = kwc_opmin1;
+const char *sCHECKprms::OPHI1 = kwc_opmax1;
+const char *sCHECKprms::OPLO2 = kwc_opmin2;
+const char *sCHECKprms::OPHI2 = kwc_opmax2;
+const char *sCHECKprms::OPVEC = kwc_range;
+const char *sCHECKprms::OPSCALE = kwc_r_scale;
+
+// Hard-wired names for misc. range vectors.
+const char *sCHECKprms::checkFAIL = kwc_checkFAIL;
+const char *sCHECKprms::checkPNTS = kwc_checkPNTS;
+const char *sCHECKprms::checkINIT = kwc_checkINIT;
+
+// Hard-wired names for user-given input range vectors.
+const char *sCHECKprms::checkVAL1 = kwc_checkVAL1;
+const char *sCHECKprms::checkSTP1 = kwc_checkSTP1;
+const char *sCHECKprms::checkDEL1 = kwc_checkDEL1;
+const char *sCHECKprms::checkVAL2 = kwc_checkVAL2;
+const char *sCHECKprms::checkSTP2 = kwc_checkSTP2;
+const char *sCHECKprms::checkDEL2 = kwc_checkDEL2;
+
+sHtab *sCHECKprms::ch_plotnames;
+
+
 sCHECKprms::sCHECKprms()
 {
     ch_op           = 0;
@@ -638,6 +616,106 @@ sCHECKprms::~sCHECKprms()
             fclose(ch_op);
             ch_op = 0;
         }
+    }
+}
+
+
+void
+sCHECKprms::find_oprange(wordlist *wl, bool dolower, bool doupper)
+{
+    if (!Sp.CurCircuit())
+        return;
+    int ret = true;
+
+    wl = wordlist::copy(wl);
+    const char *name1 = 0, *name2 = 0;
+    wordlist *wn;
+    for (wordlist *ww = wl; ww; ww = wn) {
+        wn = ww->wl_next;
+        bool f1 = false, f2 = false;
+        if (lstring::eq(ww->wl_word, "-n1"))
+            f1 = true;
+        else if (lstring::eq(ww->wl_word, "-n2"))
+            f2  = true;
+        if (f1 || f2) {
+            if (!ww->wl_prev)
+                wl = wn;
+            else
+                ww->wl_prev->wl_next = ww->wl_next;
+            if (ww->wl_next)
+                ww->wl_next->wl_prev = ww->wl_prev;
+            delete ww;
+            ww = wn;
+            if (ww) {
+                if (f1)
+                    name1 = lstring::copy(ww->wl_word);
+                else
+                    name2 = lstring::copy(ww->wl_word);
+                wn = wn->wl_next;
+                if (!ww->wl_prev)
+                    wl = wn;
+                else
+                    ww->wl_prev->wl_next = ww->wl_next;
+                if (ww->wl_next)
+                    ww->wl_next->wl_prev = ww->wl_prev;
+                delete ww;
+            }
+        }
+    }
+
+    resetup(&wl);
+    wordlist::destroy(wl);
+
+    char *lo1 = 0, *hi1 = 0, *lo2 = 0, *hi2 = 0;
+    if (name1) {
+        lo1 = new char[strlen(name1) + 5];
+        hi1 = new char[strlen(name1) + 5];
+        sprintf(lo1, "%s_min", name1);
+        sprintf(hi1, "%s_max", name1);
+        OPLO1 = lo1;
+        OPHI1 = hi1;
+    }
+    if (name2) {
+        lo2 = new char[strlen(name2) + 5];
+        hi2 = new char[strlen(name2) + 5];
+        sprintf(lo2, "%s_min", name2);
+        sprintf(hi2, "%s_max", name2);
+        OPLO2 = lo2;
+        OPHI2 = hi2;
+    }
+
+    bool mbak = monte();
+    bool abak = doall();
+    int s1 = step1();
+    int s2 = step2();
+    set_monte(false);
+    set_doall(false);
+    set_step1(0);
+    set_step2(0);
+
+    if (!out_cir)
+        ret = initial();
+    if (ret)
+        ret = findRange(dolower, doupper);
+
+    set_monte(mbak);
+    set_doall(abak);
+    set_step1(s1);
+    set_step2(s2);
+    initInput(val1(), val2());
+    if (name1) {
+        OPLO1 = kwc_opmin1;
+        OPHI1 = kwc_opmax1;
+        delete [] name1;
+        delete [] lo1;
+        delete [] hi1;
+    }
+    if (name2) {
+        OPLO2 = kwc_opmin2;
+        OPHI2 = kwc_opmax2;
+        delete [] name2;
+        delete [] lo2;
+        delete [] hi2;
     }
 }
 
@@ -715,7 +793,7 @@ sCHECKprms::setup(checkargs &args, wordlist *wl)
 // sweep parameters.
 //
 int
-sCHECKprms::resetup(wordlist *wl)
+sCHECKprms::resetup(wordlist **pwl)
 {
     sFtCirc *curckt = Sp.CurCircuit();
     if (!curckt)
@@ -727,11 +805,10 @@ sCHECKprms::resetup(wordlist *wl)
     }
     OP.setCurPlot(out_plot->type_name());
 
-    int err = parseRange(&wl);
+    int err = parseRange(pwl);
     if (err != OK) {
         GRpkgIf()->ErrPrintf(ET_ERROR,
             "syntax error in findrange command line.\n");
-        wordlist::destroy(wl);
         return (err);
     }
 

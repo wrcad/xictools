@@ -184,8 +184,9 @@ struct sCHECKprms : public sOUTcontrol
     sCHECKprms();
     ~sCHECKprms();
 
+    void find_oprange(wordlist*, bool dolower=true, bool doupper=true);
     int setup(checkargs&, wordlist*);
-    int resetup(wordlist*);
+    int resetup(wordlist**);
     int parseRange(wordlist**);
     void initRange();
     void initNames();
