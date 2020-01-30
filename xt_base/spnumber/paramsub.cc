@@ -678,7 +678,7 @@ sParamTab::squote_subst(char **str) const
 
     char *expr;
     if (pt_no_sqexp || strchr(*str, '$')) {
-        // We aren't single-quote expanding, ot The expression
+        // We aren't single-quote expanding, or The expression
         // contains unexpanded shell variables.  In this case expand
         // any parameters, and leave the result in single quotes.
 

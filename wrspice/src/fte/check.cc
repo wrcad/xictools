@@ -628,7 +628,7 @@ sCHECKprms::find_oprange(wordlist *wl, bool dolower, bool doupper)
     int ret = true;
 
     wl = wordlist::copy(wl);
-    const char *name1 = 0, *name2 = 0;
+    char *name1 = 0, *name2 = 0;
     wordlist *wn;
     for (wordlist *ww = wl; ww; ww = wn) {
         wn = ww->wl_next;
@@ -647,10 +647,14 @@ sCHECKprms::find_oprange(wordlist *wl, bool dolower, bool doupper)
             delete ww;
             ww = wn;
             if (ww) {
-                if (f1)
+                if (f1) {
                     name1 = lstring::copy(ww->wl_word);
-                else
+                    lstring::unquote_in_place(name1);
+                }
+                else {
                     name2 = lstring::copy(ww->wl_word);
+                    lstring::unquote_in_place(name2);
+                }
                 wn = wn->wl_next;
                 if (!ww->wl_prev)
                     wl = wn;
@@ -695,8 +699,10 @@ sCHECKprms::find_oprange(wordlist *wl, bool dolower, bool doupper)
 
     if (!out_cir)
         ret = initial();
-    if (ret)
+    if (ret) {
+        set_opvec(0, 0);
         ret = findRange(dolower, doupper);
+    }
 
     set_monte(mbak);
     set_doall(abak);
