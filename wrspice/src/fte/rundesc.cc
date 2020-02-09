@@ -127,10 +127,10 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
         for (int i = 0; i < rd_numData; i++) {
             dataDesc *dd = rd_data + i;
             sDataVec *v = new sDataVec;
-            if (lstring::cieq(dd->name, "frequency"))
+            if (lstring::cieq(dd->dname(), "frequency"))
                 v->units()->set(UU_FREQUENCY);
-            else if (dd->regular) {
-                if (lstring::ciprefix("inoise", dd->name)) {
+            else if (dd->regular()) {
+                if (lstring::ciprefix("inoise", dd->dname())) {
                     if (in_is_cur) {
                         if (is_spectrum)
                             v->units()->set("AAS");  // A^2/Hz
@@ -144,7 +144,7 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
                             v->units()->set("VV");
                     }
                 }
-                else if (lstring::ciprefix("onoise", dd->name)) {
+                else if (lstring::ciprefix("onoise", dd->dname())) {
                     if (out_is_cur) {
                         if (is_spectrum)
                             v->units()->set("AAS");  // A^2/Hz
@@ -158,7 +158,7 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
                             v->units()->set("VV");
                     }
                 }
-                else if (strchr(dd->name, Sp.SpecCatchar())) {
+                else if (strchr(dd->dname(), Sp.SpecCatchar())) {
                     // Found the '@' in, e.g., dens@YYY
                     if (in_is_cur) {
                         if (is_spectrum)
@@ -173,8 +173,8 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
                             v->units()->set("VV");
                     }
                 }
-                else if (lstring::cisubstring("dens", dd->name) ||
-                        lstring::cisubstring("tot", dd->name)) {
+                else if (lstring::cisubstring("dens", dd->dname()) ||
+                        lstring::cisubstring("tot", dd->dname())) {
                     if (out_is_cur) {
                         if (is_spectrum)
                             v->units()->set("AAS");  // A^2/Hz
@@ -189,7 +189,7 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
                     }
                 }
             }
-            v->set_name(dd->name);
+            v->set_name(dd->dname());
             v->set_scale(0);
             v->set_length(0);
             if (rd_isComplex)
@@ -198,32 +198,32 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
                 v->set_flags(0);
             v->alloc(!rd_isComplex, rd_numPoints*rd_cycles);
             v->newperm();
-            dd->vec = v;
+            dd->set_vec(v);
         }
     }
-    else if (lstring::cieq((char*)rd_job->JOBname, "tf")) {
+    else if (lstring::cieq((const char*)rd_job->JOBname, "tf")) {
         sTFAN *an = (sTFAN*)rd_job;
         for (int i = 0; i < rd_numData; i++) {
             dataDesc *dd = rd_data + i;
             sDataVec *v = new sDataVec;
-            if (lstring::cieq(dd->name, "frequency"))
+            if (lstring::cieq(dd->dname(), "frequency"))
                 v->units()->set(UU_FREQUENCY);
-            else if (dd->regular) {
-                if (lstring::cieq(dd->name, "tranfunc")) {
+            else if (dd->regular()) {
+                if (lstring::cieq(dd->dname(), "tranfunc")) {
                     if (an->TFinIsI && an->TFoutIsV)
                         v->units()->set(UU_RES);
                     else if (an->TFinIsV && an->TFoutIsI)
                         v->units()->set(UU_COND);
                 }
-                else if (lstring::cisubstring("Zi", dd->name) ||
-                        lstring::cisubstring("Zo", dd->name))
+                else if (lstring::cisubstring("Zi", dd->dname()) ||
+                        lstring::cisubstring("Zo", dd->dname()))
                     v->units()->set(UU_RES);
-                else if (lstring::cisubstring("isweep", dd->name))
+                else if (lstring::cisubstring("isweep", dd->dname()))
                     v->units()->set(UU_CURRENT);
-                else if (lstring::cisubstring("vsweep", dd->name))
+                else if (lstring::cisubstring("vsweep", dd->dname()))
                     v->units()->set(UU_VOLTAGE);
             }
-            v->set_name(dd->name);
+            v->set_name(dd->dname());
             v->set_scale(0);
             v->set_length(0);
             if (rd_isComplex)
@@ -232,25 +232,25 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
                 v->set_flags(0);
             v->alloc(!rd_isComplex, rd_numPoints*rd_cycles);
             v->newperm();
-            dd->vec = v;
+            dd->set_vec(v);
         }
     }
-    else if (lstring::cieq((char*)rd_job->JOBname, "sens")) {
+    else if (lstring::cieq((const char*)rd_job->JOBname, "sens")) {
         sSENSAN *an = (sSENSAN*)rd_job;
         for (int i = 0; i < rd_numData; i++) {
             dataDesc *dd = rd_data + i;
             sDataVec *v = new sDataVec;
-            if (lstring::cieq(dd->name, "frequency"))
+            if (lstring::cieq(dd->dname(), "frequency"))
                 v->units()->set(UU_FREQUENCY);
-            else if (dd->regular) {
-                if (lstring::cisubstring("sweep", dd->name)) {
+            else if (dd->regular()) {
+                if (lstring::cisubstring("sweep", dd->dname())) {
                     if (an->SENSoutSrc)
                         v->units()->set(UU_CURRENT);
                     else
                         v->units()->set(UU_VOLTAGE);
                 }
             }
-            v->set_name(dd->name);
+            v->set_name(dd->dname());
             v->set_scale(0);
             v->set_length(0);
             if (rd_isComplex)
@@ -259,7 +259,7 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
                 v->set_flags(0);
             v->alloc(!rd_isComplex, rd_numPoints*rd_cycles);
             v->newperm();
-            dd->vec = v;
+            dd->set_vec(v);
         }
     }
     else {
@@ -269,23 +269,23 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
             sDataVec *v = new sDataVec;
 
             const char *s;
-            if (lstring::substring("#branch", dd->name) ||
-                    lstring::cieq(dd->name, "isweep") ||
-                    ((s = strchr(dd->name, '#')) != 0 && *(s+1) == 'i'))
+            if (lstring::substring("#branch", dd->dname()) ||
+                    lstring::cieq(dd->dname(), "isweep") ||
+                    ((s = strchr(dd->dname(), '#')) != 0 && *(s+1) == 'i'))
                 v->units()->set(UU_CURRENT);
-            else if (lstring::cieq(dd->name, "time"))
+            else if (lstring::cieq(dd->dname(), "time"))
                 v->units()->set(UU_TIME);
-            else if (lstring::cieq(dd->name, "frequency"))
+            else if (lstring::cieq(dd->dname(), "frequency"))
                 v->units()->set(UU_FREQUENCY);
-            else if (dd->regular) {
-                if (!strrchr(dd->name, '(')) {
+            else if (dd->regular()) {
+                if (!strrchr(dd->dname(), '(')) {
                     v->units()->set(UU_VOLTAGE);
-                    sprintf(buf, "v(%s)", dd->name);
+                    sprintf(buf, "v(%s)", dd->dname());
                     v->set_name(buf);
                 }
             }
             if (!v->name())
-                v->set_name(dd->name);
+                v->set_name(dd->dname());
             v->set_scale(0);
             v->set_length(0);
             if (rd_isComplex)
@@ -298,11 +298,11 @@ sRunDesc::plotInit(double tstart, double tstop, double tstep, sPlot *plot)
                 v->set_flags(v->flags() | VF_ZERO);
             v->alloc(!rd_isComplex, rd_numPoints*rd_cycles);
             v->newperm();
-            dd->vec = v;
+            dd->set_vec(v);
         }
     }
     if (rd_refIndex >= 0)
-        rd_runPlot->set_scale(rd_data[rd_refIndex].vec);
+        rd_runPlot->set_scale(rd_data[rd_refIndex].vec());
     ToolBar()->UpdatePlots(1);
 }
 
@@ -313,20 +313,20 @@ void
 sRunDesc::addPointToPlot(IFvalue *refValue, IFvalue *valuePtr, bool inc)
 {
     for (int i = 0; i < rd_numData; i++) {
-        if (rd_data[i].regular) {
-            if (rd_data[i].outIndex == -1) {
-                if (rd_data[i].type == IF_REAL)
+        if (rd_data[i].regular()) {
+            if (rd_data[i].outIndex() == -1) {
+                if (rd_data[i].type() == IF_REAL)
                     rd_data[i].addRealValue(refValue->rValue, inc);
-                else if (rd_data[i].type == IF_COMPLEX)
+                else if (rd_data[i].type() == IF_COMPLEX)
                     rd_data[i].addComplexValue(refValue->cValue, inc);
             }
             else {
-                if (rd_data[i].type == IF_REAL)
+                if (rd_data[i].type() == IF_REAL)
                     rd_data[i].addRealValue(
-                        valuePtr->v.vec.rVec[rd_data[i].outIndex], inc);
-                else if (rd_data[i].type == IF_COMPLEX)
+                        valuePtr->v.vec.rVec[rd_data[i].outIndex()], inc);
+                else if (rd_data[i].type() == IF_COMPLEX)
                     rd_data[i].addComplexValue(
-                        valuePtr->v.vec.cVec[rd_data[i].outIndex], inc);
+                        valuePtr->v.vec.cVec[rd_data[i].outIndex()], inc);
             }
         }
         else {
@@ -334,9 +334,9 @@ sRunDesc::addPointToPlot(IFvalue *refValue, IFvalue *valuePtr, bool inc)
             IFvalue val;
             if (!getSpecial(rd_ckt, i, &val))
                 continue;
-            if (rd_data[i].type == IF_REAL)
+            if (rd_data[i].type() == IF_REAL)
                 rd_data[i].addRealValue(val.rValue, inc);
-            else if (rd_data[i].type == IF_COMPLEX)
+            else if (rd_data[i].type() == IF_COMPLEX)
                 rd_data[i].addComplexValue(val.cValue, inc);
             else 
                 GRpkgIf()->ErrPrintf(ET_INTERR,
@@ -353,20 +353,20 @@ sRunDesc::pushPointToPlot(sCKT *ckt, IFvalue *refValue, IFvalue *valuePtr,
     unsigned int indx)
 {
     for (int i = 0; i < rd_numData; i++) {
-        if (rd_data[i].regular) {
-            if (rd_data[i].outIndex == -1) {
-                if (rd_data[i].type == IF_REAL)
+        if (rd_data[i].regular()) {
+            if (rd_data[i].outIndex() == -1) {
+                if (rd_data[i].type() == IF_REAL)
                     rd_data[i].pushRealValue(refValue->rValue, indx);
-                else if (rd_data[i].type == IF_COMPLEX)
+                else if (rd_data[i].type() == IF_COMPLEX)
                     rd_data[i].pushComplexValue(refValue->cValue, indx);
             }
             else {
-                if (rd_data[i].type == IF_REAL)
+                if (rd_data[i].type() == IF_REAL)
                     rd_data[i].pushRealValue(
-                        valuePtr->v.vec.rVec[rd_data[i].outIndex], indx);
-                else if (rd_data[i].type == IF_COMPLEX)
+                        valuePtr->v.vec.rVec[rd_data[i].outIndex()], indx);
+                else if (rd_data[i].type() == IF_COMPLEX)
                     rd_data[i].pushComplexValue(
-                        valuePtr->v.vec.cVec[rd_data[i].outIndex], indx);
+                        valuePtr->v.vec.cVec[rd_data[i].outIndex()], indx);
             }
         }
         else {
@@ -374,9 +374,9 @@ sRunDesc::pushPointToPlot(sCKT *ckt, IFvalue *refValue, IFvalue *valuePtr,
             IFvalue val;
             if (!getSpecial(ckt, i, &val))
                 continue;
-            if (rd_data[i].type == IF_REAL)
+            if (rd_data[i].type() == IF_REAL)
                 rd_data[i].pushRealValue(val.rValue, indx);
-            else if (rd_data[i].type == IF_COMPLEX)
+            else if (rd_data[i].type() == IF_COMPLEX)
                 rd_data[i].pushComplexValue(val.cValue, indx);
             else 
                 GRpkgIf()->ErrPrintf(ET_INTERR,
@@ -437,8 +437,8 @@ void
 sRunDesc::resetVecs()
 {
     for (int i = 0; i < rd_numData; i++) {
-        rd_data[i].vec->set_length(0);
-        rd_data[i].sp.reset();
+        rd_data[i].vec()->set_length(0);
+        rd_data[i].sp().reset();
     }
 }
 
@@ -459,10 +459,10 @@ sRunDesc::plotEnd()
 bool
 sRunDesc::datasize()
 {
-    // if any of them are complex, make them all complex
+    // If any of them are complex, make them all complex.
     rd_isComplex = 0;
     for (int i = 0; i < rd_numData; i++) {
-        if (rd_data[i].type == IF_COMPLEX) {
+        if (rd_data[i].type() == IF_COMPLEX) {
             rd_isComplex = 1;
             break;
         }
@@ -494,7 +494,7 @@ sRunDesc::unrollVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
         dataDesc *d = rd_data + k;
-        sDataVec *v = d->vec;
+        sDataVec *v = d->vec();
         if (v) {
             if (v->flags() & VF_ROLLOVER) {
                 if (v->isreal()) {
@@ -532,7 +532,7 @@ void
 sRunDesc::scalarizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
-        sDataVec *v = rd_data[k].vec;
+        sDataVec *v = rd_data[k].vec();
         if (v)
             v->scalarize();
     }
@@ -543,7 +543,7 @@ void
 sRunDesc::unscalarizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
-        sDataVec *v = rd_data[k].vec;
+        sDataVec *v = rd_data[k].vec();
         if (v)
             v->unscalarize();
     }
@@ -557,7 +557,7 @@ void
 sRunDesc::segmentizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
-        sDataVec *v = rd_data[k].vec;
+        sDataVec *v = rd_data[k].vec();
         if (v)
             v->segmentize();
     }
@@ -568,7 +568,7 @@ void
 sRunDesc::unsegmentizeVecs()
 {
     for (int k = 0; k < rd_numData; k++) {
-        sDataVec *v = rd_data[k].vec;
+        sDataVec *v = rd_data[k].vec();
         if (v)
             v->unsegmentize();
     }
@@ -582,25 +582,15 @@ int
 sRunDesc::addDataDesc(const char *nm, int typ, int ind)
 {
     if (rd_numData == rd_dataSize) {
-        dataDesc *d = new dataDesc[rd_dataSize + DATA_GROW];
-        if (rd_data) {
-            memcpy(d, rd_data, rd_dataSize * sizeof(dataDesc));
-            delete [] rd_data;
-        }
-        rd_data = d;
-        rd_dataSize += DATA_GROW;
+        int nsz = rd_dataSize + DATA_GROW;
+        rd_data = dataDesc::resize(nsz, rd_dataSize, rd_data);
+        rd_dataSize = nsz;
     }
 
     dataDesc *d = rd_data + rd_numData;
-    *d = dataDesc();
+//XXX    *d = dataDesc();
 
-    d->name = lstring::copy(nm);
-    d->type = typ & IF_VARTYPES;
-    d->gtype = GRID_LIN;
-    d->regular = true;
-    d->outIndex = ind;
-    if (rd_scrolling && rd_numPoints > 1)
-        d->rollover_ok = true;
+    d->setup(nm, ind, typ, (rd_scrolling && rd_numPoints > 1));
 
     if (ind == -1) {
         // It's the reference vector
@@ -612,27 +602,19 @@ sRunDesc::addDataDesc(const char *nm, int typ, int ind)
 
 
 int
-sRunDesc::addSpecialDesc(const char *nm, int depind, bool usevec)
+sRunDesc::addSpecialDesc(const char *nm, int ind, bool usevec)
 {
     if (rd_numData == rd_dataSize) {
-        dataDesc *d = new dataDesc[rd_dataSize + DATA_GROW];
-        if (rd_data) {
-            memcpy(d, rd_data, rd_dataSize * sizeof(dataDesc));
-            delete [] rd_data;
-        }
-        rd_data = d;
-        rd_dataSize += DATA_GROW;
+        int nsz = rd_dataSize + DATA_GROW;
+        rd_data = dataDesc::resize(nsz, rd_dataSize, rd_data);
+        rd_dataSize = nsz;
     }
 
     dataDesc *d = rd_data + rd_numData;
-    *d = dataDesc();
+//XXX    *d = dataDesc();
 
-    d->name = lstring::copy(nm);
-    d->useVecIndx = usevec;
-    d->outIndex = depind;
-    d->regular = false;
-    if (rd_scrolling && rd_numPoints > 1)
-        d->rollover_ok = true;
+    d->setup_special(nm, ind, usevec, (rd_scrolling && rd_numPoints > 1));
+
     rd_numData++;
     return (OK);
 }
@@ -642,33 +624,33 @@ bool
 sRunDesc::getSpecial(sCKT *ckt, int indx, IFvalue *val)
 {
     dataDesc *desc = rd_data + indx;
-    if (desc->sp.sp_error == OK) {
+    if (desc->sp().sp_error == OK) {
         int i;
         // I don't know if this has any usefulness, i.e., using another
         // vector to index the (list type) special parameter.
-        if (desc->useVecIndx) {
-            if (desc->outIndex == -1) {
+        if (desc->useVecIndx()) {
+            if (desc->outIndex() == -1) {
                 dataDesc *dd = rd_data + rd_refIndex;
-                i = (int)dd->vec->realval(dd->vec->length() - 1);
+                i = (int)dd->vec()->realval(dd->vec()->length() - 1);
             }
             else {
-                dataDesc *dd = rd_data + desc->outIndex;
-                i = (int)dd->vec->realval(dd->vec->length() - 1);
+                dataDesc *dd = rd_data + desc->outIndex();
+                i = (int)dd->vec()->realval(dd->vec()->length() - 1);
             }
         }
         else
-            i = desc->outIndex;
+            i = desc->outIndex();
         IFdata d;
-        bool set_vtype = desc->sp.sp_isset ? false : true;
-        desc->sp.evaluate(desc->name, ckt, &d, i);
-        if (desc->sp.sp_error == OK) {
+        bool set_vtype = desc->sp().sp_isset ? false : true;
+        desc->sp().evaluate(desc->dname(), ckt, &d, i);
+        if (desc->sp().sp_error == OK) {
             if ((d.type & IF_VARTYPES) == IF_INTEGER) {
-                desc->type = IF_REAL;
+                desc->set_type(IF_REAL);
                 val->rValue = (double)d.v.iValue;
             }
             else if ((d.type & IF_VARTYPES) == IF_REAL ||
                     (d.type & IF_VARTYPES) ==  IF_COMPLEX) {
-                desc->type = d.type & IF_VARTYPES;
+                desc->set_type(d.type & IF_VARTYPES);
                 *val = d.v;
             }
             else
@@ -676,13 +658,13 @@ sRunDesc::getSpecial(sCKT *ckt, int indx, IFvalue *val)
             // The data vecs were created before we had the units,
             // so set the units on the first pass thru here
             if (set_vtype)
-                desc->vec->units()->set(d.toUU());
+                desc->vec()->units()->set(d.toUU());
             return (true);
         }
         else {
-            OP.error(ERR_WARNING, "can not evaluate %s.", desc->name);
-            rd_runPlot->remove_vec(desc->name);
-            desc->vec = 0;
+            OP.error(ERR_WARNING, "can not evaluate %s.", desc->dname());
+            rd_runPlot->remove_vec(desc->dname());
+            desc->set_vec(0);
         }
     }
     return (false);
@@ -703,25 +685,25 @@ void
 dataDesc::addRealValue(double value, bool inc)
 {
     if (!inc)
-        vec->set_length(0);
-    pushRealValue(value, vec->length());
+        dd_vec->set_length(0);
+    pushRealValue(value, dd_vec->length());
 }
 
 
 void
 dataDesc::pushRealValue(double value, unsigned int indx)
 {
-    unsigned int vl = vec->length();
+    unsigned int vl = dd_vec->length();
     if (indx >= vl)
         vl = indx + 1;
-    if (vl > (unsigned)vec->allocated())
-        vec->resize(vl + SIZE_INCR);
-    vec->set_length(vl);
-    if (vec->isreal())
-        vec->set_realval(indx, value);
+    if (vl > (unsigned int)dd_vec->allocated())
+        dd_vec->resize(vl + SIZE_INCR);
+    dd_vec->set_length(vl);
+    if (dd_vec->isreal())
+        dd_vec->set_realval(indx, value);
     else {
-        vec->set_realval(indx, value);
-        vec->set_imagval(indx, 0.0);
+        dd_vec->set_realval(indx, value);
+        dd_vec->set_imagval(indx, 0.0);
     }
 }
 
@@ -730,28 +712,28 @@ void
 dataDesc::addComplexValue(IFcomplex value, bool inc)
 {
     if (!inc)
-        vec->set_length(0);
-    else if (vec->length() == 0 && !(vec->flags() & VF_COMPLEX)) {
-        delete [] vec->realvec();
-        vec->alloc(false, vec->allocated());
-        vec->set_flags(vec->flags() | VF_COMPLEX);
+        dd_vec->set_length(0);
+    else if (dd_vec->length() == 0 && !(dd_vec->flags() & VF_COMPLEX)) {
+        delete [] dd_vec->realvec();
+        dd_vec->alloc(false, dd_vec->allocated());
+        dd_vec->set_flags(dd_vec->flags() | VF_COMPLEX);
     }
-    pushComplexValue(value, vec->length());
+    pushComplexValue(value, dd_vec->length());
 }
 
 
 void
 dataDesc::pushComplexValue(IFcomplex value, unsigned int indx)
 {
-    if (indx >= (unsigned int)vec->length())
-        vec->set_length(indx+1);
-    if (vec->length() > vec->allocated())
-        vec->resize(vec->length() + SIZE_INCR);
-    if (vec->isreal())
-        vec->set_realval(indx, value.real);
+    if (indx >= (unsigned int)dd_vec->length())
+        dd_vec->set_length(indx+1);
+    if (dd_vec->length() > dd_vec->allocated())
+        dd_vec->resize(dd_vec->length() + SIZE_INCR);
+    if (dd_vec->isreal())
+        dd_vec->set_realval(indx, value.real);
     else {
-        vec->set_realval(indx, value.real);
-        vec->set_imagval(indx, value.imag);
+        dd_vec->set_realval(indx, value.real);
+        dd_vec->set_imagval(indx, value.imag);
     }
 }
 // End of dataDesc methods.

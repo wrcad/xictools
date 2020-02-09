@@ -227,10 +227,10 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                 setDims(run, dims, 2);
             }
             for (int i = 0; i < run->numData(); i++) {
-                // clear these cached values, may be bogus
-                run->data(i)->sp.sp_isset = false;
-                run->data(i)->sp.sp_inst = 0;
-                run->data(i)->sp.sp_mod = 0;
+                // Clear these cached values, they may be bogus.
+                run->data(i)->sp().sp_isset = false;
+                run->data(i)->sp().sp_inst = 0;
+                run->data(i)->sp().sp_mod = 0;
             }
             initRunops(run);
             return (run);
@@ -255,10 +255,10 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
             plot = swp->out_plot;
             if (run) {
                 for (int i = 0; i < run->numData(); i++) {
-                    // clear these cached values, may be bogus
-                    run->data(i)->sp.sp_isset = false;
-                    run->data(i)->sp.sp_inst = 0;
-                    run->data(i)->sp.sp_mod = 0;
+                    // Clear these cached values, they may be bogus.
+                    run->data(i)->sp().sp_isset = false;
+                    run->data(i)->sp().sp_inst = 0;
+                    run->data(i)->sp().sp_mod = 0;
                 }
                 initRunops(run);
                 return (run);
@@ -612,7 +612,7 @@ IFoutput::appendData(sRunDesc *run, IFvalue *refValue, IFvalue *valuePtr)
             run->rd()->file_points(run->pointCount()-1);
         }
         else if (run->maxPts() &&
-                run->data(0)->vec->length() >= run->maxPts()) {
+                run->data(0)->vec()->length() >= run->maxPts()) {
             // memory limit reached
             o_endit = true;
             double maxdata = DEF_maxData;
@@ -668,7 +668,7 @@ IFoutput::insertData(sCKT *ckt, sRunDesc *run, IFvalue *refValue,
     // ciruit.  We need that actual thread circuit here.
     run->pushPointToPlot(ckt, refValue, valuePtr, indx);
 
-    if (run->maxPts() && run->data(0)->vec->length() >= run->maxPts()) {
+    if (run->maxPts() && run->data(0)->vec()->length() >= run->maxPts()) {
         // memory limit reached
         o_endit = true;
         double maxdata = DEF_maxData;
@@ -732,7 +732,7 @@ IFoutput::setDims(sRunDesc *run, int *dims, int numDims, bool looping)
         return (OK);
 
     for (int i = 0; i < run->numData(); i++) {
-        sDataVec *v = run->data(i)->vec;
+        sDataVec *v = run->data(i)->vec();
         if (v) {
             if (looping) {
                 if (Sp.GetFlag(FT_GRDB) && ((run->refIndex() >= 0 &&
@@ -757,22 +757,22 @@ IFoutput::setDims(sRunDesc *run, int *dims, int numDims, bool looping)
                     GRpkgIf()->ErrPrintf(ET_MSGS, lstr.string());
                 }
 
-                if (run->data(i)->numbasedims == 0) {
+                if (run->data(i)->numbasedims() == 0) {
                     if (v->numdims() == 0) {
-                        run->data(i)->numbasedims = 1;
-                        run->data(i)->basedims[0] = v->length();
+                        run->data(i)->set_numbasedims(1);
+                        run->data(i)->set_basedims(0, v->length());
                     }
                     else {
                         for (int j = 0; j < v->numdims(); j++)
-                            run->data(i)->basedims[j] = v->dims(j);
-                        run->data(i)->numbasedims = v->numdims();
+                            run->data(i)->set_basedims(j, v->dims(j));
+                        run->data(i)->set_numbasedims(v->numdims());
                     }
                 }
                 for (int j = 0; j < numDims - 1; j++)
                     v->set_dims(j, dims[j]);
-                for (int k = 0; k < run->data(i)->numbasedims; k++)
-                    v->set_dims(k + numDims - 1, run->data(i)->basedims[k]);
-                v->set_numdims(numDims - 1 + run->data(i)->numbasedims);
+                for (int k = 0; k < run->data(i)->numbasedims(); k++)
+                    v->set_dims(k + numDims - 1, run->data(i)->basedims(k));
+                v->set_numdims(numDims - 1 + run->data(i)->numbasedims());
             }
             else {
 
@@ -827,11 +827,11 @@ IFoutput::setAttrs(sRunDesc *run, IFuid *varName, OUTscaleType param, IFvalue*)
     if (run->rd()) { 
         if (varName) {
             for (int i = 0; i < run->numData(); i++)
-                if (lstring::eq((char*)varName, run->data(i)->name))
-                    run->data(i)->gtype = type;
+                if (lstring::eq((const char*)varName, run->data(i)->dname()))
+                    run->data(i)->set_gtype(type);
         }
         else
-            run->data(run->refIndex())->gtype = type;
+            run->data(run->refIndex())->set_gtype(type);
     }
     else {
         if (varName) {

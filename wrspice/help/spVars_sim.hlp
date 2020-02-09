@@ -2187,6 +2187,7 @@ Syntax Control Variables
     expanded by default, to save processing time and avoid unintended
     matches causing errors.  This variable can be set for backward
     compatibility, for files that actually used this feature.
+    </dl>
 
     <a name="plot_catchar"></a>
     <dl>
@@ -2273,7 +2274,7 @@ Syntax Control Variables
     <p>
     This variable can appear in a <a
     href=".options"><tt>.options</tt></a> line in SPICE input, where
-    is will set the concatenation character used for the circuit.  See
+    it will set the concatenation character used for the circuit.  See
     also the description of the <tt>subc_catmode</tt> variable below.
     </dl>
 

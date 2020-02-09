@@ -57,25 +57,84 @@ Authors: 1988 Wayne A. Christopher
 //
 struct dataDesc
 {
-    // No constructor, allocated by Realloc which provides zeroed
-    // memory.
+    // No constructor, bulk allocated.
 
+    ~dataDesc()
+        {
+//XXX
+if (dd_name)
+fprintf(stderr, "%s\n", dd_name);
+            delete [] dd_name;
+        }
+
+    void setup(const char *nm, int ind, int typ, bool rok)
+        {
+            dd_name = lstring::copy(nm);
+            dd_type = typ & IF_VARTYPES;
+            dd_gtype = GRID_LIN;
+            dd_regular = true;
+            dd_outIndex = ind;
+            dd_rollover_ok = rok;
+        }
+
+    void setup_special(const char *nm, int ind, bool usevec, bool rok)
+        {
+            dd_name = lstring::copy(nm);
+            dd_useVecIndx = usevec;
+            dd_outIndex = ind;
+            dd_regular = false;
+            dd_rollover_ok = rok;
+        }
+
+    const char *dname()     const { return (dd_name); }
+    sDataVec *vec()         const { return (dd_vec); }
+    int type()              const { return (dd_type); }
+    int outIndex()          const { return (dd_outIndex); }
+    int numbasedims()       const { return (dd_numbasedims); }
+    int basedims(int i)     const { return (dd_basedims[i]); }
+    IFspecial &sp()         { return (dd_sp); }
+    bool useVecIndx()       const { return (dd_useVecIndx); }
+    bool regular()          const { return (dd_regular); }
+
+    void set_vec(sDataVec *v)       { dd_vec = v; }
+    void set_type(int t)            { dd_type = t; }
+    void set_gtype(int t)           { dd_gtype = t; }
+    void set_numbasedims(int n)     { dd_numbasedims = n; }
+    void set_basedims(int i, int n) { dd_basedims[i] = n; }
+
+    // rundesc.cc
     void addRealValue(double, bool);
     void pushRealValue(double, unsigned int);
     void addComplexValue(IFcomplex, bool);
     void pushComplexValue(IFcomplex, unsigned int);
 
-    const char *name;   // The name of the vector
-    sDataVec *vec;      // The data
-    int type;           // The type
-    int gtype;          // Default plot grid type
-    int outIndex;       // Index of regular vector or dependent
-    int numbasedims;    // Vector numdims for looping
-    int basedims[MAXDIMS]; // Vector dimensions for looping
-    IFspecial sp;       // Descriptor for special parameter
-    bool useVecIndx;    // Use vector for special array index
-    bool regular;       // True if regular vector, false if special
-    bool rollover_ok;   // If true, roll over
+    static dataDesc *resize(int newsize, int oldsize, dataDesc *oldptr)
+    {
+        dataDesc *d = new dataDesc[newsize];
+        if (oldptr) {
+            for (int i = 0; i < oldsize; i++) {
+                *(d+i) = *(oldptr+i);
+                oldptr[i].dd_name = 0;
+            }
+            delete [] oldptr;
+        }
+        for (int i = oldsize; i < newsize; i++)
+            *(d+i) = dataDesc();
+        return (d);
+    }
+
+private:
+    const char *dd_name;    // The name of the vector
+    sDataVec *dd_vec;       // The data
+    int dd_type;            // The type
+    int dd_gtype;           // Default plot grid type
+    int dd_outIndex;        // Index of regular vector or dependent
+    int dd_numbasedims;     // Vector numdims for looping
+    int dd_basedims[MAXDIMS]; // Vector dimensions for looping
+    IFspecial dd_sp;        // Descriptor for special parameter
+    bool dd_useVecIndx;     // Use vector for special array index
+    bool dd_regular;        // True if regular vector, false if special
+    bool dd_rollover_ok;    // If true, roll over
 };
 
 // Struct used to store run status and context.  This is returned from
@@ -118,12 +177,11 @@ struct sRunDesc
 
     ~sRunDesc()
         {
+//XXX
+printf("here %lx\n", this);
             delete [] rd_name;
             delete [] rd_type;
             delete [] rd_title;
-
-            for (int i = 0; i < rd_numData; i++)
-                delete [] rd_data[i].name;
             delete [] rd_data;
             delete rd_rd;
             delete rd_segfilebase;
@@ -227,7 +285,7 @@ struct sRunDesc
     double ref_value()
         {
             if (rd_refIndex >= 0 && rd_data)
-                return (rd_data[rd_refIndex].vec->realval(rd_pointCount-1));
+                return (rd_data[rd_refIndex].vec()->realval(rd_pointCount-1));
             return (0.0);
         }
 
