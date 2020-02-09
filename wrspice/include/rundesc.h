@@ -61,9 +61,6 @@ struct dataDesc
 
     ~dataDesc()
         {
-//XXX
-if (dd_name)
-fprintf(stderr, "%s\n", dd_name);
             delete [] dd_name;
         }
 
@@ -177,8 +174,6 @@ struct sRunDesc
 
     ~sRunDesc()
         {
-//XXX
-printf("here %lx\n", this);
             delete [] rd_name;
             delete [] rd_type;
             delete [] rd_title;

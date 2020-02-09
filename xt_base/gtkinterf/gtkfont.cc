@@ -67,6 +67,8 @@ GRfont::fnt_t GRfont::app_fonts[] =
     fnt_t( "HTML Viewer Proportional Family", "Sans 9", false, true ),
     fnt_t( "HTML Viewer Fixed Pitch Family",  "Lucida Console 9", true, true )
 #else
+/******
+Needed on old 2010 Macbook Pro 13 inch, not good for new 15 inch Macbook Pro.
 #ifdef __APPLE__
     fnt_t( "Fixed Pitch Text Window Font",    "Monospace 12", true, false ),
     fnt_t( "Proportional Text Window Font",   "Sans 12", false, false ),
@@ -74,14 +76,13 @@ GRfont::fnt_t GRfont::app_fonts[] =
     fnt_t( "Text Editor Font",                "Monospace 12", false, false ),
     fnt_t( "HTML Viewer Proportional Family", "Sans 12", false, true ),
     fnt_t( "HTML Viewer Fixed Pitch Family",  "Monospace 12", true, true )
-#else
+*******/
     fnt_t( "Fixed Pitch Text Window Font",    "Monospace 9", true, false ),
     fnt_t( "Proportional Text Window Font",   "Sans 9", false, false ),
     fnt_t( "Fixed Pitch Drawing Window Font", "Monospace 9", true, false ),
     fnt_t( "Text Editor Font",                "Monospace 9", false, false ),
     fnt_t( "HTML Viewer Proportional Family", "Sans 9", false, true ),
     fnt_t( "HTML Viewer Fixed Pitch Family",  "Monospace 9", true, true )
-#endif
 #endif
 };
 
