@@ -194,9 +194,9 @@ struct sCHECKprms : public sOUTcontrol
     void initOutMode(bool, bool, bool);
     void initCheckPnts();
     void initInput(double, double);
-    bool initial();
+    bool initial(bool=false);
     bool loop();
-    int trial(int, int, double, double);
+    int trial(int, int, double, double, bool=false);
     CBret evaluate();
     void findEdge(const char*, const char*);
     bool findRange(bool, bool);
@@ -218,7 +218,6 @@ struct sCHECKprms : public sOUTcontrol
     void set_pflag(int i, int v) { ch_flags[i] = v; }
 
     void set_batchmode(bool b)  { ch_batchmode = b; }
-    void set_no_output(bool b)  { ch_no_output = b; }
     void set_use_remote(bool b) { ch_use_remote = b; }
     bool monte()                const { return (ch_monte); }
     void set_monte(bool b)      { ch_monte = b; }
@@ -277,7 +276,6 @@ private:
     char *ch_tmpoutname;    // Redirect stdout filename.
     int ch_graphid;         // Graph id if plotting.
     bool ch_batchmode;      // If true, no user prompts.
-    bool ch_no_output;      // Supress output recording.
     bool ch_use_remote;     // Submit analysis to servers.
     bool ch_monte;          // Monte Carlo analysis.
     bool ch_doall;          // Check all points.

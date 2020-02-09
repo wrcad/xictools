@@ -78,31 +78,38 @@ CommandTab::com_check(wordlist *wl)
 void
 CommandTab::com_mctrial(wordlist*)
 {
-    if (!Sp.CurCircuit())
+    if (!Sp.CurCircuit()) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "No current circuit.\n");
         return;
+    }
     sCHECKprms *cj = Sp.CurCircuit()->check();
-    if (!cj)
+    if (!cj) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "The check command is not running.\n");
         return;
+    }
     Sp.SetFlag(FT_MONTE, true);
     int ret;
-    cj->set_no_output(true);
     if (!cj->out_cir)
-        ret = cj->initial();
+        ret = cj->initial(true);
     else
-        ret = cj->trial(0, 0, 0.0, 0.0);
-    cj->set_no_output(false);
+        ret = cj->trial(0, 0, 0.0, 0.0, true);
     Sp.SetFlag(FT_MONTE, false);
     Sp.SetVar("trial_return", ret);
 }
 
 
-//XXX add message if error out
 void
 CommandTab::com_findrange(wordlist *wl)
 {
-    sCHECKprms *cj = Sp.CurCircuit()->check();
-    if (!cj)
+    if (!Sp.CurCircuit()) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "No current circuit.\n");
         return;
+    }
+    sCHECKprms *cj = Sp.CurCircuit()->check();
+    if (!cj) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "The check command is not running.\n");
+        return;
+    }
     cj->find_oprange(wl);
 }
 
@@ -110,9 +117,15 @@ CommandTab::com_findrange(wordlist *wl)
 void
 CommandTab::com_findupper(wordlist *wl)
 {
-    sCHECKprms *cj = Sp.CurCircuit()->check();
-    if (!cj)
+    if (!Sp.CurCircuit()) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "No current circuit.\n");
         return;
+    }
+    sCHECKprms *cj = Sp.CurCircuit()->check();
+    if (!cj) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "The check command is not running.\n");
+        return;
+    }
     cj->find_oprange(wl, false);
 }
 
@@ -120,9 +133,15 @@ CommandTab::com_findupper(wordlist *wl)
 void
 CommandTab::com_findlower(wordlist *wl)
 {
-    sCHECKprms *cj = Sp.CurCircuit()->check();
-    if (!cj)
+    if (!Sp.CurCircuit()) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "No current circuit.\n");
         return;
+    }
+    sCHECKprms *cj = Sp.CurCircuit()->check();
+    if (!cj) {
+        GRpkgIf()->ErrPrintf(ET_ERROR, "The check command is not running.\n");
+        return;
+    }
     cj->find_oprange(wl, true, false);
 }
 
@@ -560,7 +579,6 @@ sCHECKprms::sCHECKprms()
     ch_tmpoutname   = 0;
     ch_graphid      = 0;
     ch_batchmode    = false;
-    ch_no_output    = false;
     ch_use_remote   = false;
     ch_monte        = false;
     ch_doall        = false;
@@ -698,7 +716,7 @@ sCHECKprms::find_oprange(wordlist *wl, bool dolower, bool doupper)
     set_step2(0);
 
     if (!out_cir)
-        ret = initial();
+        ret = initial(true);
     if (ret) {
         set_opvec(0, 0);
         ret = findRange(dolower, doupper);
@@ -1292,7 +1310,7 @@ sCHECKprms::initInput(double value1, double value2)
 // and the analysis should be halted.
 //
 bool
-sCHECKprms::initial()
+sCHECKprms::initial(bool no_output)
 {
     char buf[256];
     buf[0] = 0;
@@ -1393,13 +1411,13 @@ sCHECKprms::initial()
         error = OK;
     }
     if (error == OK) {
-        if (!ch_no_output) {
+        if (!no_output) {
             if (GP.MpMark(ch_graphid, !ch_fail) && !ch_batchmode)
                 TTY.printf_force(ch_fail ? " FAIL\n\n" : " PASS\n\n");
             if (ch_op)
                 fprintf(ch_op, "%s\t\t%s\n", buf, ch_fail ? "FAIL" : "PASS");
+            addpoint(-ch_step1, -ch_step2, ch_fail);
         }
-        addpoint(-ch_step1, -ch_step2, ch_fail);
     }
     else {
         ch_nogo = true;
@@ -1593,7 +1611,7 @@ quit:
 // fail, 0 if error.
 //
 int
-sCHECKprms::trial(int i, int j, double value1, double value2)
+sCHECKprms::trial(int i, int j, double value1, double value2, bool no_output)
 {
     if (!out_cir || !out_plot) {
         ch_nogo = true;
@@ -1621,7 +1639,7 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
             for (int k = 0; k < ch_max; k++)
                 ch_points[k] = d->realval(k);
         }
-        if (!ch_no_output) {
+        if (!no_output) {
             int num = (j + ch_step2)*(2*ch_step1 + 1) + i + ch_step1 + 1;
             if (GP.MpWhere(ch_graphid, i, j) && !ch_batchmode)
                 TTY.printf_force("%3d %3d run %3d\n", i, j, num);
@@ -1631,7 +1649,7 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
     }
     else {
         initInput(value1, value2);
-        if (!ch_no_output) {
+        if (!no_output) {
             if (GP.MpWhere(ch_graphid, i, j) && !ch_batchmode)
                 TTY.printf_force("%3d %3d %12g %12g\n", i, j, value1, value2);
             if (ch_op)
@@ -1657,13 +1675,13 @@ sCHECKprms::trial(int i, int j, double value1, double value2)
     if (error < 0)
         ch_pause = true;
     else if (error == OK) {
-        if (!ch_no_output) {
+        if (!no_output) {
             if (GP.MpMark(ch_graphid, !ch_fail) && !ch_batchmode)
                 TTY.printf_force(ch_fail ? " FAIL\n\n" : " PASS\n\n");
             if (ch_op)
                 fprintf(ch_op, "%s\t\t%s\n", buf, ch_fail ? "FAIL" : "PASS");
+            addpoint(i, j, ch_fail);
         }
-        addpoint(i, j, ch_fail);
         return (ch_fail + 1);
     }
     else
@@ -1771,7 +1789,6 @@ sCHECKprms::findEdge(const char *po, const char *pc)
     }
 
     bool pass1 = true;
-    ch_no_output = true;
     int itno = ch_iterno;
     while (itno--) {
         int error;
@@ -1798,7 +1815,6 @@ sCHECKprms::findEdge(const char *po, const char *pc)
         if (error < 0) {
             // User interrupt, can't resume.
             ch_nogo = true;
-            ch_no_output = false;
             return;
         }
         else if (error != OK) {
@@ -1809,7 +1825,6 @@ sCHECKprms::findEdge(const char *po, const char *pc)
             }
             else {
                 ch_nogo = true;
-                ch_no_output = false;
                 return;
             }
         }
@@ -1826,7 +1841,6 @@ sCHECKprms::findEdge(const char *po, const char *pc)
             }
         }
     }
-    ch_no_output = false;
 }
 
 
@@ -2452,9 +2466,7 @@ sCHECKprms::find_upper1(double val, int offset)
         int i;
         for (i = 0; i < SPAN; i++) {
             value1 += delta;
-            ch_no_output = true;
-            trial(0, 0, value1, value2);
-            ch_no_output = false;
+            trial(0, 0, value1, value2, true);
             if (ch_fail) {
                 value1 -= delta;
                 if (findext1(ch_iterno, &value1, value2, -delta))
@@ -2494,9 +2506,7 @@ sCHECKprms::find_lower1(double val, int offset)
         int i;
         for (i = 0; i < SPAN; i++) {
             value1 -= delta;
-            ch_no_output = true;
-            trial(0, 0, value1, value2);
-            ch_no_output = false;
+            trial(0, 0, value1, value2, true);
             if (ch_fail) {
                 value1 += delta;
                 if (findext1(ch_iterno, &value1, value2, delta))
@@ -2536,9 +2546,7 @@ sCHECKprms::find_upper2(double val, int offset)
         int i;
         for (i = 0; i < SPAN; i++) {
             value2 += delta;
-            ch_no_output = true;
-            trial(0, 0, value1, value2);
-            ch_no_output = false;
+            trial(0, 0, value1, value2, true);
             if (ch_fail) {
                 value2 -= delta;
                 if (findext2(ch_iterno, value1, &value2, -delta))
@@ -2578,9 +2586,7 @@ sCHECKprms::find_lower2(double val, int offset)
         int i;
         for (i = 0; i < SPAN; i++) {
             value2 -= delta;
-            ch_no_output = true;
-            trial(0, 0, value1, value2);
-            ch_no_output = false;
+            trial(0, 0, value1, value2, true);
             if (ch_fail) {
                 value2 += delta;
                 if (findext2(ch_iterno, value1, &value2, delta))
@@ -2608,7 +2614,6 @@ sCHECKprms::findext1(int itno, double *value1, double value2, double delta)
 {
     delta *= .5;
     *value1 -= delta;
-    ch_no_output = true;
     while (itno--) {
         initInput(*value1, value2);
         out_cir->resetTrial(ch_names != 0);
@@ -2619,7 +2624,6 @@ sCHECKprms::findext1(int itno, double *value1, double value2, double delta)
         ToolBar()->SuppressUpdate(false);
         if (error < 0) {
             ch_pause = true;
-            ch_no_output = false;
             return (true);
         }
         if (error == E_ITERLIM) {
@@ -2630,7 +2634,6 @@ sCHECKprms::findext1(int itno, double *value1, double value2, double delta)
         }
         else if (error != OK) {
             ch_nogo = true;
-            ch_no_output = false;
             return (true);
         }
         delta *= .5;
@@ -2639,7 +2642,6 @@ sCHECKprms::findext1(int itno, double *value1, double value2, double delta)
         else
             *value1 += delta;
     }
-    ch_no_output = false;
     return (false);
 }
 
@@ -2653,7 +2655,6 @@ sCHECKprms::findext2(int itno, double value1, double *value2, double delta)
 {
     delta *= .5;
     *value2 -= delta;
-    ch_no_output = true;
     while (itno--) {
         initInput(value1, *value2);
         out_cir->resetTrial(ch_names != 0);
@@ -2664,7 +2665,6 @@ sCHECKprms::findext2(int itno, double value1, double *value2, double delta)
         ToolBar()->SuppressUpdate(false);
         if (error < 0) {
             ch_pause = true;
-            ch_no_output = false;
             return (true);
         }
         if (error == E_ITERLIM) {
@@ -2675,7 +2675,6 @@ sCHECKprms::findext2(int itno, double value1, double *value2, double delta)
         }
         else if (error != OK) {
             ch_nogo = true;
-            ch_no_output = false;
             return (true);
         }
         delta *= .5;
@@ -2684,7 +2683,6 @@ sCHECKprms::findext2(int itno, double value1, double *value2, double delta)
         else
             *value2 += delta;
     }
-    ch_no_output = false;
     return (false);
 }
 

@@ -588,8 +588,6 @@ sRunDesc::addDataDesc(const char *nm, int typ, int ind)
     }
 
     dataDesc *d = rd_data + rd_numData;
-//XXX    *d = dataDesc();
-
     d->setup(nm, ind, typ, (rd_scrolling && rd_numPoints > 1));
 
     if (ind == -1) {
@@ -611,8 +609,6 @@ sRunDesc::addSpecialDesc(const char *nm, int ind, bool usevec)
     }
 
     dataDesc *d = rd_data + rd_numData;
-//XXX    *d = dataDesc();
-
     d->setup_special(nm, ind, usevec, (rd_scrolling && rd_numPoints > 1));
 
     rd_numData++;

@@ -285,6 +285,8 @@ struct sDimen
         {
             if (!d_v1) {
                 int sz = sz1 * sz2;
+                if (sz <= 0)
+                    return;
                 d_v1 = new char[sz];
                 d_v2 = new char[sz];
                 d_pf = new char[sz];
