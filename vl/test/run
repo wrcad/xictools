@@ -1,0 +1,5 @@
+#! /bin/sh
+
+for a in ../examples_ivl/ivltests/*.v; do
+    ../vl $a
+done

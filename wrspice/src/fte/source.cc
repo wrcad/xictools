@@ -913,8 +913,11 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
             for (wordlist *wl = controls; wl; wl = wl->wl_next)
                 ct->params()->param_subst_all(&wl->wl_word);
         }
-        if (!nocmds || nospice)
+        if (!nocmds || nospice) {
+            ControlsPush();
             ExecCmds(controls);
+            ControlsPop();
+        }
     }
     wordlist::destroy(controls);
 
@@ -994,7 +997,9 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
             OP.setCurPlot(pl_ex);
         }
 
+        ExecsPush();
         ExecCmds(wx);
+        ExecsPop();
         wordlist::destroy(wx);
 
         // Still in list? may have been destroyed.

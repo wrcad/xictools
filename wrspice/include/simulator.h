@@ -733,6 +733,16 @@ struct IFsimulator
     const char *Description()       { return (ft_description); }
     const char *Version()           { return (ft_version); }
 
+    void ControlsPush()             { ft_control_depth++;}
+    void ControlsPop()              { if (ft_control_depth)
+                                          ft_control_depth--; }
+    int ControlsDepth()             { return (ft_control_depth); }
+
+    void ExecsPush()                { ft_exec_depth++;}
+    void ExecsPop()                 { if (ft_exec_depth)
+                                          ft_exec_depth--; }
+    int ExecsDepth()                { return (ft_exec_depth); }
+
     FPEmode GetFPEmode()            { return (ft_fpe_mode); }
 
     sHtab *Options()                { return (ft_options); }
@@ -787,6 +797,9 @@ private:
     sFtCirc *ft_circuits;       // List head for circuits
 
     IFanalysis *ft_cur_analysis; // The most recent analysis started.
+
+    int ft_control_depth;       // .control execution frame.
+    int ft_exec_depth;          // .exec execution frame.
 
     int ft_fpe_inhibit;         // Longjmp on SIGFPE inhibited when nonzero
 

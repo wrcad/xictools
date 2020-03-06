@@ -1,0 +1,252 @@
+* 3-stage Josephson counter, operating range analysis\n\n\
+To run, give these commands to WRspice after sourcing this file:\n\
+    mplot -on\n\
+    check
+*
+*
+* Warning:  This file requires WRspice-4.3.11 or later.
+* Warning:  This uses WRspice extensions, file is not portable.
+* This version uses a new construct that avoids shell substitution.
+*
+.check
+
+* Set this to 0 to use TRAN ramp-up and uic instead of DCOP.
+.param dcop=1
+
+* Below,
+* Level=1 selects the internal RSJ JJ model.
+* Level=2 selects the example Verilog-A JJ model, if loaded (with
+* the devload command).
+* Level=3 selects the internal microscopic JJ model.
+*
+.model jj1 jj(level=1)
+
+.if dcop
+.tran 1p 500p
+.else
+.tran 1p 500p uic
+.endif
+
+.exec
+# Margins of a Josephson binary counter
+# This is an example of an operating range analysis input file
+#
+# After sourcing the file, optionally enter "mplot -on" to see results
+# graphically, then "check" to initiate run.  The results will be left
+# in a file.
+#
+# central value of first variable, number of evaluation steps above and
+# below, step delta:
+checkVAL1 = 13m
+checkSTP1 = 5
+checkDEL1 = .5m
+#
+# same thing for second variable
+checkVAL2 = 38m
+checkSTP2 = 5
+checkDEL2 = 1m
+
+# Set the swept variables.  This is a new syntax in 4.3.11, we push
+# values directly into the circuit, avoiding the shell substitution
+# mechanism.  The general syntax is a percent sign '%', followed by a
+# space-separated list of device names, followed by a comma, followed
+# by a list of parameter names that must apply to the devices given. 
+# This follows the syntax of the WRspice sweep command.
+set value1 = "%v1,dc"
+set value2 = "%v2,dc"
+#
+# end of header
+.endc
+
+* There is no bound codeblock in this example.  Instead, pass/fail
+* logic is found in .stop callbacks.
+
+.control cb1
+    if (    (@b1.x2[n]-@b2.x2[n] ne 1) || \
+            (@b1.x3[n]-@b2.x3[n] ne 0) || \
+            (@b1.x4[n]-@b2.x4[n] ne 0))
+#        echo fail 1 $&time
+        return 0
+    end
+#    echo pass 1 $&time
+    return 1
+.endc
+
+.control cb2
+    if (    (@b1.x2[n]-@b2.x2[n] ne 0) || \
+            (@b1.x3[n]-@b2.x3[n] ne 1) || \
+            (@b1.x4[n]-@b2.x4[n] ne 0))
+#        echo fail 2 $&time
+        return 0
+    end
+#    echo pass 2 $&time
+    return 1
+.endc
+
+.control cb3
+    if (    (@b1.x2[n]-@b2.x2[n] ne 1) || \
+            (@b1.x3[n]-@b2.x3[n] ne 1) || \
+            (@b1.x4[n]-@b2.x4[n] ne 0))
+#        echo fail 3 $&time
+        return 0
+    end
+#    echo pass 3 $&time
+    return 1
+.endc
+
+.control cb4
+    if (    (@b1.x2[n]-@b2.x2[n] ne 0) || \
+            (@b1.x3[n]-@b2.x3[n] ne 0) || \
+            (@b1.x4[n]-@b2.x4[n] ne 1))
+#        echo fail 4 $&time
+        return 0
+    end
+#    echo pass 4 $&time
+    return 1
+.endc
+
+.control cb5
+    if (    (@b1.x2[n]-@b2.x2[n] ne 1) || \
+            (@b1.x3[n]-@b2.x3[n] ne 0) || \
+            (@b1.x4[n]-@b2.x4[n] ne 1))
+#        echo fail 5 $&time
+        return 0
+    end
+#    echo pass 5 $&time
+    return 1
+.endc
+
+.control cb6
+    if (    (@b1.x2[n]-@b2.x2[n] ne 0) || \
+            (@b1.x3[n]-@b2.x3[n] ne 1) || \
+            (@b1.x4[n]-@b2.x4[n] ne 1))
+#        echo fail 6 $&time
+        return 0
+    end
+#    echo pass 6 $&time
+    return 1
+.endc
+
+.control cb7
+    if (    (@b1.x2[n]-@b2.x2[n] ne 1) || \
+            (@b1.x3[n]-@b2.x3[n] ne 1) || \
+            (@b1.x4[n]-@b2.x4[n] ne 1))
+#        echo fail 7 $&time
+        return 0
+    end
+#    echo pass 7 $&time
+    return 1
+.endc
+
+.control cxx
+    # Print states obtained from "emission count" parameter.
+    echo $&(@b1.x4[n]-@b2.x4[n]) $&(@b1.x3[n]-@b2.x3[n]) \
+      $&(@b1.x2[n]-@b2.x2[n]) $&time
+    return 1
+.endc
+* This version uses .stop lines for pass/fail testing.
+
+.stop tran at v(20)=-10mV fall=2 repeat 50p call cxx silent
+
+* Best thing to do is look for a clock edge to use as a time reference.
+.stop tran at v(20)=-10mV fall=2 call cb1 silent
+
+* Or one can use absolute time points, and we can do the test here, we
+* don't necessarily need to call a script.
+.stop tran at ts=185p ((@b1.x2[n]-@b2.x2[n] ne 0) || \
+            (@b1.x3[n]-@b2.x3[n] ne 1) || \
+            (@b1.x4[n]-@b2.x4[n] ne 0)) silent
+
+*.stop tran at 185p call cb2 silent
+*.stop tran at 235p call cb3 silent
+*.stop tran at 285p call cb4 silent
+*.stop tran at 335p call cb5 silent
+*.stop tran at 385p call cb6 silent
+
+.stop tran at v(20)=-10mV fall=4 when \
+            (@b1.x2[n]-@b2.x2[n] ne 1) || \
+            (@b1.x3[n]-@b2.x3[n] ne 1) || \
+            (@b1.x4[n]-@b2.x4[n] ne 0) silent
+.stop tran at v(20)=-10mV fall=5 call cb4 silent
+.stop tran at v(20)=-10mV fall=6 call cb5 silent
+.stop tran at v(20)=-10mV fall=7 call cb6 silent
+.stop tran at v(20)=-10mV fall=8 call cb7 silent
+
+.subckt count 1 4 5 6 7
+c1 4 0 3.2p
+r1 3 8 .4
+r2 4 9 1.1
+b1 3 0 6 jj1 ics=0.6mA
+b2 5 0 7 jj1 ics=0.6mA
+l1 3 4 2.0p
+l2 4 5 2.0p
+l3 1 2 2.0p
+l4 2 0 2.0p
+l5 8 0 1.4p
+l6 9 0 .1p
+k1 l1 l3 .99
+k2 l2 l4 .99
+.ends count
+
+r1 17 2 50
+r2 1 6 50
+r3 1 10 50
+r4 1 14 50
+r5 3 18 50
+r6 7 13 50
+r7 11 13 50
+r8 15 13 50
+r9 3 20 50
+r10 4 5 .43
+r11 8 9 .43
+r12 12 19 .43
+r13 16 30 .5
+l1 5 6 2.1p
+l2 9 10 2.1p
+l3 19 14 2.1p
+l4 30 0 2p
+x1 3 2 4 100 101 count
+x2 7 6 8 200 201 count
+x3 11 10 12 300 301 count
+x4 15 14 16 400 401 count
+ 
+* These are the sources which vary
+* In general, the $value1 or $value2 symbols can replace any numerical
+* parameter in the circuit description.  No checking is done as to whether
+* the substitution makes sense.
+*
+.if dcop
+*flux bias
+v1 13 0 13m
+*gate bias
+v2 1 0 38m
+.else
+*flux bias
+v1 13 0 pulse(0 13m 10ps 10ps)
+*gate bias
+v2 1 0 pulse(0 38m 10ps 10ps)
+.endif
+ 
+*v3 20 0 pwl(0 0 70p 0
+*+ 75p  15m 90p  15m 100p -15m 115p -15m 
+*+ 125p 15m 140p 15m 150p -15m 165p -15m
+*+ 175p 15m 190p 15m 200p -15m 215p -15m
+*+ 225p 15m 240p 15m 250p -15m 265p -15m
+*+ 275p 15m 290p 15m 300p -15m 315p -15m
+*+ 325p 15m 340p 15m 350p -15m 365p -15m
+*+ 375p 15m 390p 15m 400p -15m 415p -15m
+*+ 425p 15m 440p 15m 450p -15m 465p -15m 500p -15m)
+v3 20 0 sin(0 17mV 20gHz 70pS)
+ 
+.if dcop
+* flux bias first stage
+v4 18 0 13m
+*gate bias first stage
+v5 17 0 39m
+.else
+* flux bias first stage
+v4 18 0 pulse(0 13m 10ps 10ps)
+*gate bias first stage
+v5 17 0 pulse(0 39m 10ps 10ps)
+.endif
+*

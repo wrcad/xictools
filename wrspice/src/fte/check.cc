@@ -314,7 +314,11 @@ int
 sFtCirc::checkCodeblocks()
 {
     if (!controlBlk().name()) {
-        if (!controlBlk().tree()) {
+        if (!controlBlk().tree() && !Sp.ControlsDepth()) {
+            // Sp.ControlsDepth is >0 when we are executing a .control
+            // block.  In this case don't bind the .control block, as
+            // this would be recursive.
+
             if (controlBlk().text()) {
                 controlBlk().set_tree(CP.MakeControl(controlBlk().text()));
                 if (!controlBlk().tree()) {
@@ -333,7 +337,11 @@ sFtCirc::checkCodeblocks()
         }
     }
     if (!execBlk().name()) {
-        if (!execBlk().tree()) {
+        if (!execBlk().tree() && !Sp.ExecsDepth()) {
+            // Sp.ExecsDepth is >0 when we are executing a .exec
+            // block.  In this case don't bind the .exec block, as
+            // this would be recursive.
+
             if (execBlk().text()) {
                 execBlk().set_tree(CP.MakeControl(execBlk().text()));
                 if (!execBlk().tree()) {
