@@ -336,31 +336,10 @@ CHANGES AND NEW FEATURES
     New pre-defined parameter WRSPICE_BATCH, set to 1 if running in
     batch mode, 0 otherwise.
 
-    Note:  Bound codeblocks are parameter expamded, named codeblocks
+    Note:  Bound codeblocks are parameter expanded, named codeblocks
     are not.  In a named codeblock, parameters are available through
     @parmname syntax.
 
-* Updates to the Josephson junction and TJM device models.
-
-    The ICS parameter range was widened to [ICRIT/50:ICRIT*50] from
-    [ICRIT/20:ICRIT*20] in the internal JJ/TJM and Verilog models.  A
-    new FORCE model parameter flag is recognized in internal JJ/TJM
-    models only.  When given, this skips testing of VN, RSUB, ICRN,
-    and RN for out of range except for >= 0.  Similar functionality is
-    available in the Verilog model by uncommenting NORLMT compiler
-    symbol.
-
-    The internal JJ model is presently correctly subtracting the
-    subgap conductance from GSHUNT, this was not being done (a bug)
-    previously.  The GSHUNT and LSHVAL instance output parameters are
-    now available in both internal and Verilog models, the internal
-    model has an additional RSHUNT output parameter as well.
-
-    Added temperature dependence to the JJ model, with new model
-    parameters TC, TNOM, TEMP, TCFCT, and a new instance parameter
-    TEMP.  This applies to internal and VA models.
-
-    
 * Verilog co-simulation capability.
 
     It is now possible to run the internal digital Verilog simulator
@@ -407,6 +386,31 @@ CHANGES AND NEW FEATURES
     devlist,paramlist (as for sweep command) syntax.
 
     The new jjoprng2.cir example illustrates use of this syntax.
+
+    It is now possible to fairly easily extract parameter operating
+    ranges.  The nor_il_op.cir file illustrates how this can be done. 
+    The file makes use of a number of new features and syntax
+    elements.
+
+* Updates to the Josephson junction and TJM device models.
+
+    The ICS parameter range was widened to [ICRIT/50:ICRIT*50] from
+    [ICRIT/20:ICRIT*20] in the internal JJ/TJM and Verilog models.  A
+    new FORCE model parameter flag is recognized in internal JJ/TJM
+    models only.  When given, this skips testing of VN, RSUB, ICRN,
+    and RN for out of range except for >= 0.  Similar functionality is
+    available in the Verilog model by uncommenting NORLMT compiler
+    symbol.
+
+    The internal JJ model is presently correctly subtracting the
+    subgap conductance from GSHUNT, this was not being done (a bug)
+    previously.  The GSHUNT and LSHVAL instance output parameters are
+    now available in both internal and Verilog models, the internal
+    model has an additional RSHUNT output parameter as well.
+
+    Added temperature dependence to the JJ model, with new model
+    parameters TC, TNOM, TEMP, TCFCT, and a new instance parameter
+    TEMP.  This applies to internal and VA models.
 
 * Miscellaneous changes.
 

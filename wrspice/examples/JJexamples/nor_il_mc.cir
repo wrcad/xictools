@@ -1,4 +1,4 @@
-* \nExample parameter range analysis of NOR gate.
+* \nExample multi-parameter Monte Carlo analysis of NOR gate.
 
 * We need to save the special vectors accessed for pass/fail testing.
 .save @b2.x3[n]
@@ -28,80 +28,34 @@ vout 102 0 pulse(0 1 DLY+2*PER-10p 0.2p 0.2p 0.5*PER-0.2p PER BD1) |
 #run
 #plot ysep v(3) v(6) v(8) v(5) v(15) v(102) (@b2.x3[n]-@b3.x3[n])
 
-# Enable operating point limit search to depth.
-set checkiterate=6
-
 # Unbind any "control" codeblock (unlikely to be one).  Since we call
 # check from the .control block here, the .control block will not be
-# bound as it would be in a normal operating range input file.
+# bound as it would be in a normal Monte Carlo input file.
 codeblock -b
 
-# Start incremental margin analysis.
-check -b
+# Do the Monte Carlo Analysis.  The default is to do 49 points, based
+# on (2*CHECK_STP1 + 1)*(2*CHECK_STP2 + 1), both STPs default to 3.
+mplot -on
+check -m
+mplot -off
 
-# Below, find the operating range of the circuit parameters listed. 
-# The second findrange argument is quoted so it is taken as a name
-# string and not parameter expanded, as it is in the final argument.
+.endc
 
-# Some of these may generate warning messages as the search takes
-# parameters out of range.  Some parameters may not have an upper or
-# lower bound.
-
-findrange -n1 "b0ics" b0.x0,ics b0ics
-echo b0.x0 ics
-print b0ics_min b0ics_max 0.5*(b0ics_min+b0ics_max)  b0ics
-
-findrange -n1 "b1ics" b1.x0,ics b1ics
-echo b1.x0 ics
-print b1ics_min b1ics_max 0.5*(b1ics_min+b1ics_max)  b1ics
-
-findrange -n1 "b2ics" b2.x0,ics b2ics
-echo b2.x0 ics
-print b2ics_min b2ics_max 0.5*(b2ics_min+b2ics_max)  b2ics
-
-findrange -n1 "b3ics" b3.x0,ics b3ics
-echo b3.x0 ics
-print b3ics_min b3ics_max 0.5*(b3ics_min+b3ics_max)  b3ics
-
-findrange -n1 "b4ics" b4.x0,ics b4ics
-echo b4.x0 ics
-print b4ics_min b4ics_max 0.5*(b4ics_min+b4ics_max)  b4ics
-
-findrange -n1 "b5ics" b5.x0,ics b5ics
-echo b5.x0 ics
-print b5ics_min b5ics_max 0.5*(b5ics_min+b5ics_max)  b5ics
-
-findrange -n1 "b6ics" b6.x0,ics b6ics
-echo b6.x0 ics
-print b6ics_min b6ics_max 0.5*(b6ics_min+b6ics_max)  b6ics
-
-findrange -n1 "b7ics" b7.x0,ics b7ics
-echo b7.x0 ics
-print b7ics_min b7ics_max 0.5*(b7ics_min+b7ics_max)  b7ics
-
-findrange -n1 "r0r" r0.x0,r r0r
-echo r0.x0 r
-print r0r_min r0r_max 0.5*(r0r_min+r0r_max)  r0r
-
-findrange -n1 "r1r" r1.x0,r r1r
-echo r1.x0 r
-print r1r_min r1r_max 0.5*(r1r_min+r1r_max)  r1r
-
-findrange -n1 "r2r" r2.x0,r r2r
-echo r2.x0 r
-print r2r_min r2r_max 0.5*(r2r_min+r2r_max)  r2r
-
-findrange -n1 "r3r" r3.x0,r r3r
-echo r3.x0 r
-print r3r_min r3r_max 0.5*(r3r_min+r3r_max)  r0r
-
-findrange -n1 "l5l" l5.x0,l l5l
-echo l5.x0 l
-print l5l_min l5l_max 0.5*(l5l_min+l5l_max)  l5l
-
-# End the incremental range analysis.
-check -c
-
+.exec
+# This is run before each trial.
+let @b0.x0[ics]=b0ics*agauss(1, 0.2, 1)
+let @b1.x0[ics]=b1ics*agauss(1, 0.1, 1)
+let @b2.x0[ics]=b2ics*agauss(1, 0.1, 1)
+let @b3.x0[ics]=b3ics*agauss(1, 0.1, 1)
+let @b4.x0[ics]=b4ics*agauss(1, 0.1, 1)
+let @b5.x0[ics]=b5ics*agauss(1, 0.1, 1)
+let @b6.x0[ics]=b6ics*agauss(1, 0.1, 1)
+let @b7.x0[ics]=b7ics*agauss(1, 0.1, 1)
+let @r0.x0[r]=r0r*agauss(1, 0.1, 1)
+let @r1.x0[r]=r1r*agauss(1, 0.1, 1)
+let @r2.x0[r]=r2r*agauss(1, 0.1, 1)
+let @r3.x0[r]=r3r*agauss(1, 0.1, 1)
+let @l5.x0[l]=l5l*agauss(1, 0.1, 1)
 .endc
 
 * Set up periodic result checking (call cb periodically).

@@ -967,6 +967,12 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
     sParamTab *ptab = new sParamTab;
     ptab = deck->process_conditionals(ptab);
     ptab->define_macros(true);
+#define NEWPEXP
+#ifdef NEWPEXP
+    for (wordlist *wl = execs; wl; wl = wl->wl_next)
+        ptab->param_subst_all(&wl->wl_word);
+#endif
+
 
 #define EXECPLOTNAME "exec"
     // If execs, run them now, after parameter expanding.
@@ -975,12 +981,15 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
     if (execs && !noexec) {
         // Run the execs (before source).
 
+#ifdef NEWPEXP
+#else
         wordlist *wx = wordlist::copy(execs);
         if (ptab) {
             // Parameter expand the .exec lines.
             for (wordlist *wl = wx; wl; wl = wl->wl_next)
                 ptab->param_subst_all(&wl->wl_word);
         }
+#endif
         strcpy(tpname, OP.curPlot()->type_name());
         // Set up a temporary plot for vectors defined in the exec
         // block that might be needed in the circuit.
@@ -997,10 +1006,16 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
             OP.setCurPlot(pl_ex);
         }
 
+#ifdef NEWPEXP
+        ExecsPush();
+        ExecCmds(execs);
+        ExecsPop();
+#else
         ExecsPush();
         ExecCmds(wx);
         ExecsPop();
         wordlist::destroy(wx);
+#endif
 
         // Still in list? may have been destroyed.
         sPlot *px = OP.plotList();
