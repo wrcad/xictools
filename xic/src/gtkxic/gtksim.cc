@@ -58,6 +58,8 @@ namespace {
 
             void control(SpType);
 
+            GtkWidget *shell()  { return (sp_shell); }
+
         private:
             static int sp_down_timer(void*);
             static void sp_cancel_proc(GtkWidget*, void*);
@@ -73,6 +75,27 @@ namespace {
 }
 
 using namespace gtksim;
+
+namespace {
+    int label_set_idle(void *arg)
+    {
+        const char *msg = (const char*)arg;
+        GtkWidget *shell = Sim.shell();
+        if (shell) {
+            GtkWidget *label = (GtkWidget*)gtk_object_get_data(
+                GTK_OBJECT(shell), "label");
+            if (label) {
+                gtk_label_set_text(GTK_LABEL(label), msg);
+                if (!GTK_WIDGET_MAPPED(shell)) {
+                    GRX->SetPopupLocation(GRloc(LW_LL), shell,
+                        mainBag()->Viewport());
+                    gtk_widget_show(shell);
+                }
+            }
+        }
+        return (0);
+    }
+}
 
 
 // data set:
@@ -126,16 +149,7 @@ sSim::control(SpType status)
         break;
     }
     if (sp_shell) {
-        GtkWidget *label = (GtkWidget*)gtk_object_get_data(
-            GTK_OBJECT(sp_shell), "label");
-        if (label) {
-            gtk_label_set_text(GTK_LABEL(label), msg);
-            if (!GTK_WIDGET_MAPPED(sp_shell)) {
-                GRX->SetPopupLocation(GRloc(LW_LL), sp_shell,
-                    mainBag()->Viewport());
-                gtk_widget_show(sp_shell);
-            }
-        }
+        gtk_idle_add(label_set_idle, (void*)msg);
         return;
     }
     main_bag *w = mainBag();

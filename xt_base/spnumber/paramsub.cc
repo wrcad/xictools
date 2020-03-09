@@ -326,8 +326,19 @@ sParamTab::update(const char *str)
             }
             else {
                 if (p && !p->readonly()) {
-                    delete [] p->sub();
-                    p->set_sub(psub);
+                    // Expand!  Needed for "param=param" recursion.
+                    if (*psub == '\'')
+                        squote_subst(&psub);
+                    else if (subst(&psub)) {
+                        if (*psub == '\'')
+                            squote_subst(&psub);
+                        else
+                            line_subst(&psub);
+                    }
+                    if (psub != p->sub()) {
+                        delete [] p->sub();
+                        p->set_sub(psub);
+                    }
                 }
                 else
                     delete [] psub;
