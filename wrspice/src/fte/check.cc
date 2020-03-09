@@ -846,7 +846,8 @@ sCHECKprms::resetup(wordlist **pwl)
 
     // Run the exec script.
     set_vec(checkINIT, 1.0);
-    curckt->execBlk().exec(false);
+// FIXME sometimes needed sometimes not
+//XXX    curckt->execBlk().exec(false);
     set_vec(checkINIT, 0.0);
     set_vec(checkFAIL, 0.0);
 
@@ -1710,7 +1711,8 @@ sCHECKprms::evaluate()
 
     CBret ret = CBfail;
     if (out_cir && out_plot) {
-        if (!out_cir->controlBlk().tree())
+//XXX
+        if (!out_cir->controlBlk().tree() && !out_cir->controlBlk().name())
             return (CBok);
         sFtCirc *cir = Sp.CurCircuit();
         sPlot *plt = OP.curPlot();
