@@ -1134,6 +1134,16 @@ PrptyState::prp_updtext(sSel *sl)
                     PL()->EditHypertextPrompt(buf, ((CDp_user*)pdesc)->data(),
                         use_lt, PLedUpdate);
                     break;
+                case P_RANGE:
+                    {
+                        sLstr lstr;
+                        ((CDp_range*)pdesc)->print(&lstr, 0, 0);
+                        hyList *h = new hyList(0, lstr.string(), HYcvPlain);
+                        PL()->EditHypertextPrompt(buf, h, false, PLedUpdate);
+                        hyList::destroy(h);
+                    }
+                    break;
+
                 default:
                     // shouldn't be here
                     return;
@@ -1861,6 +1871,16 @@ PrptyState::prp_get_string(bool global, bool allow_switch)
                     hnew = PL()->EditHypertextPrompt(tbuf,
                         ((CDp_user*)SelPrp)->data(), use_lt);
                     break;
+                case P_RANGE:
+                    {
+                        sLstr lstr;
+                        ((CDp_range*)SelPrp)->print(&lstr, 0, 0);
+                        hyList *h = new hyList(0, lstr.string(), HYcvPlain);
+                        hnew = PL()->EditHypertextPrompt(tbuf, h, false);
+                        hyList::destroy(h);
+                    }
+                    break;
+
                 default:
                     // shouldn't be here
                     hnew = PL()->EditHypertextPrompt(tbuf, 0, use_lt);

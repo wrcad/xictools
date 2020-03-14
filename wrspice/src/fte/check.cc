@@ -847,7 +847,7 @@ sCHECKprms::resetup(wordlist **pwl)
     // Run the exec script.
     set_vec(checkINIT, 1.0);
 // FIXME sometimes needed sometimes not
-//XXX    curckt->execBlk().exec(false);
+    curckt->execBlk().exec(false);
     set_vec(checkINIT, 0.0);
     set_vec(checkFAIL, 0.0);
 

@@ -1583,6 +1583,7 @@ cScedConnect::connect()
                     while (rgen.next(0)) {
                         CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
                         for ( ; pn; pn = pn->next()) {
+/*XXX
                             if (pn->has_flag(TE_BYNAME))
                                 continue;
                             if (issym) {
@@ -1593,6 +1594,7 @@ cScedConnect::connect()
                                 if (pn->has_flag(TE_SCINVIS))
                                     continue;
                             }
+*/
                             CDp_cnode *pn1;
                             if (cnt == 0)
                                 pn1 = pn;
@@ -1609,6 +1611,8 @@ cScedConnect::connect()
                 else {
                     CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
                     for ( ; pn; pn = pn->next()) {
+//XXX Need to assign a node if these are referenced by an open bus terminal.
+/*XXX
                         if (pn->has_flag(TE_BYNAME))
                             continue;
                         if (issym) {
@@ -1619,6 +1623,7 @@ cScedConnect::connect()
                             if (pn->has_flag(TE_SCINVIS))
                                 continue;
                         }
+*/
                         if (pn->enode() < 0) {
                             add_to_ntab(cn_count, pn);
                             new_node();
@@ -2977,7 +2982,8 @@ cScedConnect::bit_to_inst(CDp_nodeEx *pcn1, const CDp_range *pr1,
         }
         else {
             int iw1 = pr1->width();
-            int iw2 = pr2->width();
+//XXX
+            int iw2 = pr2->width() * pbcn2->width();
             if (iw1 != iw2) {
                 // We require that the instance vector widths be
                 // equal.
@@ -2993,6 +2999,37 @@ cScedConnect::bit_to_inst(CDp_nodeEx *pcn1, const CDp_range *pr1,
                 return;
             }
 
+#define NEWXXX
+#ifdef NEWXXX
+            CDgenRange rgen0(pr2);
+            int cnt = 0;
+            int aindx = 0;
+            while (rgen0.next(0)) {
+                CDgenRange rgen2(pbcn2);
+                int indx = 0;
+
+                while (rgen2.next(0)) {
+                    CDp_cnode *pn0 = find_node_prp(cdesc2, pbcn2, aindx);
+                    if (!pn0)
+                        break;
+                    CDp_cnode *pn2;
+                    if (indx == 0)
+                        pn2 = pn0;
+                    else
+                        pn2 = pr2->node(0, indx, pn0->index());
+
+                    CDp_nodeEx *pn1;
+                    if (cnt == 0)
+                        pn1 = pcn1;
+                    else
+                        pn1 = pr1->node(0, cnt, pcn1->index());
+                    indx++;
+                    cnt++;
+                    connect_nodes(pn1, pn2);
+                }
+                aindx++;
+            }
+#else
             CDgenRange rgen0(pr2);
             int cnt = 0;
             while (rgen0.next(0)) {
@@ -3003,6 +3040,7 @@ cScedConnect::bit_to_inst(CDp_nodeEx *pcn1, const CDp_range *pr1,
                     pn1 = pcn1;
                 else
                     pn1 = pr1->node(0, cnt, pcn1->index());
+
                 while (rgen2.next(0)) {
                     CDp_cnode *pn0 = find_node_prp(cdesc2, pbcn2, indx);
                     if (!pn0)
@@ -3017,6 +3055,7 @@ cScedConnect::bit_to_inst(CDp_nodeEx *pcn1, const CDp_range *pr1,
                 }
                 cnt++;
             }
+#endif
         }
     }
 }

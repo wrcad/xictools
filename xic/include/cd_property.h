@@ -1437,6 +1437,8 @@ struct CDp_cname : public CDp_sname
         {
             if (n && *n)
                 pnc_setname = CD()->PfxTableAdd(n);
+            else
+                pnc_setname = 0;
         }
 
     int pos_x()                 const { return (pnc_x); }

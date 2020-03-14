@@ -561,8 +561,8 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
             // The "local" expansion mode, lower level parameter
             // assignments override upper level.
 
-            ptab = sParamTab::update(ptab, *parm_ptr);
             ptab = sParamTab::update(ptab, sss->su_params);
+            ptab = sParamTab::update(ptab, *parm_ptr);
             if (params) {
                 if (!ptab)
                     ptab = new sParamTab;
@@ -2623,7 +2623,7 @@ sSPcx::kwMatchModel(const char *string)
 }
 
 
-// Local provate function.
+// Local private function.
 //
 void
 sSPcx::init(sFtCirc *circ)
