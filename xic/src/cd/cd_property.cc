@@ -1428,6 +1428,28 @@ CDp_range::name_prp(const CDc *cdesc, unsigned int instix) const
         return (0);
     return (&pr_names[instix - 1]);
 }
+
+
+const char *
+CDp_range::str_rspec(const char *str, unsigned int *beg, unsigned int *end)
+{
+    if (str) {
+        const char *e = str + strlen(str) - 1;
+        if (*e == '>' || *e == ']' || *e == '}') {
+            for (const char *s = e-1; s >= str; s--) {
+                if (*s == '<' || *s == '[' || *s == '{') {
+                    char bf[8];
+                    const char *start = s++;
+                    if (sscanf(s, "%u%c%u", beg, bf, end) == 3)
+                        return (start);
+                    break;
+                }
+            }
+        }
+    }
+    return (0);
+}
+
 // End CDp_range functions
 
 

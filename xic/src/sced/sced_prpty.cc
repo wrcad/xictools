@@ -257,15 +257,40 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
             return (0);
         }
 
-        pn = (CDp_cname*)pn->dup();
-        pn->set_assigned_name(0);
         char *nstr = 0;
         if (hystr)
             nstr = hyList::string(hystr, HYcvPlain, false);
         else if (string)
             nstr = lstring::copy(string);
+
+        bool new_range = false;
         if (nstr) {
-            GCarray<char*> gc_nstr(nstr);
+            if (*nstr && isalpha(*nstr)) {
+                // Look for a range suffix.  If found, strip it from
+                // the name string, and modify the range property if
+                // necessary.
+
+                unsigned int rbeg, rend;
+                const char *e = CDp_range::str_rspec(nstr, &rbeg, &rend);
+                CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
+                if (e) {
+                    nstr[e-nstr] = 0;
+                    if (!pr || rbeg != pr->beg_range() ||
+                            rend != pr->end_range()) {
+                        char trange[64];
+                        sprintf(trange, "%u %u", rbeg, rend);
+                        prptyModify(cdesc, pr, P_RANGE, trange, 0);
+                        new_range = true;
+                    }
+                }
+                else if (pr) {
+                    // No range suffix, delete any range property.
+
+                    prptyModify(cdesc, pr, P_RANGE, 0, 0);
+                    new_range = true;
+                }
+            }
+
             // filter out delimiters
             char *s;
             if ((s = strchr(nstr, '.')) != 0)
@@ -274,26 +299,39 @@ cSced::prptyModify(CDc *cdesc, CDp *oldp, int value, const char *string,
                 *s = '\0';
 
             if (*nstr && isalpha(*nstr)) {
+                // If the name hasn't changed, we're done.
+                const char *instname = cdesc->getElecInstBaseName(pn);
+                if (!strcasecmp(instname, nstr)) {
+                    delete nstr;
+                    return (0);
+                }
+
                 if (!cdesc->nameOK(nstr)) {
                     Log()->ErrorLogV(mh::Properties,
                 "Can't assign name %s, conflicts with another assignment.",
                         nstr);
-                    delete pn;
+                    delete nstr;
                     return (0);
                 }
-                pn->set_assigned_name(nstr);
             }
             else {
                 Log()->ErrorLogV(mh::Properties,
                     "Can't assign name %s, first char must be alpha.",
                     nstr);
-                delete pn;
                 return (0);
             }
         }
-        addDeviceLabel(cdesc, pn, oldp, 0, false, iscur);
-        Ulist()->RecordPrptyChange(sdesc, cdesc, oldp, pn);
-        return (pn);
+        CDp_cname *pnnew = (CDp_cname*)pn->dup();
+        pnnew->set_assigned_name(nstr);
+
+        // When editing the label, have to get out of this to avoid
+        // munging the label size.
+        if (new_range)
+            ED()->setLabelOverride(0, 0, 0, 0, 0);
+
+        addDeviceLabel(cdesc, pnnew, oldp, 0, false, iscur);
+        Ulist()->RecordPrptyChange(sdesc, cdesc, oldp, pnnew);
+        return (pnnew);
     }
     else if (value == P_MODEL || value == P_VALUE ||
             value == P_PARAM || value == P_OTHER || value == P_DEVREF) {

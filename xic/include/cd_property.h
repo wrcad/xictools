@@ -529,6 +529,8 @@ struct CDp_range : public CDp
     void print_nodes(const CDc*, FILE*, sLstr*) const;
     CDp_cname *name_prp(const CDc*, unsigned int) const;
 
+    static const char *str_rspec(const char*, unsigned int*, unsigned int*);
+
 protected:
     unsigned short pr_beg_range;    // range start
     unsigned short pr_end_range;    // range end
