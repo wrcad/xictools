@@ -130,20 +130,34 @@ struct sParamTab
     // PTgeneral:   Handle p=v constructs only
     // PTsngl:      Handle p=v constructs plus isolated params and exprs
 
+    struct PTctrl
+    {
+        // These flags are set transiently.  In the case of no_sqexp,
+        // we want to set this without affecting const-ness, which is
+        // why this flag is not in the main struct.  For collapse, the
+        // subst function should become non-const when set, where by
+        // const we assume no altering of the table entries.  This
+        // flag could be in the main struct but is along for the ride
+        // here.  These could be static, but that would be manufestly
+        // thread-unsafe.
+
+        PTctrl() : collapse(false), no_sqexp(false) { }
+
+        bool collapse;       // Resolve and simplify definition chains.
+        bool no_sqexp;       // Don't do single-quote expansion.
+    };
+
     // Parameter names are case-insensitive!
     sParamTab()
         {
             pt_table = new sHtab(sHtab::get_ciflag(CSE_PARAM));
             pt_rctab = new sHtab(sHtab::get_ciflag(CSE_PARAM));
-            pt_collapse = false;
-            pt_no_sqexp = false;
+            pt_ctrl = new PTctrl;
             if (pt_set_predefs)
                 (*pt_set_predefs)(this);
         }
 
     ~sParamTab();
-
-    void set_no_sqexp(bool b)       { pt_no_sqexp = b; }
 
     // tokenize str and update all tokens.
     //
@@ -156,9 +170,9 @@ struct sParamTab
     //
     void param_subst_all_collapse(char **str)
         {
-            pt_collapse = true;
+            pt_ctrl->collapse = true;
             line_subst(str);
-            pt_collapse = false;
+            pt_ctrl->collapse = false;
         }
 
     // The str is expected to contain name = value definitions. 
@@ -194,20 +208,20 @@ struct sParamTab
     // Special for .measure line.  For HSPICE compatibility, don't do
     // single-quote expansion.
     //
-    void param_subst_measure(char **str)
+    void param_subst_measure(char **str) const
         {
-            pt_no_sqexp = true;
+            pt_ctrl->no_sqexp = true;
             line_subst(str);
-            pt_no_sqexp = false;
+            pt_ctrl->no_sqexp = false;
         }
 
     // Special for .options lines.
     //
     void param_subst_options(char **str)
         {
-            pt_collapse = true;
+            pt_ctrl->collapse = true;
             defn_subst(this, str, PTgeneral, 1);
-            pt_collapse = false;
+            pt_ctrl->collapse = false;
         }
 
     // Add a "pre-defined" read-only parameter.
@@ -251,8 +265,7 @@ private:
 
     sHtab *pt_table;        // Main table for elements.
     sHtab *pt_rctab;        // Used for recursion testing.
-    bool pt_collapse;
-    bool pt_no_sqexp;       // Don't do single-quote expansion.
+    PTctrl *pt_ctrl;        // Flags.
 
     static void(*pt_set_predefs)(sParamTab*);
 };

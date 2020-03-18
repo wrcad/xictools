@@ -189,14 +189,16 @@ struct sScGlobal
         }
 
     void init(sFtCirc*);
-    sLine *expand_and_replace(sLine*, sParamTab**, cUdf**, const char* = 0);
+    bool cache_setup(const char*, sParamTab**, cUdf**);
+    sLine *expand_and_replace(sLine*, const sParamTab*, const sParamTab*,
+        const sParamTab*);
     bool do_submapping(sLine*);
     bool extract_cache_block(sLine**, char**, sLine**);
     bool extract_subckts(sLine**);
     void addmod(const char*, const char*);
     void addsub(sLine*);
     sSubc *findsub(const char*, int = -1);
-    void param_expand(sLine*, sParamTab*);
+    void param_expand(sLine*, const sParamTab*);
     bool translate(sLine*, const char*, const char*, const char*, const char*,
         sParamTab*);
     bool cache_add(const char*, sLine**, const sParamTab*, const cUdf*);
@@ -329,9 +331,13 @@ sFtCirc::expandSubckts()
         }
     }
 
-    sLine *ll = sg.expand_and_replace(edeck, &ci_params, &ci_defines,
-        cache_name);
+    if (!sg.cache_setup(cache_name, &ci_params, &ci_defines)) {
+        delete [] cache_name;
+        return (false);
+    }
     delete [] cache_name;
+
+    sLine *ll = sg.expand_and_replace(edeck, ci_params, 0, ci_params);
 
     // Now check to see if there are still subckt instances undefined...
     for (sLine *c = ll; c; c = c->next()) {
@@ -412,32 +418,55 @@ sScGlobal::init(sFtCirc *circ)
 }
 
 
-sLine *
-sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
-    cUdf **udf_ptr, const char *cache_name)
+bool
+sScGlobal::cache_setup(const char *cache_name, sParamTab **pptab, cUdf **pudf)
 {
-#ifdef TIME_DBG
-    double tstart = OP.seconds();
-    double tend = 0.0;
-#endif
-
     sg_stack[sg_stack_ptr].clear();
+
     if (cache_name) {
         sCblk *blk = SPcache.get(cache_name);
         if (!blk) {
             GRpkgIf()->ErrPrintf(ET_ERROR,
                 "can't find cache block named %s.\n", cache_name);
-            return (0);
+            return (false);
         }
         sg_stack[sg_stack_ptr].subs = sSubcTab::copy(blk->cb_subs);
-        *parm_ptr = sParamTab::update(*parm_ptr, blk->cb_prms);
+        *pptab = sParamTab::update(*pptab, blk->cb_prms);
         IP.setModCache(blk->cb_mods);
 
         // Swap in the cached function definitions.
-        delete *udf_ptr;
-        *udf_ptr = blk->cb_defines->copy();
+        delete *pudf;
+        *pudf = blk->cb_defines->copy();
     }
+    return (true);
+}
 
+
+sLine *
+sScGlobal::expand_and_replace(sLine *deck, const sParamTab *s_ptab,
+    const sParamTab *i_ptab, const sParamTab *uptab)
+{
+    // The parameter tables require care in opdering before use in
+    // expanding, to support parhier global/local.  The global mode
+    // can be done with a single table (see code in previous
+    // versions).  Local mode done correctly seems to require passing
+    // two tables, and a third (uptab) is passed to avoid redundant
+    // computation.
+    //
+    // Global:
+    // The s_ptab is the context above the current expansion, and has
+    // precedence.  The i_ptab is not used (0), and uptab is a pointer
+    // to s_ptab.
+    //
+    // Local:
+    // The s_ptab is the context above as supplied by .param lines and
+    // .subckt lines.  The i_ptab is the context above due to subckt
+    // calls.  The uptab is the full expansion table. 
+
+#ifdef TIME_DBG
+    double tstart = OP.seconds();
+    double tend = 0.0;
+#endif
     sLine *lc = 0;
     wordlist *badcalls = 0;
 
@@ -461,7 +490,7 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
     for (sLine *c = deck; c; ) {
         if (!SPcx.kwMatchSubinvoke(c->line()) || do_submapping(c)) {
             if (sg_stack_ptr == 0)
-                param_expand(c, *parm_ptr);
+                param_expand(c, uptab);
             lc = c;
             c = c->next();
             continue;
@@ -487,7 +516,8 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
         // .param sub=mysub
         // X0 (nodes) sub (params)
 
-        (*parm_ptr)->param_subst_all(&subname);
+        if (uptab)
+            uptab->param_subst_all(&subname);
 
         sSubc *sss = findsub(subname, sg_stack_ptr);
         if (!sss || !sss->su_body) {
@@ -543,32 +573,40 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
         //
         sLine *lcc = sLine::copy(sss->su_body);
 
-        sParamTab *ptab = 0;
+        sParamTab *ptab, *sptab, *iptab;
         if (SPcx.parhier() == ParHierGlobal) {
             // The "parhier" option is set to "global". 
             // Above-scope parameter assignments override
             // lower assignments.
 
-            ptab = sParamTab::update(ptab, sss->su_params);
+            ptab = sParamTab::update(0, sss->su_params);
             if (params) {
                 if (!ptab)
-                    ptab = new sParamTab;
+                    iptab = new sParamTab;
                 ptab->update(params);
             }
-            ptab = sParamTab::update(ptab, *parm_ptr);
+            ptab = sParamTab::update(ptab, s_ptab);
+            sptab = ptab;
+            iptab = 0;
         }
         else {
             // The "local" expansion mode, lower level parameter
             // assignments override upper level.
 
-            ptab = sParamTab::update(ptab, sss->su_params);
-            ptab = sParamTab::update(ptab, *parm_ptr);
+            sptab = sParamTab::update(0, s_ptab);
+            sptab = sParamTab::update(sptab, sss->su_params);
+
+            iptab = sParamTab::update(0, i_ptab);
             if (params) {
-                if (!ptab)
-                    ptab = new sParamTab;
-                ptab->update(params);
+                if (!iptab)
+                    iptab = new sParamTab;
+                iptab->update(params);
             }
+
+            ptab = sParamTab::update(0, sptab);
+            ptab = sParamTab::update(ptab, iptab);
         }
+
         if (sParamTab::errString) {
             c->errcat("Error during subcircuit call parameter expansion:\n");
             c->errcat(sParamTab::errString);
@@ -578,12 +616,16 @@ sScGlobal::expand_and_replace(sLine *deck, sParamTab **parm_ptr,
 
         // Location of these lines changed in 3.2.18 to fix nesting.
         sg_stack_ptr++;
-        lcc = expand_and_replace(lcc, &ptab, udf_ptr);
+        lcc = expand_and_replace(lcc, sptab, iptab, ptab);
         sg_stack_ptr--;
 
 #ifdef TIME_DBG
         double ts_tr == OP.seconds();
 #endif
+        if (SPcx.parhier() == ParHierLocal) {
+            delete iptab;
+            delete sptab;
+        }
 
         // Add the functions defined in the subckt context.
         ptab->define_macros();
@@ -918,7 +960,7 @@ namespace {
 // definitions.
 //
 void
-sScGlobal::param_expand(sLine *deck, sParamTab *ptab)
+sScGlobal::param_expand(sLine *deck, const sParamTab *ptab)
 {
     if (!deck || !deck->line() || !ptab)
         return;

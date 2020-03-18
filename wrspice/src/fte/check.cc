@@ -1711,7 +1711,6 @@ sCHECKprms::evaluate()
 
     CBret ret = CBfail;
     if (out_cir && out_plot) {
-//XXX
         if (!out_cir->controlBlk().tree() && !out_cir->controlBlk().name())
             return (CBok);
         sFtCirc *cir = Sp.CurCircuit();

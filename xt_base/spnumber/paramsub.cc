@@ -88,6 +88,7 @@ sParamTab::~sParamTab()
     pt_table->clear_data(&free_param, 0);
     delete pt_table;
     delete pt_rctab;
+    delete pt_ctrl;
 }
 
 
@@ -688,7 +689,7 @@ sParamTab::squote_subst(char **str) const
     const char *msg = "Evaluation failed: %s.";
 
     char *expr;
-    if (pt_no_sqexp || strchr(*str, '$')) {
+    if (pt_ctrl->no_sqexp || strchr(*str, '$')) {
         // We aren't single-quote expanding, or The expression
         // contains unexpanded shell variables.  In this case expand
         // any parameters, and leave the result in single quotes.
@@ -874,7 +875,7 @@ sParamTab::subst(char **tok) const
         }
         pt_rctab->add(p->name(), p);
 
-        if (pt_collapse) {
+        if (pt_ctrl->collapse) {
             if (!p->collapsed()) {
                 p->set_collapsed();
                 char *sub = p->sub();
