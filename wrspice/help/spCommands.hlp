@@ -79,7 +79,9 @@ devls
 devmod
 disto
 dump
+findlower
 findrange
+findupper
 free 
 jobs
 mctrial
@@ -132,7 +134,7 @@ qhelp
 quit
 version
 
-!! commands.tex 030519
+!! commands.tex 032120
 !!KEYWORD
 commands
 !!TITLE
@@ -281,8 +283,12 @@ Built-in Commands
       <td>Initiate distortion analysis</td></tr>
     <tr><td><a href="dump"><b>dump</b></a></td>
       <td>Print circuit matrix</td></tr>
+    <tr><td><a href="findlower"><b>findlower</b></a></td>
+      <td>Find lower edge of operating range</td></tr>
     <tr><td><a href="findrange"><b>findrange</b></a></td>
       <td>Find edges of operating range</td></tr>
+    <tr><td><a href="findupper"><b>findupper</b></a></td>
+      <td>Find upper edge of operating range</td></tr>
     <tr><td><a href="free"><b>free</b></a></td>
       <td>Delete circuits and/or plots</td></tr>
     <tr><td><a href="jobs"><b>jobs</b></a></td>
@@ -1636,7 +1642,7 @@ Input and Output Commands
 !!SEEALSO
 commands
 
-!! commands.tex 012109
+!! commands.tex 032320
 !!KEYWORD
 codeblock
 !!TITLE
@@ -1732,6 +1738,12 @@ codeblock command
     binding is deleted from the current circuit, according to whether
     the <tt>b</tt> or <tt>be</tt> was given.  Separate calls are
     required to unbind both blocks.
+
+    <p>
+    Note:  Bound codeblocks are parameter expanded, named codeblocks
+    are not.  In a named codeblock, parameters are available through
+    the <tt>@</tt><i>parmname</i> (<a href="specialvec">special
+    vector</a>) syntax.
 
     <p>
     <a href="oprng_analysis">Operating range</a> and <a
@@ -2601,7 +2613,7 @@ iocmds
 !!REDIRECT runop        simcmds#runop
 
 !! ----------------------------------------------------------------------------
-!! commands.tex 030119
+!! commands.tex 032120
 !!KEYWORD
 simcmds
 !!TITLE
@@ -2726,8 +2738,12 @@ Simulation Commands
       <td>Initiate distortion analysis</td></tr>
     <tr><td><a href="dump"><b>dump</b></a></td>
       <td>Print circuit matrix</td></tr>
+    <tr><td><a href="findlower"><b>findlower</b></a></td>
+      <td>Find lower edge of operating range</td></tr>
     <tr><td><a href="findrange"><b>findrange</b></a></td>
       <td>find edges of operating range</td></tr>
+    <tr><td><a href="findupper"><b>findupper</b></a></td>
+      <td>Find upper edge of operating range</td></tr>
     <tr><td><a href="free"><b>free</b></a></td>
       <td>Delete circuits and/or plots</td></tr>
     <tr><td><a href="jobs"><b>jobs</b></a></td>
@@ -3523,6 +3539,8 @@ check command
 oprngfile
 codeblock
 rhostcom
+findrange
+mctrial
 simcmds
 
 !! commands.tex 011909
@@ -3896,18 +3914,117 @@ dump command
 !!SEEALSO
 simcmds
 
-!! commands.tex 030219
+!! commands.tex 032120
+!!KEYWORD
+findlower
+!!TITLE
+findlower command
+!!HTML 
+    command: <tt>findlower</tt> <i>findrange_args</i>
+
+    <p>
+    This command can be used to find the lower operating limit of one
+    or two parameters in the circuit.  See the <a
+    href="findrange"><b>findrange</b></a> comand for a complete
+    description.
+ 
+!!SEEALSO
+simcmds
+
+!! commands.tex 032120
 !!KEYWORD
 findrange
 !!TITLE
 findrange command
 !!HTML 
     command: <tt>findrange</tt>
+        [<tt>-n1</tt> <i>name1</i>] [<tt>-n2</tt> <i>name2</i>]
+        [[<i>pstr1</i>] <i>val1</i>] [[<i>pstr2</i>] <i>val2</i>]
 
     <p>
-    This can be called after a Monte Carlo analysis trial and will
-    find the actual upper and lower operating limits of two
-    parameters.
+    The command, and its associated commands <a
+    href="findlower"><b>findlower</b></a> and <a
+    href="findupper"><b>findupper</b></a>, can be used to find the
+    operating margins of one or two circuit parameters.  This utilizes
+    the infrastructure developed for <a
+    href="oprng_analysis">Operating Range</a> analysis, but can be
+    used in scripts for finer control of the process.  The depth used
+    in the binary search can be given in the <a
+    href="checkiterate"><tt>checkiterate</tt></a> variable as for
+    standard range analysis, or defaults to 6 if not set.
+
+    <p>
+    These commands can be running only when a range analysis has been
+    initiated with the <a href="check"><b>check</b></a> command,
+    generally by giving the "<tt>-b</tt>} option.  Any number of the
+    <b>findrange</b> commands or the variants can be given, as well as
+    other commands such as <a href="mctrial"><b>mcrtial</b></a>.  When
+    finished the <b>check</b> command should be given with the
+    "<tt>-c</tt>" option to terminate the mode and free internal
+    memory.
+
+    <p>
+    A usage example can be found in the examples:
+    <tt>JJexamples/nor_op.cir</tt>.
+
+    <p>
+    By default, the lower and upper range values will be saved in
+    vectors named <tt>opmin1</tt>, <tt>opmin2</tt>, <tt>opmax1</tt>,
+    and <tt>opmax2</tt>, which are created if necessary.  If given
+    following "<tt>-n1</tt>" or "<tt>-n2</tt>" respectively,
+    <i>name1</i> and <i>name2</i> tokens will serve as a base for new
+    names that replace vector names <tt>opmin1</tt>, <tt>opmin2</tt>,
+    <tt>opmax1</tt>, <tt>opmax2</tt> for range results.  For example,
+    <blockquote>
+        <tt>-n1 foo</tt>
+    </blockquote>
+    will save output in vectors named <tt>foo_min</tt>, <tt>foo_max</tt>.
+
+    <p>
+    There is a subtlety in the syntax:  a double-quoted name, e.g.,
+    -n1 "<i>pname</i>", is accepted and the quotes will be stripped
+    before use.  The quotes prevent parameter substitution, so this
+    allows use of a name that has also been defined as a parameter
+    (with <a href=".param"><tt>.param</tt></a> directive or otherwise).
+
+    <p>
+    Each of the three functions can take parameter definitions and
+    range parameters, in the same syntax as supplied to the
+    <b>check</b> and <a href="sweep"><b>sweep</b></a> commands,
+    however only the starting parameter value is needed.  The
+    simulation must run correctly at the starting value.  The command
+    line may include one or two specifications.  Each specification
+    consists of an optional parameter specification string, followed
+    by the starting value.  The numbers will override the
+    <tt>checkVAL1</tt>, and <tt>checkVAL2</tt> vectors that may be in
+    effect.
+
+    <p>
+    The optional <i>pstr1</i> and <i>pstr2</i> strings take the same
+    format and significance as in the <a href="sweep"><b>sweep</b></a>
+    command.  See the description of that command for a description of
+    the format.  If a parameter specifier is given, the specified
+    device parameters will be altered directly, and the variables and
+    vectors normally used to pass values will <b>not</b> be set.  If
+    two parameters are being set, either both must be set using the
+    syntax above, or neither, the two methods can't be mixed.
+ 
+!!SEEALSO
+simcmds
+
+!! commands.tex 032120
+!!KEYWORD
+findupper
+!!TITLE
+findupper command
+!!HTML 
+    command: <tt>findupper</tt> <i>findrange_args</i>
+ 
+    <p>
+    This command can be used to find the upper operating limit of one
+    or two parameters in the circuit.  See the <a
+    href="findrange"><b>findrange</b></a> comand for a complete
+    description.
  
 !!SEEALSO
 simcmds
@@ -3984,7 +4101,7 @@ mctrial command
 !!SEEALSO
 simcmds
 
-!! commands.tex 060219
+!! commands.tex 032220
 !!KEYWORD
 measure
 !!TITLE
@@ -4044,7 +4161,6 @@ measure command
     guaranteeing that the necessary data will be available when
     needed, whether or not the vector has been mentioned in a <a
     href=".save"><tt>.save</tt></a> line.
-
 
     <a name="point"></a>
     <h2>Point and Interval Specification</h2>
@@ -4340,7 +4456,6 @@ measure command
     defined as <i>expr1</i> going from less than to greater than
     <i>expr2</i>.
 
-
     <a name="measure"></a>
     <h2>Measurements</h2>
 
@@ -4387,8 +4502,27 @@ measure command
       <dd>This will measure the 10-90 percent rise or fall time of the
           edge from <i>expr</i> contained in the interval.  The
           reference start and final values are the values at the ends
-          of the interval.</dl>
+          of the interval.
+    </dl>
 
+    <p>
+    These functions are also available in general expressions outside
+    of the <b>measure</b> command:
+    <a href="mmin"><b>mmin</b></a>,
+    <a href="mmax"><b>mmax</b></a>,
+    <a href="mpp"><b>mpp</b></a>,
+    <a href="mavg"><b>mavg</b></a>,
+    <a href="mrms"><b>mrms</b></a>,
+    <a href="mpw"><b>mpw</b></a>,
+    <a href="mrft"><b>mrft</b></a>.
+    Each of these functions takes three arguments:
+    (<i>vector</i>, <i>scaleval1</i>, <i>scaleval2</i>).
+    The two scale values frame the area of measurement.  These must be
+    chosen to isolate the feature of interest for rise/fall/width
+    measurement.  If not in range of the <i>vector</i> scale, 
+    the <i>vector</i> scale endpoints are assumed.
+
+    <p>
     When a point has been specified, the only measurement form
     available is
 
@@ -5092,7 +5226,7 @@ status
 delete
 simcmds
 
-!! commands.tex 060119
+!! commands.tex 032220
 !!KEYWORD
 stop
 !!TITLE
@@ -5145,6 +5279,14 @@ stop command
     analysis point index is now an integer enclosed is square
     brackets, numeric values are now assumed to be scale values (such
     as time) otherwise.
+    </dl>
+
+    <dl>
+    <dt><tt>repeat</tt> <i>delta</i><dd>
+    The <i>delta</i> is a real number scale extent.  After the
+    <i>point</i> trigger, the actions are repeated on every multipole
+    of <i>delta</i> that follows, as long as a <tt>call</tt>
+    script (see below) returns 1.
     </dl>
 
     There are a couple of optional "<i>postcmd</i>" operations which
@@ -5632,7 +5774,7 @@ Data Manipulation Commands
 !!SEEALSO
 commands
 
-!! commands.tex 092611
+!! commands.tex 032220
 !!KEYWORD
 compose
 !!TITLE
@@ -5640,21 +5782,39 @@ compose command
 !!HTML 
     command:
     <blockquote>
-       <tt>compose</tt> <i>vecname</i>
-                  <i>param</i> = <i>value</i> [...]<br>
-       <tt>compose</tt> <i>vecname</i> values <i>value</i> [...]
+       <tt>compose</tt> <i>vecname</i> <tt>values</tt> <i>value</i> [...]<br>
+       <tt>compose</tt> <i>vecname</i> <tt>pattern</tt> [<i>n1</i> [<i>n2</i>]]
+           <i>bstring</i> [<i>modifiers</i>] [...]
+       <tt>compose</tt> <i>vecname</i> <i>param</i> = <i>value</i> [...]<br>
     </blockquote>
 
     <p>
-    The <b>compose</b> command is used to create vectors.  Both forms
+    The <b>compose</b> command is used to create vectors.  All forms
     of this command create a new vector called <i>vecname</i>.  In the
-    first form, the values in the vector are determined by the
-    parameters given, as described below.  In the second form,
-    indicated by the keyword "<tt>values</tt>", the given values are
-    used to form the vector.
+    first form, indicated by the keyword "<tt>values</tt>", the given
+    values are concatenated to form the vector.  The second form
+    creates a binary pattern of 1 and 0 values based on the given
+    pattern specification to be described.  In the third form, the
+    values in the vector are determined by the parameters given, as
+    will be described.
 
     <p>
-    In the first form, there are three groups of possible parameter
+    The pattern generation syntax given in the second form is as used
+    in <a href=pulse">pulse</a> source.  See the <a
+    href="pattern">reference</a> for a complete description of the
+    <i>bstring</i> and <i>modifier</i> syntax and usage.  The optional
+    preceding numbers <i>n1</i> and <i>n2</i> apply only when infinite
+    repetition (<tt>r=-1</tt>) is given in the <i>modifier</i>: 
+    neither given will will cause the vector to end at the sequence
+    end, with no repeat.  If <i>n1</i> only is given, this number is
+    taken as the maximum length of the vector.  If both <i>n1</i> and
+    <i>n2</i> are given, the two numbers are taken as <i>step</i> and
+    <i>stop</i>, with the maximum length <i>stop</i>/<i>step</i>. 
+    This is convenient for setting the length to match a transient
+    analysis specification.
+
+    <p>
+    In the third form, there are three groups of possible parameter
     sets.  The first set facilitates creation of uniform arrays.  This
     set contains the following parameters.
 

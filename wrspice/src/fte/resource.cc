@@ -841,33 +841,64 @@ ResPrint::print_cktvar(const variable *v, sLstr *plstr)
 void
 ResPrint::get_elapsed(double *elapsed, double *user, double *cpu)
 {
+    if (elapsed)
+        *elapsed = 0.0;
+    if (user)
+        *user = 0.0;
+    if (cpu)
+        *cpu = 0.0;
 #ifdef HAVE_TIMES
     struct tms ruse;
     long realt = times(&ruse);
-    *elapsed = (double)(realt - origsec)/HZ +
-        (double)((realt - origsec)%HZ)/HZ;
-    *user = (double)ruse.tms_utime/HZ +
-        (double)(ruse.tms_utime%HZ)/HZ;
-    *cpu = (double)ruse.tms_stime/HZ +
-        (double)(ruse.tms_stime%HZ)/HZ;
+    if (elapsed) {
+        *elapsed = (double)(realt - origsec)/HZ +
+            (double)((realt - origsec)%HZ)/HZ;
+    }
+    if (user) {
+        *user = (double)ruse.tms_utime/HZ +
+            (double)(ruse.tms_utime%HZ)/HZ;
+    }
+    if (cpu) {
+        *cpu = (double)ruse.tms_stime/HZ +
+            (double)(ruse.tms_stime%HZ)/HZ;
+    }
 #else
 #ifdef HAVE_GETTIMEOFDAY
-    struct timeval tv;
-    struct timezone tz;
-    gettimeofday(&tv, &tz);
-    *elapsed = (tv.tv_sec - origsec) + (tv.tv_usec - origusec)/1.0e6;
-#else
-    *elapsed = -1.0;
+    if (elapsed) {
+        struct timeval tv;
+        struct timezone tz;
+        gettimeofday(&tv, &tz);
+        *elapsed = (tv.tv_sec - origsec) + (tv.tv_usec - origusec)/1.0e6;
+    }
 #endif
+#ifdef HAVE_GETRUSAGE
+    if (user || cpu) {
+        struct rusage ruse;
+        getrusage(RUSAGE_SELF, &ruse);
+        if (user)
+            *user = ruse.ru_utime.tv_sec + ruse.ru_utime.tv_usec/1.0e6;
+        if (cpu)
+            *cpu = ruse.ru_stime.tv_sec + ruse.ru_stime.tv_usec/1.0e6;
+    }
+#endif
+#endif
+}
+
+
+void
+ResPrint::get_faults(unsigned int *fptr, unsigned int *cxptr)
+{
+    if (fptr)
+        *fptr = 0;
+    if (cxptr)
+        *cxptr = 0;
 #ifdef HAVE_GETRUSAGE
     struct rusage ruse;
     getrusage(RUSAGE_SELF, &ruse);
-    *user = ruse.ru_utime.tv_sec + ruse.ru_utime.tv_usec/1.0e6;
-    *cpu = ruse.ru_stime.tv_sec + ruse.ru_stime.tv_usec/1.0e6;
-#else
-    *user = -1.0; 
-    *cpu = -1.0;
-#endif
+    if (fptr)
+        *fptr = ruse.ru_majflt;
+    if (cxptr)
+        *cxptr = ruse.ru_nvcsw + ruse.ru_nivcsw;
 #endif
 }
 
@@ -877,46 +908,61 @@ ResPrint::get_elapsed(double *elapsed, double *user, double *cpu)
 void
 ResPrint::get_space(unsigned *data, unsigned *hlimit, unsigned *slimit)
 {
+    if (data)
+        *data = 0.0;
+    if (hlimit)
+        *hlimit = 0.0;
+    if (slimit)
+        *slimit = 0.0;
 #ifdef WIN32
-    MEMORYSTATUS mem;
-    memset(&mem, 0, sizeof(MEMORYSTATUS));
-    GlobalMemoryStatus(&mem);
-    *slimit = mem.dwAvailPhys + mem.dwAvailPageFile;
-    *hlimit = *slimit;
-
-    unsigned d = 0;
-    MEMORY_BASIC_INFORMATION m;
-    for (char *ptr = 0; ptr < (char*)0x7ff00000; ptr += m.RegionSize) {
-        VirtualQuery(ptr, &m, sizeof(m));
-        if (m.AllocationProtect == PAGE_READWRITE &&
-                m.State == MEM_COMMIT &&
-                m.Type == MEM_PRIVATE)
-            d += m.RegionSize;
+    if (hlimit || slimit) {
+        MEMORYSTATUS mem;
+        memset(&mem, 0, sizeof(MEMORYSTATUS));
+        GlobalMemoryStatus(&mem);
+        if (slimit)
+            *slimit = mem.dwAvailPhys + mem.dwAvailPageFile;
+        if (hlimit)
+            *hlimit = *slimit;
     }
-    *data = d;
+
+    if (data) {
+        unsigned d = 0;
+        MEMORY_BASIC_INFORMATION m;
+        for (char *ptr = 0; ptr < (char*)0x7ff00000; ptr += m.RegionSize) {
+            VirtualQuery(ptr, &m, sizeof(m));
+            if (m.AllocationProtect == PAGE_READWRITE &&
+                    m.State == MEM_COMMIT &&
+                    m.Type == MEM_PRIVATE)
+                d += m.RegionSize;
+        }
+        *data = d;
+    }
 
 #else
 
+    if (data) {
 #ifdef HAVE_LOCAL_ALLOCATOR
-    *data = (unsigned int)(1024*Memory()->coresize());
+        *data = (unsigned int)(1024*Memory()->coresize());
 #else
-    *data = (unsigned int)(1024*coresize());
+        *data = (unsigned int)(1024*coresize());
 #endif
+    }
+
+    if (hlimit || slimit) {
 #if defined(HAVE_GETRLIMIT) && defined(RLIMIT_DATA)
-    struct rlimit rld;
-    getrlimit(RLIMIT_DATA, &rld);
-    *hlimit = rld.rlim_max;
-    *slimit = rld.rlim_cur;
+        struct rlimit rld;
+        getrlimit(RLIMIT_DATA, &rld);
+        if (hlimit)
+            *hlimit = rld.rlim_max;
+        if (slimit)
+            *slimit = rld.rlim_cur;
 #else
 #ifdef HAVE_ULIMIT
-    long lim = ulimit(3, 0L);
-    *hlimit = lim;
-    *slimit = 0;
-#else
-    *hlimit = 0;
-    *slimit = 0;
+        if (hlimit)
+            *hlimit = ulimit(3, 0L);
 #endif // HAVE_ULIMIT
 #endif // defined(HAVE_GETRLIMIT) && defined(RLIMIT_DATA)
+    }
 #endif // WIN32
 }
 

@@ -59,17 +59,56 @@ STATanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
     IFvalue *value = &data->v;
 
     switch (which) {
-    case ST_RUNS:
-        value->iValue = stat->STATruns;
-        data->type = IF_INTEGER;
-        break;
-    case ST_ACCEPT:
-        value->iValue = stat->STATaccepted;
-        data->type = IF_INTEGER;
-        break;
+    // real values
     case ST_CVCHKTIME:
         value->rValue = stat->STATcvChkTime;
         data->type = IF_REAL;
+        break;
+    case ST_LOADTIME:
+        value->rValue = stat->STATloadTime;
+        data->type = IF_REAL;
+        break;
+    case ST_LUTIME:
+        value->rValue = stat->STATdecompTime;
+        data->type = IF_REAL;
+        break;
+    case ST_REORDERTIME:
+        value->rValue = stat->STATreorderTime;
+        data->type = IF_REAL;
+        break;
+    case ST_SOLVETIME:
+        value->rValue = stat->STATsolveTime;
+        data->type = IF_REAL;
+        break;
+    case ST_TIME:
+        value->rValue = stat->STATtotAnalTime;
+        data->type = IF_REAL;
+        break;
+    case ST_TRANLUTIME:
+        value->rValue = stat->STATtranDecompTime;
+        data->type = IF_REAL;
+        break;
+    case ST_TRANOUTTIME:
+        value->rValue = stat->STATtranOutTime;
+        data->type = IF_REAL;
+        break;
+    case ST_TRANSOLVETIME:
+        value->rValue = stat->STATtranSolveTime;
+        data->type = IF_REAL;
+        break;
+    case ST_TRANTIME:
+        value->rValue = stat->STATtranTime;
+        data->type = IF_REAL;
+        break;
+    case ST_TRANTSTIME:
+        value->rValue = stat->STATtranTsTime;
+        data->type = IF_REAL;
+        break;
+
+    // integer values
+    case ST_ACCEPT:
+        value->iValue = stat->STATaccepted;
+        data->type = IF_INTEGER;
         break;
     case ST_EQUATIONS:
         value->iValue = ckt->CKTnodeTab.numNodes();
@@ -83,10 +122,6 @@ STATanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         value->iValue = stat->STATinvolCxSwitch;
         data->type = IF_INTEGER;
         break;
-    case ST_LOADTIME:
-        value->rValue = stat->STATloadTime;
-        data->type = IF_REAL;
-        break;
 #ifdef WITH_THREADS
     case ST_LOADTHRDS:
         value->iValue = stat->STATloadThreads;
@@ -97,10 +132,6 @@ STATanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         data->type = IF_INTEGER;
         break;
 #endif
-    case ST_LUTIME:
-        value->rValue = stat->STATdecompTime;
-        data->type = IF_REAL;
-        break;
     case ST_MATSIZE:
         value->iValue = stat->STATmatSize;
         data->type = IF_INTEGER;
@@ -117,17 +148,9 @@ STATanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         value->iValue = stat->STATrejected;
         data->type = IF_INTEGER;
         break;
-    case ST_REORDERTIME:
-        value->rValue = stat->STATreorderTime;
-        data->type = IF_REAL;
-        break;
-    case ST_SOLVETIME:
-        value->rValue = stat->STATsolveTime;
-        data->type = IF_REAL;
-        break;
-    case ST_TIME:
-        value->rValue = stat->STATtotAnalTime;
-        data->type = IF_REAL;
+    case ST_RUNS:
+        value->iValue = stat->STATruns;
+        data->type = IF_INTEGER;
         break;
     case ST_TOTITER:
         value->iValue = stat->STATnumIter;
@@ -145,38 +168,19 @@ STATanalysis::askQuest(const sCKT *ckt, const sJOB*, int which,
         value->iValue = stat->STATtranIterCut;
         data->type = IF_INTEGER;
         break;
-    case ST_TRANLUTIME:
-        value->rValue = stat->STATtranDecompTime;
-        data->type = IF_REAL;
-        break;
-    case ST_TRANOUTTIME:
-        value->rValue = stat->STATtranOutTime;
-        data->type = IF_REAL;
-        break;
     case ST_TRANPOINTS:
         value->iValue = stat->STATtimePts;
         data->type = IF_INTEGER;
-        break;
-    case ST_TRANSOLVETIME:
-        value->rValue = stat->STATtranSolveTime;
-        data->type = IF_REAL;
-        break;
-    case ST_TRANTIME:
-        value->rValue = stat->STATtranTime;
-        data->type = IF_REAL;
         break;
     case ST_TRANTRAPCUT:
         value->iValue = stat->STATtranTrapCut;
         data->type = IF_INTEGER;
         break;
-    case ST_TRANTSTIME:
-        value->rValue = stat->STATtranTsTime;
-        data->type = IF_REAL;
-        break;
     case ST_VOLCXSWITCH:
         value->iValue = stat->STATvolCxSwitch;
         data->type = IF_INTEGER;
         break;
+
     default:
         return (E_BADPARM);
     }

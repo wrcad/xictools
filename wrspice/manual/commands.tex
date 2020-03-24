@@ -1,7 +1,7 @@
 \chapter{{\WRspice} Commands}
 \label{commands}
 
-% spCommands.hlp:commands 030519
+% spCommands.hlp:commands 032120
 
 When a line is entered, it is interpreted as one of several things. 
 First, it may be an alias, in which case the line is replaced with the
@@ -89,7 +89,9 @@ The following table lists all built-in commands understood by
 \cb devmod & Change device model levels\\ \hline
 \cb disto & Initiate distortion analysis\\ \hline
 \cb dump & Print circuit matrix\\ \hline
+\cb findlower & Find lower edge of operating range\\ \hline
 \cb findrange & Find edges of operating range\\ \hline
+\cb findupper & Find upper edge of operating range\\ \hline
 \cb free & Delete circuits and/or plots\\ \hline
 \cb jobs & Check asynchronous jobs\\ \hline
 \cb loop & Alias for sweep command\\ \hline
@@ -1098,7 +1100,7 @@ output to be saved in files.
 \index{codeblock command}
 \label{codeblock}
 
-% spCommands.hlp:codeblock 012109
+% spCommands.hlp:codeblock 032320
 
 The {\cb codeblock} command manipulates codeblocks.
 \begin{quote}\vt
@@ -1172,6 +1174,10 @@ blocks obtained from the file.  If no {\it filename} was given, the
 existing binding is deleted from the current circuit, according to
 whether the {\vt b} or {\vt be} was given.  Separate calls are
 required to unbind both blocks.
+
+Note:  Bound codeblocks are parameter expanded, named codeblocks
+are not.  In a named codeblock, parameters are available through
+the {\vt @}{\it parmname} (special vector) syntax.
 
 Operating range and Monte Carlo analysis can make use of ``bound''
 codeblocks.  In both types of analysis, the ``controls'' codeblock
@@ -1874,7 +1880,7 @@ See \ref{textedit} for more information about the text editor.
 \section{Simulation Control Commands}
 \label{simcmds}
 
-% spCommands.hlp:simcmds 030119
+% spCommands.hlp:simcmds 032120
 
 The commands described in this section initiate, control, and monitor
 {\WRspice} simulations.  One can monitor the progress of a run in two
@@ -1958,7 +1964,9 @@ is used.
 \cb devmod & Change device model levels\\ \hline
 \cb disto & Initiate distortion analysis\\ \hline
 \cb dump & Print circuit matrix\\ \hline
+\cb findlower & Find lower edge of operating range\\ \hline
 \cb findrange & Find edges of operating range\\ \hline
+\cb findupper & Find upper edge of operating range\\ \hline
 \cb free & Delete circuits and/or plots\\ \hline
 \cb jobs & Check asynchronous jobs\\ \hline
 \cb loop & Alias for sweep command\\ \hline
@@ -2892,15 +2900,98 @@ Print output in the given file.
 \end{description}
 
 %SU-------------------------------------
+\subsection{\spcmd{findlower}}
+\index{findlower command}
+
+% spCommands.hlp:findlower 032120
+
+This command can be used to find the lower operating limit of one or
+two parameters in the circuit.  See the {\cb findrange} command for a
+complete description.
+
+\begin{quote}
+{\vt findlower} {\it findrange\_args}
+\end{quote}
+
+%SU-------------------------------------
 \subsection{\spcmd{findrange}}
 \index{findrange command}
 
-% spCommands.hlp:findrange 030219
+% spCommands.hlp:findrange 032120
 
-This can be called after a Monte Carlo analysis trial and will find
-the actual uppear and lower operating limits of two parameters.
-\begin{quote}\vt
-findrange
+The command, and its associated commands {\cb findlower} and {\cb
+findupper}, can be used to find the operating margins of one or two
+circuit parameters.
+
+\begin{quote}
+{\vt findrange} [{\vt -n1} {\it name1\/}] [{\vt -n2} {\it name2\/}]
+[[{\it pstr1\/}] {\it val1\/}] [[{\it pstr2\/}] {\it val2\/}]
+\end{quote}
+
+This utilizes the infrastructure developed for Operating Range
+analysis in \ref{oprange}, but can be used in scripts for finer
+control of the process.  The depth used in the binary search can be
+given in the {\et checkiterate} variable as for standard range
+analysis, or defaults to 6 if not set.
+
+These commands can be running only when a range analysis has been
+initiated with the {\cb check} command (see \ref{checkcom}), generally
+by giving the ``{\vt -b}'' option.  Any number of the {\cb findrange}
+commands or the variants can be given, as well as other commands such
+as {\cb mcrtial}.  When finished the {\cb check} command should be
+given with the ``{\vt -c}'' option to terminate the mode and free
+internal memory.
+
+A usage example can be found in the examples: {\vt JJexamples/nor\_op.cir}.
+
+By default, the lower and upper range values will be saved in vectors
+named {\vt opmin1}, {\vt opmin2}, {\it opmax1}, and {\vt opmax2},
+which are created if necessary.  If given following ``{\vt -n1}'' or
+``{\vt -n2}'' respectively, {\it name1} and {\it name2} tokens will
+serve as a base for new names that replace vector names {\vt opmin1},
+{\vt opmin2}, {\vt opmax1}, {\vt opmax2} for range results.  For
+example,
+\begin{quote}
+\vt -n1 foo
+\end{quote}
+will save output in vectors named {\vt foo\_min}, {\vt foo\_max}>.
+
+There is a subtlety in the syntax:  a double-quoted name, e.g.,
+<tt>-n1 "</tt>{\it pname\/}<tt>"</tt>, is accepted and the quotes will
+be stripped before use.  The quotes prevent parameter substitution, so
+this allows use of a name that has also been defined as a parameter
+(with {\vt .param} directive or otherwise).
+
+Each of the three functions can take parameter definitions and range
+parameters, in the same syntax as supplied to the {\cb check} and {\cb
+sweep} commands, however only the starting parameter value is needed. 
+The simulation must run correctly at the starting value.  The command
+line may include one or two specifications.  Each specification
+consists of an optional parameter specification string, followed by
+the starting value.  The numbers will override the {\vt checkVAL1},
+and {\vt checkVAL2} vectors that may be in effect.
+
+The optional {\it pstr1} and {\it pstr2} strings take the same format
+and significance as in the {\cb sweep} command.  See the description
+of that command for a description of the format.  If a parameter
+specifier is given, the specified device parameters will be altered
+directly, and the variables and vectors normally used to pass values
+will {\bf not} be set.  If two parameters are being set, either both
+must be set using the syntax above, or neither, the two methods can't
+be mixed.
+
+%SU-------------------------------------
+\subsection{\spcmd{findupper}}
+\index{findupper command}
+
+% spCommands.hlp:findupper 032120
+
+This command can be used to find the upper operating limit of one or
+two parameters in the circuit.  See the {\cb findrange} command for a
+complete description.
+
+\begin{quote}
+{\vt findupper} {\it findrange\_args}
 \end{quote}
 
 %SU-------------------------------------
@@ -2961,7 +3052,7 @@ mctrial
 \subsection{\spcmd{measure}}
 \index{measure command}
 
-% spCommands.hlp:measure 060219
+% spCommands.hlp:measure 032220
 
 The {\cb measure} command allows one to set up a runop (see
 \ref{runop}) which will identify a measurement point or interval, and
@@ -3285,6 +3376,15 @@ This will measure the 10-90 percent rise or fall time of the edge
 contained in the interval.  The reference start and final values are
 the values at the ends of the interval.
 \end{description}
+
+These functions are also available in general expressions outside of
+the {\cb measure} command:  {\cb mmin}, {\cb mmax}, {\cb mpp}, {\cb
+mavg}, {\cb mrms}, {\cb mpw}, {\cb mrft}.  Each of these functions
+takes three arguments:  ({\it vector\/}, {\it scaleval1\/}, {\it
+scaleval2\/}).  The two scale values frame the area of measurement. 
+These must be chosen to isolate the feature of interest for
+rise/fall/width measurement.  If not in range of the {\it vector}
+scale, the {\it vector} scale endpoints are assumed.
 
 When a point has been specified, the only measurement form
 available is
@@ -3860,7 +3960,7 @@ given, or one, if no number is given.
 \subsection{\spcmd{stop}}
 \index{stop command}
 
-% spCommands.hlp:stop 060119
+% spCommands.hlp:stop 032220
 
 The {\cb stop} command will add a stop point to the runop list.
 \begin{quote}
@@ -3901,6 +4001,11 @@ of the syntax.  Note that this should cover the pre-4.3.9 syntax,
 however an analysis point index is now an integer enclosed is square
 brackets, numeric values are now assumed to be scale values (such as
 time) otherwise.
+
+\item{\vt repeat} {\it delta}\\
+The {\it delta} is a real number scale extent.  After the {\it point}
+trigger, the actions are repeated on every multipole of {\it delta}
+that follows, as long as a {\vt call} script (see below) returns 1.
 \end{description}
 
 There are a couple of optional ``{\it postcmd}'' operations which can
@@ -4302,21 +4407,38 @@ used in expressions.  They can be deleted with the {\cb unlet} command.
 \subsection{\spcmd{compose}}
 \index{compose command}
 
-% spCommands.hlp:compose 092611
+% spCommands.hlp:compose 032220
 
-The {\cb compose} command is used to create vectors.  It has two forms:
+The {\cb compose} command is used to create vectors.  It has three forms:
 \begin{quote}\vt
-compose {\it vecname} {\it param = value} [...]\\
+compose {\it vecname} values {\it value} [...]\\
 {\rm or}\\
-compose {\it vecname} values {\it value} [...]
+compose {\it vecname} pattern [{\it n1} [{\it n2\/}]] {\it bstring}
+[{\it modifiers\/}] [...]
+{\rm or}\\
+compose {\it vecname} {\it param = value} [...]\\
 \end{quote}
-Both forms of this command create a new vector called {\it vecname\/}. 
-In the first form, the values in the vector are determined by the
-parameters given, as described below.  In the second form, indicated
-by the keyword ``{\vt values}'', the given values are used to form the
-vector.
 
-In the first form, there are three groups of possible parameter sets. 
+All forms of this command create a new vector called {\it vecname\/}. 
+In the first form, indicated by the keyword ``{\vt values}'', the
+given values are concatenated to form the vector.  The second form
+creates a binary pattern of 1 and 0 values based on the given pattern
+specification to be described.  In the third form, the values in the
+vector are determined by the parameters given, as will be described.
+
+The pattern generation syntax given in the second form is as used in
+pulse source.  See \ref{pattern} for a complete description of the
+{\it bstring} and {\it modifier} syntax and usage.  The optional
+preceding numbers {\it n1} and {\it n2} apply only when infinite
+repetition ({\vt r=-1}) is given in the {\it modifier\/}:  neither
+given will will cause the vector to end at the sequence end, with no
+repeat.  If {\it n1} only is given, this number is taken as the
+maximum length of the vector.  If both {\it n1} and {\it n2} are
+given, the two numbers are taken as {\it step} and {\it stop}, with
+the maximum length {\it stop}/{\it step}.  This is convenient for
+setting the length to match a transient analysis specification.
+
+In the third form, there are three groups of possible parameter sets. 
 The first set facilitates creation of uniform arrays.  This set
 contains the following parameters.
 
@@ -5709,8 +5831,9 @@ no arguments.
 %SU-------------------------------------
 \subsection{\spcmd{rusage}}
 \index{rusage command}
+\label{rusage}
 
-% spRusage.hlp:rusage 060219
+% spRusage.hlp:rusage 032320
 
 The {\cb rusage} command is used to obtain information about the
 consumption of system resources and other statistics during the
@@ -5732,17 +5855,14 @@ In release 4.3.10 and later, statistics accumulate in Monte Carlo,
 operating range, and sweep operations.  This was not the case in
 earlier releases.
 
+The two tables that follow list the available resource statistics.  An
+internal statistical database maintains these values, the {\cb rusage}
+and {\cb stats} commands are the user interface to this database.  The
+following are a few keywords handled by the {\cb rusage} and {\cb
+stats} commands directly.  Other keywords are passed in queries to the
+internal statistical database.
+
 \begin{description}
-\item{\vt accept}\\
-\index{rusage command!accept}
-This keyword prints the number of accepted time points from the last
-transient analysis.
-
-\item{\vt cvchktime}\\
-\index{rusage command!cvchktime}
-Print the time spent checking for convergence in the most recent dc or
-transient analysis (including operating point).
-
 \item{\vt elapsed}\\
 \index{rusage command!elapsed}
 This keyword prints the total amount of time that has elapsed since
@@ -5750,18 +5870,140 @@ the last call of the {\cb rusage} or {\cb stats} command with the {\vt
 elapsed} keyword (explicit or implied with ``{\vt all}''), or to the
 program start time.
 
-\item{\vt equations}\\
-\index{rusage command!equations}
-Print the number of nodes in the current circuit, including internally
-generated nodes.  This includes the ground node so is one larger than
-the matrix size.
-
 \item{\vt faults}\\
 \index{rusage command!faults}
 This keyword prints the number of page faults and context switches
 seen by the program thus far.  See also {\et pagefaults}, {\et
 involcxswitch}, and {\et volcxswitch} for the values that occurred
 during the last anslysis.
+
+\item{\vt space}\\
+\index{rusage command!space}
+This keyword will print the memory presently in use by {\WRspice}.
+
+\item{\vt totaltime}\\
+\index{rusage command!totaltime}
+If this keyword is given, the total time used in the present session
+will be printed.
+\end{description}
+
+subsubsection{Statistical Database Entries}
+\index{statistical database}
+
+The statistical database contains the following data items, listed in
+the tables below and with a more detailed description of each item
+following.
+
+\begin{longtable}{p{1in}p{4.75in}l}
+\bf Resource Parameter Name & \bf Description\\[0.5ex]
+\multicolumn{2}{l}{\bf Real-Valued Parameters}\\
+{\vt cvchktime} & \rr Time spent convergence testing.&\\
+{\vt loadtime} & \rr Device model evaluation and matrix load time.&\\
+{\vt lutime} & \rr L-U decomposition time.&\\
+{\vt reordertime} & \rr Matrix reordering time.&\\
+{\vt solvetime} & \rr Matrix solve time.&\\
+{\vt time} & \rr Total analysis time.&\\
+{\vt tranlutime} & \rr Transient L-U decomposition time.&\\
+{\vt tranouttime} & \rr Transient output recording time.&\\
+{\vt transolvetime} & \rr Transient solve time.&\\
+{\vt trantime} & \rr Transient time.&\\
+{\vt trantstime} & \rr Transient timestep computation time.&\\
+\\
+
+\multicolumn{2}{l}{\bf Integer-Valued Parameters}\\
+{\vt accept} & \rr Accepted timepoints.&\\
+{\vt equations} & \rr Circuit equations.&\\
+{\vt fillin} & \rr Fill-in terms from decomposition.&\\
+{\vt involcxswitch} & \rr Involuntary context switches during analysis.&\\
+{\vt loadthrds} & \rr Number of device loading helper threads.&\\
+{\vt loopthrds} & \rr Number of repetitive analysis helper threads.&\\
+{\vt matsize} & \rr Matrix size.&\\
+{\vt nonzero} & \rr Number of nonzero matrix entries.&\\
+{\vt pagefaults} & \rr Number of page faults during analysis.&\\
+{\vt rejected} & \rr Number of rejected timepoints.&\\
+{\vt runs} & \rr Accumulated core analysis runs.&\\
+{\vt totiter} & \rr Total iterations.&\\
+{\vt trancuriters} & \rr Transient interations at last timepoint.&\\
+{\vt traniter} & \rr Transient interations.&\\
+{\vt tranitercut} & \rr Transient timepoints where iteration limit exceeded.&\\
+{\vt tranpoints} & \rr Transient timepoints.&\\
+{\vt trantrapcut} & \rr Transient timepoints where trapcheck failed.&\\
+{\vt volcxswitch} & \rr Voluntary context switches during analysis.&\\
+\end{longtable}
+
+subsubsection{Real Valued Database Entries}
+
+\begin{description}
+\item{\vt cvchktime}\\
+\index{rusage command!cvchktime}
+Print the time spent checking for convergence in the most recent dc or
+transient analysis (including operating point).
+
+\item{\vt loadtime}\\
+\index{rusage command!loadtime}
+If given, print the time spent loading the matrix in the last
+simulation run.  This includes the time spent in computation of device
+characteristics.
+
+\item{\vt lutime}\\
+\index{rusage command!lutime}
+The {\vt lutime} keyword will print the time spent in LU factorization
+of the matrix during the last simulation run.
+
+\item{\vt reordertime}\\
+\index{rusage command!reordertime}
+Print the time spent reordering the matrix for numerical stability in
+the most recent simulation.
+
+\item{\vt solvetime}\\
+\index{rusage command!solvetime}
+This will print the time spent solving the matrix equations, after
+LU decomposition, in the last simulation run.
+
+\item{\vt time}\\
+\index{rusage command!time}
+This keyword will print the time used by the last simulation run.
+
+\item{\vt tranlutime}\\
+\index{rusage command!tranlutime}
+The time spent LU factoring the matrix in the most recent transient
+analysis, not including the dc operating point calculation.
+
+\item{\vt tranouttime}\\
+\index{rusage command!tranouttime}
+Print the time spent saving output in the most recent transient
+analysis.
+
+\item{\vt transolvetime}\\
+\index{rusage command!transolvetime}
+This keyword prints the matrix solution time required by the last
+transient analysis, not including the operating point calculation.
+
+\item{\vt trantime}\\
+\index{rusage command!trantime}
+This keyword will print the total time spent in transient analysis
+in the last transient analysis, not including the operating point
+calculation.
+
+\item{\vt trantstime}\\
+\index{rusage command!trantstime}
+Report the time spent computing the next timestep in the most recent
+transient analysis.
+\end{description}
+
+subsubsection{Integer Valued Database Entries}
+
+\begin{description}
+\item{\vt accept}\\
+\index{rusage command!accept}
+This keyword prints the number of accepted time points from the last
+transient analysis.
+
+\item{\vt equations}\\
+\index{rusage command!equations}
+Print the number of nodes in the current circuit, including internally
+generated nodes.  This includes the ground node so is one larger than
+the matrix size.
 
 \item{\vt fillin}\\
 \index{rusage command!fillin}
@@ -5773,12 +6015,6 @@ factoring.  This is not available from KLU.
 This provides the number of involuntary context switches seen during
 the last analysis.  If multiple threads are being used, this is the
 total for all threads.
-
-\item{\vt loadtime}\\
-\index{rusage command!loadtime}
-If given, print the time spent loading the matrix in the last
-simulation run.  This includes the time spent in computation of device
-characteristics.
 
 \item{\vt loadthrds}\\
 \index{rusage command!loadthrds}
@@ -5794,11 +6030,6 @@ Report the number of threads in use for repetitive analysis in the
 most recent analysis run.  This would be at most the value of the {\et
 loopthrds} option variable in effect during the analysis, but is the
 number of threads actually used.
-
-\item{\vt lutime}\\
-\index{rusage command!lutime}
-The {\vt lutime} keyword will print the time spent in LU factorization
-of the matrix during the last simulation run.
 
 \item{\vt matsize}\\
 \index{rusage command!matsize}
@@ -5817,32 +6048,9 @@ Report the number of page faults seen during the most recent analysis.
 This keyword prints the number of rejected time points in the last
 transient analysis.
 
-\item{\vt reordertime}\\
-\index{rusage command!reordertime}
-Print the time spent reordering the matrix for numerical stability in
-the most recent simulation.
-
 \item{runs}\\
 In Monte Carlo, operating range, and sweep analysis, this returns    
 the number of trial runs over which statistics have accumulated.
-
-\item{\vt solvetime}\\
-\index{rusage command!solvetime}
-This will print the time spent solving the matrix equations, after
-LU decomposition, in the last simulation run.
-
-\item{\vt space}\\
-\index{rusage command!space}
-This keyword will print the memory presently in use by {\WRspice}.
-
-\item{\vt time}\\
-\index{rusage command!time}
-This keyword will print the time used by the last simulation run.
-
-\item{\vt totaltime}\\
-\index{rusage command!totaltime}
-If this keyword is given, the total time used in the present session
-will be printed.
 
 \item{\vt totiter}\\
 \index{rusage command!totiter}
@@ -5868,31 +6076,10 @@ step cut by iteration count.  If the {\et itl4} limit is reached when
 attempting convergence at a transient time point, the timestep is cut
 and convergence is reattempted.
 
-\item{\vt tranlutime}\\
-\index{rusage command!tranlutime}
-The time spent LU factoring the matrix in the most recent transient
-analysis, not including the dc operating point calculation.
-
-\item{\vt tranouttime}\\
-\index{rusage command!tranouttime}
-Print the time spent saving output in the most recent transient
-analysis.
-
 \item{\vt tranpoints}\\
 \index{rusage command!tranpoints}
 This keyword prints the number of internal time steps used in the
 last transient analysis.
-
-\item{\vt transolvetime}\\
-\index{rusage command!transolvetime}
-This keyword prints the matrix solution time required by the last
-transient analysis, not including the operating point calculation.
-
-\item{\vt trantime}\\
-\index{rusage command!trantime}
-This keyword will print the total time spent in transient analysis
-in the last transient analysis, not including the operating point
-calculation.
 
 \item{\vt trantrapcut}\\
 \index{rusage command!trantrapcut}
@@ -5900,11 +6087,6 @@ This is the number of times in the most recent transient analysis that
 a timestep was cut due to the trapcheck algorithm.  This may occur
 when the {\et trapcheck} variable is set, which enables a test to
 detect numerical problems in trapezoidal integration. 
-
-\item{\vt trantstime}\\
-\index{rusage command!trantstime}
-Report the time spent computing the next timestep in the most recent
-transient analysis.
 
 \item{\vt volcxswitch}\\
 \index{rusage command!volcxswitch}

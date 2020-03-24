@@ -866,6 +866,7 @@ namespace ResPrint
     void print_opt(const char*, sLstr*);
     void print_cktvar(const variable*, sLstr*);
     void get_elapsed(double*, double*, double*);
+    void get_faults(unsigned int*, unsigned int*);
     void get_space(unsigned int*, unsigned int*, unsigned int*);
 };
 

@@ -1855,8 +1855,8 @@ sCHECKprms::findEdge(const char *po, const char *pc)
 
 // Find the operating range of value1 and value2.  The initial values
 // must be nonzero, and the output vectors should exist, otherwise the
-// search is skipped.  The search is also skipped if ch_iterno
-// (the checkiterate variable) is zero.
+// search is skipped.  If checkiterate is not set, use a temporary
+// default value.
 //
 bool
 sCHECKprms::findRange(bool dolower, bool doupper)
@@ -1868,16 +1868,14 @@ sCHECKprms::findRange(bool dolower, bool doupper)
         ch_nogo = true;
         return (true);
     }
-    if (ch_doall) {
-        // With the "all" flag set, find the range of each of the
-        // value vector entries that are not masked by value_mask,
-        // if value exists.
-        //
-        if (!ch_names) {
-            GRpkgIf()->ErrPrintf(ET_ERROR,
-            "find range with \"all\" flag set requires a \"values\" vector.");
-            return (true);
-        }
+    if (ch_doall && !ch_names) {
+        GRpkgIf()->ErrPrintf(ET_ERROR,
+        "find range with \"all\" flag set requires a \"values\" vector.");
+        return (true);
+    }
+
+    int chiter_bak = ch_iterno;
+    if (ch_iterno <= 0) {
         VTvalue vv;
         if (Sp.GetVar(kw_checkiterate, VTYP_NUM, &vv, out_cir))
             ch_iterno = vv.get_int();
@@ -1886,9 +1884,17 @@ sCHECKprms::findRange(bool dolower, bool doupper)
             ch_iterno = 0;
             GRpkgIf()->ErrPrintf(ET_WARN,
                 "bad value for checkiterate, ignored.\n");
-        }
-        if (ch_iterno == 0)
             return (false);
+        }
+#define DEF_CHITER 6
+        if (ch_iterno == 0)
+            ch_iterno = DEF_CHITER;
+    }
+    if (ch_doall) {
+        // With the "all" flag set, find the range of each of the
+        // value vector entries that are not masked by value_mask,
+        // if value exists.
+
         sDataVec *d = out_plot->find_vec(ch_names->value());
         if (d && d->isreal()) {
             char maskbuf[64];
@@ -1901,19 +1907,24 @@ sCHECKprms::findRange(bool dolower, bool doupper)
                 tmpd->set_realvec(new double[d->length()], true);
                 tmpd->set_length(d->length());
             }
-            else
+            else {
+                ch_iterno = chiter_bak;
                 return (true);
+            }
             tmpd = out_plot->find_vec(OPHI1);
             if (tmpd && tmpd->isreal()) {
                 tmpd->set_realvec(new double[d->length()], true);
                 tmpd->set_length(d->length());
             }
-            else
+            else {
+                ch_iterno = chiter_bak;
                 return (true);
+            }
             for (int i = 0; i < d->length(); i++) {
                 if (vm && vm->isreal() && i < vm->length() &&
-                        vm->realval(i) != 0.0)
+                        vm->realval(i) != 0.0) {
                     continue;
+                }
                 double value1 = d->realval(i);
                 set_vec(ch_names->n1(), (double)i);
                 if (doupper && find_upper1(value1, i))
@@ -1922,19 +1933,22 @@ sCHECKprms::findRange(bool dolower, bool doupper)
                     continue;
             }
         }
+        ch_iterno = chiter_bak;
         return (false);
     }
-    if (ch_iterno == 0)
-        return (false);
-    if (doupper && find_upper1(ch_val1, 0))
-        return (true);
-    if (dolower && find_lower1(ch_val1, 0))
-        return (true);
-    if (doupper && find_upper2(ch_val2, 0))
-        return (true);
-    if (dolower && find_lower2(ch_val2, 0))
-        return (true);
-    return (false);
+
+    bool ret = false;
+    if (!ret && doupper && find_upper1(ch_val1, 0))
+        ret = true;
+    if (!ret && dolower && find_lower1(ch_val1, 0))
+        ret = true;
+    if (!ret && doupper && find_upper2(ch_val2, 0))
+        ret = true;
+    if (!ret && dolower && find_lower2(ch_val2, 0))
+        ret = true;
+
+    ch_iterno = chiter_bak;
+    return (ret);
 }
 
 

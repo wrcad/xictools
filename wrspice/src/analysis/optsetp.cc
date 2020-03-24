@@ -1193,7 +1193,7 @@ namespace {
         IFparm(spkw_itl6,           OPT_SRCSTEPS,       IF_IO|IF_INTEGER,
             "Number of source steps"),
         IFparm(spkw_vastep,         OPT_VASTEP,         IF_IO|IF_INTEGER,
-            "Verilog time step multiplier"),
+            "Verilog time step mapping"),
 
         IFparm(spkw_dcoddstep,      OPT_DCODDSTEP,      IF_IO|IF_FLAG,
             "DC sweep will include end of range point if off-step"),

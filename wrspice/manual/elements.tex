@@ -1410,7 +1410,7 @@ provided.
 \index{device expressions}
 \label{devexpr}
 
-% spSources.hlp:devexpr 092312
+% spSources.hlp:devexpr 032120
 
 {\WRspice} contains a separate expression handling system for
 expressions found in device lines.  Voltage and current source lines
@@ -1431,9 +1431,13 @@ have unit length with the current value as the data item.}
 
 \item{All inputs and results are real values.}
 
-\item{All expressions must be differentiable with respect to node
-voltages and branch current variables.  This has subtle but important
-consequences as explained below.}
+\item{In theory, expressions should be differentiable with respect to
+node voltages and branch current variables.  If not, lack of
+convergence might be seen.  Previous versions of {\WRspice} were more
+strict about this than the present version, which allows relational
+and logic operators.  It is often very convenient to use these
+operators, and in general it seems that their use does not prevent
+convergence.  Your experience may be different, however.}
 \end{enumerate}
 
 The expression can contain vectors from the current plot
@@ -1444,15 +1448,20 @@ is defined to be the controlling variable in dependent sources, or is
 set to the scale variable in the analysis (e.g., {\et time} for
 transient analysis).
 
-The functions which are used in the device description must be
-differentiable with respect to node voltages and branch currents. 
-Internally, the expressions are symbolically differentiated in order
-to calculate the Jacobian, which is used to set up the matrix which is
-solved during analysis.  This prevents use of the logical operators,
-modulus operator, relational operators ({\vt <}, {\vt >}, etc.), and
-the tri-conditional operator ({\it a} {\vt ?} {\it b} {\vt :} {\it
-c\/}) in these expressions where an operand depends on a node voltage
-or branch current.
+The functions which are used in the device description should be
+differentiable with respect to node voltages and branch currents to
+promote convergence.  Internally, the expressions are symbolically
+differentiated in order to calculate the Jacobian, which is used to
+set up the matrix which is solved during analysis.  This would seem to
+prevent use of the logical operators, modulus operator, relational
+operators ({\vt <}, {\vt >}, etc.), and the tri-conditional operator
+({\it a} {\vt ?} {\it b} {\vt :} {\it c\/}) in these expressions where
+an operand depends on a node voltage or branch current.  However,
+{\WRspice} currently supports relational and logic operators in source
+expressions, by assuming identically zero derivatives for these
+operators when differentiating.  We find, in practice, that this
+rarely causes obvious convergence problems, at least if used in
+moderation.
 
 In addition to the built-in functions, expressions used in devices can
 include user-defined functions, which must have been defined
@@ -1462,10 +1471,7 @@ These can be used with either math package.  Internally, they are
 saved in a data structure known as a parse tree.  When a user-defined
 function is called in the context of a device equation, checking is
 performed on the user-defined function parse tree to see if any of the
-non-differentiable operations are included.  If so, an error, such as
-\begin{quote}
-\vt invalid operator number 16 ("LT") in input
-\end{quote}
+non-differentiable operations are included.  If so, an error message
 is generated, and the equation setup fails.
 
 This being said, the situation is actually a bit more complicated.  As
@@ -1480,7 +1486,7 @@ conditionals and other unsupported constructs will have disappeared.
 
 The bottom line of all of this is that for equations that appear in a
 device description, the circuit variables (node voltages and branch
-currents) can't be used in tri-conditional, logical, or relational
+currents) can't be used in tri-conditional and modulus
 sub-expressions.  For example consider the following:
 
 \begin{quote}\vt
@@ -1491,10 +1497,10 @@ E3 3 0 function mymax(v(1), 0)
 \end{quote}
 
 This will not work, as it specifically breaks the rules prohibiting
-relational operators and tri-conditionals.  However, it really should
-be possible to simulate a circuit with behavior described as intended
-above, and it (usually) is.  One needs to find ways of expressing the
-behavior by using supported math.
+tri-conditionals.  However, it really should be possible to simulate a
+circuit with behavior described as intended above, and it (usually)
+is.  One needs to find ways of expressing the behavior by using
+supported math.
 
 For example, either of these alternatives would be an acceptable
 alternative for {\vt myabs}.
@@ -1517,11 +1523,8 @@ E2 2 0 function myabs(v(1))\\
 E3 3 0 function mymax(v(1), 0)
 \end{quote}
 
-Someday, it may be possible to add internal intelligence to {\WRspice}
-to perform this type of substitution automatically.
-
 Although the lists of math functions available in the two packages are
-similar, the internal evaluation routines are different.  The shell
+similar, the internal evaluation functions are different.  The shell
 math functions must operate on vectors of complex values, whereas the
 functions called in device expressions take scalar real values only. 
 Furthermore, the device expressions must be differentiable with
@@ -1612,6 +1615,25 @@ the following tokens are recognized in a device function.
 {\vt x} & independent variable\\ \hline
 {\it number} & a floating point number\\ \hline
 {\it string} & a library function, table, or circuit vector\\ \hline
+\end{tabular}
+\end{quote}
+
+Additionally, the following relational and logical operators are
+available.  Use of these operators may impede convergence.  The
+operators evaluate to 1.0 when true, 0.0 otherwise.  Inputs to logical
+operators are true if integer-converted values are nonzero.
+
+\begin{quote}
+\begin{tabular}{|l|l|}\hline
+{\vt =,==,eq} & equality\\ \hline
+{\vt !=,<>,><,ne} & inequality\\ \hline
+{\vt >,gt} & greater than\\ \hline
+{\vt <,lt} & less than\\ \hline
+{\vt >=,ge} & greater than or equal\\ \hline
+{\vt <=,le} & less than or equal\\ \hline
+{\vt \&,\&\&,and} & logical and\\ \hline
+{\vt $|$,$||$,or} & logical or\\ \hline
+{\vt \symbol{126},!,not} & logical not\\ \hline
 \end{tabular}
 \end{quote}
 
@@ -2111,7 +2133,7 @@ well.
 \index{pulse specification}
 \index{pulse tran function}
 
-% spSources.hlp:pulse 060119
+% spSources.hlp:pulse 032220
 
 \spgen{pulse({\it v1 v2} [{\it td tr tf pw per td1 td2} ...]
   [{\it pattern\_spec}])}
@@ -2245,6 +2267,17 @@ bstring pattern, and indicates the start point for repetitions, if
 any.  If not given, the effective value is 1, indicating that the
 entire pattern repeats.  An integer must follow {\vt rb}, white space
 and an equal sign will be ignored.
+
+\item{\vt bprbs}[{\it N\/}]\\
+In {\WRspice}, the bstring can also specify pseudo-random sequences
+through the syntax {\vt bprbs}[{\it N\/}].  The {\it N} is an unsigned
+integer, defaulting to 6 if not given, and clipped to the range 6--12
+if not in this range.  This is the degree of the pseudo-random
+sequence, i.e., the sequence length is $2^N-1$.  This will accept the
+{\vt r} and {\vt rb} modifiers, however {\vt rb} is treated a little
+differently.  With this form, it rotates the bit sequence, giving
+rotated output starting with the first pass.  The same degree with
+different {\vt rb} values produces uncorrelated sequences.
 \end{description}
 
 An arbitrary number of bstrings with options can appear in the

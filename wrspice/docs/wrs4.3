@@ -140,6 +140,12 @@ the programs are fully compatible with El Capitan (10.11).
 Support for earlier OS X releases has ended.  This is Apple's
 decision, not mine.
 
+March 2020:
+Fixed default font sizes in Apple so they aren't huge on my new 15
+inch Macbook Pro (12 pt to 9 pt).  For now, user should create a
+$HOME/.gtkrc-2.0 file with a line gtk-font-name="foo 9" This shrinks
+GTK menu, etc.  widget fonts to be reasonable.
+
 *****************************************************
 IMPORTANT -- Linux and OS X only
 
@@ -233,12 +239,16 @@ CHANGES AND NEW FEATURES
 ------- --- --- --------
 
 * Updates to findrange command.
+docs findrange
 
     New commands: findlower, findupper
-    Each can now take the parameter
-    definitions and range parameters as supplied to the check command.
-    These no longer require their own check -b call, they can simply be
-    listed following an initial check -b.
+        Same arguments and operation as findrange, but only the lower
+        or upper operating point is searched for.
+
+    Each of the three functions can now take the parameter definitions
+    and range parameters as supplied to the check command.  These no
+    longer require their own check -b call, they can simply be listed
+    following an initial check -b.
 
     New arguments to findrange/findupper/findlower,
 
@@ -248,51 +258,35 @@ CHANGES AND NEW FEATURES
     vector names opmin1/2, opmax1/2 for range results.  E.g.,
         -n1 foo
     will save output in  vectors named foo_min, foo_max.
-    Subtle syntax:  -n1 "pname", i.e., a double-quoted name, is accepted
-    and the quotes will be stripped before use.
-    The quotes prevent parameter substitution, so this allows use of a
-    name that has also been defined as a .param.
+
+    There is a subtlety in the syntax:  -n1 "pname", i.e., a
+    double-quoted name, is accepted and the quotes will be stripped
+    before use.  The quotes prevent parameter substitution, so this
+    allows use of a name that has also been defined as a parameter
+    (with .param or otherwise).
 
 * New relational and logic operators in expressions.
+docs devexpr
 
     Added support for relational and logic operations in source
     expressions.  These are
-        eq(=) gt(>) lt(<) ge(>=) le(<=) ne(!=) and(&) or(|) not(~)
-    These evaluate to 0.0/1.0.  Warning, as these are not
-    differentiable they can potentially cause convergence issues.
-    The intended application is pass/fail testing in a .stop callback
+        eq    =, ==
+        ne    !=, <>
+        gt    >
+        lt    <
+        ge    >=
+        le    <=
+        and   &, &&
+        or    |, ||
+        not   ~, !
+
+    These evaluate to 0.0/1.0 when false/true.  As these are not
+    differentiable they can potentially cause convergence issues.  An
+    example application is pass/fail testing in a .stop callback
     function.
 
-* Pseudo-random support in bit strings.
-
-    This applies to the "bstring" syntax of the pulse and gpulse
-    sources, and the compose command (below).  Support was added for a
-    "bprbsN" bstring where N is an unsigned integer and the rest of
-    the charactrers are verbatim.  N can be any unsigned integer or
-    missing (default taken as 6), but values are clipped to the active
-    range 6-12.  This expands to a pseudo-random bit sequence of order
-    N, i.e., the length of the sequence is 2^N - 1.
-
-    The associated "rb" option works slightly differently:  the
-    sequence is effectively rotated by the integer value that follows. 
-    It affacts the first pass through the sequence, unlike in the
-    normal sequence case where it affects the second and subsequent
-    passes only.
-
-* Update to the compose command.
-
-    New compose syntax:  compose name pattern [n1 [n2]] bstring
-
-    This is triggered by the literal keyword "pattern" and uses the
-    pulse/gpulse bstring syntax.  The optional preceding numbers n1,n2
-    apply only when infinite repetition (r=-1) is given in the
-    bstring:  no numbers will quit at sequence end, no repeat.  1
-    number gives the maximum length in points.  2 numbers are taken as
-    step and stop, with the maximum length stop/step.  This is
-    convenient for setting the length to match a transient analysis
-    specification.
-
 * Updates to .measure and .stop directives.
+docs measure mathfuncs measfuncs
 
     New stop clause "repeat delta" where delta is a real number scale
     extent.  The exec and call function will be called at the first
@@ -317,8 +311,101 @@ CHANGES AND NEW FEATURES
     a bare number rather than an expression in the context of
     "expr[=expr]".  E.g., stop at 30p+2p ...  now acts sensibly.
 
-* Parameter handling.
+* Verilog co-simulation capability.
 
+    It is now possible to run the internal digital Verilog simulator
+    while running an analog SPICE simulation.  The digital result can
+    be used as the basis for a pass/fail test for the analog circuit,
+    for example.
+
+    The new prbs.cir and nor_vamc.cir examples illustrates the new
+    features.
+
+    Syntax addition to .verilog line: .verilog [dly] [flgs]
+        dly
+        This is a word starting with s/f/anything_else (case
+        insensitive) for slow/fast/typical gate delays.
+
+        flgs
+        These are the vl debugging flags in C-style hex syntax
+        (0xnnnn) as would be supplied with the -d option in the vl
+        command line.  See the vl documentation, unlikely to be of
+        use to non-developers.
+
+    New vastep option and command.
+        .options vastep=N
+        N is an integer:
+        0  The Verilog simulation is advanced by calling the vastep
+           command, likely through a callback function called from
+           .measure or .stop.
+        1  (the default)  the original advancing mechanism.  Advance
+           Verilog at each transient time step.
+        X  Otherwise, advance after X transient time steps. 
+
+        vastep command
+        This command has effect only when .option vastep=0 is set. 
+        Calling this function will advance the Verilog simulation to
+        the next tick.  The command accepts no arguments.
+
+* Monte Carlo and operating range analysis changes.
+
+    Instead of using shell substitution and the value1/value2 variables
+    to set varying circuit parameters, one can use an internal parameter
+    passing method which is probably more efficient.
+
+    The form, given before the analysis,
+
+        set value1="%devicelist,paramlist"
+
+    sets up a direct push into the named device/parameters, avoiding
+    shell expansion and vectors.  Note that the list must follow a
+    magic '%' character, which tells the system to use the
+    devlist,paramlist (as for sweep command) syntax.
+
+    The new jjoprng2.cir example illustrates use of this syntax.
+
+    It is now possible to fairly easily extract parameter operating
+    ranges.  The nor_op.cir file illustrates how this can be done. 
+    The file makes use of a number of new features and syntax
+    elements.
+
+    The new example nor_mc.cir illustrates some of the new syntax for
+    Monte Carlo analysis.
+
+* Pseudo-random support in bit strings.
+docs pulse
+
+    This applies to the "bstring" syntax of the pulse and gpulse
+    voltage and current sources, and the compose command (below). 
+    Support was added for a "bprbsN" bstring where N is an unsigned
+    integer and the rest of the characters are verbatim.  N can be
+    any unsigned integer or missing (default taken as 6), but values
+    are clipped to the active range 6-12.  This expands to a
+    pseudo-random bit sequence of order N, i.e., the length of the
+    sequence is 2^N - 1.
+
+    The associated "rb" option works slightly differently than normal
+    bstrings:  the sequence is effectively rotated by the integer
+    value that follows.  It affacts the first pass through the
+    sequence, unlike in the normal sequence case where it affects the
+    second and subsequent passes only.
+
+* Update to the compose command.
+docs compose
+
+    New compose syntax:  compose name pattern [n1 [n2]] bstring
+
+    This is triggered by the literal keyword "pattern" and uses the
+    pulse/gpulse bstring syntax.  The optional preceding numbers n1,n2
+    apply only when infinite repetition (r=-1) is given in the
+    bstring:  no numbers will quit at sequence end, no repeat.  1
+    number gives the maximum length in points.  2 numbers are taken as
+    step and stop, with the maximum length stop/step.  This is
+    convenient for setting the length to match a transient analysis
+    specification.
+
+* Parameter handling.
+docs expressions .if param codeblock
     Support was added for a string return from $&@name constructs. 
     Since one can have .param foo="hello there", the $&@foo in the
     shell context new expands to "hello there".  Previously the return
@@ -339,62 +426,6 @@ CHANGES AND NEW FEATURES
     Note:  Bound codeblocks are parameter expanded, named codeblocks
     are not.  In a named codeblock, parameters are available through
     @parmname syntax.
-
-* Verilog co-simulation capability.
-
-    It is now possible to run the internal digital Verilog simulator
-    while running an analog SPICE simulation.  The digital result can
-    be used as the basis for a pass/fail test for the analog circuit,
-    for example.
-
-    The new prbs.cir and nor_vamc.cir examples illustrates the new
-    features.
-
-    Syntax addition to .verilog line: .verilog [dly] [flgs]
-        dly is s/f/t for gate delays (slow/fast/typical).  This is a
-        word starting with sS/fF/anything_else for slow/fast/typical.
-
-        flgs is undocumented.
-
-    New vastep option and command.
-        .options vastep=N
-        N is an integer:
-        0  The Verilog simulation is advanced by calling the vastep
-           command, likely through a callback function called from
-           .measure or .stop.
-        1  (the default)  the original advancing mechanism.  Advance
-           Verilog at each transient time step.
-        x  Otherwise, advance after N transient time steps. 
-
-        vastep command
-        This has effect only when .option vastep=0.  Calling this
-        function will advance the Verilog simulation to the next
-        tick. 
-
-* Monte Carlo and operating range analysis changes.
-
-    Instead of using shell substitution and the value1/value2 variables
-    to set varying circuit parameters, one can use an internal parameter
-    passing method which is probably more efficient.
-
-    The form, given before the analysis,
-
-        set value1="%devicelist,paramlist"
-
-    sets up direct push into the named device/parameters, avoiding
-    shell expansion and vectors.  Note that the list must follow a
-    magic '%' character, which tells the system use use
-    devlist,paramlist (as for sweep command) syntax.
-
-    The new jjoprng2.cir example illustrates use of this syntax.
-
-    It is now possible to fairly easily extract parameter operating
-    ranges.  The nor_op.cir file illustrates how this can be done. 
-    The file makes use of a number of new features and syntax
-    elements.
-
-    The new example nor_mc.cir illustrates some of the new syntax for
-    Monte Carlo analysis.
 
 * Updates to the Josephson junction and TJM device models.
 
@@ -428,43 +459,48 @@ CHANGES AND NEW FEATURES
     The combine command now prints a more detailed error message.
 
     Added new special vectors:
-        @maxdelta : The maximum allowed timestep in transient analysis.
-        @tstep, @tstop, @tstart:  Transient analysis parameters.
-        @fstop, @fstart:  AC analysis parameters.
+docs plotvec options rusage
+        @maxdelta               : The maximum allowed timestep in
+                                  transient analysis.
+        @tstep, @tstop, @tstart : Transient analysis parameters.
+        @fstop, @fstart         : AC analysis parameters.
 
 
 BUGS FIXED
 ---- -----
 
-    Fixed default font sizes in Apple so they aren't huge on my new 15
-    inch Macbook Pro (12 pt to 9 pt).  For now, user should create a
-    $HOME/.gtkrc-2.0 file with a line gtk-font-name="foo 9" This
-    shrinks GTK menu, etc.  widget fonts to be reasonable.
+* Fixed default font sizes in Apple so they aren't huge on my new 15
+  inch Macbook Pro (12 pt to 9 pt).  For now, users should create a
+  $HOME/.gtkrc-2.0 file with a line gtk-font-name="foo 9" This shrinks
+  GTK menu, etc.  widget fonts to be reasonable.
 
-    Control-C was causing seg faults!  Ugly bug since this is used to
-    pause simulations.
+* Control-C was causing seg faults!  Ugly bug since this is used to
+  pause simulations.
 
-    Fixed an issue with .control/.exec assignment-only files, vectors
-    were unresolved when a subsequent circuit file was sourced.
+* Fixed an issue with .control/.exec that contained assignments only,
+  vectors were unresolved when a subsequent circuit file was sourced.
 
-    Note that assignments in .exec and .control blocks may be handled
-    differently.  Exec blocks will create a special plot for new
-    vectors, .control assignments may go to the constants plot. 
-    Existing vectors in the constants plot override assignments in
-    exec blocks.  If the current plot is an exec plot, it will be used
-    in exec block processing, so multiple exec blocks can be read and
-    all new vectors will be defined in one plot.
+  Note that assignments in .exec and .control blocks may be handled
+  differently.  Exec blocks will create a special plot for new
+  vectors, .control assignments may go to the constants plot. 
+  Existing vectors in the constants plot override assignments in exec
+  blocks.  If the current plot is an exec plot, it will be used in
+  exec block processing, so multiple exec blocks can be read and all
+  new vectors will be defined in one plot.
 
-    Fixed bug in jj/tjm models, VSHUNT could not be given as 0.
+* Fixed bug in jj/tjm models, VSHUNT could not be given a value 0.
 
-    The $&?  (shell vector existence test) and $&# (shell vector size)
-    prefixes were not being recognized.  Support for these has been
-    reimplemented.
+* The $&? (shell vector existence test) and $&# (shell vector size)
+  prefixes were not being recognized.  Support for these has been
+  reimplemented.
 
-    Fixed problem where plot windows that have complex data would
-    freeze on resize.
+* Fixed a problem where plot windows that have complex data would
+  freeze on resize.
 
-    Fixed Fedora segfault, and several others.
+* Fixed Fedora segfault, and several others.
+
+* Fixed discrepancy in parameter expansion logic with .option
+  parhier=local.
 
 
 -------------------------------------------------------------------------------

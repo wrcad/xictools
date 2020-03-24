@@ -703,7 +703,7 @@ options.  This section provides further information on the use of
 option variables in {\WRspice}.
 
 %----------------------------------------------------
-% spVars_sim.hlp:options 092716
+% spVars_sim.hlp:options 032220
 
 \subsubsection{Simulation Options}
 \label{options}
@@ -852,6 +852,16 @@ description of each of these variables is provided in \ref{simvars}.
 {\vt xmu} & \rr The SPICE2 trapezoidal/Euler mixing parameter.&\\
 \\
 
+\multicolumn{2}{l}{\bf Read-Only Real-Valued Parameters}\\
+{\vt delta} & \rr Transient analysis internal time step.&\\
+{\vt fstart} & \rr AC analysis start frequency.&\\
+{\vt fstop} & \rr AC analysis end frequency.&\\
+{\vt maxdelta} & \rr Transient analysis maximum internal time step.&\\
+{\vt tstart} & \rr Transient analysis start output time.&\\
+{\vt tstep} & \rr Transient analysis print increment.&\\
+{\vt tstop} & \rr Transient analysis final time.&\\
+\\
+
 \multicolumn{2}{l}{\bf Integer-Valued Parameters}\\
 {\vt bypass} & \rr Set to 0 to disable element computation bypassing.&\\
 {\vt fpemode} & \rr Set floating point error handling method (0--3).&\\
@@ -871,6 +881,7 @@ description of each of these variables is provided in \ref{simvars}.
 {\vt srcsteps} & \rr The number of increments to use for non-dynamic source
   stepping.&\\
 {\vt itl6} & \rr An alias for {\vt srcsteps}.&\\
+{\vt vastep} & \rr Verilog time step mapping.&\\
 \\
 
 \multicolumn{2}{l}{\bf Boolean Parameters}\\
@@ -888,6 +899,7 @@ description of each of these variables is provided in \ref{simvars}.
 {\vt nomatsort} & \rr With Sparse solver, don't sort elements for cache
   locality.&\\
 {\vt noopiter} & \rr Skip initial dc convergence attempt.&\\
+{\vt nopmdc} & \rr Do not allow phase-mode DC analysis.&\\
 {\vt noshellopts} & \rr Ignore circuit variables not set in {\vt .options}
   line.&\\
 {\vt oldlimit} & \rr Use SPICE2 voltage limiting.&\\
@@ -902,6 +914,8 @@ description of each of these variables is provided in \ref{simvars}.
   model.&\\
 {\vt useadjoint} & \rr Create an adjoint matrix for BSIM device current
   monitoring.&\\
+{\vt translate} & \rr Map node numbers into matrix assuming nodes are not
+  compact.&\\
 \\
 
 \multicolumn{2}{l}{\bf String Parameters}\\
@@ -1026,7 +1040,7 @@ Additional temperatures listed in the {\vt .temp} line are ignored.
 %------------------------------------------------------------------------------
 \section{Parameters and Expressions}
 
-% spInput.hlp:param 032817
+% spInput.hlp:param 032320
 
 %----------------------------------------------------
 \subsection{Single-Quoted Expressions}
@@ -1192,6 +1206,10 @@ as if specified on a {\vt .param} line.  However, they are read-only,
 and attempts to redefine them will silently fail.
 
 \begin{description}
+\item{\vt WRSPICE\_BATCH}\\
+This parameter is set to 1 if {\WRspice} is running in batch mode, 0
+otherwise.
+
 \item{\vt WRSPICE\_PROGRAM}\\
 The value of this parameter is set to 1.  This enables users to
 include {\WRspice}-specific input in SPICE files, which will be
@@ -1261,6 +1279,16 @@ does not understand variables implicitly set by inclusion in the {\vt
 references.  The scope for these constructs is always global, meaning
 that they apply to lines of text in the file without regard to {\vt
 .subckt} block boundaries.
+
+The construct {\vt def}({\it paramname\/}) can be used in the {\it
+expression\/}, where it is replaced by 1 or 0 if {\it paramname} is
+defined or not.  Thus, one can define parameters that have not been
+previously defined with
+\begin{quote}\vt
+.if !def(myparam)\\ 
+.param myparam=2\\
+.endif
+\end{quote}
 
 If the single {\it expression} is nonzero, or the two expressions
 yield the same result, the lines following {\vt .if} up to the

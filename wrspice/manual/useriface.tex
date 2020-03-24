@@ -4214,7 +4214,7 @@ into idle mode, i.e., the simulation or other operation completes.
 \index{plot description}
 \index{vector description}
 
-% spExpressions.hlp:plotvec 022519
+% spExpressions.hlp:plotvec 032320
 
 %SU-------------------------------------
 \subsection{Plots and Vectors}
@@ -4650,6 +4650,7 @@ command.
 
 %SU-------------------------------------
 \subsection{Special Vectors}
+\label{specialvec}
 
 Most simply, vector names can be any alphanumeric word that starts
 with an alpha character.  Vector names may also be of the form {\it
@@ -4663,75 +4664,50 @@ by the program, in Celsius.
 
 In {\WRspice}, a vector name beginning with the `{\vt @}' symbol is a
 ``special'' vector, and is considered a reference to an internal
-device or model parameter, or a circuit parameter.  If the vector name
-is of the form {\vt @{\it name}[{\it param}]}, this denotes the
-parameter {\it param} of the device or model named {\it name}.  Of
-course, there must be a device or model with that name defined for the
-current circuit and {\it param} must be a valid parameter name for
-that device or model type.  See the documentation or use the {\cb
-show} command for a listing of the parameters available.
+device or model parameter, or a circuit parameter.  If the variable
+{\et spec\_catchar} is set to a string consisting of a single
+punctuation character, then that character will identify a special
+vector, instead of `{\vt @}'.  The descriptions below use `{\vt @}',
+but in actuality this character can be respecified by the user.
 
-If the variable {\et spec\_catchar} is set to a string consisting of a
-single punctuation character, then that character will identify a
-special vector, instead of `{\vt @}'.  The descriptions below use
-`{\vt @}', but in actuality this character can be respecified by the
-user.
+If the vector name is of the form {\vt @{\it name}[{\it param}]}, this
+denotes the parameter {\it param} of the device or model named {\it
+name}.  Of course, there must be a device or model with that name
+defined for the current circuit and {\it param} must be a valid
+parameter name for that device or model type.  See the documentation
+or use the {\cb show} command for a listing of the parameters
+available.
 
-If the vector name is of the form {\vt @}{\it param}, this refers to a
-parameter of the circuit with the name {\it param}.  The parameters
-obtained in this manner are those from the table below defined on a
-{\vt .options} line in the current circuit, those defined on a {\vt
-.param} line in a current circuit, and the keywords of the {\cb
-rusage} command, sought in that order.  These vectors may be used as
-arguments to commands and functions which take vector arguments.
-
-\begin{tabular}{|l|l|l|}
-\multicolumn{3}{c}{\bf Option Special Vectors}\\ \hline
-\bf Reals       & \bf Integers          & \bf Flags\\ \hline
-\vt @abstol     & \vt @bypass           & \vt @gminfirst\\ \hline
-\vt @chgtol     & \vt @gminsteps        & \vt @jjaccel\\ \hline
-\vt @defad      & \vt @interplev        & \vt @noiter\\ \hline
-\vt @defas      & \vt @itl1             & \vt @nojjtp\\ \hline
-\vt @defl       & \vt @itl2             & \vt @noopiter\\ \hline
-\vt @defw       & \vt @itl2gmin         & \vt @notrapcheck\\ \hline
-\vt @dphimax    & \vt @itl2src          & \vt @noklu\\ \hline
-\vt @gmin       & \vt @itl4             & \vt @nomatsort\\ \hline
-\vt @minbreak   & \vt @maxord           & \vt @noadjoint\\ \hline
-\vt @pivrel     & \vt @srcsteps         & \vt @oldlimit\\ \hline
-\vt @pivtol     &                       & \vt @spice3\\ \hline
-\vt @reltol     &                       & \vt @trytocompact\\ \hline
-\vt @temp       &                       & \\ \hline
-\vt @tnom       &                       & \\ \hline
-\vt @trapratio  &                       & \\ \hline
-\vt @trtol      &                       & \\ \hline
-\vt @vntol      &                       & \\ \hline
-\vt @xmu        &                       & \\ \hline
-\end{tabular}
-
-\begin{tabular}{|l|l|}
-\multicolumn{2}{c}{\bf Rusage Special Vectors}\\ \hline
-\bf Reals & \bf Integers\\ \hline
-\vt @elapsed &       \vt @accept\\ \hline
-\vt @loadtime &      \vt @equations\\ \hline
-\vt @lutime &        \vt @fillin\\ \hline
-\vt @reordertime &   \vt @matsize\\ \hline
-\vt @solvetime &     \vt @nonzero\\ \hline
-\vt @space &         \vt @rejected\\ \hline
-\vt @time &          \vt @totiter\\ \hline
-\vt @tranlutime &    \vt @trancuriters\\ \hline
-\vt @transolvetime & \vt @traniter\\ \hline
-\vt @trantime &      \vt @tranpoints\\ \hline
-\vt  &               \vt @tranitercut\\ \hline
-\vt  &               \vt @trantrapcut\\ \hline
-\end{tabular}
+Special vectors should be saved with the {\cb save} command or on a
+{\vt .save} line during analysis if a value is required at each
+analysis point.  Otherwise, only the current value is available, which
+is the value used at the final analysis point after analysis
+completes.
 
 The special vectors that correspond to device and model parameters in
-the current circuit can be assigned.  Other special vectors are
-read-only.  When a special vector is assigned, the effect is similar
-to the {\cb alter} command.  Actual assignment is deferred until the
-next analysis run of the current circuit, and assignment applies to
-that run only.  The assignment must be repeated if needed for
-additional runs.
+the current circuit can be assigned.  When a special vector is
+assigned, the effect is similar to the {\cb alter} command.  Actual
+assignment is deferred until the next analysis run of the current
+circuit, and assignment applies to that run only.  The assignment must
+be repeated if needed for additional runs.
+
+Other special vectors are read-only.
+
+If the vector name is of the form {\vt @}{\it param}, this refers to a
+parameter of the circuit with the name {\it param}.
+
+These are resolved in the following way.  First, a match to one of the
+``official'' options is sought.  These are the options listed in the
+table in the options description (\ref{options}).  Any of these will
+match, with the exceptions in the sub-tables listing batch mode and
+obsolete options.
+
+If this fails, parameters defined in the current circuit are searched
+for a matching name.  These are defined in {\vt .param} lines.
+
+Finally, the {\cb rusage} command (see \ref{rusage}) keywords are
+searched.  Any of these keywords will match.
+
 
 %SU-------------------------------------
 \subsection{Vector Expressions}
@@ -4801,6 +4777,15 @@ something\/})} as a reference to a SPICE node voltage, so that one can
 index node voltages as {\vt echo \$\&v(\$\&i)}, for example.  A range
 specification can be added, which can contain shell variables.  This
 is true for both vectors ({\vt \$\&} prefix) and variables.
+
+There is a special case when {\vt \$\&} is used with a special vector
+(see \ref{specialvec}) that is referencing a string-type parameter. 
+Since one can have
+\begin{quote}\vt
+.param foo="hello there"
+\end{quote}
+{\vt \$\&@foo} will expand to ``{\vt hello there}'' in this case. 
+Other references to {\vt @foo} will return 0.0.
 
 %SU-------------------------------------
 \subsection{Operators in Expressions}
@@ -4935,7 +4920,7 @@ of the elements in the result is reversed.
 \subsection{Math Functions}
 \index{math functions}
 
-% spExpressions.hlp:mathfuncs 031416
+% spExpressions.hlp:mathfuncs 032220
 
 There are a number of built-in math functions which take and return
 vectors.  Generally, these functions operate on the supplied vector
@@ -4945,9 +4930,10 @@ The pre-defined functions available are listed below.  In general, all
 operations and functions will work on either real or complex values,
 providing complex data output when necessary.
 
-In addition, there are statistical random number sources, and a number
-of compatibility functions to support HSPICE extensions available. 
-These are described in sections that follow.
+In addition, there are statistical random number sources, as well as
+measurement functions exported by the {\cb measure} command, and a
+number of compatibility functions to support HSPICE extensions
+available.  These are described in sections that follow.
 
 It should be noted that the mathematics subsystem used to evaluate
 expressions in voltage/current sources is completely different.  In
@@ -5446,6 +5432,63 @@ term-by-term.  If {\it vector} is real, the return is also real.  If
 {\it vector} is complex, the return is also complex, with separate
 results for the real and imaginary parts, obtained using the real and
 imaginary parts of {\it vector}.
+\end{description}
+
+
+%SU-------------------------------------
+\subsection{Measurement Functions}
+\index{measurement functions}
+\label{measfuncs}
+
+% spExpressions.hlp:measfuncs 032220
+
+These functions are exported from the {\cb measure}command and provide
+the same measurement capability in post-processing.
+
+Each function takes three arguments.  The first argument is a
+simulation result vector.  The second two arguments are scalar values
+of the vector's scale that define the measurement range (effectively
+the trigger and target points).  These are clipped to the actual
+vector scale if out of range.  The return value is a real scalar.
+
+\begin{description}
+\index{mavg function}
+\item{\vt mavg}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Compute the average value of {\it vec} over the range {\it start} to
+{\it end\/}.
+
+\index{mmax function}
+\item{\vt mmax}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the maximum value of {\it vec} over the range {\it start} to {\it
+end\/}.
+
+\index{mmin function}
+\item{\vt mmin}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the minimum value of {\it vec} over the range {\it start} to {\it
+end\/}.
+
+\index{mpp function}
+\item{\vt mpp}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the peak to peak (maximum minus minimum) value of {\it vec} over
+the range {\it start} to {\it end\/}.
+
+\index{mpw function}
+\item{\vt mpw}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the full width hasf maximum pulse width of {\it vec} over the
+range {\it start} to {\it end\/}.  The {\it start} and {\it end} are
+assumed to frame a single pulse.  The maximum and minimum values are
+found, and the first two crossings of the average of these values
+provides the result.
+
+\index{mrft function}
+\item{\vt mrft}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Find the 10\% tp 90\% rise or fall duration of {\it vec} over the
+range {\it start} to {\it end\/}.
+
+\index{mrms function}
+\item{\vt mrms}({\it vec\/}, {\it start\/}, {\it end\/})\\
+Compute the root mean square (RMS) value of {\it vec} over the range
+{\it start} to {\it end\/}.
 \end{description}
 
 

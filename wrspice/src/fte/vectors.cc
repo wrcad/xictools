@@ -598,17 +598,32 @@ IFoutput::vecGet(const char *word, const sCKT *ckt, bool silent)
             }
             if (err) {
                 if (lstring::eq(name+1, kw_elapsed)) {
-                    double d1, d2, d3;
-                    ResPrint::get_elapsed(&d1, &d2, &d3);
+                    double d1;
+                    ResPrint::get_elapsed(&d1, 0, 0);
                     data.type = IF_REAL;
                     data.v.rValue = d1;
                     err = 0;
                 }
-                else if (lstring::eq(name+1, kw_space)) {
-                    unsigned int d1, d2, d3;
-                    ResPrint::get_space(&d1, &d2, &d3);
+                else if (lstring::eq(name+1, kw_faults)) {
+                    unsigned int d1;
+                    ResPrint::get_faults(&d1, 0);
                     data.type = IF_INTEGER;
                     data.v.iValue = d1;
+                    err = 0;
+                }
+                else if (lstring::eq(name+1, kw_space)) {
+                    unsigned int d1;
+                    ResPrint::get_space(&d1, 0, 0);
+                    data.type = IF_INTEGER;
+                    data.v.iValue = d1;
+                    err = 0;
+                }
+                else if (lstring::eq(name+1, kw_totaltime)) {
+                    // same as elapsed
+                    double d1;
+                    ResPrint::get_elapsed(&d1, 0, 0);
+                    data.type = IF_REAL;
+                    data.v.rValue = d1;
                     err = 0;
                 }
             }

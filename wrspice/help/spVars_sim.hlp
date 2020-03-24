@@ -22,7 +22,7 @@ unused_vars
 syntax_vars
 
 
-!! format.tex 092716
+!! format.tex 032220
 !!KEYWORD
 options
 !!TITLE
@@ -207,6 +207,22 @@ options
     <tr><td><a href="xmu"><tt>xmu</tt></a></td>
       <td>The SPICE2 trapezoidal/Euler mixing parameter.</td></tr>
 
+    <tr><th colspan=2>Read-Only Real-Valued Parameters</th></tr>
+    <tr><td><a href="delta"><tt>delta</tt></a></td>
+      <td>Transient analysis internal time step.</td></tr>
+    <tr><td><a href="fstart"><tt>fstart</tt></a></td>
+      <td>AC analysis start frequency.</td></tr>
+    <tr><td><a href="fstop"><tt>fstop</tt></a></td>
+      <td>AC analysis end frequency.</td></tr>
+    <tr><td><a href="maxdelta"><tt>maxdelta</tt></a></td>
+      <td>Transient analysis maximum internal time step.</td></tr>
+    <tr><td><a href="tstart"><tt>tstart</tt></a></td>
+      <td>Transient analysis start output time.</td></tr>
+    <tr><td><a href="tstep"><tt>tstep</tt></a></td>
+      <td>Transient analysis print increment.</td></tr>
+    <tr><td><a href="tstop"><tt>tstop</tt></a></td>
+      <td>Transient analysis final time.</td></tr>
+
     <tr><th colspan=2>Integer-Valued Parameters</th></tr>
     <tr><td><a href="bypass"><tt>bypass</tt></td>
       <td>Set to 0 to disable element computation bypassing.</td></tr>
@@ -240,6 +256,8 @@ options
       stepping.</td></tr>
     <tr><td><a href="srcsteps"><tt>itl6</tt></td>
       <td>An alias for <tt>srcsteps</tt>.</td></tr>
+    <tr><td><a href="vastep"><tt>vastep</tt></td>
+      <td>Verilog time step mapping.</td></tr>
 
     <tr><th colspan=2>Boolean Parameters</th></tr>
     <tr><td><a href="dcoddstep"><tt>dcoddstep</tt></a></td>
@@ -265,6 +283,8 @@ options
       <td>With Sparse solver, don't sort elements for cache locality.</td></tr>
     <tr><td><a href="noopiter"><tt>noopiter</tt></a></td>
       <td>Skip initial dc convergence attempt.</td></tr>
+    <tr><td><a href="nopmdc"><tt>nopmdc</tt></a></td>
+      <td>Do not allow phase-mode DC analysis.</td></tr>
     <tr><td><a href="noshellopts"><tt>noshellopts</tt></a></td>
       <td>Ignore circuit variables not set in <tt>.options</tt> line.</td></tr>
     <tr><td><a href="oldlimit"><tt>oldlimit</tt></a></td>
@@ -285,6 +305,8 @@ options
       <td>Enable compaction in LTRA (lossy transmission line) model.</td></tr>
     <tr><td><a href="useadjoint"><tt>useadjoint</tt></a></td>
       <td>Create an adjoint matric for BSIM device current monitoring.</td></tr>
+    <tr><td><a href="translate"><tt>translate</tt></a></td>
+      <td>Map node numbers into matrix assuming nodes are not compact.</td></tr>
 
     <tr><th colspan=2>String Parameters</th></tr>
     <tr><td><a href="method"><tt>method</tt></a></td>

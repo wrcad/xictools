@@ -635,6 +635,7 @@ Operating Range Analysis
 
 !!SUBTOPICS
 oprngfile
+findrange
 !!SEEALSO
 analyses
 marganal

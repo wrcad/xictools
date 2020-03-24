@@ -19,41 +19,43 @@ rusage
 stats
 
 
-!!REDIRECT accept       rusage#accept
 !!REDIRECT cvchktime    rusage#cvchktime
+!!REDIRECT loadtime     rusage#loadtime
+!!REDIRECT lutime       rusage#lutime
+!!REDIRECT reordertime  rusage#reordertime
+!!REDIRECT solvetime    rusage#solvetime
+!!REDIRECT time         rusage#time
+!!REDIRECT tranlutime   rusage#tranlutime
+!!REDIRECT tranouttime  rusage#tranouttime
+!!REDIRECT transolvetime rusage#transolvetime
+!!REDIRECT trantime     rusage#trantime
+!!REDIRECT trantstime   rusage#trantstime
+
+!!REDIRECT accept       rusage#accept
 !!REDIRECT elapsed      rusage#elapsed
 !!REDIRECT equations    rusage#equations
-!!REDIRECT faults       rusage#faults
 !!REDIRECT fillin       rusage#fillin
 !!REDIRECT involcxswitch rusage#involcxswitch
-!!REDIRECT loadtime     rusage#loadtime
 !!# conflict #!!REDIRECT loadthrds      rusage#loadthrds
 !!# conflict #!!REDIRECT loopthrds      rusage#loopthrds
-!!REDIRECT lutime       rusage#lutime
 !!REDIRECT matsize      rusage#matsize
 !!REDIRECT nonzero      rusage#nonzero
 !!REDIRECT pagefaults   rusage#pagefaults
 !!REDIRECT rejected     rusage#rejected
-!!REDIRECT reordertime  rusage#reordertime
 !!REDIRECT runs         rusage#runs
-!!REDIRECT solvetime    rusage#solvetime
-!!REDIRECT space        rusage#space
-!!REDIRECT time         rusage#time
-!!REDIRECT totaltime    rusage#totaltime
 !!REDIRECT totiter      rusage#totiter
 !!REDIRECT trancuriters rusage#trancuriters
 !!REDIRECT traniter     rusage#traniter
 !!REDIRECT tranitercut  rusage#tranitercut
-!!REDIRECT tranlutime   rusage#tranlutime
-!!REDIRECT tranouttime  rusage#tranouttime
 !!REDIRECT tranpoints   rusage#tranpoints
-!!REDIRECT transolvetime rusage#transolvetime
-!!REDIRECT trantime     rusage#trantime
 !!REDIRECT trantrapcut  rusage#trantrapcut
-!!REDIRECT trantstime   rusage#trantstime
 !!REDIRECT volcxswitch  rusage#volcxswitch
 
-!! commands.tex 060219
+!!REDIRECT totaltime    rusage#totaltime
+!!REDIRECT space        rusage#space
+!!REDIRECT faults       rusage#faults
+
+!! commands.tex 032320
 !!KEYWORD
 rusage
 !!TITLE
@@ -81,21 +83,14 @@ rusage command
     In release 4.3.10 and later, statistics accumulate in Monte Carlo,
     operating range, and sweep operations.  This was not the case in
     earlier releases.
- 
+
     <p>
-    <a name="accept"></a>
-    <dl>
-    <dt><tt>accept</tt><dd>
-    This keyword prints the number of accepted time points in the last
-    transient analysis.
-    </dl>
- 
-    <a name="cvchktime"></a>
-    <dl>
-    <dt><tt>cvchktime</tt><dd>
-    Print the time spent checking for convergence in the most recent
-    dc or transient analysis (including operating point).
-    </dl>
+    The two tables that follow list the available resource statistics. 
+    An internal statistical database maintains these values, the
+    <b>rusage</b> and <b>stats</b> commands are the user interface to
+    this database.  The following are a few keywords handled by the
+    <b>rusage</b> and <b>stats</b> commands directly.  Other keywords
+    are passed in queries to the internal statistical database.
 
     <a name="elapsed"></a>
     <dl>
@@ -107,14 +102,6 @@ rusage command
     program start time.
     </dl>
 
-    <a name="equations"></a>
-    <dl>
-    <dt><tt>equations</tt><dd>
-    Print the number of nodes in the current circuit, including
-    internally generated nodes.  This includes the ground node so is
-    one larger than the matrix size.
-    </dl>
-
     <a name="faults"></a>
     <dl>
     <dt><tt>faults</tt><dd>
@@ -124,6 +111,192 @@ rusage command
     href="involcxswitch"><tt>involcxswitch</tt></a>, and <a
     href="volcxswitch"><tt>volcxswitch</tt></a> for the values that
     occurred during the last analysis.
+    </dl>
+
+    <a name="space"></a>
+    <dl>
+    <dt><tt>space</tt><dd>
+    This keyword will print the memory presently in use by
+    <i>WRspice</i>.
+    </dl>
+
+    <a name="totaltime"></a>
+    <dl>
+    <dt><tt>totaltime</tt><dd>
+    If this keyword is given, the total time used in the present
+    session will be printed.
+    </dl>
+
+    <h4>Statistical Database Entries</h4>
+    
+    The statistical database contains the following data items, listed
+    in the tables below and with a more detailed description of each
+    item following.
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Resource Parameter Name</th>  <th>Description</th></tr>
+    <tr><th colspan=2>Real-Valued Parameters</th></tr>
+    <tr><td><a href="cvchktime"><tt>cvchktime</tt></a></td>
+      <td>Time spent convergence testing.</td></tr>
+    <tr><td><a href="loadtime"><tt>loadtime</tt></a></td>
+      <td>Device model evaluation and matrix load time.</td></tr>
+    <tr><td><a href="lutime"><tt>lutime</tt></a></td>
+      <td>L-U decomposition time.</td></tr>
+    <tr><td><a href="reordertime"><tt>reordertime</tt></a></td>
+      <td>Matrix reordering time.</td></tr>
+    <tr><td><a href="solvetime"><tt>solvetime</tt></a></td>
+      <td>Matrix solve time.</td></tr>
+    <tr><td><a href="time"><tt>time</tt></a></td>
+      <td>Total analysis time.</td></tr>
+    <tr><td><a href="tranlutime"><tt>tranlutime</tt></a></td>
+      <td>Transient L-U decomposition time.</td></tr>
+    <tr><td><a href="tranouttime"><tt>tranouttime</tt></a></td>
+      <td>Transient output recording time.</td></tr>
+    <tr><td><a href="transolvetime"><tt>transolvetime</tt></a></td>
+      <td>Transient solve time.</td></tr>
+    <tr><td><a href="trantime"><tt>trantime</tt></a></td>
+      <td>Transient time.</td></tr>
+    <tr><td><a href="trantstime"><tt>trantstime</tt></a></td>
+      <td>Transient timestep computation time.</td></tr>
+    </table>
+ 
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Resource Parameter Name</th>  <th>Description</th></tr>
+    <tr><th colspan=2>Integer-Valued Parameters</th></tr>
+    <tr><td><a href="accept"><tt>accept</tt></a></td>
+      <td>Accepted timepoints.</td></tr>
+    <tr><td><a href="equations"><tt>equations</tt></a></td>
+      <td>Circuit equations.</td></tr>
+    <tr><td><a href="fillin"><tt>fillin</tt></a></td>
+      <td>Fill-in terms from decomposition.</td></tr>
+    <tr><td><a href="involcxswitch"><tt>involcxswitch</tt></a></td>
+      <td>Involuntary context switches during analysis.</td></tr>
+    <tr><td><a href="loadthrds"><tt>loadthrds</tt></a></td>
+      <td>Number of device loading helper threads.</td></tr>
+    <tr><td><a href="loopthrds"><tt>loopthrds</tt></a></td>
+      <td>Number of repetitive analysis helper threads.</td></tr>
+    <tr><td><a href="matsize"><tt>matsize</tt></a></td>
+      <td>Matrix size.</td></tr>
+    <tr><td><a href="nonzero"><tt>nonzero</tt></a></td>
+      <td>Number of nonzero matrix entries.</td></tr>
+    <tr><td><a href="pagefaults"><tt>pagefaults</tt></a></td>
+      <td>Number of page faults during analysis.</td></tr>
+    <tr><td><a href="rejected"><tt>rejected</tt></a></td>
+      <td>Number of rejected timepoints.</td></tr>
+    <tr><td><a href="runs"><tt>runs</tt></a></td>
+      <td>Accumulated core analysis runs.</td></tr>
+    <tr><td><a href="totiter"><tt>totiter</tt></a></td>
+      <td>Total iterations.</td></tr>
+    <tr><td><a href="trancuriters"><tt>trancuriters</tt></a></td>
+      <td>Transient interations at last timepoint.</td></tr>
+    <tr><td><a href="traniter"><tt>traniter</tt></a></td>
+      <td>Transient interations.</td></tr>
+    <tr><td><a href="tranitercut"><tt>tranitercut</tt></a></td>
+      <td>Transient timepoints where iteration limit exceeded.</td></tr>
+    <tr><td><a href="tranpoints"><tt>tranpoints</tt></a></td>
+      <td>Transient timepoints.</td></tr>
+    <tr><td><a href="trantrapcut"><tt>trantrapcut</tt></a></td>
+      <td>Transient timepoints where trapcheck failed.</td></tr>
+    <tr><td><a href="volcxswitch"><tt>volcxswitch</tt></a></td>
+      <td>Voluntary context switches during analysis.</td></tr>
+    </table>
+    </blockquote>
+
+    <h4>Real Valued Database Entries</h4>
+
+    <a name="cvchktime"></a>
+    <dl>
+    <dt><tt>cvchktime</tt><dd>
+    Print the time spent checking for convergence in the most recent
+    dc or transient analysis (including operating point).
+    </dl>
+
+    <a name="loadtime"></a>
+    <dl>
+    <dt><tt>loadtime</tt><dd>
+    If given, print the time spent loading the matrix in the last
+    simulation run.  This includes the time spent in computation of
+    device characteristics.
+    </dl>
+
+    <a name="lutime"></a>
+    <dl>
+    <dt><tt>lutime</tt><dd>
+    The <tt>lutime</tt> keyword will print the time spent in LU
+    factorization of the matrix during the last simulation run.
+    </dl>
+
+    <a name="reordertime"></a>
+    <dl>
+    <dt><tt>reordertime</tt><dd>
+    Print the time spent reordering the matrix for numerical stability in
+    the most recent simulation.
+    </dl>
+
+    <a name="solvetime"></a>
+    <dl>
+    <dt><tt>solvetime</tt><dd>
+    This will print the time spent solving the matrix equations, after
+    LU decomposition, in the last simulation run.
+    </dl>
+
+    <a name="time"></a>
+    <dl>
+    <dt><tt>time</tt><dd>
+    This keyword will print the time used by the last simulation run.
+    </dl>
+
+    <a name="tranlutime"></a>
+    <dl>
+    <dt><tt>tranlutime</tt><dd>
+    The time spent LU factoring the matrix in the most recent transient
+    analysis, not including the dc operating point calculation.
+    </dl>
+
+    <a name="tranouttime"></a>
+    <dl>
+    <dt><tt>tranouttime</tt><dd>
+    Print the time spent saving output in the most recent transient
+    analysis.
+    </dl>
+
+    <a name="transolvetime"></a>
+    <dl>
+    <dt><tt>transolvetime</tt><dd>
+    This keyword prints the matrix solution time required by the last
+    transient analysis, not including the operating point calculation.
+    </dl>
+
+    <a name="trantime"></a>
+    <dl>
+    <dt><tt>trantime</tt><dd>
+    This keyword will print the total time spent in transient analysis
+    in the last transient analysis, not including the operating point
+    calculation.
+    </dl>
+
+    <a name="trantstime"></a>
+    <dl>
+    <dt><tt>trantstime</tt><dd>
+    Report the time spent computing the next timestep in the most
+    recent transient analysis.
+    </dl>
+
+    <h4>Integer Valued Database Entries</h4>
+
+    <a name="accept"></a>
+    <dl>
+    <dt><tt>accept</tt><dd>
+    This keyword prints the number of accepted time points in the last
+    transient analysis.
+    </dl>
+ 
+    <a name="equations"></a>
+    <dl>
+    <dt><tt>equations</tt><dd>
+    Print the number of nodes in the current circuit, including
+    internally generated nodes.  This includes the ground node so is
+    one larger than the matrix size.
     </dl>
 
     <a name="fillin"></a>
@@ -139,14 +312,6 @@ rusage command
     This provides the number of involuntary context switches seen
     during the last analysis.  If multiple threads are being used,
     this is the total for all threads.
-    </dl>
-
-    <a name="loadtime"></a>
-    <dl>
-    <dt><tt>loadtime</tt><dd>
-    If given, print the time spent loading the matrix in the last
-    simulation run.  This includes the time spent in computation of
-    device characteristics.
     </dl>
 
     <a name="loadthrds"></a>
@@ -168,13 +333,6 @@ rusage command
     be at most the value of the <a
     href="loopthrds"><tt>loopthrds</tt></a> option variable in effect
     during the analysis, but is the number of threads actually used.
-    </dl>
-
-    <a name="lutime"></a>
-    <dl>
-    <dt><tt>lutime</tt><dd>
-    The <tt>lutime</tt> keyword will print the time spent in LU
-    factorization of the matrix during the last simulation run.
     </dl>
 
     <a name="matsize"></a>
@@ -203,45 +361,11 @@ rusage command
     transient analysis.
     </dl>
 
-    <a name="reordertime"></a>
-    <dl>
-    <dt><tt>reordertime</tt><dd>
-    Print the time spent reordering the matrix for numerical stability in
-    the most recent simulation.
-    </dl>
-
     <a name="runs"></a>
     <dl>
     <dt><tt>runs</tt><dd>
     In Monte Carlo, operating range, and sweep analysis, this returns
     the number of trial runs over which statistics have accumulated.
-    </dl>
-
-    <a name="solvetime"></a>
-    <dl>
-    <dt><tt>solvetime</tt><dd>
-    This will print the time spent solving the matrix equations, after
-    LU decomposition, in the last simulation run.
-    </dl>
-
-    <a name="space"></a>
-    <dl>
-    <dt><tt>space</tt><dd>
-    This keyword will print the memory presently in use by
-    <i>WRspice</i>.
-    </dl>
-
-    <a name="time"></a>
-    <dl>
-    <dt><tt>time</tt><dd>
-    This keyword will print the time used by the last simulation run.
-    </dl>
-
-    <a name="totaltime"></a>
-    <dl>
-    <dt><tt>totaltime</tt><dd>
-    If this keyword is given, the total time used in the present
-    session will be printed.
     </dl>
 
     <a name="totiter"></a>
@@ -277,40 +401,11 @@ rusage command
     convergence is reattempted.
     </dl>
 
-    <a name="tranlutime"></a>
-    <dl>
-    <dt><tt>tranlutime</tt><dd>
-    The time spent LU factoring the matrix in the most recent transient
-    analysis, not including the dc operating point calculation.
-    </dl>
-
-    <a name="tranouttime"></a>
-    <dl>
-    <dt><tt>tranouttime</tt><dd>
-    Print the time spent saving output in the most recent transient
-    analysis.
-    </dl>
-
     <a name="tranpoints"></a>
     <dl>
     <dt><tt>tranpoints</tt><dd>
     This keyword prints the number of internal time steps used in the
     last transient analysis.
-    </dl>
-
-    <a name="transolvetime"></a>
-    <dl>
-    <dt><tt>transolvetime</tt><dd>
-    This keyword prints the matrix solution time required by the last
-    transient analysis, not including the operating point calculation.
-    </dl>
-
-    <a name="trantime"></a>
-    <dl>
-    <dt><tt>trantime</tt><dd>
-    This keyword will print the total time spent in transient analysis
-    in the last transient analysis, not including the operating point
-    calculation.
     </dl>
 
     <a name="trantrapcut"></a>
@@ -323,13 +418,6 @@ rusage command
     trapezoidal integration.
     </dl>
 
-    <a name="trantstime"></a>
-    <dl>
-    <dt><tt>trantstime</tt><dd>
-    Report the time spent computing the next timestep in the most
-    recent transient analysis.
-    </dl>
-
     <a name="volcxswitch"></a>
     <dl>
     <dt><tt>volcxswitch</tt><dd>
@@ -340,7 +428,6 @@ rusage command
  
 !!SEEALSO
 misccmds
-
 
 !! commands.tex 062515
 !!KEYWORD
@@ -361,3 +448,4 @@ stats command
  
 !!SEEALSO
 misccmds
+
