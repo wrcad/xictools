@@ -79,10 +79,10 @@ Author: 1992 Stephen R. Whiteley
 #define TcMax   280.0       // Max Tc
 #define Tnom    4.2         // Param. measurement temp.
 #define TnomMin 0.0         // Min param. measurement temp.
-#define TnomMax Tc          // Max param. measurement temp.
+#define TnomMax 0.95*Tc     // Max param. measurement temp.
 #define Temp    Tnom        // Operating temp
 #define TempMin 0.0         // Min operating temp.
-#define TempMax Tc          // Max operating temp.
+#define TempMax 0.95*Tc     // Max operating temp.
 #define TcFct   1.74        // Temp. correction param.
 #define TcFctMin 1.5        // Min temp. correction param.
 #define TcFctMax 2.5        // Max temp. correction param.

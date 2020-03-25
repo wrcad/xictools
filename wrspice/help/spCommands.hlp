@@ -106,6 +106,7 @@ sweep
 tf
 trace
 tran
+vastep_cmd
 where
 datacmds
 compose
@@ -134,7 +135,7 @@ qhelp
 quit
 version
 
-!! commands.tex 032120
+!! commands.tex 032420
 !!KEYWORD
 commands
 !!TITLE
@@ -339,6 +340,8 @@ Built-in Commands
       <td>Set trace</td></tr>
     <tr><td><a href="tran"><b>tran</b></a></td>
       <td>Initiate transient analysis</td></tr>
+    <tr><td><a href="vastep_cmd"><b>vastep</b></a></td>
+      <td>Advance Verilog simulator</td></tr>
     <tr><td><a href="where"><b>where</b></a></td>
       <td>Print nonconvergence information</td></tr>
 
@@ -2613,7 +2616,7 @@ iocmds
 !!REDIRECT runop        simcmds#runop
 
 !! ----------------------------------------------------------------------------
-!! commands.tex 032120
+!! commands.tex 032420
 !!KEYWORD
 simcmds
 !!TITLE
@@ -2794,6 +2797,8 @@ Simulation Commands
       <td>Set trace</td></tr>
     <tr><td><a href="tran"><b>tran</b></a></td>
       <td>Initiate transient analysis</td></tr>
+    <tr><td><a href="vastep_cmd"><b>vastep</b></a></td>
+      <td>Advance Verilog simulator</td></tr>
     <tr><td><a href="where"><b>where</b></a></td>
       <td>Print nonconvergence information</td></tr>
     </table>
@@ -2994,7 +2999,7 @@ cache command
 !!SEEALSO
 simcmds
 
-!! commands.tex 030419
+!! commands.tex 032520
 !!KEYWORD
 check
 !!TITLE
@@ -3408,6 +3413,29 @@ check command
       variable.  For example, if <tt>set value1 = L1</tt> is given,
       the variable <tt>L1</tt> is used to pass trial parameter 1
       values to the circuit (references are <tt>$L1</tt>).
+
+      <p>
+      Instead of using shell substitution and the
+      <tt>value1</tt>/<tt>value2</tt> variables to set varying circuit
+      parameters, one can use an internal parameter passing method
+      which is probably more efficient.
+
+      <p>
+      The form, given before the analysis,
+      <blockquote>
+      <tt>set value1="%</tt><i>devicelist</i><tt>,</tt><i>paramlist</i><tt>"</tt>
+      </blockquote>
+
+      sets up a direct push into the named <i>parameters</i> of listed
+      <i>devices</i>, avoiding shell expansion and vectors.  Note that
+      the list must follow a magic '<tt>%</tt>' character, which tells
+      the system to use the <i>devlist</i>,<i>paramlist</i> syntax, as
+      used in the <a href="psetting"><b>sweep</b></a> command.
+
+      <p>
+      The <tt>jjoprng2.cir</tt> file in the examples illustrates use
+      of this syntax.
+
     </dl>
 
     <p>
@@ -3956,7 +3984,7 @@ findrange command
     <p>
     These commands can be running only when a range analysis has been
     initiated with the <a href="check"><b>check</b></a> command,
-    generally by giving the "<tt>-b</tt>} option.  Any number of the
+    generally by giving the "<tt>-b</tt>" option.  Any number of the
     <b>findrange</b> commands or the variants can be given, as well as
     other commands such as <a href="mctrial"><b>mcrtial</b></a>.  When
     finished the <b>check</b> command should be given with the
@@ -4086,7 +4114,7 @@ jobs command
 !!SEEALSO
 simcmds
  
-!! commands.tex 030219
+!! commands.tex 032520
 !!KEYWORD
 mctrial
 !!TITLE
@@ -4098,6 +4126,20 @@ mctrial command
     This is a cCommand to run a single trial for use when when
     performing script-driven Monte Carlo analysis.
  
+    <p>
+    This can run only when a Monte Carlo analysis mode has been
+    initiated with the <a href="check"><b>check</b></a> command,
+    generally by giving the "<tt>-b</tt>" and "<tt>-m</tt>" options. 
+    Any number of the <b>mctrial</b> commands can be given, as well as
+    other commands such as <a href="findrange"><b>findrange</b></a>. 
+    When finished the <b>check</b> command should be given with the
+    "<tt>-c</tt>" option to terminate the mode and free internal
+    memory.
+
+    <p>
+    A usage example can be found in the examples:
+    <tt>JJexamples/nor_mc.cir</tt>.
+
 !!SEEALSO
 simcmds
 
@@ -5352,7 +5394,9 @@ iplot
 status
 simcmds
 
-!! commands.tex 120215
+!!REDIRECT psetting     sweep#psetting
+
+!! commands.tex 032520
 !!KEYWORD
 sweep loop
 !!TITLE
@@ -5549,6 +5593,7 @@ sweep command
     0.25 micron increments.
     </ol>
 
+    <a name="psetting"></a>
     <h4>Explicit parameter specification</h4>
 
     If parameters specifications (<i>pstr1</i> and <i>pstr2</i>) are
@@ -5686,6 +5731,28 @@ tran command
 multidc
 simcmds
 
+!! commands.tex 032420
+!!KEYWORD
+vastep_cmd
+!!TITLE
+vastep command
+!!HTML 
+    command: <tt>vastep</tt>
+
+    <p>
+    This command has application when simulating a circuit containing
+    a <a href=".verilog">Verilog block</a>, and the option <a
+    href="vastep"><tt>vastep</tt></a> has been set to 0.  In this
+    case, a call to this command will advance the Verilog
+    simulation to the next clock tick.  This function can be called
+    from a callback initiated from a <a
+    href=".stop"><tt>.stop</tt></a> line, used when co-simulating
+    Verilog and SPICE.
+
+!!SEEALSO
+simcmds
+verilog
+
 !! commands.tex 012209
 !!KEYWORD
 where
@@ -5769,6 +5836,8 @@ Data Manipulation Commands
       <td>Undefine macro function</td></tr>
     <tr><td><a href="unlet"><b>unlet</b></a></td>
       <td>Undefine vector</td></tr>
+    <tr><td><a href="vastep_cmd"><b>vastep</b></a></td>
+      <td>Advance Verilog simulator</td></tr>
     </table>
 
 !!SEEALSO

@@ -1,7 +1,7 @@
 \chapter{{\WRspice} Commands}
 \label{commands}
 
-% spCommands.hlp:commands 032120
+% spCommands.hlp:commands 032420
 
 When a line is entered, it is interpreted as one of several things. 
 First, it may be an alias, in which case the line is replaced with the
@@ -117,6 +117,7 @@ The following table lists all built-in commands understood by
 \cb tf & Initiate transfer function analysis\\ \hline
 \cb trace & Set trace\\ \hline
 \cb tran & Initiate transient analysis\\ \hline
+\cb vastep & Advance Verilog simulator\\ \hline
 \cb where & Print nonconvergence information\\ \hline
 \hline
 \multicolumn{2}{|c|}{\bf Data Manipulation Commands}\\ \hline
@@ -1880,7 +1881,7 @@ See \ref{textedit} for more information about the text editor.
 \section{Simulation Control Commands}
 \label{simcmds}
 
-% spCommands.hlp:simcmds 032120
+% spCommands.hlp:simcmds 032420
 
 The commands described in this section initiate, control, and monitor
 {\WRspice} simulations.  One can monitor the progress of a run in two
@@ -1992,6 +1993,7 @@ is used.
 \cb tf & Initiate transfer function analysis\\ \hline
 \cb trace & Set trace\\ \hline
 \cb tran & Initiate transient analysis\\ \hline
+\cb vastep & Advance Verilog simulator\\ \hline
 \cb where & Print nonconvergence information\\ \hline
 \end{tabular}
 
@@ -2154,7 +2156,7 @@ This will clear all data from the cache.
 \index{check command}
 \label{checkcom}
 
-% spCommands.hlp:check 030419
+% spCommands.hlp:check 032520
 
 The {\cb check} command is used to initiate margin analysis.  Margin
 analysis can consist of either a swept operating range analysis, or
@@ -2482,6 +2484,24 @@ the string will take on the functionality of the assigned-to variable.
 For example, if {\vt set value1 = L1} is given, the variable {\vt L1}
 is used to pass trial parameter 1 values to the circuit (references
 are {\vt \$L1}).
+
+Instead of using shell substitution and the {\vt value1}/{\vt value2}
+variables to set varying circuit parameters, one can use an internal
+parameter passing method which is probably more efficient.
+ 
+The form, given before the analysis,
+\begin{quote}
+{\vt set value1="\%}{\it devicelist\/}{\vt ,}{\it paramlist\/}{\vt "}
+\end{quote}
+sets up a direct push into the named {\it parameters} of listed {\it
+devices}, avoiding shell expansion and vectors.  Note that the list
+must follow a magic `{\vt \%}' character, which tells the system to
+use the {\it devlist\/},{\it paramlist} syntax, as used in the {\cb
+sweep} command (see \ref{psetting}).
+
+The {\vt jjoprng2.cir} file in the examples illustrates use of this
+syntax.
+
 \end{description}
 
 The {\et checkVAL1}, {\et checkDEL1}, etc.  vectors used must be
@@ -3040,13 +3060,23 @@ arguments.
 \subsection{\spcmd{mctrial}}
 \index{mctrial command}
 
-% spCommands.hlp:mctrial 030219
+% spCommands.hlp:mctrial 032520
 
 This is a cCommand to run a single trial for used when when performing
 script-driven Monte Carlo analysis.
 \begin{quote}\vt
 mctrial
 \end{quote}
+
+This can run only when a Monte Carlo analysis mode has been initiated
+with the {\cb check} command, generally by giving the ``{\vt -b}'' and
+``{\vt -m}'' options.  Any number of the {\cb mctrial} commands can be
+given, as well as other commands such as {\cb findrange}.  When
+finished the {\cb check} command should be given with the ``{\vt -c}''
+option to terminate the mode and free internal memory.
+
+A usage example can be found in the examples:  {\vt
+JJexamples/nor\_mc.cir}.
 
 %SU-------------------------------------
 \subsection{\spcmd{measure}}
@@ -4063,7 +4093,7 @@ circuits.  This is the same effect as a {\vt .stop} line.
 \index{sweep command}
 \index{loop command}
 
-% spCommands.hlp:sweep 120215
+% spCommands.hlp:sweep 032520
 
 The {\cb sweep} command, which for historical compatibility is also
 available as ``{\cb loop}'', is used to perform a simulation analysis
@@ -4242,6 +4272,7 @@ increments.
 \end{enumerate}
 
 \subsubsection{Explicit parameter setting}
+\label{psetting}
 
 If parameters specifications ({\it pstr1} and {\it pstr2\/}) are
 given, there is no variable or vector setting.  Instead, the indicated
@@ -4348,6 +4379,19 @@ specification follows, the transient analysis is performed at each
 sweep point.
 
 %SU-------------------------------------
+\subsection{\spcmd{vastep}}
+\index{vastep command}
+
+% spCommands.hlp:vastep 032420
+
+This command has application when simulating a circuit containing
+Verilog block, and the option {\cb vastep} has been set to 0.  In this
+case, a call to this command will advance the Verilog simulation to
+the next clock tick.  This function can be called from a callback
+initiated from a {\vt .stop} line, used when co-simulating Verilog and
+SPICE.
+
+%SU-------------------------------------
 \subsection{\spcmd{where}}
 \index{where command}
 
@@ -4401,6 +4445,7 @@ used in expressions.  They can be deleted with the {\cb unlet} command.
 \cb spec & Perform spectral analysis\\ \hline
 \cb undefine & Undefine macro function\\ \hline
 \cb unlet & Undefine vector\\ \hline
+\cb vastep & Advance Verilog simulator\\ \hline
 \end{tabular}
 
 %SU-------------------------------------

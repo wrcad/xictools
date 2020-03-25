@@ -4309,7 +4309,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 \subsection{Josephson Junctions}
 \index{Josephson junction instance}
 
-% spElements.hlp:jj 060119
+% spElements.hlp:jj 032520
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
@@ -4321,6 +4321,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
   other values, effectively modifying the junction area.\\ \hline
 {\vt ics=}{\it val} & Instantiated critical current, used as scale factor
   for capacitance, conductances.\\ \hline
+{\vt temp=}{\it val} & Device temperature, Kelvin.\\ \hline
 {\vt lser=}{\it val} & Junction series parasitic inductance. \\ \hline
 {\vt lsh=}{\it val} & Shunt resistor series parasitic inductance. \\ \hline
 {\vt ic=}{\it vj\/},{\it phi} & The initial junction voltage and phase
@@ -4385,12 +4386,18 @@ is something nice, like the historical 1mA, and unchanging.  If not
 specified and {\vt ics} is not given, the effective value is 1.0.
 
 \item{\vt ics}\\
-{\bf range:} 0.05*{\vt icrit} -- 20.0*{\vt icrit}\\
+{\bf range:} 0.02*{\vt icrit} -- 50.0*{\vt icrit}\\
 This gives the actual critical current of the instantiated junction,
 and in addition scales all conductance and capacitance values from the
 reference junction appropriately.  This is equivalent to giving the
 {\vt area} parameter with a value of {\vt ics}/{\vt icrit}.  The
 default is {\vt icrit}, the reference junction critical current.
+
+\item{\vt temp}\\
+{\bf range:} 0.0 -- 0.95*{\vt tc}\\
+This is the assumed operating temperature of the device, in Kelvin. 
+The default is the model {\vt temp} value.  See the model description
+for more information about temperature modeling.
 
 \item{\vt lser}\\
 {\bf range:} 0.0 -- 10.0pH\\
@@ -4629,7 +4636,7 @@ See the Josephson junction model description for more information.
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 060119
+% spModels.hlp:jjmodel 032520
 
 {\cb Type Name:} {\vt jj}
 
@@ -4682,6 +4689,8 @@ when formulating instance capacitance and conductances.
 \hline
 {\vt icfct} or {\vt icfact} & & \rr Ratio of critical to gap currents & - & ${\pi}/4$\\
 \hline
+\vt force & & \rr Don't check conductances & & 0\\
+\hline
 \vt vshunt & & \rr Voltage to specify fixed shunt resistance & $V$ & 0.0\\
 \hline
 \vt lsh0 & & \rr Shunt resistor series inductance, constant part & $H$ & 0.0\\
@@ -4691,6 +4700,14 @@ when formulating instance capacitance and conductances.
 \vt tsfactor & & \rr Time step phase change limit & & ${\vt dphimax}/2\pi$\\
 \hline
 \vt tsaccel & & \rr time step accelerator & & 1.0\\
+\hline
+\vt tc & & \rr superconducting transition temperature & $K$ & 9.26\\
+\hline
+\vt tnom & & \rr model reference temperature & $K$ & 4.2\\
+\hline
+\vt temp & & \rr operating temperature & $K$ & \vt tnom\\
+\hline
+\vt tcfct & & \rr temperature dependence fitting parameter & & 1.74\\
 \hline
 \vt vdbpak & & \rr dropback voltage (read only) & &\\
 \hline
@@ -4767,8 +4784,8 @@ mode.  For example, the controlling current can be translated from a
 circuit voltage representing temperature with an external nonlinear
 source.  The functional dependence is in general a complicated
 function, but a reasonable approximation is $1 - (T/T_c)^4$.  See the
-examples for an example input file ({\vt ex8.cir}) which illustrates
-{\vt rtype=4}.
+examples (\ref{examples}) for an example input file ({\vt ex10.cir})
+which illustrates {\vt rtype=4}.
 
 It is currently not possible to use other than the piecewise linear
 model with temperature variation.  If {\vt rtype=4}, then legal values
@@ -4954,6 +4971,13 @@ quasiparticle step height.  Theory provides the default value of
 $\pi/4$ which is usually adequately close.  Characterization of
 fabricated junctions would provide an improved number.
 
+\item{\vt force}\\
+{\bf range:} 0 or 1\\
+If this flag is set, then the only range test applied to subgap and
+above gap resistance values is that they be larger than zero.  This
+affects the parameters that set the quasiparticle branch conductance
+values, any input other than a short circuit is allowed.
+
 \item{\vt vshunt}\\
 {\bf range:} 0.0 -- 2.0mV\\
 This parameter is unique in that it does not describe an as-fabricated
@@ -5017,6 +5041,58 @@ proportional to voltages above this value.
 
 Experimentation suggests that a value of 2.5 is a good choice for RSFQ
 circuits, your results may vary.
+
+\item{\vt tc}\\
+{\bf range:} 0.1K -- 280K\\
+This is the transition temperature of the material used in the
+Josephson junction.  We assume that both junction electrodes use the
+same material.  The default value is 9.26K, the transition temperature
+of niobium.
+
+\item{\vt tnom}\\
+{\bf range:} 0.0K -- 0.95*{\vt tc}\\
+This is the temperature at which all model parameters are measured. 
+The default is 4.2K, the boiling point of liquid helium.
+
+\item{\vt temp}\\
+{\bf range:} 0.0K -- 0.95*{\vt tc}\\
+This is the default operating temperature of instances of the model,
+which can be overridden on a per-instance basis by specifying the
+instance parameter of the same name.  The default is the {\vt tnom}
+value.  value.
+
+{\vt tcfct}\\
+{\bf range:} 1.5 -- 2.5\\
+The model utilizes a BCS interpolation formula to represent
+temperature variation of the gap parameter of the superconductor, with
+the current restriction that the same superconductor (and gap
+parameter) appears on either side of the barrier.
+
+\begin{quote}
+$\Delta = \Delta_0 tanh(tcfct\sqrt(tc/T-1))$
+\end{quote}
+Reference: {\vt https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap}
+
+Here, $\Delta$ is the gap parameter, with the subscript indicating the
+value at temperature T=0.  The {\vt tcfct} parameter is
+semi-empirical, commonly cited as 1.74, which is the default value. 
+It is taken that the junction gap voltage and critical current are
+directly proportional to the gap parameter.  The quasiparticle
+resistance is assumed invariant with temperature, which should be true
+for the low temperatures of interest.
+
+In order to apply temperature correction one takes the assumption that
+parameters for the reference junction are measured at nominal
+temperature {\vt tnom}, and we therefor have
+
+\begin{quote}
+$\Delta_nom = \Delta_0 tanh(tcfct\sqrt(tc/tnom-1))$
+\end{quote}
+
+The correction factor, which will multiply device critical current and
+gap voltage, is the ratio $\Delta/\Delta_num$.  This is applied, in
+addition to area scaling, when extrapolating device parameters from
+reference junction parameters.
 
 \item{\vt vdpbak} (read only)\\
 This parameter returns the computed value of the dropback voltage,

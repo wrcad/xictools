@@ -312,6 +312,7 @@ docs measure mathfuncs measfuncs
     "expr[=expr]".  E.g., stop at 30p+2p ...  now acts sensibly.
 
 * Verilog co-simulation capability.
+docs verilog vastep vastep_cmd
 
     It is now possible to run the internal digital Verilog simulator
     while running an analog SPICE simulation.  The digital result can
@@ -337,7 +338,7 @@ docs measure mathfuncs measfuncs
         N is an integer:
         0  The Verilog simulation is advanced by calling the vastep
            command, likely through a callback function called from
-           .measure or .stop.
+           a .stop line.
         1  (the default)  the original advancing mechanism.  Advance
            Verilog at each transient time step.
         X  Otherwise, advance after X transient time steps. 
@@ -348,6 +349,7 @@ docs measure mathfuncs measfuncs
         the next tick.  The command accepts no arguments.
 
 * Monte Carlo and operating range analysis changes.
+docs check oprng_analysis findrange mctrial
 
     Instead of using shell substitution and the value1/value2 variables
     to set varying circuit parameters, one can use an internal parameter
@@ -357,10 +359,10 @@ docs measure mathfuncs measfuncs
 
         set value1="%devicelist,paramlist"
 
-    sets up a direct push into the named device/parameters, avoiding
-    shell expansion and vectors.  Note that the list must follow a
-    magic '%' character, which tells the system to use the
-    devlist,paramlist (as for sweep command) syntax.
+    sets up a direct push into the named parameters of listed devices,
+    avoiding shell expansion and vectors.  Note that the list must
+    follow a magic '%' character, which tells the system to use the
+    devlist,paramlist syntax, as used in the sweep command.
 
     The new jjoprng2.cir example illustrates use of this syntax.
 
@@ -428,6 +430,7 @@ docs expressions .if param codeblock
     @parmname syntax.
 
 * Updates to the Josephson junction and TJM device models.
+docs jj jjmodel
 
     The ICS parameter range was widened to [ICRIT/50:ICRIT*50] from
     [ICRIT/20:ICRIT*20] in the internal JJ/TJM and Verilog models.  A
@@ -446,8 +449,10 @@ docs expressions .if param codeblock
     Added temperature dependence to the JJ model, with new model
     parameters TC, TNOM, TEMP, TCFCT, and a new instance parameter
     TEMP.  This applies to internal and VA models.
+temp,tnom max is now 0.95*tc
 
 * Miscellaneous changes.
+docs plotvec options rusage
 
     Updated the jjpulse.cir example to cope with steptype=nousertp and
     the combine command.  This wasn't working due to JJ model change.
@@ -459,7 +464,6 @@ docs expressions .if param codeblock
     The combine command now prints a more detailed error message.
 
     Added new special vectors:
-docs plotvec options rusage
         @maxdelta               : The maximum allowed timestep in
                                   transient analysis.
         @tstep, @tstop, @tstart : Transient analysis parameters.

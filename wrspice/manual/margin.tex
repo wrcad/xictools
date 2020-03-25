@@ -27,7 +27,7 @@ automated.
 \index{operating range analysis}
 \label{oprange}
 
-% spOpRangeAnal.hlp:oprng_analysis 030919
+% spOpRangeAnal.hlp:oprng_analysis 032520
 
 In operating range analysis, a suitably configured source file
 containing a circuit description is evaluated over a two dimensional
@@ -248,6 +248,24 @@ SPICE deck should reference these variables (as {\vt \$value1} and
 vector} {\et value} array can be used for this purpose.  These
 variables can be used in Monte Carlo analysis, but are not set
 implicitly.
+
+Instead of using shell substitution and the {\vt value1}/{\vt value2}
+variables to set varying circuit parameters, one can use an internal
+parameter passing method which is probably more efficient.
+ 
+The form, given before the analysis,
+\begin{quote}
+{\vt set value1="\%}{\it devicelist\/}{\vt ,}{\it paramlist\/}{\vt "}
+\end{quote}
+sets up a direct push into the named {\it parameters} of listed {\it
+devices}, avoiding shell expansion and vectors.  Note that the list
+must follow a magic `{\vt \%}' character, which tells the system to
+use the {\it devlist\/},{\it paramlist} syntax, as used in the {\cb
+sweep} command (see \ref{psetting}).
+
+The {\vt jjoprng2.cir} file in the examples illustrates use of this
+syntax.
+
 \end{description}
 
 If any of the shell variables {\et value1}, {\et value2}, or a {\it

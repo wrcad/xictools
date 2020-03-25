@@ -55,7 +55,7 @@ monte
 atomic
 optimize
 
-!! margin.tex 030919
+!! margin.tex 032520
 !!KEYWORD
 oprng_analysis
 !!TITLE
@@ -294,6 +294,28 @@ Operating Range Analysis
     Alternatively, the vector <tt>value</tt> array can be used for
     this purpose.  These variables can be used in Monte Carlo
     analysis, but are not set implicitly.
+
+    <p>
+    Instead of using shell substitution and the
+    <tt>value1</tt>/<tt>value2</tt> variables to set varying circuit
+    parameters, one can use an internal parameter passing method
+    which is probably more efficient.
+
+    <p>
+    The form, given before the analysis,
+    <blockquote>
+    <tt>set value1="%</tt><i>devicelist</i><tt>,</tt><i>paramlist</i><tt>"</tt>
+    </blockquote>
+
+    sets up a direct push into the named <i>parameters</i> of listed
+    <i>devices</i>, avoiding shell expansion and vectors.  Note that
+    the list must follow a magic '<tt>%</tt>' character, which tells
+    the system to use the <i>devlist</i>,<i>paramlist</i> syntax, as
+    used in the <a href="psetting"><b>sweep</b></a> command.
+
+    <p>
+    The <tt>jjoprng2.cir</tt> file in the examples illustrates use
+    of this syntax.
     </dl>
 
     <p>

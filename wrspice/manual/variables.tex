@@ -1798,6 +1798,30 @@ as given.
 \bf Default & \bf Min Value & \bf Max Value & \bf Set From\\ \hline
 0 & -1 & 20 & \bf Simulation Options/Convergence\\ \hline
 \end{tabular}
+
+% 032420
+\index{vastep variable}
+\item{\et vastep}\\
+This option applies when a {\vt .verilog} block is present, and the
+Verilog simulation is run in parallel with transient analysis. 
+Precisely how this occurs is controlled by this option.  The value is
+an unsigned integer.
+
+\begin{description}
+\item{0}\\
+The Verilog simulation is advanced by calling the {\cb vastep}
+command, likely through a callback function called from a {\vt .stop}
+line.
+
+\item{1} (the default)\\
+The Verilog simulation is advanced at each transient analysis
+time step.
+
+\item{\it X} (positive integer greater than 1)\\
+The Verilog simulation is advanced after {\it X} transient time
+steps.
+\end{description}
+
 \end{description}
 
 %-------------

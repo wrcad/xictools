@@ -408,6 +408,7 @@ unused_vars
 !!REDIRECT loopthrds    sim_vars#loopthrds
 !!REDIRECT maxord       sim_vars#maxord
 !!REDIRECT srcsteps     sim_vars#srcsteps
+!!REDIRECT vastep       sim_vars#vastep
 
 !! booleans
 !!REDIRECT dcoddstep    sim_vars#dcoddstep
@@ -1292,6 +1293,33 @@ Simulation Option Variables
     <tr><td>0</td> <td>-1</td> <td>20</td>
       <th>Simulation Options/Convergence</th></tr>
     </table>
+    </dl>
+
+!! 032420
+    <a name="vastep"></a>
+    <dl>
+    <dt><tt>vastep</tt><dd>
+    This option applies when a <a href=".verilog"><tt>.verilog</tt></a>
+    block is present, and
+    the Verilog simulation is run in parallel with transient analysis. 
+    Precisely how this occurs is controlled by this option.
+    The value is an unsigned integer.
+
+    <dl>
+    <dt>0<dd>
+    The Verilog simulation is advanced by calling the <a
+    href="vastep_cmd"><b>vastep</b></a> command, likely through a
+    callback function called from a <a href=".stop"><tt>.stop</b></a>
+    line.
+    </dl><dl>
+    <dt>1</tt> (the default)<dd>
+    The Verilog simulation is advanced at each transient analysis
+    time step.
+    </dl><dl>
+    <dt><i>X</i> (positive integer greater than 1)<dd>
+    The Verilog simulation is advanced after <i>X</i> transient time
+    steps.
+    </dl>
     </dl>
 
     <h3>Boolean Parameters</h3>

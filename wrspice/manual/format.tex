@@ -1302,7 +1302,7 @@ if a {\vt .else} line follows, the lines following {\vt .else} to {\vt
 similar to the C preprocessor.
 
 This filtering is performed early in the parsing of the file, so that
-the {\vt .if}, etc.  lines can enclose script lines, verilog blocks,
+the {\vt .if}, etc.  lines can enclose script lines, Verilog blocks,
 etc., and not simply circuit lines.  The lines not in scope are never
 saved in memory.
 
@@ -3129,13 +3129,15 @@ lines are given.
 %------------------------------------------------------------------------------
 \section{Verilog Interface}
 
-% spInput.hlp:verilog 012509
+% spInput.hlp:verilog 032420
 
 {\WRspice} contains a built-in Verilog parser/simulator.  Verilog is a
 popular hardware description language for digital logic circuits.  The
 integration of Verilog with SPICE provides a wealth of new capability:
 \begin{itemize}
 \item{Direct support for analog/digital mixed-mode simulations.}
+\item{The ability to co-simulate in digital and anallog domains,
+possibly using the digital result to validate the SPICE simulation.}
 \item{The ability to create simulation control automation in a
         Verilog block.}
 \item{The ability to create measurement automation in a Verilog
@@ -3151,17 +3153,55 @@ integration of Verilog with SPICE provides a wealth of new capability:
 \index{.endv line}
 \index{Verilog blocks}
 In {\WRspice}, all Verilog code is placed into a block of statements
-starting with a {\vt .verilog} line and ending with a {\vt .endv}
-line.  The Verilog block defines the modules of a hierarchy, including
-a top-level ``stimulus'' module.  The Verilog simulation is run in
-parallel with transient analysis, where each user time increment
-corresponds to one unit of Verilog time.  The simulation is performed
-as if {\et steptype} is set to {\vt hitusertp}, i.e., simulation is
-performed at each user time point.  The Verilog simulation occurs
-before the SPICE iterations at the time point.  Signals are passed to
-the Verilog block with {\vt .adc} statements, and signals from the
-Verilog block are accessed through referencing voltage or current
-sources.
+starting with a line in the form
+\begin{quote}
+{\vt .verilog} {\it gatedly} {\it dbgflags}
+\end{quote}
+and ending with a {\vt .endv} line.  The {\it gatedly} is a word
+starting with `{\vt s}' or `{\vt f}' (case insensitive), any other
+word is ignored.  This specifies use of slow, fast, or typical gate
+delays.  If no such word appears, the default is typical.  The {\it
+dbgflags} is a hex integer in C format ({\vt 0x}{\it nnnn\/}) where
+the {\it nnnn} is a hex number using digits {\vt 0--f}.  The set bits
+in this number correspond to the debugging flags as would be supplied
+in the {\vt -d} option to the Whiteley Research {\it VL} Verilog
+simulator.  See the {\it VL} documentation for information about the
+available flags.  This feature is unlikely to be useful for most
+users.
+
+The lines within Verilog block define the modules of a hierarchy,
+including a top-level ``stimulus'' module.  This is ordinary Verilog
+syntax, using the subset of the complete language description that is
+supported by the {\it VL} simulator.
+
+The Verilog simulation is run in parallel with transient analysis. 
+Precisely how this occurs is controlled by the {\et vastep} option. 
+This can be supplied on a {\vt .options} line, or set as a variable
+before the simulation is run.  The value is an unsigned integer.
+\begin{description}
+\item{0}\\
+The Verilog simulation is advanced by calling the {\cb vastep}
+command, likely through a callback function called from a {\vt .stop}
+line.
+
+\item{1 (the default)}\\
+The Verilog simulation is advanced at each transient analysis time
+step.
+
+\item{\it X} (positive integer greater than 1)\\
+The Verilog simulation is advanced after {\it X} transient time steps.
+\end{description}
+
+When {\vt vastep} is not zero, the Verilog is actually advanced at the
+first time step where the simulation time is equal to or larger than
+the specified time.  If {\vt vastep} is zero, the Verilog advancement
+occurs when the {\cb vastep} command is run, which if called from a
+callback will execute at the current time point.  In both cases
+Verilog is advanced after SPICE has converged at the point.
+
+Signals are passed to the Verilog block with {\vt .adc} statements,
+and signals from the Verilog block are accessed through referencing
+voltage or current sources.
 
 Output signals from the Verilog block are obtained through voltage or
 current sources in the circuit.  The voltage/current source must refer
@@ -3175,8 +3215,10 @@ A good primer on Verilog is:  Samir Palnitkar, {\it Verilog HDL, A
 Guide to Digital Design and Synthesis}, SunSoft Press (Prentice Hall)
 ISBN 0-13-451675-3.  The full story is in IEEE Standard 1364-1995.
 
-An example input file that uses a {\vt .verilog} block is given
-in \ref{examples}.
+An example input file that uses a {\vt .verilog} block ({\vt ex8}) is
+given in \ref{examples}.  Other examples including {\vt prbs.cir} and
+{\vt nor\_vamc.cir} are provided with {\WRspice}.
+
 
 %----------------------------------------------------
 \subsection{{\vt .adc} Line}
