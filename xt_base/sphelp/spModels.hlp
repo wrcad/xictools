@@ -2081,7 +2081,7 @@ MOSFET Models
 !!SEEALSO
 .model
 
-!! elements.tex 060119
+!! elements.tex 032520
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -2162,6 +2162,9 @@ Josephson Models
     <tr><td><tt>icfct</tt> or <tt>icfact</tt></td> <td>&nbsp;</td>
         <td>ratio of critical to gap currents</td>
         <td>-</td>      <td>pi/4</td></tr>
+    <tr><td><tt>force</tt></td> <td>&nbsp;</td>
+        <td>don't check conductances</td>
+        <td>-</td>      <td>0</td></tr>
     <tr><td><tt>vshunt</tt></td> <td>&nbsp;</td>
         <td>voltage to specify fixed shunt resistance</td>
         <td>V</td>      <td>0.0</td></tr>
@@ -2177,6 +2180,18 @@ Josephson Models
     <tr><td><tt>tsaccel</tt></td> <td>&nbsp;</td>
         <td>time step accelerator</td>
         <td>V</td>      <td><tt>1.0</tt></td></tr>
+    <tr><td><tt>tc</tt></td> <td>&nbsp;</td>
+        <td>superconducting transition temperature</td>
+        <td>K</td>      <td><tt>9.26</tt></td></tr>
+    <tr><td><tt>tnom</tt></td> <td>&nbsp;</td>
+        <td>model reference temperature</td>
+        <td>K</td>      <td><tt>4.2</tt></td></tr>
+    <tr><td><tt>temp</tt></td> <td>&nbsp;</td>
+        <td>operating temperature</td>
+        <td>K</td>      <td><tt>tnom</tt></td></tr>
+    <tr><td><tt>tcfct</tt></td> <td>&nbsp;</td>
+        <td>temperature dependence fitting parameter</td>
+        <td></td>      <td><tt>1.74</tt></td></tr>
     <tr><td><tt>vdpbak</tt></td> <td>&nbsp;</td>
         <td>dropback voltage (read only)</td>
         <td>V</td>      <td></td></tr>
@@ -2191,6 +2206,7 @@ Josephson Models
 
     <dl>
     <dt><tt>level</tt><dd>
+
     This specifies the model to use.  There are three choices provided
     in <i>WRspice</i>.  Level 1 (the default) in the internal RSJ
     model, and level 2 indicates the Verilog-A example RSJ model,
@@ -2266,8 +2282,8 @@ Josephson Models
     external nonlinear source.  The functional dependence is in
     general a complicated function, but a reasonable approximation is
     1 - (T/T<sub>c</sub>)<sup>4</sup>.  See the examples for an
-    example input file (<tt>ex8.cir</tt>) which illustrates
-    <tt>rtype</tt>=4.
+    example input file (<a href="ex10"><tt>ex10.cir</tt></a>) which
+    illustrates <tt>rtype</tt>=4.
 
     <p>
     It is currently not possible to use other than the piecewise
@@ -2495,6 +2511,16 @@ Josephson Models
     </dl>
 
     <dl>
+    <dt><tt>force</tt><dd>
+    <b>range:</b> 0 or 1<br>
+    If this flag is set, then the only range test applied to subgap
+    and above gap resistance values is that they be larger than zero. 
+    This affects the parameters that set the quasiparticle branch
+    conductance values, any input other than a short circuit is
+    allowed.
+    </dl>
+
+    <dl>
     <dt><tt>vshunt</tt><dd>
     <b>range:</b> 0.0 - 2.0mV<br>
     This parameter is unique in that it does not describe an
@@ -2570,6 +2596,71 @@ Josephson Models
     <p>
     Experimentation suggests that a value of 2.5 is a good choice for
     RSFQ circuits, your results may vary.
+    </dl>
+
+    <dl>
+    <dt><tt>tc</tt><dd>
+    <b>range:</b> 0.1K - 280.0K<br>
+    This is the transition temperature of the material used in the
+    Josephson junction.  We assume that both junction electrodes use
+    the same material.  The default value is 9.26K, the transition
+    temperature of niobium.
+    </dl>
+
+    <dl>
+    <dt><tt>tnom</tt><dd>
+    <b>range:</b> 0.0K - 0.95*<tt>tc</tt><br>
+    This is the temperature at which all model parameters are
+    measured.  The default is 4.2K, the boiling point of liquid
+    helium.
+    </dl>
+
+    <dl>
+    <dt><tt>temp</tt><dd>
+    <b>range:</b> 0.0K - 0.95*<tt>tc</tt><br>
+    This is the default operating temperature of instances of the
+    model, which can be overridden on a per-instance basis by
+    specifying the instance parameter of the same name.  The default
+    is the <tt>tnom</tt> value.  The Verilog-A example JJ model uses
+    "<tt>deftemp</tt>" for this parameter.
+    </dl>
+
+    <dl>
+    <dt><tt>tcfct</tt><dd>
+    <b>range:</b> 1.5 - 2.5<br>
+    The model utilizes a BCS interpolation formula to represent
+    temperature variation of the gap parameter of the superconductor,
+    with the current restriction that the same superconductor (and gap
+    parameter) appears on either side of the barrier.
+
+    <blockquote>
+    &Delta; = &Delta;<sub>0</sub> <i>tanh</i>(<tt>tcfct</tt>
+    &radic;(<tt>tc</tt>/T - 1))
+    </blockquote>
+    Reference: <tt>https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap</tt>
+
+    <p>
+    Here, &Delta; is the gap parameter, with the subscript indicating the
+    value at temperature T=0.  The <tt>tcfct</tt> parameter is semi-empirical,
+    commonly cited as 1.74, which is the default value.  It is taken that
+    the junction gap voltage and critical current are directly proportional
+    to the gap parameter.  The quasiparticle resistance is assumed invariant with temperature, which
+    should be true for the low temperatures of interest.
+
+    <p>
+    In order to apply temperature correction one takes the assumption
+    that parameters for the reference junction are measured at nominal
+    temperature <tt>tnom</tt>, and we therefor have
+
+    <blockquote>
+    &Delta;<sub>nom</sub> = &Delta;<sub>0</sub> <i>tanh</i>(<tt>tcfct</tt>
+    &radic;(<tt>tc</tt>/<tt>tnom</tt> - 1))
+    </blockquote>
+
+    The correction factor, which will multiply device critical current
+    and gap voltage, is the ratio &Delta;/&Delta;<sub>nom</sub>.  This
+    is applied, in addition to area scaling, when extrapolating device
+    parameters from reference junction parameters.
     </dl>
 
     <dl>

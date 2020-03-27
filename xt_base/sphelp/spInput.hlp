@@ -1174,7 +1174,7 @@ spinput
 !!REDIRECT .else        param#.if
 !!REDIRECT .endif       param#.if
 
-!! format.tex 032817
+!! format.tex 032320
 !!KEYWORD
 param
 !!TITLE
@@ -1394,6 +1394,12 @@ Parameters and Expressions
     are read-only, and attempts to redefine them will silently fail.
 
     <dl>
+    <dt><tt>WRSPICE_BATCH</tt><dd>
+    This parameter expands to 1 if <i>WRspice</i> is running in batch
+    mode, 0 otherwise.
+    </dl>
+
+    <dl>
     <dt><tt>WRSPICE_PROGRAM</tt><dd>
     The value of this parameter is set to 1.  This enables users to
     include <i>WRspice</i>-specific input in SPICE files, which will
@@ -1481,6 +1487,17 @@ Parameters and Expressions
     boundaries.
 
     <p>
+    The construct <tt>def</tt>(<i>paramname</i>) can be used in the
+    <i>expression</i>, where it is replaced by 1 or 0 if
+    <i>paramname</i> is defined or not.  Thus, one can define
+    parameters that have not been previously defined with
+    <blockquote><tt>
+    .if !def(myparam)<br>
+    .param myparam=2<br>
+    .endif
+    </tt></blockquote>
+
+    <p>
     If the single <i>expression</i> is nonzero, or the two expressions
     yield the same result, the lines following <tt>.if</tt> up to the
     matching <tt>.elif</tt>, <tt>.else</tt> or <tt>.endif</tt> are
@@ -1495,7 +1512,7 @@ Parameters and Expressions
 
     <p>
     This filtering is performed early in the parsing of the file, so
-    the <tt>.if</tt>, etc.  lines can enclose script lines, verilog
+    the <tt>.if</tt>, etc.  lines can enclose script lines, Verilog
     blocks, etc., and not simply circuit lines.  The lines not in
     scope are never saved in memory.
 
@@ -2562,7 +2579,7 @@ spinput
 !!REDIRECT .endv        verilog#.verilog
 !!REDIRECT .adc         verilog#.adc
 
-!! format.tex 012509
+!! format.tex 032420
 !!KEYWORD
 verilog
 !!TITLE
@@ -2575,6 +2592,10 @@ Verilog Interface
     <ul>
     <li>Direct support for analog/digital mixed-mode simulations.</ul>
     <ul>
+    <li>The ability to co-simulate in digital and anallog domains,
+    possibly using the digital result to validate the SPICE
+    simulation.</li>
+    <ul>
     <li>The ability to create simulation control automation in a
         Verilog block.</ul>
     <ul>
@@ -2586,25 +2607,72 @@ Verilog Interface
 
     <p>
     <a name=".verilog"></a>
-    <font size=+3><b><tt>.verilog</tt></b>, <b><tt>.endv</tt></b>
+    <font size=+3><b><tt>.verilog</tt></b> <b><tt>.endv</tt></b>
       <b>Lines</b></font>
     <p>
 
     <p>
     In <i>WRspice</i>, all Verilog code is placed into a block of
-    statements starting with a <tt>.verilog</tt> line and ending with
-    a <tt>.endv</tt> line.  The Verilog block defines the modules of a
-    hierarchy, including a top-level "stimulus" module.  The Verilog
-    simulation is run in parallel with transient analysis, where each
-    user time increment corresponds to one unit of Verilog time.  The
-    simulation is performed as if <a
-    href="steptype"><tt>steptype</tt></a> is set to
-    <tt>hitusertp</tt>, i.e., simulation is performed at each user
-    time point.  The verilog simulation occurs before the SPICE
-    iterations at the time point.  Signals are passed to the Verilog
-    block with <a href=".adc"><tt>.adc</tt></a> statements, and
-    signals from the Verilog block are accessed through referencing
-    voltage or current sources.
+    statements starting with a line in the form
+    <blockquote>
+    <tt>.verilog</tt> [<i>gatedly</i>] [<i>dbgflags</i>]
+    </blockquote>
+    and ending with a <tt>.endv</tt> line.  The <i>gatedly</i> is a
+    word starting with '<tt>s</tt>' or '<tt>f</tt>' (case
+    insensitive), any other word is ignored.  This specifies use of
+    slow, fast, or typical gate delays.  If no such word appears, the
+    default is typical.  The <i>dbgflags</i> is a hex integer in C
+    format (<tt>0x</tt><i>nnnn</i>) where the <i>nnnn</i> is a hex
+    number using digits <tt>0-f</tt>.  The set bits in this number
+    correspond to the debugging flags as would be supplied in the
+    <tt>-d</tt> option to the Whiteley Research <i>VL</i> Verilog
+    simulator.  See the <i>VL</i> documentation for information about
+    the available flags.  This feature is unlikely to be useful for
+    most users.
+
+    <p>
+    The lines within Verilog block define the modules of a hierarchy,
+    including a top-level "stimulus" module.  This is ordinary Verilog
+    syntax, using the subset of the complete language description that
+    is supported by the <i>VL</i> simulator.
+
+    <p>
+    The Verilog simulation is run in parallel with transient analysis. 
+    Precisely how this occurs is controlled by the <a
+    href="vastep"><tt>vastep</tt></a> option.  This can be supplied on
+    a <a href=".options"><tt>.options</tt></a> line, or <a
+    href="set"><b>set</b><a/> as a <a href="variables">variable</a>
+    before the simulation is run.  The value is an unsigned integer.
+    <dl>
+    <dt>0<dd>
+    The Verilog simulation is advanced by calling the <a
+    href="vastep_cmd"><b>vastep</b></a> command, likely through a
+    callback function called from a <a href=".stop"><tt>.stop</b></a>
+    line.
+    </dl><dl>
+    <dt>1</tt> (the default)<dd>
+    The Verilog simulation is advanced at each transient analysis
+    time step.
+    </dl><dl>
+    <dt><i>X</i> (positive integer greater than 1)<dd>
+    The Verilog simulation is advanced after <i>X</i> transient time
+    steps.
+    </dl>
+
+    <p>
+    When <tt>vastep</tt> is not zero, the Verilog is actually advanced
+    at the first time step where the simulation time is equal to or
+    larger than the specified time.  If <tt>vastep</tt> is zero, the
+    Verilog advancement occurs when the <b>vastep</b> command is run,
+    which if called from a callback will execute at the current time
+    point.  In both cases Verilog is advanced after SPICE has
+    converged at the point.
+
+    <p>
+    Signals are passed to the Verilog block with <a
+    href=".adc"><tt>.adc</tt></a> statements, and signals from the
+    Verilog block are accessed through referencing voltage or current
+    sources.
 
     <p>
     Output signals from the verilog block are obtained through voltage
@@ -2622,6 +2690,8 @@ Verilog Interface
 
     <p>
     An example of a Verilog circuit is provided <a href="ex8">here</a>.
+    Other examples including <tt>prbs.cir</tt> and <tt>nor_vamc.cir</tt>
+    are provided with <i>WRspice</i>.
 
     <p>
     <a name=".adc"></a>

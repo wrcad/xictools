@@ -818,139 +818,140 @@ substitution, etc.  From the user's perspective, there is no real
 distinction between ``options'' and ``variables''.  A complete
 description of each of these variables is provided in \ref{simvars}.
 
-\begin{longtable}{p{1in}p{4.75in}l}
-\bf Parameter Name & \bf Description\\[0.5ex]
-\multicolumn{2}{l}{\bf Real-Valued Parameters}\\
-{\vt abstol} & \rr The absolute current error tolerance of the program.&\\
+\begin{longtable}{|p{1in}|p{4.75in}l|}\hline
+\bf Parameter Name & \bf Description&\\ \hline
+\multicolumn{3}{|l}{ }\\
+\multicolumn{3}{|l}{\bf Real-Valued Parameters}\\ \hline
+{\vt abstol} & \rr The absolute current error tolerance of the program.&\\ \hline
 {\vt chgtol} & \rr The minimum charge used when computing the time step in
-  transient analysis.&\\
-{\vt dcmu} & \rr Mixing parameter to help dc convergence.&\\
-{\vt defad} & \rr The default value for MOS drain diffusion area.&\\
-{\vt defas} & \rr The default value for MOS source diffusion area.&\\
-{\vt defl} & \rr The value for MOS channel length.&\\
-{\vt defw} & \rr The value for MOS channel width.&\\
-{\vt delmin} & \rr The minimum time step allowed.&\\
-{\vt dphimax} & \rr The maximum allowed phase change per time step.&\\
-{\vt jjdphimax} & \rr An alias for {\vt dphimax}.&\\
-{\vt gmax} & \rr The maximum conductance allowed in circuit equations.&\\
-{\vt gmin} & \rr The minimum conductance allowed in circuit equations.&\\
-{\vt maxdata} & \rr Maximum output data size in kilobytes.&\\
-{\vt minbreak} & \rr The minimum time, in seconds, between breakpoints.&\\
+  transient analysis.&\\ \hline
+{\vt dcmu} & \rr Mixing parameter to help dc convergence.&\\ \hline
+{\vt defad} & \rr The default value for MOS drain diffusion area.&\\ \hline
+{\vt defas} & \rr The default value for MOS source diffusion area.&\\ \hline
+{\vt defl} & \rr The value for MOS channel length.&\\ \hline
+{\vt defw} & \rr The value for MOS channel width.&\\ \hline
+{\vt delmin} & \rr The minimum time step allowed.&\\ \hline
+{\vt dphimax} & \rr The maximum allowed phase change per time step.&\\ \hline
+{\vt jjdphimax} & \rr An alias for {\vt dphimax}.&\\ \hline
+{\vt gmax} & \rr The maximum conductance allowed in circuit equations.&\\ \hline
+{\vt gmin} & \rr The minimum conductance allowed in circuit equations.&\\ \hline
+{\vt maxdata} & \rr Maximum output data size in kilobytes.&\\ \hline
+{\vt minbreak} & \rr The minimum time, in seconds, between breakpoints.&\\ \hline
 {\vt pivrel} & \rr The relative ratio between the largest column entry and
-  an acceptable pivot value.&\\
+  an acceptable pivot value.&\\ \hline
 {\vt pivtol} & \rr The absolute minimum value for a matrix entry to be
-  accepted as a pivot.&\\
-{\vt rampup} & \rr Time to ramp up sources in transient analysis.&\\
-{\vt reltol} & \rr The relative error tolerance of the program.&\\
-{\vt temp} & \rr The assumed circuit operating temperature.&\\
-{\vt tnom} & \rr The nominal temperature for device model parameters.&\\
+  accepted as a pivot.&\\ \hline
+{\vt rampup} & \rr Time to ramp up sources in transient analysis.&\\ \hline
+{\vt reltol} & \rr The relative error tolerance of the program.&\\ \hline
+{\vt temp} & \rr The assumed circuit operating temperature.&\\ \hline
+{\vt tnom} & \rr The nominal temperature for device model parameters.&\\ \hline
 {\vt trapratio} & \rr The threshold for trapezoidal integration
-  convergence failure detection.&\\
+  convergence failure detection.&\\ \hline
 {\vt trtol} & \rr The transient time step prediction factor, the
-  approximate overestimation of the actual truncation error.&\\
-{\vt vntol} & \rr The absolute voltage error tolerance of the program.&\\
-{\vt xmu} & \rr The SPICE2 trapezoidal/Euler mixing parameter.&\\
-\\
+  approximate overestimation of the actual truncation error.&\\ \hline
+{\vt vntol} & \rr The absolute voltage error tolerance of the program.&\\ \hline
+{\vt xmu} & \rr The SPICE2 trapezoidal/Euler mixing parameter.&\\ \hline
 
-\multicolumn{2}{l}{\bf Read-Only Real-Valued Parameters}\\
-{\vt delta} & \rr Transient analysis internal time step.&\\
-{\vt fstart} & \rr AC analysis start frequency.&\\
-{\vt fstop} & \rr AC analysis end frequency.&\\
-{\vt maxdelta} & \rr Transient analysis maximum internal time step.&\\
-{\vt tstart} & \rr Transient analysis start output time.&\\
-{\vt tstep} & \rr Transient analysis print increment.&\\
-{\vt tstop} & \rr Transient analysis final time.&\\
-\\
+\multicolumn{3}{|l}{ }\\
+\multicolumn{3}{|l}{\bf Read-Only Real-Valued Parameters}\\ \hline
+{\vt delta} & \rr Transient analysis internal time step.&\\ \hline
+{\vt fstart} & \rr AC analysis start frequency.&\\ \hline
+{\vt fstop} & \rr AC analysis end frequency.&\\ \hline
+{\vt maxdelta} & \rr Transient analysis maximum internal time step.&\\ \hline
+{\vt tstart} & \rr Transient analysis start output time.&\\ \hline
+{\vt tstep} & \rr Transient analysis print increment.&\\ \hline
+{\vt tstop} & \rr Transient analysis final time.&\\ \hline
 
-\multicolumn{2}{l}{\bf Integer-Valued Parameters}\\
-{\vt bypass} & \rr Set to 0 to disable element computation bypassing.&\\
-{\vt fpemode} & \rr Set floating point error handling method (0--3).&\\
+\multicolumn{3}{|l}{ }\\
+\multicolumn{3}{|l}{\bf Integer-Valued Parameters}\\ \hline
+{\vt bypass} & \rr Set to 0 to disable element computation bypassing.&\\ \hline
+{\vt fpemode} & \rr Set floating point error handling method (0--3).&\\ \hline
 {\vt gminsteps} & \rr The number of increments to use for non-dynamic gmin
-  stepping.&\\
-{\vt interplev} & \rr The interpolation level used for scale data.&\\
-{\vt itl1} & \rr The dc operating pointiteration limit.&\\
-{\vt itl2} & \rr The dc transfer curve iteration limit.&\\
-{\vt itl2gmin} & \rr The iteration limit that applies during gmin stepping.&\\
-{\vt itl2src} & \rr The iteration limit that applies during source stepping.&\\
-{\vt itl4} & \rr The transient timepoint iteration limit.&\\
+  stepping.&\\ \hline
+{\vt interplev} & \rr The interpolation level used for scale data.&\\ \hline
+{\vt itl1} & \rr The dc operating pointiteration limit.&\\ \hline
+{\vt itl2} & \rr The dc transfer curve iteration limit.&\\ \hline
+{\vt itl2gmin} & \rr The iteration limit that applies during gmin stepping.&\\ \hline
+{\vt itl2src} & \rr The iteration limit that applies during source stepping.&\\ \hline
+{\vt itl4} & \rr The transient timepoint iteration limit.&\\ \hline
 {\vt loadthrds} & \rr The number of helper threads used for device
-  evaluation and matrix loading.&\\
+  evaluation and matrix loading.&\\ \hline
 {\vt loopthrds} & \rr The number of helper threads used when performing
-  repeated analysis.&\\
-{\vt maxord} & \rr The maximum integration order.&\\
+  repeated analysis.&\\ \hline
+{\vt maxord} & \rr The maximum integration order.&\\ \hline
 {\vt srcsteps} & \rr The number of increments to use for non-dynamic source
-  stepping.&\\
-{\vt itl6} & \rr An alias for {\vt srcsteps}.&\\
-{\vt vastep} & \rr Verilog time step mapping.&\\
-\\
+  stepping.&\\ \hline
+{\vt itl6} & \rr An alias for {\vt srcsteps}.&\\ \hline
+{\vt vastep} & \rr Verilog time step mapping.&\\ \hline
 
-\multicolumn{2}{l}{\bf Boolean Parameters}\\
-{\vt dcoddstep} & \rr Always include range end point in dc sweep.&\\
-{\vt extprec} & \rr Use extended precision when solving circuit equations.&\\
+\multicolumn{3}{|l}{ }\\
+\multicolumn{3}{|l}{\bf Boolean Parameters}\\ \hline
+{\vt dcoddstep} & \rr Always include range end point in dc sweep.&\\ \hline
+{\vt extprec} & \rr Use extended precision when solving circuit equations.&\\ \hline
 {\vt forcegmin} & \rr Enforce all nodes mave at least gmin conductivity to
-  ground.&\\
-{\vt gminfirst} & \rr Attempt gmin stepping before source stepping.&\\
-{\vt hspice} & \rr Suppress warnings from unsupported HSPICE input.&\\
+  ground.&\\ \hline
+{\vt gminfirst} & \rr Attempt gmin stepping before source stepping.&\\ \hline
+{\vt hspice} & \rr Suppress warnings from unsupported HSPICE input.&\\ \hline
 {\vt jaccel} & \rr Attempt to speed up Josephson junction transient
-  analysis.&\\
-{\vt noiter} & \rr Don't Newton iterate.&\\
-{\vt nojjtp} & \rr >Don't use Josephson junction time step limiting.&\\
-{\vt noklu} & \rr Don't use KLU sparse matrix solver, use SPICE3 Sparse.&\\
+  analysis.&\\ \hline
+{\vt noiter} & \rr Don't Newton iterate.&\\ \hline
+{\vt nojjtp} & \rr >Don't use Josephson junction time step limiting.&\\ \hline
+{\vt noklu} & \rr Don't use KLU sparse matrix solver, use SPICE3 Sparse.&\\ \hline
 {\vt nomatsort} & \rr With Sparse solver, don't sort elements for cache
-  locality.&\\
-{\vt noopiter} & \rr Skip initial dc convergence attempt.&\\
-{\vt nopmdc} & \rr Do not allow phase-mode DC analysis.&\\
+  locality.&\\ \hline
+{\vt noopiter} & \rr Skip initial dc convergence attempt.&\\ \hline
+{\vt nopmdc} & \rr Do not allow phase-mode DC analysis.&\\ \hline
 {\vt noshellopts} & \rr Ignore circuit variables not set in {\vt .options}
-  line.&\\
-{\vt oldlimit} & \rr Use SPICE2 voltage limiting.&\\
-{\vt oldsteplim} & \rr Use SPICE3/{\WRspice}-3 timestep limiting.&\\
-{\vt renumber} & \rr Renumber lines after subcircuit expansion.&\\
-{\vt savecurrent} & \rr Save device current special vectors.&\\
+  line.&\\ \hline
+{\vt oldlimit} & \rr Use SPICE2 voltage limiting.&\\ \hline
+{\vt oldsteplim} & \rr Use SPICE3/{\WRspice}-3 timestep limiting.&\\ \hline
+{\vt renumber} & \rr Renumber lines after subcircuit expansion.&\\ \hline
+{\vt savecurrent} & \rr Save device current special vectors.&\\ \hline
 {\vt spice3} & \rr Use the SPICE3 integration level control logic
-  in transient analysis.&\\
+  in transient analysis.&\\ \hline
 {\vt trapcheck} & \rr Perform trapezoidal integration convergence testing in
-  transient analysis.&\\
+  transient analysis.&\\ \hline
 {\vt trytocompact} & Enable compaction in LTRA (lossy transmission line)
-  model.&\\
+  model.&\\ \hline
 {\vt useadjoint} & \rr Create an adjoint matrix for BSIM device current
-  monitoring.&\\
+  monitoring.&\\ \hline
 {\vt translate} & \rr Map node numbers into matrix assuming nodes are not
-  compact.&\\
-\\
+  compact.&\\ \hline
 
-\multicolumn{2}{l}{\bf String Parameters}\\
+\multicolumn{3}{|l}{ }\\
+\multicolumn{3}{|l}{\bf String Parameters}\\ \hline
 {\vt method} & \rr Integration method: ``{\vt trap}'' (default) or
-  ``{\vt gear}''.&\\
+  ``{\vt gear}''.&\\ \hline
 {\vt optmerge} & \rr Options merging method: ``{\vt global}'' (default) or
-  ``{\vt local}'' or ``{\vt noshell}''.&\\
+  ``{\vt local}'' or ``{\vt noshell}''.&\\ \hline
 {\vt parhier} & \rr Parameter substitution precedence: ``{\vt global}''
-  (default) or ``{\vt local}''.&\\
+  (default) or ``{\vt local}''.&\\ \hline
 {\vt steptype} & \rr Time advancement method: ``{\vt interpolate}'' (default)
-  or ``{\vt hitusertp}'', ``{\vt nousertp}'', ``{\vt fixedstep}''.&\\
-\\
+  or ``{\vt hitusertp}'', ``{\vt nousertp}'', ``{\vt fixedstep}''.&\\ \hline
 
-\multicolumn{2}{l}{\bf Batch and Output Parameters}\\
-{\vt acct} & \rr Print accounting information in batch output.&\\
-{\vt dev} & \rr Print device list in batch output.&\\
-{\vt list} & \rr Print a listing of the input file in batch output.&\\
-{\vt mod} & \rr Print device model list in batch output.&\\
+\multicolumn{3}{|l}{ }\\
+\multicolumn{3}{|l}{\bf Batch and Output Parameters}\\ \hline
+{\vt acct} & \rr Print accounting information in batch output.&\\ \hline
+{\vt dev} & \rr Print device list in batch output.&\\ \hline
+{\vt list} & \rr Print a listing of the input file in batch output.&\\ \hline
+{\vt mod} & \rr Print device model list in batch output.&\\ \hline
 {\vt node} & \rr Print a tabulation of the operating point node voltages in
-  batch output.&\\
-{\vt nopage} & \rr Suppress page breaks in batch output.&\\
-{\vt numdgt} & \rr Number of significant digets printed in output.&\\
-{\vt opts} & \rr Print a summary of the specified options in batch output.&\\
-{\vt post} & \rr Give post-simulation option.&\\
-\\
+  batch output.&\\ \hline
+{\vt nopage} & \rr Suppress page breaks in batch output.&\\ \hline
+{\vt numdgt} & \rr Number of significant digets printed in output.&\\ \hline
+{\vt opts} & \rr Print a summary of the specified options in batch output.&\\ \hline
+{\vt post} & \rr Give post-simulation option.&\\ \hline
 
-\multicolumn{2}{l}{\bf Obsolete/Unsupported Parameters}\\
-{\vt cptime} & \rr Obsolete SPICE2 parameter.&\\
-{\vt itl3} & \rr Obsolete SPICE2 parameter.&\\
-{\vt itl5} & \rr Obsolete SPICE2 parameter.&\\
-{\vt limpts} & \rr Obsolete SPICE2 parameter.&\\
-{\vt limtim} & \rr Obsolete SPICE2 parameter.&\\
-{\vt lvlcod} & \rr Obsolete SPICE2 parameter.&\\
-{\vt lvltim} & \rr Obsolete SPICE2 parameter.&\\
-{\vt nomod} & \rr Obsolete SPICE2 parameter.&\\
+\multicolumn{3}{|l}{ }\\
+\multicolumn{3}{|l}{\bf Obsolete/Unsupported Parameters}\\ \hline
+{\vt cptime} & \rr Obsolete SPICE2 parameter.&\\ \hline
+{\vt itl3} & \rr Obsolete SPICE2 parameter.&\\ \hline
+{\vt itl5} & \rr Obsolete SPICE2 parameter.&\\ \hline
+{\vt limpts} & \rr Obsolete SPICE2 parameter.&\\ \hline
+{\vt limtim} & \rr Obsolete SPICE2 parameter.&\\ \hline
+{\vt lvlcod} & \rr Obsolete SPICE2 parameter.&\\ \hline
+{\vt lvltim} & \rr Obsolete SPICE2 parameter.&\\ \hline
+{\vt nomod} & \rr Obsolete SPICE2 parameter.&\\ \hline
 
 \end{longtable}
 
@@ -3136,6 +3137,7 @@ popular hardware description language for digital logic circuits.  The
 integration of Verilog with SPICE provides a wealth of new capability:
 \begin{itemize}
 \item{Direct support for analog/digital mixed-mode simulations.}
+
 \item{The ability to co-simulate in digital and anallog domains,
 possibly using the digital result to validate the SPICE simulation.}
 \item{The ability to create simulation control automation in a
@@ -3162,12 +3164,12 @@ starting with `{\vt s}' or `{\vt f}' (case insensitive), any other
 word is ignored.  This specifies use of slow, fast, or typical gate
 delays.  If no such word appears, the default is typical.  The {\it
 dbgflags} is a hex integer in C format ({\vt 0x}{\it nnnn\/}) where
-the {\it nnnn} is a hex number using digits {\vt 0--f}.  The set bits
-in this number correspond to the debugging flags as would be supplied
-in the {\vt -d} option to the Whiteley Research {\it VL} Verilog
-simulator.  See the {\it VL} documentation for information about the
-available flags.  This feature is unlikely to be useful for most
-users.
+the {\it nnnn} is a hex number using digits {\vt 0}--{\vt f}.  The set
+bits in this number correspond to the debugging flags as would be
+supplied in the {\vt -d} option to the Whiteley Research {\it VL}
+Verilog simulator.  See the {\it VL} documentation for information
+about the available flags.  This feature is unlikely to be useful for
+most users.
 
 The lines within Verilog block define the modules of a hierarchy,
 including a top-level ``stimulus'' module.  This is ordinary Verilog

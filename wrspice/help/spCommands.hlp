@@ -3430,7 +3430,9 @@ check command
       <i>devices</i>, avoiding shell expansion and vectors.  Note that
       the list must follow a magic '<tt>%</tt>' character, which tells
       the system to use the <i>devlist</i>,<i>paramlist</i> syntax, as
-      used in the <a href="psetting"><b>sweep</b></a> command.
+      used in the <a href="psetting"><b>sweep</b></a> command.  This
+      is equivalent to giving the <i>pstr1</i>, <i>pstr2</i> on the
+      command line.
 
       <p>
       The <tt>jjoprng2.cir</tt> file in the examples illustrates use
@@ -3986,7 +3988,7 @@ findrange command
     initiated with the <a href="check"><b>check</b></a> command,
     generally by giving the "<tt>-b</tt>" option.  Any number of the
     <b>findrange</b> commands or the variants can be given, as well as
-    other commands such as <a href="mctrial"><b>mcrtial</b></a>.  When
+    other commands such as <a href="mctrial"><b>mctrial</b></a>.  When
     finished the <b>check</b> command should be given with the
     "<tt>-c</tt>" option to terminate the mode and free internal
     memory.
@@ -4017,25 +4019,26 @@ findrange command
 
     <p>
     Each of the three functions can take parameter definitions and
-    range parameters, in the same syntax as supplied to the
-    <b>check</b> and <a href="sweep"><b>sweep</b></a> commands,
-    however only the starting parameter value is needed.  The
-    simulation must run correctly at the starting value.  The command
-    line may include one or two specifications.  Each specification
-    consists of an optional parameter specification string, followed
-    by the starting value.  The numbers will override the
-    <tt>checkVAL1</tt>, and <tt>checkVAL2</tt> vectors that may be in
-    effect.
+    range parameters, in the same syntax as supplied to the <a
+    href="check"><b>check</b></a> and <a href="sweep"><b>sweep</b></a>
+    commands, however only the starting parameter value is needed. 
+    The simulation must run correctly at the starting value.  The
+    command line may include one or two specifications.  Each
+    specification consists of an optional parameter specification
+    string, followed by the starting value.  The numbers will override
+    the <tt>checkVAL1</tt>, and <tt>checkVAL2</tt> vectors that may be
+    in effect.
 
     <p>
     The optional <i>pstr1</i> and <i>pstr2</i> strings take the same
-    format and significance as in the <a href="sweep"><b>sweep</b></a>
-    command.  See the description of that command for a description of
-    the format.  If a parameter specifier is given, the specified
-    device parameters will be altered directly, and the variables and
-    vectors normally used to pass values will <b>not</b> be set.  If
-    two parameters are being set, either both must be set using the
-    syntax above, or neither, the two methods can't be mixed.
+    format and significance as in the <a
+    href="psetting"><b>sweep</b></a> command.  See the description of
+    that command for a description of the format.  If a parameter
+    specifier is given, the specified device parameters will be
+    altered directly, and the variables and vectors normally used to
+    pass values will <b>not</b> be set.  If two parameters are being
+    set, either both must be set using the syntax above, or neither,
+    the two methods can't be mixed.
  
 !!SEEALSO
 simcmds
@@ -4123,8 +4126,8 @@ mctrial command
     command: <tt>mctrial</tt>
 
     <p>
-    This is a cCommand to run a single trial for use when when
-    performing script-driven Monte Carlo analysis.
+    This is a command to run a single trial for use when performing
+    script-driven Monte Carlo analysis.
  
     <p>
     This can run only when a Monte Carlo analysis mode has been
@@ -5853,8 +5856,8 @@ compose command
     <blockquote>
        <tt>compose</tt> <i>vecname</i> <tt>values</tt> <i>value</i> [...]<br>
        <tt>compose</tt> <i>vecname</i> <tt>pattern</tt> [<i>n1</i> [<i>n2</i>]]
-           <i>bstring</i> [<i>modifiers</i>] [...]
-       <tt>compose</tt> <i>vecname</i> <i>param</i> = <i>value</i> [...]<br>
+           <i>bstring</i> [<i>modifiers</i>] [...]<br>
+       <tt>compose</tt> <i>vecname</i> <i>param</i> = <i>value</i> [...]
     </blockquote>
 
     <p>
@@ -5869,7 +5872,7 @@ compose command
 
     <p>
     The pattern generation syntax given in the second form is as used
-    in <a href=pulse">pulse</a> source.  See the <a
+    in <a href="pulse">pulse</a> source.  See the <a
     href="pattern">reference</a> for a complete description of the
     <i>bstring</i> and <i>modifier</i> syntax and usage.  The optional
     preceding numbers <i>n1</i> and <i>n2</i> apply only when infinite

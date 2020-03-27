@@ -5059,9 +5059,10 @@ The default is 4.2K, the boiling point of liquid helium.
 This is the default operating temperature of instances of the model,
 which can be overridden on a per-instance basis by specifying the
 instance parameter of the same name.  The default is the {\vt tnom}
-value.  value.
+value.  The Verilog-A example JJ model uses ``{\vt deftemp}'' for this
+parameter.
 
-{\vt tcfct}\\
+\item{\vt tcfct}\\
 {\bf range:} 1.5 -- 2.5\\
 The model utilizes a BCS interpolation formula to represent
 temperature variation of the gap parameter of the superconductor, with
@@ -5071,7 +5072,8 @@ parameter) appears on either side of the barrier.
 \begin{quote}
 $\Delta = \Delta_0 tanh(tcfct\sqrt(tc/T-1))$
 \end{quote}
-Reference: {\vt https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap}
+Reference: {\vt https://physics.stackexchange.com/questions/192416/\\
+interpolation-formula-for-bcs-superconducting-gap}
 
 Here, $\Delta$ is the gap parameter, with the subscript indicating the
 value at temperature T=0.  The {\vt tcfct} parameter is
@@ -5086,11 +5088,11 @@ parameters for the reference junction are measured at nominal
 temperature {\vt tnom}, and we therefor have
 
 \begin{quote}
-$\Delta_nom = \Delta_0 tanh(tcfct\sqrt(tc/tnom-1))$
+$\Delta_{nom} = \Delta_0 tanh(tcfct\sqrt(tc/tnom-1))$
 \end{quote}
 
 The correction factor, which will multiply device critical current and
-gap voltage, is the ratio $\Delta/\Delta_num$.  This is applied, in
+gap voltage, is the ratio $\Delta/\Delta_{nom}$.  This is applied, in
 addition to area scaling, when extrapolating device parameters from
 reference junction parameters.
 

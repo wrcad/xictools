@@ -208,19 +208,19 @@ options
       <td>The SPICE2 trapezoidal/Euler mixing parameter.</td></tr>
 
     <tr><th colspan=2>Read-Only Real-Valued Parameters</th></tr>
-    <tr><td><a href="delta"><tt>delta</tt></a></td>
+    <tr><td><tt>delta</tt></td>
       <td>Transient analysis internal time step.</td></tr>
-    <tr><td><a href="fstart"><tt>fstart</tt></a></td>
+    <tr><td><tt>fstart</tt></td>
       <td>AC analysis start frequency.</td></tr>
-    <tr><td><a href="fstop"><tt>fstop</tt></a></td>
+    <tr><td><tt>fstop</tt></td>
       <td>AC analysis end frequency.</td></tr>
-    <tr><td><a href="maxdelta"><tt>maxdelta</tt></a></td>
+    <tr><td><tt>maxdelta</tt></td>
       <td>Transient analysis maximum internal time step.</td></tr>
-    <tr><td><a href="tstart"><tt>tstart</tt></a></td>
+    <tr><td><tt>tstart</tt></td>
       <td>Transient analysis start output time.</td></tr>
-    <tr><td><a href="tstep"><tt>tstep</tt></a></td>
+    <tr><td><tt>tstep</tt></td>
       <td>Transient analysis print increment.</td></tr>
-    <tr><td><a href="tstop"><tt>tstop</tt></a></td>
+    <tr><td><tt>tstop</tt></td>
       <td>Transient analysis final time.</td></tr>
 
     <tr><th colspan=2>Integer-Valued Parameters</th></tr>

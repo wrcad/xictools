@@ -240,6 +240,7 @@ CHANGES AND NEW FEATURES
 
 * Updates to findrange command.
 docs findrange
+ok
 
     New commands: findlower, findupper
         Same arguments and operation as findrange, but only the lower
@@ -267,6 +268,7 @@ docs findrange
 
 * New relational and logic operators in expressions.
 docs devexpr
+ok
 
     Added support for relational and logic operations in source
     expressions.  These are
@@ -287,6 +289,7 @@ docs devexpr
 
 * Updates to .measure and .stop directives.
 docs measure mathfuncs measfuncs
+ok
 
     New stop clause "repeat delta" where delta is a real number scale
     extent.  The exec and call function will be called at the first
@@ -313,6 +316,7 @@ docs measure mathfuncs measfuncs
 
 * Verilog co-simulation capability.
 docs verilog vastep vastep_cmd
+ok
 
     It is now possible to run the internal digital Verilog simulator
     while running an analog SPICE simulation.  The digital result can
@@ -350,6 +354,7 @@ docs verilog vastep vastep_cmd
 
 * Monte Carlo and operating range analysis changes.
 docs check oprng_analysis findrange mctrial
+ok
 
     Instead of using shell substitution and the value1/value2 variables
     to set varying circuit parameters, one can use an internal parameter
@@ -376,6 +381,7 @@ docs check oprng_analysis findrange mctrial
 
 * Pseudo-random support in bit strings.
 docs pulse
+ok
 
     This applies to the "bstring" syntax of the pulse and gpulse
     voltage and current sources, and the compose command (below). 
@@ -394,6 +400,7 @@ docs pulse
 
 * Update to the compose command.
 docs compose
+ok
 
     New compose syntax:  compose name pattern [n1 [n2]] bstring
 
@@ -408,6 +415,7 @@ docs compose
 
 * Parameter handling.
 docs expressions .if param codeblock
+ok
     Support was added for a string return from $&@name constructs. 
     Since one can have .param foo="hello there", the $&@foo in the
     shell context new expands to "hello there".  Previously the return
@@ -431,6 +439,7 @@ docs expressions .if param codeblock
 
 * Updates to the Josephson junction and TJM device models.
 docs jj jjmodel
+ok
 
     The ICS parameter range was widened to [ICRIT/50:ICRIT*50] from
     [ICRIT/20:ICRIT*20] in the internal JJ/TJM and Verilog models.  A
@@ -453,6 +462,7 @@ temp,tnom max is now 0.95*tc
 
 * Miscellaneous changes.
 docs plotvec options rusage
+ok
 
     Updated the jjpulse.cir example to cope with steptype=nousertp and
     the combine command.  This wasn't working due to JJ model change.

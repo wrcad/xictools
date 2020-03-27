@@ -2497,7 +2497,8 @@ sets up a direct push into the named {\it parameters} of listed {\it
 devices}, avoiding shell expansion and vectors.  Note that the list
 must follow a magic `{\vt \%}' character, which tells the system to
 use the {\it devlist\/},{\it paramlist} syntax, as used in the {\cb
-sweep} command (see \ref{psetting}).
+sweep} command (see \ref{psetting}).  This is equivalent to giving
+{\it pstr1\/}, {\it pstr2} on the command line.
 
 The {\vt jjoprng2.cir} file in the examples illustrates use of this
 syntax.
@@ -2958,14 +2959,14 @@ These commands can be running only when a range analysis has been
 initiated with the {\cb check} command (see \ref{checkcom}), generally
 by giving the ``{\vt -b}'' option.  Any number of the {\cb findrange}
 commands or the variants can be given, as well as other commands such
-as {\cb mcrtial}.  When finished the {\cb check} command should be
+as {\cb mctrial}.  When finished the {\cb check} command should be
 given with the ``{\vt -c}'' option to terminate the mode and free
 internal memory.
 
 A usage example can be found in the examples: {\vt JJexamples/nor\_op.cir}.
 
 By default, the lower and upper range values will be saved in vectors
-named {\vt opmin1}, {\vt opmin2}, {\it opmax1}, and {\vt opmax2},
+named {\vt opmin1}, {\vt opmin2}, {\vt opmax1}, and {\vt opmax2},
 which are created if necessary.  If given following ``{\vt -n1}'' or
 ``{\vt -n2}'' respectively, {\it name1} and {\it name2} tokens will
 serve as a base for new names that replace vector names {\vt opmin1},
@@ -2974,10 +2975,10 @@ example,
 \begin{quote}
 \vt -n1 foo
 \end{quote}
-will save output in vectors named {\vt foo\_min}, {\vt foo\_max}>.
+will save output in vectors named {\vt foo\_min}, {\vt foo\_max}.
 
 There is a subtlety in the syntax:  a double-quoted name, e.g.,
-<tt>-n1 "</tt>{\it pname\/}<tt>"</tt>, is accepted and the quotes will
+{\vt -n1 "}{\it pname\/}{\vt "}, is accepted and the quotes will
 be stripped before use.  The quotes prevent parameter substitution, so
 this allows use of a name that has also been defined as a parameter
 (with {\vt .param} directive or otherwise).
@@ -3062,7 +3063,7 @@ arguments.
 
 % spCommands.hlp:mctrial 032520
 
-This is a cCommand to run a single trial for used when when performing
+This is a command to run a single trial for use when performing
 script-driven Monte Carlo analysis.
 \begin{quote}\vt
 mctrial
@@ -3288,7 +3289,7 @@ pointspec} in the {\it pointlist}.  This will trigger at the time of
 the previous {\it pointspec} in the list (to the left) delayed by {\it
 delay}.
 
-\item{{\vt tr=}{\it delay}}\\
+\item{{\vt ts=}{\it delay}}\\
 This is similar to {\vt td}, however it is strobing.  In the two
 expression case, in addition to having the effect of {\vt td}, it will
 convert {\vt when} and {\vt after} clauses to work as {\vt at},
@@ -4385,7 +4386,7 @@ sweep point.
 % spCommands.hlp:vastep 032420
 
 This command has application when simulating a circuit containing
-Verilog block, and the option {\cb vastep} has been set to 0.  In this
+Verilog block, and the option {\et vastep} has been set to 0.  In this
 case, a call to this command will advance the Verilog simulation to
 the next clock tick.  This function can be called from a callback
 initiated from a {\vt .stop} line, used when co-simulating Verilog and
@@ -4459,9 +4460,9 @@ The {\cb compose} command is used to create vectors.  It has three forms:
 compose {\it vecname} values {\it value} [...]\\
 {\rm or}\\
 compose {\it vecname} pattern [{\it n1} [{\it n2\/}]] {\it bstring}
-[{\it modifiers\/}] [...]
+[{\it modifiers\/}] [...]\\
 {\rm or}\\
-compose {\it vecname} {\it param = value} [...]\\
+compose {\it vecname} {\it param = value} [...]
 \end{quote}
 
 All forms of this command create a new vector called {\it vecname\/}. 
@@ -5939,44 +5940,45 @@ The statistical database contains the following data items, listed in
 the tables below and with a more detailed description of each item
 following.
 
-\begin{longtable}{p{1in}p{4.75in}l}
-\bf Resource Parameter Name & \bf Description\\[0.5ex]
-\multicolumn{2}{l}{\bf Real-Valued Parameters}\\
-{\vt cvchktime} & \rr Time spent convergence testing.&\\
-{\vt loadtime} & \rr Device model evaluation and matrix load time.&\\
-{\vt lutime} & \rr L-U decomposition time.&\\
-{\vt reordertime} & \rr Matrix reordering time.&\\
-{\vt solvetime} & \rr Matrix solve time.&\\
-{\vt time} & \rr Total analysis time.&\\
-{\vt tranlutime} & \rr Transient L-U decomposition time.&\\
-{\vt tranouttime} & \rr Transient output recording time.&\\
-{\vt transolvetime} & \rr Transient solve time.&\\
-{\vt trantime} & \rr Transient time.&\\
-{\vt trantstime} & \rr Transient timestep computation time.&\\
-\\
+\begin{longtable}{|p{1in}|p{4.75in}l|} \hline
+\bf Resource Name & \bf Description&\\ \hline
+\multicolumn{3}{|l}{}\\
+\multicolumn{3}{|l}{\bf Real-Valued Parameters}\\ \hline
+{\vt cvchktime} & \rr Time spent convergence testing.&\\ \hline
+{\vt loadtime} & \rr Device model evaluation and matrix load time.&\\ \hline
+{\vt lutime} & \rr L-U decomposition time.&\\ \hline
+{\vt reordertime} & \rr Matrix reordering time.&\\ \hline
+{\vt solvetime} & \rr Matrix solve time.&\\ \hline
+{\vt time} & \rr Total analysis time.&\\ \hline
+{\vt tranlutime} & \rr Transient L-U decomposition time.&\\ \hline
+{\vt tranouttime} & \rr Transient output recording time.&\\ \hline
+{\vt transolvetime} & \rr Transient solve time.&\\ \hline
+{\vt trantime} & \rr Transient time.&\\ \hline
+{\vt trantstime} & \rr Transient timestep computation time.&\\ \hline
 
-\multicolumn{2}{l}{\bf Integer-Valued Parameters}\\
-{\vt accept} & \rr Accepted timepoints.&\\
-{\vt equations} & \rr Circuit equations.&\\
-{\vt fillin} & \rr Fill-in terms from decomposition.&\\
-{\vt involcxswitch} & \rr Involuntary context switches during analysis.&\\
-{\vt loadthrds} & \rr Number of device loading helper threads.&\\
-{\vt loopthrds} & \rr Number of repetitive analysis helper threads.&\\
-{\vt matsize} & \rr Matrix size.&\\
-{\vt nonzero} & \rr Number of nonzero matrix entries.&\\
-{\vt pagefaults} & \rr Number of page faults during analysis.&\\
-{\vt rejected} & \rr Number of rejected timepoints.&\\
-{\vt runs} & \rr Accumulated core analysis runs.&\\
-{\vt totiter} & \rr Total iterations.&\\
-{\vt trancuriters} & \rr Transient interations at last timepoint.&\\
-{\vt traniter} & \rr Transient interations.&\\
-{\vt tranitercut} & \rr Transient timepoints where iteration limit exceeded.&\\
-{\vt tranpoints} & \rr Transient timepoints.&\\
-{\vt trantrapcut} & \rr Transient timepoints where trapcheck failed.&\\
-{\vt volcxswitch} & \rr Voluntary context switches during analysis.&\\
+\multicolumn{3}{|l}{}\\
+\multicolumn{3}{|l}{\bf Integer-Valued Parameters}\\ \hline
+{\vt accept} & \rr Accepted timepoints.&\\ \hline
+{\vt equations} & \rr Circuit equations.&\\ \hline
+{\vt fillin} & \rr Fill-in terms from decomposition.&\\ \hline
+{\vt involcxswitch} & \rr Involuntary context switches during analysis.&\\ \hline
+{\vt loadthrds} & \rr Number of device loading helper threads.&\\ \hline
+{\vt loopthrds} & \rr Number of repetitive analysis helper threads.&\\ \hline
+{\vt matsize} & \rr Matrix size.&\\ \hline
+{\vt nonzero} & \rr Number of nonzero matrix entries.&\\ \hline
+{\vt pagefaults} & \rr Number of page faults during analysis.&\\ \hline
+{\vt rejected} & \rr Number of rejected timepoints.&\\ \hline
+{\vt runs} & \rr Accumulated core analysis runs.&\\ \hline
+{\vt totiter} & \rr Total iterations.&\\ \hline
+{\vt trancuriters} & \rr Transient interations at last timepoint.&\\ \hline
+{\vt traniter} & \rr Transient interations.&\\ \hline
+{\vt tranitercut} & \rr Transient timepoints where iteration limit exceeded.&\\ \hline
+{\vt tranpoints} & \rr Transient timepoints.&\\ \hline
+{\vt trantrapcut} & \rr Transient timepoints where trapcheck failed.&\\ \hline
+{\vt volcxswitch} & \rr Voluntary context switches during analysis.&\\ \hline
 \end{longtable}
 
-subsubsection{Real Valued Database Entries}
+\subsubsection{Real Valued Database Entries}
 
 \begin{description}
 \item{\vt cvchktime}\\
@@ -6036,7 +6038,7 @@ Report the time spent computing the next timestep in the most recent
 transient analysis.
 \end{description}
 
-subsubsection{Integer Valued Database Entries}
+\subsubsection{Integer Valued Database Entries}
 
 \begin{description}
 \item{\vt accept}\\

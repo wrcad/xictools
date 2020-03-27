@@ -27,7 +27,7 @@ setandlet
 !!REDIRECT temper       plotvec#temper
 !!REDIRECT specialvec   plotvec#special
 
-!! useriface.tex 022519
+!! useriface.tex 032320
 !!KEYWORD
 plotvec
 !!TITLE
@@ -525,6 +525,13 @@ Plots and Vectors
     In <i>WRspice</i>, a vector name beginning with the '<tt>@</tt>'
     symbol is a "special" vector, and is considered to be a reference
     to an internal device or model parameter, or a circuit parameter. 
+    If the variable <a href="spec_catchar"><tt>spec_catchar</tt></a>
+    is set to a string consisting of a single punctuation character,
+    then that character will identify a special vector, instead of
+    '<tt>@</tt>'.  The descriptions below use '<tt>@</tt>', but in
+    actuality this character can be respecified by the user.
+
+    <p>
     If the vector name is of the form
     <tt>@</tt><i>name</i>[<i>param</i>], this denotes the parameter
     <i>param</i> of the device or model named <i>name</i>.  Of course,
@@ -535,74 +542,44 @@ Plots and Vectors
     parameters available.
 
     <p>
-    If the variable <a href="spec_catchar"><tt>spec_catchar</tt></a>
-    is set to a string consisting of a single punctuation character,
-    then that character will identify a special vector, instead of
-    '<tt>@</tt>'.  The descriptions below use '<tt>@</tt>', but in
-    actuality this character can be respecified by the user.
+    Special vectors should be saved with the <a
+    href="save"><b>save</b></a> command or on a <a
+    href=".save"><tt>.save</tt></a> line during analysis if a value is
+    required at each analysis point.  Otherwise, only the current
+    value is available, which is the value used at the final analysis
+    point after analysis completes.
+
+    <p>
+    The special vectors that correspond to device and model parameters
+    in the current circuit can be assigned.  When a special vector is
+    assigned, the effect is similar to the <a
+    href="alter"><b>alter</b></a> command.  Actual assignment is
+    deferred until the next analysis run of the current circuit, and
+    assignment applies to that run only.  The assignment must be
+    repeated if needed for additional runs.
+
+    <p>
+    Other special vectors are read-only.
 
     <p>
     If the vector name is of the form <tt>@</tt><i>param</i>, this
     refers to a parameter of the circuit with the name <i>param</i>. 
-    The parameters obtained in this manner are those from the table
-    below defined on a <a href=".options"><tt>.options</tt></a> line
-    in the current circuit, those defined on a <a
-    href=".param"><tt>.param</tt></a> line in a current circuit, and
-    the keywords of the <a href="rusage"><b>rusage</b></a> command,
-    sought in that order.  These vectors may be used as arguments to
-    commands and functions which take vector arguments.
-
-    <blockquote>
-    <table border=1 cellpadding=2 bgcolor="#ffffee">
-    <th colspan=3>Option Special Vectors</th></tr>
-    <th>Reals</th> <th>Integers</th> <th>Flags</th></tr>
-    <tr><td><tt>@abstol</tt></td> <td><tt>@bypass</tt></td> <td><tt>@gminfirst</tt></td></tr>
-    <tr><td><tt>@chgtol</tt></td> <td><tt>@gminsteps</tt></td> <td><tt>@jjaccel</tt></td></tr>
-    <tr><td><tt>@defad</tt></td> <td><tt>@interplev</tt></td> <td><tt>@noiter</tt></td></tr>
-    <tr><td><tt>@defas</tt></td> <td><tt>@itl1</tt></td> <td><tt>@nojjtp</tt></td></tr>
-    <tr><td><tt>@defl</tt></td> <td><tt>@itl2</tt></td> <td><tt>@noopiter</tt></td></tr>
-    <tr><td><tt>@defw</tt></td> <td><tt>@itl2gmin</tt></td> <td><tt>@notrapcheck</tt></td></tr>
-    <tr><td><tt>@dphimax</tt></td> <td><tt>@itl2src</tt></td> <td><tt>@noklu</tt></td></tr>
-    <tr><td><tt>@gmin</tt></td> <td><tt>@itl4</tt></td> <td><tt>@nomatsort</tt></td></tr>
-    <tr><td><tt>@minbreak</tt></td><td><tt>@maxord</tt></td> <td><tt>@noadjoint</tt></td></tr>
-    <tr><td><tt>@pivrel</tt></td> <td><tt>@srcsteps</tt></td> <td><tt>@oldlimit</tt></td></tr>
-    <tr><td><tt>@pivtol</tt></td> <td>&nbsp;</td> <td><tt>@spice3</tt></td></tr>
-    <tr><td><tt>@reltol</tt></td> <td>&nbsp;</td> <td><tt>@trytocompact</tt></td></tr>
-    <tr><td><tt>@temp</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
-    <tr><td><tt>@tnom</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
-    <tr><td><tt>@trapratio</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
-    <tr><td><tt>@trtol</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
-    <tr><td><tt>@vntol</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
-    <tr><td><tt>@xmu</tt></td> <td>&nbsp;</td> <td>&nbsp;</td></tr>
-    </table>
 
     <p>
-    <table border=1 cellpadding=2 bgcolor="#ffffee">
-    <th colspan=2>Rusage Special Vectors</th></tr>
-    <th>Reals</th> <th>Integers</th></tr>
-    <tr><td><tt>@elapsed</tt></td>       <td><tt>@accept</tt></td></tr>
-    <tr><td><tt>@loadtime</tt></td>      <td><tt>@equations</tt></td></tr>
-    <tr><td><tt>@lutime</tt></td>        <td><tt>@fillin</tt></td></tr>
-    <tr><td><tt>@reordertime</tt></td>   <td><tt>@matsize</tt></td></tr>
-    <tr><td><tt>@solvetime</tt></td>     <td><tt>@nonzero</tt></td></tr>
-    <tr><td><tt>@space</tt></td>         <td><tt>@rejected</tt></td></tr>
-    <tr><td><tt>@time</tt></td>          <td><tt>@totiter</tt></td></tr>
-    <tr><td><tt>@tranlutime</tt></td>    <td><tt>@trancuriters</tt></td></tr>
-    <tr><td><tt>@transolvetime</tt></td> <td><tt>@traniter</tt></td></tr>
-    <tr><td><tt>@trantime</tt></td>      <td><tt>@tranpoints</tt></td></tr>
-    <tr><td>&nbsp;</td>                  <td><tt>@tranitercut</tt></td></tr>
-    <tr><td>&nbsp;</td>                  <td><tt>@trantrapcut</tt></td></tr>
-    </table>
-    </blockquote>
+    These are resolved in the following way.  First, a match to one of
+    the "official" options is sought.  These are the options listed in
+    the table in the <a href="options">options</a> description.  Any
+    of these will match, with the exceptions in the sub-tables listing
+    batch mode and obsolete options.
 
     <p>
-    The special vectors that correspond to device and model parameters
-    in the current circuit can be assigned.  Other special vectors are
-    read-only.  When a special vector is assigned, the effect is
-    similar to the <a href="alter"><b>alter</b></a> command.  Actual
-    assignment is deferred until the next analysis run of the current
-    circuit, and assignment applies to that run only.  The assignment
-    must be repeated if needed for additional runs.
+    If this fails, parameters defined in the current circuit are
+    searched for a matching name.  These are defined in <a
+    href=".param"><tt>.param</tt></a> lines.
+
+    <p>
+    Finally, the <a href="rusage"><b>rusage</b> keywords are searched.
+    Any of these keywords will match.
 
 !!SUBTOPICS
 constants
@@ -756,6 +733,16 @@ Vector Expressions
     $&v($&i)</tt>, for example.  A range specification can be added,
     which can contain shell variables.  This is true for both vectors
     (<tt>$&</tt> prefix) and variables.
+
+    <p>
+    There is a special case when <tt>$&</tt> is used with a <a
+    href="specialvec">special vector</a> that is referencing a
+    string-type parameter.  Since one can have
+    <blockquote>
+    <tt>.param foo="hello there"</tt>
+    </blockquote>
+    <tt>$&@foo</tt> will expand to "<tt>hello there</tt>" in this
+    case.  Other references to <tt>@foo</tt> will return 0.0.
 
 !!SUBTOPICS
 explists
@@ -1035,7 +1022,7 @@ expressions
 !!REDIRECT unitvec      mathfuncs#unitvec
 !!REDIRECT vector       mathfuncs#vector
 
-!! useriface.tex 021416
+!! useriface.tex 032220
 !!KEYWORD
 mathfuncs
 !!TITLE
@@ -1053,9 +1040,11 @@ Math Functions
 
     <p>
     In addition, there are statistical <a href="statfuncs">random
-    number sources</a>, and a number of <a
-    href="hs_functions">compatibility functions</a>
-    to support <a href="hspicesim">HSPICE</a> extensions available.
+    number sources</a>, as well as <a href="measfuncs">measurement
+    functions</a> exported by the <a href="measure"><b>measure</b></a>
+    command, and a number of <a href="hs_functions">compatibility
+    functions</a> to support <a href="hspicesim">HSPICE</a> extensions
+    available.
 
     <p>
     It should be noted that the mathematics subsystem used to evaluate
@@ -1726,6 +1715,102 @@ Statistical Functions
 expressions
 mathfuncs
 hs_functions
+
+!!REDIRECT mavg         measfuncs#mavg
+!!REDIRECT mmax         measfuncs#mmax
+!!REDIRECT mmin         measfuncs#mmin
+!!REDIRECT mpp          measfuncs#mpp
+!!REDIRECT mpw          measfuncs#mpw
+!!REDIRECT mrft         measfuncs#mrft
+!!REDIRECT mrms         measfuncs#mrms
+
+!! useriface.tex 032220
+!!KEYWORD
+measfuncs
+!!TITLE
+Measure Functions
+!!HTML 
+    These functions are exported from the <a
+    href="measure"><b>measure</b></a> command and provide the same
+    measurement capability in post-processing.
+
+    <p>
+    Each function takes three arguments.  The first argument is a
+    simulation result vector.  The second two arguments are scalar
+    values of the vector's scale that define the measurement range
+    (effectively the trigger and target points).  These are clipped to
+    the actual vector scale if out of range.  The return value is
+    a real scalar.
+
+    <a name="mavg"></a>
+    <dl>
+    <dt><b>mavg function</b>:
+        <tt>mavg</tt>(<i>vec</i>, <i>start</i>, <i>end</i>)<dd>
+    <dd>
+    Compute the average value of <i>vec</i> over the range
+    <i>start</i> to <i>end</i>. 
+    </dl>
+
+    <a name="mmax"></a>
+    <dl>
+    <dt><b>mmax function</b>:
+        <tt>mmax</tt>(<i>vec</i>, <i>start</i>, <i>end</i>)<dd>
+    <dd>
+    Find the maximum value of <i>vec</i> over the range
+    <i>start</i> to <i>end</i>. 
+    </dl>
+
+    <a name="mmin"></a>
+    <dl>
+    <dt><b>mmin function</b>:
+        <tt>mmin</tt>(<i>vec</i>, <i>start</i>, <i>end</i>)<dd>
+    <dd>
+    Find the minimum value of <i>vec</i> over the range
+    <i>start</i> to <i>end</i>. 
+    </dl>
+
+    <a name="mpp"></a>
+    <dl>
+    <dt><b>mpp function</b>:
+        <tt>mpp</tt>(<i>vec</i>, <i>start</i>, <i>end</i>)<dd>
+    <dd>
+    Find the peak to peak (maximum minus minimum) value of <i>vec</i>
+    over the range <i>start</i> to <i>end</i>. 
+    </dl>
+
+    <a name="mpw"></a>
+    <dl>
+    <dt><b>mpw function</b>:
+        <tt>mpw</tt>(<i>vec</i>, <i>start</i>, <i>end</i>)<dd>
+    <dd>
+    Find the full-width half-maximum pulse width of <i>vec</i> over
+    the range <i>start</i> to <i>end</i>.  The <i>start</i> and
+    <i>end</i> are assumed to frame a single pulse.  The maximum and
+    minimum values are found, and the first two crossings of the
+    average of these values provide the result.
+    </dl>
+
+    <a name="mrft"></a>
+    <dl>
+    <dt><b>mrft function</b>:
+        <tt>mrft</tt>(<i>vec</i>, <i>start</i>, <i>end</i>)<dd>
+    <dd>
+    Find the 10% to 90% rise or fall duration for an edge assumed to
+    be framed by <i>start</i> and <i>end</i>.
+    </dl>
+
+    <a name="mrms"></a>
+    <dl>
+    <dt><b>mrms function</b>:
+        <tt>mrms</tt>(<i>vec</i>, <i>start</i>, <i>end</i>)<dd>
+    <dd>
+    Compute the root mean square (RMS) value of <i>vec</i> over the
+    range <i>start</i> to <i>end</i>. 
+    </dl>
+
+!!SEEALSO
+expressions
+mathfuncs
 
 !! Clashes in Xic
 !!IFNDEF Xic

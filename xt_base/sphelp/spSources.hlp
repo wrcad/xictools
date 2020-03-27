@@ -176,7 +176,7 @@ depsource
 elements
 devexpr 
 
-!! elements.tex 092312
+!! elements.tex 032120
 !!KEYWORD
 devexpr 
 !!TITLE
@@ -205,9 +205,14 @@ Device Expressions
     <li>All inputs and results are real values.
 
     <p>
-    <li>All expressions must be differentiable with respect to node
-    voltages and branch current variables.  This has subtle but
-    important consequences as explained below.
+    <li>In theory, expressions should be differentiable with respect
+    to node voltages and branch current variables.  If not, lack of
+    convergence might be seen.  Previous versions of <i>WRspice</i>
+    were more strict about this than the present version, which allows
+    relational and logic operators.  It is often very convenient to
+    use these operators, and in general it seems that their use does
+    not prevent convergence.  Your experience may be different,
+    however.
     </ol>
 
     <p>
@@ -222,33 +227,34 @@ Device Expressions
     analysis).
 
     <p>
-    The functions which are used in the device description must be
-    differentiable with respect to node voltages and branch currents. 
-    Internally, the expressions are symbolically differentiated in
-    order to calculate the Jacobian, which is used to set up the
-    matrix which is solved during analysis.  This prevents use of the
-    logical operators, modulus operator, relational operators
-    (<tt>&#60;</tt>, <tt>></tt>, etc.), and the tri-conditional
-    operator (<i>a</i> <tt>?</tt> <i>b</i> <tt>:</tt> <i>c</i>) in
-    these expressions where an operand depends on a node voltage or
-    branch current.
+    The functions which are used in the device description should be
+    differentiable with respect to node voltages and branch currents
+    to promote convergence.  Internally, the expressions are
+    symbolically differentiated in order to calculate the Jacobian,
+    which is used to set up the matrix which is solved during
+    analysis.  This would seem to prevent use of the logical
+    operators, modulus operator, relational operators (<tt>&#60;</tt>,
+    <tt>></tt>, etc.), and the tri-conditional operator (<i>a</i>
+    <tt>?</tt> <i>b</i> <tt>:</tt> <i>c</i>) in these expressions
+    where an operand depends on a node voltage or branch current. 
+    However, <i>WRspice</i> currently supports relational and logic
+    operators in source expressions, by assuming identically zero
+    derivatives for these operators when differentiating.  We find, in
+    practice, that this rarely causes obvious convergence problems, at
+    least if used in moderation.
 
-    <p>
-    In addition to the built-in functions, expressions used in devices
-    can include user-defined functions, which must have been defined
-    previously with the <a href="define"><b>define</b></a> command, or
-    with a <a href=".param"><tt>.param</tt></a> line, or in a
-    parameter definition list in a subcircuit call or definition. 
+    <p> In addition to the built-in functions, expressions used in
+    devices can include user-defined functions, which must have been
+    defined previously with the <a href="define"><b>define</b></a>
+    command, or with a <a href=".param"><tt>.param</tt></a> line, or
+    in a parameter definition list in a subcircuit call or definition. 
     These can be used with either math package.  Internally, they are
     saved in a data structure known as a parse tree.  When a
     user-defined function is called in the context of a device
     equation, checking is performed on the user-defined function parse
     tree to see if any of the non-differentiable operations are
-    included.  If so, an error, such as
-    <blockquote>
-    <tt>invalid operator number 16 ("LT") in input</tt>
-    </blockquote>
-    is generated, and the equation setup fails.
+    included.  If so, an error message is generated, and the equation
+    setup fails.
 
     <p>
     This being said, the situation is actually a bit more complicated. 
@@ -265,8 +271,8 @@ Device Expressions
     <p>
     The bottom line of all of this is that for equations that appear
     in a circuit description, the circuit variables (node voltages and
-    branch currents) can't be used in tri-conditional, logical, or
-    relational sub-expressions.  For example consider the following:
+    branch currents) can't be used in tri-conditional and modulus
+    sub-expressions.  For example consider the following:
 
     <blockquote>
     <tt>.param myabs(a) = 'a &#60; 0 ? -a : a'</tt><br>
@@ -275,11 +281,11 @@ Device Expressions
     <tt>E3 3 0 function mymax(v(1), 0)</tt>
     </blockquote>
 
-    This will not work, as it specifically breaks the rules prohibiting
-    relational operators and tri-conditionals.  However, it really
-    should be possible to simulate a circuit with behavior described
-    as intended above, and it (usually) is.  One needs to find ways of
-    expressing the behavior by using supported math.
+    This will not work, as it specifically breaks the rules
+    prohibiting tri-conditionals.  However, it really should be
+    possible to simulate a circuit with behavior described as intended
+    above, and it (usually) is.  One needs to find ways of expressing
+    the behavior by using supported math.
 
     For example, either of these alternatives would be an acceptable
     alternative for <tt>myabs</tt>.
@@ -303,12 +309,8 @@ Device Expressions
     </blockquote>
 
     <p>
-    Someday, it may be possible to add internal intelligence to
-    <i>WRspice</i> to perform this type of substitution automatically.
-
-    <p>
     Although the lists of math functions available in the two packages
-    are similar, the internal evaluation routines are different.  The
+    are similar, the internal evaluation functions are different.  The
     shell math functions must operate on vectors of complex values,
     whereas the functions called in device expressions take scalar
     real values only.  Furthermore, the device expressions should be
@@ -444,6 +446,35 @@ Device Expressions
      <td> a floating point number</td></tr>
     <tr><th align="left"><i>string</i></th>
      <td> a library function, table, or circuit vector</td></tr>
+    </table>
+    </blockquote>
+
+    <p>
+    Additionally, the following relational and logical operators are
+    available.  Use of these operators may impede convergence.  The
+    operators evaluate to 1.0 when true, 0.0 otherwise.  Inputs to
+    logical operators are true if integer-converted values are
+    nonzero.
+    <blockquote>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th align="left"><tt>=,==,eq</tt></th>
+     <td>  equality</td></tr>
+    <tr><th align="left"><tt>!=,&#60;>,>&#60;,ne</tt></th>
+     <td>  inequality</td></tr>
+    <tr><th align="left"><tt>>,gt</tt></th>
+     <td>  greater than</td></tr>
+    <tr><th align="left"><tt>&#60;,lt</tt></th>
+     <td>  less than</td></tr>
+    <tr><th align="left"><tt>>=,ge</tt></th>
+     <td>  greater than or equal</td></tr>
+    <tr><th align="left"><tt>&#60;=,le</tt></th>
+     <td>  less than or equal</td></tr>
+    <tr><th align="left"><tt>&,&&,and</tt></th>
+     <td>  logical and</td></tr>
+    <tr><th align="left"><tt>|,||,or</tt></th>
+     <td>  logical or</td></tr>
+    <tr><th align="left"><tt>~,!,not</tt></th>
+     <td>  logical not</td></tr>
     </table>
     </blockquote>
 
@@ -1080,7 +1111,7 @@ tranfuncs
 
 !!REDIRECT pattern      pulse#pattern
 
-!! elements.tex 060119
+!! elements.tex 032220
 !!KEYWORD
 pulse
 !!TITLE
@@ -1245,6 +1276,19 @@ Pulse
     any.  If not given, the effective value is 1, indicating that the
     entire pattern repeats.  An integer must follow <tt>rb</tt>, white
     space and an equal sign will be ignored.
+
+    <p>
+    <dt><tt>bprbs</tt>[<i>N</i>]<dd>
+    In <i>WRspice</i>, the bstring can also specify pseudo-random
+    sequences through the syntax <tt>bprbs</tt>[<i>N</i>].  The
+    <i>N</i> is an unsigned integer, defaulting to 6 if not given, and
+    clipped to the range 6-12 if not in this range.  This is the
+    degree of the pseudo-random sequence, i.e., the sequence length is
+    2<sup><i>N</i></sup>-1.  This will accept the <tt>r</tt> and
+    <tt>rb</tt> modifiers, however <tt>rb</tt> is treated a little
+    differently.  With this form, it rotates the bit sequence, giving
+    rotated output starting with the first pass.  The same degree with
+    different <tt>rb</tt> values produces uncorrelated sequences. 
     </dl>
 
     <p>

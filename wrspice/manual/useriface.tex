@@ -5442,7 +5442,7 @@ imaginary parts of {\it vector}.
 
 % spExpressions.hlp:measfuncs 032220
 
-These functions are exported from the {\cb measure}command and provide
+These functions are exported from the {\cb measure} command and provide
 the same measurement capability in post-processing.
 
 Each function takes three arguments.  The first argument is a
@@ -5474,16 +5474,16 @@ the range {\it start} to {\it end\/}.
 
 \index{mpw function}
 \item{\vt mpw}({\it vec\/}, {\it start\/}, {\it end\/})\\
-Find the full width hasf maximum pulse width of {\it vec} over the
+Find the full-width half-maximum pulse width of {\it vec} over the
 range {\it start} to {\it end\/}.  The {\it start} and {\it end} are
 assumed to frame a single pulse.  The maximum and minimum values are
 found, and the first two crossings of the average of these values
-provides the result.
+provide the result.
 
 \index{mrft function}
 \item{\vt mrft}({\it vec\/}, {\it start\/}, {\it end\/})\\
-Find the 10\% tp 90\% rise or fall duration of {\it vec} over the
-range {\it start} to {\it end\/}.
+Find the 10\% to 90\% rise or fall duration for an edge assumed to be
+framed by {\it start} and {\it end\/}.
 
 \index{mrms function}
 \item{\vt mrms}({\it vec\/}, {\it start\/}, {\it end\/})\\

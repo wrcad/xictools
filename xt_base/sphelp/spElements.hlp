@@ -1061,7 +1061,7 @@ Uniform RC Line
 passive
 tra
 
-!! elements.tex 060119
+!! elements.tex 032520
 !!KEYWORD
 jj
 !!TITLE
@@ -1085,6 +1085,8 @@ Josephson Junctions
     <tr><td><tt>ics=</tt><i>val</i></td> <td>Instantiated critical
       current, used as scale factor for
       capacitance, conductances.</td></tr>
+    <tr><td><tt>temp=</tt><i>val</i></td> <td>Device temperature,
+      Kelvin.</td></tr>
     <tr><td><tt>lser=</tt><i>val</i></td> <td>Junction series parasitic
       inductance.</td></tr>
     <tr><td><tt>lsh=</tt><i>val</i></td> <td>Shunt resistor series parasitic
@@ -1171,13 +1173,22 @@ Josephson Junctions
 
     <dl>
     <dt><tt>ics</tt><dd>
-    <b>range:</b> 0.05*<tt>icrit</tt> - 20.0*<tt>icrit</tt><br>
+    <b>range:</b> 0.02*<tt>icrit</tt> - 50.0*<tt>icrit</tt><br>
     This gives the actual critical current of the instantiated
     junction, and in addition scales all conductance and capacitance
     values from the reference junction appropriately.  This is
     equivalent to giving the <tt>area</tt> parameter with a value of
     <tt>ics</tt>/<tt>icrit</tt>.  The default is <tt>icrit</tt>, the
     reference junction critical current.
+    </dl>
+
+    <dl>
+    <dt><tt>temp</tt><dd>
+    <b>range:</b> 0.0 - 0.95*<tt>tc</tt><br>
+    This is the assumed operating temperature of the device, in
+    Kelvin.  The default is the model <tt>temp</tt> value.  See the <a
+    href="jjmodel">model description</a> for more information about
+    temperature modeling.
     </dl>
 
     <dl>
