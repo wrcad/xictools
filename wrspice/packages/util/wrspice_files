@@ -61,8 +61,13 @@ jjmc1.cir \
 jjmc.cir \
 jjoprng.cir \
 jjoprng1.cir \
+jjoprng2.cir \
 jjprbs.cir \
 jjpulse.cir \
+nor_mc.cir \
+nor_op.cir \
+nor_test.gds \
+nor_vamc.cir \
 README \
 sfq.cir \
 shutop.cir \

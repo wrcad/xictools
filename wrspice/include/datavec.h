@@ -63,11 +63,6 @@ struct sHtab;
 struct wordlist;
 struct sTrie;
 
-//XXX rid these
-
-// fourier.cc
-extern double *FFTwindow(int, double*, double);
-
 // Complex numbers
 //
 struct complex : public IFcomplex

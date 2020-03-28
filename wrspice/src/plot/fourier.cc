@@ -296,6 +296,101 @@ Author:   1994 Anthony E. Parker, Department of Electronics, Macquarie Uni.
 
 #define KEEPWINDOW
 
+namespace {
+    // Return an array representing the window function for the time
+    // values passed, over the given span.
+    //
+    double *FFTwindow(int tlen, double *time, double span)
+    {
+        double *win = new double[tlen];
+        double maxt = time[tlen-1];
+        const char *window = kw_hanning;
+        VTvalue vv;
+        if (Sp.GetVar(kw_specwindow, VTYP_STRING, &vv)) 
+            window = vv.get_string();
+
+        if (lstring::eq(window, kw_none)) {
+            for (int i = 0; i < tlen; i++)
+                win[i] = 1.0;
+        }
+        else if (lstring::eq(window, kw_rectangular)) {
+            for (int i = 0; i < tlen; i++) {
+                if (maxt - time[i] > span)
+                    win[i] = 0.0;
+                else
+                    win[i] = 1.0;
+            }
+        }
+        else if (lstring::eq(window, kw_hanning) ||
+                lstring::eq(window, kw_cosine)) {
+            for (int i = 0; i < tlen; i++) {
+                if (maxt - time[i] > span)
+                    win[i] = 0.0;
+                else
+                    win[i] = 1.0 - cos(2.0*M_PI*(time[i] - maxt)/span);
+            }
+        }
+        else if (lstring::eq(window, kw_hamming)) {
+            for (int i = 0; i < tlen; i++) {
+                if (maxt - time[i] > span)
+                    win[i] = 0.0;
+                else
+                    win[i] =
+                        1.0 - 0.92/1.08*cos(2.0*M_PI*(time[i] - maxt)/span);
+            }
+        }
+        else if (lstring::eq(window, kw_triangle) ||
+                lstring::eq(window, kw_bartlet)) {
+            for (int i = 0; i < tlen; i++) {
+                if (maxt - time[i] > span)
+                    win[i] = 0.0;
+                else
+                    win[i] = 2.0 - fabs(2.0 + 4.0*(time[i] - maxt)/span);
+            }
+        }
+        else if (lstring::eq(window, kw_blackman)) {
+            /* Only order=2 supported.
+            int order = DEF_specwindoworder;
+            VTvalue vv1;
+            if (Sp.GetVar(kw_specwindoworder, VTYP_NUM, &vv1) &&
+                    vv1.get_int() >= DEF_specwindoworder_MIN &&
+                    vv1.get_int() <= DEF_specwindoworder_MAX)
+                order = vv1.get_int();
+            */
+
+            for (int i = 0; i < tlen; i++) {
+                if (maxt - time[i] > span)
+                    win[i] = 0.0;
+                else {
+                    win[i]  = 1.0;
+                    win[i] -= 0.50/0.42*cos(2.0*M_PI*(time[i] - maxt)/span);
+                    win[i] += 0.08/0.42*cos(4.0*M_PI*(time[i] - maxt)/span);
+                }
+            }
+        }
+        else if (lstring::eq(window, kw_gaussian)) {
+            int order = 2;  // only order 2 supported here
+
+            double scale =
+                pow(2.0*M_PI/order, 0.5)*(0.5 - erfc(pow(order, 0.5)));
+            for (int i = 0; i < tlen; i++) {
+                if (maxt - time[i] > span)
+                    win[i] = 0.0;
+                else
+                    win[i] = exp(-0.5*order*(1.0 - 2.0*(maxt - time[i])/span)*
+                        (1.0 - 2.0*(maxt - time[i])/span))/scale;
+            }
+        }
+        else {
+            GRpkgIf()->ErrPrintf(ET_ERROR, "Unknown window type %s.\n", window);
+            delete [] win;
+            return (0);
+        }
+        return (win);
+    }
+}
+
+
 //
 // Code to do fourier transforms on transient analysis data.
 //
@@ -518,97 +613,5 @@ CommandTab::com_spec(wordlist *wl)
 #else
     delete [] win;
 #endif
-}
-
-
-// Return an array representing the window function for the time values
-// passed, over the given span
-//
-double *
-FFTwindow(int tlen, double *time, double span)
-{
-    double *win = new double[tlen];
-    double maxt = time[tlen-1];
-    const char *window = kw_hanning;
-    VTvalue vv;
-    if (Sp.GetVar(kw_specwindow, VTYP_STRING, &vv)) 
-        window = vv.get_string();
-
-    if (lstring::eq(window, kw_none)) {
-        for (int i = 0; i < tlen; i++)
-            win[i] = 1.0;
-    }
-    else if (lstring::eq(window, kw_rectangular)) {
-        for (int i = 0; i < tlen; i++) {
-            if (maxt - time[i] > span)
-                win[i] = 0.0;
-            else
-                win[i] = 1.0;
-        }
-    }
-    else if (lstring::eq(window, kw_hanning) ||
-            lstring::eq(window, kw_cosine)) {
-        for (int i = 0; i < tlen; i++) {
-            if (maxt - time[i] > span)
-                win[i] = 0.0;
-            else
-                win[i] = 1.0 - cos(2.0*M_PI*(time[i] - maxt)/span);
-        }
-    }
-    else if (lstring::eq(window, kw_hamming)) {
-        for (int i = 0; i < tlen; i++) {
-            if (maxt - time[i] > span)
-                win[i] = 0.0;
-            else
-                win[i] = 1.0 - 0.92/1.08*cos(2.0*M_PI*(time[i] - maxt)/span);
-        }
-    }
-    else if (lstring::eq(window, kw_triangle) ||
-            lstring::eq(window, kw_bartlet)) {
-        for (int i = 0; i < tlen; i++) {
-            if (maxt - time[i] > span)
-                win[i] = 0.0;
-            else
-                win[i] = 2.0 - fabs(2.0 + 4.0*(time[i] - maxt)/span);
-        }
-    }
-    else if (lstring::eq(window, kw_blackman)) {
-        /* Only order=2 supported.
-        int order = DEF_specwindoworder;
-        VTvalue vv1;
-        if (Sp.GetVar(kw_specwindoworder, VTYP_NUM, &vv1) &&
-                vv1.get_int() >= DEF_specwindoworder_MIN &&
-                vv1.get_int() <= DEF_specwindoworder_MAX)
-            order = vv1.get_int();
-        */
-
-        for (int i = 0; i < tlen; i++) {
-            if (maxt - time[i] > span)
-                win[i] = 0.0;
-            else {
-                win[i]  = 1.0;
-                win[i] -= 0.50/0.42*cos(2.0*M_PI*(time[i] - maxt)/span);
-                win[i] += 0.08/0.42*cos(4.0*M_PI*(time[i] - maxt)/span);
-            }
-        }
-    }
-    else if (lstring::eq(window, kw_gaussian)) {
-        int order = 2;  // only order 2 supported here
-
-        double scale = pow(2.0*M_PI/order, 0.5)*(0.5 - erfc(pow(order, 0.5)));
-        for (int i = 0; i < tlen; i++) {
-            if (maxt - time[i] > span)
-                win[i] = 0.0;
-            else
-                win[i] = exp(-0.5*order*(1.0 - 2.0*(maxt - time[i])/span)*
-                    (1.0 - 2.0*(maxt - time[i])/span))/scale;
-        }
-    }
-    else {
-        GRpkgIf()->ErrPrintf(ET_ERROR, "Unknown window type %s.\n", window);
-        delete [] win;
-        return (0);
-    }
-    return (win);
 }
 
