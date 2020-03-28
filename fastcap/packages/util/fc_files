@@ -20,7 +20,7 @@ fastcap_paper.pdf \
 FastCapsuppl.pdf \
 mtt.ps \
 tcad.ps \
-ug.ps"
+ug.pdf"
 
 examples="\
 1x1bus.lst \
