@@ -54,40 +54,68 @@
 // Exported font control class
 //
 namespace { GTKfont gtk_font; }
+
 GRfont &FC = gtk_font;
 
 GRfont::fnt_t GRfont::app_fonts[] =
 {
     fnt_t( 0, 0, false, false ),  // not used
-#ifdef WIN32
-    fnt_t( "Fixed Pitch Text Window Font",    "Lucida Console 9", true, false ),
-    fnt_t( "Proportional Text Window Font",   "Sans 9", false, false ),
-    fnt_t( "Fixed Pitch Drawing Window Font", "Lucida Console 9", true, false ),
-    fnt_t( "Text Editor Font",                "Lucida Console 9", false, false ),
-    fnt_t( "HTML Viewer Proportional Family", "Sans 9", false, true ),
-    fnt_t( "HTML Viewer Fixed Pitch Family",  "Lucida Console 9", true, true )
-#else
-/******
-Needed on old 2010 Macbook Pro 13 inch, not good for new 15 inch Macbook Pro.
-#ifdef __APPLE__
-    fnt_t( "Fixed Pitch Text Window Font",    "Monospace 12", true, false ),
-    fnt_t( "Proportional Text Window Font",   "Sans 12", false, false ),
-    fnt_t( "Fixed Pitch Drawing Window Font", "Monospace 12", true, false ),
-    fnt_t( "Text Editor Font",                "Monospace 12", false, false ),
-    fnt_t( "HTML Viewer Proportional Family", "Sans 12", false, true ),
-    fnt_t( "HTML Viewer Fixed Pitch Family",  "Monospace 12", true, true )
-*******/
-    fnt_t( "Fixed Pitch Text Window Font",    "Monospace 9", true, false ),
-    fnt_t( "Proportional Text Window Font",   "Sans 9", false, false ),
-    fnt_t( "Fixed Pitch Drawing Window Font", "Monospace 9", true, false ),
-    fnt_t( "Text Editor Font",                "Monospace 9", false, false ),
-    fnt_t( "HTML Viewer Proportional Family", "Sans 9", false, true ),
-    fnt_t( "HTML Viewer Fixed Pitch Family",  "Monospace 9", true, true )
-#endif
+    fnt_t( "Fixed Pitch Text Window Font",    0, true, false ),
+    fnt_t( "Proportional Text Window Font",   0, false, false ),
+    fnt_t( "Fixed Pitch Drawing Window Font", 0, true, false ),
+    fnt_t( "Text Editor Font",                0, false, false ),
+    fnt_t( "HTML Viewer Proportional Family", 0, false, true ),
+    fnt_t( "HTML Viewer Fixed Pitch Family",  0, true, true )
 };
 
 int GRfont::num_app_fonts =
     sizeof(GRfont::app_fonts)/sizeof(GRfont::app_fonts[0]);
+
+
+// This sets the default font names and sizes.  It nust be called as
+// soon as GTK is initialized, and before any calls to the other font
+// functions.
+//
+void
+GTKfont::initFonts()
+{
+    // Just call this once.
+    if (app_fonts[0].default_fontname != 0)
+        return;
+
+    // Figure out the present font size, this should take into account
+    // settings in .gtkrc-2.0 and elsewhere.
+    GtkWidget *button = gtk_button_new();
+    int def_size = stringWidth(button, 0);
+    if (def_size <= 0)
+        def_size = 9;
+
+//    printf("Default font size %d.\n", def_size);
+
+    char buf[80];
+    char *def_fx_font_name;
+    char *def_pr_font_name;
+#ifdef WIN32
+    sprintf(buf, "Lucide Console %d", def_size);
+    def_fx_font_name = lstring::copy(buf);
+    sprintf(buf, "Sans %d", def_size);
+    def_pr_font_name = lstring::copy(buf);
+#else
+    sprintf(buf, "Monospace %d", def_size);
+    def_fx_font_name = lstring::copy(buf);
+    sprintf(buf, "Sans %d", def_size);
+    def_pr_font_name = lstring::copy(buf);
+#endif
+
+    // Poke in the names.
+    for (int i = 0; i < num_app_fonts; i++) {
+        if (app_fonts[i].fixed)
+            app_fonts[i].default_fontname = def_fx_font_name;
+        else
+            app_fonts[i].default_fontname = def_pr_font_name;
+    }
+}
+
 
 namespace {
     // Test if the spacing for 'i' and 'M' are the same, return true

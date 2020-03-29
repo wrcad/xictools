@@ -52,6 +52,7 @@ namespace gtkinterf {
     {
         GTKfont() { last_index = 0; }
 
+        void initFonts();
         GRfontType getType() { return (GRfontP); }
         void setName(const char*, int);
         const char *getName(int);
