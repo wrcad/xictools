@@ -68,17 +68,32 @@ for example.
 *****************************************************
 IMPORTANT -- Mac OS X note!
 
-The Darwin package release is now generated on Sierra (10.12), but
-the programs are fully compatible with El Capitan (10.11).
+The Darwin64 package release is now generated on High Sierra (10.13),
+but the programs are fully compatible with Sierra (10.12), Mojave
+(10.14), and Catalina (10.15).
 
 Support for earlier OS X releases has ended.  This is Apple's
 decision, not mine.
 
-March 2020:
-Fixed default font sizes in Apple so they aren't huge on my new 15
-inch Macbook Pro (12 pt to 9 pt).  For now, user should create a
-$HOME/.gtkrc-2.0 file with a line gtk-font-name="foo 9" This shrinks
-GTK menu, etc.  widget fonts to be reasonable.
+*****************************************************
+IMPORTANT -- Font Size (March 2020)
+
+The default GTK font sizes generally seem reasonable, except on my old
+MacBook 2010 pro, where they become too small to read (they are fine
+on my new 15 inch MacBook Pro).  One can change the fonts with the
+Font setting pop up and saving, but these apply only to text in
+application windows, not the native widget text.  There is a new way
+to set all font sizes, including the widget fonts:
+
+Create (if necessary, it might already exist) a file in your home
+directory named ".gtkrc-2.0".
+
+Add a line to the file:  gtk-font-name="foo 12"
+
+The integer 12 is an example, your size may vary.  Experiment to find
+the best size for your screen.  For my old MacBook I use 12, for
+everything else 9 is a decent choice, which is about the same as not
+doing this at all.
 
 *****************************************************
 IMPORTANT -- Linux and OS X only

@@ -33,7 +33,7 @@ oses)
   echo \
 "Darwin \
 LinuxDebian10 \
-LinuxFedora30 \
+LinuxFedora31 \
 LinuxOpenSUSE42 \
 LinuxRHEL5.i686 \
 LinuxRHEL5 \
@@ -51,7 +51,7 @@ host)
     echo macbook;;
   LinuxDebian10)
     echo debby;;
-  LinuxFedora30)
+  LinuxFedora31)
     echo fedor;;
   LinuxOpenSUSE42)
     echo byron;;
@@ -75,7 +75,7 @@ sfx)
     echo pkg;;
   LinuxDebian10)
     echo deb;;
-  LinuxFedora30)
+  LinuxFedora31)
     echo rpm;;
   LinuxOpenSUSE42)
     echo rpm;;

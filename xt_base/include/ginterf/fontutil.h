@@ -75,11 +75,10 @@ namespace ginterf
             bool fixed;         // restricted to monospace fonts
             bool family_only;   // ignore slant, etc.
         };
-        static fnt_t app_fonts[];
-        static int num_app_fonts;
 
         virtual ~GRfont() { }
 
+        virtual void initFonts() = 0;
         virtual GRfontType getType() = 0;
         virtual void setName(const char*, int) = 0;
         virtual const char *getName(int) = 0;
@@ -95,6 +94,9 @@ namespace ginterf
 
         static void parse_freeform_font_string(const char*, char**,
             stringlist**, int*, int = 12);
+
+        static fnt_t app_fonts[];
+        static int num_app_fonts;
     };
 
 
