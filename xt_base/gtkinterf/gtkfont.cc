@@ -93,19 +93,10 @@ GTKfont::initFonts()
 //    printf("Default font size %d.\n", def_size);
 
     char buf[80];
-    char *def_fx_font_name;
-    char *def_pr_font_name;
-#ifdef WIN32
-    sprintf(buf, "Lucide Console %d", def_size);
-    def_fx_font_name = lstring::copy(buf);
-    sprintf(buf, "Sans %d", def_size);
-    def_pr_font_name = lstring::copy(buf);
-#else
     sprintf(buf, "Monospace %d", def_size);
-    def_fx_font_name = lstring::copy(buf);
+    char *def_fx_font_name = lstring::copy(buf);
     sprintf(buf, "Sans %d", def_size);
-    def_pr_font_name = lstring::copy(buf);
-#endif
+    char *def_pr_font_name = lstring::copy(buf);
 
     // Poke in the names.
     for (int i = 0; i < num_app_fonts; i++) {
