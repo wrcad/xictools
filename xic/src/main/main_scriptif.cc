@@ -277,9 +277,23 @@ namespace {
             sprintf(buf, "FEATURESET \"%s\"", "VIEWER");
             mh->parse_macro(buf, true);
         }
+
         const char *techname = Tech()->TechnologyName();
-        if (techname && *techname) 
-            mh->parse_macro(techname, true, true);   // No subdtitution.
+        if (techname && *techname) {
+            mh->parse_macro(techname, true, true);   // No substitution.
+            sprintf(buf, "technology \"%s\"", techname);
+            mh->parse_macro(buf, true, true);   // No substitution.
+        }
+        const char *vendor = Tech()->VendorName();
+        if (vendor && *vendor) {
+            sprintf(buf, "vendor \"%s\"", vendor);
+            mh->parse_macro(buf, true, true);   // No substitution.
+        }
+        const char *process = Tech()->ProcessName();
+        if (process && *process) {
+            sprintf(buf, "process \"%s\"", process);
+            mh->parse_macro(buf, true, true);   // No substitution.
+        }
     }
 }
 

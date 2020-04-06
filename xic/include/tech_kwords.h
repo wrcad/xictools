@@ -64,6 +64,8 @@ struct sTKW
 
     // Global Parameters.
     const char *Technology()        const { return ("Technology"); }
+    const char *Vendor()            const { return ("Vendor"); }
+    const char *Process()           const { return ("Process"); }
     const char *MapLayer()          const { return ("MapLayer"); }
     const char *DefineLayer()       const { return ("DefineLayer"); }
     const char *DefinePurpose()     const { return ("DefinePurpose"); }
