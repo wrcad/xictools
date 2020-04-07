@@ -1,6 +1,5 @@
 SCED spice model library
-# Xic model.lib file 3.1.7 8/10/2009
-# >>> NOTE: The Hypres JJ models have changed.
+# Xic model.lib file April 6, 2020.
 #
 # This file contains only a few representative device models.  It is
 # expected that each site will have a central model.lib file, customized
@@ -8,33 +7,50 @@ SCED spice model library
 # files.  Remember that models can also be kept in /models subdirectories
 # in the library search path.
 
-# Josephson junctions for Hypres foundry process.
-# Based on Hypres Design Rules Revision #24, Jan. 11, 2008.
-# Note that capacitance values are substantially larger than the models
-# provided earlier.
+# Josephson junctions for SeeQC (formerly Hypres) foundry process.
+# Based on SeeQC Process #S1 Design Rules Rev. 1, Nov. 25, 2019.
 
-# These scale to 1mA for area=1.  Use the area device parameter to set
+# These scale to 1mA for area=1.  Use the ics device parameter to set
 # actual critical current.
 
-* Nb 30 A/cm2
+# Nb 30 A/cm2
 .model jj1 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
 + icrit=1m, r0=30, rn=1.7, cap=123.3p)
 
-* Nb 1000 A/cm2
+# Nb 1000 A/cm2
 .model jj2 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
 + icrit=1m, r0=30, rn=1.7, cap=5.0p)
 
-* Nb 4500 A/cm2
+# Nb 4500 A/cm2
 .model jj3 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
 + icrit=1m, r0=30, rn=1.7, cap=1.31p)
-.model jjr jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
+.model jj3r jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
 + icrit=1m, vshunt=0.5mV cap=1.31p)
+
+# Nb 10000 A/cm2
+.model jj4 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=0.65p)
+.model jj4r jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, vshunt=0.71mV cap=0.65p)
+
+# Nb 20000 A/cm2
+.model jj5 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, r0=30, rn=1.7, cap=0.36p)
+.model jj5r jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
++ icrit=1m, vshunt=0.96mV cap=0.36p)
+
+# MIT-LL SFQ5ee process, 10000 A/cm2
+.model jj5eeu jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m,
++ icrit=1m, r0=16/5, rn=1.65, cap=0.7p)
+.model jj5ee jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m,
++ icrit=1m, vshunt=0.6857mV cap=0.7p)
+.model jj5ee1 jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m,
++ icrit=1m, vshunt=1.2mV cap=0.7p)
 
 # Made-up YBCO model, the Vg is kept small so that timestep-limiting
 # does not make simulations ridiculously slow.  This will not affect
 # SFQ circuits since junction voltage is always much smaller than this
 # value.
-* YBCO
 .model ybco1 jj(rtype=1, cct=1, icon=10m, vg=2.8m, delv=0.08m,
 + icrit=1m, r0=1, rn=1, cap=.1p)
 
@@ -100,3 +116,4 @@ SCED spice model library
 .model dx D(Is=800.0E-18)
 .model qx NPN(Is=800.0E-18 Bf=62.50)
 .ends
+
