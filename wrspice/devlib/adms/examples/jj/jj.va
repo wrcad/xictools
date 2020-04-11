@@ -52,6 +52,10 @@
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
 
+// Version 1.35, April 10, 2020 added NOIDT symbol to allow avoidance
+//   of the idt call, which was reported be inaccurate in some
+//   implementations.  Removed the "fakeDC" compile option, as this is
+//   just not good.
 // Version 1.34, December 18, 2019 instance param ics range widened,
 //   added NORLMT compile-time option.
 // Version 1.33, July 14, 2019 instance read-only parameters gshunt
@@ -221,13 +225,13 @@
 // you don't do SFQ logic.
 `define NEWNPAR
 
-// Uncomment this to support a phony DC analysis mode by loading JJ as
-// a tiny resistance.  Not recommended.
-//`define fakeDC
-
 // Suppress limit check of subgap and normal resistances.  Not
-// recomended unless needed for wierd devices.
+// recomended unless needed for Monte Carlo or weird devices.
 //`define NORLMT
+
+// Avoid calling the idt (integration) function, seems it may be
+// inaccurate in some implementations.  Not needed for WRspice.
+//`define NOIDT
 
 // MIT-LL SFQ5EE process, parameters from:
 // Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 26, 1100110, (2016)
@@ -266,8 +270,7 @@ module jj (n1, n2, ph);
 
 // The third node is optional, and if used will return the junction phase
 // in radians.
-inout n1, n2;
-output ph;
+inout n1, n2, ph;
 // Add flags to indicate a "phase node" for WRspice phase-mode DC analysis.
 electrical n1           `P(phase="true");
 electrical n2           `P(phase="true");
@@ -281,6 +284,9 @@ branch(n1, n2) bj, bc, br;
 `endif
 `ifdef NEWLSH
 electrical nshint       `P(phase="true");
+`endif
+`ifdef NOIDT
+electrical nph;
 `endif
 
 //
@@ -555,7 +561,7 @@ analog begin
                     lshval = lsh0 + lsh1/gshunt;
 `endif
             end
-`endif
+`endif  // NEWVSHUNT
 
         // Interface parameter passed to model from simulator using
         // the Verilog $simparam system function.  At present, only
@@ -570,11 +576,11 @@ analog begin
 `endif
     end
 
-`ifdef WRspice
-    // Only WRspice can do DC analysis at present.
 
     if (analysis("static") != 0)
         begin
+`ifdef WRspice
+        // Only WRspice can do DC analysis at present.
 
         // smallSig
         //   If the simulator returns nonzero, we're about to load the
@@ -632,15 +638,22 @@ analog begin
 `else
                 I(br) <+ gshunt*V(br);
 `endif
-`endif
+`endif  // NEWLSH
                 end
-`endif
+`endif  // NEWVSHUNT
 
+`ifdef NOIDT
+            if ($port_connected(ph))
+                V(nph,ph) <+ 0;
+            I(nph) <+ phase;
+            I(nph) <+ -V(nph);
+`else
             if ($port_connected(ph))
                 begin
                 I(ph) <+ phase;
                 I(ph) <+ -V(ph);
                 end
+`endif
             end
         else if (pmode != 0)
             begin
@@ -687,11 +700,18 @@ analog begin
                     I(bj) <+ ic_scaled*sin(phase);
                 end
             start_phase = phase;
+`ifdef NOIDT
+            if ($port_connected(ph))
+                V(nph,ph) <+ 0;
+            I(nph) <+ phase;
+            I(nph) <+ -V(nph);
+`else
             if ($port_connected(ph))
                 begin
                 I(ph) <+ phase;
                 I(ph) <+ -V(ph);
                 end
+`endif
 `ifdef NEWLSER
             if (lser > 0.0)
                 V(blser) <+ lser*I(blser)/`PHI0_2PI;
@@ -707,56 +727,62 @@ analog begin
             end
         else
             begin
-`ifdef fakeDC
-            // DC analysis, fake it by modeling the JJ as a low value
-            // resistor.  This is not recommended, but may allow use
-            // of conventional DCOP in some circuits.
-
-            I(ph) <+ -V(ph);
-            I(br) <+ 1e6*scale*V(br);
-`ifdef NEWLSER
-            V(blser) <+ 0.0;
-`endif
-`else
             $error(
  "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
             $finish(0);
-`endif
             end
         end
+`else  // not WRspice
+        begin
+        $error(
+ "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
+        $finish(0);
+        end
+`endif  // WRspice
+
     else if (analysis("tran") != 0)
-`else
-    if (analysis("tran") != 0)
-`endif
         begin : tranan
         real avj, vtmp;
 
         // Supercurrent.
         if (cct == 1)
             begin
+`ifdef NOIDT
+            // Integrate using the charge on a virtual capacitor. 
+            // This assumes that ddt is not broken as is idt.
+
+            if ($port_connected(ph))
+                V(nph,ph) <+ 0;
+            phase = V(nph);
+            I(nph) <+ -V(bj);
+            I(nph) <+ ddt(V(nph)*`PHI0_2PI);
+            // Keep a dc return path of matrix might be singular.
+            I(nph) <+ 1e-12;
+            // I(nph) <+ $simparam("gmin", 1e-12);  // slow
+`else
             phase = idt(V(bj)/`PHI0_2PI, start_phase);
+            if ($port_connected(ph))
+                begin
+                // The following will make the output phase node look like
+                // a voltage source.  However, some Verilog-A translation
+                // systems can't handle this construct (WRspice handles it
+                // properly).  It also adds a "branch" node to the circuit
+                // matrix, which increases memory use for no good reason.
+                //
+                // V(ph) <+ phase;
+                //
+                // The following is basically equivalent.  This gives our
+                // "voltage source" a 1 ohm internal resistance, and does
+                // not increase the circuit matrix size.
+                //
+                I(ph) <+ phase;
+                I(ph) <+ -V(ph);
+                end
+`endif
             if (pijj != 0)
                 I(bj) <+ -ic_scaled*sin(phase);
             else
                 I(bj) <+ ic_scaled*sin(phase);
-            end
-
-        if ($port_connected(ph))
-            begin
-            // The following will make the output phase node look like a
-            // voltage source.  However, some Verilog-A translation
-            // systems can't handle this construct (WRspice handles it
-            // properly).  It also adds a "branch" node to the circuit
-            // matrix, which increases memory use for no good reason.
-            //
-            // V(ph) <+ phase;
-            //
-            // The following is basically equivalent.  This gives our
-            // "voltage source" a 1 ohm internal resistance, and does
-            // not increase the circuit matrix size.
-            //
-            I(ph) <+ phase;
-            I(ph) <+ -V(ph);
             end
 
         // Geometric capacitance current.
@@ -789,9 +815,9 @@ analog begin
 `else
             I(br) <+ gshunt*V(br);
 `endif
-`endif
+`endif  // NEWLSH
             end
-`endif
+`endif  // NEWVSHUNT
 
 `ifdef NEWLSER
         if (lser > 0.0)
