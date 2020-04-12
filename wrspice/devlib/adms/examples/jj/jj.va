@@ -577,10 +577,11 @@ analog begin
     end
 
 
+`ifdef WRspice
+    // Only WRspice can do DC analysis at present.
+
     if (analysis("static") != 0)
         begin
-`ifdef WRspice
-        // Only WRspice can do DC analysis at present.
 
         // smallSig
         //   If the simulator returns nonzero, we're about to load the
@@ -732,15 +733,12 @@ analog begin
             $finish(0);
             end
         end
-`else  // not WRspice
-        begin
-        $error(
- "JJ.va model:  DC analysis is unsupported, use \"uic\" to avoid DCOP.");
-        $finish(0);
-        end
-`endif  // WRspice
 
     else if (analysis("tran") != 0)
+`else  // not WRspice
+    if (analysis("tran") != 0)
+`endif  // WRspice
+
         begin : tranan
         real avj, vtmp;
 
@@ -756,9 +754,9 @@ analog begin
             phase = V(nph);
             I(nph) <+ -V(bj);
             I(nph) <+ ddt(V(nph)*`PHI0_2PI);
-            // Keep a dc return path of matrix might be singular.
+            // Keep a dc return path or matrix might be singular.
             I(nph) <+ 1e-12;
-            // I(nph) <+ $simparam("gmin", 1e-12);  // slow
+            // I(nph) <+ $simparam("gmin", 1e-12);  // may be slow
 `else
             phase = idt(V(bj)/`PHI0_2PI, start_phase);
             if ($port_connected(ph))
