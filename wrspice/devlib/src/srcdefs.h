@@ -224,6 +224,7 @@ using namespace SRC;
 enum {
     SRC_I = GENSRC_I,  // GENSRC_I = 1
     SRC_V = GENSRC_V,
+    SRC_PWRMODE,
     SRC_DEP,
     SRC_DC,
     SRC_AC,

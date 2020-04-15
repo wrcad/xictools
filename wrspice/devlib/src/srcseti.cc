@@ -59,6 +59,7 @@ SRCdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         0, // notused
         &&L_SRC_I,
         &&L_SRC_V,
+        &&L_SRC_PWRMODE,
         &&L_SRC_DEP,
         &&L_SRC_DC,
         &&L_SRC_AC,
@@ -129,6 +130,14 @@ SRCdev::setInst(int param, IFdata *data, sGENinstance *geninst)
             inst->SRCtree->differentiate();
             value->tValue = 0;
         }
+        return (OK);
+    L_SRC_PWRMODE:
+        // This is undocumented, for HSPICE coexistence.  A
+        // value 0 is a normal source, nonzero is something weird and
+        // not supported.
+
+        if (value->iValue != 0)
+            return (E_BADPARM);
         return (OK);
     L_SRC_DEP:
         if (inst->SRCdep)
@@ -344,6 +353,14 @@ SRCdev::setInst(int param, IFdata *data, sGENinstance *geninst)
             inst->SRCtree->differentiate();
             value->tValue = 0;
         }
+        break;
+    case SRC_PWRMODE:
+        // This is undocumented, for HSPICE coexistence.  A
+        // value 0 is a normal source, nonzero is something weird and
+        // not supported.
+
+        if (value->iValue != 0)
+            return (E_BADPARM);
         break;
     case SRC_DEP:
         if (inst->SRCdep)
