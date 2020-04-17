@@ -357,7 +357,12 @@
 #define  SP_OPT_INTERRUPT                   0
 #define  SP_OPT_DEFAULT_PARTITION           spINDIRECT_PARTITION
 #define  SP_OPT_LONG_DBL_SOLVE              1
+#define NEWXXX
+#ifdef NEWXXX
+#define  SP_BUILDHASH                       1
+#else
 #define  SP_BUILDHASH                       0
+#endif
 #define  SP_BITFIELD                        0
 #define  SP_OPT_DEBUG                       0
 
@@ -901,6 +906,9 @@ struct spHtab
     ~spHtab();
 
     spMatrixElement *get(int, int);
+#ifdef NEWXXX
+    spMatrixElement *list();
+#endif
     void link(spHelt*);
     void stats(unsigned int*, unsigned int*);
 
@@ -1206,6 +1214,9 @@ public:
     spMatrixFrame(int, int);
     ~spMatrixFrame();
     void     spClear();
+#ifdef NEWXXX
+    void     spSetBuildState(int);
+#endif
     spREAL*  spGetElement(int, int);
 #if SP_OPT_QUAD_ELEMENT
     int      spGetAdmittance(int, int, struct spTemplate*);
@@ -1246,6 +1257,9 @@ public:
 
     // spspice.cc
 #ifdef WRSPICE
+#ifdef NEWXXX
+    void     spSwitchMatrix();
+#endif
     void     spSaveForInitialization();
     void     spLoadInitialization();
     void     spNegate();
@@ -1359,6 +1373,15 @@ private:
         {
             return (ElementHashTab ? ElementHashTab->get(row, col) : 0);
         }
+
+#ifdef NEWXXX
+    // Return a row-linked list of the elements.
+    //
+    spMatrixElement *sph_list()
+        {
+            return (ElementHashTab ? ElementHashTab->list() : 0);
+        }
+#endif
 
     // Return the sph_get call count and the allocated size.  The call
     // count is zeroed.
@@ -1505,6 +1528,9 @@ private:
     int                         Singletons;
     int                         MaxRowCountInLowerTri;
     int                         Error;
+#ifdef NEWXXX
+    int                         BuildState;
+#endif
 
     spBOOLEAN                   Complex;
     spBOOLEAN                   Factored;

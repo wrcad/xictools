@@ -56,6 +56,28 @@
 //   S. R. Whiteley 1993 (and subsequent)
 //
 
+#ifdef NEWXXX
+void
+spMatrixFrame::spSwitchMatrix()
+{
+#ifdef USE_KLU
+    ASSERT(IS_SPARSE(this));
+
+    if (BuildState == 1 AND (NOT NoKLU) AND klu_if.is_ok()) {
+        spSetMatlabMatrix(new KLUmatrix(Size, Elements, Complex, LongDoubles));
+        // We can now destroy all previous elements and fill-ins.
+        ElementAllocator.Clear();
+        FillinAllocator.Clear();
+        memset(FirstInCol, 0, (Size+1)*sizeof(void*));
+        memset(FirstInRow, 0, (Size+1)*sizeof(void*));
+        memset(Diag, 0, (Size+1)*sizeof(void*));
+        DataAddressChange = YES;
+        BuildState = 2;
+    }
+#endif
+}
+#endif
+
 
 //  COPY REAL PART TO INITIALIZER PART OF MATRIX
 //
@@ -80,6 +102,7 @@ spMatrixFrame::spSaveForInitialization()
 {
     ASSERT(IS_SPARSE(this));
 
+/*XXX call spSwitchMatrix
 #ifdef USE_KLU
     if (NOT NoKLU AND klu_if.is_ok()) {
         spSetMatlabMatrix(new KLUmatrix(Size, Elements, Complex, LongDoubles));
@@ -92,6 +115,7 @@ spMatrixFrame::spSaveForInitialization()
         DataAddressChange = YES;
     }
 #endif
+*/
 
     if (Matrix)
         Matrix->toInit();

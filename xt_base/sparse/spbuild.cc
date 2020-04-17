@@ -71,6 +71,9 @@
 #include "sparse/spmacros.h"
 #include "sparse/spmatrix.h"
 #include <math.h>
+#ifdef NEWXXX
+#include <algorithm>
+#endif
 
 #ifdef WRSPICE
 #include "ttyio.h"
@@ -213,6 +216,9 @@ spMatrixFrame::spMatrixFrame(int size, int flags)
     Fillins                         = 0;
     Singletons                      = 0;
     MaxRowCountInLowerTri           = 0;
+#ifdef NEWXXX
+    BuildState                      = 0;
+#endif
 
     Factored                        = NO;
     Partitioned                     = NO;
@@ -382,6 +388,128 @@ spMatrixFrame::spClear()
 }
 
 
+#ifdef NEWXXX
+
+namespace {
+    bool eltsort(const spMatrixElement *e1, const spMatrixElement *e2)
+    {
+        if (e1->Row < e2->Row)
+            return (true);
+        if ((e1->Row == e2->Row) && (e1->Col < e2->Col))
+            return (true);
+        return (false);
+    }
+
+    spMatrixElement *sortlist(spMatrixElement *list)
+    {
+        unsigned int sz = 0;
+        for (spMatrixElement *p = list; p; p = p->NextInRow)
+            sz++;
+        if (sz < 2)
+            return (list);
+        spMatrixElement **ary = new spMatrixElement*[sz];
+        sz = 0;
+        for (spMatrixElement *p = list; p; p = p->NextInRow)
+            ary[sz++] = p;
+
+        std::sort(ary, ary+sz, eltsort);
+        for (unsigned int i = 1; i < sz; i++)
+            ary[i-1]->NextInRow = ary[i];
+        ary[sz-1]->NextInRow = 0;
+        list = ary[0];
+        delete [] ary;
+        return (list);
+    }
+}
+
+
+void
+spMatrixFrame::spSetBuildState(int n)
+{
+    if (n == 0) {
+        // This is called before any calls to spGetElement. 
+        // Subsequently, spGetElement is called for each matrix term
+        // that will be handled, one pass to record the nonzero matrix
+        // entries.
+
+        BuildState = 0;
+        return;
+    }
+    if (n == 1 && BuildState == 0) {
+        // Called when we've completed the first pass, and therefor
+        // know the size of the matrix.
+        
+#if SP_BUILDHASH
+        // Link the hash table elements into a 2D linked list, and
+        // fill in the row/col list head arrays.
+
+        EnlargeMatrix(ExtSize); // sets Size.
+        spMatrixElement *list = sph_list();
+        list = sortlist(list);
+
+        unsigned int sp1 = Size+1;
+        spMatrixElement **lastInRow = new spMatrixElement*[sp1];
+        memset(lastInRow, 0, sp1*sizeof(spMatrixElement*));
+        memset(FirstInRow, 0, sp1*sizeof(spMatrixElement*));
+        spMatrixElement **lastInCol = new spMatrixElement*[sp1];
+        memset(lastInCol, 0, sp1*sizeof(spMatrixElement*));
+        memset(FirstInCol, 0, sp1*sizeof(spMatrixElement*));
+
+        Elements = 0;
+        spMatrixElement *pnxt;
+        for (spMatrixElement *p = list; p; p = pnxt) {
+            Elements++;
+            pnxt = p->NextInRow;
+            p->NextInRow = 0;
+            p->NextInCol = 0;
+
+            if (!FirstInRow[p->Row]) {
+                FirstInRow[p->Row] = p;
+                lastInRow[p->Row] = p;
+            }
+            else {
+                lastInRow[p->Row]->NextInRow = p;
+                lastInRow[p->Row] = p;
+            }
+
+            if (!FirstInCol[p->Col]) {
+                FirstInCol[p->Col] = p;
+                lastInCol[p->Col] = p;
+            }
+            else {
+                lastInCol[p->Col]->NextInCol = p;
+                lastInCol[p->Col] = p;
+            }
+
+            if (p->Row == p->Col)
+                Diag[p->Row] = p;
+        }
+        delete [] lastInRow;
+        delete [] lastInCol;
+        RowsLinked = YES;
+
+#if SP_OPT_TRANSLATE
+        if (NOT RemapInTranslate) {
+            // Build identity maps.
+            delete [] ExtToIntColMap;
+            delete [] ExtToIntRowMap;
+            ExtToIntColMap = new int[sp1];
+            ExtToIntRowMap = new int[sp1];
+            for (int i = 0; i <= Size; i++) {
+                ExtToIntColMap[i] = i;
+                ExtToIntRowMap[i] = i;
+            }
+        }
+#endif
+#endif
+        BuildState = 1;
+        return;
+    }
+}
+
+#endif
+
+
 //  SINGLE ELEMENT ADDITION TO MATRIX BY INDEX
 //
 // Finds element [row,col] and returns a pointer to it.  If element is
@@ -418,6 +546,77 @@ spMatrixFrame::spClear()
 spREAL *
 spMatrixFrame::spGetElement(int inrow, int incol)
 {
+    ASSERT(inrow >= 0 AND incol >= 0);
+
+    if ((inrow == 0) OR (incol == 0))
+        return (&TrashCan.Real);
+
+#if NOT SP_OPT_TRANSLATE
+    ASSERT(NeedsOrdering);
+#endif
+
+#ifdef NEWXXX
+    int row = inrow;
+    int col = incol;
+#if SP_OPT_TRANSLATE
+    if (RemapInTranslate)
+        Translate(&row, &col);
+#endif
+
+    spMatrixElement *pElement;
+#if SP_BUILDHASH
+    if (BuildState == 0) {
+        // The first time we load the element nodes, we simply load
+        // them into a hash table, that keys off x,y.
+
+        pElement = sph_get(row, col);
+        if (pElement)
+            return ((spREAL*)pElement);
+        pElement = GetElement();
+        pElement->Row = row;
+        pElement->Col = col;
+        sph_add(row, col, pElement);
+        if (row > ExtSize)
+            ExtSize = row;
+        if (col > ExtSize)
+            ExtSize = col;
+        return ((spREAL*)pElement);
+    }
+    if (!Matrix) {
+        pElement = sph_get(row, col);
+        if (!pElement) {
+            // Something is fucked up.
+        }
+        return ((spREAL*)pElement);
+    }
+    if (Matrix)
+        return (Matrix->find(row-1, col-1));
+
+#else // SP_BUILDHASH
+
+    if (Matrix)
+        return (Matrix->find(row-1, col-1));
+
+#if NOT SP_OPT_TRANSLATE
+#if NOT SP_OPT_EXPANDABLE
+    ASSERT(row <= Size AND col <= Size);
+#endif
+
+#if SP_OPT_EXPANDABLE
+    // Re-size Matrix if necessary
+    if ((row > Size) OR (col > Size))
+        EnlargeMatrix(SPMAX(row, col));
+#endif
+#endif
+
+    if ((row == col) AND (Diag[row] != 0))
+        pElement = Diag[row];
+    else
+        pElement = FindElementInCol(&FirstInCol[col], row, col, YES);
+#endif
+    return ((spREAL*)pElement);
+
+#else  // NEWXXX
     ASSERT(inrow >= 0 AND incol >= 0);
 
     if ((inrow == 0) OR (incol == 0))
@@ -466,6 +665,8 @@ spMatrixFrame::spGetElement(int inrow, int incol)
     sph_add(inrow, incol, pElement);
 #endif
     return ((spREAL*)pElement);
+
+#endif // NEWXXX
 }
 
 
@@ -1452,6 +1653,29 @@ spHtab::get(int row, int col)
     }
     return (0);
 }
+
+
+#ifdef NEWXXX
+// Return all matrix elements in a linked list along the Row pointer.
+// THIS DESTROYS ANY ROW/COL LINKAGE.
+//
+spMatrixElement *
+spHtab::list()
+{
+    if (allocated) {
+        spMatrixElement *pstart = 0;
+        for (unsigned int i = 0; i <= mask; i++) {
+            for (spHelt *h = entries[i]; h; h = h->next) {
+                h->eptr->NextInRow = pstart;
+                pstart = h->eptr;
+                h->eptr->NextInCol = 0;
+            }
+        }
+        return (pstart);
+    }
+    return (0);
+}
+#endif
 
 
 void
