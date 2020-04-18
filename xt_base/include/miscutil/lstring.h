@@ -471,8 +471,22 @@ namespace lstring {
         if (!**s)
             return (0);
         T *st = *s;
-        while (is_not_sepchar(**s, sepchars))
+        if (**s == '"' || **s == '\'') {
+            // Keep quotes and keep content verbatim.
+            char q = **s;
             (*s)++;
+            while (**s) {
+                if (**s == q)
+                    break;
+                (*s)++;
+            }
+            if (**s)
+                (*s)++;
+        }
+        else {
+            while (is_not_sepchar(**s, sepchars))
+                (*s)++;
+        }
         char *cbuf = new char[*s - st + 1];
         char *c = cbuf;
         while (st < *s)

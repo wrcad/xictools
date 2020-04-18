@@ -284,6 +284,7 @@ CshPar::MessageHandler(int fc)
 
     s = buf;
     cp_flags[CP_MESSAGE] = true;
+
     // some "secret" interface functions
     if (lstring::eq(buf, "inprogress")) {
         // Return whether or not a simulation is in progress.
@@ -519,6 +520,12 @@ CshPar::MessageHandler(int fc)
         // Run as WRspice built-in command.
         bool intr = cp_flags[CP_INTERACTIVE];
         cp_flags[CP_INTERACTIVE] = false;
+
+        if (lstring::match("plot", buf) || lstring::match("iplot", buf)) {
+            // Avoid syntax error on unquoted form like v(xx<0>).
+            cp_flags[CP_NOBRKTOK] = true;
+        }
+
 #ifdef WIN32
         extern jmp_buf msw_jbf[4];
         extern int msw_jbf_sp;
@@ -541,6 +548,7 @@ CshPar::MessageHandler(int fc)
 #endif
         cp_flags[CP_CWAIT] = true;  // have to reset this
         cp_flags[CP_INTERACTIVE] = intr;
+        cp_flags[CP_NOBRKTOK] = false;
         Sp.Periodic();
         write_msg("ok");
     }
