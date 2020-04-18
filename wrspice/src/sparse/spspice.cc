@@ -56,7 +56,9 @@
 //   S. R. Whiteley 1993 (and subsequent)
 //
 
-#ifdef NEWXXX
+
+// Switch to use of KLU for subsequent computation.
+//
 void
 spMatrixFrame::spSwitchMatrix()
 {
@@ -76,7 +78,6 @@ spMatrixFrame::spSwitchMatrix()
     }
 #endif
 }
-#endif
 
 
 //  COPY REAL PART TO INITIALIZER PART OF MATRIX
@@ -101,21 +102,6 @@ void
 spMatrixFrame::spSaveForInitialization()
 {
     ASSERT(IS_SPARSE(this));
-
-/*XXX call spSwitchMatrix
-#ifdef USE_KLU
-    if (NOT NoKLU AND klu_if.is_ok()) {
-        spSetMatlabMatrix(new KLUmatrix(Size, Elements, Complex, LongDoubles));
-        // We can now destroy all previous elements and fill-ins.
-        ElementAllocator.Clear();
-        FillinAllocator.Clear();
-        memset(FirstInCol, 0, (Size+1)*sizeof(void*));
-        memset(FirstInRow, 0, (Size+1)*sizeof(void*));
-        memset(Diag, 0, (Size+1)*sizeof(void*));
-        DataAddressChange = YES;
-    }
-#endif
-*/
 
     if (Matrix)
         Matrix->toInit();

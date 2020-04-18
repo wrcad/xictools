@@ -71,9 +71,7 @@
 #include "sparse/spmacros.h"
 #include "sparse/spmatrix.h"
 #include <math.h>
-#ifdef NEWXXX
 #include <algorithm>
-#endif
 
 #ifdef WRSPICE
 #include "ttyio.h"
@@ -216,9 +214,7 @@ spMatrixFrame::spMatrixFrame(int size, int flags)
     Fillins                         = 0;
     Singletons                      = 0;
     MaxRowCountInLowerTri           = 0;
-#ifdef NEWXXX
     BuildState                      = 0;
-#endif
 
     Factored                        = NO;
     Partitioned                     = NO;
@@ -388,8 +384,6 @@ spMatrixFrame::spClear()
 }
 
 
-#ifdef NEWXXX
-
 namespace {
     bool eltsort(const spMatrixElement *e1, const spMatrixElement *e2)
     {
@@ -399,6 +393,7 @@ namespace {
             return (true);
         return (false);
     }
+
 
     spMatrixElement *sortlist(spMatrixElement *list)
     {
@@ -507,8 +502,6 @@ spMatrixFrame::spSetBuildState(int n)
     }
 }
 
-#endif
-
 
 //  SINGLE ELEMENT ADDITION TO MATRIX BY INDEX
 //
@@ -555,7 +548,6 @@ spMatrixFrame::spGetElement(int inrow, int incol)
     ASSERT(NeedsOrdering);
 #endif
 
-#ifdef NEWXXX
     int row = inrow;
     int col = incol;
 #if SP_OPT_TRANSLATE
@@ -615,58 +607,6 @@ spMatrixFrame::spGetElement(int inrow, int incol)
         pElement = FindElementInCol(&FirstInCol[col], row, col, YES);
 #endif
     return ((spREAL*)pElement);
-
-#else  // NEWXXX
-    ASSERT(inrow >= 0 AND incol >= 0);
-
-    if ((inrow == 0) OR (incol == 0))
-        return (&TrashCan.Real);
-
-#if NOT SP_OPT_TRANSLATE
-    ASSERT(NeedsOrdering);
-#endif
-
-    spMatrixElement *pElement;
-#if SP_BUILDHASH
-    if (!Matrix) {
-        // The hashing doesn't work (seg faults) with KLU.
-        pElement = sph_get(inrow, incol);
-        if (pElement)
-            return ((spREAL*)pElement);
-    }
-#endif
-
-    int row = inrow;
-    int col = incol;
-#if SP_OPT_TRANSLATE
-    Translate(&row, &col);
-#endif
-
-    if (Matrix)
-        return (Matrix->find(row-1, col-1));
-
-#if NOT SP_OPT_TRANSLATE
-#if NOT SP_OPT_EXPANDABLE
-    ASSERT(row <= Size AND col <= Size);
-#endif
-
-#if SP_OPT_EXPANDABLE
-    // Re-size Matrix if necessary
-    if ((row > Size) OR (col > Size))
-        EnlargeMatrix(SPMAX(row, col));
-#endif
-#endif
-
-    if ((row == col) AND (Diag[row] != 0))
-        pElement = Diag[row];
-    else
-        pElement = FindElementInCol(&FirstInCol[col], row, col, YES);
-#if SP_BUILDHASH
-    sph_add(inrow, incol, pElement);
-#endif
-    return ((spREAL*)pElement);
-
-#endif // NEWXXX
 }
 
 
@@ -1655,7 +1595,6 @@ spHtab::get(int row, int col)
 }
 
 
-#ifdef NEWXXX
 // Return all matrix elements in a linked list along the Row pointer.
 // THIS DESTROYS ANY ROW/COL LINKAGE.
 //
@@ -1675,7 +1614,6 @@ spHtab::list()
     }
     return (0);
 }
-#endif
 
 
 void
