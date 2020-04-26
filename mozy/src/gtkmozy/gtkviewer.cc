@@ -527,7 +527,10 @@ gtk_viewer::tk_resize_area(int w, int h)
             resize_handler(&v_form->allocation);
     }
 
-    if (w > wid) {
+    if (w > wid+8) {
+        // We can get by without a horizintal scrollbar if w is only
+        // slightly larger than wid.  The scrollbar can be annoying.
+
         double val = gtk_adjustment_get_value(v_hsba);
         v_hsba->upper = w;
         v_hsba->page_size = v_width;
@@ -2072,8 +2075,10 @@ gtk_viewer::resize_handler(GtkAllocation *a)
 {
     // Ignore resize events until the initial expose event is fully
     // handled.
-    if (!v_seen_expose)
-        return (true);
+    // Don't do this, causes initial window to be empty in Ubuntu.  Why
+    // was this done anyway?
+    // if (!v_seen_expose)
+    //     return (true);
 
     if (a->width != v_width || a->height != v_height) {
         v_width = a->width;
