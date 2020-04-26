@@ -362,7 +362,7 @@ sCfg::sCfg(GRobject caller, const char *chdname)
     gtk_window_set_focus(GTK_WINDOW(wb_shell), button);
 
     // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_usize(wb_shell, 360, -1);
+    gtk_widget_set_size_request(wb_shell, 360, -1);
 
     update(chdname);
 }

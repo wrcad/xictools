@@ -399,7 +399,7 @@ sOas::sOas(GRobject c)
 
     GtkWidget *sb = sb_entm.init(REP_RUN_MIN, REP_RUN_MIN, REP_RUN_MAX, 0);
     sb_entm.connect_changed(GTK_SIGNAL_FUNC(oas_val_changed), 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -425,7 +425,7 @@ sOas::sOas(GRobject c)
 
     sb = sb_enta.init(REP_ARRAY_MIN, REP_ARRAY_MIN, REP_ARRAY_MAX, 0);
     sb_enta.connect_changed(GTK_SIGNAL_FUNC(oas_val_changed), 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -441,7 +441,7 @@ sOas::sOas(GRobject c)
 
     sb = sb_entx.init(REP_MAX_ITEMS, REP_MAX_ITEMS_MIN, REP_MAX_ITEMS_MAX, 0);
     sb_entx.connect_changed(GTK_SIGNAL_FUNC(oas_val_changed), 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -468,7 +468,7 @@ sOas::sOas(GRobject c)
     sb = sb_entt.init(REP_MAX_REPS, REP_MAX_REPS_MIN,
         REP_MAX_REPS_MAX, 0);
     sb_entt.connect_changed(GTK_SIGNAL_FUNC(oas_val_changed), 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -487,7 +487,7 @@ sOas::sOas(GRobject c)
     gtk_window_set_focus(GTK_WINDOW(oas_popup), button);
 
     // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_usize(oas_popup, 360, -1);
+    gtk_widget_set_size_request(oas_popup, 360, -1);
 
     update();
 }

@@ -265,7 +265,7 @@ sMC::sMC(mitem_t *mi)
         (GtkAttachOptions)0, 2, 2);
 
     // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_usize(mc_popup, 220, -1);
+    gtk_widget_set_size_request(mc_popup, 220, -1);
 }
 
 

@@ -207,7 +207,7 @@ GTKltab::GTKltab(bool nogr)
     GtkWidget *entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
-    gtk_widget_set_usize(entry, 80, -1);
+    gtk_widget_set_size_request(entry, 80, -1);
     gtk_signal_connect(GTK_OBJECT(entry), "activate",
         GTK_SIGNAL_FUNC(ltab_activate_proc), this);
     ltab_entry = entry;

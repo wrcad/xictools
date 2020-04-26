@@ -353,7 +353,7 @@ sFh::sFh(GRobject c)
     gtk_box_pack_start(GTK_BOX(hbox), label, true, true, 0);
     entry = gtk_entry_new();
     gtk_widget_show(entry);
-    gtk_widget_set_usize(entry, 50, -1);
+    gtk_widget_set_size_request(entry, 50, -1);
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
         GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
@@ -364,7 +364,7 @@ sFh::sFh(GRobject c)
     gtk_box_pack_start(GTK_BOX(hbox), label, true, true, 0);
     entry = gtk_entry_new();
     gtk_widget_show(entry);
-    gtk_widget_set_usize(entry, 50, -1);
+    gtk_widget_set_size_request(entry, 50, -1);
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
         GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
@@ -375,7 +375,7 @@ sFh::sFh(GRobject c)
     gtk_box_pack_start(GTK_BOX(hbox), label, true, true, 0);
     entry = gtk_entry_new();
     gtk_widget_show(entry);
-    gtk_widget_set_usize(entry, 30, -1);
+    gtk_widget_set_size_request(entry, 30, -1);
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
         GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
@@ -443,7 +443,7 @@ sFh::sFh(GRobject c)
     GtkWidget *sb = sb_fh_manh_grid_cnt.init(FH_DEF_MANH_GRID_CNT,
         FH_MIN_MANH_GRID_CNT,
         FH_MAX_MANH_GRID_CNT, 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
     sb_fh_manh_grid_cnt.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
         (void*)ManhGridCnt, "FhManhGridCnt");
     gtk_container_add(GTK_CONTAINER(frame), sb);
@@ -486,7 +486,7 @@ sFh::sFh(GRobject c)
 
     sb = sb_fh_volel_target.init(FH_DEF_TARG_VOLEL, FH_MIN_TARG_VOLEL,
         FH_MAX_TARG_VOLEL, 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
     sb_fh_volel_target.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
         (void*)VolElTarg, "FhVolElTarget");
     frame = gtk_frame_new("FhVolElTarget");
@@ -528,7 +528,7 @@ sFh::sFh(GRobject c)
 #endif
         NULL);
 
-    gtk_widget_set_usize(fh_jobs, 200, 200);
+    gtk_widget_set_size_request(fh_jobs, 200, 200);
 
     gtk_table_attach(GTK_TABLE(table), contr, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

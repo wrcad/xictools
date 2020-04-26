@@ -265,7 +265,7 @@ sES::sES(GRobject caller)
 
     GtkWidget *sb = sb_depth.init(CDMAXCALLDEPTH, 0.0, CDMAXCALLDEPTH, 0);
     sb_depth.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0);
-    gtk_widget_set_usize(sb, 50, -1);
+    gtk_widget_set_size_request(sb, 50, -1);
     gtk_box_pack_start(GTK_BOX(hbox), sb, false, false, 0);
 
     button = gtk_button_new_with_label("0");

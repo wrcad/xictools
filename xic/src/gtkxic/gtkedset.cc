@@ -270,7 +270,7 @@ sEd::sEd(GRobject c)
 
     GtkWidget *sb = sb_ulen.init(DEF_MAX_UNDO_LEN, 0.0, 1000.0, 0);
     sb_ulen.connect_changed(GTK_SIGNAL_FUNC(ed_val_changed), 0, "ulen");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 1, 2, rowcnt, rowcnt+1,
@@ -288,7 +288,7 @@ sEd::sEd(GRobject c)
 
     sb = sb_maxgobjs.init(DEF_MAX_GHOST_OBJECTS, 50.0, 50000.0, 0);
     sb_maxgobjs.connect_changed(GTK_SIGNAL_FUNC(ed_val_changed), 0, "maxg");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 1, 2, rowcnt, rowcnt+1,

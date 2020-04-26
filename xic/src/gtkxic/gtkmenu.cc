@@ -147,7 +147,7 @@ GTKmenu::InitSideButtonMenus(bool horiz_buttons)
             GtkWidgetClass *ks = GTK_WIDGET_GET_CLASS(pbox);
             if (ks)
                 ks->size_allocate = gtk_vbox_size_allocate;
-            gtk_widget_set_usize(pbox, 28, -1);
+            gtk_widget_set_size_request(pbox, 28, -1);
         }
 
         for (int i = 1; pbtn_menu->menu[i].entry; i++) {
@@ -168,7 +168,7 @@ GTKmenu::InitSideButtonMenus(bool horiz_buttons)
             ebox = gtk_hbox_new(true, 0);
         else {
             ebox = gtk_vbox_new(true, 0);
-            gtk_widget_set_usize(ebox, 28, -1);
+            gtk_widget_set_size_request(ebox, 28, -1);
         }
 
         for (int i = 1; ebtn_menu->menu[i].entry; i++) {

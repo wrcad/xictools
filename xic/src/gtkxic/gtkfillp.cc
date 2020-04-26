@@ -358,14 +358,14 @@ sFpe::sFpe(GRobject c)
     sb_nx.set_wrap(false);
     sb_nx.set_editable(true);
     sb_nx.connect_changed(GTK_SIGNAL_FUNC(fp_nxy_proc), (void*)(long)1, "nx");
-    gtk_widget_set_usize(sb, 50, -1);
+    gtk_widget_set_size_request(sb, 50, -1);
     gtk_box_pack_start(GTK_BOX(echbox), sb, false, false, 0);
 
     sb = sb_ny.init(8.0, 2.0, 32.0, 0);
     sb_ny.set_wrap(false);
     sb_ny.set_editable(true);
     sb_ny.connect_changed(GTK_SIGNAL_FUNC(fp_nxy_proc), (void*)(long)2, "ny");
-    gtk_widget_set_usize(sb, 50, -1);
+    gtk_widget_set_size_request(sb, 50, -1);
     gtk_box_pack_start(GTK_BOX(echbox), sb, false, false, 0);
     gtk_container_add(GTK_CONTAINER(frame), echbox);
     gtk_box_pack_start(GTK_BOX(ecvbox), frame, false, false, 0);
@@ -424,7 +424,7 @@ sFpe::sFpe(GRobject c)
     sb_defpats.set_wrap(true);
     sb_defpats.set_editable(false);
     sb_defpats.connect_changed(GTK_SIGNAL_FUNC(fp_bank_proc), 0, "Defpats");
-    gtk_widget_set_usize(sb, 50, -1);
+    gtk_widget_set_size_request(sb, 50, -1);
     gtk_container_add(GTK_CONTAINER(frame), sb);
     gtk_box_pack_start(GTK_BOX(scvbox), frame, false, false, 0);
 

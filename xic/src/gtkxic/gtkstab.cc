@@ -193,7 +193,7 @@ sTb::sTb(GRobject c)
     gtk_option_menu_set_menu(GTK_OPTION_MENU(entry), menu);
     gtk_option_menu_set_history(GTK_OPTION_MENU(entry), 0);
     gtk_box_pack_start(GTK_BOX(row), entry, true, true, 0);
-    gtk_widget_set_usize(entry, 100, -1);
+    gtk_widget_set_size_request(entry, 100, -1);
     tb_tables = entry;
 
     tb_add = gtk_toggle_button_new_with_label("Add");

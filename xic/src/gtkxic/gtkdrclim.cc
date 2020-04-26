@@ -278,7 +278,7 @@ sDL::sDL(GRobject c)
     GtkWidget *sb = sb_max_errs.init(DRC()->maxErrors(),
         DRC_MAX_ERRS_MIN, DRC_MAX_ERRS_MAX, 0);
     sb_max_errs.connect_changed(GTK_SIGNAL_FUNC(dl_val_changed), 0, "MaxErrs");
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -299,7 +299,7 @@ sDL::sDL(GRobject c)
         DRC_INTR_MAX_OBJS_MIN, DRC_INTR_MAX_OBJS_MAX, 0);
     sb_imax_objs.connect_changed(GTK_SIGNAL_FUNC(dl_val_changed), 0,
         "IMaxObjs");
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -320,7 +320,7 @@ sDL::sDL(GRobject c)
         DRC_INTR_MAX_TIME_MIN, DRC_INTR_MAX_TIME_MAX, 0);
     sb_imax_time.connect_changed(GTK_SIGNAL_FUNC(dl_val_changed), 0,
         "IMaxTime");
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -341,7 +341,7 @@ sDL::sDL(GRobject c)
         DRC_INTR_MAX_ERRS_MIN, DRC_INTR_MAX_ERRS_MAX, 0);
     sb_imax_errs.connect_changed(GTK_SIGNAL_FUNC(dl_val_changed), 0,
         "IMaxErrs");
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

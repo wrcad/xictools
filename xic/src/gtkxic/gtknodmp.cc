@@ -377,7 +377,7 @@ sNM::sNM(GRobject caller, int node)
     GtkWidget *entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
-    gtk_widget_set_usize(entry, 80, -1);
+    gtk_widget_set_size_request(entry, 80, -1);
     gtk_signal_connect(GTK_OBJECT(entry), "activate",
         GTK_SIGNAL_FUNC(nm_activate_proc), 0);
     nm_srch_entry = entry;
@@ -408,7 +408,7 @@ sNM::sNM(GRobject caller, int node)
     //
     GtkWidget *swin = gtk_scrolled_window_new(0, 0);
     gtk_widget_show(swin);
-    gtk_widget_set_usize(swin, 250, 200);
+    gtk_widget_set_size_request(swin, 250, 200);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(swin), 2);
@@ -450,7 +450,7 @@ sNM::sNM(GRobject caller, int node)
     //
     swin = gtk_scrolled_window_new(0, 0);
     gtk_widget_show(swin);
-    gtk_widget_set_usize(swin, 110, 200);
+    gtk_widget_set_size_request(swin, 110, 200);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(swin), 2);

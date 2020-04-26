@@ -252,7 +252,7 @@ sPc::sPc()
         "paragraph-background", bclr,
 #endif
         NULL);
-    gtk_widget_set_usize(wb_textarea, 300, 200);
+    gtk_widget_set_size_request(wb_textarea, 300, 200);
 
     // The font change pop-up uses this to redraw the widget
     gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",

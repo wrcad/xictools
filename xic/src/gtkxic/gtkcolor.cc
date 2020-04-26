@@ -364,7 +364,7 @@ sClr::sClr(GRobject c)
     gtk_widget_set_name(entry, "AttrMenu");
     gtk_widget_show(entry);
     gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 0);
-    gtk_widget_set_usize(entry, 180, -1);
+    gtk_widget_set_size_request(entry, 180, -1);
     c_categ_menu_proc(0, (void*)(long)CATEG_ATTR);
 
     //

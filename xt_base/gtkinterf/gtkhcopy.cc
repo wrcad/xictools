@@ -1131,7 +1131,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 2);
         gtk_widget_set_name(entry, "linewidth");
         gtk_widget_show(entry);
-        gtk_widget_set_usize(entry, 90, -1);
+        gtk_widget_set_size_request(entry, 90, -1);
         gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
         gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
         hc->hc_linwent = entry;

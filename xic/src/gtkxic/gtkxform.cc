@@ -257,7 +257,7 @@ sTfm::sTfm(GRobject c,
     int wid1 = sb_mag.width_for_string(buf);
     if (wid1 > wid)
         wid = wid1;
-    gtk_widget_set_usize(sb, wid, -1);
+    gtk_widget_set_size_request(sb, wid, -1);
 
     gtk_box_pack_start(GTK_BOX(row), sb, false, false, 0);
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rowcnt, rowcnt+1,

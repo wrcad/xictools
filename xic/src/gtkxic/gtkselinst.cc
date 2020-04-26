@@ -288,7 +288,7 @@ sCI::sCI(CDol *l, bool filtmode)
     else if (ww > 600)
         ww = 600;
     ww += 15;  // scrollbar
-    gtk_widget_set_usize(GTK_WIDGET(wb_textarea), ww, -1);
+    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, -1);
 }
 
 

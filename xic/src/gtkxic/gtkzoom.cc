@@ -202,7 +202,7 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
             (GtkAttachOptions)0, 2, 2);
 
         GtkWidget *sb = sb_yscale.init(1.0, CDSCALEMIN, CDSCALEMAX, 5);
-        gtk_widget_set_usize(sb, 120, -1);
+        gtk_widget_set_size_request(sb, 120, -1);
 
         gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -237,7 +237,7 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
         (GtkAttachOptions)0, 2, 2);
 
     GtkWidget *sb = sb_zoom.init(1.0, CDSCALEMIN, CDSCALEMAX, 5);
-    gtk_widget_set_usize(sb, 120, -1);
+    gtk_widget_set_size_request(sb, 120, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -273,14 +273,14 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
     int ndgt = w->Mode() == Physical ? CD()->numDigits() : 3;
 
     sb = sb_x.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 120, -1);
+    gtk_widget_set_size_request(sb, 120, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_y.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 120, -1);
+    gtk_widget_set_size_request(sb, 120, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -296,7 +296,7 @@ sZm::sZm(gtk_bag *owner, WindowDesc *w)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_wid.init(100.0, 0.1, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 120, -1);
+    gtk_widget_set_size_request(sb, 120, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

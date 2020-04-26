@@ -317,7 +317,7 @@ sAT::sAT(GRobject c)
     gtk_window_set_focus(GTK_WINDOW(wb_shell), button);
 
     // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_usize(wb_shell, 240, -1);
+    gtk_widget_set_size_request(wb_shell, 240, -1);
 
     check_sens();
 }

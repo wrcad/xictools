@@ -264,7 +264,7 @@ sCGL::sCGL(GRobject c)
         GTK_SIGNAL_FUNC(cgl_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), cgl_list);
-    gtk_widget_set_usize(swin, -1, 120);
+    gtk_widget_set_size_request(swin, -1, 120);
 
     // Set up font and tracking.
     GTKfont::setupFont(cgl_list, FNT_PROP, true);

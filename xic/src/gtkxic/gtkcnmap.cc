@@ -62,7 +62,7 @@ cnmap_t::cnmap_t(bool outp)
     col++;
     cn_prefix = gtk_entry_new();
     gtk_widget_show(cn_prefix);
-    gtk_widget_set_usize(cn_prefix, 60, -1);
+    gtk_widget_set_size_request(cn_prefix, 60, -1);
     gtk_table_attach(GTK_TABLE(tform), cn_prefix, col, col+1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -94,7 +94,7 @@ cnmap_t::cnmap_t(bool outp)
     col++;
     cn_suffix = gtk_entry_new();
     gtk_widget_show(cn_suffix);
-    gtk_widget_set_usize(cn_suffix, 60, -1);
+    gtk_widget_set_size_request(cn_suffix, 60, -1);
     gtk_table_attach(GTK_TABLE(tform), cn_suffix, col, col+1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);

@@ -275,7 +275,7 @@ sPflt::sPflt(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
     gtk_window_set_focus(GTK_WINDOW(pf_popup), button);
 
-    gtk_widget_set_usize(pf_popup, 350, -1);
+    gtk_widget_set_size_request(pf_popup, 350, -1);
     update();
 }
 

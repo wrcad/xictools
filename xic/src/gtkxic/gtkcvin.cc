@@ -583,7 +583,7 @@ sCvi::sCvi(GRobject c, bool (*callback)(int, void*), void *arg)
     GtkWidget *sb = sb_scale.init(FIO()->ReadScale(), CDSCALEMIN, CDSCALEMAX,
         5);
     sb_scale.connect_changed(GTK_SIGNAL_FUNC(cvi_val_changed), 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
