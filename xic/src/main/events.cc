@@ -940,14 +940,14 @@ cEventHdlr::ZoomPress(WindowDesc *wdesc, int x, int y, int state)
 void
 cEventHdlr::ZoomRelease(WindowDesc *wdesc, int x, int y, int state)
 {
-    if (!ZoomCmd)
+    if (!ZoomCmd || !wdesc)
         return;
     WindowDesc *initdesc = DSP()->Windesc(ZoomCmd->InitId);
     if (!initdesc) {
         initdesc = wdesc;
        ZoomCmd->InitId = wdesc->WindowId();
     }
-    if (UpTimer() || !wdesc || !wdesc->IsSimilar(initdesc))
+    if (UpTimer() || !wdesc->IsSimilar(initdesc))
         return;
     if (!ZoomCmd->DidMark && (state & (GR_SHIFT_MASK | GR_CONTROL_MASK))) {
         wdesc->PToL(x, y, x, y);
