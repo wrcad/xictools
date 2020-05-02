@@ -263,6 +263,8 @@ sAT::sAT(GRobject c)
     //
     GtkWidget *contr;
     text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
+    int hh = 8*GTKfont::stringHeight(wb_textarea, 0);
+    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), -1, hh);
 
     gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
     gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",

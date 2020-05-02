@@ -220,7 +220,8 @@ sEC::sEC(stringlist *l)
     else if (ww > 600)
         ww = 600;
     ww += 15;  // scrollbar
-    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, -1);
+    int hh = 8*GTKfont::stringHeight(wb_textarea, 0);
+    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), ww, hh);
 }
 
 

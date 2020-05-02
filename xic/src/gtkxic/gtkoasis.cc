@@ -48,6 +48,7 @@
 #include "gtkmain.h"
 #include "gtkinlines.h"
 #include "gtkcv.h"
+#include "gtkinterf/gtkfont.h"
 #include "gtkinterf/gtkspinbtn.h"
 
 
@@ -376,6 +377,7 @@ sOas::sOas(GRobject c)
     gtk_table_attach(GTK_TABLE(form), frame, 0, 1, rowcnt, rowcnt+5,
         (GtkAttachOptions)0,
         (GtkAttachOptions)0, 2, 2);
+    int formbtm = rowcnt+6;
 
     //
     // Entry areas
@@ -481,13 +483,16 @@ sOas::sOas(GRobject c)
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(oas_cancel_proc), 0);
 
+    if (rowcnt < formbtm)
+        rowcnt = formbtm;
     gtk_table_attach(GTK_TABLE(form), button, 0, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
     gtk_window_set_focus(GTK_WINDOW(oas_popup), button);
 
     // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_size_request(oas_popup, 360, -1);
+    int h = 44*GTKfont::stringWidth(oas_popup, 0);
+    gtk_widget_set_size_request(oas_popup, h, -1);
 
     update();
 }
