@@ -1650,35 +1650,29 @@ SpOut::get_sptext_labels(CDs *sdesc)
 
 
 namespace {
-    inline bool
-    is_all_digits(const char *s)
-    {
-        do {
-            if (!isdigit(*s))
-                return (false);
-            s++;
-            if (isspace(*s))
-                break;
-        } while (*s);
-        return (true);
-    }
-
     // Line sort function.
     //
     inline bool
     lcomp(const char *s, const char *t)
     {
         while (*s && *t) {
-            if ((isalpha(*s) || *s == '_') && (isalpha(*t) || *t == '_')) {
-                if (*s != *t)
-                    return (*s < *t);
+            if (isdigit(*s) && isdigit(*t)) {
+                unsigned int is = atoi(s);
+                unsigned int it = atoi(t);
+                if (is != it)
+                    return (is < it);
                 s++;
                 t++;
+                while (isdigit(*s))
+                    s++;
+                while (isdigit(*t))
+                    t++;
                 continue;
             }
-            if (is_all_digits(s) && is_all_digits(t))
-                return (atoi(s) < atoi(t));
-            break;
+            if (*s != *t)
+                return (*s < *t);
+            s++;
+            t++;
         }
         return (strcmp(s, t) < 0);
     }

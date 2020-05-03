@@ -402,7 +402,7 @@ cSced::subcircuitDeleteTerm()
 
 
 // Export
-// Create any missing bits ot the present named bus terminal.
+// Create any missing bits of the present named bus terminal.
 //
 bool
 cSced::subcircuitBits(bool reorder)

@@ -1314,6 +1314,10 @@ cScedConnect::init_nophys_shorts()
 void
 cScedConnect::connect()
 {
+    // Set the locations of scalar components connected by name of bus
+    // terminals to the location of the bus terminal, for consistency.
+    set_byname_locations();
+
     // Table to keep track of wires we've processed.
     delete cn_wire_tab;
     cn_wire_tab = new SymTab(false, false);
@@ -1596,44 +1600,20 @@ cScedConnect::connect()
                 continue;
 
             CDelecCellType tp = msdesc->elecCellType();
-            if (isDevOrSubc(tp)) {
-                // A device or subcircuit.
+            if (!isDevOrSubc(tp))
+                continue;
 
-                bool issym = (tp == CDelecDev);
-                if (!issym)
-                    issym = msdesc->isSymbolic();
+            // A device or subcircuit.
 
-                CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
-                if (pr) {
-                    CDgenRange rgen(pr);
-                    int cnt = 0;
-                    while (rgen.next(0)) {
-                        CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
-                        for ( ; pn; pn = pn->next()) {
-                            if (pn->has_flag(TE_BYNAME))
-                                continue;
-                            if (issym) {
-                                if (pn->has_flag(TE_SYINVIS))
-                                    continue;
-                            }
-                            else {
-                                if (pn->has_flag(TE_SCINVIS))
-                                    continue;
-                            }
-                            CDp_cnode *pn1;
-                            if (cnt == 0)
-                                pn1 = pn;
-                            else
-                                pn1 = pr->node(0, cnt, pn->index());
-                            if (pn1->enode() < 0) {
-                                add_to_ntab(cn_count, pn1);
-                                new_node();
-                            }
-                        }
-                        cnt++;
-                    }
-                }
-                else {
+            bool issym = (tp == CDelecDev);
+            if (!issym)
+                issym = msdesc->isSymbolic();
+
+            CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
+            if (pr) {
+                CDgenRange rgen(pr);
+                int cnt = 0;
+                while (rgen.next(0)) {
                     CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
                     for ( ; pn; pn = pn->next()) {
                         if (pn->has_flag(TE_BYNAME))
@@ -1646,8 +1626,97 @@ cScedConnect::connect()
                             if (pn->has_flag(TE_SCINVIS))
                                 continue;
                         }
-                        if (pn->enode() < 0) {
-                            add_to_ntab(cn_count, pn);
+                        CDp_cnode *pn1;
+                        if (cnt == 0)
+                            pn1 = pn;
+                        else
+                            pn1 = pr->node(0, cnt, pn->index());
+                        if (pn1->enode() < 0) {
+                            add_to_ntab(cn_count, pn1);
+                            new_node();
+                        }
+                    }
+                    cnt++;
+                }
+            }
+            else {
+                CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
+                for ( ; pn; pn = pn->next()) {
+                    if (pn->has_flag(TE_BYNAME))
+                        continue;
+                    if (issym) {
+                        if (pn->has_flag(TE_SYINVIS))
+                            continue;
+                    }
+                    else {
+                        if (pn->has_flag(TE_SCINVIS))
+                            continue;
+                    }
+                    if (pn->enode() < 0) {
+                        add_to_ntab(cn_count, pn);
+                        new_node();
+                    }
+                }
+            }
+            if (pr) {
+                CDgenRange rgen(pr);
+                int cnt = 0;
+                while (rgen.next(0)) {
+                    CDp_bcnode *pb = (CDp_bcnode*)cdesc->prpty(P_BNODE);
+                    for ( ; pb; pb = pb->next()) {
+                        if (!pb->has_name())
+                            continue;
+                        if (issym) {
+                            if (pb->has_flag(TE_SYINVIS))
+                                continue;
+                        }
+                        else {
+                            if (pb->has_flag(TE_SCINVIS))
+                                continue;
+                        }
+                        CDgenRange rgen1(pb);
+                        int indx = 0;
+                        while (rgen1.next(0)) {
+                            CDp_cnode *pn0 = find_node_prp(cdesc, pb, indx);
+                            if (!pn0)
+                                break;
+                            CDp_cnode *pn1;
+                            if (cnt == 0)
+                                pn1 = pn0;
+                            else
+                                pn1 = pr->node(0, cnt, pn0->index());
+                            indx++;
+                            if (pn1->enode() < 0) {
+                                add_to_ntab(cn_count, pn1);
+                                new_node();
+                            }
+                        }
+                    }
+                    cnt++;
+                }
+            }
+            else {
+                CDp_bcnode *pb = (CDp_bcnode*)cdesc->prpty(P_BNODE);
+                for ( ; pb; pb = pb->next()) {
+                    if (!pb->has_name())
+                        continue;
+                    if (issym) {
+                        if (pb->has_flag(TE_SYINVIS))
+                            continue;
+                    }
+                    else {
+                        if (pb->has_flag(TE_SCINVIS))
+                            continue;
+                    }
+                    CDgenRange rgen1(pb);
+                    int indx = 0;
+                    while (rgen1.next(0)) {
+                        CDp_cnode *pn0 = find_node_prp(cdesc, pb, indx);
+                        if (!pn0)
+                            break;
+                        indx++;
+                        if (pn0->enode() < 0) {
+                            add_to_ntab(cn_count, pn0);
                             new_node();
                         }
                     }
@@ -1683,6 +1752,100 @@ cScedConnect::connect()
 
     delete cn_wire_tab;
     cn_wire_tab = 0;
+}
+
+
+// For all instance bus terminals, set all scalar TE_BYNAME component
+// terminal locations to the bus terminal location.  This location
+// shouldn't matter, but we would like for it to be well-defined.
+//
+void
+cScedConnect::set_byname_locations()
+{
+    CDg gdesc;
+    gdesc.init_gen(cn_sdesc, CellLayer());
+    CDc *cdesc;
+    while ((cdesc = (CDc*)gdesc.next()) != 0) {
+        CDs *msdesc = cdesc->masterCell();
+        if (!msdesc)
+            continue;
+
+        CDelecCellType tp = msdesc->elecCellType();
+        if (!isDevOrSubc(tp))
+            continue;
+
+        // A device or subcircuit.
+
+        bool issym = (tp == CDelecDev);
+        if (!issym)
+            issym = msdesc->isSymbolic();
+
+        CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
+        if (pr) {
+            CDgenRange rgen(pr);
+            int cnt = 0;
+            while (rgen.next(0)) {
+                CDp_bcnode *pb = (CDp_bcnode*)cdesc->prpty(P_BNODE);
+                for ( ; pb; pb = pb->next()) {
+                    if (!pb->has_name())
+                        continue;
+                    if (issym) {
+                        if (pb->has_flag(TE_SYINVIS))
+                            continue;
+                    }
+                    else {
+                        if (pb->has_flag(TE_SCINVIS))
+                            continue;
+                    }
+                    int px = 0, py = 0;
+                    pb->get_pos(0, &px, &py);
+                    CDgenRange rgen1(pb);
+                    int indx = 0;
+                    while (rgen1.next(0)) {
+                        CDp_cnode *pn0 = find_node_prp(cdesc, pb, indx);
+                        if (!pn0)
+                            break;
+                        CDp_cnode *pn1;
+                        if (cnt == 0)
+                            pn1 = pn0;
+                        else
+                            pn1 = pr->node(0, cnt, pn0->index());
+                        indx++;
+                        if (pn1->has_flag(TE_BYNAME))
+                            pn1->set_pos(0, px, py);
+                    }
+                }
+                cnt++;
+            }
+        }
+        else {
+            CDp_bcnode *pb = (CDp_bcnode*)cdesc->prpty(P_BNODE);
+            for ( ; pb; pb = pb->next()) {
+                if (!pb->has_name())
+                    continue;
+                if (issym) {
+                    if (pb->has_flag(TE_SYINVIS))
+                        continue;
+                }
+                else {
+                    if (pb->has_flag(TE_SCINVIS))
+                        continue;
+                }
+                int px = 0, py = 0;
+                pb->get_pos(0, &px, &py);
+                CDgenRange rgen1(pb);
+                int indx = 0;
+                while (rgen1.next(0)) {
+                    CDp_cnode *pn0 = find_node_prp(cdesc, pb, indx);
+                    if (!pn0)
+                        break;
+                    indx++;
+                    if (pn0->has_flag(TE_BYNAME))
+                        pn0->set_pos(0, px, py);
+                }
+            }
+        }
+    }
 }
 
 

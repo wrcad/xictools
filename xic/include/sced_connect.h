@@ -172,6 +172,7 @@ private:
     void init_nophys_shorts();
 
     void connect();
+    void set_byname_locations();
     bool push(const CDw*);
     bool push_unnamed(const CDw*);
     void pop();
