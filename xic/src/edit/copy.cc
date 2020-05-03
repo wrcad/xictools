@@ -1004,6 +1004,7 @@ cEdit::copy_call(int ref_x, int ref_y, int new_x, int new_y,
             GEO()->applyCurTransform(&stk, ref_x, ref_y, new_x, new_y);
             cdesc->prptyRemove(P_NAME);
             cdesc->prptyRemove(P_NODE);
+            cdesc->prptyRemove(P_BNODE);
         }
         cdesc->prptyRemove(P_VALUE);
         cdesc->prptyRemove(P_MODEL);
@@ -1028,13 +1029,21 @@ cEdit::copy_call(int ref_x, int ref_y, int new_x, int new_y,
                         pnd->transform(&stk);
                 }
                 break;
+            case P_BNODE:
+                if (mc == CDcopy)
+                    break;
+                else {
+                    CDp_bnode *pnd = (CDp_bnode*)cdesc->prptyAddCopy(pdesc);
+                    if (pnd)
+                        pnd->transform(&stk);
+                }
+                break;
             case P_NAME:
                 if (mc == CDcopy)
                     break;
                 cdesc->prptyAddCopy(pdesc);
                 break;
             case P_RANGE:
-            case P_BNODE:
             case P_MODEL:
             case P_VALUE:
             case P_PARAM:
@@ -1569,6 +1578,8 @@ namespace {
                 }
             }
             if (DSP()->CurMode() == Electrical) {
+                bool symb = msdesc && msdesc->isSymbolic();
+
                 // Show the terminals
                 WindowDesc *wdesc;
                 WDgen wgen(WDgen::MAIN, WDgen::CDDB);
@@ -1578,6 +1589,13 @@ namespace {
                         CDp_cnode *pn =
                             (CDp_cnode*)((CDc*)odesc)->prpty(P_NODE);
                         for ( ; pn; pn = pn->next()) {
+                            if (symb && pn->has_flag(TE_SYINVIS))
+                                continue;
+                            if (!symb && pn->has_flag(TE_SCINVIS))
+                                continue;
+                            if (pn->has_flag(TE_BYNAME))
+                                continue;
+
                             for (unsigned int ix = 0; ; ix++) {
                                 int xx, yy;
                                 if (!pn->get_pos(ix, &xx, &yy))
@@ -1592,9 +1610,32 @@ namespace {
                                 cnt++;
                             }
                         }
+                        delta = (int)(4.0/wdesc->Ratio());
+                        CDp_bcnode *pb =
+                            (CDp_bcnode*)((CDc*)odesc)->prpty(P_BNODE);
+                        for ( ; pb; pb = pb->next()) {
+                            if (symb && pb->has_flag(TE_SYINVIS))
+                                continue;
+                            if (!symb && pb->has_flag(TE_SCINVIS))
+                                continue;
+
+                            for (unsigned int ix = 0; ; ix++) {
+                                int xx, yy;
+                                if (!pb->get_pos(ix, &xx, &yy))
+                                    break;
+                                DSP()->TLoadCurrent(tfnew);
+                                DSP()->TPoint(&xx, &yy);
+                                DSP()->TLoadCurrent(tfold);
+                                wdesc->ShowLineW(xx - delta, yy,
+                                    xx + delta, yy);
+                                wdesc->ShowLineW(xx, yy - delta,
+                                    xx, yy + delta);
+                                cnt++;
+                            }
+                        }
                     }
                 }
-                if (msdesc && msdesc->isSymbolic())
+                if (symb)
                     return (cnt);
             }
 

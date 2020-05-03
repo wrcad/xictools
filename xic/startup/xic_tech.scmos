@@ -24,6 +24,7 @@ Comment  7/6/10 Update to remove/replace "Alt" keywords for 3.2.11.
 Comment  This file is NOT compatible with releases before 3.2.11.
 
 Technology scmos
+
 Define SUBM
 
 !Set FlattenPrefix $$

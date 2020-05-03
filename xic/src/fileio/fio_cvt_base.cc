@@ -1968,6 +1968,7 @@ cv_out::write_geometry(const CDs *sdesc)
                 return (false);
             if (lchk == cvLnogo)
                 break;
+            out_cellBB.add(&odesc->oBB());
         }
         if (!flush_cache())
             return (false);

@@ -1410,7 +1410,7 @@ sTextPop::sTextPop(const char *title, const char *lstring, const char *textstr,
     gtk_signal_connect(GTK_OBJECT(tp_text), "button_release_event",
         GTK_SIGNAL_FUNC(tp_btn_hdlr), this);
 
-    gtk_widget_set_usize(tp_text, DEF_TWIDTH, DEF_THEIGHT);
+    gtk_widget_set_size_request(tp_text, DEF_TWIDTH, DEF_THEIGHT);
 
     // This will provide an arrow cursor.
     gtk_signal_connect_after(GTK_OBJECT(tp_text), "realize",

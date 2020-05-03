@@ -63,7 +63,7 @@ GRfont::fnt_t GRfont::app_fonts[] =
     fnt_t( "Fixed Pitch Text Window Font",    0, true, false ),
     fnt_t( "Proportional Text Window Font",   0, false, false ),
     fnt_t( "Fixed Pitch Drawing Window Font", 0, true, false ),
-    fnt_t( "Text Editor Font",                0, false, false ),
+    fnt_t( "Text Editor Font",                0, true, false ),
     fnt_t( "HTML Viewer Proportional Family", 0, false, true ),
     fnt_t( "HTML Viewer Fixed Pitch Family",  0, true, true )
 };

@@ -109,7 +109,7 @@ sAsmPage::sAsmPage(sAsm *mt)
         (GtkAttachOptions)0, 2, 2);
 
     GtkWidget *sb = sb_scale.init(1.0, CDSCALEMIN, CDSCALEMAX, ASM_NUMD);
-    gtk_widget_set_usize(sb, ASM_NFW, -1);
+    gtk_widget_set_size_request(sb, ASM_NFW, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 0, 1, row+1, row+2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -133,7 +133,7 @@ sAsmPage::sAsmPage(sAsm *mt)
 
     pg_prefix = gtk_entry_new();
     gtk_widget_show(pg_prefix);
-    gtk_widget_set_usize(pg_prefix, 60, -1);
+    gtk_widget_set_size_request(pg_prefix, 60, -1);
     gtk_box_pack_start(GTK_BOX(hbox), pg_prefix, false, false, 2);
 
     gtk_table_attach(GTK_TABLE(table), hbox, 1, 2, row+1, row+2,
@@ -150,7 +150,7 @@ sAsmPage::sAsmPage(sAsm *mt)
 
     pg_suffix = gtk_entry_new();
     gtk_widget_show(pg_suffix);
-    gtk_widget_set_usize(pg_suffix, 60, -1);
+    gtk_widget_set_size_request(pg_suffix, 60, -1);
     gtk_box_pack_start(GTK_BOX(hbox), pg_suffix, false, false, 2);
 
     pg_to_lower = gtk_check_button_new_with_label("To Lower");

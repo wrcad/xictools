@@ -551,6 +551,8 @@ public:
         }
 
     const char *TechnologyName()    const { return (tc_technology_name); }
+    const char *VendorName()        const { return (tc_vendor_name); }
+    const char *ProcessName()       const { return (tc_process_name); }
 
     const char *TechExtension()     const { return (tc_tech_ext); }
     void SetTechExtension(const char *e)
@@ -718,6 +720,8 @@ private:
 
 
     char *tc_technology_name;   // Name of technology.
+    char *tc_vendor_name;       // Name of vendor.
+    char *tc_process_name;      // Name of process.
     char *tc_tech_ext;          // Tech file extension.
     char *tc_tech_filename;     // Tech file path.
     char *tc_kwbuf;             // Keyword buffer for parser.

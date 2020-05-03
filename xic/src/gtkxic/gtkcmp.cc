@@ -471,7 +471,7 @@ sCmp::sCmp(GRobject c)
     gtk_box_pack_start(GTK_BOX(hbox), label, false, false, 0);
 
     GtkWidget *sb = sb_max_errs.init(0.0, 0.0, 1e6, 0);
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_start(GTK_BOX(hbox), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 2, rowcnt, rowcnt+1,
@@ -783,7 +783,7 @@ sCmp::flat_geom_page()
     cmp_p3_s_btn = gtk_button_new_with_label("S");
     gtk_widget_set_name(cmp_p3_s_btn, "SaveWin");
     gtk_widget_show(cmp_p3_s_btn);
-    gtk_widget_set_usize(cmp_p3_s_btn, 30, -1);
+    gtk_widget_set_size_request(cmp_p3_s_btn, 30, -1);
 
     char buf[64];
     cmp_p3_s_menu = gtk_menu_new();
@@ -817,7 +817,7 @@ sCmp::flat_geom_page()
 
     GtkWidget *sb = sb_p3_aoi_left.init(MICRONS(FIO()->CvtWindow()->left),
         -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -832,7 +832,7 @@ sCmp::flat_geom_page()
 
     sb = sb_p3_aoi_bottom.init(MICRONS(FIO()->CvtWindow()->bottom),
         -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 3, 4, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -842,7 +842,7 @@ sCmp::flat_geom_page()
     cmp_p3_r_btn = gtk_button_new_with_label("R");
     gtk_widget_set_name(cmp_p3_r_btn, "RclWin");
     gtk_widget_show(cmp_p3_r_btn);
-    gtk_widget_set_usize(cmp_p3_r_btn, 30, -1);
+    gtk_widget_set_size_request(cmp_p3_r_btn, 30, -1);
 
     cmp_p3_r_menu = gtk_menu_new();
     gtk_widget_set_name(cmp_p3_r_menu, "Rmenu");
@@ -873,7 +873,7 @@ sCmp::flat_geom_page()
 
     sb = sb_p3_aoi_right.init(MICRONS(FIO()->CvtWindow()->right),
         -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -888,7 +888,7 @@ sCmp::flat_geom_page()
 
     sb = sb_p3_aoi_top.init(MICRONS(FIO()->CvtWindow()->top),
         -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 3, 4, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -897,7 +897,7 @@ sCmp::flat_geom_page()
 
     GtkWidget *hsep = gtk_hseparator_new();
     gtk_widget_show(hsep);
-    gtk_widget_set_usize(hsep, -1, 20);
+    gtk_widget_set_size_request(hsep, -1, 20);
     gtk_table_attach(GTK_TABLE(table), hsep, 0, 4, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -911,7 +911,7 @@ sCmp::flat_geom_page()
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_p3_fine_grid.init(20.0, 1.0, 100.0, 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -925,7 +925,7 @@ sCmp::flat_geom_page()
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_p3_coarse_mult.init(20.0, 1.0, 100.0, 0);
-    gtk_widget_set_usize(sb, 100, -1);
+    gtk_widget_set_size_request(sb, 100, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 3, 4, rcnt, rcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

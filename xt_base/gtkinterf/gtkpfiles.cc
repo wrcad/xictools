@@ -346,7 +346,7 @@ files_bag::viewing_area(int width, int height)
         GtkWidget *nbtext = (GtkWidget*)dl->dataptr();
         if (i == init_page) {
             wb_textarea = nbtext;
-            gtk_widget_set_usize(nbtext, width, height);  // Just set one.
+            gtk_widget_set_size_request(nbtext, width, height);
         }
 
     }

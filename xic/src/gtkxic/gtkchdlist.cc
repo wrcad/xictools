@@ -321,7 +321,7 @@ sCHL::sCHL(GRobject c)
         GTK_SIGNAL_FUNC(chl_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), chl_list);
-    gtk_widget_set_usize(swin, 380, 120);
+    gtk_widget_set_size_request(swin, 380, 120);
 
     // Set up font and tracking.
     GTKfont::setupFont(chl_list, FNT_PROP, true);

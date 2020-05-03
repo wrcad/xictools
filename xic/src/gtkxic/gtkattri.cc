@@ -453,7 +453,7 @@ sAttr::sAttr(GRobject c)
     GtkWidget *sb = sb_cellthr.init(DSP_DEF_CELL_THRESHOLD,
         DSP_MIN_CELL_THRESHOLD, DSP_MAX_CELL_THRESHOLD, 0);
     sb_cellthr.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "cellthr");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -472,7 +472,7 @@ sAttr::sAttr(GRobject c)
 
     sb = sb_cxpct.init(DSP_DEF_CX_DARK_PCNT, DSP_MIN_CX_DARK_PCNT, 100.0, 0);
     sb_cxpct.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "cxpct");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -491,7 +491,7 @@ sAttr::sAttr(GRobject c)
 
     sb = sb_offset.init(0, -16, 16, 0);
     sb_offset.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "offset");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -568,7 +568,7 @@ sAttr::sAttr(GRobject c)
     sb = sb_tsize.init(DSP_DEF_PTRM_TXTHT, DSP_MIN_PTRM_TXTHT,
         DSP_MAX_PTRM_TXTHT, 0);
     sb_tsize.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "tsize");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -640,7 +640,7 @@ sAttr::sAttr(GRobject c)
     sb = sb_ttsize.init(DSP()->TermTextSize(), DSP_MIN_PTRM_TXTHT,
         DSP_MAX_PTRM_TXTHT, 0);
     sb_ttsize.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "TTSize");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -660,7 +660,7 @@ sAttr::sAttr(GRobject c)
     sb = sb_tmsize.init(DSP()->TermMarkSize(), DSP_MIN_PTRM_DELTA,
         DSP_MAX_PTRM_DELTA, 0);
     sb_tmsize.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "TMSize");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -722,7 +722,7 @@ sAttr::sAttr(GRobject c)
     sb = sb_lheight.init(CD_DEF_TEXT_HEI, CD_MIN_TEXT_HEI,
         CD_MAX_TEXT_HEI, 2);
     sb_lheight.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "lheight");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -742,7 +742,7 @@ sAttr::sAttr(GRobject c)
     sb = sb_llen.init(DSP_DEF_MAX_LABEL_LEN, DSP_MIN_MAX_LABEL_LEN,
         DSP_MAX_MAX_LABEL_LEN, 0);
     sb_llen.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "llen");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,
@@ -762,7 +762,7 @@ sAttr::sAttr(GRobject c)
     sb = sb_llines.init(DSP_DEF_MAX_LABEL_LINES, DSP_MIN_MAX_LABEL_LINES,
         DSP_MAX_MAX_LABEL_LINES, 0);
     sb_llines.connect_changed(GTK_SIGNAL_FUNC(at_val_changed), 0, "llines");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 1, rcnt, rcnt+1,

@@ -396,8 +396,10 @@ sgen::load_new(bool is_dc)
     DEV.device(sg_dev)->temperature(sg_model, sg_ckt);
     if (!is_dc)
         sg_ckt->CKTpreload = 1;
-    else
+    else {
+        sg_ckt->CKTmatrix->spSwitchMatrix();
         sg_ckt->CKTmatrix->spSaveForInitialization();  // cache real part
+    }
 
     // call load
     int error;

@@ -497,7 +497,7 @@ GTKeditPopup::GTKeditPopup(gtk_bag *owner, GTKeditPopup::WidgetType type,
     int defw = 80*fw + 4;
     int defh = ed_widget_type == Mailer || ed_widget_type == StringEditor ?
         12*fh : 24*fh;
-    gtk_widget_set_usize(wb_textarea, defw, defh);
+    gtk_widget_set_size_request(wb_textarea, defw, defh);
 
     gtk_signal_connect_after(GTK_OBJECT(wb_textarea), "button-press-event",
         GTK_SIGNAL_FUNC(ed_btn_hdlr), this);

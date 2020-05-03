@@ -583,7 +583,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
             fs_rootdir = lstring::copy(cur_root());
         wb_shell = gtk_NewPopup(owner, "Target Selection", fs_quit_proc, this);
         nofiles = true;
-        gtk_widget_set_usize(wb_shell, 400, 200);
+        gtk_widget_set_size_request(wb_shell, 400, 200);
     }
     else if (fs_type == fsSAVE || fs_type == fsOPEN) {
         // root_or_fname should be tilde and dot expanded
@@ -614,7 +614,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
         if (fs_type == fsSAVE) {
             wb_shell = gtk_NewPopup(owner, "Path Selection", fs_quit_proc,
                 this);
-            gtk_widget_set_usize(wb_shell, 250, 200);
+            gtk_widget_set_size_request(wb_shell, 250, 200);
             nofiles = true;
         }
         else
@@ -844,7 +844,7 @@ GTKfilePopup::GTKfilePopup(gtk_bag *owner, FsMode mode, void *arg,
     
         GtkWidget *contr;
         text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
-        gtk_widget_set_usize(wb_textarea, DEF_TEXT_USWIDTH, 200);
+        gtk_widget_set_size_request(wb_textarea, DEF_TEXT_USWIDTH, 200);
         fs_scrwin = contr;
 
         GtkWidget *vbox = gtk_vbox_new(false, 2);
@@ -3354,7 +3354,7 @@ gtkinterf::gtk_FileAction(GtkWidget *shell, const char *src, const char *dst,
         (GtkAttachOptions)0, 2, 2);
     gtk_window_set_focus(GTK_WINDOW(popup), button);
 
-    gtk_widget_set_usize(popup, 400, -1);
+    gtk_widget_set_size_request(popup, 400, -1);
     if (shell) {
         gtk_window_set_transient_for(GTK_WINDOW(popup), GTK_WINDOW(shell));
         GRX->SetPopupLocation(GRloc(), popup, shell);
@@ -3497,7 +3497,7 @@ gtkinterf::gtk_Message(GtkWidget *shell, bool failed, const char *msg)
 {
     GtkWidget *popup = gtk_NewPopup(0,
         failed ? "Action Failed" : "Action Complete", fail_cancel, 0);
-    gtk_widget_set_usize(popup, 240, -1);
+    gtk_widget_set_size_request(popup, 240, -1);
 
     GtkWidget *form = gtk_table_new(1, 2, false);
     gtk_widget_show(form);

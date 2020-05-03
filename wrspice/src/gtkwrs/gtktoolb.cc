@@ -880,7 +880,7 @@ ErrMsgBox::PopUpErr(const char *string)
 
     int wid = 400;
     int hei = 120;
-    gtk_widget_set_usize(er_popup, wid, hei);
+    gtk_widget_set_size_request(er_popup, wid, hei);
     if (er_x == 0 && er_y == 0) {
         er_x = (mwid - wid)/2;
         er_y = 0;
@@ -3094,11 +3094,11 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
             // no spin - may want to add options with and without spin
             entry = gtk_entry_new();
             gtk_widget_show(entry);
-            gtk_widget_set_usize(entry, 80, -1);
+            gtk_widget_set_size_request(entry, 80, -1);
             gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 2);
             entry2 = gtk_entry_new();
             gtk_widget_show(entry2);
-            gtk_widget_set_usize(entry2, 80, -1);
+            gtk_widget_set_size_request(entry2, 80, -1);
             gtk_box_pack_start(GTK_BOX(hbox), entry2, true, true, 2);
         }
         else {
@@ -3106,7 +3106,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
                 kwstruct->max, del, pgsize, 0);
             entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), rate, numd);
             gtk_widget_show(entry);
-            gtk_widget_set_usize(entry, 80, -1);
+            gtk_widget_set_size_request(entry, 80, -1);
             gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
             gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 2);
             if (mode == KW_INT_2) {
@@ -3114,7 +3114,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
                     del, pgsize, 0);
                 entry2 = gtk_spin_button_new(GTK_ADJUSTMENT(adj), rate, numd);
                 gtk_widget_show(entry2);
-                gtk_widget_set_usize(entry2, 80, -1);
+                gtk_widget_set_size_request(entry2, 80, -1);
                 gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry2), true);
                 gtk_box_pack_start(GTK_BOX(hbox), entry2, false, false, 2);
             }
@@ -3126,7 +3126,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
         if (kwstruct->type != VTYP_LIST || mode != KW_NO_CB) {
             entry = gtk_entry_new();
             gtk_widget_show(entry);
-            gtk_widget_set_usize(entry, 80, -1);
+            gtk_widget_set_size_request(entry, 80, -1);
             gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 2);
         }
         if (cb && mode != KW_NO_SPIN && mode != KW_NO_CB) {

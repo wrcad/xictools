@@ -222,7 +222,7 @@ sPCc::sPCc(GRobject c)
 
     GtkWidget *sb = sb_psz.init(DSP_MIN_FENCE_INST_PIXELS, 0, 1000, 0);
     sb_psz.connect_changed(GTK_SIGNAL_FUNC(pcc_val_changed), 0, 0);
-    gtk_widget_set_usize(sb, 60, -1);
+    gtk_widget_set_size_request(sb, 60, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), row, 0, 2, rowcnt, rowcnt+1,

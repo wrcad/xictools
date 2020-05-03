@@ -972,7 +972,7 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
             if (textwidth < twid)
                 textwidth = twid;
         }
-        gtk_widget_set_usize(pw_text, textwidth + 10, -1);
+        gtk_widget_set_size_request(pw_text, textwidth + 10, -1);
 
         // drop site
         // For GtkEntry, in GTK-2, including GTK_DEST_DEFAULT_DROP will
@@ -1003,7 +1003,8 @@ GTKledPopup::GTKledPopup(gtk_bag *owner, const char *prompt_str,
         gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 1, 2,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 0);
-        gtk_widget_set_usize(GTK_WIDGET(pw_text), textwidth, -1);
+        int hh = 8*GTKfont::stringHeight(pw_text, 0);
+        gtk_widget_set_size_request(GTK_WIDGET(pw_text), textwidth, hh);
     }
     gtk_window_set_focus(GTK_WINDOW(pw_shell), pw_text);
 
@@ -1309,7 +1310,7 @@ GTKmsgPopup::GTKmsgPopup(gtk_bag *owner, const char *string, bool err)
     gtk_table_attach(GTK_TABLE(form), pw_cancel, 0, 1, 1, 2,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
-    gtk_widget_set_usize(pw_cancel, 150, -1);  // set min width
+    gtk_widget_set_size_request(pw_cancel, 150, -1);  // set min width
 }
 
 
@@ -1570,7 +1571,7 @@ GTKtextPopup::GTKtextPopup(gtk_bag *owner, const char *message_str,
         gtk_table_attach(GTK_TABLE(form), contr, 0, 1, 0, 1,
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
             (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-        gtk_widget_set_usize(pw_text, width, height);
+        gtk_widget_set_size_request(pw_text, width, height);
     }
 
     GtkWidget *sep = gtk_hseparator_new();

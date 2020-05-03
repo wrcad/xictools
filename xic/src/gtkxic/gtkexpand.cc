@@ -190,7 +190,7 @@ sExp::sExp(gtk_bag *owner, const char *string, bool nopeek, void *arg)
     gtk_entry_set_text(GTK_ENTRY(exp_text), string);
     gtk_entry_set_editable(GTK_ENTRY(exp_text), true);
     gtk_box_pack_start(GTK_BOX(row), exp_text, false, false, 0);
-    gtk_widget_set_usize(exp_text, 60, -1);
+    gtk_widget_set_size_request(exp_text, 60, -1);
     gtk_entry_set_position(GTK_ENTRY(exp_text), 0);
     gtk_signal_connect_after(GTK_OBJECT(exp_text), "changed",
         GTK_SIGNAL_FUNC(exp_change_proc), this);

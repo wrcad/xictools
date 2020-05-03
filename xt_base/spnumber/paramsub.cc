@@ -328,14 +328,7 @@ sParamTab::update(const char *str)
             else {
                 if (p && !p->readonly()) {
                     // Expand!  Needed for "param=param" recursion.
-                    if (*psub == '\'')
-                        squote_subst(&psub);
-                    else if (subst(&psub)) {
-                        if (*psub == '\'')
-                            squote_subst(&psub);
-                        else
-                            line_subst(&psub);
-                    }
+                    line_subst(&psub);
                     if (psub != p->sub()) {
                         delete [] p->sub();
                         p->set_sub(psub);
@@ -544,14 +537,7 @@ sParamTab::defn_subst(const sParamTab *thispt, char **str, PTmode mode,
         }
 
         char *tsub = lstring::copy(psub);
-        if (*psub == '\'')
-            ptab->squote_subst(&psub);
-        else if (ptab->subst(&psub)) {
-            if (*psub == '\'')
-                ptab->squote_subst(&psub);
-            else
-                ptab->line_subst(&psub);
-        }
+        ptab->line_subst(&psub);
 
         if (mode == PTsubc) {
             // We're parsing a .subckt line.  'this' is a COPY of the

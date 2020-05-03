@@ -205,7 +205,7 @@ sLcg::sLcg()
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
         GTK_SIGNAL_FUNC(lcg_cancel_proc), 0);
-    gtk_widget_set_usize(button, 250, -1);
+    gtk_widget_set_size_request(button, 250, -1);
 
     gtk_table_attach(GTK_TABLE(form), button, 0, 1, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

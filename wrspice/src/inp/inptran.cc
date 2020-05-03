@@ -729,11 +729,7 @@ SPinput::fixParentheses(const char *line, sCKT *ckt, const char *xalias)
         const char *nlst = nend;
         char *parm = IP.getTok(&nend, true);
         if (!parm)
-            // catch error later
-            return (0);
-
-        // Try to make this work whether or not getTok() returns '(' as
-        // a token.
+            break;
 
         const char *tparm = parm;
         IFparseNode::PTtfunc *tranfunc = is_tran_func(&tparm);
@@ -2274,6 +2270,12 @@ again:
             delete [] tok;
             if (lookingR || lookingTD)
                 goto again;
+        }
+        if (!pnxt && *ts0) {
+            da.add(0.0);
+            Errs()->add_error("%s function arg %d parse failed.",
+                "PWL", da.count());
+            *error = E_BADPARM;
         }
 
         if (!list_done)

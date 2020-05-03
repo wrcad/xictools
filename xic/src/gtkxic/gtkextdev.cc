@@ -277,7 +277,7 @@ sED::sED(GRobject caller)
         GTK_SIGNAL_FUNC(ed_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), ed_list);
-    gtk_widget_set_usize(ed_list, -1, 100);
+    gtk_widget_set_size_request(ed_list, -1, 100);
 
     // Set up font and tracking.
     GTKfont::setupFont(ed_list, FNT_PROP, true);

@@ -1863,8 +1863,21 @@ SpOut::sp_dsave_t::process(CDs *sdesc, const char *pref)
             CDc_gen cgen(md);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
                 const char *instname = c->getElecInstBaseName();
-                if (lstring::prefix(pref, instname))
-                    save(instname);
+                if (lstring::prefix(pref, instname)) {
+                    CDp_range *pr = (CDp_range*)c->prpty(P_RANGE);
+                    CDgenRange rgen(pr);
+                    unsigned int vindex;
+                    while (rgen.next(&vindex)) {
+                        sLstr lstr;
+                        lstr.add(instname);
+                        if (pr) {
+                            lstr.add_c(cTnameTab::subscr_open());
+                            lstr.add_i(vindex);
+                            lstr.add_c(cTnameTab::subscr_close());
+                        }
+                        save(lstr.string());
+                    }
+                }
             }
         }
     }
@@ -1877,9 +1890,21 @@ SpOut::sp_dsave_t::process(CDs *sdesc, const char *pref)
             CDc_gen cgen(md);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
                 const char *instname = c->getElecInstBaseName();
-                if (push(instname)) {
-                    process(msdesc, pref);
-                    pop();
+                CDp_range *pr = (CDp_range*)c->prpty(P_RANGE);
+                CDgenRange rgen(pr);
+                unsigned int vindex;
+                while (rgen.next(&vindex)) {
+                    sLstr lstr;
+                    lstr.add(instname);
+                    if (pr) {
+                        lstr.add_c(cTnameTab::subscr_open());
+                        lstr.add_i(vindex);
+                        lstr.add_c(cTnameTab::subscr_close());
+                    }
+                    if (push(lstr.string())) {
+                        process(msdesc, pref);
+                        pop();
+                    }
                 }
             }
         }

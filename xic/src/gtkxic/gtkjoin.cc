@@ -215,7 +215,7 @@ sJn::sJn(GRobject c)
 
     GtkWidget *sb = sb_mverts.init(Zlist::JoinMaxVerts, 0, 8000, 0);
     sb_mverts.connect_changed(GTK_SIGNAL_FUNC(jn_val_changed), 0, "MaxVerts");
-    gtk_widget_set_usize(sb, 60, -1);
+    gtk_widget_set_size_request(sb, 60, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -234,7 +234,7 @@ sJn::sJn(GRobject c)
 
     sb = sb_mgroup.init(Zlist::JoinMaxGroup, 0, 1e6, 0);
     sb_mgroup.connect_changed(GTK_SIGNAL_FUNC(jn_val_changed), 0, "MaxGroup");
-    gtk_widget_set_usize(sb, 60, -1);
+    gtk_widget_set_size_request(sb, 60, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -253,7 +253,7 @@ sJn::sJn(GRobject c)
 
     sb = sb_mqueue.init(Zlist::JoinMaxQueue, 0, 1e6, 0);
     sb_mqueue.connect_changed(GTK_SIGNAL_FUNC(jn_val_changed), 0, "MaxQueue");
-    gtk_widget_set_usize(sb, 60, -1);
+    gtk_widget_set_size_request(sb, 60, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

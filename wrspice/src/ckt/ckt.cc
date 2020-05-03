@@ -644,20 +644,21 @@ sCKT::doTaskSetup()
         }
     }
 
-    // The unchanging (real) constants in the matrix
-    // are preloaded during setup.  For DC and TRAN
-    // analysis (including operating point for AC), we
-    // copy the real part of the matrix into an
-    // otherwise unused field.  The (dc) load
-    // function, rather than clearing the real matrix,
-    // loads it with this field.  This saves a bit of
-    // computation.
+    // If using KLU, the KLUmatrix is created, the original struct
+    // cleared, and all further matrix operations will be done using
+    // KLU.
+    //
+    CKTmatrix->spSwitchMatrix();
 
-    // This caches the real part for reinitializing
-    // the matrix with spLoadInitialization.  If using
-    // KLU, the KLUmatrix is created, the original
-    // struct cleared, and all further matrix
-    // operations will be done using KLU.
+    // The unchanging (real) constants in the matrix are preloaded
+    // during setup.  For DC and TRAN analysis (including operating
+    // point for AC), we copy the real part of the matrix into an
+    // otherwise unused field.  The (dc) load function, rather than
+    // clearing the real matrix, loads it with this field.  This saves
+    // a bit of computation.
+
+    // This caches the real part for reinitializing the matrix with
+    // spLoadInitialization.
     //
     CKTmatrix->spSaveForInitialization();
     if (CKTmatrix->spDataAddressChange()) {
@@ -2128,6 +2129,7 @@ sCKT::setup()
         if (error)
             return (error);
     }
+    CKTmatrix->spSetBuildState(0);
 
     // Set up Josephson junction support flags.
     CKTjjPresent = false;   // Circuit contains a Josephson junction.
@@ -2206,6 +2208,7 @@ sCKT::setup()
         if (error)
             return (error);
     }
+    CKTmatrix->spSetBuildState(1);
 
     CKTstateSize = CKTnumStates;
     for (int i = 0; i < 8; i++) {

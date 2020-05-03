@@ -374,7 +374,7 @@ sCmd::sCmd(GRobject c, sExtCmd *cmd,
             if (wid < twid)
                 wid = twid;
         }
-        gtk_widget_set_usize(cmd_text, wid + 10, -1);
+        gtk_widget_set_size_request(cmd_text, wid + 10, -1);
 
         // drop site
         GtkDestDefaults DD = (GtkDestDefaults)

@@ -528,7 +528,7 @@ sDbg::sDbg(GRobject c)
     gtk_signal_connect(GTK_OBJECT(wb_shell), "key-press-event",
         GTK_SIGNAL_FUNC(db_key_dn_hdlr), 0);
 
-    gtk_widget_set_usize(wb_textarea, DEF_WIDTH, DEF_HEIGHT);
+    gtk_widget_set_size_request(wb_textarea, DEF_WIDTH, DEF_HEIGHT);
 
     // The font change pop-up uses this to redraw the widget
     gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",
@@ -2009,7 +2009,7 @@ sDbV::sDbV(void *p)
     //
     GtkWidget *swin = gtk_scrolled_window_new(0, 0);
     gtk_widget_show(swin);
-    gtk_widget_set_usize(swin, 220, 200);
+    gtk_widget_set_size_request(swin, 220, 200);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(swin),
         GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
     gtk_container_set_border_width(GTK_CONTAINER(swin), 2);

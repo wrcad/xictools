@@ -167,7 +167,8 @@ public:
 
 private:
     void init(CDs*, bool);
-    bool init_terminal(CDc*);
+    void init_wires(CDs*);
+    void init_instances(CDs*);
     void init_nophys_shorts();
 
     void connect();

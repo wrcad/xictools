@@ -156,6 +156,7 @@ enum CPflag {
     CP_NOTTYIO,                 // Prevent changes to terminal.
     CP_WAITING,                 // True when waiting for input.
     CP_RAWMODE,                 // stdin is in raw mode.
+    CP_NOBRKTOK,                // Lexer shouldn't take <>&; as token sep. 
     CP_NUMFLAGS
 };
 

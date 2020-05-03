@@ -326,12 +326,12 @@ sRu::sRu(GRobject c, DRCtype type, const char *username,
     GtkWidget *hbox = gtk_hbox_new(false, 2);
     gtk_widget_show(hbox);
     GtkWidget *sb = sb_dimen.init(0.0, 0.0, 1e6, ndgt);
-    gtk_widget_set_usize(sb, SBSIZE, -1);
+    gtk_widget_set_size_request(sb, SBSIZE, -1);
     ru_dimen_sb = sb;
     gtk_box_pack_start(GTK_BOX(hbox), sb, true, true, 0);
 
     sb = sb_area.init(0.0, 0.0, 1e6, 6);
-    gtk_widget_set_usize(sb, SBSIZE, -1);
+    gtk_widget_set_size_request(sb, SBSIZE, -1);
     ru_area_sb = sb;
     gtk_box_pack_start(GTK_BOX(hbox), sb, true, true, 0);
 
@@ -350,7 +350,7 @@ sRu::sRu(GRobject c, DRCtype type, const char *username,
     ru_diag_la = label;
 
     sb = sb_diag.init(0.0, 0.0, 1e6, ndgt);
-    gtk_widget_set_usize(sb, SBSIZE, -1);
+    gtk_widget_set_size_request(sb, SBSIZE, -1);
     ru_diag_sb = sb;
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -368,7 +368,7 @@ sRu::sRu(GRobject c, DRCtype type, const char *username,
     ru_net_la = label;
 
     sb = sb_net.init(0.0, 0.0, 1e6, ndgt);
-    gtk_widget_set_usize(sb, SBSIZE, -1);
+    gtk_widget_set_size_request(sb, SBSIZE, -1);
     ru_net_sb = sb;
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -407,7 +407,7 @@ sRu::sRu(GRobject c, DRCtype type, const char *username,
     ru_enc_la = label;
 
     sb = sb_enc.init(0.0, 0.0, 1e6, ndgt);
-    gtk_widget_set_usize(sb, SBSIZE, -1);
+    gtk_widget_set_size_request(sb, SBSIZE, -1);
     ru_enc_sb = sb;
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
@@ -428,12 +428,12 @@ sRu::sRu(GRobject c, DRCtype type, const char *username,
     gtk_widget_show(row);
 
     sb = sb_opp1.init(0.0, 0.0, 1e6, ndgt);
-    gtk_widget_set_usize(sb, SBSIZE, -1);
+    gtk_widget_set_size_request(sb, SBSIZE, -1);
     gtk_box_pack_start(GTK_BOX(row), sb, true, true, 0);
     ru_opp_sb1 = sb;
 
     sb = sb_opp2.init(0.0, 0.0, 1e6, ndgt);
-    gtk_widget_set_usize(sb, SBSIZE, -1);
+    gtk_widget_set_size_request(sb, SBSIZE, -1);
     gtk_box_pack_start(GTK_BOX(row), sb, true, true, 0);
     ru_opp_sb2 = sb;
 

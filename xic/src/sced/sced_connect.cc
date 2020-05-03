@@ -247,9 +247,10 @@ cSced::connect(CDs *sd)
     if (sd->cellname() == DSP()->CurCellName())
         fixPaths(sd);
 
-    if (sd->isSPconnected() && !sd->isConnected())
+    if (sd->isSPconnected() && !sd->isConnected()) {
         // Shouldn't happen.
         sd->setSPconnected(false);
+    }
 
     bool nm_dirty = sd->nodes() ? sd->nodes()->isDirty() : false;
     if (sc_include_nophys && !sd->isSPconnected()) {
@@ -319,9 +320,10 @@ cSced::updateHlabels(CDs *sd)
     CDl *ldesc;
     CDsLgen lgen(sd);
     while ((ldesc = lgen.next()) != 0) {
-        if (ldesc->index(Electrical) < 2)
+        if (ldesc->index(Electrical) < 2) {
             // skip SCED layer
             continue;
+        }
         CDg gdesc;
         gdesc.init_gen(sd, ldesc);
         CDo *odesc;
@@ -329,9 +331,10 @@ cSced::updateHlabels(CDs *sd)
             if (odesc->type() != CDLABEL)
                 continue;
             CDp_lref *prf = (CDp_lref*)odesc->prpty(P_LABRF);
-            if (prf && prf->devref())
+            if (prf && prf->devref()) {
                 // already redrawn
                 continue;
+            }
             CDla *olabel = (CDla*)odesc;
             hyList *hlabel = olabel->label();
             while (hlabel) {
@@ -620,9 +623,10 @@ cScedConnect::run(CDs *sd, bool lvsmode)
                 ntab->add((unsigned long)nm,
                     (void*)(long)ne->nodeprp()->enode(), false);
             }
-            else
+            else {
                 ntab->add((unsigned long)ne->name(),
                     (void*)(long)ne->nodeprp()->enode(), false);
+            }
         }
     }
     else {
@@ -635,9 +639,10 @@ cScedConnect::run(CDs *sd, bool lvsmode)
                 ntab->add((unsigned long)nm,
                     (void*)(long)ne->nodeprp()->enode(), false);
             }
-            else
+            else {
                 ntab->add((unsigned long)ne->name(),
                     (void*)(long)ne->nodeprp()->enode(), false);
+            }
         }
     }
     // Pass the number of nodes and the name table to the node name map.
@@ -846,6 +851,30 @@ cScedConnect::init(CDs *sd, bool lvsmode)
     // With a label, initialize with a value, consistent with the name
     // table.
     //
+    init_wires(sd);
+
+    // Add temporary wires across "shorted" NOPHYS devices.
+    //
+    if (lvsmode)
+        init_nophys_shorts();
+
+    // Initialize devices, terminal devices, andsubcircuits.
+    //
+    init_instances(sd);
+
+    SCD()->renumberInstances(sd);
+
+    sd->updateTermNames(CDs::UTNinstances);
+}
+
+
+// Set active layer wire nodes without an associated label to -1. 
+// With a label, initialize with a value, consistent with the name
+// table.
+//
+void
+cScedConnect::init_wires(CDs *sd)
+{
     CDsLgen gen(sd);
     CDl *ld;
     while ((ld = gen.next()) != 0) {
@@ -1008,14 +1037,14 @@ cScedConnect::init(CDs *sd, bool lvsmode)
             }
         }
     }
+}
 
-    // Add temporary wires across "shorted" NOPHYS devices.
-    //
-    if (lvsmode)
-        init_nophys_shorts();
 
-    // Initialize instances.
-
+// Initialize device, terminal device, and subcircuit instances.
+//
+void
+cScedConnect::init_instances(CDs *sd)
+{
     CDg gdesc;
     gdesc.init_gen(sd, CellLayer());
     CDc *cdesc;
@@ -1026,13 +1055,16 @@ cScedConnect::init(CDs *sd, bool lvsmode)
         CDelecCellType tp = msdesc->elecCellType();
 
         if (tp == CDelecGnd) {
+            // Ground contact.
+
             CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
             if (pn)
                 pn->set_enode(0);
+            continue;
         }
-        else if (tp == CDelecTerm)
-            init_terminal(cdesc);
-        else if (tp == CDelecDev) {
+        if (tp == CDelecDev) {
+            // Device instance.
+
             CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
             if (pr)
                 pr->setup(cdesc);
@@ -1041,8 +1073,11 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                 for ( ; pn; pn = pn->next())
                     pn->set_enode(-1);
             }
+            continue;
         }
-        else if (tp == CDelecMacro || tp == CDelecSubc) {
+        if (tp == CDelecMacro || tp == CDelecSubc) {
+            // Subcircuit instance.
+
             CDp_range *pr = (CDp_range*)cdesc->prpty(P_RANGE);
             if (pr)
                 pr->setup(cdesc);
@@ -1051,158 +1086,150 @@ cScedConnect::init(CDs *sd, bool lvsmode)
                 for ( ; pn; pn = pn->next())
                     pn->set_enode(-1);
             }
+            continue;
         }
-    }
+        if (tp != CDelecTerm)
+            continue;
 
-    SCD()->renumberInstances(sd);
+        // Terminal device.
+        // We know that cdesc is a terminal device, but we don't really
+        // know what kind until we look at the label string.  This is
+        // where terminal devices are actually configured.
 
-    sd->updateTermNames(CDs::UTNinstances);
-}
+        // Check for valid name property of master.
+        CDp_cname *pna = (CDp_cname*)msdesc->prpty(P_NAME);
+        if (!pna || (pna->key() != P_NAME_TERM &&
+                pna->key() != P_NAME_BTERM_DEPREC))
+            continue;
+        if (pna->key() == P_NAME_BTERM_DEPREC) {
+            // We shouldn't see this anymore, translate to normal terminal
+            // prefix.
+            char tbf[2];
+            tbf[0] = P_NAME_TERM;
+            tbf[1] = 0;
+            pna->set_name_string(tbf);
+        }
 
+        // We accept either a single node or bnode, but not both.
+        CDp_snode *ppn = (CDp_snode*)msdesc->prpty(P_NODE);
+        CDp_bsnode *ppb = (CDp_bsnode*)msdesc->prpty(P_BNODE);
+        if ((!ppn && !ppb) || (ppn && ppb))
+            continue;
+        if (ppn && ppn->next())
+            continue;
+        if (ppb && ppb->next())
+            continue;
 
-bool
-cScedConnect::init_terminal(CDc *cdesc)
-{
-    // We know that cdesc is a terminal device, but we don't really
-    // know what kind until we look at the label string.  This is
-    // where terminal devices are actually configured.
+        // Check for valid name property of instance.
+        pna = (CDp_cname*)cdesc->prpty(P_NAME);
+        if (!pna || !pna->bound())
+            continue;
+        if (pna->key() == P_NAME_BTERM_DEPREC) {
+            // We shouldn't see this anymore, translate to normal terminal
+            // prefix.
+            char tbf[2];
+            tbf[0] = P_NAME_TERM;
+            tbf[1] = 0;
+            pna->set_name_string(tbf);
+        }
 
-    CDs *msd = cdesc->masterCell();
-    if (!msd)
-        return (false);
+        // Check for bound instance label.
+        char *label = hyList::string(pna->bound()->label(), HYcvPlain, true);
+        if (!label)
+            continue;
 
-    // Check for valid name property.
-    CDp_cname *pna = (CDp_cname*)msd->prpty(P_NAME);
-    if (!pna || (pna->key() != P_NAME_TERM &&
-            pna->key() != P_NAME_BTERM_DEPREC))
-        return (false);
-    if (pna->key() == P_NAME_BTERM_DEPREC) {
-        // We shouldn't see this anymore, translate to normal terminal
-        // prefix.
-        char tbf[2];
-        tbf[0] = P_NAME_TERM;
-        tbf[1] = 0;
-        pna->set_name_string(tbf);
-    }
-
-    // We accept either a single node or bnode, but not both.
-    CDp_snode *ppn = (CDp_snode*)msd->prpty(P_NODE);
-    CDp_bsnode *ppb = (CDp_bsnode*)msd->prpty(P_BNODE);
-    if ((!ppn && !ppb) || (ppn && ppb))
-        return (false);
-    if (ppn && ppn->next())
-        return (false);
-    if (ppb && ppb->next())
-        return (false);
-
-    // Check for bound instance label.
-    pna = (CDp_cname*)cdesc->prpty(P_NAME);
-    if (!pna || !pna->bound())
-        return (false);
-    if (pna->key() == P_NAME_BTERM_DEPREC) {
-        // We shouldn't see this anymore, translate to normal terminal
-        // prefix.
-        char tbf[2];
-        tbf[0] = P_NAME_TERM;
-        tbf[1] = 0;
-        pna->set_name_string(tbf);
-    }
-    char *label = hyList::string(pna->bound()->label(), HYcvPlain, true);
-    if (!label)
-        return (false);
-
-    // Parse the label as a net expression.
-    CDnetex *netex;
-    if (!CDnetex::parse(label, &netex) || !netex) {
-        ScedErrLog.add_err("bad terminal device label name %s, ignored.\n%s",
-            label, Errs()->get_error());
+        // Parse the label as a net expression.
+        CDnetex *netex;
+        if (!CDnetex::parse(label, &netex) || !netex) {
+            ScedErrLog.add_err("bad terminal device label name %s, ignored.\n%s",
+                label, Errs()->get_error());
+            delete [] label;
+            continue;
+        }
         delete [] label;
-        return (false);
-    }
-    delete [] label;
 
-    int x, y;
-    if (ppn)
-        ppn->get_schem_pos(&x, &y);
-    else
-        ppb->get_schem_pos(&x, &y);
-    cTfmStack stk;
-    stk.TPush();
-    stk.TApplyTransform(cdesc);
-    stk.TPoint(&x, &y);
-    stk.TPop();
+        int x, y;
+        if (ppn)
+            ppn->get_schem_pos(&x, &y);
+        else
+            ppb->get_schem_pos(&x, &y);
+        cTfmStack stk;
+        stk.TPush();
+        stk.TApplyTransform(cdesc);
+        stk.TPoint(&x, &y);
+        stk.TPop();
 
-    CDnetName nm;
-    int beg = -1, end = -1;
-    if (netex->is_scalar(&nm) ||
-            (netex->is_simple(&nm, &beg, &end) && nm && beg == end)) {
-        // A scalar or 1-bit connector.
-        CDnetex::destroy(netex);
+        CDnetName nm;
+        int beg = -1, end = -1;
+        if (netex->is_scalar(&nm) ||
+                (netex->is_simple(&nm, &beg, &end) && nm && beg == end)) {
+            // A scalar or 1-bit connector.
+            CDnetex::destroy(netex);
 
-        cdesc->prptyRemove(P_BNODE);
-        CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
-        if (!pn) {
-            pn = new CDp_cnode;
-            cdesc->link_prpty_list(pn);
-        }
-        pn->set_pos(0, x, y);
-        pn->CDp_node::set_term_name(nm);
-
-        name_elt *ne = tname_tab_find(Tstring(nm), beg);
-        if (ne)
-            add_to_ntab(ne->nodenum(), pn);
-        else {
-            ne = cn_name_elt_alloc.new_element();
-            ne->set(cn_count, nm, beg, pn);
-            add_to_tname_tab(ne);
-            add_to_ntab(cn_count, pn);
-            new_node();
-        }
-    }
-    else {
-        // A multi-conductor (bundle or vector) connector.
-
-        cdesc->prptyRemove(P_NODE);
-        CDp_bcnode *pn = (CDp_bcnode*)cdesc->prpty(P_BNODE);
-        if (!pn) {
-            pn = new CDp_bcnode;
-            cdesc->link_prpty_list(pn);
-        }
-        pn->set_pos(0, x, y);
-        pn->update_bundle(netex);
-
-        CDnetexGen ngen(pn);
-        int n;
-        while (ngen.next(&nm, &n)) {
-            if (!nm) {
-                char *tn = pn->id_text();
-                ScedErrLog.add_err(
-                    "bad terminal device label name %s, ignored.", tn);
-                delete [] tn;
-                continue;
+            cdesc->prptyRemove(P_BNODE);
+            CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
+            if (!pn) {
+                pn = new CDp_cnode;
+                cdesc->link_prpty_list(pn);
             }
-            name_elt *ne = tname_tab_find(Tstring(nm), n);
-            if (!ne) {
-                CDp_cnode *pc = new CDp_cnode;
-                CDnetName tnm = CDnetex::mk_name(Tstring(nm), n);
-                pn->CDp_bnode::set_term_name(tnm);
-                pc->set_pos(0, x, y);
-                pc->set_enode(-1);
-                pc->set_next_prp(cn_btprps);
-                cn_btprps = pc;
-                pc->set_flag(TE_BYNAME);
+            pn->set_pos(0, x, y);
+            pn->CDp_node::set_term_name(nm);
 
+            name_elt *ne = tname_tab_find(Tstring(nm), beg);
+            if (ne)
+                add_to_ntab(ne->nodenum(), pn);
+            else {
                 ne = cn_name_elt_alloc.new_element();
-                ne->set(cn_count, nm, n, pc);
+                ne->set(cn_count, nm, beg, pn);
                 add_to_tname_tab(ne);
-                add_to_ntab(cn_count, pc);
+                add_to_ntab(cn_count, pn);
                 new_node();
-                ScedErrLog.add_log("new dummy node %s %d", pc->term_name(),
-                    pc->enode());
+            }
+        }
+        else {
+            // A multi-conductor (bundle or vector) connector.
+
+            cdesc->prptyRemove(P_NODE);
+            CDp_bcnode *pn = (CDp_bcnode*)cdesc->prpty(P_BNODE);
+            if (!pn) {
+                pn = new CDp_bcnode;
+                cdesc->link_prpty_list(pn);
+            }
+            pn->set_pos(0, x, y);
+            pn->update_bundle(netex);
+
+            CDnetexGen ngen(pn);
+            int n;
+            while (ngen.next(&nm, &n)) {
+                if (!nm) {
+                    char *tn = pn->id_text();
+                    ScedErrLog.add_err(
+                        "bad terminal device label name %s, ignored.", tn);
+                    delete [] tn;
+                    continue;
+                }
+                name_elt *ne = tname_tab_find(Tstring(nm), n);
+                if (!ne) {
+                    CDp_cnode *pc = new CDp_cnode;
+                    CDnetName tnm = CDnetex::mk_name(Tstring(nm), n);
+                    pc->CDp_node::set_term_name(tnm);
+                    pc->set_pos(0, x, y);
+                    pc->set_enode(-1);
+                    pc->set_next_prp(cn_btprps);
+                    cn_btprps = pc;
+                    pc->set_flag(TE_BYNAME);
+
+                    ne = cn_name_elt_alloc.new_element();
+                    ne->set(cn_count, nm, n, pc);
+                    add_to_tname_tab(ne);
+                    add_to_ntab(cn_count, pc);
+                    new_node();
+                    ScedErrLog.add_log("new dummy node %s %d", pc->term_name(),
+                        pc->enode());
+                }
             }
         }
     }
-    return (true);
 }
 
 
@@ -1583,7 +1610,6 @@ cScedConnect::connect()
                     while (rgen.next(0)) {
                         CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
                         for ( ; pn; pn = pn->next()) {
-/*XXX
                             if (pn->has_flag(TE_BYNAME))
                                 continue;
                             if (issym) {
@@ -1594,7 +1620,6 @@ cScedConnect::connect()
                                 if (pn->has_flag(TE_SCINVIS))
                                     continue;
                             }
-*/
                             CDp_cnode *pn1;
                             if (cnt == 0)
                                 pn1 = pn;
@@ -1611,8 +1636,6 @@ cScedConnect::connect()
                 else {
                     CDp_cnode *pn = (CDp_cnode*)cdesc->prpty(P_NODE);
                     for ( ; pn; pn = pn->next()) {
-//XXX Need to assign a node if these are referenced by an open bus terminal.
-/*XXX
                         if (pn->has_flag(TE_BYNAME))
                             continue;
                         if (issym) {
@@ -1623,7 +1646,6 @@ cScedConnect::connect()
                             if (pn->has_flag(TE_SCINVIS))
                                 continue;
                         }
-*/
                         if (pn->enode() < 0) {
                             add_to_ntab(cn_count, pn);
                             new_node();
@@ -1641,13 +1663,18 @@ cScedConnect::connect()
         SymTab *sytmp = new SymTab(false, false);
         for (int i = 0; i < cn_count; i++) {
             for (node_list *n = cn_ntab[i]; n; n = n->next()) {
-                if (n->node()->enode() != i)
+                bool err = false;
+                if (n->node()->enode() != i) {
                     ScedErrLog.add_err(
                     "final node table numbering error, wrong node number.");
-                if (SymTab::get(sytmp, (unsigned long)n->node()) != ST_NIL)
+                    err = true;
+                }
+                if (SymTab::get(sytmp, (unsigned long)n->node()) != ST_NIL) {
                     ScedErrLog.add_err(
                     "final node table numbering error, duplicate property.");
-                else
+                    err = true;
+                }
+                if (!err)
                    sytmp->add((unsigned long)n->node(), 0, false);
             }
         }
@@ -1710,9 +1737,10 @@ cScedConnect::push(const CDw *wdesc)
 bool
 cScedConnect::push_unnamed(const CDw *wdesc)
 {
-    if (SymTab::get(cn_wire_tab, (unsigned long)wdesc) != ST_NIL)
+    if (SymTab::get(cn_wire_tab, (unsigned long)wdesc) != ST_NIL) {
         // Already processed this wire.
         return (false);
+    }
 
     // We know that this wire is unnamed, we have already processed all
     // named wires.
@@ -2683,12 +2711,14 @@ cScedConnect::connect_inst_to_inst(const CDc *cdesc_ref, CDp_cnode *pn,
                     if (pn)
                         bit_to_named(pn, pr, NetexWrap(pcb).netex());
                     else if (pb) {
-                        if (tp_ref == CDelecTerm)
+                        if (tp_ref == CDelecTerm) {
                             named_to_named(NetexWrap(pcb).netex(),
                                 NetexWrap(pb).netex());
-                        else if (isDevOrSubc(tp_ref))
+                        }
+                        else if (isDevOrSubc(tp_ref)) {
                             inst_to_named(cdesc_ref, pb, pr,
                                 NetexWrap(pcb).netex());
+                        }
                     }
                 }
             }
@@ -2722,9 +2752,10 @@ cScedConnect::connect_inst_to_inst(const CDc *cdesc_ref, CDp_cnode *pn,
                     if (pn)
                         bit_to_inst(pn, pr, cdesc, pcb, pcr);
                     else if (pb) {
-                        if (tp_ref == CDelecTerm)
+                        if (tp_ref == CDelecTerm) {
                             inst_to_named(cdesc, pcb, pcr,
                                 NetexWrap(pb).netex());
+                        }
                         else if (isDevOrSubc(tp_ref))
                             inst_to_inst(cdesc, pcb, pcr, cdesc_ref, pb, pr);
                     }
@@ -2982,7 +3013,6 @@ cScedConnect::bit_to_inst(CDp_nodeEx *pcn1, const CDp_range *pr1,
         }
         else {
             int iw1 = pr1->width();
-//XXX
             int iw2 = pr2->width() * pbcn2->width();
             if (iw1 != iw2) {
                 // We require that the instance vector widths be
@@ -2999,63 +3029,34 @@ cScedConnect::bit_to_inst(CDp_nodeEx *pcn1, const CDp_range *pr1,
                 return;
             }
 
-#define NEWXXX
-#ifdef NEWXXX
             CDgenRange rgen0(pr2);
             int cnt = 0;
             int aindx = 0;
             while (rgen0.next(0)) {
                 CDgenRange rgen2(pbcn2);
                 int indx = 0;
-
-                while (rgen2.next(0)) {
-                    CDp_cnode *pn0 = find_node_prp(cdesc2, pbcn2, aindx);
-                    if (!pn0)
-                        break;
-                    CDp_cnode *pn2;
-                    if (indx == 0)
-                        pn2 = pn0;
-                    else
-                        pn2 = pr2->node(0, indx, pn0->index());
-
-                    CDp_nodeEx *pn1;
-                    if (cnt == 0)
-                        pn1 = pcn1;
-                    else
-                        pn1 = pr1->node(0, cnt, pcn1->index());
-                    indx++;
-                    cnt++;
-                    connect_nodes(pn1, pn2);
-                }
-                aindx++;
-            }
-#else
-            CDgenRange rgen0(pr2);
-            int cnt = 0;
-            while (rgen0.next(0)) {
-                CDgenRange rgen2(pbcn2);
-                int indx = 0;
-                CDp_nodeEx *pn1;
-                if (cnt == 0)
-                    pn1 = pcn1;
-                else
-                    pn1 = pr1->node(0, cnt, pcn1->index());
-
                 while (rgen2.next(0)) {
                     CDp_cnode *pn0 = find_node_prp(cdesc2, pbcn2, indx);
                     if (!pn0)
                         break;
+
                     CDp_cnode *pn2;
                     if (cnt == 0)
                         pn2 = pn0;
                     else
                         pn2 = pr2->node(0, cnt, pn0->index());
+
+                    CDp_nodeEx *pn1;
+                    if (cnt+indx == 0)
+                        pn1 = pcn1;
+                    else
+                        pn1 = pr1->node(0, aindx, pcn1->index());
                     indx++;
+                    aindx++;
                     connect_nodes(pn1, pn2);
                 }
                 cnt++;
             }
-#endif
         }
     }
 }

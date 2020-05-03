@@ -139,6 +139,7 @@ PZanalysis::pz_dcoperation(sCKT *ckt, int restart)
     if (error)
         return (error);
 
+    ckt->CKTmatrix->spSwitchMatrix();
     ckt->CKTmatrix->spSaveForInitialization();
 
     // Calculate small signal parameters at the operating point

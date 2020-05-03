@@ -527,7 +527,10 @@ gtk_viewer::tk_resize_area(int w, int h)
             resize_handler(&v_form->allocation);
     }
 
-    if (w > wid) {
+    if (w > wid+8) {
+        // We can get by without a horizintal scrollbar if w is only
+        // slightly larger than wid.  The scrollbar can be annoying.
+
         double val = gtk_adjustment_get_value(v_hsba);
         v_hsba->upper = w;
         v_hsba->page_size = v_width;
@@ -1488,7 +1491,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 
             entry->width = entry->size * GTKfont::stringWidth(ed, 0) + PADVAL;
             entry->height = GTKfont::stringHeight(ed, 0) + PADVAL;
-            gtk_widget_set_usize(ed, entry->width, entry->height);
+            gtk_widget_set_size_request(ed, entry->width, entry->height);
 
             if (entry->type == FORM_TEXT) {
                 if (entry->value)
@@ -1526,7 +1529,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 
             entry->width = 16;
             entry->height = 16;
-            gtk_widget_set_usize(cb, entry->width, entry->height);
+            gtk_widget_set_size_request(cb, entry->width, entry->height);
 
             entry->widget = cb;
             gtk_widget_show(cb);
@@ -1549,7 +1552,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 
             entry->width = 16;
             entry->height = 16;
-            gtk_widget_set_usize(cb, entry->width, entry->height);
+            gtk_widget_set_size_request(cb, entry->width, entry->height);
 
             gtk_object_set_data(GTK_OBJECT(cb), "viewer", this);
             gtk_signal_connect(GTK_OBJECT(cb), "toggled",
@@ -1581,14 +1584,14 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
 
             int ew = entry->size * GTKfont::stringWidth(ed, 0) + PADVAL;
             int ht = GTKfont::stringHeight(ed, 0) + PADVAL;
-            gtk_widget_set_usize(ed, ew, ht);
+            gtk_widget_set_size_request(ed, ew, ht);
 
             const char *lab = entry->value ? entry->value : "Browse...";
             GtkWidget *button = gtk_button_new_with_label(entry->value ?
                 entry->value : "Browse...");
             gtk_widget_show(button);
             int bw = GTKfont::stringWidth(button, lab) + PADVAL;
-            gtk_widget_set_usize(button, bw, ht);
+            gtk_widget_set_size_request(button, bw, ht);
             gtk_object_set_data(GTK_OBJECT(hbox), "browse", button);
 
             entry->width = ew + bw + PADVAL;
@@ -1623,7 +1626,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
             GtkWidget *cb = gtk_button_new_with_label(lab);
             entry->width = GTKfont::stringWidth(cb, lab) + PADVAL;
             entry->height = GTKfont::stringHeight(cb, 0) + PADVAL;
-            gtk_widget_set_usize(cb, entry->width, entry->height);
+            gtk_widget_set_size_request(cb, entry->width, entry->height);
 
             gtk_object_set_data(GTK_OBJECT(cb), "viewer", this);
             gtk_signal_connect(GTK_OBJECT(cb), "clicked",
@@ -1734,7 +1737,7 @@ gtk_viewer::tk_add_widget(htmForm *entry, htmForm *parent)
                 PADVAL;
             entry->height =
                 entry->maxlength * GTKfont::stringHeight(textw, 0) + PADVAL;
-            gtk_widget_set_usize(frame ? frame : textw, entry->width,
+            gtk_widget_set_size_request(frame ? frame : textw, entry->width,
                 entry->height);
 
             entry->widget = textw;
@@ -1779,7 +1782,7 @@ gtk_viewer::tk_select_close(htmForm *entry)
             req.width += 22;  // scrollbar compensation
         entry->width = req.width + PADVAL;
         entry->height = ht;
-        gtk_widget_set_usize(GTK_WIDGET(entry->widget), entry->width,
+        gtk_widget_set_size_request(GTK_WIDGET(entry->widget), entry->width,
             entry->height);
 
         // set initial selections
@@ -1809,7 +1812,7 @@ gtk_viewer::tk_select_close(htmForm *entry)
         gtk_widget_size_request(menu, &req);
         entry->width = req.width + 24;
         entry->height = GTKfont::stringHeight(option_menu, 0) + PADVAL;
-        gtk_widget_set_usize(GTK_WIDGET(entry->widget), entry->width,
+        gtk_widget_set_size_request(GTK_WIDGET(entry->widget), entry->width,
             entry->height);
         gtk_option_menu_set_history(GTK_OPTION_MENU(option_menu), cnt);
     }
@@ -2072,8 +2075,10 @@ gtk_viewer::resize_handler(GtkAllocation *a)
 {
     // Ignore resize events until the initial expose event is fully
     // handled.
-    if (!v_seen_expose)
-        return (true);
+    // Don't do this, causes initial window to be empty in Ubuntu.  Why
+    // was this done anyway?
+    // if (!v_seen_expose)
+    //     return (true);
 
     if (a->width != v_width || a->height != v_height) {
         v_width = a->width;

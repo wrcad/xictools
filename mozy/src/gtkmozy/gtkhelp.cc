@@ -1644,7 +1644,7 @@ GTKhelpPopup::frame_signal_handler(htmFrameCallbackStruct *cbs)
             h_frame_array[i]->set_frame_parent(this);
             h_frame_array[i]->set_frame_name(cbs->frames[i].name);
 
-            gtk_widget_set_usize(h_frame_array[i]->Shell(),
+            gtk_widget_set_size_request(h_frame_array[i]->Shell(),
                 cbs->frames[i].width, cbs->frames[i].height);
             gtk_fixed_put(GTK_FIXED(fixed), h_frame_array[i]->Shell(),
                 cbs->frames[i].x, cbs->frames[i].y);
@@ -1691,7 +1691,7 @@ GTKhelpPopup::frame_signal_handler(htmFrameCallbackStruct *cbs)
     else if (cbs->reason == htm::HTM_FRAMERESIZE) {
         for (int i = 0; i < h_frame_array_size; i++) {
 
-            gtk_widget_set_usize(h_frame_array[i]->Shell(),
+            gtk_widget_set_size_request(h_frame_array[i]->Shell(),
                 cbs->frames[i].width, cbs->frames[i].height);
             gtk_fixed_move(GTK_FIXED(fixed), h_frame_array[i]->Shell(),
                 cbs->frames[i].x, cbs->frames[i].y);
