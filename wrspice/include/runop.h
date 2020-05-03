@@ -124,7 +124,7 @@ struct sRunop
     bool bad()                  { return (ro_bad); }
     void set_bad(bool b)        { ro_bad = b; }
 
-    virtual void print(char**) = 0;
+    virtual void print(sLstr*) = 0;
     virtual void destroy() = 0;
 
 protected:
@@ -176,7 +176,7 @@ struct sRunopSave : public sRunop
 
     sRunopSave *next()          { return ((sRunopSave*)ro_next); }
 
-    void print(char**);         // Print, in string if given, the runop msg.
+    void print(sLstr*);         // Print, in string if given, the runop msg.
     void destroy();             // Destroy this runop.
 };
 
@@ -190,7 +190,7 @@ struct sRunopTrace : public sRunop
 
     sRunopTrace *next()         { return ((sRunopTrace*)ro_next); }
 
-    void print(char**);         // Print, in string if given, the runop msg.
+    void print(sLstr*);         // Print, in string if given, the runop msg.
     void destroy();             // Destroy this runop.
 
     bool print_trace(sPlot*, bool*, int);  // Print trace output.
@@ -212,7 +212,7 @@ struct sRunopIplot : public sRunop
     int reuseid()               { return (ro_reuseid); }
     void set_reuseid(int i)     { ro_reuseid = i; }
 
-    void print(char**);         // Print, in string if given, the runop msg.
+    void print(sLstr*);         // Print, in string if given, the runop msg.
     void destroy();             // Destroy this runop.
 
 private:
@@ -341,7 +341,7 @@ struct sMpoint
         }
 
     int parse(const char**, char**, const char*);
-    void print(sLstr&);
+    void print(sLstr*);
     bool check_found(sFtCirc*, bool*, bool, sMpoint* = 0);
     int check_trig(sDataVec*, double);
 
@@ -421,7 +421,7 @@ struct sMfunc
     double val()                { return (f_val); }
     void set_val(double d)      { f_val = d; }
 
-    void print(sLstr&);
+    void print(sLstr*);
 
     bool mmin(sDataVec*, int, int, double*, double*);
     bool mmax(sDataVec*, int, int, double*, double*);
@@ -512,7 +512,7 @@ struct sRunopMeas : public sRunop
             return (0);
         }
 
-    void print(char**);         // Print, in string if given, the runop msg.
+    void print(sLstr*);         // Print, in string if given, the runop msg.
     void destroy();             // Destroy this runop.
 
     // measure.cc
@@ -598,14 +598,14 @@ struct sRunopStop : public sRunop
     bool silent()               { return (ro_silent); }
     void nostop()               { ro_stop_flag = false; ro_end_flag = false; }
 
-    void print(char**);         // Print, in string if given, the runop msg.
+    void print(sLstr*);         // Print, in string if given, the runop msg.
     void destroy();             // Destroy this runop.
 
     // measure.cc
     bool parse(const char*, char**);
     void reset();
     ROret check_stop(sRunDesc*);
-    void print_cond(char**, bool);
+    void print_cond(sLstr*, bool);
 
 private:
     double endval(sDataVec*, sDataVec*, bool);

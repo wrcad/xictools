@@ -203,41 +203,38 @@ IFoutput::stopCmd(wordlist *wl)
 
 
 void
-IFoutput::statusCmd(char **ps)
+IFoutput::statusCmd(sLstr *plstr)
 {
-    if (ps)
-        *ps = 0;
     const char *msg = "No runops are in effect.\n";
     if (!o_runops->isset() &&
             (!Sp.CurCircuit() || !Sp.CurCircuit()->runops().isset())) {
-        if (!ps)
+        if (!plstr)
             TTY.send(msg);
         else
-            *ps = lstring::copy(msg);
+            plstr->add(msg);
         return;
     }
-    char **t = ps;
     sRunopDb *db = Sp.CurCircuit() ? &Sp.CurCircuit()->runops() : 0;
 
     ROgen<sRunopSave> svgen(o_runops->saves(), db ? db->saves() : 0);
     for (sRunopSave *d = svgen.next(); d; d = svgen.next())
-        d->print(t);
+        d->print(plstr);
 
     ROgen<sRunopTrace> tgen(o_runops->traces(), db ? db->traces() : 0);
     for (sRunopTrace *d = tgen.next(); d; d = tgen.next())
-        d->print(t);
+        d->print(plstr);
 
     ROgen<sRunopIplot> igen(o_runops->iplots(), db ? db->iplots() : 0);
     for (sRunopIplot *d = igen.next(); d; d = igen.next())
-        d->print(t);
+        d->print(plstr);
 
     ROgen<sRunopMeas> mgen(o_runops->measures(), db ? db->measures() : 0);
     for (sRunopMeas *d = mgen.next(); d; d = mgen.next())
-        d->print(t);
+        d->print(plstr);
 
     ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
     for (sRunopStop *d = sgen.next(); d; d = sgen.next())
-        d->print(t);
+        d->print(plstr);
 }
 
 
@@ -1022,17 +1019,18 @@ IFoutput::hasIntervalMeasure()
 
 
 void
-sRunopSave::print(char **retstr)
+sRunopSave::print(sLstr *plstr)
 {
     const char *msg0 = "%c %-4d %s %s\n";
     char buf[BSIZE_SP];
-    if (!retstr)
+    if (!plstr) {
         TTY.printf(msg0, ro_active ? ' ' : 'I', ro_number,
             kw_save,  ro_string);
+    }
     else {
         sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
             kw_save,  ro_string);
-        *retstr = lstring::build_str(*retstr, buf);
+        plstr->add(buf);
     }
 }
 
@@ -1046,17 +1044,18 @@ sRunopSave::destroy()
 
 
 void
-sRunopTrace::print(char **retstr)
+sRunopTrace::print(sLstr *plstr)
 {
     const char *msg0 = "%c %-4d %s %s\n";
     char buf[BSIZE_SP];
-    if (!retstr)
+    if (!plstr) {
         TTY.printf(msg0, ro_active ? ' ' : 'I', ro_number,
             kw_trace,  ro_string ? ro_string : "");
+    }
     else {
         sprintf(buf, msg0, ro_active ? ' ' : 'I', ro_number,
             kw_trace,  ro_string ? ro_string : "");
-        *retstr = lstring::build_str(*retstr, buf);
+        plstr->add(buf);
     }
 }
 
@@ -1135,18 +1134,18 @@ sRunopTrace::print_trace(sPlot *plot, bool *flag, int pnt)
 
 
 void
-sRunopIplot::print(char **retstr)
+sRunopIplot::print(sLstr *plstr)
 {
     const char *msg2 = "%c %-4d %s %s\n";
     char buf[BSIZE_SP];
-    if (!retstr) {
+    if (!plstr) {
         TTY.printf(msg2, ro_active ? ' ' : 'I', ro_number, kw_iplot,
             ro_string);
     }
     else {
         sprintf(buf, msg2, ro_active ? ' ' : 'I', ro_number, kw_iplot,
             ro_string);
-        *retstr = lstring::build_str(*retstr, buf);
+        plstr->add(buf);
     }
 }
 

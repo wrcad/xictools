@@ -55,7 +55,7 @@ struct sKW
     sKW(const char *w, const char *d)
         { word = w; descr = d; type = VTYP_NONE; }
     virtual ~sKW () { }
-    virtual void print(char **rstr);
+    virtual void print(sLstr*);
 
     const char *word;
     const char *descr;

@@ -196,7 +196,7 @@ GTKtoolbar::PopUpPlots(int x, int y)
 {
     if (pl_shell)
         return;
-    char *s = 0;
+    sLstr lstr;
     for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
         char buf[256];
         if (OP.curPlot() == p)
@@ -205,12 +205,11 @@ GTKtoolbar::PopUpPlots(int x, int y)
         else
             sprintf(buf,"        %-11s%-20s (%s)\n",
                 p->type_name(), p->title(), p->name());
-        s = lstring::build_str(s, buf);
+        lstr.add(buf);
     }
     FixLoc(&x, &y);
-    sPlots plts(x, y, s);
+    sPlots plts(x, y, lstr.string());
     pl_text = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(pl_shell), "text");
-    delete [] s;
     SetActive(ntb_plots, true);
 }
 
@@ -265,20 +264,22 @@ GTKtoolbar::UpdatePlots(int lev)
     else if (level)
         return;
 
-    char *s = 0, buf[512];
+    char buf[512];
+    sLstr lstr;
     for (sPlot *p = OP.plotList(); p; p = p->next_plot()) {
-        if (OP.curPlot() == p)
+        if (OP.curPlot() == p) {
             sprintf(buf, "Current %-11s%-20s (%s)\n",
             p->type_name(), p->title(), p->name());
-        else
+        }
+        else {
             sprintf(buf,"        %-11s%-20s (%s)\n",
                 p->type_name(), p->title(), p->name());
-        s = lstring::build_str(s, buf);
+        }
+        lstr.add(buf);
     }
 
     double val = text_get_scroll_value(pl_text);
-    text_set_chars(pl_text, s);
-    delete [] s;
+    text_set_chars(pl_text, lstr.string());
     text_set_scroll_value(pl_text, val);
 }
 
@@ -326,13 +327,12 @@ sVectors::update()
     if (!text)
         return;
 
-    char *s = 0;
-    OP.vecPrintList(0, &s);
+    sLstr lstr;
+    OP.vecPrintList(0, &lstr);
 
     double val = text_get_scroll_value(text);
-    text_set_chars(text, s);
+    text_set_chars(text, lstr.string());
     ve_recolor();
-    delete [] s;
     text_set_scroll_value(text, val);
 }
 
@@ -655,16 +655,16 @@ sCircuits::ci_str()
     if (!Sp.CircuitList())
         return (lstring::copy("There are no circuits loaded."));
 
-    char *s = 0;
+    sLstr lstr;
     for (sFtCirc *p = Sp.CircuitList(); p; p = p->next()) {
         char buf[512];
         if (Sp.CurCircuit() == p)
             sprintf(buf, "Current %-6s %s\n", p->name(), p->descr());
         else
             sprintf(buf, "        %-6s %s\n", p->name(), p->descr());
-        s = lstring::build_str(s, buf);
+        lstr.add(buf);
     }
-    return (s);
+    return (lstr.string_trim());
 }
 
 
@@ -1071,15 +1071,14 @@ const char *sTraces::tr_btns[] = { "Delete Inactive" };
 void
 sTraces::update()
 {
-    char *s;
-    OP.statusCmd(&s);
+    sLstr lstr;
+    OP.statusCmd(&lstr);
     GtkWidget *text = TB()->tr_text;
     if (!text)
         return;
     double val = text_get_scroll_value(text);
-    text_set_chars(text, s);
+    text_set_chars(text, lstr.string());
     tr_recolor();
-    delete [] s;
     text_set_scroll_value(text, val);
 }
 
@@ -1266,12 +1265,11 @@ GTKtoolbar::PopUpVariables(int x, int y)
 {
     if (va_shell)
         return;
-    char *s = 0;
-    Sp.VarPrint(&s);
+    sLstr lstr;
+    Sp.VarPrint(&lstr);
     FixLoc(&x, &y);
-    sVariables vars(x, y, s);
+    sVariables vars(x, y, lstr.string());
     va_text = (GtkWidget*)gtk_object_get_data(GTK_OBJECT(va_shell), "text");
-    delete [] s;
     SetActive(ntb_variables, true);
 }
 
@@ -1304,11 +1302,10 @@ GTKtoolbar::UpdateVariables()
         return;
     if (!va_shell)
         return;
-    char *s = 0;
-    Sp.VarPrint(&s);
+    sLstr lstr;
+    Sp.VarPrint(&lstr);
     double val = text_get_scroll_value(va_text);
-    text_set_chars(va_text, s);
-    delete [] s;
+    text_set_chars(va_text, lstr.string());
     text_set_scroll_value(va_text, val);
 }
 

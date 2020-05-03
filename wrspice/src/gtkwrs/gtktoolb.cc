@@ -604,30 +604,30 @@ sTBhelp::sTBhelp(GRobject parent, GRobject call_btn)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    char *s = 0;
+    sLstr lstr;
     int i;
     if (parent == (GRobject)TB()->sh_shell) {
         for (i = 0; KW.shell(i)->word; i++)
-            KW.shell(i)->print(&s);
+            KW.shell(i)->print(&lstr);
     }
     else if (parent == (GRobject)TB()->sd_shell) {
         for (i = 0; KW.sim(i)->word; i++)
-            KW.sim(i)->print(&s);
+            KW.sim(i)->print(&lstr);
     }
     else if (parent == (GRobject)TB()->cm_shell) {
         for (i = 0; KW.cmds(i)->word; i++)
-            KW.cmds(i)->print(&s);
+            KW.cmds(i)->print(&lstr);
     }
     else if (parent == (GRobject)TB()->pd_shell) {
         for (i = 0; KW.plot(i)->word; i++)
-            KW.plot(i)->print(&s);
+            KW.plot(i)->print(&lstr);
     }
     else if (parent == (GRobject)TB()->db_shell) {
         for (i = 0; KW.debug(i)->word; i++)
-            KW.debug(i)->print(&s);
+            KW.debug(i)->print(&lstr);
     }
     else
-        s = lstring::copy("Internal error.");
+        lstr.add("Internal error.");
 
     //
     // text area
@@ -635,8 +635,7 @@ sTBhelp::sTBhelp(GRobject parent, GRobject call_btn)
     GtkWidget *hbox;
     text_scrollable_new(&hbox, &th_text, FNT_FIXED);
 
-    text_set_chars(th_text, s);
-    delete [] s;
+    text_set_chars(th_text, lstr.string());
 
     gtk_widget_add_events(th_text,
         GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
