@@ -400,7 +400,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
         // NOBRKTOK allows forms like v(aa<0>) to lex without a syntax
         // error when not double-quoted.
         wordlist *plotcmd = CP.Lexer(ls_plot.string());
-        CP.SetFlag(CP_NOBRKTOK, true);
+        CP.SetFlag(CP_NOBRKTOK, false);
 
         pnlist *pl0 = Sp.GetPtree(plotcmd, false);
         wordlist::destroy(plotcmd);

@@ -360,8 +360,13 @@ sVectors::ve_selections()
                 while (isspace(*t))
                     t++;
                 char *s = buf;
+                // Double quote each entry, otherwise vector names
+                // that include net expression indexing and similar
+                // may not parse correctly.
+                *s++ = '"';
                 while (*t && !isspace(*t))
                     *s++ = *t++;
+                *s++ = '"';
                 *s = '\0';
                 if (!wl0)
                     wl = wl0 = new wordlist(buf, 0);
