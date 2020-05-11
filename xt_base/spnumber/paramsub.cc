@@ -105,12 +105,8 @@ sParamTab::copy(const sParamTab *pt)
     sHent *h;
     while ((h = gen.next()) != 0) {
         sParam *po = (sParam*)h->data();
-        sParam *p = new sParam(lstring::copy(po->name()),
-            lstring::copy(po->sub()));
-        if (po->collapsed())
-            p->set_collapsed();
-        if (po->readonly())
-            p->set_readonly();
+        sParam *p = new sParam(lstring::copy(po->name()), 0);
+        p->update(po);
         pnew->pt_table->add(p->name(), p);
     }
     return (pnew);
@@ -216,13 +212,13 @@ sParamTab::extract_params(sParamTab *thispt, const char *str)
                 if (p) {
                     delete [] p->sub();
                     p->set_sub(psub);
-                    p->set_args(al);
+                    p->set_arglist(al);
                     delete [] pname;
                 }
             }
             if (!p) {
                 p = new sParam(pname, psub);
-                p->set_args(al);
+                p->set_arglist(al);
                 if (!ptab)
                     ptab = new sParamTab;
                 ptab->pt_table->add(pname, p);
@@ -282,10 +278,6 @@ sParamTab::update(sParamTab *thispt, const sParamTab *ptab)
         else {
             sParam *pnew = new sParam(lstring::copy(p->name()), 0);
             pnew->update(p);
-            if (p->collapsed())
-                pnew->set_collapsed();
-            if (p->readonly())
-                pnew->set_readonly();
             p0->pt_table->add(pnew->name(), pnew);
         }
     }
@@ -311,7 +303,7 @@ sParamTab::update(const char *str)
             if (p && !p->readonly()) {
                 delete [] p->sub();
                 p->set_sub(psub);
-                p->set_args(al);
+                p->set_arglist(al);
             }
             else {
                 delete [] psub;
@@ -375,22 +367,6 @@ sParamTab::eval(const sParam *p, bool *err) const
 #endif
     }
     return (0.0);
-}
-
-
-// Expand all values.
-//
-void
-sParamTab::collapse()
-{
-    sHgen gen(pt_table);
-    sHent *h;
-    while ((h = gen.next()) != 0) {
-        sParam *p = (sParam*)h->data();
-        char *sub = p->sub();
-        line_subst(&sub);
-        p->set_sub(sub);
-    }
 }
 
 
@@ -862,12 +838,8 @@ sParamTab::subst(char **tok) const
         pt_rctab->add(p->name(), p);
 
         if (pt_ctrl->collapse) {
-            if (!p->collapsed()) {
-                p->set_collapsed();
-                char *sub = p->sub();
-                line_subst(&sub);
-                p->set_sub(sub);
-            }
+            if (!p->collapsed())
+                p->collapse(this);
         }
 
         delete [] *tok;

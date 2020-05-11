@@ -4030,7 +4030,7 @@ The Terminal Edit Pop-Up
     <dt><b>Check/Create Bits</b><dd>
     This will create, at the end of the scalar terminal list, any
     scalar terminal referenced by the present terminal and not found. 
-    Newly created scalar terminals whill have <tt>BYNAME</tt>,
+    Newly created scalar terminals will have <tt>BYNAME</tt>,
     <tt>SCINVIS</tt>, and <tt>SYINVIS</tt> set, meaning that the
     terminals will be invisible and make contact by name only.  The
     new terminals are placed at the same location as the present

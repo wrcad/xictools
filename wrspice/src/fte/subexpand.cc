@@ -582,7 +582,7 @@ sScGlobal::expand_and_replace(sLine *deck, const sParamTab *s_ptab,
             ptab = sParamTab::update(0, sss->su_params);
             if (params) {
                 if (!ptab)
-                    iptab = new sParamTab;
+                    ptab = new sParamTab;
                 ptab->update(params);
             }
             ptab = sParamTab::update(ptab, s_ptab);
@@ -604,7 +604,12 @@ sScGlobal::expand_and_replace(sLine *deck, const sParamTab *s_ptab,
             }
 
             ptab = sParamTab::update(0, sptab);
-            ptab = sParamTab::update(ptab, iptab);
+            ptab = sParamTab::update(ptab, i_ptab);
+            if (params) {
+                if (!ptab)
+                    ptab = new sParamTab;
+                ptab->update(params);
+            }
         }
 
         if (sParamTab::errString) {
