@@ -73,9 +73,9 @@ JJdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->JJtnom = value->rValue;
         model->JJtnomGiven = true;
         break;
-    case JJ_MOD_TEMP:
-        model->JJtemp = value->rValue;
-        model->JJtempGiven = true;
+    case JJ_MOD_DEFTEMP:
+        model->JJdeftemp = value->rValue;
+        model->JJdeftempGiven = true;
         break;
     case JJ_MOD_TCFCT:
         model->JJtcfct = value->rValue;

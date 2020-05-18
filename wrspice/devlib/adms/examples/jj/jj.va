@@ -52,6 +52,8 @@
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
 
+// Version 1.35, May 18, 2020 instance parameter temp renamed temp_k
+//   to avoid conflict with reserved word in some simulators.
 // Version 1.34, December 18, 2019 instance param ics range widened,
 //   added NORLMT compile-time option.
 // Version 1.33, July 14, 2019 instance read-only parameters gshunt
@@ -404,7 +406,7 @@ parameter real ic_phase = 0 from (-`M_PI:`M_PI)
 aliasparam phi          = ic_phase;
 
 // Operating temperature.
-parameter real temp     = deftemp from [0.0:tc]
+parameter real temp_k   = deftemp from [0.0:tc]
     `P(type="instance" info="Operating temperature Kelvin");
 
 // Scaling critical current.
@@ -507,7 +509,7 @@ analog begin
 `endif
 
         // Temperature correction
-        tcf = tanh(tcfct*sqrt(tc/(temp+1e-3) - 1))/
+        tcf = tanh(tcfct*sqrt(tc/(temp_k+1e-3) - 1))/
             tanh(tcfct*sqrt(tc/(tnom+1e-3)-1));
         vgap_t = vgap*tcf;
 

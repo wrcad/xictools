@@ -237,15 +237,15 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->JJtnom = Tnom;
             }
         }
-        if (!model->JJtempGiven)
-            model->JJtemp = model->JJtnom;
+        if (!model->JJdeftempGiven)
+            model->JJdeftemp = model->JJtnom;
         else {
-            if (model->JJtemp < TempMin || model->JJtemp > model->JJtc) {
+            if (model->JJdeftemp < TempMin || model->JJdeftemp > model->JJtc) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: TEMP=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->JJtemp, TempMin, model->JJtc,
+                    "%s: DEFTEMP=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJdeftemp, TempMin, model->JJtc,
                     model->JJtnom);
-                model->JJtemp = model->JJtnom;
+                model->JJdeftemp = model->JJtnom;
             }
         }
         if (!model->JJtcfctGiven)
@@ -522,21 +522,21 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         sJJinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
 
-            if (!inst->JJtempGiven)
-                inst->JJtemp = model->JJtemp;
+            if (!inst->JJtemp_kGiven)
+                inst->JJtemp_k = model->JJdeftemp;
             else {
-                if (inst->JJtemp < TempMin || inst->JJtemp > model->JJtc) {
+                if (inst->JJtemp_k < TempMin || inst->JJtemp_k > model->JJtc) {
                     DVO.textOut(OUT_WARNING,
-                        "%s: TEMP=%g out of range [%g-%g], reset to %g.\n",
-                        inst->GENname, inst->JJtemp, TempMin, model->JJtc,
-                        model->JJtemp);
-                    inst->JJtemp = model->JJtemp;
+                        "%s: TEMP_K=%g out of range [%g-%g], reset to %g.\n",
+                        inst->GENname, inst->JJtemp_k, TempMin, model->JJtc,
+                        model->JJdeftemp);
+                    inst->JJtemp_k = model->JJdeftemp;
                 }
             }
 
             // Temperature correction factor.
             inst->JJtcf =
-            tanh(model->JJtcfct*sqrt(model->JJtc/(inst->JJtemp+1e-3) - 1.0)) /
+            tanh(model->JJtcfct*sqrt(model->JJtc/(inst->JJtemp_k+1e-3) - 1.0)) /
             tanh(model->JJtcfct*sqrt(model->JJtc/(model->JJtnom+1e-3) - 1.0));
 
             inst->JJvg = inst->JJtcf * model->JJvgnom;

@@ -132,7 +132,7 @@ struct sJJinstancePOD
     IFuid JJcontrol;               // name of controlling device
     double JJarea;                 // area factor for the junction
     double JJics;                  // area factor = ics/icrit
-    double JJtemp;                 // temperature Kelvin
+    double JJtemp_k;               // temperature Kelvin
     double JJtcf;                  // temperature compensation factor
 
     double JJinitCnd[2];           // initial condition vector
@@ -215,7 +215,7 @@ struct sJJinstancePOD
                                    // Flags to indicate...
     unsigned JJareaGiven : 1;      // area was specified
     unsigned JJicsGiven : 1;       // ics was specified
-    unsigned JJtempGiven : 1;      // temp was specified
+    unsigned JJtemp_kGiven : 1;    // temp_k was specified
 #ifdef NEWLSER
     unsigned JJlserGiven : 1;      // lser was specified
 #endif
@@ -273,7 +273,7 @@ struct sJJmodelPOD
     int JJrtype;
     int JJictype;
     double JJtc;
-    double JJtemp;
+    double JJdeftemp;
     double JJtnom;
     double JJtcfct;
     double JJvgnom;
@@ -304,7 +304,7 @@ struct sJJmodelPOD
     unsigned JJpiGiven : 1;
     unsigned JJictypeGiven : 1;
     unsigned JJtcGiven : 1;
-    unsigned JJtempGiven : 1;
+    unsigned JJdeftempGiven : 1;
     unsigned JJtnomGiven : 1;
     unsigned JJtcfctGiven : 1;
     unsigned JJvgGiven : 1;
@@ -346,7 +346,7 @@ using namespace JJ;
 enum {
     JJ_AREA = 1, 
     JJ_ICS,
-    JJ_TEMP,
+    JJ_TEMP_K,
 #ifdef NEWLSER
     JJ_LSER,
 #endif
@@ -409,7 +409,7 @@ enum {
     JJ_MOD_IC,
     JJ_MOD_TC,
     JJ_MOD_TNOM,
-    JJ_MOD_TEMP,
+    JJ_MOD_DEFTEMP,
     JJ_MOD_TCFCT,
     JJ_MOD_VG,
     JJ_MOD_DV,

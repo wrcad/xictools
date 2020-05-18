@@ -77,7 +77,7 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         0, // notused
         &&L_JJ_AREA, 
         &&L_JJ_ICS, 
-        &&L_JJ_TEMP, 
+        &&L_JJ_TEMP_K, 
 #ifdef NEWLSER
         &&L_JJ_LSER, 
 #endif
@@ -159,8 +159,8 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_JJ_ICS:
         data->v.rValue = inst->JJics;
         return (OK);
-    L_JJ_TEMP:
-        data->v.rValue = inst->JJtemp;
+    L_JJ_TEMP_K:
+        data->v.rValue = inst->JJtemp_k;
         return (OK);
 #ifdef NEWLSER
     L_JJ_LSER:
@@ -317,8 +317,8 @@ JJdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case JJ_ICS:
         data->v.rValue = inst->JJics;
         break;
-    case JJ_TEMP:
-        data->v.rValue = inst->JJtemp;
+    case JJ_TEMP_K:
+        data->v.rValue = inst->JJtemp_k;
         break;
 #ifdef NEWLSER
     case JJ_LSER:
