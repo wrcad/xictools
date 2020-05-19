@@ -508,7 +508,7 @@ struct IFoutput
     void stopCmd(wordlist*);
     void measureCmd(wordlist*);
     void stop2Cmd(wordlist*);
-    void statusCmd(char**);
+    void statusCmd(sLstr*);
     void deleteCmd(wordlist*);
     void initRunops(sRunDesc*);
     void setRunopActive(int, bool);
@@ -546,7 +546,7 @@ struct IFoutput
     void vecSet(const char*, const char*, bool = false, const char** = 0);
     void vecGc(bool = false);
     static bool vecEq(sDataVec*, sDataVec*);
-    void vecPrintList(wordlist*, char**);
+    void vecPrintList(wordlist*, sLstr*);
 
     sRunopDb *runops()          { return (o_runops); }
 

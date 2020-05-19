@@ -63,7 +63,7 @@ sAsmPrg::sAsmPrg()
     prg_inp_label = gtk_label_new("");
     gtk_widget_show(prg_inp_label);
     gtk_container_add(GTK_CONTAINER(frame), prg_inp_label);
-    gtk_widget_set_usize(prg_inp_label, 240, 20);
+    gtk_widget_set_size_request(prg_inp_label, 240, 20);
 
     int row = 0;
     gtk_table_attach(GTK_TABLE(form), frame, 0, 1, row, row + 1,
@@ -76,7 +76,7 @@ sAsmPrg::sAsmPrg()
     prg_out_label = gtk_label_new("");
     gtk_widget_show(prg_out_label);
     gtk_container_add(GTK_CONTAINER(frame), prg_out_label);
-    gtk_widget_set_usize(prg_out_label, 240, 20);
+    gtk_widget_set_size_request(prg_out_label, 240, 20);
 
     gtk_table_attach(GTK_TABLE(form), frame, 1, 2, row, row + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -89,7 +89,7 @@ sAsmPrg::sAsmPrg()
     prg_info_label = gtk_label_new("");
     gtk_widget_show(prg_info_label);
     gtk_container_add(GTK_CONTAINER(frame), prg_info_label);
-    gtk_widget_set_usize(prg_info_label, -1, 40);
+    gtk_widget_set_size_request(prg_info_label, -1, 40);
 
     gtk_table_attach(GTK_TABLE(form), frame, 0, 2, row, row + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -102,7 +102,7 @@ sAsmPrg::sAsmPrg()
     prg_cname_label = gtk_label_new("");
     gtk_widget_show(prg_cname_label);
     gtk_container_add(GTK_CONTAINER(frame), prg_cname_label);
-    gtk_widget_set_usize(prg_cname_label, -1, 40);
+    gtk_widget_set_size_request(prg_cname_label, -1, 40);
 
     gtk_table_attach(GTK_TABLE(form), frame, 0, 2, row, row + 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -141,7 +141,7 @@ sAsmPrg::sAsmPrg()
         (GtkAttachOptions)0, 2, 2);
     row++;
 
-    gtk_widget_set_usize(prg_shell, 500, -1);
+    gtk_widget_set_size_request(prg_shell, 500, -1);
 }
 
 

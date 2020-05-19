@@ -353,7 +353,7 @@ sDC::sDC(GRobject c)
 
     GtkWidget *sb = sb_part.init(DRC_PART_DEF, DRC_PART_MIN, DRC_PART_MAX, 2);
     sb_part.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), 0, "partsize");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_start(GTK_BOX(row), sb, true, true, 0);
 
     gtk_table_attach(GTK_TABLE(table), row, 2, 4, rowcnt, rowcnt+1,
@@ -418,7 +418,7 @@ sDC::sDC(GRobject c)
 
     sb = sb_left.init(0.0, -1e6, 1e6, ndgt);
     sb_left.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), this, "left");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -433,7 +433,7 @@ sDC::sDC(GRobject c)
 
     sb = sb_bottom.init(0.0, -1e6, 1e6, ndgt);
     sb_bottom.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), this, "bottom");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -450,7 +450,7 @@ sDC::sDC(GRobject c)
 
     sb = sb_right.init(0.0, -1e6, 1e6, ndgt);
     sb_right.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), this, "right");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -465,7 +465,7 @@ sDC::sDC(GRobject c)
 
     sb = sb_top.init(0.0, -1e6, 1e6, ndgt);
     sb_top.connect_changed(GTK_SIGNAL_FUNC(dc_val_changed), this, "top");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(table), sb, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -541,7 +541,7 @@ sDC::sDC(GRobject c)
 #endif
         NULL);
 
-    gtk_widget_set_usize(dc_jobs, 200, 200);
+    gtk_widget_set_size_request(dc_jobs, 200, 200);
 
     gtk_table_attach(GTK_TABLE(table), contr, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

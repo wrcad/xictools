@@ -604,30 +604,30 @@ sTBhelp::sTBhelp(GRobject parent, GRobject call_btn)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    char *s = 0;
+    sLstr lstr;
     int i;
     if (parent == (GRobject)TB()->sh_shell) {
         for (i = 0; KW.shell(i)->word; i++)
-            KW.shell(i)->print(&s);
+            KW.shell(i)->print(&lstr);
     }
     else if (parent == (GRobject)TB()->sd_shell) {
         for (i = 0; KW.sim(i)->word; i++)
-            KW.sim(i)->print(&s);
+            KW.sim(i)->print(&lstr);
     }
     else if (parent == (GRobject)TB()->cm_shell) {
         for (i = 0; KW.cmds(i)->word; i++)
-            KW.cmds(i)->print(&s);
+            KW.cmds(i)->print(&lstr);
     }
     else if (parent == (GRobject)TB()->pd_shell) {
         for (i = 0; KW.plot(i)->word; i++)
-            KW.plot(i)->print(&s);
+            KW.plot(i)->print(&lstr);
     }
     else if (parent == (GRobject)TB()->db_shell) {
         for (i = 0; KW.debug(i)->word; i++)
-            KW.debug(i)->print(&s);
+            KW.debug(i)->print(&lstr);
     }
     else
-        s = lstring::copy("Internal error.");
+        lstr.add("Internal error.");
 
     //
     // text area
@@ -635,8 +635,7 @@ sTBhelp::sTBhelp(GRobject parent, GRobject call_btn)
     GtkWidget *hbox;
     text_scrollable_new(&hbox, &th_text, FNT_FIXED);
 
-    text_set_chars(th_text, s);
-    delete [] s;
+    text_set_chars(th_text, lstr.string());
 
     gtk_widget_add_events(th_text,
         GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK);
@@ -880,7 +879,7 @@ ErrMsgBox::PopUpErr(const char *string)
 
     int wid = 400;
     int hei = 120;
-    gtk_widget_set_usize(er_popup, wid, hei);
+    gtk_widget_set_size_request(er_popup, wid, hei);
     if (er_x == 0 && er_y == 0) {
         er_x = (mwid - wid)/2;
         er_y = 0;
@@ -3094,11 +3093,11 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
             // no spin - may want to add options with and without spin
             entry = gtk_entry_new();
             gtk_widget_show(entry);
-            gtk_widget_set_usize(entry, 80, -1);
+            gtk_widget_set_size_request(entry, 80, -1);
             gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 2);
             entry2 = gtk_entry_new();
             gtk_widget_show(entry2);
-            gtk_widget_set_usize(entry2, 80, -1);
+            gtk_widget_set_size_request(entry2, 80, -1);
             gtk_box_pack_start(GTK_BOX(hbox), entry2, true, true, 2);
         }
         else {
@@ -3106,7 +3105,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
                 kwstruct->max, del, pgsize, 0);
             entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), rate, numd);
             gtk_widget_show(entry);
-            gtk_widget_set_usize(entry, 80, -1);
+            gtk_widget_set_size_request(entry, 80, -1);
             gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
             gtk_box_pack_start(GTK_BOX(hbox), entry, false, false, 2);
             if (mode == KW_INT_2) {
@@ -3114,7 +3113,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
                     del, pgsize, 0);
                 entry2 = gtk_spin_button_new(GTK_ADJUSTMENT(adj), rate, numd);
                 gtk_widget_show(entry2);
-                gtk_widget_set_usize(entry2, 80, -1);
+                gtk_widget_set_size_request(entry2, 80, -1);
                 gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry2), true);
                 gtk_box_pack_start(GTK_BOX(hbox), entry2, false, false, 2);
             }
@@ -3126,7 +3125,7 @@ xEnt::create_widgets(xKWent *kwstruct, const char *defstring,
         if (kwstruct->type != VTYP_LIST || mode != KW_NO_CB) {
             entry = gtk_entry_new();
             gtk_widget_show(entry);
-            gtk_widget_set_usize(entry, 80, -1);
+            gtk_widget_set_size_request(entry, 80, -1);
             gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 2);
         }
         if (cb && mode != KW_NO_SPIN && mode != KW_NO_CB) {

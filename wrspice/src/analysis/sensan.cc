@@ -257,11 +257,14 @@ SENSanalysis::sens_dcoperation(sCKT *ckt, int restart)
     if (error)
         return (error);
 
-    // This caches the real part for reinitializing
-    // the matrix with spLoadInitialization.  If using
-    // KLU, the KLUmatrix is created, the original
-    // struct cleared, and all further matrix
-    // operations will be done using KLU.
+    // If using KLU, the KLUmatrix is created, the original struct
+    // cleared, and all further matrix operations will be done using
+    // KLU.
+    //
+    ckt->CKTmatrix->spSwitchMatrix();
+
+    // This caches the real part for reinitializing the matrix with
+    // spLoadInitialization.
     //
     ckt->CKTmatrix->spSaveForInitialization();  // cache real part
     if (ckt->CKTmatrix->spDataAddressChange()) {
@@ -446,11 +449,14 @@ SENSanalysis::sens_acoperation(sCKT *ckt, int restart)
     if (error)
         return (error);
 
-    // This caches the real part for reinitializing
-    // the matrix with spLoadInitialization.  If using
-    // KLU, the KLUmatrix is created, the original
-    // struct cleared, and all further matrix
-    // operations will be done using KLU.
+    // If using KLU, the KLUmatrix is created, the original struct
+    // cleared, and all further matrix operations will be done using
+    // KLU.
+    //
+    ckt->CKTmatrix->spSwitchMatrix();
+
+    // This caches the real part for reinitializing the matrix with
+    // spLoadInitialization.
     //
     ckt->CKTmatrix->spSaveForInitialization();  // cache real part
     if (ckt->CKTmatrix->spDataAddressChange()) {

@@ -165,14 +165,14 @@ sDw::sDw(GRobject caller, bool(*cb)(bool, const BBox*, void*), void *arg)
     int ndgt = CD()->numDigits();
 
     GtkWidget *sb = sb_x.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 120, -1);
+    gtk_widget_set_size_request(sb, 120, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_y.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, 120, -1);
+    gtk_widget_set_size_request(sb, 120, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -188,7 +188,7 @@ sDw::sDw(GRobject caller, bool(*cb)(bool, const BBox*, void*), void *arg)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_wid.init(100.0, 0.1, 1e6, 2);
-    gtk_widget_set_usize(sb, 120, -1);
+    gtk_widget_set_size_request(sb, 120, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

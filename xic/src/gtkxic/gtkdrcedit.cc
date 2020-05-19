@@ -353,7 +353,7 @@ sDim::sDim(GRobject c)
     const char *bclr = GRpkgIf()->GetAttrColor(GRattrColorLocSel);
     gtk_text_buffer_create_tag(textbuf, "primary", "background", bclr, NULL);
 
-    gtk_widget_set_usize(dim_text, DEF_WIDTH, DEF_HEIGHT);
+    gtk_widget_set_size_request(dim_text, DEF_WIDTH, DEF_HEIGHT);
 
     // The font change pop-up uses this to redraw the widget
     gtk_object_set_data(GTK_OBJECT(dim_text), "font_changed",

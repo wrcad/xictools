@@ -744,7 +744,7 @@ struct sDataVec
     void sort();
     sDataVec *mkfamily();
     void extend(int);
-    void print(char**);
+    void print(sLstr*);
     void minmax(double*, bool);
     void SmithMinmax(double*, bool);
     sDataVec *SmithCopy();

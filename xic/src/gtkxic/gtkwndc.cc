@@ -96,7 +96,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_sbutton = gtk_button_new_with_label("S");
     gtk_widget_set_name(wnd_sbutton, "SaveWin");
     gtk_widget_show(wnd_sbutton);
-    gtk_widget_set_usize(wnd_sbutton, 20, -1);
+    gtk_widget_set_size_request(wnd_sbutton, 20, -1);
 
     char buf[64];
     wnd_s_menu = gtk_menu_new();
@@ -138,7 +138,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     GtkWidget *sb = sb_left.init(initd, -1e6, 1e6, ndgt);
     sb_left.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "left");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -161,7 +161,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     sb = sb_bottom.init(initd, -1e6, 1e6, ndgt);
     sb_bottom.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "bottom");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -189,7 +189,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
     wnd_rbutton = gtk_button_new_with_label("R");
     gtk_widget_set_name(wnd_rbutton, "RclWin");
     gtk_widget_show(wnd_rbutton);
-    gtk_widget_set_usize(wnd_rbutton, 20, -1);
+    gtk_widget_set_size_request(wnd_rbutton, 20, -1);
 
     wnd_r_menu = gtk_menu_new();
     gtk_widget_set_name(wnd_r_menu, "Rmenu");
@@ -228,7 +228,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     sb = sb_right.init(initd, -1e6, 1e6, ndgt);
     sb_right.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "right");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -251,7 +251,7 @@ wnd_t::wnd_t(WndSensMode(sens_test)(), WndFuncMode fmode)
 
     sb = sb_top.init(initd, -1e6, 1e6, ndgt);
     sb_top.connect_changed(GTK_SIGNAL_FUNC(wnd_val_changed), this, "top");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
 
     gtk_table_attach(GTK_TABLE(tform), sb, 3, 4, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

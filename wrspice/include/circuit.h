@@ -1805,6 +1805,8 @@ public:
 #ifdef WITH_THREADS
     void ldadd(double *ptr, double val)
         {
+            if (!ptr)
+                return;
             if (!CKTloadThreads) {
                 if (CKTextPrec)
                     *(long double*)ptr += val;
@@ -1846,6 +1848,8 @@ public:
 #else
     void ldadd(double *ptr, double val)
         {
+            if (!ptr)
+                return;
             if (CKTextPrec)
                 *(long double*)ptr += val;
             else
@@ -1855,6 +1859,8 @@ public:
 
     void ldset(double *ptr, double val)
         {
+            if (!ptr)
+                return;
             if (CKTcurTask->TSKextPrec)
                 *(long double*)ptr = val;
             else
@@ -1904,6 +1910,8 @@ public:
 
     void preldadd(double *ptr, double val)
         {
+            if (!ptr)
+                return;
             if (CKTcurTask->TSKextPrec)
                 *(long double*)ptr += val;
             else
@@ -1912,6 +1920,8 @@ public:
 
     void preldset(double *ptr, double val)
         {
+            if (!ptr)
+                return;
             if (CKTcurTask->TSKextPrec)
                 *(long double*)ptr = val;
             else

@@ -417,7 +417,7 @@ SRCdev::src_parse(
             delete [] nline;
             return;
         }
-        while (**line == ')')
+        while (**line == ')' || isspace(**line))
             (*line)++;
         end = *line;
 

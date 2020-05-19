@@ -167,10 +167,12 @@ public:
 
 private:
     void init(CDs*, bool);
-    bool init_terminal(CDc*);
+    void init_wires(CDs*);
+    void init_instances(CDs*);
     void init_nophys_shorts();
 
     void connect();
+    void set_byname_locations();
     bool push(const CDw*);
     bool push_unnamed(const CDw*);
     void pop();

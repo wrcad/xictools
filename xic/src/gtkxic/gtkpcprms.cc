@@ -235,7 +235,7 @@ sPcp::sPcp(GRobject c, PCellParam *prm, const char *dbname, pcpMode mode)
     if (!pcp_popup)
         return;
 
-    gtk_widget_set_usize(pcp_popup, 300, 400);
+    gtk_widget_set_size_request(pcp_popup, 300, 400);
     GtkWidget *form = gtk_table_new(2, 1, false);
     gtk_widget_show(form);
     gtk_container_set_border_width(GTK_CONTAINER(form), 2);
@@ -389,7 +389,7 @@ sPcp::update(const char *dbname, PCellParam *p0)
         char *ltext;
         GtkWidget *entry = setup_entry(p, lstr, &ltext);
         gtk_widget_show(entry);
-        gtk_widget_set_usize(entry, 120, -1);
+        gtk_widget_set_size_request(entry, 120, -1);
 
         gtk_table_attach(GTK_TABLE(table), entry, 1, 2, rcnt, rcnt+1,
         (GtkAttachOptions)0,

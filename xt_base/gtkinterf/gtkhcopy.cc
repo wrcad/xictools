@@ -688,9 +688,19 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
     hc->hc_linwlab = 0;
     hc->hc_linwent = 0;
 
-    GtkWidget *form = gtk_table_new(1, 8, false);
+    // Under Ubuntu 18.04 the background of the entire window is dark
+    // with the default theme, making the labels invisible.  Other
+    // widgets don't have this issue.  Adding an event box over
+    // everything reverts to a light background and all is well.
+    // I don't understand this.
+
+    GtkWidget *eb = gtk_event_box_new();
+    gtk_widget_show(eb);
+    gtk_container_add(GTK_CONTAINER(hc->hc_popup), eb);
+
+    GtkWidget *form = gtk_table_new(1, 1, false);
     gtk_widget_show(form);
-    gtk_container_add(GTK_CONTAINER(hc->hc_popup), form);
+    gtk_container_add(GTK_CONTAINER(eb), form);
     gtk_container_set_border_width(GTK_CONTAINER(hc->hc_popup), 2);
 
     //
@@ -1131,7 +1141,7 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
         entry = gtk_spin_button_new(GTK_ADJUSTMENT(adj), 1.0, 2);
         gtk_widget_set_name(entry, "linewidth");
         gtk_widget_show(entry);
-        gtk_widget_set_usize(entry, 90, -1);
+        gtk_widget_set_size_request(entry, 90, -1);
         gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(entry), true);
         gtk_box_pack_start(GTK_BOX(row), entry, false, false, 0);
         hc->hc_linwent = entry;
@@ -1257,10 +1267,11 @@ GTKprintPopup::hc_hcpopup(GRobject caller, gtk_bag *wb, HCcb *cb,
 
     gtk_window_set_transient_for(GTK_WINDOW(hc->hc_popup),
         GTK_WINDOW(wb->Shell()));
-    if (wb->PositionReferenceWidget())
+    if (wb->PositionReferenceWidget()) {
         GRX->SetPopupLocation(
             GRloc(textmode == HCgraphical ? LW_UL : LW_CENTER),
             hc->hc_popup, wb->PositionReferenceWidget());
+    }
     gtk_widget_show(hc->hc_popup);
 }
 

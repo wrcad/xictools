@@ -141,27 +141,29 @@ The time at found_local implicitly added to the delay of conj!
 *********************************/
 
 void
-sMfunc::print(sLstr &lstr)
+sMfunc::print(sLstr *plstr)
 {
-    lstr.add_c(' ');
-    if (f_type == Mmin)
-        lstr.add(mkw_min);
-    else if (f_type == Mmax)
-        lstr.add(mkw_max);
-    else if (f_type == Mpp)
-        lstr.add(mkw_pp);
-    else if (f_type == Mavg)
-        lstr.add(mkw_avg);
-    else if (f_type == Mrms)
-        lstr.add(mkw_rms);
-    else if (f_type == Mpw)
-        lstr.add(mkw_pw);
-    else if (f_type == Mrft)
-        lstr.add(mkw_rt);
-    else if (f_type == Mfind)
-        lstr.add(mkw_find);
-    lstr.add_c(' ');
-    lstr.add(f_expr);
+    if (plstr) {
+        plstr->add_c(' ');
+        if (f_type == Mmin)
+            plstr->add(mkw_min);
+        else if (f_type == Mmax)
+            plstr->add(mkw_max);
+        else if (f_type == Mpp)
+            plstr->add(mkw_pp);
+        else if (f_type == Mavg)
+            plstr->add(mkw_avg);
+        else if (f_type == Mrms)
+            plstr->add(mkw_rms);
+        else if (f_type == Mpw)
+            plstr->add(mkw_pw);
+        else if (f_type == Mrft)
+            plstr->add(mkw_rt);
+        else if (f_type == Mfind)
+            plstr->add(mkw_find);
+        plstr->add_c(' ');
+        plstr->add(f_expr);
+    }
 }
 
 
@@ -1051,7 +1053,7 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
 #ifdef M_DEBUG
     if (!lockout) {
         sLstr lstr;
-        print(lstr);
+        print(&lstr);
         printf("sMpoint:  %s\n", lstr.string());
     }
 #endif
@@ -1062,89 +1064,91 @@ sMpoint::parse(const char **pstr, char **errstr, const char *kw)
 // Print the specification into lstr.
 //
 void
-sMpoint::print(sLstr &lstr)
+sMpoint::print(sLstr *plstr)
 {
+    if (!plstr)
+        return;
     if (!t_active)
         return;
-    lstr.add_c(' ');
+    plstr->add_c(' ');
     if (t_kw1) {
-        lstr.add(t_kw1);
-        lstr.add_c(' ');
+        plstr->add(t_kw1);
+        plstr->add_c(' ');
     }
     if (t_kw2) {
-        lstr.add(t_kw2);
-        lstr.add_c(' ');
+        plstr->add(t_kw2);
+        plstr->add_c(' ');
     }
     if (t_type == MPnum) {
         if (t_ptmode) {
-            lstr.add_c('[');
-            lstr.add_u(t_indx);
-            lstr.add_c(']');
+            plstr->add_c('[');
+            plstr->add_u(t_indx);
+            plstr->add_c(']');
         }
         else
-            lstr.add_g(t_td);
+            plstr->add_g(t_td);
     }
     else if (t_type == MPmref) {
-        lstr.add(t_expr1);
+        plstr->add(t_expr1);
         if (t_td_given) {
-            lstr.add_c(' ');
+            plstr->add_c(' ');
             if (t_dstrobe)
-                lstr.add(mkw_ts);
+                plstr->add(mkw_ts);
             else
-                lstr.add(mkw_td);
-            lstr.add_c('=');
-            lstr.add_g(t_td);
+                plstr->add(mkw_td);
+            plstr->add_c('=');
+            plstr->add_g(t_td);
         }
     }
     else if (t_type == MPexp1) {
-        lstr.add(t_expr1);
+        plstr->add(t_expr1);
         if (t_td_given || t_mname) {
-            lstr.add_c(' ');
+            plstr->add_c(' ');
             if (t_dstrobe)
-                lstr.add(mkw_ts);
+                plstr->add(mkw_ts);
             else
-                lstr.add(mkw_td);
-            lstr.add_c('=');
+                plstr->add(mkw_td);
+            plstr->add_c('=');
             if (t_mname)
-                lstr.add(t_mname);
+                plstr->add(t_mname);
             else
-                lstr.add_g(t_td);
+                plstr->add_g(t_td);
         }
     }
     else if (t_type == MPexp2) {
-        lstr.add(t_expr1);
-        lstr.add_c('=');
-        lstr.add(t_expr2);
+        plstr->add(t_expr1);
+        plstr->add_c('=');
+        plstr->add(t_expr2);
         if (t_td_given || t_mname) {
-            lstr.add_c(' ');
-            lstr.add(mkw_td);
-            lstr.add_c('=');
+            plstr->add_c(' ');
+            plstr->add(mkw_td);
+            plstr->add_c('=');
             if (t_mname)
-                lstr.add(t_mname);
+                plstr->add(t_mname);
             else
-                lstr.add_g(t_td);
+                plstr->add_g(t_td);
         }
         if (t_rises) {
-            lstr.add_c(' ');
-            lstr.add(mkw_rise);
-            lstr.add_c('=');
-            lstr.add_u(t_rises);
+            plstr->add_c(' ');
+            plstr->add(mkw_rise);
+            plstr->add_c('=');
+            plstr->add_u(t_rises);
         }
         if (t_falls) {
-            lstr.add_c(' ');
-            lstr.add(mkw_fall);
-            lstr.add_c('=');
-            lstr.add_u(t_falls);
+            plstr->add_c(' ');
+            plstr->add(mkw_fall);
+            plstr->add_c('=');
+            plstr->add_u(t_falls);
         }
         if (t_crosses) {
-            lstr.add_c(' ');
-            lstr.add(mkw_cross);
-            lstr.add_c('=');
-            lstr.add_u(t_crosses);
+            plstr->add_c(' ');
+            plstr->add(mkw_cross);
+            plstr->add_c('=');
+            plstr->add_u(t_crosses);
         }
     }
     if (t_conj)
-        t_conj->print(lstr);
+        t_conj->print(plstr);
 }
 
 
@@ -1480,65 +1484,64 @@ sMpoint::eval2()
 
 
 void
-sRunopMeas::print(char **pstr)
+sRunopMeas::print(sLstr *plstr)
 {
     const char *msg1 = "%c %-4d %s";
     char buf[64];
     sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number, kw_measure);
+    bool tostdout = (plstr == 0);
     sLstr lstr;
-    if (pstr && *pstr)
-        lstr.add(*pstr);
-    lstr.add(buf);
+    if (!plstr)
+        plstr = &lstr;
+    plstr->add(buf);
     if (ro_analysis >= 0) {
         IFanalysis *a = IFanalysis::analysis(ro_analysis);
         if (a) {
-            lstr.add_c(' ');
-            lstr.add(a->name);
+            plstr->add_c(' ');
+            plstr->add(a->name);
         }
     }
     if (ro_result) {
-        lstr.add_c(' ');
-        lstr.add(ro_result);
+        plstr->add_c(' ');
+        plstr->add(ro_result);
     }
-    ro_start.print(lstr);
-    ro_end.print(lstr);
+    ro_start.print(plstr);
+    ro_end.print(plstr);
 
     if (ro_end.active()) {
         for (sMfunc *m = ro_funcs; m; m = m->next())
-            m->print(lstr);
+            m->print(plstr);
     }
     for (sMfunc *m = ro_finds; m; m = m->next())
-        m->print(lstr);
+        m->print(plstr);
 
     if (ro_print_flag == 2) {
-        lstr.add_c(' ');
-        lstr.add(mkw_print);
+        plstr->add_c(' ');
+        plstr->add(mkw_print);
     }
     else if (ro_print_flag == 1) {
-        lstr.add_c(' ');
-        lstr.add(mkw_print_terse);
+        plstr->add_c(' ');
+        plstr->add(mkw_print_terse);
     }
     if (ro_exec) {
-        lstr.add_c(' ');
-        lstr.add(mkw_exec);
-        lstr.add_c(' ');
-        lstr.add(ro_exec);
+        plstr->add_c(' ');
+        plstr->add(mkw_exec);
+        plstr->add_c(' ');
+        plstr->add(ro_exec);
     }
     if (ro_call) {
-        lstr.add_c(' ');
-        lstr.add(mkw_call);
-        lstr.add_c(' ');
-        lstr.add(ro_call);
+        plstr->add_c(' ');
+        plstr->add(mkw_call);
+        plstr->add_c(' ');
+        plstr->add(ro_call);
     }
     if (ro_stop_flag) {
-        lstr.add_c(' ');
-        lstr.add(kw_stop);
+        plstr->add_c(' ');
+        plstr->add(kw_stop);
     }
 
-    lstr.add_c('\n');
-    if (pstr)
-        *pstr = lstr.string_trim();
-    else
+    plstr->add_c('\n');
+    if (tostdout)
         TTY.send(lstr.string());
 }
 
@@ -2371,18 +2374,18 @@ sRunopMeas::endval(sDataVec *dv)
 
 
 void
-sRunopStop::print(char **retstr)
+sRunopStop::print(sLstr *plstr)
 {
     const char *msg1 = "%c %-4d ";
-    if (!retstr) {
+    if (!plstr) {
         TTY.printf(msg1, ro_active ? ' ' : 'I', ro_number);
         print_cond(0, true);
     }
     else {
         char buf[64];
         sprintf(buf, msg1, ro_active ? ' ' : 'I', ro_number);
-        *retstr = lstring::build_str(*retstr, buf);
-        print_cond(retstr, true);
+        plstr->add(buf);
+        print_cond(plstr, true);
     }
 }
 
@@ -2538,54 +2541,50 @@ sRunopStop::check_stop(sRunDesc *run)
 // printing for the status command.
 //
 void
-sRunopStop::print_cond(char **retstr, bool status)
+sRunopStop::print_cond(sLstr *plstr, bool status)
 {
     (void)status;
+    bool tostdout = (plstr == 0);
     sLstr lstr;
-    if (retstr) {
-        lstr.add(*retstr);
-        delete [] *retstr;
-        *retstr = 0;
-    }
-    lstr.add(kw_stop);
+    if (!plstr)
+        plstr = &lstr;
+    plstr->add(kw_stop);
     if (ro_analysis >= 0) {
         IFanalysis *a = IFanalysis::analysis(ro_analysis);
         if (a) {
-            lstr.add_c(' ');
-            lstr.add(a->name);
+            plstr->add_c(' ');
+            plstr->add(a->name);
         }
     }
-    ro_start.print(lstr);
+    ro_start.print(plstr);
 
     if (ro_per != 0.0) {
-        lstr.add_c(' ');
-        lstr.add(mkw_repeat);
-        lstr.add_c(' ');
-        lstr.add_g(ro_per);
+        plstr->add_c(' ');
+        plstr->add(mkw_repeat);
+        plstr->add_c(' ');
+        plstr->add_g(ro_per);
     }
     if (ro_exec) {
-        lstr.add_c(' ');
-        lstr.add(mkw_exec);
-        lstr.add_c(' ');
-        lstr.add(ro_exec);
+        plstr->add_c(' ');
+        plstr->add(mkw_exec);
+        plstr->add_c(' ');
+        plstr->add(ro_exec);
     }
     if (ro_call) {
-        lstr.add_c(' ');
-        lstr.add(mkw_call);
-        lstr.add_c(' ');
-        lstr.add(ro_call);
+        plstr->add_c(' ');
+        plstr->add(mkw_call);
+        plstr->add_c(' ');
+        plstr->add(ro_call);
     }
     if (status) {
         if (ro_silent) {
-            lstr.add_c(' ');
-            lstr.add(mkw_silent);
+            plstr->add_c(' ');
+            plstr->add(mkw_silent);
         }
     }
-    lstr.add_c('\n');
+    plstr->add_c('\n');
 
-    if (retstr)
-        *retstr = lstr.string_trim();
-    else
+    if (tostdout)
         TTY.send(lstr.string());
 }
 

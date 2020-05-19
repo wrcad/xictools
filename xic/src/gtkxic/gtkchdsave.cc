@@ -202,7 +202,7 @@ sCs::sCs(GRobject caller, bool(*callback)(const char*, bool, void*),
         (GtkAttachOptions)0, 2, 0);
     rowcnt++;
 
-    gtk_widget_set_usize(cs_text, 320, -1);
+    gtk_widget_set_size_request(cs_text, 320, -1);
 
     gtk_signal_connect_after(GTK_OBJECT(cs_text), "changed",
         GTK_SIGNAL_FUNC(cs_change_proc), 0);

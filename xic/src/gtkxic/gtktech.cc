@@ -232,7 +232,7 @@ sTc::sTc(GRobject caller)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
 
-    gtk_widget_set_usize(tc_popup, 250, -1);
+    gtk_widget_set_size_request(tc_popup, 250, -1);
     gtk_window_set_focus(GTK_WINDOW(tc_popup), tc_entry);
 
     update();

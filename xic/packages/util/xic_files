@@ -328,6 +328,7 @@ wr_install \
 xic_format_lib \
 xic_mesg \
 xic_stipples \
+xic_tech.c4s1 \
 xic_tech.cni \
 xic_tech.hyp \
 xic_tech.n65 \

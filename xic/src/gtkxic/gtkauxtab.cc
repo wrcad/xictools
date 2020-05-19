@@ -263,6 +263,8 @@ sAT::sAT(GRobject c)
     //
     GtkWidget *contr;
     text_scrollable_new(&contr, &wb_textarea, FNT_FIXED);
+    int hh = 8*GTKfont::stringHeight(wb_textarea, 0);
+    gtk_widget_set_size_request(GTK_WIDGET(wb_textarea), -1, hh);
 
     gtk_widget_add_events(wb_textarea, GDK_BUTTON_PRESS_MASK);
     gtk_signal_connect(GTK_OBJECT(wb_textarea), "button-press-event",
@@ -317,7 +319,7 @@ sAT::sAT(GRobject c)
     gtk_window_set_focus(GTK_WINDOW(wb_shell), button);
 
     // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_usize(wb_shell, 240, -1);
+    gtk_widget_set_size_request(wb_shell, 240, -1);
 
     check_sens();
 }

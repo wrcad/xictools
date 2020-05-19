@@ -1,5 +1,5 @@
 Comment Technology file for Hypres design rules
-# $Id: xic_tech.hyp,v 1.24 2014/09/08 16:54:24 stevew Exp $
+Comment OBSOLETE, HISTORICAL INTEREST ONLY
 
 # This is an example tech file based on the Hypres superconductive foundry
 # process (www.hypres.com).
@@ -13,8 +13,11 @@ Comment  6/8/12 Added Hyp1k define to support 1KA/cm2 process.
 Comment  3/12/12 Added elecwhite/black scripts, these need 3.2.25 or later.
 Comment  7/6/10 Update to remove/replace "Alt" keywords for 3.2.11.
 Comment  This file is NOT compatible with releases before 3.2.11.
+Comment  4/6/2020 This techfile is obsolete, users should move
+Comment  to xic_tech.c4s1.
 
-Technology hypres
+Technology      sce
+Vendor          Hypres
 
 # Uncomment below if you are using the 1KA/cm2 process.  Default support
 # is for the 4.5KA/cm2 process only.

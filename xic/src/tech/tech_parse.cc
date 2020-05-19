@@ -1230,6 +1230,24 @@ cTech::dispatch(FILE *techfp)
         }
         return (TCmatch);
     }
+    if (Matching(Tkw.Vendor())) {
+        char *tt;
+        const char *bp = tc_inbuf;
+        if (GetWord(&bp, &tt)) {
+            delete [] tc_vendor_name;
+            tc_vendor_name = tt;
+        }
+        return (TCmatch);
+    }
+    if (Matching(Tkw.Process())) {
+        char *tt;
+        const char *bp = tc_inbuf;
+        if (GetWord(&bp, &tt)) {
+            delete [] tc_process_name;
+            tc_process_name = tt;
+        }
+        return (TCmatch);
+    }
 
     // Layer Aliases.
     if (Matching(Tkw.MapLayer())) {

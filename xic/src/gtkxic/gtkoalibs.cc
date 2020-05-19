@@ -365,7 +365,7 @@ sLBoa::sLBoa(GRobject c)
         GTK_SIGNAL_FUNC(lb_focus_proc), this);
 
     gtk_container_add(GTK_CONTAINER(swin), lb_list);
-    gtk_widget_set_usize(lb_list, -1, 100);
+    gtk_widget_set_size_request(lb_list, -1, 100);
 
     // Set up font and tracking.
     GTKfont::setupFont(lb_list, FNT_PROP, true);

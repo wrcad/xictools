@@ -93,12 +93,13 @@ struct sParam
         }
 
     const char *name()    const { return (p_name); }
-    char *sub()           const { return (p_sub); }
+    const char *sub()     const { return (p_sub); }
     void set_sub(char *s)       { p_sub = s; }
 
     const char *args()    const { return (p_args ? p_args->a_args : 0); }
     int numargs()         const { return (p_args ? p_args->a_argc : -1); }
-    void set_args(sArgList*a)   { delete p_args; p_args = a; }
+    sArgList *arglist()   const { return (p_args); }
+    void set_arglist(sArgList*a) { delete p_args; p_args = a; }
     
     bool collapsed()      const { return (p_collapsed); }
     void set_collapsed()        { p_collapsed = true; }
@@ -112,7 +113,12 @@ struct sParam
             p_sub = lstring::copy(p->p_sub);
             delete p_args;
             p_args = sArgList::copy(p->p_args);
+            p_collapsed = p->p_collapsed;
+            if (p->p_readonly)
+                p_readonly = true;
         }
+
+    inline void collapse(const sParamTab*);
 
 private:
     char *p_name;       // token and flag
@@ -138,7 +144,7 @@ struct sParamTab
         // subst function should become non-const when set, where by
         // const we assume no altering of the table entries.  This
         // flag could be in the main struct but is along for the ride
-        // here.  These could be static, but that would be manufestly
+        // here.  These could be static, but that would be manifestly
         // thread-unsafe.
 
         PTctrl() : collapse(false), no_sqexp(false) { }
@@ -243,7 +249,6 @@ struct sParamTab
     static sParamTab *update(sParamTab*, const sParamTab*);
     void update(const char*);
     double eval(const sParam*, bool*) const;
-    void collapse();
     void define_macros(bool = false);
     void undefine_macros();
     void dump() const;
@@ -291,6 +296,14 @@ struct sMacroMapTab : public sHtab
 private:
     char mmbuf[256];
 };
+
+
+inline void
+sParam::collapse(const sParamTab *ptab)
+{
+    ptab->param_subst_all(&p_sub);
+    p_collapsed = true;
+}
 
 #endif
 

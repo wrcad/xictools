@@ -711,7 +711,7 @@ struct IFsimulator
     void SetVar(wordlist*);
     variable *GetRawVar(const char*, sFtCirc* = 0);
     bool GetVar(const char*, VTYPenum, VTvalue*, sFtCirc* = 0);
-    void VarPrint(char**);
+    void VarPrint(sLstr*);
     variable *EnqPlotVar(const char*);
     variable *EnqCircuitVar(const char*);
     variable *EnqVectorVar(const char*, bool = false);

@@ -579,7 +579,7 @@ CshPar::FreeBlock(const char *name)
 
 // Prevent redirection for listed commands.
 namespace {
-    const char *const noredirect[] = { "stop", 0 } ;  // Only one??
+    const char *const noredirect[] = { "stop", "plot", "iplot", 0 } ;  // More?
 }
 
 // If there is an argument, give this to cshpar to use instead of stdin. In

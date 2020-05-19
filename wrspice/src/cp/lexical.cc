@@ -584,10 +584,12 @@ namespace {
 
 
     // Return true if c is one of the special characters included, which
-    // break words
+    // break words.
     //
     inline bool breakword(char c)
     {
+        if (CP.GetFlag(CP_NOBRKTOK))
+            return (false);
         return (c == '<' || c == '>' || c == ';' || c == '&');
     }
 }
@@ -598,6 +600,7 @@ namespace {
 //
 
 #define FILENO(fp) ((fp) ? fileno(fp) : -1)
+
 
 wordlist *
 CshPar::Lexer(const char *string)

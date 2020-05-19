@@ -261,9 +261,9 @@ namespace {
         sprintf(buf, "PROGROOT \"%s\"", XM()->ProgramRoot());
         mh->parse_macro(buf, true);
 
-        const char *progname = XM()->Product();
-        if (progname && *progname)
-            mh->parse_macro(progname, true, true);   // No substitution.
+        const char *t = XM()->Product();
+        if (t && *t)
+            mh->parse_macro(t, true, true);   // No substitution.
 
         if (ExtIf()->hasExtract()) {
             sprintf(buf, "FEATURESET \"%s\"", "FULL");
@@ -277,9 +277,23 @@ namespace {
             sprintf(buf, "FEATURESET \"%s\"", "VIEWER");
             mh->parse_macro(buf, true);
         }
-        const char *techname = Tech()->TechnologyName();
-        if (techname && *techname) 
-            mh->parse_macro(techname, true, true);   // No subdtitution.
+
+        t = Tech()->TechnologyName();
+        if (t && *t) {
+            mh->parse_macro(t, true, true);   // No substitution.
+            sprintf(buf, "TECHNOLOGY \"%s\"", t);
+            mh->parse_macro(buf, true);
+        }
+        t = Tech()->VendorName();
+        if (t && *t) {
+            sprintf(buf, "VENDOR \"%s\"", t);
+            mh->parse_macro(buf, true);
+        }
+        t = Tech()->ProcessName();
+        if (t && *t) {
+            sprintf(buf, "PROCESS \"%s\"", t);
+            mh->parse_macro(buf, true);
+        }
     }
 }
 

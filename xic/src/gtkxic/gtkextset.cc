@@ -705,7 +705,7 @@ sEs::net_and_cell_page()
     GtkWidget *vsb = sb_vdepth.init(EXT_DEF_VIA_SEARCH_DEPTH, 0,
         CDMAXCALLDEPTH, 0);
     sb_vdepth.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "ViaDepth");
-    gtk_widget_set_usize(vsb, 80, -1);
+    gtk_widget_set_size_request(vsb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), vsb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(vform), row, 1, 2, vcnt, vcnt+1,
@@ -1002,7 +1002,7 @@ sEs::devs_page()
     int ndgt = CD()->numDigits();
     GtkWidget *sb = sb_delta.init(0.01, 0.01, 1000.0, ndgt);
     sb_delta.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "Delta");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(rlform), row, 0, 2, rlcnt, rlcnt+1,
@@ -1031,7 +1031,7 @@ sEs::devs_page()
 
     sb = sb_maxpts.init(1000.0, 1000.0, 100000.0, 0);
     sb_maxpts.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "MaxPts");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(rlform), row, 1, 2, rlcnt, rlcnt+1,
@@ -1050,7 +1050,7 @@ sEs::devs_page()
 
     sb = sb_gridpts.init(10.0, 10.0, 100000.0, 0);
     sb_gridpts.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "GridPts");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(rlform), row, 0, 2, rlcnt, rlcnt+1,
@@ -1207,7 +1207,7 @@ sEs::misc_page()
 
     GtkWidget *sb = sb_loop.init(EXT_DEF_LVS_LOOP_MAX, 0.0, 1000000.0, 0);
     sb_loop.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "Loop");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(aform), row, 1, 2, arowcnt, arowcnt+1,
@@ -1225,7 +1225,7 @@ sEs::misc_page()
 
     sb = sb_iters.init(EXT_DEF_LVS_ITER_MAX, 10.0, 1000000.0, 0);
     sb_iters.connect_changed(GTK_SIGNAL_FUNC(es_val_changed), 0, "Iters");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(row), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(aform), row, 1, 2, arowcnt, arowcnt+1,

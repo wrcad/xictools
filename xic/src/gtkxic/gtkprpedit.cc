@@ -369,7 +369,7 @@ sPo::sPo(CDo *odesc, PRPmode activ)
     // for passing hypertext via selections, see gtkhtext.cc
     gtk_object_set_data(GTK_OBJECT(wb_textarea), "hyexport", (void*)1);
 
-    gtk_widget_set_usize(wb_textarea, 400, 200);
+    gtk_widget_set_size_request(wb_textarea, 400, 200);
 
     // The font change pop-up uses this to redraw the widget
     gtk_object_set_data(GTK_OBJECT(wb_textarea), "font_changed",

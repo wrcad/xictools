@@ -1650,35 +1650,29 @@ SpOut::get_sptext_labels(CDs *sdesc)
 
 
 namespace {
-    inline bool
-    is_all_digits(const char *s)
-    {
-        do {
-            if (!isdigit(*s))
-                return (false);
-            s++;
-            if (isspace(*s))
-                break;
-        } while (*s);
-        return (true);
-    }
-
     // Line sort function.
     //
     inline bool
     lcomp(const char *s, const char *t)
     {
         while (*s && *t) {
-            if ((isalpha(*s) || *s == '_') && (isalpha(*t) || *t == '_')) {
-                if (*s != *t)
-                    return (*s < *t);
+            if (isdigit(*s) && isdigit(*t)) {
+                unsigned int is = atoi(s);
+                unsigned int it = atoi(t);
+                if (is != it)
+                    return (is < it);
                 s++;
                 t++;
+                while (isdigit(*s))
+                    s++;
+                while (isdigit(*t))
+                    t++;
                 continue;
             }
-            if (is_all_digits(s) && is_all_digits(t))
-                return (atoi(s) < atoi(t));
-            break;
+            if (*s != *t)
+                return (*s < *t);
+            s++;
+            t++;
         }
         return (strcmp(s, t) < 0);
     }
@@ -1863,8 +1857,21 @@ SpOut::sp_dsave_t::process(CDs *sdesc, const char *pref)
             CDc_gen cgen(md);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
                 const char *instname = c->getElecInstBaseName();
-                if (lstring::prefix(pref, instname))
-                    save(instname);
+                if (lstring::prefix(pref, instname)) {
+                    CDp_range *pr = (CDp_range*)c->prpty(P_RANGE);
+                    CDgenRange rgen(pr);
+                    unsigned int vindex;
+                    while (rgen.next(&vindex)) {
+                        sLstr lstr;
+                        lstr.add(instname);
+                        if (pr) {
+                            lstr.add_c(cTnameTab::subscr_open());
+                            lstr.add_i(vindex);
+                            lstr.add_c(cTnameTab::subscr_close());
+                        }
+                        save(lstr.string());
+                    }
+                }
             }
         }
     }
@@ -1877,9 +1884,21 @@ SpOut::sp_dsave_t::process(CDs *sdesc, const char *pref)
             CDc_gen cgen(md);
             for (CDc *c = cgen.c_first(); c; c = cgen.c_next()) {
                 const char *instname = c->getElecInstBaseName();
-                if (push(instname)) {
-                    process(msdesc, pref);
-                    pop();
+                CDp_range *pr = (CDp_range*)c->prpty(P_RANGE);
+                CDgenRange rgen(pr);
+                unsigned int vindex;
+                while (rgen.next(&vindex)) {
+                    sLstr lstr;
+                    lstr.add(instname);
+                    if (pr) {
+                        lstr.add_c(cTnameTab::subscr_open());
+                        lstr.add_i(vindex);
+                        lstr.add_c(cTnameTab::subscr_close());
+                    }
+                    if (push(lstr.string())) {
+                        process(msdesc, pref);
+                        pop();
+                    }
                 }
             }
         }

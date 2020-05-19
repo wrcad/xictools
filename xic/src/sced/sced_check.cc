@@ -1133,6 +1133,8 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
     //
     CDp_cnode *pcn = (CDp_cnode*)cdesc->prpty(P_NODE);
     for ( ; pcn; pcn = pcn->next()) {
+        if (pcn->has_flag(TE_BYNAME))
+            continue;
         for (unsigned int ix = 0; ; ix++) {
             int x, y;
             if (!pcn->get_pos(ix, &x, &y))
@@ -1151,6 +1153,8 @@ cSced::prptyCheckInst(CDs *sdesc, CDc *cdesc, char **str)
     }
     CDp_bcnode *pb = (CDp_bcnode*)cdesc->prpty(P_BNODE);
     for ( ; pb; pb = pb->next()) {
+        if (pb->has_flag(TE_BYNAME))
+            continue;
         for (unsigned int ix = 0; ; ix++) {
             int x, y;
             if (!pb->get_pos(ix, &x, &y))

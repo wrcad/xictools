@@ -2593,7 +2593,7 @@ main_bag::initialize()
             rowcnt++;
         }
         else
-            gtk_widget_set_usize(btnarray, 36, -1);
+            gtk_widget_set_size_request(btnarray, 36, -1);
     }
 
     // Main drawing window (in frame).

@@ -1,12 +1,7 @@
 (Library device.lib);
-# The line above *must* be first for xic-2.4.46 and later.
-# $Id: device.lib,v 1.12 2016/10/10 16:31:40 stevew Exp $
-# Xic device library file 3.3.1  6/12/13
-#
-# Old-style property declarations, these still work in Gen-3.
-# Property 20 I c
-# Property 21 nmos 4 NSUB
-# Property 21 pmos 4 PSUB
+# The line above *must* be first.
+
+# Revised 4/7/2020
  
 Property SpiceDotSave I c
 Property DefaultNode nmos 4 NSUB
@@ -137,7 +132,7 @@ W 0 0 100 100 200;
 DF;
 E
 
-IFDEF hypres
+IF VENDOR == "hypres"
 
 # The "port" terminal
 (Symbol port);
@@ -213,7 +208,7 @@ W 0 225 900 175 900;
 DF;
 E
  
-IFDEF hypres
+IF TECHNOLOGY == "sce"
  
 (Symbol ind1);
 5 10 -1 1 100 500 _1 0 0 0;

@@ -332,14 +332,14 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     stv_layer1 = gtk_entry_new();
     gtk_entry_set_editable(GTK_ENTRY(stv_layer1), false);
-    gtk_widget_set_usize(stv_layer1, NUMWID, -1);
+    gtk_widget_set_size_request(stv_layer1, NUMWID, -1);
     gtk_widget_show(stv_layer1);
     gtk_table_attach(GTK_TABLE(form), stv_layer1, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     stv_layer2 = gtk_entry_new();
     gtk_entry_set_editable(GTK_ENTRY(stv_layer2), false);
-    gtk_widget_set_usize(stv_layer2, NUMWID, -1);
+    gtk_widget_set_size_request(stv_layer2, NUMWID, -1);
     gtk_widget_show(stv_layer2);
     gtk_table_attach(GTK_TABLE(form), stv_layer2, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -353,12 +353,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     GtkWidget *sb = sb_wid.init(WID_DEF, WID_MIN, WID_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_hei.init(HEI_DEF, HEI_MIN, HEI_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -370,12 +370,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_rows.init(ROWS_DEF, ROWS_MIN, ROWS_MAX, 0);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_cols.init(COLS_DEF, COLS_MIN, COLS_MAX, 0);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -387,12 +387,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_spa_x.init(SPA_X_DEF, SPA_X_MIN, SPA_X_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_spa_y.init(SPA_Y_DEF, SPA_Y_MIN, SPA_Y_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -404,12 +404,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_enc1_x.init(ENC1_X_DEF, ENC1_X_MIN, ENC1_X_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_enc1_y.init(ENC1_Y_DEF, ENC1_Y_MIN, ENC1_Y_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -421,12 +421,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_off1_x.init(OFF1_X_DEF, OFF1_X_MIN, OFF1_X_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_off1_y.init(OFF1_Y_DEF, OFF1_Y_MIN, OFF1_Y_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -438,12 +438,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_enc2_x.init(ENC2_X_DEF, ENC2_X_MIN, ENC2_X_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_enc2_y.init(ENC2_Y_DEF, ENC2_Y_MIN, ENC2_Y_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -455,12 +455,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_off2_x.init(OFF2_X_DEF, OFF2_X_MIN, OFF2_X_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_off2_y.init(OFF2_Y_DEF, OFF2_Y_MIN, OFF2_Y_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -472,12 +472,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_org_x.init(ORG_X_DEF, ORG_X_MIN, ORG_X_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_org_y.init(ORG_Y_DEF, ORG_Y_MIN, ORG_Y_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -490,14 +490,14 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)0, 2, 2);
     stv_imp1 = gtk_entry_new();
     gtk_entry_set_editable(GTK_ENTRY(stv_imp1), false);
-    gtk_widget_set_usize(stv_imp1, NUMWID, -1);
+    gtk_widget_set_size_request(stv_imp1, NUMWID, -1);
     gtk_widget_show(stv_imp1);
     gtk_table_attach(GTK_TABLE(form), stv_imp1, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     stv_imp2 = gtk_entry_new();
     gtk_entry_set_editable(GTK_ENTRY(stv_imp2), false);
-    gtk_widget_set_usize(stv_imp2, NUMWID, -1);
+    gtk_widget_set_size_request(stv_imp2, NUMWID, -1);
     gtk_widget_show(stv_imp2);
     gtk_table_attach(GTK_TABLE(form), stv_imp2, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -510,12 +510,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_imp1_x.init(IMP1_X_DEF, IMP1_X_MIN, IMP1_X_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_imp1_y.init(IMP1_Y_DEF, IMP1_Y_MIN, IMP1_Y_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
@@ -527,12 +527,12 @@ sStv::sStv(GRobject caller, CDc *cdesc)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_imp2_x.init(IMP2_X_DEF, IMP2_X_MIN, IMP2_X_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     sb = sb_imp2_y.init(IMP2_Y_DEF, IMP2_Y_MIN, IMP2_Y_MAX, ndgt);
-    gtk_widget_set_usize(sb, NUMWID, -1);
+    gtk_widget_set_size_request(sb, NUMWID, -1);
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, rowcnt, rowcnt+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);

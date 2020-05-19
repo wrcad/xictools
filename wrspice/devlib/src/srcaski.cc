@@ -61,6 +61,7 @@ SRCdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         0, // notused
         0, // &&L_SRC_I,
         0, // &&L_SRC_V,
+        0, // &&L_SRC_PWRMODE,
         &&L_SRC_DEP,
         &&L_SRC_DC,
         &&L_SRC_AC,

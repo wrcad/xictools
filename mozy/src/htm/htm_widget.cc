@@ -344,7 +344,7 @@ htmWidget::trySync()
 void
 htmWidget::parse()
 {
-    // new text has been set, kill of any existing PLC's
+    // new text has been set, kill off any existing PLC's
     htm_im.killPLCCycler();
 
     // release event database

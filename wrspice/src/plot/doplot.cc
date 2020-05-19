@@ -395,8 +395,13 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
         // The plot arguments are converted back to a wordlist, since
         // GetPtree(wordlist*,...) handles quoted tokens properly, i.e.,
         // quoted tokens are evaluated as separate expressions.
-        //
+
+        CP.SetFlag(CP_NOBRKTOK, true);
+        // NOBRKTOK allows forms like v(aa<0>) to lex without a syntax
+        // error when not double-quoted.
         wordlist *plotcmd = CP.Lexer(ls_plot.string());
+        CP.SetFlag(CP_NOBRKTOK, false);
+
         pnlist *pl0 = Sp.GetPtree(plotcmd, false);
         wordlist::destroy(plotcmd);
         if (pl0 == 0) {

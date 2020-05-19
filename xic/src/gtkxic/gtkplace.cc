@@ -400,7 +400,7 @@ sPlc::sPlc(bool noprompt)
 
     sb = sb_mmlen.init(ED()->plMenuLen(), 1.0, 75.0, 0);
     sb_mmlen.connect_changed(GTK_SIGNAL_FUNC(pl_val_changed), 0, "mmlen");
-    gtk_widget_set_usize(sb, 80, -1);
+    gtk_widget_set_size_request(sb, 80, -1);
     gtk_box_pack_end(GTK_BOX(hbox), sb, false, false, 0);
 
     gtk_table_attach(GTK_TABLE(form), hbox, 0, 1, rowcnt, rowcnt+1,

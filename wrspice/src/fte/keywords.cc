@@ -172,15 +172,15 @@ cKeyWords::initDatabase()
 
 
 void
-sKW::print(char **rstr)
+sKW::print(sLstr *plstr)
 {
     char buf[256];
     const char *fmt = "%-18s %s %s\n";
     sprintf(buf, fmt, word, ((variable*)0)->typeString(type), descr);
-    if (!rstr)
+    if (!plstr)
         TTY.send(buf);
     else
-        *rstr = lstring::build_str(*rstr, buf);
+        plstr->add(buf);
 }
 
 
@@ -469,16 +469,16 @@ struct KWent_gridstyle : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Grid: lin, xlog, ylog, loglog, polar, smith, smithgrid."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.gstyles(i)->word; i++) {
             sprintf(buf, fmt2, KW.gstyles(i)->word, KW.gstyles(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -917,16 +917,16 @@ struct KWent_plotstyle : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Style: linplot, combplot, pointplot."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.pstyles(i)->word; i++) {
             sprintf(buf, fmt2, KW.pstyles(i)->word, KW.pstyles(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -1034,16 +1034,16 @@ struct KWent_scaletype : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Scale: single, multi, group."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.scale(i)->word; i++) {
             sprintf(buf, fmt2, KW.scale(i)->word, KW.scale(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -1697,16 +1697,16 @@ struct KWent_debug : public KWent
         VTYP_LIST, 0.0, 0.0,
         "Enable debugging messages."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.dbargs(i)->word; i++) {
             sprintf(buf, fmt2, KW.dbargs(i)->word, KW.dbargs(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -2505,16 +2505,16 @@ struct KWent_filetype : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Rawfile type: ascii or binary."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.ft(i)->word; i++) {
             sprintf(buf, fmt2, KW.ft(i)->word, KW.ft(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -2672,16 +2672,16 @@ struct KWent_level : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Level for help (b, i, or a)."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.level(i)->word; i++) {
             sprintf(buf, fmt2, KW.level(i)->word, KW.level(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -3091,16 +3091,16 @@ struct KWent_specwindow : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Spec command, Fourier analysis window type."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.spec(i)->word; i++) {
             sprintf(buf, fmt2, KW.spec(i)->word, KW.spec(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -3179,16 +3179,16 @@ struct KWent_units : public KWent
         VTYP_STRING, 0.0, 0.0,
         "if 'degrees' trig functions don't use radians."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.units(i)->word; i++) {
             sprintf(buf, fmt2, KW.units(i)->word, KW.units(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -5178,16 +5178,16 @@ struct KWent_method : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Type of integration, trapezoid or gear."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.method(i)->word; i++) {
             sprintf(buf, fmt2, KW.method(i)->word, KW.method(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -5220,16 +5220,16 @@ struct KWent_optmerge : public KWent
         VTYP_STRING, 0.0, 0.0,
         "How shell variables merge with .options."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.optmerge(i)->word; i++) {
             sprintf(buf, fmt2, KW.optmerge(i)->word, KW.optmerge(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -5262,16 +5262,16 @@ struct KWent_parhier : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Subcircuit parameter scope, local (default) or global."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.parhier(i)->word; i++) {
             sprintf(buf, fmt2, KW.parhier(i)->word, KW.parhier(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -5304,16 +5304,16 @@ struct KWent_steptype : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Transient output: interpolate, hitusertp, nousertp."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.step(i)->word; i++) {
             sprintf(buf, fmt2, KW.step(i)->word, KW.step(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 
@@ -5458,16 +5458,16 @@ struct KWent_submaps : public KWent
         VTYP_STRING, 0.0, 0.0,
         "Subcircuit name maps list."); }
 
-    void print(char **rstr)
+    void print(sLstr *plstr)
     {
-        sKW::print(rstr);
+        sKW::print(plstr);
         char buf[256];
         for (int i = 0; KW.parhier(i)->word; i++) {
             sprintf(buf, fmt2, KW.parhier(i)->word, KW.parhier(i)->descr);
-            if (!rstr)
+            if (!plstr)
                 TTY.send(buf);
             else
-                *rstr = lstring::build_str(*rstr, buf);
+                plstr->add(buf);
         }
     }
 

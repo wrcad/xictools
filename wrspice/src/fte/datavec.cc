@@ -591,7 +591,7 @@ sDataVec::extend(int len)
 
 
 void
-sDataVec::print(char **retstr)
+sDataVec::print(sLstr *plstr)
 {
     char buf[BSIZE_SP], buf2[BSIZE_SP];
     char ubuf[64];
@@ -686,8 +686,8 @@ sDataVec::print(char **retstr)
         strcat(buf, " [default scale]\n");
     else
         strcat(buf, "\n");
-    if (retstr)
-        *retstr = lstring::build_str(*retstr, buf);
+    if (plstr)
+        plstr->add(buf);
     else
         TTY.send(buf);
 }

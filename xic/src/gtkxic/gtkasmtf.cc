@@ -79,14 +79,14 @@ sAsmTf::sAsmTf(sAsmPage *src)
         (GtkAttachOptions)0, 2, 2);
 
     GtkWidget *sb = sb_placement_x.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, ASM_NFWP, -1);
+    gtk_widget_set_size_request(sb, ASM_NFWP, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_placement_y.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, ASM_NFWP, -1);
+    gtk_widget_set_size_request(sb, ASM_NFWP, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -147,7 +147,7 @@ sAsmTf::sAsmTf(sAsmPage *src)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_magnification.init(1.0, CDMAGMIN, CDMAGMAX, ASM_NUMD);
-    gtk_widget_set_usize(sb, ASM_NFWP, -1);
+    gtk_widget_set_size_request(sb, ASM_NFWP, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -227,14 +227,14 @@ sAsmTf::sAsmTf(sAsmPage *src)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_win_l.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, ASM_NFWP, -1);
+    gtk_widget_set_size_request(sb, ASM_NFWP, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_win_b.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, ASM_NFWP, -1);
+    gtk_widget_set_size_request(sb, ASM_NFWP, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -258,14 +258,14 @@ sAsmTf::sAsmTf(sAsmPage *src)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_win_r.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, ASM_NFWP, -1);
+    gtk_widget_set_size_request(sb, ASM_NFWP, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_win_t.init(0.0, -1e6, 1e6, ndgt);
-    gtk_widget_set_usize(sb, ASM_NFWP, -1);
+    gtk_widget_set_size_request(sb, ASM_NFWP, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 2, 3, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -292,7 +292,7 @@ sAsmTf::sAsmTf(sAsmPage *src)
         (GtkAttachOptions)0, 2, 2);
 
     sb = sb_scale.init(1.0, CDSCALEMIN, CDSCALEMAX, ASM_NUMD);
-    gtk_widget_set_usize(sb, ASM_NFWP, -1);
+    gtk_widget_set_size_request(sb, ASM_NFWP, -1);
 
     gtk_table_attach(GTK_TABLE(form), sb, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

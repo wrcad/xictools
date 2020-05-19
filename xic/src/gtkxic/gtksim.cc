@@ -155,7 +155,7 @@ sSim::control(SpType status)
     main_bag *w = mainBag();
     GtkWidget *popup = gtk_NewPopup(w, "SPICE Run", sp_destroy_proc, 0);
     gtk_window_set_resizable(GTK_WINDOW(popup), false);
-    gtk_widget_set_usize(popup, 200, -1);
+    gtk_widget_set_size_request(popup, 200, -1);
 
     // Prevent the pop-up from taking focus.  Otherwise, when it pops
     // down it will give focus back to the main window, causing iplots

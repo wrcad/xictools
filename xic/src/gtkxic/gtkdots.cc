@@ -182,7 +182,7 @@ sDt::sDt(GRobject caller)
     gtk_window_set_focus(GTK_WINDOW(dt_popup), button);
 
     // Constrain overall widget width so title text isn't truncated.
-    gtk_widget_set_usize(button, 240, -1);
+    gtk_widget_set_size_request(button, 240, -1);
     update();
 }
 
