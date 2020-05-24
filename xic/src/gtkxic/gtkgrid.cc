@@ -653,7 +653,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
 
     GtkWidget *darea = gtk_drawing_area_new();
     gtk_widget_show(darea);
-    gtk_drawing_area_size(GTK_DRAWING_AREA(darea), 200, 10);
+    gtk_widget_set_size_request(darea, 200, 10);
     gtk_table_attach(GTK_TABLE(eform), darea, 0, 3, 2, 3,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
@@ -677,7 +677,7 @@ sGrd::sGrd(gtk_bag *owner, WindowDesc *wd)
 
     darea = gtk_drawing_area_new();
     gtk_widget_show(darea);
-    gtk_drawing_area_size(GTK_DRAWING_AREA(darea), 200, 10);
+    gtk_widget_set_size_request(darea, 200, 10);
     gtk_widget_add_events(darea, GDK_BUTTON_PRESS_MASK);
     gtk_widget_add_events(darea, GDK_BUTTON_RELEASE_MASK);
     gtk_signal_connect(GTK_OBJECT(darea), "button-press-event",

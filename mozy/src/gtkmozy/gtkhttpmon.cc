@@ -207,7 +207,7 @@ grbits::start(Transaction *t)
     gtk_signal_connect(GTK_OBJECT(gb->g_text_area), "expose-event",
         GTK_SIGNAL_FUNC(grbits::g_da_expose), gb);
     gtk_widget_show(gb->g_text_area);
-    gtk_drawing_area_size(GTK_DRAWING_AREA(gb->g_text_area), 320, 30);
+    gtk_widget_set_size_request(gb->g_text_area, 320, 30);
     gtk_container_add(GTK_CONTAINER(frame), gb->g_text_area);
     gtk_table_attach(GTK_TABLE(form), frame, 0, 1, 0, 1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),

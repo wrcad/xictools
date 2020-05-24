@@ -250,7 +250,7 @@ plot_bag::init(sGraph *gr)
         dawid = 300;
         dahei = 300;
     }
-    gtk_drawing_area_size(GTK_DRAWING_AREA(Viewport()), dawid, dahei);
+    gtk_widget_set_size_request(Viewport(), dawid, dahei);
 
     gtk_widget_show(Viewport());
 

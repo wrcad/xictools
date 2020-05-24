@@ -556,7 +556,7 @@ sLpalette::init_size()
 
     int wid = LP_PALETTE_COLS*lp_entry_width + 4;
     int hei = lp_user_y + (2*fhei + fhei/2)*LP_PALETTE_ROWS;
-    gtk_drawing_area_size(GTK_DRAWING_AREA(Lpal->gd_viewport), wid, hei);
+    gtk_widget_set_size_request(Lpal->gd_viewport, wid, hei);
 }
 
 

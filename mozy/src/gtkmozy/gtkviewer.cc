@@ -144,7 +144,7 @@ gtk_viewer::gtk_viewer(int wid, int hei, htmDataInterface *d) :
 
     v_draw_area = gtk_drawing_area_new();
     gtk_widget_show(v_draw_area);
-    gtk_drawing_area_size(GTK_DRAWING_AREA(v_draw_area), v_width, v_height);
+    gtk_widget_set_size_request(v_draw_area, v_width, v_height);
     gtk_fixed_put(GTK_FIXED(v_fixed), v_draw_area, 0, 0);
 
     v_hsba = (GtkAdjustment*)gtk_adjustment_new(0.0, 0.0, v_width, 8.0,
@@ -2086,8 +2086,7 @@ gtk_viewer::resize_handler(GtkAllocation *a)
         GdkPixmap *pm = (GdkPixmap*)tk_new_pixmap(v_width, v_height);
         gdk_pixmap_unref(v_pixmap);
         v_pixmap = pm;
-        gtk_drawing_area_size(GTK_DRAWING_AREA(v_draw_area),
-            v_width, v_height);
+        gtk_widget_set_size_request(v_draw_area, v_width, v_height);
         int x = htm_viewarea.x;
         int y = htm_viewarea.y;
         htmWidget::resize();

@@ -1778,8 +1778,7 @@ namespace {
         if (w) {
             int fw, fh;
             w->TextExtent(0, &fw, &fh);
-            gtk_drawing_area_size(GTK_DRAWING_AREA(w->Viewport()),
-                40*fw + 6, 6*fh + 6);
+            gtk_widget_set_size_request(w->Viewport(), 40*fw + 6, 6*fh + 6);
         }
     }
 
@@ -2336,8 +2335,7 @@ GTKtoolbar::tbpop(bool up)
 
     int wid, hei;
     w->TextExtent(0, &wid, &hei);
-    gtk_drawing_area_size(GTK_DRAWING_AREA(w->Viewport()),
-        40*wid + 6, 6*hei + 6);
+    gtk_widget_set_size_request(w->Viewport(), 40*wid + 6, 6*hei + 6);
 
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);

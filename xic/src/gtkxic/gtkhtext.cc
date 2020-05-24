@@ -259,7 +259,7 @@ GTKedit::GTKedit(bool nogr)
     a.x = 0;
     a.y = 0;
     gtk_widget_size_allocate(pe_keys, &a);
-    gtk_drawing_area_size(GTK_DRAWING_AREA(gd_viewport), prm_wid, height);
+    gtk_widget_set_size_request(gd_viewport, prm_wid, height);
 }
 
 
@@ -897,8 +897,7 @@ GTKedit::pe_font_change_hdlr(GtkWidget*, void*, void*)
             int ht = fh + 4;
             if (ht < r.height)
                 ht = r.height;
-            gtk_drawing_area_size(GTK_DRAWING_AREA(ptr()->gd_viewport), -1,
-                ht);
+            gtk_widget_set_size_request(ptr()->gd_viewport, -1, ht);
         }
         ptr()->init();
     }

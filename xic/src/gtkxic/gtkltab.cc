@@ -176,7 +176,7 @@ GTKltab::GTKltab(bool nogr)
 
     int ew;
     entry_size(&ew, 0);
-    gtk_drawing_area_size(GTK_DRAWING_AREA(gd_viewport), ew, 400);
+    gtk_widget_set_size_request(gd_viewport, ew, 400);
 
     // The search container contains a text entry and "search" button. 
     // The user can type a few chars into the text area, and cycle
@@ -1116,7 +1116,7 @@ GTKltab::ltab_font_change_hdlr(GtkWidget*, void*, void *arg)
     if (lt && lt->gd_viewport) {
         int ew;
         lt->entry_size(&ew, 0);
-        gtk_drawing_area_size(GTK_DRAWING_AREA(lt->gd_viewport), ew, -1);
+        gtk_widget_set_size_request(lt->gd_viewport, ew, -1);
     }
 }
 

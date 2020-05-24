@@ -331,8 +331,7 @@ sFpe::sFpe(GRobject c)
     GtkWidget *darea = gtk_drawing_area_new();
     gtk_widget_show(darea);
     fp_editor = darea;
-    gtk_drawing_area_size(GTK_DRAWING_AREA(darea), fp_edt_box_dim,
-        fp_edt_box_dim);
+    gtk_widget_set_size_request(darea, fp_edt_box_dim, fp_edt_box_dim);
     gtk_widget_add_events(darea, GDK_ENTER_NOTIFY_MASK);
     gtk_container_add(GTK_CONTAINER(frame), darea);
     fp_connect_sigs(darea, false, true);
@@ -463,8 +462,7 @@ sFpe::sFpe(GRobject c)
     darea = gtk_drawing_area_new();
     gtk_widget_show(darea);
     fp_sample = darea;
-    gtk_drawing_area_size(GTK_DRAWING_AREA(darea), fp_def_box_h,
-        fp_pat_box_h);
+    gtk_widget_set_size_request(darea, fp_def_box_h, fp_pat_box_h);
     gtk_container_add(GTK_CONTAINER(frame), darea);
     fp_connect_sigs(darea, true, true);
     gtk_box_pack_start(GTK_BOX(vbox), fp_editctrl, true, true, 0);
@@ -492,8 +490,7 @@ sFpe::sFpe(GRobject c)
             darea = gtk_drawing_area_new();
             gtk_widget_show(darea);
             fp_stores[i + j*3] = darea;
-            gtk_drawing_area_size(GTK_DRAWING_AREA(darea), fp_def_box_w,
-                fp_def_box_h);
+            gtk_widget_set_size_request(darea, fp_def_box_w, fp_def_box_h);
             gtk_container_add(GTK_CONTAINER(iframe), darea);
             if (j == 0 && i <= 1)
                 fp_connect_sigs(darea, true, false);

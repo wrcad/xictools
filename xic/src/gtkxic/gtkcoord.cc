@@ -105,7 +105,7 @@ cCoord::cCoord()
     int wid, hei;
     wid = 600;
     hei = GTKfont::stringHeight(gd_viewport, 0) + 2;
-    gtk_drawing_area_size(GTK_DRAWING_AREA(gd_viewport), wid, hei);
+    gtk_widget_set_size_request(gd_viewport, wid, hei);
 }
 
 
@@ -348,8 +348,7 @@ cCoord::co_font_change(GtkWidget*, void*, void*)
         Coord()->TextExtent(0, &fw, &fh);
         int winw, winh;
         gdk_window_get_size(Coord()->gd_window, &winw, &winh);
-        gtk_drawing_area_size(GTK_DRAWING_AREA(Coord()->Viewport()), -1,
-            fh + 2);
+        gtk_widget_set_size_request(Coord()->Viewport(), -1, fh + 2);
         Coord()->do_print(Coord()->co_xc, Coord()->co_yc, COOR_BEGIN);
     }
 }

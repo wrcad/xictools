@@ -414,7 +414,7 @@ sClr::sClr(GRobject c)
         c_sample = da;
         gtk_widget_show(da);
         gtk_container_add(GTK_CONTAINER(frame), da);
-        gtk_drawing_area_size(GTK_DRAWING_AREA(da), 150, -1);
+        gtk_widget_set_size_request(da, 150, -1);
         hbox = gtk_hbox_new(false, 2);
         gtk_widget_show(hbox);
         gtk_box_pack_start(GTK_BOX(hbox), frame, false, true, 2);

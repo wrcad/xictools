@@ -171,7 +171,7 @@ sMem::sMem()
     int ww = 34*fw + 4;
     if (ww < MEM_MINWIDTH)
         ww = MEM_MINWIDTH;
-    gtk_drawing_area_size(GTK_DRAWING_AREA(gd_viewport), ww, 5*fh + 4);
+    gtk_widget_set_size_request(gd_viewport, ww, 5*fh + 4);
 
     GtkWidget *frame = gtk_frame_new(0);
     gtk_widget_show(frame);
@@ -364,7 +364,7 @@ sMem::mem_font_change(GtkWidget*, void*, void*)
         int ww = 34*fw + 4;
         if (ww < MEM_MINWIDTH)
             ww = MEM_MINWIDTH;
-        gtk_drawing_area_size(GTK_DRAWING_AREA(Mem->gd_viewport), ww, 5*fh + 4);
+        gtk_widget_set_size_request(Mem->gd_viewport, ww, 5*fh + 4);
     }
 }
 

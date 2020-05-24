@@ -387,8 +387,7 @@ sDv::sDv(GRobject caller, stringlist *wl)
         dv_type = dvMenuPict;
         gd_viewport = gtk_drawing_area_new();
         gtk_widget_show(gd_viewport);
-        gtk_drawing_area_size(GTK_DRAWING_AREA(gd_viewport),
-            40, CELL_SIZE);
+        gtk_widget_set_size_request(gd_viewport, 40, CELL_SIZE);
 
         GTKfont::setupFont(gd_viewport, FNT_SCREEN, true);
 
