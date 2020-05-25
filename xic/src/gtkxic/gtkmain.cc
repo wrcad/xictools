@@ -1322,6 +1322,8 @@ win_bag::SwitchFromPixmap(const BBox *BB)
             BB->width() + 1, abs(BB->height()) + 1);
         gd_window = wib_window_bak;
         wib_window_bak = 0;
+        // This fixes a display problem on OpenSuse plasma (at least).
+        gdk_flush();
     }
 }
 
