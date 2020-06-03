@@ -158,9 +158,25 @@ cAlibFixup::src_params(sLstr &lstr, const char *dname, const char **params)
     lstr.add_c(' ');
     lstr.add(p->stringVal());
 
-    while ((p = PCellParam::find(prms, *params++)) != 0) {
+    while ((p = PCellParam::find(prms, *params)) != 0) {
         lstr.add_c(' ');
         lstr.add(p->stringVal());
+
+        if (lstring::cieq(*params, "pattern")) {
+            // Hack for the gpulse bstring modifiers.
+            p = PCellParam::find(prms, "r");
+            if (p) {
+                lstr.add(" r=");
+                lstr.add_i(atof(p->stringVal()));
+            }
+            p = PCellParam::find(prms, "rb");
+            if (p) {
+                lstr.add(" rb=");
+                lstr.add_i(atof(p->stringVal()));
+            }
+            break;
+        }
+        params++;
     }
     dcac(prms, lstr);
     PCellParam::destroy(prms);
@@ -220,12 +236,13 @@ cAlibFixup::alib_vexp(sLstr &lstr)
 }
 
 // vgpulse
-// instParameters      (dc acm acp v1 v2 td pw per pattern)
+// instParameters      (dc acm acp v1 v2 td pw per pattern r rb)
 //
 bool
 cAlibFixup::alib_vgpulse(sLstr &lstr)
 {
-    const char *params[] = { "v1", "v2", "td", "pw", "per", "pattern", 0 };
+    const char *params[] = { "v1", "v2", "td", "pw", "per", "pattern",
+        "r", "rb", 0 };
     return (src_params(lstr, "gpulse", params));
 }
 
@@ -332,12 +349,13 @@ cAlibFixup::alib_iexp(sLstr &lstr)
 }
 
 // igpulse
-// instParameters      (dc acm acp i1 i2 td pw per pattern)
+// instParameters      (dc acm acp i1 i2 td pw per patter r rbn)
 //
 bool
 cAlibFixup::alib_igpulse(sLstr &lstr)
 {
-    const char *params[] = { "i1", "iv2", "td", "pw", "per", "pattern", 0 };
+    const char *params[] = { "i1", "iv2", "td", "pw", "per", "pattern",
+        "r", "rb", 0 };
     return (src_params(lstr, "gpulse", params));
 }
 
