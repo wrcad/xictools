@@ -591,8 +591,11 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
 
         bool pcell_macro = false;
         if (!macrocall) {
-            if (pname->is_macro())
+            if (pname->is_macro()) {
                 pcell_macro = true;
+                if (!model && !subname)
+                    subname = lstring::copy(Tstring(cdesc->cellname()));
+            }
         }
         if (pcell_macro) {
             // We need to add an 'X' ahead of the device name.

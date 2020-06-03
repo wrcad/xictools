@@ -1248,7 +1248,7 @@ fhLayout::check_sort_terms()
 }
 
 
-// Dump the prot specifications.  We've already checked that all is
+// Dump the port specifications.  We've already checked that all is
 // well with the terminals.
 //
 void
