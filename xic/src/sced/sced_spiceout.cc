@@ -680,19 +680,31 @@ SpOut::ckt_deck(CDs *sdesc, bool add_sc)
                 lstr.add(devref);
             }
 
-            // Note that the model property supersedes the value property
-            // if both are present.
             if (subname) {
                 lstr.add_c(' ');
                 lstr.add(subname);
             }
-            if (model) {
+            else if (model) {
                 lstr.add_c(' ');
                 lstr.add(model);
             }
-            if (value && !model) {
-                lstr.add_c(' ');
-                lstr.add(value);
+            if (value) {
+                if (!subname && !model) {
+                    lstr.add_c(' ');
+                    lstr.add(value);
+                }
+                else {
+                    char k = *device;
+                    if (isupper(k))
+                        k = tolower(k);
+                    if (k == 'r' || k  == 'c' || k == 'l') {
+                        lstr.add_c(' ');
+                        lstr.add_c(k);
+                        lstr.add_c('=');
+                        lstr.add(value);
+                    }
+                    // Else model supersedes value, value ignored.
+                }
             }
             if (param) {
                 lstr.add_c(' ');
