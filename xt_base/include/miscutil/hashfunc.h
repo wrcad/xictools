@@ -50,6 +50,32 @@
 //-----------------------------------------------------------------------------
 // Hash function for unsigned long (same size as a pointer).
 
+
+/* XXX
+ * New ones from stackoverflow.com
+ * https://stackoverflow.com/questions/664014/what-integer-hash-function-are-good-that-accepts-an-integer-hash-key
+
+unsigned int number_hash(unsigned int x, unsigned int y,
+    unsigned int hashmask)
+{
+    unsigned long a = y;
+    a = (a << 32) | x;
+    a = (a ^ (a >> 30)) * 0xbf58476d1ce4e5b9;
+    a = (a ^ (a >> 27)) * 0x94d049bb133111eb;
+    a = a ^ (a >> 31);
+    return (a & hashmask);
+}
+
+unsigned int number_hash(unsigned int x, unsigned int hashmask)
+{
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = ((x >> 16) ^ x) * 0x45d9f3b;
+    x = (x >> 16) ^ x;
+    return (x & hashmask);
+}
+
+*/
+
 #if 1
 // The Jenkins hash is a bit faster (on Inter x86), particularly for
 // 64-bits.
