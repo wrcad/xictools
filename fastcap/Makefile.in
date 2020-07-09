@@ -41,6 +41,7 @@ unpack:
 	    sed -e "s/VERSION_STRING .*$$/VERSION_STRING $(VERS)/" \
 	      < fastcap-2.0wr/src/mulGlobal.h > mytmp.h; \
 	    mv -f mytmp.h fastcap-2.0wr/src/mulGlobal.h; \
+	    patch fastcap-2.0wr/src/resusage.h files/fix_resusage.patch; \
 	fi
 
 clean:
