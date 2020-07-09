@@ -1,0 +1,4 @@
+52c52
+< struct rusage timestuff;
+---
+> __attribute__((weak)) struct rusage timestuff;

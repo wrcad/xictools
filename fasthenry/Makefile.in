@@ -50,6 +50,9 @@ unpack:
 	    sed -e "s^KLU_HOME .*$$^KLU_HOME = ../../../../KLU^" \
 	        -e "s^#RTLIB .*$$^RTLIB = $(LIBRT)^" \
 	      < /tmp/mk_klu.inc > fasthenry-3.0wr/src/fasthenry/mk_klu.inc; \
+	    patch fasthenry-3.0wr/src/fasthenry/induct.c files/fix_fh_induct.patch; \
+	    patch fasthenry-3.0wr/src/fasthenry/resusage.h files/fix_fh_resusage.patch; \
+	    patch fasthenry-3.0wr/src/zbuf/resusage.h files/fix_zbuf_resusage.patch; \
 	fi
 
 clean:

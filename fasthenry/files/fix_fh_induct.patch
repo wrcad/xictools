@@ -1,0 +1,40 @@
+47c47
+< FILE *fp, *fp2, *fp3, *fptemp, *fb, *fROM;
+---
+> FILE *fp1, *fp2, *fp3, *fptemp, *fb, *fROM;
+183c183
+<     fp = stdin;
+---
+>     fp1 = stdin;
+187c187
+<     fp = stdin;
+---
+>     fp1 = stdin;
+191,192c191,192
+<     fp = fopen(opts->fname, "r");
+<     if (fp == NULL) {
+---
+>     fp1 = fopen(opts->fname, "r");
+>     if (fp1 == NULL) {
+200c200
+<   err = readGeom(fp, indsys);
+---
+>   err = readGeom(fp1, indsys);
+204c204
+<   fclose(fp);
+---
+>   fclose(fp1);
+548,549c548,549
+<     fp = fopen(outfname, "wb");
+<     if (fp == NULL) {
+---
+>     fp1 = fopen(outfname, "wb");
+>     if (fp1 == NULL) {
+877c877
+<       dump_to_Ycond(fp, m, indsys);
+---
+>       dump_to_Ycond(fp1, m, indsys);
+895c895
+<     fclose(fp);
+---
+>     fclose(fp1);
