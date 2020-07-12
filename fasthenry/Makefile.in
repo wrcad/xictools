@@ -19,11 +19,12 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-FASTHENRY = fasthenry-3.0wr-062820.tar.gz
+FASTHENRY = fasthenry-3.0wr-071020.tar.gz
 
 FASTHENRY_DIR = fasthenry-3.0wr
+SRCDIR = $(FASTHENRY_DIR)/src/fasthenry
 
-IDSTR := "`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
+IDSTR := \"`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
 VERS := \"`./version`\"
 
 all: unpack
@@ -39,17 +40,15 @@ unpack:
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        (cd $(FASTHENRY_DIR); ./config mingw); \
 	    fi; \
-	    mv -f fasthenry-3.0wr/src/fasthenry/induct.c /tmp; \
-            sed -e s/XT_IDSTRING/$(IDSTR)/ \
-	      < /tmp/induct.c > fasthenry-3.0wr/src/fasthenry/induct.c; \
-	    mv -f fasthenry-3.0wr/src/fasthenry/induct.h /tmp; \
+	    mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig; \
 	    sed -e "s/FHVERSION .*$$/FHVERSION $(VERS)/" \
 	      -e "s/FHDATE .*$$/FHDATE \"xictools\"/" \
-	      < /tmp/induct.h > fasthenry-3.0wr/src/fasthenry/induct.h; \
-	    mv -f fasthenry-3.0wr/src/fasthenry/mk_klu.inc /tmp; \
+              -e "s/ID_STRING .*$$/ID_STRING $(IDSTR)/" \
+	      < $(SRCDIR)/release.h.orig > $(SRCDIR)/release.h; \
+	    mv -f $(SRCDIR)/mk_klu.inc $(SRCDIR)/mk_klu.inc.orig; \
 	    sed -e "s^KLU_HOME .*$$^KLU_HOME = ../../../../KLU^" \
-	        -e "s^#RTLIB .*$$^RTLIB = $(LIBRT)^" \
-	      < /tmp/mk_klu.inc > fasthenry-3.0wr/src/fasthenry/mk_klu.inc; \
+	      -e "s^#RTLIB .*$$^RTLIB = $(LIBRT)^" \
+	      < $(SRCDIR)//mk_klu.inc.orig > $(SRCDIR)/mk_klu.inc; \
 	fi
 
 clean:

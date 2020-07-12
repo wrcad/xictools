@@ -437,9 +437,6 @@ sFh::sFh(GRobject c)
     frame = gtk_frame_new("FhManhGridCnt");
     gtk_widget_show(frame);
 
-//XXX    int ndgt = CD()->numDigits();
-//    double val = FH_MIN_RECT_SIZE_DEF;
-
     GtkWidget *sb = sb_fh_manh_grid_cnt.init(FH_DEF_MANH_GRID_CNT,
         FH_MIN_MANH_GRID_CNT,
         FH_MAX_MANH_GRID_CNT, 0);
