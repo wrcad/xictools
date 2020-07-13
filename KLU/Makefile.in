@@ -166,7 +166,7 @@ unpack:
 	@mv SuiteSparse/SuiteSparse_config .
 	-@rm -rf SuiteSparse
 
-patch:
+patch: unpack
 	@patch -p0 < long_dbl_patch
 
 depend: unpack patch
