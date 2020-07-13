@@ -18,11 +18,12 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-FASTCAP = fastcap-2.0wr-033020.tar.gz
+FASTCAP = fastcap-2.0wr-071020.tar.gz
 
 FASTCAP_DIR = fastcap-2.0wr
+SRCDIR = $(FASTCAP_DIR)/src
 
-IDSTR := "`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
+IDSTR := \"`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
 VERS := \"`./version` (xictools)\"
 
 all: unpack
@@ -35,12 +36,10 @@ unpack:
 	    if [ -n "$(EXESUFFIX)" ]; then \
 	        (cd $(FASTCAP_DIR); ./config mingw); \
 	    fi; \
-	    rm -f fastcap-2.0wr/src/fastcap.c; \
-            sed -e s/XT_IDSTRING/$(IDSTR)/ \
-	      < files/fastcap.c.sed > fastcap-2.0wr/src/fastcap.c; \
-	    sed -e "s/VERSION_STRING .*$$/VERSION_STRING $(VERS)/" \
-	      < fastcap-2.0wr/src/mulGlobal.h > mytmp.h; \
-	    mv -f mytmp.h fastcap-2.0wr/src/mulGlobal.h; \
+	    mv -f $(SRCDIR)/release.h $(SRCDIR)/release.h.orig; \
+	    sed -e "s/FCVERSION .*$$/FCVERSION $(VERS)/" \
+	      -e "s/ID_STRING .*$$/ID_STRING $(IDSTR)/" \
+	      < $(SRCDIR)/release.h.orig > $(SRCDIR)/release.h; \
 	fi
 
 clean:
