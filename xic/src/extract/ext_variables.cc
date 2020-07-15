@@ -840,6 +840,7 @@ cExt::setupVariables()
 
     // FastHenry Interface
     vsetup(VA_FhArgs,               S,  evFH);
+    vsetup(VA_FhDefaults,           S,  evFH);
     vsetup(VA_FhForeg,              B,  evFH);
     vsetup(VA_FhFreq,               S,  evFH);
     vsetup(VA_FhManhGridCnt,        S,  evFhManhGridCnt);

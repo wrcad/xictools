@@ -55,6 +55,8 @@ enum phKW
     phNil,
     phPlanarize,
     phThickness,
+    phFH_nhinc,
+    phFH_rh,
     phRho,
     phSigma,
     phRsh,

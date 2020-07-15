@@ -66,25 +66,29 @@ struct DspLayerParams
 
     GRfillType *fill()                  { return (&lp_fill); }
 
-    int red()                           { return (lp_red); }
+    int red()                           const { return (lp_red); }
+    int green()                         const { return (lp_green); }
+    int blue()                          const { return (lp_blue); }
     void set_red(int c)                 { lp_red = c; }
-    int green()                         { return (lp_green); }
     void set_green(int c)               { lp_green = c; }
-    int blue()                          { return (lp_blue); }
     void set_blue(int c)                { lp_blue = c; }
 
-    int pixel()                         { return (lp_pixel); }
+    int pixel()                         const { return (lp_pixel); }
     void set_pixel(int c)               { lp_pixel = c; }
 
-    int dim_pixel()                     { return (lp_dim_pixel); }
+    int dim_pixel()                     const { return (lp_dim_pixel); }
     void set_dim_pixel(int c)           { lp_dim_pixel = c; }
 
-    int xsect_thickness()               { return (lp_xsect_thickness); }
-    void set_xsect_thickness(int d)     { lp_xsect_thickness = d; }
-    double thickness()                  { return (lp_thickness); }
+    int xsect_thickness()               const { return (lp_xsect_thickness); }
+    double thickness()                  const { return (lp_thickness); }
+    int wire_width()                    const { return (lp_wire_width); }
+    int fh_nhinc()                      const { return (lp_fh_nhinc); }
+    double fh_rh()                      const { return (lp_fh_rh); }
+    void set_xsect_thickness(int t)     { lp_xsect_thickness = t; }
     void set_thickness(double d)        { lp_thickness = d; }
-    int wire_width()                    { return (lp_wire_width); }
-    void set_wire_width(int d)          { lp_wire_width = d; }
+    void set_wire_width(int w)          { lp_wire_width = w; }
+    void set_fh_nhinc(int n)            { lp_fh_nhinc = n; }
+    void set_fh_rh(double d)            { lp_fh_rh = d; }
 
 private:
     GRfillType lp_fill;                 // fill data
@@ -92,8 +96,10 @@ private:
     unsigned int lp_pixel;              // Colormap pixel
     unsigned int lp_dim_pixel;          // Dim pixel, for anti-highlighting
     int lp_xsect_thickness;             // thickness for cross-section display
-    float lp_thickness;                 // film thickness, microns
+    double lp_thickness;                // film thickness, microns
     int lp_wire_width;                  // default wire width
+    int lp_fh_nhinc;                    // FastHenry filaments
+    double lp_fh_rh;                    // FastHenry filament height ratio
 
     static int internal_pixel;      // common default internal lyr. pix.
     static int alloc_count;         // default color assignment counter

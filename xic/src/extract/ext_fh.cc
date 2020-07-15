@@ -460,8 +460,7 @@ namespace {
 // in order, but not necessarily with respect to layers of the other
 // type.  Conducting layers must have the CONDUCTOR attribute, and
 // have nonzero thickness.  Insulating layers must have the VIA
-// attribute and nonzero thickness.  The argument is the substrate
-// relative dielectric constant.
+// attribute and nonzero thickness.
 //
 fhLayout::fhLayout()
 {
@@ -631,8 +630,21 @@ fhLayout::setup()
             double lambda = tech_prm(l->layer_desc())->lambda();
             if (lambda < 0.0)
                 lambda = 0.0;
-            for (fhConductor *c = cl->cndlist(); c; c = c->next())
-                c->set_siglam(sigma, lambda);
+#ifdef NEWHINC
+            DspLayerParams *dp = dsp_prm(l->layer_desc());
+            int thickness = INTERNAL_UNITS(dp->thickness());
+            int nhinc = dp->fh_nhinc();
+            double rh = dp->fh_rh();
+#endif
+            for (fhConductor *c = cl->cndlist(); c; c = c->next()) {
+                c->set_sigma(sigma);
+                c->set_lambda(lambda);
+#ifdef NEWHINC
+                c->set_thickness(thickness);
+                c->set_nhinc(nhinc);
+                c->set_rh(rh);
+#endif
+            }
         }
     }
 
@@ -883,8 +895,11 @@ fhLayout::fh_dump(FILE *fp)
     e_unit unit = (e_unit)u;
 
     fprintf(fp, ".Units %s\n", unit_t::units(unit)->name());
-    fprintf(fp, "\n");
+    const char *defs = CDvdb()->getVariable(VA_FhDefaults);
+    if (defs && *defs)
+        fprintf(fp, ".Default %s\n", defs);
 
+    fprintf(fp, "\n");
     layer_dump(fp);
     fprintf(fp, "\n");
 
@@ -946,7 +961,7 @@ fhLayout::fh_dump(FILE *fp)
 
 
 namespace {
-    // Create a sorted, momotonically increasing array of values from
+    // Create a sorted, monotonically increasing array of values from
     // the hash table.
     //
     void sort_points(SymTab *tab, int **ppts, int *pnp)
@@ -1408,6 +1423,15 @@ fhConductor::segments_print(FILE *fp, e_unit unit, const fhNodeGen *gen)
         fprintf(fp, ff, sc*s->wid());
         fprintf(fp, " h=");
         fprintf(fp, ff, sc*s->hei());
+#ifdef NEWHINC
+        if (hc_nhinc > 1 && s->pn1()->z == s->pn2()->z &&
+                sc*s->hei() == hc_thickness) {
+            fprintf(fp, " nhinc=%d", hc_nhinc);
+            if (hc_rh != DEF_FH_RH && hc_rh > 0.0)
+                fprintf(fp, " rh=%g", hc_rh);
+        }
+#endif
+
         fprintf(fp, "%s\n", buf);
         cnt++;
     }

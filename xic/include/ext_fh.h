@@ -47,6 +47,9 @@
 #include "ext_fxunits.h"
 #include "ext_fxjob.h"
 
+//XXX
+#define NEWHINC
+
 //
 // Definitions for the "new" FastHenry interface.
 //
@@ -298,6 +301,11 @@ private:
     int tl_ccnt;           // copy count, 0 for original
 };
 
+#ifdef NEWHINC
+#define DEF_FH_NHINC 1
+#define DEF_FH_RH 2.0
+#endif
+
 struct fhConductor
 {
     fhConductor(int lix = -1, int g = -1)
@@ -309,6 +317,11 @@ struct fhConductor
             hc_layer_ix = lix;
             hc_sigma = 0.0;
             hc_lambda = 0.0;
+#ifdef NEWHINC
+            hc_thickness = 0;
+            hc_nhinc = DEF_FH_NHINC;
+            hc_rh = DEF_FH_RH;
+#endif
             hc_segments = 0;
         }
 
@@ -351,16 +364,23 @@ struct fhConductor
     glZlistRef3d *zlist3d_ref() const { return (hc_zlist3d_ref); }
     glZlist3d *zlist3d()        const { return (hc_zlist3d); }
 
-    void set_siglam(double s, double l)
-        {
-            hc_sigma = s;
-            hc_lambda = l;
-        }
+    void set_sigma(double d)    { hc_sigma = d; }
+    void set_lambda(double d)   { hc_lambda = d; }
+#ifdef NEWHINC
+    void set_thickness(int n)   { hc_thickness = n; }
+    void set_nhinc(int n)       { hc_nhinc = n; }
+    void set_rh(double d)       { hc_rh = d; }
+#endif
 
     int group()                 const { return (hc_group); }
     int layer_index()           const { return (hc_layer_ix); }
     double sigma()              const { return (hc_sigma); }
     double lambda()             const { return (hc_lambda); }
+#ifdef NEWHINC
+    int thickness()             const { return (hc_thickness); }
+    int nhinc()                 const { return (hc_nhinc); }
+    double rh()                 const { return (hc_rh); }
+#endif
 
     void set_next(fhConductor *n)     { hc_next = n; }
     fhConductor *next()         const { return (hc_next); }
@@ -373,7 +393,12 @@ private:
     int hc_layer_ix;            // layer index
     double hc_sigma;            // conductivity
     double hc_lambda;           // penetration depth
+#ifdef NEWHINC
+    int hc_thickness;           // conductor film thickness, internal units
+    int hc_nhinc;               // number of filaments.
+    double hc_rh;               // filament thickness ratio
     fhSegment *hc_segments;     // segment list
+#endif
 };
 
 struct fhLayer

@@ -100,6 +100,7 @@ namespace {
             GtkWidget *fh_out;
             GtkWidget *fh_file;
             GtkWidget *fh_args;
+            GtkWidget *fh_defs;
             GtkWidget *fh_fmin;
             GtkWidget *fh_fmax;
             GtkWidget *fh_ndec;
@@ -120,7 +121,7 @@ namespace {
         sFh *Fh;
 
         enum { FhRun, FhRunFile, FhDump, Foreg, ToCons, Enable, Kill };
-        enum { ManhGridCnt, VolElTarg, FhPath, FhArgs, FhFreq };
+        enum { ManhGridCnt, VolElTarg, FhPath, FhArgs, FhDefaults, FhFreq };
     }
 
     // FastHenry units menu, must have same order and length as Units[]
@@ -197,6 +198,7 @@ sFh::sFh(GRobject c)
     fh_out = 0;
     fh_file = 0;
     fh_args = 0;
+    fh_defs = 0;
     fh_fmin = 0;
     fh_fmax = 0;
     fh_ndec = 0;
@@ -336,6 +338,20 @@ sFh::sFh(GRobject c)
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
         GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhArgs);
     fh_args = entry;
+
+    gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    row++;
+
+    frame = gtk_frame_new("FhDefaults");
+    gtk_widget_show(frame);
+    entry = gtk_entry_new();
+    gtk_widget_show(entry);
+    gtk_container_add(GTK_CONTAINER(frame), entry);
+    gtk_signal_connect(GTK_OBJECT(entry), "changed",
+        GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhDefaults);
+    fh_defs = entry;
 
     gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -612,6 +628,15 @@ sFh::update()
     if (strcmp(var, cur))
         gtk_entry_set_text(GTK_ENTRY(fh_args), var);
 
+    var = CDvdb()->getVariable(VA_FhDefaults);
+    if (!var)
+        var = fh_def_string(FhDefaults);
+    cur = gtk_entry_get_text(GTK_ENTRY(fh_defs));
+    if (!cur)
+        cur = "";
+    if (strcmp(var, cur))
+        gtk_entry_set_text(GTK_ENTRY(fh_defs), var);
+
     var = CDvdb()->getVariable(VA_FhPath);
     if (!var)
         var = fh_def_string(FhPath);
@@ -877,6 +902,7 @@ sFh::fh_def_string(int id)
     case FhPath:
         return (fxJob::fh_default_path());
     case FhArgs:
+    case FhDefaults:
         return ("");
     case FhFreq:
         return ("1e3");
@@ -966,6 +992,12 @@ sFh::fh_change_proc(GtkWidget *widget, void *arg)
             CDvdb()->clearVariable(VA_FhArgs);
         else
             CDvdb()->setVariable(VA_FhArgs, s);
+        break;
+    case FhDefaults:
+        if (!strcmp(s, fh_def_string(id)))
+            CDvdb()->clearVariable(VA_FhDefaults);
+        else
+            CDvdb()->setVariable(VA_FhDefaults, s);
         break;
     case FhFreq:
         Fh->update_fh_freq();

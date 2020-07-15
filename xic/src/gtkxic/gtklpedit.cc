@@ -242,9 +242,10 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     //
     // menu bar
     //
-    GtkItemFactoryEntry menu_items[50];
-    int nitems = 0;
+#define NUM_MENU_ITEMS 60
+    GtkItemFactoryEntry menu_items[NUM_MENU_ITEMS];
 
+    int nitems = 0;
     IFINIT(nitems, "/_Edit", 0, 0, 0, "<Branch>");
     IFINIT(nitems, "/Edit/_Edit", "<control>E", lp_edit_proc, 0, 0);
     IFINIT(nitems, "/Edit/_Delete", "<control>D", lp_delete_proc, 0, 0);
@@ -304,6 +305,10 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
         phPlanarize, 0);
     IFINIT(nitems, "/Physical Keywords/Thickness", 0, lp_kw_proc,
         phThickness, 0);
+    IFINIT(nitems, "/Physical Keywords/FH_nhinc", 0, lp_kw_proc,
+        phFH_nhinc, 0);
+    IFINIT(nitems, "/Physical Keywords/FH_rh", 0, lp_kw_proc,
+        phFH_rh, 0);
     IFINIT(nitems, "/Physical Keywords/Rho", 0, lp_kw_proc,
         phRho, 0);
     IFINIT(nitems, "/Physical Keywords/Sigma", 0, lp_kw_proc,

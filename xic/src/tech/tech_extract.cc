@@ -448,6 +448,38 @@ cTech::ParseExtLayerBlock()
         return (SaveError("%s: layer %s, bad specification.",
             Ekw.Rsh(), tc_last_layer->name()));
     }
+    if (Matching(Ekw.FH_nhinc())) {
+        // The FastHenry nhinc number for the layer.  The FastHenry
+        // interface uses this to split conductors in a direction
+        // parallel to the substrate to account for penetration/skin
+        // depth.
+        //
+        TCret tcret = CheckLD(true);
+        if (tcret != TCnone)
+            return (tcret);
+        int n;
+        if (sscanf(tc_inbuf, "%d", &n) == 1 && n > 0) {
+            dsp_prm(tc_last_layer)->set_fh_nhinc(n);
+            return (TCmatch);
+        }
+        return (SaveError("%s: layer %s, bad value, must be positive integer.",
+            Ekw.FH_nhinc(), tc_last_layer->name()));
+    }
+    if (Matching(Ekw.FH_rh())) {
+        // When using nhinc, this is the thickness ratio between
+        // adjacent filaments, default is 2.0.
+        //
+        TCret tcret = CheckLD(true);
+        if (tcret != TCnone)
+            return (tcret);
+        double d;
+        if (sscanf(tc_inbuf, "%lf", &d) == 1 && d > 0.0) {
+            dsp_prm(tc_last_layer)->set_fh_rh(d);
+            return (TCmatch);
+        }
+        return (SaveError("%s: layer %s, bad value, must be positive.",
+            Ekw.FH_rh(), tc_last_layer->name()));
+    }
     if (Matching(Ekw.EpsRel())) {
         // relative dielectric constant
         TCret tcret = CheckLD(true);
@@ -716,6 +748,20 @@ cTech::PrintExtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld)
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Thickness());
+
+    if (dp->fh_nhinc() > 1) {
+        sprintf(buf, "%s %d\n", Ekw.FH_nhinc(), dp->fh_nhinc());
+        PutStr(fp, lstr, buf);
+    }
+    if (cmts)
+        CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.FH_nhinc());
+
+    if (dp->fh_rh() > 0.0 && dp->fh_rh() != 2.0) {
+        sprintf(buf, "%s %g\n", Ekw.FH_rh(), dp->fh_rh());
+        PutStr(fp, lstr, buf);
+    }
+    if (cmts)
+        CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.FH_rh());
 
     if (lp->rho() > 0.0) {
         sprintf(buf, "%s %g\n", Ekw.Rho(), lp->rho());

@@ -105,6 +105,10 @@ phyKWstruct::insert_keyword_text(const char *str, const char*, const char*)
         remove_keyword_text(phPlanarize);
     else if (type == phThickness)
         remove_keyword_text(phThickness);
+    else if (type == phFH_nhinc)
+        remove_keyword_text(phFH_nhinc);
+    else if (type == phFH_rh)
+        remove_keyword_text(phFH_rh);
     else if (type == phRho) {
         remove_keyword_text(phRho);
         remove_keyword_text(phSigma);
@@ -292,6 +296,42 @@ phyKWstruct::get_string_for(int type, const char *orig)
             }
             in = prompt(
                 "Bad input, reenter film thickness: ", tbuf);
+        }
+        break;
+
+    case phFH_nhinc:
+        nexttok(&orig, tbuf, false);
+        nexttok(&orig, tbuf, false);
+        in = prompt("Enter layer FastHenry in-plane filament count: ", tbuf);
+        for (;;) {
+            if (!in)
+                return (0);
+            int n;
+            if (sscanf(in, "%d", &n) == 1 && n > 0) {
+                sprintf(buf, "%s %d", Ekw.FH_nhinc(), n);
+                break;
+            }
+            in = prompt(
+                "Bad input, reenter FastHenry nhinc: ", tbuf);
+        }
+        break;
+
+    case phFH_rh:
+        nexttok(&orig, tbuf, false);
+        nexttok(&orig, tbuf, false);
+        in = prompt(
+            "Enter layer FastHenry in-plane adjacent filament height ratio: ",
+            tbuf);
+        for (;;) {
+            if (!in)
+                return (0);
+            double d;
+            if (sscanf(in, "%lf", &d) == 1 && d > 0.0) {
+                sprintf(buf, "%s %.4f", Ekw.FH_rh(), d);
+                break;
+            }
+            in = prompt(
+                "Bad input, reenter FastHenry rh: ", tbuf);
         }
         break;
 
@@ -499,6 +539,10 @@ phyKWstruct::kwtype(const char *str)
             ret = phPlanarize;
         else if (lstring::cieq(tok, Ekw.Thickness()))
             ret = phThickness;
+        else if (lstring::cieq(tok, Ekw.FH_nhinc()))
+            ret = phFH_nhinc;
+        else if (lstring::cieq(tok, Ekw.FH_rh()))
+            ret = phFH_rh;
         else if (lstring::cieq(tok, Ekw.Rho()))
             ret = phRho;
         else if (lstring::cieq(tok, Ekw.Sigma()))
@@ -549,6 +593,14 @@ phyKWstruct::get_settings(const CDl *ld)
         sprintf(buf, "%s %.*f\n", Ekw.Thickness(), ndgt, dp->thickness());
         lstr.add(buf);
     }
+    if (dp->fh_nhinc() > 1) {
+        sprintf(buf, "%s %d\n", Ekw.FH_nhinc(), dp->fh_nhinc());
+        lstr.add(buf);
+    }
+    if (dp->fh_rh() > 0.0 && dp->fh_rh() != 2.0) {
+        sprintf(buf, "%s %g\n", Ekw.FH_rh(), dp->fh_rh());
+        lstr.add(buf);
+    }
     if (lp->rho() > 0.0) {
         sprintf(buf, "%s %g\n", Ekw.Rho(), lp->rho());
         lstr.add(buf);
@@ -592,14 +644,16 @@ phyKWstruct::get_settings(const CDl *ld)
 #define ELP_ERR  0x1        // Badness
 #define ELP_PL   0x2        // Planarize
 #define ELP_TH   0x4        // Thickness
-#define ELP_RH   0x8        // Rho
-#define ELP_SG   0x10       // Sigma
-#define ELP_R    0x20       // Rsh
-#define ELP_EP   0x40       // EpsRel
-#define ELP_CA   0x80       // Capacitance
-#define ELP_LA   0x100      // Lambda
-#define ELP_TR   0x200      // Tline
-#define ELP_AT   0x400      // Antenna
+#define ELP_FN   0x8        // FH_nhinc
+#define ELP_FR   0x10       // FH_rh
+#define ELP_RH   0x20       // Rho
+#define ELP_SG   0x40       // Sigma
+#define ELP_R    0x80       // Rsh
+#define ELP_EP   0x100      // EpsRel
+#define ELP_CA   0x200      // Capacitance
+#define ELP_LA   0x400      // Lambda
+#define ELP_TR   0x800      // Tline
+#define ELP_AT   0x1000     // Antenna
 
 namespace {
     // Parse one line of text and set the layer desc accordingly,
@@ -650,6 +704,24 @@ namespace {
                 return (ELP_TH | ELP_ERR);
             dsp_prm(ld)->set_thickness(p0);
             ret |= ELP_TH;
+        }
+        else if (lstring::cieq(kwbuf, Ekw.FH_nhinc())) {
+            if (flags & (ELP_FN))
+                return (ELP_FN | ELP_ERR);
+            int n;
+            if (sscanf(inbuf, "%d", &n) != 1 || n < 1)
+                return (ELP_FN | ELP_ERR);
+            dsp_prm(ld)->set_fh_nhinc(n);
+            ret |= ELP_FN;
+        }
+        else if (lstring::cieq(kwbuf, Ekw.FH_rh())) {
+            if (flags & (ELP_FR))
+                return (ELP_FR | ELP_ERR);
+            double p0;
+            if (sscanf(inbuf, "%lf", &p0) != 1 || p0 <= 0.0)
+                return (ELP_FR | ELP_ERR);
+            dsp_prm(ld)->set_fh_rh(p0);
+            ret |= ELP_FR;
         }
         else if (lstring::cieq(kwbuf, Ekw.Rho())) {
             if (flags & (ELP_RH | ELP_SG))
@@ -760,6 +832,10 @@ namespace {
 
                 thickness = dp->thickness();
                 dp->set_thickness(0.0);
+                fh_nhinc = dp->fh_nhinc();
+                dp->set_fh_nhinc(1);
+                fh_rh = dp->fh_rh();
+                dp->set_fh_rh(2.0);
 
                 TechLayerParams *lp = tech_prm(ld);
 
@@ -805,6 +881,8 @@ namespace {
                     ldesc->setPlanarizing(true, plzasset);
 
                 dp->set_thickness(thickness);
+                dp->set_fh_nhinc(fh_nhinc);
+                dp->set_fh_rh(fh_rh);
 
                 TechLayerParams *lp = tech_prm(ldesc);
                 lp->set_rho(rho);
@@ -820,6 +898,8 @@ namespace {
 
     private:
         double thickness;
+        int fh_nhinc;
+        double fh_rh;
         double rho;
         double ohms_per_sq;
         double epsrel;
@@ -867,9 +947,10 @@ phyKWstruct::set_settings(CDl *ld, const char *string)
                         msg = "Retry: bad input line %d";
                 }
                 else if (result &
-                        (ELP_TH | ELP_RH | ELP_SG | ELP_EP | ELP_LA | ELP_AT)) {
-                    if (flags & (ELP_TH | ELP_RH | ELP_SG | ELP_EP | ELP_LA |
-                            ELP_AT))
+                        (ELP_TH | ELP_FN | ELP_FR | ELP_RH | ELP_SG | ELP_EP |
+                        ELP_LA | ELP_AT)) {
+                    if (flags & (ELP_TH | ELP_FN | ELP_FR | ELP_RH | ELP_SG |
+                            ELP_EP | ELP_LA | ELP_AT))
                         msg =
                     "Retry: inappropriate physical property keyword line %d";
                     else

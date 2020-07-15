@@ -76,6 +76,8 @@ DspLayerParams::DspLayerParams(CDl *ld)
     lp_xsect_thickness = 0;
     lp_thickness = 0.0;
     lp_wire_width = 0;
+    lp_fh_nhinc = 1;  // FastHenry default
+    lp_fh_rh = 2.0;   // FastHenry default
 }
 
 
