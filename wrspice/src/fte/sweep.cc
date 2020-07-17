@@ -101,6 +101,11 @@ IFsimulator::SweepAnalysis(wordlist *wl)
         didpause = true;
     }
     else {
+        if (!ft_curckt->deck()) {
+            GRpkgIf()->ErrPrintf(ET_ERROR, "no current circuit initialization.\n");
+            return;
+        }
+
         sweep = new sSWEEPprms;
         int error = sweep->sweepParse(&wl);
         if (error) {

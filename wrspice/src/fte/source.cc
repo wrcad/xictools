@@ -965,7 +965,8 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
     // The conditionals have already been processed and removed.  This
     // builds a param table from the existing lines.
     sParamTab *ptab = new sParamTab;
-    ptab = deck->process_conditionals(ptab);
+    if (deck)
+        ptab = deck->process_conditionals(ptab);
     ptab->define_macros(true);
 #define NEWPEXP
 #ifdef NEWPEXP
@@ -1865,6 +1866,9 @@ void
 sFtCirc::setup(sLine *spdeck, const char *fname, wordlist *exec,
     wordlist *ctrl, sLine *vlog, sParamTab *ptab)
 {
+    if (!spdeck)
+        return;
+
     ci_descr = lstring::copy(spdeck->line());
     ci_verilog = vlog;
     ci_params = ptab;

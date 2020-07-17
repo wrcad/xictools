@@ -396,6 +396,12 @@ IFsimulator::Simulate(SIMtype what, wordlist *wl)
                 "there aren't any circuits loaded.\n");
             return;
         }
+        if (!ft_curckt->deck()) {
+            GRpkgIf()->ErrPrintf(ET_ERROR,
+                "current circuit is not initialized.\n");
+            return;
+        }
+
         if (ft_curckt->inprogress() && what == SIMrun) {
             TTY.printf("Resuming run in progress.\n");
             what = SIMresume;
@@ -682,8 +688,9 @@ sFtCirc::rebuild(bool save_loop)
     }
     int trtype = ci_runtype;
     sLine *dd = ci_deck;
-    sLine *tdeck = dd->actual();
-    dd->set_actual(0);
+    sLine *tdeck = dd ? dd->actual() : 0;
+    if (dd)
+        dd->set_actual(0);
     ci_origdeck = 0;
     const char *tfilename = FTSAVE(ci_filename);
 
