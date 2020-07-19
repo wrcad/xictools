@@ -9,14 +9,14 @@
 !!HEADER
     <table border=1 width=100% cellpadding=0 cellspacing=0>
     <tr><td bgcolor=white><img src=wrbannermain.gif width=300 align=left>
-    <font face=utopia color=royalblue size=5>
+    <font face=sans color=royalblue size=5>
     <br>&nbsp;&nbsp; Help System</font></td></tr>          
     <tr><td bgcolor=white height=40>
-    <font face=utopia color="#dd0000" size=5>&nbsp;&nbsp;%TITLE%</font></td></t>
+    <font face=sans color="#dd0000" size=5>&nbsp;&nbsp;%TITLE%</font></td></t>
     </table><p>
  
 !!FOOTER
-    <p><hr><font size=3 face=utopia color=darkblue>
+    <p><hr><font size=3 face=sans color=darkblue>
     &#169; Whiteley Research Inc. 2014, All Rights Reserved.</font>
 !!ENDIF
 

@@ -8,20 +8,20 @@
 !!HEADER
     <table border=1 width=100% cellpadding=0 cellspacing=0>
     <tr><td bgcolor=white><img src=wrbannermain.gif width=300 align=middle>
-    <font face=utopia color=royalblue size=5>
+    <font face=sans color=royalblue size=5>
     &nbsp;&nbsp;<i>Xic</i> Help System</font></td></tr>
     <tr><td bgcolor=white height=40>
-    <font face=utopia color="#dd0000" size=5>&nbsp;&nbsp;%TITLE%</font></td></tr>
+    <font face=sans color="#dd0000" size=5>&nbsp;&nbsp;%TITLE%</font></td></tr>
     </table><p>
 
 !!FOOTER
-    <p><hr><font size=3 face=utopia color=darkblue>
+    <p><hr><font size=3 face=sans color=darkblue>
     &#169; Whiteley Research Inc. 2016, All Rights Reserved.</font>
 
 !!TAGTEXT
     <table border=1 width=100% cellpadding=0 cellspacing=0>
     <tr><td bgcolor=white height=30>
-    <font face=utopia color="#dd0000" size=4>&nbsp;&nbsp;
+    <font face=sans color="#dd0000" size=4>&nbsp;&nbsp;
     Supplemental Information From %TAG% Help System</font></td></tr>
     </table><p>
 
