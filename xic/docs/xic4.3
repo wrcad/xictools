@@ -183,7 +183,7 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
-xic-4.3.10  07/xx/2019
+xic-4.3.10  07/20/2019
 Current Release
 
 CHANGES AND NEW FEATURES
@@ -206,8 +206,8 @@ CHANGES AND NEW FEATURES
 * Default Technology Files
 
     Added a technology file for the SeeQC 4-superconducting layer
-    process (c4S1).  This is a continuation under new management of the
-    Hypres process.
+    process (c4S1).  This is a continuation under new management of
+    the Hypres process.
 
     SeeQC Inc., Elmsford, NY USA  https://www.seeqc.com
     https://seeqc.com/wp-content/uploads/2020/02/SeeqcDesignRules_S1.pdf
@@ -220,8 +220,8 @@ CHANGES AND NEW FEATURES
 
     New predefined macros are TECHNOLOGY, VENDOR, and PROCESS, all
     upper-case, and added Process and Vendor techfile keywords,
-    analogous to Technology.  The macros are set in the technology file,
-    e.g.
+    analogous to Technology.  The macros are set in the technology
+    file, e.g.
 
         Technology      sce
         Vendor          SeeQC
@@ -234,8 +234,12 @@ CHANGES AND NEW FEATURES
          ...
          Endif.
 
-    The TECHNOLOGY can also set as a Define for backwards compatibility.
+    The TECHNOLOGY value is also set as a Define, as if (from the
+    example)
 
+        Define sce
+
+    was given.
 
 * Misc. Properties and Terminals
 
@@ -257,7 +261,8 @@ CHANGES AND NEW FEATURES
 BUGS FIXED
 ---- -----
 
-* Repetition is now added to gpulse read from from OpenAccess.
+* Repetition is now added to gpulse source instances read from from
+  OpenAccess.
 
 * Fixed a SPICE netlisting bug.
 
