@@ -400,8 +400,10 @@ Linux)
         dst=`rpm -qf /etc/redhat-release`
     elif test -f /etc/centos-release ; then
         dst=`rpm -qf /etc/centos-release`
-    elif test -f /etc/SuSE-release ; then
-        dst=`rpm -qf /etc/SuSE-release`
+    elif test -f /etc/SUSE-brand ; then
+        dst=`rpm -qf /etc/SUSE-brand`
+    elif test -f /etc/os-release ; then
+        dst=`rpm -qf /etc/os-release`
     fi
     if test -n "$dst"; then
 dnl     # RPM-based:  Red Hat, CentOS, OpenSuSE, and others.  Recognize 5/6/7
