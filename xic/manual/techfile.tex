@@ -7,7 +7,7 @@
 \appendix
 \chapter{Technology File}
 % -----------------------------------------------------------------------------
-% techfile 112019
+% techfile 071820
 \label{techfile}
 \index{technology file}
 \index{xic\_tech file}
@@ -86,18 +86,31 @@ The technology file has a macro facility which can be used to simplify
 the constructs and to customize the file to a particular variation of
 the technology.
 
-The technology file may contain the following keyword/value pair
+The technology file may contain the following keyword/value pairs
 near the top of the file:
 \begin{description}
 \index{technology name}
 \item{\vt Technology} {\it name}\\
-The {\it name} can be any character token (no white space allowed)
-and gives a name to the technology.  This is not directly used by
-{\Xic}, but but the {\it name} is placed in the macro name space of
-the macro preprocessor used when reading various types of input
-files, including the device library.  The name is displayed in the
-status line of the main window, and is part of the information
-available for output in scripts and elsewhere.
+The {\it name} can be any character token (no white space allowed) and
+defines a value for the predefined TECHNOLOGY macro.  Additionally,
+the value of {\it name} is itself defined as a macro.  These are not
+directly used by {\Xic}, but the macro is placed in the name space of
+the macro preprocessor used when reading various types of input files,
+including the device library.  The name is displayed in the status
+line of the main window, and is part of the information available for
+output in scripts and elsewhere.
+
+\item{\vt Vendor} {\it name}\\
+The {\it name} can be any character token (no white space allowed) and
+defines a value for the predefined VENDOR macro.  This is not
+directly used by {\Xic}, but the macro is placed in the name space of
+the macro preprocessor used when reading various types of input files.
+
+\item{\vt Process} {\it name}\\
+The {\it name} can be any character token (no white space allowed) and
+defines a value for the predefined PROCESS macro.  This is not
+directly used by {\Xic}, but the macro is placed in the name space of
+the macro preprocessor used when reading various types of input files.
 
 \index{device library name}
 \item{\vt DeviceLibrary} {\it libname}\\
@@ -1400,7 +1413,7 @@ The combination is equivalent to {\et GroundPlaneClear}.
 
 
 %-------------------------------
-% techfile:layers:phys 090714
+% techfile:layers:phys 071820
 \subsection{Technology File Layer Block Keywords:  Physical Properties}
 \label{phkwords}
 
@@ -1438,6 +1451,25 @@ and which layers are planarized by default.
 This keyword supplies the film thickness of the corresponding
 deposited film.  The {\it thickness} is given in microns.  This can be
 applied to any physical layer.
+
+\item{\et FH\_nhinc} {\it nhinc}\\
+This keyword applies to the {\it FastHenry} interface, and may be
+applied to conducting layers.  This specifies the {\vt nhinc}
+parameter to horizontal segments (parallel to the substrate) with
+thinkness equal to the layer thickness (as given with the {\et
+Thickness} keyword).  This is the number of filaments contained in the
+segment, which can account for skin or penetration depth of conductors
+on the layer, in the vertical direction.  The value given must be an
+integer 1 or larger.  See the {\it FastHenry} documentation for more
+information about the {\vt nhinc} parameter.
+
+\item{\et FH\_rh} {\it rh}\\
+This keyword applies to the {\it FastHenry} interface, and may be
+applied to conducting layers.  This specifies the {\vt rh} parameter,
+which is the ratio of heights between adjacent filaments.  The default
+ratio is 2.0.  Note that this applies only when the number of
+filaments is larger than one.  See the {\it FastHenry} documentation
+for more information about the {\vt rh} parameter.
 \end{description}
 
 At most one of the following two keywords ({\et Rho} and {\et Sigma})

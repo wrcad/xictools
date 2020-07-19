@@ -37,7 +37,7 @@ scr:forms
 !!REDIRECT XTROOT       macro#xtroot
 !!REDIRECT PROGROOT     macro#progroot
 
-!! 062116
+!! 071820
 !!KEYWORD
 macro
 !!TITLE
@@ -248,6 +248,18 @@ Macro Preprocessor
     These macros are always available, and additional predefined
     macros may be available in the various contexts, which are
     documented elsewhere.
+
+    <dl>
+    <dt>technology definitions<dd>
+    First implemented:  release 4.3.10<br>
+    In addition to above, if the technology file uses the
+    href="techfile#techname"><tt>Technology</tt></a> keyword to define
+    a name for the technology, the predefined macro
+    "<tt>TECHNOLOGY</tt>" is set to that name.  Furthermore, if the
+    <tt>Vendoor</tt> keyword is used to define a name, the
+    "<tt>VENDOR</tt>" predefined macro is set to the name.  Similarly,
+    <tt>Process</tt> can be used to assign a name to the predefined
+    "<tt>PROCESS</tt>" macro.
 
     <a name="generic"></a>
     <h2>Generic Macro Keywords</h2>

@@ -334,7 +334,7 @@ for a complete description.
 
 
 % -----------------------------------------------------------------------------
-% elecpropuser 081318
+% elecpropuser 071920
 \section{User-Specified Electrical Property Specifications}
 \label{elecpropuser}
 \index{properties!electrical}
@@ -376,11 +376,10 @@ exist in a model library file.
 \index{properties!value}
 \item{\et value} property, number 2\\
 The {\et value} property supplies a string to be used in the device
-line in SPICE output for the device ``value''.  It should not appear
-if the device has a model property, and if it does, it will be
-ignored.  The property is normally applied to device instances with
-the {\cb Property Editor}, but can appear in the device definition
-in the device library file to assign a default value for the device.
+line in SPICE output for the device ``value''.  The property is
+normally applied to device instances with the {\cb Property Editor},
+but can appear in the device definition in the device library file to
+assign a default value for the device.
 \begin{quote}\vt
 5 2 {\it value\/};
 \end{quote}
@@ -389,9 +388,6 @@ floating point number specifying the component value, e.g., in ohms
 for a resistor.  In general, any string can appear, and it may include
 hypertext references.  A complex string would be necessary for a
 voltage source with functional dependence, for example.
-
-The {\et model} and {\et value} properties are mutually exclusive,
-either can be supplied, but not both.
 
 \index{initc property}
 \index{param property}

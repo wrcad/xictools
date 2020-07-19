@@ -2779,7 +2779,7 @@ Extraction Setup
     This functionality is also available from the <a
     href="!ushow"><b>!ushow</b></a> text-mode command.
 
-!! 061916
+!! 071820
     <a name="net"></a>
     <h2>The Net Config Page</h2>
 
@@ -2943,9 +2943,9 @@ Extraction Setup
     efficiency - the geometrical computations are much faster for box
     objects.  In practice, a via is almost always a square, but other
     shapes, mostly circular approximations, are occasionally seen.  In
-    particular, users of the Hypres process often use circular vias
-    concentric with circular Josephson junctions.  If the check box is
-    not set, the via shape is decomposed into a trapezoid list.
+    particular, in superconductive electronics we often use circular
+    vias concentric with circular Josephson junctions.  If the check
+    box is not set, the via shape is decomposed into a trapezoid list.
 
     <p>
     <li>We look for objects on the upper and lower conductor layers
@@ -3011,11 +3011,11 @@ Extraction Setup
     extraction.  When set, vias that are not rectangular are assumed
     to be convex polygons, and connectivity testing is performed in a
     small rectangular region near the center of the bounding box. 
-    This is specifically for Hypres-style circular vias.  This
-    simplifies testing and might speed extraction when circular vias
-    are present.  It should <b>not</b> be used if vias can take
-    arbitrary polygonal shapes.  This will have no effect on
-    rectangular vias.
+    This is specifically for circular vias, as found in
+    superconductive electronics.  This simplifies testing and might
+    speed extraction when circular vias are present.  It should
+    <b>not</b> be used if vias can take arbitrary polygonal shapes. 
+    This will have no effect on rectangular vias.
 
     <p>
     This sets/tracks the state of the <a

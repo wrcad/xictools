@@ -7,7 +7,7 @@
 \chapter{The {\Xic} Scripting Language}
 
 % -----------------------------------------------------------------------------
-% macro 062116
+% macro 071820
 \section{The Macro Preprocessor}
 \label{macro}
 \index{macros}
@@ -168,6 +168,17 @@ substitution is inhibited (4.2.12 and later).
 These macros are always available, and additional predefined macros
 may be available in the various contexts, which are documented
 elsewhere.
+
+\begin{description}
+\item{technology definitions}\\
+First implemented: release 4.3.10\\
+In addition to above, if the technology file uses the {\vt Technology}
+keyword to define a name for the technology, the predefined macro
+``{\vt TECHNOLOGY}'' is set to that name.  Furthermore, if the {\vt
+Vendoor} keyword is used to define a name, the ``{\vt VENDOR}''
+predefined macro is set to the name.  Similarly, {\vt Process} can be
+used to assign a name to the predefined ``{\vt PROCESS}'' macro.
+\end{description}
 
 \subsection{Generic Macro Keywords}
 \index{macros!generic keywords}

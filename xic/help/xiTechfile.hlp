@@ -44,7 +44,7 @@ resourcefile
 !!REDIRECT ReadCniTech          techfile#ReadCniTech
 !!REDIRECT LispLogging          techfile#LispLogging
 
-!! 112019
+!! 071820
 !!KEYWORD
 techfile
 !!TITLE
@@ -137,19 +137,38 @@ Technology File
 
     <p>
     <a name="techname"></a>
-    The technology file may contain the following keyword/value pair
+    The technology file may contain the following keyword/value pairs
     near the top of the file:
 
     <dl>
     <dt><tt>Technology</tt> <i>name</i>
     <dd>The <i>name</i> can be any character token (no white space
-    allowed) and gives a name to the technology.  This is not directly
-    used by <i>Xic</i>, but the <i>name</i> is placed in the macro
-    name space of the <a href="macro">macro preprocessor</a> used when
-    reading various types of input files, including the device
-    library.  The name is displayed in the <a href="statusline">status
-    line</a>, of the main window, and is part of the information
-    available for output in scripts and elsewhere.
+    allowed) and defines a value for the predefined TECHNOLOGY macro. 
+    Additionally, the value of <i>name</i> is itself defined as a
+    macro.  These are not directly used by <i>Xic</i>, but the macro
+    is placed in the name space of the <a href="macro">macro
+    preprocessor</a> used when reading various types of input files,
+    including the device library.  The name is displayed in the <a
+    href="statusline">status line</a>, of the main window, and is part
+    of the information available for output in scripts and elsewhere.
+    </dl>
+
+    <dl>
+    <dt><tt>Vendor</tt> <i>name</i>
+    <dd>The <i>name</i> can be any character token (no white space
+    allowed) and defines a value for the predefined VENDOR macro. 
+    This is not directly used by <i>Xic</i>, but the macro is placed
+    in the name space of the <a href="macro">macro preprocessor</a>
+    used when reading various types of input files.
+    </dl>
+
+    <dl>
+    <dt><tt>Process</tt> <i>name</i>
+    <dd>The <i>name</i> can be any character token (no white space
+    allowed) and defines a value for the predefined PROCESS macro. 
+    This is not directly used by <i>Xic</i>, but the macro is placed
+    in the name space of the <a href="macro">macro preprocessor</a>
+    used when reading various types of input files.
     </dl>
 
     <dl>
@@ -1819,6 +1838,8 @@ techfile:layers
 
 !!REDIRECT Planarize            techfile:layers:phys#Planarize
 !!REDIRECT Thickness            techfile:layers:phys#Thickness
+!!REDIRECT FH_nhinc             techfile:layers:phys#FH_nhinc
+!!REDIRECT FH_rh                techfile:layers:phys#FH_rh
 !!REDIRECT Rho                  techfile:layers:phys#Sigma
 !!REDIRECT Sigma                techfile:layers:phys#Sigma
 !!REDIRECT Rsh                  techfile:layers:phys#Rsh
@@ -1829,8 +1850,10 @@ techfile:layers
 !!REDIRECT Tline                techfile:layers:phys#Tline
 !!REDIRECT Antenna              techfile:layers:phys#Antenna
 
-!!REDIRECT PLANARIZE            techfile:layers:phys#DarkField
+!!REDIRECT PLANARIZE            techfile:layers:phys#Planarize
 !!REDIRECT THICKNESS            techfile:layers:phys#Thickness
+!!REDIRECT FH_NHINC             techfile:layers:phys#FH_nhinc
+!!REDIRECT FH_RH                techfile:layers:phys#FH_rh
 !!REDIRECT RHO                  techfile:layers:phys#Sigma
 !!REDIRECT SIGMA                techfile:layers:phys#Sigma
 !!REDIRECT RSH                  techfile:layers:phys#Rsh
@@ -1841,7 +1864,7 @@ techfile:layers
 !!REDIRECT TLINE                techfile:layers:phys#Tline
 !!REDIRECT ANTENNA              techfile:layers:phys#Antenna
 
-!! 090714
+!! 071820
 !!KEYWORD
 techfile:layers:phys
 !!TITLE
@@ -1889,6 +1912,35 @@ Technology File Layer Block Keywords:  Physical Properties
     <dd>This keyword supplies the film thickness of the corresponding
     deposited film.  The <i>thickness</i> is given in microns.  This
     can be given to any physical layer.
+    </dl>
+
+    <a name="FH_nhinc"></a>
+    <dl>
+    <dt><tt>FH_nhinc</tt> <i>nhinc</i>
+    <dd>This keyword applies to the <a
+    href="fhinterf"><i>FastHenry</i></a> interface, and may be applied
+    to conducting layers.  This specifies the <tt>nhinc</tt> parameter
+    to horizontal segments (parallel to the substrate) with thinkness
+    equal to the layer thickness (as given with the <tt>Thickness</tt>
+    keyword).  This is the number of filaments contained in the
+    segment, which can account for skin or penetration depth of
+    conductors on the layer, in the vertical direction.  The value
+    given must be an integer 1 or larger.  See the <i>FastHenry</i>
+    documentation for more information about the <tt>nhinc</tt>
+    parameter.
+    </dl>
+
+    <a name="FH_rh"></a>
+    <dl>
+    <dt><tt>FH_rh</tt> <i>rh</i>
+    <dd>This keyword applies to the <a
+    href="fhinterf"><i>FastHenry</i></a> interface, and may be applied
+    to conducting layers.  This specifies the <tt>rh</tt> parameter,
+    which is the ratio of heights between adjacent filaments.  The
+    default ratio is 2.0.  Note that this applies only when the number
+    of filaments is larger than one.  See the <i>FastHenry</i>
+    documentation for more information about the <tt>rh</tt>
+    parameter.
     </dl>
 
     <a name="Sigma"></a>

@@ -428,9 +428,11 @@ follow.
 \et FcPlaneBloat & Capacitance extractor substrate bloat dimension\\ \hline
 \et FcUnits & Capacitance extractor file units: m, cm, mm, um, in, mils\\ \hline
 
-% 111819
+% 071820
 \multicolumn{2}{|c|}{\kb Inductance/Resistance Extraction Interface}\\ \hline
 \et FhArgs & {\it FastHenry} command line arguments\\ \hline
+\et FhDefaults & Text for {\vt .DEFAULT} line in {\it FastHenry} input\\
+  \hline
 \et FhForeg & {\it FastHenry} run in foreground if set\\ \hline
 \et FhFreq & {\it FastHenry} frequency specification\\ \hline
 \et FhLayerName & {\it FastHenry} interface masking layer name\\ \hline
@@ -5069,7 +5071,7 @@ The value of this variable tracks the {\cb Via search depth} entry
 area in the {\cb Net Config} page of the {\cb Extraction Setup} panel
 from the {\cb Extract Menu}.
 
-% 030715
+% 071820
 \index{ViaConvex variable}
 \item{\et ViaConvex}\\
 {\bf Value:} boolean.\\
@@ -5077,9 +5079,10 @@ This applies when checking for connectivity through a via during
 extraction.  When set, all non-rectangular vias are assumed to be
 convex polygons.  The test region is taken as a small rectangle
 centered on the via bounding box.  This simplifies and should speed
-testing.  It is intended specifically for Hypres-style circular vias. 
-It has no effect on rectangular vias.  It should {\bf not} be set if
-any vias are non-convex polygons, as incorrect results may occur.
+testing.  It is intended specifically for circular vias, as used in
+superconductive electronics.  It has no effect on rectangular vias. 
+It should {\bf not} be set if any vias are non-convex polygons, as
+incorrect results may occur.
 
 Whether or not this variable is set tracks the state of the {\cb
 Assume convex vias} check box in the {\cb Net Config} page of the {\cb
@@ -5566,6 +5569,17 @@ argument list when {\it FastHenry} is initiated with the {\cb Run
 FastHenry} button in the {\cb LR Extraction} panel {\cb Run}
 page.  The variable is most conveniently manipulated with the text
 entry field in the {\cb LR Extraction} panel {\cb Run} page.
+
+% 071820
+\index{FhDefaults variable}
+\item{\et FhDefaults}\\
+{\bf Value:} string.\\
+If set to a string, the value will be used in a {\vt .DEFAULT} line in
+the {\it FastHenry} input file created by the interface.  The variable
+is most conveniently manipulated with the text entry field in the {\cb
+LR Extraction} panel {\cb Run} page.  See the {\it FastHenry}
+documentation describing the syntax and options for the applicable
+text.
 
 % 111819
 \index{FhForeg variable}

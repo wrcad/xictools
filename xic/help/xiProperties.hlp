@@ -990,7 +990,7 @@ prptyspec
 !!REDIRECT prpty:macro          elecpropuser#macro
 !!REDIRECT prpty:devref         elecpropuser#devref
 
-!! 081318
+!! 071920
 !!KEYWORD
 elecpropuser
 !!TITLE
@@ -1038,12 +1038,10 @@ User-Specified Electrical Property Specifications
     <dl>
     <dt><b>value</b> property, number 2<dd>
     The <b>value</b> property supplies a string to be used in the
-    device line in SPICE output for the device "value".  It should not
-    appear if the device has a model property, and if it does, it will
-    be ignored.  The property is normally applied to device instances
-    with the <b>Property Editor</b>, but can appear in the device
-    definition in the device library file to assign a default value
-    for the device.
+    device line in SPICE output for the device "value".  The property
+    is normally applied to device instances with the <b>Property
+    Editor</b>, but can appear in the device definition in the device
+    library file to assign a default value for the device.
 
     <blockquote>
       <tt>5 2</tt> <i>value</i>;
@@ -1054,10 +1052,6 @@ User-Specified Electrical Property Specifications
     may include hypertext references.  A complex string would be
     necessary for a voltage source with functional dependence, for
     example.
-
-    <p>
-    The <b>model</b> and <b>value</b> properties are mutually
-    exclusive, either can be supplied, but not both.
     </dl>
 
     <a name="param"></a>

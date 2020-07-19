@@ -725,7 +725,7 @@ fhpanel
 !!SEEALSO
 xic:extmenu
 
-!! 111919
+!! 071920
 !!KEYWORD
 fhinterf
 !!TITLE
@@ -1047,6 +1047,36 @@ The Inductance/Resistance Extraction Interface
     </ul>
 
     <p>
+    Conductor layers can have the following optional keywords defined. 
+    These control the filamentation of conductor layers carrying
+    current in the plane of the substrate, in the direction normal to
+    the substrate.  This accounts for penetration or skin depth in
+    planar areas of material, in the Z direction.  Typically, for
+    superconductors at least, lateral dimensions are much larger than
+    film thicknesses, so the volume element refinement tends to keep
+    the film thinkness unbroken in the Z direction.  For accurate
+    account of the penetration depth, this should be further
+    subdivided, and filamentation is one way to accomplish this.
+
+    <ul>
+    <li>A <a href="FH_nhinc"><tt>FH_nhinc</tt></a> keyword with an
+    integer value greater than one can be applied.  This is the number
+    of filaments into which the segment will be divided, along the
+    normal to the substrate.  See the <i>FastHenry</i> documentation
+    for more information about the <tt>nhinc</tt> parameter which can
+    be applied to segment definitions.
+
+    <li>A <a href="FH_rh"><tt>FH_rh</tt></a> keyword with a real value
+    different from the default value of 2.0 can be given.  When the
+    filament count is larger than 2, filaments have varying height so
+    as to maximize the density at the film surfaces.  This parameter
+    sets the ratio of heights between adjacent filaments.  A value of
+    1.0 means that all filaments have the same height.  See the
+    <i>FastHenry</i> documentation for more discussion and information
+    about the <tt>rh</tt> parameter.
+    </ul>
+
+    <p>
     The conductor layers can be given a resistivity or conductivity
     with the <tt>Rho</tt> and <tt>Sigma</tt> keywords, respectively. 
     Additionally, the <tt>Lambda</tt> parameter, which specifies the
@@ -1199,7 +1229,7 @@ fhpanel
 xic:ldb3d
 !fh
 
-!! 111919
+!! 071820
 !!KEYWORD
 fhpanel
 !!TITLE
@@ -1313,6 +1343,15 @@ The LR Extraction Panel
     options to be provided during the run, which the user may require. 
     This entry field is tied to the <a href="FhArgs"><b>FhArgs</b></a>
     variable.
+    </dl>
+
+    <dl>
+    <dt><b>FhDefaults</b><dd>
+    This text entry allows the user to provide a string which will
+    appear in a <tt>.DEFAULT</tt> line in the created <i>FastHenry</i>
+    input file.  See the FastHenry documentation for syntax and
+    options.  This entry field is tied to the <a
+    href="FhDefaults"><b>FhDefaults</b></a> variable.
     </dl>
 
     <dl>

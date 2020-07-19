@@ -476,7 +476,7 @@ xic:editmenu
 xic:flatn
 xic:subct
 
-!! 092717
+!! 071820
 !!KEYWORD
 xic:crvia
 !!TITLE
@@ -491,7 +491,7 @@ Create Via
     are defined in the <a href="techfile:stdvia">current
     technology</a>.  If no standard vias are defined, the menu entry
     will be grayed, and the panel will not be available.  This will be
-    the case for the example <tt>scmos</tt> and Hypres technology
+    the case for the example <tt>scmos</tt> and other technology
     files provided.  The <tt>xic_tech.demo</tt> technology file found
     with the memory chip examples does provide standard via
     definitions, should the user wish to try this feature.

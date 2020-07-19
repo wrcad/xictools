@@ -183,6 +183,125 @@ IMPORTANT -- Windows notes
 End of general info.
 
 ===============================================================================
+xic-4.3.10  07/xx/2019
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Updates to the FastHenry interface.
+
+    1. New technology file physical layer keywords: FH_nhinc, FH_rh.
+    These correspond to the FastHenry nhinc and rh segment options
+    (number of filaments and filament width ratio).  When given and
+    non-default, these will be added to each segment definition for
+    the layer that is parallel to the substrate and has the height of
+    the film thickness, in generated FastHenry input files.
+
+    2) New variable FhDefaults and corresponding entry area in the LR
+    Extraction panel (from the Extract menu).  Any text in this entry
+    is added to the generated FastHenry input file in a ".DEFAULT"
+    line.
+
+* Default Technology Files
+
+    Added a technology file for the SeeQC 4-superconducting layer
+    process (c4S1).  This is a continuation under new management of the
+    Hypres process.
+
+    SeeQC Inc., Elmsford, NY USA  https://www.seeqc.com
+    https://seeqc.com/wp-content/uploads/2020/02/SeeqcDesignRules_S1.pdf
+
+    The Hypres tech file will remain for now, for historical
+    compatibility, but that process no longer exists - use the SeeQC
+    tech file for new work.
+
+* New Predefined Macros
+
+    New predefined macros are TECHNOLOGY, VENDOR, and PROCESS, all
+    upper-case, and added Process and Vendor techfile keywords,
+    analogous to Technology.  The macros are set in the technology file,
+    e.g.
+
+        Technology      sce
+        Vendor          SeeQC
+        Process         c4s1
+
+    These expand like other macros., and can be queried when macro
+    expanding lines from startup files.  In device.lib, for example,
+
+         If vendor = IBM
+         ...
+         Endif.
+
+    The TECHNOLOGY can also set as a Define for backwards compatibility.
+
+
+* Misc. Properties and Terminals
+
+    For R, L, C devices, it is now possible to apply both a model and
+    value properties.  Both properties are used when netlisting.
+
+    One can now set/modify vectored instance range by editing the
+    label.  If the given name string contains a range suffix <n:m>, it
+    will be used to set the range property.  Lack of a suffix will
+    delete an existing range.  It seems that the only way to revert to
+    internally generated labels is to delete the name property in the
+    Properties Editor.
+
+    The "byname" terminals are now forced to have the same locations
+    as bus terminals that they implelent bits of.  This is for
+    consistency, and for the Node Mapping panel marks.
+
+
+BUGS FIXED
+---- -----
+
+* Repetition is now added to gpulse read from from OpenAccess.
+
+* Fixed a SPICE netlisting bug.
+
+* Fixed a weird display problem on OpenSuse.  Before, if the mouse
+  enters the Xic tray icon, the display will be munged if the pointer
+  is in the main drawing window when redrawing.  Dragging the mouse
+  over one of the other icons would fix things.
+
+* Updated the SPICE output line sorting to better represent arrayed
+  instance names.
+
+* Fixed bug:  press/hold button 3 in drawing window, move pointer out of
+  Xic and release, get a segmentation fault.
+
+* Fixed an issue under Ubuntu with the default theme.  The Print Control
+  panel was black and basically unusable.
+
+* Fixed some problems with netlisting of arrayed instances and bundle
+  terminals.  Most importantly, terminal devices with non-scalar net
+  expression labels didn't work.
+
+* Fixed bad syntax in SPICE output .saves from vector subcells.
+
+* Suppress display of invisible terminals in ghost move display of
+  schematic instances.
+
+* Fixed bug, moved instance bus terminal positions were not updated.
+
+* Fixed an ugly one.  When a cell was saved as native, the bounding box
+  would become incorrect, and physical cells would appear empty if there
+  are no subcells.
+
+* Fixed bug, couldn't revert from assigned name of instance.
+
+* When editing a range property from the Properties panel, any existing
+  text is now displayed in the prompt line.
+
+* Fixed connectivity bug in arrayed bus terms.
+
+* Probable bug fix, when WRspice doesn't converge, sometimes Xic
+  freezes.  Added code to (tentatively) avoid this problem.
+
+
+-------------------------------------------------------------------------------
 xic-4.3.9  11/20/2019
 Current Release
 

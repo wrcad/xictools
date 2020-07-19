@@ -2222,7 +2222,7 @@ between layout and schematic.
 This functionality is also available from the {\cb !ushow} text-mode
 command.
 
-% 061916
+% 071820
 % -------------------------------
 \subsection{The {\cb Net Config} Page}
 
@@ -2355,10 +2355,10 @@ vias} check box is checked, it is replaced temporarily by a box of
 half the width/height of the bounding box.  This is for efficiency --
 the geometrical computations are much faster for box objects.  In
 practice, a via is almost always a square, but other shapes, mostly
-circular approximations, are occasionally seen.  In particular, users
-of the Hypres process often use circular vias concentric with circular
-Josephson junctions.  If the check box is not set, the via shape is
-decomposed into a trapezoid list.}
+circular approximations, are occasionally seen.  In particular, in
+superconductive electronics we often use circular vias concentric with
+circular Josephson junctions.  If the check box is not set, the via
+shape is decomposed into a trapezoid list.}
 
 \item{We look for objects on the upper and lower conductor layers
 whose intersection intersects the assumed via shape with nonzero area. 
@@ -2416,10 +2416,11 @@ This applies when checking connectivity through a via during
 extraction.  When set, vias that are not rectangular are assumed to be
 convex polygons, and connectivity testing is performed in a small
 rectangular region near the center of the bounding box.  This is
-specifically for Hypres-style circular vias.  This simplifies testing
-and might speed extraction when circular vias are present.  It should
-{\cb not} be used if vias can take arbitrary polygonal shapes.  This
-will have no effect on rectangular vias.
+specifically for circular vias, as found in superconductive
+electronics.  This simplifies testing and might speed extraction when
+circular vias are present.  It should {\cb not} be used if vias can
+take arbitrary polygonal shapes.  This will have no effect on
+rectangular vias.
 
 \index{ViaConvex variable}
 This sets/tracks the state of the {\et ViaConvex} variable.
@@ -4607,7 +4608,7 @@ Whiteley Research web site ({\vt http://wrcad.com}).
 
 
 % -----------------------------------------------------------------------------
-% fhinterf 111919
+% fhinterf 071920
 \subsection{The Inductance/Resistance Extraction Interface}
 \index{inductance extraction interface}
 \index{FastHenry program}
@@ -4883,6 +4884,33 @@ zero.}
 \item{Must not have the {\et Symbolic} keyword applied.}
 \end{itemize}
 
+Conductor layers can have the following optional keywords defined. 
+These control the filamentation of conductor layers carrying current
+in the plane of the substrate, in the direction normal to the
+substrate.  This accounts for penetration or skin depth in planar
+areas of material, in the Z direction.  Typically, for superconductors
+at least, lateral dimensions are much larger than film thicknesses, so
+the volume element refinement tends to keep the film thinkness
+unbroken in the Z direction.  For accurate account of the penetration
+depth, this should be further subdivided, and filamentation is one way
+to accomplish this.
+
+\begin{itemize}
+\item{A {\et FH\_nhinc} keyword with an integer value greater than one
+can be applied.  This is the number of filaments into which the
+segment will be divided, along the normal to the substrate.  See the
+{\it FastHenry} documentation for more information about the {\vt
+nhinc} parameter which can be applied to segment definitions.}
+
+\item{A {\et FH\_rh} keyword with a real value different from the
+default value of 2.0 can be given.  When the filament count is larger
+than 2, filaments have varying height so as to maximize the density at
+the film surfaces.  This parameter sets the ratio of heights between
+adjacent filaments.  A value of 1.0 means that all filaments have the
+same height.  See the {\it FastHenry} documentation for more
+discussion and information about the {\vt rh} parameter.}
+\end{itemize}
+
 The conductor layers can be given a resistivity or conductivity with
 the {\et Rho} and {\et Sigma} keywords, respectively.  Additionally,
 the {\et Lambda} parameter, which specifies the London penetration
@@ -5017,7 +5045,7 @@ hardware.}
 
 
 % -----------------------------------------------------------------------------
-% fhpanel 111919
+% fhpanel 071820
 \subsection{The LR Extraction Panel}
 \index{LR Extraction Panel}
 \label{fhpanel}
@@ -5097,6 +5125,12 @@ the argument list when the program is run with the {\cb Run
 Extraction} button.  This allows specialized command line options to
 be provided during the run, which the user may require.  This entry
 field is tied to the {\et FhArgs} variable.
+
+\item{FhDefaults}
+This text entry allows the user to provide a string which will appear
+in a {\vt .DEFAULT} line in the created {\it FastHenry} input file. 
+See the FastHenry documentation for syntax and options.  This entry
+field is tied to the {\et FhDefaults} variable.
 
 \item{\cb FhFreq}\\
 This consists of three entry areas, which take the starting and ending

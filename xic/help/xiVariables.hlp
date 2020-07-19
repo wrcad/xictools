@@ -443,9 +443,10 @@ xiVariables.hlp
     <tr><td><b>FcPlaneBloat</b></td><td>Capacitance extractor substrate bloat dimension</td></tr>
     <tr><td><b>FcUnits</b></td><td>Capacitance extractor file units: m, cm, mm, um, in, mils</td></tr>
 
-!! 111810
+!! 071820
     <tr><th colspan=2><a href="!set:fh">Inductance/Resistance Extraction Interface</a></th></tr>
     <tr><td><b>FhArgs</b></td><td><i>FastHenry</i> command line arguments</td></tr>
+    <tr><td><b>FhDefaults</b></td><td>Text for <tt>.DEFAULT</tt> line in <i>FastHenry</i> input</tt></tr>
     <tr><td><b>FhForeg</b></td><td><i>FastHenry</i> run in foreground if set</td></tr>
     <tr><td><b>FhFreq</b></td><td><i>FastHenry</i> frequency specification</td></tr>
     <tr><td><b>FhLayerName</b></td><td><i>FastHenry</i> interface masking layer name</td></tr>
@@ -6647,7 +6648,7 @@ Extraction General
     <b>Extract Menu</b>.
     </dl>
 
-!! 030715
+!! 071820
     <a name="ViaConvex"></a>
     <dl>
     <dt><b>ViaConvex</b><dd>
@@ -6656,10 +6657,10 @@ Extraction General
     extraction.  When set, all non-rectangular vias are assumed to be
     convex polygons.  The test region is taken as a small rectangle
     centered on the via bounding box.  This simplifies and should
-    speed testing.  It is intended specifically for Hypres-style
-    circular vias.  It has no effect on rectangular vias.  It should
-    <b>not</b> be set if any vias are non-convex polygons, as
-    incorrect results may occur.
+    speed testing.  It is intended specifically for circular vias, as
+    used in superconductive electronics.  It has no effect on
+    rectangular vias.  It should <b>not</b> be set if any vias are
+    non-convex polygons, as incorrect results may occur.
 
     <p>
     Whether or not this variable is set tracks the state of the <b>Assume
@@ -7294,6 +7295,7 @@ Capacitance Extraction Interface
 !set:variables
 
 !!REDIRECT FhArgs               !set:fh#FhArgs
+!!REDIRECT FhDefaults           !set:fh#FhDefaults
 !!REDIRECT FhForeg              !set:fh#FhForeg
 !!REDIRECT FhFreq               !set:fh#FhFreq
 !!REDIRECT FhLayerName          !set:fh#FhLayerName
@@ -7327,6 +7329,19 @@ Inductance/Resistance Extraction Interface
     <b>Run</b> page.  The variable is most conveniently manipulated
     with the text entry field in the <b>LR Extraction</b> panel
     <b>Run</b> page.
+    </dl>
+
+!! 071820
+    <a name="FhDefaults"></a>
+    <dl>
+    <dt><b>FhDefaults</b><dd>
+    <b>Value:</b> string.<br>
+    If set to a string, the value will be used in a <tt>.DEFAULT</tt>
+    line in the <i>FastHenry</i> input file created by the interface. 
+    The variable is most conveniently manipulated with the text entry
+    field in the <b>LR Extraction</b> panel <b>Run</b> page.  See the
+    <i>FastHenry</i> documentation describing the syntax and options
+    for the applicable text.
     </dl>
 
 !! 111819
