@@ -385,7 +385,7 @@ types of form elements in scripts.
 
 ----
 
-EXAMPLE FILE: rsfq_lib.tar.gz
+EXAMPLE FILE: rsfq_lib-MMDDYY.tar.gz
 
 This is an example library of superconducting Josephson junction RSFQ
 logic cells, some of which are inductorless.  Un-tar the file in a
