@@ -250,6 +250,57 @@ End of general info.
 
 
 ===============================================================================
+wrspice-4.3.12  7/20/2020
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Josephson Junction Models
+
+    The internal and Verilog-A JJ models now use model parameter
+    DEFTEMP and instance parameter TEMP_K instead of TEMP, which is a
+    reserved word in some simulation environments.
+
+    The Verilog-A model has a new NOIDT compiler symbol.  This turns
+    on a different integration algorithm which may be more accurate in
+    some simulators.
+
+* Misc.
+
+    The Vectors tool now double quotes each entry sent to print/plot. 
+    This seems to be the only way to avoid parser trouble from net
+    expression indexing.
+
+
+BUGS FIXED
+---- -----
+
+* Avoid seg faults when (incorrectly) using .exec block to run
+  analysis, as the circuit struct has not been set up yet.
+
+* The Vectors panel now comes up in reasonable time when the vector
+  count is large, used to hang.
+
+* Forms like v(xx<0>) are now handled in ipc from Xic and from the
+  Vectors panel without a syntax error when not double quoted.
+
+* Added "power" set-only instance parameter to sources for HSPICE
+  compatibility.  The value must be 0 or BADPARAM is triggered.
+
+* Fix spurions syntax error in PWL caused by expression terms
+  containing parentheses, e.g. pwl(0 0 100p 4/(1+1)).
+
+* Fix recursion/expansion errors in parameter substittutions.
+
+* Text editor window default font is now Monospace (somehow get set to
+  Sans).
+
+* Recognize and link libtinfo if found.  Required for WRspice terminal
+  editing on some systems.
+
+
+-------------------------------------------------------------------------------
 wrspice-4.3.11  3/28/2020
 Current Release
 

@@ -4309,7 +4309,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 \subsection{Josephson Junctions}
 \index{Josephson junction instance}
 
-% spElements.hlp:jj 032520
+% spElements.hlp:jj 072020
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
@@ -4321,7 +4321,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
   other values, effectively modifying the junction area.\\ \hline
 {\vt ics=}{\it val} & Instantiated critical current, used as scale factor
   for capacitance, conductances.\\ \hline
-{\vt temp=}{\it val} & Device temperature, Kelvin.\\ \hline
+{\vt temp\_k=}{\it val} & Device temperature, Kelvin.\\ \hline
 {\vt lser=}{\it val} & Junction series parasitic inductance. \\ \hline
 {\vt lsh=}{\it val} & Shunt resistor series parasitic inductance. \\ \hline
 {\vt ic=}{\it vj\/},{\it phi} & The initial junction voltage and phase
@@ -4393,10 +4393,10 @@ reference junction appropriately.  This is equivalent to giving the
 {\vt area} parameter with a value of {\vt ics}/{\vt icrit}.  The
 default is {\vt icrit}, the reference junction critical current.
 
-\item{\vt temp}\\
+\item{\vt temp\_k}\\
 {\bf range:} 0.0 -- 0.95*{\vt tc}\\
 This is the assumed operating temperature of the device, in Kelvin. 
-The default is the model {\vt temp} value.  See the model description
+The default is the model {\vt deftemp} value.  See the model description
 for more information about temperature modeling.
 
 \item{\vt lser}\\
@@ -4636,7 +4636,7 @@ See the Josephson junction model description for more information.
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 032520
+% spModels.hlp:jjmodel 072020
 
 {\cb Type Name:} {\vt jj}
 
@@ -4705,7 +4705,7 @@ when formulating instance capacitance and conductances.
 \hline
 \vt tnom & & \rr model reference temperature & $K$ & 4.2\\
 \hline
-\vt temp & & \rr operating temperature & $K$ & \vt tnom\\
+\vt deftemp & & \rr operating temperature & $K$ & \vt tnom\\
 \hline
 \vt tcfct & & \rr temperature dependence fitting parameter & & 1.74\\
 \hline
@@ -5059,8 +5059,7 @@ The default is 4.2K, the boiling point of liquid helium.
 This is the default operating temperature of instances of the model,
 which can be overridden on a per-instance basis by specifying the
 instance parameter of the same name.  The default is the {\vt tnom}
-value.  The Verilog-A example JJ model uses ``{\vt deftemp}'' for this
-parameter.
+value.
 
 \item{\vt tcfct}\\
 {\bf range:} 1.5 -- 2.5\\
