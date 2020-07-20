@@ -18,7 +18,7 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB    = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-FASTCAP = fastcap-2.0wr-071020.tar.gz
+FASTCAP = fastcap-2.0wr-072020.tar.gz
 
 FASTCAP_DIR = fastcap-2.0wr
 SRCDIR = $(FASTCAP_DIR)/src
