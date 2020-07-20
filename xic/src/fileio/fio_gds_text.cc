@@ -614,7 +614,7 @@ gds_in::ap_reflibs()
     tbuf[GDS_MAX_LIBNAM_LEN] = '\0';
     print_offset();
     print_space(4);
-    strncpy(tbuf, in_cbuf, GDS_MAX_LIBNAM_LEN);
+    memcpy(tbuf, in_cbuf, GDS_MAX_LIBNAM_LEN);  // avoid stringop-truncation
     print_word2("REFLIB", tbuf, false);
     strncpy(tbuf, in_cbuf + GDS_MAX_LIBNAM_LEN, GDS_MAX_LIBNAM_LEN);
     print_space(14);
@@ -630,7 +630,7 @@ gds_in::ap_fonts()
     tbuf[GDS_MAX_LIBNAM_LEN] = '\0';
     print_offset();
     print_space(4);
-    strncpy(tbuf, in_cbuf, GDS_MAX_LIBNAM_LEN);
+    memcpy(tbuf, in_cbuf, GDS_MAX_LIBNAM_LEN);  // avoid stringop-truncation
     print_word2("FONT0", tbuf, false);
     strncpy(tbuf, in_cbuf + GDS_MAX_LIBNAM_LEN, GDS_MAX_LIBNAM_LEN);
     print_space(14);

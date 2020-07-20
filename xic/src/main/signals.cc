@@ -122,15 +122,6 @@ cMain::InitSignals(bool no_die)
 #ifdef WIN32
     signal(SIGSEGV, SIG_HDLR);
     signal(SIGILL, SIG_HDLR);
-#else
-    struct sigaction sa;
-    sigemptyset(&sa.sa_mask);
-    sa.sa_flags = SA_SIGINFO;
-    sa.sa_sigaction = sig_hdlr;
-    sigaction(SIGSEGV, &sa, 0);
-    sigaction(SIGBUS, &sa, 0);
-    sigaction(SIGILL, &sa, 0);
-#endif
 
     signal(SIGINT, SIG_HDLR);
     signal(SIGTERM, SIG_HDLR);
@@ -179,6 +170,64 @@ cMain::InitSignals(bool no_die)
 #endif
 #ifdef SIGIO
     signal(SIGIO, SIG_IGN);
+#endif
+#else
+    struct sigaction sa;
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = SA_SIGINFO | SA_RESTART;
+    sa.sa_sigaction = sig_hdlr;
+    sigaction(SIGSEGV, &sa, 0);
+    sigaction(SIGBUS, &sa, 0);
+    sigaction(SIGILL, &sa, 0);
+
+    sigaction(SIGINT, &sa, 0);
+    sigaction(SIGTERM, &sa, 0);
+    sigaction(SIGFPE, &sa, 0);
+#ifdef SIGHUP
+    sigaction(SIGHUP, &sa, 0);
+#endif
+#ifdef SIGQUIT
+    sigaction(SIGQUIT, &sa, 0);
+#endif
+#ifdef SIGSYS
+    sigaction(SIGSYS, &sa, 0);
+#endif
+#ifdef SIGTRAP
+    sigaction(SIGTRAP, &sa, 0);
+#endif
+#ifdef SIGABRT
+    sigaction(SIGABRT, &sa, 0);
+#endif
+#ifdef SIGEMT
+    sigaction(SIGEMT, &sa, 0);
+#endif
+#ifdef SIGURG
+    sigaction(SIGURG, &sa, 0);
+#endif
+#ifdef SIGPIPE
+    sigaction(SIGPIPE, &sa, 0);
+#endif
+#ifdef SIGCHLD
+    sigaction(SIGCHLD, &sa, 0);
+#endif
+#ifdef SIGXCPU
+    sigaction(SIGXCPU, &sa, 0);
+#endif
+#ifdef SIGXFSZ
+    sigaction(SIGXFSZ, &sa, 0);
+#endif
+#ifdef SIGVTALRM
+    sigaction(SIGVTALRM, &sa, 0);
+#endif
+#ifdef SIGUSR1
+    sigaction(SIGUSR1, &sa, 0);
+#endif
+#ifdef SIGUSR2
+    sigaction(SIGUSR2, &sa, 0);
+#endif
+#ifdef SIGIO
+    sigaction(SIGIO, &sa, 0);
+#endif
 #endif
 }
 
@@ -235,6 +284,7 @@ namespace {
 #ifdef WIN32
     sig_hdlr(int sig)
     {
+        signal(sig, SIG_HDLR);  // reset for SysV
 #else
     sig_hdlr(int sig, siginfo_t*, void *uc)
     {
@@ -264,7 +314,7 @@ namespace {
                 if (uc)
                     DeathAddr =
                         (void*)((ucontext_t*)uc)->uc_mcontext.gregs[REG_EIP];
-#endif
+#endif // defined(__x86_64 || defined(__x86_64__)
 #else
 #ifdef __APPLE__
                 // OS-X
@@ -277,31 +327,21 @@ namespace {
                         (void*)((ucontext_t*)uc)->uc_mcontext->__ss.__rip;
 #else
                     DeathAddr = (void*)((ucontext_t*)uc)->uc_mcontext->ss.eip;
-#endif
-#endif
+#endif // __x86_64__
+#endif // __ppc__
 #else
 #ifdef __FreeBSD__
                 if (uc)
                     DeathAddr = (void*)((ucontext_t*)uc)->uc_mcontext.mc_eip;
-#endif
-#endif
-#endif
-#endif
+#endif // __FreeBSD__
+#endif // __APPLE__
+#endif // __linux
+#endif // __sparc
             }
-            struct sigaction sa;
-            sigemptyset(&sa.sa_mask);
-            sa.sa_flags = SA_SIGINFO;
-            sa.sa_sigaction = sig_hdlr;
-            sigaction(SIGSEGV, &sa, 0);
-            sigaction(SIGBUS, &sa, 0);
-            sigaction(SIGILL, &sa, 0);
         }
-        else
-#endif
-            signal(sig, SIG_HDLR);  // reset for SysV
+#endif // WIN32
 
         if (sig == SIGINT) {
-            signal(SIGINT, SIG_HDLR);
             fprintf(stderr, "interrupt\n");
             if (NoDieOnIntr)
                 cMain::InterruptHandler();
@@ -317,7 +357,6 @@ namespace {
         else if (sig == SIGURG) {
             // This is received when oob data arrives, which indicates
             // interrupt sent from client in server mode
-            signal(SIGURG, SIG_HDLR);
             if (siDaemon::server_skt() > 0) {
                 int c;
                 for (;;) {
