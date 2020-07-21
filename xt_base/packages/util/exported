@@ -39,7 +39,7 @@ LinuxRHEL5.i686 \
 LinuxRHEL5 \
 LinuxRHEL6 \
 LinuxRHEL7 \
-LinuxUbuntu18 \
+LinuxUbuntu20 \
 Win32"
 ;;
 progs)
@@ -63,7 +63,7 @@ host)
     echo poe;;
   LinuxRHEL7)
     echo frost;;
-  LinuxUbuntu18)
+  LinuxUbuntu20)
     echo ubun;;
   Win32)
     echo marlowe;;
@@ -87,7 +87,7 @@ sfx)
     echo rpm;;
   LinuxRHEL7)
     echo rpm;;
-  LinuxUbuntu18)
+  LinuxUbuntu20)
     echo deb;;
   Win32)
     echo exe;;
