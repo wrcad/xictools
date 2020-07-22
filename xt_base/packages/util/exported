@@ -34,7 +34,7 @@ oses)
 "Darwin \
 LinuxDebian10 \
 LinuxFedora32 \
-LinuxopenSUSE15 \
+LinuxOpenSUSE15 \
 LinuxRHEL5.i686 \
 LinuxRHEL5 \
 LinuxRHEL6 \
@@ -53,7 +53,7 @@ host)
     echo debby;;
   LinuxFedora32)
     echo fedor;;
-  LinuxopenSUSE15)
+  LinuxOpenSUSE15)
     echo byron;;
   LinuxRHEL5.i686)
     echo shelley;;
@@ -77,7 +77,7 @@ sfx)
     echo deb;;
   LinuxFedora32)
     echo rpm;;
-  LinuxopenSUSE15)
+  LinuxOpenSUSE15)
     echo rpm;;
   LinuxRHEL5.i686)
     echo rpm;;
