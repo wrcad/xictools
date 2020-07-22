@@ -6,6 +6,7 @@ DATE = @DATE@
 
 prefix = @prefix@
 itopok = @itopok@
+CC = @CC@
 OSNAME = @OSNAME@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
@@ -32,7 +33,7 @@ all: unpack
 	if [ ! -f ../KLU/KLU/Lib/libklu.a ]; then \
 	    cd ../KLU; $(MAKE); \
         fi
-	cd $(FASTHENRY_DIR); $(MAKE) SOLVER=KLU_SOLVER all
+	cd $(FASTHENRY_DIR); $(MAKE) SOLVER=KLU_SOLVER CC="$(CC)" all
 
 unpack:
 	@if [ ! -d $(FASTHENRY_DIR) ]; then \

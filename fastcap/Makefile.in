@@ -6,6 +6,7 @@ DATE = @DATE@
 
 prefix = @prefix@
 itopok = @itopok@
+CC = @CC@
 OSNAME = @OSNAME@
 INSTALL = @INSTALL@
 EXESUFFIX = @EXESUFFIX@
@@ -27,7 +28,7 @@ IDSTR := \"`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
 VERS := \"`./version` (xictools)\"
 
 all: unpack
-	cd $(FASTCAP_DIR); $(MAKE) all
+	cd $(FASTCAP_DIR); $(MAKE) CC="$(CC)" all
 	cd fc_accs; $(MAKE) all
 
 unpack:
