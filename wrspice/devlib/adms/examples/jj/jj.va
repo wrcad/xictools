@@ -51,6 +51,9 @@
 
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
+// Version 1.37, July 26, 2020 the NOIDT is now on by default,
+//   as it seems to lower iteration count with WRspice and reduce
+//   simulation time.
 // Version 1.36, May 18, 2020 instance parameter temp renamed temp_k
 //   to avoid conflict with reserved word in some simulators.
 // Version 1.35, April 10, 2020 added NOIDT symbol to allow avoidance
@@ -231,8 +234,9 @@
 //`define NORLMT
 
 // Avoid calling the idt (integration) function, seems it may be
-// inaccurate in some implementations.  Not needed for WRspice.
-//`define NOIDT
+// inaccurate in some implementations.  This seems to reduce
+// iterations and run time in WRspice too, so now defaulting to on.
+`define NOIDT
 
 // MIT-LL SFQ5EE process, parameters from:
 // Tolpygo et al., IEEE Trans. Appl. Supercond., vol. 26, 1100110, (2016)
