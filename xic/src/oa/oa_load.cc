@@ -4327,7 +4327,7 @@ namespace {
                 on_eval(textIn, textOut);
             }
 
-#if oacAPIMajorRevNumber == 5
+#if oacAPIMajorRevNumber >= 5
         // Building on app-major 5, can we provide service to
         // app-major 4 OA installations?  This entry shouldn't exist
         // in that case, hopefully its presence would be benign.
@@ -4376,7 +4376,6 @@ namespace {
                 on_eval(textIn, textOut);
             }
     };
-
 }
 
 
@@ -4394,10 +4393,10 @@ oa_in::readOaEvalText(oaEvalText *evalText, CDs *sdesc, CDl *ldesc)
     cell_name = Tstring(sdesc->cellname());
 
     if (!evTextLink) {
-        if (in_api_major == 5)
-            evTextLink = oaEvalTextLink::create((IEvalText*)new myIEvalText5);
+        if (in_api_major <= 4)
+            evTextLink = oaEvalTextLink::create((IEvalText*)new myIEvalText4);
         else
-            evTextLink = oaEvalTextLink::create(new myIEvalText4);
+            evTextLink = oaEvalTextLink::create((IEvalText*)new myIEvalText5);
     }
     evalText->setLink(evTextLink);
 

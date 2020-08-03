@@ -766,7 +766,7 @@ cOAprop::getPropTab(oaDesign *design)
             prp->getValue(val);
             if (name == "cnParamConstraints" && val == "oaHierProp") {
                 // This is a Ciranova pcell.
-                oaIter<oaProp> pp_iter(prp);
+                oaIter<oaProp> pp_iter(prp->getProps());
                 while ((prp = pp_iter.getNext()) != 0) {
                     prp->getName(name);
                     prp->getValue(val);

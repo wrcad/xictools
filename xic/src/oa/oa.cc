@@ -105,10 +105,11 @@ cOA::initialize()
     if (oa_initialized)
         return (true);
     try {
-        // Initialize OA with data model 4.  Our includes are ancient
-        // api-major 4.  To semi-support api-major 5, init using the
-        // hard coded values and hope for the best.  We need to find
-        // the api-major from the library, so we can init accordingly.
+        // Initialize OA with data model 4.  Our includes may be
+        // ancient api-major 4.  To semi-support api-major 5/6, init
+        // using the hard coded values and hope for the best.  We need
+        // to find the api-major from the library, so we can init
+        // accordingly.
 
         // This is safe to call before oaDesignInit.
         oaBuildInfo *bi = oaBuildInfo::find("oaBase");
@@ -121,12 +122,14 @@ cOA::initialize()
                 oa_api_major = 4;
             else if (amaj >= 50 && amaj < 60)
                 oa_api_major = 5;
+            else if (amaj >= 60 && amaj < 70)
+                oa_api_major = 6;
         }
-        if (oa_api_major == 4) {
+        if (oacAPIMajorRevNumber == oa_api_major) {
             oaDesignInit(oacAPIMajorRevNumber, oacAPIMinorRevNumber, 4);
         }
-        else if (oa_api_major == 5) {
-            oaDesignInit(5, 0, 4);
+        else if (oa_api_major >= 4) {
+            oaDesignInit(oa_api_major, 0, 4);  // Hope for the best!
         }
         else {
             // We didn't determine the app-major value, or it is
