@@ -47,20 +47,27 @@
 #include "ext_fxunits.h"
 #include "ext_fxjob.h"
 
-//XXX
-#define NEWHINC
 
 //
 // Definitions for the "new" FastHenry interface.
 //
 
 // Variables
+#define VA_FhArgs               "FhArgs"
+#define VA_FhDefaults           "FhDefaults"
+#define VA_FhDefNhinc           "FhDefNhinc"
+#define VA_FhDefRh              "FhDefRh"
 #define VA_FhForeg              "FhForeg"
 #define VA_FhFreq               "FhFreq"
 #define VA_FhLayerName          "FhLayerName"
-#define VA_FhMonitor            "FhMonitor"
 #define VA_FhManhGridCnt        "FhManhGridCnt"
+#define VA_FhMonitor            "FhMonitor"
+#define VA_FhOverride           "FhOverride"
+#define VA_FhPath               "FhPath"
 #define VA_FhUnits              "FhUnits"
+#define VA_FhUseFilament        "FhUseFilament"
+#define VA_FhVolElEnable        "FhVolElEnable"
+#define VA_FhVolElMin           "FhVolElMin"
 #define VA_FhVolElTarget        "FhVolElTarget"
 
 // Debugging (undocumented)
@@ -73,9 +80,19 @@
 #define FH_MAX_MANH_GRID_CNT    1e5
 #define FH_DEF_MANH_GRID_CNT    1e3
 
-#define FH_MIN_TARG_VOLEL       1e2
-#define FH_MAX_TARG_VOLEL       1e5
-#define FH_DEF_TARG_VOLEL       1e3
+#define FH_MIN_DEF_NHINC        1
+#define FH_MAX_DEF_NHINC        20
+
+#define FH_MIN_DEF_RH           0.5
+#define FH_MAX_DEF_RH           4.0
+
+#define FH_MIN_VOLEL_MIN        0.0
+#define FH_MAX_VOLEL_MIN        1.0
+#define FH_DEF_VOLEL_MIN        0.1
+
+#define FH_MIN_VOLEL_TARG       1e2
+#define FH_MAX_VOLEL_TARG       1e5
+#define FH_DEF_VOLEL_TARG       1e3
 
 // File extensions
 #define FH_INP_SFX              "inp"
@@ -301,11 +318,6 @@ private:
     int tl_ccnt;           // copy count, 0 for original
 };
 
-#ifdef NEWHINC
-#define DEF_FH_NHINC 1
-#define DEF_FH_RH 2.0
-#endif
-
 struct fhConductor
 {
     fhConductor(int lix = -1, int g = -1)
@@ -317,11 +329,6 @@ struct fhConductor
             hc_layer_ix = lix;
             hc_sigma = 0.0;
             hc_lambda = 0.0;
-#ifdef NEWHINC
-            hc_thickness = 0;
-            hc_nhinc = DEF_FH_NHINC;
-            hc_rh = DEF_FH_RH;
-#endif
             hc_segments = 0;
         }
 
@@ -349,7 +356,7 @@ struct fhConductor
     static fhConductor *addz3d(fhConductor*, const glZoid3d*);
     fhNodeList *get_nodes(const fhNodeGen&, int, const Point*);
     void segmentize(fhNodeGen&);
-    int segments_print(FILE*, e_unit, const fhNodeGen*);
+    int segments_print(FILE*, e_unit, const fhLayout*);
     bool refine(const BBox*);
     PolyList *polylist();
     void accum_points(SymTab*, SymTab*);
@@ -366,21 +373,11 @@ struct fhConductor
 
     void set_sigma(double d)    { hc_sigma = d; }
     void set_lambda(double d)   { hc_lambda = d; }
-#ifdef NEWHINC
-    void set_thickness(int n)   { hc_thickness = n; }
-    void set_nhinc(int n)       { hc_nhinc = n; }
-    void set_rh(double d)       { hc_rh = d; }
-#endif
 
     int group()                 const { return (hc_group); }
     int layer_index()           const { return (hc_layer_ix); }
     double sigma()              const { return (hc_sigma); }
     double lambda()             const { return (hc_lambda); }
-#ifdef NEWHINC
-    int thickness()             const { return (hc_thickness); }
-    int nhinc()                 const { return (hc_nhinc); }
-    double rh()                 const { return (hc_rh); }
-#endif
 
     void set_next(fhConductor *n)     { hc_next = n; }
     fhConductor *next()         const { return (hc_next); }
@@ -393,12 +390,7 @@ private:
     int hc_layer_ix;            // layer index
     double hc_sigma;            // conductivity
     double hc_lambda;           // penetration depth
-#ifdef NEWHINC
-    int hc_thickness;           // conductor film thickness, internal units
-    int hc_nhinc;               // number of filaments.
-    double hc_rh;               // filament thickness ratio
     fhSegment *hc_segments;     // segment list
-#endif
 };
 
 struct fhLayer
@@ -406,11 +398,22 @@ struct fhLayer
     fhLayer()
         {
             fl_list = 0;
+            fl_l3d = 0;
         }
 
     ~fhLayer()
         {
             fhConductor::destroy(fl_list);
+        }
+
+    void set_layer(Layer3d *l)
+        {
+            fl_l3d = l;
+        }
+
+    Layer3d *layer()
+        {
+            return (fl_l3d);
         }
 
     void clear_list()
@@ -432,6 +435,7 @@ struct fhLayer
 
 private:
     fhConductor *fl_list;   // conductors on this layer
+    Layer3d *fl_l3d;        // back pointer to layer
 };
 
 struct fhLayout : public Ldb3d
@@ -451,11 +455,12 @@ struct fhLayout : public Ldb3d
     bool setup();
     bool fh_dump(FILE*);
 
-    fhLayer *fhlayers()             { return (fhl_layers); }
-    fhTermList **terms()            { return (fhl_terms); }
+    fhLayer *fhlayers()             const { return (fhl_layers); }
+    fhTermList **terms()            const { return (fhl_terms); }
+    const fhNodeGen *nodes()        const { return (&fhl_ngen); }
 
 private:
-    void slice_groups(int);
+    void slice_groups(int, int);
     void slice_groups_z(int);
     fhConductor *find_conductor(int, int);
     void add_terminal(const Poly*, const char*, const char*, int, int);

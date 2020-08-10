@@ -40,6 +40,8 @@
 
 #include "main.h"
 #include "ext_fxjob.h"
+#include "ext_fc.h"
+#include "ext_fh.h"
 #include "dsp.h"
 #include "dsp_inlines.h"
 #include "dsp_tkif.h"

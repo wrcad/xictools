@@ -46,6 +46,8 @@ SCED spice model library
 + icrit=1m, vshunt=0.6857mV cap=0.7p)
 .model jj5ee1 jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m,
 + icrit=1m, vshunt=1.2mV cap=0.7p)
+.model jj5ee2 jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m,
++ icrit=1m, vshunt=1.5mV cap=0.7p)
 
 # Made-up YBCO model, the Vg is kept small so that timestep-limiting
 # does not make simulations ridiculously slow.  This will not affect

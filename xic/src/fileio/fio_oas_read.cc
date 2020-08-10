@@ -2069,7 +2069,7 @@ oas_in::read_header(bool)
         "**  resolution %d, loss by rounding can occur.  Suggest using the\n"
         "**  DatabaseResolution variable to set matching resolution when\n"
         "**  working with this file.\n**",
-                mmRnd(1e-6/in_unit), CDphysResolution);
+                mmRnd(in_unit), CDphysResolution);
         }
     }
     else

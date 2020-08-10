@@ -55,6 +55,10 @@ struct sVia;
 
 enum tRouteDir { tDirNone, tDirHoriz, tDirVert };
 
+// FastHenry defaults
+#define DEF_FH_NHINC    1
+#define DEF_FH_RH       2.0
+
 struct TechLayerParams
 {
     // layers.cc
@@ -93,6 +97,11 @@ struct TechLayerParams
     void set_diel_thick(double d)       { lp_diel_thick = d; }
     double diel_const()                 { return (lp_diel_const); }
     void set_diel_const(double d)       { lp_diel_const = d; }
+
+    int fh_nhinc()                      { return (lp_fh_nhinc); }
+    void set_fh_nhinc(int n)            { lp_fh_nhinc = n; }
+    double fh_rh()                      { return (lp_fh_rh); }
+    void set_fh_rh(double d)            { lp_fh_rh = d; }
 
     double ant_ratio()                  { return (lp_ant_ratio); }
     void set_ant_ratio(double d)        { lp_ant_ratio = d; }
@@ -139,6 +148,10 @@ private:
     char *lp_gp_lname;                  // ground plane layer name
     float lp_diel_thick;                // assumed dielectric thickness
     float lp_diel_const;                // assumed rel. dielectric const.
+
+    // FastHenry interface (Extract).
+    int lp_fh_nhinc;                    // FastHenry filaments
+    float lp_fh_rh;                     // FastHenry filament height ratio
 
     // Misc. (Extract).
     float lp_ant_ratio;                 // antenna ratio

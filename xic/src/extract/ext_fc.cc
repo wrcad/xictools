@@ -553,6 +553,7 @@ fcLayout::write_panels(FILE *fp, int xo, int yo, e_unit unit)
     fcl_num_d_panels_raw = 0;
     fcl_num_d_panels_written = 0;
 
+//XXX check documentation!
     fcl_zoids = CDvdb()->getVariable(VA_FcZoids);
     fcl_verbose_out = CDvdb()->getVariable(VA_FcVerboseOut);
     fcl_domerge = !CDvdb()->getVariable(VA_FcNoMerge);

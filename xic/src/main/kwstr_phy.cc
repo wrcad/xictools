@@ -593,12 +593,12 @@ phyKWstruct::get_settings(const CDl *ld)
         sprintf(buf, "%s %.*f\n", Ekw.Thickness(), ndgt, dp->thickness());
         lstr.add(buf);
     }
-    if (dp->fh_nhinc() > 1) {
-        sprintf(buf, "%s %d\n", Ekw.FH_nhinc(), dp->fh_nhinc());
+    if (lp->fh_nhinc() > 1) {
+        sprintf(buf, "%s %d\n", Ekw.FH_nhinc(), lp->fh_nhinc());
         lstr.add(buf);
     }
-    if (dp->fh_rh() > 0.0 && dp->fh_rh() != 2.0) {
-        sprintf(buf, "%s %g\n", Ekw.FH_rh(), dp->fh_rh());
+    if (lp->fh_rh() > 0.0 && lp->fh_rh() != 2.0) {
+        sprintf(buf, "%s %g\n", Ekw.FH_rh(), lp->fh_rh());
         lstr.add(buf);
     }
     if (lp->rho() > 0.0) {
@@ -711,7 +711,7 @@ namespace {
             int n;
             if (sscanf(inbuf, "%d", &n) != 1 || n < 1)
                 return (ELP_FN | ELP_ERR);
-            dsp_prm(ld)->set_fh_nhinc(n);
+            tech_prm(ld)->set_fh_nhinc(n);
             ret |= ELP_FN;
         }
         else if (lstring::cieq(kwbuf, Ekw.FH_rh())) {
@@ -720,7 +720,7 @@ namespace {
             double p0;
             if (sscanf(inbuf, "%lf", &p0) != 1 || p0 <= 0.0)
                 return (ELP_FR | ELP_ERR);
-            dsp_prm(ld)->set_fh_rh(p0);
+            tech_prm(ld)->set_fh_rh(p0);
             ret |= ELP_FR;
         }
         else if (lstring::cieq(kwbuf, Ekw.Rho())) {
@@ -825,6 +825,7 @@ namespace {
                 mask = 0;
 
                 DspLayerParams *dp = dsp_prm(ld);
+                TechLayerParams *lp = tech_prm(ld);
 
                 if (ld->isPlanarizingSet())
                     mask |= CDL_PLANARIZE;
@@ -832,12 +833,10 @@ namespace {
 
                 thickness = dp->thickness();
                 dp->set_thickness(0.0);
-                fh_nhinc = dp->fh_nhinc();
-                dp->set_fh_nhinc(1);
-                fh_rh = dp->fh_rh();
-                dp->set_fh_rh(2.0);
-
-                TechLayerParams *lp = tech_prm(ld);
+                fh_nhinc = lp->fh_nhinc();
+                lp->set_fh_nhinc(1);
+                fh_rh = lp->fh_rh();
+                lp->set_fh_rh(2.0);
 
                 rho = lp->rho();
                 lp->set_rho(0.0);
@@ -875,16 +874,16 @@ namespace {
                     return;
 
                 DspLayerParams *dp = dsp_prm(ldesc);
+                TechLayerParams *lp = tech_prm(ldesc);
 
                 ldesc->setPlanarizingSet(false);
                 if (mask & CDL_PLANARIZE)
                     ldesc->setPlanarizing(true, plzasset);
 
                 dp->set_thickness(thickness);
-                dp->set_fh_nhinc(fh_nhinc);
-                dp->set_fh_rh(fh_rh);
+                lp->set_fh_nhinc(fh_nhinc);
+                lp->set_fh_rh(fh_rh);
 
-                TechLayerParams *lp = tech_prm(ldesc);
                 lp->set_rho(rho);
                 lp->set_ohms_per_sq(ohms_per_sq);
                 lp->set_epsrel(epsrel);

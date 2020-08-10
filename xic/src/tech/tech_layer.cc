@@ -374,6 +374,9 @@ TechLayerParams::TechLayerParams(CDl*)
     lp_diel_thick       = 0.0;
     lp_diel_const       = 0.0;
 
+    lp_fh_nhinc         = 0;
+    lp_fh_rh            = 0.0;
+
     lp_ant_ratio        = 0.0;
 
     lp_route_dir        = tDirNone;

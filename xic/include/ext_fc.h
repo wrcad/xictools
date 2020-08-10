@@ -51,10 +51,12 @@
 //
 
 // Variables
+#define VA_FcArgs               "FcArgs"
 #define VA_FcForeg              "FcForeg"
 #define VA_FcLayerName          "FcLayerName"
 #define VA_FcMonitor            "FcMonitor"
 #define VA_FcPanelTarget        "FcPanelTarget"
+#define VA_FcPath               "FcPath"
 #define VA_FcPlaneBloat         "FcPlaneBloat"
 #define VA_FcUnits              "FcUnits"
 

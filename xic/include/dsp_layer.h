@@ -82,13 +82,9 @@ struct DspLayerParams
     int xsect_thickness()               const { return (lp_xsect_thickness); }
     double thickness()                  const { return (lp_thickness); }
     int wire_width()                    const { return (lp_wire_width); }
-    int fh_nhinc()                      const { return (lp_fh_nhinc); }
-    double fh_rh()                      const { return (lp_fh_rh); }
     void set_xsect_thickness(int t)     { lp_xsect_thickness = t; }
     void set_thickness(double d)        { lp_thickness = d; }
     void set_wire_width(int w)          { lp_wire_width = w; }
-    void set_fh_nhinc(int n)            { lp_fh_nhinc = n; }
-    void set_fh_rh(double d)            { lp_fh_rh = d; }
 
 private:
     GRfillType lp_fill;                 // fill data
@@ -98,8 +94,6 @@ private:
     int lp_xsect_thickness;             // thickness for cross-section display
     double lp_thickness;                // film thickness, microns
     int lp_wire_width;                  // default wire width
-    int lp_fh_nhinc;                    // FastHenry filaments
-    double lp_fh_rh;                    // FastHenry filament height ratio
 
     static int internal_pixel;      // common default internal lyr. pix.
     static int alloc_count;         // default color assignment counter

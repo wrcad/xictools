@@ -43,6 +43,7 @@
 #include "ext_fh.h"
 #include "ext_fxunits.h"
 #include "ext_fxjob.h"
+#include "tech_layer.h"
 #include "dsp_inlines.h"
 #include "dsp_color.h"
 #include "menu.h"
@@ -94,6 +95,8 @@ namespace {
             GtkWidget *fh_label;
 
             GtkWidget *fh_units;
+            GtkWidget *fh_nhinc_ovr;
+            GtkWidget *fh_nhinc_fh;
             GtkWidget *fh_enab;
 
             GtkWidget *fh_foreg;
@@ -115,13 +118,18 @@ namespace {
             int fh_line_selected;
 
             GTKspinBtn sb_fh_manh_grid_cnt;
+            GTKspinBtn sb_fh_nhinc;
+            GTKspinBtn sb_fh_rh;
+            GTKspinBtn sb_fh_volel_min;
             GTKspinBtn sb_fh_volel_target;
         };
 
         sFh *Fh;
 
-        enum { FhRun, FhRunFile, FhDump, Foreg, ToCons, Enable, Kill };
-        enum { ManhGridCnt, VolElTarg, FhPath, FhArgs, FhDefaults, FhFreq };
+        enum { fhRun, fhRunFile, fhDump, fhForeg, fhMonitor, fhEnable,
+            fhOverrd, fhFlmt, fhKill };
+        enum { fhManhGridCnt, fhNhinc, fhRh, fhVolElMin, fhVolElTarg, fhPath,
+            fhArgs, fhDefaults, fhFreq };
     }
 
     // FastHenry units menu, must have same order and length as Units[]
@@ -194,6 +202,8 @@ sFh::sFh(GRobject c)
     fh_label = 0;
     fh_units = 0;
     fh_enab = 0;
+    fh_nhinc_ovr = 0;
+    fh_nhinc_fh = 0;
     fh_foreg = 0;
     fh_out = 0;
     fh_file = 0;
@@ -261,18 +271,18 @@ sFh::sFh(GRobject c)
     gtk_widget_show(hbox);
 
     button = gtk_check_button_new_with_label("Run in foreground");
-    gtk_widget_set_name(button, "FhForeg");
+    gtk_widget_set_name(button, VA_FhForeg);
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)Foreg);
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhForeg);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
     fh_foreg = button;
 
     button = gtk_check_button_new_with_label("Out to console");
-    gtk_widget_set_name(button, "FhCons");
+    gtk_widget_set_name(button, VA_FhMonitor);
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)ToCons);
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhMonitor);
     gtk_box_pack_end(GTK_BOX(hbox), button, false, false, 0);
     fh_out = button;
 
@@ -293,10 +303,10 @@ sFh::sFh(GRobject c)
     gtk_widget_show(hbox);
 
     button = gtk_button_new_with_label("Run File");
-    gtk_widget_set_name(button, "FhRunFile");
+    gtk_widget_set_name(button, "RunFile");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)FhRunFile);
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhRunFile);
     gtk_box_pack_start(GTK_BOX(hbox), button, false, false, 0);
 
     GtkWidget *entry = gtk_entry_new();
@@ -310,33 +320,33 @@ sFh::sFh(GRobject c)
     row++;
 
     button = gtk_button_new_with_label("Run FastHenry");
-    gtk_widget_set_name(button, "FhRun");
+    gtk_widget_set_name(button, "Run");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)FhRun);
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhRun);
 
     gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
     button = gtk_button_new_with_label("Dump FastHenry File");
-    gtk_widget_set_name(button, "FhDump");
+    gtk_widget_set_name(button, "Dump");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)FhDump);
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhDump);
 
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
     row++;
 
-    frame = gtk_frame_new("FhArgs");
+    frame = gtk_frame_new(VA_FhArgs);
     gtk_widget_show(frame);
     entry = gtk_entry_new();
     gtk_widget_show(entry);
     gtk_container_add(GTK_CONTAINER(frame), entry);
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhArgs);
+        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhArgs);
     fh_args = entry;
 
     gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
@@ -344,21 +354,7 @@ sFh::sFh(GRobject c)
         (GtkAttachOptions)0, 2, 2);
     row++;
 
-    frame = gtk_frame_new("FhDefaults");
-    gtk_widget_show(frame);
-    entry = gtk_entry_new();
-    gtk_widget_show(entry);
-    gtk_container_add(GTK_CONTAINER(frame), entry);
-    gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhDefaults);
-    fh_defs = entry;
-
-    gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)0, 2, 2);
-    row++;
-
-    frame = gtk_frame_new("FhFreq");
+    frame = gtk_frame_new(VA_FhFreq);
     gtk_widget_show(frame);
     hbox = gtk_hbox_new(false, 0);
     gtk_widget_show(hbox);
@@ -371,7 +367,7 @@ sFh::sFh(GRobject c)
     gtk_widget_show(entry);
     gtk_widget_set_size_request(entry, 50, -1);
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhFreq);
+        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
     fh_fmin = entry;
 
@@ -382,7 +378,7 @@ sFh::sFh(GRobject c)
     gtk_widget_show(entry);
     gtk_widget_set_size_request(entry, 50, -1);
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhFreq);
+        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
     fh_fmax = entry;
 
@@ -393,7 +389,7 @@ sFh::sFh(GRobject c)
     gtk_widget_show(entry);
     gtk_widget_set_size_request(entry, 30, -1);
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhFreq);
+        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhFreq);
     gtk_box_pack_start(GTK_BOX(hbox), entry, true, true, 0);
     fh_ndec = entry;
 
@@ -408,7 +404,7 @@ sFh::sFh(GRobject c)
     gtk_widget_show(entry);
     gtk_container_add(GTK_CONTAINER(frame), entry);
     gtk_signal_connect(GTK_OBJECT(entry), "changed",
-        GTK_SIGNAL_FUNC(fh_change_proc), (void*)FhPath);
+        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhPath);
     fh_path = entry;
 
     gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
@@ -426,13 +422,13 @@ sFh::sFh(GRobject c)
     gtk_widget_show(table);
     row = 0;
 
-    frame = gtk_frame_new("FhUnits");
+    frame = gtk_frame_new(VA_FhUnits);
     gtk_widget_show(frame);
     entry = gtk_option_menu_new();
-    gtk_widget_set_name(entry, "FhUnits");
+    gtk_widget_set_name(entry, VA_FhUnits);
     gtk_widget_show(entry);
     GtkWidget *menu = gtk_menu_new();
-    gtk_widget_set_name(menu, "FhUnits");
+    gtk_widget_set_name(menu, VA_FhUnits);
     for (int i = 0; fh_units_strings[i]; i++) {
         GtkWidget *mi = gtk_menu_item_new_with_label(fh_units_strings[i]);
         gtk_widget_set_name(mi, fh_units_strings[i]);
@@ -450,7 +446,7 @@ sFh::sFh(GRobject c)
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)0, 2, 2);
 
-    frame = gtk_frame_new("FhManhGridCnt");
+    frame = gtk_frame_new(VA_FhManhGridCnt);
     gtk_widget_show(frame);
 
     GtkWidget *sb = sb_fh_manh_grid_cnt.init(FH_DEF_MANH_GRID_CNT,
@@ -458,7 +454,7 @@ sFh::sFh(GRobject c)
         FH_MAX_MANH_GRID_CNT, 0);
     gtk_widget_set_size_request(sb, 100, -1);
     sb_fh_manh_grid_cnt.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
-        (void*)ManhGridCnt, "FhManhGridCnt");
+        (void*)fhManhGridCnt, VA_FhManhGridCnt);
     gtk_container_add(GTK_CONTAINER(frame), sb);
 
     gtk_table_attach(GTK_TABLE(table), frame, 1, 2, row, row+1,
@@ -466,10 +462,67 @@ sFh::sFh(GRobject c)
         (GtkAttachOptions)0, 2, 2);
     row++;
 
-    hsep = gtk_hseparator_new();
-    gtk_widget_show(hsep);
+    frame = gtk_frame_new(VA_FhDefaults);
+    gtk_widget_show(frame);
+    entry = gtk_entry_new();
+    gtk_widget_show(entry);
+    gtk_container_add(GTK_CONTAINER(frame), entry);
+    gtk_signal_connect(GTK_OBJECT(entry), "changed",
+        GTK_SIGNAL_FUNC(fh_change_proc), (void*)fhDefaults);
+    fh_defs = entry;
 
-    gtk_table_attach(GTK_TABLE(table), hsep, 0, 2, row, row+1,
+    gtk_table_attach(GTK_TABLE(table), frame, 0, 2, row, row+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    row++;
+
+    frame = gtk_frame_new(VA_FhDefNhinc);
+    gtk_widget_show(frame);
+    sb = sb_fh_nhinc.init(DEF_FH_NHINC, FH_MIN_DEF_NHINC,
+        FH_MAX_DEF_NHINC, 0);
+    gtk_widget_set_size_request(sb, 100, -1);
+    sb_fh_nhinc.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+        (void*)fhNhinc, VA_FhDefNhinc);
+    gtk_container_add(GTK_CONTAINER(frame), sb);
+
+    gtk_table_attach(GTK_TABLE(table), frame, 0, 1, row, row+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+
+    frame = gtk_frame_new(VA_FhDefRh);
+    gtk_widget_show(frame);
+
+    sb = sb_fh_rh.init(DEF_FH_RH, FH_MIN_DEF_RH, FH_MAX_DEF_RH, 3);
+    gtk_widget_set_size_request(sb, 100, -1);
+    sb_fh_rh.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+        (void*)fhRh, VA_FhDefRh);
+    gtk_container_add(GTK_CONTAINER(frame), sb);
+
+    gtk_table_attach(GTK_TABLE(table), frame, 1, 2, row, row+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+    row++;
+
+    button = gtk_check_button_new_with_label("Override Layer NHINC, RH");
+    gtk_widget_set_name(button, VA_FhOverride);
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhOverrd);
+    fh_nhinc_ovr = button;
+
+    gtk_table_attach(GTK_TABLE(table), button, 0, 2, row, row+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
+    row++;
+
+    button = gtk_check_button_new_with_label("Use FastHenry Internal NHINC, RH");
+    gtk_widget_set_name(button, VA_FhUseFilament);
+    gtk_widget_show(button);
+    gtk_signal_connect(GTK_OBJECT(button), "clicked",
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhFlmt);
+    fh_nhinc_fh = button;
+
+    gtk_table_attach(GTK_TABLE(table), button, 0, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
     row++;
@@ -486,25 +539,41 @@ sFh::sFh(GRobject c)
         (GtkAttachOptions)0, 2, 2);
     row++;
 
+    hbox = gtk_hbox_new(false, 2);
+    gtk_widget_show(hbox);
+
     button = gtk_check_button_new_with_label("Enable");
     gtk_widget_set_name(button, "Enable");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)Enable);
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhEnable);
     fh_enab = button;
+    gtk_box_pack_start(GTK_BOX(hbox), button, true, true, 0);
 
-    gtk_table_attach(GTK_TABLE(table), button, 0, 1, row, row+1,
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
-        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK), 2, 2);
-
-    sb = sb_fh_volel_target.init(FH_DEF_TARG_VOLEL, FH_MIN_TARG_VOLEL,
-        FH_MAX_TARG_VOLEL, 0);
+    sb = sb_fh_volel_min.init(FH_DEF_VOLEL_MIN, FH_MIN_VOLEL_MIN,
+        FH_MAX_VOLEL_MIN, 2);
     gtk_widget_set_size_request(sb, 100, -1);
-    sb_fh_volel_target.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
-        (void*)VolElTarg, "FhVolElTarget");
-    frame = gtk_frame_new("FhVolElTarget");
+    sb_fh_volel_min.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+        (void*)fhVolElMin, VA_FhVolElMin);
+    frame = gtk_frame_new(VA_FhVolElMin);
     gtk_widget_show(frame);
     gtk_container_add(GTK_CONTAINER(frame), sb);
+    gtk_box_pack_start(GTK_BOX(hbox), frame, true, true, 0);
+    Fh->sb_fh_volel_min.set_sensitive(false);
+
+    gtk_table_attach(GTK_TABLE(table), hbox, 0, 1, row, row+1,
+        (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
+        (GtkAttachOptions)0, 2, 2);
+
+    sb = sb_fh_volel_target.init(FH_DEF_VOLEL_TARG, FH_MIN_VOLEL_TARG,
+        FH_MAX_VOLEL_TARG, 0);
+    gtk_widget_set_size_request(sb, 100, -1);
+    sb_fh_volel_target.connect_changed(GTK_SIGNAL_FUNC(fh_change_proc),
+        (void*)fhVolElTarg, VA_FhVolElTarget);
+    frame = gtk_frame_new(VA_FhVolElTarget);
+    gtk_widget_show(frame);
+    gtk_container_add(GTK_CONTAINER(frame), sb);
+    Fh->sb_fh_volel_target.set_sensitive(false);
 
     gtk_table_attach(GTK_TABLE(table), frame, 1, 2, row, row+1,
         (GtkAttachOptions)(GTK_EXPAND | GTK_FILL | GTK_SHRINK),
@@ -552,7 +621,7 @@ sFh::sFh(GRobject c)
     gtk_widget_set_name(button, "Abort");
     gtk_widget_show(button);
     gtk_signal_connect(GTK_OBJECT(button), "clicked",
-        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)Kill);
+        GTK_SIGNAL_FUNC(fh_btn_proc), (void*)fhKill);
     fh_kill = button;
 
     gtk_table_attach(GTK_TABLE(table), button, 1, 2, row, row+1,
@@ -621,7 +690,7 @@ sFh::update()
 
     var = CDvdb()->getVariable(VA_FhArgs);
     if (!var)
-        var = fh_def_string(FhArgs);
+        var = fh_def_string(fhArgs);
     cur = gtk_entry_get_text(GTK_ENTRY(fh_args));
     if (!cur)
         cur = "";
@@ -630,7 +699,7 @@ sFh::update()
 
     var = CDvdb()->getVariable(VA_FhDefaults);
     if (!var)
-        var = fh_def_string(FhDefaults);
+        var = fh_def_string(fhDefaults);
     cur = gtk_entry_get_text(GTK_ENTRY(fh_defs));
     if (!cur)
         cur = "";
@@ -639,7 +708,7 @@ sFh::update()
 
     var = CDvdb()->getVariable(VA_FhPath);
     if (!var)
-        var = fh_def_string(FhPath);
+        var = fh_def_string(fhPath);
     cur = gtk_entry_get_text(GTK_ENTRY(fh_path));
     if (!cur)
         cur = "";
@@ -666,21 +735,43 @@ sFh::update()
         sb_fh_manh_grid_cnt.set_value(FH_DEF_MANH_GRID_CNT);
     }
 
-    static double fhvt_bak;
-    var = CDvdb()->getVariable(VA_FhVolElTarget);
-    if (sb_fh_volel_target.is_valid(var)) {
-        sb_fh_volel_target.set_value(atof(var));
-        sb_fh_volel_target.set_sensitive(true);
-        GRX->SetStatus(fh_enab, true);
-        fhvt_bak = sb_fh_volel_target.get_value();
+    var = CDvdb()->getVariable(VA_FhDefNhinc);
+    if (sb_fh_nhinc.is_valid(var))
+        sb_fh_nhinc.set_value(atof(var));
+    else {
+        if (var)
+            CDvdb()->clearVariable(VA_FhDefNhinc);
+        sb_fh_nhinc.set_value(DEF_FH_NHINC);
     }
+
+    var = CDvdb()->getVariable(VA_FhDefRh);
+    if (sb_fh_rh.is_valid(var))
+        sb_fh_rh.set_value(atof(var));
+    else {
+        if (var)
+            CDvdb()->clearVariable(VA_FhDefRh);
+        sb_fh_rh.set_value(DEF_FH_RH);
+    }
+
+    GRX->SetStatus(fh_nhinc_ovr, CDvdb()->getVariable(VA_FhOverride));
+    GRX->SetStatus(fh_nhinc_fh, CDvdb()->getVariable(VA_FhUseFilament));
+
+    var = CDvdb()->getVariable(VA_FhVolElMin);
+    if (sb_fh_volel_min.is_valid(var))
+        sb_fh_volel_min.set_value(atof(var));
+    else {
+        if (var)
+            CDvdb()->clearVariable(VA_FhVolElMin);
+        sb_fh_volel_min.set_value(FH_DEF_VOLEL_MIN);
+    }
+
+    var = CDvdb()->getVariable(VA_FhVolElTarget);
+    if (sb_fh_volel_target.is_valid(var))
+        sb_fh_volel_target.set_value(atof(var));
     else {
         if (var)
             CDvdb()->clearVariable(VA_FhVolElTarget);
-        if (fhvt_bak > 0.0)
-            sb_fh_volel_target.set_value(fhvt_bak);
-        sb_fh_volel_target.set_sensitive(false);
-        GRX->SetStatus(fh_enab, false);
+        sb_fh_volel_target.set_value(FH_DEF_VOLEL_TARG);
     }
 
     // Jobs page
@@ -751,9 +842,9 @@ sFh::update_fh_freq_widgets()
     if (Fh) {
         const char *str = CDvdb()->getVariable(VA_FhFreq);
         char *smin = str ? getword("fmin=", str) :
-            lstring::copy(fh_def_string(FhFreq));
+            lstring::copy(fh_def_string(fhFreq));
         char *smax = str ? getword("fmax=", str) :
-            lstring::copy(fh_def_string(FhFreq));
+            lstring::copy(fh_def_string(fhFreq));
         char *sdec = str ? getword("ndec=", str) : lstring::copy("");
         gtk_entry_set_text(GTK_ENTRY(fh_fmin), smin);
         gtk_entry_set_text(GTK_ENTRY(fh_fmax), smax);
@@ -785,8 +876,8 @@ sFh::update_fh_freq()
         if (sdec)
             sprintf(buf, "fmin=%s fmax=%s ndec=%s", smin, smax, sdec);
         else {
-            if (!strcmp(smin, fh_def_string(FhFreq)) &&
-                    !strcmp(smax, fh_def_string(FhFreq))) {
+            if (!strcmp(smin, fh_def_string(fhFreq)) &&
+                    !strcmp(smax, fh_def_string(fhFreq))) {
                 CDvdb()->clearVariable(VA_FhFreq);
                 return;
             }
@@ -893,18 +984,27 @@ sFh::fh_def_string(int id)
 {
     static char tbuf[16];
     switch (id) {
-    case ManhGridCnt:
+    case fhManhGridCnt:
         sprintf(tbuf, "%.*f", 0, FH_DEF_MANH_GRID_CNT);
         return (tbuf);
-    case VolElTarg:
-        sprintf(tbuf, "%.*f", 0, FH_DEF_TARG_VOLEL);
+    case fhNhinc:
+        sprintf(tbuf, "%d", DEF_FH_NHINC);
         return (tbuf);
-    case FhPath:
+    case fhRh:
+        sprintf(tbuf, "%.*f", 3, DEF_FH_RH);
+        return (tbuf);
+    case fhVolElMin:
+        sprintf(tbuf, "%.*f", 2, FH_DEF_VOLEL_MIN);
+        return (tbuf);
+    case fhVolElTarg:
+        sprintf(tbuf, "%.*f", 0, FH_DEF_VOLEL_TARG);
+        return (tbuf);
+    case fhPath:
         return (fxJob::fh_default_path());
-    case FhArgs:
-    case FhDefaults:
+    case fhArgs:
+    case fhDefaults:
         return ("");
-    case FhFreq:
+    case fhFreq:
         return ("1e3");
     }
     return ("");
@@ -965,7 +1065,7 @@ sFh::fh_change_proc(GtkWidget *widget, void *arg)
         return;
     int id = (long)arg;
     switch (id) {
-    case ManhGridCnt:
+    case fhManhGridCnt:
         if (check_num(s, FH_MIN_MANH_GRID_CNT, FH_MAX_MANH_GRID_CNT))
             break;
         if (!strcmp(s, fh_def_string(id)))
@@ -973,33 +1073,57 @@ sFh::fh_change_proc(GtkWidget *widget, void *arg)
         else
             CDvdb()->setVariable(VA_FhManhGridCnt, s);
         break;
-    case VolElTarg:
-        if (check_num(s, FH_MIN_TARG_VOLEL, FH_MAX_TARG_VOLEL))
+    case fhNhinc:
+        if (check_num(s, FH_MIN_DEF_NHINC, FH_MAX_DEF_NHINC))
+            break;
+        if (!strcmp(s, fh_def_string(id)))
+            CDvdb()->clearVariable(VA_FhDefNhinc);
+        else
+            CDvdb()->setVariable(VA_FhDefNhinc, s);
+        break;
+    case fhRh:
+        if (check_num(s, FH_MIN_DEF_RH, FH_MAX_DEF_RH))
+            break;
+        if (!strcmp(s, fh_def_string(id)))
+            CDvdb()->clearVariable(VA_FhDefRh);
+        else
+            CDvdb()->setVariable(VA_FhDefRh, s);
+        break;
+    case fhVolElMin:
+        if (check_num(s, FH_MIN_VOLEL_MIN, FH_MAX_VOLEL_MIN))
+            break;
+        if (!strcmp(s, fh_def_string(id)))
+            CDvdb()->clearVariable(VA_FhVolElMin);
+        else
+            CDvdb()->setVariable(VA_FhVolElMin, s);
+        break;
+    case fhVolElTarg:
+        if (check_num(s, FH_MIN_VOLEL_TARG, FH_MAX_VOLEL_TARG))
             break;
         if (!strcmp(s, fh_def_string(id)))
             CDvdb()->clearVariable(VA_FhVolElTarget);
         else
             CDvdb()->setVariable(VA_FhVolElTarget, s);
         break;
-    case FhPath:
+    case fhPath:
         if (!strcmp(s, fh_def_string(id)))
             CDvdb()->clearVariable(VA_FhPath);
         else
             CDvdb()->setVariable(VA_FhPath, s);
         break;
-    case FhArgs:
+    case fhArgs:
         if (!strcmp(s, fh_def_string(id)))
             CDvdb()->clearVariable(VA_FhArgs);
         else
             CDvdb()->setVariable(VA_FhArgs, s);
         break;
-    case FhDefaults:
+    case fhDefaults:
         if (!strcmp(s, fh_def_string(id)))
             CDvdb()->clearVariable(VA_FhDefaults);
         else
             CDvdb()->setVariable(VA_FhDefaults, s);
         break;
-    case FhFreq:
+    case fhFreq:
         Fh->update_fh_freq();
         break;
     }
@@ -1035,7 +1159,7 @@ void
 sFh::fh_dump_cb(const char *fname, void *client_data)
 {
     switch ((long)client_data) {
-    case FhDump:
+    case fhDump:
         if (FH()->fhDump(fname)) {
             if (!Fh)
                 return;
@@ -1060,10 +1184,10 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
         return;
     const char *s;
     switch ((long)arg) {
-    case FhRun:
+    case fhRun:
         FH()->fhRun(0, 0, 0);
         break;
-    case FhRunFile:
+    case fhRunFile:
         s = gtk_entry_get_text(GTK_ENTRY(Fh->fh_file));
         {
             char *tok = lstring::getqtok(&s);
@@ -1077,41 +1201,66 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
             }
         }
         break;
-    case FhDump:
+    case fhDump:
         s = FH()->getFileName(FH_INP_SFX);
-        Fh->PopUpInput(0, s, "Dump", fh_dump_cb, (void*)FhDump);
+        Fh->PopUpInput(0, s, "Dump", fh_dump_cb, (void*)fhDump);
         delete [] s;
         break;
-    case Foreg:
+    case fhForeg:
         if (GRX->GetStatus(widget))
             CDvdb()->setVariable(VA_FhForeg, "");
         else
             CDvdb()->clearVariable(VA_FhForeg);
         break;
-    case ToCons:
+    case fhMonitor:
         if (GRX->GetStatus(widget))
             CDvdb()->setVariable(VA_FhMonitor, "");
         else
             CDvdb()->clearVariable(VA_FhMonitor);
         break;
-    case Enable:
+    case fhEnable:
         if (GRX->GetStatus(widget)) {
             s = Fh->sb_fh_volel_target.get_string();
-            if (!check_num(s, FH_MIN_TARG_VOLEL, FH_MAX_TARG_VOLEL))
+            if (!check_num(s, FH_MIN_VOLEL_TARG, FH_MAX_VOLEL_TARG))
                 CDvdb()->setVariable(VA_FhVolElTarget, s);
             else {
                 char tbf[32];
-                sprintf(tbf, "%.1e", FH_DEF_TARG_VOLEL);
+                sprintf(tbf, "%.1e", FH_DEF_VOLEL_TARG);
                 CDvdb()->setVariable(VA_FhVolElTarget, tbf);
             }
             Fh->sb_fh_volel_target.set_sensitive(true);
+            s = Fh->sb_fh_volel_min.get_string();
+            if (!check_num(s, FH_MIN_VOLEL_MIN, FH_MAX_VOLEL_MIN))
+                CDvdb()->setVariable(VA_FhVolElMin, s);
+            else {
+                char tbf[32];
+                sprintf(tbf, "%.1e", FH_DEF_VOLEL_MIN);
+                CDvdb()->setVariable(VA_FhVolElMin, tbf);
+            }
+            Fh->sb_fh_volel_min.set_sensitive(true);
+            CDvdb()->setVariable(VA_FhVolElEnable, "");
         }
         else {
             CDvdb()->clearVariable(VA_FhVolElTarget);
+            CDvdb()->clearVariable(VA_FhVolElMin);
+            CDvdb()->clearVariable(VA_FhVolElEnable);
             Fh->sb_fh_volel_target.set_sensitive(false);
+            Fh->sb_fh_volel_min.set_sensitive(false);
         }
         break;
-    case Kill:
+    case fhOverrd:
+        if (GRX->GetStatus(widget))
+            CDvdb()->setVariable(VA_FhOverride, "");
+        else
+            CDvdb()->clearVariable(VA_FhOverride);
+        break;
+    case fhFlmt:
+        if (GRX->GetStatus(widget))
+            CDvdb()->setVariable(VA_FhUseFilament, "");
+        else
+            CDvdb()->clearVariable(VA_FhUseFilament);
+        break;
+    case fhKill:
         {
             int pid = Fh->get_pid();
             if (pid > 0)

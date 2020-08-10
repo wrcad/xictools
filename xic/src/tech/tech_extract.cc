@@ -459,7 +459,7 @@ cTech::ParseExtLayerBlock()
             return (tcret);
         int n;
         if (sscanf(tc_inbuf, "%d", &n) == 1 && n > 0) {
-            dsp_prm(tc_last_layer)->set_fh_nhinc(n);
+            tech_prm(tc_last_layer)->set_fh_nhinc(n);
             return (TCmatch);
         }
         return (SaveError("%s: layer %s, bad value, must be positive integer.",
@@ -474,7 +474,7 @@ cTech::ParseExtLayerBlock()
             return (tcret);
         double d;
         if (sscanf(tc_inbuf, "%lf", &d) == 1 && d > 0.0) {
-            dsp_prm(tc_last_layer)->set_fh_rh(d);
+            tech_prm(tc_last_layer)->set_fh_rh(d);
             return (TCmatch);
         }
         return (SaveError("%s: layer %s, bad value, must be positive.",
@@ -749,15 +749,15 @@ cTech::PrintExtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld)
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Thickness());
 
-    if (dp->fh_nhinc() > 1) {
-        sprintf(buf, "%s %d\n", Ekw.FH_nhinc(), dp->fh_nhinc());
+    if (lp->fh_nhinc() > 1) {
+        sprintf(buf, "%s %d\n", Ekw.FH_nhinc(), lp->fh_nhinc());
         PutStr(fp, lstr, buf);
     }
     if (cmts)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.FH_nhinc());
 
-    if (dp->fh_rh() > 0.0 && dp->fh_rh() != 2.0) {
-        sprintf(buf, "%s %g\n", Ekw.FH_rh(), dp->fh_rh());
+    if (lp->fh_rh() > 0.0 && lp->fh_rh() != DEF_FH_RH) {
+        sprintf(buf, "%s %g\n", Ekw.FH_rh(), lp->fh_rh());
         PutStr(fp, lstr, buf);
     }
     if (cmts)

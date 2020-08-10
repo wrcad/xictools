@@ -722,17 +722,76 @@ namespace {
     }
 
     bool
+    evFhDefNhinc(const char *vstring, bool set)
+    {
+        if (set) {
+            int pmin = FH_MIN_DEF_NHINC;
+            int pmax = FH_MAX_DEF_NHINC;
+            int d;
+            if (str_to_int(&d, vstring) && d >= pmin && d <= pmax)
+                ;
+            else {
+                Log()->ErrorLogV(mh::Variables,
+                    "Incorrect FhDefNhinc: range %d - %d.", pmin, pmax);
+                return (false);
+            }
+        }
+        CDvdb()->registerPostFunc(post_fh);
+        return (true);
+    }
+
+    bool
+    evFhDefRh(const char *vstring, bool set)
+    {
+        if (set) {
+            double pmin = FH_MIN_DEF_RH;
+            double pmax = FH_MAX_DEF_RH;
+            double d;
+            if (str_to_dbl(&d, vstring) && d >= pmin && d <= pmax)
+                ;
+            else {
+                Log()->ErrorLogV(mh::Variables,
+                    "Incorrect FhManhGridCnt: range %.3f - %.3f.",
+                    pmin, pmax);
+                return (false);
+            }
+        }
+        CDvdb()->registerPostFunc(post_fh);
+        return (true);
+    }
+
+    bool
     evFhVolElTarget(const char *vstring, bool set)
     {
         if (set) {
-            double pmin = FH_MIN_TARG_VOLEL;
-            double pmax = FH_MAX_TARG_VOLEL;
+            double pmin = FH_MIN_VOLEL_TARG;
+            double pmax = FH_MAX_VOLEL_TARG;
             double d;
             if (str_to_dbl(&d, vstring) && d >= pmin && d <= pmax)
                 ;
             else {
                 Log()->ErrorLogV(mh::Variables,
                     "Incorrect FhVolElTarget: range %.1f - %.1f.",
+                    pmin, pmax);
+                return (false);
+            }
+        }
+        CDvdb()->registerPostFunc(post_fh);
+        return (true);
+    }
+
+    bool
+    evFhVolElMin(const char *vstring, bool set)
+    {
+        if (set) {
+            double pmin = FH_MIN_VOLEL_MIN;
+            double pmax = FH_MAX_VOLEL_MIN;
+            double d;
+            if (str_to_dbl(&d, vstring) && d >= pmin && d <= pmax)
+                ;
+            else {
+                Log()->ErrorLogV(mh::Variables,
+                    "Incorrect FhVolElMin: range %.1f - %.1f.",
                     pmin, pmax);
                 return (false);
             }
@@ -841,12 +900,18 @@ cExt::setupVariables()
     // FastHenry Interface
     vsetup(VA_FhArgs,               S,  evFH);
     vsetup(VA_FhDefaults,           S,  evFH);
+    vsetup(VA_FhDefNhinc,           S,  evFhDefNhinc);
+    vsetup(VA_FhDefRh,              S,  evFhDefRh);
     vsetup(VA_FhForeg,              B,  evFH);
     vsetup(VA_FhFreq,               S,  evFH);
     vsetup(VA_FhManhGridCnt,        S,  evFhManhGridCnt);
     vsetup(VA_FhMonitor,            B,  evFH);
+    vsetup(VA_FhOverride,           B,  evFH);
     vsetup(VA_FhPath,               S,  evFH);
     vsetup(VA_FhUnits,              S,  evFH);
+    vsetup(VA_FhUseFilament,        B,  evFH);
+    vsetup(VA_FhVolElEnable,        B,  evFH);
+    vsetup(VA_FhVolElMin,           S,  evFhVolElMin);
     vsetup(VA_FhVolElTarget,        S,  evFhVolElTarget);
 }
 
