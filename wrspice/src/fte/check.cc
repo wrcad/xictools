@@ -2450,6 +2450,7 @@ sCHECKprms::set_rangevec()
         scale->set_defcolor(t->defcolor());
         scale->set_gridtype(t->gridtype());
         scale->set_plottype(t->plottype());
+        scale->set_no_sxze(true);
         scale->newperm();
 
         v = new sDataVec(lstring::copy(OPVEC), t->flags(), cnt, t->units(), d);
@@ -2457,6 +2458,7 @@ sCHECKprms::set_rangevec()
         v->set_gridtype(t->gridtype());
         v->set_plottype(t->plottype());
         v->set_scale(scale);
+        v->set_no_sxze(true);
         v->newperm();
     }
     else {

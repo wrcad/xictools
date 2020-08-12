@@ -534,15 +534,16 @@ private:
 #define VF_POLE      0x4      // PZ data: poles
 #define VF_ZERO      0x8      // PZ data: zeros
 #define VF_ROLLOVER  0x10     // Vector has rolled-over data
-#define VF_COPYMASK  0x1f     // Flags that are generally copied
+#define VF_NOSXZE    0x20     // Do not scalarize or segmentize
+#define VF_COPYMASK  0x3f     // Flags that are generally copied
 
-#define VF_PERMANENT 0x20     // Don't garbage collect this vector
-#define VF_MINGIVEN  0x40     // The v_minsignal value is valid
-#define VF_MAXGIVEN  0x80     // The v_maxsignal value is valid
-#define VF_SELECTED  0x100    // Vector is currently selected
-#define VF_READONLY  0x200    // Vector can't be changed
-#define VF_TEMPORARY 0x400    // Vector will be freed immediately
-#define VF_STRING    0x800    // Vector has string data in v_defcolor.
+#define VF_PERMANENT 0x40     // Don't garbage collect this vector
+#define VF_MINGIVEN  0x80     // The v_minsignal value is valid
+#define VF_MAXGIVEN  0x100    // The v_maxsignal value is valid
+#define VF_SELECTED  0x200    // Vector is currently selected
+#define VF_READONLY  0x400    // Vector can't be changed
+#define VF_TEMPORARY 0x800    // Vector will be freed immediately
+#define VF_STRING    0x1000   // Vector has string data in v_defcolor.
 
 // Grid types.
 // SMITHGRID is only a smith grid, SMITH transforms the data.
@@ -920,6 +921,15 @@ struct sDataVec
             if (clean && c != v_data.comp)
                 delete [] v_data.comp;
             v_data.comp = c;
+        }
+
+    bool no_sxze()              { return (v_flags & VF_NOSXZE); }
+    void set_no_sxze(bool b)
+        {
+            if (b)
+                v_flags |= VF_NOSXZE;
+            else
+                v_flags &= ~VF_NOSXZE;
         }
 
     bool scalarized()           { return (v_scaldata != 0); }

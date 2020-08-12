@@ -480,6 +480,24 @@ struct sRunopMeas : public sRunop
             sMfunc::destroy_list(ro_finds);
         }
 
+    // Reset the measurement.
+    //
+    void reset()
+        {
+            ro_start.reset();
+            ro_end.reset();
+
+            ro_found_rises      = 0;
+            ro_found_falls      = 0;
+            ro_found_crosses    = 0;
+            ro_measure_done     = false;
+            ro_measure_error    = false;
+            ro_measure_skip     = false;
+            ro_stop_flag        = false;
+            ro_end_flag         = false;
+            ro_queue_measure    = false;
+        }
+
     sRunopMeas *next()          { return ((sRunopMeas*)ro_next); }
 
     sMpoint &start()            { return (ro_start); }
@@ -517,7 +535,6 @@ struct sRunopMeas : public sRunop
 
     // measure.cc
     bool parse(const char*, char**);
-    void reset(sPlot*);
     bool check_measure(sRunDesc*);
     bool do_measure();
     bool measure(sDataVec**, int*);
@@ -584,6 +601,23 @@ struct sRunopStop : public sRunop
             delete [] ro_call;
         }
 
+    // Reset the measurement.
+    //
+    void reset()
+        {
+            ro_start.reset();
+
+            ro_found_rises      = 0;
+            ro_found_falls      = 0;
+            ro_found_crosses    = 0;
+            ro_offs             = 0.0;
+            ro_stop_done        = false;
+            ro_stop_error       = false;
+            ro_stop_flag        = false;
+            ro_end_flag         = false;
+            ro_repeating        = false;
+        }
+
     sRunopStop *next()          { return ((sRunopStop*)ro_next); }
 
     sMpoint &start()            { return (ro_start); }
@@ -603,7 +637,6 @@ struct sRunopStop : public sRunop
 
     // measure.cc
     bool parse(const char*, char**);
-    void reset();
     ROret check_stop(sRunDesc*);
     void print_cond(sLstr*, bool);
 

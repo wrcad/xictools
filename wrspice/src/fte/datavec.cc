@@ -178,7 +178,7 @@ sDataVec::newperm(sPlot *pl)
 void
 sDataVec::scalarize()
 {
-    if (!v_scaldata && v_length > 1) {
+    if (!v_scaldata && (v_length > 1) && !no_sxze()) {
         v_scaldata = new scalData(this);
 
         v_length = 1;
@@ -219,7 +219,7 @@ sDataVec::unscalarize()
 void
 sDataVec::segmentize()
 {
-    if (!v_segmdata && v_numdims > 1) {
+    if (!v_segmdata && (v_numdims > 1) && !no_sxze())  {
 
         int per = v_dims[1];
         int l = v_length;

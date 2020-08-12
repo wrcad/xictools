@@ -1813,85 +1813,6 @@ sRunopMeas::parse(const char *str, char **errstr)
 }
 
 
-// Reset the measurement.
-//
-void
-sRunopMeas::reset(sPlot *pl)
-{
-    if (pl) {
-        // If the result vector is found in pl, delete it after copying
-        // to a history list in pl.
-        sDataVec *v = pl->get_perm_vec(ro_result);
-        if (v) {
-            char buf[128];
-            pl->remove_perm_vec(ro_result);
-            sprintf(buf, "%s_scale", ro_result);
-            sDataVec *vs = pl->get_perm_vec(buf);
-            if (vs) {
-                pl->remove_perm_vec(buf);
-                sprintf(buf, "%s_hist", ro_result);
-                sDataVec *vh = pl->get_perm_vec(buf);
-                if (!vh) {
-                    vh = new sDataVec(*v->units());
-                    vh->set_name(buf);
-                    vh->set_flags(0);
-                    vh->newperm(pl);
-                }
-                sDataVec *vhs = vh->scale();
-                if (!vhs) {
-                    sprintf(buf, "%s_hist_scale", ro_result);
-                    vhs = new sDataVec(*vs->units());
-                    vhs->set_name(buf);
-                    vhs->set_flags(0);
-                    vhs->newperm(pl);
-                    vh->set_scale(vhs);
-                }
-
-                int len = vh->length();
-                int nlen = len + v->length();
-                double *old = vh->realvec();
-                vh->set_realvec(new double[nlen]);
-                vh->set_length(nlen);
-                vh->set_allocated(nlen);
-                int i;
-                for (i = 0; i < len; i++)
-                    vh->set_realval(i, old[i]);
-                for (i = len; i < nlen; i++)
-                    vh->set_realval(i, v->realval(i-len));
-                delete [] old;
-
-                len = vhs->length();
-                nlen = len + vs->length();
-                old = vhs->realvec();
-                vhs->set_realvec(new double[nlen]);
-                vhs->set_length(nlen);
-                vhs->set_allocated(nlen);
-                for (i = 0; i < len; i++)
-                    vhs->set_realval(i, old[i]);
-                for (i = len; i < nlen; i++)
-                    vhs->set_realval(i, vs->realval(i-len));
-                delete [] old;
-                delete vs;
-            }
-            delete v;
-        }
-    }
-
-    ro_start.reset();
-    ro_end.reset();
-
-    ro_found_rises      = 0;
-    ro_found_falls      = 0;
-    ro_found_crosses    = 0;
-    ro_measure_done     = false;
-    ro_measure_error    = false;
-    ro_measure_skip     = false;
-    ro_stop_flag        = false;
-    ro_end_flag         = false;
-    ro_queue_measure    = false;
-}
-
-
 // Check if the measurement is triggered, and if so perform the
 // measurement.  This is called periodically as the analysis
 // progresses, or can be called after the analysis is complete.  True
@@ -2071,92 +1992,112 @@ sRunopMeas::update_plot(sDataVec *dv0, int count)
         return (false);
     if (ro_cktptr->runplot()) {
 
-        // create the output vector and scale
         sPlot *pl = ro_cktptr->runplot();
-        sDataVec *xs = pl->scale();
-        sDataVec *nv = 0;
-        if (ro_end.ready()) {
-            // units test
-            int uv = 0, us = 0;
-            for (sMfunc *ff = ro_funcs; ff; ff = ff->next()) {
-                if (ff->type() == Mpw || ff->type() == Mrft)
-                    us++;
-                else
-                    uv++;
-            }
-            if (us) {
-                if (!uv)
-                    nv = new sDataVec(*xs->units());
-                else
-                    nv = new sDataVec();
-            }
-        }
+        sDataVec *nv = pl->get_perm_vec(ro_result);
         if (!nv) {
-            if (dv0)
-                nv = new sDataVec(*dv0->units());
-            else {
-                sUnits u;
-                nv = new sDataVec(u);
+            // Create the output vector and scale.
+            sDataVec *xs = pl->scale();
+            if (ro_end.ready()) {
+                // units test
+                int uv = 0, us = 0;
+                for (sMfunc *ff = ro_funcs; ff; ff = ff->next()) {
+                    if (ff->type() == Mpw || ff->type() == Mrft)
+                        us++;
+                    else
+                        uv++;
+                }
+                if (us) {
+                    if (!uv)
+                        nv = new sDataVec(*xs->units());
+                    else
+                        nv = new sDataVec();
+                }
             }
-        }
-        nv->set_name(ro_result);
-        nv->set_flags(0);
-        nv->newperm(pl);
+            if (!nv) {
+                if (dv0)
+                    nv = new sDataVec(*dv0->units());
+                else {
+                    sUnits u;
+                    nv = new sDataVec(u);
+                }
+            }
+            nv->set_name(ro_result);
+            nv->set_flags(VF_NOSXZE);
+            nv->newperm(pl);
 
-        char scname[128];
-        sprintf(scname, "%s_scale", ro_result);
-        sDataVec *ns = new sDataVec(*xs->units());
-        ns->set_name(scname);
-        ns->set_flags(0);
-        ns->newperm(pl);
-        nv->set_scale(ns);
+            char scname[128];
+            sprintf(scname, "%s_scale", ro_result);
+            sDataVec *ns = new sDataVec(*xs->units());
+            ns->set_name(scname);
+            ns->set_flags(VF_NOSXZE);
+            ns->newperm(pl);
+            nv->set_scale(ns);
+        }
 
         if (ro_prmexpr) {
-            nv->set_length(1);
-            nv->set_allocated(1);
-            nv->set_realvec(new double[1]);
+            int osz = nv->allocated();
+            nv->resize(osz + 1);
+            nv->set_length(osz + 1);
             if (dv0)
-                nv->set_realval(0, dv0->realval(0));
-            ns->set_length(1);
-            ns->set_allocated(1);
-            ns->set_realvec(new double[1]);
-            ns->set_realval(0, xs ? xs->realval(xs->length()-1) : 0.0);
+                nv->set_realval(osz, dv0->realval(0));
+            nv->set_numdims(2);
+            nv->set_dims(1, 1);
+            nv->set_dims(0, nv->allocated());
+            sDataVec *ns = nv->scale();
+            osz = ns->allocated();
+            ns->resize(osz + 1);
+            ns->set_length(osz + 1);
+            sDataVec *xs = pl->scale();
+            ns->set_realval(osz, xs ? xs->realval(xs->length()-1) : 0.0);
+            ns->set_numdims(2);
+            ns->set_dims(1, 1);
+            ns->set_dims(0, ns->allocated());
             if (!dv0) {
                 // No measurement, the named result is the time value.
-                nv->set_realval(0, ns->realval(0));
+                nv->set_realval(osz, ns->realval(osz));
             }
         }
         else {
+            int osz = nv->allocated();
             if (count == 0) {
                 count = 1;
                 if (ro_end.ready())
                     count++;
-                nv->set_realvec(new double[count]);
+                nv->resize(osz + count);
                 // No measurement, the named result is the time value.
-                nv->set_realval(0, ro_start.found());
+                nv->set_realval(osz, ro_start.found());
                 if (ro_end.ready())
-                    nv->set_realval(1, ro_end.found());
+                    nv->set_realval(osz+1, ro_end.found());
             }
             else
-                nv->set_realvec(new double[count]);
-            nv->set_length(count);
-            nv->set_allocated(count);
+                nv->resize(osz + count);
+            nv->set_length(osz + count);
+            int nd = nv->allocated() / count;
+            nv->set_numdims(2);
+            nv->set_dims(1, count);
+            nv->set_dims(0, nd);
             count = 0;
             if (ro_end.ready()) {
                 for (sMfunc *ff = ro_funcs; ff; ff = ff->next(), count++)
-                    nv->set_realval(count, ff->val());
+                    nv->set_realval(osz + count, ff->val());
             }
             for (sMfunc *ff = ro_finds; ff; ff = ff->next(), count++)
-                nv->set_realval(count, ff->val());
+                nv->set_realval(osz + count, ff->val());
+
             count = 1;
             if (ro_end.ready())
                 count++;
-            ns->set_realvec(new double[count]);
-            ns->set_length(count);
-            ns->set_allocated(count);
-            ns->set_realval(0, ro_start.found());
+            sDataVec *ns = nv->scale();
+            osz = ns->allocated();
+            ns->resize(osz + count);
+            ns->set_length(osz + count);
+            ns->set_realval(osz, ro_start.found());
             if (ro_end.ready())
-                ns->set_realval(1, ro_end.found());
+                ns->set_realval(osz+1, ro_end.found());
+            nd = ns->allocated() / count;
+            ns->set_numdims(2);
+            ns->set_dims(1, count);
+            ns->set_dims(0, nd);
         }
     }
     return (true);
@@ -2471,26 +2412,6 @@ sRunopStop::parse(const char *str, char **errstr)
     if (err)
         ro_stop_skip = true;
     return (true);
-}
-
-
-// Reset the measurement.
-//
-void
-sRunopStop::reset()
-{
-
-    ro_start.reset();
-
-    ro_found_rises      = 0;
-    ro_found_falls      = 0;
-    ro_found_crosses    = 0;
-    ro_offs             = 0.0;
-    ro_stop_done        = false;
-    ro_stop_error       = false;
-    ro_stop_flag        = false;
-    ro_end_flag         = false;
-    ro_repeating        = false;
 }
 
 

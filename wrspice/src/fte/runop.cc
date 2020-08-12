@@ -429,7 +429,7 @@ IFoutput::initRunops(sRunDesc *run)
     for (sRunopMeas *d = mgen.next(); d; d = mgen.next()) {
         if (run->job()->JOBtype != d->analysis())
             continue;
-        d->reset(run->runPlot());
+        d->reset();
     }
 
     ROgen<sRunopStop> sgen(o_runops->stops(), db ? db->stops() : 0);
