@@ -169,6 +169,14 @@ struct sParamTab
     //
     void param_subst_all(char **str) const
         {
+#ifdef WRSPICE
+            char *t = *str;
+            // Treat 'set' and 'let' specially (for WRspice).
+            if ((t[0] == 's' || t[0] == 'l') && t[1] == 'e' && t[2] == 't' &&
+                    isspace(t[3]))
+                defn_subst(this, str, PTgeneral, 1);
+            else
+#endif
             line_subst(str);
         }
 
@@ -266,6 +274,8 @@ private:
     void line_subst(char**) const;
     void squote_subst(char**) const;
     bool subst(char**) const;
+    void evaluate(char**) const;
+
     static bool tokenize(const char**, char**, char**, PTmode, const char** =0);
 
     sHtab *pt_table;        // Main table for elements.

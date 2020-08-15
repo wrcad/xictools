@@ -648,14 +648,12 @@ sParamTab::line_subst(char **str) const
 void
 sParamTab::squote_subst(char **str) const
 {
-    const char *msg = "Evaluation failed: %s.";
-
-    char *expr;
     if (pt_ctrl->no_sqexp || strchr(*str, '$')) {
         // We aren't single-quote expanding, or The expression
         // contains unexpanded shell variables.  In this case expand
         // any parameters, and leave the result in single quotes.
 
+        char *expr;
         bool quoted = false;
         if (**str == '\'') {
             // strip quotes;
@@ -680,6 +678,80 @@ sParamTab::squote_subst(char **str) const
         *str = expr;
         return;
     }
+
+    evaluate(str);
+}
+
+
+// If tok is a parameter, perform the substitution and return true.
+//
+bool
+sParamTab::subst(char **tok) const
+{
+    // Special case, parameter definition check:  def(foo) is replaced
+    // by 1/0 if foo is defined/undefined.
+    char *t = *tok;
+    if (lstring::ciprefix("def(", t)) {
+        t += 4;
+        int n = strlen(t) - 1;
+        if (t[n] == ')')
+            t[n] = 0;
+        sParam *p = (sParam*)get(t);
+        if (p)
+            (*tok)[0] = '1';
+        else
+            (*tok)[0] = '0';
+        (*tok)[1] = 0;
+        return (true);
+    }
+
+    sParam *p = (sParam*)get(*tok);
+    if (p) {
+        if (sHtab::get(pt_rctab, *tok) != 0) {
+            // Uh-oh, we're already subbing this token, there is a
+            // recursive loop.
+            delete [] errString;
+            sLstr lstr;
+            lstr.add("Recursion detected, parameter name: ");
+            lstr.add(p->name());
+            lstr.add(" value: ");
+            lstr.add(p->sub());
+            errString = lstr.string_trim();
+            return (false);
+        }
+        pt_rctab->add(p->name(), p);
+
+        if (pt_ctrl->collapse) {
+            if (!p->collapsed())
+                p->collapse(this);
+        }
+
+        delete [] *tok;
+        if (*p->sub() == '"') {
+            // strip quotes
+            *tok = lstring::copy(p->sub()+1);
+            char *tt = *tok + strlen(*tok) - 1;
+            if (*tt == '"')
+                *tt = 0;
+        }
+        else {
+            *tok = lstring::copy(p->sub());
+//XXX NEW
+            evaluate(tok);
+        }
+
+        pt_rctab->remove(p->name());
+        return (true);
+    }
+    return (false);
+}
+
+
+void
+sParamTab::evaluate(char **str) const
+{
+    const char *msg = "Evaluation failed: %s.";
+    char *expr;
 
 #ifdef WRSPICE
     bool quoted = false;
@@ -781,7 +853,7 @@ sParamTab::squote_subst(char **str) const
     delete [] *str;
     *str = lstring::copy(SPnum.printnum(dv->realval(0), dv->units(), false));
     OP.vecGc(true);
-#else
+#else  // WRSPICE
     const char *eptr = expr;
     double *dp = SCD()->evalExpr(&eptr);
     if (!dp) {
@@ -795,68 +867,7 @@ sParamTab::squote_subst(char **str) const
     delete [] expr;
     delete [] *str;
     *str = lstring::copy(SPnum.printnum(*dp));
-#endif
-}
-
-
-// If tok is a parameter, perform the substitution and return true.
-//
-bool
-sParamTab::subst(char **tok) const
-{
-    // Special case, parameter definition check:  def(foo) is replaced
-    // by 1/0 if foo is defined/undefined.
-    char *t = *tok;
-    if (lstring::ciprefix("def(", t)) {
-        t += 4;
-        int n = strlen(t) - 1;
-        if (t[n] == ')')
-            t[n] = 0;
-        sParam *p = (sParam*)get(t);
-        if (p)
-            (*tok)[0] = '1';
-        else
-            (*tok)[0] = '0';
-        (*tok)[1] = 0;
-        return (true);
-    }
-
-    sParam *p = (sParam*)get(*tok);
-    if (p) {
-        if (sHtab::get(pt_rctab, *tok) != 0) {
-            // Uh-oh, we're already subbing this token, there is a
-            // recursive loop.
-            delete [] errString;
-            sLstr lstr;
-            lstr.add("Recursion detected, parameter name: ");
-            lstr.add(p->name());
-            lstr.add(" value: ");
-            lstr.add(p->sub());
-            errString = lstr.string_trim();
-            return (false);
-        }
-        pt_rctab->add(p->name(), p);
-
-        if (pt_ctrl->collapse) {
-            if (!p->collapsed())
-                p->collapse(this);
-        }
-
-        delete [] *tok;
-        if (*p->sub() == '"') {
-            // strip quotes
-            *tok = lstring::copy(p->sub()+1);
-            char *tt = *tok + strlen(*tok) - 1;
-            if (*tt == '"')
-                *tt = 0;
-        }
-        else
-            *tok = lstring::copy(p->sub());
-
-        pt_rctab->remove(p->name());
-        return (true);
-    }
-    return (false);
+#endif  // WRSPICE
 }
 
 

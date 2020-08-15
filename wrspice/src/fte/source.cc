@@ -968,12 +968,8 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
     if (deck)
         ptab = deck->process_conditionals(ptab);
     ptab->define_macros(true);
-#define NEWPEXP
-#ifdef NEWPEXP
     for (wordlist *wl = execs; wl; wl = wl->wl_next)
         ptab->param_subst_all(&wl->wl_word);
-#endif
-
 
 #define EXECPLOTNAME "exec"
     // If execs, run them now, after parameter expanding.
@@ -982,15 +978,6 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
     if (execs && !noexec) {
         // Run the execs (before source).
 
-#ifdef NEWPEXP
-#else
-        wordlist *wx = wordlist::copy(execs);
-        if (ptab) {
-            // Parameter expand the .exec lines.
-            for (wordlist *wl = wx; wl; wl = wl->wl_next)
-                ptab->param_subst_all(&wl->wl_word);
-        }
-#endif
         strcpy(tpname, OP.curPlot()->type_name());
         // Set up a temporary plot for vectors defined in the exec
         // block that might be needed in the circuit.
@@ -1007,16 +994,24 @@ IFsimulator::SpDeck(sLine *deck, const char *filename, wordlist *execs,
             OP.setCurPlot(pl_ex);
         }
 
-#ifdef NEWPEXP
         ExecsPush();
         ExecCmds(execs);
         ExecsPop();
-#else
-        ExecsPush();
-        ExecCmds(wx);
-        ExecsPop();
-        wordlist::destroy(wx);
-#endif
+
+        // This is subtle.  Suppose that there are lines like "param
+        // p1 = $val" and that the execs contain "set val = 10".  At
+        // this point, we need to update the parameters, before we do
+        // the parameter expand in subcircuit expansion, otherwise
+        // we get unexpanded shell variables in the netlist.
+
+        for (sLine *dd = deck->next(); dd; dd = dd->next()) {
+            if (lstring::cimatch(PARAM_KW, dd->line())) {
+                if (strchr(dd->line(), '$')) {
+                    dd->var_subst();
+                    ptab = sParamTab::extract_params(ptab, dd->line());
+                }
+            }
+        }
 
         // Still in list? may have been destroyed.
         sPlot *px = OP.plotList();
