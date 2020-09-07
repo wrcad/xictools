@@ -1,0 +1,172 @@
+
+MMJCO - Tunnel Junction Amplitude calculator.
+Version 0.5 (ALPHA)     9/3/2020
+S. Whiteley,  wrcad.com, Synopsys, Inc.
+
+This is derived from the MiTMoJCo project, specifically the
+mitmojco.py environment that provides an interface for creating tunnel
+junction amplitudes and fitting tables.
+
+This has been implemented as two C++ classes, one for creating tunnel
+junction amplitudes, which basically evaluates the Werthamer model as
+formulated for MiTMoJCo by D.  R.  Gulevich, the second to compress
+the amplitudes into a compact representation, as used by MiTMoJCo and
+the TJM (JJ level=3) device model in WRspice.  The method is that of
+Odintsov, Semenov, and Zorin (see mmjco.cc comments for literature
+references).
+
+++++ Building
+
+One should be able to build on any Linux-like platform.
+
+Presently, the file will build into a static library, and a
+stand-alone application "mmjco" that will provide an interactive
+interface for generating files containing tunnel junction amplitudes
+and fitting tables.
+
+Building requires the "devel" versions of the following libraries:
+
+    GSL  (the Gnu Scientific library)  Version 1.15 is known to be ok.
+
+The source now includes a release of cmpfit
+https://pages.physics.wisc.edu/~craigm/idl/cmpfit.html
+This provides a version of the venerable lmdif least-squares fitter
+from MINPACK, an ancient fortran library.  As an alternative, one can
+instead use:
+    cminpack (a C/C++ version of the MINPACK optimization library)
+    https://github.com/devernay/cminpack
+
+This was the original target for mmjco, however it is a bit obscure,
+and in particular I couldn't find it at Synopsys (though it is
+provided in CentOS 7 repos).  This may be an issue for others so I
+found and included cmpfit instead.
+
+Once installed, tweak the Makefile if necessary to set the proper
+paths to libraries for your system, and type "make".  If all goes well
+the "mmjco" binary should be created in the current directory, along
+with a libmmjco.a library file.
+
+++++ Running
+
+Presently, running mmjco enters a command-line processing loop, the user
+responds to the "mmjco> " prompt with commands from the list below.  Each
+command can be followed by options as indicated.
+
+Text in square brackets ([...]) is optional.  A vertical pipe
+character ( | ) indicates that either the text to the right or left is
+acceptable, i.e., it separates options.
+
+cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename]
+
+    Create TCA data, save internally and to a file.  See below for
+    an explanation of the options.
+
+cf[it]  [-n terms] [-h thr] [-f filename]
+
+    Create fit parameters for TCA data currently in memory, from cd
+    or ld commands.  This is saved internallyand to a file.  See
+    below for an explanation of the options.
+
+cm[odel]  [-h thr] [-f [filename]]
+
+    Create a model for TCA data using fitting parameters currently in
+    memory, compute the residual, and optionally save to a file.  If -f
+    is given without a filename, a file name will be generated
+    internally.  If -f is not given, the model will not be saved to a
+    file, but used only to compute the residual.  The printed
+    residual number is an indication of the fit quality, smaller
+    values indicate better matching.
+
+ld[ata] filename
+
+    Load the internal TCA data register from a TCA data file whose name
+    must be given.
+
+lf[it] filename
+
+    Load the internal fit parameters register from a fit parameter file
+    given.
+
+h[elp] | v[ersion] | ?
+
+    Print help and the running mmjco release number.
+
+q[uit] | e[xit]
+
+    Exit the mmjco interface.
+
+Tunnel current amplitude and smoothing options:
+
+    -t   The assumed temperature follows, in Kelvin.  Default 4.2.
+
+    -d   This will set both d1 and d2, the pair breaking energy in
+         milli-electron volts, of the two superconducting banks.  The
+         default is 1.4 mev.
+
+    -d1  
+    -d2  Like -d, but apply to only one of the banks.  The final
+         occurrence of d,d1,d2 will have precedence.
+
+    -s   This provides the smoothing parameter as used in MiTMoJCo.
+         the accepted range is 0.0 - 0.099.  The default is 0.008.  If
+         less than 0.001, 0 is assumed.  When 0, no smoothing is done
+         and raw BCS tunnel amplitudes are generated.
+
+    -x   The number of points used to create the tunnel current
+         amplitudes.  The range of sweep of voltage normalized to the
+         gap voltage (d1+d2) extends from 0.001 through 2.0.  The
+         default point count is 500.
+
+    -f   A name for the TCA anplitude file.  If not given, a
+         default is used, described below.
+
+Fitting table options:
+
+    -n   The size of the table, defaults to 8.  Larger tables are
+         more accurate but take more time to generate and process.
+         A maximum of 20 is enforced..
+
+    -h   The ratio of the absolute to relative tolerances, used in
+         compression, the default is 0.2.
+
+    -f   A name for the fitting parameter table.  If not given, a
+         default is used, described below.
+
+Running mmjco can generate two types files:  a file containing the
+swept values of the tunnel current amplitudes, and a file containing
+the fitting parameters used to represent the tunnel current amplitues
+in a compact form.  The "model" files use the same format as the TCA
+files.
+
+By default, these files are given a name that encodes the various
+parameter values used in creation.  This format is described below.
+
+Tunnel current amplitude file name
+
+    tcaTTTDD1DD2SFXXXX.data
+
+The "tca" and ".data" are literal.  TTT is a three-digit integer equal
+to 100*temp (truncated to integer).  DD1 and DD2 are three digit
+integers equal to 100*d1 and 100*d2, truncated to integer.  SF is a
+two digit integer representing the smoothing parameter equal to
+1000*sf, truncated to integer.  The XXXX is the number of points used
+(-x option), 0-padded if needed to fill out 4 integers,  Model files
+use the same default name, however ".model" replaces ".data".
+
+The fitting parameter file name has the form
+
+    tcaTTTDD1DD2SFXXXX-NNHHH.fit
+
+The first part, ahead of the '-', is as described above.  Following
+the hyphen, NN is the zero-padded two-digit fitting table size.  This
+is followed by the compression threshold, as a three digit integer
+representing 1000*thr, truncated to integer.
+
+The fit parameter table format is precisely that used by MiTMoJCo. 
+Note that the table values do not match those found in the MiTMoJCo
+distribution.  It seems that these values are not unique, and the
+various programs can converge to different sets.  It was found that
+the original and present versions of mitmojco.py gave different
+values, and neither matched the values provided in the amplitudes
+folder.
+
