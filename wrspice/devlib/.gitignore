@@ -9,6 +9,7 @@ adms/include/ifdata.h
 adms/include/inpline.h
 adms/include/input.h
 adms/include/noisdefs.h
+adms/include/stab.h
 toc.cc
 include/acdefs.h
 include/circuit.h
@@ -21,6 +22,7 @@ include/ifdata.h
 include/inpline.h
 include/input.h
 include/noisdefs.h
+include/stab.h
 b3soi-3.0/bsoi30.dylib
 b3soi-3.0/bsoi30.so
 b3soi-3.0/bsoi30.dll

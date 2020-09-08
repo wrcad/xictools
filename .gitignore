@@ -1,8 +1,8 @@
 *.[oa]
 Makefile
 Makefile.bak
-.configured
-errs
+/.configured
+/errs
 */packages/root
 */packages/Darwin
 */packages/Linux*
