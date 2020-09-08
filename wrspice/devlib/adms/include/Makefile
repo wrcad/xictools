@@ -3,7 +3,7 @@
 #######################################################################
 
 SPHFILES = circuit.h device.h acdefs.h dctdefs.h distdefs.h noisdefs.h \
- errors.h ifcx.h ifdata.h inpline.h input.h
+ errors.h ifcx.h ifdata.h inpline.h input.h stab.h
 INCL = ../../..
 
 depend: $(SPHFILES)
@@ -22,6 +22,7 @@ ifcx.h:         $(INCL)/include/ifcx.h
 ifdata.h:       $(INCL)/include/ifdata.h
 inpline.h:      $(INCL)/include/inpline.h
 input.h:        $(INCL)/include/input.h
+stab.h:         $(INCL)/include/stab.h
 
 clean distclean:
 	-@rm -f $(SPHFILES)

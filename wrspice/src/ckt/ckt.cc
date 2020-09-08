@@ -61,6 +61,7 @@ Authors: 1985 Thomas L. Quarles
 #include "sparse/spmatrix.h"
 #include "spnumber/hash.h"
 #include "miscutil/errorrec.h"
+#include "miscutil/pathlist.h"
 #ifdef HAVE_FLOAT_H
 #include <float.h>
 #endif
@@ -2772,5 +2773,19 @@ sCKT::enableFPE(int state)
 {
     checkFPE(true);
     Sp.SetFPEmode((FPEmode)state);
+}
+// End of sCKT functions.
+
+
+// This is used in the TJM device library model.  It is kept out of
+// circuit.h due to the stdio reference.
+//
+FILE *tjm_fopen(const char *nm)
+{
+    const char *tjm_path = "( . ~/.mmjco )";
+    VTvalue vv;
+    if (Sp.GetVar("tjm_path", VTYP_STRING, &vv, Sp.CurCircuit()))
+        tjm_path = vv.get_string();
+    return (pathlist::open_path_file(nm, tjm_path, "r", 0, false));
 }
 

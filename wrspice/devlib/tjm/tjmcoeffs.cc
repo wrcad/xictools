@@ -39,6 +39,16 @@
  *========================================================================*/
 
 #include "tjmdefs.h"
+#include "stab.h"
+#include <stdio.h>
+
+// WRspice provides this, defined in ckt.cc.  This not defined in the
+// headers to avoid having to include stdio there.  WRspice is
+// sensitive to a variable named "tjm_path" which is list of locations
+// to search for fit files.  This effectively defaults to
+// "( . ~/.mmjco )".
+//
+extern FILE *tjm_fopen(const char*);
 
 
 //
@@ -46,12 +56,21 @@
 //
 
 namespace {
-    // Built-in default TJM models, where A, B, and P are Dirichlet
+    // Built-in default TJM models, where p, A, and B are Dirichlet
     // coefficients.  Size of Dirichlet series should be even and less
     // or equal to 20.  Taken from MiTMoJCo
     // (https://github.com/drgulevich/mitmojco) repository.
 
-    // Model BCS42_008
+    // Mitmojco  BCS42_008 and NbNb_4K2_008
+    IFcomplex P_1[] =
+        { cIFcomplex(-4.373312, -0.114845),
+        cIFcomplex(-0.411779, 0.898335),
+        cIFcomplex(-0.139858, 0.991853),
+        cIFcomplex(-0.013048, 1.000349),
+        cIFcomplex(-0.043182, 1.000747),
+        cIFcomplex(-1.105852, -0.000000),
+        cIFcomplex(-0.651673, 0.123645),
+        cIFcomplex(-0.073309, 0.000067)};
     IFcomplex A_1[] = 
         { cIFcomplex(1.057436, -18.941930),
         cIFcomplex(0.219525, 0.072188),
@@ -70,18 +89,19 @@ namespace {
         cIFcomplex(-0.217956, 0.000001),
         cIFcomplex(-0.401859, -0.545156),
         cIFcomplex(0.000643, -0.098458)};
-    IFcomplex P_1[] =
-        { cIFcomplex(-4.373312, -0.114845),
-        cIFcomplex(-0.411779, 0.898335),
-        cIFcomplex(-0.139858, 0.991853),
-        cIFcomplex(-0.013048, 1.000349),
-        cIFcomplex(-0.043182, 1.000747),
-        cIFcomplex(-1.105852, -0.000000),
-        cIFcomplex(-0.651673, 0.123645),
-        cIFcomplex(-0.073309, 0.000067)};
-    TJMcoeffSet tjm_coeffs1("tjm1", 8, A_1, B_1, P_1);
 
-    // Model BCS42_001.
+    // Mitmojco  BCS42_001 and NbNb_4K2_001
+    IFcomplex P_2[] = 
+        { cIFcomplex(-0.090721, -0.000036),
+        cIFcomplex(-0.004370, 1.000126),
+        cIFcomplex(-0.813405, -0.043201),
+        cIFcomplex(-0.299741, 0.941648),
+        cIFcomplex(-0.013468, 1.000303),
+        cIFcomplex(-0.001497, 1.000022),
+        cIFcomplex(-0.039953, 0.999920),
+        cIFcomplex(-0.113673, 0.993161),
+        cIFcomplex(-6.766647, -0.000001),
+        cIFcomplex(-0.646220, 0.637507)};
     IFcomplex A_2[] = 
         { cIFcomplex(-0.000935, -0.344952),
         cIFcomplex(0.002376, -0.000079),
@@ -104,19 +124,12 @@ namespace {
         cIFcomplex(0.053536, 0.018137),
         cIFcomplex(-0.017427, 0.000001),
         cIFcomplex(-0.161605, 0.336628)};
-    IFcomplex P_2[] = 
-        { cIFcomplex(-0.090721, -0.000036),
-        cIFcomplex(-0.004370, 1.000126),
-        cIFcomplex(-0.813405, -0.043201),
-        cIFcomplex(-0.299741, 0.941648),
-        cIFcomplex(-0.013468, 1.000303),
-        cIFcomplex(-0.001497, 1.000022),
-        cIFcomplex(-0.039953, 0.999920),
-        cIFcomplex(-0.113673, 0.993161),
-        cIFcomplex(-6.766647, -0.000001),
-        cIFcomplex(-0.646220, 0.637507)};
-    TJMcoeffSet tjm_coeffs2("mitmojco_001", 10, A_2, B_2, P_2);
-}  // namespace
+}
+
+sTab<TJMcoeffSet> *TJMcoeffSet::TJMcoeffsTab = 0;
+
+#define MAX_PARAMS 20
+
 
 // Static Function.
 TJMcoeffSet *
@@ -124,18 +137,67 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm)
 {
     if (!nm)
         return (0);
-    if (!strcasecmp(nm, tjm_coeffs1.cfs_name))
-        return (&tjm_coeffs1);
-    if (!strcasecmp(nm, tjm_coeffs2.cfs_name))
-        return (&tjm_coeffs2);
+    if (!TJMcoeffsTab) {
+        TJMcoeffsTab = new sTab<TJMcoeffSet>(true);
+        IFcomplex *p = new IFcomplex[8];
+        IFcomplex *A = new IFcomplex[8];
+        IFcomplex *B = new IFcomplex[8];
+        for (int i = 0; i < 8; i++) {
+            p[i] = P_1[i];
+            A[i] = A_1[i];
+            B[i] = B_1[i];
+        }
+        TJMcoeffSet *cs = new TJMcoeffSet(strdup("tjm1"), 8, p, A, B);
+        TJMcoeffsTab->add(cs);
+
+        p = new IFcomplex[10];
+        A = new IFcomplex[10];
+        B = new IFcomplex[10];
+        for (int i = 0; i < 10; i++) {
+            p[i] = P_2[i];
+            A[i] = A_2[i];
+            B[i] = B_2[i];
+        }
+        cs = new TJMcoeffSet(strdup("tjm2"), 10, p, A, B);
+        TJMcoeffsTab->add(cs);
+    }
+
+    TJMcoeffSet *cs = TJMcoeffsTab->find(nm);
+    if (cs)
+        return (cs);
+
+    FILE *fp = tjm_fopen(nm);
+    if (fp) {
+        cIFcomplex p[MAX_PARAMS], A[MAX_PARAMS], B[MAX_PARAMS];
+        char buf[256];
+        int cnt = 0;
+        while (fgets(buf, 256, fp) != 0) {
+            double pr, pi, ar, ai, br, bi;
+            if (sscanf(buf, "%lf %lf %lf %lf %lf %lf", &pr, &pi, &ar, &ai,
+                    &br, &bi) == 6) {
+                if (cnt < MAX_PARAMS) {
+                    p[cnt].real = pr;
+                    p[cnt].imag = pi;
+                    A[cnt].real = ar;
+                    A[cnt].imag = ai;
+                    B[cnt].real = br;
+                    B[cnt].imag = bi;
+                }
+                cnt++;
+            }
+        }
+        if (cnt >= 4 && cnt <= MAX_PARAMS && !(cnt&1)) {
+            cIFcomplex *np = new cIFcomplex[cnt];
+            cIFcomplex *nA = new cIFcomplex[cnt];
+            cIFcomplex *nB = new cIFcomplex[cnt];
+            for (int i = 0; i < cnt; i++) {
+                np[i] = p[i];
+                nA[i] = A[i];
+                nB[i] = B[i];
+            }
+            return (new TJMcoeffSet(strdup(nm), cnt, nA, nB, np));
+        }
+    }
     return (0);
 }
-
-// TODO
-// support tables embedded in .model statements.
-// support tables saved in mitmojco-format files.
-// suport a path or known location to search for table files.
-// support a multi-table format that can be loaded on startup.
-// Once a table is loaded, it is saved in memory under its name for the
-// WRspice session.  Reloading is ok, will overwrite existing.
 

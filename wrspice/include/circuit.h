@@ -1301,6 +1301,10 @@ private:
 #define STAB_START_MASK 31
 
 // Structures used to maintain a symbol table for nodes and names.
+// The T must have entries
+//   T* next();
+//   void set_next(T*);
+//   const char *name();
 //
 template <class T>
 struct sTab
@@ -1320,7 +1324,7 @@ struct sTab
                 for (unsigned int i = 0; i <= t_hashmask; i++) {
                     T *lt;
                     for (T *t = t_tab[i]; t; t = lt) {
-                        lt = t->t_next;
+                        lt = t->next();
                         delete t;
                     }
                 }
@@ -1442,6 +1446,10 @@ struct sCKTnodeTab
                 delete [] t_ent;
             }
 
+        sNEnt *next()           { return (t_next); }
+        void set_next(sNEnt *x) { t_next = x; }
+        const char *name()      { return (t_ent); }
+
         char *t_ent;
         sNEnt *t_next;
         sCKTnode* t_node;
@@ -1508,6 +1516,10 @@ struct sSymTab
             {
                 delete [] t_ent;
             }
+
+        sEnt *next()            { return (t_next); }
+        void set_next(sEnt *x)  { t_next = x; }
+        const char *name()      { return (t_ent); }
 
         char *t_ent;
         sEnt *t_next;

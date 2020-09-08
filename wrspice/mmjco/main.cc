@@ -269,10 +269,11 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
                     return (1);
                 }
                 int d;
-                if (sscanf(argv[i], "%d", &d) == 1 && d > 1 && d <= 20)
+                if (sscanf(argv[i], "%d", &d) == 1 && d > 3 && d < 21 && !(d&1))
                     nterms = d;
                 else {
-                    printf("Error: bad -n (number of terms), exiting.\n");
+                    printf(
+                    "Error: bad -n (number of terms, 4-20 even), exiting.\n");
                     return (1);
                 }
                 continue;

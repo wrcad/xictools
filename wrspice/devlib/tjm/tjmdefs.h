@@ -275,9 +275,9 @@ struct sTJMmodelPOD
     double      tjm_kgap;
     double      tjm_kgap_rejpt;
     double      tjm_alphaN;
+    IFcomplex   *tjm_p;
     IFcomplex   *tjm_A;
     IFcomplex   *tjm_B;
-    IFcomplex   *tjm_P;
     int         tjm_narray;
 
     int         TJMrtype;
@@ -330,8 +330,8 @@ struct sTJMmodel : sGENmodel, sTJMmodelPOD
     sTJMmodel() : sGENmodel(), sTJMmodelPOD() { }
     ~sTJMmodel()
         {
-            delete [] tjm_A;
-            // B and P are pointers into A array
+            delete [] tjm_p;
+            // A and B are pointers into p array
         }
 
     sTJMmodel *next()    { return (static_cast<sTJMmodel*>(GENnextModel)); }
@@ -345,25 +345,44 @@ struct sTJMmodel : sGENmodel, sTJMmodelPOD
 //
 struct TJMcoeffSet
 {
-    TJMcoeffSet(const char *name, int size, const IFcomplex *A,
-            const IFcomplex *B, const IFcomplex *P)
+    TJMcoeffSet(const char *cname, int csize, const IFcomplex *pc,
+            const IFcomplex *Ac, const IFcomplex *Bc)
         {
             cfs_next    = 0;
-            cfs_name    = name;
-            cfs_A       = A;
-            cfs_B       = B;
-            cfs_P       = P;
-            cfs_size    = size;
+            cfs_name    = cname;
+            cfs_p       = pc;
+            cfs_A       = Ac;
+            cfs_B       = Bc;
+            cfs_size    = csize;
+        }
+
+    ~TJMcoeffSet()
+        {
+            delete [] cfs_name;
+            delete [] cfs_p;
+            delete [] cfs_A;
+            delete [] cfs_B;
         }
 
     static TJMcoeffSet *getTJMcoeffSet(const char*);
 
+    TJMcoeffSet *next()             const {return (cfs_next); }
+    void set_next(TJMcoeffSet *x)   { cfs_next = x; }
+    const char *name()              const {return (cfs_name); }
+    const IFcomplex *p()            const {return (cfs_p); }
+    const IFcomplex *A()            const {return (cfs_A); }
+    const IFcomplex *B()            const {return (cfs_B); }
+    int size()                      const {return (cfs_size); }
+
+private:
     TJMcoeffSet *cfs_next;
     const char *cfs_name;
+    const IFcomplex *cfs_p;
     const IFcomplex *cfs_A;
     const IFcomplex *cfs_B;
-    const IFcomplex *cfs_P;
     int cfs_size;
+
+    static sTab<TJMcoeffSet> *TJMcoeffsTab;
 };
 } // namespace TJM
 using namespace TJM;

@@ -522,7 +522,7 @@ sTJMinstance::tjm_newstep(sCKT *ckt)
     double kdt = model->tjm_kgap*model->TJMomegaJ*ckt->CKTdelta;
 
     for (int i = 0; i < model->tjm_narray; i++) {
-        IFcomplex z(model->tjm_P[i]*kdt);
+        IFcomplex z(model->tjm_p[i]*kdt);
         double d = exp(z.real);
         cIFcomplex ez(d*cos(z.imag), d*sin(z.imag));
         tjm_exp_z[i] = ez;
