@@ -310,7 +310,7 @@ cMsgHdlr::append_message(const char* string)
     // duplicates the previous message, and omit it if so, after
     // adding a "duplicate message" line.
 
-    const char *MM_RECD = "...(duplicate messages(s) received)\n";
+    const char *MM_RECD = "...(duplicate message(s) received)\n";
 
     if (!mh_list)
         mh_list = mh_list_end = new wordlist(string, 0);

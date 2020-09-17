@@ -736,7 +736,6 @@ sParamTab::subst(char **tok) const
         }
         else {
             *tok = lstring::copy(p->sub());
-//XXX NEW
             evaluate(tok);
         }
 

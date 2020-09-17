@@ -766,12 +766,15 @@ cRawIn::raw_read(const char *name)
             }
             // And fix the scale pointers
             for (v = curpl->tempvecs(); v; v = v->next()) {
-                if (v->scale()) {
-                    for (nv = curpl->tempvecs(); nv; nv = nv->next())
-                        if (lstring::cieq((char*)v->scale(), nv->name())) {
+                if (v->special_scale()) {
+                    for (nv = curpl->tempvecs(); nv; nv = nv->next()) {
+                        if (lstring::cieq((char*)v->special_scale(),
+                                nv->name())) {
+                            delete [] (char*)v->special_scale();
                             v->set_scale(nv);
                             break;
                         }
+                    }
                     if (!nv) {
                         Sp.Error(E_NOVEC, 0, (char*)v->scale());
                         v->set_scale(0);

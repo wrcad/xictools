@@ -1032,6 +1032,7 @@ struct sDataVec
                 return (v_plot->scale());
             return (0);
         }
+    sDataVec *special_scale()       { return (v_scale); }
     void set_scale(sDataVec *s)     { v_scale = s; }
 
     sDataVec *next()                { return (v_next); }
