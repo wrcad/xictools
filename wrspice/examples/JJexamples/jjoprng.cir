@@ -34,7 +34,7 @@ To run, give these commands to WRspice after sourcing this file:\n\
 # graphically, then "check" to initiate run.  The results will be left
 # in a file.
 #
-compose checkPNTS values 50p 135p 185p 235p 285p 335p 385p 435p	485p
+compose checkPNTS values 50p 135p 185p 235p 285p 335p 385p 435p 485p
 checkFAIL = 0
 # above two lines are required in header, the rest are optional
 #
@@ -60,121 +60,121 @@ failthres = 1
 # each one of the checkPNTS
 #
 if time > checkPNTS[0]
-	if time < checkPNTS[1]
+        if time < checkPNTS[1]
 # time is 50p, set quiescent phase differences.  Uninitialized variables
 # do not require declaration in header
-		p0 = v(200) - v(201)
-		p1 = v(300) - v(301)
-		p2 = v(400) - v(401)
-		checkFAIL = 0
+                p0 = v(200) - v(201)
+                p1 = v(300) - v(301)
+                p2 = v(400) - v(401)
+                checkFAIL = 0
 # echo "tp1" to screen
-		echo tp1
-	end
+                echo tp1
+        end
 end
 if time > checkPNTS[1]
-	if time < checkPNTS[2]
+        if time < checkPNTS[2]
 # time = 135p, state should be '001'. if not set checkFAIL to 1
 # pi and the other variables in the 'constants' plot are known
-		if abs(v(200) - v(201) + p0 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(300) - v(301) - p1) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(400) - v(401) - p2) > failthres
-			checkFAIL = 1;
-		end
-		echo tp2
-	end
+                if abs(v(200) - v(201) + p0 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(300) - v(301) - p1) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(400) - v(401) - p2) > failthres
+                        checkFAIL = 1;
+                end
+                echo tp2
+        end
 end
 if time > checkPNTS[2]
-	if time < checkPNTS[3]
+        if time < checkPNTS[3]
 # time = 185p, state should be '010'. if not set checkFAIL to 1
-		if abs(v(200) - v(201) - p0) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(300) - v(301) + p1 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(400) - v(401) - p2) > failthres
-			checkFAIL = 1;
-		end
-		echo tp3
-	end
+                if abs(v(200) - v(201) - p0) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(300) - v(301) + p1 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(400) - v(401) - p2) > failthres
+                        checkFAIL = 1;
+                end
+                echo tp3
+        end
 end
 if time > checkPNTS[3]
-	if time < checkPNTS[4]
+        if time < checkPNTS[4]
 # time = 235p, state should be '011'. if not set checkFAIL to 1
-		if abs(v(200) - v(201) + p0 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(300) - v(301) + p1 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(400) - v(401) - p2) > failthres
-			checkFAIL = 1;
-		end
-		echo tp4
-	end
+                if abs(v(200) - v(201) + p0 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(300) - v(301) + p1 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(400) - v(401) - p2) > failthres
+                        checkFAIL = 1;
+                end
+                echo tp4
+        end
 end
 if time > checkPNTS[4]
-	if time < checkPNTS[5]
+        if time < checkPNTS[5]
 # time = 285p, state should be '100'. if not set checkFAIL to 1
-		if abs(v(200) - v(201) - p0) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(300) - v(301) - p1) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(400) - v(401) + p2 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		echo tp5
-	end
+                if abs(v(200) - v(201) - p0) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(300) - v(301) - p1) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(400) - v(401) + p2 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                echo tp5
+        end
 end
 if time > checkPNTS[5]
-	if time < checkPNTS[6]
+        if time < checkPNTS[6]
 # time = 335p, state should be '101'. if not set checkFAIL to 1
-		if abs(v(200) - v(201) + p0 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(300) - v(301) - p1) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(400) - v(401) + p2 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		echo tp6
-	end
+                if abs(v(200) - v(201) + p0 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(300) - v(301) - p1) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(400) - v(401) + p2 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                echo tp6
+        end
 end
 if time > checkPNTS[6]
-	if time < checkPNTS[7]
+        if time < checkPNTS[7]
 # time = 385p, state should be '110'. if not set checkFAIL to 1
-		if abs(v(200) - v(201) - p0) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(300) - v(301) + p1 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(400) - v(401) + p2 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		echo tp7
-	end
+                if abs(v(200) - v(201) - p0) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(300) - v(301) + p1 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(400) - v(401) + p2 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                echo tp7
+        end
 end
 if time > checkPNTS[7]
-	if time < checkPNTS[8]
+        if time < checkPNTS[8]
 # time = 435p, state should be '111'. if not set checkFAIL to 1
-		if abs(v(200) - v(201) + p0 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(300) - v(301) + p1 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-		if abs(v(400) - v(401) + p2 - 2*pi) > failthres
-			checkFAIL = 1;
-		end
-	end
+                if abs(v(200) - v(201) + p0 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(300) - v(301) + p1 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+                if abs(v(400) - v(401) + p2 - 2*pi) > failthres
+                        checkFAIL = 1;
+                end
+        end
 end
 #
 # end of pass/fail logic
@@ -235,7 +235,7 @@ v1 13 0 pulse(0 $value1%m 10ps 10ps)
 v2 1 0 pulse(0 $value2%m 10ps 10ps)
 .endif
  
-v3 20 0 pwl(0 0	70p 0
+v3 20 0 pwl(0 0 70p 0
 + 75p  15m 90p  15m 100p -15m 115p -15m 
 + 125p 15m 140p 15m 150p -15m 165p -15m
 + 175p 15m 190p 15m 200p -15m 215p -15m

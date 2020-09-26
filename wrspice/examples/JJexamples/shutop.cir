@@ -53,169 +53,169 @@ checkDEL2 = 10
 # each one of the checkPNTS
 #
 if time > checkPNTS[0]
-	if time < checkPNTS[1]
-		checkFAIL = 0
-		if abs(v(100) - v(101) - 5.3) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(101) - v(102)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(102) - v(103)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(103) - v(104)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(104) - v(105)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(105) - v(106)) > 2
-			checkFAIL = 1;
-		end
-		echo tp1
-	end
+        if time < checkPNTS[1]
+                checkFAIL = 0
+                if abs(v(100) - v(101) - 5.3) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(101) - v(102)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(102) - v(103)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(103) - v(104)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(104) - v(105)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(105) - v(106)) > 2
+                        checkFAIL = 1;
+                end
+                echo tp1
+        end
 end
 if time > checkPNTS[1]
-	if time < checkPNTS[2]
-		checkFAIL = 0
-		if abs(v(100) - v(101)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(101) - v(102) - 5.3) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(102) - v(103)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(103) - v(104)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(104) - v(105)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(105) - v(106)) > 2
-			checkFAIL = 1;
-		end
-		echo tp2
-	end
+        if time < checkPNTS[2]
+                checkFAIL = 0
+                if abs(v(100) - v(101)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(101) - v(102) - 5.3) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(102) - v(103)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(103) - v(104)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(104) - v(105)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(105) - v(106)) > 2
+                        checkFAIL = 1;
+                end
+                echo tp2
+        end
 end
 if time > checkPNTS[2]
-	if time < checkPNTS[3]
-		checkFAIL = 0
-		if abs(v(100) - v(101)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(101) - v(102)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(102) - v(103) - 5.3) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(103) - v(104)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(104) - v(105)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(105) - v(106)) > 2
-			checkFAIL = 1;
-		end
-		echo tp3
-	end
+        if time < checkPNTS[3]
+                checkFAIL = 0
+                if abs(v(100) - v(101)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(101) - v(102)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(102) - v(103) - 5.3) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(103) - v(104)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(104) - v(105)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(105) - v(106)) > 2
+                        checkFAIL = 1;
+                end
+                echo tp3
+        end
 end
 if time > checkPNTS[3]
-	if time < checkPNTS[4]
-		checkFAIL = 0
-		if abs(v(100) - v(101)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(101) - v(102)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(102) - v(103)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(103) - v(104) - 5.3) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(104) - v(105)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(105) - v(106)) > 2
-			checkFAIL = 1;
-		end
-		echo tp4
-	end
+        if time < checkPNTS[4]
+                checkFAIL = 0
+                if abs(v(100) - v(101)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(101) - v(102)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(102) - v(103)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(103) - v(104) - 5.3) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(104) - v(105)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(105) - v(106)) > 2
+                        checkFAIL = 1;
+                end
+                echo tp4
+        end
 end
 if time > checkPNTS[4]
-	if time < checkPNTS[5]
-		checkFAIL = 0
-		if abs(v(100) - v(101)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(101) - v(102)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(102) - v(103)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(103) - v(104)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(104) - v(105) - 5.3) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(105) - v(106)) > 2
-			checkFAIL = 1;
-		end
-		echo tp5
-	end
+        if time < checkPNTS[5]
+                checkFAIL = 0
+                if abs(v(100) - v(101)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(101) - v(102)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(102) - v(103)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(103) - v(104)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(104) - v(105) - 5.3) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(105) - v(106)) > 2
+                        checkFAIL = 1;
+                end
+                echo tp5
+        end
 end
 if time > checkPNTS[5]
-	if time < checkPNTS[6]
-		checkFAIL = 0
-		if abs(v(100) - v(101)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(101) - v(102)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(102) - v(103)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(103) - v(104)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(104) - v(105)) > 2
-			checkFAIL = 1;
-		end
-		if abs(v(105) - v(106) - 5.3) > 2
-			checkFAIL = 1;
-		end
-		echo tp6
-	end
+        if time < checkPNTS[6]
+                checkFAIL = 0
+                if abs(v(100) - v(101)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(101) - v(102)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(102) - v(103)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(103) - v(104)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(104) - v(105)) > 2
+                        checkFAIL = 1;
+                end
+                if abs(v(105) - v(106) - 5.3) > 2
+                        checkFAIL = 1;
+                end
+                echo tp6
+        end
 end
 if time > checkPNTS[6]
-	checkFAIL = 0
-	if abs(v(100) - v(101)) > 2
-		checkFAIL = 1;
-	end
-	if abs(v(101) - v(102)) > 2
-		checkFAIL = 1;
-	end
-	if abs(v(102) - v(103)) > 2
-		checkFAIL = 1;
-	end
-	if abs(v(103) - v(104)) > 2
-		checkFAIL = 1;
-	end
-	if abs(v(104) - v(105)) > 2
-		checkFAIL = 1;
-	end
-	if abs(v(105) - v(106)) > 2
-		checkFAIL = 1;
-	end
+        checkFAIL = 0
+        if abs(v(100) - v(101)) > 2
+                checkFAIL = 1;
+        end
+        if abs(v(101) - v(102)) > 2
+                checkFAIL = 1;
+        end
+        if abs(v(102) - v(103)) > 2
+                checkFAIL = 1;
+        end
+        if abs(v(103) - v(104)) > 2
+                checkFAIL = 1;
+        end
+        if abs(v(104) - v(105)) > 2
+                checkFAIL = 1;
+        end
+        if abs(v(105) - v(106)) > 2
+                checkFAIL = 1;
+        end
 end
 .endc
 

@@ -1,4 +1,4 @@
-*	Diode-Resistor circuit
+*       Diode-Resistor circuit
 
 r1 2 0 1k
 d1 1 2 diode

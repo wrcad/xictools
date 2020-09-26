@@ -80,7 +80,7 @@ v1 13 0 pulse(0 12.75mV 10ps 10ps)
 v2 1 0 pulse(0 14.9mV 10ps 10ps)
 .endif
 *
-v3 20 0 pwl(0 0	70p 0
+v3 20 0 pwl(0 0 70p 0
 + 75p  15m 90p  15m 100p -15m 115p -15m 
 + 125p 15m 140p 15m 150p -15m 165p -15m
 + 175p 15m 190p 15m 200p -15m 215p -15m

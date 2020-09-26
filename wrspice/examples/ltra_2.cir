@@ -1,4 +1,4 @@
-* 	Example 3 for interconnect simulation
+*       Example 3 for interconnect simulation
 
 * From neug1, Mosaic aluminum lines. 2um thick, 11um wide. Assuming
 * 10um above the ground.
@@ -24,8 +24,8 @@
 *    = 12.45ohms/cm
 *
 *  transmission line parameters:
-*  	nominal z0 = sqrt(L/C) = 137 ohms
-*	td = sqrt(LC) = 64.14e-12 secs/cm = 0.064ns/cm
+*       nominal z0 = sqrt(L/C) = 137 ohms
+*       td = sqrt(LC) = 64.14e-12 secs/cm = 0.064ns/cm
 *
 *
 
