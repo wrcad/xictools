@@ -1827,12 +1827,12 @@ sRunopMeas::check_measure(sRunDesc *run)
         return (true);
 
     sFtCirc *circuit = run->circuit();
-    sRunopMeas *measures = circuit->measures();
-    if (!measures)
-       return (true);  // "can't happen"
     bool ready = true;
     if (ro_prmexpr) {
-        for (sRunopMeas *m = measures; m; m = m->next()) {
+        sRunopDb *db = &circuit->runops();
+        ROgen<sRunopMeas> mgen(OP.runops()->measures(),
+            db ? db->measures() : 0);
+        for (sRunopMeas *m = mgen.next(); m; m = mgen.next()) {
             if (ro_analysis != m->ro_analysis)
                 continue;
             if (m == this)
