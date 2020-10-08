@@ -731,7 +731,8 @@ Parser::lexer()
 
     case '\'':
         // delimiter for expression
-        prsr_sptr++;
+        if (prsr_lastToken != TT_VALUE && prsr_lastToken != TT_RPAREN)
+            prsr_sptr++;
         prsr_el->clear();
         finish();
         return (prsr_el);

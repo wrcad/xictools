@@ -272,6 +272,14 @@ namespace {
                 s++;
             }
         }
+        if (string[l] == '\'' && *string == '\'') {
+            string[l] = '\0';
+            char *s = string;
+            while (*s) {
+                *s = *(s+1);
+                s++;
+            }
+        }
     }
 }
 
