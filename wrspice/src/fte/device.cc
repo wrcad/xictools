@@ -1971,10 +1971,38 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
 }
 
 
+namespace {
+    int get_dfrd_val(sCKT *ckt, dfrdlist *dl, IFdata *data)
+    {
+        int err = ckt->getParam(dl->dname, dl->param, data, 0);
+        if (err) {
+            const char *msg = Sp.ErrorShort(err);
+            GRpkgIf()->ErrPrintf(ET_ERROR, "could not get @%s[%s]: %s.\n",
+                dl->dname, dl->param, msg);
+            return (err);
+        }
+        return (OK);
+    }
+}
+
+
 void
 sFtCirc::printAlter(FILE *fp)
 {
     if (fp) {
+/*
+        IFdata data;
+        sCKT *ckt = runckt();
+        for (dfrdlist *dl = ci_deferred; dl; dl = dl->next) {
+            int ret = get_dfrd_val(ckt, dl, &data);
+            if (ret == OK && data.type == IF_REAL) {
+                fprintf(fp, "%-16s %-16s %.12e\n", dl->dname, dl->param,
+                    data.v.rValue);
+            }
+            else
+                fprintf(fp, "%-16s %-16s 0.0\n", dl->dname, dl->param);
+        }
+*/
         for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
             fprintf(fp, "%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
         for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)

@@ -132,7 +132,7 @@ Fitting table options:
     -f   A name for the fitting parameter table.  If not given, a
          default is used, described below.
 
-Running mmjco can generate two types files:  a file containing the
+Running mmjco can generate two types of files:  a file containing the
 swept values of the tunnel current amplitudes, and a file containing
 the fitting parameters used to represent the tunnel current amplitues
 in a compact form.  The "model" files use the same format as the TCA
