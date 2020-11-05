@@ -771,7 +771,7 @@ CommandTab::com_alter(wordlist *wl)
     }
 
     if (!devs && !parms) {
-        Sp.CurCircuit()->printAlter();
+        Sp.CurCircuit()->printAlter(0, true);
         return;
     }
     if (!devs) {
@@ -1974,7 +1974,13 @@ sFtCirc::alter(const char *dname, wordlist *dparams)
 namespace {
     int get_dfrd_val(sCKT *ckt, dfrdlist *dl, IFdata *data)
     {
-        int err = ckt->getParam(dl->dname, dl->param, data, 0);
+        int err = 0;
+        if (!ckt)
+            err = E_NOCKT;
+        else if (!dl || !data)
+            err = E_BADPARM;
+        else
+            err = ckt->getParam(dl->dname, dl->param, data, 0);
         if (err) {
             const char *msg = Sp.ErrorShort(err);
             GRpkgIf()->ErrPrintf(ET_ERROR, "could not get @%s[%s]: %s.\n",
@@ -1987,32 +1993,58 @@ namespace {
 
 
 void
-sFtCirc::printAlter(FILE *fp)
+sFtCirc::printAlter(FILE *fp, bool inval)
 {
+    if (inval) {
+        // Print the given RHS as a string.
+        if (fp) {
+            for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
+                fprintf(fp, "%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+            for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
+                fprintf(fp, "%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+        }
+        else {
+            for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
+                TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+            for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
+                TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+        }
+        return;
+    }
+
+    IFdata data;
+    sCKT *ckt = runckt();
+
+    // Query the current value of the parameter.
     if (fp) {
-/*
-        IFdata data;
-        sCKT *ckt = runckt();
         for (dfrdlist *dl = ci_deferred; dl; dl = dl->next) {
             int ret = get_dfrd_val(ckt, dl, &data);
-            if (ret == OK && data.type == IF_REAL) {
+            if (ret == OK && (data.type & IF_VARTYPES) == IF_REAL) {
                 fprintf(fp, "%-16s %-16s %.12e\n", dl->dname, dl->param,
                     data.v.rValue);
+            }
+            else if (ret == OK && (data.type & IF_VARTYPES) == IF_INTEGER) {
+                fprintf(fp, "%-16s %-16s %d\n", dl->dname, dl->param,
+                    data.v.iValue);
             }
             else
                 fprintf(fp, "%-16s %-16s 0.0\n", dl->dname, dl->param);
         }
-*/
-        for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
-            fprintf(fp, "%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
-        for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
-            fprintf(fp, "%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
     }
     else {
-        for (dfrdlist *dl = ci_deferred; dl; dl = dl->next)
-            TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
-        for (dfrdlist *dl = ci_trial_deferred; dl; dl = dl->next)
-            TTY.printf("%-16s %-16s %s\n", dl->dname, dl->param, dl->rhs);
+        for (dfrdlist *dl = ci_deferred; dl; dl = dl->next) {
+            int ret = get_dfrd_val(ckt, dl, &data);
+            if (ret == OK && (data.type & IF_VARTYPES) == IF_REAL) {
+                fprintf(fp, "%-16s %-16s %.12e\n", dl->dname, dl->param,
+                    data.v.rValue);
+            }
+            else if (ret == OK && (data.type & IF_VARTYPES) == IF_INTEGER) {
+                fprintf(fp, "%-16s %-16s %d\n", dl->dname, dl->param,
+                    data.v.iValue);
+            }
+            else
+                fprintf(fp, "%-16s %-16s 0.0\n", dl->dname, dl->param);
+        }
     }
 }
 // End of sFtCirc functions.

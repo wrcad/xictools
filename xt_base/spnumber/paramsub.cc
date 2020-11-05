@@ -70,8 +70,15 @@ namespace {
     char *nametok(const char**, const char**, bool);
     char *valtok(const char**);
 
-    // Valid chars for first char in parameter name.
-    inline bool is_namechar(char c) { return (isalpha(c) || c == '_'); }
+    // Valid parameter name, also used for set/let LHS in WRspice.
+    inline bool is_namestr(const char *s)
+    {
+        if (!s)
+            return (false);
+        if (*s == '@')
+            s++;
+        return (isalpha(*s) || *s == '_');
+    }
 }
 
 
@@ -586,7 +593,7 @@ sParamTab::line_subst(char **str) const
             squote_subst(&tok);
             chg = true;
         }
-        else if (is_namechar(*tok)) {
+        else if (is_namestr(tok)) {
             char *ltok = lstring::copy(tok);
             if (subst(&tok)) {
                 pt_rctab->add(ltok, (void*)1);
@@ -895,7 +902,7 @@ sParamTab::tokenize(const char **pstr, char **pname, char **psub,
                 // viable parameter definition.
                 mode = PTgeneral;
             else {
-                if (!is_namechar(*name)) {
+                if (!is_namestr(name)) {
                     sLstr lstr;
                     lstr.add("Bad parameter name: ");
                     lstr.add(name);
@@ -916,7 +923,7 @@ sParamTab::tokenize(const char **pstr, char **pname, char **psub,
         }
         if (**pstr == '=')
             break;
-        if (mode == PTsngl && (is_namechar(*name) || *name == '\'')) {
+        if (mode == PTsngl && (is_namestr(name) || *name == '\'')) {
             // Found an isolated name or expression, return it.
             *pname = name;
             *psub = 0;
@@ -928,7 +935,7 @@ sParamTab::tokenize(const char **pstr, char **pname, char **psub,
         delete [] name;
         return (false);
     }
-    if (!is_namechar(*name)) {
+    if (!is_namestr(name)) {
         sLstr lstr;
         lstr.add("Bad parameter name: ");
         lstr.add(name);

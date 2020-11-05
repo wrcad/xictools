@@ -43,6 +43,7 @@
 //
 
 #include "simulator.h"
+#include "spglobal.h"
 #include "runop.h"
 #include "graph.h"
 #include "output.h"
@@ -1375,12 +1376,14 @@ sCHECKprms::initial(bool no_output)
             }
         }
         if (ch_op) {
-            if (ch_monte)
-                sprintf(buf, "[DATA] %3d %3d run %3d",
+            if (ch_monte) {
+                sprintf(buf, "[DATA] %3d %3d trial %3d",
                     -ch_step1, -ch_step2, 1);
-            else
+            }
+            else {
                 sprintf(buf, "[DATA] %3d %3d %12g %12g", 
                     -ch_step1, -ch_step2, value1, value2);
+            }
         }
         set_opvec(-1, -1);  // clear oplo, ophi
         VTvalue vv;
@@ -1423,8 +1426,10 @@ sCHECKprms::initial(bool no_output)
         if (!no_output) {
             if (GP.MpMark(ch_graphid, !ch_fail) && !ch_batchmode)
                 TTY.printf_force(ch_fail ? " FAIL\n\n" : " PASS\n\n");
-            if (ch_op)
+            if (ch_op) {
                 fprintf(ch_op, "%s\t\t%s\n", buf, ch_fail ? "FAIL" : "PASS");
+                out_cir->printAlter(ch_op);
+            }
             addpoint(-ch_step1, -ch_step2, ch_fail);
         }
     }
@@ -1653,7 +1658,7 @@ sCHECKprms::trial(int i, int j, double value1, double value2, bool no_output)
             if (GP.MpWhere(ch_graphid, i, j) && !ch_batchmode)
                 TTY.printf_force("%3d %3d run %3d\n", i, j, num);
             if (ch_op)
-                sprintf(buf, "[DATA] %3d %3d run %3d", i, j, num);
+                sprintf(buf, "[DATA] %3d %3d trial %3d", i, j, num);
         }
     }
     else {
@@ -1661,9 +1666,10 @@ sCHECKprms::trial(int i, int j, double value1, double value2, bool no_output)
         if (!no_output) {
             if (GP.MpWhere(ch_graphid, i, j) && !ch_batchmode)
                 TTY.printf_force("%3d %3d %12g %12g\n", i, j, value1, value2);
-            if (ch_op)
+            if (ch_op) {
                 sprintf(buf, "[DATA] %3d %3d %12g %12g",
                     i, j, value1, value2);
+            }
         }
     }
 
@@ -1687,8 +1693,10 @@ sCHECKprms::trial(int i, int j, double value1, double value2, bool no_output)
         if (!no_output) {
             if (GP.MpMark(ch_graphid, !ch_fail) && !ch_batchmode)
                 TTY.printf_force(ch_fail ? " FAIL\n\n" : " PASS\n\n");
-            if (ch_op)
+            if (ch_op) {
                 fprintf(ch_op, "%s\t\t%s\n", buf, ch_fail ? "FAIL" : "PASS");
+                out_cir->printAlter(ch_op);
+            }
             addpoint(i, j, ch_fail);
         }
         return (ch_fail + 1);
@@ -2149,44 +2157,50 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
     const char *filename = Sp.CurCircuit()->filename();
     if (!filename)
         filename = "<unknown>";
-    if (c == 'm')
-        fprintf(fp, "Monte Carlo Analysis from %s\n", CP.Program());
-    else
-        fprintf(fp, "Operating Range Analysis from %s\n", CP.Program());
-    fprintf(fp, "Date: %s\n", datestring());
-    fprintf(fp, "File: %s\n", filename);
-    if (!tnames) {
-        fprintf(fp, "Parameter 1: %s\n", "value1");
-        fprintf(fp, "Parameter 2: %s\n", "value2");
+    if (c == 'm') {
+        fprintf(fp, "Monte Carlo Analysis from %s-%s\n", CP.Program(),
+            Global.Version());
     }
     else {
-        // Print the substituted parameter names.
-        char param1[128], param2[128];
-        *param1 = '\0';
-        *param2 = '\0';
-        sDataVec *d = out_plot->find_vec(tnames->value());
-        if (d && d->isreal()) {
-            int len = d->length();
-            sDataVec *n1 = out_plot->find_vec(tnames->n1());
-            sDataVec *n2 = out_plot->find_vec(tnames->n2());
-            if (n2 && n2->isreal()) {
-                int ii = (int)n2->realval(0);
-                if (ii >= 0 && ii < len)
-                    sprintf(param1, "%s[%d]", tnames->value(), ii);
-            }
-            // N1 has precedence if N1 = N2
-            if (n1 && n1->isreal()) {
-                int ii = (int)n1->realval(0);
-                if (ii >= 0 && ii < len)
-                    sprintf(param2, "%s[%d]", tnames->value(), ii);
-            }
+        fprintf(fp, "Operating Range Analysis from %s-%s\n", CP.Program(),
+            Global.Version());
+    }
+    fprintf(fp, "Date: %s\n", datestring());
+    fprintf(fp, "File: %s\n", filename);
+    if (c != 'm') {
+        if (!tnames) {
+            fprintf(fp, "Parameter 1: %s\n", "value1");
+            fprintf(fp, "Parameter 2: %s\n", "value2");
         }
-        if (!*param1)
-            strcpy(param1, tnames->value1());
-        if (!*param2)
-            strcpy(param2, tnames->value2());
-        fprintf(fp, "Parameter 1: %s\n", param1);
-        fprintf(fp, "Parameter 2: %s\n", param2);
+        else {
+            // Print the substituted parameter names.
+            char param1[128], param2[128];
+            *param1 = '\0';
+            *param2 = '\0';
+            sDataVec *d = out_plot->find_vec(tnames->value());
+            if (d && d->isreal()) {
+                int len = d->length();
+                sDataVec *n1 = out_plot->find_vec(tnames->n1());
+                sDataVec *n2 = out_plot->find_vec(tnames->n2());
+                if (n2 && n2->isreal()) {
+                    int ii = (int)n2->realval(0);
+                    if (ii >= 0 && ii < len)
+                        sprintf(param1, "%s[%d]", tnames->value(), ii);
+                }
+                // N1 has precedence if N1 = N2
+                if (n1 && n1->isreal()) {
+                    int ii = (int)n1->realval(0);
+                    if (ii >= 0 && ii < len)
+                        sprintf(param2, "%s[%d]", tnames->value(), ii);
+                }
+            }
+            if (!*param1)
+                strcpy(param1, tnames->value1());
+            if (!*param2)
+                strcpy(param2, tnames->value2());
+            fprintf(fp, "Parameter 1: %s\n", param1);
+            fprintf(fp, "Parameter 2: %s\n", param2);
+        }
     }
 
     // Map the file name to the current plot name.
@@ -2319,23 +2333,27 @@ sCHECKprms::processReturn(const char *fname)
                 mcrun = true;
             }
             if (GP.MpWhere(ch_graphid, d1, d2) && !ch_batchmode) {
-                if (mcrun)
+                if (mcrun) {
                     TTY.printf_force("%3d %3d %3s %3s\t\t%s\n", d1, d2,
                         string1, string2, string3);
-                else
+                }
+                else {
                     TTY.printf_force("%3d %3d %12s %12s\t\t%s\n", d1, d2,
                         string1, string2, string3);
+                }
             }
             GP.MpMark(ch_graphid, pf);
             if (ch_op) {
-                if (mcrun)
+                if (mcrun) {
                     fprintf(ch_op,
                         "[DATA] %3d %3d %3s %3s\t\t%s\n", d1, d2, string1,
                         string2, string3);
-                else
+                }
+                else {
                     fprintf(ch_op,
                         "[DATA] %3d %3d %12s %12s\t\t%s\n", d1, d2, string1,
                         string2, string3);
+                }
             }
             char *flag = ch_flags + (d2 + ch_step2)*num1 + d1;
             *flag = 1 + (1-pf);
