@@ -191,6 +191,18 @@ CommandTab::com_echof(wordlist *wlist)
 }
 
 
+void
+CommandTab::com_printf(wordlist *wl)
+{
+    if (!Sp.CurCircuit() || !Sp.CurCircuit()->check() ||
+            !Sp.CurCircuit()->check()->outfp())
+        return;
+    TTY.ioPush(Sp.CurCircuit()->check()->outfp());
+    com_print(wl);
+    TTY.ioPop();
+}
+
+
 // This will dump the alter list to the output file, for use in Monte
 // Carlo analysis.  In this approach, the alter command, or
 // equivalently forms like "let @device[param] = trial_value" are used
@@ -2168,11 +2180,7 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
     fprintf(fp, "Date: %s\n", datestring());
     fprintf(fp, "File: %s\n", filename);
     if (c != 'm') {
-        if (!tnames) {
-            fprintf(fp, "Parameter 1: %s\n", "value1");
-            fprintf(fp, "Parameter 2: %s\n", "value2");
-        }
-        else {
+        if (tnames) {
             // Print the substituted parameter names.
             char param1[128], param2[128];
             *param1 = '\0';
@@ -2198,8 +2206,10 @@ sCHECKprms::df_open(int c, char **rdname, FILE **rdfp, sNames *tnames)
                 strcpy(param1, tnames->value1());
             if (!*param2)
                 strcpy(param2, tnames->value2());
-            fprintf(fp, "Parameter 1: %s\n", param1);
-            fprintf(fp, "Parameter 2: %s\n", param2);
+            if (strcmp(param1, "value1") || strcmp(param2, "value2")) {
+                fprintf(fp, "Parameter 1: %s\n", param1);
+                fprintf(fp, "Parameter 2: %s\n", param2);
+            }
         }
     }
 

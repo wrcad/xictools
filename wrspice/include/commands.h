@@ -168,6 +168,7 @@ public:
     static void com_plot(wordlist*);
     static void com_plotwin(wordlist*);
     static void com_print(wordlist*);
+    static void com_printf(wordlist*);
     static void com_proxy(wordlist*);
     static void com_pwd(wordlist*);
     static void com_pz(wordlist*);

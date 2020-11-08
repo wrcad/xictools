@@ -195,6 +195,7 @@ namespace cmdnames {
     const char *cmd_plot        = "plot";
     const char *cmd_plotwin     = "plotwin";
     const char *cmd_print       = "print";
+    const char *cmd_printf      = "printf";
     const char *cmd_pwd         = "pwd";
     const char *cmd_pz          = "pz";
     const char *cmd_qhelp       = "qhelp";
@@ -459,6 +460,9 @@ sCommand CommandTab::ct_list[] = {
     sCommand( cmd_print, com_print, false, false, true,
       Bvec, Bvec, Bvec, Bvec, E_BEGINNING, 0, LOTS, 0,
       "[col] expr ... : Print vector values." ) ,
+    sCommand( cmd_printf, com_printf, false, false, true,
+      Bvec, Bvec, Bvec, Bvec, E_BEGINNING, 0, LOTS, 0,
+      "[col] expr ... : Print vector values of report file." ) ,
     sCommand( cmd_pwd, com_pwd, false, false, false,
       Bnone, Bnone, Bnone, Bnone, E_DEFHMASK, 0, 0, 0,
       ": Print working directory." ) ,

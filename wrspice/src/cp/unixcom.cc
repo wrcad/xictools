@@ -103,15 +103,21 @@ CshPar::Rehash(const char *pathlist, bool docc)
     }
 
     // Clear out the old hash table
-    hashtabp->clear_data(0, 0);
-    delete hashtabp;
-    hashtabp = 0;
-    hashtabc->clear_data(0, 0);
-    delete hashtabc;
-    hashtabc = 0;
-    hashtabs->clear_data(0, 0);
-    delete hashtabs;
-    hashtabs = 0;
+    if (hashtabp) {
+        hashtabp->clear_data(0, 0);
+        delete hashtabp;
+        hashtabp = 0;
+    }
+    if (hashtabc) {
+        hashtabc->clear_data(0, 0);
+        delete hashtabc;
+        hashtabc = 0;
+    }
+    if (hashtabs) {
+        hashtabs->clear_data(0, 0);
+        delete hashtabs;
+        hashtabs = 0;
+    }
 
     if (docc)
         Cmds.CcSetup();
