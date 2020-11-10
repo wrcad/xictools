@@ -183,6 +183,16 @@ namespace {
                 *is_branch = true;
                 return (nm);
             }
+            if (*nm == '@') {
+                char *nm1 = lstring::copy(nm+1);
+                delete [] nm;
+                nm = nm1;
+                e = strchr(nm, '[');
+                if (e)
+                    *e = 0;
+                *is_branch = true;
+                return (nm);
+            }
             delete [] nm;
         }
         else if (*v->units() == Uv) {
