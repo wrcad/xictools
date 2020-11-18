@@ -119,6 +119,8 @@ phyKWstruct::insert_keyword_text(const char *str, const char*, const char*)
     }
     else if (type == phRsh)
         remove_keyword_text(phRsh);
+    else if (type == phTau)
+        remove_keyword_text(phTau);
     else if (type == phEpsRel)
         remove_keyword_text(phEpsRel);
     else if (type == phCapacitance)
@@ -386,6 +388,23 @@ phyKWstruct::get_string_for(int type, const char *orig)
         }
         break;
 
+    case phTau:
+        nexttok(&orig, tbuf, false);
+        nexttok(&orig, tbuf, false);
+        in = prompt("Enter Drude relaxation time tau: ", tbuf);
+        for (;;) {
+            if (!in)
+                return (0);
+            double d;
+            if (sscanf(in, "%lf", &d) == 1 && d >= 0.0) {
+                sprintf(buf, "%s %.4e", Ekw.Tau(), d);
+                break;
+            }
+            in = prompt(
+                "Bad input, reenter tau: ", tbuf);
+        }
+        break;
+
     case phEpsRel:
         nexttok(&orig, tbuf, false);
         nexttok(&orig, tbuf, false);
@@ -549,6 +568,8 @@ phyKWstruct::kwtype(const char *str)
             ret = phSigma;
         else if (lstring::cieq(tok, Ekw.Rsh()))
             ret = phRsh;
+        else if (lstring::cieq(tok, Ekw.Tau()))
+            ret = phTau;
         else if (lstring::cieq(tok, Ekw.EpsRel()))
             ret = phEpsRel;
         else if (lstring::cieq(tok, Ekw.Capacitance()) ||
@@ -609,6 +630,10 @@ phyKWstruct::get_settings(const CDl *ld)
         sprintf(buf, "%s %g\n", Ekw.Rsh(), lp->ohms_per_sq());
         lstr.add(buf);
     }
+    if (lp->tau() > 0.0) {
+        sprintf(buf, "%s %g\n", Ekw.Tau(), lp->tau());
+        lstr.add(buf);
+    }
     if (lp->epsrel() > 0.0) {
         sprintf(buf, "%s %g\n", Ekw.EpsRel(), lp->epsrel());
         lstr.add(buf);
@@ -649,11 +674,12 @@ phyKWstruct::get_settings(const CDl *ld)
 #define ELP_RH   0x20       // Rho
 #define ELP_SG   0x40       // Sigma
 #define ELP_R    0x80       // Rsh
-#define ELP_EP   0x100      // EpsRel
-#define ELP_CA   0x200      // Capacitance
-#define ELP_LA   0x400      // Lambda
-#define ELP_TR   0x800      // Tline
-#define ELP_AT   0x1000     // Antenna
+#define ELP_TU   0x100      // Tau
+#define ELP_EP   0x200      // EpsRel
+#define ELP_CA   0x400      // Capacitance
+#define ELP_LA   0x800      // Lambda
+#define ELP_TR   0x1000     // Tline
+#define ELP_AT   0x2000     // Antenna
 
 namespace {
     // Parse one line of text and set the layer desc accordingly,
@@ -749,6 +775,15 @@ namespace {
                 return (ELP_R | ELP_ERR);
             tech_prm(ld)->set_ohms_per_sq(p0);
             ret |= ELP_R;
+        }
+        else if (lstring::cieq(kwbuf, Ekw.Tau())) {
+            double p0;
+            if (flags & ELP_TU)
+                return (ELP_TU | ELP_ERR);
+            if (sscanf(inbuf, "%lf", &p0) < 1 || p0 < 0)
+                return (ELP_TU | ELP_ERR);
+            tech_prm(ld)->set_tau(p0);
+            ret |= ELP_TU;
         }
         else if (lstring::cieq(kwbuf, Ekw.EpsRel())) {
             if (flags & ELP_EP)
@@ -949,7 +984,7 @@ phyKWstruct::set_settings(CDl *ld, const char *string)
                         (ELP_TH | ELP_FN | ELP_FR | ELP_RH | ELP_SG | ELP_EP |
                         ELP_LA | ELP_AT)) {
                     if (flags & (ELP_TH | ELP_FN | ELP_FR | ELP_RH | ELP_SG |
-                            ELP_EP | ELP_LA | ELP_AT))
+                            ELP_TU | ELP_EP | ELP_LA | ELP_AT))
                         msg =
                     "Retry: inappropriate physical property keyword line %d";
                     else

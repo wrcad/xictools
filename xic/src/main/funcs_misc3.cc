@@ -196,6 +196,7 @@ namespace {
         bool IFgetLayerThickness(Variable*, Variable*, void*);
         bool IFgetLayerRho(Variable*, Variable*, void*);
         bool IFgetLayerResis(Variable*, Variable*, void*);
+        bool IFgetLayerTau(Variable*, Variable*, void*);
         bool IFgetLayerEps(Variable*, Variable*, void*);
         bool IFgetLayerCap(Variable*, Variable*, void*);
         bool IFgetLayerCapPerim(Variable*, Variable*, void*);
@@ -344,6 +345,7 @@ namespace {
     PY_FUNC(GetLayerThickness,      1,  IFgetLayerThickness);
     PY_FUNC(GetLayerRho,            1,  IFgetLayerRho);
     PY_FUNC(GetLayerResis,          1,  IFgetLayerResis);
+    PY_FUNC(GetLayerTau,            1,  IFgetLayerTau);
     PY_FUNC(GetLayerEps,            1,  IFgetLayerEps);
     PY_FUNC(GetLayerCap,            1,  IFgetLayerCap);
     PY_FUNC(GetLayerCapPerim,       1,  IFgetLayerCapPerim);
@@ -637,6 +639,7 @@ namespace {
     TCL_FUNC(GetLayerThickness,      1,  IFgetLayerThickness);
     TCL_FUNC(GetLayerRho,            1,  IFgetLayerRho);
     TCL_FUNC(GetLayerResis,          1,  IFgetLayerResis);
+    TCL_FUNC(GetLayerTau,            1,  IFgetLayerTau);
     TCL_FUNC(GetLayerEps,            1,  IFgetLayerEps);
     TCL_FUNC(GetLayerCap,            1,  IFgetLayerCap);
     TCL_FUNC(GetLayerCapPerim,       1,  IFgetLayerCapPerim);
@@ -936,6 +939,7 @@ cMain::load_funcs_misc3()
   SIparse()->registerFunc("GetLayerThickness",      1,  IFgetLayerThickness);
   SIparse()->registerFunc("GetLayerRho",            1,  IFgetLayerRho);
   SIparse()->registerFunc("GetLayerResis",          1,  IFgetLayerResis);
+  SIparse()->registerFunc("GetLayerTau",            1,  IFgetLayerTau);
   SIparse()->registerFunc("GetLayerEps",            1,  IFgetLayerEps);
   SIparse()->registerFunc("GetLayerCap",            1,  IFgetLayerCap);
   SIparse()->registerFunc("GetLayerCapPerim",       1,  IFgetLayerCapPerim);
@@ -3715,6 +3719,26 @@ misc3_funcs::IFgetLayerResis(Variable *res, Variable *args, void*)
         rsh = 1e6*tech_prm(ld)->rho()/dsp_prm(ld)->thickness();
 
     res->content.value = rsh;
+    return (OK);
+}
+
+
+// (real) GetLayerTau(stdlyr)
+//
+// The function returns the Drude model relaxation time associated
+// with the layer.  This will add kinetic inductance to a normal
+// metal or resistive layer, if a nonzero resistance has been set. 
+// The effective complex conductivity is sigma/(1-i*omega*tau) at
+// frequency omega.
+//
+bool
+misc3_funcs::IFgetLayerTau(Variable *res, Variable *args, void*)
+{
+    CDl *ld;
+    ARG_CHK(arg_layer(args, 0, &ld, true))
+
+    res->type = TYP_SCALAR;
+    res->content.value = tech_prm(ld)->tau();
     return (OK);
 }
 

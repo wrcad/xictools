@@ -704,11 +704,13 @@ fhLayout::setup()
 
             // Fill in the cached material properties.
             double sigma = get_sigma(l->layer_desc());
+            double tau = tech_prm(l->layer_desc())->tau();
             double lambda = tech_prm(l->layer_desc())->lambda();
             if (lambda < 0.0)
                 lambda = 0.0;
             for (fhConductor *c = cl->cndlist(); c; c = c->next()) {
                 c->set_sigma(sigma);
+                c->set_tau(tau);
                 c->set_lambda(lambda);
             }
         }
@@ -1560,8 +1562,10 @@ fhConductor::segments_print(FILE *fp, e_unit unit, const fhLayout *fhl)
     char buf[128];
     buf[0] = 0;
     const unit_t *u = unit_t::units(unit);
-    if (hc_sigma > 0)
+    if (hc_sigma > 0.0)
         sprintf(buf, " sigma= %g", hc_sigma*u->sigma_factor());
+    if (hc_tau > 0.0)
+        sprintf(buf, " tau= %g", hc_tau);
     if (hc_lambda > 0)
         sprintf(buf + strlen(buf), " lambda= %g", hc_lambda*u->lambda_factor());
     double sc = u->coord_factor();

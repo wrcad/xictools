@@ -109,7 +109,8 @@ LOCAL_LIBS = \
 ####### Executable targets ############################################
 
 TARGETS = wrspice wrspiced multidec proc2mod printtoraw
-all: cptest $(TARGETS) wdemo
+MMJCO = mmjco/mmjco
+all: cptest $(TARGETS) $(MMJCO) wdemo
 
 cptest:
 	cd help; make cptest
@@ -159,6 +160,9 @@ bin/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
 	@echo $@: dynamic link
 	@$(LINKCC) -o bin/printtoraw bin/printtoraw.o $(BASE)/lib/miscutil.a \
   $(STDCLIB) $(WINPTHREADFIX)
+
+mmjco/mmjco: 
+	cd mmjco; make
 
 #######################################################################
 ####### Recursively generate libraries ################################
@@ -389,6 +393,8 @@ install_links::
 	@ln -s $(destn)/bin/wrspice $(toolbin)/wrspice
 	@rm -f $(toolbin)/wrspiced
 	@ln -s $(destn)/bin/wrspiced $(toolbin)/wrspiced
+	@rm -f $(toolbin)/mmjco
+	@ln -s $(destn)/bin/mmjco $(toolbin)/mmjco
 
 clean_links::
 	-@if [ -n $(EXESUFFIX) ]; then \
@@ -401,6 +407,7 @@ clean_links::
 	-@rm -f $(toolbin)s/printtoraw
 	-@rm -f $(toolbin)/wrspice
 	-@rm -f $(toolbin)/wrspiced
+	-@rm -f $(toolbin)/mmjco
 
 install_clean::
 	-@rm -rf $(destn)
@@ -410,6 +417,7 @@ $(destn)/bin::
 	@for aa in wrspiced multidec proc2mod printtoraw; do \
 	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
 	done
+	$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@; \
 # Don't strip wrspice.exe, Webroot will think its a virus!
 	@if [ $(DLL_SPICE_PROG) = wrspice ]; then \
 	    $(INSTALL_BIN) bin/wrspice.dll $@; \

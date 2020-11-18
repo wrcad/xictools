@@ -448,6 +448,19 @@ cTech::ParseExtLayerBlock()
         return (SaveError("%s: layer %s, bad specification.",
             Ekw.Rsh(), tc_last_layer->name()));
     }
+    if (Matching(Ekw.Tau())) {
+        // Drude relaxation time, sec.
+        TCret tcret = CheckLD(true);
+        if (tcret != TCnone)
+            return (tcret);
+        double d;
+        if (sscanf(tc_inbuf, "%lf", &d) == 1 && d > 0.0) {
+            tech_prm(tc_last_layer)->set_tau(d);
+            return (TCmatch);
+        }
+        return (SaveError("%s: layer %s, bad specification.",
+            Ekw.Tau(), tc_last_layer->name()));
+    }
     if (Matching(Ekw.FH_nhinc())) {
         // The FastHenry nhinc number for the layer.  The FastHenry
         // interface uses this to split conductors in a direction
@@ -772,6 +785,13 @@ cTech::PrintExtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld)
         CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Sigma());
     }
 
+    if (lp->tau() > 0.0) {
+        sprintf(buf, "%s %g\n", Ekw.Tau(), lp->tau());
+        PutStr(fp, lstr, buf);
+    }
+    if (cmts)
+        CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Tau());
+
     if (lp->ohms_per_sq() > 0.0) {
         sprintf(buf, "%s %g\n", Ekw.Rsh(), lp->ohms_per_sq());
         PutStr(fp, lstr, buf);
@@ -977,6 +997,11 @@ cTech::ExtCheckLayerKeywords(CDl *ld)
             sprintf(buf, msg, ld->name(), tbuf, Ekw.Via());
             lstr.add(buf);
         }
+        if (lp->tau() > 0.0) {
+            // Tau on Via
+            sprintf(buf, msg, ld->name(), Ekw.Tau(), Ekw.Via());
+            lstr.add(buf);
+        }
         if (lp->ohms_per_sq() > 0.0) {
             // Rsh on Via
             sprintf(buf, msg, ld->name(), Ekw.Rsh(), Ekw.Via());
@@ -1008,6 +1033,11 @@ cTech::ExtCheckLayerKeywords(CDl *ld)
             // Rho/Sigma on Dielectric
             sprintf(tbuf, "%s or %s", Ekw.Rho(), Ekw.Sigma());
             sprintf(buf, msg, ld->name(), tbuf, Ekw.Dielectric());
+            lstr.add(buf);
+        }
+        if (lp->tau() > 0.0) {
+            // Tau on Via
+            sprintf(buf, msg, ld->name(), Ekw.Tau(), Ekw.Via());
             lstr.add(buf);
         }
         if (lp->ohms_per_sq() > 0.0) {
@@ -1043,6 +1073,11 @@ cTech::ExtCheckLayerKeywords(CDl *ld)
             // Rho/Sigma with EpsRel
             sprintf(tbuf, "%s or %s", Ekw.Rho(), Ekw.Sigma());
             sprintf(buf, msg1, ld->name(), tbuf, Ekw.EpsRel());
+            lstr.add(buf);
+        }
+        if (lp->tau() > 0.0) {
+            // Tau on Via
+            sprintf(buf, msg, ld->name(), Ekw.Tau(), Ekw.Via());
             lstr.add(buf);
         }
         if (lp->ohms_per_sq() > 0.0) {

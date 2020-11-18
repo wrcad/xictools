@@ -328,6 +328,7 @@ struct fhConductor
             hc_group = g;
             hc_layer_ix = lix;
             hc_sigma = 0.0;
+            hc_tau = 0.0;
             hc_lambda = 0.0;
             hc_segments = 0;
         }
@@ -372,11 +373,13 @@ struct fhConductor
     glZlist3d *zlist3d()        const { return (hc_zlist3d); }
 
     void set_sigma(double d)    { hc_sigma = d; }
+    void set_tau(double d)      { hc_tau = d; }
     void set_lambda(double d)   { hc_lambda = d; }
 
     int group()                 const { return (hc_group); }
     int layer_index()           const { return (hc_layer_ix); }
     double sigma()              const { return (hc_sigma); }
+    double tau()                const { return (hc_tau); }
     double lambda()             const { return (hc_lambda); }
 
     void set_next(fhConductor *n)     { hc_next = n; }
@@ -389,6 +392,7 @@ private:
     int hc_group;               // conductor group
     int hc_layer_ix;            // layer index
     double hc_sigma;            // conductivity
+    double hc_tau;              // Drude relaxation time
     double hc_lambda;           // penetration depth
     fhSegment *hc_segments;     // segment list
 };

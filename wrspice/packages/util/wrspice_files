@@ -6,7 +6,8 @@ multidec \
 proc2mod \
 printtoraw \
 wrspice \
-wrspiced"
+wrspiced \
+mmjco"
 
 examples="\
 README \

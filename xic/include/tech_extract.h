@@ -88,6 +88,7 @@ struct sExtKW
     const char *Thickness()         const { return ("Thickness"); }
     const char *Rho()               const { return ("Rho"); }
     const char *Sigma()             const { return ("Sigma"); }
+    const char *Tau()               const { return ("Tau"); }
     const char *FH_nhinc()          const { return ("FH_nhinc"); }
     const char *FH_rh()             const { return ("FH_rh"); }
     const char *Rsh()               const { return ("Rsh"); }

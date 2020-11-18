@@ -80,6 +80,8 @@ struct TechLayerParams
     void set_rho(double d)              { lp_rho = d; }
     double ohms_per_sq()                { return (lp_ohms_per_sq); }
     void set_ohms_per_sq(double d)      { lp_ohms_per_sq = d; }
+    double tau()                        { return (lp_tau); }
+    void set_tau(double d)              { lp_tau = d; }
 
     double epsrel()                     { return (lp_epsrel); }
     void set_epsrel(double d)           { lp_epsrel = d; }
@@ -135,6 +137,7 @@ private:
     // Resistance parameters (Extract).
     float lp_rho;                       // resistivity, ohm-meter
     float lp_ohms_per_sq;
+    float lp_tau;                       // Drude model relaxation time
 
     // Capacitance parameters (Extract).
     float lp_epsrel;                    // relative permititivity

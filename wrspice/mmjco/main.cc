@@ -7,6 +7,7 @@
 
 #include "mmjco.h"
 #include <string.h>
+#include "../../xt_base/include/miscutil/pathlist.h"
 
 
 namespace {
@@ -30,6 +31,7 @@ public:
             mmc_d2          = 0.0;
             mmc_sf          = 0.0;
             mmc_datafile    = 0;
+            mmc_tcadir      = 0;
 
             mmc_nterms      = 0;
             mmc_thr         = 0.0;
@@ -39,6 +41,8 @@ public:
             mmc_qp_model    = 0;
 
             gsl_set_error_handler(&gslhdlr);
+
+            char *home = pathlist::get_home();
         }
 
     ~mmjco_cmds()
@@ -69,6 +73,7 @@ private:
     double mmc_d2;
     double mmc_sf;
     const char *mmc_datafile;
+    const char *mmc_tcadir;
 
     // create_fit context
     int mmc_nterms;

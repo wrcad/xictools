@@ -129,6 +129,7 @@ namespace {
             GtkWidget *lp_rho;              // Rho menu entry
             GtkWidget *lp_sigma;            // Sigma menu entry
             GtkWidget *lp_rsh;              // Rsh menu entry
+            GtkWidget *lp_tau;              // Tau menu entry
             GtkWidget *lp_epsrel;           // EpsRel menu entry
             GtkWidget *lp_cap;              // Capacitance menu entry
             GtkWidget *lp_lambda;           // Lambda menu entry
@@ -216,6 +217,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     lp_rho = 0;
     lp_sigma = 0;
     lp_rsh = 0;
+    lp_tau = 0;
     lp_epsrel = 0;
     lp_cap = 0;
     lp_lambda = 0;
@@ -393,6 +395,7 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
     lp_rho = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Rho");
     lp_sigma = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Sigma");
     lp_rsh = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Rsh");
+    lp_tau = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Tau");
     lp_epsrel = gtk_item_factory_get_widget(ifc, "/Physical Keywords/EpsRel");
     lp_cap = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Capacitance");
     lp_lambda = gtk_item_factory_get_widget(ifc, "/Physical Keywords/Lambda");
@@ -576,6 +579,7 @@ sLpe::update(const char *msg, const char *string)
             gtk_widget_set_sensitive(lp_rho, true);
             gtk_widget_set_sensitive(lp_sigma, true);
             gtk_widget_set_sensitive(lp_rsh, true);
+            gtk_widget_set_sensitive(lp_tau, true);
             gtk_widget_set_sensitive(lp_epsrel, true);
             gtk_widget_set_sensitive(lp_cap, true);
             gtk_widget_set_sensitive(lp_lambda, true);
@@ -596,6 +600,7 @@ sLpe::update(const char *msg, const char *string)
                     gtk_widget_set_sensitive(lp_rho, false);
                     gtk_widget_set_sensitive(lp_sigma, false);
                     gtk_widget_set_sensitive(lp_rsh, false);
+                    gtk_widget_set_sensitive(lp_tau, false);
                     gtk_widget_set_sensitive(lp_cap, false);
                     gtk_widget_set_sensitive(lp_lambda, false);
                     gtk_widget_set_sensitive(lp_tline, false);
@@ -607,13 +612,14 @@ sLpe::update(const char *msg, const char *string)
                         gtk_widget_set_sensitive(lp_rho, false);
                         gtk_widget_set_sensitive(lp_sigma, false);
                         gtk_widget_set_sensitive(lp_rsh, false);
+                        gtk_widget_set_sensitive(lp_tau, false);
                         gtk_widget_set_sensitive(lp_cap, false);
                         gtk_widget_set_sensitive(lp_lambda, false);
                         gtk_widget_set_sensitive(lp_tline, false);
                         gtk_widget_set_sensitive(lp_antenna, false);
                     }
                     else if (lp->rho() > 0.0 || lp->ohms_per_sq() > 0.0 ||
-                            lp->cap_per_area() > 0.0 ||
+                            lp->tau() > 0.0 || lp->cap_per_area() > 0.0 ||
                             lp->cap_per_perim() > 0.0 ||
                             lp->lambda() > 0.0 || lp->gp_lname() ||
                             lp->ant_ratio() > 0.0)
