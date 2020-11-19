@@ -875,9 +875,10 @@ namespace {
 
                 rho = lp->rho();
                 lp->set_rho(0.0);
-
                 ohms_per_sq = lp->ohms_per_sq();
                 lp->set_ohms_per_sq(0.0);
+                tau = lp->tau();
+                lp->set_tau(0.0);
 
                 epsrel = lp->epsrel();
                 lp->set_epsrel(0.0);
@@ -921,6 +922,7 @@ namespace {
 
                 lp->set_rho(rho);
                 lp->set_ohms_per_sq(ohms_per_sq);
+                lp->set_tau(tau);
                 lp->set_epsrel(epsrel);
                 lp->set_cap_per_area(cap_per_area);
                 lp->set_cap_per_perim(cap_per_perim);
@@ -936,6 +938,7 @@ namespace {
         double fh_rh;
         double rho;
         double ohms_per_sq;
+        double tau;
         double epsrel;
         double cap_per_area;
         double cap_per_perim;

@@ -317,6 +317,8 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
         phSigma, 0);
     IFINIT(nitems, "/Physical Keywords/Rsh", 0, lp_kw_proc,
         phRsh, 0);
+    IFINIT(nitems, "/Physical Keywords/Tau", 0, lp_kw_proc,
+        phTau, 0);
     IFINIT(nitems, "/Physical Keywords/EpsRel", 0, lp_kw_proc,
         phEpsRel, 0);
     IFINIT(nitems, "/Physical Keywords/Capacitance", 0, lp_kw_proc,

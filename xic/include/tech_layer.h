@@ -135,29 +135,29 @@ private:
     sVia *lp_vialist;                   // via list
 
     // Resistance parameters (Extract).
-    float lp_rho;                       // resistivity, ohm-meter
-    float lp_ohms_per_sq;
-    float lp_tau;                       // Drude model relaxation time
+    double lp_rho;                      // resistivity, ohm-meter
+    double lp_ohms_per_sq;              // sheet resistance
+    double lp_tau;                      // Drude model relaxation time
 
     // Capacitance parameters (Extract).
-    float lp_epsrel;                    // relative permititivity
-    float lp_cap_per_area;              // pF per sq micron
-    float lp_cap_per_perim;             // pF per micron
+    double lp_epsrel;                   // relative permititivity
+    double lp_cap_per_area;             // pF per sq micron
+    double lp_cap_per_perim;            // pF per micron
 
     // Superconducting penetration depth (Extract).
-    float lp_lambda;                    // London penetration depth, microns
+    double lp_lambda;                   // London penetration depth, microns
 
     // Transmission line (Extract).
     char *lp_gp_lname;                  // ground plane layer name
-    float lp_diel_thick;                // assumed dielectric thickness
-    float lp_diel_const;                // assumed rel. dielectric const.
+    double lp_diel_thick;               // assumed dielectric thickness
+    double lp_diel_const;               // assumed rel. dielectric const.
 
     // FastHenry interface (Extract).
     int lp_fh_nhinc;                    // FastHenry filaments
-    float lp_fh_rh;                     // FastHenry filament height ratio
+    double lp_fh_rh;                    // FastHenry filament height ratio
 
     // Misc. (Extract).
-    float lp_ant_ratio;                 // antenna ratio
+    double lp_ant_ratio;                // antenna ratio
 
     // Routing info.
     tRouteDir lp_route_dir;             // route direction

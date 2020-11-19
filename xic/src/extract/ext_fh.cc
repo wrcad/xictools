@@ -1562,10 +1562,11 @@ fhConductor::segments_print(FILE *fp, e_unit unit, const fhLayout *fhl)
     char buf[128];
     buf[0] = 0;
     const unit_t *u = unit_t::units(unit);
-    if (hc_sigma > 0.0)
+    if (hc_sigma > 0.0) {
         sprintf(buf, " sigma= %g", hc_sigma*u->sigma_factor());
-    if (hc_tau > 0.0)
-        sprintf(buf, " tau= %g", hc_tau);
+        if (hc_tau > 0.0 && hc_lambda <= 0.0)
+            sprintf(buf + strlen(buf), " tau= %g", hc_tau);
+    }
     if (hc_lambda > 0)
         sprintf(buf + strlen(buf), " lambda= %g", hc_lambda*u->lambda_factor());
     double sc = u->coord_factor();
