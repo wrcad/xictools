@@ -191,6 +191,7 @@ namespace {
         bool IFisLayerGround(Variable*, Variable*, void*);
         bool IFisLayerContact(Variable*, Variable*, void*);
         bool IFisLayerVia(Variable*, Variable*, void*);
+        bool IFisLayerViaCut(Variable*, Variable*, void*);
         bool IFisLayerDielectric(Variable*, Variable*, void*);
         bool IFisLayerDarkField(Variable*, Variable*, void*);
         bool IFgetLayerThickness(Variable*, Variable*, void*);
@@ -340,6 +341,7 @@ namespace {
     PY_FUNC(IsLayerGround,          1,  IFisLayerGround);
     PY_FUNC(IsLayerContact,         1,  IFisLayerContact);
     PY_FUNC(IsLayerVia,             1,  IFisLayerVia);
+    PY_FUNC(IsLayerViaCut,          1,  IFisLayerViaCut);
     PY_FUNC(IsLayerDielectric,      1,  IFisLayerDielectric);
     PY_FUNC(IsLayerDarkField,       1,  IFisLayerDarkField);
     PY_FUNC(GetLayerThickness,      1,  IFgetLayerThickness);
@@ -486,6 +488,7 @@ namespace {
       cPyIf::register_func("IsLayerGround",          pyIsLayerGround);
       cPyIf::register_func("IsLayerContact",         pyIsLayerContact);
       cPyIf::register_func("IsLayerVia",             pyIsLayerVia);
+      cPyIf::register_func("IsLayerViaCut",          pyIsLayerViaCut);
       cPyIf::register_func("IsLayerDielectric",      pyIsLayerDielectric);
       cPyIf::register_func("IsLayerDarkField",       pyIsLayerDarkField);
       cPyIf::register_func("GetLayerThickness",      pyGetLayerThickness);
@@ -634,6 +637,7 @@ namespace {
     TCL_FUNC(IsLayerGround,          1,  IFisLayerGround);
     TCL_FUNC(IsLayerContact,         1,  IFisLayerContact);
     TCL_FUNC(IsLayerVia,             1,  IFisLayerVia);
+    TCL_FUNC(IsLayerViaCut,          1,  IFisLayerViaCut);
     TCL_FUNC(IsLayerDielectric,      1,  IFisLayerDielectric);
     TCL_FUNC(IsLayerDarkField,       1,  IFisLayerDarkField);
     TCL_FUNC(GetLayerThickness,      1,  IFgetLayerThickness);
@@ -780,6 +784,7 @@ namespace {
       cTclIf::register_func("IsLayerGround",          tclIsLayerGround);
       cTclIf::register_func("IsLayerContact",         tclIsLayerContact);
       cTclIf::register_func("IsLayerVia",             tclIsLayerVia);
+      cTclIf::register_func("IsLayerViaCut",          tclIsLayerViaCut);
       cTclIf::register_func("IsLayerDielectric",      tclIsLayerDielectric);
       cTclIf::register_func("IsLayerDarkField",       tclIsLayerDarkField);
       cTclIf::register_func("GetLayerThickness",      tclGetLayerThickness);
@@ -934,6 +939,7 @@ cMain::load_funcs_misc3()
   SIparse()->registerFunc("IsLayerGround",          1,  IFisLayerGround);
   SIparse()->registerFunc("IsLayerContact",         1,  IFisLayerContact);
   SIparse()->registerFunc("IsLayerVia",             1,  IFisLayerVia);
+  SIparse()->registerFunc("IsLayerViaCut",          1,  IFisLayerViaCut);
   SIparse()->registerFunc("IsLayerDielectric",      1,  IFisLayerDielectric);
   SIparse()->registerFunc("IsLayerDarkField",       1,  IFisLayerDarkField);
   SIparse()->registerFunc("GetLayerThickness",      1,  IFgetLayerThickness);
@@ -3616,6 +3622,24 @@ misc3_funcs::IFisLayerVia(Variable *res, Variable *args, void*)
 
     res->type = TYP_SCALAR;
     res->content.value = ld->isVia();
+    return (OK);
+}
+
+
+// (int) IsLayerViaCut(stdlyr)
+//
+// The function returns 1 if the ViaCut keyword is given for the layer
+// indicated by the argument, which is a standard layer argument or a
+// derived layer name string, 0 otherwise.
+//
+bool
+misc3_funcs::IFisLayerViaCut(Variable *res, Variable *args, void*)
+{
+    CDl *ld;
+    ARG_CHK(arg_layer(args, 0, &ld, true))
+
+    res->type = TYP_SCALAR;
+    res->content.value = ld->isViaCut();
     return (OK);
 }
 
