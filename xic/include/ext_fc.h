@@ -213,6 +213,8 @@ struct fcLayout : public Ldb3d
     bool write_panels(FILE*, int, int, e_unit);
     fcGrpPtr *group_points() const;
 
+    static void clear_dbg_zlist();
+
 private:
     void write_subs_panels(FILE*, FILE*, int, int, e_unit);
     void write_d_panels(FILE*, FILE*, fcDpanel*, char*, int, int, e_unit);

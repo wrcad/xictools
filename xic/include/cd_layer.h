@@ -84,9 +84,10 @@ struct strm_odata;
 #define CDL_GROUNDPLANE     0x00400000   // ground plane layer
 #define CDL_IN_CONTACT      0x00800000   // layer will contact another net
 #define CDL_VIA             0x01000000   // layer is via between nets
-#define CDL_DIELECTRIC      0x02000000   // layer is capacitor dielectric
-#define CDL_PLANARIZE       0x04000000   // layer planarizes, y/n given
-#define CDL_DARKFIELD       0x08000000   // layer is polarity reversed
+#define CDL_VIACUT          0x02000000   // layer dielectric with cuts defined
+#define CDL_DIELECTRIC      0x04000000   // layer is capacitor dielectric
+#define CDL_PLANARIZE       0x08000000   // layer planarizes, y/n given
+#define CDL_DARKFIELD       0x10000000   // layer is polarity reversed
 
 // Flags in the ld_flags2 field.
 #define CDLPRV_TYPE         0x3         // the first 2 bits specify the
@@ -187,6 +188,7 @@ struct CDl
     bool isGroundPlane()        const { return (ld_flags & CDL_GROUNDPLANE); }
     bool isInContact()          const { return (ld_flags & CDL_IN_CONTACT); }
     bool isVia()                const { return (ld_flags & CDL_VIA); }
+    bool isViaCut()             const { return (ld_flags & CDL_VIACUT); }
     bool isDielectric()         const { return (ld_flags & CDL_DIELECTRIC); }
     bool isPlanarizingSet()     const { return (ld_flags & CDL_PLANARIZE); }
     bool isDarkField()          const { return (ld_flags & CDL_DARKFIELD); }
@@ -240,6 +242,8 @@ struct CDl
                 (ld_flags | CDL_IN_CONTACT) : (ld_flags & ~CDL_IN_CONTACT); }
     void setVia(bool b) { ld_flags = b ?
                 (ld_flags | CDL_VIA) : (ld_flags & ~CDL_VIA); }
+    void setViaCut(bool b) { ld_flags = b ?
+                (ld_flags | CDL_VIACUT) : (ld_flags & ~CDL_VIACUT); }
     void setDielectric(bool b) { ld_flags = b ?
                 (ld_flags | CDL_DIELECTRIC) : (ld_flags & ~CDL_DIELECTRIC); }
     void setPlanarizingSet(bool b) { ld_flags = b ?
@@ -258,7 +262,7 @@ struct CDl
         {
             if (isPlanarizingSet())
                 return (ld_flags2 & CDLPRV_PLZASSET);
-            return (isVia() || isConductor());
+            return (isVia() || isViaCut() || isConductor());
         }
 
     void setPlanarizing(bool set, bool plz)

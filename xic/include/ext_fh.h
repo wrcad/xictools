@@ -364,7 +364,7 @@ struct fhConductor
     void accum_points_z(SymTab*);
     bool split(int*, int, int*, int);
     bool split_z(int*, int);
-    void save_zlist_db();
+    void save_dbg_zlist();
 
     void set_zlist3d_ref(glZlistRef3d *z)   { hc_zlist3d_ref = z; }
     void set_zlist3d(glZlist3d *z)          { hc_zlist3d = z; }
@@ -458,6 +458,8 @@ struct fhLayout : public Ldb3d
 
     bool setup();
     bool fh_dump(FILE*);
+
+    static void clear_dbg_zlist();
 
     fhLayer *fhlayers()             const { return (fhl_layers); }
     fhTermList **terms()            const { return (fhl_terms); }

@@ -296,6 +296,8 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
         exContact, 0);
     IFINIT(nitems, "/Extract Keywords/Via", 0, lp_kw_proc,
         exVia, 0);
+    IFINIT(nitems, "/Extract Keywords/ViaCut", 0, lp_kw_proc,
+        exViaCut, 0);
     IFINIT(nitems, "/Extract Keywords/Dielectric", 0, lp_kw_proc,
         exDielectric, 0);
     IFINIT(nitems, "/Extract Keywords/DarkField", 0, lp_kw_proc,
@@ -338,7 +340,6 @@ sLpe::sLpe(GRobject c, const char *msg, const char *string)
         cvStreamOut, 0);
     IFINIT(nitems, "/Convert Keywords/NoDrcDataType", 0, lp_kw_proc,
         cvNoDrcDataType, 0);
-
 
     IFINIT(nitems, "/Global _Attributes", 0, 0, 0, "<Branch>");
     IFINIT(nitems, "/Global Attributes/BoxLineStyle", 0, lp_attr_proc,
@@ -598,7 +599,7 @@ sLpe::update(const char *msg, const char *string)
                     if (!lp_ldesc->isRouting())
                         gtk_widget_set_sensitive(lp_antenna, false);
                 }
-                else if (lp_ldesc->isVia()) {
+                else if (lp_ldesc->isVia() || lp_ldesc->isViaCut()) {
                     gtk_widget_set_sensitive(lp_rho, false);
                     gtk_widget_set_sensitive(lp_sigma, false);
                     gtk_widget_set_sensitive(lp_rsh, false);

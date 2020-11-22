@@ -59,6 +59,7 @@ enum exKW
     exGroundPlaneClear,
     exContact,
     exVia,
+    exViaCut,
     exDielectric,
     exDarkField
 };

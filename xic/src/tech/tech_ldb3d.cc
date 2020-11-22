@@ -45,6 +45,8 @@
 #include "geo_ylist.h"
 #include "cd_lgen.h"
 #include "cd_propnum.h"
+#include "si_parsenode.h"
+#include "si_lexpr.h"
 #include "tech.h"
 #include "tech_ldb3d.h"
 #include "tech_layer.h"
@@ -99,11 +101,9 @@ namespace {
         if (!Layer3d::is_conductor(ld) && !Layer3d::is_insulator(ld))
             return (false);
 
-        // Must have finite thickness.
-        if (dsp_prm(ld)->thickness() <= 0)
-            return (false);
-
-        // Do some sanity checking of the VIA layer.
+        // Do some sanity checking of the VIA layer, even if it has
+        // zero thickness.  In the latter case, if may be used in a
+        // ViaCut layer.
         if (ld->isVia()) {
             bool ok = true;
             for (sVia *vl = tech_prm(ld)->via_list(); vl; vl = vl->next()) {
@@ -132,6 +132,11 @@ namespace {
             if (!ok)
                 return (false);
         }
+
+        // Must have finite thickness.
+        if (dsp_prm(ld)->thickness() <= 0)
+            return (false);
+
         return (true);
     }
 }
@@ -182,6 +187,9 @@ Ldb3d::order_layers()
         }
     }
     CDll::destroy(ll0);
+
+    if (db3_logging)
+        layer_dump(stdout);
 
     return (db3_stack != 0);
 }
@@ -710,13 +718,24 @@ Layer3d::extract_geom(const CDs *sdesc, const Zlist *zref, int manh_min,
         zref = ztemp;
     }
 
-    XIrt ret;
-    Zlist *zl = sdesc->getZlist(CDMAXCALLDEPTH, l3_ldesc, zref, &ret);
+    XIrt ret = XIbad;
+    Zlist *zl = 0;
+    if (l3_ldesc->isViaCut()) {
+        // ViaCut layer -- extract geometry using the layer expression.
+
+        sVia *v = tech_prm(l3_ldesc)->via_list();
+        if (v && v->tree()) {
+            SIlexprCx cx(sdesc, CDMAXCALLDEPTH, zref);
+            ret = v->tree()->evalTree(&cx, &zl, PolarityDark);
+        }
+    }
+    else
+        zl = sdesc->getZlist(CDMAXCALLDEPTH, l3_ldesc, zref, &ret);
     if (ret != XIok) {
         Zlist::destroy(ztemp);
         return (false);
     }
-    if (l3_ldesc->isVia() || l3_ldesc->isDarkField()) {
+    if (l3_ldesc->isVia() || l3_ldesc->isViaCut() || l3_ldesc->isDarkField()) {
         Zlist *zr = Zlist::copy(zref);
         ret = Zlist::zl_andnot(&zr, zl);
         if (ret != XIok) {
@@ -998,7 +1017,7 @@ Layer3d::is_insulator(const CDl *ld)
 {
     if (!ld)
         return (false);
-    return (ld->flags() & (CDL_VIA | CDL_DIELECTRIC));
+    return (ld->flags() & (CDL_VIA | CDL_VIACUT | CDL_DIELECTRIC));
 }
 
 

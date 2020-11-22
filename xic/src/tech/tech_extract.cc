@@ -346,6 +346,38 @@ cTech::ParseExtLayerBlock()
         delete [] vl2;
         return (TCmatch);
     }
+    if (Matching(Ekw.ViaCut())) {
+        TCret tcret = CheckLD(true);
+        if (tcret != TCnone)
+            return (tcret);
+        const char *inptr = tc_inbuf;
+        while (isspace(*inptr))
+            inptr++;
+        ParseNode *tree = 0;
+        if (*inptr) {
+            const char *t = inptr;
+            tree = SIparse()->getLexprTree(&t);
+            if (!tree) {
+                char *er = SIparse()->errMessage();
+                if (er) {
+                    char *e = SaveError(
+                        "%s: layer experession parse failed:\n%s",
+                        Ekw.Via(), er);
+                    delete [] er;
+                    return (e);
+                }
+                return (SaveError("%s: layer %s, parse error.",
+                    Ekw.Via(), tc_last_layer->name()));
+            }
+        }
+        if (!tree) {
+            return (SaveError(
+                "%s: layer %s, missing or unknown cut expression.",
+                Ekw.Via(), tc_last_layer->name()));
+        }
+        AddVia(tc_last_layer, 0, 0, tree);
+        return (TCmatch);
+    }
     if (Matching(Ekw.Dielectric())) {
         TCret tcret = CheckLD(true);
         if (tcret != TCnone)
@@ -628,6 +660,21 @@ cTech::PrintExtLayerBlock(FILE *fp, sLstr *lstr, bool cmts, const CDl *ld)
                 CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.Via());
         }
     }
+    else if (ld->isViaCut()) {
+        sVia *v = tech_prm(ld)->via_list();
+        if (v && v->tree()) {
+            sLstr tstr;
+            v->tree()->string(tstr);
+            if (tstr.string()) {
+                PutStr(fp, lstr, Ekw.ViaCut());
+                PutChr(fp, lstr, ' ');
+                PutStr(fp, lstr, tstr.string());
+                PutChr(fp, lstr, '\n');
+            }
+        }
+        if (cmts)
+            CommentDump(fp, lstr, tBlkPlyr, ld->name(), Ekw.ViaCut());
+    }
     else if (ld->isDielectric()) {
         PutStr(fp, lstr, Ekw.Dielectric());
         PutChr(fp, lstr, '\n');
@@ -851,6 +898,20 @@ cTech::AddVia(CDl *ld, const char *ln1, const char *ln2, ParseNode *tree)
 {
     if (!ld)
         return (0);
+
+    if (!ln1 && !ln2 && tree) {
+        // ViaCut layer.  This is a dielectric that takes its pattern
+        // from a layer expression.
+
+        sVia *vl0 = tech_prm(ld)->via_list();
+        sVia::destroy(vl0);
+        vl0 = new sVia(0, 0, tree);
+        tech_prm(ld)->set_via_list(vl0);
+        ld->setViaCut(true);
+        ld->setDarkField(true);
+        return (vl0);
+    }
+
     if (!ln1 || !*ln1)
         return (0);
     if (!ln2 || !*ln2)
@@ -1024,6 +1085,44 @@ cTech::ExtCheckLayerKeywords(CDl *ld)
         }
         if (lp->ant_ratio() > 0.0) {
             // Antenna on Via
+            sprintf(buf, msg, ld->name(), Ekw.Antenna(), Ekw.Via());
+            lstr.add(buf);
+        }
+    }
+    else if (ld->isViaCut()) {
+        if (lp->rho() > 0.0) {
+            // Rho/Sigma on ViaCut
+            sprintf(tbuf, "%s or %s", Ekw.Rho(), Ekw.Sigma());
+            sprintf(buf, msg, ld->name(), tbuf, Ekw.Via());
+            lstr.add(buf);
+        }
+        if (lp->tau() > 0.0) {
+            // Tau on ViaCut
+            sprintf(buf, msg, ld->name(), Ekw.Tau(), Ekw.Via());
+            lstr.add(buf);
+        }
+        if (lp->ohms_per_sq() > 0.0) {
+            // Rsh on ViaCut
+            sprintf(buf, msg, ld->name(), Ekw.Rsh(), Ekw.Via());
+            lstr.add(buf);
+        }
+        if (lp->cap_per_area() > 0.0 || lp->cap_per_perim() > 0.0) {
+            // Capacitance on ViaCut
+            sprintf(buf, msg, ld->name(), Ekw.Capacitance(), Ekw.Via());
+            lstr.add(buf);
+        }
+        if (lp->lambda() > 0.0) {
+            // Lambda on ViaCut
+            sprintf(buf, msg, ld->name(), Ekw.Lambda(), Ekw.Via());
+            lstr.add(buf);
+        }
+        if (lp->gp_lname() != 0) {
+            // Tline on ViaCut
+            sprintf(buf, msg, ld->name(), Ekw.Tline(), Ekw.Via());
+            lstr.add(buf);
+        }
+        if (lp->ant_ratio() > 0.0) {
+            // Antenna on ViaCut
             sprintf(buf, msg, ld->name(), Ekw.Antenna(), Ekw.Via());
             lstr.add(buf);
         }

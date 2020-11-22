@@ -152,6 +152,7 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
             }
         }
         remove_keyword_text(exVia);
+        remove_keyword_text(exViaCut);
         remove_keyword_text(exDielectric);
     }
     else if (type == exRouting) {
@@ -160,6 +161,7 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
         remove_keyword_text(exGroundPlane);
         remove_keyword_text(exGroundPlaneClear);
         remove_keyword_text(exVia);
+        remove_keyword_text(exViaCut);
         remove_keyword_text(exDielectric);
     }
     else if (type == exGroundPlane) {
@@ -168,6 +170,7 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
         remove_keyword_text(exGroundPlane);
         remove_keyword_text(exGroundPlaneClear);
         remove_keyword_text(exVia);
+        remove_keyword_text(exViaCut);
         remove_keyword_text(exDielectric);
     }
     else if (type == exGroundPlaneClear) {
@@ -177,11 +180,14 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
         remove_keyword_text(exGroundPlaneClear);
         remove_keyword_text(exDarkField);
         remove_keyword_text(exVia);
+        remove_keyword_text(exViaCut);
         remove_keyword_text(exDielectric);
     }
     else if (type == exContact) {
         remove_keyword_text(exConductor, true);
+        remove_keyword_text(exContact);
         remove_keyword_text(exVia);
+        remove_keyword_text(exViaCut);
         remove_keyword_text(exDielectric);
     }
     else if (type == exVia) {
@@ -192,6 +198,19 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
         remove_keyword_text(exContact);
         remove_keyword_text(exVia, false, l1, l2);
         remove_keyword_text(exDarkField);
+        remove_keyword_text(exViaCut);
+        remove_keyword_text(exDielectric);
+    }
+    else if (type == exViaCut) {
+        remove_keyword_text(exConductor);
+        remove_keyword_text(exRouting);
+        remove_keyword_text(exGroundPlane);
+        remove_keyword_text(exGroundPlaneClear);
+        remove_keyword_text(exContact);
+        remove_keyword_text(exVia, false, l1, l2);
+        remove_keyword_text(exDarkField);
+        remove_keyword_text(exVia);
+        remove_keyword_text(exViaCut);
         remove_keyword_text(exDielectric);
     }
     else if (type == exDielectric) {
@@ -201,6 +220,7 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
         remove_keyword_text(exGroundPlaneClear);
         remove_keyword_text(exContact);
         remove_keyword_text(exVia);
+        remove_keyword_text(exViaCut);
         remove_keyword_text(exDielectric);
     }
     else if (type == exDarkField) {
@@ -212,6 +232,10 @@ extKWstruct::insert_keyword_text(const char *str, const char *l1,
         }
         if (inlist(exVia)) {
             sprintf(buf, msg, Ekw.DarkField(), Ekw.Via());
+            return (lstring::copy(buf));
+        }
+        if (inlist(exViaCut)) {
+            sprintf(buf, msg, Ekw.DarkField(), Ekw.ViaCut());
             return (lstring::copy(buf));
         }
     }
@@ -564,6 +588,18 @@ extKWstruct::get_string_for(int type, const char *orig)
             sprintf(buf + strlen(buf), " %s", in);
         break;
 
+    case exViaCut:
+        nexttok(&orig, tbuf, false);
+        nexttok(&orig, tbuf, true);
+        in = prompt(
+            "Enter the layer expression that defines cuts: ", tbuf);
+        if (!in)
+            return (0);
+        in = lstring::strip_space(in);
+        if (*in)
+            sprintf(buf, "%s %s", Ekw.ViaCut(), in);
+        break;
+
     case exDielectric:
         strcpy(buf, Ekw.Dielectric());
         break;
@@ -604,6 +640,8 @@ extKWstruct::kwtype(const char *str)
             ret = exContact;
         else if (lstring::cieq(tok, Ekw.Via()))
             ret = exVia;
+        else if (lstring::cieq(tok, Ekw.ViaCut()))
+            ret = exViaCut;
         else if (lstring::cieq(tok, Ekw.Dielectric()))
             ret = exDielectric;
         else if (lstring::cieq(tok, Ekw.DarkField()))
@@ -636,6 +674,15 @@ extKWstruct::get_settings(const CDl *ld)
                     v->tree()->string(lstr);
                 lstr.add_c('\n');
             }
+        }
+    }
+    else if (ld->isViaCut()) {
+        sVia *v = tech_prm(ld)->via_list();
+        if (v && v->tree()) {
+            lstr.add(Ekw.ViaCut());
+            lstr.add_c(' ');
+            v->tree()->string(lstr);
+            lstr.add_c('\n');
         }
     }
     else if (ld->isDielectric()) {
@@ -726,13 +773,14 @@ extKWstruct::get_settings(const CDl *ld)
 #define ELP_GPC  0x10       // GroundPlaneClear
 #define ELP_CN   0x20       // Contact
 #define ELP_V    0x40       // Via
-#define ELP_DI   0x80       // Dielectric
-#define ELP_DF   0x100      // DarkField
-#define ELP_UI   0x200      // MultiNet
-#define ELP_UIM0 0x400      // Invert 0
-#define ELP_UIM1 0x800      // Invert 1
-#define ELP_UIM2 0x1000     // Invert 2
-#define ELP_VP   0x2000     // Via parse tree
+#define ELP_VC   0x80       // ViaCut
+#define ELP_DI   0x100      // Dielectric
+#define ELP_DF   0x200      // DarkField
+#define ELP_UI   0x400      // MultiNet
+#define ELP_UIM0 0x800      // Invert 0
+#define ELP_UIM1 0x1000     // Invert 1
+#define ELP_UIM2 0x2000     // Invert 2
+#define ELP_VP   0x4000     // Via parse tree
 
 namespace {
     // Parse one line of text and set the layer desc accordingly,
@@ -771,7 +819,7 @@ namespace {
         }
 
         if (lstring::cieq(kwbuf, Ekw.Conductor())) {
-            if (flags & (ELP_V | ELP_DI))
+            if (flags & (ELP_V | ELP_VC | ELP_DI))
                 return (ELP_CO | ELP_ERR);
             ld->setConductor(true);
             ret |= ELP_CO;
@@ -796,7 +844,7 @@ namespace {
             }
         }
         else if (lstring::cieq(kwbuf, Ekw.Routing())) {
-            if (flags & (ELP_V | ELP_DI))
+            if (flags & (ELP_V | ELP_VC | ELP_DI))
                 return (ELP_RO | ELP_ERR);
             if (!Tech()->ParseRouting(ld, inbuf)) {
                 Log()->PopUpErr(Errs()->get_error());
@@ -808,14 +856,14 @@ namespace {
         }
         else if (lstring::cieq(kwbuf, Ekw.GroundPlane()) ||
                 lstring::cieq(kwbuf, Ekw.GroundPlaneDark())) {
-            if (flags & (ELP_V | ELP_DI))
+            if (flags & (ELP_V | ELP_VC | ELP_DI))
                 return (ELP_GPD | ELP_ERR);
             ld->setConductor(true);
             ld->setGroundPlane(true);
         }
         else if (lstring::cieq(kwbuf, Ekw.GroundPlaneClear()) ||
                 lstring::cieq(kwbuf, Ekw.TermDefault())) {
-            if (flags & (ELP_V | ELP_DI))
+            if (flags & (ELP_V | ELP_VC | ELP_DI))
                 return (ELP_GPC | ELP_ERR);
             ld->setConductor(true);
             ld->setGroundPlane(true);
@@ -851,7 +899,7 @@ namespace {
             }
         }
         else if (lstring::cieq(kwbuf, Ekw.Contact())) {
-            if (flags & (ELP_V | ELP_DI))
+            if (flags & (ELP_V | ELP_VC | ELP_DI))
                 return (ELP_CN | ELP_ERR);
             const char*s = inbuf;
             char *vs1 = lstring::gettok(&s);
@@ -883,7 +931,7 @@ namespace {
         }
         else if (lstring::cieq(kwbuf, Ekw.Via())) {
             if (flags & (ELP_CO | ELP_RO | ELP_GPD | ELP_GPC | ELP_CN |
-                    ELP_DI | ELP_UI))
+                    ELP_DI | ELP_VC | ELP_UI))
                 return (ELP_V | ELP_ERR);
             const char *s = inbuf;
             char *vs1 = lstring::gettok(&s);
@@ -921,9 +969,32 @@ namespace {
             ld->setDarkField(true);
             ret |= ELP_V;
         }
+        else if (lstring::cieq(kwbuf, Ekw.ViaCut())) {
+            if (flags & (ELP_CO | ELP_RO | ELP_GPD | ELP_GPC | ELP_CN |
+                    ELP_DI | ELP_V | ELP_VC | ELP_UI))
+                return (ELP_VC | ELP_ERR);
+            const char *s = inbuf;
+            ParseNode *tree = 0;
+            if (*s) {
+                tree = SIparse()->getLexprTree(&s);
+                if (!tree) {
+                    char *er = SIparse()->errMessage();
+                    if (er) {
+                        Log()->PopUpErr(er);
+                        delete [] er;
+                    }
+                    return (ELP_VP | ELP_ERR);
+                }
+            }
+            sVia *via = new sVia(0, 0, tree);
+            tech_prm(ld)->set_via_list(via);
+            ld->setViaCut(true);
+            ld->setDarkField(true);
+            ret |= ELP_VC;
+        }
         else if (lstring::cieq(kwbuf, Ekw.Dielectric())) {
             if (flags & (ELP_CO | ELP_RO | ELP_GPD | ELP_GPC | ELP_CN |
-                    ELP_V | ELP_UI))
+                    ELP_V | ELP_VC | ELP_UI))
                 return (ELP_DI | ELP_ERR);
             ld->setDielectric(true);
             ret |= ELP_DI;
@@ -959,6 +1030,9 @@ namespace {
                 if (ld->isVia())
                     mask |= CDL_VIA;
                 ld->setVia(false);
+                if (ld->isViaCut())
+                    mask |= CDL_VIACUT;
+                ld->setViaCut(false);
                 if (ld->isDielectric())
                     mask |= CDL_DIELECTRIC;
                 ld->setDielectric(false);
@@ -1007,6 +1081,9 @@ namespace {
                 ldesc->setVia(false);
                 if (mask & CDL_VIA)
                     ldesc->setVia(true);
+                ldesc->setViaCut(false);
+                if (mask & CDL_VIACUT)
+                    ldesc->setViaCut(true);
                 ldesc->setDielectric(false);
                 if (mask & CDL_DIELECTRIC)
                     ldesc->setDielectric(true);
@@ -1064,14 +1141,14 @@ extKWstruct::set_settings(CDl *ld, const char *string)
                 const char *msg;
                 char buf[128];
                 if (result &
-                        (ELP_CO | ELP_RO | ELP_V | ELP_CN | ELP_GPD |
-                        ELP_GPC | ELP_DF | ELP_UI)) {
+                        (ELP_CO | ELP_RO | ELP_V | ELP_VC | ELP_DI | ELP_CN |
+                        ELP_GPD | ELP_GPC | ELP_DF | ELP_UI)) {
                     if (flags &
-                            (ELP_CO | ELP_RO | ELP_V | ELP_CN | ELP_GPD |
-                            ELP_GPC | ELP_DF | ELP_UI))
+                            (ELP_CO | ELP_RO | ELP_V | ELP_VC | ELP_DI |
+                            ELP_CN | ELP_GPD | ELP_GPC | ELP_DF | ELP_UI))
                         msg = "Retry: inappropriate extract keyword line %d";
                     else if (result & ELP_VP)
-                        msg = "Retry: conjunction parse error line %d";
+                        msg = "Retry: expression parse error line %d";
                     else
                         msg = "Retry: bad input line %d";
                 }

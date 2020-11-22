@@ -680,6 +680,14 @@ namespace {
         CDvdb()->registerPostFunc(post_fc);
         return (true);
     }
+
+    bool
+    evFcZoids(const char*, bool set)
+    {
+        if (!set)
+            fcLayout::clear_dbg_zlist();
+        return (true);
+    }
 }
 
 
@@ -799,6 +807,14 @@ namespace {
         CDvdb()->registerPostFunc(post_fh);
         return (true);
     }
+
+    bool
+    evFhZoids(const char*, bool set)
+    {
+        if (!set)
+            fhLayout::clear_dbg_zlist();
+        return (true);
+    }
 }
 
 
@@ -896,6 +912,7 @@ cExt::setupVariables()
     vsetup(VA_FcPath,               S,  evFC);
     vsetup(VA_FcPlaneBloat,         S,  evFcPlaneBloat);
     vsetup(VA_FcUnits,              S,  evFC);
+    vsetup(VA_FcZoids,              B,  evFcZoids);
 
     // FastHenry Interface
     vsetup(VA_FhArgs,               S,  evFH);
@@ -913,5 +930,6 @@ cExt::setupVariables()
     vsetup(VA_FhVolElEnable,        B,  evFH);
     vsetup(VA_FhVolElMin,           S,  evFhVolElMin);
     vsetup(VA_FhVolElTarget,        S,  evFhVolElTarget);
+    vsetup(VA_FhZoids,              B,  evFhZoids);
 }
 

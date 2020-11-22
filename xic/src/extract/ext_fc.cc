@@ -1182,26 +1182,65 @@ namespace {
         sPgrp *next;
     };
 
+    stringlist *dbg_layers = 0;
 
     // Add the Zlist as objects in the current cell, for debugging.
     //
-    void save_zlist(Zlist *zl, const char *s1, const char *s2, int i)
+    void save_dbg_zlist(Zlist *zl, const char *s1, const char *s2, int i)
     {
         char buf[64];
         sprintf(buf, "%s%s%d", s1, s2, i);
+        bool there = false;
+        for (stringlist *sl = dbg_layers; sl; sl = sl->next) {
+            if (!strcmp(sl->string, buf)) {
+                there = true;
+                break;
+            }
+        }
+        if (!there)
+            dbg_layers = new stringlist(lstring::copy(buf), dbg_layers);
+
         CDl *ld = CDldb()->newLayer(buf, Physical);
         CurCell(Physical)->db_clear_layer(ld);
         Zlist::add(zl, CurCell(Physical), ld, false, false);
     }
 
 
-    void save_zlist(Zlist *zl, int g, const char *s2, int i)
+    void save_dbg_zlist(Zlist *zl, int g, const char *s2, int i)
     {
         char buf[64];
         sprintf(buf, "g%d%s%d", g, s2, i);
+        bool there = false;
+        for (stringlist *sl = dbg_layers; sl; sl = sl->next) {
+            if (!strcmp(sl->string, buf)) {
+                there = true;
+                break;
+            }
+        }
+        if (!there)
+            dbg_layers = new stringlist(lstring::copy(buf), dbg_layers);
+
         CDl *ld = CDldb()->newLayer(buf, Physical);
         CurCell(Physical)->db_clear_layer(ld);
         Zlist::add(zl, CurCell(Physical), ld, false, false);
+    }
+}
+
+
+// Static function.
+// Clear the panal visualization layers.
+//
+void
+fcLayout::clear_dbg_zlist()
+{
+    while (dbg_layers) {
+        stringlist *sl = dbg_layers;
+        dbg_layers = dbg_layers->next;
+        CDl *ld = CDldb()->findLayer(sl->string, Physical);
+        if (ld)
+            CurCell(Physical)->db_clear_layer(ld);
+        delete [] sl->string;
+        delete sl;
     }
 }
 
@@ -1274,7 +1313,7 @@ fcLayout::panelize_group_zbot(const glZlistRef3d *z0) const
                 zg->list = Zlist::repartition_ni(zg->list);
             zg->list = Zlist::filter_slivers(zg->list, 1);
             if (fcl_zoids) {
-                save_zlist(zg->list, z0->PZ->group, "zbot", cnt);
+                save_dbg_zlist(zg->list, z0->PZ->group, "zbot", cnt);
                 cnt++;
             }
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
@@ -1395,7 +1434,7 @@ done:   ;
                 zg->list = Zlist::repartition_ni(zg->list);
             zg->list = Zlist::filter_slivers(zg->list, 1);
             if (fcl_zoids) {
-                save_zlist(zg->list, z0->PZ->group, "ztop", cnt);
+                save_dbg_zlist(zg->list, z0->PZ->group, "ztop", cnt);
                 cnt++;
             }
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
@@ -2060,7 +2099,7 @@ fcLayout::panelize_dielectric_zbot(const Layer3d *l) const
             zg->list = Zlist::filter_slivers(zg->list, 1);
             if (fcl_zoids) {
                 CDl *ld = l->layer_desc();
-                save_zlist(zg->list, ld->name(), "zbot", cnt);
+                save_dbg_zlist(zg->list, ld->name(), "zbot", cnt);
                 cnt++;
             }
             for (Zlist *zl = zg->list; zl; zl = zl->next) {
@@ -2189,7 +2228,7 @@ done:       ;
             zg->list = Zlist::filter_slivers(zg->list, 1);
             if (fcl_zoids) {
                 CDl *ld = l1->layer_desc();
-                save_zlist(zg->list, ld->name(), "ztop", cnt);
+                save_dbg_zlist(zg->list, ld->name(), "ztop", cnt);
                 cnt++;
             }
             for (Zlist *zl = zg->list; zl; zl = zl->next) {

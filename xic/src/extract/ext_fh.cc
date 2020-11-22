@@ -937,7 +937,7 @@ fhLayout::setup()
             if (l->is_conductor()) {
                 fhLayer *cl = &fhl_layers[l->index()];
                 for (fhConductor *c = cl->cndlist(); c; c = c->next())
-                    c->save_zlist_db();
+                    c->save_dbg_zlist();
             }
         }
     }
@@ -1774,13 +1774,28 @@ fhConductor::split_z(int *zpts, int nz)
 }
 
 
+namespace {
+    stringlist *dbg_layers = 0;
+}
+
+
 // Add the Zlist as objects in the current cell, for debugging.
 //
 void
-fhConductor::save_zlist_db()
+fhConductor::save_dbg_zlist()
 {
     char buf[64];
     sprintf(buf, "G%dL%d:FH", hc_group, hc_layer_ix);
+    bool there = false;
+    for (stringlist *sl = dbg_layers; sl; sl = sl->next) {
+        if (!strcmp(sl->string, buf)) {
+            there = true;
+            break;
+        }
+    }
+    if (!there)
+        dbg_layers = new stringlist(lstring::copy(buf), dbg_layers);
+    
     CDl *ld = CDldb()->newLayer(buf, Physical);
     CurCell(Physical)->db_clear_layer(ld);
     Zlist *zl = glZlist3d::to_zlist(hc_zlist3d);
@@ -1788,6 +1803,24 @@ fhConductor::save_zlist_db()
     Zlist::destroy(zl);
 }
 // End of fhConductor functions.
+
+
+// Clear the added objects.
+// Static function.
+//
+void
+fhLayout::clear_dbg_zlist()
+{
+    while (dbg_layers) {
+        stringlist *sl = dbg_layers;
+        dbg_layers = dbg_layers->next;
+        CDl *ld = CDldb()->findLayer(sl->string, Physical);
+        if (ld)
+            CurCell(Physical)->db_clear_layer(ld);
+        delete [] sl->string;
+        delete sl;
+    }
+}
 
 
 namespace {
