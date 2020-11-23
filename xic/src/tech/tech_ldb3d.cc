@@ -167,7 +167,7 @@ Ldb3d::order_layers()
     // highest elevation in the layout, and to fill the empty space in
     // the layout up to this level with layer material.  The top
     // surface of the layout is then planar.  Then, the regular layer
-    // features are added.  If not given, CDL_CONDUCTOR and CDL_VIA
+    // features are added.  If not given, CDL_CONDUCTOR and CDL_VIA[CUT]
     // layers are "yes", all others are "no", unless the NoPlanarize 
     // variable is set, in which case no layers are planarizing by
     // default.
@@ -874,9 +874,8 @@ Layer3d::mk3d(bool is_cross_sect)
             planarize();
     }
     else if (!Tech()->IsNoPlanarize() &&
-            (l3_ldesc->isVia() || l3_ldesc->isConductor()))
+            (l3_ldesc->flags() & (CDL_CONDUCTOR | CDL_VIA | CDL_VIACUT)))
         planarize();
-
 }
 
 
@@ -1000,7 +999,7 @@ Layer3d::is_conductor(const CDl *ld)
     if (ld->flags() &
             (CDL_CONDUCTOR | CDL_ROUTING | CDL_GROUNDPLANE | CDL_IN_CONTACT))
         return (true);
-    if (ld->flags() & (CDL_VIA | CDL_DIELECTRIC))
+    if (ld->flags() & (CDL_VIA | CDL_VIACUT | CDL_DIELECTRIC))
         return (false);
     if (tech_prm(ld)->rho() > 0.0 || tech_prm(ld)->ohms_per_sq() > 0.0 ||
             tech_prm(ld)->lambda() > 0.0)
