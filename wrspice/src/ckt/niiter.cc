@@ -482,7 +482,7 @@ sCKT::NIiter(int maxIter)
             break;
         }
 
-        if (!jjaccel()) {
+        if (!jjaccel() || (CKTmode & MODEDC)) {
             if (CKTmode & (MODEINITFIX | MODEINITFLOAT)) {
                 if (CKTnoncon == 0 && iterno != 1) {
                     startTime = OP.seconds();
