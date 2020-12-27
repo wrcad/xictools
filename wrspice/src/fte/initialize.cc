@@ -45,6 +45,11 @@ Authors: 1985 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
+// Needed to expose feenableexcept prototype in fenv.h.
+#ifdef __CYGWIN__
+#define _GNU_SOURCE
+#endif
+
 #include "config.h"
 #include "simulator.h"
 #include "spglobal.h"

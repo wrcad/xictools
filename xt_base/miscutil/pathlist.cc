@@ -830,7 +830,11 @@ pathlist::get_bin_path(const char *argv0)
     if (sysctl(mib, 4, pthbuf, &pthlen, 0, 0) == 0)
         return (lstring::copy(pthbuf));
 #else
+#ifdef __CYGWIN__
+//XXX
+#else
     FIXME DAMMIT!
+#endif  // __CYGWIN__
 #endif  // __FreeBSD__
 #endif  // __APPLE__
 #endif  // WIN32

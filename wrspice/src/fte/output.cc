@@ -45,6 +45,11 @@ Authors: 1988 Wayne A. Christopher
          1992 Stephen R. Whiteley
 ****************************************************************************/
 
+// Needed to expose vasprintf prototype in stdio.h.
+#ifdef __CYGWIN__
+#define _GNU_SOURCE
+#endif
+
 #include "config.h"
 #include "graph.h"
 #include "simulator.h"

@@ -83,6 +83,11 @@
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *------------------------------------------------------------------------*/
 
+// Needed to expose vasprintf prototype in stdio.h.
+#ifdef __CYGWIN__
+#define _GNU_SOURCE
+#endif
+
 #include "htm_widget.h"
 #include "htm_image.h"
 #include <stdio.h>

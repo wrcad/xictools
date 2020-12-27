@@ -820,6 +820,7 @@ main(int argc, char **argv)
     // Something for Cadence PSF writer.
     cPSFout::vo_init(&argc, argv);
 
+/* XXX this is obsolete?
 #ifdef HAVE_FENV_H
     // This sets the x87 precision mode.  The default under Linux is
     // to use 80-bit mode, which produces subtle differences from
@@ -855,6 +856,7 @@ main(int argc, char **argv)
         fesetenv(&env);
     }
 #endif
+*/
 
     // Set default FPE handling.
     Sp.SetFPEmode(FPEdefault);
