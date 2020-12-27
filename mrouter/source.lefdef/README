@@ -5,6 +5,10 @@ toolkits, and documentation, as obtained from the Si2 organization.
 These are redistributed here under the terms of the covering
 Apache-2.0 license.
 
+The lef_5.8-p013.tar.gz file differs from the original lef_5.8-p013.tar.Z
+only by having the Microsoft line terminations removed from lef/crypt.cpp,
+and gzip rather than Z compression. 
+
 The patch files are applied before use in the router.  The most
 important change is to compile files with -fPIC, so that they can be
 used in a shared library.  There are other tweaks, such as support for

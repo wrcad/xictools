@@ -31,7 +31,7 @@ all: lef def
 	@cd mrouter; $(MAKE) depend; $(MAKE)
 
 lef:
-	@tar xzf source.lefdef/lef*tar.Z
+	@tar xzf source.lefdef/lef*tar.gz
 	@patch -p0 < source.lefdef/lef.patch
 
 def:
