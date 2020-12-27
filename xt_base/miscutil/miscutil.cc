@@ -59,7 +59,9 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <net/if.h>
+#ifdef HAVE_EXECINFO_H
 #include <execinfo.h>
+#endif
 #if defined(__FreeBSD__) || defined(__APPLE__)
 #include <net/if_dl.h>
 #endif
@@ -731,7 +733,9 @@ miscutil::new_release(const char *progname, const char *release)
 }
 
 
-//#define USE_GDB
+#ifndef HAVE_EXECINFO_H
+#define USE_GDB
+#endif
 
 // Dump a backtrace in GDB_OFILE to be used for debugging after
 // a crash.
