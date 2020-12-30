@@ -179,7 +179,6 @@ struct sScGlobal
             sg_stack_ptr = 0;
             sg_glob_tab = 0;
             sg_submaps = 0;
-            memset(sg_stack, 0, SUB_STK_DEPTH*sizeof(sSCX));
         }
 
     ~sScGlobal()

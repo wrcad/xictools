@@ -57,12 +57,12 @@ struct nt_t
 {
     friend struct numtab_t;
 
-    unsigned long tab_key()     { return (num); }
+    uintptr_t tab_key()         { return (num); }
     void set_tab_next(nt_t *n)  { next = n; }
     nt_t *tab_next()            { return (next); }
 
 private:
-    unsigned long num;
+    uintptr_t num;
     nt_t *next;
     symref_t *symref;
 };
@@ -129,7 +129,7 @@ struct nametab_t : public cxfact_t
     symref_t *get(CDcellName name)
         {
             if (name)
-                return (nm_table->find((unsigned long)name));
+                return (nm_table->find((uintptr_t)name));
             return (0);
         }
 

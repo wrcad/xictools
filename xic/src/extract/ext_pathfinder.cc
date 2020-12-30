@@ -59,7 +59,7 @@
 
 
 namespace {
-    unsigned long check_time;
+    uint64_t check_time;
 
     inline bool checkInterrupt()
     {
@@ -731,7 +731,7 @@ pathfinder::remove(CDo *ocopy)
 {
     if (!pf_tab)
         return (false);
-    unsigned long tag = ocopy->hash();
+    uintptr_t tag = ocopy->hash();
     SymTabEnt *ent = SymTab::get_ent(pf_tab, tag);
     if (!ent)
         // not found!
@@ -1041,10 +1041,10 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
         Zlist *zl = od->toZlist();
         if (!zl)
             continue;
-        SymTabEnt *h = SymTab::get_ent(tab, (unsigned long)od->ldesc());
+        SymTabEnt *h = SymTab::get_ent(tab, (uintptr_t)od->ldesc());
         if (!h) {
-            tab->add((unsigned long)od->ldesc(), 0, false);
-            h = SymTab::get_ent(tab, (unsigned long)od->ldesc());
+            tab->add((uintptr_t)od->ldesc(), 0, false);
+            h = SymTab::get_ent(tab, (uintptr_t)od->ldesc());
         }
         if (!h->stData)
             h->stData = zl;
@@ -1079,10 +1079,10 @@ pathfinder::get_via_list(const CDo *od0, XIrt *err, bool incl_xtra_layers)
             if (!ld1 || !ld2)
                 continue;
 
-            Zlist *z1 = (Zlist*)SymTab::get(tab, (unsigned long)ld1);
+            Zlist *z1 = (Zlist*)SymTab::get(tab, (uintptr_t)ld1);
             if (z1 == (Zlist*)ST_NIL)
                 continue;
-            Zlist *z2 = (Zlist*)SymTab::get(tab, (unsigned long)ld2);
+            Zlist *z2 = (Zlist*)SymTab::get(tab, (uintptr_t)ld2);
             if (z2 == (Zlist*)ST_NIL)
                 continue;
             z1 = Zlist::copy(z1);

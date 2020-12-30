@@ -1042,7 +1042,7 @@ cgx_in::end_struct()
             if (!in_savebb && !in_no_test_empties && in_sdesc->isEmpty()) {
                 FIO()->ifPrintCvLog(IFLOG_INFO,
                     "Cell %s physical definition is empty at offset %llu.",
-                    in_cellname, (unsigned long long)in_cell_offset);
+                    in_cellname, (uint64_t)in_cell_offset);
             }
         }
         else {
@@ -1128,7 +1128,7 @@ cgx_in::a_struct(int, int)
         if (srf && srf->get_defseen()) {
             FIO()->ifPrintCvLog(IFLOG_WARN,
                 "Duplicate cell definition for %s at offset %llu.",
-                in_cellname, (unsigned long long)in_offset);
+                in_cellname, (uint64_t)in_offset);
             dup_sym = true;
         }
 
@@ -1210,8 +1210,8 @@ cgx_in::a_struct(int, int)
                 // table means that we have prompted for this cell.
                 if (!in_over_tab)
                     in_over_tab = new SymTab(false, false);
-                in_over_tab->add((unsigned long)sd->cellname(),
-                    (void*)(long)mi.overwrite_elec, false);
+                in_over_tab->add((uintptr_t)sd->cellname(),
+                    (void*)(uintptr_t)mi.overwrite_elec, false);
                 if (mi.overwrite_elec) {
                     // If overwriting electrical, clear the existing
                     // electrical cell (if any) here.  There may not
@@ -1244,7 +1244,7 @@ cgx_in::a_struct(int, int)
                 void *xx;
                 if (in_over_tab &&
                         (xx = SymTab::get(in_over_tab,
-                            (unsigned long)sd->cellname())) != ST_NIL) {
+                            (uintptr_t)sd->cellname())) != ST_NIL) {
                     // We already asked about overwriting.
                     if (xx) {
                         // User chose to overwrite the electrical
@@ -3079,7 +3079,7 @@ void
 cgx_in::warning(const char *str)
 {
     FIO()->ifPrintCvLog(IFLOG_WARN, "%s [%s %llu]",
-        str, in_cellname, (unsigned long long)in_offset);
+        str, in_cellname, (uint64_t)in_offset);
 }
 
 
@@ -3096,7 +3096,7 @@ cgx_in::warning(const char *str, int x, int y)
         lname = in_layername;
 
     FIO()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d %s %llu]", str,
-        in_cellname, x, y, lname, (unsigned long long)in_offset);
+        in_cellname, x, y, lname, (uint64_t)in_offset);
 }
 
 
@@ -3108,7 +3108,7 @@ cgx_in::warning(const char *str, const char *mstr, int x, int y)
 {
     FIO()->ifPrintCvLog(IFLOG_WARN,
         "%s for instance of %s [%s %d,%d %llu]",
-        str, mstr, in_cellname, x, y, (unsigned long long)in_offset);
+        str, mstr, in_cellname, x, y, (uint64_t)in_offset);
 }
 
 
@@ -3296,11 +3296,7 @@ void
 cgx_in::pr_record(const char *rec, int size, int flags)
 {
     if (in_printing) {
-#ifdef WIN32
-        fprintf(in_print_fp, "%-12I64x ", (long long unsigned)in_offset);
-#else
-        fprintf(in_print_fp, "%-12llx ", (long long unsigned)in_offset);
-#endif
+        fprintf(in_print_fp, "%-12llx ", in_offset);
         fprintf(in_print_fp, "%-9s size=%-9d flags=%d\n", rec, size, flags);
     }
 }

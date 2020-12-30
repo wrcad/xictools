@@ -83,7 +83,7 @@ namespace {
     // Instantiate.
     cAntParams _ap_;
 
-    unsigned long check_time;
+    uintptr_t check_time;
 
     inline bool checkInterrupt()
     {
@@ -229,9 +229,9 @@ ant_pathfinder::process(const sDevContactInst *cx)
     while ((h = gen.next()) != 0) {
         for (CDo *od = (CDo*)h->stData; od; od = od->next_odesc()) {
             Zlist *zl = od->toZlist();
-            SymTabEnt *hh = SymTab::get_ent(&ltab, (unsigned long)od->ldesc());
+            SymTabEnt *hh = SymTab::get_ent(&ltab, (uintptr_t)od->ldesc());
             if (!hh) {
-                ltab.add((unsigned long)od->ldesc(), zl, false);
+                ltab.add((uintptr_t)od->ldesc(), zl, false);
                 continue;
             }
             Zlist *zx = (Zlist*)hh->stData;

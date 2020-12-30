@@ -57,7 +57,7 @@ struct pl_data
     // created.
 
     // itable_t necessities
-    unsigned long tab_key()             { return ((unsigned long)lname); }
+    uintptr_t tab_key()                 { return ((uintptr_t)lname); }
     pl_data *tab_next()                 { return (next); }
     void set_tab_next(pl_data *n)       { next = n; }
     pl_data *tgen_next(bool)            { return (next); }
@@ -125,7 +125,7 @@ struct pc_data
     // explicit deletion of this field through subclassing or
     // otherwise.
 
-    unsigned long tab_key()             { return ((unsigned long)cname); }
+    uintptr_t tab_key()                 { return ((uintptr_t)cname); }
     pc_data *tab_next()                 { return (next); }
     void set_tab_next(pc_data *n)       { next = n; }
     pc_data *tgen_next(bool)            { return (next); }

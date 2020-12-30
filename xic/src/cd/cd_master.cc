@@ -101,7 +101,7 @@ CDm::linkCdesc(CDc *cd, bool unl_list)
             ptable_t<CDc> *t = (ptable_t<CDc>*)(mUnlinked & ~1);
             t->add(cd);
             t = t->check_rehash();
-            mUnlinked = (unsigned long)t | 1;
+            mUnlinked = (uintptr_t)t | 1;
         }
         else {
             int cnt = 0;
@@ -109,7 +109,7 @@ CDm::linkCdesc(CDc *cd, bool unl_list)
                 cnt++;
             if (cnt < ST_MAX_DENS) {
                 cd->set_ptab_next((CDc*)mUnlinked);
-                mUnlinked = (unsigned long)cd;
+                mUnlinked = (uintptr_t)cd;
             }
             else {
                 ptable_t<CDc> *t = new ptable_t<CDc>;
@@ -122,7 +122,7 @@ CDm::linkCdesc(CDc *cd, bool unl_list)
                 }
                 t->add(cd);
                 t = t->check_rehash();
-                mUnlinked = (unsigned long)t | 1;
+                mUnlinked = (uintptr_t)t | 1;
             }
         }
     }
@@ -131,7 +131,7 @@ CDm::linkCdesc(CDc *cd, bool unl_list)
             ptable_t<CDc> *t = (ptable_t<CDc>*)(mObjRefs & ~1);
             t->add(cd);
             t = t->check_rehash();
-            mObjRefs = (unsigned long)t | 1;
+            mObjRefs = (uintptr_t)t | 1;
         }
         else {
             int cnt = 0;
@@ -139,7 +139,7 @@ CDm::linkCdesc(CDc *cd, bool unl_list)
                 cnt++;
             if (cnt < ST_MAX_DENS) {
                 cd->set_ptab_next((CDc*)mObjRefs);
-                mObjRefs = (unsigned long)cd;
+                mObjRefs = (uintptr_t)cd;
             }
             else {
                 ptable_t<CDc> *t = new ptable_t<CDc>;
@@ -152,7 +152,7 @@ CDm::linkCdesc(CDc *cd, bool unl_list)
                 }
                 t->add(cd);
                 t = t->check_rehash();
-                mObjRefs = (unsigned long)t | 1;
+                mObjRefs = (uintptr_t)t | 1;
             }
         }
     }
@@ -172,7 +172,7 @@ CDm::unlinkCdesc(CDc *cd, bool unl_list)
             for (CDc *c = (CDc*)mUnlinked; c; c = c->ptab_next()) {
                 if (c == cd) {
                     if (!cp)
-                        mUnlinked = (unsigned long)c->ptab_next();
+                        mUnlinked = (uintptr_t)c->ptab_next();
                     else
                         cp->set_ptab_next(c->ptab_next());
                     cd->set_ptab_next(0);
@@ -190,7 +190,7 @@ CDm::unlinkCdesc(CDc *cd, bool unl_list)
             for (CDc *c = (CDc*)mObjRefs; c; c = c->ptab_next()) {
                 if (c == cd) {
                     if (!cp)
-                        mObjRefs = (unsigned long)c->ptab_next();
+                        mObjRefs = (uintptr_t)c->ptab_next();
                     else
                         cp->set_ptab_next(c->ptab_next());
                     cd->set_ptab_next(0);

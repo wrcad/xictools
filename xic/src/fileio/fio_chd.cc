@@ -1453,10 +1453,10 @@ cCHD::write(symref_t *p, cv_in *in, const FIOcvtPrms *prms, bool allcells,
                     out->add_visited(Tstring(tp->get_name()));
                 }
                 else {
-                    if (SymTab::get(vtab, (unsigned long)tp->get_name()) !=
+                    if (SymTab::get(vtab, (uintptr_t)tp->get_name()) !=
                             ST_NIL)
                         continue;
-                    vtab->add((unsigned long)tp->get_name(), 0, false);
+                    vtab->add((uintptr_t)tp->get_name(), 0, false);
                 }
             }
             if (tp->should_skip())
@@ -1585,7 +1585,7 @@ cCHD::listCellnames_rc(symref_t *p, SymTab *tab, int depth)
 // Private recursive core of the depthCounts function.
 //
 bool
-cCHD::depthCounts_rc(symref_t *p, unsigned int depth, unsigned long pcnt,
+cCHD::depthCounts_rc(symref_t *p, unsigned int depth, unsigned int pcnt,
     unsigned int *array)
 {
     if (depth >= CDMAXCALLDEPTH) {
@@ -1597,7 +1597,7 @@ cCHD::depthCounts_rc(symref_t *p, unsigned int depth, unsigned long pcnt,
 
     SymTab ctab(false, false);
 
-    unsigned long lcnt = 0;
+    unsigned int lcnt = 0;
     crgen_t gen(nameTab(p->mode()), p);
     const cref_o_t *c;
     while ((c = gen.next()) != 0) {
@@ -1613,12 +1613,12 @@ cCHD::depthCounts_rc(symref_t *p, unsigned int depth, unsigned long pcnt,
                 "depthCounts: unresolved transform ticket %d", c->attr);
             return (false);
         }
-        unsigned long cnt = at.nx*at.ny;
-        SymTabEnt *ent = SymTab::get_ent(&ctab, (unsigned long)cp);
+        unsigned int cnt = at.nx*at.ny;
+        SymTabEnt *ent = SymTab::get_ent(&ctab, (uintptr_t)cp);
         if (!ent)
-            ctab.add((unsigned long)cp, (void*)cnt, false);
+            ctab.add((uintptr_t)cp, (void*)(uintptr_t)cnt, false);
         else
-            ent->stData = (void*)((unsigned long)ent->stData + cnt);
+            ent->stData = (void*)((intptr_t)ent->stData + cnt);
         lcnt += cnt;
     }
     array[depth] += pcnt*lcnt;
@@ -1626,7 +1626,7 @@ cCHD::depthCounts_rc(symref_t *p, unsigned int depth, unsigned long pcnt,
     SymTabEnt *ent;
     while ((ent = stgen.next()) != 0) {
         if (!depthCounts_rc((symref_t*)ent->stTag, depth+1,
-                pcnt*(unsigned long)ent->stData, array))
+                pcnt*(uintptr_t)ent->stData, array))
             return (false);
     }
     return (true);
@@ -1636,8 +1636,8 @@ cCHD::depthCounts_rc(symref_t *p, unsigned int depth, unsigned long pcnt,
 // Private recursive core of the instanceCounts function.
 //
 bool
-cCHD::instanceCounts_rc(symref_t *p, unsigned int depth,
-    unsigned long pcnt, SymTab *tab)
+cCHD::instanceCounts_rc(symref_t *p, unsigned int depth, unsigned int pcnt,
+    SymTab *tab)
 {
     if (depth >= CDMAXCALLDEPTH) {
         Errs()->add_error(
@@ -1646,11 +1646,11 @@ cCHD::instanceCounts_rc(symref_t *p, unsigned int depth,
         return (false);
     }
 
-    SymTabEnt *ent = SymTab::get_ent(tab, (unsigned long)p);
+    SymTabEnt *ent = SymTab::get_ent(tab, (uintptr_t)p);
     if (!ent)
-        tab->add((unsigned long)p, (void*)pcnt, false);
+        tab->add((uintptr_t)p, (void*)(uintptr_t)pcnt, false);
     else
-        ent->stData = (void*)((unsigned long)ent->stData + pcnt);
+        ent->stData = (void*)((intptr_t)ent->stData + pcnt);
 
     SymTab ctab(false, false);
 
@@ -1670,17 +1670,17 @@ cCHD::instanceCounts_rc(symref_t *p, unsigned int depth,
                 c->attr);
             return (false);
         }
-        unsigned long cnt = at.nx*at.ny;
-        ent = SymTab::get_ent(&ctab, (unsigned long)cp);
+        unsigned int cnt = at.nx*at.ny;
+        ent = SymTab::get_ent(&ctab, (uintptr_t)cp);
         if (!ent)
-            ctab.add((unsigned long)cp, (void*)cnt, false);
+            ctab.add((uintptr_t)cp, (void*)(uintptr_t)cnt, false);
         else
-            ent->stData = (void*)((unsigned long)ent->stData + cnt);
+            ent->stData = (void*)((intptr_t)ent->stData + cnt);
     }
     SymTabGen stgen(&ctab);
     while ((ent = stgen.next()) != 0) {
         if (!instanceCounts_rc((symref_t*)ent->stTag, depth+1,
-                pcnt*(unsigned long)ent->stData, tab))
+                pcnt*(uintptr_t)ent->stData, tab))
             return (false);
     }
     return (true);

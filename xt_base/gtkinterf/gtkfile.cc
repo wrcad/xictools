@@ -52,6 +52,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 #include <ctype.h>
+#include <stdint.h>
 #ifdef HAVE_FNMATCH_H
 #include <fnmatch.h>
 #else
@@ -2221,7 +2222,8 @@ GTKfilePopup::fs_upmenu_proc(GtkWidget *widget, void *client_data)
 {
     GTKfilePopup *fs = static_cast<GTKfilePopup*>(client_data);
     if (fs) {
-        long offset = (long)gtk_object_get_data(GTK_OBJECT(widget), "offset");
+        intptr_t offset = 
+            (intptr_t)gtk_object_get_data(GTK_OBJECT(widget), "offset");
         if (offset <= 0)
             offset = 1;
         if (offset >= 256)
@@ -3248,8 +3250,8 @@ namespace {
             if (entry_dst)
                 dst = gtk_entry_get_text(GTK_ENTRY(entry_dst));
 
-            GdkDragAction action =
-                (GdkDragAction)(long)gtk_object_get_data(GTK_OBJECT(caller),
+            GdkDragAction action = (GdkDragAction)
+                    (intptr_t)gtk_object_get_data(GTK_OBJECT(caller),
                     "action");
             if (action == GDK_ACTION_MOVE || action == GDK_ACTION_COPY ||
                     action == GDK_ACTION_LINK) {
@@ -3375,8 +3377,8 @@ namespace {
     {
         GtkWidget *popup = (GtkWidget*)client_data;
         if (popup) {
-            unsigned long timer =
-                (unsigned long)gtk_object_get_data(GTK_OBJECT(popup), "timer");
+            uintptr_t timer =
+                (uintptr_t)gtk_object_get_data(GTK_OBJECT(popup), "timer");
             if (timer)
                 gtk_timeout_remove(timer);
             gtk_signal_disconnect_by_func(GTK_OBJECT(popup),

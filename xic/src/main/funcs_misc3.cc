@@ -4290,7 +4290,7 @@ misc3_funcs::IFflatGenNext(Variable *res, Variable *args, void*)
     if (hdl) {
         if (hdl->type != HDLgen)
             return (BAD);
-        int hid = (long)hdl->iterator();
+        int hid = (intptr_t)hdl->iterator();
         res->type = TYP_HANDLE;
         res->content.value = hid;
     }

@@ -347,7 +347,7 @@ sEC::ec_btn_proc(GtkWidget*, void *client_data)
 {
     if (!EC)
         return;
-    int mode = (long)client_data;
+    int mode = (intptr_t)client_data;
     if (mode == EC_apply) {
         bool didone = false;
         bool leftone = false;

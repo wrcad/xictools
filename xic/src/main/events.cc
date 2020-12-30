@@ -394,7 +394,7 @@ namespace {
 void
 cEventHdlr::DownTimer(int which)
 {
-    GRpkgIf()->AddTimer(250, downtimeout, (void*)(long)which);
+    GRpkgIf()->AddTimer(250, downtimeout, (void*)(uintptr_t)which);
     btn_down = true;
 }
 
@@ -413,7 +413,7 @@ namespace {
     downtimeout(void *client_data)
     {
         if (btn_down) {
-            Gst()->BumpGhostPointer((long)client_data);
+            Gst()->BumpGhostPointer((uintptr_t)client_data);
             btn_down = false;
         }
         return (false);

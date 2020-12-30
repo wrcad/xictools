@@ -56,7 +56,7 @@
 
 struct ct_elt
 {
-    unsigned long tab_key()         { return (unsigned long)name; }
+    uintptr_t tab_key()             { return (uintptr_t)name; }
     ct_elt *tab_next()              { return (next); }
     void set_tab_next(ct_elt *n)    { next = n; }
     ct_elt *tgen_next(bool)         { return (next); }

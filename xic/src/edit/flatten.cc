@@ -810,7 +810,7 @@ cEdit::flatten_cell_recurse(cTfmStack *tstk, CDs *sdesc, int depth,
         "Interrupted!  Do you want to abort (your cell may be a mess!) ? ";
     // Quitting in the middle of a flatten is not a good thing to do.
 
-    unsigned long check_time = 0;
+    uint64_t check_time = 0;
     CDsLgen lgen(sdesc);
     CDl *ld;
     while ((ld = lgen.next()) != 0) {

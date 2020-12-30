@@ -98,10 +98,10 @@ CDnameCache::add(const CDs *sd, const char *name)
 {
     if (!sd || !name || !*name)
         return;
-    SymTabEnt *h = SymTab::get_ent(nc_celltab, (unsigned long)sd);
+    SymTabEnt *h = SymTab::get_ent(nc_celltab, (uintptr_t)sd);
     if (!h) {
-        nc_celltab->add((unsigned long)sd, 0, false);
-        h = SymTab::get_ent(nc_celltab, (unsigned long)sd);
+        nc_celltab->add((uintptr_t)sd, 0, false);
+        h = SymTab::get_ent(nc_celltab, (uintptr_t)sd);
         h->stData = new table_t<sl_t>;
     }
     table_t<sl_t> *tab = (table_t<sl_t>*)h->stData;
@@ -118,10 +118,10 @@ CDnameCache::in_cache(const CDs *sd, const char *name)
 {
     // If no name, check if cell is in table.
     if (!name || !*name)
-        return (SymTab::get_ent(nc_celltab, (unsigned long)sd) != 0);
+        return (SymTab::get_ent(nc_celltab, (uintptr_t)sd) != 0);
 
     if (!nc_hprev || (CDs*)nc_hprev->stTag != sd) {
-        nc_hprev = SymTab::get_ent(nc_celltab, (unsigned long)sd);
+        nc_hprev = SymTab::get_ent(nc_celltab, (uintptr_t)sd);
         // If cell not in table, too bad.
         if (!nc_hprev)
             return (false);

@@ -124,7 +124,7 @@ namespace {
             unsigned int t_ucount;      // user feedback counter
             unsigned int t_udel;        // user feedback increment
             int t_mdepth;               // max depth
-            unsigned long t_check_time; // interval test
+            uint64_t t_check_time;      // interval test
         };
 
         sTree *Tree;
@@ -684,9 +684,9 @@ sTree::build_tree_rc(cCHD *chd, symref_t *p, GtkTreeIter *parent, int dpt)
     const cref_o_t *c;
     while ((c = cgen.next()) != 0) {
         symref_t *cp = ntab->find_symref(c->srfptr);
-        if (cp && SymTab::get(xtab, (unsigned long)cp) == ST_NIL) {
+        if (cp && SymTab::get(xtab, (uintptr_t)cp) == ST_NIL) {
             s0 = new syrlist_t(cp, s0);
-            xtab->add((unsigned long)cp, 0, false);
+            xtab->add((uintptr_t)cp, 0, false);
         }
     }
     delete xtab;

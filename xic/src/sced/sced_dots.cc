@@ -82,8 +82,8 @@ namespace {
     //
     struct dotc_t
     {
-        unsigned long tab_key()         { return (dc_key); }
-        void set_tab_key(CDcellName  nm) { dc_key = (unsigned long)nm; }
+        uintptr_t tab_key()             { return (dc_key); }
+        void set_tab_key(CDcellName  nm) { dc_key = (uintptr_t)nm; }
 
         dotc_t *tab_next()              { return (dc_next); }
         void set_tab_next(dotc_t *n)    { dc_next = n; }
@@ -98,7 +98,7 @@ namespace {
 
     private:
         dotc_t *dc_next;
-        unsigned long dc_key;
+        uintptr_t dc_key;
         xytable_t<dvtx_t> *dc_dots;
         bool dc_dirty;
     };

@@ -897,7 +897,7 @@ sCvi::cvi_dup_menu_proc(GtkWidget*, void *client_data)
 void
 sCvi::cvi_force_menu_proc(GtkWidget*, void *client_data)
 {
-    FIO()->CifStyle().set_lread_type((EXTlreadType)(long)client_data);
+    FIO()->CifStyle().set_lread_type((EXTlreadType)(intptr_t)client_data);
     if (FIO()->CifStyle().lread_type() != EXTlreadDef) {
         char buf[32];
         sprintf(buf, "%d", FIO()->CifStyle().lread_type());

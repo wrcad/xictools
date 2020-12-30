@@ -587,10 +587,10 @@ cCVtab::dbg_print(const cCHD *chd, const symref_t *p, unsigned int ix,
 // Return the memory space used for the table (does not include
 // allocator overhead).
 //
-unsigned long
+uint64_t
 cCVtab::memuse()
 {
-    unsigned long bytes = ct_cvtab_allocator.memuse();
+    uint64_t bytes = ct_cvtab_allocator.memuse();
     bytes += ct_bytefact.memuse();
     bytes += ct_ts_bytefact.memuse();
 
@@ -1649,7 +1649,7 @@ cvtab_item_t::init_flags(const cCHD *chd, const symref_t *p, bytefact_t *fact)
             }
             unsigned char *s = fact->find(t);
             memset(s, 0, sz);
-            cvi_flags = (unsigned long)s;
+            cvi_flags = (uintptr_t)s;
         }
     }
     return (true);

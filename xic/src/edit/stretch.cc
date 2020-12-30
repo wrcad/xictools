@@ -600,9 +600,9 @@ cEdit::doStretchObjList(int ref_x, int ref_y, int map_x, int map_y, bool reins)
                     SymTab tab(false, false);
                     while (ox && ox != op) {
                         if (ox->odel())
-                            tab.add((unsigned long)ox->odel(), 0, false);
+                            tab.add((uintptr_t)ox->odel(), 0, false);
                         if (ox->oadd() && SymTab::get(&tab,
-                                (unsigned long)ox->oadd()) == ST_NIL) {
+                                (uintptr_t)ox->oadd()) == ST_NIL) {
                             Selections.insertObject(CurCell(), ox->oadd(),
                                 true);
                         }

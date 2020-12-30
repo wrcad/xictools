@@ -530,11 +530,11 @@ sCHDout::name_index(CDcellName name)
         co_nmtab = new SymTab(false, false);
     void *ret = SymTab::get(co_nmtab, Tstring(name));
     if (ret == ST_NIL) {
-        co_nmtab->add(Tstring(name), (void*)(long)co_nmidx, false);
+        co_nmtab->add(Tstring(name), (void*)(uintptr_t)co_nmidx, false);
         co_nmidx++;
         return (co_nmidx - 1);
     }
-    return ((unsigned int)(long)ret);
+    return ((unsigned int)(intptr_t)ret);
 }
 
 
@@ -657,7 +657,7 @@ sCHDout::write_tables()
     while ((h = nmgen.next()) != 0) {
         if (!write_n_string(h->stTag))
             return (false);
-        if (!write_unsigned((unsigned int)(long)h->stData))
+        if (!write_unsigned((unsigned int)(intptr_t)h->stData))
             return (false);
     }
 
@@ -668,7 +668,7 @@ sCHDout::write_tables()
 
     SymTabGen atgen(co_attab);
     while ((h = atgen.next()) != 0) {
-        ticket_t t = (ticket_t)(long)h->stTag;
+        ticket_t t = (ticket_t)(intptr_t)h->stTag;
         if (!write_unsigned(t))
             return (false);
         CDattr at;

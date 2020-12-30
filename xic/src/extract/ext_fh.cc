@@ -1041,7 +1041,7 @@ namespace {
         SymTabGen gen(tab);
         int cnt = 0;
         while ((ent = gen.next()) != 0)
-            pts[cnt++] = (int)(unsigned long)ent->stTag;
+            pts[cnt++] = (int)(uintptr_t)ent->stTag;
         std::sort(pts, pts + cnt);
         *ppts = pts;
         *pnp = cnt;
@@ -1215,11 +1215,11 @@ fhLayout::slice_groups_z(int maxdim)
             if (nhinc > 1) {
                 double th = dsp_prm(l->layer_desc())->thickness();
                 double *a = get_ztab(nhinc, rh);
-                ztab.add((unsigned long)l->plane(), 0, true);
+                ztab.add((uintptr_t)l->plane(), 0, true);
                 double h = MICRONS(l->plane());
                 for (int i = 0; i < nhinc; i++) {
                     h += th*a[i];
-                    ztab.add((unsigned long)INTERNAL_UNITS(h), 0, true);
+                    ztab.add((uintptr_t)INTERNAL_UNITS(h), 0, true);
                 }
                 delete [] a;
             }
@@ -1692,10 +1692,10 @@ void
 fhConductor::accum_points(SymTab *xtab, SymTab *ytab)
 {
     for (const glZlist3d *z = hc_zlist3d; z; z = z->next) {
-        xtab->add((unsigned long)z->Z.xll, 0, true);
-        xtab->add((unsigned long)z->Z.xlr, 0, true);
-        ytab->add((unsigned long)z->Z.yl, 0, true);
-        ytab->add((unsigned long)z->Z.yu, 0, true);
+        xtab->add((uintptr_t)z->Z.xll, 0, true);
+        xtab->add((uintptr_t)z->Z.xlr, 0, true);
+        ytab->add((uintptr_t)z->Z.yl, 0, true);
+        ytab->add((uintptr_t)z->Z.yu, 0, true);
     }
 }
 
@@ -1704,8 +1704,8 @@ void
 fhConductor::accum_points_z(SymTab *ztab)
 {
     for (const glZlist3d *z = hc_zlist3d; z; z = z->next) {
-        ztab->add((unsigned long)z->Z.zbot, 0, true);
-        ztab->add((unsigned long)z->Z.ztop, 0, true);
+        ztab->add((uintptr_t)z->Z.zbot, 0, true);
+        ztab->add((uintptr_t)z->Z.ztop, 0, true);
     }
 }
 

@@ -101,11 +101,11 @@ struct SymTab
     ~SymTab();
     void clear();
     bool add(const char*, const void*, bool);
-    bool add(unsigned long, const void*, bool);
+    bool add(uintptr_t, const void*, bool);
     bool replace(const char*, const void*);
-    bool replace(unsigned long, const void*);
+    bool replace(uintptr_t, const void*);
     bool remove(const char*);
-    bool remove(unsigned long);
+    bool remove(uintptr_t);
 
     static void *get(SymTab *tab, const char *tag)
         {
@@ -114,7 +114,7 @@ struct SymTab
             return (tab->get_prv(tag));
         }
 
-    static void *get(SymTab *tab, unsigned long itag)
+    static void *get(SymTab *tab, uintptr_t itag)
         {
             if (!tab)
                 return (ST_NIL);
@@ -128,7 +128,7 @@ struct SymTab
             return (tab->get_ent_prv(tag));
         }
 
-    static SymTabEnt *get_ent(SymTab *tab, unsigned long itag)
+    static SymTabEnt *get_ent(SymTab *tab, uintptr_t itag)
         {
             if (!tab)
                 return (0);
@@ -172,9 +172,9 @@ struct SymTab
 
 protected:
     void *get_prv(const char*);
-    void *get_prv(unsigned long);
+    void *get_prv(uintptr_t);
     SymTabEnt *get_ent_prv(const char*);
-    SymTabEnt *get_ent_prv(unsigned long);
+    SymTabEnt *get_ent_prv(uintptr_t);
     stringlist *names_prv();
 
 private:

@@ -122,7 +122,7 @@ fmu_t::find_totals()
 
         unsigned int cnt = 0;
         for (syrlist_t *s = sl; s; s = s->next) {
-            ftab->add((unsigned long)s->symref, (void*)(long)cnt, false);
+            ftab->add((uintptr_t)s->symref, (void*)(uintptr_t)cnt, false);
             cnt++;
         }
         syrlist_t::destroy(sl);
@@ -219,8 +219,8 @@ fmu_t::sum_counts(double sc, symref_t *sref)
         Errs()->add_error("fmu_t::sum_counts: null symbol reference.");
         return (false);
     }
-    unsigned int offs = (unsigned long)SymTab::get(ftab, (unsigned long)sref);
-    if (offs == (unsigned int)(long)ST_NIL) {
+    unsigned int offs = (uintptr_t)SymTab::get(ftab, (uintptr_t)sref);
+    if (offs == (unsigned int)(uintptr_t)ST_NIL) {
         Errs()->add_error(
             "fmu_t::sum_counts: unresolved symbol reference.");
         return (false);

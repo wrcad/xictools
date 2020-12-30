@@ -84,7 +84,7 @@
  *------------------------------------------------------------------------*/
 
 // Needed to expose vasprintf prototype in stdio.h.
-#ifdef __CYGWIN__
+#ifdef WIN32
 #define _GNU_SOURCE
 #endif
 
@@ -94,10 +94,10 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#ifdef WIN32
-// This provides vasprintf in MINGW.
-#include <libiberty.h>
-#endif
+//#ifdef WIN32
+// This provides vasprintf in win-builds MINGW.
+//#include <libiberty.h>
+//#endif
 
 #if defined(HAVE_LIBTIFF) && defined(HAVE_LIBPNG)
 #include <tiff.h>

@@ -49,6 +49,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "miscutil/lstring.h"
 #include "miscutil/errorrec.h"
@@ -220,18 +221,18 @@ protected:
 #ifdef CD_PRPTY_TAB
 struct prpelt_t
 {
-    unsigned long tab_key()     { return (p_key); }
+    uintptr_t tab_key()         { return (p_key); }
     prpelt_t *tab_next()        { return (p_next); }
     prpelt_t *tgen_next(bool)   { return (tab_next()); }
 
     void set_tab_next(prpelt_t *n) { p_next = n; }
-    void set_key(const void *k) { p_key = (unsigned long)k; }
+    void set_key(const void *k) { p_key = (intptr_t)k; }
     CDp *get_list()             { return (p_list); }
     void set_list(CDp *p)       { p_list = p; }
 
 private:
     CDp *p_list;
-    unsigned long p_key;
+    uintptr_t p_key;
     prpelt_t *p_next;
 };
 

@@ -213,7 +213,7 @@ CDc::add_hash(unsigned int k)
 {
     k = incr_hash(k, &cAttr);
     // The cellname is in the string table, treat like a long value.
-    unsigned long cn = (unsigned long)cellname();
+    uintptr_t cn = (uintptr_t)cellname();
     k = incr_hash(k, &cn);
     k = incr_hash(k, &cX);
     k = incr_hash(k, &cY);

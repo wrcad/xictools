@@ -1183,9 +1183,10 @@ sGrd::gd_axes_proc(GtkWidget *widget, void *arg)
     WindowDesc *wd = DSP()->Window(grd->gd_win_num);
     if (!wd)
         return;
-    if (GRX->GetStatus(widget) && wd->Mode() == Physical)
-        grd->gd_grid.set_axes(
-            (AxesType)(long)gtk_object_get_data(GTK_OBJECT(widget), "axes"));
+    if (GRX->GetStatus(widget) && wd->Mode() == Physical) {
+        grd->gd_grid.set_axes((AxesType)(intptr_t)
+            gtk_object_get_data(GTK_OBJECT(widget), "axes"));
+    }
 }
 
 
@@ -1195,7 +1196,7 @@ sGrd::gd_lst_proc(GtkWidget *widget, void *arg)
 {
     sGrd *grd = *(sGrd**)arg;
     if (grd && GRX->GetStatus(widget)) {
-        int lst = (long)gtk_object_get_data(GTK_OBJECT(widget), "lst");
+        int lst = (intptr_t)gtk_object_get_data(GTK_OBJECT(widget), "lst");
         if (lst == LstSolid) {
             if (!grd->gd_mask_bak && grd->gd_grid.linestyle().mask != 0 &&
                     grd->gd_grid.linestyle().mask != -1)

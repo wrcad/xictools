@@ -50,7 +50,7 @@ struct CDm
 {
     // itable_t (CDs masters list) and ptable_t (CDs master refs list)
     // requirements
-    unsigned long tab_key()     const { return ((unsigned long)mName); }
+    uintptr_t tab_key()         const { return ((uintptr_t)mName); }
     CDm *tab_next()             const { return (mTabNext); }
     void set_tab_next(CDm *m)         { mTabNext = m; }
     CDm *ptab_next()            const { return (mPtabNext); }
@@ -104,8 +104,8 @@ struct CDm
 
     bool isNullCelldesc()           const { return (!mSdesc); }
 
-    unsigned long instances()       const { return (mObjRefs); }
-    unsigned long unlinked()        const { return (mUnlinked); }
+    uintptr_t instances()           const { return (mObjRefs); }
+    uintptr_t unlinked()            const { return (mUnlinked); }
 
     // Each CDm is normally contained in two symbol tables:  a
     // name-keyed table in the cell containing instances, and a
@@ -145,8 +145,8 @@ private:
 
     CDs *mParent;               // Back pointer to parent.
     CDs *mSdesc;                // Structure referenced.
-    unsigned long mObjRefs;     // Linked instance pointers (ptable_t).
-    unsigned long mUnlinked;    // Unlinked instance pointers (ptable_t).
+    uintptr_t mObjRefs;         // Linked instance pointers (ptable_t).
+    uintptr_t mUnlinked;        // Unlinked instance pointers (ptable_t).
 };
 
 // Generators defined in cd_cell.h.

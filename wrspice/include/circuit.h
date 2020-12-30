@@ -58,6 +58,7 @@ Authors: 1985 Thomas L. Quarles
 #define THREAD_SAFE_EVAL
 
 #include <math.h>
+#include <stdint.h>
 #include "ifdata.h"
 #ifdef WITH_THREADS
 #include <pthread.h>
@@ -161,7 +162,7 @@ struct sGENmodel;
 struct sGENinstance
 {
     // Hash table hooks.
-    unsigned long tab_key()             { return ((unsigned long)GENname); }
+    uintptr_t tab_key()                 { return ((uintptr_t)GENname); }
     sGENinstance *tab_next()            { return (GENnextTabInstance); }
     void set_tab_next(sGENinstance *n)  { GENnextTabInstance = n; }
 

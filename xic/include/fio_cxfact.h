@@ -112,8 +112,8 @@ struct bytefact_t
             return (p + ix);
         }
 
-    ticket_t get_space_volatile(unsigned long);
-    ticket_t get_space_nonvolatile(unsigned long);
+    ticket_t get_space_volatile(uintptr_t);
+    ticket_t get_space_nonvolatile(uintptr_t);
 
     size_t memuse()
         {
@@ -129,8 +129,8 @@ struct bytefact_t
             return (b_records);
         }
 
-    unsigned long bytes_inuse() { return (b_inuse); }
-    unsigned int allocations() { return (b_allocations); }
+    uintptr_t bytes_inuse()     { return (b_inuse); }
+    unsigned int allocations()  { return (b_allocations); }
 
 protected:
     unsigned char **b_blocks;   // array of data blocks
@@ -138,7 +138,7 @@ protected:
     unsigned int b_allocated;   // size of array
     unsigned int b_blkused;     // current offset into block
     unsigned int b_allocations; // number of allocations
-    unsigned long b_inuse;      // bytes in use
+    uintptr_t b_inuse;          // bytes in use
     unsigned int b_records;     // user's record count
     bool b_full;                // out of tickets
 };
@@ -234,8 +234,8 @@ struct cmp_bytefact_t
             return (b_records);
         }
 
-    unsigned long bytes_inuse() { return (b_inuse); }
-    unsigned int allocations() { return (b_allocations); }
+    uintptr_t bytes_inuse()     { return (b_inuse); }
+    unsigned int allocations()  { return (b_allocations); }
 
     static void set_cmp_threshold(unsigned int t) { b_cmp_threshold = t; }
 
@@ -287,7 +287,7 @@ private:
     unsigned int b_allocated;   // size of array
     unsigned int b_blkused;     // current offset into block
     unsigned int b_allocations; // number of allocations
-    unsigned long b_inuse;      // bytes in use
+    uintptr_t b_inuse;          // bytes in use
     unsigned int b_records;     // user's record count
     bool b_full;                // out of tickets
 
@@ -662,7 +662,7 @@ struct cxfact_t
     bool save_space(ticket_t) { }
 #endif
 
-    void cref_count(unsigned int *ncrefs, unsigned long *bytes_inuse)
+    void cref_count(unsigned int *ncrefs, uintptr_t *bytes_inuse)
         {
             *ncrefs = crstab->add_count(0);
             *bytes_inuse = crstab->bytes_inuse();

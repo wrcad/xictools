@@ -122,7 +122,7 @@ namespace ext_group {
         const int u_i1, u_i2;
         int u_cnt;
         bool u_printed;
-        unsigned long u_check_time;
+        uint64_t u_check_time;
         char u_buf[256];
     };
 }

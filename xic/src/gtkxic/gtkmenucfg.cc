@@ -769,7 +769,7 @@ gtkMenuConfig::instantiateTopButtonMenu()
             if (ent->is_set())
                 Menu()->Select(button);
             gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                GTK_SIGNAL_FUNC(top_btnmenu_callback), (void*)(long)i);
+                GTK_SIGNAL_FUNC(top_btnmenu_callback), (void*)(intptr_t)i);
             if (ent->description) {
                 GtkTooltips *tt = gtk_NewTooltip();
                 gtk_tooltips_set_tip(tt, button, ent->description, "");
@@ -827,7 +827,7 @@ gtkMenuConfig::instantiateSideButtonMenus()
                 if (ent->is_set())
                     Menu()->Select(button);
                 gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                    GTK_SIGNAL_FUNC(btnmenu_callback), (void*)(long)i);
+                    GTK_SIGNAL_FUNC(btnmenu_callback), (void*)(intptr_t)i);
             }
             if (ent->description) {
                 GtkTooltips *tt = gtk_NewTooltip();
@@ -880,7 +880,7 @@ gtkMenuConfig::instantiateSideButtonMenus()
                 if (ent->is_set())
                     Menu()->Select(button);
                 gtk_signal_connect(GTK_OBJECT(button), "clicked",
-                    GTK_SIGNAL_FUNC(btnmenu_callback), (void*)(long)i);
+                    GTK_SIGNAL_FUNC(btnmenu_callback), (void*)(intptr_t)i);
             }
             if (ent->description) {
                 GtkTooltips *tt = gtk_NewTooltip();
@@ -940,11 +940,12 @@ gtkMenuConfig::instantiateSubwMenus(int wnum, GtkItemFactory *item_factory)
         GtkWidget *btn = gtk_item_factory_get_widget(item_factory,
             "/View/View");
         GtkWidget *popup = gtkMenu()->new_popup_menu(btn,
-            XM()->ViewList(), GTK_SIGNAL_FUNC(vimenu_proc), (void*)(long)wnum);
+            XM()->ViewList(), GTK_SIGNAL_FUNC(vimenu_proc),
+            (void*)(intptr_t)wnum);
         if (popup) {
             gtk_object_set_data(GTK_OBJECT(btn), "menu", popup);
             gtk_object_set_data(GTK_OBJECT(btn), "callb", (void*)vimenu_proc);
-            gtk_object_set_data(GTK_OBJECT(btn), "data", (void*)(long)wnum);
+            gtk_object_set_data(GTK_OBJECT(btn), "data",(void*)(intptr_t)wnum);
 
             // Set up the mapping so that the accelerator for the
             // "view" button will activate the "full" operation from
@@ -1655,7 +1656,7 @@ gtkMenuConfig::vimenu_proc(GtkWidget *caller, void *client_data)
     const char *string = Menu()->GetLabel(caller);
     if (!string || !*string)
         return;
-    int wnum = (long)client_data;
+    int wnum = (intptr_t)client_data;
     if (wnum < 0 || wnum >= DSP_NUMWINS)
         return;
     WindowDesc *wdesc = DSP()->Window(wnum);
@@ -1760,7 +1761,7 @@ gtkMenuConfig::shmenu_proc(GtkWidget *caller, void*)
 void
 gtkMenuConfig::top_btnmenu_callback(GtkWidget *widget, void *data)
 {
-    menu_handler(widget,  Menu()->GetMiscMenu()->menu, (unsigned long)data);
+    menu_handler(widget,  Menu()->GetMiscMenu()->menu, (uintptr_t)data);
 }
 
 
@@ -1768,7 +1769,7 @@ gtkMenuConfig::top_btnmenu_callback(GtkWidget *widget, void *data)
 void
 gtkMenuConfig::btnmenu_callback(GtkWidget *widget, void *data)
 {
-    menu_handler(widget,  Menu()->GetButtonMenu()->menu, (unsigned long)data);
+    menu_handler(widget,  Menu()->GetButtonMenu()->menu, (uintptr_t)data);
 }
 
 

@@ -43,6 +43,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <stdint.h>
 #include "ginterf/graphics.h"
 #include "cd.h"
 #include "cd_types.h"
@@ -333,7 +334,7 @@ public:
                 return;
             if (!d_invisible_master_tab)
                 d_invisible_master_tab = new SymTab(false, false);
-            d_invisible_master_tab->add((unsigned long)mdesc, 0, true);
+            d_invisible_master_tab->add((intptr_t)mdesc, 0, true);
         }
 
     void ClearInvisible(CDm *mdesc)
@@ -345,13 +346,13 @@ public:
                 d_invisible_master_tab = 0;
             }
             else
-                d_invisible_master_tab->remove((unsigned long)mdesc);
+                d_invisible_master_tab->remove((intptr_t)mdesc);
         }
 
     bool IsInvisible(CDm *mdesc)
         {
             return (d_invisible_master_tab && mdesc &&
-                SymTab::get(d_invisible_master_tab, (unsigned long)mdesc) !=
+                SymTab::get(d_invisible_master_tab, (intptr_t)mdesc) !=
                 ST_NIL);
         }
 

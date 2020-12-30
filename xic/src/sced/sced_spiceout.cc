@@ -1107,7 +1107,7 @@ SpOut::add_dot_global()
                 }
                 else {
                     CDnetName nm = CDnetex::name_tab_add(val);
-                    if (SymTab::get(gtab, (unsigned long)nm) == ST_NIL) {
+                    if (SymTab::get(gtab, (uintptr_t)nm) == ST_NIL) {
                         if (indeck(name, sp_celldesc)) {
                             lstr.add_c(' ');
                             lstr.add(val);

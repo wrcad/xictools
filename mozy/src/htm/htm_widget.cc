@@ -853,8 +853,6 @@ htmWidget::XYToInfo(int x, int y)
 
     // check if we have an anchor
     if (anchor) {
-        // set to zero
-        memset(&anchor_cbs, 0, sizeof(htmAnchorCallbackStruct));
 
         // initialize callback fields
         anchor_cbs.reason   = HTM_ACTIVATE;
@@ -866,6 +864,7 @@ htmWidget::XYToInfo(int x, int y)
         anchor_cbs.rel      = anchor->rel;
         anchor_cbs.rev      = anchor->rev;
         anchor_cbs.title    = anchor->title;
+        anchor_cbs.is_frame = false;
         anchor_cbs.doit     = false;
         anchor_cbs.visited  = anchor->visited;
 
@@ -891,7 +890,8 @@ htmWidget::XYToInfo(int x, int y)
         else {
             // htmImageInfo has been freed, construct one
             // set to zero
-            memset(&info, 0, sizeof(htmImageInfo));
+            info = htmImageInfo();
+
             // fill in the fields we know
             info.url        = image->url;
             info.type       = IMAGE_UNKNOWN;

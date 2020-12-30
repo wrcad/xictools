@@ -4349,13 +4349,13 @@ bangcmds::ldshared(const char *s)
     }
 
     handle = LoadLibrary(path);
-    if ((unsigned long)handle <= HINSTANCE_ERROR) {
+    if ((uintptr_t)handle <= HINSTANCE_ERROR) {
         int err = GetLastError();
         PL()->ShowPromptV("LoadLibrary failed, error code %d", err);
         delete [] path;
         return;
     }
-    initfunc init = (initfunc)GetProcAddress(handle, "init");
+    initfunc init = (initfunc)(void*)GetProcAddress(handle, "init");
     if (!init) {
         FreeLibrary(handle);
         PL()->ShowPrompt("Could not find init function in library.");

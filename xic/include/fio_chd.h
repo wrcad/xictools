@@ -241,8 +241,8 @@ private:
 
     // fio_chd.cc
     bool listCellnames_rc(symref_t*, SymTab*, int);
-    bool depthCounts_rc(symref_t*, unsigned int, unsigned long, unsigned int*);
-    bool instanceCounts_rc(symref_t*, unsigned int, unsigned long, SymTab*);
+    bool depthCounts_rc(symref_t*, unsigned int, unsigned int, unsigned int*);
+    bool instanceCounts_rc(symref_t*, unsigned int, unsigned int, SymTab*);
     bool setBoundaries_rcprv(symref_t*, unsigned int);
     bool instanceBoundaries_rc(symref_t*, fio_chd::ib_t*, unsigned int = 0);
 

@@ -152,7 +152,7 @@ cCD::RegisterCreate(const char *name)
     if (!h)
         cdAllocTab->add(name, (void*)1L, false);
     else {
-        long cnt = (long)h->stData;
+        intptr_t cnt = (intptr_t)h->stData;
         cnt++;
         h->stData = (void*)cnt;
     }
@@ -168,7 +168,7 @@ cCD::RegisterDestroy(const char *name)
     if (!h)
         cdAllocTab->add(name, (void*)-1L, false);
     else {
-        long cnt = (long)h->stData;
+        intptr_t cnt = (intptr_t)h->stData;
         cnt--;
         h->stData = (void*)cnt;
     }
@@ -185,9 +185,9 @@ cCD::CheckAlloc()
     SymTabGen gen(cdAllocTab);
     SymTabEnt *h;
     while ((h = gen.next()) != 0) {
-        long cnt = (long)h->stData;
+        intptr_t cnt = (intptr_t)h->stData;
         if (cnt != 0)
-            printf("%s %ld\n", h->stTag, cnt);
+            printf("%s %lld\n", h->stTag, (int64_t)cnt);
     }
 }
 

@@ -929,7 +929,7 @@ namespace ginterf
         void defineFillpattern(GRfillType*, int, int, const unsigned char*);
 
         // graphics primitives
-        virtual unsigned long WindowID()                                = 0;
+        virtual void *WindowID()                                        = 0;
         virtual void Halt()                                             = 0;
         virtual void Clear()                                            = 0;
         virtual void ResetViewport(int, int)                            = 0;
@@ -1010,7 +1010,7 @@ namespace ginterf
         //   void SetFillpattern(const GRfillType*)
         //   double Resolution()
 
-        unsigned long WindowID()                            { return (0); }
+        void *WindowID()                                        { return (0); }
         void Clear()                                            { }
 
         void SetGhost(GhostDrawFunc, int, int)                  { }

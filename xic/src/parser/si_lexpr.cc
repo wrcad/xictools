@@ -176,7 +176,7 @@ SIlexprCx::getDbZlist(const CDl *ld, const char *name, Zlist **zret)
     if (!sdb)
         return (XIbad);
     if (sdb->type() == sdbBdb) {
-        bdb_t *db = (bdb_t*)SymTab::get(sdb->table(), (unsigned long)ld);
+        bdb_t *db = (bdb_t*)SymTab::get(sdb->table(), (uintptr_t)ld);
         if (db != (bdb_t*)ST_NIL) {
             if (cx_verbose)
                 SIparse()->ifSendMessage("Zoidifying %s ...", name);
@@ -189,7 +189,7 @@ SIlexprCx::getDbZlist(const CDl *ld, const char *name, Zlist **zret)
         return (XIok);
     }
     if (sdb->type() == sdbOdb) {
-        odb_t *db = (odb_t*)SymTab::get(sdb->table(), (unsigned long)ld);
+        odb_t *db = (odb_t*)SymTab::get(sdb->table(), (uintptr_t)ld);
         if (db != (odb_t*)ST_NIL) {
             if (cx_verbose)
                 SIparse()->ifSendMessage("Zoidifying %s ...", name);
@@ -202,7 +202,7 @@ SIlexprCx::getDbZlist(const CDl *ld, const char *name, Zlist **zret)
         return (XIok);
     }
     if (sdb->type() == sdbZdb) {
-        zdb_t *db = (zdb_t*)SymTab::get(sdb->table(), (unsigned long)ld);
+        zdb_t *db = (zdb_t*)SymTab::get(sdb->table(), (uintptr_t)ld);
         if (db != (zdb_t*)ST_NIL) {
             if (cx_verbose)
                 SIparse()->ifSendMessage("Zoidifying %s ...", name);
@@ -215,7 +215,7 @@ SIlexprCx::getDbZlist(const CDl *ld, const char *name, Zlist **zret)
         return (XIok);
     }
     if (sdb->type() == sdbZldb) {
-        Zlist *db = (Zlist*)SymTab::get(sdb->table(), (unsigned long)ld);
+        Zlist *db = (Zlist*)SymTab::get(sdb->table(), (uintptr_t)ld);
         if (db != (Zlist*)ST_NIL) {
             if (cx_verbose)
                 SIparse()->ifSendMessage("Zoidifying %s ...", name);
@@ -231,7 +231,7 @@ SIlexprCx::getDbZlist(const CDl *ld, const char *name, Zlist **zret)
         return (XIok);
     }
     if (sdb->type() == sdbZbdb) {
-        zbins_t *db = (zbins_t*)SymTab::get(sdb->table(), (unsigned long)ld);
+        zbins_t *db = (zbins_t*)SymTab::get(sdb->table(), (uintptr_t)ld);
         if (db != (zbins_t*)ST_NIL) {
             if (cx_verbose)
                 SIparse()->ifSendMessage("Zoidifying %s ...", name);

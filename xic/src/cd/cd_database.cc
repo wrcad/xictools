@@ -63,7 +63,7 @@ namespace {
                 if (!a)
                     return;
                 pthread_mutex_lock(&gt_mtx);
-                gt_tab.add((unsigned long)a, 0, true);
+                gt_tab.add((uintptr_t)a, 0, true);
                 pthread_mutex_unlock(&gt_mtx);
             }
 
@@ -72,7 +72,7 @@ namespace {
                 if (!a)
                     return;
                 pthread_mutex_lock(&gt_mtx);
-                gt_tab.remove((unsigned long)a);
+                gt_tab.remove((uintptr_t)a);
                 pthread_mutex_unlock(&gt_mtx);
             }
 

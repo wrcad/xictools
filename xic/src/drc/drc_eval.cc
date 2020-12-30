@@ -1402,20 +1402,20 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
             if (td->inhibited() || drc_rule_disable[td->type()])
                 continue;
             if (!added_me && ld->layerType() == CDLderived) {
-                drc_drv_tab->add((unsigned long)ld, 0, true);
+                drc_drv_tab->add((uintptr_t)ld, 0, true);
                 added_me = true;
             }
 
             CDll *l0 = td->sourceLayers();
             for (CDll *l = l0; l; l = l->next) {
                 if (l->ldesc->layerType() == CDLderived)
-                    drc_drv_tab->add((unsigned long)l->ldesc, 0, true);
+                    drc_drv_tab->add((uintptr_t)l->ldesc, 0, true);
             }
             CDll::destroy(l0);
             l0 = td->targetLayers();
             for (CDll *l = l0; l; l = l->next) {
                 if (l->ldesc->layerType() == CDLderived)
-                    drc_drv_tab->add((unsigned long)l->ldesc, 0, true);
+                    drc_drv_tab->add((uintptr_t)l->ldesc, 0, true);
             }
             CDll::destroy(l0);
         }
@@ -1477,7 +1477,7 @@ cDRC::init_drc(const BBox *AOI, Blist **blist, bool skip_cnt)
         if (l0) {
             drc_drv_tab = new SymTab(false, false);
             for (CDll *l = l0; l; l = l->next)
-                drc_drv_tab->add((unsigned long)l->ldesc, 0, false);
+                drc_drv_tab->add((uintptr_t)l->ldesc, 0, false);
             CDll::destroy(l0);
         }
 

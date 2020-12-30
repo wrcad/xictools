@@ -54,7 +54,7 @@
 struct as_elt_t
 {
     as_elt_t *next;
-    u_int64_t tag;
+    uintptr_t tag;
 };
 
 
@@ -82,11 +82,11 @@ struct as_aligner_t
         }
 
     union {
-        u_int64_t ui[2];
+        uintptr_t ui[2];
         struct {
             as_elt_t *ptr;
-            u_int64_t tag;
-        } __attribute__ (( __aligned__(16) ));
+            uintptr_t tag;
+        } __attribute__ (( __aligned__(2*sizeof(uintptr_t)) ));
     };
 };
 

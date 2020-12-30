@@ -492,7 +492,7 @@ sCHDin::read_nametab()
                         break;
                     }
 
-                    c->set_tkt((ticket_t)((unsigned int)(long)xx - 1));
+                    c->set_tkt((ticket_t)((unsigned int)(uintptr_t)xx - 1));
                     if (ci_nogo)
                         break;
                     c->set_pos_x(read_signed());
@@ -694,9 +694,11 @@ sCHDin::read_tables()
             }
         }
         ticket_t ntkt = CD()->RecordAttr(&at);
-        if (SymTab::get(ci_attab, otkt) == ST_NIL)
+        if (SymTab::get(ci_attab, otkt) == ST_NIL) {
             // save as ntkt+1 to avoid 0
-            ci_attab->add((unsigned int)otkt, (void*)(long)(ntkt+1), false);
+            ci_attab->add((unsigned int)otkt, (void*)(uintptr_t)(ntkt+1),
+                false);
+        }
     }
     return (true);
 }

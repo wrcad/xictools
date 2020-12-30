@@ -424,7 +424,7 @@ cFIO::TabToNative(SymTab *tab, const char *xic_fname)
             ld->setTmpSkip(false);
             lindex++;
 
-            CDol *ol0 = (CDol*)SymTab::get(tab, (unsigned long)ld);
+            CDol *ol0 = (CDol*)SymTab::get(tab, (uintptr_t)ld);
             if (ol0 == (CDol*)ST_NIL)
                 continue;
 

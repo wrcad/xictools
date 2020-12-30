@@ -1471,7 +1471,7 @@ sFpe::fp_redraw_sample_hdlr(GtkWidget*, GdkEvent *event, void*)
 int
 sFpe::fp_redraw_store_hdlr(GtkWidget*, GdkEvent *event, void *arg)
 {
-    long i = (long)arg;
+    int i = (intptr_t)arg;
     if (Fpe->fp_pm_widget == Fpe->fp_stores[i]) {
         GdkEventExpose *pev = (GdkEventExpose*)event;
         gdk_window_copy_area(Fpe->fp_stores[i]->window, Fpe->GC(),
@@ -1813,7 +1813,7 @@ void
 sFpe::fp_nxy_proc(GtkWidget*, void *arg)
 {
     if (Fpe) {
-        if ((long)arg == 1) {
+        if ((intptr_t)arg == 1) {
             // Reconfigure the pixel map so that the pattern doesn't
             // turn to crap when the bpl changes.
 
@@ -1846,7 +1846,7 @@ sFpe::fp_nxy_proc(GtkWidget*, void *arg)
                 }
             }
         }
-        else if ((long)arg == 2)
+        else if ((intptr_t)arg == 2)
             Fpe->fp_ny = Fpe->sb_ny.get_value_as_int();
         Fpe->set_fp(Fpe->fp_array, Fpe->fp_nx, Fpe->fp_ny);
         Fpe->SetFillpattern(0);

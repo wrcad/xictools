@@ -961,7 +961,7 @@ sCHL::chl_geom_proc(GtkWidget*, void *client_data)
 {
     if (!CHL)
         return;
-    ChdCgdType tp = (ChdCgdType)(long)client_data;
+    ChdCgdType tp = (ChdCgdType)(intptr_t)client_data;
     sCHDin::set_default_cgd_type(tp);
 }
 

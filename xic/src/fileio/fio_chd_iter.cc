@@ -658,7 +658,7 @@ namespace {
                 return (XIbad);
             }
             zbins_t *zdb =
-                (zbins_t*)SymTab::get(ci_db1->table(), (unsigned long)ld);
+                (zbins_t*)SymTab::get(ci_db1->table(), (uintptr_t)ld);
             if (zdb == (zbins_t*)ST_NIL)
                 continue;
 
@@ -826,7 +826,7 @@ namespace {
         CDlgen lgen(Physical);
         CDl *ld;
         while ((ld = lgen.next()) != 0) {
-            SymTabEnt *h = SymTab::get_ent(ci_ldiffs, (unsigned long)ld);
+            SymTabEnt *h = SymTab::get_ent(ci_ldiffs, (uintptr_t)ld);
             if (h) {
                 Ldiff *lx = (Ldiff*)h->stData;
                 h->stData = 0;
@@ -915,9 +915,9 @@ namespace {
                 break;
             }
             zbins_t *zdb1 =
-                (zbins_t*)SymTab::get(ci_db1->table(), (unsigned long)ld);
+                (zbins_t*)SymTab::get(ci_db1->table(), (uintptr_t)ld);
             zbins_t *zdb2 =
-                (zbins_t*)SymTab::get(ci_db2->table(), (unsigned long)ld);
+                (zbins_t*)SymTab::get(ci_db2->table(), (uintptr_t)ld);
 
             if (zdb1 == (zbins_t*)ST_NIL)
                 zdb1 = 0;
@@ -936,7 +936,7 @@ namespace {
 
                     Ldiff *ld0 = 0;
                     if (!ci_fp && ci_ldiffs) {
-                        ld0 = (Ldiff*)SymTab::get(ci_ldiffs, (unsigned long)ld);
+                        ld0 = (Ldiff*)SymTab::get(ci_ldiffs, (uintptr_t)ld);
                         if (ld0 == (Ldiff*)ST_NIL)
                             ld0 = 0;
                     }
@@ -1017,9 +1017,9 @@ namespace {
                     }
                     else {
                         if (ci_ldiffs) {
-                            if (SymTab::get(ci_ldiffs, (unsigned long)ld) ==
+                            if (SymTab::get(ci_ldiffs, (uintptr_t)ld) ==
                                     ST_NIL)
-                                ci_ldiffs->add((unsigned long)ld, ld0, false);
+                                ci_ldiffs->add((uintptr_t)ld, ld0, false);
                         }
                         else
                             delete ld0;

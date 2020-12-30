@@ -719,7 +719,7 @@ sLx::lx_val_changed(GtkWidget *caller, void*)
 void
 sLx::lx_depth_proc(GtkWidget*, void *arg)
 {
-    depth_hst = (long)arg;
+    depth_hst = (intptr_t)arg;
 }
 
 
@@ -754,7 +754,7 @@ sLx::lx_save_proc(GtkWidget*, void *arg)
 {
     if (!Lx)
         return;
-    int ix = (long)arg;
+    int ix = (intptr_t)arg;
     const char *s = gtk_entry_get_text(GTK_ENTRY(Lx->lx_lexpr));
     if (*s)
         ED()->setLayerExpString(s, ix);
@@ -767,7 +767,7 @@ sLx::lx_recall_proc(GtkWidget*, void *arg)
 {
     if (!Lx)
         return;
-    int ix = (long)arg;
+    int ix = (intptr_t)arg;
     const char *s = ED()->layerExpString(ix);
     if (!s)
         s = "";

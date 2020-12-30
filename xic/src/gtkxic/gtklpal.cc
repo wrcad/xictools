@@ -185,7 +185,7 @@ sLpalette::sLpalette(GRobject caller)
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(recall_menu), mi);
         gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(lp_recall_proc), (void*)(long)i);
+            GTK_SIGNAL_FUNC(lp_recall_proc), (void*)(intptr_t)i);
     }
     gtk_signal_connect(GTK_OBJECT(recall_btn), "button-press-event",
         GTK_SIGNAL_FUNC(lp_popup_menu), recall_menu);
@@ -205,7 +205,7 @@ sLpalette::sLpalette(GRobject caller)
         gtk_widget_show(mi);
         gtk_menu_append(GTK_MENU(save_menu), mi);
         gtk_signal_connect(GTK_OBJECT(mi), "activate",
-            GTK_SIGNAL_FUNC(lp_save_proc), (void*)(long)i);
+            GTK_SIGNAL_FUNC(lp_save_proc), (void*)(intptr_t)i);
     }
     gtk_signal_connect(GTK_OBJECT(save_btn), "button-press-event",
         GTK_SIGNAL_FUNC(lp_popup_menu), save_menu);
@@ -1187,7 +1187,7 @@ sLpalette::lp_recall_proc(GtkWidget*, void *arg)
 {
     if (!Lpal)
         return;
-    int ix = (long)arg;
+    int ix = (intptr_t)arg;
 
     int usz = LP_PALETTE_COLS * LP_PALETTE_ROWS;
     for (int i = 0; i < usz; i++)
@@ -1215,7 +1215,7 @@ sLpalette::lp_save_proc(GtkWidget*, void *arg)
 {
     if (!Lpal)
         return;
-    int ix = (long)arg;
+    int ix = (intptr_t)arg;
 
     sLstr lstr;
     int usz = LP_PALETTE_COLS * LP_PALETTE_ROWS;

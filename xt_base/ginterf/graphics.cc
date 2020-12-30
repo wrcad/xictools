@@ -46,13 +46,14 @@
 #include "config.h"
 #include <errno.h>
 #include <stdarg.h>
+#include <stdint.h>
 #ifdef HAVE_SYS_WAIT_H
 #include <sys/wait.h>
 #endif
 #ifdef WIN32
 #include <windows.h>
 #include <process.h>
-#include <libiberty.h>
+//#include <libiberty.h>
 #endif
 #include "graphics.h"
 #include "miscutil/lstring.h"
@@ -269,7 +270,7 @@ namespace {
     void __cdecl thcb1(void *arg)
     {
         thread_got1 = false;
-        thread_c1 = GRpkgIf()->GetChar((int)arg);
+        thread_c1 = GRpkgIf()->GetChar((intptr_t)arg);
         thread_got1 = true;
         thread1 = 0;
     }
@@ -311,7 +312,7 @@ GRpkg::Input(int fd, int socket, int *keyret)
             return (fd);
         }
         if (fd >= 0 && !thread1)
-            thread1 = _beginthread(thcb1, 0, (void*)fd);
+            thread1 = _beginthread(thcb1, 0, (void*)(intptr_t)fd);
         SleepEx(0, true);
     }
 

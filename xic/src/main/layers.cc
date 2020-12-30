@@ -543,7 +543,7 @@ ProfState::show_cross_section(int x1, int y1, int x2, int y2)
         }
         if (db) {
             CDl *ld = l->layer_desc();
-            tab->add((unsigned long)ld, db, false);
+            tab->add((uintptr_t)ld, db, false);
         }
         Blist::destroy(boxes[lnum]);
         lnum++;

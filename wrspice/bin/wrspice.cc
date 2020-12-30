@@ -1939,6 +1939,7 @@ namespace {
 }
 
 
+#ifndef WIN32
 #if defined(HAVE_GTK1) || defined(HAVE_GTK2)
 namespace {
     //
@@ -1991,6 +1992,7 @@ namespace {
 #endif
     }
 }
+#endif
 #endif
 
 

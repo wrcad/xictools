@@ -454,14 +454,14 @@ cMain::SetRulers(CDs *sdesc, CDs *oldsdesc)
     }
 
     if (oldsdesc) {
-        RulerTab->remove((unsigned long)oldsdesc);
+        RulerTab->remove((uintptr_t)oldsdesc);
         if (DSP()->Rulers()) {
-            RulerTab->add((unsigned long)oldsdesc, DSP()->Rulers(), false);
+            RulerTab->add((uintptr_t)oldsdesc, DSP()->Rulers(), false);
             DSP()->SetRulers(0);
         }
     }
     if (sdesc) {
-        DSP()->SetRulers((sRuler*)SymTab::get(RulerTab, (unsigned long)sdesc));
+        DSP()->SetRulers((sRuler*)SymTab::get(RulerTab, (uintptr_t)sdesc));
         if (DSP()->Rulers() == (sRuler*)ST_NIL)
             DSP()->SetRulers(0);
     }
@@ -480,17 +480,17 @@ cMain::EraseRulers(CDs *sdesc, WindowDesc *wd, int num)
                 delete r;
             }
             if (RulerTab)
-                RulerTab->remove((unsigned long)sdesc);
+                RulerTab->remove((uintptr_t)sdesc);
         }
         else if (RulerTab) {
-            sRuler *r0 = (sRuler*)SymTab::get(RulerTab, (unsigned long)sdesc);
+            sRuler *r0 = (sRuler*)SymTab::get(RulerTab, (uintptr_t)sdesc);
             if (r0 != (sRuler*)ST_NIL) {
                 while (r0) {
                     sRuler *r = r0;
                     r0 = r0->next;
                     delete r;
                 }
-                RulerTab->remove((unsigned long)sdesc);
+                RulerTab->remove((uintptr_t)sdesc);
             }
         }
         return;

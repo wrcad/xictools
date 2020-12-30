@@ -46,7 +46,7 @@ Authors: 1988 Wayne A. Christopher
 ****************************************************************************/
 
 // Needed to expose vasprintf prototype in stdio.h.
-#ifdef __CYGWIN__
+#ifdef WIN32
 #define _GNU_SOURCE
 #endif
 
@@ -66,6 +66,7 @@ Authors: 1988 Wayne A. Christopher
 #include "spnumber/hash.h"
 #include "miscutil/pathlist.h"
 #include <limits.h>
+#include <stdint.h>
 #ifdef HAVE_SECURE
 #include <signal.h>
 #include <unistd.h>
@@ -73,9 +74,6 @@ extern int StateInitialized;  // security
 #ifdef WIN32
 #include "miscutil/msw.h"
 #endif
-#endif
-#ifdef WIN32
-#include <libiberty.h>  // provides vasprintf
 #endif
 #include <stdarg.h>
 
@@ -352,7 +350,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
     for (int j = 0; j < outd->numNames; j++) {
         char *nm = name_tok((const char*)outd->dataNames[j]);
         if (nm) {
-            dataNameTab.add(nm, (void*)(unsigned long)(j+1));
+            dataNameTab.add(nm, (void*)(intptr_t)(j+1));
             delete [] nm;
         }
     }
@@ -384,11 +382,11 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
             char *nm = name_tok(h->name());
             if (!nm)
                 continue;
-            int j = (unsigned long)sHtab::get(&dataNameTab, nm);
+            int j = (intptr_t)sHtab::get(&dataNameTab, nm);
             if (j && !sHtab::get(&outTab, nm))  {
                 j--;
                 run->addDataDesc((char*)outd->dataNames[j], outd->dataType, j);
-                outTab.add(nm, (void*)(long)(j+1));
+                outTab.add(nm, (void*)(intptr_t)(j+1));
                 h->set_data((void*)(long)true);
             }
             delete [] nm;
@@ -408,7 +406,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
             }
             if (!sHtab::get(&outTab, nm)) {
                 run->addDataDesc((char*)outd->dataNames[j], outd->dataType, j);
-                outTab.add(nm, (void*)(long)(j+1));
+                outTab.add(nm, (void*)(intptr_t)(j+1));
             }
             delete [] nm;
         }
@@ -442,10 +440,10 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                 }
                 if (usevec) {
                     char *nm = name_tok(depbuf);
-                    int j = (long)sHtab::get(&outTab, nm);
+                    int j = (intptr_t)sHtab::get(&outTab, nm);
                     if (j == 0) {
                         // Better add it.
-                        j = (unsigned long)sHtab::get(&dataNameTab, nm);
+                        j = (intptr_t)sHtab::get(&dataNameTab, nm);
                         if (j == 0) {
                             sDataVec *d = vecGet(depbuf, ckt);
                             if (d) {
@@ -464,7 +462,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                             j--;
                             run->addDataDesc((char*)outd->dataNames[j],
                                 outd->dataType, j);
-                            outTab.add(nm, (void*)(long)(j+1));
+                            outTab.add(nm, (void*)(intptr_t)(j+1));
                             depind = j;
                         }
                     }
@@ -507,7 +505,7 @@ IFoutput::beginPlot(sOUTdata *outd, int multip,
                 if (!sHtab::get(&outTab, nm)) {
                     run->addDataDesc((char*)outd->dataNames[j],
                         outd->dataType, j);
-                    outTab.add(nm, (void*)(long)(j+1));
+                    outTab.add(nm, (void*)(intptr_t)(j+1));
                 }
                 delete [] nm;
             }

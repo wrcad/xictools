@@ -157,10 +157,10 @@ struct CDlabelCache
         {
             if (!name)
                 return;
-            SymTab *ntab = (SymTab*)SymTab::get(lc_tab, (unsigned long)name);
+            SymTab *ntab = (SymTab*)SymTab::get(lc_tab, (uintptr_t)name);
             if (ntab == (SymTab*)ST_NIL) {
                 ntab = new SymTab(false, false);
-                lc_tab->add((unsigned long)name, ntab, false);
+                lc_tab->add((uintptr_t)name, ntab, false);
             }
             ntab->add(n, cd, false);
         }
@@ -169,7 +169,7 @@ struct CDlabelCache
         {
             if (!name)
                 return (0);
-            SymTab *ntab = (SymTab*)SymTab::get(lc_tab, (unsigned long)name);
+            SymTab *ntab = (SymTab*)SymTab::get(lc_tab, (uintptr_t)name);
             if (ntab == (SymTab*)ST_NIL)
                 return (0);
             CDc *cd = (CDc*)SymTab::get(ntab, n);
@@ -616,7 +616,7 @@ CDs::isEmpty(const CDl *ld) const
 bool
 CDs::isSubcell() const
 {
-    unsigned long master_refs = masterRefs();
+    uintptr_t master_refs = masterRefs();
     if (!master_refs)
         return (false);
     if (master_refs & 1) {
@@ -2171,7 +2171,7 @@ CDs::insertMaster(CDcellName mname)
             itable_t<CDm> *t = (itable_t<CDm>*)(sMasters & ~1);
             t->link(m, false);
             t = t->check_rehash();
-            sMasters = (unsigned long)t | 1;
+            sMasters = (uintptr_t)t | 1;
         }
         else {
             int cnt = 0;
@@ -2179,7 +2179,7 @@ CDs::insertMaster(CDcellName mname)
                 cnt++;
             if (cnt < ST_MAX_DENS) {
                 m->set_tab_next((CDm*)sMasters);
-                sMasters = (unsigned long)m;
+                sMasters = (uintptr_t)m;
             }
             else {
                 itable_t<CDm> *t = new itable_t<CDm>;
@@ -2192,7 +2192,7 @@ CDs::insertMaster(CDcellName mname)
                 }
                 t->link(m, false);
                 t = t->check_rehash();
-                sMasters = (unsigned long)t | 1;
+                sMasters = (uintptr_t)t | 1;
             }
         }
     }
@@ -2213,7 +2213,7 @@ CDs::removeMaster(CDcellName mname)
         for (CDm *mm = (CDm*)sMasters; mm; mm = mm->tab_next()) {
             if (mm->cellname() == mname) {
                 if (!mp)
-                    sMasters = (unsigned long)mm->tab_next();
+                    sMasters = (uintptr_t)mm->tab_next();
                 else
                     mp->set_tab_next(mm->tab_next());
                 m = mm;
@@ -2242,7 +2242,7 @@ CDs::linkMaster(CDm *md)
         itable_t<CDm> *t = (itable_t<CDm>*)(sMasters & ~1);
         m = t->link(md);
         t = t->check_rehash();
-        sMasters = (unsigned long)t | 1;
+        sMasters = (uintptr_t)t | 1;
     }
     else {
         int cnt = 0;
@@ -2255,7 +2255,7 @@ CDs::linkMaster(CDm *md)
         }
         if (cnt < ST_MAX_DENS) {
             md->set_tab_next((CDm*)sMasters);
-            sMasters = (unsigned long)md;
+            sMasters = (uintptr_t)md;
             m = md;
         }
         else {
@@ -2269,7 +2269,7 @@ CDs::linkMaster(CDm *md)
             }
             m = t->link(md);
             t = t->check_rehash();
-            sMasters = (unsigned long)t | 1;
+            sMasters = (uintptr_t)t | 1;
         }
     }
     if (m)
@@ -2289,7 +2289,7 @@ CDs::unlinkMaster(CDm *md)
         for (CDm *mm = (CDm*)sMasters; mm; mm = mm->tab_next()) {
             if (mm == md) {
                 if (!mp)
-                    sMasters = (unsigned long)mm->tab_next();
+                    sMasters = (uintptr_t)mm->tab_next();
                 else
                     mp->set_tab_next(mm->tab_next());
                 m = mm;
@@ -2318,7 +2318,7 @@ CDs::linkMasterRef(CDm *md)
         ptable_t<CDm> *t = (ptable_t<CDm>*)(sMasterRefs & ~1);
         t->add(md);
         t = t->check_rehash();
-        sMasterRefs = (unsigned long)t | 1;
+        sMasterRefs = (uintptr_t)t | 1;
     }
     else {
         int cnt = 0;
@@ -2326,7 +2326,7 @@ CDs::linkMasterRef(CDm *md)
             cnt++;
         if (cnt < ST_MAX_DENS) {
             md->set_ptab_next((CDm*)sMasterRefs);
-            sMasterRefs = (unsigned long)md;
+            sMasterRefs = (uintptr_t)md;
         }
         else {
             ptable_t<CDm> *t = new ptable_t<CDm>;
@@ -2339,7 +2339,7 @@ CDs::linkMasterRef(CDm *md)
             }
             t->add(md);
             t = t->check_rehash();
-            sMasterRefs = (unsigned long)t | 1;
+            sMasterRefs = (uintptr_t)t | 1;
         }
     }
 }
@@ -2361,7 +2361,7 @@ CDs::unlinkMasterRef(CDm *md)
         for (CDm *mm = (CDm*)sMasterRefs; mm; mm = mm->ptab_next()) {
             if (mm == md) {
                 if (!mp)
-                    sMasterRefs = (unsigned long)mm->ptab_next();
+                    sMasterRefs = (uintptr_t)mm->ptab_next();
                 else
                     mp->set_ptab_next(mm->ptab_next());
                 md->set_ptab_next(0);
@@ -2708,21 +2708,21 @@ CDs::numberInstances()
         cdesc->set_group(count);
         count += inc;
 
-        long cnt = 0;
+        intptr_t cnt = 0;
         CDs *msdesc = cdesc->masterCell();
         if (msdesc) {
-            SymTabEnt *ent = SymTab::get_ent(&tab, (unsigned long)msdesc);
+            SymTabEnt *ent = SymTab::get_ent(&tab, (uintptr_t)msdesc);
             if (!ent) {
-                tab.add((unsigned long)msdesc, 0, false);
-                ent = SymTab::get_ent(&tab, (unsigned long)msdesc);
+                tab.add((uintptr_t)msdesc, 0, false);
+                ent = SymTab::get_ent(&tab, (uintptr_t)msdesc);
             }
             else {
-                cnt = (long)ent->stData;
+                cnt = (intptr_t)ent->stData;
                 cnt += inc;
                 ent->stData = (void*)cnt;
             }
         }
-        cdesc->set_index((long)cnt);
+        cdesc->set_index(cnt);
     }
     setInstNumValid(true);
 }
@@ -2937,9 +2937,9 @@ namespace {
                         BBox BB = *msdesc->BBforInst(cdesc);
                         TBB(&BB, 0);  
                         if (BB.intersect(&h_AOI, false)) {
-                            if (SymTab::get(h_ctab, (unsigned long)msdesc) ==
+                            if (SymTab::get(h_ctab, (uintptr_t)msdesc) ==
                                     ST_NIL)
-                                h_ctab->add((unsigned long)msdesc, 0, false);
+                                h_ctab->add((uintptr_t)msdesc, 0, false);
                             if (dp < h_depth)
                                 setup_cells(msdesc, dp+1);
                         }

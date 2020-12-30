@@ -510,11 +510,7 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
         lstr.add(buf);
 
     if (show_offs) {
-#ifdef WIN32
-        sprintf(buf, "Offset: %I64d\n", (long long)p->get_offset());
-#else
-        sprintf(buf, "Offset: %lld\n", (long long)p->get_offset());
-#endif
+        sprintf(buf, "Offset: %lld\n", p->get_offset());
         if (fp)
             fputs(buf, fp);
         else
@@ -748,7 +744,7 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
         SymTabGen stgen(tab);
         SymTabEnt *ent;
         while ((ent = stgen.next()) != 0)
-            totcnt += (unsigned long)ent->stData;
+            totcnt += (uintptr_t)ent->stData;
         if (fp)
             fprintf(fp, "Total Instances: %ld\n", totcnt);
         else
@@ -767,7 +763,7 @@ cCHD::prInstanceCounts(FILE *fp, DisplayMode mode, bool print)
     int n = 0;
     while ((ent = stgen.next()) != 0) {
         ary[n].symref = (symref_t*)ent->stTag;
-        ary[n].cnt = (unsigned long)ent->stData;
+        ary[n].cnt = (uintptr_t)ent->stData;
         n++;
     }
     delete tab;
@@ -916,11 +912,11 @@ char *
 cCHD::prCmpStats(FILE *fp, DisplayMode mode)
 {
     unsigned int ncrefs;
-    unsigned long br;
+    uint64_t br;
     nametab_t *ntab = nameTab(mode);
     ntab->cref_count(&ncrefs, &br);
     char buf[80];
-    sprintf(buf, "Compression: refs=%d  bytes=%ld  ratio=%.3f",
+    sprintf(buf, "Compression: refs=%d  bytes=%lld  ratio=%.3f",
         ncrefs, br, br/(double)(16*ncrefs));
     if (fp) {
         fputs(buf, fp);

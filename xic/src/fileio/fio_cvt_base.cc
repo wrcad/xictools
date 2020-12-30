@@ -860,7 +860,7 @@ cv_in::mark_references(stringlist **slp)
                 // phys_sym_tab.
 
                 CDcellName cn = (CDcellName)SymTab::get(in_submaster_tab,
-                    (unsigned long)p->get_name());
+                    (uintptr_t)p->get_name());
                 if (cn != (CDcellName)ST_NIL && cn != p->get_name())
                     sdesc = CDcdb()->findCell(cn, in_mode);
             }
@@ -1053,7 +1053,7 @@ cv_in::check_sub_master(CDcellName cname)
 {
     if (in_mode == Physical) {
         CDcellName cn = (CDcellName)SymTab::get(in_submaster_tab,
-            (unsigned long)cname);
+            (uintptr_t)cname);
         if (cn != (CDcellName)ST_NIL)
             cname = cn;
         else {
@@ -1063,7 +1063,7 @@ cv_in::check_sub_master(CDcellName cname)
                 cname = sdnew->cellname();
                 if (!in_submaster_tab)
                     in_submaster_tab = new SymTab(false, false);
-                in_submaster_tab->add((unsigned long)cn, cname, false);
+                in_submaster_tab->add((uintptr_t)cn, cname, false);
             }
         }
     }

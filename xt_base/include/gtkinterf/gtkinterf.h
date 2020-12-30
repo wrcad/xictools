@@ -352,7 +352,7 @@ namespace gtkinterf {
         gtk_draw(int = 0);
         virtual ~gtk_draw();
 
-        unsigned long WindowID() { return ((unsigned long)gd_window); }
+        void *WindowID()                    { return (gd_window); }
 
         // gtkinterf.cc
         void Halt();

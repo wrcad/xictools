@@ -92,7 +92,7 @@ SPinput::checkDotCard(const char *token)
         for (const char **s = unh_words; *s; s++)
             unh_tab->add(*s, (void*)1L);
     }
-    return ((int)(long)sHtab::get(unh_tab, token + 1));
+    return ((int)(intptr_t)sHtab::get(unh_tab, token + 1));
 }
 
 

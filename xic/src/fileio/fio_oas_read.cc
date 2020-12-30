@@ -2300,8 +2300,8 @@ oas_in::a_cell(const char *name)
                 // table means that we have prompted for this cell.
                 if (!in_over_tab)
                     in_over_tab = new SymTab(false, false);
-                in_over_tab->add((unsigned long)sd->cellname(),
-                    (void*)(long)mi.overwrite_elec, false);
+                in_over_tab->add((uintptr_t)sd->cellname(),
+                    (void*)(intptr_t)mi.overwrite_elec, false);
                 if (mi.overwrite_elec) {
                     // If overwriting electrical, clear the existing
                     // electrical cell (if any) here.  There may not
@@ -2333,7 +2333,7 @@ oas_in::a_cell(const char *name)
             else {
                 void *xx;
                 if (in_over_tab && (xx = SymTab::get(in_over_tab,
-                        (unsigned long)sd->cellname())) != ST_NIL) {
+                        (uintptr_t)sd->cellname())) != ST_NIL) {
                     // We already asked about overwriting.
                     if (xx) {
                         // User chose to overwrite the electrical
@@ -9232,7 +9232,7 @@ oas_in::read_xname(unsigned int ix)
         in_xname_table = in_xname_table->check_rehash();
         te->set_string(str, len);
         gc_str.clear();
-        te->set_data((void*)(long)attr);
+        te->set_data((void*)(intptr_t)attr);
     }
 
     if (!in_skip_action && !in_skip_all) {

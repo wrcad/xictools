@@ -41,6 +41,8 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include <stdint.h>
+
 // If defined, include test for use of main class before initialized.
 //#define TIMER_TEST_NULL
 
@@ -69,9 +71,9 @@ public:
     cTimer();
     void start(int);
 
-    unsigned long elapsed_msec()        { return (t_elapsed_time); }
+    uint64_t elapsed_msec()             { return (t_elapsed_time); }
 
-    bool check_interval(unsigned long &check_time)
+    bool check_interval(uint64_t &check_time)
         {
             if (t_elapsed_time > check_time) {
                 check_time = t_elapsed_time;
@@ -94,7 +96,7 @@ private:
 #endif
 #endif
 
-    unsigned long t_elapsed_time;
+    uint64_t t_elapsed_time;
     void(*t_callback)();
     int t_period;
     bool t_started;

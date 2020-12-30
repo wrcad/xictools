@@ -56,7 +56,7 @@
 //
 struct ts_writer
 {
-    ts_writer(unsigned char *str, unsigned long cnt, bool co)
+    ts_writer(unsigned char *str, uint64_t cnt, bool co)
         {
             ts_stream = str;
             ts_used = cnt;
@@ -82,7 +82,7 @@ struct ts_writer
             ts_stream[ts_used++] = c;
         }
 
-    unsigned long bytes_used() { return (ts_used); }
+    uint64_t bytes_used() { return (ts_used); }
 
     void alloc_stream();
     void add_record(CDtx*, unsigned int, unsigned int, int, int);
@@ -94,8 +94,8 @@ struct ts_writer
 
 protected:
     unsigned char *ts_stream;
-    unsigned long ts_used;
-    unsigned long ts_length;
+    uint64_t ts_used;
+    uint64_t ts_length;
     bool ts_cnt_only;
     bool ts_use_alloc;
 };
@@ -122,7 +122,7 @@ struct ts_reader
             return (ts_stream ? ts_stream[ts_offset++] : TS_END);
         }
 
-    unsigned long bytes_used() { return (ts_offset); }
+    uint64_t bytes_used()   { return (ts_offset); }
 
     bool read_record(CDtx*, CDap*);
 
@@ -132,7 +132,7 @@ struct ts_reader
 
 protected:
     unsigned const char *ts_stream;
-    unsigned long ts_offset;
+    uint64_t ts_offset;
 };
 
 #endif

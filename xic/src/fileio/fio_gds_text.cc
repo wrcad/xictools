@@ -141,11 +141,7 @@ void
 gds_in::print_offset()
 {
     if (in_printing)
-#ifdef WIN32
-        fprintf(in_print_fp, "%09I64d ", (long long)in_offset);
-#else
-        fprintf(in_print_fp, "%09lld ", (long long)in_offset);
-#endif
+        fprintf(in_print_fp, "%09lld ", in_offset);
 }
 
 
@@ -287,12 +283,8 @@ gds_in::ap_bgnstr()
     if (!get_record())
         return (false);
     if (in_rectype != II_STRNAME) {
-#ifdef WIN32
-        fprintf(in_print_fp, ">> Unexpected record type %d at offset %I64u",
-#else
         fprintf(in_print_fp, ">> Unexpected record type %d at offset %llu",
-#endif
-            in_rectype, (unsigned long long)in_offset);
+            in_rectype, in_offset);
         return (false);
     }
     if (!ap_strname())

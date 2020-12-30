@@ -393,7 +393,7 @@ Variable::incr__handle(Variable *res)
                 delete obj;
         }
         else if (hdl->type == HDLgen) {
-            int tid = (long)hdl->iterator();
+            int tid = (intptr_t)hdl->iterator();
             sHdl *nhdl = sHdl::get(tid);
             if (nhdl)
                 nhdl->close(tid);

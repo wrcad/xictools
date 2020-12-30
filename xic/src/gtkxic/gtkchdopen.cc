@@ -577,7 +577,7 @@ void
 sCo::co_info_proc(GtkWidget*, void *arg)
 {
     cvINFO cv;
-    switch ((long)arg) {
+    switch ((intptr_t)arg) {
     case cvINFOnone:
         cv = cvINFOnone;
         break;

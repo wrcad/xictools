@@ -226,12 +226,12 @@ cExt::addSubcircuit(sSubcDesc *sd)
     if (!ext_subckt_tab)
         ext_subckt_tab = new SymTab(false, false);
     sSubcDesc *osd = (sSubcDesc*)SymTab::get(
-        ext_subckt_tab, (unsigned long)sd->master());
+        ext_subckt_tab, (uintptr_t)sd->master());
     if (osd != (sSubcDesc*)ST_NIL) {
-        ext_subckt_tab->remove((unsigned long)sd->master());
+        ext_subckt_tab->remove((uintptr_t)sd->master());
         delete osd;
     }
-    ext_subckt_tab->add((unsigned long)sd->master(), sd, false);
+    ext_subckt_tab->add((uintptr_t)sd->master(), sd, false);
 }
 
 
@@ -243,7 +243,7 @@ cExt::findSubcircuit(const CDs *sdesc)
     if (!ext_subckt_tab || !sdesc)
         return (0);
     sSubcDesc *sd = (sSubcDesc*)SymTab::get(
-        ext_subckt_tab, (unsigned long)sdesc);
+        ext_subckt_tab, (uintptr_t)sdesc);
     if (sd == (sSubcDesc*)ST_NIL)
         return (0);
     return (sd);
@@ -4088,7 +4088,7 @@ sDevDesc::find(CDs *sdesc, sDevInst **dlist, const BBox *AOI, bool findall,
     // structures if possible.
     int cnt = 0;
     sDevInst *d0 = 0;
-    unsigned long check_time = 0;
+    uint64_t check_time = 0;
     for (int i = 0; i < g->num; i++) {
         if (Timer()->check_interval(check_time)) {
             if (DSP()->MainWdesc() && DSP()->MainWdesc()->Wdraw())
@@ -6177,11 +6177,11 @@ sGroupXf::find_objects(const sDevContactInst *c1, const CDl *ld)
     else if (gx_objs) {
         CDol *ol = gx_objs->find_object(ld, c1->cBB());
         if (ol) {
-            if (SymTab::get(tab, (unsigned long)ol->odesc) != ST_NIL) {
+            if (SymTab::get(tab, (uintptr_t)ol->odesc) != ST_NIL) {
                 CDol::destroy(ol);
                 return (0);
             }
-            tab->add((unsigned long)ol->odesc, 0, false);
+            tab->add((uintptr_t)ol->odesc, 0, false);
             ol->next = ol0;
             ol0 = ol;
         }
@@ -6257,11 +6257,11 @@ sGroupXf::find_objects_rc(const sDevContactInst *c1, const CDl *ld,
     else if (gx_objs) {
         CDol *ol = gx_objs->find_object(ld, c1->cBB());
         if (ol) {
-            if (SymTab::get(tab, (unsigned long)ol->odesc) != ST_NIL) {
+            if (SymTab::get(tab, (uintptr_t)ol->odesc) != ST_NIL) {
                 CDol::destroy(ol);
                 return (0);
             }
-            tab->add((unsigned long)ol->odesc, 0, false);
+            tab->add((uintptr_t)ol->odesc, 0, false);
             ol->next = ol0;
             ol0 = ol;
         }

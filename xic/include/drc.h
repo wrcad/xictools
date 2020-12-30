@@ -1345,7 +1345,7 @@ private:
     DRCerrList *drc_err_list;       // Error list, built during evaluation.
     SymTab *drc_drv_tab;            // Derived layers we've used.
     DRCjob *drc_job_list;           // Running background jobs.
-    unsigned long drc_check_time;   // Last time interrupts were tested.
+    uint64_t drc_check_time;        // Last time interrupts were tested.
 
     // Information for export during tests.
     const Point *drc_obj_points;

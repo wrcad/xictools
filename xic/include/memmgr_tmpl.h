@@ -267,7 +267,7 @@ struct mttab_t
 
     unsigned int hash(void *addr)
         {
-            unsigned long l = (unsigned long)addr;
+            uintptr_t l = (uintptr_t)addr;
             return (hashmask & (unsigned int)(l >> page_shift));
         }
 

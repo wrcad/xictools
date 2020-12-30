@@ -282,7 +282,7 @@ typedef CDnetNameStr* CDnetName;
 struct CDs : public CDdb
 {
     // table necessities
-    unsigned long tab_key() const   { return ((unsigned long)sName); }
+    uintptr_t tab_key() const       { return ((uintptr_t)sName); }
     CDs *tab_next() const           { return (sTabNext); }
     void set_tab_next(CDs *t)       { sTabNext = t; }
     CDs *tgen_next(bool) const      { return (sTabNext); }
@@ -332,7 +332,7 @@ struct CDs : public CDdb
                 sName = n;
         }
 
-    unsigned long masterRefs() const
+    uintptr_t masterRefs() const
         {
             CDs *sd = owner();
             if (sd)
@@ -340,7 +340,7 @@ struct CDs : public CDdb
             return (sMasterRefs);
         }
 
-    void setMasterRefs(unsigned long mr)
+    void setMasterRefs(uintptr_t mr)
         {
             CDs *sd = owner();
             if (sd)
@@ -415,8 +415,8 @@ struct CDs : public CDdb
                 sLibname = CD()->ArchiveTableAdd(fn);
         }
 
-    unsigned long masters() const       { return (sMasters); }
-    void setMasters(unsigned long sm)   { sMasters = sm; }
+    uintptr_t masters() const           { return (sMasters); }
+    void setMasters(uintptr_t sm)       { sMasters = sm; }
 
     CDm *findMaster(CDcellName mname) const
         {
@@ -1035,8 +1035,8 @@ private:
     CDs *sTabNext;              // Link for use by symbol table.
 
     CDp *sPrptyList;            // List of properties.
-    unsigned long sMasters;     // Subcell master descs table (itable_t).
-    unsigned long sMasterRefs;  // Referencing master descs table (ptable_t).
+    intptr_t sMasters;          // Subcell master descs table (itable_t).
+    intptr_t sMasterRefs;       // Referencing master descs table (ptable_t).
     BBox sBB;                   // Structure's bounding box.
     union {
         cGroupDesc *sGroups;    // Connectivity group info for physical.

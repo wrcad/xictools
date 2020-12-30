@@ -65,14 +65,14 @@ struct sGENinstTable
         {
             if (!inst_tab || !n)
                 return (0);
-            return (inst_tab->find((unsigned long)n));
+            return (inst_tab->find((uintptr_t)n));
         }
 
     sGENinstance *remove(IFuid n)
         {
             if (!inst_tab || !n)
                 return (0);
-            return (inst_tab->remove((unsigned long)n));
+            return (inst_tab->remove((uintptr_t)n));
         }
 
     void link(sGENinstance *inst)

@@ -424,10 +424,11 @@ cSced::renumberInstances(CDs *sd)
         if (!pna || !pna->name_string())
             continue;
  
-        long dcnt = (long)SymTab::get(stab, (unsigned long)pna->name_string());
-        if (dcnt == (long)ST_NIL)
+        intptr_t dcnt =
+            (intptr_t)SymTab::get(stab, (uintptr_t)pna->name_string());
+        if (dcnt == (intptr_t)ST_NIL)
             dcnt = 0;
-        stab->replace((unsigned long)pna->name_string(), (void*)(dcnt+1));
+        stab->replace((uintptr_t)pna->name_string(), (void*)(dcnt+1));
         cdesc->updateDeviceName(dcnt);
 
         // Subcircuits have an additional ordering number, which is
@@ -435,10 +436,10 @@ cSced::renumberInstances(CDs *sd)
         // computed the absolute ordering number.
 
         if (pna->is_subckt() && !pna->is_macro()) {
-            dcnt = (long)SymTab::get(scstab, (unsigned long)cdesc->cellname());
-            if (dcnt == (long)ST_NIL)
+            dcnt = (intptr_t)SymTab::get(scstab, (uintptr_t)cdesc->cellname());
+            if (dcnt == (intptr_t)ST_NIL)
                 dcnt = 0;
-            scstab->replace((unsigned long)cdesc->cellname(), (void*)(dcnt+1));
+            scstab->replace((uintptr_t)cdesc->cellname(), (void*)(dcnt+1));
             CDp_cname *pnc = (CDp_cname*)cdesc->prpty(P_NAME);
             if (pnc)
                 pnc->set_scindex(dcnt);
@@ -620,12 +621,12 @@ cScedConnect::run(CDs *sd, bool lvsmode)
             if (ne->index() >= 0) {
                 CDnetName nm = CDnetex::mk_name(Tstring(ne->name()),
                     ne->index());
-                ntab->add((unsigned long)nm,
-                    (void*)(long)ne->nodeprp()->enode(), false);
+                ntab->add((uintptr_t)nm,
+                    (void*)(uintptr_t)ne->nodeprp()->enode(), false);
             }
             else {
-                ntab->add((unsigned long)ne->name(),
-                    (void*)(long)ne->nodeprp()->enode(), false);
+                ntab->add((uintptr_t)ne->name(),
+                    (void*)(uintptr_t)ne->nodeprp()->enode(), false);
             }
         }
     }
@@ -636,12 +637,12 @@ cScedConnect::run(CDs *sd, bool lvsmode)
             if (ne->index() >= 0) {
                 CDnetName nm = CDnetex::mk_name(Tstring(ne->name()),
                     ne->index());
-                ntab->add((unsigned long)nm,
-                    (void*)(long)ne->nodeprp()->enode(), false);
+                ntab->add((uintptr_t)nm,
+                    (void*)(uintptr_t)ne->nodeprp()->enode(), false);
             }
             else {
-                ntab->add((unsigned long)ne->name(),
-                    (void*)(long)ne->nodeprp()->enode(), false);
+                ntab->add((uintptr_t)ne->name(),
+                    (void*)(uintptr_t)ne->nodeprp()->enode(), false);
             }
         }
     }
@@ -1738,13 +1739,13 @@ cScedConnect::connect()
                     "final node table numbering error, wrong node number.");
                     err = true;
                 }
-                if (SymTab::get(sytmp, (unsigned long)n->node()) != ST_NIL) {
+                if (SymTab::get(sytmp, (uintptr_t)n->node()) != ST_NIL) {
                     ScedErrLog.add_err(
                     "final node table numbering error, duplicate property.");
                     err = true;
                 }
                 if (!err)
-                   sytmp->add((unsigned long)n->node(), 0, false);
+                   sytmp->add((uintptr_t)n->node(), 0, false);
             }
         }
         delete sytmp;
@@ -1852,7 +1853,7 @@ cScedConnect::set_byname_locations()
 bool
 cScedConnect::push(const CDw *wdesc)
 {
-    if (SymTab::get(cn_wire_tab, (unsigned long)wdesc) != ST_NIL)
+    if (SymTab::get(cn_wire_tab, (uintptr_t)wdesc) != ST_NIL)
         // Already processed this wire.
         return (false);
 
@@ -1892,7 +1893,7 @@ cScedConnect::push(const CDw *wdesc)
         }
     }
     cn_wire_stack = new cstk_elt(netex, wdesc, cn_wire_stack);
-    cn_wire_tab->add((unsigned long)wdesc, 0, false);
+    cn_wire_tab->add((uintptr_t)wdesc, 0, false);
     return (true);
 }
 
@@ -1900,7 +1901,7 @@ cScedConnect::push(const CDw *wdesc)
 bool
 cScedConnect::push_unnamed(const CDw *wdesc)
 {
-    if (SymTab::get(cn_wire_tab, (unsigned long)wdesc) != ST_NIL) {
+    if (SymTab::get(cn_wire_tab, (uintptr_t)wdesc) != ST_NIL) {
         // Already processed this wire.
         return (false);
     }
@@ -1920,7 +1921,7 @@ cScedConnect::push_unnamed(const CDw *wdesc)
     }
 
     cn_wire_stack = new cstk_elt(0, wdesc, cn_wire_stack);
-    cn_wire_tab->add((unsigned long)wdesc, 0, false);
+    cn_wire_tab->add((uintptr_t)wdesc, 0, false);
     return (true);
 }
 

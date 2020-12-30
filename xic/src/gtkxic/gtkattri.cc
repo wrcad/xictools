@@ -955,7 +955,7 @@ sAttr::at_action(GtkWidget *caller, void*)
 void
 sAttr::at_curs_menu_proc(GtkWidget*, void *client_data)
 {
-    CursorType ct = (CursorType)(long)client_data;
+    CursorType ct = (CursorType)(intptr_t)client_data;
     XM()->UpdateCursor(0, ct);
 }
 
@@ -966,7 +966,7 @@ sAttr::at_menuproc(GtkWidget*, void *arg)
 {
     if (!Attr)
         return;
-    int i = (long)arg;
+    int i = (intptr_t)arg;
     if (i == 0)
         CDvdb()->clearVariable(VA_LabelHiddenMode);
     else {

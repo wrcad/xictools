@@ -404,17 +404,17 @@ sHdlUniq::sHdlUniq(sHdl *hdl)
             hu_copies = ((sHdlObject*)hdl)->copies;
             CDol *ol = (CDol*)hdl->data;
             for (CDol *o = ol; o; o = o->next)
-                hu_tab->add((unsigned long)o->odesc, 0, true);
+                hu_tab->add((uintptr_t)o->odesc, 0, true);
         }
         else if (hu_type == HDLprpty) {
             CDpl *pl = (CDpl*)hdl->data;
             for (CDpl *p = pl; p; p = p->next)
-                hu_tab->add((unsigned long)p->pdesc, 0, true);
+                hu_tab->add((uintptr_t)p->pdesc, 0, true);
         }
         else {
             tlist<void> *t0 = (tlist<void>*)hdl->data;
             for (tlist<void>*t = t0; t; t = t->next)
-                hu_tab->add((unsigned long)t->elt, 0, true);
+                hu_tab->add((uintptr_t)t->elt, 0, true);
         }
     }
 }
@@ -457,18 +457,18 @@ sHdlUniq::test(sHdl *hdl)
     else if (hu_type == HDLobject) {
         if (hu_copies == ((sHdlObject*)hdl)->copies) {
             CDol *ol = (CDol*)hdl->data;
-            if (ol && SymTab::get(hu_tab, (unsigned long)ol->odesc) == 0)
+            if (ol && SymTab::get(hu_tab, (uintptr_t)ol->odesc) == 0)
                 return (true);
         }
     }
     else if (hu_type == HDLprpty) {
         CDpl *pl = (CDpl*)hdl->data;
-        if (pl && SymTab::get(hu_tab, (unsigned long)pl->pdesc) == 0)
+        if (pl && SymTab::get(hu_tab, (uintptr_t)pl->pdesc) == 0)
             return (true);
     }
     else {
         tlist<void> *t0 = (tlist<void>*)hdl->data;
-        if (t0 && SymTab::get(hu_tab, (unsigned long)t0->elt) == 0)
+        if (t0 && SymTab::get(hu_tab, (uintptr_t)t0->elt) == 0)
             return (true);
     }
     return (false);
@@ -725,7 +725,7 @@ sHdlGen::iterator()
             if (od) {
                 CDol *ol = new CDol(od, 0);
                 sHdl *h = new sHdlObject(ol, sdesc, (rec->depth != 0));
-                return ((void*)(long)h->id);
+                return ((void*)(uintptr_t)h->id);
             }
             CDl *ld = 0;
             while (!ld && rec->names) {

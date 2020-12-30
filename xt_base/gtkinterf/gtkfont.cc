@@ -39,6 +39,7 @@
  *========================================================================*/
 
 #include <ctype.h>
+#include <stdint.h>
 #include "gtkinterf.h"
 #include "gtkfont.h"
 #include "miscutil/lstring.h"
@@ -283,7 +284,7 @@ namespace {
     void
     unreg_hdlr(GtkWidget *caller, void *arg)
     {
-        gtk_font.unregisterCallback(caller, (int)(long)arg);
+        gtk_font.unregisterCallback(caller, (int)(intptr_t)arg);
     }
 }
 
@@ -761,7 +762,7 @@ GTKfontPopup::ft_opt_menu_proc(GtkWidget *caller, void *client_data)
 {
     GTKfontPopup *sel = static_cast<GTKfontPopup*>(client_data);
     if (sel) {
-        int ix = (long)gtk_object_get_data(GTK_OBJECT(caller), "index");
+        int ix = (intptr_t)gtk_object_get_data(GTK_OBJECT(caller), "index");
         sel->set_index(ix);
     }
 }

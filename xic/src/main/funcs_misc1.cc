@@ -5471,7 +5471,7 @@ misc1_funcs::IFhcDump(Variable *res, Variable *args, void*)
         }
         argv[argc++] = (char*)"-nat";
         argv[argc++] = (char*)cmd;
-        argv[argc++] = (char*)HCstate.media;
+        argv[argc++] = (char*)(uintptr_t)HCstate.media;
         if (file_given)
             cmd = 0;
     }

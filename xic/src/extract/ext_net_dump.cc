@@ -230,8 +230,8 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
                     // Keep only layers not found otherwise.
                     if (!ltab)
                         ltab = new SymTab(false, false);
-                    if (SymTab::get(ltab, (unsigned long)ldtmp) == ST_NIL)
-                        ltab->add((unsigned long)ldtmp, 0, false);
+                    if (SymTab::get(ltab, (uintptr_t)ldtmp) == ST_NIL)
+                        ltab->add((uintptr_t)ldtmp, 0, false);
                 }
                 CDll::destroy(l0);
             }
@@ -254,7 +254,7 @@ cExtNets::dump_nets(const BBox *AOI, int x, int y)
             if (ld->isGroundPlane() && ld->isDarkField())
                 ldgp = ld;
         }
-        else if (SymTab::get(ltab, (unsigned long)ld) != ST_NIL) {
+        else if (SymTab::get(ltab, (uintptr_t)ld) != ST_NIL) {
             if (lstr.string())
                 lstr.add_c(' ');
             lstr.add(ld->name());
@@ -597,10 +597,10 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
         Zlist *zl = ol->odesc->toZlist();
         if (!zl)
             continue;
-        SymTabEnt *h = SymTab::get_ent(tab, (unsigned long)ol->odesc->ldesc());
+        SymTabEnt *h = SymTab::get_ent(tab, (uintptr_t)ol->odesc->ldesc());
         if (!h) {
-            tab->add((unsigned long)ol->odesc->ldesc(), 0, false);
-            h = SymTab::get_ent(tab, (unsigned long)ol->odesc->ldesc());
+            tab->add((uintptr_t)ol->odesc->ldesc(), 0, false);
+            h = SymTab::get_ent(tab, (uintptr_t)ol->odesc->ldesc());
         }
         if (!h->stData)
             h->stData = zl;
@@ -637,10 +637,10 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
             if (!ld1 || !ld2)
                 continue;
 
-            Zlist *z1 = (Zlist*)SymTab::get(tab, (unsigned long)ld1);
+            Zlist *z1 = (Zlist*)SymTab::get(tab, (uintptr_t)ld1);
             if (z1 == (Zlist*)ST_NIL)
                 continue;
-            Zlist *z2 = (Zlist*)SymTab::get(tab, (unsigned long)ld2);
+            Zlist *z2 = (Zlist*)SymTab::get(tab, (uintptr_t)ld2);
             if (z2 == (Zlist*)ST_NIL)
                 continue;
             z1 = Zlist::copy(z1);
@@ -697,9 +697,9 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
 
                                 if (od) {
                                     SymTabEnt *h = SymTab::get_ent(
-                                        out_tab, (unsigned long)ldtmp);
+                                        out_tab, (uintptr_t)ldtmp);
                                     if (!h)
-                                        out_tab->add((unsigned long)ldtmp, od,
+                                        out_tab->add((uintptr_t)ldtmp, od,
                                             false);
                                     else {
                                         CDo *ox = od;
@@ -740,9 +740,9 @@ cExtNets::write_vias(const CDs *sdesc, const sGroup *grp, oas_out *oas) const
         CDo *od = PolyList::to_odesc(po, ld);
 
         if (od) {
-            SymTabEnt *h = SymTab::get_ent(out_tab, (unsigned long)ld);
+            SymTabEnt *h = SymTab::get_ent(out_tab, (uintptr_t)ld);
             if (!h)
-                out_tab->add((unsigned long)ld, od, false);
+                out_tab->add((uintptr_t)ld, od, false);
             else {
                 CDo *ox = od;
                 while (ox->next_odesc())

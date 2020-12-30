@@ -52,6 +52,7 @@
 using namespace mswinterf;
 #endif
 
+#include <stdint.h>
 #include <signal.h>
 #include <sys/types.h>
 #ifdef HAVE_SYS_WAIT_H
@@ -1684,7 +1685,7 @@ void
 GTKprintPopup::hc_menu_proc(GtkWidget *caller, void *client_data)
 {
     HCtextType indx =
-        (HCtextType)(long)gtk_object_get_user_data(GTK_OBJECT(caller));
+        (HCtextType)(intptr_t)gtk_object_get_user_data(GTK_OBJECT(caller));
     GTKprintPopup *hc = (GTKprintPopup*)client_data;
     hc->hc_textfmt = indx;
 }
@@ -1699,7 +1700,7 @@ GTKprintPopup::hc_formenu_proc(GtkWidget *caller, void *client_data)
     gtk_bag *wb = static_cast<gtk_bag*>(client_data);
     GTKprintPopup *hc = wb->HC();
     if (hc) {
-        long index = (long)gtk_object_get_user_data(GTK_OBJECT(caller));
+        int index = (intptr_t)gtk_object_get_user_data(GTK_OBJECT(caller));
         hc_set_format(wb, index, false);
     }
 }
@@ -1734,7 +1735,7 @@ GTKprintPopup::hc_pagesize_proc(GtkWidget *caller, void *client_data)
             hc->hc_metric = true;
         return;
     }
-    long index = (long)gtk_object_get_user_data(GTK_OBJECT(caller));
+    int index = (intptr_t)gtk_object_get_user_data(GTK_OBJECT(caller));
     double shrink = 0.375 * 72;
     double width = pagesizes[index].width - 2*shrink;
     double height = pagesizes[index].height - 2*shrink;
@@ -2475,7 +2476,7 @@ GTKprintPopup::hc_printit(const char *str, const char *filename, gtk_bag *wb)
 int
 GTKprintPopup::hc_msg_idle_proc(void *arg)
 {
-    pid_t pid = (pid_t)(long)arg;
+    pid_t pid = (pid_t)(intptr_t)arg;
     MsgList::Msg *msg = Mlist.remove(pid);
     if (msg) {
         msg->show();
@@ -2532,7 +2533,7 @@ GTKprintPopup::hc_resol_proc(GtkWidget *caller, void *client_data)
 {
     GTKprintPopup *hc = static_cast<gtk_bag*>(client_data)->HC();
     if (hc) {
-        long i = (long)gtk_object_get_user_data(GTK_OBJECT(caller));
+        int i = (intptr_t)gtk_object_get_user_data(GTK_OBJECT(caller));
         if (i >= 0 && i < 100)
             // sanity check
             hc->hc_resol = i;

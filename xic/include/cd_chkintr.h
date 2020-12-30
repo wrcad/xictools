@@ -43,7 +43,7 @@
 
 #include "miscutil/timer.h"
 
-extern unsigned long CDcheckTime;
+extern uint64_t CDcheckTime;
 
 namespace {
     // Assume that the application has the timer running.  The check

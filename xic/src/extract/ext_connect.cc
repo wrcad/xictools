@@ -506,7 +506,7 @@ sGroupObjs::accumulate(CDol *ol0, SymTab *tab)
     int cnt = 0;
     for (CDol *o = objlist(); o; o = o->next) {
         CDo *od = o->odesc;
-        if (od->ldesc() == ld && SymTab::get(tab, (unsigned long)od) ==
+        if (od->ldesc() == ld && SymTab::get(tab, (uintptr_t)od) ==
                 ST_NIL) {
             if (!ol1)
                 ol1 = oe = new CDol(od, 0);

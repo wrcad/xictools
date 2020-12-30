@@ -62,10 +62,11 @@
 
 struct chd_intab;
 
-// Number of "local" instance use flags available in a 64-bit int.  The
-// lsb bit is the "local" flag, all other bits are available.
+// Number of "local" instance use flags available in a pointer-width
+// int.  The lsb bit is the "local" flag, all other bits are
+// available.
 //
-#define CTAB_NUMLFLAGS (sizeof(unsigned long) - 1)
+#define CTAB_NUMLFLAGS (8*sizeof(uintptr_t) - 1)
 
 // Data item, bulk allocatd.  This contains:
 //   - An effective bounding box, representing the area of the cell
@@ -82,7 +83,7 @@ struct cvtab_item_t : public cv_fgif
     // there is no constructor or destructor.  Caller is responsible
     // for initialization and cleanup.
 
-    unsigned long tab_key()         { return ((unsigned long)cvi_symref); }
+    uintptr_t tab_key()             { return ((uintptr_t)cvi_symref); }
     cvtab_item_t *tab_next()        { return (cvi_next); }
     void set_tab_next(cvtab_item_t *n)  { cvi_next = n; }
     cvtab_item_t *tgen_next(bool)   { return (cvi_next); }
@@ -119,26 +120,28 @@ struct cvtab_item_t : public cv_fgif
     void set_flag(int n)
         {
             if (cvi_use_flags) {
-                if (cvi_flags & 0x1) {
-                    cvi_flags |= (0x1L << (n+1));
+                uintptr_t one = 1;
+                if (cvi_flags & one) {
+                    cvi_flags |= (one << (n+1));
                     return;
                 }
-                unsigned char *ptr = (unsigned char*)(cvi_flags & ~0x1L);
+                unsigned char *ptr = (unsigned char*)(cvi_flags & ~one);
                 if (ptr)
-                    ptr[n >> 3] |= (0x1L << (n & 0x7));
+                    ptr[n >> 3] |= (one << (n & 0x7));
             }
         }
 
     void unset_flag(int n)
         {
             if (cvi_use_flags) {
-                if (cvi_flags & 0x1) {
-                    cvi_flags &= ~(0x1L << (n+1));
+                uintptr_t one = 1;
+                if (cvi_flags & one) {
+                    cvi_flags &= ~(one << (n+1));
                     return;
                 }
-                unsigned char *ptr = (unsigned char*)(cvi_flags & ~0x1L);
+                unsigned char *ptr = (unsigned char*)(cvi_flags & ~one);
                 if (ptr)
-                    ptr[n >> 3] &= ~(0x1L << (n & 0x7));
+                    ptr[n >> 3] &= ~(one << (n & 0x7));
             }
         }
 
@@ -146,10 +149,11 @@ struct cvtab_item_t : public cv_fgif
         {
             if (!cvi_use_flags || !cvi_flags)
                 return (ts_ambiguous);
-            if (cvi_flags & 0x1)
-                return ((cvi_flags & (0x1L << (n+1))) ? ts_set : ts_unset);
-            unsigned char *ptr = (unsigned char*)(cvi_flags & ~0x1L);
-            return ((ptr[n >> 3] & (0x1L << (n & 0x7))) ? ts_set : ts_unset);
+            uintptr_t one = 1;
+            if (cvi_flags & one)
+                return ((cvi_flags & (one << (n+1))) ? ts_set : ts_unset);
+            unsigned char *ptr = (unsigned char*)(cvi_flags & ~one);
+            return ((ptr[n >> 3] & (one << (n & 0x7))) ? ts_set : ts_unset);
         }
 
     void set_full_area(bool b)      { cvi_full_area = b; }
@@ -162,8 +166,8 @@ struct cvtab_item_t : public cv_fgif
     ticket_t ticket()         const { return (cvi_ticket); }
     void set_ticket(ticket_t t)     { cvi_ticket = t; }
 
-    unsigned long bytes_used()        const { return (cvi_bytes_used); }
-    void set_bytes_used(unsigned long u)    { cvi_bytes_used = u; }
+    uint64_t bytes_used()     const { return (cvi_bytes_used); }
+    void set_bytes_used(uint64_t u) { cvi_bytes_used = u; }
 
     // Allocate transform stream memory.
     bool allocate_tstream(bytefact_t *bytefact)
@@ -188,7 +192,7 @@ struct cvtab_item_t : public cv_fgif
 
     void print()
         {
-            printf("  %-16s effBB= %d,%d %d,%d ts_bytes= %lu full= %d\n",
+            printf("  %-16s effBB= %d,%d %d,%d ts_bytes= %llu full= %d\n",
                 Tstring(cvi_symref->get_name()),
                 cvi_BB.left, cvi_BB.bottom, cvi_BB.right, cvi_BB.top,
                 cvi_bytes_used, get_full_area());
@@ -209,8 +213,8 @@ private:
     symref_t *cvi_symref;           // symref_t pointer
     cvtab_item_t *cvi_next;         // link for table
     BBox cvi_BB;                    // effective bounding box
-    unsigned long cvi_flags;        // instance use flags or address
-    unsigned long cvi_bytes_used;   // count of bytes used
+    uintptr_t cvi_flags;            // instance use flags or address
+    uint64_t cvi_bytes_used;        // count of bytes used
     ticket_t cvi_ticket;            // string ticket
     unsigned char cvi_chd_tkt;      // CHD ticket
     bool cvi_full_area;             // effective BB == real BB
@@ -367,7 +371,7 @@ public:
 
     // Diagnostics.
     void dbg_print(const cCHD*, const symref_t*, unsigned int, bool);
-    unsigned long memuse();
+    uint64_t memuse();
 
 private:
     cvtab_item_t *add(cCHD*, symref_t*, unsigned int, const BBox* = 0);

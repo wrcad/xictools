@@ -645,7 +645,7 @@ sPlc::pl_replace_proc(GtkWidget *caller, void*)
 void
 sPlc::pl_refmenu_proc(GtkWidget*, void *arg)
 {
-    PLref ref = (PLref)(long)(arg);
+    PLref ref = (PLref)(intptr_t)(arg);
     ED()->setInstanceRef(ref);
 }
 
@@ -687,7 +687,7 @@ sPlc::pl_array_set_proc(GtkWidget*, void *arg)
 {
     if (!Plc)
         return;
-    int code = (long)arg;
+    int code = (intptr_t)arg;
     if (code == PL_NX)
         pl_iap.set_nx(Plc->sb_nx.get_value_as_int());
     else if (code == PL_NY)

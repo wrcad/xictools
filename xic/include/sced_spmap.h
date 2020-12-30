@@ -57,7 +57,7 @@ struct sLibMap
 
 private:
     stringlist *append_file_rc(stringlist*, const char*, bool, bool*);
-    long find(const char*, const char*);
+    intptr_t find(const char*, const char*);
     SymTab *map_lib(FILE*);
 
     SymTab *lib_tab;

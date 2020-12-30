@@ -260,10 +260,15 @@ fi
 AC_PATH_PROG(LD, ld, "")
 AC_PATH_PROG(RANLIB, ranlib, "")
 
+NEED_FILTER=no
 sys_os=`uname`
-if test ${sys_os:0:6} = CYGWIN; then
+if test ${sys_os:0:6} = CYGWIN -o ${sys_os:0:5} = MINGW; then
     mingw=yes
-    sys_os="CYGWIN"
+dnl # Filtering drive specifiers and linefeeds not needed in MSYS2.
+    if test ${sys_os:0:6} = CYGWIN; then
+        NEED_FILTER=yes
+    fi
+    sys_os=MINGW
     CC=$mingw_dir/bin/gcc
     CXX=$mingw_dir/bin/g++
     RESOURCE=resource.o
@@ -348,9 +353,11 @@ DLL_XIC_PROG='dll-xic'
 NODLL_XIC_PROG='xic'
 
 case $sys_os in
-CYGWIN*)
+MINGW)
     EXESUFFIX=".exe"
-    FILTER="|sed -e s/C:// -e s///g"
+    if test $NEED_FILTER = yes; then
+        FILTER="|sed -e s/C:// -e s///g"
+    fi
     MALLOC=
     OSNAME="Win32"
     ARCH="i386"
@@ -683,12 +690,13 @@ dnl ***
 dnl *** Graphical interface configuration
 dnl ***
 
+dnl Don't need to filter with newer tools that win-builds.
 AC_CHECK_PROG(have_cfg, pkg-config, "yes", "no", $PATH:$gtkloc)
 if test $have_cfg = yes; then
     ${gtklocd}pkg-config --exists gtk+-2.0
     if test $? = 0; then
         GRPREF=gtk
-        if test -n "$EXESUFFIX"; then
+        if test -n "$EXESUFFIX" -a $NEED_FILTER = yes; then
 dnl         # Filter needed in Windows, pkg-config adds ^M that chokes g++.
             tkcf="`${gtklocd}pkg-config --cflags gtk+-2.0 |sed -e s///g`"
             tkl="`${gtklocd}pkg-config --libs gtk+-2.0 |sed -e s///g`"
@@ -791,6 +799,7 @@ AC_EGREP_HEADER(sys_errlist, stdio.h, AC_DEFINE(SYS_ERRLIST_DEF))
 dnl Detect when select takes int* as second arg (for HPUX)
 AC_EGREP_HEADER(select.*int.*int, sys/time.h, AC_DEFINE(SELECT_TAKES_INTP))
 
+dnl  If this isn't found, use our own regex which was borrowed from FreeBSD.
 AC_CHECK_HEADER(regex.h, , REGEX='$(BASE)/lib/libregex.a')
 
 dnl ***
@@ -856,6 +865,9 @@ if test $OSNAME = "Win32"; then
     fi
     MSLIBS=${MSLIBS}"-lgdi32 -lwinspool -lcomdlg32 -lole32 -loleaut32 \
  -luuid -lodbc32 -lversion -lcomctl32 -lwsock32 -lws2_32 -liphlpapi"
+    if test -z $REGEX; then
+        MSLIBS="$MSLIBS -lregex -ltre -lintl -liconv"
+    fi
     MSLIBS2="-lbfd -liberty -lintl -liconv -lm"
     dnl -lbfd -liberty required for stackdump.o, and fnmatch used in mswfile.cc
     SLIBS="$MSLIBS"

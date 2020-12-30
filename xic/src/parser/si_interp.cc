@@ -1958,10 +1958,10 @@ SIinterp::gettokval(const char **line)
     }
     if (!token_tab)
         tt_init();
-    long val = (long)SymTab::get(token_tab, tok);
+    int val = (intptr_t)SymTab::get(token_tab, tok);
     delete [] tok;
-    if (val != (long)ST_NIL)
-        return ((int)val);
+    if (val != (int)(intptr_t)ST_NIL)
+        return (val);
     *line = oline;
     return (CO_STATEMENT);
 }

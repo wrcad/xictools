@@ -850,7 +850,7 @@ GTKedit::pe_selection_proc(GtkWidget*, GtkSelectionData *sdata, guint, void*)
         GtkWidget *widget;
         gdk_window_get_user_data(wnd, (void**)&widget);
         if (widget) {
-            int code = (long)gtk_object_get_data(GTK_OBJECT(widget),
+            int code = (intptr_t)gtk_object_get_data(GTK_OBJECT(widget),
                 "hyexport");
             if (code) {
                 int start = GTK_OLD_EDITABLE(widget)->selection_start_pos;

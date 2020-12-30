@@ -42,13 +42,14 @@
 #define HASHFUNC_H
 
 #include <ctype.h>
+#include <stdint.h>
 
 //
 // Hash functions
 //
 
 //-----------------------------------------------------------------------------
-// Hash function for unsigned long (same size as a pointer).
+// Hash functions for uintptr_t (same size as a pointer).
 
 
 /* XXX
@@ -58,7 +59,7 @@
 unsigned int number_hash(unsigned int x, unsigned int y,
     unsigned int hashmask)
 {
-    unsigned long a = y;
+    uint64_t a = y;
     a = (a << 32) | x;
     a = (a ^ (a >> 30)) * 0xbf58476d1ce4e5b9;
     a = (a ^ (a >> 27)) * 0x94d049bb133111eb;
@@ -92,12 +93,12 @@ unsigned int number_hash(unsigned int x, unsigned int hashmask)
 // lookup3.c, by Bob Jenkins, May 2006, Public Domain.
 //
 inline unsigned int
-number_hash(unsigned long n, unsigned int hashmask)
+number_hash(uintptr_t n, unsigned int hashmask)
 {
     unsigned int a, b, c; // Assumes 32-bit int.
 
-    if (sizeof(unsigned long) == 8) {
-        union { unsigned long l; unsigned int i[2]; } u;
+    if (sizeof(uintptr_t) == 8) {
+        union { uintptr_t l; unsigned int i[2]; } u;
         a = b = c = 0xdeadbeef + 8;
         u.l = n;
         b += u.i[1];
@@ -136,17 +137,17 @@ number_hash(unsigned long n, unsigned int hashmask)
 //#define FNV1_INIT 0x811c9dc5
 //
 inline unsigned int
-number_hash(unsigned long n, unsigned int hashmask)
+number_hash(uintptr_t n, unsigned int hashmask)
 {
     if (!hashmask)
         return (0);
     unsigned char *s = (unsigned char*)&n;
-    int i = sizeof(unsigned long);
+    int i = sizeof(uintptr_t);
 
-    unsigned long hval, prime;
+    uintptr_t hval, prime;
     if (i == 8) {
-        prime = (unsigned long)0x100000001b3ULL;
-        hval = (unsigned long)0xcbf29ce484222325ULL;
+        prime = (uint64_t)0x100000001b3ULL;
+        hval = (uint64_t)0xcbf29ce484222325ULL;
     }
     else {
         prime = 0x01000193;

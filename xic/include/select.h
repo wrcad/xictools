@@ -41,6 +41,8 @@
 #ifndef SELECT_H
 #define SELECT_H
 
+#include <stdint.h>
+
 // The selections list.
 
 // Theory of Operation
@@ -113,7 +115,7 @@ enum PSELmode { PSELpoint, PSELstrict_area, PSELstrict_area_nt };
 //
 struct sqel_t
 {
-    unsigned long tab_key()         { return ((unsigned long)odesc); }
+    uintptr_t tab_key()             { return ((uintptr_t)odesc); }
     sqel_t *tab_next()              { return (tabnext); }
     void set_tab_next(sqel_t *n)    { tabnext = n; }
 

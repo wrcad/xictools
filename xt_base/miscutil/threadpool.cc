@@ -40,6 +40,7 @@
 
 #include "threadpool.h"
 #include <stdio.h>
+#include <stdint.h>
 
 
 //
@@ -185,8 +186,8 @@ cThreadPool::run(sTPthreadData *data)
         if (!j)
             break;
         sTPjobList *n = j->jl_next;
-        if (!__sync_bool_compare_and_swap((unsigned long*)&tp_list,
-                (unsigned long)j, (unsigned long)n))
+        if (!__sync_bool_compare_and_swap((uintptr_t*)&tp_list,
+                (uintptr_t)j, (uintptr_t)n))
             continue;
         if (!j->jl_job)
             continue;
@@ -233,8 +234,8 @@ cThreadPool::tp_thread_proc(void *arg)
             if (!j)
                 break;
             sTPjobList *n = j->jl_next;
-            if (!__sync_bool_compare_and_swap((unsigned long*)&tp->tp_list,
-                    (unsigned long)j, (unsigned long)n))
+            if (!__sync_bool_compare_and_swap((uintptr_t*)&tp->tp_list,
+                    (uintptr_t)j, (uintptr_t)n))
                 continue;
             if (!j->jl_job)
                 continue;

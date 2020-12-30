@@ -49,6 +49,7 @@
 #else
 #include <dlfcn.h>
 #endif
+#include <stdint.h>
 
 //
 // Functions for the KLU matrix solver plug-in.  If available, KLU
@@ -131,7 +132,7 @@ KLUif::find_klu()
 
 #ifdef WIN32
     HINSTANCE handle = LoadLibrary(lstr.string());
-    if ((unsigned long)handle <= HINSTANCE_ERROR) {
+    if ((intptr_t)handle <= HINSTANCE_ERROR) {
 #ifdef VERBOSE
         printf("LoadLibrary failed for %s\n", lstr.string());
 #endif

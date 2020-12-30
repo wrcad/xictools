@@ -41,6 +41,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdint.h>
 #include <string.h>
 
 #include "gtkinterf.h"
@@ -518,7 +519,7 @@ GTKmcolPopup::mc_menu_proc(GtkWidget *widget, void *client_data)
 {
     GTKmcolPopup *mcol = static_cast<GTKmcolPopup*>(client_data);
     if (mcol) {
-        long i = (long)gtk_object_get_data(GTK_OBJECT(widget), "menuent");
+        int i = (intptr_t)gtk_object_get_data(GTK_OBJECT(widget), "menuent");
         if (mcol->mc_page != i) {
             mcol->mc_page = i;
             mcol->relist();

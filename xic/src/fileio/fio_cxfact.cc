@@ -52,7 +52,7 @@
 // being filled).
 //
 ticket_t
-bytefact_t::get_space_volatile(unsigned long size)
+bytefact_t::get_space_volatile(uintptr_t size)
 {
     if (size == 0)
         return (0);
@@ -123,7 +123,7 @@ bytefact_t::get_space_volatile(unsigned long size)
 // returned with find, is stable.
 //
 ticket_t
-bytefact_t::get_space_nonvolatile(unsigned long size)
+bytefact_t::get_space_nonvolatile(uintptr_t size)
 {
     if (size == 0)
         return (0);

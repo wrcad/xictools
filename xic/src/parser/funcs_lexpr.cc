@@ -3661,7 +3661,7 @@ lexpr_funcs::IFgetObjectsOdb(Variable *res, Variable *args, void*)
             CDl *ld;
             while ((ld = gen.next()) != 0) {
                 odb_t *odb = (odb_t*)SymTab::get(
-                    db->table(), (unsigned long)ld);
+                    db->table(), (uintptr_t)ld);
                 if (odb != (odb_t*)ST_NIL) {
                     int num = odb->find_objects(&BB);
                     for (int i = 0; i < num; i++) {
@@ -3687,7 +3687,7 @@ lexpr_funcs::IFgetObjectsOdb(Variable *res, Variable *args, void*)
                 CDl *ld = CDldb()->findLayer(lname, Physical);
                 if (ld) {
                     odb_t *odb = (odb_t*)SymTab::get(
-                        db->table(), (unsigned long)ld);
+                        db->table(), (uintptr_t)ld);
                     if (odb != (odb_t*)ST_NIL) {
                         int num = odb->find_objects(&BB);
                         for (int i = 0; i < num; i++) {
@@ -3788,7 +3788,7 @@ lexpr_funcs::IFgetZlistDb(Variable *res, Variable *args, void *datap)
         if (db && db->table()) {
             if (db->type() == sdbOdb) {
                 odb_t *odb = (odb_t*)SymTab::get(
-                    db->table(), (unsigned long)ld);
+                    db->table(), (uintptr_t)ld);
                 if (odb != (odb_t*)ST_NIL) {
                     res->content.zlist = odb->getZlist(zl, &ret);
                     if (ret != XIok) {
@@ -3804,7 +3804,7 @@ lexpr_funcs::IFgetZlistDb(Variable *res, Variable *args, void *datap)
             }
             else if (db->type() == sdbZdb) {
                 zdb_t *zdb = (zdb_t*)SymTab::get(
-                    db->table(), (unsigned long)ld);
+                    db->table(), (uintptr_t)ld);
                 if (zdb != (zdb_t*)ST_NIL) {
                     res->content.zlist = zdb->getZlist(zl, &ret);
                     if (ret != XIok) {
@@ -3820,7 +3820,7 @@ lexpr_funcs::IFgetZlistDb(Variable *res, Variable *args, void *datap)
             }
             else if (db->type() == sdbZbdb) {
                 zbins_t *zdb = (zbins_t*)SymTab::get(
-                    db->table(), (unsigned long)ld);
+                    db->table(), (uintptr_t)ld);
                 if (zdb != (zbins_t*)ST_NIL) {
                     res->content.zlist = zdb->getZlist(zl, &ret);
                     if (ret != XIok) {
@@ -3868,7 +3868,7 @@ lexpr_funcs::IFgetZlistZbdb(Variable *res, Variable *args, void*)
         cSDB *db = CDsdb()->findDB(dbname);
         if (db && db->table() && db->type() == sdbZbdb) {
             zbins_t *zdb = (zbins_t*)SymTab::get(
-                db->table(), (unsigned long)ld);
+                db->table(), (uintptr_t)ld);
             if (zdb != (zbins_t*)ST_NIL)
                 res->content.zlist = Zlist::copy(zdb->getZlist(nx, ny));
         }
@@ -4021,7 +4021,7 @@ lexpr_funcs::IFaddNameToTable(Variable *res, Variable *args, void*)
     SymTab *st = nametab::findNametab(tabname, false);
     if (st) {
         if (SymTab::get(st, name) == ST_NIL) {
-            st->add(lstring::copy(name), (void*)(long)value, false);
+            st->add(lstring::copy(name), (void*)(uintptr_t)value, false);
             res->content.value = 1;
         }
     }
@@ -4083,7 +4083,7 @@ lexpr_funcs::IFfindNameInTable(Variable *res, Variable *args, void*)
     res->content.value = -1;
     SymTab *st = nametab::findNametab(tabname, false);
     if (st)
-        res->content.value = (long)SymTab::get(st, name);
+        res->content.value = (uintptr_t)SymTab::get(st, name);
     return (OK);
 }
 

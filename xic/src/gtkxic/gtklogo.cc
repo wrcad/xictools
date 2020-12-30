@@ -478,7 +478,7 @@ sLgo::lgo_es_menu_proc(GtkWidget*, void *client_data)
     if (!Lgo)
         return;
     char buf[32];
-    int es = (long)client_data;
+    int es = (intptr_t)client_data;
     if (es >= 0 && es <= 2 && es != DEF_LOGO_END_STYLE) {
         sprintf(buf, "%d", es);
         CDvdb()->setVariable(VA_LogoEndStyle, buf);
@@ -495,7 +495,7 @@ sLgo::lgo_pw_menu_proc(GtkWidget*, void *client_data)
     if (!Lgo)
         return;
     char buf[32];
-    int pw = (long)client_data;
+    int pw = (intptr_t)client_data;
     if (pw >= 1 && pw <= 5 && pw != DEF_LOGO_PATH_WIDTH) {
         sprintf(buf, "%d", pw);
         CDvdb()->setVariable(VA_LogoPathWidth, buf);

@@ -440,7 +440,7 @@ sCI::ci_btn_proc(GtkWidget*, void *client_data)
 {
     if (!CI)
         return;
-    int mode = (long)client_data;
+    int mode = (intptr_t)client_data;
     if (mode == CI_select) {
         for (ci_item *s = CI->ci_list; s->name; s++) {
             s->sel = true;

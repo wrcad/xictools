@@ -51,7 +51,7 @@
 //
 struct sLayerAttr
 {
-    unsigned long tab_key()             { return ((unsigned long)la_ldesc); }
+    uintptr_t tab_key()                 { return ((uintptr_t)la_ldesc); }
     sLayerAttr *tab_next()              { return (la_next); }
     void set_tab_next(sLayerAttr *n)    { la_next = n; }
     sLayerAttr *tgen_next(bool)         { return (la_next); }

@@ -855,7 +855,7 @@ geom1_funcs::IFclearCell(Variable *res, Variable *args, void*)
             CDl *ld = CDldb()->findLayer(tok, DSP()->CurMode());
             delete [] tok;
             if (ld)
-                lt->add((unsigned long)ld, 0, false);
+                lt->add((uintptr_t)ld, 0, false);
         }
     }
 
@@ -866,7 +866,7 @@ geom1_funcs::IFclearCell(Variable *res, Variable *args, void*)
     CDl *ldesc;
     while ((ldesc = lgen.next()) != 0) {
         if (lt) {
-            void *xx = SymTab::get(lt, (unsigned long)ldesc);
+            void *xx = SymTab::get(lt, (uintptr_t)ldesc);
             if ((xx && !notlayers) || (!xx && notlayers))
                 continue;
         }
@@ -3888,9 +3888,9 @@ geom1_funcs::IFgetObjectID(Variable *res, Variable *args, void*)
         CDol *ol = (CDol*)hdl->data;
         if (ol) {
             if (((sHdlObject*)hdl)->copies)
-                res->content.value = (long)ol->odesc->const_next_odesc();
+                res->content.value = (intptr_t)ol->odesc->const_next_odesc();
             else
-                res->content.value = (long)ol->odesc;
+                res->content.value = (intptr_t)ol->odesc;
         }
     }
     return (OK);

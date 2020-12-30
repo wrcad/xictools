@@ -1078,7 +1078,7 @@ sCf::cf_sto_menu_proc(GtkWidget*, void *arg)
 {
     if (!Cf)
         return;
-    int ix = (long)arg;
+    int ix = (intptr_t)arg;
     cfilter_t *cf = Cf->new_filter();
     if (!cf) {
         Log()->PopUpErrV("Failed: %s", Errs()->get_error());
@@ -1102,7 +1102,7 @@ sCf::cf_rcl_menu_proc(GtkWidget*, void *arg)
 {
     if (!Cf)
         return;
-    int ix = (long)arg;
+    int ix = (intptr_t)arg;
     cfilter_t *cf;
     if (Cf->cf_mode == Physical)
         cf = cfilter_t::parse(cf_phys_regs[ix], Physical, 0);

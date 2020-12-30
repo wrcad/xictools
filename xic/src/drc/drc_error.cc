@@ -241,7 +241,7 @@ cDRC::eraseListError(const op_change_t *list, bool doadd)
                 // our pointer, delete the entry
                 //
                 if (el->stack()) {
-                    long sz = (long)el->stack()[0];
+                    int sz = (intptr_t)el->stack()[0];
                     if (sz > clev && odesc == el->stack()[clev+1]) {
 
                         if (!ep)
@@ -572,7 +572,7 @@ DRCerrList::~DRCerrList()
 {
     delete el_pointer;
     if (el_stack) {
-        long sz = (long)el_stack[0];
+        int sz = (intptr_t)el_stack[0];
         for (int i = 0; i < sz; i++) {
             if (el_stack[i+1]->is_copy())
                 delete el_stack[i+1];
@@ -698,7 +698,7 @@ DRCerrList::newstack(const sPF *gen)
     }
     if (sp) {
         el_stack = new const CDc*[sp + 1];
-        el_stack[0] = (CDc*)(long)sp;
+        el_stack[0] = (CDc*)(intptr_t)sp;
         for (int i = 0; i < sp; i++)
             el_stack[i + 1] = st[i];
     }

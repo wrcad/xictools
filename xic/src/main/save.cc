@@ -203,7 +203,7 @@ cMain::CheckModified(bool panic)
     while (sgen->next(&cbin)) {
         if (cbin.isModified() &&
                 FIO()->IsSupportedArchiveFormat(cbin.fileType()))
-            modtab->add((unsigned long)cbin.cellname(), 0, false);
+            modtab->add((uintptr_t)cbin.cellname(), 0, false);
     }
     delete sgen;
 
@@ -242,7 +242,7 @@ cMain::CheckModified(bool panic)
                 while (gen.next(&cbret, &err)) {
                     if (cbret.isModified() && 
                             FIO()->IsSupportedArchiveFormat(cbret.fileType()))
-                        modtab->remove((unsigned long)cbret.cellname());
+                        modtab->remove((uintptr_t)cbret.cellname());
                 }
             }
         }

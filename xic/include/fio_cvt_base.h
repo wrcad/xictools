@@ -744,12 +744,12 @@ struct chd_intab : public SymTab
 
     void insert(const cCHD *chd, cv_in *in)
         {
-            add((unsigned long)chd, in, false);
+            add((uintptr_t)chd, in, false);
         }
 
     cv_in *find(const cCHD *chd)
         {
-            void *p = get_prv((unsigned long)chd);
+            void *p = get_prv((uintptr_t)chd);
             if (p == ST_NIL)
                 return (0);
             return ((cv_in*)p);

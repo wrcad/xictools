@@ -467,7 +467,8 @@ void
 sAsmTf::tf_angle_proc(GtkWidget *widget, void *mtxp)
 {
     sAsmTf *tx = static_cast<sAsmTf*>(mtxp);
-    tx->tf_angle_ix = (long)gtk_object_get_data(GTK_OBJECT(widget), "angle");
+    tx->tf_angle_ix = (intptr_t)gtk_object_get_data(GTK_OBJECT(widget),
+        "angle");
 }
 
 

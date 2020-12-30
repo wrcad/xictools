@@ -46,7 +46,7 @@ Authors: 1986 Wayne A. Christopher
 ****************************************************************************/
 
 // Needed to expose vasprintf prototype in stdio.h.
-#ifdef __CYGWIN__
+#ifdef WIN32
 #define _GNU_SOURCE
 #endif
 
@@ -73,7 +73,6 @@ Authors: 1986 Wayne A. Christopher
 #include <dirent.h>
 #ifdef WIN32
 #include <windows.h>
-#include <libiberty.h>  // provides vasprintf
 #else
 #include <dlfcn.h>
 #endif
@@ -939,7 +938,7 @@ IFsimulator::LoadModules(const char *str)
 
 #ifdef WIN32
             HINSTANCE handle = LoadLibrary(path);
-            if ((unsigned long)handle <= HINSTANCE_ERROR) {
+            if ((intptr_t)handle <= HINSTANCE_ERROR) {
                 GRpkgIf()->ErrPrintf(ET_ERROR,
                 "failed to dynamically load %s.\n", lstring::strip_path(path));
                 delete [] path;
@@ -1000,7 +999,7 @@ IFsimulator::LoadModules(const char *str)
             strcat(buf, "_c");
 
 #ifdef WIN32
-            NewDevFunc f = (NewDevFunc)GetProcAddress(handle, buf);
+            NewDevFunc f = (NewDevFunc)(void*)GetProcAddress(handle, buf);
 #else
             // Should use dlfunc here, but Apple doesn't have it!
             NewDevFunc f = (NewDevFunc)dlsym(handle, buf);

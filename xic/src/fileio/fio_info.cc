@@ -153,7 +153,7 @@ cv_info::has_geom(symref_t *p, info_lnames_t *ifln, bool skip_layers)
         while ((lyr = gen.next()) != 0) {
             bool found = false;
             for (stringlist *sl = ifln->names(); sl; sl = sl->next) {
-                if (lyr->tab_key() == (unsigned long)sl->string) {
+                if (lyr->tab_key() == (uintptr_t)sl->string) {
                     found = true;
                     break;
                 }
@@ -467,21 +467,17 @@ cv_info::format_totals()
     sLstr lstr;
     char buf[256];
 
-#ifdef WIN32
-    const char *format = "%-16s %I64d\n";
-#else
     const char *format = "%-16s %lld\n";
-#endif
 
-    sprintf(buf, format, "Records", (long long)total_records());
+    sprintf(buf, format, "Records", total_records());
     lstr.add(buf);
-    sprintf(buf, format, "Cells", (long long)total_cells());
+    sprintf(buf, format, "Cells", total_cells());
     lstr.add(buf);
-    sprintf(buf, format, "Labels", (long long)total_labels());
+    sprintf(buf, format, "Labels", total_labels());
     lstr.add(buf);
-    sprintf(buf, format, "Srefs", (long long)total_srefs());
+    sprintf(buf, format, "Srefs", total_srefs());
     lstr.add(buf);
-    sprintf(buf, format, "Arefs", (long long)total_arefs());
+    sprintf(buf, format, "Arefs", total_arefs());
     lstr.add(buf);
 
     if (enable_per_layer) {
@@ -502,11 +498,11 @@ cv_info::format_totals()
         lstr.add("\nTotals:\n");
     }
 
-    sprintf(buf, format, "Boxes", (long long)total_boxes());
+    sprintf(buf, format, "Boxes", total_boxes());
     lstr.add(buf);
-    sprintf(buf, format, "Polygons", (long long)total_polys());
+    sprintf(buf, format, "Polygons", total_polys());
     lstr.add(buf);
-    sprintf(buf, format, "Wires", (long long)total_wires());
+    sprintf(buf, format, "Wires", total_wires());
 
     lstr.add(buf);
     double tv = (double)(total_polys() + total_wires());
@@ -717,8 +713,7 @@ pl_data::print_counts(char *buf, const char *lstring) const
     double va = 0.0;
     if (polys + wires)
         va = ((double)verts)/(polys + wires);
-    sprintf(buf, count_format, lstring, (long long)boxes, (long long)polys,
-        (long long)wires, va);
+    sprintf(buf, count_format, lstring, boxes, polys, wires, va);
 }
 // End of pl_data functions.
 
@@ -829,8 +824,8 @@ pc_data::print_totals(char *buf) const
 {
     if (!item_tab) {
         // note: sprintf bug work-around
-        sprintf(buf, count_format, "Totals:", (long long)0, (long long)0,
-            (long long)0, 0.0);
+        sprintf(buf, count_format, "Totals:", (uint64_t)0, (uint64_t)0,
+            (uint64_t)0, 0.0);
         return;
     }
     int64_t boxes = 0;
@@ -849,8 +844,7 @@ pc_data::print_totals(char *buf) const
     double va = 0.0;
     if (polys + wires)
         va = ((double)verts)/(polys + wires);
-    sprintf(buf, count_format, "Totals:", (long long)boxes, (long long)polys,
-        (long long)wires, va);
+    sprintf(buf, count_format, "Totals:", boxes, polys, wires, va);
 }
 // End of pc_data functions.
 

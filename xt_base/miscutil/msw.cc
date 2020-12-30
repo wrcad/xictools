@@ -543,10 +543,10 @@ msw::MapiSend(const char *toaddr, const char *subject, const char *body,
 
 #ifdef WIN8
     LPMAPISENDMAILW lpfnSendMail =
-        (LPMAPISENDMAILW)GetProcAddress(hInstMail, "MAPISendMailW");
+        (LPMAPISENDMAILW)(void*)GetProcAddress(hInstMail, "MAPISendMailW");
 #else
     LPMAPISENDMAIL lpfnSendMail =
-        (LPMAPISENDMAIL)GetProcAddress(hInstMail, "MAPISendMail");
+        (LPMAPISENDMAIL)(void*)GetProcAddress(hInstMail, "MAPISendMail");
 #endif
     if (!lpfnSendMail)
         return ("can't find entry point in MAPI32.DLL");

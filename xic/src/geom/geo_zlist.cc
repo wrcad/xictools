@@ -957,19 +957,19 @@ Zlist::linewidth(const Zlist *thiszl)
 
     SymTab *tab = new SymTab(false, false);
     for (const Zlist *z = thiszl; z; z = z->next) {
-        unsigned long ht = z->Z.yu - z->Z.yl;
-        unsigned long wd = ((z->Z.xur + z->Z.xlr) - (z->Z.xul + z->Z.xll))/2;
+        uintptr_t ht = z->Z.yu - z->Z.yl;
+        uintptr_t wd = ((z->Z.xur + z->Z.xlr) - (z->Z.xul + z->Z.xll))/2;
         SymTabEnt *h = SymTab::get_ent(tab, ht);
         if (!h)
             tab->add(ht, (void*)wd, false);
         else
-            h->stData = (void*)(wd + (long)h->stData);
+            h->stData = (void*)(wd + (intptr_t)h->stData);
 
         h = SymTab::get_ent(tab, wd);
         if (!h)
             tab->add(wd, (void*)ht, false);
         else
-            h->stData = (void*)(ht + (long)h->stData);
+            h->stData = (void*)(ht + (intptr_t)h->stData);
     }
 
     SymTabGen gen(tab);
@@ -977,13 +977,13 @@ Zlist::linewidth(const Zlist *thiszl)
     int hstmax = 0;
     int hstval = 0;
     while ((h = gen.next()) != 0) {
-        if ((long)h->stData > hstmax) {
-            hstmax = (int)(long)h->stData;
-            hstval = (int)(long)h->stTag;
+        if ((int)(intptr_t)h->stData > hstmax) {
+            hstmax = (int)(intptr_t)h->stData;
+            hstval = (int)(intptr_t)h->stTag;
         }
-        else if ((long)h->stData == hstmax) {
-            if ((long)h->stTag < hstval)
-                hstval = (int)(long)h->stTag;
+        else if ((intptr_t)h->stData == hstmax) {
+            if ((intptr_t)h->stTag < hstval)
+                hstval = (int)(intptr_t)h->stTag;
         }
     }
     delete tab;

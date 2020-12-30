@@ -69,7 +69,7 @@ struct sLibRef
     sLibRef *tab_next()       const {
         return ((sLibRef*)(lr_next_and_flag & ~1)); }
     void set_tab_next(sLibRef *n) {
-        lr_next_and_flag = (unsigned long)n | (lr_next_and_flag & 1); }
+        lr_next_and_flag = (uintptr_t)n | (lr_next_and_flag & 1); }
 
     void set_alias_flag(bool b)
         {
@@ -105,7 +105,7 @@ struct sLibRef
     void set_cellname(const char *s) { lr_u.cellname = s; }
 
 private:
-    unsigned long lr_next_and_flag; // table link pointer and alias flag
+    uintptr_t lr_next_and_flag; // table link pointer and alias flag
     const char *lr_name;        // key name for reference
 
     // The path to the file is saved as a (rooted) directory path and

@@ -333,7 +333,7 @@ sMC::mc_btn_proc(GtkWidget *caller, void *client_data)
 {
     if (!MC)
         return;
-    int mode = (long)client_data;
+    int mode = (intptr_t)client_data;
     if (mode == MC_apply) {
         if (GRX->LoopLevel() > 1)
             GRX->BreakLoop();

@@ -320,10 +320,10 @@ cExt::saveCurrentPathToFile(const char *name, bool include_vias)
             SymTab *tab = new SymTab(false, false);
             while (od) {
                 SymTabEnt *h = SymTab::get_ent(tab,
-                    (unsigned long)od->ldesc());
+                    (uintptr_t)od->ldesc());
                 if (!h) {
-                    tab->add((unsigned long)od->ldesc(), 0, false);
-                    h = SymTab::get_ent(tab, (unsigned long)od->ldesc());
+                    tab->add((uintptr_t)od->ldesc(), 0, false);
+                    h = SymTab::get_ent(tab, (uintptr_t)od->ldesc());
                 }
                 CDo *on = od->next_odesc();
                 od->set_next_odesc(0);
@@ -332,10 +332,10 @@ cExt::saveCurrentPathToFile(const char *name, bool include_vias)
             }
             while (odv) {
                 SymTabEnt *h = SymTab::get_ent(tab,
-                    (unsigned long)odv->ldesc());
+                    (uintptr_t)odv->ldesc());
                 if (!h) {
-                    tab->add((unsigned long)odv->ldesc(), 0, false);
-                    h = SymTab::get_ent(tab, (unsigned long)odv->ldesc());
+                    tab->add((uintptr_t)odv->ldesc(), 0, false);
+                    h = SymTab::get_ent(tab, (uintptr_t)odv->ldesc());
                 }
                 CDo *on = odv->next_odesc();
                 odv->set_next_odesc(0);

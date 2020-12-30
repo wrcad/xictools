@@ -121,7 +121,7 @@ cExt::dump_phys_recurse(FILE *fp, CDs *topsdesc, CDs *sdesc, int depth,
     cGroupDesc *gd = sdesc->groups();
     if (!opts->isset(opt_atom_btmup)) {
         if (sdesc == topsdesc) {
-            tab->add((unsigned long)sdesc, 0, false);
+            tab->add((uintptr_t)sdesc, 0, false);
             if (!gd || (gd->test_nets_only() && !opts->isset(opt_atom_all))) {
                 if (opts->isset(opt_atom_net)) {
                     fprintf(fp, "## %s (empty cell)\n",
@@ -141,12 +141,12 @@ cExt::dump_phys_recurse(FILE *fp, CDs *topsdesc, CDs *sdesc, int depth,
             CDs *msdesc = mdesc->celldesc();
             if (!msdesc)
                 continue;
-            if (SymTab::get(tab, (unsigned long)msdesc) != ST_NIL)
+            if (SymTab::get(tab, (uintptr_t)msdesc) != ST_NIL)
                 continue;
             if (!opts->isset(opt_atom_all)) {
                 cGroupDesc *tgd = msdesc->groups();
                 if (tgd && tgd->test_nets_only()) {
-                    tab->add((unsigned long)msdesc, 0, false);
+                    tab->add((uintptr_t)msdesc, 0, false);
                     continue;
                 }
 
@@ -166,14 +166,14 @@ cExt::dump_phys_recurse(FILE *fp, CDs *topsdesc, CDs *sdesc, int depth,
                 if (!needit)
                     continue;
             }
-            tab->add((unsigned long)msdesc, 0, false);
+            tab->add((uintptr_t)msdesc, 0, false);
             if (!dump_phys_recurse(fp, topsdesc, msdesc, depth-1, opts,  tab))
                 return (false);
         }
     }
     if (opts->isset(opt_atom_btmup)) {
         if (sdesc == topsdesc) {
-            tab->add((unsigned long)sdesc, 0, false);
+            tab->add((uintptr_t)sdesc, 0, false);
             if (!gd || (gd->test_nets_only() && !opts->isset(opt_atom_all))) {
                 if (opts->isset(opt_atom_net)) {
                     fprintf(fp, "## %s (empty cell)\n",
@@ -591,7 +591,7 @@ cGroupDesc::print_spice(FILE *fp, CDs *topsdesc, sDumpOpts *opts)
                         name_tab->add(pf, 0, false);
                         ent = SymTab::get_ent(name_tab, pf);
                     }
-                    unsigned long n = (unsigned long)ent->stData;
+                    uintptr_t n = (uintptr_t)ent->stData;
                     di->set_spindex(n);
                     n++;
                     ent->stData = (void*)n;

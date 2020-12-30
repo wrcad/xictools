@@ -399,7 +399,7 @@ cMRcmdIf::openRouter()
 #endif
 
 #ifdef WIN32
-    const char *(*vrs)() = (const char*(*)())GetProcAddress(handle,
+    const char *(*vrs)() = (const char*(*)())(void*)GetProcAddress(handle,
         "ld_version_string");
     if (!vrs) {
         if (verbose) {
@@ -425,7 +425,8 @@ cMRcmdIf::openRouter()
         }
     }
 
-    cLDDBif*(*dptr)() = (cLDDBif*(*)())GetProcAddress(handle, "new_lddb");
+    cLDDBif*(*dptr)() = (cLDDBif*(*)())(void*)GetProcAddress(handle,
+        "new_lddb");
     if (!dptr) {
         if (verbose) {
             int code = GetLastError();
@@ -434,8 +435,8 @@ cMRcmdIf::openRouter()
         if_error = true;
         return (false);
     }
-    cMRif*(*rptr)(cLDDBif*) = (cMRif*(*)(cLDDBif*))GetProcAddress(handle,
-        "new_router");
+    cMRif*(*rptr)(cLDDBif*) = (cMRif*(*)(cLDDBif*))(void*)GetProcAddress(
+        handle, "new_router");
     if (!rptr) {
         if (verbose) {
             int code = GetLastError();

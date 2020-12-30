@@ -684,22 +684,23 @@ sCv::cv_input_proc(GtkWidget*, void *arg)
 {
     if (!Cv)
         return;
-    if ((long)arg == cConvert::cvLayoutFile) {
+    int a = (intptr_t)arg;
+    if (a == cConvert::cvLayoutFile) {
         gtk_widget_set_sensitive(Cv->cv_cnmap->frame(), true);
         Cv->cv_inp_type = cConvert::cvLayoutFile;
         Cv->cv_fmt->configure(cvofmt_file);
     }
-    else if ((long)arg == cConvert::cvChdName) {
+    else if (a == cConvert::cvChdName) {
         gtk_widget_set_sensitive(Cv->cv_cnmap->frame(), false);
         Cv->cv_inp_type = cConvert::cvChdName;
         Cv->cv_fmt->configure(cvofmt_chd);
     }
-    else if ((long)arg == cConvert::cvChdFile) {
+    else if (a == cConvert::cvChdFile) {
         gtk_widget_set_sensitive(Cv->cv_cnmap->frame(), false);
         Cv->cv_inp_type = cConvert::cvChdFile;
         Cv->cv_fmt->configure(cvofmt_chdfile);
     }
-    else if ((long)arg == cConvert::cvNativeDir) {
+    else if (a == cConvert::cvNativeDir) {
         gtk_widget_set_sensitive(Cv->cv_cnmap->frame(), true);
         Cv->cv_inp_type = cConvert::cvNativeDir;
         Cv->cv_fmt->configure(cvofmt_native);

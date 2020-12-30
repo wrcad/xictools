@@ -164,7 +164,7 @@ SymTab::add(const char *tag, const void *data, bool check_unique)
 // itag.
 //
 bool
-SymTab::add(unsigned long itag, const void *data, bool check_unique)
+SymTab::add(uintptr_t itag, const void *data, bool check_unique)
 {
     if (tMode == STchar)
         return (false);
@@ -222,7 +222,7 @@ SymTab::replace(const char *tag, const void *data)
 // old).  If itag is not found, add an entry and return true.
 //
 bool
-SymTab::replace(unsigned long itag, const void *data)
+SymTab::replace(uintptr_t itag, const void *data)
 {
     if (tMode == STchar)
         return (false);
@@ -284,7 +284,7 @@ SymTab::remove(const char *tag)
 // database.
 //
 bool
-SymTab::remove(unsigned long itag)
+SymTab::remove(uintptr_t itag)
 {
     if (tMode == STchar)
         return (false);
@@ -338,7 +338,7 @@ SymTab::get_prv(const char *tag)
 // return the datum ST_NIL.
 //
 void *
-SymTab::get_prv(unsigned long itag)
+SymTab::get_prv(uintptr_t itag)
 {
     if (tMode != STint)
         return (ST_NIL);
@@ -375,7 +375,7 @@ SymTab::get_ent_prv(const char *tag)
 // not be messed with.
 //
 SymTabEnt *
-SymTab::get_ent_prv(unsigned long itag)
+SymTab::get_ent_prv(uintptr_t itag)
 {
     if (tMode != STint)
         return (0);
@@ -433,7 +433,7 @@ SymTab::rehash()
             SymTabEnt *hn;
             for (SymTabEnt *h = oldent[i]; h; h = hn) {
                 hn = h->stNext;
-                unsigned int j = number_hash((unsigned long)h->stTag, tMask);
+                unsigned int j = number_hash((uintptr_t)h->stTag, tMask);
                 h->stNext = tEnt[j];
                 tEnt[j] = h;
             }

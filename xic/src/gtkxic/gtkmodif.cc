@@ -446,7 +446,7 @@ sSC::sc_btn_proc(GtkWidget*, void *client_data)
 {
     if (!SC)
         return;
-    int mode = (long)client_data;
+    int mode = (intptr_t)client_data;
     if (mode == sc_save) {
         for (s_item *s = SC->sc_list; s->name; s++)
             s->save = true;

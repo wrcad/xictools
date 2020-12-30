@@ -261,7 +261,7 @@ cSced::getElecContactNames(CDs *sdesc, int *size)
     SymTabGen gen(list_tab, true);
     SymTabEnt *h;
     while ((h = gen.next()) != 0) {
-        int n = (long)h->stTag;
+        int n = (intptr_t)h->stTag;
         stringlist *sl = (stringlist*)h->stData;
         stringlist::sort(sl);
         if (n >= 0 && n <= max_node)

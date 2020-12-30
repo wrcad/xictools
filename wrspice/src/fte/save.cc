@@ -53,6 +53,7 @@ Authors: 1987 Wayne A. Christopher
 #include "commands.h"
 #include "toolbar.h"
 #include "spnumber/hash.h"
+#include <stdint.h>
 
 
 //
@@ -357,7 +358,7 @@ sSaveList::set_used(const char *name, bool used)
     sHent *h = sHtab::get_ent(sl_tab, name);
     if (!h)
         return (false);
-    h->set_data((void*)(long)used);
+    h->set_data((void*)(intptr_t)used);
     return (true);
 }
 

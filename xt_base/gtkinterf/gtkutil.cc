@@ -40,6 +40,7 @@
 
 #include <stdio.h>
 #include <ctype.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -2659,8 +2660,8 @@ namespace {
         GtkWidget *cancel = (GtkWidget*)client_data;
         static GdkCursor *cursor;
         if (event->button.button == 2) {
-            long dc_state =
-                (long)gtk_object_get_data(GTK_OBJECT(caller), "pirate");
+            int dc_state =
+                (intptr_t)gtk_object_get_data(GTK_OBJECT(caller), "pirate");
             if (dc_state) {
                 gtk_object_set_data(GTK_OBJECT(caller), "pirate", (void*)0);
                 if (GTK_IS_BUTTON(cancel))
@@ -2685,7 +2686,7 @@ namespace {
     int
     dc_leave_hdlr(GtkWidget *caller, GdkEvent *event, void*)
     {
-        long dc_state = (long)gtk_object_get_data(GTK_OBJECT(caller),
+        int dc_state = (intptr_t)gtk_object_get_data(GTK_OBJECT(caller),
             "pirate");
         if (dc_state && event->crossing.mode == GDK_CROSSING_NORMAL) {
             gtk_object_set_data(GTK_OBJECT(caller), "pirate", (void*)0);

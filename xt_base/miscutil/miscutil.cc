@@ -483,6 +483,7 @@ miscutil::send_mail(const char *mailaddr, const char *subject,
 // Throw this out when doing the hwtest since it needs additional
 // support when linking.
 
+#ifndef WIN32
 namespace {
     // Return a full path to the xterm executable if found.
     //
@@ -508,6 +509,7 @@ namespace {
         return (0);
     }
 }
+#endif
 
 
 // Pop up a terminal and execute cmd.  Return the pid, or 0 on error.
@@ -733,9 +735,9 @@ miscutil::new_release(const char *progname, const char *release)
 }
 
 
-#ifndef HAVE_EXECINFO_H
-#define USE_GDB
-#endif
+//#ifndef HAVE_EXECINFO_H
+//#define USE_GDB
+//#endif
 
 // Dump a backtrace in GDB_OFILE to be used for debugging after
 // a crash.
@@ -908,7 +910,7 @@ miscutil::dump_backtrace(const char *program, const char *header,
     write_text(fd, buf);
     if (death_addr) {
         write_text(fd, "  ");
-        sprintf(buf, "DeathAddr = 0x%lx", (unsigned long)death_addr);
+        sprintf(buf, "DeathAddr = %p", death_addr);
         write_text(fd, buf);
     }
 #ifdef WIN32

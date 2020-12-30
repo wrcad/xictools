@@ -181,7 +181,7 @@ msw_draw::Clear()
     r.right++;
     r.bottom++;
     HDC dc = check_dc();
-    HBRUSH brush = (HBRUSH)GetClassLong(md_window, GCL_HBRBACKGROUND);
+    HBRUSH brush = (HBRUSH)GetClassLongPtr(md_window, GCLP_HBRBACKGROUND);
     if (!brush) {
         brush = CreateSolidBrush(GetSysColor(COLOR_3DFACE));
         FillRect(dc, &r, brush);
@@ -656,7 +656,8 @@ void
 msw_draw::SetWindowBackground(int pixel)
 {
     HBRUSH brush = CreateSolidBrush(pixel);
-    brush = (HBRUSH)SetClassLong(md_window, GCL_HBRBACKGROUND, (DWORD)brush);
+    brush = (HBRUSH)SetClassLongPtr(md_window, GCLP_HBRBACKGROUND,
+        (long long)brush);
     if (brush)
         DeleteBrush(brush);
 }

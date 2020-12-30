@@ -290,7 +290,7 @@ cExt::clearGroups(CDs *sd)
 XIrt
 cExt::group_rec(CDs *sdesc, int depth, SymTab *tab)
 {
-    tab->add((unsigned long)sdesc, 0, false);
+    tab->add((uintptr_t)sdesc, 0, false);
 
     XIrt ret = XIok;
     if (depth > 0) {
@@ -299,7 +299,7 @@ cExt::group_rec(CDs *sdesc, int depth, SymTab *tab)
             CDs *msdesc = md->celldesc();
             if (!msdesc)
                 continue;
-            if (SymTab::get(tab, (unsigned long)msdesc) != ST_NIL)
+            if (SymTab::get(tab, (uintptr_t)msdesc) != ST_NIL)
                 continue;
             ret = group_rec(msdesc, depth - 1, tab);
             if (ret != XIok)
@@ -624,7 +624,7 @@ cGroupDesc::find_ignored()
                         2*Tech()->AngleSupport()) == XIok && ct != CovNone) {
                     if (!gd_ignore_tab)
                         gd_ignore_tab = new SymTab(false, false);
-                    gd_ignore_tab->add((unsigned long)c, 0, false);
+                    gd_ignore_tab->add((uintptr_t)c, 0, false);
                 }
             }
         }

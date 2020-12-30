@@ -1420,7 +1420,7 @@ void
 sCells::c_page_proc(GtkWidget*, void *arg)
 {
     if (Cells) {
-        long i = (long)arg;
+        int i = (intptr_t)arg;
         if (Cells->c_page != i) {
             Cells->c_page = i;
             Cells->update();
@@ -1432,7 +1432,7 @@ sCells::c_page_proc(GtkWidget*, void *arg)
 void
 sCells::c_mode_proc(GtkWidget*, void *arg)
 {
-    DisplayMode m = (DisplayMode)(long)arg;
+    DisplayMode m = (DisplayMode)(intptr_t)arg;
     if (Cells && Cells->c_mode != m) {
         Cells->c_mode = m;
         XM()->PopUpCellFilt(0, MODE_UPD, Cells->c_mode, 0, 0);

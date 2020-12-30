@@ -1211,7 +1211,7 @@ private:
     // ext_duality.cc
     void find_and_set_permutes();
 
-    unsigned long   sd_sdescF;  // master and "hidden" flag bit
+    uintptr_t       sd_sdescF;  // master and "hidden" flag bit
     int             *sd_array;  // address of array of group numbers
 
     // The array contains tables of integers, providing:
@@ -1955,7 +1955,7 @@ public:
     bool in_flatten_list(const CDc *cdesc)
         {
             if (gd_flatten_tab) {
-                return (SymTab::get(gd_flatten_tab, (unsigned long)cdesc) !=
+                return (SymTab::get(gd_flatten_tab, (uintptr_t)cdesc) !=
                     ST_NIL);
             }
             return (false);
@@ -1965,7 +1965,7 @@ public:
     bool in_ignore_list(const CDc *cdesc)
         {
             if (gd_ignore_tab) {
-                return (SymTab::get(gd_ignore_tab, (unsigned long)cdesc) !=
+                return (SymTab::get(gd_ignore_tab, (uintptr_t)cdesc) !=
                     ST_NIL);
             }
             return (false);

@@ -417,7 +417,7 @@ cEdit::createLayer(CDs *sdesc, const BBox *pAOI, CDl *ld, const char *str,
     }
     else {
         int cnt = 0;
-        unsigned long check_time = 0;
+        uint64_t check_time = 0;
         Timer()->check_interval(check_time);
         while ((gBB = grd.advance()) != 0) {
             cnt++;
@@ -754,9 +754,9 @@ namespace {
     {
         if (ld->layerType() != CDLderived)
             return (true);
-        if (SymTab::get(tab, (unsigned long)ld) != ST_NIL)
+        if (SymTab::get(tab, (uintptr_t)ld) != ST_NIL)
             return (true);
-        tab->add((unsigned long)ld, 0, false);
+        tab->add((uintptr_t)ld, 0, false);
         sLspec lspec;
         const char *ex = ld->drvExpr();
         if (!lspec.parseExpr(&ex)) {
@@ -875,7 +875,7 @@ cEdit::evalDerivedLayers(CDll **plist, CDs *sdesc, const BBox *AOI)
             CDll *l0 = lspec.findLayers();
             for (CDll *l = l0; l; l = l->next) {
                 if (l->ldesc->layerType() == CDLderived) {
-                    if (SymTab::get(dltab, (unsigned long)l->ldesc) == ST_NIL) {
+                    if (SymTab::get(dltab, (uintptr_t)l->ldesc) == ST_NIL) {
                         defer = true;
                         break;
                     }
@@ -893,7 +893,7 @@ cEdit::evalDerivedLayers(CDll **plist, CDs *sdesc, const BBox *AOI)
                     delete [] ary;
                     goto err;
                 }
-                dltab->add((unsigned long)ary[i], 0, false);
+                dltab->add((uintptr_t)ary[i], 0, false);
                 ary[i] = 0;
                 added++;
             }

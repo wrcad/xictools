@@ -462,7 +462,7 @@ void
 sSel::sl_ptr_mode_proc(GtkWidget *widget, void *arg)
 {
     if (GRX->GetStatus(widget))
-        Selections.setPtrMode((PTRmode)(long)(arg));
+        Selections.setPtrMode((PTRmode)(intptr_t)(arg));
 }
 
 
@@ -471,7 +471,7 @@ void
 sSel::sl_area_mode_proc(GtkWidget *widget, void *arg)
 {
     if (GRX->GetStatus(widget))
-        Selections.setAreaMode((ASELmode)(long)(arg));
+        Selections.setAreaMode((ASELmode)(intptr_t)(arg));
 }
 
 
@@ -480,7 +480,7 @@ void
 sSel::sl_add_mode_proc(GtkWidget *widget, void *arg)
 {
     if (GRX->GetStatus(widget))
-        Selections.setSelMode((SELmode)(long)(arg));
+        Selections.setSelMode((SELmode)(intptr_t)(arg));
 }
 
 
@@ -488,7 +488,7 @@ sSel::sl_add_mode_proc(GtkWidget *widget, void *arg)
 void
 sSel::sl_obj_proc(GtkWidget *widget, void *arg)
 {
-    char c = (long)arg;
+    char c = (intptr_t)arg;
     bool state = GRX->GetStatus(widget);
     Selections.setSelectType(c, state);
 }

@@ -2459,7 +2459,7 @@ cSpiceIPC::setup_async_io(bool async)
     if (async) {
         if (ipc_level == 1) {
             ipc_level = 2;
-            _beginthread((void(*)(void*))sigio_hdlr, 0, 0);
+            _beginthread((void(*)(void*))(void*)sigio_hdlr, 0, 0);
         }
     }
     else if (ipc_level == 2) {
@@ -2580,7 +2580,7 @@ cSpiceIPC::remote_stdout_thread_proc(void *arg)
 {
     cSpiceIPC *sp = (cSpiceIPC*)arg;
     for (;;) {
-        if (!sp->ipc_stdout_skt < 0)
+        if (sp->ipc_stdout_skt < 0)
             break;
         timeval to;
         to.tv_sec = 0;

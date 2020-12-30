@@ -243,7 +243,7 @@ namespace {
                 tp = "private";
                 break;
             }
-            fprintf(fp, "%-8x %-8ld %-8s %-8s %s\n", (unsigned)m.BaseAddress,
+            fprintf(fp, "%-8p %-8lld %-8s %-8s %s\n", m.BaseAddress,
                 m.RegionSize, st, tp, ap);
         }
     }
@@ -269,7 +269,7 @@ namespace {
         int *p = new int;
         delete p;
         delete p;
-        long a = 5;
+        uintptr_t a = 5;
         delete &a;
         delete (int*)a;
     }

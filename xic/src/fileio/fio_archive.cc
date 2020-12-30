@@ -646,12 +646,8 @@ namespace {
         const char *t = *s;
         if (t[0] == '0' && (t[1] == 'x' || t[1] == 'X')) {
             int n = 0;
-            long long ll;
-#ifdef WIN32
-            if (sscanf(t+2, "%I64x%n", &ll, &n) == 1) {
-#else
+            int64_t ll;
             if (sscanf(t+2, "%llx%n", &ll, &n) == 1) {
-#endif
                 *num = ll;
                 (*s) += n+2;
                 return (true);
@@ -659,12 +655,8 @@ namespace {
         }
         else if (isdigit(*t)) {
             int n = 0;
-            long long ll;
-#ifdef WIN32
-            if (sscanf(t, "%I64u%n", &ll, &n) == 1) {
-#else
+            int64_t ll;
             if (sscanf(t, "%llu%n", &ll, &n) == 1) {
-#endif
                 *num = ll;
                 (*s) += n;
                 return (true);

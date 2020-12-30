@@ -185,7 +185,7 @@ class cCDldb
     struct loa_t
     {
         const char *tab_name()      { return (oa_name); }
-        unsigned long tab_key()     { return (oa_num); }
+        uintptr_t tab_key()         { return (oa_num); }
 
         loa_t *tab_next()           { return (oa_next); }
         void set_tab_next(loa_t *n) { oa_next = n; }

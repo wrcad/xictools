@@ -264,13 +264,13 @@ cGroupDesc::setup_duality_first_pass(SymTab *done_tab, int dcnt)
     if (dcnt >= CDMAXCALLDEPTH)
         return (XIbad);
 
-    if (SymTab::get(done_tab, (unsigned long)this) != ST_NIL)
+    if (SymTab::get(done_tab, (uintptr_t)this) != ST_NIL)
         return (XIok);
     if (!gd_devices && !gd_subckts) {
         // Nothing any good here, silently skip it.
 
         clear_duality();
-        done_tab->add((unsigned long)this, 0, false);
+        done_tab->add((uintptr_t)this, 0, false);
         return (XIok);
     }
 
@@ -309,7 +309,7 @@ cGroupDesc::setup_duality_first_pass(SymTab *done_tab, int dcnt)
 #endif
     }
 
-    done_tab->add((unsigned long)this, 0, false);
+    done_tab->add((uintptr_t)this, 0, false);
     return (ret);
 }
 
@@ -749,16 +749,16 @@ cGroupDesc::subcircuit_permutation_fix(const sSubcList *sl)
                 if (esg < 0)
                     continue;
 
-                unsigned long old_sg = ci->subc_group();
-                unsigned long new_nd = mgd->gd_groups[esg].node();
+                uintptr_t old_sg = ci->subc_group();
+                uintptr_t new_nd = mgd->gd_groups[esg].node();
 
                 // Check to be sure that each instance connection is
                 // consistent.  Put a message in the log.  LVS will
                 // fail.
 
-                unsigned long oldn = (unsigned long)SymTab::get(&tab, old_sg);
+                uintptr_t oldn = (uintptr_t)SymTab::get(&tab, old_sg);
 
-                if (oldn == (unsigned long)ST_NIL)
+                if (oldn == (uintptr_t)ST_NIL)
                     tab.add(old_sg, (void*)new_nd, false);
                 else if (oldn != new_nd) {
                     char *iname = si->instance_name();
@@ -778,8 +778,8 @@ cGroupDesc::subcircuit_permutation_fix(const sSubcList *sl)
         SymTabGen gen(&tab);
         SymTabEnt *ent;
         while ((ent = gen.next()) != 0) {
-            int grp = (long)ent->stTag;
-            int nd = (long)ent->stData;
+            int grp = (intptr_t)ent->stTag;
+            int nd = (intptr_t)ent->stData;
             if (ExtErrLog.log_associating() && ExtErrLog.verbose()) {
                 int ndcur = mgd->gd_groups[grp].node();
                 const char *nncur = SCD()->nodeName(cbin.elec(), ndcur);
@@ -2137,7 +2137,7 @@ cGroupDesc::combine_elec_parallel()
                         ttab = new SymTab(false, false);
                     for (unsigned int i = 0; i < asz2; i++) {
                         if (ary2[i]->inst_terminal()) {
-                            ttab->add((unsigned long)ary2[i]->inst_terminal(),
+                            ttab->add((uintptr_t)ary2[i]->inst_terminal(),
                                 0, false);
                         }
                     }
@@ -2153,7 +2153,7 @@ cGroupDesc::combine_elec_parallel()
                 if (!ntab)
                     ntab = new SymTab(false, false);
                 for (unsigned int i = 0; i < asz1; i++)
-                    ntab->add((unsigned long)ary1[i]->enode(), 0, true);
+                    ntab->add((uintptr_t)ary1[i]->enode(), 0, true);
             }
             delete [] ary1;
         }
@@ -3346,7 +3346,7 @@ cGroupDesc::solve_duals() THROW_XIrt
     int check_count = 0;
     int loop_count = 0;
     int max_iters = 0;
-    unsigned long check_time = 0;
+    uint64_t check_time = 0;
     try {
         for (;;) {
             if (loop_count > gd_loop_max) {
@@ -3647,7 +3647,7 @@ cGroupDesc::check_global(int grp)
         return (false);
     CDnetName nn = g.netname();
     if (nn) {
-        if (SymTab::get(gd_global_nametab, (unsigned long)nn) == 0) {
+        if (SymTab::get(gd_global_nametab, (uintptr_t)nn) == 0) {
             // Has a global name.
             g.set_global(true);
             return (true);
@@ -3684,7 +3684,7 @@ cGroupDesc::check_global(int grp)
             g.set_netname(gp->netname(), sGroup::NameFromTerm);
             return (true);
         }
-        if (SymTab::get(gd_global_nametab, (unsigned long)gp->netname()) == 0) {
+        if (SymTab::get(gd_global_nametab, (uintptr_t)gp->netname()) == 0) {
             g.set_global(true);
             g.set_netname(gp->netname(), sGroup::NameFromTerm);
             return (true);
@@ -3696,7 +3696,7 @@ cGroupDesc::check_global(int grp)
                 for ( ; ps; ps = ps->next()) {
                     if (ps->enode() == gp->node()) {
                         if (SymTab::get(gd_global_nametab,
-                                (unsigned long)ps->get_term_name()) == 0) {
+                                (uintptr_t)ps->get_term_name()) == 0) {
                             g.set_global(true);
                             g.set_netname(ps->get_term_name(),
                                 sGroup::NameFromTerm);

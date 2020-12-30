@@ -130,10 +130,10 @@ struct cv_backend_odb : cv_backend
 
             if (!table)
                 table = new SymTab(false, false);
-            odb_t *db = (odb_t*)SymTab::get(table, (unsigned long)ldesc);
+            odb_t *db = (odb_t*)SymTab::get(table, (uintptr_t)ldesc);
             if (db == (odb_t*)ST_NIL) {
                 db = new odb_t;
-                table->add((unsigned long)ldesc, db, false);
+                table->add((uintptr_t)ldesc, db, false);
             }
             entry = db;
             return (true);
@@ -202,10 +202,10 @@ struct cv_backend_zdb : cv_backend
 
             if (!table)
                 table = new SymTab(false, false);
-            zdb_t *db = (zdb_t*)SymTab::get(table, (unsigned long)ldesc);
+            zdb_t *db = (zdb_t*)SymTab::get(table, (uintptr_t)ldesc);
             if (db == (zdb_t*)ST_NIL) {
                 db = new zdb_t;
-                table->add((unsigned long)ldesc, db, false);
+                table->add((uintptr_t)ldesc, db, false);
             }
             entry = db;
             return (true);
@@ -275,10 +275,10 @@ struct cv_backend_zl : cv_backend
                 ldesc = CDldb()->newLayer(layer->name, Physical);
             if (!table)
                 table = new SymTab(false, false);
-            SymTabEnt *h = SymTab::get_ent(table, (unsigned long)ldesc);
+            SymTabEnt *h = SymTab::get_ent(table, (uintptr_t)ldesc);
             if (!h) {
-                table->add((unsigned long)ldesc, 0, false);
-                h = SymTab::get_ent(table, (unsigned long)ldesc);
+                table->add((uintptr_t)ldesc, 0, false);
+                h = SymTab::get_ent(table, (uintptr_t)ldesc);
             }
             entry = h;
             return (true);
@@ -364,10 +364,10 @@ struct cv_backend_zbdb : cv_backend
 
             if (!table)
                 table = new SymTab(false, false);
-            zbins_t *db = (zbins_t*)SymTab::get(table, (unsigned long)ldesc);
+            zbins_t *db = (zbins_t*)SymTab::get(table, (uintptr_t)ldesc);
             if (db == (zbins_t*)ST_NIL) {
                 db = new zbins_t(b_x, b_y, b_nx, b_ny, b_dx, b_dy, b_bx, b_by);
-                table->add((unsigned long)ldesc, db, false);
+                table->add((uintptr_t)ldesc, db, false);
             }
             entry = db;
             return (true);

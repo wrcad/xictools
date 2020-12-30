@@ -148,7 +148,7 @@ cExt::dump_elec_recurse(FILE *fp, CDs *sdesc, int depth, sDumpOpts *opts,
         SpiceLine::destroy(d0);
     }
 
-    tab->add((unsigned long)sdesc, 0, false);
+    tab->add((uintptr_t)sdesc, 0, false);
     if (!opts->isset(opt_atom_btmup)) {
         if (!dump_elec(fp, sdesc, depth, opts, tab, sptab))
             return (false);
@@ -161,7 +161,7 @@ cExt::dump_elec_recurse(FILE *fp, CDs *sdesc, int depth, sDumpOpts *opts,
             CDs *msdesc = mdesc->celldesc();
             if (!msdesc)
                 continue;
-            if (SymTab::get(tab, (unsigned long)msdesc) != ST_NIL)
+            if (SymTab::get(tab, (uintptr_t)msdesc) != ST_NIL)
                 continue;
             if (skipExtract(msdesc))
                 continue;

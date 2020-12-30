@@ -137,7 +137,7 @@ namespace {
         PL()->ShowPrompt(buf);
     }
 
-    unsigned long check_time;
+    uint64_t check_time;
 
     // Return true if the current operation should be aborted,
     // called periodically.

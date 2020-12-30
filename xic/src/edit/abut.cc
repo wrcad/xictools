@@ -1369,8 +1369,8 @@ unsigned int
 sAbutPrior::newId(const CDc *cd1, const CDc *cd2)
 {
     unsigned int id = time(0);
-    id *= ((unsigned long)cd1) >> 8;
-    id *= ((unsigned long)cd2) >> 8;
+    id *= ((uintptr_t)cd1) >> 8;
+    id *= ((uintptr_t)cd2) >> 8;
     return (id);
 }
 // End of sAbutPrior functions.

@@ -158,7 +158,7 @@ namespace ginterf
         Window reset_drawable(Drawable d)
             { Window prev = window; window = d; return (prev); }
 
-        unsigned long WindowID()                        { return (0); }
+        void *WindowID()                                        { return (0); }
         void Halt();
         void Title(const char*, const char*)                    { }
         void Clear();

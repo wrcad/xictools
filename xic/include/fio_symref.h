@@ -207,7 +207,7 @@ struct symref_t
     ticket_t get_crefs()      const { return (crefs); }
     void set_crefs(ticket_t s)      { crefs = s; }
 
-    unsigned long tab_key()         { return ((unsigned long)name); }
+    uintptr_t tab_key()             { return ((uintptr_t)name); }
     symref_t *tab_next()            { return (next); }
     void set_tab_next(symref_t *s)  { next = s; }
     symref_t *tgen_next(bool)       { return (next); }

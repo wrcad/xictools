@@ -955,7 +955,7 @@ sElecNetList::flatten(const CDc *cdesc, unsigned int vec_ix,
     sd->setName(msd->cellname());
 
     bool new_link = false;
-    sdlink *link = (sdlink*)SymTab::get(et_ftab, (unsigned long)cdesc);
+    sdlink *link = (sdlink*)SymTab::get(et_ftab, (uintptr_t)cdesc);
     if (link == (sdlink*)ST_NIL) {
         link = sdlink::alloc(cdesc, et_fcells, wd);
         new_link = true;
@@ -1183,7 +1183,7 @@ sElecNetList::flatten(const CDc *cdesc, unsigned int vec_ix,
         SymTabGen gen(subl->et_ftab, true);
         SymTabEnt *ent;
         while ((ent = gen.next()) != 0) {
-            et_ftab->add((unsigned long)ent->stTag, ent->stData, false);
+            et_ftab->add((uintptr_t)ent->stTag, ent->stData, false);
             delete ent;
         }
     }
@@ -1194,7 +1194,7 @@ sElecNetList::flatten(const CDc *cdesc, unsigned int vec_ix,
         et_fcells = link;
         if (!et_ftab)
             et_ftab = new SymTab(false, false);
-        et_ftab->add((unsigned long)cdesc, et_fcells, false);
+        et_ftab->add((uintptr_t)cdesc, et_fcells, false);
     }
     return (ok);
 }
@@ -1206,7 +1206,7 @@ sElecNetList::flattened(const CDc *cd, unsigned int vix)
     if (!cd || !et_ftab)
         return (false);
 
-    sdlink *link = (sdlink*)SymTab::get(et_ftab, (unsigned long)cd);
+    sdlink *link = (sdlink*)SymTab::get(et_ftab, (uintptr_t)cd);
     if (link == (sdlink*)ST_NIL)
         return (false);
     if (vix >= link->width)
@@ -1303,7 +1303,7 @@ sElecNetList::purge_terminals(SymTab *ttab, SymTab *ntab)
     SymTabGen gen(ntab);
     SymTabEnt *ent;
     while ((ent = gen.next()) != 0) {
-        int node = (long)ent->stTag;
+        int node = (intptr_t)ent->stTag;
         if (node > (int)et_maxix)
             continue;
         CDcont *tp = 0, *tn;
@@ -1311,7 +1311,7 @@ sElecNetList::purge_terminals(SymTab *ttab, SymTab *ntab)
             tn = t->next();
             CDcterm *term = t->term();
             if (term && term->instance()) {
-                if (SymTab::get(ttab, (unsigned long)term) != ST_NIL) {
+                if (SymTab::get(ttab, (uintptr_t)term) != ST_NIL) {
                     if (tp)
                         tp->set_next(tn);
                     else

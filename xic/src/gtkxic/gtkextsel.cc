@@ -721,7 +721,7 @@ sES::es_menu_proc(GtkWidget*, void *arg)
 {
     if (!ES)
         return;
-    long code = (long)arg;
+    int code = (intptr_t)arg;
     if (code == 0)
         CDvdb()->clearVariable(VA_QpathGroundPlane);
     else if (code == 1)

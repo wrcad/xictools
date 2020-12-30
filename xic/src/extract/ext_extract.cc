@@ -404,7 +404,7 @@ cExt::referenceList(const CDs *sdesc)
     if (!ext_reference_tab || !sdesc)
         return (0);
     sGdList *gdl = (sGdList*)SymTab::get(
-        ext_reference_tab, (unsigned long)sdesc);
+        ext_reference_tab, (uintptr_t)sdesc);
     if (gdl == (sGdList*)ST_NIL)
         return (0);
     return (gdl);
@@ -552,7 +552,7 @@ cGroupDesc::setup_extract(int dcnt)
                     !SCD()->isGlobalNetName(Tstring(nm)))
                 continue;
 
-            long onum = (long)SymTab::get(&tab, (unsigned long)nm);
+            int onum = (intptr_t)SymTab::get(&tab, (uintptr_t)nm);
             if (onum >= 0) {
                 ExtErrLog.add_log(ExtLogExt,
                     "Merging groups %d and %d named %s by labels.",
@@ -562,7 +562,7 @@ cGroupDesc::setup_extract(int dcnt)
                 i--;
                 continue;
             }
-            tab.add((unsigned long)nm, (void*)(long)i, false);
+            tab.add((uintptr_t)nm, (void*)(uintptr_t)i, false);
         }
         if (ndone)
             renumber_groups();
@@ -833,24 +833,24 @@ cGroupDesc::test_nets_only()
 void
 cGroupDesc::list_callers(SymTab *list_tab, SymTab *done_tab)
 {
-    done_tab->add((unsigned long)gd_celldesc, 0, false);
+    done_tab->add((uintptr_t)gd_celldesc, 0, false);
 
     for (sSubcList *s = gd_subckts; s; s = s->next()) {
         CDs *sd = s->subs()->cdesc()->masterCell();
         if (!sd)
             continue;
-        if (SymTab::get(done_tab, (unsigned long)sd) == ST_NIL) {
+        if (SymTab::get(done_tab, (uintptr_t)sd) == ST_NIL) {
             cGroupDesc *gd = sd->groups();
             if (!gd) {
-                done_tab->add((unsigned long)sd, 0, false);
+                done_tab->add((uintptr_t)sd, 0, false);
                 continue;
             }
             gd->list_callers(list_tab, done_tab);
         }
         if (list_tab) {
-            SymTabEnt *ent = SymTab::get_ent(list_tab, (unsigned long)sd);
+            SymTabEnt *ent = SymTab::get_ent(list_tab, (uintptr_t)sd);
             if (!ent)
-                list_tab->add((unsigned long)sd, new sGdList(this, 0), false);
+                list_tab->add((uintptr_t)sd, new sGdList(this, 0), false);
             else
                 ent->stData = new sGdList(this, (sGdList*)ent->stData);
         }
@@ -1002,7 +1002,7 @@ cGroupDesc::fix_connections()
         CDs *sd = s->subs()->cdesc()->masterCell();
         if (!sd)
             continue;
-        if (SymTab::get(&done_tab, (unsigned long)sd) != ST_NIL)
+        if (SymTab::get(&done_tab, (uintptr_t)sd) != ST_NIL)
             continue;
         cGroupDesc *gd = sd->groups();
         if (!gd)
@@ -1768,13 +1768,13 @@ cGroupDesc::warn_conductor(int grp, const char *tname)
 void
 cGroupDesc::fix_connections_rc(SymTab *done_tab)
 {
-    done_tab->add((unsigned long)gd_celldesc, 0, false);
+    done_tab->add((uintptr_t)gd_celldesc, 0, false);
 
     for (sSubcList *s = gd_subckts; s; s = s->next()) {
         CDs *sd = s->subs()->cdesc()->masterCell();
         if (!sd)
             continue;
-        if (SymTab::get(done_tab, (unsigned long)sd) != ST_NIL)
+        if (SymTab::get(done_tab, (uintptr_t)sd) != ST_NIL)
             continue;
         cGroupDesc *gd = sd->groups();
         if (!gd)
@@ -1802,14 +1802,14 @@ cGroupDesc::fix_connections_rc(SymTab *done_tab)
                         ci = ci->next()) {
 
                     SymTabEnt *ent = SymTab::get_ent(&tab,
-                        (unsigned long)ci->parent_group());
+                        (uintptr_t)ci->parent_group());
                     if (ent) {
                         ent->stData = new int_list(ci->subc_group(),
                             (int_list*)ent->stData);
                         dcnt++;
                     }
                     else {
-                        tab.add((unsigned long)ci->parent_group(),
+                        tab.add((uintptr_t)ci->parent_group(),
                             new int_list(ci->subc_group(), 0), false);
                     }
                 }
@@ -2231,7 +2231,7 @@ cGroupDesc::flatten_core(sSubcList *sc, bool assoc, int *nf, int *ns, int *nd)
         // arrayed, it is probably in the table already, so check.
         if (!gd_flatten_tab)
             gd_flatten_tab = new SymTab(false, false);
-        gd_flatten_tab->add((unsigned long)s->cdesc(), 0, true);
+        gd_flatten_tab->add((uintptr_t)s->cdesc(), 0, true);
 
         stk.TPop();
 
@@ -2950,7 +2950,7 @@ sSubcDesc::sSubcDesc(const sSubcInst *s)
     // The s, which is the first encountered, sets the contact order. 
     // One should call sort_and_update for every other instance.
 
-    sd_sdescF = (unsigned long)s->cdesc()->masterCell();
+    sd_sdescF = (uintptr_t)s->cdesc()->masterCell();
 
     int numcontacts = 0;
     for (sSubcContactInst *c = s->contacts(); c; c = c->next())

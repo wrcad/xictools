@@ -737,7 +737,7 @@ sTBhelp::th_cancel_proc(GtkWidget*, void *client_data)
         "caller");
     if (caller)
         GRX->Deselect(caller);
-    int type = (long)gtk_object_get_data(GTK_OBJECT(popup), "tbtype");
+    int type = (intptr_t)gtk_object_get_data(GTK_OBJECT(popup), "tbtype");
     TB()->PopDownTBhelp((TBH_type)type);
 }
 

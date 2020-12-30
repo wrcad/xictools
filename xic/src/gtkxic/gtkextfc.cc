@@ -1155,7 +1155,7 @@ sFc::fc_change_proc(GtkWidget *widget, void *arg)
     const char *s = gtk_entry_get_text(GTK_ENTRY(widget));
     if (!s)
         return;
-    int id = (long)arg;
+    int id = (intptr_t)arg;
     switch (id) {
     case FcPath:
         if (!strcmp(s, fc_def_string(id)))
@@ -1233,7 +1233,7 @@ sFc::fc_p_cb(bool ok, void *arg)
 void
 sFc::fc_dump_cb(const char *fname, void *client_data)
 {
-    switch ((long)client_data) {
+    switch ((intptr_t)client_data) {
     case FcDump:
         if (FC()->fcDump(fname)) {
             if (!Fc)
@@ -1257,7 +1257,7 @@ sFc::fc_btn_proc(GtkWidget *widget, void *arg)
 {
     if (!Fc)
         return;
-    switch ((long)arg) {
+    switch ((intptr_t)arg) {
     case FcRun:
         FC()->fcRun(0, 0, 0);
         break;

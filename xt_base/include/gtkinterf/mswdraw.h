@@ -126,7 +126,7 @@ struct msw_draw : virtual public GRdraw
     HDC SetMemDC(HDC);
     void ReleaseDC();
 
-    unsigned long WindowID()    { return ((unsigned long)md_window); }
+    void *WindowID()            { return (md_window); }
     void set_monochrome(bool b) { md_blackout = b; }
 
     HWND Window()               { return (md_window); }

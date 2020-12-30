@@ -716,7 +716,7 @@ namespace {
             m->setCelldesc(newsd);
             parent->linkMaster(m);
         }
-        unsigned long mr = sdesc->masterRefs();
+        uintptr_t mr = sdesc->masterRefs();
         sdesc->setMasterRefs(0);
         newsd->setMasterRefs(mr);
     }
@@ -2527,8 +2527,8 @@ cif_in::a_symbol_db(const char *unalias_name, int sym_num)
                 // table means that we have prompted for this cell.
                 if (!in_over_tab)
                     in_over_tab = new SymTab(false, false);
-                in_over_tab->add((unsigned long)sd->cellname(),
-                    (void*)(long)mi.overwrite_elec, false);
+                in_over_tab->add((uintptr_t)sd->cellname(),
+                    (void*)(uintptr_t)mi.overwrite_elec, false);
                 if (mi.overwrite_elec) {
                     // If overwriting electrical, clear the existing
                     // electrical cell (if any) here.  There may not
@@ -2560,7 +2560,7 @@ cif_in::a_symbol_db(const char *unalias_name, int sym_num)
             else {
                 void *xx;
                 if (in_over_tab && (xx = SymTab::get(in_over_tab,
-                        (unsigned long)sd->cellname())) != ST_NIL) {
+                        (uintptr_t)sd->cellname())) != ST_NIL) {
                     // We already asked about overwriting.
                     if (xx) {
                         // User chose to overwrite the electrical

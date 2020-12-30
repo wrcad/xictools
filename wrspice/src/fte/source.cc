@@ -47,6 +47,7 @@ Authors: 1985 Wayne A. Christopher
 
 #include "spglobal.h"
 #include <errno.h>
+#include <stdint.h>
 #include "simulator.h"
 #include "runop.h"
 #include "circuit.h"
@@ -98,7 +99,7 @@ struct sLibMap
 
     ~sLibMap();
 
-    long find(const char*, const char*);
+    intptr_t find(const char*, const char*);
 
 private:
     sHtab *map_lib(FILE*);
@@ -1580,7 +1581,7 @@ IFsimulator::ReadDeck(FILE *fp, char *title, bool *err, sParamTab **ptab,
                         return (0);
                     }
                 }
-                long offs = LibMap->find(file, name);
+                intptr_t offs = LibMap->find(file, name);
                 if (offs == LM_NO_NAME) {
                     GRpkgIf()->ErrPrintf(ET_ERROR,
                         "block %s not found in library %s.\n", name, file);
@@ -2919,7 +2920,7 @@ sLibMap::~sLibMap()
 //
 // The file is a bare file name, and we have chdir'ed to its directory.
 //
-long
+intptr_t
 sLibMap::find(const char *file, const char *name)
 {
     if (!file)
@@ -2953,7 +2954,7 @@ sLibMap::find(const char *file, const char *name)
     ent = sHtab::get_ent(h, name);
     if (!ent)
         return (LM_NO_NAME);
-    return ((long)ent->data());
+    return ((intptr_t)ent->data());
 }
 
 
@@ -3005,7 +3006,7 @@ sLibMap::map_lib(FILE *fp)
                     t++;
                 *t = 0;
                 if (t > s) {
-                    unsigned long offs = ftell(fp);
+                    intptr_t offs = ftell(fp);
                     h->add(s, (void*)offs);
                 }
             }

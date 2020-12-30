@@ -689,7 +689,7 @@ WindowDesc::ClearExpand()
 void
 WindowDesc::SetID()
 {
-    w_windowid = w_draw ? w_draw->WindowID() : 0;
+    w_windowid = w_draw ? (uintptr_t)w_draw->WindowID() : 0;
 }
 
 

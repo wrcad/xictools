@@ -533,7 +533,7 @@ void
 sDE::de_menu_proc(GtkWidget*, void *arg)
 {
     if (DE)
-        DE->de_menustate = (long)arg;
+        DE->de_menustate = (intptr_t)arg;
 }
 
 

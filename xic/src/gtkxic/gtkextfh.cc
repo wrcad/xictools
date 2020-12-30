@@ -1063,7 +1063,7 @@ sFh::fh_change_proc(GtkWidget *widget, void *arg)
     const char *s = gtk_entry_get_text(GTK_ENTRY(widget));
     if (!s)
         return;
-    int id = (long)arg;
+    int id = (intptr_t)arg;
     switch (id) {
     case fhManhGridCnt:
         if (check_num(s, FH_MIN_MANH_GRID_CNT, FH_MAX_MANH_GRID_CNT))
@@ -1158,7 +1158,7 @@ sFh::fh_p_cb(bool ok, void *arg)
 void
 sFh::fh_dump_cb(const char *fname, void *client_data)
 {
-    switch ((long)client_data) {
+    switch ((intptr_t)client_data) {
     case fhDump:
         if (FH()->fhDump(fname)) {
             if (!Fh)
@@ -1183,7 +1183,7 @@ sFh::fh_btn_proc(GtkWidget *widget, void *arg)
     if (!Fh)
         return;
     const char *s;
-    switch ((long)arg) {
+    switch ((intptr_t)arg) {
     case fhRun:
         FH()->fhRun(0, 0, 0);
         break;

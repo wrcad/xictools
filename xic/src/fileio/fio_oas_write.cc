@@ -607,9 +607,9 @@ oas_out::write_struct(const char *name, tm*, tm*)
             return (false);
     }
     else {
-        unsigned long refnum = (unsigned long)SymTab::get(
+        uintptr_t refnum = (uintptr_t)SymTab::get(
             out_cellname_tab, name);
-        if (refnum == (unsigned long)ST_NIL) {
+        if (refnum == (uintptr_t)ST_NIL) {
             refnum = out_cellname_ix++;
             out_cellname_tab->add(out_string_pool->new_string(name),
                 (void*)refnum, false);
@@ -1395,9 +1395,9 @@ oas_out::write_text(const Text *text)
                 return (false);
         }
         else {
-            unsigned long refnum = (unsigned long)SymTab::get(
+            uintptr_t refnum = (uintptr_t)SymTab::get(
                 out_textstring_tab, string);
-            if (refnum == (unsigned long)ST_NIL) {
+            if (refnum == (uintptr_t)ST_NIL) {
                 refnum = out_textstring_ix++;
                 out_textstring_tab->add(out_string_pool->new_string(string),
                     (void*)refnum, false);
@@ -1566,9 +1566,9 @@ oas_out::write_sref(const Instance *inst)
                     return (false);
             }
             else {
-                unsigned long refnum = (unsigned long)SymTab::get(
+                uintptr_t refnum = (uintptr_t)SymTab::get(
                     out_cellname_tab, cellname);
-                if (refnum == (unsigned long)ST_NIL) {
+                if (refnum == (uintptr_t)ST_NIL) {
                     refnum = out_cellname_ix++;
                     out_cellname_tab->add(out_string_pool->new_string(cellname),
                         (void*)refnum, false);
@@ -2989,9 +2989,9 @@ oas_out::write_properties(int type)
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)SymTab::get(
+        uintptr_t refnum = (uintptr_t)SymTab::get(
             out_propname_tab, pname);
-        if (refnum == (unsigned long)ST_NIL) {
+        if (refnum == (uintptr_t)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),
                 (void*)refnum, false);
@@ -3053,9 +3053,9 @@ oas_out::write_properties(int type)
         else {
             if (!write_unsigned(13))
                 return (false);
-            unsigned long refnum = (unsigned long)SymTab::get(
+            uintptr_t refnum = (uintptr_t)SymTab::get(
                 out_propstring_tab, str);
-            if (refnum == (unsigned long)ST_NIL) {
+            if (refnum == (uintptr_t)ST_NIL) {
                 refnum = out_propstring_ix++;
                 out_propstring_tab->add(out_string_pool->new_string(str),
                     (void*)refnum, false);
@@ -3080,9 +3080,9 @@ oas_out::write_properties(int type)
         else {
             if (!write_unsigned(13))
                 return (false);
-            unsigned long refnum = (unsigned long)SymTab::get(
+            uintptr_t refnum = (uintptr_t)SymTab::get(
                 out_propstring_tab, str);
-            if (refnum == (unsigned long)ST_NIL) {
+            if (refnum == (uintptr_t)ST_NIL) {
                 refnum = out_propstring_ix++;
                 out_propstring_tab->add(out_string_pool->new_string(str),
                     (void*)refnum, false);
@@ -3115,9 +3115,9 @@ oas_out::write_offset_std_prpty(uint64_t offset)
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)SymTab::get(
+        uintptr_t refnum = (uintptr_t)SymTab::get(
             out_propname_tab, pname);
-        if (refnum == (unsigned long)ST_NIL) {
+        if (refnum == (uintptr_t)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),
                 (void*)refnum, false);
@@ -3157,9 +3157,9 @@ oas_out::write_label_property(unsigned int width, unsigned int xform)
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)SymTab::get(
+        uintptr_t refnum = (uintptr_t)SymTab::get(
             out_propname_tab, pname);
-        if (refnum == (unsigned long)ST_NIL) {
+        if (refnum == (uintptr_t)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),
                 (void*)refnum, false);
@@ -3201,9 +3201,9 @@ oas_out::write_rounded_end_property()
         info_byte |= 2;  // N = 1
         if (!write_char(info_byte))
             return (false);
-        unsigned long refnum = (unsigned long)SymTab::get(
+        uintptr_t refnum = (uintptr_t)SymTab::get(
             out_propname_tab, pname);
-        if (refnum == (unsigned long)ST_NIL) {
+        if (refnum == (uintptr_t)ST_NIL) {
             refnum = out_propname_ix++;
             out_propname_tab->add(out_string_pool->new_string(pname),
                 (void*)refnum, false);
@@ -3342,7 +3342,7 @@ oas_out::write_tables()
         SymTabGen gen(out_cellname_tab, false);
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            unsigned long ix = (unsigned long)h->stData;
+            uintptr_t ix = (uintptr_t)h->stData;
             ta.ary[ix] = h->stTag;
         }
         if (!begin_compression(0))
@@ -3367,7 +3367,7 @@ oas_out::write_tables()
         SymTabGen gen(out_textstring_tab, false);
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            unsigned long ix = (unsigned long)h->stData;
+            uintptr_t ix = (uintptr_t)h->stData;
             ta.ary[ix] = h->stTag;
         }
         if (!begin_compression(0))
@@ -3392,7 +3392,7 @@ oas_out::write_tables()
         SymTabGen gen(out_propname_tab, false);
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            unsigned long ix = (unsigned long)h->stData;
+            uintptr_t ix = (uintptr_t)h->stData;
             ta.ary[ix] = h->stTag;
         }
         if (!begin_compression(0))
@@ -3417,7 +3417,7 @@ oas_out::write_tables()
         SymTabGen gen(out_propstring_tab, false);
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            unsigned long ix = (unsigned long)h->stData;
+            uintptr_t ix = (uintptr_t)h->stData;
             ta.ary[ix] = h->stTag;
         }
         if (!begin_compression(0))
@@ -3442,7 +3442,7 @@ oas_out::write_tables()
         SymTabGen gen(out_layername_tab, false);
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            unsigned long ix = (unsigned long)h->stData;
+            uintptr_t ix = (uintptr_t)h->stData;
             ta.ary[ix] = h->stTag;
         }
         if (!begin_compression(0))
@@ -3473,7 +3473,7 @@ oas_out::write_tables()
         SymTabGen gen(out_xname_tab, false);
         SymTabEnt *h;
         while ((h = gen.next()) != 0) {
-            unsigned long ix = (unsigned long)h->stData;
+            uintptr_t ix = (uintptr_t)h->stData;
             ta.ary[ix] = h->stTag;
         }
         if (!begin_compression(0))

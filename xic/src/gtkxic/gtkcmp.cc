@@ -1377,7 +1377,7 @@ sCmp::cmp_p1_fltr_proc(GtkWidget*, void *arg)
 {
     if (!Cmp)
         return;
-    long n = (long)arg;
+    int n = (intptr_t)arg;
     if (n == 1)
         Cmp->cmp_p1_fltr_mode = PrpFltNone;
     else if (n == 2)

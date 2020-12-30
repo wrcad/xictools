@@ -174,7 +174,7 @@ cSced::isGlobalNetName(const char *nn)
 
 
 // Return a hash table containing all of the global net names found in
-// the sdesc hierarchy.  The name is indexed as an unsigned long
+// the sdesc hierarchy.  The name is indexed as a  uintptr_t.
 // CDnetex string table entry, with null data.  Caller should delete
 // the returned table.
 //
@@ -239,7 +239,7 @@ cNodeMap::findNode(CDnetName name)
     refresh();  // makes this function non-const
 
     if (nm_netname_tab) {
-        long n = (long)SymTab::get(nm_netname_tab, (unsigned long)name);
+        intptr_t n = (intptr_t)SymTab::get(nm_netname_tab, (uintptr_t)name);
         if (n >= 0)
             return (n);
     }
@@ -289,7 +289,7 @@ cNodeMap::countNodes()
 
 
 // Callback from the connection operation.  The nmtab tags are net
-// names as unsigned long CDnetName, with data being the node number.
+// names as uintptr_t CDnetName, with data being the node number.
 // Note that we take ownership here.
 //
 void
@@ -526,7 +526,7 @@ cNodeMap::tabAddGlobal(SymTab *tab) const
         return;
     for (int i = 0; i < nm_size; i++) {
         if (nm_fmap[i] & NM_GLOB)
-            tab->add((unsigned long)nm_nmap[i], 0, true);
+            tab->add((uintptr_t)nm_nmap[i], 0, true);
     }
 }
 
@@ -685,7 +685,7 @@ cNodeMap::setup()
         SymTabEnt *ent;
         while ((ent = gen.next()) != 0) {
             CDnetName nm = (CDnetName)ent->stTag;
-            int node = (long)ent->stData;
+            int node = (intptr_t)ent->stData;
             if (node < 0 || node >= nm_size)
                 continue;
 

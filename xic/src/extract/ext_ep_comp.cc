@@ -475,9 +475,9 @@ cGroupDesc::ep_hier_comp(int grp, int node)
                 sGroup *pg = pgd->group_for(ci->parent_group());
                 if (pg && pg->netname() &&
                         pg->netname_origin() >= sGroup::NameFromTerm) {
-                    if (SymTab::get(&tab, (unsigned long)pg->netname()) ==
+                    if (SymTab::get(&tab, (uintptr_t)pg->netname()) ==
                             ST_NIL)
-                        tab.add((unsigned long)pg->netname(), 0, false);
+                        tab.add((uintptr_t)pg->netname(), 0, false);
                 }
             }
             if (!tab.allocated())
@@ -504,7 +504,7 @@ cGroupDesc::ep_hier_comp(int grp, int node)
                 if (!pc)
                     continue;
                 CDnetName nn = pmap->mapStab(pc->enode());
-                if (SymTab::get(&tab, (unsigned long)nn) == ST_NIL)
+                if (SymTab::get(&tab, (uintptr_t)nn) == ST_NIL)
                     score--;
                 else
                     score++;
@@ -633,10 +633,10 @@ cGroupDesc::ep_hier_comp_rc(int grp, int node)
             SymTabGen pgen(&ptab);
             SymTabEnt *pent, *eent;
             while ((pent = pgen.next()) != 0) {
-                int tg = (unsigned long)pent->stTag;
+                int tg = (uintptr_t)pent->stTag;
                 SymTabGen egen(&etab);
                 while ((eent = egen.next()) != 0) {
-                    int tn = (unsigned long)eent->stTag;
+                    int tn = (uintptr_t)eent->stTag;
                     int ret = pgd->ep_hier_comp_rc(tg, tn);
                     if (ret > 0)
                         return (ret);

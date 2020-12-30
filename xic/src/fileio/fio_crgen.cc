@@ -113,7 +113,7 @@ crgen_t::next_remap(ticket_t ntkt, tkt_map_t *map, SymTab *attab,
                         nstr = 0;
                         goto done;
                     }
-                    n = (int)((long)xx - 1);
+                    n = (int)((intptr_t)xx - 1);
                 }
                 tsw.add_signed(n);
             }
@@ -200,22 +200,22 @@ cr_writer::create_table(symref_t *p, unsigned int *pcnt, unsigned *preccnt,
         xmod = c->pos_x();
 
         if (abs(tx) >= 64) {
-            SymTabEnt *h = SymTab::get_ent(tab, (unsigned long)tx);
+            SymTabEnt *h = SymTab::get_ent(tab, (uintptr_t)tx);
             if (!h)
-                tab->add((unsigned long)tx, 0, false);
+                tab->add((uintptr_t)tx, 0, false);
             else if (h->stData == 0)
-                h->stData = (void*)(long)tab_cnt++;
+                h->stData = (void*)(intptr_t)tab_cnt++;
         }
 
         int ty = c->pos_y() - ymod;
         ymod = c->pos_y();
 
         if (abs(ty) >= 64) {
-            SymTabEnt *h = SymTab::get_ent(tab, (unsigned long)ty);
+            SymTabEnt *h = SymTab::get_ent(tab, (uintptr_t)ty);
             if (!h)
-                tab->add((unsigned long)ty, 0, false);
+                tab->add((uintptr_t)ty, 0, false);
             else if (h->stData == 0)
-                h->stData = (void*)(long)tab_cnt++;
+                h->stData = (void*)(intptr_t)tab_cnt++;
         }
 
         if (c->last_cref())
@@ -265,9 +265,9 @@ cr_writer::build_list(symref_t *p, SymTab *tab, unsigned int num_values,
             SymTabGen gen(tab, false);
             SymTabEnt *h;
             while ((h = gen.next()) != 0) {
-                unsigned int i = (unsigned int)(long)h->stData;
+                unsigned int i = (unsigned int)(intptr_t)h->stData;
                 if (i)
-                    values_ary[i-1] = (int)(long)h->stTag;
+                    values_ary[i-1] = (int)(intptr_t)h->stTag;
             }
         }
 
@@ -301,8 +301,8 @@ cr_writer::build_list(symref_t *p, SymTab *tab, unsigned int num_values,
             xmod = c->pos_x();
 
             unsigned int indx =
-                (unsigned int)(long)SymTab::get(tab, (unsigned long)tx);
-            if (!indx || indx == (unsigned int)(long)ST_NIL)
+                (unsigned int)(intptr_t)SymTab::get(tab, (uintptr_t)tx);
+            if (!indx || indx == (unsigned int)(intptr_t)ST_NIL)
                 co.tx = tx;
             else {
                 co.tx = indx-1;
@@ -312,8 +312,8 @@ cr_writer::build_list(symref_t *p, SymTab *tab, unsigned int num_values,
             int ty = c->pos_y() - ymod;
             ymod = c->pos_y();
 
-            indx = (unsigned int)(long)SymTab::get(tab, (unsigned long)ty);
-            if (!indx || indx == (unsigned int)(long)ST_NIL)
+            indx = (unsigned int)(intptr_t)SymTab::get(tab, (uintptr_t)ty);
+            if (!indx || indx == (unsigned int)(intptr_t)ST_NIL)
                 co.ty = ty;
             else {
                 co.ty = indx-1;

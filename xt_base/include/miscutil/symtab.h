@@ -44,6 +44,7 @@
 #include "lstring.h"
 #include "hashfunc.h"
 #include <stdlib.h>
+#include <stdint.h>
 
 
 //
@@ -776,7 +777,7 @@ csntable_t<T>::check_rehash()
 // Template for a low-overhead integer-keyed symbol table.  The
 // elements must provide the following public methods:
 //
-//    unsigned long tab_key();
+//    uintptr_t tab_key();
                             // Key value.
 //    T *tab_next();
 //    void set_tab_next(T*);
@@ -790,12 +791,12 @@ csntable_t<T>::check_rehash()
 template <class T>
 struct itable_t : public stab_t<T>
 {
-    T *find(unsigned long);
-    T *remove(unsigned long);
+    T *find(uintptr_t);
+    T *remove(uintptr_t);
 
     // These provide an interface for arbitrary pointers.
-    T *find(const void *n) { return (find((unsigned long)n)); }
-    T *remove(const void *n) { return (remove((unsigned long)n)); }
+    T *find(const void *n) { return (find((uintptr_t)n)); }
+    T *remove(const void *n) { return (remove((uintptr_t)n)); }
 
     T *link(T*, bool = true);
     T *unlink(T*);
@@ -806,7 +807,7 @@ struct itable_t : public stab_t<T>
 // Return the element, or 0 if not found.
 //
 template <class T> T *
-itable_t<T>::find(unsigned long tag)
+itable_t<T>::find(uintptr_t tag)
 {
     unsigned int i = number_hash(tag, this->hashmask);
     for (T *e = this->tab[i]; e; e = e->tab_next()) {
@@ -821,7 +822,7 @@ itable_t<T>::find(unsigned long tag)
 // otherwise return 0.
 //
 template <class T> T *
-itable_t<T>::remove(unsigned long tag)
+itable_t<T>::remove(uintptr_t tag)
 {
     unsigned int i = number_hash(tag, this->hashmask);
     T *ep = 0;
@@ -953,8 +954,8 @@ struct xytable_t : public stab_t<T>
 };
 
 
-inline unsigned long
-xy_hash(int x, int y, unsigned long hashmask)
+inline uintptr_t
+xy_hash(int x, int y, uintptr_t hashmask)
 {
     return (number_hash(x + y, hashmask));
 }
@@ -1110,7 +1111,7 @@ struct ptable_t : public stab_t<T>
 template <class T> T *
 ptable_t<T>::find(T *el)
 {
-    unsigned int i = number_hash((unsigned long)el, this->hashmask);
+    unsigned int i = number_hash((uintptr_t)el, this->hashmask);
     for (T *e = this->tab[i]; e; e = e->ptab_next()) {
         if (e == el)
             return (e);
@@ -1126,7 +1127,7 @@ template <class T> T *
 ptable_t<T>::add(T *el)
 {
     if (el) {
-        unsigned int i = number_hash((unsigned long)el, this->hashmask);
+        unsigned int i = number_hash((uintptr_t)el, this->hashmask);
         for (T *e = this->tab[i]; e; e = e->ptab_next()) {
             if (e == el)
                 return (e);
@@ -1146,7 +1147,7 @@ ptable_t<T>::add(T *el)
 template <class T> T *
 ptable_t<T>::remove(T *el)
 {
-    unsigned int i = number_hash((unsigned long)el, this->hashmask);
+    unsigned int i = number_hash((uintptr_t)el, this->hashmask);
     T *ep = 0;
     for (T *e = this->tab[i]; e; e = e->ptab_next()) {
         if (e == el) {
@@ -1185,7 +1186,7 @@ ptable_t<T>::check_rehash()
         T *en;
         for (T *e = this->tab[i]; e; e = en) {
             en = e->ptab_next();
-            unsigned int j = number_hash((unsigned long)e, newmask);
+            unsigned int j = number_hash((uintptr_t)e, newmask);
             e->set_ptab_next(st->tab[j]);
             st->tab[j] = e;
         }
@@ -1532,7 +1533,7 @@ private:
 // tgen_t:  Element generator for stab_t derivatives
 
 // Class for iteration through table_t, etc.  This can be constructed
-// directly from a pointer to a table, or an unsigned long with the 1
+// directly from a pointer to a table, or an uintptr_t with the 1
 // bit set to indicate a table pointer, or a linked list otherwise.
 //
 // In order to use this the T must have a tgen_next function:
@@ -1553,7 +1554,7 @@ struct tgen_t
             tinit(t);
         }
 
-    tgen_t(unsigned long p, bool ptype)
+    tgen_t(uintptr_t p, bool ptype)
         {
             init(p, ptype);
         }
@@ -1567,7 +1568,7 @@ struct tgen_t
             use_p = false;
         }
 
-    void init(unsigned long p, bool ptype)
+    void init(uintptr_t p, bool ptype)
         {
             if (p & 1) {
                 stab_t<T> *t = (stab_t<T>*)(p & ~1);
@@ -1625,14 +1626,14 @@ tgen_t<T>::next()
 // List element, locally allocated.
 struct pl_t
 {
-    unsigned long tab_key()         { return (key); }
-    void set_tab_key(const void *p) { key = (unsigned long)p; }
+    uintptr_t tab_key()             { return (key); }
+    void set_tab_key(const void *p) { key = (uintptr_t)p; }
     pl_t *tab_next()                { return (next); }
     void set_tab_next(pl_t *t)      { next = t; }
     pl_t *tgen_next(bool)           { return (next); }
 
 private:
-    unsigned long key;
+    uintptr_t key;
     pl_t *next;
 };
 

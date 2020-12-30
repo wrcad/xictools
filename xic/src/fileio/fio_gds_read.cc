@@ -1556,8 +1556,7 @@ gds_in::get_record()
 void
 gds_in::fatal_error()
 {
-    Errs()->add_error("Fatal error at offset %llu.",
-        (unsigned long long)in_offset);
+    Errs()->add_error("Fatal error at offset %llu.", in_offset);
 }
 
 
@@ -1568,8 +1567,7 @@ void
 gds_in::warning(const char *str)
 {
     FIO()->ifPrintCvLog(IFLOG_WARN, "%s [%s %llu]",
-        str, in_cellname, (unsigned long long)
-        (in_obj_offset ? in_obj_offset : in_offset));
+        str, in_cellname, (in_obj_offset ? in_obj_offset : in_offset));
 }
 
 
@@ -1587,7 +1585,7 @@ gds_in::warning(const char *str, int x, int y)
 
     FIO()->ifPrintCvLog(IFLOG_WARN, "%s [%s %d,%d %s %llu]", str,
         in_cellname, x, y, tbf, 
-        (unsigned long long)(in_obj_offset ? in_obj_offset : in_offset));
+        in_obj_offset ? in_obj_offset : in_offset);
 }
 
 
@@ -1600,7 +1598,7 @@ gds_in::warning(const char *str, const char *mstr, int x, int y)
     FIO()->ifPrintCvLog(IFLOG_WARN,
         "%s for instance of %s [%s %d,%d %llu]",
         str, mstr, in_cellname, x, y,
-        (unsigned long long)(in_obj_offset ? in_obj_offset : in_offset));
+        in_obj_offset ? in_obj_offset : in_offset);
 }
 
 
@@ -1785,7 +1783,7 @@ gds_in::check_layer(bool *changed, bool create_new)
             layer_tab = in_elec_layer_tab = new SymTab(false, false, 4);
     }
 
-    unsigned long ll = (in_layer << 16) | in_dtype;
+    uint32_t ll = (in_layer << 16) | in_dtype;
 
     gds_lspec *lspec = (gds_lspec*)SymTab::get(layer_tab, ll);
     if (lspec != (gds_lspec*)ST_NIL) {
@@ -2012,14 +2010,11 @@ gds_in::unsup()
     char buf[256];
     for (int i = 0; Unsup[i].name; i++) {
         if (in_rectype == Unsup[i].type) {
-            if (in_action == cvOpenModePrint)
+            if (in_action == cvOpenModePrint) {
                 fprintf(in_print_fp,
-#ifdef WIN32
-                    ">> Unsupported record type %s at offset %I64u\n",
-#else
                     ">> Unsupported record type %s at offset %llu\n",
-#endif
-                    Unsup[i].name, (unsigned long long)in_offset);
+                    Unsup[i].name, in_offset);
+            }
             else {
                 sprintf(buf, "unsupported record type %s", Unsup[i].name);
                 warning(buf);
@@ -2027,13 +2022,10 @@ gds_in::unsup()
             return (true);
         }
     }
-    if (in_action == cvOpenModePrint)
-#ifdef WIN32
-        fprintf(in_print_fp, ">> Unknown record type %d at offset %I64u\n",
-#else
+    if (in_action == cvOpenModePrint) {
         fprintf(in_print_fp, ">> Unknown record type %d at offset %llu\n",
-#endif
-            in_rectype, (unsigned long long)in_offset);
+            in_rectype, in_offset);
+    }
     else {
         sprintf(buf, "unknown record type %d", in_rectype);
         warning(buf);
@@ -2067,14 +2059,11 @@ gds_in::nop()
     char buf[256];
     for (int i = 0; Ignored[i].name; i++) {
         if (in_rectype == Ignored[i].type) {
-            if (in_action == cvOpenModePrint)
+            if (in_action == cvOpenModePrint) {
                 fprintf(in_print_fp,
-#ifdef WIN32
-                    ">> Ignored record type %s at offset %I64u\n",
-#else
                     ">> Ignored record type %s at offset %llu\n",
-#endif
-                    Ignored[i].name, (unsigned long long)in_offset);
+                    Ignored[i].name, in_offset);
+            }
             else {
                 sprintf(buf, "ignored record type %s", Ignored[i].name);
                 warning(buf);
@@ -2082,13 +2071,10 @@ gds_in::nop()
             return (true);
         }
     }
-    if (in_action == cvOpenModePrint)
-#ifdef WIN32
-        fprintf(in_print_fp, ">> Ignored record type %d at offset %I64u\n",
-#else
+    if (in_action == cvOpenModePrint) {
         fprintf(in_print_fp, ">> Ignored record type %d at offset %llu\n",
-#endif
-            in_rectype, (unsigned long long)in_offset);
+            in_rectype, in_offset);
+    }
     else {
         sprintf(buf, "ignored record type %d", in_rectype);
         warning(buf);
@@ -2229,7 +2215,7 @@ gds_in::a_bgnstr()
         if (srf && srf->get_defseen()) {
             FIO()->ifPrintCvLog(IFLOG_WARN,
                 "Duplicate cell definition for %s at offset %llu.",
-                in_cellname, (unsigned long long)in_offset);
+                in_cellname, in_offset);
             dup_sym = true;
         }
 
@@ -2318,8 +2304,8 @@ gds_in::a_bgnstr()
                 // table means that we have prompted for this cell.
                 if (!in_over_tab)
                     in_over_tab = new SymTab(false, false);
-                in_over_tab->add((unsigned long)sd->cellname(),
-                    (void*)(long)mi.overwrite_elec, false);
+                in_over_tab->add((uintptr_t)sd->cellname(),
+                    (void*)(uintptr_t)mi.overwrite_elec, false);
                 if (mi.overwrite_elec) {
                     // If overwriting electrical, clear the existing
                     // electrical cell (if any) here.  There may not
@@ -2351,7 +2337,7 @@ gds_in::a_bgnstr()
             else {
                 void *xx;
                 if (in_over_tab && (xx = SymTab::get(in_over_tab,
-                        (unsigned long)sd->cellname())) != ST_NIL) {
+                        (uintptr_t)sd->cellname())) != ST_NIL) {
                     // We already asked about overwriting.
                     if (xx) {
                         // User chose to overwrite the electrical
@@ -2460,7 +2446,7 @@ gds_in::a_bgnstr()
             if (!in_savebb && !in_no_test_empties && in_sdesc->isEmpty()) {
                 FIO()->ifPrintCvLog(IFLOG_INFO,
                     "Cell %s physical definition is empty at offset %llu.",
-                    in_cellname, (unsigned long long)symoff);
+                    in_cellname, symoff);
             }
         }
         else {

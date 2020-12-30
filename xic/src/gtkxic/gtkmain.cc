@@ -1082,7 +1082,7 @@ win_bag::subw_initialize(int wnum)
     char buf[32];
     sprintf(buf, "%s %d", XM()->Product(), wnum);
     wb_shell = gtk_NewPopup(mainBag(), buf, subwin_cancel_proc,
-        (void*)(long)wnum);
+        (void*)(intptr_t)wnum);
     gtk_widget_set_size_request(wb_shell, 500, 400);
 
     wib_windesc = DSP()->Window(wnum);
@@ -1262,7 +1262,7 @@ win_bag::pre_destroy(int wnum)
     LastPos[wnum].height = rect.height;
 
     gtk_signal_disconnect_by_func(GTK_OBJECT(wb_shell),
-        GTK_SIGNAL_FUNC(subwin_cancel_proc), (void*)(long)wnum);
+        GTK_SIGNAL_FUNC(subwin_cancel_proc), (void*)(intptr_t)wnum);
 }
 
 
@@ -2457,7 +2457,7 @@ win_bag::target_drag_motion(GtkWidget *widget, GdkDragContext*, gint, gint,
 void
 win_bag::subwin_cancel_proc(GtkWidget*, void *client_data)
 {
-    int wnum = (long)client_data;
+    int wnum = (intptr_t)client_data;
     if (wnum > 0 && wnum < DSP_NUMWINS)
         delete DSP()->Window(wnum);
 }

@@ -310,7 +310,6 @@ struct sGraph
 
             gr_linestyle    = 0;;
             gr_color        = 0;;
-            memset(gr_colors, 0, sizeof(gr_colors));
             gr_ticmarks     = 0;
             gr_field        = 0;
 

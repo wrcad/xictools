@@ -93,7 +93,7 @@ namespace {
             {
                 if (!sd || !obj)
                     return;
-                objects->add((unsigned long)obj, sd, true);
+                objects->add((uintptr_t)obj, sd, true);
             }
 
         void empty_trash();
@@ -621,17 +621,17 @@ Oper::check_objects()
             // been deleted later.  Entries after the present occurred
             // later since list was reversed.
 
-            tab->add((unsigned long)oc1->oadd(), oc1, false);
+            tab->add((uintptr_t)oc1->oadd(), oc1, false);
         }
         if (oc1->odel()) {
-            Ochg *oc2 = (Ochg*)SymTab::get(tab, (unsigned long)oc1->odel());
+            Ochg *oc2 = (Ochg*)SymTab::get(tab, (uintptr_t)oc1->odel());
             if (oc2 != (Ochg*)ST_NIL) {
                 // The object is deleted from memory here.
                 if (XM()->DebugFlags() & DBG_UNDOLIST) {
                     fprintf(DBG_FP, "DELETE %p ", oc1->odel());
                     pobject(oc1->odel(), DBG_FP);
                 }
-                tab->remove((unsigned long)oc1->odel());
+                tab->remove((uintptr_t)oc1->odel());
                 if (!o_cell_desc->unlink(oc1->odel(), false))
                     Errs()->get_error();
                 oc1->set_odel(0);
@@ -989,8 +989,8 @@ cUndoList::RecordObjectChange(CDs *sdesc, CDo *olddesc, CDo *newdesc)
             ox = ul_curop.obj_list();
             oc->set_next_chg(ox);
         } while (! __sync_bool_compare_and_swap(
-            (unsigned long*)ul_curop.obj_list_addr(), (unsigned long)ox,
-            (unsigned long)oc));
+            (uintptr_t*)ul_curop.obj_list_addr(), (uintptr_t)ox,
+            (uintptr_t)oc));
     }
 
     if (newdesc)

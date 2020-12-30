@@ -102,7 +102,7 @@ cExt::lvs_recurse(FILE *fp, CDcbin *cbin, int depth, SymTab *tab)
         return (LVSap);
     CDs *esdesc = cbin->elec();
     CDs *psdesc = cbin->phys();
-    tab->add((unsigned long)esdesc, 0, false);
+    tab->add((uintptr_t)esdesc, 0, false);
     fprintf(fp, "############  %s\n", XM()->IdString());
     fprintf(fp, "LVS comparison for cell %s.\n", Tstring(cbin->cellname()));
     cGroupDesc *gd = psdesc->groups();
@@ -127,7 +127,7 @@ cExt::lvs_recurse(FILE *fp, CDcbin *cbin, int depth, SymTab *tab)
             CDs *msdesc = mdesc->celldesc();
             if (!msdesc)
                 continue;
-            if (SymTab::get(tab, (unsigned long)msdesc) != ST_NIL)
+            if (SymTab::get(tab, (uintptr_t)msdesc) != ST_NIL)
                 continue;
             if (EX()->skipExtract(msdesc))
                 continue;
@@ -747,7 +747,7 @@ cGroupDesc::check_stamping()
         if (dil) {
             if (!list_tab)
                 list_tab = new SymTab(false, false);
-            list_tab->add((unsigned long)sd, dil, false);
+            list_tab->add((uintptr_t)sd, dil, false);
         }
         delete ent;
     }
@@ -794,7 +794,7 @@ cGroupDesc::check_stamping_rc(cGroupDesc *topdesc, SymTab *list_tab,
             }
         }
     }
-    di_list *dil = (di_list*)SymTab::get(list_tab, (unsigned long)gd_celldesc);
+    di_list *dil = (di_list*)SymTab::get(list_tab, (uintptr_t)gd_celldesc);
     if (dil == (di_list*)ST_NIL)
         return (0);
     for ( ; dil; dil = dil->next) {
