@@ -301,7 +301,6 @@ cMRouter::initRouter()
         setObsInfoAry(i, 0);
 
         mrProute *obs2 = new mrProute[sz];
-        memset(obs2, 0, sz*sizeof(mrProute));
         setObs2Ary(i, obs2);
 
         bool *lstd = new bool[sz];

@@ -1,16 +1,26 @@
-$Id: README,v 1.1 2016/06/23 17:24:21 stevew Exp $
+README mrouter-1.2.4 12/31/2020
 
 This directory contains the source distributions for the LEF and DEF
 toolkits, and documentation, as obtained from the Si2 organization. 
 These are redistributed here under the terms of the covering
 Apache-2.0 license.
 
-The lef_5.8-p013.tar.gz file differs from the original lef_5.8-p013.tar.Z
-only by having the Microsoft line terminations removed from lef/crypt.cpp,
-and gzip rather than Z compression. 
+We provide the original LEF and DEF tarballs in ".Z" files, plus
+locally updated versions in the corresponding ".gz" files.  The latter
+are used in Mrouter.
 
-The patch files are applied before use in the router.  The most
-important change is to compile files with -fPIC, so that they can be
-used in a shared library.  There are other tweaks, such as support for
-Apple OS X and syntax updates for Bison-3.  View the files for more
-info.
+The two patch files track the differences, with one important
+exception.  The file lef/lef/crypt.cpp originally comes with DOS line
+termination.  It is important to change this to unix termination
+before doing a diff, as the patch will fail under MSYS2 (as of Dec
+2020).  It is ok under Linux.  The patches are no longer used in the
+Makefile, but are retained.
+
+The most important change in the local version of LEF/DEF is to
+compile files with -fPIC, so that they can be used in a shared
+library.  There are other tweaks, such as support for Apple OS X and
+syntax updates for Bison-3.  Finally, the very numerous compiler
+warnings with our standard warning options and gcc-10.2 were fixed. 
+Most of the fixes have no real effect, however a few, such as
+mismatched print formats and arguments, could indicate bugs.
+

@@ -1,6 +1,267 @@
-diff -c -r lef.orig/lef/crypt.cpp lef/lef/crypt.cpp
-*** lef.orig/lef/crypt.cpp	2016-03-14 15:20:23.000000000 -0700
---- lef/lef/crypt.cpp	2016-05-15 17:37:35.628069300 -0700
+diff -c -r source.lefdef/lef.orig/clef/lefiLayer.h lef/clef/lefiLayer.h
+*** source.lefdef/lef.orig/clef/lefiLayer.h	Fri Feb  5 14:39:14 2016
+--- lef/clef/lefiLayer.h	Wed Dec 30 18:17:06 2020
+***************
+*** 215,221 ****
+  EXTERN const char* lefiLayer_propName (const lefiLayer* obj, int  index);
+  EXTERN const char* lefiLayer_propValue (const lefiLayer* obj, int  index);
+  EXTERN double lefiLayer_propNumber (const lefiLayer* obj, int  index);
+! EXTERN const char lefiLayer_propType (const lefiLayer* obj, int  index);
+  EXTERN int lefiLayer_propIsNumber (const lefiLayer* obj, int  index);
+  EXTERN int lefiLayer_propIsString (const lefiLayer* obj, int  index);
+  
+--- 215,221 ----
+  EXTERN const char* lefiLayer_propName (const lefiLayer* obj, int  index);
+  EXTERN const char* lefiLayer_propValue (const lefiLayer* obj, int  index);
+  EXTERN double lefiLayer_propNumber (const lefiLayer* obj, int  index);
+! EXTERN char lefiLayer_propType (const lefiLayer* obj, int  index);
+  EXTERN int lefiLayer_propIsNumber (const lefiLayer* obj, int  index);
+  EXTERN int lefiLayer_propIsString (const lefiLayer* obj, int  index);
+  
+diff -c -r source.lefdef/lef.orig/clef/lefiMacro.h lef/clef/lefiMacro.h
+*** source.lefdef/lef.orig/clef/lefiMacro.h	Fri Feb  5 14:39:14 2016
+--- lef/clef/lefiMacro.h	Wed Dec 30 18:18:00 2020
+***************
+*** 198,204 ****
+  EXTERN const char* lefiPin_propName (const lefiPin* obj, int  index);
+  EXTERN const char* lefiPin_propValue (const lefiPin* obj, int  index);
+  EXTERN double lefiPin_propNum (const lefiPin* obj, int  index);
+! EXTERN const char lefiPin_propType (const lefiPin* obj, int  index);
+  EXTERN int lefiPin_propIsNumber (const lefiPin* obj, int  index);
+  EXTERN int lefiPin_propIsString (const lefiPin* obj, int  index);
+  
+--- 198,204 ----
+  EXTERN const char* lefiPin_propName (const lefiPin* obj, int  index);
+  EXTERN const char* lefiPin_propValue (const lefiPin* obj, int  index);
+  EXTERN double lefiPin_propNum (const lefiPin* obj, int  index);
+! EXTERN char lefiPin_propType (const lefiPin* obj, int  index);
+  EXTERN int lefiPin_propIsNumber (const lefiPin* obj, int  index);
+  EXTERN int lefiPin_propIsString (const lefiPin* obj, int  index);
+  
+***************
+*** 246,252 ****
+  EXTERN const char* lefiMacro_propName (const lefiMacro* obj, int  index);
+  EXTERN const char* lefiMacro_propValue (const lefiMacro* obj, int  index);
+  EXTERN double lefiMacro_propNum (const lefiMacro* obj, int  index);
+! EXTERN const char lefiMacro_propType (const lefiMacro* obj, int  index);
+  EXTERN int lefiMacro_propIsNumber (const lefiMacro* obj, int  index);
+  EXTERN int lefiMacro_propIsString (const lefiMacro* obj, int  index);
+  
+--- 246,252 ----
+  EXTERN const char* lefiMacro_propName (const lefiMacro* obj, int  index);
+  EXTERN const char* lefiMacro_propValue (const lefiMacro* obj, int  index);
+  EXTERN double lefiMacro_propNum (const lefiMacro* obj, int  index);
+! EXTERN char lefiMacro_propType (const lefiMacro* obj, int  index);
+  EXTERN int lefiMacro_propIsNumber (const lefiMacro* obj, int  index);
+  EXTERN int lefiMacro_propIsString (const lefiMacro* obj, int  index);
+  
+diff -c -r source.lefdef/lef.orig/clef/lefiNonDefault.h lef/clef/lefiNonDefault.h
+*** source.lefdef/lef.orig/clef/lefiNonDefault.h	Fri Feb  5 14:39:14 2016
+--- lef/clef/lefiNonDefault.h	Wed Dec 30 18:18:58 2020
+***************
+*** 44,50 ****
+  EXTERN const char* lefiNonDefault_propName (const lefiNonDefault* obj, int  index);
+  EXTERN const char* lefiNonDefault_propValue (const lefiNonDefault* obj, int  index);
+  EXTERN double lefiNonDefault_propNumber (const lefiNonDefault* obj, int  index);
+! EXTERN const char lefiNonDefault_propType (const lefiNonDefault* obj, int  index);
+  EXTERN int lefiNonDefault_propIsNumber (const lefiNonDefault* obj, int  index);
+  EXTERN int lefiNonDefault_propIsString (const lefiNonDefault* obj, int  index);
+  
+--- 44,50 ----
+  EXTERN const char* lefiNonDefault_propName (const lefiNonDefault* obj, int  index);
+  EXTERN const char* lefiNonDefault_propValue (const lefiNonDefault* obj, int  index);
+  EXTERN double lefiNonDefault_propNumber (const lefiNonDefault* obj, int  index);
+! EXTERN char lefiNonDefault_propType (const lefiNonDefault* obj, int  index);
+  EXTERN int lefiNonDefault_propIsNumber (const lefiNonDefault* obj, int  index);
+  EXTERN int lefiNonDefault_propIsString (const lefiNonDefault* obj, int  index);
+  
+diff -c -r source.lefdef/lef.orig/clef/lefiPropType.h lef/clef/lefiPropType.h
+*** source.lefdef/lef.orig/clef/lefiPropType.h	Fri Feb  5 14:39:14 2016
+--- lef/clef/lefiPropType.h	Wed Dec 30 18:19:41 2020
+***************
+*** 40,45 ****
+  /* Struct holds the data type for one property, if the property is            */
+  /* either REAL or INTEGER.                                                    */
+  
+! EXTERN const char lefiPropType_propType (const lefiPropType* obj, char*  name);
+  
+  #endif
+--- 40,45 ----
+  /* Struct holds the data type for one property, if the property is            */
+  /* either REAL or INTEGER.                                                    */
+  
+! EXTERN char lefiPropType_propType (const lefiPropType* obj, char*  name);
+  
+  #endif
+diff -c -r source.lefdef/lef.orig/clef/lefiViaRule.h lef/clef/lefiViaRule.h
+*** source.lefdef/lef.orig/clef/lefiViaRule.h	Fri Feb  5 14:39:14 2016
+--- lef/clef/lefiViaRule.h	Wed Dec 30 18:20:42 2020
+***************
+*** 91,97 ****
+  EXTERN const char* lefiViaRule_propName (const lefiViaRule* obj, int  index);
+  EXTERN const char* lefiViaRule_propValue (const lefiViaRule* obj, int  index);
+  EXTERN double lefiViaRule_propNumber (const lefiViaRule* obj, int  index);
+! EXTERN const char lefiViaRule_propType (const lefiViaRule* obj, int  index);
+  EXTERN int lefiViaRule_propIsNumber (const lefiViaRule* obj, int  index);
+  EXTERN int lefiViaRule_propIsString (const lefiViaRule* obj, int  index);
+  
+--- 91,97 ----
+  EXTERN const char* lefiViaRule_propName (const lefiViaRule* obj, int  index);
+  EXTERN const char* lefiViaRule_propValue (const lefiViaRule* obj, int  index);
+  EXTERN double lefiViaRule_propNumber (const lefiViaRule* obj, int  index);
+! EXTERN char lefiViaRule_propType (const lefiViaRule* obj, int  index);
+  EXTERN int lefiViaRule_propIsNumber (const lefiViaRule* obj, int  index);
+  EXTERN int lefiViaRule_propIsString (const lefiViaRule* obj, int  index);
+  
+diff -c -r source.lefdef/lef.orig/clef/xlefiLayer.cpp lef/clef/xlefiLayer.cpp
+*** source.lefdef/lef.orig/clef/xlefiLayer.cpp	Fri Feb  5 14:39:14 2016
+--- lef/clef/xlefiLayer.cpp	Wed Dec 30 18:17:27 2020
+***************
+*** 553,559 ****
+      return ((LefDefParser::lefiLayer*)obj)->propNumber(index);
+  }
+  
+! const char lefiLayer_propType (const ::lefiLayer* obj, int  index) {
+      return ((const LefDefParser::lefiLayer*)obj)->propType(index);
+  }
+  
+--- 553,559 ----
+      return ((LefDefParser::lefiLayer*)obj)->propNumber(index);
+  }
+  
+! char lefiLayer_propType (const ::lefiLayer* obj, int  index) {
+      return ((const LefDefParser::lefiLayer*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/lef.orig/clef/xlefiMacro.cpp lef/clef/xlefiMacro.cpp
+*** source.lefdef/lef.orig/clef/xlefiMacro.cpp	Fri Feb  5 14:39:14 2016
+--- lef/clef/xlefiMacro.cpp	Wed Dec 30 18:18:27 2020
+***************
+*** 577,583 ****
+      return ((LefDefParser::lefiPin*)obj)->propNum(index);
+  }
+  
+! const char lefiPin_propType (const ::lefiPin* obj, int  index) {
+      return ((const LefDefParser::lefiPin*)obj)->propType(index);
+  }
+  
+--- 577,583 ----
+      return ((LefDefParser::lefiPin*)obj)->propNum(index);
+  }
+  
+! char lefiPin_propType (const ::lefiPin* obj, int  index) {
+      return ((const LefDefParser::lefiPin*)obj)->propType(index);
+  }
+  
+***************
+*** 727,733 ****
+      return ((LefDefParser::lefiMacro*)obj)->propNum(index);
+  }
+  
+! const char lefiMacro_propType (const ::lefiMacro* obj, int  index) {
+      return ((const LefDefParser::lefiMacro*)obj)->propType(index);
+  }
+  
+--- 727,733 ----
+      return ((LefDefParser::lefiMacro*)obj)->propNum(index);
+  }
+  
+! char lefiMacro_propType (const ::lefiMacro* obj, int  index) {
+      return ((const LefDefParser::lefiMacro*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/lef.orig/clef/xlefiNonDefault.cpp lef/clef/xlefiNonDefault.cpp
+*** source.lefdef/lef.orig/clef/xlefiNonDefault.cpp	Fri Feb  5 14:39:14 2016
+--- lef/clef/xlefiNonDefault.cpp	Wed Dec 30 18:19:22 2020
+***************
+*** 61,67 ****
+      return ((LefDefParser::lefiNonDefault*)obj)->propNumber(index);
+  }
+  
+! const char lefiNonDefault_propType (const ::lefiNonDefault* obj, int  index) {
+      return ((const LefDefParser::lefiNonDefault*)obj)->propType(index);
+  }
+  
+--- 61,67 ----
+      return ((LefDefParser::lefiNonDefault*)obj)->propNumber(index);
+  }
+  
+! char lefiNonDefault_propType (const ::lefiNonDefault* obj, int  index) {
+      return ((const LefDefParser::lefiNonDefault*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/lef.orig/clef/xlefiPropType.cpp lef/clef/xlefiPropType.cpp
+*** source.lefdef/lef.orig/clef/xlefiPropType.cpp	Fri Feb  5 14:39:14 2016
+--- lef/clef/xlefiPropType.cpp	Wed Dec 30 18:20:03 2020
+***************
+*** 37,43 ****
+  #include "lefiPropType.hpp"
+  
+  // Wrappers definitions.
+! const char lefiPropType_propType (const ::lefiPropType* obj, char*  name) {
+      return ((const LefDefParser::lefiPropType*)obj)->propType(name);
+  }
+  
+--- 37,43 ----
+  #include "lefiPropType.hpp"
+  
+  // Wrappers definitions.
+! char lefiPropType_propType (const ::lefiPropType* obj, char*  name) {
+      return ((const LefDefParser::lefiPropType*)obj)->propType(name);
+  }
+  
+diff -c -r source.lefdef/lef.orig/clef/xlefiViaRule.cpp lef/clef/xlefiViaRule.cpp
+*** source.lefdef/lef.orig/clef/xlefiViaRule.cpp	Fri Feb  5 14:39:14 2016
+--- lef/clef/xlefiViaRule.cpp	Wed Dec 30 18:21:04 2020
+***************
+*** 181,187 ****
+      return ((LefDefParser::lefiViaRule*)obj)->propNumber(index);
+  }
+  
+! const char lefiViaRule_propType (const ::lefiViaRule* obj, int  index) {
+      return ((const LefDefParser::lefiViaRule*)obj)->propType(index);
+  }
+  
+--- 181,187 ----
+      return ((LefDefParser::lefiViaRule*)obj)->propNumber(index);
+  }
+  
+! char lefiViaRule_propType (const ::lefiViaRule* obj, int  index) {
+      return ((const LefDefParser::lefiViaRule*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/lef.orig/clef/xlefrReader.cpp lef/clef/xlefrReader.cpp
+*** source.lefdef/lef.orig/clef/xlefrReader.cpp	Fri Feb  5 14:39:14 2016
+--- lef/clef/xlefrReader.cpp	Wed Dec 30 18:22:00 2020
+***************
+*** 286,296 ****
+  }
+  
+  void lefrSetMacroOriginCbk (::lefrMacroNumCbkFnType p0) {
+!     LefDefParser::lefrSetMacroOriginCbk((LefDefParser::lefrMacroNumCbkFnType) p0);
+  }
+  
+  void lefrSetMacroSizeCbk (::lefrMacroNumCbkFnType p0) {
+!     LefDefParser::lefrSetMacroSizeCbk((LefDefParser::lefrMacroNumCbkFnType) p0);
+  }
+  
+  void lefrSetMacroFixedMaskCbk (::lefrIntegerCbkFnType p0) {
+--- 286,296 ----
+  }
+  
+  void lefrSetMacroOriginCbk (::lefrMacroNumCbkFnType p0) {
+!     LefDefParser::lefrSetMacroOriginCbk((LefDefParser::lefrMacroNumCbkFnType) (void*)p0);
+  }
+  
+  void lefrSetMacroSizeCbk (::lefrMacroNumCbkFnType p0) {
+!     LefDefParser::lefrSetMacroSizeCbk((LefDefParser::lefrMacroNumCbkFnType) (void*)p0);
+  }
+  
+  void lefrSetMacroFixedMaskCbk (::lefrIntegerCbkFnType p0) {
+Only in lef: include
+diff -c -r source.lefdef/lef.orig/lef/crypt.cpp lef/lef/crypt.cpp
+*** source.lefdef/lef.orig/lef/crypt.cpp	Thu Dec 31 09:14:00 2020
+--- lef/lef/crypt.cpp	Wed Dec 30 16:56:29 2020
 ***************
 *** 37,43 ****
   
@@ -29,9 +290,62 @@ diff -c -r lef.orig/lef/crypt.cpp lef/lef/crypt.cpp
   
   FILE *
   encOpenFileForRead(char *filename)
-diff -c -r lef.orig/lef/lef.y lef/lef/lef.y
-*** lef.orig/lef/lef.y	2016-02-05 14:39:14.000000000 -0800
---- lef/lef/lef.y	2016-05-15 17:37:19.311896800 -0700
+***************
+*** 54,61 ****
+  }
+  
+  FILE *
+! encOpenFileForWrite(char    *filename,
+!                     int     encrypt_f)
+  {
+      return fopen(filename, "w");
+  }
+--- 56,62 ----
+  }
+  
+  FILE *
+! encOpenFileForWrite(char    *filename, int)
+  {
+      return fopen(filename, "w");
+  }
+***************
+*** 67,73 ****
+  }
+  
+  void
+! encClearBuf(FILE *fp)
+  {
+  }
+  
+--- 68,74 ----
+  }
+  
+  void
+! encClearBuf(FILE *)
+  {
+  }
+  
+***************
+*** 82,88 ****
+  }
+  
+  int
+! encIsEncrypted(unsigned char *buf)
+  {
+      return false;
+  }
+--- 83,89 ----
+  }
+  
+  int
+! encIsEncrypted(unsigned char *)
+  {
+      return false;
+  }
+Only in lef/lef: lef.output
+diff -c -r source.lefdef/lef.orig/lef/lef.y lef/lef/lef.y
+*** source.lefdef/lef.orig/lef/lef.y	Fri Feb  5 14:39:14 2016
+--- lef/lef/lef.y	Wed Dec 30 16:52:37 2020
 ***************
 *** 2,7 ****
 --- 2,12 ----
@@ -110,9 +424,2095 @@ diff -c -r lef.orig/lef/lef.y lef/lef/lef.y
       }
   
   opt_range_second:
-diff -c -r lef.orig/template.mk lef/template.mk
-*** lef.orig/template.mk	2016-02-05 14:39:13.000000000 -0800
---- lef/template.mk	2016-05-15 17:36:47.857480400 -0700
+diff -c -r source.lefdef/lef.orig/lef/lefiLayer.cpp lef/lef/lefiLayer.cpp
+*** source.lefdef/lef.orig/lef/lefiLayer.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiLayer.cpp	Wed Dec 30 17:01:09 2020
+***************
+*** 4336,4342 ****
+      return dvalues_[i];
+  }
+  
+! const char
+  lefiLayer::propType(int i) const
+  {
+      char msg[160];
+--- 4336,4342 ----
+      return dvalues_[i];
+  }
+  
+! char
+  lefiLayer::propType(int i) const
+  {
+      char msg[160];
+diff -c -r source.lefdef/lef.orig/lef/lefiLayer.hpp lef/lef/lefiLayer.hpp
+*** source.lefdef/lef.orig/lef/lefiLayer.hpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiLayer.hpp	Wed Dec 30 16:57:05 2020
+***************
+*** 550,556 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+--- 550,556 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+diff -c -r source.lefdef/lef.orig/lef/lefiMacro.cpp lef/lef/lefiMacro.cpp
+*** source.lefdef/lef.orig/lef/lefiMacro.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiMacro.cpp	Wed Dec 30 17:02:09 2020
+***************
+*** 2637,2643 ****
+      return propNums_[index];
+  }
+  
+! const char
+  lefiPin::propType(int index) const
+  {
+      char msg[160];
+--- 2637,2643 ----
+      return propNums_[index];
+  }
+  
+! char
+  lefiPin::propType(int index) const
+  {
+      char msg[160];
+***************
+*** 3372,3378 ****
+      return propNums_[index];
+  }
+  
+! const char
+  lefiMacro::propType(int index) const
+  {
+      char msg[160];
+--- 3372,3378 ----
+      return propNums_[index];
+  }
+  
+! char
+  lefiMacro::propType(int index) const
+  {
+      char msg[160];
+diff -c -r source.lefdef/lef.orig/lef/lefiMacro.hpp lef/lef/lefiMacro.hpp
+*** source.lefdef/lef.orig/lef/lefiMacro.hpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiMacro.hpp	Wed Dec 30 16:59:35 2020
+***************
+*** 315,321 ****
+    const  char* propName(int index) const;
+    const  char* propValue(int index) const;
+    double propNum(int index) const;
+!   const  char  propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+--- 315,321 ----
+    const  char* propName(int index) const;
+    const  char* propValue(int index) const;
+    double propNum(int index) const;
+!   char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+***************
+*** 559,565 ****
+    const char* propName(int index) const;
+    const char* propValue(int index) const;
+    double propNum(int index) const;
+!   const char propType(int index) const;
+    int  propIsNumber(int index) const;
+    int  propIsString(int index) const;
+  
+--- 559,565 ----
+    const char* propName(int index) const;
+    const char* propValue(int index) const;
+    double propNum(int index) const;
+!   char propType(int index) const;
+    int  propIsNumber(int index) const;
+    int  propIsString(int index) const;
+  
+diff -c -r source.lefdef/lef.orig/lef/lefiNonDefault.cpp lef/lef/lefiNonDefault.cpp
+*** source.lefdef/lef.orig/lef/lefiNonDefault.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiNonDefault.cpp	Wed Dec 30 17:02:49 2020
+***************
+*** 1081,1087 ****
+      return dvalues_[index];
+  }
+  
+! const char
+  lefiNonDefault::propType(int index) const
+  {
+      char msg[160];
+--- 1081,1087 ----
+      return dvalues_[index];
+  }
+  
+! char
+  lefiNonDefault::propType(int index) const
+  {
+      char msg[160];
+diff -c -r source.lefdef/lef.orig/lef/lefiNonDefault.hpp lef/lef/lefiNonDefault.hpp
+*** source.lefdef/lef.orig/lef/lefiNonDefault.hpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiNonDefault.hpp	Wed Dec 30 16:58:46 2020
+***************
+*** 73,79 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+    
+--- 73,79 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+    
+diff -c -r source.lefdef/lef.orig/lef/lefiPropType.cpp lef/lef/lefiPropType.cpp
+*** source.lefdef/lef.orig/lef/lefiPropType.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiPropType.cpp	Wed Dec 30 17:03:22 2020
+***************
+*** 123,129 ****
+      propTypes_ = newt;
+  }
+  
+! const char
+  lefiPropType::propType(char *name) const
+  {
+      int i;
+--- 123,129 ----
+      propTypes_ = newt;
+  }
+  
+! char
+  lefiPropType::propType(char *name) const
+  {
+      int i;
+diff -c -r source.lefdef/lef.orig/lef/lefiPropType.hpp lef/lef/lefiPropType.hpp
+*** source.lefdef/lef.orig/lef/lefiPropType.hpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiPropType.hpp	Wed Dec 30 17:00:08 2020
+***************
+*** 48,54 ****
+    void setPropType(const char* name, const char type);
+    void Clear();
+  
+!   const char propType(char* name) const;
+    void bumpProps();
+  
+  protected:
+--- 48,54 ----
+    void setPropType(const char* name, const char type);
+    void Clear();
+  
+!   char propType(char* name) const;
+    void bumpProps();
+  
+  protected:
+diff -c -r source.lefdef/lef.orig/lef/lefiViaRule.cpp lef/lef/lefiViaRule.cpp
+*** source.lefdef/lef.orig/lef/lefiViaRule.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiViaRule.cpp	Wed Dec 30 17:15:43 2020
+***************
+*** 59,66 ****
+    spacingStepX_(0.0),
+    spacingStepY_(0.0),
+    xl_(0.0),
+-   xh_(0.0),
+    yl_(0.0),
+    yh_(0.0)
+  {
+      Init();
+--- 59,66 ----
+    spacingStepX_(0.0),
+    spacingStepY_(0.0),
+    xl_(0.0),
+    yl_(0.0),
++   xh_(0.0),
+    yh_(0.0)
+  {
+      Init();
+***************
+*** 807,813 ****
+      return dvalues_[i];
+  }
+  
+! const char
+  lefiViaRule::propType(int i) const
+  {
+      char msg[160];
+--- 807,813 ----
+      return dvalues_[i];
+  }
+  
+! char
+  lefiViaRule::propType(int i) const
+  {
+      char msg[160];
+diff -c -r source.lefdef/lef.orig/lef/lefiViaRule.hpp lef/lef/lefiViaRule.hpp
+*** source.lefdef/lef.orig/lef/lefiViaRule.hpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefiViaRule.hpp	Wed Dec 30 16:57:48 2020
+***************
+*** 161,167 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+--- 161,167 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+diff -c -r source.lefdef/lef.orig/lef/lefrData.cpp lef/lef/lefrData.cpp
+*** source.lefdef/lef.orig/lef/lefrData.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefrData.cpp	Wed Dec 30 17:48:52 2020
+***************
+*** 43,55 ****
+  lefrData  *lefData = NULL;
+  
+  lefrData::lefrData()
+! : antennaInoutWarnings(0),
+    antennaInputWarnings(0),
+    antennaOutputWarnings(0),
+-   antennaType(lefiAntennaAR),
+    arrayCutsVal(0),
+    arrayCutsWar(0),
+-   arrayName(NULL),
+    arrayWarnings(0),
+    caseSensitiveWarnings(0),
+    correctionTableWarnings(0),
+--- 43,81 ----
+  lefrData  *lefData = NULL;
+  
+  lefrData::lefrData()
+! : lefrFile(0),
+!   lefrLog(0),
+! 
+!   lefPropDefType('\0'),
+! 
+!   arrayName(NULL),
+!   last(NULL),
+!   layerName(NULL),
+!   lefch(NULL),
+!   lefrFileName(0),
+!   macroName(NULL),
+!   ndName(0),
+!   next(NULL),
+!   nonDefaultRuleName(NULL),
+!   outMsg(NULL),
+!   pinName(NULL),
+!   shiftBuf(0),
+!   siteName(NULL),
+!   viaName(NULL),
+!   viaRuleName(NULL),
+! 
+!   layerCutSpacing(0),
+!   lef_save_x(0.0),
+!   lef_save_y(0.0),
+!   leflVal(0.0),
+!   lefrVal(0.0),
+!   versionNum(CURRENT_VERSION),
+! 
+!   antennaInoutWarnings(0),
+    antennaInputWarnings(0),
+    antennaOutputWarnings(0),
+    arrayCutsVal(0),
+    arrayCutsWar(0),
+    arrayWarnings(0),
+    caseSensitiveWarnings(0),
+    correctionTableWarnings(0),
+***************
+*** 98,109 ****
+    inputAntennaWarnings(0),
+    input_level(-1),
+    isGenerate(0),
+-   last(NULL),
+    layerCut(0),
+-   layerCutSpacing(0),
+    layerDir(0),
+    layerMastOver(0),
+-   layerName(NULL),
+    layerRout(0),
+    layerWarnings(0),
+    lefDefIf(FALSE),
+--- 124,132 ----
+***************
+*** 114,125 ****
+    lefInPropDef(0),
+    lefInfoMsgPrinted(0),
+    lefInvalidChar(0),
+-   namesCaseSensitive(TRUE),
+    lefNdRule(0),
+    lefNewIsKeyword(0),
+    lefNlToken(FALSE),
+    lefNoNum(0),
+-   lefPropDefType('\0'),
+    lefRealNum(0),
+    lefRetVal(0),
+    lefWRetVal(0),
+--- 137,146 ----
+***************
+*** 127,210 ****
+    lef_errors(0),
+    lef_nlines(1),
+    lef_ntokens(0),
+-   lef_save_x(0.0),
+-   lef_save_y(0.0),
+    lef_warnings(0),
+-   lefch(NULL),
+-   leflVal(0.0),
+-   lefrAntennaPWLPtr(0),
+-   lefrArray(),
+-   lefrCorrectionTable(),
+-   lefrDensity(),
+    lefrDoGcell(0),
+    lefrDoGeometries(0),
+    lefrDoSite(0),
+    lefrDoTrack(0),
+-   lefrFile(0),
+-   lefrFileName(0),
+-   lefrGcellPatternPtr(0),
+-   lefrGeometriesPtr(0),
+    lefrHasLayer(0),
+    lefrHasMaxVS(0),
+    lefrHasSpacing(0),
+    lefrHasSpacingTbl(0),
+!   lefrIRDrop(),
+!   lefrLayer(),
+!   lefrLog(0),
+!   lefrMacro(),
+!   lefrMaxStackVia(),
+!   lefrMinFeature(),
+!   lefrNoiseMargin(),
+!   lefrNoiseTable(),
+!   lefrNonDefault(),
+!   lefrObstruction(),
+!   lefrPin(),
+!   lefrProp(),
+!   lefrSite(),
+!   lefrSitePatternPtr(0),
+!   lefrSpacing(),
+!   lefrTiming(),
+!   lefrTrackPatternPtr(0),
+!   lefrUnits(),
+!   lefrUseMinSpacing(),
+!   lefrVal(0.0),
+!   lefrVia(),
+!   lefrViaRule(),
+!   macroName(NULL),
+!   macroNum(),
+    macroWarnings(0),
+    maxStackViaWarnings(0),
+- 
+    minFeatureWarnings(0),
+    msgCnt(1),
+!   nd(0),
+    ndLayer(0),
+    ndLayerSpace(0),
+    ndLayerWidth(0),
+-   ndName(0),
+    ndRule(0),
+    needGeometry(0),
+-   next(NULL),
+    noWireExtensionWarnings(0),
+    noiseMarginWarnings(0),
+    noiseTableWarnings(0),
+-   nonDefaultRuleName(NULL),
+    nonDefaultWarnings(0),
+    numVia(0),
+    obsDef(0),
+    origDef(0),
+-   outMsg(NULL),
+    outputAntennaWarnings(0),
+    pinDef(0),
+-   pinName(NULL),
+    pinWarnings(0),
+    prtNewLine(0),
+    prtSemiColon(0),
+    ringPlace(0),
+-   shiftBuf(0),
+    shiftBufLength(0),
+    siteDef(0),
+-   siteName(NULL),
+    siteWarnings(0),
+    sizeDef(0),
+    spParallelLength(0),
+--- 148,188 ----
+    lef_errors(0),
+    lef_nlines(1),
+    lef_ntokens(0),
+    lef_warnings(0),
+    lefrDoGcell(0),
+    lefrDoGeometries(0),
+    lefrDoSite(0),
+    lefrDoTrack(0),
+    lefrHasLayer(0),
+    lefrHasMaxVS(0),
+    lefrHasSpacing(0),
+    lefrHasSpacingTbl(0),
+! 
+    macroWarnings(0),
+    maxStackViaWarnings(0),
+    minFeatureWarnings(0),
+    msgCnt(1),
+!   namesCaseSensitive(TRUE),
+    ndLayer(0),
+    ndLayerSpace(0),
+    ndLayerWidth(0),
+    ndRule(0),
+    needGeometry(0),
+    noWireExtensionWarnings(0),
+    noiseMarginWarnings(0),
+    noiseTableWarnings(0),
+    nonDefaultWarnings(0),
+    numVia(0),
+    obsDef(0),
+    origDef(0),
+    outputAntennaWarnings(0),
+    pinDef(0),
+    pinWarnings(0),
+    prtNewLine(0),
+    prtSemiColon(0),
+    ringPlace(0),
+    shiftBufLength(0),
+    siteDef(0),
+    siteWarnings(0),
+    sizeDef(0),
+    spParallelLength(0),
+***************
+*** 217,231 ****
+    use5_4(0),
+    useLenThr(0),
+    useMinSpacingWarnings(0),
+-   versionNum(CURRENT_VERSION),
+    viaLayer(0),
+-   viaName(NULL),
+    viaRuleHasDir(0),
+    viaRuleHasEnc(0),
+    viaRuleLayer(0),
+-   viaRuleName(NULL),
+    viaRuleWarnings(0),
+    viaWarnings(0),
+    current_token((char*) malloc(TOKEN_SIZE)),
+    pv_token((char*) malloc(TOKEN_SIZE)),
+    uc_token((char*) malloc(TOKEN_SIZE)), 
+--- 195,237 ----
+    use5_4(0),
+    useLenThr(0),
+    useMinSpacingWarnings(0),
+    viaLayer(0),
+    viaRuleHasDir(0),
+    viaRuleHasEnc(0),
+    viaRuleLayer(0),
+    viaRuleWarnings(0),
+    viaWarnings(0),
++ 
++   antennaType(lefiAntennaAR),
++   lefrAntennaPWLPtr(0),
++   lefrArray(),
++   lefrCorrectionTable(),
++   lefrDensity(),
++   lefrGcellPatternPtr(0),
++   lefrGeometriesPtr(0),
++   lefrIRDrop(),
++   lefrLayer(),
++   lefrMacro(),
++   lefrMaxStackVia(),
++   lefrMinFeature(),
++   lefrNoiseMargin(),
++   lefrNoiseTable(),
++   lefrNonDefault(),
++   nd(0),
++   macroNum(),
++   lefrObstruction(),
++   lefrPin(),
++   lefrProp(),
++   lefrSite(),
++   lefrSitePatternPtr(0),
++   lefrSpacing(),
++   lefrTiming(),
++   lefrTrackPatternPtr(0),
++   lefrUnits(),
++   lefrUseMinSpacing(),
++   lefrVia(),
++   lefrViaRule(),
++ 
+    current_token((char*) malloc(TOKEN_SIZE)),
+    pv_token((char*) malloc(TOKEN_SIZE)),
+    uc_token((char*) malloc(TOKEN_SIZE)), 
+diff -c -r source.lefdef/lef.orig/lef/lefrData.hpp lef/lef/lefrData.hpp
+*** source.lefdef/lef.orig/lef/lefrData.hpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefrData.hpp	Wed Dec 30 18:51:26 2020
+***************
+*** 270,281 ****
+      lefiUseMinSpacing  lefrUseMinSpacing; 
+      lefiVia  lefrVia; 
+      lefiViaRule  lefrViaRule; 
+!     
+      lefStringMap        alias_set; 
+      lefDoubleMap        define_set; 
+      lefIntMap           defineb_set; 
+      lefStringMap        defines_set; 
+-     int                 tokenSize;
+  
+      //ARRAYS
+      // Ring buffer storage 
+--- 270,285 ----
+      lefiUseMinSpacing  lefrUseMinSpacing; 
+      lefiVia  lefrVia; 
+      lefiViaRule  lefrViaRule; 
+! 
+!     char                *current_token; 
+!     char                *pv_token; 
+!     char                *uc_token; 
+!     int                 tokenSize;
+! 
+      lefStringMap        alias_set; 
+      lefDoubleMap        define_set; 
+      lefIntMap           defineb_set; 
+      lefStringMap        defines_set; 
+  
+      //ARRAYS
+      // Ring buffer storage 
+***************
+*** 283,292 ****
+      int         ringSizes[RING_SIZE];
+      char        lefDebug[100];
+  
+-     char       *current_token; 
+-     char       *pv_token; 
+-     char       *uc_token; 
+- 
+      char       current_buffer[IN_BUF_SIZE];
+      const char *current_stack[20];  // the stack itself 
+  
+--- 287,292 ----
+diff -c -r source.lefdef/lef.orig/lef/lefrReader.cpp lef/lef/lefrReader.cpp
+*** source.lefdef/lef.orig/lef/lefrReader.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefrReader.cpp	Wed Dec 30 17:58:13 2020
+***************
+*** 307,314 ****
+      lefrData::reset();
+  
+      lefData->versionNum = (lefSettings->VersionNum == 0.0) ?
+!         CURRENT_VERSION :
+!         lefData->versionNum = lefSettings->VersionNum;
+  
+      if (lefSettings->CaseSensitiveSet) {
+          lefData->namesCaseSensitive = lefSettings->CaseSensitive;
+--- 307,313 ----
+      lefrData::reset();
+  
+      lefData->versionNum = (lefSettings->VersionNum == 0.0) ?
+!         CURRENT_VERSION : lefSettings->VersionNum;
+  
+      if (lefSettings->CaseSensitiveSet) {
+          lefData->namesCaseSensitive = lefSettings->CaseSensitive;
+***************
+*** 343,361 ****
+      if (lefCallbacks->BusBitCharsCbk == 0)
+          lefCallbacks->BusBitCharsCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->CaseSensitiveCbk == 0)
+!         lefCallbacks->CaseSensitiveCbk = (lefrIntegerCbkFnType) func;
+      if (lefCallbacks->NoWireExtensionCbk == 0)
+          lefCallbacks->NoWireExtensionCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->CorrectionTableCbk == 0)
+          lefCallbacks->CorrectionTableCbk = (lefrCorrectionTableCbkFnType) func;
+      if (lefCallbacks->DielectricCbk == 0)
+!         lefCallbacks->DielectricCbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->EdgeRateScaleFactorCbk == 0)
+!         lefCallbacks->EdgeRateScaleFactorCbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->EdgeRateThreshold1Cbk == 0)
+!         lefCallbacks->EdgeRateThreshold1Cbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->EdgeRateThreshold2Cbk == 0)
+!         lefCallbacks->EdgeRateThreshold2Cbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->IRDropBeginCbk == 0)
+          lefCallbacks->IRDropBeginCbk = (lefrVoidCbkFnType) func;
+      if (lefCallbacks->IRDropCbk == 0)
+--- 342,360 ----
+      if (lefCallbacks->BusBitCharsCbk == 0)
+          lefCallbacks->BusBitCharsCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->CaseSensitiveCbk == 0)
+!         lefCallbacks->CaseSensitiveCbk = (lefrIntegerCbkFnType) (void*)func;
+      if (lefCallbacks->NoWireExtensionCbk == 0)
+          lefCallbacks->NoWireExtensionCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->CorrectionTableCbk == 0)
+          lefCallbacks->CorrectionTableCbk = (lefrCorrectionTableCbkFnType) func;
+      if (lefCallbacks->DielectricCbk == 0)
+!         lefCallbacks->DielectricCbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->EdgeRateScaleFactorCbk == 0)
+!         lefCallbacks->EdgeRateScaleFactorCbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->EdgeRateThreshold1Cbk == 0)
+!         lefCallbacks->EdgeRateThreshold1Cbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->EdgeRateThreshold2Cbk == 0)
+!         lefCallbacks->EdgeRateThreshold2Cbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->IRDropBeginCbk == 0)
+          lefCallbacks->IRDropBeginCbk = (lefrVoidCbkFnType) func;
+      if (lefCallbacks->IRDropCbk == 0)
+***************
+*** 373,383 ****
+      if (lefCallbacks->MacroClassTypeCbk == 0)
+          lefCallbacks->MacroClassTypeCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->MacroOriginCbk == 0)
+!         lefCallbacks->MacroOriginCbk = (lefrMacroNumCbkFnType) func;
+      if (lefCallbacks->MacroSizeCbk == 0)
+!         lefCallbacks->MacroSizeCbk = (lefrMacroNumCbkFnType) func;
+      if (lefCallbacks->MacroFixedMaskCbk == 0)
+!         lefCallbacks->MacroFixedMaskCbk = (lefrIntegerCbkFnType) func;
+      if (lefCallbacks->TimingCbk == 0)
+          lefCallbacks->TimingCbk = (lefrTimingCbkFnType) func;
+      if (lefCallbacks->MinFeatureCbk == 0)
+--- 372,382 ----
+      if (lefCallbacks->MacroClassTypeCbk == 0)
+          lefCallbacks->MacroClassTypeCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->MacroOriginCbk == 0)
+!         lefCallbacks->MacroOriginCbk = (lefrMacroNumCbkFnType) (void*)func;
+      if (lefCallbacks->MacroSizeCbk == 0)
+!         lefCallbacks->MacroSizeCbk = (lefrMacroNumCbkFnType) (void*)func;
+      if (lefCallbacks->MacroFixedMaskCbk == 0)
+!         lefCallbacks->MacroFixedMaskCbk = (lefrIntegerCbkFnType) (void*)func;
+      if (lefCallbacks->TimingCbk == 0)
+          lefCallbacks->TimingCbk = (lefrTimingCbkFnType) func;
+      if (lefCallbacks->MinFeatureCbk == 0)
+***************
+*** 410,416 ****
+          lefCallbacks->UnitsCbk = (lefrUnitsCbkFnType) func;
+      if ((lefCallbacks->VersionCbk == 0) && (lefCallbacks->VersionStrCbk == 0)) {
+          // both version callbacks weren't set, if either one is set, it is ok
+!         lefCallbacks->VersionCbk = (lefrDoubleCbkFnType) func;
+          lefCallbacks->VersionStrCbk = (lefrStringCbkFnType) func;
+      }
+      if (lefCallbacks->ViaCbk == 0)
+--- 409,415 ----
+          lefCallbacks->UnitsCbk = (lefrUnitsCbkFnType) func;
+      if ((lefCallbacks->VersionCbk == 0) && (lefCallbacks->VersionStrCbk == 0)) {
+          // both version callbacks weren't set, if either one is set, it is ok
+!         lefCallbacks->VersionCbk = (lefrDoubleCbkFnType) (void*)func;
+          lefCallbacks->VersionStrCbk = (lefrStringCbkFnType) func;
+      }
+      if (lefCallbacks->ViaCbk == 0)
+***************
+*** 418,438 ****
+      if (lefCallbacks->ViaRuleCbk == 0)
+          lefCallbacks->ViaRuleCbk = (lefrViaRuleCbkFnType) func;
+      if (lefCallbacks->InputAntennaCbk == 0)
+!         lefCallbacks->InputAntennaCbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->OutputAntennaCbk == 0)
+!         lefCallbacks->OutputAntennaCbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->InoutAntennaCbk == 0)
+!         lefCallbacks->InoutAntennaCbk = (lefrDoubleCbkFnType) func;
+  
+      // NEW CALLBACK - Add a line here for each new callback routine 
+      if (lefCallbacks->AntennaInputCbk == 0)
+!         lefCallbacks->AntennaInputCbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->AntennaInoutCbk == 0)
+!         lefCallbacks->AntennaInoutCbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->AntennaOutputCbk == 0)
+!         lefCallbacks->AntennaOutputCbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->ManufacturingCbk == 0)
+!         lefCallbacks->ManufacturingCbk = (lefrDoubleCbkFnType) func;
+      if (lefCallbacks->UseMinSpacingCbk == 0)
+          lefCallbacks->UseMinSpacingCbk = (lefrUseMinSpacingCbkFnType) func;
+      if (lefCallbacks->ClearanceMeasureCbk == 0)
+--- 417,437 ----
+      if (lefCallbacks->ViaRuleCbk == 0)
+          lefCallbacks->ViaRuleCbk = (lefrViaRuleCbkFnType) func;
+      if (lefCallbacks->InputAntennaCbk == 0)
+!         lefCallbacks->InputAntennaCbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->OutputAntennaCbk == 0)
+!         lefCallbacks->OutputAntennaCbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->InoutAntennaCbk == 0)
+!         lefCallbacks->InoutAntennaCbk = (lefrDoubleCbkFnType) (void*)func;
+  
+      // NEW CALLBACK - Add a line here for each new callback routine 
+      if (lefCallbacks->AntennaInputCbk == 0)
+!         lefCallbacks->AntennaInputCbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->AntennaInoutCbk == 0)
+!         lefCallbacks->AntennaInoutCbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->AntennaOutputCbk == 0)
+!         lefCallbacks->AntennaOutputCbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->ManufacturingCbk == 0)
+!         lefCallbacks->ManufacturingCbk = (lefrDoubleCbkFnType) (void*)func;
+      if (lefCallbacks->UseMinSpacingCbk == 0)
+          lefCallbacks->UseMinSpacingCbk = (lefrUseMinSpacingCbkFnType) func;
+      if (lefCallbacks->ClearanceMeasureCbk == 0)
+***************
+*** 440,450 ****
+      if (lefCallbacks->MacroClassTypeCbk == 0)
+          lefCallbacks->MacroClassTypeCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->MacroOriginCbk == 0)
+!         lefCallbacks->MacroOriginCbk = (lefrMacroNumCbkFnType) func;
+      if (lefCallbacks->MacroSizeCbk == 0)
+!         lefCallbacks->MacroSizeCbk = (lefrMacroNumCbkFnType) func;
+      if (lefCallbacks->MacroFixedMaskCbk == 0)
+!         lefCallbacks->MacroFixedMaskCbk = (lefrIntegerCbkFnType) func;
+      if (lefCallbacks->MacroEndCbk == 0)
+          lefCallbacks->MacroEndCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->MaxStackViaCbk == 0)
+--- 439,449 ----
+      if (lefCallbacks->MacroClassTypeCbk == 0)
+          lefCallbacks->MacroClassTypeCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->MacroOriginCbk == 0)
+!         lefCallbacks->MacroOriginCbk = (lefrMacroNumCbkFnType) (void*)func;
+      if (lefCallbacks->MacroSizeCbk == 0)
+!         lefCallbacks->MacroSizeCbk = (lefrMacroNumCbkFnType) (void*)func;
+      if (lefCallbacks->MacroFixedMaskCbk == 0)
+!         lefCallbacks->MacroFixedMaskCbk = (lefrIntegerCbkFnType) (void*)func;
+      if (lefCallbacks->MacroEndCbk == 0)
+          lefCallbacks->MacroEndCbk = (lefrStringCbkFnType) func;
+      if (lefCallbacks->MaxStackViaCbk == 0)
+***************
+*** 454,460 ****
+      if (lefCallbacks->DensityCbk == 0)
+          lefCallbacks->DensityCbk = (lefrDensityCbkFnType) func;
+      if (lefCallbacks->FixedMaskCbk == 0)
+!         lefCallbacks->FixedMaskCbk = (lefrIntegerCbkFnType) func;
+  }
+  
+  // These count up the number of times an unset callback is called... 
+--- 453,459 ----
+      if (lefCallbacks->DensityCbk == 0)
+          lefCallbacks->DensityCbk = (lefrDensityCbkFnType) func;
+      if (lefCallbacks->FixedMaskCbk == 0)
+!         lefCallbacks->FixedMaskCbk = (lefrIntegerCbkFnType) (void*)func;
+  }
+  
+  // These count up the number of times an unset callback is called... 
+diff -c -r source.lefdef/lef.orig/lef/lefrSettings.cpp lef/lef/lefrSettings.cpp
+*** source.lefdef/lef.orig/lef/lefrSettings.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefrSettings.cpp	Wed Dec 30 18:13:11 2020
+***************
+*** 38,47 ****
+  lefrSettings *lefSettings = NULL;
+  
+  lefrSettings::lefrSettings()
+! : DisPropStrProcess(0),
+    CaseSensitive(FALSE),
+    CaseSensitiveSet(FALSE),
+-   CommentChar('#'),
+    DeltaNumberLines(10000),
+    AntennaInoutWarnings(999),
+    AntennaInputWarnings(999),
+--- 38,48 ----
+  lefrSettings *lefSettings = NULL;
+  
+  lefrSettings::lefrSettings()
+! : CommentChar('#'),
+!   VersionNum(0.0),
+!   DisPropStrProcess(0),
+    CaseSensitive(FALSE),
+    CaseSensitiveSet(FALSE),
+    DeltaNumberLines(10000),
+    AntennaInoutWarnings(999),
+    AntennaInputWarnings(999),
+***************
+*** 53,67 ****
+    EdgeRateScaleFactorWarnings(999),
+    EdgeRateThreshold1Warnings(999),
+    EdgeRateThreshold2Warnings(999),
+-   ErrorLogFunction(0),
+-   FreeFunction(0),
+    IRDropWarnings(999),
+    InoutAntennaWarnings(999),
+    InputAntennaWarnings(999),
+-   LayerWarnings(999),
+    LineNumberFunction(0),
+    MacroWarnings(999),
+-   MallocFunction(0),
+    MaxStackViaWarnings(999),
+    MinFeatureWarnings(999),
+    NoWireExtensionWarnings(999),
+--- 54,65 ----
+    EdgeRateScaleFactorWarnings(999),
+    EdgeRateThreshold1Warnings(999),
+    EdgeRateThreshold2Warnings(999),
+    IRDropWarnings(999),
+    InoutAntennaWarnings(999),
+    InputAntennaWarnings(999),
+    LineNumberFunction(0),
++   LayerWarnings(999),
+    MacroWarnings(999),
+    MaxStackViaWarnings(999),
+    MinFeatureWarnings(999),
+    NoWireExtensionWarnings(999),
+***************
+*** 72,78 ****
+    PinWarnings(999),
+    ReadFunction(0),
+    ReadEncrypted(0),
+-   ReallocFunction(0),
+    RegisterUnused(0),
+    RelaxMode(FALSE),
+    ShiftCase(0),
+--- 70,75 ----
+***************
+*** 81,93 ****
+    TimingWarnings(999),
+    UnitsWarnings(999),
+    UseMinSpacingWarnings(999),
+-   UserData(NULL),
+-   VersionNum(0.0),
+    ViaRuleWarnings(999),
+    ViaWarnings(999),
+    LogFileAppend(0),
+-   SetLogFunction(0),
+    TotalMsgLimit(0),
+    WarningLogFunction(0),
+    dAllMsgs(0)
+  {
+--- 78,94 ----
+    TimingWarnings(999),
+    UnitsWarnings(999),
+    UseMinSpacingWarnings(999),
+    ViaRuleWarnings(999),
+    ViaWarnings(999),
+    LogFileAppend(0),
+    TotalMsgLimit(0),
++   UserData(NULL),
++ 
++   MallocFunction(0),
++   ReallocFunction(0),
++   FreeFunction(0),
++   ErrorLogFunction(0),
++   SetLogFunction(0),
+    WarningLogFunction(0),
+    dAllMsgs(0)
+  {
+diff -c -r source.lefdef/lef.orig/lef/lefrSettings.hpp lef/lef/lefrSettings.hpp
+*** source.lefdef/lef.orig/lef/lefrSettings.hpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefrSettings.hpp	Wed Dec 30 18:13:15 2020
+***************
+*** 127,136 ****
+      LEFI_LOG_FUNCTION SetLogFunction;
+      LEFI_WARNING_LOG_FUNCTION WarningLogFunction;
+  
+      int MsgLimit[MAX_LEF_MSGS];
+  
+      MsgsDisableMap msgsDisableMap;
+-     int  dAllMsgs; 
+  
+      lefrProps lefProps;
+  };
+--- 127,136 ----
+      LEFI_LOG_FUNCTION SetLogFunction;
+      LEFI_WARNING_LOG_FUNCTION WarningLogFunction;
+  
++     int  dAllMsgs; 
+      int MsgLimit[MAX_LEF_MSGS];
+  
+      MsgsDisableMap msgsDisableMap;
+  
+      lefrProps lefProps;
+  };
+diff -c -r source.lefdef/lef.orig/lef/lefwWriter.cpp lef/lef/lefwWriter.cpp
+*** source.lefdef/lef.orig/lef/lefwWriter.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lef/lefwWriter.cpp	Wed Dec 30 18:52:30 2020
+***************
+*** 4517,4523 ****
+                      int     mask)
+  {
+      int i;
+!     int polyCount;
+  
+      if (!lefwFile)
+          return LEFW_UNINITIALIZED;
+--- 4517,4523 ----
+                      int     mask)
+  {
+      int i;
+! //    int polyCount;
+  
+      if (!lefwFile)
+          return LEFW_UNINITIALIZED;
+***************
+*** 4542,4548 ****
+          } else {
+              encPrint(lefwFile, (char*) "      POLYGON ");
+          }
+!         polyCount = 0;
+          for (i = 0; i < num_polys; i++) {
+              if (i == 0)
+                  encPrint(lefwFile, (char*) "%.11g %.11g ", *xl++, *yl++);
+--- 4542,4548 ----
+          } else {
+              encPrint(lefwFile, (char*) "      POLYGON ");
+          }
+! //        polyCount = 0;
+          for (i = 0; i < num_polys; i++) {
+              if (i == 0)
+                  encPrint(lefwFile, (char*) "%.11g %.11g ", *xl++, *yl++);
+***************
+*** 4562,4568 ****
+          } else {
+              fprintf(lefwFile, "      POLYGON ");
+          }
+!         polyCount = 0;
+          for (i = 0; i < num_polys; i++) {
+              if (i == 0)
+                  fprintf(lefwFile, "%.11g %.11g", *xl++, *yl++);
+--- 4562,4568 ----
+          } else {
+              fprintf(lefwFile, "      POLYGON ");
+          }
+! //        polyCount = 0;
+          for (i = 0; i < num_polys; i++) {
+              if (i == 0)
+                  fprintf(lefwFile, "%.11g %.11g", *xl++, *yl++);
+diff -c -r source.lefdef/lef.orig/lefdiff/diffLefRW.cpp lef/lefdiff/diffLefRW.cpp
+*** source.lefdef/lef.orig/lefdiff/diffLefRW.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lefdiff/diffLefRW.cpp	Wed Dec 30 19:09:24 2020
+***************
+*** 470,476 ****
+          for (j = 0; j < a->numSites(i); j++) {
+             pattern = a->site(i, j);
+             fprintf(fout,
+!                "ARRAY %s FLOORPLAN %s %s %s %g %g %s DO %d BY %d STEP %g %g\n",
+                 a->name(), a->floorPlanName(i), a->siteType(i, j),
+                 pattern->name(), chkNum(pattern->x()), chkNum(pattern->y()),
+                 lefiOrientStr(pattern->orient()), pattern->xStart(),
+--- 470,476 ----
+          for (j = 0; j < a->numSites(i); j++) {
+             pattern = a->site(i, j);
+             fprintf(fout,
+!                "ARRAY %s FLOORPLAN %s %s %s %g %g %s DO %g BY %g STEP %g %g\n",
+                 a->name(), a->floorPlanName(i), a->siteType(i, j),
+                 pattern->name(), chkNum(pattern->x()), chkNum(pattern->y()),
+                 lefiOrientStr(pattern->orient()), pattern->xStart(),
+***************
+*** 554,560 ****
+             // victims
+             for (k = 0; k < resist->numVictims(); k++) {
+                victim = resist->victim(k);
+!               if (victim->length() > 0)
+                   fprintf(fout,
+                      "CROSSTALK CORRECTIONTABLE %d RESISTANCE %g VICTIMLEN %g\n",
+                           table->num(), chkNum(resist->num(j)),
+--- 554,560 ----
+             // victims
+             for (k = 0; k < resist->numVictims(); k++) {
+                victim = resist->victim(k);
+!               if (victim->length() > 0) {
+                   fprintf(fout,
+                      "CROSSTALK CORRECTIONTABLE %d RESISTANCE %g VICTIMLEN %g\n",
+                           table->num(), chkNum(resist->num(j)),
+***************
+*** 564,569 ****
+--- 564,570 ----
+                      "CROSSTALK CORRECTIONTABLE %d RESISTANCE %g VICTIM GTH %g CORRECTIONFACTOR %g\n",
+                         table->num(), chkNum(resist->num(j)),
+                         chkNum(victim->length()), chkNum(victim->correction(l)));
++               }
+             }
+          }
+       }
+***************
+*** 1396,1402 ****
+                // victims
+                for (k = 0; k < resist->numVictims(); k++) {
+                   victim = resist->victim(k);
+!                  if (victim->length() > 0)
+                      fprintf(fout, "CROSSTALK NOISETABLE %d RESISTANCE %g VICTIMLENGTH % g\n",
+                              table->num(), chkNum(resist->num(j)),
+                              chkNum(victim->length()));
+--- 1397,1403 ----
+                // victims
+                for (k = 0; k < resist->numVictims(); k++) {
+                   victim = resist->victim(k);
+!                  if (victim->length() > 0) {
+                      fprintf(fout, "CROSSTALK NOISETABLE %d RESISTANCE %g VICTIMLENGTH % g\n",
+                              table->num(), chkNum(resist->num(j)),
+                              chkNum(victim->length()));
+***************
+*** 1404,1409 ****
+--- 1405,1411 ----
+                         fprintf(fout, "CROSSTALK NOISETABLE %d RESISTANCE %g VICTIMLENGT %g NOISEFACTOR %g\n",
+                            table->num(), chkNum(resist->num(j)),
+                            chkNum(victim->length()), chkNum(victim->noise(l)));
++                  }
+                }
+             }
+          }
+***************
+*** 1860,1868 ****
+       fprintf(fout, "TIMING FROMPIN %s\n", timing->fromPin(i));
+    for (i = 0; i < timing->numToPins(); i++)
+       fprintf(fout, "TIMING TOPIN %s\n", timing->toPin(i));
+!      fprintf(fout, "TIMING RISE SLEW1 %g %g %g %g\n",
+!              chkNum(timing->riseSlewOne()), chkNum(timing->riseSlewTwo()),
+!              chkNum(timing->riseSlewThree()), chkNum(timing->riseSlewFour()));
+    if (timing->hasRiseSlew2())
+       fprintf(fout, "TIMING RISE SLEW2 %g %g %g\n",
+               chkNum(timing->riseSlewFive()), chkNum(timing->riseSlewSix()),
+--- 1862,1870 ----
+       fprintf(fout, "TIMING FROMPIN %s\n", timing->fromPin(i));
+    for (i = 0; i < timing->numToPins(); i++)
+       fprintf(fout, "TIMING TOPIN %s\n", timing->toPin(i));
+!   fprintf(fout, "TIMING RISE SLEW1 %g %g %g %g\n",
+!      chkNum(timing->riseSlewOne()), chkNum(timing->riseSlewTwo()),
+!      chkNum(timing->riseSlewThree()), chkNum(timing->riseSlewFour()));
+    if (timing->hasRiseSlew2())
+       fprintf(fout, "TIMING RISE SLEW2 %g %g %g\n",
+               chkNum(timing->riseSlewFive()), chkNum(timing->riseSlewSix()),
+***************
+*** 1894,1900 ****
+    if (timing->hasRiseRS())
+       fprintf(fout, "TIMING RISERS %g %g\n",
+               chkNum(timing->riseRSOne()), chkNum(timing->riseRSTwo()));
+!      if (timing->hasRiseCS())
+       fprintf(fout, "TIMING RISECS %g %g\n",
+               chkNum(timing->riseCSOne()), chkNum(timing->riseCSTwo()));
+    if (timing->hasFallRS())
+--- 1896,1902 ----
+    if (timing->hasRiseRS())
+       fprintf(fout, "TIMING RISERS %g %g\n",
+               chkNum(timing->riseRSOne()), chkNum(timing->riseRSTwo()));
+!   if (timing->hasRiseCS())
+       fprintf(fout, "TIMING RISECS %g %g\n",
+               chkNum(timing->riseCSOne()), chkNum(timing->riseCSTwo()));
+    if (timing->hasFallRS())
+***************
+*** 2032,2038 ****
+   
+  int diffLefReadFile(char* inFile, char* outFile) {
+    FILE* f;
+!   int   res;
+   
+    userData = (void*)0x01020304;
+    lefrInit();
+--- 2034,2040 ----
+   
+  int diffLefReadFile(char* inFile, char* outFile) {
+    FILE* f;
+!   int   res = 0;
+   
+    userData = (void*)0x01020304;
+    lefrInit();
+***************
+*** 2097,2101 ****
+    fclose(f);
+    fclose(fout);
+  
+!   return 0;
+  }
+--- 2099,2103 ----
+    fclose(f);
+    fclose(fout);
+  
+!   return res;
+  }
+diff -c -r source.lefdef/lef.orig/lefdiff/differLef.cpp lef/lefdiff/differLef.cpp
+*** source.lefdef/lef.orig/lefdiff/differLef.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lefdiff/differLef.cpp	Wed Dec 30 19:07:27 2020
+***************
+*** 47,55 ****
+  #endif
+  #ifndef WIN32
+  #   include <unistd.h>
+- extern char VersionIdent[];
+- #else
+- char* VersionIdent = "N/A";
+  #endif /* not WIN32 */
+  #include "lefrReader.hpp"
+  #include "diffLefRW.hpp"
+--- 47,52 ----
+diff -c -r source.lefdef/lef.orig/lefrw/lefrw.cpp lef/lefrw/lefrw.cpp
+*** source.lefdef/lef.orig/lefrw/lefrw.cpp	Fri Feb  5 14:39:14 2016
+--- lef/lefrw/lefrw.cpp	Wed Dec 30 18:58:04 2020
+***************
+*** 27,36 ****
+  // *****************************************************************************
+  // *****************************************************************************
+  
+- #ifdef WIN32
+- #pragma warning (disable : 4786)
+- #endif
+- 
+  #include <stdio.h>
+  #include <string.h>
+  #include <iostream>
+--- 27,32 ----
+***************
+*** 400,406 ****
+      }
+  }
+  
+! int antennaCB(lefrCallbackType_e c, double value, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 396,402 ----
+      }
+  }
+  
+! int antennaCB(lefrCallbackType_e c, double value, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 430,436 ****
+    return 0;
+  }
+  
+! int arrayBeginCB(lefrCallbackType_e c, const char* name, lefiUserData ud) {
+    int  status;
+  
+    checkType(c);
+--- 426,432 ----
+    return 0;
+  }
+  
+! int arrayBeginCB(lefrCallbackType_e c, const char* name, lefiUserData ) {
+    int  status;
+  
+    checkType(c);
+***************
+*** 442,448 ****
+    return 0;
+  }
+  
+! int arrayCB(lefrCallbackType_e c, lefiArray* a, lefiUserData ud) {
+    int              status, i, j, defCaps;
+    lefiSitePattern* pattern;
+    lefiTrackPattern* track;
+--- 438,444 ----
+    return 0;
+  }
+  
+! int arrayCB(lefrCallbackType_e c, lefiArray* a, lefiUserData ) {
+    int              status, i, j, defCaps;
+    lefiSitePattern* pattern;
+    lefiTrackPattern* track;
+***************
+*** 568,574 ****
+    return 0;
+  }
+  
+! int arrayEndCB(lefrCallbackType_e c, const char* name, lefiUserData ud) {
+    int  status;
+  
+    checkType(c);
+--- 564,570 ----
+    return 0;
+  }
+  
+! int arrayEndCB(lefrCallbackType_e c, const char* name, lefiUserData ) {
+    int  status;
+  
+    checkType(c);
+***************
+*** 580,586 ****
+    return 0;
+  }
+  
+! int busBitCharsCB(lefrCallbackType_e c, const char* busBit, lefiUserData ud)
+  {
+    int status;
+  
+--- 576,582 ----
+    return 0;
+  }
+  
+! int busBitCharsCB(lefrCallbackType_e c, const char* busBit, lefiUserData )
+  {
+    int status;
+  
+***************
+*** 593,599 ****
+    return 0;
+  }
+  
+! int caseSensCB(lefrCallbackType_e c, int caseSense, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 589,595 ----
+    return 0;
+  }
+  
+! int caseSensCB(lefrCallbackType_e c, int caseSense, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 604,610 ****
+    return 0;
+  }
+  
+! int fixedMaskCB(lefrCallbackType_e c, int fixedMask, lefiUserData ud) {
+      checkType(c);
+  
+      if (fixedMask == 1) 
+--- 600,606 ----
+    return 0;
+  }
+  
+! int fixedMaskCB(lefrCallbackType_e c, int fixedMask, lefiUserData ) {
+      checkType(c);
+  
+      if (fixedMask == 1) 
+***************
+*** 612,618 ****
+      return 0;
+  }
+  
+! int clearanceCB(lefrCallbackType_e c, const char* name, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 608,614 ----
+      return 0;
+  }
+  
+! int clearanceCB(lefrCallbackType_e c, const char* name, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 620,626 ****
+    return 0;
+  }
+  
+! int dividerCB(lefrCallbackType_e c, const char* name, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 616,622 ----
+    return 0;
+  }
+  
+! int dividerCB(lefrCallbackType_e c, const char* name, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 628,634 ****
+    return 0;
+  }
+  
+! int noWireExtCB(lefrCallbackType_e c, const char* name, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 624,630 ----
+    return 0;
+  }
+  
+! int noWireExtCB(lefrCallbackType_e c, const char* name, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 636,648 ****
+    return 0;
+  }
+  
+! int noiseMarCB(lefrCallbackType_e c, lefiNoiseMargin *noise, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    return 0;
+  }
+  
+! int edge1CB(lefrCallbackType_e c, double name, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 632,644 ----
+    return 0;
+  }
+  
+! int noiseMarCB(lefrCallbackType_e c, lefiNoiseMargin *, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    return 0;
+  }
+  
+! int edge1CB(lefrCallbackType_e c, double name, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 650,656 ****
+    return 0;
+  }
+  
+! int edge2CB(lefrCallbackType_e c, double name, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 646,652 ----
+    return 0;
+  }
+  
+! int edge2CB(lefrCallbackType_e c, double name, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 658,664 ****
+    return 0;
+  }
+  
+! int edgeScaleCB(lefrCallbackType_e c, double name, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 654,660 ----
+    return 0;
+  }
+  
+! int edgeScaleCB(lefrCallbackType_e c, double name, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 666,686 ****
+    return 0;
+  }
+  
+! int noiseTableCB(lefrCallbackType_e c, lefiNoiseTable *noise, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+    return 0;
+  }
+  
+! int correctionCB(lefrCallbackType_e c, lefiCorrectionTable *corr, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+    return 0;
+  }
+  
+! int dielectricCB(lefrCallbackType_e c, double dielectric, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+--- 662,682 ----
+    return 0;
+  }
+  
+! int noiseTableCB(lefrCallbackType_e c, lefiNoiseTable *, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+    return 0;
+  }
+  
+! int correctionCB(lefrCallbackType_e c, lefiCorrectionTable *, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+    return 0;
+  }
+  
+! int dielectricCB(lefrCallbackType_e c, double dielectric, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+  
+***************
+*** 688,701 ****
+    return 0;
+  }
+  
+! int irdropBeginCB(lefrCallbackType_e c, void* ptr, lefiUserData ud){
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "IRDROP\n");
+    return 0;
+  }
+  
+! int irdropCB(lefrCallbackType_e c, lefiIRDrop* irdrop, lefiUserData ud) {
+    int i;
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+--- 684,697 ----
+    return 0;
+  }
+  
+! int irdropBeginCB(lefrCallbackType_e c, void* , lefiUserData ){
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "IRDROP\n");
+    return 0;
+  }
+  
+! int irdropCB(lefrCallbackType_e c, lefiIRDrop* irdrop, lefiUserData ) {
+    int i;
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+***************
+*** 707,720 ****
+    return 0;
+  }
+  
+! int irdropEndCB(lefrCallbackType_e c, void* ptr, lefiUserData ud){
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "END IRDROP\n");
+    return 0;
+  }
+  
+! int layerCB(lefrCallbackType_e c, lefiLayer* layer, lefiUserData ud) {
+    int i, j, k;
+    int numPoints, propNum;
+    double *widths, *current;
+--- 703,716 ----
+    return 0;
+  }
+  
+! int irdropEndCB(lefrCallbackType_e c, void* , lefiUserData ){
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "END IRDROP\n");
+    return 0;
+  }
+  
+! int layerCB(lefrCallbackType_e c, lefiLayer* layer, lefiUserData ) {
+    int i, j, k;
+    int numPoints, propNum;
+    double *widths, *current;
+***************
+*** 1289,1333 ****
+    return 0;
+  }
+  
+! int macroBeginCB(lefrCallbackType_e c, const char* macroName, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MACRO %s\n",  macroName);
+    return 0;
+  }
+  
+! int macroFixedMaskCB(lefrCallbackType_e c, int fixedMask, 
+!                      lefiUserData ud) {
+    checkType(c);
+  
+    return 0;
+  }
+  
+  int macroClassTypeCB(lefrCallbackType_e c, const char* macroClassType,
+!                      lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MACRO CLASS %s\n",  macroClassType);
+    return 0;
+  }
+  
+! int macroOriginCB(lefrCallbackType_e c, lefiNum macroNum,
+!                      lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    // fprintf(fout, "  ORIGIN ( %g %g ) ;\n", macroNum.x, macroNum.y);
+    return 0;
+  }
+  
+! int macroSizeCB(lefrCallbackType_e c, lefiNum macroNum,
+!                      lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    // fprintf(fout, "  SIZE %g BY %g ;\n", macroNum.x, macroNum.y);
+    return 0;
+  }
+  
+! int macroCB(lefrCallbackType_e c, lefiMacro* macro, lefiUserData ud) {
+    lefiSitePattern* pattern;
+    int              propNum, i, hasPrtSym = 0;
+  
+--- 1285,1326 ----
+    return 0;
+  }
+  
+! int macroBeginCB(lefrCallbackType_e c, const char* macroName, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MACRO %s\n",  macroName);
+    return 0;
+  }
+  
+! int macroFixedMaskCB(lefrCallbackType_e c, int , lefiUserData ) {
+    checkType(c);
+  
+    return 0;
+  }
+  
+  int macroClassTypeCB(lefrCallbackType_e c, const char* macroClassType,
+!                      lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MACRO CLASS %s\n",  macroClassType);
+    return 0;
+  }
+  
+! int macroOriginCB(lefrCallbackType_e c, lefiNum , lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    // fprintf(fout, "  ORIGIN ( %g %g ) ;\n", macroNum.x, macroNum.y);
+    return 0;
+  }
+  
+! int macroSizeCB(lefrCallbackType_e c, lefiNum , lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    // fprintf(fout, "  SIZE %g BY %g ;\n", macroNum.x, macroNum.y);
+    return 0;
+  }
+  
+! int macroCB(lefrCallbackType_e c, lefiMacro* macro, lefiUserData ) {
+    lefiSitePattern* pattern;
+    int              propNum, i, hasPrtSym = 0;
+  
+***************
+*** 1442,1455 ****
+    return 0;
+  }
+  
+! int macroEndCB(lefrCallbackType_e c, const char* macroName, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "END %s\n", macroName);
+    return 0;
+  }
+  
+! int manufacturingCB(lefrCallbackType_e c, double num, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MANUFACTURINGGRID %g ;\n", num);
+--- 1435,1448 ----
+    return 0;
+  }
+  
+! int macroEndCB(lefrCallbackType_e c, const char* macroName, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "END %s\n", macroName);
+    return 0;
+  }
+  
+! int manufacturingCB(lefrCallbackType_e c, double num, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MANUFACTURINGGRID %g ;\n", num);
+***************
+*** 1457,1463 ****
+  }
+  
+  int maxStackViaCB(lefrCallbackType_e c, lefiMaxStackVia* maxStack,
+!   lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MAXVIASTACK %d ", maxStack->lefiMaxStackVia::maxStackVia());
+--- 1450,1456 ----
+  }
+  
+  int maxStackViaCB(lefrCallbackType_e c, lefiMaxStackVia* maxStack,
+!   lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MAXVIASTACK %d ", maxStack->lefiMaxStackVia::maxStackVia());
+***************
+*** 1469,1475 ****
+    return 0;
+  }
+  
+! int minFeatureCB(lefrCallbackType_e c, lefiMinFeature* min, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MINFEATURE %g %g ;\n", min->lefiMinFeature::one(),
+--- 1462,1468 ----
+    return 0;
+  }
+  
+! int minFeatureCB(lefrCallbackType_e c, lefiMinFeature* min, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "MINFEATURE %g %g ;\n", min->lefiMinFeature::one(),
+***************
+*** 1477,1483 ****
+    return 0;
+  }
+  
+! int nonDefaultCB(lefrCallbackType_e c, lefiNonDefault* def, lefiUserData ud) {
+    int          i;
+    lefiVia*     via;
+    lefiSpacing* spacing;
+--- 1470,1476 ----
+    return 0;
+  }
+  
+! int nonDefaultCB(lefrCallbackType_e c, lefiNonDefault* def, lefiUserData ) {
+    int          i;
+    lefiVia*     via;
+    lefiSpacing* spacing;
+***************
+*** 1569,1575 ****
+  }
+  
+  int obstructionCB(lefrCallbackType_e c, lefiObstruction* obs,
+!                   lefiUserData ud) {
+    lefiGeometries* geometry;
+  
+    checkType(c);
+--- 1562,1568 ----
+  }
+  
+  int obstructionCB(lefrCallbackType_e c, lefiObstruction* obs,
+!                   lefiUserData ) {
+    lefiGeometries* geometry;
+  
+    checkType(c);
+***************
+*** 1581,1587 ****
+    return 0;
+  }
+  
+! int pinCB(lefrCallbackType_e c, lefiPin* pin, lefiUserData ud) {
+    int                  numPorts, i, j;
+    lefiGeometries*      geometry;
+    lefiPinAntennaModel* aModel;
+--- 1574,1580 ----
+    return 0;
+  }
+  
+! int pinCB(lefrCallbackType_e c, lefiPin* pin, lefiUserData ) {
+    int                  numPorts, i, j;
+    lefiGeometries*      geometry;
+    lefiPinAntennaModel* aModel;
+***************
+*** 1839,1845 ****
+  }
+  
+  int densityCB(lefrCallbackType_e c, lefiDensity* density,
+!                   lefiUserData ud) {
+  
+    struct lefiGeomRect rect;
+  
+--- 1832,1838 ----
+  }
+  
+  int densityCB(lefrCallbackType_e c, lefiDensity* density,
+!                   lefiUserData ) {
+  
+    struct lefiGeomRect rect;
+  
+***************
+*** 1859,1865 ****
+    return 0;
+  }
+  
+! int propDefBeginCB(lefrCallbackType_e c, void* ptr, lefiUserData ud) {
+  
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+--- 1852,1858 ----
+    return 0;
+  }
+  
+! int propDefBeginCB(lefrCallbackType_e c, void* , lefiUserData ) {
+  
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+***************
+*** 1867,1873 ****
+    return 0;
+  }
+  
+! int propDefCB(lefrCallbackType_e c, lefiProp* prop, lefiUserData ud) {
+  
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+--- 1860,1866 ----
+    return 0;
+  }
+  
+! int propDefCB(lefrCallbackType_e c, lefiProp* prop, lefiUserData ) {
+  
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+***************
+*** 1895,1901 ****
+    return 0;
+  }
+  
+! int propDefEndCB(lefrCallbackType_e c, void* ptr, lefiUserData ud) {
+  
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+--- 1888,1894 ----
+    return 0;
+  }
+  
+! int propDefEndCB(lefrCallbackType_e c, void* , lefiUserData ) {
+  
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+***************
+*** 1903,1909 ****
+    return 0;
+  }
+  
+! int siteCB(lefrCallbackType_e c, lefiSite* site, lefiUserData ud) {
+    int hasPrtSym = 0;
+    int i;
+  
+--- 1896,1902 ----
+    return 0;
+  }
+  
+! int siteCB(lefrCallbackType_e c, lefiSite* site, lefiUserData ) {
+    int hasPrtSym = 0;
+    int i;
+  
+***************
+*** 1950,1977 ****
+    return 0;
+  }
+  
+! int spacingBeginCB(lefrCallbackType_e c, void* ptr, lefiUserData ud){
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "SPACING\n");
+    return 0;
+  }
+  
+! int spacingCB(lefrCallbackType_e c, lefiSpacing* spacing, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    lefSpacing(spacing);
+    return 0;
+  }
+  
+! int spacingEndCB(lefrCallbackType_e c, void* ptr, lefiUserData ud){
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "END SPACING\n");
+    return 0;
+  }
+  
+! int timingCB(lefrCallbackType_e c, lefiTiming* timing, lefiUserData ud) {
+    int i;
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+--- 1943,1970 ----
+    return 0;
+  }
+  
+! int spacingBeginCB(lefrCallbackType_e c, void* , lefiUserData ){
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "SPACING\n");
+    return 0;
+  }
+  
+! int spacingCB(lefrCallbackType_e c, lefiSpacing* spacing, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    lefSpacing(spacing);
+    return 0;
+  }
+  
+! int spacingEndCB(lefrCallbackType_e c, void* , lefiUserData ){
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "END SPACING\n");
+    return 0;
+  }
+  
+! int timingCB(lefrCallbackType_e c, lefiTiming* timing, lefiUserData ) {
+    int i;
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+***************
+*** 1980,1988 ****
+       fprintf(fout, " FROMPIN %s ;\n", timing->fromPin(i));
+    for (i = 0; i < timing->numToPins(); i++)
+       fprintf(fout, " TOPIN %s ;\n", timing->toPin(i));
+!      fprintf(fout, " RISE SLEW1 %g %g %g %g ;\n", timing->riseSlewOne(),
+!              timing->riseSlewTwo(), timing->riseSlewThree(),
+!              timing->riseSlewFour());
+    if (timing->hasRiseSlew2())
+       fprintf(fout, " RISE SLEW2 %g %g %g ;\n", timing->riseSlewFive(),
+               timing->riseSlewSix(), timing->riseSlewSeven());
+--- 1973,1980 ----
+       fprintf(fout, " FROMPIN %s ;\n", timing->fromPin(i));
+    for (i = 0; i < timing->numToPins(); i++)
+       fprintf(fout, " TOPIN %s ;\n", timing->toPin(i));
+!   fprintf(fout, " RISE SLEW1 %g %g %g %g ;\n", timing->riseSlewOne(),
+!      timing->riseSlewTwo(), timing->riseSlewThree(), timing->riseSlewFour());
+    if (timing->hasRiseSlew2())
+       fprintf(fout, " RISE SLEW2 %g %g %g ;\n", timing->riseSlewFive(),
+               timing->riseSlewSix(), timing->riseSlewSeven());
+***************
+*** 2008,2014 ****
+    if (timing->hasRiseRS())
+       fprintf(fout, "TIMING RISERS %g %g ;\n",
+               timing->riseRSOne(), timing->riseRSTwo());
+!      if (timing->hasRiseCS())
+       fprintf(fout, "TIMING RISECS %g %g ;\n",
+               timing->riseCSOne(), timing->riseCSTwo());
+    if (timing->hasFallRS())
+--- 2000,2006 ----
+    if (timing->hasRiseRS())
+       fprintf(fout, "TIMING RISERS %g %g ;\n",
+               timing->riseRSOne(), timing->riseRSTwo());
+!   if (timing->hasRiseCS())
+       fprintf(fout, "TIMING RISECS %g %g ;\n",
+               timing->riseCSOne(), timing->riseCSTwo());
+    if (timing->hasFallRS())
+***************
+*** 2044,2050 ****
+    return 0;
+  }
+  
+! int unitsCB(lefrCallbackType_e c, lefiUnits* unit, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "UNITS\n");
+--- 2036,2042 ----
+    return 0;
+  }
+  
+! int unitsCB(lefrCallbackType_e c, lefiUnits* unit, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "UNITS\n");
+***************
+*** 2070,2076 ****
+  }
+  
+  int useMinSpacingCB(lefrCallbackType_e c, lefiUseMinSpacing* spacing,
+!                     lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "USEMINSPACING %s ", spacing->lefiUseMinSpacing::name());
+--- 2062,2068 ----
+  }
+  
+  int useMinSpacingCB(lefrCallbackType_e c, lefiUseMinSpacing* spacing,
+!                     lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "USEMINSPACING %s ", spacing->lefiUseMinSpacing::name());
+***************
+*** 2081,2108 ****
+    return 0;
+  }
+  
+! int versionCB(lefrCallbackType_e c, double num, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "VERSION %g ;\n", num);
+    return 0;
+  }
+  
+! int versionStrCB(lefrCallbackType_e c, const char* versionName, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "VERSION %s ;\n", versionName);
+    return 0;
+  }
+  
+! int viaCB(lefrCallbackType_e c, lefiVia* via, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    lefVia(via);
+    return 0;
+  }
+  
+! int viaRuleCB(lefrCallbackType_e c, lefiViaRule* viaRule, lefiUserData ud) {
+    int               numLayers, numVias, i;
+    lefiViaRuleLayer* vLayer;
+  
+--- 2073,2100 ----
+    return 0;
+  }
+  
+! int versionCB(lefrCallbackType_e c, double num, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "VERSION %g ;\n", num);
+    return 0;
+  }
+  
+! int versionStrCB(lefrCallbackType_e c, const char* versionName, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "VERSION %s ;\n", versionName);
+    return 0;
+  }
+  
+! int viaCB(lefrCallbackType_e c, lefiVia* via, lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    lefVia(via);
+    return 0;
+  }
+  
+! int viaRuleCB(lefrCallbackType_e c, lefiViaRule* viaRule, lefiUserData ) {
+    int               numLayers, numVias, i;
+    lefiViaRuleLayer* vLayer;
+  
+***************
+*** 2158,2164 ****
+    return 0;
+  }
+  
+! int extensionCB(lefrCallbackType_e c, const char* extsn, lefiUserData ud) {
+    checkType(c);
+    // lefrSetCaseSensitivity(0);
+    // if ((long)ud != userData) dataError();
+--- 2150,2156 ----
+    return 0;
+  }
+  
+! int extensionCB(lefrCallbackType_e c, const char* extsn, lefiUserData ) {
+    checkType(c);
+    // lefrSetCaseSensitivity(0);
+    // if ((long)ud != userData) dataError();
+***************
+*** 2167,2173 ****
+    return 0;
+  }
+  
+! int doneCB(lefrCallbackType_e c, void* ptr, lefiUserData ud) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "END LIBRARY\n");
+--- 2159,2165 ----
+    return 0;
+  }
+  
+! int doneCB(lefrCallbackType_e c, void* , lefiUserData ) {
+    checkType(c);
+    // if ((long)ud != userData) dataError();
+    fprintf(fout, "END LIBRARY\n");
+***************
+*** 2175,2185 ****
+  }
+   
+  void errorCB(const char* msg) {
+!   printf ("%s : %s\n", lefrGetUserData(), msg);
+  }
+  
+  void warningCB(const char* msg) {
+!   printf ("%s : %s\n", lefrGetUserData(), msg);
+  }
+  
+  void* mallocCB(int size) {
+--- 2167,2177 ----
+  }
+   
+  void errorCB(const char* msg) {
+!   printf ("%s : %s\n", (const char*)lefrGetUserData(), msg);
+  }
+  
+  void warningCB(const char* msg) {
+!   printf ("%s : %s\n", (const char*)lefrGetUserData(), msg);
+  }
+  
+  void* mallocCB(int size) {
+***************
+*** 2228,2234 ****
+    int test1 = 0;
+    int test2 = 0;
+    int ccr749853 = 0;
+!   int verbose = 0;
+  
+  // start_mem = (long)sbrk(0);
+  
+--- 2220,2226 ----
+    int test1 = 0;
+    int test2 = 0;
+    int ccr749853 = 0;
+! //  int verbose = 0;
+  
+  // start_mem = (long)sbrk(0);
+  
+***************
+*** 2462,2468 ****
+        res = lefrRead(f, inFile[fileCt], (void*)userData);
+  
+        if (res)
+!          fprintf(stderr, "Reader returns bad status.\n", inFile[fileCt]);
+  
+        (void)lefrPrintUnusedCallbacks(fout);
+        (void)lefrReleaseNResetMemory();
+--- 2454,2460 ----
+        res = lefrRead(f, inFile[fileCt], (void*)userData);
+  
+        if (res)
+!          fprintf(stderr, "Reader returns bad status.\n");
+  
+        (void)lefrPrintUnusedCallbacks(fout);
+        (void)lefrReleaseNResetMemory();
+***************
+*** 2481,2487 ****
+      // 2nd will enable 2007 by calling lefrEnableParserMsgs
+      // 3rd enable all msgs by call lefrEnableAllMsgs
+  
+!     int nMsgs = 3;
+      int dMsgs[3];
+      if (numInFile != 1) {
+          fprintf(stderr,"Test 2 mode needs only 1 file\n");
+--- 2473,2479 ----
+      // 2nd will enable 2007 by calling lefrEnableParserMsgs
+      // 3rd enable all msgs by call lefrEnableAllMsgs
+  
+! //    int nMsgs = 3;
+      int dMsgs[3];
+      if (numInFile != 1) {
+          fprintf(stderr,"Test 2 mode needs only 1 file\n");
+***************
+*** 2525,2531 ****
+        res = lefrRead(f, inFile[fileCt], (void*)userData);
+  
+        if (res)
+!          fprintf(stderr, "Reader returns bad status.\n", inFile[fileCt]);
+  
+        (void)lefrPrintUnusedCallbacks(fout);
+        (void)lefrReleaseNResetMemory();
+--- 2517,2523 ----
+        res = lefrRead(f, inFile[fileCt], (void*)userData);
+  
+        if (res)
+!          fprintf(stderr, "Reader returns bad status.\n");
+  
+        (void)lefrPrintUnusedCallbacks(fout);
+        (void)lefrReleaseNResetMemory();
+***************
+*** 2554,2560 ****
+        res = lefrRead(f, inFile[fileCt], (void*)userData);
+  
+        if (res)
+!          fprintf(stderr, "Reader returns bad status.\n", inFile[fileCt]);
+  
+        (void)lefrPrintUnusedCallbacks(fout);
+        (void)lefrReleaseNResetMemory();
+--- 2546,2552 ----
+        res = lefrRead(f, inFile[fileCt], (void*)userData);
+  
+        if (res)
+!          fprintf(stderr, "Reader returns bad status.\n");
+  
+        (void)lefrPrintUnusedCallbacks(fout);
+        (void)lefrReleaseNResetMemory();
+Only in lef: lib
+diff -c -r source.lefdef/lef.orig/template.mk lef/template.mk
+*** source.lefdef/lef.orig/template.mk	Fri Feb  5 14:39:13 2016
+--- lef/template.mk	Wed Dec 30 16:52:37 2020
 ***************
 *** 23,28 ****
 --- 23,38 ----

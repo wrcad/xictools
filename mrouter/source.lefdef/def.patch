@@ -1,6 +1,359 @@
-diff -c -r def.orig/def/def.y def/def/def.y
-*** def.orig/def/def.y	2016-02-05 14:39:14.000000000 -0800
---- def/def/def.y	2016-05-15 17:38:57.880706000 -0700
+diff -c -r source.lefdef/def.orig/cdef/defiGroup.h def/cdef/defiGroup.h
+*** source.lefdef/def.orig/cdef/defiGroup.h	Fri Feb  5 14:39:14 2016
+--- def/cdef/defiGroup.h	Wed Dec 30 14:20:07 2020
+***************
+*** 55,61 ****
+  EXTERN const char* defiGroup_propName (const defiGroup* obj, int  index);
+  EXTERN const char* defiGroup_propValue (const defiGroup* obj, int  index);
+  EXTERN double defiGroup_propNumber (const defiGroup* obj, int  index);
+! EXTERN const char defiGroup_propType (const defiGroup* obj, int  index);
+  EXTERN int defiGroup_propIsNumber (const defiGroup* obj, int  index);
+  EXTERN int defiGroup_propIsString (const defiGroup* obj, int  index);
+  
+--- 55,61 ----
+  EXTERN const char* defiGroup_propName (const defiGroup* obj, int  index);
+  EXTERN const char* defiGroup_propValue (const defiGroup* obj, int  index);
+  EXTERN double defiGroup_propNumber (const defiGroup* obj, int  index);
+! EXTERN char defiGroup_propType (const defiGroup* obj, int  index);
+  EXTERN int defiGroup_propIsNumber (const defiGroup* obj, int  index);
+  EXTERN int defiGroup_propIsString (const defiGroup* obj, int  index);
+  
+diff -c -r source.lefdef/def.orig/cdef/defiNet.h def/cdef/defiNet.h
+*** source.lefdef/def.orig/cdef/defiNet.h	Fri Feb  5 14:39:14 2016
+--- def/cdef/defiNet.h	Wed Dec 30 14:19:23 2020
+***************
+*** 124,130 ****
+  EXTERN const char* defiNet_propName (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_propValue (const defiNet* obj, int  index);
+  EXTERN double defiNet_propNumber (const defiNet* obj, int  index);
+! EXTERN const char defiNet_propType (const defiNet* obj, int  index);
+  EXTERN int defiNet_propIsNumber (const defiNet* obj, int  index);
+  EXTERN int defiNet_propIsString (const defiNet* obj, int  index);
+  EXTERN int defiNet_numConnections (const defiNet* obj);
+--- 124,130 ----
+  EXTERN const char* defiNet_propName (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_propValue (const defiNet* obj, int  index);
+  EXTERN double defiNet_propNumber (const defiNet* obj, int  index);
+! EXTERN char defiNet_propType (const defiNet* obj, int  index);
+  EXTERN int defiNet_propIsNumber (const defiNet* obj, int  index);
+  EXTERN int defiNet_propIsString (const defiNet* obj, int  index);
+  EXTERN int defiNet_numConnections (const defiNet* obj);
+***************
+*** 223,233 ****
+  EXTERN int defiNet_numViaSpecs (const defiNet* obj);
+  EXTERN struct defiPoints defiNet_getViaPts (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaName (const defiNet* obj, int  index);
+! EXTERN const int defiNet_viaOrient (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaOrientStr (const defiNet* obj, int  index);
+! EXTERN const int defiNet_topMaskNum (const defiNet* obj, int  index);
+! EXTERN const int defiNet_cutMaskNum (const defiNet* obj, int  index);
+! EXTERN const int defiNet_bottomMaskNum (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaRouteStatus (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaRouteStatusShieldName (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaShapeType (const defiNet* obj, int  index);
+--- 223,233 ----
+  EXTERN int defiNet_numViaSpecs (const defiNet* obj);
+  EXTERN struct defiPoints defiNet_getViaPts (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaName (const defiNet* obj, int  index);
+! EXTERN int defiNet_viaOrient (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaOrientStr (const defiNet* obj, int  index);
+! EXTERN int defiNet_topMaskNum (const defiNet* obj, int  index);
+! EXTERN int defiNet_cutMaskNum (const defiNet* obj, int  index);
+! EXTERN int defiNet_bottomMaskNum (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaRouteStatus (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaRouteStatusShieldName (const defiNet* obj, int  index);
+  EXTERN const char* defiNet_viaShapeType (const defiNet* obj, int  index);
+diff -c -r source.lefdef/def.orig/cdef/defiNonDefault.h def/cdef/defiNonDefault.h
+*** source.lefdef/def.orig/cdef/defiNonDefault.h	Fri Feb  5 14:39:14 2016
+--- def/cdef/defiNonDefault.h	Wed Dec 30 14:17:08 2020
+***************
+*** 44,50 ****
+  EXTERN const char* defiNonDefault_propName (const defiNonDefault* obj, int  index);
+  EXTERN const char* defiNonDefault_propValue (const defiNonDefault* obj, int  index);
+  EXTERN double defiNonDefault_propNumber (const defiNonDefault* obj, int  index);
+! EXTERN const char defiNonDefault_propType (const defiNonDefault* obj, int  index);
+  EXTERN int defiNonDefault_propIsNumber (const defiNonDefault* obj, int  index);
+  EXTERN int defiNonDefault_propIsString (const defiNonDefault* obj, int  index);
+  
+--- 44,50 ----
+  EXTERN const char* defiNonDefault_propName (const defiNonDefault* obj, int  index);
+  EXTERN const char* defiNonDefault_propValue (const defiNonDefault* obj, int  index);
+  EXTERN double defiNonDefault_propNumber (const defiNonDefault* obj, int  index);
+! EXTERN char defiNonDefault_propType (const defiNonDefault* obj, int  index);
+  EXTERN int defiNonDefault_propIsNumber (const defiNonDefault* obj, int  index);
+  EXTERN int defiNonDefault_propIsString (const defiNonDefault* obj, int  index);
+  
+diff -c -r source.lefdef/def.orig/cdef/defiPinProp.h def/cdef/defiPinProp.h
+*** source.lefdef/def.orig/cdef/defiPinProp.h	Fri Feb  5 14:39:14 2016
+--- def/cdef/defiPinProp.h	Wed Dec 30 14:15:45 2020
+***************
+*** 45,51 ****
+  EXTERN const char* defiPinProp_propName (const defiPinProp* obj, int  index);
+  EXTERN const char* defiPinProp_propValue (const defiPinProp* obj, int  index);
+  EXTERN double defiPinProp_propNumber (const defiPinProp* obj, int  index);
+! EXTERN const char defiPinProp_propType (const defiPinProp* obj, int  index);
+  EXTERN int defiPinProp_propIsNumber (const defiPinProp* obj, int  index);
+  EXTERN int defiPinProp_propIsString (const defiPinProp* obj, int  index);
+  
+--- 45,51 ----
+  EXTERN const char* defiPinProp_propName (const defiPinProp* obj, int  index);
+  EXTERN const char* defiPinProp_propValue (const defiPinProp* obj, int  index);
+  EXTERN double defiPinProp_propNumber (const defiPinProp* obj, int  index);
+! EXTERN char defiPinProp_propType (const defiPinProp* obj, int  index);
+  EXTERN int defiPinProp_propIsNumber (const defiPinProp* obj, int  index);
+  EXTERN int defiPinProp_propIsString (const defiPinProp* obj, int  index);
+  
+diff -c -r source.lefdef/def.orig/cdef/defiPropType.h def/cdef/defiPropType.h
+*** source.lefdef/def.orig/cdef/defiPropType.h	Fri Feb  5 14:39:14 2016
+--- def/cdef/defiPropType.h	Wed Dec 30 14:14:41 2020
+***************
+*** 40,45 ****
+  /* Struct holds the data type for one property, if the property is            */
+  /* either REAL or INTEGER.                                                    */
+  
+! EXTERN const char defiPropType_propType (const defiPropType* obj, char*  name);
+  
+  #endif
+--- 40,45 ----
+  /* Struct holds the data type for one property, if the property is            */
+  /* either REAL or INTEGER.                                                    */
+  
+! EXTERN char defiPropType_propType (const defiPropType* obj, char*  name);
+  
+  #endif
+diff -c -r source.lefdef/def.orig/cdef/defiRegion.h def/cdef/defiRegion.h
+*** source.lefdef/def.orig/cdef/defiRegion.h	Fri Feb  5 14:39:14 2016
+--- def/cdef/defiRegion.h	Wed Dec 30 14:13:40 2020
+***************
+*** 45,51 ****
+  EXTERN const char* defiRegion_propName (const defiRegion* obj, int  index);
+  EXTERN const char* defiRegion_propValue (const defiRegion* obj, int  index);
+  EXTERN double defiRegion_propNumber (const defiRegion* obj, int  index);
+! EXTERN const char defiRegion_propType (const defiRegion* obj, int  index);
+  EXTERN int defiRegion_propIsNumber (const defiRegion* obj, int  index);
+  EXTERN int defiRegion_propIsString (const defiRegion* obj, int  index);
+  
+--- 45,51 ----
+  EXTERN const char* defiRegion_propName (const defiRegion* obj, int  index);
+  EXTERN const char* defiRegion_propValue (const defiRegion* obj, int  index);
+  EXTERN double defiRegion_propNumber (const defiRegion* obj, int  index);
+! EXTERN char defiRegion_propType (const defiRegion* obj, int  index);
+  EXTERN int defiRegion_propIsNumber (const defiRegion* obj, int  index);
+  EXTERN int defiRegion_propIsString (const defiRegion* obj, int  index);
+  
+diff -c -r source.lefdef/def.orig/cdef/defiRowTrack.h def/cdef/defiRowTrack.h
+*** source.lefdef/def.orig/cdef/defiRowTrack.h	Fri Feb  5 14:39:14 2016
+--- def/cdef/defiRowTrack.h	Wed Dec 30 14:12:36 2020
+***************
+*** 54,60 ****
+  EXTERN const char* defiRow_propName (const defiRow* obj, int  index);
+  EXTERN const char* defiRow_propValue (const defiRow* obj, int  index);
+  EXTERN double defiRow_propNumber (const defiRow* obj, int  index);
+! EXTERN const char defiRow_propType (const defiRow* obj, int  index);
+  EXTERN int defiRow_propIsNumber (const defiRow* obj, int  index);
+  EXTERN int defiRow_propIsString (const defiRow* obj, int  index);
+  
+--- 54,60 ----
+  EXTERN const char* defiRow_propName (const defiRow* obj, int  index);
+  EXTERN const char* defiRow_propValue (const defiRow* obj, int  index);
+  EXTERN double defiRow_propNumber (const defiRow* obj, int  index);
+! EXTERN char defiRow_propType (const defiRow* obj, int  index);
+  EXTERN int defiRow_propIsNumber (const defiRow* obj, int  index);
+  EXTERN int defiRow_propIsString (const defiRow* obj, int  index);
+  
+diff -c -r source.lefdef/def.orig/cdef/xdefiGroup.cpp def/cdef/xdefiGroup.cpp
+*** source.lefdef/def.orig/cdef/xdefiGroup.cpp	Fri Feb  5 14:39:14 2016
+--- def/cdef/xdefiGroup.cpp	Wed Dec 30 14:19:44 2020
+***************
+*** 97,103 ****
+      return ((LefDefParser::defiGroup*)obj)->propNumber(index);
+  }
+  
+! const char defiGroup_propType (const ::defiGroup* obj, int  index) {
+      return ((const LefDefParser::defiGroup*)obj)->propType(index);
+  }
+  
+--- 97,103 ----
+      return ((LefDefParser::defiGroup*)obj)->propNumber(index);
+  }
+  
+! char defiGroup_propType (const ::defiGroup* obj, int  index) {
+      return ((const LefDefParser::defiGroup*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/def.orig/cdef/xdefiNet.cpp def/cdef/xdefiNet.cpp
+*** source.lefdef/def.orig/cdef/xdefiNet.cpp	Fri Feb  5 14:39:14 2016
+--- def/cdef/xdefiNet.cpp	Wed Dec 30 14:18:25 2020
+***************
+*** 197,203 ****
+      return ((LefDefParser::defiNet*)obj)->propNumber(index);
+  }
+  
+! const char defiNet_propType (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->propType(index);
+  }
+  
+--- 197,203 ----
+      return ((LefDefParser::defiNet*)obj)->propNumber(index);
+  }
+  
+! char defiNet_propType (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->propType(index);
+  }
+  
+***************
+*** 501,507 ****
+      return ((const LefDefParser::defiNet*)obj)->viaName(index);
+  }
+  
+! const int defiNet_viaOrient (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->viaOrient(index);
+  }
+  
+--- 501,507 ----
+      return ((const LefDefParser::defiNet*)obj)->viaName(index);
+  }
+  
+! int defiNet_viaOrient (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->viaOrient(index);
+  }
+  
+***************
+*** 509,523 ****
+      return ((const LefDefParser::defiNet*)obj)->viaOrientStr(index);
+  }
+  
+! const int defiNet_topMaskNum (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->topMaskNum(index);
+  }
+  
+! const int defiNet_cutMaskNum (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->cutMaskNum(index);
+  }
+  
+! const int defiNet_bottomMaskNum (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->bottomMaskNum(index);
+  }
+  
+--- 509,523 ----
+      return ((const LefDefParser::defiNet*)obj)->viaOrientStr(index);
+  }
+  
+! int defiNet_topMaskNum (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->topMaskNum(index);
+  }
+  
+! int defiNet_cutMaskNum (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->cutMaskNum(index);
+  }
+  
+! int defiNet_bottomMaskNum (const ::defiNet* obj, int  index) {
+      return ((const LefDefParser::defiNet*)obj)->bottomMaskNum(index);
+  }
+  
+diff -c -r source.lefdef/def.orig/cdef/xdefiNonDefault.cpp def/cdef/xdefiNonDefault.cpp
+*** source.lefdef/def.orig/cdef/xdefiNonDefault.cpp	Fri Feb  5 14:39:14 2016
+--- def/cdef/xdefiNonDefault.cpp	Wed Dec 30 15:37:58 2020
+***************
+*** 61,67 ****
+      return ((LefDefParser::defiNonDefault*)obj)->propNumber(index);
+  }
+  
+! const char defiNonDefault_propType (const ::defiNonDefault* obj, int  index) {
+      return ((const LefDefParser::defiNonDefault*)obj)->propType(index);
+  }
+  
+--- 61,67 ----
+      return ((LefDefParser::defiNonDefault*)obj)->propNumber(index);
+  }
+  
+! char defiNonDefault_propType (const ::defiNonDefault* obj, int  index) {
+      return ((const LefDefParser::defiNonDefault*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/def.orig/cdef/xdefiPinProp.cpp def/cdef/xdefiPinProp.cpp
+*** source.lefdef/def.orig/cdef/xdefiPinProp.cpp	Fri Feb  5 14:39:14 2016
+--- def/cdef/xdefiPinProp.cpp	Wed Dec 30 14:15:08 2020
+***************
+*** 65,71 ****
+      return ((LefDefParser::defiPinProp*)obj)->propNumber(index);
+  }
+  
+! const char defiPinProp_propType (const ::defiPinProp* obj, int  index) {
+      return ((const LefDefParser::defiPinProp*)obj)->propType(index);
+  }
+  
+--- 65,71 ----
+      return ((LefDefParser::defiPinProp*)obj)->propNumber(index);
+  }
+  
+! char defiPinProp_propType (const ::defiPinProp* obj, int  index) {
+      return ((const LefDefParser::defiPinProp*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/def.orig/cdef/xdefiPropType.cpp def/cdef/xdefiPropType.cpp
+*** source.lefdef/def.orig/cdef/xdefiPropType.cpp	Fri Feb  5 14:39:14 2016
+--- def/cdef/xdefiPropType.cpp	Wed Dec 30 14:14:18 2020
+***************
+*** 37,43 ****
+  #include "defiPropType.hpp"
+  
+  // Wrappers definitions.
+! const char defiPropType_propType (const ::defiPropType* obj, char*  name) {
+      return ((const LefDefParser::defiPropType*)obj)->propType(name);
+  }
+  
+--- 37,43 ----
+  #include "defiPropType.hpp"
+  
+  // Wrappers definitions.
+! char defiPropType_propType (const ::defiPropType* obj, char*  name) {
+      return ((const LefDefParser::defiPropType*)obj)->propType(name);
+  }
+  
+diff -c -r source.lefdef/def.orig/cdef/xdefiRegion.cpp def/cdef/xdefiRegion.cpp
+*** source.lefdef/def.orig/cdef/xdefiRegion.cpp	Fri Feb  5 14:39:14 2016
+--- def/cdef/xdefiRegion.cpp	Wed Dec 30 14:13:25 2020
+***************
+*** 57,63 ****
+      return ((LefDefParser::defiRegion*)obj)->propNumber(index);
+  }
+  
+! const char defiRegion_propType (const ::defiRegion* obj, int  index) {
+      return ((const LefDefParser::defiRegion*)obj)->propType(index);
+  }
+  
+--- 57,63 ----
+      return ((LefDefParser::defiRegion*)obj)->propNumber(index);
+  }
+  
+! char defiRegion_propType (const ::defiRegion* obj, int  index) {
+      return ((const LefDefParser::defiRegion*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/def.orig/cdef/xdefiRowTrack.cpp def/cdef/xdefiRowTrack.cpp
+*** source.lefdef/def.orig/cdef/xdefiRowTrack.cpp	Fri Feb  5 14:39:14 2016
+--- def/cdef/xdefiRowTrack.cpp	Wed Dec 30 14:13:02 2020
+***************
+*** 101,107 ****
+      return ((LefDefParser::defiRow*)obj)->propNumber(index);
+  }
+  
+! const char defiRow_propType (const ::defiRow* obj, int  index) {
+      return ((const LefDefParser::defiRow*)obj)->propType(index);
+  }
+  
+--- 101,107 ----
+      return ((LefDefParser::defiRow*)obj)->propNumber(index);
+  }
+  
+! char defiRow_propType (const ::defiRow* obj, int  index) {
+      return ((const LefDefParser::defiRow*)obj)->propType(index);
+  }
+  
+diff -c -r source.lefdef/def.orig/def/def.y def/def/def.y
+*** source.lefdef/def.orig/def/def.y	Fri Feb  5 14:39:14 2016
+--- def/def/def.y	Wed Dec 30 15:34:55 2020
 ***************
 *** 19,24 ****
 --- 19,29 ----
@@ -14,7 +367,7 @@ diff -c -r def.orig/def/def.y def/def/def.y
 + //====
   //******************************************************************************
   // 
-  //  $Author: stevew $
+  //  $Author: dell $
 ***************
 *** 570,581 ****
               }
@@ -42,9 +395,2133 @@ diff -c -r def.orig/def/def.y def/def/def.y
               {
                 if (defCallbacks->PropCbk) defData->Prop.setPropReal();
                 defData->defPropDefType = 'R';
-diff -c -r def.orig/template.mk def/template.mk
-*** def.orig/template.mk	2016-02-05 14:39:13.000000000 -0800
---- def/template.mk	2016-05-15 17:38:24.696701300 -0700
+***************
+*** 3184,3191 ****
+          | '+' K_ESTCAP NUMBER
+              { 
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5)
+                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
+                else
+                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+--- 3189,3197 ----
+          | '+' K_ESTCAP NUMBER
+              { 
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5) {
+                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
++               }
+                else
+                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+***************
+*** 3287,3294 ****
+  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
+              {
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5)
+                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
+                else
+                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+--- 3293,3301 ----
+  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
+              {
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5) {
+                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
++               }
+                else
+                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+***************
+*** 3562,3585 ****
+  group_soft_option: K_MAXX NUMBER
+        {
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
+          else
+            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXY NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
+          else
+            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXHALFPERIMETER NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
+          else
+            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+--- 3569,3595 ----
+  group_soft_option: K_MAXX NUMBER
+        {
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
++         }
+          else
+            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXY NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
++         }
+          else
+            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXHALFPERIMETER NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
++         }
+          else
+            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+diff -c -r source.lefdef/def.orig/def/def_keywords.cpp def/def/def_keywords.cpp
+*** source.lefdef/def.orig/def/def_keywords.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/def_keywords.cpp	Wed Dec 30 11:27:26 2020
+***************
+*** 289,301 ****
+  lines2str(long long lines) 
+  {
+      static char buffer[30];
+- 
+- #ifdef _WIN32
+-     sprintf(buffer, "%I64d", lines);
+- #else
+      sprintf(buffer, "%lld", lines);
+- #endif 
+- 
+      return buffer;
+  }
+  
+--- 289,295 ----
+***************
+*** 846,855 ****
+  
+        if (defGetKeyword(defData->uc_token, &result)) {
+           if (K_HISTORY == result) {  /* history - get up to ';' */
+!             int n;
+              int c;
+              int prev;
+!             n = 0;
+              prev = ' ';
+              while (1) {
+                 c = GETC();
+--- 840,849 ----
+  
+        if (defGetKeyword(defData->uc_token, &result)) {
+           if (K_HISTORY == result) {  /* history - get up to ';' */
+! //            int n;
+              int c;
+              int prev;
+! //            n = 0;
+              prev = ' ';
+              while (1) {
+                 c = GETC();
+***************
+*** 869,880 ****
+              }
+              defData->History_text.push_back('\0');
+           } else if (K_BEGINEXT == result) { /* extension, get up to end */
+!             int nn;
+              int cc;
+              int foundTag = 0;
+              int notEmpTag = 0;
+              int begQuote = 0;
+!             nn = 0;
+              /* First make sure there is a name after BEGINEXT within quote */
+              /* BEGINEXT "name" */
+              while (1) {
+--- 863,874 ----
+              }
+              defData->History_text.push_back('\0');
+           } else if (K_BEGINEXT == result) { /* extension, get up to end */
+! //            int nn;
+              int cc;
+              int foundTag = 0;
+              int notEmpTag = 0;
+              int begQuote = 0;
+! //            nn = 0;
+              /* First make sure there is a name after BEGINEXT within quote */
+              /* BEGINEXT "name" */
+              while (1) {
+diff -c -r source.lefdef/def.orig/def/defiAlias.cpp def/def/defiAlias.cpp
+*** source.lefdef/def.orig/def/defiAlias.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiAlias.cpp	Wed Dec 30 15:26:15 2020
+***************
+*** 38,45 ****
+  }; 
+  
+  defiAlias_itr::defiAlias_itr() 
+! : first(1),
+!   iterator(NULL)
+  {
+      defiAlias_itr::Init();
+  }
+--- 38,45 ----
+  }; 
+  
+  defiAlias_itr::defiAlias_itr() 
+! : iterator(NULL),
+!     first(1)
+  {
+      defiAlias_itr::Init();
+  }
+diff -c -r source.lefdef/def.orig/def/defiGroup.cpp def/def/defiGroup.cpp
+*** source.lefdef/def.orig/def/defiGroup.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiGroup.cpp	Wed Dec 30 11:14:54 2020
+***************
+*** 324,330 ****
+  }
+  
+  
+! const char defiGroup::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (LEFPARS-6050): The index number %d given for the GROUP PROPERTY is invalid.\nValid index is from 0 to %d", index, numProps_);
+--- 324,330 ----
+  }
+  
+  
+! char defiGroup::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (LEFPARS-6050): The index number %d given for the GROUP PROPERTY is invalid.\nValid index is from 0 to %d", index, numProps_);
+diff -c -r source.lefdef/def.orig/def/defiGroup.hpp def/def/defiGroup.hpp
+*** source.lefdef/def.orig/def/defiGroup.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiGroup.hpp	Wed Dec 30 11:10:11 2020
+***************
+*** 72,78 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+--- 72,78 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+diff -c -r source.lefdef/def.orig/def/defiNet.cpp def/def/defiNet.cpp
+*** source.lefdef/def.orig/def/defiNet.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiNet.cpp	Wed Dec 30 11:16:51 2020
+***************
+*** 1275,1281 ****
+  }
+  
+  
+! const char defiNet::propType(int index) const {
+    if (index >= 0 &&  index < numProps_)
+      return propTypes_[index];
+    return 0;
+--- 1275,1281 ----
+  }
+  
+  
+! char defiNet::propType(int index) const {
+    if (index >= 0 &&  index < numProps_)
+      return propTypes_[index];
+    return 0;
+***************
+*** 2891,2897 ****
+      return viaShapeTypes_[index];
+  }
+  
+! const int defiNet::viaOrient(int index) const {
+      char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+--- 2891,2897 ----
+      return viaShapeTypes_[index];
+  }
+  
+! int defiNet::viaOrient(int index) const {
+      char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+***************
+*** 2914,2920 ****
+      return (defiOrientStr(viaOrients_[index]));
+  }
+  
+! const int defiNet::topMaskNum(int index) const {
+     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+--- 2914,2920 ----
+      return (defiOrientStr(viaOrients_[index]));
+  }
+  
+! int defiNet::topMaskNum(int index) const {
+     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+***************
+*** 2926,2932 ****
+      return viaMasks_[index] / 100;
+  }
+  
+! const int defiNet::cutMaskNum(int index) const {
+      char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+--- 2926,2932 ----
+      return viaMasks_[index] / 100;
+  }
+  
+! int defiNet::cutMaskNum(int index) const {
+      char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+***************
+*** 2938,2944 ****
+      return viaMasks_[index] / 10 % 10;
+  }
+  
+! const int defiNet::bottomMaskNum(int index) const {
+      char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+--- 2938,2944 ----
+      return viaMasks_[index] / 10 % 10;
+  }
+  
+! int defiNet::bottomMaskNum(int index) const {
+      char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+diff -c -r source.lefdef/def.orig/def/defiNet.hpp def/def/defiNet.hpp
+*** source.lefdef/def.orig/def/defiNet.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiNet.hpp	Wed Dec 30 11:08:28 2020
+***************
+*** 302,308 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+    int          numConnections() const;
+--- 302,308 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char         propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+    int          numConnections() const;
+***************
+*** 410,420 ****
+    int  numViaSpecs() const;
+    struct defiPoints getViaPts(int index) const;                       
+    const char* viaName(int index) const;
+!   const int viaOrient(int index) const;
+    const char* viaOrientStr(int index) const;
+!   const int topMaskNum(int index) const;
+!   const int cutMaskNum(int index) const;
+!   const int bottomMaskNum(int index) const;
+    const char* viaRouteStatus(int index) const;
+    const char* viaRouteStatusShieldName(int index) const;
+    const char* viaShapeType(int index) const;
+--- 410,420 ----
+    int  numViaSpecs() const;
+    struct defiPoints getViaPts(int index) const;                       
+    const char* viaName(int index) const;
+!   int   viaOrient(int index) const;
+    const char* viaOrientStr(int index) const;
+!   int   topMaskNum(int index) const;
+!   int   cutMaskNum(int index) const;
+!   int   bottomMaskNum(int index) const;
+    const char* viaRouteStatus(int index) const;
+    const char* viaRouteStatusShieldName(int index) const;
+    const char* viaShapeType(int index) const;
+diff -c -r source.lefdef/def.orig/def/defiNonDefault.cpp def/def/defiNonDefault.cpp
+*** source.lefdef/def.orig/def/defiNonDefault.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiNonDefault.cpp	Wed Dec 30 11:17:15 2020
+***************
+*** 670,676 ****
+    return dvalues_[index];
+  }
+  
+! const char defiNonDefault::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+--- 670,676 ----
+    return dvalues_[index];
+  }
+  
+! char defiNonDefault::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+diff -c -r source.lefdef/def.orig/def/defiNonDefault.hpp def/def/defiNonDefault.hpp
+*** source.lefdef/def.orig/def/defiNonDefault.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiNonDefault.hpp	Wed Dec 30 11:11:37 2020
+***************
+*** 67,73 ****
+    const char* propName(int index) const;
+    const char* propValue(int index) const;
+    double      propNumber(int index) const;
+!   const char  propType(int index) const;
+    int         propIsNumber(int index) const;
+    int         propIsString(int index) const;
+    
+--- 67,73 ----
+    const char* propName(int index) const;
+    const char* propValue(int index) const;
+    double      propNumber(int index) const;
+!   char        propType(int index) const;
+    int         propIsNumber(int index) const;
+    int         propIsString(int index) const;
+    
+diff -c -r source.lefdef/def.orig/def/defiPath.cpp def/def/defiPath.cpp
+*** source.lefdef/def.orig/def/defiPath.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiPath.cpp	Wed Dec 30 15:24:30 2020
+***************
+*** 39,47 ****
+  defiPath::defiPath()
+  : keys_(NULL),
+  data_(NULL),
+- pointer_(NULL),
+  numUsed_(0),
+  numAllocated_(0),
+  numX_(0),      
+  numY_(0),
+  stepX_(0),
+--- 39,48 ----
+  defiPath::defiPath()
+  : keys_(NULL),
+  data_(NULL),
+  numUsed_(0),
+  numAllocated_(0),
++ pointer_(NULL),
++ 
+  numX_(0),      
+  numY_(0),
+  stepX_(0),
+diff -c -r source.lefdef/def.orig/def/defiPinProp.cpp def/def/defiPinProp.cpp
+*** source.lefdef/def.orig/def/defiPinProp.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiPinProp.cpp	Wed Dec 30 11:18:03 2020
+***************
+*** 259,265 ****
+  }
+  
+  
+! const char defiPinProp::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+--- 259,265 ----
+  }
+  
+  
+! char defiPinProp::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+diff -c -r source.lefdef/def.orig/def/defiPinProp.hpp def/def/defiPinProp.hpp
+*** source.lefdef/def.orig/def/defiPinProp.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiPinProp.hpp	Wed Dec 30 11:10:42 2020
+***************
+*** 59,65 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+--- 59,65 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+diff -c -r source.lefdef/def.orig/def/defiPropType.cpp def/def/defiPropType.cpp
+*** source.lefdef/def.orig/def/defiPropType.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiPropType.cpp	Wed Dec 30 11:18:34 2020
+***************
+*** 114,120 ****
+  }
+  
+  
+! const char defiPropType::propType(char* name) const {
+    int i;
+  
+    // Name is NULL, error
+--- 114,120 ----
+  }
+  
+  
+! char defiPropType::propType(char* name) const {
+    int i;
+  
+    // Name is NULL, error
+diff -c -r source.lefdef/def.orig/def/defiPropType.hpp def/def/defiPropType.hpp
+*** source.lefdef/def.orig/def/defiPropType.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiPropType.hpp	Wed Dec 30 11:12:11 2020
+***************
+*** 48,54 ****
+    void setPropType(const char* name, const char type);
+    void Clear();
+  
+!   const char propType(char* name) const;
+    void bumpProps();
+  
+  protected:
+--- 48,54 ----
+    void setPropType(const char* name, const char type);
+    void Clear();
+  
+!   char propType(char* name) const;
+    void bumpProps();
+  
+  protected:
+diff -c -r source.lefdef/def.orig/def/defiRegion.cpp def/def/defiRegion.cpp
+*** source.lefdef/def.orig/def/defiRegion.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiRegion.cpp	Wed Dec 30 11:19:01 2020
+***************
+*** 303,309 ****
+  }
+  
+  
+! const char defiRegion::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+--- 303,309 ----
+  }
+  
+  
+! char defiRegion::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+diff -c -r source.lefdef/def.orig/def/defiRegion.hpp def/def/defiRegion.hpp
+*** source.lefdef/def.orig/def/defiRegion.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiRegion.hpp	Wed Dec 30 11:09:34 2020
+***************
+*** 58,64 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int propIsNumber(int index) const;
+    int propIsString(int index) const;
+  
+--- 58,64 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int propIsNumber(int index) const;
+    int propIsString(int index) const;
+  
+diff -c -r source.lefdef/def.orig/def/defiRowTrack.cpp def/def/defiRowTrack.cpp
+*** source.lefdef/def.orig/def/defiRowTrack.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiRowTrack.cpp	Wed Dec 30 11:19:27 2020
+***************
+*** 271,277 ****
+    return propDValues_[index];
+  }
+  
+! const char defiRow::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+--- 271,277 ----
+    return propDValues_[index];
+  }
+  
+! char defiRow::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+diff -c -r source.lefdef/def.orig/def/defiRowTrack.hpp def/def/defiRowTrack.hpp
+*** source.lefdef/def.orig/def/defiRowTrack.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defiRowTrack.hpp	Wed Dec 30 11:09:08 2020
+***************
+*** 71,77 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int propIsNumber(int index) const;
+    int propIsString(int index) const;
+  
+--- 71,77 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int propIsNumber(int index) const;
+    int propIsString(int index) const;
+  
+diff -c -r source.lefdef/def.orig/def/defrCallbacks.cpp def/def/defrCallbacks.cpp
+*** source.lefdef/def.orig/def/defrCallbacks.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defrCallbacks.cpp	Wed Dec 30 15:21:54 2020
+***************
+*** 51,56 ****
+--- 51,57 ----
+    ComponentStartCbk(NULL),
+    ComponentEndCbk(NULL),
+    ComponentCbk(NULL),
++   ComponentMaskShiftLayerCbk(NULL),
+    NetStartCbk(NULL),
+    NetEndCbk(NULL),
+    NetCbk(NULL),
+***************
+*** 95,101 ****
+    GroupsEndCbk(NULL),
+    GroupNameCbk(NULL),
+    GroupMemberCbk(NULL),
+-   ComponentMaskShiftLayerCbk(NULL),
+    GroupCbk(NULL),
+    AssertionsStartCbk(NULL),
+    AssertionsEndCbk(NULL),
+--- 96,101 ----
+***************
+*** 169,175 ****
+      if (!FloorPlanNameCbk)
+          FloorPlanNameCbk = (defrStringCbkFnType) f;
+      if (!UnitsCbk)
+!         UnitsCbk = (defrDoubleCbkFnType) f;
+      if (!DividerCbk)
+          DividerCbk = (defrStringCbkFnType) f;
+      if (!BusBitCbk)
+--- 169,175 ----
+      if (!FloorPlanNameCbk)
+          FloorPlanNameCbk = (defrStringCbkFnType) f;
+      if (!UnitsCbk)
+!         UnitsCbk = (defrDoubleCbkFnType) (void*)f;
+      if (!DividerCbk)
+          DividerCbk = (defrStringCbkFnType) f;
+      if (!BusBitCbk)
+***************
+*** 181,193 ****
+      if (!CannotOccupyCbk)
+          CannotOccupyCbk = (defrSiteCbkFnType) f;
+      if (!ComponentStartCbk)
+!         ComponentStartCbk = (defrIntegerCbkFnType) f;
+      if (!ComponentEndCbk)
+          ComponentEndCbk = (defrVoidCbkFnType) f;
+      if (!ComponentCbk)
+          ComponentCbk = (defrComponentCbkFnType) f;
+      if (!NetStartCbk)
+!         NetStartCbk = (defrIntegerCbkFnType) f;
+      if (!NetEndCbk)
+          NetEndCbk = (defrVoidCbkFnType) f;
+      if (!NetCbk)
+--- 181,193 ----
+      if (!CannotOccupyCbk)
+          CannotOccupyCbk = (defrSiteCbkFnType) f;
+      if (!ComponentStartCbk)
+!         ComponentStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!ComponentEndCbk)
+          ComponentEndCbk = (defrVoidCbkFnType) f;
+      if (!ComponentCbk)
+          ComponentCbk = (defrComponentCbkFnType) f;
+      if (!NetStartCbk)
+!         NetStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!NetEndCbk)
+          NetEndCbk = (defrVoidCbkFnType) f;
+      if (!NetCbk)
+***************
+*** 197,203 ****
+          PathCbk = (defrPathCbkFnType) f;
+      if ((!VersionCbk) && (!VersionStrCbk)) {
+          // both version callbacks weren't set, if either one is set, it is ok
+!         VersionCbk = (defrDoubleCbkFnType) f;
+          VersionStrCbk = (defrStringCbkFnType) f;
+      }
+      if (!PinExtCbk)
+--- 197,203 ----
+          PathCbk = (defrPathCbkFnType) f;
+      if ((!VersionCbk) && (!VersionStrCbk)) {
+          // both version callbacks weren't set, if either one is set, it is ok
+!         VersionCbk = (defrDoubleCbkFnType) (void*)f;
+          VersionStrCbk = (defrStringCbkFnType) f;
+      }
+      if (!PinExtCbk)
+***************
+*** 227,237 ****
+      if (!PinCbk)
+          PinCbk = (defrPinCbkFnType) f;
+      if (!StartPinsCbk)
+!         StartPinsCbk = (defrIntegerCbkFnType) f;
+      if (!PinEndCbk)
+          PinEndCbk = (defrVoidCbkFnType) f;
+      if (!DefaultCapCbk)
+!         DefaultCapCbk = (defrIntegerCbkFnType) f;
+      if (!RowCbk)
+          RowCbk = (defrRowCbkFnType) f;
+      if (!TrackCbk)
+--- 227,237 ----
+      if (!PinCbk)
+          PinCbk = (defrPinCbkFnType) f;
+      if (!StartPinsCbk)
+!         StartPinsCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!PinEndCbk)
+          PinEndCbk = (defrVoidCbkFnType) f;
+      if (!DefaultCapCbk)
+!         DefaultCapCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!RowCbk)
+          RowCbk = (defrRowCbkFnType) f;
+      if (!TrackCbk)
+***************
+*** 239,257 ****
+      if (!GcellGridCbk)
+          GcellGridCbk = (defrGcellGridCbkFnType) f;
+      if (!ViaStartCbk)
+!         ViaStartCbk = (defrIntegerCbkFnType) f;
+      if (!ViaEndCbk)
+          ViaEndCbk = (defrVoidCbkFnType) f;
+      if (!ViaCbk)
+          ViaCbk = (defrViaCbkFnType) f;
+      if (!RegionStartCbk)
+!         RegionStartCbk = (defrIntegerCbkFnType) f;
+      if (!RegionEndCbk)
+          RegionEndCbk = (defrVoidCbkFnType) f;
+      if (!RegionCbk)
+          RegionCbk = (defrRegionCbkFnType) f;
+      if (!SNetStartCbk)
+!         SNetStartCbk = (defrIntegerCbkFnType) f;
+      if (!SNetEndCbk)
+          SNetEndCbk = (defrVoidCbkFnType) f;
+      if (!SNetCbk)
+--- 239,257 ----
+      if (!GcellGridCbk)
+          GcellGridCbk = (defrGcellGridCbkFnType) f;
+      if (!ViaStartCbk)
+!         ViaStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!ViaEndCbk)
+          ViaEndCbk = (defrVoidCbkFnType) f;
+      if (!ViaCbk)
+          ViaCbk = (defrViaCbkFnType) f;
+      if (!RegionStartCbk)
+!         RegionStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!RegionEndCbk)
+          RegionEndCbk = (defrVoidCbkFnType) f;
+      if (!RegionCbk)
+          RegionCbk = (defrRegionCbkFnType) f;
+      if (!SNetStartCbk)
+!         SNetStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!SNetEndCbk)
+          SNetEndCbk = (defrVoidCbkFnType) f;
+      if (!SNetCbk)
+***************
+*** 259,265 ****
+      //  if(! defrSNetPartialPathCbk) defrSNetPartialPathCbk = (defrNetCbkFnType)f;
+      //  if(! defrSNetWireCbk) defrSNetWireCbk = (defrNetCbkFnType)f;
+      if (!GroupsStartCbk)
+!         GroupsStartCbk = (defrIntegerCbkFnType) f;
+      if (!GroupsEndCbk)
+          GroupsEndCbk = (defrVoidCbkFnType) f;
+      if (!GroupNameCbk)
+--- 259,265 ----
+      //  if(! defrSNetPartialPathCbk) defrSNetPartialPathCbk = (defrNetCbkFnType)f;
+      //  if(! defrSNetWireCbk) defrSNetWireCbk = (defrNetCbkFnType)f;
+      if (!GroupsStartCbk)
+!         GroupsStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!GroupsEndCbk)
+          GroupsEndCbk = (defrVoidCbkFnType) f;
+      if (!GroupNameCbk)
+***************
+*** 271,351 ****
+      if (!GroupCbk)
+          GroupCbk = (defrGroupCbkFnType) f;
+      if (!AssertionsStartCbk)
+!         AssertionsStartCbk = (defrIntegerCbkFnType) f;
+      if (!AssertionsEndCbk)
+          AssertionsEndCbk = (defrVoidCbkFnType) f;
+      if (!AssertionCbk)
+          AssertionCbk = (defrAssertionCbkFnType) f;
+      if (!ConstraintsStartCbk)
+!         ConstraintsStartCbk = (defrIntegerCbkFnType) f;
+      if (!ConstraintsEndCbk)
+          ConstraintsEndCbk = (defrVoidCbkFnType) f;
+      if (!ConstraintCbk)
+          ConstraintCbk = (defrAssertionCbkFnType) f;
+      if (!ScanchainsStartCbk)
+!         ScanchainsStartCbk = (defrIntegerCbkFnType) f;
+      if (!ScanchainsEndCbk)
+          ScanchainsEndCbk = (defrVoidCbkFnType) f;
+      if (!ScanchainCbk)
+          ScanchainCbk = (defrScanchainCbkFnType) f;
+      if (!IOTimingsStartCbk)
+!         IOTimingsStartCbk = (defrIntegerCbkFnType) f;
+      if (!IOTimingsEndCbk)
+          IOTimingsEndCbk = (defrVoidCbkFnType) f;
+      if (!IOTimingCbk)
+          IOTimingCbk = (defrIOTimingCbkFnType) f;
+      if (!FPCStartCbk)
+!         FPCStartCbk = (defrIntegerCbkFnType) f;
+      if (!FPCEndCbk)
+          FPCEndCbk = (defrVoidCbkFnType) f;
+      if (!FPCCbk)
+          FPCCbk = (defrFPCCbkFnType) f;
+      if (!TimingDisablesStartCbk)
+!         TimingDisablesStartCbk = (defrIntegerCbkFnType) f;
+      if (!TimingDisablesEndCbk)
+          TimingDisablesEndCbk = (defrVoidCbkFnType) f;
+      if (!TimingDisableCbk)
+          TimingDisableCbk = (defrTimingDisableCbkFnType) f;
+      if (!PartitionsStartCbk)
+!         PartitionsStartCbk = (defrIntegerCbkFnType) f;
+      if (!PartitionsEndCbk)
+          PartitionsEndCbk = (defrVoidCbkFnType) f;
+      if (!PartitionCbk)
+          PartitionCbk = (defrPartitionCbkFnType) f;
+      if (!PinPropStartCbk)
+!         PinPropStartCbk = (defrIntegerCbkFnType) f;
+      if (!PinPropEndCbk)
+          PinPropEndCbk = (defrVoidCbkFnType) f;
+      if (!PinPropCbk)
+          PinPropCbk = (defrPinPropCbkFnType) f;
+      if (!CaseSensitiveCbk)
+!         CaseSensitiveCbk = (defrIntegerCbkFnType) f;
+      if (!BlockageStartCbk)
+!         BlockageStartCbk = (defrIntegerCbkFnType) f;
+      if (!BlockageEndCbk)
+          BlockageEndCbk = (defrVoidCbkFnType) f;
+      if (!BlockageCbk)
+          BlockageCbk = (defrBlockageCbkFnType) f;
+      if (!SlotStartCbk)
+!         SlotStartCbk = (defrIntegerCbkFnType) f;
+      if (!SlotEndCbk)
+          SlotEndCbk = (defrVoidCbkFnType) f;
+      if (!SlotCbk)
+          SlotCbk = (defrSlotCbkFnType) f;
+      if (!FillStartCbk)
+!         FillStartCbk = (defrIntegerCbkFnType) f;
+      if (!FillEndCbk)
+          FillEndCbk = (defrVoidCbkFnType) f;
+      if (!FillCbk)
+          FillCbk = (defrFillCbkFnType) f;
+      if (!NonDefaultStartCbk)
+!         NonDefaultStartCbk = (defrIntegerCbkFnType) f;
+      if (!NonDefaultEndCbk)
+          NonDefaultEndCbk = (defrVoidCbkFnType) f;
+      if (!NonDefaultCbk)
+          NonDefaultCbk = (defrNonDefaultCbkFnType) f;
+      if (!StylesStartCbk)
+!         StylesStartCbk = (defrIntegerCbkFnType) f;
+      if (!StylesEndCbk)
+          StylesEndCbk = (defrVoidCbkFnType) f;
+      if (!StylesCbk)
+--- 271,351 ----
+      if (!GroupCbk)
+          GroupCbk = (defrGroupCbkFnType) f;
+      if (!AssertionsStartCbk)
+!         AssertionsStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!AssertionsEndCbk)
+          AssertionsEndCbk = (defrVoidCbkFnType) f;
+      if (!AssertionCbk)
+          AssertionCbk = (defrAssertionCbkFnType) f;
+      if (!ConstraintsStartCbk)
+!         ConstraintsStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!ConstraintsEndCbk)
+          ConstraintsEndCbk = (defrVoidCbkFnType) f;
+      if (!ConstraintCbk)
+          ConstraintCbk = (defrAssertionCbkFnType) f;
+      if (!ScanchainsStartCbk)
+!         ScanchainsStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!ScanchainsEndCbk)
+          ScanchainsEndCbk = (defrVoidCbkFnType) f;
+      if (!ScanchainCbk)
+          ScanchainCbk = (defrScanchainCbkFnType) f;
+      if (!IOTimingsStartCbk)
+!         IOTimingsStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!IOTimingsEndCbk)
+          IOTimingsEndCbk = (defrVoidCbkFnType) f;
+      if (!IOTimingCbk)
+          IOTimingCbk = (defrIOTimingCbkFnType) f;
+      if (!FPCStartCbk)
+!         FPCStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!FPCEndCbk)
+          FPCEndCbk = (defrVoidCbkFnType) f;
+      if (!FPCCbk)
+          FPCCbk = (defrFPCCbkFnType) f;
+      if (!TimingDisablesStartCbk)
+!         TimingDisablesStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!TimingDisablesEndCbk)
+          TimingDisablesEndCbk = (defrVoidCbkFnType) f;
+      if (!TimingDisableCbk)
+          TimingDisableCbk = (defrTimingDisableCbkFnType) f;
+      if (!PartitionsStartCbk)
+!         PartitionsStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!PartitionsEndCbk)
+          PartitionsEndCbk = (defrVoidCbkFnType) f;
+      if (!PartitionCbk)
+          PartitionCbk = (defrPartitionCbkFnType) f;
+      if (!PinPropStartCbk)
+!         PinPropStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!PinPropEndCbk)
+          PinPropEndCbk = (defrVoidCbkFnType) f;
+      if (!PinPropCbk)
+          PinPropCbk = (defrPinPropCbkFnType) f;
+      if (!CaseSensitiveCbk)
+!         CaseSensitiveCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!BlockageStartCbk)
+!         BlockageStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!BlockageEndCbk)
+          BlockageEndCbk = (defrVoidCbkFnType) f;
+      if (!BlockageCbk)
+          BlockageCbk = (defrBlockageCbkFnType) f;
+      if (!SlotStartCbk)
+!         SlotStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!SlotEndCbk)
+          SlotEndCbk = (defrVoidCbkFnType) f;
+      if (!SlotCbk)
+          SlotCbk = (defrSlotCbkFnType) f;
+      if (!FillStartCbk)
+!         FillStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!FillEndCbk)
+          FillEndCbk = (defrVoidCbkFnType) f;
+      if (!FillCbk)
+          FillCbk = (defrFillCbkFnType) f;
+      if (!NonDefaultStartCbk)
+!         NonDefaultStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!NonDefaultEndCbk)
+          NonDefaultEndCbk = (defrVoidCbkFnType) f;
+      if (!NonDefaultCbk)
+          NonDefaultCbk = (defrNonDefaultCbkFnType) f;
+      if (!StylesStartCbk)
+!         StylesStartCbk = (defrIntegerCbkFnType) (void*)f;
+      if (!StylesEndCbk)
+          StylesEndCbk = (defrVoidCbkFnType) f;
+      if (!StylesCbk)
+diff -c -r source.lefdef/def.orig/def/defrData.cpp def/def/defrData.cpp
+*** source.lefdef/def.orig/def/defrData.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defrData.cpp	Wed Dec 30 15:36:31 2020
+***************
+*** 45,51 ****
+  defrData *defData = NULL;
+  
+  defrData::defrData()
+! : Subnet(0),
+    aOxide(0),
+    assertionWarnings(0),
+    bit_is_keyword(0),
+--- 45,68 ----
+  defrData *defData = NULL;
+  
+  defrData::defrData()
+! : defrLog(0),
+!   defPropDefType('\0'),
+!   ch(NULL),
+!   defMsg(NULL),
+!   deftoken((char*)defMalloc(TOKEN_SIZE)),
+!   uc_token((char*)defMalloc(TOKEN_SIZE)),
+!   last(NULL),
+!   magic((char*)malloc(1)),
+!   next(NULL),
+!   pv_deftoken((char*)defMalloc(TOKEN_SIZE)),
+!   rowName(NULL),
+!   shieldName(NULL),
+!   shiftBuf(0),
+!   warningMsg(NULL),
+!   save_x(0.0),
+!   save_y(0.0),
+!   lVal(0.0),
+!   rVal(0.0),
+    aOxide(0),
+    assertionWarnings(0),
+    bit_is_keyword(0),
+***************
+*** 53,59 ****
+    blockageWarnings(0),
+    by_is_keyword(0),
+    caseSensitiveWarnings(0),
+-   ch(NULL),
+    componentWarnings(0),
+    constraintWarnings(0),
+    cover_is_keyword(0),
+--- 70,75 ----
+***************
+*** 61,75 ****
+    defIgnoreVersion(0),
+    defInPropDef(0),
+    defInvalidChar(0),
+-   defMsg(NULL),
+    defMsgCnt(5500),
+    defMsgPrinted(0),
+    defPrintTokens(0),
+-   defPropDefType('\0'),
+    defRetVal(0),
+    def_warnings(0),
+    defaultCapWarnings(0),
+-   defrLog(0),
+    do_is_keyword(0),
+    dumb_mode(0),
+    errors(0),
+--- 77,88 ----
+***************
+*** 92,99 ****
+    hasVer(0),
+    iOTimingWarnings(0),
+    input_level(-1),
+-   last(NULL),
+-   magic((char*)malloc(1)),
+    mask_is_keyword(0),
+    mustjoin_is_keyword(0),
+    names_case_sensitive(1),
+--- 105,110 ----
+***************
+*** 102,109 ****
+    netOsnet(0),
+    netWarnings(0),
+    new_is_keyword(0),
+-   next(NULL),
+-   nlines(1),
+    nl_token(FALSE),
+    no_num(0),
+    nonDefaultWarnings(0),
+--- 113,118 ----
+***************
+*** 119,133 ****
+    regionWarnings(0),
+    ringPlace(0),
+    routed_is_keyword(0),
+-   rowName(NULL),
+    rowWarnings(0),
+    sNetWarnings(0),
+-   save_x(0.0),
+-   save_y(0.0),
+    scanchainWarnings(0),
+    shield(FALSE),
+-   shieldName(NULL),
+-   shiftBuf(0),
+    shiftBufLength(0),
+    specialWire_mask(0),
+    step_is_keyword(0),
+--- 128,137 ----
+***************
+*** 139,153 ****
+    viaWarnings(0),
+    virtual_is_keyword(0),
+    deftokenLength(TOKEN_SIZE),
+!   warningMsg(NULL),
+    specialWire_routeStatus((char*) "ROUTED"),
+    specialWire_routeStatusName((char *)""),
+    specialWire_shapeType((char*)""),
+    VersionNum(5.7),
+    xStep(0),
+    yStep(0),
+!   lVal(0.0),
+!   rVal(0.0),
+    // defrReader vars
+    Prop(),
+    Site(),
+--- 143,157 ----
+    viaWarnings(0),
+    virtual_is_keyword(0),
+    deftokenLength(TOKEN_SIZE),
+!   nlines(1),
+! 
+    specialWire_routeStatus((char*) "ROUTED"),
+    specialWire_routeStatusName((char *)""),
+    specialWire_shapeType((char*)""),
+    VersionNum(5.7),
+    xStep(0),
+    yStep(0),
+! 
+    // defrReader vars
+    Prop(),
+    Site(),
+***************
+*** 177,187 ****
+    Fill(),
+    NonDefault(),
+    Styles(),
+    doneDesign(0),
+    NeedPathData(0),
+!   deftoken((char*)defMalloc(TOKEN_SIZE)),
+!   uc_token((char*)defMalloc(TOKEN_SIZE)),
+!   pv_deftoken((char*)defMalloc(TOKEN_SIZE))
+  {
+      magic[0] = '\0';
+      deftoken[0] = '\0';
+--- 181,191 ----
+    Fill(),
+    NonDefault(),
+    Styles(),
++   Geometries(),
+    doneDesign(0),
++ 
+    NeedPathData(0),
+!   Subnet(0)
+  {
+      magic[0] = '\0';
+      deftoken[0] = '\0';
+diff -c -r source.lefdef/def.orig/def/defrData.hpp def/def/defrData.hpp
+*** source.lefdef/def.orig/def/defrData.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defrData.hpp	Wed Dec 30 15:10:27 2020
+***************
+*** 90,95 ****
+--- 90,96 ----
+      int  componentWarnings; 
+      int  constraintWarnings; 
+      int  cover_is_keyword; 
++ 
+      int  defIgnoreVersion; // ignore checking version number
+      int  defInPropDef; 
+      int  defInvalidChar; 
+***************
+*** 161,170 ****
+      int  deftokenLength;
+      long long nlines;
+  
+-     std::vector<char>  History_text; 
+-     defAliasMap        def_alias_set; 
+-     defDefineMap       def_defines_set;
+- 
+      char*  specialWire_routeStatus;
+      char*  specialWire_routeStatusName;
+      char*  specialWire_shapeType;
+--- 162,167 ----
+***************
+*** 173,179 ****
+      double yStep;
+          
+      //defrParser vars.
+-     defiPath PathObj;
+      defiProp Prop;
+      defiSite Site;
+      defiComponent Component;
+--- 170,175 ----
+***************
+*** 214,219 ****
+--- 210,220 ----
+      char* ring[RING_SIZE];
+      int ringSizes[RING_SIZE];
+      std::string stack[20];  /* the stack itself */
++ 
++     defiPath PathObj;
++     std::vector<char>  History_text; 
++     defAliasMap        def_alias_set; 
++     defDefineMap       def_defines_set;
+  };
+  
+  extern defrData *defData;
+diff -c -r source.lefdef/def.orig/def/defrSettings.cpp def/def/defrSettings.cpp
+*** source.lefdef/def.orig/def/defrSettings.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defrSettings.cpp	Wed Dec 30 14:35:29 2020
+***************
+*** 46,51 ****
+--- 46,52 ----
+    FillWarnings(999),
+    GcellGridWarnings(999),
+    IOTimingWarnings(999),
++ 
+    NetWarnings(999),
+    NonDefaultWarnings(999),
+    PinExtWarnings(999),
+***************
+*** 81,86 ****
+--- 82,88 ----
+    FreeFunction(NULL),
+    LineNumberFunction(NULL),
+    LongLineNumberFunction(NULL),
++ 
+    CompProp(),
+    CompPinProp(),
+    DesignProp(),
+diff -c -r source.lefdef/def.orig/def/defrSettings.hpp def/def/defrSettings.hpp
+*** source.lefdef/def.orig/def/defrSettings.hpp	Fri Feb  5 14:39:14 2016
+--- def/def/defrSettings.hpp	Wed Dec 30 14:35:22 2020
+***************
+*** 75,81 ****
+      int FillWarnings;
+      int GcellGridWarnings;
+      int IOTimingWarnings;
+-     int LogFileAppend; 
+      int NetWarnings;
+      int NonDefaultWarnings;
+      int PinExtWarnings;
+--- 75,80 ----
+***************
+*** 92,97 ****
+--- 91,98 ----
+  
+      int  nDDMsgs; 
+      int* disableDMsgs;
++     int reader_case_sensitive;
++     int reader_case_sensitive_set;
+      int  totalDefMsgLimit; // to save the user set total msg limit to output
+      int AddPathToNet;
+      int AllowComponentNets;
+***************
+*** 99,107 ****
+      int DisPropStrProcess; 
+      FILE* File;
+      char* FileName;
+      defiUserData UserData;
+-     int reader_case_sensitive;
+-     int reader_case_sensitive_set;
+  
+      DEFI_READ_FUNCTION ReadFunction;
+      DEFI_LOG_FUNCTION ErrorLogFunction;
+--- 100,107 ----
+      int DisPropStrProcess; 
+      FILE* File;
+      char* FileName;
++     int LogFileAppend; 
+      defiUserData UserData;
+  
+      DEFI_READ_FUNCTION ReadFunction;
+      DEFI_LOG_FUNCTION ErrorLogFunction;
+***************
+*** 113,122 ****
+      DEFI_LINE_NUMBER_FUNCTION LineNumberFunction;
+      DEFI_LONG_LINE_NUMBER_FUNCTION LongLineNumberFunction;
+  
+-     int Debug[DEF_DEBUG_IDS]; /* can set from command line for debugging */
+-     int UnusedCallbacks[CBMAX];
+-     int MsgLimit[DEF_MSGS];
+- 
+      // The following global variables are for storing the propertydefination
+      // types.  Only real & integer need to store since the parser can
+      // distinguish string and quote string
+--- 113,118 ----
+***************
+*** 129,134 ****
+--- 125,134 ----
+      defiPropType RegionProp;
+      defiPropType RowProp;
+      defiPropType SNetProp;
++ 
++     int Debug[DEF_DEBUG_IDS]; /* can set from command line for debugging */
++     int UnusedCallbacks[CBMAX];
++     int MsgLimit[DEF_MSGS];
+  };
+  
+  extern defrSettings *defSettings;
+diff -c -r source.lefdef/def.orig/def/defwWriterCalls.cpp def/def/defwWriterCalls.cpp
+*** source.lefdef/def.orig/def/defwWriterCalls.cpp	Fri Feb  5 14:39:14 2016
+--- def/def/defwWriterCalls.cpp	Wed Dec 30 11:46:33 2020
+***************
+*** 347,353 ****
+  
+  int defwCountFunc(defwCallbackType_e e, defiUserData d) {
+    int i = (int)e;
+!   if (defiDebug(23)) printf("count %d 0x%x\n", (int)e, d);
+    if (i >= 0 && i < 100) {
+      defwUnusedCount[i] += 1;
+      return 0;
+--- 347,353 ----
+  
+  int defwCountFunc(defwCallbackType_e e, defiUserData d) {
+    int i = (int)e;
+!   if (defiDebug(23)) printf("count %d 0x%p\n", (int)e, d);
+    if (i >= 0 && i < 100) {
+      defwUnusedCount[i] += 1;
+      return 0;
+diff -c -r source.lefdef/def.orig/defdiff/diffDefRW.cpp def/defdiff/diffDefRW.cpp
+*** source.lefdef/def.orig/defdiff/diffDefRW.cpp	Fri Feb  5 14:39:14 2016
+--- def/defdiff/diffDefRW.cpp	Wed Dec 30 15:58:30 2020
+***************
+*** 169,176 ****
+      if (co->maskShiftSize()) {
+  	fprintf(fout, "MASKSHIFT ");
+  
+!         for (int i = co->maskShiftSize()-1; i >= 0; i--) {
+!             fprintf(fout, "%d", co->maskShift(i));
+          }
+          fprintf(fout, "\n");
+      }
+--- 169,176 ----
+      if (co->maskShiftSize()) {
+  	fprintf(fout, "MASKSHIFT ");
+  
+!         for (int ix = co->maskShiftSize()-1; ix >= 0; ix--) {
+!             fprintf(fout, "%d", co->maskShift(ix));
+          }
+          fprintf(fout, "\n");
+      }
+***************
+*** 202,208 ****
+  // Net
+  int netf(defrCallbackType_e c, defiNet* net, defiUserData ud) {
+    // For net and special net.
+!   int         i, j, k, w, x, y, z, px, py, pz;
+    defiPath*   p;
+    defiSubnet* s;
+    int         path;
+--- 202,208 ----
+  // Net
+  int netf(defrCallbackType_e c, defiNet* net, defiUserData ud) {
+    // For net and special net.
+!   int         i, j, k, w, x, y, z, px = 0, py = 0, pz = 0;
+    defiPath*   p;
+    defiSubnet* s;
+    int         path;
+***************
+*** 488,493 ****
+--- 488,494 ----
+                                   net->name(), layerName, x, y);
+                           nline = 1;
+                        }
++                       break;
+                   case DEFIPATH_TAPER:
+                        fprintf(fout, " TAPER");
+                        break;
+***************
+*** 630,636 ****
+    int        path;
+    defiShield* shield;
+    defiWire   *wire;
+!   int        nline;
+    const char* sNLayerName = "N/A";
+    int        numX, numY, stepX, stepY;
+  
+--- 631,637 ----
+    int        path;
+    defiShield* shield;
+    defiWire   *wire;
+!   int        nline = 0;
+    const char* sNLayerName = "N/A";
+    int        numX, numY, stepX, stepY;
+  
+***************
+*** 691,697 ****
+           }
+        }
+        if (net->polyMask(i)) {
+! 	  fprintf(fout, "MASK %d POLYGON % s ", 
+  		  net->polyMask(i),
+  		  net->polygonName(i));
+        } else {
+--- 692,698 ----
+           }
+        }
+        if (net->polyMask(i)) {
+! 	  fprintf(fout, "MASK %d POLYGON %s ", 
+  		  net->polyMask(i),
+  		  net->polygonName(i));
+        } else {
+***************
+*** 728,735 ****
+        
+         defiPoints points = net->getViaPts(i);
+  
+!        for (int j = 0; j < points.numPoints; j++) {
+!           fprintf(fout, " %d %d", points.x[j], points.y[j]);
+         }
+         fprintf(fout, ";\n"); 
+       }
+--- 729,736 ----
+        
+         defiPoints points = net->getViaPts(i);
+  
+!        for (int jx = 0; jx < points.numPoints; jx++) {
+!           fprintf(fout, " %d %d", points.x[jx], points.y[jx]);
+         }
+         fprintf(fout, ";\n"); 
+       }
+***************
+*** 1232,1240 ****
+    checkType(c);
+    if (ud != userData) dataError();
+    if (d == 1)
+!      fprintf(fout, "NAMESCASESENSITIVE OFF\n", d);
+    else
+!      fprintf(fout, "NAMESCASESENSITIVE ON\n", d);
+    return 0;
+  }
+  
+--- 1233,1241 ----
+    checkType(c);
+    if (ud != userData) dataError();
+    if (d == 1)
+!      fprintf(fout, "NAMESCASESENSITIVE OFF\n");
+    else
+!      fprintf(fout, "NAMESCASESENSITIVE ON\n");
+    return 0;
+  }
+  
+***************
+*** 1425,1431 ****
+           fprintf(fout, "\n");
+  
+           if (pin->hasPort()) {
+!              struct defiPoints points;
+               defiPinPort* port;
+               for (j = 0; j < pin->numPorts(); j++) {
+                  fprintf(fout, "PIN %s", tmpPinName);
+--- 1426,1432 ----
+           fprintf(fout, "\n");
+  
+           if (pin->hasPort()) {
+! //             struct defiPoints points;
+               defiPinPort* port;
+               for (j = 0; j < pin->numPorts(); j++) {
+                  fprintf(fout, "PIN %s", tmpPinName);
+***************
+*** 1594,1600 ****
+           --numObjs;
+           break;
+    case defrDefaultCapCbkType :
+!          i = (long)cl;
+           fprintf(fout, "DEFAULTCAP %d\n", i);
+           numObjs = i;
+           break;
+--- 1595,1601 ----
+           --numObjs;
+           break;
+    case defrDefaultCapCbkType :
+!          i = (intptr_t)cl;
+           fprintf(fout, "DEFAULTCAP %d\n", i);
+           numObjs = i;
+           break;
+***************
+*** 1697,1703 ****
+           }
+  	 // POLYGON
+           if (via->numPolygons()) {
+!            struct defiPoints points;
+             for (i = 0; i < via->numPolygons(); i++) {
+  	     int polyMask = via->polyMask(i);
+  
+--- 1698,1704 ----
+           }
+  	 // POLYGON
+           if (via->numPolygons()) {
+! //           struct defiPoints points;
+             for (i = 0; i < via->numPolygons(); i++) {
+  	     int polyMask = via->polyMask(i);
+  
+***************
+*** 1715,1727 ****
+           }
+  
+           if (via->hasViaRule()) {
+!              char *vrn, *bl, *cl, *tl;
+               int xs, ys, xcs, ycs, xbe, ybe, xte, yte;
+               int cr, cc, xo, yo, xbo, ybo, xto, yto;
+!              (void)via->viaRule(&vrn, &xs, &ys, &bl, &cl, &tl, &xcs,
+                                           &ycs, &xbe, &ybe, &xte, &yte);
+               fprintf(fout, "VIA %s VIARULE %s CUTSIZE %d %d LAYERS %s %s %s",
+!                      via->name(), vrn, xs, ys, bl, cl, tl);
+               fprintf(fout, " CUTSPACING %d %d ENCLOSURE %d %d %d %d", xcs, ycs,
+                       xbe, ybe, xte, yte);
+               if (via->hasRowCol()) {
+--- 1716,1728 ----
+           }
+  
+           if (via->hasViaRule()) {
+!              char *vrn, *bl, *tcl, *tl;
+               int xs, ys, xcs, ycs, xbe, ybe, xte, yte;
+               int cr, cc, xo, yo, xbo, ybo, xto, yto;
+!              (void)via->viaRule(&vrn, &xs, &ys, &bl, &tcl, &tl, &xcs,
+                                           &ycs, &xbe, &ybe, &xte, &yte);
+               fprintf(fout, "VIA %s VIARULE %s CUTSIZE %d %d LAYERS %s %s %s",
+!                      via->name(), vrn, xs, ys, bl, tcl, tl);
+               fprintf(fout, " CUTSPACING %d %d ENCLOSURE %d %d %d %d", xcs, ycs,
+                       xbe, ybe, xte, yte);
+               if (via->hasRowCol()) {
+***************
+*** 1769,1777 ****
+               fprintf(fout, "REGION %s ", group->regionName());
+           if (group->hasRegionBox()) {
+               int *gxl, *gyl, *gxh, *gyh;
+!              int size;
+!              group->regionRects(&size, &gxl, &gyl, &gxh, &gyh);
+!              for (i = 0; i < size; i++)
+                   fprintf(fout, "REGION (%d %d) (%d %d) ", gxl[i], gyl[i],
+                           gxh[i], gyh[i]);
+           }
+--- 1770,1778 ----
+               fprintf(fout, "REGION %s ", group->regionName());
+           if (group->hasRegionBox()) {
+               int *gxl, *gyl, *gxh, *gyh;
+!              int tsize;
+!              group->regionRects(&tsize, &gxl, &gyl, &gxh, &gyh);
+!              for (i = 0; i < tsize; i++)
+                   fprintf(fout, "REGION (%d %d) (%d %d) ", gxl[i], gyl[i],
+                           gxh[i], gyh[i]);
+           }
+***************
+*** 1791,1805 ****
+           fprintf(fout, "SCANCHAINS %s", sc->name());
+           if (sc->hasStart()) {
+               sc->start(&a1, &b1);
+!              fprintf(fout, " START %s %s", sc->name(), a1, b1);
+           }
+           if (sc->hasStop()) {
+               sc->stop(&a1, &b1);
+!              fprintf(fout, " STOP %s %s", sc->name(), a1, b1);
+           }
+           if (sc->hasCommonInPin() ||
+               sc->hasCommonOutPin()) {
+!              fprintf(fout, " COMMONSCANPINS ", sc->name());
+               if (sc->hasCommonInPin())
+                  fprintf(fout, " ( IN %s )", sc->commonInPin());
+               if (sc->hasCommonOutPin())
+--- 1792,1806 ----
+           fprintf(fout, "SCANCHAINS %s", sc->name());
+           if (sc->hasStart()) {
+               sc->start(&a1, &b1);
+!              fprintf(fout, " START %s %s %s", sc->name(), a1, b1);
+           }
+           if (sc->hasStop()) {
+               sc->stop(&a1, &b1);
+!              fprintf(fout, " STOP %s %s %s", sc->name(), a1, b1);
+           }
+           if (sc->hasCommonInPin() ||
+               sc->hasCommonOutPin()) {
+!              fprintf(fout, " COMMONSCANPINS %s ", sc->name());
+               if (sc->hasCommonInPin())
+                  fprintf(fout, " ( IN %s )", sc->commonInPin());
+               if (sc->hasCommonOutPin())
+***************
+*** 1914,1926 ****
+           break;
+    case defrTimingDisableCbkType :
+           td = (defiTimingDisable*)cl;
+!          if (td->hasFromTo()) fprintf(fout, "TIMINGDISABLE FROMPIN %s %s ", td->fromInst(), td->fromPin(), td->toInst(), td->toPin()); if (td->hasThru())
+               fprintf(fout, " THRUPIN %s %s ", td->thruInst(), td->thruPin());
+           if (td->hasMacroFromTo())
+               fprintf(fout, " MACRO %s FROMPIN %s %s ", td->macroName(),
+                       td->fromPin(), td->toPin());
+           if (td->hasMacroThru())
+!              fprintf(fout, " MACRO %s THRUPIN %s %s ", td->macroName(),
+                       td->fromPin());
+           fprintf(fout, "\n");
+           break;
+--- 1915,1929 ----
+           break;
+    case defrTimingDisableCbkType :
+           td = (defiTimingDisable*)cl;
+!          if (td->hasFromTo()) fprintf(fout, "TIMINGDISABLE FROMPIN %s %s %s %s ",
+!              td->fromInst(), td->fromPin(), td->toInst(), td->toPin());
+!          if (td->hasThru())
+               fprintf(fout, " THRUPIN %s %s ", td->thruInst(), td->thruPin());
+           if (td->hasMacroFromTo())
+               fprintf(fout, " MACRO %s FROMPIN %s %s ", td->macroName(),
+                       td->fromPin(), td->toPin());
+           if (td->hasMacroThru())
+!              fprintf(fout, " MACRO %s THRUPIN %s ", td->macroName(),
+                       td->fromPin());
+           fprintf(fout, "\n");
+           break;
+***************
+*** 2061,2067 ****
+                      slot->xh(i), slot->yh(i));
+           }
+           for (i = 0; i < slot->numPolygons(); i++) {
+!             fprintf(fout, "SLOT LAYER %s POLYGON");
+              points = slot->getPolygon(i);
+              for (j = 0; j < points.numPoints; j++)
+                fprintf(fout, " %d %d", points.x[j], points.y[j]);
+--- 2064,2070 ----
+                      slot->xh(i), slot->yh(i));
+           }
+           for (i = 0; i < slot->numPolygons(); i++) {
+!             fprintf(fout, "SLOT LAYER %s POLYGON", slot->layerName());
+              points = slot->getPolygon(i);
+              for (j = 0; j < points.numPoints; j++)
+                fprintf(fout, " %d %d", points.x[j], points.y[j]);
+***************
+*** 2112,2118 ****
+           break;
+  
+    case defrStylesCbkType :
+!          struct defiPoints points;
+           styles = (defiStyles*)cl;
+           fprintf(fout, "STYLE %d", styles->style());
+           points = styles->getPolygon();
+--- 2115,2121 ----
+           break;
+  
+    case defrStylesCbkType :
+! //         struct defiPoints points;
+           styles = (defiStyles*)cl;
+           fprintf(fout, "STYLE %d", styles->style());
+           points = styles->getPolygon();
+***************
+*** 2163,2169 ****
+  int diffDefReadFile(char* inFile, char* outFile, char* ignorePinExtra,
+                   char* ignoreRowName, char* ignoreViaName, char* netSegComp) {
+    FILE* f;
+!   int   res;
+  
+    userData = (void*)0x01020304;
+    defrInit();
+--- 2166,2172 ----
+  int diffDefReadFile(char* inFile, char* outFile, char* ignorePinExtra,
+                   char* ignoreRowName, char* ignoreViaName, char* netSegComp) {
+    FILE* f;
+!   int   res = 0;
+  
+    userData = (void*)0x01020304;
+    defrInit();
+***************
+*** 2210,2216 ****
+    defrSetPinCapCbk((defrPinCapCbkFnType)cls);
+    defrSetPinCbk((defrPinCbkFnType)cls);
+    defrSetPinPropCbk((defrPinPropCbkFnType)cls);
+!   defrSetDefaultCapCbk((defrIntegerCbkFnType)cls);
+    defrSetRowCbk((defrRowCbkFnType)cls);
+    defrSetTrackCbk((defrTrackCbkFnType)cls);
+    defrSetGcellGridCbk((defrGcellGridCbkFnType)cls);
+--- 2213,2219 ----
+    defrSetPinCapCbk((defrPinCapCbkFnType)cls);
+    defrSetPinCbk((defrPinCbkFnType)cls);
+    defrSetPinPropCbk((defrPinPropCbkFnType)cls);
+!   defrSetDefaultCapCbk((defrIntegerCbkFnType)(void*)cls);
+    defrSetRowCbk((defrRowCbkFnType)cls);
+    defrSetTrackCbk((defrTrackCbkFnType)cls);
+    defrSetGcellGridCbk((defrGcellGridCbkFnType)cls);
+***************
+*** 2254,2258 ****
+    fclose(f);
+    fclose(fout);
+  
+!   return 0;
+  }
+--- 2257,2261 ----
+    fclose(f);
+    fclose(fout);
+  
+!   return res;
+  }
+diff -c -r source.lefdef/def.orig/defdiff/differDef.cpp def/defdiff/differDef.cpp
+*** source.lefdef/def.orig/defdiff/differDef.cpp	Fri Feb  5 14:39:14 2016
+--- def/defdiff/differDef.cpp	Wed Dec 30 10:56:44 2020
+***************
+*** 48,56 ****
+  #endif
+  #ifndef WIN32
+  #   include <unistd.h>
+! extern char VersionIdent[];
+! #else
+! char* VersionIdent = "N/A";
+  #endif /* not WIN32 */
+  #include "defrReader.hpp"
+  #include "diffDefRW.hpp"
+--- 48,56 ----
+  #endif
+  #ifndef WIN32
+  #   include <unistd.h>
+! //extern char VersionIdent[];
+! //#else
+! //char* VersionIdent = "N/A";
+  #endif /* not WIN32 */
+  #include "defrReader.hpp"
+  #include "diffDefRW.hpp"
+diff -c -r source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
+*** source.lefdef/def.orig/defrw/defrw.cpp	Fri Feb  5 14:39:14 2016
+--- def/defrw/defrw.cpp	Wed Dec 30 15:39:13 2020
+***************
+*** 77,90 ****
+  }
+  
+  
+! int done(defrCallbackType_e c, void* dummy, defiUserData ud) {
+    checkType(c);
+    if (ud != userData) dataError();
+    fprintf(fout, "END DESIGN\n");
+    return 0;
+  }
+  
+! int endfunc(defrCallbackType_e c, void* dummy, defiUserData ud) {
+    checkType(c);
+    if (ud != userData) dataError();
+    return 0;
+--- 77,90 ----
+  }
+  
+  
+! int done(defrCallbackType_e c, void* , defiUserData ud) {
+    checkType(c);
+    if (ud != userData) dataError();
+    fprintf(fout, "END DESIGN\n");
+    return 0;
+  }
+  
+! int endfunc(defrCallbackType_e c, void* , defiUserData ud) {
+    checkType(c);
+    if (ud != userData) dataError();
+    return 0;
+***************
+*** 192,199 ****
+          if (co->maskShiftSize()) {
+              fprintf(fout, "+ MASKSHIFT ");
+  
+!             for (int i = co->maskShiftSize()-1; i >= 0; i--) {
+!                 fprintf(fout, "%d", co->maskShift(i));
+              }
+              fprintf(fout, "\n");
+          }
+--- 192,199 ----
+          if (co->maskShiftSize()) {
+              fprintf(fout, "+ MASKSHIFT ");
+  
+!             for (int ix = co->maskShiftSize()-1; ix >= 0; ix--) {
+!                 fprintf(fout, "%d", co->maskShift(ix));
+              }
+              fprintf(fout, "\n");
+          }
+***************
+*** 243,249 ****
+  }
+  
+  
+! int netpath(defrCallbackType_e c, defiNet* ppath, defiUserData ud) {
+    fprintf(fout, "\n");
+  
+    fprintf (fout, "Callback of partial path for net\n");
+--- 243,249 ----
+  }
+  
+  
+! int netpath(defrCallbackType_e , defiNet* , defiUserData ) {
+    fprintf(fout, "\n");
+  
+    fprintf (fout, "Callback of partial path for net\n");
+***************
+*** 938,945 ****
+  
+  	    defiPoints points = ppath->getViaPts(i);
+  
+! 	    for (int j = 0; j < points.numPoints; j++) {
+! 		fprintf(fout, " %d %d", points.x[j], points.y[j]);
+  	    }
+  	}
+    }
+--- 938,945 ----
+  
+  	    defiPoints points = ppath->getViaPts(i);
+  
+! 	    for (int jx = 0; jx < points.numPoints; jx++) {
+! 		fprintf(fout, " %d %d", points.x[jx], points.y[jx]);
+  	    }
+  	}
+    }
+***************
+*** 1220,1226 ****
+           }
+        }
+        if (net->polyMask(i)) {
+! 	  fprintf(fout, "\n  + MASK %d + POLYGON % s ", net->polyMask(i),
+  		  net->polygonName(i));
+        } else {
+            fprintf(fout, "\n  + POLYGON %s ", net->polygonName(i));
+--- 1220,1226 ----
+           }
+        }
+        if (net->polyMask(i)) {
+! 	  fprintf(fout, "\n  + MASK %d + POLYGON %s ", net->polyMask(i),
+  		  net->polygonName(i));
+        } else {
+            fprintf(fout, "\n  + POLYGON %s ", net->polygonName(i));
+***************
+*** 1284,1291 ****
+        
+         defiPoints points = net->getViaPts(i);
+  
+!        for (int j = 0; j < points.numPoints; j++) {
+!           fprintf(fout, " %d %d", points.x[j], points.y[j]);
+         }
+         fprintf(fout, ";\n"); 
+  
+--- 1284,1291 ----
+        
+         defiPoints points = net->getViaPts(i);
+  
+!        for (int jx = 0; jx < points.numPoints; jx++) {
+!           fprintf(fout, " %d %d", points.x[jx], points.y[jx]);
+         }
+         fprintf(fout, ";\n"); 
+  
+***************
+*** 1665,1671 ****
+  }
+  
+  
+! int propstart(defrCallbackType_e c, void* dummy, defiUserData ud) {
+    checkType(c);
+    fprintf(fout, "\nPROPERTYDEFINITIONS\n");
+    isProp = 1;
+--- 1665,1671 ----
+  }
+  
+  
+! int propstart(defrCallbackType_e c, void* , defiUserData ) {
+    checkType(c);
+    fprintf(fout, "\nPROPERTYDEFINITIONS\n");
+    isProp = 1;
+***************
+*** 1717,1723 ****
+  }
+  
+  
+! int propend(defrCallbackType_e c, void* dummy, defiUserData ud) {
+    checkType(c);
+    if (isProp) {
+        fprintf(fout, "END PROPERTYDEFINITIONS\n\n");
+--- 1717,1723 ----
+  }
+  
+  
+! int propend(defrCallbackType_e c, void* , defiUserData ) {
+    checkType(c);
+    if (isProp) {
+        fprintf(fout, "END PROPERTYDEFINITIONS\n\n");
+***************
+*** 1797,1805 ****
+    checkType(c);
+    if (ud != userData) dataError();
+    if (d == 1)
+!      fprintf(fout, "NAMESCASESENSITIVE ON ;\n", d);
+    else
+!      fprintf(fout, "NAMESCASESENSITIVE OFF ;\n", d);
+    return 0;
+  }
+  
+--- 1797,1805 ----
+    checkType(c);
+    if (ud != userData) dataError();
+    if (d == 1)
+!      fprintf(fout, "NAMESCASESENSITIVE ON ;\n");
+    else
+!      fprintf(fout, "NAMESCASESENSITIVE OFF ;\n");
+    return 0;
+  }
+  
+***************
+*** 1914,1920 ****
+                   fprintf(fout, "+ GROUNDSENSITIVITY %s ",
+                           pin->groundSensitivity());
+               if (pin->hasLayer()) {
+!                  struct defiPoints points;
+                   for (i = 0; i < pin->numLayer(); i++) {
+                      fprintf(fout, "\n  + LAYER %s ", pin->layer(i));
+                      if (pin->layerMask(i)) 
+--- 1914,1920 ----
+                   fprintf(fout, "+ GROUNDSENSITIVITY %s ",
+                           pin->groundSensitivity());
+               if (pin->hasLayer()) {
+! //                 struct defiPoints points;
+                   for (i = 0; i < pin->numLayer(); i++) {
+                      fprintf(fout, "\n  + LAYER %s ", pin->layer(i));
+                      if (pin->layerMask(i)) 
+***************
+*** 1961,1967 ****
+                   }
+               }
+               if (pin->hasPort()) {
+!                  struct defiPoints points;
+                   defiPinPort* port;
+                   for (j = 0; j < pin->numPorts(); j++) {
+                      port = pin->pinPort(j);
+--- 1961,1967 ----
+                   }
+               }
+               if (pin->hasPort()) {
+! //                 struct defiPoints points;
+                   defiPinPort* port;
+                   for (j = 0; j < pin->numPorts(); j++) {
+                      port = pin->pinPort(j);
+***************
+*** 2160,2166 ****
+           }
+           break;
+    case defrDefaultCapCbkType :
+!          i = (long)cl;
+           fprintf(fout, "DEFAULTCAP %d\n", i);
+           numObjs = i;
+           break;
+--- 2160,2166 ----
+           }
+           break;
+    case defrDefaultCapCbkType :
+!          i = (intptr_t)cl;
+           fprintf(fout, "DEFAULTCAP %d\n", i);
+           numObjs = i;
+           break;
+***************
+*** 2251,2257 ****
+               }
+               // POLYGON
+               if (via->numPolygons()) {
+!                  struct defiPoints points;
+                   for (i = 0; i < via->numPolygons(); i++) {
+                       int polyMask = via->polyMask(i);
+  
+--- 2251,2257 ----
+               }
+               // POLYGON
+               if (via->numPolygons()) {
+! //                 struct defiPoints points;
+                   for (i = 0; i < via->numPolygons(); i++) {
+                       int polyMask = via->polyMask(i);
+  
+***************
+*** 2268,2281 ****
+               }
+               fprintf(fout, " ;\n");
+               if (via->hasViaRule()) {
+!                  char *vrn, *bl, *cl, *tl;
+                   int xs, ys, xcs, ycs, xbe, ybe, xte, yte;
+                   int cr, cc, xo, yo, xbo, ybo, xto, yto;
+!                  (void)via->viaRule(&vrn, &xs, &ys, &bl, &cl, &tl, &xcs,
+                                               &ycs, &xbe, &ybe, &xte, &yte);
+                   fprintf(fout, "+ VIARULE '%s'\n", ignoreViaNames ? "XXX" : vrn);
+                   fprintf(fout, "  + CUTSIZE %d %d\n", xs, ys);
+!                  fprintf(fout, "  + LAYERS %s %s %s\n", bl, cl, tl);
+                   fprintf(fout, "  + CUTSPACING %d %d\n", xcs, ycs);
+                   fprintf(fout, "  + ENCLOSURE %d %d %d %d\n", xbe, ybe, xte, yte);
+                   if (via->hasRowCol()) {
+--- 2268,2281 ----
+               }
+               fprintf(fout, " ;\n");
+               if (via->hasViaRule()) {
+!                  char *vrn, *bl, *tcl, *tl;
+                   int xs, ys, xcs, ycs, xbe, ybe, xte, yte;
+                   int cr, cc, xo, yo, xbo, ybo, xto, yto;
+!                  (void)via->viaRule(&vrn, &xs, &ys, &bl, &tcl, &tl, &xcs,
+                                               &ycs, &xbe, &ybe, &xte, &yte);
+                   fprintf(fout, "+ VIARULE '%s'\n", ignoreViaNames ? "XXX" : vrn);
+                   fprintf(fout, "  + CUTSIZE %d %d\n", xs, ys);
+!                  fprintf(fout, "  + LAYERS %s %s %s\n", bl, tcl, tl);
+                   fprintf(fout, "  + CUTSPACING %d %d\n", xcs, ycs);
+                   fprintf(fout, "  + ENCLOSURE %d %d %d %d\n", xbe, ybe, xte, yte);
+                   if (via->hasRowCol()) {
+***************
+*** 2366,2374 ****
+               fprintf(fout, "\n  + REGION %s ", group->regionName());
+           if (group->hasRegionBox()) {
+               int *gxl, *gyl, *gxh, *gyh;
+!              int size;
+!              group->regionRects(&size, &gxl, &gyl, &gxh, &gyh);
+!              for (i = 0; i < size; i++)
+                   fprintf(fout, "REGION %d %d %d %d ", gxl[i], gyl[i],
+                           gxh[i], gyh[i]);
+           }
+--- 2366,2374 ----
+               fprintf(fout, "\n  + REGION %s ", group->regionName());
+           if (group->hasRegionBox()) {
+               int *gxl, *gyl, *gxh, *gyh;
+!              int tsize;
+!              group->regionRects(&tsize, &gxl, &gyl, &gxh, &gyh);
+!              for (i = 0; i < tsize; i++)
+                   fprintf(fout, "REGION %d %d %d %d ", gxl[i], gyl[i],
+                           gxh[i], gyh[i]);
+           }
+***************
+*** 2539,2545 ****
+    case defrTimingDisableCbkType :
+           td = (defiTimingDisable*)cl;
+           if (td->hasFromTo())
+!              fprintf(fout, "- FROMPIN %s %s ",
+                       td->fromInst(),
+                       td->fromPin(),
+                       td->toInst(),
+--- 2539,2545 ----
+    case defrTimingDisableCbkType :
+           td = (defiTimingDisable*)cl;
+           if (td->hasFromTo())
+!              fprintf(fout, "- FROMPIN %s %s %s %s",
+                       td->fromInst(),
+                       td->fromPin(),
+                       td->toInst(),
+***************
+*** 2554,2560 ****
+                       td->fromPin(),
+                       td->toPin());
+           if (td->hasMacroThru())
+!              fprintf(fout, "- MACRO %s THRUPIN %s %s ",
+                       td->macroName(),
+                       td->fromPin());
+           fprintf(fout, ";\n");
+--- 2554,2560 ----
+                       td->fromPin(),
+                       td->toPin());
+           if (td->hasMacroThru())
+!              fprintf(fout, "- MACRO %s THRUPIN %s ",
+                       td->macroName(),
+                       td->fromPin());
+           fprintf(fout, ";\n");
+***************
+*** 2794,2800 ****
+           }
+           break;
+    case defrStylesCbkType :
+!          struct defiPoints points;
+           styles = (defiStyles*)cl;
+           fprintf(fout, "- STYLE %d ", styles->style());
+           points = styles->getPolygon();
+--- 2794,2800 ----
+           }
+           break;
+    case defrStylesCbkType :
+! //         struct defiPoints points;
+           styles = (defiStyles*)cl;
+           fprintf(fout, "- STYLE %d ", styles->style());
+           points = styles->getPolygon();
+***************
+*** 2880,2893 ****
+          ccr1131444 = 0;
+      }
+  
+- #ifdef _WIN32
+-   fprintf(fout, "Parsed %I64d number of lines!!\n", lineNo);
+- #else 
+    fprintf(fout, "Parsed %lld number of lines!!\n", lineNo);
+- #endif
+  }
+  
+! int unUsedCB(defrCallbackType_e c, void* any, defiUserData ud) {
+    fprintf(fout, "This callback is not used.\n");
+    return 0;
+  }
+--- 2880,2889 ----
+          ccr1131444 = 0;
+      }
+  
+    fprintf(fout, "Parsed %lld number of lines!!\n", lineNo);
+  }
+  
+! int unUsedCB(defrCallbackType_e , void* , defiUserData ) {
+    fprintf(fout, "This callback is not used.\n");
+    return 0;
+  }
+***************
+*** 2902,2908 ****
+    char* inFile[6];
+    char* outFile;
+    FILE* f;
+!   int res;
+    int noCalls = 0;
+  //  long start_mem;
+    int retStr = 0;
+--- 2898,2904 ----
+    char* inFile[6];
+    char* outFile;
+    FILE* f;
+!   int res = 0;
+    int noCalls = 0;
+  //  long start_mem;
+    int retStr = 0;
+***************
+*** 3096,3106 ****
+      defrSetPinCapCbk((defrPinCapCbkFnType)cls);
+      defrSetPinCbk((defrPinCbkFnType)cls);
+      defrSetPinPropCbk((defrPinPropCbkFnType)cls);
+!     defrSetDefaultCapCbk((defrIntegerCbkFnType)cls);
+      defrSetRowCbk((defrRowCbkFnType)cls);
+      defrSetTrackCbk((defrTrackCbkFnType)cls);
+      defrSetGcellGridCbk((defrGcellGridCbkFnType)cls);
+!     defrSetViaCbk((defrViaCbkFnType)cls);
+      defrSetRegionCbk((defrRegionCbkFnType)cls);
+      defrSetGroupNameCbk((defrStringCbkFnType)cls);
+      defrSetGroupMemberCbk((defrStringCbkFnType)cls);
+--- 3092,3102 ----
+      defrSetPinCapCbk((defrPinCapCbkFnType)cls);
+      defrSetPinCbk((defrPinCbkFnType)cls);
+      defrSetPinPropCbk((defrPinPropCbkFnType)cls);
+!     defrSetDefaultCapCbk((defrIntegerCbkFnType)(void*)cls);
+      defrSetRowCbk((defrRowCbkFnType)cls);
+      defrSetTrackCbk((defrTrackCbkFnType)cls);
+      defrSetGcellGridCbk((defrGcellGridCbkFnType)cls);
+!     defrSetViaCbk((defrViaCbkFnType)(void*)cls);
+      defrSetRegionCbk((defrRegionCbkFnType)cls);
+      defrSetGroupNameCbk((defrStringCbkFnType)cls);
+      defrSetGroupMemberCbk((defrStringCbkFnType)cls);
+***************
+*** 3192,3198 ****
+         res = defrRead(f, inFile[fileCt], userData, 1);
+  
+         if (res)
+!           fprintf(stderr, "Reader returns bad status.\n", inFile[fileCt]);
+  
+         (void)defrPrintUnusedCallbacks(fout);
+         (void)defrReleaseNResetMemory();
+--- 3188,3194 ----
+         res = defrRead(f, inFile[fileCt], userData, 1);
+  
+         if (res)
+!           fprintf(stderr, "Reader returns bad status.\n");
+  
+         (void)defrPrintUnusedCallbacks(fout);
+         (void)defrReleaseNResetMemory();
+***************
+*** 3209,3215 ****
+      // 2nd will enable 7016 by calling defrEnableParserMsgs
+      // 3rd enable all msgs by call defrEnableAllMsgs
+  
+!     int nMsgs = 2;
+      int dMsgs[2];
+  
+      for (fileCt = 0; fileCt < numInFile; fileCt++) {
+--- 3205,3211 ----
+      // 2nd will enable 7016 by calling defrEnableParserMsgs
+      // 3rd enable all msgs by call defrEnableAllMsgs
+  
+! //    int nMsgs = 2;
+      int dMsgs[2];
+  
+      for (fileCt = 0; fileCt < numInFile; fileCt++) {
+***************
+*** 3231,3237 ****
+         res = defrRead(f, inFile[fileCt], userData, 1);
+   
+         if (res)
+!           fprintf(stderr, "Reader returns bad status.\n", inFile[fileCt]);
+   
+         (void)defrPrintUnusedCallbacks(fout);
+         (void)defrReleaseNResetMemory();
+--- 3227,3233 ----
+         res = defrRead(f, inFile[fileCt], userData, 1);
+   
+         if (res)
+!           fprintf(stderr, "Reader returns bad status.\n");
+   
+         (void)defrPrintUnusedCallbacks(fout);
+         (void)defrReleaseNResetMemory();
+***************
+*** 3253,3259 ****
+         res = defrRead(f, inFile[fileCt], userData, 1);
+  
+         if (res)
+!            fprintf(stderr, "Reader returns bad status.\n", inFile[fileCt]);
+  
+         // Testing the aliases API.
+         defrAddAlias ("alias1", "aliasValue1", 1);
+--- 3249,3255 ----
+         res = defrRead(f, inFile[fileCt], userData, 1);
+  
+         if (res)
+!            fprintf(stderr, "Reader returns bad status.\n");
+  
+         // Testing the aliases API.
+         defrAddAlias ("alias1", "aliasValue1", 1);
+diff -c -r source.lefdef/def.orig/template.mk def/template.mk
+*** source.lefdef/def.orig/template.mk	Fri Feb  5 14:39:13 2016
+--- def/template.mk	Wed Dec 30 10:44:46 2020
 ***************
 *** 23,28 ****
 --- 23,38 ----
