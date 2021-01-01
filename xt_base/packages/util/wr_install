@@ -524,7 +524,7 @@ do_update()
         fi
         ;;
 
-    Win32)
+    MINGW)
 	if [ ! -x $distfile ]; then
             echo File: $distfile
             echo Error: file not executable.

@@ -47,10 +47,10 @@
 #include "secure_prv.h"
 
 #ifdef WIN32
-#include "msw.h"
-#include "lstring.h"
+#include "miscutil/msw.h"
+#include "miscutil/lstring.h"
 // Tell the msw interface that we're Generation 4.
-const char *msw::MSWpkgSuffix = "-4";
+//const char *msw::MSWpkgSuffix = "-4";
 #endif
 
 #ifndef HAVE_STRERROR

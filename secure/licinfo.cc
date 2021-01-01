@@ -57,7 +57,7 @@
 
 #ifdef WIN32
 // Tell the msw interface that we're Generation 4.
-const char *msw::MSWpkgSuffix = "-4";
+//const char *msw::MSWpkgSuffix = "-4";
 #endif
 
 

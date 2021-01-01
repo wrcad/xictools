@@ -88,7 +88,9 @@ namespace {
     namespace secure_prv {
         FILE *open_license(int, const char*);
         int test_me(int);
+#ifndef WIN32
         bool parse_etc_hosts(sJobReq*, char*);
+#endif
         void alter_key(bool);
         int validate(sJobReq*);
         dblk *read_license(int*);
@@ -474,7 +476,6 @@ secure_prv::test_me(int code)
 {
     char buf[256];
     sJobReq c;
-    memset(&c, 0, sizeof(sJobReq));
     if (gethostname(buf, 256) < 0) {
         out.cat("Abort: gethostname system call failed\n");
         out.dump(true);
@@ -642,6 +643,7 @@ secure_prv::test_me(int code)
 }
 
 
+#ifndef WIN32
 // Look for name in /etc/hosts, if found fill in the address in c and
 // return true.
 //
@@ -688,6 +690,7 @@ secure_prv::parse_etc_hosts(sJobReq *c, char *name)
     fclose(fp);
     return (false);
 }
+#endif
 
 
 // Encode the key while not in use.  Yes, the arg really doesn't matter.
@@ -751,7 +754,8 @@ secure_prv::validate(sJobReq *c)
         error = ERR_TIMEXP;
     else if (!check_users(myblock, blocks))
         error = ERR_USRLIM;
-    memset(blocks, 0, (NUMBLKS+1)*sizeof(dblk));
+    for (int i = 0; i <= NUMBLKS; i++)
+        blocks[i].clear();
     delete [] blocks;
     return (error);
 }

@@ -27,8 +27,6 @@ for a in $oses; do
   arch=$2
   if [ -n "$arch" ]; then
     echo '<input type=checkbox name='$a'>'$nm $arch'<br>'
-  elif [ $nm = Win32 ]; then
-    echo '<input type=checkbox name='$a'>'Windows i386'<br>'
   else
     echo '<input type=checkbox name='$a'>'$nm X86_64'<br>'
   fi

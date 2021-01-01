@@ -40,7 +40,7 @@ package::
 	            exit; \
 	        fi; \
 	    fi ;; \
-	Win32) ;; \
+	MINGW) ;; \
 	*) \
 	    if [ -z "$$osname" ]; then \
 	        echo "Error: Can't determine OSNAME"; \
@@ -56,7 +56,7 @@ clean::
 	-@if [ -d dpkg ]; then cd dpkg; $(MAKE) clean; fi
 	-@if [ -d osxpkg ]; then cd osxpkg; $(MAKE) clean; fi
 	-@if [ -d rpm ]; then cd rpm; $(MAKE) clean; fi
-	-@if [ -d Win32 ]; then cd Win32; $(MAKE) clean; fi
+	-@if [ -d MINGW ]; then cd MINGW; $(MAKE) clean; fi
 	-@rm -rf root
 
 distclean:: clean

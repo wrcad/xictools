@@ -338,40 +338,61 @@ install_test::
 install_links::
 	@rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/xic
 	@ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/xic
-	@rm -f $(toolbin)/xic.sh $(toolbin)/xic
-	@sed -e s%/usr/local%$(INSTALL_PREFIX)% < $(destn)/bin/xic.sh \
-  > $(toolbin)/xic; chmod 755 $(toolbin)/xic
-	@rm -f $(toolbin)/wrencode
-	@ln -s $(destn)/bin/wrencode $(toolbin)
-	@rm -f $(toolbin)/wrdecode
-	@ln -s $(destn)/bin/wrdecode $(toolbin)
-	@rm -f $(toolbin)/wrsetpass
-	@ln -s $(destn)/bin/wrsetpass $(toolbin)
+	@rm -f $(toolbin)/wrencode$(EXESUFFIX)
+	@ln -s $(destn)/bin/wrencode$(EXESUFFIX) $(toolbin)/wrencode$(EXESUFFIX)
+	@rm -f $(toolbin)/wrdecode$(EXESUFFIX)
+	@ln -s $(destn)/bin/wrdecode$(EXESUFFIX) $(toolbin)/wrdecode$(EXESUFFIX)
+	@rm -f $(toolbin)/wrsetpass$(EXESUFFIX)
+	@ln -s $(destn)/bin/wrsetpass$(EXESUFFIX) $(toolbin)/wrsetpass$(EXESUFFIX)
 	@if [ ! -h $(destn)/startup/xic_tech ]; then \
 	    ln -s $(destn)/startup/xic_tech.scmos $(destn)/startup/xic_tech; \
+	fi
+	@if [ -n "$(EXESUFFIX)" ]; then \
+	    cp -f $(destn)/bin/xic.bat $(toolbin); \
+	    rm -f $(toolbin)/xic$(EXESUFFIX); \
+	    ln -s $(destn)/bin/xic$(EXESUFFIX) $(toolbin)/xic$(EXESUFFIX); \
+	    rm -f $(toolbin)/xic.dll; \
+	    ln -s $(destn)/bin/xic.dll $(toolbin)/xic.dll; \
+	else \
+	    rm -f $(toolbin)/xic.sh $(toolbin)/xic; \
+	    sed -e s%/usr/local%$(INSTALL_PREFIX)% < $(destn)/bin/xic.sh \
+  > $(toolbin)/xic; chmod 755 $(toolbin)/xic; \
+	fi
+
+clean_links::
+	-@if [ -n $(EXESUFFIX) ]; then \
+	    rm -rf $(INSTALL_PREFIX)/$(TOOLROOT)/xic; \
+	else \
+	    rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/xic; \
+	fi
+	-@rm -f $(toolbin)/wrencode$(EXESUFFIX)
+	-@rm -f $(toolbin)/wrdecode$(EXESUFFIX)
+	-@rm -f $(toolbin)s/wrsetpass$(EXESUFFIX)
+	-@rm -f $(toolbin)/xic$(EXESUFFIX)
+	-@if [ -n "$(EXESUFFIX)" ]; then \
+            -@rm -f $(toolbin)/xic.bat; \
+            -@rm -f $(toolbin)/xic.dll; \
 	fi
 
 install_xic_clean::
 	-@rm -rf $(destn)
 
+# Don't strip xic.exe in Windows, Webroot will think its a virus!
 $(destn)/bin::
 	@$(BASE)/util/mkdirpth $@
 	$(INSTALL_BIN) bin/wrencode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrdecode$(EXESUFFIX) $@
 	$(INSTALL_BIN) bin/wrsetpass$(EXESUFFIX) $@
-# Don't strip xic.exe in Windows, Webroot will think its a virus!
+	$(INSTALL_BIN) bin/xic$(EXESUFFIX) $@
 	@if [ $(DLL_XIC_PROG) = xic ]; then \
 	    $(INSTALL_BIN) bin/xic.dll $@; \
-	    $(INSTALL_SCRIPT) bin/xic$(EXESUFFIX) $@; \
-	else \
-	    $(INSTALL_BIN) bin/xic$(EXESUFFIX) $@; \
 	fi
-	@if [ -z "$(EXESUFFIX)" ]; then \
-	    $(INSTALL_SCRIPT) bin/xic.sh $@; \
-	else \
+	@if [ -n "$(EXESUFFIX)" ]; then \
 	    cp $(BASE)/util/program.bat xic.bat; \
             $(INSTALL_SCRIPT) xic.bat $@; \
 	    rm -f xic.bat; \
+	else \
+	    $(INSTALL_SCRIPT) bin/xic.sh $@; \
 	fi
 	@$(BASE)/util/mkdirpth $(toolbin)
 

@@ -383,18 +383,23 @@ install_test::
 install_links::
 	@rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
 	@ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
-	@rm -f $(toolbin)/multidec
-	@ln -s $(destn)/bin/multidec $(toolbin)/multidec
-	@rm -f $(toolbin)/proc2mod
-	@ln -s $(destn)/bin/proc2mod $(toolbin)/proc2mod
-	@rm -f $(toolbin)/printtoraw
-	@ln -s $(destn)/bin/printtoraw $(toolbin)/printtoraw
-	@rm -f $(toolbin)/wrspice
-	@ln -s $(destn)/bin/wrspice $(toolbin)/wrspice
-	@rm -f $(toolbin)/wrspiced
-	@ln -s $(destn)/bin/wrspiced $(toolbin)/wrspiced
-	@rm -f $(toolbin)/mmjco
-	@ln -s $(destn)/bin/mmjco $(toolbin)/mmjco
+	@rm -f $(toolbin)/mmjco$(EXESUFFIX)
+	@ln -s $(destn)/bin/mmjco$(EXESUFFIX) $(toolbin)/mmjco$(EXESUFFIX)
+	@rm -f $(toolbin)/multidec$(EXESUFFIX)
+	@ln -s $(destn)/bin/multidec$(EXESUFFIX) $(toolbin)/multidec$(EXESUFFIX)
+	@rm -f $(toolbin)/printtoraw$(EXESUFFIX)
+	@ln -s $(destn)/bin/printtoraw$(EXESUFFIX) $(toolbin)/printtoraw$(EXESUFFIX)
+	@rm -f $(toolbin)/proc2mod$(EXESUFFIX)
+	@ln -s $(destn)/bin/proc2mod$(EXESUFFIX) $(toolbin)/proc2mod$(EXESUFFIX)
+	@rm -f $(toolbin)/wrspice$(EXESUFFIX)
+	@ln -s $(destn)/bin/wrspice$(EXESUFFIX) $(toolbin)/wrspice$(EXESUFFIX)
+	@rm -f $(toolbin)/wrspiced$(EXESUFFIX)
+	@ln -s $(destn)/bin/wrspiced$(EXESUFFIX) $(toolbin)/wrspiced$(EXESUFFIX)
+	-@if [ -n "$(EXESUFFIX)" ]; then \
+	    cp -f $(destn)/bin/wrspice.bat $(toolbin); \
+            rm -f $(toolbin)/wrspice.dll; \
+	    ln -s $(destn)/bin/wrspice.dll $(toolbin)/wrspice.dll; \
+	fi
 
 clean_links::
 	-@if [ -n $(EXESUFFIX) ]; then \
@@ -402,12 +407,16 @@ clean_links::
 	else \
 	    rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
 	fi
-	-@rm -f $(toolbin)/multidec
-	-@rm -f $(toolbin)/proc2mod
-	-@rm -f $(toolbin)s/printtoraw
-	-@rm -f $(toolbin)/wrspice
-	-@rm -f $(toolbin)/wrspiced
-	-@rm -f $(toolbin)/mmjco
+	-@rm -f $(toolbin)/mmjco$(EXESUFFIX)
+	-@rm -f $(toolbin)/multidec$(EXESUFFIX)
+	-@rm -f $(toolbin)s/printtoraw$(EXESUFFIX)
+	-@rm -f $(toolbin)/proc2mod$(EXESUFFIX)
+	-@rm -f $(toolbin)/wrspice$(EXESUFFIX)
+	-@rm -f $(toolbin)/wrspiced$(EXESUFFIX)
+	-@if [ -n "$(EXESUFFIX)" ]; then \
+            -@rm -f $(toolbin)/wrspice.bat; \
+            -@rm -f $(toolbin)/wrspice.dll; \
+	fi
 
 install_clean::
 	-@rm -rf $(destn)

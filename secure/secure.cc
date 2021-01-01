@@ -65,7 +65,7 @@
 #include <pwd.h>
 #endif
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #else
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -1207,7 +1207,7 @@ bool
 sAuthChk::fill_req(sJobReq *c, const char *host, const char *addr,
     const char *alt)
 {
-    memset(c, 0, sizeof(sJobReq));
+    c->clear();
 
     char buf[256];
     strcpy(buf, host);

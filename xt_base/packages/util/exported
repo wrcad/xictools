@@ -40,7 +40,7 @@ LinuxRHEL5 \
 LinuxRHEL6 \
 LinuxRHEL7 \
 LinuxUbuntu20 \
-Win32"
+MINGW"
 ;;
 progs)
   echo "adms fastcap fasthenry mozy mrouter vl wrspice xic"
@@ -65,7 +65,7 @@ host)
     echo frost;;
   LinuxUbuntu20)
     echo ubun;;
-  Win32)
+  MINGW)
     echo marlowe;;
   esac
 ;;
@@ -89,7 +89,7 @@ sfx)
     echo rpm;;
   LinuxUbuntu20)
     echo deb;;
-  Win32)
+  MINGW)
     echo exe;;
   esac
 ;;

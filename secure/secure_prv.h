@@ -102,7 +102,21 @@ namespace secure {
 
     struct sJobReq
     {
-        sJobReq() { memset(this, 0, sizeof(sJobReq)); }
+        sJobReq()
+            {
+                clear();
+            }
+
+        void clear()
+            {
+                memset(host, 0, 64*sizeof(char));
+                memset(user, 0, 64*sizeof(char));
+                date = 0;
+                memset(addr, 0, 4*sizeof(unsigned char));
+                reqtype = 0;
+                pid = 0;
+                code = 0;
+            }
 
         char host[64];          // host request is from
         char user[64];          // user for requesting process
@@ -121,7 +135,12 @@ namespace secure {
 
     struct sTR
     {
-        sTR() { memset(this, 0, sizeof(sTR)); }
+        sTR() : death_date(0)
+            {
+                memset(valid_addr, 0, 4*sizeof(unsigned char));
+                valid_host = 0;
+                memset(limits, 0, 4*sizeof(unsigned char));
+            }
 
         unsigned int  death_date;     // no use after this date (seconds)
         unsigned char valid_addr[4];  // host internet address
@@ -133,7 +152,12 @@ namespace secure {
 #define HOSTNAMLEN 56
     struct block
     {
-        block() { memset(this, 0, sizeof(block)); }
+        block()
+            {
+                memset(addr, 0, 4*sizeof(unsigned char));
+                memset(code, 0, 4*sizeof(unsigned char));
+                memset(hostname, 0, HOSTNAMLEN*sizeof(char));
+            }
 
         unsigned char addr[4];        // internet address
         unsigned char code[4];        // program code, etc
@@ -143,7 +167,17 @@ namespace secure {
     // data block in authentication file
     struct dblk
     {
-        dblk() { memset(this, 0, sizeof(dblk)); }
+        dblk()
+            {
+                clear();
+            }
+
+        void clear()
+            {
+                timelim = 0;
+                memset(limits, 0, 4*sizeof(unsigned char));
+                memset(sum, 0, 16*sizeof(unsigned char));
+            }
 
         unsigned int timelim;         // no use after this date (seconds)
         unsigned char limits[4];      // 0: code

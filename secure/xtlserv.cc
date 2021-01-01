@@ -81,7 +81,7 @@
 #endif
 
 #ifdef WIN32
-#include "msw.h"
+#include "miscutil/msw.h"
 #include <mapi.h>
 #else
 #include <sys/socket.h>
@@ -108,7 +108,7 @@
 
 #ifdef WIN32
 // Tell the msw interface that we're Generation 4.
-const char *msw::MSWpkgSuffix = "-4";
+//const char *msw::MSWpkgSuffix = "-4";
 #endif
 
 // Timeout for read/write.
@@ -180,7 +180,7 @@ namespace xtlserv {
     void sig_hdlr(int);
     void start_timer(void);
 #ifdef WIN32
-    void CALLBACK alarm_hdlr(HWND, UINT, UINT, DWORD);
+    void CALLBACK alarm_hdlr(HWND, UINT, uintptr_t, DWORD);
 #else
     void alarm_hdlr(int);
 #endif
@@ -927,7 +927,7 @@ bool
 xtlserv::fill_req(sJobReq *c, const char *host, const char *addr,
     const char *alt, int progcode, int mode)
 {
-    memset(c, 0, sizeof(sJobReq));
+    c->clear();
 
     char buf[256];
     strcpy(buf, host);
@@ -1279,7 +1279,8 @@ xtlserv::validate(sJobReq *c, bool chkfiles, const sJobReq *cref)
             }
         }
     }
-    memset(blocks, 0, (NUMBLKS+1)*sizeof(dblk));
+    for (int i = 0; i <= NUMBLKS; i++)
+        blocks[i].clear();
     delete [] blocks;
     closedir(dir);
     if (chkfiles && error == ERR_NOTLIC && errcnt == 0)
@@ -1952,7 +1953,7 @@ xtlserv::start_timer()
 #ifdef WIN32
 
 void CALLBACK
-xtlserv::alarm_hdlr(HWND, UINT, UINT, DWORD)
+xtlserv::alarm_hdlr(HWND, UINT, uintptr_t, DWORD)
 {
     clean_list();
     check_log();
