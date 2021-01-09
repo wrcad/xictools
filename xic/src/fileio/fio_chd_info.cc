@@ -510,7 +510,7 @@ cCHD::prCell(FILE *fp, symref_t *p, int dflags)
         lstr.add(buf);
 
     if (show_offs) {
-        sprintf(buf, "Offset: %lld\n", p->get_offset());
+        sprintf(buf, "Offset: %lld\n", (long long)p->get_offset());
         if (fp)
             fputs(buf, fp);
         else
@@ -916,8 +916,8 @@ cCHD::prCmpStats(FILE *fp, DisplayMode mode)
     nametab_t *ntab = nameTab(mode);
     ntab->cref_count(&ncrefs, &br);
     char buf[80];
-    sprintf(buf, "Compression: refs=%d  bytes=%lld  ratio=%.3f",
-        ncrefs, br, br/(double)(16*ncrefs));
+    sprintf(buf, "Compression: refs=%d  bytes=%llu  ratio=%.3f",
+        ncrefs, (unsigned long long)br, br/(double)(16*ncrefs));
     if (fp) {
         fputs(buf, fp);
         return (0);

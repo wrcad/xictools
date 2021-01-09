@@ -494,6 +494,7 @@ namespace {
       cPyIf::register_func("GetLayerThickness",      pyGetLayerThickness);
       cPyIf::register_func("GetLayerRho",            pyGetLayerRho);
       cPyIf::register_func("GetLayerResis",          pyGetLayerResis);
+      cPyIf::register_func("GetLayerTau",            pyGetLayerTau);
       cPyIf::register_func("GetLayerEps",            pyGetLayerEps);
       cPyIf::register_func("GetLayerCap",            pyGetLayerCap);
       cPyIf::register_func("GetLayerCapPerim",       pyGetLayerCapPerim);
@@ -790,6 +791,7 @@ namespace {
       cTclIf::register_func("GetLayerThickness",      tclGetLayerThickness);
       cTclIf::register_func("GetLayerRho",            tclGetLayerRho);
       cTclIf::register_func("GetLayerResis",          tclGetLayerResis);
+      cTclIf::register_func("GetLayerTau",            tclGetLayerTau);
       cTclIf::register_func("GetLayerEps",            tclGetLayerEps);
       cTclIf::register_func("GetLayerCap",            tclGetLayerCap);
       cTclIf::register_func("GetLayerCapPerim",       tclGetLayerCapPerim);

@@ -3296,7 +3296,7 @@ void
 cgx_in::pr_record(const char *rec, int size, int flags)
 {
     if (in_printing) {
-        fprintf(in_print_fp, "%-12llx ", in_offset);
+        fprintf(in_print_fp, "%-12llx ", (unsigned long long)in_offset);
         fprintf(in_print_fp, "%-9s size=%-9d flags=%d\n", rec, size, flags);
     }
 }

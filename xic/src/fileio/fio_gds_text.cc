@@ -141,7 +141,7 @@ void
 gds_in::print_offset()
 {
     if (in_printing)
-        fprintf(in_print_fp, "%09lld ", in_offset);
+        fprintf(in_print_fp, "%09llu ", (unsigned long long)in_offset);
 }
 
 
@@ -284,7 +284,7 @@ gds_in::ap_bgnstr()
         return (false);
     if (in_rectype != II_STRNAME) {
         fprintf(in_print_fp, ">> Unexpected record type %d at offset %llu",
-            in_rectype, in_offset);
+            in_rectype, (unsigned long long)in_offset);
         return (false);
     }
     if (!ap_strname())

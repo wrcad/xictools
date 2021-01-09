@@ -315,8 +315,8 @@ namespace cd_attrdb {
     adb_t::print_stats()
     {
         printf("Ticket count: %d\n", table.allocated());
-        printf("Bytes used: %lld\n", factory.bytes_inuse() +
-            table.allocated() * sizeof(atitem_t));
+        printf("Bytes used: %llu\n", (unsigned long long)(
+            factory.bytes_inuse() + table.allocated() * sizeof(atitem_t)));
         printf("Hash width: %d\n", table.hashwidth());
     }
 

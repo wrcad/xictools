@@ -2013,7 +2013,7 @@ gds_in::unsup()
             if (in_action == cvOpenModePrint) {
                 fprintf(in_print_fp,
                     ">> Unsupported record type %s at offset %llu\n",
-                    Unsup[i].name, in_offset);
+                    Unsup[i].name, (unsigned long long)in_offset);
             }
             else {
                 sprintf(buf, "unsupported record type %s", Unsup[i].name);
@@ -2024,7 +2024,7 @@ gds_in::unsup()
     }
     if (in_action == cvOpenModePrint) {
         fprintf(in_print_fp, ">> Unknown record type %d at offset %llu\n",
-            in_rectype, in_offset);
+            in_rectype, (unsigned long long)in_offset);
     }
     else {
         sprintf(buf, "unknown record type %d", in_rectype);
@@ -2062,7 +2062,7 @@ gds_in::nop()
             if (in_action == cvOpenModePrint) {
                 fprintf(in_print_fp,
                     ">> Ignored record type %s at offset %llu\n",
-                    Ignored[i].name, in_offset);
+                    Ignored[i].name, (unsigned long long)in_offset);
             }
             else {
                 sprintf(buf, "ignored record type %s", Ignored[i].name);
@@ -2073,7 +2073,7 @@ gds_in::nop()
     }
     if (in_action == cvOpenModePrint) {
         fprintf(in_print_fp, ">> Ignored record type %d at offset %llu\n",
-            in_rectype, in_offset);
+            in_rectype, (unsigned long long)in_offset);
     }
     else {
         sprintf(buf, "ignored record type %d", in_rectype);

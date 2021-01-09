@@ -54,6 +54,7 @@
 #ifndef MROUTER_H
 #define MROUTER_H
 
+#include <stdint.h>
 #include "mrouter.h"
 #include "mr_stack.h"
 #include "miscutil/lstring.h"

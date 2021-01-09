@@ -187,7 +187,7 @@ cCD::CheckAlloc()
     while ((h = gen.next()) != 0) {
         intptr_t cnt = (intptr_t)h->stData;
         if (cnt != 0)
-            printf("%s %lld\n", h->stTag, (int64_t)cnt);
+            printf("%s %lld\n", h->stTag, (long long)cnt);
     }
 }
 

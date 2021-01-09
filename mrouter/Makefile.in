@@ -34,10 +34,10 @@ all: lef def
 	@cd mrouter; $(MAKE) depend; $(MAKE)
 
 lef:
-	@tar xzf source.lefdef/lef*tar.gz
+	@tar xzf $(LEFLIB)
 
 def:
-	@tar xzf source.lefdef/def*tar.Z
+	@tar xzf $(DEFLIB)
 
 cleanlef:
 	@cd lef; $(MAKE) clean

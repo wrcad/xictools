@@ -646,7 +646,7 @@ namespace {
         const char *t = *s;
         if (t[0] == '0' && (t[1] == 'x' || t[1] == 'X')) {
             int n = 0;
-            int64_t ll;
+            unsigned long long ll;
             if (sscanf(t+2, "%llx%n", &ll, &n) == 1) {
                 *num = ll;
                 (*s) += n+2;
@@ -655,7 +655,7 @@ namespace {
         }
         else if (isdigit(*t)) {
             int n = 0;
-            int64_t ll;
+            unsigned long long ll;
             if (sscanf(t, "%llu%n", &ll, &n) == 1) {
                 *num = ll;
                 (*s) += n;

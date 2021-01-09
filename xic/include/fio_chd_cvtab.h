@@ -195,7 +195,7 @@ struct cvtab_item_t : public cv_fgif
             printf("  %-16s effBB= %d,%d %d,%d ts_bytes= %llu full= %d\n",
                 Tstring(cvi_symref->get_name()),
                 cvi_BB.left, cvi_BB.bottom, cvi_BB.right, cvi_BB.top,
-                cvi_bytes_used, get_full_area());
+                (unsigned long long)cvi_bytes_used, get_full_area());
         }
 
 private:
