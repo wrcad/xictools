@@ -1,6 +1,6 @@
-diff -c -r source.lefdef/def.orig/cdef/defiGroup.h def/cdef/defiGroup.h
-*** source.lefdef/def.orig/cdef/defiGroup.h	Fri Feb  5 14:39:14 2016
---- def/cdef/defiGroup.h	Wed Dec 30 14:20:07 2020
+diff -r -c source.lefdef/def.orig/cdef/defiGroup.h def/cdef/defiGroup.h
+*** source.lefdef/def.orig/cdef/defiGroup.h	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/defiGroup.h	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 55,61 ****
   EXTERN const char* defiGroup_propName (const defiGroup* obj, int  index);
@@ -18,9 +18,9 @@ diff -c -r source.lefdef/def.orig/cdef/defiGroup.h def/cdef/defiGroup.h
   EXTERN int defiGroup_propIsNumber (const defiGroup* obj, int  index);
   EXTERN int defiGroup_propIsString (const defiGroup* obj, int  index);
   
-diff -c -r source.lefdef/def.orig/cdef/defiNet.h def/cdef/defiNet.h
-*** source.lefdef/def.orig/cdef/defiNet.h	Fri Feb  5 14:39:14 2016
---- def/cdef/defiNet.h	Wed Dec 30 14:19:23 2020
+diff -r -c source.lefdef/def.orig/cdef/defiNet.h def/cdef/defiNet.h
+*** source.lefdef/def.orig/cdef/defiNet.h	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/defiNet.h	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 124,130 ****
   EXTERN const char* defiNet_propName (const defiNet* obj, int  index);
@@ -63,9 +63,9 @@ diff -c -r source.lefdef/def.orig/cdef/defiNet.h def/cdef/defiNet.h
   EXTERN const char* defiNet_viaRouteStatus (const defiNet* obj, int  index);
   EXTERN const char* defiNet_viaRouteStatusShieldName (const defiNet* obj, int  index);
   EXTERN const char* defiNet_viaShapeType (const defiNet* obj, int  index);
-diff -c -r source.lefdef/def.orig/cdef/defiNonDefault.h def/cdef/defiNonDefault.h
-*** source.lefdef/def.orig/cdef/defiNonDefault.h	Fri Feb  5 14:39:14 2016
---- def/cdef/defiNonDefault.h	Wed Dec 30 14:17:08 2020
+diff -r -c source.lefdef/def.orig/cdef/defiNonDefault.h def/cdef/defiNonDefault.h
+*** source.lefdef/def.orig/cdef/defiNonDefault.h	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/defiNonDefault.h	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 44,50 ****
   EXTERN const char* defiNonDefault_propName (const defiNonDefault* obj, int  index);
@@ -83,9 +83,9 @@ diff -c -r source.lefdef/def.orig/cdef/defiNonDefault.h def/cdef/defiNonDefault.
   EXTERN int defiNonDefault_propIsNumber (const defiNonDefault* obj, int  index);
   EXTERN int defiNonDefault_propIsString (const defiNonDefault* obj, int  index);
   
-diff -c -r source.lefdef/def.orig/cdef/defiPinProp.h def/cdef/defiPinProp.h
-*** source.lefdef/def.orig/cdef/defiPinProp.h	Fri Feb  5 14:39:14 2016
---- def/cdef/defiPinProp.h	Wed Dec 30 14:15:45 2020
+diff -r -c source.lefdef/def.orig/cdef/defiPinProp.h def/cdef/defiPinProp.h
+*** source.lefdef/def.orig/cdef/defiPinProp.h	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/defiPinProp.h	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 45,51 ****
   EXTERN const char* defiPinProp_propName (const defiPinProp* obj, int  index);
@@ -103,9 +103,9 @@ diff -c -r source.lefdef/def.orig/cdef/defiPinProp.h def/cdef/defiPinProp.h
   EXTERN int defiPinProp_propIsNumber (const defiPinProp* obj, int  index);
   EXTERN int defiPinProp_propIsString (const defiPinProp* obj, int  index);
   
-diff -c -r source.lefdef/def.orig/cdef/defiPropType.h def/cdef/defiPropType.h
-*** source.lefdef/def.orig/cdef/defiPropType.h	Fri Feb  5 14:39:14 2016
---- def/cdef/defiPropType.h	Wed Dec 30 14:14:41 2020
+diff -r -c source.lefdef/def.orig/cdef/defiPropType.h def/cdef/defiPropType.h
+*** source.lefdef/def.orig/cdef/defiPropType.h	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/defiPropType.h	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 40,45 ****
   /* Struct holds the data type for one property, if the property is            */
@@ -121,9 +121,9 @@ diff -c -r source.lefdef/def.orig/cdef/defiPropType.h def/cdef/defiPropType.h
 ! EXTERN char defiPropType_propType (const defiPropType* obj, char*  name);
   
   #endif
-diff -c -r source.lefdef/def.orig/cdef/defiRegion.h def/cdef/defiRegion.h
-*** source.lefdef/def.orig/cdef/defiRegion.h	Fri Feb  5 14:39:14 2016
---- def/cdef/defiRegion.h	Wed Dec 30 14:13:40 2020
+diff -r -c source.lefdef/def.orig/cdef/defiRegion.h def/cdef/defiRegion.h
+*** source.lefdef/def.orig/cdef/defiRegion.h	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/defiRegion.h	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 45,51 ****
   EXTERN const char* defiRegion_propName (const defiRegion* obj, int  index);
@@ -141,9 +141,9 @@ diff -c -r source.lefdef/def.orig/cdef/defiRegion.h def/cdef/defiRegion.h
   EXTERN int defiRegion_propIsNumber (const defiRegion* obj, int  index);
   EXTERN int defiRegion_propIsString (const defiRegion* obj, int  index);
   
-diff -c -r source.lefdef/def.orig/cdef/defiRowTrack.h def/cdef/defiRowTrack.h
-*** source.lefdef/def.orig/cdef/defiRowTrack.h	Fri Feb  5 14:39:14 2016
---- def/cdef/defiRowTrack.h	Wed Dec 30 14:12:36 2020
+diff -r -c source.lefdef/def.orig/cdef/defiRowTrack.h def/cdef/defiRowTrack.h
+*** source.lefdef/def.orig/cdef/defiRowTrack.h	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/defiRowTrack.h	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 54,60 ****
   EXTERN const char* defiRow_propName (const defiRow* obj, int  index);
@@ -161,9 +161,9 @@ diff -c -r source.lefdef/def.orig/cdef/defiRowTrack.h def/cdef/defiRowTrack.h
   EXTERN int defiRow_propIsNumber (const defiRow* obj, int  index);
   EXTERN int defiRow_propIsString (const defiRow* obj, int  index);
   
-diff -c -r source.lefdef/def.orig/cdef/xdefiGroup.cpp def/cdef/xdefiGroup.cpp
-*** source.lefdef/def.orig/cdef/xdefiGroup.cpp	Fri Feb  5 14:39:14 2016
---- def/cdef/xdefiGroup.cpp	Wed Dec 30 14:19:44 2020
+diff -r -c source.lefdef/def.orig/cdef/xdefiGroup.cpp def/cdef/xdefiGroup.cpp
+*** source.lefdef/def.orig/cdef/xdefiGroup.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/xdefiGroup.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 97,103 ****
       return ((LefDefParser::defiGroup*)obj)->propNumber(index);
@@ -181,9 +181,9 @@ diff -c -r source.lefdef/def.orig/cdef/xdefiGroup.cpp def/cdef/xdefiGroup.cpp
       return ((const LefDefParser::defiGroup*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/def.orig/cdef/xdefiNet.cpp def/cdef/xdefiNet.cpp
-*** source.lefdef/def.orig/cdef/xdefiNet.cpp	Fri Feb  5 14:39:14 2016
---- def/cdef/xdefiNet.cpp	Wed Dec 30 14:18:25 2020
+diff -r -c source.lefdef/def.orig/cdef/xdefiNet.cpp def/cdef/xdefiNet.cpp
+*** source.lefdef/def.orig/cdef/xdefiNet.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/xdefiNet.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 197,203 ****
       return ((LefDefParser::defiNet*)obj)->propNumber(index);
@@ -251,9 +251,9 @@ diff -c -r source.lefdef/def.orig/cdef/xdefiNet.cpp def/cdef/xdefiNet.cpp
       return ((const LefDefParser::defiNet*)obj)->bottomMaskNum(index);
   }
   
-diff -c -r source.lefdef/def.orig/cdef/xdefiNonDefault.cpp def/cdef/xdefiNonDefault.cpp
-*** source.lefdef/def.orig/cdef/xdefiNonDefault.cpp	Fri Feb  5 14:39:14 2016
---- def/cdef/xdefiNonDefault.cpp	Wed Dec 30 15:37:58 2020
+diff -r -c source.lefdef/def.orig/cdef/xdefiNonDefault.cpp def/cdef/xdefiNonDefault.cpp
+*** source.lefdef/def.orig/cdef/xdefiNonDefault.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/xdefiNonDefault.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 61,67 ****
       return ((LefDefParser::defiNonDefault*)obj)->propNumber(index);
@@ -271,9 +271,9 @@ diff -c -r source.lefdef/def.orig/cdef/xdefiNonDefault.cpp def/cdef/xdefiNonDefa
       return ((const LefDefParser::defiNonDefault*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/def.orig/cdef/xdefiPinProp.cpp def/cdef/xdefiPinProp.cpp
-*** source.lefdef/def.orig/cdef/xdefiPinProp.cpp	Fri Feb  5 14:39:14 2016
---- def/cdef/xdefiPinProp.cpp	Wed Dec 30 14:15:08 2020
+diff -r -c source.lefdef/def.orig/cdef/xdefiPinProp.cpp def/cdef/xdefiPinProp.cpp
+*** source.lefdef/def.orig/cdef/xdefiPinProp.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/xdefiPinProp.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 65,71 ****
       return ((LefDefParser::defiPinProp*)obj)->propNumber(index);
@@ -291,9 +291,9 @@ diff -c -r source.lefdef/def.orig/cdef/xdefiPinProp.cpp def/cdef/xdefiPinProp.cp
       return ((const LefDefParser::defiPinProp*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/def.orig/cdef/xdefiPropType.cpp def/cdef/xdefiPropType.cpp
-*** source.lefdef/def.orig/cdef/xdefiPropType.cpp	Fri Feb  5 14:39:14 2016
---- def/cdef/xdefiPropType.cpp	Wed Dec 30 14:14:18 2020
+diff -r -c source.lefdef/def.orig/cdef/xdefiPropType.cpp def/cdef/xdefiPropType.cpp
+*** source.lefdef/def.orig/cdef/xdefiPropType.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/xdefiPropType.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 37,43 ****
   #include "defiPropType.hpp"
@@ -311,9 +311,9 @@ diff -c -r source.lefdef/def.orig/cdef/xdefiPropType.cpp def/cdef/xdefiPropType.
       return ((const LefDefParser::defiPropType*)obj)->propType(name);
   }
   
-diff -c -r source.lefdef/def.orig/cdef/xdefiRegion.cpp def/cdef/xdefiRegion.cpp
-*** source.lefdef/def.orig/cdef/xdefiRegion.cpp	Fri Feb  5 14:39:14 2016
---- def/cdef/xdefiRegion.cpp	Wed Dec 30 14:13:25 2020
+diff -r -c source.lefdef/def.orig/cdef/xdefiRegion.cpp def/cdef/xdefiRegion.cpp
+*** source.lefdef/def.orig/cdef/xdefiRegion.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/xdefiRegion.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 57,63 ****
       return ((LefDefParser::defiRegion*)obj)->propNumber(index);
@@ -331,9 +331,9 @@ diff -c -r source.lefdef/def.orig/cdef/xdefiRegion.cpp def/cdef/xdefiRegion.cpp
       return ((const LefDefParser::defiRegion*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/def.orig/cdef/xdefiRowTrack.cpp def/cdef/xdefiRowTrack.cpp
-*** source.lefdef/def.orig/cdef/xdefiRowTrack.cpp	Fri Feb  5 14:39:14 2016
---- def/cdef/xdefiRowTrack.cpp	Wed Dec 30 14:13:02 2020
+diff -r -c source.lefdef/def.orig/cdef/xdefiRowTrack.cpp def/cdef/xdefiRowTrack.cpp
+*** source.lefdef/def.orig/cdef/xdefiRowTrack.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/cdef/xdefiRowTrack.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 101,107 ****
       return ((LefDefParser::defiRow*)obj)->propNumber(index);
@@ -351,147 +351,1553 @@ diff -c -r source.lefdef/def.orig/cdef/xdefiRowTrack.cpp def/cdef/xdefiRowTrack.
       return ((const LefDefParser::defiRow*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/def.orig/def/def.y def/def/def.y
-*** source.lefdef/def.orig/def/def.y	Fri Feb  5 14:39:14 2016
---- def/def/def.y	Wed Dec 30 15:34:55 2020
+diff -r -c source.lefdef/def.orig/def/defiAlias.cpp def/def/defiAlias.cpp
+*** source.lefdef/def.orig/def/defiAlias.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiAlias.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
-*** 19,24 ****
---- 19,29 ----
-  // 
-  // For updates, support, or to become part of the LEF/DEF Community,
-  // check www.openeda.org for details.
-+ //====
-+ // Updated to add missing semicolons for compatibility with bison-3.
-+ // Bison no longer repairs this error.
-+ // Stephen Whiteley, Whiteley Research Inc.
-+ //====
-  //******************************************************************************
-  // 
-  //  $Author: dell $
-***************
-*** 570,581 ****
-              }
-          | error ';' { yyerrok; yyclearin;}
+*** 38,45 ****
+  }; 
   
-! property_type_and_val: K_INTEGER { defData->real_num = 0 } opt_range opt_num_val
-              {
-                if (defCallbacks->PropCbk) defData->Prop.setPropInteger();
-                defData->defPropDefType = 'I';
-              }
-!         | K_REAL { defData->real_num = 1 } opt_range opt_num_val
-              {
-                if (defCallbacks->PropCbk) defData->Prop.setPropReal();
-                defData->defPropDefType = 'R';
---- 575,586 ----
-              }
-          | error ';' { yyerrok; yyclearin;}
+  defiAlias_itr::defiAlias_itr() 
+! : first(1),
+!   iterator(NULL)
+  {
+      defiAlias_itr::Init();
+  }
+--- 38,45 ----
+  }; 
   
-! property_type_and_val: K_INTEGER { defData->real_num = 0; } opt_range opt_num_val
-              {
-                if (defCallbacks->PropCbk) defData->Prop.setPropInteger();
-                defData->defPropDefType = 'I';
-              }
-!         | K_REAL { defData->real_num = 1; } opt_range opt_num_val
-              {
-                if (defCallbacks->PropCbk) defData->Prop.setPropReal();
-                defData->defPropDefType = 'R';
+  defiAlias_itr::defiAlias_itr() 
+! : iterator(NULL),
+!     first(1)
+  {
+      defiAlias_itr::Init();
+  }
+diff -r -c source.lefdef/def.orig/def/defiGroup.cpp def/def/defiGroup.cpp
+*** source.lefdef/def.orig/def/defiGroup.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiGroup.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
-*** 3184,3191 ****
-          | '+' K_ESTCAP NUMBER
-              { 
-                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!               if (defData->VersionNum < 5.5)
-                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
-                else
-                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-              }
---- 3189,3197 ----
-          | '+' K_ESTCAP NUMBER
-              { 
-                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!               if (defData->VersionNum < 5.5) {
-                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
-+               }
-                else
-                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-              }
+*** 324,330 ****
+  }
+  
+  
+! const char defiGroup::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (LEFPARS-6050): The index number %d given for the GROUP PROPERTY is invalid.\nValid index is from 0 to %d", index, numProps_);
+--- 324,330 ----
+  }
+  
+  
+! char defiGroup::propType(int index) const {
+    char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (LEFPARS-6050): The index number %d given for the GROUP PROPERTY is invalid.\nValid index is from 0 to %d", index, numProps_);
+diff -r -c source.lefdef/def.orig/def/defiGroup.hpp def/def/defiGroup.hpp
+*** source.lefdef/def.orig/def/defiGroup.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiGroup.hpp	2020-12-30 16:46:37.000000000 -0800
 ***************
-*** 3287,3294 ****
-  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
-              {
-                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!               if (defData->VersionNum < 5.5)
-                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
-                else
-                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-              }
---- 3293,3301 ----
-  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
-              {
-                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!               if (defData->VersionNum < 5.5) {
-                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
-+               }
-                else
-                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-              }
+*** 72,78 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+--- 72,78 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+diff -r -c source.lefdef/def.orig/def/defiNet.cpp def/def/defiNet.cpp
+*** source.lefdef/def.orig/def/defiNet.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiNet.cpp	2021-01-09 12:27:43.513136786 -0800
 ***************
-*** 3562,3585 ****
-  group_soft_option: K_MAXX NUMBER
-        {
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5)
-            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
-          else
-            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-        | K_MAXY NUMBER
-        { 
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5)
-            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
-          else
-            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-        | K_MAXHALFPERIMETER NUMBER
-        { 
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5)
-            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
-          else
-            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
---- 3569,3595 ----
-  group_soft_option: K_MAXX NUMBER
-        {
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5) {
-            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
-+         }
-          else
-            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-        | K_MAXY NUMBER
-        { 
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5) {
-            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
-+         }
-          else
-            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-        | K_MAXHALFPERIMETER NUMBER
-        { 
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5) {
-            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
-+         }
-          else
-            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-diff -c -r source.lefdef/def.orig/def/def_keywords.cpp def/def/def_keywords.cpp
-*** source.lefdef/def.orig/def/def_keywords.cpp	Fri Feb  5 14:39:14 2016
---- def/def/def_keywords.cpp	Wed Dec 30 11:27:26 2020
+*** 1195,1201 ****
+  
+  void defiNet::changeInstance(const char* instance, int index) {
+    int len;
+!   char errMsg[128];
+  
+    if ((index < 0) || (index > numPins_)) {
+       sprintf (errMsg, "ERROR (DEFPARS-6083): The index number %d specified for the NET INSTANCE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+--- 1195,1201 ----
+  
+  void defiNet::changeInstance(const char* instance, int index) {
+    int len;
+!   char errMsg[256];
+  
+    if ((index < 0) || (index > numPins_)) {
+       sprintf (errMsg, "ERROR (DEFPARS-6083): The index number %d specified for the NET INSTANCE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+***************
+*** 1213,1219 ****
+  
+  void defiNet::changePin(const char* pin, int index) {
+    int len;
+!   char errMsg[128];
+  
+    if ((index < 0) || (index > numPins_)) {
+       sprintf (errMsg, "ERROR (DEFPARS-6084): The index number %d specified for the NET PIN is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+--- 1213,1219 ----
+  
+  void defiNet::changePin(const char* pin, int index) {
+    int len;
+!   char errMsg[256];
+  
+    if ((index < 0) || (index > numPins_)) {
+       sprintf (errMsg, "ERROR (DEFPARS-6084): The index number %d specified for the NET PIN is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+***************
+*** 1275,1281 ****
+  }
+  
+  
+! const char defiNet::propType(int index) const {
+    if (index >= 0 &&  index < numProps_)
+      return propTypes_[index];
+    return 0;
+--- 1275,1281 ----
+  }
+  
+  
+! char defiNet::propType(int index) const {
+    if (index >= 0 &&  index < numProps_)
+      return propTypes_[index];
+    return 0;
+***************
+*** 2508,2514 ****
+  
+  // 5.6
+  const char* defiNet::polygonName(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index > numPolys_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numPolys_);
+--- 2508,2514 ----
+  
+  // 5.6
+  const char* defiNet::polygonName(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index > numPolys_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numPolys_);
+***************
+*** 2519,2525 ****
+  }
+  
+  const char* defiNet::polyRouteStatus(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index > numPolys_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numPolys_);
+--- 2519,2525 ----
+  }
+  
+  const char* defiNet::polyRouteStatus(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index > numPolys_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numPolys_);
+***************
+*** 2530,2536 ****
+  }
+  
+  const char* defiNet::polyRouteStatusShieldName(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numPolys_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPolys_);
+--- 2530,2536 ----
+  }
+  
+  const char* defiNet::polyRouteStatusShieldName(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numPolys_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPolys_);
+***************
+*** 2541,2547 ****
+  }
+  
+  const char* defiNet::polyShapeType(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index > numPolys_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numPolys_);
+--- 2541,2547 ----
+  }
+  
+  const char* defiNet::polyShapeType(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index > numPolys_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numPolys_);
+***************
+*** 2552,2558 ****
+  }
+  
+  int defiNet::polyMask(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index > numPolys_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numPolys_);
+--- 2552,2558 ----
+  }
+  
+  int defiNet::polyMask(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index > numPolys_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numPolys_);
+***************
+*** 2658,2664 ****
+  
+  // 5.6
+  const char* defiNet::rectName(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index > numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+--- 2658,2664 ----
+  
+  // 5.6
+  const char* defiNet::rectName(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index > numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+***************
+*** 2669,2675 ****
+  }
+  
+  const char* defiNet::rectRouteStatus(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index > numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+--- 2669,2675 ----
+  }
+  
+  const char* defiNet::rectRouteStatus(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index > numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+***************
+*** 2680,2686 ****
+  }
+  
+  const char* defiNet::rectRouteStatusShieldName(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numRects_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numRects_);
+--- 2680,2686 ----
+  }
+  
+  const char* defiNet::rectRouteStatusShieldName(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numRects_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numRects_);
+***************
+*** 2691,2697 ****
+  }
+  
+  const char* defiNet::rectShapeType(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index > numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+--- 2691,2697 ----
+  }
+  
+  const char* defiNet::rectShapeType(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index > numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+***************
+*** 2703,2709 ****
+  
+  // 5.6
+  int defiNet::xl(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+--- 2703,2709 ----
+  
+  // 5.6
+  int defiNet::xl(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+***************
+*** 2715,2721 ****
+  
+  // 5.6
+  int defiNet::yl(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+--- 2715,2721 ----
+  
+  // 5.6
+  int defiNet::yl(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+***************
+*** 2727,2733 ****
+  
+  // 5.6
+  int defiNet::xh(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+--- 2727,2733 ----
+  
+  // 5.6
+  int defiNet::xh(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+***************
+*** 2739,2745 ****
+  
+  // 5.6
+  int defiNet::yh(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+--- 2739,2745 ----
+  
+  // 5.6
+  int defiNet::yh(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+***************
+*** 2750,2756 ****
+  }
+  
+  int defiNet::rectMask(int index) const {
+!   char errMsg[128];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+--- 2750,2756 ----
+  }
+  
+  int defiNet::rectMask(int index) const {
+!   char errMsg[256];
+    if (index < 0 || index >= numRects_) {
+       sprintf (errMsg, "ERROR (DEFPARS-6086): The index number %d specified for the NET RECTANGLE is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numRects_);
+***************
+*** 2848,2854 ****
+  }
+  
+  const char* defiNet::viaName(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+--- 2848,2854 ----
+  }
+  
+  const char* defiNet::viaName(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+***************
+*** 2859,2865 ****
+  }
+  
+  const char* defiNet::viaRouteStatus(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+--- 2859,2865 ----
+  }
+  
+  const char* defiNet::viaRouteStatus(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+***************
+*** 2870,2876 ****
+  }
+  
+  const char* defiNet::viaRouteStatusShieldName(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+--- 2870,2876 ----
+  }
+  
+  const char* defiNet::viaRouteStatusShieldName(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+***************
+*** 2881,2887 ****
+  }
+  
+  const char* defiNet::viaShapeType(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+--- 2881,2887 ----
+  }
+  
+  const char* defiNet::viaShapeType(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+***************
+*** 2891,2898 ****
+      return viaShapeTypes_[index];
+  }
+  
+! const int defiNet::viaOrient(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+--- 2891,2898 ----
+      return viaShapeTypes_[index];
+  }
+  
+! int defiNet::viaOrient(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+***************
+*** 2903,2909 ****
+  }
+  
+  const char* defiNet::viaOrientStr(int index) const  {
+!     char errMsg[128];
+  
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+--- 2903,2909 ----
+  }
+  
+  const char* defiNet::viaOrientStr(int index) const  {
+!     char errMsg[256];
+  
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+***************
+*** 2914,2921 ****
+      return (defiOrientStr(viaOrients_[index]));
+  }
+  
+! const int defiNet::topMaskNum(int index) const {
+!    char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+--- 2914,2921 ----
+      return (defiOrientStr(viaOrients_[index]));
+  }
+  
+! int defiNet::topMaskNum(int index) const {
+!    char errMsg[256];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+***************
+*** 2926,2933 ****
+      return viaMasks_[index] / 100;
+  }
+  
+! const int defiNet::cutMaskNum(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+--- 2926,2933 ----
+      return viaMasks_[index] / 100;
+  }
+  
+! int defiNet::cutMaskNum(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+***************
+*** 2938,2945 ****
+      return viaMasks_[index] / 10 % 10;
+  }
+  
+! const int defiNet::bottomMaskNum(int index) const {
+!     char errMsg[128];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+--- 2938,2945 ----
+      return viaMasks_[index] / 10 % 10;
+  }
+  
+! int defiNet::bottomMaskNum(int index) const {
+!     char errMsg[256];
+      if (index < 0 || index > numPts_) {
+          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+              index, numPts_);
+diff -r -c source.lefdef/def.orig/def/defiNet.hpp def/def/defiNet.hpp
+*** source.lefdef/def.orig/def/defiNet.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiNet.hpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 302,308 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+    int          numConnections() const;
+--- 302,308 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char         propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+    int          numConnections() const;
+***************
+*** 410,420 ****
+    int  numViaSpecs() const;
+    struct defiPoints getViaPts(int index) const;                       
+    const char* viaName(int index) const;
+!   const int viaOrient(int index) const;
+    const char* viaOrientStr(int index) const;
+!   const int topMaskNum(int index) const;
+!   const int cutMaskNum(int index) const;
+!   const int bottomMaskNum(int index) const;
+    const char* viaRouteStatus(int index) const;
+    const char* viaRouteStatusShieldName(int index) const;
+    const char* viaShapeType(int index) const;
+--- 410,420 ----
+    int  numViaSpecs() const;
+    struct defiPoints getViaPts(int index) const;                       
+    const char* viaName(int index) const;
+!   int   viaOrient(int index) const;
+    const char* viaOrientStr(int index) const;
+!   int   topMaskNum(int index) const;
+!   int   cutMaskNum(int index) const;
+!   int   bottomMaskNum(int index) const;
+    const char* viaRouteStatus(int index) const;
+    const char* viaRouteStatusShieldName(int index) const;
+    const char* viaShapeType(int index) const;
+diff -r -c source.lefdef/def.orig/def/defiNonDefault.cpp def/def/defiNonDefault.cpp
+*** source.lefdef/def.orig/def/defiNonDefault.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiNonDefault.cpp	2021-01-09 12:14:24.793428642 -0800
+***************
+*** 318,324 ****
+  }
+  
+  const char* defiNonDefault::layerName(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 318,324 ----
+  }
+  
+  const char* defiNonDefault::layerName(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 330,336 ****
+  
+  // Will be obsoleted in 5.7
+  double defiNonDefault::layerWidth(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 330,336 ----
+  
+  // Will be obsoleted in 5.7
+  double defiNonDefault::layerWidth(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 341,347 ****
+  }
+  
+  int defiNonDefault::layerWidthVal(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 341,347 ----
+  }
+  
+  int defiNonDefault::layerWidthVal(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 352,358 ****
+  }
+  
+  int defiNonDefault::hasLayerDiagWidth(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 352,358 ----
+  }
+  
+  int defiNonDefault::hasLayerDiagWidth(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 364,370 ****
+  
+  // Will be obsoleted in 5.7
+  double defiNonDefault::layerDiagWidth(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 364,370 ----
+  
+  // Will be obsoleted in 5.7
+  double defiNonDefault::layerDiagWidth(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 375,381 ****
+  }
+  
+  int defiNonDefault::layerDiagWidthVal(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 375,381 ----
+  }
+  
+  int defiNonDefault::layerDiagWidthVal(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 386,392 ****
+  }
+  
+  int defiNonDefault::hasLayerWireExt(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 386,392 ----
+  }
+  
+  int defiNonDefault::hasLayerWireExt(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 397,403 ****
+  }
+  
+  int defiNonDefault::hasLayerSpacing(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 397,403 ----
+  }
+  
+  int defiNonDefault::hasLayerSpacing(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 409,415 ****
+  
+  // Will be obsoleted in 5.7
+  double defiNonDefault::layerWireExt(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 409,415 ----
+  
+  // Will be obsoleted in 5.7
+  double defiNonDefault::layerWireExt(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 420,426 ****
+  }
+  
+  int defiNonDefault::layerWireExtVal(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 420,426 ----
+  }
+  
+  int defiNonDefault::layerWireExtVal(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 432,438 ****
+  
+  // Will be obsoleted in 5.7
+  double defiNonDefault::layerSpacing(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 432,438 ----
+  
+  // Will be obsoleted in 5.7
+  double defiNonDefault::layerSpacing(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 443,449 ****
+  }
+  
+  int defiNonDefault::layerSpacingVal(int index) const { 
+!   char msg[160];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 443,449 ----
+  }
+  
+  int defiNonDefault::layerSpacingVal(int index) const { 
+!   char msg[256];
+    if (index < 0 || index >= numLayers_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 458,464 ****
+  }
+  
+  const char* defiNonDefault::viaName(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numVias_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 458,464 ----
+  }
+  
+  const char* defiNonDefault::viaName(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numVias_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 473,479 ****
+  }
+  
+  const char* defiNonDefault::viaRuleName(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numViaRules_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 473,479 ----
+  }
+  
+  const char* defiNonDefault::viaRuleName(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numViaRules_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 488,494 ****
+  }
+  
+  const char* defiNonDefault::cutLayerName(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numMinCuts_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 488,494 ----
+  }
+  
+  const char* defiNonDefault::cutLayerName(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numMinCuts_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 499,505 ****
+  }
+  
+  int defiNonDefault::numCuts(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numMinCuts_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+--- 499,505 ----
+  }
+  
+  int defiNonDefault::numCuts(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numMinCuts_) {
+       sprintf (msg, "ERROR (DEFPARS-6090): The index number %d specified for the NONDEFAULT LAYER is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numLayers_);
+***************
+*** 638,644 ****
+  }
+  
+  const char* defiNonDefault::propName(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+--- 638,644 ----
+  }
+  
+  const char* defiNonDefault::propName(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+***************
+*** 649,655 ****
+  }
+  
+  const char* defiNonDefault::propValue(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+--- 649,655 ----
+  }
+  
+  const char* defiNonDefault::propValue(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+***************
+*** 660,666 ****
+  }
+  
+  double defiNonDefault::propNumber(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+--- 660,666 ----
+  }
+  
+  double defiNonDefault::propNumber(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+***************
+*** 670,677 ****
+    return dvalues_[index];
+  }
+  
+! const char defiNonDefault::propType(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+--- 670,677 ----
+    return dvalues_[index];
+  }
+  
+! char defiNonDefault::propType(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+***************
+*** 682,688 ****
+  }
+  
+  int defiNonDefault::propIsNumber(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+--- 682,688 ----
+  }
+  
+  int defiNonDefault::propIsNumber(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+***************
+*** 693,699 ****
+  }
+  
+  int defiNonDefault::propIsString(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+--- 693,699 ----
+  }
+  
+  int defiNonDefault::propIsString(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
+               index, numProps_);
+diff -r -c source.lefdef/def.orig/def/defiNonDefault.hpp def/def/defiNonDefault.hpp
+*** source.lefdef/def.orig/def/defiNonDefault.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiNonDefault.hpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 67,73 ****
+    const char* propName(int index) const;
+    const char* propValue(int index) const;
+    double      propNumber(int index) const;
+!   const char  propType(int index) const;
+    int         propIsNumber(int index) const;
+    int         propIsString(int index) const;
+    
+--- 67,73 ----
+    const char* propName(int index) const;
+    const char* propValue(int index) const;
+    double      propNumber(int index) const;
+!   char        propType(int index) const;
+    int         propIsNumber(int index) const;
+    int         propIsString(int index) const;
+    
+diff -r -c source.lefdef/def.orig/def/defiPath.cpp def/def/defiPath.cpp
+*** source.lefdef/def.orig/def/defiPath.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiPath.cpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 39,47 ****
+  defiPath::defiPath()
+  : keys_(NULL),
+  data_(NULL),
+- pointer_(NULL),
+  numUsed_(0),
+  numAllocated_(0),
+  numX_(0),      
+  numY_(0),
+  stepX_(0),
+--- 39,48 ----
+  defiPath::defiPath()
+  : keys_(NULL),
+  data_(NULL),
+  numUsed_(0),
+  numAllocated_(0),
++ pointer_(NULL),
++ 
+  numX_(0),      
+  numY_(0),
+  stepX_(0),
+diff -r -c source.lefdef/def.orig/def/defiPinProp.cpp def/def/defiPinProp.cpp
+*** source.lefdef/def.orig/def/defiPinProp.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiPinProp.cpp	2021-01-09 12:15:51.887062993 -0800
+***************
+*** 224,230 ****
+  
+  
+  const char* defiPinProp::propName(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 224,230 ----
+  
+  
+  const char* defiPinProp::propName(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 236,242 ****
+  
+  
+  const char* defiPinProp::propValue(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 236,242 ----
+  
+  
+  const char* defiPinProp::propValue(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 248,254 ****
+  
+  
+  double defiPinProp::propNumber(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 248,254 ----
+  
+  
+  double defiPinProp::propNumber(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 259,266 ****
+  }
+  
+  
+! const char defiPinProp::propType(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 259,266 ----
+  }
+  
+  
+! char defiPinProp::propType(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 272,278 ****
+  
+  
+  int defiPinProp::propIsNumber(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 272,278 ----
+  
+  
+  int defiPinProp::propIsNumber(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 284,290 ****
+  
+  
+  int defiPinProp::propIsString(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 284,290 ----
+  
+  
+  int defiPinProp::propIsString(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+diff -r -c source.lefdef/def.orig/def/defiPinProp.hpp def/def/defiPinProp.hpp
+*** source.lefdef/def.orig/def/defiPinProp.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiPinProp.hpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 59,65 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+--- 59,65 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int    propIsNumber(int index) const;
+    int    propIsString(int index) const;
+  
+diff -r -c source.lefdef/def.orig/def/defiPropType.cpp def/def/defiPropType.cpp
+*** source.lefdef/def.orig/def/defiPropType.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiPropType.cpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 114,120 ****
+  }
+  
+  
+! const char defiPropType::propType(char* name) const {
+    int i;
+  
+    // Name is NULL, error
+--- 114,120 ----
+  }
+  
+  
+! char defiPropType::propType(char* name) const {
+    int i;
+  
+    // Name is NULL, error
+diff -r -c source.lefdef/def.orig/def/defiPropType.hpp def/def/defiPropType.hpp
+*** source.lefdef/def.orig/def/defiPropType.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiPropType.hpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 48,54 ****
+    void setPropType(const char* name, const char type);
+    void Clear();
+  
+!   const char propType(char* name) const;
+    void bumpProps();
+  
+  protected:
+--- 48,54 ----
+    void setPropType(const char* name, const char type);
+    void Clear();
+  
+!   char propType(char* name) const;
+    void bumpProps();
+  
+  protected:
+diff -r -c source.lefdef/def.orig/def/defiRegion.cpp def/def/defiRegion.cpp
+*** source.lefdef/def.orig/def/defiRegion.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiRegion.cpp	2021-01-09 12:17:08.652030041 -0800
+***************
+*** 268,274 ****
+  
+  
+  const char* defiRegion::propName(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 268,274 ----
+  
+  
+  const char* defiRegion::propName(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 280,286 ****
+  
+  
+  const char* defiRegion::propValue(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 280,286 ----
+  
+  
+  const char* defiRegion::propValue(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 292,298 ****
+  
+  
+  double defiRegion::propNumber(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 292,298 ----
+  
+  
+  double defiRegion::propNumber(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 303,310 ****
+  }
+  
+  
+! const char defiRegion::propType(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 303,310 ----
+  }
+  
+  
+! char defiRegion::propType(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 315,321 ****
+  }
+  
+  int defiRegion::propIsNumber(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 315,321 ----
+  }
+  
+  int defiRegion::propIsNumber(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 326,332 ****
+  }
+  
+  int defiRegion::propIsString(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 326,332 ----
+  }
+  
+  int defiRegion::propIsString(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 342,348 ****
+  
+  
+  int defiRegion::xl(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6131): The index number %d specified for the REGION RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+--- 342,348 ----
+  
+  
+  int defiRegion::xl(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6131): The index number %d specified for the REGION RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+***************
+*** 354,360 ****
+  
+  
+  int defiRegion::yl(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6131): The index number %d specified for the REGION RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+--- 354,360 ----
+  
+  
+  int defiRegion::yl(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6131): The index number %d specified for the REGION RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+***************
+*** 366,372 ****
+  
+  
+  int defiRegion::xh(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6131): The index number %d specified for the REGION RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+--- 366,372 ----
+  
+  
+  int defiRegion::xh(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6131): The index number %d specified for the REGION RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+***************
+*** 378,384 ****
+  
+  
+  int defiRegion::yh(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6131): The index number %d specified for the REGION RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+--- 378,384 ----
+  
+  
+  int defiRegion::yh(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6131): The index number %d specified for the REGION RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+diff -r -c source.lefdef/def.orig/def/defiRegion.hpp def/def/defiRegion.hpp
+*** source.lefdef/def.orig/def/defiRegion.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiRegion.hpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 58,64 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int propIsNumber(int index) const;
+    int propIsString(int index) const;
+  
+--- 58,64 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int propIsNumber(int index) const;
+    int propIsString(int index) const;
+  
+diff -r -c source.lefdef/def.orig/def/defiRowTrack.cpp def/def/defiRowTrack.cpp
+*** source.lefdef/def.orig/def/defiRowTrack.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiRowTrack.cpp	2021-01-09 12:17:52.138844201 -0800
+***************
+*** 238,244 ****
+  
+  
+  const char* defiRow::propName(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 238,244 ----
+  
+  
+  const char* defiRow::propName(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 250,256 ****
+  
+  
+  const char* defiRow::propValue(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 250,256 ----
+  
+  
+  const char* defiRow::propValue(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 261,267 ****
+  }
+  
+  double defiRow::propNumber(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 261,267 ----
+  }
+  
+  double defiRow::propNumber(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 271,278 ****
+    return propDValues_[index];
+  }
+  
+! const char defiRow::propType(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 271,278 ----
+    return propDValues_[index];
+  }
+  
+! char defiRow::propType(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 283,289 ****
+  }
+  
+  int defiRow::propIsNumber(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 283,289 ----
+  }
+  
+  int defiRow::propIsNumber(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+***************
+*** 294,300 ****
+  }
+  
+  int defiRow::propIsString(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+--- 294,300 ----
+  }
+  
+  int defiRow::propIsString(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numProps_) {
+       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numProps_);
+diff -r -c source.lefdef/def.orig/def/defiRowTrack.hpp def/def/defiRowTrack.hpp
+*** source.lefdef/def.orig/def/defiRowTrack.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiRowTrack.hpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 71,77 ****
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   const char   propType(int index) const;
+    int propIsNumber(int index) const;
+    int propIsString(int index) const;
+  
+--- 71,77 ----
+    const char*  propName(int index) const;
+    const char*  propValue(int index) const;
+    double propNumber(int index) const;
+!   char   propType(int index) const;
+    int propIsNumber(int index) const;
+    int propIsString(int index) const;
+  
+diff -r -c source.lefdef/def.orig/def/defiSlot.cpp def/def/defiSlot.cpp
+*** source.lefdef/def.orig/def/defiSlot.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiSlot.cpp	2021-01-09 12:18:21.652754275 -0800
+***************
+*** 192,198 ****
+  
+  
+  int defiSlot::xl(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+--- 192,198 ----
+  
+  
+  int defiSlot::xl(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+***************
+*** 204,210 ****
+  
+  
+  int defiSlot::yl(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+--- 204,210 ----
+  
+  
+  int defiSlot::yl(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+***************
+*** 216,222 ****
+  
+  
+  int defiSlot::xh(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+--- 216,222 ----
+  
+  
+  int defiSlot::xh(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+***************
+*** 228,234 ****
+  
+  
+  int defiSlot::yh(int index) const {
+!   char msg[160];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+--- 228,234 ----
+  
+  
+  int defiSlot::yh(int index) const {
+!   char msg[256];
+    if (index < 0 || index >= numRectangles_) {
+       sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
+                index, numRectangles_);
+diff -r -c source.lefdef/def.orig/def/def_keywords.cpp def/def/def_keywords.cpp
+*** source.lefdef/def.orig/def/def_keywords.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/def_keywords.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 289,301 ****
   lines2str(long long lines) 
@@ -558,429 +1964,9 @@ diff -c -r source.lefdef/def.orig/def/def_keywords.cpp def/def/def_keywords.cpp
               /* First make sure there is a name after BEGINEXT within quote */
               /* BEGINEXT "name" */
               while (1) {
-diff -c -r source.lefdef/def.orig/def/defiAlias.cpp def/def/defiAlias.cpp
-*** source.lefdef/def.orig/def/defiAlias.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiAlias.cpp	Wed Dec 30 15:26:15 2020
-***************
-*** 38,45 ****
-  }; 
-  
-  defiAlias_itr::defiAlias_itr() 
-! : first(1),
-!   iterator(NULL)
-  {
-      defiAlias_itr::Init();
-  }
---- 38,45 ----
-  }; 
-  
-  defiAlias_itr::defiAlias_itr() 
-! : iterator(NULL),
-!     first(1)
-  {
-      defiAlias_itr::Init();
-  }
-diff -c -r source.lefdef/def.orig/def/defiGroup.cpp def/def/defiGroup.cpp
-*** source.lefdef/def.orig/def/defiGroup.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiGroup.cpp	Wed Dec 30 11:14:54 2020
-***************
-*** 324,330 ****
-  }
-  
-  
-! const char defiGroup::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (LEFPARS-6050): The index number %d given for the GROUP PROPERTY is invalid.\nValid index is from 0 to %d", index, numProps_);
---- 324,330 ----
-  }
-  
-  
-! char defiGroup::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (LEFPARS-6050): The index number %d given for the GROUP PROPERTY is invalid.\nValid index is from 0 to %d", index, numProps_);
-diff -c -r source.lefdef/def.orig/def/defiGroup.hpp def/def/defiGroup.hpp
-*** source.lefdef/def.orig/def/defiGroup.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defiGroup.hpp	Wed Dec 30 11:10:11 2020
-***************
-*** 72,78 ****
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   const char   propType(int index) const;
-    int    propIsNumber(int index) const;
-    int    propIsString(int index) const;
-  
---- 72,78 ----
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   char   propType(int index) const;
-    int    propIsNumber(int index) const;
-    int    propIsString(int index) const;
-  
-diff -c -r source.lefdef/def.orig/def/defiNet.cpp def/def/defiNet.cpp
-*** source.lefdef/def.orig/def/defiNet.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiNet.cpp	Wed Dec 30 11:16:51 2020
-***************
-*** 1275,1281 ****
-  }
-  
-  
-! const char defiNet::propType(int index) const {
-    if (index >= 0 &&  index < numProps_)
-      return propTypes_[index];
-    return 0;
---- 1275,1281 ----
-  }
-  
-  
-! char defiNet::propType(int index) const {
-    if (index >= 0 &&  index < numProps_)
-      return propTypes_[index];
-    return 0;
-***************
-*** 2891,2897 ****
-      return viaShapeTypes_[index];
-  }
-  
-! const int defiNet::viaOrient(int index) const {
-      char errMsg[128];
-      if (index < 0 || index > numPts_) {
-          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
---- 2891,2897 ----
-      return viaShapeTypes_[index];
-  }
-  
-! int defiNet::viaOrient(int index) const {
-      char errMsg[128];
-      if (index < 0 || index > numPts_) {
-          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
-***************
-*** 2914,2920 ****
-      return (defiOrientStr(viaOrients_[index]));
-  }
-  
-! const int defiNet::topMaskNum(int index) const {
-     char errMsg[128];
-      if (index < 0 || index > numPts_) {
-          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
---- 2914,2920 ----
-      return (defiOrientStr(viaOrients_[index]));
-  }
-  
-! int defiNet::topMaskNum(int index) const {
-     char errMsg[128];
-      if (index < 0 || index > numPts_) {
-          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
-***************
-*** 2926,2932 ****
-      return viaMasks_[index] / 100;
-  }
-  
-! const int defiNet::cutMaskNum(int index) const {
-      char errMsg[128];
-      if (index < 0 || index > numPts_) {
-          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
---- 2926,2932 ----
-      return viaMasks_[index] / 100;
-  }
-  
-! int defiNet::cutMaskNum(int index) const {
-      char errMsg[128];
-      if (index < 0 || index > numPts_) {
-          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
-***************
-*** 2938,2944 ****
-      return viaMasks_[index] / 10 % 10;
-  }
-  
-! const int defiNet::bottomMaskNum(int index) const {
-      char errMsg[128];
-      if (index < 0 || index > numPts_) {
-          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
---- 2938,2944 ----
-      return viaMasks_[index] / 10 % 10;
-  }
-  
-! int defiNet::bottomMaskNum(int index) const {
-      char errMsg[128];
-      if (index < 0 || index > numPts_) {
-          sprintf (errMsg, "ERROR (DEFPARS-6085): The index number %d specified for the NET POLYGON is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
-diff -c -r source.lefdef/def.orig/def/defiNet.hpp def/def/defiNet.hpp
-*** source.lefdef/def.orig/def/defiNet.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defiNet.hpp	Wed Dec 30 11:08:28 2020
-***************
-*** 302,308 ****
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   const char   propType(int index) const;
-    int    propIsNumber(int index) const;
-    int    propIsString(int index) const;
-    int          numConnections() const;
---- 302,308 ----
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   char         propType(int index) const;
-    int    propIsNumber(int index) const;
-    int    propIsString(int index) const;
-    int          numConnections() const;
-***************
-*** 410,420 ****
-    int  numViaSpecs() const;
-    struct defiPoints getViaPts(int index) const;                       
-    const char* viaName(int index) const;
-!   const int viaOrient(int index) const;
-    const char* viaOrientStr(int index) const;
-!   const int topMaskNum(int index) const;
-!   const int cutMaskNum(int index) const;
-!   const int bottomMaskNum(int index) const;
-    const char* viaRouteStatus(int index) const;
-    const char* viaRouteStatusShieldName(int index) const;
-    const char* viaShapeType(int index) const;
---- 410,420 ----
-    int  numViaSpecs() const;
-    struct defiPoints getViaPts(int index) const;                       
-    const char* viaName(int index) const;
-!   int   viaOrient(int index) const;
-    const char* viaOrientStr(int index) const;
-!   int   topMaskNum(int index) const;
-!   int   cutMaskNum(int index) const;
-!   int   bottomMaskNum(int index) const;
-    const char* viaRouteStatus(int index) const;
-    const char* viaRouteStatusShieldName(int index) const;
-    const char* viaShapeType(int index) const;
-diff -c -r source.lefdef/def.orig/def/defiNonDefault.cpp def/def/defiNonDefault.cpp
-*** source.lefdef/def.orig/def/defiNonDefault.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiNonDefault.cpp	Wed Dec 30 11:17:15 2020
-***************
-*** 670,676 ****
-    return dvalues_[index];
-  }
-  
-! const char defiNonDefault::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
---- 670,676 ----
-    return dvalues_[index];
-  }
-  
-! char defiNonDefault::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (DEFPARS-6091): The index number %d specified for the NONDEFAULT PROPERTY is invalid.\nValid index is from 0 to %d. Specify a valid index number and then try again.",
-diff -c -r source.lefdef/def.orig/def/defiNonDefault.hpp def/def/defiNonDefault.hpp
-*** source.lefdef/def.orig/def/defiNonDefault.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defiNonDefault.hpp	Wed Dec 30 11:11:37 2020
-***************
-*** 67,73 ****
-    const char* propName(int index) const;
-    const char* propValue(int index) const;
-    double      propNumber(int index) const;
-!   const char  propType(int index) const;
-    int         propIsNumber(int index) const;
-    int         propIsString(int index) const;
-    
---- 67,73 ----
-    const char* propName(int index) const;
-    const char* propValue(int index) const;
-    double      propNumber(int index) const;
-!   char        propType(int index) const;
-    int         propIsNumber(int index) const;
-    int         propIsString(int index) const;
-    
-diff -c -r source.lefdef/def.orig/def/defiPath.cpp def/def/defiPath.cpp
-*** source.lefdef/def.orig/def/defiPath.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiPath.cpp	Wed Dec 30 15:24:30 2020
-***************
-*** 39,47 ****
-  defiPath::defiPath()
-  : keys_(NULL),
-  data_(NULL),
-- pointer_(NULL),
-  numUsed_(0),
-  numAllocated_(0),
-  numX_(0),      
-  numY_(0),
-  stepX_(0),
---- 39,48 ----
-  defiPath::defiPath()
-  : keys_(NULL),
-  data_(NULL),
-  numUsed_(0),
-  numAllocated_(0),
-+ pointer_(NULL),
-+ 
-  numX_(0),      
-  numY_(0),
-  stepX_(0),
-diff -c -r source.lefdef/def.orig/def/defiPinProp.cpp def/def/defiPinProp.cpp
-*** source.lefdef/def.orig/def/defiPinProp.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiPinProp.cpp	Wed Dec 30 11:18:03 2020
-***************
-*** 259,265 ****
-  }
-  
-  
-! const char defiPinProp::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
---- 259,265 ----
-  }
-  
-  
-! char defiPinProp::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (DEFPARS-6120): The index number %d specified for the PIN PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
-diff -c -r source.lefdef/def.orig/def/defiPinProp.hpp def/def/defiPinProp.hpp
-*** source.lefdef/def.orig/def/defiPinProp.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defiPinProp.hpp	Wed Dec 30 11:10:42 2020
-***************
-*** 59,65 ****
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   const char   propType(int index) const;
-    int    propIsNumber(int index) const;
-    int    propIsString(int index) const;
-  
---- 59,65 ----
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   char   propType(int index) const;
-    int    propIsNumber(int index) const;
-    int    propIsString(int index) const;
-  
-diff -c -r source.lefdef/def.orig/def/defiPropType.cpp def/def/defiPropType.cpp
-*** source.lefdef/def.orig/def/defiPropType.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiPropType.cpp	Wed Dec 30 11:18:34 2020
-***************
-*** 114,120 ****
-  }
-  
-  
-! const char defiPropType::propType(char* name) const {
-    int i;
-  
-    // Name is NULL, error
---- 114,120 ----
-  }
-  
-  
-! char defiPropType::propType(char* name) const {
-    int i;
-  
-    // Name is NULL, error
-diff -c -r source.lefdef/def.orig/def/defiPropType.hpp def/def/defiPropType.hpp
-*** source.lefdef/def.orig/def/defiPropType.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defiPropType.hpp	Wed Dec 30 11:12:11 2020
-***************
-*** 48,54 ****
-    void setPropType(const char* name, const char type);
-    void Clear();
-  
-!   const char propType(char* name) const;
-    void bumpProps();
-  
-  protected:
---- 48,54 ----
-    void setPropType(const char* name, const char type);
-    void Clear();
-  
-!   char propType(char* name) const;
-    void bumpProps();
-  
-  protected:
-diff -c -r source.lefdef/def.orig/def/defiRegion.cpp def/def/defiRegion.cpp
-*** source.lefdef/def.orig/def/defiRegion.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiRegion.cpp	Wed Dec 30 11:19:01 2020
-***************
-*** 303,309 ****
-  }
-  
-  
-! const char defiRegion::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
---- 303,309 ----
-  }
-  
-  
-! char defiRegion::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (DEFPARS-6130): The index number %d specified for the REGION PROPERTY is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
-diff -c -r source.lefdef/def.orig/def/defiRegion.hpp def/def/defiRegion.hpp
-*** source.lefdef/def.orig/def/defiRegion.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defiRegion.hpp	Wed Dec 30 11:09:34 2020
-***************
-*** 58,64 ****
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   const char   propType(int index) const;
-    int propIsNumber(int index) const;
-    int propIsString(int index) const;
-  
---- 58,64 ----
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   char   propType(int index) const;
-    int propIsNumber(int index) const;
-    int propIsString(int index) const;
-  
-diff -c -r source.lefdef/def.orig/def/defiRowTrack.cpp def/def/defiRowTrack.cpp
-*** source.lefdef/def.orig/def/defiRowTrack.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defiRowTrack.cpp	Wed Dec 30 11:19:27 2020
-***************
-*** 271,277 ****
-    return propDValues_[index];
-  }
-  
-! const char defiRow::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
---- 271,277 ----
-    return propDValues_[index];
-  }
-  
-! char defiRow::propType(int index) const {
-    char msg[160];
-    if (index < 0 || index >= numProps_) {
-       sprintf (msg, "ERROR (DEFPARS-6140): The index number %d specified for the VIA LAYER RECTANGLE is invalide.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
-diff -c -r source.lefdef/def.orig/def/defiRowTrack.hpp def/def/defiRowTrack.hpp
-*** source.lefdef/def.orig/def/defiRowTrack.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defiRowTrack.hpp	Wed Dec 30 11:09:08 2020
-***************
-*** 71,77 ****
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   const char   propType(int index) const;
-    int propIsNumber(int index) const;
-    int propIsString(int index) const;
-  
---- 71,77 ----
-    const char*  propName(int index) const;
-    const char*  propValue(int index) const;
-    double propNumber(int index) const;
-!   char   propType(int index) const;
-    int propIsNumber(int index) const;
-    int propIsString(int index) const;
-  
-diff -c -r source.lefdef/def.orig/def/defrCallbacks.cpp def/def/defrCallbacks.cpp
-*** source.lefdef/def.orig/def/defrCallbacks.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defrCallbacks.cpp	Wed Dec 30 15:21:54 2020
+diff -r -c source.lefdef/def.orig/def/defrCallbacks.cpp def/def/defrCallbacks.cpp
+*** source.lefdef/def.orig/def/defrCallbacks.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defrCallbacks.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 51,56 ****
 --- 51,57 ----
@@ -1312,9 +2298,9 @@ diff -c -r source.lefdef/def.orig/def/defrCallbacks.cpp def/def/defrCallbacks.cp
       if (!StylesEndCbk)
           StylesEndCbk = (defrVoidCbkFnType) f;
       if (!StylesCbk)
-diff -c -r source.lefdef/def.orig/def/defrData.cpp def/def/defrData.cpp
-*** source.lefdef/def.orig/def/defrData.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defrData.cpp	Wed Dec 30 15:36:31 2020
+diff -r -c source.lefdef/def.orig/def/defrData.cpp def/def/defrData.cpp
+*** source.lefdef/def.orig/def/defrData.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defrData.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 45,51 ****
   defrData *defData = NULL;
@@ -1475,9 +2461,9 @@ diff -c -r source.lefdef/def.orig/def/defrData.cpp def/def/defrData.cpp
   {
       magic[0] = '\0';
       deftoken[0] = '\0';
-diff -c -r source.lefdef/def.orig/def/defrData.hpp def/def/defrData.hpp
-*** source.lefdef/def.orig/def/defrData.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defrData.hpp	Wed Dec 30 15:10:27 2020
+diff -r -c source.lefdef/def.orig/def/defrData.hpp def/def/defrData.hpp
+*** source.lefdef/def.orig/def/defrData.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defrData.hpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 90,95 ****
 --- 90,96 ----
@@ -1525,9 +2511,9 @@ diff -c -r source.lefdef/def.orig/def/defrData.hpp def/def/defrData.hpp
   };
   
   extern defrData *defData;
-diff -c -r source.lefdef/def.orig/def/defrSettings.cpp def/def/defrSettings.cpp
-*** source.lefdef/def.orig/def/defrSettings.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defrSettings.cpp	Wed Dec 30 14:35:29 2020
+diff -r -c source.lefdef/def.orig/def/defrSettings.cpp def/def/defrSettings.cpp
+*** source.lefdef/def.orig/def/defrSettings.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defrSettings.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 46,51 ****
 --- 46,52 ----
@@ -1548,9 +2534,9 @@ diff -c -r source.lefdef/def.orig/def/defrSettings.cpp def/def/defrSettings.cpp
     CompProp(),
     CompPinProp(),
     DesignProp(),
-diff -c -r source.lefdef/def.orig/def/defrSettings.hpp def/def/defrSettings.hpp
-*** source.lefdef/def.orig/def/defrSettings.hpp	Fri Feb  5 14:39:14 2016
---- def/def/defrSettings.hpp	Wed Dec 30 14:35:22 2020
+diff -r -c source.lefdef/def.orig/def/defrSettings.hpp def/def/defrSettings.hpp
+*** source.lefdef/def.orig/def/defrSettings.hpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defrSettings.hpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 75,81 ****
       int FillWarnings;
@@ -1618,9 +2604,9 @@ diff -c -r source.lefdef/def.orig/def/defrSettings.hpp def/def/defrSettings.hpp
   };
   
   extern defrSettings *defSettings;
-diff -c -r source.lefdef/def.orig/def/defwWriterCalls.cpp def/def/defwWriterCalls.cpp
-*** source.lefdef/def.orig/def/defwWriterCalls.cpp	Fri Feb  5 14:39:14 2016
---- def/def/defwWriterCalls.cpp	Wed Dec 30 11:46:33 2020
+diff -r -c source.lefdef/def.orig/def/defwWriterCalls.cpp def/def/defwWriterCalls.cpp
+*** source.lefdef/def.orig/def/defwWriterCalls.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defwWriterCalls.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 347,353 ****
   
@@ -1638,9 +2624,147 @@ diff -c -r source.lefdef/def.orig/def/defwWriterCalls.cpp def/def/defwWriterCall
     if (i >= 0 && i < 100) {
       defwUnusedCount[i] += 1;
       return 0;
-diff -c -r source.lefdef/def.orig/defdiff/diffDefRW.cpp def/defdiff/diffDefRW.cpp
-*** source.lefdef/def.orig/defdiff/diffDefRW.cpp	Fri Feb  5 14:39:14 2016
---- def/defdiff/diffDefRW.cpp	Wed Dec 30 15:58:30 2020
+diff -r -c source.lefdef/def.orig/def/def.y def/def/def.y
+*** source.lefdef/def.orig/def/def.y	2016-02-05 14:39:14.000000000 -0800
+--- def/def/def.y	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 19,24 ****
+--- 19,29 ----
+  // 
+  // For updates, support, or to become part of the LEF/DEF Community,
+  // check www.openeda.org for details.
++ //====
++ // Updated to add missing semicolons for compatibility with bison-3.
++ // Bison no longer repairs this error.
++ // Stephen Whiteley, Whiteley Research Inc.
++ //====
+  //******************************************************************************
+  // 
+  //  $Author: dell $
+***************
+*** 570,581 ****
+              }
+          | error ';' { yyerrok; yyclearin;}
+  
+! property_type_and_val: K_INTEGER { defData->real_num = 0 } opt_range opt_num_val
+              {
+                if (defCallbacks->PropCbk) defData->Prop.setPropInteger();
+                defData->defPropDefType = 'I';
+              }
+!         | K_REAL { defData->real_num = 1 } opt_range opt_num_val
+              {
+                if (defCallbacks->PropCbk) defData->Prop.setPropReal();
+                defData->defPropDefType = 'R';
+--- 575,586 ----
+              }
+          | error ';' { yyerrok; yyclearin;}
+  
+! property_type_and_val: K_INTEGER { defData->real_num = 0; } opt_range opt_num_val
+              {
+                if (defCallbacks->PropCbk) defData->Prop.setPropInteger();
+                defData->defPropDefType = 'I';
+              }
+!         | K_REAL { defData->real_num = 1; } opt_range opt_num_val
+              {
+                if (defCallbacks->PropCbk) defData->Prop.setPropReal();
+                defData->defPropDefType = 'R';
+***************
+*** 3184,3191 ****
+          | '+' K_ESTCAP NUMBER
+              { 
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5)
+                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
+                else
+                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+--- 3189,3197 ----
+          | '+' K_ESTCAP NUMBER
+              { 
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5) {
+                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
++               }
+                else
+                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+***************
+*** 3287,3294 ****
+  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
+              {
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5)
+                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
+                else
+                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+--- 3293,3301 ----
+  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
+              {
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5) {
+                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
++               }
+                else
+                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+***************
+*** 3562,3585 ****
+  group_soft_option: K_MAXX NUMBER
+        {
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
+          else
+            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXY NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
+          else
+            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXHALFPERIMETER NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
+          else
+            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+--- 3569,3595 ----
+  group_soft_option: K_MAXX NUMBER
+        {
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
++         }
+          else
+            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXY NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
++         }
+          else
+            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXHALFPERIMETER NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
++         }
+          else
+            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+diff -r -c source.lefdef/def.orig/defdiff/diffDefRW.cpp def/defdiff/diffDefRW.cpp
+*** source.lefdef/def.orig/defdiff/diffDefRW.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/defdiff/diffDefRW.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 169,176 ****
       if (co->maskShiftSize()) {
@@ -2007,9 +3131,9 @@ diff -c -r source.lefdef/def.orig/defdiff/diffDefRW.cpp def/defdiff/diffDefRW.cp
   
 !   return res;
   }
-diff -c -r source.lefdef/def.orig/defdiff/differDef.cpp def/defdiff/differDef.cpp
-*** source.lefdef/def.orig/defdiff/differDef.cpp	Fri Feb  5 14:39:14 2016
---- def/defdiff/differDef.cpp	Wed Dec 30 10:56:44 2020
+diff -r -c source.lefdef/def.orig/defdiff/differDef.cpp def/defdiff/differDef.cpp
+*** source.lefdef/def.orig/defdiff/differDef.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/defdiff/differDef.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 48,56 ****
   #endif
@@ -2031,9 +3155,9 @@ diff -c -r source.lefdef/def.orig/defdiff/differDef.cpp def/defdiff/differDef.cp
   #endif /* not WIN32 */
   #include "defrReader.hpp"
   #include "diffDefRW.hpp"
-diff -c -r source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
-*** source.lefdef/def.orig/defrw/defrw.cpp	Fri Feb  5 14:39:14 2016
---- def/defrw/defrw.cpp	Wed Dec 30 15:39:13 2020
+diff -r -c source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
+*** source.lefdef/def.orig/defrw/defrw.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/defrw/defrw.cpp	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 77,90 ****
   }
@@ -2519,9 +3643,9 @@ diff -c -r source.lefdef/def.orig/defrw/defrw.cpp def/defrw/defrw.cpp
   
          // Testing the aliases API.
          defrAddAlias ("alias1", "aliasValue1", 1);
-diff -c -r source.lefdef/def.orig/template.mk def/template.mk
-*** source.lefdef/def.orig/template.mk	Fri Feb  5 14:39:13 2016
---- def/template.mk	Wed Dec 30 10:44:46 2020
+diff -r -c source.lefdef/def.orig/template.mk def/template.mk
+*** source.lefdef/def.orig/template.mk	2016-02-05 14:39:13.000000000 -0800
+--- def/template.mk	2020-12-30 16:46:37.000000000 -0800
 ***************
 *** 23,28 ****
 --- 23,38 ----
