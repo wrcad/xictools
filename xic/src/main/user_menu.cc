@@ -91,7 +91,7 @@ namespace {
     user_menu_rebuild(MenuBox *mbox)
     {
         umenu *u0 = XM()->GetFunctionList();
-        int cnt = u0->numitems();
+        int cnt = umenu::numitems(u0);
 
         // menu size, including empty terminator
         int umenusize = cnt + userMenu_END + 1;

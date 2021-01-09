@@ -357,7 +357,8 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice.current
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install: install_wrspice_pkg install_links devkit_examples install_devkit
+install: install_wrspice_pkg clean_links install_links devkit_examples \
+  install_devkit
 
 install_wrspice_pkg: install_test install_clean install_bin install_help \
   install_icons install_startup install_scripts install_examples install_docs
@@ -380,33 +381,49 @@ install_test::
 	    fi; \
 	fi
 
+# In order to use the Windows mklink command, user must be running with
+# Admin privileges, or Developer Mode must be on.  Set this from
+# Settings/Update & Security/For Developers
+
 install_links::
-	@rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
-	@ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
-	@rm -f $(toolbin)/mmjco$(EXESUFFIX)
-	@ln -s $(destn)/bin/mmjco$(EXESUFFIX) $(toolbin)/mmjco$(EXESUFFIX)
-	@rm -f $(toolbin)/multidec$(EXESUFFIX)
-	@ln -s $(destn)/bin/multidec$(EXESUFFIX) $(toolbin)/multidec$(EXESUFFIX)
-	@rm -f $(toolbin)/printtoraw$(EXESUFFIX)
-	@ln -s $(destn)/bin/printtoraw$(EXESUFFIX) $(toolbin)/printtoraw$(EXESUFFIX)
-	@rm -f $(toolbin)/proc2mod$(EXESUFFIX)
-	@ln -s $(destn)/bin/proc2mod$(EXESUFFIX) $(toolbin)/proc2mod$(EXESUFFIX)
-	@rm -f $(toolbin)/wrspice$(EXESUFFIX)
-	@ln -s $(destn)/bin/wrspice$(EXESUFFIX) $(toolbin)/wrspice$(EXESUFFIX)
-	@rm -f $(toolbin)/wrspiced$(EXESUFFIX)
-	@ln -s $(destn)/bin/wrspiced$(EXESUFFIX) $(toolbin)/wrspiced$(EXESUFFIX)
 	-@if [ -n "$(EXESUFFIX)" ]; then \
+	    $(BASE)/util/make_junc $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice \
+  $(destn); \
+	    $(BASE)/util/make_link $(toolbin)/mmjco$(EXESUFFIX) \
+  $(destn)/bin/mmjco$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/multidec$(EXESUFFIX) \
+  $(destn)/bin/multidec$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/printtoraw$(EXESUFFIX) \
+  $(destn)/bin/printtoraw$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/proc2mod$(EXESUFFIX) \
+  $(destn)/bin/proc2mod$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/wrspice$(EXESUFFIX) \
+  $(destn)/bin/wrspice$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/wrspiced$(EXESUFFIX) \
+  $(destn)/bin/wrspiced$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/wrspice.dll \
+  $(destn)/bin/wrspice.dll; \
 	    cp -f $(destn)/bin/wrspice.bat $(toolbin); \
-            rm -f $(toolbin)/wrspice.dll; \
-	    ln -s $(destn)/bin/wrspice.dll $(toolbin)/wrspice.dll; \
+	else \
+	    ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
+	    ln -s $(destn)/bin/mmjco$(EXESUFFIX) \
+  $(toolbin)/mmjco$(EXESUFFIX); \
+	    ln -s $(destn)/bin/multidec$(EXESUFFIX) \
+  $(toolbin)/multidec$(EXESUFFIX); \
+	    ln -s $(destn)/bin/printtoraw$(EXESUFFIX) \
+  $(toolbin)/printtoraw$(EXESUFFIX); \
+	    ln -s $(destn)/bin/proc2mod$(EXESUFFIX) \
+  $(toolbin)/proc2mod$(EXESUFFIX); \
+	    ln -s $(destn)/bin/wrspice$(EXESUFFIX) \
+  $(toolbin)/wrspice$(EXESUFFIX); \
+	    ln -s $(destn)/bin/wrspiced$(EXESUFFIX) \
+  $(toolbin)/wrspiced$(EXESUFFIX); \
 	fi
 
+# Under MSYS2, rm deletes Windows links and junctions.
+
 clean_links::
-	-@if [ -n $(EXESUFFIX) ]; then \
-	    rm -rf $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
-	else \
-	    rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice; \
-	fi
+	-@rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/wrspice
 	-@rm -f $(toolbin)/mmjco$(EXESUFFIX)
 	-@rm -f $(toolbin)/multidec$(EXESUFFIX)
 	-@rm -f $(toolbin)s/printtoraw$(EXESUFFIX)
@@ -414,8 +431,8 @@ clean_links::
 	-@rm -f $(toolbin)/wrspice$(EXESUFFIX)
 	-@rm -f $(toolbin)/wrspiced$(EXESUFFIX)
 	-@if [ -n "$(EXESUFFIX)" ]; then \
-            -@rm -f $(toolbin)/wrspice.bat; \
-            -@rm -f $(toolbin)/wrspice.dll; \
+            rm -f $(toolbin)/wrspice.bat; \
+            rm -f $(toolbin)/wrspice.dll; \
 	fi
 
 install_clean::

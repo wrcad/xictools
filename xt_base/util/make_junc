@@ -1,0 +1,13 @@
+#! /bin/sh
+
+# Shell script to create a Windows "junction".
+# Usage: make_link link pathdd
+
+link=$1
+path=$2
+
+linkd=`echo $link | sed 's/\//\\\\/g'`
+pathd=`echo $path | sed 's/\//\\\\/g'`
+com=`echo cmd /c "'"mklink /j $linkd $pathd"'"`
+#echo $com
+eval $com

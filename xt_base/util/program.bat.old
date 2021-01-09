@@ -88,19 +88,39 @@ for /f "Tokens=2,*" %%A in (
     set prefix=%%B
 )
 
-@rem   We would like to find the MSYS2/MINGW64 bin somehow.  For now,
-@rem   just assume the default location.
+@rem   Do this again for the gtk2-bundle, in case it was installed under
+@rem   a different prefix.  Look in the old Registry location, too, so we
+@rem   can work with the earlier gtk-bundle installed with inno-5.5.1.
 
-set mingw_dll_path=c:\msys64\mingw64\bin
+@rem   32-bit app in a 64-bit registry view, e.g., Cygwin64 or native64.
+set key=HKLM\Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall
 
+set appname=gtk2-bundle_is1
+reg query %key%\%appname% /v InstallLocation > NUL 2>&1
+if ERRORLEVEL 1 (
+@rem   32-bit app in a 32-bin registtry view, e.g., Cygwin32, or 32-bit
+@rem   Windows if there is such a thing anymore.
+    set key=HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall
+)
+reg query %key%\%appname% /v InstallLocation > NUL 2>&1
+if ERRORLEVEL 1 (
+    echo Error: gtk2-bundle installation location not found in registry.
+    exit
+)
+
+for /f "Tokens=2,*" %%A in (
+    'reg query %key%\%appname% /v InstallLocation %reg%'
+) do (
+    set bundle_prefix=%%B
+)
 @rem   ---------------------------------------------------------------------
 
 @rem   ---------------------------------------------------------------------
 @rem   Locally modify the search path so that the program can find
-@rem   the MINGW DLLs, before any others in the PATH.
+@rem   the gtk2-bundle DLLs, before any others in the PATH.
 
 setlocal
-PATH=%mingw_dll_path%;%PATH%
+PATH=%bundle_prefix%gtk2-bundle\bin;%PATH%
 @rem   ---------------------------------------------------------------------
 
 @rem   ---------------------------------------------------------------------

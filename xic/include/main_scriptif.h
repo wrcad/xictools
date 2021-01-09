@@ -164,7 +164,7 @@ struct umenu
 
     // main_scriptif.cc
     static void sort(umenu*);
-    int numitems() const;
+    static int numitems(const umenu*);
 
 private:
     char *u_name;       // Name of script or menu, appears on button.

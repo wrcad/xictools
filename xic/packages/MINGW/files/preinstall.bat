@@ -10,21 +10,17 @@
 @rem   test "if exist link\".  We also blow away regular directories or
 @rem   files that would conflict.
 
-set prog=xic
-
-@rem   We don't set these, but they might be around from an earlier
-@rem   installation that wasn't properly removed.
-if exist bin\%prog%.exe del bin\%prog%.exe
-if exist bin\%prog%.dll del bin\%prog%.dll
-
 @rem   rd /s /q is safe for links, and will completely remove a regular
 @rem   directory.
-if exist %prog%\ rmdir /s /q %prog%
 
-@rem   This is the only main executable we export, exe and dll are
-@rem   not in the search path.
-if exist bin\%prog%.bat\ ( rmdir bin\%prog%.bat
-) else ( if exist bin\%prog%.bat del bin\%prog%.bat )
+set prog=xic
+if exist %prog%\ rmdir /s /q %prog% 
+
+if exist bin\%prog%.exe\ ( rmdir bin\%prog%.exe
+) else ( if exist bin\%prog%.exe del bin\%prog%.exe )
+if exist bin\%prog%.dll\ ( rmdir bin\%prog%.dll
+) else ( if exist bin\%prog%.dll del bin\%prog%.dll )
+if exist bin\%prog%.bat ( del bin\%prog%.bat )
 
 @rem   Xic-specific exported utilities.
 if exist bin\wrdecode.exe\ ( rmdir bin\wrdecode.exe

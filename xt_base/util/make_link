@@ -1,0 +1,17 @@
+#! /bin/sh
+
+# Shell script to create a Windows symbolic link.
+# Usage: make_link link pathdd
+
+# In order to use the Windows mklink command, user must be running with
+# Admin privileges, or Developer Mode must be on.  Set this from
+# Settings/Update & Security/For Developers
+
+link=$1
+path=$2
+
+linkd=`echo $link | sed 's/\//\\\\/g'`
+pathd=`echo $path | sed 's/\//\\\\/g'`
+com=`echo cmd /c "'"mklink $linkd $pathd"'"`
+#echo $com
+eval $com

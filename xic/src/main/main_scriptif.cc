@@ -588,16 +588,17 @@ umenu::sort(umenu *thisu)
 }
 
 
+// Static function.
 // return the number of entries in the menu tree
 //
 int
-umenu::numitems() const
+umenu::numitems(const umenu *thisu)
 {
     int cnt = 0;
-    for (const umenu *u = this; u; u = u->u_next) {
+    for (const umenu *u = thisu; u; u = u->u_next) {
         cnt++;
         if (u->u_menu)
-            cnt += u->u_menu->numitems();
+            cnt += umenu::numitems(u->u_menu);
     }
     return (cnt);
 }

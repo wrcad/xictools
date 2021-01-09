@@ -310,7 +310,7 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/xic.current
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install: install_xic_pkg install_links
+install: install_xic_pkg clean_links install_links
 
 install_xic_pkg: install_test install_xic_clean install_xic_bin \
   install_xic_help install_xic_icons install_xic_plugins \
@@ -335,43 +335,56 @@ install_test::
 	    fi; \
 	fi
 
+# In order to use the Windows mklink command, user must be running with
+# Admin privileges, or Developer Mode must be on.  Set this from
+# Settings/Update & Security/For Developers
+
 install_links::
-	@rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/xic
-	@ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/xic
-	@rm -f $(toolbin)/wrencode$(EXESUFFIX)
-	@ln -s $(destn)/bin/wrencode$(EXESUFFIX) $(toolbin)/wrencode$(EXESUFFIX)
-	@rm -f $(toolbin)/wrdecode$(EXESUFFIX)
-	@ln -s $(destn)/bin/wrdecode$(EXESUFFIX) $(toolbin)/wrdecode$(EXESUFFIX)
-	@rm -f $(toolbin)/wrsetpass$(EXESUFFIX)
-	@ln -s $(destn)/bin/wrsetpass$(EXESUFFIX) $(toolbin)/wrsetpass$(EXESUFFIX)
-	@if [ ! -h $(destn)/startup/xic_tech ]; then \
-	    ln -s $(destn)/startup/xic_tech.scmos $(destn)/startup/xic_tech; \
-	fi
 	@if [ -n "$(EXESUFFIX)" ]; then \
+	    $(BASE)/util/make_junc $(INSTALL_PREFIX)/$(TOOLROOT)/xic $(destn); \
+	    $(BASE)/util/make_link $(toolbin)/xic$(EXESUFFIX) \
+ $(destn)/bin/xic$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/xic.dll $(destn)/bin/xic.dll; \
+	    $(BASE)/util/make_link $(toolbin)/wrencode$(EXESUFFIX) \
+ $(destn)/bin/wrencode$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/wrdecode$(EXESUFFIX) \
+ $(destn)/bin/wrdecode$(EXESUFFIX); \
+	    $(BASE)/util/make_link $(toolbin)/wrsetpass$(EXESUFFIX) \
+ $(destn)/bin/wrsetpass$(EXESUFFIX); \
 	    cp -f $(destn)/bin/xic.bat $(toolbin); \
-	    rm -f $(toolbin)/xic$(EXESUFFIX); \
-	    ln -s $(destn)/bin/xic$(EXESUFFIX) $(toolbin)/xic$(EXESUFFIX); \
-	    rm -f $(toolbin)/xic.dll; \
-	    ln -s $(destn)/bin/xic.dll $(toolbin)/xic.dll; \
+	    if [ ! -h $(destn)/startup/xic_tech ]; then \
+	        $(BASE)/util/make_link $(destn)/startup/xic_tech \
+ $(destn)/startup/xic_tech.scmos; \
+	    fi \
 	else \
-	    rm -f $(toolbin)/xic.sh $(toolbin)/xic; \
+	    ln -s $(destn) $(INSTALL_PREFIX)/$(TOOLROOT)/xic; \
+	    ln -s $(destn)/bin/wrencode$(EXESUFFIX) \
+ $(toolbin)/wrencode$(EXESUFFIX); \
+	    ln -s $(destn)/bin/wrdecode$(EXESUFFIX) \
+ $(toolbin)/wrdecode$(EXESUFFIX); \
+	    ln -s $(destn)/bin/wrsetpass$(EXESUFFIX) \
+ $(toolbin)/wrsetpass$(EXESUFFIX); \
+	    if [ ! -h $(destn)/startup/xic_tech ]; then \
+	        ln -s $(destn)/startup/xic_tech.scmos \
+ $(destn)/startup/xic_tech; \
+	    fi; \
 	    sed -e s%/usr/local%$(INSTALL_PREFIX)% < $(destn)/bin/xic.sh \
   > $(toolbin)/xic; chmod 755 $(toolbin)/xic; \
 	fi
 
+# Under MSYS2, rm deletes Windows links and junctions.
+
 clean_links::
-	-@if [ -n $(EXESUFFIX) ]; then \
-	    rm -rf $(INSTALL_PREFIX)/$(TOOLROOT)/xic; \
-	else \
-	    rm -f $(INSTALL_PREFIX)/$(TOOLROOT)/xic; \
-	fi
+	-@rm -rf $(INSTALL_PREFIX)/$(TOOLROOT)/xic
 	-@rm -f $(toolbin)/wrencode$(EXESUFFIX)
 	-@rm -f $(toolbin)/wrdecode$(EXESUFFIX)
-	-@rm -f $(toolbin)s/wrsetpass$(EXESUFFIX)
+	-@rm -f $(toolbin)/wrsetpass$(EXESUFFIX)
 	-@rm -f $(toolbin)/xic$(EXESUFFIX)
 	-@if [ -n "$(EXESUFFIX)" ]; then \
-            -@rm -f $(toolbin)/xic.bat; \
-            -@rm -f $(toolbin)/xic.dll; \
+            rm -f $(toolbin)/xic.bat; \
+            rm -f $(toolbin)/xic.dll; \
+	else \
+            rm -f $(toolbin)/xic; \
 	fi
 
 install_xic_clean::

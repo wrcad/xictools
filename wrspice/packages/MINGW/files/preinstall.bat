@@ -10,23 +10,21 @@
 @rem   test "if exist link\".  We also blow away regular directories or
 @rem   files that would conflict.
 
-set prog=wrspice
-
-@rem   We don't set these, but they might be around from an earlier
-@rem   installation that wasn't properly removed.
-if exist bin\%prog%.exe del bin\%prog%.exe
-if exist bin\%prog%.dll del bin\%prog%.dll
-
 @rem   rd /s /q is safe for links, and will completely remove a regular
 @rem   directory.
+
+set prog=wrspice
 if exist %prog%\ rmdir /s /q %prog%
 
-@rem   This is the only main executable we export, exe and dll are
-@rem   not in the search path.
-if exist bin\%prog%.bat\ ( rmdir bin\%prog%.bat
-) else ( if exist bin\%prog%.bat del bin\%prog%.bat )
+if exist bin\%prog%.exe\ ( rmdir bin\%prog%.exe
+) else ( if exist bin\%prog%.exe del bin\%prog%.exe )
+if exist bin\%prog%.dll\ ( rmdir bin\%prog%.dll
+) else ( if exist bin\%prog%.dll del bin\%prog%.dll )
+if exist bin\%prog%.bat ( del bin\%prog%.bat )
 
 @rem   WRspice-specific exported utilities.
+if exist bin\mmjco.exe\ ( rmdir bin\mmjco.exe
+) else ( if exist bin\mmjco.exe del bin\mmjco.exe )
 if exist bin\multidec.exe\ ( rmdir bin\multidec.exe
 ) else ( if exist bin\multidec.exe del bin\multidec.exe )
 if exist bin\proc2mod.exe\ ( rmdir bin\proc2mod.exe
