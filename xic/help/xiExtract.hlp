@@ -95,7 +95,7 @@ Extraction and Verification
       <td>Extract capacitance using Fast[er]Cap</td></tr>
     <tr><td><a href="xic:exlr"><b>Extract LR</b></a></td>
       <td><tt>exlr</tt></td> <td><b>LR Extraction</b></td>
-      <td>Extract L/R using FastHenry</td></tr>
+      <td>Extract L/R using <i>FastHenry</i></td></tr>
     </table>
 
     <p>

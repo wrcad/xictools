@@ -767,7 +767,7 @@ The third group of main module functions:
 \vr SetLayerNoDRCdatatype({\it stdlyr\/}, {\it datatype\/}) & Set GDSII
   NoDRC datatype\\ \hline
 
-% 120114
+% 011621
 \multicolumn{2}{|c|}{\kb Layers -- Extraction Support}\\ \hline
 \vr SetLayerExKeyword({\it stdlyr\/}, {\it string\/}) & Set extraction
   keyword/value of layer\\ \hline
@@ -782,11 +782,13 @@ The third group of main module functions:
 \vr IsLayerGround({\it stdlyr\/}) & Return nonzero for GroundPlane\\ \hline
 \vr IsLayerContact({\it stdlyr\/}) & Return nonzero for Contact\\ \hline
 \vr IsLayerVia({\it stdlyr\/}) & Return nonzero for Via\\ \hline
+\vr IsLayerViaCut({\it stdlyr\/}) & Return nonzero for ViaCut\\ \hline
 \vr IsLayerDielectric({\it stdlyr\/}) & Return nonzero for Dielectric\\ \hline
 \vr IsLayerDarkField({\it stdlyr\/}) & Return nonzero for DarkField\\ \hline
 \vr GetLayerThickness({\it stdlyr\/}) & Return Thickness\\ \hline
 \vr GetLayerRho({\it stdlyr\/}) & Return resistivity\\ \hline
 \vr GetLayerResis({\it stdlyr\/}) & Return resistance per square\\ \hline
+\vr GetLayerTau({\it stdlyr\/}) & Return Drude relaxation time\\ \hline
 \vr GetLayerEps({\it stdlyr\/}) & Return dielectric constant\\ \hline
 \vr GetLayerCap({\it stdlyr\/}) & Return capacitance per area\\ \hline
 \vr GetLayerCapPerim({\it stdlyr\/}) & Return capacitance per length\\ \hline
@@ -7288,6 +7290,14 @@ indicated by the argument, which is a standard layer argument or a
 derived layer name string, 0 otherwise.
 
 %------------------------------------
+% 011621
+\index{IsLayerViaCut function}
+\item{(int) \vt IsLayerViaCut({\it stdlyr\/})}\\
+The function returns 1 if the {\et ViaCut} keyword is given
+for the layer indicated by the argument, which is a standard
+layer argument or a derived layer name string, 0 otherwise.
+
+%------------------------------------
 % 120114
 \index{IsLayerDielectric function}
 \item{(int) \vt IsLayerDielectric({\it stdlyr\/})}\\
@@ -7332,6 +7342,15 @@ name string.  This will be the value of the {\vt Rsh} parameter, if
 given, or the values of {\vt Rho}/{\vt Thickness}, if {\vt Rho} or
 {\vt Sigma} and {\vt Thickness} are given, or 0 if no value is
 available.
+
+%------------------------------------
+% 011621
+\index{GetLayerTau function}
+\item{(real) \vt GetLayerTau({\it stdlyr\/})}\\
+The function returns the Drude relaxation time for the layer
+indicated by the argument, which is a standard layer argument
+or a derived layer name string.  This will be the value of the
+{\et Tau} parameter if given to the layer, 0 otherwise.
 
 %------------------------------------
 % 120114

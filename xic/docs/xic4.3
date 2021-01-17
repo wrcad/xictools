@@ -17,53 +17,56 @@ Scroll down to the notes for the current Xic release, which follows
 some important general information.
 
 *****************************************************
-IMPORTANT -- General changes from 4.2 branch
+IMPORTANT -- New Windows framework, releases.
 
-1.  If you currently have XicTools programs installed from earlier
-branches, it is strongly recommended that these be deleted.  This will
-be managed automatically by the wr_install script.  Under Windows, you
-can use wr_install under Cygwin, or you can run the cleanold.bat file
-before installing 4.3 programs.  You should NOT delete the gtk2-bundle
-packages for Windows and OS X, these are still required for 4.3.  Your
-present releases of Xic and WRspice can be saved in Safe Install
-format (even under Windows), and existing safe-installs won't be
-affected.
+Starting January 2021, all Windows binaries are 64-bit, compiled under
+the MINGW64 subsystem of MSYS2 (64-bit version).
 
-2.  The Safe Install feature now applies to all packages, including
-Microsoft Windows.  In Safe Install, when updating, the current
-release is saved in its entirety, and can be easily reverted to if
-necessary.  The Safe Install logic is now implemented with scripts
-included in the distribution files, and no longer relies on use of
-wr_install.
+Although it may be possible to run the programs from other MINGW64
+installations, for example Cygwin, it is recommended MSYS2 be
+installed.  This replaces the "gtk_bundle" package that was previously
+used to supply gui dlls.
 
-3.  Distribution file names, and operating system names, are a little
-different now.  The new OSNAME format is now in the form NAME[.ARCH],
-where the optional ARCH defaults to x86_64 if not given for Linux/OS
-X, or i386 for Windows.
+* Installing MSYS2
 
-4.2 OSNAME    Corresponding 4.3 name
-Darwin64        Darwin
-LinuxRHEL5      LinuxRHEL5.i686
-LinuxRHEL5_64   LinuxRHEL5
-LinuxRHEL6_64   LinuxRHEL6
-LinuxRHEL7_64   LinuxRHEL7
-Win32           Win32
+MSYS2 is a linux-like environment similar to Cygwin.
 
-4.  The XicTools source repository was migrated to GIT from CVS.  The
-source tree orgainzation was improved.  The build, packaging, and
-package installation systems were extensively revised.  Previously
-external accessories such as adms (used with WRspice), and fastcap and
-fasthenry (used with Xic) were added to the XicTools collection.  New
-packages sets for Fedora26 and OpenSUSE13 were added.
+When installing MSYS2 and XicTools programs, you are strongly
+advised to install in the default locations.
 
-5.  Support for OpenAccess in Xic is back.  Non-commercial or
-OpenAccess Coalition members are free to use this capability.
+Go to msys2.org.  Download and run the installer, and follow the
+directions.  It is easy.  When done, you will have a shell window on
+the screen.  You should type the following commands to load some
+things you'll need.
 
-6.  In Linux and OS X, Xic is now run from a shell script, which uses
-the XIC_LIBRARY_PATH environment variable to set the LIBRARY_PATH
-environment variable during execution.  The XIC_LIBRARY_PATH variable
-can be used to transfer the location of the user's OpenAccess library,
-for example.
+ pacman -S vim
+ pacman -S winpty
+ pacman -S mingw-w64-x86_64-gtk2
+
+Then, use the vim editor to edit the .bash_profile file that exists in
+the current (your home) directory.  Add the following lines to the
+bottom of the file:
+
+ mount c:/usr/local/xictools /usr/local/xictools
+ export PATH="/usr/local/xictools/bin:$PATH"
+
+* The mintty Terminal Emulator Window
+
+The terminal window used in MSYS2 is "mintty".  This does NOT work
+directly with native Windows programs that work with a console window,
+which includes the XicTools programs.  One must run WRspice and
+probably Xic with the "winpty" program.  Just type "winpty" followed
+by the name and arguments of the program you want to run.
+
+For example, command to run WRspice is
+
+ winpty wrspice ...
+
+where the ... represents the command line arguments to wrspice.
+
+The winpty program performs some magic that enables native Windows
+programs expecting to find a cmd.com type of window to work with
+the mintty.
 
 *****************************************************
 IMPORTANT -- Mac OS X note!
@@ -71,9 +74,6 @@ IMPORTANT -- Mac OS X note!
 The Darwin64 package release is now generated on High Sierra (10.13),
 but the programs are fully compatible with Sierra (10.12), Mojave
 (10.14), and Catalina (10.15).
-
-Support for earlier OS X releases has ended.  This is Apple's
-decision, not mine.
 
 *****************************************************
 IMPORTANT -- Font Size (March 2020)
@@ -101,89 +101,102 @@ new one 10.  Linux and Windows seem to get this right in the first
 place, 10 being about the default.
 
 *****************************************************
-IMPORTANT -- Linux and OS X only
+IMPORTANT -- Search path setup.
 
-You should remove the following directories from your search path:
-  usr/local/xictools/xic/bin
-  usr/local/xictools/wrspice/bin
-(assuming tools installed under /usr/local, this could be different).
-
-These directories were required in your search path for earlier Xic
-and WRspice, as part of Safe Install support.  In 4.3 releases, all
-executables are linked into the
+In 4.3 releases, all executables are linked into the
    /usr/local/xictools/bin
-directory.
-
-This directory should remain, or be added to your search path if not
-already there (again /usr/local is the default, and should be replaced
-by your actual installation location prefix).
-
-*****************************************************
-IMPORTANT -- Windows notes
-
-  WINDOWS USERS SHOULD DO THE FOLLOWING:
-  To avoid rendering problems with tree-view display components.
-  Edit the file c:/usr/local/gtk2-bundle/etc/gtk-2.0/gtkrc
-  Either comment out the line by adding a # character at the beginning,
-  or replace the line with
-
-    gtk-theme-name="MS-Windows"
-
-  This changes the appearance of Xic and WRspice, which may look
-  better to Windows users (I think so).
-
-* DLL issues.
-
-  The gtk2-bundle package must be installed to support any XicTools
-  programs that use a graphical interface.  This is the same bundle as
-  was used with 4.2.  You should NOT have the gtk2-bundle/bin in your
-  search path, as it might then adversely affect operation of other
-  programs.
-
-  The programs that need the bundle DLLs should be run from the .bat
-  files, i.e., xic.bat, wrspice.bat, and others.  These are installed
-  by default in /usr/local/xictools/bin, which should be in your shell
-  search path.
-
-* Cygwin users:
-
-  Cygwin now defaults to a new "mintty" terminal emulator.  This does
-  NOT work AT ALL with WRspice, or any other native Windows
-  application that interacts with the console.  The same applies to
-  xterm and rvxt terminal emulators compiled under Cygwin.  These work
-  better for running Xic, or running WRspice from Xic, where the
-  terminal window is not interactive, but there are subtle problems so
-  this is not recommended.
-
-  WRspice can be run from the old-style native bash box, or a native
-  DOS box.  For example, start a Command Prompt terminal window ("DOS
-  box") from Windows, and give the commands
-    cd c:\cygwin64\bin
-    bash --login -i
-  This gives the traditional Cygwin window, suitable for running
-  WRspice.  This can be encapsulated in a bat file that can be run
-  from an icon, there may be a c:/cygwin64/Cygwin.bat file in the Cygwin
-  distribution that does exactly this.  If not, create a Cygwin.bat
-  file somewhere with the contents
-    @echo off
-    C:
-    chdir C:\cygwin64\bin
-    bash --login -i
-  This assumes that Cygwin in installed in C:\cygwin64, modify the
-  file text appropriately if not.  Create a desktop icon that will
-  run this bat file, and use it to launch Cygwin windows for running
-  native Windows applications including WRspice and Xic.
-
-  Note:  the 64-bit Cygwin64 is recommended over the 32-bit Cygwin,
-  which suffers from internal problems due to conflicts with Windows
-  Defender and other Windows programs.  This caused mysterious run-time
-  failures of Cygwin programs on my Windows 10 machines.
+directory, or the equivalent if you installed xictoiols in another
+location.  The directory should be added to your shell search path.
 
 *****************************************************
 End of general info.
 
 ===============================================================================
-xic-4.3.10  07/20/2019
+xic-4.3.11  01/20/2021
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* New layer extraction keyword:  ViaCut layer_expr
+
+  This is applied to a physical layer (has Thickness > 0) that opens
+  up cuts from the layer expression.  This applies only when using 3D
+  processing such as for cross sections and the FastCap/FastHenry
+  interface.  It allows one to separate abstract Via layers from the
+  physical layers that represent dielectrics.  The abstract layers are
+  used for LVS, DRC, etc.  The patterning is applied to the dielectric
+  ViaCut layers when computing 3D geometry.  This allows abstract vias
+  to have cuts through multiple dielectric layers.
+
+  ViaCut layers are assumed planarizing (like Via layers).
+
+  There is a new script function IsLayerViaCut().
+
+  ViaCut was added to the Layer keyword editor,
+
+  Example:  You have the following sequence of layers:
+  M1 I1A R1 I1B M2 VM12 VR12
+  The I1A and I1B layers are dielectrics, which encapsulate a
+  resistor R1.  VM12 is a via between M1 and M2, VR12 is a via
+  between R1 and M2 (these are two separate etch steps).
+
+  To express the dielectrics and via connectivity for this structure,
+  one can use
+
+  PhysLayer I1A
+  ViaCut VM12
+  Thickness 0.2
+
+  PhysLayer i1B
+  ViaCut VM12|VR12
+  Thickness 0.2
+
+  PhysLayer VM12
+  Via M1 M2
+
+  PhysLayer VR12
+  Via R1 M2
+
+  In this case, the VM12 and VR12 layers have no thickness, so they
+  become symbolic, but still establish connectivity for netlisting
+  and LVS.  The physical structure in 3D is actually established
+  by the I1A and I1B layers, which must have nonzero Thickness.  These
+  are used when 3D extraction (cross section of L/C extraction) is
+  being performed.
+    
+* New physical tech parameter Tau.
+
+  This is the Drude relaxation time for resistive layers, as accepted
+  by current releases of FastHenry.  This enables extraction of the
+  parasitic inductance of resistors, which can become appreciable for
+  some materials at low temperature.
+
+  There is a new script function GetLayerTau()
+
+  Tau was added to the layer keyword editor.
+  This is exported to FastHenry.
+
+* Major update to FastHenry interface.
+
+  New veriables: FhDefNhinc, FhDefRh, FhOverride, FhUseFilament,
+      FhVolEnablle, FhVolElMin.
+
+  These have corresponding new entries in the Params page of the LR
+  Extraction panel.
+
+  These provide better control/use of non-monotonic thickness division
+  similar to nhinc but internal,
+
+
+BUGS FIXED
+---- -----
+
+* Misc. small fixes.
+
+
+===============================================================================
+xic-4.3.10  07/20/2020
 Current Release
 
 CHANGES AND NEW FEATURES
@@ -257,9 +270,6 @@ CHANGES AND NEW FEATURES
     as bus terminals that they implelent bits of.  This is for
     consistency, and for the Node Mapping panel marks.
 
-
-BUGS FIXED
----- -----
 
 * Repetition is now added to gpulse source instances read from from
   OpenAccess.

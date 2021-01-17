@@ -1460,6 +1460,7 @@ techfile:layers
 !!REDIRECT TermDefault          techfile:layers:ext#GroundPlaneClear
 !!REDIRECT MultiNet             techfile:layers:ext#GroundPlaneClear
 !!REDIRECT Via                  techfile:layers:ext#Via
+!!REDIRECT ViaCut               techfile:layers:ext#ViaCut
 !!REDIRECT Dielectric           techfile:layers:ext#Dielectric
 !!REDIRECT Contact              techfile:layers:ext#Contact
 !!REDIRECT DarkField            techfile:layers:ext#DarkField
@@ -1472,11 +1473,12 @@ techfile:layers
 !!REDIRECT TERMDEFAULT          techfile:layers:ext#GroundPlaneClear
 !!REDIRECT MULTINET             techfile:layers:ext#GroundPlaneClear
 !!REDIRECT VIA                  techfile:layers:ext#Via
+!!REDIRECT VIACUT               techfile:layers:ext#ViaCut
 !!REDIRECT DIELECTRIC           techfile:layers:ext#Dielectric
 !!REDIRECT CONTACT              techfile:layers:ext#Contact
 !!REDIRECT DARKFIELD            techfile:layers:ext#DarkField
 
-!! 062016
+!! 011621
 !!KEYWORD
 techfile:layers:ext
 !!TITLE
@@ -1776,6 +1778,78 @@ Technology File Layer Block Keywords:  Extraction
     or by RES.
     </dl>
 
+    <a name="ViaCut"></a>
+    <dl>
+    <dt><tt>ViaCut</tt> <i>layer_expr</i>
+    <dd>
+    This is applied to an insulating layer with positive <a
+    href="Thickness"><tt>Thickness</tt></a> given, and defines cuts
+    through the layer from the <a href="layer_exp">layer
+    expression</a>.  This applies only when using three-dimensional
+    processing such as for <a href="xic:csect">cross sections</a> and
+    the <a href="xic:exc">FastCap</a>/<a href="xic:exlr">FastHenry</a>
+    interface.  It allows one to separate abstract (<tt>Thickness</tt>
+    not given or zero) <tt>Via</tt> layers from the physical layers
+    that represent dielectrics.  The abstract layers are used for
+    netlisting, LVS, etc.  The patterning is applied to the dielectric
+    <tt>ViaCut</tt> layers when computing 3D geometry.  This allows
+    abstract vias to have cuts through multiple dielectric layers,
+    which is required for some complex layer sequences.
+
+    <p>
+    <b>Example</b><br>
+    Assume one has the following sequence of layers:
+
+    <blockquote>
+    <tt>M1 I1A R1 I1B M2 VM12 VR12</tt>
+    </blockquote>
+
+    The <tt>I1A</tt> and <tt>I1B</tt> layers are dielectrics, which
+    encapsulate a resistor <tt>R1</tt>.  <tt>VM12</tt> is a via
+    between <tt>M1</tt> and <tt>M2</tt>, <tt>VR12</tt> is a via
+    between <tt>R1</tt> and <tt>M2</tt> (these are two separate etch
+    steps).
+
+    <p>
+    To express this structure, one can use
+    <blockquote><tt>
+
+    PhysLayer M1<br>
+    Conductor<br>
+    Thickness 0.2<br>
+    <br>
+    PhysLayer I1A<br>
+    ViaCut VM12<br>
+    Thickness 0.2<br>
+    <br>
+    PhysLayer R1<br>
+    Thickness 0.1<br>
+    Rsh 2.0<br>
+    <br>
+    PhysLayer i1B<br>
+    ViaCut VM12|VR12<br>
+    Thickness 0.2<br>
+    <br>
+    PhysLayer VM12<br>
+    Via M1 M2<br>
+    <br>
+    PhysLayer VR12<br>
+    Via R1 M2<br>
+    <br>
+    PhysLayer M2<br>
+    Conductor<br>
+    Thickness 0.2<br>
+    </blockquote><tt?
+
+    <p>
+    In this case, the <tt>VM12</tt> and <tt>VR12</tt> layers have no
+    thickness, so they are abstract, but still establish connectivity
+    for netlisting and LVS.  The physical structure in 3D is actually
+    established by the <tt>I1A</tt> and <tt>I1B</tt> layers, which
+    must have nonzero <tt>Thickness</tt>.  These are used when 3D
+    extraction (cross section or L/C extraction) is being performed.
+    </dl>
+
     <a name="Dielectric"></a>
     <dl>
     <dt><tt>Dielectric</tt>
@@ -1843,6 +1917,7 @@ techfile:layers
 !!REDIRECT Rho                  techfile:layers:phys#Sigma
 !!REDIRECT Sigma                techfile:layers:phys#Sigma
 !!REDIRECT Rsh                  techfile:layers:phys#Rsh
+!!REDIRECT Tau                  techfile:layers:phys#Tau
 !!REDIRECT EpsRel               techfile:layers:phys#EpsRel
 !!REDIRECT Capacitance          techfile:layers:phys#Capacitance
 !!REDIRECT Cap                  techfile:layers:phys#Capacitance
@@ -1857,6 +1932,7 @@ techfile:layers
 !!REDIRECT RHO                  techfile:layers:phys#Sigma
 !!REDIRECT SIGMA                techfile:layers:phys#Sigma
 !!REDIRECT RSH                  techfile:layers:phys#Rsh
+!!REDIRECT TAU                  techfile:layers:phys#Tau
 !!REDIRECT EPSREL               techfile:layers:phys#EpsRel
 !!REDIRECT CAPACITANCE          techfile:layers:phys#Capacitance
 !!REDIRECT CAP                  techfile:layers:phys#Capacitance
@@ -1864,7 +1940,7 @@ techfile:layers
 !!REDIRECT TLINE                techfile:layers:phys#Tline
 !!REDIRECT ANTENNA              techfile:layers:phys#Antenna
 
-!! 071820
+!! 011621
 !!KEYWORD
 techfile:layers:phys
 !!TITLE
@@ -1977,6 +2053,18 @@ Technology File Layer Block Keywords:  Physical Properties
     then the sheet resistance is already available and this keyword is
     redundant.  Supplying this keyword overrides the
     <tt>Rho</tt>/<tt>Thickness</tt> value for sheet resistance.
+    </dl>
+
+    <a name="Tau"></a>
+    <dl>
+    <dt><tt>Tau</tt> <i>tau</i>
+    <dd>
+    This is the Drude relaxation time for resistive layers, as
+    accepted by current releases of FastHenry.  This enables
+    extraction of the parasitic inductance of resistors, which can
+    become appreciable for some materials at low temperature.  This
+    parameter is used only when creating <a href="xic:exelr>FastHenry
+    input</a>.
     </dl>
 
     <a name="EpsRel"></a>

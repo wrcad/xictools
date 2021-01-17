@@ -133,11 +133,13 @@ funcs:main3:meas
 !!REDIRECT IsLayerGround        funcs:main3:layerex#IsLayerGround
 !!REDIRECT IsLayerContact       funcs:main3:layerex#IsLayerContact
 !!REDIRECT IsLayerVia           funcs:main3:layerex#IsLayerVia
+!!REDIRECT IsLayerViaCut        funcs:main3:layerex#IsLayerViaCut
 !!REDIRECT IsLayerDielectric    funcs:main3:layerex#IsLayerDielectric
 !!REDIRECT IsLayerDarkField     funcs:main3:layerex#IsLayerDarkField
 !!REDIRECT GetLayerThickness    funcs:main3:layerex#GetLayerThickness
 !!REDIRECT GetLayerRho          funcs:main3:layerex#GetLayerRho
 !!REDIRECT GetLayerResis        funcs:main3:layerex#GetLayerResis
+!!REDIRECT GetLayerTau          funcs:main3:layerex#GetLayerTau
 !!REDIRECT GetLayerEps          funcs:main3:layerex#GetLayerEps
 !!REDIRECT GetLayerCap          funcs:main3:layerex#GetLayerCap
 !!REDIRECT GetLayerCapPerim     funcs:main3:layerex#GetLayerCapPerim
@@ -483,7 +485,7 @@ Main Functions 3
      <tt>SetLayerNoDRCdatatype</tt>(<i>stdlyr</i>, <i>datatype</i>)</a>
      </td><td>Set GDSII NoDRC datatype</td></tr>
 
-    <!-- 120114 -->
+    <!-- 011621 -->
     <tr><th colspan=2 align="center">
         <a href="funcs:main3:layerex">Layers - Extraction Support</a></th></tr>
 
@@ -514,6 +516,9 @@ Main Functions 3
     <tr><td><a href="funcs:main3:layerex#IsLayerVia">
      <tt>IsLayerVia</tt>(<i>stdlyr</i>)</a>
      </td><td>Return nonzero for Via</td></tr>
+    <tr><td><a href="funcs:main3:layerex#IsLayerViaCut">
+     <tt>IsLayerViaCut</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return nonzero for ViaCut</td></tr>
     <tr><td><a href="funcs:main3:layerex#IsLayerDielectric">
      <tt>IsLayerDielectric</tt>(<i>stdlyr</i>)</a>
      </td><td>Return nonzero for Dielectric</td></tr>
@@ -529,6 +534,9 @@ Main Functions 3
     <tr><td><a href="funcs:main3:layerex#GetLayerResis">
      <tt>GetLayerResis</tt>(<i>stdlyr</i>)</a>
      </td><td>Return resistance per square</td></tr>
+    <tr><td><a href="funcs:main3:layerex#GetLayerTau">
+     <tt>GetLayerTau</tt>(<i>stdlyr</i>)</a>
+     </td><td>Return Drude relaxstion time</td></tr>
     <tr><td><a href="funcs:main3:layerex#GetLayerEps">
      <tt>GetLayerEps</tt>(<i>stdlyr</i>)</a>
      </td><td>Return dielectric constant</td></tr>
@@ -2120,8 +2128,9 @@ Layers - Extraction Support
     <dl>
     <dt><b>(int) <tt>IsLayerConductor</tt>(<i>stdlyr</i>)</b>
     <dd><br>
-    The function returns 1 if the <tt>Conductor</tt> keyword is given
-    or implied for the layer indicated by the argument, which is a <a
+    The function returns 1 if the <a
+    href="Conductor"><tt>Conductor</tt></a> keyword is given or
+    implied for the layer indicated by the argument, which is a <a
     href="stdlyr">standard layer</a> argument or a <a
     href="drvlayer">derived layer</a> name string, 0 otherwise.
     </dl>
@@ -2132,10 +2141,11 @@ Layers - Extraction Support
     <dl>
     <dt><b>(int) <tt>IsLayerRouting</tt>(<i>stdlyr</i>)</b>
     <dd><br>
-    The function returns 1 if the <tt>Routing</tt> keyword is given
-    for the layer indicated by the argument, which is a <a
-    href="stdlyr">standard layer</a> argument or a <a
-    href="drvlayer">derived layer</a> name string, 0 otherwise. 
+    The function returns 1 if the <a
+    href="Routing"><tt>Routing</tt></a> keyword is given for the layer
+    indicated by the argument, which is a <a href="stdlyr">standard
+    layer</a> argument or a <a href="drvlayer">derived layer</a> name
+    string, 0 otherwise. 
     </dl>
     <hr>
 
@@ -2144,8 +2154,9 @@ Layers - Extraction Support
     <dl>
     <dt><b>(int) <tt>IsLayerGround</tt>(<i>stdlyr</i>)</b>
     <dd><br>
-    The function returns 1 if one of the <tt>GroundPlane</tt> keywords
-    was given for the layer indicated by the argument, which is a <a
+    The function returns 1 if one of the <a
+    href="GroundPlane"><tt>GroundPlane</tt></a> keywords was given for
+    the layer indicated by the argument, which is a <a
     href="stdlyr">standard layer</a> argument or a <a
     href="drvlayer">derived layer</a> name string, 0 otherwise.
     </dl>
@@ -2156,10 +2167,11 @@ Layers - Extraction Support
     <dl>
     <dt><b>(int) <tt>IsLayerContact</tt>(<i>stdlyr</i>)</b>
     <dd><br>
-    The function returns 1 if the <tt>Contact</tt> keyword is given
-    for the layer indicated by the argument, which is a <a
-    href="stdlyr">standard layer</a> argument or a <a
-    href="drvlayer">derived layer</a> name string, 0 otherwise. 
+    The function returns 1 if the <a
+    href="Contact"><tt>Contact</tt></a> keyword is given for the layer
+    indicated by the argument, which is a <a href="stdlyr">standard
+    layer</a> argument or a <a href="drvlayer">derived layer</a> name
+    string, 0 otherwise. 
     </dl>
     <hr>
 
@@ -2168,9 +2180,21 @@ Layers - Extraction Support
     <dl>
     <dt><b>(int) <tt>IsLayerVia</tt>(<i>stdlyr</i>)</b>
     <dd><br>
-    The function returns 1 if the <tt>Via</tt> keyword is given for
-    the layer indicated by the argument, which is a <a
-    href="stdlyr">standard layer</a> argument or a <a
+    The function returns 1 if the <a href="Via"><tt>Via</tt></a>
+    keyword is given for the layer indicated by the argument, which is
+    a <a href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string, 0 otherwise.
+    </dl>
+    <hr>
+
+    <!-- 011621 -->
+    <a name="IsLayerViaCut"></a>
+    <dl>
+    <dt><b>(int) <tt>IsLayerViaCut</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns 1 if the <a href="ViaCut"><tt>ViaCut</tt></a>
+    keyword is given for the layer indicated by the argument, which is
+    a <a href="stdlyr">standard layer</a> argument or a <a
     href="drvlayer">derived layer</a> name string, 0 otherwise.
     </dl>
     <hr>
@@ -2180,8 +2204,9 @@ Layers - Extraction Support
     <dl>
     <dt><b>(int) <tt>IsLayerDielectric</tt>(<i>stdlyr</i>)</b>
     <dd><br>
-    The function returns 1 if the <tt>Dielectric</tt> keyword is given
-    for the layer indicated by the argument, which is a <a
+    The function returns 1 if the <a
+    href="Dielectric"><tt>Dielectric</tt></a> keyword is given for the
+    layer indicated by the argument, which is a <a
     href="stdlyr">standard layer</a> argument or a <a
     href="drvlayer">derived layer</a> name string, 0 otherwise.
     </dl>
@@ -2192,8 +2217,9 @@ Layers - Extraction Support
     <dl>
     <dt><b>(int) <tt>IsLayerDarkField</tt>(<i>stdlyr</i>)</b>
     <dd><br>
-    The function returns 1 if the <tt>DarkField</tt> keyword is given
-    or implied for the layer indicated by the argument, which is a <a
+    The function returns 1 if the <a
+    href="DarkField"><tt>DarkField</tt></a> keyword is given or
+    implied for the layer indicated by the argument, which is a <a
     href="stdlyr">standard layer</a> argument or a <a
     href="drvlayer">derived layer</a> name string, 0 otherwise.
     </dl>
@@ -2204,8 +2230,9 @@ Layers - Extraction Support
     <dl>
     <dt><b>(real) <tt>GetLayerThickness</tt>(<i>stdlyr</i>)</b>
     <dd><br>
-    The function returns the value of the <tt>Thickness</tt> parameter
-    given for the layer indicated by the argument, which is a <a
+    The function returns the value of the <a
+    href="Thickness"><tt>Thickness</tt></a> parameter given for the
+    layer indicated by the argument, which is a <a
     href="stdlyr">standard layer</a> argument or a <a
     href="drvlayer">derived layer</a> name string.
     </dl>
@@ -2238,6 +2265,20 @@ Layers - Extraction Support
     the values of <tt>Rho</tt>/<tt>Thickness</tt>, if <tt>Rho</tt> or
     <tt>Sigma</tt> and <tt>Thickness</tt> are given, or 0 if no value
     is available.
+    </dl>
+    <hr>
+
+    <!-- 011621 -->
+    <a name="GetLayerTau"></a>
+    <dl>
+    <dt><b>(real) <tt>GetLayerTau</tt>(<i>stdlyr</i>)</b>
+    <dd><br>
+    The function returns the Drude relaxation time for the
+    layer indicated by the argument, which is a <a
+    href="stdlyr">standard layer</a> argument or a <a
+    href="drvlayer">derived layer</a> name string.  This will
+    be the value of the <a href="Tau"><tt>Tau</tt></a>
+    parameter if given to the layer, 0 otherwise.
     </dl>
     <hr>
 

@@ -443,18 +443,24 @@ xiVariables.hlp
     <tr><td><b>FcPlaneBloat</b></td><td>Capacitance extractor substrate bloat dimension</td></tr>
     <tr><td><b>FcUnits</b></td><td>Capacitance extractor file units: m, cm, mm, um, in, mils</td></tr>
 
-!! 071820
+!! 011621
     <tr><th colspan=2><a href="!set:fh">Inductance/Resistance Extraction Interface</a></th></tr>
     <tr><td><b>FhArgs</b></td><td><i>FastHenry</i> command line arguments</td></tr>
     <tr><td><b>FhDefaults</b></td><td>Text for <tt>.DEFAULT</tt> line in <i>FastHenry</i> input</tt></tr>
+    <tr><td><b>FhDefNhinc</b></td><td>Default for <tt>nhinc</tt> in <i>FastHenry</i> input</tt></tr>
+    <tr><td><b>FhDefRh</b></td><td>Default for <tt>rh</tt> in <i>FastHenry</i> input</tt></tr>
     <tr><td><b>FhForeg</b></td><td><i>FastHenry</i> run in foreground if set</td></tr>
     <tr><td><b>FhFreq</b></td><td><i>FastHenry</i> frequency specification</td></tr>
     <tr><td><b>FhLayerName</b></td><td><i>FastHenry</i> interface masking layer name</td></tr>
     <tr><td><b>FhManhGridCnt</b></td><td>Manhattanization grid cell count</td></tr>
     <tr><td><b>FhMonitor</b></td><td><i>FastHenry</i> output appears in console window if set</td></tr>
+    <tr><td><b>FhOverride</b></td><td>Override <tt>nhinc</tt>, <tt>rh</tt> in <i>FastHenry</i> input</td></tr>
     <tr><td><b>FhPath</b></td><td>Path to <i>FastHenry</i> executable</td></tr>
     <tr><td><b>FhUnits</b></td><td><i>FastHenry</i> file units: m, cm, mm, um, in, mils</td></tr>
+    <tr><td><b>FhUseFilament</b></td><td>Use <i>FastHenry</i> filaments</td></tr>
+    <tr><td><b>FhVolElMin</b></td><td><i>FastHenry</i> volume element minimum size factor</td></tr>
     <tr><td><b>FhVolElTarget</b></td><td><i>FastHenry</i> volume element count target</td></tr>
+    <tr><td><b>FhVolEnable</b></td><td>Enable segment refinement</td></tr>
 
 !! 102613
     <tr><th colspan=2><a href="!set:help">Help System</a></th></tr>
@@ -7296,14 +7302,20 @@ Capacitance Extraction Interface
 
 !!REDIRECT FhArgs               !set:fh#FhArgs
 !!REDIRECT FhDefaults           !set:fh#FhDefaults
+!!REDIRECT FhDefNhinc           !set:fh#FhDefNhinc
+!!REDIRECT FhDefRh              !set:fh#FhDefRh
 !!REDIRECT FhForeg              !set:fh#FhForeg
 !!REDIRECT FhFreq               !set:fh#FhFreq
 !!REDIRECT FhLayerName          !set:fh#FhLayerName
 !!REDIRECT FhManhGridCnt        !set:fh#FhManhGridCnt
 !!REDIRECT FhMonitor            !set:fh#FhMonitor
+!!REDIRECT FhOverride           !set:fh#FhOverride
 !!REDIRECT FhPath               !set:fh#FhPath
 !!REDIRECT FhUnits              !set:fh#FhUnits
+!!REDIRECT FhUseFilament        !set:fh#FhUseFilament
+!!REDIRECT FhVolElMin           !set:fh#FhVolElMin
 !!REDIRECT FhVolElTarget        !set:fh#FhVolElTarget
+!!REDIRECT FhVolEnable          !set:fh#FhVolEnable
 
 !! 111819
 !!KEYWORD
@@ -7312,11 +7324,11 @@ Capacitance Extraction Interface
 Inductance/Resistance Extraction Interface
 !!HTML
     The following variables apply to the inductance/resistance
-    extraction (<a href="fhinterf">FastHenry interface</a>).  Most of
-    these are associated with entry fields in the <a
-    href="fhpanel"><b>LR Extraction</b></a> panel, which is
-    brought up with the <a href="xic:exlr"><b>Extract LR</b></a>
-    button in the <a href="xic:extmenu"><b>Extract Menu</b></a>.
+    extraction (<a href="fhinterf"><i>FastHenry</i> interface</a>). 
+    Most of these are associated with entry fields in the <a
+    href="fhpanel"><b>LR Extraction</b></a> panel, which is brought up
+    with the <a href="xic:exlr"><b>Extract LR</b></a> button in the <a
+    href="xic:extmenu"><b>Extract Menu</b></a>.
 
 !! 111819
     <a name="FhArgs"></a>
@@ -7342,6 +7354,34 @@ Inductance/Resistance Extraction Interface
     field in the <b>LR Extraction</b> panel <b>Run</b> page.  See the
     <i>FastHenry</i> documentation describing the syntax and options
     for the applicable text.
+    </dl>
+
+!! 011621
+    <a name="FhDefNhinc"></a>
+    <dl>
+    <dt><b>FhDefNhinc</b><dd>
+    <b>Value:</b> integer 1-20<br>
+    Provide a default value for the <tt>nhinc</tt> parameter as used
+    by <i>FastHenry</i>.  This is overridden by values specified with
+    the <a href="FH_nhinc"><tt>FH_nhinc</tt></a> technology keyword
+    for layers, unless the <a href="FhOverride"><b>FhOverride</b></a>
+    variable is set, in which case the this variable has precedence. 
+    This tracks the <b>FhDefNhinc</b> entry in the <b>Params</b> page
+    of the <a href="fhpanel"><b>LR Extraction</b></a> panel.
+    </dl>
+
+!! 011621
+    <a name="FhDefRh"></a>
+    <dl>
+    <dt><b>FhDefRh</b><dd>
+    <b>Value:</b> real 0.5 - 4.0<br>
+    Provide a default value for the <tt>rh</tt> parameter as used by
+    <i>FastHenry</i>.  This is overridden by values specified with the
+    <a href="FH_rh"><tt>FH_rh</tt></a> technology keyword for layers,
+    unless the <a href="FhOverride"><b>FhOverride</b></a> variable is
+    set, in which case the this variable has precedence.  This tracks
+    the <b>FhDefRh</b> entry in the <b>Params</b> page of the <a
+    href="fhpanel"><b>LR Extraction</b></a> panel.
     </dl>
 
 !! 111819
@@ -7462,6 +7502,21 @@ Inductance/Resistance Extraction Interface
     Extgraction</b></a> panel from the <b>Extract Menu</b>.
     </dl>
 
+!! 011621
+    <a name="FhOverride"></a>
+    <dl>
+    <dt><b>FhOverride</b><dd>
+    <b>Value:</b> boolean.<br>
+    When set, values of the <a href="FhDefNhinc"><b>FhDefNhinc</b></a>
+    and <a href="FhDefRh"><b>FhDefRh</b></a> variables will override
+    values provided by <a href="FH_nhinc"><tt>FH_nhinc</tt></a> and <a
+    href="FH_rh"><tt>FH_rh</tt></a> technology layer parameters to use
+    for <tt>nhinc</tt> and <tt>rh</tt> parameters in <i>FastHenry</i>
+    input.  This tracks the state of the <b>Override Layer NHINC,
+    RH</b> button in the <b>Params</b> page of the <a
+    href="fhpanel"><b>LR Extraction</b></a> panel.
+    </dl>
+
 !! 111819
     <a name="FhPath"></a>
     <dl>
@@ -7500,6 +7555,31 @@ Inductance/Resistance Extraction Interface
     page.
     </dl>
 
+!! 011621
+    <a name="FhUseFilament"></a>
+    <dl>
+    <dt><b>FhUseFilament</b><dd>
+    <b>Value:</b> boolean.<br>
+    If set, <i>FastHenry</i> will decompose segments into filaments
+    according to the given <tt>nhinc</tt> and <tt>rh</tt> parameters. 
+    If not set, the interface will automatically slice segments
+    according to the same parameters, without further refinement by
+    <i>FastHenry</i>.  This tracks the state of the <b>Use FastHenry
+    Internal NHINC, RH</b> button in the <b>Params</b> page of the <a
+    href="fhpanel"><b>LR Extraction</b></a> panel.
+    </dl>
+
+!! 011621
+    <a name="FhVolElMin"></a>
+    <dl>
+    <dt><b>FhVolElMin</b><dd>
+    <b>Value:</b> real 0 - 1.0, default 0.1.<br>
+    The minimum rectangle edge length is this factor
+    multiplying the maximum edge length.  This tracks the
+    <b>FhVolElMin</b> entry in the <b>Params</b> page of the
+    <a href="fhpanel"><b>LR Extraction</b></a> panel.
+    </dl>
+
 !! 090314
     <a name="FhVolElTarget"></a>
     <dl>
@@ -7512,6 +7592,16 @@ Inductance/Resistance Extraction Interface
     elements is approximately the value of this variable.  Each volume
     element contains six segments, connecting the center node to each
     face node.
+    </dl>
+
+!! 011621
+    <a name="FhVolEnable"></a>
+    <dl>
+    <dt><b>FhVolEnable</b><dd>
+    <b>Value:</b> boolean,<br>
+    Enable segment refinement.  This tracks the state of the
+    <b>Enable</b> button in the <b>Params</b> page of the <a
+    href="fhpanel"><b>LR Extraction</b></a> panel.
     </dl>
 
 !!SEEALSO

@@ -1123,7 +1123,7 @@ appear in the input mapping for the layer.
 
 
 %-------------------------------
-% techfile:layers:ext 062016
+% techfile:layers:ext 011621
 \subsection{Technology File Layer Block Keywords:  Extraction}
 \label{exkwords}
 
@@ -1367,6 +1367,69 @@ A via is indicated if part of the via object is not covered by {\vt I2}
 or by {\vt RES}.
 \end{description}
 
+\item{\et ViaCut {\it expression\/}}\\
+\index{ViaCut keyword}
+This is applied to an insulating layer with positive {\et
+Thickness} given, and defines cuts through the layer from the
+layer expression.  This applies only when using
+three-dimensional processing such as for cross sections and
+the FastCap/FastHenry interface.  It allows one to separate
+abstract ({\et Thickness}> not given or zero) {\et Via} layers
+from the physical layers that represent dielectrics.  The
+abstract layers are used for netlisting, LVS, etc.  The
+patterning is applied to the dielectric {\et ViaCut} layers
+when computing 3D geometry.  This allows abstract vias to have
+cuts through multiple dielectric layers, which is required for
+some complex layer sequences.
+
+Example\\
+Assume one has the following sequence of layers:
+\begin{quote}\vt
+M1 I1A R1 I1B M2 VM12 VR12
+\end{quote}
+
+The {\vt I1A} and {\vt I1B} layers are dielectrics, which
+encapsulate a resistor {\vt R1}.  {\vt VM12} is a via between
+{\vt M1} and {\vt M2}, {\vt VR12} is a via between {\vt R1}
+and {\vt M2} (these are two separate etch steps).
+
+To express this structure, one can use
+\begin{quote}\vt
+PhysLayer M1\\
+Conductor\\
+Thickness 0.2\\
+\\
+PhysLayer I1A\\
+ViaCut VM12\\
+Thickness 0.2\\
+\\
+PhysLayer R1\\
+Thickness 0.1\\
+Rsh 2.0\\
+\\
+PhysLayer i1B\\
+ViaCut VM12|VR12\\
+Thickness 0.2\\
+\\
+PhysLayer VM12\\
+Via M1 M2\\
+\\
+PhysLayer VR12\\
+Via R1 M2\\
+\\
+PhysLayer M2\\
+Conductor\\
+Thickness 0.2\\
+\end{quote}
+
+In this case, the {\vt VM12} and {\vt VR12} layers have no
+thickness, so they are abstract, but still establish
+connectivity for netlisting and LVS.  The physical structure
+in 3D is actually established by the {\vt I1A} and {\vt I1B}
+layers, which must have nonzero {\et Thickness}.  These are
+used when 3D extraction (cross section or L/C extraction) is
+being performed.
+
 \item{\et Dielectric}\\
 \index{Dielectric keyword}
 This keyword is intended to specify an explicit capacitor dielectric,
@@ -1413,7 +1476,7 @@ The combination is equivalent to {\et GroundPlaneClear}.
 
 
 %-------------------------------
-% techfile:layers:phys 071820
+% techfile:layers:phys 011621
 \subsection{Technology File Layer Block Keywords:  Physical Properties}
 \label{phkwords}
 
@@ -1501,6 +1564,14 @@ Sigma} is given, and also {\et Thickness}, then the sheet resistance
 is already available and this keyword is redundant.  Supplying this
 keyword overrides the {\et Rho}/{\et Thickness} value for sheet
 resistance.
+
+\item{\et Tau {\it tau}}\\
+\index{Tau keyword}
+This is the Drude relaxation time for resistive layers, as
+accepted by current releases of FastHenry.  This enables
+extraction of the parasitic inductance of resistors, which can
+become appreciable for some materials at low temperature. 
+This parameter is used only when creating FastHenry input.
 
 \item{\et EpsRel {\it diel\_constant}}\\
 This keyword supplies the relative dielectric constant of insulating

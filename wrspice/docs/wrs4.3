@@ -17,129 +17,65 @@ Scroll down to the notes for the current WRspice release, which
 follows some important general information.
 
 *****************************************************
-IMPORTANT -- General changes from 4.2 branch
+IMPORTANT -- New Windows framework, releases.
 
-1.  If you currently have XicTools programs installed from earlier
-branches, it is strongly recommended that these be deleted.  This will
-be managed automatically by the wr_install script.  Under Windows, you
-can use wr_install under Cygwin, or you can run the cleanold.bat file
-before installing 4.3 programs.  You should NOT delete the gtk2-bundle
-packages for Windows and OS X, these are still required for 4.3.  Your
-present releases of Xic and WRspice can be saved in Safe Install
-format (even under Windows), and existing safe-installs won't be
-affected.
+Starting January 2021, all Windows binaries are 64-bit, compiled under
+the MINGW64 subsystem of MSYS2 (64-bit version).
 
-2.  The Safe Install feature now applies to all packages, including
-Microsoft Windows.  In Safe Install, when updating, the current
-release is saved in its entirety, and can be easily reverted to if
-necessary.  The Safe Install logic is now implemented with scripts
-included in the distribution files, and no longer relies on use of
-wr_install.
+Although it may be possible to run the programs from other MINGW64
+installations, for example Cygwin, it is recommended MSYS2 be
+installed.  This replaces the "gtk_bundle" package that was previously
+used to supply gui dlls.
 
-3.  Distribution file names, and operating system names, are a little
-different now.  The new OSNAME format is now in the form NAME[.ARCH],
-where the optional ARCH defaults to x86_64 if not given for Linux/OS
-X, or i386 for Windows.
+* Installing MSYS2
 
-4.2 OSNAME    Corresponding 4.3 name
-Darwin64        Darwin
-LinuxRHEL5      LinuxRHEL5.i686
-LinuxRHEL5_64   LinuxRHEL5
-LinuxRHEL6_64   LinuxRHEL6
-LinuxRHEL7_64   LinuxRHEL7
-Win32           Win32
+MSYS2 is a linux-like environment similar to Cygwin.
 
-4.  The XicTools source repository was migrated to GIT from CVS.  The
-source tree orgainzation was improved.  The build, packaging, and
-package installation systems were extensively revised.  Previously
-external accessories such as adms (used with WRspice), and fastcap and
-fasthenry (used with Xic) were added to the XicTools collection.  New
-packages sets for Fedora26 and OpenSUSE13 were added.
+When installing MSYS2 and XicTools programs, you are strongly
+advised to install in the default locations.
 
-5.  You probably want to remove your existing adms package, if any. 
-and install the new xictools adms package.  This provides a newer adms
-release, integrated automatically with WRspice.
+Go to msys2.org.  Download and run the installer, and follow the
+directions.  It is easy.  When done, you will have a shell window on
+the screen.  You should type the following commands to load some
+things you'll need.
+
+ pacman -S vim
+ pacman -S winpty
+ pacman -S mingw-w64-x86_64-gtk2
+
+Then, use the vim editor to edit the .bash_profile file that exists in
+the current (your home) directory.  Add the following lines to the
+bottom of the file:
+
+ mount c:/usr/local/xictools /usr/local/xictools
+ export PATH="/usr/local/xictools/bin:$PATH"
+
+This should be all that is needed to run the XicTools programs.
+
+* The mintty Terminal Emulator Window
+
+The terminal window used in MSYS2 is "mintty".  This does NOT work
+directly with native Windows programs that work with a console window,
+which includes the XicTools programs.  One must run WRspice and
+probably Xic with the "winpty" program.  Just type "winpty" followed
+by the name and arguments of the program you want to run.
+
+For example, command to run WRspice is
+
+ winpty wrspice ...
+
+where the ... represents the command line arguments to wrspice.
+
+The winpty program performs some magic that enables native Windows
+programs expecting to find a command.com type of window to work with
+the mintty.
 
 *****************************************************
-IMPORTANT -- WRspice changes (these are the same as in 4.2.x)
-
-The present WRspice has some differences that can affect simulation
-results relative to pre-production or pre-Gen-4 releases.
-
-1)  TMAX Limiting to TSTEP
-
-  WRspice now limits the maximum internal time step to the printing time
-  step (Tstep).  This is obtained from the tran line
-
-  .tran Tstep Tstop [Tstart [Tmax]]     (simplified syntax)
-
-  I.e., Tmax now defaults to Tstep.
-
-  This was done to improve results from circuits containing only devices
-  that weakly limit the time step (e.g.  MOSFETs) which otherwise can be
-  ugly and wrong (e.g., ring oscillator results).  This allows users of
-  such devices to get good results without having to set an explicit
-  maximum time step in the tran line.
-
-  However, if the printing time steps are very closely spaced, the
-  simulation time can dramatically increase, since these points are now
-  actually being calculated and not just interpolated.  The user in
-  this situation has several options:
-
-  1.  Accept the longer analysis time as the cost of greater accuracy.
-  2.  Use a larger printing time increment (Tstep).
-  3.  Use the Tmax parameter in the tran line to set a larger limit.
-  4.  Use .options oldsteplim to use the old limit of (Tstop-Tstart)/50.
-
-2)  Josephson Junction DC Operating Point Analysis
-
-  The transient "uic" parameter is no longer virtually applied when
-  Josephson junctions are present.  Instead, a dc operating point
-  calculation is done, with Josephson junctions taken to have a very
-  large conductance.  The operating range analysis is generally
-  required for JJ/semiconductor hybrid circuits, but is most often
-  redundant for purely Josephson circuits.
-
-  This is all transparent to the user, except if the circuit contains
-  inductor loops.  The operating point analysis, and therefor the
-  transient analysis will fail in this case.  This can be remedied by
-  giving the "uic" keyword explicitly in the tran command or .tran
-  line, which causes the transient analysis to start with initial
-  conditions and the operating point calculation is skipped.  Inductor
-  loops are not a problem in this case.
-
-3)  GMAX Resistance Limiting
-
-  Resistor vales are limited to be larger than the reciprocal of the
-  gmax parameter, which by default limits resistors to be 1 micro-ohm
-  or larger.  Resistors of smaller value will be taken as the minimum
-  value, and a warning message will be generated.
-
-  Earlier releases limited the resistor values to 1 pico-ohm or
-  larger, and there was no message if a resistor value was changed.
-
-  Believe it or not, a circuit was submitted where this made a large
-  difference in simulated results, unless gmax was set to the maximum
-  value of 1e12.
-
-4)  Node Name Parameter Expansion
-
-  Node names are no longer parameter expanded (as of 4.1.12) by
-  default.
-
-  I know of at least one old deck where this feature was used.
-
-  If the boolean variable pexnodes is set, then parameter expansion
-  will occur, for backward compatibility.
-*****************************************************
-IMPORTANT  Mac users!
+IMPORTANT -- Mac OS X note!
 
 The Darwin64 package release is now generated on High Sierra (10.13),
 but the programs are fully compatible with Sierra (10.12), Mojave
 (10.14), and Catalina (10.15).
-
-Support for earlier OS X releases has ended.  This is Apple's
-decision, not mine.
 
 *****************************************************
 IMPORTANT -- Font Size (March 2020)
@@ -167,89 +103,89 @@ new one 10.  Linux and Windows seem to get this right in the first
 place, 10 being about the default.
 
 *****************************************************
-IMPORTANT -- Linux and OS X only
+IMPORTANT -- Search path setup.
 
-You should remove the following directories from your search path:
-  usr/local/xictools/xic/bin
-  usr/local/xictools/wrspice/bin
-(assuming tools installed under /usr/local, this could be different).
-
-These directories were required in your search path for earlier Xic
-and WRspice, as part of Safe Install support.  In 4.3 releases, all
-executables are linked into the
+In 4.3 releases, all executables are linked into the
    /usr/local/xictools/bin
-directory.
-
-This directory should remain, or be added to your search path if not
-already there (again /usr/local is the default, and should be replaced
-by your actual installation location prefix).
-
-*****************************************************
-IMPORTANT -- Windows notes
-
-  WINDOWS USERS SHOULD DO THE FOLLOWING:
-  To avoid rendering problems with tree-view display components.
-  Edit the file c:/usr/local/gtk2-bundle/etc/gtk-2.0/gtkrc
-  Either comment out the line by adding a # character at the beginning,
-  or replace the line with
-
-    gtk-theme-name="MS-Windows"
-
-  This changes the appearance of Xic and WRspice, which may look
-  better to Windows users (I think so).
-
-* DLL issues.
-
-  The gtk2-bundle package must be installed to support any XicTools
-  programs that use a graphical interface.  This is the same bundle as
-  was used with 4.2.  You should NOT have the gtk2-bundle/bin in your
-  search path, as it might then adversely affect operation of other
-  programs.
-
-  The programs that need the bundle DLLs should be run from the .bat
-  files, i.e., xic.bat, wrspice.bat, and others.  These are installed
-  by default in /usr/local/xictools/bin, which should be in your shell
-  search path.
-
-* Cygwin users:
-
-  Cygwin now defaults to a new "mintty" terminal emulator.  This does
-  NOT work AT ALL with WRspice, or any other native Windows
-  application that interacts with the console.  The same applies to
-  xterm and rvxt terminal emulators compiled under Cygwin.  These work
-  better for running Xic, or running WRspice from Xic, where the
-  terminal window is not interactive, but there are subtle problems so
-  this is not recommended.
-
-  WRspice can be run from the old-style native bash box, or a native
-  DOS box.  For example, start a Command Prompt terminal window ("DOS
-  box") from Windows, and give the commands
-    cd c:\cygwin64\bin
-    bash --login -i
-  This gives the traditional Cygwin window, suitable for running
-  WRspice.  This can be encapsulated in a bat file that can be run
-  from an icon, there may be a c:/cygwin64/Cygwin.bat file in the Cygwin
-  distribution that does exactly this.  If not, create a Cygwin.bat
-  file somewhere with the contents
-    @echo off
-    C:
-    chdir C:\cygwin64\bin
-    bash --login -i
-  This assumes that Cygwin in installed in C:\cygwin64, modify the
-  file text appropriately if not.  Create a desktop icon that will
-  run this bat file, and use it to launch Cygwin windows for running
-  native Windows applications including WRspice and Xic.
-
-  Note:  the 64-bit Cygwin64 is recommended over the 32-bit Cygwin,
-  which suffers from internal problems due to conflicts with Windows
-  Defender and other Windows programs.  This caused mysterious run-time
-  failures of Cygwin programs on my Windows 10 machines.
+directory, or the equivalent if you installed xictoiols in another
+location.  The directory should be added to your shell search path.
 
 *****************************************************
 End of general info.
 
 
 ===============================================================================
+wrspice-4.3.13  1/20/2021
+Current Release
+
+CHANGES AND NEW FEATURES
+------- --- --- --------
+
+* Added a new command "printf".  This is like the print command,
+  however it prints to the report file for use in operating range and
+  Monte Carlo analysis.
+
+* Altered parameters are now added to the report file automatically,
+  no need for "alterf" command, for Monte Carlo analysis.
+
+* One can now use "set" in exec blocks to set values for parameters
+  with RHS variables, e.g., .param p1=$val, the exec block might
+  contain "set val=1.2".
+
+* The .measure results vectors and scales are now extended
+  when multiple dimensions are encountered, there is no longer a
+  "_history" and "_history_scale".
+
+* PSF output now includes @device[param] branch current constructs. 
+  The '@' and '[param]' are stripped.
+
+* jj.va Josephson junction Verilog-A:  the NOIDT preprocessor define
+  is now enabled by default, since this generally reduces interation
+  count and simulation time in WRspice.
+
+* Added the mmjco utility to the WRspice package.  This is for
+  computing tunnel current amplitude tables for the (mitmojco) TJM
+  Josephson junction model.
+
+* New variable "tjm_path" provides a list of directories to search for
+  fit files, effectively defaults to "( .  ~/.mmjco )".  Fit file
+  loading in TJM is now complete, the model param can be set to path
+  or file name, or "tjm1" and "tjm2" for internal models.
+
+
+BUGS FIXED
+---- -----
+
+* Fixed a bug with the jjaccel variable not working properly with
+  phase-mode DCOP (reported by Manuel at NIST).
+
+* Fixed "set unixcom", it would crash. the program.
+
+* Fixed single-quoted bstring (pattern definition for pulse/gpulse)
+  bug.  The quoting would cause an extra 1-bit in the sequence.
+
+* The measure runop was not working, fixed (thanks Ken Segall).
+
+* Fix spurious error messages that were being generated when reading a
+  rawfile.  (Dave Harms)
+
+* Fixed handling of numerical params treated as strings.  E.g.,
+
+    .param p1=10 p2=2/p1 p3=1/p2
+
+  Previously p3 would evaluate to 0.05 due to evaluating 1/2/10, now
+  RHS parameters are expanded before use so result is 1/0.2=5.
+
+* The presence of a .measure would cause corruption of multi-dimensional
+  plot data.
+
+* Fixed internal JJ model parameter handling.  Specifying capacitance
+  now overrides CPIC, which is needed to get proper time step.  Also
+  specifying RSUB or RN revalues VM, ICRN.  In the parameter info,
+  removed the "mv" from VM, ICRN which are actually in volts.
+
+
+-------------------------------------------------------------------------------
 wrspice-4.3.12  7/20/2020
 Current Release
 

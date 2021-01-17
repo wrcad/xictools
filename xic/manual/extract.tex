@@ -5045,7 +5045,7 @@ hardware.}
 
 
 % -----------------------------------------------------------------------------
-% fhpanel 071820
+% fhpanel 011721
 \subsection{The LR Extraction Panel}
 \index{LR Extraction Panel}
 \label{fhpanel}
@@ -5151,8 +5151,8 @@ displays and sets the {\et FhPath} variable.
 %-----------------------------------
 \subsubsection{The Params page}
 
-The upper half of this page provides entry areas for parameters used
-by the interface.
+This page provides entry areas for parameters used by the
+interface.
 
 \begin{description}
 \item{\cb FhUnits}\\
@@ -5166,12 +5166,12 @@ input files are generated.  The choice of units will not affect the
 computed inductance/resistance.
 
 \index{FhManhGridCnt variable}
-\item{\et FhManhGridCnt}\\
+\item{\cb FhManhGridCnt}\\
 {\bf Value:} real number 1e2--1e5.\\
 When a non-Manhattan polygon is ``Manhattanized'' for {\it FastHenry},
 it is converted to an approximating Manhattan polygon.  The value in
 this entry is used to set the minimum rectangle width and height
-allowed in the decomposition.  It sets, and is set by, the {\cb
+allowed in the decomposition.  It sets, and is set by, the {\et
 FhManhGridCnt} variable.  The minimum size is given by
 \begin{quote}
 {\vt sqrt(}{\it area\_of\_interest\/}{\vt /FhManhGridCnt)}
@@ -5180,48 +5180,109 @@ The default entry value is 1000.  Larger values are more accurate
 but slow processing, sometimes dramatically.  The {\it
 area\_of\_interest} is the layout area being processed for input to
 {\it FastHenry}.
+
+\index{FhDefaults variable}
+\item{\cb FhDefaults}\\
+Any text entered into this area will be included in a {\vt
+.defaults} line in {\it FastHenry} input.  The text must be
+understood by the {\it FastHenry} program in use.  The text
+will also be saved in and track the {\et FhDefaults} variable.
+
+\index{FhDefNhinc variable}
+\item{\cb FhDefNhinc}\\
+This entry tracks the value of the {\et FhDefNhinc} variable,
+which sets a default value for the {\it FastHenry} {\vt nhinc}
+parameter.  This will be overridden by values set by the layer
+keyword {\vt FH\_nhinc} in the technology file, unless the
+{\et FhOverride} variable is set, in which case the variable
+has precedence.
+
+\index{FhDefRh variable}
+\item{\cb FhDefRh}\\
+This entry tracks the value of the {\et FhDefRh} variable,
+which sets a default value for the {\it FastHenry} {\vt rh}
+parameter.  This will be overridden by values set by the layer
+keyword {\vt FH\_rh} in the technology file, unless the {\et
+FhOverride} variable is set, in which case the variable has
+precedence.
+
+\index{FhOverride variable}
+\item{\cb Override Layer NHINC, RH}\\
+When this check box is set, the values of the {\cb FhDefNhinc}
+and {\cb FhDefRh} entries override values set with technology
+file keywords on individual layers.  This tracks the state of
+the {\et FhOverride} variable (set or not).
+
+\index{FhUseFilament variable}
+\item{\cb Use FastHenry Internal NHINC, RH}\\
+If set, the {\vt >nhinc} and {\vt rh} values are passed to
+{\it FastHenry\/}, which will use the values internally for
+filament generation.  If not set, the values will be used in
+the input file generation to refine segments according to the
+same parameters, and {\it FastHenry} will not create
+additional filaments.  This button tracks the state of the
+{\et FhUseFilament} variable (set or not).
+
 \end{description}
 
-The lower half of the page allows one to crudely refine the raw
-segmentation.  By default, this is not enabled, so that only tiling
-provides refinement.  This may be a good starting point for a
-third-party refinement algorithm, but with present {\it FastHenry}
-programs is unlikely to provide accurate results as-is.  When enabled,
-the crude refinement should provide somewhat better results.
+The {\cb FastHenry Volume Element Refinement} allows one to
+crudely refine the raw segmentation.  By default, this is not
+enabled, so that only tiling provides refinement.  This may be
+a good starting point for a third-party refinement algorithm,
+but with present {\it FastHenry} programs is unlikely to
+provide accurate results as-is.  When enabled, the crude
+refinement should provide somewhat better results.
 
-The refinement algorithm works as follows.  First, the total volume of
-all conductors is calculated.  This is divided by the {\cb
-FhVolElTarget} as entered.  The cube root is taken, which provides a
-length which is used as a maximum.  If a side of a tile exceeds this
-length, it is subdivided.  This is repeated until no tiles have sides
-larger than the calculated length.  The total number of tiles (or
-``volume elements'') is approximately the target value entgered.  The
+The refinement algorithm works as follows.  For each
+conductor, find the volume and divide by the film thickness. 
+The maximum size is taken as the square root of the sum of
+these terms divided by the {\et FhVolElTarget} as entered.  If
+a side of a tile exceeds this length, it is subdivided.  This
+is repeated until no tiles have sides larger than the
+calculated length.  The total number of tiles (or ``volume
+elements'') is approximately the target value entgered.  The
 total number of segments is approximately six times larger.
 
-The refinement is ``crude'' due to each refined volume element being
-approximately the same size.  If the size is small enough, sufficient
-spatial resolution for accurate calculation is achieved.  This
-resolution is needed along edges, and at corners, where there are
-strong field gradients, but is gross overkill for most areas.  Since
-the solving time is related to the total number of segments, this type
-of refinement is very inefficient with respect to memory use and
-execution speed.
+Additionally, a minimum dimension can be defined.  Volume
+elements with a dimension smaller than the minimum will be
+ignored.
+
+The refinement is ``crude'' due to each refined volume element
+being approximately the same size.  If the size is small
+enough, sufficient spatial resolution for accurate calculation
+is achieved.  This resolution is needed along edges, and at
+corners, where there are strong field gradients, but is gross
+overkill for most areas.  Since the solving time is related to
+the total number of segments, this type of refinement is very
+inefficient with respect to memory use and execution speed.
 
 \begin{description}
 \item{\cb Enable}\\
-This check box will enable or disable the refinement.  When pressed,
-the {\cb FhVolElTarget} entry will become un-grayed, and internally
-the {\et FhVolElTarget} variable will be set to the number shown
-in the {\cb FhVolElTarget} entry area.  When the {\cb Enable} button
-is set inactive, the {\et FhVolElTarget} variable is unset.  The {\cb
-Enable} button state will reflect whether or not the {\et
-FhVolElTarget} variable is set.
+This check box will enable or disable the refinement.  When
+pressed, the two numerical entry areas will become un-grayed,
+and internally the {\et FhVolElTarget} variable will be set to
+the number shown in the {\cb FhVolElTarget} entry area, and
+the {\et FfVolElMin} variable will be set to the number shown
+in the {\cb FhVolElMin} entry area.  When the {\cb Enable}
+button is set inactive, the {\et FhVolElTarget} and {\cb
+FhVolElMin} variables are unset.  The {\et FhVolEnable}
+variable tracks the state (set or unset) of the {\cb Enable}
+button.
 
 \item{\cb FhVolElTarget}\\
-This entry area is seensitive only when the {\cb Enable} check box is
-checked.  It tracks the value of the {\et FhVolElTarget} variable,
-which can be set to a real value of 1e2 -- 1e5.  This will be the
-approximate number of refined tiles generated in the input file.
+This entry area is sensitive only when the {\cb Enable} check
+box is checked.  It tracks the value of the {\et
+FhVolElTarget} variable, which can be set to a real value of
+1e2 -- 1e5.  This will be the approximate number of refined
+tiles generated in the input file.
+
+\item{\cb FhVolElMin}\\
+This entry area is sensitive only when the {\cb Enable} check
+box is checked.  It tracks the value of the {\et FhVolElMin}
+variable, which can be set to a real value of 0 -- 1.0. 
+Volume elements with a dimension smaller that this fraction of
+the maximum dimension computed for the volume element target
+will be ignored.
 \end{description}
 
 %-----------------------------------

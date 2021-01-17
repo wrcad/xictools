@@ -1218,10 +1218,10 @@ The Inductance/Resistance Extraction Interface
     computation time.
 
     <p>
-    <li>One should not try to extract "too much", due to the FastHenry
-    limitations.  How much is too much depends on a lot a factors,
-    the user should experiment to gain a feel for their process and
-    computer hardware.
+    <li>One should not try to extract "too much", due to the
+    <i>FastHenry</i> limitations.  How much is too much
+    depends on a lot a factors, the user should experiment to
+    gain a feel for their process and computer hardware.
     </ul>
 
 !!SEEALSO
@@ -1229,7 +1229,7 @@ fhpanel
 xic:ldb3d
 !fh
 
-!! 071820
+!! 011721
 !!KEYWORD
 fhpanel
 !!TITLE
@@ -1245,35 +1245,39 @@ The LR Extraction Panel
     </td></tr></table>
 
     <p>
-    This panel, brought up by the <a href="xic:exlr"><b>Extract
-    LR</b></a> button in the <a href="xic:extmenu"><b>Extract
-    Menu</b></a>, controls the <a href="fhinterf">interface</a> to
-    external inductance/resistance extraction programs described
-    therein.  The interface can also be controlled to a large extent
-    with the <a href="!fh"><b>!fh</b></a> prompt line command.
+    This panel, brought up by the <a
+    href="xic:exlr"><b>Extract LR</b></a> button in the <a
+    href="xic:extmenu"><b>Extract Menu</b></a>, controls the
+    <a href="fhinterf">interface</a> to external
+    inductance/resistance extraction programs described
+    therein.  The interface can also be controlled to a large
+    extent with the <a href="!fh"><b>!fh</b></a> prompt line
+    command.
 
     <p>
-    The panel functionality is divided into three pages, selectable
-    through the tabs along the top of the window.  Common to all pages
-    is a <b>Help</b> button, status line, and <b>Dismiss</b> button. 
-    The status line indicates the number of background extraction jobs
-    currently running.
+    The panel functionality is divided into three pages,
+    selectable through the tabs along the top of the window. 
+    Common to all pages is a <b>Help</b> button, status line,
+    and <b>Dismiss</b> button.  The status line indicates the
+    number of background extraction jobs currently running.
 
     <a name="run"></a>
     <h2>The Run Page</h2>
 
-    The <b>Run</b> page contains controls for running the supported
-    programs, or creating input files for these programs.  This is the
-    default page, shown when the panel appears.
+    The <b>Run</b> page contains controls for running the
+    supported programs, or creating input files for these
+    programs.  This is the default page, shown when the panel
+    appears.
 
     <p>
     <dl>
     <dt><b>Run in foreground</b><dd>
-    At the top of the page is the <b>Run in foreground</b> check box. 
-    When checked, the program will run synchronously in the
-    foreground, rather than asynchronously in the background.  Aside
-    from possibly being helpful when debugging problems, it is not
-    clear that this mode has any value.
+    At the top of the page is the <b>Run in foreground</b>
+    check box.  When checked, the program will run
+    synchronously in the foreground, rather than
+    asynchronously in the background.  Aside from possibly
+    being helpful when debugging problems, it is not clear
+    that this mode has any value.
 
     <p>
     This check box sets, and is set by, the <a
@@ -1282,10 +1286,11 @@ The LR Extraction Panel
 
     <dl>
     <dt><b>Out to console</b><dd>
-    When the <b>Out to console</b> check box is checked, the program
-    output will be printed in the console window, i.e., the shell
-    window from which <i>Xic</i> is running.  It may be useful to
-    verify that all is well by watching this output.
+    When the <b>Out to console</b> check box is checked, the
+    program output will be printed in the console window,
+    i.e., the shell window from which <i>Xic</i> is running. 
+    It may be useful to verify that all is well by watching
+    this output.
 
     <p>
     This check box sets, and is set by, the <a
@@ -1294,76 +1299,84 @@ The LR Extraction Panel
 
     <dl>
     <dt><b>Run File</b><dd>
-    This button and adjacent text entry allows a compatible input file
-    to be run by the inductance/resistance extraction program
-    currently configured.  The text area should contain a path to a
-    valid input file for the configured program.  The program will
-    run, and results will appear, as for a normal extraction run.
+    This button and adjacent text entry allows a compatible
+    input file to be run by the inductance/resistance
+    extraction program currently configured.  The text area
+    should contain a path to a valid input file for the
+    configured program.  The program will run, and results
+    will appear, as for a normal extraction run.
     </dl>
 
     <dl>
     <dt><b>Run Extraction</b><dd>
-    This button will dump a temporary input file, run the program, and
-    display the results.  The result file is named
-    <i>cellname</i>-<i>pid</i><tt>.fh_log</tt>, where
-    <i>cellname</i> is the name of the current cell, and <i>pid</i>
-    is the process id of the spawned process used to run the program. 
-    The file contains listings of the input file produced by the
-    interface and the output file produced by the program.
+    This button will dump a temporary input file, run the
+    program, and display the results.  The result file is
+    named <i>cellname</i>-<i>pid</i><tt>.fh_log</tt>, where
+    <i>cellname</i> is the name of the current cell, and
+    <i>pid</i> is the process id of the spawned process used
+    to run the program.  The file contains listings of the
+    input file produced by the interface and the output file
+    produced by the program.
 
     <p>
-    By default, the program is run in the background.  The label at
-    the bottom of the panel will indicate that the job is running. 
-    When complete, a <b>File Browser</b> window containing the result
-    file will appear.  While jobs are running in the background, one
-    can continue using <i>Xic</i>.
+    By default, the program is run in the background.  The
+    label at the bottom of the panel will indicate that the
+    job is running.  When complete, a <b>File Browser</b>
+    window containing the result file will appear.  While jobs
+    are running in the background, one can continue using
+    <i>Xic</i>.
 
     <p>
-    If the <a href="FhForeg"><b>FhForeg</b></a> variable is set, from
-    the <b>Run in foreground</b> check box or with the <a
-    href="!set"><b>!set</b></a> command, then the program will instead
-    run in the foreground.  In this case, the result file is named
-    <i>cellname</i><tt>.fh_log</tt>, and <i>Xic</i> will be
-    unresponsive until the run completes.
+    If the <a href="FhForeg"><b>FhForeg</b></a> variable is
+    set, from the <b>Run in foreground</b> check box or with
+    the <a href="!set"><b>!set</b></a> command, then the
+    program will instead run in the foreground.  In this case,
+    the result file is named <i>cellname</i><tt>.fh_log</tt>,
+    and <i>Xic</i> will be unresponsive until the run
+    completes.
     </dl>
 
     <dl>
     <dt><b>Dump FastHenry File</b><dd>
-    This button allows an input file to be generated, which is in a
-    format compatible with the <i>FastHenry</i> program.  The default
-    name for this file is <i>cellname</i><tt>.inp</tt>, where
-    <i>cellname</i> is the current cell name.
+    This button allows an input file to be generated, which is
+    in a format compatible with the <i>FastHenry</i> program. 
+    The default name for this file is
+    <i>cellname</i><tt>.inp</tt>, where <i>cellname</i> is the
+    current cell name.
     </dl>
 
     <dl>
     <dt><b>FhArgs</b><dd>
-    This text entry area can be given a string, which will be included
-    in the argument list when the program is run with the <b>Run
-    Extraction</b> button.  This allows specialized command line
-    options to be provided during the run, which the user may require. 
-    This entry field is tied to the <a href="FhArgs"><b>FhArgs</b></a>
-    variable.
+    This text entry area can be given a string, which will be
+    included in the argument list when the program is run with
+    the <b>Run Extraction</b> button.  This allows specialized
+    command line options to be provided during the run, which
+    the user may require.  This entry field is tied to the <a
+    href="FhArgs"><b>FhArgs</b></a> variable.
     </dl>
 
     <dl>
     <dt><b>FhDefaults</b><dd>
-    This text entry allows the user to provide a string which will
-    appear in a <tt>.DEFAULT</tt> line in the created <i>FastHenry</i>
-    input file.  See the FastHenry documentation for syntax and
-    options.  This entry field is tied to the <a
-    href="FhDefaults"><b>FhDefaults</b></a> variable.
+    This text entry allows the user to provide a string which
+    will appear in a <tt>.DEFAULT</tt> line in the created
+    <i>FastHenry</i> input file.  See the <i>FastHenry</i>
+    documentation for syntax and options.  This entry field is
+    tied to the <a href="FhDefaults"><b>FhDefaults</b></a>
+    variable.
     </dl>
 
     <dl>
     <dt><b>FhFreq</b><dd>
-    This consists of three entry areas, which take the starting and
-    ending evaluation frequencies for <i>FastHenry</i> runs, and the
-    number of intermediate frequencies to evaluate.  This corresponds
-    to the <tt>.Freq</tt> specification line in <i>FastHenry</i> input
-    files.  The frequencies are given in hertz.  If the third field in
-    empty, then evaluation is at the specified frequencies only.  This
-    variable is tied to the <a href="FhFreq"><b>FhFreq</b></a>
-    variable, which can also be set with the <b>!set</b> command.
+    This consists of three entry areas, which take the
+    starting and ending evaluation frequencies for
+    <i>FastHenry</i> runs, and the number of intermediate
+    frequencies to evaluate.  This corresponds to the
+    <tt>.Freq</tt> specification line in <i>FastHenry</i>
+    input files.  The frequencies are given in hertz.  If the
+    third field in empty, then evaluation is at the specified
+    frequencies only.  This variable is tied to the <a
+    href="FhFreq"><b>FhFreq</b></a> variable, which can also
+    be set with the <b>!set</b> command.
     </dl>
 
     <dl>
@@ -1378,8 +1391,8 @@ The LR Extraction Panel
     <h2>The Params Page</h2>
 
     <img src="screenshots/lrex2.png" align=right>
-    The upper half of this page provides entry areas for parameters
-    used by the interface.
+    This page provides entry areas for parameters used by the
+    interface.
 
     <dl>
     <dt><b>FhUnits</b><dd>
@@ -1413,55 +1426,136 @@ The LR Extraction Panel
     input to <i>FastHenry</i>.
     </dl>
 
+    <dl>
+    <dt><b>FhDefaults</b><dd>
+    Any text entered into this area will be included in a
+    <tt>.defaults</tt> line in <i>FastHenry</i> input.  The
+    text must be understood by the <i>FastHenry</i> program in
+    use.  The text will also be saved in and track the <a
+    href="FhDefaults"><b>FhDefaults</b></a> variable.
+    </dl>
+
+    <dl>
+    <dt><b>FhDefNhinc</b><dd>
+    This entry tracks the value of the <a
+    href="FhDefNhinc"><b>FhDefNhinc</b></a> variable, which
+    sets a default value for the <i>FastHenry</i>
+    <tt>nhinc</tt> parameter.  This will be overridden by
+    values set by the layer keyword <a
+    href="FH_nhinc"><tt>FH_nhinc</tt></a> in the technology
+    file, unless the <a
+    href="FhOverride"><b>FhOverride</b></a> variable is set,
+    in which case the variable has precedence.
+    </dl>
+
+    <dl>
+    <dt><b>FhDefRh</b><dd>
+    This entry tracks the value of the <a
+    href="FhDefRh"><b>FhDefRh</b></a> variable, which sets a
+    default value for the <i>FastHenry</i> <tt>rh</tt>
+    parameter.  This will be overridden by values set by the
+    layer keyword <a href="FH_rh"><tt>FH_rh</tt></a> in the
+    technology file, unless the <a
+    href="FhOverride"><b>FhOverride</b></a> variable is set,
+    in which case the variable has precedence.
+    </dl>
+
+    <dl>
+    <dt><b>Override Layer NHINC, RH</b><dd>
+    When this check box is set, the values of the
+    <b>FhDefNhinc</b> and <b>FhDefRh</b> entries override
+    values set with technology file keywords on individual
+    layers.  This tracks the state of the <a
+    href="FhOverride"><b>FhOverride</b></a> variable (set or
+    not).
+    </dl>
+
+    <dl>
+    <dt><b>Use FastHenry Internal NHINC, RH</b><dd>
+    If set, the <tt>nhinc</tt> and <tt>rh</tt> values are
+    passed to <i>FastHenry</i>, which will use the values
+    internally for filament generation.  If not set, the
+    values will be used in the input file generation to refine
+    segments according to the same parameters, and
+    <i>FastHenry</i> will not create additional filaments. 
+    This button tracks the state of the <a
+    href="FhUseFilament"><b>FhUseFilament</b></a> variable
+    (set or not).
+    </dl>
+
     <p>
-    The lower half of the page allows one to crudely refine the raw
-    segmentation.  By default, this is not enabled, so that only
-    tiling provides refinement.  This may be a good starting point
-    for a third-party refinement algorithm, but with present
-    <i>FastHenry</i> programs is unlikely to provide accurate results as-is.
+    The <b>FastHenry Volume Element Refinement</b> allows one
+    to crudely refine the raw segmentation.  By default, this
+    is not enabled, so that only tiling provides refinement. 
+    This may be a good starting point for a third-party
+    refinement algorithm, but with present <i>FastHenry</i>
+    programs is unlikely to provide accurate results as-is. 
     When enabled, the crude refinement should provide somewhat
     better results.
 
     <p>
-    The refinement algorithm works as follows.  First, the total volume
-    of all conductors is calculated.  This is divided by the <a
-    href="FhVolElTarget"><b>FhVolElTarget</b></a> as entered.  The
-    cube root is taken, which provides a length which is used as a
-    maximum.  If a side of a tile exceeds this length, it is
-    subdivided.  This is repeated until no tiles have sides larger
-    than the calculated length.  The total number of tiles (or "volume
-    elements") is approximately the target value entgered.  The total
-    number of segments is approximately six times larger.
+    The refinement algorithm works as follows.  For each
+    conductor, find the volume and divide by the film
+    thickness.  The maximum size is taken as the square root
+    of the sum of these terms divided by the <a
+    href="FhVolElTarget"><b>FhVolElTarget</b></a> as entered. 
+    If a side of a tile exceeds this length, it is subdivided. 
+    This is repeated until no tiles have sides larger than the
+    calculated length.  The total number of tiles (or "volume
+    elements") is approximately the target value entgered. 
+    The total number of segments is approximately six times
+    larger.
 
     <p>
-    The refinement is "crude" due to each refined volume element being
-    approximately the same size.  If the size is small enough,
-    sufficient spatial resolution for accurate calculation is
-    achieved.  This resolution is needed along edges, and at corners,
-    where there are strong field gradients, but is gross overkill for
-    most areas.  Since the solving time is related to the total number
-    of segments, this type of refinement is very inefficient with
+    Additionally, a minimum dimension can be defined.  Volume
+    elements with a dimension smaller than the minimum will be
+    ignored.
+
+    <p>
+    The refinement is "crude" due to each refined volume
+    element being approximately the same size.  If the size is
+    small enough, sufficient spatial resolution for accurate
+    calculation is achieved.  This resolution is needed along
+    edges, and at corners, where there are strong field
+    gradients, but is gross overkill for most areas.  Since
+    the solving time is related to the total number of
+    segments, this type of refinement is very inefficient with
     respect to memory use and execution speed.
 
     <dl>
     <dt><b>Enable</b><dd>
-    This check box will enable or disable the refinement.  When
-    pressed, the <b>FhVolElTarget</b> entry will become un-grayed, and
-    internally the <a href="FhVolElTarget"><b>FhVolElTarget</b></a>
-    variable will be set to the number shown in the
-    <b>FhVolElTarget</b> entry area.  When the <b>Enable</b> button is
-    set inactive, the <b>FhVolElTarget</b> variable is unset.  The
-    <b>Enable</b> button state will reflect whether or not the
-    <b>FhVolElTarget</b> variable is set.
+    This check box will enable or disable the refinement. 
+    When pressed, the two numerical entry areas will become
+    un-grayed, and internally the <a
+    href="FhVolElTarget"><b>FhVolElTarget</b></a> variable
+    will be set to the number shown in the
+    <b>FhVolElTarget</b> entry area, and the <a
+    href="FhVolElMin"><b>FfVolElMin</b></a> variable will be
+    set to the number shown in the <b>FhVolElMin</b> entry
+    area.  When the <b>Enable</b> button is set inactive, the
+    <b>FhVolElTarget</b> and <b>FhVolElMin</b> variables are
+    unset.  The <a href="FhVolEnable"><b>FhVolEnable</b></a>
+    variable tracks the state (set or unset) of the
+    <b>Enable</b> button.
     </dl>
 
     <dl>
     <dt><b>FhVolElTarget</b><dd>
-    This entry area is seensitive only when the <b>Enable</b> check
+    This entry area is sensitive only when the <b>Enable</b> check
     box is checked.  It tracks the value of the <b>FhVolElTarget</b>
     variable, which can be set to a real value of 1e2 - 1e5.  This
     will be the approximate number of refined tiles generated in the
     input file.
+    </dl>
+
+    <dl>
+    <dt><b>FhVolElMin</b><dd>
+    This entry area is sensitive only when the <b>Enable</b>
+    check box is checked.  It tracks the value of the
+    <b>FhVolElMin</b> variable, which can be set to a real
+    value of 0 - 1.0.  Volume elements with a dimension
+    smaller that this fraction of the maximum dimension
+    computed for the volume element target will be ignored.
     </dl>
 
     <a name="jobs"></a>

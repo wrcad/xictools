@@ -428,20 +428,26 @@ follow.
 \et FcPlaneBloat & Capacitance extractor substrate bloat dimension\\ \hline
 \et FcUnits & Capacitance extractor file units: m, cm, mm, um, in, mils\\ \hline
 
-% 071820
+% 011621
 \multicolumn{2}{|c|}{\kb Inductance/Resistance Extraction Interface}\\ \hline
 \et FhArgs & {\it FastHenry} command line arguments\\ \hline
 \et FhDefaults & Text for {\vt .DEFAULT} line in {\it FastHenry} input\\
   \hline
+\et FhDefNhinc & Default for {\vt nhinc} in {\it FastHenry} input\\ \hline
+\et FhDefRh & Default for {\vt rh} in {\it FastHenry} input\\ \hline
 \et FhForeg & {\it FastHenry} run in foreground if set\\ \hline
 \et FhFreq & {\it FastHenry} frequency specification\\ \hline
 \et FhLayerName & {\it FastHenry} interface masking layer name\\ \hline
 \et FhManhGridCnt & Manhattanization grid cell count\\ \hline
 \et FhMonitor & {\it FastHenry} output appears in console window if set\\
   \hline
+\et FhOverride & Override {\vt nhinc}, {\vt rh} in {\it FastHenry} input\\ \hline
 \et FhPath & Path to {\it FastHenry} executable\\ \hline
 \et FhUnits & {\it FastHenry} file units: m, cm, mm, um, in, mils\\ \hline
+\et FhUseFilament & Use {\it FastHenry} filaments\\ \hline
+\et FhVolElMin & {\it FastHenry} volume element minimum size factor\\ \hline
 \et FhVolElTarget & {\it FastHenry} volume element count target\\ \hline
+\et FhVolEnable & Enable segment refinement.\\ \hline
 
 % 102613
 \multicolumn{2}{|c|}{\kb Help System}\\ \hline
@@ -5581,6 +5587,28 @@ LR Extraction} panel {\cb Run} page.  See the {\it FastHenry}
 documentation describing the syntax and options for the applicable
 text.
 
+% 011621
+\index{FhDefNhinc variable}
+\item{\et FhDefNhinc}\\
+{\bf Value:} integer 1 -- 20.\\
+Provide a default value for the {\vt nhinc} parameter as used by {\it
+FastHenry\/}.  This is overridden by values specified with the {\vt
+FH\_nhinc} technology keyword for layers, unless the {\et FhOverride}
+variable is set, in which case the this variable has precedence.  This
+tracks the {\cb FhDefNhinc} entry in the {\cb Params} page of the {\cb
+LR Extraction} panel.
+
+% 011621
+\index{FhDefRh variable}
+\item{\et FhDefRh}\\
+{\bf Value:} real 0.5 -- 4.0.\\
+Provide a default value for the {\vt rh} parameter as used by {\it
+FastHenry\/}.  This is overridden by values specified with the {\vt
+FH\_rh} technology keyword for layers, unless the {\et FhOverride}
+variable is set, in which case the this variable has precedence.  This
+tracks the {\cb FhDefRh} entry in the {\cb Params} page of the {\cb LR
+Extraction} panel.
+
 % 111819
 \index{FhForeg variable}
 \item{\et FhForeg}\\
@@ -5678,6 +5706,17 @@ This variable mirrors the state of the {\cb Out to console} check box
 in the {\cb Run} page of the {\cb LR Extraction} panel from the
 {\cb Extract Menu}.
 
+% 011621
+\index{FhOverride variable}
+\item{\et FhOverride}\\
+{\bf Value:} boolean.\\
+When set, values of the {\et FhDefNhinc} and {\et FhDefRh}
+variables will override values provided by {\vt FH\_nhinc} and
+{\vt FH\_rh} technology layer parameters to use for {\vt
+nhinc} and {\vt rh} parameters in {\it FastHenry} input.  This
+tracks the state of the {\cb Override Layer NHINC, RH} button
+in the {\cb Params} page of the {\cb LR Extraction} panel. 
+
 % 111819
 \index{FhPath variable}
 \item{\et FhPath}\\
@@ -5707,6 +5746,26 @@ word will also be accepted.  This variable is most conveniently
 manipulated with the choice menu found in the {\cb LR Extraction}
 panel {\cb Params} page.
 
+% 011621
+\index{FhUseFillament variable}
+\item{\et FhUseFillament}\\
+{\bf Value:} units boolean.\\
+If set, {\it FastHenry} will decompose segments into filaments
+according to the given {\vt nhinc} and {\vt rh} parameters.  If not
+set, the interface will automatically slice segments according to the
+same parameters, without further refinement by {\it FastHenry\/}. 
+This tracks the state of the {\cb Use FastHenry Internal NHINC, RH}
+button in the {\cb Params} page of the {\cb LR Extraction} panel.
+
+% 011621
+\index{FhVolElMin variable}
+\item{\et FhVolElMin}\\
+{\bf Value:} units real 0 -- 1.0, default 0.1.\\
+The minimum rectangle edge length is this factor multiplying
+the maximum edge length.  This tracks the {\cb FhVolElMin}
+entry in the {\cb Params} page of the {\cb LR Extraction}
+panel.
+
 % 090314
 \index{FhVolElTarget variable}
 \item{\et FhVolElTarget}\\
@@ -5717,6 +5776,15 @@ provide a length.  Volume elements are split so that no edge is longer
 than this length.  The total number of volume elements is
 approximately the value of this variable.  Each volume element
 contains six segments, connecting the center node to each face node.
+
+% 011621
+\index{FhVolEnable variable}
+\item{\et FhVolEnable}\\
+{\bf Value:} boolean.\\
+Enable segment refinement.  This tracks the state of the {\cb
+Enable} button in the {\cb Params} page of the {\cb LR
+Extraction} panel.
+
 \end{description}
 
 
