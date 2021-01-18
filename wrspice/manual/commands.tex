@@ -1,7 +1,7 @@
 \chapter{{\WRspice} Commands}
 \label{commands}
 
-% spCommands.hlp:commands 032420
+% spCommands.hlp:commands 011721
 
 When a line is entered, it is interpreted as one of several things. 
 First, it may be an alias, in which case the line is replaced with the
@@ -67,6 +67,7 @@ The following table lists all built-in commands understood by
 \cb listing & List current circuit\\ \hline
 \cb load & Read plot data from file\\ \hline
 \cb print & Print vectors\\ \hline
+\cb printf & Print vectors to logging file\\ \hline
 \cb return & Return from script immediately, possibly with a value\\ \hline
 \cb sced & Bring up {\Xic} schematic editor\\ \hline
 \cb source & Read circuit or script input file\\ \hline
@@ -1076,7 +1077,7 @@ a description of that variable being printed.
 %S-----------------------------------------------------------------------------
 \section{Input and Output Commands}
 
-% spCommands.hlp:iocmds 092611
+% spCommands.hlp:iocmds 011721
 
 These commands manage input to {\WRspice}, or allow {\WRspice}
 output to be saved in files.
@@ -1089,6 +1090,7 @@ output to be saved in files.
 \cb listing & List current circuit\\ \hline
 \cb load & Read plot data from file\\ \hline
 \cb print & Print vectors\\ \hline
+\cb printf & Print vectors to logging file\\ \hline
 \cb return & Return from script immediately, possibly with a value\\ \hline
 \cb sced & Bring up {\Xic} schematic editor\\ \hline
 \cb source & Read circuit or script input file\\ \hline
@@ -1574,6 +1576,20 @@ This prints the vectors to four decimal places in the file "myfile".
 print 2*v(2)+v(3) v(4)-v(1)
 \end{quote}
 This prints the computed quantities using the default format.
+
+%SU-------------------------------------
+\subsection{\spcmd{printf}}
+\index{printf command}
+
+% spCommands.hlp:printf 011721
+
+The {\cb printf} command is equivalent to the {\cb print} command,
+however output goes to the logging file for use in operating range and
+Monte Carlo analysis.
+\begin{quote}\vt
+print [/{\it format\/}] [col | line] {\it expr\/} [...]
+\end{quote}
+This is used in codeblocks evaluated while those processes are active.
 
 %SU-------------------------------------
 \subsection{\spcmd{return}}
@@ -2069,7 +2085,7 @@ Examples:
 \subsection{\spcmd{alterf}}
 \index{alterf command}
 
-% spCommands.hlp:alterf 030219
+% spCommands.hlp:alterf 011721
 
 This will dump the alter list to the output file, for use in Monte
 Carlo analysis.
@@ -2080,6 +2096,9 @@ In this approach, the {\cb alter} command, or equivalently forms like
 ``{\vt let @}{\it device\/}{\vt [}{\it param\/}{\vt ]} {\vt =} {\it
 trial\_value}'' are used to set trial values in the {\vt exec} block. 
 Once set, this can be called to dump the values into the output file.
+
+In 4.3.13, these are added to the logging file automatically, so
+this command may be obsolete.
 
 %SU-------------------------------------
 \subsection{\spcmd{aspice}}

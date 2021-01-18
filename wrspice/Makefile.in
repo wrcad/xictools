@@ -471,6 +471,7 @@ $(destn)/help::
 	for a in $$help; do \
 	    $(INSTALL_LIB) help/$$a $@; \
 	done
+	cp -f mmjco/README $@/mmjco.txt;
 	helpss=`packages/util/wrspice_files help_screenshots`; \
         for a in $$helpss; do \
 	    $(INSTALL_LIB) help/screenshots/$$a $@/screenshots; \

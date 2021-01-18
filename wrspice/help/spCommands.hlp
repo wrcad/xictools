@@ -58,6 +58,7 @@ edit
 listing
 load
 print
+printf
 return
 sced
 source
@@ -135,7 +136,7 @@ qhelp
 quit
 version
 
-!! commands.tex 032420
+!! commands.tex 011721
 !!KEYWORD
 commands
 !!TITLE
@@ -242,6 +243,8 @@ Built-in Commands
       <td>Read plot data from file</td></tr>
     <tr><td><a href="print"><b>print</b></a></td>
       <td>Print vectors</td></tr>
+    <tr><td><a href="printf"><b>printf</b></a></td>
+      <td>Print vectors to logging file</td></tr>
     <tr><td><a href="return"><b>return</b></a></td>
       <td>Return from script immediately, possibly with a value</td></tr>
     <tr><td><a href="sced"><b>sced</b></a></td>
@@ -1606,7 +1609,7 @@ usrset command
 shellcmds
 
 !! ----------------------------------------------------------------------------
-!! commands.tex 092611
+!! commands.tex 011721
 !!KEYWORD
 iocmds
 !!TITLE
@@ -1630,6 +1633,8 @@ Input and Output Commands
       <td>Read plot data from rawfile</td></tr>
     <tr><td><a href="print"><b>print</b></a></td>
       <td>Print vectors</td></tr>
+    <tr><td><a href="printf"><b>printf</b></a></td>
+      <td>Print vectors to logging file</td></tr>
     <tr><td><a href="return"><b>return</b></a></td>
       <td>Return from script immediately, possibly with a value</td></tr>
     <tr><td><a href="sced"><b>sced</b></a></td>
@@ -2240,6 +2245,25 @@ print command
       <tt>print 2*v(2)+v(3) v(4)-v(1)</tt>
     </blockquote>
     This prints the computed quantities using the default format.
+
+!!SEEALSO
+iocmds
+
+!! commands.tex 011721
+!!KEYWORD
+printf
+!!TITLE
+printf command
+!!HTML 
+    command: <tt>printf</tt> [/<i>format</i>] [<tt>col | line</tt>]
+    <i>expr</i> [...]
+
+    <p>
+    This is equivalent to the <a href="print"><b>print</b></a>
+    command, however output goes to the logging file generated during
+    <a href="oprng_analysis">operating ramge</a> and <a
+    href="monte">Monte Carlo</a> analysis.  This is used in codeblocks
+    evaluated while those processes are active.
 
 !!SEEALSO
 iocmds
@@ -2891,7 +2915,7 @@ alter command
 !!SEEALSO
 simcmds
 
-!! commands.tex 030219
+!! commands.tex 011721
 !!KEYWORD
 alterf
 !!TITLE
@@ -2907,6 +2931,10 @@ alterf command
     = <i>trial_value</i>" are used to set trial values in the
     <tt>exec</tt> block.  Once set, this can be called to dump the
     values into the output file.
+
+    <p>
+    In 4.3.13, these are added to the logging file automatically, so
+    this command may be obsolete.
  
 !!SEEALSO
 simcmds

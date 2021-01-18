@@ -22,7 +22,7 @@ unused_vars
 syntax_vars
 
 
-!! format.tex 032220
+!! format.tex 011821
 !!KEYWORD
 options
 !!TITLE
@@ -321,6 +321,9 @@ options
     <tr><td><a href="steptype"><tt>steptype</tt></a></td>
       <td>Time advancement method: "<tt>interpolate</tt>" (default) or
       "<tt>hitusertp</tt>", "<tt>nousertp</tt>, "<tt>fixedstep</tt>".</td></tr>
+    <tr><td><a href="tjm_path"><tt>tjm_path</tt></a></td>
+      <td>Amplitude table file search path for Josephson junction
+      model.</td></tr>
 
     <tr><th colspan=2>Batch and Output Parameters</th></tr>
     <tr><td><a href="acct"><tt>acct</tt></a></td>
@@ -444,6 +447,7 @@ unused_vars
 !!REDIRECT hitusertp    sim_vars#steptype
 !!REDIRECT nousertp     sim_vars#steptype
 !!REDIRECT fixedstep    sim_vars#steptype
+!!REDIRECT tjm_path     sim_vars#tjm_path
 
 !! variables.tex 082015
 !!KEYWORD
@@ -1982,6 +1986,18 @@ Simulation Option Variables
       <tt>hitusertp</tt>, <tt>nousertp</tt>, <tt>fixedstep</tt></td>
       <th>Simulation Options/Timestep</th></tr>
     </table>
+    </dl>
+
+!! 011821
+    <a name="tjm_path"></a>
+    <dl>
+    <dt><tt>tjm_path</tt><dd>
+    This list variable provides the directories to search for tunnel
+    current amplitude tables created with the <a
+    href="mmjco.txt"><i>mmjco</i> utility</a> or equivalent, for use
+    in the microscopic <a href="jjmodel">Josephson junction</a> model. 
+    If not given, the search path is effectively "<tt>( . 
+    $HOME/.mmjco }</tt>".
     </dl>
 
 !!SEEALSO

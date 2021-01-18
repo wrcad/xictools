@@ -4636,12 +4636,15 @@ See the Josephson junction model description for more information.
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 072020
+% spModels.hlp:jjmodel 011821
 
 {\cb Type Name:} {\vt jj}
 
-The Josephson junction model is an extended version of the RSJ model
-as used by Jewett\cite{jewett}.
+The default Josephson junction model is an extended version of the RSJ
+model as used by Jewett\cite{jewett}.  For level=3, a microscopic
+tunnel junction ``Werthamer'' model is provided.  This is based on the
+open-source MitMoJCo project on {\vt
+https://github.com/drgulevich/mitmojco}. 
 
 The parameters marked with an asterisk in the {\bf area} column scale
 with the {\vt ics} parameter given in the device line, not necessarily
@@ -4657,6 +4660,7 @@ when formulating instance capacitance and conductances.
 \multicolumn{5}{|c|}{\bf JJ Model Parameters}\\ \hline
 \bf name & \bf area & \bf parameter & \bf units & \bf default\\ \hline\hline
 \vt level & & \rr model type & - & 1\\ \hline
+\vt coeffset & & \rr coefficient set name & - &\\ \hline
 \vt pijj & & \rr pi junction & - & 0\\ \hline
 \vt rtype & & \rr Quasiparticle branch model & - & 1\\
 \hline
@@ -4722,11 +4726,28 @@ Verilog-A examples, and the microscopic model.
 \begin{description}
 \item{\vt level}\\
 This specifies the model to use.  There are three choices provided in
-{\WRspice}.  Level 1 (the default) in the internal RSJ model, and
+{\WRspice}.  Level 1 (the default) is the internal RSJ model, and
 level 2 indicates the Verilog-A example RSJ model, which is available
 if it has been loaded.  The third choice is level 3, which is an
 internal microscopic tunnel junction model, based on the open-source
 MitMoJCo project on {\vt https://github.com/drgulevich/mitmojco}. 
+
+\item{\vt coeffset}\\
+{\bf Level 3 only.}\\
+This provides the name of the table of tunnel current amplitudes to
+use in the model.  These are provided as files as produced from the
+{\it mmjco} utility provided with {\WRspice}, and can also be produced
+with the Python program supplied with MitMoJCo.  The files are
+searched for along a path provided by setting the {\et tjm\_path}
+variable, or a path can be provided directly.  The default is to
+search the current directory and {\vt \$HOME/.mmjco} if that directory
+exists.
+
+There are two built-in coefficient sets, ``tjm1'' (the default) and
+``tjm2''.  These are the MitMoJCo NbNb\_4k2\_008 and NbNb\_4K2\_001
+parameter sets, respectively.  Both assume niobium at temperature 4.2K
+and differ in the level of smoothing applied to mitigate the Riedel
+singularity.
 
 \item{\vt pijj}\\
 {\bf Levels 1 and 2 only.}\\
