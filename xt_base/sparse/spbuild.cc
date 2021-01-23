@@ -384,6 +384,8 @@ spMatrixFrame::spClear()
 }
 
 
+#if SP_BUILDHASH
+
 namespace {
     bool eltsort(const spMatrixElement *e1, const spMatrixElement *e2)
     {
@@ -416,6 +418,8 @@ namespace {
         return (list);
     }
 }
+
+#endif
 
 
 void
