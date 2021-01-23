@@ -388,8 +388,8 @@
 #define  SP_OPT_INTERRUPT                   1
 #define  SP_OPT_DEFAULT_PARTITION           spDIRECT_PARTITION
 #define  SP_OPT_LONG_DBL_SOLVE              0
-#define  SP_BUILDHASH                       1
-#define  SP_BITFIELD                        1
+#define  SP_BUILDHASH                       0
+#define  SP_BITFIELD                        0
 #define  SP_OPT_SP_DEBUG                    0
 
 #else
