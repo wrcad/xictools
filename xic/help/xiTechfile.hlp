@@ -3186,7 +3186,7 @@ techfile:attr
 !!REDIRECT ElecGridReg          techfile:attr:gridreg
 !!REDIRECT PhysGridReg          techfile:attr:gridreg
 
-!! 070214
+!! 012321
 !!KEYWORD
 techfile:attr:gridreg
 !!TITLE
@@ -3247,8 +3247,8 @@ Technology File Attributes:  Grid Registers
 
     <dt><tt>-a</tt> <i>axes</i> (integer 0-2)<dd>
     This sets the axes presentation mode in physical mode.  If 0, axes
-    aren't shown.  If 1, plain axes are shown, and if 2, axes are
-    shown and the origin decorated.
+    are shown and the origin decorated.  If 1, plain axes are shown,
+    and if 2, axes aren't shown.
 
     <dt><tt>-d</tt> <i>dsp</i> (boolean)<dd>
     This sets whether the grid is displayed or not.  The <i>dsp</i>

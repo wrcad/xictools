@@ -555,7 +555,7 @@ GridDesc::desc_string()
     lstr.add_u(g_cross_size);
 
     lstr.add(" -a ");
-    lstr.add_u(g_coarse_mult);
+    lstr.add_u(g_axes);
     lstr.add(" -d ");
     lstr.add_u(g_displayed);
     lstr.add(" -t ");
