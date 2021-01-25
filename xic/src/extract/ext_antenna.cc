@@ -83,7 +83,7 @@ namespace {
     // Instantiate.
     cAntParams _ap_;
 
-    uintptr_t check_time;
+    uint64_t check_time;
 
     inline bool checkInterrupt()
     {
