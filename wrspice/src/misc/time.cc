@@ -77,7 +77,7 @@ datestring()
 #endif
 
     static char tbuf[40];
-    strcpy(tbuf,ap);
+    strcpy(tbuf, ap ? ap : "");
     int i = strlen(tbuf);
     tbuf[i - 1] = '\0';
     return (tbuf);
