@@ -28,6 +28,7 @@ Source: "..\root\usr\local\xictools\wrspice.current\bin\postinstall.bat"; DestDi
 Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
 Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspice.dll"; DestDir: "{app}\xictools\wrspice.current\bin";
 Source: "..\root\usr\local\xictools\wrspice.current\bin\wrspiced.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
+Source: "..\root\usr\local\xictools\wrspice.current\bin\mmjco.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
 Source: "..\root\usr\local\xictools\wrspice.current\bin\multidec.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
 Source: "..\root\usr\local\xictools\wrspice.current\bin\proc2mod.exe"; DestDir: "{app}\xictools\wrspice.current\bin";
 Source: "..\root\usr\local\xictools\wrspice.current\bin\printtoraw.exe"; DestDir: "{app}\xictools\wrspice.current\bin"; AfterInstall: DoAfterInstall
