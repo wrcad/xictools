@@ -28,6 +28,10 @@
 # script exported to the web site.
 # 
 
+# obsoleting...
+#LinuxRHEL5.i686
+#LinuxRHEL5
+
 case $1 in
 oses)
   echo \
@@ -35,8 +39,6 @@ oses)
 LinuxDebian10 \
 LinuxFedora32 \
 LinuxOpenSUSE15 \
-LinuxRHEL5.i686 \
-LinuxRHEL5 \
 LinuxRHEL6 \
 LinuxRHEL7 \
 LinuxUbuntu20 \

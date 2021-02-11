@@ -10,6 +10,9 @@
 # Change these if you're not me.
 login=stevew
 
+# SSH command, note alternate port.
+sshcmd="ssh -p 2222"
+
 # Files come from $login@$home:$srcdir/$osname/$filename
 srcdir=/home/$login/export/xictools
 
@@ -118,9 +121,9 @@ get()
     if [ ! -f $newloc ]; then
         echo $fname
         if [ $dryrun = yes ]; then
-            echo rsync --rsh=ssh $login@$home:$srcdir/$os/$fname $newloc
+            echo rsync --rsh="$sshcmd" $login@$home:$srcdir/$os/$fname $newloc
         else
-            rsync --rsh=ssh $login@$home:$srcdir/$os/$fname $newloc
+            rsync --rsh="$sshcmd" $login@$home:$srcdir/$os/$fname $newloc
         fi
     fi
 }

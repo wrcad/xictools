@@ -7,8 +7,12 @@
 #   -t:  dry run, don't actually change anything, echo commands.
 #   -y;  skip prompts, yes to all.
 
+# Change these if you're not me.
 login=stevew
 srcdir=/home/$login/src/xt
+
+# SSH command, note alternate port.
+sshcmd="ssh -p 2222"
 
 man_destdir=/home/webadmin/wrcad.com/html/xictools/docs
 
@@ -79,23 +83,23 @@ get_man()
 
     echo fetching $manps
     if [ $dryrun = yes ]; then
-        echo rsync --rsh=ssh $login@$home:$manual/$manps $man_destdir
+        echo rsync --rsh="$sshcmd" $login@$home:$manual/$manps $man_destdir
     else
-        rsync --rsh=ssh $login@$home:$manual/$manps $man_destdir
+        rsync --rsh="$sshcmd" $login@$home:$manual/$manps $man_destdir
     fi
 
     echo fetching $manpdf
     if [ $dryrun = yes ]; then
-        echo rsync --rsh=ssh $login@$home:$manual/$manpdf $man_destdir
+        echo rsync --rsh="$sshcmd" $login@$home:$manual/$manpdf $man_destdir
     else
-        rsync --rsh=ssh $login@$home:$manual/$manpdf $man_destdir
+        rsync --rsh="$sshcmd" $login@$home:$manual/$manpdf $man_destdir
     fi
 
     echo fetching $manhtml
     if [ $dryrun = yes ]; then
-        echo rsync --rsh=ssh $login@$home:$manual/$manhtml $man_destdir
+        echo rsync --rsh="$sshcmd" $login@$home:$manual/$manhtml $man_destdir
     else
-        rsync --rsh=ssh $login@$home:$manual/$manhtml $man_destdir
+        rsync --rsh="$sshcmd" $login@$home:$manual/$manhtml $man_destdir
     fi
 }
 
