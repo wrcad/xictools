@@ -1134,7 +1134,7 @@ Ylist::clip_out_ylist(const Ylist *thisyl, const Ylist *yr) THROW_XIrt
                 // appears to be much faster than using scl_clip_out
                 // directly on the entire list.
 
-                Zlist *zb = yr->overlapping(&zl1->Z);
+                Zlist *zb = yr ? yr->overlapping(&zl1->Z) : 0;
                 if (!zb) {
                     // No overlap, zoid is not clipped, save it.
                     z0 = new Zlist(&zl1->Z, z0);
