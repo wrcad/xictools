@@ -41,7 +41,7 @@ SCED spice model library
 
 # MIT-LL SFQ5ee process, 10000 A/cm2
 .model jj5eeu jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m,
-+ icrit=1m, r0=16/5, rn=1.65, cap=0.7p)
++ icrit=1m, r0=16.5, rn=1.65, cap=0.7p)
 .model jj5ee jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m,
 + icrit=1m, vshunt=0.6857mV cap=0.7p)
 .model jj5ee1 jj(rtype=1, cct=1, icon=10m, vg=2.6m, delv=0.08m,
