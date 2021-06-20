@@ -1061,6 +1061,8 @@ Uniform RC Line
 passive
 tra
 
+!!REDIRECT phasemode    jj#phasemode
+
 !! elements.tex 032520
 !!KEYWORD
 jj
@@ -1368,6 +1370,7 @@ Josephson Junctions
     replaces the DC operating point analysis.
 
     <p>
+    <a name="phasemode"></a>
     <i>WRspice</i> after release 4.3.3 offers a DC analysis capability
     which uses phase-mode for circuits containing Josephson
     junctions.  Unlike strictly phase-mode simulators, <i>WRspice</i>

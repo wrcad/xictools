@@ -645,9 +645,11 @@ namespace {
 
 
     // Parse and deal with 'range' ...
+    // The range2 provides two-deep access to list of lists.
     //
-    wordlist *var_range(variable *v, const char *range)
+    wordlist *var_range(variable *v, const char *range, const char *range2)
     {
+top:
         if (range) {
             int up, low;
             const char *s = range;
@@ -676,6 +678,18 @@ namespace {
             }
             else
                 up = low;
+
+            if (v->list() && low == up && range2) {
+                variable *vv = v->list();
+                while (vv && up--)
+                    vv = vv->next();
+                if (!vv)
+                    return (0);
+                range = range2;
+                range2 = 0;
+                v = vv;
+                goto top;
+            }
             return (v->var2wl(low, up));
         }
         return (v->varwl());
@@ -705,12 +719,17 @@ CshPar::VarEval(const char *cstring)
     GCarray<char*> gc_string(string);
     Strip(string);
 
-    char *range = 0, *s;
+    char *range = 0, *range2 = 0, *s;
     if ((s = strchr(string, '[')) != 0) {
         *s = '\0';
         range = rng_t::eval_range(s+1);
+        if ((s = strchr(s+1, '[')) != 0) {
+            *s = '\0';
+            range2 = rng_t::eval_range(s+1);
+        }
     }
     GCarray<char*> gc_range(range);
+    GCarray<char*> gc_range2(range2);
 
     char buf[BSIZE_SP];
     wordlist *wl = 0;
@@ -853,16 +872,16 @@ CshPar::VarEval(const char *cstring)
     //
     variable *v = Sp.GetRawVar(string, Sp.CurCircuit());
     if (v)
-        return (var_range(v, range));
+        return (var_range(v, range, range2));
 
     if (isdigit(*string)) {
         v = cp_vardb->get("argv");
-        return (v ? var_range(v, string) : 0);
+        return (v ? var_range(v, string, 0) : 0);
     }
 
     v = Sp.EnqPlotVar(string);
     if (v) {
-        wl = var_range(v, range);
+        wl = var_range(v, range, 0);
         variable::destroy(v);
         return (wl);
     }
