@@ -78,6 +78,9 @@ Authors: 1985 Wayne A. Christopher
 // Time profiling
 //#define TIME_DEBUG
 
+// Parameter expansion debugging.
+//#define PARAM_DEBUG
+
 #ifdef SOURCE_DEBUG
 #include "../../malloc/local_malloc.h"
 #endif
@@ -911,8 +914,15 @@ IFsimulator::DeckSource(sLine *deck, bool nospice, bool nocmds,
     if (controls && !noexec) {
         if (ct && ct->params()) {
             // Parameter expand the .control lines.
-            for (wordlist *wl = controls; wl; wl = wl->wl_next)
+            for (wordlist *wl = controls; wl; wl = wl->wl_next) {
+#ifdef PARAM_DEBUG
+                printf("%s\n", wl->wl_word);
+#endif
                 ct->params()->param_subst_all(&wl->wl_word);
+#ifdef PARAM_DEBUG
+                printf("%s\n", wl->wl_word);
+#endif
+            }
         }
         if (!nocmds || nospice) {
             ControlsPush();
