@@ -1,6 +1,6 @@
 
 MMJCO - Tunnel Junction Amplitude calculator.
-Version 0.5 (ALPHA)     9/3/2020
+Version 0.6 (ALPHA+)     6/27/2021
 S. Whiteley,  wrcad.com, Synopsys, Inc.
 
 This is derived from the MiTMoJCo project, specifically the
@@ -46,6 +46,18 @@ paths to libraries for your system, and type "make".  If all goes well
 the "mmjco" binary should be created in the current directory, along
 with a libmmjco.a library file.
 
+If built with the preprocessor symbol WRSPICE defined, the program is
+intended to serve as an accessory to the WRspice circuit simulator,
+for building tables for use with the TMJ model.  There are two main
+effects:
+
+  - The tunnel current amplitude files use the "rawfile" format, and
+    can be plotted in WRspice, WaveView, and other programs.
+
+  - The created amplitude and fit files are saved by default in a
+    directory named ".mmjco" in the user's home directory.  This
+    location is in the default WRspice search path for fit files.
+
 ++++ Running
 
 Presently, running mmjco enters a command-line processing loop, the user
@@ -76,6 +88,17 @@ cm[odel]  [-h thr] [-f [filename]]
     file, but used only to compute the residual.  The printed
     residual number is an indication of the fit quality, smaller
     values indicate better matching.
+
+    The model files are saved in the current directory (unless a path
+    is given explicitly).
+
+d[ir] directory_path
+
+    Give a path to a directory where all amplitude and fit files will
+    be stored and loaded from, if a rooted path is not given with the
+    file names.  The location is by default the current directory,
+    unless the WRSPICE preprocessor symbol is used, in which case the
+    default location is ".mmjco" in the user's home directory.
 
 ld[ata] filename
 
@@ -144,14 +167,20 @@ parameter values used in creation.  This format is described below.
 Tunnel current amplitude file name
 
     tcaTTTDD1DD2SFXXXX.data
+    tcaTTTDD1DD2SFXXXX.raw
 
-The "tca" and ".data" are literal.  TTT is a three-digit integer equal
-to 100*temp (truncated to integer).  DD1 and DD2 are three digit
-integers equal to 100*d1 and 100*d2, truncated to integer.  SF is a
-two digit integer representing the smoothing parameter equal to
-1000*sf, truncated to integer.  The XXXX is the number of points used
-(-x option), 0-padded if needed to fill out 4 integers,  Model files
-use the same default name, however ".model" replaces ".data".
+The "tca" and ".data"/".raw" are literal (the WRSPICE preprocessor
+symbol causes use of the rawfile format and .raw extension).  TTT is a
+three-digit integer equal to 100*temp (truncated to integer).  DD1 and
+DD2 are three digit integers equal to 100*d1 and 100*d2, truncated to
+integer.  SF is a two digit integer representing the smoothing
+parameter equal to 1000*sf, truncated to integer.  The XXXX is the
+number of points used (-x option), 0-padded if needed to fill out 4
+integers, Model files use the same default name, however ".model"
+replaces ".data"/"raw".
+
+In WRspice, a rawfile can be loaded with the load command, and the
+amplitudes can then be plotted with "plot all".
 
 The fitting parameter file name has the form
 

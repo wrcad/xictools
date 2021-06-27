@@ -78,9 +78,6 @@ public:
     static double minimum(double x, double y) { return (x < y ? x : y); }
     static double maximum(double x, double y) { return (x > y ? x : y); }
 
-    static void save_data(const char*, const double*, const complex<double>*,
-        const complex<double>*, int);
-
     static const char *version()    { return (mm_version); }
 
 private:
@@ -322,7 +319,7 @@ public:
     void new_fit_parameters(const double*, const complex<double>*,
         const complex<double>*, int, int, double);
     void save_fit_parameters(const char*);
-    void load_fit_parameters(const char*);
+    void load_fit_parameters(const char*, FILE*);
     void tca_fit(const double*, int, complex<double>**, complex<double>**);
     double residual(const complex<double>*, const complex<double>*,
         const complex<double>*, const complex<double>*, int, double);

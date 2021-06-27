@@ -7,7 +7,15 @@
 
 #include "mmjco.h"
 #include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/time.h>
+#include <time.h>
+#ifdef WRSPICE
 #include "../../xt_base/include/miscutil/pathlist.h"
+// This brings in lstring.h.
+#endif
 
 
 namespace {
@@ -29,7 +37,7 @@ public:
             mmc_temp        = 0.0;
             mmc_d1          = 0.0;
             mmc_d2          = 0.0;
-            mmc_sf          = 0.0;
+            mmc_sm          = 0.0;
             mmc_datafile    = 0;
             mmc_tcadir      = 0;
 
@@ -42,7 +50,19 @@ public:
 
             gsl_set_error_handler(&gslhdlr);
 
+#ifdef WRSPICE
             char *home = pathlist::get_home();
+            if (home) {
+                sLstr lstr;
+                lstr.add(home);
+                delete [] home;
+                lstr.add("/.mmjco");
+                char *av[2];
+                av[1] = lstr.string_trim();
+                mm_set_dir(2, av);
+                delete [] av[1];
+            }
+#endif
         }
 
     ~mmjco_cmds()
@@ -56,6 +76,7 @@ public:
             delete [] mmc_qp_model;
         }
 
+    int mm_set_dir(int, char**);
     int mm_create_data(int, char**);
     int mm_create_fit(int, char**);
     int mm_create_model(int, char**);
@@ -63,6 +84,9 @@ public:
     int mm_load_fit(int, char**);
 
 private:
+    void save_data(const char*, FILE*, const double*, const complex<double>*,
+        const complex<double>*, int);
+
     // create_data context
     complex<double> *mmc_pair_data;
     complex<double> *mmc_qp_data;
@@ -71,7 +95,7 @@ private:
     double mmc_temp;
     double mmc_d1;
     double mmc_d2;
-    double mmc_sf;
+    double mmc_sm;
     const char *mmc_datafile;
     const char *mmc_tcadir;
 
@@ -87,6 +111,35 @@ private:
 };
 
 
+// Set the directory path for default input/output.
+int
+mmjco_cmds::mm_set_dir(int argc, char **argv)
+{
+    if (argc < 2) {
+        printf("Error: missing directory path.\n");
+        return (1);
+    }
+    const char *dir = argv[1];
+    struct stat st;
+    if (stat(dir, &st) < 0) {
+        mkdir(dir, 0777);
+        if (stat(dir, &st) < 0) {
+            printf("Error: cannot stat path.\n");
+            return (1);
+        }
+    }
+    if (!(st.st_mode & S_IFDIR)) {
+        printf("Error: path is not a directory.\n");
+        return (1);
+    }
+    delete [] mmc_tcadir;
+    char *bf = new char[strlen(dir) + 1];
+    strcpy(bf, dir);
+    mmc_tcadir = bf;
+    return (0);
+}
+
+
 // Create a TCA data set and write this to a file.  The data set is
 // saved in an internal data register, replacing any existing data.
 //
@@ -98,7 +151,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     double temp = 4.2;
     double d1 = 1.4;
     double d2 = 1.4;
-    double sf = 0.008;
+    double sm = 0.008;
     int nx  = 500;
     char *datafile = 0;
 
@@ -167,7 +220,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 0.099)
-                    sf = (a >= 0.001 ? a : 0.0);
+                    sm = (a >= 0.001 ? a : 0.0);
                 else {
                     printf("Error: bad -s (smoothing factor), exiting.\n");
                     return (1);
@@ -206,7 +259,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     }
 
     // Setup TCA computation.
-    mmjco m(temp, d1, d2, sf);
+    mmjco m(temp, d1, d2, sm);
 
     delete [] mmc_pair_data;
     delete [] mmc_qp_data;
@@ -214,7 +267,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     mmc_temp = temp;
     mmc_d1 = d1;
     mmc_d2 = d2;
-    mmc_sf = sf;
+    mmc_sm = sm;
     mmc_numxpts = nx;
     mmc_pair_data = new complex<double>[mmc_numxpts];
     mmc_qp_data = new complex<double>[mmc_numxpts];
@@ -224,7 +277,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     double x0 = 0.001;
     double dx = (2.0 - x0)/(mmc_numxpts-1);
     for (int i = 0; i < mmc_numxpts; i++) {
-        if (sf > 0.0) {
+        if (sm > 0.0) {
             mmc_pair_data[i] = m.Jpair_smooth(x0);
             mmc_qp_data[i] = m.Jqp_smooth(x0);
         }
@@ -236,13 +289,35 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
         x0 += dx;
     }
 
+    const char *filename = datafile;
     if (!datafile) {
-        datafile = new char[32];
-        sprintf(datafile, "tca%03d%03d%03d%02d%04d.data",
+        char *dp;
+        if (mmc_tcadir) {
+            datafile = new char[strlen(mmc_tcadir) + 32];
+            sprintf(datafile, "%s/", mmc_tcadir);
+            dp = datafile + strlen(datafile);
+        }
+        else {
+            datafile = new char[32];
+            dp = datafile;
+        }
+        filename = dp;
+        sprintf(dp, "tca%03d%03d%03d%02d%04d",
             (int)(mmc_temp*100), (int)(mmc_d1*100), (int)(mmc_d2*100),
-            (int)(mmc_sf*1000), mmc_numxpts);
+            (int)(mmc_sm*1000), mmc_numxpts);
+#ifdef WRSPICE
+        strcat(datafile, ".raw");
+#else
+        strcat(datafile, ".data");
+#endif
     }
-    m.save_data(datafile, mmc_xpts, mmc_pair_data, mmc_qp_data, mmc_numxpts);
+    FILE *fp = fopen(datafile, "w");
+    if (!fp) {
+        printf("Error: unable to open file %s.\n", filename);
+        return (1);
+    }
+    save_data(filename, fp, mmc_xpts, mmc_pair_data, mmc_qp_data, mmc_numxpts);
+    fclose(fp);
     delete [] mmc_datafile;
     mmc_datafile = datafile;
     return (0);
@@ -321,20 +396,29 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
         mmc_nterms, mmc_thr);
 
     if (!fitfile) {
-        char buf[80];
+        char *tbuf;
         if (mmc_datafile) {
-            strcpy(buf, mmc_datafile);
-            char *t = strrchr(buf, '.');
-            if (t && t > buf)
+            tbuf = new char[strlen(mmc_datafile) + 12];
+            strcpy(tbuf, mmc_datafile);
+            char *t = strrchr(tbuf, '.');
+            if (t && t > tbuf)
                 *t = 0;
         }
-        else
-            strcpy(buf, "tca_data");
+        else {
+            if (mmc_tcadir) {
+                tbuf = new char[strlen(mmc_tcadir) + 20];
+                sprintf(tbuf, "%s/", mmc_tcadir);
+            }
+            else {
+                tbuf = new char[20];
+                *tbuf = 0;
+            }
+            strcat(tbuf, "tca_data");
+        }
         
-        sprintf(buf+strlen(buf), "-%02d%03d.fit", mmc_nterms,
+        sprintf(tbuf+strlen(tbuf), "-%02d%03d.fit", mmc_nterms,
             (int)(mmc_thr*1000));
-        fitfile = new char[strlen(buf)+1];
-        strcpy(fitfile, buf);
+        fitfile = tbuf;
     }
     mmc_mf.save_fit_parameters(fitfile);
     delete [] mmc_fitfile;
@@ -414,11 +498,41 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
             modfile = new char[strlen(buf) + 1];
             strcpy(modfile, buf);
         }
-        mmjco::save_data(modfile, mmc_xpts, mmc_pair_model, mmc_qp_model,
+        FILE *fp = fopen(modfile, "w");
+        if (!fp) {
+            printf("Error: unable to open file %s.\n", modfile);
+            return (1);
+        }
+        save_data(modfile, fp, mmc_xpts, mmc_pair_model, mmc_qp_model,
             mmc_numxpts);
+        fclose(fp);
         delete [] modfile;
     }
     return (0);
+}
+
+
+namespace {
+    // Return true if the string represents an absolute path.
+    //
+    bool
+    is_rooted(const char *string)
+    {
+        if (!string || !*string)
+            return (false);
+        if (*string == '/')
+            return (true);
+        if (*string == '~')
+            return (true);
+#ifdef WIN32
+        if (*string == '\\')
+            return (true);
+        if (strlen(string) >= 3 && isalpha(string[0]) && string[1] == ':' &&
+                (string[2] == '/' || string[2] == '\\'))
+            return (true);
+#endif
+        return (false);
+    }
 }
 
 
@@ -433,12 +547,119 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
         printf("Error: no filename given.\n");
         return (1);
     }
-    FILE *fp = fopen(argv[1], "r");
-    if (!fp) {
-        printf("Error: unable to open file %s.\n", argv[1]);
-        return (1);
+
+    FILE *fp;
+    char *path = 0;
+    if (is_rooted(argv[1]) || !mmc_tcadir) {
+        fp = fopen(argv[1], "r");
+        if (!fp) {
+            printf("Error: unable to open file %s.\n", argv[1]);
+            return (1);
+        }
+    }
+    else {
+        path = new char[strlen(mmc_tcadir) + strlen(argv[1]) + 2];
+        sprintf(path, "%s/%s", mmc_tcadir, argv[1]);
+        fp = fopen(path, "r");
+        if (!fp) {
+            delete [] path;
+            printf("Error: unable to open file %s.\n", argv[1]);
+            return (1);
+        }
     }
     char buf[256];
+
+#ifdef WRSPICE
+    // Assume a rawfile format for TCA data.
+    if (fgets(buf, 256, fp) == 0 || strcmp(buf, "Title: mmjco")) {
+        printf("Error: bad title line.\n");
+        fclose(fp);
+        return (1);
+    }
+
+    double T, d1, d2, sm = 0.0;
+    while (fgets(buf, 256, fp) != 0) {
+        if (sscanf(buf, "Plotname: T=%lf d1=%lf d2=%lf sm=%lf", &T,
+                &d1, &d2, &sm) == 4)
+            break;
+    }
+    if (sm == 0.0) {
+        printf("Error: bad or missing parameters.\n");
+        fclose(fp);
+        return (1);
+    }
+
+    int npts = 0;
+    while (fgets(buf, 256, fp) != 0) {
+        if (sscanf(buf, "No. Points: %d", &npts) == 1)
+            break;
+    }
+    if (npts < 2) {
+        printf("Error: too few points.\n");
+        fclose(fp);
+        return (1);
+    }
+
+    bool fvals = false;
+    while (fgets(buf, 256, fp) != 0) {
+        if (!strcmp(buf, "Values:")) {
+            fvals = true;
+            break;
+        }
+    }
+    if (!fvals) {
+        printf("Error: no valid data in file.\n");
+        fclose(fp);
+        return (1);
+    }
+
+    delete [] mmc_pair_data;
+    delete [] mmc_qp_data;
+    delete [] mmc_xpts;
+
+    int ix = 0;
+    int state = 0;
+    while (fgets(buf, 256, fp) != 0) {
+        if (state == 0) {
+            if (sscanf(buf, "%d %lf", &ix, mmc_xpts + ix) != 2)
+                break;
+            state++;
+            continue;
+        }
+        if (state == 1) {
+            double pr, pi;
+            if (sscanf(buf, "%lf %lf", &pr, &pi) != 2)
+                break;
+            mmc_pair_data[ix].real(pr);
+            mmc_pair_data[ix].imag(pi);
+            state++;
+            continue;
+        }
+        if (state == 1) {
+            double pr, pi;
+            if (sscanf(buf, "%lf %lf", &pr, &pi) != 2)
+                break;
+            mmc_qp_data[ix].real(pr);
+            mmc_qp_data[ix].imag(pi);
+            state = 0;
+            continue;
+        }
+    }
+    if (ix != npts-1) {
+        printf("Error: problem reading data.\n");
+        fclose(fp);
+        return (1);
+    }
+
+    mmc_numxpts = npts;
+
+    mmc_temp = T;
+    mmc_d1 = d1;
+    mmc_d2 = d2;
+    mmc_sm = sm;
+
+#else
+    // Generic TCA format.
     int cnt = 0;
     while (fgets(buf, 256, fp) != 0) {
         int i;
@@ -476,12 +697,15 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
     mmc_temp = 0.0;
     mmc_d1 = 0.0;
     mmc_d2 = 0.0;
-    mmc_sf = 0.0;
+    mmc_sm = 0.0;
+#endif
+
+    if (!path) {
+        path = new char[strlen(argv[1]) + 1];
+        strcpy(path, argv[1]);
+    }
     delete [] mmc_datafile;
-    char *datafile = new char[strlen(argv[1]) + 1];
-    strcpy(datafile, argv[1]);
-    delete [] mmc_datafile;
-    mmc_datafile = datafile;
+    mmc_datafile = path;
     return (0);
 }
 
@@ -498,16 +722,101 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
         return (1);
     }
 
+    FILE *fp;
+    char *path = 0;
+    if (is_rooted(argv[1]) || !mmc_tcadir) {
+        fp = fopen(argv[1], "r");
+        if (!fp) {
+            printf("Error: unable to open file %s.\n", argv[1]);
+            return (1);
+        }
+    }
+    else {
+        path = new char[strlen(mmc_tcadir) + strlen(argv[1]) + 2];
+        sprintf(path, "%s/%s", mmc_tcadir, argv[1]);
+        fp = fopen(path, "r");
+        if (!fp) {
+            delete [] path;
+            printf("Error: unable to open file %s.\n", argv[1]);
+            return (1);
+        }
+    }
+
     mmc_nterms = 0;
     mmc_thr = 0.0;
     delete [] mmc_fitfile;
-    char *fitfile = new char[strlen(argv[1]) + 1];
-    strcpy(fitfile, argv[1]);
-    mmc_fitfile = fitfile;
+    mmc_fitfile = path;
 
-    mmc_mf.load_fit_parameters(mmc_fitfile);
+    mmc_mf.load_fit_parameters(argv[1], fp);
     mmc_nterms = mmc_mf.numterms();
     return (0);
+}
+
+
+namespace {
+    // Return the date. Return value is static data.
+    //
+    char *datestring()
+    {
+#define HAVE_GETTIMEOFDAY
+#ifdef HAVE_GETTIMEOFDAY
+        struct timeval tv;
+        gettimeofday(&tv, 0);
+        struct tm *tp = localtime((time_t *) &tv.tv_sec);
+        char *ap = asctime(tp);
+#else
+        time_t tloc;
+        time(&tloc);
+        struct tm *tp = localtime(&tloc);
+        char *ap = asctime(tp);
+#endif
+
+        static char tbuf[40];
+        strcpy(tbuf, ap ? ap : "");
+        int i = strlen(tbuf);
+        tbuf[i - 1] = '\0';
+        return (tbuf);
+    }
+}
+
+
+// Save the TCA data in a file.
+//
+void
+mmjco_cmds::save_data(const char *filename, FILE *fp, const double *x,
+    const complex<double> *Jpair_data, const complex<double> *Jqp_data, int xsz)
+{
+#ifdef WRSPICE
+    // Save in rawfile format.
+    char tbf[80];
+    sprintf(tbf, "T=%.2f d1=%.2f d2=%.2f sm=%.3f", mmc_temp, mmc_d1, mmc_d2,
+        mmc_sm);
+
+    fprintf(fp, "Title: mmjco\n");
+    fprintf(fp, "Date: %s\n", datestring());
+    fprintf(fp, "Plotname: %s\n", tbf);
+    fprintf(fp, "Flags: complex unpadded\n");
+    fprintf(fp, "No. Variables: 3\n");
+    fprintf(fp, "No. Points: %d\n", xsz);
+    fprintf(fp, "Variables:\n 0 X\n 1 Jpair\n 2 Jqp\n");
+    fprintf(fp, "Values:\n");
+    for (int i = 0; i < xsz; i++) {
+        fprintf(fp, " %d\t%12.5e,%12.5e\n\t%12.5e,%12.5e\n\t%12.5e,%12.5e\n",
+            i, x[i], 0.0, Jpair_data[i].real(), Jpair_data[i].imag(),
+            Jqp_data[i].real(), Jqp_data[i].imag());
+    }
+    printf("TCA data saved to rawfile %s.\n", filename);
+#else
+    // Save in generic format.
+    fprintf(fp,
+        "#    X            Jpair_real   Jpair_imag   Jqp_real     Jqp_imag\n");
+    for (int i = 0; i < xsz; i++) {
+        fprintf(fp, "%-4d %-12.5e %-12.5e %-12.5e %-12.5e %-12.5e\n", i, x[i],
+            Jpair_data[i].real(), Jpair_data[i].imag(),
+            Jqp_data[i].real(), Jqp_data[i].imag());
+    }
+    printf("TCA data saved to file %s.\n", filename);
+#endif
 }
 
 
@@ -565,6 +874,8 @@ int main(int argc, char **argv)
             mmc.mm_create_fit(ac, av);
         else if (av[0][0] == 'c' && av[0][1] == 'm')
             mmc.mm_create_model(ac, av);
+        else if (av[0][0] == 'd')
+            mmc.mm_set_dir(ac, av);
         else if (av[0][0] == 'l' && av[0][1] == 'd')
             mmc.mm_load_data(ac, av);
         else if (av[0][0] == 'l' && av[0][1] == 'f')

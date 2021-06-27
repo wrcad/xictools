@@ -17,7 +17,7 @@
 #endif
 
 
-const char *mmjco::mm_version = "0.5";
+const char *mmjco::mm_version = "0.6";
 
 //#define DEBUG
 
@@ -31,6 +31,7 @@ namespace {
         return (false);
     }
 }
+
 
 //-----------------------------------------------------------------------------
 // Function description:
@@ -77,7 +78,7 @@ mmjco::mmjco(double T, double Delta1, double Delta2, double sm)
     // Define normalized gaps mm_d1 and mm_d2 (0 < mm_d1 <= mm_d2).
     mm_d1 = minimum(Delta1, Delta2)/(Delta1+Delta2);
     mm_d2 = 1.0 - mm_d1;
-    double Vg = 1.e-3*(Delta1+Delta2); // Gap voltage in volts.
+    double Vg = 1e-3*(Delta1+Delta2);  // Gap voltage in volts.
     mm_b  = MM_ECHG*Vg/(2*MM_BOLTZ*T); // Parameter alpha in Ref.
                                        // PRB 96, 024515 (2017)
 
@@ -121,30 +122,6 @@ mmjco::~mmjco()
     gsl_integration_qaws_table_free(mm_tbl);
 }
     
-
-// Static function.
-// Save the TCA data in a file.
-//
-void
-mmjco::save_data(const char *filename, const double *x,
-    const complex<double> *Jpair_data, const complex<double> *Jqp_data, int xsz)
-{
-    FILE *fp = fopen(filename, "w");
-    if (!fp) {
-        printf("Error: unable to open file %s.\n", filename);
-        return;
-    }
-    fprintf(fp,
-        "#    X            Jpair_real   Jpair_imag   Jqp_real     Jqp_imag\n");
-    for (int i = 0; i < xsz; i++) {
-        fprintf(fp, "%-4d %-12.5e %-12.5e %-12.5e %-12.5e %-12.5e\n", i, x[i],
-            Jpair_data[i].real(), Jpair_data[i].imag(),
-            Jqp_data[i].real(), Jqp_data[i].imag());
-    }
-    fclose(fp);
-    printf("TCA data saved to file %s.\n", filename);
-}
-
 
 //---------------------------------------------------
 //          Define tunnel current amplitudes
@@ -515,13 +492,8 @@ mmjco_fit::save_fit_parameters(const char *filename)
 // Load TCA fit parameters from file.
 //
 void
-mmjco_fit::load_fit_parameters(const char *filename)
+mmjco_fit::load_fit_parameters(const char *filename, FILE *fp)
 {
-    FILE *fp = fopen(filename, "r");
-    if (!fp) {
-        printf("Error: unable to open file %s.\n", filename);
-        return;
-    }
     complex<double> p[MAX_NTERMS];
     complex<double> A[MAX_NTERMS];
     complex<double> B[MAX_NTERMS];

@@ -577,6 +577,8 @@ sTJMmodel::tjm_init()
     TJMcoeffSet *cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
     if (!cs) {
         // ERROR
+        DVO.textOut(OUT_FATAL,
+            "%s: coefficient set %s not found.\n", GENmodName, tjm_coeffs);
         return (E_PANIC);
     }
     tjm_narray = cs->size();

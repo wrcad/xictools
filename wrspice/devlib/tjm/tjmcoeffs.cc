@@ -173,7 +173,7 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm)
         int cnt = 0;
         while (fgets(buf, 256, fp) != 0) {
             double pr, pi, ar, ai, br, bi;
-            if (sscanf(buf, "%lf %lf %lf %lf %lf %lf", &pr, &pi, &ar, &ai,
+            if (sscanf(buf, "%lf, %lf, %lf, %lf, %lf, %lf", &pr, &pi, &ar, &ai,
                     &br, &bi) == 6) {
                 if (cnt < MAX_PARAMS) {
                     p[cnt].real = pr;
@@ -195,7 +195,7 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm)
                 nA[i] = A[i];
                 nB[i] = B[i];
             }
-            return (new TJMcoeffSet(strdup(nm), cnt, nA, nB, np));
+            return (new TJMcoeffSet(strdup(nm), cnt, np, nA, nB));
         }
     }
     return (0);

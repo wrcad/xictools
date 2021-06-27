@@ -893,22 +893,24 @@ pathlist::open_path_file(const char *namein, const char *path,
 
     pathgen pg(path);
     char *p;
+    FILE *fp = 0;
     while ((p = pg.nextpath(realname ? true : false)) != 0) {
         char *ptmp = mk_path(p, name);
         delete [] p;
         p = ptmp;
-        FILE *fp = fopen(p, mode);
-        if (fp) {
-            if (realname)
-                *realname = lstring::copy(p);
+        fp = fopen(p, mode);
+        if (!fp) {
             delete [] p;
-            delete [] name;
-            return (fp);
+            continue;
         }
-        delete [] p;
+        if (realname)
+            *realname = p;
+        else
+            delete [] p;
+        break;
     }
     delete [] name;
-    return (0);
+    return (fp);
 }
 
 
