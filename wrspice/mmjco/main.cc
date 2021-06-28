@@ -898,7 +898,7 @@ mmjco_cmds::save_data(const char *filename, FILE *fp, DFTYPE dtype,
             fprintf(fp, "Flags: complex\n");
             fprintf(fp, "No. Variables: 3\n");
             fprintf(fp, "No. Points: %d\n", xsz);
-            fprintf(fp, "Variables:\n 0 X\n 1 Jpair\n 2 Jqp\n");
+            fprintf(fp, "Variables:\n 0 none X\n 1 Jpair\n 2 Jqp\n");
             fprintf(fp, "Values:\n");
             for (int i = 0; i < xsz; i++) {
                 fprintf(fp,
@@ -912,8 +912,8 @@ mmjco_cmds::save_data(const char *filename, FILE *fp, DFTYPE dtype,
             fprintf(fp, "Flags: real\n");
             fprintf(fp, "No. Variables: 5\n");
             fprintf(fp, "No. Points: %d\n", xsz);
-            fprintf(fp,
-            "Variables:\n 0 X\n 1 Jpair_re\n 2 Jpair_im\n 3 Jqp_re\n 4 Jqp_im\n");
+            fprintf(fp, "Variables:\n 0 none X\n 1 Jpair_re\n 2 "
+                "Jpair_im\n 3 Jqp_re\n 4 Jqp_im\n");
             fprintf(fp, "Values:\n");
             for (int i = 0; i < xsz; i++) {
                 fprintf(fp,
