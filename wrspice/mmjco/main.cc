@@ -157,7 +157,8 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     int nx  = 500;
     char *datafile = 0;
 #ifdef WRSPICE
-    DFTYPE dtype = DFRAWCPLX;
+    // Use real-valued rawfile for WaveView.
+    DFTYPE dtype = DFRAWREAL;
 #else
     DFTYPE dtype = DFDATA;
 #endif
