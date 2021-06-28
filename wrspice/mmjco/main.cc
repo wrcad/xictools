@@ -24,6 +24,7 @@ namespace {
     }
 }
 
+enum DFTYPE { DFDATA, DFRAWCPLX, DFRAWREAL };
 
 class mmjco_cmds
 {
@@ -84,8 +85,8 @@ public:
     int mm_load_fit(int, char**);
 
 private:
-    void save_data(const char*, FILE*, const double*, const complex<double>*,
-        const complex<double>*, int);
+    void save_data(const char*, FILE*, DFTYPE, const double*,
+        const complex<double>*, const complex<double>*, int);
 
     // create_data context
     complex<double> *mmc_pair_data;
@@ -143,7 +144,8 @@ mmjco_cmds::mm_set_dir(int argc, char **argv)
 // Create a TCA data set and write this to a file.  The data set is
 // saved in an internal data register, replacing any existing data.
 //
-// cd[ata] [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] -f [filename]
+// cd[ata] [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] -f [filename] \
+//  [-r | -rr | -rd]
 //
 int
 mmjco_cmds::mm_create_data(int argc, char **argv)
@@ -154,6 +156,11 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     double sm = 0.008;
     int nx  = 500;
     char *datafile = 0;
+#ifdef WRSPICE
+    DFTYPE dtype = DFRAWCPLX;
+#else
+    DFTYPE dtype = DFDATA;
+#endif
 
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
@@ -255,6 +262,15 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                 }
                 continue;
             }
+            if (argv[i][1] == 'r') {
+                if (argv[i][2] == 'r')
+                    dtype = DFRAWREAL;
+                else if (argv[i][2] == 'd')
+                    dtype = DFDATA;
+                else
+                    dtype = DFRAWCPLX;
+                continue;
+            }
         }
     }
 
@@ -305,18 +321,18 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
         sprintf(dp, "tca%03d%03d%03d%02d%04d",
             (int)(mmc_temp*100), (int)(mmc_d1*100), (int)(mmc_d2*100),
             (int)(mmc_sm*1000), mmc_numxpts);
-#ifdef WRSPICE
-        strcat(datafile, ".raw");
-#else
-        strcat(datafile, ".data");
-#endif
+        if (dtype == DFDATA)
+            strcat(datafile, ".data");
+        else
+            strcat(datafile, ".raw");
     }
     FILE *fp = fopen(datafile, "w");
     if (!fp) {
         printf("Error: unable to open file %s.\n", filename);
         return (1);
     }
-    save_data(filename, fp, mmc_xpts, mmc_pair_data, mmc_qp_data, mmc_numxpts);
+    save_data(filename, fp, dtype, mmc_xpts, mmc_pair_data, mmc_qp_data,
+        mmc_numxpts);
     fclose(fp);
     delete [] mmc_datafile;
     mmc_datafile = datafile;
@@ -427,7 +443,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
 }
 
 
-// cm [-h thr] [-f [filename]]
+// cm [-h thr] [-f [filename]] [-r | -rr | -rd]
 int
 mmjco_cmds::mm_create_model(int argc, char **argv)
 {
@@ -439,6 +455,11 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
         printf("Error: no fit data in memory, use \"cf\" or \"lf\".\n");
         return (1);
     }
+#ifdef WRSPICE
+    DFTYPE dtype = DFRAWCPLX;
+#else
+    DFTYPE dtype = DFDATA;
+#endif
 
     double loc_thr = (mmc_thr > 0.0 ? mmc_thr : 0.2);
     bool got_f = false;
@@ -472,6 +493,15 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
                 }
                 continue;
             }
+            if (argv[i][1] == 'r') {
+                if (argv[i][2] == 'r')
+                    dtype = DFRAWREAL;
+                else if (argv[i][2] == 'd')
+                    dtype = DFDATA;
+                else
+                    dtype = DFRAWCPLX;
+                continue;
+            }
         }
     }
 
@@ -503,7 +533,7 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
             printf("Error: unable to open file %s.\n", modfile);
             return (1);
         }
-        save_data(modfile, fp, mmc_xpts, mmc_pair_model, mmc_qp_model,
+        save_data(modfile, fp, dtype, mmc_xpts, mmc_pair_model, mmc_qp_model,
             mmc_numxpts);
         fclose(fp);
         delete [] modfile;
@@ -569,136 +599,192 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
     }
     char buf[256];
 
-#ifdef WRSPICE
-    // Assume a rawfile format for TCA data.
-    if (fgets(buf, 256, fp) == 0 || strcmp(buf, "Title: mmjco")) {
-        printf("Error: bad title line.\n");
+    // Read first line, determines file type.
+    if (fgets(buf, 256, fp) == 0) {
+        printf("Error: file is empty or unreadable.\n");
         fclose(fp);
         return (1);
     }
 
-    double T, d1, d2, sm = 0.0;
-    while (fgets(buf, 256, fp) != 0) {
-        if (sscanf(buf, "Plotname: T=%lf d1=%lf d2=%lf sm=%lf", &T,
-                &d1, &d2, &sm) == 4)
-            break;
-    }
-    if (sm == 0.0) {
-        printf("Error: bad or missing parameters.\n");
-        fclose(fp);
-        return (1);
-    }
+    if (!strcmp(buf, "Title: mmjco")) {
+        // Rawfile format for TCA data.
 
-    int npts = 0;
-    while (fgets(buf, 256, fp) != 0) {
-        if (sscanf(buf, "No. Points: %d", &npts) == 1)
-            break;
-    }
-    if (npts < 2) {
-        printf("Error: too few points.\n");
-        fclose(fp);
-        return (1);
-    }
-
-    bool fvals = false;
-    while (fgets(buf, 256, fp) != 0) {
-        if (!strcmp(buf, "Values:")) {
-            fvals = true;
-            break;
-        }
-    }
-    if (!fvals) {
-        printf("Error: no valid data in file.\n");
-        fclose(fp);
-        return (1);
-    }
-
-    delete [] mmc_pair_data;
-    delete [] mmc_qp_data;
-    delete [] mmc_xpts;
-
-    int ix = 0;
-    int state = 0;
-    while (fgets(buf, 256, fp) != 0) {
-        if (state == 0) {
-            if (sscanf(buf, "%d %lf", &ix, mmc_xpts + ix) != 2)
+        double T, d1, d2, sm = 0.0;
+        while (fgets(buf, 256, fp) != 0) {
+            if (sscanf(buf, "Plotname: T=%lf d1=%lf d2=%lf sm=%lf", &T,
+                    &d1, &d2, &sm) == 4)
                 break;
-            state++;
-            continue;
         }
-        if (state == 1) {
-            double pr, pi;
-            if (sscanf(buf, "%lf %lf", &pr, &pi) != 2)
+        if (sm == 0.0) {
+            printf("Error: bad or missing parameters.\n");
+            fclose(fp);
+            return (1);
+        }
+
+        bool iscplx = true;
+        while (fgets(buf, 256, fp) != 0) {
+            int d;
+            if (sscanf(buf, "Flags: %c", &d) == 1)
                 break;
-            mmc_pair_data[ix].real(pr);
-            mmc_pair_data[ix].imag(pi);
-            state++;
-            continue;
+            if (d == 'r' || d == 'R')
+                iscplx = false;
         }
-        if (state == 1) {
-            double pr, pi;
-            if (sscanf(buf, "%lf %lf", &pr, &pi) != 2)
+
+        int npts = 0;
+        while (fgets(buf, 256, fp) != 0) {
+            if (sscanf(buf, "No. Points: %d", &npts) == 1)
                 break;
-            mmc_qp_data[ix].real(pr);
-            mmc_qp_data[ix].imag(pi);
-            state = 0;
-            continue;
         }
-    }
-    if (ix != npts-1) {
-        printf("Error: problem reading data.\n");
-        fclose(fp);
-        return (1);
-    }
-
-    mmc_numxpts = npts;
-
-    mmc_temp = T;
-    mmc_d1 = d1;
-    mmc_d2 = d2;
-    mmc_sm = sm;
-
-#else
-    // Generic TCA format.
-    int cnt = 0;
-    while (fgets(buf, 256, fp) != 0) {
-        int i;
-        double x, pr, pi, qr, qi;
-        if (sscanf(buf, "%d %lf %lf %lf %lf %lf",
-                &i, &x, &pr, &pi, &qr, &qi) == 6)
-            cnt++;
-    }
-    if (cnt > 2) {
-        printf("Error: no valid data in file.\n");
-        return (1);
-    }
-
-    delete [] mmc_pair_data;
-    delete [] mmc_qp_data;
-    delete [] mmc_xpts;
-
-    rewind(fp);
-    cnt = 0;
-    while (fgets(buf, 256, fp) != 0) {
-        int i;
-        double x, pr, pi, qr, qi;
-        if (sscanf(buf, "%d %lf %lf %lf %lf %lf",
-                &i, &x, &pr, &pi, &qr, &qi) == 6) {
-            mmc_xpts[cnt] = x;
-            mmc_pair_data[cnt].real(pr);
-            mmc_pair_data[cnt].imag(pi);
-            mmc_qp_data[cnt].real(qr);
-            mmc_qp_data[cnt].imag(qi);
-            cnt++;
+        if (npts < 2) {
+            printf("Error: too few points.\n");
+            fclose(fp);
+            return (1);
         }
+
+        bool fvals = false;
+        while (fgets(buf, 256, fp) != 0) {
+            if (!strcmp(buf, "Values:")) {
+                fvals = true;
+                break;
+            }
+        }
+        if (!fvals) {
+            printf("Error: no valid data in file.\n");
+            fclose(fp);
+            return (1);
+        }
+
+        delete [] mmc_pair_data;
+        delete [] mmc_qp_data;
+        delete [] mmc_xpts;
+
+        int ix = 0;
+        int state = 0;
+        if (iscplx) {
+            while (fgets(buf, 256, fp) != 0) {
+                if (state == 0) {
+                    if (sscanf(buf, "%d %lf", &ix, mmc_xpts + ix) != 2)
+                        break;
+                    state++;
+                    continue;
+                }
+                if (state == 1) {
+                    double pr, pi;
+                    if (sscanf(buf, "%lf %lf", &pr, &pi) != 2)
+                        break;
+                    mmc_pair_data[ix].real(pr);
+                    mmc_pair_data[ix].imag(pi);
+                    state++;
+                    continue;
+                }
+                if (state == 1) {
+                    double pr, pi;
+                    if (sscanf(buf, "%lf %lf", &pr, &pi) != 2)
+                        break;
+                    mmc_qp_data[ix].real(pr);
+                    mmc_qp_data[ix].imag(pi);
+                    state = 0;
+                    continue;
+                }
+            }
+        }
+        else {
+            while (fgets(buf, 256, fp) != 0) {
+                if (state == 0) {
+                    if (sscanf(buf, "%d %lf", &ix, mmc_xpts + ix) != 2)
+                        break;
+                    state++;
+                    continue;
+                }
+                if (state == 1) {
+                    double d;
+                    if (sscanf(buf, "%lf", &d) != 1)
+                        break;
+                    mmc_pair_data[ix].real(d);
+                    state++;
+                    continue;
+                }
+                if (state == 2) {
+                    double d;
+                    if (sscanf(buf, "%lf", &d) != 1)
+                        break;
+                    mmc_pair_data[ix].imag(d);
+                    state++;
+                    continue;
+                }
+                if (state == 3) {
+                    double d;
+                    if (sscanf(buf, "%lf", &d) != 1)
+                        break;
+                    mmc_qp_data[ix].real(d);
+                    state++;
+                    continue;
+                }
+                if (state == 4) {
+                    double d;
+                    if (sscanf(buf, "%lf", &d) != 1)
+                        break;
+                    mmc_qp_data[ix].imag(d);
+                    state = 0;
+                    continue;
+                }
+            }
+        }
+        if (ix != npts-1) {
+            printf("Error: problem reading data.\n");
+            fclose(fp);
+            return (1);
+        }
+
+        mmc_numxpts = npts;
+
+        mmc_temp = T;
+        mmc_d1 = d1;
+        mmc_d2 = d2;
+        mmc_sm = sm;
     }
-    mmc_numxpts = cnt;
-    // XXX maybe want to save these in the data file?
-    mmc_temp = 0.0;
-    mmc_d1 = 0.0;
-    mmc_d2 = 0.0;
-    mmc_sm = 0.0;
-#endif
+    else {
+
+        // Generic TCA format.
+        int cnt = 0;
+        while (fgets(buf, 256, fp) != 0) {
+            int i;
+            double x, pr, pi, qr, qi;
+            if (sscanf(buf, "%d %lf %lf %lf %lf %lf",
+                    &i, &x, &pr, &pi, &qr, &qi) == 6)
+                cnt++;
+        }
+        if (cnt > 2) {
+            printf("Error: no valid data in file.\n");
+            return (1);
+        }
+
+        delete [] mmc_pair_data;
+        delete [] mmc_qp_data;
+        delete [] mmc_xpts;
+
+        rewind(fp);
+        cnt = 0;
+        while (fgets(buf, 256, fp) != 0) {
+            int i;
+            double x, pr, pi, qr, qi;
+            if (sscanf(buf, "%d %lf %lf %lf %lf %lf",
+                    &i, &x, &pr, &pi, &qr, &qi) == 6) {
+                mmc_xpts[cnt] = x;
+                mmc_pair_data[cnt].real(pr);
+                mmc_pair_data[cnt].imag(pi);
+                mmc_qp_data[cnt].real(qr);
+                mmc_qp_data[cnt].imag(qi);
+                cnt++;
+            }
+        }
+        mmc_numxpts = cnt;
+        // XXX maybe want to save these in the data file?
+        mmc_temp = 0.0;
+        mmc_d1 = 0.0;
+        mmc_d2 = 0.0;
+        mmc_sm = 0.0;
+    }
 
     if (!path) {
         path = new char[strlen(argv[1]) + 1];
@@ -783,40 +869,61 @@ namespace {
 // Save the TCA data in a file.
 //
 void
-mmjco_cmds::save_data(const char *filename, FILE *fp, const double *x,
-    const complex<double> *Jpair_data, const complex<double> *Jqp_data, int xsz)
+mmjco_cmds::save_data(const char *filename, FILE *fp, DFTYPE dtype,
+    const double *x, const complex<double> *Jpair_data,
+    const complex<double> *Jqp_data, int xsz)
 {
-#ifdef WRSPICE
-    // Save in rawfile format.
-    char tbf[80];
-    sprintf(tbf, "T=%.2f d1=%.2f d2=%.2f sm=%.3f", mmc_temp, mmc_d1, mmc_d2,
-        mmc_sm);
+    if (dtype == DFDATA) {
+        // Save in generic format.
+        fprintf(fp,
+          "#    X            Jpair_real   Jpair_imag   Jqp_real     Jqp_imag\n");
+        for (int i = 0; i < xsz; i++) {
+            fprintf(fp, "%-4d %-12.5e %-12.5e %-12.5e %-12.5e %-12.5e\n",
+                i, x[i],
+                Jpair_data[i].real(), Jpair_data[i].imag(),
+                Jqp_data[i].real(), Jqp_data[i].imag());
+        }
+        printf("TCA data saved to file %s.\n", filename);
+    }
+    else {
+        // Save in rawfile format.
+        char tbf[80];
+        sprintf(tbf, "T=%.2f d1=%.2f d2=%.2f sm=%.3f", mmc_temp, mmc_d1, mmc_d2,
+            mmc_sm);
 
-    fprintf(fp, "Title: mmjco\n");
-    fprintf(fp, "Date: %s\n", datestring());
-    fprintf(fp, "Plotname: %s\n", tbf);
-    fprintf(fp, "Flags: complex unpadded\n");
-    fprintf(fp, "No. Variables: 3\n");
-    fprintf(fp, "No. Points: %d\n", xsz);
-    fprintf(fp, "Variables:\n 0 X\n 1 Jpair\n 2 Jqp\n");
-    fprintf(fp, "Values:\n");
-    for (int i = 0; i < xsz; i++) {
-        fprintf(fp, " %d\t%12.5e,%12.5e\n\t%12.5e,%12.5e\n\t%12.5e,%12.5e\n",
-            i, x[i], 0.0, Jpair_data[i].real(), Jpair_data[i].imag(),
-            Jqp_data[i].real(), Jqp_data[i].imag());
+        fprintf(fp, "Title: mmjco\n");
+        fprintf(fp, "Date: %s\n", datestring());
+        fprintf(fp, "Plotname: %s\n", tbf);
+        if (dtype == DFRAWCPLX) {
+            fprintf(fp, "Flags: complex\n");
+            fprintf(fp, "No. Variables: 3\n");
+            fprintf(fp, "No. Points: %d\n", xsz);
+            fprintf(fp, "Variables:\n 0 X\n 1 Jpair\n 2 Jqp\n");
+            fprintf(fp, "Values:\n");
+            for (int i = 0; i < xsz; i++) {
+                fprintf(fp,
+                  " %d\t%12.5e,%12.5e\n\t%12.5e,%12.5e\n\t%12.5e,%12.5e\n",
+                    i, x[i], 0.0, Jpair_data[i].real(), Jpair_data[i].imag(),
+                    Jqp_data[i].real(), Jqp_data[i].imag());
+            }
+            printf("TCA data saved to complex rawfile %s.\n", filename);
+        }
+        else {
+            fprintf(fp, "Flags: real\n");
+            fprintf(fp, "No. Variables: 5\n");
+            fprintf(fp, "No. Points: %d\n", xsz);
+            fprintf(fp,
+            "Variables:\n 0 X\n 1 Jpair_re\n 2 Jpair_im\n 3 Jqp_re\n 4 Jqp_im\n");
+            fprintf(fp, "Values:\n");
+            for (int i = 0; i < xsz; i++) {
+                fprintf(fp,
+                  " %d\t%12.5e\n\t%12.5e\n\t%12.5e\n\t%12.5e\n\t%12.5e\n",
+                    i, x[i], Jpair_data[i].real(), Jpair_data[i].imag(),
+                    Jqp_data[i].real(), Jqp_data[i].imag());
+            }
+            printf("TCA data saved to real rawfile %s.\n", filename);
+        }
     }
-    printf("TCA data saved to rawfile %s.\n", filename);
-#else
-    // Save in generic format.
-    fprintf(fp,
-        "#    X            Jpair_real   Jpair_imag   Jqp_real     Jqp_imag\n");
-    for (int i = 0; i < xsz; i++) {
-        fprintf(fp, "%-4d %-12.5e %-12.5e %-12.5e %-12.5e %-12.5e\n", i, x[i],
-            Jpair_data[i].real(), Jpair_data[i].imag(),
-            Jqp_data[i].real(), Jqp_data[i].imag());
-    }
-    printf("TCA data saved to file %s.\n", filename);
-#endif
 }
 
 
