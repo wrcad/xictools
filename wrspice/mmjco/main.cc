@@ -35,6 +35,13 @@ public:
             mmc_qp_data     = 0;
             mmc_xpts        = 0;
             mmc_numxpts     = 0;
+#ifdef WRSPICE
+            // Use real-valued rawfile, WaveView is not friendly with
+            // complex.
+            mmc_ftype = DFRAWREAL;
+#else
+            mmc_ftype = DFDATA;
+#endif
             mmc_temp        = 0.0;
             mmc_d1          = 0.0;
             mmc_d2          = 0.0;
@@ -54,6 +61,7 @@ public:
 #ifdef WRSPICE
             char *home = pathlist::get_home();
             if (home) {
+                // Set default TCA directory to $HOME/.mmjco.
                 sLstr lstr;
                 lstr.add(home);
                 delete [] home;
@@ -93,6 +101,7 @@ private:
     complex<double> *mmc_qp_data;
     double *mmc_xpts;
     int mmc_numxpts;
+    DFTYPE mmc_ftype;
     double mmc_temp;
     double mmc_d1;
     double mmc_d2;
@@ -112,7 +121,8 @@ private:
 };
 
 
-// Set the directory path for default input/output.
+// Set the directory path for default input/output of TCA files.
+//
 int
 mmjco_cmds::mm_set_dir(int argc, char **argv)
 {
@@ -156,12 +166,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     double sm = 0.008;
     int nx  = 500;
     char *datafile = 0;
-#ifdef WRSPICE
-    // Use real-valued rawfile for WaveView.
-    DFTYPE dtype = DFRAWREAL;
-#else
-    DFTYPE dtype = DFDATA;
-#endif
+    DFTYPE dtype = mmc_ftype;
 
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
@@ -456,12 +461,8 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
         printf("Error: no fit data in memory, use \"cf\" or \"lf\".\n");
         return (1);
     }
-#ifdef WRSPICE
-    DFTYPE dtype = DFRAWCPLX;
-#else
-    DFTYPE dtype = DFDATA;
-#endif
 
+    DFTYPE dtype = mmc_ftype;
     double loc_thr = (mmc_thr > 0.0 ? mmc_thr : 0.2);
     bool got_f = false;
     char *modfile = 0;
@@ -993,13 +994,16 @@ int main(int argc, char **argv)
         else if (av[0][0] == 'h' || av[0][0] == 'v' || av[0][0] == '?') {
             printf("mmjco version %s\n", mmjco::version());
             printf(
-"cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename]\n"
+"cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename]\\\n"
+"         [-r | -rr | -rd]\n"
 "    Create TCA data, save internally and to file.\n"
 "cf[it]  [-n terms] [-h thr] [-f filename]\n"
 "    Create fit parameters for TCA data, save internally and to file.\n"
-"cm[odel]  [-h thr] [-f [filename]]\n"
+"cm[odel]  [-h thr] [-f [filename]] [-r | -rr | -rd]\n"
 "    Create model for TCA data using fitting parameters, compute fit\n"
 "    measure, optionally save to file.\n"
+"d[ir] directory_path\n"
+"    Use the given directory as source and destination for TCA files.\n"
 "ld[ata] filename\n"
 "    Load internal data register from TCA data file.\n"
 "lf[it] filename\n"

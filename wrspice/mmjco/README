@@ -68,7 +68,8 @@ Text in square brackets ([...]) is optional.  A vertical pipe
 character ( | ) indicates that either the text to the right or left is
 acceptable, i.e., it separates options.
 
-cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename]
+cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename] \
+         [-r | -rr | -rd]
 
     Create TCA data, save internally and to a file.  See below for
     an explanation of the options.
@@ -79,7 +80,7 @@ cf[it]  [-n terms] [-h thr] [-f filename]
     or ld commands.  This is saved internallyand to a file.  See
     below for an explanation of the options.
 
-cm[odel]  [-h thr] [-f [filename]]
+cm[odel]  [-h thr] [-f [filename]] [-r | -rr | -rd]
 
     Create a model for TCA data using fitting parameters currently in
     memory, compute the residual, and optionally save to a file.  If -f
@@ -88,6 +89,15 @@ cm[odel]  [-h thr] [-f [filename]]
     file, but used only to compute the residual.  The printed
     residual number is an indication of the fit quality, smaller
     values indicate better matching.
+
+    If one of -r, -rr, -rd is given when a file is being generated, it
+    overrides the default type for file to produce.
+      -r  complex-valued rawfile
+      -rr real-valued rawfile
+      -rd simple data file
+
+    The default file type is "-rr" when built with WRSPICE defined,
+    or the simple data file format otherwise.
 
     The model files are saved in the current directory (unless a path
     is given explicitly).
@@ -103,7 +113,7 @@ d[ir] directory_path
 ld[ata] filename
 
     Load the internal TCA data register from a TCA data file whose name
-    must be given.
+    must be given.  This understands all supported file formats.
 
 lf[it] filename
 
@@ -143,6 +153,13 @@ Tunnel current amplitude and smoothing options:
     -f   A name for the TCA anplitude file.  If not given, a
          default is used, described below.
 
+    -r   Output file is a complex-valued rawfile.
+    -rr  Output file is a real-valued rawfile.
+    -rd  Output file diomple data file.
+
+If none of the "-r" options is set, the format will be "-rr" if the
+program was build with WRSPICE defined, "-rd" otherwise.
+
 Fitting table options:
 
     -n   The size of the table, defaults to 8.  Larger tables are
@@ -170,10 +187,10 @@ Tunnel current amplitude file name
     tcaTTTDD1DD2SFXXXX.raw
 
 The "tca" and ".data"/".raw" are literal (the WRSPICE preprocessor
-symbol causes use of the rawfile format and .raw extension).  TTT is a
-three-digit integer equal to 100*temp (truncated to integer).  DD1 and
-DD2 are three digit integers equal to 100*d1 and 100*d2, truncated to
-integer.  SF is a two digit integer representing the smoothing
+symbol defaults use of the rawfile format and .raw extension).  TTT is
+a three-digit integer equal to 100*temp (truncated to integer).  DD1
+and DD2 are three digit integers equal to 100*d1 and 100*d2, truncated
+to integer.  SF is a two digit integer representing the smoothing
 parameter equal to 1000*sf, truncated to integer.  The XXXX is the
 number of points used (-x option), 0-padded if needed to fill out 4
 integers, Model files use the same default name, however ".model"
