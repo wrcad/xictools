@@ -55,6 +55,27 @@ extern FILE *tjm_fopen(const char*);
 // A database of tunneling amplitude tables for the TJM.
 //
 
+// Static function.
+// Return the coefficient set file name for the parameters.
+//
+char *
+TJMcoeffSet::fit_fname(double temp, double d1, double d2, double sm)
+{
+    int numxpts = 500;
+    int nterms = 8;
+    double thr = 0.2;
+    char tbuf[80];
+    sprintf(tbuf, "tca%03ld%03ld%03ld%02ld%04d",
+        lround(temp*100), lround(d1*100000), lround(d2*100000),
+        lround(sm*1000), numxpts);
+    sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", nterms,
+        lround(thr*1000));
+    char *tr = new char[strlen(tbuf)+1];
+    strcpy(tr, tbuf);
+    return (tr);
+}
+
+
 namespace {
     // Built-in default TJM models, where p, A, and B are Dirichlet
     // coefficients.  Size of Dirichlet series should be even and less
@@ -126,17 +147,12 @@ namespace {
         cIFcomplex(-0.161605, 0.336628)};
 }
 
+
 sTab<TJMcoeffSet> *TJMcoeffSet::TJMcoeffsTab = 0;
 
-#define MAX_PARAMS 20
-
-
-// Static Function.
-TJMcoeffSet *
-TJMcoeffSet::getTJMcoeffSet(const char *nm)
+void
+TJMcoeffSet::check_coeffTab()
 {
-    if (!nm)
-        return (0);
     if (!TJMcoeffsTab) {
         TJMcoeffsTab = new sTab<TJMcoeffSet>(true);
         IFcomplex *p = new IFcomplex[8];
@@ -161,6 +177,42 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm)
         cs = new TJMcoeffSet(strdup("tjm2"), 10, p, A, B);
         TJMcoeffsTab->add(cs);
     }
+}
+
+
+#define MAX_PARAMS 20
+
+// Static Function.
+TJMcoeffSet *
+TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm)
+{
+    char *nm = fit_fname(temp, d1, d2, sm);
+    TJMcoeffSet *cs = getTJMcoeffSet(nm);
+    if (cs) {
+        delete [] nm;
+        return (cs);
+    }
+    char buf[80];
+    sprintf(buf, "mmjco cdf -t %.2f -d1 %.2f -d2 %.2f -s %.3f", temp,
+        d1*1e3, d2*1e3, sm);
+printf("%s\n", buf);
+    system(buf);
+printf("%s\n", nm);
+    cs = getTJMcoeffSet(nm);
+    delete [] nm;
+    if (cs)
+        return (cs);
+    return (0);
+}
+
+
+// Static Function.
+TJMcoeffSet *
+TJMcoeffSet::getTJMcoeffSet(const char *nm)
+{
+    if (!nm)
+        return (0);
+    check_coeffTab();
 
     TJMcoeffSet *cs = TJMcoeffsTab->find(nm);
     if (cs)

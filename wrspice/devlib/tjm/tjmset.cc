@@ -77,9 +77,18 @@
 #define IcMax   1e-1        // Max referenct Ic, A
 #define IcsMin  Icrit/50    // Min instance Ic, A
 #define IcsMax  Icrit*50    // Max instance Ic, A
+
 #define Vg      2.6e-3      // Assumed Vgap of reference, V
 #define VgMin   0.1e-3      // Min Vgap, V
 #define VgMax   10.0e-3     // Max Vgap, V
+#define DelMin  (0.5*VgMin)
+#define DelMax  (0.5*VgMax)
+#define Temp    4.2
+#define TempMin 0
+#define TempMax 280
+#define Smf     0.008
+#define SmfMin  0.001
+#define SmfMax  0.099
 
 #define RTMAX   1           // Max rtype, integer
 #define ITMAX   1           // Max ictype, integer
@@ -171,7 +180,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
     sTJMmodel *model = static_cast<sTJMmodel*>(genmod);
     for ( ; model; model = model->next()) {
 
-
         if (!model->TJMrtypeGiven)
             model->TJMrtype = 1;
         else {
@@ -192,6 +200,29 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->TJMictype = 1;
             }
         }
+
+        if (model->TJMdel1Given) {
+            if (model->TJMdel1 < DelMin || model->TJMdel1 > DelMax) {
+                double Del = model->TJMdel1 < DelMin ? DelMin : DelMax;
+                DVO.textOut(OUT_WARNING,
+                    "%s: DEL1=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMdel1, DelMin, DelMax, Del);
+                model->TJMdel1 = Del;
+            }
+        }
+        if (model->TJMdel2Given) {
+            if (model->TJMdel2 < DelMin || model->TJMdel2 > DelMax) {
+                double Del = model->TJMdel2 < DelMin ? DelMin : DelMax;
+                DVO.textOut(OUT_WARNING,
+                    "%s: DEL2=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMdel2, DelMin, DelMax, Del);
+                model->TJMdel2 = Del;
+            }
+        }
+        if (model->TJMdel1Given && model->TJMdel2Given) {
+            model->TJMvg = model->TJMdel1 + model->TJMdel2;
+            model->TJMvgGiven = true;
+        }
         if (!model->TJMvgGiven)
             model->TJMvg = Vg;
         else {
@@ -200,6 +231,30 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                     "%s: VG=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->TJMvg, VgMin, VgMax, Vg);
                 model->TJMvg = Vg;
+            }
+        }
+        if (!model->TJMdel1Given || !model->TJMdel2Given)
+            model->TJMdel1 = model->TJMdel2 = 0.5*model->TJMvg;
+
+        if (!model->TJMtempGiven)
+            model->TJMtemp = Temp;
+        else {
+            if (model->TJMtemp < TempMin || model->TJMtemp > TempMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TEMP=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMtemp, TempMin, TempMax, Temp);
+                model->TJMtemp = Temp;
+            }
+        }
+
+        if (!model->TJMsmfGiven)
+            model->TJMsmf = Smf;
+        else {
+            if (model->TJMsmf < SmfMin || model->TJMsmf > SmfMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: SMF=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMsmf, SmfMin, SmfMax, Smf);
+                model->TJMsmf = Smf;
             }
         }
 
@@ -571,12 +626,12 @@ TJMdev::resetup(sGENmodel *inModel, sCKT *ckt)
 int
 sTJMmodel::tjm_init()
 {
-    if (!tjm_coeffsGiven)
-        tjm_coeffs = strdup("tjm1");
-
-    TJMcoeffSet *cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
+    TJMcoeffSet *cs;
+    if (tjm_coeffsGiven)
+        cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
+    else
+        cs = TJMcoeffSet::getTJMcoeffSet(TJMtemp, TJMdel1, TJMdel2, TJMsmf);
     if (!cs) {
-        // ERROR
         DVO.textOut(OUT_FATAL,
             "%s: coefficient set %s not found.\n", GENmodName, tjm_coeffs);
         return (E_PANIC);

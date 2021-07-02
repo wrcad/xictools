@@ -282,6 +282,10 @@ struct sTJMmodelPOD
 
     int         TJMrtype;
     int         TJMictype;
+    double      TJMdel1;
+    double      TJMdel2;
+    double      TJMtemp;
+    double      TJMsmf;
     double      TJMvg;
     double      TJMcriti;
     double      TJMcap;
@@ -305,6 +309,10 @@ struct sTJMmodelPOD
     unsigned    tjm_coeffsGiven : 1;
     unsigned    TJMrtypeGiven : 1;
     unsigned    TJMictypeGiven : 1;
+    unsigned    TJMdel1Given : 1;
+    unsigned    TJMdel2Given : 1;
+    unsigned    TJMtempGiven : 1;
+    unsigned    TJMsmfGiven : 1;
     unsigned    TJMvgGiven : 1;
     unsigned    TJMvmGiven : 1;
     unsigned    TJMr0Given : 1;
@@ -364,6 +372,9 @@ struct TJMcoeffSet
             delete [] cfs_B;
         }
 
+    static char *fit_fname(double, double, double, double);
+    static void check_coeffTab();
+    static TJMcoeffSet *getTJMcoeffSet(double, double, double, double);
     static TJMcoeffSet *getTJMcoeffSet(const char*);
 
     TJMcoeffSet *next()             const {return (cfs_next); }
@@ -439,6 +450,10 @@ enum {
     TJM_MOD_COEFFS,
     TJM_MOD_RTP,
     TJM_MOD_CTP,
+    TJM_MOD_DEL1,
+    TJM_MOD_DEL2,
+    TJM_MOD_TEMP,
+    TJM_MOD_SMF,
     TJM_MOD_VG,
     TJM_MOD_CRT,
     TJM_MOD_CAP,

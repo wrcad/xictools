@@ -444,7 +444,7 @@ $(destn)/bin::
 	@for aa in wrspiced multidec proc2mod printtoraw; do \
 	    $(INSTALL_BIN) bin/$$aa$(EXESUFFIX) $@; \
 	done
-	$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@; \
+	@$(INSTALL_BIN) mmjco/mmjco$(EXESUFFIX) $@;
 # Don't strip wrspice.exe, Webroot will think its a virus!
 	@if [ $(DLL_SPICE_PROG) = wrspice ]; then \
 	    $(INSTALL_BIN) bin/wrspice.dll $@; \

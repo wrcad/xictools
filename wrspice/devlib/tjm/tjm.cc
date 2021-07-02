@@ -121,6 +121,23 @@ OP("lshbrn",            TJM_QUEST_NSHB,     IF_INTEGER,
 #endif
 };
 
+/*
+del1
+del2
+temp
+smf
+
+if del1_given && del2_given
+vgap = del1 + del2;
+else
+del1 = del2 = vgap/2
+if (smf_given)
+delv = smf*vgap
+else
+smf = delv/vgap
+
+*/
+
 IFparm TJMmPTable[] = {
 OP("jj",                TJM_MOD_TJM,        IF_FLAG,
                 "Model name"),
@@ -130,6 +147,14 @@ IO("rtype",             TJM_MOD_RTP,        IF_INTEGER,
                 "Quasiparticle current enabled"),
 IO("cct",               TJM_MOD_CTP,        IF_INTEGER,
                 "Critical current enabled"),
+IO("del1",              TJM_MOD_DEL1,       IF_REAL|IF_VOLT,
+                "Order voltage 1"),
+IO("del1",              TJM_MOD_DEL2,       IF_REAL|IF_VOLT,
+                "Order voltage 2"),
+IO("temp",              TJM_MOD_TEMP,       IF_REAL,
+                "Operating termerature Kelvin"),
+IO("smf",               TJM_MOD_SMF,        IF_REAL,
+                "Riedel smoothing factor"),
 IO("vg",                TJM_MOD_VG,         IF_REAL|IF_VOLT,
                 "Gap voltage"),
 IO("vgap",              TJM_MOD_VG,         IF_REAL|IF_VOLT|IF_REDUNDANT,

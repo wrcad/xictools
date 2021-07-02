@@ -66,6 +66,22 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->TJMictype = value->iValue;
         model->TJMictypeGiven = true;
         break;
+    case TJM_MOD_DEL1:
+        model->TJMdel1 = value->rValue;
+        model->TJMdel1Given = true;
+        break;
+    case TJM_MOD_DEL2:
+        model->TJMdel2 = value->rValue;
+        model->TJMdel2Given = true;
+        break;
+    case TJM_MOD_TEMP:
+        model->TJMtemp = value->rValue;
+        model->TJMtempGiven = true;
+        break;
+    case TJM_MOD_SMF:
+        model->TJMsmf = value->rValue;
+        model->TJMsmfGiven = true;
+        break;
     case TJM_MOD_VG:
         model->TJMvg = value->rValue;
         model->TJMvgGiven = true;
