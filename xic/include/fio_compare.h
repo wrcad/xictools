@@ -109,7 +109,7 @@ private:
 //
 struct diff_parser
 {
-    enum DirecType { DirNone, DirL, DirR };
+    enum DirecType { DirU, DirL, DirR };
 
     diff_parser();
     ~diff_parser();

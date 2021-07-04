@@ -894,7 +894,7 @@ diff_parser::read_cell()
         return (false);
     }
 
-    DirecType dr = DirNone;
+    DirecType dr = DirU;
     CDl *ld = 0;
     const char *s;
     char buf[256];

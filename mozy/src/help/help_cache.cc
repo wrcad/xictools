@@ -169,7 +169,7 @@ HLPcache::add(const char *url, bool nocache)
                 tagcnt = c->tagcnt - 1;
                 delete c;
             }
-            const char *fn = CACHE_DIR + 1;
+            const char *fn = &CACHE_DIR[1];
             ix = tagcnt % cache_size;
             char buf[256];
             sprintf(buf, "%s/%s%d", dirname, fn, ix);
@@ -228,7 +228,7 @@ HLPcache::add_ext(const char *url, bool nocache)
                     // slot was at top, so it can be reused
                     tagcnt--;
             }
-            const char *fn = CACHE_DIR + 1;
+            const char *fn = &CACHE_DIR[1];
             ix = tagcnt % cache_size;
             char buf[256];
             sprintf(buf, "%s/%s%d", dirname, fn, ix);
@@ -401,7 +401,7 @@ HLPcache::dump()
         sprintf(buf, "%s/%s", dirname, "directory");
         FILE *fp = fopen(buf, "w");
         if (fp) {
-            fprintf(fp, "%s %d\n", CACHE_DIR + 1, tagcnt % cache_size);
+            fprintf(fp, "%s %d\n", &CACHE_DIR[1], tagcnt % cache_size);
             for (int i = 0; i < cache_size; i++) {
                 if (entries[i])
                     fprintf(fp, "%-4d %d %s\n", i,
@@ -422,7 +422,7 @@ HLPcache::load()
     char buf[256];
     set_dir();
     if (dirname) {
-        const char *fn = CACHE_DIR + 1;
+        const char *fn = &CACHE_DIR[1];
         sprintf(buf, "%s/%s", dirname, "directory");
         FILE *fp = fopen(buf, "r");
         if (fp) {
@@ -442,7 +442,7 @@ HLPcache::load()
             clear();
             tagcnt = tc;
             char tbuf[256];
-            sprintf(tbuf, "%s/%s", dirname, CACHE_DIR + 1);
+            sprintf(tbuf, "%s/%s", dirname, &CACHE_DIR[1]);
             int fend = strlen(tbuf);
             while (fgets(buf, 256, fp) != 0) {
                 char *s = buf;
