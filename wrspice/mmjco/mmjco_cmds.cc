@@ -223,7 +223,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                     return (1);
                 }
                 char f[256];
-                if (sscanf(argv[i], "%s", &f) == 1)
+                if (sscanf(argv[i], "%s", f) == 1)
                     datafile = strdup(f);
                 else {
                     printf("Error: bad -f (data filename), exiting.\n");
@@ -287,7 +287,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
             dp = datafile;
         }
         filename = dp;
-        sprintf(dp, "tca%03d%03d%03d%02d%04d",
+        sprintf(dp, "tca%03ld%03ld%03ld%02ld%04d",
             lround(mmc_temp*100), lround(mmc_d1*100), lround(mmc_d2*100),
             lround(mmc_sm*1000), mmc_numxpts);
         if (dtype == DFDATA)
@@ -362,7 +362,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
                     return (1);
                 }
                 char f[256];
-                if (sscanf(argv[i], "%s", &f) == 1)
+                if (sscanf(argv[i], "%s", f) == 1)
                     fitfile = strdup(f);
                 else {
                     printf("Error: bad -f (fit filename), exiting.\n");
@@ -401,7 +401,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
             strcat(tbuf, "tca_data");
         }
         
-        sprintf(tbuf+strlen(tbuf), "-%02d%03d.fit", mmc_nterms,
+        sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", mmc_nterms,
             lround(mmc_thr*1000));
         fitfile = tbuf;
     }
@@ -449,7 +449,7 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
                 got_f = true;
                 if (++i < argc) {
                     char f[256];
-                    if (sscanf(argv[i], "%s", &f) == 1)
+                    if (sscanf(argv[i], "%s", f) == 1)
                         modfile = strdup(f);
                     else {
                         printf("Error: bad -f (model filename), exiting.\n");
@@ -588,7 +588,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
 
         bool iscplx = true;
         while (fgets(buf, 256, fp) != 0) {
-            int d;
+            char d;
             if (sscanf(buf, "Flags: %c", &d) == 1)
                 break;
             if (d == 'r' || d == 'R')

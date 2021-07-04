@@ -7,7 +7,8 @@ dnl ***
 dnl *** Initialize
 dnl ***
 
-AC_INIT(configure)
+AC_INIT
+AC_CONFIG_SRCDIR([configure])
 
 linux32=no
 if test "`uname -m`" = i686; then
@@ -320,7 +321,7 @@ AC_SUBST([NO_IGNORED_QUALIFIERS])
 AC_PROG_MAKE_SET
 
 LEX="flex -l"
-AC_PROG_LEX
+AC_PROG_LEX(noyywrap)
 AC_PROG_YACC
 AC_PATH_XTRA
 
@@ -363,8 +364,8 @@ dnl # index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
         ARCH="x86_64"
         DIST_SUFFIX="pkg"
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
-dnl # support OSX 10.10 (Yosemite) and later.
-        UFLAGS="-mmacosx-version-min=10.10 -arch $ARCH -isysroot $SDK"
+dnl # support OSX 11.0 (Big Sur) and later.
+        UFLAGS="-mmacosx-version-min=11.0 -arch $ARCH -isysroot $SDK"
         MALLOC='$(BASE)/lib/malloc.a'
         oa_lpath=$oa_loc/lib/darwin_64/opt
     else
@@ -764,7 +765,11 @@ dnl *** Checks for header files
 dnl ***
 
 AC_HEADER_DIRENT
-AC_HEADER_STDC
+# Autoupdate added the next two lines to ensure that your configure
+# script's behavior did not change.  They are probably safe to remove.
+AC_CHECK_INCLUDES_DEFAULT
+AC_PROG_EGREP
+
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(
     alloca.h execinfo.h dirent.h fcntl.h fenv.h float.h fnmatch.h \
@@ -783,13 +788,13 @@ dnl ***
 dnl *** Checks for typedefs, structures, and compiler characteristics
 dnl ***
 AC_C_CONST
-AC_HEADER_TIME
+AC_CHECK_HEADERS_ONCE([sys/time.h])
+
 AC_STRUCT_TM
-AC_TYPE_SIGNAL
+
 dnl check for socklen_t
 dnl AC_CHECK_SOCKTYPE(TYPE, DEFAULT)
-AC_DEFUN(AC_CHECK_SOCKTYPE,
-[AC_REQUIRE([AC_HEADER_STDC])dnl
+AC_DEFUN(AC_CHECK_SOCKTYPE,[
 AC_MSG_CHECKING(for $1)
 AC_CACHE_VAL(ac_cv_type_$1,
 [AC_EGREP_CPP(dnl
@@ -797,10 +802,9 @@ changequote(<<,>>)dnl
 <<(^|[^a-zA-Z_0-9])$1[^a-zA-Z_0-9]>>dnl
 changequote([,]), [#include <sys/types.h>
 #include <sys/socket.h>
-#if STDC_HEADERS
 #include <stdlib.h>
 #include <stddef.h>
-#endif], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
+], ac_cv_type_$1=yes, ac_cv_type_$1=no)])dnl
 AC_MSG_RESULT($ac_cv_type_$1)
 if test $ac_cv_type_$1 = no; then
     AC_DEFINE($1, $2)
@@ -1051,7 +1055,6 @@ dnl *** Checks for library functions
 dnl ***
 
 AC_FUNC_VPRINTF
-AC_FUNC_WAIT3
 if test $OSNAME = "MINGW"; then
     dnl These are macros.
     ac_cv_func_gethostname="yes"
@@ -1140,9 +1143,9 @@ if test -f ginterf/ginterf.a; then
 fi
 
 if test -f config.h.in; then
-    AC_CONFIG_HEADER(config.h)
+    AC_CONFIG_HEADERS([config.h])
 elif test -f include/config.h.in; then
-    AC_CONFIG_HEADER(include/config.h)
+    AC_CONFIG_HEADERS([include/config.h])
 fi
 
 makefiles="Makefile"
@@ -1245,7 +1248,8 @@ if test -d ../fasthenry; then
     makefiles="$makefiles ../fasthenry/Makefile"
 fi
 
-AC_OUTPUT($makefiles)
+AC_CONFIG_FILES([$makefiles])
+AC_OUTPUT
 
 echo '#! /bin/sh'               > info.sh
 echo "# created by configure, don't edit" >> info.sh

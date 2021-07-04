@@ -32,7 +32,7 @@ INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 XTLSERV_VERSION := `./version`
 
 BASE = ../xt_base
-INCLUDE = -I. -I$(BASE)/include
+INCLUDE = -Iinclude -I$(BASE)/include
 
 LIB_TARGET = secure.a
 

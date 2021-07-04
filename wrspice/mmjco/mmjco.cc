@@ -331,9 +331,9 @@ mmjco_fit::new_fit_parameters(const double *x,
     complex<double> p[use_nterms];
     complex<double> A[use_nterms];
     complex<double> B[use_nterms];
-    p[0] = -1.0+0.0j;
-    A[0] = 0.0+0.0j;
-    B[0] = 0.0+0.0j;
+    p[0] = complex<double>(-1.0, 0.0);
+    A[0] = complex<double>(0.0, 0.0);
+    B[0] = complex<double>(0.0, 0.0);
     double xnew = 1.0;
 
     double *xd = new double[4*lenx];
@@ -357,9 +357,9 @@ mmjco_fit::new_fit_parameters(const double *x,
     int nterms = 1;
     while (nterms < use_nterms) {
 
-        p[nterms] = -1.0+1.0j*xnew;
-        A[nterms] = 0.0+0.0j;
-        B[nterms] = 0.0+0.0j;
+        p[nterms] = complex<double>(-1.0, 1.0*xnew);
+        A[nterms] = complex<double>(0.0, 0.0);
+        B[nterms] = complex<double>(0.0, 0.0);
         nterms++;
 
         printf("# nterms = %d with new term at frequency %f. Calculating...\n",
