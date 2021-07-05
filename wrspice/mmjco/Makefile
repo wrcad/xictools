@@ -7,7 +7,7 @@ ifeq ($(shell uname),Darwin)
   -I/usr/local/gtk2-bundle-x11/include -DWRSPICE
 	GSL = -L/usr/local/gtk2-bundle-x11/lib
 else
-	CFLAGS = -O -g -Wall -W -Wshadow -Wwrite-strings
+	CFLAGS = -O -g -Wall -W -Wshadow -Wwrite-strings -DWRSPICE
 endif
 
 mmjco: ./cmpfit-1.4/libmpfit.a libmmjco.a main.cc

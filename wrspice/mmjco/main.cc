@@ -29,7 +29,6 @@ int main(int argc, char **argv)
     char *av[MAX_ARGC];
     int ac;
 
-printf("%d %s\n", argc, argv[1]);
     if (argc > 1) {
         if (!strcmp(argv[1], "cdf")) {
             mmc.mm_create_data(argc, argv);
