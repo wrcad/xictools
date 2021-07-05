@@ -6,3 +6,6 @@ Makefile.bak
 */packages/root
 */packages/Darwin
 */packages/Linux*
+*/packages/MINGW/build.log
+wrspice/bin/wrspice.dll
+xic/bin/xic.dll
