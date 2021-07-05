@@ -215,7 +215,7 @@ htmImageManager::readTIFF(ImageBuffer *ib)
 namespace {
     inline bool test_bigendian()
     {
-        union { int32 i; char c[4]; } endian_tester;
+        union { int32_t i; char c[4]; } endian_tester;
         endian_tester.i = 1;
         return (endian_tester.c[0]);
     }
@@ -353,7 +353,7 @@ tiffns::tiff_to_png(const char *tiffname, FILE *pngfp)
     if (TIFFGetField(tif, TIFFTAG_XRESOLUTION, &xres) &&
             TIFFGetField(tif, TIFFTAG_YRESOLUTION, &yres) && 
             (xres != 0.0) && (yres != 0.0)) {
-        uint16 resunit;
+        uint16_t resunit;
         have_res = true;
 #ifdef DEBUG
         if (verbose) {
@@ -689,7 +689,7 @@ tiffns::tiff_to_png(const char *tiffname, FILE *pngfp)
     unsigned char *tiffstrip = 0;
     size_t tilesz = 0L;
     int num_tilesX = 0;
-    uint32 tile_width = 0, tile_height = 0;
+    uint32_t tile_width = 0, tile_height = 0;
 
     if (!tiled) {
         // strip-based TIFF

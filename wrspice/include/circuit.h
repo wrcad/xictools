@@ -63,7 +63,8 @@ Authors: 1985 Thomas L. Quarles
 #ifdef WITH_THREADS
 #include <pthread.h>
 #ifdef __APPLE__
-#include <libkern/OSAtomic.h>
+//XXX#include <libkern/OSAtomic.h>
+#include <os/lock.h>
 #endif
 #endif
 
@@ -1831,9 +1832,9 @@ public:
                 // how to do this atomically.
 
 #ifdef __APPLE__
-                OSSpinLockLock(&CKTloadLock2);
+                os_unfair_lock_lock(&CKTloadLock2);
                 *(long double*)ptr += val;
-                OSSpinLockUnlock(&CKTloadLock2);
+                os_unfair_lock_unlock(&CKTloadLock2);
 #else
                 pthread_spin_lock(&CKTloadLock2);
                 *(long double*)ptr += val;
@@ -2115,7 +2116,7 @@ public:
 
 #ifdef WITH_THREADS
 #ifdef __APPLE__
-    static OSSpinLock CKTloadLock2;
+    static os_unfair_lock_s CKTloadLock2;
 #else
     static pthread_spinlock_t CKTloadLock2;
 #endif

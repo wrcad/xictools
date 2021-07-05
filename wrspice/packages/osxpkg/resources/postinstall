@@ -41,6 +41,7 @@ tbin=$prefix/xictools/bin
 if [ ! -d $tbin ]; then
     mkdir $tbin
 fi
+ln -s $twrs/bin/mmjco $tbin/mmjco
 ln -s $twrs/bin/multidec $tbin/multidec
 ln -s $twrs/bin/proc2mod $tbin/proc2mod
 ln -s $twrs/bin/printtoraw $tbin/printtoraw

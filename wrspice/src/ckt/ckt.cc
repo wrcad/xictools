@@ -84,7 +84,7 @@ Authors: 1985 Thomas L. Quarles
 // #define TDEBUG
 #include "miscutil/threadpool.h"
 #ifdef __APPLE__
-OSSpinLock sCKT::CKTloadLock2;
+os_unfair_lock_s sCKT::CKTloadLock2;
 #else
 pthread_spinlock_t sCKT::CKTloadLock2;
 #endif
