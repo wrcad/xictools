@@ -87,10 +87,8 @@ INSTALL_PREFIX ?= $(prefix)
 destn = $(INSTALL_PREFIX)/$(TOOLROOT)/mrouter
 toolbin = $(INSTALL_PREFIX)/$(TOOLROOT)/bin
 
-install: install_test install_clean install_bin \
+install: install_test uninstall_clean install_bin \
   install_lib install_help install_include install_doc install_examples
-
-uninstall: install_test install_clean
 
 install_bin:            $(toolbin)
 install_lib:            $(destn)/lib
@@ -106,10 +104,6 @@ install_test::
 	        exit 1; \
 	    fi; \
 	fi
-
-install_clean::
-	-@rm -rf $(destn)
-	-@rm -f $(toolbin)/mrouter$(EXESUFFIX)
 
 $(toolbin)::
 	@$(BASE)/util/mkdirpth $(toolbin)
@@ -164,6 +158,20 @@ $(destn)/examples::
 	$(INSTALL_LIB) examples/xic/stdvia.scr          $@/xic
 	$(INSTALL_LIB) examples/xic/stdvias             $@/xic
 	$(INSTALL_LIB) examples/xic/xic_tech            $@/xic
+
+uninstall: uninstall_test uninstall_clean
+
+uninstall_test::
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	echo "No!  Use operating system or wr_uninstall script  to uninstall!"; \
+	        exit 1; \
+	    fi; \
+	fi
+
+uninstall_clean::
+	-@rm -rf $(destn)
+	-@rm -f $(toolbin)/mrouter$(EXESUFFIX)
 
 package::
 	$(MAKE) all

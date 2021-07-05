@@ -530,7 +530,7 @@ pathlist::expand_path(const char *string, bool expdot, bool strip_space)
             ret = cat(start, nstart, pw->pw_dir, t);
 #else
         if (t == t0) {
-            char *home = get_home(0);
+            char *home = get_home();
             if (home) {
                 ret = cat(start, nstart, home, t);
                 delete [] home;
@@ -724,42 +724,45 @@ pathlist::get_user_name(bool realname)
 }
 
 
-// Return the "home" directory (copied), default to the root directory
-// if home can't be determined.
+// Return the home directory (copied), or null if home can't be
+// determined.
 //
 char *
-pathlist::get_home(const char *envname)
+pathlist::get_home()
 {
 #ifdef HAVE_GETPWUID
+    // Unix/Linux
     passwd *pw = getpwuid(getuid());
     if (pw && pw->pw_dir && *pw->pw_dir)
         return (lstring::copy(pw->pw_dir));
-#endif
-
-    if (envname && *envname) {
-        // Caller can pass this to override all other environment.
-        const char *env = getenv(envname);
-        if (env && *env) {
-            char *home = lstring::copy(env);
-#ifdef WIN32
-            lstring::unix_path(home);
-#endif
-            return (home);
-        }
-    }
-
-    // In Windows, let HOME override the Windows environment, for Cygwin
-    // users.
     const char *homedir = getenv("HOME");
+    if (homedir && *homedir)
+        return (lstring::copy(homedir));
+#endif
+
+#ifdef WIN32
+    // Ignore "HOME" as it is probably relative to a Cygwin or MSYS2
+    // environment.  When using such an environment, the XT_HOMEDIR
+    // variable should be set to the full Windows path of the
+    // environment's home directory, e.g., "c:/msys64/home/yourname".
+
+    const char *homedir = getenv("XT_HOMEDIR");
     if (homedir && *homedir) {
         char *home = lstring::copy(homedir);
-#ifdef WIN32
         lstring::unix_path(home);
-#endif
+        return (home);
+    }
+    // This is deprecated.
+    homedir = getenv("XIC_START_DIR");
+    if (homedir && *homedir) {
+        char *home = lstring::copy(homedir);
+        lstring::unix_path(home);
         return (home);
     }
 
-#ifdef WIN32
+    // These may lead to the user's Windows home directory under
+    // (e.g.) c:/Users.
+
     const char *homedrive = getenv("HOMEDRIVE");
     const char *homepath = getenv("HOMEPATH");
     if (homedrive && *homedrive && homepath && *homepath) {
@@ -775,10 +778,10 @@ pathlist::get_home(const char *envname)
         lstring::unix_path(home);
         return (home);
     }
-    return (lstring::copy("C:/"));
-#else
-    return (lstring::copy("/"));
 #endif
+
+    // Can't find home.
+    return (0);
 }
 
 

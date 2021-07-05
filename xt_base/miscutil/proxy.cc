@@ -50,7 +50,7 @@
 char *
 proxy::get_proxy()
 {
-    char *home = pathlist::get_home("XIC_START_DIR");
+    char *home = pathlist::get_home();
     if (!home)
         return (0);
 
@@ -89,7 +89,7 @@ proxy::set_proxy(const char *addr, const char *port)
     if (!a)
         return ("bad host address");
 
-    char *home = pathlist::get_home("XIC_START_DIR");
+    char *home = pathlist::get_home();
     if (!home) {
         delete [] a;
         return ("can't determine home directory");
@@ -129,7 +129,7 @@ proxy::move_proxy(const char *token)
     int c = *token++;
     if (c != '-' && c != '+')
         return (0);
-    char *home = pathlist::get_home(0);
+    char *home = pathlist::get_home();
     if (!home)
         return ("can't determine home directory.");
     char *f1 = pathlist::mk_path(home, PXFILE);

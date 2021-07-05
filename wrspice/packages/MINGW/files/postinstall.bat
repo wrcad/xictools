@@ -4,6 +4,10 @@
 @rem   by the installer program.
 
 mklink /j wrspice %cd%\wrspice.current
+if not exist bin\ (
+    if exist bin ( del bin )
+    mkdir bin
+)
 mklink bin\wrspice.exe %cd%\wrspice\bin\wrspice.exe
 mklink bin\wrspice.dll %cd%\wrspice\bin\wrspice.dll
 mklink bin\mmjco.exe %cd%\wrspice\bin\mmjco.exe

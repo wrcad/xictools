@@ -367,7 +367,7 @@ main(int argc, char **argv)
             pause = true;
             char *cwd = getcwd(0, 0);
             if (cwd && lstring::cieq(cwd, "c:\\")) {
-                char *home = pathlist::get_home("XIC_START_DIR");
+                char *home = pathlist::get_home();
                 if (home) {
                     chdir(home);
                     delete [] home;
@@ -1278,7 +1278,7 @@ cMain::InitializeStrings()
     xm_program = 0;
     xm_tools_root = TOOLS_ROOT;
     xm_app_root = APP_ROOT;
-    xm_homedir = pathlist::get_home("XIC_START_DIR");
+    xm_homedir = pathlist::get_home();
 
     const char *string = getenv("XIC_HOME");
     if (string && *string) {

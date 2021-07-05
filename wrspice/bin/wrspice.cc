@@ -1110,7 +1110,7 @@ main(int argc, char **argv)
             USR_STARTUP(sbuf);
 
             // First, the home startup.
-            char *home = pathlist::get_home(0);
+            char *home = pathlist::get_home();
             if (home) {
                 char *fn = pathlist::mk_path(home, sbuf);
                 delete [] home;
@@ -2309,7 +2309,7 @@ IFsimulator::StartupFileName(char **p)
     char sbuf[64];
     USR_STARTUP(sbuf);
     char *path = 0;
-    char *home = pathlist::get_home(0);
+    char *home = pathlist::get_home();
     if (home) {
         path = pathlist::mk_path(home, sbuf);
         delete [] home;

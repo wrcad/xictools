@@ -541,7 +541,7 @@ void
 HLPcache::set_dir()
 {
     if (!dirname) {
-        char *home = pathlist::get_home(0);
+        char *home = pathlist::get_home();
         if (home) {
             char *pbuf = pathlist::mk_path(home, CACHE_DIR);
             delete [] home;

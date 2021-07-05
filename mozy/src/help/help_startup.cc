@@ -115,7 +115,7 @@ namespace {
                 return (fp);
             }
             delete [] path;
-            char *home = pathlist::get_home(0);
+            char *home = pathlist::get_home();
             if (home) {
                 path = pathlist::mk_path(home, STARTUP_FILE);
                 delete [] home;
@@ -133,7 +133,7 @@ namespace {
         else if (mode && strchr(mode, 'w')) {
             // Writing: trye $HOME, then CWD.
 
-            char *home = pathlist::get_home(0);
+            char *home = pathlist::get_home();
             if (home) {
                 char *path = pathlist::mk_path(home, STARTUP_FILE);
                 delete [] home;

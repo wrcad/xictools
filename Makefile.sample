@@ -138,6 +138,13 @@ install: all
 	    fi; \
 	done
 
+uninstall::
+	-@for a in $(SUBDIRS); do \
+	    if [ -d $$a -a -d $$a/packages ]; then \
+	        (cd $$a; $(MAKE) uninstall); \
+	    fi; \
+	done
+
 depend clean:
 	-@for a in $(SUBDIRS); do \
 	    if [ -d $$a ]; then \

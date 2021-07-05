@@ -83,7 +83,7 @@ src = adms_wr/admsXml
 
 install: install_test install_force
 
-install_force: install_clean install_bin install_lib
+install_force: uninstall_clean install_bin install_lib
 
 install_bin: $(dst_bin)
 install_lib: $(dst_lib) $(dst_lib)/doc $(dst_lib)/examples
@@ -95,10 +95,6 @@ install_test::
 	        exit 1; \
 	    fi; \
 	fi
-
-install_clean::
-	rm -f $(dst_bin)/admsXml$(EXESUFFIX)
-	rm -rf $(dst_lib)
 
 $(dst_bin)::
 	@$(BASE)/util/mkdirpth $@
@@ -167,6 +163,20 @@ $(dst_lib)/examples::
 	for a in $$files; do \
 	    $(INSTALL_LIB) adms_wr/testcases/$$a $@/testcases; \
 	done
+
+uninstall: uninstall_test uninstall_clean
+
+uninstall_test::
+	@if [ $(INSTALL_PREFIX) = $(prefix) ]; then \
+	    if [ $(itopok) != yes ]; then \
+	echo "No!  Use operating system or wr_uninstall script to uninstall!"; \
+	        exit 1; \
+	    fi; \
+	fi
+
+uninstall_clean::
+	-@rm -f $(dst_bin)/admsXml$(EXESUFFIX)
+	-@rm -rf $(dst_lib)
 
 package::
 	$(MAKE)

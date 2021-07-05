@@ -96,7 +96,11 @@ mmjco_cmds::mm_set_dir(int argc, char **argv)
     const char *dir = argv[1];
     struct stat st;
     if (stat(dir, &st) < 0) {
+#ifdef WIN32
+        mkdir(dir);
+#else
         mkdir(dir, 0777);
+#endif
         if (stat(dir, &st) < 0) {
             printf("Error: cannot stat path.\n");
             return (1);
@@ -117,7 +121,7 @@ mmjco_cmds::mm_set_dir(int argc, char **argv)
 // Create a TCA data set and write this to a file.  The data set is
 // saved in an internal data register, replacing any existing data.
 //
-// cd[ata] [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] -f [filename] \
+// cd[ata] [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] -f [filename]
 //  [-r | -rr | -rd]
 //
 int

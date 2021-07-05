@@ -95,10 +95,6 @@ Source: "..\root\usr\local\xictools\wrspice.current\docs\wrs*"; DestDir: "{app}\
 Source: "..\root\usr\local\xictools\wrspice.current\docs\README"; DestDir: "{app}\xictools\wrspice.current\docs"
 Source: "..\root\usr\local\xictools\wrspice.current\docs\MSWINFO.TXT"; DestDir: "{app}\xictools\wrspice.current\docs"
 
-[Icons]
-
-Name: "{group}\wrspice"; Filename: "{app}\xictools\wrspice.current\bin\wrspice.bat"; WorkingDir: "c:\"; IconFilename: "{app}\xictools\wrspice.current\bin\wrspice.exe"
-
 [code]
 
 #include "..\..\..\xt_base\packages\files\inno_uninstall"
