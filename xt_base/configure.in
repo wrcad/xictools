@@ -767,8 +767,8 @@ dnl ***
 AC_HEADER_DIRENT
 # Autoupdate added the next two lines to ensure that your configure
 # script's behavior did not change.  They are probably safe to remove.
-AC_CHECK_INCLUDES_DEFAULT
-AC_PROG_EGREP
+# AC_CHECK_INCLUDES_DEFAULT
+# AC_PROG_EGREP
 
 AC_HEADER_SYS_WAIT
 AC_CHECK_HEADERS(
@@ -918,54 +918,68 @@ else
     IMG_LIBS=
     IMG_FLAGS=
 
-dnl  Try to link static graphics libraries if found.
+dnl If set to yes, link static libraries if found.  Probably not
+dnl a good idea as they may become incompatible with dynamic libs.
+    prefer_static=no
 
     AC_CHECK_LIB(png, main)
     AC_CHECK_LIB(png, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBPNG"
-    if test $linux32 = yes; then
-        if test -f /usr/lib/libpng.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib/libpng.a"
+    if test $prefer_static = yes; then
+        if test $linux32 = yes; then
+            if test -f /usr/lib/libpng.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib/libpng.a"
+            else
+                IMG_LIBS="$IMG_LIBS -lpng"
+            fi
         else
-            IMG_LIBS="$IMG_LIBS -lpng"
+            if test -f /usr/lib64/libpng.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib64/libpng.a"
+            else
+                IMG_LIBS="$IMG_LIBS -lpng"
+            fi
         fi
     else
-        if test -f /usr/lib64/libpng.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib64/libpng.a"
-        else
-            IMG_LIBS="$IMG_LIBS -lpng"
-        fi
+        IMG_LIBS="$IMG_LIBS -lpng"
     fi)
 
     AC_CHECK_LIB(tiff, main)
     AC_CHECK_LIB(tiff, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBTIFF"
-    if test $linux32 = yes; then
-        if test -f /usr/lib/libtiff.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib/libtiff.a"
+    if test $prefer_static = yes; then
+        if test $linux32 = yes; then
+            if test -f /usr/lib/libtiff.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib/libtiff.a"
+            else
+                IMG_LIBS="$IMG_LIBS -ltiff"
+            fi
         else
-            IMG_LIBS="$IMG_LIBS -ltiff"
+            if test -f /usr/lib64/libtiff.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib64/libtiff.a"
+            else
+                IMG_LIBS="$IMG_LIBS -ltiff"
+            fi
         fi
     else
-        if test -f /usr/lib64/libtiff.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib64/libtiff.a"
-        else
-            IMG_LIBS="$IMG_LIBS -ltiff"
-        fi
+        IMG_LIBS="$IMG_LIBS -ltiff"
     fi)
 
     AC_CHECK_LIB(jpeg, main)
     AC_CHECK_LIB(jpeg, main, IMG_FLAGS="$IMG_FLAGS -DHAVE_LIBJPEG"
-    if test $linux32 = yes; then
-        if test -f /usr/lib/libjpeg.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib/libjpeg.a"
+    if test $prefer_static = yes; then
+        if test $linux32 = yes; then
+            if test -f /usr/lib/libjpeg.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib/libjpeg.a"
+            else
+                IMG_LIBS="$IMG_LIBS -ljpeg"
+            fi
         else
-            IMG_LIBS="$IMG_LIBS -ljpeg"
+            if test -f /usr/lib64/libjpeg.a; then
+                IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a"
+            else
+                IMG_LIBS="$IMG_LIBS -ljpeg"
+            fi
         fi
     else
-        if test -f /usr/lib64/libjpeg.a; then
-            IMG_LIBS="$IMG_LIBS /usr/lib64/libjpeg.a"
-        else
-            IMG_LIBS="$IMG_LIBS -ljpeg"
-        fi
+        IMG_LIBS="$IMG_LIBS -ljpeg"
     fi)
 
     tmplibs1="$tmplibsq $IMG_LIBS"
