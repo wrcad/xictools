@@ -1224,6 +1224,7 @@ if test -d ../wrspice; then
         ../wrspice/src/fte/Makefile \
         ../wrspice/src/${GRPREF}wrs/Makefile \
         ../wrspice/src/inp/Makefile \
+        ../wrspice/src/malt/Makefile \
         ../wrspice/src/misc/Makefile \
         ../wrspice/src/plot/Makefile \
         ../wrspice/src/sparse/Makefile \

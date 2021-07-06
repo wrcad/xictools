@@ -1,0 +1,54 @@
+#######################################################################
+LOCATION = wrspice/src/malt
+#######################################################################
+
+SPICE_VERSION = @SPICE_VERSION@
+DATE = @DATE@
+
+CXX = @CXX@
+CC = @CC@
+CFLAGS = @CFLAGSG@ @UFLAGS@ -DWRSPICE
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ -DWRSPICE
+AR = @AR@
+RANLIB = @RANLIB@
+EXESUFFIX = @EXESUFFIX@
+FILTER = @FILTER@
+
+LIB_TARGET = malt.a
+
+BASE = ../../../xt_base
+INCLUDE = -I../../include -I$(BASE)/include
+
+HFILES =
+CCFILES = \
+  dsimplx.cc lineread.cc optimize.cc param.cc points.cc yield.cc
+CCOBJS = $(CCFILES:.cc=.o)
+
+$(LIB_TARGET): $(CCOBJS)
+	@if [ -f $(LIB_TARGET) ]; then \
+	    rm -f $(LIB_TARGET); \
+	fi
+	$(AR) cr $(LIB_TARGET) $(CCOBJS)
+	$(RANLIB) $(LIB_TARGET)
+
+opt$(EXESUFFIX): $(LIB_TARGET)
+	$(CXX) -g -O -Wall -Wshadow -o opt $(INCLUDE) main.cc $(LIB_TARGET)
+
+.cc.o:
+	$(CXX) $(CFLAGS) $(INCLUDE) -c $*.cc
+
+depend: 
+	@echo depending in $(LOCATION)
+	@if [ x$(DEPEND_DONE) = x ]; then \
+	    echo DEPEND_DONE = 1 >> Makefile; \
+	    $(DEPEND_PROG) $(INCLUDE) $(MOZYINC) $(CCFILES) \
+  $(FILTER) >> Makefile; \
+	fi
+
+clean:
+	-@rm -f *.o $(LIB_TARGET) opt$(EXESUFFIX)
+
+distclean: clean
+	-@rm -f Makefile
+
+#######################################################################
