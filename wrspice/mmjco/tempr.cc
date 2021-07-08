@@ -11,9 +11,86 @@
 // Tinkham, "Introduction to Superconductiovity".
 // https://physics.stackexchange.com/questions/54200/superconducting-gap-
 //  temperature-dependence-how-to-calculate-this-integral
+// https://en.wikipedia.org/wiki/Romberg%27s_method
 // http://www.knowledgedoor.com/2/elements_handbook/debye_temperature.html
 
+// Define to use GSL for integration, otherwise use the romberg method
+// below.  The romberg function seems to do as well.
+//
+//#define USE_GSL
+
 #include "tempr.h"
+
+
+#ifndef USE_GSL
+
+//#define DEBUG
+#ifdef DEBUG
+namespace {
+    void dump_row(size_t i, double *R)
+    {
+       printf("R[%2zu] = ", i);
+       for (size_t j = 0; j <= i; ++j){
+          printf("%f ", R[j]);
+       }
+       printf("\n");
+    }
+}
+#endif
+
+
+// Romberg numerical integration method from Wikipedia.
+//
+// f            Function to integrate.
+// ptr          Void pointer passed to f.
+// a,b          Lower, upper limits.
+// max_steps    Maximum iteration levels.
+// acc          Desired accuracy.
+//
+double romberg(double (*f)(double, void*), void *ptr, double a, double b,
+    size_t max_steps, double acc)
+{
+    double R1[max_steps], R2[max_steps]; // Buffers.
+    double *Rp = &R1[0], *Rc = &R2[0];   // Rp is prev row, Rc is current row.
+    double h = (b-a);                    // Step size.
+    Rp[0] = (f(a, ptr) + f(b, ptr))*h*0.5; // First trapezoidal step.
+
+#ifdef DEBUG
+    dump_row(0, Rp);
+#endif
+
+    for (size_t i = 1; i < max_steps; ++i) {
+        h /= 2.0;
+        double c = 0.0;
+        size_t ep = 1 << (i-1); // 2^(n-1)
+        for (size_t j = 1; j <= ep; ++j) {
+            c += f(a+(2*j-1)*h, ptr);
+        }
+        Rc[0] = h*c + 0.5*Rp[0]; // R(i,0)
+
+        for (size_t j = 1; j <= i; ++j) {
+            double n_k = pow(4, j);
+            Rc[j] = (n_k*Rc[j-1] - Rp[j-1])/(n_k-1); // Compute R(i,j).
+        }
+
+#ifdef DEBUG
+        // Dump ith row of R, R[i,i] is the best estimate so far
+        dump_row(i, Rc);
+#endif
+
+        if (i > 1 && fabs(Rp[i-1]-Rc[i]) < acc) {
+            return (Rc[i-1]);
+        }
+
+        // Swap Rn and Rc as we only need the last row.
+        double *rt = Rp;
+        Rp = Rc;
+        Rc = rt;
+    }
+    return (Rp[max_steps-1]); // Return our best guess.
+}
+
+#endif  // notdef USE_GSL
 
 
 namespace {
@@ -25,6 +102,7 @@ namespace {
         return (tanh(b*a)/a);
     }
 
+#ifdef USE_GSL
     double func(tempr::tprms *tp, double dbe, gsl_integration_workspace *ws)
     {
         gsl_function gsl_f;
@@ -40,7 +118,12 @@ namespace {
             return (0.0);
         }
         return (intret);
+#else
+    double func(tempr::tprms *tp, double dbe)
+    {
+        return (romberg(intfunc, tp, 0.0, dbe, 20, 1e-6));
     }
+#endif  // USE_GSL
 }
 
 
@@ -61,8 +144,12 @@ tempr::order_parameter(double T)
     for (;;) {
         tp.del = xdel * ECHG;
 
+#ifdef USE_GSL
         double f = func(&tp, t_dbe, t_ws) - t_eta;
-        if (fabs(f) < 1e-4)
+#else
+        double f = func(&tp, t_dbe) - t_eta;
+#endif
+        if (fabs(f) < 1e-8*t_eta)
             break;
 
         if (f > 0.0) {
@@ -130,7 +217,15 @@ int main(int argc, char *argv[])
     else {
         for (double T = 0.0; T <= TC_NB; T += 0.1) {
             double del = t.order_parameter(T);
+#define CHECK_FIT_FUNC
+#ifdef CHECK_FIT_FUNC
+            double fit = 1.3994e-3*tanh(1.74*sqrt(TC_NB/(T+1e-3) - 1.0));
+            double pcterr = 100*2*fabs(del - fit)/(del + fit);
+            printf("T= %.4e Del= %.4e Fit= %.4e PctErr= %.4e\n", T, del, fit,
+                pcterr);
+#else
             printf("T= %.4e Del= %.4e\n", T, del);
+#endif
         }
         return (0);
     }

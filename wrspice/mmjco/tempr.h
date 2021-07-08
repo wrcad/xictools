@@ -11,6 +11,7 @@
 // Tinkham, "Introduction to Superconductiovity".
 // https://physics.stackexchange.com/questions/54200/superconducting-gap-
 //  temperature-dependence-how-to-calculate-this-integral
+// https://en.wikipedia.org/wiki/Romberg%27s_method
 // http://www.knowledgedoor.com/2/elements_handbook/debye_temperature.html
 
 #ifndef TEMPR_H
@@ -18,10 +19,13 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <math.h>
+#ifdef USE_GSL
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_errno.h>
 #include <gsl/gsl_integration.h>
+#endif
 
 #define BOLTZ 1.3806226e-23
 #define ECHG 1.602176634e-19
@@ -50,13 +54,17 @@ struct tempr
             else
                 t_tc = TC_NB;
             t_eta = -log((t_tc * BOLTZ)/(1.134*t_dbe));
+#ifdef USE_GSL
             t_ws = gsl_integration_workspace_alloc(200);
+#endif
         }
 
+#ifdef USE_GSL
     ~tempr()
         {
             gsl_integration_workspace_free(t_ws);
         }
+#endif
 
     double order_parameter(double);
 
@@ -64,7 +72,9 @@ private:
     double t_tc;    // Transition temperature
     double t_dbe;   // Debye energy
     double t_eta;   // 1/N(0)V
+#ifdef USE_GSL
     gsl_integration_workspace *t_ws;
+#endif
 };
 
 #endif
