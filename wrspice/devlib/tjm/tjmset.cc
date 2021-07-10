@@ -39,6 +39,7 @@
  *========================================================================*/
 
 #include "tjmdefs.h"
+#include "tempr.h"
 
 
 #ifndef M_PI_4
@@ -78,7 +79,6 @@
 #define IcsMin  Icrit/50    // Min instance Ic, A
 #define IcsMax  Icrit*50    // Max instance Ic, A
 
-#define Vg      2.6e-3      // Assumed Vgap of reference, V
 #define VgMin   0.1e-3      // Min Vgap, V
 #define VgMax   10.0e-3     // Max Vgap, V
 #define DelMin  (0.5*VgMin)
@@ -86,15 +86,16 @@
 #define Temp    4.2
 #define TempMin 0
 #define TempMax 280
+#define TcDef   9.2
+#define TcMin   0.5
+#define TcMax   280
+#define TdbDef  276
+#define TdbMin  40
+#define TdbMax  500
 #define Smf     0.008
 #define SmfMin  0.001
 #define SmfMax  0.099
 
-#define RTMAX   1           // Max rtype, integer
-#define ITMAX   1           // Max ictype, integer
-#define CCsens  1e-2        // Assumed magnetic sens. of reference
-#define CCsensMin 1e-4      // Min magnetic sens.
-#define CCsensMax 1.0       // Max magnetic sens.
 #define CPIC    (1e-9*C_PER_A/I_PER_A)  // Reference capacitance, F/A
 #define CPICmin 0.0         // Minimum CPIC F/A
 #define CPICmax 1e-6        // Maximum CPIC F/A
@@ -180,24 +181,82 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
     sTJMmodel *model = static_cast<sTJMmodel*>(genmod);
     for ( ; model; model = model->next()) {
 
-        if (!model->TJMrtypeGiven)
-            model->TJMrtype = 1;
-        else {
-            if (model->TJMrtype < 0 || model->TJMrtype > RTMAX) {
-                DVO.textOut(OUT_WARNING,
-                    "%s: RTYPE=%d out of range [0-%d], reset to 1.\n",
-                    model->GENmodName, model->TJMrtype, RTMAX);
-                model->TJMrtype = 1;
-            }
-        }
         if (!model->TJMictypeGiven)
             model->TJMictype = 1;
         else {
-            if (model->TJMictype < 0 || model->TJMictype > ITMAX) {
+            if (model->TJMictype < 0 || model->TJMictype > 1) {
                 DVO.textOut(OUT_WARNING,
                     "%s: CCT=%d out of range [0-%d], reset to 1.\n",
-                    model->GENmodName, model->TJMictype, ITMAX);
+                    model->GENmodName, model->TJMictype, 1);
                 model->TJMictype = 1;
+            }
+        }
+
+        if (!model->TJMtnomGiven)
+            model->TJMtnom = Temp;
+        else {
+            if (model->TJMtnom < TempMin || model->TJMtnom > TempMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TNOM=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMtnom, TempMin, TempMax, Temp);
+                model->TJMtnom = Temp;
+            }
+        }
+        if (!model->TJMtempGiven)
+            model->TJMtemp = model->TJMtnom;
+        else {
+            if (model->TJMtemp < TempMin || model->TJMtemp > TempMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TEMP=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMtemp, TempMin, TempMax,
+                    model->TJMtnom);
+                model->TJMtemp = model->TJMtnom;
+            }
+        }
+
+        if (!model->TJMtc1Given)
+            model->TJMtc1 = TcDef;
+        else {
+            if (model->TJMtc1 < TcMin || model->TJMtc1 > TcMax) {
+                double tc1 = model->TJMtc1 < TcMin ? TcMin : TcMax;
+                DVO.textOut(OUT_WARNING,
+                    "%s: TC1=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMtc1, TcMin, TcMax, tc1);
+                model->TJMtc1 = tc1;
+            }
+        }
+        if (!model->TJMtc2Given)
+            model->TJMtc2 = TcDef;
+        else {
+            if (model->TJMtc2 < TcMin || model->TJMtc2 > TcMax) {
+                double tc2 = model->TJMtc2 < TcMin ? TcMin : TcMax;
+                DVO.textOut(OUT_WARNING,
+                    "%s: TC2=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMtc2, TcMin, TcMax, tc2);
+                model->TJMtc2 = tc2;
+            }
+        }
+
+        if (!model->TJMtdebye1Given)
+            model->TJMtdebye1 = TdbDef;
+        else {
+            if (model->TJMtdebye1 < TdbMin || model->TJMtdebye1 > TdbMax) {
+                double tdb1 = model->TJMtdebye1 < TdbMin ? TdbMin : TdbMax;
+                DVO.textOut(OUT_WARNING,
+                    "%s: TDEBYE1=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMtdebye1, TdbMin, TdbMax, tdb1);
+                model->TJMtdebye1 = tdb1;
+            }
+        }
+        if (!model->TJMtdebye2Given)
+            model->TJMtdebye2 = TdbDef;
+        else {
+            if (model->TJMtdebye2 < TdbMin || model->TJMtdebye2 > TdbMax) {
+                double tdb2 = model->TJMtdebye2 < TdbMin ? TdbMin : TdbMax;
+                DVO.textOut(OUT_WARNING,
+                    "%s: TDEBYE2=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMtdebye2, TdbMin, TdbMax, tdb2);
+                model->TJMtdebye2 = tdb2;
             }
         }
 
@@ -210,6 +269,10 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->TJMdel1 = Del;
             }
         }
+        else {
+            tempr tp(model->TJMtc1, model->TJMtdebye1);
+            model->TJMdel1 = tp.order_parameter(model->TJMtemp);
+        }
         if (model->TJMdel2Given) {
             if (model->TJMdel2 < DelMin || model->TJMdel2 > DelMax) {
                 double Del = model->TJMdel2 < DelMin ? DelMin : DelMax;
@@ -219,32 +282,21 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->TJMdel2 = Del;
             }
         }
-        if (model->TJMdel1Given && model->TJMdel2Given) {
-            model->TJMvg = model->TJMdel1 + model->TJMdel2;
-            model->TJMvgGiven = true;
+        else {
+            tempr tp(model->TJMtc2, model->TJMtdebye2);
+            model->TJMdel2 = tp.order_parameter(model->TJMtemp);
         }
         if (!model->TJMvgGiven)
-            model->TJMvg = Vg;
+            model->TJMvg = model->TJMdel1 + model->TJMdel2;
         else {
             if (model->TJMvg < VgMin || model->TJMvg > VgMax) {
+                double Vg = model->TJMvg < VgMin ? VgMin : VgMax;
                 DVO.textOut(OUT_WARNING,
                     "%s: VG=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->TJMvg, VgMin, VgMax, Vg);
                 model->TJMvg = Vg;
             }
-        }
-        if (!model->TJMdel1Given || !model->TJMdel2Given)
             model->TJMdel1 = model->TJMdel2 = 0.5*model->TJMvg;
-
-        if (!model->TJMtempGiven)
-            model->TJMtemp = Temp;
-        else {
-            if (model->TJMtemp < TempMin || model->TJMtemp > TempMax) {
-                DVO.textOut(OUT_WARNING,
-                    "%s: TEMP=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->TJMtemp, TempMin, TempMax, Temp);
-                model->TJMtemp = Temp;
-            }
         }
 
         if (!model->TJMsmfGiven)
@@ -268,6 +320,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->TJMcriti = Ic;
             }
         }
+
         if (!model->TJMcpicGiven)
             model->TJMcpic = CPIC;
         else {
@@ -292,6 +345,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->TJMcap = cap;
             }
         }
+
         if (!model->TJMicfGiven)
             model->TJMicFactor = ICfct;
         else {
@@ -303,6 +357,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->TJMicFactor = ICfct;
             }
         }
+
         if (!model->TJMvmGiven) {
             model->TJMvm = Vm;
         }
@@ -324,7 +379,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 }
             }
         }
-
         if (!model->TJMr0Given) {
             double i = model->TJMcriti > 0.0 ? model->TJMcriti : 1e-3;
             model->TJMr0 = model->TJMvm/i;
@@ -353,7 +407,6 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 }
             }
         }
-
 
         if (model->TJMvShuntGiven) {
             if (model->TJMvShunt < 0.0 || model->TJMvShunt > model->TJMvg) {
@@ -416,12 +469,38 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
+        if (model->TJMtemp != model->TJMtnom) {
+            // Compute the temperature correction factor for Icrit. 
+            // This is obtained form Tinkham 2nd ed.  eq.  6.10,
+            // ratioing factors for temp and tnom (correction factor
+            // is 1.0 at temp = tnom).
+
+            tempr tp(model->TJMtc1, model->TJMtdebye1);
+            double vgNom = tp.order_parameter(model->TJMtnom);
+            if (model->TJMtc1 == model->TJMtc2 &&
+                    model->TJMtdebye1 == model->TJMtdebye2)
+                vgNom += vgNom;
+            else {
+                tp = tempr(model->TJMtc2, model->TJMtdebye2);
+                vgNom += tp.order_parameter(model->TJMtnom);
+            }
+            double tmp = ECHG*model->TJMvg/(4.0*BOLTZ*(model->TJMtemp + 0.001));
+            double tmp2 = ECHG*vgNom/(4.0*BOLTZ*(model->TJMtnom + 0.001));
+            model->TJMicTempFactor = (model->TJMvg/vgNom)*(tanh(tmp)/tanh(tmp2));
+
+            // Apply correction.
+            model->TJMcriti *= model->TJMicTempFactor;
+        }
+        else
+            model->TJMicTempFactor = 1.0;
+
         double halfvg = model->TJMvg/2;
         if (model->TJMcap > 0.0) {
-            model->TJMvdpbak = sqrt(PHI0_2PI/model->TJMcpic);
+            double cpic = model->TJMcap/model->TJMcriti;
+            model->TJMvdpbak = sqrt(PHI0_2PI/cpic);
             if (model->TJMvdpbak > halfvg)
                 model->TJMvdpbak = halfvg;
-            model->TJMomegaJ = sqrt(1.0/(model->TJMcpic*PHI0_2PI));
+            model->TJMomegaJ = sqrt(1.0/(cpic*PHI0_2PI));
         }
         else
             model->TJMvdpbak = halfvg;
@@ -447,7 +526,13 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                         model->TJMcriti);
                     inst->TJMics = model->TJMcriti;
                 }
-                inst->TJMarea = inst->TJMics/model->TJMcriti;
+
+                // The area is computed for nominal temperature, which
+                // allows to instance critical current to vary with
+                // temperature, i.e., it is not fixed at ics.
+
+                double icnom = model->TJMcriti/model->TJMicTempFactor;
+                inst->TJMarea = inst->TJMics/icnom;
             }
             else if (!inst->TJMareaGiven)
                 inst->TJMarea = 1;
@@ -519,7 +604,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 #endif
 
 #ifdef NEWJJDC
-            if (model->TJMictype > 0 && !ckt->CKTcurTask->TSKnoPhaseModeDC) {
+            if (!ckt->CKTcurTask->TSKnoPhaseModeDC) {
                 // Set the phase flag of connected nodes for
                 // phase-mode DC analysis, if critical current is
                 // turned on and phase mode DC is not disabled.

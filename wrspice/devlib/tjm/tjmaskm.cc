@@ -54,10 +54,6 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->sValue = model->tjm_coeffs;
         data->type = IF_STRING;
         break;
-    case TJM_MOD_RTP:
-        value->iValue = model->TJMrtype;
-        data->type = IF_INTEGER;
-        break;
     case TJM_MOD_CTP:
         value->iValue = model->TJMictype;
         data->type = IF_INTEGER;
@@ -68,14 +64,35 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_DEL2:
         value->rValue = model->TJMdel2;
         break;
+    case TJM_MOD_VG:
+        value->rValue = model->TJMvg;
+        break;
     case TJM_MOD_TEMP:
         value->rValue = model->TJMtemp;
         break;
+    case TJM_MOD_TNOM:
+        value->rValue = model->TJMtnom;
+        break;
+    case TJM_MOD_TC:
+        value->rValue = SPMIN(model->TJMtc1, model->TJMtc2);
+        break;
+    case TJM_MOD_TC1:
+        value->rValue = model->TJMtc1;
+        break;
+    case TJM_MOD_TC2:
+        value->rValue = model->TJMtc2;
+        break;
+    case TJM_MOD_TDEBYE:
+        value->rValue = SPMIN(model->TJMtdebye1, model->TJMtdebye2);
+        break;
+    case TJM_MOD_TDEBYE1:
+        value->rValue = model->TJMtdebye1;
+        break;
+    case TJM_MOD_TDEBYE2:
+        value->rValue = model->TJMtdebye2;
+        break;
     case TJM_MOD_SMF:
         value->rValue = model->TJMsmf;
-        break;
-    case TJM_MOD_VG:
-        value->rValue = model->TJMvg;
         break;
     case TJM_MOD_CRT:
         value->rValue = model->TJMcriti;
@@ -132,8 +149,13 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->rValue = model->TJMomegaJ;
         break;
     case TJM_MQUEST_BETAC:
-        value->rValue = 
-            model->TJMvm*model->TJMvm*model->TJMcap/(model->TJMcriti*PHI0_2PI);
+        {
+            double tvm = model->TJMvm*model->TJMicTempFactor;
+            value->rValue = tvm*tvm*model->TJMcap / (model->TJMcriti*PHI0_2PI);
+        }
+        break;
+    case TJM_MQUEST_ICTEMPFCT:
+        value->rValue = model->TJMicTempFactor;
         break;
     case TJM_MOD_TJM:
         value->iValue = 1;

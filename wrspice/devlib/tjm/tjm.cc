@@ -121,44 +121,39 @@ OP("lshbrn",            TJM_QUEST_NSHB,     IF_INTEGER,
 #endif
 };
 
-/*
-del1
-del2
-temp
-smf
-
-if del1_given && del2_given
-vgap = del1 + del2;
-else
-del1 = del2 = vgap/2
-if (smf_given)
-delv = smf*vgap
-else
-smf = delv/vgap
-
-*/
-
 IFparm TJMmPTable[] = {
 OP("jj",                TJM_MOD_TJM,        IF_FLAG,
                 "Model name"),
 IO("coeffset",          TJM_MOD_COEFFS,     IF_STRING,
                 "Coefficient set name"),
-IO("rtype",             TJM_MOD_RTP,        IF_INTEGER,
-                "Quasiparticle current enabled"),
 IO("cct",               TJM_MOD_CTP,        IF_INTEGER,
                 "Critical current enabled"),
 IO("del1",              TJM_MOD_DEL1,       IF_REAL|IF_VOLT,
                 "Order voltage 1"),
-IO("del1",              TJM_MOD_DEL2,       IF_REAL|IF_VOLT,
+IO("del2",              TJM_MOD_DEL2,       IF_REAL|IF_VOLT,
                 "Order voltage 2"),
-IO("temp",              TJM_MOD_TEMP,       IF_REAL,
-                "Operating termerature Kelvin"),
-IO("smf",               TJM_MOD_SMF,        IF_REAL,
-                "Riedel smoothing factor"),
 IO("vg",                TJM_MOD_VG,         IF_REAL|IF_VOLT,
                 "Gap voltage"),
 IO("vgap",              TJM_MOD_VG,         IF_REAL|IF_VOLT|IF_REDUNDANT,
                 "Gap voltage"),
+IO("temp",              TJM_MOD_TEMP,       IF_REAL,
+                "Operating termerature Kelvin"),
+IO("tnom",              TJM_MOD_TNOM,       IF_REAL,
+                "Parameter measurement temperature Kelvin"),
+IO("tc",                TJM_MOD_TC,         IF_REAL,
+                "Superconducting transition temperature Kelvin"),
+IO("tc1",               TJM_MOD_TC1,        IF_REAL,
+                "Superconducting transition temp Kelvin side 1"),
+IO("tc2",               TJM_MOD_TC2,        IF_REAL,
+                "Superconducting transition temp Kelvin side 2"),
+IO("tdebye",            TJM_MOD_TDEBYE,     IF_REAL,
+                "Debye temperature Kelvin"),
+IO("tdebye1",           TJM_MOD_TDEBYE1,    IF_REAL,
+                "Debye temperature Kelvin side 1"),
+IO("tdebye2",           TJM_MOD_TDEBYE2,    IF_REAL,
+                "Debye temperature Kelvin side 2"),
+IO("smf",               TJM_MOD_SMF,        IF_REAL,
+                "Riedel smoothing factor"),
 IO("icrit",             TJM_MOD_CRT,        IF_REAL|IF_AMP,
                 "Reference critical current"),
 IO("cap",               TJM_MOD_CAP,        IF_REAL|IF_CAP,
@@ -201,7 +196,9 @@ OP("vdp",               TJM_MQUEST_VDP,     IF_REAL|IF_VOLT,
 OP("omegaj",            TJM_MQUEST_OMEGAJ,  IF_REAL|IF_FREQ,
                 "Plasma resonance frequency, radians"),
 OP("betac",             TJM_MQUEST_BETAC,   IF_REAL,
-                "Stewart-McCumber parameter")
+                "Stewart-McCumber parameter"),
+OP("ictempfct",         TJM_MQUEST_ICTEMPFCT, IF_REAL,
+                "Critical current temperature correction factor")
 };
 
 const char *TJMnames[] = {

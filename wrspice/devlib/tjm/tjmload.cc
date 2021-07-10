@@ -204,7 +204,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
 
         ts.ts_dcrt = 0;
         ts.ts_crt  = inst->TJMcriti;
-    
+        
         ckt->integrate(inst->TJMvoltage, inst->TJMdelVdelT);
         inst->tjm_load(ckt, ts);
 
@@ -348,6 +348,7 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         }
 
         inst->TJMdelVdelT = ckt->find_ceq(inst->TJMvoltage);
+
         inst->tjm_init(ts.ts_phi);
 
         ts.ts_dcrt = 0;
@@ -559,7 +560,10 @@ sTJMinstance::tjm_update(double phi)
         FsSq += (model->tjm_B[i]*tjm_Fs[i]).real;
     }
     double fct = TJMcriti * model->tjm_kgap_rejpt;
-    tjm_cp  = fct*(sinphi_2*FcSp + cosphi_2*FsSp);
+    if (model->TJMictype > 0)
+        tjm_cp  = fct*(sinphi_2*FcSp + cosphi_2*FsSp);
+    else
+        tjm_cp = 0.0;
     tjm_cqp = fct*(sinphi_2*FcSq - cosphi_2*FsSq);
 }
 

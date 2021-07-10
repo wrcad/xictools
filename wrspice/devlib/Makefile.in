@@ -69,7 +69,7 @@ INDEVICES = \
 DEVICES = $(INDEVICES) $(MODULES)
 
 #######################################################################
-CCFILES = devlib.cc gencurrent.cc
+CCFILES = devlib.cc gencurrent.cc tempr.cc
 ALLFILES = $(CCFILES) Makefile.in
 COBJS = toc.o $(CCFILES:.cc=.o)
 INCLUDE = -Iinclude

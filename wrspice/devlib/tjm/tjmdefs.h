@@ -280,13 +280,17 @@ struct sTJMmodelPOD
     IFcomplex   *tjm_B;
     int         tjm_narray;
 
-    int         TJMrtype;
     int         TJMictype;
     double      TJMdel1;
     double      TJMdel2;
-    double      TJMtemp;
-    double      TJMsmf;
     double      TJMvg;
+    double      TJMtemp;
+    double      TJMtnom;
+    double      TJMtc1;
+    double      TJMtc2;
+    double      TJMtdebye1;
+    double      TJMtdebye2;
+    double      TJMsmf;
     double      TJMcriti;
     double      TJMcap;
     double      TJMcpic;
@@ -298,6 +302,7 @@ struct sTJMmodelPOD
     double      TJMvdpbak;
     double      TJMomegaJ;
     double      TJMicFactor;
+    double      TJMicTempFactor;
     double      TJMvShunt;
     double      TJMtsfact;
     double      TJMtsaccl;
@@ -307,13 +312,17 @@ struct sTJMmodelPOD
 #endif
 
     unsigned    tjm_coeffsGiven : 1;
-    unsigned    TJMrtypeGiven : 1;
     unsigned    TJMictypeGiven : 1;
     unsigned    TJMdel1Given : 1;
     unsigned    TJMdel2Given : 1;
-    unsigned    TJMtempGiven : 1;
-    unsigned    TJMsmfGiven : 1;
     unsigned    TJMvgGiven : 1;
+    unsigned    TJMtempGiven : 1;
+    unsigned    TJMtnomGiven : 1;
+    unsigned    TJMtc1Given : 1;
+    unsigned    TJMtc2Given : 1;
+    unsigned    TJMtdebye1Given : 1;
+    unsigned    TJMtdebye2Given : 1;
+    unsigned    TJMsmfGiven : 1;
     unsigned    TJMvmGiven : 1;
     unsigned    TJMr0Given : 1;
     unsigned    TJMgmuGiven : 1;
@@ -448,13 +457,19 @@ enum {
 enum {
     TJM_MOD_TJM = 1000,
     TJM_MOD_COEFFS,
-    TJM_MOD_RTP,
     TJM_MOD_CTP,
     TJM_MOD_DEL1,
     TJM_MOD_DEL2,
-    TJM_MOD_TEMP,
-    TJM_MOD_SMF,
     TJM_MOD_VG,
+    TJM_MOD_TEMP,
+    TJM_MOD_TNOM,
+    TJM_MOD_TC,
+    TJM_MOD_TC1,
+    TJM_MOD_TC2,
+    TJM_MOD_TDEBYE,
+    TJM_MOD_TDEBYE1,
+    TJM_MOD_TDEBYE2,
+    TJM_MOD_SMF,
     TJM_MOD_CRT,
     TJM_MOD_CAP,
     TJM_MOD_CPIC,
@@ -475,7 +490,8 @@ enum {
 
     TJM_MQUEST_VDP,
     TJM_MQUEST_OMEGAJ,
-    TJM_MQUEST_BETAC
+    TJM_MQUEST_BETAC,
+    TJM_MQUEST_ICTEMPFCT
 };
 
 #endif // TJMDEFS_H
