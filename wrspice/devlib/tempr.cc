@@ -20,6 +20,7 @@
 //#define USE_GSL
 
 #include "tempr.h"
+#include "device.h"
 
 
 #ifndef USE_GSL
@@ -166,6 +167,14 @@ tempr::order_parameter(double T)
         }
     }
     return (tp.del/ECHG);
+}
+
+
+double
+sDevLib::bcs_egapv(double T, double Tc, double Tdb)
+{
+    tempr t(Tc, Tdb);
+    return t.order_parameter(T);
 }
 
 

@@ -43,10 +43,10 @@ struct tempr
         double del;
     };
 
-    tempr(double Tc = 0.0, double dbtemp = 0.0)
+    tempr(double Tc = 0.0, double Tdb = 0.0)
         {
-            if (dbtemp > 0.0)
-                t_dbe = dbtemp * BOLTZ;
+            if (Tdb > 0.0)
+                t_dbe = Tdb * BOLTZ;
             else
                 t_dbe = DEBYE_TEMP_NB * BOLTZ;
             if (Tc > 0.0)
@@ -67,6 +67,7 @@ struct tempr
 #endif
 
     double order_parameter(double);
+
 
 private:
     double t_tc;    // Transition temperature

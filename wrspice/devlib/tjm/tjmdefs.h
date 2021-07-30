@@ -272,6 +272,7 @@ struct sTJMmodelPOD
 {
     // MiTMoJCo core parameters
     char        *tjm_coeffs;
+    double      tjm_rejpt;
     double      tjm_kgap;
     double      tjm_kgap_rejpt;
     double      tjm_alphaN;
@@ -491,7 +492,12 @@ enum {
     TJM_MQUEST_VDP,
     TJM_MQUEST_OMEGAJ,
     TJM_MQUEST_BETAC,
-    TJM_MQUEST_ICTEMPFCT
+    TJM_MQUEST_ICTEMPFCT,
+    TJM_MQUEST_NARRAY,
+    TJM_MQUEST_ALPHAN,
+    TJM_MQUEST_KGAP,
+    TJM_MQUEST_REJPT,
+    TJM_MQUEST_KGAP_REJPT
 };
 
 #endif // TJMDEFS_H

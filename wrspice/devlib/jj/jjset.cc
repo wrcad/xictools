@@ -537,16 +537,27 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
 
             // Temperature correction factor.
-            inst->JJtcf =
-            tanh(model->JJtcfct*sqrt(model->JJtc/(inst->JJtemp_k+1e-3) - 1.0)) /
-            tanh(model->JJtcfct*sqrt(model->JJtc/(model->JJtnom+1e-3) - 1.0));
+            if (inst->JJtemp_k != model->JJtnom) {
+                inst->JJtcf =
+                tanh(model->JJtcfct*sqrt(model->JJtc/(inst->JJtemp_k+1e-4) - 1.0)) /
+                tanh(model->JJtcfct*sqrt(model->JJtc/(model->JJtnom+1e-4) - 1.0));
 
-            inst->JJvg = inst->JJtcf * model->JJvgnom;
+                inst->JJvg = inst->JJtcf * model->JJvgnom;
+
+                double tmp = wrsCHARGE*inst->JJvg/
+                    (4.0*wrsCONSTboltz*(inst->JJtemp_k+1e-4));
+                double tmp2 = wrsCHARGE*model->JJvgnom/
+                    (4.0*wrsCONSTboltz*(model->JJtnom+1e-4));
+                inst->JJtcf *= tanh(tmp)/tanh(tmp2);
+            }
+            else {
+                inst->JJvg = model->JJvgnom;
+                inst->JJtcf = 1.0;
+            }
 
             double halfdv = 0.5*model->JJdelv;
             inst->JJvless  = inst->JJvg - halfdv;
             inst->JJvmore  = inst->JJvg + halfdv;
-
 
             if (inst->JJicsGiven) {
                 if (inst->JJareaGiven) {

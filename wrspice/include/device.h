@@ -161,6 +161,7 @@ struct sDevLib
     double  pnjlim(double, double, double, double, int*);
     double  fetlim(double, double, double);
     double  limexp(double, double, int*);
+    double  bcs_egapv(double, double=0.0, double=0.0);
 
     // Specialized interface functions called by application.
     bool    getMinMax(sCKT*, double*, double*);

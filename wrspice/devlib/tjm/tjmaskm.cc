@@ -157,6 +157,22 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MQUEST_ICTEMPFCT:
         value->rValue = model->TJMicTempFactor;
         break;
+    case TJM_MQUEST_NARRAY:
+        value->iValue = model->tjm_narray;
+        data->type = IF_INTEGER;
+        break;
+    case TJM_MQUEST_ALPHAN:
+        value->rValue = model->tjm_alphaN;
+        break;
+    case TJM_MQUEST_KGAP:
+        value->rValue = model->tjm_kgap;
+        break;
+    case TJM_MQUEST_REJPT:
+        value->rValue = model->tjm_rejpt;
+        break;
+    case TJM_MQUEST_KGAP_REJPT:
+        value->rValue = model->tjm_kgap_rejpt;
+        break;
     case TJM_MOD_TJM:
         value->iValue = 1;
         data->type = IF_INTEGER;

@@ -5,7 +5,7 @@
 
 # This must match the SyntaxLevel defined in device.xml.  If it is
 # smaller, you need to update this Makefile to match devkit/Makefile.
-SyntaxLevel = 17
+SyntaxLevel = 18
 
 #######################################################################
 #  MANDATORY User Configuration

@@ -198,7 +198,17 @@ OP("omegaj",            TJM_MQUEST_OMEGAJ,  IF_REAL|IF_FREQ,
 OP("betac",             TJM_MQUEST_BETAC,   IF_REAL,
                 "Stewart-McCumber parameter"),
 OP("ictempfct",         TJM_MQUEST_ICTEMPFCT, IF_REAL,
-                "Critical current temperature correction factor")
+                "Critical current temperature correction factor"),
+OP("narray",            TJM_MQUEST_NARRAY,  IF_INTEGER,
+                "Size of TJM coefficient array"),
+OP("alphan",            TJM_MQUEST_ALPHAN,  IF_REAL,
+                "TJM alphaN value"),
+OP("kgap",              TJM_MQUEST_KGAP,    IF_REAL,
+                "TJM kgap value"),
+OP("rejpt",             TJM_MQUEST_REJPT,   IF_REAL,
+                "TJM rejpt value"),
+OP("kgap_rejpt",        TJM_MQUEST_KGAP_REJPT, IF_REAL,
+                "TJM kgap_rejpt value")
 };
 
 const char *TJMnames[] = {

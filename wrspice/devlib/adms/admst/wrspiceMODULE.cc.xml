@@ -458,6 +458,9 @@
 
   <admst:text format="\nconst char *$(moduc)modNames[] = {\n"/>
   <admst:choose>
+    <admst:when test="[$package_devkey='b']">
+      <admst:text format="$(indent)&quot;jj&quot;,\n"/>
+    </admst:when>
     <admst:when test="[$package_devkey='j']">
       <admst:text format="$(indent)&quot;njf&quot;,\n"/>
       <admst:text format="$(indent)&quot;pjf&quot;,\n"/>

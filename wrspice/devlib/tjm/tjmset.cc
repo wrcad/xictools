@@ -86,7 +86,7 @@
 #define Temp    4.2
 #define TempMin 0
 #define TempMax 280
-#define TcDef   9.2
+#define TcDef   9.26
 #define TcMin   0.5
 #define TcMax   280
 #define TdbDef  276
@@ -270,8 +270,9 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
         else {
-            tempr tp(model->TJMtc1, model->TJMtdebye1);
-            model->TJMdel1 = tp.order_parameter(model->TJMtemp);
+            model->TJMdel1 = DEV.bcs_egapv(model->TJMtemp, model->TJMtc1,
+                model->TJMtdebye1);
+
         }
         if (model->TJMdel2Given) {
             if (model->TJMdel2 < DelMin || model->TJMdel2 > DelMax) {
@@ -283,8 +284,8 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
         else {
-            tempr tp(model->TJMtc2, model->TJMtdebye2);
-            model->TJMdel2 = tp.order_parameter(model->TJMtemp);
+            model->TJMdel2 = DEV.bcs_egapv(model->TJMtemp, model->TJMtc2,
+                model->TJMtdebye2);
         }
         if (!model->TJMvgGiven)
             model->TJMvg = model->TJMdel1 + model->TJMdel2;
@@ -475,18 +476,21 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             // ratioing factors for temp and tnom (correction factor
             // is 1.0 at temp = tnom).
 
-            tempr tp(model->TJMtc1, model->TJMtdebye1);
-            double vgNom = tp.order_parameter(model->TJMtnom);
+            double vgNom = DEV.bcs_egapv(model->TJMtnom, model->TJMtc1,
+                model->TJMtdebye1);
             if (model->TJMtc1 == model->TJMtc2 &&
                     model->TJMtdebye1 == model->TJMtdebye2)
                 vgNom += vgNom;
             else {
-                tp = tempr(model->TJMtc2, model->TJMtdebye2);
-                vgNom += tp.order_parameter(model->TJMtnom);
+                vgNom = DEV.bcs_egapv(model->TJMtnom, model->TJMtc2,
+                    model->TJMtdebye2);
             }
-            double tmp = ECHG*model->TJMvg/(4.0*BOLTZ*(model->TJMtemp + 0.001));
-            double tmp2 = ECHG*vgNom/(4.0*BOLTZ*(model->TJMtnom + 0.001));
-            model->TJMicTempFactor = (model->TJMvg/vgNom)*(tanh(tmp)/tanh(tmp2));
+            double tmp = wrsCHARGE*model->TJMvg/
+                (4.0*wrsCONSTboltz*(model->TJMtemp + 1e-4));
+            double tmp2 = wrsCHARGE*vgNom/
+                (4.0*wrsCONSTboltz*(model->TJMtnom + 1e-4));
+            model->TJMicTempFactor =
+                (model->TJMvg/vgNom)*(tanh(tmp)/tanh(tmp2));
 
             // Apply correction.
             model->TJMcriti *= model->TJMicTempFactor;
@@ -738,6 +742,7 @@ sTJMmodel::tjm_init()
     for (int i = 0; i < tjm_narray; i++)
         rejpt -= (tjm_A[i]/tjm_p[i]).real;
     rejpt *= TJMicFactor;
+    tjm_rejpt = rejpt;
     tjm_kgap_rejpt = tjm_kgap/rejpt;
     tjm_alphaN = 1.0/(2*rejpt*tjm_kgap);
 
