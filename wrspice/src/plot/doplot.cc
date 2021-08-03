@@ -237,6 +237,7 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
                     // expression, such as if followed by a '-' sign.
                     delete [] ww->wl_word;
                     ww->wl_word = lstring::copy("\"vs\"");
+                    continue;
                 }
                 if (ww->wl_word[0] == '.' && ww->wl_word[1] == '@' &&
                         isdigit(ww->wl_word[2])) {
