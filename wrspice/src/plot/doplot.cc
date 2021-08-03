@@ -231,6 +231,13 @@ SPgraphics::Plot(wordlist *wl, sGraph *fromgraph, const char *hcopy,
                     ww = ww->splice(wx);
                     continue;
                 }
+                if (lstring::eq(ww->wl_word, "vs")) {
+                    // If a "vs" is found, double quote it.  This
+                    // prevents it from being included in a following
+                    // expression, such as if followed by a '-' sign.
+                    delete [] ww->wl_word;
+                    ww->wl_word = lstring::copy("\"vs\"");
+                }
                 if (ww->wl_word[0] == '.' && ww->wl_word[1] == '@' &&
                         isdigit(ww->wl_word[2])) {
                     int n = atoi(ww->wl_word + 2);
