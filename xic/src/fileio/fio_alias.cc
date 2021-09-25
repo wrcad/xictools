@@ -804,8 +804,7 @@ bdtable_t::check_rehash()
         (bdtable_t*)new char[sizeof(bdtable_t) + 2*newmask*sizeof(bd_t*)];
     st->count = count;
     st->hashmask = newmask;
-    for (unsigned int i = 0; i <= 2*newmask; i++)
-        st->tab[i] = 0;
+    memset(st->tab, 0, 2*(newmask+1)*sizeof(bd_t*));
     for (unsigned int i = 0;  i <= hashmask; i++) {
         bd_t *en;
         for (bd_t *e = tab[i]; e; e = en) {
@@ -816,7 +815,7 @@ bdtable_t::check_rehash()
         }
         tab[i] = 0;
     }
-    for (unsigned int i = hashmask + 1;  i <= 2*hashmask; i++) {
+    for (unsigned int i = hashmask + 1;  i <= 2*hashmask + 1; i++) {
         bd_t *en;
         for (bd_t *e = tab[i]; e; e = en) {
             en = e->n_next;
