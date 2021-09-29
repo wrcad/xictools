@@ -47,32 +47,33 @@
 
 struct bd_t
 {
-    bd_t() { name = alias = 0; n_next = a_next = 0; }
-
-    bd_t *tgen_next(bool) { return (n_next); }
-
     const char *name;
     const char *alias;
-
     bd_t *n_next;
     bd_t *a_next;
 };
 
 
-struct bdtable_t : public stab_t<bd_t>
+struct bdtable_t
 {
-    bdtable_t() { place_holder[0] = 0; }
+    bdtable_t()
+        {
+            count = 0;
+            hashmask = 0;
+            tab[0] = 0;
+            tab[1] = 0;
+        }
 
     const char *find_alias(const char *name);
     const char *find_name(const char *alias);
     void add(const char *name, const char *alias, eltab_t<bd_t>*);
+    void add(bd_t*);
     bool remove(const char *name);
     bdtable_t *check_rehash();
 
-    // This is a variable-length struct, but has twice as many list
-    // heads as table_t, etc.
-
-    bd_t *place_holder[1];  // not used, accessed through stab_t::tab
+    unsigned int count;     // Number of elements in table.
+    unsigned int hashmask;  // Hash table size - 1, size is power 2.
+    bd_t *tab[2];           // Start of the hash table (extended as necessary).
 };
 
 // The bi-directional table used to hold name/alias pairs.
