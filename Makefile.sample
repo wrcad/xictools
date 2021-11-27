@@ -52,6 +52,16 @@ ITOPOK = --enable-itopok=no
 #
 #OALOC  = --enable-oa=/usr/local/cad/OA-22.04
 
+# If enabled and set to the installed location of the PyCellStudio
+# from Synopsys, the Python plug-in will link to the Python supplied
+# with PyCellStudio, version 2.6.2 support only at present. 
+# OpenAccess above must point to a version "close to" that provided in
+# PyCellStudio, but we need the source for the include files not
+# provided with PyCellStudio.
+#
+#CNILOC = \
+#  --enable-cni=/global/apps/customcompiler_2021.09-2/linux64/PyCellStudio
+
 # PSF support in WRspice (for Cadence ADE integration), Linux RHEL6/7
 # only.  If you have this Cadence product, PSF file support can be
 # enabled by setting and uncommenting this variable.

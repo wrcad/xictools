@@ -140,6 +140,21 @@ elif test $enable_oa = yes; then
 fi
 )
 
+dnl Enable use of PyCellStudio-provided Python, and the potential to
+dnl use portable PCells.  The Python plug-in build and the running xic
+must dnl see the PyCellStudio environment.  Linux only.
+dnl
+dnl --enable-cni=/path/to/PyCellStudio
+with_cni="no"
+AC_ARG_ENABLE(cni,
+    [  ]--enable-cni[[=path_to_cni]]           enable Python from PyCellStudio,
+if test $enable_cni != no; then
+    cni_loc=$enable_cni
+    with_cni=yes
+
+fi
+)
+
 dnl  Enable (limited) support for Cadence psf simulation data file format. 
 dnl  This links to prebuilt libraries supplied with the oasis simulator
 dnl  integration toolkit, for integrating a simulator (such as WRspice)
@@ -727,7 +742,12 @@ if test $OSNAME = "Darwin"; then
         echo '#define HAVE_TK 1'>> confdefs.h
     fi
 elif test ${OSNAME:0:5} = "Linux"; then
-    if test -d /usr/include/python2.7; then
+    if test [ $with_cni == yes ]; then
+        PY_INCLUDE="-I$cni_loc/linux64/3rd/Python/include/python2.6"
+        PY_LIBS="-L$cni_loc/linux64/3rd/Python/lib -lpython2.6"
+        PY_TARGETS="py26.so"
+        echo '#define HAVE_PYTHON 1'>> confdefs.h
+    elif test -d /usr/include/python2.7; then
         PY_INCLUDE="-I/usr/include/python2.7"
         PY_LIBS="-lpython2.7"
         PY_TARGETS="py27.so"

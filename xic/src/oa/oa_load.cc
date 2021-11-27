@@ -1,4 +1,3 @@
-
 /*========================================================================*
  *                                                                        *
  *  Distributed by Whiteley Research Inc., Sunnyvale, California, USA     *
@@ -71,6 +70,7 @@
 #include "oa_errlog.h"
 #include "miscutil/texttf.h"
 
+//#define LOAD_DBG
 
 // Schematics from Virtuoso are very different from Xic.  For
 // starters, we need to scale all coordintes by 1000 when reading
@@ -150,7 +150,7 @@ private:
     CDs *newCell(const char*, ncType*, bool = false);
     CDcellName checkSubMaster(CDcellName, CDp*);
 
-    bool readPhysicalDesign(const oaDesign*, const oaString&, CDs**);
+    bool readPhysicalDesign(const oaDesign*, const oaString&, CDs**, int);
     bool readElectricalDesign(const oaDesign*, const oaDesign*,
         const oaString&, CDs**);
     bool readInstances(const oaBlock*, CDs*);
@@ -801,6 +801,10 @@ oa_in::loadCellRec(oaLib *lib, oaCell *cell, oaView *view, oaInt4 depth,
 
     oaString lognam("loadCellRec[" + cellname + "]");
     cOAerrLogWrap logger(lognam, OA_ERRLOG, OA_DBGLOG);
+#ifdef LOAD_DBG
+    printf("%*c loadCellRec %s %d\n", 40-depth, ' ', (const char*)cellname,
+        depth);
+#endif
 
     oaViewType *maskLayoutVT = oaViewType::get(oacMaskLayout);
     oaViewType *schematicVT = oaViewType::get(oacSchematic);
@@ -1640,6 +1644,10 @@ oa_in::loadPhysicalDesign(const oaDesign *design, const char *cname, CDs **sdp,
         cellname = cname;
     else
         design->getCellName(in_ns, cellname);
+#ifdef LOAD_DBG
+    printf("%*c loadPhysicalDesign %s %d\n", 40-depth, ' ',
+        (const char*)cellname, depth);
+#endif
 
     // Read in the masters first, these are needed for finding
     // terminal locations.
@@ -1673,7 +1681,7 @@ oa_in::loadPhysicalDesign(const oaDesign *design, const char *cname, CDs **sdp,
             }
         }
     }
-    if (!readPhysicalDesign(design, cellname, sdp))
+    if (!readPhysicalDesign(design, cellname, sdp, depth))
         return (OIerror);
     return (oiret);
 }
@@ -1932,7 +1940,7 @@ oa_in::loadVia(const oaViaHeader *viaHeader, oaUInt4  depth)
             }
 
             CDs *sd = 0;
-            bool ret = readPhysicalDesign(design, viaCellname, &sd);
+            bool ret = readPhysicalDesign(design, viaCellname, &sd, depth);
             if (ret && sd)
                 add_std_via_prop(stdViaHeader, sd);
 
@@ -2009,6 +2017,11 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
     hdr->getLibName(libName);
     hdr->getCellName(cellName);
     hdr->getViewName(viewName);
+#ifdef LOAD_DBG
+    oaString xxcn;
+    cellName.get(xxcn);
+    printf("%*c loadMaster %s %d\n", 40-depth, ' ', (const char*)xxcn, depth);
+#endif
 
     if (!hdr->isSubHeader()) {
 
@@ -2044,6 +2057,13 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
             (const char*)libname);
         return (OIerror);
     }
+    lib->getAccess(oacReadLibAccess);
+
+    // Sometimes the first request for hdr->getParams below returns
+    // something incorrect on the first call, but subsequent calls
+    // are fine.  These lines seem to correct that.
+    oaDesign *des = oaDesign::open(libName, cellName, viewName, 'r');
+    des->close();
 
     oaParamArray allParams;
     hdr->getAllParams(allParams);
@@ -2053,6 +2073,9 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
     hdr->getParams(params);
     CDcellName cname = NameTab.getMasterName(libName, cellName, viewName,
         params, has_params, in_from_xic);
+#ifdef LOAD_DBG
+    printf("%*c  master name %s\n", 40-depth, ' ', (const char*)cname);
+#endif
 
     // Check if the cell has already been translated.
     //
@@ -2066,8 +2089,6 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
         if (XM()->ConfirmAbort("Interrupt received, abort load? "))
             return (OIaborted);
     }
-
-    lib->getAccess(oacReadLibAccess);
 
     oaDesign *design;
 
@@ -2098,6 +2119,9 @@ oa_in::loadMaster(const oaInstHeader *hdr, oaInt4 depth)
         lib->releaseAccess();
         return (OIerror);
     }
+#ifdef LOAD_DBG
+    printf("%*c ok\n", 40-depth, ' ');
+#endif
 
     CDs *sd = 0;
     // This is a sub-master and must be physical?
@@ -2281,7 +2305,7 @@ oa_in::checkSubMaster(CDcellName cname, CDp *plist)
 
 bool 
 oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
-    CDs **sdp)
+    CDs **sdp, int depth)
 {
     if (!design) {
         Errs()->add_error("Null design handle encountered.");
@@ -2295,6 +2319,9 @@ oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
         Errs()->add_error("readPhysicalDesign:  not in physical mode.");
         return (false);
     }
+#ifdef LOAD_DBG
+    printf("%*c readPhysicalDesign\n", 40-depth, ' ');
+#endif
 
     oaString libname;
     design->getLibName(in_ns, libname);
@@ -2379,6 +2406,9 @@ oa_in::readPhysicalDesign(const oaDesign *design, const oaString &xic_cname,
     if (!readGeometry(blk, sdesc))
         return (false);
 
+#ifdef LOAD_DBG
+    printf("%*c readPhysicalDesign done\n", 40-depth, ' ');
+#endif
     return (true);
 }
 
@@ -2514,7 +2544,9 @@ oa_in::readInstances(const oaBlock *blk, CDs *sdesc)
             header->getParams(params);
             CDcellName cname = NameTab.getMasterName(libName, cellName,
                 viewName, params, has_params, in_from_xic);
-
+#ifdef LOAD_DBG
+            printf(" readInstances %s\n", (const char*)cname);
+#endif
             long f = in_mode == Physical ? OAL_REFP : OAL_REFE;
             NameTab.updateCname(cname, f);
 
