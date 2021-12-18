@@ -459,28 +459,25 @@ sTrie::match(const char *word)
 wordlist *
 sTrie::wl(bool sib)
 {
-    const sTrie *trie = this;
-    if (!trie)
-        return (0);
     wordlist *twl;
     if (!cc_invalid) {
         twl = new wordlist(cc_name, 0);
-        twl->wl_next = cc_child->wl(true);
+        twl->wl_next = cc_child ? cc_child->wl(true) : 0;
         if (twl->wl_next)
             twl->wl_next->wl_prev = twl;
     }
     else
-        twl = cc_child->wl(true);
+        twl = cc_child ? cc_child->wl(true) : 0;
     if (sib) {
         wordlist *end;
         if (twl) {
             for (end = twl; end->wl_next; end = end->wl_next) ;
-            end->wl_next = cc_sibling->wl(true);
+            end->wl_next = cc_sibling ? cc_sibling->wl(true) : 0;
             if (end->wl_next)
                 end->wl_next->wl_prev = twl;
         }
         else
-            twl = cc_sibling->wl(true);
+            twl = cc_sibling ? cc_sibling->wl(true) : 0;
     }
     return (twl);
 }
