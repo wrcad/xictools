@@ -1085,8 +1085,8 @@ IFsimulator::Show(wordlist *wl, char**, bool mod, int contact_node)
         parms = new wordlist("all", 0);
 
     if (objs == 0) {
-        objs = mod ? (*ft_curckt->models())->wl(true) :
-                (*ft_curckt->devices())->wl(true);
+        sTrie *tr = mod ? *ft_curckt->models() : *ft_curckt->devices();
+        objs = tr ? tr->wl(true) : 0;
     }
 
     wordlist::sort(objs);
@@ -2305,8 +2305,10 @@ sFtCirc::devExpand(const char *name, bool mod)
     if (isglob(name)) {
         if (!Sp.CurCircuit())
             return (0);
-        wordlist *objs = mod ? (*Sp.CurCircuit()->models())->wl(true) :
-            (*Sp.CurCircuit()->devices())->wl(true);
+
+        sTrie *tr = mod ? *Sp.CurCircuit()->models() :
+            *Sp.CurCircuit()->devices();
+        wordlist *objs = tr ? tr->wl(true) : 0;
         wordlist *nlist = CP.BracExpand(name);
         if (ci)
             wl_tolower(nlist);
@@ -2333,8 +2335,9 @@ sFtCirc::devExpand(const char *name, bool mod)
     else if (lstring::cieq(name, "all")) {
         if (!Sp.CurCircuit())
             return (0);
-        wl = mod ? (*Sp.CurCircuit()->models())->wl(true) :
-            (*Sp.CurCircuit()->devices())->wl(true);
+        sTrie *tr = mod ? *Sp.CurCircuit()->models() :
+            *Sp.CurCircuit()->devices();
+        wl = tr ? tr->wl(true) : 0;
     }
     else
         wl = new wordlist(name, 0);

@@ -203,6 +203,7 @@ RESdev::temperature(sGENmodel *genmod, sCKT *ckt)
                         res = -rmin;
                     else
                         res = rmin;
+                    inst->RESresist = res;
                     DVO.textOut(OUT_WARNING,
                         "%s: resistance reset to %g by gmax limiting.",
                         (const char*)inst->GENname, res);

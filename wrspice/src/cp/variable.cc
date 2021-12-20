@@ -300,7 +300,7 @@ CommandTab::com_shift(wordlist *wl)
 wordlist *
 CshPar::VarList()
 {
-    return (cp_vardb->wl());
+    return (cp_vardb ? cp_vardb->wl() : 0);
 }
 
 
