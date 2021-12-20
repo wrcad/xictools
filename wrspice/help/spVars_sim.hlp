@@ -687,7 +687,7 @@ Simulation Option Variables
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>Default</th> <th>Min Value</th> <th>Max Value</th>
       <th>Set From</th></tr>
-    <tr><td>1e6</td> <td>1e-2</td> <td>1e12</td>
+    <tr><td>1e3</td> <td>1e-3</td> <td>1e6</td>
       <th>Simultion Defaults/Convergence</th></tr>
     </table>
     </dl>

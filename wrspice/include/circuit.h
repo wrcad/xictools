@@ -507,9 +507,9 @@ enum OMRG_TYPE { OMRG_GLOBAL, OMRG_LOCAL, OMRG_NOSHELL };
 #define DEF_dphiMax_MIN         M_PI/1000
 #define DEF_dphiMax_MAX         M_PI
 
-#define DEF_gmax                1e6
-#define DEF_gmax_MIN            1e-2
-#define DEF_gmax_MAX            1e12
+#define DEF_gmax                1e3
+#define DEF_gmax_MIN            1e-3
+#define DEF_gmax_MAX            1e6
 
 #define DEF_gmin                1e-12
 #define DEF_gmin_MIN            1e-15

@@ -69,7 +69,7 @@ Authors: 1985 Thomas L. Quarles
 #define USE_PRELOAD
 
 // Maximum conductivity allowed, when not limited by circuit gmax.
-#define RES_GMAX 1e12
+#define RES_GMAX 1e6
 
 namespace RES {
 
