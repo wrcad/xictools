@@ -196,20 +196,18 @@ RESdev::temperature(sGENmodel *genmod, sCKT *ckt)
                     return (E_SYNTAX);
             }
             if (res_given) {
-                double G = inst->RESm/(inst->RESresist * factor);
-                if (G > gmax) {
-                    G = gmax;
+                double rmin = inst->RESm/(gmax * factor);
+                double res = inst->RESresist;
+                if (fabs(res) < rmin) {
+                    if (res < 0.0)
+                        res = -rmin;
+                    else
+                        res = rmin;
                     DVO.textOut(OUT_WARNING,
                         "%s: resistance reset to %g by gmax limiting.",
-                        (const char*)inst->GENname, 1.0/gmax);
+                        (const char*)inst->GENname, res);
                 }
-                else if (G < -gmax) {
-                    G = -gmax;
-                    DVO.textOut(OUT_WARNING,
-                        "%s: resistance reset to %g by gmax limiting.",
-                        (const char*)inst->GENname, -1.0/gmax);
-                }
-                inst->RESconduct = G;
+                inst->RESconduct = inst->RESm/(res * factor);
             }
 
 #ifdef USE_PRELOAD

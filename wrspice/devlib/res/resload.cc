@@ -85,13 +85,16 @@ RESdev::load(sGENinstance *in_inst, sCKT *ckt)
         if (gmax <= 0.0)
             gmax = RES_GMAX;
 
-        inst->RESresist = R;
         double sc = inst->RESm/inst->REStcFactor;
+        double rmin = sc/gmax;
+        if (fabs(R) < rmin) {
+            if (R < 0.0)
+                R = -rmin;
+            else
+                R = rmin;
+        }
+        inst->RESresist = R;
         double G = sc/R;
-        if (G > gmax)
-            G = gmax;
-        else if (G < -gmax)
-            G = -gmax;
         inst->RESconduct = G;
         double F = G*G*vres/sc;
         double fderiv = F * D;
@@ -161,13 +164,16 @@ RESdev::load(sGENinstance *in_inst, sCKT *ckt)
         if (gmax <= 0.0)
             gmax = RES_GMAX;
 
-        inst->RESresist = R;
         double sc = inst->RESm/inst->REStcFactor;
+        double rmin = sc/gmax;
+        if (fabs(R) < rmin) {
+            if (R < 0.0)
+                R = -rmin;
+            else
+                R = rmin;
+        }
+        inst->RESresist = R;
         double G = sc/R;
-        if (G > gmax)
-            G = gmax;
-        else if (G < -gmax)
-            G = -gmax;
         inst->RESconduct = G;
 
         double vres = *(ckt->CKTrhsOld + inst->RESposNode) - 
