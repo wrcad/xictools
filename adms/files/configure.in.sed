@@ -22,23 +22,30 @@ AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_AWK
-AC_PROG_YACC
-AC_PROG_LEX
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_EXEEXT
 
-if test $MAINTAINER = yes; then
-  #force use of flex/bison
-  if test "x$LEX" != "xflex"; then
-    AC_MSG_WARN(Program flex not found (found $LEX))
-    AC_MSG_ERROR(Please install gnu flex from http://www.gnu.org/software/flex/)
-  fi
-  if test "x$YACC" != "xbison -y"; then
-    AC_MSG_WARN(Program bison not found (found $YACC))
-    AC_MSG_ERROR(Please install gnu bison from http://www.gnu.org/software/bison/)
-  fi
+AC_PATH_PROG(FLEX, flex, "")
+if test -n "$FLEX"; then
+    LEX="$FLEX -l"
+elif test $MAINTAINER = yes; then
+    echo "  Error: the \"flex\" program is required and not found."
+    exit 1
 fi
+if test `uname` == "Darwin"; then
+    BISON=/usr/local/gtk2-bundle-x11/bin/bison
+else
+    AC_PATH_PROG(BISON, bison, "")
+fi
+if test -n "$BISON"; then
+    YACC="$BISON -y"
+elif test $MAINTAINER = yes; then
+    echo "  Error: the \"bison\" program is required and not found."
+    exit 1
+fi
+AC_SUBST(LEX)
+AC_SUBST(YACC)
 
 #advice use of gcc
 if test "x$GCC" = "xyes"; then
