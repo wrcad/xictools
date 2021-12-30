@@ -1287,7 +1287,7 @@ R_expression
 R_e.conditional
         | R_e.bitwise_equ
           _ $$=$1;
-        | R_e.bitwise_equ '?' R_e.bitwise_equ ':' R_e.bitwise_equ
+        | R_e.bitwise_equ '?' R_e.conditional ':' R_e.conditional
           _ p_adms m1=YY($1);
           _ p_adms m2=YY($3);
           _ p_adms m3=YY($5);
