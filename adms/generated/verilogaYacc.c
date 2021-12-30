@@ -1,21 +1,22 @@
-/* A Bison parser, made by GNU Bison 2.7.  */
+/* A Bison parser, made by GNU Bison 3.7.6.  */
 
 /* Bison implementation for Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989-1990, 2000-2012 Free Software Foundation, Inc.
-   
+
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -26,12 +27,16 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
 /* C LALR(1) parser skeleton written by Richard Stallman, by
    simplifying the original so-called "semantic" parser.  */
+
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
 /* All symbols defined below should begin with yy or YY, to avoid
    infringing on user name space.  This should be done even for local
@@ -40,11 +45,11 @@
    define necessary library symbols; they are noted "INFRINGES ON
    USER NAME SPACE" below.  */
 
-/* Identify Bison output.  */
-#define YYBISON 1
+/* Identify Bison output, and Bison version.  */
+#define YYBISON 30706
 
-/* Bison version.  */
-#define YYBISON_VERSION "2.7"
+/* Bison version string.  */
+#define YYBISON_VERSION "3.7.6"
 
 /* Skeleton name.  */
 #define YYSKELETON_NAME "yacc.c"
@@ -63,13 +68,12 @@
 #define yyparse         verilogaparse
 #define yylex           verilogalex
 #define yyerror         verilogaerror
-#define yylval          verilogalval
-#define yychar          verilogachar
 #define yydebug         verilogadebug
 #define yynerrs         veriloganerrs
+#define yylval          verilogalval
+#define yychar          verilogachar
 
-/* Copy the first part of user declarations.  */
-/* Line 371 of yacc.c  */
+/* First part of user prologue.  */
 #line 6 "verilogaYacc.y"
 
 #define YYDEBUG 1
@@ -186,30 +190,34 @@ static p_nature lookup_nature(const char *myname)
 }
 
 
-/* Line 371 of yacc.c  */
-#line 191 "y.tab.c"
+#line 194 "y.tab.c"
 
-# ifndef YY_NULL
-#  if defined __cplusplus && 201103L <= __cplusplus
-#   define YY_NULL nullptr
+# ifndef YY_CAST
+#  ifdef __cplusplus
+#   define YY_CAST(Type, Val) static_cast<Type> (Val)
+#   define YY_REINTERPRET_CAST(Type, Val) reinterpret_cast<Type> (Val)
 #  else
-#   define YY_NULL 0
+#   define YY_CAST(Type, Val) ((Type) (Val))
+#   define YY_REINTERPRET_CAST(Type, Val) ((Type) (Val))
+#  endif
+# endif
+# ifndef YY_NULLPTR
+#  if defined __cplusplus
+#   if 201103L <= __cplusplus
+#    define YY_NULLPTR nullptr
+#   else
+#    define YY_NULLPTR 0
+#   endif
+#  else
+#   define YY_NULLPTR ((void*)0)
 #  endif
 # endif
 
-/* Enabling verbose error messages.  */
-#ifdef YYERROR_VERBOSE
-# undef YYERROR_VERBOSE
-# define YYERROR_VERBOSE 1
-#else
-# define YYERROR_VERBOSE 0
-#endif
-
-/* In a future release of Bison, this section will be replaced
-   by #include "y.tab.h".  */
+/* Use api.header.include to #include this header
+   instead of duplicating it here.  */
 #ifndef YY_VERILOGA_Y_TAB_H_INCLUDED
 # define YY_VERILOGA_Y_TAB_H_INCLUDED
-/* Enabling traces.  */
+/* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
 #endif
@@ -217,188 +225,443 @@ static p_nature lookup_nature(const char *myname)
 extern int verilogadebug;
 #endif
 
-/* Tokens.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     PREC_IF_THEN = 258,
-     tk_else = 259,
-     tk_from = 260,
-     tk_branch = 261,
-     tk_number = 262,
-     tk_nature = 263,
-     tk_aliasparameter = 264,
-     tk_output = 265,
-     tk_anystring = 266,
-     tk_dollar_ident = 267,
-     tk_or = 268,
-     tk_aliasparam = 269,
-     tk_if = 270,
-     tk_analog = 271,
-     tk_parameter = 272,
-     tk_discipline = 273,
-     tk_char = 274,
-     tk_anytext = 275,
-     tk_for = 276,
-     tk_while = 277,
-     tk_real = 278,
-     tk_op_shr = 279,
-     tk_case = 280,
-     tk_potential = 281,
-     tk_endcase = 282,
-     tk_disc_id = 283,
-     tk_inf = 284,
-     tk_exclude = 285,
-     tk_ground = 286,
-     tk_endmodule = 287,
-     tk_begin = 288,
-     tk_enddiscipline = 289,
-     tk_domain = 290,
-     tk_ident = 291,
-     tk_op_shl = 292,
-     tk_string = 293,
-     tk_integer = 294,
-     tk_module = 295,
-     tk_endattribute = 296,
-     tk_end = 297,
-     tk_inout = 298,
-     tk_and = 299,
-     tk_bitwise_equr = 300,
-     tk_default = 301,
-     tk_function = 302,
-     tk_input = 303,
-     tk_beginattribute = 304,
-     tk_endnature = 305,
-     tk_endfunction = 306,
-     tk_flow = 307
-   };
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    PREC_IF_THEN = 258,            /* PREC_IF_THEN  */
+    tk_aliasparam = 259,           /* tk_aliasparam  */
+    tk_aliasparameter = 260,       /* tk_aliasparameter  */
+    tk_analog = 261,               /* tk_analog  */
+    tk_and = 262,                  /* tk_and  */
+    tk_anystring = 263,            /* tk_anystring  */
+    tk_anytext = 264,              /* tk_anytext  */
+    tk_begin = 265,                /* tk_begin  */
+    tk_beginattribute = 266,       /* tk_beginattribute  */
+    tk_bitwise_equr = 267,         /* tk_bitwise_equr  */
+    tk_branch = 268,               /* tk_branch  */
+    tk_case = 269,                 /* tk_case  */
+    tk_char = 270,                 /* tk_char  */
+    tk_default = 271,              /* tk_default  */
+    tk_disc_id = 272,              /* tk_disc_id  */
+    tk_discipline = 273,           /* tk_discipline  */
+    tk_dollar_ident = 274,         /* tk_dollar_ident  */
+    tk_domain = 275,               /* tk_domain  */
+    tk_else = 276,                 /* tk_else  */
+    tk_end = 277,                  /* tk_end  */
+    tk_endattribute = 278,         /* tk_endattribute  */
+    tk_endcase = 279,              /* tk_endcase  */
+    tk_enddiscipline = 280,        /* tk_enddiscipline  */
+    tk_endfunction = 281,          /* tk_endfunction  */
+    tk_endmodule = 282,            /* tk_endmodule  */
+    tk_endnature = 283,            /* tk_endnature  */
+    tk_exclude = 284,              /* tk_exclude  */
+    tk_flow = 285,                 /* tk_flow  */
+    tk_for = 286,                  /* tk_for  */
+    tk_from = 287,                 /* tk_from  */
+    tk_function = 288,             /* tk_function  */
+    tk_ground = 289,               /* tk_ground  */
+    tk_ident = 290,                /* tk_ident  */
+    tk_if = 291,                   /* tk_if  */
+    tk_inf = 292,                  /* tk_inf  */
+    tk_inout = 293,                /* tk_inout  */
+    tk_input = 294,                /* tk_input  */
+    tk_integer = 295,              /* tk_integer  */
+    tk_module = 296,               /* tk_module  */
+    tk_nature = 297,               /* tk_nature  */
+    tk_number = 298,               /* tk_number  */
+    tk_op_shl = 299,               /* tk_op_shl  */
+    tk_op_shr = 300,               /* tk_op_shr  */
+    tk_or = 301,                   /* tk_or  */
+    tk_output = 302,               /* tk_output  */
+    tk_parameter = 303,            /* tk_parameter  */
+    tk_potential = 304,            /* tk_potential  */
+    tk_real = 305,                 /* tk_real  */
+    tk_string = 306,               /* tk_string  */
+    tk_while = 307                 /* tk_while  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
-/* Tokens.  */
+/* Token kinds.  */
+#define YYEMPTY -2
+#define YYEOF 0
+#define YYerror 256
+#define YYUNDEF 257
 #define PREC_IF_THEN 258
-#define tk_else 259
-#define tk_from 260
-#define tk_branch 261
-#define tk_number 262
-#define tk_nature 263
-#define tk_aliasparameter 264
-#define tk_output 265
-#define tk_anystring 266
-#define tk_dollar_ident 267
-#define tk_or 268
-#define tk_aliasparam 269
-#define tk_if 270
-#define tk_analog 271
-#define tk_parameter 272
+#define tk_aliasparam 259
+#define tk_aliasparameter 260
+#define tk_analog 261
+#define tk_and 262
+#define tk_anystring 263
+#define tk_anytext 264
+#define tk_begin 265
+#define tk_beginattribute 266
+#define tk_bitwise_equr 267
+#define tk_branch 268
+#define tk_case 269
+#define tk_char 270
+#define tk_default 271
+#define tk_disc_id 272
 #define tk_discipline 273
-#define tk_char 274
-#define tk_anytext 275
-#define tk_for 276
-#define tk_while 277
-#define tk_real 278
-#define tk_op_shr 279
-#define tk_case 280
-#define tk_potential 281
-#define tk_endcase 282
-#define tk_disc_id 283
-#define tk_inf 284
-#define tk_exclude 285
-#define tk_ground 286
-#define tk_endmodule 287
-#define tk_begin 288
-#define tk_enddiscipline 289
-#define tk_domain 290
-#define tk_ident 291
-#define tk_op_shl 292
-#define tk_string 293
-#define tk_integer 294
-#define tk_module 295
-#define tk_endattribute 296
-#define tk_end 297
-#define tk_inout 298
-#define tk_and 299
-#define tk_bitwise_equr 300
-#define tk_default 301
-#define tk_function 302
-#define tk_input 303
-#define tk_beginattribute 304
-#define tk_endnature 305
-#define tk_endfunction 306
-#define tk_flow 307
+#define tk_dollar_ident 274
+#define tk_domain 275
+#define tk_else 276
+#define tk_end 277
+#define tk_endattribute 278
+#define tk_endcase 279
+#define tk_enddiscipline 280
+#define tk_endfunction 281
+#define tk_endmodule 282
+#define tk_endnature 283
+#define tk_exclude 284
+#define tk_flow 285
+#define tk_for 286
+#define tk_from 287
+#define tk_function 288
+#define tk_ground 289
+#define tk_ident 290
+#define tk_if 291
+#define tk_inf 292
+#define tk_inout 293
+#define tk_input 294
+#define tk_integer 295
+#define tk_module 296
+#define tk_nature 297
+#define tk_number 298
+#define tk_op_shl 299
+#define tk_op_shr 300
+#define tk_or 301
+#define tk_output 302
+#define tk_parameter 303
+#define tk_potential 304
+#define tk_real 305
+#define tk_string 306
+#define tk_while 307
 
-
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
+union YYSTYPE
 {
-/* Line 387 of yacc.c  */
 #line 126 "verilogaYacc.y"
 
   p_lexval _lexval;
   p_yaccval _yaccval;
 
+#line 356 "y.tab.c"
 
-/* Line 387 of yacc.c  */
-#line 344 "y.tab.c"
-} YYSTYPE;
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+
 extern YYSTYPE verilogalval;
 
-#ifdef YYPARSE_PARAM
-#if defined __STDC__ || defined __cplusplus
-int verilogaparse (void *YYPARSE_PARAM);
-#else
-int verilogaparse ();
-#endif
-#else /* ! YYPARSE_PARAM */
-#if defined __STDC__ || defined __cplusplus
 int verilogaparse (void);
-#else
-int verilogaparse ();
-#endif
-#endif /* ! YYPARSE_PARAM */
 
 #endif /* !YY_VERILOGA_Y_TAB_H_INCLUDED  */
+/* Symbol kind.  */
+enum yysymbol_kind_t
+{
+  YYSYMBOL_YYEMPTY = -2,
+  YYSYMBOL_YYEOF = 0,                      /* "end of file"  */
+  YYSYMBOL_YYerror = 1,                    /* error  */
+  YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
+  YYSYMBOL_PREC_IF_THEN = 3,               /* PREC_IF_THEN  */
+  YYSYMBOL_tk_aliasparam = 4,              /* tk_aliasparam  */
+  YYSYMBOL_tk_aliasparameter = 5,          /* tk_aliasparameter  */
+  YYSYMBOL_tk_analog = 6,                  /* tk_analog  */
+  YYSYMBOL_tk_and = 7,                     /* tk_and  */
+  YYSYMBOL_tk_anystring = 8,               /* tk_anystring  */
+  YYSYMBOL_tk_anytext = 9,                 /* tk_anytext  */
+  YYSYMBOL_tk_begin = 10,                  /* tk_begin  */
+  YYSYMBOL_tk_beginattribute = 11,         /* tk_beginattribute  */
+  YYSYMBOL_tk_bitwise_equr = 12,           /* tk_bitwise_equr  */
+  YYSYMBOL_tk_branch = 13,                 /* tk_branch  */
+  YYSYMBOL_tk_case = 14,                   /* tk_case  */
+  YYSYMBOL_tk_char = 15,                   /* tk_char  */
+  YYSYMBOL_tk_default = 16,                /* tk_default  */
+  YYSYMBOL_tk_disc_id = 17,                /* tk_disc_id  */
+  YYSYMBOL_tk_discipline = 18,             /* tk_discipline  */
+  YYSYMBOL_tk_dollar_ident = 19,           /* tk_dollar_ident  */
+  YYSYMBOL_tk_domain = 20,                 /* tk_domain  */
+  YYSYMBOL_tk_else = 21,                   /* tk_else  */
+  YYSYMBOL_tk_end = 22,                    /* tk_end  */
+  YYSYMBOL_tk_endattribute = 23,           /* tk_endattribute  */
+  YYSYMBOL_tk_endcase = 24,                /* tk_endcase  */
+  YYSYMBOL_tk_enddiscipline = 25,          /* tk_enddiscipline  */
+  YYSYMBOL_tk_endfunction = 26,            /* tk_endfunction  */
+  YYSYMBOL_tk_endmodule = 27,              /* tk_endmodule  */
+  YYSYMBOL_tk_endnature = 28,              /* tk_endnature  */
+  YYSYMBOL_tk_exclude = 29,                /* tk_exclude  */
+  YYSYMBOL_tk_flow = 30,                   /* tk_flow  */
+  YYSYMBOL_tk_for = 31,                    /* tk_for  */
+  YYSYMBOL_tk_from = 32,                   /* tk_from  */
+  YYSYMBOL_tk_function = 33,               /* tk_function  */
+  YYSYMBOL_tk_ground = 34,                 /* tk_ground  */
+  YYSYMBOL_tk_ident = 35,                  /* tk_ident  */
+  YYSYMBOL_tk_if = 36,                     /* tk_if  */
+  YYSYMBOL_tk_inf = 37,                    /* tk_inf  */
+  YYSYMBOL_tk_inout = 38,                  /* tk_inout  */
+  YYSYMBOL_tk_input = 39,                  /* tk_input  */
+  YYSYMBOL_tk_integer = 40,                /* tk_integer  */
+  YYSYMBOL_tk_module = 41,                 /* tk_module  */
+  YYSYMBOL_tk_nature = 42,                 /* tk_nature  */
+  YYSYMBOL_tk_number = 43,                 /* tk_number  */
+  YYSYMBOL_tk_op_shl = 44,                 /* tk_op_shl  */
+  YYSYMBOL_tk_op_shr = 45,                 /* tk_op_shr  */
+  YYSYMBOL_tk_or = 46,                     /* tk_or  */
+  YYSYMBOL_tk_output = 47,                 /* tk_output  */
+  YYSYMBOL_tk_parameter = 48,              /* tk_parameter  */
+  YYSYMBOL_tk_potential = 49,              /* tk_potential  */
+  YYSYMBOL_tk_real = 50,                   /* tk_real  */
+  YYSYMBOL_tk_string = 51,                 /* tk_string  */
+  YYSYMBOL_tk_while = 52,                  /* tk_while  */
+  YYSYMBOL_53_ = 53,                       /* ';'  */
+  YYSYMBOL_54_ = 54,                       /* '='  */
+  YYSYMBOL_55_ = 55,                       /* '('  */
+  YYSYMBOL_56_ = 56,                       /* ')'  */
+  YYSYMBOL_57_ = 57,                       /* ','  */
+  YYSYMBOL_58_ = 58,                       /* '{'  */
+  YYSYMBOL_59_ = 59,                       /* '}'  */
+  YYSYMBOL_60_ = 60,                       /* '['  */
+  YYSYMBOL_61_ = 61,                       /* ':'  */
+  YYSYMBOL_62_ = 62,                       /* ']'  */
+  YYSYMBOL_63_ = 63,                       /* '-'  */
+  YYSYMBOL_64_ = 64,                       /* '+'  */
+  YYSYMBOL_65_ = 65,                       /* '@'  */
+  YYSYMBOL_66_ = 66,                       /* '<'  */
+  YYSYMBOL_67_ = 67,                       /* '#'  */
+  YYSYMBOL_68_ = 68,                       /* '.'  */
+  YYSYMBOL_69_ = 69,                       /* '?'  */
+  YYSYMBOL_70_ = 70,                       /* '~'  */
+  YYSYMBOL_71_ = 71,                       /* '^'  */
+  YYSYMBOL_72_ = 72,                       /* '|'  */
+  YYSYMBOL_73_ = 73,                       /* '&'  */
+  YYSYMBOL_74_ = 74,                       /* '!'  */
+  YYSYMBOL_75_ = 75,                       /* '>'  */
+  YYSYMBOL_76_ = 76,                       /* '*'  */
+  YYSYMBOL_77_ = 77,                       /* '/'  */
+  YYSYMBOL_78_ = 78,                       /* '%'  */
+  YYSYMBOL_YYACCEPT = 79,                  /* $accept  */
+  YYSYMBOL_R_admsParse = 80,               /* R_admsParse  */
+  YYSYMBOL_81_R_l_admsParse = 81,          /* R_l.admsParse  */
+  YYSYMBOL_82_R_s_admsParse = 82,          /* R_s.admsParse  */
+  YYSYMBOL_R_discipline_member = 83,       /* R_discipline_member  */
+  YYSYMBOL_R_discipline_name = 84,         /* R_discipline_name  */
+  YYSYMBOL_85_R_l_discipline_assignment = 85, /* R_l.discipline_assignment  */
+  YYSYMBOL_86_R_s_discipline_assignment = 86, /* R_s.discipline_assignment  */
+  YYSYMBOL_87_R_discipline_naturename = 87, /* R_discipline.naturename  */
+  YYSYMBOL_R_nature_member = 88,           /* R_nature_member  */
+  YYSYMBOL_89_R_l_nature_assignment = 89,  /* R_l.nature_assignment  */
+  YYSYMBOL_90_R_s_nature_assignment = 90,  /* R_s.nature_assignment  */
+  YYSYMBOL_91_R_d_attribute_0 = 91,        /* R_d.attribute.0  */
+  YYSYMBOL_92_R_d_attribute = 92,          /* R_d.attribute  */
+  YYSYMBOL_93_R_l_attribute = 93,          /* R_l.attribute  */
+  YYSYMBOL_94_R_s_attribute = 94,          /* R_s.attribute  */
+  YYSYMBOL_95_R_d_module = 95,             /* R_d.module  */
+  YYSYMBOL_96_1 = 96,                      /* $@1  */
+  YYSYMBOL_97_2 = 97,                      /* $@2  */
+  YYSYMBOL_R_modulebody = 98,              /* R_modulebody  */
+  YYSYMBOL_R_netlist = 99,                 /* R_netlist  */
+  YYSYMBOL_100_R_l_instance = 100,         /* R_l.instance  */
+  YYSYMBOL_101_R_d_terminal = 101,         /* R_d.terminal  */
+  YYSYMBOL_102_R_l_terminal_0 = 102,       /* R_l.terminal.0  */
+  YYSYMBOL_103_R_l_terminal = 103,         /* R_l.terminal  */
+  YYSYMBOL_104_R_s_terminal = 104,         /* R_s.terminal  */
+  YYSYMBOL_105_R_l_declaration = 105,      /* R_l.declaration  */
+  YYSYMBOL_106_R_s_declaration_withattribute = 106, /* R_s.declaration.withattribute  */
+  YYSYMBOL_107_R_d_attribute_global = 107, /* R_d.attribute.global  */
+  YYSYMBOL_108_R_s_declaration = 108,      /* R_s.declaration  */
+  YYSYMBOL_109_3 = 109,                    /* $@3  */
+  YYSYMBOL_110_4 = 110,                    /* $@4  */
+  YYSYMBOL_111_5 = 111,                    /* $@5  */
+  YYSYMBOL_112_R_d_node = 112,             /* R_d.node  */
+  YYSYMBOL_113_6 = 113,                    /* $@6  */
+  YYSYMBOL_114_7 = 114,                    /* $@7  */
+  YYSYMBOL_115_8 = 115,                    /* $@8  */
+  YYSYMBOL_116_R_node_type = 116,          /* R_node.type  */
+  YYSYMBOL_117_R_l_terminalnode = 117,     /* R_l.terminalnode  */
+  YYSYMBOL_118_R_l_node = 118,             /* R_l.node  */
+  YYSYMBOL_119_R_s_terminalnode = 119,     /* R_s.terminalnode  */
+  YYSYMBOL_120_R_s_node = 120,             /* R_s.node  */
+  YYSYMBOL_121_R_d_branch = 121,           /* R_d.branch  */
+  YYSYMBOL_122_R_l_branchalias = 122,      /* R_l.branchalias  */
+  YYSYMBOL_123_R_s_branchalias = 123,      /* R_s.branchalias  */
+  YYSYMBOL_124_R_s_branch = 124,           /* R_s.branch  */
+  YYSYMBOL_125_R_d_analogfunction = 125,   /* R_d.analogfunction  */
+  YYSYMBOL_126_R_d_analogfunction_proto = 126, /* R_d.analogfunction.proto  */
+  YYSYMBOL_127_R_d_analogfunction_name = 127, /* R_d.analogfunction.name  */
+  YYSYMBOL_128_R_l_analogfunction_declaration = 128, /* R_l.analogfunction.declaration  */
+  YYSYMBOL_129_R_s_analogfunction_declaration = 129, /* R_s.analogfunction.declaration  */
+  YYSYMBOL_130_R_l_analogfunction_input_variable = 130, /* R_l.analogfunction.input.variable  */
+  YYSYMBOL_131_R_l_analogfunction_output_variable = 131, /* R_l.analogfunction.output.variable  */
+  YYSYMBOL_132_R_l_analogfunction_inout_variable = 132, /* R_l.analogfunction.inout.variable  */
+  YYSYMBOL_133_R_l_analogfunction_integer_variable = 133, /* R_l.analogfunction.integer.variable  */
+  YYSYMBOL_134_R_l_analogfunction_real_variable = 134, /* R_l.analogfunction.real.variable  */
+  YYSYMBOL_135_R_variable_type_set = 135,  /* R_variable.type.set  */
+  YYSYMBOL_136_R_variable_type = 136,      /* R_variable.type  */
+  YYSYMBOL_137_9 = 137,                    /* $@9  */
+  YYSYMBOL_138_R_d_variable_end = 138,     /* R_d.variable.end  */
+  YYSYMBOL_139_R_l_parameter = 139,        /* R_l.parameter  */
+  YYSYMBOL_140_R_l_variable = 140,         /* R_l.variable  */
+  YYSYMBOL_141_R_d_aliasparameter = 141,   /* R_d.aliasparameter  */
+  YYSYMBOL_142_R_d_aliasparameter_token = 142, /* R_d.aliasparameter.token  */
+  YYSYMBOL_143_R_s_parameter = 143,        /* R_s.parameter  */
+  YYSYMBOL_144_R_s_variable = 144,         /* R_s.variable  */
+  YYSYMBOL_145_R_s_parameter_name = 145,   /* R_s.parameter.name  */
+  YYSYMBOL_146_R_s_variable_name = 146,    /* R_s.variable.name  */
+  YYSYMBOL_147_R_s_parameter_range = 147,  /* R_s.parameter.range  */
+  YYSYMBOL_148_R_l_interval = 148,         /* R_l.interval  */
+  YYSYMBOL_149_R_s_interval = 149,         /* R_s.interval  */
+  YYSYMBOL_150_R_d_interval = 150,         /* R_d.interval  */
+  YYSYMBOL_151_R_interval_inf = 151,       /* R_interval.inf  */
+  YYSYMBOL_152_R_interval_sup = 152,       /* R_interval.sup  */
+  YYSYMBOL_R_analog = 153,                 /* R_analog  */
+  YYSYMBOL_154_10 = 154,                   /* $@10  */
+  YYSYMBOL_R_analogcode = 155,             /* R_analogcode  */
+  YYSYMBOL_156_R_l_expression = 156,       /* R_l.expression  */
+  YYSYMBOL_157_R_analogcode_atomic = 157,  /* R_analogcode.atomic  */
+  YYSYMBOL_158_R_analogcode_block = 158,   /* R_analogcode.block  */
+  YYSYMBOL_159_R_analogcode_block_atevent = 159, /* R_analogcode.block.atevent  */
+  YYSYMBOL_160_R_l_analysis = 160,         /* R_l.analysis  */
+  YYSYMBOL_161_R_s_analysis = 161,         /* R_s.analysis  */
+  YYSYMBOL_162_R_d_block = 162,            /* R_d.block  */
+  YYSYMBOL_163_R_d_block_begin = 163,      /* R_d.block.begin  */
+  YYSYMBOL_164_R_l_blockitem = 164,        /* R_l.blockitem  */
+  YYSYMBOL_165_R_d_blockvariable = 165,    /* R_d.blockvariable  */
+  YYSYMBOL_166_R_l_blockvariable = 166,    /* R_l.blockvariable  */
+  YYSYMBOL_167_R_s_blockvariable = 167,    /* R_s.blockvariable  */
+  YYSYMBOL_168_R_d_contribution = 168,     /* R_d.contribution  */
+  YYSYMBOL_R_contribution = 169,           /* R_contribution  */
+  YYSYMBOL_R_source = 170,                 /* R_source  */
+  YYSYMBOL_171_R_d_while = 171,            /* R_d.while  */
+  YYSYMBOL_172_R_d_for = 172,              /* R_d.for  */
+  YYSYMBOL_173_R_d_case = 173,             /* R_d.case  */
+  YYSYMBOL_174_R_l_case_item = 174,        /* R_l.case.item  */
+  YYSYMBOL_175_R_s_case_item = 175,        /* R_s.case.item  */
+  YYSYMBOL_176_R_s_paramlist_0 = 176,      /* R_s.paramlist.0  */
+  YYSYMBOL_177_R_s_instance = 177,         /* R_s.instance  */
+  YYSYMBOL_178_R_instance_module_name = 178, /* R_instance.module.name  */
+  YYSYMBOL_179_R_l_instance_parameter = 179, /* R_l.instance.parameter  */
+  YYSYMBOL_180_R_s_instance_parameter = 180, /* R_s.instance.parameter  */
+  YYSYMBOL_181_R_s_assignment = 181,       /* R_s.assignment  */
+  YYSYMBOL_182_R_d_conditional = 182,      /* R_d.conditional  */
+  YYSYMBOL_183_R_s_expression = 183,       /* R_s.expression  */
+  YYSYMBOL_184_R_l_enode = 184,            /* R_l.enode  */
+  YYSYMBOL_185_R_s_function_expression = 185, /* R_s.function_expression  */
+  YYSYMBOL_R_expression = 186,             /* R_expression  */
+  YYSYMBOL_187_R_e_conditional = 187,      /* R_e.conditional  */
+  YYSYMBOL_188_R_e_bitwise_equ = 188,      /* R_e.bitwise_equ  */
+  YYSYMBOL_189_R_e_bitwise_xor = 189,      /* R_e.bitwise_xor  */
+  YYSYMBOL_190_R_e_bitwise_or = 190,       /* R_e.bitwise_or  */
+  YYSYMBOL_191_R_e_bitwise_and = 191,      /* R_e.bitwise_and  */
+  YYSYMBOL_192_R_e_logical_or = 192,       /* R_e.logical_or  */
+  YYSYMBOL_193_R_e_logical_and = 193,      /* R_e.logical_and  */
+  YYSYMBOL_194_R_e_comp_equ = 194,         /* R_e.comp_equ  */
+  YYSYMBOL_195_R_e_comp = 195,             /* R_e.comp  */
+  YYSYMBOL_196_R_e_bitwise_shift = 196,    /* R_e.bitwise_shift  */
+  YYSYMBOL_197_R_e_arithm_add = 197,       /* R_e.arithm_add  */
+  YYSYMBOL_198_R_e_arithm_mult = 198,      /* R_e.arithm_mult  */
+  YYSYMBOL_199_R_e_unary = 199,            /* R_e.unary  */
+  YYSYMBOL_200_R_e_atomic = 200            /* R_e.atomic  */
+};
+typedef enum yysymbol_kind_t yysymbol_kind_t;
 
-/* Copy the second part of user declarations.  */
 
-/* Line 390 of yacc.c  */
-#line 372 "y.tab.c"
+
 
 #ifdef short
 # undef short
 #endif
 
-#ifdef YYTYPE_UINT8
-typedef YYTYPE_UINT8 yytype_uint8;
-#else
-typedef unsigned char yytype_uint8;
+/* On compilers that do not define __PTRDIFF_MAX__ etc., make sure
+   <limits.h> and (if available) <stdint.h> are included
+   so that the code can choose integer types of a good width.  */
+
+#ifndef __PTRDIFF_MAX__
+# include <limits.h> /* INFRINGES ON USER NAME SPACE */
+# if defined __STDC_VERSION__ && 199901 <= __STDC_VERSION__
+#  include <stdint.h> /* INFRINGES ON USER NAME SPACE */
+#  define YY_STDINT_H
+# endif
 #endif
 
-#ifdef YYTYPE_INT8
-typedef YYTYPE_INT8 yytype_int8;
-#elif (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+/* Narrow types that promote to a signed type and that can represent a
+   signed or unsigned integer of at least N bits.  In tables they can
+   save space and decrease cache pressure.  Promoting to a signed type
+   helps avoid bugs in integer arithmetic.  */
+
+#ifdef __INT_LEAST8_MAX__
+typedef __INT_LEAST8_TYPE__ yytype_int8;
+#elif defined YY_STDINT_H
+typedef int_least8_t yytype_int8;
+#else
 typedef signed char yytype_int8;
-#else
-typedef short int yytype_int8;
 #endif
 
-#ifdef YYTYPE_UINT16
-typedef YYTYPE_UINT16 yytype_uint16;
+#ifdef __INT_LEAST16_MAX__
+typedef __INT_LEAST16_TYPE__ yytype_int16;
+#elif defined YY_STDINT_H
+typedef int_least16_t yytype_int16;
 #else
-typedef unsigned short int yytype_uint16;
+typedef short yytype_int16;
 #endif
 
-#ifdef YYTYPE_INT16
-typedef YYTYPE_INT16 yytype_int16;
+/* Work around bug in HP-UX 11.23, which defines these macros
+   incorrectly for preprocessor constants.  This workaround can likely
+   be removed in 2023, as HPE has promised support for HP-UX 11.23
+   (aka HP-UX 11i v2) only through the end of 2022; see Table 2 of
+   <https://h20195.www2.hpe.com/V2/getpdf.aspx/4AA4-7673ENW.pdf>.  */
+#ifdef __hpux
+# undef UINT_LEAST8_MAX
+# undef UINT_LEAST16_MAX
+# define UINT_LEAST8_MAX 255
+# define UINT_LEAST16_MAX 65535
+#endif
+
+#if defined __UINT_LEAST8_MAX__ && __UINT_LEAST8_MAX__ <= __INT_MAX__
+typedef __UINT_LEAST8_TYPE__ yytype_uint8;
+#elif (!defined __UINT_LEAST8_MAX__ && defined YY_STDINT_H \
+       && UINT_LEAST8_MAX <= INT_MAX)
+typedef uint_least8_t yytype_uint8;
+#elif !defined __UINT_LEAST8_MAX__ && UCHAR_MAX <= INT_MAX
+typedef unsigned char yytype_uint8;
 #else
-typedef short int yytype_int16;
+typedef short yytype_uint8;
+#endif
+
+#if defined __UINT_LEAST16_MAX__ && __UINT_LEAST16_MAX__ <= __INT_MAX__
+typedef __UINT_LEAST16_TYPE__ yytype_uint16;
+#elif (!defined __UINT_LEAST16_MAX__ && defined YY_STDINT_H \
+       && UINT_LEAST16_MAX <= INT_MAX)
+typedef uint_least16_t yytype_uint16;
+#elif !defined __UINT_LEAST16_MAX__ && USHRT_MAX <= INT_MAX
+typedef unsigned short yytype_uint16;
+#else
+typedef int yytype_uint16;
+#endif
+
+#ifndef YYPTRDIFF_T
+# if defined __PTRDIFF_TYPE__ && defined __PTRDIFF_MAX__
+#  define YYPTRDIFF_T __PTRDIFF_TYPE__
+#  define YYPTRDIFF_MAXIMUM __PTRDIFF_MAX__
+# elif defined PTRDIFF_MAX
+#  ifndef ptrdiff_t
+#   include <stddef.h> /* INFRINGES ON USER NAME SPACE */
+#  endif
+#  define YYPTRDIFF_T ptrdiff_t
+#  define YYPTRDIFF_MAXIMUM PTRDIFF_MAX
+# else
+#  define YYPTRDIFF_T long
+#  define YYPTRDIFF_MAXIMUM LONG_MAX
+# endif
 #endif
 
 #ifndef YYSIZE_T
@@ -406,16 +669,28 @@ typedef short int yytype_int16;
 #  define YYSIZE_T __SIZE_TYPE__
 # elif defined size_t
 #  define YYSIZE_T size_t
-# elif ! defined YYSIZE_T && (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+# elif defined __STDC_VERSION__ && 199901 <= __STDC_VERSION__
 #  include <stddef.h> /* INFRINGES ON USER NAME SPACE */
 #  define YYSIZE_T size_t
 # else
-#  define YYSIZE_T unsigned int
+#  define YYSIZE_T unsigned
 # endif
 #endif
 
-#define YYSIZE_MAXIMUM ((YYSIZE_T) -1)
+#define YYSIZE_MAXIMUM                                  \
+  YY_CAST (YYPTRDIFF_T,                                 \
+           (YYPTRDIFF_MAXIMUM < YY_CAST (YYSIZE_T, -1)  \
+            ? YYPTRDIFF_MAXIMUM                         \
+            : YY_CAST (YYSIZE_T, -1)))
+
+#define YYSIZEOF(X) YY_CAST (YYPTRDIFF_T, sizeof (X))
+
+
+/* Stored state numbers (used for stacks). */
+typedef yytype_int16 yy_state_t;
+
+/* State numbers in computations.  */
+typedef int yy_state_fast_t;
 
 #ifndef YY_
 # if defined YYENABLE_NLS && YYENABLE_NLS
@@ -429,32 +704,65 @@ typedef short int yytype_int16;
 # endif
 #endif
 
+
+#ifndef YY_ATTRIBUTE_PURE
+# if defined __GNUC__ && 2 < __GNUC__ + (96 <= __GNUC_MINOR__)
+#  define YY_ATTRIBUTE_PURE __attribute__ ((__pure__))
+# else
+#  define YY_ATTRIBUTE_PURE
+# endif
+#endif
+
+#ifndef YY_ATTRIBUTE_UNUSED
+# if defined __GNUC__ && 2 < __GNUC__ + (7 <= __GNUC_MINOR__)
+#  define YY_ATTRIBUTE_UNUSED __attribute__ ((__unused__))
+# else
+#  define YY_ATTRIBUTE_UNUSED
+# endif
+#endif
+
 /* Suppress unused-variable warnings by "using" E.  */
 #if ! defined lint || defined __GNUC__
-# define YYUSE(E) ((void) (E))
+# define YY_USE(E) ((void) (E))
 #else
-# define YYUSE(E) /* empty */
+# define YY_USE(E) /* empty */
 #endif
 
-/* Identity function, used to suppress warnings about constant conditions.  */
-#ifndef lint
-# define YYID(N) (N)
+#if defined __GNUC__ && ! defined __ICC && 407 <= __GNUC__ * 100 + __GNUC_MINOR__
+/* Suppress an incorrect diagnostic about yylval being uninitialized.  */
+# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN                            \
+    _Pragma ("GCC diagnostic push")                                     \
+    _Pragma ("GCC diagnostic ignored \"-Wuninitialized\"")              \
+    _Pragma ("GCC diagnostic ignored \"-Wmaybe-uninitialized\"")
+# define YY_IGNORE_MAYBE_UNINITIALIZED_END      \
+    _Pragma ("GCC diagnostic pop")
 #else
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-static int
-YYID (int yyi)
-#else
-static int
-YYID (yyi)
-    int yyi;
+# define YY_INITIAL_VALUE(Value) Value
 #endif
-{
-  return yyi;
-}
+#ifndef YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+# define YY_IGNORE_MAYBE_UNINITIALIZED_END
+#endif
+#ifndef YY_INITIAL_VALUE
+# define YY_INITIAL_VALUE(Value) /* Nothing. */
 #endif
 
-#if ! defined yyoverflow || YYERROR_VERBOSE
+#if defined __cplusplus && defined __GNUC__ && ! defined __ICC && 6 <= __GNUC__
+# define YY_IGNORE_USELESS_CAST_BEGIN                          \
+    _Pragma ("GCC diagnostic push")                            \
+    _Pragma ("GCC diagnostic ignored \"-Wuseless-cast\"")
+# define YY_IGNORE_USELESS_CAST_END            \
+    _Pragma ("GCC diagnostic pop")
+#endif
+#ifndef YY_IGNORE_USELESS_CAST_BEGIN
+# define YY_IGNORE_USELESS_CAST_BEGIN
+# define YY_IGNORE_USELESS_CAST_END
+#endif
+
+
+#define YY_ASSERT(E) ((void) (0 && (E)))
+
+#if !defined yyoverflow
 
 /* The parser invokes alloca or malloc; define the necessary symbols.  */
 
@@ -471,8 +779,7 @@ YYID (yyi)
 #    define alloca _alloca
 #   else
 #    define YYSTACK_ALLOC alloca
-#    if ! defined _ALLOCA_H && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#    if ! defined _ALLOCA_H && ! defined EXIT_SUCCESS
 #     include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
       /* Use EXIT_SUCCESS as a witness for stdlib.h.  */
 #     ifndef EXIT_SUCCESS
@@ -484,8 +791,8 @@ YYID (yyi)
 # endif
 
 # ifdef YYSTACK_ALLOC
-   /* Pacify GCC's `empty if-body' warning.  */
-#  define YYSTACK_FREE(Ptr) do { /* empty */; } while (YYID (0))
+   /* Pacify GCC's 'empty if-body' warning.  */
+#  define YYSTACK_FREE(Ptr) do { /* empty */; } while (0)
 #  ifndef YYSTACK_ALLOC_MAXIMUM
     /* The OS might guarantee only one guard page at the bottom of the stack,
        and a page size can be as small as 4096 bytes.  So we cannot safely
@@ -501,7 +808,7 @@ YYID (yyi)
 #  endif
 #  if (defined __cplusplus && ! defined EXIT_SUCCESS \
        && ! ((defined YYMALLOC || defined malloc) \
-	     && (defined YYFREE || defined free)))
+             && (defined YYFREE || defined free)))
 #   include <stdlib.h> /* INFRINGES ON USER NAME SPACE */
 #   ifndef EXIT_SUCCESS
 #    define EXIT_SUCCESS 0
@@ -509,40 +816,37 @@ YYID (yyi)
 #  endif
 #  ifndef YYMALLOC
 #   define YYMALLOC malloc
-#   if ! defined malloc && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#   if ! defined malloc && ! defined EXIT_SUCCESS
 void *malloc (YYSIZE_T); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 #  ifndef YYFREE
 #   define YYFREE free
-#   if ! defined free && ! defined EXIT_SUCCESS && (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+#   if ! defined free && ! defined EXIT_SUCCESS
 void free (void *); /* INFRINGES ON USER NAME SPACE */
 #   endif
 #  endif
 # endif
-#endif /* ! defined yyoverflow || YYERROR_VERBOSE */
-
+#endif /* !defined yyoverflow */
 
 #if (! defined yyoverflow \
      && (! defined __cplusplus \
-	 || (defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
+         || (defined YYSTYPE_IS_TRIVIAL && YYSTYPE_IS_TRIVIAL)))
 
 /* A type that is properly aligned for any stack member.  */
 union yyalloc
 {
-  yytype_int16 yyss_alloc;
+  yy_state_t yyss_alloc;
   YYSTYPE yyvs_alloc;
 };
 
 /* The size of the maximum gap between one aligned stack and the next.  */
-# define YYSTACK_GAP_MAXIMUM (sizeof (union yyalloc) - 1)
+# define YYSTACK_GAP_MAXIMUM (YYSIZEOF (union yyalloc) - 1)
 
 /* The size of an array large to enough to hold all stacks, each with
    N elements.  */
 # define YYSTACK_BYTES(N) \
-     ((N) * (sizeof (yytype_int16) + sizeof (YYSTYPE)) \
+     ((N) * (YYSIZEOF (yy_state_t) + YYSIZEOF (YYSTYPE)) \
       + YYSTACK_GAP_MAXIMUM)
 
 # define YYCOPY_NEEDED 1
@@ -552,16 +856,16 @@ union yyalloc
    elements in the stack, and YYPTR gives the new location of the
    stack.  Advance YYPTR to a properly aligned location for the next
    stack.  */
-# define YYSTACK_RELOCATE(Stack_alloc, Stack)				\
-    do									\
-      {									\
-	YYSIZE_T yynewbytes;						\
-	YYCOPY (&yyptr->Stack_alloc, Stack, yysize);			\
-	Stack = &yyptr->Stack_alloc;					\
-	yynewbytes = yystacksize * sizeof (*Stack) + YYSTACK_GAP_MAXIMUM; \
-	yyptr += yynewbytes / sizeof (*yyptr);				\
-      }									\
-    while (YYID (0))
+# define YYSTACK_RELOCATE(Stack_alloc, Stack)                           \
+    do                                                                  \
+      {                                                                 \
+        YYPTRDIFF_T yynewbytes;                                         \
+        YYCOPY (&yyptr->Stack_alloc, Stack, yysize);                    \
+        Stack = &yyptr->Stack_alloc;                                    \
+        yynewbytes = yystacksize * YYSIZEOF (*Stack) + YYSTACK_GAP_MAXIMUM; \
+        yyptr += yynewbytes / YYSIZEOF (*yyptr);                        \
+      }                                                                 \
+    while (0)
 
 #endif
 
@@ -571,16 +875,16 @@ union yyalloc
 # ifndef YYCOPY
 #  if defined __GNUC__ && 1 < __GNUC__
 #   define YYCOPY(Dst, Src, Count) \
-      __builtin_memcpy (Dst, Src, (Count) * sizeof (*(Src)))
+      __builtin_memcpy (Dst, Src, YY_CAST (YYSIZE_T, (Count)) * sizeof (*(Src)))
 #  else
 #   define YYCOPY(Dst, Src, Count)              \
       do                                        \
         {                                       \
-          YYSIZE_T yyi;                         \
+          YYPTRDIFF_T yyi;                      \
           for (yyi = 0; yyi < (Count); yyi++)   \
             (Dst)[yyi] = (Src)[yyi];            \
         }                                       \
-      while (YYID (0))
+      while (0)
 #  endif
 # endif
 #endif /* !YYCOPY_NEEDED */
@@ -588,7 +892,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  20
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   653
+#define YYLAST   634
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  79
@@ -596,18 +900,23 @@ union yyalloc
 #define YYNNTS  122
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  263
-/* YYNRULES -- Number of states.  */
+/* YYNSTATES -- Number of states.  */
 #define YYNSTATES  514
 
-/* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
-#define YYUNDEFTOK  2
+/* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   307
 
-#define YYTRANSLATE(YYX)						\
-  ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
 
-/* YYTRANSLATE[YYLEX] -- Bison symbol number corresponding to YYLEX.  */
-static const yytype_uint8 yytranslate[] =
+/* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
+   as returned by yylex, with out-of-bounds checking.  */
+#define YYTRANSLATE(YYX)                                \
+  (0 <= (YYX) && (YYX) <= YYMAXUTOK                     \
+   ? YY_CAST (yysymbol_kind_t, yytranslate[YYX])        \
+   : YYSYMBOL_YYUNDEF)
+
+/* YYTRANSLATE[TOKEN-NUM] -- Symbol number corresponding to TOKEN-NUM
+   as returned by yylex.  */
+static const yytype_int8 yytranslate[] =
 {
        0,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -643,135 +952,8 @@ static const yytype_uint8 yytranslate[] =
 };
 
 #if YYDEBUG
-/* YYPRHS[YYN] -- Index of the first RHS symbol of rule number YYN in
-   YYRHS.  */
-static const yytype_uint16 yyprhs[] =
-{
-       0,     0,     3,     5,     7,    10,    12,    14,    16,    21,
-      23,    25,    28,    32,    36,    40,    42,    47,    49,    52,
-      57,    63,    68,    73,    74,    76,    80,    83,    86,    88,
-      91,    95,    96,    97,   106,   107,   109,   111,   114,   116,
-     118,   121,   124,   128,   130,   133,   139,   140,   142,   144,
-     148,   150,   152,   155,   157,   160,   162,   164,   166,   167,
-     173,   174,   179,   180,   185,   187,   189,   191,   192,   197,
-     198,   203,   204,   209,   211,   213,   215,   217,   221,   223,
-     227,   230,   233,   237,   239,   243,   245,   252,   257,   262,
-     267,   273,   279,   281,   283,   286,   290,   294,   298,   302,
-     306,   308,   312,   314,   318,   320,   324,   326,   330,   332,
-     336,   338,   340,   342,   343,   347,   349,   351,   355,   357,
-     361,   368,   370,   372,   375,   378,   383,   390,   392,   399,
-     400,   402,   404,   407,   410,   413,   419,   425,   431,   437,
-     439,   441,   444,   446,   448,   451,   452,   456,   458,   460,
-     462,   466,   469,   471,   474,   476,   478,   480,   482,   488,
-     493,   496,   498,   500,   503,   511,   514,   519,   521,   525,
-     527,   530,   535,   539,   545,   548,   550,   553,   557,   561,
-     565,   567,   571,   573,   580,   584,   589,   596,   601,   607,
-     617,   624,   626,   629,   633,   637,   640,   641,   646,   654,
-     656,   658,   662,   668,   672,   677,   684,   692,   698,   706,
-     708,   710,   714,   716,   718,   720,   726,   728,   732,   737,
-     739,   743,   745,   749,   751,   755,   757,   761,   763,   767,
-     769,   774,   779,   781,   785,   790,   794,   799,   801,   805,
-     809,   811,   815,   819,   821,   825,   829,   833,   835,   838,
-     841,   844,   847,   849,   852,   854,   857,   859,   861,   863,
-     865,   870,   875,   880
-};
-
-/* YYRHS -- A `-1'-separated list of the rules' RHS.  */
-static const yytype_int16 yyrhs[] =
-{
-      80,     0,    -1,    81,    -1,    82,    -1,    81,    82,    -1,
-      95,    -1,    83,    -1,    88,    -1,    18,    84,    85,    34,
-      -1,    36,    -1,    86,    -1,    85,    86,    -1,    26,    87,
-      53,    -1,    52,    87,    53,    -1,    35,    36,    53,    -1,
-      36,    -1,     8,    36,    89,    50,    -1,    90,    -1,    89,
-      90,    -1,    36,    54,     7,    53,    -1,    36,    54,     7,
-      36,    53,    -1,    36,    54,    11,    53,    -1,    36,    54,
-      36,    53,    -1,    -1,    92,    -1,    49,    93,    41,    -1,
-      49,    20,    -1,    49,    41,    -1,    94,    -1,    93,    94,
-      -1,    36,    54,    11,    -1,    -1,    -1,    91,    40,    36,
-      96,   101,    97,    98,    32,    -1,    -1,   105,    -1,    99,
-      -1,   105,    99,    -1,   153,    -1,   100,    -1,   100,   153,
-      -1,   153,   100,    -1,   100,   153,   100,    -1,   177,    -1,
-     100,   177,    -1,    55,   102,    56,    91,    53,    -1,    -1,
-     103,    -1,   104,    -1,   103,    57,   104,    -1,    36,    -1,
-     106,    -1,   105,   106,    -1,   108,    -1,   107,   108,    -1,
-      92,    -1,   112,    -1,   121,    -1,    -1,    17,   109,   136,
-     139,   138,    -1,    -1,    17,   110,   139,   138,    -1,    -1,
-     136,   111,   140,   138,    -1,   141,    -1,   125,    -1,    53,
-      -1,    -1,   116,   113,   117,    53,    -1,    -1,    31,   114,
-     118,    53,    -1,    -1,    28,   115,   118,    53,    -1,    48,
-      -1,    10,    -1,    43,    -1,   119,    -1,   117,    57,   119,
-      -1,   120,    -1,   118,    57,   120,    -1,    36,    91,    -1,
-      36,    91,    -1,     6,   124,    53,    -1,   123,    -1,   122,
-      57,   123,    -1,    36,    -1,    55,    36,    57,    36,    56,
-     122,    -1,    55,    36,    56,   122,    -1,   126,   128,   158,
-      51,    -1,    16,    47,   127,    53,    -1,    16,    47,    39,
-     127,    53,    -1,    16,    47,    23,   127,    53,    -1,    36,
-      -1,   129,    -1,   128,   129,    -1,    48,   130,    53,    -1,
-      10,   131,    53,    -1,    43,   132,    53,    -1,    39,   133,
-      53,    -1,    23,   134,    53,    -1,    36,    -1,   130,    57,
-      36,    -1,    36,    -1,   131,    57,    36,    -1,    36,    -1,
-     132,    57,    36,    -1,    36,    -1,   133,    57,    36,    -1,
-      36,    -1,   134,    57,    36,    -1,    39,    -1,    23,    -1,
-      38,    -1,    -1,   135,   137,    91,    -1,    53,    -1,   143,
-      -1,   139,    57,   143,    -1,   144,    -1,   140,    57,   144,
-      -1,   142,    36,    54,    36,    91,    53,    -1,     9,    -1,
-      14,    -1,   145,    91,    -1,   146,    91,    -1,   146,    54,
-     183,   147,    -1,   146,    54,    58,   156,    59,   147,    -1,
-      36,    -1,    36,    60,    39,    61,    39,    62,    -1,    -1,
-     148,    -1,   149,    -1,   148,   149,    -1,     5,   150,    -1,
-      30,   150,    -1,    55,   151,    61,   152,    56,    -1,    55,
-     151,    61,   152,    62,    -1,    60,   151,    61,   152,    56,
-      -1,    60,   151,    61,   152,    62,    -1,   183,    -1,   183,
-      -1,    63,    29,    -1,   183,    -1,    29,    -1,    64,    29,
-      -1,    -1,    16,   154,   155,    -1,   157,    -1,   158,    -1,
-     183,    -1,   156,    57,   183,    -1,    91,   165,    -1,   168,
-      -1,   181,    53,    -1,   182,    -1,   171,    -1,   173,    -1,
-     172,    -1,    12,    55,   156,    56,    53,    -1,    12,    55,
-      56,    53,    -1,    12,    53,    -1,    53,    -1,   162,    -1,
-     159,   162,    -1,    65,    55,    36,    55,   160,    56,    56,
-      -1,    65,    36,    -1,    65,    55,    36,    56,    -1,   161,
-      -1,   160,    57,   161,    -1,    11,    -1,   163,    42,    -1,
-     163,    61,    36,    42,    -1,   163,   164,    42,    -1,   163,
-      61,    36,   164,    42,    -1,    91,    33,    -1,   155,    -1,
-     164,   155,    -1,    39,   166,    53,    -1,    23,   166,    53,
-      -1,    38,   166,    53,    -1,   167,    -1,   166,    57,   167,
-      -1,    36,    -1,    36,    60,     7,    61,     7,    62,    -1,
-     169,    91,    53,    -1,   170,    66,    64,   183,    -1,    36,
-      55,    36,    57,    36,    56,    -1,    36,    55,    36,    56,
-      -1,    22,    55,   183,    56,   155,    -1,    21,    55,   181,
-      53,   183,    53,   181,    56,   155,    -1,    25,    55,   183,
-      56,   174,    27,    -1,   175,    -1,   174,   175,    -1,   184,
-      61,   155,    -1,    46,    61,   155,    -1,    46,   155,    -1,
-      -1,    67,    55,   179,    56,    -1,   178,   176,    36,    55,
-     118,    56,    53,    -1,    36,    -1,   180,    -1,   179,    57,
-     180,    -1,    68,    36,    55,   183,    56,    -1,    36,    54,
-     183,    -1,    92,    36,    54,   183,    -1,    36,    60,   186,
-      62,    54,   183,    -1,    92,    36,    60,   186,    62,    54,
-     183,    -1,    15,    55,   183,    56,   155,    -1,    15,    55,
-     183,    56,   155,     4,   155,    -1,   186,    -1,   185,    -1,
-     184,    57,   185,    -1,   186,    -1,   187,    -1,   188,    -1,
-     188,    69,   188,    61,   188,    -1,   189,    -1,   188,    45,
-     189,    -1,   188,    70,    71,   189,    -1,   190,    -1,   189,
-      71,   190,    -1,   191,    -1,   190,    72,   191,    -1,   192,
-      -1,   191,    73,   192,    -1,   193,    -1,   192,    13,   193,
-      -1,   194,    -1,   193,    44,   194,    -1,   195,    -1,   194,
-      54,    54,   195,    -1,   194,    74,    54,   195,    -1,   196,
-      -1,   195,    66,   196,    -1,   195,    66,    54,   196,    -1,
-     195,    75,   196,    -1,   195,    75,    54,   196,    -1,   197,
-      -1,   196,    24,   197,    -1,   196,    37,   197,    -1,   198,
-      -1,   197,    64,   198,    -1,   197,    63,   198,    -1,   199,
-      -1,   198,    76,   199,    -1,   198,    77,   199,    -1,   198,
-      78,   199,    -1,   200,    -1,    64,   200,    -1,    63,   200,
-      -1,    74,   200,    -1,    70,   200,    -1,    39,    -1,    39,
-      36,    -1,     7,    -1,     7,    36,    -1,    19,    -1,    11,
-      -1,    36,    -1,    12,    -1,    36,    60,   186,    62,    -1,
-      12,    55,   184,    56,    -1,    36,    55,   184,    56,    -1,
-      55,   186,    56,    -1
-};
-
-/* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
-static const yytype_uint16 yyrline[] =
+  /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
+static const yytype_int16 yyrline[] =
 {
        0,   295,   295,   300,   303,   308,   311,   314,   319,   326,
      333,   336,   341,   345,   349,   361,   372,   397,   400,   405,
@@ -803,26 +985,34 @@ static const yytype_uint16 yyrline[] =
 };
 #endif
 
-#if YYDEBUG || YYERROR_VERBOSE || 0
+/** Accessing symbol of state STATE.  */
+#define YY_ACCESSING_SYMBOL(State) YY_CAST (yysymbol_kind_t, yystos[State])
+
+#if YYDEBUG || 0
+/* The user-facing name of the symbol whose (internal) number is
+   YYSYMBOL.  No bounds checking.  */
+static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
+
 /* YYTNAME[SYMBOL-NUM] -- String name of the symbol SYMBOL-NUM.
    First, the terminals, then, starting at YYNTOKENS, nonterminals.  */
 static const char *const yytname[] =
 {
-  "$end", "error", "$undefined", "PREC_IF_THEN", "tk_else", "tk_from",
-  "tk_branch", "tk_number", "tk_nature", "tk_aliasparameter", "tk_output",
-  "tk_anystring", "tk_dollar_ident", "tk_or", "tk_aliasparam", "tk_if",
-  "tk_analog", "tk_parameter", "tk_discipline", "tk_char", "tk_anytext",
-  "tk_for", "tk_while", "tk_real", "tk_op_shr", "tk_case", "tk_potential",
-  "tk_endcase", "tk_disc_id", "tk_inf", "tk_exclude", "tk_ground",
-  "tk_endmodule", "tk_begin", "tk_enddiscipline", "tk_domain", "tk_ident",
-  "tk_op_shl", "tk_string", "tk_integer", "tk_module", "tk_endattribute",
-  "tk_end", "tk_inout", "tk_and", "tk_bitwise_equr", "tk_default",
-  "tk_function", "tk_input", "tk_beginattribute", "tk_endnature",
-  "tk_endfunction", "tk_flow", "';'", "'='", "'('", "')'", "','", "'{'",
-  "'}'", "'['", "':'", "']'", "'-'", "'+'", "'@'", "'<'", "'#'", "'.'",
-  "'?'", "'~'", "'^'", "'|'", "'&'", "'!'", "'>'", "'*'", "'/'", "'%'",
-  "$accept", "R_admsParse", "R_l.admsParse", "R_s.admsParse",
-  "R_discipline_member", "R_discipline_name", "R_l.discipline_assignment",
+  "\"end of file\"", "error", "\"invalid token\"", "PREC_IF_THEN",
+  "tk_aliasparam", "tk_aliasparameter", "tk_analog", "tk_and",
+  "tk_anystring", "tk_anytext", "tk_begin", "tk_beginattribute",
+  "tk_bitwise_equr", "tk_branch", "tk_case", "tk_char", "tk_default",
+  "tk_disc_id", "tk_discipline", "tk_dollar_ident", "tk_domain", "tk_else",
+  "tk_end", "tk_endattribute", "tk_endcase", "tk_enddiscipline",
+  "tk_endfunction", "tk_endmodule", "tk_endnature", "tk_exclude",
+  "tk_flow", "tk_for", "tk_from", "tk_function", "tk_ground", "tk_ident",
+  "tk_if", "tk_inf", "tk_inout", "tk_input", "tk_integer", "tk_module",
+  "tk_nature", "tk_number", "tk_op_shl", "tk_op_shr", "tk_or", "tk_output",
+  "tk_parameter", "tk_potential", "tk_real", "tk_string", "tk_while",
+  "';'", "'='", "'('", "')'", "','", "'{'", "'}'", "'['", "':'", "']'",
+  "'-'", "'+'", "'@'", "'<'", "'#'", "'.'", "'?'", "'~'", "'^'", "'|'",
+  "'&'", "'!'", "'>'", "'*'", "'/'", "'%'", "$accept", "R_admsParse",
+  "R_l.admsParse", "R_s.admsParse", "R_discipline_member",
+  "R_discipline_name", "R_l.discipline_assignment",
   "R_s.discipline_assignment", "R_discipline.naturename",
   "R_nature_member", "R_l.nature_assignment", "R_s.nature_assignment",
   "R_d.attribute.0", "R_d.attribute", "R_l.attribute", "R_s.attribute",
@@ -858,14 +1048,20 @@ static const char *const yytname[] =
   "R_e.conditional", "R_e.bitwise_equ", "R_e.bitwise_xor",
   "R_e.bitwise_or", "R_e.bitwise_and", "R_e.logical_or", "R_e.logical_and",
   "R_e.comp_equ", "R_e.comp", "R_e.bitwise_shift", "R_e.arithm_add",
-  "R_e.arithm_mult", "R_e.unary", "R_e.atomic", YY_NULL
+  "R_e.arithm_mult", "R_e.unary", "R_e.atomic", YY_NULLPTR
 };
+
+static const char *
+yysymbol_name (yysymbol_kind_t yysymbol)
+{
+  return yytname[yysymbol];
+}
 #endif
 
-# ifdef YYPRINT
-/* YYTOKNUM[YYLEX-NUM] -- Internal token number corresponding to
-   token YYLEX-NUM.  */
-static const yytype_uint16 yytoknum[] =
+#ifdef YYPRINT
+/* YYTOKNUM[NUM] -- (External) token number corresponding to the
+   (internal) symbol number NUM (which must be that of a token).  */
+static const yytype_int16 yytoknum[] =
 {
        0,   256,   257,   258,   259,   260,   261,   262,   263,   264,
      265,   266,   267,   268,   269,   270,   271,   272,   273,   274,
@@ -876,9 +1072,369 @@ static const yytype_uint16 yytoknum[] =
       91,    58,    93,    45,    43,    64,    60,    35,    46,    63,
      126,    94,   124,    38,    33,    62,    42,    47,    37
 };
-# endif
+#endif
 
-/* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
+#define YYPACT_NINF (-344)
+
+#define yypact_value_is_default(Yyn) \
+  ((Yyn) == YYPACT_NINF)
+
+#define YYTABLE_NINF (-61)
+
+#define yytable_value_is_error(Yyn) \
+  0
+
+  /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
+     STATE-NUM.  */
+static const yytype_int16 yypact[] =
+{
+      17,    29,    45,    60,   113,    98,  -344,  -344,  -344,    80,
+    -344,  -344,  -344,  -344,   122,    66,  -344,  -344,     2,   171,
+    -344,  -344,   196,   244,  -344,  -344,   220,   241,   241,   212,
+    -344,   209,    15,  -344,  -344,  -344,   216,  -344,   236,   251,
+    -344,  -344,    39,  -344,  -344,   259,  -344,  -344,  -344,   266,
+     276,    52,   262,  -344,  -344,  -344,   281,  -344,  -344,   286,
+     265,  -344,   493,  -344,   337,   262,  -344,  -344,   319,   301,
+    -344,  -344,  -344,  -344,  -344,  -344,  -344,   330,  -344,  -344,
+    -344,  -344,   342,  -344,    77,   493,  -344,   532,  -344,  -344,
+    -344,  -344,  -344,   246,  -344,  -344,  -344,   336,   339,  -344,
+     317,   332,  -344,   137,   465,   354,   343,   355,   355,   101,
+     357,  -344,  -344,   339,  -344,  -344,  -344,   319,  -344,   360,
+     362,   369,   370,   374,   381,    16,  -344,   337,   357,   363,
+     339,   364,   383,  -344,  -344,   385,   385,   371,   367,    69,
+     368,   134,   373,   375,  -344,    62,    21,   396,  -344,  -344,
+    -344,   337,  -344,   160,  -344,   337,   372,  -344,  -344,  -344,
+     389,  -344,    47,  -344,   337,    76,  -344,   108,   357,   394,
+     111,  -344,   337,   391,   339,   337,   133,  -344,  -344,   173,
+    -344,   207,  -344,   221,  -344,   222,  -344,   234,   439,  -344,
+     426,  -344,   242,  -344,   337,   424,   393,   408,   416,   417,
+    -344,   351,  -344,    22,    35,   351,   436,   351,   351,   351,
+    -344,   437,  -344,   438,   438,   438,  -344,   103,  -344,  -344,
+     442,  -344,   188,   425,   419,  -344,   450,   451,  -344,  -344,
+     355,  -344,   111,   448,  -344,   357,  -344,  -344,    92,  -344,
+    -344,   360,  -344,   454,  -344,   456,  -344,   457,  -344,   458,
+    -344,   460,  -344,   357,  -344,  -344,   337,   467,    81,  -344,
+     355,  -344,  -344,  -344,  -344,   452,    65,   468,   470,   351,
+      91,    91,    91,    91,   453,  -344,  -344,    24,   440,   441,
+     435,   466,   507,    44,   -22,   104,   170,   139,  -344,  -344,
+     462,   250,  -344,   149,   396,   463,  -344,   269,   459,   464,
+     469,   189,   474,   245,  -344,   252,   264,   351,   351,   415,
+    -344,  -344,  -344,   351,  -344,   472,  -344,   479,  -344,  -344,
+     461,  -344,   351,   172,  -344,  -344,  -344,  -344,  -344,  -344,
+    -344,   471,   484,  -344,   393,   284,   351,   351,   351,  -344,
+    -344,   486,  -344,  -344,  -344,  -344,   165,   351,   351,   455,
+     351,   351,   351,   351,   351,   494,   496,   203,   273,   351,
+     351,   351,   351,   351,   351,   351,  -344,   498,   351,   351,
+    -344,   488,   499,   465,   465,   511,  -344,   512,  -344,   438,
+    -344,  -344,  -344,   485,  -344,   422,  -344,   450,   450,   514,
+     126,   275,   275,  -344,   172,  -344,  -344,   351,  -344,   502,
+     294,  -344,  -344,   298,   497,  -344,   429,     5,  -344,   263,
+     440,   495,   351,   441,   435,   466,   507,    44,   351,   351,
+     351,   104,   351,   104,   170,   170,   139,   139,  -344,  -344,
+    -344,  -344,  -344,   505,   504,   351,   540,  -344,  -344,   304,
+    -344,   501,  -344,   509,  -344,  -344,   472,   503,   172,   392,
+     392,  -344,  -344,  -344,  -344,   513,  -344,  -344,   351,  -344,
+    -344,   465,  -344,  -344,  -344,   465,   351,   440,   -22,   -22,
+     104,   104,    35,  -344,  -344,   465,   517,   511,   535,   351,
+    -344,  -344,   549,   515,  -344,   486,   516,  -344,  -344,  -344,
+    -344,  -344,   525,  -344,  -344,  -344,   526,  -344,  -344,   338,
+     338,   465,  -344,  -344,   559,   192,  -344,   206,  -344,  -344,
+    -344,  -344,  -344,  -344
+};
+
+  /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
+     Performed when YYTABLE does not specify something else to do.  Zero
+     means the default is an error.  */
+static const yytype_int16 yydefact[] =
+{
+      23,     0,     0,     0,     0,     2,     3,     6,     7,     0,
+      24,     5,    26,    27,     0,     0,    28,     9,     0,     0,
+       1,     4,     0,     0,    25,    29,     0,     0,     0,     0,
+      10,     0,     0,    17,    31,    30,     0,    15,     0,     0,
+       8,    11,     0,    16,    18,     0,    14,    13,    12,     0,
+       0,     0,    46,    32,    21,    22,     0,    19,    50,     0,
+      47,    48,    34,    20,    23,     0,   122,   121,   145,     0,
+      71,    69,   199,    75,    73,   110,    74,    58,   111,   112,
+      66,    55,     0,    36,    39,    35,    51,     0,    53,    56,
+      67,    57,    65,     0,   113,    62,    64,     0,    38,    43,
+     196,     0,    49,     0,    23,     0,     0,     0,     0,     0,
+       0,    33,   145,    40,    44,    37,    52,     0,    54,     0,
+       0,     0,     0,     0,     0,    23,    93,    23,     0,     0,
+      41,     0,     0,    45,    92,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,   161,     0,     0,    24,   146,   147,
+     148,    23,   162,    23,   152,    23,     0,   155,   157,   156,
+       0,   154,     0,    82,    23,     0,    78,     0,     0,   127,
+       0,   116,    23,     0,    42,    23,     0,    76,   104,     0,
+     100,     0,   106,     0,   102,     0,   108,     0,     0,    94,
+       0,   114,     0,   118,    23,     0,     0,     0,     0,     0,
+      89,     0,   160,     0,     0,     0,     0,     0,     0,     0,
+     165,     0,   174,     0,     0,     0,   151,     0,   163,   170,
+       0,   175,    23,     0,     0,   153,     0,     0,    81,    72,
+       0,    70,     0,     0,   115,     0,    61,   123,     0,    80,
+      68,     0,    97,     0,    95,     0,    98,     0,    96,     0,
+      99,     0,    88,     0,    63,   124,    23,     0,     0,   200,
+       0,    90,    91,   257,   256,   259,   258,   252,   254,     0,
+       0,     0,     0,     0,     0,   209,   213,   214,   216,   219,
+     221,   223,   225,   227,   229,   232,   237,   240,   243,   247,
+       0,     0,   149,     0,     0,     0,   203,     0,     0,     0,
+       0,     0,   182,     0,   180,     0,     0,     0,     0,    23,
+     172,   176,   184,     0,    85,    87,    83,     0,    79,    59,
+       0,   117,     0,   129,    77,   105,   101,   107,   103,   109,
+     119,     0,     0,   197,     0,     0,     0,     0,     0,   253,
+     255,     0,   249,   248,   251,   250,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,   159,     0,     0,     0,
+     187,     0,     0,    23,    23,     0,   166,     0,   177,     0,
+     178,   179,   204,     0,   171,    23,   185,     0,     0,     0,
+       0,     0,     0,   125,   130,   131,   120,     0,   201,     0,
+       0,   210,   212,     0,     0,   263,    23,     0,   191,     0,
+     217,     0,     0,   220,   222,   224,   226,   228,     0,     0,
+       0,   233,     0,   235,   239,   238,   242,   241,   244,   245,
+     246,   158,   150,     0,     0,     0,   207,   188,   169,     0,
+     167,     0,   181,     0,   173,    84,    86,     0,   129,     0,
+       0,   134,   139,   133,   132,     0,   198,   261,     0,   262,
+     260,    23,   195,   190,   192,    23,     0,   218,   230,   231,
+     234,   236,     0,   186,   205,    23,     0,     0,     0,     0,
+     128,   126,     0,     0,   140,   209,     0,   202,   211,   194,
+     193,   215,     0,   208,   164,   168,     0,   206,   141,     0,
+       0,    23,   183,   143,     0,     0,   142,     0,   189,   144,
+     135,   136,   137,   138
+};
+
+  /* YYPGOTO[NTERM-NUM].  */
+static const yytype_int16 yypgoto[] =
+{
+    -344,  -344,  -344,   582,  -344,  -344,  -344,   561,   563,  -344,
+    -344,   565,     3,   -62,  -344,   578,  -344,  -344,  -344,  -344,
+     510,   -64,  -344,  -344,  -344,   533,  -344,   518,  -344,   519,
+    -344,  -344,  -344,  -344,  -344,  -344,  -344,  -344,  -344,  -101,
+     359,   377,  -344,   213,   218,  -344,  -344,  -344,   228,  -344,
+     483,  -344,  -344,  -344,  -344,  -344,  -344,   500,  -344,  -159,
+     443,  -344,  -344,  -344,   378,   365,  -344,  -117,   162,  -344,
+     223,   224,   169,   112,   531,  -344,  -103,   299,  -344,   506,
+    -344,  -344,   143,   473,  -344,   313,  -344,   153,   247,  -344,
+    -344,  -344,  -344,  -344,  -344,  -344,   225,  -344,   -72,  -344,
+    -344,   289,  -200,  -344,  -199,    40,   167,  -193,  -343,  -344,
+    -328,   277,   278,   282,   280,   274,   -39,  -332,    23,    26,
+     -32,  -255
+};
+
+  /* YYDEFGOTO[NTERM-NUM].  */
+static const yytype_int16 yydefgoto[] =
+{
+       0,     4,     5,     6,     7,    18,    29,    30,    38,     8,
+      32,    33,   146,    10,    15,    16,    11,    45,    62,    82,
+      83,    84,    53,    59,    60,    61,    85,    86,    87,    88,
+     109,   110,   128,    89,   119,   108,   107,    90,   176,   165,
+     177,   166,    91,   315,   316,   106,    92,    93,   137,   125,
+     126,   181,   185,   179,   183,   187,    94,    95,   127,   236,
+     170,   192,    96,    97,   171,   193,   172,   173,   393,   394,
+     395,   451,   483,   505,    98,   104,   221,   291,   149,   150,
+     151,   439,   440,   152,   153,   222,   216,   303,   304,   154,
+     155,   156,   157,   158,   159,   407,   408,   132,    99,   100,
+     258,   259,   160,   161,   292,   409,   401,   275,   276,   277,
+     278,   279,   280,   281,   282,   283,   284,   285,   286,   287,
+     288,   289
+};
+
+  /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
+     positive, shift that token.  If negative, reduce the rule whose
+     number is the opposite.  If YYTABLE_NINF, syntax error.  */
+static const yytype_int16 yytable[] =
+{
+      81,   148,   274,     9,   295,   411,   296,   167,     9,   299,
+     300,   194,   114,   263,   298,   342,   343,   344,   345,   410,
+     264,   406,    26,    81,   265,   421,   423,     1,     1,   463,
+     263,   212,    27,   254,   130,     2,   347,   264,    12,   323,
+     266,   265,   147,    43,   357,   267,     1,    49,   268,   174,
+      31,    28,    13,   358,   120,   121,   122,   266,   114,     3,
+     269,   213,   267,   123,    14,   268,   124,   101,   270,   271,
+     293,   214,   215,   319,    50,   272,   341,   269,   290,   273,
+      17,   145,    51,   112,   467,   270,   271,    56,   470,    24,
+     471,   147,   272,   348,   349,    19,   273,   210,   355,   263,
+     263,    14,   114,   226,   227,    57,   264,   264,   382,     1,
+     265,   265,    72,    20,   386,   383,     2,   211,   356,   311,
+     337,    22,   202,   491,   203,   338,   266,   266,   188,   229,
+     191,   267,   267,   230,   268,   268,   194,   333,   334,   -23,
+       3,    75,   294,   402,   402,   404,   269,   269,   359,   360,
+     322,    78,    79,   402,   188,   270,   271,   307,   223,   335,
+     147,   231,   272,   308,   234,   230,   273,   228,   235,   432,
+     433,     1,   134,   263,   138,   237,    23,   135,   239,   139,
+     264,   406,   219,   368,   265,   448,   240,   136,   205,   206,
+     241,   140,   452,   452,   207,   141,   142,   255,   455,     1,
+     266,   391,   138,   205,   392,   267,    31,   139,   268,   207,
+     310,   263,   143,   144,   402,   363,   364,   365,   264,   140,
+     269,   220,   265,   141,   142,   145,   242,   342,   270,   271,
+     243,    34,    26,   361,   362,   272,   474,    40,   266,   273,
+     143,   144,    27,   267,   375,   376,   268,   147,   510,   343,
+     484,   484,    35,   145,   511,    36,   485,   420,   269,   331,
+     244,    28,   512,    42,   245,   402,   270,   271,   513,    46,
+     436,   437,   492,   272,   246,   248,    37,   273,   247,   249,
+     497,   263,   311,   263,   120,   121,   122,   250,   264,    47,
+     264,   251,   265,   123,   265,   234,   124,    58,   378,   253,
+     506,   506,   379,   462,    48,   380,   367,   368,   266,   379,
+     266,   147,   147,   267,    52,   267,   268,   381,   268,    54,
+     458,   379,    65,   147,   465,   370,   371,   422,   269,    55,
+     449,   428,   429,   430,    63,   450,   270,   271,   270,   271,
+     399,   230,    64,   272,   147,   272,   263,   273,     1,   273,
+     457,   458,   103,   264,   459,   458,   105,   265,   489,   263,
+     476,   477,   490,   198,   199,   -60,   264,   305,   306,   111,
+     265,   129,   493,   266,    72,   503,   400,   403,   267,   468,
+     469,   268,   424,   425,   131,   133,   266,   426,   427,   162,
+     164,   267,   169,   269,   268,   175,   163,   178,   508,   147,
+     263,   270,   504,   147,   180,   182,   269,   264,   272,   184,
+     294,   265,   273,   147,   270,   271,   186,   195,   197,   196,
+     134,   272,   201,   204,   200,   273,     1,   266,   208,   138,
+     209,   217,   267,     1,   139,   268,   138,   384,   224,   147,
+       1,   139,   225,   138,   444,   238,   140,   269,   139,   212,
+     141,   142,   252,   140,   233,   482,   271,   141,   142,   256,
+     140,   257,   272,   260,   141,   142,   273,   143,   144,   261,
+     262,   297,   301,   302,   143,   144,     1,   309,   312,   138,
+     145,   143,   144,   313,   139,   314,   317,   145,   320,   325,
+     461,   326,   327,   328,   145,   329,   140,    66,    67,    68,
+     141,   142,   332,   339,     1,   340,    69,   336,   352,   346,
+      70,   350,   353,   351,   354,   366,   369,   143,   144,   438,
+     373,   372,   389,   434,   396,   374,   412,    71,    72,   387,
+     145,    73,    74,    75,   377,   388,    66,    67,   117,   397,
+      76,    77,   405,    78,    79,    69,    80,   443,   418,    70,
+     419,   431,   441,   435,   447,   456,   466,   263,   472,   460,
+     473,   475,   478,   479,   264,   480,    71,   263,   265,   487,
+      73,    74,    75,   494,   264,   496,   499,   500,   265,    76,
+      77,   501,    78,    79,   266,    80,   498,    21,   502,   267,
+      41,    39,   268,    25,   266,   115,   509,    44,   102,   267,
+     324,   446,   268,   116,   269,   445,   118,   318,   189,   168,
+     481,   232,   507,   321,   269,   113,   453,   454,   330,   486,
+     495,   390,   385,   398,   218,   488,   442,   413,   417,   414,
+       0,   190,   464,   416,   415
+};
+
+static const yytype_int16 yycheck[] =
+{
+      62,   104,   201,     0,   204,   348,   205,   108,     5,   208,
+     209,   128,    84,     8,   207,   270,   271,   272,   273,   347,
+      15,    16,    20,    85,    19,   357,   358,    11,    11,    24,
+       8,    10,    30,   192,    98,    18,    12,    15,     9,   238,
+      35,    19,   104,    28,    66,    40,    11,     8,    43,   113,
+      35,    49,    23,    75,    38,    39,    40,    35,   130,    42,
+      55,    40,    40,    47,    35,    43,    50,    64,    63,    64,
+      35,    50,    51,   232,    35,    70,   269,    55,    56,    74,
+      35,    65,    43,     6,   412,    63,    64,    35,   420,    23,
+     422,   153,    70,    69,    70,    35,    74,    35,    54,     8,
+       8,    35,   174,    56,    57,    53,    15,    15,   307,    11,
+      19,    19,    35,     0,   313,   308,    18,    55,    74,   222,
+      55,    41,    53,   466,    55,    60,    35,    35,   125,    53,
+     127,    40,    40,    57,    43,    43,   253,    56,    57,    41,
+      42,    40,   204,   336,   337,   338,    55,    55,    44,    45,
+      58,    50,    51,   346,   151,    63,    64,    54,   155,   260,
+     222,    53,    70,    60,    53,    57,    74,   164,    57,   368,
+     369,    11,    35,     8,    14,   172,    54,    40,   175,    19,
+      15,    16,    22,    57,    19,    59,    53,    50,    54,    55,
+      57,    31,   391,   392,    60,    35,    36,   194,   397,    11,
+      35,    29,    14,    54,    32,    40,    35,    19,    43,    60,
+      22,     8,    52,    53,   407,    76,    77,    78,    15,    31,
+      55,    61,    19,    35,    36,    65,    53,   482,    63,    64,
+      57,    35,    20,    63,    64,    70,   435,    25,    35,    74,
+      52,    53,    30,    40,    55,    56,    43,   309,    56,   504,
+     449,   450,     8,    65,    62,    35,   449,    54,    55,   256,
+      53,    49,    56,    54,    57,   458,    63,    64,    62,    53,
+     373,   374,   472,    70,    53,    53,    35,    74,    57,    57,
+     479,     8,   385,     8,    38,    39,    40,    53,    15,    53,
+      15,    57,    19,    47,    19,    53,    50,    35,    53,    57,
+     499,   500,    57,   406,    53,    53,    56,    57,    35,    57,
+      35,   373,   374,    40,    55,    40,    43,    53,    43,    53,
+      57,    57,    57,   385,    61,    56,    57,    54,    55,    53,
+      55,   363,   364,   365,    53,    60,    63,    64,    63,    64,
+      56,    57,    56,    70,   406,    70,     8,    74,    11,    74,
+      56,    57,    33,    15,    56,    57,    55,    19,   461,     8,
+      56,    57,   465,   135,   136,    35,    15,   214,   215,    27,
+      19,    35,   475,    35,    35,    37,   336,   337,    40,   418,
+     419,    43,   359,   360,    67,    53,    35,   361,   362,    35,
+      35,    40,    35,    55,    43,    35,    53,    35,   501,   461,
+       8,    63,    64,   465,    35,    35,    55,    15,    70,    35,
+     472,    19,    74,   475,    63,    64,    35,    54,    35,    55,
+      35,    70,    55,    55,    53,    74,    11,    35,    55,    14,
+      55,    35,    40,    11,    19,    43,    14,    22,    66,   501,
+      11,    19,    53,    14,    22,    54,    31,    55,    19,    10,
+      35,    36,    26,    31,    60,    63,    64,    35,    36,    35,
+      31,    68,    70,    55,    35,    36,    74,    52,    53,    53,
+      53,    35,    35,    35,    52,    53,    11,    35,    53,    14,
+      65,    52,    53,    64,    19,    35,    35,    65,    40,    35,
+      61,    35,    35,    35,    65,    35,    31,     4,     5,     6,
+      35,    36,    35,    35,    11,    35,    13,    55,    73,    56,
+      17,    71,    46,    72,     7,    53,    53,    52,    53,     8,
+      56,    62,    61,    35,    53,    56,    71,    34,    35,    57,
+      65,    38,    39,    40,    60,    56,     4,     5,     6,    55,
+      47,    48,    56,    50,    51,    13,    53,    62,    54,    17,
+      54,    53,    40,    54,    40,    53,    61,     8,    53,    62,
+      56,    21,    61,    54,    15,    62,    34,     8,    19,    56,
+      38,    39,    40,    56,    15,    40,    61,    61,    19,    47,
+      48,    56,    50,    51,    35,    53,    37,     5,    62,    40,
+      29,    28,    43,    15,    35,    85,    37,    32,    65,    40,
+     241,   388,    43,    85,    55,   387,    87,   230,   125,   109,
+     448,   168,   500,   235,    55,    84,   392,   394,   253,   450,
+     477,   322,   309,   334,   151,   458,   379,   350,   354,   351,
+      -1,   125,   407,   353,   352
+};
+
+  /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
+     symbol of state STATE-NUM.  */
+static const yytype_uint8 yystos[] =
+{
+       0,    11,    18,    42,    80,    81,    82,    83,    88,    91,
+      92,    95,     9,    23,    35,    93,    94,    35,    84,    35,
+       0,    82,    41,    54,    23,    94,    20,    30,    49,    85,
+      86,    35,    89,    90,    35,     8,    35,    35,    87,    87,
+      25,    86,    54,    28,    90,    96,    53,    53,    53,     8,
+      35,    43,    55,   101,    53,    53,    35,    53,    35,   102,
+     103,   104,    97,    53,    56,    57,     4,     5,     6,    13,
+      17,    34,    35,    38,    39,    40,    47,    48,    50,    51,
+      53,    92,    98,    99,   100,   105,   106,   107,   108,   112,
+     116,   121,   125,   126,   135,   136,   141,   142,   153,   177,
+     178,    91,   104,    33,   154,    55,   124,   115,   114,   109,
+     110,    27,     6,   153,   177,    99,   106,     6,   108,   113,
+      38,    39,    40,    47,    50,   128,   129,   137,   111,    35,
+     100,    67,   176,    53,    35,    40,    50,   127,    14,    19,
+      31,    35,    36,    52,    53,    65,    91,    92,   155,   157,
+     158,   159,   162,   163,   168,   169,   170,   171,   172,   173,
+     181,   182,    35,    53,    35,   118,   120,   118,   136,    35,
+     139,   143,   145,   146,   100,    35,   117,   119,    35,   132,
+      35,   130,    35,   133,    35,   131,    35,   134,    91,   129,
+     158,    91,   140,   144,   146,    54,    55,    35,   127,   127,
+      53,    55,    53,    55,    55,    54,    55,    60,    55,    55,
+      35,    55,    10,    40,    50,    51,   165,    35,   162,    22,
+      61,   155,   164,    91,    66,    53,    56,    57,    91,    53,
+      57,    53,   139,    60,    53,    57,   138,    91,    54,    91,
+      53,    57,    53,    57,    53,    57,    53,    57,    53,    57,
+      53,    57,    26,    57,   138,    91,    35,    68,   179,   180,
+      55,    53,    53,     8,    15,    19,    35,    40,    43,    55,
+      63,    64,    70,    74,   183,   186,   187,   188,   189,   190,
+     191,   192,   193,   194,   195,   196,   197,   198,   199,   200,
+      56,   156,   183,    35,    92,   181,   183,    35,   186,   183,
+     183,    35,    35,   166,   167,   166,   166,    54,    60,    35,
+      22,   155,    53,    64,    35,   122,   123,    35,   120,   138,
+      40,   143,    58,   183,   119,    35,    35,    35,    35,    35,
+     144,    91,    35,    56,    57,   118,    55,    55,    60,    35,
+      35,   186,   200,   200,   200,   200,    56,    12,    69,    70,
+      71,    72,    73,    46,     7,    54,    74,    66,    75,    44,
+      45,    63,    64,    76,    77,    78,    53,    56,    57,    53,
+      56,    57,    62,    56,    56,    55,    56,    60,    53,    57,
+      53,    53,   183,   186,    22,   164,   183,    57,    56,    61,
+     156,    29,    32,   147,   148,   149,    53,    55,   180,    56,
+     184,   185,   186,   184,   186,    56,    16,   174,   175,   184,
+     189,   187,    71,   190,   191,   192,   193,   194,    54,    54,
+      54,   196,    54,   196,   197,   197,   198,   198,   199,   199,
+     199,    53,   183,   183,    35,    54,   155,   155,     8,   160,
+     161,    40,   167,    62,    22,   123,   122,    40,    59,    55,
+      60,   150,   183,   150,   149,   183,    53,    56,    57,    56,
+      62,    61,   155,    24,   175,    61,    61,   189,   195,   195,
+     196,   196,    53,    56,   183,    21,    56,    57,    61,    54,
+      62,   147,    63,   151,   183,   186,   151,    56,   185,   155,
+     155,   187,   181,   155,    56,   161,    40,   183,    37,    61,
+      61,    56,    62,    37,    64,   152,   183,   152,   155,    37,
+      56,    62,    56,    62
+};
+
+  /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
        0,    79,    80,    81,    81,    82,    82,    82,    83,    84,
@@ -910,8 +1466,8 @@ static const yytype_uint8 yyr1[] =
      200,   200,   200,   200
 };
 
-/* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
-static const yytype_uint8 yyr2[] =
+  /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
+static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     1,     2,     1,     1,     1,     4,     1,
        1,     2,     3,     3,     3,     1,     4,     1,     2,     4,
@@ -942,429 +1498,40 @@ static const yytype_uint8 yyr2[] =
        4,     4,     4,     3
 };
 
-/* YYDEFACT[STATE-NAME] -- Default reduction number in state STATE-NUM.
-   Performed when YYTABLE doesn't specify something else to do.  Zero
-   means the default is an error.  */
-static const yytype_uint16 yydefact[] =
-{
-      23,     0,     0,     0,     0,     2,     3,     6,     7,     0,
-      24,     5,     0,     9,     0,    26,     0,    27,     0,    28,
-       1,     4,     0,     0,     0,    17,     0,     0,     0,     0,
-      10,     0,    25,    29,    31,     0,    16,    18,    15,     0,
-       0,     0,     8,    11,    30,     0,     0,     0,     0,    12,
-      14,    13,    46,    32,     0,    19,    21,    22,    50,     0,
-      47,    48,    34,    20,    23,     0,     0,   121,    74,   122,
-     145,    58,   111,    71,    69,   199,   112,   110,    75,    73,
-      66,    55,     0,    36,    39,    35,    51,     0,    53,    56,
-      67,    57,    65,     0,   113,    62,    64,     0,    38,    43,
-     196,     0,    49,     0,     0,     0,    23,     0,     0,     0,
-       0,    33,   145,    40,    44,    37,    52,     0,    54,     0,
-       0,     0,     0,     0,     0,    23,    93,    23,     0,     0,
-      41,     0,     0,    45,     0,    82,     0,    92,     0,     0,
-       0,     0,     0,     0,     0,     0,   161,     0,     0,    24,
-     146,   147,   148,    23,   162,    23,   152,    23,     0,   155,
-     157,   156,     0,   154,     0,   127,     0,   116,    23,     0,
-      23,     0,    78,     0,    42,    23,     0,    76,   102,     0,
-     108,     0,   106,     0,   104,     0,   100,     0,     0,    94,
-       0,   114,     0,   118,    23,     0,     0,     0,     0,     0,
-       0,     0,    89,   160,     0,     0,     0,     0,     0,     0,
-       0,     0,   165,     0,     0,   174,     0,     0,   151,     0,
-     163,   170,     0,   175,    23,     0,     0,   153,     0,     0,
-     115,     0,    61,   123,     0,    81,    72,     0,    70,    80,
-      68,     0,    96,     0,    99,     0,    98,     0,    97,     0,
-      95,     0,    88,     0,    63,   124,    23,     0,     0,   200,
-       0,    85,    87,    83,     0,    91,    90,   254,   257,   259,
-     256,   258,   252,     0,     0,     0,     0,     0,     0,     0,
-     149,   209,   213,   214,   216,   219,   221,   223,   225,   227,
-     229,   232,   237,   240,   243,   247,     0,     0,     0,     0,
-       0,     0,   203,     0,     0,     0,   182,     0,   180,     0,
-       0,     0,     0,    23,   172,   176,   184,     0,    59,     0,
-     117,     0,   129,    79,    77,   103,   109,   107,   105,   101,
-     119,     0,     0,   197,     0,     0,     0,     0,   255,     0,
-       0,     0,   253,     0,   159,   249,   248,   251,   250,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-      23,     0,    23,     0,   187,     0,     0,     0,   166,     0,
-     178,     0,   179,   177,   204,     0,   171,    23,   185,     0,
-       0,     0,     0,   125,   130,   131,   120,     0,   201,     0,
-      84,    86,     0,   210,   212,     0,     0,   263,   158,   150,
-     217,     0,     0,   220,   222,   224,   226,   228,     0,     0,
-       0,   233,     0,   235,   238,   239,   242,   241,   244,   245,
-     246,   207,     0,   188,    23,     0,   191,     0,     0,     0,
-     169,     0,   167,     0,   181,     0,   173,     0,   129,     0,
-       0,   133,   139,   134,   132,     0,   198,   261,     0,   262,
-     260,     0,   218,   230,   231,   234,   236,    23,     0,    23,
-     195,   190,   192,    23,   186,   205,     0,     0,     0,     0,
-     128,   126,     0,     0,   140,   209,     0,   202,   211,   215,
-     208,     0,   194,   193,   164,   168,     0,   206,   141,     0,
-       0,    23,   183,   143,     0,     0,   142,     0,   189,   144,
-     135,   136,   137,   138
-};
 
-/* YYDEFGOTO[NTERM-NUM].  */
-static const yytype_int16 yydefgoto[] =
-{
-      -1,     4,     5,     6,     7,    14,    29,    30,    39,     8,
-      24,    25,   148,    10,    18,    19,    11,    45,    62,    82,
-      83,    84,    53,    59,    60,    61,    85,    86,    87,    88,
-     107,   108,   128,    89,   119,   110,   109,    90,   176,   171,
-     177,   172,    91,   262,   263,   104,    92,    93,   139,   125,
-     126,   187,   179,   185,   183,   181,    94,    95,   127,   232,
-     166,   192,    96,    97,   167,   193,   168,   169,   393,   394,
-     395,   451,   483,   505,    98,   106,   223,   279,   151,   152,
-     153,   441,   442,   154,   155,   224,   218,   307,   308,   156,
-     157,   158,   159,   160,   161,   435,   436,   132,    99,   100,
-     258,   259,   162,   163,   280,   437,   403,   281,   282,   283,
-     284,   285,   286,   287,   288,   289,   290,   291,   292,   293,
-     294,   295
-};
+enum { YYENOMEM = -2 };
 
-/* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
-   STATE-NUM.  */
-#define YYPACT_NINF -338
-static const yytype_int16 yypact[] =
-{
-      37,    22,    98,   117,    48,    35,  -338,  -338,  -338,   -22,
-    -338,  -338,   147,  -338,    69,  -338,   137,  -338,   145,  -338,
-    -338,  -338,   167,   162,    93,  -338,   189,   191,   189,    12,
-    -338,   241,  -338,  -338,  -338,    26,  -338,  -338,  -338,   202,
-     224,   252,  -338,  -338,  -338,   232,    70,   254,   256,  -338,
-    -338,  -338,   275,  -338,   265,  -338,  -338,  -338,  -338,   238,
-     269,  -338,   559,  -338,   285,   275,   292,  -338,  -338,  -338,
-     277,   312,  -338,  -338,  -338,  -338,  -338,  -338,  -338,  -338,
-    -338,  -338,   322,  -338,    64,   559,  -338,   600,  -338,  -338,
-    -338,  -338,  -338,    18,  -338,  -338,  -338,   317,   327,  -338,
-     291,   314,  -338,   333,   318,    73,   334,   125,   338,   339,
-     339,  -338,  -338,   327,  -338,  -338,  -338,   277,  -338,   341,
-     342,   343,   344,   345,   346,   172,  -338,   285,   338,   332,
-     327,   337,   352,  -338,   187,  -338,   353,  -338,   353,   347,
-      99,   349,   359,   360,   361,   130,  -338,    63,   128,   358,
-    -338,  -338,  -338,   285,  -338,   411,  -338,   285,   331,  -338,
-    -338,  -338,   348,  -338,   338,   362,    78,  -338,   285,   365,
-     285,   112,  -338,   156,   327,   285,   157,  -338,  -338,   171,
-    -338,   173,  -338,   176,  -338,   182,  -338,   188,   388,  -338,
-     374,  -338,   196,  -338,   285,   393,   363,   379,   399,   402,
-     389,   390,  -338,  -338,    15,   354,    97,   354,   354,   354,
-     405,   354,  -338,   408,   409,  -338,   409,   409,  -338,   -18,
-    -338,  -338,   412,  -338,   437,   397,   387,  -338,    78,   418,
-    -338,   338,  -338,  -338,    62,  -338,  -338,   339,  -338,  -338,
-    -338,   341,  -338,   427,  -338,   430,  -338,   431,  -338,   433,
-    -338,   434,  -338,   338,  -338,  -338,   285,   438,   207,  -338,
-     339,  -338,   423,  -338,   419,  -338,  -338,   446,  -338,   428,
-    -338,    50,   448,   354,   432,   401,   401,   401,   401,   216,
-    -338,  -338,  -338,    46,   416,   417,   415,   478,   449,   -35,
-      28,   118,   217,   215,  -338,  -338,   439,   116,   358,   443,
-     444,   445,  -338,   227,   450,   234,   451,   197,  -338,   205,
-     213,   354,   354,   456,  -338,  -338,  -338,   354,  -338,   447,
-    -338,   354,    30,  -338,  -338,  -338,  -338,  -338,  -338,  -338,
-    -338,   453,   455,  -338,   363,   245,   399,   399,  -338,   354,
-     354,   354,  -338,   458,  -338,  -338,  -338,  -338,  -338,   462,
-     354,   354,   354,   454,   354,   354,   354,   354,   354,   463,
-     465,   138,   168,   354,   354,   354,   354,   354,   354,   354,
-     334,   354,   334,   249,  -338,   484,   473,   488,  -338,   521,
-    -338,   409,  -338,  -338,  -338,   468,  -338,   482,  -338,   493,
-     139,   267,   267,  -338,    30,  -338,  -338,   354,  -338,   483,
-    -338,   423,   258,  -338,  -338,   260,   476,  -338,  -338,  -338,
-     416,    52,   354,   417,   415,   478,   449,   -35,   354,   354,
-     354,   118,   354,   118,   217,   217,   215,   215,  -338,  -338,
-    -338,   535,   487,  -338,   501,    13,  -338,   214,   486,   354,
-    -338,   264,  -338,   485,  -338,   489,  -338,   491,    30,   391,
-     391,  -338,  -338,  -338,  -338,   492,  -338,  -338,   354,  -338,
-    -338,   354,   416,    28,    28,   118,   118,   334,    97,   334,
-    -338,  -338,  -338,   334,  -338,  -338,   499,   488,   537,   354,
-    -338,  -338,   522,   498,  -338,   458,   502,  -338,  -338,    57,
-    -338,   504,  -338,  -338,  -338,  -338,   505,  -338,  -338,   321,
-     321,   334,  -338,  -338,   545,   143,  -338,   144,  -338,  -338,
-    -338,  -338,  -338,  -338
-};
+#define yyerrok         (yyerrstatus = 0)
+#define yyclearin       (yychar = YYEMPTY)
 
-/* YYPGOTO[NTERM-NUM].  */
-static const yytype_int16 yypgoto[] =
-{
-    -338,  -338,  -338,   540,  -338,  -338,  -338,   520,   542,  -338,
-    -338,   547,     3,   -62,  -338,   554,  -338,  -338,  -338,  -338,
-     494,   -48,  -338,  -338,  -338,   513,  -338,   495,  -338,   496,
-    -338,  -338,  -338,  -338,  -338,  -338,  -338,  -338,  -338,  -101,
-     350,   351,  -338,   248,   250,  -338,  -338,  -338,    81,  -338,
-     464,  -338,  -338,  -338,  -338,  -338,  -338,   497,  -338,  -136,
-     429,  -338,  -338,  -338,   368,   366,  -338,  -112,   146,  -338,
-     198,   204,   151,   103,   527,  -338,  -105,   284,  -338,   490,
-    -338,  -338,   136,   467,  -338,   305,  -338,   119,   240,  -338,
-    -338,  -338,  -338,  -338,  -338,  -338,   190,  -338,   -67,  -338,
-    -338,   288,  -199,  -338,  -203,    -1,   166,  -201,  -338,  -337,
-    -330,   272,   274,   271,   273,   276,   -76,  -332,   -19,   -14,
-     -69,  -264
-};
+#define YYACCEPT        goto yyacceptlab
+#define YYABORT         goto yyabortlab
+#define YYERROR         goto yyerrorlab
 
-/* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
-   positive, shift that token.  If negative, reduce the rule which
-   number is the opposite.  If YYTABLE_NINF, syntax error.  */
-#define YYTABLE_NINF -61
-static const yytype_int16 yytable[] =
-{
-      81,   150,   296,     9,   300,   301,   302,   299,     9,   173,
-     304,   345,   346,   347,   348,   411,   194,   114,    22,   359,
-     267,   410,   267,    81,   268,   269,   268,   269,   120,   421,
-     423,   322,   270,    46,   270,   391,   311,    47,    26,   360,
-     471,   121,   312,     1,   149,     1,    42,    27,    20,   271,
-     130,   271,   272,     2,   272,     2,   254,   122,    12,   434,
-     392,   123,    48,   114,    28,   174,   124,   101,   273,   267,
-     273,   274,   343,   268,   269,   -23,   275,   276,   275,   276,
-     112,   270,   462,   277,     3,   277,     3,   278,   465,   278,
-     466,   351,   318,   149,   361,    26,   136,   351,   271,   212,
-      75,   272,   351,   362,    27,   340,    54,   114,   384,   137,
-     341,   385,   138,   461,   388,   352,   353,   273,   213,   315,
-     321,    28,   353,    55,   489,   275,   276,   353,   188,    23,
-     191,   230,   277,   297,    13,   231,   278,    15,   404,   404,
-     406,   194,   363,    36,   298,   267,     3,   409,    72,   268,
-     269,   214,   203,    16,   204,   364,   188,   270,    17,   335,
-     225,   215,   149,    76,    77,   236,   216,   217,   432,   237,
-     209,   233,   404,   235,   271,   267,   211,   272,   239,   268,
-     269,    16,   120,    23,   209,   210,    32,   270,   452,   452,
-     211,    31,   420,   273,   455,   121,   350,   255,   448,   510,
-     512,   275,   276,    34,   271,   511,   513,   272,   277,   238,
-     240,   122,   278,   237,   241,   123,    35,   200,   345,   201,
-     124,     3,   422,   273,   242,    38,   244,    40,   243,   246,
-     245,   275,   276,   247,   404,   248,   475,   147,   277,   249,
-     346,   250,   278,   198,   199,   251,   484,   484,   485,   230,
-     380,   149,    44,   253,   381,    49,   267,   404,   382,   331,
-     268,   269,   381,   333,   334,   431,   383,   433,   270,   491,
-     381,   458,   349,   350,   267,   473,   497,    50,   268,   269,
-     365,   366,   315,   374,   375,   271,   270,    52,   272,   377,
-     378,   367,   368,   369,    64,   434,   506,   506,   428,   429,
-     430,   399,   237,   271,   273,    51,   272,    56,   149,    57,
-     149,    58,   275,   276,   457,   458,   459,   458,    63,   277,
-     476,   477,   449,   278,   105,   149,    65,   450,   267,   470,
-     275,   276,   268,   269,     3,   309,   310,   277,   402,   405,
-     270,   278,   463,   464,   424,   425,   140,   103,   -60,   141,
-     503,   426,   427,   129,   111,   142,   143,   271,   131,   144,
-     272,   267,   490,    75,   492,   268,   269,   133,   493,   134,
-     145,   135,   149,   270,   165,   170,   273,   175,   178,   180,
-     182,   184,   186,     3,   275,   504,   195,   146,   197,   137,
-     271,   277,   196,   272,   219,   278,   508,   226,   267,   147,
-     202,   227,   268,   269,   205,   149,   298,   149,   267,   273,
-     270,   149,   268,   269,   206,   207,   208,   275,   276,   234,
-     270,   215,   229,   140,   277,   252,   141,   271,   278,   256,
-     272,   257,   142,   143,   260,   261,   144,   271,   264,   149,
-     272,   303,   265,   266,   305,   306,   273,   145,   313,   140,
-     316,   317,   141,   221,   482,   276,   273,   319,   142,   143,
-       3,   277,   144,   325,   146,   278,   326,   327,   140,   328,
-     329,   141,   222,   145,   332,   337,   147,   142,   143,   314,
-     336,   144,   338,   339,   342,   344,     3,   354,   356,   355,
-     146,   357,   145,   358,   140,   370,   371,   141,   386,   440,
-     372,   373,   147,   142,   143,     3,   396,   144,   389,   146,
-     397,   379,   376,   140,   407,   408,   141,   418,   145,   419,
-     438,   147,   142,   143,   446,   412,   144,   439,   443,   267,
-     445,     3,   447,   268,   269,   146,   456,   145,   460,   467,
-     468,   270,   474,   479,   496,    21,   478,   147,   487,    43,
-       3,   498,   267,   480,   146,   494,   268,   269,   271,   499,
-     501,   272,   469,   500,   270,    66,   147,   502,    67,    68,
-      41,    37,    33,    69,   509,    70,    71,   273,   102,   115,
-     116,   271,    72,   118,   272,   401,   400,    73,   323,   189,
-      74,   324,   454,   228,   481,    75,   453,    76,    77,   320,
-     273,   486,    78,   507,   164,   390,    66,    79,     3,    67,
-      68,   113,    80,   495,    69,   190,   117,    71,   387,   330,
-     220,   444,   398,    72,   488,   472,   413,   415,    73,   414,
-     416,    74,     0,     0,   417,     0,     0,     0,    76,    77,
-       0,     0,     0,    78,     0,     0,     0,     0,    79,     0,
-       0,     0,     0,    80
-};
-
-#define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-338)))
-
-#define yytable_value_is_error(Yytable_value) \
-  YYID (0)
-
-static const yytype_int16 yycheck[] =
-{
-      62,   106,   205,     0,   207,   208,   209,   206,     5,   110,
-     211,   275,   276,   277,   278,   352,   128,    84,    40,    54,
-       7,   351,     7,    85,    11,    12,    11,    12,    10,   361,
-     362,   234,    19,     7,    19,     5,    54,    11,    26,    74,
-      27,    23,    60,     8,   106,     8,    34,    35,     0,    36,
-      98,    36,    39,    18,    39,    18,   192,    39,    36,    46,
-      30,    43,    36,   130,    52,   113,    48,    64,    55,     7,
-      55,    56,   273,    11,    12,    40,    63,    64,    63,    64,
-      16,    19,   412,    70,    49,    70,    49,    74,   420,    74,
-     422,    45,   228,   155,    66,    26,    23,    45,    36,    36,
-      36,    39,    45,    75,    35,    55,    36,   174,   311,    36,
-      60,   312,    39,    61,   317,    69,    70,    55,    55,   224,
-      58,    52,    70,    53,   461,    63,    64,    70,   125,    36,
-     127,    53,    70,    36,    36,    57,    74,    20,   339,   340,
-     341,   253,    24,    50,   206,     7,    49,   350,    23,    11,
-      12,    23,    53,    36,    55,    37,   153,    19,    41,   260,
-     157,    33,   224,    38,    39,    53,    38,    39,   371,    57,
-      54,   168,   373,   170,    36,     7,    60,    39,   175,    11,
-      12,    36,    10,    36,    54,    55,    41,    19,   391,   392,
-      60,    54,    54,    55,   397,    23,    57,   194,    59,    56,
-      56,    63,    64,    36,    36,    62,    62,    39,    70,    53,
-      53,    39,    74,    57,    57,    43,    54,   136,   482,   138,
-      48,    49,    54,    55,    53,    36,    53,    36,    57,    53,
-      57,    63,    64,    57,   435,    53,   439,    65,    70,    57,
-     504,    53,    74,    56,    57,    57,   449,   450,   449,    53,
-      53,   313,    11,    57,    57,    53,     7,   458,    53,   256,
-      11,    12,    57,    56,    57,   370,    53,   372,    19,   468,
-      57,    57,    56,    57,     7,    61,   479,    53,    11,    12,
-      63,    64,   387,    56,    57,    36,    19,    55,    39,    55,
-      56,    76,    77,    78,    56,    46,   499,   500,   367,   368,
-     369,    56,    57,    36,    55,    53,    39,    53,   370,    53,
-     372,    36,    63,    64,    56,    57,    56,    57,    53,    70,
-      56,    57,    55,    74,    47,   387,    57,    60,     7,   434,
-      63,    64,    11,    12,    49,   216,   217,    70,   339,   340,
-      19,    74,   418,   419,   363,   364,    12,    55,    36,    15,
-      29,   365,   366,    36,    32,    21,    22,    36,    67,    25,
-      39,     7,   467,    36,   469,    11,    12,    53,   473,    36,
-      36,    53,   434,    19,    36,    36,    55,    36,    36,    36,
-      36,    36,    36,    49,    63,    64,    54,    53,    36,    36,
-      36,    70,    55,    39,    36,    74,   501,    66,     7,    65,
-      53,    53,    11,    12,    55,   467,   468,   469,     7,    55,
-      19,   473,    11,    12,    55,    55,    55,    63,    64,    54,
-      19,    33,    60,    12,    70,    51,    15,    36,    74,    36,
-      39,    68,    21,    22,    55,    36,    25,    36,    36,   501,
-      39,    36,    53,    53,    36,    36,    55,    36,    36,    12,
-      53,    64,    15,    42,    63,    64,    55,    39,    21,    22,
-      49,    70,    25,    36,    53,    74,    36,    36,    12,    36,
-      36,    15,    61,    36,    36,    56,    65,    21,    22,    42,
-      57,    25,    36,    55,    36,    53,    49,    71,    73,    72,
-      53,    13,    36,    44,    12,    56,    53,    15,    42,    11,
-      56,    56,    65,    21,    22,    49,    53,    25,    61,    53,
-      55,    60,    62,    12,    56,    53,    15,    54,    36,    54,
-      36,    65,    21,    22,    42,    71,    25,    54,     7,     7,
-      62,    49,    39,    11,    12,    53,    53,    36,    62,     4,
-      53,    19,    56,    54,     7,     5,    61,    65,    56,    29,
-      49,    29,     7,    62,    53,    56,    11,    12,    36,    61,
-      56,    39,    61,    61,    19,     6,    65,    62,     9,    10,
-      28,    24,    18,    14,    29,    16,    17,    55,    65,    85,
-      85,    36,    23,    87,    39,   337,   336,    28,   237,   125,
-      31,   241,   394,   164,   448,    36,   392,    38,    39,   231,
-      55,   450,    43,   500,   107,   321,     6,    48,    49,     9,
-      10,    84,    53,   477,    14,   125,    16,    17,   313,   253,
-     153,   381,   334,    23,   458,   435,   354,   356,    28,   355,
-     357,    31,    -1,    -1,   358,    -1,    -1,    -1,    38,    39,
-      -1,    -1,    -1,    43,    -1,    -1,    -1,    -1,    48,    -1,
-      -1,    -1,    -1,    53
-};
-
-/* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
-   symbol of state STATE-NUM.  */
-static const yytype_uint8 yystos[] =
-{
-       0,     8,    18,    49,    80,    81,    82,    83,    88,    91,
-      92,    95,    36,    36,    84,    20,    36,    41,    93,    94,
-       0,    82,    40,    36,    89,    90,    26,    35,    52,    85,
-      86,    54,    41,    94,    36,    54,    50,    90,    36,    87,
-      36,    87,    34,    86,    11,    96,     7,    11,    36,    53,
-      53,    53,    55,   101,    36,    53,    53,    53,    36,   102,
-     103,   104,    97,    53,    56,    57,     6,     9,    10,    14,
-      16,    17,    23,    28,    31,    36,    38,    39,    43,    48,
-      53,    92,    98,    99,   100,   105,   106,   107,   108,   112,
-     116,   121,   125,   126,   135,   136,   141,   142,   153,   177,
-     178,    91,   104,    55,   124,    47,   154,   109,   110,   115,
-     114,    32,    16,   153,   177,    99,   106,    16,   108,   113,
-      10,    23,    39,    43,    48,   128,   129,   137,   111,    36,
-     100,    67,   176,    53,    36,    53,    23,    36,    39,   127,
-      12,    15,    21,    22,    25,    36,    53,    65,    91,    92,
-     155,   157,   158,   159,   162,   163,   168,   169,   170,   171,
-     172,   173,   181,   182,   136,    36,   139,   143,   145,   146,
-      36,   118,   120,   118,   100,    36,   117,   119,    36,   131,
-      36,   134,    36,   133,    36,   132,    36,   130,    91,   129,
-     158,    91,   140,   144,   146,    54,    55,    36,    56,    57,
-     127,   127,    53,    53,    55,    55,    55,    55,    55,    54,
-      55,    60,    36,    55,    23,    33,    38,    39,   165,    36,
-     162,    42,    61,   155,   164,    91,    66,    53,   139,    60,
-      53,    57,   138,    91,    54,    91,    53,    57,    53,    91,
-      53,    57,    53,    57,    53,    57,    53,    57,    53,    57,
-      53,    57,    51,    57,   138,    91,    36,    68,   179,   180,
-      55,    36,   122,   123,    36,    53,    53,     7,    11,    12,
-      19,    36,    39,    55,    56,    63,    64,    70,    74,   156,
-     183,   186,   187,   188,   189,   190,   191,   192,   193,   194,
-     195,   196,   197,   198,   199,   200,   183,    36,    92,   181,
-     183,   183,   183,    36,   186,    36,    36,   166,   167,   166,
-     166,    54,    60,    36,    42,   155,    53,    64,   138,    39,
-     143,    58,   183,   120,   119,    36,    36,    36,    36,    36,
-     144,    91,    36,    56,    57,   118,    57,    56,    36,    55,
-      55,    60,    36,   186,    53,   200,   200,   200,   200,    56,
-      57,    45,    69,    70,    71,    72,    73,    13,    44,    54,
-      74,    66,    75,    24,    37,    63,    64,    76,    77,    78,
-      56,    53,    56,    56,    56,    57,    62,    55,    56,    60,
-      53,    57,    53,    53,   183,   186,    42,   164,   183,    61,
-     156,     5,    30,   147,   148,   149,    53,    55,   180,    56,
-     123,   122,   184,   185,   186,   184,   186,    56,    53,   183,
-     189,   188,    71,   190,   191,   192,   193,   194,    54,    54,
-      54,   196,    54,   196,   197,   197,   198,   198,   199,   199,
-     199,   155,   183,   155,    46,   174,   175,   184,    36,    54,
-      11,   160,   161,     7,   167,    62,    42,    39,    59,    55,
-      60,   150,   183,   150,   149,   183,    53,    56,    57,    56,
-      62,    61,   189,   195,   195,   196,   196,     4,    53,    61,
-     155,    27,   175,    61,    56,   183,    56,    57,    61,    54,
-      62,   147,    63,   151,   183,   186,   151,    56,   185,   188,
-     155,   181,   155,   155,    56,   161,     7,   183,    29,    61,
-      61,    56,    62,    29,    64,   152,   183,   152,   155,    29,
-      56,    62,    56,    62
-};
-
-#define yyerrok		(yyerrstatus = 0)
-#define yyclearin	(yychar = YYEMPTY)
-#define YYEMPTY		(-2)
-#define YYEOF		0
-
-#define YYACCEPT	goto yyacceptlab
-#define YYABORT		goto yyabortlab
-#define YYERROR		goto yyerrorlab
-
-
-/* Like YYERROR except do call yyerror.  This remains here temporarily
-   to ease the transition to the new meaning of YYERROR, for GCC.
-   Once GCC version 2 has supplanted version 1, this can go.  However,
-   YYFAIL appears to be in use.  Nevertheless, it is formally deprecated
-   in Bison 2.4.2's NEWS entry, where a plan to phase it out is
-   discussed.  */
-
-#define YYFAIL		goto yyerrlab
-#if defined YYFAIL
-  /* This is here to suppress warnings from the GCC cpp's
-     -Wunused-macros.  Normally we don't worry about that warning, but
-     some users do, and we want to make it easy for users to remove
-     YYFAIL uses, which will produce warnings from Bison 2.5.  */
-#endif
 
 #define YYRECOVERING()  (!!yyerrstatus)
 
-#define YYBACKUP(Token, Value)                                  \
-do                                                              \
-  if (yychar == YYEMPTY)                                        \
-    {                                                           \
-      yychar = (Token);                                         \
-      yylval = (Value);                                         \
-      YYPOPSTACK (yylen);                                       \
-      yystate = *yyssp;                                         \
-      goto yybackup;                                            \
-    }                                                           \
-  else                                                          \
-    {                                                           \
-      yyerror (YY_("syntax error: cannot back up")); \
-      YYERROR;							\
-    }								\
-while (YYID (0))
+#define YYBACKUP(Token, Value)                                    \
+  do                                                              \
+    if (yychar == YYEMPTY)                                        \
+      {                                                           \
+        yychar = (Token);                                         \
+        yylval = (Value);                                         \
+        YYPOPSTACK (yylen);                                       \
+        yystate = *yyssp;                                         \
+        goto yybackup;                                            \
+      }                                                           \
+    else                                                          \
+      {                                                           \
+        yyerror (YY_("syntax error: cannot back up")); \
+        YYERROR;                                                  \
+      }                                                           \
+  while (0)
 
-/* Error token number */
-#define YYTERROR	1
-#define YYERRCODE	256
+/* Backward compatibility with an undocumented macro.
+   Use YYerror or YYUNDEF. */
+#define YYERRCODE YYUNDEF
 
-
-/* This macro is provided for backward compatibility. */
-#ifndef YY_LOCATION_PRINT
-# define YY_LOCATION_PRINT(File, Loc) ((void) 0)
-#endif
-
-
-/* YYLEX -- calling `yylex' with the right arguments.  */
-#ifdef YYLEX_PARAM
-# define YYLEX yylex (YYLEX_PARAM)
-#else
-# define YYLEX yylex ()
-#endif
 
 /* Enable debugging if requested.  */
 #if YYDEBUG
@@ -1374,82 +1541,65 @@ while (YYID (0))
 #  define YYFPRINTF fprintf
 # endif
 
-# define YYDPRINTF(Args)			\
-do {						\
-  if (yydebug)					\
-    YYFPRINTF Args;				\
-} while (YYID (0))
+# define YYDPRINTF(Args)                        \
+do {                                            \
+  if (yydebug)                                  \
+    YYFPRINTF Args;                             \
+} while (0)
 
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)			  \
-do {									  \
-  if (yydebug)								  \
-    {									  \
-      YYFPRINTF (stderr, "%s ", Title);					  \
-      yy_symbol_print (stderr,						  \
-		  Type, Value); \
-      YYFPRINTF (stderr, "\n");						  \
-    }									  \
-} while (YYID (0))
+/* This macro is provided for backward compatibility. */
+# ifndef YY_LOCATION_PRINT
+#  define YY_LOCATION_PRINT(File, Loc) ((void) 0)
+# endif
 
 
-/*--------------------------------.
-| Print this symbol on YYOUTPUT.  |
-`--------------------------------*/
+# define YY_SYMBOL_PRINT(Title, Kind, Value, Location)                    \
+do {                                                                      \
+  if (yydebug)                                                            \
+    {                                                                     \
+      YYFPRINTF (stderr, "%s ", Title);                                   \
+      yy_symbol_print (stderr,                                            \
+                  Kind, Value); \
+      YYFPRINTF (stderr, "\n");                                           \
+    }                                                                     \
+} while (0)
 
-/*ARGSUSED*/
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
+
+/*-----------------------------------.
+| Print this symbol's value on YYO.  |
+`-----------------------------------*/
+
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep)
-#else
-static void
-yy_symbol_value_print (yyoutput, yytype, yyvaluep)
-    FILE *yyoutput;
-    int yytype;
-    YYSTYPE const * const yyvaluep;
-#endif
+yy_symbol_value_print (FILE *yyo,
+                       yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep)
 {
-  FILE *yyo = yyoutput;
-  YYUSE (yyo);
+  FILE *yyoutput = yyo;
+  YY_USE (yyoutput);
   if (!yyvaluep)
     return;
 # ifdef YYPRINT
-  if (yytype < YYNTOKENS)
-    YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
-# else
-  YYUSE (yyoutput);
+  if (yykind < YYNTOKENS)
+    YYPRINT (yyo, yytoknum[yykind], *yyvaluep);
 # endif
-  switch (yytype)
-    {
-      default:
-        break;
-    }
+  YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+  YY_USE (yykind);
+  YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
-/*--------------------------------.
-| Print this symbol on YYOUTPUT.  |
-`--------------------------------*/
+/*---------------------------.
+| Print this symbol on YYO.  |
+`---------------------------*/
 
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep)
-#else
-static void
-yy_symbol_print (yyoutput, yytype, yyvaluep)
-    FILE *yyoutput;
-    int yytype;
-    YYSTYPE const * const yyvaluep;
-#endif
+yy_symbol_print (FILE *yyo,
+                 yysymbol_kind_t yykind, YYSTYPE const * const yyvaluep)
 {
-  if (yytype < YYNTOKENS)
-    YYFPRINTF (yyoutput, "token %s (", yytname[yytype]);
-  else
-    YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
+  YYFPRINTF (yyo, "%s %s (",
+             yykind < YYNTOKENS ? "token" : "nterm", yysymbol_name (yykind));
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep);
-  YYFPRINTF (yyoutput, ")");
+  yy_symbol_value_print (yyo, yykind, yyvaluep);
+  YYFPRINTF (yyo, ")");
 }
 
 /*------------------------------------------------------------------.
@@ -1457,16 +1607,8 @@ yy_symbol_print (yyoutput, yytype, yyvaluep)
 | TOP (included).                                                   |
 `------------------------------------------------------------------*/
 
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
 static void
-yy_stack_print (yytype_int16 *yybottom, yytype_int16 *yytop)
-#else
-static void
-yy_stack_print (yybottom, yytop)
-    yytype_int16 *yybottom;
-    yytype_int16 *yytop;
-#endif
+yy_stack_print (yy_state_t *yybottom, yy_state_t *yytop)
 {
   YYFPRINTF (stderr, "Stack now");
   for (; yybottom <= yytop; yybottom++)
@@ -1477,63 +1619,56 @@ yy_stack_print (yybottom, yytop)
   YYFPRINTF (stderr, "\n");
 }
 
-# define YY_STACK_PRINT(Bottom, Top)				\
-do {								\
-  if (yydebug)							\
-    yy_stack_print ((Bottom), (Top));				\
-} while (YYID (0))
+# define YY_STACK_PRINT(Bottom, Top)                            \
+do {                                                            \
+  if (yydebug)                                                  \
+    yy_stack_print ((Bottom), (Top));                           \
+} while (0)
 
 
 /*------------------------------------------------.
 | Report that the YYRULE is going to be reduced.  |
 `------------------------------------------------*/
 
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, int yyrule)
-#else
-static void
-yy_reduce_print (yyvsp, yyrule)
-    YYSTYPE *yyvsp;
-    int yyrule;
-#endif
+yy_reduce_print (yy_state_t *yyssp, YYSTYPE *yyvsp,
+                 int yyrule)
 {
+  int yylno = yyrline[yyrule];
   int yynrhs = yyr2[yyrule];
   int yyi;
-  unsigned long int yylno = yyrline[yyrule];
-  YYFPRINTF (stderr, "Reducing stack by rule %d (line %lu):\n",
-	     yyrule - 1, yylno);
+  YYFPRINTF (stderr, "Reducing stack by rule %d (line %d):\n",
+             yyrule - 1, yylno);
   /* The symbols being reduced.  */
   for (yyi = 0; yyi < yynrhs; yyi++)
     {
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
-      yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
-		       &(yyvsp[(yyi + 1) - (yynrhs)])
-		       		       );
+      yy_symbol_print (stderr,
+                       YY_ACCESSING_SYMBOL (+yyssp[yyi + 1 - yynrhs]),
+                       &yyvsp[(yyi + 1) - (yynrhs)]);
       YYFPRINTF (stderr, "\n");
     }
 }
 
-# define YY_REDUCE_PRINT(Rule)		\
-do {					\
-  if (yydebug)				\
-    yy_reduce_print (yyvsp, Rule); \
-} while (YYID (0))
+# define YY_REDUCE_PRINT(Rule)          \
+do {                                    \
+  if (yydebug)                          \
+    yy_reduce_print (yyssp, yyvsp, Rule); \
+} while (0)
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
    multiple parsers can coexist.  */
 int yydebug;
 #else /* !YYDEBUG */
-# define YYDPRINTF(Args)
-# define YY_SYMBOL_PRINT(Title, Type, Value, Location)
+# define YYDPRINTF(Args) ((void) 0)
+# define YY_SYMBOL_PRINT(Title, Kind, Value, Location)
 # define YY_STACK_PRINT(Bottom, Top)
 # define YY_REDUCE_PRINT(Rule)
 #endif /* !YYDEBUG */
 
 
 /* YYINITDEPTH -- initial size of the parser's stacks.  */
-#ifndef	YYINITDEPTH
+#ifndef YYINITDEPTH
 # define YYINITDEPTH 200
 #endif
 
@@ -1549,363 +1684,77 @@ int yydebug;
 #endif
 
 
-#if YYERROR_VERBOSE
 
-# ifndef yystrlen
-#  if defined __GLIBC__ && defined _STRING_H
-#   define yystrlen strlen
-#  else
-/* Return the length of YYSTR.  */
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-static YYSIZE_T
-yystrlen (const char *yystr)
-#else
-static YYSIZE_T
-yystrlen (yystr)
-    const char *yystr;
-#endif
-{
-  YYSIZE_T yylen;
-  for (yylen = 0; yystr[yylen]; yylen++)
-    continue;
-  return yylen;
-}
-#  endif
-# endif
 
-# ifndef yystpcpy
-#  if defined __GLIBC__ && defined _STRING_H && defined _GNU_SOURCE
-#   define yystpcpy stpcpy
-#  else
-/* Copy YYSRC to YYDEST, returning the address of the terminating '\0' in
-   YYDEST.  */
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-static char *
-yystpcpy (char *yydest, const char *yysrc)
-#else
-static char *
-yystpcpy (yydest, yysrc)
-    char *yydest;
-    const char *yysrc;
-#endif
-{
-  char *yyd = yydest;
-  const char *yys = yysrc;
 
-  while ((*yyd++ = *yys++) != '\0')
-    continue;
-
-  return yyd - 1;
-}
-#  endif
-# endif
-
-# ifndef yytnamerr
-/* Copy to YYRES the contents of YYSTR after stripping away unnecessary
-   quotes and backslashes, so that it's suitable for yyerror.  The
-   heuristic is that double-quoting is unnecessary unless the string
-   contains an apostrophe, a comma, or backslash (other than
-   backslash-backslash).  YYSTR is taken from yytname.  If YYRES is
-   null, do not copy; instead, return the length of what the result
-   would have been.  */
-static YYSIZE_T
-yytnamerr (char *yyres, const char *yystr)
-{
-  if (*yystr == '"')
-    {
-      YYSIZE_T yyn = 0;
-      char const *yyp = yystr;
-
-      for (;;)
-	switch (*++yyp)
-	  {
-	  case '\'':
-	  case ',':
-	    goto do_not_strip_quotes;
-
-	  case '\\':
-	    if (*++yyp != '\\')
-	      goto do_not_strip_quotes;
-	    /* Fall through.  */
-	  default:
-	    if (yyres)
-	      yyres[yyn] = *yyp;
-	    yyn++;
-	    break;
-
-	  case '"':
-	    if (yyres)
-	      yyres[yyn] = '\0';
-	    return yyn;
-	  }
-    do_not_strip_quotes: ;
-    }
-
-  if (! yyres)
-    return yystrlen (yystr);
-
-  return yystpcpy (yyres, yystr) - yyres;
-}
-# endif
-
-/* Copy into *YYMSG, which is of size *YYMSG_ALLOC, an error message
-   about the unexpected token YYTOKEN for the state stack whose top is
-   YYSSP.
-
-   Return 0 if *YYMSG was successfully written.  Return 1 if *YYMSG is
-   not large enough to hold the message.  In that case, also set
-   *YYMSG_ALLOC to the required number of bytes.  Return 2 if the
-   required number of bytes is too large to store.  */
-static int
-yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
-                yytype_int16 *yyssp, int yytoken)
-{
-  YYSIZE_T yysize0 = yytnamerr (YY_NULL, yytname[yytoken]);
-  YYSIZE_T yysize = yysize0;
-  enum { YYERROR_VERBOSE_ARGS_MAXIMUM = 5 };
-  /* Internationalized format string. */
-  const char *yyformat = YY_NULL;
-  /* Arguments of yyformat. */
-  char const *yyarg[YYERROR_VERBOSE_ARGS_MAXIMUM];
-  /* Number of reported tokens (one for the "unexpected", one per
-     "expected"). */
-  int yycount = 0;
-
-  /* There are many possibilities here to consider:
-     - Assume YYFAIL is not used.  It's too flawed to consider.  See
-       <http://lists.gnu.org/archive/html/bison-patches/2009-12/msg00024.html>
-       for details.  YYERROR is fine as it does not invoke this
-       function.
-     - If this state is a consistent state with a default action, then
-       the only way this function was invoked is if the default action
-       is an error action.  In that case, don't check for expected
-       tokens because there are none.
-     - The only way there can be no lookahead present (in yychar) is if
-       this state is a consistent state with a default action.  Thus,
-       detecting the absence of a lookahead is sufficient to determine
-       that there is no unexpected or expected token to report.  In that
-       case, just report a simple "syntax error".
-     - Don't assume there isn't a lookahead just because this state is a
-       consistent state with a default action.  There might have been a
-       previous inconsistent state, consistent state with a non-default
-       action, or user semantic action that manipulated yychar.
-     - Of course, the expected token list depends on states to have
-       correct lookahead information, and it depends on the parser not
-       to perform extra reductions after fetching a lookahead from the
-       scanner and before detecting a syntax error.  Thus, state merging
-       (from LALR or IELR) and default reductions corrupt the expected
-       token list.  However, the list is correct for canonical LR with
-       one exception: it will still contain any token that will not be
-       accepted due to an error action in a later state.
-  */
-  if (yytoken != YYEMPTY)
-    {
-      int yyn = yypact[*yyssp];
-      yyarg[yycount++] = yytname[yytoken];
-      if (!yypact_value_is_default (yyn))
-        {
-          /* Start YYX at -YYN if negative to avoid negative indexes in
-             YYCHECK.  In other words, skip the first -YYN actions for
-             this state because they are default actions.  */
-          int yyxbegin = yyn < 0 ? -yyn : 0;
-          /* Stay within bounds of both yycheck and yytname.  */
-          int yychecklim = YYLAST - yyn + 1;
-          int yyxend = yychecklim < YYNTOKENS ? yychecklim : YYNTOKENS;
-          int yyx;
-
-          for (yyx = yyxbegin; yyx < yyxend; ++yyx)
-            if (yycheck[yyx + yyn] == yyx && yyx != YYTERROR
-                && !yytable_value_is_error (yytable[yyx + yyn]))
-              {
-                if (yycount == YYERROR_VERBOSE_ARGS_MAXIMUM)
-                  {
-                    yycount = 1;
-                    yysize = yysize0;
-                    break;
-                  }
-                yyarg[yycount++] = yytname[yyx];
-                {
-                  YYSIZE_T yysize1 = yysize + yytnamerr (YY_NULL, yytname[yyx]);
-                  if (! (yysize <= yysize1
-                         && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
-                    return 2;
-                  yysize = yysize1;
-                }
-              }
-        }
-    }
-
-  switch (yycount)
-    {
-# define YYCASE_(N, S)                      \
-      case N:                               \
-        yyformat = S;                       \
-      break
-      YYCASE_(0, YY_("syntax error"));
-      YYCASE_(1, YY_("syntax error, unexpected %s"));
-      YYCASE_(2, YY_("syntax error, unexpected %s, expecting %s"));
-      YYCASE_(3, YY_("syntax error, unexpected %s, expecting %s or %s"));
-      YYCASE_(4, YY_("syntax error, unexpected %s, expecting %s or %s or %s"));
-      YYCASE_(5, YY_("syntax error, unexpected %s, expecting %s or %s or %s or %s"));
-# undef YYCASE_
-    }
-
-  {
-    YYSIZE_T yysize1 = yysize + yystrlen (yyformat);
-    if (! (yysize <= yysize1 && yysize1 <= YYSTACK_ALLOC_MAXIMUM))
-      return 2;
-    yysize = yysize1;
-  }
-
-  if (*yymsg_alloc < yysize)
-    {
-      *yymsg_alloc = 2 * yysize;
-      if (! (yysize <= *yymsg_alloc
-             && *yymsg_alloc <= YYSTACK_ALLOC_MAXIMUM))
-        *yymsg_alloc = YYSTACK_ALLOC_MAXIMUM;
-      return 1;
-    }
-
-  /* Avoid sprintf, as that infringes on the user's name space.
-     Don't have undefined behavior even if the translation
-     produced a string with the wrong number of "%s"s.  */
-  {
-    char *yyp = *yymsg;
-    int yyi = 0;
-    while ((*yyp = *yyformat) != '\0')
-      if (*yyp == '%' && yyformat[1] == 's' && yyi < yycount)
-        {
-          yyp += yytnamerr (yyp, yyarg[yyi++]);
-          yyformat += 2;
-        }
-      else
-        {
-          yyp++;
-          yyformat++;
-        }
-  }
-  return 0;
-}
-#endif /* YYERROR_VERBOSE */
 
 /*-----------------------------------------------.
 | Release the memory associated to this symbol.  |
 `-----------------------------------------------*/
 
-/*ARGSUSED*/
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep)
-#else
-static void
-yydestruct (yymsg, yytype, yyvaluep)
-    const char *yymsg;
-    int yytype;
-    YYSTYPE *yyvaluep;
-#endif
+yydestruct (const char *yymsg,
+            yysymbol_kind_t yykind, YYSTYPE *yyvaluep)
 {
-  YYUSE (yyvaluep);
-
+  YY_USE (yyvaluep);
   if (!yymsg)
     yymsg = "Deleting";
-  YY_SYMBOL_PRINT (yymsg, yytype, yyvaluep, yylocationp);
+  YY_SYMBOL_PRINT (yymsg, yykind, yyvaluep, yylocationp);
 
-  switch (yytype)
-    {
-
-      default:
-        break;
-    }
+  YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
+  YY_USE (yykind);
+  YY_IGNORE_MAYBE_UNINITIALIZED_END
 }
 
 
-
-
-/* The lookahead symbol.  */
+/* Lookahead token kind.  */
 int yychar;
 
-
-#ifndef YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-# define YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
-# define YY_IGNORE_MAYBE_UNINITIALIZED_END
-#endif
-#ifndef YY_INITIAL_VALUE
-# define YY_INITIAL_VALUE(Value) /* Nothing. */
-#endif
-
 /* The semantic value of the lookahead symbol.  */
-YYSTYPE yylval YY_INITIAL_VALUE(yyval_default);
-
+YYSTYPE yylval;
 /* Number of syntax errors so far.  */
 int yynerrs;
+
+
 
 
 /*----------.
 | yyparse.  |
 `----------*/
 
-#ifdef YYPARSE_PARAM
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
-int
-yyparse (void *YYPARSE_PARAM)
-#else
-int
-yyparse (YYPARSE_PARAM)
-    void *YYPARSE_PARAM;
-#endif
-#else /* ! YYPARSE_PARAM */
-#if (defined __STDC__ || defined __C99__FUNC__ \
-     || defined __cplusplus || defined _MSC_VER)
 int
 yyparse (void)
-#else
-int
-yyparse ()
-
-#endif
-#endif
 {
-    int yystate;
+    yy_state_fast_t yystate = 0;
     /* Number of tokens to shift before error messages enabled.  */
-    int yyerrstatus;
+    int yyerrstatus = 0;
 
-    /* The stacks and their tools:
-       `yyss': related to states.
-       `yyvs': related to semantic values.
-
-       Refer to the stacks through separate pointers, to allow yyoverflow
+    /* Refer to the stacks through separate pointers, to allow yyoverflow
        to reallocate them elsewhere.  */
 
-    /* The state stack.  */
-    yytype_int16 yyssa[YYINITDEPTH];
-    yytype_int16 *yyss;
-    yytype_int16 *yyssp;
+    /* Their size.  */
+    YYPTRDIFF_T yystacksize = YYINITDEPTH;
 
-    /* The semantic value stack.  */
+    /* The state stack: array, bottom, top.  */
+    yy_state_t yyssa[YYINITDEPTH];
+    yy_state_t *yyss = yyssa;
+    yy_state_t *yyssp = yyss;
+
+    /* The semantic value stack: array, bottom, top.  */
     YYSTYPE yyvsa[YYINITDEPTH];
-    YYSTYPE *yyvs;
-    YYSTYPE *yyvsp;
-
-    YYSIZE_T yystacksize;
+    YYSTYPE *yyvs = yyvsa;
+    YYSTYPE *yyvsp = yyvs;
 
   int yyn;
+  /* The return value of yyparse.  */
   int yyresult;
-  /* Lookahead token as an internal (translated) token number.  */
-  int yytoken = 0;
+  /* Lookahead symbol kind.  */
+  yysymbol_kind_t yytoken = YYSYMBOL_YYEMPTY;
   /* The variables used to return semantic value and location from the
      action routines.  */
   YYSTYPE yyval;
 
-#if YYERROR_VERBOSE
-  /* Buffer for error messages, and its allocated size.  */
-  char yymsgbuf[128];
-  char *yymsg = yymsgbuf;
-  YYSIZE_T yymsg_alloc = sizeof yymsgbuf;
-#endif
+
 
 #define YYPOPSTACK(N)   (yyvsp -= (N), yyssp -= (N))
 
@@ -1913,102 +1762,105 @@ yyparse ()
      Keep to zero when no symbol should be popped.  */
   int yylen = 0;
 
-  yyssp = yyss = yyssa;
-  yyvsp = yyvs = yyvsa;
-  yystacksize = YYINITDEPTH;
-
   YYDPRINTF ((stderr, "Starting parse\n"));
 
-  yystate = 0;
-  yyerrstatus = 0;
-  yynerrs = 0;
   yychar = YYEMPTY; /* Cause a token to be read.  */
   goto yysetstate;
 
+
 /*------------------------------------------------------------.
-| yynewstate -- Push a new state, which is found in yystate.  |
+| yynewstate -- push a new state, which is found in yystate.  |
 `------------------------------------------------------------*/
- yynewstate:
+yynewstate:
   /* In all cases, when you get here, the value and location stacks
      have just been pushed.  So pushing a state here evens the stacks.  */
   yyssp++;
 
- yysetstate:
-  *yyssp = yystate;
+
+/*--------------------------------------------------------------------.
+| yysetstate -- set current state (the top of the stack) to yystate.  |
+`--------------------------------------------------------------------*/
+yysetstate:
+  YYDPRINTF ((stderr, "Entering state %d\n", yystate));
+  YY_ASSERT (0 <= yystate && yystate < YYNSTATES);
+  YY_IGNORE_USELESS_CAST_BEGIN
+  *yyssp = YY_CAST (yy_state_t, yystate);
+  YY_IGNORE_USELESS_CAST_END
+  YY_STACK_PRINT (yyss, yyssp);
 
   if (yyss + yystacksize - 1 <= yyssp)
+#if !defined yyoverflow && !defined YYSTACK_RELOCATE
+    goto yyexhaustedlab;
+#else
     {
       /* Get the current used size of the three stacks, in elements.  */
-      YYSIZE_T yysize = yyssp - yyss + 1;
+      YYPTRDIFF_T yysize = yyssp - yyss + 1;
 
-#ifdef yyoverflow
+# if defined yyoverflow
       {
-	/* Give user a chance to reallocate the stack.  Use copies of
-	   these so that the &'s don't force the real ones into
-	   memory.  */
-	YYSTYPE *yyvs1 = yyvs;
-	yytype_int16 *yyss1 = yyss;
+        /* Give user a chance to reallocate the stack.  Use copies of
+           these so that the &'s don't force the real ones into
+           memory.  */
+        yy_state_t *yyss1 = yyss;
+        YYSTYPE *yyvs1 = yyvs;
 
-	/* Each stack pointer address is followed by the size of the
-	   data in use in that stack, in bytes.  This used to be a
-	   conditional around just the two extra args, but that might
-	   be undefined if yyoverflow is a macro.  */
-	yyoverflow (YY_("memory exhausted"),
-		    &yyss1, yysize * sizeof (*yyssp),
-		    &yyvs1, yysize * sizeof (*yyvsp),
-		    &yystacksize);
-
-	yyss = yyss1;
-	yyvs = yyvs1;
+        /* Each stack pointer address is followed by the size of the
+           data in use in that stack, in bytes.  This used to be a
+           conditional around just the two extra args, but that might
+           be undefined if yyoverflow is a macro.  */
+        yyoverflow (YY_("memory exhausted"),
+                    &yyss1, yysize * YYSIZEOF (*yyssp),
+                    &yyvs1, yysize * YYSIZEOF (*yyvsp),
+                    &yystacksize);
+        yyss = yyss1;
+        yyvs = yyvs1;
       }
-#else /* no yyoverflow */
-# ifndef YYSTACK_RELOCATE
-      goto yyexhaustedlab;
-# else
+# else /* defined YYSTACK_RELOCATE */
       /* Extend the stack our own way.  */
       if (YYMAXDEPTH <= yystacksize)
-	goto yyexhaustedlab;
+        goto yyexhaustedlab;
       yystacksize *= 2;
       if (YYMAXDEPTH < yystacksize)
-	yystacksize = YYMAXDEPTH;
+        yystacksize = YYMAXDEPTH;
 
       {
-	yytype_int16 *yyss1 = yyss;
-	union yyalloc *yyptr =
-	  (union yyalloc *) YYSTACK_ALLOC (YYSTACK_BYTES (yystacksize));
-	if (! yyptr)
-	  goto yyexhaustedlab;
-	YYSTACK_RELOCATE (yyss_alloc, yyss);
-	YYSTACK_RELOCATE (yyvs_alloc, yyvs);
+        yy_state_t *yyss1 = yyss;
+        union yyalloc *yyptr =
+          YY_CAST (union yyalloc *,
+                   YYSTACK_ALLOC (YY_CAST (YYSIZE_T, YYSTACK_BYTES (yystacksize))));
+        if (! yyptr)
+          goto yyexhaustedlab;
+        YYSTACK_RELOCATE (yyss_alloc, yyss);
+        YYSTACK_RELOCATE (yyvs_alloc, yyvs);
 #  undef YYSTACK_RELOCATE
-	if (yyss1 != yyssa)
-	  YYSTACK_FREE (yyss1);
+        if (yyss1 != yyssa)
+          YYSTACK_FREE (yyss1);
       }
 # endif
-#endif /* no yyoverflow */
 
       yyssp = yyss + yysize - 1;
       yyvsp = yyvs + yysize - 1;
 
-      YYDPRINTF ((stderr, "Stack size increased to %lu\n",
-		  (unsigned long int) yystacksize));
+      YY_IGNORE_USELESS_CAST_BEGIN
+      YYDPRINTF ((stderr, "Stack size increased to %ld\n",
+                  YY_CAST (long, yystacksize)));
+      YY_IGNORE_USELESS_CAST_END
 
       if (yyss + yystacksize - 1 <= yyssp)
-	YYABORT;
+        YYABORT;
     }
-
-  YYDPRINTF ((stderr, "Entering state %d\n", yystate));
+#endif /* !defined yyoverflow && !defined YYSTACK_RELOCATE */
 
   if (yystate == YYFINAL)
     YYACCEPT;
 
   goto yybackup;
 
+
 /*-----------.
 | yybackup.  |
 `-----------*/
 yybackup:
-
   /* Do appropriate processing given the current state.  Read a
      lookahead token if we need one and don't already have one.  */
 
@@ -2019,17 +1871,28 @@ yybackup:
 
   /* Not known => get a lookahead token if don't already have one.  */
 
-  /* YYCHAR is either YYEMPTY or YYEOF or a valid lookahead symbol.  */
+  /* YYCHAR is either empty, or end-of-input, or a valid lookahead.  */
   if (yychar == YYEMPTY)
     {
-      YYDPRINTF ((stderr, "Reading a token: "));
-      yychar = YYLEX;
+      YYDPRINTF ((stderr, "Reading a token\n"));
+      yychar = yylex ();
     }
 
   if (yychar <= YYEOF)
     {
-      yychar = yytoken = YYEOF;
+      yychar = YYEOF;
+      yytoken = YYSYMBOL_YYEOF;
       YYDPRINTF ((stderr, "Now at end of input.\n"));
+    }
+  else if (yychar == YYerror)
+    {
+      /* The scanner already issued an error message, process directly
+         to error recovery.  But do not keep the error token as
+         lookahead, it is too special and may lead us to an endless
+         loop in error recovery. */
+      yychar = YYUNDEF;
+      yytoken = YYSYMBOL_YYerror;
+      goto yyerrlab1;
     }
   else
     {
@@ -2058,15 +1921,13 @@ yybackup:
 
   /* Shift the lookahead token.  */
   YY_SYMBOL_PRINT ("Shifting", yytoken, &yylval, &yylloc);
-
-  /* Discard the shifted token.  */
-  yychar = YYEMPTY;
-
   yystate = yyn;
   YY_IGNORE_MAYBE_UNINITIALIZED_BEGIN
   *++yyvsp = yylval;
   YY_IGNORE_MAYBE_UNINITIALIZED_END
 
+  /* Discard the shifted token.  */
+  yychar = YYEMPTY;
   goto yynewstate;
 
 
@@ -2081,14 +1942,14 @@ yydefault:
 
 
 /*-----------------------------.
-| yyreduce -- Do a reduction.  |
+| yyreduce -- do a reduction.  |
 `-----------------------------*/
 yyreduce:
   /* yyn is the number of a rule to reduce with.  */
   yylen = yyr2[yyn];
 
   /* If YYLEN is nonzero, implement the default value of the action:
-     `$$ = $1'.
+     '$$ = $1'.
 
      Otherwise, the following line sets YYVAL to garbage.
      This behavior is undocumented and Bison
@@ -2101,133 +1962,132 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-        case 2:
-/* Line 1792 of yacc.c  */
+  case 2: /* R_admsParse: R_l.admsParse  */
 #line 296 "verilogaYacc.y"
-    {
+          {
           }
+#line 1970 "y.tab.c"
     break;
 
-  case 3:
-/* Line 1792 of yacc.c  */
+  case 3: /* R_l.admsParse: R_s.admsParse  */
 #line 301 "verilogaYacc.y"
-    {
+          {
           }
+#line 1977 "y.tab.c"
     break;
 
-  case 4:
-/* Line 1792 of yacc.c  */
+  case 4: /* R_l.admsParse: R_l.admsParse R_s.admsParse  */
 #line 304 "verilogaYacc.y"
-    {
+          {
           }
+#line 1984 "y.tab.c"
     break;
 
-  case 5:
-/* Line 1792 of yacc.c  */
+  case 5: /* R_s.admsParse: R_d.module  */
 #line 309 "verilogaYacc.y"
-    {
+          {
           }
+#line 1991 "y.tab.c"
     break;
 
-  case 6:
-/* Line 1792 of yacc.c  */
+  case 6: /* R_s.admsParse: R_discipline_member  */
 #line 312 "verilogaYacc.y"
-    {
+          {
           }
+#line 1998 "y.tab.c"
     break;
 
-  case 7:
-/* Line 1792 of yacc.c  */
+  case 7: /* R_s.admsParse: R_nature_member  */
 #line 315 "verilogaYacc.y"
-    {
+          {
           }
+#line 2005 "y.tab.c"
     break;
 
-  case 8:
-/* Line 1792 of yacc.c  */
+  case 8: /* R_discipline_member: tk_discipline R_discipline_name R_l.discipline_assignment tk_enddiscipline  */
 #line 320 "verilogaYacc.y"
-    {
+          {
             adms_admsmain_list_discipline_prepend_once_or_abort(root(),gDiscipline);
             gDiscipline=NULL;
           }
+#line 2014 "y.tab.c"
     break;
 
-  case 9:
-/* Line 1792 of yacc.c  */
+  case 9: /* R_discipline_name: tk_ident  */
 #line 327 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             gDiscipline=adms_discipline_new(mylexval1);
           }
+#line 2023 "y.tab.c"
     break;
 
-  case 10:
-/* Line 1792 of yacc.c  */
+  case 10: /* R_l.discipline_assignment: R_s.discipline_assignment  */
 #line 334 "verilogaYacc.y"
-    {
+          {
           }
+#line 2030 "y.tab.c"
     break;
 
-  case 11:
-/* Line 1792 of yacc.c  */
+  case 11: /* R_l.discipline_assignment: R_l.discipline_assignment R_s.discipline_assignment  */
 #line 337 "verilogaYacc.y"
-    {
+          {
           }
+#line 2037 "y.tab.c"
     break;
 
-  case 12:
-/* Line 1792 of yacc.c  */
+  case 12: /* R_s.discipline_assignment: tk_potential R_discipline.naturename ';'  */
 #line 342 "verilogaYacc.y"
-    {
-            gDiscipline->_potential=(p_nature)YY((yyvsp[(2) - (3)]._yaccval));
+          {
+            gDiscipline->_potential=(p_nature)YY((yyvsp[-1]._yaccval));
           }
+#line 2045 "y.tab.c"
     break;
 
-  case 13:
-/* Line 1792 of yacc.c  */
+  case 13: /* R_s.discipline_assignment: tk_flow R_discipline.naturename ';'  */
 #line 346 "verilogaYacc.y"
-    {
-            gDiscipline->_flow=(p_nature)YY((yyvsp[(2) - (3)]._yaccval));
+          {
+            gDiscipline->_flow=(p_nature)YY((yyvsp[-1]._yaccval));
           }
+#line 2053 "y.tab.c"
     break;
 
-  case 14:
-/* Line 1792 of yacc.c  */
+  case 14: /* R_s.discipline_assignment: tk_domain tk_ident ';'  */
 #line 350 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (3)]._lexval))->_string;
+          {
+            char* mylexval2=((p_lexval)(yyvsp[-1]._lexval))->_string;
             if(!strcmp(mylexval2,"discrete"))
               gDiscipline->_domain=admse_discrete;
             else if(!strcmp(mylexval2,"continuous"))
               gDiscipline->_domain=admse_continuous;
             else
-             adms_veriloga_message_fatal("domain: bad value given - should be either 'discrete' or 'continuous'\n",(yyvsp[(2) - (3)]._lexval));
+             adms_veriloga_message_fatal("domain: bad value given - should be either 'discrete' or 'continuous'\n",(yyvsp[-1]._lexval));
           }
+#line 2067 "y.tab.c"
     break;
 
-  case 15:
-/* Line 1792 of yacc.c  */
+  case 15: /* R_discipline.naturename: tk_ident  */
 #line 362 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             p_nature mynature=lookup_nature(mylexval1);
             if(!mynature)
-              adms_veriloga_message_fatal("can't find nature definition\n",(yyvsp[(1) - (1)]._lexval));
+              adms_veriloga_message_fatal("can't find nature definition\n",(yyvsp[0]._lexval));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mynature);
           }
+#line 2080 "y.tab.c"
     break;
 
-  case 16:
-/* Line 1792 of yacc.c  */
+  case 16: /* R_nature_member: tk_nature tk_ident R_l.nature_assignment tk_endnature  */
 #line 373 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (4)]._lexval))->_string;
+          {
+            char* mylexval2=((p_lexval)(yyvsp[-2]._lexval))->_string;
             p_nature mynature=NULL;
             if(gNatureAccess) 
               mynature=adms_admsmain_list_nature_prepend_by_id_once_or_abort(root(),gNatureAccess);
             else
-             adms_veriloga_message_fatal("attribute 'access' in nature definition not found\n",(yyvsp[(2) - (4)]._lexval));
+             adms_veriloga_message_fatal("attribute 'access' in nature definition not found\n",(yyvsp[-2]._lexval));
             adms_nature_valueto_name(mynature,mylexval2);
             if(gNatureidt) 
               adms_nature_valueto_idt_name(mynature,gNatureidt);
@@ -2243,51 +2103,51 @@ yyreduce:
             gNatureidt=NULL;
             gNatureddt=NULL;
           }
+#line 2107 "y.tab.c"
     break;
 
-  case 17:
-/* Line 1792 of yacc.c  */
+  case 17: /* R_l.nature_assignment: R_s.nature_assignment  */
 #line 398 "verilogaYacc.y"
-    {
+          {
           }
+#line 2114 "y.tab.c"
     break;
 
-  case 18:
-/* Line 1792 of yacc.c  */
+  case 18: /* R_l.nature_assignment: R_l.nature_assignment R_s.nature_assignment  */
 #line 401 "verilogaYacc.y"
-    {
+          {
           }
+#line 2121 "y.tab.c"
     break;
 
-  case 19:
-/* Line 1792 of yacc.c  */
+  case 19: /* R_s.nature_assignment: tk_ident '=' tk_number ';'  */
 #line 406 "verilogaYacc.y"
-    {
-            if(!strcmp((yyvsp[(1) - (4)]._lexval)->_string,"abstol"))
+          {
+            if(!strcmp((yyvsp[-3]._lexval)->_string,"abstol"))
             {
               if(gNatureAbsTol)
-                adms_veriloga_message_fatal("nature attribute defined more than once\n",(yyvsp[(1) - (4)]._lexval));
-              gNatureAbsTol=adms_number_new((yyvsp[(3) - (4)]._lexval));
+                adms_veriloga_message_fatal("nature attribute defined more than once\n",(yyvsp[-3]._lexval));
+              gNatureAbsTol=adms_number_new((yyvsp[-1]._lexval));
             }
             else
-             adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[(1) - (4)]._lexval));
+             adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[-3]._lexval));
           }
+#line 2136 "y.tab.c"
     break;
 
-  case 20:
-/* Line 1792 of yacc.c  */
+  case 20: /* R_s.nature_assignment: tk_ident '=' tk_number tk_ident ';'  */
 #line 417 "verilogaYacc.y"
-    {
-            char* mylexval4=((p_lexval)(yyvsp[(4) - (5)]._lexval))->_string;
+          {
+            char* mylexval4=((p_lexval)(yyvsp[-1]._lexval))->_string;
             admse myunit=admse_1;
-            if(!strcmp((yyvsp[(1) - (5)]._lexval)->_string,"abstol"))
+            if(!strcmp((yyvsp[-4]._lexval)->_string,"abstol"))
             {
               if(gNatureAbsTol)
-                adms_veriloga_message_fatal("nature attribute defined more than once\n",(yyvsp[(1) - (5)]._lexval));
-              gNatureAbsTol=adms_number_new((yyvsp[(3) - (5)]._lexval));
+                adms_veriloga_message_fatal("nature attribute defined more than once\n",(yyvsp[-4]._lexval));
+              gNatureAbsTol=adms_number_new((yyvsp[-2]._lexval));
             }
             else
-             adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[(1) - (5)]._lexval));
+             adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[-4]._lexval));
             if(0) {}
             else if(!strcmp(mylexval4,"E")) myunit=admse_E;
             else if(!strcmp(mylexval4,"P")) myunit=admse_P;
@@ -2308,127 +2168,127 @@ yyreduce:
             else if(!strcmp(mylexval4,"f")) myunit=admse_f;
             else if(!strcmp(mylexval4,"a")) myunit=admse_a;
             else
-              adms_veriloga_message_fatal("can not convert symbol to valid unit\n",(yyvsp[(4) - (5)]._lexval));
+              adms_veriloga_message_fatal("can not convert symbol to valid unit\n",(yyvsp[-1]._lexval));
             gNatureAbsTol->_scalingunit=myunit;
           }
+#line 2175 "y.tab.c"
     break;
 
-  case 21:
-/* Line 1792 of yacc.c  */
+  case 21: /* R_s.nature_assignment: tk_ident '=' tk_anystring ';'  */
 #line 452 "verilogaYacc.y"
-    {
-            char* mylexval3=((p_lexval)(yyvsp[(3) - (4)]._lexval))->_string;
-            if(!strcmp((yyvsp[(1) - (4)]._lexval)->_string,"units"))
+          {
+            char* mylexval3=((p_lexval)(yyvsp[-1]._lexval))->_string;
+            if(!strcmp((yyvsp[-3]._lexval)->_string,"units"))
             {
               if(gNatureUnits)
-                adms_veriloga_message_fatal("nature attribute defined more than once\n",(yyvsp[(1) - (4)]._lexval));
+                adms_veriloga_message_fatal("nature attribute defined more than once\n",(yyvsp[-3]._lexval));
               gNatureUnits=adms_kclone(mylexval3);
             }
             else
-             adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[(1) - (4)]._lexval));
+             adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[-3]._lexval));
           }
+#line 2191 "y.tab.c"
     break;
 
-  case 22:
-/* Line 1792 of yacc.c  */
+  case 22: /* R_s.nature_assignment: tk_ident '=' tk_ident ';'  */
 #line 464 "verilogaYacc.y"
-    {
-            char* mylexval3=((p_lexval)(yyvsp[(3) - (4)]._lexval))->_string;
-            if(!strcmp((yyvsp[(1) - (4)]._lexval)->_string,"access"))
+          {
+            char* mylexval3=((p_lexval)(yyvsp[-1]._lexval))->_string;
+            if(!strcmp((yyvsp[-3]._lexval)->_string,"access"))
             {
               if(gNatureAccess)
-                adms_veriloga_message_fatal("nature attribute defined more than once\n",(yyvsp[(1) - (4)]._lexval));
+                adms_veriloga_message_fatal("nature attribute defined more than once\n",(yyvsp[-3]._lexval));
               gNatureAccess=adms_kclone(mylexval3);
             }
-            else if(!strcmp((yyvsp[(1) - (4)]._lexval)->_string,"idt_nature"))
+            else if(!strcmp((yyvsp[-3]._lexval)->_string,"idt_nature"))
             {
               if(gNatureidt)
-                adms_veriloga_message_fatal("idt_nature attribute defined more than once\n",(yyvsp[(1) - (4)]._lexval));
+                adms_veriloga_message_fatal("idt_nature attribute defined more than once\n",(yyvsp[-3]._lexval));
               gNatureidt=adms_kclone(mylexval3);
             }
-            else if(!strcmp((yyvsp[(1) - (4)]._lexval)->_string,"ddt_nature"))
+            else if(!strcmp((yyvsp[-3]._lexval)->_string,"ddt_nature"))
             {
               if(gNatureddt)
-                adms_veriloga_message_fatal("ddt_nature attribute defined more than once\n",(yyvsp[(1) - (4)]._lexval));
+                adms_veriloga_message_fatal("ddt_nature attribute defined more than once\n",(yyvsp[-3]._lexval));
               gNatureddt=adms_kclone(mylexval3);
             }
             else
-             adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[(1) - (4)]._lexval));
+             adms_veriloga_message_fatal("unknown nature attribute\n",(yyvsp[-3]._lexval));
           }
+#line 2219 "y.tab.c"
     break;
 
-  case 23:
-/* Line 1792 of yacc.c  */
+  case 23: /* R_d.attribute.0: %empty  */
 #line 490 "verilogaYacc.y"
-    {
+          {
           }
+#line 2226 "y.tab.c"
     break;
 
-  case 24:
-/* Line 1792 of yacc.c  */
+  case 24: /* R_d.attribute.0: R_d.attribute  */
 #line 493 "verilogaYacc.y"
-    {
+          {
           }
+#line 2233 "y.tab.c"
     break;
 
-  case 25:
-/* Line 1792 of yacc.c  */
+  case 25: /* R_d.attribute: tk_beginattribute R_l.attribute tk_endattribute  */
 #line 498 "verilogaYacc.y"
-    {
+          {
           }
+#line 2240 "y.tab.c"
     break;
 
-  case 26:
-/* Line 1792 of yacc.c  */
+  case 26: /* R_d.attribute: tk_beginattribute tk_anytext  */
 #line 501 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (2)]._lexval))->_string;
+          {
+            char* mylexval2=((p_lexval)(yyvsp[0]._lexval))->_string;
             p_attribute myattribute=adms_attribute_new("ibm");
             p_admst myconstant=adms_admst_newks(adms_kclone(mylexval2));
             myattribute->_value=(p_adms)myconstant;
             adms_slist_push(&gAttributeList,(p_adms)myattribute);
           }
+#line 2252 "y.tab.c"
     break;
 
-  case 27:
-/* Line 1792 of yacc.c  */
+  case 27: /* R_d.attribute: tk_beginattribute tk_endattribute  */
 #line 509 "verilogaYacc.y"
-    {
+          {
           }
+#line 2259 "y.tab.c"
     break;
 
-  case 28:
-/* Line 1792 of yacc.c  */
+  case 28: /* R_l.attribute: R_s.attribute  */
 #line 514 "verilogaYacc.y"
-    {
+          {
           }
+#line 2266 "y.tab.c"
     break;
 
-  case 29:
-/* Line 1792 of yacc.c  */
+  case 29: /* R_l.attribute: R_l.attribute R_s.attribute  */
 #line 517 "verilogaYacc.y"
-    {
+          {
           }
+#line 2273 "y.tab.c"
     break;
 
-  case 30:
-/* Line 1792 of yacc.c  */
+  case 30: /* R_s.attribute: tk_ident '=' tk_anystring  */
 #line 522 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (3)]._lexval))->_string;
-            char* mylexval3=((p_lexval)(yyvsp[(3) - (3)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[-2]._lexval))->_string;
+            char* mylexval3=((p_lexval)(yyvsp[0]._lexval))->_string;
             p_attribute myattribute=adms_attribute_new(mylexval1);
             p_admst myconstant=adms_admst_newks(adms_kclone(mylexval3));
             myattribute->_value=(p_adms)myconstant;
             adms_slist_push(&gAttributeList,(p_adms)myattribute);
           }
+#line 2286 "y.tab.c"
     break;
 
-  case 31:
-/* Line 1792 of yacc.c  */
+  case 31: /* $@1: %empty  */
 #line 533 "verilogaYacc.y"
-    {
-            char* mylexval3=((p_lexval)(yyvsp[(3) - (3)]._lexval))->_string;
+          {
+            char* mylexval3=((p_lexval)(yyvsp[0]._lexval))->_string;
             p_slist l;
             p_nodealias mynodealias;
             gModule=adms_admsmain_list_module_prepend_by_id_once_or_abort(root(),mylexval3); 
@@ -2441,325 +2301,325 @@ yyreduce:
               adms_slist_push(&gModule->_attribute,l->data);
             adms_slist_free(gAttributeList); gAttributeList=NULL;
           }
+#line 2305 "y.tab.c"
     break;
 
-  case 32:
-/* Line 1792 of yacc.c  */
+  case 32: /* $@2: %empty  */
 #line 548 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_moduletop);
           }
+#line 2313 "y.tab.c"
     break;
 
-  case 33:
-/* Line 1792 of yacc.c  */
+  case 33: /* R_d.module: R_d.attribute.0 tk_module tk_ident $@1 R_d.terminal $@2 R_modulebody tk_endmodule  */
 #line 552 "verilogaYacc.y"
-    {
+          {
             adms_slist_pull(&gBlockList);
             adms_slist_inreverse(&gModule->_assignment);
           }
+#line 2322 "y.tab.c"
     break;
 
-  case 34:
-/* Line 1792 of yacc.c  */
+  case 34: /* R_modulebody: %empty  */
 #line 559 "verilogaYacc.y"
-    {
+          {
           }
+#line 2329 "y.tab.c"
     break;
 
-  case 35:
-/* Line 1792 of yacc.c  */
+  case 35: /* R_modulebody: R_l.declaration  */
 #line 562 "verilogaYacc.y"
-    {
+          {
           }
+#line 2336 "y.tab.c"
     break;
 
-  case 36:
-/* Line 1792 of yacc.c  */
+  case 36: /* R_modulebody: R_netlist  */
 #line 565 "verilogaYacc.y"
-    {
+          {
           }
+#line 2343 "y.tab.c"
     break;
 
-  case 37:
-/* Line 1792 of yacc.c  */
+  case 37: /* R_modulebody: R_l.declaration R_netlist  */
 #line 568 "verilogaYacc.y"
-    {
+          {
           }
+#line 2350 "y.tab.c"
     break;
 
-  case 38:
-/* Line 1792 of yacc.c  */
+  case 38: /* R_netlist: R_analog  */
 #line 573 "verilogaYacc.y"
-    {
+          {
           }
+#line 2357 "y.tab.c"
     break;
 
-  case 39:
-/* Line 1792 of yacc.c  */
+  case 39: /* R_netlist: R_l.instance  */
 #line 576 "verilogaYacc.y"
-    {
+          {
           }
+#line 2364 "y.tab.c"
     break;
 
-  case 40:
-/* Line 1792 of yacc.c  */
+  case 40: /* R_netlist: R_l.instance R_analog  */
 #line 579 "verilogaYacc.y"
-    {
+          {
           }
+#line 2371 "y.tab.c"
     break;
 
-  case 41:
-/* Line 1792 of yacc.c  */
+  case 41: /* R_netlist: R_analog R_l.instance  */
 #line 582 "verilogaYacc.y"
-    {
+          {
           }
+#line 2378 "y.tab.c"
     break;
 
-  case 42:
-/* Line 1792 of yacc.c  */
+  case 42: /* R_netlist: R_l.instance R_analog R_l.instance  */
 #line 585 "verilogaYacc.y"
-    {
+          {
           }
+#line 2385 "y.tab.c"
     break;
 
-  case 43:
-/* Line 1792 of yacc.c  */
+  case 43: /* R_l.instance: R_s.instance  */
 #line 590 "verilogaYacc.y"
-    {
+          {
           }
+#line 2392 "y.tab.c"
     break;
 
-  case 44:
-/* Line 1792 of yacc.c  */
+  case 44: /* R_l.instance: R_l.instance R_s.instance  */
 #line 593 "verilogaYacc.y"
-    {
+          {
           }
+#line 2399 "y.tab.c"
     break;
 
-  case 45:
-/* Line 1792 of yacc.c  */
+  case 45: /* R_d.terminal: '(' R_l.terminal.0 ')' R_d.attribute.0 ';'  */
 #line 598 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             for(l=gAttributeList;l;l=l->next)
               adms_slist_push(&gModule->_attribute,l->data);
             adms_slist_free(gAttributeList); gAttributeList=NULL;
           }
+#line 2410 "y.tab.c"
     break;
 
-  case 46:
-/* Line 1792 of yacc.c  */
+  case 46: /* R_l.terminal.0: %empty  */
 #line 607 "verilogaYacc.y"
-    {
+          {
           }
+#line 2417 "y.tab.c"
     break;
 
-  case 47:
-/* Line 1792 of yacc.c  */
+  case 47: /* R_l.terminal.0: R_l.terminal  */
 #line 610 "verilogaYacc.y"
-    {
+          {
           }
+#line 2424 "y.tab.c"
     break;
 
-  case 48:
-/* Line 1792 of yacc.c  */
+  case 48: /* R_l.terminal: R_s.terminal  */
 #line 615 "verilogaYacc.y"
-    {
+          {
           }
+#line 2431 "y.tab.c"
     break;
 
-  case 49:
-/* Line 1792 of yacc.c  */
+  case 49: /* R_l.terminal: R_l.terminal ',' R_s.terminal  */
 #line 618 "verilogaYacc.y"
-    {
+          {
           }
+#line 2438 "y.tab.c"
     break;
 
-  case 50:
-/* Line 1792 of yacc.c  */
+  case 50: /* R_s.terminal: tk_ident  */
 #line 623 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             p_nodealias mynodealias=adms_module_list_nodealias_prepend_by_id_once_or_abort(gModule,gModule,mylexval1); 
             p_node mynode=adms_module_list_node_prepend_by_id_once_or_abort(gModule,gModule,mylexval1); 
             mynodealias->_node=mynode;
             mynode->_location=admse_external;
           }
+#line 2450 "y.tab.c"
     break;
 
-  case 51:
-/* Line 1792 of yacc.c  */
+  case 51: /* R_l.declaration: R_s.declaration.withattribute  */
 #line 633 "verilogaYacc.y"
-    {
+          {
           }
+#line 2457 "y.tab.c"
     break;
 
-  case 52:
-/* Line 1792 of yacc.c  */
+  case 52: /* R_l.declaration: R_l.declaration R_s.declaration.withattribute  */
 #line 636 "verilogaYacc.y"
-    {
+          {
           }
+#line 2464 "y.tab.c"
     break;
 
-  case 53:
-/* Line 1792 of yacc.c  */
+  case 53: /* R_s.declaration.withattribute: R_s.declaration  */
 #line 641 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_moduletop);
           }
+#line 2472 "y.tab.c"
     break;
 
-  case 54:
-/* Line 1792 of yacc.c  */
+  case 54: /* R_s.declaration.withattribute: R_d.attribute.global R_s.declaration  */
 #line 645 "verilogaYacc.y"
-    {
+          {
             adms_slist_free(gGlobalAttributeList); gGlobalAttributeList=NULL;
             set_context(ctx_moduletop);
           }
+#line 2481 "y.tab.c"
     break;
 
-  case 55:
-/* Line 1792 of yacc.c  */
+  case 55: /* R_d.attribute.global: R_d.attribute  */
 #line 652 "verilogaYacc.y"
-    {
+          {
             gGlobalAttributeList=gAttributeList;
             gAttributeList=NULL;
           }
+#line 2490 "y.tab.c"
     break;
 
-  case 56:
-/* Line 1792 of yacc.c  */
+  case 56: /* R_s.declaration: R_d.node  */
 #line 659 "verilogaYacc.y"
-    {
+          {
           }
+#line 2497 "y.tab.c"
     break;
 
-  case 57:
-/* Line 1792 of yacc.c  */
+  case 57: /* R_s.declaration: R_d.branch  */
 #line 662 "verilogaYacc.y"
-    {
+          {
           }
+#line 2504 "y.tab.c"
     break;
 
-  case 58:
-/* Line 1792 of yacc.c  */
+  case 58: /* $@3: %empty  */
 #line 665 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_any);
           }
+#line 2512 "y.tab.c"
     break;
 
-  case 59:
-/* Line 1792 of yacc.c  */
+  case 59: /* R_s.declaration: tk_parameter $@3 R_variable.type R_l.parameter R_d.variable.end  */
 #line 669 "verilogaYacc.y"
-    {
+          {
           }
+#line 2519 "y.tab.c"
     break;
 
-  case 60:
-/* Line 1792 of yacc.c  */
+  case 60: /* $@4: %empty  */
 #line 672 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_any);
           }
+#line 2527 "y.tab.c"
     break;
 
-  case 61:
-/* Line 1792 of yacc.c  */
+  case 61: /* R_s.declaration: tk_parameter $@4 R_l.parameter R_d.variable.end  */
 #line 676 "verilogaYacc.y"
-    {
+          {
           }
+#line 2534 "y.tab.c"
     break;
 
-  case 62:
-/* Line 1792 of yacc.c  */
+  case 62: /* $@5: %empty  */
 #line 679 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_any);
           }
+#line 2542 "y.tab.c"
     break;
 
-  case 63:
-/* Line 1792 of yacc.c  */
+  case 63: /* R_s.declaration: R_variable.type $@5 R_l.variable R_d.variable.end  */
 #line 683 "verilogaYacc.y"
-    {
+          {
           }
+#line 2549 "y.tab.c"
     break;
 
-  case 64:
-/* Line 1792 of yacc.c  */
+  case 64: /* R_s.declaration: R_d.aliasparameter  */
 #line 686 "verilogaYacc.y"
-    {
+          {
           }
+#line 2556 "y.tab.c"
     break;
 
-  case 65:
-/* Line 1792 of yacc.c  */
+  case 65: /* R_s.declaration: R_d.analogfunction  */
 #line 689 "verilogaYacc.y"
-    {
+          {
           }
+#line 2563 "y.tab.c"
     break;
 
-  case 66:
-/* Line 1792 of yacc.c  */
+  case 66: /* R_s.declaration: ';'  */
 #line 692 "verilogaYacc.y"
-    {
+          {
           }
+#line 2570 "y.tab.c"
     break;
 
-  case 67:
-/* Line 1792 of yacc.c  */
+  case 67: /* $@6: %empty  */
 #line 697 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_any);
           }
+#line 2578 "y.tab.c"
     break;
 
-  case 68:
-/* Line 1792 of yacc.c  */
+  case 68: /* R_d.node: R_node.type $@6 R_l.terminalnode ';'  */
 #line 701 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             for(l=gTerminalList;l;l=l->next)
               ((p_node)l->data)->_direction=gNodeDirection;
             adms_slist_free(gTerminalList); gTerminalList=NULL;
           }
+#line 2589 "y.tab.c"
     break;
 
-  case 69:
-/* Line 1792 of yacc.c  */
+  case 69: /* $@7: %empty  */
 #line 708 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_any);
           }
+#line 2597 "y.tab.c"
     break;
 
-  case 70:
-/* Line 1792 of yacc.c  */
+  case 70: /* R_d.node: tk_ground $@7 R_l.node ';'  */
 #line 712 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             for(l=gNodeList;l;l=l->next)
               ((p_node)l->data)->_location=admse_ground;
             adms_slist_free(gNodeList); gNodeList=NULL;
           }
+#line 2608 "y.tab.c"
     break;
 
-  case 71:
-/* Line 1792 of yacc.c  */
+  case 71: /* $@8: %empty  */
 #line 719 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             set_context(ctx_any);
             gDisc=mylexval1;
           }
+#line 2618 "y.tab.c"
     break;
 
-  case 72:
-/* Line 1792 of yacc.c  */
+  case 72: /* R_d.node: tk_disc_id $@8 R_l.node ';'  */
 #line 725 "verilogaYacc.y"
-    {
+          {
             char* mydisciplinename=gDisc;
             p_discipline mydiscipline=adms_admsmain_list_discipline_lookup_by_id(root(),mydisciplinename);
             p_slist l;
@@ -2767,71 +2627,71 @@ yyreduce:
               ((p_node)l->data)->_discipline=mydiscipline;
             adms_slist_free(gNodeList); gNodeList=NULL;
           }
+#line 2631 "y.tab.c"
     break;
 
-  case 73:
-/* Line 1792 of yacc.c  */
+  case 73: /* R_node.type: tk_input  */
 #line 736 "verilogaYacc.y"
-    {
+          {
             gNodeDirection=admse_input;
           }
+#line 2639 "y.tab.c"
     break;
 
-  case 74:
-/* Line 1792 of yacc.c  */
+  case 74: /* R_node.type: tk_output  */
 #line 740 "verilogaYacc.y"
-    {
+          {
             gNodeDirection=admse_output;
           }
+#line 2647 "y.tab.c"
     break;
 
-  case 75:
-/* Line 1792 of yacc.c  */
+  case 75: /* R_node.type: tk_inout  */
 #line 744 "verilogaYacc.y"
-    {
+          {
             gNodeDirection=admse_inout;
           }
+#line 2655 "y.tab.c"
     break;
 
-  case 76:
-/* Line 1792 of yacc.c  */
+  case 76: /* R_l.terminalnode: R_s.terminalnode  */
 #line 750 "verilogaYacc.y"
-    {
+          {
           }
+#line 2662 "y.tab.c"
     break;
 
-  case 77:
-/* Line 1792 of yacc.c  */
+  case 77: /* R_l.terminalnode: R_l.terminalnode ',' R_s.terminalnode  */
 #line 753 "verilogaYacc.y"
-    {
+          {
           }
+#line 2669 "y.tab.c"
     break;
 
-  case 78:
-/* Line 1792 of yacc.c  */
+  case 78: /* R_l.node: R_s.node  */
 #line 758 "verilogaYacc.y"
-    {
+          {
           }
+#line 2676 "y.tab.c"
     break;
 
-  case 79:
-/* Line 1792 of yacc.c  */
+  case 79: /* R_l.node: R_l.node ',' R_s.node  */
 #line 761 "verilogaYacc.y"
-    {
+          {
           }
+#line 2683 "y.tab.c"
     break;
 
-  case 80:
-/* Line 1792 of yacc.c  */
+  case 80: /* R_s.terminalnode: tk_ident R_d.attribute.0  */
 #line 766 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (2)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[-1]._lexval))->_string;
             p_slist l;
             p_node mynode=adms_module_list_node_lookup_by_id(gModule,gModule,mylexval1);
             if(!mynode)
-             adms_veriloga_message_fatal("terminal not found\n",(yyvsp[(1) - (2)]._lexval));
+             adms_veriloga_message_fatal("terminal not found\n",(yyvsp[-1]._lexval));
             if(mynode->_location!=admse_external)
-             adms_veriloga_message_fatal("node not a terminal\n",(yyvsp[(1) - (2)]._lexval));
+             adms_veriloga_message_fatal("node not a terminal\n",(yyvsp[-1]._lexval));
             adms_slist_push(&gTerminalList,(p_adms)mynode);
             for(l=gAttributeList;l;l=l->next)
               adms_slist_push(&mynode->_attribute,l->data);
@@ -2839,13 +2699,13 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&mynode->_attribute,l->data);
           }
+#line 2703 "y.tab.c"
     break;
 
-  case 81:
-/* Line 1792 of yacc.c  */
+  case 81: /* R_s.node: tk_ident R_d.attribute.0  */
 #line 784 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (2)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[-1]._lexval))->_string;
             p_slist l;
             p_node mynode=adms_module_list_node_prepend_by_id_once_or_ignore(gModule,gModule,mylexval1);
             adms_slist_push(&gNodeList,(p_adms)mynode);
@@ -2855,53 +2715,53 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&mynode->_attribute,l->data);
           }
+#line 2719 "y.tab.c"
     break;
 
-  case 82:
-/* Line 1792 of yacc.c  */
+  case 82: /* R_d.branch: tk_branch R_s.branch ';'  */
 #line 798 "verilogaYacc.y"
-    {
+          {
           }
+#line 2726 "y.tab.c"
     break;
 
-  case 83:
-/* Line 1792 of yacc.c  */
+  case 83: /* R_l.branchalias: R_s.branchalias  */
 #line 803 "verilogaYacc.y"
-    {
+          {
           }
+#line 2733 "y.tab.c"
     break;
 
-  case 84:
-/* Line 1792 of yacc.c  */
+  case 84: /* R_l.branchalias: R_l.branchalias ',' R_s.branchalias  */
 #line 806 "verilogaYacc.y"
-    {
+          {
           }
+#line 2740 "y.tab.c"
     break;
 
-  case 85:
-/* Line 1792 of yacc.c  */
+  case 85: /* R_s.branchalias: tk_ident  */
 #line 811 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             adms_slist_push(&gBranchAliasList,(p_adms)mylexval1);
           }
+#line 2749 "y.tab.c"
     break;
 
-  case 86:
-/* Line 1792 of yacc.c  */
+  case 86: /* R_s.branch: '(' tk_ident ',' tk_ident ')' R_l.branchalias  */
 #line 818 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (6)]._lexval))->_string;
-            char* mylexval4=((p_lexval)(yyvsp[(4) - (6)]._lexval))->_string;
+          {
+            char* mylexval2=((p_lexval)(yyvsp[-4]._lexval))->_string;
+            char* mylexval4=((p_lexval)(yyvsp[-2]._lexval))->_string;
             p_slist l;
             p_branch mybranch; 
             p_node pnode=adms_module_list_node_lookup_by_id(gModule,gModule,mylexval2);
             p_node nnode=adms_module_list_node_lookup_by_id(gModule,gModule,mylexval4);
             mybranch=adms_module_list_branch_prepend_by_id_once_or_ignore(gModule,gModule,pnode,nnode); 
             if(!pnode)
-             adms_veriloga_message_fatal("node never declared\n",(yyvsp[(2) - (6)]._lexval));
+             adms_veriloga_message_fatal("node never declared\n",(yyvsp[-4]._lexval));
             if(!nnode)
-             adms_veriloga_message_fatal("node never declared\n",(yyvsp[(4) - (6)]._lexval));
+             adms_veriloga_message_fatal("node never declared\n",(yyvsp[-2]._lexval));
             for(l=gBranchAliasList;l;l=l->next)
             {
               char*aliasname=(char*)l->data;
@@ -2914,18 +2774,18 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&mybranch->_attribute,l->data);
           }
+#line 2778 "y.tab.c"
     break;
 
-  case 87:
-/* Line 1792 of yacc.c  */
+  case 87: /* R_s.branch: '(' tk_ident ')' R_l.branchalias  */
 #line 843 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (4)]._lexval))->_string;
+          {
+            char* mylexval2=((p_lexval)(yyvsp[-2]._lexval))->_string;
             p_slist l;
             p_branch mybranch;
             p_node pnode=adms_module_list_node_lookup_by_id(gModule,gModule,mylexval2);
             if(!pnode)
-             adms_veriloga_message_fatal("node never declared\n",(yyvsp[(2) - (4)]._lexval));
+             adms_veriloga_message_fatal("node never declared\n",(yyvsp[-2]._lexval));
             mybranch=adms_module_list_branch_prepend_by_id_once_or_ignore(gModule,gModule,pnode,gGND); 
             for(l=gBranchAliasList;l;l=l->next)
             {
@@ -2939,333 +2799,333 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&mybranch->_attribute,l->data);
           }
+#line 2803 "y.tab.c"
     break;
 
-  case 88:
-/* Line 1792 of yacc.c  */
+  case 88: /* R_d.analogfunction: R_d.analogfunction.proto R_l.analogfunction.declaration R_analogcode.block tk_endfunction  */
 #line 866 "verilogaYacc.y"
-    {
+          {
             adms_slist_pull(&gBlockList);
-            gAnalogfunction->_tree=YY((yyvsp[(3) - (4)]._yaccval));
+            gAnalogfunction->_tree=YY((yyvsp[-1]._yaccval));
             gAnalogfunction=NULL;
           }
+#line 2813 "y.tab.c"
     break;
 
-  case 89:
-/* Line 1792 of yacc.c  */
+  case 89: /* R_d.analogfunction.proto: tk_analog tk_function R_d.analogfunction.name ';'  */
 #line 874 "verilogaYacc.y"
-    {
+          {
             NEWVARIABLE(gAnalogfunction->_lexval)
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_output=admse_yes;
           }
+#line 2823 "y.tab.c"
     break;
 
-  case 90:
-/* Line 1792 of yacc.c  */
+  case 90: /* R_d.analogfunction.proto: tk_analog tk_function tk_integer R_d.analogfunction.name ';'  */
 #line 880 "verilogaYacc.y"
-    {
+          {
             NEWVARIABLE(gAnalogfunction->_lexval)
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_type=admse_integer;
             gAnalogfunction->_type=admse_integer; 
           }
+#line 2835 "y.tab.c"
     break;
 
-  case 91:
-/* Line 1792 of yacc.c  */
+  case 91: /* R_d.analogfunction.proto: tk_analog tk_function tk_real R_d.analogfunction.name ';'  */
 #line 888 "verilogaYacc.y"
-    {
+          {
             NEWVARIABLE(gAnalogfunction->_lexval)
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_output=admse_yes;
           }
+#line 2845 "y.tab.c"
     break;
 
-  case 92:
-/* Line 1792 of yacc.c  */
+  case 92: /* R_d.analogfunction.name: tk_ident  */
 #line 896 "verilogaYacc.y"
-    {
+          {
             p_slist l;
-            gAnalogfunction=adms_analogfunction_new(gModule,(yyvsp[(1) - (1)]._lexval));
+            gAnalogfunction=adms_analogfunction_new(gModule,(yyvsp[0]._lexval));
             adms_slist_push(&gBlockList,(p_adms)gAnalogfunction);
             adms_module_list_analogfunction_prepend_once_or_abort(gModule,gAnalogfunction); 
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&gAnalogfunction->_attribute,l->data);
           }
+#line 2858 "y.tab.c"
     break;
 
-  case 93:
-/* Line 1792 of yacc.c  */
+  case 93: /* R_l.analogfunction.declaration: R_s.analogfunction.declaration  */
 #line 907 "verilogaYacc.y"
-    {
+          {
           }
+#line 2865 "y.tab.c"
     break;
 
-  case 94:
-/* Line 1792 of yacc.c  */
+  case 94: /* R_l.analogfunction.declaration: R_l.analogfunction.declaration R_s.analogfunction.declaration  */
 #line 910 "verilogaYacc.y"
-    {
+          {
           }
+#line 2872 "y.tab.c"
     break;
 
-  case 95:
-/* Line 1792 of yacc.c  */
+  case 95: /* R_s.analogfunction.declaration: tk_input R_l.analogfunction.input.variable ';'  */
 #line 915 "verilogaYacc.y"
-    {
+          {
           }
+#line 2879 "y.tab.c"
     break;
 
-  case 96:
-/* Line 1792 of yacc.c  */
+  case 96: /* R_s.analogfunction.declaration: tk_output R_l.analogfunction.output.variable ';'  */
 #line 918 "verilogaYacc.y"
-    {
+          {
           }
+#line 2886 "y.tab.c"
     break;
 
-  case 97:
-/* Line 1792 of yacc.c  */
+  case 97: /* R_s.analogfunction.declaration: tk_inout R_l.analogfunction.inout.variable ';'  */
 #line 921 "verilogaYacc.y"
-    {
+          {
           }
+#line 2893 "y.tab.c"
     break;
 
-  case 98:
-/* Line 1792 of yacc.c  */
+  case 98: /* R_s.analogfunction.declaration: tk_integer R_l.analogfunction.integer.variable ';'  */
 #line 924 "verilogaYacc.y"
-    {
+          {
           }
+#line 2900 "y.tab.c"
     break;
 
-  case 99:
-/* Line 1792 of yacc.c  */
+  case 99: /* R_s.analogfunction.declaration: tk_real R_l.analogfunction.real.variable ';'  */
 #line 927 "verilogaYacc.y"
-    {
+          {
           }
+#line 2907 "y.tab.c"
     break;
 
-  case 100:
-/* Line 1792 of yacc.c  */
+  case 100: /* R_l.analogfunction.input.variable: tk_ident  */
 #line 932 "verilogaYacc.y"
-    {
-            NEWVARIABLE((yyvsp[(1) - (1)]._lexval))
+          {
+            NEWVARIABLE((yyvsp[0]._lexval))
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_input=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
+#line 2918 "y.tab.c"
     break;
 
-  case 101:
-/* Line 1792 of yacc.c  */
+  case 101: /* R_l.analogfunction.input.variable: R_l.analogfunction.input.variable ',' tk_ident  */
 #line 939 "verilogaYacc.y"
-    {
-            NEWVARIABLE((yyvsp[(3) - (3)]._lexval))
+          {
+            NEWVARIABLE((yyvsp[0]._lexval))
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_input=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
+#line 2929 "y.tab.c"
     break;
 
-  case 102:
-/* Line 1792 of yacc.c  */
+  case 102: /* R_l.analogfunction.output.variable: tk_ident  */
 #line 948 "verilogaYacc.y"
-    {
-            NEWVARIABLE((yyvsp[(1) - (1)]._lexval))
+          {
+            NEWVARIABLE((yyvsp[0]._lexval))
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
+#line 2940 "y.tab.c"
     break;
 
-  case 103:
-/* Line 1792 of yacc.c  */
+  case 103: /* R_l.analogfunction.output.variable: R_l.analogfunction.output.variable ',' tk_ident  */
 #line 955 "verilogaYacc.y"
-    {
-            NEWVARIABLE((yyvsp[(3) - (3)]._lexval))
+          {
+            NEWVARIABLE((yyvsp[0]._lexval))
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
+#line 2951 "y.tab.c"
     break;
 
-  case 104:
-/* Line 1792 of yacc.c  */
+  case 104: /* R_l.analogfunction.inout.variable: tk_ident  */
 #line 964 "verilogaYacc.y"
-    {
-            NEWVARIABLE((yyvsp[(1) - (1)]._lexval))
+          {
+            NEWVARIABLE((yyvsp[0]._lexval))
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_input=admse_yes;
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
+#line 2963 "y.tab.c"
     break;
 
-  case 105:
-/* Line 1792 of yacc.c  */
+  case 105: /* R_l.analogfunction.inout.variable: R_l.analogfunction.inout.variable ',' tk_ident  */
 #line 972 "verilogaYacc.y"
-    {
-            NEWVARIABLE((yyvsp[(3) - (3)]._lexval))
+          {
+            NEWVARIABLE((yyvsp[0]._lexval))
             adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
             myvariableprototype->_input=admse_yes;
             myvariableprototype->_output=admse_yes;
             myvariableprototype->_parametertype=admse_analogfunction;
           }
+#line 2975 "y.tab.c"
     break;
 
-  case 106:
-/* Line 1792 of yacc.c  */
+  case 106: /* R_l.analogfunction.integer.variable: tk_ident  */
 #line 982 "verilogaYacc.y"
-    {
-            p_variableprototype myvariableprototype=adms_analogfunction_list_variable_lookup_by_id(gAnalogfunction,gModule,(yyvsp[(1) - (1)]._lexval),(p_adms)gAnalogfunction);
+          {
+            p_variableprototype myvariableprototype=adms_analogfunction_list_variable_lookup_by_id(gAnalogfunction,gModule,(yyvsp[0]._lexval),(p_adms)gAnalogfunction);
             if(myvariableprototype)
               myvariableprototype->_type=admse_integer;
             else
             {
-              NEWVARIABLE((yyvsp[(1) - (1)]._lexval))
+              NEWVARIABLE((yyvsp[0]._lexval))
               adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
               myvariableprototype->_type=admse_integer;
             }
           }
+#line 2991 "y.tab.c"
     break;
 
-  case 107:
-/* Line 1792 of yacc.c  */
+  case 107: /* R_l.analogfunction.integer.variable: R_l.analogfunction.integer.variable ',' tk_ident  */
 #line 994 "verilogaYacc.y"
-    {
-            p_variableprototype myvariableprototype=adms_analogfunction_list_variable_lookup_by_id(gAnalogfunction,gModule,(yyvsp[(3) - (3)]._lexval),(p_adms)gAnalogfunction);
+          {
+            p_variableprototype myvariableprototype=adms_analogfunction_list_variable_lookup_by_id(gAnalogfunction,gModule,(yyvsp[0]._lexval),(p_adms)gAnalogfunction);
             if(myvariableprototype)
               myvariableprototype->_type=admse_integer;
             else
             {
-              NEWVARIABLE((yyvsp[(3) - (3)]._lexval))
+              NEWVARIABLE((yyvsp[0]._lexval))
               adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
               myvariableprototype->_type=admse_integer;
             }
           }
+#line 3007 "y.tab.c"
     break;
 
-  case 108:
-/* Line 1792 of yacc.c  */
+  case 108: /* R_l.analogfunction.real.variable: tk_ident  */
 #line 1008 "verilogaYacc.y"
-    {
-            p_variableprototype myvariableprototype=adms_analogfunction_list_variable_lookup_by_id(gAnalogfunction,gModule,(yyvsp[(1) - (1)]._lexval),(p_adms)gAnalogfunction);
+          {
+            p_variableprototype myvariableprototype=adms_analogfunction_list_variable_lookup_by_id(gAnalogfunction,gModule,(yyvsp[0]._lexval),(p_adms)gAnalogfunction);
             if(myvariableprototype)
               myvariableprototype->_type=admse_real;
             else
             {
-              NEWVARIABLE((yyvsp[(1) - (1)]._lexval))
+              NEWVARIABLE((yyvsp[0]._lexval))
               adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
               myvariableprototype->_type=admse_real;
             }
           }
+#line 3023 "y.tab.c"
     break;
 
-  case 109:
-/* Line 1792 of yacc.c  */
+  case 109: /* R_l.analogfunction.real.variable: R_l.analogfunction.real.variable ',' tk_ident  */
 #line 1020 "verilogaYacc.y"
-    {
-            p_variableprototype myvariableprototype=adms_analogfunction_list_variable_lookup_by_id(gAnalogfunction,gModule,(yyvsp[(3) - (3)]._lexval),(p_adms)gAnalogfunction);
+          {
+            p_variableprototype myvariableprototype=adms_analogfunction_list_variable_lookup_by_id(gAnalogfunction,gModule,(yyvsp[0]._lexval),(p_adms)gAnalogfunction);
             if(myvariableprototype)
               myvariableprototype->_type=admse_real;
             else
             {
-              NEWVARIABLE((yyvsp[(3) - (3)]._lexval))
+              NEWVARIABLE((yyvsp[0]._lexval))
               adms_analogfunction_list_variable_prepend_once_or_abort(gAnalogfunction,myvariableprototype); 
               myvariableprototype->_type=admse_real;
             }
           }
+#line 3039 "y.tab.c"
     break;
 
-  case 110:
-/* Line 1792 of yacc.c  */
+  case 110: /* R_variable.type.set: tk_integer  */
 #line 1034 "verilogaYacc.y"
-    {
+          {
             gVariableType=admse_integer;
           }
+#line 3047 "y.tab.c"
     break;
 
-  case 111:
-/* Line 1792 of yacc.c  */
+  case 111: /* R_variable.type.set: tk_real  */
 #line 1038 "verilogaYacc.y"
-    {
+          {
             gVariableType=admse_real;
           }
+#line 3055 "y.tab.c"
     break;
 
-  case 112:
-/* Line 1792 of yacc.c  */
+  case 112: /* R_variable.type.set: tk_string  */
 #line 1042 "verilogaYacc.y"
-    {
+          {
             gVariableType=admse_string;
           }
+#line 3063 "y.tab.c"
     break;
 
-  case 113:
-/* Line 1792 of yacc.c  */
+  case 113: /* $@9: %empty  */
 #line 1048 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_any);
           }
+#line 3071 "y.tab.c"
     break;
 
-  case 114:
-/* Line 1792 of yacc.c  */
+  case 114: /* R_variable.type: R_variable.type.set $@9 R_d.attribute.0  */
 #line 1052 "verilogaYacc.y"
-    {
+          {
             adms_slist_concat(&gGlobalAttributeList,gAttributeList);
             gAttributeList=NULL;
           }
+#line 3080 "y.tab.c"
     break;
 
-  case 115:
-/* Line 1792 of yacc.c  */
+  case 115: /* R_d.variable.end: ';'  */
 #line 1059 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             for(l=gVariableDeclarationList;l;l=l->next)
               ((p_variableprototype)l->data)->_type=gVariableType;
             adms_slist_free(gVariableDeclarationList); gVariableDeclarationList=NULL;
           }
+#line 3091 "y.tab.c"
     break;
 
-  case 116:
-/* Line 1792 of yacc.c  */
+  case 116: /* R_l.parameter: R_s.parameter  */
 #line 1068 "verilogaYacc.y"
-    {
+          {
           }
+#line 3098 "y.tab.c"
     break;
 
-  case 117:
-/* Line 1792 of yacc.c  */
+  case 117: /* R_l.parameter: R_l.parameter ',' R_s.parameter  */
 #line 1071 "verilogaYacc.y"
-    {
+          {
           }
+#line 3105 "y.tab.c"
     break;
 
-  case 118:
-/* Line 1792 of yacc.c  */
+  case 118: /* R_l.variable: R_s.variable  */
 #line 1076 "verilogaYacc.y"
-    {
+          {
           }
+#line 3112 "y.tab.c"
     break;
 
-  case 119:
-/* Line 1792 of yacc.c  */
+  case 119: /* R_l.variable: R_l.variable ',' R_s.variable  */
 #line 1079 "verilogaYacc.y"
-    {
+          {
           }
+#line 3119 "y.tab.c"
     break;
 
-  case 120:
-/* Line 1792 of yacc.c  */
+  case 120: /* R_d.aliasparameter: R_d.aliasparameter.token tk_ident '=' tk_ident R_d.attribute.0 ';'  */
 #line 1084 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (6)]._lexval))->_string;
+          {
+            char* mylexval2=((p_lexval)(yyvsp[-4]._lexval))->_string;
             p_slist l;
-            p_variableprototype myvariableprototype=adms_module_list_variable_lookup_by_id(gModule,gModule,(yyvsp[(4) - (6)]._lexval),(p_adms)gModule);
+            p_variableprototype myvariableprototype=adms_module_list_variable_lookup_by_id(gModule,gModule,(yyvsp[-2]._lexval),(p_adms)gModule);
             if(!myvariableprototype)
-             adms_veriloga_message_fatal("variable never declared\n",(yyvsp[(4) - (6)]._lexval));
+             adms_veriloga_message_fatal("variable never declared\n",(yyvsp[-2]._lexval));
             adms_variableprototype_list_alias_prepend_once_or_abort(myvariableprototype,adms_kclone(mylexval2));
             for(l=gAttributeList;l;l=l->next)
               adms_slist_push(&myvariableprototype->_attribute,l->data);
@@ -3273,26 +3133,26 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&myvariableprototype->_attribute,l->data);
           }
+#line 3137 "y.tab.c"
     break;
 
-  case 121:
-/* Line 1792 of yacc.c  */
+  case 121: /* R_d.aliasparameter.token: tk_aliasparameter  */
 #line 1100 "verilogaYacc.y"
-    {
+          {
           }
+#line 3144 "y.tab.c"
     break;
 
-  case 122:
-/* Line 1792 of yacc.c  */
+  case 122: /* R_d.aliasparameter.token: tk_aliasparam  */
 #line 1103 "verilogaYacc.y"
-    {
+          {
           }
+#line 3151 "y.tab.c"
     break;
 
-  case 123:
-/* Line 1792 of yacc.c  */
+  case 123: /* R_s.parameter: R_s.parameter.name R_d.attribute.0  */
 #line 1108 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             for(l=gAttributeList;l;l=l->next)
               adms_slist_push(&((p_variableprototype)gVariableDeclarationList->data)->_attribute,l->data);
@@ -3300,12 +3160,12 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&((p_variableprototype)gVariableDeclarationList->data)->_attribute,l->data);
           }
+#line 3164 "y.tab.c"
     break;
 
-  case 124:
-/* Line 1792 of yacc.c  */
+  case 124: /* R_s.variable: R_s.variable.name R_d.attribute.0  */
 #line 1119 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             for(l=gAttributeList;l;l=l->next)
               adms_slist_push(&((p_variableprototype)gVariableDeclarationList->data)->_attribute,l->data);
@@ -3313,24 +3173,24 @@ yyreduce:
             for(l=gGlobalAttributeList;l;l=l->next)
               adms_slist_push(&((p_variableprototype)gVariableDeclarationList->data)->_attribute,l->data);
           }
+#line 3177 "y.tab.c"
     break;
 
-  case 125:
-/* Line 1792 of yacc.c  */
+  case 125: /* R_s.parameter.name: R_s.variable.name '=' R_s.expression R_s.parameter.range  */
 #line 1130 "verilogaYacc.y"
-    {
+          {
             ((p_variableprototype)gVariableDeclarationList->data)->_input=admse_yes;
-            ((p_variableprototype)gVariableDeclarationList->data)->_default=((p_expression)YY((yyvsp[(3) - (4)]._yaccval)));
+            ((p_variableprototype)gVariableDeclarationList->data)->_default=((p_expression)YY((yyvsp[-1]._yaccval)));
             ((p_variableprototype)gVariableDeclarationList->data)->_range=adms_slist_reverse(gRangeList);
             gRangeList=NULL;
           }
+#line 3188 "y.tab.c"
     break;
 
-  case 126:
-/* Line 1792 of yacc.c  */
+  case 126: /* R_s.parameter.name: R_s.variable.name '=' '{' R_l.expression '}' R_s.parameter.range  */
 #line 1137 "verilogaYacc.y"
-    {
-            p_slist myArgs=(p_slist)YY((yyvsp[(4) - (6)]._yaccval));
+          {
+            p_slist myArgs=(p_slist)YY((yyvsp[-2]._yaccval));
             adms_slist_inreverse(&myArgs);
             ((p_variableprototype)gVariableDeclarationList->data)->_input=admse_yes;
             ((p_variableprototype)gVariableDeclarationList->data)->_default=((p_expression)myArgs->data);
@@ -3338,162 +3198,162 @@ yyreduce:
             ((p_variableprototype)gVariableDeclarationList->data)->_range=adms_slist_reverse(gRangeList);
             gRangeList=NULL;
           }
+#line 3202 "y.tab.c"
     break;
 
-  case 127:
-/* Line 1792 of yacc.c  */
+  case 127: /* R_s.variable.name: tk_ident  */
 #line 1149 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
-            NEWVARIABLE((yyvsp[(1) - (1)]._lexval))
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
+            NEWVARIABLE((yyvsp[0]._lexval))
             if(adms_module_list_node_lookup_by_id(gModule,gModule,mylexval1))
-             adms_veriloga_message_fatal("variable already defined as node\n",(yyvsp[(1) - (1)]._lexval));
+             adms_veriloga_message_fatal("variable already defined as node\n",(yyvsp[0]._lexval));
             adms_module_list_variable_prepend_once_or_abort(gModule,myvariableprototype); 
             adms_slist_push(&gVariableDeclarationList,(p_adms)myvariableprototype);
           }
+#line 3215 "y.tab.c"
     break;
 
-  case 128:
-/* Line 1792 of yacc.c  */
+  case 128: /* R_s.variable.name: tk_ident '[' tk_integer ':' tk_integer ']'  */
 #line 1158 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (6)]._lexval))->_string;
-            NEWVARIABLE((yyvsp[(1) - (6)]._lexval))
+          {
+            char* mylexval1=((p_lexval)(yyvsp[-5]._lexval))->_string;
+            NEWVARIABLE((yyvsp[-5]._lexval))
             if(adms_module_list_node_lookup_by_id(gModule,gModule,mylexval1))
-             adms_veriloga_message_fatal("variable already defined as node\n",(yyvsp[(1) - (6)]._lexval));
+             adms_veriloga_message_fatal("variable already defined as node\n",(yyvsp[-5]._lexval));
             adms_module_list_variable_prepend_once_or_abort(gModule,myvariableprototype); 
             adms_slist_push(&gVariableDeclarationList,(p_adms)myvariableprototype);
             myvariableprototype->_sizetype=admse_array;
-            myvariableprototype->_minsize=adms_number_new((yyvsp[(3) - (6)]._lexval));
-            myvariableprototype->_maxsize=adms_number_new((yyvsp[(5) - (6)]._lexval));
+            myvariableprototype->_minsize=adms_number_new((yyvsp[-3]._lexval));
+            myvariableprototype->_maxsize=adms_number_new((yyvsp[-1]._lexval));
           }
+#line 3231 "y.tab.c"
     break;
 
-  case 129:
-/* Line 1792 of yacc.c  */
+  case 129: /* R_s.parameter.range: %empty  */
 #line 1172 "verilogaYacc.y"
-    {
+          {
           }
+#line 3238 "y.tab.c"
     break;
 
-  case 130:
-/* Line 1792 of yacc.c  */
+  case 130: /* R_s.parameter.range: R_l.interval  */
 #line 1175 "verilogaYacc.y"
-    {
+          {
           }
+#line 3245 "y.tab.c"
     break;
 
-  case 131:
-/* Line 1792 of yacc.c  */
+  case 131: /* R_l.interval: R_s.interval  */
 #line 1180 "verilogaYacc.y"
-    {
+          {
           }
+#line 3252 "y.tab.c"
     break;
 
-  case 132:
-/* Line 1792 of yacc.c  */
+  case 132: /* R_l.interval: R_l.interval R_s.interval  */
 #line 1183 "verilogaYacc.y"
-    {
+          {
           }
+#line 3259 "y.tab.c"
     break;
 
-  case 133:
-/* Line 1792 of yacc.c  */
+  case 133: /* R_s.interval: tk_from R_d.interval  */
 #line 1188 "verilogaYacc.y"
-    {
-            if(((p_range)YY((yyvsp[(2) - (2)]._yaccval)))->_infboundtype==admse_range_bound_value)
-              ((p_range)YY((yyvsp[(2) - (2)]._yaccval)))->_type=admse_include_value;
+          {
+            if(((p_range)YY((yyvsp[0]._yaccval)))->_infboundtype==admse_range_bound_value)
+              ((p_range)YY((yyvsp[0]._yaccval)))->_type=admse_include_value;
             else
-              ((p_range)YY((yyvsp[(2) - (2)]._yaccval)))->_type=admse_include;
-            adms_slist_push(&gRangeList,YY((yyvsp[(2) - (2)]._yaccval)));
+              ((p_range)YY((yyvsp[0]._yaccval)))->_type=admse_include;
+            adms_slist_push(&gRangeList,YY((yyvsp[0]._yaccval)));
           }
+#line 3271 "y.tab.c"
     break;
 
-  case 134:
-/* Line 1792 of yacc.c  */
+  case 134: /* R_s.interval: tk_exclude R_d.interval  */
 #line 1196 "verilogaYacc.y"
-    {
-            if(((p_range)YY((yyvsp[(2) - (2)]._yaccval)))->_infboundtype==admse_range_bound_value)
-              ((p_range)YY((yyvsp[(2) - (2)]._yaccval)))->_type=admse_exclude_value;
+          {
+            if(((p_range)YY((yyvsp[0]._yaccval)))->_infboundtype==admse_range_bound_value)
+              ((p_range)YY((yyvsp[0]._yaccval)))->_type=admse_exclude_value;
             else
-              ((p_range)YY((yyvsp[(2) - (2)]._yaccval)))->_type=admse_exclude;
-            adms_slist_push(&gRangeList,YY((yyvsp[(2) - (2)]._yaccval)));
+              ((p_range)YY((yyvsp[0]._yaccval)))->_type=admse_exclude;
+            adms_slist_push(&gRangeList,YY((yyvsp[0]._yaccval)));
           }
+#line 3283 "y.tab.c"
     break;
 
-  case 135:
-/* Line 1792 of yacc.c  */
+  case 135: /* R_d.interval: '(' R_interval.inf ':' R_interval.sup ')'  */
 #line 1206 "verilogaYacc.y"
-    {
-            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[(2) - (5)]._yaccval)),(p_expression)YY((yyvsp[(4) - (5)]._yaccval))); 
+          {
+            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[-3]._yaccval)),(p_expression)YY((yyvsp[-1]._yaccval))); 
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             myrange->_infboundtype=admse_range_bound_exclude;
             myrange->_supboundtype=admse_range_bound_exclude;
             Y((yyval._yaccval),(p_adms)myrange);
           }
+#line 3295 "y.tab.c"
     break;
 
-  case 136:
-/* Line 1792 of yacc.c  */
+  case 136: /* R_d.interval: '(' R_interval.inf ':' R_interval.sup ']'  */
 #line 1214 "verilogaYacc.y"
-    {
-            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[(2) - (5)]._yaccval)),(p_expression)YY((yyvsp[(4) - (5)]._yaccval))); 
+          {
+            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[-3]._yaccval)),(p_expression)YY((yyvsp[-1]._yaccval))); 
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             myrange->_infboundtype=admse_range_bound_exclude;
             myrange->_supboundtype=admse_range_bound_include;
             Y((yyval._yaccval),(p_adms)myrange);
           }
+#line 3307 "y.tab.c"
     break;
 
-  case 137:
-/* Line 1792 of yacc.c  */
+  case 137: /* R_d.interval: '[' R_interval.inf ':' R_interval.sup ')'  */
 #line 1222 "verilogaYacc.y"
-    {
-            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[(2) - (5)]._yaccval)),(p_expression)YY((yyvsp[(4) - (5)]._yaccval))); 
+          {
+            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[-3]._yaccval)),(p_expression)YY((yyvsp[-1]._yaccval))); 
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             myrange->_infboundtype=admse_range_bound_include;
             myrange->_supboundtype=admse_range_bound_exclude;
             Y((yyval._yaccval),(p_adms)myrange);
           }
+#line 3319 "y.tab.c"
     break;
 
-  case 138:
-/* Line 1792 of yacc.c  */
+  case 138: /* R_d.interval: '[' R_interval.inf ':' R_interval.sup ']'  */
 #line 1230 "verilogaYacc.y"
-    {
-            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[(2) - (5)]._yaccval)),(p_expression)YY((yyvsp[(4) - (5)]._yaccval))); 
+          {
+            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[-3]._yaccval)),(p_expression)YY((yyvsp[-1]._yaccval))); 
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             myrange->_infboundtype=admse_range_bound_include;
             myrange->_supboundtype=admse_range_bound_include;
             Y((yyval._yaccval),(p_adms)myrange);
           }
+#line 3331 "y.tab.c"
     break;
 
-  case 139:
-/* Line 1792 of yacc.c  */
+  case 139: /* R_d.interval: R_s.expression  */
 #line 1238 "verilogaYacc.y"
-    {
-            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[(1) - (1)]._yaccval)),(p_expression)YY((yyvsp[(1) - (1)]._yaccval))); 
+          {
+            p_range myrange=adms_module_list_range_prepend_by_id_once_or_abort(gModule,gModule,(p_expression)YY((yyvsp[0]._yaccval)),(p_expression)YY((yyvsp[0]._yaccval))); 
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             myrange->_infboundtype=admse_range_bound_value;
             myrange->_supboundtype=admse_range_bound_value;
             Y((yyval._yaccval),(p_adms)myrange);
           }
+#line 3343 "y.tab.c"
     break;
 
-  case 140:
-/* Line 1792 of yacc.c  */
+  case 140: /* R_interval.inf: R_s.expression  */
 #line 1248 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3351 "y.tab.c"
     break;
 
-  case 141:
-/* Line 1792 of yacc.c  */
+  case 141: /* R_interval.inf: '-' tk_inf  */
 #line 1252 "verilogaYacc.y"
-    {
-            p_number mynumber=adms_number_new((yyvsp[(2) - (2)]._lexval)); 
+          {
+            p_number mynumber=adms_number_new((yyvsp[0]._lexval)); 
             p_expression myexpression=adms_expression_new(gModule,(p_adms)mynumber); 
             mynumber->_lexval->_string=adms_kclone("-inf");
             adms_slist_push(&gModule->_expression,(p_adms)myexpression); 
@@ -3502,21 +3362,21 @@ yyreduce:
             myexpression->_hasspecialnumber=adms_kclone("YES");
             Y((yyval._yaccval),(p_adms)myexpression);
           }
+#line 3366 "y.tab.c"
     break;
 
-  case 142:
-/* Line 1792 of yacc.c  */
+  case 142: /* R_interval.sup: R_s.expression  */
 #line 1265 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3374 "y.tab.c"
     break;
 
-  case 143:
-/* Line 1792 of yacc.c  */
+  case 143: /* R_interval.sup: tk_inf  */
 #line 1269 "verilogaYacc.y"
-    {
-            p_number mynumber=adms_number_new((yyvsp[(1) - (1)]._lexval)); 
+          {
+            p_number mynumber=adms_number_new((yyvsp[0]._lexval)); 
             p_expression myexpression=adms_expression_new(gModule,(p_adms)mynumber); 
             mynumber->_lexval->_string=adms_kclone("+inf");
             adms_slist_push(&gModule->_expression,(p_adms)myexpression); 
@@ -3525,13 +3385,13 @@ yyreduce:
             myexpression->_hasspecialnumber=adms_kclone("YES");
             Y((yyval._yaccval),(p_adms)myexpression);
           }
+#line 3389 "y.tab.c"
     break;
 
-  case 144:
-/* Line 1792 of yacc.c  */
+  case 144: /* R_interval.sup: '+' tk_inf  */
 #line 1280 "verilogaYacc.y"
-    {
-            p_number mynumber=adms_number_new((yyvsp[(2) - (2)]._lexval)); 
+          {
+            p_number mynumber=adms_number_new((yyvsp[0]._lexval)); 
             p_expression myexpression=adms_expression_new(gModule,(p_adms)mynumber); 
             mynumber->_lexval->_string=adms_kclone("+inf");
             adms_slist_push(&gModule->_expression,(p_adms)myexpression); 
@@ -3540,131 +3400,131 @@ yyreduce:
             myexpression->_hasspecialnumber=adms_kclone("YES");
             Y((yyval._yaccval),(p_adms)myexpression);
           }
+#line 3404 "y.tab.c"
     break;
 
-  case 145:
-/* Line 1792 of yacc.c  */
+  case 145: /* $@10: %empty  */
 #line 1293 "verilogaYacc.y"
-    {
+          {
             set_context(ctx_any); // from here, don't recognize node declarations.
                                   // they are not permitted anyway.
           }
+#line 3413 "y.tab.c"
     break;
 
-  case 146:
-/* Line 1792 of yacc.c  */
+  case 146: /* R_analog: tk_analog $@10 R_analogcode  */
 #line 1298 "verilogaYacc.y"
-    {
-            gModule->_analog=adms_analog_new(YY((yyvsp[(3) - (3)]._yaccval)));
+          {
+            gModule->_analog=adms_analog_new(YY((yyvsp[0]._yaccval)));
           }
+#line 3421 "y.tab.c"
     break;
 
-  case 147:
-/* Line 1792 of yacc.c  */
+  case 147: /* R_analogcode: R_analogcode.atomic  */
 #line 1304 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3429 "y.tab.c"
     break;
 
-  case 148:
-/* Line 1792 of yacc.c  */
+  case 148: /* R_analogcode: R_analogcode.block  */
 #line 1308 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3437 "y.tab.c"
     break;
 
-  case 149:
-/* Line 1792 of yacc.c  */
+  case 149: /* R_l.expression: R_s.expression  */
 #line 1314 "verilogaYacc.y"
-    {
+          {
             p_slist myArgs=NULL;
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            adms_slist_push(&myArgs,YY((yyvsp[(1) - (1)]._yaccval)));
+            adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
+#line 3448 "y.tab.c"
     break;
 
-  case 150:
-/* Line 1792 of yacc.c  */
+  case 150: /* R_l.expression: R_l.expression ',' R_s.expression  */
 #line 1321 "verilogaYacc.y"
-    {
-            p_slist myArgs=(p_slist)YY((yyvsp[(1) - (3)]._yaccval));
-            (yyval._yaccval)=(yyvsp[(1) - (3)]._yaccval);
-            adms_slist_push(&myArgs,YY((yyvsp[(3) - (3)]._yaccval)));
+          {
+            p_slist myArgs=(p_slist)YY((yyvsp[-2]._yaccval));
+            (yyval._yaccval)=(yyvsp[-2]._yaccval);
+            adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
+#line 3459 "y.tab.c"
     break;
 
-  case 151:
-/* Line 1792 of yacc.c  */
+  case 151: /* R_analogcode.atomic: R_d.attribute.0 R_d.blockvariable  */
 #line 1330 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             p_slist lv;
             for(l=gAttributeList;l;l=l->next)
-              for(lv=((p_blockvariable)YY((yyvsp[(2) - (2)]._yaccval)))->_variable;lv;lv=lv->next)
+              for(lv=((p_blockvariable)YY((yyvsp[0]._yaccval)))->_variable;lv;lv=lv->next)
                 adms_slist_push(&((p_variableprototype)lv->data)->_attribute,l->data);
             adms_slist_free(gAttributeList); gAttributeList=NULL;
-            (yyval._yaccval)=(yyvsp[(2) - (2)]._yaccval);
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3473 "y.tab.c"
     break;
 
-  case 152:
-/* Line 1792 of yacc.c  */
+  case 152: /* R_analogcode.atomic: R_d.contribution  */
 #line 1340 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3481 "y.tab.c"
     break;
 
-  case 153:
-/* Line 1792 of yacc.c  */
+  case 153: /* R_analogcode.atomic: R_s.assignment ';'  */
 #line 1344 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (2)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[-1]._yaccval);
           }
+#line 3489 "y.tab.c"
     break;
 
-  case 154:
-/* Line 1792 of yacc.c  */
+  case 154: /* R_analogcode.atomic: R_d.conditional  */
 #line 1348 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3497 "y.tab.c"
     break;
 
-  case 155:
-/* Line 1792 of yacc.c  */
+  case 155: /* R_analogcode.atomic: R_d.while  */
 #line 1352 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3505 "y.tab.c"
     break;
 
-  case 156:
-/* Line 1792 of yacc.c  */
+  case 156: /* R_analogcode.atomic: R_d.case  */
 #line 1356 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3513 "y.tab.c"
     break;
 
-  case 157:
-/* Line 1792 of yacc.c  */
+  case 157: /* R_analogcode.atomic: R_d.for  */
 #line 1360 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3521 "y.tab.c"
     break;
 
-  case 158:
-/* Line 1792 of yacc.c  */
+  case 158: /* R_analogcode.atomic: tk_dollar_ident '(' R_l.expression ')' ';'  */
 #line 1364 "verilogaYacc.y"
-    {
-            p_function myfunction=adms_function_new((yyvsp[(1) - (5)]._lexval),uid++);
-            p_slist myArgs=(p_slist)YY((yyvsp[(3) - (5)]._yaccval));
+          {
+            p_function myfunction=adms_function_new((yyvsp[-4]._lexval),uid++);
+            p_slist myArgs=(p_slist)YY((yyvsp[-2]._yaccval));
             p_callfunction mycallfunction=adms_callfunction_new(gModule,myfunction);
             adms_slist_push(&gModule->_callfunction,(p_adms)mycallfunction);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
@@ -3672,170 +3532,170 @@ yyreduce:
             myfunction->_arguments=myArgs;
             Y((yyval._yaccval),(p_adms)mycallfunction);
           }
+#line 3536 "y.tab.c"
     break;
 
-  case 159:
-/* Line 1792 of yacc.c  */
+  case 159: /* R_analogcode.atomic: tk_dollar_ident '(' ')' ';'  */
 #line 1375 "verilogaYacc.y"
-    {
-            p_function myfunction=adms_function_new((yyvsp[(1) - (4)]._lexval),uid++);
+          {
+            p_function myfunction=adms_function_new((yyvsp[-3]._lexval),uid++);
             p_callfunction mycallfunction=adms_callfunction_new(gModule,myfunction);
             adms_slist_push(&gModule->_callfunction,(p_adms)mycallfunction);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mycallfunction);
           }
+#line 3548 "y.tab.c"
     break;
 
-  case 160:
-/* Line 1792 of yacc.c  */
+  case 160: /* R_analogcode.atomic: tk_dollar_ident ';'  */
 #line 1383 "verilogaYacc.y"
-    {
-            p_function myfunction=adms_function_new((yyvsp[(1) - (2)]._lexval),uid++);
+          {
+            p_function myfunction=adms_function_new((yyvsp[-1]._lexval),uid++);
             p_callfunction mycallfunction=adms_callfunction_new(gModule,myfunction);
             adms_slist_push(&gModule->_callfunction,(p_adms)mycallfunction);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mycallfunction);
           }
+#line 3560 "y.tab.c"
     break;
 
-  case 161:
-/* Line 1792 of yacc.c  */
+  case 161: /* R_analogcode.atomic: ';'  */
 #line 1391 "verilogaYacc.y"
-    {
+          {
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)adms_nilled_new(gModule));
           }
+#line 3569 "y.tab.c"
     break;
 
-  case 162:
-/* Line 1792 of yacc.c  */
+  case 162: /* R_analogcode.block: R_d.block  */
 #line 1398 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 3577 "y.tab.c"
     break;
 
-  case 163:
-/* Line 1792 of yacc.c  */
+  case 163: /* R_analogcode.block: R_analogcode.block.atevent R_d.block  */
 #line 1402 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(2) - (2)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
             adms_lexval_free(((p_block)YY((yyval._yaccval)))->_lexval);
-            ((p_block)YY((yyval._yaccval)))->_lexval=(p_lexval)YY((yyvsp[(1) - (2)]._yaccval));
+            ((p_block)YY((yyval._yaccval)))->_lexval=(p_lexval)YY((yyvsp[-1]._yaccval));
           }
+#line 3587 "y.tab.c"
     break;
 
-  case 164:
-/* Line 1792 of yacc.c  */
+  case 164: /* R_analogcode.block.atevent: '@' '(' tk_ident '(' R_l.analysis ')' ')'  */
 #line 1410 "verilogaYacc.y"
-    {
-            adms_veriloga_message_fatal("@ control not supported\n",(yyvsp[(3) - (7)]._lexval));
+          {
+            adms_veriloga_message_fatal("@ control not supported\n",(yyvsp[-4]._lexval));
           }
+#line 3595 "y.tab.c"
     break;
 
-  case 165:
-/* Line 1792 of yacc.c  */
+  case 165: /* R_analogcode.block.atevent: '@' tk_ident  */
 #line 1414 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (2)]._lexval))->_string;
+          {
+            char* mylexval2=((p_lexval)(yyvsp[0]._lexval))->_string;
             char* mypartitionning=adms_kclone(mylexval2);
             if(strcmp(mypartitionning,"initial_model")
               && strcmp(mypartitionning,"initial_instance")
               && strcmp(mypartitionning,"noise")
               && strcmp(mypartitionning,"initial_step")
               && strcmp(mypartitionning,"final_step"))
-              adms_veriloga_message_fatal(" @() control not supported\n",(yyvsp[(2) - (2)]._lexval));
+              adms_veriloga_message_fatal(" @() control not supported\n",(yyvsp[0]._lexval));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            Y((yyval._yaccval),(p_adms)(yyvsp[(2) - (2)]._lexval));
+            Y((yyval._yaccval),(p_adms)(yyvsp[0]._lexval));
           }
+#line 3612 "y.tab.c"
     break;
 
-  case 166:
-/* Line 1792 of yacc.c  */
+  case 166: /* R_analogcode.block.atevent: '@' '(' tk_ident ')'  */
 #line 1427 "verilogaYacc.y"
-    {
-            char* mylexval3=((p_lexval)(yyvsp[(3) - (4)]._lexval))->_string;
+          {
+            char* mylexval3=((p_lexval)(yyvsp[-1]._lexval))->_string;
             char* mypartitionning=adms_kclone(mylexval3);
             if(strcmp(mypartitionning,"initial_model")
               && strcmp(mypartitionning,"initial_instance")
               && strcmp(mypartitionning,"noise")
               && strcmp(mypartitionning,"initial_step")
               && strcmp(mypartitionning,"final_step"))
-              adms_veriloga_message_fatal(" @() control not supported\n",(yyvsp[(3) - (4)]._lexval));
+              adms_veriloga_message_fatal(" @() control not supported\n",(yyvsp[-1]._lexval));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            Y((yyval._yaccval),(p_adms)(yyvsp[(3) - (4)]._lexval));
+            Y((yyval._yaccval),(p_adms)(yyvsp[-1]._lexval));
           }
+#line 3629 "y.tab.c"
     break;
 
-  case 167:
-/* Line 1792 of yacc.c  */
+  case 167: /* R_l.analysis: R_s.analysis  */
 #line 1442 "verilogaYacc.y"
-    {
+          {
           }
+#line 3636 "y.tab.c"
     break;
 
-  case 168:
-/* Line 1792 of yacc.c  */
+  case 168: /* R_l.analysis: R_l.analysis ',' R_s.analysis  */
 #line 1445 "verilogaYacc.y"
-    {
+          {
           }
+#line 3643 "y.tab.c"
     break;
 
-  case 169:
-/* Line 1792 of yacc.c  */
+  case 169: /* R_s.analysis: tk_anystring  */
 #line 1450 "verilogaYacc.y"
-    {
+          {
           }
+#line 3650 "y.tab.c"
     break;
 
-  case 170:
-/* Line 1792 of yacc.c  */
+  case 170: /* R_d.block: R_d.block.begin tk_end  */
 #line 1455 "verilogaYacc.y"
-    {
+          {
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),gBlockList->data);
             adms_slist_pull(&gBlockList);
           }
+#line 3660 "y.tab.c"
     break;
 
-  case 171:
-/* Line 1792 of yacc.c  */
+  case 171: /* R_d.block: R_d.block.begin ':' tk_ident tk_end  */
 #line 1461 "verilogaYacc.y"
-    {
+          {
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),gBlockList->data);
             adms_slist_pull(&gBlockList);
-            ((p_block)YY((yyval._yaccval)))->_lexval->_string=(yyvsp[(3) - (4)]._lexval)->_string;
+            ((p_block)YY((yyval._yaccval)))->_lexval->_string=(yyvsp[-1]._lexval)->_string;
           }
+#line 3671 "y.tab.c"
     break;
 
-  case 172:
-/* Line 1792 of yacc.c  */
+  case 172: /* R_d.block: R_d.block.begin R_l.blockitem tk_end  */
 #line 1468 "verilogaYacc.y"
-    {
+          {
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),gBlockList->data);
             adms_slist_pull(&gBlockList);
           }
+#line 3681 "y.tab.c"
     break;
 
-  case 173:
-/* Line 1792 of yacc.c  */
+  case 173: /* R_d.block: R_d.block.begin ':' tk_ident R_l.blockitem tk_end  */
 #line 1474 "verilogaYacc.y"
-    {
+          {
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),gBlockList->data);
             adms_slist_pull(&gBlockList);
-            ((p_block)YY((yyval._yaccval)))->_lexval->_string=(yyvsp[(3) - (5)]._lexval)->_string;
+            ((p_block)YY((yyval._yaccval)))->_lexval->_string=(yyvsp[-2]._lexval)->_string;
           }
+#line 3692 "y.tab.c"
     break;
 
-  case 174:
-/* Line 1792 of yacc.c  */
+  case 174: /* R_d.block.begin: R_d.attribute.0 tk_begin  */
 #line 1483 "verilogaYacc.y"
-    {
+          {
             p_slist l;
-            p_block myblock=adms_block_new(gModule,(yyvsp[(2) - (2)]._lexval),gBlockList?((p_block)gBlockList->data):NULL,NULL);
+            p_block myblock=adms_block_new(gModule,(yyvsp[0]._lexval),gBlockList?((p_block)gBlockList->data):NULL,NULL);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             myblock->_lexval->_string=adms_kclone("");
             adms_slist_push(&gBlockList,(p_adms)myblock);
@@ -3844,28 +3704,28 @@ yyreduce:
             adms_slist_free(gAttributeList); gAttributeList=NULL;
             adms_slist_push(&gModule->_block,gBlockList->data);
           }
+#line 3708 "y.tab.c"
     break;
 
-  case 175:
-/* Line 1792 of yacc.c  */
+  case 175: /* R_l.blockitem: R_analogcode  */
 #line 1497 "verilogaYacc.y"
-    {
-            adms_slist_push(&((p_block)gBlockList->data)->_item,YY((yyvsp[(1) - (1)]._yaccval)));
+          {
+            adms_slist_push(&((p_block)gBlockList->data)->_item,YY((yyvsp[0]._yaccval)));
           }
+#line 3716 "y.tab.c"
     break;
 
-  case 176:
-/* Line 1792 of yacc.c  */
+  case 176: /* R_l.blockitem: R_l.blockitem R_analogcode  */
 #line 1501 "verilogaYacc.y"
-    {
-            adms_slist_push(&((p_block)gBlockList->data)->_item,YY((yyvsp[(2) - (2)]._yaccval)));
+          {
+            adms_slist_push(&((p_block)gBlockList->data)->_item,YY((yyvsp[0]._yaccval)));
           }
+#line 3724 "y.tab.c"
     break;
 
-  case 177:
-/* Line 1792 of yacc.c  */
+  case 177: /* R_d.blockvariable: tk_integer R_l.blockvariable ';'  */
 #line 1507 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             p_blockvariable myblockvariable=adms_blockvariable_new(((p_block)gBlockList->data)); 
             adms_slist_push(&gModule->_blockvariable,(p_adms)myblockvariable); 
@@ -3877,12 +3737,12 @@ yyreduce:
             gBlockVariableList=NULL;
             Y((yyval._yaccval),(p_adms)myblockvariable);
           }
+#line 3741 "y.tab.c"
     break;
 
-  case 178:
-/* Line 1792 of yacc.c  */
+  case 178: /* R_d.blockvariable: tk_real R_l.blockvariable ';'  */
 #line 1520 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             p_blockvariable myblockvariable=adms_blockvariable_new(((p_block)gBlockList->data)); 
             adms_slist_push(&gModule->_blockvariable,(p_adms)myblockvariable); 
@@ -3894,12 +3754,12 @@ yyreduce:
             gBlockVariableList=NULL;
             Y((yyval._yaccval),(p_adms)myblockvariable);
           }
+#line 3758 "y.tab.c"
     break;
 
-  case 179:
-/* Line 1792 of yacc.c  */
+  case 179: /* R_d.blockvariable: tk_string R_l.blockvariable ';'  */
 #line 1533 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             p_blockvariable myblockvariable=adms_blockvariable_new(((p_block)gBlockList->data)); 
             adms_slist_push(&gModule->_blockvariable,(p_adms)myblockvariable); 
@@ -3911,78 +3771,78 @@ yyreduce:
             gBlockVariableList=NULL;
             Y((yyval._yaccval),(p_adms)myblockvariable);
           }
+#line 3775 "y.tab.c"
     break;
 
-  case 180:
-/* Line 1792 of yacc.c  */
+  case 180: /* R_l.blockvariable: R_s.blockvariable  */
 #line 1548 "verilogaYacc.y"
-    {
+          {
           }
+#line 3782 "y.tab.c"
     break;
 
-  case 181:
-/* Line 1792 of yacc.c  */
+  case 181: /* R_l.blockvariable: R_l.blockvariable ',' R_s.blockvariable  */
 #line 1551 "verilogaYacc.y"
-    {
+          {
           }
+#line 3789 "y.tab.c"
     break;
 
-  case 182:
-/* Line 1792 of yacc.c  */
+  case 182: /* R_s.blockvariable: tk_ident  */
 #line 1556 "verilogaYacc.y"
-    {
-            NEWVARIABLE((yyvsp[(1) - (1)]._lexval))
+          {
+            NEWVARIABLE((yyvsp[0]._lexval))
             adms_block_list_variable_prepend_once_or_abort(((p_block)gBlockList->data),myvariableprototype); 
             adms_slist_push(&gBlockVariableList,(p_adms)myvariableprototype);
           }
+#line 3799 "y.tab.c"
     break;
 
-  case 183:
-/* Line 1792 of yacc.c  */
+  case 183: /* R_s.blockvariable: tk_ident '[' tk_integer ':' tk_integer ']'  */
 #line 1562 "verilogaYacc.y"
-    {
-            NEWVARIABLE((yyvsp[(1) - (6)]._lexval))
+          {
+            NEWVARIABLE((yyvsp[-5]._lexval))
             adms_block_list_variable_prepend_once_or_abort(((p_block)gBlockList->data),myvariableprototype); 
             adms_slist_push(&gVariableDeclarationList,(p_adms)myvariableprototype);
             myvariableprototype->_sizetype=admse_array;
-            myvariableprototype->_minsize=adms_number_new((yyvsp[(3) - (6)]._lexval));
-            myvariableprototype->_maxsize=adms_number_new((yyvsp[(5) - (6)]._lexval));
+            myvariableprototype->_minsize=adms_number_new((yyvsp[-3]._lexval));
+            myvariableprototype->_maxsize=adms_number_new((yyvsp[-1]._lexval));
           }
+#line 3812 "y.tab.c"
     break;
 
-  case 184:
-/* Line 1792 of yacc.c  */
+  case 184: /* R_d.contribution: R_contribution R_d.attribute.0 ';'  */
 #line 1573 "verilogaYacc.y"
-    {
+          {
             p_slist l;
             for(l=gAttributeList;l;l=l->next)
               adms_slist_push(&gContribution->_attribute,l->data);
             adms_slist_free(gAttributeList); gAttributeList=NULL;
             gContribution=NULL;
           }
+#line 3824 "y.tab.c"
     break;
 
-  case 185:
-/* Line 1792 of yacc.c  */
+  case 185: /* R_contribution: R_source '<' '+' R_s.expression  */
 #line 1583 "verilogaYacc.y"
-    {
-            p_source mysource=(p_source)YY((yyvsp[(1) - (4)]._yaccval));
+          {
+            p_source mysource=(p_source)YY((yyvsp[-3]._yaccval));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            gContribution=adms_contribution_new(gModule,mysource,(p_expression)YY((yyvsp[(4) - (4)]._yaccval)),gLexval);
+            gContribution=adms_contribution_new(gModule,mysource,(p_expression)YY((yyvsp[0]._yaccval)),gLexval);
             adms_slist_push(&gModule->_contribution,(p_adms)gContribution);
             Y((yyval._yaccval),(p_adms)gContribution);
             gContribution->_branchalias=gBranchAlias;
             gBranchAlias=NULL;
           }
+#line 3838 "y.tab.c"
     break;
 
-  case 186:
-/* Line 1792 of yacc.c  */
+  case 186: /* R_source: tk_ident '(' tk_ident ',' tk_ident ')'  */
 #line 1595 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (6)]._lexval))->_string;
-            char* mylexval3=((p_lexval)(yyvsp[(3) - (6)]._lexval))->_string;
-            char* mylexval5=((p_lexval)(yyvsp[(5) - (6)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[-5]._lexval))->_string;
+            char* mylexval3=((p_lexval)(yyvsp[-3]._lexval))->_string;
+            char* mylexval5=((p_lexval)(yyvsp[-1]._lexval))->_string;
             p_node Pnode=adms_module_list_node_lookup_by_id(gModule,gModule,mylexval3);
             p_node Nnode=adms_module_list_node_lookup_by_id(gModule,gModule,mylexval5);
             char* natureID=mylexval1;
@@ -3992,17 +3852,17 @@ yyreduce:
             if(!mynature)
              adms_message_fatal(("[source:error] there is no nature with access %s, missing discipline.h file?\n",natureID))
             gSource=adms_module_list_source_prepend_by_id_once_or_ignore(gModule,gModule,mybranch,mynature);
-            gLexval=(yyvsp[(1) - (6)]._lexval);
+            gLexval=(yyvsp[-5]._lexval);
             Y((yyval._yaccval),(p_adms)gSource);
           }
+#line 3859 "y.tab.c"
     break;
 
-  case 187:
-/* Line 1792 of yacc.c  */
+  case 187: /* R_source: tk_ident '(' tk_ident ')'  */
 #line 1612 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (4)]._lexval))->_string;
-            char* mylexval3=((p_lexval)(yyvsp[(3) - (4)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[-3]._lexval))->_string;
+            char* mylexval3=((p_lexval)(yyvsp[-1]._lexval))->_string;
             char* natureID=mylexval1;
             p_nature mynature=adms_admsmain_list_nature_lookup_by_id(root(),natureID);
             p_branchalias branchalias=adms_module_list_branchalias_lookup_by_id(gModule,gModule,mylexval3);
@@ -4016,123 +3876,123 @@ yyreduce:
             else if(branchalias)
               mybranch=branchalias->_branch;
             else
-              adms_veriloga_message_fatal("undefined branch or node\n",(yyvsp[(1) - (4)]._lexval));
+              adms_veriloga_message_fatal("undefined branch or node\n",(yyvsp[-3]._lexval));
             gSource=adms_module_list_source_prepend_by_id_once_or_ignore(gModule,gModule,mybranch,mynature);
-            gLexval=(yyvsp[(1) - (4)]._lexval);
+            gLexval=(yyvsp[-3]._lexval);
             gBranchAlias=branchalias;
             Y((yyval._yaccval),(p_adms)gSource);
           }
+#line 3886 "y.tab.c"
     break;
 
-  case 188:
-/* Line 1792 of yacc.c  */
+  case 188: /* R_d.while: tk_while '(' R_s.expression ')' R_analogcode  */
 #line 1637 "verilogaYacc.y"
-    {
-            p_whileloop mywhileloop=adms_whileloop_new(gModule,(p_expression)YY((yyvsp[(3) - (5)]._yaccval)),YY((yyvsp[(5) - (5)]._yaccval)));
+          {
+            p_whileloop mywhileloop=adms_whileloop_new(gModule,(p_expression)YY((yyvsp[-2]._yaccval)),YY((yyvsp[0]._yaccval)));
             adms_slist_push(&gModule->_whileloop,(p_adms)mywhileloop);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mywhileloop);
           }
+#line 3897 "y.tab.c"
     break;
 
-  case 189:
-/* Line 1792 of yacc.c  */
+  case 189: /* R_d.for: tk_for '(' R_s.assignment ';' R_s.expression ';' R_s.assignment ')' R_analogcode  */
 #line 1646 "verilogaYacc.y"
-    {
-            p_forloop myforloop=adms_forloop_new(gModule,(p_assignment)YY((yyvsp[(3) - (9)]._yaccval)),(p_expression)YY((yyvsp[(5) - (9)]._yaccval)),(p_assignment)YY((yyvsp[(7) - (9)]._yaccval)),YY((yyvsp[(9) - (9)]._yaccval)));
+          {
+            p_forloop myforloop=adms_forloop_new(gModule,(p_assignment)YY((yyvsp[-6]._yaccval)),(p_expression)YY((yyvsp[-4]._yaccval)),(p_assignment)YY((yyvsp[-2]._yaccval)),YY((yyvsp[0]._yaccval)));
             adms_slist_push(&gModule->_forloop,(p_adms)myforloop);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myforloop);
           }
+#line 3908 "y.tab.c"
     break;
 
-  case 190:
-/* Line 1792 of yacc.c  */
+  case 190: /* R_d.case: tk_case '(' R_s.expression ')' R_l.case.item tk_endcase  */
 #line 1655 "verilogaYacc.y"
-    {
-            p_case mycase=adms_case_new(gModule,(p_expression)YY((yyvsp[(3) - (6)]._yaccval)));
+          {
+            p_case mycase=adms_case_new(gModule,(p_expression)YY((yyvsp[-3]._yaccval)));
             adms_slist_push(&gModule->_case,(p_adms)mycase);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            mycase->_caseitem=adms_slist_reverse((p_slist)YY((yyvsp[(5) - (6)]._yaccval)));
+            mycase->_caseitem=adms_slist_reverse((p_slist)YY((yyvsp[-1]._yaccval)));
             Y((yyval._yaccval),(p_adms)mycase);
           }
+#line 3920 "y.tab.c"
     break;
 
-  case 191:
-/* Line 1792 of yacc.c  */
+  case 191: /* R_l.case.item: R_s.case.item  */
 #line 1665 "verilogaYacc.y"
-    {
+          {
             p_slist myArgs=NULL;
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            adms_slist_push(&myArgs,YY((yyvsp[(1) - (1)]._yaccval)));
+            adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
+#line 3931 "y.tab.c"
     break;
 
-  case 192:
-/* Line 1792 of yacc.c  */
+  case 192: /* R_l.case.item: R_l.case.item R_s.case.item  */
 #line 1672 "verilogaYacc.y"
-    {
-            p_slist myArgs=(p_slist)YY((yyvsp[(1) - (2)]._yaccval));
-            (yyval._yaccval)=(yyvsp[(1) - (2)]._yaccval);
-            adms_slist_push(&myArgs,YY((yyvsp[(2) - (2)]._yaccval)));
+          {
+            p_slist myArgs=(p_slist)YY((yyvsp[-1]._yaccval));
+            (yyval._yaccval)=(yyvsp[-1]._yaccval);
+            adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
+#line 3942 "y.tab.c"
     break;
 
-  case 193:
-/* Line 1792 of yacc.c  */
+  case 193: /* R_s.case.item: R_l.enode ':' R_analogcode  */
 #line 1681 "verilogaYacc.y"
-    {
-            p_slist myArgs=(p_slist)YY((yyvsp[(1) - (3)]._yaccval));
-            p_caseitem mycaseitem=adms_caseitem_new(YY((yyvsp[(3) - (3)]._yaccval)));
+          {
+            p_slist myArgs=(p_slist)YY((yyvsp[-2]._yaccval));
+            p_caseitem mycaseitem=adms_caseitem_new(YY((yyvsp[0]._yaccval)));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             mycaseitem->_condition=adms_slist_reverse(myArgs);
             Y((yyval._yaccval),(p_adms)mycaseitem);
           }
+#line 3954 "y.tab.c"
     break;
 
-  case 194:
-/* Line 1792 of yacc.c  */
+  case 194: /* R_s.case.item: tk_default ':' R_analogcode  */
 #line 1689 "verilogaYacc.y"
-    {
-            p_caseitem mycaseitem=adms_caseitem_new(YY((yyvsp[(3) - (3)]._yaccval)));
+          {
+            p_caseitem mycaseitem=adms_caseitem_new(YY((yyvsp[0]._yaccval)));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             mycaseitem->_defaultcase=admse_yes;
             Y((yyval._yaccval),(p_adms)mycaseitem);
           }
+#line 3965 "y.tab.c"
     break;
 
-  case 195:
-/* Line 1792 of yacc.c  */
+  case 195: /* R_s.case.item: tk_default R_analogcode  */
 #line 1696 "verilogaYacc.y"
-    {
-            p_caseitem mycaseitem=adms_caseitem_new(YY((yyvsp[(2) - (2)]._yaccval)));
+          {
+            p_caseitem mycaseitem=adms_caseitem_new(YY((yyvsp[0]._yaccval)));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             mycaseitem->_defaultcase=admse_yes;
             Y((yyval._yaccval),(p_adms)mycaseitem);
           }
+#line 3976 "y.tab.c"
     break;
 
-  case 196:
-/* Line 1792 of yacc.c  */
+  case 196: /* R_s.paramlist.0: %empty  */
 #line 1705 "verilogaYacc.y"
-    {
+          {
           }
+#line 3983 "y.tab.c"
     break;
 
-  case 197:
-/* Line 1792 of yacc.c  */
+  case 197: /* R_s.paramlist.0: '#' '(' R_l.instance.parameter ')'  */
 #line 1708 "verilogaYacc.y"
-    {
+          {
           }
+#line 3990 "y.tab.c"
     break;
 
-  case 198:
-/* Line 1792 of yacc.c  */
+  case 198: /* R_s.instance: R_instance.module.name R_s.paramlist.0 tk_ident '(' R_l.node ')' ';'  */
 #line 1713 "verilogaYacc.y"
-    {
-            char* mylexval3=((p_lexval)(yyvsp[(3) - (7)]._lexval))->_string;
+          {
+            char* mylexval3=((p_lexval)(yyvsp[-4]._lexval))->_string;
             p_instance myinstance;
             p_slist l1;
             p_slist l2;
@@ -4151,87 +4011,87 @@ yyreduce:
             adms_slist_free(gNodeList);gNodeList=NULL;
             adms_slist_free(gInstanceVariableList);gInstanceVariableList=NULL;
           }
+#line 4015 "y.tab.c"
     break;
 
-  case 199:
-/* Line 1792 of yacc.c  */
+  case 199: /* R_instance.module.name: tk_ident  */
 #line 1736 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             set_context(ctx_any); // from here, don't recognize node declarations.
                                   // they are not permitted anyway.
             gInstanceModule=adms_admsmain_list_module_lookup_by_id(root(),mylexval1);
             if(!gInstanceModule)
               adms_message_fatal(("module '%s' not found\n",mylexval1));
           }
+#line 4028 "y.tab.c"
     break;
 
-  case 200:
-/* Line 1792 of yacc.c  */
+  case 200: /* R_l.instance.parameter: R_s.instance.parameter  */
 #line 1747 "verilogaYacc.y"
-    {
+          {
           }
+#line 4035 "y.tab.c"
     break;
 
-  case 201:
-/* Line 1792 of yacc.c  */
+  case 201: /* R_l.instance.parameter: R_l.instance.parameter ',' R_s.instance.parameter  */
 #line 1750 "verilogaYacc.y"
-    {
+          {
           }
+#line 4042 "y.tab.c"
     break;
 
-  case 202:
-/* Line 1792 of yacc.c  */
+  case 202: /* R_s.instance.parameter: '.' tk_ident '(' R_s.expression ')'  */
 #line 1755 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (5)]._lexval))->_string;
-            p_variableprototype myvariableprototype=adms_module_list_variable_lookup_by_id(gInstanceModule,gInstanceModule,(yyvsp[(2) - (5)]._lexval),(p_adms)gInstanceModule);
+          {
+            char* mylexval2=((p_lexval)(yyvsp[-3]._lexval))->_string;
+            p_variableprototype myvariableprototype=adms_module_list_variable_lookup_by_id(gInstanceModule,gInstanceModule,(yyvsp[-3]._lexval),(p_adms)gInstanceModule);
             if(myvariableprototype)
             {
               p_instanceparameter myinstanceparameter;
               myinstanceparameter=adms_instanceparameter_new(myvariableprototype);
               adms_slist_push(&gInstanceVariableList,(p_adms)myinstanceparameter);
-              myinstanceparameter->_value=((p_expression)YY((yyvsp[(4) - (5)]._yaccval)));
+              myinstanceparameter->_value=((p_expression)YY((yyvsp[-1]._yaccval)));
             }
             else
             {
-              adms_veriloga_message_fatal_continue((yyvsp[(2) - (5)]._lexval));
+              adms_veriloga_message_fatal_continue((yyvsp[-3]._lexval));
               adms_message_fatal(("[%s.%s.%s]: undefined variable (instance declaration)",
                 adms_module_uid(gModule),adms_module_uid(gInstanceModule),mylexval2))
             }
           }
+#line 4064 "y.tab.c"
     break;
 
-  case 203:
-/* Line 1792 of yacc.c  */
+  case 203: /* R_s.assignment: tk_ident '=' R_s.expression  */
 #line 1775 "verilogaYacc.y"
-    {
+          {
             p_assignment myassignment;
-            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[(1) - (3)]._lexval));
+            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[-2]._lexval));
             p_variableprototype myvariableprototype;
             if(!myvariable)
-              adms_veriloga_message_fatal("undefined variable\n",(yyvsp[(1) - (3)]._lexval));
+              adms_veriloga_message_fatal("undefined variable\n",(yyvsp[-2]._lexval));
             myvariableprototype=myvariable->_prototype;
-            myassignment=adms_assignment_new(gModule,(p_adms)myvariable,(p_expression)YY((yyvsp[(3) - (3)]._yaccval)),(yyvsp[(1) - (3)]._lexval));
+            myassignment=adms_assignment_new(gModule,(p_adms)myvariable,(p_expression)YY((yyvsp[0]._yaccval)),(yyvsp[-2]._lexval));
             adms_slist_push(&gModule->_assignment,(p_adms)myassignment);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myassignment);
             myvariableprototype->_vcount++;
             myvariableprototype->_vlast=myassignment;
           }
+#line 4083 "y.tab.c"
     break;
 
-  case 204:
-/* Line 1792 of yacc.c  */
+  case 204: /* R_s.assignment: R_d.attribute tk_ident '=' R_s.expression  */
 #line 1790 "verilogaYacc.y"
-    {
+          {
             p_assignment myassignment;
-            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[(2) - (4)]._lexval));
+            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[-2]._lexval));
             p_variableprototype myvariableprototype;
             if(!myvariable)
-              adms_veriloga_message_fatal("undefined variable\n",(yyvsp[(2) - (4)]._lexval));
+              adms_veriloga_message_fatal("undefined variable\n",(yyvsp[-2]._lexval));
             myvariableprototype=myvariable->_prototype;
-            myassignment=adms_assignment_new(gModule,(p_adms)myvariable,(p_expression)YY((yyvsp[(4) - (4)]._yaccval)),(yyvsp[(2) - (4)]._lexval));
+            myassignment=adms_assignment_new(gModule,(p_adms)myvariable,(p_expression)YY((yyvsp[0]._yaccval)),(yyvsp[-2]._lexval));
             adms_slist_push(&gModule->_assignment,(p_adms)myassignment);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myassignment);
@@ -4244,42 +4104,42 @@ yyreduce:
             myvariableprototype->_vcount++;
             myvariableprototype->_vlast=myassignment;
           }
+#line 4108 "y.tab.c"
     break;
 
-  case 205:
-/* Line 1792 of yacc.c  */
+  case 205: /* R_s.assignment: tk_ident '[' R_expression ']' '=' R_s.expression  */
 #line 1811 "verilogaYacc.y"
-    {
+          {
             p_assignment myassignment;
             p_array myarray;
-            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[(1) - (6)]._lexval));
+            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[-5]._lexval));
             p_variableprototype myvariableprototype;
             if(!myvariable)
-              adms_veriloga_message_fatal("undefined variable\n",(yyvsp[(1) - (6)]._lexval));
+              adms_veriloga_message_fatal("undefined variable\n",(yyvsp[-5]._lexval));
             myvariableprototype=myvariable->_prototype;
-            myarray=adms_array_new(myvariable,YY((yyvsp[(3) - (6)]._yaccval)));
-            myassignment=adms_assignment_new(gModule,(p_adms)myarray,(p_expression)YY((yyvsp[(6) - (6)]._yaccval)),(yyvsp[(1) - (6)]._lexval));
+            myarray=adms_array_new(myvariable,YY((yyvsp[-3]._yaccval)));
+            myassignment=adms_assignment_new(gModule,(p_adms)myarray,(p_expression)YY((yyvsp[0]._yaccval)),(yyvsp[-5]._lexval));
             adms_slist_push(&gModule->_assignment,(p_adms)myassignment);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myassignment);
             myvariableprototype->_vcount++;
             myvariableprototype->_vlast=myassignment;
           }
+#line 4129 "y.tab.c"
     break;
 
-  case 206:
-/* Line 1792 of yacc.c  */
+  case 206: /* R_s.assignment: R_d.attribute tk_ident '[' R_expression ']' '=' R_s.expression  */
 #line 1828 "verilogaYacc.y"
-    {
+          {
             p_assignment myassignment;
             p_array myarray;
-            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[(2) - (7)]._lexval));
+            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[-5]._lexval));
             p_variableprototype myvariableprototype;
             if(!myvariable)
-              adms_veriloga_message_fatal("undefined variable\n",(yyvsp[(2) - (7)]._lexval));
+              adms_veriloga_message_fatal("undefined variable\n",(yyvsp[-5]._lexval));
             myvariableprototype=myvariable->_prototype;
-            myarray=adms_array_new(myvariable,YY((yyvsp[(4) - (7)]._yaccval)));
-            myassignment=adms_assignment_new(gModule,(p_adms)myarray,(p_expression)YY((yyvsp[(7) - (7)]._yaccval)),(yyvsp[(2) - (7)]._lexval));
+            myarray=adms_array_new(myvariable,YY((yyvsp[-3]._yaccval)));
+            myassignment=adms_assignment_new(gModule,(p_adms)myarray,(p_expression)YY((yyvsp[0]._yaccval)),(yyvsp[-5]._lexval));
             adms_slist_push(&gModule->_assignment,(p_adms)myassignment);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myassignment);
@@ -4292,500 +4152,500 @@ yyreduce:
             myvariableprototype->_vcount++;
             myvariableprototype->_vlast=myassignment;
           }
+#line 4156 "y.tab.c"
     break;
 
-  case 207:
-/* Line 1792 of yacc.c  */
+  case 207: /* R_d.conditional: tk_if '(' R_s.expression ')' R_analogcode  */
 #line 1853 "verilogaYacc.y"
-    {
-            p_expression myexpression=(p_expression)YY((yyvsp[(3) - (5)]._yaccval));
-            p_adms mythen=YY((yyvsp[(5) - (5)]._yaccval));
+          {
+            p_expression myexpression=(p_expression)YY((yyvsp[-2]._yaccval));
+            p_adms mythen=YY((yyvsp[0]._yaccval));
             p_conditional myconditional=adms_conditional_new(gModule,myexpression,mythen,NULL);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myconditional);
           }
+#line 4168 "y.tab.c"
     break;
 
-  case 208:
-/* Line 1792 of yacc.c  */
+  case 208: /* R_d.conditional: tk_if '(' R_s.expression ')' R_analogcode tk_else R_analogcode  */
 #line 1861 "verilogaYacc.y"
-    {
-            p_expression myexpression=(p_expression)YY((yyvsp[(3) - (7)]._yaccval));
-            p_adms mythen=YY((yyvsp[(5) - (7)]._yaccval));
-            p_adms myelse=YY((yyvsp[(7) - (7)]._yaccval));
+          {
+            p_expression myexpression=(p_expression)YY((yyvsp[-4]._yaccval));
+            p_adms mythen=YY((yyvsp[-2]._yaccval));
+            p_adms myelse=YY((yyvsp[0]._yaccval));
             p_conditional myconditional=adms_conditional_new(gModule,myexpression,mythen,myelse);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myconditional);
           }
+#line 4181 "y.tab.c"
     break;
 
-  case 209:
-/* Line 1792 of yacc.c  */
+  case 209: /* R_s.expression: R_expression  */
 #line 1872 "verilogaYacc.y"
-    {
-            p_expression myexpression=adms_expression_new(gModule,YY((yyvsp[(1) - (1)]._yaccval))); 
+          {
+            p_expression myexpression=adms_expression_new(gModule,YY((yyvsp[0]._yaccval))); 
             adms_slist_push(&gModule->_expression,(p_adms)myexpression); 
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
             Y((yyval._yaccval),(p_adms)myexpression);
           }
+#line 4192 "y.tab.c"
     break;
 
-  case 210:
-/* Line 1792 of yacc.c  */
+  case 210: /* R_l.enode: R_s.function_expression  */
 #line 1881 "verilogaYacc.y"
-    {
+          {
             p_slist myArgs=NULL;
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            adms_slist_push(&myArgs,YY((yyvsp[(1) - (1)]._yaccval)));
+            adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
+#line 4203 "y.tab.c"
     break;
 
-  case 211:
-/* Line 1792 of yacc.c  */
+  case 211: /* R_l.enode: R_l.enode ',' R_s.function_expression  */
 #line 1888 "verilogaYacc.y"
-    {
-            p_slist myArgs=(p_slist)YY((yyvsp[(1) - (3)]._yaccval));
-            (yyval._yaccval)=(yyvsp[(1) - (3)]._yaccval);
-            adms_slist_push(&myArgs,YY((yyvsp[(3) - (3)]._yaccval)));
+          {
+            p_slist myArgs=(p_slist)YY((yyvsp[-2]._yaccval));
+            (yyval._yaccval)=(yyvsp[-2]._yaccval);
+            adms_slist_push(&myArgs,YY((yyvsp[0]._yaccval)));
             Y((yyval._yaccval),(p_adms)myArgs);
           }
+#line 4214 "y.tab.c"
     break;
 
-  case 212:
-/* Line 1792 of yacc.c  */
+  case 212: /* R_s.function_expression: R_expression  */
 #line 1897 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4222 "y.tab.c"
     break;
 
-  case 213:
-/* Line 1792 of yacc.c  */
+  case 213: /* R_expression: R_e.conditional  */
 #line 1903 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4230 "y.tab.c"
     break;
 
-  case 214:
-/* Line 1792 of yacc.c  */
+  case 214: /* R_e.conditional: R_e.bitwise_equ  */
 #line 1909 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4238 "y.tab.c"
     break;
 
-  case 215:
-/* Line 1792 of yacc.c  */
+  case 215: /* R_e.conditional: R_e.bitwise_equ '?' R_e.conditional ':' R_e.conditional  */
 #line 1913 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (5)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (5)]._yaccval));
-            p_adms m3=YY((yyvsp[(5) - (5)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-4]._yaccval));
+            p_adms m2=YY((yyvsp[-2]._yaccval));
+            p_adms m3=YY((yyvsp[0]._yaccval));
             p_mapply_ternary myop=adms_mapply_ternary_new(admse_conditional,m1,m2,m3);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4251 "y.tab.c"
     break;
 
-  case 216:
-/* Line 1792 of yacc.c  */
+  case 216: /* R_e.bitwise_equ: R_e.bitwise_xor  */
 #line 1924 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4259 "y.tab.c"
     break;
 
-  case 217:
-/* Line 1792 of yacc.c  */
+  case 217: /* R_e.bitwise_equ: R_e.bitwise_equ tk_bitwise_equr R_e.bitwise_xor  */
 #line 1928 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_bw_equr,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4271 "y.tab.c"
     break;
 
-  case 218:
-/* Line 1792 of yacc.c  */
+  case 218: /* R_e.bitwise_equ: R_e.bitwise_equ '~' '^' R_e.bitwise_xor  */
 #line 1936 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (4)]._yaccval));
-            p_adms m2=YY((yyvsp[(4) - (4)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-3]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_bw_equl,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4283 "y.tab.c"
     break;
 
-  case 219:
-/* Line 1792 of yacc.c  */
+  case 219: /* R_e.bitwise_xor: R_e.bitwise_or  */
 #line 1946 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4291 "y.tab.c"
     break;
 
-  case 220:
-/* Line 1792 of yacc.c  */
+  case 220: /* R_e.bitwise_xor: R_e.bitwise_xor '^' R_e.bitwise_or  */
 #line 1950 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_bw_xor,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4303 "y.tab.c"
     break;
 
-  case 221:
-/* Line 1792 of yacc.c  */
+  case 221: /* R_e.bitwise_or: R_e.bitwise_and  */
 #line 1960 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4311 "y.tab.c"
     break;
 
-  case 222:
-/* Line 1792 of yacc.c  */
+  case 222: /* R_e.bitwise_or: R_e.bitwise_or '|' R_e.bitwise_and  */
 #line 1964 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_bw_or,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4323 "y.tab.c"
     break;
 
-  case 223:
-/* Line 1792 of yacc.c  */
+  case 223: /* R_e.bitwise_and: R_e.logical_or  */
 #line 1974 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4331 "y.tab.c"
     break;
 
-  case 224:
-/* Line 1792 of yacc.c  */
+  case 224: /* R_e.bitwise_and: R_e.bitwise_and '&' R_e.logical_or  */
 #line 1978 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_bw_and,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4343 "y.tab.c"
     break;
 
-  case 225:
-/* Line 1792 of yacc.c  */
+  case 225: /* R_e.logical_or: R_e.logical_and  */
 #line 1988 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4351 "y.tab.c"
     break;
 
-  case 226:
-/* Line 1792 of yacc.c  */
+  case 226: /* R_e.logical_or: R_e.logical_or tk_or R_e.logical_and  */
 #line 1992 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_or,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4363 "y.tab.c"
     break;
 
-  case 227:
-/* Line 1792 of yacc.c  */
+  case 227: /* R_e.logical_and: R_e.comp_equ  */
 #line 2002 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4371 "y.tab.c"
     break;
 
-  case 228:
-/* Line 1792 of yacc.c  */
+  case 228: /* R_e.logical_and: R_e.logical_and tk_and R_e.comp_equ  */
 #line 2006 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_and,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4383 "y.tab.c"
     break;
 
-  case 229:
-/* Line 1792 of yacc.c  */
+  case 229: /* R_e.comp_equ: R_e.comp  */
 #line 2016 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4391 "y.tab.c"
     break;
 
-  case 230:
-/* Line 1792 of yacc.c  */
+  case 230: /* R_e.comp_equ: R_e.comp_equ '=' '=' R_e.comp  */
 #line 2020 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (4)]._yaccval));
-            p_adms m2=YY((yyvsp[(4) - (4)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-3]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_equ,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4403 "y.tab.c"
     break;
 
-  case 231:
-/* Line 1792 of yacc.c  */
+  case 231: /* R_e.comp_equ: R_e.comp_equ '!' '=' R_e.comp  */
 #line 2028 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (4)]._yaccval));
-            p_adms m2=YY((yyvsp[(4) - (4)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-3]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_notequ,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4415 "y.tab.c"
     break;
 
-  case 232:
-/* Line 1792 of yacc.c  */
+  case 232: /* R_e.comp: R_e.bitwise_shift  */
 #line 2038 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4423 "y.tab.c"
     break;
 
-  case 233:
-/* Line 1792 of yacc.c  */
+  case 233: /* R_e.comp: R_e.comp '<' R_e.bitwise_shift  */
 #line 2042 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_lt,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4435 "y.tab.c"
     break;
 
-  case 234:
-/* Line 1792 of yacc.c  */
+  case 234: /* R_e.comp: R_e.comp '<' '=' R_e.bitwise_shift  */
 #line 2050 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (4)]._yaccval));
-            p_adms m2=YY((yyvsp[(4) - (4)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-3]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_lt_equ,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4447 "y.tab.c"
     break;
 
-  case 235:
-/* Line 1792 of yacc.c  */
+  case 235: /* R_e.comp: R_e.comp '>' R_e.bitwise_shift  */
 #line 2058 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_gt,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4459 "y.tab.c"
     break;
 
-  case 236:
-/* Line 1792 of yacc.c  */
+  case 236: /* R_e.comp: R_e.comp '>' '=' R_e.bitwise_shift  */
 #line 2066 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (4)]._yaccval));
-            p_adms m2=YY((yyvsp[(4) - (4)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-3]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_gt_equ,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4471 "y.tab.c"
     break;
 
-  case 237:
-/* Line 1792 of yacc.c  */
+  case 237: /* R_e.bitwise_shift: R_e.arithm_add  */
 #line 2076 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4479 "y.tab.c"
     break;
 
-  case 238:
-/* Line 1792 of yacc.c  */
+  case 238: /* R_e.bitwise_shift: R_e.bitwise_shift tk_op_shr R_e.arithm_add  */
 #line 2080 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_shiftr,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4491 "y.tab.c"
     break;
 
-  case 239:
-/* Line 1792 of yacc.c  */
+  case 239: /* R_e.bitwise_shift: R_e.bitwise_shift tk_op_shl R_e.arithm_add  */
 #line 2088 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_shiftl,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4503 "y.tab.c"
     break;
 
-  case 240:
-/* Line 1792 of yacc.c  */
+  case 240: /* R_e.arithm_add: R_e.arithm_mult  */
 #line 2098 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4511 "y.tab.c"
     break;
 
-  case 241:
-/* Line 1792 of yacc.c  */
+  case 241: /* R_e.arithm_add: R_e.arithm_add '+' R_e.arithm_mult  */
 #line 2102 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_addp,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4523 "y.tab.c"
     break;
 
-  case 242:
-/* Line 1792 of yacc.c  */
+  case 242: /* R_e.arithm_add: R_e.arithm_add '-' R_e.arithm_mult  */
 #line 2110 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_addm,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4535 "y.tab.c"
     break;
 
-  case 243:
-/* Line 1792 of yacc.c  */
+  case 243: /* R_e.arithm_mult: R_e.unary  */
 #line 2120 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4543 "y.tab.c"
     break;
 
-  case 244:
-/* Line 1792 of yacc.c  */
+  case 244: /* R_e.arithm_mult: R_e.arithm_mult '*' R_e.unary  */
 #line 2124 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_multtime,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4555 "y.tab.c"
     break;
 
-  case 245:
-/* Line 1792 of yacc.c  */
+  case 245: /* R_e.arithm_mult: R_e.arithm_mult '/' R_e.unary  */
 #line 2132 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_multdiv,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4567 "y.tab.c"
     break;
 
-  case 246:
-/* Line 1792 of yacc.c  */
+  case 246: /* R_e.arithm_mult: R_e.arithm_mult '%' R_e.unary  */
 #line 2140 "verilogaYacc.y"
-    {
-            p_adms m1=YY((yyvsp[(1) - (3)]._yaccval));
-            p_adms m2=YY((yyvsp[(3) - (3)]._yaccval));
+          {
+            p_adms m1=YY((yyvsp[-2]._yaccval));
+            p_adms m2=YY((yyvsp[0]._yaccval));
             p_mapply_binary myop=adms_mapply_binary_new(admse_multmod,m1,m2);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myop);
           }
+#line 4579 "y.tab.c"
     break;
 
-  case 247:
-/* Line 1792 of yacc.c  */
+  case 247: /* R_e.unary: R_e.atomic  */
 #line 2150 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(1) - (1)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[0]._yaccval);
           }
+#line 4587 "y.tab.c"
     break;
 
-  case 248:
-/* Line 1792 of yacc.c  */
+  case 248: /* R_e.unary: '+' R_e.atomic  */
 #line 2154 "verilogaYacc.y"
-    {
-            p_adms m=YY((yyvsp[(2) - (2)]._yaccval));
+          {
+            p_adms m=YY((yyvsp[0]._yaccval));
             p_mapply_unary mymathapply=adms_mapply_unary_new(admse_plus,m);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mymathapply);
           }
+#line 4598 "y.tab.c"
     break;
 
-  case 249:
-/* Line 1792 of yacc.c  */
+  case 249: /* R_e.unary: '-' R_e.atomic  */
 #line 2161 "verilogaYacc.y"
-    {
-            p_adms m=YY((yyvsp[(2) - (2)]._yaccval));
+          {
+            p_adms m=YY((yyvsp[0]._yaccval));
             p_mapply_unary mymathapply=adms_mapply_unary_new(admse_minus,m);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mymathapply);
           }
+#line 4609 "y.tab.c"
     break;
 
-  case 250:
-/* Line 1792 of yacc.c  */
+  case 250: /* R_e.unary: '!' R_e.atomic  */
 #line 2168 "verilogaYacc.y"
-    {
-            p_adms m=YY((yyvsp[(2) - (2)]._yaccval));
+          {
+            p_adms m=YY((yyvsp[0]._yaccval));
             p_mapply_unary mymathapply=adms_mapply_unary_new(admse_not,m);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mymathapply);
           }
+#line 4620 "y.tab.c"
     break;
 
-  case 251:
-/* Line 1792 of yacc.c  */
+  case 251: /* R_e.unary: '~' R_e.atomic  */
 #line 2175 "verilogaYacc.y"
-    {
-            p_adms m=YY((yyvsp[(2) - (2)]._yaccval));
+          {
+            p_adms m=YY((yyvsp[0]._yaccval));
             p_mapply_unary mymathapply=adms_mapply_unary_new(admse_bw_not,m);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)mymathapply);
           }
+#line 4631 "y.tab.c"
     break;
 
-  case 252:
-/* Line 1792 of yacc.c  */
+  case 252: /* R_e.atomic: tk_integer  */
 #line 2184 "verilogaYacc.y"
-    {
-            p_number mynumber=adms_number_new((yyvsp[(1) - (1)]._lexval));
+          {
+            p_number mynumber=adms_number_new((yyvsp[0]._lexval));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             mynumber->_cast=admse_i;
             Y((yyval._yaccval),(p_adms)mynumber);
           }
+#line 4642 "y.tab.c"
     break;
 
-  case 253:
-/* Line 1792 of yacc.c  */
+  case 253: /* R_e.atomic: tk_integer tk_ident  */
 #line 2191 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (2)]._lexval))->_string;
-            p_number mynumber=adms_number_new((yyvsp[(1) - (2)]._lexval));
+          {
+            char* mylexval2=((p_lexval)(yyvsp[0]._lexval))->_string;
+            p_number mynumber=adms_number_new((yyvsp[-1]._lexval));
             int myunit=admse_1;
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             if(0) {}
@@ -4808,28 +4668,28 @@ yyreduce:
             else if(!strcmp(mylexval2,"f")) myunit=admse_f;
             else if(!strcmp(mylexval2,"a")) myunit=admse_a;
             else
-              adms_veriloga_message_fatal(" can not convert symbol to valid unit\n",(yyvsp[(2) - (2)]._lexval));
+              adms_veriloga_message_fatal(" can not convert symbol to valid unit\n",(yyvsp[0]._lexval));
             mynumber->_scalingunit=myunit;
             mynumber->_cast=admse_i;
             Y((yyval._yaccval),(p_adms)mynumber);
           }
+#line 4677 "y.tab.c"
     break;
 
-  case 254:
-/* Line 1792 of yacc.c  */
+  case 254: /* R_e.atomic: tk_number  */
 #line 2222 "verilogaYacc.y"
-    {
+          {
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            Y((yyval._yaccval),(p_adms)adms_number_new((yyvsp[(1) - (1)]._lexval)));
+            Y((yyval._yaccval),(p_adms)adms_number_new((yyvsp[0]._lexval)));
           }
+#line 4686 "y.tab.c"
     break;
 
-  case 255:
-/* Line 1792 of yacc.c  */
+  case 255: /* R_e.atomic: tk_number tk_ident  */
 #line 2227 "verilogaYacc.y"
-    {
-            char* mylexval2=((p_lexval)(yyvsp[(2) - (2)]._lexval))->_string;
-            p_number mynumber=adms_number_new((yyvsp[(1) - (2)]._lexval));
+          {
+            char* mylexval2=((p_lexval)(yyvsp[0]._lexval))->_string;
+            p_number mynumber=adms_number_new((yyvsp[-1]._lexval));
             int myunit=admse_1;
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             if(0) {}
@@ -4852,37 +4712,37 @@ yyreduce:
             else if(!strcmp(mylexval2,"f")) myunit=admse_f;
             else if(!strcmp(mylexval2,"a")) myunit=admse_a;
             else
-              adms_veriloga_message_fatal(" can not convert symbol to valid unit\n",(yyvsp[(2) - (2)]._lexval));
+              adms_veriloga_message_fatal(" can not convert symbol to valid unit\n",(yyvsp[0]._lexval));
             mynumber->_scalingunit=myunit;
             Y((yyval._yaccval),(p_adms)mynumber);
           }
+#line 4720 "y.tab.c"
     break;
 
-  case 256:
-/* Line 1792 of yacc.c  */
+  case 256: /* R_e.atomic: tk_char  */
 #line 2257 "verilogaYacc.y"
-    {
-            adms_veriloga_message_fatal("%s: character are not handled\n",(yyvsp[(1) - (1)]._lexval));
+          {
+            adms_veriloga_message_fatal("%s: character are not handled\n",(yyvsp[0]._lexval));
           }
+#line 4728 "y.tab.c"
     break;
 
-  case 257:
-/* Line 1792 of yacc.c  */
+  case 257: /* R_e.atomic: tk_anystring  */
 #line 2261 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)adms_string_new(mylexval1));
           }
+#line 4738 "y.tab.c"
     break;
 
-  case 258:
-/* Line 1792 of yacc.c  */
+  case 258: /* R_e.atomic: tk_ident  */
 #line 2267 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (1)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[0]._lexval))->_string;
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[(1) - (1)]._lexval));
+            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[0]._lexval));
             if(myvariable)
               Y((yyval._yaccval),(p_adms)myvariable);
             else if (!gAnalogfunction)
@@ -4894,52 +4754,52 @@ yyreduce:
                   Y((yyval._yaccval),(p_adms)mybranchalias->_branch);
             }
             if(!YY((yyval._yaccval)))
-              adms_veriloga_message_fatal("identifier never declared\n",(yyvsp[(1) - (1)]._lexval));
+              adms_veriloga_message_fatal("identifier never declared\n",(yyvsp[0]._lexval));
           }
+#line 4760 "y.tab.c"
     break;
 
-  case 259:
-/* Line 1792 of yacc.c  */
+  case 259: /* R_e.atomic: tk_dollar_ident  */
 #line 2285 "verilogaYacc.y"
-    {
-            p_function myfunction=adms_function_new((yyvsp[(1) - (1)]._lexval),uid++);
+          {
+            p_function myfunction=adms_function_new((yyvsp[0]._lexval),uid++);
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             Y((yyval._yaccval),(p_adms)myfunction);
           }
+#line 4770 "y.tab.c"
     break;
 
-  case 260:
-/* Line 1792 of yacc.c  */
+  case 260: /* R_e.atomic: tk_ident '[' R_expression ']'  */
 #line 2291 "verilogaYacc.y"
-    {
+          {
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
-            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[(1) - (4)]._lexval));
+            p_variable myvariable=variable_recursive_lookup_by_id(gBlockList->data,(yyvsp[-3]._lexval));
             if(!myvariable)
-               adms_veriloga_message_fatal("undefined array variable\n",(yyvsp[(1) - (4)]._lexval));
-            Y((yyval._yaccval),(p_adms)adms_array_new(myvariable,YY((yyvsp[(3) - (4)]._yaccval))));
+               adms_veriloga_message_fatal("undefined array variable\n",(yyvsp[-3]._lexval));
+            Y((yyval._yaccval),(p_adms)adms_array_new(myvariable,YY((yyvsp[-1]._yaccval))));
           }
+#line 4782 "y.tab.c"
     break;
 
-  case 261:
-/* Line 1792 of yacc.c  */
+  case 261: /* R_e.atomic: tk_dollar_ident '(' R_l.enode ')'  */
 #line 2299 "verilogaYacc.y"
-    {
-            p_function myfunction=adms_function_new((yyvsp[(1) - (4)]._lexval),uid++);
-            p_slist myArgs=(p_slist)YY((yyvsp[(3) - (4)]._yaccval));
+          {
+            p_function myfunction=adms_function_new((yyvsp[-3]._lexval),uid++);
+            p_slist myArgs=(p_slist)YY((yyvsp[-1]._yaccval));
             (yyval._yaccval)=adms_yaccval_new("unknown source file");
             adms_slist_inreverse(&myArgs);
             myfunction->_arguments=myArgs;
             Y((yyval._yaccval),(p_adms)myfunction);
           }
+#line 4795 "y.tab.c"
     break;
 
-  case 262:
-/* Line 1792 of yacc.c  */
+  case 262: /* R_e.atomic: tk_ident '(' R_l.enode ')'  */
 #line 2308 "verilogaYacc.y"
-    {
-            char* mylexval1=((p_lexval)(yyvsp[(1) - (4)]._lexval))->_string;
+          {
+            char* mylexval1=((p_lexval)(yyvsp[-3]._lexval))->_string;
             char* myfunctionname=mylexval1;
-            p_slist myArgs=(p_slist)YY((yyvsp[(3) - (4)]._yaccval));
+            p_slist myArgs=(p_slist)YY((yyvsp[-1]._yaccval));
             int narg=adms_slist_length(myArgs);
             p_probe myprobe=NULL;
             p_nature mynature=adms_admsmain_list_nature_lookup_by_id(root(),myfunctionname);
@@ -4957,7 +4817,7 @@ yyreduce:
                 myprobe=adms_module_list_probe_prepend_by_id_once_or_ignore(gModule,gModule,(p_branch)mychild0,mynature);
               }
               else
-                adms_veriloga_message_fatal("bad argument (expecting node or branch)\n",(yyvsp[(1) - (4)]._lexval));
+                adms_veriloga_message_fatal("bad argument (expecting node or branch)\n",(yyvsp[-3]._lexval));
             }
             else if(mynature && narg==2)
             {
@@ -4965,9 +4825,9 @@ yyreduce:
               p_adms mychild1=(p_adms)adms_slist_nth_data(myArgs,1);
               p_branch mybranch;
               if(mychild0->_datatypename!=admse_node)
-                adms_veriloga_message_fatal("second argument of probe is not a node\n",(yyvsp[(1) - (4)]._lexval));
+                adms_veriloga_message_fatal("second argument of probe is not a node\n",(yyvsp[-3]._lexval));
               if(mychild1->_datatypename!=admse_node)
-                adms_veriloga_message_fatal("first argument of probe is not a node\n",(yyvsp[(1) - (4)]._lexval));
+                adms_veriloga_message_fatal("first argument of probe is not a node\n",(yyvsp[-3]._lexval));
               mybranch=adms_module_list_branch_prepend_by_id_once_or_ignore(gModule,gModule,(p_node)mychild1,((p_node)mychild0));
               myprobe=adms_module_list_probe_prepend_by_id_once_or_ignore(gModule,gModule,mybranch,mynature);
             }
@@ -4976,30 +4836,31 @@ yyreduce:
             else
             {
               p_slist l;
-              p_function myfunction=adms_function_new((yyvsp[(1) - (4)]._lexval),uid++);
+              p_function myfunction=adms_function_new((yyvsp[-3]._lexval),uid++);
               for(l=gModule->_analogfunction;l&&(myfunction->_definition==NULL);l=l->next)
               {
                 p_analogfunction myanalogfunction=(p_analogfunction)l->data;
-                if(!strcmp((yyvsp[(1) - (4)]._lexval)->_string,myanalogfunction->_lexval->_string))
+                if(!strcmp((yyvsp[-3]._lexval)->_string,myanalogfunction->_lexval->_string))
                   myfunction->_definition=myanalogfunction;
               }
               myfunction->_arguments=adms_slist_reverse(myArgs);
               Y((yyval._yaccval),(p_adms)myfunction);
             }
           }
+#line 4851 "y.tab.c"
     break;
 
-  case 263:
-/* Line 1792 of yacc.c  */
+  case 263: /* R_e.atomic: '(' R_expression ')'  */
 #line 2360 "verilogaYacc.y"
-    {
-            (yyval._yaccval)=(yyvsp[(2) - (3)]._yaccval);
+          {
+            (yyval._yaccval)=(yyvsp[-1]._yaccval);
           }
+#line 4859 "y.tab.c"
     break;
 
 
-/* Line 1792 of yacc.c  */
-#line 5003 "y.tab.c"
+#line 4863 "y.tab.c"
+
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -5013,96 +4874,58 @@ yyreduce:
      case of YYERROR or YYBACKUP, subsequent parser actions might lead
      to an incorrect destructor call or verbose syntax error message
      before the lookahead is translated.  */
-  YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
+  YY_SYMBOL_PRINT ("-> $$ =", YY_CAST (yysymbol_kind_t, yyr1[yyn]), &yyval, &yyloc);
 
   YYPOPSTACK (yylen);
   yylen = 0;
-  YY_STACK_PRINT (yyss, yyssp);
 
   *++yyvsp = yyval;
 
-  /* Now `shift' the result of the reduction.  Determine what state
+  /* Now 'shift' the result of the reduction.  Determine what state
      that goes to, based on the state we popped back to and the rule
      number reduced by.  */
-
-  yyn = yyr1[yyn];
-
-  yystate = yypgoto[yyn - YYNTOKENS] + *yyssp;
-  if (0 <= yystate && yystate <= YYLAST && yycheck[yystate] == *yyssp)
-    yystate = yytable[yystate];
-  else
-    yystate = yydefgoto[yyn - YYNTOKENS];
+  {
+    const int yylhs = yyr1[yyn] - YYNTOKENS;
+    const int yyi = yypgoto[yylhs] + *yyssp;
+    yystate = (0 <= yyi && yyi <= YYLAST && yycheck[yyi] == *yyssp
+               ? yytable[yyi]
+               : yydefgoto[yylhs]);
+  }
 
   goto yynewstate;
 
 
-/*------------------------------------.
-| yyerrlab -- here on detecting error |
-`------------------------------------*/
+/*--------------------------------------.
+| yyerrlab -- here on detecting error.  |
+`--------------------------------------*/
 yyerrlab:
   /* Make sure we have latest lookahead translation.  See comments at
      user semantic actions for why this is necessary.  */
-  yytoken = yychar == YYEMPTY ? YYEMPTY : YYTRANSLATE (yychar);
-
+  yytoken = yychar == YYEMPTY ? YYSYMBOL_YYEMPTY : YYTRANSLATE (yychar);
   /* If not already recovering from an error, report this error.  */
   if (!yyerrstatus)
     {
       ++yynerrs;
-#if ! YYERROR_VERBOSE
       yyerror (YY_("syntax error"));
-#else
-# define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
-                                        yyssp, yytoken)
-      {
-        char const *yymsgp = YY_("syntax error");
-        int yysyntax_error_status;
-        yysyntax_error_status = YYSYNTAX_ERROR;
-        if (yysyntax_error_status == 0)
-          yymsgp = yymsg;
-        else if (yysyntax_error_status == 1)
-          {
-            if (yymsg != yymsgbuf)
-              YYSTACK_FREE (yymsg);
-            yymsg = (char *) YYSTACK_ALLOC (yymsg_alloc);
-            if (!yymsg)
-              {
-                yymsg = yymsgbuf;
-                yymsg_alloc = sizeof yymsgbuf;
-                yysyntax_error_status = 2;
-              }
-            else
-              {
-                yysyntax_error_status = YYSYNTAX_ERROR;
-                yymsgp = yymsg;
-              }
-          }
-        yyerror (yymsgp);
-        if (yysyntax_error_status == 2)
-          goto yyexhaustedlab;
-      }
-# undef YYSYNTAX_ERROR
-#endif
     }
-
-
 
   if (yyerrstatus == 3)
     {
       /* If just tried and failed to reuse lookahead token after an
-	 error, discard it.  */
+         error, discard it.  */
 
       if (yychar <= YYEOF)
-	{
-	  /* Return failure if at end of input.  */
-	  if (yychar == YYEOF)
-	    YYABORT;
-	}
+        {
+          /* Return failure if at end of input.  */
+          if (yychar == YYEOF)
+            YYABORT;
+        }
       else
-	{
-	  yydestruct ("Error: discarding",
-		      yytoken, &yylval);
-	  yychar = YYEMPTY;
-	}
+        {
+          yydestruct ("Error: discarding",
+                      yytoken, &yylval);
+          yychar = YYEMPTY;
+        }
     }
 
   /* Else will try to reuse lookahead token after shifting the error
@@ -5114,14 +4937,12 @@ yyerrlab:
 | yyerrorlab -- error raised explicitly by YYERROR.  |
 `---------------------------------------------------*/
 yyerrorlab:
+  /* Pacify compilers when the user code never invokes YYERROR and the
+     label yyerrorlab therefore never appears in user code.  */
+  if (0)
+    YYERROR;
 
-  /* Pacify compilers like GCC when the user code never invokes
-     YYERROR and the label yyerrorlab therefore never appears in user
-     code.  */
-  if (/*CONSTCOND*/ 0)
-     goto yyerrorlab;
-
-  /* Do not reclaim the symbols of the rule which action triggered
+  /* Do not reclaim the symbols of the rule whose action triggered
      this YYERROR.  */
   YYPOPSTACK (yylen);
   yylen = 0;
@@ -5134,29 +4955,30 @@ yyerrorlab:
 | yyerrlab1 -- common code for both syntax error and YYERROR.  |
 `-------------------------------------------------------------*/
 yyerrlab1:
-  yyerrstatus = 3;	/* Each real token shifted decrements this.  */
+  yyerrstatus = 3;      /* Each real token shifted decrements this.  */
 
+  /* Pop stack until we find a state that shifts the error token.  */
   for (;;)
     {
       yyn = yypact[yystate];
       if (!yypact_value_is_default (yyn))
-	{
-	  yyn += YYTERROR;
-	  if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYTERROR)
-	    {
-	      yyn = yytable[yyn];
-	      if (0 < yyn)
-		break;
-	    }
-	}
+        {
+          yyn += YYSYMBOL_YYerror;
+          if (0 <= yyn && yyn <= YYLAST && yycheck[yyn] == YYSYMBOL_YYerror)
+            {
+              yyn = yytable[yyn];
+              if (0 < yyn)
+                break;
+            }
+        }
 
       /* Pop the current state because it cannot handle the error token.  */
       if (yyssp == yyss)
-	YYABORT;
+        YYABORT;
 
 
       yydestruct ("Error: popping",
-		  yystos[yystate], yyvsp);
+                  YY_ACCESSING_SYMBOL (yystate), yyvsp);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -5168,7 +4990,7 @@ yyerrlab1:
 
 
   /* Shift the error token.  */
-  YY_SYMBOL_PRINT ("Shifting", yystos[yyn], yyvsp, yylsp);
+  YY_SYMBOL_PRINT ("Shifting", YY_ACCESSING_SYMBOL (yyn), yyvsp, yylsp);
 
   yystate = yyn;
   goto yynewstate;
@@ -5181,6 +5003,7 @@ yyacceptlab:
   yyresult = 0;
   goto yyreturn;
 
+
 /*-----------------------------------.
 | yyabortlab -- YYABORT comes here.  |
 `-----------------------------------*/
@@ -5188,16 +5011,21 @@ yyabortlab:
   yyresult = 1;
   goto yyreturn;
 
-#if !defined yyoverflow || YYERROR_VERBOSE
+
+#if !defined yyoverflow
 /*-------------------------------------------------.
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
   yyerror (YY_("memory exhausted"));
   yyresult = 2;
-  /* Fall through.  */
+  goto yyreturn;
 #endif
 
+
+/*-------------------------------------------------------.
+| yyreturn -- parsing is finished, clean up and return.  |
+`-------------------------------------------------------*/
 yyreturn:
   if (yychar != YYEMPTY)
     {
@@ -5207,30 +5035,24 @@ yyreturn:
       yydestruct ("Cleanup: discarding lookahead",
                   yytoken, &yylval);
     }
-  /* Do not reclaim the symbols of the rule which action triggered
+  /* Do not reclaim the symbols of the rule whose action triggered
      this YYABORT or YYACCEPT.  */
   YYPOPSTACK (yylen);
   YY_STACK_PRINT (yyss, yyssp);
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-		  yystos[*yyssp], yyvsp);
+                  YY_ACCESSING_SYMBOL (+*yyssp), yyvsp);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
   if (yyss != yyssa)
     YYSTACK_FREE (yyss);
 #endif
-#if YYERROR_VERBOSE
-  if (yymsg != yymsgbuf)
-    YYSTACK_FREE (yymsg);
-#endif
-  /* Make sure YYID is used.  */
-  return YYID (yyresult);
+
+  return yyresult;
 }
 
-
-/* Line 2055 of yacc.c  */
 #line 2364 "verilogaYacc.y"
 
 void adms_veriloga_setint_yydebug(const int val)

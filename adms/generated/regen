@@ -1,0 +1,30 @@
+#! /bin/sh
+
+files="adms.c \
+adms.h \
+adms.implicit.xml.c \
+admstpath.dtd \
+admstpathYacc.c \
+admstpathYacc.h \
+admstpathYacc.y \
+constants.vams.c \
+disciplines.vams.c \
+dummy.va.c \
+dummy.xml.c \
+preprocessorLex.c \
+preprocessorYacc.c \
+preprocessorYacc.h \
+preprocessorYacc.y \
+verilogaLex.c \
+verilogaYacc.c \
+verilogaYacc.h \
+verilogaYacc.y"
+
+if [ ! -d safe ]; then
+    mkdir safe
+fi
+for a in $files; do
+    mv -f $a safe
+    cp ../adms_wr/admsXml/$a .
+#    diff $a ../adms_wr/admsXml/$a
+done

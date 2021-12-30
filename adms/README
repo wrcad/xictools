@@ -12,7 +12,7 @@ replaced the Whiteley Research source-code release going forward.
 ADMS is available from github:
 
 https://github.com/Qucs/ADMS.git
-https://github.com/Qucs/ADMS/archive/release-2.3.6.tar.gz
+https://github.com/Qucs/ADMS/archive/release-2.3.x.tar.gz
 
 However, there were some changes made when building this package:
 
@@ -44,6 +44,20 @@ However, there were some changes made when building this package:
     Makefile is now configured with maintenance mode off.  Advanced
     users can turn this on in adms_wr/admsXml/Makefile.
 
+--------------------------------------------------------------------------
+Instructions for adding auto-generated dependencies.
+a.  In the Makefile, change the "REGEN = no" line to "REGEN = yes".
+b.  rm -rf adms_wr
+c.  run make (no arguments).  The admsXml binary should build with
+    no errors.  Make sure that all is well before continuing.
+d.  cd generated
+    ./regen
+    This will copy the generated files into the generated directory,
+    for future use.
+e.  Change the Makefile back to "REGEN = no".
+f.  You probably want to check in changes if this is under git.
+--------------------------------------------------------------------------
+
 5)  We also have to supply a modified mkelements.pl (in ./files) that
     has this modification in two places:
 
@@ -66,6 +80,11 @@ However, there were some changes made when building this package:
 2.3.62:  11/10/2017
     Modified verilogaYacc.y.in so that array endpoints are tk_integer
     instead or tk_number.  Arrays are now supported in WRspice.
+
+2.3.70;  12/30/2021
+    Modified verilogaYacc.y.in so that nested tri-conditionals are
+    accepted (for bsimcmg-111).  The ADMS source was updated to
+    2.3.7 from the Qucs project on github.com.
 
 ------------------------------------------------------------------------
 Changes from original adms-2.3.0, also see the ChangeLog in the
