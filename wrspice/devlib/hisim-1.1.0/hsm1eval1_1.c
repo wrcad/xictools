@@ -111,6 +111,10 @@
 /* SRW */
 #ifdef WIN32
 #define finite(x) (!_isnan(x))
+#else
+#ifdef __arm64__
+#define finite isfinite
+#endif
 #endif
 
 /*-----------------------------------*

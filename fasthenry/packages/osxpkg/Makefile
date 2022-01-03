@@ -3,7 +3,7 @@ BASE = ../../../xt_base
 APPNAME = xictools_fasthenry
 SUBDIRS = bin fasthenry
 
-VERSION = `../../version`
+VERSION = `../../release.sh`
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-$(ARCH).pkg
 PKGNAME = $(APPNAME)-$(VERSION)
 PKGDIR = $(BASE)/packages/pkgfiles

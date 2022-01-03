@@ -1,7 +1,7 @@
 BASE = ../../../xt_base
 
 PROG = xictools_mrouter
-VERSION := $(shell ../../version)
+VERSION := $(shell ../../release.sh)
 PKGDIR := $(BASE)/packages/pkgfiles
 SRCDIR := $(shell pwd)/../root
 OSNAME := $(shell $(BASE)/info.sh osname)

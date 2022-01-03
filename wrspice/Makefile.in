@@ -303,6 +303,7 @@ clean: eclean
 	-@for a in $(SUBDIRS) devlib; do \
 	    (cd $$a; $(MAKE) $@) \
 	done
+	cd mmjco; $(MAKE) clean
 	-@rm -f bin/*.o $(WDEMODIR).tar.gz
 
 distclean: eclean
@@ -310,6 +311,7 @@ distclean: eclean
   ipc_demo_files; do \
 	    (cd $$a; $(MAKE) $@) \
 	done
+	-@cd mmjco; $(MAKE) distclean
 	-@rm -f bin/*.o wrspice_ipc_demo.tar.gz Makefile
 	-@rm -f examples/wrspice_ipc_demo.tar.gz
 
@@ -346,7 +348,7 @@ wdemo wrspice_ipc_demo:
 	@cp -pf ../xic/src/sced/sced_spiceipc.cc $(WDEMODIR)
 	@cp -pf ../xic/include/sced_spiceipc.h $(WDEMODIR)
 	@cp -pf bin/wrspiced.cc $(WDEMODIR)
-	@cp -pf version $(WDEMODIR)
+	@cp -pf release.sh $(WDEMODIR)
 	@tar czf $(WDEMODIR).tar.gz $(WDEMODIR)
 	@rm -rf $(WDEMODIR)
 	@cp -f $(WDEMODIR).tar.gz examples

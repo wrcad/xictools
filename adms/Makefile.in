@@ -24,7 +24,7 @@ ADMS = ADMS-release-2.3.7.tar.gz
 ADMS_DIR = ADMS-release-2.3.7
 
 GIT := \"`git log --pretty=format:'%h' -n 1u`\"
-IDSTR := "`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
+IDSTR := "`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`"
 
 REGEN = no
 
@@ -40,7 +40,7 @@ unpack:
 	@if [ ! -d  adms_wr ]; then \
 	    tar xzf $(ADMS); \
 	    mv -f $(ADMS_DIR) adms_wr; \
-	    sed -e s/VERSION/$$(./version)/ < files/configure.in.sed \
+	    sed -e s/VERSION/$$(./release.sh)/ < files/configure.in.sed \
 	      > adms_wr/configure.in; \
             sed -e s/GIT/$(GIT)/ -e s/XT_IDSTRING/$(IDSTR)/ \
 	      < files/admsXml.c.sed > adms_wr/admsXml/admsXml.c; \

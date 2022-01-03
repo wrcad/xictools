@@ -35,12 +35,12 @@ depend::
 
 clean realclean::
 	@for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@); \
+	    (cd $$a; $(MAKE) WRSPICE= $@) \
 	done
 
 distclean::
 	@for a in $(SUBDIRS); do \
-	    (cd $$a; $(MAKE) $@; rm -f Makefile) \
+	    (cd $$a; $(MAKE) WRSPICE= $@; rm -f Makefile) \
 	done
 	-@rm -f examples
 

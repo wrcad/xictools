@@ -37,7 +37,7 @@ version()
     # programs are assumed identical to the remote versions.
     root=../..
     if [ -d $root/$program ]; then
-        echo $($root/$program/version)
+        echo $($root/$program/release.sh)
     fi
 }
 

@@ -3,7 +3,7 @@ BASE = ../../../xt_base
 APPNAME = xictools_adms
 SUBDIRS = bin adms
 
-VERSION = `../../version`
+VERSION = `../../release.sh`
 PKGFILE = $(APPNAME)-$(OSNAME)-$(VERSION)-$(ARCH).pkg
 PKGNAME = $(APPNAME)-$(VERSION)
 PKGDIR = $(BASE)/packages/pkgfiles

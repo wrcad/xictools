@@ -9,7 +9,7 @@ LOCATION = vl
 # -DHAVE_TIMES          | library has times()
 # -DHAVE_VSNPRINTF      | library has vsnprintf()
 
-VERSION = `./version`
+VERSION = `./release.sh`
 
 prefix = @prefix@
 itopok = @itopok@

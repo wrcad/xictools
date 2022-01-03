@@ -1,7 +1,7 @@
 BASE = ../../../xt_base
 
 PROG = xictools_xtlserv
-VERSION = `../../version`
+VERSION = `../../release.sh`
 PKGDIR = $(BASE)/packages/pkgfiles
 SRCDIR = `pwd`/../root
 OSNAME = `$(BASE)/info.sh osname`

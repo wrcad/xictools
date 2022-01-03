@@ -140,10 +140,12 @@ WRSPICE = wrspice
 #  isn't like mine, likely for non-Linux.
 #######################################################################
 
+ifneq ($(WRSPICE),)
 VSTR = $(shell $(WRSPICE) --v)
 DEVLIB_VERSION = $(word 1, $(VSTR))
 OSNAME = $(word 2, $(VSTR))
 ARCH = $(word 3, $(VSTR))
+endif
 
 # This Makefile originated from this distribution:
 #DEVLIB_VERSION = @DEVLIB_VERSION@
@@ -183,7 +185,7 @@ else ifeq ($(OSNAME:Darwin%=Darwin),Darwin)
 CXX = g++
 CC = gcc
 LINKCC = $(CXX)
-CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread -mmacosx-version-min=10.10 -arch x86_64 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+CFLAGS = @CFLAGS_S@ @UFLAGS@
 LSHFLAG = -dynamiclib -undefined dynamic_lookup
 DEPEND_PROG = $(CC) -MM
 FILTER = 

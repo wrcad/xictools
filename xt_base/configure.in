@@ -48,13 +48,13 @@ fi
 
 DATE=`/bin/date`
 if test -d ../wrspice; then
-    SPICE_VERSION=`../wrspice/version wrspice`
-    DEVLIB_VERSION=`../wrspice/version devlib`
+    SPICE_VERSION=`../wrspice/release.sh wrspice`
+    DEVLIB_VERSION=`../wrspice/release.sh devlib`
     DEVLIB_SHARED_FILE=libwrsdev.so.2.0
     DEVLIB_STATIC_FILE=libwrsdev.a
 fi
 if test -d ../xic; then
-    GFX_VERSION=`../xic/version xic`
+    GFX_VERSION=`../xic/release.sh xic`
 fi
 TOOLROOT="xictools"
 AC_SUBST(prefix)
@@ -381,15 +381,15 @@ Darwin)
     IFS="."
     set $kern
     IFS=$tifs
-dnl # uname -r returns the kernel release, it seems that the major
-dnl # index - 4 is the OS release, e.g. kernel 10.4.0 is OS X 10.6.4.
+dnl # uname -r returns the kernel release.
     if test $1 -ge 13; then
         OSNAME="Darwin"
-        ARCH="x86_64"
+dnl # uname -m is x86_64 or arm64.
+        ARCH=`uname -m`
         DIST_SUFFIX="pkg"
         SDK="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
-dnl # support OSX 11.0 (Big Sur) and later.
-        UFLAGS="-mmacosx-version-min=11.0 -arch $ARCH -isysroot $SDK"
+dnl # support OSX 12.0 (Monterey) and later.
+        UFLAGS="-mmacosx-version-min=12.0 -arch $ARCH -isysroot $SDK"
         MALLOC='$(BASE)/lib/malloc.a'
         oa_lpath=$oa_loc/lib/darwin_64/opt
     else
@@ -734,12 +734,12 @@ dnl *** Python and Tcl/Tk configuration
 dnl ***
 
 if test $OSNAME = "Darwin"; then
-    if test -d /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/python2.7; then
-        PY_INCLUDE="-I/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/python2.7"
-        PY_LIBS="-L/usr/lib -lpython2.7"
-        PY_TARGETS="py27.dylib"
-        echo '#define HAVE_PYTHON 1'>> confdefs.h
-    fi
+dnl *** Apple prevents us from linking to python27 within the platform.
+dnl *** We now include a skeletal python27 in the gtk2-bundle.
+    PY_INCLUDE=-I/usr/local/gtk2-bundle-x11/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7
+    PY_LIBS="-L/usr/local/gtk2-bundle-x11/lib -lpython2.7"
+    PY_TARGETS="py27.dylib"
+    echo '#define HAVE_PYTHON 1'>> confdefs.h
     if test -f /usr/include/tcl.h; then
         TCL_INCLUDE=
         TCL_LIBS="-ltcl"
@@ -1272,6 +1272,7 @@ if test -d ../wrspice; then
         ../wrspice/src/plot/Makefile \
         ../wrspice/src/sparse/Makefile \
         ../wrspice/ipc_demo_files/Makefile \
+        ../wrspice/mmjco/Makefile \
         ../wrspice/Makefile \
         ../wrspice/devlib/Makefile"
     (cd ../wrspice/devlib; make -f Makefile.in devlist)

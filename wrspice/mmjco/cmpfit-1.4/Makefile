@@ -5,7 +5,7 @@ LIBFILE=libmpfit.a
 all: $(LIBFILE) testmpfit
 
 clean:
-	rm -f $(OFILES) testmpfit testmpfit.exe $(LIBFILE)
+	-@rm -f $(OFILES) testmpfit testmpfit.exe $(LIBFILE)
 
 mpfit.o: mpfit.c mpfit.h
 	$(CC) -c -o $@ $< $(CFLAGS)

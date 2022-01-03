@@ -24,8 +24,8 @@ FASTCAP = fastcap-2.0wr-072020.tar.gz
 FASTCAP_DIR = fastcap-2.0wr
 SRCDIR = $(FASTCAP_DIR)/src
 
-IDSTR := \"`./version` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
-VERS := \"`./version` (xictools)\"
+IDSTR := \"`./release.sh` `$(BASE)/info.sh osname` `$(BASE)/info.sh arch`\"
+VERS := \"`./release.sh` (xictools)\"
 
 all: unpack
 	cd $(FASTCAP_DIR); $(MAKE) CC="$(CC)" all

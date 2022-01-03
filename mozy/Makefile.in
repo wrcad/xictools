@@ -31,7 +31,7 @@ WINPTHREADFIX = @WINPTHREADFIX@
 BASE = ../xt_base
 INCLUDE = -Iinclude -I$(BASE)/include
 
-MOZY_VERSION := `./version`
+MOZY_VERSION := `./release.sh`
 
 LOCAL_LIBS = \
   lib/htm.a \

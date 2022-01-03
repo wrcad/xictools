@@ -326,7 +326,12 @@ namespace {
                     DeathAddr =
                         (void*)((ucontext_t*)uc)->uc_mcontext->__ss.__rip;
 #else
+#ifdef __arm64__
+                    DeathAddr =
+                        (void*)((ucontext_t*)uc)->uc_mcontext->__ss.__pc;
+#else
                     DeathAddr = (void*)((ucontext_t*)uc)->uc_mcontext->ss.eip;
+#endif // __arc64__
 #endif // __x86_64__
 #endif // __ppc__
 #else

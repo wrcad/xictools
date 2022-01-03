@@ -14,7 +14,7 @@ distclean:
 
 # Create/update the reltag.h file.
 reltag:
-	@version=`../version xic`; \
+	@version=`../release.sh xic`; \
 	if [ -z "$$version" ]; then \
 	    echo "Can't find version!"; \
 	    exit; \

@@ -29,7 +29,7 @@ INSTALL_SCRIPT = $(INSTALL) -c -m 0755
 INSTALL_LIB = $(INSTALL) -c -m 0644
 INSTALL_LIB_RO = $(INSTALL) -c -m 0444
 
-XTLSERV_VERSION := `./version`
+XTLSERV_VERSION := `./release.sh`
 
 BASE = ../xt_base
 INCLUDE = -Iinclude -I$(BASE)/include

@@ -1,0 +1,55 @@
+#######################################################################
+LOCATION = wrspice/mmjco
+#######################################################################
+# Makefile for xictools build with local cmpfig-1.4.
+
+DATE = @DATE@
+SPICE_VERSION = @SPICE_VERSION@
+
+CXX = @CXX@
+CC = @CC@
+LINKCC = @LINKCC@
+CFLAGS = @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ @UFLAGS@ -DWRSPICE
+LFLAGS = @LFLAGS@ @TOOLKITLFLAGS@ @UFLAGS@
+OSNAME = @OSNAME@
+ARCH = @ARCH@
+DEPEND_PROG = @DEPEND_PROG@ @CFLAGSG@ @DYNAMIC_LIBS@ @TOOLKITCFLAGS@ -DWRSPICE
+INSTALL = @INSTALL@
+EXESUFFIX = @EXESUFFIX@
+FILTER = @FILTER@
+
+ifeq ($(OSNAME),Darwin)
+	GSL = -L/usr/local/gtk2-bundle-x11/lib
+	INCLUDE = -I/usr/local/gtk2-bundle-x11/include
+endif
+
+all: mmjco tempr
+
+mmjco: ./cmpfit-1.4/libmpfit.a libmmjco.a main.cc
+	g++ $(CFLAGS) $(INCLUDE) -o mmjco main.cc -L. -lmmjco $(GSL) \
+ -lgsl -lgslcblas ../../xt_base/lib/miscutil.a -L./cmpfit-1.4 -lmpfit -lm
+
+tempr: tempr.cc tempr.h
+	g++ $(CFLAGS) $(INCLUDE) -DSTAND_ALONE -o tempr tempr.cc -L. $(GSL) \
+ -lgsl -lgslcblas ../../xt_base/lib/miscutil.a -lm
+
+libmmjco.a: mmjco.o mmjco_cmds.o
+	ar -cr libmmjco.a mmjco.o mmjco_cmds.o
+	ranlib libmmjco.a
+
+mmjco.o: mmjco.cc mmjco.h
+	g++ $(CFLAGS) $(INCLUDE) -I./cmpfit-1.4 -c mmjco.cc
+
+mmjco_cmds.o: mmjco_cmds.cc mmjco_cmds.h mmjco.h
+	g++ $(CFLAGS) $(INCLUDE) -I./cmpfit-1.4 -c mmjco_cmds.cc
+
+./cmpfit-1.4/libmpfit.a:
+	cd cmpfit-1.4; $(MAKE)
+
+clean::
+	-@cd cmpfit-1.4; $(MAKE) clean
+	-@rm -f libmmjco.a *.o mmjco mmjco.exe tca* tempr tempr.exe
+
+distclean: clean
+	-@rm -f Makefile
+
