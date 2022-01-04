@@ -4,7 +4,7 @@ LOCATION = mrouter/mrouter
 
 DATE = @DATE@
 
-MR_VERSION = `../version`
+MR_VERSION = `../release.sh`
 MR_VERS_H = ../include/mr_vers.h
 
 CXX = @CXX@

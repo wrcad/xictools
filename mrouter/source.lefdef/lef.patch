@@ -1,6 +1,6 @@
-diff -c -r source.lefdef/lef.orig/clef/lefiLayer.h lef/clef/lefiLayer.h
-*** source.lefdef/lef.orig/clef/lefiLayer.h	Fri Feb  5 14:39:14 2016
---- lef/clef/lefiLayer.h	Wed Dec 30 18:17:06 2020
+diff -r -c source.lefdef/lef.orig/clef/lefiLayer.h lef/clef/lefiLayer.h
+*** source.lefdef/lef.orig/clef/lefiLayer.h	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/lefiLayer.h	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 215,221 ****
   EXTERN const char* lefiLayer_propName (const lefiLayer* obj, int  index);
@@ -18,9 +18,9 @@ diff -c -r source.lefdef/lef.orig/clef/lefiLayer.h lef/clef/lefiLayer.h
   EXTERN int lefiLayer_propIsNumber (const lefiLayer* obj, int  index);
   EXTERN int lefiLayer_propIsString (const lefiLayer* obj, int  index);
   
-diff -c -r source.lefdef/lef.orig/clef/lefiMacro.h lef/clef/lefiMacro.h
-*** source.lefdef/lef.orig/clef/lefiMacro.h	Fri Feb  5 14:39:14 2016
---- lef/clef/lefiMacro.h	Wed Dec 30 18:18:00 2020
+diff -r -c source.lefdef/lef.orig/clef/lefiMacro.h lef/clef/lefiMacro.h
+*** source.lefdef/lef.orig/clef/lefiMacro.h	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/lefiMacro.h	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 198,204 ****
   EXTERN const char* lefiPin_propName (const lefiPin* obj, int  index);
@@ -55,9 +55,9 @@ diff -c -r source.lefdef/lef.orig/clef/lefiMacro.h lef/clef/lefiMacro.h
   EXTERN int lefiMacro_propIsNumber (const lefiMacro* obj, int  index);
   EXTERN int lefiMacro_propIsString (const lefiMacro* obj, int  index);
   
-diff -c -r source.lefdef/lef.orig/clef/lefiNonDefault.h lef/clef/lefiNonDefault.h
-*** source.lefdef/lef.orig/clef/lefiNonDefault.h	Fri Feb  5 14:39:14 2016
---- lef/clef/lefiNonDefault.h	Wed Dec 30 18:18:58 2020
+diff -r -c source.lefdef/lef.orig/clef/lefiNonDefault.h lef/clef/lefiNonDefault.h
+*** source.lefdef/lef.orig/clef/lefiNonDefault.h	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/lefiNonDefault.h	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 44,50 ****
   EXTERN const char* lefiNonDefault_propName (const lefiNonDefault* obj, int  index);
@@ -75,9 +75,9 @@ diff -c -r source.lefdef/lef.orig/clef/lefiNonDefault.h lef/clef/lefiNonDefault.
   EXTERN int lefiNonDefault_propIsNumber (const lefiNonDefault* obj, int  index);
   EXTERN int lefiNonDefault_propIsString (const lefiNonDefault* obj, int  index);
   
-diff -c -r source.lefdef/lef.orig/clef/lefiPropType.h lef/clef/lefiPropType.h
-*** source.lefdef/lef.orig/clef/lefiPropType.h	Fri Feb  5 14:39:14 2016
---- lef/clef/lefiPropType.h	Wed Dec 30 18:19:41 2020
+diff -r -c source.lefdef/lef.orig/clef/lefiPropType.h lef/clef/lefiPropType.h
+*** source.lefdef/lef.orig/clef/lefiPropType.h	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/lefiPropType.h	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 40,45 ****
   /* Struct holds the data type for one property, if the property is            */
@@ -93,9 +93,9 @@ diff -c -r source.lefdef/lef.orig/clef/lefiPropType.h lef/clef/lefiPropType.h
 ! EXTERN char lefiPropType_propType (const lefiPropType* obj, char*  name);
   
   #endif
-diff -c -r source.lefdef/lef.orig/clef/lefiViaRule.h lef/clef/lefiViaRule.h
-*** source.lefdef/lef.orig/clef/lefiViaRule.h	Fri Feb  5 14:39:14 2016
---- lef/clef/lefiViaRule.h	Wed Dec 30 18:20:42 2020
+diff -r -c source.lefdef/lef.orig/clef/lefiViaRule.h lef/clef/lefiViaRule.h
+*** source.lefdef/lef.orig/clef/lefiViaRule.h	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/lefiViaRule.h	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 91,97 ****
   EXTERN const char* lefiViaRule_propName (const lefiViaRule* obj, int  index);
@@ -113,9 +113,9 @@ diff -c -r source.lefdef/lef.orig/clef/lefiViaRule.h lef/clef/lefiViaRule.h
   EXTERN int lefiViaRule_propIsNumber (const lefiViaRule* obj, int  index);
   EXTERN int lefiViaRule_propIsString (const lefiViaRule* obj, int  index);
   
-diff -c -r source.lefdef/lef.orig/clef/xlefiLayer.cpp lef/clef/xlefiLayer.cpp
-*** source.lefdef/lef.orig/clef/xlefiLayer.cpp	Fri Feb  5 14:39:14 2016
---- lef/clef/xlefiLayer.cpp	Wed Dec 30 18:17:27 2020
+diff -r -c source.lefdef/lef.orig/clef/xlefiLayer.cpp lef/clef/xlefiLayer.cpp
+*** source.lefdef/lef.orig/clef/xlefiLayer.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/xlefiLayer.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 553,559 ****
       return ((LefDefParser::lefiLayer*)obj)->propNumber(index);
@@ -133,9 +133,9 @@ diff -c -r source.lefdef/lef.orig/clef/xlefiLayer.cpp lef/clef/xlefiLayer.cpp
       return ((const LefDefParser::lefiLayer*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/lef.orig/clef/xlefiMacro.cpp lef/clef/xlefiMacro.cpp
-*** source.lefdef/lef.orig/clef/xlefiMacro.cpp	Fri Feb  5 14:39:14 2016
---- lef/clef/xlefiMacro.cpp	Wed Dec 30 18:18:27 2020
+diff -r -c source.lefdef/lef.orig/clef/xlefiMacro.cpp lef/clef/xlefiMacro.cpp
+*** source.lefdef/lef.orig/clef/xlefiMacro.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/xlefiMacro.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 577,583 ****
       return ((LefDefParser::lefiPin*)obj)->propNum(index);
@@ -170,9 +170,9 @@ diff -c -r source.lefdef/lef.orig/clef/xlefiMacro.cpp lef/clef/xlefiMacro.cpp
       return ((const LefDefParser::lefiMacro*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/lef.orig/clef/xlefiNonDefault.cpp lef/clef/xlefiNonDefault.cpp
-*** source.lefdef/lef.orig/clef/xlefiNonDefault.cpp	Fri Feb  5 14:39:14 2016
---- lef/clef/xlefiNonDefault.cpp	Wed Dec 30 18:19:22 2020
+diff -r -c source.lefdef/lef.orig/clef/xlefiNonDefault.cpp lef/clef/xlefiNonDefault.cpp
+*** source.lefdef/lef.orig/clef/xlefiNonDefault.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/xlefiNonDefault.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 61,67 ****
       return ((LefDefParser::lefiNonDefault*)obj)->propNumber(index);
@@ -190,9 +190,9 @@ diff -c -r source.lefdef/lef.orig/clef/xlefiNonDefault.cpp lef/clef/xlefiNonDefa
       return ((const LefDefParser::lefiNonDefault*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/lef.orig/clef/xlefiPropType.cpp lef/clef/xlefiPropType.cpp
-*** source.lefdef/lef.orig/clef/xlefiPropType.cpp	Fri Feb  5 14:39:14 2016
---- lef/clef/xlefiPropType.cpp	Wed Dec 30 18:20:03 2020
+diff -r -c source.lefdef/lef.orig/clef/xlefiPropType.cpp lef/clef/xlefiPropType.cpp
+*** source.lefdef/lef.orig/clef/xlefiPropType.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/xlefiPropType.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 37,43 ****
   #include "lefiPropType.hpp"
@@ -210,9 +210,9 @@ diff -c -r source.lefdef/lef.orig/clef/xlefiPropType.cpp lef/clef/xlefiPropType.
       return ((const LefDefParser::lefiPropType*)obj)->propType(name);
   }
   
-diff -c -r source.lefdef/lef.orig/clef/xlefiViaRule.cpp lef/clef/xlefiViaRule.cpp
-*** source.lefdef/lef.orig/clef/xlefiViaRule.cpp	Fri Feb  5 14:39:14 2016
---- lef/clef/xlefiViaRule.cpp	Wed Dec 30 18:21:04 2020
+diff -r -c source.lefdef/lef.orig/clef/xlefiViaRule.cpp lef/clef/xlefiViaRule.cpp
+*** source.lefdef/lef.orig/clef/xlefiViaRule.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/xlefiViaRule.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 181,187 ****
       return ((LefDefParser::lefiViaRule*)obj)->propNumber(index);
@@ -230,9 +230,9 @@ diff -c -r source.lefdef/lef.orig/clef/xlefiViaRule.cpp lef/clef/xlefiViaRule.cp
       return ((const LefDefParser::lefiViaRule*)obj)->propType(index);
   }
   
-diff -c -r source.lefdef/lef.orig/clef/xlefrReader.cpp lef/clef/xlefrReader.cpp
-*** source.lefdef/lef.orig/clef/xlefrReader.cpp	Fri Feb  5 14:39:14 2016
---- lef/clef/xlefrReader.cpp	Wed Dec 30 18:22:00 2020
+diff -r -c source.lefdef/lef.orig/clef/xlefrReader.cpp lef/clef/xlefrReader.cpp
+*** source.lefdef/lef.orig/clef/xlefrReader.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/clef/xlefrReader.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 286,296 ****
   }
@@ -258,94 +258,248 @@ diff -c -r source.lefdef/lef.orig/clef/xlefrReader.cpp lef/clef/xlefrReader.cpp
   }
   
   void lefrSetMacroFixedMaskCbk (::lefrIntegerCbkFnType p0) {
-Only in lef: include
-diff -c -r source.lefdef/lef.orig/lef/crypt.cpp lef/lef/crypt.cpp
-*** source.lefdef/lef.orig/lef/crypt.cpp	Thu Dec 31 09:14:00 2020
---- lef/lef/crypt.cpp	Wed Dec 30 16:56:29 2020
+diff -r -c source.lefdef/lef.orig/lef/crypt.cpp lef/lef/crypt.cpp
+*** source.lefdef/lef.orig/lef/crypt.cpp	2016-03-14 15:20:23.000000000 -0700
+--- lef/lef/crypt.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
-*** 37,43 ****
-  
-  #include "lefiKRDefs.hpp"
-  
+*** 1,116 ****
+! // *****************************************************************************
+! // *****************************************************************************
+! // Copyright 2012 - 2013, Cadence Design Systems
+! // 
+! // This  file  is  part  of  the  Cadence  LEF/DEF  Open   Source
+! // Distribution,  Product Version 5.8. 
+! // 
+! // Licensed under the Apache License, Version 2.0 (the "License");
+! //    you may not use this file except in compliance with the License.
+! //    You may obtain a copy of the License at
+! // 
+! //        http://www.apache.org/licenses/LICENSE-2.0
+! // 
+! //    Unless required by applicable law or agreed to in writing, software
+! //    distributed under the License is distributed on an "AS IS" BASIS,
+! //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+! //    implied. See the License for the specific language governing
+! //    permissions and limitations under the License.
+! // 
+! // For updates, support, or to become part of the LEF/DEF Community,
+! // check www.openeda.org for details.
+! // 
+! //  $Author: dell $
+! //  $Revision: #6 $
+! //  $Date: 2015/01/20 $
+! //  $State:  $
+! // *****************************************************************************
+! // *****************************************************************************
+! 
+! /*
+!  * FILE: crypt.cpp
+!  *
+!  */
+! 
+! #include <stdio.h>
+! #include <stdarg.h>
+! 
+! #include "lefiKRDefs.hpp"
+! 
 ! BEGIN_LEFDEF_PARSER_NAMESPACE
-  
-  #ifdef WIN32
-  #   include <io.h>
---- 37,44 ----
-  
-  #include "lefiKRDefs.hpp"
-  
-! // S. Whiteley, move this below include.
-! // BEGIN_LEFDEF_PARSER_NAMESPACE
-  
-  #ifdef WIN32
-  #   include <io.h>
-***************
-*** 46,51 ****
---- 47,53 ----
-  
-  #endif // WIN32 
-  
-+ BEGIN_LEFDEF_PARSER_NAMESPACE
-  
-  FILE *
-  encOpenFileForRead(char *filename)
-***************
-*** 54,61 ****
-  }
-  
-  FILE *
+! 
+! #ifdef WIN32
+! #   include <io.h>
+! #else // not WIN32 
+! #   include <unistd.h>
+! 
+! #endif // WIN32 
+! 
+! 
+! FILE *
+! encOpenFileForRead(char *filename)
+! {
+!     return fopen(filename, "r");
+! }
+! 
+! FILE *
 ! encOpenFileForWrite(char    *filename,
 !                     int     encrypt_f)
-  {
-      return fopen(filename, "w");
-  }
---- 56,62 ----
-  }
-  
-  FILE *
-! encOpenFileForWrite(char    *filename, int)
-  {
-      return fopen(filename, "w");
-  }
-***************
-*** 67,73 ****
-  }
-  
-  void
+! {
+!     return fopen(filename, "w");
+! }
+! 
+! int
+! encCloseFile(FILE *fp)
+! {
+!     return fclose(fp);
+! }
+! 
+! void
 ! encClearBuf(FILE *fp)
-  {
-  }
-  
---- 68,74 ----
-  }
-  
-  void
-! encClearBuf(FILE *)
-  {
-  }
-  
-***************
-*** 82,88 ****
-  }
-  
-  int
+! {
+! }
+! 
+! void
+! encReadingEncrypted()
+! {
+! }
+! 
+! void
+! encWritingEncrypted()
+! {
+! }
+! 
+! int
 ! encIsEncrypted(unsigned char *buf)
-  {
-      return false;
-  }
---- 83,89 ----
-  }
-  
-  int
+! {
+!     return false;
+! }
+! 
+! int
+! encFgetc(FILE *fp)
+! {
+!     return fgetc(fp);
+! }
+! 
+! int
+! encFputc(char   c,
+!          FILE   *fp)
+! {
+!     return fputc(c, fp);
+! }
+! 
+! void
+! encPrint(FILE   *fp,
+!          char   *format,
+!          ...)
+! {
+!     va_list ap;
+! 
+!     va_start(ap, format);
+!     vfprintf(fp, format, ap);
+!     va_end(ap);
+! }
+! 
+! END_LEFDEF_PARSER_NAMESPACE
+! 
+--- 1,117 ----
+! // *****************************************************************************
+! // *****************************************************************************
+! // Copyright 2012 - 2013, Cadence Design Systems
+! // 
+! // This  file  is  part  of  the  Cadence  LEF/DEF  Open   Source
+! // Distribution,  Product Version 5.8. 
+! // 
+! // Licensed under the Apache License, Version 2.0 (the "License");
+! //    you may not use this file except in compliance with the License.
+! //    You may obtain a copy of the License at
+! // 
+! //        http://www.apache.org/licenses/LICENSE-2.0
+! // 
+! //    Unless required by applicable law or agreed to in writing, software
+! //    distributed under the License is distributed on an "AS IS" BASIS,
+! //    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
+! //    implied. See the License for the specific language governing
+! //    permissions and limitations under the License.
+! // 
+! // For updates, support, or to become part of the LEF/DEF Community,
+! // check www.openeda.org for details.
+! // 
+! //  $Author: dell $
+! //  $Revision: #6 $
+! //  $Date: 2015/01/20 $
+! //  $State:  $
+! // *****************************************************************************
+! // *****************************************************************************
+! 
+! /*
+!  * FILE: crypt.cpp
+!  *
+!  */
+! 
+! #include <stdio.h>
+! #include <stdarg.h>
+! 
+! #include "lefiKRDefs.hpp"
+! 
+! // S. Whiteley, move this below include.
+! // BEGIN_LEFDEF_PARSER_NAMESPACE
+! 
+! #ifdef WIN32
+! #   include <io.h>
+! #else // not WIN32 
+! #   include <unistd.h>
+! 
+! #endif // WIN32 
+! 
+! BEGIN_LEFDEF_PARSER_NAMESPACE
+! 
+! FILE *
+! encOpenFileForRead(char *filename)
+! {
+!     return fopen(filename, "r");
+! }
+! 
+! FILE *
+! encOpenFileForWrite(char    *filename, int)
+! {
+!     return fopen(filename, "w");
+! }
+! 
+! int
+! encCloseFile(FILE *fp)
+! {
+!     return fclose(fp);
+! }
+! 
+! void
+! encClearBuf(FILE *)
+! {
+! }
+! 
+! void
+! encReadingEncrypted()
+! {
+! }
+! 
+! void
+! encWritingEncrypted()
+! {
+! }
+! 
+! int
 ! encIsEncrypted(unsigned char *)
-  {
-      return false;
-  }
-Only in lef/lef: lef.output
-diff -c -r source.lefdef/lef.orig/lef/lef.y lef/lef/lef.y
-*** source.lefdef/lef.orig/lef/lef.y	Fri Feb  5 14:39:14 2016
---- lef/lef/lef.y	Wed Dec 30 16:52:37 2020
+! {
+!     return false;
+! }
+! 
+! int
+! encFgetc(FILE *fp)
+! {
+!     return fgetc(fp);
+! }
+! 
+! int
+! encFputc(char   c,
+!          FILE   *fp)
+! {
+!     return fputc(c, fp);
+! }
+! 
+! void
+! encPrint(FILE   *fp,
+!          char   *format,
+!          ...)
+! {
+!     va_list ap;
+! 
+!     va_start(ap, format);
+!     vfprintf(fp, format, ap);
+!     va_end(ap);
+! }
+! 
+! END_LEFDEF_PARSER_NAMESPACE
+! 
+diff -r -c source.lefdef/lef.orig/lef/lef.y lef/lef/lef.y
+*** source.lefdef/lef.orig/lef/lef.y	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lef.y	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 2,7 ****
 --- 2,12 ----
@@ -424,9 +578,29 @@ diff -c -r source.lefdef/lef.orig/lef/lef.y lef/lef/lef.y
       }
   
   opt_range_second:
-diff -c -r source.lefdef/lef.orig/lef/lefiLayer.cpp lef/lef/lefiLayer.cpp
-*** source.lefdef/lef.orig/lef/lefiLayer.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiLayer.cpp	Wed Dec 30 17:01:09 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiDebug.cpp lef/lef/lefiDebug.cpp
+*** source.lefdef/lef.orig/lef/lefiDebug.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiDebug.cpp	2022-01-04 13:39:19.000000000 -0800
+***************
+*** 94,100 ****
+      if (lefSettings->ErrorLogFunction)
+          (*lefSettings->ErrorLogFunction)(str);
+      else
+!         fprintf(stderr, str);
+  }
+  
+  static char lefiShift [] = {
+--- 94,100 ----
+      if (lefSettings->ErrorLogFunction)
+          (*lefSettings->ErrorLogFunction)(str);
+      else
+!         fprintf(stderr, "%s", str);
+  }
+  
+  static char lefiShift [] = {
+diff -r -c source.lefdef/lef.orig/lef/lefiLayer.cpp lef/lef/lefiLayer.cpp
+*** source.lefdef/lef.orig/lef/lefiLayer.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiLayer.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 4336,4342 ****
       return dvalues_[i];
@@ -444,9 +618,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiLayer.cpp lef/lef/lefiLayer.cpp
   lefiLayer::propType(int i) const
   {
       char msg[160];
-diff -c -r source.lefdef/lef.orig/lef/lefiLayer.hpp lef/lef/lefiLayer.hpp
-*** source.lefdef/lef.orig/lef/lefiLayer.hpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiLayer.hpp	Wed Dec 30 16:57:05 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiLayer.hpp lef/lef/lefiLayer.hpp
+*** source.lefdef/lef.orig/lef/lefiLayer.hpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiLayer.hpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 550,556 ****
     const char*  propName(int index) const;
@@ -464,9 +638,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiLayer.hpp lef/lef/lefiLayer.hpp
     int    propIsNumber(int index) const;
     int    propIsString(int index) const;
   
-diff -c -r source.lefdef/lef.orig/lef/lefiMacro.cpp lef/lef/lefiMacro.cpp
-*** source.lefdef/lef.orig/lef/lefiMacro.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiMacro.cpp	Wed Dec 30 17:02:09 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiMacro.cpp lef/lef/lefiMacro.cpp
+*** source.lefdef/lef.orig/lef/lefiMacro.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiMacro.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 2637,2643 ****
       return propNums_[index];
@@ -501,9 +675,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiMacro.cpp lef/lef/lefiMacro.cpp
   lefiMacro::propType(int index) const
   {
       char msg[160];
-diff -c -r source.lefdef/lef.orig/lef/lefiMacro.hpp lef/lef/lefiMacro.hpp
-*** source.lefdef/lef.orig/lef/lefiMacro.hpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiMacro.hpp	Wed Dec 30 16:59:35 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiMacro.hpp lef/lef/lefiMacro.hpp
+*** source.lefdef/lef.orig/lef/lefiMacro.hpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiMacro.hpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 315,321 ****
     const  char* propName(int index) const;
@@ -538,9 +712,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiMacro.hpp lef/lef/lefiMacro.hpp
     int  propIsNumber(int index) const;
     int  propIsString(int index) const;
   
-diff -c -r source.lefdef/lef.orig/lef/lefiNonDefault.cpp lef/lef/lefiNonDefault.cpp
-*** source.lefdef/lef.orig/lef/lefiNonDefault.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiNonDefault.cpp	Wed Dec 30 17:02:49 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiNonDefault.cpp lef/lef/lefiNonDefault.cpp
+*** source.lefdef/lef.orig/lef/lefiNonDefault.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiNonDefault.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 1081,1087 ****
       return dvalues_[index];
@@ -558,9 +732,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiNonDefault.cpp lef/lef/lefiNonDefault.
   lefiNonDefault::propType(int index) const
   {
       char msg[160];
-diff -c -r source.lefdef/lef.orig/lef/lefiNonDefault.hpp lef/lef/lefiNonDefault.hpp
-*** source.lefdef/lef.orig/lef/lefiNonDefault.hpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiNonDefault.hpp	Wed Dec 30 16:58:46 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiNonDefault.hpp lef/lef/lefiNonDefault.hpp
+*** source.lefdef/lef.orig/lef/lefiNonDefault.hpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiNonDefault.hpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 73,79 ****
     const char*  propName(int index) const;
@@ -578,9 +752,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiNonDefault.hpp lef/lef/lefiNonDefault.
     int    propIsNumber(int index) const;
     int    propIsString(int index) const;
     
-diff -c -r source.lefdef/lef.orig/lef/lefiPropType.cpp lef/lef/lefiPropType.cpp
-*** source.lefdef/lef.orig/lef/lefiPropType.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiPropType.cpp	Wed Dec 30 17:03:22 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiPropType.cpp lef/lef/lefiPropType.cpp
+*** source.lefdef/lef.orig/lef/lefiPropType.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiPropType.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 123,129 ****
       propTypes_ = newt;
@@ -598,9 +772,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiPropType.cpp lef/lef/lefiPropType.cpp
   lefiPropType::propType(char *name) const
   {
       int i;
-diff -c -r source.lefdef/lef.orig/lef/lefiPropType.hpp lef/lef/lefiPropType.hpp
-*** source.lefdef/lef.orig/lef/lefiPropType.hpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiPropType.hpp	Wed Dec 30 17:00:08 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiPropType.hpp lef/lef/lefiPropType.hpp
+*** source.lefdef/lef.orig/lef/lefiPropType.hpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiPropType.hpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 48,54 ****
     void setPropType(const char* name, const char type);
@@ -618,9 +792,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiPropType.hpp lef/lef/lefiPropType.hpp
     void bumpProps();
   
   protected:
-diff -c -r source.lefdef/lef.orig/lef/lefiViaRule.cpp lef/lef/lefiViaRule.cpp
-*** source.lefdef/lef.orig/lef/lefiViaRule.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiViaRule.cpp	Wed Dec 30 17:15:43 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiViaRule.cpp lef/lef/lefiViaRule.cpp
+*** source.lefdef/lef.orig/lef/lefiViaRule.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiViaRule.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 59,66 ****
     spacingStepX_(0.0),
@@ -657,9 +831,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiViaRule.cpp lef/lef/lefiViaRule.cpp
   lefiViaRule::propType(int i) const
   {
       char msg[160];
-diff -c -r source.lefdef/lef.orig/lef/lefiViaRule.hpp lef/lef/lefiViaRule.hpp
-*** source.lefdef/lef.orig/lef/lefiViaRule.hpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefiViaRule.hpp	Wed Dec 30 16:57:48 2020
+diff -r -c source.lefdef/lef.orig/lef/lefiViaRule.hpp lef/lef/lefiViaRule.hpp
+*** source.lefdef/lef.orig/lef/lefiViaRule.hpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefiViaRule.hpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 161,167 ****
     const char*  propName(int index) const;
@@ -677,9 +851,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefiViaRule.hpp lef/lef/lefiViaRule.hpp
     int    propIsNumber(int index) const;
     int    propIsString(int index) const;
   
-diff -c -r source.lefdef/lef.orig/lef/lefrData.cpp lef/lef/lefrData.cpp
-*** source.lefdef/lef.orig/lef/lefrData.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefrData.cpp	Wed Dec 30 17:48:52 2020
+diff -r -c source.lefdef/lef.orig/lef/lefrData.cpp lef/lef/lefrData.cpp
+*** source.lefdef/lef.orig/lef/lefrData.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefrData.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 43,55 ****
   lefrData  *lefData = NULL;
@@ -954,9 +1128,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefrData.cpp lef/lef/lefrData.cpp
     current_token((char*) malloc(TOKEN_SIZE)),
     pv_token((char*) malloc(TOKEN_SIZE)),
     uc_token((char*) malloc(TOKEN_SIZE)), 
-diff -c -r source.lefdef/lef.orig/lef/lefrData.hpp lef/lef/lefrData.hpp
-*** source.lefdef/lef.orig/lef/lefrData.hpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefrData.hpp	Wed Dec 30 18:51:26 2020
+diff -r -c source.lefdef/lef.orig/lef/lefrData.hpp lef/lef/lefrData.hpp
+*** source.lefdef/lef.orig/lef/lefrData.hpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefrData.hpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 270,281 ****
       lefiUseMinSpacing  lefrUseMinSpacing; 
@@ -1001,9 +1175,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefrData.hpp lef/lef/lefrData.hpp
       const char *current_stack[20];  // the stack itself 
   
 --- 287,292 ----
-diff -c -r source.lefdef/lef.orig/lef/lefrReader.cpp lef/lef/lefrReader.cpp
-*** source.lefdef/lef.orig/lef/lefrReader.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefrReader.cpp	Wed Dec 30 17:58:13 2020
+diff -r -c source.lefdef/lef.orig/lef/lefrReader.cpp lef/lef/lefrReader.cpp
+*** source.lefdef/lef.orig/lef/lefrReader.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefrReader.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 307,314 ****
       lefrData::reset();
@@ -1192,9 +1366,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefrReader.cpp lef/lef/lefrReader.cpp
   }
   
   // These count up the number of times an unset callback is called... 
-diff -c -r source.lefdef/lef.orig/lef/lefrSettings.cpp lef/lef/lefrSettings.cpp
-*** source.lefdef/lef.orig/lef/lefrSettings.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefrSettings.cpp	Wed Dec 30 18:13:11 2020
+diff -r -c source.lefdef/lef.orig/lef/lefrSettings.cpp lef/lef/lefrSettings.cpp
+*** source.lefdef/lef.orig/lef/lefrSettings.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefrSettings.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 38,47 ****
   lefrSettings *lefSettings = NULL;
@@ -1292,9 +1466,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefrSettings.cpp lef/lef/lefrSettings.cpp
     WarningLogFunction(0),
     dAllMsgs(0)
   {
-diff -c -r source.lefdef/lef.orig/lef/lefrSettings.hpp lef/lef/lefrSettings.hpp
-*** source.lefdef/lef.orig/lef/lefrSettings.hpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefrSettings.hpp	Wed Dec 30 18:13:15 2020
+diff -r -c source.lefdef/lef.orig/lef/lefrSettings.hpp lef/lef/lefrSettings.hpp
+*** source.lefdef/lef.orig/lef/lefrSettings.hpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefrSettings.hpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 127,136 ****
       LEFI_LOG_FUNCTION SetLogFunction;
@@ -1318,9 +1492,43 @@ diff -c -r source.lefdef/lef.orig/lef/lefrSettings.hpp lef/lef/lefrSettings.hpp
   
       lefrProps lefProps;
   };
-diff -c -r source.lefdef/lef.orig/lef/lefwWriter.cpp lef/lef/lefwWriter.cpp
-*** source.lefdef/lef.orig/lef/lefwWriter.cpp	Fri Feb  5 14:39:14 2016
---- lef/lef/lefwWriter.cpp	Wed Dec 30 18:52:30 2020
+diff -r -c source.lefdef/lef.orig/lef/lefwWriter.cpp lef/lef/lefwWriter.cpp
+*** source.lefdef/lef.orig/lef/lefwWriter.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lef/lefwWriter.cpp	2022-01-04 13:05:38.000000000 -0800
+***************
+*** 1122,1128 ****
+          return LEFW_BAD_ORDER; // has to be after 
+      // lefwLayerCutSpacing is called
+      if (lefwWriteEncrypt) {
+!         if (viaCuts < 2 && viaCuts > 4)
+              return LEFW_BAD_DATA;
+          encPrint(lefwFile, (char*) "\n     ADJACENTCUTS %d WITHIN %.11g",
+                   viaCuts, distance);
+--- 1122,1128 ----
+          return LEFW_BAD_ORDER; // has to be after 
+      // lefwLayerCutSpacing is called
+      if (lefwWriteEncrypt) {
+!         if (viaCuts < 2 || viaCuts > 4)
+              return LEFW_BAD_DATA;
+          encPrint(lefwFile, (char*) "\n     ADJACENTCUTS %d WITHIN %.11g",
+                   viaCuts, distance);
+***************
+*** 1130,1136 ****
+              encPrint(lefwFile, (char*) " EXCEPTSAMEPGNET");
+  
+      } else {
+!         if (viaCuts < 2 && viaCuts > 4)
+              return LEFW_BAD_DATA;
+          fprintf(lefwFile, "\n     ADJACENTCUTS %d WITHIN %.11g", viaCuts,
+                  distance);
+--- 1130,1136 ----
+              encPrint(lefwFile, (char*) " EXCEPTSAMEPGNET");
+  
+      } else {
+!         if (viaCuts < 2 || viaCuts > 4)
+              return LEFW_BAD_DATA;
+          fprintf(lefwFile, "\n     ADJACENTCUTS %d WITHIN %.11g", viaCuts,
+                  distance);
 ***************
 *** 4517,4523 ****
                       int     mask)
@@ -1372,9 +1580,9 @@ diff -c -r source.lefdef/lef.orig/lef/lefwWriter.cpp lef/lef/lefwWriter.cpp
           for (i = 0; i < num_polys; i++) {
               if (i == 0)
                   fprintf(lefwFile, "%.11g %.11g", *xl++, *yl++);
-diff -c -r source.lefdef/lef.orig/lefdiff/diffLefRW.cpp lef/lefdiff/diffLefRW.cpp
-*** source.lefdef/lef.orig/lefdiff/diffLefRW.cpp	Fri Feb  5 14:39:14 2016
---- lef/lefdiff/diffLefRW.cpp	Wed Dec 30 19:09:24 2020
+diff -r -c source.lefdef/lef.orig/lefdiff/diffLefRW.cpp lef/lefdiff/diffLefRW.cpp
+*** source.lefdef/lef.orig/lefdiff/diffLefRW.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lefdiff/diffLefRW.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 470,476 ****
           for (j = 0; j < a->numSites(i); j++) {
@@ -1514,9 +1722,9 @@ diff -c -r source.lefdef/lef.orig/lefdiff/diffLefRW.cpp lef/lefdiff/diffLefRW.cp
   
 !   return res;
   }
-diff -c -r source.lefdef/lef.orig/lefdiff/differLef.cpp lef/lefdiff/differLef.cpp
-*** source.lefdef/lef.orig/lefdiff/differLef.cpp	Fri Feb  5 14:39:14 2016
---- lef/lefdiff/differLef.cpp	Wed Dec 30 19:07:27 2020
+diff -r -c source.lefdef/lef.orig/lefdiff/differLef.cpp lef/lefdiff/differLef.cpp
+*** source.lefdef/lef.orig/lefdiff/differLef.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lefdiff/differLef.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 47,55 ****
   #endif
@@ -1529,9 +1737,9 @@ diff -c -r source.lefdef/lef.orig/lefdiff/differLef.cpp lef/lefdiff/differLef.cp
   #include "lefrReader.hpp"
   #include "diffLefRW.hpp"
 --- 47,52 ----
-diff -c -r source.lefdef/lef.orig/lefrw/lefrw.cpp lef/lefrw/lefrw.cpp
-*** source.lefdef/lef.orig/lefrw/lefrw.cpp	Fri Feb  5 14:39:14 2016
---- lef/lefrw/lefrw.cpp	Wed Dec 30 18:58:04 2020
+diff -r -c source.lefdef/lef.orig/lefrw/lefrw.cpp lef/lefrw/lefrw.cpp
+*** source.lefdef/lef.orig/lefrw/lefrw.cpp	2016-02-05 14:39:14.000000000 -0800
+--- lef/lefrw/lefrw.cpp	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 27,36 ****
   // *****************************************************************************
@@ -2509,10 +2717,9 @@ diff -c -r source.lefdef/lef.orig/lefrw/lefrw.cpp lef/lefrw/lefrw.cpp
   
         (void)lefrPrintUnusedCallbacks(fout);
         (void)lefrReleaseNResetMemory();
-Only in lef: lib
-diff -c -r source.lefdef/lef.orig/template.mk lef/template.mk
-*** source.lefdef/lef.orig/template.mk	Fri Feb  5 14:39:13 2016
---- lef/template.mk	Wed Dec 30 16:52:37 2020
+diff -r -c source.lefdef/lef.orig/template.mk lef/template.mk
+*** source.lefdef/lef.orig/template.mk	2016-02-05 14:39:13.000000000 -0800
+--- lef/template.mk	2020-12-31 09:41:38.000000000 -0800
 ***************
 *** 23,28 ****
 --- 23,38 ----
