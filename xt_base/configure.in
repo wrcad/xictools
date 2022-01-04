@@ -142,7 +142,7 @@ fi
 
 dnl Enable use of PyCellStudio-provided Python, and the potential to
 dnl use portable PCells.  The Python plug-in build and the running xic
-must dnl see the PyCellStudio environment.  Linux only.
+dnl must see the PyCellStudio environment.  Linux only.
 dnl
 dnl --enable-cni=/path/to/PyCellStudio
 with_cni="no"
