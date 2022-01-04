@@ -559,7 +559,7 @@ spMatrixFrame::spGetElement(int inrow, int incol)
         Translate(&row, &col);
 #endif
 
-    spMatrixElement *pElement;
+    spMatrixElement *pElement = 0;
 #if SP_BUILDHASH
     if (BuildState == 0) {
         // The first time we load the element nodes, we simply load
@@ -581,7 +581,7 @@ spMatrixFrame::spGetElement(int inrow, int incol)
     if (!Matrix) {
         pElement = sph_get(row, col);
         if (!pElement) {
-            // Something is fucked up.
+            // Something is messed up.
         }
         return ((spREAL*)pElement);
     }

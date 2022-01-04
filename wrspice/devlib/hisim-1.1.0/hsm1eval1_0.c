@@ -112,7 +112,7 @@
 #ifdef WIN32
 #define finite(x) (!_isnan(x))
 #else
-#ifdef __arm64__
+#ifdef __APPLE__
 #define finite isfinite
 #endif
 #endif
