@@ -351,6 +351,213 @@ diff -r -c source.lefdef/def.orig/cdef/xdefiRowTrack.cpp def/cdef/xdefiRowTrack.
       return ((const LefDefParser::defiRow*)obj)->propType(index);
   }
   
+diff -r -c source.lefdef/def.orig/def/def.y def/def/def.y
+*** source.lefdef/def.orig/def/def.y	2016-02-05 14:39:14.000000000 -0800
+--- def/def/def.y	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 19,24 ****
+--- 19,29 ----
+  // 
+  // For updates, support, or to become part of the LEF/DEF Community,
+  // check www.openeda.org for details.
++ //====
++ // Updated to add missing semicolons for compatibility with bison-3.
++ // Bison no longer repairs this error.
++ // Stephen Whiteley, Whiteley Research Inc.
++ //====
+  //******************************************************************************
+  // 
+  //  $Author: dell $
+***************
+*** 570,581 ****
+              }
+          | error ';' { yyerrok; yyclearin;}
+  
+! property_type_and_val: K_INTEGER { defData->real_num = 0 } opt_range opt_num_val
+              {
+                if (defCallbacks->PropCbk) defData->Prop.setPropInteger();
+                defData->defPropDefType = 'I';
+              }
+!         | K_REAL { defData->real_num = 1 } opt_range opt_num_val
+              {
+                if (defCallbacks->PropCbk) defData->Prop.setPropReal();
+                defData->defPropDefType = 'R';
+--- 575,586 ----
+              }
+          | error ';' { yyerrok; yyclearin;}
+  
+! property_type_and_val: K_INTEGER { defData->real_num = 0; } opt_range opt_num_val
+              {
+                if (defCallbacks->PropCbk) defData->Prop.setPropInteger();
+                defData->defPropDefType = 'I';
+              }
+!         | K_REAL { defData->real_num = 1; } opt_range opt_num_val
+              {
+                if (defCallbacks->PropCbk) defData->Prop.setPropReal();
+                defData->defPropDefType = 'R';
+***************
+*** 3184,3191 ****
+          | '+' K_ESTCAP NUMBER
+              { 
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5)
+                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
+                else
+                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+--- 3189,3197 ----
+          | '+' K_ESTCAP NUMBER
+              { 
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5) {
+                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
++               }
+                else
+                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+***************
+*** 3287,3294 ****
+  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
+              {
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5)
+                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
+                else
+                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+--- 3293,3301 ----
+  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
+              {
+                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!               if (defData->VersionNum < 5.5) {
+                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
++               }
+                else
+                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+              }
+***************
+*** 3562,3585 ****
+  group_soft_option: K_MAXX NUMBER
+        {
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
+          else
+            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXY NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
+          else
+            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXHALFPERIMETER NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5)
+            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
+          else
+            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+--- 3569,3595 ----
+  group_soft_option: K_MAXX NUMBER
+        {
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
++         }
+          else
+            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXY NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
++         }
+          else
+            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+        | K_MAXHALFPERIMETER NUMBER
+        { 
+          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
+!         if (defData->VersionNum < 5.5) {
+            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
++         }
+          else
+            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
+        }
+diff -r -c source.lefdef/def.orig/def/def_keywords.cpp def/def/def_keywords.cpp
+*** source.lefdef/def.orig/def/def_keywords.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/def_keywords.cpp	2020-12-30 16:46:37.000000000 -0800
+***************
+*** 289,301 ****
+  lines2str(long long lines) 
+  {
+      static char buffer[30];
+- 
+- #ifdef _WIN32
+-     sprintf(buffer, "%I64d", lines);
+- #else
+      sprintf(buffer, "%lld", lines);
+- #endif 
+- 
+      return buffer;
+  }
+  
+--- 289,295 ----
+***************
+*** 846,855 ****
+  
+        if (defGetKeyword(defData->uc_token, &result)) {
+           if (K_HISTORY == result) {  /* history - get up to ';' */
+!             int n;
+              int c;
+              int prev;
+!             n = 0;
+              prev = ' ';
+              while (1) {
+                 c = GETC();
+--- 840,849 ----
+  
+        if (defGetKeyword(defData->uc_token, &result)) {
+           if (K_HISTORY == result) {  /* history - get up to ';' */
+! //            int n;
+              int c;
+              int prev;
+! //            n = 0;
+              prev = ' ';
+              while (1) {
+                 c = GETC();
+***************
+*** 869,880 ****
+              }
+              defData->History_text.push_back('\0');
+           } else if (K_BEGINEXT == result) { /* extension, get up to end */
+!             int nn;
+              int cc;
+              int foundTag = 0;
+              int notEmpTag = 0;
+              int begQuote = 0;
+!             nn = 0;
+              /* First make sure there is a name after BEGINEXT within quote */
+              /* BEGINEXT "name" */
+              while (1) {
+--- 863,874 ----
+              }
+              defData->History_text.push_back('\0');
+           } else if (K_BEGINEXT == result) { /* extension, get up to end */
+! //            int nn;
+              int cc;
+              int foundTag = 0;
+              int notEmpTag = 0;
+              int begQuote = 0;
+! //            nn = 0;
+              /* First make sure there is a name after BEGINEXT within quote */
+              /* BEGINEXT "name" */
+              while (1) {
 diff -r -c source.lefdef/def.orig/def/defiAlias.cpp def/def/defiAlias.cpp
 *** source.lefdef/def.orig/def/defiAlias.cpp	2016-02-05 14:39:14.000000000 -0800
 --- def/def/defiAlias.cpp	2020-12-30 16:46:37.000000000 -0800
@@ -373,6 +580,26 @@ diff -r -c source.lefdef/def.orig/def/defiAlias.cpp def/def/defiAlias.cpp
   {
       defiAlias_itr::Init();
   }
+diff -r -c source.lefdef/def.orig/def/defiDebug.cpp def/def/defiDebug.cpp
+*** source.lefdef/def.orig/def/defiDebug.cpp	2016-02-05 14:39:14.000000000 -0800
+--- def/def/defiDebug.cpp	2022-01-04 13:20:09.000000000 -0800
+***************
+*** 83,89 ****
+    if (defSettings->ErrorLogFunction) {
+      (*defSettings->ErrorLogFunction)(mess);
+    } else {
+!     fprintf(stderr, mess);
+    }
+  }
+  
+--- 83,89 ----
+    if (defSettings->ErrorLogFunction) {
+      (*defSettings->ErrorLogFunction)(mess);
+    } else {
+!     fprintf(stderr, "%s", mess);
+    }
+  }
+  
 diff -r -c source.lefdef/def.orig/def/defiGroup.cpp def/def/defiGroup.cpp
 *** source.lefdef/def.orig/def/defiGroup.cpp	2016-02-05 14:39:14.000000000 -0800
 --- def/def/defiGroup.cpp	2020-12-30 16:46:37.000000000 -0800
@@ -415,7 +642,7 @@ diff -r -c source.lefdef/def.orig/def/defiGroup.hpp def/def/defiGroup.hpp
   
 diff -r -c source.lefdef/def.orig/def/defiNet.cpp def/def/defiNet.cpp
 *** source.lefdef/def.orig/def/defiNet.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/def/defiNet.cpp	2021-01-09 12:27:43.513136786 -0800
+--- def/def/defiNet.cpp	2021-01-09 12:27:43.000000000 -0800
 ***************
 *** 1195,1201 ****
   
@@ -913,7 +1140,7 @@ diff -r -c source.lefdef/def.orig/def/defiNet.hpp def/def/defiNet.hpp
     const char* viaShapeType(int index) const;
 diff -r -c source.lefdef/def.orig/def/defiNonDefault.cpp def/def/defiNonDefault.cpp
 *** source.lefdef/def.orig/def/defiNonDefault.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/def/defiNonDefault.cpp	2021-01-09 12:14:24.793428642 -0800
+--- def/def/defiNonDefault.cpp	2021-01-09 12:14:24.000000000 -0800
 ***************
 *** 318,324 ****
   }
@@ -1337,7 +1564,7 @@ diff -r -c source.lefdef/def.orig/def/defiPath.cpp def/def/defiPath.cpp
   stepX_(0),
 diff -r -c source.lefdef/def.orig/def/defiPinProp.cpp def/def/defiPinProp.cpp
 *** source.lefdef/def.orig/def/defiPinProp.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/def/defiPinProp.cpp	2021-01-09 12:15:51.887062993 -0800
+--- def/def/defiPinProp.cpp	2021-01-09 12:15:51.000000000 -0800
 ***************
 *** 224,230 ****
   
@@ -1504,7 +1731,7 @@ diff -r -c source.lefdef/def.orig/def/defiPropType.hpp def/def/defiPropType.hpp
   protected:
 diff -r -c source.lefdef/def.orig/def/defiRegion.cpp def/def/defiRegion.cpp
 *** source.lefdef/def.orig/def/defiRegion.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/def/defiRegion.cpp	2021-01-09 12:17:08.652030041 -0800
+--- def/def/defiRegion.cpp	2021-01-09 12:17:08.000000000 -0800
 ***************
 *** 268,274 ****
   
@@ -1699,7 +1926,7 @@ diff -r -c source.lefdef/def.orig/def/defiRegion.hpp def/def/defiRegion.hpp
   
 diff -r -c source.lefdef/def.orig/def/defiRowTrack.cpp def/def/defiRowTrack.cpp
 *** source.lefdef/def.orig/def/defiRowTrack.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/def/defiRowTrack.cpp	2021-01-09 12:17:52.138844201 -0800
+--- def/def/defiRowTrack.cpp	2021-01-09 12:17:52.000000000 -0800
 ***************
 *** 238,244 ****
   
@@ -1826,7 +2053,7 @@ diff -r -c source.lefdef/def.orig/def/defiRowTrack.hpp def/def/defiRowTrack.hpp
   
 diff -r -c source.lefdef/def.orig/def/defiSlot.cpp def/def/defiSlot.cpp
 *** source.lefdef/def.orig/def/defiSlot.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/def/defiSlot.cpp	2021-01-09 12:18:21.652754275 -0800
+--- def/def/defiSlot.cpp	2021-01-09 12:18:21.000000000 -0800
 ***************
 *** 192,198 ****
   
@@ -1895,75 +2122,6 @@ diff -r -c source.lefdef/def.orig/def/defiSlot.cpp def/def/defiSlot.cpp
     if (index < 0 || index >= numRectangles_) {
        sprintf (msg, "ERROR (DEFPARS-6160): The index number %d specified for the SLOT RECTANGLE is invalid.\nValid index number is from 0 to %d. Specify a valid index number and then try again.",
                 index, numRectangles_);
-diff -r -c source.lefdef/def.orig/def/def_keywords.cpp def/def/def_keywords.cpp
-*** source.lefdef/def.orig/def/def_keywords.cpp	2016-02-05 14:39:14.000000000 -0800
---- def/def/def_keywords.cpp	2020-12-30 16:46:37.000000000 -0800
-***************
-*** 289,301 ****
-  lines2str(long long lines) 
-  {
-      static char buffer[30];
-- 
-- #ifdef _WIN32
--     sprintf(buffer, "%I64d", lines);
-- #else
-      sprintf(buffer, "%lld", lines);
-- #endif 
-- 
-      return buffer;
-  }
-  
---- 289,295 ----
-***************
-*** 846,855 ****
-  
-        if (defGetKeyword(defData->uc_token, &result)) {
-           if (K_HISTORY == result) {  /* history - get up to ';' */
-!             int n;
-              int c;
-              int prev;
-!             n = 0;
-              prev = ' ';
-              while (1) {
-                 c = GETC();
---- 840,849 ----
-  
-        if (defGetKeyword(defData->uc_token, &result)) {
-           if (K_HISTORY == result) {  /* history - get up to ';' */
-! //            int n;
-              int c;
-              int prev;
-! //            n = 0;
-              prev = ' ';
-              while (1) {
-                 c = GETC();
-***************
-*** 869,880 ****
-              }
-              defData->History_text.push_back('\0');
-           } else if (K_BEGINEXT == result) { /* extension, get up to end */
-!             int nn;
-              int cc;
-              int foundTag = 0;
-              int notEmpTag = 0;
-              int begQuote = 0;
-!             nn = 0;
-              /* First make sure there is a name after BEGINEXT within quote */
-              /* BEGINEXT "name" */
-              while (1) {
---- 863,874 ----
-              }
-              defData->History_text.push_back('\0');
-           } else if (K_BEGINEXT == result) { /* extension, get up to end */
-! //            int nn;
-              int cc;
-              int foundTag = 0;
-              int notEmpTag = 0;
-              int begQuote = 0;
-! //            nn = 0;
-              /* First make sure there is a name after BEGINEXT within quote */
-              /* BEGINEXT "name" */
-              while (1) {
 diff -r -c source.lefdef/def.orig/def/defrCallbacks.cpp def/def/defrCallbacks.cpp
 *** source.lefdef/def.orig/def/defrCallbacks.cpp	2016-02-05 14:39:14.000000000 -0800
 --- def/def/defrCallbacks.cpp	2020-12-30 16:46:37.000000000 -0800
@@ -2624,144 +2782,6 @@ diff -r -c source.lefdef/def.orig/def/defwWriterCalls.cpp def/def/defwWriterCall
     if (i >= 0 && i < 100) {
       defwUnusedCount[i] += 1;
       return 0;
-diff -r -c source.lefdef/def.orig/def/def.y def/def/def.y
-*** source.lefdef/def.orig/def/def.y	2016-02-05 14:39:14.000000000 -0800
---- def/def/def.y	2020-12-30 16:46:37.000000000 -0800
-***************
-*** 19,24 ****
---- 19,29 ----
-  // 
-  // For updates, support, or to become part of the LEF/DEF Community,
-  // check www.openeda.org for details.
-+ //====
-+ // Updated to add missing semicolons for compatibility with bison-3.
-+ // Bison no longer repairs this error.
-+ // Stephen Whiteley, Whiteley Research Inc.
-+ //====
-  //******************************************************************************
-  // 
-  //  $Author: dell $
-***************
-*** 570,581 ****
-              }
-          | error ';' { yyerrok; yyclearin;}
-  
-! property_type_and_val: K_INTEGER { defData->real_num = 0 } opt_range opt_num_val
-              {
-                if (defCallbacks->PropCbk) defData->Prop.setPropInteger();
-                defData->defPropDefType = 'I';
-              }
-!         | K_REAL { defData->real_num = 1 } opt_range opt_num_val
-              {
-                if (defCallbacks->PropCbk) defData->Prop.setPropReal();
-                defData->defPropDefType = 'R';
---- 575,586 ----
-              }
-          | error ';' { yyerrok; yyclearin;}
-  
-! property_type_and_val: K_INTEGER { defData->real_num = 0; } opt_range opt_num_val
-              {
-                if (defCallbacks->PropCbk) defData->Prop.setPropInteger();
-                defData->defPropDefType = 'I';
-              }
-!         | K_REAL { defData->real_num = 1; } opt_range opt_num_val
-              {
-                if (defCallbacks->PropCbk) defData->Prop.setPropReal();
-                defData->defPropDefType = 'R';
-***************
-*** 3184,3191 ****
-          | '+' K_ESTCAP NUMBER
-              { 
-                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!               if (defData->VersionNum < 5.5)
-                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
-                else
-                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-              }
---- 3189,3197 ----
-          | '+' K_ESTCAP NUMBER
-              { 
-                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!               if (defData->VersionNum < 5.5) {
-                   if (defCallbacks->SNetCbk) defData->Net.setCap($3);
-+               }
-                else
-                   defWarning(7024, "The ESTCAP statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-              }
-***************
-*** 3287,3294 ****
-  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
-              {
-                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!               if (defData->VersionNum < 5.5)
-                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
-                else
-                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-              }
---- 3293,3301 ----
-  snet_width: '+' K_WIDTH { defData->dumb_mode = 1; } T_STRING NUMBER
-              {
-                // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!               if (defData->VersionNum < 5.5) {
-                   if (defCallbacks->SNetCbk) defData->Net.setWidth($4, $5);
-+               }
-                else
-                   defWarning(7026, "The WIDTH statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-              }
-***************
-*** 3562,3585 ****
-  group_soft_option: K_MAXX NUMBER
-        {
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5)
-            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
-          else
-            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-        | K_MAXY NUMBER
-        { 
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5)
-            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
-          else
-            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-        | K_MAXHALFPERIMETER NUMBER
-        { 
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5)
-            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
-          else
-            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
---- 3569,3595 ----
-  group_soft_option: K_MAXX NUMBER
-        {
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5) {
-            if (defCallbacks->GroupCbk) defData->Group.setMaxX(ROUND($2));
-+         }
-          else
-            defWarning(7028, "The GROUP SOFT MAXX statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-        | K_MAXY NUMBER
-        { 
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5) {
-            if (defCallbacks->GroupCbk) defData->Group.setMaxY(ROUND($2));
-+         }
-          else
-            defWarning(7029, "The GROUP SOFT MAXY statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
-        | K_MAXHALFPERIMETER NUMBER
-        { 
-          // 11/12/2002 - this is obsolete in 5.5, & will be ignored 
-!         if (defData->VersionNum < 5.5) {
-            if (defCallbacks->GroupCbk) defData->Group.setPerim(ROUND($2));
-+         }
-          else
-            defWarning(7030, "The GROUP SOFT MAXHALFPERIMETER statement is obsolete in version 5.5 and later.\nThe DEF parser will ignore this statement.");
-        }
 diff -r -c source.lefdef/def.orig/defdiff/diffDefRW.cpp def/defdiff/diffDefRW.cpp
 *** source.lefdef/def.orig/defdiff/diffDefRW.cpp	2016-02-05 14:39:14.000000000 -0800
 --- def/defdiff/diffDefRW.cpp	2020-12-30 16:46:37.000000000 -0800

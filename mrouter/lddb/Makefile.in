@@ -4,7 +4,7 @@ LOCATION = mrouter/lddb
 
 DATE = @DATE@
 
-LD_VERSION = `../version`
+LD_VERSION = `../release.sh`
 LD_VERS_H = ../include/ld_vers.h
 
 CXX = @CXX@

@@ -26,7 +26,7 @@
 # for configuration and utilities.  The previoulsy existing
 # configuration script and local utilities port were discarded.
 
-version="1.2.4"
+version="1.2.5"
 
 echo $version
 
