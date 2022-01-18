@@ -51,6 +51,9 @@
 
 // Whiteley Research/Synopsys PWL-RCSJ Josephson Junction Model
 //
+// Version 1.39, January 18, 2022 added block name "tempblk" to
+//   avoid compiler fatal error with some compilers (eg. pVA) due to
+//   the presence of locally named parameters.
 // Version 1.38, July 30, 2021 added a term to temperature
 //   correction of critical current.
 // Version 1.37, July 26, 2020 the NOIDT is now on by default,
@@ -523,7 +526,7 @@ analog begin
 
         // Temperature correction
         if (temp_k != tnom)
-            begin
+            begin : tempblk
             real tmp, tmp2;
             tcf = tanh(tcfct*sqrt(tc/(temp_k + 1e-4) - 1))/
                 tanh(tcfct*sqrt(tc/(tnom + 1e-4) - 1));
