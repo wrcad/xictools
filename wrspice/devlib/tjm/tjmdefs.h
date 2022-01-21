@@ -281,7 +281,8 @@ struct sTJMmodelPOD
     IFcomplex   *tjm_B;
     int         tjm_narray;
 
-    int         TJMictype;
+    short int   TJMrtype;
+    short int   TJMictype;
     double      TJMdel1;
     double      TJMdel2;
     double      TJMvg;
@@ -313,6 +314,7 @@ struct sTJMmodelPOD
 #endif
 
     unsigned    tjm_coeffsGiven : 1;
+    unsigned    TJMrtypeGiven : 1;
     unsigned    TJMictypeGiven : 1;
     unsigned    TJMdel1Given : 1;
     unsigned    TJMdel2Given : 1;
@@ -458,6 +460,7 @@ enum {
 enum {
     TJM_MOD_TJM = 1000,
     TJM_MOD_COEFFS,
+    TJM_MOD_RT,
     TJM_MOD_CTP,
     TJM_MOD_DEL1,
     TJM_MOD_DEL2,

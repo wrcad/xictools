@@ -181,6 +181,16 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
     sTJMmodel *model = static_cast<sTJMmodel*>(genmod);
     for ( ; model; model = model->next()) {
 
+        if (!model->TJMrtypeGiven)
+            model->TJMrtype = 1;
+        else {
+            if (model->TJMrtype < 0 || model->TJMrtype > 1) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: RTYPE=%d out of range [0-%d], reset to 1.\n",
+                    model->GENmodName, model->TJMrtype, 1);
+                model->TJMrtype = 1;
+            }
+        }
         if (!model->TJMictypeGiven)
             model->TJMictype = 1;
         else {
@@ -364,17 +374,18 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
         else {
             if (model->TJMforceGiven) {
-                if (model->TJMvm <= 0.0) {
+                if (model->TJMvm < 0.0) {
                     DVO.textOut(OUT_WARNING,
-                        "%s: VM=%g zero or negative, reset to %g.\n",
+                        "%s: VM=%g negative, reset to %g.\n",
                         model->GENmodName, model->TJMvm, Vm);
                     model->TJMvm = Vm;
                 }
             }
             else {
-                if (model->TJMvm < VmMin || model->TJMvm > VmMax) {
+                if (model->TJMvg != 0.0 &&
+                        (model->TJMvm < VmMin || model->TJMvm > VmMax)) {
                     DVO.textOut(OUT_WARNING,
-                        "%s: VM=%g out of range [%g-%g], reset to %g.\n",
+                        "%s: VM=%g out of range 0 or [%g-%g], reset to %g.\n",
                         model->GENmodName, model->TJMvm, VmMin, VmMax, Vm);
                     model->TJMvm = Vm;
                 }
@@ -386,11 +397,11 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
         else {
             if (model->TJMforceGiven) {
-                if (model->TJMr0 <= 0.0) {
+                if (model->TJMr0 < 0.0) {
                     double i = model->TJMcriti > 0.0 ? model->TJMcriti : 1e-3;
                     double R0 = model->TJMvm/i;
                     DVO.textOut(OUT_WARNING,
-                        "%s: RSUB=%g zero or negative, reset to %g.\n",
+                        "%s: RSUB=%g negative, reset to %g.\n",
                         model->GENmodName, model->TJMr0, R0);
                     model->TJMr0 = R0;
                 }
@@ -399,10 +410,11 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 double i = model->TJMcriti > 0.0 ? model->TJMcriti : 1e-3;
                 double R0min = VmMin/i;
                 double R0max = VmMax/i;
-                if (model->TJMr0 < R0min || model->TJMr0 > R0max) {
+                if (model->TJMr0 != 0.0 &&
+                        (model->TJMr0 < R0min || model->TJMr0 > R0max)) {
                     double R0 = model->TJMvm/i;
                     DVO.textOut(OUT_WARNING,
-                        "%s: RSUB=%g out of range [%g-%g], reset to %g.\n",
+                        "%s: RSUB=%g out of range 0 or [%g-%g], reset to %g.\n",
                         model->GENmodName, model->TJMr0, R0min, R0max, R0);
                     model->TJMr0 = R0;
                 }
@@ -566,6 +578,10 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 inst->TJMposNode = inst->TJMrealPosNode;
             }
 #endif
+            double sqrta = sqrt(inst->TJMarea);
+            double gfac = inst->TJMarea*(1.0 - model->TJMgmu) +
+                sqrta*model->TJMgmu;
+            inst->TJMg0 = model->TJMr0 > 0.0 ? gfac / model->TJMr0 : 0.0;
             inst->TJMgqp = inst->TJMg0;
             if (model->TJMvShuntGiven && model->TJMvShunt > 0.0) {
                 double gshunt = inst->TJMcriti/model->TJMvShunt - inst->TJMgqp;
@@ -632,14 +648,8 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 }
             }
 #endif
-
-            double sqrta = sqrt(inst->TJMarea);
             inst->TJMcap = model->TJMcap*(inst->TJMarea*(1.0 - model->TJMcmu) +
                 sqrta*model->TJMcmu);
-
-            double gfac = inst->TJMarea*(1.0 - model->TJMgmu) +
-                sqrta*model->TJMgmu;
-            inst->TJMg0 = gfac / model->TJMr0;
 
             if (!inst->TJMnoiseGiven)
                 inst->TJMnoise = model->TJMnoise;

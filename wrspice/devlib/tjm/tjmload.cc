@@ -76,62 +76,31 @@ TJMdev::load(sGENinstance *in_inst, sCKT *ckt)
         ts.ts_vj  = *(ckt->CKTrhsOld + inst->TJMposNode) -
                 *(ckt->CKTrhsOld + inst->TJMnegNode);
 
-        if (model->TJMictype != 0) {
-            ts.ts_phi = ts.ts_vj;
-            *(ckt->CKTstate0 + inst->TJMphase) = ts.ts_phi;
-            *(ckt->CKTstate0 + inst->TJMvoltage) = 0.0;
+        ts.ts_phi = ts.ts_vj;
+        *(ckt->CKTstate0 + inst->TJMphase) = ts.ts_phi;
+        *(ckt->CKTstate0 + inst->TJMvoltage) = 0.0;
 
-            ts.ts_pfac = 1.0;
-            ts.ts_dcrt = 0;
-            ts.ts_crt  = inst->TJMcriti;
-            inst->tjm_load(ckt, ts);
-            // don't load shunt
+        ts.ts_pfac = 1.0;
+        ts.ts_dcrt = 0;
+        ts.ts_crt  = inst->TJMcriti;
+        inst->tjm_load(ckt, ts);
+        // don't load shunt
 #ifdef NEWLSH
-            if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
-                // Load lsh as 0-voltage source, don't load resistor. 
-                // Dangling voltage source shouldn't matter.
+        if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
+            // Load lsh as 0-voltage source, don't load resistor. 
+            // Dangling voltage source shouldn't matter.
 
-                if (inst->TJMlsh > 0.0) {
-                    ckt->ldadd(inst->TJMlshIbrIbrPtr, 0.0);
+            if (inst->TJMlsh > 0.0) {
+                ckt->ldadd(inst->TJMlshIbrIbrPtr, 0.0);
 #ifndef USE_PRELOAD
-                    ckt->ldset(inst->TJMlshPosIbrPtr, 1.0);
-                    ckt->ldset(inst->TJMlshIbrPosPtr, 1.0);
-                    ckt->ldset(inst->TJMlshNegIbrPtr, -1.0);
-                    ckt->ldset(inst->TJMlshIbrNegPtr, -1.0);
-#endif
-                }
-            }
-#endif
-        }
-        else {
-            // No critical current, treat like a nonlinear resistor.
-
-            ts.ts_phi = 0.0;
-            ts.ts_dcrt = 0.0;
-            ts.ts_crt  = 0.0;
-        
-            inst->tjm_load(ckt, ts);
-
-            // Load the shunt resistance implied if vshunt given.
-            if (model->TJMvShuntGiven && inst->TJMgshunt > 0.0) {
-                ckt->ldadd(inst->TJMrshPosPosPtr, inst->TJMgshunt);
-                ckt->ldadd(inst->TJMrshPosNegPtr, -inst->TJMgshunt);
-                ckt->ldadd(inst->TJMrshNegPosPtr, -inst->TJMgshunt);
-                ckt->ldadd(inst->TJMrshNegNegPtr, inst->TJMgshunt);
-#ifdef NEWLSH
-                // Load lsh as 0-voltage source.
-                if (inst->TJMlsh > 0.0) {
-                    ckt->ldadd(inst->TJMlshIbrIbrPtr, 0.0);
-#ifndef USE_PRELOAD
-                    ckt->ldset(inst->TJMlshPosIbrPtr, 1.0);
-                    ckt->ldset(inst->TJMlshIbrPosPtr, 1.0);
-                    ckt->ldset(inst->TJMlshNegIbrPtr, -1.0);
-                    ckt->ldset(inst->TJMlshIbrNegPtr, -1.0);
-#endif
-                }
+                ckt->ldset(inst->TJMlshPosIbrPtr, 1.0);
+                ckt->ldset(inst->TJMlshIbrPosPtr, 1.0);
+                ckt->ldset(inst->TJMlshNegIbrPtr, -1.0);
+                ckt->ldset(inst->TJMlshIbrNegPtr, -1.0);
 #endif
             }
         }
+#endif
         if (ckt->CKTmode & MODEINITSMSIG) {
             // for ac load
             inst->TJMdcrt = ts.ts_dcrt;
@@ -564,6 +533,9 @@ sTJMinstance::tjm_update(double phi)
         tjm_cp  = fct*(sinphi_2*FcSp + cosphi_2*FsSp);
     else
         tjm_cp = 0.0;
-    tjm_cqp = fct*(sinphi_2*FcSq - cosphi_2*FsSq);
+    if (model->TJMrtype > 0)
+        tjm_cqp = fct*(sinphi_2*FcSq - cosphi_2*FsSq);
+    else
+        tjm_cqp = 0.0;
 }
 

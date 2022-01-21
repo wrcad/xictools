@@ -116,18 +116,16 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
             }
 
             // find max vj for time step
-            if (model->TJMictype != 0 && inst->TJMcriti > 0) {
-                if (!didm) {
-                    didm = true;
-                    if (vmax < vth)
-                        vmax = vth;
-                }
-                double vj = *(ckt->CKTstate0 + inst->TJMvoltage);
-                if (vj < 0)
-                    vj = -vj;
-                if (vmax < vj)
-                    vmax = vj;
+            if (!didm) {
+                didm = true;
+                if (vmax < vth)
+                    vmax = vth;
             }
+            double vj = *(ckt->CKTstate0 + inst->TJMvoltage);
+            if (vj < 0)
+                vj = -vj;
+            if (vmax < vj)
+                vmax = vj;
         }
         if (vmax > 0.0) {
             // Limit next time step.

@@ -58,6 +58,10 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
             model->tjm_coeffsGiven = true;
         }
         break;
+    case TJM_MOD_RT:
+        model->TJMrtype = value->iValue;
+        model->TJMrtypeGiven = true;
+        break;
     case TJM_MOD_CTP:
         model->TJMictype = value->iValue;
         model->TJMictypeGiven = true;

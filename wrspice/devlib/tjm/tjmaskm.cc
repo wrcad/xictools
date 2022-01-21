@@ -54,6 +54,10 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->sValue = model->tjm_coeffs;
         data->type = IF_STRING;
         break;
+    case TJM_MOD_RT:
+        value->iValue = model->TJMrtype;
+        data->type = IF_INTEGER;
+        break;
     case TJM_MOD_CTP:
         value->iValue = model->TJMictype;
         data->type = IF_INTEGER;
