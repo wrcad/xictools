@@ -465,7 +465,10 @@ sTJMinstance::tjm_init(double phi)
 
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
     int narray = model->tjm_narray;
-    tjm_gcrit = model->tjm_alphaN * sqrt(TJMcap*TJMcriti/PHI0_2PI);
+    if (model->TJMrtype > 0)
+        tjm_gcrit = model->tjm_alphaN * sqrt(TJMcap*TJMcriti/PHI0_2PI);
+    else
+        tjm_gcrit = 0.0;
 
     if (!tjm_Fc) {
         tjm_Fc = new IFcomplex[7*narray];
