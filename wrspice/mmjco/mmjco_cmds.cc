@@ -138,7 +138,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             double a;
-            if (argv[i][1] == 't') {
+            if (!strcmp(argv[i], "-t")) {
                 if (++i == argc) {
                     printf("Error: missing temperature, exiting.\n");
                     return (1);
@@ -151,35 +151,35 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                 }
                 continue;
             }
-            if (argv[i][1] == 'd') {
-                if (argv[i][2] == '1') {
-                    if (++i == argc) {
-                        printf("Error: missing delta, exiting.\n");
-                        return (1);
-                    }
-                    if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
-                        d1 = a;
-                    }
-                    else {
-                        printf("Error: bad -d1 (delta), exiting.\n");
-                        return (1);
-                    }
-                    continue;
+            if (!strcmp(argv[i], "-d1")) {
+                if (++i == argc) {
+                    printf("Error: missing delta, exiting.\n");
+                    return (1);
                 }
-                if (argv[i][2] == '2') {
-                    if (++i == argc) {
-                        printf("Error: missing delta, exiting.\n");
-                        return (1);
-                    }
-                    if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
-                        d2 = a;
-                    }
-                    else {
-                        printf("Error: bad -d2 (delta), exiting.\n");
-                        return (1);
-                    }
-                    continue;
+                if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
+                    d1 = a;
                 }
+                else {
+                    printf("Error: bad -d1 (delta), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-d2")) {
+                if (++i == argc) {
+                    printf("Error: missing delta, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
+                    d2 = a;
+                }
+                else {
+                    printf("Error: bad -d2 (delta), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-d")) {
                 if (++i == argc) {
                     printf("Error: missing delta, exiting.\n");
                     return (1);
@@ -194,7 +194,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                 }
                 continue;
             }
-            if (argv[i][1] == 's') {
+            if (!strcmp(argv[i], "-s")) {
                 if (++i == argc) {
                     printf("Error: missing smoothing factor, exiting.\n");
                     return (1);
@@ -207,7 +207,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                 }
                 continue;
             }
-            if (argv[i][1] == 'x') {
+            if (!strcmp(argv[i], "-x")) {
                 if (++i == argc) {
                     printf("Error: missing datapoints, exiting.\n");
                     return (1);
@@ -221,7 +221,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                 }
                 continue;
             }
-            if (argv[i][1] == 'f') {
+            if (!strcmp(argv[i], "-f")) {
                 if (++i == argc) {
                     printf("Error: missing filename, exiting.\n");
                     return (1);
@@ -235,13 +235,16 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                 }
                 continue;
             }
-            if (argv[i][1] == 'r') {
-                if (argv[i][2] == 'r')
-                    dtype = DFRAWREAL;
-                else if (argv[i][2] == 'd')
-                    dtype = DFDATA;
-                else
-                    dtype = DFRAWCPLX;
+            if (!strcmp(argv[i], "-rr")) {
+                dtype = DFRAWREAL;
+                continue;
+            }
+            if (!strcmp(argv[i], "-rd")) {
+                dtype = DFDATA;
+                continue;
+            }
+            if (!strcmp(argv[i], "-r")) {
+                dtype = DFRAWCPLX;
                 continue;
             }
         }
@@ -316,7 +319,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
 // Create a fitting table for the existing internal TCA data and write
 // this to a file.  The fitting paramers are stored internally.
 //
-// cf[it] [-n terms] [-h thr] [-f filename]
+// cf[it] [-n terms] [-h thr] [-ff filename]
 //
 int
 mmjco_cmds::mm_create_fit(int argc, char **argv)
@@ -332,7 +335,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
             double a;
-            if (argv[i][1] == 'n') {
+            if (!strcmp(argv[i], "-n")) {
                 if (++i == argc) {
                     printf("Error: missing term count, exiting.\n");
                     return (1);
@@ -347,7 +350,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
                 }
                 continue;
             }
-            if (argv[i][1] == 'h') {
+            if (!strcmp(argv[i], "-h")) {
                 if (++i == argc) {
                     printf("Error: missing threshold, exiting.\n");
                     return (1);
@@ -360,7 +363,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
                 }
                 continue;
             }
-            if (argv[i][1] == 'f') {
+            if (!strcmp(argv[i], "-ff")) {
                 if (++i == argc) {
                     printf("Error: missing filename, exiting.\n");
                     return (1);
@@ -369,7 +372,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
                 if (sscanf(argv[i], "%s", f) == 1)
                     fitfile = strdup(f);
                 else {
-                    printf("Error: bad -f (fit filename), exiting.\n");
+                    printf("Error: bad -ff (fit filename), exiting.\n");
                     return (1);
                 }
                 continue;
@@ -416,7 +419,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
 }
 
 
-// cm [-h thr] [-f [filename]] [-r | -rr | -rd]
+// cm [-h thr] [-fm [filename]] [-r | -rr | -rd]
 int
 mmjco_cmds::mm_create_model(int argc, char **argv)
 {
@@ -435,7 +438,7 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
     char *modfile = 0;
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
-            if (argv[i][1] == 'h') {
+            if (!strcmp(argv[i], "-h")) {
                 if (++i == argc) {
                     printf("Error: missing threshold, exiting.\n");
                     return (1);
@@ -449,26 +452,29 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
                 }
                 continue;
             }
-            if (argv[i][1] == 'f') {
+            if (!strcmp(argv[i], "-fm")) {
                 got_f = true;
                 if (++i < argc) {
                     char f[256];
                     if (sscanf(argv[i], "%s", f) == 1)
                         modfile = strdup(f);
                     else {
-                        printf("Error: bad -f (model filename), exiting.\n");
+                        printf("Error: bad -fm (model filename), exiting.\n");
                         return (1);
                     }
                 }
                 continue;
             }
-            if (argv[i][1] == 'r') {
-                if (argv[i][2] == 'r')
-                    dtype = DFRAWREAL;
-                else if (argv[i][2] == 'd')
-                    dtype = DFDATA;
-                else
-                    dtype = DFRAWCPLX;
+            if (!strcmp(argv[i], "-rr")) {
+                dtype = DFRAWREAL;
+                continue;
+            }
+            if (!strcmp(argv[i], "-rd")) {
+                dtype = DFDATA;
+                continue;
+            }
+            if (!strcmp(argv[i], "-r")) {
+                dtype = DFRAWCPLX;
                 continue;
             }
         }

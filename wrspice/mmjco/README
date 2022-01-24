@@ -1,9 +1,16 @@
 
 MMJCO - Tunnel Junction Amplitude calculator.
-Version 0.6 (ALPHA+)     6/27/2021
+Version 0.8 (ALPHA+)     01/24/2022
 S. Whiteley,  wrcad.com, Synopsys, Inc.
 
-This is derived from the MiTMoJCo project, specifically the
+----------
+0.8 Change:
+The command line argument for fit and model files has changed from -f
+to -ff and -fm to distinguish from TCA files.  This allow them to be
+independently specified in the cdf and future commands.
+----------
+
+MMJCO is derived from the MiTMoJCo project, specifically the
 mitmojco.py environment that provides an interface for creating tunnel
 junction amplitudes and fitting tables.
 
@@ -75,13 +82,24 @@ effects:
 
 ++++ Running
 
-Presently, running mmjco enters a command-line processing loop, the user
-responds to the "mmjco> " prompt with commands from the list below.  Each
-command can be followed by options as indicated.
+Presently, running mmjco enters a command-line processing loop, the
+user responds to the "mmjco> " prompt with commands from the list
+below.  Each command can be followed by options as indicated. 
+However,there is a "cdf" mode whereby mmjco will create TCA and fit
+files according to the arguments, and exit.  This is mostly to support
+WRspice, which uses this mode to create new models on-the-fly.
 
 Text in square brackets ([...]) is optional.  A vertical pipe
 character ( | ) indicates that either the text to the right or left is
 acceptable, i.e., it separates options.
+
+mmjco cdf arguments...
+
+The arguments are a superset of the arguments described below for the
+cd and cf commands.
+
+The following are the interactive commands which can be entered after
+starting mmjco with no arguments.
 
 cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename] \
          [-r | -rr | -rd]
@@ -89,13 +107,13 @@ cd[ata]  [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] [-f filename] \
     Create TCA data, save internally and to a file.  See below for
     an explanation of the options.
 
-cf[it]  [-n terms] [-h thr] [-f filename]
+cf[it]  [-n terms] [-h thr] [-ff filename]
 
     Create fit parameters for TCA data currently in memory, from cd
     or ld commands.  This is saved internallyand to a file.  See
     below for an explanation of the options.
 
-cm[odel]  [-h thr] [-f [filename]] [-r | -rr | -rd]
+cm[odel]  [-h thr] [-fm [filename]] [-r | -rr | -rd]
 
     Create a model for TCA data using fitting parameters currently in
     memory, compute the residual, and optionally save to a file.  If -f
@@ -184,7 +202,7 @@ Fitting table options:
     -h   The ratio of the absolute to relative tolerances, used in
          compression, the default is 0.2.
 
-    -f   A name for the fitting parameter table.  If not given, a
+    -ff  A name for the fitting parameter table.  If not given, a
          default is used, described below.
 
 Running mmjco can generate two types of files:  a file containing the
