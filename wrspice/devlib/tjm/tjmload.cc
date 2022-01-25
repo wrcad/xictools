@@ -464,7 +464,7 @@ sTJMinstance::tjm_init(double phi)
     tjm_cosphi_2_old = cosphi_2;
 
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    int narray = model->tjm_narray;
+    int narray = model->TJMnterms;;
     if (model->TJMrtype > 0)
         tjm_gcrit = model->tjm_alphaN * sqrt(TJMcap*TJMcriti/PHI0_2PI);
     else
@@ -494,7 +494,7 @@ sTJMinstance::tjm_newstep(sCKT *ckt)
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
     double kdt = model->tjm_kgap*model->TJMomegaJ*ckt->CKTdelta;
 
-    for (int i = 0; i < model->tjm_narray; i++) {
+    for (int i = 0; i < model->TJMnterms; i++) {
         IFcomplex z(model->tjm_p[i]*kdt);
         double d = exp(z.real);
         cIFcomplex ez(d*cos(z.imag), d*sin(z.imag));
@@ -520,7 +520,7 @@ sTJMinstance::tjm_update(double phi)
     double FsSp = 0.0;  // sine for pairs
     double FsSq = 0.0;  // sine for qp
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    for (int i = 0; i < model->tjm_narray; i++) {
+    for (int i = 0; i < model->TJMnterms; i++) {
         tjm_Fc[i] = tjm_exp_z[i]*tjm_Fcprev[i] + 
             tjm_alpha0[i]*tjm_cosphi_2_old + tjm_alpha1[i]*cosphi_2;
         tjm_Fs[i] = tjm_exp_z[i]*tjm_Fsprev[i] +

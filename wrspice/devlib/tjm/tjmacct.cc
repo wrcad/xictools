@@ -161,7 +161,7 @@ sTJMinstance::tjm_accept(double phi)
     sincos(0.5*phi, tjm_sinphi_2_old, tjm_cosphi_2_old);
 
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-    for (int i = 0; i < model->tjm_narray; i++) {
+    for (int i = 0; i < model->TJMnterms; i++) {
         tjm_Fcprev[i] = tjm_Fc[i];
         tjm_Fsprev[i] = tjm_Fs[i];
     }

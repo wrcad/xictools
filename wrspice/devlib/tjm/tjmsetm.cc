@@ -126,6 +126,18 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->TJMsmf = value->rValue;
         model->TJMsmfGiven = true;
         break;
+    case TJM_MOD_NTERMS:
+        model->TJMnterms = value->iValue;
+        model->TJMntermsGiven = true;
+        break;
+    case TJM_MOD_NXPTS:
+        model->TJMnxpts = value->iValue;
+        model->TJMnxptsGiven = true;
+        break;
+    case TJM_MOD_THR:
+        model->TJMthr = value->rValue;
+        model->TJMthrGiven = true;
+        break;
     case TJM_MOD_CRT:
         model->TJMcriti = value->rValue;
         model->TJMcritiGiven = true;

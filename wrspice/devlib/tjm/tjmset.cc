@@ -95,6 +95,15 @@
 #define Smf     0.008
 #define SmfMin  0.001
 #define SmfMax  0.099
+#define Ntrms    8
+#define NtrmsMin 6
+#define NtrmsMax 20
+#define Xpts    500
+#define XptsMin 100
+#define XptsMax 10000
+#define Thr     0.2
+#define ThrMin  0.1
+#define ThrMax  0.5
 
 #define CPIC    (1e-9*C_PER_A/I_PER_A)  // Reference capacitance, F/A
 #define CPICmin 0.0         // Minimum CPIC F/A
@@ -318,6 +327,41 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                     "%s: SMF=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->TJMsmf, SmfMin, SmfMax, Smf);
                 model->TJMsmf = Smf;
+            }
+        }
+
+        if (!model->TJMntermsGiven)
+            model->TJMnterms = Ntrms;
+        else {
+            if (model->TJMnterms < NtrmsMin || model->TJMnterms > NtrmsMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: NTERMS=%d out of range [%d-%d], reset to %d.\n",
+                    model->GENmodName, model->TJMnterms, NtrmsMin, NtrmsMax,
+                    Ntrms);
+                model->TJMnterms = Ntrms;
+            }
+        }
+
+        if (!model->TJMnxptsGiven)
+            model->TJMnxpts = Xpts;
+        else {
+            if (model->TJMnxpts < XptsMin || model->TJMnxpts > XptsMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: XPTS=%d out of range [%d-%d], reset to %d.\n",
+                    model->GENmodName, model->TJMnxpts, XptsMin, XptsMax,
+                    Xpts);
+                model->TJMnxpts = Xpts;
+            }
+        }
+
+        if (!model->TJMthrGiven)
+            model->TJMthr = Thr;
+        else {
+            if (model->TJMthr < ThrMin || model->TJMthr > ThrMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: THR=%d out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMthr, ThrMin, ThrMax, Thr);
+                model->TJMthr = Thr;
             }
         }
 
@@ -729,17 +773,23 @@ sTJMmodel::tjm_init()
     if (tjm_coeffsGiven)
         cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
     else
-        cs = TJMcoeffSet::getTJMcoeffSet(TJMtemp, TJMdel1, TJMdel2, TJMsmf);
+        cs = TJMcoeffSet::getTJMcoeffSet(TJMtemp, TJMdel1, TJMdel2, TJMsmf,
+            TJMnxpts, TJMnterms, TJMthr);
     if (!cs) {
         DVO.textOut(OUT_FATAL,
             "%s: coefficient set %s not found.\n", GENmodName, tjm_coeffs);
         return (E_PANIC);
     }
-    tjm_narray = cs->size();
-    tjm_p = new IFcomplex[3*tjm_narray];
-    tjm_A = tjm_p + tjm_narray;
-    tjm_B = tjm_A + tjm_narray;
-    for (int i = 0; i < tjm_narray; i++) {
+    if (TJMnterms != cs->size()) {
+        DVO.textOut(OUT_FATAL,
+            "%s: coefficient set %s term count %d not equal to %d.\n",
+            GENmodName, tjm_coeffs, cs->size(), TJMnterms);
+        return (E_PANIC);
+    }
+    tjm_p = new IFcomplex[3*TJMnterms];
+    tjm_A = tjm_p + TJMnterms;
+    tjm_B = tjm_A + TJMnterms;
+    for (int i = 0; i < TJMnterms; i++) {
         tjm_p[i] = cs->p()[i];
         tjm_A[i] = cs->A()[i];
         tjm_B[i] = cs->B()[i];
@@ -749,7 +799,7 @@ sTJMmodel::tjm_init()
     tjm_kgap = omega_g/TJMomegaJ;
 
     double rejpt = 0.0;
-    for (int i = 0; i < tjm_narray; i++)
+    for (int i = 0; i < TJMnterms; i++)
         rejpt -= (tjm_A[i]/tjm_p[i]).real;
     rejpt *= TJMicFactor;
     tjm_rejpt = rejpt;
@@ -759,7 +809,7 @@ sTJMmodel::tjm_init()
     // Renormalize.  Here we would rotate to C and D vectors, however
     // we want to preserve the pair and qp amplitudes for separate
     // access.
-    for (int i = 0; i < tjm_narray; i++) {
+    for (int i = 0; i < TJMnterms; i++) {
         tjm_A[i] = (TJMicFactor*tjm_A[i]) / (-tjm_kgap*tjm_p[i]);
         tjm_B[i] = (tjm_B[i]) / (-tjm_kgap*tjm_p[i]);
     }

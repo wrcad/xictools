@@ -59,16 +59,17 @@ extern FILE *tjm_fopen(const char*);
 // Return the coefficient set file name for the parameters.
 //
 char *
-TJMcoeffSet::fit_fname(double temp, double d1, double d2, double sm)
+TJMcoeffSet::fit_fname(double temp, double d1, double d2, double sm,
+    int numxpts, int numterms, double thr)
 {
-    int numxpts = 500;
-    int nterms = 8;
-    double thr = 0.2;
+//XXX    int numxpts = 500;
+//XXX    int numterms = 8;
+//XXX    double thr = 0.2;
     char tbuf[80];
     sprintf(tbuf, "tca%03ld%03ld%03ld%02ld%04d",
         lround(temp*100), lround(d1*100000), lround(d2*100000),
         lround(sm*1000), numxpts);
-    sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", nterms,
+    sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", numterms,
         lround(thr*1000));
     char *tr = new char[strlen(tbuf)+1];
     strcpy(tr, tbuf);
@@ -184,17 +185,19 @@ TJMcoeffSet::check_coeffTab()
 
 // Static Function.
 TJMcoeffSet *
-TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm)
+TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm,
+    int numxpts, int numterms, double thr)
 {
-    char *nm = fit_fname(temp, d1, d2, sm);
+    char *nm = fit_fname(temp, d1, d2, sm, numxpts, numterms, thr);
     TJMcoeffSet *cs = getTJMcoeffSet(nm);
     if (cs) {
         delete [] nm;
         return (cs);
     }
     char buf[80];
-    sprintf(buf, "mmjco cdf -t %.2f -d1 %.2f -d2 %.2f -s %.3f", temp,
-        d1*1e3, d2*1e3, sm);
+    sprintf(buf,
+        "mmjco cdf -t %.2f -d1 %.2f -d2 %.2f -s %.3f -x $d -n %d -h %.2f",
+        temp, d1*1e3, d2*1e3, sm, numxpts, numterms, thr);
     printf("%s\n", buf);
     system(buf);
     cs = getTJMcoeffSet(nm);

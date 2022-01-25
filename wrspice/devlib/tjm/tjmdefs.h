@@ -279,10 +279,9 @@ struct sTJMmodelPOD
     IFcomplex   *tjm_p;
     IFcomplex   *tjm_A;
     IFcomplex   *tjm_B;
-    int         tjm_narray;
 
-    short int   TJMrtype;
-    short int   TJMictype;
+    int         TJMrtype;
+    int         TJMictype;
     double      TJMdel1;
     double      TJMdel2;
     double      TJMvg;
@@ -293,6 +292,9 @@ struct sTJMmodelPOD
     double      TJMtdebye1;
     double      TJMtdebye2;
     double      TJMsmf;
+    int         TJMnterms;
+    int         TJMnxpts;
+    double      TJMthr;
     double      TJMcriti;
     double      TJMcap;
     double      TJMcpic;
@@ -326,6 +328,9 @@ struct sTJMmodelPOD
     unsigned    TJMtdebye1Given : 1;
     unsigned    TJMtdebye2Given : 1;
     unsigned    TJMsmfGiven : 1;
+    unsigned    TJMntermsGiven : 1;
+    unsigned    TJMnxptsGiven : 1;
+    unsigned    TJMthrGiven : 1;
     unsigned    TJMvmGiven : 1;
     unsigned    TJMr0Given : 1;
     unsigned    TJMgmuGiven : 1;
@@ -384,9 +389,10 @@ struct TJMcoeffSet
             delete [] cfs_B;
         }
 
-    static char *fit_fname(double, double, double, double);
+    static char *fit_fname(double, double, double, double, int, int, double);
     static void check_coeffTab();
-    static TJMcoeffSet *getTJMcoeffSet(double, double, double, double);
+    static TJMcoeffSet *getTJMcoeffSet(double, double, double, double, int,
+        int, double);
     static TJMcoeffSet *getTJMcoeffSet(const char*);
 
     TJMcoeffSet *next()             const {return (cfs_next); }
@@ -474,6 +480,9 @@ enum {
     TJM_MOD_TDEBYE1,
     TJM_MOD_TDEBYE2,
     TJM_MOD_SMF,
+    TJM_MOD_NTERMS,
+    TJM_MOD_NXPTS,
+    TJM_MOD_THR,
     TJM_MOD_CRT,
     TJM_MOD_CAP,
     TJM_MOD_CPIC,
@@ -496,7 +505,6 @@ enum {
     TJM_MQUEST_OMEGAJ,
     TJM_MQUEST_BETAC,
     TJM_MQUEST_ICTEMPFCT,
-    TJM_MQUEST_NARRAY,
     TJM_MQUEST_ALPHAN,
     TJM_MQUEST_KGAP,
     TJM_MQUEST_REJPT,

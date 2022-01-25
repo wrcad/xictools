@@ -98,6 +98,17 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_SMF:
         value->rValue = model->TJMsmf;
         break;
+    case TJM_MOD_NTERMS:
+        value->iValue = model->TJMnterms;
+        data->type = IF_INTEGER;
+        break;
+    case TJM_MOD_NXPTS:
+        value->iValue = model->TJMnxpts;
+        data->type = IF_INTEGER;
+        break;
+    case TJM_MOD_THR:
+        value->rValue = model->TJMthr;
+        break;
     case TJM_MOD_CRT:
         value->rValue = model->TJMcriti;
         break;
@@ -160,10 +171,6 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         break;
     case TJM_MQUEST_ICTEMPFCT:
         value->rValue = model->TJMicTempFactor;
-        break;
-    case TJM_MQUEST_NARRAY:
-        value->iValue = model->tjm_narray;
-        data->type = IF_INTEGER;
         break;
     case TJM_MQUEST_ALPHAN:
         value->rValue = model->tjm_alphaN;
