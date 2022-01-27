@@ -196,7 +196,7 @@ TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm,
     }
     char buf[80];
     sprintf(buf,
-        "mmjco cdf -t %.2f -d1 %.2f -d2 %.2f -s %.3f -x $d -n %d -h %.2f",
+        "mmjco cdf -t %.2f -d1 %.2f -d2 %.2f -s %.3f -x %d -n %d -h %.2f",
         temp, d1*1e3, d2*1e3, sm, numxpts, numterms, thr);
     printf("%s\n", buf);
     system(buf);

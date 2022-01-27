@@ -161,7 +161,7 @@ bin/printtoraw: bin/printtoraw.o $(BASE)/lib/miscutil.a
 	@$(LINKCC) -o bin/printtoraw bin/printtoraw.o $(BASE)/lib/miscutil.a \
   $(STDCLIB) $(WINPTHREADFIX)
 
-mmjco/mmjco: 
+mmjco/mmjco::
 	cd mmjco; make
 
 #######################################################################
