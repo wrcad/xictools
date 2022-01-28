@@ -269,15 +269,19 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     double x0 = 0.001;
     double dx = (2.0 - x0)/(mmc_numxpts-1);
     for (int i = 0; i < mmc_numxpts; i++) {
+        double xx = x0;
+        // Need to avoid xx == 1.0 which causes integration failure.
+        if (fabs(xx - 1.0) < 1e-5)
+            xx = 1.0 + 1e-5;
         if (sm > 0.0) {
-            mmc_pair_data[i] = m.Jpair_smooth(x0);
-            mmc_qp_data[i] = m.Jqp_smooth(x0);
+            mmc_pair_data[i] = m.Jpair_smooth(xx);
+            mmc_qp_data[i] = m.Jqp_smooth(xx);
         }
         else {
-            mmc_pair_data[i] = m.Jpair(x0);
-            mmc_qp_data[i] = m.Jqp(x0);
+            mmc_pair_data[i] = m.Jpair(xx);
+            mmc_qp_data[i] = m.Jqp(xx);
         }
-        mmc_xpts[i] = x0;
+        mmc_xpts[i] = xx;
         x0 += dx;
     }
 
