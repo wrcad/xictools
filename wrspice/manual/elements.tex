@@ -4309,7 +4309,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
 \subsection{Josephson Junctions}
 \index{Josephson junction instance}
 
-% spElements.hlp:jj 072020
+% spElements.hlp:jj 013022
 
 \spgen{b{\it name} {\it n\/}+ {\it n\/}- [{\it np\/}] [{\it modname\/}]
  [{\it parameters} ...]}
@@ -4334,7 +4334,7 @@ BSIM3v3.1.  The following parameters are new for v3.2:
   name.\\ \hline
 {\vt n} & SFQ emission count (read only).\\ \hline
 {\vt phase} & Junction phase (read only).\\ \hline
-{\vt phsf} & True if SFQ count change at chrrent time point (read only).\\
+{\vt phsf} & True if SFQ count change at current time point (read only).\\
  \hline
 {\vt phst} & Time of last SFQ emission (read only).\\ \hline
 \end{tabular}
@@ -4364,8 +4364,7 @@ If the {\vt pijj} parameter is given and set to a nonzero integer
 value, the device instance will behave as a ``pi'' junction.  This
 type of junction has a ground state with phase $\pi$ rather than 0. 
 The value given on the device line (if any) overrides the value given
-in the model.  This parameter may not be recognized in the Verilog-A
-model.
+in the model.
 
 \item{\vt area}\\
 {\bf range:} 0.05 -- 20.0\\
@@ -4636,7 +4635,7 @@ See the Josephson junction model description for more information.
 \index{Josephson junction model}
 \label{jjmodel}
 
-% spModels.hlp:jjmodel 011821
+% spModels.hlp:jjmodel 013022
 
 {\cb Type Name:} {\vt jj}
 
@@ -4718,6 +4717,36 @@ when formulating instance capacitance and conductances.
 \end{tabular}
 \end{quote}
 
+The following are additional parameters that are used when Level=3 only.
+\begin{quote}
+\begin{tabular}{|l|c|l|l|l|}\hline
+\multicolumn{5}{|c|}{\bf JJ Model Parameters}\\ \hline
+\bf name & \bf area & \bf parameter & \bf units & \bf default\\ \hline\hline
+{\vt del1} & & \rr Energy gap side 1 & $V$ & 1.3e-3\\
+\hline
+{\vt del2} & & \rr Energy gap side 2 & $V$ & 1.3e-3\\
+\hline
+{\vt tc1} & & \rr Transition temperature side 1 & $K$ & 9.26\\
+\hline
+{\vt tc2} & & \rr Transition temperature side 2 & $K$ & 9.26\\
+\hline
+{\vt tdebye} & & \rr Debye temperature & $K$ & 276\\
+\hline
+{\vt tdebye1} & & \rr Debye temperature side 1 & $K$ & 276\\
+\hline
+{\vt tdebye2} & & \rr Debye temperature side 2 & $K$ & 276\\
+\hline
+{\vt smf} & & \rr Smoothing factor & $-$ & 0.008\\
+\hline
+{\vt nterms} & & \rr Number of terms in compression & $-$ &8\\
+\hline
+{\vt nxpts} & & \rr Number of TCA table entries & $-$ &500\\
+\hline
+{\vt thr} & & \rr Fitting algorithn threshold & $-$ &0,2\\
+\hline
+\end{tabular}
+\end{quote}
+
 Detailed information about these parameters is presented below. 
 Unless stated otherwise, this information also applies to the
 Verilog-A Josephson junction model provided with {\WRspice} in the
@@ -4734,14 +4763,18 @@ MitMoJCo project on {\vt https://github.com/drgulevich/mitmojco}.
 
 \item{\vt coeffset}\\
 {\bf Level 3 only.}\\
-This provides the name of the table of tunnel current amplitudes to
-use in the model.  These are provided as files as produced from the
-{\it mmjco} utility provided with {\WRspice}, and can also be produced
-with the Python program supplied with MitMoJCo.  The files are
-searched for along a path provided by setting the {\et tjm\_path}
-variable, or a path can be provided directly.  The default is to
-search the current directory and {\vt \$HOME/.mmjco} if that directory
-exists.
+This provides the name of the table of compressed tunnel current
+amplitudes to use in the model.  These are provided as files as
+produced from the {\it mmjco} utility provided with {\WRspice}, and
+can also be produced with the Python program supplied with MitMoJCo. 
+The files are searched for along a path provided by setting the {\et
+tjm\_path} variable, or a path can be provided directly.  The default
+is to search the current directory and {\vt \$HOME/.mmjco} if that
+directory exists.
+
+These files are produced automatically as needed according to the
+given model parameters and cached in the users {\vt .mmjco} directory. 
+So it is not common to use this parameter to load a set by name.
 
 There are two built-in coefficient sets, ``tjm1'' (the default) and
 ``tjm2''.  These are the MitMoJCo NbNb\_4k2\_008 and NbNb\_4K2\_001
@@ -4759,15 +4792,14 @@ interesting behavior, they are not at this point available or used
 with any frequency.
 
 \item{\vt rtype}\\
-{\bf Levels 1 and 2 only.}\\
 The {\vt rtype} parameter determines the type of quasiparticle branch
-modeling employed.  Legal values for level 1 are listed below, only 0
-and 1 are supported in level 2.
+modeling employed.  Legal values are listed below, only 0 and 1 are
+supported in levels 2 and 3.
 \begin{quote}
 \begin{tabular}{ll}
 \bf 0 & The junction is completely unshunted, all shunt conductances
  set to zero.\\
-\bf 1 & Standard piecewise-linear model.\\
+\bf 1 & Standard model (the default).\\
 \bf 2 & Analytic exponentially-derived approximation.\\
 \bf 3 & Fifth order polynomial expansion model.\\
 \bf 4 & ``Temperature'' variation, allow modulation of the gap parameter.\\
@@ -4779,15 +4811,15 @@ the Verilog-A model supplied with {\WRspice} in the Verilog-A
 examples.
 
 The default is {\vt rtype=1}.  Setting {\vt rtype=0} will disable
-modeling of the quasiparticle current, effectively setting the RSJ
-shunt resistance to infinity.  Conditions with {\vt rtype=1} and {\vt
-2} are as described by Jewett, however it is not assumed that the
-normal resistance projects through the origin.  The {\vt icfact}
-parameter can be set to a value lower than the default BCS theoretical
-value to reflect the behavior of most real junctions.  The
-quasiparticle resistance is approximated with a fifth order polynomial
-if {\vt rtype=3}, which seems to give good results for the modeling of
-some NbN junctions (which tend to have gently sloping quasiparticle
+modeling of the quasiparticle current, effectively setting the shunt
+resistance to infinity.  Conditions with {\vt rtype=1} and {\vt 2} are
+as described by Jewett, however it is not assumed that the normal
+resistance projects through the origin.  The {\vt icfact} parameter
+can be set to a value lower than the default BCS theoretical value to
+reflect the behavior of most real junctions.  The quasiparticle
+resistance is approximated with a fifth order polynomial if {\vt
+rtype=3}, which seems to give good results for the modeling of some
+NbN junctions (which tend to have gently sloping quasiparticle
 curves).
 
 {\vt Rtype=4} uses a piecewise-linear quasiparticle characteristic
@@ -4816,9 +4848,8 @@ is specified for {\vt cct}, {\vt cct} reverts to 0.  Thus, magnetic
 coupling and quasiparticle injection are not simultaneously available.
 
 \item{\vt cct}\\
-{\bf Levels 1 and 2 only.}\\
 The {\vt cct} parameter can take one of the following values in level
-1, only 0 and 1 are supported in level 2.
+1, only 0 and 1 are supported in levels 2 and 3.
 \begin{quote}
 \begin{tabular}{ll}
 \bf 0 & No critical current.\\
@@ -4928,7 +4959,8 @@ Here, $A$ is the ``area'' scaling factor, which is the ratio of the
 junction critical current to the reference critical current.
 
 \item{\vt vm}\\
-{\bf range:} 8mV -- 100mV\\
+{\bf range:} 8mV -- 100mV, can be 0 if Level=3\\
+
 This is the product of the reference subgap resistance and the
 reference device critical current.  This parameter is commonly
 provided by foundries, and is a standard indicator for junction
@@ -4938,11 +4970,22 @@ Lincoln Laboratory SFQ5EE process\cite{tolpygo}, which is 16.5mV, The
 reference junction subgap resistance is obtained from the value of
 this parameter and the critical current, unless given explicitly.
 
+For the Level 3 model, the intrinsic subgap conductivity will be
+subtracted if smaller than the given {\vt vm} implies.  If {\vt vm} is
+set to 0, then no additional conductivity will be added and only the
+intrinsic conductivity will be seen.  Often, the intrinsic subgap
+conductivity is much smaller than observed in real junctions.
+
 \item{{\vt rsub} or {\vt r0}}\\
-{\bf range:} 8mV/{\vt icrit} -- 100mV/{\vt icrit}\\
+{\bf range:} 8mV/{\vt icrit} -- 100mV/{\vt icrit}, can be 0 if Level=3\\
 The reference junction subgap resistance can be given directly
 with this parameter, and a given value will override the
 {\vt vm} value if also given.
+
+For the Level 3 model, the subgap conductance will be reduced by the
+intrinsic condutance if this is smaller.  If {\vt vm} is given as 0
+and this parameter is not given, the parameter value will be 0.  If
+the value is 0, no additional conductance will be added.
 
 \item{\vt icrn}\\
 {\bf range:} 1.5mV -- 1.9mV\\
@@ -5075,11 +5118,11 @@ of niobium.
 This is the temperature at which all model parameters are measured. 
 The default is 4.2K, the boiling point of liquid helium.
 
-\item{\vt temp}\\
+\item{\vt deftemp}\\
 {\bf range:} 0.0K -- 0.95*{\vt tc}\\
 This is the default operating temperature of instances of the model,
 which can be overridden on a per-instance basis by specifying the
-instance parameter of the same name.  The default is the {\vt tnom}
+{\vt temo\_k} instance parameter.  The default is the {\vt tnom}
 value.
 
 \item{\vt tcfct}\\

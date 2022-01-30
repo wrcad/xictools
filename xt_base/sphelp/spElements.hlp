@@ -1063,7 +1063,7 @@ tra
 
 !!REDIRECT phasemode    jj#phasemode
 
-!! elements.tex 032520
+!! elements.tex 013022
 !!KEYWORD
 jj
 !!TITLE
@@ -1087,7 +1087,7 @@ Josephson Junctions
     <tr><td><tt>ics=</tt><i>val</i></td> <td>Instantiated critical
       current, used as scale factor for
       capacitance, conductances.</td></tr>
-    <tr><td><tt>temp=</tt><i>val</i></td> <td>Device temperature,
+    <tr><td><tt>temp_k=</tt><i>val</i></td> <td>Device temperature,
       Kelvin.</td></tr>
     <tr><td><tt>lser=</tt><i>val</i></td> <td>Junction series parasitic
       inductance.</td></tr>
@@ -1147,8 +1147,7 @@ Josephson Junctions
     integer value, the device instance will behave as a "pi" junction. 
     This type of junction has a ground state with phase &pi; rather
     than 0.  The value given on the device line (if any) overrides the
-    value given in the model.  This parameter may not be recognized in
-    the Verilog-A model.
+    value given in the model.
     </dl>
 
     <dl>
@@ -1185,10 +1184,10 @@ Josephson Junctions
     </dl>
 
     <dl>
-    <dt><tt>temp</tt><dd>
+    <dt><tt>temp_k</tt><dd>
     <b>range:</b> 0.0 - 0.95*<tt>tc</tt><br>
     This is the assumed operating temperature of the device, in
-    Kelvin.  The default is the model <tt>temp</tt> value.  See the <a
+    Kelvin.  The default is the model <tt>deftemp</tt> value.  See the <a
     href="jjmodel">model description</a> for more information about
     temperature modeling.
     </dl>
