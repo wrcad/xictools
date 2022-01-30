@@ -157,6 +157,9 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_TSACCL:
         value->rValue = model->TJMtsaccl;
         break;
+    case TJM_MQUEST_RSINT:
+        value->rValue = model->TJMrsint;
+        break;
     case TJM_MQUEST_VDP:
         value->rValue = model->TJMvdpbak;
         break;

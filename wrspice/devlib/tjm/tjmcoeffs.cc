@@ -62,9 +62,6 @@ char *
 TJMcoeffSet::fit_fname(double temp, double d1, double d2, double sm,
     int numxpts, int numterms, double thr)
 {
-//XXX    int numxpts = 500;
-//XXX    int numterms = 8;
-//XXX    double thr = 0.2;
     char tbuf[80];
     sprintf(tbuf, "tca%03ld%03ld%03ld%02ld%04d",
         lround(temp*100), lround(d1*100000), lround(d2*100000),
@@ -253,5 +250,41 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm)
         }
     }
     return (0);
+}
+
+
+// Static function.
+// Jqp model.
+//
+cIFcomplex *
+TJMcoeffSet::modelJqp(const cIFcomplex *cp, const cIFcomplex *cb, int csz,
+    const double *w, int lenw)
+{
+#define rep(z)  (-fabs(z))
+#define zeta(n) cp[n].real
+#define eta(n)  cp[n].imag
+#define reb(n)  cb[n].real
+#define imb(n)  cb[n].imag
+    cIFcomplex *sum = new cIFcomplex[lenw];
+    for (int k = 0; k < lenw; k++) {
+        sum[k].real = 0.0;
+        sum[k].imag = 0.0;
+        for (int n = 0; n < csz; n++) { 
+            double numr = reb(n)*rep(zeta(n)) + imb(n)*eta(n);
+            double numi = w[k]*reb(n);
+            double denr = rep(zeta(n))*rep(zeta(n)) + eta(n)*eta(n) - w[k]*w[k];
+            double deni = 2.0*w[k]*rep(zeta(n));
+            double d = denr*denr + deni*deni;
+            sum[k].real -= (numr*denr + numi*deni)/d;
+            sum[k].imag -= (numi*denr - numr*deni)/d;
+        }
+        sum[k].imag += w[k];
+    }
+    return (sum);
+#undef rep
+#undef zeta
+#undef eta
+#undef reb
+#undef imb
 }
 

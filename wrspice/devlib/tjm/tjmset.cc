@@ -426,7 +426,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 }
             }
             else {
-                if (model->TJMvg != 0.0 &&
+                if (model->TJMvm != 0.0 &&
                         (model->TJMvm < VmMin || model->TJMvm > VmMax)) {
                     DVO.textOut(OUT_WARNING,
                         "%s: VM=%g out of range 0 or [%g-%g], reset to %g.\n",
@@ -625,10 +625,16 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             double sqrta = sqrt(inst->TJMarea);
             double gfac = inst->TJMarea*(1.0 - model->TJMgmu) +
                 sqrta*model->TJMgmu;
+            inst->TJMgqp = gfac/model->TJMrsint;
+
+            // G0 is the user-specified subgap conductance, subtract
+            // off the intrinsic conductance if we can.
             inst->TJMg0 = model->TJMr0 > 0.0 ? gfac / model->TJMr0 : 0.0;
-            inst->TJMgqp = inst->TJMg0;
+            if (inst->TJMg0 >= inst->TJMgqp)
+                inst->TJMg0 -= inst->TJMgqp;
             if (model->TJMvShuntGiven && model->TJMvShunt > 0.0) {
-                double gshunt = inst->TJMcriti/model->TJMvShunt - inst->TJMgqp;
+                double gshunt = inst->TJMcriti/model->TJMvShunt -
+                    SPMAX(inst->TJMg0, inst->TJMgqp);
                 if (gshunt > 0.0)
                     inst->TJMgshunt = gshunt;
             }
@@ -806,6 +812,38 @@ sTJMmodel::tjm_init()
     tjm_kgap_rejpt = tjm_kgap/rejpt;
     tjm_alphaN = 1.0/(2*rejpt*tjm_kgap);
 
+    // Compute the internal subgap resistance.  This involves
+    // computing the quasiparticle model, extracting the current at
+    // 80% of Vgap, and computing the linear resistance.  Must be a
+    // better way?
+
+    // First, define the X-axis, per mmjco.
+    double *xpts = new double[TJMnxpts];
+    double x = 0.001;
+    double dx = (2.0 - x)/(TJMnxpts - 1);
+    for (int i = 0; i < TJMnxpts; i++) {
+        xpts[i] = x;
+        x += dx;
+    }
+
+    // This returns the quasiparticle TCA model.
+    cIFcomplex *qp =
+        TJMcoeffSet::modelJqp((const cIFcomplex*)tjm_p,
+        (const cIFcomplex*)tjm_B, TJMnterms, xpts, TJMnxpts);
+
+    // Index of the point closest to 80% of Vgap.
+    int n = round((0.8 - 0.001)/dx);
+
+    // Un-normalization factor.
+    double fct = TJMcriti * tjm_kgap_rejpt;
+
+    // Save the approximate intrinsic subgap resistance.
+    TJMrsint = 0.8*TJMvg/(fct*qp[n].imag);
+
+    delete [] xpts;
+    delete [] qp;
+    // End of subgap resistance computation.
+
     // Renormalize.  Here we would rotate to C and D vectors, however
     // we want to preserve the pair and qp amplitudes for separate
     // access.
@@ -813,6 +851,7 @@ sTJMmodel::tjm_init()
         tjm_A[i] = (TJMicFactor*tjm_A[i]) / (-tjm_kgap*tjm_p[i]);
         tjm_B[i] = (tjm_B[i]) / (-tjm_kgap*tjm_p[i]);
     }
+
     return (OK);
 }
 // End of sTJMmodel functions.

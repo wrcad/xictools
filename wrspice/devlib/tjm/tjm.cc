@@ -199,6 +199,8 @@ IO("tsfactor",          TJM_MOD_TSFACT,     IF_REAL,
 IO("tsaccel",           TJM_MOD_TSACCL,     IF_REAL,
                 "Ratio max time step to that at dropback voltage"),
 
+OP("rsint",             TJM_MQUEST_RSINT,   IF_REAL,
+                "Intrinsic subgap resistance"),
 OP("vdp",               TJM_MQUEST_VDP,     IF_REAL|IF_VOLT,
                 "Dropback voltage"),
 OP("omegaj",            TJM_MQUEST_OMEGAJ,  IF_REAL|IF_FREQ,

@@ -301,6 +301,7 @@ struct sTJMmodelPOD
     double      TJMcmu;
     double      TJMvm;
     double      TJMr0;
+    double      TJMrsint;
     double      TJMgmu;
     double      TJMnoise;
     double      TJMvdpbak;
@@ -394,6 +395,8 @@ struct TJMcoeffSet
     static TJMcoeffSet *getTJMcoeffSet(double, double, double, double, int,
         int, double);
     static TJMcoeffSet *getTJMcoeffSet(const char*);
+    static cIFcomplex *modelJqp(const cIFcomplex*, const cIFcomplex*, int,
+        const double*, int);
 
     TJMcoeffSet *next()             const {return (cfs_next); }
     void set_next(TJMcoeffSet *x)   { cfs_next = x; }
@@ -501,6 +504,7 @@ enum {
     TJM_MOD_TSFACT,
     TJM_MOD_TSACCL,
 
+    TJM_MQUEST_RSINT,
     TJM_MQUEST_VDP,
     TJM_MQUEST_OMEGAJ,
     TJM_MQUEST_BETAC,

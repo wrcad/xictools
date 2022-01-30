@@ -50,7 +50,7 @@ TJMdev::acLoad(sGENmodel *genmod, sCKT *ckt)
         for (inst = model->inst(); inst; inst = inst->next()) {
 
             // Load intrinsic shunt conductance.
-            double G = inst->TJMgqp;
+            double G = SPMAX(inst->TJMg0, inst->TJMgqp);
             *inst->TJMposPosPtr += G;
             *inst->TJMnegNegPtr += G;
             *inst->TJMposNegPtr -= G;

@@ -51,7 +51,8 @@ TJMdev::trunc(sGENmodel *genmod, sCKT *ckt, double *timeStep)
     for ( ; model; model = model->next()) {
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
-            ckt->terr(inst->TJMvoltage, timeStep);
+            if (model->TJMictype == 0 || inst->TJMcriti == 0.0)
+                ckt->terr(inst->TJMvoltage, timeStep);
         }
     }
     return (OK);
