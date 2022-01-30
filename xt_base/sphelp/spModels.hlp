@@ -2081,7 +2081,7 @@ MOSFET Models
 !!SEEALSO
 .model
 
-!! elements.tex 032520
+!! elements.tex 013022
 !!KEYWORD
 jjmodel 
 !!TITLE
@@ -2090,9 +2090,12 @@ Josephson Models
     <b>Type Name:</b> <tt>jj</tt>
 
     <p>
-    The <a href="jj">Josephson junction</a> model is an extended
-    version of the RSJ model as used by <a
-    href="jewett">Jewett</a>.
+    The default <a href="jj">Josephson junction</a> model is an
+    extended version of the RSJ model as used by <a
+    href="jewett">Jewett</a>.  For <tt>level=3</tt>, a microscopic
+    tunnel junction "Werthamer" model is provided.  This is based on
+    the open-source MitMoJCo project on <a
+    href="https://github.com/drgulevich/mitmojco"><tt>https://github.com/drgulevich/mitmojco</tt></a>.
 
     <p>
     The parameters marked with an asterisk in the <b>area</b> column
@@ -2114,6 +2117,9 @@ Josephson Models
     <tr><td><tt>level</tt></td> <td></td>
         <td>model type</td>
         <td>-</td>      <td>1</td></tr>
+    <tr><td><tt>coeffset</tt></td> <td></td>
+        <td>coefficient set name</td>
+        <td>-</td>      <td></td></tr>
     <tr><td><tt>pijj</tt></td> <td></td>
         <td>pi junction</td>
         <td>-</td>      <td>0</td></tr>
@@ -2186,7 +2192,7 @@ Josephson Models
     <tr><td><tt>tnom</tt></td> <td>&nbsp;</td>
         <td>model reference temperature</td>
         <td>K</td>      <td><tt>4.2</tt></td></tr>
-    <tr><td><tt>temp</tt></td> <td>&nbsp;</td>
+    <tr><td><tt>deftemp</tt></td> <td>&nbsp;</td>
         <td>operating temperature</td>
         <td>K</td>      <td><tt>tnom</tt></td></tr>
     <tr><td><tt>tcfct</tt></td> <td>&nbsp;</td>
@@ -2195,6 +2201,49 @@ Josephson Models
     <tr><td><tt>vdpbak</tt></td> <td>&nbsp;</td>
         <td>dropback voltage (read only)</td>
         <td>V</td>      <td></td></tr>
+    </table>
+    <br>
+
+    <p>
+    The following are additional parameters that are used when Level=3 only.
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <caption>Josephson Junction Model Parameters</caption>
+    <tr><th>name</th> <th>area</th>
+        <th>parameter</th>
+        <th>units</th> <th>default</th></tr>
+    <tr><td><tt>del1</tt></td> <td>&nbsp;</td>
+        <td>Energy gap side 1</td>
+        <td>V</td>      <td>1.3e-3</td></tr>
+    <tr><td><tt>del2</tt></td> <td>&nbsp;</td>
+        <td>Energy gap side 2</td>
+        <td>V</td>      <td>1.3e-3</td></tr>
+    <tr><td><tt>tc1</tt></td> <td>&nbsp;</td>
+        <td>Transition temperature side 1</td>
+        <td>K</td>      <td>9.26</td></tr>
+    <tr><td><tt>tc2</tt></td> <td>&nbsp;</td>
+        <td>Transition temperature side 2</td>
+        <td>K</td>      <td>9.26</td></tr>
+    <tr><td><tt>tdebye</tt></td> <td>&nbsp;</td>
+        <td>Debye temperature</td>
+        <td>K</td>      <td>276</td></tr>
+    <tr><td><tt>tdebye1</tt></td> <td>&nbsp;</td>
+        <td>Debye temperature side 1</td>
+        <td>K</td>      <td>276</td></tr>
+    <tr><td><tt>tdebye2</tt></td> <td>&nbsp;</td>
+        <td>Debye temperature side 2</td>
+        <td>K</td>      <td>276</td></tr>
+    <tr><td><tt>smf</tt></td> <td>&nbsp;</td>
+        <td>Smoothing factor</td>
+        <td></td>      <td>0.008</td></tr>
+    <tr><td><tt>nterms</tt></td> <td>&nbsp;</td>
+        <td>Number of terms in compression</td>
+        <td></td>      <td>8</td></tr>
+    <tr><td><tt>nxpts</tt></td> <td>&nbsp;</td>
+        <td>Number of TCA table entries</td>
+        <td></td>      <td>500</td></tr>
+    <tr><td><tt>thr</tt></td> <td>&nbsp;</td>
+        <td>qFitting algorithm threshold</td>
+        <td></td>      <td>0.2</td></tr>
     </table>
     <br>
 
@@ -2217,6 +2266,33 @@ Josephson Models
     </dl>
 
     <dl>
+    <dt><tt>coeffset</tt><dd>
+    <b>Level 3 only.</b><br>
+    This provides the name of the table of compressed tunnel current
+    amplitudes to use in the model.  These are provided as files as
+    produced from the <a href="mmjco"><b>mmjco</b></a> utility
+    provided with <i>WRspice</i>, and can also be produced with the
+    Python program supplied with MitMoJCo.  The files are searched for
+    along a path provided by setting the <a
+    href="tjm_path"><tt>tjm_path</tt></a> variable, or a path can be
+    provided directly.  The default is to search the current directory
+    and <tt>$HOME/.mmjco</tt> if that directory exists.
+
+    <p>
+    These files are produced automatically as needed according to the
+    given model parameters and cached in the users <tt>.mmjco</tt>
+    directory.  So it is not common to use this parameter to load a
+    set by name.
+
+    <p>
+    There are two built-in coefficient sets, "tjm1" (the default) and
+    "tjm2".  These are the MitMoJCo <tt>NbNb_4k2_008</tt> and
+    <tt>NbNb_4K2_001</tt> parameter sets, respectively.  Both assume
+    niobium at temperature 4.2K and differ in the level of smoothing
+    applied to mitigate the Riedel singularity.
+    </dl>
+
+    <dl>
     <dt><tt>pijj</tt><dd>
     <b>Levels 1 and 2 only.</b><br>
     If this flag is given a nonzero integer value, the junctions will
@@ -2229,15 +2305,14 @@ Josephson Models
 
     <dl>
     <dt><tt>rtype</tt><dd>
-    <b>Levels 1 and 2 only.</b><br>
     The <tt>rtype</tt> parameter determines the quasiparticle branch
-    modeling employed.  Legal values for level 1 are listed below,
-    only 0 and 1 are supported in level 2.
+    modeling employed.  Legal values are listed below, only 0 and 1
+    are supported in levels 2 and 3.
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><td>0</td><td>  The junction is completely unshunted, all shunt
         conductance set to zero.
-    <tr><td>1</td><td>  Standard piecewise-linear model</td></tr>
+    <tr><td>1</td><td>  Standard model (the default)</td></tr>
     <tr><td>2</td><td>  Analytic exponentially-derived approximation</td></tr>
     <tr><td>3</td><td>  Fifth order polynomial approximation model</td></tr>
     <tr><td>4</td><td>  "Temperature" variation, allow modulation of the gap
@@ -2253,7 +2328,7 @@ Josephson Models
     <p>
     The default is <tt>rtype</tt>=1.  Setting <tt>rtype</tt>=0 will
     disable modeling of the quasiparticle current, effectively setting
-    the RSJ shunt resistance to infinity.  Conditions with
+    the shunt resistance to infinity.  Conditions with
     <tt>rtype</tt>=1 and <tt>rtype</tt>=2 are as described by Jewett,
     however it is not assumed that the normal resistance projects
     through the origin.  The <tt>icfact</tt> parameter can be set to a
@@ -2297,9 +2372,8 @@ Josephson Models
 
     <dl>
     <dt><tt>cct</tt><dd>
-    <b>Levels 1 and 2 only.</b><br>
     The <tt>cct</tt> parameter can take one of the following values in
-    level 1, only 0 and 1 are supported in level 2.
+    level 1, only 0 and 1 are supported in levels 2 and 3.
     <blockquote>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><td>0</td><td>  No critical current</td></tr>
@@ -2432,7 +2506,7 @@ Josephson Models
 
     <dl>
     <dt><tt>vm</tt><dd>
-    <b>range:</b> 8mV - 100mV<br>
+    <b>range:</b>8mV - 100mV, can be 0 if Level=3<br>
     This is the product of the reference subgap resistance and the
     reference device critical current.  This parameter is commonly
     provided by foundries, and is a standard indicator for junction
@@ -2442,14 +2516,30 @@ Josephson Models
     href="tolpygo">[Tolpygo]</a>, which is 16.5mV, The reference
     junction subgap resistance is obtained from the value of this
     parameter and the critical current, unless given explicitly.
+
+    <p>
+    For the Level 3 model, the intrinsic subgap conductivity will be
+    subtracted if smaller than the given <tt>vm</tt> implies.  If
+    <tt>vm</tt> is set to 0, then no additional conductivity will be
+    added and only the intrinsic conductivity will be seen.  Often,
+    the intrinsic subgap conductivity is much smaller than observed in
+    real junctions.
     </dl>
 
     <dl>
     <dt><tt>rsub</tt> or <tt>r0</tt><dd>
-    <b>range:</b> 8mV/<tt>icrit</tt> - 100mV/<tt>icrit</tt><br>
+    <b>range:</b> 8mV/<tt>icrit</tt> - 100mV/<tt>icrit</tt>, can be 0
+    if Level=3<br>
     The reference junction subgap resistance can be given directly
     with this parameter, and a given value will override the
     <tt>vm</tt> value if also given.
+
+    <p>
+    For the Level 3 model, the subgap conductance will be reduced by
+    the intrinsic condutance if this is smaller.  If <tt>vm</tt> is
+    given as 0 and this parameter is not given, the parameter value
+    will be 0.  If the value is 0, no additional conductance will be
+    added.
     </dl>
 
     <dl>
@@ -2616,13 +2706,12 @@ Josephson Models
     </dl>
 
     <dl>
-    <dt><tt>temp</tt><dd>
+    <dt><tt>deftemp</tt><dd>
     <b>range:</b> 0.0K - 0.95*<tt>tc</tt><br>
     This is the default operating temperature of instances of the
     model, which can be overridden on a per-instance basis by
-    specifying the instance parameter of the same name.  The default
-    is the <tt>tnom</tt> value.  The Verilog-A example JJ model uses
-    "<tt>deftemp</tt>" for this parameter.
+    specifying the <tt>temp_k</tt>instance parameter.  The default is
+    the <tt>tnom</tt> value.
     </dl>
 
     <dl>
