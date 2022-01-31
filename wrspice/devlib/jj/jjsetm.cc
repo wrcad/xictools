@@ -69,6 +69,10 @@ JJdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->JJtc = value->rValue;
         model->JJtcGiven = true;
         break;
+    case JJ_MOD_TDEBYE:
+        model->JJtdebye = value->rValue;
+        model->JJtdebyeGiven = true;
+        break;
     case JJ_MOD_TNOM:
         model->JJtnom = value->rValue;
         model->JJtnomGiven = true;

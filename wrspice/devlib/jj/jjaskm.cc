@@ -70,6 +70,9 @@ JJdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case JJ_MOD_TC:
         value->rValue = model->JJtc;
         break;
+    case JJ_MOD_TDEBYE:
+        value->rValue = model->JJtdebye;
+        break;
     case JJ_MOD_TNOM:
         value->rValue = model->JJtnom;
         break;

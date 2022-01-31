@@ -11,7 +11,7 @@ BASE = ../../xt_base/help
 SPBASE = ../../xt_base/sphelp
 MOZY = ../../mozy/help
 
-depend: cptest $(BASEFILES) $(MOZYFILES) $(SPFILES)
+depend: $(BASEFILES) $(MOZYFILES) $(SPFILES) cptest
 	cd screenshots; $(MAKE)
 
 $(BASEFILES):

@@ -273,6 +273,7 @@ struct sJJmodelPOD
     int JJrtype;
     int JJictype;
     double JJtc;
+    double JJtdebye;
     double JJdeftemp;
     double JJtnom;
     double JJtcfct;
@@ -304,6 +305,7 @@ struct sJJmodelPOD
     unsigned JJpiGiven : 1;
     unsigned JJictypeGiven : 1;
     unsigned JJtcGiven : 1;
+    unsigned JJtdebyeGiven : 1;
     unsigned JJdeftempGiven : 1;
     unsigned JJtnomGiven : 1;
     unsigned JJtcfctGiven : 1;
@@ -408,6 +410,7 @@ enum {
     JJ_MOD_RT,
     JJ_MOD_IC,
     JJ_MOD_TC,
+    JJ_MOD_TDEBYE,
     JJ_MOD_TNOM,
     JJ_MOD_DEFTEMP,
     JJ_MOD_TCFCT,

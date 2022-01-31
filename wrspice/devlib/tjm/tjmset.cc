@@ -100,7 +100,7 @@
 #define NtrmsMax 20
 #define Xpts    500
 #define XptsMin 100
-#define XptsMax 10000
+#define XptsMax 9999
 #define Thr     0.2
 #define ThrMin  0.1
 #define ThrMax  0.5
@@ -221,15 +221,15 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->TJMtnom = Temp;
             }
         }
-        if (!model->TJMtempGiven)
-            model->TJMtemp = model->TJMtnom;
+        if (!model->TJMdeftempGiven)
+            model->TJMdeftemp = model->TJMtnom;
         else {
-            if (model->TJMtemp < TempMin || model->TJMtemp > TempMax) {
+            if (model->TJMdeftemp < TempMin || model->TJMdeftemp > TempMax) {
                 DVO.textOut(OUT_WARNING,
-                    "%s: TEMP=%g out of range [%g-%g], reset to %g.\n",
-                    model->GENmodName, model->TJMtemp, TempMin, TempMax,
+                    "%s: DEFTEMP=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMdeftemp, TempMin, TempMax,
                     model->TJMtnom);
-                model->TJMtemp = model->TJMtnom;
+                model->TJMdeftemp = model->TJMtnom;
             }
         }
 
@@ -289,7 +289,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
         else {
-            model->TJMdel1 = DEV.bcs_egapv(model->TJMtemp, model->TJMtc1,
+            model->TJMdel1 = DEV.bcs_egapv(model->TJMdeftemp, model->TJMtc1,
                 model->TJMtdebye1);
 
         }
@@ -303,7 +303,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
         else {
-            model->TJMdel2 = DEV.bcs_egapv(model->TJMtemp, model->TJMtc2,
+            model->TJMdel2 = DEV.bcs_egapv(model->TJMdeftemp, model->TJMtc2,
                 model->TJMtdebye2);
         }
         if (!model->TJMvgGiven)
@@ -526,11 +526,11 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
-        if (model->TJMtemp != model->TJMtnom) {
+        if (model->TJMdeftemp != model->TJMtnom) {
             // Compute the temperature correction factor for Icrit. 
-            // This is obtained form Tinkham 2nd ed.  eq.  6.10,
-            // ratioing factors for temp and tnom (correction factor
-            // is 1.0 at temp = tnom).
+            // This is obtained from Tinkham 2nd ed.  eq.  6.10,
+            // ratioing factors for deftemp and tnom (correction factor
+            // is 1.0 at deftemp = tnom).
 
             double vgNom = DEV.bcs_egapv(model->TJMtnom, model->TJMtc1,
                 model->TJMtdebye1);
@@ -542,7 +542,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                     model->TJMtdebye2);
             }
             double tmp = wrsCHARGE*model->TJMvg/
-                (4.0*wrsCONSTboltz*(model->TJMtemp + 1e-4));
+                (4.0*wrsCONSTboltz*(model->TJMdeftemp + 1e-4));
             double tmp2 = wrsCHARGE*vgNom/
                 (4.0*wrsCONSTboltz*(model->TJMtnom + 1e-4));
             model->TJMicTempFactor =
@@ -779,7 +779,7 @@ sTJMmodel::tjm_init()
     if (tjm_coeffsGiven)
         cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
     else
-        cs = TJMcoeffSet::getTJMcoeffSet(TJMtemp, TJMdel1, TJMdel2, TJMsmf,
+        cs = TJMcoeffSet::getTJMcoeffSet(TJMdeftemp, TJMdel1, TJMdel2, TJMsmf,
             TJMnxpts, TJMnterms, TJMthr);
     if (!cs) {
         DVO.textOut(OUT_FATAL,

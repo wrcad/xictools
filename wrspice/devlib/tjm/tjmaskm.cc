@@ -71,8 +71,8 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_VG:
         value->rValue = model->TJMvg;
         break;
-    case TJM_MOD_TEMP:
-        value->rValue = model->TJMtemp;
+    case TJM_MOD_DEFTEMP:
+        value->rValue = model->TJMdeftemp;
         break;
     case TJM_MOD_TNOM:
         value->rValue = model->TJMtnom;

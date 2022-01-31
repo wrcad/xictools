@@ -44,6 +44,7 @@ Author: 1992 Stephen R. Whiteley
 ****************************************************************************/
 
 #include "jjdefs.h"
+#include "tempr.h"
 
 
 #ifndef M_PI_4
@@ -77,6 +78,9 @@ Author: 1992 Stephen R. Whiteley
 #define Tc      9.26        // Nb Tc
 #define TcMin   0.1         // Min Tc
 #define TcMax   280.0       // Max Tc
+#define Tdb     276         // Nb Debye temp.
+#define TdbMin  40          // Min Debye temp.
+#define TdbMax  500         // Max Debye temp.
 #define Tnom    4.2         // Param. measurement temp.
 #define TnomMin 0.0         // Min param. measurement temp.
 #define TnomMax 0.95*Tc     // Max param. measurement temp.
@@ -226,6 +230,16 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 model->JJtc = Tc;
             }
         }
+        if (!model->JJtdebyeGiven)
+            model->JJtdebye = Tdb;
+        else {
+            if (model->JJtdebye < TdbMin || model->JJtdebye > TdbMax) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TDEBYE=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->JJtdebye, TdbMin, TdbMax, Tdb);
+                model->JJtdebye = Tdb;
+            }
+        }
         if (!model->JJtnomGiven)
             model->JJtnom = Tnom;
         else {
@@ -260,8 +274,13 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
+        // If Vgap is not given, compute the value from BCS, and use
+        // computed values for temperature variation modeling. 
+        // Otherwise, we will use an approximation formula.
+        //
         if (!model->JJvgGiven)
-            model->JJvgnom = Vg;
+            model->JJvgnom = DEV.bcs_egapv(model->JJtnom, model->JJtc,
+                model->JJtdebye);
         else {
             if (model->JJvgnom < VgMin || model->JJvgnom > VgMax) {
                 DVO.textOut(OUT_WARNING,
@@ -538,11 +557,22 @@ JJdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
 
             // Temperature correction factor.
             if (inst->JJtemp_k != model->JJtnom) {
-                inst->JJtcf =
-                tanh(model->JJtcfct*sqrt(model->JJtc/(inst->JJtemp_k+1e-4) - 1.0)) /
-                tanh(model->JJtcfct*sqrt(model->JJtc/(model->JJtnom+1e-4) - 1.0));
-
-                inst->JJvg = inst->JJtcf * model->JJvgnom;
+                if (model->JJvgGiven) {
+                    // Use approximation formula for temperature
+                    // variation modeling.
+                    inst->JJtcf =
+                        tanh(model->JJtcfct*sqrt(
+                            model->JJtc/(inst->JJtemp_k+1e-4)-1.0)) /
+                        tanh(model->JJtcfct*sqrt(
+                            model->JJtc/(model->JJtnom+1e-4)-1.0));
+                    inst->JJvg = inst->JJtcf * model->JJvgnom;
+                }
+                else {
+                    // Compute BCS gat voltage.
+                    inst->JJvg = DEV.bcs_egapv(inst->JJtemp_k, model->JJtc,
+                        model->JJtdebye);
+                    inst->JJtcf = inst->JJvg / model->JJvgnom;
+                }
 
                 double tmp = wrsCHARGE*inst->JJvg/
                     (4.0*wrsCONSTboltz*(inst->JJtemp_k+1e-4));

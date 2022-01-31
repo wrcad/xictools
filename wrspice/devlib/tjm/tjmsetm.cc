@@ -78,9 +78,9 @@ TJMdev::setModl(int param, IFdata *data, sGENmodel *genmod)
         model->TJMvg = value->rValue;
         model->TJMvgGiven = true;
         break;
-    case TJM_MOD_TEMP:
-        model->TJMtemp = value->rValue;
-        model->TJMtempGiven = true;
+    case TJM_MOD_DEFTEMP:
+        model->TJMdeftemp = value->rValue;
+        model->TJMdeftempGiven = true;
         break;
     case TJM_MOD_TNOM:
         model->TJMtnom = value->rValue;

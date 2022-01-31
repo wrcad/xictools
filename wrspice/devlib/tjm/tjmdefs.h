@@ -285,7 +285,7 @@ struct sTJMmodelPOD
     double      TJMdel1;
     double      TJMdel2;
     double      TJMvg;
-    double      TJMtemp;
+    double      TJMdeftemp;
     double      TJMtnom;
     double      TJMtc1;
     double      TJMtc2;
@@ -322,7 +322,7 @@ struct sTJMmodelPOD
     unsigned    TJMdel1Given : 1;
     unsigned    TJMdel2Given : 1;
     unsigned    TJMvgGiven : 1;
-    unsigned    TJMtempGiven : 1;
+    unsigned    TJMdeftempGiven : 1;
     unsigned    TJMtnomGiven : 1;
     unsigned    TJMtc1Given : 1;
     unsigned    TJMtc2Given : 1;
@@ -474,7 +474,7 @@ enum {
     TJM_MOD_DEL1,
     TJM_MOD_DEL2,
     TJM_MOD_VG,
-    TJM_MOD_TEMP,
+    TJM_MOD_DEFTEMP,
     TJM_MOD_TNOM,
     TJM_MOD_TC,
     TJM_MOD_TC1,
