@@ -20,11 +20,14 @@ public:
     mmjco_cmds();
     ~mmjco_cmds();
     int mm_set_dir(int, char**);
-    int mm_create_data(int, char**);
-    int mm_create_fit(int, char**);
+    int mm_get_gap(int, char**);
+    int mm_create_data(int, char**, double=4.2, bool=false);
+    int mm_create_fit(int, char**, FILE* = 0);
     int mm_create_model(int, char**);
+    int mm_create_table(int, char**);
     int mm_load_data(int, char**);
     int mm_load_fit(int, char**);
+    int mm_load_table(int, char**);
 
     static void get_av(char**, int*, char*);
 

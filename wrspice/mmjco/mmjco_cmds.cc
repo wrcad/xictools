@@ -6,6 +6,8 @@
 // License:  GNU General Public License Version 3m 29 June 2007.
 
 #include "mmjco_cmds.h"
+#include "mmjco_tempr.h"
+#include "mmjco_tscale.h"
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -90,7 +92,7 @@ int
 mmjco_cmds::mm_set_dir(int argc, char **argv)
 {
     if (argc < 2) {
-        printf("Error: missing directory path.\n");
+        fprintf(stderr, "Error: missing directory path.\n");
         return (1);
     }
     const char *dir = argv[1];
@@ -102,12 +104,12 @@ mmjco_cmds::mm_set_dir(int argc, char **argv)
         mkdir(dir, 0777);
 #endif
         if (stat(dir, &st) < 0) {
-            printf("Error: cannot stat path.\n");
+            fprintf(stderr, "Error: cannot stat path.\n");
             return (1);
         }
     }
     if (!(st.st_mode & S_IFDIR)) {
-        printf("Error: path is not a directory.\n");
+        fprintf(stderr, "Error: path is not a directory.\n");
         return (1);
     }
     delete [] mmc_tcadir;
@@ -118,18 +120,110 @@ mmjco_cmds::mm_set_dir(int argc, char **argv)
 }
 
 
+int
+mmjco_cmds::mm_get_gap(int argc, char **argv)
+{
+    double tc = TC_NB;
+    double td = DEBYE_TEMP_NB;
+    double temps[10];
+    int ix = 0;
+
+    for (int i = 1; i < argc; i++) {
+        double a;
+        if (argv[i][0] == '-') {
+            if (!strcmp(argv[i], "-tc")) {
+                if (++i == argc) {
+                    fprintf(stderr,
+                        "Error: missing transition temperature, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0)
+                    tc = a;
+                else {
+                    fprintf(stderr, "Error: bad -tc (temperature), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-td")) {
+                if (++i == argc) {
+                    fprintf(stderr,
+                        "Error: missing Debye temperature, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0)
+                    tc = a;
+                else {
+                    fprintf(stderr, "Error: bad -td (temperature), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+        }
+        if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0) {
+            if (ix < 10)
+                temps[ix++] = a;
+        }
+    }
+
+    mmjco_tempr tp(tc, td);
+    if (ix == 0) {
+        for (double T = 0.0; T <= tc; T += 0.1) {
+            double del = tp.gap_parameter(T);
+#define CHECK_FIT_FUNC
+#ifdef CHECK_FIT_FUNC
+            double fit = 1.3994e-3*tanh(1.74*sqrt(tc/(T+1e-3) - 1.0));
+            double pcterr = 100*2*fabs(del - fit)/(del + fit);
+            printf("T= %.4e Del= %.4e Fit= %.4e PctErr= %.4e\n", T, del,
+                fit, pcterr);
+#else
+            printf("T= %.4e Del= %.4e\n", T, del);
+#endif
+        }
+    }
+    else if (ix == 2) {
+        double Tmin = temps[0];
+        double Tmax = temps[1];
+        if (Tmin >= 0.0 && Tmin <= tc && Tmax >= 0.0 && Tmax <= tc) {
+            if (Tmin > Tmax) {
+                double tmp = Tmin;
+                Tmin = Tmax;
+                Tmax = tmp;
+            }
+            for (double T = Tmin; T <= Tmax; T += 0.1) {
+                double del = tp.gap_parameter(T);
+                printf("T= %.4e Del= %.4e\n", T, del);
+            }
+        }
+    }
+    else {
+        for (int i = 0; i < ix; i++) {
+            if (temps[i] >= 0.0 && temps[i] <= tc) {
+                double del = tp.gap_parameter(temps[i]);
+                printf("T= %.4e Del= %.4e\n", temps[i], del);
+            }
+        }
+    }
+    return (0);
+}
+
+
 // Create a TCA data set and write this to a file.  The data set is
 // saved in an internal data register, replacing any existing data.
+// The default temp can be passed in the args for sweeps.
 //
-// cd[ata] [-t temp] [-d|-d1|-d2 delta] [-s smooth] [-x nx] -f [filename]
-//  [-r | -rr | -rd]
+// cd[ata] [-t temp] [-tc1|-tc2|-tc Tc] [-td1|-td2|-td Tdebye]
+//  [-d|-d1|-d2 delta] [-s smooth] [-x nx] -f [filename] [-r | -rr | -rd]
 //
 int
-mmjco_cmds::mm_create_data(int argc, char **argv)
+mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
 {
-    double temp = 4.2;
-    double d1 = 1.4;
-    double d2 = 1.4;
+    double tc1 = TC_NB;
+    double tc2 = TC_NB;
+    double td1 = DEBYE_TEMP_NB;
+    double td2 = DEBYE_TEMP_NB;
+    double d1 = 0.0;
+    double d2 = 0.0;
     double sm = 0.008;
     int nx  = 500;
     char *datafile = 0;
@@ -140,48 +234,138 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
             double a;
             if (!strcmp(argv[i], "-t")) {
                 if (++i == argc) {
-                    printf("Error: missing temperature, exiting.\n");
+                    fprintf(stderr, "Error: missing temperature, exiting.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0)
                     temp = a;
                 else {
-                    printf("Error: bad -t (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -t (temperature), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-tc1")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing Tc1, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 300.0) {
+                    tc1 = a;
+                }
+                else {
+                    fprintf(stderr,
+                        "Error: bad -tc1 (temperature), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-tc2")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing Tc2, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 300.0) {
+                    tc2 = a;
+                }
+                else {
+                    fprintf(stderr,
+                        "Error: bad -tc2 (temperature), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-tc")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing Tc, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 300.0) {
+                    tc1 = a;
+                    tc2 = a;
+                }
+                else {
+                    fprintf(stderr, "Error: bad -tc (temperature), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-td1")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing Tdebye1, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 1000.0) {
+                    td1 = a;
+                }
+                else {
+                    fprintf(stderr,
+                        "Error: bad -td1 (temperature), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-td2")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing Tdebye2, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 1000.0) {
+                    td2 = a;
+                }
+                else {
+                    fprintf(stderr,
+                        "Error: bad -td2 (temperature), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-td")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing Tdebye, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 1000.0) {
+                    td1 = a;
+                    td2 = a;
+                }
+                else {
+                    fprintf(stderr, "Error: bad -td (temperature), exiting.\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-d1")) {
                 if (++i == argc) {
-                    printf("Error: missing delta, exiting.\n");
+                    fprintf(stderr, "Error: missing delta, exiting.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
                     d1 = a;
                 }
                 else {
-                    printf("Error: bad -d1 (delta), exiting.\n");
+                    fprintf(stderr, "Error: bad -d1 (delta), exiting.\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-d2")) {
                 if (++i == argc) {
-                    printf("Error: missing delta, exiting.\n");
+                    fprintf(stderr, "Error: missing delta, exiting.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
                     d2 = a;
                 }
                 else {
-                    printf("Error: bad -d2 (delta), exiting.\n");
+                    fprintf(stderr, "Error: bad -d2 (delta), exiting.\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-d")) {
                 if (++i == argc) {
-                    printf("Error: missing delta, exiting.\n");
+                    fprintf(stderr, "Error: missing delta, exiting.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
@@ -189,48 +373,52 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
                     d2 = a;
                 }
                 else {
-                    printf("Error: bad -d (delta), exiting.\n");
+                    fprintf(stderr, "Error: bad -d (delta), exiting.\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-s")) {
                 if (++i == argc) {
-                    printf("Error: missing smoothing factor, exiting.\n");
+                    fprintf(stderr,
+                        "Error: missing smoothing factor, exiting.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 0.099)
                     sm = (a >= 0.001 ? a : 0.0);
                 else {
-                    printf("Error: bad -s (smoothing factor), exiting.\n");
+                    fprintf(stderr,
+                        "Error: bad -s (smoothing factor), exiting.\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-x")) {
                 if (++i == argc) {
-                    printf("Error: missing datapoints, exiting.\n");
+                    fprintf(stderr, "Error: missing datapoints, exiting.\n");
                     return (1);
                 }
                 int d;
                 if (sscanf(argv[i], "%d", &d) == 1 && d >= 10 && d <= 10000)
                     nx = d;
                 else {
-                    printf("Error: bad -x (number of data points), exiting.\n");
+                    fprintf(stderr,
+                        "Error: bad -x (number of data points), exiting.\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-f")) {
                 if (++i == argc) {
-                    printf("Error: missing filename, exiting.\n");
+                    fprintf(stderr, "Error: missing filename, exiting.\n");
                     return (1);
                 }
                 char f[256];
                 if (sscanf(argv[i], "%s", f) == 1)
                     datafile = strdup(f);
                 else {
-                    printf("Error: bad -f (data filename), exiting.\n");
+                    fprintf(stderr,
+                        "Error: bad -f (data filename), exiting.\n");
                     return (1);
                 }
                 continue;
@@ -251,6 +439,15 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
     }
 
     // Setup TCA computation.
+    if (d1 == 0.0) {
+        mmjco_tempr tmpr(tc1, td1);
+        d1 = tmpr.gap_parameter(temp) * 1e3;
+    }
+    if (d2 == 0.0) {
+        mmjco_tempr tmpr(tc2, td2);
+        d2 = tmpr.gap_parameter(temp) * 1e3;
+    }
+
     mmjco m(temp, d1, d2, sm);
 
     delete [] mmc_pair_data;
@@ -285,6 +482,10 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
         x0 += dx;
     }
 
+    if (no_out && datafile) {
+        delete [] datafile;
+        datafile = 0;
+    }
     const char *filename = datafile;
     if (!datafile) {
         char *dp;
@@ -298,22 +499,29 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
             dp = datafile;
         }
         filename = dp;
+        sprintf(dp, "tca%05ld%05ld%05ld%02ld%04d",
+            lround(mmc_temp*1e3), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
+            lround(mmc_sm*1e3), mmc_numxpts);
+/*XXX
         sprintf(dp, "tca%03ld%03ld%03ld%02ld%04d",
             lround(mmc_temp*100), lround(mmc_d1*100), lround(mmc_d2*100),
             lround(mmc_sm*1000), mmc_numxpts);
+*/
         if (dtype == DFDATA)
-            strcat(datafile, ".data");
+            strcat(dp, ".data");
         else
-            strcat(datafile, ".raw");
+            strcat(dp, ".raw");
     }
-    FILE *fp = fopen(datafile, "w");
-    if (!fp) {
-        printf("Error: unable to open file %s.\n", filename);
-        return (1);
+    if (!no_out) {
+        FILE *fp = fopen(datafile, "w");
+        if (!fp) {
+            fprintf(stderr, "Error: unable to write file %s.\n", filename);
+            return (1);
+        }
+        save_data(filename, fp, dtype, mmc_xpts, mmc_pair_data, mmc_qp_data,
+            mmc_numxpts);
+        fclose(fp);
     }
-    save_data(filename, fp, dtype, mmc_xpts, mmc_pair_data, mmc_qp_data,
-        mmc_numxpts);
-    fclose(fp);
     delete [] mmc_datafile;
     mmc_datafile = datafile;
     return (0);
@@ -321,15 +529,17 @@ mmjco_cmds::mm_create_data(int argc, char **argv)
 
 
 // Create a fitting table for the existing internal TCA data and write
-// this to a file.  The fitting paramers are stored internally.
+// this to a file.  The fitting paramers are stored internally.  The
+// destination can be coerced by passing fp.
 //
 // cf[it] [-n terms] [-h thr] [-ff filename]
 //
 int
-mmjco_cmds::mm_create_fit(int argc, char **argv)
+mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
 {
     if (!mmc_numxpts) {
-        printf("Error: no TCA data in memory, use \"cd\" or \"ld\".\n");
+        fprintf(stderr,
+            "Error: no TCA data in memory, use \"cd\" or \"ld\".\n");
         return (1);
     }
     int nterms = 8;
@@ -341,14 +551,14 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
             double a;
             if (!strcmp(argv[i], "-n")) {
                 if (++i == argc) {
-                    printf("Error: missing term count, exiting.\n");
+                    fprintf(stderr, "Error: missing term count, exiting.\n");
                     return (1);
                 }
                 int d;
                 if (sscanf(argv[i], "%d", &d) == 1 && d > 3 && d < 21 && !(d&1))
                     nterms = d;
                 else {
-                    printf(
+                    fprintf(stderr,
                     "Error: bad -n (number of terms, 4-20 even), exiting.\n");
                     return (1);
                 }
@@ -356,27 +566,28 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
             }
             if (!strcmp(argv[i], "-h")) {
                 if (++i == argc) {
-                    printf("Error: missing threshold, exiting.\n");
+                    fprintf(stderr, "Error: missing threshold, exiting.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.05 && a < 0.5)
                     thr = a;
                 else {
-                    printf("Error: bad -h (threshold), exiting.\n");
+                    fprintf(stderr, "Error: bad -h (threshold), exiting.\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-ff")) {
                 if (++i == argc) {
-                    printf("Error: missing filename, exiting.\n");
+                    fprintf(stderr, "Error: missing filename, exiting.\n");
                     return (1);
                 }
                 char f[256];
                 if (sscanf(argv[i], "%s", f) == 1)
                     fitfile = strdup(f);
                 else {
-                    printf("Error: bad -ff (fit filename), exiting.\n");
+                    fprintf(stderr,
+                        "Error: bad -ff (fit filename), exiting.\n");
                     return (1);
                 }
                 continue;
@@ -416,7 +627,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv)
             lround(mmc_thr*1000));
         fitfile = tbuf;
     }
-    mmc_mf.save_fit_parameters(fitfile);
+    mmc_mf.save_fit_parameters(fitfile, fp);
     delete [] mmc_fitfile;
     mmc_fitfile = fitfile;
     return (0);
@@ -428,11 +639,13 @@ int
 mmjco_cmds::mm_create_model(int argc, char **argv)
 {
     if (!mmc_numxpts) {
-        printf("Error: no TCA data in memory, use \"cd\" or \"ld\".\n");
+        fprintf(stderr,
+            "Error: no TCA data in memory, use \"cd\" or \"ld\".\n");
         return (1);
     }
     if (mmc_nterms <= 0) {
-        printf("Error: no fit data in memory, use \"cf\" or \"lf\".\n");
+        fprintf(stderr,
+            "Error: no fit data in memory, use \"cf\" or \"lf\".\n");
         return (1);
     }
 
@@ -444,14 +657,14 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
         if (argv[i][0] == '-') {
             if (!strcmp(argv[i], "-h")) {
                 if (++i == argc) {
-                    printf("Error: missing threshold, exiting.\n");
+                    fprintf(stderr, "Error: missing threshold, exiting.\n");
                     return (1);
                 }
                 double a;
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.05 && a < 0.5)
                     loc_thr = a;
                 else {
-                    printf("Error: bad -h (threshold), exiting.\n");
+                    fprintf(stderr, "Error: bad -h (threshold), exiting.\n");
                     return (1);
                 }
                 continue;
@@ -463,7 +676,8 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
                     if (sscanf(argv[i], "%s", f) == 1)
                         modfile = strdup(f);
                     else {
-                        printf("Error: bad -fm (model filename), exiting.\n");
+                        fprintf(stderr,
+                            "Error: bad -fm (model filename), exiting.\n");
                         return (1);
                     }
                 }
@@ -488,28 +702,38 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
     delete [] mmc_qp_model;
     mmc_mf.tca_fit(mmc_xpts, mmc_numxpts, &mmc_pair_model, &mmc_qp_model);
 
-    double res = mmc_mf.residual(mmc_pair_model, mmc_qp_model,
-        mmc_pair_data, mmc_qp_data, mmc_numxpts, loc_thr);
-    printf("Model created, residual = %g\n", res);
+    if (mmc_pair_data && mmc_qp_data) {
+        double res = mmc_mf.residual(mmc_pair_model, mmc_qp_model,
+            mmc_pair_data, mmc_qp_data, mmc_numxpts, loc_thr);
+        printf("Model created, residual = %g\n", res);
+    }
 
     if (got_f) {
         if (!modfile) {
-            char buf[64];
+            char *tbuf;
+            char *fn;
             if (mmc_fitfile) {
-                strcpy(buf, mmc_fitfile);
-                char *t = strrchr(buf, '.');
-                if (t && t > buf)
+                tbuf = new char[strlen(mmc_fitfile) + 10];
+                strcpy(tbuf, mmc_fitfile);
+                char *t = strrchr(tbuf, '.');
+                if (t && t > tbuf)
                     *t = 0;
+                fn = tbuf + strlen(tbuf);
             }
+            else {
+                tbuf = new char[20];
+                strcpy(tbuf, "tca_model");
+                fn = tbuf;
+            }
+            if (dtype == DFDATA)
+                strcat(fn, ".data");
             else
-                strcpy(buf, "tca_data");
-            strcat(buf, ".model");
-            modfile = new char[strlen(buf) + 1];
-            strcpy(modfile, buf);
+                strcat(fn, ".raw");
+            modfile = tbuf;
         }
         FILE *fp = fopen(modfile, "w");
         if (!fp) {
-            printf("Error: unable to open file %s.\n", modfile);
+            fprintf(stderr, "Error: unable to open file %s.\n", modfile);
             return (1);
         }
         save_data(modfile, fp, dtype, mmc_xpts, mmc_pair_model, mmc_qp_model,
@@ -517,6 +741,49 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
         fclose(fp);
         delete [] modfile;
     }
+    return (0);
+}
+
+
+// ct[ab] T1 T2 [... Tn] [ ct and cf args]
+//
+int
+mmjco_cmds::mm_create_table(int argc, char **argv)
+{
+    int ntemps = 0;
+    for (int i = 1; i < argc; i++) {
+        if ((!isdigit(*argv[i]) && *argv[i] != '.')) {
+            ntemps = i-1;
+            break;
+        }
+        if (i == argc-1) {
+            ntemps = i;
+            break;
+        }
+    }
+printf("temps %d\n", ntemps);
+    if (ntemps < 2 || ntemps > 10) {
+        fprintf(stderr, "Error: 2 to 10 temperatures required\n");
+        return (1);
+    }
+    double *temps = new double[ntemps];
+    for (int i = 0; i < ntemps; i++) {
+        temps[i] = atof(argv[i+1]);
+        if (temps[i] <= 0) {
+            fprintf(stderr, "Error: non-positive temperature\n");
+            return (1);
+        }
+    }
+//XXX
+FILE *fp = fopen("sweepfile", "w");
+    fprintf(fp, "tsweep %d\n", ntemps);
+    for (int i = 0; i < ntemps; i++) {
+        int nt = ntemps;
+        mm_create_data(argc-nt, argv+nt, temps[i], true);
+        mm_create_fit(argc-nt, argv+nt, fp);
+    }
+    fclose(fp);
+    delete [] temps;
     return (0);
 }
 
@@ -553,7 +820,7 @@ int
 mmjco_cmds::mm_load_data(int argc, char **argv)
 {
     if (argc < 2) {
-        printf("Error: no filename given.\n");
+        fprintf(stderr, "Error: no filename given.\n");
         return (1);
     }
 
@@ -562,7 +829,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
     if (is_rooted(argv[1]) || !mmc_tcadir) {
         fp = fopen(argv[1], "r");
         if (!fp) {
-            printf("Error: unable to open file %s.\n", argv[1]);
+            fprintf(stderr, "Error: unable to open file %s.\n", argv[1]);
             return (1);
         }
     }
@@ -572,7 +839,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
         fp = fopen(path, "r");
         if (!fp) {
             delete [] path;
-            printf("Error: unable to open file %s.\n", argv[1]);
+            fprintf(stderr, "Error: unable to open file %s.\n", argv[1]);
             return (1);
         }
     }
@@ -580,7 +847,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
 
     // Read first line, determines file type.
     if (fgets(buf, 256, fp) == 0) {
-        printf("Error: file is empty or unreadable.\n");
+        fprintf(stderr, "Error: file is empty or unreadable.\n");
         fclose(fp);
         return (1);
     }
@@ -595,7 +862,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
                 break;
         }
         if (sm == 0.0) {
-            printf("Error: bad or missing parameters.\n");
+            fprintf(stderr, "Error: bad or missing parameters.\n");
             fclose(fp);
             return (1);
         }
@@ -615,7 +882,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
                 break;
         }
         if (npts < 2) {
-            printf("Error: too few points.\n");
+            fprintf(stderr, "Error: too few points.\n");
             fclose(fp);
             return (1);
         }
@@ -628,7 +895,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
             }
         }
         if (!fvals) {
-            printf("Error: no valid data in file.\n");
+            fprintf(stderr, "Error: no valid data in file.\n");
             fclose(fp);
             return (1);
         }
@@ -710,7 +977,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
             }
         }
         if (ix != npts-1) {
-            printf("Error: problem reading data.\n");
+            fprintf(stderr, "Error: problem reading data.\n");
             fclose(fp);
             return (1);
         }
@@ -734,7 +1001,7 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
                 cnt++;
         }
         if (cnt > 2) {
-            printf("Error: no valid data in file.\n");
+            fprintf(stderr, "Error: no valid data in file.\n");
             return (1);
         }
 
@@ -783,7 +1050,7 @@ int
 mmjco_cmds::mm_load_fit(int argc, char **argv)
 {
     if (argc < 2) {
-        printf("Error: no filename given.\n");
+        fprintf(stderr, "Error: no filename given.\n");
         return (1);
     }
 
@@ -792,7 +1059,7 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
     if (is_rooted(argv[1]) || !mmc_tcadir) {
         fp = fopen(argv[1], "r");
         if (!fp) {
-            printf("Error: unable to open file %s.\n", argv[1]);
+            fprintf(stderr, "Error: unable to open file %s.\n", argv[1]);
             return (1);
         }
     }
@@ -802,7 +1069,7 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
         fp = fopen(path, "r");
         if (!fp) {
             delete [] path;
-            printf("Error: unable to open file %s.\n", argv[1]);
+            fprintf(stderr, "Error: unable to open file %s.\n", argv[1]);
             return (1);
         }
     }
@@ -814,6 +1081,133 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
 
     mmc_mf.load_fit_parameters(argv[1], fp);
     mmc_nterms = mmc_mf.numterms();
+    return (0);
+}
+
+
+int
+mmjco_cmds::mm_load_table(int argc, char **argv)
+{
+    char *tabfile = 0;
+    double temp = -1.0;
+    for (int i = 1; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            if (!strcmp(argv[i], "-ft")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing filename, exiting.\n");
+                    return (1);
+                }
+                char f[256];
+                if (sscanf(argv[i], "%s", f) == 1)
+                    tabfile = strdup(f);
+                else {
+                    fprintf(stderr,
+                        "Error: bad -ft (fit table filename), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+        }
+        double a;
+        if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0) {
+            temp = a;
+        }
+        else {
+            fprintf(stderr, "Error: bad temperature, exiting.\n");
+            return (1);
+        }
+    }
+    if (temp == -1.0) {
+        fprintf(stderr, "Error: temperature not given, exiting.\n");
+        return (1);
+    }
+    if (!tabfile)
+        tabfile = strdup("sweepfile");
+
+    FILE *fp = fopen(tabfile, "r");
+    if (!fp) {
+        fprintf(stderr, "Error: can not open %s.\n", tabfile);
+        return (1);
+    }
+
+    mmjco_mtdb mt;
+    if (!mt.load(fp)) {
+        fprintf(stderr, "Error: load failed.\n");
+        fclose(fp);
+        return (1);
+    }
+    fclose(fp);
+
+    const double *data = mt.new_tab(temp);
+
+    mmc_mf.load_fit_parameters(data, mt.num_terms());
+
+    // Clear TCA data if any, set parameters from the interpolation fit
+    // data.
+    delete [] mmc_pair_data;
+    delete [] mmc_qp_data;
+    mmc_pair_data = 0;
+    mmc_qp_data = 0;
+    mmc_d1 = 0.0;
+    mmc_d2 = 0.0;
+    mmc_temp = temp;
+
+    mmc_nterms = mt.num_terms();
+    mmc_thr = mt.thresh();
+    if (mmc_numxpts != mt.num_xp()) {
+        mmc_numxpts = mt.num_xp();
+        delete [] mmc_xpts;
+        mmc_xpts = new double[mmc_numxpts];
+
+        double x0 = 0.001;
+        double dx = (2.0 - x0)/(mmc_numxpts-1);
+        for (int i = 0; i < mmc_numxpts; i++) {
+            double xx = x0;
+            // Need to avoid xx == 1.0 which causes integration failure.
+            if (fabs(xx - 1.0) < 1e-5)
+                xx = 1.0 + 1e-5;
+            mmc_xpts[i] = xx;
+            x0 += dx;
+        }
+    }
+    mmc_sm = mt.smooth();
+    delete [] mmc_datafile;
+    mmc_datafile = 0;
+
+    char *tbuf;
+    char *fn;
+    if (mmc_tcadir) {
+        tbuf = new char[strlen(mmc_tcadir) + 40];
+        sprintf(tbuf, "%s/", mmc_tcadir);
+        fn = tbuf + strlen(tbuf);
+    }
+    else {
+        tbuf = new char[40];
+        fn = tbuf;
+    }
+    sprintf(fn, "tca%05ld%05ld%05ld%02ld%04d",
+        lround(mmc_temp*1e3), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
+        lround(mmc_sm*1e3), mmc_numxpts);
+    sprintf(fn+strlen(fn), "-%02d%03ld.fit", mmc_nterms, lround(mmc_thr*1000));
+
+    fp = fopen(tbuf, "w");
+    if (fp) {
+        mmc_mf.save_fit_parameters(tbuf, fp);
+        fclose(fp);
+    }
+    else
+        fprintf(stderr, "Waring: coumd not write %s.\n", fn);
+    delete [] mmc_fitfile;
+    mmc_fitfile = tbuf;;
+
+    const double *dp = data;
+    for (int i = 0; i < mt.num_terms(); i++) {
+        fprintf(stdout, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
+            dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
+        dp += 6;
+    }
+
+    delete [] data;
     return (0);
 }
 

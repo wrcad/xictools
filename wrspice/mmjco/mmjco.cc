@@ -25,7 +25,7 @@ namespace {
     bool erhdlr(int er, const char *text)
     {
         if (er) {
-            printf("%s %s\n", gsl_strerror(er), text);
+            fprintf(stderr, "%s %s\n", gsl_strerror(er), text);
             return (true);
         }
         return (false);
@@ -463,29 +463,45 @@ mmjco_fit::new_fit_parameters(const double *x,
 }
 
 
-// Save TCA fit parameters p,A,B to file.
+// Save TCA fit parameters p,A,B to file.  The destination can be
+// set by passing fp, in which case the file name will be added
+// as a leading text string.
 //
 void
-mmjco_fit::save_fit_parameters(const char *filename)
+mmjco_fit::save_fit_parameters(const char *filename, FILE *fp)
 {
     if (!mmf_pAB || !mmf_nterms) {
-        printf("Error: no saved parameter set.\n");
+        fprintf(stderr, "Error: no saved parameter set.\n");
         return;
     }
     complex<double> *A = mmf_pAB + mmf_nterms;
     complex<double> *B = A + mmf_nterms;
-    FILE *fp = fopen(filename, "w");
+    bool closefp = false;
     if (!fp) {
-        printf("Error: unable to open file %s.\n", filename);
-        return;
+        fp = fopen(filename, "w");
+        if (!fp) {
+            fprintf(stderr, "Error: unable to open file %s.\n", filename);
+            return;
+        }
+        closefp = true;
+    }
+    else {
+        const char *f = strrchr(filename, '/');
+        if (f)
+            f++;
+        else
+            f = filename;
+        fprintf(fp, "%s\n", f);
     }
     for (int i = 0; i < mmf_nterms; i++) {
         fprintf(fp, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
             mmf_pAB[i].real(), mmf_pAB[i].imag(), A[i].real(), A[i].imag(),
             B[i].real(), B[i].imag());
     }
-    fclose(fp);
-    printf("Parameters saved to file %s.\n", filename);
+    if (closefp) {
+        fclose(fp);
+        printf("Parameters saved to file %s.\n", filename);
+    }
 }
 
 
@@ -529,6 +545,37 @@ mmjco_fit::load_fit_parameters(const char *filename, FILE *fp)
 }
 
 
+// Load TCA fit parameters from array.
+//
+void
+mmjco_fit::load_fit_parameters(const double *data, int nterms)
+{
+    complex<double> p[MAX_NTERMS];
+    complex<double> A[MAX_NTERMS];
+    complex<double> B[MAX_NTERMS];
+    const double *dp = data;
+    for (int i = 0; i < nterms; i++) {
+        p[i].real(dp[0]);
+        p[i].imag(dp[1]);
+        A[i].real(dp[2]);
+        A[i].imag(dp[3]);
+        B[i].real(dp[4]);
+        B[i].imag(dp[5]);
+        dp += 6;
+    }
+    mmf_nterms = nterms;
+    complex<double> *pAB = new complex<double>[3*nterms];
+    for (int i = 0; i < nterms; i++) {
+        pAB[i] = p[i];
+        pAB[nterms+i] = A[i];
+        pAB[2*nterms+i] = B[i];
+    }
+    delete [] mmf_pAB;
+    mmf_pAB = pAB;
+    printf("Loaded TCA parameters from data.\n");
+}
+
+
 // Return fitted TCAs from saved parameters for values in x.
 //
 void
@@ -536,7 +583,7 @@ mmjco_fit::tca_fit(const double *x, int xsz,
     complex<double> **Jpair_modelptr, complex<double> **Jqp_modelptr)
 {
     if (!mmf_pAB || !mmf_nterms) {
-        printf("Error: no saved fit parameters.\n");
+        fprintf(stderr, "Error: no saved fit parameters.\n");
         *Jpair_modelptr = 0;
         *Jqp_modelptr = 0;
         return;
@@ -558,11 +605,11 @@ mmjco_fit::residual(const complex<double> *Jpair_model,
     const complex<double> *Jqp_data, int xsz, double thr)
 {
     if (!Jpair_model || !Jqp_model) {
-        printf("Error: bad model.\n");
+        fprintf(stderr, "Warning: no model TCA data, skipping residual.\n");
         return (0.0);
     }
     if (!Jpair_data || !Jqp_data) {
-        printf("Error: bad data.\n");
+        fprintf(stderr, "Warning: no raw TCA data, skipping residual.\n");
         return (0.0);
     }
     double tot = 0.0;

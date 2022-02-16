@@ -1,6 +1,6 @@
 //=================================================================
 // Class to compute superconductor properties as a function of
-// temperature.  Presently, this will compute the order parameter.
+// temperature.  Presently, this will compute the gap parameter.
 //
 // Stephen R. Whiteley, wrcad.com,  Synopsys, Inc.  7/7/2021
 //=================================================================
@@ -35,15 +35,16 @@
 #define TC_NB 9.2
 
 
-struct tempr
+class mmjco_tempr
 {
+public:
     struct tprms
     {
         double T;
         double del;
     };
 
-    tempr(double Tc = 0.0, double dbtemp = 0.0)
+    mmjco_tempr(double Tc = 0.0, double dbtemp = 0.0)
         {
             if (dbtemp > 0.0)
                 t_dbe = dbtemp * BOLTZ;
@@ -60,13 +61,13 @@ struct tempr
         }
 
 #ifdef USE_GSL
-    ~tempr()
+    ~mmjco_tempr()
         {
             gsl_integration_workspace_free(t_ws);
         }
 #endif
 
-    double order_parameter(double);
+    double gap_parameter(double);
 
 private:
     double t_tc;    // Transition temperature

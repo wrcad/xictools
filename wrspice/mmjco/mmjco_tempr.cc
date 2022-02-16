@@ -1,6 +1,6 @@
 //=================================================================
 // Class to compute superconductor properties as a function of
-// temperature.  Presently, this will compute the order parameter.
+// temperature.  Presently, this will compute the gap parameter.
 //
 // Stephen R. Whiteley, wrcad.com,  Synopsys, Inc.  7/7/2021
 //=================================================================
@@ -19,7 +19,7 @@
 //
 //#define USE_GSL
 
-#include "tempr.h"
+#include "mmjco_tempr.h"
 
 
 #ifndef USE_GSL
@@ -96,14 +96,15 @@ double romberg(double (*f)(double, void*), void *ptr, double a, double b,
 namespace {
     double intfunc(double x, void *ptr)
     {
-        tempr::tprms *tp = (tempr::tprms*)ptr;
+        mmjco_tempr::tprms *tp = (mmjco_tempr::tprms*)ptr;
         double a = sqrt(tp->del*tp->del + x*x);
         double b = 0.5/(BOLTZ*tp->T);
         return (tanh(b*a)/a);
     }
 
 #ifdef USE_GSL
-    double func(tempr::tprms *tp, double dbe, gsl_integration_workspace *ws)
+    double func(mmjco_tempr::tprms *tp, double dbe, 
+            gsl_integration_workspace *ws)
     {
         gsl_function gsl_f;
         gsl_f.function = intfunc;
@@ -119,7 +120,7 @@ namespace {
         }
         return (intret);
 #else
-    double func(tempr::tprms *tp, double dbe)
+    double func(mmjco_tempr::tprms *tp, double dbe)
     {
         return (romberg(intfunc, tp, 0.0, dbe, 20, 1e-6));
     }
@@ -128,7 +129,7 @@ namespace {
 
 
 double
-tempr::order_parameter(double T)
+mmjco_tempr::gap_parameter(double T)
 {
     if (T >= (t_tc - 0.01))
         return (0);
@@ -171,20 +172,20 @@ tempr::order_parameter(double T)
 
 #ifdef STAND_ALONE
 
-// Calculate order parameter for Nb as a function of temperature.
+// Calculate gap parameter for Nb as a function of temperature.
 // No args:  print Del over range T=[0,Tc].
 // One arg:  print Del for the given T.
 // Two args: print Del for range of two temperatures given.
 //
 int main(int argc, char *argv[])
 {
-    tempr t;
+    mmjco_tempr t;
 
     if (argc == 2) {
         if (!strcmp(argv[1], "-h") || !strcmp(argv[1], "-?") || *argv[1]== 'h' ||
                 *argv[1] == '?') {
             puts(
-                "\nCalculate order parameter for Nb as a function of "
+                "\nCalculate gap parameter for Nb as a function of "
                 "temperature.\n"
                 "No args:  print Del over range T=[0,Tc].\n"
                 "One arg:  print Del for the given T.\n"
@@ -193,7 +194,7 @@ int main(int argc, char *argv[])
         }
         double T = atof(argv[1]);
         if (T >= 0.0 && T <= TC_NB) {
-            double del = t.order_parameter(T);
+            double del = t.gap_parameter(T);
             printf("T= %.4e Del= %.4e\n", T, del);
             return (0);
         }
@@ -208,7 +209,7 @@ int main(int argc, char *argv[])
                 Tmax = tmp;
             }
             for (double T = Tmin; T <= Tmax; T += 0.1) {
-                double del = t.order_parameter(T);
+                double del = t.gap_parameter(T);
                 printf("T= %.4e Del= %.4e\n", T, del);
             }
             return (0);
@@ -216,7 +217,7 @@ int main(int argc, char *argv[])
     }
     else {
         for (double T = 0.0; T <= TC_NB; T += 0.1) {
-            double del = t.order_parameter(T);
+            double del = t.gap_parameter(T);
 #define CHECK_FIT_FUNC
 #ifdef CHECK_FIT_FUNC
             double fit = 1.3994e-3*tanh(1.74*sqrt(TC_NB/(T+1e-3) - 1.0));
