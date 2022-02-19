@@ -41,13 +41,16 @@ mmjco_mtdb::new_tab(double t)
 // of the file contains the keyword "tsweep" followed by the number of
 // fit sets (and temperatures).
 //
+// Also used to load a sweep file.  In this case, the file pointer is
+// already pointing to the first record to read, and the number of
+// records to read is passed.
+//
 bool
-mmjco_mtdb::load(FILE *fp)
+mmjco_mtdb::load(FILE *fp, int ntemps)
 {
     const char *s;
     char buf[256];
     char tbf[16];
-    int ntemps = 0;
     int nterms = 0;
     double temp = 0.0;
     double *data = 0;
@@ -59,7 +62,7 @@ mmjco_mtdb::load(FILE *fp)
             s++;
         if (!*s)
             continue;
-        if (!strncmp(s, "tsweep", 6)) {
+        if (!strncmp(s, "tpoint", 6)) {
             s += 7;
             ntemps = atoi(s);
             continue;
@@ -162,6 +165,8 @@ mmjco_mtdb::load(FILE *fp)
                 fprintf(stderr, "Error: failed to add fit set.\n");
                 return (0);
             }
+            if (ix == ntemps)
+                break;
         }
     }
     delete [] data;

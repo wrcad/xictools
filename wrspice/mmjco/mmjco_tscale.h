@@ -114,7 +114,7 @@ public:
     double thresh() const   { return (mt_thr); }
 
     double *new_tab(double);
-    bool load(FILE*);
+    bool load(FILE*, int = 0);
 
 private:
     int mt_nterms;

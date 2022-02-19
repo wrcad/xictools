@@ -14,11 +14,13 @@
 //   cd[ata]
 //   cf[it]
 //   cm[odel]
+//   cs[ab]
 //   ct[ab]
 //   d[ir]
 //   g[ap]
 //   ld[ata]
 //   lf[it]
+//   ls[ab]
 //   lt[ab]
 //   h[elp]
 //   q[uit] | e[xit]
@@ -58,6 +60,8 @@ int main(int argc, char **argv)
             mmc.mm_create_fit(ac, av);
         else if (av[0][0] == 'c' && av[0][1] == 'm')
             mmc.mm_create_model(ac, av);
+        else if (av[0][0] == 'c' && av[0][1] == 's')
+            mmc.mm_create_sweep(ac, av);
         else if (av[0][0] == 'c' && av[0][1] == 't')
             mmc.mm_create_table(ac, av);
         else if (av[0][0] == 'd')
@@ -68,6 +72,8 @@ int main(int argc, char **argv)
             mmc.mm_load_data(ac, av);
         else if (av[0][0] == 'l' && av[0][1] == 'f')
             mmc.mm_load_fit(ac, av);
+        else if (av[0][0] == 'l' && av[0][1] == 's')
+            mmc.mm_load_sweep(ac, av);
         else if (av[0][0] == 'l' && av[0][1] == 't')
             mmc.mm_load_table(ac, av);
         else if (av[0][0] == 'q' || av[0][0] == 'e')
@@ -83,7 +89,10 @@ int main(int argc, char **argv)
 "cm[odel]  [-h thr] [-fm [filename]] [-r | -rr | -rd]\n"
 "    Create model for TCA data using fitting parameters, compute fit\n"
 "    measure, optionally save to file.\n"
-"ct[ab]  XXXXXXX\n"
+"cs[weep] Tstrt Tend [delta] [cd and cf args] \n"
+"    Create a temperature sweep file, delta defaults to 0.1K."
+"ct[ab] T1 T2 [... TN] [cd and cf args]\n"
+"    Create a temperature table file."
 "d[ir] directory_path\n"
 "    Use the given directory as source and destination for TCA files.\n"
 "g[ap] -t temp [-tc Tc] [-td Debye]\n"
@@ -92,8 +101,10 @@ int main(int argc, char **argv)
 "    Load internal data register from TCA data file.\n"
 "lf[it] filename\n"
 "    Load internal register from fit parameter file.\n"
+"ls[weep] filename\n"
+"    Load internal register from interpolated fit parameter sweep file.\n"
 "lt[ab] filename\n"
-"    Load internal register from interpolated fit parameter file.\n"
+"    Load internal register from interpolated fit parameter table file.\n"
 "h[elp] | v[ersion] | ?\n"
 "    Print this help.\n"
 "q[uit] | e[xit]\n"

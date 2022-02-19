@@ -494,10 +494,17 @@ mmjco_fit::save_fit_parameters(const char *filename, FILE *fp)
         fprintf(fp, "%s\n", f);
     }
     for (int i = 0; i < mmf_nterms; i++) {
+        fprintf(fp, "%12.5e,%12.5e,%12.5e,%12.5e,%12.5e,%12.5e\n",
+            mmf_pAB[i].real(), mmf_pAB[i].imag(), A[i].real(), A[i].imag(),
+            B[i].real(), B[i].imag());
+    }
+/*XXX
+    for (int i = 0; i < mmf_nterms; i++) {
         fprintf(fp, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
             mmf_pAB[i].real(), mmf_pAB[i].imag(), A[i].real(), A[i].imag(),
             B[i].real(), B[i].imag());
     }
+*/
     if (closefp) {
         fclose(fp);
         printf("Parameters saved to file %s.\n", filename);

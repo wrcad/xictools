@@ -745,7 +745,71 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
 }
 
 
-// ct[ab] T1 T2 [... Tn] [ ct and cf args]
+// cs[weep] T1 T2 dT  [ cd and cf args]
+//
+int
+mmjco_cmds::mm_create_sweep(int argc, char **argv)
+{
+    int nvals = 0;
+    for (int i = 1; i < argc; i++) {
+        if ((!isdigit(*argv[i]) && *argv[i] != '.')) {
+            nvals = i-1;
+            break;
+        }
+        if (i == argc-1) {
+            nvals = i;
+            break;
+        }
+    }
+    if (nvals < 2 || nvals > 3) {
+        fprintf(stderr, "Error: 2 temperatures and optional delta required\n");
+        return (1);
+    }
+    double *vals = new double[3];
+    for (int i = 0; i < nvals; i++) {
+        vals[i] = atof(argv[i+1]);
+        if (vals[i] <= 0) {
+            fprintf(stderr, "Error: non-positive temperature or delta\n");
+            return (1);
+        }
+    }
+    if (vals[0] > vals[1]) {
+        double t = vals[0];
+        vals[0] = vals[1];
+        vals[1] = t;
+    }
+    if (nvals == 2)
+        vals[2] = 0.1;
+    int ntemps = (vals[1] - vals[0])/vals[2] + 0.001;
+
+    char *datafile;
+    char *dp;
+    if (mmc_tcadir) {
+        datafile = new char[strlen(mmc_tcadir) + 32];
+        sprintf(datafile, "%s/", mmc_tcadir);
+        dp = datafile + strlen(datafile);
+    }
+    else {
+        datafile = new char[32];
+        dp = datafile;
+    }
+    sprintf(dp, "tsweep_%d_%.4f_%.4f", ntemps, vals[0], vals[2]);
+
+    FILE *fp = fopen(datafile, "w");
+    fprintf(fp, "tsweep %d %.4f %.4f\n", ntemps, vals[0], vals[2]);
+    for (int i = 0; i < ntemps; i++) {
+        mm_create_data(argc-nvals, argv+nvals, vals[0], true);
+        mm_create_fit(argc-nvals, argv+nvals, fp);
+        vals[0] += vals[2];
+    }
+    fclose(fp);
+    delete [] vals;
+    delete [] datafile;
+    return (0);
+}
+
+
+// ct[ab] T1 T2 [... Tn] [ cd and cf args]
 //
 int
 mmjco_cmds::mm_create_table(int argc, char **argv)
@@ -761,7 +825,6 @@ mmjco_cmds::mm_create_table(int argc, char **argv)
             break;
         }
     }
-printf("temps %d\n", ntemps);
     if (ntemps < 2 || ntemps > 10) {
         fprintf(stderr, "Error: 2 to 10 temperatures required\n");
         return (1);
@@ -774,9 +837,22 @@ printf("temps %d\n", ntemps);
             return (1);
         }
     }
-//XXX
-FILE *fp = fopen("sweepfile", "w");
-    fprintf(fp, "tsweep %d\n", ntemps);
+
+    char *datafile;
+    char *dp;
+    if (mmc_tcadir) {
+        datafile = new char[strlen(mmc_tcadir) + 32];
+        sprintf(datafile, "%s/", mmc_tcadir);
+        dp = datafile + strlen(datafile);
+    }
+    else {
+        datafile = new char[32];
+        dp = datafile;
+    }
+    sprintf(dp, "tpoints_%d", ntemps);
+
+    FILE *fp = fopen(datafile, "w");
+    fprintf(fp, "tpoints %d\n", ntemps);
     for (int i = 0; i < ntemps; i++) {
         int nt = ntemps;
         mm_create_data(argc-nt, argv+nt, temps[i], true);
@@ -784,6 +860,7 @@ FILE *fp = fopen("sweepfile", "w");
     }
     fclose(fp);
     delete [] temps;
+    delete [] datafile;
     return (0);
 }
 
@@ -1081,6 +1158,176 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
 
     mmc_mf.load_fit_parameters(argv[1], fp);
     mmc_nterms = mmc_mf.numterms();
+    return (0);
+}
+
+
+int
+mmjco_cmds::mm_load_sweep(int argc, char **argv)
+{
+    char *swpfile = 0;
+    double temp = -1.0;
+    for (int i = 1; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            if (!strcmp(argv[i], "-ft")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing filename, exiting.\n");
+                    return (1);
+                }
+                char f[256];
+                if (sscanf(argv[i], "%s", f) == 1)
+                    swpfile = strdup(f);
+                else {
+                    fprintf(stderr,
+                        "Error: bad -ft (fit table filename), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+        }
+        double a;
+        if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0) {
+            temp = a;
+        }
+        else {
+            fprintf(stderr, "Error: bad temperature, exiting.\n");
+            return (1);
+        }
+    }
+    if (temp == -1.0) {
+        fprintf(stderr, "Error: temperature not given, exiting.\n");
+        return (1);
+    }
+    if (!swpfile)
+        swpfile = strdup("sweepfile");
+
+    FILE *fp = fopen(swpfile, "r");
+    if (!fp) {
+        fprintf(stderr, "Error: can not open %s.\n", swpfile);
+        return (1);
+    }
+
+    int nrec;
+    double tstrt, tdel;
+    {
+        char *tbuf = new char[128];
+        if (!fgets(tbuf, 64, fp)) {
+            delete [] tbuf;
+            fprintf(stderr, "Error: premature EOF in %s.\n", swpfile);
+            return (1);
+        }
+
+        if (strncmp(tbuf, "tsweep", 6) || sscanf(tbuf+7, "%d %lf %lf",
+                &nrec, &tstrt, &tdel) != 3) {
+            delete [] tbuf;
+            fprintf(stderr, "Error: syntax in %s.\n", swpfile);
+            return (1);
+        }
+        delete [] tbuf;
+    }
+
+    int ntemp = (temp - tstrt)/tdel + 1e-6;
+    if (ntemp < 0 || ntemp >= nrec) {
+        fprintf(stderr, "Error: range mismatch in %s.\n", swpfile);
+        return (1);
+    }
+    double resid = (temp - tstrt) - ntemp*tdel;
+//XXX linear for now
+    int recs = 0;
+    if (resid < 1e-6)
+        recs = 1;
+    else
+        recs = 2;
+    long pos1 = ftell(fp);
+    struct stat st;
+    fstat(fileno(fp), &st);
+    long sz = st.st_size - pos1;
+    long recsz = sz/nrec;
+
+    long offset = recsz*ntemp;
+    if (fseek(fp, offset, SEEK_CUR) < 0) {
+        fprintf(stderr, "Error: seek failed in %s.\n", swpfile);
+        return (1);
+    }
+
+    mmjco_mtdb mt;
+    if (!mt.load(fp, recs)) {
+        fprintf(stderr, "Error: load failed.\n");
+        fclose(fp);
+        return (1);
+    }
+    fclose(fp);
+
+    const double *data = mt.new_tab(temp);
+
+    mmc_mf.load_fit_parameters(data, mt.num_terms());
+
+    // Clear TCA data if any, set parameters from the interpolation fit
+    // data.
+    delete [] mmc_pair_data;
+    delete [] mmc_qp_data;
+    mmc_pair_data = 0;
+    mmc_qp_data = 0;
+    mmc_d1 = 0.0;
+    mmc_d2 = 0.0;
+    mmc_temp = temp;
+
+    mmc_nterms = mt.num_terms();
+    mmc_thr = mt.thresh();
+    if (mmc_numxpts != mt.num_xp()) {
+        mmc_numxpts = mt.num_xp();
+        delete [] mmc_xpts;
+        mmc_xpts = new double[mmc_numxpts];
+
+        double x0 = 0.001;
+        double dx = (2.0 - x0)/(mmc_numxpts-1);
+        for (int i = 0; i < mmc_numxpts; i++) {
+            double xx = x0;
+            // Need to avoid xx == 1.0 which causes integration failure.
+            if (fabs(xx - 1.0) < 1e-5)
+                xx = 1.0 + 1e-5;
+            mmc_xpts[i] = xx;
+            x0 += dx;
+        }
+    }
+    mmc_sm = mt.smooth();
+    delete [] mmc_datafile;
+    mmc_datafile = 0;
+
+    char *tbuf;
+    char *fn;
+    if (mmc_tcadir) {
+        tbuf = new char[strlen(mmc_tcadir) + 40];
+        sprintf(tbuf, "%s/", mmc_tcadir);
+        fn = tbuf + strlen(tbuf);
+    }
+    else {
+        tbuf = new char[40];
+        fn = tbuf;
+    }
+    sprintf(fn, "tca%05ld%05ld%05ld%02ld%04d",
+        lround(mmc_temp*1e3), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
+        lround(mmc_sm*1e3), mmc_numxpts);
+    sprintf(fn+strlen(fn), "-%02d%03ld.fit", mmc_nterms, lround(mmc_thr*1000));
+
+    fp = fopen(tbuf, "w");
+    if (fp) {
+        mmc_mf.save_fit_parameters(tbuf, fp);
+        fclose(fp);
+    }
+    else
+        fprintf(stderr, "Waring: could not write %s.\n", fn);
+    delete [] mmc_fitfile;
+    mmc_fitfile = tbuf;;
+
+    const double *dp = data;
+    for (int i = 0; i < mt.num_terms(); i++) {
+        fprintf(stdout, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
+            dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
+        dp += 6;
+    }
+
+    delete [] data;
     return (0);
 }
 
