@@ -25,7 +25,6 @@ public:
     int mm_create_fit(int, char**, FILE* = 0);
     int mm_create_model(int, char**);
     int mm_create_sweep(int, char**);
-    int mm_create_table(int, char**);
     int mm_load_data(int, char**);
     int mm_load_fit(int, char**);
     int mm_load_sweep(int, char**);

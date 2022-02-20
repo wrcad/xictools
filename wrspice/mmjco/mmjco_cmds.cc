@@ -499,14 +499,14 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
             dp = datafile;
         }
         filename = dp;
-        sprintf(dp, "tca%05ld%05ld%05ld%02ld%04d",
-            lround(mmc_temp*1e3), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
+        sprintf(dp, "tca%06ld%05ld%05ld%02ld%04d",
+            lround(mmc_temp*1e4), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
             lround(mmc_sm*1e3), mmc_numxpts);
-/*XXX
+        /* This was the original format.
         sprintf(dp, "tca%03ld%03ld%03ld%02ld%04d",
             lround(mmc_temp*100), lround(mmc_d1*100), lround(mmc_d2*100),
             lround(mmc_sm*1000), mmc_numxpts);
-*/
+        */
         if (dtype == DFDATA)
             strcat(dp, ".data");
         else
@@ -1232,24 +1232,41 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
         return (1);
     }
     double resid = (temp - tstrt) - ntemp*tdel;
-//XXX linear for now
+    // On-point, linear, or quadratic.
     int recs = 0;
-    if (resid < 1e-6)
+    if (resid < 1e-6) {
+        // Close enough to reference, no interpolation needed.
         recs = 1;
-    else
+    }
+    else {
         recs = 2;
+        if (resid > 0.5) {
+            // Closer to the next reference, do quad unless at upper limit.
+            if (ntemp + 2 < nreq)
+                recs = 3;
+        }
+        else if (ntemp > 0) {
+            // Do quad unless at lower limit.
+            ntemp--;
+            recs = 3;
+        }
+    }
+
+    // Compute the record size, these should all be the same.
     long pos1 = ftell(fp);
     struct stat st;
     fstat(fileno(fp), &st);
     long sz = st.st_size - pos1;
     long recsz = sz/nrec;
 
+    // Set the offset into the file.
     long offset = recsz*ntemp;
     if (fseek(fp, offset, SEEK_CUR) < 0) {
         fprintf(stderr, "Error: seek failed in %s.\n", swpfile);
         return (1);
     }
 
+    // Grab the data.
     mmjco_mtdb mt;
     if (!mt.load(fp, recs)) {
         fprintf(stderr, "Error: load failed.\n");
@@ -1258,7 +1275,14 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     }
     fclose(fp);
 
+    // This does the interpolation, returning the new fit set.
     const double *data = mt.new_tab(temp);
+
+    // From not on, this is example-only code.  We load the new fit
+    // parameters back into mmjco as if they were computed directly,
+    // then drop a model file (back-converted TCA amplitudes) which
+    // can be plotted or compared with an actual TCA amplitude file
+    // for the temperature.
 
     mmc_mf.load_fit_parameters(data, mt.num_terms());
 
@@ -1305,8 +1329,9 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
         tbuf = new char[40];
         fn = tbuf;
     }
-    sprintf(fn, "tca%05ld%05ld%05ld%02ld%04d",
-        lround(mmc_temp*1e3), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
+
+    sprintf(fn, "tca%06ld%05ld%05ld%02ld%04d",
+        lround(mmc_temp*1e4), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
         lround(mmc_sm*1e3), mmc_numxpts);
     sprintf(fn+strlen(fn), "-%02d%03ld.fit", mmc_nterms, lround(mmc_thr*1000));
 
@@ -1320,133 +1345,7 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     delete [] mmc_fitfile;
     mmc_fitfile = tbuf;;
 
-    const double *dp = data;
-    for (int i = 0; i < mt.num_terms(); i++) {
-        fprintf(stdout, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
-            dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
-        dp += 6;
-    }
-
-    delete [] data;
-    return (0);
-}
-
-
-int
-mmjco_cmds::mm_load_table(int argc, char **argv)
-{
-    char *tabfile = 0;
-    double temp = -1.0;
-    for (int i = 1; i < argc; i++) {
-        if (argv[i][0] == '-') {
-            if (!strcmp(argv[i], "-ft")) {
-                if (++i == argc) {
-                    fprintf(stderr, "Error: missing filename, exiting.\n");
-                    return (1);
-                }
-                char f[256];
-                if (sscanf(argv[i], "%s", f) == 1)
-                    tabfile = strdup(f);
-                else {
-                    fprintf(stderr,
-                        "Error: bad -ft (fit table filename), exiting.\n");
-                    return (1);
-                }
-                continue;
-            }
-        }
-        double a;
-        if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0) {
-            temp = a;
-        }
-        else {
-            fprintf(stderr, "Error: bad temperature, exiting.\n");
-            return (1);
-        }
-    }
-    if (temp == -1.0) {
-        fprintf(stderr, "Error: temperature not given, exiting.\n");
-        return (1);
-    }
-    if (!tabfile)
-        tabfile = strdup("sweepfile");
-
-    FILE *fp = fopen(tabfile, "r");
-    if (!fp) {
-        fprintf(stderr, "Error: can not open %s.\n", tabfile);
-        return (1);
-    }
-
-    mmjco_mtdb mt;
-    if (!mt.load(fp)) {
-        fprintf(stderr, "Error: load failed.\n");
-        fclose(fp);
-        return (1);
-    }
-    fclose(fp);
-
-    const double *data = mt.new_tab(temp);
-
-    mmc_mf.load_fit_parameters(data, mt.num_terms());
-
-    // Clear TCA data if any, set parameters from the interpolation fit
-    // data.
-    delete [] mmc_pair_data;
-    delete [] mmc_qp_data;
-    mmc_pair_data = 0;
-    mmc_qp_data = 0;
-    mmc_d1 = 0.0;
-    mmc_d2 = 0.0;
-    mmc_temp = temp;
-
-    mmc_nterms = mt.num_terms();
-    mmc_thr = mt.thresh();
-    if (mmc_numxpts != mt.num_xp()) {
-        mmc_numxpts = mt.num_xp();
-        delete [] mmc_xpts;
-        mmc_xpts = new double[mmc_numxpts];
-
-        double x0 = 0.001;
-        double dx = (2.0 - x0)/(mmc_numxpts-1);
-        for (int i = 0; i < mmc_numxpts; i++) {
-            double xx = x0;
-            // Need to avoid xx == 1.0 which causes integration failure.
-            if (fabs(xx - 1.0) < 1e-5)
-                xx = 1.0 + 1e-5;
-            mmc_xpts[i] = xx;
-            x0 += dx;
-        }
-    }
-    mmc_sm = mt.smooth();
-    delete [] mmc_datafile;
-    mmc_datafile = 0;
-
-    char *tbuf;
-    char *fn;
-    if (mmc_tcadir) {
-        tbuf = new char[strlen(mmc_tcadir) + 40];
-        sprintf(tbuf, "%s/", mmc_tcadir);
-        fn = tbuf + strlen(tbuf);
-    }
-    else {
-        tbuf = new char[40];
-        fn = tbuf;
-    }
-    sprintf(fn, "tca%05ld%05ld%05ld%02ld%04d",
-        lround(mmc_temp*1e3), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
-        lround(mmc_sm*1e3), mmc_numxpts);
-    sprintf(fn+strlen(fn), "-%02d%03ld.fit", mmc_nterms, lround(mmc_thr*1000));
-
-    fp = fopen(tbuf, "w");
-    if (fp) {
-        mmc_mf.save_fit_parameters(tbuf, fp);
-        fclose(fp);
-    }
-    else
-        fprintf(stderr, "Waring: coumd not write %s.\n", fn);
-    delete [] mmc_fitfile;
-    mmc_fitfile = tbuf;;
-
+    // Print the parameters.
     const double *dp = data;
     for (int i = 0; i < mt.num_terms(); i++) {
         fprintf(stdout, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",

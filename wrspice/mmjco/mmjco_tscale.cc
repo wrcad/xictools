@@ -63,6 +63,7 @@ mmjco_mtdb::load(FILE *fp, int ntemps)
         if (!*s)
             continue;
         if (!strncmp(s, "tpoint", 6)) {
+            // Not seen in sweep files.
             s += 7;
             ntemps = atoi(s);
             continue;
@@ -75,8 +76,9 @@ mmjco_mtdb::load(FILE *fp, int ntemps)
             *t++ = *s++;
             *t++ = *s++;
             *t++ = *s++;
+            *t++ = *s++;
             *t = 0;
-            temp = atof(tbf)*1e-3;
+            temp = atof(tbf)*1e-4;
 #ifdef DEBUG
             printf("tm = %g\n", temp);
 #endif

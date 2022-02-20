@@ -14,14 +14,13 @@
 //   cd[ata]
 //   cf[it]
 //   cm[odel]
-//   cs[ab]
+//   cs[weep]
 //   ct[ab]
 //   d[ir]
 //   g[ap]
 //   ld[ata]
 //   lf[it]
-//   ls[ab]
-//   lt[ab]
+//   ls[weep]
 //   h[elp]
 //   q[uit] | e[xit]
 // The remainder of the line contains arguments as expected by the
@@ -103,8 +102,6 @@ int main(int argc, char **argv)
 "    Load internal register from fit parameter file.\n"
 "ls[weep] filename\n"
 "    Load internal register from interpolated fit parameter sweep file.\n"
-"lt[ab] filename\n"
-"    Load internal register from interpolated fit parameter table file.\n"
 "h[elp] | v[ersion] | ?\n"
 "    Print this help.\n"
 "q[uit] | e[xit]\n"
