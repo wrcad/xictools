@@ -2726,7 +2726,8 @@ Josephson Models
     &Delta; = &Delta;<sub>0</sub> <i>tanh</i>(<tt>tcfct</tt>
     &radic;(<tt>tc</tt>/T - 1))
     </blockquote>
-    Reference: <tt>https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap</tt>
+    Reference: <a href="https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap">
+    <tt>https://physics.stackexchange.com/questions/192416/interpolation-formula-for-bcs-superconducting-gap</tt></a>
 
     <p>
     Here, &Delta; is the gap parameter, with the subscript indicating the

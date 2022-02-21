@@ -777,7 +777,7 @@ sTJMmodel::tjm_init()
 {
     TJMcoeffSet *cs;
     if (tjm_coeffsGiven)
-        cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs);
+        cs = TJMcoeffSet::getTJMcoeffSet(tjm_coeffs, TJMdeftemp);
     else
         cs = TJMcoeffSet::getTJMcoeffSet(TJMdeftemp, TJMdel1, TJMdel2, TJMsmf,
             TJMnxpts, TJMnterms, TJMthr);

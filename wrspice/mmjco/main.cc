@@ -41,8 +41,19 @@ int main(int argc, char **argv)
 
     if (argc > 1) {
         if (!strcmp(argv[1], "cdf")) {
-            mmc.mm_create_data(argc, argv);
-            mmc.mm_create_fit(argc, argv);
+            if (mmc.mm_create_data(argc-1, argv+1))
+                return (1);
+            if (mmc.mm_create_fit(argc-1, argv+1))
+                return (1);
+            return (0);
+        }
+        if (!strcmp(argv[1], "sf")) {
+            double temp;
+            mmjco_mtdb *mt;
+            
+            if (mmc.mm_get_sweep_fit(argc-1, argv+1, &mt, &temp))
+                return (1);
+
             return (0);
         }
     }
@@ -73,8 +84,6 @@ int main(int argc, char **argv)
             mmc.mm_load_fit(ac, av);
         else if (av[0][0] == 'l' && av[0][1] == 's')
             mmc.mm_load_sweep(ac, av);
-        else if (av[0][0] == 'l' && av[0][1] == 't')
-            mmc.mm_load_table(ac, av);
         else if (av[0][0] == 'q' || av[0][0] == 'e')
             break;
         else if (av[0][0] == 'h' || av[0][0] == 'v' || av[0][0] == '?') {

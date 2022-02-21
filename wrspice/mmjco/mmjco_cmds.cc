@@ -208,6 +208,128 @@ mmjco_cmds::mm_get_gap(int argc, char **argv)
 }
 
 
+// Return the possibly interpolated fit data for temp from the sweep
+// file.
+//
+int
+mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **mtp,
+    double *pt)
+{
+    char *swpfile = 0;
+    double temp = -1.0;
+    for (int i = 1; i < argc; i++) {
+        if (argv[i][0] == '-') {
+            if (!strcmp(argv[i], "-ft")) {
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing filename, exiting.\n");
+                    return (1);
+                }
+                char f[256];
+                if (sscanf(argv[i], "%s", f) == 1)
+                    swpfile = strdup(f);
+                else {
+                    fprintf(stderr,
+                        "Error: bad -ft (fit table filename), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+        }
+        double a;
+        if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0) {
+            temp = a;
+        }
+        else {
+            fprintf(stderr, "Error: bad temperature, exiting.\n");
+            return (1);
+        }
+    }
+    if (temp == -1.0) {
+        fprintf(stderr, "Error: temperature not given, exiting.\n");
+        return (1);
+    }
+    if (!swpfile) {
+        fprintf(stderr, "Error: sweep file not given, exiting.\n");
+        return (1);
+    }
+    FILE *fp = fopen(swpfile, "r");
+    if (!fp) {
+        fprintf(stderr, "Error: can not open %s.\n", swpfile);
+        return (1);
+    }
+    *pt = temp;
+
+    int nrec;
+    double tstrt, tdel;
+    char *tbuf = new char[128];
+    if (!fgets(tbuf, 64, fp)) {
+        delete [] tbuf;
+        fprintf(stderr, "Error: premature EOF in %s.\n", swpfile);
+        return (1);
+    }
+
+    if (strncmp(tbuf, "tsweep", 6) || sscanf(tbuf+7, "%d %lf %lf",
+            &nrec, &tstrt, &tdel) != 3) {
+        delete [] tbuf;
+        fprintf(stderr, "Error: syntax in %s.\n", swpfile);
+        return (1);
+    }
+    delete [] tbuf;
+
+    int ntemp = (temp - tstrt)/tdel + 1e-6;
+    if (ntemp < 0 || ntemp >= nrec) {
+        fprintf(stderr, "Error: range mismatch in %s.\n", swpfile);
+        return (1);
+    }
+    double resid = (temp - tstrt) - ntemp*tdel;
+    // On-point, linear, or quadratic.
+    int recs = 0;
+    if (resid < 1e-6) {
+        // Close enough to reference, no interpolation needed.
+        recs = 1;
+    }
+    else {
+        recs = 2;
+        if (resid > 0.5) {
+            // Closer to the next reference, do quad unless at upper limit.
+            if (ntemp + 2 < nrec)
+                recs = 3;
+        }
+        else if (ntemp > 0) {
+            // Do quad unless at lower limit.
+            ntemp--;
+            recs = 3;
+        }
+    }
+
+    // Compute the record size, these should all be the same.
+    long pos1 = ftell(fp);
+    struct stat st;
+    fstat(fileno(fp), &st);
+    long sz = st.st_size - pos1;
+    long recsz = sz/nrec;
+
+    // Set the offset into the file.
+    long offset = recsz*ntemp;
+    if (fseek(fp, offset, SEEK_CUR) < 0) {
+        fprintf(stderr, "Error: seek failed in %s.\n", swpfile);
+        return (1);
+    }
+
+    // Grab the data.
+    mmjco_mtdb *mt = new mmjco_mtdb;
+    if (!mt->load(fp, recs)) {
+        fprintf(stderr, "Error: load failed.\n");
+        delete mt;
+        fclose(fp);
+        return (1);
+    }
+    *mtp = mt;
+    fclose(fp);
+    return (0);
+}
+
+
 // Create a TCA data set and write this to a file.  The data set is
 // saved in an internal data register, replacing any existing data.
 // The default temp can be passed in the args for sweeps.
@@ -599,6 +721,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
     mmc_thr = thr;
 
     // Compute fitting parameters.
+    printf("Computing fitting parameters at T=%.4fK\n", mmc_temp);
     mmc_mf.new_fit_parameters(mmc_xpts, mmc_pair_data, mmc_qp_data, mmc_numxpts,
         mmc_nterms, mmc_thr);
 
@@ -633,7 +756,11 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
     return (0);
 }
 
-
+// Back-convert a "model" TCA parameter table from the fitting
+// parameters stored in memory.  By default, output is not saved, only
+// the reisdual to the original TCA table (if present) is computed. 
+// Use -fm with no argument to save with default file name,
+//
 // cm [-h thr] [-fm [filename]] [-r | -rr | -rd]
 int
 mmjco_cmds::mm_create_model(int argc, char **argv)
@@ -745,7 +872,10 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
 }
 
 
-// cs[weep] T1 T2 dT  [ cd and cf args]
+// Create a sweep file which consists of fit parameters for
+// temperatures over a range.  The dT defaults to 0.1K.
+//
+// cs[weep] T1 T2 [dT]  [ cd and cf args]
 //
 int
 mmjco_cmds::mm_create_sweep(int argc, char **argv)
@@ -809,6 +939,9 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
 }
 
 
+// Create a tab file which consists of fit data for each of the
+// temperatures listed.
+//
 // ct[ab] T1 T2 [... Tn] [ cd and cf args]
 //
 int
@@ -825,8 +958,8 @@ mmjco_cmds::mm_create_table(int argc, char **argv)
             break;
         }
     }
-    if (ntemps < 2 || ntemps > 10) {
-        fprintf(stderr, "Error: 2 to 10 temperatures required\n");
+    if (ntemps < 2 || ntemps > 100) {
+        fprintf(stderr, "Error: 2 to 100 temperatures required\n");
         return (1);
     }
     double *temps = new double[ntemps];
@@ -1162,129 +1295,27 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
 }
 
 
+// Load fit Parameter data interpolated from a sweep file.
+//
+// ls -ft filename temp
 int
 mmjco_cmds::mm_load_sweep(int argc, char **argv)
 {
-    char *swpfile = 0;
-    double temp = -1.0;
-    for (int i = 1; i < argc; i++) {
-        if (argv[i][0] == '-') {
-            if (!strcmp(argv[i], "-ft")) {
-                if (++i == argc) {
-                    fprintf(stderr, "Error: missing filename, exiting.\n");
-                    return (1);
-                }
-                char f[256];
-                if (sscanf(argv[i], "%s", f) == 1)
-                    swpfile = strdup(f);
-                else {
-                    fprintf(stderr,
-                        "Error: bad -ft (fit table filename), exiting.\n");
-                    return (1);
-                }
-                continue;
-            }
-        }
-        double a;
-        if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0) {
-            temp = a;
-        }
-        else {
-            fprintf(stderr, "Error: bad temperature, exiting.\n");
-            return (1);
-        }
-    }
-    if (temp == -1.0) {
-        fprintf(stderr, "Error: temperature not given, exiting.\n");
+    mmjco_mtdb *mt;
+    double temp;
+    if (mm_get_sweep_fit(argc, argv, &mt, &temp))
         return (1);
-    }
-    if (!swpfile)
-        swpfile = strdup("sweepfile");
-
-    FILE *fp = fopen(swpfile, "r");
-    if (!fp) {
-        fprintf(stderr, "Error: can not open %s.\n", swpfile);
-        return (1);
-    }
-
-    int nrec;
-    double tstrt, tdel;
-    {
-        char *tbuf = new char[128];
-        if (!fgets(tbuf, 64, fp)) {
-            delete [] tbuf;
-            fprintf(stderr, "Error: premature EOF in %s.\n", swpfile);
-            return (1);
-        }
-
-        if (strncmp(tbuf, "tsweep", 6) || sscanf(tbuf+7, "%d %lf %lf",
-                &nrec, &tstrt, &tdel) != 3) {
-            delete [] tbuf;
-            fprintf(stderr, "Error: syntax in %s.\n", swpfile);
-            return (1);
-        }
-        delete [] tbuf;
-    }
-
-    int ntemp = (temp - tstrt)/tdel + 1e-6;
-    if (ntemp < 0 || ntemp >= nrec) {
-        fprintf(stderr, "Error: range mismatch in %s.\n", swpfile);
-        return (1);
-    }
-    double resid = (temp - tstrt) - ntemp*tdel;
-    // On-point, linear, or quadratic.
-    int recs = 0;
-    if (resid < 1e-6) {
-        // Close enough to reference, no interpolation needed.
-        recs = 1;
-    }
-    else {
-        recs = 2;
-        if (resid > 0.5) {
-            // Closer to the next reference, do quad unless at upper limit.
-            if (ntemp + 2 < nreq)
-                recs = 3;
-        }
-        else if (ntemp > 0) {
-            // Do quad unless at lower limit.
-            ntemp--;
-            recs = 3;
-        }
-    }
-
-    // Compute the record size, these should all be the same.
-    long pos1 = ftell(fp);
-    struct stat st;
-    fstat(fileno(fp), &st);
-    long sz = st.st_size - pos1;
-    long recsz = sz/nrec;
-
-    // Set the offset into the file.
-    long offset = recsz*ntemp;
-    if (fseek(fp, offset, SEEK_CUR) < 0) {
-        fprintf(stderr, "Error: seek failed in %s.\n", swpfile);
-        return (1);
-    }
-
-    // Grab the data.
-    mmjco_mtdb mt;
-    if (!mt.load(fp, recs)) {
-        fprintf(stderr, "Error: load failed.\n");
-        fclose(fp);
-        return (1);
-    }
-    fclose(fp);
 
     // This does the interpolation, returning the new fit set.
-    const double *data = mt.new_tab(temp);
+    const double *data = mt->new_tab(temp);
 
-    // From not on, this is example-only code.  We load the new fit
+    // From now on, this is example-only code.  We load the new fit
     // parameters back into mmjco as if they were computed directly,
     // then drop a model file (back-converted TCA amplitudes) which
     // can be plotted or compared with an actual TCA amplitude file
     // for the temperature.
 
-    mmc_mf.load_fit_parameters(data, mt.num_terms());
+    mmc_mf.load_fit_parameters(data, mt->num_terms());
 
     // Clear TCA data if any, set parameters from the interpolation fit
     // data.
@@ -1296,10 +1327,10 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     mmc_d2 = 0.0;
     mmc_temp = temp;
 
-    mmc_nterms = mt.num_terms();
-    mmc_thr = mt.thresh();
-    if (mmc_numxpts != mt.num_xp()) {
-        mmc_numxpts = mt.num_xp();
+    mmc_nterms = mt->num_terms();
+    mmc_thr = mt->thresh();
+    if (mmc_numxpts != mt->num_xp()) {
+        mmc_numxpts = mt->num_xp();
         delete [] mmc_xpts;
         mmc_xpts = new double[mmc_numxpts];
 
@@ -1314,7 +1345,7 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
             x0 += dx;
         }
     }
-    mmc_sm = mt.smooth();
+    mmc_sm = mt->smooth();
     delete [] mmc_datafile;
     mmc_datafile = 0;
 
@@ -1335,7 +1366,7 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
         lround(mmc_sm*1e3), mmc_numxpts);
     sprintf(fn+strlen(fn), "-%02d%03ld.fit", mmc_nterms, lround(mmc_thr*1000));
 
-    fp = fopen(tbuf, "w");
+    FILE *fp = fopen(tbuf, "w");
     if (fp) {
         mmc_mf.save_fit_parameters(tbuf, fp);
         fclose(fp);
@@ -1347,12 +1378,13 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
 
     // Print the parameters.
     const double *dp = data;
-    for (int i = 0; i < mt.num_terms(); i++) {
+    for (int i = 0; i < mt->num_terms(); i++) {
         fprintf(stdout, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
             dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
         dp += 6;
     }
 
+    delete mt;
     delete [] data;
     return (0);
 }

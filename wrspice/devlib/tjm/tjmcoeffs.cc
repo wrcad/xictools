@@ -63,11 +63,16 @@ TJMcoeffSet::fit_fname(double temp, double d1, double d2, double sm,
     int numxpts, int numterms, double thr)
 {
     char tbuf[80];
+    sprintf(tbuf, "tca%06ld%05ld%05ld%02ld%04d",
+        lround(temp*1e4), lround(d1*1e7), lround(d2*1e7), lround(sm*1e3),
+        numxpts);
+    /* Original format.
     sprintf(tbuf, "tca%03ld%03ld%03ld%02ld%04d",
         lround(temp*100), lround(d1*100000), lround(d2*100000),
         lround(sm*1000), numxpts);
+    */
     sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", numterms,
-        lround(thr*1000));
+        lround(thr*1e3));
     char *tr = new char[strlen(tbuf)+1];
     strcpy(tr, tbuf);
     return (tr);
@@ -193,25 +198,48 @@ TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm,
     }
     char buf[80];
     sprintf(buf,
-        "mmjco cdf -t %.2f -d1 %.2f -d2 %.2f -s %.3f -x %d -n %d -h %.2f",
+        "mmjco cdf -t %.4f -d1 %.4f -d2 %.4f -s %.3f -x %d -n %d -h %.2f",
         temp, d1*1e3, d2*1e3, sm, numxpts, numterms, thr);
-    printf("%s\n", buf);
-    system(buf);
+    const char *mpath = getenv("MMJCO_PATH");
+    char *str;
+    if (mpath) {
+        str = new char[strlen(mpath) + strlen(buf) + 2];
+        sprintf(str, "%s/%s", mpath, buf);
+    }
+    else {
+        str = new char[strlen(buf) + 1];
+        strcpy(str, buf);
+    }
+    printf("%s\n", str);
+    int ret = system(str);
+    delete [] str;
+    if (ret != 0) {
+        printf("Operation failed: return value %d\n", ret);
+        delete [] nm;
+        return (0);
+    }
     cs = getTJMcoeffSet(nm);
     delete [] nm;
-    if (cs)
-        return (cs);
-    return (0);
+    return (cs);
 }
 
 
 // Static Function.
 TJMcoeffSet *
-TJMcoeffSet::getTJMcoeffSet(const char *nm)
+TJMcoeffSet::getTJMcoeffSet(const char *nm, double temp)
 {
     if (!nm)
         return (0);
     check_coeffTab();
+
+    if (!strncmp(nm, "tsweep", 6) {
+        // A sweep file
+        /*
+        mmjco cls -f nm -t temp > tmpfile
+
+        return (0);
+        */
+    }
 
     TJMcoeffSet *cs = TJMcoeffsTab->find(nm);
     if (cs)
