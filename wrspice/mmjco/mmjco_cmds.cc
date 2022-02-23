@@ -1372,7 +1372,7 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
         fclose(fp);
     }
     else
-        fprintf(stderr, "Waring: could not write %s.\n", fn);
+        fprintf(stderr, "Warning: could not write %s.\n", fn);
     delete [] mmc_fitfile;
     mmc_fitfile = tbuf;;
 
@@ -1387,6 +1387,39 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     delete mt;
     delete [] data;
     return (0);
+///////
+    char *tbuf;
+    char *fn;
+    if (mmc_tcadir) {
+        tbuf = new char[strlen(mmc_tcadir) + 40];
+        sprintf(tbuf, "%s/", mmc_tcadir);
+        fn = tbuf + strlen(tbuf);
+    }
+    else {
+        tbuf = new char[40];
+        fn = tbuf;
+    }
+
+    double d1 = 0.0, d2 = 0.0;
+    sprintf(fn, "swp%06ld%05ld%05ld%02ld%04d",
+        lround(temp*1e4), lround(d1*1e4), lround(d2*1e4),
+        lround(mt->smooth()*1e3), mt->num_xp());
+    sprintf(fn + strlen(fn), "-%02d%03ld.fit", mt->num_terms(),
+        lround(mt->thresh()*1000));
+
+    FILE *fp = fopen(tbuf, "w");
+    if (fp) {
+        double *dp = data;
+        for (int i = 0; i < mt->num_terms(); i++) {
+            fprintf(fp, "%12.5e,%12.5e,%12.5e,%12.5e,%12.5e,%12.5e\n",
+                dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
+            dp += 6;
+        }
+        mmc_mf.save_fit_parameters(tbuf, fp);
+        fclose(fp);
+    }
+    else
+        fprintf(stderr, "Warning: could not write %s.\n", fn);
 }
 
 
