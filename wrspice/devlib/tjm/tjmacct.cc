@@ -49,10 +49,15 @@ TJMdev::accept(sCKT *ckt, sGENmodel *genmod)
 
         bool didm = false;
         double vmax = 0;
+#ifndef TJM_INST_TEMP
         double vth = model->TJMvdpbak/model->TJMtsaccl;
+#endif
 
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
+#ifdef TJM_INST_TEMP
+            double vth = inst->TJMvdpbak/model->TJMtsaccl;
+#endif
 
             // Keep phi in the range -2pi - 2pi, with an integer 4pi
             // modulus.  This preserves phase accuracy for large phase

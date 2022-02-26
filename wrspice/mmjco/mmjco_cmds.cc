@@ -24,6 +24,29 @@ namespace {
     void gslhdlr(const char*, const char*, int, int)
     {
     }
+
+    // Return true if the string represents an absolute path.
+    //
+    bool
+    is_rooted(const char *string)
+    {
+        if (!string || !*string)
+            return (false);
+        if (*string == '/')
+            return (true);
+        if (*string == '~')
+            return (true);
+        if (*string == '.')
+            return (true);
+#ifdef WIN32
+        if (*string == '\\')
+            return (true);
+        if (strlen(string) >= 3 && isalpha(string[0]) && string[1] == ':' &&
+                (string[2] == '/' || string[2] == '\\'))
+            return (true);
+#endif
+        return (false);
+    }
 }
 
 
@@ -212,24 +235,39 @@ mmjco_cmds::mm_get_gap(int argc, char **argv)
 // file.
 //
 int
-mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **mtp,
-    double *pt)
+mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
+    double *pt, char **pfn)
 {
+    if (pmt)
+        *pmt = 0;
+    if (pt)
+        *pt = 0.0;
+    if (pfn)
+        *pfn = 0;
     char *swpfile = 0;
     double temp = -1.0;
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
-            if (!strcmp(argv[i], "-ft")) {
+            if (!strcmp(argv[i], "-fs")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing filename, exiting.\n");
+                    fprintf(stderr,
+                        "Error: missing sweep filename, exiting.\n");
                     return (1);
                 }
                 char f[256];
-                if (sscanf(argv[i], "%s", f) == 1)
-                    swpfile = strdup(f);
+                if (sscanf(argv[i], "%s", f) == 1) {
+                    if (mmc_tcadir && !is_rooted(f)) {
+                        swpfile = new char[strlen(mmc_tcadir) + strlen(f) +2];
+                        sprintf(swpfile, "%s/%s", mmc_tcadir, f);
+                    }
+                    else {
+                        swpfile = new char[strlen(f)+1];
+                        strcpy(swpfile, f);
+                    }
+                }
                 else {
                     fprintf(stderr,
-                        "Error: bad -ft (fit table filename), exiting.\n");
+                        "Error: bad -fs (sweep filename), exiting.\n");
                     return (1);
                 }
                 continue;
@@ -255,23 +293,25 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **mtp,
     FILE *fp = fopen(swpfile, "r");
     if (!fp) {
         fprintf(stderr, "Error: can not open %s.\n", swpfile);
+        delete [] swpfile;
         return (1);
     }
-    *pt = temp;
 
     int nrec;
     double tstrt, tdel;
     char *tbuf = new char[128];
     if (!fgets(tbuf, 64, fp)) {
-        delete [] tbuf;
         fprintf(stderr, "Error: premature EOF in %s.\n", swpfile);
+        delete [] tbuf;
+        delete [] swpfile;
         return (1);
     }
 
     if (strncmp(tbuf, "tsweep", 6) || sscanf(tbuf+7, "%d %lf %lf",
             &nrec, &tstrt, &tdel) != 3) {
-        delete [] tbuf;
         fprintf(stderr, "Error: syntax in %s.\n", swpfile);
+        delete [] tbuf;
+        delete [] swpfile;
         return (1);
     }
     delete [] tbuf;
@@ -279,6 +319,7 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **mtp,
     int ntemp = (temp - tstrt)/tdel + 1e-6;
     if (ntemp < 0 || ntemp >= nrec) {
         fprintf(stderr, "Error: range mismatch in %s.\n", swpfile);
+        delete [] swpfile;
         return (1);
     }
     double resid = (temp - tstrt) - ntemp*tdel;
@@ -313,6 +354,7 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **mtp,
     long offset = recsz*ntemp;
     if (fseek(fp, offset, SEEK_CUR) < 0) {
         fprintf(stderr, "Error: seek failed in %s.\n", swpfile);
+        delete [] swpfile;
         return (1);
     }
 
@@ -321,10 +363,21 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **mtp,
     if (!mt->load(fp, recs)) {
         fprintf(stderr, "Error: load failed.\n");
         delete mt;
+        delete [] swpfile;
         fclose(fp);
         return (1);
     }
-    *mtp = mt;
+    if (pt)
+        *pt = temp;
+    if (pmt)
+        *pmt = mt;
+    else
+        delete mt;
+    if (pfn)
+        *pfn = swpfile;
+    else
+        delete [] swpfile;
+
     fclose(fp);
     return (0);
 }
@@ -609,7 +662,9 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
         datafile = 0;
     }
     const char *filename = datafile;
+    bool df_given = true;
     if (!datafile) {
+        df_given = false;
         char *dp;
         if (mmc_tcadir) {
             datafile = new char[strlen(mmc_tcadir) + 32];
@@ -635,9 +690,20 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
             strcat(dp, ".raw");
     }
     if (!no_out) {
+        if (df_given) {
+            if (mmc_tcadir && !is_rooted(datafile)) {
+                char *t = new char[strlen(datafile) + strlen(mmc_tcadir) + 2];
+                sprintf(t, "%s/%s", mmc_tcadir, datafile);
+                delete [] datafile;
+                datafile = t;
+                filename = datafile + strlen(mmc_tcadir)+1;
+            }
+        }
+
         FILE *fp = fopen(datafile, "w");
         if (!fp) {
             fprintf(stderr, "Error: unable to write file %s.\n", filename);
+            delete [] datafile;
             return (1);
         }
         save_data(filename, fp, dtype, mmc_xpts, mmc_pair_data, mmc_qp_data,
@@ -750,6 +816,12 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
             lround(mmc_thr*1000));
         fitfile = tbuf;
     }
+    else if (mmc_tcadir && !is_rooted(fitfile)) {
+        char *t = new char[strlen(mmc_tcadir) + strlen(fitfile) + 2];
+        sprintf(t, "%s/%s", mmc_tcadir, fitfile);
+        delete [] fitfile;
+        fitfile = t;
+    }
     mmc_mf.save_fit_parameters(fitfile, fp);
     delete [] mmc_fitfile;
     mmc_fitfile = fitfile;
@@ -858,9 +930,11 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
                 strcat(fn, ".raw");
             modfile = tbuf;
         }
+        // Note that these do not use mmc_tcadir.
         FILE *fp = fopen(modfile, "w");
         if (!fp) {
             fprintf(stderr, "Error: unable to open file %s.\n", modfile);
+            delete [] modfile;
             return (1);
         }
         save_data(modfile, fp, dtype, mmc_xpts, mmc_pair_model, mmc_qp_model,
@@ -910,7 +984,7 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
     }
     if (nvals == 2)
         vals[2] = 0.1;
-    int ntemps = (vals[1] - vals[0])/vals[2] + 0.001;
+    int ntemps = (vals[1] - vals[0])/vals[2] + 1.001;
 
     char *datafile;
     char *dp;
@@ -923,7 +997,7 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
         datafile = new char[32];
         dp = datafile;
     }
-    sprintf(dp, "tsweep_%d_%.4f_%.4f", ntemps, vals[0], vals[2]);
+    sprintf(dp, "tsweep_%d_%.4f_%.4f.swp", ntemps, vals[0], vals[2]);
 
     FILE *fp = fopen(datafile, "w");
     fprintf(fp, "tsweep %d %.4f %.4f\n", ntemps, vals[0], vals[2]);
@@ -995,30 +1069,6 @@ mmjco_cmds::mm_create_table(int argc, char **argv)
     delete [] temps;
     delete [] datafile;
     return (0);
-}
-
-
-namespace {
-    // Return true if the string represents an absolute path.
-    //
-    bool
-    is_rooted(const char *string)
-    {
-        if (!string || !*string)
-            return (false);
-        if (*string == '/')
-            return (true);
-        if (*string == '~')
-            return (true);
-#ifdef WIN32
-        if (*string == '\\')
-            return (true);
-        if (strlen(string) >= 3 && isalpha(string[0]) && string[1] == ':' &&
-                (string[2] == '/' || string[2] == '\\'))
-            return (true);
-#endif
-        return (false);
-    }
 }
 
 
@@ -1297,13 +1347,14 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
 
 // Load fit Parameter data interpolated from a sweep file.
 //
-// ls -ft filename temp
+// ls -fs filename temp
 int
 mmjco_cmds::mm_load_sweep(int argc, char **argv)
 {
     mmjco_mtdb *mt;
     double temp;
-    if (mm_get_sweep_fit(argc, argv, &mt, &temp))
+    char *ffn;
+    if (mm_get_sweep_fit(argc, argv, &mt, &temp, &ffn))
         return (1);
 
     // This does the interpolation, returning the new fit set.
@@ -1314,6 +1365,14 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     // then drop a model file (back-converted TCA amplitudes) which
     // can be plotted or compared with an actual TCA amplitude file
     // for the temperature.
+
+    // Print the parameters.
+    const double *dp = data;
+    for (int i = 0; i < mt->num_terms(); i++) {
+        fprintf(stdout, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
+            dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
+        dp += 6;
+    }
 
     mmc_mf.load_fit_parameters(data, mt->num_terms());
 
@@ -1348,78 +1407,30 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     mmc_sm = mt->smooth();
     delete [] mmc_datafile;
     mmc_datafile = 0;
-
-    char *tbuf;
-    char *fn;
-    if (mmc_tcadir) {
-        tbuf = new char[strlen(mmc_tcadir) + 40];
-        sprintf(tbuf, "%s/", mmc_tcadir);
-        fn = tbuf + strlen(tbuf);
-    }
-    else {
-        tbuf = new char[40];
-        fn = tbuf;
-    }
-
-    sprintf(fn, "tca%06ld%05ld%05ld%02ld%04d",
-        lround(mmc_temp*1e4), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
-        lround(mmc_sm*1e3), mmc_numxpts);
-    sprintf(fn+strlen(fn), "-%02d%03ld.fit", mmc_nterms, lround(mmc_thr*1000));
-
-    FILE *fp = fopen(tbuf, "w");
-    if (fp) {
-        mmc_mf.save_fit_parameters(tbuf, fp);
-        fclose(fp);
-    }
-    else
-        fprintf(stderr, "Warning: could not write %s.\n", fn);
     delete [] mmc_fitfile;
-    mmc_fitfile = tbuf;;
+    mmc_fitfile = 0;
 
-    // Print the parameters.
-    const double *dp = data;
-    for (int i = 0; i < mt->num_terms(); i++) {
-        fprintf(stdout, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
-            dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
-        dp += 6;
+    char *fitfile = new char[strlen(ffn) + 16];
+    strcpy(fitfile, ffn);
+    delete [] ffn;
+    char *t = strrchr(fitfile, '.');
+    if (t && !strcmp(t, ".swp"))
+        *t = 0;
+    sprintf(fitfile + strlen(fitfile), "_%.4f.fit", temp);
+
+    // Save a fit file.
+    if (!mt->dump_file(fitfile, data)) {
+        fprintf(stderr, "Error: write fit file failed.\n");
+        delete mt;
+        delete [] data;
+        delete [] fitfile;
+        return (1);
     }
+    mmc_fitfile = fitfile;
 
     delete mt;
     delete [] data;
     return (0);
-///////
-    char *tbuf;
-    char *fn;
-    if (mmc_tcadir) {
-        tbuf = new char[strlen(mmc_tcadir) + 40];
-        sprintf(tbuf, "%s/", mmc_tcadir);
-        fn = tbuf + strlen(tbuf);
-    }
-    else {
-        tbuf = new char[40];
-        fn = tbuf;
-    }
-
-    double d1 = 0.0, d2 = 0.0;
-    sprintf(fn, "swp%06ld%05ld%05ld%02ld%04d",
-        lround(temp*1e4), lround(d1*1e4), lround(d2*1e4),
-        lround(mt->smooth()*1e3), mt->num_xp());
-    sprintf(fn + strlen(fn), "-%02d%03ld.fit", mt->num_terms(),
-        lround(mt->thresh()*1000));
-
-    FILE *fp = fopen(tbuf, "w");
-    if (fp) {
-        double *dp = data;
-        for (int i = 0; i < mt->num_terms(); i++) {
-            fprintf(fp, "%12.5e,%12.5e,%12.5e,%12.5e,%12.5e,%12.5e\n",
-                dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
-            dp += 6;
-        }
-        mmc_mf.save_fit_parameters(tbuf, fp);
-        fclose(fp);
-    }
-    else
-        fprintf(stderr, "Warning: could not write %s.\n", fn);
 }
 
 

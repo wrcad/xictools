@@ -35,6 +35,31 @@ temp      The operating temperature.
 icrit     The critical current at nominal temperature.
 cpic,cap  Specification of device capacitance.
 
+///
+if del1/2 given, this sets the gap value at tnom, and the actual gap value
+used for tca fit parameter generation is taken as the approximation
+
+    delN = tanh(tcfN*sqrt(tcN/(temp - 1)/tanh(tcfN*sqrt(tcN/tnom - 1)
+
+Thus, the BCS computation is skipped in this case in favor of the
+approximation above.  The parameters tcN and tdebyeN are ignored in
+this case.
+
+If a coefficient set name is given, the following parameters are ignored:
+tcN, tdebyeN, delN, vgap. tnom, deftemp.
+There is no attempt to scale critical current with deftemp/tnom.
+
+If a coefficient sweep file is given, the following parameters are
+ignored:
+tcN, tdebyeN, delN, vgap. tnom.
+
+In this case, the instance parameters temp and dtemp are recognized.
+tcN and tdebyeN, temp and tnom are used in the BCS calculation to yield
+the critical current temp dependence, so these parameters must match those
+used to generate the sweep data.
+
+///
+
 There is provision for adding shunt resistance to match measured Vm and
 add explicit resistance to damp junctions for convenience in circuits.
 Other parameters may provide empirical tweaks and establish timestep

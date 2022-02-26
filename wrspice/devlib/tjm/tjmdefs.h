@@ -48,6 +48,11 @@
 // data structures used to describe Jopsephson junctions
 //
 
+// When defined, the fit table is stored in the instance struct,
+// allowing temperature variation on a per-instance basis, at the
+// cost of memory usage and setup time.
+#define TJM_INST_TEMP
+
 // Uncomment to support series parasitic inductance.
 #define NEWLSER
 
@@ -162,6 +167,26 @@ struct sTJMinstancePOD
     IFcomplex *tjm_alpha0;
     IFcomplex *tjm_alpha1;
     IFcomplex *tjm_exp_z;
+#ifdef TJM_INST_TEMP
+    // MiTMoJCo core parameters
+    double      tjm_rejpt;
+    double      tjm_kgap;
+    double      tjm_kgap_rejpt;
+    double      tjm_alphaN;
+    IFcomplex   *tjm_p;
+    IFcomplex   *tjm_A;
+    IFcomplex   *tjm_B;
+
+    double      TJMtemp;
+    double      TJMdtemp;
+    double      TJMdel1;
+    double      TJMdel2;
+    double      TJMvg;
+    double      TJMrsint;
+    double      TJMicTempFactor;
+    double      TJMvdpbak;
+    double      TJMomegaJ;
+#endif
 
     // These parameters scale with area
     double TJMcriti;        // junction critical current
@@ -212,6 +237,10 @@ struct sTJMinstancePOD
 #ifdef NEWLSH
     unsigned TJMlshGiven : 1;       // lsh was specified
 #endif
+#ifdef TJM_INST_TEMP
+    unsigned TJMtempGiven : 1;      // temp was specified
+    unsigned TJMdtempGiven : 1;     // dtemp was given
+#endif
     unsigned TJMinitVoltGiven : 1;  // ic was specified
     unsigned TJMinitPhaseGiven : 1; // ic was specified
     unsigned TJMnoiseGiven : 1;     // noise scaling was specified
@@ -259,9 +288,16 @@ struct sTJMinstance : sGENinstance, sTJMinstancePOD
         {
             delete [] tjm_Fc;
             // Fs and others are pointers into Fc.
+#ifdef TJM_INST_TEMP
+            delete [] tjm_p;
+            // A and B are pointers into p array
+#endif
         }
 
     void tjm_load(sCKT*, struct tjmstuff&);
+#ifdef TJM_INST_TEMP
+    int tjm_init1();
+#endif
     void tjm_init(double);
     void tjm_newstep(sCKT*);;
     void tjm_update(double);
@@ -270,8 +306,9 @@ struct sTJMinstance : sGENinstance, sTJMinstancePOD
 
 struct sTJMmodelPOD
 {
-    // MiTMoJCo core parameters
     char        *tjm_coeffs;
+#ifndef TJM_INST_TEMP
+    // MiTMoJCo core parameters
     double      tjm_rejpt;
     double      tjm_kgap;
     double      tjm_kgap_rejpt;
@@ -279,12 +316,15 @@ struct sTJMmodelPOD
     IFcomplex   *tjm_p;
     IFcomplex   *tjm_A;
     IFcomplex   *tjm_B;
+#endif
 
     int         TJMrtype;
     int         TJMictype;
+#ifndef TJM_INST_TEMP
     double      TJMdel1;
     double      TJMdel2;
     double      TJMvg;
+#endif
     double      TJMdeftemp;
     double      TJMtnom;
     double      TJMtc1;
@@ -301,13 +341,22 @@ struct sTJMmodelPOD
     double      TJMcmu;
     double      TJMvm;
     double      TJMr0;
+#ifdef TJM_INST_TEMP
+    double      TJMdel1Nom;
+    double      TJMdel2Nom;
+    double      TJMvgNom;
+#endif
+#ifndef TJM_INST_TEMP
     double      TJMrsint;
+#endif
     double      TJMgmu;
     double      TJMnoise;
+#ifndef TJM_INST_TEMP
     double      TJMvdpbak;
     double      TJMomegaJ;
-    double      TJMicFactor;
     double      TJMicTempFactor;
+#endif
+    double      TJMicFactor;
     double      TJMvShunt;
     double      TJMtsfact;
     double      TJMtsaccl;
@@ -319,9 +368,11 @@ struct sTJMmodelPOD
     unsigned    tjm_coeffsGiven : 1;
     unsigned    TJMrtypeGiven : 1;
     unsigned    TJMictypeGiven : 1;
+#ifndef TJM_INST_TEMP
     unsigned    TJMdel1Given : 1;
     unsigned    TJMdel2Given : 1;
     unsigned    TJMvgGiven : 1;
+#endif
     unsigned    TJMdeftempGiven : 1;
     unsigned    TJMtnomGiven : 1;
     unsigned    TJMtc1Given : 1;
@@ -354,16 +405,20 @@ struct sTJMmodelPOD
 struct sTJMmodel : sGENmodel, sTJMmodelPOD
 {
     sTJMmodel() : sGENmodel(), sTJMmodelPOD() { }
+#ifndef TJM_INST_TEMP
     ~sTJMmodel()
         {
             delete [] tjm_p;
             // A and B are pointers into p array
         }
+#endif
 
     sTJMmodel *next()    { return (static_cast<sTJMmodel*>(GENnextModel)); }
     sTJMinstance *inst() { return (static_cast<sTJMinstance*>(GENinstances)); }
 
+#ifndef TJM_INST_TEMP
     int tjm_init();
+#endif
 };
 
 // Tunnel parameters database return.  The coefficients are created
@@ -394,7 +449,7 @@ struct TJMcoeffSet
     static void check_coeffTab();
     static TJMcoeffSet *getTJMcoeffSet(double, double, double, double, int,
         int, double);
-    static TJMcoeffSet *getTJMcoeffSet(const char*);
+    static TJMcoeffSet *getTJMcoeffSet(const char*, double);
     static cIFcomplex *modelJqp(const cIFcomplex*, const cIFcomplex*, int,
         const double*, int);
 
@@ -430,6 +485,10 @@ enum {
 #ifdef NEWLSH
     TJM_LSH,
 #endif
+#ifdef TJM_INST_TEMP
+    TJM_TEMP,
+    TJM_DTEMP,
+#endif
     TJM_OFF,
     TJM_IC,
     TJM_ICP,
@@ -449,6 +508,17 @@ enum {
     TJM_QUEST_CAP,
     TJM_QUEST_G0,
     TJM_QUEST_GN,
+#ifdef TJM_INST_TEMP
+    TJM_QUEST_RSINT,
+    TJM_QUEST_VDP,
+    TJM_QUEST_OMEGAJ,
+    TJM_QUEST_BETAC,
+    TJM_QUEST_ICTEMPFCT,
+    TJM_QUEST_ALPHAN,
+    TJM_QUEST_KGAP,
+    TJM_QUEST_REJPT,
+    TJM_QUEST_KGAP_REJPT,
+#endif
     TJM_QUEST_N1,
     TJM_QUEST_N2,
     TJM_QUEST_NP,
@@ -471,9 +541,11 @@ enum {
     TJM_MOD_COEFFS,
     TJM_MOD_RT,
     TJM_MOD_CTP,
+#ifndef TJM_INST_TEMP
     TJM_MOD_DEL1,
     TJM_MOD_DEL2,
     TJM_MOD_VG,
+#endif
     TJM_MOD_DEFTEMP,
     TJM_MOD_TNOM,
     TJM_MOD_TC,
@@ -504,6 +576,7 @@ enum {
     TJM_MOD_TSFACT,
     TJM_MOD_TSACCL,
 
+#ifndef TJM_INST_TEMP
     TJM_MQUEST_RSINT,
     TJM_MQUEST_VDP,
     TJM_MQUEST_OMEGAJ,
@@ -513,6 +586,7 @@ enum {
     TJM_MQUEST_KGAP,
     TJM_MQUEST_REJPT,
     TJM_MQUEST_KGAP_REJPT
+#endif
 };
 
 #endif // TJMDEFS_H

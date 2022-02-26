@@ -6,6 +6,7 @@
 // License:  GNU General Public License Version 3m 29 June 2007.
 
 #include "mmjco_cmds.h"
+#include "mmjco_tscale.h"
 #include <stdio.h>
 
 
@@ -32,6 +33,9 @@
 // that can follow the cd and cf interactive commands.  This mode is
 // used by the TJM device model in WRspice.
 //
+// Similarly, "swf" will create a possibly-interpolated fit file from
+// and existing sweep file.
+//
 int main(int argc, char **argv)
 {
     mmjco_cmds mmc;
@@ -41,19 +45,36 @@ int main(int argc, char **argv)
 
     if (argc > 1) {
         if (!strcmp(argv[1], "cdf")) {
+            // mmjco cdf [cd and cf arguments]
             if (mmc.mm_create_data(argc-1, argv+1))
                 return (1);
             if (mmc.mm_create_fit(argc-1, argv+1))
                 return (1);
             return (0);
         }
-        if (!strcmp(argv[1], "sf")) {
-            double temp;
+        if (!strcmp(argv[1], "swf")) {
+            // mmjco swf -fs sweepfile temp
             mmjco_mtdb *mt;
-            
-            if (mmc.mm_get_sweep_fit(argc-1, argv+1, &mt, &temp))
+            double temp;
+            char *swf;
+            if (mmc.mm_get_sweep_fit(argc-1, argv+1, &mt, &temp, &swf))
                 return (1);
-
+            const double *data = mt->new_tab(temp);
+            char *tbf = new char[strlen(swf) + 16];
+            strcpy(tbf, swf);
+            delete [] swf;
+            char *t = strrchr(tbf, '.');
+            if (t && !strcmp(t, ".swp"))
+                *t = 0;
+            sprintf(tbf + strlen(tbf), "_%.4f.fit", temp);
+            bool ret = mt->dump_file(tbf, data);
+            delete mt;
+            delete [] data;
+            delete [] tbf;
+            if (!ret) {
+                fprintf(stderr, "Error: write fit file failed.\n");
+                return (1);
+            }
             return (0);
         }
     }

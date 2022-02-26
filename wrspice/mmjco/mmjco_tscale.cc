@@ -9,6 +9,7 @@
 //
 
 #include "mmjco_tscale.h"
+#include <math.h>
 
 #define DEBUG
 
@@ -132,7 +133,7 @@ mmjco_mtdb::load(FILE *fp, int ntemps)
             if (ix == 0) {
                 nterms = atoi(tbf);
                 if (!setup(ntemps, nterms))
-                    return (0);
+                    return (false);
                 data = new double[nterms*6];
             }
 #ifdef DEBUG
@@ -154,25 +155,57 @@ mmjco_mtdb::load(FILE *fp, int ntemps)
         }
         if (!dp) {
             fprintf(stderr, "Error: file is corrupt.\n");
-            return (0);
+            return (false);
         }
         if (sscanf(buf, "%lf, %lf, %lf, %lf, %lf, %lf,", dp, dp+1, dp+2, dp+3,
                 dp+4, dp+5) != 6) {
             fprintf(stderr, "Error: read failed in sweep file.\n");
-            return (0);
+            return (false);
         }
         dp += 6;
         if ((dp - data)/6 == nterms) {
             if (!add_table(buf, temp, ix-1, data)) {
                 fprintf(stderr, "Error: failed to add fit set.\n");
-                return (0);
+                return (false);
             }
             if (ix == ntemps)
                 break;
         }
     }
     delete [] data;
-    return (1);
+    return (true);
+}
+
+
+// Write the parameters to a ".fit" file.
+//
+bool
+mmjco_mtdb::dump_file(const char *fname, const double *data)
+{
+    if (!fname) {
+        fprintf(stderr, "Error: null filename pointer.\n");
+        return (false);
+    }
+    if (!data) {
+        fprintf(stderr, "Error: null data pointer.\n");
+        return (false);
+    }
+
+    FILE *fp = fopen(fname, "w");
+    if (fp) {
+        const double *dp = data;
+        for (int i = 0; i < mt_nterms; i++) {
+            fprintf(fp, "%12.5e,%12.5e,%12.5e,%12.5e,%12.5e,%12.5e\n",
+                dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
+            dp += 6;
+        }
+        fclose(fp);
+    }
+    else {
+        fprintf(stderr, "Warning: could not write %s.\n", fname);
+        return (false);
+    }
+    return (true);
 }
 
 

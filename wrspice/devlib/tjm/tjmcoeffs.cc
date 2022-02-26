@@ -38,17 +38,17 @@
  $Id:$
  *========================================================================*/
 
+// Enable external TJM support.  WRspice provides tjm_fopen, defined
+// in ckt.cc.  WRspice is sensitive to a variable named "tjm_path"
+// which is list of locations to search for fit files.  This
+// effectively defaults to "( .  ~/.mmjco )".
+//
+#define TJM_IF
+
+#include <stdio.h>
+#include <unistd.h>
 #include "tjmdefs.h"
 #include "stab.h"
-#include <stdio.h>
-
-// WRspice provides this, defined in ckt.cc.  This not defined in the
-// headers to avoid having to include stdio there.  WRspice is
-// sensitive to a variable named "tjm_path" which is list of locations
-// to search for fit files.  This effectively defaults to
-// "( . ~/.mmjco )".
-//
-extern FILE *tjm_fopen(const char*);
 
 
 //
@@ -191,7 +191,7 @@ TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm,
     int numxpts, int numterms, double thr)
 {
     char *nm = fit_fname(temp, d1, d2, sm, numxpts, numterms, thr);
-    TJMcoeffSet *cs = getTJMcoeffSet(nm);
+    TJMcoeffSet *cs = getTJMcoeffSet(nm, temp);
     if (cs) {
         delete [] nm;
         return (cs);
@@ -218,7 +218,7 @@ TJMcoeffSet::getTJMcoeffSet(double temp, double d1, double d2, double sm,
         delete [] nm;
         return (0);
     }
-    cs = getTJMcoeffSet(nm);
+    cs = getTJMcoeffSet(nm, temp);
     delete [] nm;
     return (cs);
 }
@@ -232,27 +232,61 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm, double temp)
         return (0);
     check_coeffTab();
 
-    if (!strncmp(nm, "tsweep", 6) {
-        // A sweep file
-        /*
-        mmjco cls -f nm -t temp > tmpfile
+    const char *swpfile = 0;
+    char buf[256];
+    if (!strncmp(nm, "tsweep", 6)) {
+        // A sweep file.
+        swpfile = strdup(nm);
 
-        return (0);
-        */
+        // Compose the name of the fit file.
+        strcpy(buf, nm);
+        char *t = strrchr(buf, '.');
+        if (t && !strcmp(t, ".swp"))
+            *t = 0;
+        sprintf(buf + strlen(buf), "_%.4f.fit", temp);
+        nm = buf;
     }
 
+    // Maybe we already have this one in memory?
     TJMcoeffSet *cs = TJMcoeffsTab->find(nm);
     if (cs)
         return (cs);
 
-    FILE *fp = tjm_fopen(nm);
+    if (swpfile) {
+        // Call mmjco to generate a fit file for temp.
+        const char *mpath = getenv("MMJCO_PATH");
+        char *cmd;
+        if (mpath) {
+            cmd = new char[strlen(mpath) + strlen(swpfile) + 32];
+            sprintf(cmd, "%s/mmjco swf -fs %s %.4f", mpath, swpfile, temp);
+        }
+        else {
+            cmd = new char[strlen(swpfile) + 32];
+            sprintf(cmd, "mmjco swf -fs %s %.4f", swpfile, temp);
+        }
+        int ret = system(cmd);
+        delete [] cmd;
+        if (ret != 0) {
+//XXX
+fprintf(stderr, "system command failed\n");
+            delete [] swpfile;
+            return (0);
+        }
+    }
+
+    char *rpath = 0;
+    FILE *fp;
+    if (swpfile)
+        fp = tjm_fopen(nm, &rpath);
+    else
+        fp = tjm_fopen(nm, 0);
     if (fp) {
         cIFcomplex p[MAX_PARAMS], A[MAX_PARAMS], B[MAX_PARAMS];
-        char buf[256];
+        char tbuf[256];
         int cnt = 0;
-        while (fgets(buf, 256, fp) != 0) {
+        while (fgets(tbuf, 256, fp) != 0) {
             double pr, pi, ar, ai, br, bi;
-            if (sscanf(buf, "%lf, %lf, %lf, %lf, %lf, %lf", &pr, &pi, &ar, &ai,
+            if (sscanf(tbuf, "%lf, %lf, %lf, %lf, %lf, %lf", &pr, &pi, &ar, &ai,
                     &br, &bi) == 6) {
                 if (cnt < MAX_PARAMS) {
                     p[cnt].real = pr;
@@ -274,10 +308,16 @@ TJMcoeffSet::getTJMcoeffSet(const char *nm, double temp)
                 nA[i] = A[i];
                 nB[i] = B[i];
             }
-            return (new TJMcoeffSet(strdup(nm), cnt, np, nA, nB));
+            cs = new TJMcoeffSet(strdup(nm), cnt, np, nA, nB);
         }
+        fclose(fp);
     }
-    return (0);
+    if (swpfile) {
+        unlink(rpath);
+        delete [] rpath;
+        delete [] swpfile;
+    }
+    return (cs);
 }
 
 

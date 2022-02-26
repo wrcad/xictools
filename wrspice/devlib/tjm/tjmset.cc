@@ -279,6 +279,19 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
+#ifdef TJM_INST_TEMP
+        model->TJMdel1Nom =
+            DEV.bcs_egapv(model->TJMtnom, model->TJMtc1, model->TJMtdebye1);
+        if (model->TJMtc1 == model->TJMtc2 &&
+                model->TJMtdebye1 == model->TJMtdebye2)
+            model->TJMdel2Nom = model->TJMdel1Nom;
+        else {
+            model->TJMdel2Nom =
+                DEV.bcs_egapv(model->TJMtnom, model->TJMtc2, model->TJMtdebye2);
+        }
+        model->TJMvgNom = model->TJMdel1Nom + model->TJMdel2Nom;
+
+#else
         if (model->TJMdel1Given) {
             if (model->TJMdel1 < DelMin || model->TJMdel1 > DelMax) {
                 double Del = model->TJMdel1 < DelMin ? DelMin : DelMax;
@@ -318,6 +331,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
             model->TJMdel1 = model->TJMdel2 = 0.5*model->TJMvg;
         }
+#endif
 
         if (!model->TJMsmfGiven)
             model->TJMsmf = Smf;
@@ -466,12 +480,22 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         }
 
         if (model->TJMvShuntGiven) {
+#ifdef TJM_INST_TEMP
+            if (model->TJMvShunt < 0.0 || model->TJMvShunt > model->TJMvgNom) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: VSHUNT=%g out of range [%g-%g], reset to %g.\n",
+                    model->GENmodName, model->TJMvShunt, 0.0, model->TJMvgNom,
+                    0.0);
+                model->TJMvShunt = 0.0;
+            }
+#else
             if (model->TJMvShunt < 0.0 || model->TJMvShunt > model->TJMvg) {
                 DVO.textOut(OUT_WARNING,
                     "%s: VSHUNT=%g out of range [%g-%g], reset to %g.\n",
                     model->GENmodName, model->TJMvShunt, 0.0, model->TJMvg, 0.0);
                 model->TJMvShunt = 0.0;
             }
+#endif
         }
 #ifdef NEWLSH
         if (model->TJMlsh0Given) {
@@ -526,6 +550,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             }
         }
 
+#ifndef TJM_INST_TEMP
         if (model->TJMdeftemp != model->TJMtnom) {
             // Compute the temperature correction factor for Icrit. 
             // This is obtained from Tinkham 2nd ed.  eq.  6.10,
@@ -538,7 +563,7 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                     model->TJMtdebye1 == model->TJMtdebye2)
                 vgNom += vgNom;
             else {
-                vgNom = DEV.bcs_egapv(model->TJMtnom, model->TJMtc2,
+                vgNom += DEV.bcs_egapv(model->TJMtnom, model->TJMtc2,
                     model->TJMtdebye2);
             }
             double tmp = wrsCHARGE*model->TJMvg/
@@ -568,9 +593,88 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
         int rval = model->tjm_init();
         if (rval != OK)
             return (rval);
+#else
+        model->TJMdel1Nom =
+            DEV.bcs_egapv(model->TJMtnom, model->TJMtc1, model->TJMtdebye1);
+        if (model->TJMtc1 == model->TJMtc2 &&
+                model->TJMtdebye1 == model->TJMtdebye2)
+            model->TJMdel2Nom = model->TJMdel1Nom;
+        else {
+            model->TJMdel2Nom =
+                DEV.bcs_egapv(model->TJMtnom, model->TJMtc2, model->TJMtdebye2);
+        }
+        model->TJMvgNom = model->TJMdel1Nom + model->TJMdel2Nom;
+#endif
 
         sTJMinstance *inst;
         for (inst = model->inst(); inst; inst = inst->next()) {
+#ifdef TJM_INST_TEMP
+            if (!inst->TJMtempGiven)
+                inst->TJMtemp = model->TJMdeftemp;
+            if (inst->TJMdtempGiven)
+                inst->TJMtemp = model->TJMtnom + inst->TJMdtemp;
+            if (inst->TJMtemp < 0.1) {
+                DVO.textOut(OUT_WARNING,
+                    "%s: TEMP reset to minimum value 0.1K.\n", inst->GENname);
+                inst->TJMtemp = 0.1;
+            }
+            else {
+                double mt = SPMIN(model->TJMtc1, model->TJMtc2) - 0.1;
+                if (inst->TJMtemp > mt) {
+                    DVO.textOut(OUT_WARNING,
+                        "%s: TEMP reset to maximum value %.4f.\n",
+                        inst->GENname, mt);
+                    inst->TJMtemp = mt;
+                }
+            }
+
+            if (inst->TJMtemp != model->TJMtnom) {
+                // Compute the temperature correction factor for Icrit. 
+                // This is obtained from Tinkham 2nd ed.  eq.  6.10,
+                // ratioing factors for deftemp and tnom (correction factor
+                // is 1.0 at deftemp = tnom).
+
+                inst->TJMdel1 = DEV.bcs_egapv(inst->TJMtemp, model->TJMtc1,
+                    model->TJMtdebye1);
+                if (model->TJMtc1 == model->TJMtc2 &&
+                        model->TJMtdebye1 == model->TJMtdebye2)
+                    inst->TJMdel2 = inst->TJMdel1;
+                else {
+                    inst->TJMdel2 = DEV.bcs_egapv(inst->TJMtemp, model->TJMtc2,
+                        model->TJMtdebye2);
+                }
+                inst->TJMvg = inst->TJMdel1 + inst->TJMdel2;
+
+                double tmp = wrsCHARGE*inst->TJMvg/
+                    (4.0*wrsCONSTboltz*(inst->TJMtemp + 1e-4));
+                double tmp2 = wrsCHARGE*model->TJMvgNom/
+                    (4.0*wrsCONSTboltz*(model->TJMtnom + 1e-4));
+                inst->TJMicTempFactor =
+                    (inst->TJMvg/model->TJMvgNom)*(tanh(tmp)/tanh(tmp2));
+            }
+            else {
+                inst->TJMdel1 = model->TJMdel1Nom;
+                inst->TJMdel2 = model->TJMdel2Nom;
+                inst->TJMvg = model->TJMvgNom;
+                inst->TJMicTempFactor = 1.0;
+            }
+
+            double halfvg = 0.5*inst->TJMvg;
+            if (model->TJMcap > 0.0) {
+                double cpic = model->TJMcap/
+                    (model->TJMcriti * inst->TJMicTempFactor);
+                inst->TJMvdpbak = sqrt(PHI0_2PI/cpic);
+                if (inst->TJMvdpbak > halfvg)
+                    inst->TJMvdpbak = halfvg;
+                inst->TJMomegaJ = sqrt(1.0/(cpic*PHI0_2PI));
+            }
+            else
+                inst->TJMvdpbak = halfvg;
+
+            int rval = inst->tjm_init1();
+            if (rval != OK)
+                return (rval);
+#endif
 
             if (inst->TJMicsGiven) {
                 if (inst->TJMareaGiven) {
@@ -590,16 +694,25 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
                 // The area is computed for nominal temperature, which
                 // allows to instance critical current to vary with
                 // temperature, i.e., it is not fixed at ics.
+#ifdef TJM_INST_TEMP
+                inst->TJMarea = inst->TJMics/model->TJMcriti;
 
+#else
                 double icnom = model->TJMcriti/model->TJMicTempFactor;
                 inst->TJMarea = inst->TJMics/icnom;
+#endif
             }
             else if (!inst->TJMareaGiven)
                 inst->TJMarea = 1;
 
             // ics is the input parameter, criti is the actual critical
             // current to use.
+#ifdef TJM_INST_TEMP
+            inst->TJMcriti =
+                model->TJMcriti * inst->TJMarea * inst->TJMicTempFactor;
+#else
             inst->TJMcriti = model->TJMcriti * inst->TJMarea;
+#endif
 
 #ifdef NEWLSER
             if (inst->TJMlser > 0.0 && inst->TJMlser < 1e-14) {
@@ -625,7 +738,11 @@ TJMdev::setup(sGENmodel *genmod, sCKT *ckt, int *states)
             double sqrta = sqrt(inst->TJMarea);
             double gfac = inst->TJMarea*(1.0 - model->TJMgmu) +
                 sqrta*model->TJMgmu;
+#ifdef TJM_INST_TEMP
+            inst->TJMgqp = gfac/inst->TJMrsint;
+#else
             inst->TJMgqp = gfac/model->TJMrsint;
+#endif
 
             // G0 is the user-specified subgap conductance, subtract
             // off the intrinsic conductance if we can.
@@ -771,6 +888,99 @@ TJMdev::resetup(sGENmodel *inModel, sCKT *ckt)
 }
 // End of TJMdev functions.
 
+#ifdef TJM_INST_TEMP
+
+
+
+int
+sTJMinstance::tjm_init1()
+{
+    sTJMmodel *model = (sTJMmodel*)GENmodPtr;
+    TJMcoeffSet *cs;
+    if (model->tjm_coeffsGiven)
+        cs = TJMcoeffSet::getTJMcoeffSet(model->tjm_coeffs, TJMtemp);
+    else {
+        cs = TJMcoeffSet::getTJMcoeffSet(TJMtemp, TJMdel1, TJMdel2,
+            model->TJMsmf, model->TJMnxpts, model->TJMnterms, model->TJMthr);
+    }
+    if (!cs) {
+        DVO.textOut(OUT_FATAL,
+            "%s: coefficient set %s not found.\n", model->GENmodName,
+            model->tjm_coeffs);
+        return (E_PANIC);
+    }
+    if (model->TJMnterms != cs->size()) {
+        DVO.textOut(OUT_FATAL,
+            "%s: coefficient set %s term count %d not equal to %d.\n",
+            model->GENmodName, model->tjm_coeffs, cs->size(), model->TJMnterms);
+        return (E_PANIC);
+    }
+    tjm_p = new IFcomplex[3*model->TJMnterms];
+    tjm_A = tjm_p + model->TJMnterms;
+    tjm_B = tjm_A + model->TJMnterms;
+    for (int i = 0; i < model->TJMnterms; i++) {
+        tjm_p[i] = cs->p()[i];
+        tjm_A[i] = cs->A()[i];
+        tjm_B[i] = cs->B()[i];
+    }
+
+// XXX Vg is temp dependent.
+    double omega_g = 0.5*TJMvg/PHI0_2PI;  // e*Vg = hbar*omega_g
+    tjm_kgap = omega_g/TJMomegaJ;
+
+    double rejpt = 0.0;
+    for (int i = 0; i < model->TJMnterms; i++)
+        rejpt -= (tjm_A[i]/tjm_p[i]).real;
+    rejpt *= model->TJMicFactor;
+    tjm_rejpt = rejpt;
+    tjm_kgap_rejpt = tjm_kgap/rejpt;
+    tjm_alphaN = 1.0/(2*rejpt*tjm_kgap);
+
+    // Compute the internal subgap resistance.  This involves
+    // computing the quasiparticle model, extracting the current at
+    // 80% of Vgap, and computing the linear resistance.  Must be a
+    // better way?
+
+    // First, define the X-axis, per mmjco.
+    double *xpts = new double[model->TJMnxpts];
+    double x = 0.001;
+    double dx = (2.0 - x)/(model->TJMnxpts - 1);
+    for (int i = 0; i < model->TJMnxpts; i++) {
+        xpts[i] = x;
+        x += dx;
+    }
+
+    // This returns the quasiparticle TCA model.
+    cIFcomplex *qp =
+        TJMcoeffSet::modelJqp((const cIFcomplex*)tjm_p,
+        (const cIFcomplex*)tjm_B, model->TJMnterms, xpts, model->TJMnxpts);
+
+    // Index of the point closest to 80% of Vgap.
+    int n = round((0.8 - 0.001)/dx);
+
+    // Un-normalization factor.
+    double fct = model->TJMcriti * TJMicTempFactor * tjm_kgap_rejpt;
+
+    // Save the approximate intrinsic subgap resistance.
+    TJMrsint = 0.8*TJMvg/(fct*qp[n].imag);
+
+    delete [] xpts;
+    delete [] qp;
+    // End of subgap resistance computation.
+
+    // Renormalize.  Here we would rotate to C and D vectors, however
+    // we want to preserve the pair and qp amplitudes for separate
+    // access.
+    for (int i = 0; i < model->TJMnterms; i++) {
+        tjm_A[i] = (model->TJMicFactor*tjm_A[i]) / (-tjm_kgap*tjm_p[i]);
+        tjm_B[i] = (tjm_B[i]) / (-tjm_kgap*tjm_p[i]);
+    }
+
+    return (OK);
+}
+// End of sTJMinstance functions.
+
+#else
 
 int
 sTJMmodel::tjm_init()
@@ -855,4 +1065,6 @@ sTJMmodel::tjm_init()
     return (OK);
 }
 // End of sTJMmodel functions.
+
+#endif
 

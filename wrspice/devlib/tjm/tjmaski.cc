@@ -57,6 +57,10 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
 #ifdef NEWLSH
         &&L_TJM_LSH, 
 #endif
+#ifdef  TJM_INST_TEMP
+        &&L_TJM_TEMP,
+        &&L_TJM_DTEMP,
+#endif
         &&L_TJM_OFF,
         &&L_TJM_IC,
         &&L_TJM_ICP,
@@ -76,6 +80,17 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_TJM_QUEST_CAP,
         &&L_TJM_QUEST_G0,
         &&L_TJM_QUEST_GN,
+#ifdef TJM_INST_TEMP
+        &&L_TJM_QUEST_RSINT,
+        &&L_TJM_QUEST_VDP,
+        &&L_TJM_QUEST_OMEGAJ,
+        &&L_TJM_QUEST_BETAC,
+        &&L_TJM_QUEST_ICTEMPFCT,
+        &&L_TJM_QUEST_ALPHAN,
+        &&L_TJM_QUEST_KGAP,
+        &&L_TJM_QUEST_REJPT,
+        &&L_TJM_QUEST_KGAP_REJPT,
+#endif
         &&L_TJM_QUEST_N1,
         &&L_TJM_QUEST_N2,
         &&L_TJM_QUEST_NP
@@ -127,6 +142,14 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
 #ifdef NEWLSH
     L_TJM_LSH:
         data->v.rValue = inst->TJMlsh;
+        return (OK);
+#endif
+#ifdef  TJM_INST_TEMP
+    L_TJM_TEMP:
+        data->v.rValue = inst->TJMtemp;
+        return (OK);
+    L_TJM_DTEMP:
+        data->v.rValue = inst->TJMdtemp;
         return (OK);
 #endif
     L_TJM_OFF:
@@ -194,6 +217,39 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_TJM_QUEST_GN:
         data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
         return (OK);
+#ifdef TJM_INST_TEMP
+    L_TJM_QUEST_RSINT:
+        data->v.rValue = inst->TJMrsint;
+        return (OK);
+    L_TJM_QUEST_VDP:
+        data->v.rValue = inst->TJMvdpbak;
+        return (OK);
+    L_TJM_QUEST_OMEGAJ:
+        data->v.rValue = inst->TJMomegaJ;
+        return (OK);
+    L_TJM_QUEST_BETAC:
+        {
+            sTJMmodel *model = (sTJMmodel*)inst->GENmodPtr;
+            double tvm = model->TJMvm*inst->TJMicTempFactor;
+            data->v.rValue = tvm*tvm*inst->TJMcap / (inst->TJMcriti*PHI0_2PI);
+        }
+        return (OK);
+    L_TJM_QUEST_ICTEMPFCT:
+        data->v.rValue = inst->TJMicTempFactor;
+        return (OK);
+    L_TJM_QUEST_ALPHAN:
+        data->v.rValue = inst->tjm_alphaN;
+        return (OK);
+    L_TJM_QUEST_KGAP:
+        data->v.rValue = inst->tjm_kgap;
+        return (OK);
+    L_TJM_QUEST_REJPT:
+        data->v.rValue = inst->tjm_rejpt;
+        return (OK);
+    L_TJM_QUEST_KGAP_REJPT:
+        data->v.rValue = inst->tjm_kgap_rejpt;
+        return (OK);
+#endif
     L_TJM_QUEST_N1:
         data->type = IF_INTEGER;
 #ifdef NEWLSER
@@ -246,6 +302,14 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
 #ifdef NEWLSH
     case TJM_LSH:
         data->v.rValue = inst->TJMlsh;
+        break;
+#endif
+#ifdef  TJM_INST_TEMP
+    case TJM_TEMP:
+        data->v.rValue = inst->TJMtemp;
+        break;
+    case TJM_DTEMP:
+        data->v.rValue = inst->TJMdtemp;
         break;
 #endif
     case TJM_OFF:
@@ -313,6 +377,39 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case TJM_QUEST_GN:
         data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
         break;
+#ifdef TJM_INST_TEMP
+    case TJM_QUEST_RSINT:
+        data->v.rValue = inst->TJMrsint;
+        break;
+    case TJM_QUEST_VDP:
+        data->v.rValue = inst->TJMvdpbak;
+        break;
+    case TJM_QUEST_OMEGAJ:
+        data->v.rValue = inst->TJMomegaJ;
+        break;
+    case TJM_QUEST_BETAC:
+        {
+            sTJMmodel *model = (sTJMmodel*)inst->GENmodPtr;
+            double tvm = model->TJMvm*inst->TJMicTempFactor;
+            data->v.rValue = tvm*tvm*inst->TJMcap / (inst->TJMcriti*PHI0_2PI);
+        }
+        break;
+    case TJM_QUEST_ICTEMPFCT:
+        data->v.rValue = inst->TJMicTempFactor;
+        break;
+    case TJM_QUEST_ALPHAN:
+        data->v.rValue = inst->tjm_alphaN;
+        break;
+    case TJM_QUEST_KGAP:
+        data->v.rValue = inst->tjm_kgap;
+        break;
+    case TJM_QUEST_REJPT:
+        data->v.rValue = inst->tjm_rejpt;
+        break;
+    case TJM_QUEST_KGAP_REJPT:
+        data->v.rValue = inst->tjm_kgap_rejpt;
+        break;
+#endif
     case TJM_QUEST_N1:
         data->type = IF_INTEGER;
 #ifdef NEWLSER

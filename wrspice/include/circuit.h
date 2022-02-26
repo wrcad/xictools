@@ -63,7 +63,6 @@ Authors: 1985 Thomas L. Quarles
 #ifdef WITH_THREADS
 #include <pthread.h>
 #ifdef __APPLE__
-//XXX#include <libkern/OSAtomic.h>
 #include <os/lock.h>
 #endif
 #endif
@@ -2129,6 +2128,11 @@ public:
 #endif
 #endif
 };
+
+#ifdef TJM_IF
+// This is used in the TJM device library model.
+FILE *tjm_fopen(const char*, char**);
+#endif
 
 #define CKTstate0 CKTstates[0]
 #define CKTstate1 CKTstates[1]

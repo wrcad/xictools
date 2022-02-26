@@ -79,7 +79,7 @@ public:
             mt_temps = 0;
             mt_data = 0;
             mt_names = 0;
-            if (ntemps < 2 || ntemps > 10)
+            if (ntemps < 1 || ntemps > 10)
                 return (false);
             if (nterms < 6 || nterms > 16)
                 return (false);
@@ -115,6 +115,7 @@ public:
 
     double *new_tab(double);
     bool load(FILE*, int = 0);
+    bool dump_file(const char*, const double*);
 
 private:
     int mt_nterms;

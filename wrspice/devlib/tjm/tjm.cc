@@ -56,6 +56,12 @@ IO("lser",              TJM_LSER,           IF_REAL|IF_IND,
 IO("lsh",              TJM_LSH,             IF_REAL|IF_IND,
                 "External shunt resistor series parasitic inductance"),
 #endif
+#ifdef TJM_INST_TEMP
+IO("temp",              TJM_TEMP,           IF_REAL,
+                "Instance temperature, Kelvin"),
+IO("dtemp",             TJM_DTEMP,          IF_REAL,
+                "Instance temperature difference from TNOM, Kelvin"),
+#endif
 IO("off",               TJM_OFF,            IF_FLAG,
                 "Shorted for dc operating point comp."),
 IO("ic",                TJM_IC,             IF_REALVEC|IF_VOLT,
@@ -98,6 +104,26 @@ OP("g0",                TJM_QUEST_G0,       IF_REAL|IF_COND,
                 "Subgap conductance"),
 OP("gn",                TJM_QUEST_GN,       IF_REAL|IF_COND,
                 "Normal conductance"),
+#ifdef TJM_INST_TEMP
+OP("rsint",             TJM_QUEST_RSINT,    IF_REAL,
+                "Intrinsic subgap resistance"),
+OP("vdp",               TJM_QUEST_VDP,      IF_REAL|IF_VOLT,
+                "Dropback voltage"),
+OP("omegaj",            TJM_QUEST_OMEGAJ,   IF_REAL|IF_FREQ,
+                "Plasma resonance frequency, radians"),
+OP("betac",             TJM_QUEST_BETAC,    IF_REAL,
+                "Stewart-McCumber parameter"),
+OP("ictempfct",         TJM_QUEST_ICTEMPFCT, IF_REAL,
+                "Critical current temperature correction factor"),
+OP("alphan",            TJM_QUEST_ALPHAN,   IF_REAL,
+                "TJM alphaN value"),
+OP("kgap",              TJM_QUEST_KGAP,     IF_REAL,
+                "TJM kgap value"),
+OP("rejpt",             TJM_QUEST_REJPT,    IF_REAL,
+                "TJM rejpt value"),
+OP("kgap_rejpt",        TJM_QUEST_KGAP_REJPT, IF_REAL,
+                "TJM kgap_rejpt value"),
+#endif
 OP("node1",             TJM_QUEST_N1,       IF_INTEGER,
                 "Node 1 number"),
 OP("node2",             TJM_QUEST_N2,       IF_INTEGER,
@@ -130,6 +156,7 @@ IO("rtype",             TJM_MOD_RT,         IF_INTEGER,
                 "Quasiparticle current enabled"),
 IO("cct",               TJM_MOD_CTP,        IF_INTEGER,
                 "Critical current enabled"),
+#ifndef TJM_INST_TEMP
 IO("del1",              TJM_MOD_DEL1,       IF_REAL|IF_VOLT,
                 "Order voltage 1"),
 IO("del2",              TJM_MOD_DEL2,       IF_REAL|IF_VOLT,
@@ -138,6 +165,7 @@ IO("vg",                TJM_MOD_VG,         IF_REAL|IF_VOLT,
                 "Gap voltage"),
 IO("vgap",              TJM_MOD_VG,         IF_REAL|IF_VOLT|IF_REDUNDANT,
                 "Gap voltage"),
+#endif
 IO("deftemp",           TJM_MOD_DEFTEMP,    IF_REAL,
                 "Operating termerature Kelvin"),
 IO("tnom",              TJM_MOD_TNOM,       IF_REAL,
@@ -199,6 +227,7 @@ IO("tsfactor",          TJM_MOD_TSFACT,     IF_REAL,
 IO("tsaccel",           TJM_MOD_TSACCL,     IF_REAL,
                 "Ratio max time step to that at dropback voltage"),
 
+#ifndef TJM_INST_TEMP
 OP("rsint",             TJM_MQUEST_RSINT,   IF_REAL,
                 "Intrinsic subgap resistance"),
 OP("vdp",               TJM_MQUEST_VDP,     IF_REAL|IF_VOLT,
@@ -217,6 +246,7 @@ OP("rejpt",             TJM_MQUEST_REJPT,   IF_REAL,
                 "TJM rejpt value"),
 OP("kgap_rejpt",        TJM_MQUEST_KGAP_REJPT, IF_REAL,
                 "TJM kgap_rejpt value")
+#endif
 };
 
 const char *TJMnames[] = {

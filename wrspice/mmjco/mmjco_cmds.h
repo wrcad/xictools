@@ -23,7 +23,7 @@ public:
     ~mmjco_cmds();
     int mm_set_dir(int, char**);
     int mm_get_gap(int, char**);
-    int mm_get_sweep_fit(int, char**, mmjco_mtdb**, double*);
+    int mm_get_sweep_fit(int, char**, mmjco_mtdb**, double*, char**);
     int mm_create_data(int, char**, double=4.2, bool=false);
     int mm_create_fit(int, char**, FILE* = 0);
     int mm_create_model(int, char**);
@@ -34,6 +34,8 @@ public:
     int mm_load_sweep(int, char**);
     int mm_load_table(int, char**);
     static void get_av(char**, int*, char*);
+
+    const char *tcadir() const  { return (mmc_tcadir); }
 
 private:
     void save_data(const char*, FILE*, DFTYPE, const double*,

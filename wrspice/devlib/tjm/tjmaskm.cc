@@ -62,6 +62,7 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->iValue = model->TJMictype;
         data->type = IF_INTEGER;
         break;
+#ifndef TJM_INST_TEMP
     case TJM_MOD_DEL1:
         value->rValue = model->TJMdel1;
         break;
@@ -71,6 +72,7 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_VG:
         value->rValue = model->TJMvg;
         break;
+#endif
     case TJM_MOD_DEFTEMP:
         value->rValue = model->TJMdeftemp;
         break;
@@ -157,6 +159,7 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_TSACCL:
         value->rValue = model->TJMtsaccl;
         break;
+#ifndef TJM_INST_TEMP
     case TJM_MQUEST_RSINT:
         value->rValue = model->TJMrsint;
         break;
@@ -187,6 +190,7 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MQUEST_KGAP_REJPT:
         value->rValue = model->tjm_kgap_rejpt;
         break;
+#endif
     case TJM_MOD_TJM:
         value->iValue = 1;
         data->type = IF_INTEGER;
