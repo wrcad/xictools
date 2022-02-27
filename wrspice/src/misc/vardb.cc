@@ -247,7 +247,7 @@ variable::copy(const variable *v)
 // Return a wordlist of the text of the variable.
 //
 wordlist *
-variable::varwl() const
+variable::varwl(const char *unit) const
 {
     wordlist *wl = 0, *wx = 0;
     char buf[BSIZE_SP];
@@ -259,8 +259,10 @@ variable::varwl() const
         sprintf(buf, "%d", va.v_num);
         break;
     case VTYP_REAL:
-        sprintf(buf, "%.14g", va.v_real);
-        SPnum.fixxp2(buf);
+        // Old format:
+        // sprintf(buf, "%.14g", va.v_real);
+        // SPnum.fixxp2(buf);
+        strcpy(buf, SPnum.printnum(va.v_real, unit));
         break;
     case VTYP_STRING:
         if (va.v_string == 0)

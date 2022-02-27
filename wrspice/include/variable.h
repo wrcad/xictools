@@ -92,7 +92,7 @@ struct variable
 
     const char *typeString(int) const;
     static variable *copy(const variable*);
-    wordlist *varwl() const;
+    wordlist *varwl(const char* = 0) const;
     wordlist *var2wl(int, int) const;
 
     void clear()

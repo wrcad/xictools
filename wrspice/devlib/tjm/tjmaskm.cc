@@ -62,17 +62,6 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
         value->iValue = model->TJMictype;
         data->type = IF_INTEGER;
         break;
-#ifndef TJM_INST_TEMP
-    case TJM_MOD_DEL1:
-        value->rValue = model->TJMdel1;
-        break;
-    case TJM_MOD_DEL2:
-        value->rValue = model->TJMdel2;
-        break;
-    case TJM_MOD_VG:
-        value->rValue = model->TJMvg;
-        break;
-#endif
     case TJM_MOD_DEFTEMP:
         value->rValue = model->TJMdeftemp;
         break;
@@ -159,38 +148,15 @@ TJMdev::askModl(const sGENmodel *genmod, int which, IFdata *data)
     case TJM_MOD_TSACCL:
         value->rValue = model->TJMtsaccl;
         break;
-#ifndef TJM_INST_TEMP
-    case TJM_MQUEST_RSINT:
-        value->rValue = model->TJMrsint;
+    case TJM_MQUEST_DEL1NOM:
+        value->rValue = model->TJMdel1Nom;
         break;
-    case TJM_MQUEST_VDP:
-        value->rValue = model->TJMvdpbak;
+    case TJM_MQUEST_DEL2NOM:
+        value->rValue = model->TJMdel2Nom;
         break;
-    case TJM_MQUEST_OMEGAJ:
-        value->rValue = model->TJMomegaJ;
+    case TJM_MQUEST_VGAPNOM:
+        value->rValue = model->TJMvgNom;
         break;
-    case TJM_MQUEST_BETAC:
-        {
-            double tvm = model->TJMvm*model->TJMicTempFactor;
-            value->rValue = tvm*tvm*model->TJMcap / (model->TJMcriti*PHI0_2PI);
-        }
-        break;
-    case TJM_MQUEST_ICTEMPFCT:
-        value->rValue = model->TJMicTempFactor;
-        break;
-    case TJM_MQUEST_ALPHAN:
-        value->rValue = model->tjm_alphaN;
-        break;
-    case TJM_MQUEST_KGAP:
-        value->rValue = model->tjm_kgap;
-        break;
-    case TJM_MQUEST_REJPT:
-        value->rValue = model->tjm_rejpt;
-        break;
-    case TJM_MQUEST_KGAP_REJPT:
-        value->rValue = model->tjm_kgap_rejpt;
-        break;
-#endif
     case TJM_MOD_TJM:
         value->iValue = 1;
         data->type = IF_INTEGER;

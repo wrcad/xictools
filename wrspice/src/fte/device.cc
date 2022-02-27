@@ -1147,14 +1147,22 @@ IFsimulator::Show(wordlist *wl, char**, bool mod, int contact_node)
         for (wordlist *pw = parms; pw; pw = pw->wl_next) {
             variable *vv = ckt->getParam(tw->wl_word, pw->wl_word);
             for (variable *v = vv; v; v = v->next()) {
+                IFspecial sp;
+                variable *vx = ckt->getParam(tw->wl_word, v->name(), &sp);
+                variable::destroy(vx);
+                sUnits u;
+                u.set(sp.sp_parm);
+                const char *ustr = u.unitstr();
+
                 int len = 14 + strlen(v->name());
                 TTY.printf("  %s =", v->name());
-                wordlist *w0 = v->varwl();
+                wordlist *w0 = v->varwl(ustr);
                 for (wordlist *ww = w0; ww; ww = ww->wl_next) {
                     len += strlen(ww->wl_word) + 1;
                     TTY.printf(" %s", ww->wl_word);
                 }
                 wordlist::destroy(w0);
+                delete [] ustr;
 
                 for (; len < 40; len++)
                     TTY.send(" ");

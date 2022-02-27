@@ -466,11 +466,7 @@ sTJMinstance::tjm_init(double phi)
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
     int narray = model->TJMnterms;;
     if (model->TJMrtype > 0)
-#ifdef TJM_INST_TEMP
         tjm_gcrit = tjm_alphaN * sqrt(TJMcap*TJMcriti/PHI0_2PI);
-#else
-        tjm_gcrit = model->tjm_alphaN * sqrt(TJMcap*TJMcriti/PHI0_2PI);
-#endif
     else
         tjm_gcrit = 0.0;
 
@@ -496,18 +492,10 @@ void
 sTJMinstance::tjm_newstep(sCKT *ckt)
 {
     sTJMmodel *model = (sTJMmodel*)GENmodPtr;
-#ifdef TJM_INST_TEMP
     double kdt = tjm_kgap*TJMomegaJ*ckt->CKTdelta;
-#else
-    double kdt = model->tjm_kgap*model->TJMomegaJ*ckt->CKTdelta;
-#endif
 
     for (int i = 0; i < model->TJMnterms; i++) {
-#ifdef TJM_INST_TEMP
         IFcomplex z(tjm_p[i]*kdt);
-#else
-        IFcomplex z(model->tjm_p[i]*kdt);
-#endif
         double d = exp(z.real);
         cIFcomplex ez(d*cos(z.imag), d*sin(z.imag));
         tjm_exp_z[i] = ez;
@@ -538,23 +526,12 @@ sTJMinstance::tjm_update(double phi)
         tjm_Fs[i] = tjm_exp_z[i]*tjm_Fsprev[i] +
             tjm_alpha0[i]*tjm_sinphi_2_old + tjm_alpha1[i]*sinphi_2;
 
-#ifdef TJM_INST_TEMP
         FcSp += (tjm_A[i]*tjm_Fc[i]).real;
         FcSq += (tjm_B[i]*tjm_Fc[i]).real;
         FsSp += (tjm_A[i]*tjm_Fs[i]).real;
         FsSq += (tjm_B[i]*tjm_Fs[i]).real;
-#else
-        FcSp += (model->tjm_A[i]*tjm_Fc[i]).real;
-        FcSq += (model->tjm_B[i]*tjm_Fc[i]).real;
-        FsSp += (model->tjm_A[i]*tjm_Fs[i]).real;
-        FsSq += (model->tjm_B[i]*tjm_Fs[i]).real;
-#endif
     }
-#ifdef TJM_INST_TEMP
     double fct = TJMcriti * tjm_kgap_rejpt;
-#else
-    double fct = TJMcriti * model->tjm_kgap_rejpt;
-#endif
     if (model->TJMictype > 0)
         tjm_cp  = fct*(sinphi_2*FcSp + cosphi_2*FsSp);
     else

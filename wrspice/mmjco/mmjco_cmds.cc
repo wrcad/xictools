@@ -174,7 +174,7 @@ mmjco_cmds::mm_get_gap(int argc, char **argv)
                         "Error: missing Debye temperature, exiting.\n");
                     return (1);
                 }
-                if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0)
+                if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0)
                     tc = a;
                 else {
                     fprintf(stderr, "Error: bad -td (temperature), exiting.\n");

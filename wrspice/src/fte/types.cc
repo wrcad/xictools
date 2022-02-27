@@ -521,6 +521,74 @@ sUnits::set(int type)
 }
 
 
+// Set fundamental units.
+//
+void
+sUnits::set(IFparm *p)
+{
+    for (int i = 0; i < 8; i++)
+        units[i] = 0;
+    if (!p)
+        return;
+    switch (p->dataType & IF_UNITS) {
+    default:
+    case 0:
+        return;
+    case IF_TIME:
+        units[uuTime] = 1;
+        return;
+    case IF_FREQ:
+        units[uuTime] = -1;
+        return;
+    case IF_VOLT:
+        units[uuVoltage] = 1;
+        return;
+    case IF_AMP:
+        units[uuCurrent] = 1;
+        return;
+    case IF_CHARGE:
+        units[uuCurrent] = 1;
+        units[uuTime] = 1;
+        return;
+    case IF_FLUX:
+        units[uuVoltage] = 1;
+        units[uuTime] = 1;
+        return;
+    case IF_CAP:
+        units[uuCurrent] = 1;
+        units[uuTime] = 1;
+        units[uuVoltage] = -1;
+        return;
+    case IF_IND:
+        units[uuVoltage] = 1;
+        units[uuTime] = 1;
+        units[uuCurrent] = -1;
+        return;
+    case IF_RES:
+        units[uuVoltage] = 1;
+        units[uuCurrent] = -1;
+        return;
+    case IF_COND:
+        units[uuCurrent] = 1;
+        units[uuVoltage] = -1;
+        return;
+    case IF_LEN:
+        units[uuLength] = 1;
+        return;
+    case IF_AREA:
+        units[uuLength] = 2;
+        return;
+    case IF_TEMP:
+        units[uuTemper] = 1;
+        return;
+    case IF_POWR:
+        units[uuVoltage] = 1;
+        units[uuCurrent] = 1;
+        return;
+    }
+}
+
+
 // Parse the type abbreviations in string and set the units accordingly.
 // Return false if error.
 //

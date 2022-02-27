@@ -57,10 +57,8 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
 #ifdef NEWLSH
         &&L_TJM_LSH, 
 #endif
-#ifdef  TJM_INST_TEMP
         &&L_TJM_TEMP,
         &&L_TJM_DTEMP,
-#endif
         &&L_TJM_OFF,
         &&L_TJM_IC,
         &&L_TJM_ICP,
@@ -80,8 +78,10 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_TJM_QUEST_CAP,
         &&L_TJM_QUEST_G0,
         &&L_TJM_QUEST_GN,
-#ifdef TJM_INST_TEMP
         &&L_TJM_QUEST_RSINT,
+        &&L_TJM_QUEST_DEL1,
+        &&L_TJM_QUEST_DEL2,
+        &&L_TJM_QUEST_VGAP,
         &&L_TJM_QUEST_VDP,
         &&L_TJM_QUEST_OMEGAJ,
         &&L_TJM_QUEST_BETAC,
@@ -90,7 +90,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         &&L_TJM_QUEST_KGAP,
         &&L_TJM_QUEST_REJPT,
         &&L_TJM_QUEST_KGAP_REJPT,
-#endif
         &&L_TJM_QUEST_N1,
         &&L_TJM_QUEST_N2,
         &&L_TJM_QUEST_NP
@@ -144,14 +143,12 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = inst->TJMlsh;
         return (OK);
 #endif
-#ifdef  TJM_INST_TEMP
     L_TJM_TEMP:
         data->v.rValue = inst->TJMtemp;
         return (OK);
     L_TJM_DTEMP:
         data->v.rValue = inst->TJMdtemp;
         return (OK);
-#endif
     L_TJM_OFF:
         data->type = IF_FLAG;
         data->v.iValue = inst->TJMoffGiven;
@@ -217,9 +214,17 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_TJM_QUEST_GN:
         data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
         return (OK);
-#ifdef TJM_INST_TEMP
     L_TJM_QUEST_RSINT:
         data->v.rValue = inst->TJMrsint;
+        return (OK);
+    L_TJM_QUEST_DEL1:
+        data->v.rValue = inst->TJMdel1;
+        return (OK);
+    L_TJM_QUEST_DEL2:
+        data->v.rValue = inst->TJMdel2;
+        return (OK);
+    L_TJM_QUEST_VGAP:
+        data->v.rValue = inst->TJMvgap;
         return (OK);
     L_TJM_QUEST_VDP:
         data->v.rValue = inst->TJMvdpbak;
@@ -249,7 +254,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     L_TJM_QUEST_KGAP_REJPT:
         data->v.rValue = inst->tjm_kgap_rejpt;
         return (OK);
-#endif
     L_TJM_QUEST_N1:
         data->type = IF_INTEGER;
 #ifdef NEWLSER
@@ -304,14 +308,12 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
         data->v.rValue = inst->TJMlsh;
         break;
 #endif
-#ifdef  TJM_INST_TEMP
     case TJM_TEMP:
         data->v.rValue = inst->TJMtemp;
         break;
     case TJM_DTEMP:
         data->v.rValue = inst->TJMdtemp;
         break;
-#endif
     case TJM_OFF:
         data->type = IF_FLAG;
         data->v.iValue = inst->TJMoffGiven;
@@ -377,9 +379,17 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case TJM_QUEST_GN:
         data->v.rValue = inst->tjm_gcrit + inst->TJMg0;
         break;
-#ifdef TJM_INST_TEMP
     case TJM_QUEST_RSINT:
         data->v.rValue = inst->TJMrsint;
+        break;
+    case TJM_QUEST_DEL1:
+        data->v.rValue = inst->TJMdel1;
+        break;
+    case TJM_QUEST_DEL2:
+        data->v.rValue = inst->TJMdel2;
+        break;
+    case TJM_QUEST_VGAP:
+        data->v.rValue = inst->TJMvgap;
         break;
     case TJM_QUEST_VDP:
         data->v.rValue = inst->TJMvdpbak;
@@ -409,7 +419,6 @@ TJMdev::askInst(const sCKT *ckt, const sGENinstance *geninst, int which,
     case TJM_QUEST_KGAP_REJPT:
         data->v.rValue = inst->tjm_kgap_rejpt;
         break;
-#endif
     case TJM_QUEST_N1:
         data->type = IF_INTEGER;
 #ifdef NEWLSER

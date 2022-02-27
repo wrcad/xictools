@@ -184,6 +184,7 @@ enum Ufund
     uuTemper
 };
 
+
 struct sUnits
 {
     sUnits()
@@ -192,6 +193,7 @@ struct sUnits
         }
 
     void set(int);
+    void set(IFparm*);
     bool set(const char*);
     void operator*(Ufund t) { units[t]++; }
     void operator/(Ufund t) { units[t]--; };
