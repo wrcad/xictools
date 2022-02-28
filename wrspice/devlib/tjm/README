@@ -58,6 +58,14 @@ tcN and tdebyeN, temp and tnom are used in the BCS calculation to yield
 the critical current temp dependence, so these parameters must match those
 used to generate the sweep data.
 
+If no coeffset is given as a model parameter, coefficient sets will be
+created for each instance temperature.  The use of a sweep file will
+avoid the need to actually create the fit tables, which can take tens
+of seconds apiece to generate.  If a single temperature fit file name
+is given, the instance temperature is given by that fit file and the
+temp/dtemp instance parameters are ignored, as are the model
+parameters listed above.
+
 ///
 
 There is provision for adding shunt resistance to match measured Vm and
