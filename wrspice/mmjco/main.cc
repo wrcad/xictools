@@ -34,7 +34,7 @@
 // used by the TJM device model in WRspice.
 //
 // Similarly, "swf" will create a possibly-interpolated fit file from
-// and existing sweep file.
+// an existing sweep file.
 //
 int main(int argc, char **argv)
 {
@@ -118,8 +118,8 @@ int main(int argc, char **argv)
 "cm[odel]  [-h thr] [-fm [filename]] [-r | -rr | -rd]\n"
 "    Create model for TCA data using fitting parameters, compute fit\n"
 "    measure, optionally save to file.\n"
-"cs[weep] Tstrt Tend [delta] [cd and cf args] \n"
-"    Create a temperature sweep file, delta defaults to 0.1K."
+"cs[weep] Tstrt Tend [delta] [cd and cf args]\n"
+"    Create a temperature sweep file, delta defaults to 0.1K.\n"
 "ct[ab] T1 T2 [... TN] [cd and cf args]\n"
 "    Create a temperature table file."
 "d[ir] directory_path\n"

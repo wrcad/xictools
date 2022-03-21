@@ -463,12 +463,12 @@ mmjco_fit::new_fit_parameters(const double *x,
 }
 
 
-// Save TCA fit parameters p,A,B to file.  The destination can be
-// set by passing fp, in which case the file name will be added
-// as a leading text string.
+// Save TCA fit parameters p,A,B to file.  The destination can be set
+// by passing fp, in which case the data string or file name will be
+// added as a leading text string.
 //
 void
-mmjco_fit::save_fit_parameters(const char *filename, FILE *fp)
+mmjco_fit::save_fit_parameters(const char *filename, FILE *fp, const char *data)
 {
     if (!mmf_pAB || !mmf_nterms) {
         fprintf(stderr, "Error: no saved parameter set.\n");
@@ -484,6 +484,9 @@ mmjco_fit::save_fit_parameters(const char *filename, FILE *fp)
             return;
         }
         closefp = true;
+    }
+    else if (data) {
+        fprintf(fp, "%s\n", data);
     }
     else {
         const char *f = strrchr(filename, '/');

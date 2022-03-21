@@ -824,7 +824,15 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
         delete [] fitfile;
         fitfile = t;
     }
-    mmc_mf.save_fit_parameters(fitfile, fp);
+
+    char *data = 0;
+    if (fp) {
+        data = new char[80];
+        sprintf(data, "tca %11.4e %11.4e %11.4e %9.2e %4d %2d %9.2e",
+            mmc_temp, mmc_d1, mmc_d2, mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr);
+    }
+    mmc_mf.save_fit_parameters(fitfile, fp, data);
+    delete [] data;
     delete [] mmc_fitfile;
     mmc_fitfile = fitfile;
     return (0);

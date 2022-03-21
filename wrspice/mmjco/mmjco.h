@@ -320,7 +320,7 @@ public:
 
     void new_fit_parameters(const double*, const complex<double>*,
         const complex<double>*, int, int, double);
-    void save_fit_parameters(const char*, FILE* = 0);
+    void save_fit_parameters(const char*, FILE* = 0, const char* = 0);
     void load_fit_parameters(const char*, FILE*);
     void load_fit_parameters(const double*, int);
     void tca_fit(const double*, int, complex<double>**, complex<double>**);

@@ -69,6 +69,34 @@ mmjco_mtdb::load(FILE *fp, int ntemps)
             ntemps = atoi(s);
             continue;
         }
+#define NEWFMT
+#ifdef NEWFMT
+// New format: print values, easy to parse.
+
+        if (!strncmp(s, "tca", 3)) {
+            double d1, d2, sm, th;
+            int nx, np;
+            if (sscanf(s+4, "%lf %lf %lf %lf %d %d %lf", &temp, &d1, &d2, &sm,
+                    &nx, &np, &th) != 7) {
+                fprintf(stderr, "Error: wrong header token count.\n");
+                return (false);
+            }
+            mt_sm = sm;
+            mt_xp = nx;
+            if (ix == 0) {
+                nterms = np;
+                if (!setup(ntemps, nterms))
+                    return (false);
+                data = new double[nterms*6];
+            }
+            mt_thr = th;
+            dp = data;
+            ix++;
+            continue;
+        }
+#else
+// Previous format: the "file name", parse to get values.
+
         if (!strncmp(s, "tca", 3)) {
             s += 3;
             char *t = tbf;
@@ -153,6 +181,8 @@ mmjco_mtdb::load(FILE *fp, int ntemps)
             ix++;
             continue;
         }
+#endif
+
         if (!dp) {
             fprintf(stderr, "Error: file is corrupt.\n");
             return (false);
