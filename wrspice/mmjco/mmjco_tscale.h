@@ -114,7 +114,7 @@ public:
     double thresh() const   { return (mt_thr); }
 
     double *new_tab(double);
-    bool load(FILE*, int = 0);
+    bool load(FILE*, int, int);
     bool dump_file(const char*, const double*);
 
 private:

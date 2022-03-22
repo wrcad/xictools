@@ -36,23 +36,25 @@ mmjco_mtdb::new_tab(double t)
 }
 
 
-// Load a fit table file.  The file consists of concatenated fit tables
-// for different temperatures.  The "filename" of each fit set is printed
-// before fit data, and is parsed to obtain parameters.  The first line
-// of the file contains the keyword "tsweep" followed by the number of
-// fit sets (and temperatures).
+// Load a fit table or sweep file.  The file consists of concatenated
+// fit tables for different temperatures.  The data of each fit set is
+// printed before fit data, and is parsed to obtain parameters.  For
+// sweep files, the first line of the file contains the keyword
+// "tsweep" followed by the number of fit sets, the minimum
+// temperature, delta temperature, smoothing factor, number of TCA
+// points, dimension of fit parameter set, and fit threshold.  A point
+// table contains the keyword "tpoint" followed by the number of fit
+// sets, the first temperature, the last temperature, and additional
+// parameters as for sweep.
 //
-// Also used to load a sweep file.  In this case, the file pointer is
-// already pointing to the first record to read, and the number of
-// records to read is passed.
+// The file pointer is already pointing to the first record to read,
+// and the number of records to read is passed.
 //
 bool
-mmjco_mtdb::load(FILE *fp, int ntemps)
+mmjco_mtdb::load(FILE *fp, int ntemps, int nterms)
 {
     const char *s;
     char buf[256];
-    char tbf[16];
-    int nterms = 0;
     double temp = 0.0;
     double *data = 0;
     double *dp = 0;
@@ -63,125 +65,24 @@ mmjco_mtdb::load(FILE *fp, int ntemps)
             s++;
         if (!*s)
             continue;
-        if (!strncmp(s, "tpoint", 6)) {
-            // Not seen in sweep files.
-            s += 7;
-            ntemps = atoi(s);
-            continue;
-        }
-#define NEWFMT
-#ifdef NEWFMT
-// New format: print values, easy to parse.
 
+        // New format: print values, easy to parse.
         if (!strncmp(s, "tca", 3)) {
-            double d1, d2, sm, th;
-            int nx, np;
-            if (sscanf(s+4, "%lf %lf %lf %lf %d %d %lf", &temp, &d1, &d2, &sm,
-                    &nx, &np, &th) != 7) {
-                fprintf(stderr, "Error: wrong header token count.\n");
+            double d1, d2;
+            if (sscanf(s+4, "%lf %lf %lf", &temp, &d1, &d2) != 3) {
+                fprintf(stderr, "Error: wrong record separator token count.\n");
                 return (false);
             }
-            mt_sm = sm;
-            mt_xp = nx;
             if (ix == 0) {
-                nterms = np;
                 if (!setup(ntemps, nterms))
                     return (false);
                 data = new double[nterms*6];
             }
-            mt_thr = th;
-            dp = data;
-            ix++;
-            continue;
-        }
-#else
-// Previous format: the "file name", parse to get values.
 
-        if (!strncmp(s, "tca", 3)) {
-            s += 3;
-            char *t = tbf;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t = 0;
-            temp = atof(tbf)*1e-4;
-#ifdef DEBUG
-            printf("tm = %g\n", temp);
-#endif
-            t = tbf;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t = 0;
-#ifdef DEBUG
-            double d1 = atof(tbf)*1e-4;
-            printf("d1 = %g\n", d1);
-#endif
-            t = tbf;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t = 0;
-#ifdef DEBUG
-            double d2 = atof(tbf)*1e-4;
-            printf("d2 = %g\n", d2);
-#endif
-            t = tbf;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t = 0;
-            if (ix == 0)
-                mt_sm = atof(tbf)*1e-3;
-#ifdef DEBUG
-            printf("sm = %g\n", mt_sm);
-#endif
-            t = tbf;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t = 0;
-            if (ix == 0)
-                mt_xp = atoi(tbf);
-#ifdef DEBUG
-            printf("xp = %d\n", mt_xp);
-#endif
-            s++;  // -
-            t = tbf;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t = 0;
-            if (ix == 0) {
-                nterms = atoi(tbf);
-                if (!setup(ntemps, nterms))
-                    return (false);
-                data = new double[nterms*6];
-            }
-#ifdef DEBUG
-            printf("nt = %d\n", nterms);
-#endif
-            t = tbf;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t++ = *s++;
-            *t = 0;
-            if (ix == 0)
-                mt_thr = atof(tbf)*1e-3;
-#ifdef DEBUG
-            printf("th = %g\n", mt_thr);
-#endif
             dp = data;
             ix++;
             continue;
         }
-#endif
 
         if (!dp) {
             fprintf(stderr, "Error: file is corrupt.\n");

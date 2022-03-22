@@ -307,14 +307,19 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
         return (1);
     }
 
-    if (strncmp(tbuf, "tsweep", 6) || sscanf(tbuf+7, "%d %lf %lf",
-            &nrec, &tstrt, &tdel) != 3) {
+    double sm, th;
+    int xp, nterms;
+    if (strncmp(tbuf, "tsweep", 6) || sscanf(tbuf+7, "%d %lf %lf %lf %d %d %lf",
+            &nrec, &tstrt, &tdel, &sm, &xp, &nterms, &th) != 7) {
         fprintf(stderr, "Error: syntax in %s.\n", swpfile);
         delete [] tbuf;
         delete [] swpfile;
         return (1);
     }
     delete [] tbuf;
+    mmc_sm = sm;
+    mmc_thr = th;
+    mmc_numxpts = xp;
 
     int ntemp = (temp - tstrt)/tdel + 1e-6;
     if (ntemp < 0 || ntemp >= nrec) {
@@ -362,7 +367,7 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
 
     // Grab the data.
     mmjco_mtdb *mt = new mmjco_mtdb;
-    if (!mt->load(fp, recs)) {
+    if (!mt->load(fp, recs, nterms)) {
         fprintf(stderr, "Error: load failed.\n");
         delete mt;
         delete [] swpfile;
@@ -405,6 +410,8 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
     int nx  = 500;
     char *datafile = 0;
     DFTYPE dtype = mmc_ftype;
+    int nterms = 8;
+    double thr = 0.2;
 
     for (int i = 1; i < argc; i++) {
         if (argv[i][0] == '-') {
@@ -612,7 +619,49 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
                 dtype = DFRAWCPLX;
                 continue;
             }
+
+            // If no_out is true, we are generating a sweep table, and
+            // need the values for the following fit parameters to be
+            // set, as they are used to create the sweep file name. 
+            // These will be set again when creating fit data.
+
+            if (!strcmp(argv[i], "-n")) {
+                if (!no_out)
+                    continue;
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing term count, exiting.\n");
+                    return (1);
+                }
+                int d;
+                if (sscanf(argv[i], "%d", &d) == 1 && d > 3 && d < 21 && !(d&1))
+                    nterms = d;
+                else {
+                    fprintf(stderr,
+                    "Error: bad -n (number of terms, 4-20 even), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
+            if (!strcmp(argv[i], "-h")) {
+                if (!no_out)
+                    continue;
+                if (++i == argc) {
+                    fprintf(stderr, "Error: missing threshold, exiting.\n");
+                    return (1);
+                }
+                if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.05 && a < 0.5)
+                    thr = a;
+                else {
+                    fprintf(stderr, "Error: bad -h (threshold), exiting.\n");
+                    return (1);
+                }
+                continue;
+            }
         }
+    }
+    if (no_out) {
+        mmc_nterms = nterms;
+        mmc_thr = thr;
     }
 
     // Setup TCA computation.
@@ -815,7 +864,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
         }
         
         sprintf(tbuf+strlen(tbuf), "-%02d%03ld.fit", mmc_nterms,
-            lround(mmc_thr*1000));
+            lround(mmc_thr*1e3));
         fitfile = tbuf;
     }
     else if (mmc_tcadir && !is_rooted(fitfile)) {
@@ -828,8 +877,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
     char *data = 0;
     if (fp) {
         data = new char[80];
-        sprintf(data, "tca %11.4e %11.4e %11.4e %9.2e %4d %2d %9.2e",
-            mmc_temp, mmc_d1, mmc_d2, mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr);
+        sprintf(data, "tcafit %11.4e %11.4e %11.4e", mmc_temp, mmc_d1, mmc_d2);
     }
     mmc_mf.save_fit_parameters(fitfile, fp, data);
     delete [] data;
@@ -837,6 +885,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
     mmc_fitfile = fitfile;
     return (0);
 }
+
 
 // Back-convert a "model" TCA parameter table from the fitting
 // parameters stored in memory.  By default, output is not saved, only
@@ -999,27 +1048,44 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
     char *datafile;
     char *dp;
     if (mmc_tcadir) {
-        datafile = new char[strlen(mmc_tcadir) + 32];
+        datafile = new char[strlen(mmc_tcadir) + 40];
         sprintf(datafile, "%s/", mmc_tcadir);
         dp = datafile + strlen(datafile);
     }
     else {
-        datafile = new char[32];
+        datafile = new char[40];
         dp = datafile;
     }
-    sprintf(dp, "tsweep_%d_%.4f_%.4f.swp", ntemps, vals[0], vals[2]);
 
-    FILE *fp = fopen(datafile, "w");
-    fprintf(fp, "tsweep %d %.4f %.4f\n", ntemps, vals[0], vals[2]);
+    int err = 0;
+    FILE *fp = 0;
+    bool done_header = false;
     for (int i = 0; i < ntemps; i++) {
         mm_create_data(argc-nvals, argv+nvals, vals[0], true);
+        if (!done_header) {
+            done_header = true;
+            sprintf(dp, "tsw%03d%06ld%06ld%02ld%04d-%02d%03ld.swp", ntemps,
+                lround(vals[0]*1e4), lround(vals[2]*1e4), lround(mmc_sm*1e3),
+                mmc_numxpts, mmc_nterms, lround(mmc_thr*1e3));
+            fp = fopen(datafile, "w");
+            if (!fp) {
+                fprintf(stderr, "ERROR: failed to open %s for writing.\n",
+                    datafile);
+                err = 1;
+                break;
+            }
+            fprintf(fp, "tsweep %d %.4f %.4f %.3f %d %d %3f\n", ntemps, vals[0],
+                vals[2], mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr);
+        }
+
         mm_create_fit(argc-nvals, argv+nvals, fp);
         vals[0] += vals[2];
     }
-    fclose(fp);
+    if (fp)
+        fclose(fp);
     delete [] vals;
     delete [] datafile;
-    return (0);
+    return (err);
 }
 
 
@@ -1058,31 +1124,51 @@ mmjco_cmds::mm_create_table(int argc, char **argv)
     char *datafile;
     char *dp;
     if (mmc_tcadir) {
-        datafile = new char[strlen(mmc_tcadir) + 32];
+        datafile = new char[strlen(mmc_tcadir) + 40];
         sprintf(datafile, "%s/", mmc_tcadir);
         dp = datafile + strlen(datafile);
     }
     else {
-        datafile = new char[32];
+        datafile = new char[40];
         dp = datafile;
     }
-    sprintf(dp, "tpoints_%d", ntemps);
 
-    FILE *fp = fopen(datafile, "w");
-    fprintf(fp, "tpoints %d\n", ntemps);
+    int err = 0;
+    FILE *fp = 0;
+    bool done_header = false;
+    fp = fopen(datafile, "w");
     for (int i = 0; i < ntemps; i++) {
         int nt = ntemps;
         mm_create_data(argc-nt, argv+nt, temps[i], true);
+        if (!done_header) {
+            done_header = true;
+            sprintf(dp, "tpt%03d%06ld%06ld%02ld%04d-%02d%03ld.pts", nt,
+                lround(temps[0]*1e4), lround(temps[nt-1]*1e4),
+                lround(mmc_sm*1e3), mmc_numxpts, mmc_nterms,
+                lround(mmc_thr*1e3));
+            fp = fopen(datafile, "w");
+            if (!fp) {
+                fprintf(stderr, "ERROR: failed to open %s for writing.\n",
+                    datafile);
+                err = 1;
+                break;
+            }
+            fprintf(fp, "tpoints %d %.4f %.4f %.3f %d %d %3f\n", nt,
+                temps[0], temps[nt-1], mmc_sm, mmc_numxpts, mmc_nterms,
+                mmc_thr);
+        }
+
         mm_create_fit(argc-nt, argv+nt, fp);
     }
-    fclose(fp);
+    if (fp)
+        fclose(fp);
     delete [] temps;
     delete [] datafile;
-    return (0);
+    return (err);
 }
 
 
-// Load the internal data registers from a data file, as produced with
+// Load the internal data registers from a TCA data file, as produced with
 // the "cd" command.  This overwrites any existing TCA data.
 //
 // ld filename
