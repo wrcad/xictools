@@ -51,6 +51,10 @@ private:
     double mmc_d1;
     double mmc_d2;
     double mmc_sm;
+    double mmc_tc1;
+    double mmc_tc2;
+    double mmc_td1;
+    double mmc_td2;
     const char *mmc_datafile;
     const char *mmc_tcadir;
 

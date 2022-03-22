@@ -67,6 +67,10 @@ mmjco_cmds::mmjco_cmds()
     mmc_d1          = 0.0;
     mmc_d2          = 0.0;
     mmc_sm          = 0.0;
+    mmc_tc1         = 0.0;
+    mmc_tc2         = 0.0;
+    mmc_td1         = 0.0;
+    mmc_td2         = 0.0;
     mmc_datafile    = 0;
     mmc_tcadir      = 0;
 
@@ -156,28 +160,26 @@ mmjco_cmds::mm_get_gap(int argc, char **argv)
         if (argv[i][0] == '-') {
             if (!strcmp(argv[i], "-tc")) {
                 if (++i == argc) {
-                    fprintf(stderr,
-                        "Error: missing transition temperature, exiting.\n");
+                    fprintf(stderr, "Error: missing transition temperature.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0)
                     tc = a;
                 else {
-                    fprintf(stderr, "Error: bad -tc (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -tc (temperature).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-td")) {
                 if (++i == argc) {
-                    fprintf(stderr,
-                        "Error: missing Debye temperature, exiting.\n");
+                    fprintf(stderr, "Error: missing Debye temperature.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0)
                     tc = a;
                 else {
-                    fprintf(stderr, "Error: bad -td (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -td (temperature).\n");
                     return (1);
                 }
                 continue;
@@ -250,8 +252,7 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
         if (argv[i][0] == '-') {
             if (!strcmp(argv[i], "-fs")) {
                 if (++i == argc) {
-                    fprintf(stderr,
-                        "Error: missing sweep filename, exiting.\n");
+                    fprintf(stderr, "Error: missing sweep filename.\n");
                     return (1);
                 }
                 char f[256];
@@ -266,8 +267,7 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
                     }
                 }
                 else {
-                    fprintf(stderr,
-                        "Error: bad -fs (sweep filename), exiting.\n");
+                    fprintf(stderr, "Error: bad -fs (sweep filename).\n");
                     return (1);
                 }
                 continue;
@@ -278,16 +278,16 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
             temp = a;
         }
         else {
-            fprintf(stderr, "Error: bad temperature, exiting.\n");
+            fprintf(stderr, "Error: bad temperature.\n");
             return (1);
         }
     }
     if (temp == -1.0) {
-        fprintf(stderr, "Error: temperature not given, exiting.\n");
+        fprintf(stderr, "Error: temperature not given.\n");
         return (1);
     }
     if (!swpfile) {
-        fprintf(stderr, "Error: sweep file not given, exiting.\n");
+        fprintf(stderr, "Error: sweep file not given.\n");
         return (1);
     }
     FILE *fp = fopen(swpfile, "r");
@@ -418,50 +418,48 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
             double a;
             if (!strcmp(argv[i], "-t")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing temperature, exiting.\n");
+                    fprintf(stderr, "Error: missing temperature.\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 300.0)
                     temp = a;
                 else {
-                    fprintf(stderr, "Error: bad -t (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -t (temperature).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-tc1")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing Tc1, exiting.\n");
+                    fprintf(stderr, "Error: missing -tc1 (temperature).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 300.0) {
                     tc1 = a;
                 }
                 else {
-                    fprintf(stderr,
-                        "Error: bad -tc1 (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -tc1 (temperature).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-tc2")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing Tc2, exiting.\n");
+                    fprintf(stderr, "Error: missing -tc2 (temperature).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 300.0) {
                     tc2 = a;
                 }
                 else {
-                    fprintf(stderr,
-                        "Error: bad -tc2 (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -tc2 (temperature).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-tc")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing Tc, exiting.\n");
+                    fprintf(stderr, "Error: missing -tc (temperature).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 300.0) {
@@ -469,44 +467,42 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
                     tc2 = a;
                 }
                 else {
-                    fprintf(stderr, "Error: bad -tc (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -tc (temperature).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-td1")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing Tdebye1, exiting.\n");
+                    fprintf(stderr, "Error: missing -td1 (temperature).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 1000.0) {
                     td1 = a;
                 }
                 else {
-                    fprintf(stderr,
-                        "Error: bad -td1 (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -td1 (temperature).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-td2")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing Tdebye2, exiting.\n");
+                    fprintf(stderr, "Error: missing -td2 (temperature).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 1000.0) {
                     td2 = a;
                 }
                 else {
-                    fprintf(stderr,
-                        "Error: bad -td2 (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -td2 (temperature).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-td")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing Tdebye, exiting.\n");
+                    fprintf(stderr, "Error: missing -td (temperature).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 1000.0) {
@@ -514,42 +510,42 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
                     td2 = a;
                 }
                 else {
-                    fprintf(stderr, "Error: bad -td (temperature), exiting.\n");
+                    fprintf(stderr, "Error: bad -td (temperature).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-d1")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing delta, exiting.\n");
+                    fprintf(stderr, "Error: missing -d1 (delta V).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
                     d1 = a;
                 }
                 else {
-                    fprintf(stderr, "Error: bad -d1 (delta), exiting.\n");
+                    fprintf(stderr, "Error: bad -d1 (delta V).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-d2")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing delta, exiting.\n");
+                    fprintf(stderr, "Error: missing -d2 (delta V).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
                     d2 = a;
                 }
                 else {
-                    fprintf(stderr, "Error: bad -d2 (delta), exiting.\n");
+                    fprintf(stderr, "Error: bad -d2 (delta V).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-d")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing delta, exiting.\n");
+                    fprintf(stderr, "Error: missing -d (delta V).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a > 0.0 && a < 5.0) {
@@ -557,29 +553,29 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
                     d2 = a;
                 }
                 else {
-                    fprintf(stderr, "Error: bad -d (delta), exiting.\n");
+                    fprintf(stderr, "Error: bad -d (delta V).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-s")) {
                 if (++i == argc) {
-                    fprintf(stderr,
-                        "Error: missing smoothing factor, exiting.\n");
+                    fprintf(stderr, "Error: missing -s (smoothing factor).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.0 && a < 0.099)
                     sm = (a >= 0.001 ? a : 0.0);
                 else {
                     fprintf(stderr,
-                        "Error: bad -s (smoothing factor), exiting.\n");
+                        "Error: bad -s (smoothing factor).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-x")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing datapoints, exiting.\n");
+                    fprintf(stderr,
+                        "Error: missing -x (number of datapoints).\n");
                     return (1);
                 }
                 int d;
@@ -587,22 +583,21 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
                     nx = d;
                 else {
                     fprintf(stderr,
-                        "Error: bad -x (number of data points), exiting.\n");
+                        "Error: bad -x (number of datapoints).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-f")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing filename, exiting.\n");
+                    fprintf(stderr, "Error: missing -f (data filename).\n");
                     return (1);
                 }
                 char f[256];
                 if (sscanf(argv[i], "%s", f) == 1)
                     datafile = strdup(f);
                 else {
-                    fprintf(stderr,
-                        "Error: bad -f (data filename), exiting.\n");
+                    fprintf(stderr, "Error: bad -f (data filename).\n");
                     return (1);
                 }
                 continue;
@@ -629,7 +624,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
                 if (!no_out)
                     continue;
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing term count, exiting.\n");
+                    fprintf(stderr, "Error: missing -n (term count).\n");
                     return (1);
                 }
                 int d;
@@ -637,7 +632,7 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
                     nterms = d;
                 else {
                     fprintf(stderr,
-                    "Error: bad -n (number of terms, 4-20 even), exiting.\n");
+                        "Error: bad -n (term count, expect 4-20 even).\n");
                     return (1);
                 }
                 continue;
@@ -646,18 +641,22 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
                 if (!no_out)
                     continue;
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing threshold, exiting.\n");
+                    fprintf(stderr, "Error: missing -h (threshold).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.05 && a < 0.5)
                     thr = a;
                 else {
-                    fprintf(stderr, "Error: bad -h (threshold), exiting.\n");
+                    fprintf(stderr, "Error: bad -h (threshold).\n");
                     return (1);
                 }
                 continue;
             }
         }
+    }
+    if (temp > (tc1 + tc2)*0.999) {
+        fprintf(stderr, "Error: temperature close to or above Tc.\n");
+        return (1);
     }
     if (no_out) {
         mmc_nterms = nterms;
@@ -683,6 +682,10 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
     mmc_d1 = d1;
     mmc_d2 = d2;
     mmc_sm = sm;
+    mmc_tc1 = tc1;
+    mmc_tc2 = tc2;
+    mmc_td1 = td1;
+    mmc_td2 = td2;
     mmc_numxpts = nx;
     mmc_pair_data = new complex<double>[mmc_numxpts];
     mmc_qp_data = new complex<double>[mmc_numxpts];
@@ -790,7 +793,7 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
             double a;
             if (!strcmp(argv[i], "-n")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing term count, exiting.\n");
+                    fprintf(stderr, "Error: missing -n (term count).\n");
                     return (1);
                 }
                 int d;
@@ -798,35 +801,34 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
                     nterms = d;
                 else {
                     fprintf(stderr,
-                    "Error: bad -n (number of terms, 4-20 even), exiting.\n");
+                    "Error: bad -n (term count, expect 4-20 even).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-h")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing threshold, exiting.\n");
+                    fprintf(stderr, "Error: missing -h (threshold).\n");
                     return (1);
                 }
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.05 && a < 0.5)
                     thr = a;
                 else {
-                    fprintf(stderr, "Error: bad -h (threshold), exiting.\n");
+                    fprintf(stderr, "Error: bad -h (threshold).\n");
                     return (1);
                 }
                 continue;
             }
             if (!strcmp(argv[i], "-ff")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing filename, exiting.\n");
+                    fprintf(stderr, "Error: missing -ff (fit filename).\n");
                     return (1);
                 }
                 char f[256];
                 if (sscanf(argv[i], "%s", f) == 1)
                     fitfile = strdup(f);
                 else {
-                    fprintf(stderr,
-                        "Error: bad -ff (fit filename), exiting.\n");
+                    fprintf(stderr, "Error: bad -ff (fit filename).\n");
                     return (1);
                 }
                 continue;
@@ -915,14 +917,14 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
         if (argv[i][0] == '-') {
             if (!strcmp(argv[i], "-h")) {
                 if (++i == argc) {
-                    fprintf(stderr, "Error: missing threshold, exiting.\n");
+                    fprintf(stderr, "Error: missing -h (threshold).\n");
                     return (1);
                 }
                 double a;
                 if (sscanf(argv[i], "%lf", &a) == 1 && a >= 0.05 && a < 0.5)
                     loc_thr = a;
                 else {
-                    fprintf(stderr, "Error: bad -h (threshold), exiting.\n");
+                    fprintf(stderr, "Error: bad -h (threshold).\n");
                     return (1);
                 }
                 continue;
@@ -934,8 +936,7 @@ mmjco_cmds::mm_create_model(int argc, char **argv)
                     if (sscanf(argv[i], "%s", f) == 1)
                         modfile = strdup(f);
                     else {
-                        fprintf(stderr,
-                            "Error: bad -fm (model filename), exiting.\n");
+                        fprintf(stderr, "Error: bad -fm (model filename).\n");
                         return (1);
                     }
                 }
@@ -1061,7 +1062,15 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
     FILE *fp = 0;
     bool done_header = false;
     for (int i = 0; i < ntemps; i++) {
-        mm_create_data(argc-nvals, argv+nvals, vals[0], true);
+        if (mm_create_data(argc-nvals, argv+nvals, vals[0], true)) {
+            err = 1;
+            break;
+        }
+        if (vals[0] + ntemps*vals[0] > (mmc_tc1 + mmc_tc2)*0.999) {
+            fprintf(stderr, "Error: upper range close to or above Tc.\n");
+            err = 1;
+            break;
+        }
         if (!done_header) {
             done_header = true;
             sprintf(dp, "tsw%03d%06ld%06ld%02ld%04d-%02d%03ld.swp", ntemps,
@@ -1069,12 +1078,12 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
                 mmc_numxpts, mmc_nterms, lround(mmc_thr*1e3));
             fp = fopen(datafile, "w");
             if (!fp) {
-                fprintf(stderr, "ERROR: failed to open %s for writing.\n",
+                fprintf(stderr, "Error: failed to open %s for writing.\n",
                     datafile);
                 err = 1;
                 break;
             }
-            fprintf(fp, "tsweep %d %.4f %.4f %.3f %d %d %3f\n", ntemps, vals[0],
+            fprintf(fp, "tsweep %d %.4f %.4f %.3f %d %d %.3f\n", ntemps, vals[0],
                 vals[2], mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr);
         }
 
@@ -1148,7 +1157,7 @@ mmjco_cmds::mm_create_table(int argc, char **argv)
                 lround(mmc_thr*1e3));
             fp = fopen(datafile, "w");
             if (!fp) {
-                fprintf(stderr, "ERROR: failed to open %s for writing.\n",
+                fprintf(stderr, "Error: failed to open %s for writing.\n",
                     datafile);
                 err = 1;
                 break;
