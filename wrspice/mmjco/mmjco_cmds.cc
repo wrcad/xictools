@@ -1066,13 +1066,13 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
             err = 1;
             break;
         }
-        if (vals[0] + ntemps*vals[0] > (mmc_tc1 + mmc_tc2)*0.999) {
-            fprintf(stderr, "Error: upper range close to or above Tc.\n");
-            err = 1;
-            break;
-        }
         if (!done_header) {
             done_header = true;
+            if (vals[0] + ntemps*vals[0] > (mmc_tc1 + mmc_tc2)*0.999) {
+                fprintf(stderr, "Error: upper range close to or above Tc.\n");
+                err = 1;
+                break;
+            }
             sprintf(dp, "tsw%03d%06ld%06ld%02ld%04d-%02d%03ld.swp", ntemps,
                 lround(vals[0]*1e4), lround(vals[2]*1e4), lround(mmc_sm*1e3),
                 mmc_numxpts, mmc_nterms, lround(mmc_thr*1e3));
@@ -1087,7 +1087,10 @@ mmjco_cmds::mm_create_sweep(int argc, char **argv)
                 vals[2], mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr);
         }
 
-        mm_create_fit(argc-nvals, argv+nvals, fp);
+        if (mm_create_fit(argc-nvals, argv+nvals, fp)) {
+            err = 1;
+            break;
+        }
         vals[0] += vals[2];
     }
     if (fp)
