@@ -876,13 +876,19 @@ mmjco_cmds::mm_create_fit(int argc, char **argv, FILE *fp)
         fitfile = t;
     }
 
-    char *data = 0;
+    // Print a header string.
+    char *hdr = new char[80];
     if (fp) {
-        data = new char[80];
-        sprintf(data, "tcafit %11.4e %11.4e %11.4e", mmc_temp, mmc_d1, mmc_d2);
+        // Sweep or table file.
+        sprintf(hdr, "tcafit %11.4e %11.4e %11.4e", mmc_temp, mmc_d1, mmc_d2);
     }
-    mmc_mf.save_fit_parameters(fitfile, fp, data);
-    delete [] data;
+    else {
+        // Stand-alone file.
+        sprintf(hdr, "tcafit %11.4e %11.4e %11.4e %.3f %-4d %-2d %.3f",
+            mmc_temp, mmc_d1, mmc_d2, mmc_sm, mmc_numxpts, mmc_nterms, mmc_thr);
+    }
+    mmc_mf.save_fit_parameters(fitfile, fp, hdr);
+    delete [] hdr;
     delete [] mmc_fitfile;
     mmc_fitfile = fitfile;
     return (0);
@@ -1446,9 +1452,30 @@ mmjco_cmds::mm_load_fit(int argc, char **argv)
     mmc_thr = 0.0;
     delete [] mmc_fitfile;
     mmc_fitfile = path;
+ 
+    // If it has a header line use it, otherwise just grab the numbers
+    // for backwards compatibility.
+    //
+    double tp, d1, d2, sm, th;
+    int xp, nt;
+    bool ntset = false;
+    if (fscanf(fp, "%*s %lf %lf %lf %lf %d %d %lf", &tp, &d1, &d2, &sm, &xp,
+            &nt, &th) == 7) {
+        mmc_temp = tp;
+        mmc_d1 = d1;
+        mmc_d2 = d2;
+        mmc_sm = sm;
+        mmc_numxpts = xp;
+        mmc_nterms = nt;
+        mmc_thr = th;
+        ntset = true;
+    }
+    else
+        rewind(fp);
 
     mmc_mf.load_fit_parameters(argv[1], fp);
-    mmc_nterms = mmc_mf.numterms();
+    if (!ntset)
+        mmc_nterms = mmc_mf.numterms();
     return (0);
 }
 

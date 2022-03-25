@@ -468,7 +468,7 @@ mmjco_fit::new_fit_parameters(const double *x,
 // added as a leading text string.
 //
 void
-mmjco_fit::save_fit_parameters(const char *filename, FILE *fp, const char *data)
+mmjco_fit::save_fit_parameters(const char *filename, FILE *fp, const char *hdr)
 {
     if (!mmf_pAB || !mmf_nterms) {
         fprintf(stderr, "Error: no saved parameter set.\n");
@@ -485,17 +485,8 @@ mmjco_fit::save_fit_parameters(const char *filename, FILE *fp, const char *data)
         }
         closefp = true;
     }
-    else if (data) {
-        fprintf(fp, "%s\n", data);
-    }
-    else {
-        const char *f = strrchr(filename, '/');
-        if (f)
-            f++;
-        else
-            f = filename;
-        fprintf(fp, "%s\n", f);
-    }
+    if (hdr)
+        fprintf(fp, "%s\n", hdr);
     for (int i = 0; i < mmf_nterms; i++) {
         fprintf(fp, "%12.5e,%12.5e,%12.5e,%12.5e,%12.5e,%12.5e\n",
             mmf_pAB[i].real(), mmf_pAB[i].imag(), A[i].real(), A[i].imag(),
