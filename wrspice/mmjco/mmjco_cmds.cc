@@ -679,8 +679,8 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
     delete [] mmc_qp_data;
     delete [] mmc_xpts;
     mmc_temp = temp;
-    mmc_d1 = d1;
-    mmc_d2 = d2;
+    mmc_d1 = d1*1e-3;
+    mmc_d2 = d2*1e-3;
     mmc_sm = sm;
     mmc_tc1 = tc1;
     mmc_tc2 = tc2;
@@ -731,13 +731,8 @@ mmjco_cmds::mm_create_data(int argc, char **argv, double temp, bool no_out)
         }
         filename = dp;
         sprintf(dp, "tca%06ld%05ld%05ld%02ld%04d",
-            lround(mmc_temp*1e4), lround(mmc_d1*1e4), lround(mmc_d2*1e4),
+            lround(mmc_temp*1e4), lround(mmc_d1*1e7), lround(mmc_d2*1e7),
             lround(mmc_sm*1e3), mmc_numxpts);
-        /* This was the original format.
-        sprintf(dp, "tca%03ld%03ld%03ld%02ld%04d",
-            lround(mmc_temp*100), lround(mmc_d1*100), lround(mmc_d2*100),
-            lround(mmc_sm*1000), mmc_numxpts);
-        */
         if (dtype == DFDATA)
             strcat(dp, ".data");
         else
@@ -1229,13 +1224,14 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
     if (!strcmp(buf, "Title: mmjco")) {
         // Rawfile format for TCA data.
 
-        double T, d1, d2, sm = 0.0;
+        double T, d1, d2, sm;
+        int nxp = 0;
         while (fgets(buf, 256, fp) != 0) {
-            if (sscanf(buf, "Plotname: T=%lf d1=%lf d2=%lf sm=%lf", &T,
-                    &d1, &d2, &sm) == 4)
+            if (sscanf(buf, "Plotname: %lf %lf %lf %lf %d", &T, &d1, &d2,
+                    &sm, &nxp) == 5)
                 break;
         }
-        if (sm == 0.0) {
+        if (nxp != 0) {
             fprintf(stderr, "Error: bad or missing parameters.\n");
             fclose(fp);
             return (1);
@@ -1257,6 +1253,11 @@ mmjco_cmds::mm_load_data(int argc, char **argv)
         }
         if (npts < 2) {
             fprintf(stderr, "Error: too few points.\n");
+            fclose(fp);
+            return (1);
+        }
+        if (npts != nxp) {
+            fprintf(stderr, "Error: ambiguous point count.\n");
             fclose(fp);
             return (1);
         }
@@ -1618,8 +1619,8 @@ mmjco_cmds::save_data(const char *filename, FILE *fp, DFTYPE dtype,
     else {
         // Save in rawfile format.
         char tbf[80];
-        sprintf(tbf, "T=%.2f d1=%.2f d2=%.2f sm=%.3f", mmc_temp, mmc_d1, mmc_d2,
-            mmc_sm);
+        sprintf(tbf, "%11.4e %11.4e %11.4e %.3f %-4d", mmc_temp, mmc_d1,
+            mmc_d2, mmc_sm, mmc_numxpts);
 
         fprintf(fp, "Title: mmjco\n");
         fprintf(fp, "Date: %s\n", datestring());
