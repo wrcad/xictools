@@ -59,7 +59,6 @@ int main(int argc, char **argv)
             char *swf;
             if (mmc.mm_get_sweep_fit(argc-1, argv+1, &mt, &temp, &swf))
                 return (1);
-            const double *data = mt->new_tab(temp);
             char *tbf = new char[strlen(swf) + 16];
             strcpy(tbf, swf);
             delete [] swf;
@@ -67,9 +66,8 @@ int main(int argc, char **argv)
             if (t && !strcmp(t, ".swp"))
                 *t = 0;
             sprintf(tbf + strlen(tbf), "_%.4f.fit", temp);
-            bool ret = mt->dump_file(tbf, data);
+            bool ret = mt->dump_file(tbf);
             delete mt;
-            delete [] data;
             delete [] tbf;
             if (!ret) {
                 fprintf(stderr, "Error: write fit file failed.\n");

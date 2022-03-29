@@ -13,15 +13,18 @@
 
 #define DEBUG
 
-// Create the data for a new fit table for temperature t via
+
+// Create the data for a new fit table for temperature mt_res_temp by
 // interpolating from the presently stored tables.
 //
-double * 
-mmjco_mtdb::new_tab(double t)
+void
+mmjco_mtdb::new_tab()
 {
     const double *tvals = mt_temps;
     double *fvals = new double[mt_ntemps];
-    double *data = new double[mt_nterms*6];
+
+    delete [] mt_res_data;
+    mt_res_data = new double[mt_nterms*6];
 
     int nvals = mt_nterms*6;
     for (int i = 0; i < nvals; i++) {
@@ -30,9 +33,34 @@ mmjco_mtdb::new_tab(double t)
         }
         const double *fv = fvals;
         mmjco_tscale ts(mt_ntemps, tvals, fv);
-        data[i] = ts.value(t);
+        mt_res_data[i] = ts.value(mt_res_temp);
     }
-    return (data);
+    delete [] fvals;
+}
+
+
+// Create the gap parameters for a new fit table for temperature t by
+// interpolating from the presently stored deltas.
+//
+void
+mmjco_mtdb::new_dels()
+{
+    const double *tvals = mt_temps;
+    double *fvals = new double[mt_ntemps*2];
+
+    delete [] mt_res_dels;
+    mt_res_dels = new double[2];
+
+    int nvals = 2;
+    for (int i = 0; i < nvals; i++) {
+        for (int j = 0; j < mt_ntemps; j++) {
+            fvals[j] = mt_dels[j*nvals + i];
+        }
+        const double *fv = fvals;
+        mmjco_tscale ts(mt_ntemps, tvals, fv);
+        mt_res_dels[i] = ts.value(mt_res_temp);
+    }
+    delete [] fvals;
 }
 
 
@@ -58,6 +86,7 @@ mmjco_mtdb::load(FILE *fp, int ntemps, int nterms)
     double temp = 0.0;
     double *data = 0;
     double *dp = 0;
+    double d1 = 0.0, d2 = 0.0;
     int ix = 0;
 
     while ((s = fgets(buf, 256, fp)) != 0) {
@@ -67,9 +96,8 @@ mmjco_mtdb::load(FILE *fp, int ntemps, int nterms)
             continue;
 
         // New format: print values, easy to parse.
-        if (!strncmp(s, "tca", 3)) {
-            double d1, d2;
-            if (sscanf(s+4, "%lf %lf %lf", &temp, &d1, &d2) != 3) {
+        if (!strncmp(s, "tcafit", 6)) {
+            if (sscanf(s+7, "%lf %lf %lf", &temp, &d1, &d2) != 3) {
                 fprintf(stderr, "Error: wrong record separator token count.\n");
                 return (false);
             }
@@ -95,7 +123,7 @@ mmjco_mtdb::load(FILE *fp, int ntemps, int nterms)
         }
         dp += 6;
         if ((dp - data)/6 == nterms) {
-            if (!add_table(buf, temp, ix-1, data)) {
+            if (!add_table(buf, temp, d1, d2, ix-1, data)) {
                 fprintf(stderr, "Error: failed to add fit set.\n");
                 return (false);
             }
@@ -111,20 +139,23 @@ mmjco_mtdb::load(FILE *fp, int ntemps, int nterms)
 // Write the parameters to a ".fit" file.
 //
 bool
-mmjco_mtdb::dump_file(const char *fname, const double *data)
+mmjco_mtdb::dump_file(const char *fname)
 {
     if (!fname) {
         fprintf(stderr, "Error: null filename pointer.\n");
         return (false);
     }
-    if (!data) {
+    if (!mt_res_data || !mt_res_dels) {
         fprintf(stderr, "Error: null data pointer.\n");
         return (false);
     }
 
     FILE *fp = fopen(fname, "w");
     if (fp) {
-        const double *dp = data;
+        fprintf(fp, "tcafit %11.4e %11.4e %11.4e %.3f %-4d %-2d %.3f\n",
+            mt_res_temp, mt_res_dels[0], mt_res_dels[1], mt_sm, mt_xp,
+            mt_nterms, mt_thr);
+        const double *dp = mt_res_data;
         for (int i = 0; i < mt_nterms; i++) {
             fprintf(fp, "%12.5e,%12.5e,%12.5e,%12.5e,%12.5e,%12.5e\n",
                 dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);

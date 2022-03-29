@@ -376,8 +376,10 @@ mmjco_cmds::mm_get_sweep_fit(int argc, char **argv, mmjco_mtdb **pmt,
     }
     if (pt)
         *pt = temp;
-    if (pmt)
+    if (pmt) {
+        mt->set_temp(temp, mmc_numxpts, mmc_sm, mmc_thr);
         *pmt = mt;
+    }
     else
         delete mt;
     if (pfn)
@@ -1493,9 +1495,6 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     if (mm_get_sweep_fit(argc, argv, &mt, &temp, &ffn))
         return (1);
 
-    // This does the interpolation, returning the new fit set.
-    const double *data = mt->new_tab(temp);
-
     // From now on, this is example-only code.  We load the new fit
     // parameters back into mmjco as if they were computed directly,
     // then drop a model file (back-converted TCA amplitudes) which
@@ -1503,14 +1502,14 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     // for the temperature.
 
     // Print the parameters.
-    const double *dp = data;
+    const double *dp = mt->res_data();
     for (int i = 0; i < mt->num_terms(); i++) {
         fprintf(stdout, "%10.6f,%10.6f,%10.6f,%10.6f,%10.6f,%10.6f\n",
             dp[0], dp[1], dp[2], dp[3], dp[4], dp[5]);
         dp += 6;
     }
 
-    mmc_mf.load_fit_parameters(data, mt->num_terms());
+    mmc_mf.load_fit_parameters(mt->res_data(), mt->num_terms());
 
     // Clear TCA data if any, set parameters from the interpolation fit
     // data.
@@ -1555,17 +1554,15 @@ mmjco_cmds::mm_load_sweep(int argc, char **argv)
     sprintf(fitfile + strlen(fitfile), "_%.4f.fit", temp);
 
     // Save a fit file.
-    if (!mt->dump_file(fitfile, data)) {
+    if (!mt->dump_file(fitfile)) {
         fprintf(stderr, "Error: write fit file failed.\n");
         delete mt;
-        delete [] data;
         delete [] fitfile;
         return (1);
     }
     mmc_fitfile = fitfile;
 
     delete mt;
-    delete [] data;
     return (0);
 }
 
