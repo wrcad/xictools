@@ -165,16 +165,16 @@ DATE = @DATE@
 
 # Advanced users can edit the blocks below if necessary.
 
-ifeq ($(OSNAME),Win32)
+ifeq ($(OSNAME),MINGW)
 
-# Windows, compiler and libraries from win-builds.org.
-CXX = /usr/local/win-builds/bin/g++
-CC = /usr/local/win-builds/bin/gcc
-LINKCC = $(CXX) -static-libgcc -static-libstdc++
-CFLAGS = -O3 -Wall -W -Wshadow -Wwrite-strings -pthread 
+# MINGW x86_64
+CXX = /mingw64/bin/g++
+CC = /mingw64/bin/gcc
+LINKCC = /mingw64/bin/g++ -static-libgcc -static-libstdc++
+CFLAGS = -O2 -Wall -W -Wshadow -Wwrite-strings -pthread 
 LSHFLAG = -shared -Wl,--enable-auto-import,--export-all-symbols
-DEPEND_PROG = $(CC) -MM -O3 -Wall -W -Wshadow -Wwrite-strings -pthread
-FILTER = |sed -e s/C:// -e s///
+DEPEND_PROG = $(CC) -MM -O2 -Wall -W -Wshadow -Wwrite-strings -pthread
+FILTER = 
 PIC_OPT = 
 SOEXT = dll
 DEVWINDLL = -L$(DLL_LOC) -lwrspice

@@ -11,7 +11,7 @@ MAINTAINER = @MAINTAINER@
 
 DEFS = -DHAVE_CONFIG_H  -DinsideElement -DinsidePreprocessor -DinsideVeriloga
 CPPFLAGS = -g -Wall
-CFLAGS = $(DEFS) $(CPPFLAGS) -I.
+CFLAGS = $(DEFS) $(CPPFLAGS) -I. -fcommon
 
 CFILES = adms.c preprocessorLex.c preprocessorMain.c preprocessorYacc.c \
   verilogaYacc.c verilogaLex.c admstpathYacc.c
@@ -20,7 +20,7 @@ COBJS=$(CFILES:.c=.o)
 all: admsXml$(EXEEXT) admsCheck$(EXEEXT)
 
 admsXml$(EXEEXT): adms.implicit.xml.c adms.c admsXml.o $(COBJS)
-	$(CC) -o $@ admsXml.o $(COBJS)
+	$(CC) -o $@ $(CFLAGS) admsXml.o $(COBJS)
 
 admsCheck$(EXEEXT): admsCheck.c adms.c dummy.xml.c dummy.va.c
 	$(CC) -o $@ $(CFLAGS) admsCheck.c adms.o

@@ -80,6 +80,7 @@ if test $enable_mingw != yes -a $enable_mingw != no; then
     mingw_dir=$enable_mingw
     mingw=yes
 elif test $enable_mingw = yes; then
+    mingw_dir=/mingw64
     mingw=yes
 fi
 )
@@ -878,7 +879,8 @@ if test $OSNAME = "MINGW"; then
     if test -z $REGEX; then
         MSLIBS="$MSLIBS -lregex -ltre -lintl -liconv"
     fi
-    MSLIBS2="-lbfd -liberty -lintl -liconv -lm"
+    MSLIBS2="$mingw_dir/lib/binutils/libbfd.a \
+ $mingw_dir/lib/binutils/libiberty.a -lintl -liconv -lm"
     dnl -lbfd -liberty required for stackdump.o, and fnmatch used in mswfile.cc
     SLIBS="$MSLIBS"
     LIBS="$MSLIBS $MSLIBS2 $LIBS"
