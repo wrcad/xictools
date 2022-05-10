@@ -1076,11 +1076,18 @@ Josephson Junctions
      </blockquote>
 
     <p>
+    Unless stated otherwise, information presented here applies to the
+    standard RSJ model, the Verilog-A Josephson junction model
+    provided with <i>WRspice</i> in the Verilog-A examples, and the
+    microscopic model.  These are referred to as model levels 1, 2,
+    and 3 respectively.
+
+    <p>
     Parameters:<br>
     <table border=1 cellpadding=2 bgcolor="#ffffee">
     <tr><th>Parameter Name</th> <th>Description</th></tr>
     <tr><td><tt>pijj=1|0</tt></td> <td>
-      Whether the device is a "pi" junction.</td></tr>
+      Whether the device is a "pi" junction (Levels 1 and 2).</td></tr>
     <tr><td><tt>area=</tt><i>val</i></td> <td>
       Scale factor that multiplies all currents and other values,
       effectively modifying the junction area.</td></tr>
@@ -1114,6 +1121,140 @@ Josephson Junctions
       Time of last SFQ emission (read only).</td></tr>
     </table>
 
+    Read-Only Parameters for Level 1:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Data Type</th> <th>Description</th></tr>
+    <tr><td><tt>v</tt></td> <td>real</td> <td>
+      Terminal voltage.</td></tr>
+    <tr><td><tt>phase</tt></td> <td>real</td> <td>
+      Junction phase, alias <tt>phs</tt>.</td></tr>
+    <tr><td><tt>n</tt></td> <td>integer</td> <td>
+      Junction SFQ pulse count.</td></tr>
+    <tr><td><tt>phsf</tt></td> <td>boolean</td> <td>
+      Junction SFQ pulse flag.</td></tr>
+    <tr><td><tt>phst</tt></td> <td>real</td> <td>
+      Junction SFQ last pulse time.</td></tr>
+    <tr><td><tt>tcf</tt></td> <td>real</td> <td>
+      Temperature compensation factor.</td></tr>
+    <tr><td><tt>vg</tt></td> <td>real</td> <td>
+      Gap voltage.</td></tr>
+    <tr><td><tt>vless</tt></td> <td>real</td> <td>
+      Gap threshold voltage.</td></tr>
+    <tr><td><tt>vmore</tt></td> <td>real</td> <td>
+      Gap knee voltage.</td></tr>
+    <tr><td><tt>icrit</tt></td> <td>real</td> <td>
+      Maximum critical current.</td></tr>
+    <tr><td><tt>cc</tt></td> <td>real</td> <td>
+      Capacitance current.</td></tr>
+    <tr><td><tt>cj</tt></td> <td>real</td> <td>
+      Josephson current.</td></tr>
+    <tr><td><tt>cq</tt></td> <td>real</td> <td>
+      Quasiparticle current.</td></tr>
+    <tr><td><tt>c</tt></td> <td>real</td> <td>
+      Total device current.</td></tr>
+    <tr><td><tt>cap</tt></td> <td>real</td> <td>
+      Capacitance.</td></tr>
+    <tr><td><tt>g0</tt></td> <td>real</td> <td>
+      Subgap conductance.</td></tr>
+    <tr><td><tt>gn</tt></td> <td>real</td> <td>
+      Normal conductance.</td></tr>
+    <tr><td><tt>gs</tt></td> <td>real</td> <td>
+      Quasiparticle onset conductance.</td></tr>
+    <tr><td><tt>gshunt</tt></td> <td>real</td> <td>
+      External shunt conductance from VSHUNT.</td></tr>
+    <tr><td><tt>rshunt</tt></td> <td>real</td> <td>
+      External shunt resistance from VSHUNT.</td></tr>
+    <tr><td><tt>lshval</tt></td> <td>real</td> <td>
+      External shunt resistor parasitic inductance.</td></tr>
+    <tr><td><tt>g1</tt></td> <td>real</td> <td>
+      NbN quasiparticle parameter.</td></tr>
+    <tr><td><tt>g2</tt></td> <td>real</td> <td>
+      NbN quasiparticle parameter.</td></tr>
+    <tr><td><tt>node1</tt></td> <td>integer</td> <td>
+      Node 1 number.</td></tr>
+    <tr><td><tt>node2</tt></td> <td>integer</td> <td>
+      Node 2 number.</td></tr>
+    <tr><td><tt>pnode</tt></td> <td>integer</td> <td>
+      Phase node number.</td></tr>
+    <tr><td><tt>lsernode</tt></td> <td>integer</td> <td>
+      Internal LSER node number.</td></tr>
+    <tr><td><tt>lserbrn</tt></td> <td>integer</td> <td>
+      Internal LSER branch number.</td></tr>
+    <tr><td><tt>lshnode</tt></td> <td>integer</td> <td>
+      Internal LSH node number.</td></tr>
+    <tr><td><tt>lshbrn</tt></td> <td>integer</td> <td>
+      Internal LSH branch number.</td></tr>
+    </table>
+
+    Read-Only Parameters for Level 3:<br>
+    <table border=1 cellpadding=2 bgcolor="#ffffee">
+    <tr><th>Parameter Name</th> <th>Data Type</th> <th>Description</th></tr>
+    <tr><td><tt>v</tt></td> <td>real</td> <td>
+      Terminal voltage.</td></tr>
+    <tr><td><tt>phase</tt></td> <td>real</td> <td>
+      Junction phase, alias <tt>phs</tt>.</td></tr>
+    <tr><td><tt>n</tt></td> <td>integer</td> <td>
+      Junction SFQ pulse count.</td></tr>
+    <tr><td><tt>phsf</tt></td> <td>boolean</td> <td>
+      Junction SFQ pulse flag.</td></tr>
+    <tr><td><tt>phst</tt></td> <td>real</td> <td>
+      Junction SFQ last pulse time.</td></tr>
+    <tr><td><tt>icrit</tt></td> <td>real</td> <td>
+      Maximum critical current.</td></tr>
+    <tr><td><tt>cc</tt></td> <td>real</td> <td>
+      Capacitance current.</td></tr>
+    <tr><td><tt>cj</tt></td> <td>real</td> <td>
+      Josephson current.</td></tr>
+    <tr><td><tt>cq</tt></td> <td>real</td> <td>
+      Quasiparticle current.</td></tr>
+    <tr><td><tt>c</tt></td> <td>real</td> <td>
+      Total device current.</td></tr>
+    <tr><td><tt>cap</tt></td> <td>real</td> <td>
+      Capacitance.</td></tr>
+    <tr><td><tt>g0</tt></td> <td>real</td> <td>
+      Subgap conductance.</td></tr>
+    <tr><td><tt>gn</tt></td> <td>real</td> <td>
+      Normal conductance.</td></tr>
+    <tr><td><tt>rsint</tt></td> <td>real</td> <td>
+      Intrinsic subgap resistance.</td></tr>
+    <tr><td><tt>del1</tt></td> <td>real</td> <td>
+      Side 1 delta.</td></tr>
+    <tr><td><tt>del2</tt></td> <td>real</td> <td>
+      Side 2 delta.</td></tr>
+    <tr><td><tt>vgap</tt></td> <td>real</td> <td>
+      Gap voltage.</td></tr>
+    <tr><td><tt>vdp</tt></td> <td>real</td> <td>
+      Dropback voltage.</td></tr>
+    <tr><td><tt>omega</tt></td> <td>real</td> <td>
+      Plasma resonance frequency, radians.</td></tr>
+    <tr><td><tt>betac</tt></td> <td>real</td> <td>
+      Stewart-McCumber parameter.</td></tr>
+    <tr><td><tt>ictempfct</tt></td> <td>real</td> <td>
+      Critical current temperature correction factor.</td></tr>
+    <tr><td><tt>alphan</tt></td> <td>real</td> <td>
+      TJM alphaN value.</td></tr>
+    <tr><td><tt>kgap</tt></td> <td>real</td> <td>
+      TJM kgap value.</td></tr>
+    <tr><td><tt>rejpt</tt></td> <td>real</td> <td>
+      TJM rejpt value.</td></tr>
+    <tr><td><tt>kgap_rejpt</tt></td> <td>real</td> <td>
+      TJM kgap_rejpt value.</td></tr>
+    <tr><td><tt>node1</tt></td> <td>integer</td> <td>
+      Node 1 number.</td></tr>
+    <tr><td><tt>node2</tt></td> <td>integer</td> <td>
+      Node 2 number.</td></tr>
+    <tr><td><tt>pnode</tt></td> <td>integer</td> <td>
+      Phase node number.</td></tr>
+    <tr><td><tt>lsernode</tt></td> <td>integer</td> <td>
+      Internal LSER node number.</td></tr>
+    <tr><td><tt>lserbrn</tt></td> <td>integer</td> <td>
+      Internal LSER branch number.</td></tr>
+    <tr><td><tt>lshnode</tt></td> <td>integer</td> <td>
+      Internal LSH node number.</td></tr>
+    <tr><td><tt>lshbrn</tt></td> <td>integer</td> <td>
+      Internal LSH branch number.</td></tr>
+    </table>
+
     <p>
     Example:
     <blockquote><tt>
@@ -1121,13 +1262,6 @@ Josephson Junctions
         bxx 2 0 type1 control=l3<br>
         b2 4 5 ybco phi=1.57
     </tt></blockquote>
-
-    <p>
-    Unless stated otherwise, information presented here applies to the
-    standard RSJ model, the Verilog-A Josephson junction model
-    provided with <i>WRspice</i> in the Verilog-A examples, and the
-    microscopic model.  These are referred to as model levels 1, 2,
-    and 3 respectively.
 
     <p>
     The <i>n+</i> and <i>n-</i> are the positive and negative element

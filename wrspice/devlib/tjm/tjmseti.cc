@@ -56,7 +56,7 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
 #ifdef NEWLSH
         &&L_TJM_LSH, 
 #endif
-        &&L_TJM_TEMP,
+        &&L_TJM_TEMP_K,
         &&L_TJM_DTEMP,
         &&L_TJM_OFF,
         &&L_TJM_IC,
@@ -96,7 +96,7 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->TJMlshGiven = true;
         return (OK);
 #endif
-    L_TJM_TEMP:
+    L_TJM_TEMP_K:
         inst->TJMtemp = value->rValue;
         inst->TJMtempGiven = true;
         return (OK);
@@ -157,7 +157,7 @@ TJMdev::setInst(int param, IFdata *data, sGENinstance *geninst)
         inst->TJMlshGiven = true;
         break;
 #endif
-    case TJM_TEMP:
+    case TJM_TEMP_K:
         inst->TJMtemp = value->rValue;
         inst->TJMtempGiven = true;
         break;

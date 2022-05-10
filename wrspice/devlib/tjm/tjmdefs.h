@@ -431,7 +431,7 @@ enum {
 #ifdef NEWLSH
     TJM_LSH,
 #endif
-    TJM_TEMP,
+    TJM_TEMP_K,
     TJM_DTEMP,
     TJM_OFF,
     TJM_IC,
