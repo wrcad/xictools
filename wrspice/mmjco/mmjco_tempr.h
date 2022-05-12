@@ -32,7 +32,7 @@
 
 // Defaults for niobium.
 #define DEBYE_TEMP_NB 276
-#define TC_NB 9.2
+#define TC_NB 9.26
 
 
 class mmjco_tempr

@@ -2082,6 +2082,8 @@ MOSFET Models
 !!SEEALSO
 .model
 
+.REDIRECT jjtcf jjmodel#jjtcf
+
 !! elements.tex 013022
 !!KEYWORD
 jjmodel 
@@ -2399,6 +2401,7 @@ Josephson Models
     the <tt>tnom</tt> value.
     </dl>
 
+    <a name="jjtcf"></a>
     <dl>
     <dt><tt>tcfct</tt><dd>
     <b>range:</b> 1.5 - 2.5<br>
@@ -2464,17 +2467,20 @@ Josephson Models
     </dl>
 
     <dl>
-    <dt><tt>vgap</tt> or <tt>vg</tt><dd>
+    <dt><tt>vg</tt> or <tt>vgap</tt><dd>
     <b>range:</b> 0.1mV - 10.0mV<br>
     This parameter specifies the gap voltage, which in a hysteretic
     Josephson junction is a voltage at which there is a large and
     abrupt increase in conductivity.  This parameter is material
-    dependent, the default 2.6mV is appropriate for niobium junctions.
+    dependent.  If not given, the value used is computed using BCS
+    theory from the operating temperature, superconducting transition
+    temperature, and Debye temperature, assuming both electrodes are
+    identical.
     </dl>
 
     <dl>
     <dt><tt>delv</tt><dd>
-    <b>range:</b> 0.001*<tt>vgap</tt> - 0.2*<tt>vgap</tt><br>
+    <b>range:</b> 0.001*<tt>vg</tt> - 0.2*<tt>vg</tt><br>
     <b>Levels 1 and 2 only.</b><br>
     This specifies the assumed width, in voltage, of the quasiparticle
     step region, or gap.  In this region, current increases sharply
@@ -2742,7 +2748,7 @@ Josephson Tunnel Junction Model
     The actual model computations make use of predefined fitting
     parameters that can be produced with the <a
     href="mmjco"><b>mmjco</b></a> program provided with
-    <i>WRspice</i>.  The <b>mmjco<b> program integrates the tunneling
+    <i>WRspice</i>.  The <b>mmjco</b> program integrates the tunneling
     current expressions producing a tunnel current amplitude (TCA)
     table.  This is compressed into a smaller representation using the
     OSZ approach in the reference, which in addition to saving memory
@@ -2858,13 +2864,13 @@ Josephson Tunnel Junction Model
     <tr><td><tt>tsaccel</tt></td> <td>&nbsp;</td>
         <td>Ratio max time step to that at dropback voltage</td>
         <td></td>      <td><tt>1.0</tt></td></tr>
-    <tr><td><tt>dell1nom</tt></td> <td>&nbsp;</td>
+    <tr><td><tt>dell1</tt></td> <td>&nbsp;</td>
         <td>Side 1 delta at TNOM (read only)</td>
         <td>V</td>      <td><tt>276</tt></td></tr>
-    <tr><td><tt>dell2nom</tt></td> <td>&nbsp;</td>
+    <tr><td><tt>dell2</tt></td> <td>&nbsp;</td>
         <td>Side2 delta at TNOM (read only)</td>
         <td>V</td>      <td><tt>276</tt></td></tr>
-    <tr><td><tt>vgapnom</tt></td> <td>&nbsp;</td>
+    <tr><td><tt>vg</tt> or <tt>vgap</tt></td> <td>&nbsp;</td>
         <td>Gap voltage at TNOM (read only)</td>
         <td>V</td>      <td><tt>276</tt></td></tr>
     </table>
@@ -3209,11 +3215,15 @@ Josephson Tunnel Junction Model
     </dl>
 
     <dl>
-    <dt><tt>del1nom</tt>, <tt>del2nom</tt>, <tt>vgapnom</tt><dd>
-    These three read-only parameters return the gap potential in the
-    electrodes and across the junction, respectively.  These are
-    computed internally as a function of temperature.
+    <dt><tt>del1</tt>, <tt>del2</tt><dd>
+    These two read-only parameters return the gap potential in the
+    electrodes.  These are computed internally as a function of
+    temperature.
     </dl>
+
+    <dl>
+    <dt><tt>vg</tt> or <tt>vgap</tt><dd>
+    The junction gap voltage, equal to <tt>del1 + del2</tt>.
  
 !!SEEALSO
 .model
